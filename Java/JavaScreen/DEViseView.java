@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.53  2000/07/21 16:26:19  venkatan
+// *** empty log message ***
+//
 // Revision 1.52  2000/07/21 16:17:44  venkatan
 // Mouse Format display :  "-" is now recognised.
 //
@@ -692,12 +695,22 @@ public class DEViseView
 
     // Get this first cursor in this view or this view's pile.  Note that
     // this method should only be called on a base view.
+
+    public DEViseView getBaseView(){
+	return pileBaseView;
+    }
+
     public DEViseCursor getFirstCursor() throws YError
     {
         if (pileBaseView != null) {
-	    throw new YError("Calling getFirstCursor() on non-base view (" +
-	      viewName + ")");
+	      return null;
+            // error not thrown because in some sessions pileBaseView is called 
+	    // not really clear?? Ven
+            /*  throw new YError("Calling getFirstCursor() on non-base view (" +
+	      viewName + ")"); */
+	      
 	}
+	
 
         for (int i = 0; i < viewCursors.size(); i++) {
             DEViseCursor cursor = (DEViseCursor)viewCursors.elementAt(i);

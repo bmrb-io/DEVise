@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.63  2000/08/07 03:28:51  venkatan
+// Zoom for X - only direction is now available - done with CTRL + Rubberband
+//
 // Revision 1.62  2000/07/26 15:53:41  venkatan
 // Hand - Mouse Cursor is used in the 3D view
 //
@@ -154,6 +157,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.63  2000/08/07 03:28:51  venkatan
+// Zoom for X - only direction is now available - done with CTRL + Rubberband
+//
 // Revision 1.62  2000/07/26 15:53:41  venkatan
 // Hand - Mouse Cursor is used in the 3D view
 //
@@ -1349,7 +1355,9 @@ public class DEViseCanvas extends Container
 			  activeView.translateY(p.y, 2);
 		    }
                 } else {
-                    DEViseCursor cursor = activeView.getFirstCursor();
+		       DEViseCursor cursor = null;
+
+                      cursor = activeView.getFirstCursor();
 
                     if (cursor != null && (cursor.isXMovable ||
 		      cursor.isYMovable)) {
