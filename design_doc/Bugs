@@ -3040,6 +3040,10 @@ Num Date        Status  Description
 			fill the main window when you select only a subset
 			of the available views. (rkw)
 
+754 2/8/02	OPEN	Create a session with the (demo) data source,
+			condor1_dat or paulb_sample1 and try to save it ->
+			DEVise crashes. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
