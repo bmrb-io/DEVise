@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/11/24 23:14:11  weaver
+  Changes for the new ColorManager.
+
   Revision 1.10  1997/06/09 14:46:33  wenger
   Added cursor grid; fixed bug 187; a few minor cleanups.
 
@@ -65,6 +68,7 @@
 
 #include "Cursor.h"
 #include "View.h"
+#include "Color.h"
 
 //******************************************************************************
 // Constructors and Destructors
@@ -233,5 +237,58 @@ void DeviseCursor::MoveSource(Coord x, Coord y)
     _src->SetVisualFilter(filter);
   }
 }
+
+void DeviseCursor::ReadCursorStore(WindowRep*w)
+{
+  VisualFilter *filter;
+  Coord xLow, yLow, xHigh, yHigh;
+
+  GetVisualFilter(filter);
+  xLow = MAX(filter->xLow, filter->xLow);
+  xHigh = MIN(filter->xHigh, filter->xHigh);
+  yLow = MAX(filter->yLow, filter->yLow);
+  yHigh = MIN(filter->yHigh, filter->yHigh);
+
+  w->ReadCursorStore(xLow, yLow, xHigh-xLow, yHigh-yLow, _cursor_store);
+}
+
+void DeviseCursor::DrawCursorStore(WindowRep*w)
+{
+  VisualFilter *filter;
+  GetVisualFilter(filter);
+
+  Coord xLow, yLow, xHigh, yHigh;
+  xLow = MAX(filter->xLow, filter->xLow);
+  xHigh = MIN(filter->xHigh, filter->xHigh);
+  yLow = MAX(filter->yLow, filter->yLow);
+  yHigh = MIN(filter->yHigh, filter->yHigh);
+
+  w->DrawCursorStore(xLow, yLow, xHigh-xLow, yHigh-yLow, _cursor_store);
+}
+
+void DeviseCursor::DrawCursor(WindowRep* w)
+{
+  VisualFilter *filter;
+  GetVisualFilter(filter);
+
+  Coord xLow, yLow, xHigh, yHigh;
+  xLow = MAX(filter->xLow, filter->xLow);
+  xHigh = MIN(filter->xHigh, filter->xHigh);
+  yLow = MAX(filter->yLow, filter->yLow);
+  yHigh = MIN(filter->yHigh, filter->yHigh);
+
+  w->SetForeground(whiteColor);
+  w->Line(xLow, yLow, xLow, yHigh, 1);
+  w->Line(xHigh/2+xLow/2, yLow,
+              xHigh/2+xLow/2, yHigh, 1);
+  w->Line(xHigh, yLow, xHigh, yHigh, 1);
+
+  w->SetForeground(blackColor);
+  w->Line(xLow, yLow, xHigh, yLow, 1);
+  w->Line(xLow, yLow/2+yHigh/2,
+              xHigh, yLow/2+yHigh/2, 1);
+  w->Line(xLow, yHigh, xHigh, yHigh, 1);
+}
+
 
 //******************************************************************************

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.131  1998/03/18 08:19:42  zhenhai
+  Added visual links between 3D graphics.
+
   Revision 1.130  1998/03/13 18:10:37  wenger
   Fixed bug 327 (gaps in view background colors).
 
@@ -2279,6 +2282,9 @@ Boolean View::DrawCursors()
 #if defined(DEBUG)
   printf("DrawCursors for %s\n", GetName());
 #endif
+  int index;
+
+  WindowRep *winRep = GetWindowRep();
 
   if (!Mapped()) {
 #if defined(DEBUG)
@@ -2287,10 +2293,28 @@ Boolean View::DrawCursors()
     return false;
   }
 
-  if (!_cursorsOn) {
-    DoDrawCursors();
-    _cursorsOn = true;
-    return false;
+  if (Init::UseOpenGL()) {
+    if (!_cursorsOn) {
+      for(index = _cursors->InitIterator(); _cursors->More(index);) {
+        DeviseCursor *cursor = _cursors->Next(index);
+        cursor->ReadCursorStore(winRep);
+      }
+      _cursors->DoneIterator(index);
+      for(index = _cursors->InitIterator(); _cursors->More(index);) {
+        DeviseCursor *cursor = _cursors->Next(index);
+        cursor->DrawCursor(winRep);
+      }
+      _cursors->DoneIterator(index);
+      _cursorsOn = true;
+      return false;
+    }
+  }
+  else {
+    if (!_cursorsOn) {
+      DoDrawCursors();
+      _cursorsOn = true;
+      return false;
+    }
   }
 
   return true;
@@ -2301,6 +2325,8 @@ Boolean View::HideCursors()
 #if defined(DEBUG)
   printf("HideCursors for %s\n", GetName());
 #endif
+  int index;
+  WindowRep *winRep = GetWindowRep();
 
   if (!Mapped()) {
 #if defined(DEBUG)
@@ -2309,10 +2335,23 @@ Boolean View::HideCursors()
     return false;
   }
 
-  if (_cursorsOn) {
-    DoDrawCursors();
-    _cursorsOn = false;
-    return true;
+  if (Init::UseOpenGL()) {
+    if (_cursorsOn) {
+      for(index = _cursors->InitIterator(); _cursors->More(index);) {
+        DeviseCursor *cursor = _cursors->Next(index);
+        cursor->DrawCursorStore(winRep);
+      }
+      _cursors->DoneIterator(index);
+      _cursorsOn = false;
+      return true;
+    }
+  }
+  else {
+    if (_cursorsOn) {
+      DoDrawCursors();
+      _cursorsOn = false;
+      return true;
+    }
   }
 
   return false;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/03/18 08:19:39  zhenhai
+  Added visual links between 3D graphics.
+
   Revision 1.7  1998/03/05 08:10:23  zhenhai
   Added ability to view 3D graphs from six directions. Use -gl option to run,
   and click key x,y,z and X,Y,Z to select the direction you are viewing.
@@ -258,6 +261,12 @@ public:
      matrix as top of the stack */
   void ClearTransformStack();
   /* Drawing primitives */
+
+  virtual void ReadCursorStore
+	(Coord x, Coord y, Coord w, Coord h, CursorStore & c);
+  virtual void DrawCursorStore
+	(Coord x, Coord y, Coord w, Coord h, CursorStore & c);
+
   virtual void ClearBackground(Coord xlow, Coord ylow, Coord width,
                         Coord height)
   {

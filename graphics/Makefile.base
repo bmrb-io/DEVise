@@ -17,6 +17,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.60  1998/03/11 18:25:38  wenger
+#  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
+#  reducing include dependencies between csgroup code and the rest of
+#  the code, and within the csgroup code.  (Note: running collaboration
+#  doesn't work yet.)
+#
 #  Revision 1.59  1998/03/04 18:39:59  wenger
 #  Added <arch>/Makefile.config files that now hold stuff like the
 #  PERL_CORE definitions so those don't have to be repeated in all
@@ -197,7 +203,7 @@ LIBSRC = AttrList.c AxisLabelClassInfo.c \
 	Map3D.C Temp.c PSWindowRep.c PSDisplay.c DaliIfc.c DaliPatron.c \
 	DevStatus.c DualWindowRep.c DevFont.c \
 	ETkIfc.c ETkClient.c SessionDesc.c Scheduler.c DepMgr.c Session.c\
-	GLDebug.c GDataSock.c
+	GLDebug.c GDataSock.c CursorStore.c
 
 SRCc = $(filter %.c,$(LIBSRC))
 SRCC = $(filter %.C,$(LIBSRC))

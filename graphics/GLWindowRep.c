@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/03/23 18:44:44  zhenhai
+  Fixed copy mode problem.
+
   Revision 1.11  1998/03/18 08:19:38  zhenhai
   Added visual links between 3D graphics.
 
@@ -1860,7 +1863,7 @@ void GLWindowRep::Init()
   printf("GLWindowRep(0x%p)::Init()\n",this);
 #endif
 
-
+  MAKECURRENT();
 #if defined(LIBCS)
   _dispGraphics = true;
 #else
@@ -1872,7 +1875,6 @@ void GLWindowRep::Init()
   _unobscured = false;
   // use double buffer. Use color index mode instead of RGB mode
 
-  SetCopyMode();
   GLCHECKERROR();
   SetLineWidth(0);
   GLCHECKERROR();
@@ -3105,6 +3107,7 @@ void GLWindowRep::MakeIdentity() {
 
 void GLWindowRep::Transform(Coord x, Coord y, Coord &newX, Coord &newY)
 {
+  // Object (logical) coordinate -> Window (physical) coordinate
   GLdouble model[16];
   GLdouble proj[16];
   GLint view[4];
@@ -3120,6 +3123,7 @@ void GLWindowRep::Transform(Coord x, Coord y, Coord &newX, Coord &newY)
 
 void GLWindowRep::InverseTransform(Coord x, Coord y, Coord &newX, Coord &newY)
 {
+  // Window (physical) coordinate -> Object (logical) coordinate
   GLdouble model[16];
   GLdouble proj[16];
   GLint view[4];
@@ -3187,6 +3191,60 @@ void GLWindowRep::PrintTransform()
   GLfloat width;
   glGetFloatv(GL_LINE_WIDTH, &width);
   printf("Line width = %.2f\tRecord width = %d\n", width, GetLineWidth());
+}
+
+void GLWindowRep::ReadCursorStore
+	(Coord x, Coord y, Coord w, Coord h, CursorStore & c)
+{
+  Coord x2, y2, x3, y3;
+  int xi, yi, wi, hi;
+
+  MAKECURRENT();
+
+  Transform(x,y, x2, y2);
+  Transform(x+w,y+h, x3, y3);
+
+  xi=MAX(int(x2)-2, 0);
+  yi=MAX(int(y2)-2, 0);
+  wi=MIN(int(_width), int(x3+2))-xi+1;
+  hi=MIN(int(_height), int(y3+2))-yi+1;
+
+  GLMATRIXMODE(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+
+  c.Allocate(wi, hi);
+  glReadPixels(xi, yi, wi, hi, GL_COLOR_INDEX,GL_FLOAT, c.color_index);
+  glReadPixels(xi, yi, wi, hi, GL_DEPTH_COMPONENT,GL_FLOAT, c.depth);
+
+  glPopMatrix();
+}
+
+void GLWindowRep::DrawCursorStore
+	(Coord x, Coord y, Coord w, Coord h, CursorStore & c)
+{
+  Coord x2, y2, x3, y3;
+  int xi, yi, wi, hi;
+
+  MAKECURRENT();
+
+  Transform(x,y, x2, y2);
+  Transform(x+w,y+h, x3, y3);
+
+  xi=MAX(int(x2)-2, 0);
+  yi=MAX(int(y2)-2, 0);
+  wi=MIN(int(_width), int(x3)+2)-xi+1;
+  hi=MIN(int(_height), int(y3)+2)-yi+1;
+
+  GLMATRIXMODE(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+
+  glRasterPos2i(xi,yi);
+  glDrawPixels(wi,hi,GL_DEPTH_COMPONENT,GL_FLOAT, c.depth);
+  glDrawPixels(wi,hi,GL_COLOR_INDEX,GL_FLOAT, c.color_index);
+
+  glPopMatrix();
 }
 
 /* Clear the transformation stack and put an identity 

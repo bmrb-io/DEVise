@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/11/24 23:14:12  weaver
+  Changes for the new ColorManager.
+
   Revision 1.10  1997/07/22 15:36:22  wenger
   Added capability to dump human-readable information about all links
   and cursors.
@@ -66,6 +69,7 @@
 #include "DList.h"
 #include "VisualArg.h"
 #include "ViewCallback.h"
+#include "WindowRep.h"
 
 #include "Color.h"
 #include "Coloring.h"
@@ -116,6 +120,9 @@ class DeviseCursor : private ViewCallback, public Coloring
     _gridX = gridX;
     _gridY = gridY;
   }
+  void ReadCursorStore(WindowRep*);
+  void DrawCursorStore(WindowRep*);
+  void DrawCursor(WindowRep*);
 
 private:
   virtual void FilterAboutToChange(View *view);
@@ -129,6 +136,7 @@ private:
   Boolean _useGrid;
   Coord _gridX;
   Coord _gridY;
+  CursorStore _cursor_store;
 };
 
 //******************************************************************************

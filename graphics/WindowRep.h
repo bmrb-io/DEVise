@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.67  1998/03/18 08:19:46  zhenhai
+  Added visual links between 3D graphics.
+
   Revision 1.66  1998/03/05 08:10:29  zhenhai
   Added ability to view 3D graphs from six directions. Use -gl option to run,
   and click key x,y,z and X,Y,Z to select the direction you are viewing.
@@ -338,6 +341,7 @@
 
 #include "Color.h" // Note: this includes X-specific stuff -- bad!!
 #include "Coloring.h"
+#include "CursorStore.h"
 
 enum DisplayExportFormat { POSTSCRIPT, EPS, GIF };
 
@@ -428,8 +432,8 @@ class WindowRep
 {
 	protected:
 
-		DeviseDisplay*	_display;		// Display object
-		Coloring		coloring;		// Coloring of shape being drawn
+		DeviseDisplay*	_display;	// Display object
+		Coloring	coloring;	// Coloring of shape being drawn
 
 	public:
 
@@ -438,7 +442,7 @@ class WindowRep
 		virtual ~WindowRep(void);
 
 		// Getters and Setters
-		DeviseDisplay*			GetDisplay(void)		{ return _display;	};
+		DeviseDisplay*	 	GetDisplay(void)		{ return _display;	};
 		const DeviseDisplay*	GetDisplay(void) const	{ return _display;	};
 
 		Coloring&				GetColoring(void)		{ return coloring;	}
@@ -752,6 +756,10 @@ public:
   /* Get window rep dimensions */
   virtual void Dimensions(unsigned int &width, unsigned int &height ) = 0;
   virtual void PrintDimensions() {} // for debug
+  virtual void ReadCursorStore
+	(Coord x, Coord y, Coord w, Coord h, CursorStore & c) {}
+  virtual void DrawCursorStore
+	(Coord x, Coord y, Coord w, Coord h, CursorStore & c) {}
 
   /* Set window rep dimensions */
   virtual void SetDimensions(unsigned int width, unsigned int height) {}
