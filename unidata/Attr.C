@@ -68,6 +68,8 @@ Attr::Attr(char *name)
     _maxlen = 0;
     _qte_chr[0] = '"';    // Default quote char
     _qte_chr[1] = '\0';
+    _qte_is_default = true;
+
     _date_frmt = NULL;
 
     _own_df = 0;

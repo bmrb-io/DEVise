@@ -81,7 +81,7 @@ void UniData::init()
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 // If schema is NULL, it's at the begining of the data.
-UniData::UniData(char *datafile, char *schemafile)
+UniData::UniData(const char *datafile, const char *schemafile)
 {
     init();
 
@@ -196,7 +196,7 @@ UniData::~UniData()
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 // A function to figure out the converter (if any)
 // and do the setup for it.
-int  UniData::setup_converter(char *filename)
+int  UniData::setup_converter(const char *filename)
 {
     char *cnv = _schema->converter();
 

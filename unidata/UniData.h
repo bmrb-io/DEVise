@@ -107,7 +107,7 @@ class UniData {
 
       // A function to figure out the converter (if any)
       // and do the setup for it.
-    int  setup_converter(char *filename=NULL);
+    int  setup_converter(const char *filename=NULL);
 
       // Prepare for the use of perl, if it's needed.
     int  setup_perl();
@@ -166,7 +166,7 @@ class UniData {
 
   public:
       // If schema is NULL, it's at the begining of the data.
-    UniData(char *datafile, char *schemafile=NULL);
+    UniData(const char *datafile, const char *schemafile=NULL);
     UniData(int datafd, Schema *schema=NULL);
 
    ~UniData();

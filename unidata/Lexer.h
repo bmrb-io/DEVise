@@ -21,7 +21,7 @@
 
 #define    XTRA_SPCE    16
 
-void unilex_init(char *filename);
+void unilex_init(const char *filename);
 void unilex_end();
 
 // *************************************************************************
@@ -45,7 +45,7 @@ extern ostream *perr;
 extern int yylineno;
 extern int yycolno;
 extern int yyoffset;
-extern char *filename;
+extern const char *filename;
 
 void show_token(FILE *fp, int tok, union UniLexType *ult);
 void show_token(ostream *os, int tok, union UniLexType *ult);

@@ -44,7 +44,7 @@ int  yylex(YYSTYPE *ult);
 int      yyin_fd;
 ostream *perr;
 
-char *filename;
+const char *filename;
 int   yylineno;
 int   yycolno;
 int   yynxtcol;
@@ -462,7 +462,7 @@ int yywrap()
 }
 
 /***********************************************************************/
-void unilex_init(char *file)
+void unilex_init(const char *file)
 {
     filename = file;
     yylineno = 1;

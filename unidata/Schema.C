@@ -495,6 +495,7 @@ int Schema::subParse(Attr *attr)
                 subattr->set_white(attr->whitespace(),0);
                 subattr->set_dtefmt(attr->date_format(),0);
                 subattr->set_quote(attr->quote());
+		subattr->set_quote_is_default(true); // for conv_uddr
                 subattr->set_maxlen(attr->maxlen());
  
                 if (!match(KY_LBRACE,&ult)) {
@@ -536,6 +537,7 @@ int Schema::subParse(Attr *attr)
                 subattr->set_white(attr->whitespace(),0);
                 subattr->set_dtefmt(attr->date_format(),0);
                 subattr->set_quote(attr->quote());
+		subattr->set_quote_is_default(true); // for conv_uddr
                 subattr->set_maxlen(attr->maxlen());
     
                 if (!match(KY_LBRACE,&ult)) {
@@ -1086,6 +1088,7 @@ int Schema::subParse(Attr *attr)
                 MATCH(KY_EQ, &ult);
                 MATCH(STRING, &ult);
                 attr->set_quote(ult.Str);
+		attr->set_quote_is_default(false); // for conv_uddr
                 dispose_token(STRING,&ult);
 
                 MATCH(KY_SEMICOLON, &ult);
@@ -1248,7 +1251,7 @@ int Schema::subParse(Attr *attr)
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 // Parse a schema, return the offset the "data" starts at.
-off_t Schema::Parse(int fd, char *fname, ostream *err)
+off_t Schema::Parse(int fd, const char *fname, ostream *err)
 {
     UniLexType ult;
     char tmpbuf[2];

@@ -1,0 +1,106 @@
+#!/s/std/bin/perl 
+# ========================================================================
+# DEVise Data Visualization Software
+# (c) Copyright 1999
+# By the DEVise Development Group
+# Madison, Wisconsin
+# All Rights Reserved.
+# ========================================================================
+
+# Under no circumstances is this software to be copied, distributed,
+# or altered in any way without prior permission from the DEVise
+# Development Group.
+
+# This script converts (if possible) UniData schemas to DataReader
+# schemas.  It uses the conv_uddr program to do the actual conversion,
+# so that we use the UniData code to parse the UniData schema.  The
+# Perl wrapper is used partly because UniData tends to core dump if it
+# really doesn't like a schema, so using the Perl script enables us to
+# keep going if we core dump on the conversion of one schema.
+
+# $Id$
+
+# $Log$
+
+# ------------------------------------------------------------------------
+
+use FileHandle;
+
+if (@ARGV == 0) {
+	print "UniData to DataReader schema converter\n";
+	print "Usage : ud2dr <unidata schema file> ....\n\n";
+	exit(1);
+}
+
+# Turn on autoflusing of stdout so that stdout and stderr come out
+# in the correct relative order if you send the whole thing to a file.
+autoflush STDOUT 1;
+
+for ($argnum = 0 ; $argnum < @ARGV; $argnum++) {
+	$temfile = $ARGV[$argnum] ;
+	if ($temfile =~ /\*/) {
+		@files = glob($temfile);
+	} else {
+		@files = $temfile;
+	}
+
+	foreach $unifile (@files) {
+		print "\nConverting UniData file $unifile to DataReader schema\n";
+		$drfile = "/tmp/dr_schema";
+
+		@args = ("conv_uddr", $unifile, $drfile);
+		$result = 0xffff & system(@args);
+
+		if ($result == 0) {
+			print "  Conversion of $unifile succeeded\n";
+			rename_files($unifile, $drfile);
+		} elsif ($result == 0x100) {
+			print "  WARNING: Conversion of $unifile has possible errors\n";
+			rename_files($unifile, $drfile);
+		} elsif ($result == 0x200) {
+			print "  ERROR: Conversion of $unifile failed!!\n";
+			@args = ("rm", $drfile, $drfile);
+			system(@args);
+		} elsif ($result == 0xff00) {
+			print "Command failed: $!\n";
+		} elsif ($result > 0x80) {
+			print "  ERROR: Conversion of $unifile failed\n";
+			@args = ("rm", $drfile, $drfile);
+			system(@args);
+		}
+	}
+}
+
+sub rename_files {
+	my($unifile, $drfile) = @_;
+
+	$oldfile = oldfilename($unifile);
+
+	if (!rename($unifile, $oldfile)) {
+		print "Rename of $unifile to $oldfile failed!!\n";
+	} else {
+		# Using mv here because rename() won't work across file systems.
+		@args = ("mv", $drfile, $unifile);
+		$result = 0xffff & system(@args);
+		if ($result != 0) {
+			print "Mv of $drfile to $unifile failed!!\n";
+		} else {
+			print "  DataReader schema is in $unifile\n";
+			print "  Original UniData schema is in $oldfile\n";
+		}
+	}
+}
+
+sub oldfilename {
+	my($unifile) = @_;
+
+	$exists = 1;
+	$number = 1;
+	while ($exists) {
+		$testfile = join('', $unifile, ".old", $number);
+		$exists = -e $testfile;
+		$number++;
+	}
+
+	return $testfile;
+}

@@ -80,6 +80,9 @@ umain.pure: $(OBJFILES) libunidata.a
 	purify $(PURE_OPTS) $(CC) -o $@ $(OBJFILES) -L. -lunidata \
 	$(PERL_LIB) $(ARCH_LDPOST)
 
+conv_uddr: conv_uddr.o libunidata.a
+	$(CC) -o $@ conv_uddr.o -L. -lunidata $(PERL_LIB) $(ARCH_LDPOST)
+
 pmain.o: pmain.C
 	$(CC) -c $< $(PERL_INCL)
 
@@ -87,7 +90,31 @@ myperl: pmain.o PerlCode.o
 	$(CC) -o $@ $< PerlCode.o $(PERL_LIB) $(ARCH_LDPOST)
 
 clean:
-	/bin/rm -f *.o lex.uni_yy.c libunidata.a umain myperl
+	/bin/rm -f *.o lex.uni_yy.c libunidata.a umain myperl conv_uddr
+
+utb: umain
+	umain ../../unidata/examples/box_ex.data \
+		../../unidata/examples/box_ex.schema
+
+ut1: umain
+	umain ../../unidata/examples/ex1.data \
+		../../unidata/examples/ex1.schema
+
+ut2: umain
+	umain ../../unidata/examples/ex2.data \
+		../../unidata/examples/ex2.schema
+
+ut3: umain
+	umain ../../unidata/examples/ex3.data \
+		../../unidata/examples/ex3.schema
+
+ctb: conv_uddr
+	../../unidata/ud2dr ../../unidata/examples/box_ex.schema
+
+ct1: conv_uddr
+	../../unidata/ud2dr ../../unidata/examples/ex1.schema \
+		../../unidata/examples/ex2.schema \
+		../../unidata/examples/ex3.schema
 
 ###############################################################################
 #

@@ -96,6 +96,7 @@ class Attr {
 
     int       _maxlen;     // Max length (for strings)
     char      _qte_chr[2]; // quoting char, (for strings), plus '\0';
+    bool      _qte_is_default; // conv_uddr
 
     char     *_date_frmt;  // for DateTime values.
 
@@ -157,6 +158,8 @@ class Attr {
                                   _qte_chr[0] = *str;
                                   _qte_chr[1] = '\0';
                               }
+    void set_quote_is_default(bool is_default) { // for conv_uddr
+       _qte_is_default = is_default; }
     void set_func_of(FuncOf *f) { _func_of = f; }
 
       // min/max values, NULL means we don't have any.
@@ -174,7 +177,10 @@ class Attr {
     int  rpos() { return _rpos; }
 
     int  maxlen() { return _maxlen; }
+
     char *quote() { return(_qte_chr); }
+    bool quote_is_default() { return _qte_is_default; } // for conv_uddr
+
     char *delimiter() { return(_delimit); }
     char *seperator() { return (_seper != NULL ? _seper : ""); }
     char *whitespace() { return (_white != NULL ? _white : ""); }
