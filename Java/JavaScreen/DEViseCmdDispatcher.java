@@ -274,7 +274,7 @@ public class DEViseCmdDispatcher implements Runnable
 
                 if (command.equals("ExitDispatcher")) {
                     if (cmdSocket != null) { // normal exit
-                        try {
+                        try {                            
                             cmdSocket.sendCmd("JAVAC_Exit");
                         } catch (YException e) {
                             YGlobals.Ydebugpn(e.getMessage());
@@ -1023,7 +1023,7 @@ class DEViseOpenDlg extends Frame
     private jsdevisec jsc = null;
     private boolean status = false;
     private String sessionName = null;
-    private List fileList = null;
+    private java.awt.List fileList = null;
     private Label label = new Label("Current available sessions at /DEViseSessionRoot");
     private Button okButton = new Button("OK");
     private Button cancelButton = new Button("Cancel");
@@ -1042,7 +1042,7 @@ class DEViseOpenDlg extends Frame
 
         label.setFont(new Font("Serif", Font.BOLD, 16));
 
-        fileList = new List(8, false);
+        fileList = new java.awt.List(8, false);
         //fileList.setBackground(DEViseGlobals.textbgcolor);
         fileList.setBackground(Color.white);
         fileList.setForeground(DEViseGlobals.textfgcolor);
@@ -1093,6 +1093,43 @@ class DEViseOpenDlg extends Frame
         setLocation(parentLoc);
 
         show();
+
+        fileList.addMouseListener(new MouseAdapter()
+                {
+                    public void mouseClicked(MouseEvent event)
+                    {
+                        if (event.getClickCount() > 1) {
+                            if (fileList.getItemCount() > 0) {
+                                int idx = fileList.getSelectedIndex();
+                                if (idx != -1) {
+                                    sessionName = fileList.getItem(idx);
+                        
+                                    if (sessionName.startsWith("[")) {
+                                        String[] name = YGlobals.Yparsestring(sessionName, '[', ']');
+                                        if (name[0].equals("..")) {
+                                            String[] tmpname = YGlobals.Yparsestr(currentDir, "/");
+                                            currentDir = new String("");
+                                            for (int i = 0; i < tmpname.length - 1; i++) {
+                                                currentDir = currentDir + "/" + tmpname[i];
+                                            }
+                                        } else {
+                                            currentDir = currentDir + "/" + name[0];
+                                        }
+                        
+                                        label = new Label("Current available sessions at " + currentDir);
+                                        jsc.dispatcher.insertCmd("JAVAC_GetSessionList {" + name[0] + "}");
+                                    } else {
+                                        status = false;
+                                        dispose();
+                                        jsc.dispatcher.insertCmd("JAVAC_SetDisplaySize " + jsc.jscreen.getScreenDim().width + " " + jsc.jscreen.getScreenDim().height
+                                                                 + "\nJAVAC_OpenSession {" + sessionName + "}");
+                                        //jsc.jscreen.setCursor(DEViseGlobals.waitcursor);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });                        
 
         okButton.addActionListener(new ActionListener()
                 {

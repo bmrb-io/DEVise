@@ -52,10 +52,12 @@ public class DEViseWindow extends Container
 
     boolean isCurrent = false, isViewFirstTime = true, isMouseDragged = false;
     int userAction = 0;
-    Point sp = new Point(), ep = new Point();
+    Point sp = new Point(), ep = new Point(), op = new Point();
 
     DEViseCursor[] viewCursor = null;
-    Image[] cursorImage = null;
+    Image[] cursorImage = null; 
+    boolean isWithinCursor = false;
+    int whichCursor = 0;
 
     public DEViseWindow(jsdevisec what, String name, Rectangle loc, Image img, Vector views)
     {
@@ -220,6 +222,8 @@ public class DEViseWindow extends Container
                 viewCursor[i] = (DEViseCursor)tmp.elementAt(i);
         }
         
+        buildCursorImage();
+        
         repaint();         
     } 
     
@@ -253,6 +257,50 @@ public class DEViseWindow extends Container
         }
     }
     
+    private boolean checkCursor(Point p)
+    {
+        if (viewCursor == null || currentView == null)
+            return false;
+        
+        for (int i = 0; i < viewCursor.length; i++) {
+            if (p.x >= viewCursor[i].x && p.x <= (viewCursor[i].x + viewCursor[i].width)    
+                && p.y >= viewCursor[i].y && p.y <= (viewCursor[i].y + viewCursor[i].height)) {
+                whichCursor = i;
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    private void updateCursorPosition(Point p)
+    {    
+        if (viewCursor == null || currentView == null)
+            return;
+        
+        Rectangle loc = currentView.getLoc();    
+        int cx = p.x + viewCursor[whichCursor].x;
+        if (cx < loc.x) {
+            cx = loc.x;
+        } else if (cx > loc.x + loc.width - viewCursor[whichCursor].width) {
+            cx = loc.x + loc.width - viewCursor[whichCursor].width;
+        }
+        int cy = p.y + viewCursor[whichCursor].y;
+        if (cy < loc.y) {
+            cy = loc.y;
+        } else if (cy > loc.y + loc.height - viewCursor[whichCursor].height) {
+            cy = loc.y + loc.height - viewCursor[whichCursor].height;
+        }
+        
+        //YGlobals.Ydebugpn("p.x " + p.x + " p.y " + p.y + " c.x " + viewCursor[whichCursor].x
+        //+ " c.y " + viewCursor[whichCursor].y + " c.w " + viewCursor[whichCursor].width      
+        //+ " c.h " + viewCursor[whichCursor].height + " v.x " + loc.x + " v.y " + loc.y
+        //+ " v.w " + loc.width + " v.h " + loc.height + " cy " + cy + " cx " + cx);
+        
+        viewCursor[whichCursor].x = cx;
+        viewCursor[whichCursor].y = cy;
+    }
+        
     // Enable reliable light weight component paint
     public void repaint()
     {
@@ -282,13 +330,12 @@ public class DEViseWindow extends Container
             g.drawImage(winImage, 0, 0, this);
             
             if (viewCursor != null) {
-                if (cursorImage == null) {
-                    buildCursorImage();
-                }
-                
                 if (cursorImage != null) {
                     for (int i = 0; i < cursorImage.length; i++) {
-                        g.drawImage(cursorImage[i], viewCursor[i].x, viewCursor[i].y, this);
+                        if (isWithinCursor && whichCursor == i) {                            
+                        } else {
+                            g.drawImage(cursorImage[i], viewCursor[i].x, viewCursor[i].y, this);
+                        }
                     }
                 }
             }
@@ -317,8 +364,14 @@ public class DEViseWindow extends Container
 
                         g.drawRect(x0, y0, w, h);
                         userAction = 0;
+                    } else if (userAction == 3) {
+                        Color oldColor = g.getColor();
+                        g.setColor(Color.yellow);
+                        g.drawRect(viewCursor[whichCursor].x, viewCursor[whichCursor].y, viewCursor[whichCursor].width, viewCursor[whichCursor].height);
+                        g.setColor(oldColor);
+                        userAction = 0;
                     }
-
+                    
                     Color oldColor = g.getColor();
                     g.setColor(Color.red);
                     Rectangle rect = currentView.getLoc();
@@ -528,10 +581,17 @@ public class DEViseWindow extends Container
             // Each mouse click will be here once, so double click actually will enter
             // this twice
             sp = event.getPoint();
-            ep = sp;
+            ep.x = op.x = sp.x;
+            op.y = ep.y = sp.y;
 
             //YGlobals.Ydebugpn("Mouse pressed with click counts " + event.getClickCount() + "!");
             isMouseDragged = false; 
+            if (checkCursor(ep)) {
+                isWithinCursor = true;
+                //updateCursorPosition(new Point(0, 0));
+                userAction = 3;
+            }
+                
             jscreen.setClickWindow(DEViseWindow.this);
 
             repaint();
@@ -548,25 +608,44 @@ public class DEViseWindow extends Container
             if (isMouseDragged) {
                 if (currentView != null) {
                     // clear the mouse drag box
-                    repaint();
-
-                    ep = adjustViewPoint(event.getPoint());
-                    if (sp.x == ep.x || sp.y == ep.y) {
-                        dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + ep.x + " " + ep.y);
-                    } else {
+                    if (isWithinCursor) {
+                        isWithinCursor = false;
+                        ep = adjustViewPoint(event.getPoint());
+                        updateCursorPosition(new Point(ep.x - op.x, ep.y - op.y));
+                        buildCursorImage();
+                        repaint();
+                        int cx = viewCursor[whichCursor].x + viewCursor[whichCursor].width / 2;
+                        int cy = viewCursor[whichCursor].y + viewCursor[whichCursor].height / 2;                        
                         if (isViewFirstTime) {
-                            dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + ep.x + " " + ep.y
-                                             + "\nJAVAC_MouseAction_RubberBand {" + windowName + "} " + sp.x + " " + sp.y + " " + ep.x + " " + ep.y);
-                            isViewFirstTime = false;
-                            setCursor(DEViseGlobals.waitcursor);
+                            dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + cx + " " + cy
+                                    + "\nJAVAC_MouseAction_Click {" + currentView.getName() + "} " + cx + " " + cy);
                         } else {
-                            dispatcher.insertCmd("JAVAC_MouseAction_RubberBand {" + windowName + "} " + sp.x + " " + sp.y + " " + ep.x + " " + ep.y);
-                            setCursor(DEViseGlobals.waitcursor);
+                            dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + cx + " " + cy);
+                        }    
+                    } else {
+                        repaint();
+
+                        ep = adjustViewPoint(event.getPoint());
+                        if (sp.x == ep.x || sp.y == ep.y) {
+                            dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + ep.x + " " + ep.y);
+                        } else {
+                            if (isViewFirstTime) {
+                                dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + ep.x + " " + ep.y
+                                                 + "\nJAVAC_MouseAction_RubberBand {" + windowName + "} " + sp.x + " " + sp.y + " " + ep.x + " " + ep.y);
+                                isViewFirstTime = false;
+                                setCursor(DEViseGlobals.waitcursor);
+                            } else {
+                                dispatcher.insertCmd("JAVAC_MouseAction_RubberBand {" + windowName + "} " + sp.x + " " + sp.y + " " + ep.x + " " + ep.y);
+                                setCursor(DEViseGlobals.waitcursor);
+                            }
                         }
                     }
                 } else {
                     jscreen.updateWindowPos(DEViseWindow.this, 0, 0, true);
                 }
+            } else {
+                isWithinCursor = false;
+                repaint();
             }
         }
 
@@ -616,8 +695,16 @@ public class DEViseWindow extends Container
             if (currentView != null) {
                 ep = adjustViewPoint(p);
                 jsc.viewInfo.updateInfo(ep.x, ep.y);
-
-                userAction = 2;
+                
+                if (isWithinCursor) {
+                    updateCursorPosition(new Point(ep.x - op.x, ep.y - op.y));
+                    op.x = ep.x;
+                    op.y = ep.y;
+                    userAction = 3;
+                } else {
+                    userAction = 2;
+                }
+                
                 repaint();
             } else {
                 jscreen.updateWindowPos(DEViseWindow.this, p.x - sp.x, p.y - sp.y, false);
@@ -637,7 +724,11 @@ public class DEViseWindow extends Container
                 jsc.viewInfo.updateInfo(p.x, p.y);
 
                 if (jsc.dispatcher.getStatus() != 0) {
-                    setCursor(DEViseGlobals.pointercursor);
+                    if (!checkCursor(p)) {
+                        setCursor(DEViseGlobals.pointercursor);
+                    } else {
+                        setCursor(DEViseGlobals.handcursor);
+                    }    
                 } else {
                     setCursor(DEViseGlobals.waitcursor);
                 }
@@ -653,15 +744,19 @@ public class DEViseWindow extends Container
             for (int j = 0; j < allViews.size(); j++) {
                 DEViseView view = (DEViseView)allViews.elementAt(j);
                 if (view.isCurrent(p)) {                   
+                    currentView = view;
 
                     if (jsc.dispatcher.getStatus() != 0) {
-                        setCursor(DEViseGlobals.pointercursor);
+                        if (!checkCursor(p)) {
+                            setCursor(DEViseGlobals.pointercursor);
+                        } else {
+                            setCursor(DEViseGlobals.handcursor);
+                        }
                     } else {
                         setCursor(DEViseGlobals.waitcursor);
                     }
                     
                     jsc.viewInfo.updateInfo(getName(), view.getName(), p.x, p.y);
-                    currentView = view;
                     repaint();
                     return;
                 }                                

@@ -356,15 +356,21 @@ public class jsdevisec extends Frame
 
         if (isSessionOpened) {
             //jscreen.updateScreen(false);
-            YGlobals.Yshowmsg(this, "Java Screen still has an opened session!\nPlease press CLOSE to close it first!", false, false);
-            return;
-        }
+            String result = YGlobals.Yshowmsg(this, "Java Screen still has an opened session!\nDo you really want to quit?", "Confirm", YGlobals.YMBXYESNO);            
+            YGlobals.Ydebugpn("I am here with " + result);
 
+            if (result.equals(YGlobals.YIDNO)) {
+                return;
+            }
+            
+            jscreen.updateScreen(false);
+        }
+        /*
         String result = YGlobals.Yshowmsg(this, "Do you really want to quit?", "Confirm", YGlobals.YMBXYESNO);
         if (result.equals(YGlobals.YIDNO)) {
             return;
         }
-
+        */
         if (dispatcher.getStatus() > 0) {
             dispatcher.insertCmd("ExitDispatcher");
 
@@ -378,8 +384,8 @@ public class jsdevisec extends Frame
                 if (dispatcher.getStatus() < 0)
                     isEnd = true;
             }
-        }
-
+        }        
+        
         isQuit = true;
         dispatcher = null;
 

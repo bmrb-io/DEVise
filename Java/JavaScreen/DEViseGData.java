@@ -63,7 +63,23 @@ public class DEViseGData
     public Rectangle getBounds(DEViseWindow win)
     {
         if (win != null) {
-            return new Rectangle(x + win.windowLoc.x, y + win.windowLoc.y, width, height);
+            Rectangle r = new Rectangle(x + win.windowLoc.x, y + win.windowLoc.y, width, height);
+            if (r.x < win.windowLoc.x) {
+                r.width = r.width + r.x - win.windowLoc.x;
+                r.x = win.windowLoc.x;
+            } else if (r.x > win.windowLoc.x + win.windowLoc.width - r.width) {
+                r.width = r.width + r.x - win.windowLoc.x - win.windowLoc.width + r.width;
+                r.x = win.windowLoc.x + win.windowLoc.width - r.width;
+            }
+            if (r.y < win.windowLoc.y) {
+                r.height = r.height + r.y - win.windowLoc.y;
+                r.y = win.windowLoc.y;
+            } else if (r.y > win.windowLoc.y + win.windowLoc.height - r.height) {
+                r.height = r.height + r.y - win.windowLoc.y - win.windowLoc.height + r.height;
+                r.y = win.windowLoc.y + win.windowLoc.height - r.height;
+            }
+            
+            return r; 
         } else {
             return new Rectangle(x, y, width, height);
         }

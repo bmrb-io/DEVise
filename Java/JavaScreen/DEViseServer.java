@@ -475,25 +475,25 @@ public class DEViseServer implements Runnable
                 String[] serverCmds = null;
                 Vector images = new Vector();
                 // processing client command
-                if (clientCmd.startsWith("JAVAC_Exit")) {
-                    // js or jsa will make sure that the session is closed before this
-                    removeClient();
-                    continue;
-                } else if (clientCmd.startsWith("JAVAC_GetStat")) {
+                //if (clientCmd.startsWith("JAVAC_Exit")) {
+                //    // js or jsa will make sure that the session is closed before this
+                //    removeClient();
+                //    continue;
+                if (clientCmd.startsWith("JAVAC_GetStat")) {
                     // not yet implemented
                 } else if (clientCmd.startsWith("JAVAC_Abort")) {
                     continue;
                 } else {
                     // send command to DEVise server and receive response commands
                     try {
-                        if (clientCmd.startsWith("JAVAC_CloseCurrentSession")) {
+                        if (clientCmd.startsWith("JAVAC_CloseCurrentSession") || clientCmd.startsWith("JAVAC_Exit")) {
                             if (client.isSessionOpened) {
                                 client.isSessionOpened = false;
                                 client.isSwitched = false;
                                 client.isSwitchSuccessed = false;
                                 client.isSessionSaved = false;
 
-                                serverCmds = sendCmd(clientCmd);
+                                serverCmds = sendCmd("JAVAC_CloseCurrentSession");
                             } else {
                                 client.isSwitched = false;
                                 client.isSwitchSuccessed = false;
@@ -502,6 +502,11 @@ public class DEViseServer implements Runnable
                                 serverCmds = new String[1];
                                 serverCmds[0] = new String("JAVAC_Done");
                                 deviseResponseCode = 0;
+                            }
+                            
+                            if (clientCmd.startsWith("JAVAC_Exit")) {
+                                removeClient();
+                                continue;
                             }
                         } else if (clientCmd.startsWith("JAVAC_OpenLastSavedState")) {
                             client.isSessionOpened = false;
