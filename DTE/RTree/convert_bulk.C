@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/03/28 16:07:48  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include<stdlib.h>
@@ -76,20 +80,20 @@ main()
 		{
 		case 'i':
 		  fread(entry_val, 4, 1, stdin);
-		  if feof(stdin)
+		  if (feof(stdin))
 		    exit(0);
 		  fwrite(entry_val, 4, 1, stdout);
 		  break;
 		case 'f':
 		  fread(entry_val, 4, 1, stdin);
-		  if feof(stdin)
+		  if (feof(stdin))
 		    exit(0);
 		  flip_bits(*((float *)entry_val));
 		  fwrite(entry_val, 4, 1, stdout);
 		  break;
 		case 'v':
 		  fread(entry_val, 8, 1, stdin);
-		  if feof(stdin)
+		  if (feof(stdin))
 		    exit(0);
 		  fwrite((char *)&FIRST_WORD(*entry_val), 4, 1, stdout);
 		  memcpy(extra+place_in_extra, (char *)&LAST_WORD(*entry_val), 4);
@@ -97,7 +101,7 @@ main()
 		  break;
 		case 'd':
 		  fread(entry_val, 8, 1, stdin);
-		  if feof(stdin)
+		  if (feof(stdin))
 		    exit(0);
 		  flip_bits(*((double *)entry_val));
 		  fwrite((char *)&FIRST_WORD(*entry_val), 4, 1, stdout);
@@ -109,7 +113,7 @@ main()
 		  sscanf(type_info+2, "%d", &len);
 		  type_info = strpbrk(type_info, "]");
 		  fread(entry_val, len, 1, stdin);
-		  if feof(stdin)
+		  if (feof(stdin))
 		    exit(0);
 		  if (len > 4)
 		    memcpy(extra+place_in_extra, entry_val+4, len);
