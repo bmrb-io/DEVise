@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/17 04:06:55  ravim
+  Extracts only first 6 chars of cusip number.
+
   Revision 1.3  1995/11/10 19:01:22  jussi
   Updated comments to reflect the new format of the index file.
 
@@ -42,40 +45,57 @@
 //   Beginning date of data array
 //   End date of data array
 
-#include <stdio.h>
 #include <iostream.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include <string.h>
+#include <stdlib.h>
 
 #include "sec.h"
 #include "tapedrive.h"
 
-void crsp_index(char *tapeName, char *indexName);
+void crsp_index(char *tapeName, int fileno, unsigned long int offset,
+		char *indexName);
 
 main(int argc, char **argv)
 {
   if (argc != 3) {
     cerr << "Usage: " << argv[0]
-         << " <input tape device> <output index file>" << endl;
+         << " <input tape device>[:fileno[:fileoffset]] <output index file>"
+         << endl;
     exit(0);
   }
 
-  crsp_index(argv[1], argv[2]);
+  int fileno = -1;
+  int offset = 0;
+  char *colon = strchr(argv[1], ':');
+  if (colon) {
+    char *colon2 = strchr(colon + 1, ':');
+    if (colon2) {
+      offset = atol(colon2 + 1);
+      *colon2 = 0;
+    }
+    fileno = atoi(colon + 1);
+    *colon = 0;
+  }
+
+  crsp_index(argv[1], fileno, offset, argv[2]);
 }
 
 //***********************************************************************
 
-void crsp_index(char *tapeName, char *indexName)
+void crsp_index(char *tapeName, int fileno, unsigned long int offset,
+		char *indexName)
 {
   // Open data file
-  TapeDrive tape(tapeName, "r", -1, 32768);
+  TapeDrive tape(tapeName, "r", fileno, 32768);
   if (!tape)  {
     cerr << "Error: could not open tape device " << tapeName << endl;
     exit(0);
   }
-  tape.readTarHeader();
-  unsigned long int beginning = tape.tell();
+  if (tape.seek(offset) != offset) {
+    cerr << "Cannot seek to offset " << offset << endl;
+    perror("seek");
+    exit(0);
+  }
 
   // Open index file
   FILE *fdi = fopen(indexName, "w");
@@ -85,20 +105,17 @@ void crsp_index(char *tapeName, char *indexName)
   }
 
   int recno = 0;
-  unsigned long int tapepos = tape.tell();
+  unsigned long int tapepos = offset;
   Security *s = new Security(tape);
 
   while (s->reccount) 
   {
-    char tmpbuf[7];
-    fprintf(fdi, "%lu,", tapepos);
+    fprintf(fdi, "%lu,", tapepos - offset);
     fprintf(fdi, "%d,", recno);
     fprintf(fdi, "%d,", s->header.permno);
     // Output only the first six chars of the cusip number since this is 
     // used in coral program to map with the compustat companies
-    memcpy(tmpbuf, s->header.cusip, 6);
-    tmpbuf[6] = '\0';
-    fprintf(fdi, "%s,", tmpbuf);
+    fprintf(fdi, "%.6s,", s->header.cusip);
     fprintf(fdi, "%d,", s->header.hexcd);
     fprintf(fdi, "%d,", s->header.hsiccd);
     fprintf(fdi, "\"%s\",", s->names[s->header.numnam - 1].comnam);
@@ -108,7 +125,7 @@ void crsp_index(char *tapeName, char *indexName)
     recno += s->reccount;
     delete s;
 
-    tapepos = beginning + CRSP_DATA_RLEN * recno;
+    tapepos = offset + CRSP_DATA_RLEN * recno;
     if (tape.seek(tapepos) != tapepos)
       break;
     s = new Security(tape);
