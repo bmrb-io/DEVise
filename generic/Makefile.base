@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.51  1998/05/06 22:04:30  wenger
+#  Single-attribute set links are now working except where the slave of
+#  one is the master of another.
+#
 #  Revision 1.50  1998/03/31 16:40:29  wenger
 #  Added an 'export' directory to csgroup and re-made solaris dependencies
 #  accordingly.
@@ -190,7 +194,9 @@ LDFLAGS = -L../DTE/ -L../RTree -L../graphics.new -L../graphics -L../tape \
 	-ldte -lrtree -lgraphicsnew -lcsgroup \
 	-lXrot \
 	-lissm -lcrsp -lcstat -ltape \
-	-L$(PERL_CORE) -L../unidata -lunidata -lperl $(ARCH_SYSLIBS)
+	-L../unidata -lunidata \
+	-L../DataReader -ldatareader \
+	-L$(PERL_CORE) -lperl $(ARCH_SYSLIBS)
 
 TEST_LDFLAGS = -L../graphics -lgraphics -lutils -lcolor -lX11
 
