@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.54  1996/01/24 21:52:27  jussi
+#	Layout of window preserved when window is duplicated.
+#
 #	Revision 1.53  1996/01/23 20:49:59  jussi
 #	Added Visualize/Import. Split view-related procedures into
 #	separate file views.tcl. Split general utilities into
@@ -1212,7 +1215,8 @@ proc DoVisualizeGData {} {
 # read the .rc file
 # we check the following in sequence:
 # 1) if environment variable touuper($argv0)_RC exists, use it.
-#	example: if progran name == afsio, check if environment AFSIO_RC
+#	example: if progran name == afsio, check if environment variable
+#       AFSIO_RC contains a valid filename
 # 2) else, check .$argv0_rc
 #	example: .afsio_rc
 # 3) else, check $argv0_rc
@@ -1225,13 +1229,13 @@ set rcFile1 [ format ".%s_rc" $progName ]
 set rcFile2 [ format "%s.rc" $progName ]
 set rcFile3 "devise.rc"
 
-if { [ info exists env($envName)] && [file exists env$(envName) ] } {
-    set rcFile env($envName)
-} elseif { [ file exists  $rcFile1 ] } {
+if { [ info exists env($envName)] && [file exists $env($envName) ] } {
+    set rcFile $env($envName)
+} elseif { [ file exists $rcFile1 ] } {
     set rcFile $rcFile1
-} elseif { [file exists $rcFile2 ] } {
+} elseif { [ file exists $rcFile2 ] } {
     set rcFile $rcFile2
-} elseif { [file exists $rcFile3 ] } {
+} elseif { [ file exists $rcFile3 ] } {
     set rcFile $rcFile3
 } else {
     set rcFile ""
