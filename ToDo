@@ -489,6 +489,8 @@ Allow log-scale axes. (ag/rkw 2/16/98)
 templates.C (in src/utils) should be split up so that we only grab the
 template instantiations we need for libdevwin, etc. (rkw 2/17/98)
 
+Allow LoadStringSpace to accept a URL as a file name. (am/rkw 2/27/98)
+
 
 COMPLETED
 ---------
@@ -591,6 +593,7 @@ When drilling down, allow showing of longer strings in the output. (ak/rkw
 
 ag = glew@cs.wisc.edu = Andy Glew
 ak = alain@cs.wisc.edu = Alain Kagi
+am = manikuti@cs.wisc.edu = Anand Manikutty
 at = andyt@cs.wisc.edu = Andrew Therber
 bb = wlbland@facstaff.wisc.edu = Bill Bland
 dk = Denis Koelewijn = denis@dutian.twi.tudelft.nl
