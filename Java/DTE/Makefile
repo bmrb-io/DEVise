@@ -20,6 +20,8 @@ hj:
 doc:
 	javadoc $(PACKAGES) -d /u/d/o/donjerko/public/html/Dte/
 
+opt:
+	javac OptimizerTest.java -d $(CLASSES)
 
 Parser/SQLParser.java: Parser/SQLParser.jj
 	cd Parser && javacc SQLParser.jj && cd ..

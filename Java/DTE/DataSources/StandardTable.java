@@ -30,6 +30,10 @@ public class StandardTable implements DataSource{
     urlString = new String( url);
   }
 
+  public String getFileName(){
+    return urlString;
+  }
+
   public String getTypeNm(){
     String str = "StandardTable";
     return str;

@@ -11,6 +11,10 @@ public class Schema {
 
   public Schema(){}
 
+  public TypeDesc[] getTypeDescs(){
+    return typeIDs;
+  }
+
   public Schema(int nf,  String str ) {
     if( str != null ){
 

@@ -1,5 +1,6 @@
+package DataSources;
 
-class TableAlias{
+public class TableAlias{
 
 	// Jie, this class is the mirror of TableAlias in Core/myopt.h
 
@@ -16,10 +17,10 @@ class TableAlias{
 
 	// implement toString
 
-	void setDataSource(DataSource ds){
+	public void setDataSource(DataSource ds){
 		dataSource = ds;
 	}
-	DataSource getDataSource(){
+	public DataSource getDataSource(){
 		return dataSource;
 	}
 }
