@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.50  2001/04/11 21:16:28  xuk
+// A collaboration leader could find out the followers hostname.
+//
 // Revision 1.49  2001/04/11 16:49:39  wenger
 // Added a new thread to the jspop that checks whether other threads may
 // be hung.
@@ -759,6 +762,9 @@ public class jspop implements Runnable
 	// state to REQUEST unless it's already connected to a server.)
 	//
 	try {
+	    if (DEBUG >= 3) {
+	        System.out.println("DIAG before checking sockets");
+	    }
 	    for (int i = 0; i < activeSockets.size(); i++) {
 		DEViseCommSocket socket = (DEViseCommSocket)activeSockets.elementAt(i);
 	    
@@ -803,6 +809,9 @@ public class jspop implements Runnable
 		    activeSockets.removeElement(socket);
 		}
 	    } // for
+	    if (DEBUG >= 3) {
+	        System.out.println("DIAG after checking sockets");
+	    }
 	} catch(IOException e) {
 	    pn("checking active sockets fails!");
         } catch (YException e) {
@@ -869,6 +878,11 @@ public class jspop implements Runnable
             if (debugLevel >= 1) {
                 System.out.println("jspop state: " + getServerState());
 	    }
+	}
+
+	if (DEBUG >= 3) {
+	    System.out.println("DIAG client is " + ((client != null) ?
+	      (client.getConnectionID().toString()) : "null"));
 	}
 
         return client;

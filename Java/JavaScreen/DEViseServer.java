@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.62  2001/04/12 17:35:43  wenger
+// Workaround in place for the collaboration hanging bug (caused by more
+// than one server being connected to the same client).
+//
 // Revision 1.61  2001/04/12 15:54:06  wenger
 // Made some minor improvements to the hang checking.
 //
@@ -555,7 +559,17 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 			// Get a command from the client.
                         // This method will not block, if no command it just
 			// returns null.
+			if (DEBUG >= 3) {
+                            System.out.println("DIAG before " +
+			      "client.getCmd() in " + serverThread);
+			}
+
 			clientCmd = client.getCmd();
+
+			if (DEBUG >= 3) {
+                            System.out.println("DIAG after " +
+			      "client.getCmd() in " + serverThread);
+			}
                         isEnd = true;
                     } catch (InterruptedIOException e) {
                         // since client.getCmd() will not block, this is

@@ -24,6 +24,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.39  2001/04/11 21:18:47  xuk
+// The collaboration leader could find out the followers' hostnames.
+// Added removeCollabSocket() function;
+// Added collabHoseName vector;
+// Changed addCollabSocket() and getCmd() fuctions.
+//
 // Revision 1.38  2001/04/06 19:32:13  wenger
 // Various cleanups of collaboration code (working on strange hang
 // that Miron has seen); added more debug output; turned heartbeat
@@ -498,7 +504,18 @@ public class DEViseClient
 	    }
 
             try {
+		if (DEBUG >= 3) {
+		    System.out.println("DIAG before getting cmdBuffer " +
+		      "element 0");
+		}
+
 		String command = (String)cmdBuffer.elementAt(0);
+
+		if (DEBUG >= 3) {
+		    System.out.println("DIAG before after cmdBuffer " +
+		      "element 0");
+		}
+
                 if (command != null) {
 		    if (!command.startsWith(DEViseCommands.CONNECT) &&
 		      user == null) {
@@ -586,14 +603,15 @@ public class DEViseClient
 		    }
 		}
                     
-		if (DEBUG >= 1) {
-		    System.out.println("  got command: " + (String)cmdBuffer.elementAt(0));
+                if (DEBUG >= 1 && cmdBuffer.size() > 0) {
+		    System.out.println("  got command: " +
+		      (String)cmdBuffer.elementAt(0));
 	        }
-		if (cmdBuffer.size() != 0)
+		if (cmdBuffer.size() > 0) {
 		    return (String)cmdBuffer.elementAt(0);
-		else 
+		} else {
 		    return null;
-
+                }
             } catch (YException e) {
                 //close();
                 throw e;
