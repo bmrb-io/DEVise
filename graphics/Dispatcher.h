@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1997/08/28 18:21:40  wenger
+  Eliminated unnecessary include dependencies in Dispatcher.h.
+
   Revision 1.25  1997/01/11 18:19:08  jussi
   Added handling of severe errors (SIGSEGV etc.).
 
@@ -167,6 +170,9 @@ public:
 
   ~Dispatcher() {}
 
+protected:
+  friend class Scheduler;
+
   /* schedule a callback
      note: it doesn't matter how many times this is called, the callback
      will only be made once & one cancel can kill 10 requests.
@@ -191,6 +197,7 @@ public:
     } 
   }
 
+public:
   /* Register callback */
   DispatcherID Register(DispatcherCallback *c, int priority = 10,
 			StateFlag flag = GoState, 
@@ -246,7 +253,6 @@ public:
   static void CheckUserInterrupt();
 
   /***********************************************************************/
-
 
 private:
 

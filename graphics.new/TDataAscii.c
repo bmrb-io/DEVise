@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.58  1997/07/03 01:53:46  liping
+  changed query interface to TData from RecId to double
+
   Revision 1.57  1997/05/28 15:39:30  wenger
   Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
 
@@ -266,6 +269,7 @@
 #else
 #   include "Init.h"
 #   include "DataSourceWeb.h"
+#   include "DepMgr.h"
 #endif
 
 # define  _STREAM_COMPAT
@@ -442,6 +446,7 @@ Boolean TDataAscii::LastID(RecId &recId)
 #endif
         BuildIndex();
 #ifndef ATTRPROJ
+	DepMgr::Current()->RegisterEvent(this, DepMgr::EventTdataCh);
         QueryProc::Instance()->RefreshTData(this);
 #endif
       }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/01/23 17:40:03  jussi
+  Removed references to GetXMin().
+
   Revision 1.6  1996/12/03 15:20:04  wenger
   Conditionaled out some debug code.
 
@@ -98,7 +101,7 @@ void VisualLink::InsertView(ViewGraph *view)
     /* view already inserted */
     return;
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("Adding view %s to link %s\n", view->GetName(), GetName());
 #endif
 
@@ -132,6 +135,10 @@ bool VisualLink::DeleteView(ViewGraph *view)
 void VisualLink::FilterChanged(View *view, VisualFilter &filter,
 			       int flushed)
 {
+#if defined(DEBUG)
+  printf("VisualLink::FilterChanged()\n");
+#endif
+
   /* first, make sure that this view is under our control */
   Boolean found = false;
   int index;
@@ -157,13 +164,17 @@ void VisualLink::ViewDestroyed(View *view)
 
 void VisualLink::ProcessFilterChanged(View *view, VisualFilter &filter)
 {
+#if defined(DEBUG)
+  printf("VisualLink(%s)::ProcessFilterChanged()\n", GetName());
+#endif
+
   /* We need to do this because once a visual link starts changing
      the filter of its views, this function can be called subsequently by
      those views, and we need to ignore all those calls because we have
      already changed those filters. */
 
   if (_updating) {
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("ignored because updating\n");
 #endif
     return;
@@ -252,7 +263,7 @@ void VisualLink::SetVisualFilter(View *view, VisualFilter &filter)
   }
   
   if (change)
-    view->SetVisualFilter(tempFilter);
+    view->SetVisualFilter(tempFilter, false);
     
   _updating = false;
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1997/08/28 18:21:39  wenger
+  Eliminated unnecessary include dependencies in Dispatcher.h.
+
   Revision 1.36  1997/03/19 19:41:02  andyt
   Embedded Tcl/Tk windows are now sized in data units, not screen pixel
   units. The old list of ETk window handles (WindowRep class) has been
@@ -245,8 +248,8 @@ DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
 {
 
 #if defined(DEBUG)
-  printf("Dispatcher(0x%p)::Register: %s: 0x%p, fd %d\n",
-	 this, c->DispatchedName(), c, fd);
+  printf("Dispatcher(0x%p)::Register: %s: 0x%p, fd %d, p %d\n",
+	 this, c->DispatchedName(), c, fd, priority);
 #endif
 
   DispatcherInfo *info = new DispatcherInfo;
@@ -438,6 +441,7 @@ void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 	       info->callBack, info->callBack->DispatchedName(),
 	       info->fd, info->callback_requested); 
 #endif
+	CancelCallback(info);
 	info->callBack->Run();
       }
     }

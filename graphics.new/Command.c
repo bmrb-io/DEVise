@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/07/17 00:46:52  jussi
+  Switched the order of header file inclusions to get around
+  some problems.
+
   Revision 1.11  1996/06/27 00:02:23  jussi
   Minor change. Uses class directory, not view list.
 
@@ -54,6 +58,7 @@
 #include <sys/time.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #ifdef AIX
 #include <sys/select.h>
 #endif

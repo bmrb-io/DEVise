@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.53  1997/08/20 22:10:41  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.52.2.1  1997/08/14 16:15:52  wenger
   Statistics, etc., now work correctly for timed-out draw in ViewScatter-
   type views; bumped up version because of improved stop capability.
@@ -292,7 +296,7 @@ class FilterQueue;
 
 class View
 : public ViewWin,
-  private DispatcherCallback,
+  public DispatcherCallback,
   private ControlPanelCallback
 {
   public:
@@ -326,7 +330,8 @@ class View
 	int GetId() { return _id; }
 
 	/* setting/getting visual filter */
-	void SetVisualFilter(VisualFilter &filter);
+	void SetVisualFilter(VisualFilter &filter,
+			     Boolean registerEvent = true);
 	void GetVisualFilter(VisualFilter &filter);
 	VisualFilter *GetVisualFilter();
 

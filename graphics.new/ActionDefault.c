@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.28  1997/05/30 15:41:17  wenger
+  Most of the way to user-configurable '4', '5', and '6' keys -- committing
+  this stuff now so it doesn't get mixed up with special stuff for printing
+  Mitre demo.
+
   Revision 1.27  1997/02/26 16:31:21  wenger
   Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
 
@@ -132,6 +137,7 @@
 #include "QueryProc.h"
 #include "TData.h"
 #include "DeviseKey.h"
+#include "DepMgr.h"
 
 //#define DEBUG
 
@@ -178,8 +184,11 @@ void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	      }
 	  }
 	  view->DoneMappingIterator(index);
-	  if (changed)
+	  if (changed) {
+	    DepMgr::Current()->RegisterEvent(view,
+	      DepMgr::EventViewSymbolSizeCh);
 	    view->Refresh();
+	  }
 	  break;
       }
       case '-': {
@@ -194,8 +203,11 @@ void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	      }
 	  }
 	  view->DoneMappingIterator(index);
-	  if (changed)
+	  if (changed) {
+	    DepMgr::Current()->RegisterEvent(view,
+	      DepMgr::EventViewSymbolSizeCh);
 	    view->Refresh();
+	  }
 	  break;
       }
       case '5':

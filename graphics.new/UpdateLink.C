@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/11/26 16:51:40  ssl
+  Added support for piled viws
+
   Revision 1.1  1996/08/04 21:59:56  beyer
   Added UpdateLinks that allow one view to be told to update by another view.
   Changed TData so that all TData's have a DataSource (for UpdateLinks).
@@ -83,7 +86,7 @@ void UpdateLink::FilterChanged(View *view, VisualFilter &filter, int flushed)
 
 void UpdateLink::ViewRecomputed(View *view)
 { 
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("UpdateLink::ViewRecomputed[%p - %s]\n", view, view->GetName());
 #endif
   if( view == _master ) {

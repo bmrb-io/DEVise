@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.115  1997/08/20 22:10:40  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.114.2.3  1997/08/20 19:32:44  wenger
   Removed/disabled debug output for interruptible drawing.
 
@@ -525,9 +529,8 @@
 #include "Util.h"
 #include "View.h"
 #include "RecordLink.h"
-#if 0
-#include "DataSourceFixedBuf.h"
-#endif
+#include "Scheduler.h"
+#include "DepMgr.h"
 
 // Whether to draw view borders -- must eventually be controlled by GUI.
 static const Boolean viewBorder = false;
@@ -667,7 +670,8 @@ View::View(char *name, VisualFilter &initFilter,
   ControlPanel::Instance()->InsertCallback(this);
 
   _dispatcherID = Dispatcher::Current()->Register(this, 10, GoState);
-  Dispatcher::Current()->RequestCallback(_dispatcherID);
+  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewCreated);
+  Scheduler::Current()->RequestCallback(_dispatcherID);
 }
 
 View::~View()
@@ -755,7 +759,8 @@ void View::SubClassMapped()
 
   // in batch mode, force Run() method to be called so that
   // (first) query gets properly started up
-  Dispatcher::Current()->RequestCallback(_dispatcherID);
+  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewSubclassMapped);
+  Scheduler::Current()->RequestCallback(_dispatcherID);
 #if 0
   UpdateViewTable();
 #endif
@@ -766,7 +771,7 @@ void View::SubClassUnmapped()
   AbortQuery();
 }
 
-void View::SetVisualFilter(VisualFilter &filter)
+void View::SetVisualFilter(VisualFilter &filter, Boolean registerEvent)
 {
 #if defined(DEBUG)
   printf("View(%s)::SetVisualFilter()\n", GetName());
@@ -807,6 +812,8 @@ void View::SetVisualFilter(VisualFilter &filter)
       else
 	_unknown++;
       
+      if (registerEvent) DepMgr::Current()->RegisterEvent(this,
+	DepMgr::EventViewFilterCh);
       ReportFilterAboutToChange();
 
       _filterChanged = true;
@@ -820,7 +827,7 @@ void View::SetVisualFilter(VisualFilter &filter)
       int flushed = _filterQueue->Enqueue(filter);
       ReportFilterChanged(filter, flushed);
       
-      Dispatcher::Current()->RequestCallback(_dispatcherID);
+      Scheduler::Current()->RequestCallback(_dispatcherID);
     }
   }
 }
@@ -926,7 +933,8 @@ void View::HandleExpose(WindowRep *w, int x, int y, unsigned width,
     _exposureRect.yHigh = MAX(maxY1, maxY2);
   }
 
-  Dispatcher::Current()->RequestCallback(_dispatcherID);
+  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewExpose);
+  Scheduler::Current()->RequestCallback(_dispatcherID);
 }
 
 /* set dimensionality */
@@ -944,6 +952,7 @@ void View::SetNumDimensions(int d)
   _numDimensions = d;
   _updateTransform = true;
 
+  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewDimensionsCh);
   Refresh();
 }
 
@@ -956,6 +965,7 @@ void View::SetSolid3D(int solid)
 
   _solid3D = solid;
 
+  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewSolidCh);
   Refresh();
 }
 
@@ -968,6 +978,7 @@ void View::SetDisplayDataValues(Boolean disp)
 
   _dispDataValues = disp;
 
+  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewDataDisplayCh);
   Refresh();
 }
 
@@ -988,6 +999,7 @@ void View::SetPileMode(Boolean mode)
   /* Just in case record links didn't get re-enabled after printing. */
   RecordLink::EnableUpdates();
 
+  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewPileCh);
   Refresh();
 }
 
@@ -1004,6 +1016,7 @@ void View::SetGeometry(int x, int y, unsigned wd, unsigned ht)
   /* Just in case record links didn't get re-enabled after printing. */
   RecordLink::EnableUpdates();
 
+  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewGeomCh);
   Refresh();
 }
 
@@ -1023,6 +1036,7 @@ void View::SetOverrideColor(GlobalColor color, Boolean active)
 
   _hasOverrideColor = active;
 
+  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewOverrideColorCh);
   Refresh();
 }
 
@@ -1740,10 +1754,6 @@ XXX: need to crop exposure against _filter before sending query.
 
 void View::Run()
 {
-    // This must be done at the beginning in case we request a callback
-    // somewhere inside here.
-    Dispatcher::Current()->CancelCallback(_dispatcherID);
-
 #if defined(DEBUG)
     printf("\nView::Run for view '%s' (0x%p)\n", GetName(), _dispatcherID);
 #endif
@@ -1794,6 +1804,8 @@ void View::Run()
     printf("exp %d flt %d ref %d upd %d\n", _hasExposure, _filterChanged,
 	   _refresh, _updateTransform);
 #endif
+//TEMPTEMP -- there seems to be almost no difference between what we do
+// for _hasExposure, _filterChanged, _refresh, and _updateTransform.
     
     if (mode == ControlPanel::LayoutMode && 
 	(_hasExposure || _filterChanged || _refresh || _updateTransform)) { 
@@ -2146,7 +2158,8 @@ void View::HandleResize(WindowRep *w, int xlow, int ylow,
   
   _updateTransform = true; /* need to update the transformation */
   
-  Dispatcher::Current()->RequestCallback(_dispatcherID);
+  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewResize);
+  Scheduler::Current()->RequestCallback(_dispatcherID);
 }
 
 void View::UpdateTransform(WindowRep *winRep)
@@ -2205,6 +2218,7 @@ void View::SetLabelParam(Boolean occupyTop, int extent, char *name)
   } else {
     _updateTransform = true;
 
+    DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewTitleCh);
     Refresh();
   }
 }
@@ -2216,6 +2230,7 @@ void View::XAxisDisplayOnOff(Boolean stat)
     _updateTransform = true;
   }
 
+  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewAxesCh);
   Refresh();
 }
 
@@ -2226,6 +2241,7 @@ void View::YAxisDisplayOnOff(Boolean stat)
     _updateTransform  = true;
   }
 
+  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewAxesCh);
   Refresh();
 }
 
@@ -2383,7 +2399,7 @@ void View::Refresh()
 #endif
   _doneRefresh = false;
   _refresh = true;
-  Dispatcher::Current()->RequestCallback(_dispatcherID);
+  Scheduler::Current()->RequestCallback(_dispatcherID);
 }
 
 void View::ReportViewCreated()
@@ -2407,6 +2423,9 @@ void View::ReportViewCreated()
 
 void View::ReportViewRecomputed()
 {
+#if defined(DEBUG)
+  printf("View::ReportViewRecomputed()\n");
+#endif
   if (!_viewCallbackList)
     return;
   
@@ -2511,6 +2530,7 @@ void View::Iconify(Boolean iconified)
   if (iconified)
     AbortQuery();
 
+  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewIconify);
   Refresh();
 }
 
@@ -3254,6 +3274,7 @@ void View::SetCamera(Camera new_camera)
   if (newMap) {
     CompRhoPhiTheta();
     _updateTransform = true;
+    DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewCameraCh);
     Refresh();
   }
 
@@ -3365,6 +3386,7 @@ View::SetFont(char *which, int family, float pointSize,
     reportErrNosys("Illegal font selection");
   }
 
+  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewFontCh);
   Refresh();
 }
 
@@ -3434,5 +3456,3 @@ DataSourceBuf* View::GetViewTable()
   return _viewTableBuffer; 
 }
 #endif
-
-

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/08/28 18:21:16  wenger
+  Moved duplicate code from ViewScatter, TDataViewX, and ViewLens classes
+  up into ViewGraph (parent class).
+
   Revision 1.7  1997/08/20 22:11:15  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -65,6 +69,7 @@
 #include "Util.h"
 #include "RecordLink.h"
 #include "DrawTimer.h"
+#include "Scheduler.h"
 
 //#define DEBUG
 
@@ -214,7 +219,6 @@ void ViewLens::Refresh()
 /* from View */
 void ViewLens::Run() 
 {
-  Dispatcher::Current()->CancelCallback(_dispatcherID);
   bool done = true;
   int index = InitViewLensIterator();
   while(MoreViewsInLens(index)) {
@@ -244,7 +248,7 @@ void ViewLens::Run()
   else {
 #ifdef DEBUG
 //    printf("ViewLens %s cannot  proceed\n", GetName());
-    Dispatcher::Current()->RequestCallback(_dispatcherID);
+    Scheduler::Current()->RequestCallback(_dispatcherID);
 #endif
   }
 }
@@ -270,7 +274,7 @@ void ViewLens::ViewRecomputed(View *view) {
   DoneViewLensIterator(index);
   if (found) {
       View::Refresh();
-  //    Dispatcher::Current()->RequestCallback(_dispatcherID);
+  //    Scheduler::Current()->RequestCallback(_dispatcherID);
   }
 }
 

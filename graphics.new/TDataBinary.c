@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/07/03 01:53:47  liping
+  changed query interface to TData from RecId to double
+
   Revision 1.31  1997/01/11 20:56:05  jussi
   Removed references to _currPos.
 
@@ -165,6 +168,7 @@
 #else
 #   include "Init.h"
 #   include "DataSourceWeb.h"
+#   include "DepMgr.h"
 #endif
 
 #define CONCURRENT_IO
@@ -320,6 +324,7 @@ Boolean TDataBinary::LastID(RecId &recId)
 #endif
         BuildIndex();
 #ifndef ATTRPROJ
+	DepMgr::Current()->RegisterEvent(this, DepMgr::EventTdataCh);
         QueryProc::Instance()->RefreshTData(this);
 #endif
       }

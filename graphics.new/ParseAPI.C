@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.73  1997/08/27 14:44:17  wenger
+  Made improvements to getDisplayImageAndSize command (not yet fully tested).
+
   Revision 1.72  1997/08/20 19:15:18  wenger
   Added new getDisplayImageAndSize command for Hongyu (not yet fully
   tested).
@@ -348,6 +351,7 @@
 #include "CatalogComm.h"
 #include "SessionDesc.h"
 #include "StringStorage.h"
+#include "DepMgr.h"
 #define PURIFY 0
 
 #ifdef PURIFY
@@ -1216,11 +1220,13 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       if (!strcmp(argv[1], "0")) {
 	if(control->GetMode() != ControlPanel::DisplayMode) {
 	  /* Set display mode  and make all views refresh*/
+	  DepMgr::Current()->RegisterEvent(NULL, DepMgr::EventControlModeCh);
 	  control->SetMode(ControlPanel::DisplayMode);
 	  ControlPanel::Instance()->ReportModeChange(control->GetMode());
 	}
       } else if (control->GetMode() != ControlPanel::LayoutMode) {
 	/* set layout mode */
+	DepMgr::Current()->RegisterEvent(NULL, DepMgr::EventControlModeCh);
 	control->SetMode(ControlPanel::LayoutMode);
 	ControlPanel::Instance()->ReportModeChange(control->GetMode());
       }

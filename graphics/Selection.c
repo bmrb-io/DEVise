@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/28 18:47:02  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.3  1995/12/14 17:09:38  jussi
   Added copyright notice and made small fixes.
 
@@ -302,9 +305,10 @@ void Selection::SetVisualFilters(View *selView, Boolean hasHint,
     }
     
     if (change){
+      // What the heck does hasHint mean here?  RKW Sep. 5, 1997.
       if (hasHint)
-	view->SetVisualFilter(tempFilter);
-      else view->SetVisualFilter(tempFilter);
+	view->SetVisualFilter(tempFilter, false);
+      else view->SetVisualFilter(tempFilter, false);
     }
   }
   _viewList->DoneIterator(index);

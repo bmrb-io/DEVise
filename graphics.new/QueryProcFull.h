@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/08/20 22:11:08  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.21.8.2  1997/08/20 18:36:26  wenger
   QueryProcFull and QPRange now deal correctly with interrupted draws.
   (Some debug output still turned on.)
@@ -119,6 +123,7 @@
 #include "SortedTable.h"
 #include "Timer.h"
 #include "BufMgr.h"
+#include "Scheduler.h"
 
 class TData;
 class TDataMap;
@@ -174,7 +179,7 @@ public:
 
   /* Activate query processor when timer expires */
   virtual void TimerWake(int arg) {
-      Dispatcher::Current()->RequestCallback(_dispatcherID);
+      Scheduler::Current()->RequestCallback(_dispatcherID);
       Timer::Queue(QP_TIMER_INTERVAL, this, 0);
   }
 

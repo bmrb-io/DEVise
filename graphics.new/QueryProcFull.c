@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.65  1997/08/20 22:11:07  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.64.2.3  1997/08/20 19:33:06  wenger
   Removed/disabled debug output for interruptible drawing.
 
@@ -379,7 +383,7 @@ QueryProcFull::QueryProcFull()
   gettimeofday(&_tdataQuery->started, NULL);
 
   _dispatcherID = Dispatcher::Current()->Register(this, 20, GoState);
-  Dispatcher::Current()->RequestCallback(_dispatcherID);
+  Scheduler::Current()->RequestCallback(_dispatcherID);
 #if DEBUGLVL >= 3
   printf("QueryProcFull register to dispatcher, _dispatcherID = 0x%p\n",
          &_dispatcherID);
@@ -392,7 +396,7 @@ void QueryProcFull::Cleanup()
 {
   Timer::Cancel(this, 0);
 
-  Dispatcher::Current()->CancelCallback(_dispatcherID);
+  Scheduler::Current()->CancelCallback(_dispatcherID);
   Dispatcher::Current()->Unregister(this);
 
   ClearQueries();
@@ -530,7 +534,7 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
   _queries->DoneIterator(index);
 #endif
 
-  Dispatcher::Current()->RequestCallback(_dispatcherID);
+  Scheduler::Current()->RequestCallback(_dispatcherID);
 }
 
 /* Associate a mapping with a coordinate table */
@@ -1132,6 +1136,8 @@ void QueryProcFull::ProcessQuery()
 #if DEBUGLVL >= 5
   printf("QueryProcFull::ProcessQuery()\n");
 #endif
+
+  Scheduler::Current()->RequestCallback(_dispatcherID);
 
   if (_queries->Size() == 0) {
     /*
@@ -1894,7 +1900,7 @@ Boolean QueryProcFull::DoInMemGDataConvert(TData *tdata, GData *gdata,
 void QueryProcFull::DoGDataConvert()
 {
   if (!Init::ConvertGData() || !_numMappings) {
-    Dispatcher::Current()->CancelCallback(_dispatcherID);
+    Scheduler::Current()->CancelCallback(_dispatcherID);
     return;
   }
 
@@ -1977,7 +1983,7 @@ void QueryProcFull::DoGDataConvert()
 #if DEBUGLVL >= 5
     printf("Could not find any GData that needs disk conversion\n");
 #endif
-    Dispatcher::Current()->CancelCallback(_dispatcherID);
+    Scheduler::Current()->CancelCallback(_dispatcherID);
     return;
   }
 

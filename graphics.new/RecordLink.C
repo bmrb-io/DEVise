@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/06/25 17:05:37  wenger
+  Fixed bug 192 (fixed problem in the PSWindowRep::FillPixelRect() member
+  function, disabled updating of record links during print, print dialog
+  grabs input.
+
   Revision 1.11  1997/02/26 16:31:42  wenger
   Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
 
@@ -238,6 +243,8 @@ void RecordLink::Initialize()
 #ifdef DEBUG
     printf("Refreshing slave view %s\n", view->GetName());
 #endif
+    // TEMPTEMP It doesn't seem necessary to do this refresh, since we refresh
+    // again when the query is done
     view->Refresh();
   }
   DoneIterator(index);

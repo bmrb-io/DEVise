@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/08/20 22:10:56  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.10.12.2  1997/08/15 23:06:26  wenger
   Interruptible drawing now pretty much working for TDataViewX class,
   too (connector drawing may need work, needs a little more testing).
@@ -72,9 +76,6 @@
 
 #define USE_CONNECTORS 0
 
-class QueryCallback;
-class TData;
-class GDataVar;
 class TDataMap;
 class TDataCMap;
 struct Connector;
