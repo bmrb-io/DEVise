@@ -1,0 +1,65 @@
+<HTML>
+<HEAD>
+<TITLE>DEVise Application Examples</TITLE>
+</HEAD>
+<BODY>
+
+<H1>Financial Data Exploration Example</H1>
+
+<!-- Session is /p/devise/session/jussi/spie2.tk -->
+<IMG src="financial.gif">
+
+<H2>Input Data</H2>
+
+The input data:
+<UL>
+<LI>consists of four separate data sources: Hewlett-Packard stock information,
+Digital Equipment Corp. stock information, Standard & Poor's closing value,
+and sugar futures trade price.
+<LI>the Hewlett-Packard data, for example, contains the following attributes:
+day, month, year, hour, minute, second, trade exchange, price, volume, and
+trade condition.
+</UL>
+
+<P>The Hewlett-Packard input data looks like:
+<TT>
+<BR>2,1,1992,9,32,29,M,56.125,1,@
+<BR>2,1,1992,9,32,30,X,56.125,1,@
+<BR>...
+</TT>
+
+<h2>Problem</H2>
+
+Visualize data from a number of different sources, to allow the user to
+easily look for correlations.
+
+<H2>Visualization</H2>
+
+Click <A href="model.html">here</A> to see our model of creating
+visualizations.
+
+<P>The visualization is created as follows:
+<OL>
+<LI>Define the 'HP Trade Price' window with the date mapped to the X axis
+and the trade price mapped to the Y axis.
+<LI>Define the 'HP Trade Volume' window with the date mapped to the X axis
+and the trade volume mapped to the Y axis.
+<LI>Define the 'DEC Trade Price' and 'DEC Trade Volume' windows similarly.
+<LI>Define the 'S&P Index' window with date mapped to the X axis and closing
+value mapped to the Y axis.
+<LI>Define the 'Sugar Futures' window with date mapped to the X axis and
+closing price mapped to the Y axis.
+<LI>Link the X axes of all of the windows so that they will all display the
+same range of dates.
+</OL>
+
+<H2>Observations</H2>
+This application illustrates DEVise's ability to access
+data from a variety of formats, without requiring users to store
+all data in a common repository, and its use in integrating information
+from many sources---users can now look for correlations and trends
+using the combined information from a variety of vendors.
+<BR>
+
+</BODY>
+</HTML>

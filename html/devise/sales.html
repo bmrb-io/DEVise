@@ -1,0 +1,77 @@
+<HTML>
+<HEAD>
+<TITLE>DEVise Application Examples</TITLE>
+</HEAD>
+<BODY>
+
+<H1>Geographical Information System Example</H1>
+
+<IMG src="sales.gif">
+
+<H2>Input Data</H2>
+
+The input data:
+<UL>
+<LI>are gathered by a catalog-order company from sales of its products over
+a 3-year period (650,000 customers).
+<LI>contain attributes: customer number, state where customer lives,
+number of orders made by customer, total number of products ordered by
+customer, total amount of money spent by customer.
+</UL>
+
+<P>The input file looks like:
+<TT>
+<BR>1036852,CA,15,40,976
+<BR>1036872,HI,4,20,840
+<BR>1037049,CA,5,17,403
+<BR>1037459,NV,12,38,812.5
+<BR>1037759,IL,6,25,653
+<BR>1038606,MN,10,39,945
+<BR>...
+</TT>
+
+<h2>Problem</H2>
+
+We visualize the geographical distribution of customers and try to
+find a pattern between the location and the total amount of money
+spent by customers.
+
+<H2>Visualization</H2>
+
+Click <A href="model.html">here</A> to see our model of creating
+visualizations.
+
+<P>The visualization is created as follows:
+<OL>
+
+<LI>Define window titled "Geographical Data" showing a geographical
+area of interest. Location of customers is shown on top of the US
+map. Customer's state code is mapped to the latitude and longitude of
+some major city in the state, plus some randomness to create a cloud
+for easier separation between customers. The total amount of money
+spent by the customers is indicated by size and color of rectangles.
+<LI>Duplicate window and title it "Geographical Data 2". This window
+shows the global picture, with a colored rectangle indicating the area
+displayed in the first window. The rectangle is a visual cursor which
+can be moved and resized with the mouse.
+<LI>Define window titled "Sales Data Display" showing the total number
+of orders, total number of products purchased, and the total amount of
+money spent by customer.
+<LI>Link the X axes of the views in "Sales Data Display".
+<LI>Create record link from "Geographical Data" to "Sales Data
+Display".
+<LI>Select an area of interest in "Geographical Data" and the
+system displays the corresponding data records in "Sales Data
+Display".
+</OL>
+
+<H2>Observations</H2>
+
+<OL>
+<LI>This example illustrates the ability of DEVise to handle
+large amounts of data. About 6 MB of memory buffer is used to 
+visualize 20 MB of data (650,000 customers).
+</OL>
+
+</BODY>
+</HTML>

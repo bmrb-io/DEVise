@@ -1,0 +1,55 @@
+<HTML>
+<HEAD>
+<TITLE>DEVise Application Examples</TITLE>
+</HEAD>
+<BODY>
+
+<H1>Soil Science/BIRCH Clustering Example</H1>
+
+<!-- Session is /p/devise/session/jussi/birch.tk -->
+<IMG src="birch.gif">
+
+<H2>Input Data</H2>
+
+The input data:
+<UL>
+<LI>is the result of clustering by
+<a href="http://www.cs.wisc.edu/~zhang/birch.html">BIRCH</a> on forest
+canopy images.
+<LI>contains the attributes: x, y, and color.
+</UL>
+
+<P>The input file looks like:
+<TT>
+<BR>39 1 6
+<BR>45 1 6
+<BR>50 1 6
+<BR>...
+</TT>
+
+<h2>Problem</H2>
+
+We want to view the results of clustering by BIRCH to refine the clustering
+parameters until the clustering is satisfactory.
+
+<H2>Visualization</H2>
+
+Click <A href="model.html">here</A> to see our model of creating
+visualizations.
+
+<P>The visualization is created as follows:
+<OL>
+<LI>Define the 'Image Display' window.  This window simply displays each
+record as a small rectangle of the specified color at the specified
+location.  The color is determined by the cluster into which BIRCH put
+that record (green is leaves, blue is branches, etc.).
+</OL>
+
+<H2>Observations</H2>
+The clusters can be thought of as summaries of the underlying data.
+It is important that the connection between the summaries and the underlying
+data is preserved by DEVise.
+<BR>
+
+</BODY>
+</HTML>

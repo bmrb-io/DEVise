@@ -1,0 +1,55 @@
+<HTML>
+<HEAD>
+<TITLE>DEVise Application Examples</TITLE>
+</HEAD>
+<BODY>
+
+<H1>Program Traces Example</H1>
+
+<IMG src="program.gif">
+
+<H2>Input Data</H2>
+
+The input data:
+<UL>
+<LI>are gathered from program traces from a materials science application.
+The application is distributed across multiple workstations.
+<LI>contain attributes: workstation number, job number, and starting and
+ending time for each job.
+</UL>
+
+<P>The input file looks like:
+<TT>
+<BR>5 51 179 27 1
+<BR>1 8 191 31 1
+<BR>7 82 236 25 1
+<BR>...
+</TT>
+
+<h2>Problem</H2>
+
+We are trying to debug the program, and compare the performance of
+different distributed algorithms.
+
+<H2>Visualization</H2>
+click <A href="model.html">here</A> to see our model of creating visualizations.
+
+<P>The visualization is created as follows:
+<OL>
+<LI>Map each record, representing one computation, to a rectangle: 
+workstation number on the Y axis, and time on the X axis. The length of 
+the rectangle represents the length of each computation. Map 
+job number to color.
+<LI>Use the mouse button to fetch the actual records under the mouse pointer.
+The records are displayed textually in a pop-up window.
+</OL>
+
+<H2>Observations</H2>
+<OL>
+<LI>This example is used to illustrate the mapping flexibility of DEVise.
+<LI>Calculations occur in cycles.
+<LI>Black rectangles are represented by aborted jobs: jobs
+that have to be abandoned because a workstation is reclaimed by its user.
+</OL>
+</BODY>
+</HTML>

@@ -1,0 +1,49 @@
+<HTML>
+<HEAD>
+<TITLE>DEVise Application Examples</TITLE>
+</HEAD>
+<BODY>
+
+<H1>Clinical Science Example</H1>
+
+<IMG src="clinical.gif">
+
+<H2>Input Data</H2>
+
+The input data:
+<UL>
+<LI>are gathered from medical records.
+<LI>contain attributes: date, and number of visits per day 
+for a respiratory disease.
+</UL>
+
+<P>The input file looks like:
+<TT>
+<BR>1/1/90    1 1 
+<BR>1/2/90    6 10 
+<BR>1/3/90    7 14 
+<BR>...
+</TT>
+
+<h2>Problem</H2>
+
+We are trying to see if the disease exhibits seasonal patterns.
+
+<H2>Visualization</H2>
+click <A href="model.html">here</A> to see our model of creating visualizations.
+
+<P>The visualization is created as follows:
+<UL>
+<LI>Map each record to a bar. Date is mapped to the X axis, and
+number of visits to the Y axis. Color is used to represent season
+of the year: green = Spring, blue = Summer, orange = Fall, and
+gray = Winter.
+</OL>
+
+<H2>Observations</H2>
+<UL>
+<LI>The disease is prevalent during seasonal changes, especially
+between Fall and Winter, and between Winter and Spring.
+</OL>
+</BODY>
+</HTML>
