@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/06/24 19:34:09  jussi
+  Fixed small bugs, removed unused code, and added some
+  debugging statements.
+
   Revision 1.3  1996/06/23 20:46:40  jussi
   Cleaned up and added copyright notice.
 
@@ -49,10 +53,6 @@ public:
   /* Return current time */
   static long Now() { return _now; }
 
-private:
-  /* Handler on timer interrupt */
-  static void TimerHandler(int arg);
-
   /* StopTimer() and StartTimer() should be used in pairs to
      run code that must be run with timer off :
         StopTimer()
@@ -61,6 +61,10 @@ private:
   */
   static void StopTimer();
   static void StartTimer();
+
+private:
+  /* Handler on timer interrupt */
+  static void TimerHandler(int arg);
 
   static Boolean _initialized; /* TRUE if timer has been initialized */
 
