@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.53  1999/10/10 19:59:26  hongyu
+// *** empty log message ***
+//
 // Revision 1.52  1999/10/10 09:51:01  hongyu
 // *** empty log message ***
 //
@@ -64,6 +67,7 @@ public class jsdevisec extends Panel
     //private Button statButton = new Button("Stats");
     private Button setButton = new Button("Option");
     private Button exitButton = new Button("Exit");
+    private Button filterButton = new Button("Filter");
 
     public DEViseAnimPanel animPanel = null;
     public DEViseViewInfo viewInfo = null;
@@ -147,13 +151,14 @@ public class jsdevisec extends Panel
             button[0] = restartButton;
             button[1] = stopButton;
         } else {
-            button = new Component[6];
+            button = new Component[7];
             button[0] = openButton;
             button[1] = closeButton;
             button[2] = stopButton;
             button[3] = restartButton;
             button[4] = setButton;
             button[5] = exitButton;
+            button[6] = filterButton;
         }
 
         DEViseComponentPanel buttonPanel = new DEViseComponentPanel(button, "Horizontal", 5, 1);
@@ -262,6 +267,18 @@ public class jsdevisec extends Panel
                     public void actionPerformed(ActionEvent event)
                     {
                         quit();
+                    }
+                });
+        filterButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        if (!isSessionOpened) {
+                            showMsg("You do not have any opened session!");
+                            return;
+                        }
+
+                        dispatcher.start("JAVAC_ResetFilters");
                     }
                 });
 

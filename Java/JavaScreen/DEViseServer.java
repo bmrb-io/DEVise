@@ -13,6 +13,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.26  1999/10/10 08:49:53  hongyu
+// Major changes to JAVAScreen have been commited in this update, including:
+// 1. restructure of JavaScreen internal structure to adapt to vast changes
+//    in DEVise and also prepare to future upgrade
+// 2. Fix a number of bugs in visualization and user interaction
+// 3. Add a number of new features in visualization and user interaction
+// 4. Add support for complicated 3D molecular view
+//
 // Revision 1.25  1999/08/24 08:45:53  hongyu
 // *** empty log message ***
 //
@@ -44,7 +52,7 @@ public class DEViseServer implements Runnable
     private Thread serverThread = null;
 
     public String hostname = "localhost";
-    private int dataPort = 0, cmdPort = 0, switchPort = 0;
+    public int dataPort = 0, cmdPort = 0, switchPort = 0;
     private DEViseCommSocket socket = null;
     private int devisedTimeout = 180 * 1000;
     private int socketTimeout = 1000;
@@ -57,17 +65,22 @@ public class DEViseServer implements Runnable
     private String rootDir = "DEViseSession";
 
     private int status = 0;
+    private boolean isValid = false;
 
     private int action = DEViseServer.IDLE;
 
-    public DEViseServer(jspop j, String name)
+    public DEViseServer(jspop j, String name, int cmdport, int imgport)
     {
         pop = j;
         if (name != null) {
             hostname = new String(name);
         }
-    }
 
+        cmdPort = cmdport;
+        dataPort = imgport;
+        isValid = true;
+    }
+    /*
     public synchronized static int getPort()
     {
         if (Port == DEViseGlobals.cmdport || Port == DEViseGlobals.imgport)
@@ -92,7 +105,7 @@ public class DEViseServer implements Runnable
             }
         }
     }
-
+    */
     public synchronized int getStatus()
     {
         return status;
@@ -190,6 +203,7 @@ public class DEViseServer implements Runnable
         return false;
     }
 
+    /*
     private boolean isDEViseAlive()
     {
         if (proc == null)
@@ -203,9 +217,13 @@ public class DEViseServer implements Runnable
             return true;
         }
     }
-
+    */
     private void stopDEVise()
     {
+        isValid = false;
+        pop.removeServer(this);
+
+        /*
         if (isDEViseAlive()) {
             proc.destroy();
             proc = null;
@@ -219,10 +237,15 @@ public class DEViseServer implements Runnable
         } catch (SecurityException e) {
             pop.pn("Security Error while trying to kill an old devised!");
         }
+        */
     }
 
     private boolean startDEVise()
     {
+        return isValid;
+
+
+        /*
         // stop previous devised first
         stopDEVise();
 
@@ -245,6 +268,7 @@ public class DEViseServer implements Runnable
         pop.pn("Successfully start devised ...");
 
         return true;
+        */
     }
 
     public synchronized boolean isAvailable()

@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2000/01/17 07:48:32  hongyu
+// *** empty log message ***
+//
 // Revision 1.1  1999/12/07 23:24:27  hongyu
 // *** empty log message ***
 //
@@ -461,7 +464,7 @@ class devised
             boolean stillWorking = true;
             while (stillWorking) {
                 try {
-                    int v = process.exitValue();
+                    int v = kill.exitValue();
                     stillWorking = false;
                 } catch (IllegalThreadStateException e) {
                     try {

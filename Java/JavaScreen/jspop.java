@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  1999/08/03 05:56:51  hongyu
+// bug fixes    by Hongyu Yao
+//
 // Revision 1.17  1999/06/23 20:59:21  wenger
 // Added standard DEVise header.
 //
@@ -62,6 +65,8 @@ public class jspop implements Runnable
     private int IDCount = 1;
     private int maxServerNumber = 1;
     private Thread popThread = null;
+
+    private JssHandler jssHandler = null;
     private DEViseClientDispatcher dispatcher = null;
 
     private Hashtable users = new Hashtable();
@@ -144,6 +149,7 @@ public class jspop implements Runnable
             System.exit(1);
         }
 
+        /*
         System.out.println("Starting DEViseServer ...\n");
         try {
             DEViseServer newserver = null;
@@ -157,6 +163,7 @@ public class jspop implements Runnable
             System.out.println(e.getMsg());
             quit(1);
         }
+        */
 
         System.out.println("\nStarting command server socket on " + DEViseGlobals.cmdport + " ...\n");
         try {
@@ -172,6 +179,16 @@ public class jspop implements Runnable
             dataServerSocket.setSoTimeout(5000); // wait for data socket connection for 5 seconds before disconnect
         } catch (IOException e) {
             System.out.println("Can not start data server socket at port " + DEViseGlobals.imgport);
+            quit(1);
+        }
+
+        System.out.println("\nStarting JSS handler ...\n");
+        try {
+            jssHandler = new JssHandler(this);
+            jssHandler.start();
+        } catch (YException e) {
+            System.out.println("Can not start jss handler");
+            System.out.println(e.getMessage());
             quit(1);
         }
 
@@ -203,6 +220,12 @@ public class jspop implements Runnable
             dispatcher = null;
         }
 
+        System.out.println("Stop jss handler thread ...");
+        if (jssHandler != null) {
+            jssHandler.stop();
+            jssHandler = null;
+        }
+
         System.out.println("Stop command server socket...");
         if (cmdServerSocket != null) {
             try {
@@ -223,6 +246,7 @@ public class jspop implements Runnable
             dataServerSocket = null;
         }
 
+        /*
         System.out.println("Stop DEViseServer thread...");
         for (int i = 0; i < servers.size(); i++) {
             DEViseServer server = (DEViseServer)servers.elementAt(i);
@@ -231,6 +255,7 @@ public class jspop implements Runnable
             }
         }
         servers.removeAllElements();
+        */
 
         System.out.println("Close clients...");
         for (int i = 0; i < suspendClients.size(); i++) {
@@ -415,7 +440,39 @@ public class jspop implements Runnable
         }
     }
 
-    public DEViseServer getNextAvailableServer()
+    public synchronized void addServer(String name, int cmdport, int imgport)
+    {
+        DEViseServer newserver = new DEViseServer(this, name, cmdport, imgport);
+        servers.addElement(newserver);
+    }
+
+    public synchronized void removeServer(DEViseServer server)
+    {
+        if (server == null) {
+            return;
+        }
+
+        servers.removeElement(server);
+
+        try {
+            Socket socket = new Socket(server.hostname, DEViseGlobals.JSSPORT);
+            DataOutputStream os = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+            String msg = "JSS_Restart " + server.cmdPort + " " + server.dataPort;
+            os.writeInt(msg.length());
+            os.writeBytes(msg);
+            os.flush();
+            os.close();
+            socket.close();
+        } catch (UnknownHostException e) {
+            pn("Can not find jss host " + server.hostname);
+        } catch (NoRouteToHostException e) {
+            pn("Can not find route to jss host " + server.hostname + ", may caused by an internal firewall");
+        } catch (IOException e) {
+            pn("IO Error while connecting to jss host " + server.hostname);
+        }
+    }
+
+    public synchronized DEViseServer getNextAvailableServer()
     {
         DEViseServer server = null;
         DEViseClient client = null;
