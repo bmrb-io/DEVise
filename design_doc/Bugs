@@ -2364,6 +2364,12 @@ Num Date        Status  Description
 601 7/12/00	OPEN	JavaScreen: JS doesn't get key released event
 			while help dialog is shown. (rkw)
 
+
+602 7/18/00	OPEN	JavaScreen: dragging a cursor doesn't work right
+			if the cursor is in the non-base(?) view of a pile
+			(see bmrb/test/bad_cursor_drag.ds, third cursor
+			from the right). (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
