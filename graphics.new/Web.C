@@ -7,6 +7,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/07/01 19:23:12  jussi
+  The Web data transfer routines are now called from DataSourceWeb.c,
+  and not TkControl.c. Removed the Tcl/Tk interface routines.
+
   Revision 1.7  1996/05/31 15:39:32  jussi
   Minor changes to remove compiler warnings in Linux.
 
@@ -178,16 +182,12 @@ int condor_bytes_stream_open_ckpt_file( char *name )
 
 	string_to_sin(name, &sin);
 	sock_fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sock_fd < 0) {
-		fprintf(stderr, "socket() failed, errno = %d\n", errno);
-		return sock_fd;
-	}
+	if (sock_fd < 0)
+            return sock_fd;
 	sin.sin_family = AF_INET;
 	status = connect(sock_fd, (struct sockaddr *) &sin, sizeof(sin));
-	if (status < 0) {
-		fprintf(stderr, "cbstp connect() FAILED, errno = %d\n", errno);
-		return status;
-	}
+        if (status < 0)
+            return status;
 
 #ifdef DEBUG
 	printf("cbstp: connected to %s\n", name);
@@ -236,10 +236,8 @@ int open_ftp( char *name )
   int		rval;
 
   sock_fd = socket(AF_INET, SOCK_STREAM, 0);
-  if (sock_fd < 0) {
-    perror("socket");
+  if (sock_fd < 0)
     return sock_fd;
-  }
 
   if (strncmp(name,"ftp://",6)) {
     return -1;
@@ -260,22 +258,20 @@ int open_ftp( char *name )
     sin.sin_addr = *((struct in_addr *) he->h_addr_list[0]);
   } else {
     fprintf(stderr, "Cannot translate hostname %s.\n", name);
+    *end_of_addr = '/';
     return -1;
   }
   
-  status = connect(sock_fd, (struct sockaddr *) &sin, sizeof(sin));
-  if (status < 0) {
-    fprintf(stderr, "Cannot connect to ftp server %s: ", name);
-    perror("connect");
-    return status;
-  }
-
 #ifdef DEBUG
-  printf("ftp: connected to host %s, port %d\n", name, port_num);
+  printf("ftp: connecting to host %s, port %d\n", name, port_num);
 #endif
 
   *end_of_addr = '/';
   name = end_of_addr;
+
+  status = connect(sock_fd, (struct sockaddr *) &sin, sizeof(sin));
+  if (status < 0)
+      return status;
 
   if (get_ftpd_response(sock_fd, FTP_LOGIN_RESP) == 0) {
     fprintf(stderr, "No login message from ftp server.\n");
@@ -383,10 +379,8 @@ int open_http( char *name, size_t * bytes_in_body)
   struct hostent *he;
 
   sock_fd = socket(AF_INET, SOCK_STREAM, 0);
-  if (sock_fd < 0) {
-    perror("socket");
+  if (sock_fd < 0)
     return sock_fd;
-  }
 
   if (strncmp(name,"http://", 7))
     return -1;
@@ -402,8 +396,7 @@ int open_http( char *name, size_t * bytes_in_body)
 
   if (port_sep) {
     *port_sep = '\0';
-    port_sep++;
-    port_num = atoi(port_sep);
+    port_num = atoi(port_sep + 1);
   }
   sin.sin_port = htons(port_num);
 
@@ -413,23 +406,29 @@ int open_http( char *name, size_t * bytes_in_body)
     sin.sin_addr = *((struct in_addr *) he->h_addr_list[0]);
   } else {
     fprintf(stderr, "Cannot translate host name %s.\n", name);
+    *end_of_addr = '/';
+    if (port_sep)
+      *port_sep = ':';
     return -1;
   }
 
-  status = connect(sock_fd, (struct sockaddr *) &sin, sizeof(sin));
-  if (status < 0) {
-    fprintf(stderr, "Cannot connect to http server %s: ", name);
-    perror("connect");
-    return status;
-  }
+#ifdef DEBUG
+  printf("http: connecting to host %s, port %d\n", name, port_num);
+#endif
 
   *end_of_addr = '/';
-  sprintf(buffer, HTTP_GET_FORMAT, end_of_addr);
+  if (port_sep)
+    *port_sep = ':';
+
+  status = connect(sock_fd, (struct sockaddr *) &sin, sizeof(sin));
+  if (status < 0)
+    return status;
 
 #ifdef DEBUG
   printf("http: sending get command\n");
 #endif
 
+  sprintf(buffer, HTTP_GET_FORMAT, end_of_addr);
   write(sock_fd, buffer, strlen(buffer));
 
   /* get status line */
