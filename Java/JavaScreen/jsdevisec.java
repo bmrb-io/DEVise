@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.79  2001/02/12 02:44:06  xuk
+// Made the JavaScreen can switch between collaboration and socket modes.
+//
 // Revision 1.78  2001/02/08 18:06:12  xuk
 // Merged the "Collaboration" button into "Mode" button to save menu bar space.
 //
