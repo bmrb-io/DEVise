@@ -18,5 +18,8 @@
 all:
 	javac -classpath ./starlibj.jar *.java
 
+dep:
+	javac -deprecation -classpath ./starlibj.jar *.java
+
 clean:
 	-rm *.class

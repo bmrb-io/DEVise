@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2001/03/08 21:10:34  wenger
+// Merged changes from no_collab_br_2 thru no_collab_br_3 from the branch
+// to the trunk.
+//
 // Revision 1.6  2001/03/08 20:33:24  wenger
 // Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
 // to the trunk.
@@ -57,8 +61,9 @@
 // ========================================================================
 
 import EDU.bmrb.starlibj.SaveFrameNode;
-import java.util.Vector;
-import java.util.Enumeration;
+import java.util.*;
+import java.io.*;
+import java.text.*;
 
 // for chemical shifts
 
@@ -68,9 +73,13 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
+    public static final String PEP_CGI_VERSION = "2.1";
+
     private int _accessionNum;
     private String _dataDir;
     private String _sessionDir;
+    
+    private boolean _force = false;
 
     private S2DSummaryHtml _summary;
 
@@ -82,7 +91,13 @@ public class S2DMain {
     {
         S2DMain s2d = new S2DMain(args);
 	try {
-	    s2d.process();
+	    if (!s2d.useCache()) {
+	        s2d.process();
+	    } else {
+	        if (DEBUG >= 1) {
+		    System.out.println("Cache files used");
+		}
+	    }
 	} catch (S2DWarning ex) {
 	    System.err.println(ex.getMessage());
 	} catch (Exception ex) {
@@ -115,21 +130,138 @@ public class S2DMain {
     // Check arguments to constructor, set member variables accordingly.
     private void checkArgs(String args[]) throws S2DException
     {
-        if (args.length != 3) {
-	    System.out.println("Usage: java S2DMain <accession number>" +
-	      " <data directory> <session directory>");
+	String usage = "Usage: java S2DMain [-force] " +
+	  "<accession number> <data directory> <session directory>";
+        if (args.length < 3 || args.length > 4) {
+	    System.out.println(usage);
 	    throw new S2DError("Illegal arguments");
 	} else {
+	    int index = 0;
+	    if (args.length == 4) {
+		if (args[index].equals("-force")) {
+		    _force = true;
+		} else {
+	            System.out.println(usage);
+	            throw new S2DError("Illegal arguments");
+		}
+	        index++;
+	    }
 	    try {
-	        _accessionNum = Integer.parseInt(args[0]);
-	        _dataDir = args[1];
-	        _sessionDir = args[2];
+	        _accessionNum = Integer.parseInt(args[index]);
+	        index++;
+	        _dataDir = args[index];
+	        index++;
+	        _sessionDir = args[index];
+	        index++;
 	    } catch(NumberFormatException ex) {
 	        System.err.println("Error parsing arguments: " +
 		  ex.getMessage());
 	        throw new S2DError("Error parsing " + ex.getMessage());
 	    }
 	}
+    }
+
+    //-------------------------------------------------------------------
+    // Decide whether to use cached versions of the relevant output files.
+    private boolean useCache()
+    {
+        boolean result = false;
+
+	check:
+	if (!_force) {
+	    FileReader freader;
+
+	    //
+	    // Find out whether the summary html file exists.
+	    //
+	    try {
+	        freader = new FileReader(S2DSummaryHtml.fileName(_dataDir,
+		  _accessionNum));
+	    } catch (FileNotFoundException ex) {
+		if (DEBUG >= 1) {
+		    System.out.println("Summary html file " +
+		      ex.getMessage() + " not found; cache not used");
+		}
+	        break check;
+	    }
+
+	    //
+	    // Get summary html file version and date.
+	    //
+	    String fileVersion = null;
+	    Date fileDate = null;
+	    BufferedReader breader = new BufferedReader(freader);
+	    try {
+	        String line;
+	        while ((line = breader.readLine()) != null) {
+		    int index;
+		    if ((index = line.indexOf(S2DSummaryHtml.VERSION_LABEL))
+		      != -1) {
+
+		        int index1 = line.indexOf("{", index);
+		        int index2 = line.indexOf("}", index1);
+			if (index1 != -1 && index2 != -1) {
+			    fileVersion = line.substring(index1 + 1, index2);
+			}
+		    }
+
+		    if ((index = line.indexOf(S2DSummaryHtml.GEN_DATE_LABEL))
+		      != -1) {
+		        int index1 = line.indexOf("{", index);
+		        int index2 = line.indexOf("}", index1);
+			if (index1 != -1 && index2 != -1) {
+			    String dateStr = line.substring(index1 + 1, index2);
+			    fileDate = DateFormat.getDateInstance().
+			      parse(dateStr);
+			}
+		    }
+	        }
+	    } catch (ParseException ex) {
+		System.err.println("ParseException: " + ex.getMessage());
+		break check;
+	    } catch (IOException ex) {
+		System.err.println("IOException: " + ex.getMessage());
+		break check;
+	    } finally {
+		try {
+	            breader.close();
+		} catch (IOException ex) {
+		    System.err.println("IOException: " + ex.getMessage());
+		    break check;
+		}
+	    }
+
+	    //
+	    // Compare summary file version to current peptide-cgi software
+	    // version.
+	    //
+	    if (!PEP_CGI_VERSION.equals(fileVersion)) {
+		if (DEBUG >= 1) {
+		    System.out.println("Existing summary html file version (" +
+		      fileVersion + ") does not " +
+		      "match current software version (" + PEP_CGI_VERSION +
+		      "); cache not used");
+		}
+	        break check;
+	    }
+
+	    //
+	    // Compare the generation date of the summary html file to the
+	    // modification date for the NMR-Star file.
+	    //
+	    Date starModDate = S2DStarIfc.getModDate(_accessionNum);
+	    if (starModDate == null || starModDate.after(fileDate)) {
+		if (DEBUG >= 1) {
+		    System.out.println("Existing summary html file is " +
+		      "older than NMR-Star file; cache not used");
+		}
+	        break check;
+	    }
+
+	    result = true;
+	}
+
+	return result;
     }
 
     //-------------------------------------------------------------------

@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2001/03/08 21:10:35  wenger
+// Merged changes from no_collab_br_2 thru no_collab_br_3 from the branch
+// to the trunk.
+//
 // Revision 1.3  2001/03/08 20:33:24  wenger
 // Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
 // to the trunk.
@@ -51,12 +55,17 @@
 // ========================================================================
 
 import java.io.*;
+import java.util.*;
+import java.text.DateFormat;
 
 public class S2DSummaryHtml {
     //===================================================================
     // VARIABLES
 
     private static final int DEBUG = 0;
+
+    public static final String VERSION_LABEL = "PepCgi_version";
+    public static final String GEN_DATE_LABEL = "Generation_date";
 
     private int _accNum;
     private String _dataDir = null;
@@ -65,6 +74,12 @@ public class S2DSummaryHtml {
 
     //===================================================================
     // PUBLIC METHODS
+
+    //-------------------------------------------------------------------
+    public static String fileName(String dataDir, int accNum)
+    {
+        return dataDir + "/" + accNum + S2DNames.SUMMARY_HTML_SUFFIX;
+    }
 
     //-------------------------------------------------------------------
     // Constructor.  Opens the html file and writes the header.
@@ -76,12 +91,20 @@ public class S2DSummaryHtml {
 	_dataDir = dataDir;
 
 	try {
-	    _writer = new FileWriter(_dataDir + "/" + _accNum +
-	      S2DNames.SUMMARY_HTML_SUFFIX);
+	    _writer = new FileWriter(fileName(_dataDir, _accNum));
 
 	    _writer.write("<html>\n<head>\n<title>Summary for " +
 	      starFileName + "</title>\n</head>\n" +
 	      "<body bgcolor = white>\n\n");
+
+	    _writer.write("<!-- " + VERSION_LABEL + ": {" +
+	      S2DMain.PEP_CGI_VERSION + "} -->\n");
+	    Date date = new Date();
+	    DateFormat dtf = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
+	      DateFormat.MEDIUM);
+	    _writer.write("<!-- " + GEN_DATE_LABEL + ": {" +
+	      dtf.format(date) + "} -->\n\n");
+
 	    _writer.write("<h3>DEVise plots for:\n");
 	    _writer.write(systemName + "</h3>\n");
 	    _writer.write("Title: <tt>" + frameTitle + "</tt>\n");

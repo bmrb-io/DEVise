@@ -48,15 +48,11 @@ $current_dir = `pwd`;
 chomp $current_dir;
 $data_dir = $current_dir . '/data_dir';
 
-# If the summary page for this accession number already exists, assume
-# that we don't have to generate any files.
-if (! -e $data_dir . "/" . $summary_page) {
-  if (system ("./s2d $acc_num" ) ) {
-    my ($tmpmsg);
-    $tmpmsg = "Unable to process data for accession number " . $acc_num . ".";
-    dienice($tmpmsg);
-  }
-} # end if summary page doesn't exist
+if (system ("./s2d $acc_num" ) ) {
+  my ($tmpmsg);
+  $tmpmsg = "Unable to process data for accession number " . $acc_num . ".";
+  dienice($tmpmsg);
+}
 
 # return summary page
 #TEMP -- can this be made relative?

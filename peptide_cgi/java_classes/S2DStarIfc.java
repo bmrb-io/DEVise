@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2001/03/08 21:10:34  wenger
+// Merged changes from no_collab_br_2 thru no_collab_br_3 from the branch
+// to the trunk.
+//
 // Revision 1.6  2001/03/08 20:33:24  wenger
 // Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
 // to the trunk.
@@ -68,8 +72,7 @@
 
 import EDU.bmrb.starlibj.*;
 import java.io.*;
-import java.util.Vector;
-import java.util.Enumeration;
+import java.util.*;
 
 public class S2DStarIfc {
     //===================================================================
@@ -88,6 +91,40 @@ public class S2DStarIfc {
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
+    public static String getFileName(int accessionNum)
+    {
+        return S2DNames.NMR_STAR_PREFIX + accessionNum +
+	  S2DNames.NMR_STAR_SUFFIX;
+    }
+
+    //-------------------------------------------------------------------
+    public static String getURLName(String fileName)
+    {
+        return S2DNames.BMRB_STAR_URL + fileName;
+    }
+
+    //-------------------------------------------------------------------
+    // Get the modification date/time of the appropriate NMR-Star file.
+    public static Date getModDate(int accessionNum)
+    {
+	Date date = null;
+	try {
+	    java.net.URL starfile =
+	      new java.net.URL(getURLName(getFileName(accessionNum)));
+	    java.net.URLConnection connection = starfile.openConnection();
+
+	    long timestamp = connection.getLastModified();
+	    date = new Date(timestamp);
+        } catch (java.net.MalformedURLException ex) {
+	    System.err.println("MalformedURLException: " + ex.getMessage());
+        } catch (IOException ex) {
+	    System.err.println("IOException: " + ex.getMessage());
+	}
+
+	return date;
+    }
+
+    //-------------------------------------------------------------------
     // Constructor.  Opens and parses the NMR-Star file associated with
     // the given accession number.
     public S2DStarIfc(int accessionNum) throws S2DException
@@ -98,8 +135,7 @@ public class S2DStarIfc {
 
 	S2DStarUtil.initialize();
 
-	_fileName = S2DNames.NMR_STAR_PREFIX + accessionNum +
-	  S2DNames.NMR_STAR_SUFFIX;
+	_fileName = getFileName(accessionNum);
 
         try {
 	    InputStream is = null;
@@ -108,7 +144,7 @@ public class S2DStarIfc {
 	        is = new FileInputStream(_fileName);
 	    } else {
                 java.net.URL starfile =
-                  new java.net.URL(S2DNames.BMRB_STAR_URL + _fileName);
+                  new java.net.URL(getURLName(_fileName));
 	        is = starfile.openStream();
 	    }
             StarParser parser = new StarParser(is);
