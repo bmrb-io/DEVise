@@ -7,6 +7,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/11/21 19:14:08  wenger
+  Fixed more compile warnings; updated devise.dali to match current
+  command-line flags.
+
   Revision 1.12  1996/10/02 19:47:16  jussi
   Added support for opening an HTTP connection for writing (posting)
   Web data.
@@ -141,8 +145,12 @@ readline(int fd, char *buf)
 	for(;;) {
 		if ((rval = read(fd, buf, 1)) < 0)
 			return rval;
-		if (!rval || *buf == '\n')
-			break;
+		if (!rval || *buf == '\n') {
+                    *buf = 0;
+                    break;
+                }
+                if (*buf == '\r')
+                    continue;
 		count++;
 		buf++;
 	}
