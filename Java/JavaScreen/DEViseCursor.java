@@ -15,7 +15,7 @@ public class DEViseCursor
         width = rect.width;
         height = rect.height;
 
-        if (move != null) {
+        if (move == null) {
             isXMovable = true;
             isYMovable = false;
         } else {
