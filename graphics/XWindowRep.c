@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.52  1996/08/03 16:43:41  jussi
+  Changed backing_store flag.
+
   Revision 1.51  1996/07/23 15:34:45  jussi
   Added mechanism for bypassing the Devise internal color map.
 
@@ -194,8 +197,12 @@
   Added/updated CVS header.
 */
 
+//#define DEBUG
+
 #include <unistd.h>
 #include <errno.h>
+#include <ctype.h>
+#include <X11/keysym.h>
 
 #include "XWindowRep.h"
 #include "XDisplay.h"
@@ -203,16 +210,146 @@
 #ifndef LIBCS
 #include "Init.h"
 #endif
-
 extern "C" {
 #include "xv.h"
 }
+// xv.h has a #define DELETE that conflicts with DeviseKey::DELETE
+// that is not used in this module, so undef it before including
+// DeviseKey.h
+#undef DELETE
+#include "MapIntToInt.h"
+#include "DeviseKey.h"
 
-//#define DEBUG
 #define MAXPIXELDUMP 0
 
 #define ROUND(type, value) ((type)(value + 0.5))
 #define DRAWABLE           (_win ? _win : _pixmap)
+
+
+// key translations
+static const int AltMask = Mod1Mask | Mod2Mask | Mod3Mask | Mod4Mask | Mod5Mask;
+static MapIntToInt devise_keymap(103);
+
+/**********************************************************************
+Module Initializer
+***********************************************************************/
+
+class XWindowRepInit
+{
+  public:
+
+    struct Xlate {
+	int xkey;
+	int dkey;
+    };
+
+    XWindowRepInit();
+};
+
+XWindowRepInit::XWindowRepInit()
+{
+    static Xlate xlate[] = {
+	{ XK_BackSpace,   DeviseKey::BACKSPACE },
+	{ XK_Tab,         DeviseKey::TAB },
+	{ XK_Linefeed,    DeviseKey::LINEFEED },
+	{ XK_Clear,       DeviseKey::CLEAR },
+	{ XK_Return,      DeviseKey::RETURN },
+	{ XK_Pause,       DeviseKey::PAUSE },
+	{ XK_Scroll_Lock, DeviseKey::SCROLL_LOCK },
+	{ XK_Sys_Req,     DeviseKey::SYS_REQ },
+	{ XK_Escape,      DeviseKey::ESCAPE },
+	{ XK_Delete,      DeviseKey::DELETE },
+
+	{ XK_Home,        DeviseKey::HOME },
+	{ XK_Left,        DeviseKey::LEFT },
+	{ XK_Up,          DeviseKey::UP },
+	{ XK_Right,       DeviseKey::RIGHT },
+	{ XK_Down,        DeviseKey::DOWN },
+	{ XK_Prior,       DeviseKey::PRIOR },
+	{ XK_Page_Up,     DeviseKey::PAGE_UP },
+	{ XK_Next,        DeviseKey::NEXT },
+	{ XK_Page_Down,   DeviseKey::PAGE_DOWN },
+	{ XK_End,         DeviseKey::END },
+	{ XK_Begin,       DeviseKey::BEGIN },
+
+	{ XK_Select,      DeviseKey::SELECT },
+	{ XK_Print,       DeviseKey::PRINT },
+	{ XK_Execute,     DeviseKey::EXECUTE },
+	{ XK_Insert,      DeviseKey::INSERT },
+	{ XK_Undo,        DeviseKey::UNDO },
+	{ XK_Redo,        DeviseKey::REDO },
+	{ XK_Menu,        DeviseKey::MENU },
+	{ XK_Find,        DeviseKey::FIND },
+	{ XK_Cancel,      DeviseKey::CANCEL },
+	{ XK_Help,        DeviseKey::HELP },
+	{ XK_Break,       DeviseKey::BREAK },
+	{ XK_Mode_switch, DeviseKey::MODE_SWITCH },
+	{ XK_script_switch, DeviseKey::SCRIPT_SWITCH },
+
+	{ XK_KP_Space,    DeviseKey::KP_SPACE },
+	{ XK_KP_Tab,      DeviseKey::KP_TAB },
+	{ XK_KP_Enter,    DeviseKey::KP_ENTER },
+	{ XK_KP_F1,       DeviseKey::KP_F1 },
+	{ XK_KP_F2,       DeviseKey::KP_F2 },
+	{ XK_KP_F3,       DeviseKey::KP_F3 },
+	{ XK_KP_F4,       DeviseKey::KP_F4 },
+	{ XK_KP_Home,     DeviseKey::KP_HOME },
+	{ XK_KP_Left,     DeviseKey::KP_LEFT },
+	{ XK_KP_Up,       DeviseKey::KP_UP },
+	{ XK_KP_Right,    DeviseKey::KP_RIGHT },
+	{ XK_KP_Down,     DeviseKey::KP_DOWN },
+	{ XK_KP_Prior,    DeviseKey::KP_PRIOR },
+	{ XK_KP_Page_Up,  DeviseKey::KP_PAGE_UP },
+	{ XK_KP_Next,     DeviseKey::KP_NEXT },
+	{ XK_KP_Page_Down, DeviseKey::KP_PAGE_DOWN },
+	{ XK_KP_End,      DeviseKey::KP_END },
+	{ XK_KP_Begin,    DeviseKey::KP_BEGIN },
+	{ XK_KP_Insert,   DeviseKey::KP_INSERT },
+	{ XK_KP_Delete,   DeviseKey::KP_DELETE },
+	{ XK_KP_Equal,    DeviseKey::KP_EQUAL },
+	{ XK_KP_Multiply, DeviseKey::KP_MULTIPLY },
+	{ XK_KP_Add,      DeviseKey::KP_ADD },
+	{ XK_KP_Separator, DeviseKey::KP_SEPARATOR },
+	{ XK_KP_Subtract, DeviseKey::KP_SUBTRACT },
+	{ XK_KP_Decimal,  DeviseKey::KP_DECIMAL },
+	{ XK_KP_Divide,   DeviseKey::KP_DIVIDE },
+	{ XK_KP_0,        DeviseKey::KP_0 },
+	{ XK_KP_1,        DeviseKey::KP_1 },
+	{ XK_KP_2,        DeviseKey::KP_2 },
+	{ XK_KP_3,        DeviseKey::KP_3 },
+	{ XK_KP_4,        DeviseKey::KP_4 },
+	{ XK_KP_5,        DeviseKey::KP_5 },
+	{ XK_KP_6,        DeviseKey::KP_6 },
+	{ XK_KP_7,        DeviseKey::KP_7 },
+	{ XK_KP_8,        DeviseKey::KP_8 },
+	{ XK_KP_9,        DeviseKey::KP_9 },
+
+	{ XK_F1,          DeviseKey::F1 },
+	{ XK_F2,          DeviseKey::F2 },
+	{ XK_F3,          DeviseKey::F3 },
+	{ XK_F4,          DeviseKey::F4 },
+	{ XK_F5,          DeviseKey::F5 },
+	{ XK_F6,          DeviseKey::F6 },
+	{ XK_F7,          DeviseKey::F7 },
+	{ XK_F8,          DeviseKey::F8 },
+	{ XK_F9,          DeviseKey::F9 },
+	{ XK_F10,         DeviseKey::F10 },
+	{ XK_F11,         DeviseKey::F11 },
+	{ XK_F12,         DeviseKey::F12 },
+
+	{ 0, 0 }		// must be last entry!
+    };
+
+    for(int i = 0 ; xlate[i].xkey != 0 ; i++) {
+	DOASSERT(devise_keymap.insert(xlate[i].xkey, xlate[i].dkey) == 0,
+		 "couldn't insert devise_keymap entry");
+    }
+}
+
+
+static XWindowRepInit xwindowrep_initializier;
+
+
 
 /**********************************************************************
 Initializer
@@ -1273,20 +1410,55 @@ void XWindowRep::HandleEvent(XEvent &event)
 {
   DOASSERT(_win, "Cannot handle events for pixmap");
 
-  char buf[40];
   XEvent ev;
-  int count;
   Atom protocol;
 
   switch(event.xany.type) {
+
   case KeyPress:
+
+    int d_modifier = 0;
+    if( event.xkey.state & ControlMask ) {
+	d_modifier |= DeviseKey::CONTROL;
+	event.xkey.state &= ~ControlMask; // avoid conversion by XLookupString
+    }
+    if( event.xkey.state & ShiftMask ) {
+	d_modifier |= DeviseKey::SHIFT;
+    }
+    if( event.xkey.state & AltMask ) {
+	d_modifier |= DeviseKey::ALT;
+    }
+
+    char buf[40];
     KeySym keysym;
     XComposeStatus compose;
-    count = XLookupString((XKeyEvent *)&event, buf, 40, &keysym, &compose);
-    if (count == 1) {
-      /* regular key */
-      WindowRep::HandleKey(buf[0], event.xkey.x, event.xkey.y);
+    int count = XLookupString((XKeyEvent *)&event, buf, sizeof(buf), 
+			      &keysym, &compose);
+
+    int ks = int(keysym);
+    int d_key = 0;
+    if( devise_keymap.lookup(ks, d_key) ) {
+	// not found in xkey->devise_key translation map
+	if( count == 1 ) {		// regular key
+	    d_key = buf[0];
+	    // don't report shift for normal keys, eg, 'C', not SHIFT-C
+	    d_modifier &= ~DeviseKey::SHIFT; 
+	} else {
+	    d_key = 0;		// ignore keypress
+	}
     }
+
+#if defined(DEBUG)
+    printf("KeyPress: KeySym:0x%x, state: 0x%x, d_key: %c 0x%x, d_mod: 0x%x\n",
+	   keysym, event.xkey.state,
+	   isgraph(char(d_key)) ? d_key : '~', d_key, d_modifier);
+#endif
+
+    if (d_key) {
+	d_key |= d_modifier;
+	WindowRep::HandleKey(d_key, event.xkey.x, event.xkey.y);
+    }
+
     break;
 
 #ifdef RAWMOUSEEVENTS
