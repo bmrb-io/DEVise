@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.61  2000/05/11 20:59:50  wenger
+// More comments.
+//
 // Revision 1.60  2000/05/11 20:19:34  wenger
 // Cleaned up jsdevisec.java and added comments; eliminated
 // jsdevisec.lastCursor (not really needed).
@@ -404,7 +407,7 @@ public class jsdevisec extends Panel
     } // end of constructor
 
     // print out message to debug window
-    // ADD COMMENT -- explain the difference between the p() and pn() methods
+    // pn() methods add a newline to the end of the string; p() methods don't.
     public void pn(String msg, int level)
     {
         if (debugLevel > 0) {
@@ -432,8 +435,10 @@ public class jsdevisec extends Panel
     // show message in message box
     public String showMsg(String msg, String title, int style)
     {
-	// ADD COMMENT -- why do we need two cases here?  Only if there
-	// are two message boxes at the same time?
+	// Note: we have two cases here to make things work in the case
+	// where we have more than one message box shown at once.  msgbox
+	// is a class member so we know whether we have at least one
+	// message box showing.
         if (msgbox == null) {
             msgbox = new YMsgBox(parentFrame, isCenterScreen, true, msg, title, style, DEViseUIGlobals.font, DEViseUIGlobals.bg, DEViseUIGlobals.fg);
             msgbox.open();
@@ -441,6 +446,8 @@ public class jsdevisec extends Panel
             msgbox = null;
             return result;
         } else {
+	    // We only get here if we already have one message box showing,
+	    // and need to show another one.
             YMsgBox box = new YMsgBox(parentFrame, isCenterScreen, true, msg, title, style, DEViseUIGlobals.font, DEViseUIGlobals.bg, DEViseUIGlobals.fg);
             box.open();
             String result = box.getResult();
@@ -537,7 +544,7 @@ class RecordDlg extends Dialog
 {
     String[] attrs = null;
     Button okButton = new Button("  OK  ");
-    private boolean status = false; // ADD COMMENT -- what does this mean?
+    private boolean status = false; // true means this dialog is showing
 
     public RecordDlg(Frame owner, boolean isCenterScreen, String[] data)
     {
@@ -680,6 +687,7 @@ class RecordDlg extends Dialog
         }
     }
 
+    // true means this dialog is showing
     public synchronized boolean getStatus()
     {
         return status;
@@ -704,7 +712,7 @@ class SessionDlg extends Frame
     private boolean[] sessionTypes = null;
     private String[] sessionNames = null;
 
-    private boolean status = false; // ADD COMMENT -- what does this mean?
+    private boolean status = false; // true means this dialog is showing
 
     public SessionDlg(jsdevisec what, Frame owner, boolean isCenterScreen, String[] data)
     {
@@ -958,6 +966,7 @@ class SessionDlg extends Frame
         }
     }
 
+    // true means this dialog is showing
     public synchronized boolean getStatus()
     {
         return status;
@@ -974,7 +983,7 @@ class SettingDlg extends Dialog
     public TextField screenY = new TextField(4);
     public Button setButton = new Button("   Set   ");
     public Button statButton = new Button("Request");
-    private boolean status = false; // ADD COMMENT -- what does this mean?
+    private boolean status = false; // true means this dialog is showing
 
     public SettingDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
     {
@@ -1155,6 +1164,7 @@ class SettingDlg extends Dialog
         }
     }
 
+    // true means this dialog is showing
     public synchronized boolean getStatus()
     {
         return status;
@@ -1172,7 +1182,7 @@ class ServerStateDlg extends Dialog
     private Label label3 = new Label("Current suspended client:");
     private Button okButton = new Button("   OK   ");
 
-    private boolean status = false; // ADD COMMENT -- what does this mean?
+    private boolean status = false; // true means this dialog is showing
 
     public ServerStateDlg(Frame owner, boolean isCenterScreen, String data)
     {
@@ -1349,6 +1359,7 @@ class ServerStateDlg extends Dialog
         }
     }
 
+    // true means this dialog is showing
     public synchronized boolean getStatus()
     {
         return status;

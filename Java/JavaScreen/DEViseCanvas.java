@@ -13,8 +13,10 @@
 // ------------------------------------------------------------------------
 
 // This class provides an interface to canvases in the JavaScreen.
-// It also holds some information related to piles (pile information
-// is divided between DEViseCanvas and DEViseView).
+// It puts images into canvases, and also does the drawing of cursors,
+// GData, and so on.  It holds some information related to piles (pile
+// information is divided between DEViseCanvas and DEViseView).  This
+// class also handles events that occur in views.
 
 // There is one instance of this class for each top-level view in
 // the session (note that if top-level views are piled, there's only
@@ -25,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.44  2000/05/11 20:19:32  wenger
+// Cleaned up jsdevisec.java and added comments; eliminated
+// jsdevisec.lastCursor (not really needed).
+//
 // Revision 1.43  2000/05/08 16:40:39  wenger
 // JavaScreen cursors are now drawn as frames rather than filled
 // rectangles (so symbols, especially text, show up better within cursors).
@@ -80,6 +86,10 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.44  2000/05/11 20:19:32  wenger
+// Cleaned up jsdevisec.java and added comments; eliminated
+// jsdevisec.lastCursor (not really needed).
+//
 // Revision 1.43  2000/05/08 16:40:39  wenger
 // JavaScreen cursors are now drawn as frames rather than filled
 // rectangles (so symbols, especially text, show up better within cursors).
@@ -227,7 +237,9 @@ public class DEViseCanvas extends Container
 
     boolean isMouseDragged = false, isInViewDataArea = false, isInDataArea = false;
     DEViseCursor selectedCursor = null;
-    int whichCursorSide = -1; // TEMP -- should probably have named constants for this
+
+    // See DEViseCursor.side* for values.
+    private int whichCursorSide = DEViseCursor.sideNone;
 
     public String helpMsg = null;
     public int helpMsgX = -1, helpMsgY = -1;
@@ -283,14 +295,16 @@ public class DEViseCanvas extends Container
 
     // This function is used to draw cursors because direct XOR drawing
     // (with Graphics.setXORMode()) doesn't seem to work in Netscape.
-    // loc is relative to this canvas
+    // loc is relative to this canvas.
     public Image getCroppedXORImage(Color c, Rectangle loc)
     {
         if (image == null)
             return null;
 
-        CropImageFilter croppedFilter = new CropImageFilter(loc.x, loc.y, loc.width, loc.height);
-        FilteredImageSource source = new FilteredImageSource(image.getSource(), croppedFilter);
+        CropImageFilter croppedFilter = new CropImageFilter(loc.x, loc.y,
+	  loc.width, loc.height);
+        FilteredImageSource source = new FilteredImageSource(
+	  image.getSource(), croppedFilter);
         Image img = createImage(source);
         if (img == null) {
             return null;
@@ -451,8 +465,11 @@ public class DEViseCanvas extends Container
     }
 
     // only top views get title drawn
+    // TEMP -- child views of piled views should probably have titles drawn
     private synchronized void paintTitle(Graphics gc)
     {
+	//TEMP -- should probably reverse the order here
+
         // handling child view
         for (int i = 0; i < view.viewChilds.size(); i++) {
             DEViseView v = (DEViseView)view.viewChilds.elementAt(i);
@@ -482,6 +499,8 @@ public class DEViseCanvas extends Container
 
     private synchronized void paintCursor(Graphics gc, DEViseView v)
     {
+	//TEMP -- should probably reverse the order here
+
         // handling child views
         for (int i = 0; i < v.viewChilds.size(); i++) {
             DEViseView vv = (DEViseView)v.viewChilds.elementAt(i);
@@ -529,6 +548,8 @@ public class DEViseCanvas extends Container
 
     private synchronized void paintGData(Graphics gc, DEViseView v)
     {
+	//TEMP -- should probably reverse the order here
+
         // handling child views
         for (int i = 0; i < v.viewChilds.size(); i++) {
             DEViseView vv = (DEViseView)v.viewChilds.elementAt(i);
@@ -598,7 +619,8 @@ public class DEViseCanvas extends Container
         jsc.jscreen.finalMousePosition.x = view.viewLoc.x + event.getX();
         jsc.jscreen.finalMousePosition.y = view.viewLoc.y + event.getY();
 
-        if (id == MouseEvent.MOUSE_PRESSED || id == MouseEvent.MOUSE_RELEASED || id == MouseEvent.MOUSE_CLICKED) {
+        if (id == MouseEvent.MOUSE_PRESSED || id == MouseEvent.MOUSE_RELEASED
+	  || id == MouseEvent.MOUSE_CLICKED) {
             if (dispatcher.getStatus() != 0) {
                 if (id == MouseEvent.MOUSE_PRESSED) {
                     jsc.showMsg("JavaScreen still talking to the Server!\nPlease try again later or press STOP button!");
@@ -651,6 +673,8 @@ public class DEViseCanvas extends Container
             DEViseCanvas.lastKey = event.getKeyCode();
         }
 
+	// If this is not a 3D-view, send the appropriate key action
+	// to the devised.
         public void keyReleased(KeyEvent event)
         {
             DEViseCanvas.lastKey = KeyEvent.VK_UNDEFINED;
@@ -779,12 +803,15 @@ public class DEViseCanvas extends Container
         // event sequence: 1. mousePressed 2. mouseReleased 3. mouseClicked
         public void mousePressed(MouseEvent event)
         {
-            // The starting point will be in this view, otherwise this event will not be catched
+            // The starting point will be in this view, otherwise this event
+	    // will not be caught.
 
-            // Each mouse click will be here once, so double click actually will enter this twice
+            // Each mouse click will be here once, so double click actually
+	    // will enter this twice.
 
-            // The position of this event will be relative to this view, and will not exceed the
-            // range of this view, ie, p.x >= 0 && p.x < view.width ...
+            // The position of this event will be relative to this view, and
+	    // will not exceed the range of this view, ie, p.x >= 0 &&
+	    // p.x < view.width ...
 
             Point p = event.getPoint();
             ep.x = op.x = sp.x = p.x;
@@ -794,7 +821,8 @@ public class DEViseCanvas extends Container
                 setCursor(DEViseUIGlobals.rbCursor);
 
                 activeView = view;
-                jsc.viewInfo.updateInfo(activeView.viewName, activeView.getX(sp.x), activeView.getY(sp.y));
+                jsc.viewInfo.updateInfo(activeView.viewName,
+		  activeView.getX(sp.x), activeView.getY(sp.y));
                 if (jscreen.getCurrentView() != activeView) {
                     jscreen.setCurrentView(activeView);
                 }
@@ -807,9 +835,10 @@ public class DEViseCanvas extends Container
 
         public void mouseReleased(MouseEvent event)
         {
-            // Each mouse click will be here once, so double click actually will enter
-            // this twice. Also, this event will always reported with each mouse click
-            // and before the mouseClick event is reported.
+            // Each mouse click will be here once, so double click actually
+	    // will enter this twice. Also, this event will always reported
+	    // with each mouse click and before the mouseClick event is
+	    // reported.
 
             DEViseCanvas.isInterative = false;
 
@@ -828,40 +857,38 @@ public class DEViseCanvas extends Container
                     ep.x = activeView.translateX(p.x, 1);
                     ep.y = activeView.translateY(p.y, 1);
 
-                    jsc.viewInfo.updateInfo(activeView.getX(ep.x), activeView.getY(ep.y));
+                    jsc.viewInfo.updateInfo(activeView.getX(ep.x),
+		      activeView.getY(ep.y));
 
                     int dx = ep.x - sp.x, dy = ep.y - sp.y;
                     DEViseCursor cursor= selectedCursor;
 
                         if (cursor.gridx > 0) {
-                            dx = (int)Math.round(Math.round((dx * activeView.dataXStep) / cursor.gridxx) * cursor.gridxx / activeView.dataXStep);
+                            dx = (int)Math.round(Math.round((dx *
+			      activeView.dataXStep) / cursor.gridxx) *
+			      cursor.gridxx / activeView.dataXStep);
                         }
 
                         if (cursor.gridy > 0) {
-                            dy = (int)Math.round(Math.round((dy * activeView.dataYStep) / cursor.gridyy) * cursor.gridyy / activeView.dataYStep);
+                            dy = (int)Math.round(Math.round((dy *
+			      activeView.dataYStep) / cursor.gridyy) *
+			      cursor.gridyy / activeView.dataYStep);
                         }
-                    if (whichCursorSide == 0) { // move cursor
-                        //if (cursor.gridx > 0) {
-                        //    dx = (int)Math.round(Math.round((dx * activeView.dataXStep) / cursor.gridxx) * cursor.gridxx / activeView.dataXStep);
-                        //}
-
-                        //if (cursor.gridy > 0) {
-                        //    dy = (int)Math.round(Math.round((dy * activeView.dataYStep) / cursor.gridyy) * cursor.gridyy / activeView.dataYStep);
-                        //}
-
-                        whichCursorSide = cursor.updateCursorLoc(dx, dy, 1, whichCursorSide, true);
+                    if (whichCursorSide == DEViseCursor.sideMiddle) {
+		        // move cursor
+                        whichCursorSide = cursor.updateCursorLoc(dx, dy,
+			  1, whichCursorSide, true);
                     } else {
-                        whichCursorSide = cursor.updateCursorLoc(dx, dy, 2, whichCursorSide, true);
+                        whichCursorSide = cursor.updateCursorLoc(dx, dy,
+			  2, whichCursorSide, true);
                     }
 
                     cursor.image = null;
 
                     if (DEViseCanvas.lastKey != KeyEvent.VK_CONTROL) {
-                        cmd = cmd + DEViseCommands.CURSOR_CHANGED + " " + cursor.name + " "
-                              + cursor.x + " "
-                              + cursor.y + " "
-                              + cursor.width + " "
-                              + cursor.height;
+                        cmd = cmd + DEViseCommands.CURSOR_CHANGED + " " +
+			  cursor.name + " " + cursor.x + " " + cursor.y +
+			  " " + cursor.width + " " + cursor.height;
 
                         jscreen.guiAction = true;
                         dispatcher.start(cmd);
@@ -870,7 +897,8 @@ public class DEViseCanvas extends Container
                     ep.x = activeView.translateX(p.x, 1);
                     ep.y = activeView.translateY(p.y, 1);
 
-                    jsc.viewInfo.updateInfo(activeView.getX(ep.x), activeView.getY(ep.y));
+                    jsc.viewInfo.updateInfo(activeView.getX(ep.x),
+		      activeView.getY(ep.y));
 
                     int w = ep.x - sp.x, h = ep.y - sp.y;
                     if (w < 0)
@@ -878,9 +906,14 @@ public class DEViseCanvas extends Container
                     if (h < 0)
                         h = -h;
 
-                    if (w > DEViseUIGlobals.rubberBandLimit.width || h > DEViseUIGlobals.rubberBandLimit.height) {
-                        cmd = cmd + DEViseCommands.MOUSE_RUBBERBAND + " " + activeView.getCurlyName() + " "
-                              + activeView.translateX(sp.x, 2) + " " + activeView.translateY(sp.y, 2) + " " + activeView.translateX(ep.x, 2) + " " + activeView.translateY(ep.y, 2);
+                    if (w > DEViseUIGlobals.rubberBandLimit.width ||
+		      h > DEViseUIGlobals.rubberBandLimit.height) {
+                        cmd = cmd + DEViseCommands.MOUSE_RUBBERBAND +
+			  " " + activeView.getCurlyName() + " " +
+			  activeView.translateX(sp.x, 2) + " " +
+			  activeView.translateY(sp.y, 2) + " " +
+			  activeView.translateX(ep.x, 2) + " " +
+			  activeView.translateY(ep.y, 2);
 
                         if (DEViseCanvas.lastKey == KeyEvent.VK_ALT) {
                             cmd = cmd + " 1";
@@ -895,7 +928,7 @@ public class DEViseCanvas extends Container
 
                 isInViewDataArea = false;
                 selectedCursor = null;
-                whichCursorSide = -1;
+                whichCursorSide = DEViseCursor.sideNone;
                 isMouseDragged = false;
                 DEViseCanvas.lastKey = KeyEvent.VK_UNDEFINED;
 
@@ -927,32 +960,38 @@ public class DEViseCanvas extends Container
                     } else {
                         helpMsgX = activeView.translateX(p.x, 2);
                         helpMsgY = activeView.translateY(p.y, 2);
-                        cmd = DEViseCommands.GET_VIEW_HELP + " " + activeView.getCurlyName() + " " + helpMsgX + " " + helpMsgY;
+                        cmd = DEViseCommands.GET_VIEW_HELP + " " +
+			  activeView.getCurlyName() + " " + helpMsgX + " "
+			  + helpMsgY;
                     }
                 } else {
                     DEViseCursor cursor = activeView.getFirstCursor();
 
-                    if (cursor != null && (cursor.isXMovable || cursor.isYMovable)) {
+                    if (cursor != null && (cursor.isXMovable ||
+		      cursor.isYMovable)) {
                         Rectangle loc = cursor.cursorLocInCanvas;
 
                         int dx = p.x - loc.x - loc.width / 2;
                         int dy = p.y - loc.y - loc.height / 2;
 
                         if (cursor.gridx > 0) {
-                            dx = (int)Math.round(Math.round((dx * activeView.dataXStep) / cursor.gridxx) * cursor.gridxx / activeView.dataXStep);
+                            dx = (int)Math.round(Math.round((dx *
+			      activeView.dataXStep) / cursor.gridxx) *
+			      cursor.gridxx / activeView.dataXStep);
                         }
 
                         if (cursor.gridy > 0) {
-                            dy = (int)Math.round(Math.round((dy * activeView.dataYStep) / cursor.gridyy) * cursor.gridyy / activeView.dataYStep);
+                            dy = (int)Math.round(Math.round((dy *
+			      activeView.dataYStep) / cursor.gridyy) *
+			      cursor.gridyy / activeView.dataYStep);
                         }
 
-                        cursor.updateCursorLoc(dx, dy, 1, whichCursorSide, true);
+                        cursor.updateCursorLoc(dx, dy, 1, whichCursorSide,
+			  true);
 
-                        cmd = DEViseCommands.CURSOR_CHANGED + " " + cursor.name + " "
-                              + cursor.x + " "
-                              + cursor.y + " "
-                              + cursor.width + " "
-                              + cursor.height;
+                        cmd = DEViseCommands.CURSOR_CHANGED + " " +
+			  cursor.name + " " + cursor.x + " " + cursor.y + " "
+			  + cursor.width + " " + cursor.height;
 
                         cursor.image = null;
                     }
@@ -966,7 +1005,7 @@ public class DEViseCanvas extends Container
                 DEViseCanvas.lastKey = KeyEvent.VK_UNDEFINED;
                 isInViewDataArea = false;
                 selectedCursor = null;
-                whichCursorSide = -1;
+                whichCursorSide = DEViseCursor.sideNone;
                 isMouseDragged = false;
 
                 repaint();
@@ -978,9 +1017,10 @@ public class DEViseCanvas extends Container
     // start of class ViewMouseMotionListener
     class ViewMouseMotionListener extends MouseMotionAdapter
     {
-        // When you drag a mouse, all the following mouse position is relative to the view
-        // you first start the dragging(so might have value that is less than zero), and
-        // the dragging event is still send back to the view where you first start dragging.
+        // When you drag a mouse, all the following mouse positions are
+	// relative to the view where you first start the dragging (so we
+	// might have value that is less than zero), and the dragging event
+	// is still send back to the view where you first start dragging.
 
         public void mouseDragged(MouseEvent event)
         {
@@ -992,7 +1032,8 @@ public class DEViseCanvas extends Container
                 op.x = p.x;
                 op.y = p.y;
 
-                jsc.viewInfo.updateInfo(activeView.getX(p.x), activeView.getY(p.y));
+                jsc.viewInfo.updateInfo(activeView.getX(p.x),
+		  activeView.getY(p.y));
 
                 if (lastKey == KeyEvent.VK_ALT) {
                     crystal.translate(dx, dy);
@@ -1012,7 +1053,8 @@ public class DEViseCanvas extends Container
                 ep.x = activeView.translateX(p.x, 1);
                 ep.y = activeView.translateY(p.y, 1);
 
-                jsc.viewInfo.updateInfo(activeView.getX(ep.x), activeView.getY(ep.y));
+                jsc.viewInfo.updateInfo(activeView.getX(ep.x),
+		  activeView.getY(ep.y));
 
                 if (selectedCursor != null) {
 
@@ -1020,25 +1062,25 @@ public class DEViseCanvas extends Container
 
                     int dx = ep.x - sp.x, dy = ep.y - sp.y;
 
+			//TEMP -- make a method to do this?
                         if (cursor.gridx > 0) {
-                            dx = (int)Math.round(Math.round((dx * activeView.dataXStep) / cursor.gridxx) * cursor.gridxx / activeView.dataXStep);
+                            dx = (int)Math.round(Math.round((dx *
+			      activeView.dataXStep) / cursor.gridxx) *
+			      cursor.gridxx / activeView.dataXStep);
                         }
 
                         if (cursor.gridy > 0) {
-                            dy = (int)Math.round(Math.round((dy * activeView.dataYStep) / cursor.gridyy) * cursor.gridyy / activeView.dataYStep);
+                            dy = (int)Math.round(Math.round((dy *
+			      activeView.dataYStep) / cursor.gridyy) *
+			      cursor.gridyy / activeView.dataYStep);
                         }
-                    if (whichCursorSide == 0) { // move cursor
-                        //if (cursor.gridx > 0) {
-                        //    dx = (int)Math.round(Math.round((dx * activeView.dataXStep) / cursor.gridxx) * cursor.gridxx / activeView.dataXStep);
-                        //}
-
-                        //if (cursor.gridy > 0) {
-                        //    dy = (int)Math.round(Math.round((dy * activeView.dataYStep) / cursor.gridyy) * cursor.gridyy / activeView.dataYStep);
-                        //}
-
-                        whichCursorSide = cursor.updateCursorLoc(dx, dy, 1, whichCursorSide, false);
+                    if (whichCursorSide == DEViseCursor.sideMiddle) {
+		        // move cursor
+                        whichCursorSide = cursor.updateCursorLoc(dx, dy,
+			  1, whichCursorSide, false);
                     } else {
-                        whichCursorSide = cursor.updateCursorLoc(dx, dy, 2, whichCursorSide, false);
+                        whichCursorSide = cursor.updateCursorLoc(dx, dy,
+			  2, whichCursorSide, false);
                     }
                 }
 
@@ -1050,8 +1092,9 @@ public class DEViseCanvas extends Container
 
         public void mouseMoved(MouseEvent event)
         {
-            // the position of this event will be relative to this view and will not exceed
-            // the range of this view, ie, p.x >= 0 && p.x < view.width, p.y >= 0 && p.y < view.height
+            // the position of this event will be relative to this view
+	    // and will not exceed the range of this view, ie, p.x >= 0 &&
+	    // p.x < view.width, p.y >= 0 && p.y < view.height
 
             Point p = event.getPoint();
 
@@ -1062,26 +1105,16 @@ public class DEViseCanvas extends Container
                 setCursor(DEViseUIGlobals.rbCursor);
 
                 activeView = view;
-                jsc.viewInfo.updateInfo(activeView.viewName, activeView.getX(p.x), activeView.getY(p.y));
+                jsc.viewInfo.updateInfo(activeView.viewName,
+		  activeView.getX(p.x), activeView.getY(p.y));
                 if (jscreen.getCurrentView() != activeView) {
                     jscreen.setCurrentView(activeView);
                 }
 
-		//int index = crystal.find(p.x, p.y);
-		//if (index != oldHighlightAtomIndex) {
-		//    repaint();
-		//    highlightAtomIndex = index;
-		//    repaint();
-                //}
-
-		        return;
+		return;
             }
 
             checkMousePos(p, true);
-
-            //DEViseCanvas.isInterative = true;
-            //DEViseCanvas.sourceCanvas = DEViseCanvas.this;
-            //repaint();
         }
     }
     // end of class ViewMouseMotionListener
@@ -1089,9 +1122,10 @@ public class DEViseCanvas extends Container
     // Update the shape of the mouse cursor based on whether the mouse
     // is on a DEVise cursor, etc.
     public synchronized void checkMousePos(Point p, boolean checkDispatcher)
+      throws YError
     {
         // initialize value
-        whichCursorSide = -1;
+        whichCursorSide = DEViseCursor.sideNone;
         selectedCursor = null;
         isInViewDataArea = false;
         activeView = null;
@@ -1102,38 +1136,67 @@ public class DEViseCanvas extends Container
                 // dispatcher still busy
                 tmpCursor = DEViseUIGlobals.waitCursor;
             } else if (isInViewDataArea && selectedCursor == null) {
-                // inside the date area but not within any cursor, you can draw rubber band or
-                // get the records at that data point
+                // inside the data area but not within any cursor, you
+		// can draw rubber band or get the records at that data point
                 tmpCursor = DEViseUIGlobals.rbCursor;
             } else if (isInViewDataArea && selectedCursor != null) {
                 switch (whichCursorSide) {
-                case 0: // inside a cursor, you can move that cursor
+                case DEViseCursor.sideNone:
+		    // Not on a cursor, do nothing.
+		    break;
+
+                case DEViseCursor.sideMiddle:
+		    // Inside a cursor, you can move this cursor.
                     tmpCursor = DEViseUIGlobals.moveCursor;
                     break;
-                case 1: // on left side of a cursor, you can resize this cursor
+
+                case DEViseCursor.sideLeft:
+		    // On left side of a cursor, you can resize this cursor.
                     tmpCursor = DEViseUIGlobals.lrsCursor;
                     break;
-                case 2: // on right side of a cursor, you can resize this cursor
+
+                case DEViseCursor.sideRight:
+		    // On right side of a cursor, you can resize this cursor.
                     tmpCursor = DEViseUIGlobals.rrsCursor;
                     break;
-                case 3: // on top side of a cursor, you can resize this cursor
+
+                case DEViseCursor.sideTop:
+		    // On top side of a cursor, you can resize this cursor.
                     tmpCursor = DEViseUIGlobals.trsCursor;
                     break;
-                case 4: // on bottom side of a cursor, you can resize this cursor
+
+                case DEViseCursor.sideBottom:
+		    // On bottom side of a cursor, you can resize this cursor.
                     tmpCursor = DEViseUIGlobals.brsCursor;
                     break;
-                case 5: // on left-top corner of a cursor, you can resize this cursor
+
+                case DEViseCursor.sideTopLeft:
+		    // On left-top corner of a cursor, you can resize
+		    // this cursor.
                     tmpCursor = DEViseUIGlobals.tlrsCursor;
                     break;
-                case 6: // on left-bottom corner of a cursor, you can resize this cursor
+
+                case DEViseCursor.sideBottomLeft:
+		    // On left-bottom corner of a cursor, you can resize
+		    // this cursor.
                     tmpCursor = DEViseUIGlobals.blrsCursor;
                     break;
-                case 7: // on right-top corner of a cursor, you can resize this cursor
+
+                case DEViseCursor.sideTopRight:
+		    // On right-top corner of a cursor, you can resize
+		    // this cursor.
                     tmpCursor = DEViseUIGlobals.trrsCursor;
                     break;
-                case 8: // on right-bottom corner of a cursor, you can resize this cursor
+
+                case DEViseCursor.sideBottomRight:
+		    // 0n right-bottom corner of a cursor, you can resize
+		    // this cursor.
                     tmpCursor = DEViseUIGlobals.brrsCursor;
                     break;
+
+		default:
+		    throw new YError("Illegal whichCursorSide value: " +
+		      whichCursorSide);
                 }
             } else { // inside the view but not within the data area of that view
                 tmpCursor = DEViseUIGlobals.defaultCursor;
@@ -1153,7 +1216,7 @@ public class DEViseCanvas extends Container
             jsc.viewInfo.updateInfo(activeView.viewName, activeView.getX(p.x), activeView.getY(p.y));
 
         } else { // activeView is null and all other values will be initialized value before
-            whichCursorSide = -1;
+            whichCursorSide = DEViseCursor.sideNone;
             selectedCursor = null;
             isInViewDataArea = false;
             activeView = null;
@@ -1175,7 +1238,12 @@ public class DEViseCanvas extends Container
         }
     }
 
-    // ADD COMMENT -- what does this do, what is return value?
+    // Returns some kind of information about p in terms of what it's
+    // on or in.  However, the logic is so complicated I haven't figured out
+    // any easy way to summarize it.  
+    // It also has side effects of setting activeView, selectedCursor,
+    // whichCursorSide, and isInViewDataArea.
+    // RKW 2000-05-12.
     public synchronized boolean checkMousePos(Point p, DEViseView v)
     {
         if (!v.inView(p)) {
@@ -1184,11 +1252,12 @@ public class DEViseCanvas extends Container
 
         if (!v.inViewDataArea(p)) {
             if (v.pileBaseView != null) {
+		// v is a non-base view in a pile.
                 return false;
             } else {
                 activeView = v;
                 selectedCursor = null;
-                whichCursorSide = -1;
+                whichCursorSide = DEViseCursor.sideNone;
                 isInViewDataArea = false;
                 return true;
             }
@@ -1198,19 +1267,15 @@ public class DEViseCanvas extends Container
             DEViseView vv = (DEViseView)v.viewChilds.elementAt(i);
             if (checkMousePos(p, vv)) {
                 return true;
-            } else {
-                continue;
             }
         }
 
         for (int i = 0; i < v.viewCursors.size(); i++) {
             DEViseCursor cursor = (DEViseCursor)v.viewCursors.elementAt(i);
-            int status = cursor.inCursor(p);
-            if (status < 0) {
-                continue;
-            } else {
+            int cursorSide = cursor.inCursor(p);
+	    if (cursorSide != DEViseCursor.sideNone) {
                 activeView = v;
-                whichCursorSide = status;
+                whichCursorSide = cursorSide;
                 selectedCursor = cursor;
                 isInViewDataArea = true;
                 return true;
@@ -1222,18 +1287,17 @@ public class DEViseCanvas extends Container
 
             if (checkMousePos(p, vv)) {
                 return true;
-            } else {
-                continue;
             }
         }
 
         if (v.pileBaseView != null) {
+	    // v is a non-base view in a pile.
             return false;
         } else {
             activeView = v;
             isInViewDataArea = true;
             selectedCursor = null;
-            whichCursorSide = -1;
+            whichCursorSide = DEViseCursor.sideNone;
             return true;
         }
     }
@@ -1554,7 +1618,7 @@ public class DEViseCanvas extends Container
     }
 */
 
-    // ADD COMMENT -- what does this do?
+/* Not used.  RKW 2000-05-12.
     private float[] getData(StreamTokenizer input, int number) throws YException, IOException
     {
         float[] data = new float[number];
@@ -1574,8 +1638,9 @@ public class DEViseCanvas extends Container
 
         return data;
     }
+*/
 
-    // ADD COMMENT -- what does this do?
+/* Not used.  RKW 2000-05-12.
     private float getData(StreamTokenizer input) throws YException, IOException
     {
         int type;
@@ -1591,8 +1656,9 @@ public class DEViseCanvas extends Container
             }
         }
     }
+*/
 
-    // ADD COMMENT -- what does this do?
+/* Not used.  RKW 2000-05-12.
     private String[] getString(StreamTokenizer input, int number) throws YException, IOException
     {
         String[] data = new String[number];
@@ -1612,8 +1678,9 @@ public class DEViseCanvas extends Container
 
         return data;
     }
+*/
 
-    // ADD COMMENT -- what does this do?
+/* Not used.  RKW 2000-05-12.
     private String getString(StreamTokenizer input) throws YException, IOException
     {
         int type;
@@ -1629,6 +1696,7 @@ public class DEViseCanvas extends Container
             }
         }
     }
+*/
 }
 
 // this class is used to create XOR of part of image

@@ -32,6 +32,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.56  2000/05/11 20:59:49  wenger
+// More comments.
+//
 // Revision 1.55  2000/05/11 20:19:33  wenger
 // Cleaned up jsdevisec.java and added comments; eliminated
 // jsdevisec.lastCursor (not really needed).
@@ -149,7 +152,7 @@ public class DEViseScreen extends Panel
     Vector newGData = new Vector();
     Vector obsoleteGData = new Vector();
 
-    DEViseView currentView = null;
+    private DEViseView currentView = null; // the view the mouse is in
     public DEViseView lastActionView = null;
     public boolean guiAction = false;
     private String lastCommand = null;
@@ -299,7 +302,8 @@ public class DEViseScreen extends Panel
             String cmd = "";
             for (int i = 0; i < allCanvas.size(); i++) {
                 DEViseCanvas c = (DEViseCanvas)allCanvas.elementAt(i);
-                cmd = cmd + DEViseCommands.GET_VIEW_HELP + " " + c.view.getCurlyName() + " " + 0 + " " + 0 + "\n";
+                cmd = cmd + DEViseCommands.GET_VIEW_HELP + " " +
+		  c.view.getCurlyName() + " " + 0 + " " + 0 + "\n";
             }
 
             jsc.dispatcher.start(cmd);
@@ -339,9 +343,9 @@ public class DEViseScreen extends Panel
 
     // Put an image into a view, creating the appropriate DEViseCanvas
     // object if necessary.
-    // Only top view (not view symbol, not bottom view in piled views)
-    // will have an image and only top view will associated with a canvas,
-    // a canvas will only be assiciated one view and one view only.
+    // Only the base view (not view symbols, not non-base views in piles)
+    // will have an image and only the base view will associated with a
+    // canvas; a canvas will only be assiciated one view and one view only.
     public void updateViewImage(String name, Image image)
     {
         if (name == null || image == null)
@@ -378,8 +382,11 @@ public class DEViseScreen extends Panel
         repaint();
     }
 
-    // while remove a view, everything assiciate with this view is gone, such as view symbol,
-    // cursors, gdatas, even canvas and piled views (if the view to be remove is a top view)
+    // Remove the given view by name.
+    //
+    // When we remove a view, everything assiciated with this view is removed,
+    // such as child views, cursors, gdata, and even the canvas and piled
+    // views (if the view to be removed is a base view).
     public void removeView(String name)
     {
         if (name == null)
@@ -388,6 +395,7 @@ public class DEViseScreen extends Panel
         removeView(getView(name));
     }
 
+    // Remove the given view by object reference.
     public synchronized void removeView(DEViseView view)
     {
         if (view == null) {
@@ -453,12 +461,12 @@ public class DEViseScreen extends Panel
     }
 
     // remove the child views only
-    public void removeChildViews(String name)
+    public void removeChildViews(String viewName)
     {
-        if (name == null)
+        if (viewName == null)
             return;
 
-        removeChildViews(getView(name));
+        removeChildViews(getView(viewName));
     }
 
     public void removeChildViews(DEViseView view)
@@ -480,6 +488,7 @@ public class DEViseScreen extends Panel
         repaint();
     }
 
+    // Translate view name into view object.
     public DEViseView getView(String name)
     {
         if (name == null)
@@ -515,9 +524,11 @@ public class DEViseScreen extends Panel
         }
     }
 
-    public synchronized void updateGData(String name, Vector gdList)
+    // Remove the given view's current GData and add the new GData;
+    // force a repaint.
+    public synchronized void updateGData(String viewName, Vector gdList)
     {
-        DEViseView view = getView(name);
+        DEViseView view = getView(viewName);
 
         if (view == null) {
             return;
@@ -558,6 +569,7 @@ public class DEViseScreen extends Panel
         repaint();
     }
 
+    // Add the given cursor to the named view.
     public void updateCursor(String viewName, DEViseCursor cursor)
     {
         DEViseView view = getView(viewName);
@@ -573,6 +585,7 @@ public class DEViseScreen extends Panel
         }
     }
 
+    // Remove the named cursor from the named view.
     public void removeCursor(String cursorName, String viewname)
     {
         DEViseView view = getView(viewname);
@@ -594,10 +607,12 @@ public class DEViseScreen extends Panel
         }
     }
 
+/* Not used.  RKW 2000-05-12.
     public synchronized String getLastAction()
     {
         return lastCommand;
     }
+*/
 
     public synchronized void setLastAction(String cmd)
     {
@@ -669,9 +684,10 @@ public class DEViseScreen extends Panel
         }
     }
 
-    public synchronized void showHelpMsg(String vn, String msg)
+    // Show the given help message in the named view.
+    public synchronized void showHelpMsg(String viewName, String msg)
     {
-        DEViseView view = getView(vn);
+        DEViseView view = getView(viewName);
         if (view == null) {
             return;
         }

@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2000/04/07 22:43:13  wenger
+// Improved shading of atoms (it now works on white atoms); added comments
+// based on meeting with Hongyu on 2000-04-06.
+//
 // Revision 1.17  2000/04/05 06:25:39  hongyu
 // fix excessive memory usage problem associated with gdata
 //
@@ -81,7 +85,21 @@ public class DEViseCursor
     public int cursorType = 0;
     public int gridType = 0;
 
-    public DEViseCursor(jsdevisec panel, String cn, String vn, Rectangle rect, String move, String resize, float gx, float gy, int gtype, int ctype, Color c) throws YException
+    public static final int sideNone = -1; // not on a cursor, or cannot
+    					   // be moved or resized
+    public static final int sideMiddle = 0;
+    public static final int sideLeft = 1;
+    public static final int sideRight = 2;
+    public static final int sideTop = 3;
+    public static final int sideBottom = 4;
+    public static final int sideTopLeft = 5;
+    public static final int sideBottomLeft = 6;
+    public static final int sideTopRight = 7;
+    public static final int sideBottomRight = 8;
+
+    public DEViseCursor(jsdevisec panel, String cn, String vn,
+      Rectangle rect, String move, String resize, float gx, float gy,
+      int gtype, int ctype, Color c) throws YException
     {
         if (cn == null) {
             throw new YException("Invalid cursor name");
@@ -176,22 +194,13 @@ public class DEViseCursor
     }
 
     // position p is relative to the canvas of this cursor
-    // -1: not within cursor or can not be moved or resized
-    //  0: inside cursor
-    //  1: left side
-    //  2: right side
-    //  3: top side
-    //  4: bottom side
-    //  5: left-top corner
-    //  6: left-bottom corner
-    //  7: right-top corner
-    //  8: right-bottom corner
+    // see side* for return values
     public int inCursor(Point p)
     {
         Rectangle loc = cursorLocInCanvas;
 
         if (p.x < loc.x || p.y < loc.y || p.x > loc.x + loc.width - 1 || p.y > loc.y + loc.height - 1) {
-            return -1;
+            return sideNone;
         } else {
             int xedge = (int)(loc.width / 4 + 0.4f), yedge = (int)(loc.height / 4 + 0.4f);
             if (xedge < 1) {
@@ -209,78 +218,82 @@ public class DEViseCursor
             if (p.x >= loc.x && p.x < loc.x + xedge) {
                 if (p.y >= loc.y && p.y < loc.y + yedge) { // left-top corner
                     if (isXResizable && isYResizable) {
-                        return 5;
+                        return sideTopLeft;
                     } else {
                         if (isXResizable) { // left side
-                            return 1;
+                            return sideLeft;
                         } else if (isYResizable) { // top side
-                            return 3;
+                            return sideTop;
                         }
                     }
                 } else if (p.y <= loc.y + loc.height && p.y > loc.y + loc.height - yedge) { // left-bottom corner
                     if (isXResizable && isYResizable) {
-                        return 6;
+                        return sideBottomLeft;
                     } else {
                         if (isXResizable) { // left side
-                            return 1;
+                            return sideLeft;
                         } else if (isYResizable) { // bottom side
-                            return 4;
+                            return sideBottom;
                         }
                     }
                 } else { // left side
                     if (isXResizable) {
-                        return 1;
+                        return sideLeft;
                     }
                 }
             } else if (p.x <= loc.x + loc.width && p.x > loc.x + loc.width - xedge) {
                 if (p.y >= loc.y && p.y < loc.y + yedge) { // right-top corner
                     if (isXResizable && isYResizable) {
-                        return 7;
+                        return sideTopRight;
                     } else {
                         if (isXResizable) { // right side
-                            return 2;
+                            return sideRight;
                         } else if (isYResizable) { // top side
-                            return 3;
+                            return sideTop;
                         }
                     }
                 } else if (p.y <= loc.y + loc.height && p.y > loc.y + loc.height - yedge) { // right-bottom corner
                     if (isXResizable && isYResizable) {
-                        return 8;
+                        return sideBottomRight;
                     } else {
                         if (isXResizable) { // right side
-                            return 2;
+                            return sideRight;
                         } else if (isYResizable) { // bottom side
-                            return 4;
+                            return sideBottom;
                         }
                     }
                 } else { // right side
                     if (isXResizable) {
-                        return 2;
+                        return sideRight;
                     }
                 }
             } else {
                 if (p.y >= loc.y && p.y < loc.y + yedge) { // top side
                     if (isYResizable) {
-                        return 3;
+                        return sideTop;
                     }
                 } else if (p.y <= loc.y + loc.height && p.y > loc.y + loc.height - yedge) { // bottom side
                     if (isYResizable) {
-                        return 4;
+                        return sideBottom;
                     }
                 }
             }
 
             if (isXMovable || isYMovable) {
-                return 0;
+                return sideMiddle;
             } else {
-                return -1;
+                return sideNone;
             }
         }
     }
 
 
-    // adjust the postion and size of the cursor that is being resizing or moving
-    public synchronized int updateCursorLoc(int dx, int dy, int state, int whichSide, boolean isLast)
+    // Adjust the postion and size of the cursor that is being resizing
+    // or moving.
+    // state = 1 means move cursor; state = 2 means resize cursor.
+    // return value is side*
+    public synchronized int updateCursorLoc(int dx, int dy, int state,
+      int whichSide, boolean isLast)
     {
         x = cursorLoc.x;
         y = cursorLoc.y;
@@ -300,7 +313,13 @@ public class DEViseCursor
             boolean isXChange = false, isYChange = false;
 
             switch (whichSide) {
-            case 1: // left side
+	    case sideNone:
+		throw new YError("Shouldn't get here with sideNone");
+
+	    case sideMiddle:
+		throw new YError("Shouldn't get here with sideMiddle");
+
+            case sideLeft: // left side
                 tmpx = x + width;
                 cx = adjustToParentDataAreaX(x + dx);
                 if (cx >= tmpx) {
@@ -312,7 +331,7 @@ public class DEViseCursor
                     }
 
                     if (isLast) {
-                        whichSide = 2;
+                        whichSide = sideRight;
                     }
                 } else {
                     x = cx;
@@ -320,7 +339,8 @@ public class DEViseCursor
                 }
 
                 break;
-            case 2: // right side
+
+            case sideRight: // right side
                 tmpx = x + width;
                 cx = adjustToParentDataAreaX(dx + tmpx);
 
@@ -333,14 +353,15 @@ public class DEViseCursor
                     }
 
                     if (isLast) {
-                        whichSide = 1;
+                        whichSide = sideLeft;
                     }
                 } else {
                     width = cx - tx;
                 }
 
                 break;
-            case 3: // top side
+
+            case sideTop: // top side
                 tmpy = y + height;
                 cy = adjustToParentDataAreaY(dy + y);
 
@@ -352,7 +373,7 @@ public class DEViseCursor
                     }
 
                     if (isLast) {
-                        whichSide = 4;
+                        whichSide = sideBottom;
                     }
                 } else {
                     y = cy;
@@ -360,7 +381,8 @@ public class DEViseCursor
                 }
 
                 break;
-            case 4: // bottom side
+
+            case sideBottom: // bottom side
                 tmpy = y + height;
                 cy = adjustToParentDataAreaY(dy + tmpy);
 
@@ -373,14 +395,15 @@ public class DEViseCursor
                     }
 
                     if (isLast) {
-                        whichSide = 3;
+                        whichSide = sideTop;
                     }
                 } else {
                     height = cy - ty;
                 }
 
                 break;
-            case 5: // left top corner
+
+            case sideTopLeft: // left top corner
                 isXChange = false;
                 isYChange = false;
 
@@ -424,22 +447,23 @@ public class DEViseCursor
                     if (isXChange) {
                         if (isYChange) {
                             if (isLast) {
-                                whichSide = 8;
+                                whichSide = sideBottomRight;
                             }
                         } else {
                             if (isLast) {
-                                whichSide = 7;
+                                whichSide = sideTopRight;
                             }
                         }
                     } else {
                         if (isLast) {
-                            whichSide = 6;
+                            whichSide = sideBottomLeft;
                         }
                     }
                 }
 
                 break;
-            case 6: // left bottom corner
+
+            case sideBottomLeft: // left bottom corner
                 isXChange = false;
                 isYChange = false;
 
@@ -483,22 +507,23 @@ public class DEViseCursor
                     if (isXChange) {
                         if (isYChange) {
                             if (isLast) {
-                                whichSide = 7;
+                                whichSide = sideTopRight;
                             }
                         } else {
                             if (isLast) {
-                                whichSide = 8;
+                                whichSide = sideBottomRight;
                             }
                         }
                     } else {
                         if (isLast) {
-                            whichSide = 5;
+                            whichSide = sideTopLeft;
                         }
                     }
                 }
 
                 break;
-            case 7: // right top corner
+
+            case sideTopRight: // right top corner
                 isXChange = false;
                 isYChange = false;
 
@@ -542,22 +567,23 @@ public class DEViseCursor
                     if (isXChange) {
                         if (isYChange) {
                             if (isLast) {
-                                whichSide = 6;
+                                whichSide = sideBottomLeft;
                             }
                         } else {
                             if (isLast) {
-                                whichSide = 5;
+                                whichSide = sideTopLeft;
                             }
                         }
                     } else {
                         if (isLast) {
-                            whichSide = 8;
+                            whichSide = sideBottomRight;
                         }
                     }
                 }
 
                 break;
-            case 8: // right bottom corner
+
+            case sideBottomRight: // right bottom corner
                 isXChange = false;
                 isYChange = false;
 
@@ -601,21 +627,24 @@ public class DEViseCursor
                     if (isXChange) {
                         if (isYChange) {
                             if (isLast) {
-                                whichSide = 5;
+                                whichSide = sideTopLeft;
                             }
                         } else {
                             if (isLast) {
-                                whichSide = 6;
+                                whichSide = sideBottomLeft;
                             }
                         }
                     } else {
                         if (isLast) {
-                            whichSide = 7;
+                            whichSide = sideTopRight;
                         }
                     }
                 }
 
                 break;
+
+	    default:
+		throw new YError("Illegal whichSide value: " + whichSide);
             }
         }
 

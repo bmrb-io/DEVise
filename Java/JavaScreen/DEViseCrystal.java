@@ -14,11 +14,17 @@
 
 // ADD COMMENT: overall description of the function of this class
 
+// Note that if there is a pile of 3D views, there is only a single
+// DEViseCrystal object for the entire pile.
+
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.13  2000/04/05 06:25:39  hongyu
+// fix excessive memory usage problem associated with gdata
+//
 // Revision 1.12  2000/04/03 22:24:53  wenger
 // Added named constants for GData symbol types; 3D GData symbols are now
 // differentiated by symbol type instead of string; removed some commented-
