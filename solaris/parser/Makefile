@@ -1,6 +1,6 @@
-ARCH_FLAGS = -DPENTIUM -I/p/miron/miron/DEVise/src/parser
+ARCH_FLAGS = -DPENTIUM -I../../parser
 #CC = CC
-VPATH = /p/miron/miron/DEVise/src/parser
-include /p/miron/miron/DEVise/src/parser/Makefile.solaris
+VPATH = ../../parser
+include $(VPATH)/Makefile.solaris
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

@@ -1,6 +1,6 @@
-ARCH_FLAGS = -DSUN -I/p/miron/miron/DEVise/src/parser
+ARCH_FLAGS = -DSUN -I../../parser
 #CC = CC
-VPATH = /p/miron/miron/DEVise/src/parser
-include /p/miron/miron/DEVise/src/parser/Makefile.sun
+VPATH = ../../parser
+include $(VPATH)/Makefile.sun
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
