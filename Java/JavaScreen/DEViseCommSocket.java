@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.33  2001/11/13 17:55:29  xuk
+// Cound send command in String[] format, no need to compose a long command string before sending.
+// Added a serial of sendCmd(String[] cmds, ...) methods.
+//
 // Revision 1.32  2001/11/07 22:31:29  wenger
 // Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
 // js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
@@ -503,6 +507,7 @@ public class DEViseCommSocket
     public void sendCmd(String cmd, short msgType, int ID)
       throws YException
     {
+	/* Force to use the String[] format
         if (DEBUG >= 1) {
             System.out.println("DEViseCommSocket.sendCmd(" + cmd + ", " +
 	      msgType + ", " + ID + ")");
@@ -511,6 +516,15 @@ public class DEViseCommSocket
 	synchronized (writeSync) {
 	    doSendCmd(cmd, msgType, ID);
 	}
+	*/
+
+        String[] cmdBuffer = DEViseGlobals.parseString(cmd, true);
+        if (cmdBuffer == null || cmdBuffer.length == 0) {
+	    System.err.println("Unparseable command");
+            return;
+        }
+	
+	sendCmd(cmdBuffer, msgType, ID);
     }
 
     //-------------------------------------------------------------------
@@ -526,16 +540,17 @@ public class DEViseCommSocket
     }
 
     //-------------------------------------------------------------------
-    public void sendCmd(String[] cmd, short msgType, int ID)
+    public void sendCmd(String[] cmds, short msgType, int ID)
       throws YException
     {
+
         if (DEBUG >= 1) {
-            System.out.println("DEViseCommSocket.sendCmd(" + cmd + ", " +
+            System.out.println("DEViseCommSocket.sendCmd(" + cmds + ", " +
 	      msgType + ", " + ID + ")");
         }
 
 	synchronized (writeSync) {
-	    doSendCmd(cmd, msgType, ID);
+	    doSendCmd(cmds, msgType, ID);
 	}
     }
 
@@ -558,10 +573,33 @@ public class DEViseCommSocket
     public String receiveCmd()
       throws YException, InterruptedIOException
     {
+	String[] cmdBuffer = null;
+
+        synchronized (readSync) {
+	    cmdBuffer = doReceiveCmd();
+	}
+
+	// change from String[] format to String format. 
+	String response = new String("");
+	
+	for (int i=0; i<cmdBuffer.length; i++)
+	    response = response + cmdBuffer[i] + " ";
+	
+	return response;
+    }
+
+    //-------------------------------------------------------------------
+    // Receive a command in String[] format
+    // TEMP: disabled because of the previous method.
+    /*
+    public String[] receiveCmd()
+      throws YException, InterruptedIOException
+    {
         synchronized (readSync) {
 	    return doReceiveCmd();
 	}
     }
+    */
 
     //-------------------------------------------------------------------
     public void sendData(byte[] data) throws YException
@@ -839,6 +877,8 @@ public class DEViseCommSocket
     // Receive a command.  Note that this method may be interrupted by
     // the socket timeout.  If so, it can be repeatedly called until
     // an entire command has been received.
+    // TEMP: disabled for String[] format
+    /*
     private String doReceiveCmd()
       throws YException, InterruptedIOException
     {
@@ -946,6 +986,121 @@ public class DEViseCommSocket
 
         return response;
     }
+    */
+
+    //-------------------------------------------------------------------
+    // Receive a command in String[] format.
+    // Note that this method may be interrupted by
+    // the socket timeout.  If so, it can be repeatedly called until
+    // an entire command has been received.
+    private String[] doReceiveCmd()
+      throws YException, InterruptedIOException
+    {
+	if (DEBUG >= 1) {
+	    System.out.println("DEViseCommSocket.receiveCmd()");
+	}
+
+        if (is == null) {
+            closeSocket();
+            throw new YException("Invalid input stream",
+	      "DEViseCommSocket:receiveCmd()");
+        }
+
+        try {
+            if (isControl) {
+                if (dataRead == null) {
+		    //TEMP -- 12 is 'magic constant' here!
+                    dataRead = new byte[12];
+                    numberRead = 0;
+                }
+
+		// TEMP -- try read(buf, offset, len) here
+		
+                //TEMP -- why don't we do readInt(), etc, here?  RKW 2001-11-07
+                int b;
+		//TEMP -- 12 is 'magic constant' here!
+                for (int i = numberRead; i < 12; i++) {
+                    b = is.read();
+                    if (b < 0) {
+                        closeSocket();
+                        throw new YException("Abrupt end of input stream reached", "DEViseCommSocket.receiveCmd()");
+                    }
+
+                    dataRead[numberRead] = (byte)b;
+                    numberRead++;
+                }
+
+		//TEMP -- "magic constants" here...
+                msgType = DEViseGlobals.toUshort(dataRead);
+                cmdId = DEViseGlobals.toInt(dataRead, 2);
+                flag = DEViseGlobals.toUshort(dataRead, 6);
+                numberOfElement = DEViseGlobals.toUshort(dataRead, 8);
+                totalSize = DEViseGlobals.toUshort(dataRead, 10);
+
+                dataRead = null;
+                isControl = false;
+
+                if (numberOfElement <= 0 || totalSize <= 0) {
+                    closeSocket();
+                    throw new YException("Invalid control information received", "DEViseCommSocket.receiveCmd()");
+                }
+            }
+
+            if (dataRead == null) {
+                dataRead = new byte[totalSize];
+                numberRead = 0;
+            }
+
+	    // TEMP -- try read(buf, offset, len) here
+            int b;
+            for (int i = numberRead; i < totalSize; i++) {
+                b = is.read();
+                if (b < 0) {
+                    closeSocket();
+                    throw new YException("Abrupt end of input stream reached",
+		      "DEViseCommSocket.receiveCmd()");
+                }
+
+                dataRead[numberRead] = (byte)b;
+                numberRead++;
+            }
+        } catch (InterruptedIOException e) {
+            throw e;
+        } catch (IOException e) {
+            closeSocket();
+	    System.err.println(e.getMessage() + "DEViseCommSocket:receiveCmd()");
+	    return(new String[] {"Connection disabled"});
+            //throw new YException("Error occurs while reading from input stream", "DEViseCommSocket:receiveCmd()");
+        }
+
+        int argsize = 0;
+        int pastsize = 0;
+        String[] response = new String[numberOfElement];
+        for (int i = 0; i < numberOfElement; i++) {
+            if (totalSize < pastsize + 2) {
+                closeSocket();
+                throw new YException("Inconsistant data received 1", "DEViseCommSocket:receiveCmd()");
+            }
+
+            argsize = DEViseGlobals.toUshort(dataRead, pastsize);
+            pastsize += 2;
+
+            if (totalSize < pastsize + argsize) {
+                closeSocket();
+                throw new YException("Inconsistant data received 2", "DEViseCommSocket:receiveCmd()");
+            }
+
+            // use argsize - 1 instead of argsize is to skip the string ending '\0'
+            // use one space to seperate different parts of the response command
+            response[i] = new String(dataRead, pastsize, argsize - 1);
+            pastsize += argsize;
+        }
+
+        resetData();
+
+        return response;
+    }
+
 
     //-------------------------------------------------------------------
     private void doSendData(byte[] data) throws YException

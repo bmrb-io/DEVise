@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.110  2001/11/13 17:57:00  xuk
+// Could send command in String[] format, no need to compose a long command string before sending.
+//
 // Revision 1.109  2001/11/07 22:31:28  wenger
 // Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
 // js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
@@ -1713,7 +1716,7 @@ public class DEViseCmdDispatcher implements Runnable
 
                     jsc.pn("Receive: \"" + response + "\"");
 
-		    if (response.equals("Connection disabled")) {
+		    if (response.startsWith("Connection disabled")) {
 			commSocket = null;
 	
 			jsc.disconnectedMode();		
