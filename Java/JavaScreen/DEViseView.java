@@ -13,6 +13,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.36  1999/10/10 08:49:53  hongyu
+// Major changes to JAVAScreen have been commited in this update, including:
+// 1. restructure of JavaScreen internal structure to adapt to vast changes
+//    in DEVise and also prepare to future upgrade
+// 2. Fix a number of bugs in visualization and user interaction
+// 3. Add a number of new features in visualization and user interaction
+// 4. Add support for complicated 3D molecular view
+//
 // Revision 1.35  1999/09/24 17:11:47  hongyu
 // adding support for 3-d molecule view
 //
@@ -166,6 +174,14 @@ public class DEViseView
     public void addPile(DEViseView view)
     {
         if (view != null) {
+            for (int i = 0; i < viewPiledViews.size(); i++) {
+                DEViseView v = (DEViseView)viewPiledViews.elementAt(i);
+                if (view.viewZ > v.viewZ) {
+                    viewPiledViews.insertElementAt(view, i);
+                    return;
+                }
+            }
+                
             viewPiledViews.addElement(view);
         }
     }

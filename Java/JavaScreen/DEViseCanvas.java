@@ -107,6 +107,11 @@ public class DEViseCanvas extends Container
 
     Point sp = new Point(), ep = new Point(), op = new Point();
     public static int lastKey = KeyEvent.VK_UNDEFINED;
+    
+    public static DEViseCanvas sourceCanvas = null;
+    public static boolean isInterative = false;
+    
+    public static int totalpaintcount = 0;
 
     public DEViseCanvas(DEViseView v, Image img)
     {
@@ -207,7 +212,13 @@ public class DEViseCanvas extends Container
     }
 
     public void paint(Graphics gc)
-    {
+    {   
+        if (DEViseCanvas.isInterative) {
+            if (DEViseCanvas.sourceCanvas != this) {
+                return;
+            }
+        }
+        
         // draw 3D molecular view
         if (paintCrystal(gc)) {
             paintBorder(gc);
@@ -248,7 +259,9 @@ public class DEViseCanvas extends Container
         if (view.viewDimension != 3) {
             return false;
         }
-
+        
+        //jsc.pn("crystal is been painted " + totalpaintcount++);
+        
         if (crystal == null) {
             createCrystal();
             if (crystal == null) {
@@ -419,13 +432,6 @@ public class DEViseCanvas extends Container
 
     private synchronized void paintCursor(Graphics gc, DEViseView v)
     {
-        // handling piled views
-        for (int i = 0; i < v.viewPiledViews.size(); i++) {
-            DEViseView vv = (DEViseView)v.viewPiledViews.elementAt(i);
-
-            paintCursor(gc, vv);
-        }
-
         // handling child views
         for (int i = 0; i < v.viewChilds.size(); i++) {
             DEViseView vv = (DEViseView)v.viewChilds.elementAt(i);
@@ -462,17 +468,17 @@ public class DEViseCanvas extends Container
                 gc.drawImage(cursor.image, loc.x, loc.y, this);
             }
         }
-    }
 
-    private synchronized void paintGData(Graphics gc, DEViseView v)
-    {
         // handling piled views
         for (int i = 0; i < v.viewPiledViews.size(); i++) {
             DEViseView vv = (DEViseView)v.viewPiledViews.elementAt(i);
 
-            paintGData(gc, vv);
+            paintCursor(gc, vv);
         }
+    }
 
+    private synchronized void paintGData(Graphics gc, DEViseView v)
+    {
         // handling child views
         for (int i = 0; i < v.viewChilds.size(); i++) {
             DEViseView vv = (DEViseView)v.viewChilds.elementAt(i);
@@ -490,6 +496,14 @@ public class DEViseCanvas extends Container
                 gc.setFont(gdata.font);
                 gc.drawString(gdata.string, gdata.x, gdata.y);
             }
+        }
+
+        // handling piled views
+        for (int i = 0; i < v.viewPiledViews.size(); i++) {
+        //for (int i = v.viewPiledViews.size() - 1; i >= 0; i--) {
+            DEViseView vv = (DEViseView)v.viewPiledViews.elementAt(i);
+
+            paintGData(gc, vv);
         }
     }
 
@@ -746,7 +760,9 @@ public class DEViseCanvas extends Container
             // Each mouse click will be here once, so double click actually will enter
             // this twice. Also, this event will always reported with each mouse click
             // and before the mouseClick event is reported.
-
+            
+            DEViseCanvas.isInterative = false;
+            
             if (view.viewDimension == 3) {
                 DEViseCanvas.lastKey = KeyEvent.VK_UNDEFINED;
                 return;
@@ -823,7 +839,7 @@ public class DEViseCanvas extends Container
                 whichCursorSide = -1;
                 isMouseDragged = false;
                 DEViseCanvas.lastKey = KeyEvent.VK_UNDEFINED;
-
+                
                 repaint();
             }
         }
@@ -880,7 +896,7 @@ public class DEViseCanvas extends Container
                 selectedCursor = null;
                 whichCursorSide = -1;
                 isMouseDragged = false;
-
+                
                 repaint();
             }
         }
@@ -913,7 +929,9 @@ public class DEViseCanvas extends Container
                 } else {
                     crystal.rotate(dx, dy);
                 }
-
+                
+                DEViseCanvas.isInterative = true;
+                DEViseCanvas.sourceCanvas = DEViseCanvas.this;
                 repaint();
                 return;
             }
@@ -944,9 +962,11 @@ public class DEViseCanvas extends Container
                         whichCursorSide = cursor.updateCursorLoc(dx, dy, 2, whichCursorSide, false);
                     }
                 }
+            
+                DEViseCanvas.isInterative = true;
+                DEViseCanvas.sourceCanvas = DEViseCanvas.this;
+                repaint();
             }
-
-            repaint();
         }
 
         public void mouseMoved(MouseEvent event)
@@ -978,12 +998,14 @@ public class DEViseCanvas extends Container
 		//    repaint();
                 //}
                 
-		return;
+		        return;
             }
 
             checkMousePos(p, true);
-
-            repaint();
+            
+            //DEViseCanvas.isInterative = true;
+            //DEViseCanvas.sourceCanvas = DEViseCanvas.this;
+            //repaint();
         }
     }
     // end of class ViewMouseMotionListener

@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.42  1999/11/03 08:00:49  hongyu
+// *** empty log message ***
+//
 // Revision 1.41  1999/11/01 17:40:16  hongyu
 // *** empty log message ***
 //
@@ -252,7 +255,7 @@ public class DEViseScreen extends Panel
             int i;
             for (i = 0; i < allCanvas.size(); i++) {
                 DEViseCanvas c = (DEViseCanvas)allCanvas.elementAt(i);
-                if (c.view.viewZ < canvas.view.viewZ) {
+                if (c.view.viewZ > canvas.view.viewZ) {
                     canvas.posZ = i;
                     break;
                 }
@@ -401,8 +404,10 @@ public class DEViseScreen extends Panel
 
         if (!jsc.isShowingMsg() && currentView != null) {
             requestFocus();
-            if (currentView.getCanvas() != null)
+            if (currentView.getCanvas() != null) {
                 currentView.getCanvas().requestFocus();
+                currentView.getCanvas().repaint();
+            }    
         }
     }
 
