@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/07/15 17:02:03  jussi
+  Added support for string attributes in GData.
+
   Revision 1.17  1996/07/09 16:00:19  wenger
   Added master version number and compile date to C++ code (also displayed
   in the user interface); added -usage and -version command line arguments;
@@ -284,6 +287,9 @@ void ServerAPI::DestroySessionData()
 
   // clear string storage space
   StringStorage::Clear();
+
+  // call base class
+  ControlPanel::DestroySessionData();
 }
 
 void ServerAPI::Run()

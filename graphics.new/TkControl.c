@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.62  1996/07/15 17:02:07  jussi
+  Added support for string attributes in GData.
+
   Revision 1.61  1996/07/15 14:23:39  jussi
   Made one #ifdef statement more flexible, allowing for future
   versions of Tcl/Tk.
@@ -416,6 +419,9 @@ void TkControlPanel::DestroySessionData()
 
   // clear string storage space
   StringStorage::Clear();
+
+  // call base class
+  ControlPanel::DestroySessionData();
 }
 
 void TkControlPanel::DoAbort(char *reason)
