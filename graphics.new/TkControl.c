@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1996/03/22 18:25:47  jussi
+  Fixed problem with insertWindow.
+
   Revision 1.33  1996/03/07 16:54:39  jussi
   Added association of TDataMap and ViewGraph.
 
@@ -899,11 +902,6 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				interp->result = "view not in any window";
 				goto error;
 			}
-			for (view->InitMappingIterator(); view->MoreMapping(); ){
-				TDataMap *map = view->NextMapping();
-				map->DissociateView();
-			}
-			view->DoneMappingIterator();
 			view->DeleteFromParent();
 		}
 		else if (strcmp(argv[1],"getViewMappings") == 0) {
@@ -1237,7 +1235,6 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				Exit::DoExit(2);
 			}
 			view->InsertMapping(map);
-			map->AssociateView(view);
 		}
 		else if (strcmp(argv[1],"insertLink") == 0){
 			VisualLink *link = (VisualLink *)classDir->FindInstance(argv[2]);
@@ -1295,11 +1292,6 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				fprintf(stderr,"TkControl:Cmd insertWindow can't find window %s\n", argv[3]);
 				Exit::DoExit(2);
 			}
-			for (view->InitMappingIterator(); view->MoreMapping(); ){
-				TDataMap *map = view->NextMapping();
-				map->DissociateView();
-			}
-			view->DoneMappingIterator();
 			view->DeleteFromParent();
 			view->AppendToParent(win);
 		}
