@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.78  1998/11/23 19:20:00  donjerko
+#	*** empty log message ***
+#
 #	Revision 1.77  1998/11/20 21:39:25  wenger
 #	Removed 'Move' from Table menu (not implemented); cleaned up some debug
 #	output.
@@ -428,8 +431,10 @@ proc addSQLQuotes {string quote} {
 proc newViewFile {{schemaFile ""} {dataFile ""}} {
 	global schemadir
 	if {$schemaFile != ""} {
+puts "here"
 		set logicalAttrlist [DEVise dteShowAttrNames $schemaFile $dataFile]
 	} else {
+puts "there"
 		set logicalAttrlist ""
 	}
 	set result [qbrowse 1 ""]
@@ -981,6 +986,9 @@ proc defineStandardTable {content} {
 	global retVal tableName sourceType schemaFile url viewFile schema
 
 	set numFlds [lindex $content 2]
+        if { $numFlds == "" } {
+            set numFlds 0
+        }
 	set offSet [expr 3 + $numFlds * 2]
 	set url [lindex $content $offSet] 
 	set schema [lrange $content 3 [expr 3 + $numFlds * 2 - 1]]
