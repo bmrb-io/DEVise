@@ -438,7 +438,7 @@ static DeviseCursorList _drawnCursors;
 static const float viewZInc = 0.001;
 
 static const int protocolMajorVersion = 3;
-static const int protocolMinorVersion = 0;
+static const int protocolMinorVersion = 1;
 
 // be very careful that this order agree with the ControlCmdType definition
 char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
@@ -1294,12 +1294,29 @@ JavaScreenCmd::ShowRecords3D()
 #endif
 
 	// Note: x, y, and z are the values from the relevant GData record.
-	if (_argc != 3)
+	if (_argc != 4)
 	{
 		errmsg = "Usage: ShowRecords3D <view name> <x> <y> <z>";
 		_status = ERROR;
 		return;
 	}
+
+    ViewGraph *view = (ViewGraph *)ControlPanel::FindInstance(_argv[0]);
+	if (view == NULL) {
+		errmsg = "Can't find specified view";
+		_status = ERROR;
+		return;
+	}
+
+    int msgCount;
+	char **msgs;
+#if 1 //TEMP
+    msgCount = 1;
+	char *msg = "Testing ShowRecords3D";
+	msgs = &msg;
+#endif //TEMP
+
+	_status = RequestUpdateRecordValue(msgCount, msgs);
 }
 
 //====================================================================
