@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/04/16 20:44:08  jussi
+  Added HorLineShape, a 2D horizontal line shape that is used
+  by statistics views.
+
   Revision 1.15  1996/04/09 22:55:00  jussi
   Added View parameter to DrawGDataArray().
 
@@ -567,6 +571,53 @@ public:
       win->SetFgColor(GetColor(view, gdata, map, offset));
       win->SetPattern(GetPattern(gdata, map, offset));
       win->Line(xLow, y, xHigh, y, 2);
+    }
+  }
+};
+
+// -----------------------------------------------------------------
+
+class FullMapping_SegmentShape: public SegmentShape {
+public:
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
+			      TDataMap *map, View *view, int pixelSize) {
+		 
+    GDataAttrOffset *offset = map->GetGDataOffset();
+
+    Coord x0, y0, x1, y1;
+    win->Transform(0, 0, x0, y0);
+    win->Transform(1, 1, x1, y1);
+    Coord pixelWidth = 1 / fabs(x1 - x0);
+    Coord pixelHeight = 1 / fabs(y1 - y0);
+
+    Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
+			    offset->shapeAttrOffset[1] < 0 ? true : false);
+
+    if (fixedSymSize) {
+      Coord maxWidth, maxHeight;
+      map->MaxBoundingBox(maxWidth, maxHeight);
+
+#ifdef DEBUG
+      printf("SegmentShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
+	     maxWidth, maxHeight, pixelWidth, pixelHeight);
+#endif
+
+      if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
+	DrawPixelArray(win, gdataArray, numSyms, map, view, pixelSize);
+	return;
+      }
+    }
+
+    for(int i = 0; i < numSyms; i++) {
+      char *gdata = (char *)gdataArray[i];
+      Color color = GetColor(view, gdata, map, offset);
+      Coord w = GetShapeAttr0(gdata, map, offset);
+      Coord h = GetShapeAttr1(gdata, map, offset);
+      Coord x = GetX(gdata, map, offset);
+      Coord y = GetY(gdata, map, offset);
+      win->SetFgColor(color);
+      win->SetPattern(GetPattern(gdata, map, offset));
+      win->Line(x, y, x + w, y + h, 1);
     }
   }
 };

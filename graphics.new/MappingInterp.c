@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/04/16 20:53:47  jussi
+  Added HorLineShape. Replaced DoExit() calls with DOASSERT macro.
+
   Revision 1.24  1996/04/15 16:08:09  jussi
   Moved call to SetGDataOffset() to the constructor.
 
@@ -229,6 +232,7 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
     _shapes[6] = new FullMapping_BlockShape;
     _shapes[7] = new FullMapping_3DVectorShape;
     _shapes[8] = new FullMapping_HorLineShape;
+    _shapes[9] = new FullMapping_SegmentShape;
 
     _interp = Tcl_CreateInterp();
     if (!_interp || Tcl_Init(_interp) == TCL_ERROR) {

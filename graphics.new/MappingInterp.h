@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/04/16 20:54:14  jussi
+  Added HorLineShape, a 2D horizontal line shape that is used
+  by statistical views.
+
   Revision 1.13  1996/04/09 22:54:46  jussi
   Added View parameter to DrawGDataArray().
 
@@ -115,7 +119,7 @@ struct MappingSimpleCmd {
 
 class Shape;
 class AttrList;
-const int MaxInterpShapes = 9;
+const int MaxInterpShapes = 10;
 
 class MappingInterp: public TDataMapDispatch {
   friend inline double ConvertOne(char *from, MappingSimpleCmdEntry *entry,

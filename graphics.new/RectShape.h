@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/04/16 20:43:11  jussi
+  Added HorLineShape, a 2D horizontal line shape that is used
+  by statistics views.
+
   Revision 1.6  1996/01/09 22:15:44  jussi
   Added 3D block object.
 
@@ -83,5 +87,10 @@ class BlockShape : public Shape {};
    ignored. */
 
 class HorLineShape : public Shape {};
+
+/* Segment: just a plain line segment from (x,y) to (x+w,y+h).
+   Basically the same as a vector but without the arrow head. */
+
+class SegmentShape : public Shape {};
 
 #endif
