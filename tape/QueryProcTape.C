@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/28 18:20:13  jussi
+  Removed warnings related to for loop variable scope.
+
   Revision 1.3  1995/09/22 15:46:12  jussi
   Added copyright message.
 
@@ -35,6 +38,8 @@
 #include "TData.h"
 #include "GData.h"
 #include "MappingInterp.h"
+
+//#define DEBUG
 
 // temp page to hold data for converting tdata into gdata.
 const int GDATA_BUF_SIZE = 51200;
@@ -144,13 +149,17 @@ void QueryProcTape::BatchQuery(TDataMap *map, VisualFilter &filter,
 			       QueryCallback *callback, void *userData,
 			       int priority)
 {
-  // printf("batch query: map: 0x%x, filter xlow %f, xhigh %f\n",
-  //	    map, filter.xLow, filter.xHigh);
+#ifdef DEBUG
+  printf("batch query: map: 0x%p, filter xlow %.2f, xhigh %.2f\n",
+	 map, filter.xLow, filter.xHigh);
+#endif
 
   TData *tdata = map->GetTData();
 
-  // printf("batch query for %s %s %d\n", tdata->GetName(), map->GetName(),
-  //	    priority);
+#ifdef DEBUG
+  printf("batch query for %s %s %d\n", tdata->GetName(), map->GetName(),
+	 priority);
+#endif
 
   QPTapeData *qdata = AllocEntry();
   qdata->map = map;
@@ -161,7 +170,7 @@ void QueryProcTape::BatchQuery(TDataMap *map, VisualFilter &filter,
   qdata->bytes = 0;
 
   // register GData callback so we get GData conversion info
-//  map->GetGData()->RegisterCallback(this);
+  // map->GetGData()->RegisterCallback(this);
 
   // associate mapping with one of the sorted tables
   AssociateMappingWithSortedTable(map);
@@ -173,13 +182,17 @@ void QueryProcTape::BatchQuery(TDataMap *map, VisualFilter &filter,
 
   if (numDimensions == 0) {
     qdata->qType = QPTape_Scatter;
-    // printf("scatter plot\n");
+#ifdef DEBUG
+    printf("scatter plot\n");
+#endif
   } else if (numDimensions == 1 && dimensionInfo[0] == VISUAL_X) {
     if (numTDimensions != 1) {
       fprintf(stderr,"QueryProcTape::AppendQuery: tdimensions not 1\n");
       Exit::DoExit(1);
     }
-    // printf("sortedX\n");
+#ifdef DEBUG
+    printf("sortedX\n");
+#endif
     qdata->qType = QPTape_X;
   } else if (numDimensions == 2 &&
 	   dimensionInfo[0] == VISUAL_Y &&
@@ -190,7 +203,9 @@ void QueryProcTape::BatchQuery(TDataMap *map, VisualFilter &filter,
       Exit::DoExit(1);
     }
     qdata->qType = QPTape_YX;
-    // printf("YX query\n");
+#ifdef DEBUG
+    printf("YX query\n");
+#endif
   } else {
     fprintf(stderr,"QueryProcSimple::AppendQuery:don't know this query\n");
     Exit::DoExit(1);
@@ -221,20 +236,19 @@ void QueryProcTape::BatchQuery(TDataMap *map, VisualFilter &filter,
   _queries->Append(qdata);
 
  done:
-  /*
-     printf("queries are: \n");
-     for(index= _queries->InitIterator(); _queries->More(index);) {
-       QPTapeData *qd = _queries->Next(index);
-       printf("%s %s %d\n", qd->tdata->GetName(), qd->map->GetName(),
-       qd->priority);
-     }
-     _queries->DoneIterator(index);
-  */
+#ifdef DEBUG
+  printf("queries are: \n");
+  for(index = _queries->InitIterator(); _queries->More(index);) {
+    QPTapeData *qd = _queries->Next(index);
+    printf("%s %s %d\n", qd->tdata->GetName(), qd->map->GetName(),
+	   qd->priority);
+  }
+  _queries->DoneIterator(index);
+#endif
 
   return;
 }
 
-// Destructor
 QueryProcTape::~QueryProcTape()
 {
   for(int i = 0; i < _numSortedTables; i++)
@@ -256,8 +270,8 @@ void QueryProcTape::AssociateMappingWithSortedTable(TDataMap *map)
   for(i = 0; i < _numSortedTables; i++) {
     if (_sortedTables[i]->tdata == map->GetTData()
 	&& !strcmp(_sortedTables[i]->xCmd, imap->GetMappingCmd()->xCmd)) {
-      printf("Associating mapping %08x with existing table %08x\n",
-	     (int)map, (int)&_sortedTables[i]->_table);
+      printf("Associating mapping 0x%p with existing table 0x%p\n",
+	     map, &_sortedTables[i]->_table);
       map->InsertUserData(&_sortedTables[i]->_table);
       return;
     }
@@ -275,8 +289,10 @@ void QueryProcTape::AssociateMappingWithSortedTable(TDataMap *map)
   newList[_numSortedTables] = entry;
   _numSortedTables++;
 
-  printf("Associating mapping %08x with new table %08x\n",
-	 (int)map, (int)&entry->_table);
+#ifdef DEBUG
+  printf("Associating mapping 0x%p with new table 0x%p\n",
+	 map, &entry->_table);
+#endif
   map->InsertUserData(&entry->_table);
 
   delete [] _sortedTables;
@@ -287,11 +303,14 @@ void QueryProcTape::AssociateMappingWithSortedTable(TDataMap *map)
 void QueryProcTape::AbortQuery(TDataMap *map, QueryCallback *callback)
 {
   // remove query from list of queries
-  // printf("abort query for %s %s\n", map->GetTData()->GetName(),
-  //        map->GetName());
+
+#ifdef DEBUG
+  printf("abort query for %s %s\n", map->GetTData()->GetName(),
+	 map->GetName());
+#endif
 
   int index;
-  for(index=_queries->InitIterator(); _queries->More(index);) {
+  for(index = _queries->InitIterator(); _queries->More(index);) {
     QPTapeData *qData = (QPTapeData *)_queries->Next(index);
     if (qData->map == map && qData->callback == callback) {
       _queries->DeleteCurrent(index);
@@ -349,7 +368,9 @@ void QueryProcTape::ResetGData(TData *tdata, GData *gdata)
 // Initialize queries
 void QueryProcTape::InitQPTapeX(QPTapeData *qData)
 {
-  // printf("InitQPTapeX map 0x%x\n", qData->map);
+#ifdef DEBUG
+  printf("InitQPTapeX map 0x%p\n", qData->map);
+#endif
 
   // Call initialization of query
   qData->callback->QueryInit(qData->userData);
@@ -377,7 +398,9 @@ void QueryProcTape::InitQPTapeX(QPTapeData *qData)
   qData->mgr->FocusHint(qData->high, qData->tdata, qData->gdata);
   qData->state = QPTape_ScanState;
 
-  // printf("search [%ld,%ld]\n", qData->current, qData->high);
+#ifdef DEBUG
+  printf("search [%ld,%ld]\n", qData->current, qData->high);
+#endif
 }
 
 void QueryProcTape::InitQPTapeYX(QPTapeData *qData)
@@ -401,7 +424,10 @@ void QueryProcTape::InitQPTapeScatter(QPTapeData *qData)
   } else {
     qData->state = QPTape_EndState;
   }
-  // printf("InitQPTapeScatter search [%d,%d]\n", qData->current, qData->high);
+
+#ifdef DEBUG
+  printf("InitQPTapeScatter search [%ld,%ld]\n", qData->current, qData->high);
+#endif
 }
 
 // Initialize all queries. Return false if no query is in initial state
@@ -483,7 +509,7 @@ void QueryProcTape::ProcessQPTapeX(QPTapeData *qData)
 }
 void QueryProcTape::ProcessQPTapeYX(QPTapeData *qData)
 {
-  fprintf(stderr,"PrcoessQPTapeYX: not implemented\n");
+  fprintf(stderr,"ProcessQPTapeYX: not implemented\n");
   Exit::DoExit(1);
 }
 
@@ -512,8 +538,10 @@ void QueryProcTape::ProcessQuery()
 
   // Process the first query
   QPTapeData *first = FirstQuery();
-  // printf("Processquery for %s %s\n", first->tdata->GetName(),
-  //        first->map->GetName());
+#ifdef DEBUG
+  printf("ProcessQuery for %s %s\n", first->tdata->GetName(),
+	 first->map->GetName());
+#endif
 
   if (first->state == QPTape_EndState) {
     // InitQueries could have finished this query
@@ -569,7 +597,9 @@ Boolean QueryProcTape::DoLinearSearch(BufMgr *mgr,
 				      RecId lowBound, RecId highBound,
 				      Boolean maxLower )
 {
-  // printf("DoLinearSearch xVal = %f, maxLower = %d\n", xVal, maxLower);
+#ifdef DEBUG
+  printf("DoLinearSearch xVal = %.2f, maxLower = %d\n", xVal, maxLower);
+#endif
 
   SortedTable<Coord, RecId> *table =
     (SortedTable<Coord, RecId> *)map->GetUserData();
@@ -577,7 +607,9 @@ Boolean QueryProcTape::DoLinearSearch(BufMgr *mgr,
 
   // See if value is in the sorted list
   if (table->lookup(xVal, id) >= 0) {
-    printf("Exact location of %f found at %ld\n", xVal, id);
+#ifdef DEBUG
+    printf("Exact location of %.2f found at %ld\n", xVal, id);
+#endif
     return true;
   }
 
@@ -594,23 +626,35 @@ Boolean QueryProcTape::DoLinearSearch(BufMgr *mgr,
   // See if we can get low and high bounds from the sorted list
 
   if (table->lookupLower(xVal, id) >= 0) {
-    printf("X low bound for %f found at %ld\n", xVal, id);
+#ifdef DEBUG
+    printf("X low bound for %.2f found at %ld\n", xVal, id);
+#endif
     if (id > low)
       low = id;
-    else
+    else {
+#ifdef DEBUG
       printf("User-provided lower bound is stronger.\n");
+#endif
+    }
   }
 
   if (table->lookupHigher(xVal, id) >= 0) {
-    printf("X high bound for %f found at %ld\n", xVal, id);
+#ifdef DEBUG
+    printf("X high bound for %.2f found at %ld\n", xVal, id);
+#endif
     if (id < high)
       high = id;
-    else
+    else {
+#ifdef DEBUG
       printf("User-provided high bound is stronger.\n");
+#endif
+    }
   }
 
-  printf("Searching for %f, low bound %ld, high bound %ld\n",
+#ifdef DEBUG
+  printf("Searching for %.2f, low bound %ld, high bound %ld\n",
 	 xVal, low, high);
+#endif
 
   // handle simple case where the range has just one record
   if (low == high) {
@@ -639,7 +683,9 @@ Boolean QueryProcTape::DoLinearSearch(BufMgr *mgr,
   RecId previous = low;
   RecId current = previous + 1;
 
+#ifdef DEBUG
   printf("starting jump mode, minSkip %d, maxSkip %d\n", minSkip, maxSkip);
+#endif
 
   // repeat progressive jump loop until we're past the record
   if (maxSkip > 0) {
@@ -647,13 +693,17 @@ Boolean QueryProcTape::DoLinearSearch(BufMgr *mgr,
     while(1) {
       // Get data for current record
       GetX(mgr, tdata, map, current, x);
-      printf("at %ld, value is %f\n", current, x);
+#ifdef DEBUG
+      printf("at %ld, value is %.2f\n", current, x);
+#endif
       AddCoordMapping(map, current, x);
 
       if (x >= xVal) {                  // past the value we're searching?
 	if (current - previous < minSkip)
 	  break;                        // switch to reading mode
+#ifdef DEBUG
 	printf("starting another progressive search\n");
+#endif
 	current = previous + 1;         // start another progressive search
 	continue;
       }
@@ -675,12 +725,16 @@ Boolean QueryProcTape::DoLinearSearch(BufMgr *mgr,
   if (previous == high) {               // end of file or range?
     assert(previous == current);
     id = previous;
+#ifdef DEBUG
     printf("linear search ended at high %ld\n", id);
+#endif
     return true;
   }
 
   current = previous + 1;               // back off to previous known location
+#ifdef DEBUG
   printf("switching to read mode\n");
+#endif
 
   // read until record is found
   while(current <= high) {
@@ -701,7 +755,9 @@ Boolean QueryProcTape::DoLinearSearch(BufMgr *mgr,
   if (id > high)
     id = high;
 
+#ifdef DEBUG
   printf("target was found at %ld\n", id);
+#endif
 
   (void)table->insertOne(xVal, id);
 
@@ -742,7 +798,9 @@ void QueryProcTape::InitScan()
 Boolean QueryProcTape::DoScan(QPTapeData *qData, RecId low, RecId high, 
 			      Boolean tdataOnly)
 {
-  // printf("DoScan map 0x%x, [%d,%d]\n",qData->map, low, high);
+#ifdef DEBUG
+  printf("DoScan map 0x%p, [%ld,%ld]\n",qData->map, low, high);
+#endif
 
   BufMgr *mgr = qData->mgr;
   mgr->InitGetRecs(qData->tdata, qData->gdata, low, high, 
@@ -777,7 +835,9 @@ Boolean QueryProcTape::DoScan(QPTapeData *qData, RecId low, RecId high,
 
 void QueryProcTape::QPRangeInserted(RecId low, RecId high)
 {
-  // printf("range inserted [%d,%d]\n", low, high);
+#ifdef DEBUG
+  printf("range inserted [%ld,%ld]\n", low, high);
+#endif
 
   int tRecSize = _rangeQData->tdata->RecSize();
   int gRecSize = _rangeQData->map->GDataRecordSize();
@@ -805,8 +865,10 @@ void QueryProcTape::QPRangeInserted(RecId low, RecId high)
       _rangeQData->map->ConvertToGData(recId, dbuf,
 				       &_rangeRecs[numRecs-recsLeft+offset],
 				       numToConvert,_gdataBuf);
-      // printf("ReturnGData(0x%x,%d,0x%x,%d)\n", _rangeQData->map,recId,
-      //        _gdataBuf,numToConvert);
+#ifdef DEBUG
+      printf("ReturnGData(0x%p,%ld,0x%p,%d)\n", _rangeQData->map,recId,
+	     _gdataBuf, numToConvert);
+#endif
       
       _rangeQData->callback->ReturnGData(_rangeQData->map,recId,
 					 _gdataBuf,numToConvert);
@@ -828,8 +890,10 @@ void QueryProcTape::QPRangeInserted(RecId low, RecId high)
 void QueryProcTape::DistributeTData(QPTapeData *queryData, RecId startRid,
 				    int numRecs, void *buf, void **recs)
 {
-  // printf("DistributeTData map 0x%x, [%d,%d]\n", queryData->map,
-  //        startRid, startRid+numRecs-1);
+#ifdef DEBUG
+  printf("DistributeTData map 0x%p, [%ld,%ld]\n", queryData->map,
+	 startRid, startRid + numRecs - 1);
+#endif
 
   // init params for QPRangeInserted()
   _rangeBuf = buf;
@@ -852,11 +916,15 @@ void QueryProcTape::DistributeTData(QPTapeData *queryData, RecId startRid,
 	tempHigh = qData->high;
       if (tempHigh >= tempLow) {
 	_rangeQData = qData;
-	// printf("before insert range before: ");
-	// qData->range->Print();
+#ifdef DEBUG
+	printf("before insert range before: ");
+	qData->range->Print();
+#endif
 	qData->range->Insert(tempLow, tempHigh, this);
-	// printf("after insert: ");
-	// qData->range->Print();
+#ifdef DEBUG
+	printf("after insert: ");
+	qData->range->Print();
+#endif
       }
     }
   }
@@ -866,8 +934,10 @@ void QueryProcTape::DistributeTData(QPTapeData *queryData, RecId startRid,
 void QueryProcTape::DistributeGData(QPTapeData *queryData, RecId startRid,
 				    int numRecs, void *buf, void **recs)
 {
-  // printf("DistributeGData map 0x%x, [%d,%d]\n", startRid,
-  //        startRid+numRecs-1);
+#ifdef DEBUG
+  printf("DistributeGData map 0x%p, [%ld,%ld]\n", queryData->map,
+	 startRid, startRid + numRecs - 1);
+#endif
 
   // init params for QPRangeInserted()
   _rangeBuf = buf;
@@ -890,11 +960,15 @@ void QueryProcTape::DistributeGData(QPTapeData *queryData, RecId startRid,
 	tempHigh = qData->high;
       if (tempHigh >= tempLow) {
 	_rangeQData = qData;
-	// printf("before insert range before: ");
-	// qData->range->Print();
+#ifdef DEBUG
+	printf("before insert range before: ");
+	qData->range->Print();
+#endif
 	qData->range->Insert(tempLow, tempHigh, this);
-	// printf("after insert: ");
-	// qData->range->Print();
+#ifdef DEBUG
+	printf("after insert: ");
+	qData->range->Print();
+#endif
       }
     }
   }
@@ -917,8 +991,10 @@ QPTapeData *QueryProcTape::AllocEntry()
 
 void QueryProcTape::FreeEntry(QPTapeData *entry)
 {
-  // printf("QueryProcTape::FreeEntry: range:\n");
-  // entry->range->Print();
+#ifdef DEBUG
+  printf("QueryProcTape::FreeEntry: range:\n");
+  entry->range->Print();
+#endif
 
   delete entry->range;
   entry->next = _freeList;
@@ -975,17 +1051,19 @@ void QueryProcTape::PrintStat()
 
 void QueryProcTape::InsertMapping(TDataMap *map)
 {
-  // printf("InsertMapping 0x%x, %s %s\n", map,
-  //        map->GetTData()->GetName(), map->GetName());
+#ifdef DEBUG
+  printf("InsertMapping 0x%p, %s %s\n", map,
+         map->GetTData()->GetName(), map->GetName());
+#endif
 
-  int i;
-  for(i=0; i < _numMappings; i++) {
+  for(int i = 0; i < _numMappings; i++) {
     if (map == _mappings[i])
       return;
   }
+
   // not duplicate
   if (_numMappings == QPTAPE_MAX_MAPPINGS) {
-    fprintf(stderr,"QueryProcTape::InsertMapping: too many mappings\n");
+    fprintf(stderr, "QueryProcTape::InsertMapping: too many mappings\n");
     Exit::DoExit(2);
   }
   _mappings[_numMappings++] = map;
@@ -1087,7 +1165,9 @@ void QueryProcTape::DoGDataConvert()
 
   map = _mappings[_convertIndex++];
 
-  // printf("DoGDataConvert map 0x%x\n", map);
+#ifdef DEBUG
+  printf("DoGDataConvert map 0x%p\n", map);
+#endif
 
   gdata = map->GetGData();
   if (gdata == NULL)
@@ -1097,7 +1177,9 @@ void QueryProcTape::DoGDataConvert()
   int gRecSize = map->GDataRecordSize();
   
   int recsLeft = gdata->RecsLeftToConvert();
-  // printf("Converting Gata %s, %d recs left\n", gdata->GetName(),recsLeft);
+#ifdef DEBUG
+  printf("Converting Gata %s, %d recs left\n", gdata->GetName(), recsLeft);
+#endif
 
   if (recsLeft == 0)
     // no more space to store gdata
@@ -1160,7 +1242,11 @@ void QueryProcTape::AddCoordMapping(TDataMap *map, RecId id, Coord coord)
   RecId lower, higher;
   int lowExists = table->lookupLower(coord, lower);
   int highExists = table->lookupHigher(coord, higher);
-//  printf("Current %ld, lower %ld, higher %ld\n", id, lower, higher);
+
+#ifdef DEBUG
+  printf("Current %ld, lower %ld, higher %ld\n", id, lower, higher);
+#endif
+
   if ((lowExists < 0 || id - lower >= 0.75 * QPTAPE_MIN_MARK_DISTANCE)
       && (highExists < 0 || higher - id >= 0.75 * QPTAPE_MIN_MARK_DISTANCE))
     (void)table->insertOne(coord, id);
@@ -1170,8 +1256,10 @@ void QueryProcTape::AddCoordMapping(TDataMap *map, RecId id, Coord coord)
 void QueryProcTape::InitTDataQuery(TDataMap *map, VisualFilter &filter,
 				   Boolean approx)
 {
-  // printf("InitTdataQuery xLow: %f, xHigh %f, yLow %f, yHigh %f approx %d\n",
-  //        filter.xLow, filter.xHigh, filter.yLow, filter.yHigh, approx);
+#ifdef DEBUG
+  printf("InitTdataQuery xLow: %.2f, xHigh %.2f, yLow %.2f, yHigh %.2f approx %d\n",
+	 filter.xLow, filter.xHigh, filter.yLow, filter.yHigh, approx);
+#endif
 
   TData *tdata = map->GetTData();
   _tqueryApprox = approx;
@@ -1188,14 +1276,18 @@ void QueryProcTape::InitTDataQuery(TDataMap *map, VisualFilter &filter,
 
   if (numDimensions == 0) {
     _tqueryQdata->qType = QPTape_Scatter;
-    // printf("Scatter query\n");
+#ifdef DEBUG
+    printf("Scatter query\n");
+#endif
   } else if (numDimensions == 1 && dimensionInfo[0] == VISUAL_X) {
     if (numTDimensions != 1) {
       fprintf(stderr,"QueryProcTape::AppendQuery: tdimensions not 1\n");
       Exit::DoExit(1);
     }
     _tqueryQdata->qType = QPTape_X;
-    // printf("X query\n");
+#ifdef DEBUG
+    printf("X query\n");
+#endif
   } else if (numDimensions == 2 &&
 	   dimensionInfo[0] == VISUAL_Y &&
 	   dimensionInfo[1] == VISUAL_X) {
@@ -1205,7 +1297,9 @@ void QueryProcTape::InitTDataQuery(TDataMap *map, VisualFilter &filter,
       Exit::DoExit(1);
     }
     _tqueryQdata->qType = QPTape_YX;
-    // printf("YX query\n");
+#ifdef DEBUG
+    printf("YX query\n");
+#endif
   } else {
     fprintf(stderr,"QueryProcSimple::AppendQuery:don't know this query\n");
     Exit::DoExit(1);
@@ -1222,8 +1316,10 @@ void QueryProcTape::InitTDataQuery(TDataMap *map, VisualFilter &filter,
 
   switch(_tqueryQdata->qType) {
   case QPTape_Scatter:
-    // fprintf(stderr,"QueryProcTape:: can't process scatter query yet\n");
-    // Exit::DoExit(2);
+#if 0
+    fprintf(stderr,"QueryProcTape:: can't process scatter query yet\n");
+    Exit::DoExit(2);
+#endif
     if (tdata->HeadID(_tqueryQdata->current))
       (void)tdata->LastID(_tqueryQdata->high);
     else
@@ -1234,7 +1330,9 @@ void QueryProcTape::InitTDataQuery(TDataMap *map, VisualFilter &filter,
     if (DoLinearSearch(_mgr, tdata, map,
 		       _tqueryQdata->filter.xLow, false,
 		       _tqueryQdata->current)) {
+#ifdef DEBUG
       printf("linear search startId %ld\n", _tqueryQdata->current);
+#endif
       // Find where we have to stop
       RecId lastId;
       (void)_tqueryQdata->tdata->LastID(lastId);
@@ -1243,10 +1341,14 @@ void QueryProcTape::InitTDataQuery(TDataMap *map, VisualFilter &filter,
 			  _tqueryQdata->current, lastId, false)) {
 	_tqueryQdata->high = lastId;
       }
+#ifdef DEBUG
       printf("linear search endId %ld\n", _tqueryQdata->high);
+#endif
     } else {
       // done
-      // printf("linear search failed\n");
+#ifdef DEBUG
+      printf("linear search failed\n");
+#endif
       _tqueryQdata->state = QPTape_EndState;
     }
     break;
@@ -1264,7 +1366,6 @@ void QueryProcTape::InitTDataQuery(TDataMap *map, VisualFilter &filter,
   _hasTqueryRecs = false;
 }
 
-
 /***********************************************************************
   Get the next batch of matching TData. 
   algorithm:
@@ -1276,7 +1377,9 @@ void QueryProcTape::InitTDataQuery(TDataMap *map, VisualFilter &filter,
 Boolean QueryProcTape::GetTData(RecId &retStartRid, 
 				int &retNumRecs, char *&retBuf)
 {
-  // printf("GetTdata\n");
+#ifdef DEBUG
+  printf("GetTdata\n");
+#endif
 
   char gdataBuf[128]; // buffer to hold converted GData
   TData *tdata = _tqueryQdata->tdata;
@@ -1286,19 +1389,21 @@ Boolean QueryProcTape::GetTData(RecId &retStartRid,
 
   for(;;) {
     if (!_hasTqueryRecs) {
-      // go to buffer manger to get more records
-      if (!_mgr->GetRecs(isTData,_tqueryStartRid,
+      // go to buffer manager to get more records
+      if (!_mgr->GetRecs(isTData, _tqueryStartRid,
 			 _tqueryNumRecs, _tqueryBuf, recs)) {
-	// done
-	// printf("Done with BufMgr\n");
+#ifdef DEBUG
+	printf("Done with BufMgr\n");
+#endif
 	_mgr->DoneGetRecs();
 	_tqueryQdata->state = QPTape_EndState;
 	return false;
       }
-      // printf("Got buffer 0x%x, %d recs\n", _tqueryBuf, _tqueryNumRecs);
+#ifdef DEBUG
+      printf("Got buffer 0x%p, %d recs\n", _tqueryBuf, _tqueryNumRecs);
+#endif
       if (!isTData) {
-	// pass GData directlry
-	fprintf(stderr,"QueryProcTape::TData query didn't qet Tdata\n");
+	fprintf(stderr, "QueryProcTape::TData query didn't qet Tdata\n");
 	Exit::DoExit(2);
       }
       _tqueryBeginIndex = 0; // index of record to start searching
@@ -1306,19 +1411,22 @@ Boolean QueryProcTape::GetTData(RecId &retStartRid,
     }
 
     int tRecSize = tdata->RecSize();
-    Coord x, y;
+    Coord x = 0;
+    Coord y = 0;
     
     // Find the 1st record that fits
     char *tptr = (char *)_tqueryBuf + _tqueryBeginIndex*tRecSize;
     RecId recId = _tqueryStartRid + _tqueryBeginIndex;
     int beginIndex = _tqueryBeginIndex;
-    // printf("start beginINdex %d\n", beginIndex);
+#ifdef DEBUG
+    printf("start beginIndex %d\n", beginIndex);
+#endif
     if (!_tqueryApprox) {
       // Find exact match
       for(; beginIndex < _tqueryNumRecs; beginIndex++) {
 	map->ConvertToGData(recId,tptr,recs,1,gdataBuf);		
 
-	Boolean match= true;
+	Boolean match = true;
 	if ( _tqueryQdata->filter.flag & VISUAL_X) {
 	  if (map->GetDynamicArgs() & VISUAL_X)
 	    x = ((GDataBinRec *)gdataBuf)->x;
@@ -1341,7 +1449,9 @@ Boolean QueryProcTape::GetTData(RecId &retStartRid,
 	    match = false;
 	}
 	
-	// printf("TData query id %d, x = %f, y = %f\n", recId, x, y);
+#ifdef DEBUG
+	printf("TData query id %ld, x = %.2f, y = %.2f\n", recId, x, y);
+#endif
 	
 	recId++;
 	tptr += tRecSize;
@@ -1389,15 +1499,18 @@ Boolean QueryProcTape::GetTData(RecId &retStartRid,
 	  recId ++; tptr += tRecSize;
 
 	  if (!match) {
-	    // does not fit*/
-			break;
-		      }
+	    // does not fit
+	    break;
+	  }
 	}
       }
+
       _tqueryBeginIndex = endIndex;
       // everything from [beginIndex..endIndex-1] fits
       // first, free buffer if we have to
-      // printf("endIndex = %d\n", endIndex);
+#ifdef DEBUG
+	printf("endIndex = %d\n", endIndex);
+#endif
 
       if (endIndex >= _tqueryNumRecs) {
 	_mgr->FreeRecs(_tqueryBuf,NoChange);
@@ -1411,7 +1524,9 @@ Boolean QueryProcTape::GetTData(RecId &retStartRid,
       // didn't find any record. Get ready for next iteration
       // to fetch more records
 
-      // printf("no match\n");
+#ifdef DEBUG
+      printf("no match\n");
+#endif
 
       _mgr->FreeRecs(_tqueryBuf,NoChange);
       _hasTqueryRecs = false;
@@ -1421,7 +1536,9 @@ Boolean QueryProcTape::GetTData(RecId &retStartRid,
 
 void QueryProcTape::DoneTDataQuery()
 {
-  // printf("DoneTDataQuery\n");
+#ifdef DEBUG
+  printf("DoneTDataQuery\n");
+#endif
 
   if (_tqueryQdata->state != QPTape_EndState) {
     if (_hasTqueryRecs)
@@ -1433,7 +1550,9 @@ void QueryProcTape::DoneTDataQuery()
 // Get minimum X value for mapping. Return true if found
 Boolean QueryProcTape::GetMinX(TDataMap *map, Coord &minX)
 {
-  // printf("QueryProcTape::GetMinX\n");
+#ifdef DEBUG
+  printf("QueryProcTape::GetMinX\n");
+#endif
 
   // See if we can find the xMin for this graph
   int numDimensions;
@@ -1449,10 +1568,14 @@ Boolean QueryProcTape::GetMinX(TDataMap *map, Coord &minX)
       numTDimensions == 1 ) {
     // We can find MIN X easily
     GetX(_mgr, tdata, map, firstId, minX);
-    // printf("minX = %f\n", minX);
+#ifdef DEBUG
+    printf("minX = %f\n", minX);
+#endif
     return true;
   } else {
-    // printf("no minX\n");
+#ifdef DEBUG
+    printf("no minX\n");
+#endif
     return false;
   }
 }
@@ -1476,5 +1599,3 @@ void QueryProcTape::Converted(RecId low, RecId high)
   printf("Records %ld through %ld have been converted to GData.\n",
 	 low, high);
 }
-
-
