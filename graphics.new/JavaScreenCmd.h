@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1999/08/19 20:46:37  wenger
+  Added JAVAC_ProtocolVersion command.
+
   Revision 1.23  1999/08/19 13:54:26  wenger
   Changes for JavaScreen support: all 15 shape attributes now sent in
   GData; added zoom in/out argument to JAVAC_MouseAction_RubberBand;
@@ -141,9 +144,11 @@ class ViewGraph;
 
 class DeviseCursor;
 
+
 class JavaScreenCmd
 {
 	friend class View;
+	friend class JSArgs;
 
 	public:
 		typedef enum 
@@ -195,6 +200,9 @@ class JavaScreenCmd
 		int Run();
 		static char* JavaScreenCmdName(JavaScreenCmd::ControlCmdType);
 
+	protected:
+		void ReturnVal(int argc, char** argv);
+
 	private:
 		static char* _controlCmdName[CONTROLCMD_NUM];
 		ControlPanel	*_control;
@@ -233,7 +241,6 @@ class JavaScreenCmd
 		ControlCmdType SendWindowData(const char* fileName);
 		ControlCmdType SendViewGData(ViewGraph *view);
 		int  ControlCmd(ControlCmdType  status);
-		void ReturnVal(int argc, char** argv);
 		void UpdateSessionList(char *dirName);
 		void DrawAllCursors();
 		void DoCloseSession();
@@ -249,6 +256,27 @@ class JavaScreenCmd
 	protected:
 		static void DrawCursor(View *view, DeviseCursor *cursor);
 		static void EraseCursor(View *view, DeviseCursor *cursor);
+};
+
+
+class JSArgs {
+public:
+  JSArgs(int argc);
+  ~JSArgs();
+
+  void FillString(const char *value);
+  void FillInt(int value);
+  void FillDouble(double value);
+
+  void ReturnVal(JavaScreenCmd *jsCmd) {
+    jsCmd->ReturnVal(_argc, (char **)_argv);
+  }
+
+private:
+  int _argc;
+  const char **_argv;
+  int _pos;
+  Boolean *_dynamic;
 };
 
 #endif

@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.69  1999/08/19 20:46:37  wenger
+  Added JAVAC_ProtocolVersion command.
+
   Revision 1.68  1999/08/19 13:54:25  wenger
   Changes for JavaScreen support: all 15 shape attributes now sent in
   GData; added zoom in/out argument to JAVAC_MouseAction_RubberBand;
@@ -483,21 +486,61 @@ getFileSize(const char* filename)
 }
 
 //====================================================================
-static void
-FillInt(char** argv, int& pos, const int x)
+JSArgs::JSArgs(int argc)
 {
-	char buf[128];
-	sprintf(buf, "%d", x);
-	argv[pos++] = CopyString(buf);
+  _argc = argc;
+  _argv = new (const char *)[_argc];
+  _dynamic = new Boolean[_argc];
+
+  for (int index = 0; index < _argc; index++) {
+    _dynamic[index] = false;
+  }
+
+  _pos = 0;
 }
 
 //====================================================================
-static void
-FillDouble(char** argv, int& pos, const double x)
+JSArgs::~JSArgs()
 {
-	char buf[128];
-	sprintf(buf, "%.10g", x);
-	argv[pos++] = CopyString(buf);
+  for (int index = 0; index < _argc; index++) {
+    if (_dynamic[index]) {
+	  delete [] _argv[index];
+	}
+  }
+  delete [] _argv;
+  delete [] _dynamic;
+}
+
+//====================================================================
+void
+JSArgs::FillString(const char *value)
+{
+  DOASSERT(_pos < _argc, "Too many arguments");
+  _argv[_pos++] = value;
+}
+
+//====================================================================
+void
+JSArgs::FillInt(int value)
+{
+  DOASSERT(_pos < _argc, "Too many arguments");
+  char buf[128];
+  sprintf(buf, "%d", value);
+  _argv[_pos] = CopyString(buf);
+  _dynamic[_pos] = true;
+  _pos++;
+}
+
+//====================================================================
+void
+JSArgs::FillDouble(double value)
+{
+  DOASSERT(_pos < _argc, "Too many arguments");
+  char buf[128];
+  sprintf(buf, "%.10g", value);
+  _argv[_pos] = CopyString(buf);
+  _dynamic[_pos] = true;
+  _pos++;
 }
 
 //====================================================================
@@ -1553,14 +1596,12 @@ JavaScreenCmd::RequestUpdateRecordValue(int argc, char **argv)
 	  "JavaScreenCmd::RequestUpdateRecordValue()\n");
 #endif
 
-    char **args = new char *[argc+1];
-	args[0] = _controlCmdName[UPDATERECORDVALUE];
+	JSArgs args(argc+1);
+	args.FillString(_controlCmdName[UPDATERECORDVALUE]);
 	for (int index = 0; index < argc; index++) {
-		args[index+1] = argv[index];
+		args.FillString(argv[index]);
 	}
-	ReturnVal(argc+1, args);
-
-	delete [] args;
+	args.ReturnVal(this);
 
 	return DONE;
 }
@@ -1809,10 +1850,9 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 	// Send DONE here so jspop and js start reading from the image socket.
 	//
     if (_status == DONE) {
-		const int argCount = 1;
-		char *argv[argCount];
-		argv[0] = _controlCmdName[DONE];
-		ReturnVal(argCount, argv);
+		JSArgs args(1);
+		args.FillString(_controlCmdName[DONE]);
+		args.ReturnVal(this);
 	}
 
 	//
@@ -1921,25 +1961,16 @@ JavaScreenCmd::RequestUpdateGData(ViewGraph *view)
 	//
 	// Send the command...
 	//
-	const int argCount = 7;
-	char* argv[argCount];
-	int	pos = 0;
-	argv[pos++] = _controlCmdName[UPDATEGDATA];
-	argv[pos++] = view->GetName();
-	FillDouble(argv, pos, xMult);
-	FillDouble(argv, pos, xOffset);
-	FillDouble(argv, pos, yMult);
-	FillDouble(argv, pos, yOffset);
-	FillInt(argv, pos, gdSize);
-	DOASSERT(pos == argCount, "Incorrect argCount");
+	JSArgs args(7);
+	args.FillString(_controlCmdName[UPDATEGDATA]);
+	args.FillString(view->GetName());
+	args.FillDouble(xMult);
+	args.FillDouble(xOffset);
+	args.FillDouble(yMult);
+	args.FillDouble(yOffset);
+	args.FillInt(gdSize);
 
-	ReturnVal(argCount, argv);
-
-	delete [] argv[2];
-	delete [] argv[3];
-	delete [] argv[4];
-	delete [] argv[5];
-	delete [] argv[6];
+	args.ReturnVal(this);
 
 	return DONE;
 }
@@ -2044,34 +2075,24 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	//
     // Generate the command to send.
 	//
-	const int argCount = 11;
-	char *argv[argCount];
-	int	pos = 0;
-	argv[pos++] = _controlCmdName[DRAWCURSOR];
-	argv[pos++] = (char *)cursor->GetName();
-	argv[pos++] = view->GetName();
-	FillInt(argv, pos, xLoc);
-	FillInt(argv, pos, yLoc);
-	FillInt(argv, pos, width);
-	FillInt(argv, pos, height);
-	argv[pos++] = movement;
-	argv[pos++] = fixedSize;
-	FillDouble(argv, pos, gridX);
-	FillDouble(argv, pos, gridY);
-	DOASSERT(pos == argCount, "Incorrect argCount");
+	JSArgs args(11);
+	args.FillString(_controlCmdName[DRAWCURSOR]);
+	args.FillString(cursor->GetName());
+	args.FillString(view->GetName());
+	args.FillInt(xLoc);
+	args.FillInt(yLoc);
+	args.FillInt(width);
+	args.FillInt(height);
+	args.FillString(movement);
+	args.FillString(fixedSize);
+	args.FillDouble(gridX);
+	args.FillDouble(gridY);
 
 	//
     // This JavaScreenCmd object is created only to send the command.
 	//
     JavaScreenCmd jsc(ControlPanel::Instance(), NULL_SVC_CMD, 0, NULL);
-    jsc.ReturnVal(argCount, argv);
-
-	delete [] argv[3];
-	delete [] argv[4];
-	delete [] argv[5];
-	delete [] argv[6];
-	delete [] argv[9];
-	delete [] argv[10];
+	args.ReturnVal(&jsc);
 }
 
 //====================================================================
@@ -2099,15 +2120,14 @@ JavaScreenCmd::EraseCursor(View *view, DeviseCursor *cursor)
 		return;
 	}
 
-	const int argCount = 3;
-	char* argv[argCount];
-	argv[0] = _controlCmdName[ERASECURSOR];
-	argv[1] = (char *)cursor->GetName();
-	argv[2] = view->GetName();
+	JSArgs args(3);
+	args.FillString(_controlCmdName[ERASECURSOR]);
+	args.FillString(cursor->GetName());
+	args.FillString(view->GetName());
 
     // This JavaScreenCmd object is created only to send the command.
     JavaScreenCmd jsc(ControlPanel::Instance(), NULL_SVC_CMD, 0, NULL);
-    jsc.ReturnVal(argCount, argv);
+	args.ReturnVal(&jsc);
 #endif
 }
 
@@ -2511,53 +2531,34 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 	Boolean keysEnabled = !keysDisabled;
 
 	{ // limit variable scopes
-	  const int argCount = 24;
-	  char *argv[argCount];
-	  int	pos = 0;
-	  argv[pos++] = _controlCmdName[CREATEVIEW];
-	  argv[pos++] = view->GetName();
-	  argv[pos++] = parent ? parent->GetName() : "";
-	  argv[pos++] = view->IsInPileMode() ?
-	    view->GetParentPileStack()->GetFirstView()->GetName() : "";
-	  FillInt(argv, pos, viewX);
-	  FillInt(argv, pos, viewY);
-	  FillInt(argv, pos, viewWidth);
-	  FillInt(argv, pos, viewHeight);
-	  FillDouble(argv, pos, viewZ);
-	  FillInt(argv, pos, dataX);
-	  FillInt(argv, pos, dataY);
-	  FillInt(argv, pos, dataWidth);
-	  FillInt(argv, pos, dataHeight);
-	  argv[pos++] = (char *)fgColorStr.c_str();
-	  argv[pos++] = (char *)bgColorStr.c_str();
-	  argv[pos++] = xAxisType;
-	  argv[pos++] = yAxisType;
-	  argv[pos++] = viewTitle;
-	  FillDouble(argv, pos, gridX);
-	  FillDouble(argv, pos, gridY);
-	  FillInt(argv, pos, rubberbandEnabled);
-	  FillInt(argv, pos, cursorMoveEnabled);
-	  FillInt(argv, pos, drillDownEnabled);
-	  FillInt(argv, pos, keysEnabled);
-	  DOASSERT(pos == argCount, "Incorrect argCount");
+	  JSArgs args(24);
+	  args.FillString(_controlCmdName[CREATEVIEW]);
+	  args.FillString(view->GetName());
+	  args.FillString(parent ? parent->GetName() : "");
+	  args.FillString(view->IsInPileMode() ?
+	    view->GetParentPileStack()->GetFirstView()->GetName() : "");
+	  args.FillInt(viewX);
+	  args.FillInt(viewY);
+	  args.FillInt(viewWidth);
+	  args.FillInt(viewHeight);
+	  args.FillDouble(viewZ);
+	  args.FillInt(dataX);
+	  args.FillInt(dataY);
+	  args.FillInt(dataWidth);
+	  args.FillInt(dataHeight);
+	  args.FillString(fgColorStr.c_str());
+	  args.FillString(bgColorStr.c_str());
+	  args.FillString(xAxisType);
+	  args.FillString(yAxisType);
+	  args.FillString(viewTitle);
+	  args.FillDouble(gridX);
+	  args.FillDouble(gridY);
+	  args.FillInt(rubberbandEnabled);
+	  args.FillInt(cursorMoveEnabled);
+	  args.FillInt(drillDownEnabled);
+	  args.FillInt(keysEnabled);
 
-	  ReturnVal(argCount, argv);
-
-	  delete [] argv[4];
-	  delete [] argv[5];
-	  delete [] argv[6];
-	  delete [] argv[7];
-	  delete [] argv[8];
-	  delete [] argv[9];
-	  delete [] argv[10];
-	  delete [] argv[11];
-	  delete [] argv[12];
-	  delete [] argv[18];
-	  delete [] argv[19];
-	  delete [] argv[20];
-	  delete [] argv[21];
-	  delete [] argv[22];
-	  delete [] argv[23];
+	  args.ReturnVal(this);
 	}
 }
 
@@ -2570,14 +2571,11 @@ JavaScreenCmd::DeleteChildViews(View *view)
     DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
-	const int argCount = 2;
-	char *argv[argCount];
-	int	pos = 0;
-	argv[pos++] = _controlCmdName[DELETECHILDVIEWS];
-	argv[pos++] = view->GetName();
-	DOASSERT(pos == argCount, "Incorrect argCount");
+	JSArgs args(2);
+	args.FillString(_controlCmdName[DELETECHILDVIEWS]);
+	args.FillString(view->GetName());
 
-	ReturnVal(argCount, argv);
+	args.ReturnVal(this);
 }
 
 //====================================================================
@@ -2599,20 +2597,16 @@ JavaScreenCmd::SendViewDataArea(View *view)
 		//
    		// Generate the command to send.
 		//
-		const int argCount = 5;
-		char *argv[argCount];
-		int	pos = 0;
-		argv[pos++] = _controlCmdName[VIEWDATAAREA];
-		argv[pos++] = view->GetName();
-		argv[pos++] = "X";
-		FillDouble(argv, pos, filter.xLow);
-		FillDouble(argv, pos, filter.xHigh);
-	    DOASSERT(pos == argCount, "Incorrect argCount");
+		{
+		  JSArgs args(5);
+		  args.FillString(_controlCmdName[VIEWDATAAREA]);
+		  args.FillString(view->GetName());
+		  args.FillString("X");
+		  args.FillDouble(filter.xLow);
+		  args.FillDouble(filter.xHigh);
 
-		ReturnVal(argCount, argv);
-
-		delete [] argv[3];
-		delete [] argv[4];
+		  args.ReturnVal(this);
+		}
 
 
 		// Y axis...
@@ -2620,18 +2614,17 @@ JavaScreenCmd::SendViewDataArea(View *view)
 		//
    		// Generate the command to send.
 		//
-		pos = 0;
-		argv[pos++] = _controlCmdName[VIEWDATAAREA];
-		argv[pos++] = view->GetName();
-		argv[pos++] = "Y";
-		FillDouble(argv, pos, filter.yLow);
-		FillDouble(argv, pos, filter.yHigh);
-	    DOASSERT(pos == argCount, "Incorrect argCount");
 
-		ReturnVal(argCount, argv);
+		{
+		  JSArgs args(5);
+		  args.FillString(_controlCmdName[VIEWDATAAREA]);
+		  args.FillString(view->GetName());
+		  args.FillString("Y");
+		  args.FillDouble(filter.yLow);
+		  args.FillDouble(filter.yHigh);
 
-		delete [] argv[3];
-		delete [] argv[4];
+		  args.ReturnVal(this);
+		}
 	}
 }
 
@@ -2645,14 +2638,10 @@ JavaScreenCmd::UpdateViewImage(View *view, int imageSize)
     DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
-	const int argCount = 3;
-	char* argv[argCount];
-	int	pos = 0;
-	argv[pos++] = _controlCmdName[UPDATEVIEWIMAGE];
-	argv[pos++] = view->GetName();
-	FillInt(argv, pos, imageSize);
-	DOASSERT(pos == argCount, "Incorrect argCount");
+	JSArgs args(3);
+	args.FillString(_controlCmdName[UPDATEVIEWIMAGE]);
+	args.FillString(view->GetName());
+	args.FillInt(imageSize);
 
-	ReturnVal(argCount, argv);
-	delete [] argv[2];
+	args.ReturnVal(this);
 }
