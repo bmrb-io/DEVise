@@ -15,7 +15,11 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/11/25 19:48:28  jussi
+  Added copyright notice and cleaned up the code a bit. Added IsValid
+  method.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -88,22 +92,9 @@ TDataMulti::TDataMulti(char *name): TDataAscii(name, sizeof(MultiRec))
   Initialize();
 }
 
-Boolean TDataMulti::IsValid(char *line)
-{
-  int numArgs;
-  char **args;
-
-  Parse(line, numArgs, args);
-
-  if (numArgs != 5)
-    return false;
-	
-  return true;
-}
-
 /* Decode a record and put data into buffer */
 
-Boolean TDataMulti::Decode(RecId, void *recordBuf, char *line)
+Boolean TDataMulti::Decode(void *recordBuf, char *line)
 {
   MultiRec *rec = (MultiRec *)recordBuf;
   int numArgs; char **args;

@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/11/25 19:53:18  jussi
+  Added copyright notice and the IsValid() method.
+*/
 
 #ifndef TDataMulti_h
 #define TDataMulti_h
@@ -63,11 +66,8 @@ public:
 	TDataMulti(char *name);
 
 protected:
-	/* Decode a record; return false if this line is not valid. */
-	virtual Boolean IsValid(char *line);
-
 	/* Decode a record and put data into buffer */
-	virtual Boolean Decode(RecId id,void *recordBuf, char *line);
+	virtual Boolean Decode(void *recordBuf, char *line);
 
 private:
 	int _first;

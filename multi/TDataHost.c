@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/11/25 19:50:24  jussi
+  Added copyright notice and the IsValid() method.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -88,22 +91,9 @@ TDataHost::TDataHost(char *name): TDataAscii(name, sizeof(HostRec))
   Initialize();
 }
 
-Boolean TDataHost::IsValid(char *line)
-{
-  int numArgs;
-  char **args;
-
-  Parse(line, numArgs, args);
-
-  if (numArgs != 4)
-    return false;
-	
-  return true;
-}
-
 /* Decode a record and put data into buffer */
 
-Boolean TDataHost::Decode(RecId, void *recordBuf, char *line)
+Boolean TDataHost::Decode(void *recordBuf, char *line)
 {
   HostRec *rec = (HostRec *)recordBuf;
   int numArgs; char **args;

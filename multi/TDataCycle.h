@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/11/25 19:52:56  jussi
+  Added copyright notice and the IsValid() method.
+*/
 
 #ifndef TDataCycle_h
 #define TDataCycle_h
@@ -63,11 +66,8 @@ public:
 	TDataCycle(char *name);
 
 protected:
-	/* Decode a record; return false if this line is not valid. */
-	virtual Boolean IsValid(char *line);
-
 	/* Decode a record and put data into buffer */
-	virtual Boolean Decode(RecId id,void *recordBuf, char *line);
+	virtual Boolean Decode(void *recordBuf, char *line);
 
 private:
 	int _first;

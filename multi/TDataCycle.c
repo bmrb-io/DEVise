@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/11/25 19:51:58  jussi
+  Added copyright notice and the IsValid() method.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -88,22 +91,9 @@ TDataCycle::TDataCycle(char *name): TDataAscii(name, sizeof(CycleRec))
   Initialize();
 }
 
-Boolean TDataCycle::IsValid(char *line)
-{
-  int numArgs;
-  char **args;
-
-  Parse(line, numArgs, args);
-
-  if (numArgs != 7)
-    return false;
-	
-  return true;
-}
-
 /* Decode a record and put data into buffer */
 
-Boolean TDataCycle::Decode(RecId, void *recordBuf, char *line)
+Boolean TDataCycle::Decode(void *recordBuf, char *line)
 {
   CycleRec *rec = (CycleRec *)recordBuf;
   int numArgs; char **args;
