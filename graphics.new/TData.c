@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/11/18 18:10:53  donjerko
+  New files and changes to make DTE work with Devise
+
   Revision 1.11  1996/11/01 19:28:23  kmurli
   Added DQL sources to include access to TDataDQL. This is equivalent to
   TDataAscii/TDataBinary. The DQL type in the Tcl/Tk corresponds to this
@@ -139,10 +142,10 @@ TData::TData(char* name, char* type, char* param, int recSize)
 	if (strcmp(file, segFile)) {
 	    DOASSERT(false, "Data segment does not match tdata");
 	}
-	if (   !strncmp(name, "/dev/rmt", 8)
-	    || !strncmp(name, "/dev/nrmt", 9)
-	    || !strncmp(name, "/dev/rst", 8)
-	    || !strncmp(name, "/dev/nrst", 9)) {
+	if (   !strncmp(file, "/dev/rmt", 8)
+	    || !strncmp(file, "/dev/nrmt", 9)
+	    || !strncmp(file, "/dev/rst", 8)
+	    || !strncmp(file, "/dev/nrst", 9)) {
 
 	    _data = new DataSourceTape(file, NULL);
 	} else {
