@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/08/10 20:30:57  donjerko
+  Fixed the NO_RTREE option.
+
   Revision 1.19  1997/07/30 21:39:26  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -260,7 +263,8 @@ void Site::typify(String option){	// Throws an exception
 	TRY(in = contactURL(name, options, values, count), );
 	delete [] options;
 	delete [] values;
-	iterator = new StandardRead();	
+//	iterator = new StandardRead();	
+	assert(!"temporarily broken");
 	TRY(iterator->open(in), );
 	LOG(logFile << "Header: ");
 	LOG(iterator->display(logFile));
@@ -445,6 +449,7 @@ Site* findIndexFor(String tableStr){	// throws
 	TableName* tableName = new TableName(".sysind");
 	TRY(Interface* interf = catalog->findInterface(tableName), NULL);
 	delete catalog;
+	assert(interf);
 	TRY(Site* site = interf->getSite(), NULL);
 	delete interf;
 	BaseSelection* name = new PrimeSelection("t", "table");
@@ -592,7 +597,9 @@ Iterator* SiteGroup::createExec(){
 	int innerNumFlds = site2->getNumFlds();
 	TRY(Iterator* it1 = site1->createExec(), NULL);
 	TRY(Iterator* it2 = site2->createExec(), NULL);
-	return new NLJoinExec(it1, it2, select, where, innerNumFlds);
+	TupleLoader* tupleLoader = new TupleLoader;
+	TRY(tupleLoader->open(innerNumFlds, site2->getTypeIDs()), NULL);
+	return new NLJoinExec(it1, it2, select, where, innerNumFlds, tupleLoader);
 }
 
 Iterator* UnionSite::createExec(){

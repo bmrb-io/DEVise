@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/08/04 14:50:50  donjerko
+  Fixed the bug in insert and delete queries.
+
   Revision 1.26  1997/07/30 21:39:28  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -291,6 +294,7 @@ void intToDouble(const Type* arg, Type*& result, size_t& = dummySz);
 void doubleToDouble(const Type* arg, Type*& result, size_t& = dummySz);
 void intToInt(const Type* arg, Type*& result, size_t& = dummySz);
 void stringLToString(const Type* arg, Type*& result, size_t& = dummySz);
+void stringToStringL(const Type* arg, Type*& result, size_t& sz);
 
 void doubleAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 void doubleSub(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
@@ -574,6 +578,10 @@ public:
 			retType = "bool";
 			return new GeneralPtr(stringGT, boolSize, oneOver3);
 		}
+		else if(name == "comp"){
+			retType = "bool";
+			return new GeneralPtr(stringComp, boolSize, oneOver3);
+		}
 		else{
 			THROW(new Exception(msg), NULL);
 		}
@@ -807,32 +815,59 @@ public:
 };
 
 class ISchema {
+	TypeID* typeIDs;
 	String* attributeNames;
 	int numFlds;
 public:
-	ISchema() : attributeNames(NULL), numFlds(0) {}
-	ISchema(String* attributeNames, int numFlds) :
-		attributeNames(attributeNames), numFlds(numFlds) {}
+	ISchema() : typeIDs(NULL), attributeNames(NULL), numFlds(0) {}
+	ISchema(const String& str); 
+	ISchema(TypeID* typeIDs, String* attributeNames, int numFlds) :
+		typeIDs(typeIDs),
+		attributeNames(attributeNames), 
+		numFlds(numFlds) {}
 	ISchema(const ISchema& x){
 		numFlds = x.numFlds;
-		attributeNames = new String[numFlds];
-		for(int i = 0; i < numFlds; i++){
-			attributeNames[i] = x.attributeNames[i];
+		if(x.attributeNames){
+			attributeNames = new String[numFlds];
+			for(int i = 0; i < numFlds; i++){
+				attributeNames[i] = x.attributeNames[i];
+			}
+		}
+		else{
+			attributeNames = NULL;
+		}
+		if(x.typeIDs){
+			typeIDs = new TypeID[numFlds];
+			for(int i = 0; i < numFlds; i++){
+				typeIDs[i] = x.typeIDs[i];
+			}
+		}
+		else{
+			typeIDs = NULL;
 		}
 	}
 	~ISchema(){
+		delete [] typeIDs;
 		delete [] attributeNames;
 	}
 	istream& read(istream& in); // Throws Exception
-	void display(ostream& out);
-	int getNumFlds(){
+	void write(ostream& out);
+	int getNumFlds() const {
 		return numFlds;
 	}
-	const String* getAttributeNames(){
+	const String* getAttributeNames() const {
 		assert(attributeNames);
 		return attributeNames;
 	}
+	const TypeID* getTypeIDs() const {
+		assert(typeIDs);
+		return typeIDs;
+	}
+	friend istream& operator>>(istream& in, ISchema& s);
+	friend ostream& operator<<(ostream& out, const ISchema& s);
 };
+
+extern ISchema DIR_SCHEMA;
 
 class MemoryLoader {
 protected:
@@ -895,6 +930,15 @@ public:
 	}
 };
 
+class StringLoader : public MemoryLoader {
+public:
+	virtual Type* load(const Type* arg){
+		char* retVal = (char*) allocate(strlen((char*) arg) + 1);
+		strcpy(retVal, (char*) arg);
+		return retVal;
+	}
+};
+
 template <class T>
 class MemoryLoaderTemplate : public MemoryLoader {
 public:
@@ -908,7 +952,7 @@ public:
 	~MemoryLoaderTemplate(){
 		for(pagePtrs.rewind(); !pagePtrs.atEnd(); pagePtrs.step()){
 			void* base = pagePtrs.get();
-			for(int i = 0; i <= PAGE_SZ - sizeof(T); i += sizeof(T)){
+			for(unsigned i = 0; i <= PAGE_SZ - sizeof(T); i += sizeof(T)){
 				((T*) (base + i))->~T();
 			}
 		}

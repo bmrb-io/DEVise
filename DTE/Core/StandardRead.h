@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/07/30 21:39:19  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.14  1997/07/22 15:00:54  donjerko
   *** empty log message ***
 
@@ -77,6 +80,7 @@ public:
 		in(in), readPtrs(readPtrs),
 		destroyPtrs(destroyPtrs), tuple(tuple), currentSz(currentSz),
 		numFlds(numFlds) {}
+	StandReadExec(const ISchema& schema, istream* in);
 	virtual ~StandReadExec(){
 		// destroyTuple(tuple, numFlds, typeIDs);
 		delete [] currentSz;
@@ -123,12 +127,11 @@ public:
 		delete [] attributeNames;
 		delete stats;
 	}
-	virtual void open(istream* in);	// Throws exception
+//	virtual void open(istream* in);	// Throws exception
 	void open(istream* in, int numFlds, const TypeID* typeIDs); 
 		// throws, used for tmp tables
 
-	void open(istream* in, int numFlds, TypeID* typeIDs, 
-		String* attributeNames); 
+	void open(const ISchema& schema, istream* in); 
 
 	void writeTo(ofstream* outfile);
 	virtual int getNumFlds(){
@@ -146,7 +149,12 @@ public:
 		return order;
 	}
      virtual Stats* getStats(){
-          return stats;
+		if(stats){
+			return stats;
+		}
+		else{
+			return PlanOp::getStats();
+		}
      }
 	virtual ostream& display(ostream& out){
 		out << "Num fields: " << numFlds << endl;

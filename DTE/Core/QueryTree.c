@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1997/08/11 17:10:16  donjerko
+  Added special processing for min/max queries.
+
   Revision 1.28  1997/08/10 18:09:15  donjerko
   Fixed the group by clause
 
@@ -240,7 +243,7 @@ Site* QueryTree::createSite(){
 	   	// Change the select list
 		TRY(selectList = aggregates[count]->filterList(),NULL);
 
-#if defined(DEBUG)
+#if defined(DEBUG) || 1
 		cerr << " Removing aggregates from the list\n";
 		displayList(cerr, selectList, ", ");
 		cerr << endl;
@@ -400,7 +403,9 @@ Site* QueryTree::createSite(){
 	}
 
 	for(int k = count; k >= 0;k--){
-		TRY(aggregates[k]->typify(siteGroup), NULL);
+		cerr << "name = " << siteGroup->getName() << endl;
+//		siteGroup->filterAll(selectList);
+		TRY(aggregates[k]->typify(siteGroup->getName(), siteGroup), NULL);
 		siteGroup = aggregates[k];
 	}
 

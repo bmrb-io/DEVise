@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/06/21 22:48:07  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.4  1997/04/14 20:44:12  donjerko
   Removed class Path and introduced new BaseSelection class Member.
 
@@ -46,7 +49,10 @@ LOG(extern ofstream logFile);
 class Exception{
 	String text;
 public:
-	Exception(String text) : text(text){}
+	Exception(const String& text) : text(text){}
+	void append(const String& more){
+		text += String("\n") + more;
+	}
 	void display(ostream& out = cout){
 		out << "1 " << text;
 	}
@@ -108,13 +114,14 @@ extern ITimer iTimer;
 
 #define THROW(A,B)\
 	if(currExcept){\
-		cout << "Uncaught exception found:\n";\
+		cout << "\nUncaught exception found:\n";\
 		currExcept->display();\
 		cout << endl;\
 	}\
 	assert(!currExcept); currExcept = A; return B 
 
 #define TRY(A,B) A; if(currExcept){return B;}
+#define CHECK(A,B) if(currExcept){currExcept->append(A); return B;}
 #define CATCH(A) if(currExcept){A; currExcept = NULL;}
 
 #endif

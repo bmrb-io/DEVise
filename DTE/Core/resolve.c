@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/07/30 21:39:26  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.18  1997/07/22 15:00:57  donjerko
   *** empty log message ***
 
@@ -195,6 +198,11 @@ TypeID GlobalSelect::typify(List<Site*>* sites){
 		sites->step();
 		if(sites->atEnd()){
 			cerr << "Could not find site: " << myName << endl;
+			cerr << "among: ";
+			for(sites->rewind(); !sites->atEnd(); sites->step()){
+				cerr << sites->get()->getName() << ", ";
+			}
+			cerr << endl;
 			assert(0);
 		}
 	}
@@ -373,8 +381,6 @@ bool PrimeSelection::match(BaseSelection* x){
 	assert(y->alias);
 	assert(alias);
 	if(*alias != *y->alias){
-		cerr << "Failing because name " << *alias << " does not match "
-			<< *y->alias << endl;
 		return false;
 	}
 	assert(y->fieldNm);
@@ -390,7 +396,10 @@ TypeID Operator::typify(List<Site*>* sites){
 	TRY(right->typify(sites), "");
 	TypeID root = left->getTypeID();
 	TypeID arg = right->getTypeID();
-	if(!sameType(root, arg)){
+	GeneralPtr* genPtr;
+	genPtr = getOperatorPtr(name, root, arg, typeID);
+	CATCH(;);
+	if(!genPtr){
 
 		// need to typecast
 
@@ -411,9 +420,8 @@ TypeID Operator::typify(List<Site*>* sites){
 			left = new TypeCast(arg, left, cast);
 			root = arg;
 		}
+		TRY(genPtr = getOperatorPtr(name, root, arg, typeID), "unknown");
 	}
-	GeneralPtr* genPtr;
-	TRY(genPtr = getOperatorPtr(name, root, arg, typeID), "unknown");
 	if(!genPtr){
 		String msg = "No operator " + name + "(" + root + ", " +
 			arg + ") defined";

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/08/10 20:30:55  donjerko
+  Fixed the NO_RTREE option.
+
   Revision 1.10  1997/07/22 15:00:53  donjerko
   *** empty log message ***
 
@@ -31,6 +34,8 @@
   solaris, solsparc, and hp dependencies.
 
  */
+
+#define DEBUG
 
 #include "RTreeRead.h"
 #include "RTree.h"

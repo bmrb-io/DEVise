@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/06/30 23:05:03  donjerko
+  CVS:
+
   Revision 1.11  1997/06/21 22:48:04  donjerko
   Separated type-checking and execution into different classes.
 
@@ -56,6 +59,24 @@
 #include "assert.h"
 #include "url.h"
 
+StandReadExec::StandReadExec(const ISchema& schema, istream* in) :
+	in(in)
+{
+	numFlds = schema.getNumFlds();
+	const TypeID* typeIDs = schema.getTypeIDs();
+	readPtrs = new ReadPtr[numFlds];
+	destroyPtrs = new DestroyPtr[numFlds];
+	currentSz = new size_t[numFlds];
+	tuple = new Tuple[numFlds];
+	for(int i = 0; i < numFlds; i++){
+		readPtrs[i] = getReadPtr(typeIDs[i]);
+		destroyPtrs[i] = getDestroyPtr(typeIDs[i]);
+		assert(destroyPtrs[i]);
+		tuple[i] = allocateSpace(typeIDs[i], currentSz[i]);
+	}
+}
+
+/*
 void StandardRead::open(istream* in){	// Throws exception
 	assert(in && in->good());
 	this->in = in;
@@ -103,6 +124,7 @@ void StandardRead::open(istream* in){	// Throws exception
 		THROW(new Exception(msg), );
 	}
 }
+*/
 
 void StandardRead::open(istream* in, int numFlds, const TypeID* typeIDs){
 	this->numFlds = numFlds;
@@ -114,11 +136,14 @@ void StandardRead::open(istream* in, int numFlds, const TypeID* typeIDs){
 	}
 }
 
-void StandardRead::open(istream* in, int numFlds, TypeID* typeIDs,
-	String* attributeNames){
-	this->numFlds = numFlds;
-	this->typeIDs = typeIDs;
-	this->attributeNames = attributeNames;
+void StandardRead::open(const ISchema& schema, istream* in){
+	this->numFlds = schema.getNumFlds();
+	this->typeIDs = new TypeID[numFlds];
+	this->attributeNames = new String[numFlds];
+	for(int i = 0; i < numFlds; i++){
+		typeIDs[i] = schema.getTypeIDs()[i];
+		attributeNames[i] = schema.getAttributeNames()[i];
+	}
 	assert(in && in->good());
 	this->in = in;
 }

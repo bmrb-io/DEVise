@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/08/09 00:54:44  donjerko
+  Added indexing of select-project unmaterialized views.
+
   Revision 1.21  1997/07/30 21:39:23  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -104,10 +107,10 @@ void readFilter(String viewNm, String& select,
 }
 
 Site* DeviseInterface::getSite(){
-	char* schema = strdup(schemaNm.chars());
+	char* schemaFile = strdup(schemaNm.chars());
 	char* data = strdup(dataNm.chars());
 	DevRead* unmarshal = new DevRead();
-	TRY(unmarshal->Open(schema, data), NULL);
+	TRY(unmarshal->Open(schemaFile, data), NULL);
 	if(viewNm == ""){
 		return new LocalTable("", unmarshal);	
 	}
@@ -135,32 +138,39 @@ Site* DeviseInterface::getSite(){
 }
 
 const ISchema* DeviseInterface::getISchema(TableName* table){
+	if(schema){
+		return schema;
+	}
 	assert(table);
 	assert(table->isEmpty());
 	int numFlds;
 	String* attributeNames;
+	TypeID* typeIDs;
 	if(viewNm.empty()){
-		char* schema = strdup(schemaNm.chars());
+		char* schemaFile = strdup(schemaNm.chars());
 		char* data = strdup(dataNm.chars());
 		DevRead tmp;
-		TRY(tmp.Open(schema, data), NULL);
+		TRY(tmp.Open(schemaFile, data), NULL);
 		numFlds = tmp.getNumFlds();
-		attributeNames = dupStrArr(tmp.getAttributeNames(), numFlds);
+		attributeNames = tmp.stealAttributeNames();
+		typeIDs = tmp.stealTypeIDs();
 	}
 	else {
+		assert(!"single table views not implemented");
 		String select;
 		String where;
 		TRY(readFilter(viewNm, select, attributeNames, numFlds, where), NULL);
 	}
-	return new ISchema(attributeNames, numFlds);
+	schema = new ISchema(typeIDs, attributeNames, numFlds);
+	return schema;
 }
 
 Site* StandardInterface::getSite(){ // Throws a exception
 
 	TRY(URL* url = new URL(urlString), NULL);
 	TRY(istream* in = url->getInputStream(), NULL);
-	PlanOp* unmarshal = new StandardRead();
-	TRY(unmarshal->open(in), NULL);
+	StandardRead* unmarshal = new StandardRead();
+	TRY(unmarshal->open(schema, in), NULL);
 
 	delete url;
      return new LocalTable("", unmarshal, urlString);	
@@ -173,28 +183,13 @@ Inserter* StandardInterface::getInserter(TableName* table){ // Throws
 	LOG(logFile << "Inserting into " << urlString << endl);
 
 	Inserter* inserter = new Inserter();
-	TRY(inserter->open(urlString), NULL);
+	TRY(inserter->open(schema, urlString), NULL);
 
      return inserter;
 }
 
-const ISchema* StandardInterface::getISchema(TableName* table){
-	assert(table);
-	assert(table->isEmpty());
-	int numFlds;
-	String* attributeNames;
-	TRY(URL* url = new URL(urlString), NULL);
-	TRY(istream* in = url->getInputStream(), NULL);
-	PlanOp* iterator = new StandardRead();
-	TRY(iterator->open(in), NULL);
-	numFlds = iterator->getNumFlds();
-	attributeNames = dupStrArr(iterator->getAttributeNames(), numFlds);
-	delete iterator;
-	return new ISchema(attributeNames, numFlds);
-}
-
 Site* CatalogInterface::getSite(){ // Throws a exception
-	Interface* interf = new StandardInterface(fileName);
+	Interface* interf = new StandardInterface(DIR_SCHEMA, fileName);
 	Site* retVal = interf->getSite();
 	delete interf;
 	return retVal;
@@ -203,8 +198,7 @@ Site* CatalogInterface::getSite(){ // Throws a exception
 const ISchema* CatalogInterface::getISchema(TableName* table){
 	assert(table);
 	assert(table->isEmpty());
-	String* attributeNames = new String("catentry");
-	return new ISchema(attributeNames, 1);
+	return &DIR_SCHEMA;
 }
 
 istream& CGIInterface::read(istream& in){  // throws
@@ -272,6 +266,9 @@ const ISchema* QueryInterface::getISchema(TableName* table){
 
 	// throws exception
 
+	if(schema){
+		return schema;
+	}
 	int count = 2;
 	String* options = new String[count];
 	String* values = new String[count];
@@ -289,19 +286,8 @@ const ISchema* QueryInterface::getISchema(TableName* table){
 	TRY(in = contactURL(urlString, options, values, count), NULL);
 	delete [] options;
 	delete [] values;
-	PlanOp* sr = new StandardRead();
-	TRY(sr->open(in), NULL);
-	int numFlds = sr->getNumFlds();
-	assert(numFlds == 1);
-	const TypeID* types = sr->getTypeIDs();
-	assert(types[0] == "schema");
-	TRY(Iterator* iterator = sr->createExec(), NULL);
-	iterator->initialize();
-	const Tuple* tuple;
-	assert(tuple = iterator->getNext());
-	ISchema* schema = new ISchema(*((ISchema*) tuple[0]));
-	assert(!iterator->getNext());
-	delete iterator;
+	schema = new ISchema();
+	*in >> *schema;
 	return schema;
 }
 
@@ -314,12 +300,11 @@ Site* Catalog::find(TableName* path){ // Throws Exception
 
 Interface* Catalog::findInterface(TableName* path){ // Throws Exception
 	if(path->isEmpty()){
-		return new StandardInterface(fileName);
+		return new StandardInterface(DIR_SCHEMA, fileName);
 	}
 	ifstream* in = new ifstream(fileName);
-	StandardRead* fileRead = new StandardRead();	
-	TRY(fileRead->open(in), NULL);
-	TRY(Iterator* iterator = fileRead->createExec(), NULL);
+	Iterator* iterator = new StandReadExec(DIR_SCHEMA, in);
+	assert(iterator);
 	iterator->initialize();
 
 	String firstPathNm = *path->getFirst();
@@ -327,7 +312,9 @@ Interface* Catalog::findInterface(TableName* path){ // Throws Exception
 	const Tuple* tuple;
 //	cerr << "searching for " << firstPathNm << " in " << fileName << endl;
 
-	while((tuple = iterator->getNext())){
+	tuple = iterator->getNext();
+	CHECK("Illegal catalog format", NULL);
+	while(tuple){
 		CatEntry* entry = (CatEntry*) tuple[0];
 		assert(entry);
 		String tableNm = entry->getName();
@@ -349,10 +336,11 @@ Interface* Catalog::findInterface(TableName* path){ // Throws Exception
 				return interf;	// should be return interf->duplicate()
 			}
 		}
+		tuple = iterator->getNext();
+		CHECK("Illegal catalog format", NULL);
 	}
 	delete in;
 	String msg = "Table " + firstPathNm + " not defined in file: " +
 		fileName;
-		cout << msg;
 	THROW(new Exception(msg), NULL);
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/08/04 14:53:39  donjerko
+  *** empty log message ***
+
 
   Revision 1.9  1997/06/16 16:05:10  donjerko
   New memory management in exec phase. Unidata included.
@@ -250,7 +253,7 @@ char* dteListAttributes(const char* tableName){
 	engine.initialize();
 	const Tuple* tuple;
 	assert((tuple = engine.getNext()));
-	ISchema* schema = (ISchema*) tuple[0];
+	const ISchema* schema = (const ISchema*) tuple[0];
 	assert(!(tuple = engine.getNext()));
 	engine.finalize();
 	const String* attrNames = schema->getAttributeNames();
@@ -259,7 +262,6 @@ char* dteListAttributes(const char* tableName){
 	for(int i =  0; i < numFlds; i++){
 		retVal += attrNames[i] + " ";
 	}
-	delete schema;
 	return strdup(retVal.chars());
 }
 

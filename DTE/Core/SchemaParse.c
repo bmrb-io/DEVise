@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/07/30 21:39:18  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.8  1997/07/22 15:00:54  donjerko
   *** empty log message ***
 
@@ -65,14 +68,14 @@ String getIndexCatName(){
 
 class ISchemaExec : public Iterator {
 	bool done;
+	ISchema* schema;
 	Tuple retVal[1];
 public:
-	ISchemaExec(const ISchema* schema) : done(false) {
+	ISchemaExec(ISchema* schema) : done(false), schema(schema) {
 		retVal[0] = (Type*) schema;
-		// need to copy schema over
 	}
 	virtual ~ISchemaExec(){
-		// do not delete schema  ?
+		delete schema;
 	}
 	virtual void initialize(){}
 	virtual const Tuple* getNext(){
@@ -87,11 +90,14 @@ public:
 const String SCHEMA_STR("schema");
 
 class ISchemaSite : public Site {
-	const ISchema* schema;	
+	ISchema* schema;	
 public:
-	ISchemaSite(const ISchema* schema) : Site(), schema(schema){}
+	ISchemaSite(const ISchema* schema) : Site(){
+		assert(schema);
+		this->schema = new ISchema(*schema);
+	}
 	virtual ~ISchemaSite(){
-		// do not delete schema
+		// do not delete schema, ISchemaExec is the owner
 	}
 	virtual int getNumFlds(){
 		return 1;
@@ -114,6 +120,7 @@ Site* ISchemaParse::createSite(){
 	TRY(interf = catalog->findInterface(tableName), NULL);
 	delete catalog;
 	TRY(const ISchema* schema = interf->getISchema(tableName), NULL);
+	ISchemaSite* retVal = new ISchemaSite(schema);
 	delete interf;
-	return new ISchemaSite(schema);
+	return retVal;
 }

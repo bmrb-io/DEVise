@@ -2,16 +2,11 @@
 #include "Inserter.h"
 #include "StandardRead.h"
 
-void Inserter::open(String urlString){ // throws
-	this->urlString = urlString;
+void Inserter::open(const ISchema& schema, String urlString){ // throws
 	TRY(URL* url = new URL(urlString), );
-	TRY(istream* in = url->getInputStream(), );
-	StandardRead* iterator = new StandardRead();
-	TRY(iterator->open(in), );
-	numFlds = iterator->getNumFlds();
-	const TypeID* types = iterator->getTypeIDs();
+	numFlds = schema.getNumFlds();
+	const TypeID* types = schema.getTypeIDs();
 	TRY(writePtrs = newWritePtrs(types, numFlds), );
-	delete in;
 	TRY(out = url->getOutputStream(ios::app), );
 	delete url;
 }

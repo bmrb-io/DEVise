@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/08/10 20:30:56  donjerko
+  Fixed the NO_RTREE option.
+
   Revision 1.18  1997/08/09 00:54:45  donjerko
   Added indexing of select-project unmaterialized views.
 
@@ -157,9 +160,10 @@ class ViewInterface : public Interface {
 	int numFlds;
 	String* attributeNames;
 	String query;
+	ISchema* schema;
 public:
-	ViewInterface(String tableNm) : tableNm(tableNm), attributeNames(NULL) {
-		// cout << "ViewInterface constructor" << endl;
+	ViewInterface(String tableNm) : 
+		tableNm(tableNm), attributeNames(NULL), schema(NULL) {
 	}
 	ViewInterface(int numFlds, String* attributeNames, String query) 
 		: numFlds(numFlds), attributeNames(attributeNames), query(query) {
@@ -168,15 +172,26 @@ public:
 	ViewInterface(const ViewInterface& a){
 		tableNm = a.tableNm;
 		numFlds = a.numFlds;
-		attributeNames = new String[numFlds];
-		for(int i = 0; i < numFlds; i++){
-			attributeNames[i] = a.attributeNames[i];
+		if(a.attributeNames){
+			attributeNames = new String[numFlds];
+			for(int i = 0; i < numFlds; i++){
+				attributeNames[i] = a.attributeNames[i];
+			}
+		}
+		else{
+			attributeNames = NULL;
 		}
 		query = a.query;
+		if(a.schema){
+			schema = new ISchema(*a.schema);
+		}
+		else{
+			schema = NULL;
+		}
 	}
 	virtual ~ViewInterface(){
-		// cout << "~ViewInterface destuctor" << endl;
 		delete [] attributeNames;
+		delete schema;
 	}
 	virtual ViewInterface* duplicate() const {
 		return new ViewInterface(*this);
@@ -185,6 +200,9 @@ public:
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out);
 	virtual const ISchema* getISchema(TableName* table){
+		if(schema){
+			return schema;
+		}
 		assert(table);
 		assert(table->isEmpty());
 		assert(attributeNames);
@@ -193,7 +211,10 @@ public:
 		for(int i = 0; i < numFlds; i++){
 			retVal[i + 1] = attributeNames[i];
 		}
-		return new ISchema(retVal, numFlds + 1);
+		// to do: typecheck the query
+
+		schema = new ISchema(NULL, retVal, numFlds + 1);
+		return schema;
 	}
 };
 
@@ -202,9 +223,24 @@ class DeviseInterface : public Interface{
 	String schemaNm;
 	String dataNm;
 	String viewNm;
+	ISchema* schema;
 public:
-	DeviseInterface(String tableNm) : tableNm(tableNm){}
-	virtual ~DeviseInterface(){}
+	DeviseInterface(String& tableNm) : tableNm(tableNm), schema(NULL) {}
+	DeviseInterface(const DeviseInterface& x){
+		tableNm = x.tableNm;
+		schemaNm = x.schemaNm;
+		dataNm = x.dataNm;
+		viewNm = x.viewNm;
+		if(x.schema){
+			schema = new ISchema(*x.schema);
+		}
+		else{
+			schema = NULL;
+		}
+	}
+	virtual ~DeviseInterface(){
+		delete schema;
+	}
 	virtual DeviseInterface* duplicate() const {
 		return new DeviseInterface(*this);
 	}
@@ -224,40 +260,59 @@ public:
 };
 
 class StandardInterface : public Interface{
+	ISchema schema;
 	String urlString;
 public:
-	StandardInterface() {}
-	StandardInterface(String urlString) : urlString(urlString){}
+	StandardInterface(){}
+	StandardInterface(const ISchema& schema, const String& urlString) 
+		: schema(schema), urlString(urlString){}
+	StandardInterface(const StandardInterface& x) :
+		schema(x.schema), urlString(x.urlString) {}
+	virtual ~StandardInterface(){}
 	virtual StandardInterface* duplicate() const {
 		return new StandardInterface(*this);
 	}
 	virtual Site* getSite();
 	virtual istream& read(istream& in){
+		in >> schema;
 		return in >> urlString;
 	}
 	virtual void write(ostream& out){
+		out << " " << schema;
 		out << " " << urlString;
 		Interface::write(out);
 	}
-	virtual const ISchema* getISchema(TableName* table);	// throws exception
+	virtual const ISchema* getISchema(TableName* table){ // throws
+		return &schema;
+	}
 	virtual Inserter* getInserter(TableName* table); // throws
 };
 
 class QueryInterface : public Interface{
 	String urlString;
-	Site* site;	// not the owner? has to fix this
+	ISchema* schema;
 public:
-	QueryInterface(){}
-	virtual ~QueryInterface(){}
+	QueryInterface() : schema(NULL) {}
+	QueryInterface(const QueryInterface& x){
+		urlString = x.urlString;
+		if(x.schema){
+			schema = new ISchema(*x.schema);
+		}
+		else{
+			schema = NULL;
+		}
+	}
+	virtual ~QueryInterface(){
+		delete schema;
+	}
 	virtual QueryInterface* duplicate() const {
 		return new QueryInterface(*this);
 	}
 	virtual Site* getSite(){
-		return site;
+		return new Site(urlString);
 	}
 	virtual istream& read(istream& in){
 		in >> urlString;
-		site = new Site(urlString);
 		return in;
 	}
 	virtual void write(ostream& out){

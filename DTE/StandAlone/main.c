@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/08/10 20:31:06  donjerko
+  Fixed the NO_RTREE option.
+
   Revision 1.11  1997/07/30 21:41:23  donjerko
   *** empty log message ***
 
@@ -80,7 +83,7 @@ int main(int argc, char** argv){
 		cout << endl << "---------------------------------" << endl;
 		const Tuple* tup;
 
-		engine.initialize();
+		TRY(engine.initialize(), 0);
 		while((tup = engine.getNext())){
 			for(int i = 0; i < numFlds; i++){
 				writePtrs[i](cout, tup[i]);

@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/08/04 14:50:49  donjerko
+  Fixed the bug in insert and delete queries.
+
   Revision 1.26  1997/07/30 21:39:27  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -110,6 +113,9 @@
 #include <String.h>
 #include <time.h>
 #include <string.h>		// for strdup
+#include <strstream.h>
+
+ISchema DIR_SCHEMA("1 catentry entry");
 
 void dateEq(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	EncodedDTF* val1 = ((EncodedDTF*)arg1);
@@ -422,8 +428,6 @@ void catEntryRead(istream& in, Type*& adt){
 }
 
 void schemaRead(istream& in, Type*& adt){
-	ISchema* tmp = new ISchema();
-	memcpy(adt, tmp, sizeof(ISchema));
 	TRY(((ISchema*) adt)->read(in), );
 }
 
@@ -464,7 +468,7 @@ void catEntryWrite(ostream& out, const Type* adt){
 
 void schemaWrite(ostream& out, const Type* adt){
 	assert(adt);
-	((ISchema*) adt)->display(out);
+	((ISchema*) adt)->write(out);
 }
 
 void indexDescWrite(ostream& out, const Type* adt){
@@ -827,8 +831,12 @@ String rTreeEncode(String type){
 		return "d";
 	}
 	else if(type.through(5).contains("string")){
-		String msg = "Don't know how to build index on type: " + type;
-		THROW(new Exception(msg), "");
+		ostrstream tmp;
+		tmp << "s[" << packSize(type) << "]" << ends;
+		char* tmpc = tmp.str();
+		String retVal(tmpc);
+		delete tmpc;
+		return retVal;
 	}
 	else{
 		String msg = "Don't know how to build index on type: " + type;
@@ -868,6 +876,9 @@ Type* createNegInf(TypeID type){
 	else if(type == "double"){
 		return new IDouble(-DBL_MAX);
 	}
+	else if(type.through(5).contains("string")){
+		return strdup("");
+	}
 	else{
 		String msg = "Don't know what is -Infinity for type: " + type;
 		THROW(new Exception(msg), "");
@@ -880,6 +891,9 @@ Type* createPosInf(TypeID type){
 	}
 	else if(type == "double"){
 		return new IDouble(DBL_MAX);
+	}
+	else if(type.through(5).contains("string")){
+		return strdup("zzzzzzzzzzzz");
 	}
 	else{
 		String msg = "Don't know what is +Infinity for type: " + type;
@@ -945,6 +959,7 @@ istream& CatEntry::read(istream& in){ // Throws Exception
 			" must be specified";
 		THROW(new Exception(msg), in);
 	}
+	delete interface;
 	if(typeNm == "Directory"){
 		interface = new CatalogInterface();
 		TRY(interface->read(in), in);
@@ -981,6 +996,7 @@ istream& CatEntry::read(istream& in){ // Throws Exception
 		TRY(interface->read(in), in);
 	}
 	else{
+		interface = NULL;
 		String msg = "Table " + singleName + " interface: " + 
 			typeNm + ", not defined";
 		THROW(new Exception(msg), in);
@@ -1053,22 +1069,11 @@ void IndexDesc::display(ostream& out){
 }
 
 istream& ISchema::read(istream& in){ // Throws Exception
-	in >> numFlds;
-	if(!in){
-		return in;
-	}
-	attributeNames = new String[numFlds];
-	for(int i = 0; i < numFlds; i++){
-		in >> attributeNames[i];
-	}
-	return in;
+	return in >> *this;
 }
 
-void ISchema::display(ostream& out){
-	out << numFlds;
-	for(int i = 0; i < numFlds; i++){
-		out << " " << attributeNames[i];
-	}
+void ISchema::write(ostream& out){
+	out << *this;
 }
 
 void destroyTuple(Tuple* tuple, int numFlds, DestroyPtr* destroyers){ // throws
@@ -1199,6 +1204,11 @@ void stringLToString(const Type* arg, Type*& result, size_t& sz){
 	strncpy((char*) result, (char*) arg, sz);
 }
 
+void stringToStringL(const Type* arg, Type*& result, size_t& sz){
+	assert(result);
+	strncpy((char*) result, (char*) arg, sz);
+}
+
 PromotePtr getPromotePtr(TypeID from, TypeID to){ // throws
 	if(from == "int" && to == "double"){
 		return intToDouble;
@@ -1208,6 +1218,9 @@ PromotePtr getPromotePtr(TypeID from, TypeID to){ // throws
 	}
 	else if(from.through(5).contains(STRING_TP) && to == STRING_TP){
 		return stringLToString;
+	}
+	else if(from == STRING_TP && to.through(5).contains(STRING_TP)){
+		return stringToStringL;
 	}
 	if(from == INT_TP && to == INT_TP){
 		return intToInt;
@@ -1382,8 +1395,8 @@ Type* duplicateObject(TypeID type, Type* obj){
 		return  new CatEntry(val);
 	}
 	else if(type == "schema"){
-		ISchema val = *((ISchema*) obj);
-		return new ISchema(val);
+		ISchema* val = ((ISchema*) obj);
+		return new ISchema(*val);
 	}
 	else if(type == "indexdesc"){
 		IndexDesc val = *((IndexDesc*) obj);
@@ -1427,7 +1440,6 @@ char* allocateSpace(TypeID type, size_t& size){
 		return (char*) new ISchema();
 	}
 	else if(type == "indexdesc"){
-		// return new char[sizeof(IndexDesc)];
 		return (char*) new IndexDesc();
 	}
 	else{
@@ -1449,10 +1461,48 @@ MemoryLoader** newTypeLoaders(const TypeID* types, int numFlds){
 		else if(types[i] == CAT_ENTRY_TP){
 			retVal[i] = new MemoryLoaderTemplate<CatEntry>();
 		}
+		else if(strncmp(types[i].chars(), "string", 6) == 0){
+			retVal[i] = new StringLoader();
+		}
 		else{
 			cerr << "Loader not implemented for type: " << types[i] << endl;
 			exit(1);
 		}
 	}
 	return retVal;
+}
+
+istream& operator>>(istream& in, ISchema& s){
+	
+	in >> s.numFlds;
+	if(!in){
+		return in;
+	}
+	delete [] s.typeIDs;
+	delete [] s.attributeNames;
+	s.typeIDs = new TypeID[s.numFlds];
+	s.attributeNames = new String[s.numFlds];
+	String typeName;
+	for(int i = 0; i < s.numFlds; i++){
+		in >> typeName;
+		// s.typeIDs[i] = TypeWrapper::create(typeName);
+		s.typeIDs[i] = typeName;
+		in >> s.attributeNames[i];
+	}
+	return in;
+}
+
+ISchema::ISchema(const String& str) :
+	typeIDs(NULL), attributeNames(NULL) {
+	istrstream in(str.chars());
+	in >> *this;
+}
+
+ostream& operator<<(ostream& out, const ISchema& s){
+	out << s.numFlds;
+	for(int i = 0; i < s.numFlds; i++){
+		out << " " << s.typeIDs[i];
+		out << " " << s.attributeNames[i];
+	}
+	return out;
 }

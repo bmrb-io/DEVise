@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/06/21 22:47:59  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.4  1997/06/16 16:04:42  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -35,7 +38,6 @@
 #include "types.h"
 
 class Inserter {
-	String urlString;
 	ostream* out;
 	int numFlds;
 	WritePtr* writePtrs;
@@ -48,7 +50,7 @@ public:
 		delete [] writePtrs;
 		delete out;
 	}
-	void open(String urlString); // throws
+	void open(const ISchema& schema, String urlString); // throws
 	void open(ostream* out, int numFlds, const TypeID* typeIDs){ // throws
 		this->out = out;
 		this->numFlds = numFlds;

@@ -99,13 +99,23 @@ public:
 	virtual int getNumFlds(){
 		return numFlds;
 	}
-	virtual const String *getTypeIDs(){
+	virtual const TypeID* getTypeIDs(){
 		assert(typeIDs);
 		return typeIDs;
+	}
+	virtual TypeID* stealTypeIDs(){
+		TypeID* retVal = typeIDs;
+		typeIDs = NULL;
+		return retVal;
 	}
 	virtual const String* getAttributeNames(){
 		assert(attributeNames);
 		return attributeNames;
+	}
+	virtual String* stealAttributeNames(){
+		String* retVal = attributeNames;
+		attributeNames = NULL;
+		return retVal;
 	}
 	virtual String* getOrderingAttrib(){
 		return order;

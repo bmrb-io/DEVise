@@ -72,17 +72,18 @@ class NLJoinExec : public Iterator {
 	Array<ExecExpr*>* mySelect;
 	Array<ExecExpr*>* myWhere;
 	Tuple* next;
-     List<Tuple*> innerRel;
+     List<const Tuple*> innerRel;
      bool firstEntry;
      bool firstPass;
      const Tuple* outerTup;
 	int innerNumFlds;
+	TupleLoader* tupleLoader;
 public:
 	NLJoinExec(Iterator* left, Iterator* right, 
 		Array<ExecExpr*>* mySelect, Array<ExecExpr*>* myWhere,
-		int innerNumFlds) :
+		int innerNumFlds, TupleLoader* tupleLoader) :
 		left(left), right(right), mySelect(mySelect), myWhere(myWhere),
-		innerNumFlds(innerNumFlds) {
+		innerNumFlds(innerNumFlds), tupleLoader(tupleLoader) {
           firstEntry = true;
           firstPass = true;
           outerTup = NULL;
@@ -96,8 +97,8 @@ public:
 		destroyArray(*myWhere);
 		delete myWhere;
 		delete [] next;
+		delete tupleLoader;
 
-		assert(!"incomplete impl");
 		// add more stuff here
 	}
      virtual void initialize(){

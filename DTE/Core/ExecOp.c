@@ -38,7 +38,7 @@ const Tuple* SelProjExec::getNext(){
 	const Tuple* input;
 	assert(next);
 	while(!cond){
-		input = inputIt->getNext();
+		TRY(input = inputIt->getNext(), NULL);
 		if(!input){
 			return NULL;
 		}
@@ -67,8 +67,8 @@ const Tuple* NLJoinExec::getNext(){
 	while(cond == false){
 		if(firstPass){
 			if((innerTup = right->getNext())){
-				innerRel.append((Tuple*)innerTup);	// must store the values!
-				// need to fix appendt to take const Tuple*
+				const Tuple* tmp = tupleLoader->insert(innerTup);
+				innerRel.append(tmp);
 			}
 			else{
 				firstPass = false;

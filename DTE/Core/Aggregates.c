@@ -97,6 +97,10 @@ bool Aggregates::isApplicable(){
 	// Create a new GroupAttribute object
 	// Error checking should include matching of select & groupby clauses
 	
+/*
+
+	// this part of code makes core dumps
+
 	i=0;
 	groupBy->rewind();
 	while(!groupBy->atEnd()){
@@ -117,11 +121,12 @@ bool Aggregates::isApplicable(){
 		i++;
 		groupBy->step();
 	}
-	
+*/	
 	return isApplicableValue;
 }
 
-void Aggregates::typify(Site* inputPlanOp){
+void Aggregates::typify(const String& name, Site* inputPlanOp){
+//	this->name = name;
 	this->inputPlanOp = inputPlanOp;
 	int numFlds = inputPlanOp->getNumFlds();
 	assert(numFlds == selList->cardinality());
@@ -133,7 +138,8 @@ void Aggregates::typify(Site* inputPlanOp){
 
 Iterator* Aggregates::createExec(){
 	assert(inputPlanOp);
-	Iterator* inputIter = inputPlanOp->createExec();
+	TRY(Iterator* inputIter = inputPlanOp->createExec(), NULL);
+	assert(inputIter);
 	ExecAggregate** aggExecs = new (ExecAggregate*)[numFlds];
 	for(int i = 0; i < numFlds; i++){
 		assert(aggFuncs[i]);

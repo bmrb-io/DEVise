@@ -514,7 +514,7 @@ public:
 	List<BaseSelection*>* filterList(){
 		return filteredSelList;
 	}
-	virtual void typify(Site* inputPlanOp);
+	virtual void typify(const String& name, Site* inputPlanOp);
 	
 	virtual TypeID* getTypeIDs(){
 		return typeIDs;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/08/09 00:54:43  donjerko
+  Added indexing of select-project unmaterialized views.
+
   Revision 1.14  1997/07/30 21:39:15  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -108,7 +111,8 @@ public:
 	void initialize(){
 		assert(getNumFlds() != 0);
 		assert(topNodeIt == NULL);
-		topNodeIt = topNode->createExec();
+		TRY(topNodeIt = topNode->createExec(), );
+		assert(topNodeIt);
 		topNodeIt->initialize();
 	}
 	void finalize(){
