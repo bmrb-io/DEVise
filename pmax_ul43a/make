@@ -1,0 +1,7 @@
+#! /usr/bin/csh -f
+
+foreach d (graphics graphics.new crsp compustat issm parser tape generic attrproj multi)
+  cd $d
+  make
+  cd ..
+end
