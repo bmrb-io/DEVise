@@ -2440,8 +2440,9 @@ Num Date        Status  Description
 			space for iterators. (rkw)
 			(Fixed by rkw, 9/11/00.)
 
-618 9/12/00	OPEN	Jspop can't restart devised (at least in the
+618 9/12/00	FIXED	Jspop can't restart devised (at least in the
 			one-socket version). (rkw)
+			(Fixed by rkw, 9/12/00.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
