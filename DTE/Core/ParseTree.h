@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/11/12 23:17:29  donjerko
+  Improved error checking.
+
   Revision 1.21  1997/11/08 21:02:26  arvind
   Completed embedded moving aggregates: mov aggs with grouping.
 
@@ -60,6 +63,7 @@
 
 #include "queue.h"
 #include "myopt.h"
+#include "TypeCheck.h"
 
 #ifndef __GNUG__
 using namespace std;
@@ -70,16 +74,20 @@ class Site;
 
 class ParseTree {
 public:
+//	virtual const ISchema* getISchema() = 0;
+//	virtual Iterator* createExec() = 0;	// throws exception
 	virtual Site* createSite() = 0;	// throws exception
 	virtual void setTypeCheckOnlyFlag(){assert(0);}
 };
+
+class Aggregates;
 
 class QueryTree : public ParseTree {
 	List<BaseSelection*>* selectList;
 	List<TableAlias*>* tableList;
 	BaseSelection* predicates;
-        List<BaseSelection*>* groupBy;
-        BaseSelection* havingPredicate;
+	List<BaseSelection*>* groupBy;
+	BaseSelection* havingPredicate;
 	List<BaseSelection*>* sequenceby;
 	BaseSelection* withPredicate;
 	List<BaseSelection*>* orderBy;
@@ -87,7 +95,15 @@ class QueryTree : public ParseTree {
 	List<string*>* namesToResolve;
 	void resolveNames();	// throws exception
 	bool typeCheckOnly;
-  List<BaseSelection*>* grpAndSeqFields; // concat of grp and seq fields
+	List<BaseSelection*>* grpAndSeqFields; // concat of grp and seq fields
+private:
+
+	// internally created vars
+
+	List<BaseSelection*>* predicateList;
+	TypeCheck typeCheck;
+	Aggregates* aggregates;
+
 public:	
 	QueryTree(
 		List<BaseSelection*>* selectList,
@@ -106,7 +122,9 @@ public:
 		sequenceby(sequenceby), withPredicate(withPredicate), 
 		orderBy(orderBy), sortOrdering(sortOrdering),
 		namesToResolve(namesToResolve), typeCheckOnly(false),
-		grpAndSeqFields(NULL) {}
+		grpAndSeqFields(NULL),
+		predicateList(NULL),
+		aggregates(NULL) {}
 	
 	virtual Site* createSite();	// throws exception
 	virtual ~QueryTree(){

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1997/11/12 23:17:40  donjerko
+  Improved error checking.
+
   Revision 1.37  1997/11/05 00:19:47  donjerko
   Separated typechecking from optimization.
 
@@ -170,7 +173,7 @@ public:
 		string retVal(os.str());		// do not delete, works for NT
 		return retVal;
 	}
-     virtual void display(ostream& out, int detail = 0){
+	virtual void display(ostream& out, int detail = 0){
 	};
 	virtual bool exclusive(Site* site) = 0;
 	virtual bool exclusive(string* attributeNames, int numFlds) = 0;
@@ -190,7 +193,7 @@ public:
 		return false;
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to) = 0;
-     virtual ExecExpr* createExec(Site* site1, Site* site2);
+	virtual ExecExpr* createExec(Site* site1, Site* site2);
 	virtual TypeID typeCheck() = 0;
 	virtual vector<BaseSelection*> getChildren() = 0;
 	virtual void setChildren(const vector<BaseSelection*>& children) = 0;
@@ -982,6 +985,7 @@ public:
 		displayList(cerr, tableName, ".");
 		delete [] tmp;
 	}
+	TableName& operator=(const TableName& t);
 	TableName dirName();
 	string fileName();
 	~TableName(){
@@ -1001,13 +1005,18 @@ public:
 		delete firstPath;
 	}
 	bool isEmpty() const {
-		assert(tableName);
-		return tableName->isEmpty();
+		if(tableName){
+			return tableName->isEmpty();
+		}
+		else{
+			return false;
+		}
 	}
 	void display(ostream& out){
-		assert(tableName);
 		out << ".";
-		displayList(out, tableName, ".");
+		if(tableName){
+			displayList(out, tableName, ".");
+		}
 	}
 	string toString(){
 		ostringstream tmp;
@@ -1024,12 +1033,16 @@ public:
 	}
 };
 
+class SiteDesc;
+
 class TableAlias {
 protected:
 	TableName* table;
 	string* alias;
 	string *function;
 	int shiftVal;
+	const SiteDesc* sd;
+	TableName relTabName;
 public:
 	TableAlias(TableName *t, string* a = NULL,string *func = NULL,
 			int optShiftVal = 0) : table(t), alias(a),function(func),
@@ -1039,6 +1052,12 @@ public:
 		alias = new string(aliasNm);
 		function = NULL;
 		shiftVal = 0;
+	}
+	void setSiteDesc(const SiteDesc* sd){
+		this->sd = sd;
+	}
+	void setRelTabName(const TableName& tn){
+		relTabName = tn;
 	}
 	virtual ~TableAlias(){}
 	virtual TableName* getTable(){
@@ -1067,9 +1086,6 @@ public:
 			out << " as " << *alias;
 		}
 	}
-	virtual bool isQuote(){
-		return  false;
-	}
 	virtual Site* createSite();
 };
 
@@ -1097,11 +1113,30 @@ public:
 
 		return new TableName();
 	}
-	const string* getQuote(){
-		return quote;
+	virtual Site* createSite();
+};
+
+class NamedTableAlias : public TableAlias {
+	string* name;
+	Interface* interf;
+public:
+	NamedTableAlias(string* name, string* alias = NULL) :
+		TableAlias(new TableName(), alias), name(name), interf(NULL) {}
+	virtual ~NamedTableAlias();
+	virtual void display(ostream& out, int detail = 0){
+		if(name){
+			out << *name;
+		}
+		if(alias){
+			out << " " << *alias;
+		}
 	}
-	virtual bool isQuote(){
-		return  true;
+	virtual TableName* getTable(){
+
+		// There is no table name for quoted tables, but 
+		// the optimizer needs to know table name to find indexes
+
+		return new TableName();
 	}
 	virtual Site* createSite();
 };

@@ -10,7 +10,7 @@ using namespace std;
 
 class MinMax {
 public:
-	static bool isApplicable(List<BaseSelection*>* selectList);
+	static bool isApplicable(const vector<BaseSelection*>& selList);
 	static TableAlias* createReplacement(TableAlias* table);
 	static void replace(const string& entry, const Interface* interf);
 	static string getPathName(const string& tableName);

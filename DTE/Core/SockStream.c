@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/11/20 05:30:42  okan
+  *** empty log message ***
+
   Revision 1.9  1997/11/12 15:42:52  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
   into the trunk.
@@ -112,7 +115,7 @@ Cor_sockbuf::Cor_sockbuf(int sockfd)
 }
 
 // *************************************************************************
-Cor_sockbuf::Cor_sockbuf(char* _host, unsigned short port)
+Cor_sockbuf::Cor_sockbuf(const char* _host, unsigned short port)
 {
     init();
     connect(_host, port);
@@ -165,7 +168,7 @@ void Cor_sockbuf::init()
 }
 
 // *************************************************************************
-int Cor_sockbuf::connect(char* _host, unsigned short _port)
+int Cor_sockbuf::connect(const char* _host, unsigned short _port)
 {
     port = _port;
     sockaddr_in serv_addr;

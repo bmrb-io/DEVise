@@ -6,13 +6,11 @@
 
 extern const Directory MINMAX_DIR;
 
-bool MinMax::isApplicable(List<BaseSelection*>* selList){
-	if(!selList){
-		return false;
-	}
-	for(selList->rewind(); !selList->atEnd(); selList->step()){
+bool MinMax::isApplicable(const vector<BaseSelection*>& selList){
+	vector<BaseSelection*>::const_iterator it;
+	for(it = selList.begin(); it != selList.end(); ++it){
 		
-		BaseSelection* curr = selList->get();
+		BaseSelection* curr = *it;
 
 		if(curr->selectID() == CONSTRUCTOR_ID){
 			Constructor* function = (Constructor*) curr;

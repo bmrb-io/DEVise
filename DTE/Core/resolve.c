@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1997/11/13 22:19:25  okan
+  Changes about compilation on NT
+
   Revision 1.28  1997/11/05 00:19:48  donjerko
   Separated typechecking from optimization.
 
@@ -397,6 +400,16 @@ QuoteAlias::~QuoteAlias(){
 	delete interf;
 }
 
+Site* NamedTableAlias::createSite(){
+	assert(!"not implemented");
+	return NULL;
+}
+
+NamedTableAlias::~NamedTableAlias(){
+	delete name;
+	delete interf;
+}
+
 TypeID Constructor::typeCheck(){
 	assert(args);
 	int numFlds = args->cardinality();
@@ -493,6 +506,18 @@ TableName::TableName(const TableName& arg){
 	for(other->rewind(); !other->atEnd(); other->step()){
 		tableName->append(new string(*other->get()));
 	}
+}
+
+TableName& TableName::operator=(const TableName& arg){
+	if(this != &arg){
+		this->~TableName();
+		tableName = new List<string*>;
+		List<string*>* other = arg.tableName;
+		for(other->rewind(); !other->atEnd(); other->step()){
+			tableName->append(new string(*other->get()));
+		}
+	}
+	return *this;
 }
 
 TypeID TypeCast::typeCheck(){

@@ -4,9 +4,11 @@
 #include <string>
 //#include <iostream.h>   erased for sysdep.h
 #include "sysdep.h"
-#include <windows.h>
-#include "SQL.H"
-#include <sqlext.h>
+#if defined(_WINDOWS) || defined(_CONSOLE)
+	#include <windows.h>
+	#include "SQL.H"
+	#include <sqlext.h>
+#endif
 
 #ifndef __GNUG__
 using namespace std;
@@ -19,7 +21,7 @@ class ISchema;
 
 class Interface{
 public:
-	enum Type {UNKNOWN, CATALOG, QUERY, VIEW, ODBC};
+	enum Type {UNKNOWN, CATALOG, QUERY, VIEW, ODBC, DB_SERVER};
 	Interface() {}
 	virtual Interface* duplicate() const = 0;
 	virtual ~Interface(){}
@@ -350,14 +352,48 @@ public:
 	}
 };
 
+class DBServerInterface : public Interface {
+	string host;
+	unsigned short port;
+	ISchema* schema;
+public:
+	static string typeName;
+	DBServerInterface() : schema(0) {}
+	DBServerInterface(const DBServerInterface& x){
+		host = x.host;
+		port = x.port;
+		schema = 0;
+	}
+	virtual ~DBServerInterface(){
+		delete schema;
+	}
+	virtual string getTypeNm(){
+		return typeName;
+	}
+	virtual Interface* duplicate() const {
+		return new DBServerInterface(*this);
+	}
+	virtual Site* getSite(){assert(0); return NULL;}
+	virtual istream& read(istream& in);
+	virtual void write(ostream& out) const;
+	virtual const ISchema* getISchema(TableName* table);
+	virtual Interface* copyTo(void* space){
+		return new (space) DBServerInterface(*this);
+	}
+};
+
 class ODBCInterface : public Interface {
 	string dataSourceName;
 	string userName;
 	string passwd;
+
+#if defined(_WINDOWS) || defined(_CONSOLE)
 	HENV ODBC_Handle;
 	HDBC Connect_Handle;
 	SQLHSTMT Stmt_Handle;
 	SQLRETURN SQL_Result;
+#endif
+
 	ISchema tmp;
 public:
 	static string typeName;
@@ -365,8 +401,6 @@ public:
 	int ODBC_Connect();
 	void ODBC_disConnect();
 	int ODBC_Stmt_Handle();
-	ODBCInterface(const ODBCInterface& x){
-	}
 	virtual ~ODBCInterface(){
 	}
 	virtual string getTypeNm(){

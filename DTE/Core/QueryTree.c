@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  1997/11/13 22:19:23  okan
+  Changes about compilation on NT
+
   Revision 1.43  1997/11/12 23:17:30  donjerko
   Improved error checking.
 
@@ -154,17 +157,19 @@ void QueryTree::resolveNames(){	// throws exception
      }
 }
 
-void translate(const vector<BaseSelection*>& vec, List<BaseSelection*>*& list){
+template<class T>
+void translate(const vector<T>& vec, List<T>*& list){
 	delete list;
-	list = new List<BaseSelection*>;
+	list = new List<T>;
 
-	vector<BaseSelection*>::const_iterator it;
+	vector<T>::const_iterator it;
 	for(it = vec.begin(); it != vec.end(); ++it){
 		list->append(*it);
 	}
 }
 
-void translate(List<BaseSelection*>* list,  vector<BaseSelection*>& vec){
+template<class T>
+void translate(List<T>* list,  vector<T>& vec){
 	assert(vec.empty()); 
 	if(list){
 		for(list->rewind(); !list->atEnd(); list->step()){
@@ -174,7 +179,7 @@ void translate(List<BaseSelection*>* list,  vector<BaseSelection*>& vec){
 }
 
 Site* QueryTree::createSite(){
-  if(!namesToResolve->isEmpty()){
+	if(!namesToResolve->isEmpty()){
 		TRY(resolveNames(), 0);
 	}
 	LOG(logFile << "Query was:\n";)
@@ -182,7 +187,7 @@ Site* QueryTree::createSite(){
 	LOG(displayList(logFile, selectList, ", ");)
 	LOG(logFile << endl << "   from ";)
 	LOG(displayList(logFile, tableList);)
-	List<BaseSelection*>* predicateList = new List<BaseSelection*>;
+	predicateList = new List<BaseSelection*>;
 	if(predicates){
 		LOG(logFile << endl << "   where ";)
 		LOG(predicates->display(logFile);)
@@ -205,23 +210,18 @@ Site* QueryTree::createSite(){
 
 	// typecheck the query
 
-	TypeCheck typeCheck;
-
-	TRY(typeCheck.initialize(tableList), 0);
-
+	vector<TableAlias*> tableVec;
 	vector<BaseSelection*> selectVec;
-
 	vector<BaseSelection*> predicateVec;
 	vector<BaseSelection*> groupByVec;
 	vector<BaseSelection*> orderByVec;
 
+	translate(tableList, tableVec);
 	translate(predicateList, predicateVec);
 	translate(groupBy, groupByVec);
 	translate(orderBy, orderByVec);
 
-	int count = 0;
-	Aggregates **aggregates =new Aggregates*[MAX_AGG];
-	aggregates[0] = NULL;
+	TRY(typeCheck.initialize(tableVec), 0);
 
 	if(!selectList){
 
@@ -231,10 +231,10 @@ Site* QueryTree::createSite(){
 	}
 	else {
 
-		aggregates[count] = 
-		new Aggregates(selectList,sequenceby,withPredicate,groupBy);
+		aggregates = new 
+			Aggregates(selectList,sequenceby,withPredicate,groupBy);
 
-		TRY(aggregates[count]->typeCheck(typeCheck), 0);
+		TRY(aggregates->typeCheck(typeCheck), 0);
 		translate(selectList, selectVec);
 	}
 	TRY(typeCheck.resolve(predicateVec), 0);
@@ -254,30 +254,31 @@ Site* QueryTree::createSite(){
 		return new ISchemaSite(numFlds, types, attrs);
 	}
 
-	translate(selectVec, selectList);
-	translate(predicateVec, predicateList);
-	translate(groupByVec, groupBy);
-	translate(orderByVec, orderBy);
-
 	// check if this is the min-max query
 	// if so, lookup a min-max table to see if there exists an entry
 	// if entry for this table found, switch the table name
 
-	assert(predicateList && groupBy && orderBy);
-	bool minMaxCond = tableList->cardinality() == 1 &&
-				predicateList->isEmpty() &&
-				groupBy->isEmpty() &&
-				orderBy->isEmpty();
+	bool minMaxCond = tableVec.size() == 1 &&
+				predicateVec.empty() &&
+				groupByVec.empty() &&
+				orderByVec.empty();
 
-	if(minMaxCond && MinMax::isApplicable(selectList)){
-		tableList->rewind();
-		TableAlias* table = tableList->get();
+	if(minMaxCond && MinMax::isApplicable(selectVec)){
+		TableAlias* table = tableVec.front();
 		TRY(TableAlias* replacement = MinMax::createReplacement(table), 0);
 		if(replacement){
-			tableList->replace(replacement);
+			tableVec.front() = replacement;
 			delete table;
 		}
 	}
+
+	// optimization starts here
+
+	translate(tableVec, tableList);
+	translate(selectVec, selectList);
+	translate(predicateVec, predicateList);
+	translate(groupByVec, groupBy);
+	translate(orderByVec, orderBy);
 
 	tableList->rewind();
 	int numSites = 0;
@@ -296,32 +297,18 @@ Site* QueryTree::createSite(){
 		}
 		tableList->step();
 	}
-
-	if(aggregates[count] && aggregates[count]->isApplicable()){
+	if(aggregates && aggregates->isApplicable()){
 			   
 	   	// Change the select list
-		TRY(selectList = aggregates[count]->filterList(),NULL);
+		TRY(selectList = aggregates->filterList(),NULL);
 
 #if defined(DEBUG)
 		cerr << " Removing aggregates from the list\n";
 		displayList(cerr, selectList, ", ");
 		cerr << endl;
 #endif
-		count ++;
-		if (count == MAX_AGG){
-			THROW(new Exception(" Numbr of nesting levels too high "),NULL);
-			// throw Exception(" Numbr of nesting levels too high ");
-		}
-		aggregates[count] = new Aggregates(selectList,sequenceby,withPredicate,groupBy, havingPredicate);
 	}
-	count --;
-
 	assert(groupBy);
-	if(count == -1 && !groupBy->isEmpty()){
-		aggregates[0] = new 
-			Aggregates(selectList,sequenceby,withPredicate,groupBy,havingPredicate);
-		count = 0;
-	}
 
 	LOG(logFile << "Decomposing query on " << numSites << " sites\n";)
      sites->rewind();
@@ -493,9 +480,9 @@ Site* QueryTree::createSite(){
 	  TRY(siteGroup->typify(option), NULL);
 	}
 
-	for(int k = count; k >= 0;k--){
-		TRY(aggregates[k]->typify(siteGroup->getName(), siteGroup), NULL);
-		siteGroup = aggregates[k];
+	if(aggregates && aggregates->isApplicable()){
+		TRY(aggregates->typify(siteGroup->getName(), siteGroup), NULL);
+		siteGroup = aggregates;
 	}
 
 	assert(orderBy);

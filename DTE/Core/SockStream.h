@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/09/05 22:56:08  donjerko
+  *** empty log message ***
+
   Revision 1.5  1997/09/05 22:20:10  donjerko
   Made changes for port to NT.
 
@@ -80,7 +83,7 @@ class Cor_sockbuf : public streambuf {
     Cor_sockbuf(unsigned short Port);
 
       // used to create a socket connected to a remote machine 
-    Cor_sockbuf(char *HostName, unsigned short Port = CORAL_PORT);
+    Cor_sockbuf(const char *HostName, unsigned short Port = CORAL_PORT);
 
       // create a socket using defaults, or envirornment variables,
       // or the given file descriptor (connect to a remote machine)
@@ -88,7 +91,7 @@ class Cor_sockbuf : public streambuf {
 
    ~Cor_sockbuf();
 
-    int connect(char *HostName, unsigned short Port);
+    int connect(const char *HostName, unsigned short Port);
     int close();
     int shutdown();
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/09/05 22:20:24  donjerko
+  Made changes for port to NT.
+
   Revision 1.8  1997/08/22 23:13:07  okan
   Changed #include <string.h> 's to #include <string>
 
@@ -42,17 +45,8 @@
 #ifndef URL_H
 #define URL_H
 
-//#include <sys/types.h>   erased for sysdep.h
-//#include <sys/socket.h>   erased for sysdep.h
-// #include <sys/uio.h> // why is this here? (DD)
-//#include <netinet/in.h>   erased for sysdep.h
-//#include <netdb.h>   erased for sysdep.h (There was an ifndef SUN for this line)
 #include <string>
 #include <assert.h>
-//#include <iostream.h>   erased for sysdep.h
-//#include <strstream.h>   erased for sysdep.h
-//#include <stdio.h>   erased for sysdep.h
-//#include <unistd.h>   erased for sysdep.h
 #include "SockStream.h"
 #include "exception.h"
 #include "sysdep.h"
@@ -72,7 +66,7 @@ private:
 	char* file;
 	string protocol;
 	Cor_sockbuf* sockBuf;
-	int sock;
+//	int sock;
 	bool outputRequested;
 	bool inputRequested;
 	ostringstream userInput;

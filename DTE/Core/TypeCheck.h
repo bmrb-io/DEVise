@@ -2,7 +2,6 @@
 #define TYPECHECK_H
 
 #include <vector>
-#include "queue.h"
 #include <string>
 #include <map>
 #include "StringLess.h"
@@ -19,7 +18,7 @@ class TableAlias;
 class TypeCheck {
 	map<string, BaseSelection*, StringLess> symtab;
 public:
-	void initialize(List<TableAlias*>* tableList);
+	void initialize(const vector<TableAlias*>& tableList);
 	void insert(BaseSelection* element);
      void setupSelList(vector<BaseSelection*>& list);
 	BaseSelection* TypeCheck::resolve(BaseSelection* curr);

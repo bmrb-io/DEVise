@@ -6,6 +6,7 @@
 #include "Inserter.h"
 #include "Engine.h"
 #include "catalog.h"
+#include "SockStream.h"
 #include <string>
 
 string ViewInterface::typeName = "SQLView";
@@ -17,6 +18,7 @@ string CatalogInterface::typeName = "Directory";
 string DeviseInterface::typeName = "Table";
 string DummyInterface::typeName = "UNIXFILE";
 string ODBCInterface::typeName = "ODBC";
+string DBServerInterface::typeName = "DBServer";
 
 inline int MAX_VAL(int i, int j){
 	return (i > j ? i : j);
@@ -354,14 +356,29 @@ const ISchema* ViewInterface::getISchema(TableName* table){
 	assert(table);
 	assert(table->isEmpty());
 	assert(attributeNames);
+
+	// typecheck the query
+
+	string tquery = "typecheck " + query;
+	Engine engine(tquery);
+	TRY(engine.optimize(), NULL);
+	engine.initialize();
+	const Tuple* tup = engine.getNext();
+	const ISchema* tmp = ISchema::getISchema(tup[0]);
+	const TypeID* tmpTypes = tmp->getTypeIDs();
+
 	string* retVal = new string[numFlds + 1];
+	TypeID* types = new TypeID[numFlds + 1];
 	retVal[0] = "recId";
+	types[0] = INT_TP;
 	for(int i = 0; i < numFlds; i++){
 		retVal[i + 1] = attributeNames[i];
+		types[i + 1] = tmpTypes[i];
 	}
-	// to do: typecheck the query
+	schema = new ISchema(types, retVal, numFlds + 1);
 
-	schema = new ISchema(NULL, retVal, numFlds + 1);
+	// do not delete types and retVal
+
 	return schema;
 }
 
@@ -481,4 +498,48 @@ const ISchema* CGIInterface::getISchema(TableName* table){
 	string msg = "ISchema lookup not yet implemented for CGIs";
 	THROW(new Exception(msg), NULL);
 //	throw Exception(msg);
+}
+
+istream& DBServerInterface::read(istream& in){
+	in >> host;
+	in >> port;
+	if(!in){
+		THROW(new Exception("Incorrect DBServerInterface format"), in);
+	}
+	return in;
+}
+
+void DBServerInterface::write(ostream& out) const {
+	out << typeName << " ";
+	out << host << " " << port;
+}
+
+const ISchema* DBServerInterface::getISchema(TableName* table){
+	if(schema){
+		return schema;
+	}
+	schema = new ISchema;
+	Cor_sockbuf sockBuf(host.c_str(), port);
+	iostream str(&sockBuf);
+	str << "schema " << table->toString() << ";" << flush;
+     str >> *schema;
+     if(!str){
+          string err = "Illegal schema received from the DB server";
+          THROW(new Exception(err), NULL);
+     }
+	return schema;
+}
+
+istream& ODBCInterface::read(istream& in){
+	in >> dataSourceName;
+	in >> userName >> passwd;
+	if(!in){
+		THROW(new Exception("Incorrect ODBCInterface format"), in);
+	}
+	return in;
+}
+
+void ODBCInterface::write(ostream& out) const {
+	out << typeName << "  ";
+	out << dataSourceName << "   " << userName << "  " << passwd;
 }

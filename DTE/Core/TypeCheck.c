@@ -44,21 +44,29 @@ void TypeCheck::resolve(vector<BaseSelection*>& list){
 	}
 }
 
-void TypeCheck::initialize(List<TableAlias*>* tableList){
+void TypeCheck::initialize(const vector<TableAlias*>& tableList){
      Interface* interf;
-	for(tableList->rewind(); !tableList->atEnd(); tableList->step()){
-		TableAlias* current = tableList->get();
+	vector<TableAlias*>::const_iterator it;
+	for(it = tableList.begin(); it != tableList.end(); ++it){
+		TableAlias* current = *it;
 		TableName* tableName = current->getTable();
 		TableName* tableNameCopy = new TableName(*tableName);
 		TRY(interf = ROOT_CATALOG.createInterface(tableNameCopy), NVOID);
 		TRY(const ISchema* schema = interf->getISchema(tableNameCopy), NVOID);
+
+		// get site descriptor and insert it into SDTable
+
+//		TRY(const SiteDesc* sd = interf->getSiteDesc(), NVOID);
+
 		int numFlds = schema->getNumFlds();
 		const string* attrs = schema->getAttributeNames();
 		const TypeID* types = schema->getTypeIDs();
 		for(int i = 0; i < numFlds; i++){
 			string* aliasCopy = new string(*current->getAlias());
 			string* attCpy = new string(attrs[i]);
-			insert(new PrimeSelection(aliasCopy, attCpy, types[i]));
+			PrimeSelection* ps;
+			ps = new PrimeSelection(aliasCopy, attCpy, types[i]);
+			insert(ps);
 		}
 		delete interf;
 	}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/11/13 22:19:22  okan
+  Changes about compilation on NT
+
   Revision 1.15  1997/11/12 23:17:19  donjerko
   Improved error checking.
 
@@ -93,8 +96,8 @@ Site* DeleteParse::createSite(){
 	TableAlias ta(tableName, alias);
 	site->addTable(&ta);
 
-	List<TableAlias*>* tableList = new List<TableAlias*>;
-	tableList->append(&ta);
+	vector<TableAlias*> tableList;
+	tableList.push_back(&ta);
 	TypeCheck typeCheck;
 	TRY(typeCheck.initialize(tableList), 0);
 	vector<BaseSelection*> predicateVec;

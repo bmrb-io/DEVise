@@ -11,20 +11,6 @@
 #include "SQL.H"
 #include <sqlext.h>
 
-istream& ODBCInterface::read(istream& in){
-	in >> dataSourceName;
-	in >> userName >> passwd;
-	if(!in){
-		THROW(new Exception("Incorrect ODBCInterface format"), in);
-	}
-	return in;
-}
-
-void ODBCInterface::write(ostream& out) const {
-	out << typeName << "  ";
-	out << dataSourceName << "   " << userName << "  " << passwd;
-}
-
 const ISchema* ODBCInterface::getISchema(TableName* table){
 
 	string Table_N ;
