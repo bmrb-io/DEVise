@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.41  2000/07/14 21:13:08  wenger
+// Speeded up 3D GData processing by a factor of 2-3: improved the parser
+// used for GData; eliminated Z sorting for bonds-only 3D views; eliminated
+// DEViseAtomTypes for atoms used only to define bond ends; reduced string-
+// based processing; eliminated various unused variables, etc.
+//
 // Revision 1.40  2000/07/10 12:26:03  venkatan
 // *** empty log message ***
 //
@@ -128,7 +134,7 @@ public final class DEViseGlobals
     // Note: this method is currently being used only to parse GData,
     // put it should eventually entirely replace the method immediately
     // below.
-    public static String[] parseStringGD(String inputStr, char startChar,
+    public static String[] parseString(String inputStr, char startChar,
                                        char endChar, boolean keep)
     {
         //TEMP -- what about xx{ } or xx{x} ? how should they be parsed?
@@ -171,7 +177,6 @@ public final class DEViseGlobals
 	        if (depth == 0) {
 		    if (inSpaceTok) {
 		        inSpaceTok = false;
-			ends[tokCount-1] = index;
 		    }
 		}
 	    } else {
@@ -180,6 +185,9 @@ public final class DEViseGlobals
 			inSpaceTok = true;
 		        tokCount++;
 			starts[tokCount-1] = index;
+			ends[tokCount-1] = index;
+		    } else {
+			ends[tokCount-1] = index;
 		    }
 		}
 	    }
@@ -190,9 +198,13 @@ public final class DEViseGlobals
 	if (tokCount > 0) {
 	    result = new String[tokCount];
 	    for (int tokNum = 0; tokNum < tokCount; tokNum++) {
-	        if (ends[tokNum] > starts[tokNum]) {
+	        if (ends[tokNum] >= starts[tokNum]) {
+		    // Note: substring is weird -- it is supposed to be
+		    // (firstIndex, lastIndex), but substring(2, 2), for
+		    // example, returns a zero-length string -- hence
+		    // the '+ 1' below.  RKW 2000-07-20.
 		    result[tokNum] = inputStr.substring(starts[tokNum],
-		      ends[tokNum]);
+		      ends[tokNum] + 1);
 		} else {
 		    result[tokNum] = "";
 		}
@@ -200,98 +212,6 @@ public final class DEViseGlobals
 	}
 
 	return result;
-    }
-
-    public static String[] parseString(String inputStr, char startChar,
-                                       char endChar, boolean keep)
-    {
-        String[] outputStr = null;
-
-        // Check empty string
-        if (inputStr.equals(""))  {
-            outputStr = new String[1];
-            outputStr[0] = new String("");
-            return outputStr;
-        }
-
-        Vector strBuffer = new Vector();
-        // isInit: denote the starting state
-        // isSpace: denote the space character ' '
-        // isStartChar: denote the startChar
-        // isSpecialChar: denote any character between startChar and endChar
-        // isChar: denote any other character
-        byte isInit = 0, isSpace = 1, isStartChar = 2, isSpecialChar = 3,
-             isChar = 4;
-        byte state = isInit; // denote the state of previous character
-        char testChar;
-        StringBuffer buffer = new StringBuffer("");
-        int i;
-
-        for (i = 0; i < inputStr.length(); i++) {
-            testChar = inputStr.charAt(i);
-
-            if (testChar == startChar) {
-                if (state == isInit || state == isSpace) {
-                    if (keep) {
-                        buffer.append(testChar);
-                    }
-                } else if (state == isStartChar || state == isSpecialChar) {
-                    return null;
-                } else if (state == isChar) {
-                    strBuffer.addElement(buffer.toString());
-                    buffer = new StringBuffer("");
-                }
-
-                state = isStartChar;
-            } else if (testChar == endChar) {
-                if (state == isInit || state == isSpace || state == isChar) {
-                    return null;
-                } else if (state == isSpecialChar || state == isStartChar) {
-                    if (keep)
-                        buffer.append(testChar);
-                    strBuffer.addElement(buffer.toString());
-                    buffer = new StringBuffer("");
-                }
-
-                state = isSpace;
-            } else if (testChar == ' ') {
-                if (state == isSpecialChar || state == isStartChar)  {
-                    buffer.append(testChar);
-                    state = isSpecialChar;
-                }  else if (state == isInit || state == isSpace)  {
-                    state = isSpace;
-                }  else if (state == isChar)  {
-                    strBuffer.addElement(buffer.toString());
-                    buffer = new StringBuffer("");
-                    state = isSpace;
-                }
-            } else {
-                if (state == isInit || state == isSpace || state == isChar) {
-                    buffer.append(testChar);
-                    state = isChar;
-                } else if (state == isStartChar || state == isSpecialChar) {
-                    buffer.append(testChar);
-                    state = isSpecialChar;
-                }
-            }
-        }
-
-        if (state == isChar) {
-            strBuffer.addElement(buffer.toString());
-        } else if (state == isSpace) {
-            if (strBuffer.size() == 0) {
-                strBuffer.addElement(buffer.toString());
-            }
-        } else {
-            return null;
-        }
-
-        outputStr = new String[strBuffer.size()];
-        for (i = 0; i < strBuffer.size(); i++) {
-            outputStr[i] = (String)strBuffer.elementAt(i);
-        }
-
-        return outputStr;
     }
 
     public static String[] parseString(String inputStr, char startChar, char endChar)

@@ -2371,8 +2371,9 @@ Num Date        Status  Description
 			(see bmrb/test/bad_cursor_drag.ds, third cursor
 			from the right). (rkw)
 
-603 7/19/00	OPEN	JavaScreen: variable name strings in left window
+603 7/19/00	FIXED	JavaScreen: variable name strings in left window
 			are truncated. (rkw)
+			(Fixed by rkw, 7/20/00.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

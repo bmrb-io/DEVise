@@ -23,6 +23,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.62  2000/07/19 20:11:36  wenger
+// Code to read data from sockets is more robust (hopefully fixes BMRB/Linux
+// problem); background color of upper left part of JS changed to red when a
+// dialog is shown; more debug output added.
+//
 // Revision 1.61  2000/07/14 21:13:07  wenger
 // Speeded up 3D GData processing by a factor of 2-3: improved the parser
 // used for GData; eliminated Z sorting for bonds-only 3D views; eliminated
@@ -661,19 +666,25 @@ public class DEViseCmdDispatcher implements Runnable
 		    // GData per command) and separate them use \x04.
                     String[] GData = DEViseGlobals.parseStr(gdataStr, "\u0004", false);
                     if (GData == null) {
-                        throw new YException("Invalid GData received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
+                        throw new YException(
+			  "Invalid GData received for view \"" + viewname +
+			  "\"", "DEViseCmdDispatcher::processCmd()", 2);
                     }
 
                     Vector gdList = new Vector();
                     for (int j = 0; j < GData.length; j++) {
                         if (GData[j] == null) {
-                            throw new YException("Invalid GData received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
+                            throw new YException(
+			      "Invalid GData received for view \"" + viewname +
+			      "\"", "DEViseCmdDispatcher::processCmd()", 2);
                         }
 
 			// Split the GData into records.
                         String[] results = DEViseGlobals.parseStr(GData[j]);
                         if (results == null || results.length == 0) {
-                            throw new YException("Invalid GData received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
+                            throw new YException(
+			      "Invalid GData received for view \"" + viewname +
+			      "\"", "DEViseCmdDispatcher::processCmd()", 2);
                         }
 
                         DEViseGData.defaultFont = null;

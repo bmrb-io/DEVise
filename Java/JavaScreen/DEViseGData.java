@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.35  2000/07/14 21:13:08  wenger
+// Speeded up 3D GData processing by a factor of 2-3: improved the parser
+// used for GData; eliminated Z sorting for bonds-only 3D views; eliminated
+// DEViseAtomTypes for atoms used only to define bond ends; reduced string-
+// based processing; eliminated various unused variables, etc.
+//
 // Revision 1.34  2000/05/22 17:52:49  wenger
 // JavaScreen handles fonts much more efficiently to avoid the problems with
 // GData text being drawn very slowly on Intel platforms.
@@ -169,9 +175,18 @@ public class DEViseGData
             throw new YException("Invalid parent view for GData!");
         }
 
-        String[] data = DEViseGlobals.parseStringGD(gdata, '{', '}', false);
-        if (data == null || data.length != 23)
-            throw new YException("Invalid GData + {" + gdata + "}");
+        String[] data = DEViseGlobals.parseString(gdata, '{', '}', false);
+	if (_debug) {
+            System.out.println("GData string = <" + gdata + ">");
+	    System.out.print("Parsed GData: ");
+	    for (int index = 0; index < data.length; index++) {
+	        System.out.print("<" + data[index] + "> ");
+	    }
+	    System.out.println("");
+	}
+        if (data == null || data.length != 23) {
+            throw new YException("Invalid GData: {" + gdata + "}");
+	}
         gdata = null;
 
         float size = 0;
@@ -186,7 +201,7 @@ public class DEViseGData
             size = (Float.valueOf(data[4])).floatValue();
             symbolType = Integer.parseInt(data[7]);
         } catch (NumberFormatException e) {
-            throw new YException("Invalid GData!");
+            throw new YException("Invalid GData: (" + gdata + ")");
         }
 
 	//TEMP -- perhaps this should be done when the symbol is
