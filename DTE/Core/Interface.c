@@ -532,7 +532,7 @@ const ISchema* DBServerInterface::getISchema(TableName* table){
 
 istream& ODBCInterface::read(istream& in){
 	in >> dataSourceName;
-	in >> userName >> passwd;
+	in >> userName >> passwd >> tableName;
 	if(!in){
 		THROW(new Exception("Incorrect ODBCInterface format"), in);
 	}
@@ -541,5 +541,5 @@ istream& ODBCInterface::read(istream& in){
 
 void ODBCInterface::write(ostream& out) const {
 	out << typeName << "  ";
-	out << dataSourceName << "   " << userName << "  " << passwd;
+	out << dataSourceName << "   " << userName << "  " << passwd << "  " << tableName;
 }

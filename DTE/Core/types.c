@@ -539,12 +539,8 @@ void interfaceRead(istream& in, Type*& adt){
 		interf = (ViewInterface*) new (adt) MaterViewInterface();
 		TRY(interf->read(in), NVOID );
 	}
-     else if(typeNm == ODBCInterface::typeName){
-          interf = (ODBCInterface*) new (adt) ODBCInterface();
-          TRY(interf->read(in), NVOID );
-     }
-	else if(typeNm == DBServerInterface::typeName){
-		interf = (DBServerInterface*) new (adt) DBServerInterface();
+	else if(typeNm == ODBCInterface::typeName){
+		interf = (ODBCInterface*) new (adt) ODBCInterface();
 		TRY(interf->read(in), NVOID );
 	}
 	else{
