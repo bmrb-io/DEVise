@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/04/10 21:50:29  donjerko
+  Made integers inlined, added type cast operator.
+
   Revision 1.21  1997/03/25 17:57:41  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -92,146 +95,13 @@
 
 typedef enum SelectID {
 	BASE_ID, SELECT_ID, GLOBAL_ID, OP_ID, CONST_ID, PATH_ID, METHOD_ID, 
-	EXEC_ID, CAST_ID
-};
-
-class Path {
-friend class GlobalSelect;
-friend class BaseSelection;
-friend class Operator;
-friend class PrimeSelection;
-protected:
-	String* path;
-	Path* nextPath;
-	MemberPtr memberPtr;
-public:
-	Path(String* p, Path* n = NULL) : 
-          path(p), nextPath(n), memberPtr(NULL) {}
-	Path(Path &newPath):
-		 path(newPath.path),nextPath(newPath.nextPath){}
-	virtual void display(ostream& out, int detail = 0){
-		assert(path);
-		out << *path;
-		if(nextPath){
-			out << ".";
-			nextPath->display(out, detail);
-		}
-	}
-	String toString(){
-		ostrstream os;
-		display(os);
-		os << ends;
-		char* tmp = os.str();
-		String retVal(tmp);
-		delete tmp;
-		return retVal;
-	}
-	virtual Path* filter(Site* site){
-		if(nextPath){
-			Path* nextRet = nextPath->filter(site);
-			if(nextRet){
-				return nextRet;
-			}
-			else{
-				return this;
-			}
-		}
-		else{
-			return this;
-		}
-	}
-	virtual TypeID typify(TypeID parentType, List<Site*>* sites);
-	virtual BaseSelection * getSelectList(){
-
-		assert(!"SelecList cannot be given by Path");
-		return NULL;
-	}
-
-	virtual void propagate(Site* site){
-		if(nextPath){
-			nextPath->propagate(site);
-		}
-	}
-	virtual bool exclusive(Site* site){
-		if(nextPath){
-			return nextPath->exclusive(site);
-		}
-		else{
-			return true;
-		}
-	}
-	virtual bool exclusive(String* attributeNames, int numFlds){
-		assert(!"not implemented");
-		return false;
-	}
-	virtual Path* duplicate(){
-		if(nextPath){
-			return new Path(new String(*path), nextPath->duplicate());
-		}
-		else{
-			return new Path(new String(*path));
-		}
-	}
-	virtual void collect(Site* s, List<BaseSelection*>* to){
-		if(nextPath){
-			nextPath->collect(s, to);
-		}
-	}
-     virtual void enumerate(
-		String site1, List<BaseSelection*>* list1,
-		String site2, List<BaseSelection*>* list2){
-
-          if(nextPath){
-               TRY(nextPath->enumerate(site1, list1, site2, list2), );
-          }
-     }
-     virtual SelectID selectID(){
-          return PATH_ID;
-     }
-     virtual bool match(Path* x, Path*& upTo){
-          if(!(selectID() == x->selectID())){
-               return false;
-          }
-          if(*path != *x->path){
-               return false;
-          }
-          if(x->nextPath){
-               if(nextPath){
-				return nextPath->match(x->nextPath, upTo);
-               }
-               else{
-                    return false;
-               }
-          }
-          else{
-               upTo = nextPath;
-               return true;
-          }
-     }
-	void append(Path* np){
-		assert(nextPath == NULL);
-		nextPath = np;
-	}
-	String* getPathName(){
-		return path;
-	}
-	virtual bool isFunction(){
-		return false;
-	}
-	virtual List<BaseSelection*>* getArgs(){
-		return NULL;	// implemented for functions only;
-	}
-	virtual int getSize(){
-		return 10;	// fix this later
-	}
-	virtual Type* evaluate(Type* base);
+	EXEC_ID, CAST_ID, MEMBER_ID
 };
 
 class BaseSelection{
 protected:
-	Path* nextPath;
 public:
-     BaseSelection(Path* np) : nextPath(np) {}
+     BaseSelection() {}
 	String toString(){
 		ostrstream os;
 		display(os);
@@ -242,10 +112,6 @@ public:
 		return retVal;
 	}
      virtual void display(ostream& out, int detail = 0){
-          if(nextPath){
-			out << ".";
-               nextPath->display(out, detail);
-          }
 	};
 	virtual void displayFlat(ostream& out, int detail = 0){
 		display(out, detail);
@@ -253,20 +119,6 @@ public:
 	virtual BaseSelection* filter(Site* site) = 0;
 	virtual bool exclusive(Site* site) = 0;
 	virtual bool exclusive(String* attributeNames, int numFlds) = 0;
-	void append(Path* np){
-		Path* next = nextPath;
-		Path* prevPath = NULL;
-		while(next){
-			prevPath = next;
-			next = next->nextPath;
-		}
-		if(prevPath){
-			prevPath->nextPath = np;
-		}
-		else{
-			nextPath = np;
-		}
-	}
 	virtual String* siteName(){
 		assert(0);
 		return NULL; // avoid compiler warning
@@ -292,32 +144,15 @@ public:
 		String site1, List<BaseSelection*>* list1,
 		String site2, List<BaseSelection*>* list2){
 
-          if(nextPath){
-               TRY(nextPath->enumerate(site1, list1, site2, list2), NULL);
-          }
 		return NULL;
      }
 	virtual TypeID typify(List<Site*>* sites){
-          if(nextPath){
-			assert(!"not implemented");
-               // TRY(nextPath->typify(sites), "Unknown");
-          }
 		return "Unknown";
      }
-     virtual bool match(BaseSelection* x, Path*& upTo){
-          if(x->nextPath){
-               if(nextPath){
-				return nextPath->match(x->nextPath, upTo);
-               }
-               else{
-                    return false;
-               }
-          }
-          else{
-               upTo = nextPath;
-               return true;
-          }
-     }
+     virtual bool match(BaseSelection* x) = 0;
+	virtual bool matchNoMember(BaseSelection* x){ // throws exception
+		return match(x);
+	}
      virtual SelectID selectID() = 0;
 	virtual TypeID getTypeID(){
 		assert(0);
@@ -345,17 +180,11 @@ public:
 		assert(0);
 		return NULL; // avoid compiler warning
 	}
-	virtual Path* getNext(){
-		return nextPath;
-	}
 	virtual BaseSelection* makeNonComposite(){
 		
 		// Used in the select * queries to make sure that all the
 		// referncies to base tables are simple (eg., not a.i + 1).
 
-		if(nextPath){
-			// nextPath->makeNonComposite();
-		}
 		return NULL;
 	}
 	virtual BaseSelection* distributeWrapper(Site* site){
@@ -363,16 +192,10 @@ public:
 		// Used in the select * queries to make sure that all the
 		// referncies to base tables are simple (eg., not a.i + 1).
 
-		if(nextPath){
-			// nextPath->distributeWrapper(site);
-		}
 		return NULL;
 	}
 	virtual bool isGlobal(){
 		return false;
-	}
-	Path* getPath(){
-		return nextPath;
 	}
 	virtual bool isIndexable(
 		String& attrName, String& opName, BaseSelection*& value){
@@ -387,8 +210,8 @@ public:
 		assert(0);
 		return ""; // avoid compiler warning
 	}
-     virtual bool matchFlat(BaseSelection* x, Path*& upTo){
-		return match(x, upTo);
+     virtual bool matchFlat(BaseSelection* x){
+		return match(x);
 	}
 };
 
@@ -398,8 +221,8 @@ class GlobalSelect : public BaseSelection {
 	TypeID typeID;
 	int avgSize;	// to estimate result sizes
 public:
-	GlobalSelect( Site* s, BaseSelection* sel, Path* np) :
-		site(s), selection(sel), BaseSelection(np) {
+	GlobalSelect(Site* s, BaseSelection* sel) :
+		site(s), selection(sel), BaseSelection() {
 		typeID = sel->getTypeID();
 		avgSize = sel->getSize();
 	}
@@ -424,9 +247,6 @@ public:
 		if(site == s){
 			to->append(selection);
 		}
-		if(nextPath){
-			nextPath->collect(s, to);
-		}
 	}
 	virtual BaseSelection* enumerate(
 		String site1, List<BaseSelection*>* list1,
@@ -441,9 +261,9 @@ public:
      virtual void setTypeID(TypeID type){
 		typeID = type;
      }
-     virtual bool match(BaseSelection* x, Path*& upTo);
-     virtual bool matchFlat(BaseSelection* x, Path*& upTo){
-		return selection->matchFlat(x, upTo);
+     virtual bool match(BaseSelection* x);
+     virtual bool matchFlat(BaseSelection* x){
+		return selection->matchFlat(x);
 	}
 	virtual void setSize(int size){
 		avgSize = size;
@@ -468,9 +288,9 @@ class ExecSelect : public BaseSelection {
 	int fieldNo;
 	BaseSelection* parent;
 public:
-	ExecSelect(BaseSelection* parent, int lr, int field, Path* next = NULL) :
+	ExecSelect(BaseSelection* parent, int lr, int field) :
 		leftRight(lr), fieldNo(field), parent(parent),
-		BaseSelection(next) {}
+		BaseSelection() {}
 	virtual void display(ostream& out, int detail = 0){
 		out << "(" << leftRight << ", " << fieldNo << ")";
 		BaseSelection::display(out);
@@ -510,12 +330,11 @@ public:
 	}
 	virtual Type* evaluate(Tuple* left, Tuple* right){
 		Type* base = (leftRight ? right[fieldNo] : left[fieldNo]);
-		if(nextPath){
-			return nextPath->evaluate(base);
-		}
-		else{
-			return base;
-		}
+		return base;
+	}
+     virtual bool match(BaseSelection* x){
+		assert(0);
+		return false;
 	}
 };
 		
@@ -524,7 +343,7 @@ class ConstantSelection : public BaseSelection {
      Type* value;
 public:
 	ConstantSelection(TypeID typeID, const Type* val) : 
-		BaseSelection(NULL), typeID(typeID) {
+		BaseSelection(), typeID(typeID) {
 		value = NULL;
 		ADTCopyPtr cp = getADTCopyPtr(typeID);
 		assert(cp);
@@ -564,37 +383,21 @@ public:
 		BaseSelection::display(out, detail);
 	}
 	virtual BaseSelection* filter(Site* site){
-		if(nextPath){
-               nextPath->propagate(site);
-          }
           return NULL;
 	}
 	virtual bool exclusive(Site* site){
-		if(nextPath){
-			return nextPath->exclusive(site);
-		}
-		else{
-			return true;
-		}
+		return true;
 	}
 	virtual bool exclusive(String* attributeNames, int numFlds){
-		if(nextPath){
-			return nextPath->exclusive(attributeNames, numFlds);
-		}
-		else{
-			return true;
-		}
+		return true;
 	}
 	virtual BaseSelection* duplicate();
 	virtual void collect(Site* s, List<BaseSelection*>* to){
-		if(nextPath){
-			nextPath->collect(s, to);
-		}
 	}
      virtual SelectID selectID(){
           return CONST_ID;
      }
-	virtual bool match(BaseSelection* x, Path*& upTo){ // throws exception
+	virtual bool match(BaseSelection* x){ // throws exception
           if(!(selectID() == x->selectID())){
                return false;
           }
@@ -607,7 +410,7 @@ public:
 		if(!genPtr->opPtr(value, y->value)){
 			return false;
 		}
-		return BaseSelection::match(y, upTo);
+		return true;
 	}
      virtual BaseSelection* enumerate(
           String site1, List<BaseSelection*>* list1,
@@ -638,10 +441,10 @@ class TypeCast : public BaseSelection {
 	PromotePtr promotePtr;
 public:
 	TypeCast(TypeID& typeID, BaseSelection* input) : 
-		BaseSelection(NULL), typeID(typeID), input(input), promotePtr(NULL) {
+		BaseSelection(), typeID(typeID), input(input), promotePtr(NULL) {
 	}
 	TypeCast(TypeID& typeID, BaseSelection* input, PromotePtr promotePtr) : 
-		BaseSelection(NULL), typeID(typeID), input(input), 
+		BaseSelection(), typeID(typeID), input(input), 
 		promotePtr(promotePtr) {
 	}
 	virtual ~TypeCast(){
@@ -654,8 +457,7 @@ public:
 	}
 	virtual BaseSelection* filter(Site* site){
 		if(input->exclusive(site)){
-			assert(!nextPath);	// not implemented
-			return new GlobalSelect(site, this, NULL);
+			return new GlobalSelect(site, this);
 		}
 		else{
 			BaseSelection* newInp = input->filter(site);
@@ -673,14 +475,11 @@ public:
 		return new TypeCast(typeID, input->duplicate(), promotePtr);
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to){
-		if(nextPath){
-			nextPath->collect(s, to);
-		}
 	}
      virtual SelectID selectID(){
           return CAST_ID;
      }
-	virtual bool match(BaseSelection* x, Path*& upTo){ // throws exception
+	virtual bool match(BaseSelection* x){ // throws exception
           if(!(selectID() == x->selectID())){
                return false;
           }
@@ -688,10 +487,10 @@ public:
 		if(typeID != y->typeID){
 			return false;
 		}
-		if(!input->match(y->input, upTo)){
+		if(!input->match(y->input)){
 			return false;
 		}
-		return BaseSelection::match(y, upTo);
+		return true;
 	}
      virtual BaseSelection* enumerate(
           String site1, List<BaseSelection*>* list1,
@@ -702,7 +501,12 @@ public:
 		return new TypeCast(typeID, execInp, promotePtr);
      }
      virtual TypeID typify(List<Site*>* sites){
-		assert(!promotePtr);	// already typified when consturcted 
+		if(promotePtr){
+
+			// already typified when consturcted 
+
+			return typeID;
+		}
 		TRY(TypeID inpType = input->typify(sites), "");
 		TRY(PromotePtr promotePtr = getPromotePtr(inpType, typeID), "");
 		return typeID;
@@ -721,6 +525,307 @@ public:
 	}
 };
 
+class Member : public BaseSelection {
+friend class Method;
+protected:
+	String* name;
+	TypeID typeID;
+	BaseSelection* input;
+	MemberPtr memberPtr;
+	int avgSize;	// to estimate result sizes
+public:
+	Member(String* name, BaseSelection* input, MemberPtr memberPtr = NULL,
+			TypeID typeID = "unknown") : 
+		BaseSelection(), name(name), typeID(typeID), input(input), 
+		memberPtr(memberPtr) {
+	}
+	virtual ~Member(){
+	}
+	virtual void display(ostream& out, int detail = 0){
+		input->display(out, detail);
+		out << "." << *name;
+		BaseSelection::display(out, detail);
+	}
+	const String* getName(){
+		return name;
+	}
+	virtual BaseSelection* filter(Site* site){
+		if(input->exclusive(site)){
+			return new GlobalSelect(site, this);
+		}
+		else{
+			BaseSelection* newInp = input->filter(site);
+			assert(!newInp);
+			return NULL;
+		}
+	}
+	virtual bool exclusive(Site* site){
+		return input->exclusive(site);
+	}
+	virtual bool exclusive(String* attributeNames, int numFlds){
+		return input->exclusive(attributeNames, numFlds);
+	}
+	virtual BaseSelection* duplicate(){
+		return new Member(
+			new String(*name), input->duplicate(), memberPtr, typeID);
+	}
+	virtual void collect(Site* s, List<BaseSelection*>* to){
+		input->collect(s, to);
+	}
+     virtual SelectID selectID(){
+          return MEMBER_ID;
+     }
+	virtual bool match(BaseSelection* x){ // throws exception
+          if(!(selectID() == x->selectID())){
+               return false;
+          }
+		Member* y = (Member*) x;
+          if(*name != *y->name){
+               return false;
+          }
+		if(!input->match(y->input)){
+			return false;
+		}
+		return true;
+	}
+	virtual bool matchNoMember(BaseSelection* x){ // throws exception
+		if(match(x)){
+			return true;
+		}
+		return input->matchNoMember(x);
+	}
+     virtual BaseSelection* enumerate(
+          String site1, List<BaseSelection*>* list1,
+          String site2, List<BaseSelection*>* list2){
+		BaseSelection* execInp;
+		TRY(execInp = input->enumerate(site1, list1, site2, list2), NULL);
+          TRY(BaseSelection::enumerate(site1, list1, site2, list2), NULL);
+		return new Member(new String(*name), execInp, memberPtr, typeID);
+     }
+     virtual TypeID typify(List<Site*>* sites){
+		TRY(TypeID parentType = input->typify(sites), "unknown");
+		GeneralMemberPtr* genPtr;
+		TRY(genPtr = getMemberPtr(*name, parentType, typeID), "unknown");
+		assert(genPtr);
+		memberPtr = genPtr->memberPtr;
+		assert(memberPtr);
+		return typeID;
+	}
+     virtual TypeID getTypeID(){
+          return typeID;
+     }
+	virtual void setTypeID(TypeID type){
+		typeID = type;
+	}
+	virtual Type* evaluate(Tuple* left, Tuple* right){
+		return memberPtr(input->evaluate(left, right));
+	}
+	virtual int getSize(){
+		return avgSize;
+	}
+     virtual void setSize(int size){
+          avgSize = size;
+     }
+	virtual bool checkOrphan(){
+		return input->checkOrphan();
+	}
+};
+
+class Method : public Member {
+	List<BaseSelection*>* args;
+public:
+	Method(String* name, List<BaseSelection*>* args, BaseSelection* input) :
+		Member(name, input), args(args) {}
+	virtual ~Method(){
+	}
+	virtual void display(ostream& out, int detail = 0){
+		if(input){
+			input->display(out, detail);
+			out << ".";
+		}
+		assert(name);
+		out << *name << "(";
+          if(args){
+               displayList(out, args, ", ", detail);
+          }
+          out << ')';
+	}
+     virtual bool isGlobal(){
+          return input == NULL;
+     }
+     List<BaseSelection*>* getArgs(){
+          return args;
+     }
+	virtual BaseSelection* filter(Site* site){
+		assert(0);
+		if(input->exclusive(site)){
+			return new GlobalSelect(site, this);
+		}
+		else{
+			BaseSelection* newInp = input->filter(site);
+			assert(!newInp);
+			return NULL;
+		}
+	}
+	virtual bool exclusive(Site* site){
+		assert(0);
+		return input->exclusive(site);
+	}
+	virtual bool exclusive(String* attributeNames, int numFlds){
+		assert(0);
+		return input->exclusive(attributeNames, numFlds);
+	}
+	virtual BaseSelection* duplicate(){
+		assert(0);
+		return new Member(new String(*name), input->duplicate());
+	}
+	virtual void collect(Site* s, List<BaseSelection*>* to){
+		assert(0);
+		input->collect(s, to);
+	}
+     virtual SelectID selectID(){
+          return METHOD_ID;
+     }
+	virtual bool match(BaseSelection* x){ // throws exception
+		assert(0);
+          if(!(selectID() == x->selectID())){
+               return false;
+          }
+		Member* y = (Member*) x;
+          if(*name != *y->name){
+               return false;
+          }
+		if(!input->match(y->input)){
+			return false;
+		}
+		return true;
+	}
+	virtual bool matchNoMember(BaseSelection* x){ // throws exception
+		assert(0);
+		if(match(x)){
+			return true;
+		}
+		return input->matchNoMember(x);
+	}
+     virtual BaseSelection* enumerate(
+          String site1, List<BaseSelection*>* list1,
+          String site2, List<BaseSelection*>* list2){
+		assert(0);
+		BaseSelection* execInp;
+		TRY(execInp = input->enumerate(site1, list1, site2, list2), NULL);
+          TRY(BaseSelection::enumerate(site1, list1, site2, list2), NULL);
+		return new Member(new String(*name), execInp, memberPtr, typeID);
+     }
+     virtual TypeID typify(List<Site*>* sites){
+		assert(0);
+		TRY(TypeID parentType = input->typify(sites), "unknown");
+		GeneralMemberPtr* genPtr;
+		TRY(genPtr = getMemberPtr(*name, parentType, typeID), "unknown");
+		assert(genPtr);
+		memberPtr = genPtr->memberPtr;
+		assert(memberPtr);
+		return typeID;
+	}
+     virtual TypeID getTypeID(){
+          return typeID;
+     }
+	virtual Type* evaluate(Tuple* left, Tuple* right){
+		assert(0);
+		return memberPtr(input->evaluate(left, right));
+	}
+	virtual int getSize(){
+		assert(0);
+		return packSize(typeID);
+	}
+	virtual bool checkOrphan(){
+		assert(0);
+		return input->checkOrphan();
+	}
+};
+
+class PrimeSelection : public BaseSelection{
+	String* alias;
+	String* fieldNm;
+	TypeID typeID;
+	int avgSize;	// to estimate result sizes
+	int position;  // position of this selection in a tuple
+public:
+	PrimeSelection(String a, String attr) : BaseSelection() {
+		alias = new String(a);
+		fieldNm = new String(attr);
+		typeID = "Unknown";
+		avgSize = 0;
+		position = 0;
+	}
+	PrimeSelection(
+		String* a, String* fieldNm = NULL, TypeID typeID = "Unknown",
+		int avgSize = 0, int position = 0): 
+          BaseSelection(), alias(a), fieldNm(fieldNm), typeID(typeID), 
+		avgSize(avgSize),
+		position(position) {}
+	const String* getFieldNm(){
+		return fieldNm;
+	}
+     virtual void display(ostream& out, int detail = 0){
+		if(alias){
+			out << *alias;
+		}
+		if(fieldNm){
+			out << "." << *fieldNm;
+		}
+		if(detail){
+               out << "% size = " << avgSize;
+               out << ", type = " << typeID << " %";
+          }
+	}
+	virtual BaseSelection* filter(Site* site);
+	virtual bool exclusive(Site* site);
+	virtual bool exclusive(String* attributeNames, int numFlds);
+	virtual BaseSelection* duplicate(){
+		String* dupAlias = (alias ? new String(*alias) : (String*) NULL);
+		String* dupFieldNm = 
+			(fieldNm ? new String(*fieldNm) : (String*) NULL);
+		return new PrimeSelection(dupAlias, dupFieldNm);
+	}
+	virtual void collect(Site* s, List<BaseSelection*>* to){
+	}
+     virtual BaseSelection* enumerate(
+          String site1, List<BaseSelection*>* list1,
+          String site2, List<BaseSelection*>* list2);
+	virtual TypeID typify(List<Site*>* sites);
+     virtual SelectID selectID(){
+          return SELECT_ID;
+     }
+	virtual bool match(BaseSelection* x);
+	virtual TypeID getTypeID(){
+		return typeID;
+	}
+     virtual void setTypeID(TypeID type){
+		typeID = type;
+     }
+	virtual void setSize(int size){
+		avgSize = size;
+	}
+	virtual int getSize(){
+		return avgSize;
+	}
+	virtual bool checkOrphan(){
+		assert(alias);
+		String msg = "Table " + *alias + " is not listed in FROM clause";
+		THROW(new Exception(msg), false);
+	}
+	virtual BaseSelection* distributeWrapper(Site* site){
+		return new GlobalSelect(site, this); 
+	}
+	virtual String toStringAttOnly(){
+		return *fieldNm;
+	}
+	virtual Type* evaluate(Tuple* left, Tuple* right){
+		assert(!"Evaluate called on PrimeSelection");
+		return NULL;
+	}
+};
+
 class Operator : public BaseSelection {
 friend BaseSelection* distrib(BaseSelection* l, BaseSelection* r);
 protected:
@@ -733,7 +838,7 @@ protected:
 	double selectivity;
 public:
 	Operator(String n, BaseSelection* l, BaseSelection* r)
-		: BaseSelection(NULL), name(n), left(l), right(r) {
+		: BaseSelection(), name(n), left(l), right(r) {
 		typeID = "Unknown";
 		opPtr = NULL;
           assert(left);
@@ -764,18 +869,18 @@ public:
 	virtual bool isIndexable(
 		String& attrName, String& opName, BaseSelection*& value);
 	String getAttribute(){
+		String attrNm;
 		ostrstream os;
 		if(left->selectID() == SELECT_ID){
-			left->getNext()->display(os);
+			attrNm = *(((PrimeSelection*) left)->getFieldNm());
 		}
 		else if(right->selectID() == SELECT_ID){
-			right->getNext()->display(os);
+			attrNm = *(((PrimeSelection*) right)->getFieldNm());
 		}
 		else{
 			assert(!"selection expected");
 		}
-		os << ends;
-		return String(os.str());
+		return attrNm;
 	}
 	String getValue(){
 		ostrstream os;
@@ -792,17 +897,8 @@ public:
 		return String(os.str());
 	}
 	virtual BaseSelection* filter(Site* site){
-		Path* endPath = NULL;
-		Path* nextGlobal = NULL;
 		if(exclusive(site)){
-			if(nextPath){
-				endPath = nextPath->filter(site);
-			}
-			if(endPath){
-				nextGlobal = endPath->nextPath;
-				endPath->nextPath = NULL;
-			}
-			return new GlobalSelect(site, this, nextGlobal);
+			return new GlobalSelect(site, this);
 		}
 		else{
 			BaseSelection* leftG = left->filter(site);
@@ -813,9 +909,6 @@ public:
 			if(rightG){
 				right = rightG;
 			}
-			if(nextPath){
-				nextPath->propagate(site);
-			}
 			return NULL;
 		}
 	}
@@ -825,9 +918,6 @@ public:
 		}
 		else if(!right->exclusive(site)){
 			return false;
-		}
-		else if(nextPath){
-			return nextPath->exclusive(site);
 		}
 		else{
 			return true;
@@ -840,9 +930,6 @@ public:
 		else if(!right->exclusive(attributeNames, numFlds)){
 			return false;
 		}
-		else if(nextPath){
-			return nextPath->exclusive(attributeNames, numFlds);
-		}
 		else{
 			return true;
 		}
@@ -853,9 +940,6 @@ public:
 	virtual void collect(Site* s, List<BaseSelection*>* to){
 		left->collect(s, to);
 		right->collect(s, to);
-		if(nextPath){
-			nextPath->collect(s, to);
-		}
 	}
 	virtual BaseSelection* enumerate(
 		String site1, List<BaseSelection*>* list1,
@@ -863,7 +947,7 @@ public:
      virtual SelectID selectID(){
           return OP_ID;
      }
-	virtual bool match(BaseSelection* x, Path*& upTo){
+	virtual bool match(BaseSelection* x){
           if(!(selectID() == x->selectID())){
                return false;
           }
@@ -871,13 +955,13 @@ public:
 		if(name != y->name){
 			return false;
 		}
-		if(!left->match(y->left, upTo)){
+		if(!left->match(y->left)){
 			return false;
 		}
-		if(!right->match(y->right, upTo)){
+		if(!right->match(y->right)){
 			return false;
 		}
-		return BaseSelection::match(y, upTo);
+		return true;
 	}
 	virtual TypeID typify(List<Site*>* sites);	// throws
      virtual TypeID getTypeID(){
@@ -936,101 +1020,6 @@ public:
 		Type* arg1 = left->evaluate(leftT, rightT);
 		Type* arg2 = right->evaluate(leftT, rightT);
 		return opPtr(arg1, arg2);
-	}
-};
-
-class Method : public Path {
-	List<BaseSelection*>* args; 
-public:
-	Method(String* p, List<BaseSelection*>* a, Path* n = NULL)
-		: Path(p, n), args(a) {}
-	virtual void display(ostream& out, int detail = 0){
-		assert(path);
-		out << *path << '(';
-		if(args){
-			displayList(out, args, ", ", detail);
-		}
-		out << ')';
-		if(nextPath){
-			nextPath->display(out, detail);
-		}
-	}
-	virtual Path* filter(Site* site){
-		if(args){
-			if(exclusiveF(args, site)){
-				return Path::filter(site);
-			}
-			else{
-				filterList(args, site);
-				Path::propagate(site);
-				return NULL;
-			}
-		}
-		else{
-			return Path::filter(site);
-		}
-	}
-	virtual void propagate(Site* site){
-		if(args){
-			filterList(args, site);
-		}
-		Path::propagate(site);
-	}
-	virtual bool exclusive(Site* site){
-		if(args){
-			if(exclusiveF(args, site)){
-				return Path::exclusive(site);
-			}
-			else{
-				return false;
-			}
-		}
-		else{
-			return Path::exclusive(site);
-		}
-	}
-	virtual Path* duplicate(){
-		Path* newNext;
-		newNext = nextPath ? nextPath->duplicate() : (Path*)NULL;
-		List<BaseSelection*>* newArgs;
-		newArgs = args ? duplicateF(args) : (List<BaseSelection*>*)NULL;
-		return new Method(new String(*path), newArgs, newNext);
-	}
-	virtual TypeID typify(TypeID parentType, List<Site*>* sites){
-		assert(!"not implemented");
-	}
-     virtual void enumerate(
-          String site1, List<BaseSelection*>* list1,
-          String site2, List<BaseSelection*>* list2){
-
-          if(args){
-               TRY(enumerateList(args, site1, list1, site2, list2), );
-          }
-          TRY(Path::enumerate(site1, list1, site2, list2), );
-     }
-     virtual SelectID selectID(){
-          return METHOD_ID;
-     }
-     virtual bool match(Path* x, Path*& upTo){
-		// check for args equality
-		assert(!"Method execution not supported yet");
-		return false;
-     }
-	virtual bool isFunction(){
-		return true;
-	}
-	virtual List<BaseSelection*>* getArgs(){
-		return args;
-	}
-	virtual BaseSelection * getSelectList(){
-
-		// Need to check if this is fine..?? NO!!
-		// Get the nextpath from arg 0 of the sel list
-		String *dummy = new String;
-
-		args->rewind();
-		return args->get();
-
 	}
 };
 
@@ -1107,90 +1096,6 @@ public:
 			delete right;	// shallow
 		}
 		return true;
-	}
-};
-
-class PrimeSelection : public BaseSelection{
-	String* alias;
-	TypeID typeID;
-	int avgSize;	// to estimate result sizes
-	int position;  // position of this selection in a tuple
-public:
-	PrimeSelection(String a, String attr) : 
-		BaseSelection(new Path(new String(attr), NULL)) {
-		alias = new String(a);
-		typeID = "Unknown";
-		avgSize = 0;
-		position = 0;
-	}
-	PrimeSelection(String* a, Path* n = NULL, TypeID typeID = "Unknown",
-		int avgSize = 0, int position = 0): 
-          BaseSelection(n), alias(a), typeID(typeID), avgSize(avgSize),
-		position(position) {}
-     virtual void display(ostream& out, int detail = 0){
-		if(alias){
-			out << *alias;
-		}
-		BaseSelection::display(out, detail);
-		if(detail){
-               out << "% size = " << avgSize;
-               out << ", type = " << typeID << " %";
-          }
-	}
-	virtual BaseSelection* filter(Site* site);
-	virtual bool exclusive(Site* site);
-	virtual bool exclusive(String* attributeNames, int numFlds);
-	virtual BaseSelection* duplicate(){
-		String* dupAlias = (alias ? new String(*alias) : (String*) NULL);
-		if(nextPath){
-			return new PrimeSelection(dupAlias, nextPath->duplicate());
-		}
-		else{
-			return new PrimeSelection(dupAlias);
-		}
-	}
-	virtual void collect(Site* s, List<BaseSelection*>* to){
-		if(nextPath){
-			nextPath->collect(s, to);
-		}
-	}
-     virtual BaseSelection* enumerate(
-          String site1, List<BaseSelection*>* list1,
-          String site2, List<BaseSelection*>* list2);
-	virtual TypeID typify(List<Site*>* sites);
-     virtual SelectID selectID(){
-          return SELECT_ID;
-     }
-	virtual bool match(BaseSelection* x, Path*& upTo);
-	virtual TypeID getTypeID(){
-		return typeID;
-	}
-     virtual void setTypeID(TypeID type){
-		typeID = type;
-     }
-	virtual void setSize(int size){
-		avgSize = size;
-	}
-	virtual int getSize(){
-		return avgSize;
-	}
-	virtual bool checkOrphan(){
-		assert(alias);
-		String msg = "Table " + *alias + " is not listed in FROM clause";
-		THROW(new Exception(msg), false);
-	}
-	virtual BaseSelection* distributeWrapper(Site* site){
-		return new GlobalSelect(site, this, NULL); 
-	}
-	virtual bool isGlobal(){
-		return *alias == "";
-	}
-	virtual String toStringAttOnly(){
-		return nextPath->toString();
-	}
-	virtual Type* evaluate(Tuple* left, Tuple* right){
-		assert(!"Evaluate called on PrimeSelection");
-		return NULL;
 	}
 };
 

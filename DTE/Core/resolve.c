@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/04/10 21:50:29  donjerko
+  Made integers inlined, added type cast operator.
+
   Revision 1.13  1997/03/25 17:57:41  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -77,38 +80,20 @@
 #include "machdep.h"
 
 BaseSelection* PrimeSelection::filter(Site* site){
-	Path* endPath = NULL;
-	Path* nextGlobal = NULL;
 	if(*alias != "" && !site->have(alias)){
-		if(nextPath){
-			nextPath->propagate(site);
-		}
 		return NULL;
-	}
-	if(nextPath){
-		endPath = nextPath->filter(site);
-	}
-	if(endPath){
-		nextGlobal = endPath->nextPath;
-		endPath->nextPath = NULL;
-		return new GlobalSelect(site, this, nextGlobal);
 	}
 	else if(*alias == ""){
 		return NULL;	// This global function cannot be done on this site
 	}
 	else{
-		return new GlobalSelect(site, this, nextGlobal);
+		return new GlobalSelect(site, this);
 	}
 }
 
 bool PrimeSelection::exclusive(Site* site){
 	if(site->have(alias)){
-		if(nextPath){
-			return nextPath->exclusive(site);
-		}
-		else{
-			return true;
-		}
+		return true;
 	}
 	else{
 		return false;
@@ -131,38 +116,20 @@ void GlobalSelect::display(ostream& out, int detail = 0){
 	out << "{" << site->getName() << ": ";
 	selection->display(out, detail);
 	out << "}";
-	BaseSelection::display(out, detail);
 }
 
 BaseSelection* GlobalSelect::filter(Site* siteGroup){
 	if(siteGroup->have(site)){
-		Path* endPath = NULL;
-		Path* nextGlobal = NULL;
-		if(nextPath){
-			endPath = nextPath->filter(siteGroup);
-		}
-		if(endPath){
-			nextGlobal = endPath->nextPath;
-			endPath->nextPath = NULL;
-		}
-		return new GlobalSelect(siteGroup, this, nextGlobal);
+		return new GlobalSelect(siteGroup, this);
 	}
 	else{
-		if(nextPath){
-			nextPath->propagate(siteGroup);
-		}
 		return NULL;
 	}
 }
 
 bool GlobalSelect::exclusive(Site* s){
 	if(s->have(site)){
-		if(nextPath){
-			return nextPath->exclusive(s);
-		}
-		else{
-			return true;
-		}
+		return true;
 	}
 	else{
 		return false;
@@ -193,9 +160,8 @@ BaseSelection* GlobalSelect::enumerate(
 	int i = 0;
 	BaseSelection* retVal;
 	while(!selList->atEnd()){
-		Path* upTo = NULL;
-		if(selection->match(selList->get(), upTo)){
-			retVal = new ExecSelect(this, leftRight, i, upTo);
+		if(selection->match(selList->get())){
+			retVal = new ExecSelect(this, leftRight, i);
 			return retVal;
 		}
 		selList->step();
@@ -225,14 +191,9 @@ TypeID GlobalSelect::typify(List<Site*>* sites){
 	List<BaseSelection*>* selList = currSite->getSelectList();
 	selList->rewind();
 	while(!selList->atEnd()){
-		Path* upTo = NULL;
-		if(selection->match(selList->get(), upTo)){
+		if(selection->match(selList->get())){
 			typeID = selList->get()->getTypeID();
 			avgSize = selList->get()->getSize();
-			if(upTo){
-				TRY(typeID = upTo->typify(typeID, sites), "unknown");
-				avgSize = upTo->getSize();
-			}
 			// TRY(BaseSelection::typify(sites), "Unknown");
 			return typeID;
 		}
@@ -252,7 +213,7 @@ TypeID GlobalSelect::typify(List<Site*>* sites){
 	return ""; //avoid compiler warning
 }
 
-bool GlobalSelect::match(BaseSelection* x, Path*& upTo){
+bool GlobalSelect::match(BaseSelection* x){
 	if(!(selectID() == x->selectID())){
 		return false;
 	}
@@ -260,10 +221,10 @@ bool GlobalSelect::match(BaseSelection* x, Path*& upTo){
 	if(site->getName() != y->site->getName()){
 		return false;
 	}
-	if(!selection->match(y->selection, upTo)){
+	if(!selection->match(y->selection)){
 		return false;
 	}
-	return BaseSelection::match(y, upTo);
+	return true;
 }
 
 BaseSelection* Operator::enumerate(
@@ -279,8 +240,10 @@ BaseSelection* Operator::enumerate(
 TypeID PrimeSelection::typify(List<Site*>* sites){
 	assert(alias);
 	if(*alias == ""){
-		TRY(TypeID retVal = nextPath->typify("global", sites), "unknown");
-		return retVal;
+		assert(!"global functions not implemented");
+
+		// TRY(TypeID retVal = nextPath->typify("global", sites), "unknown");
+		// return retVal;
 	}
      assert(sites->cardinality() == 1);
      sites->rewind();
@@ -290,15 +253,10 @@ TypeID PrimeSelection::typify(List<Site*>* sites){
 	selList->rewind();
 	int i = 0;
 	while(!selList->atEnd()){
-		Path* upTo = NULL;
-		if(match(selList->get(), upTo)){
+		if(match(selList->get())){
 			typeID = selList->get()->getTypeID();
 			avgSize = selList->get()->getSize();
 			position = i;
-			if(upTo){
-				TRY(typeID = upTo->typify(typeID, sites), "unknown");
-				avgSize = upTo->getSize();
-			}
 			return typeID;
 		}
 		selList->step();
@@ -309,8 +267,7 @@ TypeID PrimeSelection::typify(List<Site*>* sites){
 	tmp << ends;
 	char* tmpc = tmp.str();
 	String msg = "Table " + siteNm + "(" + String(tmpc) + ")" +
-		" does not have attribute \"" +
-		*nextPath->path + "\"";
+		" does not have attribute \"" + *fieldNm + "\"";
 	delete tmpc;
 	THROW(new Exception(msg), (char *) NULL);
 }
@@ -327,18 +284,17 @@ BaseSelection* PrimeSelection::enumerate(
 	selList->rewind();
 	int i = 0;
 	while(!selList->atEnd()){
-		Path* upTo = NULL;
-		if(match(selList->get(), upTo)){
+		if(match(selList->get())){
 			BaseSelection* retVal;
 			// assert(i == position); failed for RTreeIndex
-			retVal = new ExecSelect(this, leftRight, i, upTo);
+			retVal = new ExecSelect(this, leftRight, i);
 			return retVal;
 		}
 		selList->step();
 		i++;
 	}
 	String msg = "Table " + *alias + " does not have attribute " +
-		*nextPath->path;
+		*fieldNm;
 	THROW(new Exception(msg), NULL);
 }
 
@@ -360,49 +316,19 @@ bool Operator::isIndexable(
 	String& attrName, String& opName, BaseSelection*& value){
 	SelectID ls = left->selectID();
 	SelectID rs = right->selectID();
-	ostrstream os;
 	if(ls == SELECT_ID && rs == CONST_ID){
-		left->getPath()->display(os);
+		attrName = *(((PrimeSelection*) left)->getFieldNm());
 		value = right;
 	}
 	else if(rs == SELECT_ID && ls == CONST_ID){
-		right->getPath()->display(os);
+		attrName = *(((PrimeSelection*) right)->getFieldNm());
 		value = left;
 	}
 	else{
 		return false;
 	}
-	os << ends;
-	attrName = String(os.str());
 	opName = name;
 	return true;
-}
-
-TypeID Path::typify(TypeID parentType, List<Site*>* sites){
-
-	//cout << "Typifying function: " << *path << " on " << parentType << endl;
-
-	TypeID retType;
-	GeneralMemberPtr* genPtr;
-	TRY(genPtr = getMemberPtr(*path, parentType, retType), "unknown");
-	assert(genPtr);
-	memberPtr = genPtr->memberPtr;
-	assert(memberPtr);
-	if(nextPath){
-		TRY(retType = nextPath->typify(retType, sites), "unknown");
-	}
-	return retType;
-}
-
-Type* Path::evaluate(Type* base){
-	assert(memberPtr);
-	Type* member = memberPtr(base);
-	if(nextPath){
-		return nextPath->evaluate(member);
-	}
-	else{
-		return member;
-	}
 }
 
 ConstantSelection* ConstantSelection::promote(TypeID typeToPromote) const { 
@@ -423,7 +349,7 @@ BaseSelection* ConstantSelection::duplicate() {
 	return new ConstantSelection(typeID, value);
 }
 
-bool PrimeSelection::match(BaseSelection* x, Path*& upTo){
+bool PrimeSelection::match(BaseSelection* x){
 	assert(x);
 	if(!(selectID() == x->selectID())){
 		return false;
@@ -436,7 +362,12 @@ bool PrimeSelection::match(BaseSelection* x, Path*& upTo){
 			<< *y->alias << endl;
 		return false;
 	}
-	return BaseSelection::match(y, upTo);
+	assert(y->fieldNm);
+	assert(fieldNm);
+	if(*fieldNm != *y->fieldNm){
+		return false;
+	}
+	return true;
 }
 
 TypeID Operator::typify(List<Site*>* sites){

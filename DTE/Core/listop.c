@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/04/08 01:47:34  donjerko
+  Set up the basis for ORDER BY clause implementation.
+
   Revision 1.7  1997/04/04 23:10:29  donjerko
   Changed the getNext interface:
   	from: Tuple* getNext()
@@ -58,17 +61,11 @@ int* findPositions(List<BaseSelection*>* list,
 	for(i = 0, elements->rewind(); !elements->atEnd(); elements->step(), i++){
 		for(j = 0, list->rewind(); true; list->step(), j++){
 			if(list->atEnd()){
-				String msg = "Cannot match a selection from ORDER BY to any of the SELECT clause";
+				String msg = String("Cannot match a selection from") +
+					" ORDER BY to any of the SELECT clause";
 				THROW(new Exception(msg), NULL);
 			}
-			Path* upTo;
-			if(list->get()->matchFlat(elements->get(), upTo)){
-				if(!(upTo == NULL)){
-					cout << "Not a complete match? ";
-					upTo->display(cout);
-					cout << endl;
-				}
-				assert(upTo == NULL);
+			if(list->get()->matchFlat(elements->get())){
 				retVal[i] = j;
 				break;
 			}
@@ -344,7 +341,7 @@ List<BaseSelection*>* createGlobalSelectList(List<Site*>* sites){
 		currSelect->rewind();
 		while(!currSelect->atEnd()){
 			BaseSelection* currBase = currSelect->get();
-			retVal->append(new GlobalSelect(current, currBase, NULL));
+			retVal->append(new GlobalSelect(current, currBase));
 			currSelect->step();
 		}
 		sites->step();

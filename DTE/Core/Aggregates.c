@@ -18,10 +18,7 @@ bool Aggregates::isApplicable(){
 		
 		BaseSelection* curr = selList->get();
 
-		Path * newPath;
-
-		if(curr->isGlobal() && curr->getPath()->isFunction()){
-			const String* name = curr->getPath()->getPathName();
+		if(curr->isGlobal() && curr->selectID() == METHOD_ID){
 			isApplicableValue = true;
 		}
 		selList->step();
@@ -45,31 +42,28 @@ List<BaseSelection*>* Aggregates::filterList(){
 	selList->rewind();
 	while(!selList->atEnd()){
 		
-		Path * newPath;
 		BaseSelection *curr = selList->get();
 		if (sequenceAttr)
-			if (curr->match(sequenceAttr,newPath) && newPath == NULL )
+			if (curr->match(sequenceAttr))
 				selectMatch = true;
 		
-		if (curr->isGlobal() && curr->getPath()->isFunction()){
+		if (curr->isGlobal() && curr->selectID() == METHOD_ID){
 			
 			// Need to check if our signature match..
-		    List<BaseSelection*>* args = curr->getPath()->getArgs();
+
+			Method* mcurr = (Method*) curr;
+		    List<BaseSelection*>* args = mcurr->getArgs();
 
 			if (checkAggFunc(args)){
 				 // It is a function. So replace the list..
-			    retVal->append(curr->getPath()->getSelectList());
+				 args->rewind();
+				 retVal->append(args->get());
 				cout << " The select List prepended is " << 
-					curr->getPath()->getSelectList()->toString() << endl;
+					args->get()->toString() << endl;
 			}
 			else
 		  		retVal->append(curr);
 		}
-		/*else if (!groupBy->isEmpty() ){
-			
-				THROW(new 
-			Exception("Cannot use non-aggregating attributes with a groupBy clause"),0);
-		}*/
 		else
 		  retVal->append(curr);
 
@@ -98,8 +92,7 @@ List<BaseSelection*>* Aggregates::filterList(){
 		bool match = false;
 		selList->rewind();
 		while(!selList->atEnd()){
-			Path *path;
-			if (selList->get()->match(groupBy->get(),path)){
+			if (selList->get()->match(groupBy->get())){
 				match = true;
 				break;
 			}
@@ -151,9 +144,10 @@ void Aggregates::typify(Site* inputIterator){
 	while(!selList->atEnd()){
 		
 		BaseSelection* curr = selList->get();
-		if(curr->isGlobal() && curr->getPath()->isFunction()){
+		if(curr->isGlobal() && curr->selectID() == METHOD_ID){
 			
-			List <BaseSelection *> *args = curr->getPath()->getArgs();
+			Method* mcurr = (Method*) curr;
+			List <BaseSelection *> *args = mcurr->getArgs();
 			if (!checkAggFunc(args))
 				break;
 
@@ -164,7 +158,6 @@ void Aggregates::typify(Site* inputIterator){
 			int j;
 			for(j = 0; j < countFlds ; j++){
 			    int arg1,arg2;	
-				Path *newPath;
 				if (selArgument->toString() == AttribNameList[j]){
 					
 					//	Now that u have set the name..
@@ -192,7 +185,7 @@ void Aggregates::typify(Site* inputIterator){
 					}
 					// Set the function ptr to be called .
 					TypeID ret = setFunctionPtr(funcPtr[i], 
-					  *(curr->getPath()->getPathName()),j,TypeIDList[j],arg1,arg2,full);
+					  *(mcurr->getName()),j,TypeIDList[j],arg1,arg2,full);
 					curr->setTypeID(ret);
 					break;
 				}			
@@ -209,10 +202,9 @@ void Aggregates::typify(Site* inputIterator){
 		selectList->rewind();
 		while(!selectList->atEnd()){
 			
-			Path *path;
-			if (selectList->get()->matchFlat(groupBy->get(),path)){
+			if (selectList->get()->matchFlat(groupBy->get())){
 				if (sequenceAttr && 
-					selectList->get()->match(sequenceAttr,path)){
+					selectList->get()->match(sequenceAttr)){
 					taboo[groupBy->getCurrPos()] =1; 
 				}
 				else{
@@ -265,7 +257,6 @@ void Aggregates::getSeqAttrType(
 	int i;
 	for(i = 0; i < countFlds;i++){
 		
-		Path * newPath = NULL;		
 		if (sequenceAttr->toString() == AttribNameList[i]){
 			
 			// Get the type ID for the ordering attribute

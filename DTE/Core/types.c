@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/04/10 21:50:30  donjerko
+  Made integers inlined, added type cast operator.
+
   Revision 1.13  1997/03/23 23:45:25  donjerko
   Made boolean vars to be in the tuple.
 
@@ -241,7 +244,7 @@ void catEntryRead(istream& in, Type*& adt){
 		return;
 	}
 	adt = new CatEntry(nameStr);
-	((CatEntry*) adt)->read(in);
+	TRY(((CatEntry*) adt)->read(in), );
 }
 
 void schemaRead(istream& in, Type*& adt){
@@ -384,6 +387,7 @@ int packSize(String type){	// throws exception
 	}
 	else{
 		String msg = "Don't know size of " + type; 
+		assert(0);
 		THROW(new Exception(msg), 0);
 	}
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/04/08 01:47:33  donjerko
+  Set up the basis for ORDER BY clause implementation.
+
   Revision 1.19  1997/03/28 16:07:25  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -151,7 +154,8 @@ Site* QueryTree::createSite(){
 					String msg = "Table "+*sequencebyTable+" is not a sequence";
 					THROW(new Exception(msg),NULL);
 				} 
-				sequenceby=new PrimeSelection(sequencebyTable,new Path(attrib));
+				sequenceby=new PrimeSelection(
+					sequencebyTable, new String(*attrib));
 			}	
 		}
 	}

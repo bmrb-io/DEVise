@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/12/21 22:21:48  donjerko
+  Added hierarchical namespace.
+
   Revision 1.2  1996/12/05 16:06:01  wenger
   Added standard Devise file headers.
 
@@ -99,7 +102,14 @@ public:
 
 extern ITimer iTimer;
 
-#define THROW(A,B) assert(!currExcept); currExcept = A; return B 
+#define THROW(A,B)\
+	if(currExcept){\
+		cout << "Uncaught exception found:\n";\
+		currExcept->display();\
+		cout << endl;\
+	}\
+	assert(!currExcept); currExcept = A; return B 
+
 #define TRY(A,B) A; if(currExcept){return B;}
 #define CATCH(A) if(currExcept){A; currExcept = NULL;}
 

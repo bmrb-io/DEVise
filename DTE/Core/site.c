@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/04/10 21:50:30  donjerko
+  Made integers inlined, added type cast operator.
+
   Revision 1.12  1997/04/04 23:10:30  donjerko
   Changed the getNext interface:
   	from: Tuple* getNext()
@@ -64,16 +67,15 @@
 List<BaseSelection*>* createSelectList(String nm, Iterator* iterator){
 	assert(iterator);
 	int numFlds = iterator->getNumFlds();
-	String* attNms = iterator->getAttributeNames();
+	const String* attNms = iterator->getAttributeNames();
 	String* types = iterator->getTypeIDs();
 	Stats* stats = iterator->getStats();
 	assert(stats);
 	int* sizes = stats->fldSizes;
 	List<BaseSelection*>* retVal = new List<BaseSelection*>;
 	for(int i = 0; i < numFlds; i++){
-		Path* path = new Path(&attNms[i], NULL);
-		retVal->append(new 
-			PrimeSelection(new String(nm), path, types[i], sizes[i], i));
+		retVal->append(new PrimeSelection(
+			new String(nm), new String(attNms[i]), types[i], sizes[i], i));
 	}
 	return retVal;
 }
@@ -84,9 +86,8 @@ List<BaseSelection*>* createSelectList(String table, List<String*>* attNms){
 		return retVal;
 	}
 	for(attNms->rewind(); !attNms->atEnd(); attNms->step()){
-		Path* path = new Path(new String(*attNms->get()), NULL);
 		retVal->append(new 
-			PrimeSelection(new String(table), path));
+			PrimeSelection(new String(table), new String(*attNms->get())));
 	}
 	return retVal;
 }
@@ -104,9 +105,8 @@ List<BaseSelection*>* createSelectList(Iterator* iterator){
 		String res[3];
 		int numSplit = split(attNms[i], res, 3, String("."));
 		assert(numSplit == 2);
-		Path* path = new Path(new String(res[1]), NULL);
 		retVal->append(new 
-			PrimeSelection(new String(res[0]), path, types[i], sizes[i], i));
+			PrimeSelection(new String(res[0]), new String(res[1]), types[i], sizes[i], i));
 	}
 	return retVal;
 }

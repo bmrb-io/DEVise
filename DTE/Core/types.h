@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/04/10 21:50:31  donjerko
+  Made integers inlined, added type cast operator.
+
   Revision 1.14  1997/03/23 23:45:25  donjerko
   Made boolean vars to be in the tuple.
 
@@ -65,7 +68,6 @@
 #include <time.h>
 #include "exception.h"
 #include "AttrList.h"
-#include "queue.h"
 #include "Utility.h"
 
 class BaseSelection;
@@ -264,9 +266,9 @@ public:
 			retType = "bool";
 			return new GeneralPtr(intGT, boolSize, oneOver3);
 		}
-		else if(name == "compReturnInt"){
+		else if(name == "comp"){
 			retType = "int";
-			return new GeneralPtr(intSub, sameSize );
+			return new GeneralPtr(intComp, sameSize);
 		}
 		else{
 			return NULL;

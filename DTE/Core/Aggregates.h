@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/04/10 21:50:22  donjerko
+  Made integers inlined, added type cast operator.
+
   Revision 1.14  1997/04/04 23:10:20  donjerko
   Changed the getNext interface:
   	from: Tuple* getNext()
@@ -114,7 +117,7 @@ class AggWindow
 
 	void prepareCompOpr(){
 		TypeID retType;
-		TRY(compOpr = getOperatorPtr("compReturnInt",type,type,retType),);
+		TRY(compOpr = getOperatorPtr("-",type,type,retType),);
 		assert(compOpr);
 		if (retType != "int")
 			assert(!" Illegal comparison operator implemented");

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/04/10 21:50:28  donjerko
+  Made integers inlined, added type cast operator.
+
   Revision 1.20  1997/04/08 01:47:35  donjerko
   Set up the basis for ORDER BY clause implementation.
 
@@ -94,7 +97,6 @@ static int my_yyaccept();
 	double real;
 	BaseSelection* sel;
 	ConstantSelection* constantSel;
-	Path* path;
 	List<BaseSelection*>* selList;
 	List<ConstantSelection*>* constList;
 	List<TableAlias*>* tableList;
@@ -139,7 +141,6 @@ static int my_yyaccept();
 %type <string> JoinString 
 %type <sel> selection
 %type <integer> optShiftVal 
-%type <path> expression
 %type <selList> listOfSelections
 %type <selList> listOfSelectionsOrStar
 %type <constList> listOfConstants
@@ -371,34 +372,19 @@ predicate : predicate OR predicate {
 	;
 
 selection :
-	STRING '.' expression {
+	STRING '.' STRING {
 		$$ = new PrimeSelection($1, $3);
 	}
-	/*
-	| STRING {
-		String* dummy = new String("");
-		namesToResolve->append(dummy); 
-		$$ = new PrimeSelection(dummy, new Path($1, NULL));
+	|
+	selection '.' STRING {
+		$$ = new Member($3, $1);
 	}
-	*/
-	/*
-	| STRING '(' selection ')' optOverClause {
-		String* dummy = new String;
-		List <BaseSelection *> * dummylist = new List<BaseSelection*>;
-		if ($5 != NULL){
-			dummylist->addList($5);
-		}
-		dummylist->prepend($3);
-		$$ = new PrimeSelection(dummy, new Method($1, dummylist));
-	}
-	*/
 	| STRING '(' listOfSelections ')' optOverClause {
-		String * dummy = new String("");	
 		assert($3);
 		if ($5 != NULL){
 			$3->addList($5);
 		}
-		$$ = new PrimeSelection(dummy, new Method($1,$3));
+		$$ = new Method($1, $3, NULL);	// global function
 	}
 	| constant {
 	}
@@ -479,6 +465,7 @@ optString : STRING {
 	}
 	;
 */
+/*
 expression : STRING {
 		$$ = new Path($1, NULL);
 	}
@@ -490,6 +477,7 @@ expression : STRING {
 		$$ = $1;
 	}
 	;
+*/
 %%
 int yyerror(char* msg){
 	return 0;
