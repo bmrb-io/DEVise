@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.15.4.1  1997/05/20 16:11:15  ssl
+  Added layout manager to DEVise
+
+  Revision 1.15  1997/04/29 17:35:14  wenger
+  Minor fixes to new text labels; added fixed text label shape;
+  CheckDirSpace() no longer prints an error message if it can't get disk
+  status.
+
   Revision 1.14  1996/12/30 23:57:36  andyt
   First version with support for Embedded Tcl/Tk windows. Added new
   ETkWindow symbol shape. Improved the MappingInterp::MapGAttr2TAttr
@@ -150,13 +158,24 @@ class PolylineFileShape : public Shape {};
 
 class TextLabelShape : public Shape {};
 
+
+/* Line: connects adjacent data points, forming a line. */
+
+class LineShape : public Shape {};
+
+
 /* FixedTextLabel: draws a text label given by shape attribute 0 at (X,Y),
  * with a fixed font. */
 
 class FixedTextLabelShape : public Shape {};
 
-/* Line: connects adjacent data points, forming a line. */
 
-class LineShape : public Shape {};
+
+#ifdef VIEW_SHAPE 
+/* ViewShape : displays an embedded Devise View at (X, Y) whose name is 
+ * given as shape attr 0 and width and height as shape atrs 1 and 2.
+ */
+class ViewShape : public Shape {};
+#endif
 
 #endif

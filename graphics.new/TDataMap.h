@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.21.4.1  1997/05/20 16:11:17  ssl
+  Added layout manager to DEVise
+
+  Revision 1.21  1997/04/21 22:59:24  guangshu
+  Added function MapTAttr2GAttr.
+
   Revision 1.20  1997/03/19 19:41:52  andyt
   Embedded Tcl/Tk windows are now sized in data units, not screen pixel
   units. The old list of ETk window handles (WindowRep class) has been
@@ -297,6 +303,7 @@ protected:
   void SetDefaultShape(ShapeID shapeID, int numAttr = 0, 
 		       ShapeAttr *shapeAttr = NULL);
   void SetDefaultShapeAttr(int attrNum, Coord shapeAttr);
+  void SetDefaultShapeAttr(int attrNum, char *shapeAttr);
 
   Coord _maxSymWidth; /* bounding box for symbol */
   Coord _maxSymHeight;

@@ -1,0 +1,64 @@
+OTHERS=-DTCLTK_FRONT_END -DSTANDALONE
+INCLUDE+=OTHERS
+CC = g++
+CFLAGS = -g  $(INCLUDE) $(OTHERS)
+
+INCLUDE= -I/s/X11/include -I/s/tcl/include
+LIBPATH = -L/s/tcl/lib  -L /s/X11/lib -L /s/tcl/lib -R /s/X11/lib
+LIBS = $(LIBPATH)  -lX11 -lm -ltk -ltcl -lsocket 
+
+HDRS= LMHashTable.h LMWindow.h LMControl.h LMAPI.h LMError.h LMLayout.h
+UTIL_HDRS = DList.h Exit.h 
+
+SRC= LMHashTable.C LMWindow.C  LMControl.C LMAPI.C LMLayout.C
+UTIL_SRC = DList.C Exit.c 
+
+LIBOBJS= LMHashTable.o LMWindow.o LMControl.o LMAPI.o LMLayout.o
+UTIL_OBJS = DList.o Exit.o
+
+LIBNAME=libLM.a
+
+MAIN=LMMain.C
+EXEC=LM
+RANLIB=ranlib
+
+all     : $(EXEC)
+
+$(EXEC) : $(MAIN) $(LIBNAME) $(UTIL_OBJS)
+	$(CC) $(CFLAGS) $(MAIN) $(UTIL_OBJS) $(LIBNAME) -o $(EXEC) $(LIBS) 
+
+$(LIBNAME): $(LIBOBJS)
+	ar cr $@ $(LIBOBJS)
+	$(RANLIB) $@
+
+wintest : main1.C $(OBJS)
+	$(CC) main1.C $(OBJS) -o wintest
+
+hashtest :  main.C $(OBJS)
+	$(CC) main.C $(OBJS) 
+
+%.o : %.C %.h
+	$(CC) -c $(CFLAGS) $< 
+
+
+clean : 
+	\rm *.o $(EXEC)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

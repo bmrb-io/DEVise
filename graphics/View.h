@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.50.4.1  1997/05/20 16:10:52  ssl
+  Added layout manager to DEVise
+
+  Revision 1.50  1997/02/03 19:40:01  ssl
+  1) Added a new Layout interface which handles user defined layouts
+  2) Added functions to set geometry and remap views as changes in the
+     layout editor
+  3) Added a function to notify the front end of some change so that it
+     can execute a Tcl command
+  4) The old TileLayout.[Ch] files still exist but are commented out
+     conditionally using #ifdef NEW_LAYOUT
+
   Revision 1.49  1997/01/23 17:38:28  jussi
   Removed references to GetXMin().
 
@@ -219,7 +231,6 @@
 #include "Cursor.h"
 #include "DevFont.h"
 
-//#define VIEWTABLE 
 class DataSourceBuf;
 class DataSourceFixedBuf;
 class View;
@@ -477,10 +488,10 @@ class View
 	virtual void GetFont(char *which, int &family, float &pointSize,
 	  Boolean &bold, Boolean &italic);
 
-#ifdef VIEWTABLE 
+#if  0 
 	/* Update Viewtable */
-//	static void UpdateViewTable(char *name, double X, double Y, 
-//				    GlobalColor bgColor);
+	static void UpdateViewTable(char *name, double X, double Y, 
+				    GlobalColor bgColor);
 	static void UpdateViewTable();
 	static DataSourceBuf* GetViewTable();
 #endif
@@ -604,7 +615,7 @@ protected:
 	static int _nextId;         /* id of next view */
 	static ViewList *_viewList; /* list of all views */
 
-#ifdef VIEWTABLE
+#if 0 
 	static DataSourceFixedBuf *_viewTableBuffer; /* for view table */
 #endif
 	

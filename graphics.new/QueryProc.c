@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.9.8.1  1997/05/20 16:11:12  ssl
+  Added layout manager to DEVise
+
+  Revision 1.9  1996/11/23 21:12:06  jussi
+  Removed support for multiple query processors.
+
   Revision 1.8  1996/11/20 16:51:18  jussi
   Replaced AbortAndReexecute() with AbortQuery() and Refresh().
 
@@ -91,10 +97,10 @@ void QueryProc::RefreshTData(TData *tdata)
         }
         vg->DoneMappingIterator(idx);
         if (usesTData) {
-#ifdef DEBUG
+//#ifdef DEBUG
             printf("Reexecuting query for view %s with new data...\n",
                    vg->GetName());
-#endif
+//#endif
             vg->AbortQuery();
             vg->Refresh();
             if (vg->GetAutoScale())

@@ -17,6 +17,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.44.4.1  1997/05/20 16:10:46  ssl
+#  Added layout manager to DEVise
+#
+#  Revision 1.44  1997/04/15 18:32:49  wenger
+#  Removed xvgif rule (no longer needed) from graphics makefile.
+#
 #  Revision 1.43  1997/04/11 18:48:50  wenger
 #  Added dashed line support to the cslib versions of WindowReps; added
 #  option to not maintain aspect ratio in Tasvir images; re-added shape
@@ -103,9 +109,9 @@ include ../../Makefile.common
 CFLAGS = $(ARCH_FLAGS) -I../../graphics  -I../../graphics.new \
 	-I../../generic \
 	-I../../util -I../../tape -I../../DTE/RTree \
+	-I../../LM/C++ \
 	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX -DGRAPHICS \
 	-DNEW_LAYOUT
-#-DVIEWTABLE
 
 LIBSRC = AttrList.c AxisLabelClassInfo.c \
 	ClassDir.c ColorMgr.c Compress.c Control.c Cursor.c CursorClassInfo.c \

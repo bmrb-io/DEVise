@@ -123,7 +123,7 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
 		exit(0);
 	}
 	_tableName = strdup(argv[0]);
-	char* attrs = argv[1];
+	char* attrs = strdup(argv[1]);
 	_type = strdup(argv[1]);
 
 	// List<char*>* attrList = new List<char*>;

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.20.4.1  1997/05/20 16:11:15  ssl
+  Added layout manager to DEVise
+
+  Revision 1.20  1997/04/21 22:56:49  guangshu
+  Small changes.
+
   Revision 1.19  1997/03/20 22:18:04  guangshu
   changed GDATASTAT to GDATASTAT_X AND GDATASTAT_Y
 
@@ -194,11 +200,6 @@ TData::TData(char* name, char* type, char* param, int recSize)
 	  // Instantiate to a data stream..
 	    _data = new DataSourceDQL(param, _name);
 	}
-#ifdef VIEWTABLE
-	else if (!strcmp(_type, "VIEWTABLE")) {
-	    _data = View::GetViewTable();
-        }
-#endif
 #if 0
     // buffer stuff not working or used
     else if (!strcmp(_type, "BUFFER")) {

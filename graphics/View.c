@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.110  1997/05/21 22:09:59  andyt
+  Added EmbeddedTk and Tasvir functionality to client-server library.
+  Changed protocol between devise and ETk server: 1) devise can specify
+  that a window be "anchored" at an x-y location, with the anchor being
+  either the center of the window, or the upper-left corner. 2) devise can
+  let Tk determine the appropriate size for the new window, by sending
+  width and height values of 0 to ETk. 3) devise can send Tcl commands to
+  the Tcl interpreters running inside the ETk process.
+
+  Revision 1.109.4.1  1997/05/20 16:10:50  ssl
+  Added layout manager to DEVise
+
   Revision 1.109  1997/04/03 16:37:24  wenger
   Reduced memory and CPU usage in statistics; fixed a memory leak in the
   statistics code; switched devised back to listening on port 6100
@@ -487,7 +499,7 @@
 #include "DevError.h"
 #include "Util.h"
 #include "View.h"
-#ifdef VIEW_TABLE
+#if 0
 #include "DataSourceFixedBuf.h"
 #endif
 
@@ -523,7 +535,7 @@ ViewList *View::_viewList = &theViewList;   /* list of all views */
 int View::_nextPos = 0;
 ViewCallbackList *View::_viewCallbackList = 0;
 
-#ifdef VIEWTABLE
+#if 0
 DataSourceFixedBuf *View::_viewTableBuffer = NULL;
 #endif
 
@@ -718,7 +730,7 @@ void View::SubClassMapped()
   // in batch mode, force Run() method to be called so that
   // (first) query gets properly started up
   Dispatcher::Current()->RequestCallback(_dispatcherID);
-#ifdef VIEWTABLE
+#if 0
   UpdateViewTable();
 #endif
 }
@@ -2011,6 +2023,11 @@ void View::Run()
 	{
 	    winRep->ETk_MarkAll(false);
 	}
+	// If the view had a view has views as symbols then,
+	// we have to clean then up.
+	if (NumChildren()) {
+	  DetachChildren();
+	}
 #if !FILL_WHOLE_BACKGROUND
 	winRep->SetFgColor(GetBgColor());
 	winRep->SetPattern(Pattern0);
@@ -3301,7 +3318,7 @@ View::GetFont(char *which, int &family, float &pointSize,
   }
 }
 
-#ifdef VIEWTABLE
+#if 0
 
 //void 
 // View::UpdateViewTable(char *name, double X, double Y, 

@@ -192,7 +192,7 @@ $(LIBNAME): $(LIBOBJ)
 	ar cr $@ $(LIBOBJ)
 	$(RANLIB) $@
 
-$(DTE_DIR)/Core/my.yacc.tab.c: $(DTE_DIR)/Core/my.yacc
+$(DTE_DIR)/Core/my.yacc.tab.c: $(DTE_DIR)/Core/my.yacc $(DTE_DIR)/Core/my.yacc.tab.h 
 	bison -d -v -o $@ $(DTE_DIR)/Core/my.yacc
 
 $(DTE_DIR)/Core/my.yacc.tab.h: $(DTE_DIR)/Core/my.yacc

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.34  1997/05/08 00:18:06  wenger
+  Kludge fix for bug 182 (crash when closing multi1.tk session).
+
+  Revision 1.33.4.1  1997/05/20 16:10:52  ssl
+  Added layout manager to DEVise
+
   Revision 1.33  1997/03/25 17:58:58  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -398,13 +404,23 @@ void ViewWin::Unmap()
 #ifdef DEBUG
   printf("ViewWin 0x%p unmapping\n", this);
 #endif
-
+  
+  
   if (!_mapped)
     return;
+
+// Unmap children
+  int index = _children.InitIterator();
+  while (_children.More(index)) {
+    ViewWin *vw = _children.Next(index);
+    vw->Unmap();
+  } 
+  _children.DoneIterator(index);
 
 #ifdef TK_WINDOW_old
   _windowRep->Undecorate();
 #endif
+
 #ifdef TK_WINDOWxxx
   /* Drop margin controls */
   if (_marginsOn)

@@ -15,6 +15,17 @@
 # $Id$
 
 # $Log$
+# Revision 1.18.4.1  1997/05/20 16:11:40  ssl
+# Added layout manager to DEVise
+#
+# Revision 1.18  1997/04/30 21:46:01  wenger
+# Fixed non-constant strings in complex mappings bug; TDataAsciiInterp
+# no longer gives warning message on blank data lines; added makefile
+# targets to make a Purify'd version of multi; fixed uninitialized memory
+# read in the DList code; fixed bug that caused 1.4 version of multi to
+# always crash; better error messages in DTE command parser; version is
+# now 1.4.4.
+#
 # Revision 1.17  1997/03/28 16:12:31  wenger
 # Added headers to all source files that didn't have them; updated
 # solaris, solsparc, and hp dependencies.
@@ -27,7 +38,7 @@
 #
 
 LIBMODULES = graphics graphics.new tape issm compustat crsp \
-	attrproj devread DTE 
+	attrproj devread DTE LM
 
 MODULES = $(LIBMODULES) parser generic multi
 

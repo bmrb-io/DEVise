@@ -15,6 +15,17 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.21.4.1  1997/05/21 14:51:42  ssl
+#  Fixed compile problem with multi
+#
+#  Revision 1.21  1997/04/30 21:45:51  wenger
+#  Fixed non-constant strings in complex mappings bug; TDataAsciiInterp
+#  no longer gives warning message on blank data lines; added makefile
+#  targets to make a Purify'd version of multi; fixed uninitialized memory
+#  read in the DList code; fixed bug that caused 1.4 version of multi to
+#  always crash; better error messages in DTE command parser; version is
+#  now 1.4.4.
+#
 #  Revision 1.20  1997/04/04 15:44:58  wenger
 #  Set up makefiles to allow making a 'profile' version of Devise.
 #
@@ -63,8 +74,10 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
 # twice below.
 LDFLAGS = $(ARCH_LDFLAGS) \
 	-L../graphics.new -L../graphics -L../tape -L../issm -L../DTE \
+	 -L../LM \
 	-L../crsp -L../compustat -lmonolith -lgraphicsnew -lgraphics \
-	-lgraphicsnew -ldte -lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS) \
+	-lgraphicsnew -ldte -llm \
+	-lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS) \
 	$(ARCH_LDPOST)
 
 # Set up for profiling.
@@ -84,7 +97,9 @@ ALLOBJ = $(ALLSRC:.c=.o)
 
 ALLLIBS = ../graphics/libgraphics.a ../graphics.new/libgraphicsnew.a \
 	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \
-	../crsp/libcrsp.a ../graphics.new/libmonolith.a
+	../crsp/libcrsp.a ../graphics.new/libmonolith.a \
+	../LM/liblm.a
+
 
 all: disp
 pure: disp.pure

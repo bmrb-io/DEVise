@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.14.4.1  1997/05/20 16:10:49  ssl
+  Added layout manager to DEVise
+
+  Revision 1.14  1997/05/05 16:53:47  wenger
+  Devise now automatically launches Tasvir and/or EmbeddedTk servers if
+  necessary.
+
   Revision 1.13  1996/12/03 20:24:22  jussi
   Added readn() and writen().
 
@@ -148,6 +155,50 @@ inline int ConvertNum(char *str, double &num) {
   numArgs = sscanf(str, "%lf%c", &num, &temp);
   if (numArgs == 1)
     return 1;
+  return 0;
+}
+
+inline int isStr (char *cmd) 
+{
+  if (*cmd == '"') {	// opening quote
+    char *ptr = cmd + 1;
+    while ((*ptr != '\0') &&
+	   ((*ptr >= 'a' && *ptr <='z') ||
+	    (*ptr >= 'A' && *ptr <= 'Z') ||
+	    (*ptr >= '0' && *ptr <= '9') ||
+	    (*ptr == ' ') ||
+	    (*ptr == '_'))) {
+      ptr++;      
+    }
+    if (*ptr != '"') {		// closing quote
+      return 0;
+    } else  {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+inline int ConvertStr(char *cmd, char *&result) 
+{
+  if (*cmd == '"') {	// opening quote
+    char *ptr = cmd + 1;
+    while ((*ptr != '\0') &&
+	   ((*ptr >= 'a' && *ptr <='z') ||
+	    (*ptr >= 'A' && *ptr <= 'Z') ||
+	    (*ptr >= '0' && *ptr <= '9') ||
+	    (*ptr == ' ') ||
+	    (*ptr == '_'))) {
+      ptr++;      
+    }
+    if (*ptr != '"') {		// closing quote
+      return 0;
+    } 
+    ptr[0] = '\0';
+    result = strdup(cmd + 1);
+    ptr[0] = '"';
+    return 1;
+  } 
   return 0;
 }
 

@@ -17,6 +17,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.29.4.1  1997/05/20 16:10:41  ssl
+#  Added layout manager to DEVise
+#
+#  Revision 1.29  1997/05/02 15:39:42  wenger
+#  Greatly reduced the dependencies of the testWindowSpeed program.
+#
 #  Revision 1.28  1997/04/09 18:24:22  wenger
 #  Fixed various makefiles (removed extra -gstabs flags, etc.);
 #  setup script now links client.tcl into all cslib directories;
@@ -55,14 +61,17 @@
 
 include ../../Makefile.common
 
-CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
-	-I../../tape -fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX
+CFLAGS = -gstabs $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
+	-I../../tape -fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX \
+	-DNEW_LAYOUT
 
 # ksb: I created an unfortunate dependency from graphics to graphics.new
 # which caused -lgraphicsnew to be listed twice below...
 LDFLAGS = -L../DTE/ -L../graphics.new -L../graphics -L../tape -L../issm \
-	-L../crsp -L../compustat -lgraphicsnew -lgraphics \
+	-L../crsp -L../compustat -L../LM \
+	-lgraphicsnew -lgraphics \
 	-lgraphicsnew -ldte \
+	-llm \
 	-lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS)
 
 TEST_LDFLAGS = -L../graphics -lgraphics -lX11
@@ -83,7 +92,7 @@ OBJ += $(SRCC:.C=.o)
 ALLLIBS = ../graphics/libgraphics.a \
 	../graphics.new/libgraphicsnew.a ../DTE/libdte.a \
 	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \
-	../crsp/libcrsp.a
+	../crsp/libcrsp.a  ../LM/liblm.a
 
 CLIENTLIB = ../graphics.new/libclient.a
 SERVERLIB = ../graphics.new/libserver.a

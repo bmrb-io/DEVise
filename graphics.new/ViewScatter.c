@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.33.4.1  1997/05/20 16:11:17  ssl
+  Added layout manager to DEVise
+
+  Revision 1.33  1997/04/21 23:02:29  guangshu
+  Improved statistics handling.
+
   Revision 1.32  1997/03/20 22:27:48  guangshu
   Enhanced statistics for user specified number of buckets in histogram,
   group by X and Y, support for date type.
@@ -281,7 +287,7 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
     return;
   }
   
-#if defined(DEBUG)
+#if defined(DEBUG) || 0
   printf("ViewScatter %d recs buf start 0x%p\n", numGData, gdata);
 #endif
   
@@ -380,7 +386,6 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
 				  the query to DTE */
 	}
         if(_glistY.Size() <= MAX_GSTAT) {
-//              int Y = (int) y;
               double Y =  y;
               BasicStats *bsy = NULL;
               if(_gstatY.Lookup(y, bsy)) {

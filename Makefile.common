@@ -17,6 +17,19 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12.4.2  1997/05/21 15:23:18  wenger
+#  Removed setting of DEV_DEBUG, since this should be done as an environment
+#  variable.
+#
+#  Revision 1.12.4.1  1997/05/20 16:10:13  ssl
+#  Added layout manager to DEVise
+#
+#  Revision 1.12  1997/04/21 16:36:46  wenger
+#  Removed lex.yy.c from CVS to fix compile problems; fixed some compile
+#  warnings in the DTE; default is now to compile with neither -O nor
+#  -gstabs -- set DEV_DEBUG env. var. to -1 for -O, anything else for
+#  -gstabs; bumped version number up to 1.4.3.
+#
 #  Revision 1.11  1997/04/09 18:24:07  wenger
 #  Fixed various makefiles (removed extra -gstabs flags, etc.);
 #  setup script now links client.tcl into all cslib directories;
@@ -101,7 +114,7 @@ endif
 
 # Compile rules.
 .c.o:
-	$(CC) -c $(CFLAGS) $<
+	$(CC) -c $(CFLAGS) $< 
 .C.o:
 	$(CC) -c $(CFLAGS) $<
 

@@ -15,6 +15,13 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.2.8.1  1997/05/20 16:11:27  ssl
+#       Added layout manager to DEVise
+#
+#       Revision 1.2  1996/12/02 16:54:38  wenger
+#       Fixed compile warning; added standard headers to some files;
+#       conditionaled out debug code.
+#
 
 ############################################################
 
@@ -94,6 +101,7 @@ proc DoLensCreate {} {
     set params [DEVise getCreateParam window $class $win]
     set newParam [linsert [lrange $params 1 end] 0 $newWin]
     eval DEVise create window $class $newParam
+    puts "$win,$class, $newWin, $params, $newParam" 
     
     set views [ViewSet]
     

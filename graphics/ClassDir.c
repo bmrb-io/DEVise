@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.13.4.1  1997/05/20 16:10:45  ssl
+  Added layout manager to DEVise
+
+  Revision 1.13  1997/04/21 22:47:01  guangshu
+  Added some debugging message.
+
   Revision 1.12  1997/03/23 23:46:00  donjerko
   *** empty log message ***
 
@@ -302,8 +308,14 @@ void ClassDir::DestroyAllInstances()
 {
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
+#ifdef DEBUG
+    printf("Destroying Category -> %s\n", catRec->name);
+#endif
     for(int j = 0; j < catRec->_numClasses; j++) {
       ClassRec *classRec = catRec->_classRecs[j];
+#ifdef DEBUG
+      printf("Destroying Class -> %s\n", classRec->classInfo->ClassName());
+#endif
       for(int k = 0; k < classRec->_numInstances; k++) {
 	ClassInfo *instRec = classRec->_instances[k];
 #ifdef DEBUG

@@ -15,6 +15,13 @@
 # $Id$
 
 # $Log$
+# Revision 1.2.4.1  1997/05/20 16:11:28  ssl
+# Added layout manager to DEVise
+#
+# Revision 1.2  1997/03/28 16:11:24  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -390,7 +397,7 @@ proc CreateEditLensInfo { new name lenslist mode link oldList } {
    if { $new == 1 } {
      DEVise insertLink $link $name
    }
-#   DEVise refreshView $name
+   DEVise refreshView $name
 }
 
 proc InsertDeleteLinks { link oldList newList } {

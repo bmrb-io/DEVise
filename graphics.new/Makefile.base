@@ -1,4 +1,5 @@
 
+
 #  DEVise Data Visualization Software
 #  (c) Copyright 1992-1996
 #  By the DEVise Development Group
@@ -17,6 +18,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.57.4.1  1997/05/20 16:11:01  ssl
+#  Added layout manager to DEVise
+#
+#  Revision 1.57  1997/04/09 18:24:29  wenger
+#  Fixed various makefiles (removed extra -gstabs flags, etc.);
+#  setup script now links client.tcl into all cslib directories;
+#  added 24 point font to available sizes in font selection GUI.
+#
 #  Revision 1.56  1997/02/03 19:45:20  ssl
 #  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
 #  2) ViewLens.[Ch] : new implementation of piled views
@@ -80,13 +89,13 @@
 
 include ../../Makefile.common
 
-CFLAGS =  $(ARCH_FLAGS) -I../../graphics \
+CFLAGS =  $(ARCH_FLAGS) \
+	-I../../graphics -I../../LM \
         -I../../DTE/DeviseSpecific -I../../DTE/Core\
         -I../../graphics.new -I../../tape -I../../generic \
         -fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX \
-	  -DNEW_LAYOUT
+	  -DNEW_LAYOUT -DVIEW_SHAPE
 
-#-DVIEWTABLE
 
 # Buffer manager
 
@@ -110,6 +119,8 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C DataSourceDQL.c  \
         StringStorage.C PointStorage.C SBufMgr.C MapIntToInt.C MemMgr.C \
 	ETkWindowShape.C
+
+QPSrc += ViewShape.C
 	
 QPSrcc = $(filter %.c,$(QPSrc))
 QPSrcC = $(filter %.C,$(QPSrc))
@@ -250,7 +261,6 @@ makeGData: makeGData.o libbufmgr.a
 
 testAms1Sym: testAms1Sym.o TDataMap.o
 	$(CC) -o $@ $@.o TDataMap.o ../graphics/allobj.o -lX11 -lm
-
 testQueryProc: $(LIBOBJ) testQueryProc.o
 	$(CC) -o $@ $@.o $(LIBOBJ) ../graphics/Symbol.o \
 		../graphics/ShapeRegistrar.o ../graphics/DList.o \
@@ -298,3 +308,4 @@ mostlyclean:
 	-rm $(LIBOBJ) libbufmgr.a genStrData.o rstat.o testGDataRange.o \
 	testRecFile.o testViewRanges.o testVoidArray.o\
 	ClientAPI.o ServerAPI.o TkControl.o testSBufMgr.o
+

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.14.4.1  1997/05/20 16:11:18  ssl
+  Added layout manager to DEVise
+
+  Revision 1.14  1997/03/20 22:27:56  guangshu
+  Enhanced statistics for user specified number of buckets in histogram,
+  group by X and Y, support for date type.
+
   Revision 1.13  1997/02/14 16:47:50  wenger
   Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
 
@@ -108,6 +115,7 @@ protected:
 
   /* Get record link */
   virtual RecordLinkList *GetRecordLinkList() { return &_slaveLink; }
+  virtual RecordLinkList *GetMasterLinkList() { return &_masterLink; }
 
 private:
 

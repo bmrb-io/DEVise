@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.11.4.1  1997/05/20 16:11:13  ssl
+  Added layout manager to DEVise
+
+  Revision 1.11  1997/03/20 22:13:27  guangshu
+  Changed function QueryProc.h
+
   Revision 1.10  1997/02/03 19:45:32  ssl
   1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
   2) ViewLens.[Ch] : new implementation of piled views
@@ -86,6 +92,7 @@ class QueryCallback {
   virtual void PrintLinkInfo() {}
   
   virtual void *GetObj() = 0;  /* gets the obj which this querycallback is */
+  virtual RecordLinkList *GetMasterLinkList() { return 0; }
 };
 
 class QueryProc {

@@ -19,6 +19,12 @@
 /*
     $Id$
     $Log$
+    Revision 1.13.4.1  1997/05/20 19:45:25  ssl
+    Fixed stuff to allow empty tdata
+
+    Revision 1.13  1997/04/10 21:50:23  donjerko
+    Made integers inlined, added type cast operator.
+
     Revision 1.12  1997/04/04 23:10:21  donjerko
     Changed the getNext interface:
     	from: Tuple* getNext()
@@ -135,9 +141,10 @@ DevRead::Open(char *schemaFile, char *dataFile)
     _numAttr = computeNumFlds();
     _tDataP->HeadID(_nxtRecId);
     _tDataP->LastID(_lastRecId);
-
-    _tDataP->InitGetRecs(_nxtRecId, _lastRecId);
-
+     
+    if (_nxtRecId <= _lastRecId) { 
+   	 _tDataP->InitGetRecs(_nxtRecId, _lastRecId);
+    }
     return(result);
 }
 

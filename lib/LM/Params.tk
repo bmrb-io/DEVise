@@ -1,0 +1,353 @@
+# command.tk : commands invoked from the control panel
+# interfaces with the C++ code
+
+proc InitializeLayoutControl { w } {
+    global currentWin newChild newParent
+    global canvas
+
+    # Set the parameters for the Display (Root) window
+    # and create the window
+    SetDisplayParams $w
+    puts "one "
+    DoActualCreateWindow Display
+
+    puts "two  "
+    DrawOutline $canvas Display  
+    puts "three  "
+    # Set the Current Window to display and set up info in the edit window
+    set currentWin "Display"
+    
+    # reset the newchild and parent variables
+    set newChild ""
+    set newParent ""
+}
+
+proc SetDisplayParams { w } {
+    global xscale yscale
+    global name origX origY relX relY dimH dimW colorBg colorFg 
+    global maxX maxY
+    global layoutMode layoutRow layoutCol
+    global level parent 
+
+    set name(Display) Display
+    
+    set parent(Display) ""
+
+    # create a root layout
+    set rootHt [winfo vrootheight $w ]
+    set rootWd [winfo vrootwidth $w ]
+    set appWd [expr ($xscale * $rootWd * 1 )  + 20] 
+    set appHt [expr ($yscale * $rootHt * 1 )  + 20]
+
+    set origX(Display) 10
+    set origY(Display) 10
+    set relX(Display) 0
+    set relY(Display) 0
+
+    $w configure -width $appWd
+    $w configure -height $appHt
+    
+    set dimW(Display) [expr $xscale * $rootWd]
+    set dimH(Display) [expr $yscale * $rootHt]
+
+    set maxX(Display) $dimW(Display)
+    set maxY(Display) $dimH(Display)
+
+    set colorFg(Display) black
+    set colorBg(Display) slateblue
+    set layoutMode(Display) "custom"
+    set layoutRow(Display) 1
+    set layoutCol(Display) 1
+    set level(Display) 0
+}
+
+proc ClearWinParams { index } {
+    global name origX origY relX relY dimH dimW colorBg colorFg layoutMode 
+    
+    set name($index) ""
+    set relX($index) ""
+    set relY($index) ""
+    set origX($index) ""
+    set origY($index) ""
+    set dimH($index) ""
+    set dimW($index) ""
+    set colorBg($index) ""
+    set colorFg($index) ""
+    set parent($index) ""
+    set layoutMode($index) ""
+    set level($index) ""
+}
+
+proc SetWinParams { args } {
+    global  name \
+	    relX relY origX origY \
+	    dimH dimW \
+	    colorBg colorFg \
+	    layoutMode  \
+	    layoutRow layoutCol \
+	    level parent \
+	    maxX maxY \
+	    frameWidth 
+     
+    set index [lindex $args 0]
+    set varname [lindex $args 1]
+    upvar $varname win
+    
+    puts "$index, $win"
+    if { $win == "" } {
+	ClearWinParams $index
+	return
+    }
+    if { $win == "Display" } {
+	set name($index) $name(Display)
+	set origX($index) $origX(Display)
+	set origY($index) $origY(Display)
+	set relX($index) $relX(Display) 
+	set relY($index) $relY(Display) 
+	set dimW($index) $dimW(Display) 
+	set dimH($index) $dimH(Display) 
+	set maxX($index) $dimW(Display)
+	set maxY($index) $dimH(Display)
+	set colorBg($index) $colorBg(Display)
+	set colorFg($index) $colorFg(Display)
+	set parent($index) ""
+	set layoutMode($index)  $layoutMode(Display)
+	set layoutCol($index) $layoutCol(Display)
+	set layoutRow($index) $layoutRow(Display)
+	set level($index) 0
+    } else {
+	set params [LM getProperties $win]
+	set name($index) [lindex $params 0]
+	set origX($index) [lindex $params 1]
+	set origY($index) [lindex $params 2]
+	set relX($index) [lindex $params 3]
+	set relY($index) [lindex $params 4]
+	set dimW($index) [lindex $params 5]
+	set dimH($index) [lindex $params 6]
+	set colorBg($index) [lindex $params 7]
+	set colorFg($index) [lindex $params 8]
+	set parent($index) [LM getParent $win]
+	set layoutProps [LM getLayoutProperties $win]
+	set layoutMode($index) [lindex $layoutProps 0]
+	set layoutRow($index) [lindex $layoutProps 1]
+	set layoutCol($index) [lindex $layoutProps 2]
+	set level($index) [LM getLevel $win]
+	
+	set parDims [LM getPosn $parent($index)]
+	set maxX($index) [expr \
+		[lindex $parDims 4] - 2 * $frameWidth - $dimW($index)]
+	set maxY($index) [expr \
+		[lindex $parDims 5] - 2 * $frameWidth - $dimH($index)]
+	global standalone
+	if { $standalone } {
+	    global tdata
+	    set tdata($index) "TData"
+	}
+    }
+}
+
+
+# When the current window is changed :
+# the info for the current window is stored in current
+# the info is copied into the edit variables for edit and display in the 
+# edit window
+proc UpdateEditInfo { args } {
+    puts "$args"
+    set win [lindex $args 1]
+    upvar $win win1
+    SetWinParams [lindex $args 0] win1
+    CopyWinParams edit current
+
+    # Enable/Disable edits of various fields
+    global rgtMenu
+    ControlPropertyEdit $rgtMenu edit
+}
+
+# Change the appearance of a window on screen
+# based on information in the variables given by index
+proc ConfigureWin { win index } {
+    global canvas
+    puts "ConfigureWin $win $index"
+    if { $win == "" } {
+	return
+    }
+    if { $index == "" } {
+	return
+    }
+    global name relX relY dimH dimW colorBg  maxX maxY origX origY
+
+    if { $relX($index) < 0  ||  $relX($index) > $maxX($index) } {
+	set relX($index) 0
+    } 
+    if { $relY($index) < 0  || $relY($index) > $maxY($index) } {
+	set relY($index) 0
+    } 
+
+    set x0 [expr $origX($index) + $relX($index) ]
+    set y0 [expr $origY($index) + $relY($index) ]
+    set x1 [expr $x0 + $dimW($index)]
+    set y1 [expr $y0 + $dimH($index)]
+    
+    $canvas coords $win $x0 $y0 $x1 $y1
+    $canvas itemconfigure $win -outline $colorBg($index)
+}
+
+# Print the window parameters
+proc PrintWinParams { w } {
+    global name
+    global relX relY
+    global origX origY
+    global dimH dimW
+    global colorBg colorFg
+    global layoutMode layoutRow layoutCol
+    global level
+    global parent
+    global maxX maxY
+
+    puts "Name : $name($w)"
+    puts "Parent: $parent($w)"
+    puts "X0 : $origX($w) "
+    puts "Y0 : $origY($w) "
+    puts "X : $relX($w) "
+    puts "Y : $relY($w) "
+    puts "H : $dimH($w) "
+    puts "W : $dimW($w) "
+    puts "Bg : $colorBg($w)"
+    puts "Fg : $colorFg($w)"
+    puts "LayoutMode : $layoutMode($w)"
+    puts "Rows : $layoutRow($w)"
+    puts "Cols : $layoutCol($w)"
+    puts "Level : $level($w)"
+    puts "MaxX : $maxX($w)"
+    puts "MaxY : $maxY($w)"
+#    global standalone
+#    if { !$standalone } {
+#	global tdata
+#	puts "tData : $tdata($w)"
+#    }
+}
+
+
+# Copy window variables from one set (index i1) to another (index i2)
+proc CopyWinParams { i1 i2 } {
+    global name origX origY relX relY dimH dimW  colorBg colorFg 
+    global maxX maxY layoutMode level parent layoutRow layoutCol
+    
+    set name($i1)        $name($i2)
+
+    set parent($i1)      $parent($i2)
+    set level($i1)       $level($i2)
+
+    set origX($i1)       $origX($i2)
+    set origY($i1)       $origY($i2)
+
+    set relX($i1)        $relX($i2)
+    set relY($i1)        $relY($i2)
+    set dimW($i1)        $dimW($i2)
+    set dimH($i1)        $dimH($i2)
+    set maxX($i1)       $maxX($i2)
+    set maxY($i1)       $maxY($i2)
+
+    set colorBg($i1)     $colorBg($i2)
+    set colorFg($i1)     $colorFg($i2)
+
+    set layoutMode($i1)  $layoutMode($i2)
+    set layoutRow($i1)   $layoutRow($i2)
+    set layoutCol($i1)   $layoutCol($i2)
+}
+
+
+# Default values for window creation in custom mode 
+proc SetDefaultValues { } {
+    global name colorBg colorFg 
+    global layoutMode  layoutRow layoutCol
+    global level parent 
+    global newParent newChild 
+    global origX origY 
+    global frameWidth
+    global relX relY dimH dimW  
+    global maxX maxY 
+    
+    set index newChild 
+
+    set name($index) [UniqueName View0]
+
+    set parent($index) $name(newParent)
+    set level($index) [expr $level(newParent) + 1]    
+
+    set colorBg($index) AntiqueWhite
+    set colorFg($index) Black
+    
+    set origX($index) [expr $origX(newParent) \
+	    + $relX(newParent) \
+	    + $frameWidth]
+
+    set origY($index) [expr $origY(newParent) \
+	    + $relY(newParent) \
+	    + $frameWidth]
+
+
+    #layout parameters
+
+    set layoutMode($index) "auto"
+    set layoutRow($index) 1
+    set layoutCol($index) 1
+
+    # dimension parameters
+    set relX($index) 0  
+    set relY($index) 0
+
+    set actWd [expr $dimW(newParent) - 2 * $frameWidth]
+    set actHt [expr $dimH(newParent) - 2 * $frameWidth]
+    
+    set dimW($index) [expr $actWd / 3]
+    set dimH($index) [expr $actHt / 3]
+    set maxX($index) [expr $actWd - $dimW($index)]
+    set maxY($index) [expr $actHt - $dimH($index)]
+    global standalone
+    if { !$standalone } {
+	global tdata autoTData
+	set tdata($index) "$name($index)_LM_TData"
+	set autoTData($index) 1
+    }
+
+    PrintWinParams newChild
+}
+
+proc DefineProperty { } {
+}
+
+proc UndefineProperty { } {
+}
+
+proc WinList { } {
+    return [LM getWinList]
+}
+
+proc ExitLM { } { 
+    #exit 
+    #TEMPTEMP
+    puts "Currently can't close layout manager"
+}
+
+
+
+proc DoRename { oldname newname } {
+    global canvas
+    puts " Changing name tag from $oldname to $newname"
+    set tags [$canvas gettags $oldname]
+#    puts "before tags =  $tags"
+
+    set item [$canvas find withtag $oldname]
+    set newtags [lreplace $tags 0 0 $newname]
+#    puts "newtags = $newtags"
+    $canvas itemconfigure $item -tags  "$newtags"
+    set tags [$canvas gettags $item]
+#    puts "after tags =  $tags"
+}
+
+
+
+
+
+

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.59  1997/05/08 01:57:43  wenger
+  Fixed bug in QueryProcFull::InitQPFullX() that caused query processor
+  to return too many records when recId is mapped to X.
+
+  Revision 1.58.4.1  1997/05/20 16:11:13  ssl
+  Added layout manager to DEVise
+
   Revision 1.58  1997/05/06 17:21:03  wenger
   Turned off some debug output.
 
@@ -274,6 +281,10 @@
 
 #define DEBUGLVL 0
 //#define DEBUG_NEG_LINKS 0
+//#define NEW_RECORD_LINKS 1
+#ifdef NEW_RECORD_LINKS
+void DumpFilter(QPFullData *query);
+#endif
 
 /* Temp page to hold data for converting tdata into gdata. */
 static const int GDATA_BUF_SIZE = 6400 * sizeof(double);
@@ -375,7 +386,6 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
 			       int priority)
 {
   TData *tdata = map->GetTData();
-
   QPFullData *query = new QPFullData;//TEMPTEMP leaked
   DOASSERT(query, "Out of memory");
 
@@ -576,7 +586,7 @@ void QueryProcFull::AbortQuery(TDataMap *map, QueryCallback *callback)
     if (query->map == map && query->callback == callback) {
       AdvanceState(query, QPFull_EndState);
       ReportQueryElapsedTime(query);
-      // callback not called because view classes can't handle it!
+      // callback not called because view classes cannot handle it!
       //query->callback->QueryDone(query->bytes, query->userData);
       query->callback = NULL;
       break;
@@ -764,6 +774,7 @@ void QueryProcFull::InitQPFullScatter(QPFullData *query)
 
 void QueryProcFull::PrepareProcessedList(QPFullData *query)
 {
+#if  0
   if (!query->isRecLinkSlave)
     return;
   
@@ -875,11 +886,10 @@ void QueryProcFull::PrepareProcessedList(QPFullData *query)
 #if DEBUG_NEG_LINKS 
   printf("Done with PrepareProcessedList\n");
 #endif
+#endif  
 }
 
-/*
-   Initialize one query. Return false if no query is in initial state.
-*/
+
 Boolean QueryProcFull::MasterNotCompleted(QPFullData *query)
 {
   // check if master view is in the currently executing list
@@ -907,10 +917,14 @@ Boolean QueryProcFull::MasterNotCompleted(QPFullData *query)
   return false;
 }
 
+/*
+   Initialize one query. Return false if no query is in initial state.
+*/
+
 Boolean QueryProcFull::InitQueries()
 {
   int index = _queries->InitIterator();
-
+  
   while (_queries->More(index)) {
 
     QPFullData *query = (QPFullData *)_queries->Next(index);
@@ -928,6 +942,7 @@ Boolean QueryProcFull::InitQueries()
     printf("****************************InitQuery %p (slave : %d) \n", query,
 	   query->isRecLinkSlave);
 #endif
+
     switch(query->qType) {
       case QPFull_X:
 	InitQPFullX(query);
@@ -954,10 +969,13 @@ Boolean QueryProcFull::InitQueries()
                (void *)query->handle, query->tdata,
                query->gdata, query->low, query->high);
 #endif
-        query->processed = _mgr->GetProcessedRange(query->handle);
-        PrepareProcessedList(query);
-    }
 
+        query->processed = _mgr->GetProcessedRange(query->handle);
+
+#ifndef NEW_RECORD_LINKS
+	PrepareProcessedList(query);
+#endif	
+    }
     return true;
   }
 
@@ -1179,6 +1197,9 @@ void QueryProcFull::EndQuery(QPFullData *query)
   if( query->handle != NULL ) {
     _mgr->DoneGetRecs(query->handle);
   }
+#ifdef NEW_RECORD_LINKS
+  DumpFilter(query);
+#endif
   ReportQueryElapsedTime(query);
   if( query->callback != NULL ) {
     query->callback->QueryDone(query->bytes, query->userData, query->map);
@@ -2275,3 +2296,37 @@ void QueryProcFull::AdvanceState(QPFullData* query, QPFullState state)
     query->state = state;
   }
 }
+
+
+#ifdef NEW_RECORD_LINKS
+void DumpFilter(QPFullData *query)
+{
+  printf("*********Dumping filter (%f, %f, %f, %f)\n", 	 
+	 query->filter.xLow, query->filter.xHigh, 
+	 query->filter.yLow, query->filter.yHigh);
+
+  char filter[500];
+  char schema[100];
+
+  sprintf(schema, "4 double double double double\nxlo xhi ylo yhi ;\n");
+  sprintf(filter, "%f %f %f %f\n", 
+	  query->filter.xLow, query->filter.xHigh, 
+	  query->filter.yLow, query->filter.yHigh);
+  
+  RecordLinkList *recLinkList = query->callback->GetMasterLinkList();
+  if (!recLinkList) return;
+  int index = recLinkList->InitIterator();
+  while(recLinkList->More(index)) {
+    RecordLink *link = recLinkList->Next(index);
+    printf("link = %s\n, linkfilename = %s\n", link->GetName(),
+	   link->GetFileName());
+    FILE *fp = fopen(link->GetFileName(), "w");
+    fprintf(fp, schema);
+    fprintf(fp, filter);
+    //    link->InsertRecs(start, num);
+    fclose(fp);
+  }
+  recLinkList->DoneIterator(index);
+}
+#endif
+

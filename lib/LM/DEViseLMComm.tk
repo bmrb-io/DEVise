@@ -1,0 +1,32 @@
+#Routines to send and receive commands to and from DEVise and LM
+global DEViseApp 
+set DEViseApp "DEVise"
+global LMApp
+set LMApp "Layout Manager"
+
+proc SendCommandToDEVise { cmd } {
+    global standalone
+    if { $standalone } {
+       return
+    }
+    global DEViseApp
+    
+    puts "LM: Sending \[$cmd\] to DEVise"
+    
+    set result [send $DEViseApp $cmd]
+    puts "DEVise returned result ->"
+    puts $result
+    return $result
+}
+
+
+proc SendCommandToLM { cmd } {
+    global LMApp
+    
+    puts "DEVise: Sending \[$cmd\] to LM"
+    
+    set result [send $LMApp $cmd]
+    puts "LM returned result ->"
+    puts $result
+    return $result
+}

@@ -1,0 +1,510 @@
+# The various pieces of the properties dialog 
+# Pieces used at various places to edit window properties
+
+proc ShowPropertiesDialog { w index } {
+    label $w.txt -text "Properties" 
+    pack  $w.txt -side top -fill x
+    NameEntry $w $index    
+    ParentEntry $w $index
+    ColorEntry $w $index
+    PosnEntry $w  $index
+    DimensionEntry $w  $index
+    LevelInfoDialog $w $index
+    LayoutEntry $w  $index
+    puts "....."
+    TdataLMEntry $w $index
+    EditPropertiesButtons $w 
+}
+
+proc CreatePropertiesDialog { w index flag } {
+    set mode fixed
+    label $w.txt -text "Properties" 
+    pack  $w.txt -side top -fill x
+    NameEntry $w $index
+    ParentEntry $w $index
+    ColorEntry $w $index
+    if { $flag == 1 } {
+	PosnEntry $w  $index
+	DimensionEntry $w  $index
+	set mode custom
+    }
+    LevelInfoDialog $w $index
+    LayoutEntry $w  $index
+    TdataLMEntry $w $index
+}
+
+proc TdataLMEntry { w index } {
+    global standalone
+    if { $standalone } {
+	return
+    }
+    global tdata autoTData
+    frame $w.tdataType -relief raised -bd 2
+    frame $w.tdataLM -relief raised -bd 2
+    pack $w.tdataType $w.tdataLM -side top -fill x
+
+    #    label $w.tdataLM.l -text "AutoCreate TData" 
+    radiobutton $w.tdataType.b1 \
+	    -text "Auto" \
+	    -variable autoTData($index) \
+	    -value 1 \
+	    -command " \
+	$w.tdataLM.e configure -state disabled ;  \
+	$w.tdataLM.b configure -state disabled ;  \
+    "
+    radiobutton $w.tdataType.b2 \
+	    -text "External" \
+	    -variable autoTData($index) \
+	    -value 0 \
+	    -command " \  
+            $w.tdataLM.e configure -state normal ;  \
+	    $w.tdataLM.b configure -state normal ;  \
+    "
+    pack $w.tdataType.b1 $w.tdataType.b2 -side left 
+    label $w.tdataLM.l -text "Tdata"
+    entry $w.tdataLM.e -textvariable tdata($index) -relief sunken \
+	    -state disabled
+    button $w.tdataLM.b -text "Select" -state disabled -command  \
+	    "SelectTData $w $index"
+    pack $w.tdataLM.b -side right
+    pack $w.tdataLM.l $w.tdataLM.e -side left -fill x
+}
+
+proc SelectTData { w index } {
+    global tdata
+    set tdata($index) [ SendCommandToDEVise selectStream ]  
+}
+
+proc ParentEntry { w index } {
+    global parent
+    frame $w.parent -relief raised -bd 2 
+    pack $w.parent -side top \
+	    -fill x
+    label $w.parent.l -text "Parent"
+    entry $w.parent.e -textvariable parent($index) -relief sunken \
+	    -state disabled
+    pack $w.parent.l -side left
+    pack $w.parent.e -fill x
+}
+
+proc NameEntry { w index } {
+    global name
+    frame $w.name -relief raised -bd 2
+    pack  $w.name -side top \
+	    -fill x
+    label $w.name.l -text "Name" 
+    entry $w.name.e -textvariable name($index) -relief sunken -state disabled
+    pack $w.name.l -side left 
+    pack $w.name.e -fill x
+}
+
+proc PosnEntry { w index } {
+    global relX relY maxX maxY dimW dimH
+
+    frame $w.relX -relief raised -bd 2
+    frame $w.relY -relief raised -bd 2
+
+    label $w.xl -text X -width 1 
+    label $w.yl -text Y -width 1 
+
+    pack  $w.xl -expand 1 -side top 
+    pack  $w.relX -side top  -fill x
+    pack  $w.yl -expand 1 -side top
+    pack  $w.relY -side top  -fill x
+
+    label $w.relX.xmin -text "0" -relief sunken -width 2 
+    label $w.relX.xminl -text " < " -width 3
+    entry $w.relX.xe -textvariable relX($index) -relief sunken -width 6 
+    label $w.relX.xmaxl -text " < " -width 3
+    entry $w.relX.xmax -textvariable maxX($index) -relief sunken \
+	    -width 6 -state disabled 
+
+    label $w.relY.ymin -text "0" -relief sunken -width 2 
+    label $w.relY.yminl -text " < " -width 3
+    entry $w.relY.ye -textvariable relY($index) -relief sunken -width 6 
+    label $w.relY.ymaxl -text " < " -width 3
+    entry $w.relY.ymax -textvariable maxY($index) -relief sunken \
+	    -width 6 -state disabled 
+
+    pack    $w.relY.ymin \
+	    $w.relY.yminl \
+	    $w.relY.ye \
+	    $w.relY.ymaxl \
+	    $w.relY.ymax \
+	    -expand 1 \
+	    -side left 
+    pack    $w.relX.xmin \
+	    $w.relX.xminl \
+	    $w.relX.xe \
+	    $w.relX.xmaxl \
+	    $w.relX.xmax \
+	    -expand 1 \
+	    -side left 
+}
+
+proc DimensionEntry { w index } {
+    global dimH dimW
+    frame $w.dim -relief raised -bd 2
+    pack  $w.dim -side top \
+	    -fill x
+    
+    label $w.dim.wl -text "Width" -width 5
+    entry $w.dim.we -textvariable dimW($index) -relief sunken -width 6
+    label $w.dim.hl -text "Height" -width 6
+    entry $w.dim.he -textvariable dimH($index) -relief sunken -width 6 
+    
+    pack    $w.dim.wl \
+	    $w.dim.we \
+	    $w.dim.hl \
+	    $w.dim.he \
+	    -expand 1 \
+	    -side left 
+}
+
+proc ColorEntry { w index } {
+    global colorFg colorBg
+    frame $w.col -relief raised -bd 2
+    pack $w.col -side top \
+	    -fill x
+    
+    label $w.col.bgl -text "Bg" -width 2
+    entry $w.col.bge -textvariable colorBg($index) -bg white \
+	    -fg black -width 8
+    label $w.col.fgl -text "Fg" -width 2
+    entry $w.col.fge -textvariable colorFg($index) -bg white \
+	    -fg black -width 8
+    pack    $w.col.bgl \
+	    $w.col.bge \
+	    -side left 
+    pack    $w.col.fge \
+	    $w.col.fgl \
+	    -side right
+	    
+}
+
+
+proc LayoutEntry { w index } {
+    global layoutMode layoutRow layoutCol currentMode
+    frame $w.layout -relief raised
+    pack $w.layout -side top \
+	    -fill x
+    
+    label $w.layout.l -text "Layout" -width 6
+    
+    frame $w.layout.mode1 
+    radiobutton $w.layout.auto \
+	    -text "Auto" \
+	    -variable layoutMode($index) \
+	    -value "auto" \
+	    -command  " \
+	$w.layout.vere configure -state disabled ;
+	$w.layout.hore configure -state disabled ;  
+    "
+    radiobutton $w.layout.stacked \
+	    -text "Stacked" \
+	    -variable layoutMode($index) \
+	    -value "stacked" \
+	    -command   " \
+	    $w.layout.vere configure -state disabled ;
+            $w.layout.hore configure -state normal   ;
+    "
+    pack    $w.layout.auto \
+	    $w.layout.stacked \
+	    -in $w.layout.mode1 \
+	    -side left
+
+    frame $w.layout.mode2
+    radiobutton $w.layout.verb\
+	    -text "Fixed Cols(Vertical)" \
+	    -variable layoutMode($index) \
+	    -value "vertical" \
+	    -command  " \ 
+	$w.layout.vere configure -state normal  ;  
+	$w.layout.hore configure -state disabled  ;
+    "
+    
+    entry $w.layout.vere -textvariable layoutRow($index)\
+	    -width 3 -state disabled
+    
+    frame $w.layout.mode3
+    radiobutton $w.layout.horb \
+	    -text "Fixed Rows(Horzntl)" \
+	    -variable layoutMode($index) \
+	    -value "horizontal" \
+	    -command   " \
+	$w.layout.vere configure -state disabled ;
+	$w.layout.hore configure -state normal   ;
+    "
+    entry $w.layout.hore -textvariable layoutCol($index) \
+	    -width 3  -state disabled
+
+    pack    $w.layout.verb \
+	    $w.layout.vere \
+	    -in $w.layout.mode2 \
+	    -side left
+    
+    pack    $w.layout.horb \
+	    $w.layout.hore \
+	    -in $w.layout.mode3 \
+	    -side left 
+
+    frame $w.layout.mode4
+    radiobutton $w.layout.custom \
+	    -text "Custom" \
+	    -variable layoutMode($index) \
+	    -value "custom" \
+	    -command " \
+	    $w.layout.vere configure -state disabled  ;
+            $w.layout.hore configure -state disabled  ;
+    "
+    button $w.layout.edit -text "Edit" -command { LayoutCommand }
+    
+    pack    $w.layout.custom \
+	    $w.layout.edit \
+	    -in $w.layout.mode4 \
+	    -side left -anchor w	
+
+    pack    $w.layout.l \
+	    $w.layout.mode1 \
+	    $w.layout.mode2 \
+	    $w.layout.mode3 \
+	    $w.layout.mode4 \
+	    -side top 
+}
+
+
+proc LevelInfoDialog { w index } {
+    global level
+
+    frame $w.level -relief raised -bd 2
+    pack $w.level -side top -fill x
+    label $w.level.l -text "Level" 
+    label $w.level.e -textvariable level($index)  \
+	    -relief sunken -width 2 -anchor e
+
+    pack    $w.level.l \
+	    $w.level.e  \
+	    -expand 1 \
+	    -side left \
+	    -fill x
+}
+
+proc UserDefPropertiesDialog { w } {
+    frame $w.userdef -relief raised -bd 2 
+    pack $w.userdef -side top -fill x
+    
+    label $w.userdef.txt -text "User Defined" 
+    pack $w.userdef.txt -side top -expand 1
+}
+
+
+proc Buttons { w  buttons  } {
+    global button
+    frame $w.buttons -relief raised 
+    pack $w.buttons -side bottom \
+	    -fill both 
+    set i 0
+    foreach but $buttons {
+	button $w.buttons.p$but -text "$but" -command  " \
+		set button $i "
+	pack $w.buttons.p$but -side left -expand 1 
+	incr i 1
+    }
+    #    set oldFocus [focus]
+    #    tkwait visibility $w
+    #    grab set $w
+    #    focus $w
+    
+    # The following is a bad kludge :(. Time is crucial...
+    while { 1 } {
+	tkwait variable button
+	#    focus $oldFocus
+	if { $button != 1 } {
+	    return $button
+	} else {
+	    global name
+	    ConfigureWin $name(newChild) newChild
+	}
+    }
+    return $button
+}
+
+proc EditPropertiesButtons { w } {     
+    global currentMode
+    frame $w.buttons -relief raised -bd 2
+    pack $w.buttons -side bottom \
+	    -fill both 
+    
+    button $w.buttons.close -text "Close" -command { CloseCommand }
+    button $w.buttons.apply -text "Apply" -command { ApplyCommand }
+    button $w.buttons.undo -text "Undo" -command { UndoCommand }
+    pack $w.buttons.close $w.buttons.apply $w.buttons.undo \
+	    -side left \
+	    -expand 1
+}
+
+proc LayoutCommand { } {
+    global currentWin rgtMenu
+    global currentMode
+    
+    if { $currentMode == "Layout" } {
+	return
+    }
+    BringUpEditCanvas
+    # copy values for current window into edit
+    CopyWinParams edit current
+    ControlPropertyEdit $rgtMenu edit
+    #disable new window creation 
+    InitEditCanvas 1 1 
+}
+
+proc CloseCommand { } {
+    global rgtMenu currentMode
+    if { $currentMode == "Display" } {
+	#exit
+	#TEMPTEMP
+	puts "Currently can't close layout manager"
+    } else {
+	BringUpMainCanvas
+	ControlPropertyEdit $rgtMenu edit
+    }
+}
+
+proc ApplyCommand { } {
+    global currentWin rgtMenu currentMode
+    puts "currentMode = $currentMode"
+    if { $currentMode == "Layout" } {
+	ApplyLayoutEdits 1 1 
+    }
+    ApplyPropertiesEdit 
+    ControlPropertyEdit $rgtMenu edit
+}
+
+proc BringUpEditCanvas {} {
+    global editCanvas canvas 
+    global rgtMenu 
+    global controlPanel
+    global currentMode 
+
+    pack forget $canvas
+    
+    pack $editCanvas \
+	-in $controlPanel.middle \
+	-side left \
+	-expand 1 \
+	-fill both
+    set currentMode "Layout"
+}
+
+proc BringUpMainCanvas {} {
+    global editCanvas canvas rgtMenu
+    global controlPanel currentMode
+
+    pack forget $editCanvas
+    pack $canvas \
+	-in $controlPanel.middle \
+	-side left \
+	-expand 1 \
+	-fill both
+    set currentMode "Display"
+}
+
+proc ShowProperties {} {
+    global rgtMenu controlPanel
+    pack $rgtMenu -side right -in $controlPanel.middle -fill y
+}
+
+proc HideProperties {} {
+    global rgtMenu
+    pack forget $rgtMenu
+}
+
+# Control what fields are editable and what are not
+proc ControlPropertyEdit { w index } {
+    global name layoutMode parent 
+    global currentMode
+    global newChild
+
+    # Non editable fields 
+    if { $index == "newChild" }  {
+	$w.name.e configure -state normal
+    } else {
+	$w.name.e configure -state disabled
+    }
+    $w.parent.e configure -state disabled
+
+    # Layout mode cannot be edited when editing the layout
+    if { $currentMode != "Layout" } {
+	$w.layout.auto  configure -state normal
+	$w.layout.custom configure -state normal
+	$w.layout.stacked configure -state normal
+	$w.layout.verb configure -state normal
+	$w.layout.horb configure -state normal
+	# if layoutMode is not custom layout cannot be edited
+	if { $layoutMode($index) != "custom" } {
+	    $w.layout.edit configure -state  disabled
+	} else {
+	    $w.layout.edit configure -state  normal
+	}
+    } else {
+	$w.layout.edit configure -state  disabled
+	$w.layout.auto  configure -state disabled
+	$w.layout.custom configure -state disabled
+	$w.layout.stacked configure -state disabled
+	$w.layout.verb configure -state disabled
+	$w.layout.horb configure -state disabled
+    }
+	
+    set posEdit 0
+    # Display params cannot be edited 
+    # For any other window, edited is permitted if parent's layout is custom
+
+    if { $currentMode != "Layout" } {
+	if { $name($index) != "Display" } {
+	    set parentLayout [LM getLayoutMode $parent($index) ]
+	    if { $parentLayout == "custom"} {
+		set posEdit 1
+	    }
+	}
+    }
+    # enable pos edit if allowed
+    if { $posEdit } {
+	$w.relX.xe configure -state normal
+	$w.relY.ye configure -state normal
+	$w.dim.we configure -state normal
+	$w.dim.he configure -state normal
+    } else {
+	catch {$w.relX.xe configure -state disabled}
+	catch {$w.relY.ye configure -state disabled}
+	catch {$w.dim.we configure -state disabled}
+	catch {$w.dim.he configure -state disabled}
+    }
+    
+    # color edit always permitted
+    $w.col.bge configure -state normal
+    $w.col.fge configure -state normal
+}
+
+proc ConfigurePropertiesMenu { w index } {
+    global name parent relX relY dimW dimH level layoutMode 
+    $w.name.e configure -textvariable name($index)
+    $w.parent.e configure -textvariable parent($index)
+    $w.relX.xe configure -textvariable relX($index)
+    $w.relY.ye configure -textvariable relY($index)
+    $w.relX.xmax configure -textvariable dimW($index)
+    $w.relY.ymax configure -textvariable dimH($index)
+    $w.dim.we configure -textvariable dimW($index)
+    $w.dim.he configure -textvariable dimH($index)
+    $w.col.bge configure -textvariable colorBg($index)
+    $w.col.fge configure -textvariable colorFg($index)
+    $w.layout.auto configure -variable layoutMode($index)
+    $w.layout.custom configure -variable layoutMode($index)
+    $w.layout.stacked configure -variable layoutMode($index)
+    $w.layout.verb configure -variable layoutMode($index)
+    $w.layout.horb configure -variable layoutMode($index)
+    $w.level.e configure -textvariable level($index)
+}
+
+
+
+

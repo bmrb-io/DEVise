@@ -1,0 +1,65 @@
+include ../../Makefile.common
+
+CFLAGS =  $(ARCH_FLAGS) \
+	-I../../graphics -I../../LM/ \
+        -I../../DTE/DeviseSpecific -I../../DTE/Core\
+        -I../../graphics.new -I../../tape -I../../generic \
+        -fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX \
+	  -DNEW_LAYOUT -DVIEW_SHAPE
+
+OTHERS=-DTCLTK_FRONT_END 
+#-DSTANDALONE
+INCLUDE+=OTHERS
+
+HDRS= LMHashTable.h LMWindow.h LMControl.h LMAPI.h LMError.h LMLayout.h
+UTIL_HDRS = DList.h Exit.h 
+
+SRC= LMHashTable.C LMWindow.C  LMControl.C LMAPI.C LMLayout.C
+UTIL_SRC = DList.C Exit.c 
+
+LIBOBJ= LMHashTable.o LMWindow.o LMControl.o LMAPI.o LMLayout.o
+UTIL_OBJS = DList.o Exit.o
+ALL_OBJS = $(LIBOBJS) $(UTIL_OBJS)
+
+LIBNAME=liblm.a
+
+all     : $(LIBNAME)
+lib     : $(LIBNAME)
+
+
+$(LIBNAME): $(LIBOBJ)
+	$(AR) cr $@ $(LIBOBJ)
+	$(RANLIB) $@
+
+wintest : main1.C $(ALLOBJS) 
+	$(CC) main1.C $(ALLOBJS) -o wintest
+
+hashtest :  main.C $(ALLOBJS)
+	$(CC) main.C $(ALLOBJS) 
+
+.PHONY: clean mostlyclean
+
+clean: mostlyclean
+	-rm $(LIBNAME) 
+
+mostlyclean:
+	-rm $(LIBOBJ) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.89.2.1  1997/05/20 16:11:29  ssl
+#	Added layout manager to DEVise
+#
 #	Revision 1.88  1997/05/01 01:20:19  guangshu
 #	Removed some comment lines and some minor cleaning up.
 #
@@ -639,7 +642,7 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
 		set topgrps [DEVise getTopGroups $sname]
    	} else {
           	set topgrps [DEVise getTopGroups [file tail $schemafile]]
-#DEBUG		puts "topgrps = $topgrps"
+		puts "topgrps = $topgrps"
         	if {[llength $topgrps] == 0} {
 
             	    if {![file readable $schemafile]} {
@@ -715,7 +718,7 @@ proc setupAttrCheckButtons {win var schemaname grpname topgrp} {
     set numattrs 0
     set maxwidth 0
     foreach itm $grplist {
-	 set subname [lindex $itm 0]
+	set subname [lindex $itm 0]
 
 	set width [llength [split $subname {}]]
 	if {$width > $maxwidth} {
@@ -985,27 +988,27 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
     global x yvar viewselname bgcolor linksel windowsel titlesel
     global xaxissel yaxissel cancel newgdata viewsel
     global sourceList global curView
-
+    
     if {[WindowVisible .auto]} {
 	return
     }
-
-#    puts "In MacroDefAuto($tdata, $schemaname)"
-	
-#    set schema [DEVise getSchema $tdata]
-#   set schemaname [file tail $schemafile]
-	
+    
+    #    puts "In MacroDefAuto($tdata, $schemaname)"
+    
+    #    set schema [DEVise getSchema $tdata]
+    #   set schemaname [file tail $schemafile]
+    
     set topgrp [SelectTopGroup $schemaname]
-
-#    puts "schemaname = $schemaname, topgrp = $topgrp"
-
+    
+    #    puts "schemaname = $schemaname, topgrp = $topgrp"
+    
     toplevel .auto
     wm title .auto "Define Visualization"
     wm geometry .auto +50+50
     selection clear .auto
-	
+    
     label .auto.label -text "Define Visualization Parameters"
-
+    
     frame .auto.top
     frame .auto.mid
     frame .auto.bot
@@ -1064,28 +1067,28 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
     .auto.windowsel.window.menu add command -label "New" -command {
 	    set windowsel New
     }
-#	set newwin [DoCreateWindow "Select window type"]
-#	if {$newwin != ""} {
-#	    set windowsel $newwin
-#	    .auto.windowsel.window.menu add command -label $windowsel \
-#		    -command "set windowsel {$windowsel}"
-#	}
-
-    label .auto.xsel.label -text "Select X:"
-    menubutton .auto.xsel.attr -relief raised \
-	    -textvariable x -menu .auto.xsel.attr.g$topgrp -width 20
-    pack .auto.xsel.label .auto.xsel.attr -side left -padx 1m
-#    puts "Before setupAttrRadioMenu, schemaname=$schemaname, topgrp=$topgrp"
-    set defaultx [setupAttrRadioMenu \
-    		.auto.xsel.attr.g$topgrp x "" $schemaname $topgrp $topgrp]
-
-    label .auto.viewsel.label -text "View Type:"
-    menubutton .auto.viewsel.view -relief raised \
-	    -textvariable viewselname -menu .auto.viewsel.view.menu -width 15
-    pack .auto.viewsel.label .auto.viewsel.view -side left -padx 1m
-
-    menu .auto.viewsel.view.menu -tearoff 0
-    .auto.viewsel.view.menu add radiobutton -label "Scatter Plot" \
+    #	set newwin [DoCreateWindow "Select window type"]
+    #	if {$newwin != ""} {
+	#	    set windowsel $newwin
+	#	    .auto.windowsel.window.menu add command -label $windowsel \
+		#		    -command "set windowsel {$windowsel}"
+	#	}
+	
+	label .auto.xsel.label -text "Select X:"
+	menubutton .auto.xsel.attr -relief raised \
+		-textvariable x -menu .auto.xsel.attr.g$topgrp -width 20
+	pack .auto.xsel.label .auto.xsel.attr -side left -padx 1m
+	#    puts "Before setupAttrRadioMenu, schemaname=$schemaname, topgrp=$topgrp"
+	set defaultx [setupAttrRadioMenu \
+		.auto.xsel.attr.g$topgrp x "" $schemaname $topgrp $topgrp]
+	
+	label .auto.viewsel.label -text "View Type:"
+	menubutton .auto.viewsel.view -relief raised \
+		-textvariable viewselname -menu .auto.viewsel.view.menu -width 15
+	pack .auto.viewsel.label .auto.viewsel.view -side left -padx 1m
+	
+	menu .auto.viewsel.view.menu -tearoff 0
+	.auto.viewsel.view.menu add radiobutton -label "Scatter Plot" \
 	    -variable viewselname -value "Scatter Plot" -command {
 	set viewsel 0
     }
@@ -1099,7 +1102,7 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
     }
     set viewselname "Bar Chart"
     set viewsel 2
-
+    
     checkbutton .auto.gdatasel.link -text "New Mappings" -variable newgdata
     pack .auto.gdatasel.link -side left -padx 3m
     set newgdata 1
@@ -1226,51 +1229,157 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
 #    puts "The value of x is $x"
 #    puts "The ylist is $ylist"
     
-    if {$is_dte_type} {
-#            set result [DEVise create tdata $tdata $tdata "$x $ylist"]
-#            set tdata $result
-#	    puts "In MacroDefAuto XXXXX After dte creates tdata x=$x ylist=$ylist tdata=$tdata" 
-
-		# see if data stream already open
-		if {[lsearch [TdataSet] $tdata] < 0} {
-
-			# not open
-
-			set result [DEVise create tdata $tdata $tdata "$x $ylist"]
-			set tdata $result
-		}
-	}
-    MacroDefAutoActual $tdata $viewsel $linksel $windowsel $bgcolor \
-	    $titlesel $xaxissel $yaxissel $x $ylist $newgdata
+if {$is_dte_type} {
+    #            set result [DEVise create tdata $tdata $tdata "$x $ylist"]
+    #            set tdata $result
+    #	    puts "In MacroDefAuto XXXXX After dte creates tdata x=$x ylist=$ylist tdata=$tdata" 
+    
+    # see if data stream already open
+    if {[lsearch [TdataSet] $tdata] < 0} {
+	
+	# not open
+	
+	set result [DEVise create tdata $tdata $tdata "$x $ylist"]
+	set tdata $result
+    }
+    
+}
+MacroDefAutoActual $tdata $viewsel $linksel $windowsel $bgcolor \
+	$titlesel $xaxissel $yaxissel $x $ylist $newgdata
 }
 
 ############################################################
 
-proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
-                         titlesel xaxissel yaxissel x ylist
-                         newgdata {ofAttr ""}} {
+# all attrs except 'attr' are passed by reference
+proc ProcessAttrInfo { attr aname atype issorted ahi alo color whichattr \
+	{viewsel 0}}  {
+    upvar $aname name
+    upvar $atype type
+    upvar $issorted sorted
+    upvar $ahi hi
+    upvar $alo lo
+    upvar $color colorAttr
 
-#DEBUG  puts "In MacroDefAutoActual tdata=$tdata $viewsel $linksel $window $bgcolor
-#DEBUG	$titlesel $xaxissel $yaxissel $x $ylist $newgdata"
+    set hi ""
+    set lo ""
+    # The mapping may be an expression. So we set  defaults for lo and hi
+    # values. This is not needed in the COre devise as the initial mapping
+    # always chooses attributes but the LM shows the mapping box instead
+    # and hence I did this to reuse code -Shilpa.
+    
+    puts "Processing attr $attr"
+    if { $attr != "__Unknown__"} { 
+	set name [lindex $attr 0]
+	set type [lindex $attr 1]
+	if {[string tolower $name] == "color" && $type == "int"} {
+	set colorAttr $name
+	}
+	set sorted [lindex $attr 2]
+	set hashi [lindex $attr 3]
+	if {$hashi} {
+	    set hi [lindex $attr 4]
+	    if {$viewsel == 2 && $whichattr == "y" } {
+		set hi [ScaleUpper $hi]
+	    }
+	}
+	set haslo [lindex $attr 5]
+	if {$haslo} {
+	    set lo [lindex $attr 6]
+	    if {$viewsel == 2 && $whichattr == "y" } {
+		set lo [ScaleLower $lo]
+	    }
+	}
+    }
+    
+    # Also consult lo/hi values defined in .rc file
+    set viewParams ""
+    catch { set viewParams $viewDefault($type) }
+    foreach param $viewParams {
+        set pname [lindex $param 0]
+        set value [lindex $param 1]
+	if { $whichattr == "x" } {
+
+	    if {$lo == "" &&  $pname == "xlow"} {
+		set lo $value
+	    }
+	    if {$hi == "" && $pname == "xhigh"} {
+		set hi $value
+	    }
+	} else if { $whichattr == "y" } {
+	    if {$lo == "" &&  $pname == "ylow"} {
+		set lo $value
+	    }
+	    if {$hi == "" && $pname == "yhigh"} {
+		set hi $value
+	    }
+	}
+    }
+    
+    # if no defaults specified anywhere, resort to these defaults
+    if {$hi == ""} {
+        set hi 100
+    }
+    if {$lo == ""} {
+        set lo 0
+    }
+    
+    if {$lo == $hi} {
+        set lo [expr $lo - 1]
+        set hi [expr $hi + 1]
+    }
+
+    #puts "Mapping will have xlo $xlo and xhi $xhi"
+}    
+
+proc CleanName { name } { 	
+    set clean_name ""
+    if { [string first "max(" $name ] > 0 } {
+	set clean_name "Max"
+    } elseif { [string first "min(" $name] > 0} {
+	     set clean_name "Min"
+    } elseif { [string first "avg(" $name] > 0} {
+	set clean_name "Avg"
+    } elseif { [string first "count(" $name] > 0} {
+	set clean_name "Count"
+    } elseif { [string first "sum(" $name] > 0} {
+	set clean_name "Sum"
+    } else {
+	set clean_name $name
+    }
+    
+    return $clean_name
+}
+
+
+proc MacroDefAutoActual {tdata viewsel linksel window bgcolor \
+	titlesel xaxissel yaxissel x ylist \
+	newgdata {ofAttr ""}} {
+    #    puts "In MacroDefAutoActual tdata=$tdata $viewsel $linksel \
+    #          $window $bgcolor \
+    #          $titlesel $xaxissel $yaxissel $x $ylist $newgdata"
+    
+    
+    #    puts "In MacroDefAutoActual, schema = $schema"
+    
     global viewDefault DEViseShapes curView
-
+    
     set pos ""
     set subder ""
     set vname ""
     set tdata [string trimleft $tdata "{"]
     set tdata [string trimright $tdata "}"]
     set pos [string first : $tdata]
+
     if {$pos > 0} {
         set subder [string range  $tdata 0 [expr $pos-1]]
 	set vname  [string range  $tdata [expr $pos+1] end]
 	set subder [string trim $subder]
 	set vname  [string trim $vname]
     } 
-
-#DEBUG    puts "Before getSchema $tdata"
-
+    
+    puts "Before getSchema $tdata"
+    
     set schema [DEVise getSchema $tdata]
-#    puts "In MacroDefAutoActual, schema = $schema"
 
     set colorAttr ""
     set sortedx 0
@@ -1279,73 +1388,21 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
 
     # Find out type of X and whether it is sorted or not.
     # Also find out if there is a 'color' attribute.
+
     foreach attr $schema {
-        set name [lindex $attr 0]
-        set type [lindex $attr 1]
-        if {[string tolower $name] == "color" && $type == "int"} {
-            set colorAttr $name
-        }
-        if {$name != $x} {continue}
-        set xtype [lindex $attr 1]
-        set sortedx [lindex $attr 2]
-        set hasxhi [lindex $attr 3]
-        if {$hasxhi} {
-            set xhi [lindex $attr 4]
-        }
-        set hasxlo [lindex $attr 5]
-        if {$hasxlo} {
-            set xlo [lindex $attr 6]
-        }
-        break
+	if { [lindex $attr 0] == $x } {
+	    break;
+	}
     }
+    ProcessAttrInfo $attr xname xtype sortedx  xhi xlo colorAttr \
+	    "x" $viewsel
 
-    # Also consult lo/hi values defined in .rc file
-    set viewParams ""
-    catch { set viewParams $viewDefault($xtype) }
-    foreach param $viewParams {
-        set pname [lindex $param 0]
-        set value [lindex $param 1]
-        if {$xlo == "" && $pname == "xlow"} {
-            set xlo $value
-        }
-        if {$xhi == "" && $pname == "xhigh"} {
-            set xhi $value
-        }
-    }
-
-    # if no defaults specified anywhere, resort to these defaults
-    if {$xhi == ""} {
-        set xhi 100
-    }
-    if {$xlo == ""} {
-        set xlo 0
-    }
-
-    if {$xlo == $xhi} {
-        set xlo [expr $xlo - 1]
-        set xhi [expr $xhi + 1]
-    }
-
-    #puts "Mapping will have xlo $xlo and xhi $xhi"
+    puts "$xname $xtype $sortedx $colorAttr $xhi $xlo"
     if {$sortedx > 0} {
         set sortedx SortedX
     } else {
         set sortedx Scatter
     }
-
-    if {$linksel} {
-        set linkname [format "%s Link" $x]
-        if {![DEVise exists $linkname]} {
-            # ask DEVise to create link
-            set result [DEVise create link Visual_Link $linkname 1]
-            if {$result == ""} {
-                dialog .linkError "Link Error" \
-                        "Error creating link $linkname" "" 0 OK
-                return
-            }
-        }
-    }
-
     set color 2
     set shape $viewsel
     set size 1
@@ -1367,126 +1424,95 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
         set shapeAttr1 1
     }
 
-#    puts "schema=$schema"
+    if {$linksel} {
+        set linkname [format "%s Link" $x]
+        if {![DEVise exists $linkname]} {
+            # ask DEVise to create link
+            set result [DEVise create link Visual_Link $linkname 1]
+            if {$result == ""} {
+                dialog .linkError "Link Error" \
+                        "Error creating link $linkname" "" 0 OK
+                return
+            }
+        }
+    }
+
+    #    puts "schema=$schema"
     foreach attr $schema {
         set name [lindex $attr 0]
-	set clean_name ""
-	if { [string first "max(" $name ] > 0 } {
-	     set clean_name "Max"
-	} elseif { [string first "min(" $name] > 0} {
-	     set clean_name "Min"
-	} elseif { [string first "avg(" $name] > 0} {
-	     set clean_name "Avg"
-	} elseif { [string first "count(" $name] > 0} {
-	     set clean_name "Count"
-	} elseif { [string first "sum(" $name] > 0} {
-	     set clean_name "Sum"
-	} else {
-	     set clean_name $name
-	}
-        if {[lsearch $ylist $clean_name] < 0} { continue }
+	
+	set clean_name [CleanName $name]
+	
+	puts "clean_name = $clean_name "
 	set is_mmm 0
-	if {$clean_name=="Max"||$clean_name=="Min"||$clean_name=="Avg"} {
-		set is_mmm 1
+	if {[lsearch $ylist $clean_name] < 0}  {
+	    continue
 	}
-	if {$mmm_view != "" && $is_mmm == 1} { continue }
+	if {$clean_name=="Max"||$clean_name=="Min"||$clean_name=="Avg"} {
+	    set is_mmm 1
+	}
+	if {$mmm_view != "" && $is_mmm == 1} { 
+	    continue
+	}
+	
+	set colorY ""
+	
+	# for bar shape, make ylo zero
 
-        set type [lindex $attr 1]
-        set sorted [lindex $attr 2]
-        set yhi ""
-        set hasyhi [lindex $attr 3]
-        if {$hasyhi} {
-            set yhi [lindex $attr 4]
-            if {$viewsel == 2} {
-                set yhi [ScaleUpper $yhi]
-            }
-        }
-        set ylo ""
-        set hasylo [lindex $attr 5]
-        if {$hasylo} {
-            set ylo [lindex $attr 6]
-            if {$viewsel == 2} {
-                set ylo [ScaleLower $ylo]
-            }
-        }
+	if {$shape == 2 } {
+	    set ylo 0
+	}
 
-        # also consult lo/hi values defined in .rc file
-        set viewParams ""
-        catch { set viewParams $viewDefault($type) }
-        foreach param $viewParams {
-            set pname [lindex $param 0]
-            set value [lindex $param 1]
-            if {$ylo == "" && $pname == "ylow"} {
-                set ylo $value
-            }
-            if {$yhi == "" && $pname == "yhigh"} {
-                set yhi $value
-            }
-        }
-
-        # if no defaults specified anywhere, resort to these defaults
-        if {$yhi == ""} {
-            set yhi 100
-        }
-        if {$ylo == ""} {
-            set ylo 0
-        }
-
-        # for bar shape, make ylo zero
-        if {$shape == 2} {
-            set ylo 0
-        }
-
-        if {$ylo == $yhi} {
-            set ylo [expr $ylo - 1]
-            set yhi [expr $yhi + 1]
-        }
-
-        #puts "Mapping will have ylo $ylo and yhi $yhi"
+	ProcessAttrInfo $attr yname type sorted yhi ylo colorY "y" $viewsel
+	puts "$yname $type $sorted $colorY $yhi $ylo"
+	
 	if {$clean_name=="Count"} { set color 2 }
 	if {$clean_name=="Sum"} { set color 3 }
 	if {$clean_name=="Max"} { set color 0 }
 	if {$clean_name=="Avg"} { set color 2 }
 	if {$clean_name=="Min"} { set color 3 }
-
-        if {$subder == "Stat" || $subder == "GstatX" || $subder == "GstatXDTE" 
-	        || $subder == "GstatY"
-		|| $subder == "GstatXDate" || $subder == "GstatYDate" } {
+	
+        if {$subder == "Stat" \
+		|| $subder == "GstatX" \
+		|| $subder == "GstatXDTE" \
+		|| $subder == "GstatY" \
+		|| $subder == "GstatXDate" \
+		|| $subder == "GstatYDate" } {
             if {$clean_name=="Max"} {
-                 set shapeAttr0 0.2
+		set shapeAttr0 0.2
             }
             if {$clean_name=="Avg" || $clean_name=="Mean"} {
-                 set shapeAttr0 0.2
+		set shapeAttr0 0.2
             }
             if {$clean_name=="Min"||$clean_name=="Count"} {
-                 set shapeAttr0 0.2
+		set shapeAttr0 0.2
             }
-#	    if {$subder == "GstatX" || $subder == "GstatY"} { 
-#		set shape [findNumericCaseValue $DEViseShapes {Line Shade}] }
 	    if {$subder == "Stat" } { 
-		if {$clean_name=="Min"||$clean_name=="Max"||$clean_name=="Avg"} {
-			set shape [findNumericCaseValue $DEViseShapes {RectX}] 
+		if {$clean_name=="Min" \
+			||$clean_name=="Max" \
+			||$clean_name=="Avg"} {
+		    set shape [findNumericCaseValue $DEViseShapes {RectX}] 
 		}
 	    }
     	} elseif {$subder == "Hist"  } {
 	    set shape [findNumericCaseValue $DEViseShapes {Bar}]
         }
-
+	
         # ask DEVise to create view instance
         set sorted $sortedx
-#TEMPTEMP?        set viewbasename "View"
         set viewbasename "View 1"
-
+	
 	set mmm_list {Max Mean Avg Min}	
 	set stat_list {Stat GstatX GstatXDTE GstatY GstatXDate GstatYDate}
 	set histView ""
 	if {$subder == "Hist" || $subder == "HistDate" } {
-		set histView [DEVise getHistViewname $curView]
+	    set histView [DEVise getHistViewname $curView]
 	}
-#puts "After DEVise getHistViewName histView=$histView"
+	
 	if {[DEVise exists $histView]} {
 		set viewinstance $histView
-	} elseif {[lsearch $stat_list $subder] < 0 || !$view_exist 
+	} elseif {[lsearch $stat_list $subder] < 0 \
+		|| !$view_exist  \
 		|| [lsearch $mmm_list $clean_name] < 0} {
 	    set viewinstance [UniqueName $viewbasename]
 	    if {[lsearch [ViewSet] $viewinstance] >= 0} {
@@ -1505,117 +1531,129 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
 	    	DEVise setHistViewname $curView $viewinstance
 	    }
 	    if {$clean_name == "Max" || $clean_name == "Mean" || $clean_name == "Avg"
-			|| $clean_name == "Min" } {
+	    || $clean_name == "Min" } {
 		set view_exist 1 
 	    	set mmm_view $viewinstance 
 	    }
 	} else {
 	    set viewinstance $mmm_view
 	}
-	     
+	
         # ask DEVise to turn on/off label
-	if {$subder == "Stat" || $subder == "GstatX" || $subder == "GstatXDTE" 
-	        || $subder == "GstatY"
-		|| $subder == "GstatXDate" || $subder == "GstatYDate" } {
-	  
-	    if {$clean_name == "Max" || $clean_name == "Mean" || $clean_name == "Avg" 
-			|| $clean_name == "Min"} {
+	if {$subder == "Stat" \
+		|| $subder == "GstatX" \
+		|| $subder == "GstatXDTE" \
+		|| $subder == "GstatY" \
+		|| $subder == "GstatXDate" \
+		|| $subder == "GstatYDate" } {
+	    if {$clean_name == "Max" \
+		    || $clean_name == "Mean" \
+		    || $clean_name == "Avg"  \
+		    || $clean_name == "Min"} {
 		if {$mmmtext==""} {
 		    set titletext "Max|Avg|Min\($ofAttr\) vs. $x"
 		    set mmmtext $titletext
 		} else { 
 		    lappend mmmtext "$name vs. $x"
 		    set titletext $mmmtext
-	   	}
-	    } else { set titletext "$name\($ofAttr\) vs. $x" }
+		}
+	    } else {
+		set titletext "$name\($ofAttr\) vs. $x"
+	    }
 	} else {
-	   set titletext "$name\($ofAttr\) vs. $x"
+	    set titletext "$name\($ofAttr\) vs. $x"
 	}
-
-        if {[llength $ylist] == 1 && $titletext == "" } {
-            set titletext $tdata
-        }
-        if {$titlesel} {
-            DEVise setLabel $viewinstance 1 16 $titletext
-        } else {
-            DEVise setLabel $viewinstance 0 12 $titletext
-        }
-
-        # ask DEVise to turn on/off X axis
-        DEVise setAxisDisplay $viewinstance X $xaxissel
-
-        # ask DEVise to turn on/off Y axis
-        DEVise setAxisDisplay $viewinstance Y $yaxissel
-
-        # if new mappings are requested, associate color with mapping,
-        # otherwise associate color with view
-        if {0 && !$newgdata} {
-            DEVise setViewOverrideColor $viewinstance $color 1
-        }
-
-        # for map color, either use constant color, or variable
-        # if defined in the schema
-        set mapColor $color
-        if {$colorAttr != ""} {
-            set mapColor \$$colorAttr
-        }
-#	if {$subder == "Stat" && $clean_name == "Max"} {
-#	    set mapColor \$$colorAttr\+1
-#	}
-#	if {$subder == "Stat" && $clean_name == "Avg"} {
-#	    set mapColor \$$colorAttr\+2
-#	}
-
-        set mapname [format "%s_vs_%s" $name $x]
-
-        if {[lsearch [DEVise get mapping] $mapname] < 0} {
-            # ask DEVise to create interpreted mapping class
-            set result [DEVise createMappingClass $mapname]
-        }
-
-        set mapinstance "$tdata#$mapname"
-        if {$newgdata} {
-            # new mappings are requested
-            set mapinstance [UniqueName $mapinstance]
-        }
-        if {[lsearch [GdataSet] $mapinstance] < 0} {
+	
+	if {[llength $ylist] == 1 && $titletext == "" } {
+	    set titletext $tdata
+	}
+	if {$titlesel} {
+	    DEVise setLabel $viewinstance 1 16 $titletext
+	} else {
+	    DEVise setLabel $viewinstance 0 12 $titletext
+	}
+	
+	# ask DEVise to turn on/off X axis
+	DEVise setAxisDisplay $viewinstance X $xaxissel
+	
+	# ask DEVise to turn on/off Y axis
+	DEVise setAxisDisplay $viewinstance Y $yaxissel
+	
+	# if new mappings are requested, associate color with mapping,
+	# otherwise associate color with view
+	if {0 && !$newgdata} {
+	    DEVise setViewOverrideColor $viewinstance $color 1
+	}
+	
+	# for map color, either use constant color, or variable
+	# if defined in the schema
+	set mapColor $color
+	if {$colorAttr != ""} {
+	    set mapColor \$$colorAttr
+	}
+	set mapname [format "%s_vs_%s" $name $x]
+	
+	if {[lsearch [DEVise get mapping] $mapname] < 0} {
+	    # ask DEVise to create interpreted mapping class
+	    set result [DEVise createMappingClass $mapname]
+	}
+	
+	set mapinstance "$tdata#$mapname"
+	if {$newgdata} {
+	    # new mappings are requested
+	    set mapinstance [UniqueName $mapinstance]
+	}
+	if {[lsearch [GdataSet] $mapinstance] < 0} {
 	    if {$is_mmm == 1} { 
-	    	set name "Avg"
-		set shape [findNumericCaseValue $DEViseShapes {HighLow}]
+		set name "Avg"
+		set shape [findNumericCaseValue $DEViseShapes \
+			{HighLow}]
 		set shapeAttr0 "\$Max"
 		set shapeAttr1 "\$Min"
 		set size 3
 		if {$x == "DATE"} {set size 4000000 }
-		set result [DEVise create mapping $mapname $tdata $mapinstance \
-			"" \$$x \$$name "" $mapColor $size $pattern $orient $shape \
+		set result [DEVise create mapping \
+			$mapname $tdata $mapinstance \
+			"" \$$x \$$name "" $mapColor \
+			$size $pattern $orient $shape \
 			"" $shapeAttr0 $shapeAttr1 ]
 	    } else {
-                # ask DEVise to create an instance of mapping
-	    	set result [DEVise create mapping $mapname $tdata $mapinstance \
-			"" \$$x \$$name $mapColor $size $pattern $orient $shape \
+		# ask DEVise to create an instance of mapping
+		set result [DEVise create mapping $mapname $tdata \
+			$mapinstance \
+			"" \$$x \$$name $mapColor $size $pattern\
+			$orient $shape \
 			$shapeAttr0 $shapeAttr1]
 	    }
-            DEVise setPixelWidth $mapinstance 1
-        }
-
-        # ask DEVise to insert $mapinstance into $viewinstance
-        set result [DEVise insertMapping $viewinstance $mapinstance]
-        # seems that there's no error code returned
-
-        # ask DEVise to insert $viewinstance into $window
-        set result [DEVise insertWindow $viewinstance $window]
-        # seems that there's no error code returned
-
-        if {$linksel} {
-            # ask DEVise to link $viewinstance to $linkname
-            set result [DEVise insertLink $linkname $viewinstance]
-            # seems that there's no error code returned
-        }
-
-        DEVise clearViewHistory $viewinstance
-        DEVise insertViewHistory $viewinstance $xlo $ylo $xhi $yhi 0
-
-        ProcessViewSelected $viewinstance
-        if {$colorAttr == ""} { incr color }
+	    DEVise setPixelWidth $mapinstance 1
+	}
+	
+	# ask DEVise to insert $mapinstance into $viewinstance
+	set result [DEVise insertMapping $viewinstance $mapinstance]
+	# seems that there's no error code returned
+	
+	# ask DEVise to insert $viewinstance into $window
+	set result [DEVise insertWindow $viewinstance $window]
+	# seems that there's no error code returned
+	
+	if {$linksel} {
+	    # ask DEVise to link $viewinstance to $linkname
+	    set result [DEVise insertLink $linkname $viewinstance]
+	    # seems that there's no error code returned
+	}
+	
+	DEVise clearViewHistory $viewinstance
+	DEVise insertViewHistory $viewinstance $xlo $ylo $xhi $yhi 0
+	
+	ProcessViewSelected $viewinstance
+	if {$colorAttr == ""} { incr color }
     }
 }
+
+
+
+
+
+
+
+

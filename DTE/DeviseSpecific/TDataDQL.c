@@ -81,9 +81,9 @@ TDataDQL::TDataDQL(
 
 void TDataDQL::runQuery(){
 
-	Timer::StopTimer();
-	_result.clear();
-     Engine engine(_query);
+  Timer::StopTimer();
+  _result.clear();
+  Engine engine(_query);
      TRY(engine.optimize(), );
      _numFlds = engine.getNumFlds();
      _types = engine.getTypeIDs();
@@ -132,10 +132,10 @@ void TDataDQL::runQuery(){
      }
 	delete tup;
 
-#if defined(DEBUG)
+#if defined(DEBUG) ||  1
 	cout << "Done with query ----------------------------------\n";
 #endif
-#ifdef DEBUG
+#if defined(DEBUG) || 1
      for(int j = _result.low(); j < _result.fence(); j++){
           for(int i = 0; i < _numFlds; i++){
                displayAs(cout, _result[j][i], _types[i]);
@@ -163,10 +163,20 @@ void TDataDQL::runQuery(){
 			atname = strchr(_attributeNames[i].chars(), '.') + sizeof(char);
 		}
 		assert(atname);
-#if defined(DEBUG)
+#if defined(DEBUG) || 1
 		cout << "atname = " << atname << endl;
 #endif
 		TRY(int deviseSize = packSize(_types[i]), );
+#if defined(DEBUG) || 1
+		cout << "deviseSize = " << deviseSize << endl;
+#endif
+
+/*
+		if(deviseSize % 4){
+			deviseSize += 4 - deviseSize % 4; 
+		}
+		assert(! (deviseSize % 4));
+*/
 		_sizes[i] = deviseSize;
 		AttrType deviseType = getDeviseType(_types[i]);
 		bool hasHighLow = false;

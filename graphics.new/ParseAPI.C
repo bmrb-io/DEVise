@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.63.4.1  1997/05/20 16:11:11  ssl
+  Added layout manager to DEVise
+
+  Revision 1.63  1997/04/21 22:55:36  guangshu
+  Added several CPI commands.
+
   Revision 1.62  1997/03/25 17:59:25  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -301,6 +307,8 @@
 #include "WinClassInfo.h"
 #include "MappingInterp.h"
 
+#include "LMControl.h"		// LayoutManager
+
 #include "CatalogComm.h"
 #define PURIFY 0
 
@@ -341,24 +349,24 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   printf("\n");
 #endif
 
-	// DTE commands are done in separate file which is shared by
-	// stand alone DTE gui.
-
-	if((argc >= 1) && (strlen(argv[0]) >= 3) && !strncmp(argv[0], "dte", 3)){
-
-	    if(argc == 2 && !strcmp(argv[0],"dteImportFileType")){
-		 char * name = dteImportFileType(argv[1]);
-		 if (!name){
-		control->ReturnVal(API_NAK, strdup(""));
-		return -1;
-		 }
-		 control->ReturnVal(API_ACK, name);
-		 return 1;
-	    }
-	
-		return ParseAPIDTE(argc, argv, control);
-	}
-
+  // DTE commands are done in separate file which is shared by
+  // stand alone DTE gui.
+  
+  if((argc >= 1) && (strlen(argv[0]) >= 3) && !strncmp(argv[0], "dte", 3)){
+    
+    if(argc == 2 && !strcmp(argv[0],"dteImportFileType")){
+      char * name = dteImportFileType(argv[1]);
+      if (!name){
+	control->ReturnVal(API_NAK, strdup(""));
+	return -1;
+      }
+      control->ReturnVal(API_ACK, name);
+      return 1;
+    }
+    
+    return ParseAPIDTE(argc, argv, control);
+  }
+  
   // The first few commands have a variable number of arguments
 
   if (!strcmp(argv[0], "changeParam")) {
@@ -683,7 +691,20 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 1) {
-
+    if (!strcmp(argv[0], "startLayoutManager") ) {
+      printf("starting Layout Manager\n");
+#if 0
+      int childpid = fork();
+      if (childpid == 0) {
+	char *args[] = {"/u/s/s/ssl/Work/LM/C++/LM", 0};
+	execvp(args[0], argv);
+      } else {
+	return 1;
+      }
+#endif
+      LMControl::GetLMControl()->Go();
+      return 1;
+    }
     if (!strcmp(argv[0], "date")) {
       time_t tm = time((time_t *)0);
       control->ReturnVal(API_ACK, DateString(tm));

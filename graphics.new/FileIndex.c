@@ -29,6 +29,17 @@
   $Id$
 
   $Log$
+  Revision 1.6.4.2  1997/05/27 18:02:54  wenger
+  Minor bug fixes and cleanup to Shilpa's layout manager code and associated
+  code.
+
+  Revision 1.6.4.1  1997/05/20 19:49:38  ssl
+  Fixed stuff to allow empty TData
+
+  Revision 1.6  1997/03/19 21:33:57  wenger
+  Fixed bug 172 (DTE index filename conflict) -- DTE TData names are now
+  the data file name instead of the schema file name.
+
   Revision 1.5  1996/11/25 18:15:14  wenger
   Changes to non-indexed attrproj to match other changes to TData;
   changes to compile non-index attrproj and to get the rest of Devise
@@ -110,7 +121,8 @@ OffsetType
 FileIndex::Get(RecId recId)
 {
   DO_DEBUG(printf("FileIndex::Get(%ld)\n", recId));
-
+  
+  //printf("_highestValidIndex %d\n", _highestValidIndex);
   DOASSERT((int) recId <= _highestValidIndex, "Illegal record ID");
 
   return _indexArray[recId];

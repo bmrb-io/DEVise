@@ -15,6 +15,14 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.66.4.1  1997/05/20 16:11:33  ssl
+#	Added layout manager to DEVise
+#
+#	Revision 1.66  1997/04/22 15:25:54  wenger
+#	Conditionaled out lots of debug code; fixed data source visualization
+#	window so the window for the data again defaults to 'New' if there are
+#	no windows.
+#
 #	Revision 1.65  1997/04/21 23:08:27  guangshu
 #	Make statistics work with DTE.
 #
@@ -2131,6 +2139,7 @@ proc updateSources {} {
 proc scanDerivedSources {} {
     global derivedSourceList schemadir
 
+    
 #    catch { unset derivedSourceList }
 
     foreach view [ViewSet] {

@@ -15,6 +15,12 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.29.4.1  1997/05/20 16:11:26  ssl
+#       Added layout manager to DEVise
+#
+#       Revision 1.29  1997/04/30 18:27:23  wenger
+#       Added session text description capability.
+#
 #       Revision 1.28  1997/04/29 17:35:29  wenger
 #       Minor fixes to new text labels; added fixed text label shape;
 #       CheckDirSpace() no longer prints an error message if it can't get disk
@@ -258,9 +264,9 @@ proc BringUpMappingDialog { w curview } {
 					-value $value \
 					-command " UpdateShapeAttrs {$w} {$value} "
 			} else {
-				$w.mapping.value.p$itemname.menu.constant add radiobutton \
-					-label $value -variable mappingValue$itemname \
-					-value $value
+			    $w.mapping.value.p$itemname.menu.constant add radiobutton \
+				    -label $value -variable mappingValue$itemname \
+				    -value $value
 			}
 		}
     }
@@ -298,8 +304,7 @@ proc UpdateMappingDialog { w curView } {
      }
      if { $curView == "" } {
 	 ClearMappingDialog $w
-     }
-     
+     } 	 
      if {[DEVise getViewPileMode $curView]} {
 	 set win [DEVise getViewWin $curView]
 	 set curView [lindex [DEVise getWinViews $win] end]
@@ -309,7 +314,7 @@ proc UpdateMappingDialog { w curView } {
      }
      
      $w.message.txt configure -text "Edit Mapping for : $curView"
-
+     
      # Get mapping for the view (first one)
      set map [lindex [DEVise getViewMappings $curView] 0]
      #See if map is interpreted
@@ -323,66 +328,66 @@ proc UpdateMappingDialog { w curView } {
      if {!$found} {
 	 dialog .editError "Mapping Not Interpreted" \
 		 "View has a compiled mapping which cannot be edited." "" 0 OK
-	 ClearMappingDialog $w
+	     ClearMappingDialog $w
 	 return
      }
      global sourceList derivedSourceList
      # Get parameters for the mapping
      set params [DEVise getInstParam $map]
-
+     
      if {$params == ""} {
 	 dialog .editError "No Mapping Parameters" \
 		 "Mapping has no parameters." "" 0 OK
 	 ClearMappingDialog $w
 	 return
      }
-
-#     puts "params ========== $params"
+     
+     #     puts "params ========== $params"
      set tdata [lindex [lindex $params 0] 1]
-      set schemaname ""
+     set schemaname ""
      set error [catch {set sfname [lindex $derivedSourceList($tdata) 3]}]
- 
+     
      if {$error > 0} {
-
-#	set nextToLast [string length $tdata]
-#	set nextToLast [expr $nextToLast - 2]
-#	set tdata [string range $tdata 0 $nextToLast]
-
-	set sourcedef [DEVise dteShowCatalogEntry $tdata]
-# 	puts "hack: ********** tdata: $tdata  sourcedef: $sourcedef"
-	set sourcedef [lindex $sourcedef 0]
-
- 	set err [expr [llength $sourcedef] == 0]
-
-	if {$err == 0} {
-		# file exists
-		set stype [lindex $sourcedef 1]
-		if {[isDTEType $stype]} {
-			set schemaname $tdata
-		} else { 
-		set sfname [lindex $sourcedef 4]
-		set schemaname [file tail $sfname]
-		}
-	} 
+	 
+	 #	set nextToLast [string length $tdata]
+	 #	set nextToLast [expr $nextToLast - 2]
+	 #	set tdata [string range $tdata 0 $nextToLast]
+	 
+	 set sourcedef [DEVise dteShowCatalogEntry $tdata]
+	 # 	puts "hack: ********** tdata: $tdata  sourcedef: $sourcedef"
+	 set sourcedef [lindex $sourcedef 0]
+	 
+	 set err [expr [llength $sourcedef] == 0]
+	 
+	 if {$err == 0} {
+	     # file exists
+	     set stype [lindex $sourcedef 1]
+	     if {[isDTEType $stype]} {
+		 set schemaname $tdata
+	     } else { 
+		 set sfname [lindex $sourcedef 4]
+		 set schemaname [file tail $sfname]
+	     }
+	 } 
      }
      set pos [string first : $tdata]
      set categ ""
      if {$pos > 0} {
-     	set categ [string range $tdata 0 [expr $pos - 1]]
+	 set categ [string range $tdata 0 [expr $pos - 1]]
      } else {
-     	set categ $tdata
+	 set categ $tdata
      }
      set stat 0
      if { $categ == "Hist" || $categ == "HistDate" || $categ == "Stat" || \
-     	$categ == "GstatX" || $categ == "GstatXDTE" || $categ == "GstatXDate"|| \
-	$categ == "GstatY" || $categ == "GstatYDate" } {
-     set stat 1
+	     $categ == "GstatX" || $categ == "GstatXDTE" || $categ == "GstatXDate"|| \
+	     $categ == "GstatY" || $categ == "GstatYDate" } {
+	 set stat 1
      }
      if {$schemaname == "" && $stat == 1} {
-     	set schemaname [file tail $sfname]
+	 set schemaname [file tail $sfname]
      }
-
-#     puts "schemaname = $schemaname"
+     
+     #     puts "schemaname = $schemaname"
      set xParm [lindex [lindex $params 3] 1]
      set yParm [lindex [lindex $params 4] 1]
      set zParm [lindex [lindex $params 5] 1]
@@ -426,7 +431,7 @@ proc UpdateMappingDialog { w curView } {
      foreach item $mappings {
 	 set itemname [lindex $item 0]
 	 set itemval [lindex $item 1]
-
+	 
 #		 if {$itemname == "ShapePosition"} {
 #			 continue
 #		 }
@@ -446,7 +451,7 @@ proc UpdateMappingDialog { w curView } {
 
 
 proc ClearMappingDialog { w } {
-    if {! [WindowVisible ] } {
+    if {! [WindowVisible $w ] } {
 	return
     }
     set mappings [list X Y Z Color Size Pattern Orientation Shape \
@@ -597,6 +602,7 @@ proc UpdateMappings { map params mappings } {
 
 # Changed labels for ShapeAttr# labels in mapping dialog to labels specific to
 # each shape and attr# (e.g. Rect Attr1 => Width)
+###############Added a new shape : View 
 set DEViseShapeAttrNames { \
 	{Rect Width Height "Cloud Width" "Cloud Height" "Line Width"} \
 	{RectX "Relative Width" "Relative Height" "" "" "Line Width"} \
@@ -614,6 +620,7 @@ set DEViseShapeAttrNames { \
 	{"Polyline File" Filename Format "" "" "Line Width"} \
 	{"Text Label" "Label Text" "Format" "Width" "Height" "Outline"} \
 	{"Tcl/Tk Window" "Script File" "Arg Count" "Arg 0" "Arg 1" "Arg 2"} \
+	{"View" "Name" Width Height } \
 	{"Fixed Text Label" "Label Text" "Format" "" "" ""} \
 }
 

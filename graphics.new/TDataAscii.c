@@ -16,6 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.56.4.3  1997/05/27 18:02:55  wenger
+  Minor bug fixes and cleanup to Shilpa's layout manager code and associated
+  code.
+
+  Revision 1.56.4.2  1997/05/20 19:49:38  ssl
+  Fixed stuff to allow empty TData
+
+  Revision 1.56.4.1  1997/05/20 16:11:16  ssl
+  Added layout manager to DEVise
+
+  Revision 1.56  1997/02/26 16:31:47  wenger
+  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+
   Revision 1.55.4.1  1997/02/13 18:11:48  ssl
   Added a check to the user interface asking when user links two different
   data sets with a record link
@@ -397,6 +410,9 @@ Boolean TDataAscii::HeadID(RecId &recId)
 
 Boolean TDataAscii::LastID(RecId &recId)
 {
+#if DEBUGLVL >= 5
+  printf("totalRecs = %ld\n", _totalRecs);
+#endif
   if (!CheckFileStatus()) {
     recId = _totalRecs - 1;
     return false;
@@ -429,6 +445,7 @@ Boolean TDataAscii::LastID(RecId &recId)
     }
   }
   
+//  recId = (_totalRecs > 0) ? _totalRecs - 1 : 0;
   recId = _totalRecs - 1;
   return (_totalRecs > 0);
 }
@@ -440,9 +457,11 @@ TData::TDHandle TDataAscii::InitGetRecs(RecId lowId, RecId highId,
 #if DEBUGLVL >= 3
   printf("TDataAscii::InitGetRecs [%ld,%ld]\n", lowId, highId);
 #endif
-
+  if (_totalRecs == 0 )  {
+     return NULL;
+  }
   DOASSERT((long)lowId < _totalRecs && (long)highId < _totalRecs
-	   && highId >= lowId, "Invalid record parameters");
+   && highId >= lowId, "Invalid record parameters");
 
   TDataRequest *req = new TDataRequest;
   DOASSERT(req, "Out of memory");
@@ -493,7 +512,10 @@ TData::TDHandle TDataAscii::InitGetRecs(RecId lowId, RecId highId,
 Boolean TDataAscii::GetRecs(TDHandle req, void *buf, int bufSize,
                             RecId &startRid, int &numRecs, int &dataSize)
 {
-  DOASSERT(req, "Invalid request handle");
+  if (!req) {
+    return false;
+  }
+  //DOASSERT(req, "Invalid request handle");
 
 #if DEBUGLVL >= 3
   printf("TDataAscii::GetRecs: handle %d, buf = 0x%p\n", req->iohandle, buf);
@@ -528,7 +550,10 @@ Boolean TDataAscii::GetRecs(TDHandle req, void *buf, int bufSize,
 
 void TDataAscii::DoneGetRecs(TDHandle req)
 {
-  DOASSERT(req, "Invalid request handle");
+  if (!req) {
+     return;
+  }
+  //DOASSERT(req, "Invalid request handle");
 
 #if DEBUGLVL >= 3
   printf("TDataAscii::DoneGetRecs: handle %d\n", req->iohandle);
@@ -738,8 +763,9 @@ void TDataAscii::BuildIndex()
   printf("Index for %s: %ld total records, %ld new\n", _name,
 	 _totalRecs, _totalRecs - oldTotal);
 #endif
-
-  if (_totalRecs <= 0)
+  
+  /* There can be empty file */
+  if (_totalRecs < 0)
       fprintf(stderr, "No valid records for data stream %s\n"
               "    (check schema/data correspondence)\n", _name);
 

@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.29  1997/05/08 00:14:38  wenger
+#  Removed layout manager GUI.
+#
+#  Revision 1.28.4.1  1997/05/22 03:07:47  ssl
+#  DEVise views can be created from LM.
+#
 #  Revision 1.28  1997/02/14 16:48:10  wenger
 #  Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
 #
@@ -423,18 +429,17 @@ proc DoLoadPixmap {} {
 ############################################################
 
 # Create a new window
-proc DoCreateWindow { message } {
+proc DoCreateWindow { message { createdFromLM 0 } args } {
+
     global dialogListVar
 
     set winTypes [ DEVise get window ]
-	
+    puts " createdFromLM = $createdFromLM  types = $winTypes"
 
     if { [llength $winTypes] == 1 } {
-
-
-	return [ DoActualCreateWindow [lindex $winTypes 0] ]
+	return [ DoActualCreateWindow [lindex $winTypes 0] \
+		$createdFromLM $args ]
     }
-	
 
     set answer [ dialogList .createWin "Create Window"  \
 	    $message "" "" { OK Cancel } $winTypes ]
@@ -447,15 +452,26 @@ proc DoCreateWindow { message } {
 
 ############################################################
 
-proc DoActualCreateWindow { winType } {
+proc DoActualCreateWindow { winType {createdFromLM 1} args } {
     global dialogParamVar windowName
 
-    set paramNames [ DEVise getparam window $winType ]
     set windowName [UniqueName DEViseWn0]
-    set nameParm [lindex $paramNames 0]
-    set nameParm [lreplace $nameParm 1 1 $windowName]
-    set paramNames [lreplace $paramNames 0 0 $nameParm]
-
+    puts "args = $args"
+    if { $createdFromLM } {    
+	set paramNames [list \
+		[list Name $windowName] \
+		[list X [lindex [lindex $args 0] 0] ] \
+		[list Y [lindex [lindex $args 0] 1] ] \
+		[list Width [lindex [lindex $args 0] 2] ] \
+		[list Height [lindex [lindex $args 0] 3] ] ]\
+    } else {
+	set paramNames [ DEVise getparam window $winType ]
+	set nameParm [lindex $paramNames 0]
+	set nameParm [lreplace $nameParm 1 1 $windowName]
+	set paramNames [lreplace $paramNames 0 0 $nameParm]
+    }
+    
+    puts "$paramNames"
     set button [ dialogParam .windowParam "Create Window" \
 	    "Enter window parameters"\
 	    "" 0 { OK Cancel } $paramNames ]

@@ -15,6 +15,19 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.130  1997/05/08 00:14:36  wenger
+#	Removed layout manager GUI.
+#
+#	Revision 1.129.4.3  1997/05/27 18:03:04  wenger
+#	Minor bug fixes and cleanup to Shilpa's layout manager code and associated
+#	code.
+#
+#	Revision 1.129.4.2  1997/05/20 19:49:55  ssl
+#	Minor changes to compile LM code.
+#
+#	Revision 1.129.4.1  1997/05/20 16:11:24  ssl
+#	Added layout manager to DEVise
+#
 #	Revision 1.129  1997/04/30 18:27:21  wenger
 #	Added session text description capability.
 #
@@ -580,7 +593,7 @@ set DEViseShapes \
         {3 {Regular Polygon}} {4 Oval} {5 Vector} {6 HorLine} \
         {7 Segment} {8 HighLow} {9 Polyline} {10 {Image}} \
 	{11 {Polyline File}} {12 {Text Label}} {16 {Fixed Text Label}} \
-	{15 {Tcl/Tk Window}}}
+	{15 {Tcl/Tk Window}} {17 {View}} }
 
 # global variables:
 # restoring: true if restoring session or template
@@ -636,6 +649,20 @@ if { [info exists env(DEVISE_TMP)] } {
     set tmpdir $env(DEVISE_TMP)
 }
 
+#####ENV variables for LM
+set libdirLM "."
+if { [info exists env(LM_LIB)] } {
+    set libdirLM $env(LM_LIB)
+}
+set datdirLM "."
+if { [info exists env(LM_DAT)] } {
+    set datdirLM $env(LM_DAT)
+}
+set tmpdirLM "."
+if { [info exist env(LM_TMP)] } {
+    set tmpdirLM $env(LM_TMP) 
+}
+
 set filterdir $schemadir/query
 
 set hostCfg $libdir/config.tcl
@@ -677,6 +704,8 @@ source $libdir/tdata.tk
 source $libdir/layout.tk
 source $libdir/lens.tcl
 source $libdir/lensgui.tk
+source $libdirLM/DEViseLMComm.tk
+source $libdirLM/DEViseIfc.tk
 
 set mode 0
 DEVise changeMode $mode
@@ -743,6 +772,9 @@ if {0} {
 }
 
 wm title . "DEVise"
+global DEViseApp 
+set DEViseApp [winfo name .]
+#puts "DEVise = $DEViseApp"
 
 bind . q DoExit
 bind . <Control-c> DoExit
@@ -831,14 +863,14 @@ proc displayTable {table} {
          dialog .note "Note" "Please select only one table." "" 0 OK
          return
      }
-	set tdata_schema_pair [OpenAndDefineDataSources 0 $table]
+     set tdata_schema_pair [OpenAndDefineDataSources 0 $table]
      if {$tdata_schema_pair == ""} {
           puts "tdata = NULL"
           return
      }
      set tdata [lindex $tdata_schema_pair 0]
      set schemaname [lindex $tdata_schema_pair 1]
-	set is_dte_type [lindex $tdata_schema_pair 2]
+     set is_dte_type [lindex $tdata_schema_pair 2]
      MacroDefAuto $tdata $schemaname $is_dte_type 
 }
 
@@ -1246,6 +1278,10 @@ menu .mbar.window.menu -tearoff 0
     -command { set tmp [DoCreateWindow "Select window type"]; unset tmp }
 .mbar.window.menu add command -label "Layout" -command { SetWindowLayout "" }
 #.mbar.window.menu add command -label "Layout-Manager" -command { RootLayout }
+#.mbar.window.menu add command -label "LM Cmd test " -command \
+#	{ SendCommandToLM "LM printWindow Display" }
+.mbar.window.menu add command -label "Layout Manager" -command \
+	{ LayoutManager } 
 .mbar.window.menu add command -label "Remove" -command { RemoveWindow "" }
 .mbar.window.menu add command -label "Duplicate" -command DupWindow
 .mbar.window.menu add separator
@@ -1429,6 +1465,68 @@ proc FindDefaultXAttr { attrs } {
     }
 }
 
+#proc DoEditMapping {} {
+#    global curView
+#
+#    if {![CurrentView]} {
+#	 return
+#    }
+#    
+#    if {[WindowVisible .editMapping]}  {
+#	 return
+#    }
+#    
+#    # Get mapping for the view (first one)
+#    set map [lindex [DEVise getViewMappings $curView] 0]
+#    
+#    # See if map is interpreted
+#    set found 0
+#    foreach m [InterpretedGData] {
+#	 if {$m == $map} {
+#	     set found 1
+#	     break
+#	 }
+#    }
+#    if {!$found} {
+#	 dialog .editError "Mapping Not Interpreted" \
+#		 "View has a compiled mapping which cannot be edited." "" 0 OK
+#	 return
+#    }
+#    
+#    EditMapping $map     
+#}
+#
+#
+#proc EditMapping { map } {
+#    global sourceList derivedSourceList
+#
+#    # Get parameters for the mapping
+#    set params [DEVise getInstParam $map]
+#    
+#    if {$params == ""} {
+#	 dialog .editError "No Mapping Parameters" \
+#		 "Mapping has no parameters." "" 0 OK
+#	 return
+#    }
+#    
+#    set tdata [lindex [lindex $params 0] 1]
+#    
+#    set err [catch {set sfname [lindex $sourceList($tdata) 3]}]
+#    if {$err > 0} {
+#	 set sfname [lindex $derivedSourceList($tdata) 3]
+#    }
+#    set schemaname [file tail $sfname]
+#
+#    # set attrs [DEVise getSchema $tdata]
+#    
+#    dialogMapping .editMapping "Edit Mapping" \
+#	     "Edit Mapping" ""   \
+#	     $schemaname \
+#	     $params \
+#	     $map \
+#	     0
+#}
+#
 # Close current session
 proc DoClose {{askUser 1}} {
     global sessionName templateMode datadir sourceList
@@ -1971,3 +2069,14 @@ proc ShowKGraph {} {
     eval $cmd
 }
 
+global layoutManagerUp
+set layoutManagerUp 0
+proc LayoutManager { } {
+    global layoutManagerUp 
+    if { !$layoutManagerUp } {
+	puts "starting LM ......please wait"
+	DEVise startLayoutManager
+	puts "...................................done"
+	set layoutManagerUp 1
+    } 
+}
