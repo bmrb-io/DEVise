@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/07 16:41:48  jussi
+  Updated constructor and added HandleKey, HandlePress and HandlePopup
+  to reflect new interface between View and its derived classes.
+
   Revision 1.4  1996/04/05 20:13:33  wenger
   Fixed error causing pure virtual function to be called
   if a session was closed during a query; fixed an error
@@ -30,6 +34,8 @@
 */
 
 #include "ViewRanges.h"
+
+//#define DEBUG
 
 ViewRanges::ViewRanges(char *name,  ViewWin *parent, VisualFilter &initFilter,
 		       RangeSource *source, Boolean horizontal)

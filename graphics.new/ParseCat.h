@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/11/15 10:06:19  kmurli
+  Changed importFile parameters and ParseCat parameters to take in the file type
+  and data file name so that a whole query can be formed if necessary for calling
+  DQL type. (In case of a query schema)
+
   Revision 1.12  1996/11/03 02:41:38  kmurli
   Modified to include the query schema level. Also modified to include DQL
   processing
@@ -75,7 +80,7 @@ extern char *ParseCat(char *fileType,char *catFile,char *dataFile);
 extern char *ParseDQL(char *name,char *schema,char * schemaFile,\
 					  char *fileType,char *dataFile,char * query);
 
-extern int ParseCatDQL(char *,String &);
+extern int ParseCatDQL(char *,String &,String &);
 extern int ParseDQLCatPhysical(DataSource *,String &);
 extern int ParseDQLCatLogical (DataSource *,String &);
 

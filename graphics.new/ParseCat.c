@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.34  1996/11/15 10:06:18  kmurli
+  Changed importFile parameters and ParseCat parameters to take in the file type
+  and data file name so that a whole query can be formed if necessary for calling
+  DQL type. (In case of a query schema)
+
   Revision 1.33  1996/11/03 02:41:38  kmurli
   Modified to include the query schema level. Also modified to include DQL
   processing
@@ -1252,7 +1257,7 @@ ParseSchema(char *schemaName, char *physSchema, char *logSchema)
  * Read and parse a schema file.
  */
 int
-ParseCatDQL(char *catFile,String &list) 
+ParseCatDQL(char *catFile,String &phySchemaFile,String &list) 
 {
   // Check the first line of catFile - if it is "physical abc",
   // call ParseCatPhysical(DataSourceFile(abc), false) and then
@@ -1287,11 +1292,13 @@ ParseCatDQL(char *catFile,String &list)
 	fclose(fp);
 	if (strcmp(token1, "physical"))
 	{
+	 phySchemaFile = catFile;
       DataSourceFileStream	schemaSource(catFile, StripPath(catFile));
       result = ParseDQLCatPhysical(&schemaSource, list);
     }
     else
     {
+	 phySchemaFile = token2;
       DataSourceFileStream	logSchemaSource(catFile, StripPath(catFile));
       result = ParseDQLCatLogical(&logSchemaSource, list);
     }

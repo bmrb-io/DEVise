@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.46  1996/11/01 19:28:19  kmurli
+#  Added DQL sources to include access to TDataDQL. This is equivalent to
+#  TDataAscii/TDataBinary. The DQL type in the Tcl/Tk corresponds to this
+#  class.
+#
 #  Revision 1.45  1996/10/04 17:24:14  wenger
 #  Moved handling of indices from TDataAscii and TDataBinary to new
 #  FileIndex class.
@@ -39,7 +44,7 @@
 
 include ../../Makefile.common
 
-CFLAGS =  -gstabs $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
+CFLAGS =  -gstabs $(ARCH_FLAGS) -I../../graphics -I../../DTE -I../../graphics.new -I../../tape \
 	-I../../generic -fexternal-templates -Wall -Wno-unused $(OPTFLAG) \
 	-DUNIX
 
@@ -59,7 +64,7 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	Bitmap.c ParseCat.c ItemList.C Group.C GroupDir.C\
 	DispQueryProc.c QueryProc.c QueryProcSimple.c QueryProcFull.c \
 	RecInterp.c TDataAsciiInterp.c TDataBinaryInterp.c TDataMap.c \
-	FileIndex.c TDataDQLInterp.c TDataDQL.c TDataMap.c \
+	FileIndex.c TDataDQLInterp.c TDataMap.c TDataDQL.c \
 	GDataBin.c TDataAscii.c TDataBinary.c GdataStat.C\
 	TDataRec.c TData2DRec.c PageRange.c  RecFile.c UnixRecFile.c \
 	GDataRangeMap.c GData.c TData.c TDataViewX.c ViewScatter.c \

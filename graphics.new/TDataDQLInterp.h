@@ -22,6 +22,8 @@
 #include "TDataDQL.h"
 #include "AttrList.h"
 
+#include "TuplePtr.XPlex.h"
+
 #ifndef ATTRPROJ
 class TDataDQLInterpClassInfo: public ClassInfo {
 public:
@@ -60,8 +62,12 @@ private:
   char * _schemaFile; 
   char * _type;
   TData *_tdata;
-//  int _recSize;
+  int _recSize;
+  int _numFlds;
+  String* _types;
   AttrList _attrs;
+  TuplePtrXPlex _result;
+  int* _sizes;
 };
 #endif
 
@@ -69,7 +75,9 @@ class RecInterp;
 
 class TDataDQLInterp: public TDataDQL {
 public:
-  TDataDQLInterp(AttrList attrs,char *name,char *type,char *query);
+  TDataDQLInterp(AttrList attrs,char *name,char *type,
+	int numFlds, String* types, int recSize, TuplePtrXPlex& result,
+	int* sizes);
   virtual ~TDataDQLInterp();
 
   AttrList *GetAttrList(){ return &_attrList; }

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/11/01 19:28:23  kmurli
+  Added DQL sources to include access to TDataDQL. This is equivalent to
+  TDataAscii/TDataBinary. The DQL type in the Tcl/Tk corresponds to this
+  class.
+
   Revision 1.10  1996/10/07 22:53:59  wenger
   Added more error checking and better error messages in response to
   some of the problems uncovered by CS 737 students.
@@ -120,6 +125,8 @@ TData::TData(char* name, char* type, char* param, int recSize)
     // Check that data segment label matches TData name
 
     if (strcmp(_name, segLabel)) {
+	cout << (void*) segLabel << " " << segLabel[0] << " " << segLabel[1] << endl; 
+	cout << _name << " != " << segLabel << endl;
 	DOASSERT(false, "Data segment does not match tdata");
     }
 

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.67  1996/11/07 00:10:27  jussi
+  Tk main window is not created when monolithic Devise is run
+  in batch mode.
+
   Revision 1.66  1996/08/29 22:22:27  guangshu
   Adde quiet varible to make client quiet.
 
@@ -286,6 +290,8 @@ extern int crsp_extract(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 extern int seq_extract(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
+extern int dql_extract(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[]);
 
 MapInterpClassInfo *TkControlPanel::_interpProto = 0;
 
@@ -380,6 +386,9 @@ void TkControlPanel::StartSession()
 
   /* Create a new tcl command for SEQ data */
   Tcl_CreateCommand(_interp, "seq_extract", seq_extract, 0, 0);
+  
+  /* Create a new tcl command for DQL data */
+  Tcl_CreateCommand(_interp, "dql_extract", dql_extract, 0, 0);
 
   char *controlFile = "control.tk";
   if (Init::BatchFile()) {

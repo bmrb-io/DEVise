@@ -31,17 +31,21 @@
 #include "RecOrder.h"
 #include "DataSource.h"
 #include "FileIndex.h"
+#include "AttrList.h"
+#include "TuplePtr.XPlex.h"
 
 class TDataDQL: public TData, private DispatcherCallback {
 public:
-	TDataDQL(char *name, char *type, char *query) ;
+	TDataDQL(AttrList attrs,char *name,char *type,
+	int numFlds, String* types, int recSize, TuplePtrXPlex& result, 
+	int* sizes);
 
 	virtual ~TDataDQL();
 
 	/**** MetaData about TDataDQL ****/
 
 	// Get list of attributes
-	virtual AttrList *GetAttrList() { return NULL; }
+	virtual AttrList *GetAttrList();
 
 	// Return # of dimensions and the size of each dimension,
 	// or -1 if unknown
@@ -157,6 +161,11 @@ private:
 	int _initLastPos;               // initial last position in file
 
 	int _bytesFetched;              // total # of bytes fetched
+	AttrList _attrList;
+	int _numFlds;
+	String* _types;
+	TuplePtrXPlex _result;
+	int* _sizes;
 };
 
 #endif

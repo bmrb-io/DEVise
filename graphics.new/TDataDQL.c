@@ -12,7 +12,7 @@
   Development Group.
 */
 
-//#define DEBUG
+// #define DEBUG
 #include <assert.h>
 #include <iostream.h>
 #include <stdio.h>
@@ -23,6 +23,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include "AttrList.h"
 
 #include "Parse.h"
 #include "TDataDQL.h"
@@ -36,6 +37,11 @@
 #include "DataSeg.h"
 #include "QueryProc.h"
 
+#include "types.h"
+#include "exception.h"
+#include "Engine.h"
+#include "TuplePtr.XPlex.h"
+
 #ifdef ATTRPROJ
 #   include "ApInit.h"
 #else
@@ -45,15 +51,32 @@
 
 # define  _STREAM_COMPAT
 
-TDataDQL::TDataDQL(char *name, char *type, char *query)
-: TData(name, type, query, 8)
+TDataDQL::TDataDQL(
+	AttrList attrs,char *name, char *type, 
+	int numFlds, String* types, int recSize, TuplePtrXPlex& result,
+	int* sizes) : 
+	TData(name, type, strdup("query"), 0), // query <- name
+	_attrList(attrs),
+	_numFlds(numFlds),
+	_types(types),
+	_result(result),
+	_sizes(sizes)
 {
   
-  //Do Nothing ..
-  _totalRecs = 2000;
-  // Computer the record size.. 
-  TData::_recSize = 8;
+#ifdef DEBUG
+    printf("TDataDQL::TDataDQL(name = %s, type = %s, recSize = %d) called\n", 
+	name, type, recSize);
+    cout << "_attrList = ";
+    _attrList.Print();
+#endif
 
+	_totalRecs = _result.length();
+
+	TData::_recSize = recSize;
+}
+
+AttrList* TDataDQL::GetAttrList(){
+  return &_attrList;
 }
 
 TDataDQL::~TDataDQL()
@@ -84,7 +107,7 @@ Boolean TDataDQL::HeadID(RecId &recId)
 Boolean TDataDQL::LastID(RecId &recId)
 {
   // Find the last record 
-  recId = 1999;
+  recId = _totalRecs - 1;
   return (_totalRecs > 0);
 }
 
@@ -97,16 +120,16 @@ void TDataDQL::InitGetRecs(RecId lowId, RecId highId,RecordOrder order)
   _highId = highId;
   _nextId = lowId;
   _endId = highId;
+
+#ifdef DEBUG
+  cout << "TDataDQL::InitGetRecs(" << lowId << ", " << highId << ")\n";
+#endif
 }
 
 Boolean TDataDQL::GetRecs(void *buf, int bufSize, 
 			    RecId &startRid,int &numRecs, int &dataSize,
 			    void **recPtrs)
 {
-#ifdef DEBUG
-  printf("TDataDQL::GetRecs buf = 0x%p\n", buf);
-#endif
-
   numRecs = bufSize / _recSize;
   DOASSERT(numRecs, "Not enough record buffer space");
 
@@ -124,6 +147,17 @@ Boolean TDataDQL::GetRecs(void *buf, int bufSize,
   _nextId += numRecs;
   
   _bytesFetched += dataSize;
+
+#ifdef DEBUG
+  printf("TDataDQL::GetRecs buf = ");
+  cout << " _recSize = " <<  _recSize << endl;
+  for(int i = 0; i < _recSize; i++){
+	printf("%x, ", *(((char*)buf) + i));
+	// cout << hex << (short) *(((char*)buf) + i) << ", ";
+  }
+  cout << endl;
+#endif
+
   
   return true;
 }
@@ -178,24 +212,18 @@ void TDataDQL::BuildIndex()
 {
 
  // Find the last record, total Recs,...
- _totalRecs = 2000;
+ // _totalRecs = 2000;
 
 }
 
-void TDataDQL::ReadRec(RecId id, int numRecs, void *buf)
-{
- // Read the record..
- // And output it...
-	
- for(int i = id  ; i < numRecs+id; i++){
-	
-	//printf(" DQL:Writing Record %d = %d,10\n",i,i);
-	memcpy(buf,&i,sizeof(int));
- 	buf += sizeof(int);
-	int t = 10;
- 	memcpy(buf,&t,sizeof(int));
-	buf += sizeof(int);
- }
+void TDataDQL::ReadRec(RecId id, int numRecs, void *buf){
+
+	for(long unsigned int i = id  ; i < numRecs + id; i++){
+		for(int j = 0; j < _numFlds; j++){
+			marshal(_result[i][j], (char*) buf, _types[j]);
+			buf += _sizes[j];
+		}
+	}
 }
 
 void TDataDQL::WriteRecs(RecId startRid, int numRecs, void *buf)

@@ -15,6 +15,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
+#include "DataSeg.h"
 #include <String.h>
 #include "TDataDQLInterp.h"
 #include "AttrList.h"
@@ -25,11 +26,17 @@
 #include "Util.h"
 #include "DevError.h"
 #include "ParseCat.h"
+#include "DevError.h"
 #ifndef ATTRPROJ
 #  include "StringStorage.h"
 #endif
 
-//#define DEBUG
+#include "types.h"
+#include "exception.h"
+#include "Engine.h"
+#include "TuplePtr.XPlex.h"
+
+// #define DEBUG
 
 #ifndef ATTRPROJ
 
@@ -41,40 +48,93 @@ TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(
 /* Note that this only saves a pointer to the attrList; it doesn't copy it. */
 
   _className = strdup(className); 
-  _schemaFile = strdup(schemaFile);
+
+  String phySchemaFile;
 
   if (strcmp(fileType,"DQL")){
 	
 	// Extract the attributes from the schema..
 	String list = "";
 
-	if (ParseCatDQL(schemaFile,list) == false)
+	if (ParseCatDQL(schemaFile,phySchemaFile,list) == false)
 		return;
 
 	String tmp1 = "select "+ list + " from \"DeviseTable ";
-	tmp1 = tmp1 + schemaFile + " " + dataFile + "\" where ";
+	tmp1 = tmp1 + phySchemaFile + " " + dataFile + "\" where ";
 	tmp1 = tmp1 + query + ";";
 
 	_query = strdup(tmp1.chars());
-
+	_schemaFile = (char *)phySchemaFile.chars();
   }
-  else
+  else{
 	_query = strdup(query);
- 
-  printf(" DQL::Query = %s \n",_query);
+  	_schemaFile = strdup(schemaFile);
+  }
+  #ifdef DEBUG
+	  printf(" Query = %s \n",_query);
+  #endif
 
-  _tdata = NULL ;
+
+     Engine engine(_query);
+     engine.optimize();
+	CATCH(
+		cout << "DTE error coused by query: \n";
+		cout << "   " << _query << endl;
+		currExcept->display(); 
+		currExcept = NULL; 
+		cout << endl;
+		exit(0);
+	)
+     _numFlds = engine.getNumFlds();
+	String* attrs = engine.getAttributeNames();
+     _types = engine.getTypeIDs();
+     Tuple* tup;
+
+     while((tup = engine.getNext())){
+          _result.add_high(tup);
+     }
+
+#ifdef DEBUG
+     for(int j = _result.low(); j < _result.fence(); j++){
+          for(int i = 0; i < _numFlds; i++){
+               displayAs(cout, _result[j][i], _types[i]);
+               cout << '\t';
+          }
+          cout << endl;
+     }
+#endif
+
+	int offset = 0;
+	_sizes = new int[_numFlds]; 
+	for(int i = 0; i < _numFlds; i++){
+		String res[20];
+		int numSplit = split(attrs[i],res,20,String("."));
+				
+		char* atname = strdup(res[numSplit -1].chars());
+		int deviseSize = packSize(_result[0][i], _types[i]);
+		_sizes[i] = deviseSize;
+		AttrType deviseType = getDeviseType(_types[i]);
+		_attrs.InsertAttr(i, atname, offset, deviseSize, 
+			deviseType, false, 0, false, false, false, 0, false, 0); 
+		offset += deviseSize;
+	}
+
+	_recSize = offset;
+
+  _tdata = NULL;
   _type = NULL;
   _name = NULL;
- _attrs.InsertAttr(0,"ID1",0,sizeof(int),IntAttr,false,0,false,true,
- false,0,false,0);
- _attrs.InsertAttr(1,"ID2",4,sizeof(int),IntAttr,false,0,false,false,
- false,0,false,0);
 }
 
 TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(char * className, char *schemaFile, AttrList attrs,char * name,char * type,char *query, 
 TData *tdata): _attrs(attrs)
 {
+
+#ifdef DEBUG
+  printf(" Calling TData class -- ClassName = %s,schemaFile = %s,Name = %s,
+	type = %s,query = %s \n\n",className,schemaFile,name,type,query);
+#endif
+
   _className = strdup(className);
   _schemaFile = strdup(schemaFile);
   _name = strdup(name);
@@ -118,8 +178,7 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
   if (argc != 2 && argc != 3)
     return (ClassInfo *)NULL;
 
-#if 1
-  char *name, *type, *query;
+  char *name = NULL, *type = NULL, *query = NULL;
 
   if (argc == 2) {
     name = CopyString(argv[1]);
@@ -130,10 +189,24 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
     type = CopyString("DQL");
 	// 2 will give the actual type... e.g. UNIXFILE..
   }
+	
+	type = strdup("DQL");
+	name = strdup(argv[0]);
+
+#ifdef DEBUG
+	cout << "TDataDQInterpClassInfo::CreateWithParams: \n";
+	cout << "  _query: " << _query << endl;
+	cout << "  name: " << name << endl;
+	cout << "  type: " << type << endl;
 #endif
-  TDataDQLInterp *tdata = new TDataDQLInterp(_attrs,name,type,_query);
-                                                 
-  return new TDataDQLInterpClassInfo(_className,_schemaFile,_attrs,name,type,_query,tdata);
+  DataSeg::Set(name, _query, 0, 0);
+
+  TDataDQLInterp *tdata = new TDataDQLInterp(
+	_attrs, name, type, _numFlds, _types, _recSize, _result, _sizes);
+          
+
+  return new TDataDQLInterpClassInfo(
+	_className,_schemaFile,_attrs, name, type, _query, tdata);
 }
 
 char *TDataDQLInterpClassInfo::InstanceName()
@@ -157,11 +230,13 @@ void TDataDQLInterpClassInfo::CreateParams(int &argc, char **&argv)
 }
 #endif
 
-TDataDQLInterp::TDataDQLInterp(AttrList attrs,char *name, char *type,char *query): TDataDQL(name, type, query ),_attrList(attrs)
+TDataDQLInterp::TDataDQLInterp(
+	AttrList attrs,char *name, char *type, 
+	int numFlds, String* types, int recSize, TuplePtrXPlex& result, 
+	int* sizes) : 
+	TDataDQL(attrs, name, type, numFlds, types, recSize, result, sizes),
+	_attrList(attrs)
 {
-#ifdef DEBUG
-  printf("TDataDQLInterp %s, recSize %d\n", name, recSize);
-#endif
   
  // Need to form a attribute list and pass it back..
 

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.43  1996/10/08 21:49:09  wenger
+  ClassDir now checks for duplicate instance names; fixed bug 047
+  (problem with FileIndex class); fixed various other bugs.
+
   Revision 1.42  1996/10/07 22:53:59  wenger
   Added more error checking and better error messages in response to
   some of the problems uncovered by CS 737 students.
@@ -348,6 +352,9 @@ Boolean TDataAscii::LastID(RecId &recId)
 
 void TDataAscii::InitGetRecs(RecId lowId, RecId highId,RecordOrder order)
 {
+  cout << " RecID lowID  = " << lowId << " highId " << highId << " order = "
+    << order << endl;
+
   DOASSERT((long)lowId < _totalRecs && (long)highId < _totalRecs
 	   && highId >= lowId, "Invalid record parameters");
 
