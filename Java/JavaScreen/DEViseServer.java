@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.46  2001/01/30 03:12:43  xuk
+// Changes for collaboration JS.
+//
 // Revision 1.45  2001/01/08 20:31:53  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -460,7 +463,7 @@ public class DEViseServer implements Runnable
 	    
 			    serverDatas.removeAllElements();	
 			    processServerCmd(serverDatas);
-
+			    
 			    client.sendCmd(serverCmds);
 			    client.sendData(serverDatas);
 			    serverDatas.removeAllElements();
