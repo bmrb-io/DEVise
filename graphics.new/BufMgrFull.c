@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/12/03 20:38:50  jussi
+  Revised completely to support concurrent requests and better
+  handling of processed record ranges. Collapsed several interfaces
+  into one Init/Get/Done interface.
+
   Revision 1.11  1996/11/23 21:21:39  jussi
   Made code use shared memory in MemMgr. Simplified some routines.
 
@@ -583,6 +588,12 @@ BufMgr::BMHandle BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
 
 BufMgr::BMHandle BufMgrFull::SelectReady()
 {
+#ifndef CONCURRENT_IO
+    // For now, return first request on the list. Later enable
+    // code below for concurrent I/O.
+    return _reqhead.next;
+#endif
+
     /*
        Make one loop through list of requests to see if any one
        of them is ready to deliver data. Start from request that
