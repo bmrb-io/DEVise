@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/25  01:20:07  jussi
+  This code now uses Transform matrix operations to convert user/world
+  coordinates to screen pixel coordinates. This is to avoid any future
+  inconsistencies in how the different code locations compute the
+  conversion. xPerPixel and yPerPixel are now obsolete coefficients.
+
   Revision 1.3  1995/11/24 21:25:51  jussi
   Added copyright notice and cleaned up code. Fixed inconsistency
   in computing exact pixel values in overlap elimination vs. pixel
@@ -84,26 +90,11 @@ void GDataBin::Init(TDataMap *mapping, VisualFilter *filter,
   _dispConnector = dispConnector;
   _cMap = cMap;
 
-#ifdef CALCULATE_DIRECTLY
-  Coord xlow, ylow, xhigh, yhigh;
-  _transform = transform;
-  _transform->Transform(filter->xLow, filter->yLow, xlow, ylow);
-  _transform->Transform(filter->xHigh, filter->yHigh, xhigh, yhigh);
-  _xPerPixel = (filter->xHigh - filter->xLow) / fabs(xhigh - xlow);
-  _yPerPixel = (filter->yHigh - filter->yLow) / fabs(yhigh - ylow);
-  _xLow = filter->xLow;
-  _yLow = filter->yLow;
-  _maxYPixels = ROUND(int, fabs(yhigh - ylow));
-#ifdef DEBUG
-  printf("GDataBin: x/y per pixel: %.2f, %.2f\n", _xPerPixel, _yPerPixel);
-#endif
-#else
   Coord ylow, yhigh;
   _transform = transform;
   _transform->TransformY(filter->xLow, filter->yLow, ylow);
   _transform->TransformY(filter->xHigh, filter->yHigh, yhigh);
   _maxYPixels = ROUND(int, fabs(yhigh - ylow));
-#endif
 
 #ifdef DEBUG
   printf("GDataBin: _maxYPixels: %d\n", _maxYPixels);
@@ -157,15 +148,10 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
     // compute X pixel value for this symbol and see if it differs
     // from X pixel value for current bin
 
-#ifdef CALCULATE_DIRECTLY
-    int thisPixelX = ROUND(int, (sym->x - _xLow) / _xPerPixel);
-    int thisPixelY = ROUND(int, (sym->y - _yLow) / _yPerPixel);
-#else
     Coord x, y;
     _transform->Transform(sym->x, sym->y, x, y);
     int thisPixelX = ROUND(int, x);
     int thisPixelY = ROUND(int, y);
-#endif
 
     if (_needX) {
       _pixelX = thisPixelX;

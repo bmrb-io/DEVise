@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/25  01:20:09  jussi
+  This code now uses Transform matrix operations to convert user/world
+  coordinates to screen pixel coordinates. This is to avoid any future
+  inconsistencies in how the different code locations compute the
+  conversion. xPerPixel and yPerPixel are now obsolete coefficients.
+ 
   Revision 1.3  1995/11/24 21:33:54  jussi
   Added copyright notice and cleaned up the code. Made _pixelX an
   int instead of Coord.
@@ -33,8 +39,6 @@
 #include "VisualArg.h"
 #include "Transform.h"
 #include "RecId.h"
-
-//#define CALCULATE_DIRECTLY
 
 class QueryCallback;
 class TData;
@@ -104,11 +108,6 @@ private:
   int _pixelX;	/* get the X value for the bin */
   GDataBinCallback *_callBack;
   TDataMap *_mapping;
-
-#ifdef CALCULATE_DIRECTLY
-  Coord _xLow, _yLow;
-  Coord _xPerPixel, _yPerPixel;
-#endif
 
   /* statistics */
   int _numSyms;			/* # of symbols encountered */
