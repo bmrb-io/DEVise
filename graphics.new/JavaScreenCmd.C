@@ -20,17 +20,26 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/05/02 09:00:44  taodb
+  Added support for JAVA Screen and command logging
+
   Revision 1.1  1998/04/25 05:45:23  taodb
   Initial Revision
 
  */
 #include <sys/types.h>
 #include <sys/stat.h>
+#if !defined(SGI) && !defined(LINUX)
+#include <sys/varargs.h>
+#else
+#include <stdarg.h>
+#endif
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string>
 #include <vector>
+
 #include "JavaScreenCmd.h"
 #include "DeviseServer.h"
 #include "CmdContainer.h"
@@ -150,7 +159,7 @@ JavaScreenCmd::MouseAction_RubberBand()
 {
 	if (_argc != 5)
 	{
-		errmsg = "{Usage: MouseAction_DoubleClick <view name>}"
+		errmsg = "{Usage: MouseAction_RubberBand <view name>}"
 				 " <x1> <y1> <x2> <y2>";
 		_status = ERROR;
 		return;

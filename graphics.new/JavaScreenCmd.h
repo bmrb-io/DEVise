@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/05/02 09:00:45  taodb
+  Added support for JAVA Screen and command logging
+
   Revision 1.1  1998/04/25 05:45:34  taodb
   Initial Revision
 
@@ -27,11 +30,6 @@
 #ifndef _JAVA_SCREEN_CMD
 #define _JAVA_SCREEN_CMD
 #include <string>
-#if !defined(SGI) && !defined(LINUX)
-#include <sys/varargs.h>
-#else
-#include <stdarg.h>
-#endif
 
 typedef double TDataVal;
 typedef string GDataVal;
