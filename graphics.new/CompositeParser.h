@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/03/26 20:22:08  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 22:14:37  jussi
   Added CVS header.
 */
@@ -42,7 +45,7 @@ struct CompositeEntry {
   UserComposite *userComposite;
 };
 
-const int MAX_COMPOSITE_ENTRIES = 20;
+const int MAX_COMPOSITE_ENTRIES = 100;
 
 class CompositeParser {
 public:
