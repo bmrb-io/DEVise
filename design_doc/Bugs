@@ -2225,6 +2225,8 @@ Num Date        Status  Description
 568 03/06/00	CD	Load Misc/COD1.ds in the JavaScreen -- the devised
 			crashes. (rkw)
 
+569 03/08/00	OPEN	Group/ungroup of views causes crash. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
