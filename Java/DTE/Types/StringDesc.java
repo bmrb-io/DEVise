@@ -14,7 +14,7 @@ public class IntDesc implements TypeDesc {
 	throws IllegalArgumentException
     {
         if ( arg.getString( ).equals(name) )
-	    throw new IllegalArgumentException("give me an int!\n"); 
+	    throw new IllegalArgumentException("give me a string!\n"); 
 
         if ( opStr.equals("==") ) 
             return new StringEqualOp( );
@@ -36,7 +36,7 @@ public class IntDesc implements TypeDesc {
             return new IntLeqOp( );
 
 */
-	throw new IllegalArgumentException("give me an int!\n"); 
+	throw new IllegalArgumentException("give me a string!\n"); 
     }
 }
 
