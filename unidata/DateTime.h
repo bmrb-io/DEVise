@@ -156,6 +156,7 @@ public:
 		time = etf.time;
 		nanosec = etf.nanosec;
 	}
+	~EncodedDTF(){}
 	operator ==(const EncodedDTF& x) const {
 		return date == x.date && time == x.time && nanosec == x.nanosec;
 	}
