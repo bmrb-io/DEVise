@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/02 21:31:14  jussi
+  Cleaned up the code further.
+
   Revision 1.3  1995/11/24 21:31:05  jussi
   Added copyright notice and cleaned up the code. Added debugging
   statements.
@@ -78,6 +81,8 @@ Boolean WindowRep::HandlePopUp(int x, int y, int button, char **&msgs,
     return callBack->HandlePopUp(this, x, y, button, msgs, numMsgs);
   }
   DoneIterator(index);
+
+  return false;
 }
 
 /***************************************************************

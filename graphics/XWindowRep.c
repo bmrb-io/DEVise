@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1995/12/06 21:24:09  jussi
+  Minor bug fixes in computing exact pixel values (removed some one-off
+  errors).
+
   Revision 1.8  1995/12/05 22:02:01  jussi
   DoPopup now uses AbsoluteOrigin to compute the absolute pixel
   position of a popup window rather than duplicate the code.
@@ -226,7 +230,7 @@ virtual void XWindowRep::PopClip()
 void XWindowRep::WritePostscript(Boolean encapsulated, char *filename)
 {
   char cmd[256];
-  sprintf(cmd, "xwd -frame -id %d | xwdtopnm | pnmtops -rle > %s",
+  sprintf(cmd, "xwd -frame -id %ld | xwdtopnm | pnmtops -rle > %s",
 	  _win, filename);
 
 #ifdef DEBUG
@@ -625,10 +629,15 @@ void XWindowRep::FillPixelPoly(Point *points, int n)
 {
 #ifdef DEBUG
   printf("XwindowRep::FillPixelPoly: %d points\n",n);
-  for(int j = 0; j < n; j++) {
+
+#if MAXPIXELDUMP > 0
+  for(int j = 0; j < (n < MAXPIXELDUMP ? MAXPIXELDUMP : n); j++) {
+    if ((j + 1) % 10 == 0)
+      printf("\n");
     printf("(%.2f,%.2f)", points[j].x, points[j].y);
-  };
+  }
   printf("\n");
+#endif
 #endif
 
   if (n <= 0)
@@ -655,6 +664,11 @@ void XWindowRep::FillPixelPoly(Point *points, int n)
 virtual void XWindowRep::Arc(Coord x, Coord y, Coord w, Coord h,
 			     Coord startAngle, Coord endAngle)
 {
+#ifdef DEBUG
+  printf("XWindowRep::Arc %.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n",
+	 x, y, w, h, startAngle, endAngle);
+#endif
+  
   Coord tx, ty, tempX, tempY;
   WindowRep::Transform(x - w / 2, y + h / 2, tx, ty);
   WindowRep::Transform(x + w / 2, y - h / 2, tempX, tempY);
@@ -970,7 +984,7 @@ void XWindowRep::AbsoluteText(char *text, Coord x, Coord y,
     return;
   }
   
-  int startX, startY;
+  int startX = 0, startY = 0;
   int widthDiff = winWidth - textWidth;
   int halfWidthDiff = widthDiff / 2;
   int heightDiff = winHeight - textHeight;
@@ -1097,7 +1111,7 @@ void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
   CopyBitmap(textWidth, textHeight, dstWidth, dstHeight);
   
   /* draw the text according to alignment */
-  int startX, startY;
+  int startX = 0, startY = 0;
   int widthDiff = winWidth - dstWidth;
   int halfWidthDiff = widthDiff / 2;
   int heightDiff = winHeight - dstHeight;
