@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.34  1996/01/27 00:45:10  jussi
+#	User can now select background color of a new window.
+#
 #	Revision 1.33  1996/01/23 20:48:48  jussi
 #	Added MacroImport which, temporarily, uses almost identical
 #	duplicates of MacroDefAuto and MacroDefAutoActual. When the
@@ -1229,6 +1232,10 @@ proc OpenNewDataSource {} {
 
     # make sure data is cached on disk
     set sourcedef [OpenDataSource $sname]
+    if {$sourcedef == ""} {
+	return ""
+    }
+
     set sname [lindex $sourcedef 0]
     set source [lindex $sourcedef 1]
     set schema [lindex $sourceList($sname) 2]
@@ -2170,12 +2177,12 @@ proc MacroDefAutoNew {tdata} {
     frame .auto.winnamesel -relief groove -borderwidth 2
     frame .auto.xsel -relief groove -borderwidth 2
     pack .auto.winnamesel .auto.xsel -in .auto.top -side left \
-	    -ipady 3m -padx 3m -fill x -expand 1
+	    -ipady 3m -padx 1m -fill x -expand 1
 
     frame .auto.viewsel -relief groove -borderwidth 2
     frame .auto.layoutsel -relief groove -borderwidth 2
     pack .auto.viewsel .auto.layoutsel -in .auto.mid \
-	    -side left -ipady 3m -padx 3m -fill x -expand 1
+	    -side left -ipady 3m -padx 1m -fill x -expand 1
 
     frame .auto.colorsel -relief groove -borderwidth 2
     frame .auto.titlesel -relief groove -borderwidth 2
@@ -2183,26 +2190,26 @@ proc MacroDefAutoNew {tdata} {
     frame .auto.xaxissel -relief groove -borderwidth 2
     frame .auto.yaxissel -relief groove -borderwidth 2
     pack  .auto.colorsel .auto.titlesel .auto.linksel .auto.xaxissel \
-	    .auto.yaxissel -in .auto.bot -side left -ipady 3m -padx 3m \
+	    .auto.yaxissel -in .auto.bot -side left -ipady 3m -padx 1m \
 	    -fill x -expand 1
 
     label .auto.winnamesel.label -text "Window Name:"
     entry .auto.winnamesel.entry -relief sunken -textvariable winnamesel \
 	    -width 30
-    pack .auto.winnamesel.label .auto.winnamesel.entry -side left -padx 3m
+    pack .auto.winnamesel.label .auto.winnamesel.entry -side left -padx 1m
     set winnamesel "$tdata (Auto)"
 
     label .auto.xsel.label -text "Select X:"
     menubutton .auto.xsel.attr -relief raised \
 	    -textvariable x -menu .auto.xsel.attr.g$topgrp -width 15
-    pack .auto.xsel.label .auto.xsel.attr -side left -padx 3m
+    pack .auto.xsel.label .auto.xsel.attr -side left -padx 1m
     setupAttrRadioMenu .auto.xsel.attr.g$topgrp x "" $schemaname \
 	    $topgrp $topgrp
 
     label .auto.viewsel.label -text "View Type:"
     menubutton .auto.viewsel.view -relief raised \
 	    -textvariable viewselname -menu .auto.viewsel.view.menu -width 15
-    pack .auto.viewsel.label .auto.viewsel.view -side left -padx 3m
+    pack .auto.viewsel.label .auto.viewsel.view -side left -padx 1m
 
     menu .auto.viewsel.view.menu -tearoff 0
     .auto.viewsel.view.menu add radiobutton -label "Scatter Plot" \
@@ -2224,7 +2231,7 @@ proc MacroDefAutoNew {tdata} {
     menubutton .auto.layoutsel.layout -relief raised \
 	    -textvariable layoutsel -menu .auto.layoutsel.layout.menu \
 	    -width 15
-    pack .auto.layoutsel.label .auto.layoutsel.layout -side left -padx 3m
+    pack .auto.layoutsel.label .auto.layoutsel.layout -side left -padx 1m
 
     menu .auto.layoutsel.layout.menu -tearoff 0
     .auto.layoutsel.layout.menu add radiobutton -label Tiled \
@@ -2238,8 +2245,8 @@ proc MacroDefAutoNew {tdata} {
     label .auto.colorsel.label -text "Background:"
     menubutton .auto.colorsel.color -relief raised \
 	    -textvariable bgcolor -menu .auto.colorsel.color.menu \
-	    -width 10
-    pack .auto.colorsel.label .auto.colorsel.color -side left -padx 3m
+	    -width 15
+    pack .auto.colorsel.label .auto.colorsel.color -side left -padx 1m
 
     menu .auto.colorsel.color.menu -tearoff 0
     foreach color $DEViseColors {
@@ -2247,7 +2254,7 @@ proc MacroDefAutoNew {tdata} {
 	.auto.colorsel.color.menu add radiobutton -label $name \
 		-variable bgcolor -value $name
     }
-    set bgcolor white
+    set bgcolor AntiqueWhite
 
     checkbutton .auto.titlesel.title -text Title -variable titlesel
     pack .auto.titlesel.title -side left -padx 3m
