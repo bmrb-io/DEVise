@@ -1,0 +1,53 @@
+Ok, the beginning (0-11) is the atomic coordinates, though I could
+probably take some of that out.
+
+0   _Atom_ID               
+1   _Mol_system_component_name        
+2   _Residue_seq_code                 
+3   _Residue_label
+4   _Atom_name    
+5   _Atom_type    
+6   _Atom_coord_x 
+7   _Atom_coord_y 
+8   _Atom_coord_z
+
+9   x_vec
+10  y_vec
+11  z_vec
+ 
+12  Percent 1H assignments per residue
+13  Percent 13C assignments per residue
+14  Percent 15N assignments per residue
+15  HA delta chemical shift
+16  CA delta chemical shift
+17  C  delta chemical shift
+18  CB delta chemical shift
+19  Consensus Chemical Shift Index Plot
+ 
+20  3JHNHA coupling constants
+21  coupling constant error
+
+22  H-exchange rates
+23  H-exchange protection factors
+ 
+24  S2 values
+25   S2 error
+26  Tau e value
+27   Tau  e error
+28  Rex value
+29   Rex value error
+ 
+30  Heteronuclear NOE 750
+31  T2 relaxation values (600)
+32   T2 relaxation values (600) error
+33  T2 relaxation values (750)
+34   T2 relaxation values (750) error
+35  T1 relaxation values (750)
+36   T1 relaxation values (750) error
+
+37  Distance constraints per residue
+ 
+ 
+ 
+ 
+
