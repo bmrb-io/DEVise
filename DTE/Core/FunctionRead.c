@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/04/10 21:50:23  donjerko
+  Made integers inlined, added type cast operator.
+
   Revision 1.4  1997/04/04 23:10:22  donjerko
   Changed the getNext interface:
   	from: Tuple* getNext()
@@ -213,7 +216,7 @@ Tuple * FunctionRead::neg_value_offset()
 	// For the initial case;;;
 	if (!moreTup){
 		int count = 0;
-		List<Tuple *> *dupList;
+		List<Tuple *> *dupList = NULL;
 
 		nextTup = new Tuple[inputNumFlds];
 		moreTup = iterator->getNext(nextTup);

@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1997/04/09 18:24:07  wenger
+#  Fixed various makefiles (removed extra -gstabs flags, etc.);
+#  setup script now links client.tcl into all cslib directories;
+#  added 24 point font to available sizes in font selection GUI.
+#
 #  Revision 1.10  1997/04/08 01:45:55  donjerko
 #  Defined DEV_DEBUG
 #
@@ -79,9 +84,13 @@ RANLIB = ranlib
 
 # Set up for optimize or debug compiling.
 ifeq ($(DEV_DEBUG),)
-	OPTFLAG = -O
+	OPTFLAG =
 else
+    ifeq ($(DEV_DEBUG),-1)
+	OPTFLAG = -O
+    else
 	OPTFLAG = -gstabs
+    endif
 endif
 
 # Set up for profiling.

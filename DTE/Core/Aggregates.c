@@ -157,7 +157,7 @@ void Aggregates::typify(Site* inputIterator){
 			// Do a quick loop of the inner checking everything..
 			int j;
 			for(j = 0; j < countFlds ; j++){
-			    int arg1,arg2;	
+			    int arg1 = 0, arg2 = 0;	
 				if (selArgument->toString() == AttribNameList[j]){
 					
 					//	Now that u have set the name..

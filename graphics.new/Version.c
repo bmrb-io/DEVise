@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1997/03/25 17:59:28  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.28  1997/02/26 16:31:49  wenger
   Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
 
@@ -173,7 +176,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.4.2";
+static const char *	version = "1.4.3";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1997";

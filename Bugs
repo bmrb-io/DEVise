@@ -736,6 +736,9 @@ Num Date        Status  Description
 			parser will only be set for the first data source.
 			(rkw)
 
+177 04/21/97	OPEN	Negative color value (at least for data) causes
+			core dump. (rkw)
+
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
