@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.209  1999/12/01 00:09:35  wenger
+  Disabled extra debug logging for tracking down Omer's crash.
+
   Revision 1.208  1999/11/30 22:28:05  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -1009,6 +1012,7 @@ DataSourceFixedBuf *View::_viewTableBuffer = NULL;
 Boolean View::_drawCursors = true;
 Boolean View::_jsCursors = false;
 Boolean View::_showNames = false;
+Boolean View::_drawingEnabled = true;
 
 //******************************************************************************
 // Constructors and Destructors
@@ -2655,6 +2659,13 @@ View::DrawCursors()
   printf("View(%s)::DrawCursors()\n", GetName());
 #endif
 
+  if (!_drawingEnabled) {
+#if defined(DEBUG)
+    printf("View drawing is disabled\n");
+#endif
+    return false;
+  }
+
   if (!Mapped()) {
 #if defined(DEBUG)
     printf("not mapped\n");
@@ -3631,6 +3642,13 @@ void	View::Run(void)
   printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
 #endif
 
+    if (!_drawingEnabled) {
+#if defined(DEBUG)
+      printf("View drawing is disabled\n");
+#endif
+      return;
+    }
+
     _refreshPending = false;
 
     VisualFilter histFilter;
@@ -4480,6 +4498,25 @@ View::ShowMouseLocation(int *mouseX, int *mouseY)
   }
 
   ControlPanel::Instance()->ShowMouseLocation(xBuf, yBuf);
+}
+
+void
+View::EnableDrawing(Boolean enable)
+{
+  if (enable != _drawingEnabled) {
+    if (enable) {
+	  RefreshAll();
+    } else {
+	  int index = InitViewIterator();
+	  while (MoreView(index)) {
+	    View *tmpView = NextView(index);
+		tmpView->AbortQuery();
+	  }
+	  DoneViewIterator(index);
+	  //TEMP -- we might want to clear all views here
+    }
+    _drawingEnabled = enable;
+  }
 }
 
 //******************************************************************************

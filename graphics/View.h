@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.99  1999/11/19 17:17:31  wenger
+  Added View::SetVisualFilterCommand() method to clean up command-related
+  code for filter setting.
+
   Revision 1.98  1999/11/10 18:48:36  wenger
   Changing view dimenion now changes all views in a pile; PileStack makes
   sure all views in pile have the same number of dimensions; fixed 'bad
@@ -842,6 +846,8 @@ class View : public ViewWin
 	  }
     }
 
+	static void EnableDrawing(Boolean enable);
+
 protected:
 	/* called by base class when it has been mapped/unmapped */
 	virtual void SubClassMapped();   /* called just after mapping */
@@ -1038,6 +1044,8 @@ protected:
 		Boolean _keysDisabled;
 
 		Boolean _refreshPending;
+
+		static Boolean _drawingEnabled;
 };
 
 //******************************************************************************

@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.49  1999/11/30 22:28:21  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.48  1999/11/29 21:08:49  wenger
   Fixed bug 535 and partially fixed bug 532 (problems with view order in
   piles); removed (unused) replaceView command and related ViewWin methods
@@ -402,6 +409,12 @@ DECLARE_CLASS_END
 //Class definition: DeviseCommand_JAVAC_ProtocolVersion
 //
 DECLARE_CLASS_DeviseCommand_(JAVAC_ProtocolVersion)
+DECLARE_CLASS_END
+
+//
+//Class definition: DeviseCommand_JAVAC_ProtocolVersion
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_ShowRecords3D)
 DECLARE_CLASS_END
 
 //-------------------------------------------------------------------------
@@ -1839,6 +1852,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(setOpeningSession)
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(enableDrawing)
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

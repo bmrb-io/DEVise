@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.57  1999/12/06 18:41:02  wenger
+  Simplified and improved command logging (includes fixing bug 537, command
+  logs are now human-readable); added standard header to debug logs.
+
   Revision 1.56  1999/11/30 22:28:19  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -352,6 +356,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(JAVAC_ImageChannel)
 	REGISTER_COMMAND(JAVAC_CursorChanged)
 	REGISTER_COMMAND(JAVAC_ProtocolVersion)
+	REGISTER_COMMAND(JAVAC_ShowRecords3D)
 
 	REGISTER_COMMAND(dteImportFileType)
 	REGISTER_COMMAND(dteListAllIndexes)
@@ -592,6 +597,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(dispatcherRun1)
 	REGISTER_COMMAND(removeViewFromPile)
 	REGISTER_COMMAND(setOpeningSession)
+	REGISTER_COMMAND(enableDrawing)
 }
 
 CmdContainer::~CmdContainer()

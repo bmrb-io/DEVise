@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.90  1999/12/06 18:41:05  wenger
+  Simplified and improved command logging (includes fixing bug 537, command
+  logs are now human-readable); added standard header to debug logs.
+
   Revision 1.89  1999/11/30 23:52:27  wenger
   A view can now be successfully inserted into a window which is in custom
   layout mode (fixes problem Omer had); more error checking in insertWindow
@@ -729,14 +733,17 @@ IMPLEMENT_COMMAND_BEGIN(JAVAC_CursorChanged)
 	return jc.Run();
 IMPLEMENT_COMMAND_END
 
-
 IMPLEMENT_COMMAND_BEGIN(JAVAC_ProtocolVersion)
 	JavaScreenCmd jc(_control,JavaScreenCmd::PROTOCOLVERSION,
 		argc-1, &argv[1]);
 	return jc.Run();
 IMPLEMENT_COMMAND_END
 
-
+IMPLEMENT_COMMAND_BEGIN(JAVAC_ShowRecords3D)
+	JavaScreenCmd jc(_control,JavaScreenCmd::SHOW_RECORDS3D,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
 
 //TEMP -- all commands should check arg count
 //**********************************************************************
@@ -6265,7 +6272,26 @@ IMPLEMENT_COMMAND_BEGIN(setOpeningSession)
         ReturnVal(API_ACK, "done");
         return true;
 	} else {
-		fprintf(stderr, "Wrong # of arguments: %d in removeViewFromPile\n",
+		fprintf(stderr, "Wrong # of arguments: %d in setOpeningSession\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(enableDrawing)
+    // Arguments: <enable (Boolean)>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        Boolean enable = atoi(argv[1]);
+		View::EnableDrawing(enable);
+        ReturnVal(API_ACK, "done");
+        return true;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in enableDrawing\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
