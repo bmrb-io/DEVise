@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/08/04 21:00:41  beyer
+  Reorganized and simplified the dispatcher.  Multiple dispatchers are no
+  longer allowed.  Inserting and removing callbacks uses one list.
+
   Revision 1.20  1996/07/29 15:44:36  wenger
   Corrected compile warnings on HP.
 
@@ -102,6 +106,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <sys/types.h>
 #if defined(SOLARIS) || defined(AIX)
 #include <sys/select.h>
