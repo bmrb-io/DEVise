@@ -114,17 +114,17 @@ main(int argc, char **argv){
 	ControlPanel::RegisterClass(new ActionClassInfo("multiAction",
 		new GenMultiAction()));
 	ControlPanel::RegisterClass(new MultiClassInfo);
-	ControlPanel::RegisterClass(new ViewScatterInfo);
-	ControlPanel::RegisterClass(new HostClassInfo);
-	ControlPanel::RegisterClass(new CycleClassInfo);
 	ControlPanel::RegisterClass(new MappingInfo);
 	ControlPanel::RegisterClass(new HostMappingInfo);
 	ControlPanel::RegisterClass(new CycleOccMappingInfo);
 	ControlPanel::RegisterClass(new CycleEffMappingInfo);
+	ControlPanel::RegisterClass(new VisualLinkClassInfo());
+	ControlPanel::RegisterClass(new ViewScatterInfo);
+	ControlPanel::RegisterClass(new HostClassInfo);
+	ControlPanel::RegisterClass(new CycleClassInfo);
 	ControlPanel::RegisterClass(new CycleSuspendedMappingInfo);
 	ControlPanel::RegisterClass(new CycleWorkingMappingInfo);
 	ControlPanel::RegisterClass(new CycleCpuTimeMappingInfo);
-	ControlPanel::RegisterClass(new VisualLinkClassInfo());
 
 	mapInfo = new MapInfo;
 
