@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.56  1996/01/30 21:07:46  jussi
+#	Added a few colors and added menu option to change background
+#	color of a view. Moved some procedures to views.tcl.
+#
 #	Revision 1.55  1996/01/25 20:27:59  jussi
 #	Improved logic in selecting which .rc file to load.
 #
@@ -245,7 +249,8 @@ set DEViseColors \
 	{38 blue2} {39 blue3} {40 blue4} {41 gold1} {42 gold2}}
 
 set DEViseShapes \
-	{{0 Rect} {1 RectX} {2 Bar} {3 Polygon} {4 Oval} {5 Vector}}
+	{{0 Rect} {1 RectX} {2 Bar} {3 Polygon} {4 Oval} {5 Vector} \
+	{6 Block}}
 
 # global to control.tk: curView: current view selected.
 # lastView: last view selected.
