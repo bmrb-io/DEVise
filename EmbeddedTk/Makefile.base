@@ -9,7 +9,7 @@ CFLAGS = -Wall -Wno-unused $(INCS) $(DEFINES)
 # The line below forces ETkCompDate.c to always be compiled.
 FORCE_DATE = $(CCC) -c $(CFLAGS) ETkCompDate.c
 
-ETK_OBJS = main.o EmbeddedTk.o TkWindowRep.o ETkCommands.o
+ETK_OBJS = main.o EmbeddedTk.o TkWindowRep.o ETkCommands.o NetscapeRemote.o
 
 #
 # To compile the ETk server that supports the Zoo object browser,

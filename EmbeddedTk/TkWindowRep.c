@@ -16,11 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/06/13 18:00:45  wenger
+  Added standard file header.
+
  */
 
 #include "TkWindowRep.h"
 #include "EmbeddedTk.h"
 #include "ETkCommands.h"
+#include "BrowserCommands.h"
 
 #if defined(ZOOQUERY)
 #include "ZooCommands.h"
@@ -365,6 +369,12 @@ TkWindowRep::CreateTkWindowRep(Window parent, char *script,
     Tcl_CreateCommand(interp, "ZooQuery", ZooQueryCmd,
 		      (ClientData) win, 0);
 #endif
+
+    //
+    // Add "Browser_OpenURL" command to the interpreter
+    //
+    Tcl_CreateCommand(interp, "BrowserOpenURL", BrowserOpenURLCmd, 0, 0);
+
     
     // Make sure we receive the destroy event for this window
     unsigned long mask = 0;

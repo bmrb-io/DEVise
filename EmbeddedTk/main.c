@@ -2,6 +2,7 @@
 #include "TkWindowRep.h"
 #include "EmbeddedTk.h"
 #include "ETkCompDate.h"
+#include "BrowserCommands.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -933,6 +934,10 @@ main(int argc, char *argv[])
 	}
 	n++;
     }
+
+    // one-time initialization of browser stuff
+    BrowserInit();
+
 
     // Create a socket
     listenFd = socket(AF_INET, SOCK_STREAM, 0);
