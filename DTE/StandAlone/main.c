@@ -7,7 +7,7 @@
 #include "exception.h"
 #include "Engine.h"
 #include "ApInit.h" /* for DoInit */
-#include "RTree.h"
+#include "RTreeCommon.h"
 
 const int DETAIL = 1;
 
@@ -28,8 +28,9 @@ int main(int argc, char** argv){
 	iTimer.reset();
 	cout << "Query in main is: " << query << endl; 
 
-     int RTreeFile;
+#ifndef NO_RTREE
      initialize_system(VolumeName, RTreeFile, VolumeSize);
+#endif
 
 	Engine engine(query);
 	TRY(engine.optimize(), 0);
@@ -46,16 +47,18 @@ int main(int argc, char** argv){
 		engine.initialize();
 		while((tup = engine.getNext())){
 			for(int i = 0; i < numFlds; i++){
-				//cout << " Tuple typ == " << types[i] <<"\n";
 				displayAs(cout, tup[i], types[i]);
 				cout << '\t';
 			}
 			cout << endl;
 		}
+		engine.finalize();
 	}
 
      // shutdown
+#ifndef NO_RTREE
      shutdown_system(VolumeName, RTreeFile, VolumeSize);
+#endif
 
 	LOG(logFile << "Query completed at ");
 	LOG(iTimer.display(logFile));
