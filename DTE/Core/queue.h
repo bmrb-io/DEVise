@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/24 21:00:53  kmurli
+  Included FunctionRead to support joinprev and joinnext
+
   Revision 1.4  1996/12/21 22:21:50  donjerko
   Added hierarchical namespace.
 
@@ -269,6 +272,18 @@ public:
 			currPos = savePos;
 			return tmp;
 		}
+	}
+	void display(){
+		
+		Cell * curr = head;
+		int i = 0;
+		cout << " The pointer values are -- ";
+		while(curr){
+			printf(" pointer %d = %p ",i,curr->element);
+			i++;
+			curr = curr->next;
+		}
+		cout << endl;
 	}
 };
 

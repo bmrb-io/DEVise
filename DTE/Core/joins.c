@@ -179,34 +179,34 @@ bool Joins::innerFill(){
 	return true;
 }
 
-Site* JoinTable::Plan(List<Site*>*sites,List<BaseSelection*>*selectList,
+Site* JoinTable::Plan(List<Site*>*siteList,List<BaseSelection*>*selectList,
 	List<BaseSelection*>*predicateList)
 {
 	
 	Site * leftSite = 0,*rightSite = 0;
 	if (leftJoin)
-		TRY(leftSite = leftJoin->Plan(sites,selectList,predicateList),NULL);
+		TRY(leftSite = leftJoin->Plan(siteList,selectList,predicateList),NULL);
 	
-	sites->rewind();
-	while(!sites->atEnd()){
-		Site * site = sites->get();
+	siteList->rewind();
+	while(!siteList->atEnd()){
+		Site * site = siteList->get();
 		bool rem = false;
 		if (left && !leftSite){
 			if (site->have(left->getAlias())){
 				leftSite = site;
-				sites->remove();
+				siteList->remove();
 				rem = true;
 			}
 		}
 		if (right && !rightSite){
 			if (site->have(right->getAlias())){
 				rightSite = site;
-				sites->remove();	
+				siteList->remove();	
 				rem = true;
 			}
 		}
 		if (!rem)
-			sites->step();	
+			siteList->step();	
 	}
 	if (!rightSite && !leftSite){ 
 		THROW(new Exception(" Site for merge join couldnt be found "),NULL);

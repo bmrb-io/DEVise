@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/12/24 21:00:53  kmurli
+  Included FunctionRead to support joinprev and joinnext
+
   Revision 1.11  1996/12/21 22:21:50  donjerko
   Added hierarchical namespace.
 
@@ -1114,7 +1117,7 @@ protected:
 public:
 	TableAlias(TableName *t, String* a = NULL,String *func = NULL,
 			int optShiftVal = 0) : table(t), alias(a),function(func),
-		shiftVal(optShiftVal) {}
+		shiftVal(optShiftVal) { }
 	virtual TableName* getTable(){
 		return table;
 	}

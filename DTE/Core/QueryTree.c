@@ -214,22 +214,21 @@ Site* QueryTree::createSite(){
 			Site * check = sites->get();
 			if (check->have(sequencebyTable)){
 				sites->remove();
-				sites->prepend(check);
+				sites->append(check);
 				break;
 			}
 			sites->step();
 		}
 	}	
 	
-	cout << " Near joinList " << endl;
 	if (joinList && !joinList->isEmpty()){
 		List<Site*>* joinGroups = new List<Site *>;
-		if (1){
-		//while(!joinList->atEnd()){
+		while(!joinList->atEnd()){
 			JoinTable * jTable = joinList->get();
 			joinList->step();
 			Site* st;
 			TRY( st = jTable->Plan(sites,selectList,predicateList),0);
+			//sites->append(st);
 			joinGroups->append(st);
 		}
 		sites->addList(joinGroups);
@@ -238,8 +237,10 @@ Site* QueryTree::createSite(){
 	Site * inner = sites->get();
 	sites->step();
 	Site* siteGroup = NULL;
+	
 	while(!sites->atEnd()){
 		Site* outer = sites->get();
+		
 		siteGroup = new SiteGroup(inner, outer);
 		inner = siteGroup;
 		siteGroup->filter(selectList, predicateList);

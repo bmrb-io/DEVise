@@ -41,7 +41,7 @@ class JoinTable{
 			String * function;
 			JoinTable * leftJoin;
 
-			Site* Plan(List<Site *>*sites,List<BaseSelection*>*,
+			Site* Plan(List<Site *>*siteList,List<BaseSelection*>*,
 					List<BaseSelection*>*);
 
 			JoinTable(TableAlias * left,TableAlias * right=NULL 

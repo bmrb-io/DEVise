@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/12/25 19:54:02  kmurli
+  Files to do joinprev,joinnext and function calls.
+
   Revision 1.9  1996/12/24 21:00:54  kmurli
   Included FunctionRead to support joinprev and joinnext
 
@@ -377,11 +380,14 @@ protected:
 public:
 	SiteGroup(Site* s1, Site* s2) : Site(""), site1(s1), site2(s2){
 		sites = new List<Site*>;
+
 		List<Site*>* tmp1 = site1->getList();
 		List<Site*>* tmp2 = site2->getList();
+
 		sites->addList(tmp1);
 		sites->addList(tmp2);
 		sites->rewind();
+
 		assert(!sites->atEnd());
 		name = sites->get()->getName();
 		sites->step();
@@ -408,6 +414,7 @@ public:
 	}
 	virtual bool have(Site* siteGroup){
 		List<Site*>* checkList = siteGroup->getList();
+
 		checkList->rewind();
 		while(!checkList->atEnd()){
 			Site* checkSite = checkList->get();
@@ -416,8 +423,6 @@ public:
 				if(sites->atEnd()){
 					return false;
 				}
-				//cout << " SiteGroup comp -- " << sites->get() << "  checkSite ";
-				//cout << checkSite << endl;
 				if(sites->get() == checkSite){
 					break;
 				}
@@ -425,11 +430,16 @@ public:
 			}
 			checkList->step();
 		}
-		delete checkList;
+		// #########/
+		//delete checkList;
 	     return true;	
 	}
 	virtual List<Site*>* getList(){
-		return sites->duplicate();
+		List<Site *>* tmp = new List<Site *>;
+		tmp->addList(site1->getList());
+		tmp->addList(site2->getList());
+		return tmp;
+		//return sites->duplicate();
 	}
 	virtual void enumerate(){
 		TRY(enumerateList(mySelect, site1->getName(), site1->mySelect, 

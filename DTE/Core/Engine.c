@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/12/25 19:53:58  kmurli
+  Files to do joinprev,joinnext and function calls.
+
   Revision 1.10  1996/12/24 21:00:51  kmurli
   Included FunctionRead to support joinprev and joinnext
 
@@ -94,4 +97,5 @@ void bp(BaseSelection *sel){
 
 	if (sel)
 		sel->display(cout);
+     cout << endl;
 }
