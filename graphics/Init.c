@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.47  1998/06/23 17:51:38  wenger
+  Added client timeout to Devise -- quits if no commands from client
+  within specified period.
+
   Revision 1.46  1998/06/12 19:55:16  wenger
   Attribute of TAttr/set links can now be changed; GUI has menu of available
   attributes; attribute is set when master view is set instead of at link
@@ -830,7 +834,7 @@ void Init::DoInit(int &argc, char **argv)
 	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
 	}
-	_clientTimeout = !(atoi(argv[i+1]) == 0);
+	_clientTimeout = atoi(argv[i+1]);
 	MoveArg(argc,argv,i,2);
       }
 
