@@ -12,6 +12,9 @@ import java.util.*;
 
 public interface Expression {
 	public String toString( );
+
+	/** Print the type information of an expression; used for 
+	    printing the type-checked query. */
 	public String printTypes( );
 
 	public TypeDesc getType( );

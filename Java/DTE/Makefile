@@ -28,7 +28,7 @@ hj:
 	javac CheckType.java -d $(CLASSES)
 
 doc:
-	javadoc $(PACKAGES) -d /u/d/o/donjerko/public/html/Dte/
+	javadoc $(PACKAGES) -d /u/h/o/hongju/public/html/DTE/
 
 opt:
 	javac OptimizerTest.java -d $(CLASSES)

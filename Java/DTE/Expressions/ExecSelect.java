@@ -2,6 +2,7 @@ package Expressions;
 
 import Types.*;
 
+/** ExecSelect is created for evaluating a Selection. */
 public class ExecSelect implements ExecExpr {
      	private int leftRight;
      	private int fieldNo;
