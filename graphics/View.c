@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.46  1996/06/24 19:35:39  jussi
+  Added a win->Flush() call to strategic points so that view
+  updates get propagated to the X server.
+
   Revision 1.45  1996/06/21 19:56:10  jussi
   Default 3D navigation is now radial instead of rectangular.
 
@@ -400,7 +404,7 @@ int View::FindViewId(View *view)
 void View::SubClassMapped()
 {
   _updateTransform = true;
-  _refresh = true;
+  Refresh();
 }
 	
 void View::SubClassUnmapped()
@@ -1418,8 +1422,6 @@ void View::HandleResize(WindowRep *w, int xlow, int ylow,
   _updateTransform = true; /* need to update the transformation */
   
   Dispatcher::InsertMarker(writeFd);
-
-  /* XXX: abort current transaction if any */
 }
 
 void View::UpdateTransform(WindowRep *winRep)
@@ -1470,9 +1472,8 @@ void View::SetLabelParam(Boolean occupyTop, int extent, char *name)
     occupyTop = false;
 
   _updateTransform = true;
-  _refresh = true;
 
-  Dispatcher::InsertMarker(writeFd);
+  Refresh();
 }
 
 void View::XAxisDisplayOnOff(Boolean stat)
@@ -1480,10 +1481,9 @@ void View::XAxisDisplayOnOff(Boolean stat)
   if (stat != xAxis.inUse) {
     xAxis.inUse = stat;
     _updateTransform = true;
-    _refresh = true;
   }
 
-  Dispatcher::InsertMarker(writeFd);
+  Refresh();
 }
 
 void View::YAxisDisplayOnOff(Boolean stat)
@@ -1491,10 +1491,9 @@ void View::YAxisDisplayOnOff(Boolean stat)
   if (stat != yAxis.inUse) {
     yAxis.inUse = stat;
     _updateTransform  = true;
-    _refresh = true;
   }
 
-  Dispatcher::InsertMarker(writeFd);
+  Refresh();
 }
 
 /* Find real window coords */
@@ -1626,6 +1625,15 @@ View::UpdateFilterStat View::UpdateFilterWithScroll()
   return NotScrolled;
 }
 
+void View::AbortAndReexecuteQuery()
+{
+  if (_querySent) {
+    DerivedAbortQuery();
+    ReportQueryDone(0);
+  }
+  Refresh();
+}
+
 void View::Refresh()
 {
   _refresh = true;
@@ -1734,7 +1742,7 @@ void View::Iconify(Boolean iconified)
   if (_querySent && iconified) {
     DerivedAbortQuery();
     ReportQueryDone(0);
-    _refresh = true;
+    Refresh();
   }
 }
 
@@ -1751,11 +1759,10 @@ void View::ModeChange(ControlPanel::Mode mode)
 #endif
     DerivedAbortQuery();
     ReportQueryDone(0);
-    _refresh = true;
     _modeRefresh = true;
   }
 
-  Dispatcher::InsertMarker(writeFd);
+  Refresh();
 }
 
 void View::Highlight(Boolean flag)

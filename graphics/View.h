@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/06/21 19:32:07  jussi
+  Moved all 3D-related code to Map3D.C and Map3D.h.
+
   Revision 1.24  1996/06/15 14:09:46  jussi
   Added yuc\'s 3D methods.
 
@@ -206,7 +209,7 @@ public:
 	static View *FindViewById(int viewId);
 	static int FindViewId(View *view);
 
-	/* iterate through all mappings in the view */
+	/* iterate through all views */
 	static int InitViewIterator() { return _viewList->InitIterator(); }
 	static Boolean MoreView(int index) { return _viewList->More(index); }
 	static View *NextView(int index){ return _viewList->Next(index); }
@@ -246,6 +249,9 @@ public:
 	
 	/* set label parameters */
 	void SetLabelParam(Boolean occupyTop, int extent, char *name = 0);
+
+	/* abort and re-execute query */
+	void AbortAndReexecuteQuery();
 
 	void Refresh();
 
