@@ -17,6 +17,10 @@
 
 // ------------------------------------------------------------------------
 // $Log$
+// Revision 1.11  2001/10/19 20:05:45  xuk
+// Fixed bug 709.
+// Sleep one more ms before starting dispatcher, when it is still running.
+//
 // Revision 1.10  2001/10/19 19:28:55  xuk
 // Added playback indicator.
 //
@@ -130,7 +134,7 @@ public class DEVisePlayback implements Runnable
 	        Thread.sleep(gap);
 	        pretime = cmd.timestamp;		
 		    
-	        if ( cmd.command.startsWith(DEViseCommands.CONNECT) ||
+	        if ( // cmd.command.startsWith(DEViseCommands.CONNECT) ||
 	          cmd.command.startsWith(DEViseCommands.GET_SESSION_LIST) ||
 	          cmd.command.startsWith(DEViseCommands.EXIT) ) {
 
