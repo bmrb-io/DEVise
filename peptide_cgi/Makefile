@@ -36,7 +36,7 @@ testsetup:
 
 .PHONY : install
 install:
-	install $(DEV_DEMO_HOME) $(WWW_HOME) $(PEP_HOME) $(CGI_HOME) \
+	./install $(DEV_DEMO_HOME) $(WWW_HOME) $(PEP_HOME) $(CGI_HOME) \
 	  $(PEP_SESSION_HOME) $(PEP_DATA_HOME) $(INSTALL_MACHINE)
 
 .PHONY : clean
