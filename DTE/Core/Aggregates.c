@@ -58,18 +58,18 @@ List<BaseSelection*>* Aggregates::filterList(){
 
 			if (checkAggFunc(args)){
 				 // It is a function. So replace the list..
-			    retVal->prepend(curr->getPath()->getSelectList());
+			    retVal->append(curr->getPath()->getSelectList());
 				cout << " The select List prepended is " << 
 					curr->getPath()->getSelectList()->toString() << endl;
 			}
 			else
 		  		retVal->append(curr);
 		}
-		else if (!groupBy->isEmpty() ){
+		/*else if (!groupBy->isEmpty() ){
 			
 				THROW(new 
 			Exception("Cannot use non-aggregating attributes with a groupBy clause"),0);
-		}
+		}*/
 		else
 		  retVal->append(curr);
 
@@ -88,8 +88,8 @@ List<BaseSelection*>* Aggregates::filterList(){
 			groupBy->append(sequenceAttr);
 		}
 		else{
-			selList->prepend(sequenceAttr);
-			retVal->prepend(sequenceAttr);
+			selList->append(sequenceAttr);
+			retVal->append(sequenceAttr);
 		}
 	}
 	groupBy->rewind();
@@ -106,8 +106,8 @@ List<BaseSelection*>* Aggregates::filterList(){
 			selList->step();
 		}	
 		if (!match){
-			retVal->prepend(groupBy->get());
-			selList->prepend(groupBy->get());
+			retVal->append(groupBy->get());
+			selList->append(groupBy->get());
 			cout << " Appended the groupBy attribute --- ";
 			cout << groupBy->get()->toString() << endl;
 		}
@@ -131,9 +131,12 @@ void Aggregates::typify(Site* inputIterator){
 		funcPtr[i] = NULL;
 		
 	String *  AttribNameList = getStringsFrom(inputIterator->getSelectList());
+	List<BaseSelection*>*selectList = inputIterator->getSelectList();
 	TypeID * TypeIDList = inputIterator->getTypeIDs();
 	int countFlds = inputIterator->getNumFlds();
-
+	for(int i = 0; i < countFlds;i++)
+		cout << " Pos " << i << " " << AttribNameList[i] << endl; 
+	
 	// Now get the position and type of the sequencing attribute..
 	getSeqAttrType(AttribNameList,TypeIDList,countFlds);
 	
@@ -162,6 +165,7 @@ void Aggregates::typify(Site* inputIterator){
 			for(j = 0; j < countFlds ; j++){
 			    int arg1,arg2;	
 				Path *newPath;
+				//if (selArgument->match(selectList->getVal(j),newPath))
 				if (selArgument->toString() == AttribNameList[j]){
 					
 					//	Now that u have set the name..
@@ -196,7 +200,6 @@ void Aggregates::typify(Site* inputIterator){
 		selList->step();
 		i++;
 	}
-	List<BaseSelection*>* selectList =  inputIterator->getSelectList();
 	
 	groupBy->rewind();
 	while(!groupBy->atEnd()){
@@ -224,6 +227,7 @@ void Aggregates::typify(Site* inputIterator){
 		}
 		groupBy->step();
 	}
+	
 	// Now all that is done ...
 	// Form the Grouping class;;
 	groupIterator = new Grouping(iterator,positions,taboo,types,seqAttrPos,groupBy->cardinality());
@@ -310,7 +314,6 @@ Tuple* Aggregates::getNext()
 		else
 			//Get the actual value and stuff it.
 			retVal[i] = fillNextFunc->getTupleAtCurrPos()[i];
-	
 	return retVal;
 
 }
@@ -804,7 +807,6 @@ void Grouping::sort(){
 		TRY(lessPtrs[i] = getOperatorPtr("<",types[i],types[i],retVal),);
 		TRY(equalPtrs[i] = getOperatorPtr("=",types[i],types[i],retVal),);
 	}
-	
 	for(i = 0; i < TupleList->cardinality(); i++){
 		
 		for(int j = i+1; j < TupleList->cardinality(); j++){
@@ -854,7 +856,12 @@ Tuple *Grouping::getNext(){
 		
 		while((next = iterator->getNext()))
 			TupleList->append(next);
-	
+		
+		if (TupleList->isEmpty()){
+			next = NULL;
+			state = NORMAL;
+			return NULL;
+		}
 		//int count = TupleList->cardinality();
 		//TupleArray = new Tuple[count];
 		sort();

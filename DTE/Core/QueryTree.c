@@ -9,6 +9,7 @@
 #pragma implementation "queue.h"
 #endif
 
+#define MAX_AGG 12
 #include "queue.h"
 #include "myopt.h"
 #include "site.h"
@@ -127,17 +128,25 @@ Site* QueryTree::createSite(){
 			}	
 		}
 	}
-	Aggregates *aggregates =new Aggregates(selectList,sequenceby,withPredicate,
-		groupBy);
-	if (aggregates->isApplicable()){
+	// Need to fix a mamimum for this..
+	Aggregates **aggregates =new (Aggregates*)[MAX_AGG];
+	int count = 0;
+    aggregates[count]=new Aggregates(selectList,sequenceby,withPredicate,groupBy);
+	while(aggregates[count]->isApplicable()){
 			   
 	   	// Change the select list
-		TRY(selectList = aggregates->filterList(),NULL);
+		TRY(selectList = aggregates[count]->filterList(),NULL);
 		LOG( logFile << " Removing aggregates from the list\n" );
 		LOG(displayList(logFile, selectList, ", "));
 		LOG(logFile << endl);
+		count ++;
+		if (count == MAX_AGG){
+			THROW(new Exception(" Numbr of nesting levels too high "),NULL);
+		}
+    	aggregates[count]=new Aggregates(selectList,sequenceby,withPredicate,groupBy);
 	}
-	
+	count --;
+
 	LOG(logFile << "Decomposing query on " << numSites << " sites\n";)
      sites->rewind();
      while(!sites->atEnd()){
@@ -252,10 +261,9 @@ Site* QueryTree::createSite(){
 	if(!siteGroup){
 		siteGroup = inner;
 	}
-	if (aggregates->isApplicable()){
-
-		aggregates->typify(siteGroup);
-		siteGroup = aggregates;
+	for(int k = count; k >= 0;k--){
+		aggregates[k]->typify(siteGroup);
+		siteGroup = aggregates[k];
 	}
 
 	LOG(logFile << "Plan: \n";)
