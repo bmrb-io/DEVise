@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.8  1996/01/23 20:52:30  jussi
+#	Added support for hierarchical schemas.
+#
 #	Revision 1.7  1996/01/09 16:39:53  jussi
 #	Added support for Tcl expressions as mappings.
 #
@@ -33,110 +36,27 @@
 
 ############################################################
 
-# tian zhang 01/20/95
-# mod by jussi myllymaki 09/04/95
-# -- mappings are changed using pull-down menus rather than separate dialogs
-#
-# this procedure use a dialog box to input and edit mapping.
-# The interface of dialogMapping:
-# proc dialogMapping {w title text bitmap mappings GetName}
-#
-# w: window name
-# title: window title
-# text: text message
-# bitmap: bitmap to be displayed
-# mappings: mapping params in the following form:
-# { { name1 {{attr type} {attr type} ...} {default mapping 1} }
-#   { name2 {{attr type} {attr type} ...} {default mapping 2}}
-#  ...
-# }
-# For example:
-# { {x { {time date} {name string} {temp int} } time }
-#   {y { {time date} {name string} {temp int} } temp }
-#   {color { {1 black} {2 red} {3 yellow} } 3 }
-#  ...
-# }
-# getName: set true to display the name of the mapping.
-# REturn: 
-#	if netName == false, the new mapping.
-#	else, a list containing {mappingName mapping}
-#############################################################################
-
-# Find maximum length of labels
-# { {label {val1 val2 ...} defvalue} ... }
-proc FindMaxLabelLength { mappings } {
-    set maxlen 1
-    foreach item $mappings {
-	set len [string length [lindex $item 0]]
-	if {$len > $maxlen} {
-	    set maxlen $len
-	}
-    }
-    return $maxlen
-}
-
-# Find maximum length of values
-# { {label {val1 val2 ...} defvalue} ... }
-proc FindMaxValueLength { mappings } {
-    set maxlen 1
-    foreach item $mappings {
-	foreach val [lindex $item 1] {
-	    set len [string length $val]
-	    if {$len > $maxlen} {
-		set maxlen $len
-	    }
-	}
-    }
-    return $maxlen
-}
-
-proc dialogMapping {w title text bitmap schemaname mappings {getName 0} } { 
+proc dialogMapping {w title text bitmap schemaname mappings {getName 0}} { 
     global button1
 
-    # default options for Frame, Button
-    set tmpFrameOpt ""
-    set tmpButtonOpt ""
+    set topgrp [SelectTopGroup $schemaname]
 
     # destroy the old widget with the same name if there exists one
     catch {destroy $w}
 
-    set topgrp [SelectTopGroup $schemaname]
-
-    # toplevel widget parameters
-    toplevel $w -borderwidth 2
-    catch "$w config $tmpFrameOpt"
+    toplevel $w
     wm geometry $w +50+50
-    # wm geometry $w 400x150
-    wm maxsize $w 1000 1000
-    wm minsize $w 100 100
     wm title $w $title
-    wm iconname $w $title
 
-    #########################################################################
+    label $w.message -text $text
 
-    # display TEXT or BITMAP in a sub widget
-    label $w.message -text "$text" -bitmap "$bitmap" \
-	    -font -*-*-medium-r-normal-*-140-*-*-m-*
-    catch "$w.message config $tmpFrameOpt" 
-
-    #########################################################################
-
-    # handle mapping: {x y color shape ...} in a sub widget
     frame $w.mapping
-    catch "$w.mapping config $tmpFrameOpt"
     frame $w.mapping.label
-    catch "$w.mapping.label config $tmpFrameOpt"
     frame $w.mapping.value
-    catch "$w.mapping.value config $tmpFrameOpt"
 
-    # calculate width of label and value fields
-    set labelWidth [expr [FindMaxLabelLength $mappings] + 5]
-    set valueWidth [expr [FindMaxValueLength $mappings] + 5]
-    if {$valueWidth < 30} {
-	set valueWidth 30
-    }
+    set labelWidth 20
+    set valueWidth 30
 
-    # create the name widget
     set nameMsgWidget ""
     set nameEntryWidget ""
     if { $getName } {
@@ -158,29 +78,46 @@ proc dialogMapping {w title text bitmap schemaname mappings {getName 0} } {
 
     foreach item $mappings {
 	set itemname [lindex $item 0]
+	set itemlist [lindex $item 1]
 	set itemval [lindex $item 2]
+
 	global mappingValue$itemname
 	set mappingValue$itemname $itemval
 
-	label $w.mapping.label.p$itemname -text $itemname \
-		-width $labelWidth
-	catch "$w.mapping.label.p$itemname config $tmpButtonOpt"
+	label $w.mapping.label.p$itemname -text $itemname -width $labelWidth
 
 	menubutton $w.mapping.value.p$itemname -relief raised \
 		-textvariable mappingValue$itemname \
 		-menu $w.mapping.value.p$itemname.menu \
 		-width $valueWidth
-	catch "$w.mapping.value.p$itemname config $tmpButtonOpt"
 	menu $w.mapping.value.p$itemname.menu -tearoff 0
-	$w.mapping.value.p$itemname.menu add cascade -label Constant \
-		-menu $w.mapping.value.p$itemname.menu.constant
+	tk_menuBar $w.mapping.value $w.mapping.value.p$itemname
+
+	if {$itemname == "Color"} {
+	    $w.mapping.value.p$itemname.menu add command -label "Constant..." \
+		    -command "getColor mappingValue$itemname"
+	} else {
+	    $w.mapping.value.p$itemname.menu add cascade -label Constant \
+		    -menu $w.mapping.value.p$itemname.menu.constant
+	}
 	$w.mapping.value.p$itemname.menu add cascade -label Variable \
 		-menu $w.mapping.value.p$itemname.menu.variable
 	$w.mapping.value.p$itemname.menu add command -label "Expression..." \
 		-command "editExpression $itemname"
 
+	setupAttrRadioMenu $w.mapping.value.p$itemname.menu.variable \
+		mappingValue$itemname "\$" $schemaname $topgrp $topgrp
+	if {$getName} {
+	    $w.mapping.value.p$itemname.menu.variable configure \
+		    -command "updateMapName $nameEntryWidget $xval $yval"
+	}
+
+	if {$itemname == "Color"} {
+	    continue
+	}
+
 	menu $w.mapping.value.p$itemname.menu.constant -tearoff 0
-	foreach val [lindex $item 1] {
+	foreach val $itemlist {
 	    set value [lindex $val 0]
 	    if {[llength $val] > 1} {
 		set value [lindex $val 1]
@@ -193,36 +130,12 @@ proc dialogMapping {w title text bitmap schemaname mappings {getName 0} } {
 			-command "updateMapName $nameEntryWidget $xval $yval"
 	    }
 	}
-
-	setupAttrRadioMenu $w.mapping.value.p$itemname.menu.variable \
-		mappingValue$itemname "\$" $schemaname $topgrp $topgrp
-	if {$getName} {
-	    $w.mapping.value.p$itemname.menu.variable configure \
-		    -command "updateMapName $nameEntryWidget $xval $yval"
-	}
-
-	tk_menuBar $w.mapping.value $w.mapping.value.p$itemname
     }
 
-    #########################################################################
-    # handle decision: ok cancel in a sub widget
-    #########################################################################
-    frame $w.decision
-    catch "$w.decision config $tmpFrameOpt"
-
-    # Ok: return new mapping
-    button $w.decision.ok -text OK -width 10 -command { set button1 1 }
-    catch "$w.decision.ok config $tmpButtonOpt"
-
-    # Cancel: return old mapping
-    button $w.decision.cancel -text Cancel -width 10 -command { set button1 0 }
-    catch "$w.decision.cancel config $tmpButtonOpt"
-
-    #########################################################################
-    # packings
-    #########################################################################
-
-    pack $w.decision.ok $w.decision.cancel -side left -padx 3m
+    frame $w.but
+    button $w.but.ok -text OK -width 10 -command { set button1 1 }
+    button $w.but.cancel -text Cancel -width 10 -command { set button1 0 }
+    pack $w.but.ok $w.but.cancel -side left -padx 3m
 
     foreach item $mappings {
 	set itemname [lindex $item 0]
@@ -230,7 +143,6 @@ proc dialogMapping {w title text bitmap schemaname mappings {getName 0} } {
 	pack $w.mapping.value.p$itemname -side top -fill x
     }
 
-    # Pack the mapping name widget
     if { $getName } {
 	pack $nameMsgWidget -in $w.mapping.label -side top -fill x -pady 0.7m
 	pack $nameEntryWidget -in $w.mapping.value -side top -fill x
@@ -240,11 +152,10 @@ proc dialogMapping {w title text bitmap schemaname mappings {getName 0} } {
     pack $w.mapping.value -side right -fill x
 
     pack $w.message $w.mapping -side top -fill x -pady 2m
-    pack $w.decision -side top -pady 3m
-
-    #########################################################################
+    pack $w.but -side top -pady 3m
 
     tkwait variable button1
+
     set newmap ""
     if { $button1 == 1 } {
 	foreach item $mappings {
