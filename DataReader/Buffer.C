@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/07/02 22:39:24  beyer
+  fixed comment bug
+
   Revision 1.10  1998/06/29 17:18:23  wenger
   Fixed bug 372 (crashed in DataReader caused by a pointer alignment problem).
 
@@ -123,7 +126,9 @@ Buffer::Buffer(char* fileName, DRSchema* myDRSchema) {
 			for (j = 0; j < temArr->length; j++)
 				_separatorCheck[i][temArr->data[j]] = 1;
 			repeatings[i] = myDRSchema->tableAttr[i]->getSeparator()->repeating;
-		}
+		} else {
+			_separatorCheck[i] = NULL;
+                }
 
 		maxLens[i] = myDRSchema->tableAttr[i]->getMaxLen();
 		fieldLens[i] = myDRSchema->tableAttr[i]->getFieldLen();
@@ -172,7 +177,6 @@ Buffer::Buffer(char* fileName, DRSchema* myDRSchema) {
 
 Buffer::~Buffer() {
 	int i ;
-
 	if (_EOLCheck != NULL)
 		delete [] _EOLCheck;
 	
@@ -613,6 +617,7 @@ Status Buffer::getStringTo(Attribute* myAttr, char* target) {
 			return FOUNDEOF;
 	}
 
+        target[0] = '\0'; //kb: should get null at return
 	while (true) {
 
 		status = checkAll(_curChar, myAttr);
@@ -621,6 +626,7 @@ Status Buffer::getStringTo(Attribute* myAttr, char* target) {
 
 		target[_posTarget] = _curChar;
 		_posTarget++;
+                target[_posTarget] = '\0'; //kb: should get null at return
 
 		count++;
 
@@ -638,6 +644,7 @@ Status Buffer::getStringTo(Attribute* myAttr, char* target) {
 			target[_posTarget] = _curChar;
 			_posTarget++;
 			count++;
+                        target[_posTarget] = '\0'; //kb: should get null at return
 			
 			if (count >= maxLen) {
 				return FOUNDSEPARATOR;
@@ -840,6 +847,7 @@ Status Buffer::getStringLen(Attribute* myAttr, char* target) {
 			return FOUNDEOF;
 	}
 
+        target[0] = '\0'; //kb: should get null at return
 	while (true) {
 		status = checkEOL(_curChar);
 		if (status != OK)
@@ -847,8 +855,9 @@ Status Buffer::getStringLen(Attribute* myAttr, char* target) {
 
 		target[_posTarget] = _curChar;
 		_posTarget++ ;
+                target[_posTarget] = '\0'; //kb: should get null at return
 
-		if (_posTarget > fieldLen) {
+		if (_posTarget >= fieldLen) {
 				if ((_curChar = getChar()) == 0) 
 					return FOUNDEOF;
 				status = checkEOL(_curChar);
@@ -869,8 +878,9 @@ Status Buffer::getStringLen(Attribute* myAttr, char* target) {
 
 			target[_posTarget] = _curChar;
 			_posTarget++;
+                        target[_posTarget] = '\0'; //kb: should get null at return
 
-			if (_posTarget > fieldLen) {
+			if (_posTarget >= fieldLen) {
 
 				if ((_curChar = getChar()) == 0) 
 					return FOUNDEOF;
