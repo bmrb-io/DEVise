@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1999/07/12 19:02:11  wenger
+  Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
+
   Revision 1.14  1998/09/22 17:23:52  wenger
   Devised now returns no image data if there are any problems (as per
   request from Hongyu); added a bunch of debug and test code to try to
@@ -137,7 +140,13 @@ Semaphore::Semaphore(key_t key, int &status, int nsem)
 
 int Semaphore::destroy()
 {
+#if 1 // Set to 0 to compile on aden.bmrb.wisc.edu.
   if (semctl(id, 0, IPC_RMID) < 0)
+#else
+  semun args;
+  args.val = 0;
+  if (semctl(id, 0, IPC_RMID, args) < 0)
+#endif
     perror("semctl");
   return 0;
 }
@@ -179,7 +188,7 @@ int Semaphore::setValue(int num, int sem)
     ushort *array;
   };
 #endif
-#if defined(__sun) || defined(__solaris)
+#if defined(__sun) || defined(__solaris) || defined(__linux)
   union semun param;
   param.val = num;
   int result = semctl(id, sem, SETVAL, param);
