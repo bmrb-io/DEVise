@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.22  1995/12/04 18:28:15  jussi
+#	Changed size of automatically created windows to depend on view
+#	layout selected. For horizontal layout, the window is wide, for
+#	vertical layout, it's tall.
+#
 #	Revision 1.21  1995/12/04 18:02:33  jussi
 #	User can now choose to have a title, X axis, Y axis, X link enabled
 #	or disabled in automatically generated views. Window name can be
@@ -410,7 +415,7 @@ proc MacroDefAuto {tdata} {
     global schemas modified x xtype sortedx yvar selgrp schemaname schema
     global viewsel viewselname macroSelectColor macroMenuSelectColor
     global layoutsel layoutselname linksel winnamesel titlesel
-    global xaxissel yaxissel
+    global xaxissel yaxissel sourceList
 
     # see if .auto window already exists; if so, just return
     set err [catch {set exists [wm state .auto]}]
@@ -421,10 +426,11 @@ proc MacroDefAuto {tdata} {
     set x ""
     set xtype ""
     set sortedx 0
+    set sfname [lindex $sourceList($tdata) 3]
+    set schemaname [file tail $sfname]
 
     # get the list of top level group names from DEVise
-    set topgrps [DEVise getTopGroups $sname]
-    set schemaname $sname
+    set topgrps [DEVise getTopGroups $schemaname]
 
     if {[llength $topgrps] == 1 && [lindex $topgrps 0] == "__default"} {
 	set selgrp "__default"
@@ -1204,9 +1210,15 @@ proc DefSource {} {
     set schema [lindex $sourceList($sname) 2]
     set schemafile [lindex $sourceList($sname) 3]
 
-    # load schema file if necessary
+    # load schema file if necessary - it is not sufficient to check if
+    # the physical schema by the same name has been loaded bcos the same
+    # physical schema may be shared by several logical schemas - the best
+    # way of checking is to see that we have no groups defined under the 
+    # logical schema name
     set schemaTypes [DEVise get tdata]
-    if {[lsearch $schemaTypes $schema] < 0} {
+    set tg [DEVise getTopGroups [file tail $schemafile]]
+#    if {[lsearch $schemaTypes $schema] < 0} 
+    if {[llength $tg] == 0} {
 	set result [DEVise importFileType $schemafile]
 	if {$result == ""} {
 	    return
