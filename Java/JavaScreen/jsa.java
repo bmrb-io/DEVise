@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.7  1998/08/12 22:35:36  hongyu
+// *** empty log message ***
+//
 // Revision 1.5  1998/07/09 17:38:40  hongyu
 // *** empty log message ***
 //
@@ -74,6 +77,8 @@ public class jsa extends Applet
             return; 
         }
         
+	checkParameters();
+
         // create a YLogFile class that does nothing when its methods called
         YGlobals.LogFile = new YLogFile();
         
@@ -84,8 +89,6 @@ public class jsa extends Applet
             YGlobals.DebugInfo = new YDebug();
         }                
                         
-        checkParameters();
-        
         startJS();
     }
 
