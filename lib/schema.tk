@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1995/12/15 03:38:20  ravim
+#  User mode used for displaying schemas.
+#
 #  Revision 1.10  1995/12/12 01:46:29  ravim
 #  Physical/Logical schema support.
 #
@@ -299,7 +302,7 @@ pack .newschema.attradd -in .newschema.attr \
 	-side bottom -padx 3m -pady 1m -fill x
 
 label .newschema.attrlist.label -text "List of Attributes" -bg honeydew2 -fg red4
-label .newschema.attrlist.spec -text "Type      Order     Name" -bg honeydew2 -fg red4 -font 9x15
+label .newschema.attrlist.spec -text "Type      Order     Hi     Lo     Name" -bg honeydew2 -fg red4 -font 9x15
 pack .newschema.attrlist.label -side top -fill x
 pack .newschema.attrlist.spec -side top -anchor nw
 listbox .newschema.attrlist.list -relief raised -bd 1 \
@@ -319,8 +322,10 @@ foreach attr $attrlist {
     # Format before inserting
     set ttype [lindex $attr 0]
     set tsort [lindex $attr 1]
-    set tname [lindex $attr 2]
-    set fstr [format "%-8s  %-8s  %s" $ttype $tsort $tname]
+    set thival [lindex $attr 2]
+    set tloval [lindex $attr 3]
+    set tname [lindex $attr 4]
+    set fstr [format "%-8s  %-8s  %-6s %-6s %s" $ttype $tsort $thival $tloval $tname]
     .newschema.attrlist.list insert end $fstr
     set attrnum [expr $attrnum+1]
 }
@@ -333,13 +338,28 @@ pack .newschema.attrspec .newschema.attrop \
 frame .newschema.attrname -relief raised -bd 1 -bg honeydew2
 frame .newschema.atype -relief raised -bd 1 -bg honeydew2
 frame .newschema.asort -relief raised -bd 1 -bg honeydew2
+frame .newschema.ahival -relief raised -bd 1 -bg honeydew2
+frame .newschema.aloval -relief raised -bd 1 -bg honeydew2
 pack .newschema.attrname .newschema.atype .newschema.asort \
+	.newschema.ahival .newschema.aloval \
 	-in .newschema.attrspec -side top -fill x -padx 3m -pady 1m
 
 label .newschema.attrname.label -text "Attribute Name " -bg honeydew2 -fg red4
 entry .newschema.attrname.entry -width 25 -relief sunken -bd 2 \
 	-textvariable aname -bg bisque
 pack .newschema.attrname.label .newschema.attrname.entry -side left -padx 3m \
+	-pady 1m
+
+label .newschema.ahival.label -text "Attribute High Value " -bg honeydew2 -fg red4
+entry .newschema.ahival.entry -width 25 -relief sunken -bd 2 \
+	-textvariable ahival -bg bisque
+pack .newschema.ahival.label .newschema.ahival.entry -side left -padx 3m \
+	-pady 1m
+
+label .newschema.aloval.label -text "Attribute Low Value  " -bg honeydew2 -fg red4
+entry .newschema.aloval.entry -width 25 -relief sunken -bd 2 \
+	-textvariable aloval -bg bisque
+pack .newschema.aloval.label .newschema.aloval.entry -side left -padx 3m \
 	-pady 1m
 
 
@@ -373,11 +393,13 @@ button .newschema.attrop.add -text "Add item" -bg gray75 -fg IndianRed4 -command
 	# Increment count
 	set attrnum [expr $attrnum+1]
 	# Insert into list and clear selection
-	set fstr [format "%-8s  %-8s  %s" $atype $asort $aname]
+	set fstr [format "%-8s  %-8s  %-6s %-6s %s" $atype $asort $ahival $aloval $aname]
 	.newschema.attrlist.list insert end $fstr
 	set aname ""
 	set atype "double"
 	set asort "unsorted"
+	set ahival ""
+	set aloval ""
     }
 }
 button .newschema.attrop.delete -text "Delete item" -bg gray75 -fg IndianRed4\
@@ -391,7 +413,10 @@ bind .newschema.attrlist.list <Double-1> {
     set attrl [.newschema.attrlist.list get active] 
     set atype [lindex $attrl 0]
     set asort [lindex $attrl 1] 
-    set aname [lindex $attrl 2]
+    set ahival [lindex $attrl 2]
+    set aloval [lindex $attrl 3]
+    set aname [lindex $attrl 4]
+    
 }
     
 button .newschema.attrop.modify -text "Modify item" -bg gray75 -fg IndianRed4\
@@ -399,13 +424,15 @@ button .newschema.attrop.modify -text "Modify item" -bg gray75 -fg IndianRed4\
     if {$aname == ""} {
 	showmesg "Double click on an item to select it."
     } else {
-	set fstr [format "%-8s  %-8s  %s" $atype $asort $aname]
+	set fstr [format "%-8s  %-8s  %-6s %-6s %s" $atype $asort $ahival $aloval $aname]
 	.newschema.attrlist.list insert active $fstr
 	.newschema.attrlist.list delete active
 	# Clear selection
 	set aname ""
 	set atype "double"
 	set asort "unsorted"
+	set ahival ""
+	set aloval ""
     }
 }
 pack .newschema.attrop.add .newschema.attrop.delete \
@@ -464,7 +491,7 @@ tkwait window .newschema
 
 #-----------------------------------------------------------
 proc newschema {} {
-    global sname ftype comm separ attrlist aname atype asort tgrps
+    global sname ftype comm separ attrlist aname atype asort tgrps ahival aloval
     # First set up some global variables
     set sname ""
     set ftype ascii
@@ -475,6 +502,8 @@ proc newschema {} {
     set atype "double"
     set asort "unsorted"
     set tgrps ""
+    set ahival ""
+    set aloval ""
 
     # Call function to display the window
     newschemawin
@@ -483,7 +512,7 @@ proc newschema {} {
 #-----------------------------------------------------------
 proc openschema {filename} {
     global sname ftype comm separ attrlist aname atype asort fsBox schemadir \
-	    tgrps
+	    tgrps ahival aloval
 
     # Set some defaults
     set sname ""
@@ -495,6 +524,8 @@ proc openschema {filename} {
     set atype double
     set asort unsorted
     set tgrps ""
+    set ahival ""
+    set aloval ""
 
     # Read the file and get the contents
     readphysical $filename
@@ -564,12 +595,21 @@ proc writephysical {name type comm sep alist} {
     foreach attr $alist {
 	set atype [lindex $attr 0]
 	set asort [lindex $attr 1]
-	set aname [lindex $attr 2]
+	set ahival [lindex $attr 2]
+	set aloval [lindex $attr 3]
+	set aname [lindex $attr 4]
 	
 	if {$asort != "unsorted"} {
 	    puts -nonewline $f "sorted "
 	}
-	puts $f "attr $aname $atype"
+	puts -nonewline $f "attr $aname $atype"
+	if {$ahival != "UNDEF"} {
+	    puts -nonewline $f " hi $ahival"
+	}
+	if {$aloval != "UNDEF"} {
+	    puts -nonewline $f " lo $aloval"
+	}
+	puts $f ""
     }
     close $f
 }
@@ -626,14 +666,46 @@ proc readphysical {filename} {
     set num 0
     while {$len != -1} {
 	set first [lindex $line 0]
+#	if {$first != "sorted"} {
+#	    scan $line "attr %s %s" attrname attrtype
+#	    set attr [list $attrtype unsorted $attrname] 
+#	} else {
+#	    scan $line "sorted attr %s %s" attrname attrtype
+#	    set attr [list $attrtype sorted $attrname]
+#	}
+	
+	set hipos [lsearch $line "hi"]
+	set lopos [lsearch $line "lo"]
+
 	if {$first != "sorted"} {
-	    scan $line "attr %s %s" attrname attrtype
-	    set attr [list $attrtype unsorted $attrname] 
+	    set scanstr "attr %s %s"
+	    set sorted unsorted
 	} else {
-	    scan $line "sorted attr %s %s" attrname attrtype
-	    set attr [list $attrtype sorted $attrname]
+	    set scanstr "sorted attr %s %s"
+	    set sorted sorted
+	}
+	set argstr "attrname attrtype"
+
+	if {$hipos != -1} {
+	    set histr " hi %s"
+	    set scanstr $scanstr$histr
+	    set histr " hival"
+	    set argstr $argstr$histr
+	}
+	if {$lopos != -1} {
+	    set lostr " lo %s"
+	    set scanstr $scanstr$lostr
+	    set lostr " loval"
+	    set argstr $argstr$lostr
 	}
 
+	set hival UNDEF
+	set loval UNDEF
+
+	set cmd "scan \$line \"$scanstr\" $argstr"
+	eval $cmd
+	
+	set attr [list $attrtype $sorted $hival $loval $attrname]
 #	puts "Inserting .. $attr"
 	set attrlist [linsert $attrlist $num $attr]
 	set len [gets $f line]
@@ -641,6 +713,7 @@ proc readphysical {filename} {
     }
     # Close file
     close $f
+    set sname $filename
 }
 ###################################################################
 
@@ -1375,7 +1448,7 @@ proc displayattrs {pname} {
     # Populate the list
     readphysical $pname
     foreach attr $attrlist {
-	.slist.top.list insert end [lindex $attr 2]
+	.slist.top.list insert end [lindex $attr 4]
     }
 
     # OK button

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/13 18:42:43  jussi
+  Now iterator works even if attribute list has holes i.e. list is
+  non-contiguous.
+
   Revision 1.4  1995/11/21 21:10:43  jussi
   Added copyright notice and cleaned up a bit.
 
@@ -50,7 +54,8 @@ AttrList::~AttrList()
 void AttrList::InsertAttr(int attrNum, char *name, int offset, int length,
 			  AttrType type, Boolean hasMatchVal,
 			  AttrVal *matchVal, Boolean isComposite,
-			  Boolean isSorted)
+			  Boolean isSorted, Boolean hasHiVal, AttrVal *hiVal,
+			  Boolean hasLoVal, AttrVal *loVal)
 {
   if (attrNum < 0 || attrNum >= MAX_ATTRLIST_SIZE) {
     fprintf(stderr,"AttrList::InsertAttr: invalid attrNum %d\n", attrNum);
@@ -74,6 +79,12 @@ void AttrList::InsertAttr(int attrNum, char *name, int offset, int length,
     info->matchVal = *matchVal;
   info->isComposite = isComposite;
   info->isSorted = isSorted;
+  info->hasHiVal = hasHiVal;
+  if (hasHiVal)
+    info->hiVal = *hiVal;
+  info->hasLoVal = hasLoVal;
+  if (hasLoVal)
+    info->loVal = *loVal;
   
   if (_size < attrNum+1)
     _size = attrNum+1;
@@ -151,6 +162,42 @@ void AttrList::Print()
       printf("date");
       break;
     }
+    if (info->hasHiVal)
+    {
+      printf(" Hi ");
+      printVal(&(info->hiVal), info->type);
+    }
+    else
+      printf(" noHi ");
+
+    if (info->hasLoVal) 
+    {
+      printf(" Lo ");
+      printVal(&(info->loVal), info->type);
+    }
+    else
+      printf(" noLo ");
     printf("\n");
   }
+}
+
+void AttrList::printVal(AttrVal *aval, AttrType atype)
+{
+  switch(atype) {
+    case IntAttr:
+      printf(" %d ", aval->intVal);
+      break;
+    case FloatAttr:
+      printf(" %f ", aval->floatVal);
+      break;
+    case DoubleAttr:
+      printf(" %f ", aval->doubleVal);
+      break;
+    case StringAttr:
+      printf(" %s ", aval->strVal);
+      break;
+    case DateAttr:
+    default:
+      /* print nothing for now */;
+    }
 }

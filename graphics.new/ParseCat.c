@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1995/12/14 17:44:02  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.7  1995/12/13 02:07:09  ravim
   Groups are identified not by the physical schema name but by the logical
   schema file name - which is guaranteed to be unique since they are all files
@@ -42,7 +45,6 @@
 
 #include "ParseCat.h"
 #include "TDataAsciiInterp.h"
-#include "AttrList.h"
 #include "Parse.h"
 #include "Control.h"
 #include "Util.h"
@@ -391,43 +393,69 @@ char *ParseCatOriginal(char *catFile){
 				goto error;
 			}
 
+
 			Boolean hasMatchVal = false;
 			AttrVal matchVal;
-			if (attrNum < numArgs){
-				if (strcmp(args[attrNum],"=") != 0){
-					fprintf(stderr,"expecting '='\n");
-					goto error;
-				}
-				attrNum++;
-				if (attrNum != numArgs-1){
-					fprintf(stderr,"expecting default value after '='\n");
-					goto error;
-				}
-				hasMatchVal = true;
-				switch(attrType){
-					case IntAttr:
-						matchVal.intVal = atoi(args[attrNum]);
-						break;
-					case FloatAttr:
-						matchVal.floatVal = atof(args[attrNum]);
-						break;
-					case DoubleAttr:
-						matchVal.doubleVal = atof(args[attrNum]);
-						break;
-					case StringAttr:
-						matchVal.strVal= CopyString(args[attrNum]);
-						break;
-					case DateAttr:
-						fprintf(stderr,"match of date not implemented\n");
-						Exit::DoExit(2);
-						break;
-					default:
-						fprintf(stderr,"unknown attr value\n");
-						Exit::DoExit(2);
-						break;
-				}
+			Boolean hasHi = false;
+			Boolean hasLo = false;
+			AttrVal hiVal, loVal;
 
+			if ((attrNum < numArgs) && (!strcmp(args[attrNum], "=")))
+			{
+			  attrNum++;
+			  if (attrNum > numArgs-1){
+			      fprintf(stderr,"expecting default value after '='\n");
+			      goto error;
+			    }
+			  hasMatchVal = true;
+			  SetVal(&matchVal, args[attrNum], attrType);
+			  attrNum++;
+			} 
+			
+			if ((attrNum < numArgs) && 
+			    (strcmp(args[attrNum], "hi")) && 
+			    (strcmp(args[attrNum], "lo"))) 
+			{
+			  fprintf(stderr, "Unrecognized chars in an attribute definition line\n");
+			  goto error;
+			} 
+			else if (attrNum < numArgs)
+			{
+			  if (!strcmp(args[attrNum], "hi"))
+			  {
+			    hasHi = true;
+			    attrNum++;
+			    if (attrNum >= numArgs)
+			    {
+			      fprintf(stderr, "Expecting value after keyword hi\n");
+			      goto error;
+			    }
+			    SetVal(&hiVal, args[attrNum], attrType);
+			    attrNum++;
+			  }
+			  
+			  if ((attrNum < numArgs) && 
+			      (!strcmp(args[attrNum], "lo")))
+			  {
+			    hasLo = true;
+			    attrNum++;
+			    if (attrNum >= numArgs)
+			    {
+			      fprintf(stderr, "Expecting value after keyword lo\n");
+			      goto error;
+			    }
+			    SetVal(&loVal, args[attrNum], attrType);
+			    attrNum++;
+			  }
+
+			  if (attrNum < numArgs)
+			  {
+			    fprintf(stderr, "Unrecognized chars in an attribute definition line\n");
+			    goto error;
+			  } 
 			}
+
+
 			if (attrs == NULL){
 				if (!hasFileType ){
 					fprintf(stderr,"no file type yet\n");
@@ -776,84 +804,110 @@ char *ParseCatPhysical(char *catFile){
 
 			Boolean hasMatchVal = false;
 			AttrVal matchVal;
-			if (attrNum < numArgs){
-				if (strcmp(args[attrNum],"=") != 0){
-					fprintf(stderr,"expecting '='\n");
-					goto error;
-				}
-				attrNum++;
-				if (attrNum != numArgs-1){
-					fprintf(stderr,"expecting default value after '='\n");
-					goto error;
-				}
-				hasMatchVal = true;
-				switch(attrType){
-					case IntAttr:
-						matchVal.intVal = atoi(args[attrNum]);
-						break;
-					case FloatAttr:
-						matchVal.floatVal = atof(args[attrNum]);
-						break;
-					case DoubleAttr:
-						matchVal.doubleVal = atof(args[attrNum]);
-						break;
-					case StringAttr:
-						matchVal.strVal= CopyString(args[attrNum]);
-						break;
-					case DateAttr:
-						fprintf(stderr,"match of date not implemented\n");
-						Exit::DoExit(2);
-						break;
-					default:
-						fprintf(stderr,"unknown attr value\n");
-						Exit::DoExit(2);
-						break;
-				}
+			Boolean hasHi = false;
+			Boolean hasLo = false;
+			AttrVal hiVal, loVal;
 
-			}
-			if (attrs == NULL){
-				if (!hasFileType ){
-					fprintf(stderr,"no file type yet\n");
-					goto error;
-				}
-				attrs = new AttrList(fileType);
+			if ((attrNum < numArgs) && (!strcmp(args[attrNum], "=")))
+			{
+			  attrNum++;
+			  if (attrNum > numArgs-1){
+			      fprintf(stderr,"expecting default value after '='\n");
+			      goto error;
+			    }
+			  hasMatchVal = true;
+			  SetVal(&matchVal, args[attrNum], attrType);
+			  attrNum++;
 			}
 
-			int roundAmount = 0;
-			switch(attrType){
-				case FloatAttr:
-					roundAmount = sizeof(float);
-					break;
-				case DoubleAttr:
-					roundAmount = sizeof(double);
-					break;
-				case StringAttr:
-					roundAmount = sizeof(char);
-					break;
-				case DateAttr:
-					roundAmount = sizeof(time_t);
-					break;
-				case IntAttr:
-					roundAmount = sizeof(int);
-					break;
-				default:
-					fprintf(stderr,"ParseCat: don't know type\n");
-					Exit::DoExit(2);
+			if ((attrNum < numArgs) && 
+			    (strcmp(args[attrNum], "hi")) && 
+			    (strcmp(args[attrNum], "lo"))) 
+			{
+			  fprintf(stderr, "Unrecognized chars in an attribute definition line\n");
+			  goto error;
+			} 
+			else if (attrNum < numArgs)
+			{
+			  if (!strcmp(args[attrNum], "hi"))
+			  {
+			    hasHi = true;
+			    attrNum++;
+			    if (attrNum >= numArgs)
+			    {
+			      fprintf(stderr, "Expecting value after keyword hi\n");
+			      goto error;
+			    }
+			    SetVal(&hiVal, args[attrNum], attrType);
+			    attrNum++;
+			  }
+			  
+			  if ((attrNum < numArgs) && 
+			      (!strcmp(args[attrNum], "lo")))
+			  {
+			    hasLo = true;
+			    attrNum++;
+			    if (attrNum >= numArgs)
+			    {
+			      fprintf(stderr, "Expecting value after keyword lo\n");
+			      goto error;
+			    }
+			    SetVal(&loVal, args[attrNum], attrType);
+			    attrNum++;
+			  }
+
+			  if (attrNum < numArgs)
+			  {
+			    fprintf(stderr, "Unrecognized chars in an attribute definition line\n");
+			    goto error;
+			  } 
 			}
-			if (recSize/roundAmount*roundAmount != recSize){
-					/* round to rounding boundaries */
-					recSize = (recSize/roundAmount+1)*roundAmount;
-			}
-			attrs->InsertAttr(numAttrs,args[1],recSize,
-				attrLength,attrType, hasMatchVal, &matchVal,
-				isComposite, isSorted);
-			numAttrs++;
-			recSize += attrLength;
-		      }
-		else {
-			fprintf(stderr,"ParseCat: unknown command %s\n", args[0]);
+		      
+
+		if (attrs == NULL){
+		    if (!hasFileType ){
+			fprintf(stderr,"no file type yet\n");
 			goto error;
-		}
+		      }
+		    attrs = new AttrList(fileType);
+		  }
+
+		int roundAmount = 0;
+		switch(attrType){
+		  case FloatAttr:
+		    roundAmount = sizeof(float);
+		    break;
+		  case DoubleAttr:
+		    roundAmount = sizeof(double);
+		    break;
+		  case StringAttr:
+		    roundAmount = sizeof(char);
+		    break;
+		  case DateAttr:
+		    roundAmount = sizeof(time_t);
+		    break;
+		  case IntAttr:
+		    roundAmount = sizeof(int);
+		    break;
+		  default:
+		    fprintf(stderr,"ParseCat: don't know type\n");
+		  Exit::DoExit(2);
+		  }
+		if (recSize/roundAmount*roundAmount != recSize){
+		    /* round to rounding boundaries */
+		    recSize = (recSize/roundAmount+1)*roundAmount;
+		  }
+		attrs->InsertAttr(numAttrs,args[1],recSize,
+				  attrLength,attrType, hasMatchVal, &matchVal,
+				  isComposite, isSorted,
+				  hasHi, &hiVal, hasLo, &loVal );
+		numAttrs++;
+		recSize += attrLength;
+		      }
+	else {
+	    fprintf(stderr,"ParseCat: unknown command %s\n", args[0]);
+	    goto error;
+	  }
 	      }
 
 	/* round record size */
@@ -1091,4 +1145,36 @@ char *getTail(char *fname)
       ret = &(fname[i+1]);
 
   return ret;
+}
+
+
+void SetVal(AttrVal *aval, char *valstr, AttrType valtype)
+{
+  /* Set the value field in aval to the value equivalent of valstr based
+     on the valtype */
+
+  switch (valtype)  {
+    case IntAttr: 
+      aval->intVal = atoi(valstr);
+      break;
+    case FloatAttr:
+      aval->floatVal = atof(valstr);
+      break;
+    case DoubleAttr:
+      aval->doubleVal = atof(valstr);
+      break;
+    case StringAttr:
+      aval->strVal = CopyString(valstr);
+      break;
+    case DateAttr:
+      fprintf(stderr,"match of date not implemented\n");
+    Exit::DoExit(2);
+      break;
+    default:
+      fprintf(stderr,"unknown attr value\n");
+    Exit::DoExit(2);
+      break;
+    }
+
+  return;
 }

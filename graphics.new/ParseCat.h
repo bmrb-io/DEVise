@@ -2,6 +2,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/13 02:07:50  ravim
+  Groups identified by logical schema file name - new function to extract the
+  file name from a path string.
+
   Revision 1.4  1995/12/12 03:42:33  ravim
   Fixed a bug.
 
@@ -16,6 +20,7 @@
 #define ParseCat_h
 #include "DeviseTypes.h"
 #include "ClassDir.h"
+#include "AttrList.h"
 
 /* Parse a catalog file and register new file type with the system.
 Return name of new file type if successful, else return NULL */
@@ -24,6 +29,8 @@ extern char *ParseCatOriginal(char *catFile);
 extern char *ParseCatPhysical(char *catFile);
 extern char *ParseCatLogical(char *catFile, char *sname);
 extern char *getTail(char *fname);
+extern void SetVal(AttrVal *aval, char *valstr, AttrType valtype);
+
 
 /* Register a new constructor for class. The
 constructor is called depending on the "source" statment stored

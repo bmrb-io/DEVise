@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/05 21:12:23  jussi
+  Added/update CVS header.
+
   Revision 1.2  1995/09/05 20:39:21  jussi
   Added CVS header.
 */
@@ -34,6 +37,10 @@ struct AttrInfo {
 	AttrType type; /* attribute type */
 	Boolean hasMatchVal; /* used for parsing only */
 	AttrVal matchVal;
+	Boolean hasHiVal;
+	AttrVal hiVal;
+	Boolean hasLoVal;
+	AttrVal loVal;
 };
 
 /*
@@ -50,9 +57,13 @@ public:
 
 	/* Insert attribute into list of attributes */
 	void InsertAttr(int attrNum,
-		char *name, int offset, int length, AttrType type,
+			char *name, int offset, int length, AttrType type,
 		Boolean hasMatchVal= false, AttrVal *matchVal= (AttrVal *)NULL,
-		Boolean isComposite = false, Boolean isSorted = false);
+		Boolean isComposite = false, Boolean isSorted = false,
+			Boolean hasHiVal = false, 
+			AttrVal *hiVal = (AttrVal *)NULL, 
+			Boolean hasLoVal = false, 
+			AttrVal *loVal = (AttrVal *)NULL);
 
 	char *GetName() { return _name; }
 
@@ -77,6 +88,7 @@ private:
 	int _size;
 	int _index; /* used for iterator */
 	char *_name;
+	void printVal(AttrVal *aval, AttrType atype);
 };
 
 #endif
