@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.3  1998/06/11 15:07:52  wenger
+// Added standard header to Java files.
+//
 //
 // ------------------------------------------------------------------------
 
@@ -143,7 +146,7 @@ public class jsa extends Applet
             }
 
             if (tracker.isErrorID(0)) {
-                info.append("Can not load DEVise Symbol!\n");
+                info.append("Fatal error: cannot get gear GIFs\n");
                 return;
             }
 

@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.15  1998/06/17 17:19:30  wenger
+// Fixes to JavaScreen for JDK 1.2.
+//
 // Revision 1.14  1998/06/11 15:07:52  wenger
 // Added standard header to Java files.
 //
@@ -103,7 +106,7 @@ public class jsdevisec extends Frame
                 }
         
                 if (tracker.isErrorID(0)) {
-                    String result = UIGlobals.showMsg(this, "Fatal error occurs in the Program\nCan not get symbols of DEVise!", "Confirm");
+                    String result = UIGlobals.showMsg(this, "Fatal error: cannot get gear GIFs", "Confirm");
                     System.exit(1);
                 }
                                                           
