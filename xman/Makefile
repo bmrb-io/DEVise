@@ -43,7 +43,6 @@ PACKAGE_PREFIX = xman
 PACKAGES = xvis      \
 	   shared    \
 	   importers \
-	   wei       \
 	   xnav      \
 	   xmanGUI   \
 	   xmanMain 
