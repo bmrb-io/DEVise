@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/01/19 20:03:19  jussi
+  Remove redundant Print().
+
   Revision 1.3  1995/12/28 20:47:00  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -41,6 +44,9 @@ public:
   void SetBuf(void *buf);
   void *GetBuf() { return _buf; }
 
+  void SetRecPos(int pos) { _recPos = pos; }
+  int  GetRecPos() { return _recPos; }
+
   void SetAttrs(AttrList *attrs);
 
   /* Get the address of attributes, or NULL if not found */
@@ -59,7 +65,9 @@ public:
   void PrintAttr(char *buf, int attrNum, Boolean printAttrName = false);
 
 private:
-  AttrList *_attrs;
-  void *_buf;
+  AttrList *_attrs;                     /* attributes in record */
+  void     *_buf;                       /* record buffer */
+  int      _recPos;                     /* position of record */
 };
+
 #endif

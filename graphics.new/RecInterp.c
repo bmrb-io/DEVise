@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/01/19 20:03:17  jussi
+  Remove redundant Print().
+
   Revision 1.4  1995/12/28 19:46:47  jussi
   Small fixes to remove compiler warnings.
 
@@ -37,6 +40,7 @@ RecInterp::RecInterp()
 {
   _attrs = NULL;
   _buf = NULL;
+  _recPos = 0;
 }
 
 void RecInterp::SetBuf(void *buf)
