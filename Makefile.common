@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1996/09/25 18:35:57  wenger
+#  Updated again for Linux compile (Linux 2.0.6, Tcl 7.4, Tk 4.0).
+#
 #  Revision 1.5  1996/08/15 19:54:21  wenger
 #  Added 'pure' targets for attrproj and devread; fixed some dynamic
 #  memory problems.  Found some bugs while demo'ing for soils science
@@ -56,9 +59,8 @@ RANLIB = ranlib
 ifeq ($(DEV_DEBUG),)
 	OPTFLAG = -O
 else
-	OPTFLAG = -g
+	OPTFLAG = -gstabs
 endif
-#OPTFLAG = -gstabs
 
 # Compile rules.
 .c.o:
