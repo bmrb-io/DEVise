@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/10/14 16:07:32  wenger
+  Improvements to debug logging.
+
   Revision 1.6  1999/10/05 17:55:47  wenger
   Added debug log level.
 
@@ -79,6 +82,8 @@ protected:
 
 private:
   static const char *GetTimeString();
+
+  void CheckSize();
 
   int _logNum;
   int _fd;

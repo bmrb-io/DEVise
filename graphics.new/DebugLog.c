@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1999/10/14 16:07:31  wenger
+  Improvements to debug logging.
+
   Revision 1.9  1999/10/05 17:55:47  wenger
   Added debug log level.
 
@@ -78,6 +81,7 @@
 //#define DEBUG
 
 static DebugLog *_defaultLog = NULL;
+static int _headerBytes = 2000;
 
 /*------------------------------------------------------------------------------
  * function: DebugLog::DebugLog
@@ -170,11 +174,7 @@ DebugLog::Message(Level level, const char *msg1, const char *msg2 = NULL,
       write(_fd, msg3, strlen(msg3));
     }
 
-    if (lseek(_fd, 0, SEEK_CUR) > _maxSize) {
-      if (lseek(_fd, 0, SEEK_SET) == -1) {
-        fprintf(stderr, "lseek() failed at %s: %d\n", __FILE__, __LINE__);
-      }
-    }
+    CheckSize();
   }
 }
 
@@ -202,11 +202,7 @@ DebugLog::Message(Level level, const char *msg1, int argc,
 
     write(_fd, msg2, strlen(msg2));
 
-    if (lseek(_fd, 0, SEEK_CUR) > _maxSize) {
-      if (lseek(_fd, 0, SEEK_SET) == -1) {
-        fprintf(stderr, "lseek() failed at %s: %d\n", __FILE__, __LINE__);
-      }
-    }
+    CheckSize();
   }
 }
 
@@ -257,6 +253,23 @@ DebugLog::GetTimeString()
   }
 
   return timeStr;
+}
+
+/*------------------------------------------------------------------------------
+ * function: DebugLog::CheckSize
+ * Checks the log size, and wraps around to the beginning if it's too big.
+ */
+void
+DebugLog::CheckSize()
+{
+  if (lseek(_fd, 0, SEEK_CUR) > _maxSize) {
+    if (lseek(_fd, _headerBytes, SEEK_SET) == -1) {
+      fprintf(stderr, "lseek() failed at %s: %d\n", __FILE__, __LINE__);
+    }
+
+    char *msg = "\n\n---------------------------------------";
+    write(_fd, msg, strlen(msg));
+  }
 }
 
 /*============================================================================*/

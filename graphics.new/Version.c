@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.55  1999/11/16 17:02:09  wenger
+  Removed all DTE-related conditional compiles; changed version number to
+  1.7.0 because of removing DTE; removed DTE-related schema editing and
+  data source creation GUI.
+
   Revision 1.54  1999/09/08 20:56:28  wenger
   Removed all Tcl dependencies from the devised (main changes are in the
   Session class); changed version to 1.6.5.
@@ -294,6 +299,7 @@
 #define _Version_c_
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "Version.h"
 #include "CompDate.h"
@@ -352,7 +358,7 @@ Version::GetWinLogo()
 
 /*------------------------------------------------------------------------------
  * function: Version::PrintInfo
- * Print version and copyright information.
+ * Print and log version and copyright information.
  *
  * Note: we pass in a pointer to the log function, because if this code
  * refers directly to the DebugLog class, the devisec won't link.
@@ -385,6 +391,21 @@ Version::PrintInfo(LogFunc logFunc)
   sprintf(buf, "Compile date: %s\n", CompDate::Get());
   printf("%s", buf);
   if (logFunc) logFunc(buf);
+
+  if (logFunc) {
+    char *envVars[] = { "DEVISE_DAT", "DEVISE_HOME_TABLE", "DEVISE_CACHE",
+        "DEVISE_SCHEMA", "DEVISE_LIB", "DEVISE_TMP", "DEVISE_WORK",
+	"DEVISE_PALETTE" };
+    int varCount = sizeof(envVars) / sizeof(envVars[0]);
+    for (int index = 0; index < varCount; index++) {
+      char *value = getenv(envVars[index]);
+      if (value) {
+	char buf[MAXPATHLEN * 2];
+        sprintf(buf, "$%s = <%s>", envVars[index], value);
+	logFunc(buf);
+      }
+    }
+  }
 }
 
 /*============================================================================*/
