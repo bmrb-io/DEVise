@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/04/22 18:35:02  wenger
+  Unfixed a memory leak that I fixed earlier.  The fix caused errors
+  in sessions with multiple physical schemas.
+
   Revision 1.19  1996/04/19 17:20:46  wenger
   Put the GenClassInfo code back in -- this is needed for tape data;
   started adding the tape-related code back in (it was previously
@@ -95,6 +99,8 @@
 */
 
 #include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include "ParseCat.h"
 #include "TDataAsciiInterp.h"
@@ -1031,11 +1037,35 @@ ParseCat(char *catFile)
  * Parse a schema from buffer(s).
  */
 char *
-ParseSchema(char *schemaName, char *physSchema, char *logSchema)
+//ParseSchema(char *schemaName, char *physSchema, char *logSchema)
+ParseSchema(char *schemaName, char *logSchema, char *physSchema)
 {
 	char *		result = NULL;
 
-/*TEMPTEMP*/fprintf(stderr, ">> Into ParseSchema(");
-/*TEMPTEMP*/fprintf(stderr, "  %s, %s, %s)\n", schemaName, physSchema, logSchema);
+	if ((logSchema != NULL) && (strcmp(logSchema, "")))
+	{
+		DOASSERT(false, "Logical schemas in session files not yet implemented");
+	}
+	else
+	{
+		char	tmpPhysFile[MAXPATHLEN];
+
+		tmpnam(tmpPhysFile);
+		int fd = open(tmpPhysFile, O_WRONLY | O_CREAT, 0600);
+		if (fd == -1)
+		{
+			fprintf(stderr, "Creation of temporary schema file failed\n");
+		}
+		else
+		{
+			write(fd, physSchema, strlen(physSchema));
+			close(fd);
+
+      		result = ParseCatPhysical(tmpPhysFile, true);
+
+			unlink(tmpPhysFile);
+		}
+	}
+
 	return result;
 }
