@@ -1001,7 +1001,7 @@ Num Date        Status  Description
 251 12/12/97	OPEN	In color GUI, OK is to the right of Cancel; it's to
 			the left in the rest of the GUI. (rkw)
 
-252 12/12/97	OPEN	Changing data color changes color of drill-down
+252 12/12/97	FIXED	Changing data color changes color of drill-down
 			results popup. (rkw)
 
 253 12/12/97	FIXED	Axis values don't show up with new color manager. (rkw)

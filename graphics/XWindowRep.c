@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.112  1998/06/03 17:09:31  wenger
+  Rubberband line in JavaScreen now sends updates of all changed windows
+  using the "dirty GIF" flag; updated DEVise version to 1.5.3.
+
   Revision 1.111  1998/05/21 18:18:35  wenger
   Most code for keeping track of 'dirty' GIFs in place; added 'test'
   command to be used for generic test code that needs to be controlled
@@ -3414,6 +3418,10 @@ void XWindowRep::Iconify()
 #ifndef RAWMOUSEEVENTS
 void XWindowRep::DoPopup(int x, int y, int button)
 {
+#if defined(DEBUG)
+  printf("XWindowRep::DoPopup(%d, %d)\n", x, y);
+#endif
+
   DOASSERT(_win, "Cannot display pop-up window in pixmap");
 
   char **msgs;
@@ -3441,8 +3449,9 @@ void XWindowRep::DoPopup(int x, int y, int button)
   }
   textHeight = charHeight * numMsgs;
 
-	XColorID	fgnd = AP_GetXColorID(GetForeground());
-	XColorID	bgnd = AP_GetXColorID(GetBackground());
+  SetForeground(GetPColorID(blackColor));
+  XColorID	fgnd = AP_GetXColorID(GetForeground());
+  XColorID	bgnd = AP_GetXColorID(GetBackground());
 
   /* Create window */
   XSetWindowAttributes attr;
@@ -3754,7 +3763,8 @@ DevisePixmap *XWindowRep::GetPixmap()
     char *cBuf = _compress->CompressLine(image->data, image->bytes_per_line,
 					 outCount);
     XDestroyImage(image);
-    if (outCount + outIndex + sizeof(int) > MAX_PIXMAP_BUF_SIZE ) {
+    if (outCount + outIndex + sizeof(int) >
+		(unsigned int)MAX_PIXMAP_BUF_SIZE ) {
       /* no more buffer */
       delete pixmap;
       return NULL;
