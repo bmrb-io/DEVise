@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.180  1999/07/14 20:45:36  wenger
+  Added more debug logging.
+
   Revision 1.179  1999/07/14 18:42:39  wenger
   Added the capability to have axes without ticks and tick labels.
 
@@ -931,13 +934,16 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	xAxis.width = _defaultXAxisWidth;
 	xAxis.numTicks = 8;
 	xAxis.significantDigits = 6;
+	//TEMP -- we really should adjust this value depending on the length
+	// of the tick label strings -- if we have large values, the tick
+	// labels can overlap.  RKW 1999-07-14.
 	xAxis.labelWidth = 60;
 
 	yAxis.inUse = false;
 	yAxis.width = _defaultYAxisWidth;
 	yAxis.numTicks = 8;
 	yAxis.significantDigits = 6;
-	yAxis.labelWidth = 40;
+	yAxis.labelWidth = 20;
 
 	zAxis.inUse = false;
 	zAxis.width = _defaultZAxisWidth;
@@ -1770,6 +1776,7 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
     Coord xPixel = (tickMark - _filter.xLow) * (axisMaxX - startX) /
         (_filter.xHigh - _filter.xLow) + startX;
 
+    // Draw the tick mark itself.
     win->Line(xPixel, axisY, xPixel, axisY - tickLength, 1);
 
     char buf[32];
@@ -1778,21 +1785,37 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
     Coord labelX = xPixel - xAxis.labelWidth / 2;
 
     /* make sure label doesn't go past left or right edge */
+    Boolean pastLeft, pastRight;
     if (labelX < startX) {
+      pastLeft = true;
+    } else {
+      pastLeft = false;
+    }
+
+    if (labelX + xAxis.labelWidth > axisX + axisWidth) {
+      pastRight = true;
+    } else {
+      pastRight = false;
+    }
+
+    if (!pastLeft && !pastRight) {
+      win->AbsoluteText(buf, labelX, axisY - tickLength - (axisHeight-1),
+			xAxis.labelWidth,
+			axisHeight - 1, WindowRep::AlignCenter, true);
+    } else if (pastLeft && !pastRight) {
       labelX = startX;
       win->AbsoluteText(buf, labelX, axisY - tickLength - (axisHeight-1), 
 			xAxis.labelWidth,
 			axisHeight - 1, WindowRep::AlignWest, true);
-    } else if (labelX + xAxis.labelWidth > axisX + axisWidth) {
+    } else if (!pastLeft && pastRight) {
       labelX = axisX + axisWidth - xAxis.labelWidth;
       win->AbsoluteText(buf, labelX, axisY - tickLength - (axisHeight-1),
 			xAxis.labelWidth,
 			axisHeight - 1, WindowRep::AlignEast, true);
     } else {
-      win->AbsoluteText(buf, labelX, axisY - tickLength - (axisHeight-1),
-			xAxis.labelWidth,
-			axisHeight - 1, WindowRep::AlignCenter, true);
+      // Don't draw the label.
     }
+
     tickMark += tickInc;
   }
 }
@@ -1875,6 +1898,7 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
     Coord yPixel = (tickMark - _filter.yLow) * (axisMaxY-startY) /
       (_filter.yHigh - _filter.yLow) + startY;
 
+    // Draw the tick mark itself.
     win->Line(axisMaxX, yPixel, axisMaxX - tickLength, yPixel, 1);
 
     char buf[32];
@@ -1883,18 +1907,34 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
     Coord labelY = yPixel - yAxis.labelWidth/2;
 
     /* make sure label doesn't go past bottom or top edge */
+    Boolean pastBottom, pastTop;
     if (labelY < startY) {
+      pastBottom = true;
+    } else {
+      pastBottom = false;
+    }
+
+    if (labelY + yAxis.labelWidth > axisY + axisHeight) {
+      pastTop = true;
+    } else {
+      pastTop = false;
+    }
+
+    if (!pastBottom && !pastTop) {
+      win->AbsoluteText(buf, axisX, labelY, axisWidth-1,
+			yAxis.labelWidth, WindowRep::AlignCenter, true);
+    } else if (pastBottom && !pastTop) {
       labelY = startY;
       win->AbsoluteText(buf, axisX, labelY, axisWidth-1,
 			yAxis.labelWidth, WindowRep::AlignSouth, true);
-    } else if (labelY + yAxis.labelWidth > axisY + axisHeight) {
+    } else if (!pastBottom && pastTop) {
       labelY = axisMaxY - yAxis.labelWidth;
       win->AbsoluteText(buf, axisX, labelY, axisWidth-1,
 			yAxis.labelWidth, WindowRep::AlignNorth, true);
     } else {
-      win->AbsoluteText(buf, axisX, labelY, axisWidth-1,
-			yAxis.labelWidth, WindowRep::AlignCenter, true);
+      // Don't draw the label.
     }
+
     tickMark += tickInc;
   }
 }
