@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/11/18 23:40:57  wenger
+  Got 'multi' to compile with latest Color stuff.
+
   Revision 1.15  1996/07/19 03:49:19  jussi
   Changed View * to ViewGraph *.
 
@@ -309,28 +312,18 @@ void CodeGen(MappingRec *rec, FILE *mapFile)
 
   /* generate code to convert symbol to gdata */
 
-  fprintf(mapFile, "\tvirtual void ConvertToGData(RecId recId,void *buf, void **tRecs, int numRecs, void *gdataBuf) {\n");
+  fprintf(mapFile, "\tvirtual void ConvertToGData(RecId recId,void *buf, int numRecs, void *gdataBuf) {\n");
   fprintf(mapFile, "\t\tint tRecSize= TDataRecordSize();\n");
   fprintf(mapFile, "\t\tint gRecSize= GDataRecordSize();\n");
   fprintf(mapFile, "\t\tchar *gBuf= (char *)gdataBuf;\n");
-  fprintf(mapFile, "\t\tif (tRecSize > 0) {\n");
-  fprintf(mapFile, "\t\t\tchar *tptr = (char *)buf;\n");
-  fprintf(mapFile, "\t\t\tfor(int i = 0; i < numRecs; i++) {\n");
-  fprintf(mapFile, "\t\t\t\t%s_GData *symbol = (%s_GData *)gBuf;\n",rec->name,rec->name);
-  fprintf(mapFile, "\t\t\t\t%s *data = (%s *)tptr;\n",rec->recType, rec->recType);
-  fprintf(mapFile, "\t\t\t\ttptr += tRecSize;\n");
+  fprintf(mapFile, "\t\tchar *tptr = (char *)buf;\n");
+  fprintf(mapFile, "\t\tfor(int i = 0; i < numRecs; i++) {\n");
+  fprintf(mapFile, "\t\t\t%s_GData *symbol = (%s_GData *)gBuf;\n",rec->name,rec->name);
+  fprintf(mapFile, "\t\t\t%s *data = (%s *)tptr;\n",rec->recType, rec->recType);
+  fprintf(mapFile, "\t\t\ttptr += tRecSize;\n");
   fprintf(mapFile, "%s\n", rec->mappingText);
-  fprintf(mapFile, "\t\t\t\trecId++;\n");
-  fprintf(mapFile, "\t\t\t\tgBuf += gRecSize;;\n");
-  fprintf(mapFile, "\t\t\t}\n");
-  fprintf(mapFile, "\t\t} else {\n");
-  fprintf(mapFile, "\t\t\tfor(int i = 0; i < numRecs; i++) {\n");
-  fprintf(mapFile, "\t\t\t\t%s_GData *symbol = (%s_GData *)gBuf;\n", rec->name, rec->name);
-  fprintf(mapFile, "\t\t\t\t%s *data = (%s *)tRecs[i];\n", rec->recType, rec->recType);
-  fprintf(mapFile, "%s\n", rec->mappingText);
-  fprintf(mapFile, "\t\t\t\trecId++;\n");
-  fprintf(mapFile, "\t\t\t\tgBuf += gRecSize;\n");
-  fprintf(mapFile, "\t\t\t}\n");
+  fprintf(mapFile, "\t\t\trecId++;\n");
+  fprintf(mapFile, "\t\t\tgBuf += gRecSize;;\n");
 
 #if 0
   fprintf(mapFile, "\t\t\tSymbol *symbol = syms[i];\n");
