@@ -15,8 +15,35 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.135  1997/06/10 02:29:04  guangshu
+#	Added Unidata Physical schema menu button.
+#
+#	Revision 1.134  1997/06/09 14:47:08  wenger
+#	Added cursor grid; fixed bug 187; a few minor cleanups.
+#
+#	Revision 1.133  1997/06/05 21:08:54  wenger
+#	User-configurability of '4', '5', and '6' keys is now completed.
+#
+#	Revision 1.132  1997/05/30 20:46:16  wenger
+#	Added GUI to allow user to specify windows to exclude from display
+#	print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
+#	implemented but pixmap printing is not.
+#
+#	Revision 1.131  1997/05/28 15:39:50  wenger
+#	Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+#
 #	Revision 1.130  1997/05/08 00:14:36  wenger
 #	Removed layout manager GUI.
+#
+#	Revision 1.129.4.3  1997/05/27 18:03:04  wenger
+#	Minor bug fixes and cleanup to Shilpa's layout manager code and associated
+#	code.
+#
+#	Revision 1.129.4.2  1997/05/20 19:49:55  ssl
+#	Minor changes to compile LM code.
+#
+#	Revision 1.129.4.1  1997/05/20 16:11:24  ssl
+#	Added layout manager to DEVise
 #
 #	Revision 1.129  1997/04/30 18:27:21  wenger
 #	Added session text description capability.
@@ -583,7 +610,7 @@ set DEViseShapes \
         {3 {Regular Polygon}} {4 Oval} {5 Vector} {6 HorLine} \
         {7 Segment} {8 HighLow} {9 Polyline} {10 {Image}} \
 	{11 {Polyline File}} {12 {Text Label}} {16 {Fixed Text Label}} \
-	{15 {Tcl/Tk Window}}}
+	{15 {Tcl/Tk Window}} {17 {View}} }
 
 # global variables:
 # restoring: true if restoring session or template
@@ -639,6 +666,20 @@ if { [info exists env(DEVISE_TMP)] } {
     set tmpdir $env(DEVISE_TMP)
 }
 
+#####ENV variables for LM
+set libdirLM "."
+if { [info exists env(LM_LIB)] } {
+    set libdirLM $env(LM_LIB)
+}
+set datdirLM "."
+if { [info exists env(LM_DAT)] } {
+    set datdirLM $env(LM_DAT)
+}
+set tmpdirLM "."
+if { [info exist env(LM_TMP)] } {
+    set tmpdirLM $env(LM_TMP) 
+}
+
 set filterdir $schemadir/query
 
 set hostCfg $libdir/config.tcl
@@ -680,6 +721,11 @@ source $libdir/tdata.tk
 source $libdir/layout.tk
 source $libdir/lens.tcl
 source $libdir/lensgui.tk
+source $libdir/win_print_config.tcl
+source $libdirLM/DEViseLMComm.tk
+source $libdirLM/DEViseIfc.tk
+source $libdir/view_config.tcl
+source $libdir/cursor_grid.tcl
 
 set mode 0
 DEVise changeMode $mode
@@ -746,6 +792,9 @@ if {0} {
 }
 
 wm title . "DEVise"
+global DEViseApp 
+set DEViseApp [winfo name .]
+#puts "DEVise = $DEViseApp"
 
 bind . q DoExit
 bind . <Control-c> DoExit
@@ -834,14 +883,14 @@ proc displayTable {table} {
          dialog .note "Note" "Please select only one table." "" 0 OK
          return
      }
-	set tdata_schema_pair [OpenAndDefineDataSources 0 $table]
+     set tdata_schema_pair [OpenAndDefineDataSources 0 $table]
      if {$tdata_schema_pair == ""} {
           puts "tdata = NULL"
           return
      }
      set tdata [lindex $tdata_schema_pair 0]
      set schemaname [lindex $tdata_schema_pair 1]
-	set is_dte_type [lindex $tdata_schema_pair 2]
+     set is_dte_type [lindex $tdata_schema_pair 2]
      MacroDefAuto $tdata $schemaname $is_dte_type 
 }
 
@@ -1065,7 +1114,7 @@ menu .mbar.tdata.menu.schemaMenu -tearoff 0
 .mbar.tdata.menu.schemaMenu add separator
 .mbar.tdata.menu.schemaMenu add command -label "Physical..." \
 	-command {SchemaEdit 0}
-.mbar.tdata.menu.schemaMenu add command -label "Physical Unidata" \
+.mbar.tdata.menu.schemaMenu add command -label "Physical Unidata..." \
 	-command {SchemaEdit 3}
 .mbar.tdata.menu.schemaMenu add command -label "Logical..." \
 	-command {SchemaEdit 1}
@@ -1150,6 +1199,9 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 	-command DoSetCursorSrc
 .mbar.view.menu.cursorMenu add command -label "Set Destination" \
 	-command DoSetCursorDst
+.mbar.view.menu.cursorMenu add separator
+.mbar.view.menu.cursorMenu add command -label "Set Grid" \
+	-command DoSetCursorGrid
 #.mbar.view.menu.cursorMenu add separator
 #.mbar.view.menu.cursorMenu add command -label "Set Record Cursor" \
 #	-command DoSetRecordCursor
@@ -1161,6 +1213,8 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 .mbar.view.menu add cascade -label "Kiviat Graph" -menu .mbar.view.menu.kmenu
 .mbar.view.menu add separator
 .mbar.view.menu add cascade -label "Dimensions" -menu .mbar.view.menu.dimmenu
+.mbar.view.menu add cascade -label "Keypad Config"  \
+    -menu .mbar.view.menu.configmenu
 .mbar.view.menu add command -label "Color Override" -command DoSetOverrideColor
 .mbar.view.menu add command -label "3D Query" -command Do3DQuery
 
@@ -1230,6 +1284,12 @@ menu .mbar.view.menu.dimmenu -tearoff 0
 .mbar.view.menu.dimmenu add command -label "Three Dimensions" \
 	-command { DoSetViewDimensions 3 }
 
+menu .mbar.view.menu.configmenu -tearoff false
+.mbar.view.menu.configmenu add command -label "Home" \
+    -command { GetViewHome }
+.mbar.view.menu.configmenu add command -label "Horiz. Scroll" \
+    -command { GetViewHorPan }
+
 menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "Toggle X Axis" \
     -command { DoToggleAxisWindow X }
@@ -1251,6 +1311,10 @@ menu .mbar.window.menu -tearoff 0
     -command { set tmp [DoCreateWindow "Select window type"]; unset tmp }
 .mbar.window.menu add command -label "Layout" -command { SetWindowLayout "" }
 #.mbar.window.menu add command -label "Layout-Manager" -command { RootLayout }
+#.mbar.window.menu add command -label "LM Cmd test " -command \
+#	{ SendCommandToLM "LM printWindow Display" }
+.mbar.window.menu add command -label "Layout Manager" -command \
+	{ LayoutManager } 
 .mbar.window.menu add command -label "Remove" -command { RemoveWindow "" }
 .mbar.window.menu add command -label "Duplicate" -command DupWindow
 .mbar.window.menu add separator
@@ -1268,6 +1332,7 @@ menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "Bring View Back" -command DoBringView
 .mbar.window.menu add separator
 .mbar.window.menu add command -label "View List" -command WinViewList
+.mbar.window.menu add command -label "Print Config" -command GetWinPrintConfig
 
 .mbar.window.menu add separator
 .mbar.window.menu add command -label "Destroy" -command { RemoveWindow "" }
@@ -1434,6 +1499,68 @@ proc FindDefaultXAttr { attrs } {
     }
 }
 
+#proc DoEditMapping {} {
+#    global curView
+#
+#    if {![CurrentView]} {
+#	 return
+#    }
+#    
+#    if {[WindowVisible .editMapping]}  {
+#	 return
+#    }
+#    
+#    # Get mapping for the view (first one)
+#    set map [lindex [DEVise getViewMappings $curView] 0]
+#    
+#    # See if map is interpreted
+#    set found 0
+#    foreach m [InterpretedGData] {
+#	 if {$m == $map} {
+#	     set found 1
+#	     break
+#	 }
+#    }
+#    if {!$found} {
+#	 dialog .editError "Mapping Not Interpreted" \
+#		 "View has a compiled mapping which cannot be edited." "" 0 OK
+#	 return
+#    }
+#    
+#    EditMapping $map     
+#}
+#
+#
+#proc EditMapping { map } {
+#    global sourceList derivedSourceList
+#
+#    # Get parameters for the mapping
+#    set params [DEVise getInstParam $map]
+#    
+#    if {$params == ""} {
+#	 dialog .editError "No Mapping Parameters" \
+#		 "Mapping has no parameters." "" 0 OK
+#	 return
+#    }
+#    
+#    set tdata [lindex [lindex $params 0] 1]
+#    
+#    set err [catch {set sfname [lindex $sourceList($tdata) 3]}]
+#    if {$err > 0} {
+#	 set sfname [lindex $derivedSourceList($tdata) 3]
+#    }
+#    set schemaname [file tail $sfname]
+#
+#    # set attrs [DEVise getSchema $tdata]
+#    
+#    dialogMapping .editMapping "Edit Mapping" \
+#	     "Edit Mapping" ""   \
+#	     $schemaname \
+#	     $params \
+#	     $map \
+#	     0
+#}
+#
 # Close current session
 proc DoClose {{askUser 1}} {
     global sessionName templateMode datadir sourceList
@@ -1499,7 +1626,7 @@ proc DoOpen { asTemplate } {
     
     # Get a session file name
     set fsBox(path) $sessiondir
-    set fsBox(pattern) *.tk*
+    set fsBox(pattern) *.tk
     set file [ FSBox "Select session file to open" ]
     
     if {$file == ""} {
@@ -1536,7 +1663,7 @@ proc DoDelete {} {
 
     # Get a session file name
     set fsBox(path) $sessiondir
-    set fsBox(pattern) *.tk*
+    set fsBox(pattern) *.tk
     set file [ FSBox "Select session file to DELETE" ]
     
     if {$file == ""} {
@@ -1976,3 +2103,14 @@ proc ShowKGraph {} {
     eval $cmd
 }
 
+global layoutManagerUp
+set layoutManagerUp 0
+proc LayoutManager { } {
+    global layoutManagerUp 
+    if { !$layoutManagerUp } {
+	puts "starting LM ......please wait"
+	DEVise startLayoutManager
+	puts "...................................done"
+	set layoutManagerUp 1
+    } 
+}
