@@ -16,12 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/14 17:43:39  jussi
+  Small fix to get rid of g++ -Wall warnings.
+
   Revision 1.2  1995/09/05 22:15:18  jussi
   Added CVS header.
 */
 
 #ifndef QueryProcSimple_h
 #define QueryProcSimple_h
+
 #include "Config.h"
 #include "QueryProc.h"
 #include "DeviseTypes.h"
@@ -30,6 +34,7 @@
 #include "BufPolicy.h"
 #include "BufHint.h"
 #include "RecId.h"
+#include "GDataRec.h"
 
 class BufMgr;
 class TData;
@@ -41,12 +46,11 @@ const int QUERYPROC_MAXSYMS = 4096; /* max # of symbols in symbols array */
 const int MAX_RANGES = 1024;
 
 /* # of consecutive gdata page prefetch before attempting to throw away
-tdata pages covered by the scan */
+   tdata pages covered by the scan */
 const int G_PREFETCH_THROW_INCREMENT = 20; 
 
 class MemAlloc;
 
-const int MAX_GDATA_REC_SIZE = 32;
 const int NUM_QUERY_RECS = 1000;
 const int QUERYPROC_MAX_PAGES = DEVISE_PAGESIZE;
 
