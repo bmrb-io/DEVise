@@ -17,12 +17,17 @@ commands were added, this would not be necessary.  The advantage is
 that streams can be defined without being defined at the front-end,
 but the front-end can still be used to create new views, etc. (kb 8/2/96)
 
+Make automated test scripts. (rr/rkw 1/9/97)
+
 
 HIGH PRIORITY
 -------------
-Make automated test scripts. (rr/rkw 1/9.97)
-
 Major source code reorganization. (rkw 1/9/97)
+
+Make mapping dialog work like the query dialog in that you can select
+different views and the mapping dialog switches to the current
+mapping, and then there should be an 'apply' button to accept changes
+without closing the dialog.  (kb 8/2/96)
 
 Be able to use the mapping dialog to change some values for all views in
 a window (for example, change the symbol for all views from bars to lines).
@@ -339,15 +344,20 @@ Transition user manual from TeX/PostScript to html. (rr/rkw 1/29/97)
 Add a new rectangular shape type whose location is specified by the
 lower left corner rather than the center. (ml/rkw 1/29/97)
 
-When drilling down, allow showing of longer strings in the output. (ak/rkw
-2/3/97)
-
 Allow dotted/dashed lines in Devise. (ma/rkw 2/3/97)
 
-Allow user to change window names. (ma/rkw 2/4/97)
+Allow user to change window names (really titles). (ma/rkw 2/4/97)
+
+Allow access to Qclic browser functions on Tasvir images.  (rr/ml/rkw 2/5/97)
 
 Allow the user to configure the visual filter that will be selected
 with the 5 key. (ml/rkw 2/11/97)
+
+Allow adding a legend to piled views to distinguish the various traces.
+(ma/rkw 2/14/97)
+
+Default view title should always be 'attr1 vs. attr2', not the data stream
+name. (ma/rkw 2/14/97)
 
 
 COMPLETED
@@ -391,6 +401,9 @@ Improve sizing of Tasvir images so that they work like other symbols.
 
 Move handling of web data to V-engine.
 
+Allow functions such as toggling axes and setting foreground and background
+colors to be done on a per-window basis. (ml/rkw 2/6/97)
+
 Make mapping dialog work like the query dialog in that you can select
 different views and the mapping dialog switches to the current
 mapping, and then there should be an 'apply' button to accept changes
@@ -399,6 +412,8 @@ without closing the dialog.  (kb 8/2/96)
 
 CANCELLED
 ---------
+When drilling down, allow showing of longer strings in the output. (ak/rkw
+2/3/97) (Not needed -- was really a schema problem.  rkw 2/14/97)
 
 
 ak = alain@cs.wisc.edu = Alain Kagi
