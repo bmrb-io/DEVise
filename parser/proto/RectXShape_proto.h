@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/11/27 15:38:58  jussi
+  Initial revision.
+*/
 
 #ifdef DYNAMIC_X
 #define GDATA_X (gdata->x)
@@ -89,7 +92,6 @@ public:
     win->Transform(0, 0, x0, y0);
     win->Transform(1, 1, x1, y1);
     Coord pixelWidth = 1 / fabs(x1 - x0);
-    Coord pixelHeight = 1 / fabs(y1 - y0);
 
 #ifndef DYNAMIC_COLOR
     win->SetFgColor(GDATA_COLOR);
