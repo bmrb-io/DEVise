@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.23  1997/01/23 19:28:27  jussi
+#  Removed debugging messages. Fixed bug #126.
+#
 #  Revision 1.22  1997/01/23 16:02:24  jussi
 #  Removed debugging message.
 #
@@ -350,8 +353,8 @@ proc DoCreateWindow { message } {
 	
 
     set answer [ dialogList .createWin "Create Window"  \
-	    $message "" "" { Cancel Ok } $winTypes ]
-    if {$answer == 0 || $dialogListVar(selected) == ""} {
+	    $message "" "" { OK Cancel } $winTypes ]
+    if {$answer == 1 || $dialogListVar(selected) == ""} {
 	return ""
     } else {
 	return [ DoActualCreateWindow $dialogListVar(selected) ]
@@ -371,9 +374,9 @@ proc DoActualCreateWindow { winType } {
 
     set button [ dialogParam .windowParam "Create Window" \
 	    "Enter window parameters"\
-	    "" 1 { Cancel OK } $paramNames ]
+	    "" 0 { OK Cancel } $paramNames ]
 
-    if { $button == 0} {
+    if { $button == 1} {
 	return
     }
 
