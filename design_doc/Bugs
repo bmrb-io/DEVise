@@ -2158,6 +2158,13 @@ Num Date        Status  Description
 			in GData should not prevent the JavaScreen from
 			drawing *some* symbol. (rkw)
 
+553 01/06/00	OPEN	If the JavaScreen requests that the devised open a
+			session, and the session can't be opened (because of
+			a bad command, for example), this is not clearly
+			communicated back to the JavaScreen -- the user
+			can't tell the difference between a simple error, and
+			the devised crashing. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
