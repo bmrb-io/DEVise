@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.43  1996/11/18 23:11:32  wenger
+  Added procedures to generated PostScript to reduce the size of the
+  output and speed up PostScript processing; added 'small font' capability
+  and trademark notice to PostScript output; improved text positioning in
+  PostScript output (but still a ways to go); added a little debug code;
+  fixed data/axis area bugs (left gaps); fixed misc. bugs in color handling.
+
   Revision 1.42  1996/11/18 18:10:56  donjerko
   New files and changes to make DTE work with Devise
 
@@ -388,16 +395,18 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
   _totalGData += numGData;
   _numBatches++;
 
-  Boolean canElimRecords = true;
+  char *tp = (char *)gdata;
+  GDataAttrOffset *offset = mapping->GetGDataOffset();
+
+  // Can do record elimination only for constant bar shape
+  Boolean canElimRecords = false;
+  if (offset->shapeOffset < 0 && mapping->GetDefaultShape() == 2)
+      canElimRecords = true;
 
   // Collect statistics and update record links only for last mapping
   if (!MoreMapping(_index)) {
 
-    char *tp = (char *)gdata;
-    GDataAttrOffset *offset = mapping->GetGDataOffset();
-
     int firstRec = 0;
-
 
     for(int i = 0; i < numGData; i++) {
       // Extract X, Y, shape, and color information from gdata record
@@ -409,10 +418,6 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 	color = *(GlobalColor *)(tp + offset->colorOffset);
       Boolean complexShape = mapping->IsComplexShape(shape);
       complexShape |= (GetNumDimensions() == 3);
-
-      // Line and LineShade records prevent record elimination
-      if (shape == 13 || shape == 14 || complexShape)
-        canElimRecords = false;
 
       // Compute statistics only for records that match the filter's
       // X range, regardless of the Y boundary
