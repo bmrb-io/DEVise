@@ -15,7 +15,7 @@
 
 # $Id$
 
-JAVAC=javac -d . -depend
+JAVAC=javac -d .
 
 all: js jsa jspop jss
 js: js.class
