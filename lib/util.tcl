@@ -15,6 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.37  1997/01/17 20:32:31  wenger
+#  Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
+#  simulation of XOR drawing in PSWindowRep; removed diagnostic output
+#  from Tcl/Tk code; removed (at least for now) the ETk interface from
+#  the cslib versions of WindowRep classes so that the cslib will link
+#  okay; cslib server now tests XOR drawing.
+#
 #  Revision 1.36  1997/01/13 18:08:16  wenger
 #  Fixed bugs 043, 083, 084, 091, 114.
 #
@@ -808,6 +815,17 @@ proc WindowVisible {w} {
     } else {
 	wm withdraw $w
 	wm deiconify $w
+    }
+
+    return 1
+}
+
+proc WindowExists {w} {
+    # see if $w already exists
+    set err [catch {set state [wm state $w]}]
+	
+    if {$err} {
+	return 0
     }
 
     return 1
