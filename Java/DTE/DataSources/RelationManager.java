@@ -12,17 +12,24 @@ import Types.*;
  * defFile contains sequence of DataSource definitions.
 */
 
+/** This class implements the RelationManager with two files, say idfile and
+    deffile. Idfile is a sequence of binary integers that represent offset 
+    into deffile, which contains the sequence of StandardTable definitions.*/
+
 public class RelationManager {
   private String idStream;
   private String defStream;
 
+  /** constructor with the idfile and deffile names as arguments. */
   public RelationManager(String istr, String dstr ){
     idStream = new String(istr);
     defStream = new String(dstr);
   }
 
-  /** Return immutable (unique and nonchangable) relation id */
+  
 
+  /** This method registers a new StandardTable into the idfile and deffile, 
+      and it returns a unique relation id. */
   public RelationId registerNewRelation(DataSource dataSrc)
          throws IOException
   {
@@ -38,7 +45,7 @@ public class RelationManager {
       d_fout.seek( d_length ); //write append to tail of def file
       d_fout.writeChars(dataSrc.getString());
     }catch(IOException e){
-      throw new IOException();};
+      throw new IOException("Failed to register this new StandardTable to definition file");};
    
 
     try{
@@ -56,12 +63,12 @@ public class RelationManager {
       throw new IOException("Failed to open idfile:"+ idStream);};
 
    
-    try{
+    //try{
       i_length = i_fout.length();
       i_fout.seek( i_length );  //write appends to the tail
       i_fout.writeInt((int)d_length);
-    }catch(IOException e){
-      throw new IOException();};
+      //}catch(IOException e){
+      //throw new IOException("Failed to register this new StandardTable to idfile");};
 
     try{
       i_fout.close();
@@ -74,14 +81,14 @@ public class RelationManager {
 
 
    
-
+  /** This method fetches the StandardTable with the given relation id.*/
   public DataSource createDataSource(RelationId relId)
          throws IOException
   {
 
     int lcid = relId.getLocalId();
     if( relId.getServerId() != 1)    //DTE_SERVER_ID
-      throw new IOException("Remote ServerID yet-to-be Implemented");
+      throw new IOException("Remote ServerID yet-to-be Implemented, please use default serverid 1");
 
     RandomAccessFile i_fin = null;
     try{
@@ -89,17 +96,14 @@ public class RelationManager {
     }catch(IOException e){
        throw new IOException("Failed to open idfile:"+ idStream);};
  
+    int offset = 0;                //offset to description file 
+ 
     try{
       i_fin.seek( (long)(lcid * 4) );   
-    }catch(IOException e){
-      throw new IOException();};
-
-    int offset = 0;            //offset to description file 
-
-    try{
+    
       offset = i_fin.readInt();
     }catch(IOException e){
-      throw new IOException();};
+      throw new IOException("Fail to fetch the offset of the StandardTable from idfile" );};
 
     try{
       i_fin.close();
@@ -114,18 +118,16 @@ public class RelationManager {
     }catch(IOException e){
        throw new IOException("Failed to open description file:"+ defStream);};
 
-    try{
-      d_fin.seek((long)offset);
-    }catch(IOException e){
-      throw new IOException();};
-
+    
+    d_fin.seek((long)offset);
+    
     String schstr = new String();
     char strch = 'a';   //dummy initial value
 
     try{
       strch = d_fin.readChar();
     }catch(IOException e){
-      throw new IOException();};
+      throw new IOException("Fail to fetch StandardTable from deffile");};
 
   
     while( strch != ';' ){
@@ -134,7 +136,7 @@ public class RelationManager {
       try{
 	strch = d_fin.readChar();
       }catch(IOException e){
-	throw new IOException();};
+	throw new IOException("Fail to fetch StandardTable from deffile");};
     }
 
     try{
@@ -156,7 +158,7 @@ public class RelationManager {
   }
   
 
-  
+  /*
   public static void main(String[] args){
 
 	// this is the test code
@@ -170,7 +172,8 @@ public class RelationManager {
 
     
   }
-   
+  */
+
 }
 
 

@@ -4,21 +4,28 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 
+/** This class implements the schema of relation. */
+
 public class Schema {
 
   TypeDesc[] typeIDs;
   String[] attributeNames;
 
+  /** constructor with no arguments. */
   public Schema(){}
 
+  /** This method returns the attributes names array of this schema. */
   public String[] getAttributeNames(){
     return attributeNames;
   }
 
+  /** This method returns the typedesc array of this schema. */
   public TypeDesc[] getTypeDescs(){
     return typeIDs;
   }
 
+  /** constructor(int String) with the number of attributes of this schema,
+      the type name and attribute name as arguments. */ 
   public Schema(int nf,  String str ) {
     if( str != null ){
 
@@ -29,8 +36,8 @@ public class Schema {
       attributeNames = new String[ numFlds ];
 
       String s;
-      while( st.hasMoreTokens() ){
-	for(int i=0; i<numFlds; i++){
+      // while( st.hasMoreTokens() ){
+	for(int i=0; i<numFlds && st.hasMoreTokens() ; i++){
           s = st.nextToken();
           if( s.equals("int"))
 	    typeIDs[i] = new IntDesc();
@@ -46,10 +53,11 @@ public class Schema {
           
 	  attributeNames[i] = st.nextToken();
 	}
-      }
     }
   }
 
+  /** constructor with the number of attribute, typenames and attribute
+      names as arguments. */
   public Schema(int numFlds, String types, String attrnms){
     if( types != null && attrnms != null){
       
@@ -79,11 +87,15 @@ public class Schema {
 	  attributeNames[i] = st2.nextToken();
 	}
       }
+      else {
+       System.out.println("Numbers of attribute types and names do not match");
+       System.exit(1);
+      }
     }
   }
  
 
-
+  /** This method reads the schema from the given StreamTokenizer. */
   public boolean read( StreamTokenizer st ) throws IOException {
     
     int count=0;
@@ -127,7 +139,7 @@ public class Schema {
     return false;
   }
   
-
+  /** This method returns the number of attributes of this schema. */
   public int getnumFlds() {
     if( typeIDs.length == attributeNames.length)
       return typeIDs.length;
@@ -135,6 +147,7 @@ public class Schema {
       return 0;
   }
 
+  /** This method returns the string representation of this schema.*/
   public String getString(){
     String str = new String( );
     str += typeIDs.length;
@@ -149,7 +162,8 @@ public class Schema {
     return str;  
   }
   
- public String getTypeAttr(){
+  /** This method returns the attribute type names of this schema. */
+  public String getTypeAttr(){
     String str = new String();
     for(int i=0; i<typeIDs.length; i++){
       str += typeIDs[i].getString() + " ";
@@ -158,7 +172,7 @@ public class Schema {
     return str;
   }
     
-
+  /**This method simply prints out the attribute type names for test purpose.*/
   public void printTypes(){
     String str = new String();
     for(int i=0; i<typeIDs.length; i++){
@@ -168,7 +182,7 @@ public class Schema {
     System.out.println( str);
   }
 
-  
+  /**This method simply prints out the attribute names for test purpose.*/
   public void printAttrnms(){
     String str = new String();
     for(int i=0; i<attributeNames.length; i++){
@@ -178,106 +192,9 @@ public class Schema {
     System.out.println( str);
   }
 
-
-  public static void main(String[] str){
-
-    System.out.println("*********Test constructors of Schema****************");
-
-    Schema s1 = new Schema(4, "int sid string sname double gpa int deptid");
-
-    Schema s2 = new Schema(4, "int string double int", "sid sname gpa deptid");
-
-    System.out.println("------Case 1: test constructors with the same input");
-    System.out.println("Schema 1:");
-    System.out.println("Number of Fields:" + s1.getnumFlds());
-   
-    System.out.print("Types of Attributes:");
-    s1.printTypes();
-    System.out.print("Names of Attributes:");
-    s1.printAttrnms();
-
-    System.out.print("Output of Schema: ");
-    System.out.println( s1.getString());
-    System.out.println();
-
-    //****************************************************************************
-    System.out.println("Schema 2:");
-    System.out.println("Number of Fields:" + s2.getnumFlds());
-   
-    System.out.print("Types of Attributes:");
-    s2.printTypes();
-    System.out.print("Names of Attributes:");
-    s2.printAttrnms();
-
-    System.out.print("Output of Schema: ");
-    System.out.println( s2.getString());
-    System.out.println();
-
-    s1 = new Schema(2, "int deptid string location");
-
-    s2 = new Schema(3, "string int int", "pname deptid courseid");
-
-    System.out.println("------Case 2: test constructors with the different input");
-    System.out.println("Schema 3:");
-    System.out.println("Number of Fields:" + s1.getnumFlds());
-   
-    System.out.print("Types of Attributes:");
-    s1.printTypes();
-    System.out.print("Names of Attributes:");
-    s1.printAttrnms();
-
-    System.out.print("Output of Schema: ");
-    System.out.println( s1.getString());
-    System.out.println();
-
-    //****************************************************************************
-    System.out.println("Schema 4:");
-    System.out.println("Number of Fields:" + s2.getnumFlds());
-   
-    System.out.print("Types of Attributes:");
-    s2.printTypes();
-    System.out.print("Names of Attributes:");
-    s2.printAttrnms();
-
-    System.out.print("Output of Schema: ");
-    System.out.println( s2.getString());
-    System.out.println();
-
-    System.out.println("*********Test function read() of Schema****************");
-    FileReader r=null;
-    try{
-      r = new FileReader("descfile");
-    }catch (IOException e){System.out.println("Test failed.");};
-
-    Schema s = new Schema();
-    StreamTokenizer p = new StreamTokenizer(r);
-    int c =1;
-    try{
-      while(p.nextToken() != StreamTokenizer.TT_EOF){
-	p.pushBack();
-	
-        try{
-	  s.read(p);
-	}catch(IOException e){
-	System.out.println("Test of read() function failed...");};
-	
-	System.out.println("Number of Fields: " + s.getnumFlds());
-	System.out.print("AttrTypes of Schema[" + c + "]:");
-	s.printTypes();
-        System.out.print("AttrNames of Schema[" + c + "]:");
-	s.printAttrnms();
-	
-	System.out.print("Output of Schema[" + c + "]: ");
-	System.out.println( s.getString());
-	System.out.println();
-	c++;
-      }
-    }catch(IOException e){System.out.println("Test failed");};
-
-    System.out.println();
-    System.out.println("Test Ends Successfully......");
-  }
 }
+ 
+
 
 
 
