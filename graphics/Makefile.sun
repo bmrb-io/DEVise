@@ -61,32 +61,13 @@ Control.o: /usr/include/unistd.h /usr/include/sys/types.h
 Control.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
 Control.o: /usr/include/assert.h Init.h DeviseTypes.h /usr/include/values.h
 Control.o: DevStatus.h BufPolicy.h Control.h VisualArg.h Color.h Pattern.h
-Control.o: DList.h Exit.h ClassDir.h XawControl.h Dispatcher.h
-Control.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/string.h
-Control.o: Journal.h XawWidget.h /s/X11/include/X11/Intrinsic.h
-Control.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
-Control.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-Control.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
-Control.o: /s/X11/include/X11/Xresource.h /s/X11/include/X11/Core.h
-Control.o: /s/X11/include/X11/Composite.h /s/X11/include/X11/Constraint.h
-Control.o: /s/X11/include/X11/Object.h /s/X11/include/X11/RectObj.h
-Control.o: /s/X11/include/X11/StringDefs.h /s/X11/include/X11/Xaw/Label.h
-Control.o: /s/X11/include/X11/Xaw/Simple.h
-Control.o: /s/X11/include/X11/Xmu/Converters.h
-Control.o: /s/X11/include/X11/Xaw/Command.h /s/X11/include/X11/Xaw/Form.h
-Control.o: /s/X11/include/X11/Xaw/Toggle.h /s/X11/include/X11/Xaw/List.h
-Control.o: /s/X11/include/X11/Xaw/Viewport.h /s/X11/include/X11/Xaw/Reports.h
-Control.o: /s/X11/include/X11/Xaw/AsciiText.h /s/X11/include/X11/Xaw/Text.h
-Control.o: /s/X11/include/X11/Xaw/TextSink.h /s/X11/include/X11/Xaw/TextSrc.h
-Control.o: /s/X11/include/X11/Xaw/AsciiSrc.h
-Control.o: /s/X11/include/X11/Xaw/AsciiSink.h
-Control.o: /s/X11/include/X11/Xaw/MultiSrc.h
-Control.o: /s/X11/include/X11/Xaw/Repeater.h StringArray.h Util.h
-Control.o: /usr/include/sys/time.h /usr/include/ctype.h /usr/include/math.h
-Control.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Display.h
-Control.o: Geom.h ColorMgr.h WindowRep.h Transform.h DevisePixmap.h
-Control.o: Compress.h DevError.h /usr/include/errno.h
-Control.o: /usr/include/sys/errno.h
+Control.o: DList.h Exit.h ClassDir.h StringArray.h /usr/include/stdio.h
+Control.o: /usr/include/stdlib.h Dispatcher.h /usr/include/string.h Journal.h
+Control.o: Util.h /usr/include/sys/time.h /usr/include/ctype.h
+Control.o: /usr/include/math.h /usr/include/floatingpoint.h
+Control.o: /usr/include/sys/ieeefp.h Display.h Geom.h ColorMgr.h WindowRep.h
+Control.o: Transform.h DevisePixmap.h Compress.h DevError.h
+Control.o: /usr/include/errno.h /usr/include/sys/errno.h
 Cursor.o: Cursor.h DList.h Exit.h Color.h VisualArg.h DeviseTypes.h
 Cursor.o: /usr/include/values.h DevStatus.h /usr/include/sys/types.h
 Cursor.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h Pattern.h
@@ -537,61 +518,6 @@ XWindowRep.o: /s/X11/include/X11/Xatom.h /s/X11/include/X11/Xmd.h
 XWindowRep.o: /usr/include/signal.h /usr/include/sys/signal.h
 XWindowRep.o: /usr/include/vm/faultcode.h ../graphics.new/MapIntToInt.h
 XWindowRep.o: ../graphics.new/DeviseKey.h
-XawControl.o: /usr/include/stdio.h /usr/include/stdlib.h
-XawControl.o: /usr/include/sys/stdtypes.h /usr/include/sys/time.h
-XawControl.o: /usr/include/sys/time.h /usr/include/sys/resource.h
-XawControl.o: XawControl.h Control.h /usr/include/sys/types.h
-XawControl.o: /usr/include/sys/sysmacros.h DeviseTypes.h
-XawControl.o: /usr/include/values.h DevStatus.h VisualArg.h Color.h Pattern.h
-XawControl.o: DList.h Exit.h ClassDir.h Dispatcher.h /usr/include/unistd.h
-XawControl.o: /usr/include/string.h Journal.h XawWidget.h
-XawControl.o: /s/X11/include/X11/Intrinsic.h /s/X11/include/X11/Xlib.h
-XawControl.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
-XawControl.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
-XawControl.o: /s/X11/include/X11/Xutil.h /s/X11/include/X11/Xresource.h
-XawControl.o: /s/X11/include/X11/Core.h /s/X11/include/X11/Composite.h
-XawControl.o: /s/X11/include/X11/Constraint.h /s/X11/include/X11/Object.h
-XawControl.o: /s/X11/include/X11/RectObj.h /s/X11/include/X11/StringDefs.h
-XawControl.o: /s/X11/include/X11/Xaw/Label.h /s/X11/include/X11/Xaw/Simple.h
-XawControl.o: /s/X11/include/X11/Xmu/Converters.h
-XawControl.o: /s/X11/include/X11/Xaw/Command.h /s/X11/include/X11/Xaw/Form.h
-XawControl.o: /s/X11/include/X11/Xaw/Toggle.h /s/X11/include/X11/Xaw/List.h
-XawControl.o: /s/X11/include/X11/Xaw/Viewport.h
-XawControl.o: /s/X11/include/X11/Xaw/Reports.h
-XawControl.o: /s/X11/include/X11/Xaw/AsciiText.h
-XawControl.o: /s/X11/include/X11/Xaw/Text.h /s/X11/include/X11/Xaw/TextSink.h
-XawControl.o: /s/X11/include/X11/Xaw/TextSrc.h
-XawControl.o: /s/X11/include/X11/Xaw/AsciiSrc.h
-XawControl.o: /s/X11/include/X11/Xaw/AsciiSink.h
-XawControl.o: /s/X11/include/X11/Xaw/MultiSrc.h
-XawControl.o: /s/X11/include/X11/Xaw/Repeater.h Xdef.h
-XawControl.o: /s/X11/include/X11/Shell.h /s/X11/include/X11/SM/SMlib.h
-XawControl.o: /s/X11/include/X11/SM/SM.h /s/X11/include/X11/ICE/ICElib.h
-XawControl.o: /s/X11/include/X11/ICE/ICE.h
-XawWidget.o: XawWidget.h /usr/include/stdio.h /s/X11/include/X11/Intrinsic.h
-XawWidget.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
-XawWidget.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
-XawWidget.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
-XawWidget.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
-XawWidget.o: /s/X11/include/X11/Xutil.h /s/X11/include/X11/Xresource.h
-XawWidget.o: /usr/include/string.h /s/X11/include/X11/Core.h
-XawWidget.o: /s/X11/include/X11/Composite.h /s/X11/include/X11/Constraint.h
-XawWidget.o: /s/X11/include/X11/Object.h /s/X11/include/X11/RectObj.h
-XawWidget.o: /s/X11/include/X11/StringDefs.h /s/X11/include/X11/Xaw/Label.h
-XawWidget.o: /s/X11/include/X11/Xaw/Simple.h
-XawWidget.o: /s/X11/include/X11/Xmu/Converters.h
-XawWidget.o: /s/X11/include/X11/Xaw/Command.h /s/X11/include/X11/Xaw/Form.h
-XawWidget.o: /s/X11/include/X11/Xaw/Toggle.h /s/X11/include/X11/Xaw/List.h
-XawWidget.o: /s/X11/include/X11/Xaw/Viewport.h
-XawWidget.o: /s/X11/include/X11/Xaw/Reports.h
-XawWidget.o: /s/X11/include/X11/Xaw/AsciiText.h /s/X11/include/X11/Xaw/Text.h
-XawWidget.o: /s/X11/include/X11/Xaw/TextSink.h
-XawWidget.o: /s/X11/include/X11/Xaw/TextSrc.h
-XawWidget.o: /s/X11/include/X11/Xaw/AsciiSrc.h
-XawWidget.o: /s/X11/include/X11/Xaw/AsciiSink.h
-XawWidget.o: /s/X11/include/X11/Xaw/MultiSrc.h
-XawWidget.o: /s/X11/include/X11/Xaw/Repeater.h DeviseTypes.h
-XawWidget.o: /usr/include/values.h DevStatus.h DList.h Exit.h
 jstat.o: /usr/include/math.h /usr/include/floatingpoint.h
 jstat.o: /usr/include/sys/ieeefp.h Journal.h DeviseTypes.h
 jstat.o: /usr/include/values.h DevStatus.h /usr/include/sys/types.h
