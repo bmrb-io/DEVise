@@ -55,7 +55,7 @@ else
 endif
 
 DEVISE_SPECIFIC_SRC = TuplePtr.Plex.c TuplePtr.XPlex.c \
-	TDataDQL.c TDataDQLInterp.c CatalogComm.c
+	TDataDQL.c TDataDQLInterp.c CatalogComm.c CatalogComm2.c
 	
 DEVREAD_OBJ = \
 	../attrproj/ApInit.o \
