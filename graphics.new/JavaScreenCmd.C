@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/05/29 15:18:56  wenger
+  Rubberband lines now work in JavaScreen, at least for single-window
+  sessions.
+
   Revision 1.7  1998/05/26 14:09:19  wenger
   Now puts curly brackets on arguments to allow spaces in arguments;
   committed with debug code on for Hongyu.
@@ -277,19 +281,6 @@ JavaScreenCmd::OpenSession()
 	  }
 	}
 	DevWindow::DoneIterator(winIndex);
-
-
-
-
-
-
-
-
-
-
-
-
-	// Add---end
 }
 
 void
@@ -869,12 +860,9 @@ JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo)
 
 		// Send a image retrieving command to JAVA_Screen
 		ReturnVal(argc, argv);
-		ControlCmd(DONE);
 
-		// Send back the window image, and omit return value if successful
+		// Send back the window image.
 		status = SendWindowImage(fileName, filesize);
-		if (status == DONE)
-			status = NULL_COMMAND;
 
 		// free all ..
 		for (i=0; i< argc; ++i)
