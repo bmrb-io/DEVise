@@ -3027,6 +3027,13 @@ Num Date        Status  Description
 			(part of the RedHat 7.2 setup) (see
 			Test/view_sym_pile2.ds). (rkw)
 
+751 2/5/02	OPEN	The JavaScreen runs incredibly slowly on RedHat 7.2.
+			(rkw)
+
+752 2/5/02	OPEN	JavaScreen: dialogs don't show up right when the
+			JavaScreen is compiled with Java 1.2 (as opposed to
+			1.1). (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
