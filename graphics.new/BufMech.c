@@ -1,7 +1,24 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
   $Log$
+  Revision 1.1  1995/09/22 17:04:59  jussi
+  Restoring this file; it had disappeared.
+
   Revision 1.2  1995/09/05 22:14:09  jussi
   Added CVS header.
 */
@@ -150,7 +167,7 @@ RangeInfo *BufMech::FetchRange(TData *tdata, int recsPerPage,
 	rangeInfo->low = startId;
 	rangeInfo->high = startId + numRecs-1;
 /*
-printf("setting RangeInfo addr 0x%x, IDs %d,%d\n",
+printf("setting RangeInfo addr 0x%p, IDs %d,%d\n",
 			rangeInfo, rangeInfo->low, rangeInfo->high);
 */
 	rangeInfo->dataSize = numRecs*recsPerPage;

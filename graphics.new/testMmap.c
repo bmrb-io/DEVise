@@ -1,7 +1,24 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:16:43  jussi
+  Added CVS header.
+*/
 
 #include <sys/types.h>
 #include <sys/mman.h>
@@ -33,6 +50,6 @@ main()
     exit(2);
   }
   
-  printf("mapped file %s, address 0x%x, length %d\n",
+  printf("mapped file %s, address 0x%p, length %d\n",
 	 name, addr, sbuf.st_size);
 }

@@ -1,7 +1,24 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 21:13:53  jussi
+  Added/updated CVS header.
+*/
 
 #include <stdio.h>
 #include "Dispatcher.h"
@@ -13,7 +30,7 @@ public:
     /* draw in the exposed area */
 	virtual void HandleExpose(WindowRep * w, int x, int y,
 					unsigned width, unsigned height){
-		printf("Expose 0x%x,%d,%d,%d,%d\n",w,x,y,x+width-1,y+height-1);
+		printf("Expose 0x%p,%d,%d,%d,%d\n",w,x,y,x+width-1,y+height-1);
 		w->ClearTransformStack();
 		w->Line(0.0,0.0,10.0, 10.0, 1.0);
 	};
@@ -21,25 +38,25 @@ public:
 	/* Handle button press event */
 	virtual void HandlePress(WindowRep * w, int xlow,
 		int ylow, unsigned xhigh, unsigned yhigh, int button){
-		printf("Press 0x%x,%d,%d,%d,%d,%d\n",w,xlow, ylow, xhigh, yhigh,button);
+		printf("Press 0x%p,%d,%d,%d,%d,%d\n",w,xlow, ylow, xhigh, yhigh,button);
 	}
 			
 
 	/* Handle resize */
 	virtual void HandleResize(WindowRep * w, int xlow,
 				int ylow, unsigned width, unsigned  height){
-		printf("Resize 0x%x,%d,%d,%d,%d\n",w,xlow,ylow,xlow+width-1,
+		printf("Resize 0x%p,%d,%d,%d,%d\n",w,xlow,ylow,xlow+width-1,
 			ylow+height-1);
 	};
 
 	virtual void HandleKey(WindowRep * w,char key, int x, int y){
-		printf("key 0x%x,%c,%d,%d\n",w,key,x,y);
+		printf("key 0x%p,%c,%d,%d\n",w,key,x,y);
 	};
 
 	/* handle pop-up */
 	virtual Boolean HandlePopUp(WindowRep *w, int x, int y, 
 		int button, char **&msgs, int &numMsgs){
-		printf("PopUp 0x%x,%d,%d\n",w,x,y);
+		printf("PopUp 0x%p,%d,%d\n",w,x,y);
 		msgs = msgBuf;
 		msgBuf[0] = "hello";
 		msgBuf[1] = "universe";

@@ -1,7 +1,24 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:14:16  jussi
+  Added CVS header.
+*/
 
 #include <stdio.h>
 #include <libc.h>
@@ -67,7 +84,7 @@ static int numAlloc = 0;
 			addr = addr /8*8 + 8;
 			_startAddr = (BufPage *)addr;
 		}
-		printf("BufPage: allocating %d bytes addr = 0x%x\n",
+		printf("BufPage: allocating %d bytes addr = 0x%p\n",
 			sizeof(BufPage)*_maxPages, _startAddr);
 		_endAddr = &_startAddr[_maxPages];
 		_nextAlloc = _startAddr;
