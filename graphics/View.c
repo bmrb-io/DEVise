@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.175  1999/06/11 14:46:53  wenger
+  Added the capability (mostly for the JavaScreen) to disable rubberband
+  lines, cursor movement, drill down, and key actions in views (the code
+  to send this info to the JS is still conditionaled out until the JS is
+  ready for it).
+
   Revision 1.174  1999/06/04 16:31:59  wenger
   Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
   with key presses in piled views in the JavaScreen); made other pile-
@@ -1348,12 +1354,14 @@ void View::SetPileMode(Boolean mode)
   _pileViewHold = true;
 
   if (mode) {
-	if (GetParentPileStack()->GetFirstView()) {
+	if (GetParentPileStack()->GetFirstView() && GetWindowRep()) {
       GetWindowRep()->SetOutput(
 	      GetParentPileStack()->GetFirstView()->GetWindowRep());
 	}
   } else {
-    GetWindowRep()->ResetOutput();
+    if (GetWindowRep()) {
+	  GetWindowRep()->ResetOutput();
+    }
   }
 
   /* Just in case record links didn't get re-enabled after printing. */

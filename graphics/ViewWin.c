@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.58  1999/05/12 21:01:02  wenger
+  Views containing view symbols can now be piled.
+
   Revision 1.57  1999/05/07 16:09:38  wenger
   Fixed bug in the ordering of viewsym piles.
 
@@ -366,7 +369,7 @@ ViewWin::ViewWin(char* name, PColorID fgid, PColorID bgid,
 
 ViewWin::~ViewWin(void)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("ViewWin::~ViewWin(%p)\n", this);
 #endif
 

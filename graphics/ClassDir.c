@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.21  1999/05/07 14:13:31  wenger
+  Piled view symbols now working: pile name is specified in parent view's
+  mapping, views are piled by Z specified in parent's mapping; changes
+  include improvements to the Dispatcher because of problems exposed by
+  piled viewsyms; for now, view symbol piles are always linked (no GUI or
+  API to change this).
+
   Revision 1.20  1998/11/11 14:30:27  wenger
   Implemented "highlight views" for record links and set links; improved
   ClassDir::DestroyAllInstances() by having it destroy all links before
@@ -428,17 +435,17 @@ void ClassDir::DestroyAllInstances()
   _destroyingAll = true;
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Destroying Category -> %s\n", catRec->name);
 #endif
     for(int j = 0; j < catRec->_numClasses; j++) {
       ClassRec *classRec = catRec->_classRecs[j];
-#ifdef DEBUG
+#if defined(DEBUG)
       printf("Destroying Class -> %s\n", classRec->classInfo->ClassName());
 #endif
       for(int k = 0; k < classRec->_numInstances; k++) {
 	ClassInfo *instRec = classRec->_instances[k];
-#ifdef DEBUG
+#if defined(DEBUG)
         printf("now destroying %s\n", instRec->InstanceName());
 #endif
 	delete instRec;
