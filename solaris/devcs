@@ -65,6 +65,8 @@ setenv LM_LIB			$DEVISE_LIB/LM
 
 generic/devised -port 6102 -quit 1 &
 
+sleep 5
+
 generic/devise -p 6102
 
 rmmem
