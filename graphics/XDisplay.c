@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1996/09/13 23:04:27  guangshu
+  Added methods to save the map files for www when saving display.
+
   Revision 1.36  1996/09/10 20:07:13  wenger
   High-level parts of new PostScript output code are in place (conditionaled
   out for now so that the old code is used until the new code is fully
@@ -289,6 +292,47 @@ void XDisplay::ExportImage(DisplayExportFormat format, char *filename)
   fprintf(stderr, "Cannot export display image in PS/EPS yet\n");
 }
 
+/* Export every view as a window in the display */
+
+void XDisplay::ExportView(DisplayExportFormat format, char *filename)
+{
+  if (format == GIF) {
+	int i = 0;
+	int index1 = _winList.InitIterator();
+
+	while(_winList.More(index1)) {
+	   XWindowRep *win = _winList.Next(index1);
+	   if (win->_parent)
+	      continue;
+	   int index2 = win->_children.InitIterator();
+	   while(win->_children.More(index2)) {
+	      XWindowRep *winc = win->_children.Next(index2);
+	      char *fn = new char[strlen(filename) + 10];
+	      sprintf(fn,"%s.%d.gif", filename, i);
+#if defined(DEBUG)|| 1
+	      printf("Saving the view to file %s\n", fn);
+#endif
+	      FILE *fp = fopen(fn, "wb");
+	      if (!fp) {
+		 fprintf(stderr, "Cannot open file %s for writing.\n", fn);
+		 return;
+	      }
+	      winc->ExportGIF(fp, 1);
+	      fclose(fp);
+	      delete fn;
+	      i++;
+	   }
+	   win->_children.DoneIterator(index2);
+	}
+	_winList.DoneIterator(index1);
+	return;
+  }
+  
+  fprintf(stderr, "Cannot exprot display image in PS/EPS yet\n");
+}
+
+/* Export the display and the map file associated with the display */
+
 void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename, 
 				char *mapFileName, char *url, char *defaultUrl)
 {
@@ -391,7 +435,7 @@ void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename,
     
 }
 
-void XDisplay::ExportGIF(FILE *fp)
+void XDisplay::ExportGIF(FILE *fp, int isView = 0)
 {
   /* compute the bounding rectangle of all windows */
 

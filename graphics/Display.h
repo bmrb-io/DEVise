@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/09/13 23:02:42  guangshu
+  Added ExportImageAndMap function.
+
   Revision 1.16  1996/09/10 20:07:08  wenger
   High-level parts of new PostScript output code are in place (conditionaled
   out for now so that the old code is used until the new code is fully
@@ -138,8 +141,10 @@ public:
 
   /* Export display image to other graphics formats */
   virtual void ExportImage(DisplayExportFormat format, char *filename) = 0;
-  virtual void ExportImageAndMap(DisplayExportFormat format, char *gifFilename, char *mapFileame, char *url, char *defaultUrl) = 0;
-  virtual void ExportGIF(FILE *fp) = 0;
+  virtual void ExportImageAndMap(DisplayExportFormat format, char *gifFilename, 
+			char *mapFileame, char *url, char *defaultUrl) = 0;
+  virtual void ExportGIF(FILE *fp, int isView) = 0;
+  virtual void ExportView(DisplayExportFormat format, char *filename) = 0;
 
   /* Iterator to go through all displays */
   static int InitIterator() { return _displays.InitIterator(); }
