@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.55  1998/11/23 19:18:51  donjerko
+  Added support for gestalts
+
   Revision 1.54  1998/10/08 22:27:10  donjerko
   *** empty log message ***
 
@@ -144,10 +147,6 @@
 //#include<stdlib.h>   erased for sysdep.h
 #include "sysdep.h"
 
-class ExecExpr;
-
-List<ConstantSelection*>* dummy;	// Just needed for pragma implementation
-List<char*>* dummy2;	// Just needed for pragma implementation
 
 const int DETAIL = 1;
 LOG(ofstream logFile("log_file.txt");)
