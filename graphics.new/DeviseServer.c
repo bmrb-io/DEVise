@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/08/13 18:14:45  wenger
+  More updates to JavaScreen support.
+
   Revision 1.8  1998/05/02 09:00:43  taodb
   Added support for JAVA Screen and command logging
 
@@ -311,7 +314,7 @@ DeviseServer::WriteImagePort(const void* buf, int nsize)
 	char tempbuf[IMG_OOB];	
 	bool stopped = false; 
 	do {
-		/*
+#if 0
 		// prvoide client-controlled stopping functions
 		do{
 			nbytes = recv(_clients[_currentClient].imagefd, tempbuf,IMG_OOB, 0);
@@ -330,9 +333,12 @@ DeviseServer::WriteImagePort(const void* buf, int nsize)
 			nbytes = -1;
 			break;
 		}
-		*/
+#endif
 		nbytes = write(_clients[_currentClient].imagefd, buf, nsize);
 	} while ((nbytes == -1) && ((errno == EAGAIN)||(errno==EINTR)));
+	if (nbytes != nsize) {
+		reportErrSys("Writing to image port");
+	}
 	return nbytes;
 }
 
