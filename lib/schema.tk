@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.28  1997/02/25 22:16:55  donjerko
+#  Fixed some bugs in tcl - dte communication
+#
 #  Revision 1.27  1997/02/14 16:48:07  wenger
 #  Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
 #
@@ -156,6 +159,8 @@ proc SchemaBrowse {} {
 proc SchemaEdit {mode} {
     if {$mode == 0} {
 		SchemaSuperuser
+    } elseif {$mode == 3} {
+    		SchemaSuperuser 1
     } elseif {$mode == 1} {
 		SchemaUser
     } else {
@@ -285,8 +290,10 @@ proc SchemaQuery {} {
 }
 ########################################################
 # Schema browser for the superuser - can change both physical and logical parts
-proc SchemaSuperuser {} {
-    global schemadir
+proc SchemaSuperuser {{isunidata 0}} {
+    
+    global schemadir  is_unidata
+    set is_unidata $isunidata
     # Show a list of currently defined schemas and buttons to either
     # create a New one or Open an existing one
 
@@ -319,16 +326,26 @@ proc SchemaSuperuser {} {
 
     # Buttons at bottom
     button .psch.bot.new -text New -command {
+    	global is_unidata 
 	destroy .psch
-	newschema
+	if {$is_unidata == 1 } {
+		unidata_newschema
+	} else {
+		newschema
+	}
     }
     button .psch.bot.open -text Open -command {
+    	global is_unidata 
 	set sel [.psch.mid.list get active]
 	if {$sel == ""} {
 	    showmesg "Select the schema to edit by clicking once on the entry."
 	} else {
 	    destroy .psch
-	    openschema $sel
+	    if {$is_unidata == 1 } {
+	    	unidata_openschema $sel
+	    } else {
+	    	openschema $sel
+	    }
 	}
     }
     button .psch.bot.del -text Remove -command {
@@ -368,7 +385,16 @@ proc ChgType {name element op} {
     if {$x == "string"} {
         .newschema.astrlen.label configure -fg white
         .newschema.astrlen.entry configure -state normal
+	.newschema.dateformat.label configure -fg gray
+	.newschema.dateformat.entry configure -state disabled
+    } elseif {$x == "date" || $x == "datetime" || $x == "unixtime" } {
+    	.newschema.dateformat.label configure -fg white
+	.newschema.dateformat.entry configure -state normal
+	.newschema.astrlen.label configure -fg gray
+	.newschema.astrlen.entry configure -state disabled
     } else {
+        .newschema.dateformat.label configure -fg gray
+	.newschema.dateformat.entry configure -state disabled
         .newschema.astrlen.label configure -fg gray
         .newschema.astrlen.entry configure -state disabled
     }
@@ -410,8 +436,8 @@ proc newschemawin {} {
 	    -pady 1m
     
     label .newschema.ftype.label -text "File Type"
-    radiobutton .newschema.ftype.ascii -text Ascii -variable ftype \
-	    -value ascii -anchor nw
+    radiobutton .newschema.ftype.ascii -text Text -variable ftype \
+	    -value text -anchor nw
     radiobutton .newschema.ftype.binary -text Binary -variable ftype \
 	    -value binary -anchor nw
     pack .newschema.ftype.label .newschema.ftype.ascii .newschema.ftype.binary \
@@ -715,6 +741,436 @@ proc newschemawin {} {
     tkwait window .newschema
 }
 
+# This is the schema window for unidata
+
+proc unidata_newschemawin {} {
+    global sname ftype comm issepar issepartext separ attrlist aname acomp
+    global atype astrlen asort attrnum tgrps glist Logical
+
+    # Count number of attributes
+    set attrnum 0
+
+    toplevel .newschema
+    wm title .newschema "Schema Description"
+    wm geometry .newschema +50+50
+    
+    # Top level rows in the window
+    frame .newschema.firstrow -relief raised
+    frame .newschema.commseprow -relief raised
+    frame .newschema.opt -relief raised
+    frame .newschema.attr -relief raised
+    pack .newschema.firstrow  .newschema.commseprow .newschema.attr \
+	    .newschema.opt 	-side top -fill x -padx 1m -pady 1m
+    
+    #-----------------------------------------------------------
+    # Within first row - name and type
+    frame .newschema.fname -relief raised -bd 1
+    frame .newschema.ftype -relief raised -bd 1
+    pack .newschema.fname .newschema.ftype -in .newschema.firstrow \
+	    -side left -fill x -padx 3m -pady 1m
+    
+    label .newschema.fname.label -text "Schema Name "
+    entry .newschema.fname.entry -width 25 -relief sunken -bd 2 \
+	    -textvariable sname
+    pack .newschema.fname.label .newschema.fname.entry -side left -padx 1m \
+	    -pady 1m
+    
+    label .newschema.ftype.label -text "File Type"
+    radiobutton .newschema.ftype.ascii -text Text -variable ftype \
+	    -value text -anchor nw
+    radiobutton .newschema.ftype.binary -text Binary -variable ftype \
+	    -value binary -anchor nw
+    pack .newschema.ftype.label .newschema.ftype.ascii .newschema.ftype.binary \
+	    -side top -fill x
+    
+    #-----------------------------------------------------------
+    # Comment and separator characters
+    frame .newschema.comm -relief raised
+    frame .newschema.separ -relief raised
+    pack .newschema.comm -side left  -in .newschema.commseprow \
+	    -padx 3m -pady 1m 
+    pack .newschema.separ -side right  -in .newschema.commseprow \
+	    -padx 3m -pady 1m
+    
+    label .newschema.comm.label -text "Comment characters"
+    entry .newschema.comm.entry -width 5 -relief sunken -bd 2 \
+	    -textvariable comm
+    pack .newschema.comm.label .newschema.comm.entry -side left \
+	    -padx 1m -pady 1m
+    
+    menubutton .newschema.separ.button -relief raised \
+	    -textvariable issepartext -menu .newschema.separ.button.menu \
+	    -width 12
+    menu .newschema.separ.button.menu -tearoff 0
+    .newschema.separ.button.menu add radiobutton -label "Separator" \
+	    -variable issepar -value 1 -command {
+	set issepartext "Separator"
+    }
+    .newschema.separ.button.menu add radiobutton -label "Whitespace" \
+	    -variable issepar -value 0 -command {
+	set issepartext "Whitespace"
+    }
+    set issepartext "Separator"
+    if {!$issepar} {
+	set issepartext "Whitespace"
+    }
+    entry .newschema.separ.entry -width 15 -relief sunken -bd 2 \
+	    -textvariable separ
+    bind .newschema.separ.entry <Tab> { set separ "$separ\	'" }
+
+    pack .newschema.separ.button .newschema.separ.entry -side left \
+	    -padx 1m -pady 1m 
+    
+    #-----------------------------------------------------------
+    # Attributes
+    frame .newschema.attrlist -relief raised
+    frame .newschema.attradd -relief raised
+    pack .newschema.attrlist -in .newschema.attr \
+	    -side top -padx 3m -pady 1m -fill x
+    pack .newschema.attradd -in .newschema.attr \
+	    -side bottom -padx 3m -pady 1m -fill x
+    
+    label .newschema.attrlist.label -text "List of Attributes"
+#TEMPTEMP -- change order here
+    label .newschema.attrlist.spec \
+	    -text "Sort Type      Hi    Lo    Name" \
+	    -font 9x15
+    pack .newschema.attrlist.label -side top -fill x
+    pack .newschema.attrlist.spec -side top -anchor nw
+    listbox .newschema.attrlist.list -relief raised -bd 1 \
+	    -yscrollcommand ".newschema.attrlist.scroll set" \
+	    -xscrollcommand ".newschema.attrlist.xscroll set" \
+	    -font 9x15 -selectmode extended
+    scrollbar .newschema.attrlist.scroll \
+	    -command ".newschema.attrlist.list yview"
+    scrollbar .newschema.attrlist.xscroll -orient horizontal \
+	    -command ".newschema.attrlist.list xview"
+    pack .newschema.attrlist.scroll -side right -fill y
+    pack .newschema.attrlist.xscroll -side bottom -fill x
+    pack .newschema.attrlist.list -fill x 
+    
+    # By default insert all elements of attrlist into the list
+    foreach attr $attrlist {
+	# Format before inserting
+	set ttype [lindex $attr 0]
+	set tsort [lindex $attr 1]
+	set thival [lindex $attr 2]
+	set tloval [lindex $attr 3]
+	set tname [lindex $attr 4]
+	set tstrlen [lindex $attr 5]
+	set tdateformat [lindex $attr 6]
+	set tposition [lindex $attr 7]
+	set tlength [lindex $attr 8]
+
+	set fstr [format "%-3.3s  %-9.9s %-5s %-5s %-5s"\
+		 $tsort $ttype $thival $tloval $tname]
+	.newschema.attrlist.list insert end $fstr
+
+        # Save hidden data in a global array
+        global hiddendata
+        set hiddendata($tname,strlen) $tstrlen
+	set hiddendata($tname,dateformat) $tdateformat
+	set hiddendata($tname,position) $tposition
+	set hiddendata($tname,length) $tlength
+
+	set attrnum [expr $attrnum+1]
+    }
+    
+    frame .newschema.attrspec -relief raised
+    frame .newschema.morespec -relief raised
+    frame .newschema.attrop -relief raised
+    pack  .newschema.attrspec .newschema.morespec .newschema.attrop \
+	    -in .newschema.attradd -side top -fill x -padx 3m -pady 1m
+    
+    frame .newschema.attrnametype -relief raised -bd 1
+    frame .newschema.atype -relief raised -bd 1
+    frame .newschema.astrlen -relief raised -bd 1
+    frame .newschema.dateformat -relief raised -bd 1
+    frame .newschema.position -relief raised -bd 1
+    frame .newschema.length -relief raised -bd 1
+    frame .newschema.asort -relief raised -bd 1
+    frame .newschema.aloval -relief raised -bd 1
+    frame .newschema.ahival -relief raised -bd 1
+    pack .newschema.attrnametype .newschema.atype -in .newschema.attrspec \
+    		-side top -fill x -padx 3m -pady 1m
+    
+    label .newschema.attrnametype.label -text "Attribute Name "
+    entry .newschema.attrnametype.entry -width 20 -relief sunken -bd 2 \
+	    -textvariable aname
+    pack .newschema.attrnametype.label .newschema.attrnametype.entry -side left \
+	    -padx 3m -pady 1m
+
+    button .newschema.morespec.but -text "More Spec" \
+    	-command {
+		set text [.newschema.morespec.but cget -text]
+
+		if {$text == "More Spec"} {
+			.newschema.morespec.but configure -text "Less Spec"
+
+    			pack .newschema.astrlen .newschema.dateformat \
+				.newschema.position .newschema.length \
+            			.newschema.asort .newschema.aloval .newschema.ahival \
+	    			-in .newschema.attrspec -side top -fill x -padx 3m \
+				-pady 1m
+		} else {
+			.newschema.morespec.but configure -text "More Spec"
+			pack forget .newschema.astrlen .newschema.dateformat \
+				      .newschema.position .newschema.length \
+				      .newschema.asort .newschema.aloval \
+				      .newschema.ahival
+		}
+	}
+    pack .newschema.morespec.but -in .newschema.morespec -side left \
+    	    -padx 3m -pady 1m
+    	
+    label .newschema.dateformat.label -text "Date Format  " -fg gray
+    entry .newschema.dateformat.entry -width 25 -relief sunken -bd 2 \
+    	    -textvariable dateformat -state disabled
+    pack .newschema.dateformat.label .newschema.dateformat.entry -side left \
+    	    -padx 3m -pady 1m
+
+    label .newschema.position.label -text "Position  " -fg white
+    entry .newschema.position.entry -width 25 -relief sunken -bd 2 \
+    	    -textvariable position
+    pack .newschema.position.label .newschema.position.entry -side left \
+    	    -padx 3m -pady 1m
+
+    label .newschema.length.label -text "Length  " -fg white
+    entry .newschema.length.entry -width 25 -relief sunken -bd 2 \
+    	    -textvariable length
+    pack .newschema.length.label .newschema.length.entry -side left \
+    	    -padx 3m -pady 1m
+
+    label .newschema.aloval.label -text "Attribute Low Value  "
+    entry .newschema.aloval.entry -width 25 -relief sunken -bd 2 \
+	    -textvariable aloval
+    pack .newschema.aloval.label .newschema.aloval.entry -side left \
+	    -padx 3m -pady 1m
+
+    label .newschema.ahival.label -text "Attribute High Value "
+    entry .newschema.ahival.entry -width 25 -relief sunken -bd 2 \
+	    -textvariable ahival
+    pack .newschema.ahival.label .newschema.ahival.entry -side left \
+	    -padx 3m -pady 1m
+    
+    label .newschema.attrnametype.typelabel -text "Type   "
+    menubutton .newschema.attrnametype.typebut -relief raised \
+    	    -textvariable atype -menu .newschema.attrnametype.typebut.menu \
+	    -width 12
+    menu .newschema.attrnametype.typebut.menu -tearoff 0
+    .newschema.attrnametype.typebut.menu add radiobutton -label double\
+    	-variable atype
+    .newschema.attrnametype.typebut.menu add radiobutton -label int\
+    	-variable atype
+    .newschema.attrnametype.typebut.menu add radiobutton -label string\
+    	-variable atype
+    .newschema.attrnametype.typebut.menu add radiobutton -label float\
+    	-variable atype
+    .newschema.attrnametype.typebut.menu add radiobutton -label date \
+    	-variable atype
+    .newschema.attrnametype.typebut.menu add radiobutton -label datetime \
+    	-variable atype
+    .newschema.attrnametype.typebut.menu add radiobutton -label unixtime \
+    	-variable atype
+
+    pack .newschema.attrnametype.typelabel .newschema.attrnametype.typebut \
+    	    -side left -padx 3m -pady 1m
+
+    label .newschema.astrlen.label -text "Size   " -fg gray
+    entry .newschema.astrlen.entry -width 25 -relief sunken -bd 2 \
+         -textvariable astrlen -state disabled
+    set astrlen ""
+    pack .newschema.astrlen.label .newschema.astrlen.entry -side left \
+	    -padx 3m -pady 1m
+    trace variable atype w ChgType
+
+    label .newschema.asort.label -text "Sorted "
+    radiobutton .newschema.asort.yes -text Yes -variable asort \
+	    -value Yes -anchor nw
+    radiobutton .newschema.asort.no -text No -variable asort \
+	    -value No -anchor nw
+    pack .newschema.asort.label .newschema.asort.yes .newschema.asort.no \
+	 -side left -fill x -padx 1m
+    
+    button .newschema.attrop.add -text "Add item" -command {
+	if {$ahival == ""} {
+	    set ahival "none"
+	}
+	if {$aloval == ""} {
+	    set aloval "none"
+	}
+	set aname [lindex [string trim $aname] 0]
+	if {$aname == ""} {
+	    showmesg "Attribute name has not been specified."
+	    return
+	}
+	# Increment count
+	set attrnum [expr $attrnum+1]
+	# Insert into list and clear selection
+#TEMPTEMP -- change order here
+	set fstr [format "%-3.3s  %-9.9s %-5s %-5s %s" \
+		$asort $atype $ahival $aloval $aname]
+	.newschema.attrlist.list insert end $fstr
+        set hiddendata($aname,strlen) $astrlen
+        set hiddendata($aname,dateformat) $dateformat
+        set hiddendata($aname,position) $position
+        set hiddendata($aname,length) $length
+
+	set aname ""
+	set atype "double"
+	set astrlen ""
+	set asort No
+	set ahival ""
+	set aloval ""
+	set dateformat ""
+	set position ""
+	set length ""
+    }
+
+    button .newschema.attrop.delete -text "Delete item" -command {
+	.newschema.attrlist.list delete active
+	# Decrement count
+	set attrnum [expr $attrnum-1]
+    }
+    # Set up key binding for modify list
+    bind .newschema.attrlist.list <Double-1> {
+	set attrl [.newschema.attrlist.list get active] 
+	set asort [lindex $attrl 0] 
+	set atype [lindex $attrl 1]
+	set ahival [lindex $attrl 2]
+	set aloval [lindex $attrl 3]
+	set aname [lindex $attrl 4]
+
+        global hiddendata
+	set astrlen $hiddendata($aname,strlen)
+	set dateformat $hiddendata($aname,dateformat)
+	set position $hiddendata($aname,position)
+	set length $hiddendata($aname,length)
+
+        if { $astrlen == 0 } {
+            set astrlen ""
+        }
+	if { $dateformat == "none" } {
+		set dateformat ""
+	}
+	
+    }
+    
+    button .newschema.attrop.modify -text "Modify item" -command {
+	set aname [lindex [string trim $aname] 0]
+	if {$aname == ""} {
+	    showmesg "Double-click on an item to select it."
+	    return
+	}
+	if {$ahival == ""} {
+	    set ahival "none"
+	}
+	if {$aloval == ""} {
+	    set aloval "none"
+	}
+
+        set hiddendata($aname,strlen) $astrlen
+	set hiddendata($aname,dateformat) $dateformat
+	set hiddendata($aname,position) $position
+	set hiddendata($aname,length) $length
+
+	set fstr [format "%-3.3s  %-9.9s %-5s %-5s %s" \
+		$asort $atype $ahival $aloval $aname]
+	.newschema.attrlist.list insert active $fstr
+	.newschema.attrlist.list delete active
+	# Clear selection
+	set aname ""
+	set atype "double"
+	set astrlen ""
+	set asort No
+	set ahival ""
+	set aloval ""
+	set dateformat ""
+	set astrlen 0
+	set position ""
+	set length ""
+    }
+    #-----------------------------------------------------------
+    # Bottom portion of window
+    button .newschema.opt.save -text Save -command {
+	if {$sname == ""} {
+	    showmesg "No schema name specified."
+	} else {
+	    set attrlist {}
+	    while {$attrnum > 0} {
+		set attr [.newschema.attrlist.list get [expr $attrnum-1]]
+		set attrnum [expr $attrnum-1]
+
+                global hiddendata
+                set tname [lindex $attr 4]
+                set tstrlen $hiddendata($tname,strlen)
+		set tdateformat $hiddendata($tname,dateformat)
+		set position $hiddendata($tname,position)
+		set length $hiddendata($tname,length)
+
+                if {$tstrlen > 0} {
+                    set attr "$attr $tstrlen"
+                } else {
+		    set attr "$attr none"
+		}
+		if {$tdateformat != "" } {
+		    set attr "$attr $tdateformat"
+		} else {
+		    set attr "$attr none"
+		}
+		if {$position != ""} {
+		    set attr "$attr $position"
+		} else {
+		    set attr "$attr none"
+		}
+		if {$length != ""} {
+		    set attr "$attr $length"
+		} else {
+		    set attr "$attr none"
+		}
+		
+		# Append to attrlist
+		set attrlist [linsert $attrlist 0 $attr]
+	    }
+	    
+	    # Write into a file 
+	    unidata_writephysical $sname $ftype $comm $issepar $separ $attrlist
+	    # Update catalog with this new physical schema (if new).
+	    if {[info exists Logical($sname)] == 0} {
+		# Since this is the initial version of the physical schema
+		# we will create a default logical schema. This is simply
+		# a file in the logical schema dir which has the same name
+		# and points to this as its physical schema. No groups are
+		# defined yet.
+		writeDefaultLogical $sname
+		set Logical($sname) [list $sname]
+		writecatalog
+	    }
+            trace vdelete atype w ChgType
+	    destroy .newschema
+	}
+    }
+
+    button .newschema.opt.quit -text Cancel -command {
+            trace vdelete atype w ChgType
+            destroy .newschema
+    }
+
+    pack .newschema.attrop.add .newschema.attrop.delete \
+	    .newschema.attrop.modify -side left -padx 3m -pady 1m -expand 1
+    
+    pack .newschema.opt.save .newschema.opt.quit  -side left \
+	    -padx 3m -pady 1m -expand 1
+    
+    # modified by DD so that it works with FSBox
+
+    tkwait visibility .newschema
+    grab .newschema
+
+    tkwait window .newschema
+}
+
+
 #-----------------------------------------------------------
 proc newschema {} {
     global sname ftype comm issepar separ attrlist aname acomp
@@ -738,6 +1194,29 @@ proc newschema {} {
 
     # Call function to display the window
     newschemawin
+}
+proc unidata_newschema {} {
+    global sname ftype comm issepar separ attrlist aname acomp
+    global atype astrlen asort tgrps ahival aloval
+
+    # First set up some global variables
+    set sname ""
+    set ftype ascii
+    set comm "//"
+    set issepar 1
+    set separ "' '"
+    set attrlist ""
+    set aname ""
+    set acomp No
+    set atype "double"
+    set astrlen 0
+    set asort No
+    set tgrps ""
+    set ahival ""
+    set aloval ""
+
+    # Call function to display the window
+    unidata_newschemawin
 }
 
 #-----------------------------------------------------------
@@ -766,6 +1245,32 @@ proc openschema {filename} {
 
     # Call function to display the schema
     newschemawin
+}
+proc unidata_openschema {filename} {
+    global sname ftype comm issepar separ attrlist aname acomp
+    global atype asort tgrps ahival aloval fsBox schemadir
+
+    # Set some defaults
+    set sname ""
+    set ftype ascii
+    set comm "//"
+    set issepar 1
+    set separ "' '"
+    set attrlist ""
+    set aname ""
+    set acomp No
+    set atype "double"
+    set astrlen ""
+    set asort No
+    set tgrps ""
+    set ahival ""
+    set aloval ""
+
+    # Read the file and get the contents
+    unidata_readphysical $filename
+
+    # Call function to display the schema
+    unidata_newschemawin
 }
 
 #-----------------------------------------------------------
@@ -893,6 +1398,85 @@ proc writephysical {name type comm issep sep alist} {
 	}
 	puts $f ""
     }
+    close $f
+}
+proc unidata_writephysical {name type comm issep sep alist} {
+    global schemadir
+
+    set f [open $schemadir/physical/$name w]
+
+    set header [DEVise getFileHeader physSchema]
+    puts $f $header
+    unset header
+
+    if {$comm == ""} {
+	set comm "//"
+    }
+    if {$sep == "" || $sep == "' '"} {
+	set sep " "
+    }
+    if {[string range $comm 0 0] != "'"} {
+    	set comm "\'$comm"
+    }
+    if {[string range $comm [expr [string length $comm]-1] end] != "'"} {
+    	set comm "$comm\'"
+    }
+    if {[string range $sep 0 0] != "'"} {
+    	set sep "\'$sep"
+    }
+    if {[string range $sep [expr [string length $sep]-1] end] != "'"} {
+    	set sep "$sep\'"
+    }
+
+    puts $f "schema $name \{"
+    puts $f "\ttype = $type \;"
+
+    puts $f "\tcomment = $comm \;"
+    if {$issep} {
+	puts $f "\tseparator = $sep \;"
+    } else {
+	puts $f "\twhitespace = $sep \;"
+    }
+    puts $f ""
+    foreach attr $alist {
+	set asort [lindex $attr 0]
+	set atype [lindex $attr 1]
+	set ahival [lindex $attr 2]
+	set aloval [lindex $attr 3]
+	set aname [lindex $attr 4]
+	set astrlen [lindex $attr 5]
+	set dateformat [lindex $attr 6]
+	set position [lindex $attr 7]
+	set length [lindex $attr 8]
+
+	puts $f "\tattr $aname \{"
+	puts $f "\t\ttype = $atype \;"
+
+	if {$asort == "Yes"} {
+	    puts $f "\t\tsorted \;"
+	}
+	if {$atype == "string" && $astrlen != "none"} {
+	    puts  $f "\t\tmaxlen = $astrlen \;"
+	}
+	if {$ahival != "none"} {
+	    puts $f "\t\tmax =  $ahival \;"
+	}
+	if {$aloval != "none"} {
+	    puts $f "\t\tmin = $aloval \;"
+	}
+	if {$dateformat != "none" } {
+	    puts $f "\t\tdate_format = $dateformat \;" 
+	}
+	if {$position != "none" } {
+	    puts $f "\t\tposition = $position \;"
+	}
+	if {$length != "none"} {
+	    puts $f "\t\tlength = $length \;"
+	}
+	puts $f "\t\}"
+	puts $f ""
+    }
+    puts $f "\}"
     close $f
 }
 
@@ -1061,6 +1645,111 @@ proc readphysical {filename} {
     set sname $filename
 }
 
+proc unidata_readphysical {filename} {
+    global sname ftype comm issepar separ attrlist schemadir
+    set attrlist ""
+
+    # Open file for reading
+    set f [open $schemadir/physical/$filename r]
+
+    # First line is the schema name 
+    set line ""
+    readSchemaLine $f line
+    scan $line "schema %s \{" sname 
+
+    # Second line is schema type
+    readSchemaLine $f line
+    scan $line "type = %s \;" ftype
+
+    # Third line is comment
+    readSchemaLine $f line
+    scan $line "comment = %s \;" comm
+
+    # Third line is separator or whitespace
+    readSchemaLine $f line
+    set issepar 1
+    if {[lindex $line 0] == "whitespace"} {
+	set issepar 0
+    }
+    # everything between the 's is the separator
+    set lstart [string first "'" $line]
+    set lend [string last "'" $line]
+    set separ [string range $line $lstart $lend]
+
+    # Following are all attr declarations
+    set len [readSchemaLine $f line]
+    set num 0
+    while {$len != -1} {
+
+	set astrlen 0
+	set hival "none"
+	set loval "none"
+	set dateformat ""
+	set position ""
+	set length ""
+
+	scan $line "attr %s \{" attrname
+	readSchemaLine $f line
+	scan $line "type = %s \;" attrtype
+	readSchemaLine $f line
+
+	set sorted No
+	set count 0
+	while {[string range $line 0 0] != "\}" && $count < 20 } {
+		if {[lindex $line 0] == "sorted"} {
+			set sorted Yes
+		}
+		if {[lindex $line 0] == "max"} {
+			scan $line "max = %s \;" hival
+		}
+		if {[lindex $line 0] == "min"} {
+			scan $line "min = %s \;" loval
+		}
+		if {[lindex $line 0] == "maxlen"} {
+			scan $line "maxlen = %s \;" astrlen
+		}
+		if {$astrlen == "none"} {
+			set astrlen 0
+		}
+		if {[lindex $line 0] == "date_format"} {
+			scan $line "date_format = %s \;" dateformat
+		}
+		if { $dateformat == "none" } {
+			set dateformat ""
+		}
+		if {[lindex $line 0] == "position"} {
+			scan $line "position = %s \;" position
+		}
+		if {$position == "none"} {
+			set position ""
+		}
+		if {[lindex $line 0] == "length"} {
+			scan $line "length = %s \;" length
+		}
+		if {$length == "none"} {
+			set length ""
+		}
+
+		set count [expr $count+1]
+		readSchemaLine $f line
+	}
+
+	set attr [list $attrtype $sorted $hival $loval $attrname $astrlen $dateformat $position $length]
+
+	#puts "ATTR LIST Inserting .. $attr"
+
+	set attrlist [linsert $attrlist $num $attr]
+	set len [readSchemaLine $f line]
+	if {[string range $line 0 0] == "\}"} {
+		break
+	}
+	set num [expr $num+1]
+    }
+
+    close $f
+    set sname $filename
+}
+
 ###################################################################
 
 # Read a line from a schema file, skipping blank and comment lines.
@@ -1069,12 +1758,23 @@ proc readSchemaLine { fileId bufRef } {
 
     set len 0
     set buf ""
-    while {[lindex $buf 0] == "" || [string range $buf 0 0] == "#"} {
+    while {[lindex $buf 0] == "" || [string range $buf 0 0] == "#"} { 
+#    while { [string range $buf 0 0] == "#"} 
         set len [gets $fileId buf]
 	if {$len == -1} {
 	    return $len
 	}
     }
+    while { [string range $buf 0 0] == " " || [string range $buf 0 0] == "\t"} {
+    	set buf [string range $buf 1 end]
+	set len [expr $len - 1]
+    }
+#    while { [string range $buf 0 0] == "\t"} {
+#puts "Before $buf"
+#    	set buf [string range $buf 8 end]
+#puts "After $buf"
+#	set len [expr $len-8]
+#    }
 
     return $len
 }
