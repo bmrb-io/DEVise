@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.52  1997/12/11 04:47:51  beyer
+#  .o files that are placed into libraries (.a) are now removed.
+#
 #  Revision 1.51  1997/11/24 23:14:23  weaver
 #  Changes for the new ColorManager.
 #
@@ -139,8 +142,10 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics  -I../../graphics.new \
 	-I../../generic \
 	-I../../util -I../../tape -I../../DTE/StandAlone \
 	-I../../LM/C++ \
+	-I/s/mesa-2.4/include \
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX -DGRAPHICS \
 	-DNEW_LAYOUT
+
 # -fexternal-templates 
 
 LIBSRC = AttrList.c AxisLabelClassInfo.c \
@@ -151,11 +156,12 @@ LIBSRC = AttrList.c AxisLabelClassInfo.c \
 	Util.c View.c ViewWin.c ViewLayout.C \
 	Layout.C \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
+	GLDisplay.c GLWindowRep.c \
 	TileLayout.C xvgifwr.c xv24to8.c xvgrab.c \
 	Map3D.C Temp.c PSWindowRep.c PSDisplay.c DaliIfc.c DaliPatron.c \
 	DevStatus.c DualWindowRep.c DevFont.c \
-	ETkIfc.c ETkClient.c SessionDesc.c Scheduler.c DepMgr.c Session.c \
-	GDataSock.c
+	ETkIfc.c ETkClient.c SessionDesc.c Scheduler.c DepMgr.c Session.c\
+	GLDebug.c GDataSock.c
 
 SRCc = $(filter %.c,$(LIBSRC))
 SRCC = $(filter %.C,$(LIBSRC))
@@ -183,17 +189,17 @@ $(LIBNAME): $(LIBNAME)($(LIBOBJ))
 $(LIBNAME)(xvgifwr.o):	xvgifwr.c
 	$(C) -c $(CFLAGS) $<
 	$(AR) r $@ $%
-	$(RM) $%
+#	$(RM) $%
 
 $(LIBNAME)(xv24to8.o):	xv24to8.c
 	$(C) -c $(CFLAGS) $<
 	$(AR) r $@ $%
-	$(RM) $%
+#	$(RM) $%
 
 $(LIBNAME)(xvgrab.o):	xvgrab.c
 	$(C) -c $(CFLAGS) $<
 	$(AR) r $@ $%
-	$(RM) $%
+#	$(RM) $%
 
 jstat: jstat.o $(LIBOBJ)
 	$(CC) -o jstat jstat.o $(LIBOBJ) -lXmu -lXt -lXext -lX11 -lm

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.56  1997/12/12 05:50:22  weaver
+  *** empty log message ***
+
   Revision 1.55  1997/11/24 23:14:35  weaver
   Changes for the new ColorManager.
 
@@ -625,8 +628,7 @@ protected:
 	void DoDrawCursors();
 
 	/* Calculate the transformation for this view */
-	void CalcTransform(Transform2D &transform);
-	void CalcTransform(Transform3D &transform);
+	void CalcTransform(WindowRep* winrep);
 
 	/* Find World coord given screen coord */
 	/* void FindWorld(int sx1, int sy1, int sx2, int sy2,

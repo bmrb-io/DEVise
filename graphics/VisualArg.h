@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/11/24 23:14:37  weaver
+  Changes for the new ColorManager.
+
   Revision 1.5.10.1  1997/05/21 20:40:06  weaver
   Changes for new ColorManager
 
@@ -97,7 +100,7 @@ struct VisualFilter {
   int lastN;		           /* # of records to examine */
   Coord sizeLow, sizeHigh;         /* size filter */
   Pattern patternLow, patternHigh; /* pattern filter */
-		PColorID	colorLow, colorHigh;	// Color filter
+  PColorID colorLow, colorHigh;	// Color filter
   Coord orientationLow, orientationHigh; /* orientation filter*/
   int shapeLow, shapeHigh;         /* shape filter */
   

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.57  1997/11/24 23:14:39  weaver
+  Changes for the new ColorManager.
+
   Revision 1.56  1997/11/12 15:45:26  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
   into the trunk.
@@ -293,6 +296,14 @@
  * because that breaks the compile on HPs.  RKW June 10, 1997. */
 #ifndef FILENAME_MAX
 #define FILENAME_MAX    1024    /* max # of characters in a path name */
+#endif
+
+#ifdef DEBUG
+#include "GraphicsDebug.h"
+#else
+#define DEBUG
+#include "GraphicsDebug.h"
+#undef DEBUG
 #endif
 
 #include "Color.h"
@@ -613,6 +624,11 @@ public:
 #ifdef LIBCS
   virtual void SetDashes(int dashCount, int dashes[], int startOffset) {}
 #endif
+  // Use FillRect is inefficient for openGL
+  virtual void ClearBackground(Coord xlow, Coord ylow,
+			Coord width, Coord height) {
+	FillRect(xlow, ylow, width, height);
+  }
 
   virtual void FillRect(Coord xlow, Coord ylow,
 			Coord width, Coord height) = 0;
@@ -640,7 +656,10 @@ public:
 			     Coord minWidth = 1.0, Coord minHeight = 1.0,
 			     SymbolAlignment alignment = AlignSouthWest,
                              Coord orientation = 0.0) = 0;
+
   virtual void FillPoly(Point *, int n) = 0;
+  virtual void FillPoly3D(Point3D *, int n) {};
+
   virtual void FillPixelPoly(Point *, int n) = 0;
 
   /* Draw an arc.  Angles are in radians, end is _relative_ to start. */
@@ -649,6 +668,8 @@ public:
 
   /* draw line. end points are in world coord, but the width is in pixels */
   virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width) = 0;
+  virtual void Line3D(Coord x1, Coord y1, Coord z1,
+		      Coord x2, Coord y2, Coord z2, Coord width) {};
   virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width) = 0;
 
   /* draw and scaled text to fit inside box, according to alignment.
@@ -714,51 +735,56 @@ public:
   /* 2D transformation matrix operations */
   
   /* Push a copy of the top of stack onto the stack */
-  void PushTop() {
+  virtual void PushTop() {
     if (_current >= WindowRepTransformDepth-1 ){
       reportErrNosys("WindowRep::PushTop: overflow");
       Exit::DoExit(1);
     };
-    _transforms[_current+1].Copy(_transforms[_current]);
-    _current++;
+    DEBUGE(_transforms[_current+1].Copy(_transforms[_current]));
+    DEBUGE(_current++);
   }
   
   /* pop transformation matrix */
-  void PopTransform() {
+  virtual void PopTransform() {
     if (_current <= 0){
       reportErrNosys("WindowRep::PopTransform: underflow");
       Exit::DoExit(1);
     }
-    _current--;
+    DEBUGE(_current--);
   }
 
   /* operations on current transformation matrix */
-  void Scale(Coord sx, Coord sy) {
-    _transforms[_current].Scale(sx,sy);
+  virtual void Scale(Coord sx, Coord sy) {
+    DEBUGE(_transforms[_current].Scale(sx,sy));
   }
 
-  void Translate(Coord dx, Coord dy) {
-    _transforms[_current].Translate(dx,dy);
+  virtual void Translate(Coord dx, Coord dy) {
+    DEBUGE(_transforms[_current].Translate(dx,dy));
   }
 
-  void MakeIdentity() {
-    _transforms[_current].MakeIdentity();
+  virtual void MakeIdentity() {
+    DEBUGE(_transforms[_current].MakeIdentity());
   }
 
   /* return the transform on top of the stack. */
-  Transform2D *TopTransform() {
+  virtual Transform2D *TopTransform() {
+    DPRINTF("WindowRep::TopTransform\n");
     return &_transforms[_current];
   }
 
-  void PostMultiply(Transform2D *t) {
-    _transforms[_current].PostMultiply(t);
-  }
+/*  virtual void PostMultiply(Transform2D *t) {
+    DEBUGE(_transforms[_current].PostMultiply(t));
+  }*/
 
   virtual void Transform(Coord x, Coord y, Coord &newX, Coord &newY) {
     _transforms[_current].Transform(x, y, newX, newY);
   }
 
-  void PrintTransform() {
+  virtual void InverseTransform(Coord x, Coord y, Coord &newX, Coord &newY) {
+    _transforms[_current].InverseTransform(x, y, newX, newY);
+  }
+
+  virtual void PrintTransform() {
     _transforms[_current].Print();
   }
 
@@ -779,7 +805,7 @@ public:
       reportErrNosys("WindowRep::PushTop: overflow");
       Exit::DoExit(1);
     };
-    _transforms3[_current3+1].Copy(_transforms3[_current3]);
+    DEBUGE(_transforms3[_current3+1].Copy(_transforms3[_current3]));
     _current3++;
   }
   
@@ -794,15 +820,15 @@ public:
 
   /* operations on current transformation matrix */
   void Scale3(Coord sx, Coord sy, Coord sz) {
-    _transforms3[_current3].Scale(sx,sy,sz);
+    DEBUGE(_transforms3[_current3].Scale(sx,sy,sz));
   }
 
   void Translate3(Coord dx, Coord dy, Coord dz) {
-    _transforms3[_current3].Translate(dx,dy,dz);
+    DEBUGE(_transforms3[_current3].Translate(dx,dy,dz));
   }
 
   void MakeIdentity3() {
-    _transforms3[_current3].MakeIdentity();
+    DEBUGE(_transforms3[_current3].MakeIdentity());
   }
 
   /* return the transform on top of the stack. */
@@ -811,7 +837,7 @@ public:
   }
 
   void PostMultiply3(Transform3D *t) {
-    _transforms3[_current3].PostMultiply(t);
+    DEBUGE(_transforms3[_current3].PostMultiply(t));
   }
 
 #if 0 // Not used -- RKW 10/12/96.
@@ -926,6 +952,7 @@ protected:
   WindowRepCallbackList  *_callbackList;
 
   Transform2D _transforms[WindowRepTransformDepth];
+
   int _current;         /* current index in the stack */
   ClipRect _clippings[WindowRepClipDepth];
   int _clipCurrent;	/* index of top of stack for _clippings*/
@@ -943,6 +970,7 @@ protected:
   int _line_width;		  /* current border line width */
 
   static Boolean _destroyPending; /* true if window destroy is pending */
+
 };
 
 //******************************************************************************

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  1997/11/05 00:22:06  donjerko
+  Added initialization of Streaming Buffer Mgr, used by RTree.
+
   Revision 1.39  1997/08/20 22:10:36  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -269,6 +272,7 @@ int Init::_screenHeight = -1;
 Boolean Init::_useSharedMem = false;
 Boolean Init::_forceBinarySearch = false;
 Boolean Init::_forceTapeSearch = false;
+Boolean Init::_useOpenGL = false;
 
 float Init::_drawTimeout = 10.0;
 
@@ -703,7 +707,11 @@ void Init::DoInit(int &argc, char **argv)
         printf("Enabling searches on tape\n");
 	MoveArg(argc,argv,i,1);
       }
-
+      else if (strcmp(&argv[i][1], "gl") == 0) {
+	_useOpenGL = true;
+	printf("Use OpenGL graphics\n");
+	MoveArg(argc,argv,i,1);
+      }
       else {
         fprintf(stderr, "Unrecognized argument '%s'\n", argv[i]);
 	Usage(argv[0]);

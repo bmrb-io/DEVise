@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/11/24 23:14:27  weaver
+  Changes for the new ColorManager.
+
   Revision 1.5.10.1  1997/05/21 20:39:57  weaver
   Changes for new ColorManager
 
@@ -73,24 +76,31 @@ public:
 #define BLOCK_EDGES  12
 #define BLOCK_SIDES  6
 
+// 5*12+2
+#define SPHERE_VERTEX 62
+
+// 5*12+6*12
+#define SPHERE_EDGES 132
+
+// 6*12
+#define SPHERE_SIDES 72
+
 class WindowRep;
 
-//******************************************************************************
-// class Object3D
-//******************************************************************************
-
-class Object3D : public Coloring
-{             
-	public:
-
-		Point3D		pt;					// location (center) of object
-		Coord		W, H, D;			// size of object
-		Coord		segWidth;			// width of frame segments
-		Vertex3D	vt[BLOCK_VERTEX];	// shape's vertices
-		Edge3D		ed[BLOCK_EDGES];	// shape's edges
-		Side3D		sd[BLOCK_SIDES];	// shape's sides
-		Boolean		clipout;			// true = clip, false = keep it
+class Object3D : public Coloring {
+public:
+  Point3D  pt;               // location (center) of object
+  Coord    W, H, D;          // size of object
+  Coord    segWidth;         // width of frame segments
+  Vertex3D vt[SPHERE_VERTEX]; // shape's vertices
+  Edge3D   ed[SPHERE_EDGES];  // shape's edges
+  Side3D   sd[SPHERE_SIDES];  // shape's sides
+  Boolean  clipout;          // true = clip, false = keep it
 };
+
+// ---------------------------------------------------------- 
+// 3D mapping functions
+// ---------------------------------------------------------- 
 
 //******************************************************************************
 // class Map3D
@@ -101,7 +111,15 @@ public:
   static void AssignBlockVertices(Object3D &block);
   static void AssignBlockEdges(Object3D &block);
   static void AssignBlockSides(Object3D &block);
+
+  static void AssignOvalVertices(Object3D &block);
+  static void AssignOvalEdges(Object3D &block);
+  static void AssignOvalSides(Object3D &block);
+
   static void ClipBlocks(WindowRep *win,
+                         Object3D *block, int numSyms, 
+			 Camera camera, int H, int V);
+  static void ClipOvals(WindowRep *win,
                          Object3D *block, int numSyms, 
 			 Camera camera, int H, int V);
   static void MapBlockSegments(WindowRep *win,
@@ -109,6 +127,12 @@ public:
 			       Camera camera, int H, int V);
   static void MapBlockPlanes(WindowRep *win,
                              Object3D *block, int numSyms,
+			     Camera camera, int H, int V);
+  static void MapOvalSegments(WindowRep *win,
+                             Object3D *sphere, int numSyms,
+			     Camera camera, int H, int V);
+  static void MapOvalPlanes(WindowRep *win,
+                             Object3D *sphere, int numSyms,
 			     Camera camera, int H, int V);
   static void ClipLineSegments(WindowRep *win,
                                Object3D *segment, int numSyms, 

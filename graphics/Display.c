@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/11/24 23:14:17  weaver
+  Changes for the new ColorManager.
+
   Revision 1.18  1997/06/25 17:05:24  wenger
   Fixed bug 192 (fixed problem in the PSWindowRep::FillPixelRect() member
   function, disabled updating of record links during print, print dialog
@@ -101,6 +104,7 @@
 //#define DEBUG
 
 #include "XDisplay.h"
+#include "GLDisplay.h"
 #include "PSDisplay.h"
 #include "Util.h"
 #ifndef LIBCS
@@ -120,8 +124,13 @@ Get the default display
 
 DeviseDisplay *DeviseDisplay::DefaultDisplay()
 {
-  if (!_defaultDisplay)
-    _defaultDisplay = new XDisplay();
+  if (!_defaultDisplay) {
+    // changed for testing GLDisplay
+    if (Init::UseOpenGL())
+      _defaultDisplay = new GLDisplay();
+    else
+      _defaultDisplay = new XDisplay();
+  }
   return _defaultDisplay;
 }
 

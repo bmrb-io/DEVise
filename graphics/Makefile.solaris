@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.81  1997/12/12 16:37:13  wenger
+# Updated solaris dependencies.
+#
 # Revision 1.80  1997/12/12 05:50:18  weaver
 # *** empty log message ***
 #
@@ -119,15 +122,6 @@ AttrList.o: BufPolicy.h Util.h /usr/include/stdlib.h /usr/include/string.h
 AttrList.o: /usr/include/ctype.h /usr/include/math.h
 AttrList.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h DevError.h
 AttrList.o: /usr/include/errno.h /usr/include/sys/errno.h
-AttrList.old.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-AttrList.old.o: /usr/include/sys/va_list.h AttrList.h /usr/include/sys/time.h
-AttrList.old.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-AttrList.old.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-AttrList.old.o: /usr/include/time.h DeviseTypes.h /usr/include/values.h
-AttrList.old.o: DevStatus.h DList.h Exit.h Init.h BufPolicy.h Util.h
-AttrList.old.o: /usr/include/stdlib.h /usr/include/string.h
-AttrList.old.o: /usr/include/ctype.h /usr/include/math.h
-AttrList.old.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 AxisLabelClassInfo.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 AxisLabelClassInfo.o: /usr/include/sys/va_list.h AxisLabelClassInfo.h
 AxisLabelClassInfo.o: DeviseTypes.h /usr/include/values.h DevStatus.h

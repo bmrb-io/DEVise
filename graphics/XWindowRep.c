@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.97  1997/11/24 23:14:42  weaver
+  Changes for the new ColorManager.
+
   Revision 1.96  1997/07/18 20:25:08  wenger
   Orientation now works on Rect and RectX symbols; code also includes
   some provisions for locating symbols other than at their centers.
@@ -459,7 +462,10 @@ extern "C" {
 #define ROUND(type, value) ((type)(value + 0.5))
 #define DRAWABLE           (_win ? _win : _pixmap)
 
+#ifndef IMPLEMENTDLIST_DALIIMAGELIST
+#define IMPLEMENTDLIST_DALIIMAGELIST
 ImplementDList(DaliImageList, int);
+#endif
 
 // key translations
 // Removed 'num lock' from AltMask (rkw 8/7/96).
@@ -794,8 +800,8 @@ void XWindowRep::PushClip(Coord x, Coord y, Coord w, Coord h)
 
   Coord xlow, ylow, xhi, yhi, width, height;
   Coord x1, y1, x2, y2;
-  WindowRep::Transform(x, y, x1, y1);
-  WindowRep::Transform(x + w, y + h, x2, y2);
+  Transform(x, y, x1, y1);
+  Transform(x + w, y + h, x2, y2);
   xlow = MIN(x1, x2);
   xhi = MAX(x1, x2);
   ylow = MIN(y1, y2);
@@ -1707,7 +1713,7 @@ void XWindowRep::CoalescePixmaps(XWindowRep *root)
 void XWindowRep::DrawPixel(Coord x, Coord y)
 {
   Coord tx, ty;
-  WindowRep::Transform(x,y,tx,ty);
+  Transform(x,y,tx,ty);
 
 #ifdef DEBUG
   printf("XWindowRep::DrawPixel: %.2f %.2f --> %.2f %.2f\n", x, y, tx, ty);
@@ -1746,7 +1752,7 @@ void XWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
     DOASSERT(num <= WINDOWREP_BATCH_SIZE, "points array will overflow");
     for(int i = 0; i < num; i++) {
       Coord tx, ty;
-      WindowRep::Transform(x[i], y[i], tx, ty);
+      Transform(x[i], y[i], tx, ty);
       points[i].x = ROUND(short, tx);
       points[i].y = ROUND(short, ty);
     }
@@ -1777,7 +1783,7 @@ void XWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
   DOASSERT(num <= WINDOWREP_BATCH_SIZE, "rectAngles array will overflow");
   for(int i = 0; i < num; i++) {
     Coord tx,ty;
-    WindowRep::Transform(x[i],y[i],tx,ty);
+    Transform(x[i],y[i],tx,ty);
     rectAngles[i].x = ROUND(short, tx - halfWidth);
     rectAngles[i].y = ROUND(short, ty - halfWidth);
     rectAngles[i].width = width;
@@ -1839,8 +1845,8 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
   printf("\n");
 #endif
 
-    WindowRep::Transform(xlow[i], ylow[i], x1, y1);
-    WindowRep::Transform(xlow[i] + width[i], ylow[i] + height[i], x2, y2);
+    Transform(xlow[i], ylow[i], x1, y1);
+    Transform(xlow[i] + width[i], ylow[i] + height[i], x2, y2);
 
     // possible overflow when these numbers get rounded, so clip to MAXSHORT
     // to avoid any trouble
@@ -1918,8 +1924,8 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
   DOASSERT(num <= WINDOWREP_BATCH_SIZE, "rectAngles array will overflow");
   for(int i = 0; i < num; i++) {
     Coord x1,y1,x2,y2;
-    WindowRep::Transform(xlow[i], ylow[i], x1, y1);
-    WindowRep::Transform(xlow[i] + width, ylow[i] + height, x2, y2);
+    Transform(xlow[i], ylow[i], x1, y1);
+    Transform(xlow[i] + width, ylow[i] + height, x2, y2);
 
     // possible overflow when these numbers get rounded, so clip to MAXSHORT
     // to avoid any trouble
@@ -1973,8 +1979,8 @@ void XWindowRep::FillRect(Coord xlow, Coord ylow, Coord width,
 
   Coord txlow, tylow, txmax, tymax;
   Coord x1, y1, x2, y2;
-  WindowRep::Transform(xlow, ylow + height, x1, y1);
-  WindowRep::Transform(xlow + width, ylow, x2, y2);
+  Transform(xlow, ylow + height, x1, y1);
+  Transform(xlow + width, ylow, x2, y2);
   txlow = MIN(x1, x2);
   txmax = MAX(x1, x2);
   tylow = MIN(y1, y2);
@@ -2029,8 +2035,8 @@ void XWindowRep::FillRectAlign(Coord xlow, Coord ylow, Coord width,
   /* XXX: need to clip rect against window dimensions */
 
   Coord x1, y1, x2, y2;
-  WindowRep::Transform(xlow, ylow, x1, y1);
-  WindowRep::Transform(xlow + width, ylow + height, x2, y2);
+  Transform(xlow, ylow, x1, y1);
+  Transform(xlow + width, ylow + height, x2, y2);
 
   // possible overflow when these numbers get rounded, so clip to MAXSHORT
   // to avoid any trouble
@@ -2225,8 +2231,8 @@ void XWindowRep::Arc(Coord x, Coord y, Coord w, Coord h,
 #endif
   
   Coord tx, ty, tempX, tempY;
-  WindowRep::Transform(x, y, tx, ty);
-  WindowRep::Transform(x + w, y + h, tempX, tempY);
+  Transform(x, y, tx, ty);
+  Transform(x + w, y + h, tempX, tempY);
   Coord width = fabs(tempX - tx);
   Coord height = fabs(tempY - ty);
   int realStart = ROUND(int, ToDegree(startAngle) * 64);
@@ -2264,8 +2270,8 @@ void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
 #endif
   
   Coord tx1, ty1, tx2, ty2;
-  WindowRep::Transform(x1 ,y1, tx1, ty1);
-  WindowRep::Transform(x2, y2, tx2, ty2);
+  Transform(x1 ,y1, tx1, ty1);
+  Transform(x2, y2, tx2, ty2);
 #if defined(GRAPHICS)
   if (_dispGraphics) {
     XSetLineAttributes(_display, _gc, ROUND(int, width), _lineStyle, CapButt,
@@ -2742,8 +2748,8 @@ void XWindowRep::DrawText(Boolean scaled, char *text, Coord x,
 {
   /* transform into window coords */
   Coord tx1, ty1, tx2, ty2;
-  WindowRep::Transform(x, y, tx1, ty1);
-  WindowRep::Transform(x + width, y + height, tx2, ty2);
+  Transform(x, y, tx1, ty1);
+  Transform(x + width, y + height, tx2, ty2);
   int winX, winY, winWidth, winHeight;
   winX = ROUND(int, MIN(tx1, tx2));
   winY = ROUND(int, MIN(ty1, ty2));
@@ -3301,8 +3307,8 @@ void XWindowRep::Scroll(Coord x, Coord y, Coord w, Coord h,
 
   Coord xlow, ylow, xhi, yhi, width, height;
   Coord x1, y1, x2, y2;
-  WindowRep::Transform(x, y, x1, y1);
-  WindowRep::Transform(x + w, y + h, x2, y2);
+  Transform(x, y, x1, y1);
+  Transform(x + w, y + h, x2, y2);
   xlow = MIN(x1, x2);
   xhi = MAX(x1, x2);
   ylow = MIN(y1, y2);
@@ -3311,7 +3317,7 @@ void XWindowRep::Scroll(Coord x, Coord y, Coord w, Coord h,
   height = yhi - ylow + 1;
   
   Coord tdx, tdy;
-  WindowRep::Transform(dstX, dstY + h, tdx, tdy);
+  Transform(dstX, dstY + h, tdx, tdy);
   
 #ifdef DEBUG
   printf("XWindowRep::Scroll after xform x:%d,y:%d,w:%d,h:%d to x:%d, y%d\n",

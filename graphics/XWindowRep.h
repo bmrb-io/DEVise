@@ -15,6 +15,9 @@
 /*
   $Id$
   $Log$
+  Revision 1.47  1997/11/24 23:14:43  weaver
+  Changes for the new ColorManager.
+
   Revision 1.46  1997/07/18 20:25:09  wenger
   Orientation now works on Rect and RectX symbols; code also includes
   some provisions for locating symbols other than at their centers.
@@ -226,10 +229,18 @@
 class XWindowRep;
 
 DefinePtrDList(XWindowRepList, XWindowRep *);
+#ifndef DALIIMAGELIST_INT
+#define DALIIMAGELIST_INT
 DefineDList(DaliImageList, int);
+#endif
+#ifndef ETKWINLIST_ETKINFO
+#define ETKWINLIST_ETKINFO
 DefinePtrDList(ETkWinList, ETkInfo *);
+#endif
 
 /* Bitmap info */
+#ifndef XBITMAPINFO
+#define XBITMAPINFO
 struct XBitmapInfo {
 	Boolean inUse;
 	Pixmap pixmap;
@@ -238,6 +249,7 @@ struct XBitmapInfo {
 	int width;
 	int height;
 };
+#endif
 
 class XDisplay;
 class Compression;
@@ -394,6 +406,11 @@ class XWindowRep : public WindowRep
 	virtual void ScrollAbsolute(int x, int y, unsigned width,
 				    unsigned height, int dstX, int dstY);
 
+	virtual void Transform(Coord x, Coord y, Coord &newX, Coord &newY) {
+		WindowRep::Transform(x,y,newX,newY);
+		newY=_height-newY;
+	}
+	
 	virtual void SetPattern(Pattern p);
 
 	virtual void SetLineWidth(int w);

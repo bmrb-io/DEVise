@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/11/24 23:14:40  weaver
+  Changes for the new ColorManager.
+
   Revision 1.30  1997/07/22 19:44:30  wenger
   Removed extra dependencies that broke cslib link.
 
@@ -152,18 +155,21 @@
 #include <tk.h>
 #endif
 
+#ifndef LINE_SIZECONST
+#define LINE_SIZECONST
 const int LINE_SIZE = 512;
+#endif
 
 class XDisplay : public DeviseDisplay
 {
-	public:
+  public:
 
-		// Constructors and Destructors
-		XDisplay(char *name = 0);
+    // Constructors and Destructors
+    XDisplay(char *name = 0);
 
-		// Getters and Setters
-		Display*		GetDisplay(void)		{ return _display;	}
-		const Display*	GetDisplay(void) const	{ return _display;	}
+    // Getters and Setters
+    Display* GetDisplay(void)  { return _display;	}
+    const Display* GetDisplay(void) const { return _display;	}
 		
 #ifdef TK_WINDOW_EV2
     virtual ~XDisplay();

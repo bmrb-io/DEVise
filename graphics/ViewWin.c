@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.39  1997/11/24 23:14:36  weaver
+  Changes for the new ColorManager.
+
   Revision 1.38  1997/06/25 17:05:28  wenger
   Fixed bug 192 (fixed problem in the PSWindowRep::FillPixelRect() member
   function, disabled updating of record links during print, print dialog
@@ -808,21 +811,25 @@ void ViewWin::DrawMargins()
   RealGeometry(x, y, w, h);
 
   // draw logo
-	WindowRep*	win = GetWindowRep();
 
-	win->SetForeground(GetForeground());
-	win->SetPattern(Pattern0);
-	win->SetLineWidth(0);
-	win->FillRect(x, y, w - 1, _topMargin - 1);
-
-	win->SetForeground(GetBackground());
-	win->FillRect(x + 1, y + 1, w - 1 - 2, _topMargin - 1 - 2);
-
-	win->SetForeground(GetForeground());
-	win->SetFont("Courier", "Medium", "r", "Normal", 8.0);
-	win->AbsoluteText((char *) logo, x + 1, y + 1, w - 2, _topMargin - 2,
-					  WindowRep::AlignNorth, true);
-	win->SetNormalFont();
+  WindowRep *win = GetWindowRep();
+  win->SetForeground(GetForeground());
+  win->SetPattern(Pattern0);
+  win->SetLineWidth(0);
+  //win->FillRect(x, y, w - 1, _topMargin - 1);
+  win->FillRect(x, h-y-(_topMargin-1), w - 1, _topMargin - 1);
+  win->SetForeground(GetBackground());
+  //  win->FillRect(x + 1, y + 1, w - 1 - 2, _topMargin - 1 - 2);
+  win->FillRect(x + 1, h-(y + 1)-(_topMargin-1-2), w - 1 - 2,
+		_topMargin - 1 - 2);
+  win->SetForeground(GetForeground());
+  win->SetFont("Courier", "Medium", "r", "Normal", 8.0);
+  //win->AbsoluteText((char *) logo, x + 1, y + 1, w - 2, _topMargin - 2,
+		      //WindowRep::AlignNorth, true);
+  win->AbsoluteText((char *) logo, x + 1, h-(y + 1)-(_topMargin-2),
+		    w - 2, _topMargin - 2,
+		    WindowRep::AlignNorth, true);
+  win->SetNormalFont();
 }
 #endif
 

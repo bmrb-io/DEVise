@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.118  1997/12/12 05:50:21  weaver
+  *** empty log message ***
+
   Revision 1.117  1997/11/24 23:14:33  weaver
   Changes for the new ColorManager.
 
@@ -1045,6 +1048,8 @@ void View::GetLabelArea(int &x, int &y, int &width, int &height)
   if (height < 0)
     height = 1;
 
+  y=h-height;
+
 #if defined(DEBUG)
   printf("View::GetLabelArea %s %d %d %d %d\n", GetName(), x, y, width, height);
 #endif
@@ -1075,7 +1080,8 @@ void View::GetXAxisArea(int &x, int &y, int &width, int &height,
   unsigned int windW, winH;
   Geometry(x, y, windW, winH);
 
-  y += winH - xAxis.width;
+  //y += winH - xAxis.width;
+  y += xAxis.width;
   width = windW;
   height = xAxis.width;
   
@@ -1221,7 +1227,7 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
    * the window transform for this to work. */
   if (FILL_WHOLE_BACKGROUND || _winReps.IsFileOutput()) {
     win->SetForeground(GetBackground());
-    win->FillRect((Coord) winX, (Coord) winY, (Coord) winW, (Coord) winH);
+    win->ClearBackground((Coord) winX, (Coord) winY, (Coord) winW, (Coord) winH);
   }
 
   DrawLabel();
@@ -1240,7 +1246,7 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
       win->SetForeground(GetBackground());
       win->SetPattern(Pattern0);
       win->SetLineWidth(0);
-      win->FillRect(axisX, axisY, axisWidth - 1, axisHeight - 1);
+      win->ClearBackground(axisX, axisY, axisWidth - 1, axisHeight - 1);
 #endif
       DrawXAxis(win, x, y, w, h);
     }
@@ -1250,7 +1256,7 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
       win->SetForeground(GetBackground());
       win->SetPattern(Pattern0);
       win->SetLineWidth(0);
-      win->FillRect(axisX, axisY, axisWidth - 1, axisHeight - 1);
+      win->ClearBackground(axisX, axisY, axisWidth - 1, axisHeight - 1);
 #endif
       DrawYAxis(win, x, y, w, h);
     }
@@ -1277,10 +1283,11 @@ void View::DrawLabel()
     win->SetLineWidth(0);
 
     win->SetForeground(GetBackground());
-    win->FillRect(labelX, labelY, labelWidth - 1, labelHeight - 1);
+    win->ClearBackground(labelX, labelY, labelWidth - 1, labelHeight - 1);
 
     win->SetForeground(GetForeground());
 //    win->SetBackground(GetBackground());
+
     win->AbsoluteText(_label.name, labelX, labelY, labelWidth - 1,
 		      labelHeight - 1, WindowRep::AlignCenter, true);
   } else {
@@ -1329,7 +1336,7 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
   _xAxisFont.SetWinFont(win);
 
   /* draw a line from startX to the end of the view */
-  win->Line(startX - 1, axisY, axisMaxX, axisY, 1);
+  win->Line(startX -1, axisY, axisMaxX, axisY, 1);
 
   Coord drawWidth = axisWidth - (startX - axisX);
   int numTicks = (int)(drawWidth / xAxis.labelWidth);
@@ -1380,15 +1387,17 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
 		    tickMark, nTicks, tickInc);
 
   /* extract user transformation */
-  win->PopTransform();
-  Transform2D transform = *win->TopTransform();
-  win->PushTop();
-  win->MakeIdentity();
+//  win->PopTransform();
+//  Transform2D transform = *win->TopTransform();
+//  win->PushTop();
+//  win->MakeIdentity();
 
   /* draw tick marks */
   for(int i = 0; i < nTicks; i++) {
     Coord x, y;
-    transform.Transform(tickMark, 0, x, y);
+//    transform.Transform(tickMark, 0, x, y);
+    x=tickMark*axisWidth/(_filter.xHigh-_filter.xLow)+startX;
+
     win->Line(x, axisY, x, axisY + 3, 1);
     char buf[32];
     sprintf(buf, "%.*g", xAxis.significantDigits, tickMark);
@@ -1396,14 +1405,17 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
     /* make sure label doesn't go past left or right edge */
     if (xLeft < startX) {
       xLeft = startX;
-      win->AbsoluteText(buf, xLeft, axisY + 2, xAxis.labelWidth,
+      win->AbsoluteText(buf, xLeft, axisY - 2 - (axisHeight-1), 
+			xAxis.labelWidth,
 			axisHeight - 1, WindowRep::AlignWest, true);
     } else if (xLeft + xAxis.labelWidth > axisX + axisWidth) {
       xLeft = axisX + axisWidth - xAxis.labelWidth;
-      win->AbsoluteText(buf, xLeft, axisY + 2, xAxis.labelWidth,
+      win->AbsoluteText(buf, xLeft, axisY - 2 - (axisHeight-1),
+			xAxis.labelWidth,
 			axisHeight - 1, WindowRep::AlignEast, true);
     } else {
-      win->AbsoluteText(buf, xLeft, axisY + 2, xAxis.labelWidth,
+      win->AbsoluteText(buf, xLeft, axisY - 2 - (axisHeight-1),
+			xAxis.labelWidth,
 			axisHeight - 1, WindowRep::AlignCenter, true);
     }
     tickMark += tickInc;
@@ -1492,30 +1504,36 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
 		    tickMark, nTicks, tickInc);
 
   /* extract user transformation */
-  win->PopTransform();
-  Transform2D transform = *win->TopTransform();
-  win->PushTop();
-  win->MakeIdentity();
+//  win->PopTransform();
+//  Transform2D transform = *win->TopTransform();
+//  win->PushTop();
+//  win->MakeIdentity();
 
   /* draw tick marks */
   for(int i = 0; i < nTicks; i++) {
     Coord x, y;
-    transform.Transform(0, tickMark, x, y);
+//    transform.Transform(0, tickMark, x, y);
+    y=tickMark*axisHeight/(_filter.yHigh-_filter.yLow)+startY;
     win->Line(axisMaxX, y, axisMaxX - 3, y, 1);
     char buf[32];
     sprintf(buf, "%.*g", yAxis.significantDigits, tickMark);
-    Coord yTop = y - yAxis.labelWidth / 2 + 3;
+//    Coord yTop = y - yAxis.labelWidth / 2 + 3;
+
+    Coord yBottom = y - yAxis.labelWidth/2;
+    // the ytop is yBottom + yAxis.labelWidth
+
+    //Coord yBottom = tickMark;
     /* make sure label doesn't go past left or right edge */
-    if (yTop < startY) {
-      yTop = startY;
-      win->AbsoluteText(buf, axisX, yTop, axisWidth - 1,
-			yAxis.labelWidth, WindowRep::AlignNorth, true);
-    } else if (yTop + yAxis.labelWidth > axisY + axisHeight) {
-      yTop = axisY + axisHeight - yAxis.labelWidth;
-      win->AbsoluteText(buf, axisX, yTop, axisWidth - 1,
+    if (yBottom < startY) {
+      yBottom = startY;
+      win->AbsoluteText(buf, axisX, yBottom, axisWidth-1,
 			yAxis.labelWidth, WindowRep::AlignSouth, true);
+    } else if (yBottom + yAxis.labelWidth> axisY + axisHeight) {
+      yBottom = axisY + axisHeight-yAxis.labelWidth;
+      win->AbsoluteText(buf, axisX, yBottom, axisWidth-1,
+			yAxis.labelWidth, WindowRep::AlignNorth, true);
     } else {
-      win->AbsoluteText(buf, axisX, yTop, axisWidth - 1,
+      win->AbsoluteText(buf, axisX, yBottom, axisWidth-1,
 			yAxis.labelWidth, WindowRep::AlignCenter, true);
     }
     tickMark += tickInc;
@@ -1583,12 +1601,12 @@ void View::OptimizeTickMarks(Coord low, Coord high, int numTicks,
 void View::FindWorld(int sx1,int sy1, int sx2, int sy2,
 		     Coord &xLow, Coord &yLow, Coord &xHigh, Coord &yHigh)
 {
-  Transform2D transform;
-  CalcTransform(transform);
+
 
   Coord x1, x2, y1, y2;
-  transform.InverseTransform(sx1, sy1, x1, y1);
-  transform.InverseTransform(sx2, sy2, x2, y2);
+  WindowRep *winRep = GetWindowRep();
+  winRep->InverseTransform(sx1, sy1, x1, y1);
+  winRep->InverseTransform(sx2, sy2, x2, y2);
   xLow = MIN(x1, x2);
   xHigh = MAX(x1, x2);
   yLow = MIN(y1, y2);
@@ -1598,9 +1616,9 @@ void View::FindWorld(int sx1,int sy1, int sx2, int sy2,
 /* Calculate the transformation matrix used to translate from
    world to screen coordinates */
 
-void View::CalcTransform(Transform2D &transform)
+void View::CalcTransform(WindowRep *winRep)
 {
-  transform.MakeIdentity();
+  winRep->MakeIdentity();
 
   int dataX, dataY, dataWidth, dataHeight;
   GetDataArea(dataX, dataY, dataWidth, dataHeight);
@@ -1609,25 +1627,31 @@ void View::CalcTransform(Transform2D &transform)
   printf("transform data: %d,%d,%d,%d\n", dataX, dataY,
 	 dataWidth, dataHeight);
 #endif
+  /* Notice everything is reversed for OpenGL convention of
+   Current matrix=old matrix * transformation matrix */
+
+  /* Translate to beginning of data area. */
+  winRep->Translate(dataX, dataY);
   
-  /* translate to 0, 0 */
-  transform.Translate(-_filter.xLow, -_filter.yLow);
+  /* Translate to fit to of screen */
+//  winRep->Translate(0.0, dataHeight);
+
+  /* invert the Y coord*/
+//  winRep->Scale(1.0, -1.0);
 
   /* scale to size of the screen */
-  transform.Scale((Coord)dataWidth / (_filter.xHigh -  _filter.xLow),
+  winRep->Scale((Coord)dataWidth / (_filter.xHigh -  _filter.xLow),
 		  (Coord)(dataHeight) / (_filter.yHigh - _filter.yLow));
 
-  /* invert the Y coord to fit (0,0) at top-left corner */
-  transform.Scale(1.0, -1.0);
-  transform.Translate(0.0, dataHeight);
-  
-  /* Translate to beginning of data area. */
-  transform.Translate(dataX, dataY);
+  /* translate to 0, 0 */
+  winRep->Translate(-_filter.xLow, -_filter.yLow);
 }
 
 /* Calculate the transformation matrix used to translate from
    world to screen coordinates */
 
+#ifdef 0
+// Nowhere calls this function
 void View::CalcTransform(Transform3D &transform)
 {
   CompRhoPhiTheta();
@@ -1637,6 +1661,7 @@ void View::CalcTransform(Transform3D &transform)
   GetDataArea(dx, dy, dw, dh);
   SetViewDir(dw / 2, dh / 2);
 }
+#endif
 
 /* For query processing */
 
@@ -1743,12 +1768,9 @@ void View::UpdateTransform(WindowRep *winRep)
   winRep->ClearTransformStack();
 
   if (_numDimensions == 2) {
-     Transform2D transform;
-     CalcTransform(transform);
-     winRep->PostMultiply(&transform);
+     CalcTransform(winRep);
   } else {
-     Transform3D transform;
-     CalcTransform(transform);
+     CalcTransform(winRep);
      winRep->MakeIdentity();
   }
 }
@@ -2265,14 +2287,14 @@ void View::DoDrawCursors()
 #endif
       if (!(filter->xHigh < _filter.xLow || filter->xLow > _filter.xHigh
 	    || filter->yHigh < _filter.yLow || filter->yLow > _filter.yHigh)) {
-	winRep->FillRect(xLow, yLow, xHigh - xLow, yHigh - yLow);
+	winRep->ClearBackground(xLow, yLow, xHigh - xLow, yHigh - yLow);
       }
     } else if (filter->flag & VISUAL_X) {
 #if defined(DEBUG)
       printf("DoDrawCursors: Drawing X cursor in\n  %s\n", GetName());
 #endif
       if (!(filter->xHigh < _filter.xLow || filter->xLow > _filter.xHigh)) {
-	winRep->FillRect(xLow, _filter.yLow, xHigh - xLow,
+	winRep->ClearBackground(xLow, _filter.yLow, xHigh - xLow,
 			 _filter.yHigh - _filter.yLow);
       }
     } else if (filter->flag & VISUAL_Y) {
@@ -2280,7 +2302,7 @@ void View::DoDrawCursors()
       printf("DoDrawCursors: Drawing Y cursor in\n  %s\n", GetName());
 #endif
       if (!(filter->yHigh < _filter.yLow || filter->yLow > _filter.yHigh)) {
-	winRep->FillRect(_filter.xLow, yLow,
+	winRep->ClearBackground(_filter.xLow, yLow,
 			 _filter.xHigh - _filter.xLow, yHigh - yLow);
       }
     }

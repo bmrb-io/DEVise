@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/11/24 23:14:26  weaver
+  Changes for the new ColorManager.
+
   Revision 1.10  1997/08/12 15:32:18  wenger
   Removed unnecessary include dependencies.
 
@@ -137,6 +140,48 @@ void Map3D::AssignBlockVertices(Object3D &block)
 }
 
 // ---------------------------------------------------------- 
+// assign sphere data to vertices of the sphere
+// ---------------------------------------------------------- 
+
+/*
+	0	(arctica)
+	1-12
+	13-24
+	25-36	(equator)
+	37-48
+	49-60
+	61	(antarctica)
+*/
+
+void Map3D::AssignOvalVertices(Object3D &block)
+{
+  Coord x_r = block.W / 2; // x radius
+  Coord y_r = block.H / 2; // y radius
+  Coord z_r = block.D / 2; // z radius
+  double alpha /* angle to +z axis*/, theta /*longitude*/;
+  int i, j;
+
+  // arctica
+  block.vt[0].x_ = block.pt.x_;
+  block.vt[0].y_ = block.pt.y_;
+  block.vt[0].z_ = block.pt.z_-z_r;
+
+  // antarctica
+  block.vt[SPHERE_VERTEX-1].x_ = block.pt.x_;
+  block.vt[SPHERE_VERTEX-1].y_ = block.pt.y_;
+  block.vt[SPHERE_VERTEX-1].z_ = block.pt.z_+z_r;
+
+  for (i=0; i<5; i++)
+	for (j=0; j<12; j++) {
+		alpha=i*M_PI/6.0+M_PI/6.0;
+		theta=j*M_PI/6.0;
+		block.vt[i*12+j+1].x_=block.pt.x_ + x_r*cos(theta)*sin(alpha);
+		block.vt[i*12+j+1].y_=block.pt.y_ + y_r*sin(theta)*sin(alpha);
+		block.vt[i*12+j+1].z_=block.pt.z_ - z_r*cos(alpha);
+	}
+}
+
+// ---------------------------------------------------------- 
 // assign block data to edges of the block
 // ---------------------------------------------------------- 
 
@@ -157,6 +202,40 @@ void Map3D::AssignBlockEdges(Object3D &block)
 }
 
 // ---------------------------------------------------------- 
+// assign sphere data to edges of the sphere
+// ---------------------------------------------------------- 
+
+void Map3D::AssignOvalEdges(Object3D &block)
+{
+  // assign latitude edges: total 12*6=72 edges
+  int i, j;
+  // top 12 edges: edge 0 to 11
+  for (i=0; i<12; i++) {
+  	block.ed[i].p = 0;
+	block.ed[i].q = i+1;
+  }
+  // middle 48 edges: edge 12 to 59
+  for (i=0; i<4; i++)
+	for (j=0; j<12; j++) {
+		block.ed[i*12+j+12].p=1+i*12+j;
+		block.ed[i*12+j+12].q=1+i*12+j+12;
+	}
+  // bottom 12 edges: edge 60 to 71
+  for (i=0; i<12; i++)
+  {
+	block.ed[i+60].p = i+49;
+	block.ed[i+60].q = 61;
+  }
+  // assign longtitude edges: total 12*5=60 edges
+  // edge 72 to 131
+  for (i=0; i<6; i++)
+	for (j=0; j<12; j++) {
+		block.ed[i*12+j+72].p=i*12+j+1;
+		block.ed[i*12+j+72].q=i*12+(j+1)%12+1;
+	}
+}
+
+// ---------------------------------------------------------- 
 // assign block data to sides of the block
 // ---------------------------------------------------------- 
 
@@ -174,6 +253,33 @@ void Map3D::AssignBlockSides(Object3D &block)
   block.sd[4].pt[2] = 7; block.sd[4].pt[3] = 3;
   block.sd[5].pt[0] = 4; block.sd[5].pt[1] = 7;
   block.sd[5].pt[2] = 6; block.sd[5].pt[3] = 5;
+}
+
+void Map3D::AssignOvalSides(Object3D &block)
+{
+	int i, j;
+	// top 12 faces: face 0 to 11
+	for (j=0; j<12; j++) {
+		block.sd[j].pt[0]=0;
+		block.sd[j].pt[1]=0;
+		block.sd[j].pt[2]=j+1;
+		block.sd[j].pt[3]=(j+1)%12+1;
+	}
+	// middle 4*12=48 faces: face 12 to 59
+	for (i=0; i<4; i++)
+		for (j=0; j<12; j++) {
+			block.sd[i*12+j+12].pt[0]=i*12+1+j;
+			block.sd[i*12+j+12].pt[1]=i*12+1+(j+1)%12;
+			block.sd[i*12+j+12].pt[2]=i*12+1+(j+1)%12+12;
+			block.sd[i*12+j+12].pt[3]=i*12+1+j%12+12;
+		}
+	// bottom 12 faces: face 60 to 71
+	for (i=0; i<12; i++) {
+		block.sd[i+60].pt[0]=i+49;
+		block.sd[i+60].pt[1]=(i+1)%12+49;
+		block.sd[i+60].pt[2]=61;
+		block.sd[i+60].pt[3]=61;
+	}
 }
 
 // ---------------------------------------------------------- 
@@ -201,6 +307,73 @@ void Map3D::ClipBlocks(WindowRep *win,
     }
 
 #define _closeness_ 1.3
+
+    if ((block[i].pt.x_ > 0 && camera.x_ > 0 && 
+	 camera.x_ < block[i].pt.x_ && 
+	 block[i].pt.x_ * _closeness_ > camera._rho) ||
+	(block[i].pt.x_ < 0 && camera.x_ < 0 && 
+	 camera.x_ > block[i].pt.x_ &&
+	 block[i].pt.x_ * _closeness_ < -camera._rho) ||
+	(block[i].pt.y_ > 0 && camera.y_ > 0 && 
+	 camera.y_ < block[i].pt.y_ &&
+	 block[i].pt.y_ * _closeness_ > camera._rho) ||
+	(block[i].pt.y_ < 0 && camera.y_ < 0 && 
+	 camera.y_ > block[i].pt.y_ &&
+	 block[i].pt.y_ * _closeness_ < -camera._rho) ||
+	(block[i].pt.z_ > 0 && camera.z_ > 0 && 
+	 camera.z_ < block[i].pt.z_ &&
+	 block[i].pt.z_ * _closeness_ > camera._rho) ||
+	(block[i].pt.z_ < 0 && camera.z_ < 0 && 
+	 camera.z_ > block[i].pt.z_ &&
+	 block[i].pt.z_ * _closeness_ < -camera._rho)) {
+#ifdef DEBUG
+      printf("Block %d clipped because it's behind the camera\n", i);
+#endif
+      block[i].clipout = true;
+      continue;
+    }
+
+    // If any of the vertices of the block appear on screen,
+    // the block is not clipped, otherwise it is clipped
+    block[i].clipout = true;
+    for(int j = 0; j < BLOCK_VERTEX; j++) {
+      Point3D tmppt = CompLocationOnViewingSpace(win, block[i].vt[j]);
+      Point pt = CompProjectionOnViewingPlane(tmppt, camera);
+      if (fabs(pt.x) <= H && fabs(pt.y) <= V) {
+        block[i].clipout = false;
+        break;
+      }
+    }
+          
+    if (block[i].clipout) {
+#ifdef DEBUG
+      printf("Block %d clipped because it's outside of screen\n", i);
+#endif
+    }
+  }
+}
+
+void Map3D::ClipOvals(WindowRep *win,
+                       Object3D *block, int numSyms,
+                       Camera camera, int H, int V)
+{
+  double x1 = 0.0, y1 = 0.0, z1 = 0.0;
+
+  for(int i = 0; i < numSyms; i++) {
+
+    block[i].clipout = false;  // default is no clip
+
+    if (fabs(block[i].pt.x_ - camera.x_) <= block[i].W / 2
+	&& fabs(block[i].pt.y_ - camera.y_) <= block[i].D / 2
+	&& fabs(block[i].pt.z_ - camera.z_) <= block[i].H / 2) {
+#ifdef DEBUG
+      printf("Block %d clipped because camera is inside block\n", i);
+#endif
+      block[i].clipout = true;
+      continue;
+    }
+
+// #define _closeness_ 1.3
 
     if ((block[i].pt.x_ > 0 && camera.x_ > 0 && 
 	 camera.x_ < block[i].pt.x_ && 
@@ -281,6 +454,36 @@ void Map3D::MapBlockSegments(WindowRep *win,
   }
 }
 
+void Map3D::MapOvalSegments(WindowRep *win,
+                             Object3D *block, int numSyms,
+			     Camera camera, int H, int V)
+{
+  _numSegments = 0;
+
+  for(int i = 0; i < numSyms; i++) {
+    if (block[i].clipout)
+      continue;
+
+    Point pts[SPHERE_VERTEX];
+
+    int j;
+    for(j = 0; j < SPHERE_VERTEX; j++) {
+      Point3D tmppt = CompLocationOnViewingSpace(win, block[i].vt[j]);
+      pts[j] = CompProjectionOnViewingPlane(tmppt, camera);
+    }
+    
+    for(j = 0; j < SPHERE_EDGES; j++) {
+      _segment[_numSegments].pt[0].x = pts[block[i].ed[j].p].x;
+      _segment[_numSegments].pt[0].y = pts[block[i].ed[j].p].y;
+      _segment[_numSegments].pt[1].x = pts[block[i].ed[j].q].x;
+      _segment[_numSegments].pt[1].y = pts[block[i].ed[j].q].y;
+      _segment[_numSegments].width = block[i].segWidth;
+      _segment[_numSegments].color = block[i].GetForeground();
+      _numSegments++;
+    }
+  }
+}
+
 // ---------------------------------------------------------- 
 // map sides of blocks to triangular planes
 // ---------------------------------------------------------- 
@@ -347,6 +550,67 @@ void Map3D::MapBlockPlanes(WindowRep *win,
   qsort(_plane, _numPlanes, sizeof(Plane), _reversePlaneSortFunction);
 }
 
+void Map3D::MapOvalPlanes(WindowRep *win,
+                           Object3D *block, int numSyms,
+			   Camera camera, int H, int V)
+{
+  Point3D cameraPoint;
+  cameraPoint.x_ = camera.x_;
+  cameraPoint.y_ = camera.y_;
+  cameraPoint.z_ = camera.z_;
+
+#ifdef DEBUG
+  printf("Mapping planes of %d symbols\n", numSyms);
+#endif
+
+  _numPlanes = 0;
+
+  for(int i = 0; i < numSyms; i++) {
+    if (block[i].clipout)
+      continue;
+
+    Point pts[SPHERE_VERTEX];
+
+    int j;
+    for(j = 0; j < SPHERE_VERTEX; j++) {
+      Point3D tmppt = CompLocationOnViewingSpace(win, block[i].vt[j]);
+      pts[j] = CompProjectionOnViewingPlane(tmppt, camera);
+    }
+    
+    for(j = 0; j < SPHERE_SIDES; j++) {
+      _plane[_numPlanes].pt[0].x = pts[block[i].sd[j].pt[0]].x;
+      _plane[_numPlanes].pt[0].y = pts[block[i].sd[j].pt[0]].y;
+      _plane[_numPlanes].pt[1].x = pts[block[i].sd[j].pt[1]].x;
+      _plane[_numPlanes].pt[1].y = pts[block[i].sd[j].pt[1]].y;
+      _plane[_numPlanes].pt[2].x = pts[block[i].sd[j].pt[2]].x;
+      _plane[_numPlanes].pt[2].y = pts[block[i].sd[j].pt[2]].y;
+      _plane[_numPlanes].dist = TriDistSq(block[i],
+					  block[i].sd[j].pt[0],
+					  block[i].sd[j].pt[1],
+					  block[i].sd[j].pt[2],
+					  cameraPoint);
+      _plane[_numPlanes].color = block[i].GetForeground();
+      _numPlanes++;
+      _plane[_numPlanes].pt[0].x = pts[block[i].sd[j].pt[2]].x;
+      _plane[_numPlanes].pt[0].y = pts[block[i].sd[j].pt[2]].y;
+      _plane[_numPlanes].pt[1].x = pts[block[i].sd[j].pt[3]].x;
+      _plane[_numPlanes].pt[1].y = pts[block[i].sd[j].pt[3]].y;
+      _plane[_numPlanes].pt[2].x = pts[block[i].sd[j].pt[0]].x;
+      _plane[_numPlanes].pt[2].y = pts[block[i].sd[j].pt[0]].y;
+      _plane[_numPlanes].dist = TriDistSq(block[i],
+					  block[i].sd[j].pt[0],
+					  block[i].sd[j].pt[2],
+					  block[i].sd[j].pt[3],
+					  cameraPoint);
+      _plane[_numPlanes].color = block[i].GetForeground();
+      _numPlanes++;
+    }
+  }
+
+  // sort the triangular planes back to front, based on their distance
+  // from the camera
+  qsort(_plane, _numPlanes, sizeof(Plane), _reversePlaneSortFunction);
+}
 // ---------------------------------------------------------- 
 // clip segments
 // ---------------------------------------------------------- 

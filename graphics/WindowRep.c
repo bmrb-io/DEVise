@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+
+  Revision 1.27  1997/10/18 23:28:58  zhenhai
+  Rewrote matrix manipulation functions and deleted direct matrix manipulation
+  code. Because the code is assuming that WindowRep uses the Transformation
+  class, which is not true for GLWindowRep.
+
+  Revision 1.26  1997/11/24 23:14:38  weaver
+  Changes for the new ColorManager.
+
   Revision 1.25  1997/05/21 22:10:00  andyt
   Added EmbeddedTk and Tasvir functionality to client-server library.
   Changed protocol between devise and ETk server: 1) devise can specify
@@ -134,7 +143,6 @@
 #include "WindowRep.h"
 #include "Display.h"
 
-//#define DEBUG
 
 Boolean WindowRep::_destroyPending = false;
 
@@ -344,7 +352,7 @@ WindowRep::CopyState(WindowRep *winRepP)
   ClearTransformStack();
   for (count = 0; count <= winRepP->_current; count++)
   {
-    _transforms[count].Copy(winRepP->_transforms[count]);
+    DEBUGE(_transforms[count].Copy(winRepP->_transforms[count]));
   }
   _current = winRepP->_current;
 
@@ -352,7 +360,7 @@ WindowRep::CopyState(WindowRep *winRepP)
   ClearTransformStack3();
   for (count = 0; count <= winRepP->_current3; count++)
   {
-    _transforms3[count].Copy(winRepP->_transforms3[count]);
+    DEBUGE(_transforms3[count].Copy(winRepP->_transforms3[count]));
   }
   _current3 = winRepP->_current3;
 
@@ -369,5 +377,4 @@ WindowRep::CopyState(WindowRep *winRepP)
 }
 
 //******************************************************************************
-
 

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/08/20 22:10:37  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.17.8.1  1997/08/07 16:56:10  wenger
   Partially-complete code for improved stop capability (includes some
   debug code).
@@ -162,6 +166,8 @@ class Init {
 
     static float DrawTimeout() { return _drawTimeout; }
 
+    static Boolean UseOpenGL() {return _useOpenGL;}
+
 protected:
     static Boolean _savePopup;     /* true if pop-up window should be saved and
                                       wait for button even to remove it */
@@ -215,7 +221,7 @@ protected:
     static Boolean _forceTapeSearch;   /* force search for tape sources */
 
     static float _drawTimeout;     /* timeout for drawing a "chunk" of data */
+    static Boolean _useOpenGL;     /* whether we use opengl */
 };
 
 #endif
-

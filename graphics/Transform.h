@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.12 1997/10/19 21:39:10 zhenhai
+  Change all transformations to use OpenGL convention
+  Current matrix=old matrix * transformation matrix
+  Before it was
+  Current matrix= transformation matrix * old matrix
+
+  Revision 1.11  1996/10/18 20:34:08  wenger
+  Transforms and clip masks now work for PostScript output; changed
+  WindowRep::Text() member functions to ScaledText() to make things
+  more clear; added WindowRep::SetDaliServer() member functions to make
+  Dali stuff more compatible with client/server library.
+
   Revision 1.10  1996/07/20 18:48:00  jussi
   Added 3D line segment shape and renamed some 3D type names to
   be more general.
@@ -108,20 +120,55 @@ public:
 
   /* Translate by dx,dy */
   void Translate(Coord dx, Coord dy) {
-    _a02 += dx; _a12 += dy;
+  //  _a02 += dx; _a12 += dy;
+    /* Current matrix=old matrix * translate matrix */
+    /* Consistent with OpenGL convention. (Zhenhai Lin)*/
+
+    Transform2D transMat;
+    transMat._a00=1;
+    transMat._a01=0;
+    transMat._a10=0;
+    transMat._a11=1;
+    transMat._a02=dx;
+    transMat._a12=dy;
+    PostMultiply(&transMat);
   }
 
   /* Scale by sx, sy */
   void Scale(Coord sx, Coord sy) {
-    _a00 *= sx; _a01 *= sx; _a02 *= sx;
-    _a10 *= sy; _a11 *= sy; _a12 *= sy;
+/*    _a00 *= sx; _a01 *= sx; _a02 *= sx;
+    _a10 *= sy; _a11 *= sy; _a12 *= sy;*/
+    /* Current matrix=old matrix * scale matrix */
+    /* Consistent with OpenGL convention. (Zhenhai Lin)*/
+    Transform2D scaleMat;
+    scaleMat._a00=sx;
+    scaleMat._a01=0;
+    scaleMat._a10=0;
+    scaleMat._a11=sy;
+    scaleMat._a02=0;
+    scaleMat._a12=0;
+    PostMultiply(&scaleMat);
   }
 
   /* Rotate by theta. counter-clockwise = positive theta. */
   void Rotate(Coord theta) {
+
+    /* Current matrix=old matrix * scale matrix */
+    /* Consistent with OpenGL convention. (Zhenhai Lin)*/
+
     Coord cos_theta = cos(theta);
     Coord sin_theta = sin(theta);
 
+    Transform2D rotationMat;
+    rotationMat._a00=cos_theta;
+    rotationMat._a01=-sin_theta;
+    rotationMat._a10=sin_theta;
+    rotationMat._a11=cos_theta;
+    rotationMat._a02=0;
+    rotationMat._a12=0;
+    PostMultiply(&rotationMat);
+
+/*
     Coord temp = _a00;
     _a00 = cos_theta*temp-sin_theta*_a10;
     _a10 = sin_theta*temp+cos_theta*_a10;
@@ -132,7 +179,7 @@ public:
     
     temp = _a02;
     _a02 = cos_theta*temp-sin_theta*_a12;
-    _a12 = sin_theta*temp+cos_theta*_a12;
+    _a12 = sin_theta*temp+cos_theta*_a12;*/
 
     if (_a01 == 0.0 && _a10 == 0.0)
       _cartesian = true;
