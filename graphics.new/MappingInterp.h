@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/08/20 22:11:02  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.31.8.2  1997/08/14 16:16:03  wenger
   Statistics, etc., now work correctly for timed-out draw in ViewScatter-
   type views; bumped up version because of improved stop capability.
@@ -240,8 +244,14 @@ public:
   // See assignments to _shapes array in constructor for meanings of ShapeID
   // values.
   virtual Boolean IsComplexShape(ShapeID shape) {
-    if (shape <= 8) return false;
-    return true;
+    switch (shape) {
+    case 9:
+    case 11:
+    case 13:
+    case 14:
+      return true;
+    }
+    return false;
   }
 
   /* change the commands */

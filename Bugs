@@ -880,7 +880,7 @@ Num Date        Status  Description
 			editor GUI says 'whitespace' -- causes UniData to
 			not work. (rkw/dj)
 
-218 09/09/97	OPEN	Visual filter doesn't seem to properly exclude
+218 09/09/97	WORK	Visual filter doesn't seem to properly exclude
 			symbols from being drawn (see Mars demo, MolBio
 			demo). (rkw)
 
