@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/08/28 00:19:38  wenger
+  Improved use of Dali to correctly free images (use of Dali is now fully
+  functional with filenames in data).
+
   Revision 1.27  1996/08/23 16:55:56  wenger
   First version that allows the use of Dali to display images (more work
   needs to be done on this); changed DevStatus to a class to make it work
@@ -252,6 +256,8 @@ public:
 
   /* export window image to other graphics formats */
   virtual void ExportImage(DisplayExportFormat format, char *filename) {}
+  virtual void ExportGIF(FILE *fp) {}
+
 
   /* import graphics via Dali */
   virtual DevStatus DaliShowImage(Coord centerX, Coord centerY, Coord width,
