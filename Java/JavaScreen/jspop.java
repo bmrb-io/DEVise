@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.58  2001/09/28 19:41:46  xuk
+// *** empty log message ***
+//
 // Revision 1.57  2001/09/28 19:38:06  xuk
 // *** empty log message ***
 //
@@ -261,15 +264,18 @@ public class jspop implements Runnable
 {
     private static final int DEBUG = 1/*TEMP*/;
 
-    private static final String usage = new String("usage: java jspop [-id<string>] [-cmdport<number>] [-userfile<filename>] [-logfile<filename>] [-debug[number]] [-jspopport<number>] [-maxclient<number>] [-usage]\n" +
-      "  -id<string>: ID for ps\n" +
-      "  -cmdport<number>: port for command socket from devised\n" +
-      "  -userfile<filename>: file containing user info\n" +
-      "  -logfile<filename>: client log info file\n" +
-      "  -clientlog[on|off]: turn on|off client command log\n" + 
-      "  -debug[number]: debug output level\n" +
-      "  -jspopport<number>: port on which jspop listens for jss connections\n" +
-      "  -maxclient<number>: maximum number of client objects\n" +
+    private static final String usage = new String(
+      "Usage: java JavaScreen.jspop [options]\n" +
+      "  -id<string>: ID for ps (default: none)\n" +
+      "  -cmdport<number>: port for command socket from devised (default: " +
+      DEViseGlobals.DEFAULTCMDPORT + ")\n" +
+      "  -userfile<filename>: file containing user info (default: users.cfg)\n" +
+      "  -logfile<filename>: client log info file (default: clients.log)\n" +
+      "  -clientlog[on|off]: turn on|off client command logs (default: on)\n" + 
+      "  -debug[number]: debug output level (default: 0)\n" +
+      "  -jspopport<number>: port on which jspop listens for jss connections\n    (default: " + DEViseGlobals.JSPOPPORT + ")\n" +
+      "  -maxclient<number>: maximum number of client objects (default: " +
+      DEViseGlobals.DEFAULTMAXCLIENT + ")\n" +
       "  -usage: print this message");
     // -CMDPORT[port]:
     //      port: The command port, if blank, use the defaults
@@ -1307,15 +1313,21 @@ public class jspop implements Runnable
 			    maxClient = DEViseGlobals.DEFAULTMAXCLIENT;
 			}
                     } catch (NumberFormatException e) {
+		        System.err.println("Please specify a numerical value for the -maxclient argument");
+                        System.exit(1);
                     }
                 }
             } else if (args[i].startsWith("-clientlog")) {
 	        // enable client log files?
 		String s = args[i].substring(10);
-		if (s.equals("on"))
+		if (s.equals("on")) {
 		    clientLog = true;
-		else
+		} else if (s.equals("off")) {
 		    clientLog = false;
+	        } else {
+		    System.err.println("Please specify 'on' or 'off' for the -clientlog argument");
+                    System.exit(1);
+		}
             } else if (args[i].startsWith("-usage")) {
                 System.out.println(usage);
                 System.exit(0);

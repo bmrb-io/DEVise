@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2001/09/25 14:38:47  wenger
+// Modified all JS-related scripts, etc., to work without '.' in path;
+// fixed some problems in the JSS related to starting and killing deviseds.
+//
 // Revision 1.16  2001/07/30 19:56:56  wenger
 // Removed extra argument from one invocation of the JSS_Add command in the
 // jss; corrected the corresponding documentation.
@@ -99,16 +103,21 @@ import  java.util.*;
 
 public class jss implements Runnable
 {
-    private String usage = new String("usage: java jss -id[string] -server[number] -devisescript[filename] -debug[number] -jssport[number] -jspopport[number] -jspophost[string] -quit -usage\n" +
-	  "  -id[string]: ID for ps\n" +
-	  "  -server[number]: number of servers to start\n" +
-	  "  -devisescript[filename]: script to use to start servers\n" +
-	  "  -debug[number]: debug output level\n" +
-	  "  -jssport[number]: port jss listens on\n" +
-	  "  -jspopport[number]: port to use to connect to jspop\n" +
-	  "  -jspophost[string]: host jspop is running on\n" +
-	  "  -quit: tell another jss to quit" +
-	  "  -usage: print this message");
+    private String usage = new String(
+        "Usage: java JavaScreen.jss [options]\n" +
+	    "  -id[string]: ID for ps (default: none)\n" +
+	    "  -server[number]: number of servers to start (default: 1)\n" +
+	    "  -devisescript[filename]: script to use to start servers\n" +
+	      "    (default: DEVise.jspop)\n" +
+	    "  -debug[number]: debug output level (default: 0)\n" +
+	    "  -jssport[number]: port jss listens on (default: " +
+	      DEViseGlobals.JSSPORT + ")\n" +
+	    "  -jspopport[number]: port to use to connect to jspop (default: " +
+	      DEViseGlobals.JSPOPPORT + ")\n" +
+	    "  -jspophost[string]: host jspop is running on (default: " +
+	      DEViseGlobals.JSPOPHOST + ")\n" +
+	    "  -quit: tell another jss to quit (default: no)\n" +
+	    "  -usage: print this message");
 
     private jss jssServer = null;
     private String localHostname = null;

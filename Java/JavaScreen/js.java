@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.42  2001/10/02 22:02:11  xuk
+// Added new command-line option for client log playback.
+// Modified checkArguments() to check -clientlog, -autoplayback and playbackoriginal arguments.
+//
 // Revision 1.41  2001/05/11 20:36:12  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -117,23 +121,32 @@ import java.io.*;
 public class js extends Frame
 {
     private static final String usage = new String(
-        "usage: java js -host[string]"
-        + " -cmdport[number] -user[string] -pass[string]"
-        + " -session[filename] -debug[number] -bgcolor[number+number+number]"
-        + " -fgcolor[number+number+number] -rubberbandlimit[widthxheight]"
-        + " -screensize[widthxheight] -usage\n" +
-	"  -host[string]: host the jspop is running on\n" +
-	"  -cmdport[number]: port for command socket from jspop\n" +
-	"  -user[string]: name of user\n" +
-	"  -pass[string]: password of user\n" +
-	"  -session[filename]: session to load at startup\n" +
+        "Usage: java JavaScreen.js [options]\n" +
+	"  -host[string]: host the jspop is running on (default: localhost)\n" +
+	"  -cmdport[number]: port for command socket from jspop (default: " +
+	  DEViseGlobals.DEFAULTCMDPORT + ")\n" +
+	"  -user[string]: name of user (default: " + DEViseGlobals.DEFAULTUSER
+	  + ")\n" +
+	"  -pass[string]: password of user (default: " +
+	  DEViseGlobals.DEFAULTPASS + ")\n" +
+	"  -session[filename]: session to load at startup (default: none)\n" +
 	"  -fgcolor[number+number+number]: RGB for JavaScreen foreground\n" +
-	"  -rubberbandlimit[widthxheight]: minimum size for rubberband to have any effect\n" +
-	"  -screensize[widthxheight]: screen size in pixels\n" +
-	"  -log: turn on debug logging\n" +
-	"  -usecgi: forces the JS to use CGI communication\n" +
-	"  -cgiurl: URL for CGI communcation\n" +
-	"  -debug[number]: set debug level\n" +
+	  "    (default: 255+255+255)\n" +
+	"  -bgcolor[number+number+number]: RGB for JavaScreen background\n" +
+	  "    (default: 64+96+0)\n" +
+	"  -rubberbandlimit[widthxheight]: minimum size for rubberband to " +
+	  "have any effect\n    (default: 4x4)\n" +
+	"  -screensize[widthxheight]: window size in pixels\n" +
+	  "    (default: display width-80xdisplay height-120)\n" +
+	"  -log: turn on debug logging (default: off)\n" +
+	"  -usecgi: forces the JS to use CGI communication (default: off)\n" +
+	"  -cgiurl: URL for CGI communcation (default: none)\n" +
+	"  -debug[number]: set debug level (default: 0)\n" +
+	"  -clientlog[logfile]: specify log to play back (default: none)\n" +
+	"  -autoplayback: automatically start playing back client log file\n" +
+	  "    (default: false)\n" +
+	"  -playbackoriginal: play back client log file at original speed\n" +
+	  "    (default: false)\n" +
 	"  -usage: print this message");
 
     // -host[hostname]:
