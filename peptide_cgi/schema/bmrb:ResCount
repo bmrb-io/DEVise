@@ -1,0 +1,14 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 12 1999 15:28:37
+# DEVise version: 1.6.3
+# DEVise date: Jun 30 1999
+# DEVise endHeader
+
+# Schema for showing the residue counts for a given save frame
+
+type ResCount ascii
+comment #
+whitespace ' '
+attr ResLabel string 4
+attr ResCount int

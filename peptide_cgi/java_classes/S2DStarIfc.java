@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2001/03/13 14:50:10  wenger
+// Added cache invalidation: cache files are not used if peptide-cgi code
+// or NMR-Star file has changed since relevant cache files were generated.
+//
 // Revision 1.7  2001/03/08 21:10:34  wenger
 // Merged changes from no_collab_br_2 thru no_collab_br_3 from the branch
 // to the trunk.
@@ -84,8 +88,6 @@ public class S2DStarIfc {
     private String _fileName = null;
 
     private StarNode _starTree = null;
-
-    private int _residueCount;
 
     //===================================================================
     // PUBLIC METHODS
@@ -152,7 +154,6 @@ public class S2DStarIfc {
 	    _starTree = parser.endResult();
 	    is.close();
 
-	    _residueCount = getProteinResidueCount();
 	    //TEMP -- should we find certain critical save frames
 	    // here and save them?  (e.g., SAVE_ENTRY_INFO)?
 
@@ -217,11 +218,11 @@ public class S2DStarIfc {
     }
 
     //-------------------------------------------------------------------
-    // Returns the number of residues in this entry, or -1 if that information
-    // was not available.
-    public int residueCount()
+    // Returns the number of residues associated with the given save frame,
+    // or -1 if that information is not available.
+    public int residueCount(SaveFrameNode frame)
     {
-        return _residueCount;
+        return getResidueCount(frame);
     }
 
     // ----------------------------------------------------------------------
@@ -305,85 +306,22 @@ public class S2DStarIfc {
         boolean result = false;
 
 	try {
-	    //
-	    // Get the _Mol_system_component_name in the given save frame.
-	    //
-	    VectorCheckType list = frame.searchByName(
-	      S2DNames.MOL_SYS_COMP_NAME);
-	    if (list.size() != 1) {
-	        throw new S2DError("There should be exactly one " +
-		  S2DNames.MOL_SYS_COMP_NAME + " node; got " + list.size());
-	    }
-	    DataItemNode node = (DataItemNode)list.elementAt(0);
-	    String molSysComp = node.getValue();
-
-	    //
-	    // Find the molecular_system save frame.
-	    //
-	    list = _starTree.searchByTagValue(S2DNames.SAVEFRAME_CATEGORY,
-	      S2DNames.MOL_SYSTEM);
-	    if (list.size() != 1) {
-	        throw new S2DError("There should be exactly one " +
-		  S2DNames.MOL_SYSTEM + " save frame; got " + list.size());
-	    }
-	    node = (DataItemNode)list.elementAt(0);
-	    SaveFrameNode molSys = (SaveFrameNode)S2DStarUtil.getParentByClass(
-	      node, S2DStarUtil._frameClass);
-
-	    //
-	    // Find the loop containing _Mol_system_component_name.
-	    //
-	    list = molSys.searchByName(S2DNames.MOL_SYS_COMP_NAME);
-	    if (list.size() != 1) {
-	        throw new S2DError("There should be exactly one " +
-		  S2DNames.MOL_SYS_COMP_NAME + " loop; got " + list.size());
-	    }
-	    StarNode genNode = (StarNode)list.elementAt(0);
-	    DataLoopNode loop = (DataLoopNode)S2DStarUtil.getParentByClass(
-	      genNode, S2DStarUtil._loopClass);
-
-	    //
-	    // Now find the _Mol_system_component_name value in this loop.
-	    //
-	    String molLabel = null;
-            LoopTableNode ltNode = loop.getVals();
-	    for (int index = 0; index < ltNode.size(); index++) {
-	        LoopRowNode lrNode = ltNode.elementAt(index);
-	    	DataValueNode dvNode = lrNode.elementAt(0);
-                if (dvNode.getValue().equalsIgnoreCase(molSysComp)) {
-		    molLabel = lrNode.elementAt(1).getValue();
-		    // Assume for now that there will be only one match in
-		    // the loop.
-		    break;
-		}
-	    }
-	    if (molLabel == null) {
-	        throw new S2DError(
-		  S2DNames.MOL_SYS_COMP_NAME + " value not found");
-	    }
-
-            //
-	    // Get the corresponding save frame.
-	    //
-	    String frameName = "save_" + molLabel;
-	    list = _starTree.searchByName(frameName);
-	    if (list.size() != 1) {
-	        throw new S2DError("There should be exactly one " +
-		  frameName + " save frame; got " + list.size());
-	    }
-            SaveFrameNode compFrame = (SaveFrameNode)list.elementAt(0);
+            SaveFrameNode compFrame = getMonoPolyFrame(frame);
 
 	    //
 	    // Find the _Mol_polymer_class value.
 	    //
-	    list = compFrame.searchByName(S2DNames.MOL_POLYMER_CLASS);
+	    VectorCheckType list =
+	      compFrame.searchByName(S2DNames.MOL_POLYMER_CLASS);
+
 	    if (list.size() != 1) {
 	        throw new S2DError("There should be exactly one " +
 		  S2DNames.MOL_POLYMER_CLASS + " node; got " + list.size());
 	    }
-            node = (DataItemNode)list.elementAt(0);
+            DataItemNode node = (DataItemNode)list.elementAt(0);
 	    String molPolymerClass = node.getValue();
             if (molPolymerClass.equalsIgnoreCase("protein")) result = true;
+
 	} catch (S2DException ex) {
 	    if (DEBUG >= 1) {
 	        System.err.println("S2DException checking for protein: " +
@@ -498,53 +436,33 @@ public class S2DStarIfc {
 
     // ----------------------------------------------------------------------
     // Return value: residue count, or -1 if we can't get the residue count.
-    private int getProteinResidueCount()
+    private int getResidueCount(SaveFrameNode frame)
     {
         if (DEBUG >= 2) {
-	    System.out.println("  S2DStarIfc.getProteinResidueCount()");
+	    System.out.println("  S2DStarIfc.getResidueCount()");
 	}
 
 	int residueCount = -1;
 
 	DataItemNode node = null;
         try {
-	    VectorCheckType list = _starTree.searchByName(
-	      S2DNames.RESIDUE_COUNT);
+	    SaveFrameNode tmpFrame = getMonoPolyFrame(frame);
 
-	    boolean found = false;
-	    for (int index = 0; index < list.size(); index++) {
-		node = (DataItemNode)list.elementAt(index);
-	        SaveFrameNode frame = (SaveFrameNode)S2DStarUtil.
-		  getParentByClass(node, S2DStarUtil._frameClass);
+	    //
+	    // Find the _Residue_count value.
+	    //
+	    VectorCheckType list =
+	      tmpFrame.searchByName(S2DNames.RESIDUE_COUNT);
 
-	        VectorCheckType list2 = frame.searchByName(
-		  S2DNames.MOL_POLYMER_CLASS);
-	        if (list2.size() != 1) {
-	            throw new S2DError("There should be exactly one " +
-		      S2DNames.MOL_POLYMER_CLASS + " node; got " +
-		      list2.size());
-	        }
-                DataItemNode node2 = (DataItemNode)list2.elementAt(0);
-	        String molPolymerClass = node2.getValue();
-                if (molPolymerClass.equalsIgnoreCase("protein")) {
-		    if (found) {
-	                throw new S2DError("Expected one " +
-			  S2DNames.RESIDUE_COUNT + " node for a protein; " +
-			  "got more than one");
-		    } else {
-		        found = true;
-                        residueCount = Integer.parseInt(node.getValue());
-		    }
-
-	            //TEMP -- remove this break statement when possible
-		    // starlibj error is resolved
-		    break;
-		}
+	    if (list.size() != 1) {
+	        throw new S2DError("There should be exactly one " +
+		  S2DNames.RESIDUE_COUNT + " node; got " + list.size());
 	    }
+            node = (DataItemNode)list.elementAt(0);
 
-	    if (!found) {
-		throw new S2DError("No protein residue count found");
-	    }
+	    String countStr = node.getValue();
+	    residueCount = Integer.parseInt(countStr);
+
 	} catch(NumberFormatException ex) {
 	    System.err.println("NumberFormatException (" + ex.getMessage() +
 	      ") getting residue count at " + S2DStarUtil.node2String(node));
@@ -606,6 +524,93 @@ public class S2DStarIfc {
 	}
 
         return frameCount;
+    }
+
+    // ----------------------------------------------------------------------
+    // Get the monomeric polymer save frame corresponding to the given
+    // save frame.  (The monomeric polymer has the residue count, residue
+    // sequence list, etc.
+    public SaveFrameNode getMonoPolyFrame(SaveFrameNode frame)
+      throws S2DException
+    {
+        if (DEBUG >= 2) {
+            System.out.println("  S2DIfc.getMonoPolyFrame(" +
+	      frame.getLabel() + ")");
+        }
+
+        SaveFrameNode result = null;
+
+	//
+	// Get the _Mol_system_component_name in the given save frame.
+	//
+	VectorCheckType list = frame.searchByName(
+	  S2DNames.MOL_SYS_COMP_NAME);
+	if (list.size() != 1) {
+	    throw new S2DError("There should be exactly one " +
+	      S2DNames.MOL_SYS_COMP_NAME + " node; got " + list.size());
+	}
+	DataItemNode node = (DataItemNode)list.elementAt(0);
+	String molSysComp = node.getValue();
+
+	//
+	// Find the molecular_system save frame.
+	//
+	list = _starTree.searchByTagValue(S2DNames.SAVEFRAME_CATEGORY,
+	  S2DNames.MOL_SYSTEM);
+	if (list.size() != 1) {
+	    throw new S2DError("There should be exactly one " +
+	      S2DNames.MOL_SYSTEM + " save frame; got " + list.size());
+	}
+	node = (DataItemNode)list.elementAt(0);
+	SaveFrameNode molSys = (SaveFrameNode)S2DStarUtil.getParentByClass(
+	  node, S2DStarUtil._frameClass);
+
+	//
+	// Find the loop containing _Mol_system_component_name.
+	//
+	list = molSys.searchByName(S2DNames.MOL_SYS_COMP_NAME);
+	if (list.size() != 1) {
+	    throw new S2DError("There should be exactly one " +
+	      S2DNames.MOL_SYS_COMP_NAME + " loop; got " + list.size());
+	}
+	StarNode genNode = (StarNode)list.elementAt(0);
+	DataLoopNode loop = (DataLoopNode)S2DStarUtil.getParentByClass(
+	  genNode, S2DStarUtil._loopClass);
+
+	//
+	// Now find the _Mol_system_component_name value in this loop.
+	//
+	String molLabel = null;
+        LoopTableNode ltNode = loop.getVals();
+	for (int index = 0; index < ltNode.size(); index++) {
+	    LoopRowNode lrNode = ltNode.elementAt(index);
+	    DataValueNode dvNode = lrNode.elementAt(0);
+            if (dvNode.getValue().equalsIgnoreCase(molSysComp)) {
+	        molLabel = lrNode.elementAt(1).getValue();
+	        // Assume for now that there will be only one match in
+	        // the loop.
+	        break;
+	    }
+	}
+	if (molLabel == null) {
+	    throw new S2DError(
+	      S2DNames.MOL_SYS_COMP_NAME + " value not found");
+	}
+
+        //
+	// Get the corresponding save frame.
+	//
+	String frameName = "save_" + molLabel;
+	list = _starTree.searchByName(frameName);
+	if (list.size() != 1) {
+	    throw new S2DError("There should be exactly one " +
+	      frameName + " save frame; got " + list.size());
+	}
+        SaveFrameNode compFrame = (SaveFrameNode)list.elementAt(0);
+
+	result = compFrame;
+
+        return result;
     }
 }
 

@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2001/04/24 18:06:43  wenger
+// More improvements to "all chem shifts" visualization; found and fixed
+// bug 666.
+//
 // Revision 1.6  2001/04/17 17:09:09  wenger
 // Added display of H vs. N chem shifts.
 //
@@ -52,6 +56,7 @@
 // ========================================================================
 
 import java.io.*;
+import java.util.*;
 
 import ShiftDataManager.Pair;
 import AssgDataManager.AssgEntry;
@@ -528,7 +533,7 @@ public class S2DChemShift {
 
 	try {
             //
-	    // Write the relaxation values to the data file.
+	    // Write the chemical shift values to the data file.
 	    //
 	    for (int index = 0; index < _resSeqCodes.length; index++) {
 	        asWriter.write(_resSeqCodes[index] + " " +

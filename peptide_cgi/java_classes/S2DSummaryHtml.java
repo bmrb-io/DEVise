@@ -25,6 +25,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2001/04/30 17:45:23  wenger
+// Added special link to 3D 4096 visualization to 4096 summary page;
+// added "No chemical shift data available" message to appropriate
+// summary pages.
+//
 // Revision 1.7  2001/04/17 17:09:10  wenger
 // Added display of H vs. N chem shifts.
 //
@@ -323,7 +328,7 @@ public class S2DSummaryHtml {
 
         _writer.write("<li><a href=\"" + _accNum +
 	  S2DNames.ALL_CHEM_SHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">All Chemical Shifts</a> (by amino acid) (" + count +
+	  "\">Chemical shift distributions by amino acid</a> (" + count +
 	  " shifts)\n");
 
         _wroteLink = true;
@@ -340,7 +345,8 @@ public class S2DSummaryHtml {
 
         _writer.write("<li><a href=\"" + _accNum +
 	  S2DNames.HVSN_CHEM_SHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">H vs. N Chemical Shifts</a> (" + count + " shifts)\n");
+	  "\">Simulated 1H-15N backbone HSQC spectrum</a> (" + count +
+	  " shifts)\n");
 
         _wroteLink = true;
     }

@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2001/04/17 17:09:10  wenger
+// Added display of H vs. N chem shifts.
+//
 // Revision 1.7  2001/04/16 19:49:11  wenger
 // Added display of all chem shifts by amino acid.
 //
@@ -132,6 +135,7 @@ public class S2DNames
     public static final String HX_PROT_FACTOR_SUFFIX = "f";
     public static final String HX_RATE_SUFFIX = "r";
     public static final String PERCENT_ASSIGN_SUFFIX = "p";
+    public static final String RES_COUNT_SUFFIX = "rc";
     public static final String S2_SUFFIX = "s";
     public static final String T1_SUFFIX = "t1";
     public static final String T2_SUFFIX = "t2";

@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2001/04/30 17:45:18  wenger
+// Added special link to 3D 4096 visualization to 4096 summary page;
+// added "No chemical shift data available" message to appropriate
+// summary pages.
+//
 // Revision 1.13  2001/04/24 18:06:43  wenger
 // More improvements to "all chem shifts" visualization; found and fixed
 // bug 666.
@@ -97,7 +102,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.7";
+    public static final String PEP_CGI_VERSION = "2.8";
 
     private int _accessionNum;
     private String _dataDir;
@@ -357,6 +362,7 @@ public class S2DMain {
                 }
 	    } else {
 		try {
+	            saveFrameResCounts(star, frame, frameIndex);
 	            saveFrameChemShifts(star, frame, frameIndex);
 		} catch(S2DException ex) {
 		    System.err.println("Exception saving chem shifts for " +
@@ -502,6 +508,32 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
+    // Save residue counts for the given save frame.
+    private void saveFrameResCounts(S2DStarIfc star, SaveFrameNode frame,
+      int frameIndex) throws S2DException
+    {
+        if (DEBUG >= 3) {
+	    System.out.println("    S2DMain.saveFrameResCounts(" +
+	      star.getFrameName(frame) + ", " + frameIndex + ")");
+	}
+
+	SaveFrameNode tmpFrame = star.getMonoPolyFrame(frame);
+
+	String [] resSeqCodesTmp = star.getFrameValues(tmpFrame,
+	  S2DNames.RESIDUE_SEQ_CODE, S2DNames.RESIDUE_SEQ_CODE);
+	int [] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp);
+	resSeqCodesTmp = null;
+
+	String [] residueLabels = star.getFrameValues(tmpFrame,
+	  S2DNames.RESIDUE_SEQ_CODE, S2DNames.RESIDUE_LABEL);
+
+        S2DResCount resCount = new S2DResCount(_accessionNum, _dataDir,
+	  resSeqCodes, residueLabels);
+
+	resCount.write(frameIndex);
+    }
+
+    //-------------------------------------------------------------------
     // Save chem shifts for one save frame.
     private void saveFrameChemShifts(S2DStarIfc star, SaveFrameNode frame,
       int frameIndex) throws S2DException
@@ -533,7 +565,6 @@ public class S2DMain {
         double[] chemShiftVals = S2DUtils.arrayStr2Double(chemShiftsTmp);
 	chemShiftsTmp = null;
 
-
 	//
 	// Create an S2DChemShift object with the values we just got.
 	//
@@ -560,9 +591,10 @@ public class S2DMain {
 	// has HA chem shifts for at least 80% of the residues in
 	// the entry.  (This can be tested with bmr4001.str and
 	// bmr4011.str.)
-	if (star.residueCount() < 0 ||
+	int residueCount = star.residueCount(frame);
+	if (residueCount < 0 ||
 	  ((float)star.getHAChemShiftCount(frame) /
-	  (float)star.residueCount() >= 0.8)) {
+	  (float)residueCount >= 0.8)) {
 	    try {
 	        chemShift.writeCSI(frameIndex);
 	    } catch (S2DException ex) {
