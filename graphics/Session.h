@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.13  1999/02/11 19:54:34  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.12.2.1  1999/02/11 18:24:02  wenger
   PileStack objects are now fully working (allowing non-linked piles) except
   for a couple of minor bugs; new PileStack state is saved to session files;
@@ -95,6 +100,10 @@ public:
   static DevStatus Close();
   static DevStatus Save(char *filename, Boolean asTemplate, Boolean asExport,
       Boolean withData, Boolean selectedView = false);
+  static DevStatus Update(char *filename);
+
+  static DevStatus UpdateFilters();
+
   static DevStatus CreateTData(char *name);
 
   // Whether current session (if any) was opened by JavaScreen.

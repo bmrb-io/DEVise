@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1999/03/01 23:09:09  wenger
+  Fixed a number of memory leaks and removed unused code.
+
   Revision 1.29  1999/03/01 17:47:43  wenger
   Implemented grouping/ungrouping of views to allow custom view geometries.
 
@@ -451,6 +454,10 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(getPileStackState)
 	REGISTER_COMMAND(flipPileStack)
 	REGISTER_COMMAND(groupUngroupViews)
+	REGISTER_COMMAND(updateSession)
+	REGISTER_COMMAND(getViewAutoFilter)
+	REGISTER_COMMAND(setViewAutoFilter)
+	REGISTER_COMMAND(updateFilters)
 }
 
 CmdContainer::~CmdContainer()

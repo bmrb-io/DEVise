@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.47  1999/03/01 17:47:44  wenger
+  Implemented grouping/ungrouping of views to allow custom view geometries.
+
   Revision 1.46  1999/02/23 15:35:07  wenger
   Fixed bugs 446 and 465 (problems with cursors in piles); fixed some
   other pile-related problems.
@@ -5299,7 +5302,98 @@ IMPLEMENT_COMMAND_BEGIN(groupUngroupViews)
        	ReturnVal(API_ACK, "done");
 		return 1;
 	} else {
-		fprintf(stderr,"Wrong # of arguments: %d in test\n", argc);
+		fprintf(stderr,"Wrong # of arguments: %d in groupUngroupViews\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(updateSession)
+    // Arguments: <session file>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+		if (!Session::Update(argv[1]).IsComplete()) {
+    	  ReturnVal(API_NAK, "Unable to update session");
+    	  return -1;
+		}
+		
+       	ReturnVal(API_ACK, "done");
+		return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in updateSession\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getViewAutoFilter)
+    // Arguments: <view name>
+    // Returns: <auto filter enabled>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+		char buf[128];
+		sprintf(buf, "%d", view->AutoUpdateFilter());
+        ReturnVal(API_ACK, buf);
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in getViewAutoFilter\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setViewAutoFilter)
+    // Arguments: <view name> <auto filter enabled>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 3) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+		view->SetAutoUpdate(atoi(argv[2]));
+        ReturnVal(API_ACK, "done");
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in setViewAutoFilter\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(updateFilters)
+    // Arguments: none
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 1) {
+		if (!Session::UpdateFilters().IsComplete()) {
+    	  ReturnVal(API_NAK, "Unable to update filters");
+    	  return -1;
+		}
+		
+       	ReturnVal(API_ACK, "done");
+		return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in updateFilters\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}

@@ -1,6 +1,6 @@
 #========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-1999
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.178  1999/03/01 17:47:23  wenger
+#	Implemented grouping/ungrouping of views to allow custom view geometries.
+#	
 #	Revision 1.177  1999/01/04 15:33:53  wenger
 #	Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
 #	compiles; added code (GUI is currently disabled) to manually set view
@@ -905,6 +908,7 @@ source $libdir/count_mapping.tcl
 source $libdir/string_table.tcl
 source $libdir/dateformat.tcl
 source $libdir/viewgeom.tcl
+source $libdir/auto_filter.tcl
 
 set mode 0
 DEVise changeMode $mode
@@ -996,6 +1000,8 @@ menu .mbar.session.menu -tearoff 0
 .mbar.session.menu add command -label "Save" -command DoSave
 .mbar.session.menu add command -label "Save as" -command {DoSaveAs 0 0 0 0}
 .mbar.session.menu add command -label "Close" -command DoClose
+.mbar.session.menu add command -label "Update Filters" -command {DEVise updateFilters}
+.mbar.session.menu add command -label "Open, Update, and Save" -command {DoUpdate}
 # <<< Changes for saving sessions as batch scripts only...
 #TEMP.mbar.session.menu add separator
 #TEMP.mbar.session.menu add command -label "Open as Template" -command {DoOpen 1}
@@ -1499,6 +1505,7 @@ menu .mbar.view.menu.statMenu -tearoff 0
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Symbol Alignment" -command EditSymbolAlignment
 .mbar.view.menu add command -label "Assign String Tables" -command EditStringTables 
+.mbar.view.menu add command -label "Auto Filter Update" -command EditAutoFilter
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Destroy" -command {
     global curView
@@ -1936,6 +1943,48 @@ proc DoOpen { asTemplate } {
     }
     Puts "Restoring session from $file"
     set err [catch { DEVise openSession $file } ]
+
+    # Make sure to clean up if things didn't work or the user cancelled.
+    if {[DEVise getWinCount] <= 1} {
+      DoClose 0
+    }
+    set restoring 0
+    set template 0
+
+    if {!$err} {
+	set sessionName $file
+    } else {
+	puts "Could not restore session"
+        puts $errorInfo
+    }
+
+    UpdateLinkCursorInfo
+}
+
+# Update a session file.
+proc DoUpdate {} {
+    global fsBox sessiondir restoring template sessionName errorInfo
+
+    if {[SessionIsOpen] && ![DoClose]} {
+	# abort opening a new session
+	return
+    }
+    
+    # Get a session file name
+    set fsBox(path) $sessiondir
+    # Change for saving sessions as batch scripts only.
+    set fsBox(pattern) {*.[dt][sk]}
+    set file [ FSBox "Select session file to update" ]
+    
+    if {$file == ""} {
+	return
+    }
+
+    set sessionName "session.tk"
+    ClearDescription
+    set restoring 1
+    Puts "Restoring session from $file"
+    set err [catch { DEVise updateSession $file } ]
 
     # Make sure to clean up if things didn't work or the user cancelled.
     if {[DEVise getWinCount] <= 1} {

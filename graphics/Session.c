@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  1999/03/01 17:47:32  wenger
+  Implemented grouping/ungrouping of views to allow custom view geometries.
+
   Revision 1.43  1999/02/11 19:54:34  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -246,6 +249,7 @@
 #include "DataSeg.h"
 #include "Color.h"
 #include "ViewGeom.h"
+#include "ViewGraph.h"
 
 
 //#define DEBUG
@@ -564,6 +568,63 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
   }
 
   if (status.IsError()) reportErrNosys("Error or warning");
+  return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::Update
+ * Update specified session file (open it, do 'home' on specified views,
+ * save it).
+ */
+DevStatus
+Session::Update(char *filename)
+{
+#if defined(DEBUG)
+  printf("Session::Update(%s)\n", filename);
+#endif
+
+  DevStatus status = StatusOk;
+
+  status += Session::Open(filename);
+  if (status.IsComplete()) {
+    status += Session::UpdateFilters();
+  }
+  if (status.IsComplete()) {
+    status += Session::Save(filename, false, false, false, false);
+  }
+
+  return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::UpdateFilters
+ * Update specified session file (open it, do 'home' on specified views,
+ * save it).
+ */
+DevStatus
+Session::UpdateFilters()
+{
+#if defined(DEBUG)
+  printf("Session::UpdateFilters()\n");
+#endif
+
+  DevStatus status = StatusOk;
+
+  Dispatcher::Current()->WaitForQueries();
+
+  int index = View::InitViewIterator();
+  while (View::MoreView(index)) {
+    View *view = View::NextView(index);
+    
+    if (view->AutoUpdateFilter()) {
+#if defined(DEBUG)
+      printf("  Updating filter for view <%s>\n", view->GetName());
+#endif
+      ((ViewGraph *)view)->GoHome();
+    }
+  }
+  View::DoneViewIterator(index);
+
   return status;
 }
 
@@ -955,6 +1016,9 @@ Session::SaveView(char *category, char *devClass, char *instance,
   status += SaveParams(saveData, "getXAxisDateFormat", "setXAxisDateFormat",
       instance, NULL, NULL, true);
   status += SaveParams(saveData, "getYAxisDateFormat", "setYAxisDateFormat",
+      instance, NULL, NULL, true);
+
+  status += SaveParams(saveData, "getViewAutoFilter", "setViewAutoFilter",
       instance, NULL, NULL, true);
 
   if (status.IsError()) reportErrNosys("Error or warning");

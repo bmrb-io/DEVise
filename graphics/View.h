@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.77  1999/03/01 23:09:01  wenger
+  Fixed a number of memory leaks and removed unused code.
+
   Revision 1.76  1999/02/23 15:35:01  wenger
   Fixed bugs 446 and 465 (problems with cursors in piles); fixed some
   other pile-related problems.
@@ -685,6 +688,9 @@ class View : public ViewWin
 	static Boolean GetShowNames() { return _showNames; }
 	static void SetShowNames(Boolean showNames);
 
+	Boolean AutoUpdateFilter() { return _autoUpdate; }
+	void SetAutoUpdate(Boolean autoUpdate) { _autoUpdate = autoUpdate; }
+
 protected:
 	/* called by base class when it has been mapped/unmapped */
 	virtual void SubClassMapped();   /* called just after mapping */
@@ -872,6 +878,8 @@ protected:
 
 		char *_xAxisDateFormat;
 		char *_yAxisDateFormat;
+
+		Boolean _autoUpdate;
 
 		static Boolean _drawCursors;
 		static Boolean _jsCursors;

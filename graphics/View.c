@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.159  1999/03/01 23:08:59  wenger
+  Fixed a number of memory leaks and removed unused code.
+
   Revision 1.158  1999/02/23 15:34:59  wenger
   Fixed bugs 446 and 465 (problems with cursors in piles); fixed some
   other pile-related problems.
@@ -903,6 +906,8 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 
 	_xAxisDateFormat = NULL;
 	_yAxisDateFormat = NULL;
+
+	_autoUpdate = false;
 
 	_viewList->Insert(this);
 	ControlPanel::Instance()->InsertCallback(controlPanelCallback);
