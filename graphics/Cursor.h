@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/06/13 00:14:30  jussi
+  Added support for XY cursors. All types of cursors can now
+  be moved by clicking on their new location in the data area.
+  Previously only the X label area was sensitive for cursor
+  movement.
+
   Revision 1.5  1996/02/02 21:51:47  jussi
   Replaced HightlightColor with ForegroundColor. Cursors are
   drawn with xor so foreground color doesn't matter.
@@ -67,7 +73,6 @@ public:
 private:
   virtual void FilterAboutToChange(View *view);
   virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
-  virtual void ViewCreated(View *view) {}
   virtual void ViewDestroyed(View *view);
 
   char *_name;                          /* name of cursor */
