@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/04/16 20:06:54  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.5  1996/04/09 18:06:34  jussi
   Added error checking.
 
@@ -57,6 +60,7 @@ public:\
 	int Size();\
 \
 	void Insert(valType v);\
+	void InsertOrderly(valType v, int order);\
 	void Append(valType v);\
 \
 	/* Return true if v is in the list */\
@@ -76,8 +80,8 @@ public:\
 \
 	/* iterator for the list. This implementation supports\
 	multiple iterators, and also  supports \
-	Deletecurrent(), which deletes the current element being looked at.\
-	Note:  DeleteCurrent() is an error when more than 1 iterator is in
+	Deletecurrent(), which deletes the current element being looked at. \
+	Note:  DeleteCurrent() is an error when more than 1 iterator is in \
         effect.\
 	*/\
 \
@@ -92,6 +96,7 @@ public:\
 	void InsertAfterCurrent(int index, valType v); \
 	void InsertBeforeCurrent(int index, valType v); \
 	void DoneIterator(int index);\
+	void DeleteAll();\
 \
 protected:\
 	/* insert node2 after node 1 */\
@@ -100,8 +105,6 @@ protected:\
 	/* delete node */\
 	void _DListDelete(ListElement *node);\
 \
-	/* Delete all elements of the list */\
-	void DeleteAll();\
 private:\
 	void ClearIterators();\
 	ListElement *_head;\
@@ -130,6 +133,22 @@ void listName::Insert(valType v){\
 	ListElement *node = new ListElement;\
 	node->val = v;\
 	_Insert(_head, node);\
+}\
+\
+/* insert v in increasing order if order = 1, in decreasing order if order = 0 */\
+void listName::InsertOrderly(valType v, int order){\
+	ListElement *new_node = new ListElement;\
+	ListElement *node;\
+	new_node->val = v;\
+	if(order == 1) {\
+	    for (node = this->_head->next; v >= node->val && node != this->_head; node = node->next){}\
+   	} else if(order == 0) {\
+	    for (node = this->_head->next; v <= node->val && node != this->_head; node = node->next){}\
+	} else {\
+	    DOASSERT(0, "Invalid order");\
+	    return;\
+	}\
+	_Insert(node->prev, new_node);\
 }\
 \
 void listName::Append(valType v){\
@@ -316,7 +335,7 @@ void listName::DeleteAll(){\
 /* define a void list */
 DefineDList(VoidList, void *)
 
-/* template to convert pointer list to use VoidList.
+/* template to convert pointer list to use VoidList. 
 valType must be a pointer. */
 #define DefinePtrDList(listName, valType)\
 class listName {\
