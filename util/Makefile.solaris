@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.31  1999/01/28 22:40:39  wenger
+# Updated solaris dependencies.
+#
 # Revision 1.30  1998/06/24 22:15:44  donjerko
 # *** empty log message ***
 #
@@ -46,7 +49,9 @@ atof.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 atof.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 atof.o: ../graphics/Util.h /usr/include/stdio.h /usr/include/sys/va_list.h
 atof.o: /usr/include/string.h ../graphics/DeviseTypes.h /usr/include/values.h
-atof.o: ../graphics/DevStatus.h ../graphics/Exit.h
+atof.o: ../graphics/DevStatus.h ../graphics/Exit.h ../graphics/DevError.h
+atof.o: /usr/include/errno.h /usr/include/sys/errno.h
+atof.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
 http_url.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 http_url.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 http_url.o: /usr/include/unistd.h /usr/include/sys/types.h

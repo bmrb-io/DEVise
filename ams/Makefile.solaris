@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.56  1999/01/28 22:39:40  wenger
+# Updated solaris dependencies.
+#
 # Revision 1.55  1998/12/28 21:32:46  donjerko
 # *** empty log message ***
 #
@@ -90,35 +93,35 @@ MapClassInfo.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 MapClassInfo.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 MapClassInfo.o: /usr/include/sys/select.h /usr/include/time.h
 MapClassInfo.o: /usr/include/math.h /s/tcl/include/tcl.h /usr/include/stdio.h
-MapClassInfo.o: /usr/include/sys/va_list.h ../graphics/DeviseTypes.h
+MapClassInfo.o: /usr/include/sys/va_list.h /usr/include/stdarg.h
+MapClassInfo.o: /s/tcl/include/tclDecls.h ../graphics/DeviseTypes.h
 MapClassInfo.o: /usr/include/values.h ../graphics/DevStatus.h
 MapClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 MapClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
-MapClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
-MapClassInfo.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-MapClassInfo.o: /usr/include/string.h ../graphics/ViewWin.h
+MapClassInfo.o: ../graphics/Exit.h ../graphics/ViewWin.h
 MapClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
-MapClassInfo.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
-MapClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
-MapClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
-MapClassInfo.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
-MapClassInfo.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
-MapClassInfo.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
-MapClassInfo.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
-MapClassInfo.o: ../graphics/GraphicsDebug.h ../graphics.new/RectShape.h
-MapClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
-MapClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
-MapClassInfo.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h
-MapClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-MapClassInfo.o: ../graphics.new/ViewGraph.h ../graphics.new/Action.h
-MapClassInfo.o: ../graphics.new/PointStorage.h ../tape/HashTable.h
-MapClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
-MapClassInfo.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
-MapClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
-MapClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
-MapClassInfo.o: /usr/include/stdlib.h /usr/include/ctype.h
-MapClassInfo.o: ../graphics/Selection.h ../graphics/View.h MapClassInfo.h
-MapClassInfo.o: Soil.h AmsMap.h
+MapClassInfo.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+MapClassInfo.o: /usr/include/string.h ../graphics/Pattern.h
+MapClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+MapClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
+MapClassInfo.o: /usr/include/sys/errno.h /usr/include/sys/param.h
+MapClassInfo.o: /usr/include/sys/unistd.h ../graphics/ETkIfc.h
+MapClassInfo.o: ../graphics/ETk.h ../graphics/Xdef.h /usr/include/X11/Xlib.h
+MapClassInfo.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
+MapClassInfo.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h
+MapClassInfo.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
+MapClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
+MapClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+MapClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
+MapClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
+MapClassInfo.o: ../graphics/BufPolicy.h ../graphics.new/ViewGraph.h
+MapClassInfo.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
+MapClassInfo.o: ../tape/HashTable.h ../graphics/Control.h
+MapClassInfo.o: ../graphics/ClassDir.h ../graphics.new/TDataCMap.h
+MapClassInfo.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
+MapClassInfo.o: ../graphics.new/GDataBin.h ../graphics.new/ActionDefault.h
+MapClassInfo.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/ctype.h
+MapClassInfo.o: MapClassInfo.h Soil.h AmsMap.h
 ams.o: /usr/include/time.h /usr/include/sys/feature_tests.h
 ams.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 ams.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -126,14 +129,14 @@ ams.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 ams.o: /usr/include/sys/select.h /usr/include/sys/time.h
 ams.o: ../graphics/DeviseTypes.h /usr/include/values.h
 ams.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h ../graphics/DList.h
-ams.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
-ams.o: ../graphics/ViewDir.h /usr/include/string.h ../graphics/Display.h
-ams.o: ../graphics/Geom.h /usr/include/math.h ../graphics/ViewWin.h
-ams.o: ../graphics/WindowRep.h ../graphics/Transform.h ../graphics/Pattern.h
-ams.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-ams.o: ../graphics/DevError.h /usr/include/errno.h /usr/include/sys/errno.h
-ams.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
-ams.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+ams.o: ../graphics/Exit.h ../graphics/Display.h ../graphics/Geom.h
+ams.o: /usr/include/math.h ../graphics/ViewWin.h ../graphics/WindowRep.h
+ams.o: ../graphics/Transform.h ../graphics/VisualArg.h ../graphics/ViewDir.h
+ams.o: /usr/include/string.h ../graphics/Pattern.h ../graphics/DevisePixmap.h
+ams.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
+ams.o: /usr/include/sys/errno.h /usr/include/sys/param.h
+ams.o: /usr/include/sys/unistd.h ../graphics/ETkIfc.h ../graphics/ETk.h
+ams.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
 ams.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 ams.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
 ams.o: ../graphics/GraphicsDebug.h ../graphics/Control.h
@@ -149,10 +152,9 @@ ams.o: ../graphics.new/ViewData.h ../graphics.new/CompositeParser.h
 ams.o: ../graphics.new/RecInterp.h ../graphics.new/QueryProc.h
 ams.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
 ams.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h /usr/include/sys/ipc.h
-ams.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-ams.o: /usr/include/sys/unistd.h /usr/include/assert.h /usr/include/limits.h
-ams.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-ams.o: /usr/include/sys/param.h /usr/include/sys/wait.h
+ams.o: /usr/include/sys/sem.h /usr/include/sys/shm.h /usr/include/assert.h
+ams.o: /usr/include/limits.h /usr/include/sys/stat.h
+ams.o: ../graphics.new/machdep.h /usr/include/sys/wait.h
 ams.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
 ams.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
 ams.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
@@ -168,8 +170,7 @@ ams.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 ams.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
 ams.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
 ams.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
-ams.o: ../graphics.new/DataSourceBuf.h ../graphics.new/Command.h
-ams.o: ../graphics/Timer.h MapClassInfo.h
+ams.o: ../graphics.new/DataSourceBuf.h MapClassInfo.h
 amsStat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 amsStat.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 amsStat.o: /usr/include/fcntl.h /usr/include/sys/types.h
@@ -203,6 +204,7 @@ amsStat.o: /usr/include/sys/cred.h /usr/include/vm/seg_enum.h
 amsStat.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 amsStat.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
 amsStat.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+amsStat.o: ../graphics/Dispatcher.h ../graphics/DList.h
 amsStat.o: ../graphics.new/DiskFile.h ../graphics.new/ams.h
 amsStat.o: /usr/include/math.h
 extendAms.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h

@@ -15,6 +15,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.19  1999/11/24 15:44:05  wenger
+# Removed (unnecessary) CommandObj class; commands are now logged for the
+# monolithic form, not just the client/server form; other command-related
+# cleanups; added GUI for playing back command logs.
+#
 # Revision 1.18  1999/11/19 21:28:48  wenger
 # Removed Journal class and related code (no longer works); removed various
 # other unused or unnecessary code.
@@ -261,6 +266,9 @@ rcvMsg.o: /usr/include/sys/fcntl.h rcvMsg.h codec.h serverInterface.h colbr.h
 rcvMsg.o: dbase.h htable.h bucket.h entry.h datum.h queue.h queueElem.h
 rcvMsg.o: CollabTypes.h callBks.h error.h ctrlMsg.h netfns.h timeOut.h
 rcvMsg.o: ckptfile.h /usr/include/stdio.h /usr/include/sys/va_list.h
+rcvMsg.o: ../graphics/DevError.h /usr/include/errno.h
+rcvMsg.o: /usr/include/sys/errno.h ../graphics/DeviseTypes.h
+rcvMsg.o: /usr/include/values.h ../graphics/DevStatus.h
 server_clnt.o: server.h CollabTypes.h /usr/include/sys/types.h
 server_clnt.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
 server_clnt.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
@@ -404,17 +412,6 @@ Client.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
 Client.o: /usr/include/sys/byteorder.h /usr/include/netdb.h Client.h
 Client.o: Csprotocols.h /usr/include/arpa/inet.h keys.h CollabTypes.h
 CmdDescriptor.o: CmdDescriptor.h CmdSerialize.h
-CmdLog.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-CmdLog.o: /usr/include/sys/va_list.h /usr/include/ctype.h
-CmdLog.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-CmdLog.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
-CmdLog.o: /usr/include/sys/select.h /usr/include/sys/time.h
-CmdLog.o: /usr/include/time.h /usr/include/unistd.h /usr/include/sys/unistd.h
-CmdLog.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
-CmdLog.o: /usr/include/sys/stat.h CmdLog.h CmdSerialize.h
-CmdLog.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
-CmdLog.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/DList.h
-CmdLog.o: ../graphics/Exit.h ../graphics/Scheduler.h
 CmdSerialize.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 CmdSerialize.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 CmdSerialize.o: CmdSerialize.h
@@ -464,13 +461,14 @@ Server.o: ../graphics/ClassDir.h callBks.h error.h ctrlMsg.h rcvMsg.h
 Server.o: serverInterface.h colbr.h /usr/include/arpa/inet.h dbase.h htable.h
 Server.o: bucket.h entry.h datum.h queue.h queueElem.h keys.h Csprotocols.h
 Server.o: /usr/include/netdb.h ../graphics/Util.h /usr/include/ctype.h
-Server.o: ../graphics/Init.h ../graphics/BufPolicy.h
+Server.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/DevError.h
 TclClient.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TclClient.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 TclClient.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 TclClient.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 TclClient.o: /usr/include/sys/select.h /usr/include/sys/time.h
-TclClient.o: /usr/include/time.h TclClient.h /s/tcl/include/tcl.h Client.h
+TclClient.o: /usr/include/time.h TclClient.h /s/tcl/include/tcl.h
+TclClient.o: /usr/include/stdarg.h /s/tcl/include/tclDecls.h Client.h
 bucket.o: bucket.h entry.h datum.h
 colbrLog.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 colbrLog.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
