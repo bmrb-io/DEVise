@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.58  1999/01/05 20:54:03  wenger
+  Fixed bugs 447 and 448 (problems with symbol patterns); cleaned up some
+  of the text symbol code.
+
   Revision 1.57  1998/12/15 18:47:20  wenger
   New option in fixed text symbol: if size is <=1, it is assumed to be a
   fraction of the screen height, rather than the font size in points.
@@ -1938,6 +1942,11 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
   GetTextAttrInfo(attrList, labelAttrValid, labelAttrType,
 	labelFormatValid, labelFormatType);
 
+  VisualFilter filter;
+  view->GetVisualFilter(filter);
+  Coord filterWidth = filter.xHigh - filter.xLow;
+  Coord filterHeight = filter.yHigh - filter.yLow;
+
   GDataAttrOffset *offset = map->GetGDataOffset();
   StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
 
@@ -1963,7 +1972,14 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 	Coord size = GetSize(gdata, map, offset);
 	size *= pixelSize;
 
-	Coord width = fabs(size * GetShapeAttr2(gdata, map, offset));
+	Coord width = size * GetShapeAttr2(gdata, map, offset);
+	Boolean noScale;
+	if (width < 0.0) {
+	  noScale = true;
+	} else {
+	  noScale = false;
+	}
+	width = fabs(width);
 	Coord height = fabs(size * GetShapeAttr3(gdata, map, offset));
 
 	Coord orientation = GetOrientation(gdata, map, offset);
@@ -1974,10 +1990,9 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 	Coord x0, y0, x1, y1;
 	win->Transform(0, 0, x0, y0);
 	win->Transform(1, 1, x1, y1);
-	Coord pointSize = height * fabs(y1 - y0);
+	Coord pointSize = height * fabs(y1 - y0) *
+	  DeviseDisplay::DefaultDisplay()->PointsPerPixel();
 
-
-	pointSize = MIN(pointSize, 16.0);
 	pointSize = (Coord) ((int) (pointSize + 0.5));
 
     /* Find or generate the label string. */
@@ -2006,14 +2021,25 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
         win->FillRectAlign(x, y, width, height, alignment, orientation);
         win->SetPattern(oldPattern);
       }
-      win->ScaledDataText(label, x , y , width, height, alignment, true,
-        orientation); 
-#if 0 // For testing ScaledText() vs. ScaledDataText().
-      win->SetForeground(GetPColorID(gdata, map, offset) + 5);
-      win->ScaledText(label, x , y , width, height, alignment, true,
-        orientation); 
-      win->SetForeground(GetPColorID(gdata, map, offset));
+	  if (noScale) {
+	    win->AbsoluteDataText(label, x, y, filterWidth, filterHeight,
+		  alignment, true, orientation);
+#if 0 // For testing AbsoluteText() vs. AbsoluteDataText().
+        win->SetForeground(GetPColorID(gdata, map, offset) + 5);
+	    win->AbsoluteText(label, x, y, filterWidth, filterHeight,
+		  alignment, true, orientation);
+        win->SetForeground(GetPColorID(gdata, map, offset));
 #endif
+	  } else {
+        win->ScaledDataText(label, x , y , width, height, alignment, true,
+          orientation); 
+#if 0 // For testing ScaledText() vs. ScaledDataText().
+        win->SetForeground(GetPColorID(gdata, map, offset) + 5);
+        win->ScaledText(label, x , y , width, height, alignment, true,
+          orientation); 
+        win->SetForeground(GetPColorID(gdata, map, offset));
+#endif
+      }
      }
    }
 
@@ -2114,7 +2140,6 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
 	Coord x0, y0, x1, y1;
 	win->Transform(0, 0, x0, y0);
 	win->Transform(1, 1, x1, y1);
-	Coord pointSize =  fabs(y1 - y0);
 	
     Coord pixelperUnitHeight     = fabs(y1 - y0);
 	Coord pixelperUnitWidth      = fabs(x1 - x0);
