@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/11 17:28:45  jussi
+  Reorganized the code somewhat in order to match the ParseAPI
+  interface.
+
   Revision 1.6  1996/05/11 03:11:32  jussi
   Removed all unnecessary ControlPanel methods like FileName(),
   FileAlias() etc.
@@ -39,12 +43,9 @@
 #include "DeviseTypes.h"
 #include "VisualArg.h"
 #include "DList.h"
+#include "ClassDir.h"
 
 class Dispatcher;
-
-/*
- list of views for the control panel, arranged according to dispatcher
-*/
 
 struct CPViewList;
 class View;
@@ -52,7 +53,6 @@ class View;
 DefinePtrDList(CPViewListList,CPViewList *);
 
 class ClassInfo;
-class ClassDir;
 
 class ControlPanelCallback;
 class MapInterpClassInfo;
@@ -61,166 +61,172 @@ class GroupDir;
 DefinePtrDList(ControlPanelCallbackList ,ControlPanelCallback *);
 
 class DeviseDisplay;
+
 class ControlPanel  {
 public:
-	enum Mode { DisplayMode, LayoutMode};
+  enum Mode { DisplayMode, LayoutMode };
 
-	void InsertCallback(ControlPanelCallback *callback);
-	void DeleteCallback(ControlPanelCallback *callback);
+  void InsertCallback(ControlPanelCallback *callback);
+  void DeleteCallback(ControlPanelCallback *callback);
+  
+  /* Register class with control panel.
+     transient == true if it's a transient class to be removed
+     when closing a session.*/
+  static void RegisterClass(ClassInfo *cInfo, Boolean transient = false);
 
-	/* Register class with control panel.
-	transient == true if it's a transient class to be removed
-	when closing a session.*/
-	static void RegisterClass(ClassInfo *cInfo, Boolean transient = false);
+  /* Make view the current view */
+  virtual void SelectView(View *view) = 0;
 
-	/* Make view the current view */
-	virtual void SelectView(View *view) = 0;
+  /* Find pointer to instance with given name */
+  static void *FindInstance(char *name) {
+    return GetClassDir()->FindInstance(name);
+  }
 
-	/* Find pointer to instance with given name */
-	static void *FindInstance(char *name);
+  /* Get/set current mode */
+  virtual Mode GetMode() { return _mode; }
+  virtual void SetMode(Mode mode) { _mode = mode; }
 
-	/* Get/set current mode */
-	virtual Mode GetMode() { return _mode; }
-	virtual void SetMode(Mode mode) { _mode = mode; }
+  /* Set busy status, should be called in pairs. */
+  virtual void SetBusy() = 0;
+  virtual void SetIdle() = 0;
 
-	/* Set busy status, should be called in pairs. */
-	virtual void SetBusy() = 0;
-	virtual void SetIdle() = 0;
+  /* Get current busy status */
+  virtual Boolean IsBusy() = 0;
 
-	/* Get current busy status */
-	virtual Boolean IsBusy() = 0;
+  /* Start/restart session */
+  virtual void StartSession() {}
+  virtual void DestroySessionData() {}
+  virtual void RestartSession() {}
 
-	/* Start/restart session */
-	virtual void StartSession() {}
-	virtual void DestroySessionData() {}
-	virtual void RestartSession() {}
+  /* Execute script */
+  virtual void ExecuteScript(char *script) = 0;
 
-	/* Execute script */
-	virtual void ExecuteScript(char *script) = 0;
+  /* Instantiate control panel into display */
+  static void InsertDisplay(DeviseDisplay *disp,
+			    Coord x = 0.0, Coord y = 0.4, 
+			    Coord w = 0.15, Coord h = 0.59) {
+    Instance()->SubclassInsertDisplay(disp, x, y, w, h);
+  }
 
-	/* Instantiate control panel into display */
-	static void InsertDisplay(DeviseDisplay *disp,
-				  Coord x = 0.0, Coord y = 0.4, 
-				  Coord w = 0.15, Coord h = 0.59) {
-	  Instance()->SubclassInsertDisplay(disp,x,y,w,h);
-	}
+  /* Init control panel, before dispatcher starts running.
+     Create control panel if not already created.
+     Update contronl panel state to reflect current dispatcher
+     */
+  static void Init() {
+    Instance()->SubclassDoInit();
+  }
 
-	/* Init control panel, before dispatcher starts running.
-	   Create control panel if not already created.
-	   Update contronl panel state to reflect current dispatcher
-	   */
-	static void Init() {
-	  Instance()->SubclassDoInit();
-	}
+  /* return the one and only instance of control panel */
+  static ControlPanel *Instance();
 
-	/* return the one and only instance of control panel */
-	static ControlPanel *Instance();
+  /* report mode change */
+  void ReportModeChange(Mode mode);
 
-	/* report mode change */
-	void ReportModeChange(Mode mode);
+  /* quit */
+  virtual void DoQuit();
 
-	/* quit */
-	virtual void DoQuit();
+  /* abort */
+  virtual void DoAbort(char *reason) {}
 
-	/* abort */
-	virtual void DoAbort(char *reason);
+  /* return one or multiple values to caller of API */
+  virtual int ReturnVal(int flag, char *result) = 0;
+  virtual int ReturnVal(int argc, char **argv) = 0;
+  
+  /* Get ClassDir info */
+  static ClassDir *GetClassDir();
+  
+  /* Get GroupDir info */
+  virtual GroupDir *GetGroupDir() = 0;
+  
+  /* Get MapInterpClassInfo info */
+  virtual MapInterpClassInfo *GetInterpProto() = 0;
 
-	/* return one or multiple values to caller of API */
-	virtual int ReturnVal(int flag, char *result) = 0;
-	virtual int ReturnVal(int argc, char **argv) = 0;
+  /* Add replica server */
+  virtual int AddReplica(char *hostName, int port) = 0;
 
-	/* Get ClassDir info */
-	static ClassDir *GetClassDir();
-
-	/* Get GroupDir info */
-	virtual GroupDir *GetGroupDir() = 0;
-
-	/* Get MapInterpClassInfo info */
-	virtual MapInterpClassInfo *GetInterpProto() = 0;
+  /* Remove replica server */
+  virtual int RemoveReplica(char *hostName, int port) = 0;
 
 protected:
+  friend class Dispatcher;
 
-	friend class Dispatcher;
+  virtual void SubclassInsertDisplay(DeviseDisplay *disp,
+				     Coord x, Coord y, 
+				     Coord w, Coord h) = 0;
+  virtual void SubclassDoInit() = 0;
 
-	/* dervied classes must implement these: */
-	virtual void SubclassInsertDisplay(DeviseDisplay *disp,
-					   Coord x, Coord y, 
-					   Coord w, Coord h) = 0;
-	virtual void SubclassDoInit() = 0;
+  /* helper functions for derived classes */
 
-	/* helper functions for derived classes */
+  /* return */
+  void DoReturn();
 
-	/* return */
-	void DoReturn();
+  /* Change context and reset current view */
+  void DoContext() {}
 
-	/* Change context and reset current view */
-	void DoContext();
+  /* do go/stop */
+  void DoGo(Boolean state);
 
-	/* do go/stop */
-	void DoGo(Boolean state);
+  /* do single step */
+  void DoStep();
 
-	/* do single step */
-	void DoStep();
+  /* display symbols or connectors */
+  void DoDisplaySymbols(Boolean state) {}
+  void DoDisplayConnectors(Boolean stat) {}
 
-	/* make current view display/not display symbols according to state */
-	void DoDisplaySymbols(Boolean state);
+  /* display/not display axes for current view. */
+  void DoDisplayCurrentAxes(Boolean stat) {}
+  
+  /* display/not display axes for all views in the dispatcher.*/
+  void DoDisplayAxes(Boolean stat) {}
 
-	void DoDisplayConnectors(Boolean stat);
+  /* change one of the visual filters. 
+     on == TRUE means turn on the filter, otherwise, turn off the filter.
+     flag is one of: VISUAL_COLOR or VISUAL_PATTERN */
+  void ChangeIntVisualFilter(Boolean on, VisualFlag flag,int minVal,
+			     int maxVal) {}
 
-	/* display/not display axes for current view. */
-	void DoDisplayCurrentAxes(Boolean stat);
+  /* change one of the visual filters. 
+     on == TRUE means turn on the filter, otherwise, turn off the filter.
+     flag is one of: VISUAL_SIZE or VISUAL_ORIENTATION.
+     Note: input orientations are in degrees.
+     */
+  void ChangeFloatVisualFilter(Boolean on, VisualFlag flag,double minVal,
+			       double maxVal) {}
 
-	/* display/not display axes for all views in the dispatcher.*/
-	void DoDisplayAxes(Boolean stat);
+  /* scrol current view by the amount proportional to its
+     current width.
+     0 <= abs(amount) <= 1, amount >0 means scroll right,
+     otherwise, scroll left
+     */
+  void DoScrollX(double amount) {}
+  void DoScrollY(double amount) {}
 
-	/* change one of the visual filters. 
-	on == TRUE means turn on the filter, otherwise, turn off the filter.
-	flag is one of: VISUAL_COLOR or VISUAL_PATTERN */
-	void ChangeIntVisualFilter(Boolean on, VisualFlag flag,int minVal,
-		int maxVal);
+  /* zoom current width by the given amount */
+  void DoZoomXY(double amount) {}
+  void DoZoomX(double amount) {}
+  void DoZoomY(double amount) {}
 
-	/* change one of the visual filters. 
-	on == TRUE means turn on the filter, otherwise, turn off the filter.
-	flag is one of: VISUAL_SIZE or VISUAL_ORIENTATION.
-	Note: input orientations are in degrees.
-	*/
-	void ChangeFloatVisualFilter(Boolean on, VisualFlag flag,double minVal,
-		double  maxVal);
+  /* do initialize before dispatche starts running. This is used
+     to get control panel's notion of current dispatcher in synch
+     with the dispatchers' notion of current dispatcher.
+     Return control panel switched internally to a new current dispatcher */
+  Boolean DoInit() { return false; }
 
-	/* scrol current view by the amount proportional to its
-	current width. 0<= abs(amount) <= 1, amount >0 means scroll right,
-	otherwise, scroll left */
-	void DoScrollX(double amount);
-	void DoScrollY(double amount);
-
-	/* zoom  current width by the given amount.
-	0 <= amount */
-	void DoZoomXY(double amount);
-	void DoZoomX(double amount);
-	void DoZoomY(double amount);
-
-	/* do initialize before dispatche starts running. This is used
-	to get control panel's notion of current dispatcher in synch
-	with the dispatchers' notion of current dispatcher.
-	Return control panel switched internally to a new current dispatcher */
-	Boolean DoInit();
-
-	ControlPanel();
-	static ControlPanel *_controlPanel; /* one and only control panel */
-	static Mode _mode;
+  ControlPanel();
+  static ControlPanel *_controlPanel;
+  static Mode _mode;
 
 private:
-	/* update current view to reflect current dispatcher */
-	void UpdateNewDispatcher();
+  void UpdateNewDispatcher() {}
 
-	static ClassDir *_classDir;
+  static ClassDir *_classDir;
 
-	ControlPanelCallbackList *_callbacks;
+  ControlPanelCallbackList *_callbacks;
 };
 
 class ControlPanelCallback {
 public:
-	virtual void ModeChange(ControlPanel::Mode mode) = 0;
+  virtual void ModeChange(ControlPanel::Mode mode) = 0;
 };
 
 #endif
