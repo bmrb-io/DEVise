@@ -1,9 +1,9 @@
 /*
   ========================================================================
-  DEVise Software
+  DEVise Data Visualization Software
   (c) Copyright 1992-1995
   By the DEVise Development Group
-  University of Wisconsin at Madison
+  Madison, Wisconsin
   All Rights Reserved.
   ========================================================================
 
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/22 15:43:28  jussi
+  Added copyright message.
+
   Revision 1.2  1995/09/05 20:31:44  jussi
   Added CVS header.
 */
@@ -294,7 +297,8 @@ int SortedTable<Index,Value>::findEmpty(Index &index)
   // just do a linear scan at this point; this is basically insertion
   // sort
 
-  for(int idx = 0; idx < tableSize; idx++) {
+  int idx;
+  for(idx = 0; idx < tableSize; idx++) {
     if (st[idx]
 	&& st[idx]->index >= index)     // found spot we want to insert into?
       break;

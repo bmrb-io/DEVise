@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/05 18:36:49  jussi
+  Fixed compiler warning about char **argv being passed to a function
+  expecting const char **argv.
+
   Revision 1.3  1995/12/02 21:07:33  jussi
   Substituted DeviseTime for Time and added copyright notice.
 
@@ -207,7 +211,8 @@ void Command::ProcessLine(char *line)
     /* Print view statistics */
     if (Init::PrintViewStat()) {
       printf("View Stat\n");
-      for(int index = View::InitViewIterator();View::MoreView(index);) {
+      int index;
+      for(index = View::InitViewIterator();View::MoreView(index);) {
 	View *v = View::NextView(index);
 	printf("View %s\n", v->GetName());
 	v->PrintStat();
