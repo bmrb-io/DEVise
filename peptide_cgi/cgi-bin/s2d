@@ -10,4 +10,4 @@ unsetenv LD_LIBRARY_PATH
 /bin/rm -f error.log
 
 setenv CLASSPATH ./java_classes:./java_classes/starlibj.jar
-java S2DMain $* data_dir session_dir >>& s2d.out
+java S2DMain $* data_dir session_dir >& s2d.out

@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2001/01/19 15:39:06  wenger
+// Added T1 and T2 relaxation; removed some unnecessary variables from
+// coupling constants; added schema files to installation, unified T1
+// and T2 relaxation schema.
+//
 // Revision 1.1  2001/01/17 20:00:07  wenger
 // Restructured the peptide-cgi code to make it much more maintainable.
 //
@@ -368,7 +373,8 @@ public class S2DStarIfc {
             DataItemNode node = (DataItemNode)list.elementAt(0);
 	    result = node.getValue();
         } else {
-	    result = "Details not available for this save frame.";
+	    result = "Spectrometer frequency not available for this " +
+	      "save frame.";
         }
 
         return result;

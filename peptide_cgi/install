@@ -16,10 +16,14 @@
 
 #  Install the peptide-cgi setup.  Note: some of the installation is
 #  specific to a certain machine; this script is configured to do
-#  the installation on pumori -- slight changes may be needed to
-#  do the installation on other machines.
+#  the installation on either pumori (cs) or yola (bmrb).  Changes
+#  may be needed to do the installation on other machines.
+
+#  Note: CS install must be done on pumori; BMRB on aden.
 
 #  To use the installed software, go to:
+#  http://bmrb.wisc.edu/devise/peptide-cgi/bmrb_select.html
+#    or
 #  http://pumori.cs.wisc.edu/bmrb/bmrb_select.html.
 
 ############################################################
@@ -28,15 +32,51 @@
 
 ############################################################
 
-set demohome = /p/devise/demo
-set wwwhome = /var/home/www
+# Check the argument.
 
+if ($#argv == 1) then
+  set location = $1
+  if ($location == cs) then
+    echo "DIAG cs"
+    set demohome = /p/devise/demo
+    set wwwhome = /var/home/www
+    set pephome = $wwwhome/public/bmrb
+    set cgihome = $wwwhome/cgi-bin/bmrb
+    set sessionhome = /local.pumori/devise/bmrb/dynamic_sessions
+    set datahome = /local.pumori/devise/bmrb/dynamic_data
+  else if ($location == bmrb) then
+    echo "DIAG bmrb"
+    set demohome = /p/devise/demo
+    set wwwhome = /bmrb/htdocs
+    set pephome = $wwwhome/devise/peptide-cgi
+    set cgihome = $wwwhome/cgi-bin/peptide-cgi
+    set sessionhome = $pephome/session_dir
+    set datahome = $pephome/data_dir
+
+    echo "Have you modified cgi-bin/make_view and bmrb_select.html"
+    echo "for installation at bmrb? [n]"
+    set answer = $<
+    if ($answer != y && $answer != Y) then
+      echo Aborted.
+      exit 1
+    endif
+  else
+    echo "Illegal argument value: $location"
+    exit 1
+  endif
+else
+  echo "Usage: install <cs|bmrb>"
+  exit 1
+endif
+
+
+# Make sure the user really wants to do this.
 
 echo You are about to install the peptide-cgi setup.  This
-echo will install files in $demohome
-echo and $wwwhome.
+echo will install files in $demohome, $wwwhome,
+echo and $pephome.
 echo ""
-echo -n "Are you absolutely sure you want to do this? [N] "
+echo -n "Are you absolutely sure you want to do this? [n] "
 
 set answer = $<
 if ($answer != y && $answer != Y) then
@@ -46,54 +86,66 @@ endif
 
 
 # Compile the Java code.
+
 cd java_classes
 source set_path
 make
 cd ..
 
+
 # Create and set up the directory containing the "front-end" html file.
-set targetdir = $wwwhome/public/bmrb
+
+set targetdir = $pephome
 if (! -e $targetdir) then
   mkdir $targetdir
-  chmod a+rx $targetdir
 endif
+chmod a+rx $targetdir
 cp -p bmrb_select.html $targetdir
 chmod a+r $targetdir/bmrb_select.html
 
+
 # Create and set up the dynamic sessions directory.
-set targetdir = $demohome/session.js/bmrb/dynamic_sessions
+
+set targetdir = $sessionhome
 if (! -e $targetdir) then
   mkdir $targetdir
 
   # Needed so www-user can write here.
   fs setacl $targetdir system:anyuser write
 endif
+chmod a+rwx $targetdir
 cp -p dynamic_sessions/*.base $targetdir
 chmod a+r $targetdir/*.base
 
+
 # Create and set up the data/html directory.
-set targetdir = $demohome/dat/bmrb/dynamic_data
+
+set targetdir = $datahome
 if (! -e $targetdir) then
   mkdir $targetdir
-
-  # Needed so www-user can write here.
-  fs setacl $targetdir system:anyuser write
 endif
+chmod a+rwx $targetdir
 cp -p html/* $targetdir
 chmod a+r $targetdir/*
 
+
 # Create the link that we use to have the browser find the summary page.
-set targetdir = $wwwhome/public/bmrb/html
-if (! -e $targetdir) then
-  ln -s $demohome/dat/bmrb/dynamic_data $targetdir
+
+if ($location == cs) then
+  set targetdir = $wwwhome/public/bmrb/html
+  if (! -e $targetdir) then
+    ln -s $demohome/dat/bmrb/dynamic_data $targetdir
+  endif
 endif
 
+
 # Create and set up the CGI directory.
-set targetdir = $wwwhome/cgi-bin/bmrb
+
+set targetdir = $cgihome
 if (! -e $targetdir) then
   mkdir $targetdir
-  chmod a+rx $targetdir
 endif
+chmod a+rwx $targetdir
 cp -p cgi-bin/make_view $targetdir
 chmod a+rx $targetdir/make_view
 cp -p cgi-bin/s2d $targetdir
@@ -101,27 +153,51 @@ chmod a+rx $targetdir/s2d
 cp -p cgi-bin/set_modes $targetdir
 chmod a+rx $targetdir/set_modes
 
+
 # Link data directory to CGI directory.
-set targetdir = $wwwhome/cgi-bin/bmrb/data_dir
+
+set targetdir = $cgihome/data_dir
 if (! -e $targetdir) then
-  ln -s $demohome/dat/bmrb/dynamic_data $targetdir
+  ln -s $datahome $targetdir
 endif
+
 
 # Link session directory to CGI directory.
-set targetdir = $wwwhome/cgi-bin/bmrb/session_dir
+
+set targetdir = $cgihome/session_dir
 if (! -e $targetdir) then
-  ln -s $demohome/session.js/bmrb/dynamic_sessions $targetdir
+  ln -s $sessionhome $targetdir
 endif
 
+
+# Link data directory to the demo area.
+
+set targetdir = $demohome/dat/bmrb/dynamic_data
+if (! -e $targetdir) then
+  ln -s $datahome $targetdir
+endif
+
+
+# Link session directory to the demo area.
+
+set targetdir = $demohome/session.js/bmrb/dynamic_sessions
+if (! -e $targetdir) then
+  ln -s $sessionhome $targetdir
+endif
+
+
 # Create and set up the java classes directory.
-set targetdir = $wwwhome/cgi-bin/bmrb/java_classes
+
+set targetdir = $cgihome/java_classes
 if (! -e $targetdir) then
   mkdir $targetdir
-  chmod a+rx $targetdir
 endif
+chmod a+rx $targetdir
 cp java_classes/*.class $targetdir
 cp java_classes/*.jar $targetdir
 chmod a+r $targetdir/*.*
 
+
 # Copy the schemas to the demo area.
-cp schema/bmrb* /p/devise/demo/schema/schema/physical
+
+cp schema/bmrb* $demohome/schema/schema/physical

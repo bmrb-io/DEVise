@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2001/01/19 15:39:06  wenger
+// Added T1 and T2 relaxation; removed some unnecessary variables from
+// coupling constants; added schema files to installation, unified T1
+// and T2 relaxation schema.
+//
 // Revision 1.1  2001/01/17 20:00:07  wenger
 // Restructured the peptide-cgi code to make it much more maintainable.
 //
@@ -52,7 +57,11 @@ public class S2DMain {
     public static void main(String args[]) throws S2DException
     {
         S2DMain s2d = new S2DMain(args);
-	s2d.process();
+	try {
+	    s2d.process();
+	} catch (S2DWarning ex) {
+	    System.err.println(ex.getMessage());
+	}
     }
 
     //-------------------------------------------------------------------
@@ -129,7 +138,7 @@ public class S2DMain {
 	    ps.waitFor();
 	    int result = ps.exitValue();
 	    if (result != 0) {
-	        throw new S2DError("Non-zero exit value from set_modes; " +
+	        throw new S2DWarning("Non-zero exit value from set_modes; " +
 		  "see set_modes.out");
 	    }
 	} catch (Exception ex) {
