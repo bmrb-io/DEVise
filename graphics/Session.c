@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/10/16 16:12:00  donjerko
+  Fixed the problem of not recognizing DTE sources correctly.
+
   Revision 1.8  1997/10/03 16:01:28  wenger
   Enabled session opening and saving from back end; incremented version; a
   few more minor fixes to session-related code.
@@ -149,6 +152,9 @@ public:
   Tcl_Interp *_interp;
 };
 
+static char *classNameList;
+static unsigned int classNameListLen;
+
 #if !defined(lint) && defined(RCSID)
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
@@ -243,7 +249,13 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
     status += ForEachInstance("view", SaveView, &saveData);
 
     fprintf(saveData.fp, "\n# Create interpreted mapping classes\n");
+    char nameBuf[1024];
+    nameBuf[0] = '\0';
+    classNameList = nameBuf;
+    classNameListLen = 1024;
     status += ForEachInstance("mapping", SaveInterpMapping, &saveData);
+    classNameList = NULL;
+    classNameListLen = 0;
 
     fprintf(saveData.fp, "\n# Create mapping instances (GData)\n");
     status += ForEachInstance("mapping", SaveGData, &saveData);
@@ -646,7 +658,7 @@ Session::SaveView(char *category, char *devClass, char *instance,
 
 /*------------------------------------------------------------------------------
  * function: Session::SaveInterpMapping
- * Save information about the given mapping (if it is interpreted).
+ * Save information about the given mapping class (if it is interpreted).
  */
 DevStatus
 Session::SaveInterpMapping(char *category, char *devClass, char *instance,
@@ -659,15 +671,29 @@ Session::SaveInterpMapping(char *category, char *devClass, char *instance,
 
   DevStatus status = StatusOk;
 
-  char *result;
-  int argcOut;
-  char **argvOut;
-  status += CallParseAPI(saveData->control, result, false, argcOut, argvOut,
-      "isInterpretedGData", instance);
-  if (status.IsComplete()) {
-    int isInterpreted = atoi(result);
-    if (isInterpreted) {
-      fprintf(saveData->fp, "DEVise createMappingClass {%s}\n", devClass);
+  // Save only _unique_ mapping classes (we may have multiple mapping
+  // instances of the same class, so this function may get called multiple
+  // times with identical class names).
+  char buf[256];
+  sprintf(buf, "{%s}", devClass);
+  if (strstr(classNameList, buf) == NULL) {
+    if (strlen(classNameList) + strlen(buf) < classNameListLen) {
+      strcat(classNameList, buf);
+    } else {
+      reportErrNosys("Ran out of room in class name list; saved session file"
+	" may have errors");
+    }
+
+    char *result;
+    int argcOut;
+    char **argvOut;
+    status += CallParseAPI(saveData->control, result, false, argcOut, argvOut,
+        "isInterpretedGData", instance);
+    if (status.IsComplete()) {
+      int isInterpreted = atoi(result);
+      if (isInterpreted) {
+        fprintf(saveData->fp, "DEVise createMappingClass {%s}\n", devClass);
+      }
     }
   }
 

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/10/03 14:37:11  wenger
+  Various fixes to get session opening/saving to work with client/server
+  version; reading old-style (Tcl) session files now works in back end;
+  got back-end session file stuff working for multi.
+
   Revision 1.14  1997/09/23 19:57:40  wenger
   Opening and saving of sessions now working with new scheme of mapping
   automatically creating the appropriate TData.
@@ -390,7 +395,7 @@ ClassInfo *MapInterpClassInfo::CreateWithParams(int argc, char **argv)
 
   if (argc == 1) {
 #ifdef DEBUG
-    printf("Creating new interpreted mapping class\n");
+    printf("Creating new interpreted mapping class {%s}\n", argv[0]);
 #endif
     return new MapInterpClassInfo(argv[0]);
   }
@@ -402,13 +407,14 @@ ClassInfo *MapInterpClassInfo::CreateWithParams(int argc, char **argv)
 
   if (argc >= 1 && !strcmp(_className, rootClassName)) {
 #ifdef DEBUG
-    printf("Creating new (old-style) interpreted mapping class\n");
+    printf("Creating new (old-style) interpreted mapping class {%s}\n",
+      argv[1]);
 #endif
     return new MapInterpClassInfo(argv[1]);
   }
 
 #ifdef DEBUG
-  printf("Creating new instance of interpreted mapping class\n");
+  printf("Creating new instance of interpreted mapping class {%s}\n", argv[0]);
 #endif
     
   MappingInterpCmd *cmd = new MappingInterpCmd;//TEMPTEMP -- leaked

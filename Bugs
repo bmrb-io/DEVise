@@ -940,6 +940,9 @@ Num Date        Status  Description
 235 10/09/97	OPEN	The DTE (at least on Linux) sometimes has trouble
 			with long strings (e.g., 1024 characters). (rkw/dj)
 
+236 10/27/97	FIXED	Sessions saved by C++ code sometimes don't work because
+			of creating duplicate mapping classes. (ssl/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
