@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.40  2001/04/12 18:18:17  wenger
+// Added more diagnostic code to the JSPoP.
+//
 // Revision 1.39  2001/04/11 21:18:47  xuk
 // The collaboration leader could find out the followers' hostnames.
 // Added removeCollabSocket() function;
@@ -593,6 +596,26 @@ public class DEViseClient
 			pop.pn("We get the collab passwd: " + collabPass);
 			sendCmd(DEViseCommands.DONE);
 			cmdBuffer.removeAllElements();
+		    } else if (command.startsWith(DEViseCommands.DISABLE_COLLAB)) {
+			isAbleCollab = false;
+
+			try {
+			    for (int i = 0; i < collabSockets.size(); i++) {
+				DEViseCommSocket sock = (DEViseCommSocket)collabSockets.elementAt(i);
+				sock.sendCmd(DEViseCommands.COLLAB_EXIT);
+				sock.sendCmd(DEViseCommands.DONE);
+				sock.closeSocket();	
+				pop.pn("Closed collaboration JS " + i + ".");
+			    }
+			} catch (YException e) {
+			    System.err.println("YException " + e.getMessage() +
+			      " in DEViseClient.getCmd()");
+			}
+			collabSockets.removeAllElements();
+			collabHostName.removeAllElements();			
+			sendCmd(DEViseCommands.DONE);
+			cmdBuffer.removeAllElements();
+
 		    } else {
 			//
 			// Send an ACK immediately so that the client
