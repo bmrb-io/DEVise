@@ -1,5 +1,5 @@
-Instructions for running Devise from the public directories
------------------------------------------------------------
+Instructions for running the public version of Devise
+-----------------------------------------------------
 
 Execute the following commands:
 
