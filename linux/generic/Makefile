@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1998/03/25 14:55:19  wenger
+#  Added opengldum for all variations of ARCH_SYSLIBS.
+#
 #  Revision 1.10  1998/03/11 18:26:58  wenger
 #  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
 #  reducing include dependencies between csgroup code and the rest of
@@ -72,10 +75,12 @@
 
 include ../Makefile.config
 
-ARCH_LDFLAGS = -L/usr/lib -L/usr/X11R6/lib
+#ARCH_LDFLAGS = -L/usr/lib -L/usr/X11R6/lib
+ARCH_LDFLAGS = -L/home/zhenhai/Mesa-2.4/lib -Xlinker -rpath -Xlinker /home/zhenhai/Mesa-2.4/lib -L/usr/lib -L/usr/X11R6/lib
 #ARCH_SYSLIBS = -L../graphics -lopengldum -ltk4.0 -ltcl7.4 -lX11 -lm
 #ARCH_SYSLIBS = -L../graphics -lopengldum -ltk4.1 -ltcl7.5 -ldl -lX11 -lm
-ARCH_SYSLIBS = -L../graphics -lopengldum -ltk4.2 -ltcl7.6 -ldl -lX11 -lm
+#ARCH_SYSLIBS = -L../graphics -lopengldum -ltk4.2 -ltcl7.6 -ldl -lX11 -lm
+ARCH_SYSLIBS =  -lMesaGLU -lMesaGL -ltk4.2 -ltcl7.6 -ldl -lXaw -lXt -lXmu -lX11 -lm
 ARCH_LDPOST  =
 ARCH_STATIC_LDPOST  = -static
 
