@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/06/24 19:36:50  jussi
+  Removed unnecessary code that stored a pointer to the
+  dispatcher in a member variable.
+
   Revision 1.8  1996/05/20 18:44:58  jussi
   Merged with ClientServer library code.
 
@@ -106,11 +110,8 @@ get local color given global color.
 
 Color DeviseDisplay::GetLocalColor(Color globalColor)
 {
-  if (globalColor >= _numColors) {
-    fprintf(stderr,"Display::GetLocalColor: undefined color %ld\n",
-	    globalColor);
-    Exit::DoExit(1);
-  }
+  if (globalColor >= _numColors)
+      return _colorMap[0];
   return _colorMap[globalColor];
 }
 
