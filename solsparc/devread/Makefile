@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/10/29 16:19:58  wenger
+#  Fixed devread Makefiles in the architecture subdirectories to include
+#  the proper dependency files.
+#
 #  Revision 1.1  1996/08/14 20:01:11  flisakow
 #      Need a devread directory for each m/c arch.
 #
@@ -34,7 +38,7 @@
 
 ############################################################
 
-ARCH_FLAGS   = -DHPUX -I/s/tcl/include
+ARCH_FLAGS   = DSOLARIS -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
 ARCH_LDPOST  =
 
