@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-2001
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.28  2001/08/03 18:13:35  wenger
+#  Removed all OpenGL-related code.
+#
 #  Revision 1.27  1999/11/01 17:57:49  wenger
 #  Slight cleanup.
 #
@@ -107,11 +110,11 @@
 include ../Makefile.config
 
 ARCH_LDFLAGS = -L/s/X11/lib -L /s/tcl7.4/lib -R /s/X11/lib
-#ARCH_SYSLIBS = -lMesaGLU -lMesaGL \
-#               -ltk -ltcl -lXmu -lX11 -lm
-ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
+ARCH_D_SYSLIBS = -lX11 -lm
+ARCH_SYSLIBS = -ltk -ltcl $(ARCH_D_SYSLIBS)
 ARCH_LDPOST  = -lsocket -lnsl
-ARCH_STATIC_LDPOST  = -lsocket -lnsl -static
+ARCH_D_LDPOST  = $(ARCH_LDPOST)
+ARCH_STATIC_LDPOST  = $(ARCH_LDPOST) -static
 
 VPATH = ../../generic
 

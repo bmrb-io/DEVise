@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-2001
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.65  2001/08/03 18:12:53  wenger
+#  Removed all OpenGL-related code.
+#
 #  Revision 1.64  1999/11/16 17:01:58  wenger
 #  Removed all DTE-related conditional compiles; changed version number to
 #  1.7.0 because of removing DTE; removed DTE-related schema editing and
@@ -232,21 +235,15 @@ BATCH_CFLAGS =$(BASIC_CFLAGS) -I../../csgroup
 
 # ksb: I created an unfortunate dependency from graphics to graphics.new
 # which caused -lgraphicsnew to be listed twice below...
-# dd: dte need stuff from Jussi's SBM which is in graphics.new
 
-	DTE_STUFF =
-	DTE_DEPEND =
-
-LDFLAGS = -L../DTE/ -L../RTree -L../graphics.new -L../graphics -L../tape \
+LDFLAGS = -L../graphics.new -L../graphics -L../tape \
 	-L../color -L../utils -L../issm -L../csgroup\
 	-L../crsp -L../compustat -L../xvertext \
 	-lgraphicsnew -lgraphics -lutils -lcolor \
-	-L../DataReader \
-	$(DTE_STUFF) -lgraphicsnew -lcsgroup \
+	-lgraphicsnew -lcsgroup \
 	-lXrot \
 	-lissm -lcrsp -lcstat -ltape \
-	-L../data -ldevdata \
-	$(ARCH_SYSLIBS)
+	-L../data -ldevdata
 
 TEST_LDFLAGS = -L../graphics -lgraphics -lutils -lcolor -lX11
 
@@ -267,7 +264,6 @@ OBJ += $(SRCC:.C=.o)
 ALLLIBS = ../utils/libutils.a ../color/libcolor.a \
 	../graphics/libgraphics.a \
 	../graphics.new/libgraphicsnew.a \
-	$(DTE_DEPEND) \
 	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \
 	../crsp/libcrsp.a ../xvertext/libXrot.a \
 	../data/libdevdata.a
@@ -285,8 +281,8 @@ FORCE_DATE = $(CC) -c $(CFLAGS) ../../generic/CompDate.c
 
 
 GENERIC = $(CC) -o $@ generic.o StateMap.o CompDate.o \
-		$(ARCH_LDFLAGS) -L../DTE -L../graphics.new \
-		-lmonolith $(LDFLAGS)
+	$(ARCH_LDFLAGS) \
+	-lmonolith $(LDFLAGS) $(ARCH_SYSLIBS)
 
 generic: generic.o StateMap.o $(ALLLIBS) $(MONOLITHLIB) $(SERVERLIB)
 	$(FORCE_DATE)
@@ -301,8 +297,9 @@ generic.static: generic.o StateMap.o $(ALLLIBS) $(MONOLITHLIB) $(SERVERLIB)
 	$(GENERIC) $(ARCH_STATIC_LDPOST)
 
 DEVISED = $(CC) -o $@ generic.o StateMap.o CompDate.o \
-		$(ARCH_LDFLAGS) -L../graphics.new\
-		-lserver $(LDFLAGS) $(ARCH_LDPOST) -lcsgroup -lclient
+	$(ARCH_LDFLAGS) \
+	-lserver $(LDFLAGS) $(ARCH_D_SYSLIBS) $(ARCH_D_LDPOST) -lcsgroup \
+	-lclient
 
 devised: generic.o StateMap.o $(ALLLIBS) $(SERVERLIB) 
 	$(FORCE_DATE)
@@ -311,7 +308,6 @@ devised: generic.o StateMap.o $(ALLLIBS) $(SERVERLIB)
 devised.pure: generic.o StateMap.o $(ALLLIBS) $(SERVERLIB)
 	$(FORCE_DATE)
 	$(PURIFY) $(PURE_OPT) $(DEVISED)
-
 
 DEVISE = $(CC) -o $@ devise.o DeviseClient.o ../graphics.new/Version.o \
 	$(ARCH_LDFLAGS) -L../csgroup -L../graphics -L../graphics.new \
@@ -353,7 +349,6 @@ deviseb: deviseb.o DeviseBatchClient.o $(CLIENTLIB)
 deviseb.pure: deviseb.o DeviseBatchClient.o $(CLIENTLIB)
 	$(FORCE_DATE)
 	$(PURIFY) $(PURE_OPT) $(DEVISEB)
-
 
 TESTWS = $(CC) -o $@ testWindowSpeed.o ../graphics.new/MapIntToInt.o \
 	../graphics.new/Version.o CompDate.o $(ARCH_LDFLAGS) \

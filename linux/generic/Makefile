@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1995
+#  (c) Copyright 1992-2001
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16  2001/08/03 18:13:22  wenger
+#  Removed all OpenGL-related code.
+#
 #  Revision 1.15  1999/07/12 19:02:39  wenger
 #  Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
 #
@@ -88,14 +91,11 @@
 
 include ../Makefile.config
 
-#ARCH_LDFLAGS = -L/usr/lib -L/usr/X11R6/lib
-ARCH_LDFLAGS = -L/home/zhenhai/Mesa-2.4/lib -Xlinker -rpath -Xlinker /home/zhenhai/Mesa-2.4/lib -L/usr/lib -L/usr/X11R6/lib
-#ARCH_SYSLIBS = -L../graphics -ltk4.0 -ltcl7.4 -lX11 -lm
-#ARCH_SYSLIBS = -L../graphics -ltcl7.5 -ldl -lX11 -lm
-#ARCH_SYSLIBS = -L../graphics -ltk4.2 -ltcl7.6 -lX11 -lm
-ARCH_SYSLIBS = -L../graphics -ltk8.0 -ltcl8.0 -lX11 -lm -ldl
-#ARCH_SYSLIBS =  -lMesaGLU -lMesaGL -ltk4.2 -ltcl7.6 -ldl -lXaw -lXt -lXmu -lX11 -lm
+ARCH_LDFLAGS = -L/usr/lib -L/usr/X11R6/lib
+ARCH_D_SYSLIBS = -lX11 -lm -ldl
+ARCH_SYSLIBS = -ltk8.0 -ltcl8.0 $(ARCH_D_SYSLIBS)
 ARCH_LDPOST  = 
+ARCH_D_LDPOST  = -static
 # to make everything statically-linked...
 #ARCH_LDPOST  = -static
 ARCH_STATIC_LDPOST  = -static
