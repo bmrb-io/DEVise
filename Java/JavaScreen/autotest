@@ -1,0 +1,97 @@
+#! /bin/csh -f
+ 
+# Check the arguments.
+if ($#argv != 1) then
+  echo "Usage: autotest [all | test1 | test2]"
+  echo "                all   -- full testing"
+  echo "                test1 -- auto collaboration and most JAVAC commands"
+  echo "                test2 -- enforced client switch and pre-collab state restore"
+  exit
+endif
+
+# Kill all jspop, jss, and devised
+./kill_jsall
+rm jspop_pid:* jss_pid:* devised_pid:*
+
+# Restart one "regular" jspop and associated processes
+./restart_jspop 
+
+sleep 20
+
+# Get the pids
+set jspop_pid = `ls jspop_pid:* | cut -d':' -f4`
+set jss_pid = `ls jss_pid:* | cut -d':' -f4`
+set devised_pid = `ls devised_pid:* | cut -d':' -f4` 
+
+set success = 1
+
+if ($argv[1] == "all") then
+    ./test1
+    sleep 10
+    ./test2
+endif
+
+if ($argv[1] == "test1") then
+    ./test1
+endif
+
+if ($argv[1] == "test2") then
+    ./test2
+endif
+
+# Check the status of jspop, jss and devised
+set jspop = `ps -p $jspop_pid | grep $jspop_pid`
+set jss = `ps -p $jss_pid | grep $jss_pid`
+set devised = `ps -p $devised_pid | grep $devised_pid`
+
+if ("$jspop" != "") then
+    echo "jspop -- OK"
+else
+    echo "Error found with jspop. Please check logs/jspop.out.regular."
+    set success = 0
+endif
+
+if ("$jss" != "") then
+    echo "jss -- OK"
+else
+    echo "Error found with jss. Please check logs/jss.out.regular."
+    set success = 0
+endif
+
+if ("$devised" != "") then
+    echo "devised -- OK"
+else
+    echo "Error found with devised. Please check logs/devised.out.regular."
+    set success = 0
+endif
+
+if ($success == 1) then
+    echo "\nTested JavaScreen-Related Commands:\n"
+    echo "1. JavaScreen to JSPoP"
+    echo "   JAVAC_Connect\t JAVAC_GetServerState\t JAVAC_GetCollabList"
+    echo "   JAVAC_SetCollabPass\t JAVAC_Collaborate\t JAVAC_DisableCollab"
+    echo "   JAVAC_SaveCurSession\t JAVAC_ReOpenSession\t \n"
+    echo "2. JSPoP to JavaScreen"
+    echo "   JAVAC_User\t JAVAC_Ack\t JAVAC_UpdateServerState"
+    echo "   JAVAC_CollabState\t JAVAC_InitCollaboration\t JAVAC_UpdateJS"
+    echo "   JAVAC_CloseCollabDlg\t JAVAC_CollabExit\t JAVAC_Set3DConfig"
+    echo "   JAVAC_Hide_All_View_Help\t \n"
+    echo "3. JavaScreen to devised (via JSPoP)"
+    echo "   JAVAC_GetSessionList\t JAVAC_Exit\t JAVAC_CloseCurrentSession"
+    echo "   JAVAC_OpenSession\t JAVAC_ShowRecords\t JAVAC_MouseAction_RubberBand"
+    echo "   JAVAC_SetDisplaySize\t JAVAC_CursorChanged\t JAVAC_ProtocolVersion"
+    echo "   JAVAC_KeyAction\t JAVAC_GetViewHelp\t JAVAC_ResetFilters\n"
+    echo "4. Devised to JavaScreen (via JSPoP)"
+    echo "   JAVAC_UpdateSessionLise\t JAVAC_UpdateRecordValue\t JAVAC_CreateView"
+    echo "   JAVAC_DrawCursor\t JAVAC_ViewDataArea\t JAVAC_UpdateViewImage"
+    echo "   JAVAC_UpdateGData\t JAVAC_DeleteChildViews\t JAVAC_DeleteView\n"
+    echo "5. Status report"
+    echo "   JAVAC_Done\t JAVAC_Error\t JAVAC_Fail\n"
+endif
+
+exit(0)
+
+
+
+
+

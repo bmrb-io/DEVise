@@ -2,7 +2,7 @@
         $Id$
 
 Version: this document refers to the JavaScreen communication protocol
-version 10.1.
+version 11.0.
 
 
 For the details of the format in which commands are send on the socket,
@@ -65,7 +65,7 @@ see comments in DEViseCommSocket.java.
 
     2.7 JAVAC_SaveCurSession
     Purpose: Save the current session when a user goes into collaboration
-             mode during a session is open.
+             mode and they already have a session open.
     Arguments: 0
 
     2.8 JAVAC_ReopenSession
@@ -93,6 +93,9 @@ see comments in DEViseCommSocket.java.
         <do home>: 0 = don't do home on changed views; 1 = do home on changed
 	           views
 
+    2.12 JAVAC_DisableCollab
+    Purpose: Collaboration leader decides to exit from collaboration status.
+    Arguments: 0
 
 3. JSPoP to JavaScreen
 
@@ -155,6 +158,15 @@ see comments in DEViseCommSocket.java.
     Purpose: notify the user to reset collaboration name, due to
 	     same name has already existed.
     Arguments: 0
+
+    3.11 JAVAC_Hide_All_View_Help
+    Purpose: notify the collaboration followers to hide all view helps.
+    Arguments: 0
+
+    3.11 JAVAC_Close_Collab_Dlg
+    Purpose: notify the collaboration followers to close dialog.
+    Arguments: 0
+
 
 4. JavaScreen to devised (via JSPoP)
 
@@ -226,12 +238,14 @@ see comments in DEViseCommSocket.java.
         <view name>: name of the view in which the key press occurred.
         <key>: the key that was pressed (integer value sent as string).
 
-    4.9 JAVAC_SaveSession
+    4.9 JAVAC_SaveTmpSession
     Purpose: tells the devised to save the current session to the specified
              file.
              Notes: currently only used by JSPoP
     Arguments: 1 or 2
-        <session file>: file to which the session should be saved.
+        <session file>: file to which the session should be saved (path is
+                        relative to the temporary session directory
+                        defined by $DEVISE_TMP_SESSION).
         <save selected view>: optional. 1 if the session should save which
                               view is selected, 0 otherwise. default is 0
                               if empty.
@@ -308,6 +322,31 @@ see comments in DEViseCommSocket.java.
 	<data matrix>: 9 floats indicating current data[3][3] matrix
 	<origin>: 3 floats indicating current origin[3] matrix
 	<shifted>: 2 ints indicating current shifted X, Y position
+
+    4.19 JAVAC_CreateTmpSessionDir
+    Purpose: Create a directory to hold temporary session files for clients
+             associated with this JSPoP.  If the temporary session directory
+	     already exists, all files in the directory will be deleted.
+	     (Note: the JSPoP hostname and command port are used to ensure
+	     that the directory names are unique in case there are multiple
+	     JSPoPs.)
+    Arguments: 2
+	<JSPoP hostname>: hostname of the JSPoP.
+	<JSPoP cmd port>: command port of the JSPoP.
+
+    4.20 JAVAC_OpenTmpSession
+    Purpose: tells the devised to open the specified session file.  Unlike
+             JAVAC_OpenSession, this command does not have an option to
+             return a list of available session files.
+    Arguments: 1
+        <session file>: path of session file to open, relative to
+                        $DEVISE_TMP_SESSION.
+
+    4.21 JAVAC_DeleteTmpSession
+    Purpose: tells the devised to delete the specified session file.
+    Arguments: 1
+        <session file>: path of session file to delete, relative to
+                        $DEVISE_TMP_SESSION.
 
 
 5. Devised to JavaScreen (via JSPoP)

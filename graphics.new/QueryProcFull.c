@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.103.10.1  2002/04/30 17:48:11  wenger
+  More improvements to 'home' functionality, especially on QPFull_X
+  queries.
+
+  Revision 1.103  2001/05/24 18:42:02  wenger
+  Fixed bug 674 (drill-down doesn't work correctly on record link follower
+  views).
+
   Revision 1.102  2001/05/18 21:14:59  wenger
   Fixed bug 671 (potential GData buffer overflow).
 
@@ -1562,8 +1570,15 @@ void QueryProcFull::EndQuery(QPFullData *query)
 #endif
   ReportQueryElapsedTime(query);
   if( query->callback != NULL ) {
+    Boolean allDataReturned = (query->qType == QPFull_Scatter);
+    RecId firstRec, lastRec;
+    query->tdata->HeadID(firstRec);
+    query->tdata->LastID(lastRec);
+    if (query->low == firstRec && query->high == lastRec) {
+      allDataReturned = true;
+    }
     query->callback->QueryDone(query->bytes, query->userData,
-      query->qType == QPFull_Scatter, query->map);
+      allDataReturned, query->map);
   }
 #if DEBUG_NEG_LINKS
   printf("****************************EndQuery %p (slave : %d) \n", query,

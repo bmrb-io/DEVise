@@ -216,7 +216,7 @@ if (-e bin2) then
 endif
 tar xf $curdir/bin2.tar
 chmod 755 bin2
-chmod 755 bin2/*
+chmod 644 bin2/java
 cd $curdir
 rm bin2.tar
 
@@ -261,7 +261,7 @@ if ($popdir != $servdir) then
   endif
   tar xf $curdir/bin2p.tar
   chmod 755 bin2p
-  chmod 755 bin2p/*
+  chmod 644 bin2p/java
   mv bin2p bin2
 endif
 
@@ -271,7 +271,7 @@ if (-e bin2) then
 endif
 tar xf $curdir/bin2p.tar
 chmod 755 bin2p
-chmod 755 bin2p/*
+chmod 644 bin2p/java
 mv bin2p bin2
 
 cd $curdir

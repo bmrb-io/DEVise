@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.29.4.1  2002/04/30 17:48:11  wenger
+  More improvements to 'home' functionality, especially on QPFull_X
+  queries.
+
+  Revision 1.29  2001/12/28 18:34:40  wenger
+  Fixed bugs 727 and 730 (problems with line graphs in DEVise).
+
   Revision 1.28  2001/07/19 17:19:49  wenger
   Fixed bug in home on linked/piled views.
 
@@ -250,7 +257,8 @@ ViewData::QueryDone(int bytes, void* userData, Boolean allDataReturned,
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 1)
-  printf("ViewData(%s)::QueryDone(%d)\n", GetName(), bytes);
+  printf("ViewData(%s)::QueryDone(%d, %d)\n", GetName(), bytes,
+      allDataReturned);
 #endif
 
   int index = _derivedTables.InitIterator();

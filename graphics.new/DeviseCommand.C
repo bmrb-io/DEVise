@@ -20,6 +20,37 @@
   $Id$
 
   $Log$
+  Revision 1.125.4.1  2002/04/18 17:25:42  wenger
+  Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
+  temporary session files when the JSPoP and DEViseds are on different
+  machines).  Note: JS protocol version is now 11.0.
+
+  Revision 1.125.8.4  2002/04/18 15:41:23  wenger
+  Further cleanup of JavaScreen temporary session file code (added
+  JAVAC_DeleteTmpSession command) (includes fixing bug 774).
+
+  Revision 1.125.8.3  2002/04/17 20:14:47  wenger
+  Implemented new JAVAC_OpenTmpSession command to go along with
+  JAVAC_SaveTmpSession (so the JSPoP doesn't need to have any info about
+  the path of the temporary session directory relative to the base
+  session directory).
+
+  Revision 1.125.8.2  2002/04/17 19:14:10  wenger
+  Changed JAVAC_SaveSession command to JAVAC_SaveTmpSession (path is
+  now relative to temp session directory, not main session directory).
+
+  Revision 1.125.8.1  2002/04/17 17:46:26  wenger
+  DEVised, not JSPoP, now does the actual work of creating or clearing
+  the temporary session directory (new command from client to DEVised
+  means that communication protocol version is now 11.0).  (Client
+  switching is not working yet with this code because I need to change
+  how temporary sessions are saved and loaded.)
+
+  Revision 1.125  2001/12/13 21:35:54  wenger
+  Added flexibility to enable/disable mouse location display individually
+  for X and Y axes (needed for peptide-cgi session improvements requested
+  by John Markley).
+
   Revision 1.124  2001/11/28 21:56:42  wenger
   Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
 
@@ -857,8 +888,8 @@ IMPLEMENT_COMMAND_BEGIN(JAVAC_KeyAction)
 	return jc.Run();
 IMPLEMENT_COMMAND_END
 
-IMPLEMENT_COMMAND_BEGIN(JAVAC_SaveSession)
-	JavaScreenCmd jc(_control,JavaScreenCmd::SAVESESSION,
+IMPLEMENT_COMMAND_BEGIN(JAVAC_SaveTmpSession)
+	JavaScreenCmd jc(_control,JavaScreenCmd::SAVETMPSESSION,
 		argc-1, &argv[1]);
 	return jc.Run();
 IMPLEMENT_COMMAND_END
@@ -923,6 +954,23 @@ IMPLEMENT_COMMAND_BEGIN(JAVAC_RefreshData)
 	return jc.Run();
 IMPLEMENT_COMMAND_END
 
+IMPLEMENT_COMMAND_BEGIN(JAVAC_CreateTmpSessionDir)
+	JavaScreenCmd jc(_control,JavaScreenCmd::CREATE_TMP_SESSION_DIR,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_OpenTmpSession)
+	JavaScreenCmd jc(_control,JavaScreenCmd::OPEN_TMP_SESSION,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_DeleteTmpSession)
+	JavaScreenCmd jc(_control,JavaScreenCmd::DELETE_TMP_SESSION,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
 
 
 //TEMP -- all commands should check arg count

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2001
+// (c) Copyright 2000-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,45 @@
 // $Id$
 
 // $Log$
+// Revision 1.19.2.3  2002/04/18 17:25:10  wenger
+// Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
+// temporary session files when the JSPoP and DEViseds are on different
+// machines).  Note: JS protocol version is now 11.0.
+//
+// Revision 1.19.2.2.2.4  2002/04/18 15:40:59  wenger
+// Further cleanup of JavaScreen temporary session file code (added
+// JAVAC_DeleteTmpSession command) (includes fixing bug 774).
+//
+// Revision 1.19.2.2.2.3  2002/04/17 20:14:31  wenger
+// Implemented new JAVAC_OpenTmpSession command to go along with
+// JAVAC_SaveTmpSession (so the JSPoP doesn't need to have any info about
+// the path of the temporary session directory relative to the base
+// session directory).
+//
+// Revision 1.19.2.2.2.2  2002/04/17 19:13:54  wenger
+// Changed JAVAC_SaveSession command to JAVAC_SaveTmpSession (path is
+// now relative to temp session directory, not main session directory).
+//
+// Revision 1.19.2.2.2.1  2002/04/17 17:45:53  wenger
+// DEVised, not JSPoP, now does the actual work of creating or clearing
+// the temporary session directory (new command from client to DEVised
+// means that communication protocol version is now 11.0).  (Client
+// switching is not working yet with this code because I need to change
+// how temporary sessions are saved and loaded.)
+//
+// Revision 1.19.2.2  2002/04/04 21:16:07  xuk
+// Fixed bug 768: collaboration followers can close dialog automatically.
+// Added new command Close_Collab_Dlg.
+//
+// Revision 1.19.2.1  2002/04/03 17:42:18  xuk
+// Fixed bug 766: Hide view help for collaboration followers.
+// Add HIDE_ALL_VIEW_HELP command.
+//
+// Revision 1.19  2002/03/20 22:14:40  xuk
+// Added automatic collaboration functionality.
+// Added Reset_Collab_Name command
+// Changed the argument format of Collaborate and Clients commands.
+//
 // Revision 1.18  2002/03/01 19:58:53  xuk
 // Added new command DEViseCommands.UpdateJS to update JavaScreen after
 // a DEViseCommands.Open_Session or DEViseCommands.Close_Session command.
@@ -136,15 +175,22 @@ public final class DEViseCommands
 
     public static final String CLIENTS = JS_PREFIX + "Clients";
 
-    public static final String CLOSE_SESSION = JS_PREFIX + "CloseCurrentSession";
+    public static final String CLOSE_COLLAB_DLG = JS_PREFIX + 
+      "Close_Collab_Dlg";
+
+    public static final String CLOSE_SESSION = JS_PREFIX +
+      "CloseCurrentSession";
 
     public static final String COLLAB_EXIT = JS_PREFIX + "CollabExit";
 
-    public static final String COLLABORATE = JS_PREFIX + "Collaborate";
-
     public static final String COLLAB_STATE = JS_PREFIX + "CollabState";
 
+    public static final String COLLABORATE = JS_PREFIX + "Collaborate";
+
     public static final String CONNECT = JS_PREFIX + "Connect";
+
+    public static final String CREATE_TMP_SESSION_DIR = JS_PREFIX +
+        "CreateTmpSessionDir";
 
     public static final String CREATE_VIEW = JS_PREFIX + "CreateView";
 
@@ -152,6 +198,9 @@ public final class DEViseCommands
 
     public static final String DELETE_CHILD_VIEWS = JS_PREFIX +
       "DeleteChildViews";
+
+    public static final String DELETE_TMP_SESSION = JS_PREFIX +
+      "DeleteTmpSession";
 
     public static final String DELETE_VIEW = JS_PREFIX + "DeleteView";
 
@@ -179,6 +228,9 @@ public final class DEViseCommands
 
     public static final String HEART_BEAT = JS_PREFIX + "HeartBeat";
 
+    public static final String HIDE_ALL_VIEW_HELP = JS_PREFIX + 
+      "Hide_All_View_Help";
+
     public static final String INIT_COLLAB = JS_PREFIX + "InitCollaboration";
 
     public static final String KEY_ACTION = JS_PREFIX + "KeyAction";
@@ -188,9 +240,14 @@ public final class DEViseCommands
 
     public static final String OPEN_SESSION = JS_PREFIX + "OpenSession";
 
+    public static final String OPEN_TMP_SESSION = JS_PREFIX + "OpenTmpSession";
+
     public static final String PROTOCOL_VERSION = JS_PREFIX + "ProtocolVersion";
 
     public static final String REFRESH_DATA = JS_PREFIX + "RefreshData";
+
+    public static final String RESET_COLLAB_NAME = JS_PREFIX + 
+	"Reset_Collab_Name";
 
     public static final String RESET_FILTERS = JS_PREFIX + "ResetFilters";
 
@@ -198,7 +255,7 @@ public final class DEViseCommands
 
     public static final String SAVE_CUR_SESSION = JS_PREFIX + "SaveCurSession";
 
-    public static final String SAVE_SESSION = JS_PREFIX + "SaveSession";
+    public static final String SAVE_TMP_SESSION = JS_PREFIX + "SaveTmpSession";
 
     public static final String SET_3D_CONFIG = JS_PREFIX + "Set3DConfig";
 
@@ -232,8 +289,6 @@ public final class DEViseCommands
 
     public static final String UPDATEJS = JS_PREFIX + "UpdateJS";
     
-    public static final String RESET_COLLAB_NAME = JS_PREFIX + 
-	"Reset_Collab_Name";
     // -------------------------------------------------------------------
     // JSS commands.
 

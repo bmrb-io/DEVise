@@ -20,6 +20,37 @@
 // $Id$
 
 // $Log$
+// Revision 1.66.2.5  2002/04/18 17:25:10  wenger
+// Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
+// temporary session files when the JSPoP and DEViseds are on different
+// machines).  Note: JS protocol version is now 11.0.
+//
+// Revision 1.66.2.4.2.1  2002/04/17 17:45:54  wenger
+// DEVised, not JSPoP, now does the actual work of creating or clearing
+// the temporary session directory (new command from client to DEVised
+// means that communication protocol version is now 11.0).  (Client
+// switching is not working yet with this code because I need to change
+// how temporary sessions are saved and loaded.)
+//
+// Revision 1.66.2.4  2002/04/15 14:44:27  wenger
+// Changed kill interval to 24 hours (how long with no heartbeat before we
+// kill a client).
+//
+// Revision 1.66.2.3  2002/04/12 16:08:49  wenger
+// Lots of cleanup to the heartbeat checking code -- tested killing a
+// client because the heartbeat timeout expired, and because we have
+// too many clients.
+//
+// Revision 1.66.2.2  2002/04/04 21:21:16  xuk
+// Fixed bug 768: collaboration follower can close dialog automatically.
+// PROTOCOL_VERSION = 10.3.
+//
+// Revision 1.66.2.1  2002/04/03 23:33:51  xuk
+// Fixed bug 766.
+//
+// Revision 1.66  2002/03/07 17:18:31  xuk
+// Destroy jsa applet when it's invisible longer than one hour.
+//
 // Revision 1.65  2002/03/06 18:56:50  wenger
 // Changed JavaScreen protocol version from 11.0 to 10.1 (to allow backwards
 // compatibility with previous DEVised, because the new JAVAC_UpdateJS
@@ -288,16 +319,22 @@ public final class DEViseGlobals
     public static final String JSPOPHOST = new String("localhost");
     public static final String VERSION = new String("5.0");
 
-    public static final String PROTOCOL_VERSION = new String("10.1");
+    public static final String PROTOCOL_VERSION = new String("11.0");
 
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");
     public static final String DEFAULTHOST = new String("localhost");
 
-    public static final int CHECKINTERVAL = 600000, // check interval for dead JS, 10 minutes
-	                    KILLINTERVAL = 3600000, // kill a JS for not response after 60 minutes
-	                    DEFAULTMAXCLIENT = 100; // default value for maximum number of clients
+    // If we haven't gotten a heartbeat from a JavaScreen in this interval
+    // (in milliseconds) we'll kill the client object on the assumption that
+    // the JavaScreen has died.
+    public static final int KILLINTERVAL = 24 * 60 * 60 * 1000;
+
+    // The default value for the maximum number of clients we allow (once we
+    // reach that value, we kill off the oldest client each time a new
+    // client connects).
+    public static final int DEFAULTMAXCLIENT = 100;
 
     // global variables
 

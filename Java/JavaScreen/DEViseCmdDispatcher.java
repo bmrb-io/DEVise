@@ -23,6 +23,47 @@
 // $Id$
 
 // $Log$
+// Revision 1.120.2.9  2002/04/19 20:50:48  xuk
+// Add new testings in autotest: enforced client switching, restore pre-collab
+// states for JS;
+// Split autotest scripts into 2 parts.
+//
+// Revision 1.120.2.8  2002/04/18 17:25:10  wenger
+// Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
+// temporary session files when the JSPoP and DEViseds are on different
+// machines).  Note: JS protocol version is now 11.0.
+//
+// Revision 1.120.2.7.2.1  2002/04/18 15:40:58  wenger
+// Further cleanup of JavaScreen temporary session file code (added
+// JAVAC_DeleteTmpSession command) (includes fixing bug 774).
+//
+// Revision 1.120.2.7  2002/04/15 19:05:04  xuk
+// *** empty log message ***
+//
+// Revision 1.120.2.6  2002/04/15 18:57:53  xuk
+// Autotest improvement: catch JAVAC_Error and JAVAC_FAIL commands in JS, and display the error messages to stderr.
+//
+// Revision 1.120.2.5  2002/04/12 15:56:51  xuk
+// Improvement for autotest.
+//
+// Revision 1.120.2.4  2002/04/08 20:50:23  xuk
+// In auto play or auto test, ServerState Dialog is started by a seperate thread.
+// It's closed after 5 seconds, without user's action.
+//
+// Revision 1.120.2.3  2002/04/04 21:15:08  xuk
+// Fixed bug 768: collaboration follower can close dialog automatically.
+// in processReceivedCommand(), process Close_Collab_Dlg and Update_Record_Value commands.
+//
+// Revision 1.120.2.2  2002/04/03 17:41:36  xuk
+// Fixed bug 766: Hide view help for collaboration followers.
+// In processReceivedCommand(), process Hide_All_View_Help command.
+//
+// Revision 1.120.2.1  2002/04/02 22:51:24  xuk
+// Fixed bug 762 and 763.
+//
+// Revision 1.120  2002/03/20 22:08:16  xuk
+// Added automatic collaboration functionality.
+//
 // Revision 1.119  2002/03/01 19:58:53  xuk
 // Added new command DEViseCommands.UpdateJS to update JavaScreen after
 // a DEViseCommands.Open_Session or DEViseCommands.Close_Session command.
@@ -561,6 +602,8 @@ public class DEViseCmdDispatcher implements Runnable
 
     private DEViseHeartbeat _heartbeat = null;
 
+    private DEViseCollabDlg collabdlg = null;
+
     public String errMsg = null;
 
     // status = 0, dispatcher is not running
@@ -639,7 +682,8 @@ public class DEViseCmdDispatcher implements Runnable
         }
 
         if (getStatus() != 0) {
-            if (!cmd.startsWith(DEViseCommands.HEART_BEAT))
+            if (!cmd.startsWith(DEViseCommands.HEART_BEAT) && 
+		!jsc.jsValues.session.autoPlayback)
 		jsc.showMsg("JavaScreen is busy working\nPlease try again later");
             return;
         }
@@ -704,9 +748,9 @@ public class DEViseCmdDispatcher implements Runnable
 	    _connectedAlready = true;
 
 	    // Start the heartbeat thread.
-	    // if (jsc.specialID == -1) {
-	    _heartbeat = new DEViseHeartbeat(this);
-	    // }
+	    if (!jsc.jsValues.session.autoPlayback) {
+		_heartbeat = new DEViseHeartbeat(this);
+	    }
         }
 
 	commands = DEViseGlobals.parseStr(cmd);
@@ -814,6 +858,11 @@ public class DEViseCmdDispatcher implements Runnable
 
                 jsc.pn("Sending: \"" + DEViseCommands.EXIT +"\"");
                 sendCmd(DEViseCommands.EXIT);
+		// Try to prevent "Abrupt end of input stream" errors at
+		// the JSPoP.
+		Thread.sleep(2000);
+	    } catch (InterruptedException ex) {
+	        System.err.println("Sleep interrupted: " + ex.getMessage());
             } catch (YException e) {
                 jsc.showMsg(e.getMsg());
             }
@@ -1093,6 +1142,12 @@ public class DEViseCmdDispatcher implements Runnable
         } else if (args[0].equals(DEViseCommands.FAIL)) {
             jsc.showMsg(response);
             jsc.jscreen.updateScreen(false);
+
+	    // for autotest detection
+	    if (jsc.jsValues.session.autoPlayback) {
+		System.err.println("\nError found with JavaScreen: " +
+				   response);
+	    }
 	    
         } else if (args[0].equals(DEViseCommands.CLOSE_SESSION)) {
             // this command is for collaboration JS
@@ -1100,11 +1155,10 @@ public class DEViseCmdDispatcher implements Runnable
 
         } else if (args[0].equals(DEViseCommands.ERROR)) {
             // this command will guaranteed to be the last
-	    
 	    if (jsc.specialID != -1) {
                 // a collaborator
 		jsc.showMsg(response);
-		
+
 		jsc.socketMode();
 		jsc.specialID = -1;
 		jsc.collabinterrupted = true;
@@ -1123,6 +1177,13 @@ public class DEViseCmdDispatcher implements Runnable
 		    jsc.showSession(new String[] {response}, false);
 		}
 	    }
+
+	    // for autotest detection
+	    if (jsc.jsValues.session.autoPlayback) {
+		System.err.println("\nError found with JavaScreen: " +
+				   response);
+	    }
+
         } else if (args[0].equals(DEViseCommands.SET_DISPLAY_SIZE)) {
             jsc.setDisplaySize(response);
 
@@ -1131,6 +1192,7 @@ public class DEViseCmdDispatcher implements Runnable
 
         } else if (args[0].equals(DEViseCommands.INIT_COLLAB)) {
 	    jsc.collabInit(Integer.parseInt(args[1]));
+
         } else if (args[0].equals(DEViseCommands.COLLAB_EXIT)) {
 	    jsc.collabQuit();
 	    //TEMP -- should the stuff below all get moved into collabQuit()?
@@ -1138,10 +1200,34 @@ public class DEViseCmdDispatcher implements Runnable
 	    jsc.restoreDisplaySize();
 	    jsc.restorePreCollab();
         } else if (args[0].equals(DEViseCommands.COLLAB_STATE)) {
-            if (jsc.specialID == -1) { // only for normal JS	    
-		jsc.showCollabState(response);
-            }
+            if (jsc.specialID == -1) { // for normal JS
+		if (! jsc.jsValues.session.autoPlayback) {
+		    jsc.showCollabState(response);
+		} else {
+		    // for auto playback and auto test
+		    collabdlg = new DEViseCollabDlg(jsc, 3, response);
+		    // close dialog after 5 sec.
 
+		    try {
+			Thread.sleep(5000);
+		    } catch (InterruptedException e) {
+		    }
+
+		    collabdlg.stop();
+		    collabdlg = null;
+
+		    // close followers dialog
+		    if (jsc.isCollab) {
+			try {
+			    sockSendCmd(DEViseCommands.CLOSE_COLLAB_DLG);
+			} catch (YException ex) {
+			    System.out.println(ex.getMessage());
+			}
+		    }
+		}	
+            } else { // for collaboration followers
+		collabdlg = new DEViseCollabDlg(jsc, 3, response);
+	    } 
         } else if (args[0].equals(DEViseCommands.UPDATE_SERVER_STATE)) {
             if (args.length != 2) {
                 throw new YException(
@@ -1149,9 +1235,34 @@ public class DEViseCmdDispatcher implements Runnable
                   response + "\"", "DEViseCmdDispatcher::processCmd()", 2);
             }
 
-            if (jsc.specialID == -1) { // only for normal JS
-		jsc.showServerState(args[1]);
-            }
+            if (jsc.specialID == -1) { // for normal JS
+		if (! jsc.jsValues.session.autoPlayback) {
+		    jsc.showServerState(args[1]);
+		} else {
+		    // for auto playback and auto test
+		    collabdlg = new DEViseCollabDlg(jsc, 2, args);
+		    // close dialog after 5 sec.
+
+		    try {
+			Thread.sleep(5000);
+		    } catch (InterruptedException e) {
+		    }
+
+		    collabdlg.stop();
+		    collabdlg = null;
+
+		    // close followers dialog
+		    if (jsc.isCollab) {
+			try {
+			    sockSendCmd(DEViseCommands.CLOSE_COLLAB_DLG);
+			} catch (YException ex) {
+			    System.out.println(ex.getMessage());
+			}
+		    }
+		}	
+            } else { // for collaboration followers
+		collabdlg = new DEViseCollabDlg(jsc, 2, args);
+	    } 
 
         } else if (args[0].equals(DEViseCommands.CREATE_VIEW)) {
 	    createView(response, args);
@@ -1166,7 +1277,7 @@ public class DEViseCmdDispatcher implements Runnable
 	    // Number of arguments is variable.
 	    if (jsc.specialID == -1) { // only for normal JS 
 		jsc.showSession(args, true);
-            }
+            } 
 
         } else if (args[0].equals(DEViseCommands.DRAW_CURSOR)) {
 	    drawCursor(response, args);
@@ -1182,7 +1293,40 @@ public class DEViseCmdDispatcher implements Runnable
 
         } else if (args[0].equals(DEViseCommands.UPDATE_RECORD_VALUE)) {
 	    // Number of arguments is variable.
-            jsc.showRecord(args);
+            if (jsc.specialID == -1) { // for normal JS
+		if (! jsc.jsValues.session.autoPlayback) {
+		    jsc.showRecord(args);
+		} else {
+		    // for auto playback and auto test
+		    collabdlg = new DEViseCollabDlg(jsc, 1, args);
+		    // close dialog after 5 sec.
+
+		    try {
+			Thread.sleep(5000);
+		    } catch (InterruptedException e) {
+		    }
+
+		    collabdlg.stop();
+		    collabdlg = null;
+
+		    // close followers dialog
+		    if (jsc.isCollab) {
+			try {
+			    sockSendCmd(DEViseCommands.CLOSE_COLLAB_DLG);
+			} catch (YException ex) {
+			    System.out.println(ex.getMessage());
+			}
+		    }
+		}	
+            } else { // for collaboration followers
+		collabdlg = new DEViseCollabDlg(jsc, 1, args);
+	    } 
+
+        } else if (args[0].equals(DEViseCommands.CLOSE_COLLAB_DLG)) {
+	    if (collabdlg != null) {
+		collabdlg.stop();
+		collabdlg = null;
+	    }
 
         } else if (args[0].equals(DEViseCommands.VIEW_DATA_AREA)) {
 	    viewDataArea(response, args);
@@ -1222,6 +1366,9 @@ public class DEViseCmdDispatcher implements Runnable
                jsc.showViewDialogHelp(args[2]);
                jsc.jsValues.connection.helpBox = false ;
             }
+
+        } else if (args[0].equals(DEViseCommands.HIDE_ALL_VIEW_HELP)) {
+	    jsc.jscreen.hideAllHelp();
 
         } else if (args[0].equals(DEViseCommands.SET_3D_CONFIG)) {
             // this command is for collaboration JS
@@ -1618,9 +1765,6 @@ public class DEViseCmdDispatcher implements Runnable
 
     private void viewDataArea(String command, String[] args) throws YException
     {
-
-	// if (args.length < 5 || args.length > 12) {
-
         if (args.length != 12) {
             throw new YException(
               "Ill-formated command received from server \"" + command +
@@ -1634,29 +1778,21 @@ public class DEViseCmdDispatcher implements Runnable
             float max = (Float.valueOf(args[4])).floatValue();
 
             // Ven - for mouse display format string
-            String format = null;
-            if (args.length >= 6) {
-		format = args[5];
-            } 
-	    
-	    float factor = 1;
-	    if (args.length == 7) {
-		factor = (Float.valueOf(args[6])).floatValue();
-	    }
+            String format = args[5];
+	    float factor = Float.valueOf(args[6]).floatValue();
 
 	    int label = 0;
 	    int type = 0;
 	    int size = 0;
 	    int bold = 0;
 	    int italic = 0;
-	    if (args.length >= 8) {
-		label = (Integer.valueOf(args[7])).intValue();
-		type = (Integer.valueOf(args[8])).intValue();	
-		size = (Integer.valueOf(args[9])).intValue();
-		bold = (Integer.valueOf(args[10])).intValue();
-		italic = (Integer.valueOf(args[11])).intValue();			
-	    }	    
 
+	    label = (Integer.valueOf(args[7])).intValue();
+	    type = (Integer.valueOf(args[8])).intValue();	
+	    size = (Integer.valueOf(args[9])).intValue();
+	    bold = (Integer.valueOf(args[10])).intValue();
+	    italic = (Integer.valueOf(args[11])).intValue();		 
+	    
             jsc.jscreen.updateViewDataRange(viewname, viewaxis, min, max,
               format, factor, label, type, size, bold, italic);
         } catch (NumberFormatException e) {

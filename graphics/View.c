@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.241.4.1  2002/04/19 16:13:27  wenger
+  Fixed bug 775 (backspace in JS doesn't work after client switch)
+  (really a problem in the view history in the DEVised).
+
+  Revision 1.241  2002/02/05 19:32:33  wenger
+  Fixed bug 750 (problem with child view/pile combinations with an X
+  server with no backing store); added TEST_NO_BACKING_STORE code to
+  test this case even if we really do have backing store on the server.
+
   Revision 1.240  2001/12/13 21:35:46  wenger
   Added flexibility to enable/disable mouse location display individually
   for X and Y axes (needed for peptide-cgi session improvements requested
@@ -1512,6 +1521,10 @@ void View::SetVisualFilter(const VisualFilter &filter, Boolean registerEvent)
         filter.yLow, filter.xHigh, filter.yHigh, filter.flag);
 #endif
   }
+
+#if defined(DEBUG)
+  _filterQueue->Print(stdout);
+#endif
 }
 
 void View::GetVisualFilter(VisualFilter &filter)
@@ -3112,6 +3125,11 @@ void View::ClearHistory()
 
 void View::InsertHistory(VisualFilter &filter)
 {
+#if defined(DEBUG)
+  printf("View::InsertHistory((%g, %g), (%g, %g), %d)\n", filter.xLow,
+      filter.yLow, filter.xHigh, filter.yHigh, filter.flag);
+#endif
+
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   (void)_filterQueue->Enqueue(filter, filter.marked);
 }
@@ -3926,17 +3944,15 @@ void	View::Run(void)
     VisualFilter histFilter;
 	FilterQueue *fq = GetHistory();
 	fq->Get(fq->Size() - 1, histFilter);
-    if (histFilter.xLow != _filter.xLow ||
-	    histFilter.xHigh != _filter.xHigh ||
-		histFilter.yLow != _filter.yLow ||
-		histFilter.yHigh != _filter.yHigh) {
+    if (!dequal(histFilter.xLow, _filter.xLow, 1.0e-3, 1.0e-3) ||
+	    !dequal(histFilter.xHigh, _filter.xHigh, 1.0e-3, 1.0e-3) ||
+		!dequal(histFilter.yLow, _filter.yLow, 1.0e-3, 1.0e-3) ||
+		!dequal(histFilter.yHigh, _filter.yHigh, 1.0e-3, 1.0e-3)) {
       _filterQueue->Enqueue(_filter, _filter.marked);
-#if defined(DEBUG)
 	  char errBuf[256];
 	  sprintf(errBuf, "(warning) view <%s> current filter does not match "
 	      "last history filter", GetName());
 	  reportErrNosys(errBuf);
-#endif
 	}
 #if 0
 	printf("  histFilter: %d, (%g, %g), (%g, %g)\n", histFilter.flag,

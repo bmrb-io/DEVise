@@ -27,8 +27,12 @@ ln -s ../common/doc .
 ln -s ../common/lib .
 ln -s ../common/run .
 
-ln -s ../common/tcl .
-ln -s ../common/tk .
+set here = `pwd`
+mkdir tcl
+ssh cardinal "cp -p /s/tcl7.4/lib/tcl7.4/* $here/tcl"
+
+mkdir tk
+ssh cardinal "cp -p /s/tcl7.4/lib/tk4.0/* $here/tk"
 
 mkdir bin
 cd bin

@@ -20,6 +20,35 @@
   $Id$
 
   $Log$
+  Revision 1.70.4.1  2002/04/18 17:25:44  wenger
+  Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
+  temporary session files when the JSPoP and DEViseds are on different
+  machines).  Note: JS protocol version is now 11.0.
+
+  Revision 1.70.8.4  2002/04/18 15:41:24  wenger
+  Further cleanup of JavaScreen temporary session file code (added
+  JAVAC_DeleteTmpSession command) (includes fixing bug 774).
+
+  Revision 1.70.8.3  2002/04/17 20:14:48  wenger
+  Implemented new JAVAC_OpenTmpSession command to go along with
+  JAVAC_SaveTmpSession (so the JSPoP doesn't need to have any info about
+  the path of the temporary session directory relative to the base
+  session directory).
+
+  Revision 1.70.8.2  2002/04/17 19:14:11  wenger
+  Changed JAVAC_SaveSession command to JAVAC_SaveTmpSession (path is
+  now relative to temp session directory, not main session directory).
+
+  Revision 1.70.8.1  2002/04/17 17:46:27  wenger
+  DEVised, not JSPoP, now does the actual work of creating or clearing
+  the temporary session directory (new command from client to DEVised
+  means that communication protocol version is now 11.0).  (Client
+  switching is not working yet with this code because I need to change
+  how temporary sessions are saved and loaded.)
+
+  Revision 1.70  2001/11/28 21:56:42  wenger
+  Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
+
   Revision 1.69.6.1  2001/11/19 21:03:55  wenger
   Added JAVAC_RefreshData command and jsdevisec.refreshAllData method for
   Squid to be able to force DEVise to re-read all data and update the
@@ -477,9 +506,9 @@ DECLARE_CLASS_DeviseCommand_(JAVAC_KeyAction)
 DECLARE_CLASS_END
 
 //
-//Class definition: DeviseCommand_JAVAC_SaveSession
+//Class definition: DeviseCommand_JAVAC_SaveTmpSession
 //
-DECLARE_CLASS_DeviseCommand_(JAVAC_SaveSession)
+DECLARE_CLASS_DeviseCommand_(JAVAC_SaveTmpSession)
 DECLARE_CLASS_END
 
 //
@@ -540,6 +569,24 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(JAVAC_RefreshData)
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_CreateTmpSessionDir)
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_OpenTmpSession)
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_DeleteTmpSession)
 DECLARE_CLASS_END
 
 //-------------------------------------------------------------------------

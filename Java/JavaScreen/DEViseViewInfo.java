@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.55.2.1  2002/03/30 19:16:05  xuk
+// Fix bugs for displaying axis labels for very small values.
+//
+// Revision 1.55  2001/11/28 21:56:20  wenger
+// Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
+//
 // Revision 1.54.6.1  2001/11/21 23:35:36  wenger
 // Fixed bug 729 (JavaScreen problem displaying mouse location for date
 // axes).
@@ -223,22 +229,22 @@ public class DEViseViewInfo extends Panel
         jsc.validate();
     }
 
-    public static String viewParser(float x, String format){
-       String result = "" + x;
-       if(format  == null) return "" + x;
-      try{
-       //TEMP -- we should create a PrintfFormatter for each axis when
-       // the view is created, not each time we show the location!
-       PrintfFormatter pf = new PrintfFormatter(format);
-       result = pf.form((double) x);
-       return result;
-       }
-       catch(Exception e){
-	  e.printStackTrace();
+    public static String viewParser(float x, String format)
+    {
+	String result = "" + x;
+	if (format  == null) 
+	    return "" + x;
+	try{
+	    PrintfFormatter pf = new PrintfFormatter(format);
+	    result = pf.form((double) x);
+	    return result;
+	}
+	catch(Exception e){
+	    e.printStackTrace();
 	}
 	return result;
     }
-
+    
 }
 
 

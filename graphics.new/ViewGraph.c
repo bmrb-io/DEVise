@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,27 @@
   $Id$
 
   $Log$
+  Revision 1.152.4.3  2002/04/30 17:48:11  wenger
+  More improvements to 'home' functionality, especially on QPFull_X
+  queries.
+
+  Revision 1.152.4.2  2002/04/25 21:06:15  wenger
+  Totally re-did code for home on visual links -- fixed bug 749,
+  fix for bug 735 is much cleaner, fixed previously-unnoted bugs
+  in some other special cases.
+
+  Revision 1.152.4.1  2002/04/09 18:21:34  wenger
+  'C'/'c' (full cursor) and <backspace> (last visual filter) keys now
+  work in views that have key actions disabled (other key actions are
+  still disabled); cleaned up JavaScreen key event handling code; fixed
+  bug 772; hopefully fixed first part of bug 765; JavaScreen now allows
+  'C'/'c' and <backspace> keys even in views with key actions disabled;
+  JS tells user if they attempt a key action in a view where key actions
+  are disabled (bug 770).
+
+  Revision 1.152  2001/12/28 20:13:33  wenger
+  Fixed bug 744 (problem with zooming GUI).
+
   Revision 1.151  2001/12/28 18:34:40  wenger
   Fixed bugs 727 and 730 (problems with line graphs in DEVise).
 
@@ -713,6 +734,7 @@
 #include "ViewSymFilterInfo.h"
 #include "ArgList.h"
 #include "CmdContainer.h"
+#include "DeviseKey.h"
 
 #define STEP_SIZE 20
 
@@ -1360,7 +1382,18 @@ ViewGraph::GetHome2D(Boolean explicitRequest, VisualFilter &filter)
                     filter.xHigh = _dataXMax + homeInfo->autoXMargin;
                     setXHigh = true;
                 }
-            }
+            } else {
+				// This is kind of a kludgey partial fix for bug 485.
+				// RKW 2002-04-30.
+                if (!setXLow) {
+                    filter.xLow = MIN(filter.xLow,
+					  _dataXMin - homeInfo->autoXMargin);
+                }
+                if (!setXHigh) {
+                    filter.xHigh = MAX(filter.xHigh,
+					  _dataXMax + homeInfo->autoXMargin);
+                }
+			}
 
             if (xAttr) {
                 if (!setXLow) {
@@ -1411,7 +1444,18 @@ ViewGraph::GetHome2D(Boolean explicitRequest, VisualFilter &filter)
                     filter.yHigh = _dataYMax + homeInfo->autoYMargin;
                     setYHigh = true;
                 }
-            }
+            } else {
+				// This is kind of a kludgey partial fix for bug 485.
+				// RKW 2002-04-30.
+                if (!setYLow) {
+                    filter.yLow = MIN(filter.yLow,
+		              _dataYMin - homeInfo->autoYMargin);
+                }
+                if (!setYHigh) {
+                    filter.yHigh = MAX(filter.yHigh,
+					  _dataYMax + homeInfo->autoYMargin);
+                }
+			}
 
             if (yAttr) {
                 if (!setYLow) {
@@ -1507,25 +1551,6 @@ void ViewGraph::GoHome(Boolean explicitRequest)
     printf("ViewGraph(%s)::GoHome(%d)\n", GetName(), explicitRequest);
 #endif
 
-    if (GetNumDimensions() == 2) {
-	// If this view is in a visual link, we want to do "home" on the
-	// entire link as a unit.  Right now, this only works for 2D.
-	// RKW 1999-04-05.
-        Boolean hasVisLink = false;
-        int index = _visualLinks.InitIterator();
-        while (_visualLinks.More(index)) {
-          VisualLink *link = _visualLinks.Next(index);
-          link->GoHome(this, explicitRequest);
-          hasVisLink = true;
-        }
-        _visualLinks.DoneIterator(index);
-
-        if (hasVisLink) {
-          return;
-        }
-    }
-
-
     /* show all data records in view i.e. set filter to use the
        actual min/max X values and the actual min/max Y values;
        for 3D graphs, move camera to (0,0,Z) where Z is twice
@@ -1533,7 +1558,21 @@ void ViewGraph::GoHome(Boolean explicitRequest)
 
     if (GetNumDimensions() == 2) {
         VisualFilter filter;
+
+	//
+	// Get home for this view.
+	//
 	GetHome2D(explicitRequest, filter);
+
+	//
+	// Now adjust it according to linked views, if any.
+	//
+        int index = _visualLinks.InitIterator();
+        while (_visualLinks.More(index)) {
+          VisualLink *link = _visualLinks.Next(index);
+          link->GetHome2D(this, filter, explicitRequest);
+        }
+        _visualLinks.DoneIterator(index);
 
 	SetVisualFilter(filter);
     } else {
@@ -2777,10 +2816,22 @@ void	ViewGraph::HandleKey(WindowRep *, int key, int x, int y)
     printf("ViewGraph(%s)::HandleKey(%d, %d, %d)\n", GetName(), key, x, y);
 #endif
 
-  // Kludge warning: f/F ("full" cursor) should be allowed even if things
-  // that change this view's visual filter are not.  This is kind of a
+  // Kludge warning: c/C (full cursor) and <backspace> (last visual filter)
+  // should be allowed even if other key actions are not.  This is kind of a
   // kludgey way of allowing that.
-  if (GetKeysDisabled() && key != 'f' && key != 'F') {
+  if (key == 'c' || key == 'C') {
+    if (GetCursorMoveDisabled()) {
+      printf("Cursor moving disabled in view <%s>\n", GetName());
+      return;
+    }
+  } else if (key == DeviseKey::BACKSPACE) {
+    // It seems to make sense to allow backspace if we allow rubberband.
+    if (GetRubberbandDisabled()) {
+      printf("Backspace (previous visual filter) disabled in view <%s>\n",
+          GetName());
+      return;
+    }
+  } else if (GetKeysDisabled()) {
     printf("Key actions disabled in view <%s>\n", GetName());
     return;
   }

@@ -12,4 +12,5 @@ setenv DEVISE_SCHEMA  $DEVISE_VIS/schema/schema
 setenv DEVISE_HOME_TABLE	$DEVISE_SCHEMA/catalog.dte
 setenv DEVISE_CACHE   $DEVISE_VIS/cache
 setenv DEVISE_SESSION $DEVISE_VIS/session
+setenv DEVISE_TMP_SESSION $DEVISE_SESSION/.tmp
 setenv DEVISE_PALETTE	$DEVISE_VIS/palette

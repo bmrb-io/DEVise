@@ -24,6 +24,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.70.2.1  2002/03/30 19:16:01  xuk
+// Fix bugs for displaying axis labels for very small values.
+//
+// Revision 1.70  2002/03/27 22:11:52  xuk
+// Fixed bug 760.
+//
 // Revision 1.69  2002/03/26 16:35:51  wenger
 // Implemented kludge fix for bug 760; found bug 761.
 //
@@ -636,6 +642,18 @@ public class DEViseView
                              + cal.get(Calendar.SECOND);
             return (format.format(date) + time);
         } else {
+	    // for small values less than 1.0E-3
+	    float abs = Math.abs(x0);
+	    if (abs < 0.001) {
+		String label = new Float(x0).toString();
+		int dot = label.indexOf('.');
+		int e = label.indexOf('E');
+		if (e-dot > 4) 
+		    label = label.substring(0, dot+3).concat(label.substring(e, label.length())); 
+		return label;
+	    }
+
+
 	    // TEMP -- round to the nearest thousandth?
             if (x0 > 0) {
                 x0 = (int)(x0 * 1000.0f + 0.5f) / 1000.0f;
@@ -683,6 +701,17 @@ public class DEViseView
                              + cal.get(Calendar.SECOND);
             return (format.format(date) + time);
         } else {
+	    // for small values less than 1.0E-3
+	    float abs = Math.abs(y0);
+	    if (abs < 0.001) {
+		String label = new Float(y0).toString();
+		int dot = label.indexOf('.');
+		int e = label.indexOf('E');
+		if (e-dot > 4) 
+		    label = label.substring(0, dot+3).concat(label.substring(e, label.length())); 
+		return label;
+	    }
+
 	    // TEMP -- round to the nearest thousandth?
             if (y0 > 0) {
                 y0 = (int)(y0 * 1000.0f + 0.5f) / 1000.0f;
@@ -879,7 +908,7 @@ public class DEViseView
 	    float abs = Math.abs(y);
 	    String labelY = new Float(y).toString();
 
-	    if (abs > 99999) {
+	    if (abs > 99999) { // |y| >= 1,000,000
 		int y0 = (int)(y);
 		labelY = DEViseViewInfo.viewParser(y0, viewInfoFormatY);
 		int e = labelY.indexOf('E');
@@ -891,13 +920,21 @@ public class DEViseView
 		length = labelY.length();
 	    } else if (abs >= 10) { // |y| >= 10
 		length = (int)(Math.log(abs) / Math.log(10) + 0.0001) + 1;
-		if (y < 0) { // "-"
-		    length ++;
-	        }
+	    } else if (abs < 0.01) { // |y| < 0.01
+		int e = labelY.indexOf('E');
+		if (e != -1) 
+		    while (labelY.charAt(e-1) == '0' 
+			   || labelY.charAt(e-1) == '.') {
+			labelY = labelY.substring(0, e-1).concat(labelY.substring(e, labelY.length()));
+			e = e-1;
+		    }
+		length = labelY.length();
 	    } else {
-		//TEMP -- will this produce bad results for very
-		// small values (e.g. 1.0e-5)?  RKW 2002-03-26
 		length = Math.min(labelY.length(), 4);
+	    }
+		
+	    if (y < 0) { // "-"
+		    length ++;
 	    }
 
 	    // Kludge fix for bug 760.  RKW 2002-03-26.
@@ -936,13 +973,21 @@ public class DEViseView
 		length = labelX.length();
 	    } else if (abs >= 10) { // |x| >= 10
 		length = (int)(Math.log(abs) / Math.log(10) + 0.0001) + 1;
-		if (x < 0) { // "-"
-		    length ++;
-	        }
+	    } else if (abs < 0.01) { // |x| < 0.01
+		int e = labelX.indexOf('E');
+		if (e != -1) 
+		    while (labelX.charAt(e-1) == '0' 
+			   || labelX.charAt(e-1) == '.') {
+			labelX = labelX.substring(0, e-1).concat(labelX.substring(e, labelX.length()));
+			e = e-1;
+		    }
+		length = labelX.length();
 	    } else {
-		//TEMP -- will this produce bad results for very
-		// small values (e.g. 1.0e-5)?  RKW 2002-03-26
 		length = Math.min(labelX.length(), 4);
+	    }
+
+	    if (x < 0) { // "-"
+		length ++;
 	    }
 
 	    // Kludge fix for bug 760.  RKW 2002-03-26.
@@ -974,13 +1019,13 @@ public class DEViseView
 	temp = f / factor; 
 	
 	if (temp >= 7.5) 
-	    f = (float)((10 + 0.0001) * factor);
+	    f = (float)((10+0.0000001) * factor);
 	else if (temp >= 3.5)
-	    f = (float)((5 + 0.0001) * factor);
+	    f = (float)((5+0.0000001) * factor);
 	else if (temp >= 1.5)
-	    f = (float)((2 + 0.0001) * factor);
+	    f = (float)((2+0.0000001) * factor);
 	else 
-	    f = (float)(1 * factor);
+	    f = (float)((1+0.0000001) * factor);
 	return f;
     }
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.10.14.1  2002/04/25 21:06:16  wenger
+  Totally re-did code for home on visual links -- fixed bug 749,
+  fix for bug 735 is much cleaner, fixed previously-unnoted bugs
+  in some other special cases.
+
+  Revision 1.10  2000/02/16 18:51:48  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.9  1999/04/22 19:29:54  wenger
   Separated the configuration of explicit (user-requested) and implicit
   home actions (no GUI for configuring the implicit home); changed the
@@ -93,8 +101,10 @@ public:
   virtual char *DispatchedName() { return "VisualLink"; }
   virtual void Run();
 
-  // Make home global to the link.
-  virtual void GoHome(ViewGraph *view, Boolean explicitRequest);
+  // Update the given visual filter based on the home values of views in 
+  // this link.
+  virtual void GetHome2D(ViewGraph *view, VisualFilter &filter,
+      Boolean explicitRequest);
   
 protected:
   void SetVisualFilter(View *view);

@@ -20,6 +20,22 @@
   $Id$
 
   $Log$
+  Revision 1.64.2.1  2002/04/18 17:25:45  wenger
+  Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
+  temporary session files when the JSPoP and DEViseds are on different
+  machines).  Note: JS protocol version is now 11.0.
+
+  Revision 1.64.6.1  2002/04/17 17:46:28  wenger
+  DEVised, not JSPoP, now does the actual work of creating or clearing
+  the temporary session directory (new command from client to DEVised
+  means that communication protocol version is now 11.0).  (Client
+  switching is not working yet with this code because I need to change
+  how temporary sessions are saved and loaded.)
+
+  Revision 1.64  2002/02/21 17:02:13  wenger
+  Turned off axis labeling for JS sessions (now done in the JS itself);
+  changed version to 1.7.6.
+
   Revision 1.63  2001/12/17 18:36:59  wenger
   Changed version to 1.7.5.
 
@@ -348,7 +364,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.7.6";
+static const char *	version = "1.7.7x";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2002";
@@ -431,16 +447,18 @@ Version::PrintInfo(LogFunc logFunc)
 
   if (logFunc) {
     char *envVars[] = { "DEVISE_DAT", "DEVISE_HOME_TABLE", "DEVISE_CACHE",
-        "DEVISE_SCHEMA", "DEVISE_LIB", "DEVISE_TMP", "DEVISE_WORK",
-	"DEVISE_PALETTE" };
+        "DEVISE_SCHEMA", "DEVISE_SESSION", "DEVISE_TMP_SESSION",
+	"DEVISE_PALETTE", "DEVISE_LIB", "DEVISE_TMP", "DEVISE_WORK",
+	"DEVISE_LOG_DIR"};
     int varCount = sizeof(envVars) / sizeof(envVars[0]);
     for (int index = 0; index < varCount; index++) {
       char *value = getenv(envVars[index]);
-      if (value) {
-	char buf[MAXPATHLEN * 2];
-        sprintf(buf, "$%s = <%s>", envVars[index], value);
-	logFunc(buf);
+      if (!value) {
+        value = "null";
       }
+      char buf[MAXPATHLEN * 2];
+      sprintf(buf, "$%s = <%s>", envVars[index], value);
+      logFunc(buf);
     }
   }
 }

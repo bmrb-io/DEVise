@@ -30,7 +30,7 @@ set html_dir = $2
 
 set dist_home = `pwd`
 
-if (`hostname` != trigger) then
+if (`hostname` != trigger.cs.wisc.edu) then
   echo "Setup must be done on trigger"
   exit 1
 endif
@@ -49,11 +49,11 @@ cd ..
 # ../scripts/setup.arch_common
 # cd ..
 
-echo "Creating solaris-intel directory"
-setenv ARCH_DIR sunx86_54
-cd solaris-intel
-./setup
-cd ..
+#echo "Creating solaris-intel directory"
+#setenv ARCH_DIR sunx86_54
+#cd solaris-intel
+#./setup
+#cd ..
 
 echo "Creating solaris-sparc directory"
 setenv ARCH_DIR sun4m_54
@@ -69,7 +69,7 @@ cd ..
 # cd ..
 
 echo "Creating linux-intel directory"
-setenv ARCH_DIR i386_linux
+setenv ARCH_DIR i386_rh72
 cd linux-intel
 ./setup
 cd ..

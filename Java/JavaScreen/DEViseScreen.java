@@ -32,6 +32,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.72.2.2  2002/04/24 20:06:37  xuk
+// Fixed bug 777: avoid long waiting time for repainting in DEViseCanvas
+// Handle double-buffering in paint();
+// Added paintCanvas() method for painting.
+//
+// Revision 1.72.2.1  2002/04/03 17:39:23  xuk
+// Fixed bug 766: Hide view help for collaboration followers.
+// Added method hideAllHelp().
+//
+// Revision 1.72  2002/02/06 23:10:34  xuk
+// Draw the axis labels in the JavaScreen.
+// Changed function updateViewDataRange().
+//
 // Revision 1.71  2001/08/20 18:20:08  wenger
 // Fixes to various font problems: XDisplay calculates point sizes correctly
 // and uses screen resolution in specifying font; JS passes *its* screen
@@ -398,10 +411,23 @@ public class DEViseScreen extends Panel
                 DEViseCanvas c = (DEViseCanvas)allCanvas.elementAt(i);
                 c.helpMsg = null;
             }
-
             repaint();
+
+	    jsc.dispatcher.start(DEViseCommands.HIDE_ALL_VIEW_HELP);
         }
     }
+
+    // Hide help messages in all views.
+    public synchronized void hideAllHelp()
+    {
+	for (int i = 0; i < allCanvas.size(); i++) {
+	    DEViseCanvas c = (DEViseCanvas)allCanvas.elementAt(i);
+	    c.helpMsg = null;
+	}
+	
+	repaint();
+    }
+
 
     public void addView(DEViseView view)
     {
@@ -824,7 +850,7 @@ public class DEViseScreen extends Panel
     // Enable double-buffering
     public synchronized void update(Graphics gc)
     {
-        if (offScrImg == null) {
+	if (offScrImg == null) {
             offScrImg = createImage(screenDim.width, screenDim.height);
         }
 

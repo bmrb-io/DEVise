@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,52 @@
 // $Id$
 
 // $Log$
+// Revision 1.65.2.9  2002/04/19 20:50:47  xuk
+// Add new testings in autotest: enforced client switching, restore pre-collab
+// states for JS;
+// Split autotest scripts into 2 parts.
+//
+// Revision 1.65.2.8  2002/04/18 17:25:09  wenger
+// Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
+// temporary session files when the JSPoP and DEViseds are on different
+// machines).  Note: JS protocol version is now 11.0.
+//
+// Revision 1.65.2.7.2.2  2002/04/18 15:40:53  wenger
+// Further cleanup of JavaScreen temporary session file code (added
+// JAVAC_DeleteTmpSession command) (includes fixing bug 774).
+//
+// Revision 1.65.2.7.2.1  2002/04/17 19:13:54  wenger
+// Changed JAVAC_SaveSession command to JAVAC_SaveTmpSession (path is
+// now relative to temp session directory, not main session directory).
+//
+// Revision 1.65.2.7  2002/04/12 16:08:49  wenger
+// Lots of cleanup to the heartbeat checking code -- tested killing a
+// client because the heartbeat timeout expired, and because we have
+// too many clients.
+//
+// Revision 1.65.2.6  2002/04/12 15:56:51  xuk
+// Improvement for autotest.
+//
+// Revision 1.65.2.5  2002/04/08 20:48:11  xuk
+// Fixed bug: After leader disabled collaboration, the collab name can be reused.
+//
+// Revision 1.65.2.4  2002/04/05 17:39:09  xuk
+// Send JAVAC_DONE after sending JAVAC_HIDE_ALL_VIEW_HELP to followers.
+//
+// Revision 1.65.2.3  2002/04/05 17:28:46  xuk
+// Send JAVAC_DONE after JAVAC_CLOSE_COLLAB_DLG to followers.
+//
+// Revision 1.65.2.2  2002/04/04 21:13:23  xuk
+// Fixed bug 768: collaboration follower can close dialog automatically.
+// in addNewCmd() process Close_Collab_Dlg command.
+//
+// Revision 1.65.2.1  2002/04/03 17:40:37  xuk
+// Fixed bug 766: Hide view help for collaboration followers.
+// In addNewCmd(), process Hide_All_View_Help command.
+//
+// Revision 1.65  2002/03/26 15:47:33  wenger
+// Fixed typo that made this class not compile.
+//
 // Revision 1.64  2002/03/20 22:10:46  xuk
 // Added automatic collaboration functionality.
 // Added collabName variable and getCollabName() method;
@@ -345,7 +391,13 @@ public class DEViseClient
 
     //public String path = "DEViseSession";
     public String sessionName = null;
+
+    // Name of temporary session file (saves state for client switches,
+    // etc.).
     public String savedSessionName = null;
+    
+    // Whether temporary session file exists.
+    public boolean tmpSessionExists = false;
 
     public int screenDimX = -1;
     public int screenDimY = -1;
@@ -393,8 +445,7 @@ public class DEViseClient
         clientSock = cs;
         ID = id;
 
-        //savedSessionName = ".tmp/jstmp_" + ID;
-	savedSessionName = pop.sessionDir + "/jstmp_" + ID;
+	savedSessionName = "jstmp_" + ID;
 
         status = IDLE;
 
@@ -500,16 +551,19 @@ public class DEViseClient
             if (useCgi()) {
 	        closeSocket();
 	    }
+	    addLogFile(cmd);
         } else if (cmd.startsWith(DEViseCommands.GET_COLLAB_LIST)) {
 	    getCollabList();
             if (useCgi()) {
 	        closeSocket();
 	    }
+	    addLogFile(cmd);
         } else if (cmd.startsWith(DEViseCommands.SET_COLLAB_PASS)) {
             setCollabPassword(cmd);
             if (useCgi()) {
 	        closeSocket();
 	    }
+	    addLogFile(cmd);
         } else if (cmd.startsWith(DEViseCommands.SET_3D_CONFIG)) {
 	    try {
 	        sendCmdToCollaborators(cmd);
@@ -518,6 +572,24 @@ public class DEViseClient
 		  ex.getMessage());
 	    }
             newCommandStd(cmd);
+        } else if (cmd.startsWith(DEViseCommands.CLOSE_COLLAB_DLG)) {
+	    try {
+	        sendCmdToCollaborators(cmd);
+		sendCmdToCollaborators(DEViseCommands.DONE);
+	    } catch(YException ex) {
+	        System.err.println("Error sending command to collaborator: " +
+		  ex.getMessage());
+	    }
+        } else if (cmd.startsWith(DEViseCommands.HIDE_ALL_VIEW_HELP)) {
+	    try {
+	        sendCmdToCollaborators(cmd);
+		sendCmdToCollaborators(DEViseCommands.DONE);
+		sendCmd(DEViseCommands.DONE);
+	    } catch(YException ex) {
+	        System.err.println("Error sending command to collaborator: " +
+		  ex.getMessage());
+	    }
+	    addLogFile(cmd);
 	} else {
             newCommandStd(cmd);
 	}
@@ -525,7 +597,19 @@ public class DEViseClient
 
     private void newCommandStd(String cmd) {
         cmdBuffer.addElement(cmd);
-	if (pop.clientLog && logFile == null) {
+
+	// add command to logfile
+	addLogFile(cmd);
+
+	if (getStatus() != SERVE) {
+	    setStatus(REQUEST);
+	}
+	// Note: socket can't be closed here because we have to
+	// send the reply.
+    }
+
+    private void addLogFile(String cmd)
+    {	if (pop.clientLog && logFile == null) {
 	    String time = new Long(ID).toString();
 	    String logName = "logs/client.log." + time;
 	    logFile = new YLogFile(logName);
@@ -543,13 +627,8 @@ public class DEViseClient
 	    logFile.pn(timestamp + "  # " + dtf.format(d));
 	    logFile.pn(cmd);
         }
-
-	if (getStatus() != SERVE) {
-	    setStatus(REQUEST);
-	}
-	// Note: socket can't be closed here because we have to
-	// send the reply.
     }
+
 
     public boolean useCgi() {
         return cgi;
@@ -767,9 +846,9 @@ public class DEViseClient
 			cmdBuffer.removeAllElements();
 			cmdBuffer.addElement(DEViseCommands.EXIT);
 			
-			// remove collab name for jspop
+			// remove collab name from jspop
 			boolean f = pop.collabNames.removeElement(collabName);
-			pop.pn("Remove collab-name: " + f);
+			pop.pn("Remove collab-name " + collabName + ": " + f);
 			try {
 			    sendCmdToCollaborators(DEViseCommands.COLLAB_EXIT);
 			    sendCmdToCollaborators(DEViseCommands.DONE);
@@ -803,6 +882,10 @@ public class DEViseClient
 			collabClients.removeAllElements();
 			sendCmd(DEViseCommands.DONE);
 			cmdBuffer.removeAllElements();
+
+			// remove collab name from jspop
+			boolean f = pop.collabNames.removeElement(collabName);
+			pop.pn("Remove collab-name: " + f);
 
 		    } else if (command.startsWith(DEViseCommands.COLLAB_EXIT)) {
 			//TEMP -- move to addNewCmd()?
@@ -1002,6 +1085,8 @@ public class DEViseClient
         }
     }
 
+    // Close this client.  Note that this method should not be called
+    // on active clients.
     public synchronized void close()
     {
 	if (DEBUG >= 1) {
@@ -1010,20 +1095,37 @@ public class DEViseClient
 
         if (status == CLOSE) {
             return;
-        }
+        } else if (status == SERVE) {
+	    //
+	    // Note: this doesn't seem to be a catastrophic error, but it
+	    // doesn't shut things down cleanly in the DEViseServer object.
+	    // RKW 2002-04-11.
+	    //
+	    System.err.println(
+	      "Error: calling DEViseClient.close() on active client " + ID);
+	}
 
         status = CLOSE;
 
         pop.pn("Close connection to client(" + hostname + ")");
 
-	// delete the temporary session file
-	String file = "/p/devise/demo/session.js/" + savedSessionName;
-	File td = new File(file);
-	if (!td.exists()) {
-	    pop.pn("Session file " + file + " does not exists.\n");
-	} else {
-	    td.delete(); 
-	    pop.pn("Session file " + file + " is deleted.\n");
+	//
+	// Delete our temporary session file.  Note: this should only
+	// happen here on an "abnormal" exit.  If the client exits
+	// cleanly, the session file should be deleted in the processing
+	// of the JAVAC_Exit command.
+	//
+	if (tmpSessionExists) {
+	    try {
+                pop.sendStatelessCmd(DEViseCommands.DELETE_TMP_SESSION +
+	          " " + savedSessionName);
+	    } catch (YException ex) {
+	        // Note: this error isn't too bad a problem, since the
+		// temporary session file will get deleted the next time
+		// the JSPoP is restarted.  RKW 2002-04-17.
+	        System.err.println("Error deleting temporary session file: " +
+	          ex.getMessage());
+	    }
 	}
 
         lastActiveTime = -1;

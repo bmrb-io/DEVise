@@ -1,0 +1,3 @@
+#!/bin/csh -f
+js -screensize600x400 &
+js -screensize600x400 &

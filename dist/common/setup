@@ -24,16 +24,6 @@ ln -s ../dist_sw/public .
 ln -s ../dist_sw/doc .
 ln -s ../dist_sw/lib .
 
-mkdir tcl
-cd tcl
-cp -p /s/tcl7.4/lib/tcl7.4/* .
-cd ..
-
-mkdir tk
-cd tk
-cp -p /s/tcl7.4/lib/tk4.0/* .
-cd ..
-
 cd run
 ln -s ../../dist_sw/run/* .
 cd ..

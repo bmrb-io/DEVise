@@ -13,4 +13,5 @@ source scripts/dev_vis.gen
 
 # Special cases.
 setenv DEVISE_SESSION $DEVISE_VIS/session.js/SoilSci
+setenv DEVISE_TMP_SESSION $DEVISE_SESSION/.tmp
 setenv DEVISE_HOME_TABLE	$DEVISE_SCHEMA/catalog.js.dte

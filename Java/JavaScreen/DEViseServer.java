@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -27,6 +27,45 @@
 // $Id$
 
 // $Log$
+// Revision 1.77.2.2  2002/04/18 17:25:11  wenger
+// Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
+// temporary session files when the JSPoP and DEViseds are on different
+// machines).  Note: JS protocol version is now 11.0.
+//
+// Revision 1.77.2.1.2.5  2002/04/18 15:40:59  wenger
+// Further cleanup of JavaScreen temporary session file code (added
+// JAVAC_DeleteTmpSession command) (includes fixing bug 774).
+//
+// Revision 1.77.2.1.2.4  2002/04/17 20:14:31  wenger
+// Implemented new JAVAC_OpenTmpSession command to go along with
+// JAVAC_SaveTmpSession (so the JSPoP doesn't need to have any info about
+// the path of the temporary session directory relative to the base
+// session directory).
+//
+// Revision 1.77.2.1.2.3  2002/04/17 19:13:55  wenger
+// Changed JAVAC_SaveSession command to JAVAC_SaveTmpSession (path is
+// now relative to temp session directory, not main session directory).
+//
+// Revision 1.77.2.1.2.2  2002/04/17 17:45:54  wenger
+// DEVised, not JSPoP, now does the actual work of creating or clearing
+// the temporary session directory (new command from client to DEVised
+// means that communication protocol version is now 11.0).  (Client
+// switching is not working yet with this code because I need to change
+// how temporary sessions are saved and loaded.)
+//
+// Revision 1.77.2.1.2.1  2002/04/17 16:15:34  wenger
+// Cleaned up unnecessary serverDatas in DEViseServer.java.
+//
+// Revision 1.77.2.1  2002/04/12 16:08:49  wenger
+// Lots of cleanup to the heartbeat checking code -- tested killing a
+// client because the heartbeat timeout expired, and because we have
+// too many clients.
+//
+// Revision 1.77  2002/03/12 19:50:04  wenger
+// Fixed bug 758 (caused by JAVAC_Set3DConfig not causing a client switch
+// but still sending a command to the DEVised); did some cleanup of the
+// DEViseClient class.
+//
 // Revision 1.76  2002/03/01 19:58:53  xuk
 // Added new command DEViseCommands.UpdateJS to update JavaScreen after
 // a DEViseCommands.Open_Session or DEViseCommands.Close_Session command.
@@ -355,6 +394,10 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
     private int _objectNum = -1;
 
     private long _lastRunTime;
+    
+    private static boolean _createdTmpSessionDir = false;
+
+
     public long lastRunTime() { return _lastRunTime; }
     public void intThread() { serverThread.interrupt(); }
     public String thread2Str() { return serverThread.toString(); }
@@ -431,11 +474,31 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 
 	// Make sure the JSPoP's protocol version is compatible with the
 	// devised.
-        Vector serverDatas = new Vector();
 	processClientCmd(DEViseCommands.PROTOCOL_VERSION + " " +
-	  DEViseGlobals.PROTOCOL_VERSION, serverDatas);
+	  DEViseGlobals.PROTOCOL_VERSION);
 
         pop.pn("Successfully started a DEViseServer ...");
+
+	//
+	// Have the DEVised create or clear the temporary session directory
+	// if we haven't already done it.
+	//
+	if (!_createdTmpSessionDir) {
+	    System.out.println(
+	      "Creating or clearing temporary session directory");
+	    String hostname = "unknown";
+	    try {
+                InetAddress address = InetAddress.getLocalHost();
+	        hostname = address.getHostName();
+	    } catch (UnknownHostException ex) {
+	        System.err.println("Unable to get local host: " +
+		  ex.getMessage());
+	    }
+
+	    processClientCmd(DEViseCommands.CREATE_TMP_SESSION_DIR +
+	      " " + hostname + " " + pop.getCmdPort());
+	    _createdTmpSessionDir = true;
+	}
     }
 
     private synchronized void closeSocket()
@@ -689,14 +752,15 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                     client.removeLastCmd();
                 }
 
+		Vector serverDatas = new Vector();
+
 		//
 		// Process the command.
                 // Commands JAVAC_GetServerState, JAVAC_Abort & JAVAC_Connect
                 // already been handled in DEViseClient.
 		//
-                Vector serverDatas = new Vector();
                 try {
-		    if (!processClientCmd(clientCmd, serverDatas)) {
+		    if (!processClientCmd(clientCmd)) {
 			
 			// close client socket for cgi version
 			if (client != null && client.useCgi()) {
@@ -762,13 +826,35 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 	DEViseThreadChecker.getInstance().unregister(this);
     }
 
+    // Send a command that does not rely on client state.
+    public void sendStatelessCmd(String cmd) throws YException
+    {
+        if (DEBUG >= 2) {
+            System.out.println("DEViseServer.sendStatelessCmd(" + cmd + ")");
+        }
+
+	//
+	// Test for a legal (statelesss) command.
+	//
+	if (!cmd.startsWith(DEViseCommands.PROTOCOL_VERSION) &&
+	  !cmd.startsWith(DEViseCommands.CREATE_TMP_SESSION_DIR) &&
+	  !cmd.startsWith(DEViseCommands.DELETE_TMP_SESSION)) {
+	    throw new YException("Illegal command (not stateless): " + cmd);
+	}
+
+
+	// We need to *not* save the server commands here because doing
+	// so might goof up the client (if any) connected to this server.
+	sendCmd(cmd, false);
+    }
 
 // ------------------------------------------------------------------------
-// Method to process client commands.
+// Method to process client commands (commands generated by the client,
+// or by the JSPoP itself).
 
     // Returns true if command needs the rest of the "standard" processing,
     // false otherwise.
-    private boolean processClientCmd(String clientCmd, Vector serverDatas)
+    private boolean processClientCmd(String clientCmd)
       throws YException
     {
 	if (DEBUG >= 2) {
@@ -805,6 +891,10 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
         } else if (clientCmd.startsWith(DEViseCommands.REOPEN_SESSION)) {
 	    cmdReopenSession();
 
+        } else if (clientCmd.startsWith(
+	  DEViseCommands.CREATE_TMP_SESSION_DIR)) {
+	    cmdCreateTmpSessionDir(clientCmd);
+
         } else {
 	    cmdClientDefault(clientCmd);
         }
@@ -813,7 +903,11 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
     }
 
 // ------------------------------------------------------------------------
-// Method to process server commands.
+// Method to process server commands (commands generated by the server
+// (DEVised) in response to a command from the client or JSPoP).  Basically,
+// what we do here is pass the command back to the client, and, if necessary,
+// get the associated data from the server so we can pass that along to
+// the client as well.
 
     private void processServerCmd(Vector serverDatas) throws YException
     {
@@ -854,9 +948,10 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
     public void cmdSaveSession() throws YException
     {
 	pop.pn("We send the save_session command.");
-	cmdClientDefault(DEViseCommands.SAVE_SESSION + " {" +
+	cmdClientDefault(DEViseCommands.SAVE_TMP_SESSION + " {" +
 	  client.savedSessionName + "}");
 	client.sessionSaved = true;
+	client.tmpSessionExists = true;
 	pop.pn("We send the close_session command.");
 	cmdCloseSession();
 	// keep the current session opened
@@ -868,7 +963,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
     public void cmdReopenSession() throws YException
     {
 	pop.pn("We send the reopen-session command.");
-	sendCmd(DEViseCommands.OPEN_SESSION + " {" + client.savedSessionName + "}");
+	sendCmd(DEViseCommands.OPEN_TMP_SESSION + " {" + client.savedSessionName + "}");
 	client.sessionSaved = false;
 	if ( !client.isSessionOpened )
 	    client.isSessionOpened = true;
@@ -877,6 +972,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
     public void cmdExit() throws YException
     {
 	cmdCloseSession();
+	cmdDeleteSession();
         removeCurrentClient(false);
     }
 
@@ -915,6 +1011,15 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 		//}			    
 	    }
 	} // if (!client.collabInit)
+    }
+
+    private void cmdDeleteSession() throws YException
+    {
+        if (client.tmpSessionExists) {
+            sendCmd(DEViseCommands.DELETE_TMP_SESSION + " " +
+	      client.savedSessionName);
+	    client.tmpSessionExists = false;
+	}
     }
 
     private void cmdGetSessionList(String clientCmd) throws YException
@@ -1023,6 +1128,15 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
         }
     }
 
+    private void cmdCreateTmpSessionDir(String clientCmd)
+      throws YException
+    {
+        if (!sendCmd(clientCmd)) {
+	    System.err.println("Error requesting creation/clearing of " +
+	      "temporary session directory");
+        }
+    }
+
 // ------------------------------------------------------------------------
 // Method to process all client commands not using the command-specific
 // methods.
@@ -1053,12 +1167,12 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                 }
 
                 if (!error) {
-                    if (sendCmd(DEViseCommands.OPEN_SESSION + " {" +
+                    if (sendCmd(DEViseCommands.OPEN_TMP_SESSION + " {" +
 		      client.savedSessionName + "}")) {
                         client.isSessionOpened = true;
                     } else {
                         pop.pn("Switch error: Can not send " +
-			  DEViseCommands.OPEN_SESSION + " " +
+			  DEViseCommands.OPEN_TMP_SESSION + " " +
 			  client.savedSessionName);
                     }
                     // need to clear socket because there might be some
@@ -1188,8 +1302,10 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                 }
             }
 
-            client.close();
+	    // Suspend client before closing it so we don't get the
+	    // warning I just added to DEViseClient.close().  RKW 2002-04-12.
             pop.suspendClient(client);
+            client.close();
             client = null;
         }
     }
@@ -1222,9 +1338,10 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 
                 try {
 		    if (!client.sessionSaved) {
-			if (sendCmd(DEViseCommands.SAVE_SESSION + " {" +
+			if (sendCmd(DEViseCommands.SAVE_TMP_SESSION + " {" +
 				    client.savedSessionName + "}")) {
 			    client.isSwitchSuccessful = true;
+			    client.tmpSessionExists = true;
 			} else {
 			    pop.pn("Can not save session for old client while switching client!");
 			}
@@ -1290,7 +1407,17 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
         return data;
     }
 
+    // Send a command to the server; returns true if the command was
+    // successfully processed.
     private boolean sendCmd(String clientCmd) throws YException
+    {
+        return sendCmd(clientCmd, true);
+    }
+
+    // Send a command to the server; returns true if the command was
+    // successfully processed.
+    private synchronized boolean sendCmd(String clientCmd,
+      boolean saveServerCmds) throws YException
     {
         if (clientCmd == null) {
             return true;
@@ -1306,7 +1433,8 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 
         Vector rspbuf = new Vector();
 
-        pop.pn("Sending command to devised(" + hostname + " at " + cmdPort + ") :  \"" + clientCmd + "\"");
+        pop.pn("Sending command to devised(" + hostname + " at " +
+	  cmdPort + ") :  \"" + clientCmd + "\"");
         socket.sendCmd(clientCmd, (short)5, 9999);
 
         isEnd = false;
@@ -1317,12 +1445,14 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
             while (!isFinish) {
                 try {
                     response = socket.receiveCmd();
-                    pop.pn("Receive response from devised(" + hostname + " at " + cmdPort + ") :  \"" + response + "\"");
+                    pop.pn("Receive response from devised(" + hostname +
+		      " at " + cmdPort + ") :  \"" + response + "\"");
                     isFinish = true;
                 } catch (InterruptedIOException e) {
                     time += socketTimeout;
                     if (time > devisedTimeout) {
-                        throw new YException("Can not receive response from devised within timeout");
+                        throw new YException("Cannot receive response " +
+			  "from devised within timeout");
                     }
                 }
             }
@@ -1332,14 +1462,18 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
             } else {
                 String[] cmds = DEViseGlobals.parseString(response);
                 if (cmds == null || cmds.length == 0) {
-                    throw new YException("Ill-formated response \"" + response + "\" received from devised");
+                    throw new YException("Ill-formated response \"" +
+		      response + "\" received from devised");
                 } else {
-                    //pop.pn("Receive response \"" + response + "\" from devised");
+                    //pop.pn("Receive response \"" + response +
+		      //"\" from devised");
 
                     String cmd = cmds[0];
-                    // Rip off the { and } around the command but not the arguments
-                    for (int j = 1; j < cmds.length; j++)
+                    // Rip off the { and } around the command but not
+		    // the arguments?????
+                    for (int j = 1; j < cmds.length; j++) {
                         cmd = cmd + " {" + cmds[j] + "}";
+                    }
 
                     if (cmd.startsWith(DEViseCommands.DONE)) {
                         isEnd = true;
@@ -1356,9 +1490,12 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
             }
         }
 
-        serverCmds = new String[rspbuf.size()];
-        for (int i = 0; i < rspbuf.size(); i++)
-            serverCmds[i] = (String)rspbuf.elementAt(i);
+	if (saveServerCmds) {
+            serverCmds = new String[rspbuf.size()];
+            for (int i = 0; i < rspbuf.size(); i++) {
+                serverCmds[i] = (String)rspbuf.elementAt(i);
+            }
+	}
 
         return !isError;
     }
@@ -1414,31 +1551,34 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 	      " in thread " + Thread.currentThread());
 	}
 
+	//
+	// We save and re-open the current session so that the re-opening
+	// generates all of the commands needed to initialize a new
+	// collaboration follower.
+	//
         pop.pn("We send the save-session command.");
-        Vector serverDatas = new Vector();
-	processClientCmd(DEViseCommands.SAVE_SESSION + " {" +
-	  client.savedSessionName + "}", serverDatas);
+	processClientCmd(DEViseCommands.SAVE_TMP_SESSION + " {" +
+	  client.savedSessionName + "}");
+        client.tmpSessionExists = true;
 
 	pop.pn("We send the close-session command.");
 	//server.serverCmds = null;
-	processClientCmd(DEViseCommands.CLOSE_SESSION, serverDatas);
+	processClientCmd(DEViseCommands.CLOSE_SESSION);
 	// keep the current session opened
 	if ( ! client.isSessionOpened ) {
 	    client.isSessionOpened = true;
 	}
 
 	pop.pn("We send the open-session command.");
-	sendCmd(DEViseCommands.OPEN_SESSION + " {" +
+	sendCmd(DEViseCommands.OPEN_TMP_SESSION + " {" +
 	  client.savedSessionName + "}");
 	    
-	serverDatas.removeAllElements();	
+	Vector serverDatas = new Vector();
 	processServerCmd(serverDatas);
 			    
         client.sendCmd(serverCmds);
 	client.sendData(serverDatas);
 	pop.pn("Done sending all data to " + "collaboration client");
 	pop.pn("  client.collabInit = " + client.collabInit);
-	serverDatas.removeAllElements();
-	serverCmds = null;
     }
 }

@@ -1,0 +1,27 @@
+#! /bin/csh -f
+ 
+# Start a collaboration leader
+./js -collableadernamecollab -collableaderpassguest -autoplayback -clientlogclient_log.2 -playbackoriginal -screensize600x400 &
+
+sleep 8
+ 
+# Start a collaboration follower (we're not using the normal js script
+# here so we can get the follower's PID)
+set javaexec = `cat bin2/java`
+$javaexec JavaScreen.js -autoplayback -clientlogclient_log.3 -playbackoriginal -screensize600x400 &
+
+sleep 200
+
+# Check whether the leader process still alive
+set js = `ps | grep js$`
+if ("$js" != "") then
+    echo "\nError found with JavaScreen. Please check logs."
+    set success = 0
+endif
+
+
+
+
+
+
+

@@ -36,7 +36,7 @@ PERL_BIN2P = /s/std/bin
 JAVA_BIN3 = /s/java-1/bin
 
 POP_DIR = ~/tst/jspop_install/jspop
-SERV_DIR = ~/tst/jspop_install/jspop
+SERV_DIR = ~/tst/jspop_install/jss
 JAR_DIR = ~/tst/jspop_install/www
 CGI_DIR = ~/tst/jspop_install/cgi-bin
 IDSTR = "test"

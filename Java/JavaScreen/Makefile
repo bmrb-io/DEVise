@@ -61,7 +61,7 @@ client: *.java
 	    DEViseHeartbeat.java DEViseJSValues.java DEViseScreen.java \
 	    DEViseTrafficLight.java DEViseUIGlobals.java DEViseView.java \
 	    DEViseViewInfo.java YImageCanvas.java YLogGUI.java YMsgBox.java \
-	    jsdevisec.java DEVisePlayback.java 
+	    jsdevisec.java DEVisePlayback.java DEViseCollabDlg.java
 
 appletclass: DEViseJSApplet.java 
 	$(JAVAC) DEViseJSApplet.java DEViseJSTimer.java

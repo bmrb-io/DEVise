@@ -3019,9 +3019,10 @@ Num Date        Status  Description
 748 1/11/02	OPEN	Y-only home sets Y axis based on all data, not just
 			the data within the current X range. (rkw)
 
-749 1/17/02	OPEN	Y-only link on a view prevents home from happening
+749 1/17/02	FIXED	Y-only link on a view prevents home from happening
 			in the X direction, even if home configuration
 			says it should (see Test/Bug749.ds). (rkw)
+			(Fixed by rkw, 4/25/02.)
 
 750 2/5/02	FIXED	Sessions with more than one child view pile in a single
 			parent view cause infinite looping with XFree86 4.1.0
@@ -3070,14 +3071,109 @@ Num Date        Status  Description
 			set in the print configuration, the JavaScreen can't
 			open the session at all. (rkw)
 
-760 3/26/02	FIXED	JavaScreen: client has index out of range errors when
-			trying to draw axis labels for the session
+760 3/26/02	FIXED	JavaScreen: client has index out of range errors
+			when trying to draw axis labels for the session
 			test/axis_label_error.ds. (rkw)
-			(Fixed by xuk, 3/27/02.)
+			(Fixed by xuk, 4/4/02.)
 
 761 3/26/02	FIXED	JavaScreen: X axis labels are not "clean" values
 			for the session test/axis_label_error.ds. (rkw)
-			(Fixed by xuk, 3/27/02.)
+			(Fixed by xuk, 4/10/02.)
+
+762 4/2/02	FIXED	JavaScreen: axis labeling code does not handle
+			axis multiplication factors. (rkw)
+			(Fixed by xuk, 4/4/02.)
+
+763 4/2/02	FIXED	JavaScreen: mouse location display code does not
+			handle axis multiplication factors. (rkw)
+			(Fixed by xuk, 4/4/02.)
+	
+764 3/28/02	OPEN	JavaScreen: default password doesn't show up in
+			collaboration enabling GUI on Miron's laptop (WinXP);
+			getting into collab mode locked up both the leader
+			and follower. (rkw/ml)
+
+765 4/2/02	OPEN	JavaScreen: backspace key (to toggle between the last
+			two visual filters) doesn't work. (rkw)
+			(Saw this at BMRB, on Steve Mading's machine
+			(lobster).) (Two problems here -- backspace in opera
+			sends 0xff08 instead of 0x0008; in both opera and
+			netscape, if backspace is recognized commands are
+			sent but the view image is not updated properly.)
+			(Put in fix for part 1 of this -- rkw 4/9/02.)
+			(Part 2 may be fixed -- see bug 775 -- rkw 4/19/02.)
+
+766 4/2/02	FIXED	JavaScreen: view help seems to cause problems in
+			collaboration mode. (rkw)
+			(Fixed by xuk, 4/4/02.)
+
+767 4/2/02	FIXED	JavaScreen: collaboration GUI should be more
+			clear.(rkw)
+			(Fixed by xuk, 4/4/02.)
+
+768 4/2/02	FIXED	JavaScreen: in collaboration mode, when the leader
+			shows the record value dialog (and therefore the
+			follower also shows it), the follower's doesn't
+			go away when the leader's does (the follower's user
+			has to click the OK button). (rkw)
+			(Fixed by xuk, 4/4/02.)
+
+769 4/2/02	FIXED	JavaScreen: we should have an alternative to
+			alt-drag for zooming out, because on many systems
+			alt-drag is intercepted by the window manager (to
+			move the window). (rkw)
+			(Fixed by xuk, 4/4/02.)
+
+770 4/4/02	FIXED	JavaScreen: when the user does a key action in a
+			view with key actions disabled, they should get
+			a dialog telling them that their action is not
+			allowed in that view (see also bug 765). (rkw)
+			(Fixed by rkw, 4/9/02.)
+
+771 4/5/02	OPEN	JavaScreen: in collaboration mode, when the leader
+			clicks and shows the record value dialog, the follower
+			has no way to tell where the leader clicked, so there
+			should be some kind of a mark on the screen of both
+			the leader and the follower. (rkw/ml)
+
+772 4/5/02	FIXED	JavaScreen: arrow keys no longer work in stand-alone
+			JS (they still work within netscape). (rkw)
+			(Fixed by rkw, 4/9/02.)
+
+773 4/9/02	FIXED	JavaScreen: in the session bmrb/4096_side3h.ds,
+			enlarge residue selection cursor to full view, rotate
+			3D object, do 'r' in 3D view -> always seems to
+			generate warning about JS still talking to the
+			server. (rkw)
+			(This seems to show up in the stand-alone JS, but
+			not when running within Netscape(!).)
+			(Fixed by xuk, 4/10/02.)
+
+774 4/17/02	FIXED	JavaScreen has hard-coded '/p/devise' strings.
+			(rkw)
+			(Fixed by rkw, 4/18/02.)
+
+775 4/17/02	FIXED	JavaScreen: backspace key (to go to a view's previous
+			visual filter) doesn't work if there has been a
+			client switch since the view's filter was changed.
+			(rkw)
+			(Maybe related to bug 765?)
+			(Fixed by rkw, 4/19/02.)
+
+776 4/19/02	FIXED	JavaScreen: collaboration-related commands were not 
+			recorded in client command log file. (xuk)
+			(Fixed by xuk, 4/19/02.)
+
+777 4/23/02	FIXED	JavaScreen: when the JS has to repaint because of
+			an expose even on an X server with no backing store,
+			the repaint takes much longer than the initial
+			painting of the window (especially redrawing the
+			axes and the titles). (rkw)
+			(Fixed by xuk, 4/24/02.)
+
+778 4/26/02	OPEN	JavaScreen: collab password for leader is never set
+			to the default value in the applet (it is in the
+			stand-alone version). (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
@@ -3086,3 +3182,7 @@ NB = not (really) a bug.
 CD = can't duplicate (reproduce).
 DUP = duplicate of another bug
 NLR = no longer relevant
+
+
+
+

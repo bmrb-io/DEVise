@@ -30,6 +30,14 @@
   $Id$
 
   $Log$
+  Revision 1.23.4.1  2002/04/25 21:06:16  wenger
+  Totally re-did code for home on visual links -- fixed bug 749,
+  fix for bug 735 is much cleaner, fixed previously-unnoted bugs
+  in some other special cases.
+
+  Revision 1.23  2002/01/11 19:07:28  wenger
+  Fixed bug 735 (problems with home on piled views).
+
   Revision 1.22  2001/07/27 18:32:17  wenger
   Found and fixed bug 684 (problem with home on linked views).
 
@@ -318,72 +326,47 @@ void VisualLink::Run()
   _filterLocked = false;
 }
 
+/* Update the given visual filter based on the home values of views in
+ * this link. */
+
 void
-VisualLink::GoHome(ViewGraph *view, Boolean explicitRequest)
+VisualLink::GetHome2D(ViewGraph *view, VisualFilter &filter,
+    Boolean explicitRequest)
 {
 #if defined(DEBUG)
-  printf("VisualLink(%s)::GoHome(%s, %d)\n", GetName(), view->GetName(),
+  printf("VisualLink(%s)::GetHome2D(%s, %d)\n", GetName(), view->GetName(),
       explicitRequest);
 #endif
 
-  if (_filterLocked) {
-#if defined(DEBUG)
-    printf("  filter for visual link %s is locked\n", GetName());
+#if (DEBUG >= 4)
+  printf("  Filter is: (%g, %g), (%g, %g) before Link(%s)::GetHome2D()\n",
+      filter.xLow, filter.yLow, filter.xHigh, filter.yHigh, GetName());
 #endif
-	return;
-  }
-
-  DOASSERT(view->GetNumDimensions() == 2,
-      "VisualLink::GoHome() only works on 2D views");
-
-  // Get home of each view in the link, save the extremes.
-  double xMin = DBL_MAX;
-  double yMin = DBL_MAX;
-  double xMax = -DBL_MAX;
-  double yMax = -DBL_MAX;
 
   int index = _viewList->InitIterator();
   while (_viewList->More(index)) {
     ViewGraph *tmpView = (ViewGraph *)_viewList->Next(index);
-    if (view->GetNumDimensions() == 2) {
-      VisualFilter filter;
-      tmpView->GetHome2D(explicitRequest, filter);
+
+    // Note: we're excluding view here just for efficiency.  RKW 2002-04-25.
+    if ((tmpView != view) && (tmpView->GetNumDimensions() == 2)) {
+      VisualFilter tmpFilter;
+      tmpView->GetHome2D(explicitRequest, tmpFilter);
       if (_linkAttrs & VISUAL_X) {
-        xMin = MIN(xMin, filter.xLow);
-        xMax = MAX(xMax, filter.xHigh);
+        filter.xLow = MIN(filter.xLow, tmpFilter.xLow);
+        filter.xHigh = MAX(filter.xHigh, tmpFilter.xHigh);
       }
       if (_linkAttrs & VISUAL_Y) {
-        yMin = MIN(yMin, filter.yLow);
-        yMax = MAX(yMax, filter.yHigh);
+        filter.yLow = MIN(filter.yLow, tmpFilter.yLow);
+        filter.yHigh = MAX(filter.yHigh, tmpFilter.yHigh);
       }
     }
   }
   _viewList->DoneIterator(index);
-#if (DEBUG >= 4)
-    printf("Link {%s} filter: (%g, %g), (%g, %g)\n", GetName(), xMin, yMin,
-	    xMax, yMax);
-#endif
-
-  // Set the visual filter of the view that called us (it doesn't really
-  // matter which view in the link we set the filter for, because of the
-  // link).
-  VisualFilter filter;
-  view->GetVisualFilter(filter);
-  if (_linkAttrs & VISUAL_X) {
-    filter.xLow = xMin;
-    filter.xHigh = xMax;
-  }
-  if (_linkAttrs & VISUAL_Y) {
-    filter.yLow = yMin;
-    filter.yHigh = yMax;
-  }
 
 #if (DEBUG >= 4)
-    printf("Link {%s} final filter: (%g, %g), (%g, %g)\n", GetName(),
-	    filter.xLow, filter.yLow, filter.xHigh, filter.yHigh);
+  printf("  Filter is: (%g, %g), (%g, %g) after Link(%s)::GetHome2D()\n",
+      filter.xLow, filter.yLow, filter.xHigh, filter.yHigh, GetName());
 #endif
-
-  view->SetVisualFilter(filter);
 }
 
 

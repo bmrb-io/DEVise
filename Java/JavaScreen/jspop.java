@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -25,6 +25,40 @@
 // $Id$
 
 // $Log$
+// Revision 1.77.2.4  2002/04/19 20:50:49  xuk
+// Add new testings in autotest: enforced client switching, restore pre-collab
+// states for JS;
+// Split autotest scripts into 2 parts.
+//
+// Revision 1.77.2.3  2002/04/18 17:25:11  wenger
+// Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
+// temporary session files when the JSPoP and DEViseds are on different
+// machines).  Note: JS protocol version is now 11.0.
+//
+// Revision 1.77.2.2.2.2  2002/04/18 15:41:00  wenger
+// Further cleanup of JavaScreen temporary session file code (added
+// JAVAC_DeleteTmpSession command) (includes fixing bug 774).
+//
+// Revision 1.77.2.2.2.1  2002/04/17 17:45:56  wenger
+// DEVised, not JSPoP, now does the actual work of creating or clearing
+// the temporary session directory (new command from client to DEVised
+// means that communication protocol version is now 11.0).  (Client
+// switching is not working yet with this code because I need to change
+// how temporary sessions are saved and loaded.)
+//
+// Revision 1.77.2.2  2002/04/16 17:59:40  wenger
+// Added command-line argument for client kill interval to the JSPoP.
+//
+// Revision 1.77.2.1  2002/04/12 16:08:50  wenger
+// Lots of cleanup to the heartbeat checking code -- tested killing a
+// client because the heartbeat timeout expired, and because we have
+// too many clients.
+//
+// Revision 1.77  2002/03/20 22:12:25  xuk
+// Added automatic collaboration functionality.
+// Added collabNames vector, findClientByCollabName() method;
+// Modified setUpCollab() and getCollabLeaders() methods.
+//
 // Revision 1.76  2002/01/24 23:03:36  xuk
 // *** empty log message ***
 //
@@ -366,6 +400,8 @@ public class jspop implements Runnable
       "  -jspopport<number>: port on which jspop listens for jss connections\n    (default: " + DEViseGlobals.JSPOPPORT + ")\n" +
       "  -maxclient<number>: maximum number of client objects (default: " +
       DEViseGlobals.DEFAULTMAXCLIENT + ")\n" +
+      "  -killint<number>: client kill interval in hours (<= 0 to disable)\n" +
+      "    (default: 24.0)\n" +
       "  -usage: print this message");
     // -CMDPORT[port]:
     //      port: The command port, if blank, use the defaults
@@ -418,6 +454,10 @@ public class jspop implements Runnable
 
     // Maximum number of client objects allowed.
     private int maxClient = DEViseGlobals.DEFAULTMAXCLIENT;
+
+    // Number of milliseconds we can go without getting a client heartbeat
+    // before we kill that client.
+    private int _killInterval = DEViseGlobals.KILLINTERVAL;
 
     private int _popCmdPort = 0;
 
@@ -499,37 +539,18 @@ public class jspop implements Runnable
 
     //----------------------------------------------------------------------
 
+    public int getCmdPort()
+    {
+        return _popCmdPort;
+    }
+
+    //----------------------------------------------------------------------
+
     public jspop(String[] args)
     {
         System.out.println("\nChecking command line arguments ...\n");
         checkArguments(args);
         System.out.println("\nmaxclient value is " + maxClient);
-
-        try {
-            InetAddress address = InetAddress.getLocalHost();
-	
-	    // create a new subdir for temporary session files
-	    String dir = "/p/devise/demo/session.js/.tmp/" +
-		address.getHostName() + _popCmdPort;
-	    sessionDir = ".tmp/" + address.getHostName() + _popCmdPort;
-
-	    File td = new File(dir);
-	    if (td.exists()) {
-		String[] files = td.list();
-		for (int i=0; i<files.length; i++) {
-		    String filename = dir + "/" + files[i];
-		    File file = new File(filename);
-		    file.delete();
-		}
-		System.out.println("\nSession directory exists. All temporary files are deleted.\n");
-	    } else {
-		td.mkdir(); 
-		System.out.println("\nWe successfully create " + dir + "  for this jspop \n");
-	    }
-	} catch (UnknownHostException e) {
-            System.out.println("Can not start jspop - unknown local host!");
-            System.exit(1);
-        }
 
         System.out.println("\nStarting command server socket on " + _popCmdPort + " ...\n");
         try {
@@ -703,16 +724,38 @@ public class jspop implements Runnable
 
 	    handleConnection(socket1, hostname);
 	  
-	    if (getClientCount() > maxClient) {
-	        closeOldestClient();
+	    // client count?
+	    if (getClientCount() >= maxClient) {
+	        killOldestClient();
 	    }
 
-	    //TEMPTEMP -- is this the right place to do this???
-            //TEMPTEMP? checkHeartbeats();
+	    //
+	    // Kill off any clients that we haven't gotten heartbeats from
+	    // for a while.
+	    //
+            checkHeartbeats();
 
         } // while
 
         quit(quitID);
+    }
+
+    // Send a stateless command (one that has nothing to do with client
+    // state) to a randomly-selected server.
+    public void sendStatelessCmd(String cmd) throws YException
+    {
+        if (DEBUG >= 2) {
+	    System.out.println("jspop.sendStatelessCmd(" + cmd + ")");
+	}
+
+	// Randomly pick a server.
+	int serverCount = servers.size();
+	int serverNum = (int)((new Random()).nextFloat() * serverCount);
+	serverNum %= serverCount; // make *sure* it's legal
+
+	// Send the command.
+	DEViseServer server = (DEViseServer)servers.elementAt(serverNum);
+	server.sendStatelessCmd(cmd);
     }
 
     private void handleConnection(Socket socket1, String hostname)
@@ -743,50 +786,62 @@ public class jspop implements Runnable
         }
     }
 
+    // Check the heartbeat times of all clients; if we haven't gotten a
+    // heartbeat for _killInterval milliseconds, kill that client object (on
+    // the assumption that the actual applet has died, or we've lost
+    // communication with it).
     private void checkHeartbeats()
     {
-	Date date = new Date();
-	long runTime = date.getTime();
-	long presentTime, passTime;
+	if (DEBUG >= 2) {
+	    System.out.println("jspop.checkHeartbeats()");
+	}
 
-        // check heart-beat of every client
-        DEViseServer server = null;
-        DEViseClient client = null;
-	    
-        date = new Date();
-        presentTime = date.getTime();
-        passTime = presentTime-runTime;
+	long presentTime = (new Date()).getTime();
 
-        if (passTime>DEViseGlobals.CHECKINTERVAL) { // passed 10 minutes
-	    runTime = presentTime;
-	    //TEMP -- probably shouldn't check the active ones
-	    // firstly the active ones	    
-	    for ( int i=0; i<servers.size(); i++ ) {
-	        server = (DEViseServer) servers.elementAt(i);
-	        client = (DEViseClient) server.getCurrentClient();
-	        if (client != null) {
-		    passTime = presentTime-client.getHeartbeat();
-		    if (passTime > DEViseGlobals.KILLINTERVAL) { // passed 60 minutes
-		        try {
-			    //TEMP -- is this the right way to shut things down???
-			    server.cmdExit();
-		        } catch (YException e) {
-		        }
-		    }
-	        }
+	boolean killedAClient = false;
+
+	//
+	// Create a list of all clients so we can check both active and
+	// suspended clients without having duplicate code.
+	//
+	Vector allClients = new Vector(activeClients.size() +
+	  suspendClients.size());
+
+        for (int index = 0; index < activeClients.size(); index++) {
+	    allClients.addElement(activeClients.elementAt(index));
+	}
+
+        for (int index = 0; index < suspendClients.size(); index++) {
+	    allClients.addElement(suspendClients.elementAt(index));
+	}
+
+	//
+	// Okay, now go through the list and kill off any clients that
+	// haven't sent a heartbeat for a long time
+	// (_killInterval milliseconds).
+	//
+	for (int index = 0; index < allClients.size(); index++) {
+	    DEViseClient client =
+	      (DEViseClient)allClients.elementAt(index);
+	    long sinceHeartbeat = presentTime-client.getHeartbeat();
+	    if (_killInterval > 0 && sinceHeartbeat > _killInterval) {
+		pn("Killing client " + client.getConnectionID() +
+		  " because heartbeat interval is too long");
+		killedAClient = true;
+		killClient(client);
 	    }
-		
-	    // for suspended ones
-	    for (int i = 0; i < suspendClients.size(); i++) {
-	        client = (DEViseClient) suspendClients.elementAt(i);
-	        if (client != null) {
-		    passTime = presentTime-client.getHeartbeat();
-		    if (passTime > DEViseGlobals.KILLINTERVAL) { // passed 60 minutes
-		        client.close();
-		    }
-	        }
-	    }
-        }
+	}
+
+	//
+	// Note: killed clients will actually be removed from the client
+	// list in getNextRequestingClient().  We don't *really* need
+	// to call this here, because it will be called later, but it's
+	// kind of weird to kill off a client and then still have it in
+	// the clients list.  RKW 2002-04-11.
+	//
+        if (killedAClient) {
+	    getNextRequestingClient();
+	}
     }
 
     //----------------------------------------------------------------------
@@ -857,8 +912,11 @@ public class jspop implements Runnable
 	    DEViseClient tmpClient =
 	      (DEViseClient) activeClients.elementAt(i);
 	    if (tmpClient != null) {
-	        if (tmpClient.getCollabName().equals(name)) {
-		    return tmpClient;
+		String collabName = tmpClient.getCollabName();
+		pn("get collabname = " + collabName);
+		if (collabName != null)
+		    if (collabName.equals(name)) {
+			return tmpClient;
 		}
 	    }
 	}
@@ -867,8 +925,11 @@ public class jspop implements Runnable
 	    DEViseClient tmpClient =
 	      (DEViseClient) suspendClients.elementAt(i);
 	    if (tmpClient != null) {
-	        if (tmpClient.getCollabName().equals(name)) {
-		    return tmpClient;
+		String collabName = tmpClient.getCollabName();
+		pn("get collabname = " + collabName);
+		if (collabName != null)
+		    if (collabName.equals(name)) {
+			return tmpClient;
 		}
 	    }
 	}
@@ -993,7 +1054,7 @@ public class jspop implements Runnable
             System.gc();
 
             if (debugLevel >= 1) {
-                System.out.println("jspop state: " + getServerState());
+                System.out.println("jspop state: " + getServerState(true));
 	    }
 	}
 
@@ -1155,20 +1216,26 @@ public class jspop implements Runnable
     }
 
     //----------------------------------------------------------------------
+    public String getServerState()
+    {
+        return getServerState(false);
+    }
 
-    // State string contains the following info:
+    // State string contains the following info (if not verbose):
     //   - number of servers
     //   - hostname and client ID of each server
     //   - total number of client objects
     //   - number of active clients
     //   - ID and hostname of each active client
     //   - number of suspended clients
-    //   - ID and hostname of each suspended client
-    public String getServerState()
+    //   - ID and hostname of each suspended client, and whether the client's
+    //     command buffer is empty
+    public String getServerState(boolean verbose)
     {
         String state = "{";
 
-        state = state + servers.size() + " ";
+        state += servers.size() + " ";
+	if (verbose) state += " servers: ";
         for (int i = 0; i < servers.size(); i++) {
 	    state += "{";
             DEViseServer server = (DEViseServer)servers.elementAt(i);
@@ -1186,9 +1253,12 @@ public class jspop implements Runnable
 	    state += "} ";
         }
 
-	state += DEViseClient.getObjectCount() + " ";
+	int totalClients = activeClients.size() + suspendClients.size();
+	state += totalClients + " ";
+	if (verbose) state += "total clients ";
 
         state = state + activeClients.size() + " ";
+	if (verbose) state += "active clients: ";
         for (int i = 0; i < activeClients.size(); i++) {
             DEViseClient client = (DEViseClient)activeClients.elementAt(i);
 	    state += "{" + client.getConnectionID() + " ";
@@ -1201,6 +1271,7 @@ public class jspop implements Runnable
         }
 
         state = state + suspendClients.size() + " ";
+	if (verbose) state += "suspended clients: ";
         for (int i = 0; i < suspendClients.size(); i++) {
             DEViseClient client = (DEViseClient)suspendClients.elementAt(i);
 	    state += "{" + client.getConnectionID() + " ";
@@ -1213,6 +1284,10 @@ public class jspop implements Runnable
             }
 	    state += "} ";
         }
+
+	if (verbose) {
+	    state += DEViseClient.getObjectCount() + " client objects ";
+	}
 
         state = state + "}";
         return state;
@@ -1235,7 +1310,7 @@ public class jspop implements Runnable
 	// eventually it gets moved from there to the active clients list.
 	addClient(client);
 
-        System.out.println("jspop state: " + getServerState());
+        System.out.println("jspop state: " + getServerState(true));
 
 	return client;
     }
@@ -1270,13 +1345,14 @@ public class jspop implements Runnable
 	return id;
     }
 
+    //TEMPTEMP -- put this and check heartbeat next to each other
     //----------------------------------------------------------------------
     // Close the client that has been inactive for the longest period of
     // time.
-    private void closeOldestClient()
+    private void killOldestClient()
     {
         if (debugLevel >= 1) {
-	    System.out.println("jspop.closeOldestClient()");
+	    System.out.println("jspop.killOldestClient()");
 	}
 
 	//
@@ -1313,10 +1389,19 @@ public class jspop implements Runnable
         }
 
 	if (oldestClient != null) {
-	    System.out.println("Closing client " +
+	    System.out.println("Killing client " +
 	      oldestClient.getConnectionID() +
 	      " because maxclients limit has been reached");
-	    oldestClient.close();
+	    killClient(oldestClient);
+
+	    //
+	    // Note: killed clients will actually be removed from the client
+	    // list in getNextRequestingClient().  We don't *really* need
+	    // to call this here, because it will be called later, but it's
+	    // kind of weird to kill off a client and then still have it in
+	    // the clients list.  RKW 2002-04-11.
+	    //
+	    getNextRequestingClient();
 	}
     }
 
@@ -1414,6 +1499,24 @@ public class jspop implements Runnable
 		    System.err.println("Please specify 'on' or 'off' for the -clientlog argument");
                     System.exit(1);
 		}
+            } else if (args[i].startsWith("-killint")) {
+                if (!args[i].substring(8).equals("")) {
+                    try {
+			float hours = Float.valueOf(args[i].substring(8)).
+			  floatValue();
+			if (hours < 0.0) {
+			    // Infinite time.
+			    _killInterval = 0;
+			} else {
+			    // Hours to milliseconds conversion.
+			    _killInterval = (int)(hours * 60 * 60 * 1000);
+			}
+                    } catch (NumberFormatException e) {
+		        System.err.println("Please specify a numerical " +
+			  "value for the -killint argument");
+                        System.exit(1);
+                    }
+                }
             } else if (args[i].startsWith("-usage")) {
                 System.out.println(usage);
                 System.exit(0);
@@ -1583,7 +1686,6 @@ public class jspop implements Runnable
 	long id = 0;
 
 	String[] cmds = DEViseGlobals.parseString(cmd);
-	pn("cmd[1] = " + cmds[1] + " cmd[2] = " + cmds[2]);
 	int flag = new Integer(cmds[1]).intValue();
 	
 	if (flag == 2) { // use collab-name to identify leader
@@ -1655,6 +1757,54 @@ public class jspop implements Runnable
             System.out.println(e.getMsg());
         }
     }
+
+    // Cleanly kill the specified client, whether it's active or suspended.
+    private void killClient(DEViseClient client)
+    {
+	if (DEBUG >= 2) {
+	    System.out.println("jspop.killClient(" +
+	      client.getConnectionID() + ")");
+	}
+
+        if (activeClients.contains(client)) {
+	    if (DEBUG >= 3) {
+	        System.out.println("  Killing active client");
+	    }
+
+	    DEViseServer server = findServerOfClient(client);
+	    if (server != null) {
+	        try {
+	            server.cmdExit();
+	        } catch (YException e) {
+	            System.err.println("Error closing client " +
+		      client.getConnectionID() + ": " + e.getMessage());
+	        }
+	    } else {
+	        System.err.println(
+		  "Error: no server found for client in active clients list!");
+	    }
+	} else {
+	    if (DEBUG >= 3) {
+	        System.out.println("  Killing suspended client");
+	    }
+
+	    client.close();
+	}
+    }
+
+    // Find the server (if any) of the given client.
+    DEViseServer findServerOfClient(DEViseClient client)
+    {
+        DEViseServer result = null;
+
+        for (int index = 0; index < servers.size(); index++) {
+	    DEViseServer server = (DEViseServer)servers.elementAt(index);
+	    if (server.getCurrentClient() == client) {
+		result = server;
+	        break;
+	    }
+	}
+
+	return result;
+    }
 }
-
-

@@ -28,9 +28,11 @@ ln -s ../common/lib .
 ln -s ../common/run .
 
 mkdir tcl
-cp -p /s/tcl/lib/tcl8.3/*.tcl tcl
+cp -p -r /s/tcl/lib/tcl8.3/* tcl
+rm -rf tcl/encoding
 mkdir tk
-cp -p /s/tcl/lib/tk8.3/*.tcl tk
+cp -p -r /s/tcl/lib/tk8.3/* tk
+rm -rf tk/demos tk/images
 
 mkdir bin
 cd bin

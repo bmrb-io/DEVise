@@ -17,6 +17,16 @@
 
 // ------------------------------------------------------------------------
 // $Log$
+// Revision 1.13.2.2  2002/04/19 20:47:23  xuk
+// Process JAVAC_CollabExit and JAVAC_Collaborate commands before sending out.
+// Set proper state for JS.
+//
+// Revision 1.13.2.1  2002/04/12 15:56:52  xuk
+// Improvement for autotest.
+//
+// Revision 1.13  2002/01/24 23:00:42  xuk
+// *** empty log message ***
+//
 // Revision 1.12  2001/11/29 17:37:13  xuk
 // DEViseCommands.CONNECT command is not a special case now
 //
@@ -139,15 +149,19 @@ public class DEVisePlayback implements Runnable
 	        } else {
 	            gap = 1;
 	        }
-	        _jsc.pn("  We are going to sleep " + gap + " ms");
+
+		_jsc.pn("  We are going to sleep " + gap + " ms" +
+			" and going to execute command " + cmd.command);
+
 		if (DEBUG >= 1) {
-	            System.out.println("  We are going to sleep " + gap +
-		      " ms");
+		    System.out.println("  We are going to sleep " + gap +
+				       " ms");
 		}
-	        Thread.sleep(gap);
-	        pretime = cmd.timestamp;		
-		    
-	        if ( // cmd.command.startsWith(DEViseCommands.CONNECT) ||
+		
+		Thread.sleep(gap);
+		pretime = cmd.timestamp;	
+		
+		if ( // cmd.command.startsWith(DEViseCommands.CONNECT) ||
 	          cmd.command.startsWith(DEViseCommands.GET_SESSION_LIST) ||
 	          cmd.command.startsWith(DEViseCommands.EXIT) ) {
 
@@ -155,6 +169,33 @@ public class DEVisePlayback implements Runnable
 		    // Special case -- don't execute these commands.
 		    //
 		    continue;
+		} else if ( cmd.command.startsWith(DEViseCommands.COLLAB_EXIT) ) {
+		    //
+		    // Special case -- clear the JS for reopening at
+		    // client side.
+		    //
+		    _jsc.socketMode();
+		    _jsc.specialID = -1;
+		    _jsc.collabinterrupted = true;
+		    _jsc.dispatcher.dispatcherThread.interrupt();
+		    
+		    _jsc.animPanel.stop();
+		    _jsc.stopButton.setBackground(_jsc.jsValues.uiglobals.bg);
+		    _jsc.jscreen.updateScreen(false);
+		    _jsc.dispatcher.setStatus(0);
+		    
+		    if (_jsc.sessionSaved) {
+			_jsc.isSessionOpened = true;
+			_jsc.sessionSaved = false;
+		    }
+		    
+		    try {
+			_jsc.pn("Sending: \"" + DEViseCommands.COLLAB_EXIT +"\"");
+			_dispatcher.sockSendCmd(DEViseCommands.COLLAB_EXIT);
+			_jsc.restoreDisplaySize();
+		    } catch (YException e) {
+			_jsc.showMsg(e.getMsg());
+		    }
 
 	        } else if ( cmd.command.startsWith(DEViseCommands.SET_3D_CONFIG) ) {
 
@@ -177,7 +218,19 @@ public class DEVisePlayback implements Runnable
 			    _jsc.jsValues.uiglobals.screenSize.height + " " + 
 			    _jsc.jsValues.uiglobals.screenRes + " " + 
 			    _jsc.jsValues.uiglobals.screenRes;
-		    }
+		    } 	    
+		    else if ( cmd.command.startsWith(DEViseCommands.COLLABORATE) ) {
+			//
+			// Special case -- clear the JS for collaboration 
+			// set temp specialID
+			//
+			_jsc.specialID = 0;
+			
+			if (_jsc.isSessionOpened ) {
+			    _jsc.jscreen.updateScreen(false);
+			    _jsc.sessionSaved = true;
+			}
+		    } 
 
 		    //
 		    // Check whether dispatcher is still running.
@@ -190,8 +243,9 @@ public class DEVisePlayback implements Runnable
 		    //
 		    // Send the command to the JSPoP.
 		    //
+		    
 		    _dispatcher.start(cmd.command);
-	        }
+		}
 	    }
 
 	    _logFile.close();
@@ -228,7 +282,7 @@ public class DEVisePlayback implements Runnable
 	    _jsc.socketMode();
 
 	    // TEMP: destroy JS on exit.
-	    _jsc.destroy();
+	     _jsc.destroy();
 
 	    stop();
 	}
@@ -244,6 +298,7 @@ public class DEVisePlayback implements Runnable
 	JSCommand cmd = null;
 
         String timeLine = readLine();
+
 	if (timeLine != null) {
 	    String cmdLine = readLine();
 	    if (cmdLine != null) {

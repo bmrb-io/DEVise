@@ -21,6 +21,35 @@
   $Id$
 
   $Log$
+  Revision 1.131.2.1  2002/04/18 17:25:44  wenger
+  Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
+  temporary session files when the JSPoP and DEViseds are on different
+  machines).  Note: JS protocol version is now 11.0.
+
+  Revision 1.131.6.4  2002/04/18 15:41:24  wenger
+  Further cleanup of JavaScreen temporary session file code (added
+  JAVAC_DeleteTmpSession command) (includes fixing bug 774).
+
+  Revision 1.131.6.3  2002/04/17 20:14:48  wenger
+  Implemented new JAVAC_OpenTmpSession command to go along with
+  JAVAC_SaveTmpSession (so the JSPoP doesn't need to have any info about
+  the path of the temporary session directory relative to the base
+  session directory).
+
+  Revision 1.131.6.2  2002/04/17 19:14:11  wenger
+  Changed JAVAC_SaveSession command to JAVAC_SaveTmpSession (path is
+  now relative to temp session directory, not main session directory).
+
+  Revision 1.131.6.1  2002/04/17 17:46:28  wenger
+  DEVised, not JSPoP, now does the actual work of creating or clearing
+  the temporary session directory (new command from client to DEVised
+  means that communication protocol version is now 11.0).  (Client
+  switching is not working yet with this code because I need to change
+  how temporary sessions are saved and loaded.)
+
+  Revision 1.131  2002/03/11 23:06:17  wenger
+  DEVised logs current session file on JavaScreen support errors.
+
   Revision 1.130  2002/03/06 18:56:42  wenger
   Changed JavaScreen protocol version from 11.0 to 10.1 (to allow backwards
   compatibility with previous DEVised, because the new JAVAC_UpdateJS
@@ -616,6 +645,7 @@
 #include "ElapsedTime.h"
 #include "DrillDown3D.h"
 #include "TData.h"
+#include "Util.h"
 
 //#define DEBUG
 #define DEBUG_LOG
@@ -648,10 +678,14 @@ static DeviseCursorList _drawnCursors;
 // Assume no more than 1000 views in a pile...
 static const float viewZInc = 0.001;
 
-static const int protocolMajorVersion = 10;
-static const int protocolMinorVersion = 1;
+static const int protocolMajorVersion = 11;
+static const int protocolMinorVersion = 0;
 
 JavaScreenCache JavaScreenCmd::_cache;
+
+static char *_baseSessionDir = NULL;
+static char *_tmpSessionDirBase = NULL;
+static char *_tmpSessionDir = NULL;
 
 // be very careful that this order agrees with the ServiceCmdType definition
 char *JavaScreenCmd::_serviceCmdName[] =
@@ -666,7 +700,7 @@ char *JavaScreenCmd::_serviceCmdName[] =
     "JAVAC_CloseCurrentSession",
     "JAVAC_SetDisplaySize",
     "JAVAC_KeyAction",
-    "JAVAC_SaveSession",
+    "JAVAC_SaveTmpSession",
     "JAVAC_ServerExit",
     "JAVAC_ServerCloseSocket",
     "JAVAC_ImageChannel",
@@ -676,6 +710,9 @@ char *JavaScreenCmd::_serviceCmdName[] =
     "JAVAC_GetViewHelp",
     "JAVAC_Set3DConfig",
     "JAVAC_RefreshData",
+    "JAVAC_CreateTmpSessionDir",
+    "JAVAC_OpenTmpSession",
+    "JAVAC_DeleteTmpSession",
     "null_svc_cmd"
 };
 
@@ -1162,6 +1199,37 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
         strncpy(_argv[i], argv[i]+startPos +1, copyLen);
 		_argv[i][copyLen] = '\0';
     }
+
+	//
+	// Find session directory paths.
+	//
+	if (_baseSessionDir == NULL) {
+	    _baseSessionDir = getenv("DEVISE_SESSION");
+		if (_baseSessionDir == NULL) {
+		    reportErrNosys("DEVISE_SESSION enviroment variable is not set");
+			Exit::DoExit(1);
+		}
+	}
+
+	if (_tmpSessionDirBase == NULL) {
+		_tmpSessionDirBase = getenv("DEVISE_TMP_SESSION");
+		if (_tmpSessionDirBase == NULL) {
+			const char *tmpPath = ".tmp";
+
+			int length = strlen(_baseSessionDir) + 1 + strlen(tmpPath) + 1;
+			_tmpSessionDirBase = new char[length];
+			int formatted = snprintf(_tmpSessionDirBase, length, "%s/%s",
+			  _baseSessionDir, tmpPath);
+			checkAndTermBuf(_tmpSessionDirBase, length, formatted);
+
+			char errBuf[MAXPATHLEN * 2];
+			formatted = snprintf(errBuf, MAXPATHLEN * 2,
+			  "Warning: DEVISE_TMP_SESSION environment variable is not set;"
+			  " using %s", _tmpSessionDirBase);
+			checkAndTermBuf(errBuf, MAXPATHLEN * 2, formatted);
+		    reportErrNosys(errBuf);
+		}
+	}
 }
 
 //====================================================================
@@ -1223,8 +1291,8 @@ JavaScreenCmd::Run()
 		case KEYACTION:
 			KeyAction();
 			break;
-		case SAVESESSION:
-			SaveSession();
+		case SAVETMPSESSION:
+			SaveTmpSession();
 			break;
 		case SERVEREXIT:
 			ServerExit();
@@ -1252,6 +1320,15 @@ JavaScreenCmd::Run()
 			break;
 		case REFRESH_DATA:
 			RefreshData();
+			break;
+		case CREATE_TMP_SESSION_DIR:
+			CreateTmpSessionDir();
+			break;
+		case OPEN_TMP_SESSION:
+			OpenTmpSession();
+			break;
+		case DELETE_TMP_SESSION:
+			DeleteTmpSession();
 			break;
 		default:
 			fprintf(stderr, "Undefined JAVA Screen Command:%d\n", _ctype);
@@ -1308,13 +1385,11 @@ JavaScreenCmd::OpenSession()
 		return;
 	}
 
-	const char *basePath = getenv("DEVISE_SESSION");
-
 	// If the given filename is a directory, send back a list of the
 	// contents of that directory; otherwise, assume the file is a
 	// session file and go ahead and open it.
 	char fullpath[MAXPATHLEN];
-	sprintf(fullpath, "%s/%s", basePath, _argv[0]);
+	sprintf(fullpath, "%s/%s", _baseSessionDir, _argv[0]);
 
 	struct stat buf;
 	if (stat(fullpath, &buf) != 0) {
@@ -1331,6 +1406,36 @@ JavaScreenCmd::OpenSession()
 		    DoOpenSession(fullpath);
 	    }
 	}
+}
+
+//====================================================================
+void
+JavaScreenCmd::OpenTmpSession()
+{
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	  "JavaScreenCmd::OpenTmpSession(", _argc, _argv, ")\n");
+#endif
+
+	if (_argc != 1)
+	{
+		errmsg = "Usage: JAVAC_OpenTmpSession <session name>";
+		_status = ERROR;
+		return;
+	}
+
+	const int bufLen = MAXPATHLEN;
+	char fullpath[bufLen];
+	int formatted = snprintf(fullpath, bufLen, "%s/%s", _tmpSessionDir,
+	  _argv[0]);
+    if (formatted >= bufLen) {
+		errmsg = "File path is too long";
+		_status = ERROR;
+		return;
+	}
+
+    printf("Session %s requested!\n", fullpath);
+    DoOpenSession(fullpath);
 }
 
 //====================================================================
@@ -1789,11 +1894,11 @@ JavaScreenCmd::KeyAction()
 
 //====================================================================
 void
-JavaScreenCmd::SaveSession()
+JavaScreenCmd::SaveTmpSession()
 {
 #if defined (DEBUG_LOG)
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
-	  "JavaScreenCmd::SaveSession(", _argc, _argv, ")\n");
+	  "JavaScreenCmd::SaveTmpSession(", _argc, _argv, ")\n");
 #endif
 
 	Boolean saveSelView;
@@ -1802,15 +1907,26 @@ JavaScreenCmd::SaveSession()
 	} else if (_argc == 2) {
 		saveSelView = atoi(_argv[1]);
 	} else {
-		errmsg = "Usage: JAVAC_SaveSession <file name> [save selected view]";
+		errmsg = "Usage: JAVAC_SaveTmpSession <file name> [save selected view]";
 		_status = ERROR;
 		return;
 	}
 
-	const char *basePath = getenv("DEVISE_SESSION");
+	if (strstr(_argv[0], "..")) {
+		errmsg = "JAVAC_SaveTmpSession file name cannot contain '..'";
+		_status = ERROR;
+		return;
+	}
 
-	char fullpath[MAXPATHLEN];
-	sprintf(fullpath, "%s/%s", basePath, _argv[0]);
+	const int bufLen = MAXPATHLEN;
+	char fullpath[bufLen];
+	int formatted = snprintf(fullpath, bufLen, "%s/%s", _tmpSessionDir,
+	  _argv[0]);
+    if (formatted >= bufLen) {
+		errmsg = "File path is too long";
+		_status = ERROR;
+		return;
+	}
 
 	if (!Session::Save(fullpath, false, false, false,
 	  saveSelView).IsComplete()) {
@@ -2806,16 +2922,14 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
     printf("JavaScreenCmd::UpdateSessionList(%s)\n", dirName);
 #endif
 
-	const char *basePath = getenv("DEVISE_SESSION");
-
 	//
 	// Add the specified directory name onto the current directory.
 	//
 	char newPath[MAXPATHLEN];
 	if (dirName != NULL) {
-	    sprintf(newPath, "%s/%s", basePath, dirName);
+	    sprintf(newPath, "%s/%s", _baseSessionDir, dirName);
 	} else {
-	    strcpy(newPath, basePath);
+	    strcpy(newPath, _baseSessionDir);
 	}
 
     //
@@ -2842,7 +2956,7 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 		reportErrSys(errBuf);
 
 	    // Reset things to the "base" session directory and try again.
-		sessionDir = getenv("DEVISE_SESSION");
+		sessionDir = _baseSessionDir;
 	    directory = opendir(sessionDir);
 	}
 	if (directory == NULL) {
@@ -3548,6 +3662,77 @@ JavaScreenCmd::RefreshData()
     FreeArgs(classArgc, classArgv);
 
 	PostRedraw();
+}
+
+//====================================================================
+// Process a JAVAC_CreateTmpSessionDir command that we received.
+void
+JavaScreenCmd::CreateTmpSessionDir()
+{
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	  "JavaScreenCmd::CreateTmpSessionDir(", _argc, _argv, ")\n");
+#endif
+
+	if (_argc != 2) {
+		errmsg = "Usage: JAVAC_CreateTmpSessionDir <jspop hostname> <jspop cmd port>";
+		_status = ERROR;
+		return;
+	}
+
+    const char *popMachine = _argv[0];
+	const char *popPort = _argv[1];
+
+	// Length of final temp session string buffer (first 1 is for '/').
+	int length = strlen(_tmpSessionDirBase) + 1 + strlen(popMachine) +
+	  strlen(popPort) + 1;
+
+	_tmpSessionDir = new char[length];
+	int formatted = snprintf(_tmpSessionDir, length, "%s/%s%s",
+	  _tmpSessionDirBase, popMachine, popPort);
+	checkAndTermBuf(_tmpSessionDir, length, formatted);
+
+	printf("Creating or clearing temporary session directory %s\n",
+	  _tmpSessionDir);
+
+    CheckAndMakeDirectory(_tmpSessionDir, true);
+}
+
+//====================================================================
+// Process a JAVAC_DeleteTmpSession command that we received.
+void
+JavaScreenCmd::DeleteTmpSession()
+{
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	  "JavaScreenCmd::DeleteTmpSession(", _argc, _argv, ")\n");
+#endif
+
+	if (_argc != 1) {
+		errmsg = "Usage: JAVAC_DeleteTmpSession <session file>";
+		_status = ERROR;
+		return;
+	}
+
+	const int bufLen = MAXPATHLEN;
+	char fullpath[bufLen];
+	int formatted = snprintf(fullpath, bufLen, "%s/%s", _tmpSessionDir,
+	  _argv[0]);
+    if (formatted >= bufLen) {
+		errmsg = "File path is too long";
+		_status = ERROR;
+		return;
+	}
+
+	if (access(fullpath, F_OK) == 0) {
+	    int result = unlink(fullpath);
+	    if (result != 0) {
+		    errmsg = "Error removing temporary session file";
+		    _status = ERROR;
+
+	        reportErrSys(errmsg);
+	    }
+	}
 }
 
 //====================================================================

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -27,6 +27,36 @@
 // $Id$
 
 // $Log$
+// Revision 1.91.2.6  2002/04/24 20:06:36  xuk
+// Fixed bug 777: avoid long waiting time for repainting in DEViseCanvas
+// Handle double-buffering in paint();
+// Added paintCanvas() method for painting.
+//
+// Revision 1.91.2.5  2002/04/10 17:30:19  xuk
+// Fixed bug 773.
+//
+// Revision 1.91.2.4  2002/04/09 18:21:39  wenger
+// 'C'/'c' (full cursor) and <backspace> (last visual filter) keys now
+// work in views that have key actions disabled (other key actions are
+// still disabled); cleaned up JavaScreen key event handling code; fixed
+// bug 772; hopefully fixed first part of bug 765; JavaScreen now allows
+// 'C'/'c' and <backspace> keys even in views with key actions disabled;
+// JS tells user if they attempt a key action in a view where key actions
+// are disabled (bug 770).
+//
+// Revision 1.91.2.3  2002/04/04 16:59:11  xuk
+// Fixed bug 769: use Shift-drag as an alternative to Alt-drag.
+//
+// Revision 1.91.2.2  2002/04/02 22:51:25  xuk
+// Fixed bug 762 and 763.
+//
+// Revision 1.91.2.1  2002/03/30 19:16:05  xuk
+// Fix bugs for displaying axis labels for very small values.
+//
+// Revision 1.91  2002/03/01 19:58:48  xuk
+// Added new command DEViseCommands.UpdateJS to update JavaScreen after
+// a DEViseCommands.Open_Session or DEViseCommands.Close_Session command.
+//
 // Revision 1.90  2002/02/20 18:08:39  xuk
 // Improvement on axis label drawing.
 //
@@ -360,7 +390,6 @@ import  java.text.*;
 
 public class DEViseCanvas extends Container
 {
-
     private jsdevisec jsc = null;
     private DEViseScreen jscreen = null;
     private DEViseCmdDispatcher dispatcher = null;
@@ -533,7 +562,24 @@ public class DEViseCanvas extends Container
         }
     }
 
+    // enable double-buffering w/o calling update
     public void paint(Graphics gc)
+    {
+        if (gc == null) {
+            return;
+        }
+
+        if (offScrImg == null) {
+            offScrImg = createImage(canvasDim.width, canvasDim.height);
+        }
+
+	Graphics og = offScrImg.getGraphics();
+	paintCanvas(og);
+	gc.drawImage(offScrImg, 0, 0, this);
+	og.dispose();
+    }
+
+    public void paintCanvas(Graphics gc)
     {
 	// for command log playback
 	if (jsc.isPlayback && !jsc.isDisplay) {
@@ -555,7 +601,7 @@ public class DEViseCanvas extends Container
 
         // draw the background image
         paintBackground(gc);
-
+	
         // draw titles for all views, including view symbols but not piled views
         paintTitle(gc);
 
@@ -573,67 +619,9 @@ public class DEViseCanvas extends Container
 
         paintHelpMsg(gc);
 
+	// draw sxis lables
 	paintAxisLable(gc);
     }
-
-/* - untouched
-    private void paintHelpMsg(Graphics gc)
-    {
-        if (helpMsg == null) {
-            return;
-        }
-
-        if (helpMsgX < 0) {
-            helpMsgX = 0;
-        }
-        if (helpMsgY < 0) {
-            helpMsgY = 0;
-        }
- 
-        Toolkit tk = Toolkit.getDefaultToolkit();
-        FontMetrics fm = tk.getFontMetrics(DEViseUIGlobals.textFont);
-        int ac = fm.getAscent(), dc = fm.getDescent(), height = ac + dc + 12;
-        int width = fm.stringWidth(helpMsg) + 12;
-	int charInCol = width/100  * 12;
-        int scrWidth = 	this.getLocInScreen().width;
-	int scrHeight = this.getLocInScreen().height;
-	if(helpMsg.length()/12 * height >  scrHeight){ 
-		return; 
-	}
-        if(scrWidth > width ||( scrWidth > 200  &&  scrHeight > 60)){ 			 
-            StringTokenizer helper = new StringTokenizer(helpMsg, "\n");
-	    while(helper.hasMoreTokens()){
-	        String smallhelp = helper.nextToken();
-	        String sh1 = smallhelp;
-                if((fm.stringWidth(sh1)+12) > scrWidth){ 
-	            sh1= smallhelp.substring(0, smallhelp.length()/2);
-                    gc.setColor(Color.black);
-                    gc.drawRect(helpMsgX, helpMsgY, width - 1, height - 1);
-                    gc.setColor(new Color(255, 255, 192));
-                    gc.fillRect(helpMsgX + 1, helpMsgY + 1, width - 2, height - 2);
-                    gc.setColor(Color.black);
-                    gc.setFont(DEViseUIGlobals.textFont);
-                    gc.drawString(sh1, helpMsgX + 6, helpMsgY + height - dc - 6);
-	            helpMsgY += 30;
-	            smallhelp= smallhelp.substring(smallhelp.length()/2, smallhelp.length());
-	  }
-          gc.setColor(Color.black);
-          gc.drawRect(helpMsgX, helpMsgY, width - 1, height - 1);
-          gc.setColor(new Color(255, 255, 192));
-          gc.fillRect(helpMsgX + 1, helpMsgY + 1, width - 2, height - 2);
-          gc.setColor(Color.black);
-          gc.setFont(DEViseUIGlobals.textFont);
-          gc.drawString(smallhelp, helpMsgX + 6, helpMsgY + height - dc - 6);
-	  helpMsgY += 30;
-	  }
-	}
-        helpMsgX = 0; helpMsgY = 0;
-
-        //helpMsg = null;
-    } 
-
-*/
-
 
     private synchronized void paintBackground(Graphics gc)
     {
@@ -644,7 +632,6 @@ public class DEViseCanvas extends Container
             gc.fillRect(0, 0, canvasDim.width, canvasDim.height);
         }
     }
-// Venpaint
 
     private void paintHelpMsg(Graphics gc)
     {
@@ -845,11 +832,13 @@ public class DEViseCanvas extends Container
 		    String labelY = null;
 		    float step = 0;
 		    int width = 0;
+		    float displayY = 0;
 
 		if ((v.viewDataYType.toLowerCase()).equals("real")) {
 		    // round up the step
 		    step = 40 * v.dataYStep;
 		    step = v.roundUp(step);
+
 		    gc.setFont(DEViseFonts.getFont(v.fontSizeY, v.fontTypeY, 
 						   v.fontBoldY, v.fontItalicY));
 
@@ -860,9 +849,9 @@ public class DEViseCanvas extends Container
 			    (int)((currentY - v.viewDataYMin) / v.dataYStep);
 
 			while (currentYPos >= loc.y + 10) {
-			    currentY *= v.factorY;
-			    
-			    labelY = v.getYLabel(currentY);
+			    displayY = currentY * v.factorY;
+			
+			    labelY = view.getYLabel(displayY);		       
 			    width = gc.getFontMetrics().stringWidth(labelY);
 			    gc.drawString(labelY, loc.x-10-width, currentYPos+5); 
 			    gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
@@ -877,9 +866,9 @@ public class DEViseCanvas extends Container
 			    (int)((0 - v.viewDataYMin) / v.dataYStep);
 			
 			while (currentYPos >= loc.y + 10) {
-			    currentY *= v.factorY;
-			    
-			    labelY = v.getYLabel(currentY);
+			    displayY = currentY * v.factorY;
+			
+			    labelY = view.getYLabel(displayY);		
 			    width = gc.getFontMetrics().stringWidth(labelY);
 
 			    gc.drawString(labelY, loc.x-10-width, currentYPos+5); 
@@ -896,9 +885,9 @@ public class DEViseCanvas extends Container
 			    (int)((currentY - v.viewDataYMin) / v.dataYStep);
 		    	
 			while (currentYPos <= loc.y + loc.height) {
-			    currentY *= v.factorY;
-			    
-			    labelY = v.getYLabel(currentY);
+			    displayY = currentY * v.factorY;
+			
+			    labelY = view.getYLabel(displayY);		
 			    width = gc.getFontMetrics().stringWidth(labelY);
 
 			    gc.drawString(labelY, loc.x-10-width, currentYPos+5); 
@@ -931,6 +920,7 @@ public class DEViseCanvas extends Container
 		    String labelX = null;
 		    float step = 0;
 		    int width = 0;
+		    float displayX = 0;
 
 		if ((v.viewDataXType.toLowerCase()).equals("real")) {
 		    // round up the step
@@ -945,9 +935,9 @@ public class DEViseCanvas extends Container
 			    (int)((currentX - v.viewDataXMin) / v.dataXStep);
 
 			while (currentXPos <= loc.x + loc.width) {
-			    currentX *= v.factorX;
-			    
-			    labelX = v.getXLabel(currentX);
+			    displayX = currentX * v.factorX;
+			
+			    labelX = view.getXLabel(displayX);	
 			    width = gc.getFontMetrics().stringWidth(labelX);
 			    
 			    gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+15); 
@@ -964,9 +954,9 @@ public class DEViseCanvas extends Container
 			    (int)((0 - v.viewDataXMin) / v.dataXStep);
 			
 			while (currentXPos <= loc.x + loc.width) {
-			    currentX *= v.factorX;
-			    
-			    labelX = v.getXLabel(currentX);
+			    displayX = currentX * v.factorX;
+			
+			    labelX = view.getXLabel(displayX);	
 			    width = gc.getFontMetrics().stringWidth(labelX);			    
 			    gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+15); 
 			    gc.drawLine(currentXPos, loc.y+loc.height, 
@@ -990,7 +980,6 @@ public class DEViseCanvas extends Container
 			    gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+15); 
 			    gc.drawLine(currentXPos, loc.y+loc.height, 
 					currentXPos, loc.y+loc.height+3);
-			    // currentXPos -= 100;
 			    currentX -= step;
 			    currentXPos = loc.x + 
 				(int)((currentX - v.viewDataXMin) / v.dataXStep);
@@ -1028,6 +1017,7 @@ public class DEViseCanvas extends Container
 	    String labelY = null;
 	    float step = 0;
 	    int width = 0;
+	    float displayY;
 
 	    if ((view.viewDataYType.toLowerCase()).equals("real")) {
 		// round up the step
@@ -1042,14 +1032,13 @@ public class DEViseCanvas extends Container
 			(int)((currentY - view.viewDataYMin) / view.dataYStep);
 
 		    while (currentYPos >= loc.y + 10) {
-			currentY *= view.factorY;
-			
-			labelY = view.getYLabel(currentY);
+			displayY = currentY * view.factorY;
+
+			labelY = view.getYLabel(displayY);
 			width = gc.getFontMetrics().stringWidth(labelY);
 			gc.drawString(labelY, loc.x-10-width, currentYPos+5); 
 			gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
-			// currentYPos -= 40;	    
-			currentY += step;
+   			currentY += step;
 			currentYPos = loc.y + loc.height - 
 			    (int)((currentY - view.viewDataYMin) / view.dataYStep);
 		    }
@@ -1060,15 +1049,14 @@ public class DEViseCanvas extends Container
 			(int)((0 - view.viewDataYMin) / view.dataYStep);
 
 		    while (currentYPos >= loc.y + 10) {
-			currentY *= view.factorY;
-			
-			labelY = view.getYLabel(currentY);
+			displayY = currentY * view.factorY;
+
+			labelY = view.getYLabel(displayY);
 			width = gc.getFontMetrics().stringWidth(labelY);
 
 			gc.drawString(labelY, loc.x-10-width, currentYPos+5); 
 			gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
-			//currentYPos -= 40;	    
-			currentY += step;
+   			currentY += step;
 			currentYPos = loc.y + loc.height - 
 			    (int)((currentY - view.viewDataYMin) / view.dataYStep);
 		    }		
@@ -1079,9 +1067,9 @@ public class DEViseCanvas extends Container
 			(int)((currentY - view.viewDataYMin) / view.dataYStep);
 		    	
 		    while (currentYPos <= loc.y + loc.height) {
-			currentY *= view.factorY;
-			
-			labelY = view.getYLabel(currentY);
+			displayY = currentY * view.factorY;
+
+			labelY = view.getYLabel(displayY);
 			width = gc.getFontMetrics().stringWidth(labelY);
 
 			gc.drawString(labelY, loc.x-10-width, currentYPos+5); 
@@ -1115,6 +1103,7 @@ public class DEViseCanvas extends Container
 	    String labelX = null;
 	    float step = 0;
 	    int width = 0;
+	    float displayX = 0;
 	    
 	    if ((view.viewDataXType.toLowerCase()).equals("real")) {
 		// round up the step
@@ -1130,14 +1119,14 @@ public class DEViseCanvas extends Container
 			(int)((currentX - view.viewDataXMin) / view.dataXStep);
 		    
 		    while (currentXPos <= loc.x + loc.width) {
-			currentX *= view.factorX;
-			
-			labelX = view.getXLabel(currentX);
+			displayX = currentX * view.factorX;
+
+			labelX = view.getXLabel(displayX);
 			width = gc.getFontMetrics().stringWidth(labelX);	
 			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+15); 
 			gc.drawLine(currentXPos, loc.y+loc.height, 
 				    currentXPos, loc.y+loc.height+3);
-			// currentXPos += 100;
+
 			currentX += step;
 			currentXPos = loc.x + 
 			    (int)((currentX - view.viewDataXMin) / view.dataXStep);
@@ -1149,14 +1138,14 @@ public class DEViseCanvas extends Container
 			(int)((0 - view.viewDataXMin) / view.dataXStep);
 		    
 		    while (currentXPos <= loc.x + loc.width) {
-			currentX *= view.factorX;
-			
-			labelX = view.getXLabel(currentX);
+			displayX = currentX * view.factorX;
+
+			labelX = view.getXLabel(displayX);
 			width = gc.getFontMetrics().stringWidth(labelX);	
 			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+15); 
 			gc.drawLine(currentXPos, loc.y+loc.height, 
 				    currentXPos, loc.y+loc.height+3);
-			// currentXPos += 100;
+
 			currentX += step;
 			currentXPos = loc.x + 
 			    (int)((currentX - view.viewDataXMin) / view.dataXStep);
@@ -1168,14 +1157,13 @@ public class DEViseCanvas extends Container
 			(int)((currentX - view.viewDataXMin) / view.dataXStep);
 		    
 		    while (currentXPos >= loc.x) {
-			currentX *= view.factorX;
+			displayX = currentX * view.factorX;
 			
-			labelX = view.getXLabel(currentX);
-			width = gc.getFontMetrics().stringWidth(labelX);	
+			labelX = view.getXLabel(displayX);	
+			width = gc.getFontMetrics().stringWidth(labelX);       
 			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+15); 
 			gc.drawLine(currentXPos, loc.y+loc.height, 
 				    currentXPos, loc.y+loc.height+3);
-			// currentXPos -= 100;
 			currentX -= step;
 			currentXPos = loc.x + 
 			    (int)((currentX - view.viewDataXMin) / view.dataXStep);
@@ -1220,13 +1208,12 @@ public class DEViseCanvas extends Container
                 gc.drawString(v.viewTitle, v.viewDTX, v.viewDTY);
             }
         }
-
+	
         // handling itself
         if (view.viewDTFont != null && view.viewTitle != null) {
             gc.setColor(new Color(view.viewFg));
             gc.setFont(view.viewDTFont);
             gc.drawString(view.viewTitle, view.viewDTX, view.viewDTY);
-	    //jsc.pn("We draw title: " + view.viewTitle);
         }
     }
 
@@ -1462,13 +1449,20 @@ public class DEViseCanvas extends Container
             jsc.jsValues.canvas.lastKey = event.getKeyCode();
         }
 
+        //
+	// Note: should we move most of this to using a keyTyped handler
+	// instead of a keyReleased handler?  That is supposed to be
+	// higer-level and more hardware-independent.  RKW 2002-04-09.
+	//
+
 	// If this is not a 3D-view, send the appropriate key action
 	// to the devised.
         public void keyReleased(KeyEvent event)
         {
             if (DEBUG >= 1) {
                 System.out.println("DEViseCanvas(" + view.viewName +
-		  ").keyReleased(" + event.getKeyChar() + ")");
+		  ").keyReleased(" + event.getKeyChar() + ", " +
+		  event.getKeyCode() + ")");
 	    }
             jsc.jsValues.canvas.lastKey = KeyEvent.VK_UNDEFINED;
 
@@ -1477,67 +1471,117 @@ public class DEViseCanvas extends Container
 
 	    // F1 key shows or hides view help.
             if (keyCode == KeyEvent.VK_F1) {
-                    helpMsg = null;
-	            //
-	            // Show this view's help within a dialog box.
-	            //
-                    jsc.jsValues.connection.helpBox = true;
-                    String cmd = DEViseCommands.GET_VIEW_HELP + " " +
-		      activeView.getCurlyName() + " " + helpMsgX + " "
-		      + helpMsgY;
-		    // jscreen.guiAction = true;
-     		    dispatcher.start(cmd);
-                    return;
+	        showHideHelp();
+                return;
             }
 
             if (view.viewDimension == 3) {
 		if ((keyChar == 'r' || keyChar == 'R') && crystal != null) {
-                    crystal.totalShiftedX = 0;
-                    crystal.totalShiftedY = 0;
-		    crystal.totalX = 0.0f;
-		    crystal.totalY = 0.0f;
-		    crystal.totalZ = 0.0f;
-		    crystal.totalXRotation = 0.0f;
-		    crystal.totalYRotation = 0.0f;
-		    crystal.totalScaleFactor = 1.0f;
-		    crystal.resetAll(true);
-		    repaint();
-
-		    // send command to collaborations if necessary
-		    if (jsc.specialID == -1) {
-			String cmd = DEViseCommands.SET_3D_CONFIG + " "
-			    + activeView.getCurlyName();
-			
-			float[][] data = crystal.lcs.getData();
-			float[] origin = crystal.lcs.getOrigin();
-			Float f = null;
-			
-			for (int i=0; i<3; i++) 
-			    for (int j=0; j<3; j++) {
-				f = new Float(data[i][j]);
-				cmd = cmd + " {" + f.toString() + "}";
-			    }
-			
-			for (int i=0; i<3; i++) {
-			    f = new Float(origin[i]);
-			    cmd = cmd + " {" + f.toString() + "}";
-			    
-			}
-
-			cmd = cmd + " {" + crystal.shiftedX + "}" +
-			    " {" + crystal.shiftedY + "}";
-			
-			dispatcher.start(cmd);	
-		    }	
+		    resetCrystal();
 		}
                 return;
             }
 
-            int actualKey = 0;
+            int actualKey = translateKey(keyChar, keyCode);
 
-            if (keyChar != KeyEvent.CHAR_UNDEFINED) {
+            if (actualKey != 0 && activeView != null) {
+		if (activeView.isKey || isSpecialKey(actualKey)) {
+                    String cmd = "";
+                    cmd = cmd + DEViseCommands.KEY_ACTION + " " +
+		      activeView.getCurlyName() + " " + actualKey;
+                    jscreen.guiAction = true;
+                    dispatcher.start(cmd);
+		} else {
+		    // For some reason, after we show the dialog we get
+		    // an extra key event from the DEViseScreen.
+		    // RKW 2002-04-09.
+		    if (event.getComponent() instanceof DEViseCanvas) {
+	                jsc.showMsg("Key actions are disabled in this view");
+		    }
+		}
+            }
+        }
+
+	private void showHideHelp()
+	{
+	    helpMsg = null;
+	    
+	    //
+	    // Show this view's help within a dialog box.
+	    //
+	    jsc.jsValues.connection.helpBox = true;
+	    String cmd = DEViseCommands.GET_VIEW_HELP + " " +
+	      activeView.getCurlyName() + " " + helpMsgX + " " + helpMsgY;
+	    // jscreen.guiAction = true;
+     	    dispatcher.start(cmd);
+	}
+
+	private void resetCrystal()
+	{
+	    crystal.totalShiftedX = 0;
+	    crystal.totalShiftedY = 0;
+	    crystal.totalX = 0.0f;
+	    crystal.totalY = 0.0f;
+	    crystal.totalZ = 0.0f;
+	    crystal.totalXRotation = 0.0f;
+	    crystal.totalYRotation = 0.0f;
+	    crystal.totalScaleFactor = 1.0f;
+	    crystal.resetAll(true);
+	    repaint();
+
+            // send command to collaborations if necessary
+	    if (jsc.specialID == -1) {
+	        String cmd = DEViseCommands.SET_3D_CONFIG + " "
+		  + activeView.getCurlyName();
+			
+		float[][] data = crystal.lcs.getData();
+		float[] origin = crystal.lcs.getOrigin();
+		Float f = null;
+			
+		for (int i=0; i<3; i++) 
+		    for (int j=0; j<3; j++) {
+			f = new Float(data[i][j]);
+			cmd = cmd + " {" + f.toString() + "}";
+		    }
+			
+		for (int i=0; i<3; i++) {
+		    f = new Float(origin[i]);
+		    cmd = cmd + " {" + f.toString() + "}";
+		}
+
+		cmd = cmd + " {" + crystal.shiftedX + "}" +
+		  " {" + crystal.shiftedY + "}";
+			
+
+		if (jsc.dispatcher.getStatus() == 0)
+		    dispatcher.start(cmd);	
+	    }	
+	}
+
+	private int translateKey(char keyChar, int keyCode)
+	{
+	    if (DEBUG >= 2) {
+	        System.out.println(
+		  "DEViseCanvas.ViewKeyListener.translateKey(" + keyChar +
+		  ", " + keyCode + ")");
+	    }
+
+	    int actualKey;
+
+	    // Note: check against 0xff here is to (hopefully) fix the
+	    // first part of bug 765.  RKW 2002-04-09.
+            if (keyChar != KeyEvent.CHAR_UNDEFINED && keyChar <= 0xff) {
+	        if (DEBUG >= 2) {
+                    System.out.println("key char is defined");
+		}
+
                 actualKey = (int)keyChar;
             } else {
+	        if (DEBUG >= 2) {
+                    System.out.println("key char is NOT defined");
+		}
+
+		// TEMP -- document where these constants come from
                 switch (keyCode) {
                 case KeyEvent.VK_NUMPAD0:
                     actualKey = 0x40000 + 28;
@@ -1629,19 +1673,39 @@ public class DEViseCanvas extends Container
                 case KeyEvent.VK_END:
                     actualKey = 0x20000 + 10;
                     break;
+		case KeyEvent.VK_BACK_SPACE:
+                    actualKey = 8;
+                    break;
                 default:
                     actualKey = 0;
                     break;
                 }
             }
 
-            if (actualKey != 0 && activeView != null && activeView.isKey) {
-                String cmd = "";
-                cmd = cmd + DEViseCommands.KEY_ACTION + " " + activeView.getCurlyName() + " " + actualKey;
-                jscreen.guiAction = true;
-                dispatcher.start(cmd);
-            }
-        }
+	    if (DEBUG >= 2) {
+                System.out.println("actualKey = " + actualKey);
+	    }
+
+	    return actualKey;
+	}
+
+	// Determine whether the key is a "special" key that should be
+	// allowed even if other key actions are disabled.  (See
+	// ViewGraph::HandleKey().)
+	private boolean isSpecialKey(int actualKey)
+	{
+	    boolean result = false;
+
+	    switch (actualKey) {
+	    case 'c':
+	    case 'C':
+	    case '\b':
+	        result = true;
+		break;
+	    }
+
+	    return result;
+	}
     }
     // end of class ViewKeyListener
 
@@ -1808,8 +1872,10 @@ public class DEViseCanvas extends Container
 			      activeView.translateY(ep.y, 2);
 
 			    // Alt-drag zooms out.
-                            if (jsc.jsValues.canvas.lastKey ==
-			      KeyEvent.VK_ALT) {
+                            if (jsc.jsValues.canvas.lastKey == 
+				KeyEvent.VK_ALT || 
+				jsc.jsValues.canvas.lastKey == 
+				KeyEvent.VK_SHIFT) {
                                 cmd = cmd + " 1";
                             } else {
                                 cmd = cmd + " 0";
@@ -1950,7 +2016,8 @@ public class DEViseCanvas extends Container
                 jsc.viewInfo.updateInfo(activeView.getX(p.x),
 		  activeView.getY(p.y));
 
-                if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT) {
+                if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT || 
+		    jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT) {
                     crystal.translate(dx, dy);
                 } else if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL) {
                     crystal.scale(dx, dy);

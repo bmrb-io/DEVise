@@ -35,8 +35,8 @@ PERL_BIN2P = /s/std/bin
 # BIN3 is for compiling (Java 1.1).
 JAVA_BIN3 = /s/java-1/bin
 
-POP_DIR = /local.pumori/devise/js.wave
-SERV_DIR = /local.pumori/devise/js.wave
+POP_DIR = /local.pumori.1/devise/js.wave
+SERV_DIR = /local.pumori.1/devise/js.wave
 JAR_DIR = /var/home/www/public/waveletidr
 CGI_DIR = /var/home/www/cgi-bin/js_wave
 IDSTR = wave

@@ -22,6 +22,27 @@
 // $Id$
 
 // $Log$
+// Revision 1.141.2.5  2002/04/12 21:21:54  xuk
+// Improvement on autotest: test more dialog-related commands.
+//
+// Revision 1.141.2.4  2002/04/12 15:56:52  xuk
+// Improvement for autotest.
+//
+// Revision 1.141.2.3  2002/04/08 20:50:24  xuk
+// In auto play or auto test, ServerState Dialog is started by a seperate thread.
+// It's closed after 5 seconds, without user's action.
+//
+// Revision 1.141.2.2  2002/04/04 21:19:34  xuk
+// Fixed bug 768: collaboration followers can close dialog automatically.
+// Changed in RecordDlg::okButton.addActionListener().
+// Changed in showRecord().
+//
+// Revision 1.141.2.1  2002/04/04 16:58:02  xuk
+// Fix bug 767: changing collaboration GUI.
+//
+// Revision 1.141  2002/03/20 22:08:15  xuk
+// Added automatic collaboration functionality.
+//
 // Revision 1.140  2002/03/05 17:49:02  wenger
 // Minor cleanups, documented new JAVAC_UpdateJS command better.
 //
@@ -489,8 +510,8 @@ public class jsdevisec extends Panel
     private YMsgBox msgbox = null;
 
     public SessionDlg sessiondlg = null;
-    private RecordDlg recorddlg = null;
-    private ServerStateDlg statedlg = null;
+    public RecordDlg recorddlg = null;
+    public ServerStateDlg statedlg = null;
     private SettingDlg settingdlg = null;
     private SetCgiUrlDlg setcgiurldlg = null;
     private SetLogFileDlg setlogfiledlg = null;
@@ -1134,14 +1155,16 @@ public class jsdevisec extends Panel
     {
         collabstatedlg = new CollabStateDlg(this, parentFrame, isCenterScreen, msg);
         collabstatedlg.open();
-	collabstatedlg = null;        
+        if (specialID == -1 && ! jsValues.session.autoPlayback)	
+	    collabstatedlg = null;        
     }
 
     public void showRecord(String[] msg)
     {
         recorddlg = new RecordDlg(parentFrame, isCenterScreen, msg, this);
         recorddlg.open();
-        recorddlg = null;
+        if (specialID == -1 && ! jsValues.session.autoPlayback)
+	    recorddlg = null;
     }
 
     public String showViewDialogHelp(String msg){
@@ -1158,7 +1181,8 @@ public class jsdevisec extends Panel
     {
         statedlg = new ServerStateDlg(parentFrame, isCenterScreen, msg, this);
         statedlg.open();
-        statedlg = null;
+        if (specialID == -1 && ! jsValues.session.autoPlayback) 
+	    statedlg = null;
     }
 
     public void showSetting()
@@ -1496,6 +1520,14 @@ class RecordDlg extends Dialog
                     public void actionPerformed(ActionEvent event)
                     {
                         close();
+			// close the dialog in followers
+			if (jsc.specialID == -1 && jsc.isCollab) {
+			    try {
+				jsc.dispatcher.sockSendCmd(DEViseCommands.CLOSE_COLLAB_DLG);
+			    } catch (YException ex) {
+				System.out.println(ex.getMessage());
+			    }
+			}
                     }
                 });
 
@@ -1528,7 +1560,6 @@ class RecordDlg extends Dialog
     {
         if (status) {
             dispose();
-
             status = false;
         }
         jsc.jsValues.debug.log("Closed RecordDlg");
@@ -2257,6 +2288,15 @@ class ServerStateDlg extends Dialog
                     public void actionPerformed(ActionEvent event)
                     {
                         close();
+			
+			// close the dialog in followers
+			if (jsc.specialID == -1 && jsc.isCollab) {
+			    try {
+				jsc.dispatcher.sockSendCmd(DEViseCommands.CLOSE_COLLAB_DLG);
+			    } catch (YException ex) {
+				System.out.println(ex.getMessage());
+			    }
+			}
                     }
                 });
 
@@ -2787,9 +2827,9 @@ class CollabSelectDlg extends Dialog
 {
     jsdevisec jsc = null;
 
-    public Button collabButton = new Button("Start Collaboration");
+    public Button collabButton = new Button("Become Follower");
     public Button endButton = new Button("Finish Collaboration");
-    public Button enCollabButton = new Button("Enable Collaboration");
+    public Button enCollabButton = new Button("Become Leader");
     public Button disCollabButton = new Button("Disable Collaboration");
     public Button cancelButton = new Button("Cancel");
     private boolean status = false; // true means this dialog is showing
@@ -3524,7 +3564,7 @@ class EnterCollabPassDlg extends Dialog
 
 // ------------------------------------------------------------------------
 // Dialog for displaying collaborating state.
-class CollabStateDlg extends Frame
+class CollabStateDlg extends Dialog
 {
     private jsdevisec jsc = null;
 
@@ -3537,6 +3577,7 @@ class CollabStateDlg extends Frame
 
     public CollabStateDlg(jsdevisec what, Frame owner, boolean isCenterScreen, String data)
     {
+	super(owner, true);
 	what.jsValues.debug.log("Creating CollabStateDlg");
 
         jsc = what;
@@ -3609,7 +3650,15 @@ class CollabStateDlg extends Frame
                 {
                     public void actionPerformed(ActionEvent event)
 		    {
-			close(); 
+			close();
+			// close the dialog in followers
+			if (jsc.specialID == -1 && jsc.isCollab) {
+			    try {
+				jsc.dispatcher.sockSendCmd(DEViseCommands.CLOSE_COLLAB_DLG);
+			    } catch (YException ex) {
+				System.out.println(ex.getMessage());
+			    }
+			} 
 		    }
                 });
     }
@@ -3647,7 +3696,6 @@ class CollabStateDlg extends Frame
         if (status) {
             dispose();
             status = false;
-            jsc.collabIdDlg = null;
         }
 	jsc.jsValues.debug.log("Closed CollabStateDlg");
     }

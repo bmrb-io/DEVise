@@ -151,9 +151,12 @@ COMMITTING AND MERGING
   and abandon the first branch and continue development on the second
   branch.
 
-* Other merging.  There are other merging possibilities, such as merging
-  from one branch to another, that are not covered in this document, and
-  can hopefully be avoided.
+* Merging from one branch to another.  This is pretty similar to merging
+  from a branch to the trunk; you just need to need a -r with the tag of
+  the branch you're merging to:
+
+	% cvs checkout -j <from_branch_tag> -r <to_branch_tag>
+
 
 GETTING OFF OF THE BRANCH
 
