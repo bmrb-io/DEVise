@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/14 20:51:03  jussi
+  Added one char to _DisplayStats for terminating null.
+
   Revision 1.5  1995/12/07 02:21:22  ravim
   New function ToRemoveStats to detect if data needs to be refreshed.
 
@@ -70,5 +73,7 @@ protected:
 
  private:
   Boolean ToRemoveStats(char *oldset, char *newset);
+  void StatsXOR(char *oldstat, char *newstat, char *result);
+
 };
 #endif
