@@ -4,11 +4,11 @@ depend:
 # DO NOT DELETE
 
 binconv.o: /usr/include/math.h /usr/include/floatingpoint.h
-binconv.o: /usr/include/sys/ieeefp.h /usr/include/assert.h binconv.h
-binconv.o: /usr/include/string.h /usr/include/sys/feature_tests.h
+binconv.o: /usr/include/sys/ieeefp.h binconv.h /usr/include/string.h
+binconv.o: /usr/include/sys/feature_tests.h
 extract.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-extract.o: /usr/include/assert.h /usr/include/string.h /usr/include/stdlib.h
-extract.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
+extract.o: /usr/include/string.h /usr/include/stdlib.h /s/tcl/include/tcl.h
+extract.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
 extract.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 extract.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 extract.o: /usr/include/sys/time.h /usr/include/sys/time.h
@@ -35,8 +35,8 @@ extract.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 extract.o: /usr/include/sys/byteorder.h /usr/include/arpa/inet.h binconv.h
 extract.o: issmdata.h
 rectape.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h rectape.h
-rectape.o: /usr/include/assert.h ../tape/tapedrive.h /usr/include/stdio.h
-rectape.o: /usr/include/tar.h ../graphics.new/machdep.h /usr/include/limits.h
+rectape.o: ../tape/tapedrive.h /usr/include/stdio.h /usr/include/tar.h
+rectape.o: ../graphics.new/machdep.h /usr/include/limits.h
 rectape.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 rectape.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 rectape.o: /usr/include/sys/time.h /usr/include/sys/time.h

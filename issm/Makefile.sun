@@ -5,9 +5,9 @@ depend:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 binconv.o: /usr/include/math.h /usr/include/floatingpoint.h
-binconv.o: /usr/include/sys/ieeefp.h /usr/include/assert.h binconv.h
-binconv.o: /usr/include/string.h /usr/include/sys/stdtypes.h
-extract.o: /usr/include/stdio.h /usr/include/assert.h /usr/include/string.h
+binconv.o: /usr/include/sys/ieeefp.h binconv.h /usr/include/string.h
+binconv.o: /usr/include/sys/stdtypes.h
+extract.o: /usr/include/stdio.h /usr/include/string.h
 extract.o: /usr/include/sys/stdtypes.h /usr/include/stdlib.h
 extract.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
 extract.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
@@ -28,8 +28,8 @@ extract.o: /usr/include/sys/sockio.h /usr/include/netdb.h
 extract.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 extract.o: /usr/include/arpa/inet.h binconv.h issmdata.h
 rectape.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h rectape.h
-rectape.o: /usr/include/assert.h ../tape/tapedrive.h /usr/include/stdio.h
-rectape.o: /usr/include/tar.h ../graphics.new/machdep.h /usr/include/limits.h
+rectape.o: ../tape/tapedrive.h /usr/include/stdio.h /usr/include/tar.h
+rectape.o: ../graphics.new/machdep.h /usr/include/limits.h
 rectape.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 rectape.o: /usr/include/sys/param.h /usr/include/machine/param.h
 rectape.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h

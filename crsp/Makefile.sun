@@ -7,9 +7,9 @@ depend:
 cal.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 cal.o: cal.h /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 cal.o: /usr/include/sys/uio.h /usr/include/unistd.h
-crsp_extract.o: /usr/include/assert.h /usr/include/stdlib.h
-crsp_extract.o: /usr/include/sys/stdtypes.h /usr/include/string.h
-crsp_extract.o: /s/tcl/include/tcl.h /usr/include/stdio.h /s/tcl/include/tk.h
+crsp_extract.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+crsp_extract.o: /usr/include/string.h /s/tcl/include/tcl.h
+crsp_extract.o: /usr/include/stdio.h /s/tcl/include/tk.h
 crsp_extract.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
 crsp_extract.o: /usr/include/sys/sysmacros.h /s/X11/include/X11/X.h
 crsp_extract.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
@@ -63,10 +63,10 @@ main.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
 main.o: /usr/include/netdb.h /usr/include/sys/socket.h
 main.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
 sec.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
-sec.o: /usr/include/assert.h /usr/include/ctype.h sec.h
-sec.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-sec.o: /usr/include/sys/uio.h /usr/include/unistd.h ../tape/tapedrive.h
-sec.o: /usr/include/tar.h ../graphics.new/machdep.h /usr/include/limits.h
+sec.o: /usr/include/ctype.h sec.h /usr/include/sys/types.h
+sec.o: /usr/include/sys/sysmacros.h /usr/include/sys/uio.h
+sec.o: /usr/include/unistd.h ../tape/tapedrive.h /usr/include/tar.h
+sec.o: ../graphics.new/machdep.h /usr/include/limits.h
 sec.o: /usr/include/sys/param.h /usr/include/machine/param.h
 sec.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
 sec.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h

@@ -7,9 +7,9 @@ depend:
 cal.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h /usr/include/stdlib.h
 cal.o: cal.h /usr/include/sys/types.h /usr/include/sys/uio.h
 cal.o: /usr/include/unistd.h /usr/include/sys/unistd.h
-crsp_extract.o: /usr/include/assert.h /usr/include/sys/stdsyms.h
 crsp_extract.o: /usr/include/stdlib.h /usr/include/string.h
-crsp_extract.o: /s/tcl/include/tcl.h /usr/include/stdio.h /s/tcl/include/tk.h
+crsp_extract.o: /usr/include/sys/stdsyms.h /s/tcl/include/tcl.h
+crsp_extract.o: /usr/include/stdio.h /s/tcl/include/tk.h
 crsp_extract.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
 crsp_extract.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
 crsp_extract.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h sec.h
@@ -25,8 +25,8 @@ crsp_extract.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
 crsp_extract.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
 crsp_extract.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 crsp_extract.o: /usr/include/arpa/inet.h
-crsp_index.o: /usr/include/string.h /usr/include/stdlib.h sec.h
-crsp_index.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
+crsp_index.o: /usr/include/string.h /usr/include/sys/stdsyms.h
+crsp_index.o: /usr/include/stdlib.h sec.h /usr/include/sys/types.h
 crsp_index.o: /usr/include/sys/uio.h /usr/include/unistd.h
 crsp_index.o: /usr/include/sys/unistd.h ../tape/tapedrive.h
 crsp_index.o: /usr/include/stdio.h /usr/include/tar.h
@@ -52,15 +52,14 @@ main.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
 main.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 main.o: /usr/include/arpa/inet.h
 sec.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h /usr/include/stdlib.h
-sec.o: /usr/include/assert.h /usr/include/ctype.h sec.h
-sec.o: /usr/include/sys/types.h /usr/include/sys/uio.h /usr/include/unistd.h
-sec.o: /usr/include/sys/unistd.h ../tape/tapedrive.h /usr/include/tar.h
-sec.o: ../graphics.new/machdep.h /usr/include/limits.h
-sec.o: /usr/include/sys/param.h /usr/include/machine/param.h
-sec.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
-sec.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
-sec.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
-sec.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+sec.o: /usr/include/ctype.h sec.h /usr/include/sys/types.h
+sec.o: /usr/include/sys/uio.h /usr/include/unistd.h /usr/include/sys/unistd.h
+sec.o: ../tape/tapedrive.h /usr/include/tar.h ../graphics.new/machdep.h
+sec.o: /usr/include/limits.h /usr/include/sys/param.h
+sec.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
+sec.o: /usr/include/sys/time.h /usr/include/machine/spl.h
+sec.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
+sec.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h /usr/include/netdb.h
 sec.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
 sec.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 sec.o: /usr/include/arpa/inet.h

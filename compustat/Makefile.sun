@@ -7,7 +7,7 @@ compustat.o: /usr/include/stdio.h /usr/include/stdlib.h
 compustat.o: /usr/include/sys/stdtypes.h /usr/include/string.h
 compustat.o: /usr/include/ctype.h /usr/include/unistd.h
 compustat.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-compustat.o: /usr/include/assert.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
+compustat.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h
 compustat.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 compustat.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 compustat.o: /usr/include/stddef.h compustat.h index.h ../tape/tapedrive.h

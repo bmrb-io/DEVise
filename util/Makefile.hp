@@ -4,6 +4,9 @@ depend:
 
 # DO NOT DELETE
 
+atof.o: /usr/include/stdlib.h /usr/include/sys/stdsyms.h
+atof.o: /usr/include/assert.h /usr/include/ctype.h /usr/include/time.h
+atof.o: /usr/include/sys/time.h /usr/include/sys/timeb.h
 http_url.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 http_url.o: /usr/include/stdlib.h /usr/include/unistd.h
 http_url.o: /usr/include/sys/unistd.h /usr/include/string.h

@@ -10,9 +10,9 @@ cal.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 cal.o: /usr/include/sys/select.h /usr/include/sys/time.h
 cal.o: /usr/include/sys/time.h /usr/include/sys/uio.h /usr/include/unistd.h
 cal.o: /usr/include/sys/unistd.h
-crsp_extract.o: /usr/include/assert.h /usr/include/stdlib.h
-crsp_extract.o: /usr/include/sys/feature_tests.h /usr/include/string.h
-crsp_extract.o: /s/tcl/include/tcl.h /usr/include/stdio.h /s/tcl/include/tk.h
+crsp_extract.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+crsp_extract.o: /usr/include/string.h /s/tcl/include/tcl.h
+crsp_extract.o: /usr/include/stdio.h /s/tcl/include/tk.h
 crsp_extract.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
 crsp_extract.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 crsp_extract.o: /usr/include/sys/select.h /usr/include/sys/time.h
@@ -87,7 +87,7 @@ main.o: /usr/include/sys/cred.h /usr/include/vm/seg_enum.h
 main.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 main.o: /usr/include/sys/byteorder.h /usr/include/arpa/inet.h
 sec.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-sec.o: /usr/include/stdlib.h /usr/include/assert.h /usr/include/ctype.h sec.h
+sec.o: /usr/include/stdlib.h /usr/include/ctype.h sec.h
 sec.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 sec.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 sec.o: /usr/include/sys/time.h /usr/include/sys/time.h /usr/include/sys/uio.h

@@ -6,7 +6,7 @@ depend:
 compustat.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 compustat.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
 compustat.o: /usr/include/unistd.h /usr/include/sys/unistd.h
-compustat.o: /usr/include/assert.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
+compustat.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h
 compustat.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
 compustat.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
 compustat.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h compustat.h
