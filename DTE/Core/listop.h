@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/12/05 16:06:02  wenger
+  Added standard Devise file headers.
+
  */
 
 #ifndef LISTOP_H
@@ -57,6 +60,7 @@ void filterList(List<BaseSelection*>* list, Site* site);
 void displayList(ostream& out, List<TableAlias*>* list, String sep = ", ");
 void displayList(ostream& out, List<BaseSelection*>* list, 
 	String sep = ", ", int detail = 0); 
+void displayList(ostream& out, List<Site*>* list, String sep);
 void collectFrom(
 	List<BaseSelection*>* from, Site* site, List<BaseSelection*>* to);
 void enumerateList(List<BaseSelection*>* list,

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/04 22:09:54  donjerko
+  Removed the IntegerConstant and StringConstant and replaced them with
+  ConstantSelection
+
   Revision 1.3  1996/12/03 23:51:02  donjerko
   The begining of the support for indexes, also a minor bug fix for select *.
 
@@ -146,7 +150,8 @@ BaseSelection* GlobalSelect::enumerate(
 			if(upTo){
 				assert(!"not implemented");
 			}
-			BaseSelection* retVal = new ExecSelect(leftRight, i, newNext);
+			BaseSelection* retVal = new ExecSelect(
+				this, leftRight, i, newNext);
 			TRY(BaseSelection::enumerate(site1, list1, site2, list2), NULL);
 			return retVal;
 		}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/12/05 16:05:59  wenger
+  Added standard Devise file headers.
+
  */
 
 #ifndef ENGINE_H
@@ -28,10 +31,6 @@
 class Engine {
 	String query;
 	Site* topNode;
-	int numFlds;
-	String* typeIDs;
-	String* attributeNames;
-	Stats* stats;
 public:
 	Engine(String query) : query(query), topNode(NULL) {}
 	virtual ~Engine(){
@@ -39,19 +38,19 @@ public:
 	}
 	int optimize();	// throws
      virtual int getNumFlds(){
-          return numFlds;
+		return topNode->getNumFlds();
      }
-     virtual String *getTypeIDs(){
-          return typeIDs;
+     virtual String* getTypeIDs(){
+          return topNode->getTypeIDs();
      }
 	virtual Tuple* getNext(){
 		return topNode->getNext();
 	}
 	virtual String* getAttributeNames(){
-		return attributeNames;
+		return getStringsFrom(topNode->getSelectList());
 	}
 	Stats* getStats(){
-		return stats;
+		return topNode->getStats();
 	}
 	void reset(int lowRid, int highRid){
 		TRY(topNode->reset(lowRid, highRid), );

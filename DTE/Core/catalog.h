@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/05 16:06:01  wenger
+  Added standard Devise file headers.
+
  */
 
 #ifndef CATALOG_H
@@ -130,14 +133,19 @@ class Catalog {
 			}
 			String indexStr;
 			in >> indexStr;
-			if(in && indexStr == "index"){
-				TRY(interface->readIndex(in), in);
+			while(in && indexStr != ";"){
+				if(in && indexStr == "index"){
+					TRY(interface->readIndex(in), in);
+				}
+				else {
+					String msg = 
+					"Invalid catalog format: \"index\" or \";\" expected";
+					THROW(new Exception(msg), in);
+				}
+				in >> indexStr;
 			}
-			else if(in && indexStr == ";") {
-			}
-			else {
-				String msg = 
-				"Invalid catalog format: \"index\" or \";\" expected";
+			if(!in){
+				String msg = "Premature end of catalog";
 				THROW(new Exception(msg), in);
 			}
 			return in;

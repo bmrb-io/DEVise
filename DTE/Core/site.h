@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/05 16:06:05  wenger
+  Added standard Devise file headers.
+
  */
 
 #ifndef SITE_H
@@ -147,6 +150,9 @@ public:
 	virtual int getNumFlds(){
 		return numFlds;
 	}
+     virtual String* getTypeIDs(){
+          return getTypesFromList(mySelect);
+     }
 	List<BaseSelection*>* getSelectList(){
 		return mySelect;
 	}
@@ -165,123 +171,125 @@ public:
 	}
 };
 
-class IndexScan : public Site {
-	struct RTreePred{
-		bool bounded[2];
-		bool closed[2];
-		BaseSelection* values[2];
-		RTreePred(){
-			bounded[0] = bounded[1] = false;
-			closed[0] = closed[1] = true;
-			values[0] = values[1] = NULL;
+struct RTreePred {
+	bool bounded[2];
+	bool closed[2];
+	ConstantSelection* values[2];
+	RTreePred(){
+		bounded[0] = bounded[1] = false;
+		closed[0] = closed[1] = true;
+		values[0] = values[1] = NULL;
+	}
+	RTreePred(String opName, ConstantSelection* constant){
+		bounded[0] = bounded[1] = false;
+		closed[0] = closed[1] = true;
+		values[0] = values[1] = NULL;
+		if(opName == "="){
+			bounded[0] = bounded[1] = true;
+			values[0] = values[1] = constant;
 		}
-		RTreePred(String opName, BaseSelection* constant){
-			bounded[0] = bounded[1] = false;
-			closed[0] = closed[1] = true;
-			values[0] = values[1] = NULL;
-			if(opName == "="){
-				bounded[0] = bounded[1] = true;
-				values[0] = values[1] = constant;
-			}
-			else if(opName == "<="){
-				bounded[1] = true;
-				values[1] = constant;
-			}
-			else if(opName == ">="){
-				bounded[0] = true;
-				values[1] = constant;
-			}
-			else if(opName == "<"){
-				bounded[1] = true;
-				closed[1] = false;
-				values[1] = constant;
-			}
-			else if(opName == ">"){
-				bounded[0] = true;
-				closed[0] = false;
-				values[0] = constant;
-			}
-			else {
-				cout << "Operator \"" << opName; 
-				cout << "\" should not be passed to this function\n";
-				assert(0);
-			}
+		else if(opName == "<="){
+			bounded[1] = true;
+			values[1] = constant;
 		}
-		~RTreePred(){
-			// do not delete values;
+		else if(opName == ">="){
+			bounded[0] = true;
+			values[1] = constant;
 		}
-		void update(String opName, BaseSelection* constant){
-			RTreePred tmp(opName, constant);
-			intersect(tmp);
+		else if(opName == "<"){
+			bounded[1] = true;
+			closed[1] = false;
+			values[1] = constant;
 		}
-		void intersect(const RTreePred& pred){
-			if(pred.bounded[0] && !bounded[0]){
-				bounded[0] = true;
-				closed[0] = pred.closed[0];
+		else if(opName == ">"){
+			bounded[0] = true;
+			closed[0] = false;
+			values[0] = constant;
+		}
+		else {
+			cout << "Operator \"" << opName; 
+			cout << "\" should not be passed to this function\n";
+			assert(0);
+		}
+	}
+	~RTreePred(){
+		// do not delete values;
+	}
+	void update(String opName, BaseSelection* constant){
+		assert(constant->selectID() == CONST_ID);
+		RTreePred tmp(opName, (ConstantSelection*) constant);
+		intersect(tmp);
+	}
+	void intersect(const RTreePred& pred){
+		if(pred.bounded[0] && !bounded[0]){
+			bounded[0] = true;
+			closed[0] = pred.closed[0];
+			values[0] = pred.values[0];
+		}
+		else if(pred.bounded[0] && bounded[0]){
+			assert(pred.values[0]);
+			assert(values[0]);
+			if(*pred.values[0] > *values[0]){
 				values[0] = pred.values[0];
+				closed[0] = pred.closed[0];
 			}
-			else if(pred.bounded[0] && bounded[0]){
-				assert(pred.values[0]);
-				assert(values[0]);
-				if(*pred.values[0] > *values[0]){
-					values[0] = pred.values[0];
-					closed[0] = pred.closed[0];
-				}
-				else if(*pred.values[0] == *values[0]){
-					if(!pred.closed[0]){
-						closed[0] = false;
-					}
+			else if(*pred.values[0] == *values[0]){
+				if(!pred.closed[0]){
+					closed[0] = false;
 				}
 			}
-			if(pred.bounded[1] && !bounded[1]){
-				bounded[1] = true;
-				closed[1] = pred.closed[1];
+		}
+		if(pred.bounded[1] && !bounded[1]){
+			bounded[1] = true;
+			closed[1] = pred.closed[1];
+			values[1] = pred.values[1];
+		}
+		else if(pred.bounded[1] && bounded[1]){
+			assert(pred.values[1]);
+			assert(values[1]);
+			if(*pred.values[1] < *values[1]){
 				values[1] = pred.values[1];
+				closed[1] = pred.closed[1];
 			}
-			else if(pred.bounded[1] && bounded[1]){
-				assert(pred.values[1]);
-				assert(values[1]);
-				if(*pred.values[1] < *values[1]){
-					values[1] = pred.values[1];
-					closed[1] = pred.closed[1];
-				}
-				else if(*pred.values[1] == *values[1]){
-					if(!pred.closed[1]){
-						closed[1] = false;
-					}
+			else if(*pred.values[1] == *values[1]){
+				if(!pred.closed[1]){
+					closed[1] = false;
 				}
 			}
 		}
-		String toString(){
-			String retVal;
-			if(closed[0]){
-				retVal += "[";
-			}
-			else {
-				retVal += "<";
-			}
-			if(bounded[0]){
-				retVal += values[0]->toString();
-			}
-			else {
-				retVal += "-Infinity";
-			}
-			retVal += ", ";
-			if(bounded[1]){
-				retVal += values[1]->toString();
-			}
-			else {
-				retVal += "Infinity";
-			}
-			if(closed[1]){
-				retVal += "]";
-			}
-			else {
-				retVal += ">";
-			}
-			return retVal;
+	}
+	String toString(){
+		String retVal;
+		if(closed[0]){
+			retVal += "[";
 		}
-	};
+		else {
+			retVal += "<";
+		}
+		if(bounded[0]){
+			retVal += values[0]->toString();
+		}
+		else {
+			retVal += "-Infinity";
+		}
+		retVal += ", ";
+		if(bounded[1]){
+			retVal += values[1]->toString();
+		}
+		else {
+			retVal += "Infinity";
+		}
+		if(closed[1]){
+			retVal += "]";
+		}
+		else {
+			retVal += ">";
+		}
+		return retVal;
+	}
+};
+
+class IndexScan : public Site {
 	RTreePred* rTreeQuery;	// query is an array of RTree predicates
 	Site* parent;
 	RTreeIndex* index;
@@ -310,7 +318,13 @@ public:
 			out << "\n   where ";
 			displayList(out, myWhere, " and ", detail);
 		}
-		out << ';';
+		out << ';' << endl;
+		String tmp;
+		for(int i = 0; i < numAttrs; i++){
+			tmp += "Attr " + index->attrNames[i] + ": ";
+			tmp += rTreeQuery[i].toString() + "\n";
+		}
+		out << tmp;
 	}
 	bool isApplicable(){
 		bool retVal = false;

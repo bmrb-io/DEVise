@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/05 16:06:04  wenger
+  Added standard Devise file headers.
+
  */
 
 #ifndef MYOPT_H
@@ -153,15 +156,6 @@ public:
 		String retVal(tmp);
 		delete tmp;
 		return retVal;
-	}
-	virtual bool operator <(BaseSelection arg){
-		assert(0);
-	}
-	virtual bool operator >(BaseSelection arg){
-		assert(0);
-	}
-	virtual bool operator ==(BaseSelection arg){
-		assert(0);
 	}
      virtual void display(ostream& out, int detail = 0){
           if(nextPath){
@@ -364,13 +358,17 @@ public:
 class ExecSelect : public BaseSelection {
      int leftRight;
 	int fieldNo;
+	BaseSelection* parent;
 public:
-	ExecSelect(int lr, int field, Path* next = NULL) :
-		leftRight(lr), fieldNo(field), 
+	ExecSelect(BaseSelection* parent, int lr, int field, Path* next = NULL) :
+		leftRight(lr), fieldNo(field), parent(parent),
 		BaseSelection(next) {}
 	virtual void display(ostream& out, int detail = 0){
 		out << "(" << leftRight << ", " << fieldNo << ")";
 		BaseSelection::display(out);
+	}
+	virtual void displayFlat(ostream& out, int detail = 0){
+		parent->displayFlat(out, detail);
 	}
 	virtual BaseSelection* selectionF(){
 		assert(0);
@@ -387,7 +385,7 @@ public:
 		assert(0);
      }
 	virtual TypeID getTypeID(){
-		assert(0);
+		return parent->getTypeID();
 	}
 	virtual Type* evaluate(Tuple* left, Tuple* right){
 		return (leftRight ? right[fieldNo] : left[fieldNo]);
@@ -400,6 +398,19 @@ class ConstantSelection : public BaseSelection {
 public:
 	ConstantSelection(TypeID typeID, Type* value) : 
 		BaseSelection(NULL), typeID(typeID), value(value) {}
+	virtual bool operator <(ConstantSelection arg){
+		assert(0);
+	}
+	virtual bool operator >(ConstantSelection arg){
+		assert(0);
+	}
+	virtual bool operator ==(ConstantSelection arg){
+		TypeID tmp;
+		GeneralPtr* genPtr = getOperatorPtr("=", typeID, arg.typeID, tmp);
+		assert(tmp == "bool");
+		assert(genPtr && genPtr->opPtr);
+		return ((IBool*) genPtr->opPtr(value, arg.value))->getValue();
+	}
 	virtual void display(ostream& out, int detail = 0){
 		displayAs(out, value, typeID);
 		BaseSelection::display(out, detail);
@@ -438,7 +449,7 @@ public:
 		GeneralPtr* genPtr = getOperatorPtr("=", typeID, y->typeID, tmp);
 		assert(tmp == "bool");
 		assert(genPtr && genPtr->opPtr);
-		if(!genPtr->opPtr(value, y->value)){
+		if(!((IBool*) genPtr->opPtr(value, y->value))->getValue()){
 			return false;
 		}
 		return BaseSelection::match(y, upTo);
@@ -887,7 +898,7 @@ public:
 			if(match(selList->get(), upTo)){
 				BaseSelection* retVal;
 				assert(i == position);
-                    retVal = new ExecSelect(leftRight, i, upTo);
+                    retVal = new ExecSelect(this, leftRight, i, upTo);
 				TRY(BaseSelection::enumerate(site1, list1, site2, list2),
 					NULL);
 				return retVal;

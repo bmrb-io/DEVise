@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/12/05 16:06:02  wenger
+  Added standard Devise file headers.
+
  */
 
 #include<iostream.h>
@@ -68,6 +71,17 @@ void displayList(
 }
 
 void displayList(ostream& out, List<TableAlias*>* list, String sep){
+     list->rewind();
+     while(!list->atEnd()){
+		list->get()->display(out);
+          list->step();
+		if(!list->atEnd()){
+			out << sep;
+		}
+	}
+}
+
+void displayList(ostream& out, List<Site*>* list, String sep){
      list->rewind();
      while(!list->atEnd()){
 		list->get()->display(out);

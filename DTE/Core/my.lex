@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/12/05 16:06:02  wenger
+  Added standard Devise file headers.
+
  */
 
 %{
@@ -74,6 +77,9 @@ LessGreat    ">="|">"|"<="|"<"
 [Ww][Hh][Ee][Rr][Ee]        {return WHERE;}
 [Aa][Nn][Dd]          {return AND;}
 [Oo][Rr]           {return OR;}
+[Cc][Rr][Ee][Aa][Tt][Ee]		{return CREATE;}
+[Ii][Nn][Dd][Ee][Xx]		{return INDEX;}
+[Oo][Nn]				{return ON;}
 {String}     {yylval.string = new String(yytext); return STRING;}
 {IntLit}     {yylval.integer = atoi(yytext); return INT;}
 {LessGreat}  {yylval.string = new String(yytext); return LESSGREATER;}

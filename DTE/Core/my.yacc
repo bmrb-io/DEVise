@@ -16,22 +16,26 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/05 16:06:02  wenger
+  Added standard Devise file headers.
+
  */
 
 %{
 
 #include "myopt.h"
 #include "queue.h"
+#include "ParseTree.h"
 #include <iostream.h>
 #include <String.h>
 #include <assert.h>
 #include <stdio.h>
+
 extern int yylex();
-extern List<BaseSelection*>* selectList;
-extern List<TableAlias*>* tableList;
-extern BaseSelection* predicates;
+extern ParseTree* parseTree;
 extern List<String*>* namesToResolve;
 int yyerror(char* msg);
+
 %}
 %union{
      String* string;
@@ -46,6 +50,9 @@ int yyerror(char* msg);
 %token SELECT
 %token FROM
 %token WHERE
+%token CREATE
+%token INDEX
+%token ON
 %token <string> STRING_CONST
 %left '.'
 %left OR
@@ -63,17 +70,28 @@ int yyerror(char* msg);
 %type <sel> optWhereClause
 %type <sel> predicate
 %type <string> optString
+%type <string> index_name
+%type <string> table_name
 %%
+
+input : query
+	| definition
+	;
+definition: CREATE INDEX index_name ON table_name '(' listOfSelections ')' ';'{
+		parseTree = new IndexParse($3, $5, $7, namesToResolve);
+		YYACCEPT;
+	}
+	;
+index_name : STRING
+	;
+table_name : STRING
+	;
 query : SELECT listOfSelections FROM listOfTables optWhereClause ';' {
-		selectList = $2;
-		tableList = $4;
-		predicates = $5;
+		parseTree = new QueryTree($2, $4, $5, namesToResolve);
 		return 0;
 	}
 	| SELECT '*' FROM listOfTables optWhereClause ';' {
-		selectList = NULL;
-		tableList = $4;
-		predicates = $5;
+		parseTree = new QueryTree(NULL, $4, $5, namesToResolve);
 		return 0;
 	}
      ;
