@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  2001/04/01 03:51:17  xuk
+// Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
+//
 // Revision 1.20  2000/07/14 21:13:07  wenger
 // Speeded up 3D GData processing by a factor of 2-3: improved the parser
 // used for GData; eliminated Z sorting for bonds-only 3D views; eliminated
@@ -838,4 +841,33 @@ public class DEViseCrystal
     {
         return atomList.size();
     }
+
+
+    // 3D drill-down
+    public void drillDown3D(Point p, Vector v)
+    {
+        int x, y; 
+	int index;
+        DEViseAtomInCrystal atom = null;
+
+        for (int i = 0; i < zSortMapSize; i++) {
+            index = zSortMap[i];
+            if (index < 0) { // ignore deleted atom
+                continue;
+            }
+
+            atom = (DEViseAtomInCrystal)atomList.elementAt(index);
+            x = (int)(atom.lcspos[0] + 0.5f) + shiftedX;
+            y = (int)(atom.lcspos[1] + 0.5f) + shiftedY;
+
+	    if (_hasAtoms && atom.type != null)
+		if ((p.x >= (x-atom.type.drawSize/2)) 
+		    && (p.x <= (x+atom.type.drawSize/2)) 
+		    && (p.y >= (y-atom.type.drawSize/2)) 
+		    && (p.y <= (y+atom.type.drawSize/2))) {
+		    v.addElement(atom);
+		}
+	}
+    }
+
 }
