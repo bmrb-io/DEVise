@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.62  2002/03/05 23:01:23  xuk
+// Resize JavaScreen after reloading jsb in browser.
+// Added DEViseJSTimer class in jsb.java to destroy applet after the applet
+// has not been touched for an hour.
+//
 // Revision 1.61  2002/03/01 19:58:53  xuk
 // Added new command DEViseCommands.UpdateJS to update JavaScreen after
 // a DEViseCommands.Open_Session or DEViseCommands.Close_Session command.
@@ -353,6 +358,7 @@ public class DEViseClient
 
     private static int _objectCount = 0;
 
+    //TEMP -- do these really all have to be public?
     public Vector collabClients = new Vector();
     public boolean collabInit = false;
 
@@ -493,34 +499,45 @@ public class DEViseClient
             if (useCgi()) {
 	        closeSocket();
 	    }
+        } else if (cmd.startsWith(DEViseCommands.SET_3D_CONFIG)) {
+	    try {
+	        sendCmdToCollaborators(cmd);
+	    } catch(YException ex) {
+	        System.err.println("Error sending command to collaborator: " +
+		  ex.getMessage());
+	    }
+            newCommandStd(cmd);
 	} else {
-            cmdBuffer.addElement(cmd);
-	    if (pop.clientLog && logFile == null) {
-		String time = new Long(ID).toString();
-		String logName = "logs/client.log." + time;
-		logFile = new YLogFile(logName);
-		logFile.pn("# Start of logfile for client " + ID +
-		  " at host " + hostname);
-	    }	    
-
-	    // add command to logfile
-	    if (pop.clientLog && logFile != null) {
-		Date d = new Date();
-		long t = d.getTime();
-		String timestamp = new Long(t).toString();
-		DateFormat dtf = DateFormat.getDateTimeInstance(
-		  DateFormat.MEDIUM, DateFormat.MEDIUM);
-		logFile.pn(timestamp + "  # " + dtf.format(d));
-		logFile.pn(cmd);
-	    }
-	    
-
-	    if (getStatus() != SERVE) {
-	        setStatus(REQUEST);
-	    }
-	    // Note: socket can't be closed here because we have to
-	    // send the reply.
+            newCommandStd(cmd);
 	}
+    }
+
+    private void newCommandStd(String cmd) {
+        cmdBuffer.addElement(cmd);
+	if (pop.clientLog && logFile == null) {
+	    String time = new Long(ID).toString();
+	    String logName = "logs/client.log." + time;
+	    logFile = new YLogFile(logName);
+	    logFile.pn("# Start of logfile for client " + ID +
+	      " at host " + hostname);
+	}	    
+
+	// add command to logfile
+	if (pop.clientLog && logFile != null) {
+	    Date d = new Date();
+	    long t = d.getTime();
+	    String timestamp = new Long(t).toString();
+	    DateFormat dtf = DateFormat.getDateTimeInstance(
+	      DateFormat.MEDIUM, DateFormat.MEDIUM);
+	    logFile.pn(timestamp + "  # " + dtf.format(d));
+	    logFile.pn(cmd);
+        }
+
+	if (getStatus() != SERVE) {
+	    setStatus(REQUEST);
+	}
+	// Note: socket can't be closed here because we have to
+	// send the reply.
     }
 
     public boolean useCgi() {
@@ -735,13 +752,8 @@ public class DEViseClient
 			cmdBuffer.addElement(DEViseCommands.EXIT);
 			
 			try {
-			    for (int i = 0; i < collabClients.size(); i++) {
-				DEViseClient client =
-				  (DEViseClient)collabClients.elementAt(i);
-				client.sendCmd(DEViseCommands.COLLAB_EXIT);
-				client.sendCmd(DEViseCommands.DONE);
-				pop.pn("Closed collaboration JS " + i + ".");
-			    }
+			    sendCmdToCollaborators(DEViseCommands.COLLAB_EXIT);
+			    sendCmdToCollaborators(DEViseCommands.DONE);
 			} catch (YException e) {
 			    System.err.println("YException " + e.getMessage() +
 			      " in DEViseClient.getCmd()");
@@ -763,14 +775,8 @@ public class DEViseClient
 			isAbleCollab = false;
 
 			try {
-			    for (int i = 0; i < collabClients.size(); i++) {
-				DEViseClient client =
-				  (DEViseClient)collabClients.elementAt(i);
-				client.sendCmd(DEViseCommands.COLLAB_EXIT);
-				client.sendCmd(DEViseCommands.DONE);
-				client.closeSocket();	
-				pop.pn("Closed collaboration JS " + i + ".");
-			    }
+			    sendCmdToCollaborators(DEViseCommands.COLLAB_EXIT);
+			    sendCmdToCollaborators(DEViseCommands.DONE);
 			} catch (YException e) {
 			    System.err.println("YException " + e.getMessage() +
 			      " in DEViseClient.getCmd()");
@@ -870,6 +876,11 @@ public class DEViseClient
     // Send a single command to the client.
     public synchronized void sendCmd(String cmd) throws YException
     {
+	if (DEBUG >= 1) {
+	    System.out.println("DEViseClient(" + ID + ").sendCmd(" +
+	      cmd + ")");
+	}
+
         if (status != CLOSE) {
 	    if (cmd != null) {
 
@@ -894,13 +905,7 @@ public class DEViseClient
 			//
 			// Send commands to all collaboration clients.
 			//
-			for (int i = 0; i < collabClients.size(); i++) {
-			    DEViseClient client =
-			      (DEViseClient)collabClients.elementAt(i);		
-
-			    pop.pn("Sending command to collabration client" + " " + i);
-			    client.sendCmd(cmd);
-			}
+			sendCmdToCollaborators(cmd);
 		    }
                 }
 
@@ -960,16 +965,7 @@ public class DEViseClient
 			        //
 			        // Send data to all collaboration clients.
 			        //
-			        for (int j = 0; j < collabClients.size(); j++) {
-				    DEViseClient client =
-				      (DEViseClient)collabClients.elementAt(j);
-				    pop.pn("Sending data to collabration client"
-				      + " " + j + " (" + d.length + " bytes)");
-			            pop.pn("  First: " + d[0] + "; middle: " +
-			              d[d.length/2] + "; last: " + d[d.length-1]);
-				    client.clientSock.sendData(d);
-				    pop.pn("Done sending data");	
-			        }
+				sendDataToCollaborators(d);
 			    }
 		        }
 		    }
@@ -1167,5 +1163,27 @@ public class DEViseClient
         }
 
 	cmdBuffer.removeAllElements();
+    }
+
+    private void sendCmdToCollaborators(String cmd) throws YException
+    {
+        for (int index = 0; index < collabClients.size(); index++) {
+	    DEViseClient client = (DEViseClient)collabClients.elementAt(index);
+	    pop.pn("Sending command to collabration client " + index);
+	    client.sendCmd(cmd);
+	}
+    }
+
+    private void sendDataToCollaborators(byte[] data) throws YException
+    {
+        for (int index = 0; index < collabClients.size(); index++) {
+	    DEViseClient client = (DEViseClient)collabClients.elementAt(index);
+	    pop.pn("Sending data to collabration client" + " " + index +
+	      " (" + data.length + " bytes)");
+	    pop.pn("  First: " + data[0] + "; middle: " +
+	      data[data.length/2] + "; last: " + data[data.length-1]);
+	    client.clientSock.sendData(data);
+	    pop.pn("Done sending data");
+	}
     }
 }

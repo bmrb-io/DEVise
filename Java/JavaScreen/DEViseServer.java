@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.76  2002/03/01 19:58:53  xuk
+// Added new command DEViseCommands.UpdateJS to update JavaScreen after
+// a DEViseCommands.Open_Session or DEViseCommands.Close_Session command.
+//
 // Revision 1.75  2002/01/24 23:03:36  xuk
 // *** empty log message ***
 //
@@ -801,9 +805,6 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
         } else if (clientCmd.startsWith(DEViseCommands.REOPEN_SESSION)) {
 	    cmdReopenSession();
 
-        } else if (clientCmd.startsWith(DEViseCommands.SET_3D_CONFIG)) {
-	    cmdSet3DConfig(clientCmd);
-
         } else {
 	    cmdClientDefault(clientCmd);
         }
@@ -1022,43 +1023,17 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
         }
     }
 
-    private void cmdSet3DConfig(String clientCmd) throws YException
-    {
-	sendCmd(clientCmd);
-
-	// send config to collaborated JSs
-	//TEMP -- why isn't this handled by the DEViseClient object????
-        for (int i = 0; i < client.collabClients.size(); i++) {
-	    DEViseClient collabClient =
-	      (DEViseClient)client.collabClients.elementAt(i);	
-	    /*
-	    if (clientSock.hasCommand()) {
-	        String cmd = clientSock.getCommand();
-	        clientSock.clearCommand();
-	    
-	        if (cmd.startsWith(DEViseCommands.EXIT)) {
-		    client.removeCollabSocket(clientSock);
-	        } else {
-		    pop.pn("Sending command to collabration client " + i +
-		      ": " + clientCmd);
-		    clientSock.sendCommand(clientCmd);
-		    clientSock.sendCommand(DEViseCommands.DONE);
-	        } 
-	    } else {
-	    */
-	    pop.pn("Sending command to collabration client " + i + ": " + clientCmd);
-	    collabClient.sendCmd(clientCmd);
-	    collabClient.sendCmd(DEViseCommands.DONE);
-	    //}			    
-        }
-    }
-
 // ------------------------------------------------------------------------
 // Method to process all client commands not using the command-specific
 // methods.
 
     private void cmdClientDefault(String clientCmd) throws YException
     {
+	if (DEBUG >= 2) {
+	    System.out.println("DEViseServer.cmdClientDefault(" +
+	      clientCmd + ")");
+	}
+
         if (client.isClientSwitched) {
             client.isClientSwitched = false;
 

@@ -3057,12 +3057,13 @@ Num Date        Status  Description
 			the Y direction on the antares session. (See
 			session.js/test/antares_bad_y_home.ds.) (rkw)
 
-758 3/11/02	OPEN	JavaScreen: moving a 3D object produces the error
+758 3/11/02	FIXED	JavaScreen: moving a 3D object produces the error
 			message "Cannot find view". (rkw)  (I thought I
 			had fixed this before, but the problem is still
 			showing up.  This is turning out to be very hard
 			to duplicate -- it shows up on the "regular" JS on
 			pumori but nowhere else.)
+			(Fixed by rkw, 3/12/02.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
