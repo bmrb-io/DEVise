@@ -24,7 +24,7 @@ int main(int argc, char** argv)
     initialize_system();
 
     while(cin) {
-      cout << "\n> ";
+      cerr << "\n> ";
       string query = extractQuery(cin);
       if( query != "" ) {
         EXIT(processQuery(query, cout));
