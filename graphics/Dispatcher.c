@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/08/04 21:00:41  beyer
+  Reorganized and simplified the dispatcher.  Multiple dispatchers are no
+  longer allowed.  Inserting and removing callbacks uses one list.
+
   Revision 1.23  1996/07/31 19:38:20  wenger
   Fixed compile warnings in dispatcher.
 
@@ -207,14 +211,14 @@ DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
   }
   _callbacks.DoneIterator(index);
 
-#if defined(DEBUG_CALLBACK_ORDER)
-  printf("check count & order of callback list: count=%d\n", 
+#if defined(DEBUG_CALLBACK_ORDER) 
+  printf("check count & order of callback list: count = %d\n", 
 	 _callbacks.Size());
   int i = 0;
   for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
     i++;
     DispatcherInfo *current = _callbacks.Next(index);
-    printf("%d\t%d\n", i, current->priority);
+    printf("dispatcher current %p %d\t%d\n", current, i, current->priority);
   }
   _callbacks.DoneIterator(index);
 #endif
@@ -263,6 +267,10 @@ void Dispatcher::RunCurrent()
   
   dispatcher._returnFlag = false;
   
+#ifdef DEBUG
+  printf("Run Current.\n");
+#endif
+
   while(1) {
     dispatcher.Run1();
     if (dispatcher._returnFlag)
@@ -277,6 +285,10 @@ void Dispatcher::RunCurrent()
 void Dispatcher::RunNoReturn()
 {
   ControlPanel::Init();
+
+#ifdef DEBUG
+  printf("Run No Return.\n");
+#endif
 
   while(1)
     dispatcher.Run1();
@@ -303,7 +315,7 @@ void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
       // callback has been unregistered - remove it 
       // note: info->callback could very well be an invalid pointer!
 #if defined(DEBUG)
-      printf("deleting callback 0x%p\n", info->callback);
+      printf("deleting callback 0x%p\n", info->callBack);
 #endif
       _callbacks.DeleteCurrent(index);
       delete info;
@@ -316,7 +328,6 @@ void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 	printf("Calling callback 0x%p: called fd = %d  req = %d\n", 
 	       info->callBack, info->fd, info->callback_requested); 
 #endif
-	CancelCallback(info);
 	info->callBack->Run();
       }
     }
