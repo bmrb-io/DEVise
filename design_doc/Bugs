@@ -3066,6 +3066,10 @@ Num Date        Status  Description
 			pumori but nowhere else.)
 			(Fixed by rkw, 3/12/02.)
 
+759 3/26/02	OPEN	JavaScreen: if a view containing a cursor has 'exclude'
+			set in the print configuration, the JavaScreen can't
+			open the session at all. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
