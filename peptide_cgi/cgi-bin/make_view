@@ -72,30 +72,30 @@ if (! -e $summary_page) {
     gen_html('order');
     gen_html('relax');
   }
-      
-  # Generate new sessions
-  #TEMPTEMP -- does this need to be done even if the summary page exists?
-  # what if someone else just viewed a different sample? YES!!!
-  if (-e $number.'c.dat') {
-    chdir ($session_dir) 
-      or dienice('Could not change to session_directory ($session_dir)');
-
-    change_file('Csi','csi');
-    change_file('DeltaShift','deltashift');
-    change_file('Percent','percent');
-  }
-  
-  if (-e $number.'o.dat') {
-    chdir ($session_dir)
-      or dienice('Could not change to session_directory ($session_dir)');
-    change_not_insert('coupling');
-    change_not_insert('hxrates');
-    change_not_insert('order');
-    change_not_insert('relax');
-  }
-
 } # end if summary page doesn't exist
-    
+      
+# Generate new sessions
+# This needs to be done every time because we don't generate a separate
+# set of session files for each accession number (we probably should
+# do that).
+if (-e $number.'c.dat') {
+  chdir ($session_dir) 
+    or dienice('Could not change to session_directory ($session_dir)');
+
+  change_file('Csi','csi');
+  change_file('DeltaShift','deltashift');
+  change_file('Percent','percent');
+}
+  
+if (-e $number.'o.dat') {
+  chdir ($session_dir)
+    or dienice('Could not change to session_directory ($session_dir)');
+  change_not_insert('coupling');
+  change_not_insert('hxrates');
+  change_not_insert('order');
+  change_not_insert('relax');
+}
+
 # return summary page
 print $query->redirect("http://pumori.cs.wisc.edu/bmrb/html/$summary_page");
 exit;

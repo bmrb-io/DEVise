@@ -2379,10 +2379,11 @@ Num Date        Status  Description
 			are truncated. (rkw)
 			(Fixed by rkw, 7/20/00.)
 
-604 7/26/00	OPEN	peptide-cgi: view one accession number, then a
+604 7/26/00	FIXED	peptide-cgi: view one accession number, then a
 			different one, and then go back to the first one:
 			the sessions are not updated to the correct data
 			source. (rkw)
+			(Fixed by rkw, 7/26/00.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
