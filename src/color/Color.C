@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/02/19 23:26:02  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
  */
 
 //******************************************************************************
@@ -154,7 +162,7 @@ static bool		FreePalette(PaletteID pid);
 // Initialization Functions
 //******************************************************************************
 
-bool	InitColor(Display* display)
+bool	InitColor(Display * d, int depth, int nmap, Colormap *map)
 {
 	Trace("InitColor()");
 
@@ -162,7 +170,8 @@ bool	InitColor(Display* display)
 	PaletteID	pid;
 
 	// Initialize managers, active palette
-	gColorManager		= new XColorManager(display);	// Color manager
+	gColorManager		= new XColorManager(d, depth, nmap, map);
+								// Color manager
 	gPaletteManager		= new PaletteManager();			// Palette manager
 	gActivePalette		= new ActivePalette();			// Active palette
 

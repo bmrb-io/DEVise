@@ -58,6 +58,7 @@ VPATH = ../../graphics
 
 ifeq ($(DEV_DEBUG_GRAPHICS),1)
   DEV_DEBUG = 1
+  DEBUGFLAGS = -DDEBUGGL
 endif
 
 include $(VPATH)/Makefile.base

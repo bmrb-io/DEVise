@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/02/19 23:26:11  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
  */
 
 //******************************************************************************
@@ -67,9 +75,13 @@ bool	Compare_RGBDistance(const RGB& rgb1, const RGB& rgb2)
 // Constructors & Destructors
 //******************************************************************************
 
-XColorManager::XColorManager(Display* d) :
-  ColorManager(DefaultDepth(d, DefaultScreen(d)))
+XColorManager::XColorManager(Display * d, int depth, int nmap, Colormap *map) :
+  ColorManager(depth),ncmap(nmap)
 {
+	cmap=new Colormap[nmap];
+	for (int i=0; i<nmap; i++) {
+	  cmap[i]=map[i];
+	}
 	Trace("XColorManager::XColorManager()");
 
 	SetDisplay(d);
@@ -83,6 +95,7 @@ XColorManager::~XColorManager(void)
 
 	while (i != lmap.end())
 		XFreeColor((*i).second.xcid);			// Physical free
+	delete [] cmap;
 }
 
 //******************************************************************************
@@ -102,7 +115,8 @@ bool	XColorManager::GetXRGB(ColorID cid, RGB& rgb) const
 	if (display == NULL)
 		return false;
 
-	Colormap	map = DefaultColormap(display, DefaultScreen(display));
+//	Colormap	map = DefaultColormap(display, DefaultScreen(display));
+	Colormap	map = cmap[0];
 	XColor		xcolor;
 	
 	if (!GetXColorID(cid, xcolor.pixel))
@@ -128,7 +142,8 @@ void	XColorManager::GetXRGBList(RGBList& list) const
 	if (display == NULL)
 		return;
 
-	Colormap		map = DefaultColormap(display, DefaultScreen(display));
+//	Colormap		map = DefaultColormap(display, DefaultScreen(display));
+	Colormap	map = cmap[0];
 	const ulong		mapSize = 256;
 	XColor			xc[mapSize];
 
@@ -151,10 +166,12 @@ bool	XColorManager::XAllocColor(const RGB& rgb, XColorID& xcid) const
 		return false;
 	}
 
-	int			scr_num = DefaultScreen(display);
-	Visual*		vis = DefaultVisual(display, scr_num);
+//	int			scr_num = DefaultScreen(display);
+//	Visual*		vis = DefaultVisual(display, scr_num);
 
-	Colormap	map = DefaultColormap(display, DefaultScreen(display));
+    for (int mcount =0 ; mcount < ncmap ; mcount++) {
+	Colormap	map = cmap[mcount];
+//	Colormap	map = DefaultColormap(display, DefaultScreen(display));
 	XColor		xcolor;
 	float		error;
 
@@ -218,7 +235,7 @@ bool	XColorManager::XAllocColor(const RGB& rgb, XColorID& xcid) const
 			  error << " error\n";
 #endif
 
-			return true;
+			break;
 		}
 #if defined(DEBUG)
 		else
@@ -229,12 +246,15 @@ bool	XColorManager::XAllocColor(const RGB& rgb, XColorID& xcid) const
 
 		i++;
 	}
+	if (i==list.end())
+	  return false;
+    }
 
 #if defined(DEBUG)
     cout << "Allocating RGB " << rgb.ToString().c_str() << " failed\n";
 #endif
+    return true;
 
-	return false;
 }
 
 bool	XColorManager::XFreeColor(XColorID xcid) const
@@ -243,13 +263,15 @@ bool	XColorManager::XFreeColor(XColorID xcid) const
 
 	if (display == NULL)
 		return false;
-
-	Colormap	map = DefaultColormap(display, DefaultScreen(display));
+    for (int mcount =0 ; mcount < ncmap ; mcount++) {
+	Colormap	map = cmap[mcount];
+//	Colormap	map = DefaultColormap(display, DefaultScreen(display));
 	XColor		xcolor;
 
 	xcolor.pixel = xcid;
 	
 	::XFreeColors(display, map, &xcolor.pixel, 1, 0);
+    }
 
 	return true;
 }

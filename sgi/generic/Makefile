@@ -74,12 +74,15 @@
 include ../Makefile.config
 
 # Having -L /usr/local/lib here makes strstreams core dump! RKW Dec. 29, 1997.
-ARCH_LDFLAGS = -L /usr/lib/X11 -L /usr/freeware/lib
+ARCH_LDFLAGS = -L/usr/lib/X11 -L/usr/freeware/lib
 
 # Putting -lclient in here is a kludge, because for some ****ed-up reason
 # we need to link it on the SGI even though we don't need it on the
 # other architectures.
-ARCH_SYSLIBS = -lclient -lGL -lGLU -ltk4.0 -ltcl7.4 -lX11 -lm
+#ARCH_SYSLIBS = -lclient -lGLU -lGL -ltk4.0 -ltcl7.4 -lX11 -lm
+#ARCH_SYSLIBS = -lclient -lMesaGLU -lMesaGL -ltk4.0 -ltcl7.4 -lXext -lX11 -lm
+#ARCH_SYSLIBS = -lclient -lGLU -lMesaGL -ltk4.0 -ltcl7.4 -lXext -lX11 -lm
+ARCH_SYSLIBS = -lclient -lMesaGLU -lGL -ltk4.0 -ltcl7.4 -lXext -lX11 -lm
 
 ARCH_LDPOST  =
 ARCH_STATIC_LDPOST  = -static
