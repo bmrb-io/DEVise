@@ -15,6 +15,7 @@ public class Selection implements Expression {
     public Selection(String alias, String attribute){
         this.alias = alias;
         this.attribute = attribute;
+	this.type = null;
     }
 
     public Selection(String alias, String attribute, TypeDesc type){

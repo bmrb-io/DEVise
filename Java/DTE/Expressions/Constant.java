@@ -1,6 +1,7 @@
 package Expressions;
 
 import Types.*;
+import java.util.*;
 
 /** Constant is used to represent constants, like 1.
     It takes the type of a constant (like integer) and its value */
@@ -32,7 +33,8 @@ public class Constant implements Expression {
 		String strRep = this.toString();
 		if ( st.containsKey( strRep ) )
 		    return st.get(strRep);
-		
+
+System.out.println( "Not here!");		
 		st.put( this );
 		return this;
 	}

@@ -1,6 +1,7 @@
 package Expressions;
 
 import Types.*;
+import java.util.*;
 import Operators.*;
 
 /** class Operator is used to represent all the binary operators.
@@ -50,6 +51,7 @@ public class Operator implements Expression {
         evalOp = type.getOperator( operator, right.getType() );	
         type = evalOp.getType();
 
+System.out.println("Not in table!");
         st.put( this );
         return this;
     }
