@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.136  2002/02/21 18:35:19  wenger
+// Added jsdevisec.restartSession method so Wavelet-IDR JavaScript code
+// can force a session restart.
+//
 // Revision 1.135  2001/12/17 23:18:08  wenger
 // Fixed problem preventing JSB from starting.
 //
@@ -430,6 +434,7 @@ import  java.io.*;
 import  java.net.*;
 import  java.awt.event.*;
 import  java.util.*;
+import  java.lang.*;
 
 public class jsdevisec extends Panel
 {
@@ -654,7 +659,9 @@ public class jsdevisec extends Panel
 	}
 	buttonPanel.add(commMode);
 
-        mainPanel.add(buttonPanel);
+	pn("disable buttons = " + jsValues.session.disableButtons);
+	if (! jsValues.session.disableButtons)
+	    mainPanel.add(buttonPanel);
 
         viewInfo = new DEViseViewInfo(this, images);
 
@@ -1055,6 +1062,12 @@ public class jsdevisec extends Panel
         collabpassdlg = new CollabPassDlg(this, parentFrame, isCenterScreen);
         collabpassdlg.open();
 	collabpassdlg = null;
+    }
+
+    public void displayID()
+    {
+	String idstr = new Integer(jsValues.connection.connectionID).toString();
+	showMsg("My client ID is:  " + idstr);
     }
 
     public void disableCollab()
@@ -1761,6 +1774,7 @@ class SettingDlg extends Dialog
     public TextField screenY = new TextField(4);
     public Button setButton = new Button("   Set   ");
     public Button statButton = new Button("Request");
+    public Button meButton = new Button("Request");
     public Button collabButton = new Button("Request");
     public Button cancelButton = new Button("Cancel");
     private boolean status = false; // true means this dialog is showing
@@ -1798,6 +1812,10 @@ class SettingDlg extends Dialog
         statButton.setForeground(jsc.jsValues.uiglobals.fg);
         statButton.setFont(jsc.jsValues.uiglobals.font);
 
+        meButton.setBackground(jsc.jsValues.uiglobals.bg);
+        meButton.setForeground(jsc.jsValues.uiglobals.fg);
+        meButton.setFont(jsc.jsValues.uiglobals.font);
+
 	if (jsc.specialID == -1) {
 	    collabButton.setBackground(jsc.jsValues.uiglobals.bg);
 	} else {
@@ -1822,13 +1840,8 @@ class SettingDlg extends Dialog
         GridBagConstraints  c = new GridBagConstraints();
         setLayout(gridbag);
 
-        //c.gridx = GridBagConstraints.RELATIVE;
-        //c.gridy = GridBagConstraints.RELATIVE;
         c.gridwidth = GridBagConstraints.REMAINDER;
-        //c.gridheight = 1;
         c.fill = GridBagConstraints.BOTH;
-        //c.ipadx = 0;
-        //c.ipady = 0;
         c.anchor = GridBagConstraints.CENTER;
         c.weightx = 1.0;
         c.weighty = 1.0;
@@ -1848,7 +1861,7 @@ class SettingDlg extends Dialog
         c.insets = new Insets(10, 10, 0, 0);
         c.gridwidth = 1;
         Label label2 = new Label("JavaScreen Size:");
-        gridbag.setConstraints(label1, c);
+        gridbag.setConstraints(label2, c);
         add(label2);
 
         c.insets = new Insets(10, 0, 0, 5);
@@ -1866,7 +1879,7 @@ class SettingDlg extends Dialog
         c.insets = new Insets(10, 10, 10, 0);
         c.gridwidth = 1;
         Label label3 = new Label("JSPOP Status:");
-        gridbag.setConstraints(label2, c);
+        gridbag.setConstraints(label3, c);
         add(label3);
 
         c.insets = new Insets(10, 0, 10, 10);
@@ -1876,8 +1889,19 @@ class SettingDlg extends Dialog
 
         c.insets = new Insets(10, 10, 10, 0);
         c.gridwidth = 1;
+        Label label5 = new Label("My ID:");
+        gridbag.setConstraints(label5, c);
+        add(label5);
+
+        c.insets = new Insets(10, 0, 10, 10);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(meButton, c);
+        add(meButton);
+
+        c.insets = new Insets(10, 10, 10, 0);
+        c.gridwidth = 1;
         Label label4 = new Label("Collaboration Status:");
-        gridbag.setConstraints(label3, c);
+        gridbag.setConstraints(label4, c);
         add(label4);
 
         c.insets = new Insets(10, 0, 10, 10);
@@ -1965,6 +1989,15 @@ class SettingDlg extends Dialog
                     }
                 });
         }
+
+	meButton.addActionListener(new ActionListener()
+	    {
+		public void actionPerformed(ActionEvent event)
+		{
+		    close();
+		    jsc.displayID();	
+		}
+	    });
 
         cancelButton.addActionListener(new ActionListener()
                 {
