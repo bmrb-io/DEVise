@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/07/19 17:26:04  jussi
+  Added code that prevents record overlap elimination when
+  records are of LineShape or LineShadeShape.
+
   Revision 1.27  1996/07/19 02:43:07  jussi
   Added point storage for missing data points.
 
@@ -358,14 +362,14 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
   // Draw data only if window is not iconified
   if (!Iconified()) {
     if (_batchRecs) {
-      _dataBin->InsertSymbol(recId, gdata, numGData, 1, canElimRecords);
+      _dataBin->InsertSymbol(recId, gdata, numGData, 0, 1, canElimRecords);
 #ifdef DEBUG
       _dataBin->PrintStat();
 #endif
     } else {
       char *ptr = (char *)gdata;
       for(int i = 0; i < numGData; i++) {
-        _dataBin->InsertSymbol(recId, ptr, 1, 1, canElimRecords);
+        _dataBin->InsertSymbol(recId, ptr, 1, 0, 1, canElimRecords);
         recId++;
         ptr += gRecSize;
       }
