@@ -19,6 +19,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/12/06 17:16:52  wenger
+#  First version of automatic libcs release.
+#
 #
 
 ############################################################
@@ -58,22 +61,28 @@ cp cslib.sun.tar $target
 
 cd $target
 
-tar xvf cslib.hp.tar
-mv Makefile Makefile.hp
-mv libcs.a libcs.hp700_ux90.a
-rm cslib.hp.tar
+#tar xvf cslib.hp.tar
+#mv Makefile Makefile.hp
+#mv libcs.a libcs.hp700_ux90.a
+#rm cslib.hp.tar
 
 tar xvf cslib.solaris.tar
 mv Makefile Makefile.solaris
-mv libcs.a libcs.sunx86_55.a
+mv libcolor.a libcolor.sunx86_55.a
+mv libdevcs.a libdevcs.sunx86_55.a
+mv libdevwin.a libdevwin.sunx86_55.a
+mv libutils.a libutils.sunx86_55.a
 rm cslib.solaris.tar
 
 tar xvf cslib.solsparc.tar
 mv Makefile Makefile.solsparc
-mv libcs.a libcs.sun4x_55.a
+mv libcolor.a libcolor.sun4x_55.a
+mv libdevcs.a libdevcs.sun4x_55.a
+mv libdevwin.a libdevwin.sun4x_55.a
+mv libutils.a libutils.sun4x_55.a
 rm cslib.solsparc.tar
 
-tar xvf cslib.sun.tar
-mv Makefile Makefile.sun
-mv libcs.a libcs.sun4m_412.a
-rm cslib.sun.tar
+#tar xvf cslib.sun.tar
+#mv Makefile Makefile.sun
+#mv libcs.a libcs.sun4m_412.a
+#rm cslib.sun.tar
