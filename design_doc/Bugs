@@ -2412,11 +2412,12 @@ Num Date        Status  Description
 			4096_full.ds session, the atoms don't show up in
 			the 3D view. (rkw)
 
-611 8/17/00	OPEN	peptide-cgi: for bmr4267.str, the summary file
+611 8/17/00	FIXED	peptide-cgi: for bmr4267.str, the summary file
 			contains links to a number of plots for which no
 			data is actually generated. (rkw)
+			(Fixed by rkw, 8/29/00.)
 
-612 8/17/00	OPEN	peptide-cgi: data files have _stop as the last
+612 8/17/00	FIXED?	peptide-cgi: data files have _stop as the last
 			line. (rkw)
 
 613 8/21/00	FIXED	peptide-cgi: code relies on specific names for
@@ -2429,6 +2430,9 @@ Num Date        Status  Description
 615 8/30/00	OPEN	If you have both 'all in dest' and a grid set for
 			a cursor, the grid code can move a cursor edge
 			outside of the destination view. (rkw)
+
+616 8/31/00	OPEN	Start jspop/jss/devised; kill jspop and jss ->
+			devised starts to gobble up CPU. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
