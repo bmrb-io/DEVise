@@ -20,6 +20,16 @@
   $Id$
 
   $Log$
+  Revision 1.40  1997/02/03 04:12:17  donjerko
+  Catalog management moved to DTE
+
+  Revision 1.39.4.1  1997/03/06 19:44:33  wenger
+  Fixed various parsing bugs, improved error messages as a result of
+  Miron's problems with the GIS data: warns if strings are too long;
+  warns if improper separator/whitespace specification; better warnings
+  if records don't parse; better error messages from
+  MmDdYyHhMmAmPmComposite parser.
+
   Revision 1.39  1996/11/21 19:14:07  wenger
   Fixed more compile warnings; updated devise.dali to match current
   command-line flags.
@@ -378,51 +388,39 @@ const int MAX_SEPARATORS = 50;
 static char separators[MAX_SEPARATORS];
 static int numSeparators;
 
-/*------------------------------------------------------------------------------
- * function: ParseSeparator
- * Parse a separator; return false if can't parse.
- */
-static Boolean
-ParseSeparator(int numArgs, char **args)
-{
-  if (numArgs >= MAX_SEPARATORS) {
-    fprintf(stderr, "ParseCat: too many separators, max = %d\n",
-	    MAX_SEPARATORS);
-    return false;
-  }
-
-  for(int i = 1; i < numArgs; i++) {
-    if (!ParseChar(args[i], separators[i - 1]))
-      return false;
-  }
-
-  numSeparators = numArgs - 1;
-  return true;
-}
-
-
 static char whitespaces[MAX_SEPARATORS];
 static int numWhitespace;
 
 /*------------------------------------------------------------------------------
- * function: ParseWhiteSpace
- * Parse whitespace; return false if can't parse.
+ * function: ParseSeparators
+ * Parse separators/whitespace; return false if can't parse.
  */
 static Boolean
-ParseWhiteSpace(int numArgs, char **args)
+ParseSeparators(int numArgs, char **args, int &sepCount, char *sepChars)
 {
   if (numArgs >= MAX_SEPARATORS) {
-    fprintf(stderr, "ParseCat: too many separators, max = %d\n",
-	    MAX_SEPARATORS);
+    fprintf(stderr,
+	  "ParseCat: too many separator/whitespace strings, max = %d\n",
+	  MAX_SEPARATORS);
     return false;
   }
 
   for(int i = 1; i < numArgs; i++) {
-    if (!ParseChar(args[i], whitespaces[i - 1]))
+	if (strlen(args[i]) > 1) {
+	  char errBuf[1024];
+	  sprintf(errBuf,
+		"Too many characters in separator/whitespace string <%s>.\n"
+		"All but the first are ignored.  To specify multiple characters,\n"
+		"enclose each one in single quotes.", args[i]);
+	  reportErrNosys(errBuf);
+	}
+
+    if (!ParseChar(args[i], sepChars[i - 1])) {
       return false;
+	}
   }
 
-  numWhitespace = numArgs - 1;
+  sepCount = numArgs - 1;
   return true;
 }
 
@@ -697,7 +695,7 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly,Boolean typeOnly
 #ifdef DEBUG
 		printf("parse: ");
 		for(int ind = 0; ind < numArgs; ind++)
-		  printf("'%s' ", args[ind]);
+		  printf("<%s> ", args[ind]);
 		printf("\n");
 #endif
 
@@ -713,16 +711,22 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly,Boolean typeOnly
 		else if (strcmp(args[0],"separator")== 0)
 		{
 			/* parse separator */
-			hasSeparator = ParseSeparator(numArgs, args);
+			hasSeparator = ParseSeparators(numArgs, args, numSeparators,
+			  separators);
 			if (!hasSeparator){
-				reportError("can't parse separator", devNoSyserr);
+				reportError("can't parse separator(s)", devNoSyserr);
 				goto error;
 			}
 		}
 		else if (strcmp(args[0],"whitespace")== 0)
 		{
 			/* parse separator */
-			hasWhitespace = ParseWhiteSpace(numArgs, args);
+			hasWhitespace = ParseSeparators(numArgs, args, numWhitespace,
+			  whitespaces);
+			if (!hasWhitespace){
+				reportError("can't parse whitespace", devNoSyserr);
+				goto error;
+			}
 		}
 		else if (strcmp(args[0],"comment") == 0)
 		{

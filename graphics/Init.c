@@ -16,6 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.35  1997/03/20 01:32:07  wenger
+  Fixed a bug in color allocation; color chooser for data shows old colors
+  (temporarily); background conversion of GData defaults to off.
+
+  Revision 1.34.4.2  1997/03/21 17:45:43  wenger
+  Shared memory and background GData conversion default to off; updated
+  user manual version to 1.3.4.
+
+  Revision 1.34.4.1  1997/03/07 20:03:56  wenger
+  Tasvir images now work in PostScript output; Tasvir images now freed
+  on a per-window basis; Tasvir timeout factor can be set on the command
+  line; shared memory usage enabled by default.
+
   Revision 1.34  1997/01/30 17:25:23  wenger
   Changed the C++ code to default to not using shared memory.
 
@@ -225,8 +238,9 @@ char *Init::_batchFile = 0;
 
 char * Init::_daliServer = NULL;
 Boolean Init::_daliQuit = false;
-
 int Init::_imageDelay = 0;
+float Init::_tasvirTimeout = 1.0;
+
 int Init::_screenWidth = -1;
 int Init::_screenHeight = -1;
 
@@ -283,6 +297,7 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-savePopup: save popup window and wait for button event\n");
   fprintf(stderr, "\t-tasvir <name>: specify name of tasvir server\n");
   fprintf(stderr, "\t-tasvirquit: kills tasvir server when Devise exits\n");
+  fprintf(stderr, "\t-tasvirTO <value>: timeout factor on Tasvir images\n");
   fprintf(stderr, "\t-etk <name>: specify name of Embedded-Tk server\n");
   fprintf(stderr, "\t-etkquit: kills Embedded-Tk server when Devise exits\n");
   fprintf(stderr, "\t-screenWidth <value>: sets screen width for batch mode\n");
@@ -581,6 +596,15 @@ void Init::DoInit(int &argc, char **argv)
       else if (strcmp(&argv[i][1], "tasvirquit") == 0) {
 	_daliQuit = true;
 	MoveArg(argc,argv,i,1);
+      }
+
+      else if (strcmp(&argv[i][1], "tasvirTO") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_tasvirTimeout = atof(argv[i+1]);
+	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "etk") == 0) {

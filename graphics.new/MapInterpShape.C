@@ -17,8 +17,22 @@
   $Id$
 
   $Log$
+  Revision 1.33  1997/03/19 19:41:47  andyt
+  Embedded Tcl/Tk windows are now sized in data units, not screen pixel
+  units. The old list of ETk window handles (WindowRep class) has been
+  replaced by a list of ETkInfo structs, each with fields for the window
+  handle, x-y coordinates, name of the Tcl script, and an "in_use"
+  flag. Added an ETk_Cleanup() procedure that gets called inside
+  View::ReportQueryDone and destroys all ETk windows that are not marked
+  as in_use.
+
   Revision 1.32  1997/02/14 16:47:44  wenger
   Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+
+  Revision 1.31.4.4  1997/03/07 20:04:15  wenger
+  Tasvir images now work in PostScript output; Tasvir images now freed
+  on a per-window basis; Tasvir timeout factor can be set on the command
+  line; shared memory usage enabled by default.
 
   Revision 1.31.4.3  1997/02/11 23:32:19  weaver
   Changed vector shape drawing to have constant size arrowhead and beginning of vector at the GData center.
@@ -1500,8 +1514,7 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	    View *view2 = View::FindViewByName(view->GetName());
 	    if (view2->IsInPileMode()) timeoutFactor = 10.0;
 	    win->DaliShowImage(tx, ty, width, height, file,
-			       imageDataSize, image,
-			       timeoutFactor);
+			       imageDataSize, image, timeoutFactor);
 	}
 	else
 	{

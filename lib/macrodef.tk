@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.81  1997/03/23 23:46:27  donjerko
+#	*** empty log message ***
+#
 #	Revision 1.80  1997/03/21 23:59:22  guangshu
 #	Elliminate some comment lines.
 #
@@ -47,6 +50,12 @@
 #
 #	Revision 1.72  1997/02/03 04:12:38  donjerko
 #	Catalog management moved to DTE
+#
+#	Revision 1.71.4.2  1997/03/06 21:32:08  wenger
+#	When generating a new window in which to visualize data, the 'Create
+#	Window' dialog isn't shown until you finish in the 'Define Visualization'
+#	dialog; also, if there are no existing windows, the Window selection
+#	defaults to New.
 #
 #	Revision 1.71.4.1  1997/02/09 16:14:45  wenger
 #	Cleaned up the data source GUI a little more (as per suggestions from
@@ -979,8 +988,9 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
     set windowsel ""
     if {$curView != ""} {
 	set windowsel [DEVise getViewWin $curView]
-    }
-    if {$windowsel == ""} {
+    } elseif {[DEVise getWinCount] <= 1} {
+	set windowsel New
+    } else {
 	set windowsel "None selected yet"
     }
    
@@ -991,13 +1001,8 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
     }
 
     .auto.windowsel.window.menu add separator
-    .auto.windowsel.window.menu add command -label "New..." -command {
-	set newwin [DoCreateWindow "Select window type"]
-	if {$newwin != ""} {
-	    set windowsel $newwin
-	    .auto.windowsel.window.menu add command -label $windowsel \
-		    -command "set windowsel {$windowsel}"
-	}
+    .auto.windowsel.window.menu add command -label "New" -command {
+      set windowsel New
     }
 
     label .auto.xsel.label -text "Select X:"
@@ -1093,19 +1098,40 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
     set cancel 0
 	
     button .auto.but.ok -text OK -width 15 -command {
-	if {![DEVise exists $windowsel]} {
-	    dialog .winError "No Window Specified" \
-		    "Please select a window for visualization." \
-	    "" 0 OK
-	   return
-	}
+#TEMPTEMP?
+#	if {![DEVise exists $windowsel]} {
+#	    dialog .winError "No Window Specified" \
+#		    "Please select a window for visualization." \
+#	    "" 0 OK
+#	   return
+#	}
 
+	# See whether we've selected any Y attributes.
 	foreach yname [array names yvar] {
 	    if {$yvar($yname) > 0} {
-		set cancel 0
-		return
+
+	      # Yes, a Y attr has been selected.  Now create a window
+	      # if necessary, and make sure that it exists.  Prompt the
+	      # user to select a window if one has not been selected.
+              if {$windowsel == "New"} {
+	        set newwin [DoCreateWindow "Select window type"]
+	        if {$newwin != ""} {
+	          set windowsel $newwin
+	        }
+              }
+	      if {![DEVise exists $windowsel]} {
+	          dialog .winError "No Window Specified" \
+		          "Please select a window for visualization." \
+	          "" 0 OK
+	         return
+	      } else {
+	        set cancel 0
+	        return
+	      }
 	    }
 	}
+
+	# No -- no Y attr has been selected.  Prompt the user to do so.
 	dialog .autoError "Note" \
 		"Please select one or more\n\
 		Y attributes for automatic\n\

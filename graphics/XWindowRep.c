@@ -16,6 +16,24 @@
   $Id$
 
   $Log$
+  Revision 1.88  1997/03/19 19:41:10  andyt
+  Embedded Tcl/Tk windows are now sized in data units, not screen pixel
+  units. The old list of ETk window handles (WindowRep class) has been
+  replaced by a list of ETkInfo structs, each with fields for the window
+  handle, x-y coordinates, name of the Tcl script, and an "in_use"
+  flag. Added an ETk_Cleanup() procedure that gets called inside
+  View::ReportQueryDone and destroys all ETk windows that are not marked
+  as in_use.
+
+  Revision 1.87.4.2  1997/03/07 20:03:59  wenger
+  Tasvir images now work in PostScript output; Tasvir images now freed
+  on a per-window basis; Tasvir timeout factor can be set on the command
+  line; shared memory usage enabled by default.
+
+  Revision 1.87.4.1  1997/02/27 22:46:07  wenger
+  Most of the way to having Tasvir images work in PostScript output;
+  various WindowRep-related fixes; version now 1.3.4.
+
   Revision 1.87  1997/01/28 19:46:35  wenger
   Fixed bug 139; better testing of ScaledText() in client/server example;
   fixes to Exit class for client/server library.
@@ -897,7 +915,8 @@ XWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
 	float timeoutFactor)
 {
 #if defined(DEBUG)
-  printf("XWindowRep::DaliShowImage(%s)\n", filename);
+  printf("XWindowRep::DaliShowImage(%f, %f, %f, %f, %s)\n", centerX, centerY,
+    width, height, filename != NULL ? filename : "(image)");
 #endif
 
   DevStatus result = StatusOk;
@@ -941,6 +960,12 @@ XWindowRep::DaliFreeImages()
 
   DevStatus result = StatusOk;
 
+#if 1
+  if (_daliImages.Size() > 0) {
+    result += DaliIfc::FreeWindowImages(_daliServer, _win);
+    _daliImages.DeleteAll();
+  }
+#else
   int index = _daliImages.InitIterator(false);
   while (_daliImages.More(index))
   {
@@ -949,6 +974,7 @@ XWindowRep::DaliFreeImages()
     result += DaliIfc::FreeImage(_daliServer, handle);
   }
   _daliImages.DoneIterator(index);
+#endif
 
   return result;
 }

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.15.4.1  1997/03/07 20:03:56  wenger
+  Tasvir images now work in PostScript output; Tasvir images now freed
+  on a per-window basis; Tasvir timeout factor can be set on the command
+  line; shared memory usage enabled by default.
+
+  Revision 1.15  1997/01/09 18:47:23  jussi
+  Added command line options for setting tape search method.
+
   Revision 1.14  1996/12/30 23:51:08  andyt
   First version with support for Embedded Tcl/Tk windows. WindowRep classes
   now have member functions for creating and destroying Tk windows.
@@ -130,6 +138,7 @@ class Init {
     static char *DaliServer() { return _daliServer; }
     static Boolean DaliQuit() { return _daliQuit; }
     static int ImageDelay() { return _imageDelay; }
+    static float TasvirTimeout() { return _tasvirTimeout; }
 
     static int ScreenWidth() { return _screenWidth; }
     static int ScreenHeight() { return _screenHeight; }
@@ -181,6 +190,7 @@ protected:
     static char *_daliServer;      /* host name of Tasvir image server */
     static Boolean _daliQuit;      /* true if Tasvir abort requested */
     static int _imageDelay;        /* delay before displaying Tasvir image */
+    static float _tasvirTimeout;   /* timeout factor for Tasvir images */
 
     static int _screenWidth;       /* requested screen width */
     static int _screenHeight;      /* requested screen height */

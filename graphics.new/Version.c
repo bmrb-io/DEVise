@@ -20,11 +20,18 @@
   $Id$
 
   $Log$
+  Revision 1.28  1997/02/26 16:31:49  wenger
+  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+
   Revision 1.27  1997/02/14 16:47:48  wenger
   Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
 
   Revision 1.26  1997/01/31 19:04:18  wenger
   Changed Devise version to 1.4.0.
+
+  Revision 1.25.4.4  1997/02/27 22:46:25  wenger
+  Most of the way to having Tasvir images work in PostScript output;
+  various WindowRep-related fixes; version now 1.3.4.
 
   Revision 1.25.4.3  1997/02/20 20:50:45  wenger
   Changed mapping to use ShapeAttr4 for line width.
@@ -166,7 +173,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.4.1";
+static const char *	version = "1.4.2";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1997";

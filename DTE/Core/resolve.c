@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/03/20 20:42:24  donjerko
+  Removed the List usage from Aggregates and replaced it with Plex, a
+  form of dynamic array.
+
   Revision 1.11  1997/02/25 22:14:54  donjerko
   Enabled RTree to store data attributes in addition to key attributes.
 
@@ -24,6 +28,12 @@
 
   Revision 1.9  1997/02/03 04:11:36  donjerko
   Catalog management moved to DTE
+
+  Revision 1.8.4.2  1997/03/25 15:41:08  wenger
+  Slight change to resolve.c to get it to compile on SPARC/SunOS.
+
+  Revision 1.8.4.1  1997/03/18 14:41:20  wenger
+  Various minor changes to get 1.3 to compile on SGI.
 
   Revision 1.8  1996/12/21 22:21:50  donjerko
   Added hierarchical namespace.
@@ -236,6 +246,7 @@ TypeID GlobalSelect::typify(List<Site*>* sites){
 		selList->step();
 	}
 	assert(0);
+	return ""; //avoid compiler warning
 }
 
 bool GlobalSelect::match(BaseSelection* x, Path*& upTo){

@@ -16,6 +16,23 @@
   $Id$
 
   $Log$
+  Revision 1.25.4.3  1997/03/15 00:31:05  wenger
+  PostScript printing of entire DEVise display now works; PostScript output
+  is now centered on page; other cleanups of the PostScript printing along
+  the way.
+
+  Revision 1.25.4.2  1997/03/07 20:03:58  wenger
+  Tasvir images now work in PostScript output; Tasvir images now freed
+  on a per-window basis; Tasvir timeout factor can be set on the command
+  line; shared memory usage enabled by default.
+
+  Revision 1.25.4.1  1997/02/27 22:46:04  wenger
+  Most of the way to having Tasvir images work in PostScript output;
+  various WindowRep-related fixes; version now 1.3.4.
+
+  Revision 1.25  1997/01/30 15:57:44  wenger
+  Fixed compile warnings on Sun.
+
   Revision 1.24  1997/01/29 17:02:31  wenger
   Fixed PSWindowRep::ScaledText().
 
@@ -145,7 +162,9 @@
 #include "PSWindowRep.h"
 #include "PSDisplay.h"
 #include "DevError.h"
+
 #ifndef LIBCS
+#include "DaliIfc.h"
 #include "Init.h"
 #endif
 
@@ -159,16 +178,6 @@
 #define ROUND(type, value) ((type)(value + 0.5))
 
 #define USE_PS_PROCEDURES 1
-
-typedef struct {
-    short x, y;
-} XPoint;
-    
-typedef struct {
-    short x, y;
-    unsigned short width, height;
-} XRectangle;
-    
 
 
 /**********************************************************************
@@ -194,6 +203,10 @@ PSWindowRep::PSWindowRep(DeviseDisplay *display,
   _height = height;
 
   _xorMode = false;
+
+#ifndef LIBCS
+  _daliServer = NULL;
+#endif
 
 #ifdef LIBCS
   ColorMgr::GetColorRgb(fgndColor, _foreground.red, _foreground.green,
@@ -241,6 +254,10 @@ PSWindowRep::~PSWindowRep()
 
   if (_children.Size() > 0)
     reportErrNosys("Child windows should have been destroyed first");
+
+#ifndef LIBCS
+  delete [] _daliServer;
+#endif
 }
 
 
@@ -385,6 +402,84 @@ void PSWindowRep::ExportImage(DisplayExportFormat format, char *filename)
   reportErrNosys("PSWindowRep::ExportImage() not yet implemented");
     /* do something */
 }
+
+
+
+#ifndef LIBCS
+/*------------------------------------------------------------------------------
+ * function: PSWindowRep::DaliShowImage
+ * Show a Dali image in this window.
+ */
+DevStatus
+PSWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
+        Coord height, char *filename, int imageLen, char *image,
+        float timeoutFactor)
+{
+#if defined(DEBUG)
+  printf("PSWindowRep::DaliShowImage(%f, %f, %f, %f, %s)\n", centerX, centerY,
+    width, height, filename != NULL ? filename : "(image)");
+#endif
+
+  DevStatus result = StatusOk;
+
+#ifdef GRAPHICS
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+
+#if defined(PS_DEBUG)
+  fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
+#endif
+
+#if defined(PS_DEBUG)
+  /* Transform from center, size into corner coords. */
+  Coord tx1, ty1, tx2, ty2;
+  tx1 = centerX - width / 2.0;
+  ty1 = centerY - height / 2.0;
+  tx2 = centerX + width / 2.0;
+  ty2 = centerY + height / 2.0;
+
+  /* Outline the region the image is supposed to occupy -- for
+   * debugging purposes. */
+  GlobalColor tmpColor = GetFgColor();
+  SetFgColor(tmpColor != BlackColor ? BlackColor : WhiteColor);
+  DrawLine(printFile, tx1, ty1, tx1, ty2);
+  DrawLine(printFile, tx1, ty2, tx2, ty2);
+  DrawLine(printFile, tx2, ty2, tx2, ty1);
+  DrawLine(printFile, tx2, ty1, tx1, ty1);
+  SetFgColor(tmpColor);
+#endif
+
+  /* Call procedure to prepare for including EPS file. */
+  fprintf(printFile, "\nBeginEPSF\n");
+
+  /* Translate to the correct location -- relative to the page center,
+   * since that's how Tasvir is positioning the image. */
+  Coord pageWidth;
+  Coord pageHeight;
+  Coord xMargin;
+  Coord yMargin;
+
+  DeviseDisplay::GetPSDisplay()->GetPageGeom(pageWidth, pageHeight, xMargin,
+    yMargin);
+  fprintf(printFile, "%f %f translate\n", centerX - pageWidth / 2.0,
+    centerY - pageHeight / 2.0);
+
+  fprintf(printFile, "\n%%%%BeginDocument: %s\n",
+    filename != NULL ? filename : "(image)");
+
+  /* Get the image from Tasvir and put it into the output file. */
+  result += DaliIfc::PSShowImage(_daliServer, (int) width, (int) height,
+    filename, imageLen, image, printFile, timeoutFactor);
+
+  fprintf(printFile, "\n%%%%EndDocument\n\n");
+
+  /* Clean up after the EPS file. */
+  fprintf(printFile, "\nEndEPSF\n\n");
+
+#endif
+
+  return result;
+}
+#endif // #ifndef LIBCS
 
 
 
@@ -1329,7 +1424,7 @@ void PSWindowRep::SetAbsoluteOrigin(int x, int y)
  * of the screen window, and the size of the page to output. */
 
 void PSWindowRep::SetPPTrans(const Rectangle &viewGeom,
-  const Rectangle &parentGeom, Boolean maintainAspect)
+  const Rectangle &parentGeom)
 {
 #if defined(DEBUG)
   printf("PSWindowRep::SetPPTrans()\n");
@@ -1339,38 +1434,22 @@ void PSWindowRep::SetPPTrans(const Rectangle &viewGeom,
     parentGeom.height);
 #endif
 
-  /* Get geometry of output page here. */
-  Coord pageWidth;
-  Coord pageHeight;
-  Coord xMargin;
-  Coord yMargin;
+  /* Get geometry of output region on the page here. */
+  Rectangle boundingBox;
 
-  DeviseDisplay::GetPSDisplay()->GetPageGeom(pageWidth, pageHeight, xMargin,
-    yMargin);
-
-  pageWidth -= 2 * xMargin;
-  pageHeight -= 2 * yMargin;
-
-  if (maintainAspect) {
-    double screenAspect = parentGeom.height / parentGeom.width;
-    double pageAspect = pageHeight / pageWidth;
-
-    if (screenAspect > pageAspect) {
-      pageWidth = pageHeight / screenAspect;
-    } else {
-      pageHeight = pageWidth * screenAspect;
-    }
-  }
+  DeviseDisplay::GetPSDisplay()->GetBoundingBox(boundingBox);
 
   _pixToPointTrans.MakeIdentity();
 
-  Coord xScale = pageWidth / parentGeom.width;
-  Coord yScale = -1.0 * pageHeight / parentGeom.height;
+  Coord xScale = boundingBox.width / parentGeom.width;
+  Coord yScale = -1.0 * boundingBox.height / parentGeom.height;
   _pixToPointTrans.Scale(xScale, yScale);
-  Coord widthAdj = viewGeom.x / parentGeom.width * pageWidth;
-  Coord heightAdj = viewGeom.y / parentGeom.height * pageHeight;
-  _pixToPointTrans.Translate(widthAdj + xMargin,
-    pageHeight - heightAdj + yMargin);
+  Coord widthAdj = (viewGeom.x - parentGeom.x) /
+    parentGeom.width * boundingBox.width;
+  Coord heightAdj = (viewGeom.y - parentGeom.y) /
+    parentGeom.height * boundingBox.height;
+  _pixToPointTrans.Translate(widthAdj + boundingBox.x,
+    boundingBox.height - heightAdj + boundingBox.y);
 }
 
 

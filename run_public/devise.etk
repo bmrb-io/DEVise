@@ -30,4 +30,4 @@ endif
 
 $ETK_EXEC &
 
-$DEVISE_EXEC -sharedMem 0 -etk localhost -etkquit $*
+$DEVISE_EXEC -etk localhost -etkquit $*

@@ -3,3 +3,38 @@ depend:
 		-I../tape *.c
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+
+DevRead.o: /usr/include/stdio.h /usr/include/string.h DevRead.h
+DevRead.o: ../graphics/DeviseTypes.h /usr/include/values.h
+DevRead.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+DevRead.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
+DevRead.o: /usr/include/sys/select.h ../graphics.new/RecId.h types.h
+DevRead.o: /usr/include/assert.h /usr/include/netinet/in.h
+DevRead.o: /usr/include/sys/endian.h marshal.h ../graphics/Util.h
+DevRead.o: /usr/include/stdlib.h /usr/include/time.h /usr/include/ctype.h
+DevRead.o: /usr/include/math.h ../graphics/Exit.h ../graphics.new/TData.h
+DevRead.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
+DevRead.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
+DevRead.o: /usr/include/sys/sem.h /usr/include/sys/shm.h /usr/include/errno.h
+DevRead.o: /usr/include/sys/errno.h /usr/include/limits.h
+DevRead.o: /usr/include/sys/stat.h /usr/include/sys/time.h
+DevRead.o: ../graphics.new/machdep.h /usr/include/sys/param.h
+DevRead.o: /usr/include/sys/signal.h /usr/include/sys/wait.h
+DevRead.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
+DevRead.o: /usr/include/sys/resource.h /usr/include/sys/ioctl.h
+DevRead.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
+DevRead.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
+DevRead.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
+DevRead.o: /usr/include/sys/socket.h ../graphics/AttrList.h
+DevRead.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
+DevRead.o: ../graphics.new/DataSeg.h
+drtest.o: /usr/include/stdio.h /usr/include/sys/types.h
+drtest.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
+drtest.o: /usr/include/sys/select.h DevRead.h ../graphics/DeviseTypes.h
+drtest.o: /usr/include/values.h ../graphics/DevStatus.h
+drtest.o: ../graphics.new/RecId.h types.h /usr/include/assert.h
+drtest.o: /usr/include/netinet/in.h /usr/include/sys/endian.h marshal.h
+types.o: types.h /usr/include/assert.h /usr/include/sys/types.h
+types.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
+types.o: /usr/include/sys/select.h /usr/include/netinet/in.h
+types.o: /usr/include/sys/endian.h

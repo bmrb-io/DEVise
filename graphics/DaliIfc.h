@@ -20,6 +20,18 @@
   $Id$
 
   $Log$
+  Revision 1.4.4.2  1997/03/07 20:03:55  wenger
+  Tasvir images now work in PostScript output; Tasvir images now freed
+  on a per-window basis; Tasvir timeout factor can be set on the command
+  line; shared memory usage enabled by default.
+
+  Revision 1.4.4.1  1997/02/27 22:46:04  wenger
+  Most of the way to having Tasvir images work in PostScript output;
+  various WindowRep-related fixes; version now 1.3.4.
+
+  Revision 1.4  1997/01/09 18:41:16  wenger
+  Added workarounds for some Tasvir image bugs, added debug code.
+
   Revision 1.3  1996/09/04 21:24:48  wenger
   'Size' in mapping now controls the size of Dali images; improved Dali
   interface (prevents Dali from getting 'bad window' errors, allows Devise
@@ -53,7 +65,12 @@ public:
     int centerY, int width, int height, char *filename, int imageLen,
     char *image, int &handle, float timeoutFactor = 1.0,
     int maxImageSize = 1000);
+  static DevStatus PSShowImage(char *daliServer, int width, int height,
+    char *filename, int imageLen, char *image, FILE *printfile,
+    float timeoutFactor = 1.0);
+
   static DevStatus FreeImage(char *daliServer, int handle);
+  static DevStatus FreeWindowImages(char *daliServer, Window win);
   static DevStatus Reset(char *daliServer);
   static DevStatus Quit(char *daliServer);
 };

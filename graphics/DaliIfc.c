@@ -20,6 +20,18 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/02/14 16:47:31  wenger
+  Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+
+  Revision 1.7.4.3  1997/03/07 20:03:54  wenger
+  Tasvir images now work in PostScript output; Tasvir images now freed
+  on a per-window basis; Tasvir timeout factor can be set on the command
+  line; shared memory usage enabled by default.
+
+  Revision 1.7.4.2  1997/02/27 22:46:03  wenger
+  Most of the way to having Tasvir images work in PostScript output;
+  various WindowRep-related fixes; version now 1.3.4.
+
   Revision 1.7.4.1  1997/02/07 15:21:19  wenger
   Updated Devise version to 1.3.1; fixed bug 148 (GUI now forces unique
   window names); added axis toggling and color selections to Window menu;
@@ -84,9 +96,14 @@
 #include "DevError.h"
 
 
+static DevStatus CloseConnection(int fd);
+static DevStatus ConnectAndSend(char *daliServer, char *commandBuf,
+  int imageLen, char *image, char *replyBuf, double timeout);
 static int MyWrite(int fd, unsigned char *buff, int num);
 static int newlinefd(char *s, int fd, int maxc);
-static DevStatus SendCommand(char *daliServer, char *commandBuf, int imageLen,
+static DevStatus OpenConnection(char *daliServer, int &fd);
+static DevStatus ReadImage(int fd, int numBytes, FILE *printfile);
+static DevStatus SendCommand(int fd, char *commandBuf, int imageLen,
   char *image, char *replyBuf, double timeout);
 static DevStatus WaitForReply(char *buf, int fd, int bufSize, double timeout);
 
@@ -99,6 +116,7 @@ static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
 static char *	srcFile = __FILE__;
+static char errBuf[DALI_MAX_STR_LENGTH+100];
 
 /*------------------------------------------------------------------------------
  * function: DaliIfc::ShowImage
@@ -109,7 +127,7 @@ DaliIfc::ShowImage(char *daliServer, Window win, int centerX,
   int centerY, int width, int height, char *filename, int imageLen,
   char *image, int &handle, float timeoutFactor, int maxImageSize)
 {
-  DOASSERT(daliServer != NULL, "No Dali server specified");
+  DOASSERT(daliServer != NULL, "No Tasvir server specified");
 
 #if defined(DEBUG)
   printf("DaliIfc::ShowImage(%s, 0x%lx, %d, %d, %d, %d, %s)\n",
@@ -155,7 +173,7 @@ DaliIfc::ShowImage(char *daliServer, Window win, int centerX,
 
   double timeout = (image == NULL) ? 5.0 : 30.0;
   timeout *= timeoutFactor;
-  result += SendCommand(daliServer, commandBuf, imageLen, image, replyBuf,
+  result += ConnectAndSend(daliServer, commandBuf, imageLen, image, replyBuf,
     timeout);
 
   if (result.IsComplete())
@@ -165,13 +183,73 @@ DaliIfc::ShowImage(char *daliServer, Window win, int centerX,
 
 #if 0 // We can't free images immediately becaues they'll be erased.
     sprintf(commandBuf, "free %d\n", handle);
-    result += SendCommand(daliServer, commandBuf, 0, (char *) NULL, replyBuf);
+    result += ConnectAndSend(daliServer, commandBuf, 0, (char *) NULL,
+      replyBuf);
 #endif
   }
 
 #if PRINT_DALI_STATUS
-  SendCommand(daliServer, "status\n", 0, NULL, replyBuf, 5.0);
-  printf("Dali status: %s\n", replyBuf);
+  ConnectAndSend(daliServer, "status\n", 0, NULL, replyBuf, 5.0);
+  printf("Tasvir status: %s\n", replyBuf);
+#endif
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: DaliIfc::PSShowImage
+ * Show an image using Dali.
+ */
+DevStatus
+DaliIfc::PSShowImage(char *daliServer, int width, int height, char *filename,
+  int imageLen, char *image, FILE *printfile, float timeoutFactor)
+{
+  DOASSERT(daliServer != NULL, "No Tasvir server specified");
+
+#if defined(DEBUG)
+  printf("DaliIfc::PSShowImage(%s, %s)\n", daliServer, filename);
+#endif
+
+  DevStatus result = StatusOk;
+
+  char commandBuf[DALI_MAX_STR_LENGTH];
+  char replyBuf[DALI_MAX_STR_LENGTH];
+
+  sprintf(commandBuf, "psshow %s - -width %d -height %d", filename, width,
+    height);
+  if (image != NULL)
+  {
+    char bytesBuf[DALI_MAX_STR_LENGTH];
+    sprintf(bytesBuf, " -bytes %d\n", imageLen);
+    strcat(commandBuf, bytesBuf);
+  }
+  else
+  {
+    strcat(commandBuf, "\n");
+  }
+
+  int fd;
+  result += OpenConnection(daliServer, fd);
+
+  if (result.IsComplete())
+  {
+    double timeout = (image == NULL) ? 5.0 : 30.0;
+    timeout *= timeoutFactor;
+    result += SendCommand(fd, commandBuf, imageLen, image, replyBuf, timeout);
+  }
+
+  if (result.IsComplete())
+  {
+    int numBytes;
+    sscanf(replyBuf, "%*s %d", &numBytes);
+    result += ReadImage(fd, numBytes, printfile);
+  }
+
+  result += CloseConnection(fd);
+
+#if PRINT_DALI_STATUS
+  ConnectAndSend(daliServer, "status\n", 0, NULL, replyBuf, 5.0);
+  printf("Tasvir status: %s\n", replyBuf);
 #endif
 
   return result;
@@ -193,11 +271,61 @@ DaliIfc::FreeImage(char *daliServer, int handle)
 
   sprintf(commandBuf, "free %d\n", handle);
 
-  result += SendCommand(daliServer, commandBuf, 0, NULL, replyBuf, 5.0);
+  result += ConnectAndSend(daliServer, commandBuf, 0, NULL, replyBuf, 5.0);
 
 #if PRINT_DALI_STATUS
-  SendCommand(daliServer, "status\n", 0, NULL, replyBuf, 5.0);
-  printf("Dali status: %s\n", replyBuf);
+  ConnectAndSend(daliServer, "status\n", 0, NULL, replyBuf, 5.0);
+  printf("Tasvir status: %s\n", replyBuf);
+#endif
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: DaliIfc::FreeWindowImages
+ * Free all Tasvir images in a given window.
+ */
+DevStatus
+DaliIfc::FreeWindowImages(char *daliServer, Window win)
+{
+#if defined(DEBUG)
+  printf("DaliIfc::FreeWindowImages(%s, 0x%lx)\n", daliServer, (long) win);
+#endif
+
+  DevStatus result = StatusOk;
+
+  char commandBuf[DALI_MAX_STR_LENGTH];
+  char replyBuf[DALI_MAX_STR_LENGTH];
+
+  sprintf(commandBuf, "wapply 0x%lx free .\n", (long) win);
+
+  int fd;
+  result += OpenConnection(daliServer, fd);
+
+  if (result.IsComplete())
+  {
+    result += SendCommand(fd, commandBuf, 0, NULL, replyBuf, 5.0);
+  }
+
+  if (result.IsComplete())
+  {
+    int numReplies;
+    sscanf(replyBuf, "%*s %d", &numReplies);
+
+    int replyNum;
+    for (replyNum = 0; replyNum < numReplies; replyNum++) {
+      result += WaitForReply(replyBuf, fd, DALI_MAX_STR_LENGTH, 5.0);
+#if defined(DEBUG)
+      printf("Tasvir reply: %s\n", replyBuf);
+#endif
+    }
+  }
+
+  result += CloseConnection(fd);
+
+#if PRINT_DALI_STATUS
+  ConnectAndSend(daliServer, "status\n", 0, NULL, replyBuf, 5.0);
+  printf("Tasvir status: %s\n", replyBuf);
 #endif
 
   return result;
@@ -214,11 +342,11 @@ DaliIfc::Reset(char *daliServer)
   DevStatus result = StatusOk;
 
   char replyBuf[DALI_MAX_STR_LENGTH];
-  result += SendCommand(daliServer, "reset\n", 0, NULL, replyBuf, 5.0);
+  result += ConnectAndSend(daliServer, "reset\n", 0, NULL, replyBuf, 5.0);
 
 #if PRINT_DALI_STATUS
-  SendCommand(daliServer, "status\n", 0, NULL, replyBuf, 5.0);
-  printf("Dali status: %s\n", replyBuf);
+  ConnectAndSend(daliServer, "status\n", 0, NULL, replyBuf, 5.0);
+  printf("Tasvir status: %s\n", replyBuf);
 #endif
 
   return result;
@@ -235,45 +363,63 @@ DaliIfc::Quit(char *daliServer)
   DevStatus result = StatusOk;
 
   char replyBuf[DALI_MAX_STR_LENGTH];
-  result += SendCommand(daliServer, "quit\n", 0, NULL, replyBuf, 5.0);
+  result += ConnectAndSend(daliServer, "quit\n", 0, NULL, replyBuf, 5.0);
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: ConnectAndSend
+ * Connect, send a command to the Tasvir server, and disconnect.
+ */
+static DevStatus
+ConnectAndSend(char *daliServer, char *commandBuf, int imageLen, char *image,
+  char *replyBuf, double timeout)
+{
+  DevStatus result = StatusOk;
+
+/*
+ * Establish connection with Dali server.
+ */
+  int fd;
+  result += OpenConnection(daliServer, fd);
+
+/*
+ * Send the command.
+ */
+  if (result.IsComplete()) result += SendCommand(fd, commandBuf, imageLen,
+    image, replyBuf, timeout);
+
+/*
+ * Close the connection.
+ */
+  result += CloseConnection(fd);
 
   return result;
 }
 
 /*------------------------------------------------------------------------------
  * function: SendCommand
- * Send a command to the Dali server.
+ * Send a command to the Tasvir server.
  */
 static DevStatus
-SendCommand(char *daliServer, char *commandBuf, int imageLen, char *image,
+SendCommand(int fd, char *commandBuf, int imageLen, char *image,
   char *replyBuf, double timeout)
 {
   DevStatus result = StatusOk;
 
-  DO_DEBUG(printf("Dali command: %s", commandBuf));
-
-/*
- * Establish connection with Dali server.
- */
-  char errBuf[DALI_MAX_STR_LENGTH];
-  int fd = DaliPatron(daliServer, errBuf);
-  if (fd < 0)
-  {
-    reportError(errBuf, errno);
-    result = StatusFailed;
-  }
+#if defined(DEBUG)
+  printf("Tasvir command: %s", commandBuf);
+#endif
 
 /*
  * Send the command.
  */
-  if (result.IsComplete())
+  int length = strlen(commandBuf);
+  if (MyWrite(fd, (unsigned char *) commandBuf, length) != length)
   {
-    int length = strlen(commandBuf);
-    if (MyWrite(fd, (unsigned char *) commandBuf, length) != length)
-    {
-      reportError("Unable to send command to Dali", errno);
-      result = StatusFailed;
-    }
+    reportError("Unable to send command to Tasvir", errno);
+    result = StatusFailed;
   }
 
 /*
@@ -283,7 +429,7 @@ SendCommand(char *daliServer, char *commandBuf, int imageLen, char *image,
   {
     if (MyWrite(fd, (unsigned char *) image, imageLen) != imageLen)
     {
-      reportError("Unable to send image to Dali", errno);
+      reportError("Unable to send image to Tasvir", errno);
       result = StatusFailed;
     }
   }
@@ -298,28 +444,58 @@ SendCommand(char *daliServer, char *commandBuf, int imageLen, char *image,
 
   if (result.IsComplete())
   {
-    DO_DEBUG(printf("Dali reply: %s\n", replyBuf));
+    DO_DEBUG(printf("Tasvir reply: %s\n", replyBuf));
 
     const char *okStr = "OK";
     const char *errStr = "ERROR";
-    char errBuf[DALI_MAX_STR_LENGTH+100];
     if (!strncmp(replyBuf, okStr, strlen(okStr)))
     {
       // Do nothing...
     }
     else if (!strncmp(replyBuf, errStr, strlen(errStr)))
     {
-      sprintf(errBuf, "Error from Dali server: %s", &replyBuf[strlen(errStr)]);
+      sprintf(errBuf, "Error from Tasvir server: %s", &replyBuf[strlen(errStr)]);
       reportError(errBuf, devNoSyserr);
       result = StatusFailed;
     }
     else
     {
-      sprintf(errBuf, "Can't understand reply from Dali (%s)", replyBuf);
+      sprintf(errBuf, "Can't understand reply from Tasvir (%s)", replyBuf);
       reportError(errBuf, devNoSyserr);
       result = StatusFailed;
     }
   }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: OpenConnection
+ * Open a connection to the Tasvir server.
+ */
+static DevStatus
+OpenConnection(char *daliServer, int &fd)
+{
+  DevStatus result = StatusOk;
+
+  fd = DaliPatron(daliServer, errBuf);
+  if (fd < 0)
+  {
+    reportError(errBuf, errno);
+    result = StatusFailed;
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: CloseConnection
+ * Close the connection to the Tasvir server.
+ */
+static DevStatus
+CloseConnection(int fd)
+{
+  DevStatus result = StatusOk;
 
   if (fd >= 0)
   {
@@ -351,31 +527,87 @@ WaitForReply(char *buf, int fd, int bufSize, double timeout)
   }
   else
   {
-    double timeLimit = (double) time.tv_sec +
-      ((double) time.tv_usec) * 1.0e-6 + timeout;
+    double startTime = (double) time.tv_sec + ((double) time.tv_usec) * 1.0e-6;
+    double timeLimit = startTime + timeout;
 
     Boolean done = false;
     while (!done)
     {
-      if (newlinefd(buf, fd, bufSize) > 0) done = true;
-
-      if (gettimeofday(&time, NULL) == -1)
-      {
-        reportError("gettimeofday failed", errno);
-        result = StatusFailed;
-        done = true;
-      }
-      else
-      {
-        currentTime = (double) time.tv_sec + ((double) time.tv_usec) * 1.0e-6;
-	if (currentTime > timeLimit)
-	{
-	  reportError("Timed out waiting for Dali reply", devNoSyserr);
-	  result = StatusFailed;
-	  done = true;
-	}
+      if (newlinefd(buf, fd, bufSize) > 0) {
+	done = true;
+      } else {
+        if (gettimeofday(&time, NULL) == -1)
+        {
+          reportError("gettimeofday failed", errno);
+          result = StatusFailed;
+          done = true;
+        }
+        else
+        {
+          currentTime = (double) time.tv_sec + ((double) time.tv_usec) * 1.0e-6;
+	  if (currentTime > timeLimit)
+	  {
+	    reportError("Timed out waiting for Tasvir reply", devNoSyserr);
+	    result = StatusFailed;
+	    done = true;
+	  }
+	  else if (currentTime - startTime > 1.0)
+	  {
+	    sleep(1);
+	  }
+        }
       }
     }
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: ReadImage
+ * Read an image from the Tasvir server and write it to the print file.
+ */
+static DevStatus
+ReadImage(int fd, int numBytes, FILE *printfile)
+{
+  DevStatus result = StatusOk;
+
+#if defined(DEBUG)
+  printf("ReadImage(%d)\n", numBytes);
+#endif
+
+  const int bufSize = 1024;
+  char buffer[bufSize];
+
+  int bytesLeft = numBytes;
+  int bytesToRead, bytesRead, bytesWritten;
+
+//TEMPTEMP -- does this need a timeout?
+  while (bytesLeft > 0) {
+    bytesToRead = MIN(bufSize, bytesLeft);
+    bytesRead = read(fd, buffer, bytesToRead);
+    if (bytesRead < 0) {
+      reportErrSys("Error reading Tasvir image from socket");
+      result += StatusWarn;
+    } else {
+      bytesLeft -= bytesRead;
+    }
+
+#if 1 // Conditional this out to just throw away image.
+    if (bytesRead > 0) {
+      bytesWritten = fwrite(buffer, 1, bytesRead, printfile);
+      if (bytesWritten != bytesRead) {
+        sprintf(errBuf, "Only %d of %d bytes written", bytesWritten, bytesRead);
+        reportErrSys(errBuf);
+        result += StatusFailed;
+      }
+    }
+#endif
+  }
+
+  if (bytesLeft != 0) {
+    sprintf(errBuf, "%d of %d bytes missing", bytesLeft, numBytes);
+    reportErrNosys(errBuf);
   }
 
   return result;
@@ -401,7 +633,7 @@ newlinefd(char *s, int fd, int maxc)
     s[i++] = c;
   }
   s[i] = '\0';
-  return(i); 
+  return(-1); 
 }
 
 /*------------------------------------------------------------------------------

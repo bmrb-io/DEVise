@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.61  1997/03/20 22:12:32  guangshu
+  Added DEVise command SetBuckRefresh, checkGstat, isXDateType.
+
   Revision 1.60  1997/03/19 19:41:50  andyt
   Embedded Tcl/Tk windows are now sized in data units, not screen pixel
   units. The old list of ETk window handles (WindowRep class) has been
@@ -65,6 +68,11 @@
 
   Revision 1.49  1997/02/03 04:12:16  donjerko
   Catalog management moved to DTE
+
+  Revision 1.48.4.2  1997/03/15 00:31:30  wenger
+  PostScript printing of entire DEVise display now works; PostScript output
+  is now centered on page; other cleanups of the PostScript printing along
+  the way.
 
   Revision 1.48.4.1  1997/02/13 18:11:45  ssl
   Added a check to the user interface asking when user links two different
@@ -2135,12 +2143,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       viewWin->ExportImage(format, argv[3]);
-
-      /* Allow the generation of the print file to complete before this
-       * command returns, so that the Tcl code can lpr it if necessary. */
-      while (DeviseDisplay::GetPSDisplay()->GetPrintFile()) {
-	Dispatcher::SingleStepCurrent();
-      }
 
       control->ReturnVal(API_ACK, "done");
       return 1;

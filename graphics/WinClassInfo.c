@@ -16,6 +16,20 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/02/03 19:40:03  ssl
+  1) Added a new Layout interface which handles user defined layouts
+  2) Added functions to set geometry and remap views as changes in the
+     layout editor
+  3) Added a function to notify the front end of some change so that it
+     can execute a Tcl command
+  4) The old TileLayout.[Ch] files still exist but are commented out
+     conditionally using #ifdef NEW_LAYOUT
+
+  Revision 1.9.4.1  1997/03/15 00:31:09  wenger
+  PostScript printing of entire DEVise display now works; PostScript output
+  is now centered on page; other cleanups of the PostScript printing along
+  the way.
+
   Revision 1.9  1996/11/20 20:34:56  wenger
   Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
   some Makefile improvements so compile works first time; fixed up files
@@ -58,14 +72,14 @@
 
 static char buf1[256], buf2[80], buf3[80], buf4[80], buf5[80];
 
-int DevWindow::_windowCount = 0;
+DevWinList DevWindow::_windowList;
 
 TileLayoutInfo::TileLayoutInfo()
 {
   _name = NULL;
   _win = NULL;
 
-  DevWindow::_windowCount++;
+  DevWindow::_windowList.Insert(this);
 }
 
 #ifndef NEW_LAYOUT
@@ -74,7 +88,7 @@ TileLayoutInfo::TileLayoutInfo(char *name, TileLayout *win)
   _name = name;
   _win = win;
 
-  DevWindow::_windowCount++;
+  DevWindow::_windowList.Insert(this);
 }
 #else 
 TileLayoutInfo::TileLayoutInfo(char *name, Layout *win)
@@ -82,15 +96,17 @@ TileLayoutInfo::TileLayoutInfo(char *name, Layout *win)
   _name = name;
   _win = win;
 
-  DevWindow::_windowCount++;
+  DevWindow::_windowList.Insert(this);
 }
 #endif
 
 TileLayoutInfo::~TileLayoutInfo()
 {
+//TEMPTEMP -- does _name need to get deleted??
   delete _win;
 
-  DevWindow::_windowCount--;
+  //TEMPTEMP -- check return value
+  DevWindow::_windowList.Delete(this);
 }
 
 /* Get names of parameters */
@@ -126,7 +142,7 @@ void TileLayoutInfo::ParamNames(int &argc, char **&argv)
 ClassInfo *TileLayoutInfo::CreateWithParams(int argc, char **argv)
 {
 #if defined(DEBUG)
-  printf("TileLayoutInfo::CreateWithParams()\n");
+  printf("TileLayoutInfo::CreateWithParams(%s)\n", argv[0]);
 #endif
   if (argc != 5) {
     fprintf(stderr, "TileLayoutInfo::CreateWithParams wrong args %d\n",

@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.21.4.1  1997/03/15 00:31:02  wenger
+  PostScript printing of entire DEVise display now works; PostScript output
+  is now centered on page; other cleanups of the PostScript printing along
+  the way.
+
+  Revision 1.21  1996/12/03 23:29:09  wenger
+  Fixed PostScript bounding box to closely surround the image (fixed
+  bug 089).
+
   Revision 1.20  1996/11/26 15:44:05  wenger
   Added features and fixed bugs in PostScript-related parts of the
   client/server library and the PSWindowRep class; page size can now be
@@ -165,15 +174,20 @@ public:
 			char *mapFileame, char *url, char *defaultUrl) = 0;
   virtual void ExportGIF(FILE *fp, int isView) = 0;
   virtual void ExportView(DisplayExportFormat format, char *filename) = 0;
+#ifndef LIBCS
+  virtual void ExportToPS(DisplayExportFormat format, char *filename);
+#endif
 
 
   virtual DevStatus OpenPrintFile(char *filename) { return StatusFailed; }
   virtual DevStatus ClosePrintFile() { return StatusFailed; }
   virtual FILE *GetPrintFile() { return NULL; }
 
-  virtual void PrintPSHeader(char *title, Coord winWidth = -1.0,
-    Coord winHeight = -1.0, Boolean maintainAspect = true) {}
+  virtual void PrintPSHeader(char *title, const Rectangle &screenPrintRegion,
+    Boolean maintainAspect = true) {}
   virtual void PrintPSTrailer() {}
+  virtual void GetBoundingBox(Rectangle &boundingBox) {}
+  virtual void GetScreenPrintRegion(Rectangle &screenPrintRegion) {}
 
   /* Set page geometry in inches. */
   virtual void SetUserPageGeom(Coord width, Coord height, Coord xMargin,

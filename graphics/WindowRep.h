@@ -16,6 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.44  1997/03/19 19:41:09  andyt
+  Embedded Tcl/Tk windows are now sized in data units, not screen pixel
+  units. The old list of ETk window handles (WindowRep class) has been
+  replaced by a list of ETkInfo structs, each with fields for the window
+  handle, x-y coordinates, name of the Tcl script, and an "in_use"
+  flag. Added an ETk_Cleanup() procedure that gets called inside
+  View::ReportQueryDone and destroys all ETk windows that are not marked
+  as in_use.
+
+  Revision 1.43.4.1  1997/02/27 22:46:06  wenger
+  Most of the way to having Tasvir images work in PostScript output;
+  various WindowRep-related fixes; version now 1.3.4.
+
   Revision 1.43  1997/01/17 20:31:48  wenger
   Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
   simulation of XOR drawing in PSWindowRep; removed diagnostic output
@@ -347,8 +360,11 @@ public:
   virtual DevStatus DaliShowImage(Coord centerX, Coord centerY, Coord width,
     Coord height, char *filename, int imageLen, char *image,
     float timeoutFactor = 1.0)
-    { return StatusFailed; }
-  virtual DevStatus DaliFreeImages() { return StatusFailed; }
+    { reportErrNosys("This object does not support Tasvir operations");
+      return StatusFailed; }
+  virtual DevStatus DaliFreeImages()
+    { reportErrNosys("This object does not support Tasvir operations");
+      return StatusFailed; }
   virtual int DaliImageCount() { return 0; }
 
 #ifndef LIBCS

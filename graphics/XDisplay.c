@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.51.4.1  1997/03/15 00:31:10  wenger
+  PostScript printing of entire DEVise display now works; PostScript output
+  is now centered on page; other cleanups of the PostScript printing along
+  the way.
+
+  Revision 1.51  1997/01/30 15:57:45  wenger
+  Fixed compile warnings on Sun.
+
   Revision 1.50  1997/01/24 21:18:54  wenger
   Fixed memory leak in X font handling code; noted other minor leaks.
 
@@ -400,6 +408,10 @@ void XDisplay::SetFont(char *family, char *weight, char *slant,
 
 void XDisplay::ExportImage(DisplayExportFormat format, char *filename)
 {
+#if defined(DEBUG)
+  printf("XDisplay::ExportImage(%d, %s)\n", (int) format, filename);
+#endif
+
   if (format == GIF) {
     FILE *fp = fopen(filename, "wb");
     if (!fp) {
@@ -410,15 +422,23 @@ void XDisplay::ExportImage(DisplayExportFormat format, char *filename)
     if (fp != stderr && fp != stdout)
         fclose(fp);
     return;
+  } else {
+#ifndef LIBCS
+    ExportToPS(format, filename);
+#else
+    fprintf(stderr, "Cannot export display image in PS/EPS yet\n");
+#endif
   }
-
-  fprintf(stderr, "Cannot export display image in PS/EPS yet\n");
 }
 
 /* Export every view as a window in the display */
 
 void XDisplay::ExportView(DisplayExportFormat format, char *filename)
 {
+#if defined(DEBUG)
+  printf("XDisplay::ExportView(%d, %s)\n", (int) format, filename);
+#endif
+
   if (format == GIF) {
 	int i = 0;
 	int index1 = _winList.InitIterator();
@@ -448,9 +468,9 @@ void XDisplay::ExportView(DisplayExportFormat format, char *filename)
 	}
 	_winList.DoneIterator(index1);
 	return;
+  } else {
+    fprintf(stderr, "Cannot export all views in PS/EPS yet\n");
   }
-  
-  fprintf(stderr, "Cannot exprot display image in PS/EPS yet\n");
 }
 
 /* Export the display and the map file associated with the display */
@@ -458,6 +478,10 @@ void XDisplay::ExportView(DisplayExportFormat format, char *filename)
 void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename, 
 				char *mapFileName, char *url, char *defaultUrl)
 {
+#if defined(DEBUG)
+  printf("XDisplay::ExportImageAndMap(%d, %s)\n", (int) format, gifFilename);
+#endif
+
   if (format == GIF) {
      FILE *fp1 = fopen(gifFilename,"wb");
      if (!fp1) {
@@ -562,14 +586,17 @@ void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename,
       fclose(fp1);
       *p = '.';
       return;
-  }
-
-  fprintf(stderr, "Cannot export display image in PS/EPS yet\n");
-    
+  } else {
+    fprintf(stderr, "Cannot export display image in PS/EPS yet\n");
+  } 
 }
 
 void XDisplay::ExportGIF(FILE *fp, int isView)
 {
+#if defined(DEBUG)
+  printf("XDisplay::ExportGIF()\n");
+#endif
+
   /* compute the bounding rectangle of all windows */
 
   int x = 0, y = 0;

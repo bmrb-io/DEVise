@@ -16,6 +16,20 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/02/03 19:40:02  ssl
+  1) Added a new Layout interface which handles user defined layouts
+  2) Added functions to set geometry and remap views as changes in the
+     layout editor
+  3) Added a function to notify the front end of some change so that it
+     can execute a Tcl command
+  4) The old TileLayout.[Ch] files still exist but are commented out
+     conditionally using #ifdef NEW_LAYOUT
+
+  Revision 1.19.4.1  1997/03/15 00:31:08  wenger
+  PostScript printing of entire DEVise display now works; PostScript output
+  is now centered on page; other cleanups of the PostScript printing along
+  the way.
+
   Revision 1.19  1996/11/26 16:47:47  ssl
   Added support for Stacked Opaque and Transparent views
 
@@ -247,6 +261,7 @@ public:
       const Rectangle &parentGeom) {
       _winReps.SetFileOutput(viewGeom, parentGeom);
     }
+    Boolean IsPrinting() { return _hasPrintIndex; }
 
 protected:
     /* called by base class when it has been mapped/unmapped */

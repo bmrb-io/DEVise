@@ -16,6 +16,20 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/02/03 19:40:04  ssl
+  1) Added a new Layout interface which handles user defined layouts
+  2) Added functions to set geometry and remap views as changes in the
+     layout editor
+  3) Added a function to notify the front end of some change so that it
+     can execute a Tcl command
+  4) The old TileLayout.[Ch] files still exist but are commented out
+     conditionally using #ifdef NEW_LAYOUT
+
+  Revision 1.5.4.1  1997/03/15 00:31:09  wenger
+  PostScript printing of entire DEVise display now works; PostScript output
+  is now centered on page; other cleanups of the PostScript printing along
+  the way.
+
   Revision 1.5  1996/11/20 20:34:56  wenger
   Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
   some Makefile improvements so compile works first time; fixed up files
@@ -38,16 +52,24 @@
 #define WinClassInfo_h
 
 #include "ClassDir.h"
+#include "DList.h"
+
+DefinePtrDList(DevWinList, ClassInfo *);
 
 class DevWindow {
 public:
-  static int GetCount() { return _windowCount; }
+  static int GetCount() { return _windowList.Size(); }
+
+  /* Read-only access to window list. */
+  static int InitIterator(){ return _windowList.InitIterator();};
+  static Boolean More(int index) { return _windowList.More(index);}
+  static ClassInfo *Next(int index) { return _windowList.Next(index);}
+  static void DoneIterator(int index) { _windowList.DoneIterator(index);};
 
 protected:
-
   friend class TileLayoutInfo;
 
-  static int _windowCount;
+  static DevWinList _windowList;
 };
 
 #ifndef NEW_LAYOUT

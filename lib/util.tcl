@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.44  1997/03/20 01:32:19  wenger
+#  Fixed a bug in color allocation; color chooser for data shows old colors
+#  (temporarily); background conversion of GData defaults to off.
+#
 #  Revision 1.43  1997/02/26 16:32:06  wenger
 #  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
 #
@@ -26,6 +30,11 @@
 #
 #  Revision 1.40  1997/02/03 20:02:04  ssl
 #  Added interface for negative record links and user defined layout mode
+#
+#  Revision 1.39.4.5  1997/03/15 00:31:42  wenger
+#  PostScript printing of entire DEVise display now works; PostScript output
+#  is now centered on page; other cleanups of the PostScript printing along
+#  the way.
 #
 #  Revision 1.39.4.4  1997/02/19 23:01:27  wenger
 #  A few minor changes in the shape menu stuff to make the GUI more consistent
@@ -770,12 +779,7 @@ proc PrintActual {toprinter printcmd filename printsrc fmt map mapfile \
     }
 
     if {$printsrc == 2} {
-        if {$format != "gif"} {
-            dialog .printError "Not Supported Yet" \
-                    "Saving entire display as $fmt is not supported yet." \
-                    "" 0 OK
-            return
-        }
+	# Printing entire display...
 	set file "$filename$suffix"
 	
 	if {$map == 1} {
@@ -800,12 +804,7 @@ proc PrintActual {toprinter printcmd filename printsrc fmt map mapfile \
 	}
 	return
     } elseif {$printsrc == 3} {
-	if {$format != "gif"} {
-	    dialog .printError "Not Supported Yet" \
-		    "Saving entire display as $fmt is not supported yet." \
-		    "" 0 OK
-	    return
-  	}
+	# Printing all views...
 	set err [catch {DEVise saveDisplayView $format $filename} ]
 	if {$err > 0} {
 	     dialog .printError "View Image Save Error" \
@@ -820,6 +819,7 @@ proc PrintActual {toprinter printcmd filename printsrc fmt map mapfile \
     set windowlist ""
 
     if {!$printsrc} {
+	# Printing selected window...
 	if {$curView == ""} {
 	    dialog .printView "Print Selected Window" \
 		    "Please select a window by clicking in it first." "" 0 OK
@@ -828,7 +828,7 @@ proc PrintActual {toprinter printcmd filename printsrc fmt map mapfile \
 	set windowlist [list [DEVise getViewWin $curView]]
 
     } else {
-
+	# Printing all windows...
 	set viewClasses [ DEVise get view ]
 	foreach viewClass $viewClasses {
 	    set views [ DEVise get view $viewClass ]

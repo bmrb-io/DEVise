@@ -16,6 +16,23 @@
   $Id$
 
   $Log$
+  Revision 1.13.4.2  1997/03/15 00:31:03  wenger
+  PostScript printing of entire DEVise display now works; PostScript output
+  is now centered on page; other cleanups of the PostScript printing along
+  the way.
+
+  Revision 1.13.4.1  1997/03/07 20:03:57  wenger
+  Tasvir images now work in PostScript output; Tasvir images now freed
+  on a per-window basis; Tasvir timeout factor can be set on the command
+  line; shared memory usage enabled by default.
+
+  Revision 1.13  1997/01/17 20:31:43  wenger
+  Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
+  simulation of XOR drawing in PSWindowRep; removed diagnostic output
+  from Tcl/Tk code; removed (at least for now) the ETk interface from
+  the cslib versions of WindowRep classes so that the cslib will link
+  okay; cslib server now tests XOR drawing.
+
   Revision 1.12  1996/12/03 23:29:09  wenger
   Fixed PostScript bounding box to closely surround the image (fixed
   bug 089).
@@ -210,17 +227,20 @@ PSDisplay::ClosePrintFile()
 Print PostScript header.
 **************************************************************/
 
-void PSDisplay::PrintPSHeader(char *title, Coord winWidth,
-    Coord winHeight, Boolean maintainAspect)
+void PSDisplay::PrintPSHeader(char *title, const Rectangle &screenPrintRegion,
+    Boolean maintainAspect)
 {
   DOASSERT(_printFile != NULL, "No print file");
+
+  _screenPrintRegion = screenPrintRegion;
 
   /* Print header info. */
   fprintf(_printFile, "%%!PS-Adobe-1.0\n");
 
 
-  /* Print the bounding box, based on the dimensions of the top-level window
-   * we're printing. */
+  /* Calculate and print the bounding box, based on the dimensions of the
+   * region of the screen we're printing, and whether to maintain the same
+   * aspect ratio or fill the available area of the paper. */
   Coord width, height, xMargin, yMargin;
   GetPageGeom(width, height, xMargin, yMargin);
   width -= 2 * xMargin;
@@ -228,43 +248,43 @@ void PSDisplay::PrintPSHeader(char *title, Coord winWidth,
 
   Coord bbX1, bbY1, bbX2, bbY2;
 
-  if ((winWidth < 0.0) || (winHeight < 0.0)) {
-    /* We have to go with default dimensions -- the whole page within the
-     * margins. */
+  if (maintainAspect) {
+    double winAspect = screenPrintRegion.height / screenPrintRegion.width;
+    double pageAspect = height / width;
+
+    if (winAspect > pageAspect) {
+      /* Screen is taller than page. */
+      Coord printWidth = height / winAspect;
+      bbX1 = xMargin + (width - printWidth) / 2.0;
+      bbY1 = yMargin;
+      bbX2 = bbX1 + printWidth;
+      bbY2 = yMargin + height;
+    } else {
+      /* Page is taller than screen. */
+      Coord printHeight = width * winAspect;
+      bbX1 = xMargin;
+      bbY1 = yMargin + (height - printHeight) / 2.0;
+      bbX2 = xMargin + width;
+      bbY2 = bbY1 + printHeight;
+    }
+  } else {
+    /* Go with default dimensions. */
     bbX1 = xMargin;
     bbY1 = yMargin;
-    bbX2 = xMargin + width;
-    bbY2 = yMargin + height;
-  } else {
-    if (maintainAspect) {
-      double winAspect = winHeight / winWidth;
-      double pageAspect = height / width;
-
-      if (winAspect > pageAspect) {
-        bbX1 = xMargin;
-        bbY1 = yMargin;
-        bbX2 = xMargin + height / winAspect;
-        bbY2 = yMargin + height;
-      } else {
-        bbX1 = xMargin;
-        bbY1 = yMargin;
-        bbX2 = xMargin + width;
-        bbY2 = yMargin + width * winAspect;
-      }
-
-      /* Give ourselves a little margin for error. */
-      bbX1 -= 2.0;
-      bbY1 -= 2.0;
-      bbX2 += 2.0;
-      bbY2 += 2.0;
-    } else {
-      /* Go with default dimensions. */
-      bbX1 = xMargin;
-      bbY1 = yMargin;
-      bbX2 = width - xMargin;
-      bbY2 = height - xMargin;
-    }
+    bbX2 = width + xMargin;
+    bbY2 = height + yMargin;
   }
+
+  _boundingBox.x = bbX1;
+  _boundingBox.y = bbY1;
+  _boundingBox.width = bbX2 - bbX1;
+  _boundingBox.height = bbY2 - bbY1;
+
+  /* Give ourselves a little margin for error. */
+  bbX1 -= 2.0;
+  bbY1 -= 2.0;
+  bbX2 += 2.0;
+  bbY2 += 2.0;
 
   fprintf(_printFile, "%%%%BoundingBox: %f %f %f %f\n", bbX1, bbY1, bbX2,
     bbY2);
@@ -325,6 +345,43 @@ void PSDisplay::PrintPSHeader(char *title, Coord winWidth,
   fprintf(_printFile, "x2 x1 sub\n");
   fprintf(_printFile, "y2 y1 sub\n");
   fprintf(_printFile, "} def\n");
+
+
+  /* Print a procedure to prepare for including an EPS file. */
+  fprintf(_printFile, "/BeginEPSF { %%def\n");
+  fprintf(_printFile, "  /b4_inc_state save def		"
+    "%% Save state for cleanup\n");
+  fprintf(_printFile, "  /dict_count countdictstack def	"
+    "%% Count objects on dict stack\n");
+  fprintf(_printFile, "  /op_count count 1 sub def		"
+    "%% Count objects on operand stack\n");
+  fprintf(_printFile, "  userdict begin			"
+    "%% Push userdict on dict stack\n");
+  fprintf(_printFile, "  /showpage {} def			"
+    "%% Redefine showpage to null proc\n");
+  fprintf(_printFile, "  0 setgray 0 setlinecap		"
+    "%% Prepare graphics state\n");
+  fprintf(_printFile, "  1 setlinewidth 0 setlinejoin\n");
+  fprintf(_printFile, "  10 setmiterlimit [] 0 setdash newpath\n");
+  fprintf(_printFile, "  /languagelevel where			"
+    "%% If level != 1 then\n");
+  fprintf(_printFile, "  {pop languagelevel			"
+    "%% set strokeadjust and\n");
+  fprintf(_printFile, "  1 ne					"
+    "%% overprint to their defaults\n");
+  fprintf(_printFile, "    {false setstrokeadjust false setoverprint\n");
+  fprintf(_printFile, "    } if\n");
+  fprintf(_printFile, "  } if\n");
+  fprintf(_printFile, "} bind def\n");
+
+
+  /* Print a procedure to clean up after including an EPS file. */
+  fprintf(_printFile, "/EndEPSF { %%def\n");
+  fprintf(_printFile, "  count op_count sub {pop} repeat	"
+    "%% Clean up stacks\n");
+  fprintf(_printFile, "  countdictstack dict_count sub {end} repeat\n");
+  fprintf(_printFile, "  b4_inc_state restore\n");
+  fprintf(_printFile, "} bind def\n");
 
 #if 0
   fprintf(_printFile, "%f %f %f %f DevFillRect\n", bbX1, bbY1, bbX2, bbY2);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/03/23 23:45:23  donjerko
+  Made boolean vars to be in the tuple.
+
   Revision 1.19  1997/03/20 20:42:23  donjerko
   Removed the List usage from Aggregates and replaced it with Plex, a
   form of dynamic array.
@@ -34,6 +37,9 @@
 
   Revision 1.14  1997/02/03 04:11:35  donjerko
   Catalog management moved to DTE
+
+  Revision 1.13.4.1  1997/03/18 14:41:20  wenger
+  Various minor changes to get 1.3 to compile on SGI.
 
   Revision 1.13  1996/12/26 03:42:01  kmurli
   MOdified to make joinprev work right
@@ -260,9 +266,11 @@ public:
 	}
 	virtual String* siteName(){
 		assert(0);
+		return NULL; // avoid compiler warning
 	}
 	virtual BaseSelection* selectionF(){
 		assert(0);
+		return NULL; // avoid compiler warning
 	}
 	virtual BaseSelection* cnf(){
 		return NULL;
@@ -310,24 +318,29 @@ public:
      virtual SelectID selectID() = 0;
 	virtual TypeID getTypeID(){
 		assert(0);
+		return ""; // avoid compiler warning
 	}
 	virtual Type* evaluate(Tuple* left, Tuple* right){
 		assert(0);
+		return NULL; // avoid compiler warning
 	}
 	virtual void setSize(int size){
 		assert(0);
 	}
 	virtual int getSize(){
 		assert(0);
+		return 0; // avoid compiler warning
 	}
 	virtual void setTypeID(TypeID type){
 		assert(0);
 	}
 	virtual double getSelectivity(){
 		assert(0);
+		return 0.0; // avoid compiler warning
 	}
 	virtual bool checkOrphan(){
 		assert(0);
+		return NULL; // avoid compiler warning
 	}
 	virtual Path* getNext(){
 		return nextPath;
@@ -369,6 +382,7 @@ public:
 	virtual String toStringAttOnly(){
 		cout << "toStringAttOnly not definded for: " << selectID() << endl;
 		assert(0);
+		return ""; // avoid compiler warning
 	}
      virtual bool matchFlat(BaseSelection* x, Path*& upTo){
 		return match(x, upTo);
@@ -442,6 +456,7 @@ public:
 	}
 	virtual BaseSelection* distributeWrapper(Site* site){
 		assert(0);
+		return NULL; // avoid compiler warning
 	}
 };
 		
@@ -462,18 +477,30 @@ public:
 	}
 	virtual BaseSelection* selectionF(){
 		assert(0);
+		return NULL; // avoid compiler warning
 	}
-	virtual BaseSelection* filter(Site* siteGroup){assert(0);}
-	virtual bool exclusive(Site* s){assert(0);}
-	virtual bool exclusive(String* attributeNames, int numFlds){assert(0);}
+	virtual BaseSelection* filter(Site* siteGroup){
+		assert(0);
+		return NULL; // avoid compiler warning
+	}
+	virtual bool exclusive(Site* s){
+		assert(0);
+		return NULL; // avoid compiler warning
+	}
+	virtual bool exclusive(String* attributeNames, int numFlds){
+		assert(0);
+		return NULL; // avoid compiler warning
+	}
 	virtual BaseSelection* duplicate(){
 		assert(0);
+		return NULL; // avoid compiler warning
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to){
 		assert(0);
 	}
      virtual SelectID selectID(){
 		assert(0);
+		return BASE_ID; // avoid compiler warning
      }
 	virtual TypeID getTypeID(){
 		return parent->getTypeID();
@@ -515,9 +542,11 @@ public:
 	}
 	virtual bool operator <(ConstantSelection arg){
 		assert(0);
+		return NULL; // avoid compiler warning
 	}
 	virtual bool operator >(ConstantSelection arg){
 		assert(0);
+		return NULL; // avoid compiler warning
 	}
 	virtual bool operator ==(ConstantSelection arg){ // throws exception
 		TypeID tmp;

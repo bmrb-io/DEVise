@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.107  1997/03/19 19:41:07  andyt
+  Embedded Tcl/Tk windows are now sized in data units, not screen pixel
+  units. The old list of ETk window handles (WindowRep class) has been
+  replaced by a list of ETkInfo structs, each with fields for the window
+  handle, x-y coordinates, name of the Tcl script, and an "in_use"
+  flag. Added an ETk_Cleanup() procedure that gets called inside
+  View::ReportQueryDone and destroys all ETk windows that are not marked
+  as in_use.
+
   Revision 1.106  1997/02/08 00:29:51  ssl
   Fixed compilation bug
 
@@ -27,6 +36,11 @@
      can execute a Tcl command
   4) The old TileLayout.[Ch] files still exist but are commented out
      conditionally using #ifdef NEW_LAYOUT
+
+  Revision 1.104.4.1  1997/03/15 00:31:06  wenger
+  PostScript printing of entire DEVise display now works; PostScript output
+  is now centered on page; other cleanups of the PostScript printing along
+  the way.
 
   Revision 1.104  1997/01/28 19:46:33  wenger
   Fixed bug 139; better testing of ScaledText() in client/server example;
@@ -3185,25 +3199,14 @@ View::PrintPS()
   // Switch this view over to PostScript drawing mode.
   Rectangle viewGeom;
   int xVal, yVal;
-  /* Get the origin from the XWindowRep instead of the ViewWin because
-   * the ViewWin's origin is always set to (0, 0) for some reason. */
-  _winReps.GetScreenWinRep()->Origin(xVal, yVal);
+  AbsoluteOrigin(xVal, yVal);
   viewGeom.x = xVal;
   viewGeom.y = yVal;
   viewGeom.width = _width;
   viewGeom.height = _height;
 
   Rectangle parentGeom;
-  unsigned int width, height;
-#if defined(MARGINS) || defined(TK_WINDOW)
-  _parent->RealGeometry(xVal, yVal, width, height);
-#else
-  _parent->Geometry(xVal, yVal, width, height);
-#endif
-  parentGeom.x = xVal;
-  parentGeom.y = yVal;
-  parentGeom.width = width;
-  parentGeom.height = height;
+  psDispP->GetScreenPrintRegion(parentGeom);
 
   /* If we're in piled mode, the drawing will actually be done using
    * the WindowRep of the _top_ view in the pile, so that's the one

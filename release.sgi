@@ -17,6 +17,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3.4.1  1997/03/18 14:40:57  wenger
+#  Various minor changes to get 1.3 to compile on SGI.
+#
+#  Revision 1.3  1996/07/17 01:39:26  jussi
+#  Added processing of the server and client binaries.
+#
 #  Revision 1.2  1996/03/25 17:00:38  jussi
 #  Added transfer of *.ps and *.txt files.
 #
@@ -77,6 +83,7 @@ cp -p sgi/generic/deviseb $target/bin/deviseb
 echo ""
 echo Releasing new Tcl/Tk code...
 cp -p lib/[a-z]* $target/lib
+cp -p lib/[A-Z]*.* $target/lib
 
 echo ""
 echo Releasing documentation...

@@ -31,3 +31,6 @@ mk3dstruct.o: /usr/include/stdlib.h
 mkbinfile.o: /usr/include/math.h /usr/include/time.h /usr/include/sys/types.h
 mkbinfile.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
 mkbinfile.o: /usr/include/sys/select.h /usr/include/stdlib.h
+mkparfile.o: /usr/include/math.h /usr/include/time.h /usr/include/sys/types.h
+mkparfile.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
+mkparfile.o: /usr/include/sys/select.h /usr/include/stdlib.h

@@ -15,16 +15,17 @@
 #  $Id$
 
 #  $Log$
-#  Revision 1.2.4.1  1997/03/18 14:43:28  wenger
+#  Revision 1.1.2.1  1997/03/18 14:43:20  wenger
 #  Various minor changes to get 1.3 to compile on SGI.
 #
 
 ############################################################
 
-ARCH_FLAGS   = -DSGI -I/s/tcl/include
-ARCH_LDFLAGS = -L/s/tcl/lib
-ARCH_LDPOST  =
+ARCH_FLAGS = -DSGI -I/usr/include/X11 -I/usr/local/include \
+	-I/usr/include
+ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
+ARCH_LDPOST  = 
 
-VPATH = ../../devread:../../graphics:../../graphics.new
-include ../../devread/Makefile.base
-include ../../devread/Makefile.sgi
+VPATH = ../../attrproj:../../graphics:../../graphics.new:../../DTE/RTree
+include ../../attrproj/Makefile.base
+include ../../attrproj/Makefile.sgi

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.10.4.1  1997/03/15 00:30:49  wenger
+  PostScript printing of entire DEVise display now works; PostScript output
+  is now centered on page; other cleanups of the PostScript printing along
+  the way.
+
+  Revision 1.10  1997/01/29 17:02:25  wenger
+  Fixed PSWindowRep::ScaledText().
+
   Revision 1.9  1997/01/28 19:46:18  wenger
   Fixed bug 139; better testing of ScaledText() in client/server example;
   fixes to Exit class for client/server library.
@@ -125,6 +133,13 @@ class SampleWinServer : public WinServer {
     assert(_winReps.GetWindowRep());
     _winReps.GetWindowRep()->Origin(x, y);
     _winReps.GetWindowRep()->Dimensions(w, h);
+
+    /* outline the whole window */
+    _winReps.GetWindowRep()->SetFgColor(BlackColor);
+    _winReps.GetWindowRep()->Line(x, y, x + w - 1, y, 1);
+    _winReps.GetWindowRep()->Line(x + w - 1, y, x + w - 1, y + h - 1, 1);
+    _winReps.GetWindowRep()->Line(x + w - 1, y + h - 1, x, y + h - 1, 1);
+    _winReps.GetWindowRep()->Line(x, y + h - 1, x, y, 1);
 
     /* use color from local colormap (see Color.h) */
     _winReps.GetWindowRep()->SetFgColor(SeaGreenColor);
@@ -312,24 +327,29 @@ void SampleWinServer::Print()
 {
   printf("Received print command from client\n");
 
+  /* Figure out the screen geometry of what we want to print. */
+  int xVal, yVal;
+  unsigned int width, height;
+  _winReps.GetScreenWinRep()->Origin(xVal, yVal);
+  _winReps.GetScreenWinRep()->Dimensions(width, height);
+
+  Rectangle printRegion;
+  printRegion.x = xVal;
+  printRegion.y = yVal;
+  printRegion.width = width;
+  printRegion.height = height;
+
   /* Open the print file. */
   char *filename = "/tmp/client_server.0.ps";
   DevStatus status = ((PSDisplay *) _fileDisp)->OpenPrintFile(filename);
   assert(status.IsComplete());
-  ((PSDisplay *) _fileDisp)->PrintPSHeader("cslib sample server");
+  ((PSDisplay *) _fileDisp)->PrintPSHeader("cslib sample server", printRegion,
+    true);
 
-  /* Switch over to file output. */
-  int xVal, yVal;
-  unsigned int width, height;
-  _winReps.GetFileWinRep()->Origin(xVal, yVal);
-  _winReps.GetFileWinRep()->Dimensions(width, height);
-
-  Rectangle viewGeom, parentGeom;
-  viewGeom.x = parentGeom.x = xVal;
-  viewGeom.y = parentGeom.y = yVal;
-  viewGeom.width = parentGeom.width = width;
-  viewGeom.height = parentGeom.height = height;
-  _winReps.SetFileOutput(viewGeom, parentGeom);
+  /* Switch over to file output.  Since we're printing a single window,
+   * the window geometry and the print region geometry are the same. */
+  Rectangle windowGeom = printRegion;
+  _winReps.SetFileOutput(windowGeom, printRegion);
 
   /* Redraw the window. */
   Redraw();

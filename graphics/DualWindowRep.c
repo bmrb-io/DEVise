@@ -20,6 +20,18 @@
   $Id$
 
   $Log$
+  Revision 1.4.4.1  1997/03/15 00:31:03  wenger
+  PostScript printing of entire DEVise display now works; PostScript output
+  is now centered on page; other cleanups of the PostScript printing along
+  the way.
+
+  Revision 1.4  1996/11/18 23:13:15  wenger
+  Added procedures to generated PostScript to reduce the size of the
+  output and speed up PostScript processing; added 'small font' capability
+  and trademark notice to PostScript output; improved text positioning in
+  PostScript output (but still a ways to go); added a little debug code;
+  fixed data/axis area bugs (left gaps); fixed misc. bugs in color handling.
+
   Revision 1.3  1996/11/07 22:40:08  wenger
   More functions now working for PostScript output (FillPoly, for example);
   PostScript output also working for piled views; PSWindowRep member
@@ -144,7 +156,13 @@ void
 DualWindowRep::SetFileOutput(const Rectangle &viewGeom,
   const Rectangle &parentGeom)
 {
-  DO_DEBUG(printf("DualWindowRep(0x%p)::SetFileOutput()\n", this));
+#if defined(DEBUG)
+  printf("DualWindowRep(0x%p)::SetFileOutput()\n", this);
+  printf("  View geom: %f, %f, %f, %f\n", viewGeom.x, viewGeom.y,
+    viewGeom.width, viewGeom.height);
+  printf("  Parent geom: %f, %f, %f, %f\n", parentGeom.x, parentGeom.y,
+    parentGeom.width, parentGeom.height);
+#endif
 
   DOASSERT(_fileWinRep != NULL, "No file WindowRep");
 

@@ -16,12 +16,25 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/03/23 23:46:15  donjerko
+  *** empty log message ***
+
   Revision 1.26  1997/03/21 23:14:00  guangshu
   Added ifndef Attrproj to make attrproj compilable.
 
   Revision 1.25  1997/03/20 22:20:26  guangshu
   Modified CreateWithParameters to submit the statistics to DTE once it
   gets too expensive to calculate in memory.
+
+  Revision 1.24.4.2  1997/03/15 00:28:13  wenger
+  Improved error messages for record parsing errors.
+
+  Revision 1.24.4.1  1997/03/06 19:44:37  wenger
+  Fixed various parsing bugs, improved error messages as a result of
+  Miron's problems with the GIS data: warns if strings are too long;
+  warns if improper separator/whitespace specification; better warnings
+  if records don't parse; better error messages from
+  MmDdYyHhMmAmPmComposite parser.
 
   Revision 1.24  1996/11/01 19:28:23  kmurli
   Added DQL sources to include access to TDataDQL. This is equivalent to
@@ -418,14 +431,31 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
 
   Parse(line, numArgs, args, _separators, _numSeparators, _isSeparator);
   
-  if (numArgs < _numPhysAttrs || 
-      (_commentString != NULL &&
-       strncmp(args[0], _commentString, _commentStringLength) == 0)) {
+  Boolean isBlank = false;
+  Boolean isComment = false;
+  Boolean isError = false;
+
+  if (numArgs == 0) {
+    isBlank = true;
+  } else if (_commentString != NULL &&
+      !strncmp(args[0], _commentString, _commentStringLength)) {
+    isComment = true;
+  } else if (numArgs < _numPhysAttrs) {
+    isError = true;
+  }
+
+  if (isBlank || isComment || isError) {
+    /* Print info if there is an error or DEBUG is defined. */
+    Boolean doPrint = isError;
 #ifdef DEBUG
-    printf("Too few arguments (%d < %d) or commented line\n",
-	   numArgs, _numPhysAttrs);
-    printf("  %s\n", line);
+    doPrint = true;
 #endif
+
+    if (doPrint) {
+      printf("Too few arguments (%d < %d) or commented line\n",
+	     numArgs, _numPhysAttrs);
+      PrintRec(numArgs, args);
+    }
     return false;
   }
 	
@@ -434,17 +464,21 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
     AttrInfo *info = _attrList.Get(i);
     if (info->type == IntAttr || info->type == DateAttr) {
       if (!isdigit(args[i][0]) && args[i][0] != '-' && args[i][0] != '+') {
-#ifdef DEBUG
-	printf("Invalid integer/date value: %s\n", args[i]);
-#endif
+//#ifdef DEBUG
+	printf("Invalid integer/date value: <%s>\n", args[i]);
+	printf("  Record parsed as: ");
+        PrintRec(numArgs, args);
+//#endif
 	return false;
       }
     } else if (info->type == FloatAttr || info->type == DoubleAttr) {
       if (!isdigit(args[i][0]) && args[i][0] != '.'
 	  && args[i][0] != '-' && args[i][0] != '+') {
-#ifdef DEBUG
-	printf("Invalid float/double value: %s\n", args[i]);
-#endif
+//#ifdef DEBUG
+	printf("Invalid float/double value: <%s>\n", args[i]);
+	printf("  Record parsed as: ");
+        PrintRec(numArgs, args);
+//#endif
 	return false;
       }
     }
@@ -475,6 +509,14 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
       break;
 
     case StringAttr:
+      if ((int) strlen(args[i]) > info->length - 1) {
+	reportErrNosys("String is too long for available space"
+	  " (truncated to fit)");
+	printf("  String: <%s>\n", args[i]);
+	printf("  Length: %d (includes terminating NULL)\n", info->length);
+	printf("  Record:");
+        PrintRec(numArgs, args);
+      }
       strncpy(ptr, args[i], info->length);
       ptr[info->length - 1] = '\0';
 #ifndef ATTRPROJ
@@ -502,6 +544,7 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
   if (hasComposite)
     CompositeParser::Decode(_attrList.GetName(), _recInterp);
 
+  /* Check for matches if a matching value is specified in the schema. */
   for(i = 0; i < _numAttrs; i++) {
     AttrInfo *info = _attrList.Get(i);
 
@@ -514,8 +557,9 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
     switch(info->type) {
     case IntAttr:
       intVal = *(int *)ptr;
-      if (info->hasMatchVal && intVal != info->matchVal.intVal)
+      if (info->hasMatchVal && intVal != info->matchVal.intVal) {
 	return false;
+      }
       if (!info->hasHiVal || intVal > info->hiVal.intVal) {
 	info->hiVal.intVal = intVal;
 	info->hasHiVal = true;
@@ -532,8 +576,9 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
 
     case FloatAttr:
       floatVal = *(float *)ptr;
-      if (info->hasMatchVal && floatVal != info->matchVal.floatVal)
+      if (info->hasMatchVal && floatVal != info->matchVal.floatVal) {
 	return false;
+      }
       if (!info->hasHiVal || floatVal > info->hiVal.floatVal) {
 	info->hiVal.floatVal = floatVal;
 	info->hasHiVal = true;
@@ -550,8 +595,9 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
 
     case DoubleAttr:
       doubleVal = *(double *)ptr;
-      if (info->hasMatchVal && doubleVal != info->matchVal.doubleVal)
+      if (info->hasMatchVal && doubleVal != info->matchVal.doubleVal) {
 	return false;
+      }
       if (!info->hasHiVal || doubleVal > info->hiVal.doubleVal) {
 	info->hiVal.doubleVal = doubleVal;
 	info->hasHiVal = true;
@@ -567,14 +613,16 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
       break;
 
     case StringAttr:
-      if (info->hasMatchVal && strcmp(ptr, info->matchVal.strVal))
+      if (info->hasMatchVal && strcmp(ptr, info->matchVal.strVal)) {
 	return false;
+      }
       break;
 
     case DateAttr:
       dateVal = *(time_t *)ptr;
-      if (info->hasMatchVal && dateVal != info->matchVal.dateVal)
+      if (info->hasMatchVal && dateVal != info->matchVal.dateVal) {
 	return false;
+      }
       if (!info->hasHiVal || dateVal > info->hiVal.dateVal) {
 	info->hiVal.dateVal = dateVal;
 	info->hasHiVal = true;

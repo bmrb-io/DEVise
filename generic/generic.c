@@ -16,8 +16,21 @@
   $Id$
 
   $Log$
+  Revision 1.44  1997/02/26 16:31:04  wenger
+  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+
   Revision 1.43  1997/02/03 19:46:31  ssl
   Added new class ViewLensInfo
+
+  Revision 1.42.4.3  1997/03/06 19:44:49  wenger
+  Fixed various parsing bugs, improved error messages as a result of
+  Miron's problems with the GIS data: warns if strings are too long;
+  warns if improper separator/whitespace specification; better warnings
+  if records don't parse; better error messages from
+  MmDdYyHhMmAmPmComposite parser.
+
+  Revision 1.42.4.2  1997/02/27 21:20:44  jussi
+  Added MmDdYyHhMmAmPmComposite parser.
 
   Revision 1.42.4.1  1997/02/14 23:29:00  wenger
   Fixed off-by-one-hour error in YyDdd_HhMmComposite composite parser;
@@ -336,7 +349,7 @@ public:
     char *buf = (char *)recInterp->GetBuf();
     
     /* decode date */
-    static struct tm now;
+    struct tm now;
     int seq = *(int *)(buf + attrOffset[0]);
     now.tm_mday = seq % 100;
     now.tm_mon = (seq / 100) % 100 - 1;
@@ -348,6 +361,82 @@ public:
 
     time_t *datePtr = (time_t *)(buf + attrOffset[1]);
     *datePtr = GetTime(now);
+  }
+
+private:
+  int       *attrOffset;          /* attribute offsets */
+  Boolean   _init;                /* true when instance initialized */
+};
+
+/* User composite function for timestamps of the form MM-DD-YY HH:MM AM/PM */
+
+class MmDdYyHhMmAmPmComposite : public UserComposite {
+public:
+  MmDdYyHhMmAmPmComposite() {
+    _init = false;
+    attrOffset = 0;
+  }
+    
+  virtual ~MmDdYyHhMmAmPmComposite() {
+    delete attrOffset;
+  }
+    
+  virtual void Decode(RecInterp *recInterp) {
+        
+    if (!_init) {
+      /* initialize by caching offsets of all the attributes we need */
+            
+      char *primAttrs[] = { "MMDDYY", "HHMM", "AMPM", "DATE" };
+      const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
+      attrOffset = new int [numPrimAttrs];
+      DOASSERT(attrOffset, "Out of memory");
+            
+      for(int i = 0; i < numPrimAttrs; i++) {
+        AttrInfo *info;
+        if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
+          fprintf(stderr, "Cannot find attribute %s\n", primAttrs[i]);
+          DOASSERT(0, "Cannot find attribute");
+        }
+        if (!strcmp(info->name, "DATE") && (info->type != DateAttr)) {
+          reportErrNosys("Type of DATE attribute is not date");
+        }
+        attrOffset[i] = info->offset;
+      }
+      _init = true;
+    }
+        
+    char *buf = (char *)recInterp->GetBuf();
+        
+    /* decode date */
+    time_t *datePtr = (time_t *)(buf + attrOffset[3]);
+    char *dash1 = strchr(buf + attrOffset[0], '-');
+    char *dash2 = (!dash1 ? NULL : strchr(dash1 + 1, '-'));
+    char *colon = strchr(buf + attrOffset[1], ':');
+    char ampm = *(buf + attrOffset[2]);
+    if (islower(ampm))
+      ampm = toupper(ampm);
+    if (!isdigit(buf[attrOffset[0]]) || !dash1 || !isdigit(dash1[1]) ||
+        !dash2 || !isdigit(dash2[1]) || !isdigit(buf[attrOffset[1]]) ||
+        !colon || !isdigit(colon[1]) || (ampm != 'A' && ampm != 'P')) {
+      reportErrNosys("Timestamp not of the form MM-DD-YY HH:MM AM/PM");
+      fprintf(stderr, "  values: <%s> <%s> <%s>\n", &buf[attrOffset[0]],
+	&buf[attrOffset[1]], &buf[attrOffset[2]]);
+      *datePtr = time(0);
+    } else {
+      struct tm now;
+      now.tm_mday = atoi(dash1 + 1);
+      now.tm_mon = atoi(buf + attrOffset[0]) - 1;
+      now.tm_year = atoi(dash2 + 1);
+      now.tm_hour = atoi(buf + attrOffset[1]);
+      if (ampm == 'P' && now.tm_hour < 12)
+        now.tm_hour += 12;
+      if (ampm == 'A' && now.tm_hour == 12)
+        now.tm_hour = 0;
+      now.tm_min = atoi(colon + 1);
+      now.tm_sec = 0;
+      now.tm_isdst = -1;
+      *datePtr = GetTime(now);
+    }
   }
 
 private:
@@ -396,7 +485,7 @@ public:
     char *buf = (char *)recInterp->GetBuf();
     
     /* decode date */
-    static struct tm now;
+    struct tm now;
     now.tm_mday = *(int *)(buf + attrOffset[1]);
     now.tm_mon = *(int *)(buf + attrOffset[0]) - 1;
     now.tm_year = *(int *)(buf + attrOffset[2]) - 1900;
@@ -455,7 +544,7 @@ public:
     char *buf = (char *)recInterp->GetBuf();
     
     /* decode date */
-    static struct tm now;
+    struct tm now;
     now.tm_mday = *(int *)(buf + attrOffset[0]);
     now.tm_mon = 0;
     now.tm_year = 1996 - 1900;
@@ -527,7 +616,7 @@ public:
     int hour = int((hhmm / 100.0) + 0.1);
     int minute = int((hhmm - 100.0 * hour) + 0.1);
 
-    static struct tm now;
+    struct tm now;
     memset((char *) &now, 0, sizeof(now));
     now.tm_mday = day;
     now.tm_mon = 0;
@@ -590,7 +679,7 @@ public:
     char *buf = (char *)recInterp->GetBuf();
     
     /* decode date */
-    static struct tm now;
+    struct tm now;
     now.tm_mday = *(int *)(buf + attrOffset[0]);
     now.tm_mon = *(int *)(buf + attrOffset[1]) - 1;
     now.tm_year = *(int *)(buf + attrOffset[2]) - 1900;
@@ -650,7 +739,7 @@ public:
     char *buf = (char *)recInterp->GetBuf();
     
     /* decode date */
-    static struct tm now;
+    struct tm now;
     float dateDiff = *(float *)(buf + attrOffset[0]);
     int years = (int)(dateDiff / 360);
     int months = (int)((dateDiff - years * 360) / 30);
@@ -720,7 +809,7 @@ public:
     char *buf = (char *)recInterp->GetBuf();
     
     /* decode date */
-    static struct tm now;
+    struct tm now;
     now.tm_mday = 1;
     now.tm_mon = atoi(buf + attrOffset[1] + 1) - 1;
     now.tm_year = *(int *)(buf + attrOffset[0]) - 1900;
@@ -1324,6 +1413,8 @@ int main(int argc, char **argv)
   		CompositeParser::Register(schemaChar,new IBMAddressTraceComposite);
   	else if (parserName.matches("MailorderDateDiffComposite"))
   		CompositeParser::Register(schemaChar,new MailorderDateDiffComposite);
+  	else if (parserName.matches("MmDdYyHhMmAmPmComposite"))
+  		CompositeParser::Register(schemaChar,new MmDdYyHhMmAmPmComposite);
    }
 
   /* Register known classes  with control panel */

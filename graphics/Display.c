@@ -16,6 +16,21 @@
   $Id$
 
   $Log$
+  Revision 1.13.4.1  1997/03/15 00:31:02  wenger
+  PostScript printing of entire DEVise display now works; PostScript output
+  is now centered on page; other cleanups of the PostScript printing along
+  the way.
+
+  Revision 1.13  1996/11/13 16:56:05  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.12  1996/09/10 20:07:08  wenger
   High-level parts of new PostScript output code are in place (conditionaled
   out for now so that the old code is used until the new code is fully
@@ -66,6 +81,8 @@
 #include "Util.h"
 #ifndef LIBCS
 #include "Init.h"
+#include "WinClassInfo.h"
+#include "ViewWin.h"
 #endif
 
 DeviseDisplayList DeviseDisplay::_displays;
@@ -160,3 +177,99 @@ char *DeviseDisplay::DispatchedName()
 {
   return "Display";
 }
+
+#ifndef LIBCS
+/**************************************************************************
+Export the entire DEVise display to PostScript or EPS.
+This function is implemented in the DeviseDisplay class, rather than the
+XDisplay class, so that it can be inherited by future implementations
+of NTWindowRep, etc.
+***************************************************************************/
+
+void
+DeviseDisplay::ExportToPS(DisplayExportFormat format, char *filename)
+{
+#if defined(DEBUG)
+  printf("DeviseDisplay::ExportToPS(%d, %s)\n", (int) format, filename);
+#endif
+
+  DevStatus result = StatusOk;
+
+  DeviseDisplay *psDisplay = GetPSDisplay();
+
+  /* Find the smallest bounding rectangle covering all of the windows.
+   * Note: this is in _screen_ coordinates. */
+  int winLeft=MAXINT, winRight=0, winTop=MAXINT, winBot=0;
+
+  ClassInfo *windowInfo;
+  ViewWin *windowP;
+  int index = DevWindow::InitIterator();
+  while (DevWindow::More(index)) {
+    windowInfo = DevWindow::Next(index);
+    windowP = (ViewWin *) windowInfo->GetInstance();
+    if ((windowP != NULL) && !windowP->Iconified()) {
+      int winX, winY; 
+      unsigned winWidth, winHeight;
+      windowP->RealGeometry(winX, winY, winWidth, winHeight);
+      windowP->AbsoluteOrigin(winX, winY);
+
+      winLeft = MIN(winLeft, winX);
+      winRight = MAX(winRight, winX + (int) winWidth - 1);
+      winTop = MIN(winTop, winY);
+      winBot = MAX(winBot, winY + (int) winHeight - 1);
+    }
+  }
+  DevWindow::DoneIterator(index);
+
+  Rectangle printGeom;
+  printGeom.x = winLeft;
+  printGeom.y = winTop;
+  printGeom.width = winRight - winLeft + 1;
+  printGeom.height = winBot - winTop + 1;
+
+#if defined(DEBUG)
+  printf("Screen bounding rect: %d %d %d %d\n", winLeft, winRight, winTop,
+    winBot);
+#endif
+
+  /* Open the output file and print the PostScript header. */
+  if (!psDisplay->OpenPrintFile(filename).IsComplete()) {
+    reportError("Can't open print file", errno);
+    result += StatusFailed;
+  }
+
+  if (result.IsComplete()) {
+    psDisplay->PrintPSHeader("DEVise Visualization", printGeom, true);
+  }
+
+  /* Print each window.  Note dispatcher looping to wait for the window
+   * to finish printing. */
+  if (result.IsComplete()) {
+    index = DevWindow::InitIterator();
+    while (DevWindow::More(index)) {
+      windowInfo = DevWindow::Next(index);
+      windowP = (ViewWin *) windowInfo->GetInstance();
+      if ((windowP != NULL) && !windowP->Iconified()) {
+        windowP->PrintPS();
+        while (windowP->IsPrinting()) {
+          Dispatcher::SingleStepCurrent();
+        }
+      }
+    }
+    DevWindow::DoneIterator(index);
+  }
+
+  /* Print the PostScript trailer and close the output file. */
+  if (result.IsComplete()) {
+    psDisplay->PrintPSTrailer();
+  }
+
+  result += psDisplay->ClosePrintFile();
+  printf("Done generating print file\n");
+
+#if defined(DEBUG)
+  printf("  DeviseDisplay::ExportToPS(): ");
+  result.Print();
+#endif
+}
+#endif

@@ -20,4 +20,4 @@ if (! -f $DEVISE_EXEC) then
   exit 1
 endif
 
-$DEVISE_EXEC -sharedMem 0 $*
+$DEVISE_EXEC $*

@@ -16,8 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/03/23 23:46:15  donjerko
+  *** empty log message ***
+
   Revision 1.11  1997/03/20 22:21:07  guangshu
   Added include files.
+
+  Revision 1.10.4.1  1997/03/06 19:44:38  wenger
+  Fixed various parsing bugs, improved error messages as a result of
+  Miron's problems with the GIS data: warns if strings are too long;
+  warns if improper separator/whitespace specification; better warnings
+  if records don't parse; better error messages from
+  MmDdYyHhMmAmPmComposite parser.
 
   Revision 1.10  1996/07/01 19:28:08  jussi
   Added support for typed data sources (WWW and UNIXFILE). Renamed
@@ -136,6 +146,15 @@ protected:
   virtual Boolean ReadIndex(int fd);
 
 private:
+  static void PrintRec(int numArgs, char **args) {
+    printf(" ");
+    int argNum;
+    for (argNum = 0; argNum < numArgs; argNum++) {
+      printf(" <%s>", args[argNum]);
+    }
+    printf("\n");
+  }
+
   AttrList  _attrList;             /* list of attributes */
   Boolean   hasComposite;
   int       _recSize;

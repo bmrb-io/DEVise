@@ -50,7 +50,8 @@ x- Redo at least some testing (user interface tests at minimum).
 
 x- Redo internal release and distribution file generation.
 
-a- Update web page
+a- Update web page (includes having a pointer to a copy of the PostScript
+  user manual?)
 - Tag html and doc directories
 x- Generate "official" sources1.3.x.tar.gz file
 x- Release documentation and re-generate distribution files with up-to-date

@@ -17,33 +17,42 @@ MapClassInfo.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
 MapClassInfo.o: ../graphics/VisualArg.h ../graphics/Pattern.h
 MapClassInfo.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 MapClassInfo.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-MapClassInfo.o: ../graphics/Compress.h ../graphics.new/RectShape.h
-MapClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
-MapClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
-MapClassInfo.o: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
-MapClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
-MapClassInfo.o: ../graphics/DualWindowRep.h ../graphics/Control.h
-MapClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-MapClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
-MapClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
-MapClassInfo.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
-MapClassInfo.o: ../tape/HashTable.h ../graphics.new/DataSourceFixedBuf.h
-MapClassInfo.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
-MapClassInfo.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
-MapClassInfo.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
-MapClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
-MapClassInfo.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
-MapClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
-MapClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
-MapClassInfo.o: /usr/include/ctype.h ../graphics/Selection.h
+MapClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
+MapClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
+MapClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
+MapClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+MapClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
+MapClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
+MapClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
+MapClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
+MapClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 MapClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-MapClassInfo.o: ../graphics.new/DispQueryProc.h
-MapClassInfo.o: ../graphics.new/QueryProcSimple.h ../graphics.new/QueryProc.h
-MapClassInfo.o: ../graphics.new/BufHint.h ../graphics.new/QueryProcFull.h
-MapClassInfo.o: ../graphics.new/QPRange.h ../graphics/Timer.h
-MapClassInfo.o: ../graphics.new/BufMgr.h ../graphics.new/BufferPolicy.h
-MapClassInfo.o: ../graphics.new/RecOrder.h ../graphics.new/Snapshot.h
-MapClassInfo.o: ../graphics.new/ViewScatter.h MapClassInfo.h Soil.h AmsMap.h
+MapClassInfo.o: ../graphics/Cursor.h ../graphics/DevFont.h
+MapClassInfo.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+MapClassInfo.o: ../graphics.new/GdataStat.h ../tape/HashTable.h
+MapClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
+MapClassInfo.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
+MapClassInfo.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
+MapClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+MapClassInfo.o: /usr/include/sys/shm.h /usr/include/assert.h
+MapClassInfo.o: /usr/include/limits.h /usr/include/sys/stat.h
+MapClassInfo.o: ../graphics.new/machdep.h /usr/include/sys/param.h
+MapClassInfo.o: /usr/include/sys/signal.h /usr/include/sys/wait.h
+MapClassInfo.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
+MapClassInfo.o: /usr/include/sys/resource.h /usr/include/sys/ioctl.h
+MapClassInfo.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
+MapClassInfo.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
+MapClassInfo.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
+MapClassInfo.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+MapClassInfo.o: /usr/include/sys/endian.h ../graphics.new/UpdateLink.h
+MapClassInfo.o: ../graphics.new/VisualLink.h ../graphics.new/Action.h
+MapClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Temp.h
+MapClassInfo.o: ../graphics/Map3D.h ../graphics.new/TDataCMap.h
+MapClassInfo.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
+MapClassInfo.o: ../graphics.new/GDataBin.h ../graphics.new/ActionDefault.h
+MapClassInfo.o: ../graphics/Util.h /usr/include/ctype.h
+MapClassInfo.o: ../graphics/Selection.h ../graphics.new/ViewScatter.h
+MapClassInfo.o: ../graphics.new/QueryProc.h MapClassInfo.h Soil.h AmsMap.h
 ams.o: /usr/include/time.h /usr/include/sys/types.h /usr/include/sgidefs.h
 ams.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
 ams.o: /usr/include/stdio.h /usr/include/sys/time.h ../graphics/DeviseTypes.h
@@ -54,32 +63,42 @@ ams.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
 ams.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
 ams.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h ../graphics/Transform.h
 ams.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+ams.o: ../graphics/DevError.h /usr/include/errno.h /usr/include/sys/errno.h
 ams.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
 ams.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
 ams.o: ../graphics.new/MapInterpClassInfo.h
 ams.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
 ams.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
-ams.o: ../graphics/ViewCallback.h ../graphics/AttrList.h ../graphics/Config.h
-ams.o: ../graphics/Cursor.h ../graphics/AxisLabelClassInfo.h
+ams.o: ../graphics/ViewCallback.h ../graphics/AttrList.h ../graphics/Cursor.h
+ams.o: ../graphics/DevFont.h ../graphics/AxisLabelClassInfo.h
 ams.o: ../graphics.new/ViewClassInfo.h ../graphics.new/ViewGraph.h
 ams.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
 ams.o: ../graphics.new/GdataStat.h ../tape/HashTable.h
 ams.o: ../graphics.new/DataSourceFixedBuf.h ../graphics.new/DataSourceBuf.h
-ams.o: ../graphics.new/DataSource.h ../graphics.new/UpdateLink.h
-ams.o: ../graphics.new/VisualLink.h ../graphics.new/Action.h
-ams.o: ../graphics.new/RecId.h ../graphics.new/PointStorage.h
-ams.o: ../graphics.new/TDataViewX.h ../graphics.new/QueryProc.h
-ams.o: ../graphics.new/GDataBin.h ../graphics.new/TDataCMap.h
-ams.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
-ams.o: ../graphics.new/ShapeID.h ../graphics.new/ViewScatter.h
+ams.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
+ams.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
+ams.o: /usr/include/sys/shm.h /usr/include/assert.h /usr/include/limits.h
+ams.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
+ams.o: /usr/include/sys/param.h /usr/include/sys/signal.h
+ams.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
+ams.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
+ams.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
+ams.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
+ams.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
+ams.o: /usr/include/netdb.h /usr/include/sys/socket.h
+ams.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
+ams.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
+ams.o: ../graphics.new/Action.h ../graphics.new/RecId.h
+ams.o: ../graphics.new/PointStorage.h ../graphics.new/TDataViewX.h
+ams.o: ../graphics.new/QueryProc.h ../graphics.new/GDataBin.h
+ams.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
+ams.o: ../graphics.new/Connector.h ../graphics.new/ShapeID.h
+ams.o: ../graphics.new/ViewScatter.h ../graphics.new/ViewLens.h
 ams.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
-ams.o: ../tape/QueryProcTape.h ../graphics.new/QPRange.h
-ams.o: ../tape/SortedTable.h ../graphics.new/GData.h ../graphics.new/TData.h
-ams.o: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
-ams.o: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
 ams.o: ../graphics.new/TDataMap.h ../graphics.new/GDataRec.h
-ams.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
-ams.o: ../graphics.new/Command.h ../graphics/Timer.h MapClassInfo.h
+ams.o: ../graphics.new/TData.h ../graphics/CursorClassInfo.h
+ams.o: ../graphics.new/ParseCat.h ../graphics.new/Command.h
+ams.o: ../graphics/Timer.h MapClassInfo.h
 amsStat.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sgidefs.h
 amsStat.o: /usr/include/fcntl.h /usr/include/sys/types.h
 amsStat.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
@@ -90,8 +109,20 @@ amsStat.o: ../graphics.new/BufHint.h ../graphics.new/PageSize.h
 amsStat.o: ../graphics.new/TDataAppend.h ../graphics.new/TData.h
 amsStat.o: ../graphics/DeviseTypes.h /usr/include/values.h
 amsStat.o: ../graphics/DevStatus.h ../graphics.new/RecId.h
-amsStat.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
-amsStat.o: ../graphics/Exit.h ../graphics.new/DiskFile.h
+amsStat.o: ../graphics.new/DataSource.h ../graphics/Exit.h
+amsStat.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
+amsStat.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+amsStat.o: /usr/include/sys/shm.h /usr/include/errno.h
+amsStat.o: /usr/include/sys/errno.h /usr/include/assert.h
+amsStat.o: ../graphics.new/machdep.h /usr/include/sys/param.h
+amsStat.o: /usr/include/sys/signal.h /usr/include/sys/wait.h
+amsStat.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
+amsStat.o: /usr/include/sys/resource.h /usr/include/sys/ioctl.h
+amsStat.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
+amsStat.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
+amsStat.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
+amsStat.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+amsStat.o: /usr/include/sys/endian.h ../graphics.new/DiskFile.h
 amsStat.o: ../graphics.new/ams.h /usr/include/math.h
 extendAms.o: /usr/include/stdio.h /usr/include/stdlib.h
 extendAms.o: /usr/include/sgidefs.h /usr/include/fcntl.h
@@ -100,9 +131,7 @@ extendAms.o: /usr/include/sys/select.h /usr/include/sys/fcntl.h
 extendAms.o: /usr/include/limits.h /usr/include/unistd.h
 extendAms.o: /usr/include/sys/uio.h /usr/include/sys/stat.h
 extendAms.o: /usr/include/sys/time.h ../graphics.new/ams.h
-extendAms.o: /usr/include/math.h ../graphics/DevError.h /usr/include/errno.h
-extendAms.o: /usr/include/sys/errno.h ../graphics/DeviseTypes.h
-extendAms.o: /usr/include/values.h ../graphics/DevStatus.h
+extendAms.o: /usr/include/math.h
 testdir.o: /usr/include/stdio.h /usr/include/sys/types.h
 testdir.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
 testdir.o: /usr/include/sys/select.h /usr/include/sys/dir.h

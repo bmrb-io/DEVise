@@ -16,6 +16,24 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/03/19 19:41:05  andyt
+  Embedded Tcl/Tk windows are now sized in data units, not screen pixel
+  units. The old list of ETk window handles (WindowRep class) has been
+  replaced by a list of ETkInfo structs, each with fields for the window
+  handle, x-y coordinates, name of the Tcl script, and an "in_use"
+  flag. Added an ETk_Cleanup() procedure that gets called inside
+  View::ReportQueryDone and destroys all ETk windows that are not marked
+  as in_use.
+
+  Revision 1.19.4.2  1997/03/15 00:31:05  wenger
+  PostScript printing of entire DEVise display now works; PostScript output
+  is now centered on page; other cleanups of the PostScript printing along
+  the way.
+
+  Revision 1.19.4.1  1997/02/27 22:46:05  wenger
+  Most of the way to having Tasvir images work in PostScript output;
+  various WindowRep-related fixes; version now 1.3.4.
+
   Revision 1.19  1997/01/29 17:02:32  wenger
   Fixed PSWindowRep::ScaledText().
 
@@ -123,6 +141,7 @@
 #include "Display.h"
 #include "DList.h"
 #include "Geom.h"
+#include "Util.h"
 
 class PSWindowRep;
 
@@ -158,6 +177,18 @@ public:
 
     /* export window image to other graphics formats */
     virtual void ExportImage(DisplayExportFormat format, char *filename);
+
+#ifndef LIBCS
+    /* import graphics via Dali */
+    virtual void SetDaliServer(char *serverName) { _daliServer =
+      CopyString(serverName); }
+    virtual DevStatus DaliShowImage(Coord centerX, Coord centerY,
+                                    Coord width, Coord height,
+                                    char *filename, int imageLen,
+                                    char *image, float timeoutFactor = 1.0);
+    virtual DevStatus DaliFreeImages() { return StatusOk; }
+    virtual int DaliImageCount() { return 0; }
+#endif
 
 #ifndef LIBCS
     /* Display embedded Tk (ETk) windows */
@@ -330,12 +361,8 @@ public:
     }	
 
     /* Set up the "pixel" to point transform according to the size and location
-     * of the screen window, and the size of the page to output.  If
-     * maintainAspect is true, the printed output will maintain the same
-     * aspect ratio as the screen window.  Otherwise, the printed output
-     * will be stretched to fill the page. */
-    void SetPPTrans(const Rectangle &viewDim, const Rectangle &parentDim,
-      Boolean maintainAspect = true);
+     * of the screen window, and the size of the output on the page. */
+    void SetPPTrans(const Rectangle &viewDim, const Rectangle &parentDim);
 
     /* Transform from "pixels" to points. */
     virtual void TransPixToPoint(Coord oldX, Coord oldY, Coord &newX,
@@ -405,6 +432,10 @@ private:
 #ifdef LIBCS
     RgbVals _foreground;
     RgbVals _background;
+#endif
+
+#ifndef LIBCS
+    char *_daliServer;
 #endif
 };
 

@@ -16,6 +16,24 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/02/03 19:40:02  ssl
+  1) Added a new Layout interface which handles user defined layouts
+  2) Added functions to set geometry and remap views as changes in the
+     layout editor
+  3) Added a function to notify the front end of some change so that it
+     can execute a Tcl command
+  4) The old TileLayout.[Ch] files still exist but are commented out
+     conditionally using #ifdef NEW_LAYOUT
+
+  Revision 1.31.4.2  1997/03/15 00:31:08  wenger
+  PostScript printing of entire DEVise display now works; PostScript output
+  is now centered on page; other cleanups of the PostScript printing along
+  the way.
+
+  Revision 1.31.4.1  1997/02/27 22:46:06  wenger
+  Most of the way to having Tasvir images work in PostScript output;
+  various WindowRep-related fixes; version now 1.3.4.
+
   Revision 1.31  1997/01/08 19:01:44  wenger
   Fixed bug 064 and various other problems with drawing piled views;
   added related debug code.
@@ -223,6 +241,7 @@ ViewWin::ExportImage(DisplayExportFormat format, char *filename)
     // first place, but make sure).
     while (printWinP->_parent != NULL)
     {
+      printf("Warning: ViewWin::ExportImage() not called on top level object.\n");
       printWinP = printWinP->_parent;
     }
 
@@ -237,10 +256,26 @@ ViewWin::ExportImage(DisplayExportFormat format, char *filename)
       int x, y;
       unsigned width, height;
       RealGeometry(x, y, width, height);
+      AbsoluteOrigin(x, y);
 
-      psDispP->PrintPSHeader("DEVise Visualization", (Coord) width,
-	(Coord) height);
+      Rectangle printGeom;
+      printGeom.x = x;
+      printGeom.y = y;
+      printGeom.width = width;
+      printGeom.height = height;
+
+      psDispP->PrintPSHeader("DEVise Visualization", printGeom, true);
       result += printWinP->PrintPS();
+
+      /* Allow the generation of the print file to complete before this
+       * command returns, so that the Tcl code can lpr it if necessary. */
+      while (printWinP->IsPrinting()) {
+        Dispatcher::SingleStepCurrent();
+      }
+
+      psDispP->PrintPSTrailer();
+      result += psDispP->ClosePrintFile();
+      printf("Done generating print file\n");
     }
   }
   else
@@ -321,6 +356,7 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
   WindowRep *fileWinRep = DeviseDisplay::GetPSDisplay()->CreateWindowRep(_name,
 	x, y, w, h, foreground, background, NULL, min_width,
 	min_height, relativeMinSize, _winBoundary);
+  fileWinRep->SetDaliServer(Init::DaliServer());
   _winReps.SetFileWinRep(fileWinRep);
 
   _winReps.SetScreenOutput();
@@ -908,11 +944,17 @@ ViewWin::PrintPS()
     int xVal, yVal;
     unsigned int width, height;
     RealGeometry(xVal, yVal, width, height);
+    AbsoluteOrigin(xVal, yVal);
     geom.x = xVal;
     geom.y = yVal;
     geom.width = width;
     geom.height = height;
-    SetFileOutput(geom, geom);
+
+    Rectangle parentGeom;
+    DeviseDisplay::GetPSDisplay()->GetScreenPrintRegion(parentGeom);
+
+    SetFileOutput(geom, parentGeom);
+
     DrawMargins();
     SetScreenOutput();
   }
@@ -925,6 +967,10 @@ ViewWin::PrintPS()
   Coord centerY = yVal + height / 2.0;
   _winReps.GetFileWinRep()->FillPixelRect(centerX, centerY, (Coord) width, (Coord) height);
 #endif
+
+#if defined(DEBUG)
+    printf("Starting printing of window/view <%s>\n", _name);
+#endif
     _printIndex = _children.InitIterator();
     _hasPrintIndex = true;
   }
@@ -936,19 +982,15 @@ ViewWin::PrintPS()
   }
   else
   {
+#if defined(DEBUG)
+    printf("Ending printing of window/view <%s>\n", _name);
+#endif
     _children.DoneIterator(_printIndex);
     _hasPrintIndex = false;
 
     if (_parent != NULL)
     {
       _parent->ViewWin::PrintPS();
-    }
-    else
-    {
-      DeviseDisplay *psDispP = DeviseDisplay::GetPSDisplay();
-      psDispP->PrintPSTrailer();
-      result += psDispP->ClosePrintFile();
-      printf("Done generating print file\n");
     }
   }
 

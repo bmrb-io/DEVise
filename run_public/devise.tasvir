@@ -28,4 +28,4 @@ endif
 
 $TASVIR_EXEC &
 
-$DEVISE_EXEC -sharedMem 0 -tasvir localhost -tasvirquit $*
+$DEVISE_EXEC -tasvir localhost -tasvirquit $*
