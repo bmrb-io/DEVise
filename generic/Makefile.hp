@@ -8,7 +8,8 @@ generic.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 generic.o: /usr/include/time.h /usr/include/sys/time.h /usr/include/string.h
 generic.o: /usr/include/math.h /usr/include/sys/types.h
 generic.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
-generic.o: /usr/include/stdlib.h ../graphics/DList.h ../graphics/Exit.h
+generic.o: /usr/include/stdlib.h /usr/include/unistd.h
+generic.o: /usr/include/sys/unistd.h ../graphics/DList.h ../graphics/Exit.h
 generic.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
 generic.o: ../graphics/Pattern.h ../graphics/Display.h ../graphics/Geom.h
 generic.o: ../graphics/ColorMgr.h ../graphics/Control.h

@@ -9,12 +9,14 @@ generic.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 generic.o: /usr/include/sys/time.h /usr/include/sys/types.h
 generic.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 generic.o: /usr/include/sys/select.h ../graphics/DeviseTypes.h
-generic.o: ../graphics/Dispatcher.h /usr/include/stdlib.h ../graphics/DList.h
-generic.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
-generic.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Display.h
-generic.o: ../graphics/Geom.h ../graphics/ColorMgr.h ../graphics/Control.h
-generic.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
-generic.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
+generic.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
+generic.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+generic.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+generic.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+generic.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/ColorMgr.h
+generic.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
+generic.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
+generic.o: ../graphics.new/MapInterpClassInfo.h
 generic.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
 generic.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
 generic.o: ../graphics/Transform.h ../graphics/DevisePixmap.h

@@ -9,6 +9,7 @@ MapClassInfo.o: /usr/include/time.h /usr/include/math.h /s/tcl/include/tcl.h
 MapClassInfo.o: /usr/include/stdio.h ../graphics/DeviseTypes.h
 MapClassInfo.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/Color.h
 MapClassInfo.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
+MapClassInfo.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 MapClassInfo.o: /usr/include/sys/types.h ../graphics/DList.h
 MapClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
 MapClassInfo.o: ../graphics/VisualArg.h ../graphics/Pattern.h
@@ -34,19 +35,20 @@ MapClassInfo.o: ../graphics/BufPolicy.h ../graphics.new/TDataMapDispatch.h
 MapClassInfo.o: ../graphics.new/DispQueryProc.h
 MapClassInfo.o: ../graphics.new/QueryProcSimple.h ../graphics.new/QueryProc.h
 MapClassInfo.o: ../graphics.new/BufHint.h ../graphics.new/QueryProcFull.h
-MapClassInfo.o: ../graphics.new/QPRange.h ../graphics.new/BufMgr.h
-MapClassInfo.o: ../graphics.new/BufferPolicy.h ../graphics.new/RecOrder.h
-MapClassInfo.o: ../graphics.new/Snapshot.h ../graphics.new/ViewScatter.h
-MapClassInfo.o: MapClassInfo.h Soil.h AmsMap.h
+MapClassInfo.o: ../graphics.new/QPRange.h ../graphics/Timer.h
+MapClassInfo.o: ../graphics.new/BufMgr.h ../graphics.new/BufferPolicy.h
+MapClassInfo.o: ../graphics.new/RecOrder.h ../graphics.new/Snapshot.h
+MapClassInfo.o: ../graphics.new/ViewScatter.h MapClassInfo.h Soil.h AmsMap.h
 ams.o: /usr/include/time.h /usr/include/sys/time.h /usr/include/sys/stdsyms.h
 ams.o: /usr/include/stdio.h /usr/include/sys/types.h
 ams.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
-ams.o: /usr/include/stdlib.h ../graphics/DList.h ../graphics/Exit.h
-ams.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
-ams.o: ../graphics/Pattern.h ../graphics/Display.h ../graphics/Geom.h
-ams.o: /usr/include/math.h ../graphics/ColorMgr.h ../graphics/Control.h
-ams.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
-ams.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
+ams.o: /usr/include/stdlib.h /usr/include/unistd.h /usr/include/sys/unistd.h
+ams.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+ams.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+ams.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
+ams.o: ../graphics/ColorMgr.h ../graphics/Control.h ../graphics/ClassDir.h
+ams.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
+ams.o: ../graphics.new/MapInterpClassInfo.h
 ams.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
 ams.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Transform.h
 ams.o: ../graphics/DevisePixmap.h ../graphics/Compress.h

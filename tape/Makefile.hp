@@ -12,7 +12,8 @@ QueryProcTape.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
 QueryProcTape.o: ../graphics/DList.h ../graphics/Exit.h
 QueryProcTape.o: ../graphics/BufPolicy.h ../graphics/Dispatcher.h
 QueryProcTape.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
-QueryProcTape.o: /usr/include/stdlib.h /usr/include/sys/types.h
+QueryProcTape.o: /usr/include/stdlib.h /usr/include/unistd.h
+QueryProcTape.o: /usr/include/sys/unistd.h /usr/include/sys/types.h
 QueryProcTape.o: ../graphics/Journal.h SortedTable.h ../graphics.new/GData.h
 QueryProcTape.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
 QueryProcTape.o: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
@@ -40,6 +41,7 @@ Templates.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
 Templates.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/BufPolicy.h
 Templates.o: ../graphics/Dispatcher.h /usr/include/stdio.h
 Templates.o: /usr/include/sys/stdsyms.h /usr/include/stdlib.h
+Templates.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 Templates.o: /usr/include/sys/types.h ../graphics/Journal.h SortedTable.h
 Templates.o: ../graphics.new/GData.h ../graphics.new/TData.h
 Templates.o: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
@@ -47,7 +49,7 @@ Templates.o: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
 devtype.o: /usr/include/stdlib.h /usr/include/sys/stat.h
 devtype.o: /usr/include/sys/stdsyms.h
 tapedrive.o: /usr/include/unistd.h /usr/include/sys/unistd.h
-tapedrive.o: /usr/include/sys/stdsyms.h /usr/include/string.h tapedrive.h
+tapedrive.o: /usr/include/string.h /usr/include/sys/stdsyms.h tapedrive.h
 tapedrive.o: /usr/include/stdio.h /usr/include/tar.h
 tapedrive.o: ../graphics.new/machdep.h /usr/include/limits.h
 tapedrive.o: /usr/include/sys/param.h /usr/include/sys/types.h
