@@ -1,15 +1,6 @@
 LD = ld
 CC = g++
 
-# flags:
-#	-DUSE_AMSDISKFILE: set this to use in-memory file for AMS
-#	-DUNIX: use this for Unix file
-#	-DBATCH: true to batch symbols
-#		files: TDataView.c, SymbolBin.c
-#	-DRANDOMIZE: randomize existing pages before returning them.
-#		file: QueryProc.c
-#	-DTRACE_GDATA: trace GDATa query, file: QueryProc.c
-
 OPTFLAG = -O
 #OPTFLAG = -g
 
@@ -43,7 +34,8 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	ViewRanges.c ViewGraph.c QPRange.c ParseAPI.C \
 	ViewClassInfo.c MapInterpShape.C DataSource.c DataSourceBuf.c \
 	DataSourceFileStream.c DataSourceTape.c DataSourceFileDesc.c \
-	DataSourceSegment.c DataSeg.c DataSourceWeb.c
+	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C \
+        DerivedDataSource.C
 	
 QPSrc1 = $(filter %.c,$(QPSrc))
 QPSrc2 = $(filter %.C,$(QPSrc))
