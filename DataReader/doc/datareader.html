@@ -1,38 +1,20 @@
 <!--
-
   ========================================================================
-
   DEVise Data Visualization Software
-
-  (c) Copyright 1992-1997
-
+  (c) Copyright 1992-1998
   By the DEVise Development Group
-
   Madison, Wisconsin
-
   All Rights Reserved.
-
   ========================================================================
-
-
 
   Under no circumstances is this software to be copied, distributed,
-
   or altered in any way without prior permission from the DEVise
-
   Development Group.
-
 -->
-
-
 
 <!--
-
   $Id$
-
 -->
-
-
 
 <HTML>
 
@@ -51,108 +33,71 @@
 <BR><BR>
 
 <UL>
-
 	<LI><H2><A HREF="#Intro">Introduction</A></H2>
-
 	<LI><H2><A HREF="#Simple">A Simple Schema</A></H2>
-
 	<LI><H2><A HREF="#Schema">A Schema In General</A></H2>
-
 	<LI><H2><A HREF="#Reserve">Reserved Words</A></H2>
-
 	<LI><H2><A HREF="#Level1">Schema-Level Options</A></H2>
-
 	<LI><H2><A HREF="#Level2">Attribute-Level Options</A></H2>
-
 	<LI><H2><A HREF="tree.html">Code Specifications</A></H2>
-
 </UL>
-
 
 
 <BR><BR>
 
 <H2><A NAME="Intro">Introduction</A></H2>
 
-
-
-The DataReader library allows a program that uses it to read nearly any file.To do this, it requires a description of the physical layout of the file that will be referred to as a "schema".This document is intended as a tutorial and reference on how to write a schema.
+The DataReader library allows a program that uses it to read nearly any file.  To do this, it requires a description of the physical layout of the file that will be referred to as a "schema".  This document is intended as a tutorial and reference on how to write a schema.
 
 <BR><BR><BR>
+
 
 <H2><A NAME="Simple">A Simple Schema</A></H2>
 
 <P>Let's start out by taking a quick look at a simple example for the schema "my_schema" defining two integer attributes, "x" and "y":</P>
 
 <PRE>
-
 	schema my_schema {
 
-
-
 		# Definition of attribute x
-
 		attr x {
-
 			type = int;
-
 		}
-
-		
 
 		# Definition of attribute y
-
 		attr y {
-
-		type = int;
-
+			type = int;
 		}
-
-
 
 		skip z {
-
-		type = int;
-
+			type = int;
 		}
-
 	}
-
 </PRE>
-
 
 
 A sample of the data file:<BR>
 
 <PRE>
-
 	3 5
-
 	273 0
-
 	12 34
-
 </PRE>
 
 <BR>
 
 
+The keyword 'schema' starts a schema definition, it is followed by an identifier that is the name of the schema, and then the actual schema definition within braces.  Similarly, each attribute is defined with the keyword 'attr' or 'skip'.  Attributes defined with 'attr' are followed by the name of the attribute, followed by the actual definition within braces.  'skip' attributes are treated as garbage and thrown away.  Within the attribute definition the setting 'type' is set to 'int'.  As you might suspect, this is only one of several built-in types available.
 
-The keyword 'schema' starts a schema definition, it is followed by an identifier that is the name of the schema, and then the actual schema definition within braces. Similarly, each attribute is defined with the keyword 'attr' or 'skip'. Attributes defined with 'attr' are followed by the name of the attribute, followed by the actual definition within braces. 'skip' attributes are treated as garbage and thrown away. Within the attribute definition the setting 'type' is set to 'int'.As you might suspect, this is only one of several built-in types available.
-
-The built-in types (with their equivilent C types) are currently:<BR><BR>
+The built-in types (with their equivalent C types) are currently:<BR><BR>
 
 <LI>int: int<BR></LI>
-
 <LI>float: float<BR></LI>
-
 <LI>double : double<BR></LI>
-
 <LI>string : char*<BR></LI>
-
 <LI>date : struct tm <BR></LI>
 <BR>
-Notice that comments can be used within the schema; '#' or '//' can be used for a single line comment. For multi-lines, comments can be specified between /* and */.
+Notice that comments can be used within the schema; '#' or '//' can be used for a single line comment.  For multi-lines, comments can be specified between /* and */.
 
 <BR><BR><BR>
 
@@ -160,7 +105,7 @@ Notice that comments can be used within the schema; '#' or '//' can be used for 
 
 
 
-A generic schema is presented here,&lt;&gt; brackets are used to indicate a specific item needed at this point. [] brackets are used to indicate optional items that can be supplied. Ellipsis (...) are used to indicate that an arbitrary number of items can be supplied.<BR><BR>
+A generic schema is presented here.  &lt;&gt; brackets are used to indicate a specific item needed at this point.  [] brackets are used to indicate optional items that can be supplied.  Ellipsis (...) are used to indicate that an arbitrary number of items can be supplied.<BR><BR>
 
 
 
@@ -208,17 +153,17 @@ schema &lt;schema-name&gt; {
 
 <BR>
 
-The {} braces (i.e., {} ) are required to balance, to allow simple programs to be able to easily skip over a schema without having to parse it.If a brace is used in a literal string or comment, a matching brace should be added in that or another comment to keep the total number of each brace side equal.<BR>
+The curly braces (i.e., {}) are required to balance, to allow simple programs to be able to easily skip over a schema without having to parse it.  If a brace is used in a literal string or comment, a matching brace should be added in that or another comment to keep the total number of each brace side equal.<BR>
 
 <BR>
 
-Every item that is not inclosed in braces should be terminated with a semicolon. Extra semicolons (blank statements), are silently ignored.<BR>
+Every item that is not inclosed in braces should be terminated with a semicolon.  Extra semicolons (blank statements), are silently ignored.<BR>
 
 <BR><BR><BR>
 
 <A NAME="Reserve"><H2>Reserved Words:</H2></A>
 
-The following words are reserved, and should not be used as names of items within the schema.Names are case-sensitive.<BR>
+The following words are reserved, and should not be used as names of items within the schema.  Names are case-sensitive.<BR>
 
 
 
@@ -248,7 +193,7 @@ The following words are reserved, and should not be used as names of items withi
 
 <H2><A NAME="Level1">Schema-Level Options</A></H2>
 
-There are several options that can be expressed within the outermost level of the schema, and not nested within an attribute definition.These options apply to the entire data file, (or to each record in it separately).<BR>
+There are several options that can be expressed within the outermost level of the schema, and not nested within an attribute definition.  These options apply to the entire data file, (or to each record in it separately).<BR>
 
 <BR>
 
@@ -261,7 +206,7 @@ There are several options that can be expressed within the outermost level of th
 
 <UL>
 
-<LI>The 'comment' keyword indicates what sections within the datafile should be considered comments. Comments are currently only allowed at the beginning of records. DataReader ignores rest of of the record when it encounters a comment at the beginning and skips all the characters up to next record.<BR>
+<LI>The 'comment' keyword indicates what sections within the datafile should be considered comments.  Comments are currently only allowed at the beginning of records.  DataReader ignores rest of of the record when it encounters a comment at the beginning and skips all the characters up to next record.<BR>
 
 <BR>
 
@@ -281,7 +226,7 @@ comment = "##";<BR>
 
 <UL>
 
-<LI>The 'delimiter' keyword indicates what character an input record ends. If delimiter is not used, fields are counted to find the end of a record. '+' character at the end of a delimiter specification can be used for ignoring repeatations.<BR>
+<LI>The 'delimiter' keyword indicates what character an input record ends.  If delimiter is not used, fields are counted to find the end of a record.  '+' character at the end of a delimiter specification can be used for ignoring repetitions.<BR>
 
 <BR>
 
@@ -307,7 +252,7 @@ Default Value: [\n]+<BR>
 
 <UL>
 
-<LI>The 'key' keyword specifies the keys of this table. DataReader doesn't use this option, instead it passes this information to upper layer. DataReader allows more than one key entry.<BR>
+<LI>The 'key' keyword specifies the keys of this table.  DataReader doesn't use this option, instead it passes this information to upper layer.  DataReader allows more than one key entry.<BR>
 
 <BR>
 
@@ -329,7 +274,7 @@ key = (name, id);<BR>
 
 <UL>
 
-<LI>The 'sorted' keyword specifies the order that this table will be displayed. DataReader doesn't use this option, instead it passes this information to upper layer. <BR>
+<LI>The 'sorted' keyword specifies the order that this table will be displayed.  DataReader doesn't use this option, instead it passes this information to upper layer. <BR>
 
 <BR>
 
@@ -353,7 +298,7 @@ sorted = (name, id);<BR>
 
 <H2><A NAME="Level2">Attribute-Level Options</A></H2>
 
-These options can be expressed with an attribute definition. Some of them can also be expressed at the top-evel of the schema as well. The ones that work this way will have a mention of that fact in their description, but generally, it's the one's that could make sense at the top-level.<BR>
+These options can be expressed with an attribute definition.  Some of them can also be expressed at the top-level of the schema as well.  The ones that work this way will have a mention of that fact in their description, but generally, it's the one's that could make sense at the top-level.<BR>
 
 <BR>
 
@@ -361,7 +306,7 @@ These options can be expressed with an attribute definition. Some of them can al
 
 <UL>
 
-<LI>The 'encoding' keyword defines encoding type used for specifying escape characters. C-style reads any character after a '\' without checking it.<BR>
+<LI>The 'encoding' keyword defines encoding type used for specifying escape characters.  C-style reads any character after a '\' without checking it.<BR>
 
 <BR>
 
@@ -389,7 +334,7 @@ Default Value: no default<BR>
 <LI>The 'date_format' keyword indicates how attributes of type dates should be interpreted.<BR>
 This option works at the schema-level also. <BR>
 <BR>
-Allowed Values: &lt;a string containing a legit format&gt;<BR>
+Allowed Values: &lt;a string containing a legitimate format&gt;<BR>
 <BR>
 Sample Use:<BR>
 # Reads dates like: 12/2/97-14:22:30 <BR>
@@ -439,12 +384,12 @@ CodeReplaced By <BR><BR>
 <TR><TD WIDTH="11%" VALIGN="MIDDLE">
 <B><P>MONTH</B></TD>
 <TD WIDTH="89%" VALIGN="MIDDLE">
-<P>full month name, eg, "February"</TD>
+<P>full month name, e.g., "February"</TD>
 </TR>
 <TR><TD WIDTH="11%" VALIGN="MIDDLE">
 <B><P>MON</B></TD>
 <TD WIDTH="89%" VALIGN="MIDDLE">
-<P>abbreviated month name, eg, "Feb"</TD>
+<P>abbreviated month name, e.g., "Feb"</TD>
 </TR>
 <TR><TD WIDTH="11%" VALIGN="MIDDLE">
 <B><P>P</B></TD>
@@ -475,7 +420,7 @@ CodeReplaced By <BR><BR>
 
 <UL>
 
-<LI>The 'length' keyword is used for fixed-length attributes and defines the length of the attribute. maxlen and length can't be used together. Also, quoted strings can't specify length.<BR>
+<LI>The 'length' keyword is used for fixed-length attributes and defines the length of the attribute.  maxlen and length can't be used together.  Also, quoted strings can't specify length.<BR>
 
 <BR>
 
@@ -499,7 +444,7 @@ Default Value: no default<BR>
 
 <UL>
 
-<LI>The 'maxlen' keyword indicates how much storage should be reserved for strings that are read in. This option can only be specified for strings. Attribute can't have maxlen and length at the same time. If the specified string is longer than given 'maxlen', only first maxlen bytes of the strings are read and a warning message is displayed.<BR>
+<LI>The 'maxlen' keyword indicates how much storage should be reserved for strings that are read in.  This option can only be specified for strings.  Attribute can't have maxlen and length at the same time.  If the specified string is longer than given 'maxlen', only first maxlen bytes of the strings are read and a warning message is displayed.<BR>
 
 <BR>
 
@@ -523,7 +468,7 @@ Default Value: no default<BR>
 
 <UL>
 
-<LI>The 'nullif' keyword defines the null string for this attribute. If DataReader encounters this string, assigns NULL to this attribute.<BR>
+<LI>The 'nullif' keyword defines the null string for this attribute.  If DataReader encounters this string, assigns NULL to this attribute.<BR>
 
 <BR>
 
@@ -549,9 +494,9 @@ Default Value: no default<BR>
 
 <UL>
 
-<LI>The 'quote' keyword indicates what the quoting character is for strings in the datafile. All strings in the file need not be quoted. Any string that begins with the quote character is presumed to end with it also, so a string in the data who's first character is literally the quote character _must_ be quoted to be read properly.<BR><BR>
+<LI>The 'quote' keyword indicates what the quoting character is for strings in the datafile.  All strings in the file need not be quoted.  Any string that begins with the quote character is presumed to end with it also, so a string in the data who's first character is literally the quote character _must_ be quoted to be read properly.<BR><BR>
 Fixed length fields can't define a quote character.<BR><BR>
-If separator is not defined for quoted strings, quoted field terminates at the second quote character and the next character is assumed to be the beginning of the next field (even if it is separator). Because of this implementation, schema-level separator definition does not effect string fields, if schema-level (or field-level) quote character is defined.<BR><BR>
+If separator is not defined for quoted strings, quoted field terminates at the second quote character and the next character is assumed to be the beginning of the next field (even if it is separator).  Because of this implementation, schema-level separator definition does not effect string fields, if schema-level (or field-level) quote character is defined.<BR><BR>
 This option works at the schema-level also. <BR>
 <BR>
 
@@ -659,7 +604,7 @@ Default Value: no default<BR>
 
 <UL>
 
-<LI>The 'seperator' keyword indicates what character separates the fields of this record . An attribute can either have a seperator or length, both of them can't be specified at the same time. '+' character at the end of a separator specification can be used for ignoring repeatations.<BR>
+<LI>The 'separator' keyword indicates what character separates the fields of this record.  An attribute can either have a separator or length, both of them can't be specified at the same time.  '+' character at the end of a separator specification can be used for ignoring repetitions.<BR>
 This option works at the schema-level also. <BR>
 <BR>
 
@@ -689,7 +634,7 @@ Default Value: [ \t]+<BR>
 
 <BR>
 
-Allowed Values: one of int, double,string, date<BR>
+Allowed Values: one of int, double, string, date<BR>
 
 <BR>
 
@@ -713,7 +658,7 @@ The built-in types correspond directly to C types:<BR>
 
 <TH align=left>DataReader type<BR></TH>
 
-<TH align=left>equivilent C type<BR></TH>
+<TH align=left>equivalent C type<BR></TH>
 
 <TR>
 
