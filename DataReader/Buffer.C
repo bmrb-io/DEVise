@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1999/04/08 22:43:13  beyer
+  Added null termination when extracting because strings were not
+  getting terminated.
+
   Revision 1.22  1999/02/04 20:04:25  wenger
   Implemented simplified DataReader schema format; field separators
   now propagate to quoted string attributes; fixed some bugs in some
@@ -371,6 +375,7 @@ bool Buffer::setBufferPos(int cPos) {
 #endif
 
 	char c = -1;
+    _in.clear();
 	_in.seekg(cPos);
 	c = _in.peek();
 	if (c == -1) {
