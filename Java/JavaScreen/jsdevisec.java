@@ -449,14 +449,14 @@ public class jsdevisec extends Frame
 
         DEViseCmdSocket cmdSocket = null;
         DEViseImgSocket imgSocket = null;
-        int myID = 0;
+        int myID = -1;
         String hostname = "localhost";                            
         try  {
             cmdSocket = new DEViseCmdSocket(DEViseGlobals.DEVISEHOST, DEViseGlobals.CMDPORT);
             try {   
                 myID = cmdSocket.receiveInt();
                 
-                if (myID == 0) {
+                if (myID == -1) {
                     System.out.println("Connection to DEVise Server is rejected!");
                     System.exit(0);
                 }
@@ -468,6 +468,12 @@ public class jsdevisec extends Frame
             imgSocket = new DEViseImgSocket(DEViseGlobals.DEVISEHOST, DEViseGlobals.IMGPORT);
             try {
                 imgSocket.sendInt(myID);
+                int tempID = imgSocket.receiveInt();
+                if (tempID == -1 || tempID != myID) {
+                    System.out.println("Can not connect to DEVise Image Server!");
+                    System.exit(1); 
+                } 
+                
                 String rsp = cmdSocket.receiveRsp(false);
                 if (!rsp.equals("JAVAC_Done")) {
                     System.out.println("Can not connect to DEVise Image Server!");

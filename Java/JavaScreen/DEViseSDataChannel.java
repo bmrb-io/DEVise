@@ -11,7 +11,7 @@ public class DEViseSDataChannel implements Runnable
     boolean isExit = true;
     boolean isError = false;
     Random rand = new Random();  
-    int myID = 0;  
+    int myID = -1;  
 
     public DEViseSDataChannel(DEViseCmdServerSocket what, Socket socket) throws IOException
     {        
@@ -24,7 +24,7 @@ public class DEViseSDataChannel implements Runnable
     {
         setStatus(true);
         cmdServer.decreaseCount(this);
-        myID = 0;
+        myID = -1;
            
         try {
             if (imgSocket != null) {
@@ -64,8 +64,11 @@ public class DEViseSDataChannel implements Runnable
             imgSocket = new DEViseImgSocket(what);
             int id = imgSocket.receiveInt();
             if (id != myID) {
-                System.out.println("Something is wrong!");                
+                System.out.println("Something is wrong!");
+                imgSocket.sendInt(-1);
                 isError = true;
+            } else {
+                imgSocket.sendInt(id);
             }
         } catch (IOException e) {
             System.out.println("Can not establish image socket connection to " + hostName);
@@ -74,8 +77,6 @@ public class DEViseSDataChannel implements Runnable
             System.out.println("Communication Error while receiving data from " + hostName);
             isError = true;
         }
-        
-        //notifyAll();
     }
     
     public void run()
@@ -83,7 +84,7 @@ public class DEViseSDataChannel implements Runnable
         if (!cmdServer.increaseCount(this)) {
             try {
                 setStatus(true);
-                myID = 0;
+                myID = -1;
                 cmdSocket.sendInt(myID);  
                 close();
             } catch (DEViseNetException e) {

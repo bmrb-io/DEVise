@@ -7,7 +7,7 @@ public class DEViseCmdServerSocket extends ServerSocket implements Runnable
     private boolean isListen = true;
     public final int maxClients = 10;
     private Vector clients = new Vector();
-    private int currentID = 0;
+    private int currentID = -1;
    
     public DEViseCmdServerSocket() throws IOException
     {

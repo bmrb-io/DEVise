@@ -29,11 +29,11 @@ Basic Assumption:
                                         accept socket, check client host and 
                                         maximum allowed clients, then decide
                                         whether reject it or accept it. If 
-                                        reject it, send back 4-byte integer 0,
-                                        if accept it, send back 4-byte nozero
+                                        reject it, send back 4-byte integer -1,
+                                        if accept it, send back 4-byte positive
                                         integer as ID.
     receive 4-byte integer from
-    command socket, if zero, quit,
+    command socket, if -1, quit,
     otherwise, attempt image port
     connection.            
                                         accept socket
@@ -41,10 +41,17 @@ Basic Assumption:
     port to identify itself            
                                         receive 4-byte integer from image
                                         socket. If this integer matchs new
-                                        clients ID, send 'JAVAC_Done' 
-                                        through command socket, otherwise,
-                                        send 'JAVAC_Fail', and kill the new
-                                        client.
+                                        clients ID, send back same thing 
+                                        through image socket, otherwise, 
+                                        send back 4-byte integer -1 and kill
+                                        the image socket. 
+    receive reply-ID through image 
+    port. if -1, quit.                                            
+                                        If everything works well and server
+                                        is ready to accept commands, send 
+                                        'JAVAC_Done' through command socket.
+                                        If there is anything wrong, send                                        
+                                        'JAVAC_Fail', and kill the client
     receive control command from
     command socket, if 'JAVAC_Done',
     connection finally established.
