@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/01/26 19:45:57  jussi
+  Improved checking of data record validity.
+
   Revision 1.6  1995/12/28 19:48:13  jussi
   Small fixes to remove compiler warnings.
 
@@ -154,10 +157,12 @@ TDataAsciiInterp::TDataAsciiInterp(char *name, int recSize, AttrList *attrs,
   _numMatchingAttrs = 0;
   hasComposite = false;
 
-  for(int i = 0; i < _numAttrs; i++) {
+  for(int i = 0; i < _attrList->NumAttrs(); i++) {
     AttrInfo *info = _attrList->Get(i);
-    if (info->isComposite)
+    if (info->isComposite) {
       hasComposite = true;
+      _numAttrs--;
+    }
     if (info->hasMatchVal) {
       if (_numMatchingAttrs >= MAX_MATCHING_ATTRS) {
 	fprintf(stderr,"TDataASciiInterp: too many matching attrs\n");
@@ -181,13 +186,13 @@ Boolean TDataAsciiInterp::IsValid(char *line)
 
   Parse(line, numArgs, args, _separators, _numSeparators, _isSeparator);
 
-  if (numArgs == 0 || 
+  if (numArgs < _numAttrs || 
       (_commentString != NULL &&
        strncmp(args[0], _commentString, _commentStringLength) == 0)) {
     return false;
   }
 	
-  for(int i = 0; i < numArgs; i++) {
+  for(int i = 0; i < _numAttrs; i++) {
     AttrInfo *info = _attrList->Get(i);
     if (info->type == IntAttr || info->type == DateAttr) {
       if (!isdigit(args[i][0]))
@@ -212,16 +217,9 @@ Boolean TDataAsciiInterp::Decode(RecId id, void *recordBuf, char *line)
 
   Parse(line, numArgs, args, _separators, _numSeparators, _isSeparator);
   
-  assert(numArgs > 0);
+  assert(numArgs >= _numAttrs);
 
-  int maxArgs = MinMax::min(numArgs, _numAttrs);
-
-  int i;
-  for(i = 0; i < _numMatchingAttrs; i++)
-    if (_matchingAttrs[i]->attrNum >= maxArgs)
-      return false;
-
-  for(i = 0; i < maxArgs; i++) {
+  for(int i = 0; i < _numAttrs; i++) {
 
     AttrInfo *info = _attrList->Get(i);
     char *ptr = (char *)recordBuf + info->offset;

@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/01/23 20:54:51  jussi
+  Initial revision.
+*/
 
 #include <string.h>
 #include <assert.h>
@@ -112,10 +115,12 @@ TDataBinaryInterp::TDataBinaryInterp(char *name, int recSize,
   
   hasComposite = false;
 
-  for(int i = 0; i < _numAttrs; i++) {
+  for(int i = 0; i < _attrList->NumAttrs(); i++) {
     AttrInfo *info = _attrList->Get(i);
-    if (info->isComposite)
+    if (info->isComposite) {
       hasComposite = true;
+      _numAttrs--;
+    }
   }
   
   Initialize();
