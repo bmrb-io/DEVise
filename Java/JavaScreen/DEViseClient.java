@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.51  2001/10/16 23:30:34  wenger
+// Client logs use client ID for file name uniqueness; added human-readable
+// datestamp.
+//
 // Revision 1.50  2001/10/12 01:49:23  xuk
 // Using timestamp-based client ID.
 // 1. ID has been expended to long int;
@@ -767,7 +771,8 @@ public class DEViseClient
 				try {
 				    String clientCmd = sock.receiveCmd();
 
-				    if (clientCmd.startsWith(DEViseCommands.EXIT)) {
+				    if (clientCmd.startsWith(DEViseCommands.EXIT) ||
+					clientCmd.startsWith(DEViseCommands.ABORT) ) {
 					removeCollabSocket(sock);
 					// change the cmd, if this sock exits
 					if (cmd.startsWith(DEViseCommands.COLLAB_STATE)) {	

@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.121  2001/10/17 15:54:25  wenger
+// Fixed bug 712 (JS collaboration doesn't work); various other code
+// cleanup.
+//
 // Revision 1.120  2001/10/16 22:14:28  wenger
 // Major cleanup of command playback code; fixed bug 711 (problem with
 // command log playback).
@@ -2522,7 +2526,8 @@ class SetModeDlg extends Dialog
 			    }
 			    try {
 				jsc.pn("Sending: \"" + DEViseCommands.EXIT +"\"");
-				jsc.dispatcher.sockSendCmd(DEViseCommands.EXIT);
+				//jsc.dispatcher.sockSendCmd(DEViseCommands.EXIT);
+				jsc.dispatcher.commSocket.sendCmd(DEViseCommands.EXIT, DEViseGlobals.API_JAVA, jsc.jsValues.connection.connectionID);
 			    } catch (YException e) {
 				jsc.showMsg(e.getMsg());
 			    }
