@@ -1217,8 +1217,19 @@ Num Date        Status  Description
 322.2		OPEN	devised crashes if DEVISE_COLLABORATOR is set but
 			no collaborator is running.
 
-323 03/11/98	OPEN	Arrow keys, numeric keys in views don't get passes
+323 03/11/98	OPEN	Arrow keys, numeric keys in views don't get passed
 			to slaves in collaboration. (rkw)
+
+324 03/12/98	OPEN	Views are sometimes not redrawn properly when a
+			window is resized (the full data area may not be
+			redrawn). (ml/rkw)  (This seems to happen more
+			after you've added or removed views.)
+
+325 03/12/98	OPEN	Kiviat graphs don't seem to work (the whole circle
+			is a single color). (rkw)
+
+326 03/12/98	WORK	Lenses don't work (don't draw any data). (rkw)
+			(Workaround is disabling them in the GUI.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
