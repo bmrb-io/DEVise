@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.57  1997/04/30 21:45:38  wenger
+  Fixed non-constant strings in complex mappings bug; TDataAsciiInterp
+  no longer gives warning message on blank data lines; added makefile
+  targets to make a Purify'd version of multi; fixed uninitialized memory
+  read in the DList code; fixed bug that caused 1.4 version of multi to
+  always crash; better error messages in DTE command parser; version is
+  now 1.4.4.
+
   Revision 1.56  1997/04/29 17:35:12  wenger
   Minor fixes to new text labels; added fixed text label shape;
   CheckDirSpace() no longer prints an error message if it can't get disk
@@ -711,8 +719,8 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 				   int numRecs, void *gdataPtr)
 {
 #if defined(DEBUG)
-    printf("ConvertToGdata id %d numRecs %d, buf 0x%p, gbuf 0x%p\n", 
-           startRecId, numRecs, buf, gdataPtr);
+    printf("ConvertToGData id %d numRecs %d, buf 0x%p, gbuf 0x%p\n", 
+           (int) startRecId, numRecs, buf, gdataPtr);
 #endif
 
   if (_isSimpleCmd) {
@@ -789,9 +797,9 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
           code = StringStorage::Lookup(string, key);
           DOASSERT(code >= 0, "Invalid key value for string");
 	  _tclAttrs[j] = (double)key;
-	  /*
-	     printf("Setting string attr %d to %f\n", j, _tclAttrs[j]);
-	  */
+#if defined(DEBUG)
+	     printf("  Setting string attr %d to %f\n", j, _tclAttrs[j]);
+#endif
 	  break;
 
 	case DateAttr:
@@ -1335,7 +1343,7 @@ AttrList *MappingInterp::InitCmd(char *name)
     }
   }
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("Command is %s\n", name);
   PrintCmd();
   attrList->Print();
@@ -1441,7 +1449,7 @@ Boolean MappingInterp::ConvertSimpleCmd(char *cmd,
       isSorted = info->isSorted;
       return true;
     }
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Undefined variable name: %s\n", cmd + 1);
     printf("Attribute list:\n");
     _attrList->Print();
@@ -1523,8 +1531,10 @@ char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
 	AttrInfo *info = _attrList->Find(buf);
 	if (!info) {
 	  /* can't find variable name */
-	  InsertChar('$');
-	  InsertString(buf);
+	  char errBuf[256];
+	  sprintf(errBuf, "Can't find attribute '%s' requested by mapping",
+	    buf);
+          reportErrNosys(errBuf);
 	} else {
 	  /* found the attribute */
 	  if (info->isSorted)
@@ -1686,6 +1696,10 @@ void MappingInterp::PrintCmd()
 double MappingInterp::ConvertOne(char *from, MappingSimpleCmdEntry *entry, 
 				 double defaultVal)
 {
+#if defined(DEBUG)
+  printf("MappingInterp::ConvertOne(%s)\n", from);
+#endif
+
   AttrInfo *info;
   int offset;
   char *ptr;
@@ -1772,7 +1786,7 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
 					 int numRecs, void *gdataPtr)
 {
 #ifdef DEBUG
-  printf("ConvertToGdataSimple\n");
+  printf("ConvertToGDataSimple\n");
 #endif
 
   int tRecSize = TDataRecordSize();
