@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.92  2000/02/23 16:08:50  wenger
+  Added missing DebugLog call to SendWindowData() method.
+
   Revision 1.91  2000/02/23 15:58:35  wenger
   Added view name to JAVAC_ShowViewHelp command args; protocol version
   is 4.1.
@@ -428,6 +431,7 @@
 #define JS_TIMER 1
 #define MONOLITHIC_TEST 0
 #define NO_BATCH 0 // Non-zero for test only.
+#define DO_CHECKSUM 1//TEMP
 
 #define ROUND_TO_INT(value) ((int)(value + 0.5))
 
@@ -1830,7 +1834,8 @@ JavaScreenCmd::ControlCmd(JavaScreenCmd::ControlCmdType  status)
 
 //====================================================================
 JavaScreenCmd::ControlCmdType
-JavaScreenCmd::SendWindowData(const char* fileName)
+JavaScreenCmd::SendWindowData(const char* fileName, Boolean doChecksum,
+  int &checksumValue)
 {
 #if defined (DEBUG_LOG)
     sprintf(logBuf, "JavaScreenCmd::SendWindowData(%s)\n", fileName);
@@ -1843,6 +1848,10 @@ JavaScreenCmd::SendWindowData(const char* fileName)
 #endif
 
 	ControlCmdType	status = DONE;
+	union {
+		int value;
+		char array[sizeof(int)];
+	} tmpChecksum;
 #if MONOLITHIC_TEST
 	return status;
 #endif
@@ -1859,13 +1868,21 @@ JavaScreenCmd::SendWindowData(const char* fileName)
 	}
 	else
 	{
+		const int bufSize = 2048;
 		char buf[2048];
 		int	bytesRead;
 		
+		DeviseServer*	server;
+		server = CmdContainer::GetCmdContainer()->getDeviseServer();
 		while ((bytesRead = read(fd, buf, sizeof(buf))) > 0)
 		{
-			DeviseServer*	server;
-			server = CmdContainer::GetCmdContainer()->getDeviseServer();
+			if (doChecksum) {
+				for (int count = 0; count < bytesRead; count++) {
+					tmpChecksum.array[count % sizeof(tmpChecksum.value)] ^=
+					  buf[count];
+				}
+			}
+
 			int bytesWritten = server->WriteImagePort(buf, bytesRead);
 			if (bytesWritten < 0) {
 				reportErrSys("write image port");
@@ -1881,8 +1898,8 @@ JavaScreenCmd::SendWindowData(const char* fileName)
 			}
 			filesize += bytesRead;
 #if defined(DEBUG_LOG)
-        sprintf(logBuf, "    %d bytes sent\n", filesize);
-        DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
+        	sprintf(logBuf, "    %d bytes sent\n", filesize);
+        	DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 		}
 		if (bytesRead < 0) {
@@ -1894,6 +1911,7 @@ JavaScreenCmd::SendWindowData(const char* fileName)
         DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 	}
+	checksumValue = tmpChecksum.value;
 
 #if defined(DEBUG_LOG)
     sprintf(logBuf, "  done sending window image or GData\n  status = %d\n",
@@ -1973,6 +1991,7 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 	// the command for the JavaScreen to update the appropriate window.
 	//
 	char **imageNames = new char *[View::_viewList->Size()];
+	char **viewNames = new char *[View::_viewList->Size()];
 	int dirtyGifCount = 0;
 	ViewWinList dirtyGifList;
 
@@ -2010,6 +2029,7 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 				if (tmpResult == DONE) {
 				    UpdateViewImage(view, filesize);
 					imageNames[dirtyGifCount] = fileName;
+					viewNames[dirtyGifCount] = view->GetName();
 					dirtyGifCount++;
 				} else {
 					(void) unlink(fileName);
@@ -2077,12 +2097,20 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 	//
     for (int winNum = 0; winNum < dirtyGifCount; winNum++) {
 		if (result == DONE) {
-			(void) SendWindowData(imageNames[winNum]);
+			int checksumValue;
+			(void) SendWindowData(imageNames[winNum], DO_CHECKSUM,
+			  checksumValue);
+#if DO_CHECKSUM
+            sprintf(logBuf, "Checksum value for view <%s> GIF is 0x%x\n",
+			   viewNames[winNum], checksumValue);
+    		DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
+#endif
 		}
 		(void) unlink(imageNames[winNum]);
 		delete [] imageNames[winNum];
 	}
 	delete [] imageNames;
+	delete [] viewNames;
 
 	//
 	// Send the GData for the dirty GData views.
@@ -2657,7 +2685,13 @@ JavaScreenCmd::SendViewGData(ViewGraph *view)
 		reportErrNosys(errBuf);
 		status = ERROR;
 	} else {
-		status = SendWindowData(gdParams.file);
+		int checksumValue;
+		status = SendWindowData(gdParams.file, DO_CHECKSUM, checksumValue);
+#if DO_CHECKSUM
+        sprintf(logBuf, "Checksum value for view <%s> GData is 0x%x\n",
+		  view->GetName(), checksumValue);
+    	DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
+#endif
 
 		// Delete the GData file so that we can tell when the view gets
 		// redrawn.

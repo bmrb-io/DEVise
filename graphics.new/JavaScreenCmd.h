@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.29  2000/02/08 22:12:00  wenger
+  Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
+  edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
+  version now 4.0; added GUI to edit view help, and commands to save it
+  to session files.
+
   Revision 1.28  2000/01/14 18:23:17  wenger
   Added resetAllFilters and JAVAC_ResetFilters commands to reset all visual
   filters back to the values defined in the session file, without actually
@@ -262,7 +268,8 @@ class JavaScreenCmd
 
 		// Convenience functions
 		void CloseJavaConnection();
-		ControlCmdType SendWindowData(const char* fileName);
+		ControlCmdType SendWindowData(const char* fileName,
+		  Boolean doChecksum, int &checksumValue);
 		ControlCmdType SendViewGData(ViewGraph *view);
 		int  ControlCmd(ControlCmdType  status);
 		void UpdateSessionList(char *dirName);
