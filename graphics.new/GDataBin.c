@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/09/27 21:09:36  wenger
+  GDataBin class doesn't allocate space for connectors (no longer used
+  anyhow); fixed some more memory leaks and made notes in the code about
+  some others that I haven't fixed yet; fixed a few other minor problems
+  in the code.
+
   Revision 1.12  1996/09/27 15:53:18  wenger
   Fixed a number of memory leaks.
 
@@ -167,7 +173,7 @@ Insert symbol into bin. The bin will push the symbols to Gdata when done
 void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
 			    int startIndex, int incr, Boolean canElimRecords)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("GDataBin::InsertSymbol(%ld,0x%p,%d,%d,%d,%d)\n",
 	 startRid, recs, numRecs, startIndex, incr, canElimRecords);
 #endif

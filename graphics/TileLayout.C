@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/04/16 19:49:39  jussi
+  Replaced assert() calls with DOASSERT().
+
   Revision 1.4  1996/04/11 18:04:37  jussi
   Added support for stacked windows (one overlays another).
 
@@ -68,8 +71,8 @@ void TileLayout::MapChildren(ViewWin *single, Boolean resize,
 			     int extraWeight, int *x, int *y,
 			     unsigned int *w, unsigned int *h)
 {
-#ifdef DEBUG
-  printf("TileLayout::MapChildren 0x%x mapping children\n", this);
+#if defined(DEBUG)
+  printf("TileLayout::MapChildren 0x%p mapping children\n", this);
 #endif
 
   int totalWeight = TotalWeight() + extraWeight;
@@ -82,7 +85,7 @@ void TileLayout::MapChildren(ViewWin *single, Boolean resize,
     // in a stacked view, all children get the total screen space;
     // only the top view is visible, and it's up to someone else
     // to decide which view is on top
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("TileLayout::MapChildren: stacking views\n");
 #endif
     int index;

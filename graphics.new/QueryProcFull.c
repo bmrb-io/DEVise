@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.34  1996/09/06 07:00:12  beyer
+  - Improved support for patterns, modified the pattern bitmaps.
+  - possitive pattern numbers are used for opaque fills, while
+    negative patterns are used for transparent fills.
+  - Added a border around filled shapes.
+  - ShapeAttr3 is (temporarily) interpreted as the width of the border line.
+
   Revision 1.33  1996/09/03 14:32:09  ssl
   Added some optimization for Record Links. Data now gets distributed
   simulaneously for slaves views when they have the same master and the
@@ -1120,7 +1127,7 @@ Boolean QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high,
 
 void QueryProcFull::QPRangeInserted(RecId low, RecId high)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("QPRangeInserted [%ld,%ld]\n", low, high);
 #endif
 

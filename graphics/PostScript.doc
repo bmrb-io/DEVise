@@ -1,0 +1,182 @@
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1996
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+  High-level documentation of PostScript output code.
+ */
+
+/*
+  $Id$
+
+  $Log$
+ */
+
+
+--- 1 INTRODUCTION
+
+This document provides some information on the implementation of (direct)
+PostScript output in DEVise.  By direct PostScript output, we mean generating
+the PostScript code from the data, etc., rather than dumping an image of
+an X window or pixmap, as was done previously.
+
+
+--- 2 NEW CLASSES
+
+The following are classes that were created to implement the direct
+PostScript output.
+
+--- 2.1 PSDisplay
+
+The PSDisplay class generally handles information related to an entire
+page of PostScript output, such as the page geometry and the file
+descriptor of the file.  It is also used to create and destroy PSWindowReps.
+(Neither PSWindowReps nor XWindowReps are directly created by the classes
+that use them.  They are created via the appropriate Display class.)
+
+--- 2.2 PSWindowRep
+
+The PSWindowRep class is a subclass of the WindowRep class (as is the
+XWindowRep class).  PSWindowRep implements the same methods as XWindowRep,
+so that a PSWindowRep can be substituted in place of an XWindowRep.
+
+two-part transform TEMPTEMP
+
+--- 2.3 DualWindowRep
+
+The DualWindowRep class (which is _not_ a subclass of WindowRep) is used
+to switch back and forth between screen and file output.  A DualWindowRep
+contains two WindowReps -- a screen WindowRep and a FileWindowRep.  At
+the present time, the screen WindowRep is always an XWindowRep and the
+file WindowRep is always a PSWindowRep, but this may change as DEVise
+is ported to more systems.
+
+The main reason for having a DualWindowRep class, rather than simply having
+other objects have the two WindowReps, is to control actions that take
+place when switching between file and screen output.  Particularly when
+switching from screen to file output, the file WindowRep cannot just take
+the place of the screen WindowRep -- it must first be updated to match
+the screen WindowRep's current state in terms of transform matrices,
+clip masks, etc.
+
+It is very important to note that, when a WindowRep for screen output
+is created, a second WindowRep for file output is also created.  These
+two WindowReps are "siblings".  The connection between the siblings
+is maintained by the fact that they must both be contained in the
+same DualWindowRep.
+
+
+--- 3 RELATED/MODIFIED CLASSES
+
+--- 3.1 ViewWin
+
+There's a ViewWin object for each user-level window (see below).  The
+views in a window are children of the top-level ViewWin.
+
+The ViewWin class has the DualWindowRep that holds the corresponding
+screen and file WindowReps.
+
+--- 3.2 View
+
+View is a subclass of ViewWin.
+
+There's a View object for each thing that the user of DEVise sees as
+a "view".
+
+View objects contain the code that knows how to redraw the view (for example,
+after a resize).
+
+In my view (RKW, as of 11/7/96) there is some unnecessary overlap between
+the View and ViewWin class that makes things a little confusing.  However,
+I haven't done anything to change this so far.
+
+--- 3.3 WindowRep
+
+As noted above, WindowRep is the superclass of XWindowRep and PSWindowRep.
+There have been a few modifications to this class during the implementation,
+but nothing major.
+
+
+--- 4 IMPLEMENTATION DETAILS
+
+--- 4.1 BACKGROUND
+
+Okay, here's some information about what classes make up a window.  (Note
+that by a window, we mean what the user sees as a window -- something
+decorated by the window manager.)
+
+Assume that the user has a window with two (non-stacked) views.  Then
+there is a ViewWin object (_not_ a View) corresponding to the user-level
+window.  This ViewWin has DualWindowRep containing an XWindowRep that has
+the X window that is the user-level window and a corresponding PSWindowRep
+that is not used (so far).  It has, as children, View objects for each of
+the user-level DEVise views.  Each of these View objects has (inherited
+from ViewWin) a DualWindowRep with an XWindowRep and a PSWindowRep.  These
+WindowReps are used to generate output to the screen or file.
+
+--- 4.2 DRAWING SEQUENCE
+
+ViewWin::ExportImage() is called from the Tcl command code (for example,
+if the user selects 'Print Selected Window', ExportImage() is called on
+the object representing the selected window.  ExportImage() makes sure
+that we do, in fact, get a top-level ViewWin at which to start generating
+the PostScript.  ExportImage() opens the PostScript file, prints the
+PostScript header, and then calls PrintPS() on the top-level ViewWin.
+
+ViewWin::PrintPS()  prints the first child View by calling PrintPS()
+on that child (see below).  Once that child has finished printing,
+ViewWin::PrintPS() is called again, and prints the next child, if any.
+In this way, the views are printed in a sequential, depth-first manner.
+It may be desireable to not print the views sequentially in order to
+not have to re-issue queries if several views use the same data.  However,
+that seems like it would be more difficult, because the PostScript clip
+mask would have to be changed each time you output data from a different
+view.  So, at least for now, we print views sequentially.
+
+View::PrintPS() changes the view from screen to file output (using the
+appropriate DualWindowRep functions) (see note about piled views below).
+Once the view is set up for PostScript output, View::PrintPS() does a
+refresh to force the view to be re-drawn.
+
+Once a given view has been output to PostScript, View::PrintPSDone()
+is called on that object.  It switches the view back to screen-drawing
+mode, and calls ViewWin::PrintPS() (on the view object, not its parent)
+to continue drawing any more views that exist.  When all children of
+a ViewWin (whether it's really a ViewWin or a View) have been printed,
+it calls ViewWin::PrintPS() on its parent (unless it's the top-level
+ViewWin).  In this way, the print works its way down and then back up
+the tree of ViewWins, until all of them have been printed.  When
+ViewWin::PrintPS() is called on the top-level object for the final
+time, it prints the PostScript trailer and closes the output file.
+
+
+Note: when in piled mode, all views are actually drawn using the WindowRep
+from the top view in the pile (seeTDataViewX::ReturnGDataBinRecs).
+The top view is the first child of the parent ViewWin.
+
+
+--- 5 FUTURE TASKS
+
+Print the trademark notice at the top of each window.
+
+Get colors working.
+
+Get patterns working.
+
+Deal with output larger than a single page.
+
+Only draw to the available resolution, don't redraw stuff that overlaps, etc.,
+so that the PostScript file doesn't get so huge.
+
+Perhaps define subroutines in the generated PostScript to reduce the size
+of the output.

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/10/28 15:55:36  wenger
+  Scaling and clip masks now work for printing multiple views in a window
+  to PostScript; (direct PostScript printing still disabled pending correct
+  text positioning and colors); updated all dependencies except Linux.
+
   Revision 1.1  1996/10/18 20:34:03  wenger
   Transforms and clip masks now work for PostScript output; changed
   WindowRep::Text() member functions to ScaledText() to make things
@@ -55,7 +60,7 @@ static char *	srcFile = __FILE__;
  */
 DualWindowRep::DualWindowRep()
 {
-  DO_DEBUG(printf("DualWindowRep::DualWindowRep()\n"));
+  DO_DEBUG(printf("DualWindowRep(0x%p)::DualWindowRep()\n", this));
 
   _windowRep = NULL;
   _screenWinRep = NULL;
@@ -68,7 +73,7 @@ DualWindowRep::DualWindowRep()
  */
 DualWindowRep::~DualWindowRep()
 {
-  DO_DEBUG(printf("DualWindowRep::~DualWindowRep()\n"));
+  DO_DEBUG(printf("DualWindowRep(0x%p)::~DualWindowRep()\n", this));
 }
 
 /*------------------------------------------------------------------------------
@@ -78,7 +83,8 @@ DualWindowRep::~DualWindowRep()
 void
 DualWindowRep::SetScreenWinRep(WindowRep *screenWinRep)
 {
-  DO_DEBUG(printf("DualWindowRep::SetScreenWinRep()\n"));
+  DO_DEBUG(printf("DualWindowRep(0x%p)::SetScreenWinRep(0x%p)\n", this,
+    screenWinRep));
 
   if ((_windowRep != NULL) && (_windowRep == _screenWinRep))
   {
@@ -95,7 +101,8 @@ DualWindowRep::SetScreenWinRep(WindowRep *screenWinRep)
 void
 DualWindowRep::SetFileWinRep(WindowRep *fileWinRep)
 {
-  DO_DEBUG(printf("DualWindowRep::SetScreenWinRep()\n"));
+  DO_DEBUG(printf("DualWindowRep(0x%p)::SetFileWinRep(0x%p)\n", this,
+    fileWinRep));
 
   if ((_windowRep != NULL) && (_windowRep == _fileWinRep))
   {
@@ -112,7 +119,7 @@ DualWindowRep::SetFileWinRep(WindowRep *fileWinRep)
 void
 DualWindowRep::SetScreenOutput()
 {
-  DO_DEBUG(printf("DualWindowRep::SetScreenOutput()\n"));
+  DO_DEBUG(printf("DualWindowRep(0x%p)::SetScreenOutput()\n", this));
 
   _windowRep = _screenWinRep;
 }
@@ -127,7 +134,7 @@ void
 DualWindowRep::SetFileOutput(const Rectangle &viewGeom,
   const Rectangle &parentGeom)
 {
-  DO_DEBUG(printf("DualWindowRep::SetFileOutput()\n"));
+  DO_DEBUG(printf("DualWindowRep(0x%p)::SetFileOutput()\n", this));
 
   /* Set up the "pixel" to point transform. This MUST be done before
    * the WindowRep state is copied so that the "pixel" to point transform

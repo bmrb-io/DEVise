@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.80  1996/10/28 15:55:45  wenger
+  Scaling and clip masks now work for printing multiple views in a window
+  to PostScript; (direct PostScript printing still disabled pending correct
+  text positioning and colors); updated all dependencies except Linux.
+
   Revision 1.79  1996/10/18 20:34:09  wenger
   Transforms and clip masks now work for PostScript output; changed
   WindowRep::Text() member functions to ScaledText() to make things
@@ -435,6 +440,8 @@ View::View(char *name, VisualFilter &initFilter,
   _dispDataValues = false;
   _pileMode = false;
   _pileViewHold = true;
+
+  _printing = false;
 
   _hasOverrideColor = false;
   _overrideColor = DeviseDisplay::DefaultDisplay()->GetLocalColor(fg);
@@ -1340,7 +1347,7 @@ void View::CalcTransform(Transform3D &transform)
 void View::ReportQueryDone(int bytes, Boolean aborted)
 {
 #if defined(DEBUG)
-  printf("View::ReportQueryDone\n");
+  printf("View(%s)::ReportQueryDone(%d, %d)\n", _name, bytes, aborted);
 #endif
 
   _bytes = bytes;
@@ -1384,7 +1391,7 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
   GetWindowRep()->PopClip();
   GetWindowRep()->Flush();
 
-  if (_winReps.IsFileOutput())
+  if (_printing)
   {
     (void) PrintPSDone();
   }
@@ -2863,8 +2870,12 @@ void View::SetViewDir(int H, int V)
 DevStatus
 View::PrintPS()
 {
-  DO_DEBUG(printf("View::PrintPS(%s)\n", _name));
+#if defined(DEBUG)
+  printf("View::PrintPS(%s)\n", _name);
+#endif
   DevStatus result(StatusOk);
+
+  _printing = true;
 
   // Note: get rid of cast -- not safe.  RKW 9/19/96.
   PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
@@ -2888,7 +2899,14 @@ View::PrintPS()
   parentGeom.width = width;
   parentGeom.height = height;
 
-  _winReps.SetFileOutput(viewGeom, parentGeom);
+  /* If we're in piled mode, the drawing will actually be done using
+   * the WindowRep of the _top_ view in the pile, so that's the one
+   * that has to be set for file output. */
+  if (_pileMode) {
+    GetFirstSibling()->SetFileOutput(viewGeom, parentGeom);
+  } else {
+    SetFileOutput(viewGeom, parentGeom);
+  }
 
   // Force a refresh to print the PostScript.
   fprintf(psDispP->GetPrintFile(), "\n%% Start of view '%s'\n", _name);
@@ -2900,7 +2918,9 @@ View::PrintPS()
 DevStatus
 View::PrintPSDone()
 {
-  DO_DEBUG(printf("View::PrintPSDone(%s)\n", _name));
+#if defined(DEBUG)
+  printf("View::PrintPSDone(%s)\n", _name);
+#endif
   DevStatus result(StatusOk);
 
   // Note: get rid of cast -- not safe.  RKW 9/19/96.
@@ -2909,10 +2929,16 @@ View::PrintPSDone()
   fprintf(psDispP->GetPrintFile(), "%% End of view '%s'\n", _name);
 
   // Switch this view back to screen drawing mode.
-  _winReps.SetScreenOutput();
+  if (_pileMode) {
+    GetFirstSibling()->SetScreenOutput();
+  } else {
+    SetScreenOutput();
+  }
 
   // Continue printing any more views that need to be printed.
   result += ViewWin::PrintPS();
+
+  _printing = false;
 
   return result;
 }

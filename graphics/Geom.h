@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/10/28 15:55:37  wenger
+  Scaling and clip masks now work for printing multiple views in a window
+  to PostScript; (direct PostScript printing still disabled pending correct
+  text positioning and colors); updated all dependencies except Linux.
+
   Revision 1.9  1996/08/03 15:36:29  jussi
   Added line segment width.
 
@@ -77,7 +82,7 @@ public:
 
 class Rectangle {           // rectangle in 2D space
 public:
-  Coord x, y;               // upper left corner unless otherwise noted TEMPTEMP
+  Coord x, y;               // upper left corner unless otherwise noted
   Coord width, height;
 };
 

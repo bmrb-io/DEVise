@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/09/13 16:44:57  wenger
+  PixelSize in GData now used as multiplier to the size when symbols are
+  larger than one screen pixel (makes the '+' and '-' keys more useful).
+
   Revision 1.18  1996/09/12 18:38:06  wenger
   Added optional delay before drawing images.
 
@@ -119,6 +123,9 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 					   int numSyms, TDataMap *map,
 					   ViewGraph *view, int pixelSize)
 {
+#if defined(DEBUG)
+    printf("%s\n", __PRETTY_FUNCTION__);
+#endif
     if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
@@ -305,6 +312,9 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 					    int numSyms, TDataMap *map,
 					    ViewGraph *view, int pixelSize)
 {
+#if defined(DEBUG)
+    printf("%s\n", __PRETTY_FUNCTION__);
+#endif
     if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
@@ -420,6 +430,9 @@ void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 			    int numSyms, TDataMap *map,
 			    ViewGraph *view, int pixelSize) 
 {
+#if defined(DEBUG)
+    printf("%s\n", __PRETTY_FUNCTION__);
+#endif
     if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
@@ -489,6 +502,9 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
 						     ViewGraph *view,
 						     int pixelSize) 
 {
+#if defined(DEBUG)
+    printf("%s\n", __PRETTY_FUNCTION__);
+#endif
     if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
@@ -582,6 +598,9 @@ void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 					   int numSyms, TDataMap *map,
 					   ViewGraph *view, int pixelSize)
 {
+#if defined(DEBUG)
+    printf("%s\n", __PRETTY_FUNCTION__);
+#endif
     if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
@@ -662,6 +681,9 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 					     int numSyms, TDataMap *map,
 					     ViewGraph *view, int pixelSize)
 {
+#if defined(DEBUG)
+    printf("%s\n", __PRETTY_FUNCTION__);
+#endif
     if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
@@ -779,6 +801,9 @@ void FullMapping_HorLineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 					      int numSyms, TDataMap *map,
 					      ViewGraph *view, int pixelSize)
 {
+#if defined(DEBUG)
+    printf("%s\n", __PRETTY_FUNCTION__);
+#endif
     if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
@@ -853,6 +878,9 @@ void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 					      int numSyms, TDataMap *map,
 					      ViewGraph *view, int pixelSize)
 {
+#if defined(DEBUG)
+    printf("%s\n", __PRETTY_FUNCTION__);
+#endif
     if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
@@ -996,6 +1024,9 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 					      int numSyms, TDataMap *map,
 					      ViewGraph *view, int pixelSize)
 {
+#if defined(DEBUG)
+    printf("%s\n", __PRETTY_FUNCTION__);
+#endif
     if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
@@ -1122,6 +1153,9 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 					       int numSyms, TDataMap *map,
 					       ViewGraph *view, int pixelSize)
 {
+#if defined(DEBUG)
+    printf("%s\n", __PRETTY_FUNCTION__);
+#endif
     if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
@@ -1231,6 +1265,9 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 					       int numSyms, TDataMap *map,
 					       ViewGraph *view, int pixelSize)
 {
+#if defined(DEBUG)
+    printf("%s\n", __PRETTY_FUNCTION__);
+#endif
     const Boolean sendImageOnSocket = false;
 
     if (view->GetNumDimensions() == 3) {
@@ -1389,6 +1426,9 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 						   ViewGraph *view,
 						   int pixelSize)
 {
+#if defined(DEBUG)
+    printf("%s\n", __PRETTY_FUNCTION__);
+#endif
     if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
@@ -1507,6 +1547,9 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 						int numSyms, TDataMap *map,
 						ViewGraph *view, int pixelSize)
 {
+#if defined(DEBUG)
+    printf("%s\n", __PRETTY_FUNCTION__);
+#endif
     if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
@@ -1574,6 +1617,11 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 					   int numSyms, TDataMap *map,
 					   ViewGraph *view, int pixelSize)
 {
+#if defined(DEBUG)
+    printf("%s\n", __PRETTY_FUNCTION__);
+    printf("  win = 0x%p; numSyms = %d\n", win, numSyms);
+#endif
+
     if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/10/28 15:55:47  wenger
+  Scaling and clip masks now work for printing multiple views in a window
+  to PostScript; (direct PostScript printing still disabled pending correct
+  text positioning and colors); updated all dependencies except Linux.
+
   Revision 1.20  1996/10/18 20:34:10  wenger
   Transforms and clip masks now work for PostScript output; changed
   WindowRep::Text() member functions to ScaledText() to make things
@@ -210,6 +215,9 @@ void ViewWin::DeleteFromParent()
 
 void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 {
+#if defined(DEBUG)
+  printf("ViewWin(0x%p)::Map(%d, %d, %d, %d)\n", this, x, y, w, h);
+#endif
   if (_mapped) {
     fprintf(stderr,"ViewWin::Map() already mapped\n");
     Exit::DoExit(1);
@@ -435,7 +443,7 @@ void ViewWin::AbsoluteOrigin(int &x, int &y)
 
 void ViewWin::MoveResize(int x, int y, unsigned w, unsigned h)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("ViewWin::MoveResize 0x%p, %d, %d, %u, %u\n", this, x, y, w, h);
 #endif
 
@@ -770,7 +778,9 @@ void ViewWin::ToggleMargins()
 DevStatus
 ViewWin::PrintPS()
 {
-  DO_DEBUG(printf("ViewWin::PrintPS(%s)\n", _name));
+#if defined(DEBUG)
+  printf("ViewWin::PrintPS(%s)\n", _name);
+#endif
   DevStatus result = StatusOk;
 
   if (!_hasPrintIndex)

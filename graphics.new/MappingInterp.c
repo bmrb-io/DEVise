@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.41  1996/09/27 15:53:20  wenger
+  Fixed a number of memory leaks.
+
   Revision 1.40  1996/09/10 20:07:23  wenger
   High-level parts of new PostScript output code are in place (conditionaled
   out for now so that the old code is used until the new code is fully
@@ -469,6 +472,10 @@ void MappingInterp::UpdateMaxSymSize(void *gdata, int numSyms)
 void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
 				   void **gdataArray, int num)
 {
+#if defined(DEBUG)
+  printf("MappingInterp::DrawGDataArray(%s, 0x%p, %d)\n", view->GetName(),
+    win, num);
+#endif
   if (_offsets->shapeOffset < 0) {
     /* constant shape */
     ShapeID shape = GetDefaultShape();

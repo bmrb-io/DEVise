@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/11/06 17:00:38  wenger
+  Text alignment now working for AbsoluteText() method for PostScript
+  output. (Direct PostScript output is still disabled pending colors.)
+
   Revision 1.5  1996/10/28 15:55:43  wenger
   Scaling and clip masks now work for printing multiple views in a window
   to PostScript; (direct PostScript printing still disabled pending correct
@@ -47,8 +51,10 @@
 #endif
 
 //#define DEBUG
-//#define PS_DEBUG	// Define this to generate debug info in the
-			// PostScript output.
+
+// Define this to generate debug info in the PostScript output.
+//#define PS_DEBUG
+
 #define MAXPIXELDUMP 0
 
 #define ROUND(type, value) ((type)(value + 0.5))
@@ -62,6 +68,8 @@ typedef struct {
     unsigned short width, height;
 } XRectangle;
     
+
+
 /**********************************************************************
 Constructor.
 ***********************************************************************/
@@ -84,6 +92,8 @@ PSWindowRep::PSWindowRep(DeviseDisplay *display,
   Init();
 }
 
+
+
 /**********************************************************************
 Initializer
 ***********************************************************************/
@@ -96,6 +106,8 @@ void PSWindowRep::Init()
   UpdateWinDimensions();
   _pixToPointTrans.MakeIdentity();
 }
+
+
 
 /**************************************************************
   destructor 
@@ -115,6 +127,8 @@ PSWindowRep::~PSWindowRep()
     fprintf(stderr, "Child windows should have been destroyed first\n");
 }
 
+
+
 /******************************************************************
   If child == true, make window pointed to by 'other' a new child of
   this window.
@@ -124,10 +138,13 @@ PSWindowRep::~PSWindowRep()
 
 void PSWindowRep::Reparent(Boolean child, void *other, int x, int y)
 {
+    DOASSERT(false, "PSWindowRep::Reparent() not yet implemented");
     /* do something */
 }
 
-/******************************************************************/
+
+
+/*---------------------------------------------------------------------------*/
 
 void PSWindowRep::PushClip(Coord x, Coord y, Coord w, Coord h)
 {
@@ -156,19 +173,11 @@ void PSWindowRep::PushClip(Coord x, Coord y, Coord w, Coord h)
   PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
   FILE * printFile = psDispP->GetPrintFile();
 
-  /* Note: the PostScript Ref. Manual says it's dangerous to to an initclip,
-   * but there doesn't seem to be any other way to get rid of the clip mask
-   * for the previous view (if any) when setting things up for this view. */
-  fprintf(printFile, "initclip\n");
-  fprintf(printFile, "newpath\n");
-  fprintf(printFile, "%f %f moveto\n", xlow, ylow);
-  fprintf(printFile, "%f %f lineto\n", xlow, yhi);
-  fprintf(printFile, "%f %f lineto\n", xhi, yhi);
-  fprintf(printFile, "%f %f lineto\n", xhi, ylow);
-  fprintf(printFile, "%f %f lineto\n", xlow, ylow);
-  fprintf(printFile, "closepath\n");
-  fprintf(printFile, "clip\n");
-  fprintf(printFile, "newpath\n");
+#if defined(PS_DEBUG)
+  fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
+#endif
+
+  SetClipPath(printFile, xlow, ylow, xhi, yhi);
 #endif
 
   WindowRep::_PushClip(xlow, ylow, width, height);
@@ -176,37 +185,62 @@ void PSWindowRep::PushClip(Coord x, Coord y, Coord w, Coord h)
   return;
 }
 
-/*******************************************************************/
+
+
+/*---------------------------------------------------------------------------*/
 
 void PSWindowRep::PopClip()
 {
 #if defined(DEBUG)
   printf("PSWindowRep::PopClip()\n");
 #endif
-  WindowRep::_PopClip();
-  Coord x, y, w, h;
-  XRectangle rect; 
 
-  if (WindowRep::ClipTop(x, y, w, h)) {
-    rect.x = ROUND(short, x);
-    rect.y = ROUND(short, y);
-    rect.width = (unsigned short)ceil(w);
-    rect.height = (unsigned short)ceil(h);
+  WindowRep::_PopClip();
+
+  Coord x1, y1, width, height;
+  Coord x2, y2;
+
+  if (WindowRep::ClipTop(x1, y1, width, height)) {
+    x2 = x1 + width - 1;
+    y2 = y1 + height - 1;
+
 #ifdef GRAPHICS
-    /* do something */
+    // Note: get rid of cast -- not safe.  RKW 9/19/96.
+    PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+    FILE * printFile = psDispP->GetPrintFile();
+
+#if defined(PS_DEBUG)
+    fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
+#endif
+
+    SetClipPath(printFile, x1, y1, x2, y2);
 #endif
 
   } else {
 
     /* no more clipping */
 #ifdef GRAPHICS 
-    /* do something */
+    // Note: get rid of cast -- not safe.  RKW 9/19/96.
+    PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+    FILE * printFile = psDispP->GetPrintFile();
+
+#if defined(PS_DEBUG)
+    fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
+#endif
+
+    /* Note: the PostScript Ref. Manual says it's dangerous to to an initclip,
+     * but there doesn't seem to be any other way to get rid of the clip mask
+     * for the previous view (if any) when setting things up for this view. */
+    fprintf(printFile, "initclip\n");
 #endif
   }
 
   return;
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 /* import window image */
 
 void PSWindowRep::ImportImage(Coord x, Coord y,
@@ -223,6 +257,7 @@ void PSWindowRep::ImportImage(Coord x, Coord y,
     return;
   }
 
+  DOASSERT(false, "PSWindowRep::ImportImage() not yet implemented");
   /* do something */
 
   fclose(fp);
@@ -230,40 +265,59 @@ void PSWindowRep::ImportImage(Coord x, Coord y,
   /* do something */
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 /* export window image */
 
 void PSWindowRep::ExportImage(DisplayExportFormat format, char *filename)
 {
+  DOASSERT(false, "PSWindowRep::ExportImage() not yet implemented");
     /* do something */
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 /* color selection interface using Devise colormap */
 
 void PSWindowRep::SetFgColor(Color fg)
 {
   WindowRep::SetFgColor(fg);
 #ifdef GRAPHICS
+  //DOASSERT(false, "PSWindowRep::SetFgColor() not yet implemented");
     /* do something */
 #endif
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 void PSWindowRep::SetBgColor(Color bg)
 {
   WindowRep::SetBgColor(bg);
 #ifdef GRAPHICS
+  DOASSERT(false, "PSWindowRep::SetBgColor() not yet implemented");
     /* do something */
 #endif
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 void PSWindowRep::SetWindowBgColor(Color bg)
 {
 #ifdef GRAPHICS
+  DOASSERT(false, "PSWindowRep::SetWindowBgColor() not yet implemented");
   /* do something */
 #endif
 }
 
+
+
 /* drawing primitives */
 
+/*---------------------------------------------------------------------------*/
 void PSWindowRep::DrawPixel(Coord x, Coord y)
 {
   Coord tx, ty;
@@ -274,13 +328,26 @@ void PSWindowRep::DrawPixel(Coord x, Coord y)
 #endif
 
 #ifdef GRAPHICS
-  /* do something */
+  // Note: get rid of cast -- not safe.  RKW 9/19/96.
+  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+  FILE * printFile = psDispP->GetPrintFile();
+
+#if defined(PS_DEBUG)
+  fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
+#endif
+
+  DrawDot(printFile, tx, ty);
 #endif
 }
 
-static struct XPoint points[WINDOWREP_BATCH_SIZE];
-static XRectangle rectAngles[WINDOWREP_BATCH_SIZE];
 
+
+static Point pointArray[WINDOWREP_BATCH_SIZE];
+static Rectangle rectArray[WINDOWREP_BATCH_SIZE];
+
+
+
+/*---------------------------------------------------------------------------*/
 void PSWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 {
 #ifdef DEBUG
@@ -302,11 +369,11 @@ void PSWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 #endif
 
   if (width == 1) {
+
+    /* each "pixel" is no wider than one screen pixel */
+
     for(int i = 0; i < num; i++) {
-      Coord tx, ty;
-      Transform(x[i], y[i], tx, ty);
-      points[i].x = ROUND(short, tx);
-      points[i].y = ROUND(short, ty);
+      Transform(x[i], y[i], pointArray[i].x, pointArray[i].y);
     }
 
 #ifdef DEBUG
@@ -315,29 +382,41 @@ void PSWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
     for(k = 0; k < (num > MAXPIXELDUMP ? MAXPIXELDUMP : num); k++) {
       if ((k + 1) % 10 == 0)
 	printf("\n");
-      printf("(%d,%d)",points[k].x, points[k].y);
+      printf("(%f,%f)",pointArray[k].x, pointArray[k].y);
     }
     printf("\n");
 #endif
 #endif
 
 #ifdef GRAPHICS
-    /* do something */
+    // Note: get rid of cast -- not safe.  RKW 9/19/96.
+    PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+    FILE * printFile = psDispP->GetPrintFile();
+
+#if defined(PS_DEBUG)
+    fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
+#endif
+
+    for (int pointNum = 0; pointNum < num; pointNum++)
+    {
+      DrawDot(printFile, pointArray[pointNum].x, pointArray[pointNum].y);
+    }
 #endif
 
     return;
   }
 
+
   /* each "pixel" is wider than one screen pixel */
 
-  int halfWidth = width/2;
+  Coord halfWidth = ((Coord) width) / 2;
   for(int i = 0; i < num; i++) {
     Coord tx,ty;
-    Transform(x[i],y[i],tx,ty);
-    rectAngles[i].x = ROUND(short, tx - halfWidth);
-    rectAngles[i].y = ROUND(short, ty - halfWidth);
-    rectAngles[i].width = width;
-    rectAngles[i].height = width;
+    Transform(x[i], y[i], tx, ty);
+    rectArray[i].x = tx - halfWidth;
+    rectArray[i].y = ty - halfWidth;
+    rectArray[i].width = (Coord) width;
+    rectArray[i].height = (Coord) width;
   }
   
 #ifdef DEBUG
@@ -346,17 +425,34 @@ void PSWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
   for(k = 0; k < (num > MAXPIXELDUMP ? MAXPIXELDUMP : num); k++) {
     if ((k + 1) % 10 == 0)
       printf("\n");
-    printf("(%d,%d)", rectAngles[k].x, rectAngles[k].y);
+    printf("(%f,%f)", rectArray[k].x, rectArray[k].y);
   }
   printf("\n");
 #endif
 #endif
 
 #ifdef GRAPHICS
-  /* do something */
+  // Note: get rid of cast -- not safe.  RKW 9/19/96.
+  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+  FILE * printFile = psDispP->GetPrintFile();
+
+#if defined(PS_DEBUG)
+  fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
+#endif
+
+  for(int pointNum = 0; pointNum < num; pointNum++) {
+    Coord x1 = rectArray[pointNum].x;
+    Coord y1 = rectArray[pointNum].y;
+    Coord x2 = x1 + rectArray[pointNum].width;
+    Coord y2 = y1 + rectArray[pointNum].height;
+    DrawFilledRect(printFile, x1, y1, x2, y2);
+  }
 #endif
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 /* Fill rectangles, variable width/height */
 
 void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width, 
@@ -395,10 +491,10 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
     unsigned pixelHeight = unsigned(tymax - tylow + 1);
     if (pixelHeight == 0) pixelHeight = 1;
     
-    rectAngles[i].x = ROUND(short, txlow);
-    rectAngles[i].y = ROUND(short, tylow);
-    rectAngles[i].width = ROUND(unsigned short, pixelWidth);
-    rectAngles[i].height = ROUND(unsigned short, pixelHeight);
+    rectArray[i].x = txlow;
+    rectArray[i].y = tylow;
+    rectArray[i].width = pixelWidth;
+    rectArray[i].height = pixelHeight;
   }
 
 #ifdef DEBUG
@@ -407,8 +503,8 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
   for(k = 0; k < (n > MAXPIXELDUMP ? MAXPIXELDUMP : n); k++) {
     if ((k + 1) % 6 == 0)
       printf("\n");
-    printf("(%d,%d,%d,%d)", rectAngles[k].x, rectAngles[k].y,
-	   rectAngles[k].width, rectAngles[k].height);
+    printf("(%f,%f,%f,%f)", rectArray[k].x, rectArray[k].y,
+	   rectArray[k].width, rectArray[k].height);
   }
   printf("\n");
 #endif
@@ -419,16 +515,23 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
   PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
   FILE * printFile = psDispP->GetPrintFile();
 
+#if defined(PS_DEBUG)
+  fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
+#endif
+
   for(int pointNum = 0; pointNum < num; pointNum++) {
-    Coord x1 = (Coord) rectAngles[pointNum].x;
-    Coord y1 = (Coord) rectAngles[pointNum].y;
-    Coord x2 = x1 + (Coord) rectAngles[pointNum].width;
-    Coord y2 = y1 + (Coord) rectAngles[pointNum].height;
+    Coord x1 = rectArray[pointNum].x;
+    Coord y1 = rectArray[pointNum].y;
+    Coord x2 = x1 + rectArray[pointNum].width;
+    Coord y2 = y1 + rectArray[pointNum].height;
     DrawFilledRect(printFile, x1, y1, x2, y2);
   }
 #endif
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 /* Fill rectangles, same width/height */
 
 void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
@@ -464,20 +567,20 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
     unsigned pixelHeight = unsigned(tymax - tylow+1);
     if (pixelHeight == 0) pixelHeight=1;
     
-    rectAngles[i].x = ROUND(short, txlow);
-    rectAngles[i].y = ROUND(short, tylow);
-    rectAngles[i].width = ROUND(unsigned short, pixelWidth);
-    rectAngles[i].height = ROUND(unsigned short, pixelHeight);
+    rectArray[i].x = txlow;
+    rectArray[i].y = tylow;
+    rectArray[i].width = pixelWidth;
+    rectArray[i].height = pixelHeight;
   }
 
 #ifdef DEBUG
 #if MAXPIXELDUMP > 0
-  printf("\nAfter transformation: width %d, height %d\n\n",
-	 rectAngles[0].width, rectAngles[0].height);
+  printf("\nAfter transformation: width %f, height %f\n\n",
+	 rectArray[0].width, rectArray[0].height);
   for(k = 0; k < (num > MAXPIXELDUMP ? MAXPIXELDUMP : num); k++) {
     if ((k + 1) % 10 == 0)
       printf("\n");
-    printf("(%d,%d)", rectAngles[k].x, rectAngles[k].y);
+    printf("(%f,%f)", rectArray[k].x, rectArray[k].y);
   }
   printf("\n");
 #endif
@@ -488,16 +591,23 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
   PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
   FILE * printFile = psDispP->GetPrintFile();
 
+#if defined(PS_DEBUG)
+  fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
+#endif
+
   for(int pointNum = 0; pointNum < num; pointNum++) {
-    Coord x1 = (Coord) rectAngles[pointNum].x;
-    Coord y1 = (Coord) rectAngles[pointNum].y;
-    Coord x2 = x1 + (Coord) rectAngles[pointNum].width;
-    Coord y2 = y1 + (Coord) rectAngles[pointNum].height;
+    Coord x1 = rectArray[pointNum].x;
+    Coord y1 = rectArray[pointNum].y;
+    Coord x2 = x1 + rectArray[pointNum].width;
+    Coord y2 = y1 + rectArray[pointNum].height;
     DrawFilledRect(printFile, x1, y1, x2, y2);
   }
 #endif
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 void PSWindowRep::FillRect(Coord xlow, Coord ylow, Coord width, Coord height)
 {
 #ifdef DEBUG
@@ -546,10 +656,17 @@ void PSWindowRep::FillRect(Coord xlow, Coord ylow, Coord width, Coord height)
   PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
   FILE * printFile = psDispP->GetPrintFile();
 
+#if defined(PS_DEBUG)
+  fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
+#endif
+
   DrawFilledRect(printFile, txlow, tylow, txmax, tymax);
 #endif
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 /* Fill rectangle. All coordinates are in pixels. x and y are
    at the center of the rectangle */
 
@@ -561,35 +678,52 @@ void PSWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
          x, y, width, height);
 #endif
 
-  int pixelX, pixelY;
-  unsigned pixelWidth = (unsigned)MAX(minWidth, width);
-  unsigned pixelHeight = (unsigned)MAX(minHeight, height);
-  pixelX = ROUND(int, x - pixelWidth / 2);
-  pixelY = ROUND(int, y - pixelHeight / 2);
+  width = MAX(width, minWidth);
+  height = MAX(height, minHeight);
+
+  Coord x1 = x - width / 2;
+  Coord y1 = y - width / 2;
+  Coord x2 = x + width / 2;
+  Coord y2 = y + width / 2;
+
+  Coord tx1, ty1, tx2, ty2;
+
+  TransPixToPoint(x1, y1, tx1, ty1);
+  TransPixToPoint(x2, y2, tx2, ty2);
 
 #ifdef DEBUG
-  printf("After transformation: x %d, y %d, width %d, height %d\n",
-	 pixelX, pixelY, pixelWidth, pixelHeight);
+  printf("After transformation: (%f, %f), (%f, %f)\n", tx1, ty1, tx2, ty2);
 #endif
 
 #ifdef GRAPHICS
-  /* do something */
+  // Note: get rid of cast -- not safe.  RKW 9/19/96.
+  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+  FILE * printFile = psDispP->GetPrintFile();
+
+#if defined(PS_DEBUG)
+  fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
+#endif
+
+  DrawFilledRect(printFile, tx1, ty1, tx2, ty2);
 #endif
 }
+
+
 
 /*************************************************************************
 XXX: need to clip polygon against the window because a large polygon
 can overlow the window's integer coordinate system.
 *************************************************************************/
 
-void PSWindowRep::FillPoly(Point *pts, int n)
+void PSWindowRep::FillPoly(Point *pts, int pointCount)
 {
 #ifdef DEBUG
-  printf("PSWindowRep::FillPoly: %d points\n", n);
+  printf("PSWindowRep::FillPoly: %d points\n", pointCount);
 
 #if MAXPIXELDUMP > 0
   printf("\nBefore transformation:\n\n");
-  for(int k = 0; k < (n > MAXPIXELDUMP ? MAXPIXELDUMP : n); k++) {
+  for(int k = 0; k < (pointCount > MAXPIXELDUMP ? MAXPIXELDUMP : pointCount);
+    k++) {
     if ((k + 1) % 10 == 0)
       printf("\n");
     printf("(%.2f,%.2f)", pts[k].x, pts[k].y);
@@ -598,37 +732,54 @@ void PSWindowRep::FillPoly(Point *pts, int n)
 #endif
 #endif
 
-  if (n <= 0)
+  if (pointCount <= 0)
     return;
 
-  if (n > WINDOWREP_BATCH_SIZE) {
-    printf("Point array too large: %d > %d\n", n, WINDOWREP_BATCH_SIZE);
-    n = WINDOWREP_BATCH_SIZE;
+  if (pointCount > WINDOWREP_BATCH_SIZE) {
+    printf("Point array too large: %d > %d\n", pointCount,
+      WINDOWREP_BATCH_SIZE);
+    pointCount = WINDOWREP_BATCH_SIZE;
   }
 
-  for(int i = 0; i < n; i++) {
-    Coord tx, ty;
-    Transform(pts[i].x, pts[i].y, tx, ty);
-    points[i].x = ROUND(short, tx);
-    points[i].y = ROUND(short, ty);
+  for(int i = 0; i < pointCount; i++) {
+    Transform(pts[i].x, pts[i].y, pointArray[i].x, pointArray[i].y);
   }
   
 #ifdef DEBUG
 #if MAXPIXELDUMP > 0
   printf("\nAfter transformation:\n\n");
-  for(k = 0; k < (num > MAXPIXELDUMP ? MAXPIXELDUMP : num); k++) {
+  for(k = 0; k < (pointCount > MAXPIXELDUMP ? MAXPIXELDUMP : pointCount);
+    k++) {
     if ((k + 1) % 10 == 0)
       printf("\n");
-    printf("(%d,%d)", points[k].x, points[k].y);
+    printf("(%f, %f)", pointArray[k].x, pointArray[k].y);
   }
   printf("\n");
 #endif
 #endif
 
 #ifdef GRAPHICS
-  /* do something */
+  // Note: get rid of cast -- not safe.  RKW 9/19/96.
+  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+  FILE * printFile = psDispP->GetPrintFile();
+
+#if defined(PS_DEBUG)
+  fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
+#endif
+
+  fprintf(printFile, "newpath\n");
+  fprintf(printFile, "%f %f moveto\n", pointArray[0].x, pointArray[0].y);
+  for (int pointNum = 1; pointNum < pointCount; pointNum++) {
+    fprintf(printFile, "%f %f lineto\n", pointArray[pointNum].x,
+      pointArray[pointNum].y);
+  }
+  fprintf(printFile, "%f %f lineto\n", pointArray[0].x, pointArray[0].y);
+  fprintf(printFile, "closepath\n");
+  fprintf(printFile, "fill\n");
 #endif
 }
+
+
 
 /*************************************************************************
 Draw polygon, given PIXEL coordinates of the corners of the polygon.
@@ -658,18 +809,22 @@ void PSWindowRep::FillPixelPoly(Point *pts, int n)
     n = WINDOWREP_BATCH_SIZE;
   }
 
+#if 0
   for(int i = 0;  i < n; i++ ) {
     points[i].x = ROUND(short, pts[i].x);
     points[i].y = ROUND(short, pts[i].y);
   }
+#endif
 
 #ifdef GRAPHICS
+  DOASSERT(false, "PSWindowRep::FillPixelPoly() not yet implemented");
   /* do something */
 #endif
 }
 
-/********************************************************************/
 
+
+/*---------------------------------------------------------------------------*/
 void PSWindowRep::Arc(Coord x, Coord y, Coord w, Coord h,
 		     Coord startAngle, Coord endAngle)
 {
@@ -687,12 +842,14 @@ void PSWindowRep::Arc(Coord x, Coord y, Coord w, Coord h,
   int realEnd = ROUND(int, ToDegree(endAngle) * 64);
 
 #ifdef GRAPHICS
+  DOASSERT(false, "PSWindowRep::Arc() not yet implemented");
   /* do something */
 #endif
 }
 
-/***********************************************************************/
 
+
+/*---------------------------------------------------------------------------*/
 void PSWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2, 
 		      Coord width)
 {
@@ -709,10 +866,17 @@ void PSWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
   PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
   FILE * printFile = psDispP->GetPrintFile();
 
+#if defined(PS_DEBUG)
+  fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
+#endif
+
   DrawLine(printFile, tx1, ty1, tx2, ty2);
 #endif
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 void PSWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
 {
 #ifdef DEBUG
@@ -723,6 +887,10 @@ void PSWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
   // Note: get rid of cast -- not safe.  RKW 9/19/96.
   PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
   FILE * printFile = psDispP->GetPrintFile();
+
+#if defined(PS_DEBUG)
+  fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
+#endif
 
   Coord x1new;
   Coord y1new;
@@ -735,6 +903,9 @@ void PSWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
 #endif
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 /* Draw absolute text */
 
 void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
@@ -773,8 +944,8 @@ void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
   }
 #endif
 
-  char *comment;
-  char *calculation;
+  char *comment = "";
+  char *calculation = "";
 
   /* Here, instead of actually calculating the text position, we generate
    * the correct PostScript code to calculate the position. */
@@ -845,6 +1016,10 @@ void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
   FILE * printFile = psDispP->GetPrintFile();
 
 #if defined(PS_DEBUG)
+  fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
+#endif
+
+#if defined(PS_DEBUG)
   /* Draw the "text window" within which the text is positioned -- for
    * debugging purposes. */
   fprintf(printFile, "[3] 0 setdash\n");
@@ -897,7 +1072,10 @@ void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
 #endif
 }
 
-/* Draw scale text */
+
+
+/*---------------------------------------------------------------------------*/
+/* Draw scaled text */
 
 void PSWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
 		       Coord height, TextAlignment alignment,
@@ -933,6 +1111,10 @@ void PSWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
   PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
   FILE * printFile = psDispP->GetPrintFile();
 
+#if defined(PS_DEBUG)
+  fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
+#endif
+
   /* Note: this is a temporary expedient only -- does not scale or
    * properly position the text. RKW 11/6/96. */
   fprintf(printFile, "/Times-Roman findfont\n");
@@ -943,17 +1125,26 @@ void PSWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
 #endif
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 void PSWindowRep::SetXorMode()
 {
 #ifdef DEBUG
   printf("PSWindowRep::SetXorMode\n");
 #endif
 
+//TEMPTEMP -- maybe turn off drawing or set some kind of pattern
+
 #ifdef GRAPHICS
+  //DOASSERT(false, "PSWindowRep::SetXorMode() not yet implemented");
   /* do something */
 #endif
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 void PSWindowRep::SetCopyMode()
 {
 #ifdef DEBUG
@@ -961,31 +1152,51 @@ void PSWindowRep::SetCopyMode()
 #endif
 
 #ifdef GRAPHICS
+  //DOASSERT(false, "PSWindowRep::SetCopyMode() not yet implemented");
   /* do something */
 #endif
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 void PSWindowRep::SetNormalFont()
 {
+  DOASSERT(false, "PSWindowRep::SetNormalFont() not yet implemented");
     /* do something */
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 void PSWindowRep::SetSmallFont()
 {
+  DOASSERT(false, "PSWindowRep::SetSmallFont() not yet implemented");
     /* do something */
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 int PSWindowRep::GetSmallFontHeight()
 {
+  DOASSERT(false, "PSWindowRep::GetSmallFontHeight() not yet implemented");
     /* do something */
     return 1;
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 void PSWindowRep::UpdateWinDimensions()
 {
+  //DOASSERT(false, "PSWindowRep::UpdateWinDimensions() not yet implemented");
   /* do something */
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 /* Get window rep dimensions */
 
 void PSWindowRep::Dimensions(unsigned int &width, unsigned int &height)
@@ -994,6 +1205,9 @@ void PSWindowRep::Dimensions(unsigned int &width, unsigned int &height)
   height = _height;
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 /* Get window rep origin */
 
 void PSWindowRep::Origin(int &x, int &y)
@@ -1002,11 +1216,18 @@ void PSWindowRep::Origin(int &x, int &y)
   y = _y;
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 void PSWindowRep::AbsoluteOrigin(int &x, int &y)
 {
+  DOASSERT(false, "PSWindowRep::AbsoluteOrigin() not yet implemented");
   /* do something */
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 /* Set up the "pixel" to point transform according to the size and location
  * of the screen window, and the size of the page to output. */
 
@@ -1056,6 +1277,9 @@ void PSWindowRep::SetPPTrans(const Rectangle &viewGeom,
     pageHeight - heightAdj + yMargin);
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 /* Move and resize window, relative to the parent */
 
 void PSWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
@@ -1065,18 +1289,26 @@ void PSWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
 	 x, y, w, h);
 #endif
 
+  DOASSERT(false, "PSWindowRep::MoveResize() not yet implemented");
   /* do something */
 
   UpdateWinDimensions();
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 /* Iconify window. Not guaranteed to succeed. */
 
 void PSWindowRep::Iconify()
 {
+  DOASSERT(false, "PSWindowRep::Iconify() not yet implemented");
     /* do something */
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 /* Raise window to top of stacking order */
 
 void PSWindowRep::Raise()
@@ -1085,9 +1317,13 @@ void PSWindowRep::Raise()
   printf("PSWindowRep::Raise window %p\n", this);
 #endif
 
+  //DOASSERT(false, "PSWindowRep::Raise() not yet implemented");
   /* do something */
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 /* Lower window to bottom of stacking order */
 
 void PSWindowRep::Lower()
@@ -1096,9 +1332,13 @@ void PSWindowRep::Lower()
   printf("PSWindowRep::Lower window %p:\n", this);
 #endif
 
+  DOASSERT(false, "PSWindowRep::Lower() not yet implemented");
   /* do something */
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 /* Draw a line (coordinates must have already been scaled if
  * that is necessary). */
 void PSWindowRep::DrawLine(FILE *printFile, Coord x1, Coord y1,
@@ -1112,6 +1352,9 @@ void PSWindowRep::DrawLine(FILE *printFile, Coord x1, Coord y1,
   return;
 }
 
+
+
+/*---------------------------------------------------------------------------*/
 /* Draw a filled rectangle (coordinates must have already been scaled if
  * that is necessary). */
 void PSWindowRep::DrawFilledRect(FILE *printFile, Coord x1, Coord y1,
@@ -1123,6 +1366,51 @@ void PSWindowRep::DrawFilledRect(FILE *printFile, Coord x1, Coord y1,
   fprintf(printFile, "%f %f lineto\n", x2, y2);
   fprintf(printFile, "%f %f lineto\n", x2, y1);
   fprintf(printFile, "%f %f lineto\n", x1, y1);
+  fprintf(printFile, "closepath\n");
+  fprintf(printFile, "fill\n");
+
+  return;
+}
+
+
+
+/*---------------------------------------------------------------------------*/
+/* Set the clip path to the given rectangle (coordinates must have already
+ * been scaled if that is necessary). */
+void PSWindowRep::SetClipPath(FILE *printFile, Coord x1, Coord y1,
+    Coord x2, Coord y2)
+{
+  /* Note: the PostScript Ref. Manual says it's dangerous to to an initclip,
+   * but there doesn't seem to be any other way to get rid of the clip mask
+   * for the previous view (if any) when setting things up for this view. */
+  fprintf(printFile, "initclip\n");
+
+  fprintf(printFile, "newpath\n");
+  fprintf(printFile, "%f %f moveto\n", x1, y1);
+  fprintf(printFile, "%f %f lineto\n", x1, y2);
+  fprintf(printFile, "%f %f lineto\n", x2, y2);
+  fprintf(printFile, "%f %f lineto\n", x2, y1);
+  fprintf(printFile, "%f %f lineto\n", x1, y1);
+  fprintf(printFile, "closepath\n");
+  fprintf(printFile, "clip\n");
+  fprintf(printFile, "newpath\n");
+
+  return;
+}
+
+
+/*---------------------------------------------------------------------------*/
+/* Draw a dot (coordinates must have already been scaled if
+ * that is necessary). */
+void PSWindowRep::DrawDot(FILE *printFile, Coord x1, Coord y1,
+    Coord size)
+{
+  fprintf(printFile, "newpath\n");
+  fprintf(printFile, "%f %f moveto\n", x1 - size, y1 - size);
+  fprintf(printFile, "%f %f lineto\n", x1 - size, y1 + size);
+  fprintf(printFile, "%f %f lineto\n", x1 + size, y1 + size);
+  fprintf(printFile, "%f %f lineto\n", x1 + size, y1 - size);
+  fprintf(printFile, "%f %f lineto\n", x1 - size, y1 - size);
   fprintf(printFile, "closepath\n");
   fprintf(printFile, "fill\n");
 

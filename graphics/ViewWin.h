@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/10/18 20:34:11  wenger
+  Transforms and clip masks now work for PostScript output; changed
+  WindowRep::Text() member functions to ScaledText() to make things
+  more clear; added WindowRep::SetDaliServer() member functions to make
+  Dali stuff more compatible with client/server library.
+
   Revision 1.15  1996/09/19 20:11:55  wenger
   More PostScript output code (still disabled); some code for drawing
   view borders (disabled).
@@ -188,6 +194,19 @@ public:
     Boolean More(int index) { return _children.More(index); }
     virtual ViewWin *Next(int index) { return _children.Next(index); }
     void DoneIterator(int index) { _children.DoneIterator(index); }
+
+    /* Get the first sibling of this ViewWin (the first sibling is the
+     * one that's on top when views are piled, stacked, etc. */
+    ViewWin *GetFirstSibling() {
+      ViewWin *parent = GetParent();
+      DOASSERT(parent, "View has no parent");
+      int index = parent->InitIterator();
+      DOASSERT(parent->More(index), "Parent view has no children");
+      ViewWin *sibling = parent->Next(index);
+      parent->DoneIterator(index);
+      return sibling;
+    }
+
     
     ViewWin *GetParent() { return _parent; }
     
@@ -199,6 +218,11 @@ public:
     virtual void SetFgBgColor(Color fg, Color bg);
 
     virtual DevStatus PrintPS();
+    void SetScreenOutput() { _winReps.SetScreenOutput(); }
+    void SetFileOutput(const Rectangle &viewGeom,
+      const Rectangle &parentGeom) {
+      _winReps.SetFileOutput(viewGeom, parentGeom);
+    }
 
 protected:
     /* called by base class when it has been mapped/unmapped */

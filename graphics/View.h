@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.42  1996/10/28 15:55:46  wenger
+  Scaling and clip masks now work for printing multiple views in a window
+  to PostScript; (direct PostScript printing still disabled pending correct
+  text positioning and colors); updated all dependencies except Linux.
+
   Revision 1.41  1996/09/19 20:11:54  wenger
   More PostScript output code (still disabled); some code for drawing
   view borders (disabled).
@@ -595,6 +600,8 @@ protected:
                                            in graph */
         Boolean _pileMode;              /* true if view is in pile mode */
         Boolean _pileViewHold;          /* true if bottom view must hold */
+
+	Boolean _printing;		/* true if we're printing right now */
 
 	/* count # of times something happens */
 	int _jump, _zoomIn, _zoomOut, _scrollLeft, _scrollRight, _unknown;

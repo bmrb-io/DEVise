@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/10/28 15:55:44  wenger
+  Scaling and clip masks now work for printing multiple views in a window
+  to PostScript; (direct PostScript printing still disabled pending correct
+  text positioning and colors); updated all dependencies except Linux.
+
   Revision 1.6  1996/10/18 20:34:07  wenger
   Transforms and clip masks now work for PostScript output; changed
   WindowRep::Text() member functions to ScaledText() to make things
@@ -217,6 +222,9 @@ private:
       Coord y2);
     void DrawFilledRect(FILE *printFile, Coord x1, Coord y1, Coord x2,
       Coord y2);
+    void SetClipPath(FILE *printFile, Coord x1, Coord y1, Coord x2,
+      Coord y2);
+    void DrawDot(FILE *printFile, Coord x1, Coord y1, Coord size = 0.5);
 
     /* current dimensions of window */
     int _x, _y;
