@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/09/04 21:24:48  wenger
+  'Size' in mapping now controls the size of Dali images; improved Dali
+  interface (prevents Dali from getting 'bad window' errors, allows Devise
+  to kill off the Dali server); added devise.dali script to automatically
+  start Dali server along with Devise; fixed bug 037 (core dump if X is
+  mapped to a constant); improved diagnostics for bad command-line arguments.
+
   Revision 1.8  1996/05/20 18:44:59  jussi
   Merged with ClientServer library code.
 
@@ -41,6 +48,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "Exit.h"
 #ifndef LIBCS
@@ -62,6 +70,18 @@ void Exit::DoExit(int code)
     (void) DaliIfc::Quit(Init::DaliServer());
   }
 #endif
+
+  // hack to get rid of temp directory - this could probably be written
+  // a bit more portably, but oh well.
+  char *tmpDir =  getenv("DEVISE_TMP");
+  if (!tmpDir)
+    tmpDir = "tmp";
+  pid_t pid = getpid();
+  char buf[512];
+  DOASSERT(strlen(tmpDir) + 25 <= 512, "String space too small");
+  sprintf(buf, "rm -fr %s/DEVise_%ld", tmpDir, (long)pid);
+  system(buf);
+
   exit(code);
 }
 
