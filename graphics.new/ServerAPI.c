@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/07/18 01:17:32  jussi
+  Added call to DestroySessionData() of base class.
+
   Revision 1.18  1996/07/15 17:02:03  jussi
   Added support for string attributes in GData.
 
@@ -370,15 +373,14 @@ int ServerAPI::ReadCommand()
 
 void ServerAPI::RestartSession()
 {
-  Dispatcher::Current()->Unregister(this);
-
-  DestroySessionData();
-
   if (_socketFd >= 0) {
     printf("Closing client connection.\n");
+    Dispatcher::Current()->Unregister(this);
     NetworkClose(_socketFd);
     _socketFd = -1;
   }
+
+  DestroySessionData();
 
   for(int i = 0; i < _replicate; i++) {
     printf("Closing replica connection to %s:%d\n", _replicas[i].host,
