@@ -43,6 +43,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  2000/05/10 16:08:31  wenger
+  New index file format significantly improves the detection of invalid
+  index files.
+
   Revision 1.9  2000/03/14 17:05:28  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -348,6 +352,12 @@ FileIndex::Checkpoint(char *indexFileName, DataSource *dataP, TData *tdataP,
 #endif
 
   DevStatus result(StatusOk);
+
+  if (lastPos < newFileCompareBytes)
+  {
+    fprintf(stderr, "File not checkpointed due to its small size\n");
+    result += StatusCancel;
+  }
 
   if (_indexFileName && !strcmp(_indexFileName, indexFileName) &&
       !_changedSinceCheckpoint) {
