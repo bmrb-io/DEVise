@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/05/22 18:50:39  wenger
+  Greatly simplified Init::DoInit() to only do what's necessary for
+  attribute projection; other minor changes.
+
   Revision 1.1  1996/04/22 18:01:43  wenger
   First version of "attribute projection" code.  The parser (with
   the exception of instantiating any TData) compiles and runs.
@@ -153,7 +157,7 @@ void Init::DoInit()
 
 #if 1
   /* Create work directory, if needed */
-  char *workDir = ".";
+  char *workDir = "/tmp";
   _workDir = CopyString(workDir);
 #endif
 

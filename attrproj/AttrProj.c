@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/07/31 19:33:37  wenger
+  Added AttrProj member functions for reading entire records (no projection).
+
   Revision 1.8  1996/06/27 18:12:04  wenger
   Re-integrated most of the attribute projection code (most importantly,
   all of the TData code) into the main code base (reduced the number of
@@ -87,13 +90,13 @@ AttrProj::AttrProj(char *schemaFile, char *attrProjFile, char *dataFile)
 	DO_DEBUG(printf("AttrProj::AttrProj(%s, %s, %s)\n", schemaFile,
 		attrProjFile, dataFile));
 
-	DataSeg::Set(schemaFile, dataFile, 0, 0);
-
 	// Provision for having the schema in the data file.
 	if ((schemaFile == NULL) || !strcmp(schemaFile, ""))
 	{
 		schemaFile = dataFile;
 	}
+
+	DataSeg::Set(schemaFile, dataFile, 0, 0);
 
 	char *schemaName = ParseCat(schemaFile, dataFile, _tDataP);
 	DOASSERT(schemaName != NULL, "Can' parse schema");

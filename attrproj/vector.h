@@ -61,6 +61,9 @@ public:
 	// Vector operator-(const Vector& v2) const;
 	void Sub(const Vector& v1, const Vector& v2);
 
+	void AddSqr(const Vector& v);
+
+
 	void Transform(const Vector &W, const Vector &M);
 	void Reverse_Transform(const Vector &W, const Vector &M);
 

@@ -47,6 +47,7 @@ LIBOBJ = \
 	../graphics.new/DevFileHeader.o \
 	../graphics.new/Version.o \
 	../tape/tapedrive.o \
+	../generic/CompDate.o \
 	$(LOCALOBJ)
 
 LIB = AttrProjLib.o
@@ -57,17 +58,12 @@ ALLSHOWOBJ = $(SHOWOBJ) $(LIB)
 all: aptest show
 lib: $(LIB)
 
-# Note: the first line below forces CompDate.c to always be compiled when
-# we link this module.
-
 aptest: $(ALLTESTOBJ)
-	$(CC) -c $(CFLAGS) ../../generic/CompDate.c
-	$(CC) -o $@ $(ARCH_LDFLAGS) $(ALLTESTOBJ) CompDate.o \
+	$(CC) -o $@ $(ARCH_LDFLAGS) $(ALLTESTOBJ) \
                 -ltcl -lm $(ARCH_LDPOST)
 
 show: $(ALLSHOWOBJ)
-	$(CC) -c $(CFLAGS) ../../generic/CompDate.c
-	$(CC) -o $@ $(ARCH_LDFLAGS) $(ALLSHOWOBJ) CompDate.o \
+	$(CC) -o $@ $(ARCH_LDFLAGS) $(ALLSHOWOBJ) \
                 -ltcl -lm $(ARCH_LDPOST)
 
 $(LIB): $(LIBOBJ)

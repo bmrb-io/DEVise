@@ -131,6 +131,11 @@ void Vector::Sub(const Vector& v1, const Vector& v2) {
 		value[i]=v1.value[i]-v2.value[i];
 	}
 
+void Vector::AddSqr(const Vector& v) {
+	for (short i=0;i<dim;i++)
+		value[i]+=v.value[i]*v.value[i];
+	}
+
 // weighting and moving
 void Vector::Transform(const Vector &W,const Vector &M) {
 	for (short i=0; i<dim; i++)
