@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.179  1999/07/14 18:42:39  wenger
+  Added the capability to have axes without ticks and tick labels.
+
   Revision 1.178  1999/06/25 15:58:13  wenger
   Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
   now uses DebugLog facility instead of printf; dispatcher logging is turned
@@ -1177,6 +1180,18 @@ void View::SetVisualFilter(VisualFilter &filter, Boolean registerEvent)
       _filter.xHigh, _filter.yHigh, _filter.flag);
   printf("  New filter: (%g, %g), (%g, %g) %d\n", filter.xLow, filter.yLow,
       filter.xHigh, filter.yHigh, filter.flag);
+#endif
+#if defined(DEBUG_LOG)
+  {
+    char logBuf[1024];
+    sprintf(logBuf, "View(%s)::SetVisualFilter()\n"
+        "  Old filter: (%g, %g), (%g, %g) %d\n"
+        "  New filter: (%g, %g), (%g, %g) %d\n",
+        GetName(), _filter.xLow, _filter.yLow, _filter.xHigh, _filter.yHigh,
+	_filter.flag, filter.xLow, filter.yLow, filter.xHigh, filter.yHigh,
+	filter.flag);
+    DebugLog::DefaultLog()->Message(logBuf);
+  }
 #endif
 
   /* Just in case record links didn't get re-enabled after printing. */
