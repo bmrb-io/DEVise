@@ -1,0 +1,39 @@
+#!/bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+# Test sessions that have caused DEVise to crash.
+
+############################################################
+
+set devise_exec = devise
+if ($#argv > 0) then
+  set devise_exec = $1
+endif
+
+$devise_exec -session /p/devise/session/test/a2.tk \
+  -batch batch_gen/exit.batch
+$devise_exec -session /p/devise/session/test/birch.tk \
+  -batch batch_gen/print.batch
+$devise_exec -session /p/devise/session/test/ibmcache2.tk \
+  -batch batch_gen/exit.batch
+$devise_exec -session /p/devise/session/test/multidemo2.tk \
+  -batch batch_gen/close.batch

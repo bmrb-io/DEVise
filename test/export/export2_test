@@ -1,0 +1,39 @@
+#!/bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+# Test exporting a template containing data with two data sources.
+
+############################################################
+
+set devise_exec = devise
+if ($#argv > 0) then
+  set devise_exec = $1
+endif
+
+set outfile = /p/devise/session/test/2data_export.tk
+
+if (-f $outfile) then
+  rm $outfile
+endif
+
+$devise_exec -session export/export2.session
+$devise_exec -session $outfile -batch batch_gen/exit.batch
