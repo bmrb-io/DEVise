@@ -1,0 +1,150 @@
+#	$Id$
+
+#	$Log$
+
+############################################################
+
+set import_host $env(HOSTNAME)
+set import_port 1515
+set import_file /tmp/temp.dat
+set import_cmd  "awk "
+
+if {[info exists env(IMPORT_DISKPATH)]} {
+    set import_file $env(IMPORT_DISKPATH)/temp.dat
+}
+
+############################################################
+
+proc importUnixFile {} {
+    NotImplemented
+}
+
+############################################################
+
+proc importSocket {} {
+    global import_host import_port import_file
+
+    # see if .sck window already exists; if so, just return
+    set err [catch {set exists [wm state .sck]}]
+    if {!$err} { wm deiconify .sck; return }
+
+    toplevel .sck
+    wm maxsize .sck 1000 1000
+    wm title .sck "Import Socket Data"
+    wm geometry .sck +50+50
+    selection clear .sck
+
+    label .sck.title -text "Enter Socket Parameters"
+    frame .sck.param -relief groove -borderwidth 2
+    frame .sck.but
+    pack .sck.title -side top -pady 3m
+    pack .sck.param -side top -pady 3m -fill both -expand 1
+    pack .sck.but -side top -pady 3m -fill x
+
+    frame .sck.param.left
+    frame .sck.param.right
+    pack .sck.param.left .sck.param.right -side left -padx 3m -fill both \
+	    -expand 1
+
+    label .sck.param.left.name -text "Hostname:" -width 15
+    label .sck.param.left.port -text "Port Number:" -width 15
+    label .sck.param.left.file -text "File Name:" -width 15
+    pack .sck.param.left.name .sck.param.left.port \
+	    .sck.param.left.file -side top -pady 0.7m
+
+    entry .sck.param.right.name -relief sunken -width 30 \
+	    -textvariable import_host
+    entry .sck.param.right.port -relief sunken -width 30 \
+	    -textvariable import_port
+    entry .sck.param.right.file -relief sunken -width 30 \
+	    -textvariable import_file
+    pack .sck.param.right.name .sck.param.right.port \
+	    .sck.param.right.file -side top
+
+    button .sck.but.ok -text OK -width 10 \
+	    -command {
+	set res [importSocketActual $import_host $import_port $import_file]
+	if {$res > 0} {
+	    destroy .sck
+	}
+    }
+    button .sck.but.cancel -text Cancel -width 10 \
+	    -command { destroy .sck }
+    pack .sck.but.ok .sck.but.cancel -padx 3m -side left -expand 1
+
+    tkwait visibility .sck
+}
+
+############################################################
+
+proc importSocketActual {host port file} {
+    return 1
+}
+
+############################################################
+
+proc importAwkOutput {} {
+    global import_file import_cmd
+
+    # see if .awk window already exists; if so, just return
+    set err [catch {set exists [wm state .awk]}]
+    if {!$err} { wm deiconify .awk; return }
+
+    toplevel .awk
+    wm maxsize .awk 1000 1000
+    wm title .awk "Import Awk Data"
+    wm geometry .awk +50+50
+    selection clear .awk
+
+    label .awk.title -text "Enter Awk Parameters"
+    frame .awk.param -relief groove -borderwidth 2
+    frame .awk.but
+    pack .awk.title -side top -pady 3m
+    pack .awk.param -side top -pady 3m -fill both -expand 1
+    pack .awk.but -side top -pady 3m -fill x
+
+    frame .awk.param.left
+    frame .awk.param.right
+    pack .awk.param.left .awk.param.right -side left -padx 3m -fill both \
+	    -expand 1
+
+    label .awk.param.left.cmd -text "Awk Command:" -width 15
+    label .awk.param.left.file -text "File Name:" -width 15
+    pack .awk.param.left.cmd -side top
+    pack .awk.param.left.file -side bottom
+
+    text .awk.param.right.cmd -relief sunken -borderwidth 2 \
+	    -width 30 -height 10
+    .awk.param.right.cmd insert end $import_cmd
+    entry .awk.param.right.file -relief sunken -width 30 \
+	    -textvariable import_file
+    pack .awk.param.right.cmd .awk.param.right.file -side top
+
+    button .awk.but.ok -text OK -width 10 \
+	    -command {
+	set import_cmd [.awk.param.right.cmd get 1.0 end]
+	set res [importAwkActual $import_cmd $import_file]
+	if {$res > 0} {
+	    destroy .awk
+	}
+    }
+    button .awk.but.cancel -text Cancel -width 10 \
+	    -command { destroy .awk }
+    pack .awk.but.ok .awk.but.cancel -padx 3m -side left -expand 1
+
+    tkwait visibility .awk
+}
+
+############################################################
+
+proc importAwkActual {cmd file} {
+    global errorInfo
+
+    set err [catch {eval exec $cmd >> $file}]
+    if {$err > 0} {
+	puts "An error occurred in command execution:"
+	puts $errorInfo
+	return 0
+    }
+    return 1
+}
