@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/12/18 15:32:51  jussi
+  Replaced ~SharedMemory() with destroy().
+
   Revision 1.8  1996/12/13 21:34:02  jussi
   Replaced assert() calls with error return codes.
 
@@ -183,12 +186,7 @@ private:
 class SemaphoreV {
 public:
   SemaphoreV(key_t key, int &status, int nsem = 1);
-
-  int destroy() {                       // destroy semaphore
-    if (--_semCount > 0)
-      return 0;
-    return _sem->destroy();
-  }
+  ~SemaphoreV();
 
 #if defined(SHARED_KEYS)
   static int destroyAll() {             // destroy all semaphores
@@ -196,61 +194,67 @@ public:
   }
 #endif
 
-  static int create(int maxSems);       // create real semaphore
-
   int acquire(int num = 1,
 	      int sem = 0) {            // acquire num units of resource
-    return _sem->acquire(num, _base + sem);
+    return _sem[_semvec[sem]]->acquire(num, _semnum[sem]);
   }
 
   int release(int num = 1,
 	      int sem = 0) {            // release num units of resource
-    return _sem->release(num, _base + sem);
+    return _sem[_semvec[sem]]->release(num, _semnum[sem]);
   }
 
   int test(int num = 1,
            int sem = 0) {               // try to acquire num units of resource
-    return _sem->test(num, _base + sem);
+    return _sem[_semvec[sem]]->test(num, _semnum[sem]);
   }
 
   int getValue(int sem = 0) {           // get value of semaphore
-    return _sem->getValue(_base + sem);
+    return _sem[_semvec[sem]]->getValue(_semnum[sem]);
   }
 
   int setValue(int num, int sem = 0) {  // set num units of resource
-    return _sem->setValue(num, _base + sem);
+    return _sem[_semvec[sem]]->setValue(num, _semnum[sem]);
   }
 
-  operator int() {
-    return _sem->getValue(_base);       // get current number of units
+  operator int() {                      // get current number of units
+    return getValue(0);
   }
 
-  int getId() { return _sem->getId(); } // return id
-
-  static key_t newKey() {
-    return Semaphore::newKey();         // create new key
+  int getId() {                         // return id
+    return _sem[_semvec[0]]->getId();
   }
 
-  static int numAvailable() {           // number of available virtual sems
-    return _maxSems - _semBase;
+  static key_t newKey() {               // create new key
+    return Semaphore::newKey();
   }
 
-  static int maxNumSemaphores() {       // largest size of semaphore array
-    return 16;
-#if 0
-    // this number should really be returned, but in Solaris
-    // the number is inflated and allocating a semaphore vector
-    // of this size will fail
-    return _POSIX_SEM_NSEMS_MAX;
-#endif
+  static int numAvailable() {           // number of available semaphores
+    if (!_enabled)
+      return 0;
+    if (!_sem) {
+      if (create() < 0)
+        return 0;
+    }
+    return _semUnused;
   }
 
-private:
-  static Semaphore *_sem;               // real semaphore
-  static int _semBase;                  // base number of semaphores
-  static int _maxSems;                  // maximum semaphore number
-  static int _semCount;                 // count of semaphores
-  int _base;                            // base number of this semaphore
+  static void setEnabled(int enabled) {
+    _enabled = enabled;
+  }
+
+protected:
+  static int create();                  // create real semaphore vectors
+
+  static int _enabled;                  // non-zero if enabled
+  static Semaphore **_sem;              // real semaphore vectors
+  static int _semVectors;               // # vectors allocated
+  static int _semsPerVector;            // # semaphores per vector
+  static int **_semUsed;                // non-zero if semaphore used
+  static int _semUnused;                // number of unused semaphores
+  int _nsem;                            // # semaphores
+  int *_semvec;                         // vector number
+  int *_semnum;                         // semaphore number
 };
 
 class SharedMemory {

@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/12/18 15:32:50  jussi
+  Replaced ~SharedMemory() with destroy().
+
   Revision 1.8  1996/12/13 21:34:02  jussi
   Replaced assert() calls with error return codes.
 
@@ -80,11 +83,6 @@ static struct ShmKeyTable *shmKeyTable = 0;
 #ifdef __linux
 static const union semun NullSemUnion = { 0 };
 #endif
-
-Semaphore *SemaphoreV::_sem = 0;
-int SemaphoreV::_semBase = 0;
-int SemaphoreV::_maxSems = 0;
-int SemaphoreV::_semCount = 0;
 
 Semaphore::Semaphore(key_t key, int &status, int nsem)
 {
@@ -233,41 +231,140 @@ key_t Semaphore::newKey()
 }
 #endif
 
+int SemaphoreV::_enabled = 1;
+Semaphore **SemaphoreV::_sem = NULL;
+int SemaphoreV::_semVectors = 0;
+int SemaphoreV::_semsPerVector = 16;
+int **SemaphoreV::_semUsed = NULL;
+int SemaphoreV::_semUnused = 0;
+
 SemaphoreV::SemaphoreV(key_t key, int &status, int nsem)
 {
   key = key;
 
-  if (!_sem || _semBase + nsem > _maxSems) {
-    fprintf(stderr, "Cannot allocate %d semaphores (limit %d)\n",
-            _semBase + nsem, _maxSems);
-    status = -1;
+  _nsem = 0;
+  status = -1;
+
+  if (!_enabled)
+    return;
+
+  if (!_sem) {
+    if (create() < 0)
+      return;
+  }
+
+  DOASSERT(_sem, "Inconsistent state");
+
+  if (_semUnused < nsem) {
+    fprintf(stderr, "Cannot allocate %d semaphores (%d left)\n",
+            nsem, _semUnused);
     return;
   }
 
-  _base = _semBase;
-  _semBase += nsem;
-  _semCount++;
+  _semvec = new int [nsem];
+  _semnum = new int [nsem];
+  if (!_semvec || !_semnum) {
+    fprintf(stderr, "Out of memory\n");
+    return;
+  }
+
+  int semcnt = 0;
+
+  for(int i = 0; i < _semVectors && semcnt < nsem; i++) {
+    for(int j = 0; j < _semsPerVector && semcnt < nsem; j++) {
+      if (!_semUsed[i][j]) {
+        _semvec[semcnt] = i;
+        _semnum[semcnt] = j;
+        _semUsed[i][j] = 1;
+        _semUnused--;
+        _nsem++;
+#ifdef DEBUG
+        printf("%%  Assigned %d/%d semaphore to [%d,%d]\n",
+               semcnt, nsem, i, j);
+#endif
+        ++semcnt;
+      }
+    }
+  }
+
+  if (semcnt != nsem) {
+    fprintf(stderr, "Could not find %d free semaphores\n", nsem);
+    return;
+  }
 
   status = 0;
 }
 
-int SemaphoreV::create(int maxSems)
+SemaphoreV::~SemaphoreV()
 {
-  if (_sem) {
-    fprintf(stderr, "Real semaphore exists already\n");
+  if (!_enabled)
+    return;
+
+  for(int s = 0; s < _nsem; s++)
+    _semUsed[_semvec[s]][_semnum[s]] = 0;
+
+  _semUnused += _nsem;
+
+  delete _semvec;
+  delete _semnum;
+
+#ifdef DEBUG
+  printf("%%  Semaphores left unused %d\n", _semUnused);
+#endif
+
+  if (_semUnused < _semVectors * _semsPerVector)
+    return;
+
+#ifdef DEBUG
+  printf("%%  Destroying %dx%d semaphores\n", _semVectors, _semsPerVector);
+#endif
+
+  for(int i = 0; i < _semVectors; i++) {
+    _sem[i]->destroy();
+    delete _sem[i];
+    delete _semUsed[i];
+  }
+  delete _sem;
+  delete _semUsed;
+
+  _sem = NULL;
+  _semUsed = NULL;
+  _semVectors = 0;
+}
+
+int SemaphoreV::create()
+{
+  DOASSERT(!_sem, "Inconsistent state");
+
+  const int maxSems = 2 * 16;
+  _semVectors = maxSems / _semsPerVector;
+  if (maxSems % _semsPerVector != 0)
+    _semVectors++;
+
+  _sem = new Semaphore * [_semVectors];
+  _semUsed = new int * [_semVectors];
+  if (!_sem || !_semUsed)
     return -1;
+
+#ifdef DEBUG
+  printf("Created %dx%d semaphores\n", _semVectors, _semsPerVector);
+#endif
+
+  for(int i = 0; i < _semVectors; i++) {
+    int status;
+    _sem[i] = new Semaphore(Semaphore::newKey(), status, _semsPerVector);
+    if (!_sem[i] && status < 0)
+      return -1;
+    _semUsed[i] = new int [_semsPerVector];
+    if (!_semUsed)
+      return -1;
+    for(int j = 0; j < _semsPerVector; j++)
+      _semUsed[i][j] = 0;
   }
 
-  _semBase = _maxSems = _semCount = 0;
+  _semUnused = _semVectors * _semsPerVector;
 
-  int status;
-  _sem = new Semaphore(Semaphore::newKey(), status, maxSems);
-  if (!_sem || status < 0)
-    return -1;
-
-  _maxSems = maxSems;
-
-  return status;
+  return 0;
 }
 
 SharedMemory::SharedMemory(key_t key, int size, char *&address, int &created) :
