@@ -1,7 +1,7 @@
 #! /bin/csh -f
 
 limit coredumpsize 0
-limit descriptors 1024
+limit descriptors 256
 
 setenv DEVISE_ROOT    /p/devise
 
