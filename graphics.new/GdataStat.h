@@ -16,6 +16,7 @@
 #define GdataStat_h
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "HashTable.h"
 #include "BasicStats.h"
@@ -53,7 +54,7 @@ class GdataStat {
 
 
   protected:
-     static int hashFun(int &index, int numOfBucks) { return index%numOfBucks; }
+     static int hashFun(int &index, int numOfBucks) { return abs(index)%numOfBucks; }
 
      HashTable<int, BasicStats *> _hashTable;
 };
