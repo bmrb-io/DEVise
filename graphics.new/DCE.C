@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/12/13 21:34:02  jussi
+  Replaced assert() calls with error return codes.
+
   Revision 1.7  1996/12/12 22:04:34  jussi
   Added support for private semaphores and shared memory (default).
 
@@ -343,29 +346,22 @@ SharedMemory::SharedMemory(key_t key, int size, char *&address, int &created) :
   address = addr = ptr;
 }
 
-SharedMemory::~SharedMemory()
+int SharedMemory::destroy()
 {
   if (!addr)
-    return;
+    return 0;
 
   if (shmdt(addr) < 0)
     perror("shmdt");
-  struct shmid_ds sbuf;
-  if (shmctl(id, IPC_STAT, &sbuf) >= 0) {
-    if (sbuf.shm_nattch == 0) {
 #ifdef DEBUG
-      cerr << "%%  Removing shared memory segment " << id << endl;
+  cerr << "%%  Removing shared memory segment " << id << endl;
 #endif
-      if (shmctl(id, IPC_RMID, 0) < 0)
-	perror("shmctl");
-    } else {
-#ifdef DEBUG
-      cerr << "%%  Segment " << id << " has " << sbuf.shm_nattch
-	   << " attachments" << endl;
-#endif
-    }
-  } else
+  if (shmctl(id, IPC_RMID, 0) < 0)
     perror("shmctl");
+
+  addr = 0;
+
+  return 0;
 }
 
 #if defined(SHARED_KEYS)

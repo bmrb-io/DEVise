@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/12/13 21:34:02  jussi
+  Replaced assert() calls with error return codes.
+
   Revision 1.7  1996/12/12 22:04:34  jussi
   Added support for private semaphores and shared memory (default).
 
@@ -253,7 +256,7 @@ private:
 class SharedMemory {
 public:
   SharedMemory(key_t key, int size, char *&addr, int &created);
-  ~SharedMemory();
+  int destroy();                        // destroy shared memory segment
 #if defined(SHARED_KEYS)
   static int destroyAll();              // destroy all shared mem segments
 #endif
