@@ -5,84 +5,68 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-QueryProcTape.o: /usr/include/assert.h QueryProcTape.h
-QueryProcTape.o: ../graphics.new/QueryProc.h ../graphics/DeviseTypes.h
-QueryProcTape.o: ../graphics/VisualArg.h ../graphics/Color.h
-QueryProcTape.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
-QueryProcTape.o: ../graphics/DList.h ../graphics/Exit.h
-QueryProcTape.o: ../graphics/BufPolicy.h ../graphics/Dispatcher.h
-QueryProcTape.o: /usr/include/stdio.h /usr/include/stdlib.h
-QueryProcTape.o: /usr/include/sgidefs.h ../graphics/Journal.h SortedTable.h
-QueryProcTape.o: ../graphics.new/GData.h ../graphics.new/TData.h
-QueryProcTape.o: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
-QueryProcTape.o: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
-QueryProcTape.o: ../graphics/Init.h ../graphics.new/BufMgrFull.h
-QueryProcTape.o: ../graphics.new/RangeInfo.h ../graphics.new/BufMgrNull.h
-QueryProcTape.o: ../graphics.new/TDataMap.h ../graphics/Pattern.h
-QueryProcTape.o: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
-QueryProcTape.o: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
-QueryProcTape.o: ../graphics/View.h ../graphics/ViewWin.h
-QueryProcTape.o: ../graphics/WindowRep.h ../graphics/Geom.h
-QueryProcTape.o: /usr/include/math.h ../graphics/Transform.h
-QueryProcTape.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-QueryProcTape.o: ../graphics/Control.h ../graphics/ViewCallback.h
-QueryProcTape.o: ../graphics/AttrList.h /usr/include/sys/time.h
+QueryProcTape.o: QueryProcTape.h ../graphics.new/QueryProc.h
+QueryProcTape.o: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
+QueryProcTape.o: ../graphics/Color.h ../graphics.new/RecId.h
+QueryProcTape.o: ../graphics.new/QPRange.h ../graphics/DList.h
+QueryProcTape.o: ../graphics/Exit.h ../graphics/BufPolicy.h
+QueryProcTape.o: ../graphics/Dispatcher.h /usr/include/stdio.h
+QueryProcTape.o: /usr/include/stdlib.h /usr/include/sgidefs.h
 QueryProcTape.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
-QueryProcTape.o: /usr/include/sys/select.h ../graphics/Config.h
-QueryProcTape.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
-QueryProcTape.o: ../graphics.new/ViewStats.h ../graphics.new/GDataBin.h
+QueryProcTape.o: /usr/include/sys/select.h ../graphics/Journal.h
+QueryProcTape.o: SortedTable.h ../graphics.new/GData.h
+QueryProcTape.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
+QueryProcTape.o: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
+QueryProcTape.o: ../graphics.new/BufferPolicy.h ../graphics/Init.h
+QueryProcTape.o: ../graphics.new/BufMgrFull.h ../graphics.new/RangeInfo.h
+QueryProcTape.o: ../graphics.new/BufMgrNull.h ../graphics.new/TDataMap.h
+QueryProcTape.o: ../graphics/Pattern.h ../graphics.new/ShapeID.h
+QueryProcTape.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
+QueryProcTape.o: ../graphics.new/ViewGraph.h ../graphics/View.h
+QueryProcTape.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+QueryProcTape.o: ../graphics/Geom.h /usr/include/math.h
+QueryProcTape.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+QueryProcTape.o: ../graphics/Compress.h ../graphics/Control.h
+QueryProcTape.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
+QueryProcTape.o: ../graphics/AttrList.h /usr/include/sys/time.h
+QueryProcTape.o: ../graphics/Config.h ../graphics/Cursor.h
+QueryProcTape.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+QueryProcTape.o: ../graphics.new/Action.h ../graphics.new/GDataBin.h
 QueryProcTape.o: ../graphics.new/MappingInterp.h
-QueryProcTape.o: ../graphics.new/TDataMapDispatch.h
+QueryProcTape.o: ../graphics.new/TDataMapDispatch.h ../graphics/Display.h
+QueryProcTape.o: ../graphics/ColorMgr.h
 Templates.o: QueryProcTape.h ../graphics.new/QueryProc.h
 Templates.o: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
 Templates.o: ../graphics/Color.h ../graphics.new/RecId.h
 Templates.o: ../graphics.new/QPRange.h ../graphics/DList.h ../graphics/Exit.h
 Templates.o: ../graphics/BufPolicy.h ../graphics/Dispatcher.h
 Templates.o: /usr/include/stdio.h /usr/include/stdlib.h
-Templates.o: /usr/include/sgidefs.h ../graphics/Journal.h SortedTable.h
-Templates.o: /usr/include/assert.h ../graphics.new/GData.h
+Templates.o: /usr/include/sgidefs.h /usr/include/sys/types.h
+Templates.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+Templates.o: ../graphics/Journal.h SortedTable.h ../graphics.new/GData.h
 Templates.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
 Templates.o: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
 Templates.o: ../graphics.new/BufferPolicy.h
-atof.o: /usr/include/stdlib.h /usr/include/sgidefs.h /usr/include/assert.h
-atof.o: /usr/include/ctype.h
 devtype.o: /usr/include/stdlib.h /usr/include/sgidefs.h
 devtype.o: /usr/include/sys/stat.h /usr/include/sys/time.h
 devtype.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
 devtype.o: /usr/include/sys/select.h
-extend.o: /usr/include/stdlib.h /usr/include/sgidefs.h /usr/include/stdio.h
-extend.o: /usr/include/assert.h /usr/include/string.h
-exttape.o: /usr/include/stdlib.h /usr/include/sgidefs.h /usr/include/stdio.h
-exttape.o: /usr/include/assert.h /usr/include/string.h tapedrive.h
-exttape.o: /usr/include/tar.h ../graphics.new/machdep.h /usr/include/limits.h
-exttape.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
-exttape.o: /usr/include/sys/select.h /usr/include/sys/param.h
-exttape.o: /usr/include/sys/signal.h /usr/include/sys/time.h
-exttape.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-exttape.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
-exttape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-exttape.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-exttape.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
-exttape.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
-exttape.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
-exttape.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-exttape.o: /usr/include/sys/endian.h /usr/include/arpa/inet.h
-tapedrive.o: /usr/include/unistd.h /usr/include/string.h
-tapedrive.o: /usr/include/assert.h tapedrive.h /usr/include/stdio.h
-tapedrive.o: /usr/include/tar.h ../graphics.new/machdep.h
-tapedrive.o: /usr/include/limits.h /usr/include/sgidefs.h
-tapedrive.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
-tapedrive.o: /usr/include/sys/select.h /usr/include/sys/param.h
-tapedrive.o: /usr/include/sys/signal.h /usr/include/sys/time.h
-tapedrive.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-tapedrive.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
-tapedrive.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-tapedrive.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-tapedrive.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
-tapedrive.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
-tapedrive.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
-tapedrive.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-tapedrive.o: /usr/include/sys/endian.h /usr/include/arpa/inet.h
+tapedrive.o: /usr/include/unistd.h /usr/include/string.h tapedrive.h
+tapedrive.o: /usr/include/stdio.h /usr/include/tar.h
+tapedrive.o: ../graphics.new/machdep.h /usr/include/limits.h
+tapedrive.o: /usr/include/sgidefs.h /usr/include/sys/types.h
+tapedrive.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+tapedrive.o: /usr/include/sys/param.h /usr/include/sys/signal.h
+tapedrive.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+tapedrive.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
+tapedrive.o: /usr/include/sys/resource.h /usr/include/sys/ipc.h
+tapedrive.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+tapedrive.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
+tapedrive.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
+tapedrive.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
+tapedrive.o: /usr/include/netdb.h /usr/include/sys/socket.h
+tapedrive.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
+tapedrive.o: /usr/include/arpa/inet.h ../graphics/Exit.h
 testtape.o: tapedrive.h /usr/include/stdio.h /usr/include/tar.h
 testtape.o: ../graphics.new/machdep.h /usr/include/limits.h
 testtape.o: /usr/include/sgidefs.h /usr/include/sys/types.h
