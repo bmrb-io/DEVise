@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/11/26 15:44:07  wenger
+  Added features and fixed bugs in PostScript-related parts of the
+  client/server library and the PSWindowRep class; page size can now be
+  set in PSDisplay; did some cleanup of the DeviseDisplay and WindowRep
+  methods (allowed elimination of many typecasts).
+
   Revision 1.11  1996/11/23 00:24:12  wenger
   Incorporated all of the PostScript-related stuff into the client/server
   library; added printing to PostScript to the example client and server;
@@ -184,10 +190,11 @@ public:
     virtual void SetXorMode();
     virtual void SetCopyMode();
 
-    /* Set normal or small font */
-    virtual void SetNormalFont();
-    virtual void SetSmallFont();
-    virtual int  GetSmallFontHeight();
+    /* Set font or return to normal font */
+    virtual void SetFont(char *family, char *weight, char *slant,
+                         char *width, int pointSize);
+    virtual void SetNormalFont() { SetFont("Helvetica", "Medium", "r",
+                                           "Normal", 120); }
 
     /* Draw rubberbanding rectangle */
     virtual void DrawRubberband(int x1, int y1, int x2, int y2) {}
@@ -278,6 +285,9 @@ private:
     /* child/parent links for windows */
     PSWindowRep    *_parent;
     PSWindowRepList _children;
+
+    /* Point size of current font */
+    int _fontSize;
 
     /* "Pixel" to point transform. */
     Transform2D _pixToPointTrans;

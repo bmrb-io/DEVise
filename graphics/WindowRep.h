@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1996/11/26 16:47:48  ssl
+  Added support for Stacked Opaque and Transparent views
+
   Revision 1.35  1996/11/26 15:44:12  wenger
   Added features and fixed bugs in PostScript-related parts of the
   client/server library and the PSWindowRep class; page size can now be
@@ -395,10 +398,10 @@ public:
   virtual void SetCopyMode() = 0;
   virtual void SetOrMode() {}
 
-  /* Set normal or small font */
+  /* Set font or return to normal */
+  virtual void SetFont(char *family, char *weight, char *slant,
+                       char *width, int pointSize) = 0;
   virtual void SetNormalFont() = 0;
-  virtual void SetSmallFont() = 0;
-  virtual int  GetSmallFontHeight() = 0;
 
   /* Get window rep dimensions */
   virtual void Dimensions(unsigned int &width, unsigned int &height ) = 0;

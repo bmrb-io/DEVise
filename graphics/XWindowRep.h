@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1996/11/26 16:47:50  ssl
+  Added support for Stacked Opaque and Transparent views
+
   Revision 1.32  1996/11/13 16:56:23  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -290,10 +293,10 @@ public:
 	virtual void SetCopyMode();
 	virtual void SetOrMode();
 
-	/* Set normal or small font */
+	/* Set font or return to normal */
+        virtual void SetFont(char *family, char *weight, char *slant,
+                             char *width, int pointSize);
 	virtual void SetNormalFont();
-	virtual void SetSmallFont();
-	virtual int  GetSmallFontHeight();
 
 	/* Draw rubberbanding rectangle */
 	virtual void DrawRubberband(int x1, int y1, int x2, int y2);

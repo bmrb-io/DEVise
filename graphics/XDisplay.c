@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  1996/11/26 09:30:38  beyer
+  Mucked with debugging some statements
+
   Revision 1.43  1996/11/23 00:24:12  wenger
   Incorporated all of the PostScript-related stuff into the client/server
   library; added printing to PostScript to the example client and server;
@@ -261,28 +264,19 @@ XDisplay::XDisplay(char *name)
   /* init colors from the color manager. */
   DeviseDisplay::InitializeColors();
   
-  /* get normal font */
-  if (!(_normalFontStruct = XLoadQueryFont(_display, "7x13"))) {
-    fprintf(stderr, "XDisplay: cannot load font 7x13\n");
-    Exit::DoExit(1);
-  }
-
-  /* get small font */
-  if (!(_smallFontStruct = XLoadQueryFont(_display, "5x7"))) {
-    if (!(_smallFontStruct = XLoadQueryFont(_display, "5x8"))) {
-      fprintf(stderr, "XDisplay: cannot load font 5x7 nor 5x8\n");
+  /* set normal font to be the current font */
+  _fontStruct = NULL;
+  SetFont("Courier", "Medium", "r", "Normal", 120);
+  _normalFontStruct = _fontStruct;
+  if (!_normalFontStruct) {
+      fprintf(stderr, "Cannot load 12-point Courier font\n");
       Exit::DoExit(1);
-    }
   }
-  
-  /* set big font to be current font */
-  _fontStruct = _normalFontStruct;
 
   /* init stipples for patterns */
   Window win = XCreateSimpleWindow(_display, DefaultRootWindow(_display),
 				   (unsigned)0, (unsigned)0, (unsigned)10,
-				   (unsigned)10, /* border width */ 5,
-				   /* border */ 0, /* background */ 0);
+				   (unsigned)10, 5, 0, 0);
   DOASSERT(win, "Cannot create window");
 
   for(int i = 0; i < XNumBitmaps; i++) {
@@ -310,6 +304,38 @@ void XDisplay::Register()
   Dispatcher::Current()->Register(this, 10, AllState, true, fd());
 }
 #endif
+
+/* Set font and point size */
+
+void XDisplay::SetFont(char *family, char *weight, char *slant,
+                       char *width, int pointSize)
+{
+    XFontStruct *oldFont = _fontStruct;
+    /*
+       Attempt to load font as specified. If font cannot be loaded,
+       increase point size by one unit and try again.
+    */
+    for(int p = pointSize; p <= pointSize + 50; p += 10) {
+        char fname[128];
+        sprintf(fname, "*-%s-%s-%s-%s--*-%d-*-*-*-*-*-*",
+                family, weight, slant, width, p);
+        _fontStruct = XLoadQueryFont(_display, fname);
+        if (_fontStruct) {
+#ifdef DEBUG
+            printf("Loaded font %s\n", fname);
+#endif
+            if (oldFont && oldFont != _normalFontStruct) {
+#ifdef DEBUG
+                printf("Unloading font fid %ld\n", oldFont->fid);
+#endif
+                XUnloadFont(_display, oldFont->fid);
+            }
+            return;
+        }
+    }
+    fprintf(stderr, "Warning: could not find font %s %d\n", family, pointSize);
+    _fontStruct = _normalFontStruct;
+}
 
 /* Export display image to other graphics formats */
 

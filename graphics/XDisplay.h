@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/11/18 23:11:21  wenger
+  Added procedures to generated PostScript to reduce the size of the
+  output and speed up PostScript processing; added 'small font' capability
+  and trademark notice to PostScript output; improved text positioning in
+  PostScript output (but still a ways to go); added a little debug code;
+  fixed data/axis area bugs (left gaps); fixed misc. bugs in color handling.
+
   Revision 1.23  1996/11/13 16:56:18  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -204,13 +211,9 @@ protected:
     /* get structure for fonts */
     XFontStruct *GetFontStruct()       { return _fontStruct; };
     XFontStruct *GetNormalFontStruct() { return _normalFontStruct; };
-    XFontStruct *GetSmallFontStruct()  { return _smallFontStruct; };
-    void SetNormalFont() {
-      _fontStruct = _normalFontStruct;
-    }
-    void SetSmallFont() {
-      _fontStruct = _smallFontStruct;
-    }
+    void SetFont(char *family, char *weight, char *slant,
+                 char *width, int pointSize);
+    void SetNormalFont() { _fontStruct = _normalFontStruct; }
 
     /* Get width and height of X window */
     void WinDimensions(Window win, Coord &winWidth, Coord &winHeight);

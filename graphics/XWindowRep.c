@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.78  1996/11/26 16:47:49  ssl
+  Added support for Stacked Opaque and Transparent views
+
   Revision 1.77  1996/11/26 09:31:30  beyer
   If control or alt key used, key is always sent as upper case.
 
@@ -2262,6 +2265,17 @@ void XWindowRep::SetCopyMode()
 #endif
 }
 
+void XWindowRep::SetFont(char *family, char *weight, char *slant,
+                         char *width, int pointSize)
+{
+#if defined(DEBUG)
+  printf("XWindowRep(0x%p)::SetFont(%s,%d)\n", this, family, pointSize);
+#endif
+  GetDisplay()->SetFont(family, weight, slant, width, pointSize);
+  XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
+  XSetFont(_display, _gc, fontStruct->fid);
+}
+
 void XWindowRep::SetNormalFont()
 {
 #if defined(DEBUG)
@@ -2270,22 +2284,6 @@ void XWindowRep::SetNormalFont()
   GetDisplay()->SetNormalFont();
   XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
   XSetFont(_display, _gc, fontStruct->fid);
-}
-
-void XWindowRep::SetSmallFont()
-{
-#if defined(DEBUG)
-  printf("XWindowRep(0x%p)::SetSmallFont()\n", this);
-#endif
-  GetDisplay()->SetSmallFont();
-  XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
-  XSetFont(_display, _gc, fontStruct->fid);
-}
-
-int XWindowRep::GetSmallFontHeight()
-{
-  XFontStruct *fontStruct = GetDisplay()->GetSmallFontStruct();
-  return fontStruct->max_bounds.ascent + fontStruct->max_bounds.descent;
 }
 
 /**********************************************************************
