@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.69  1997/11/18 23:26:59  wenger
+  First version of GData to socket capability; removed some extra include
+  dependencies; committed test version of TkControl::OpenDataChannel().
+
   Revision 1.68  1997/10/10 21:13:44  liping
   The interface between TData and BufMgr and the interface between BufMgr and
   QueryProc were changed
@@ -2207,14 +2211,14 @@ Get the next batch of matching TData.
 algorithm:
 	If there is any record leftover from last call to buffer manager,
         test them. Otherwise, call buffer manager to get next batch
-        of recods. Test records and return 1st contiguous chunk
+        of records. Test records and return 1st contiguous chunk
         that matches. 
 **************************************************************************/
 
 Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
                                 char *&retBuf)
 {
-#if defined(DEBUG)
+#if DEBUGLVL >= 5
     printf("QueryProcFull::GetTData()\n");
 #endif
     TData *tdata = _tdataQuery->tdata;
@@ -2230,8 +2234,8 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
             /* go to buffer manager to get more records */
 	    result=_mgr->GetRecs(_tdataQuery->handle, isTData, &range,
                                _tqueryBuf); 
-		_tqueryNumRecs= (RecId)(range.Low);
-		_tqueryNumRecs= range.NumRecs;
+		_tqueryStartRid = (RecId)(range.Low);
+		_tqueryNumRecs = range.NumRecs;
 
           	if (!result)
                 {
