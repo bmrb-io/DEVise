@@ -1,12 +1,30 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 21:13:13  jussi
+  Added/updated CVS header.
+*/
 
 #ifndef Util_h
 #define Util_h
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
 #if (defined(SUN) || defined(PENTIUM))
 #include <string.h>
@@ -14,6 +32,7 @@
 #include <strings.h>
 #endif
 #include <ctype.h>
+#include <iostream.h>
 
 /* get the name file was last modified */
 extern long ModTime(char *fname);
@@ -57,13 +76,16 @@ inline int WordBoundary(int num, int wordWidth){
 	return num;
 }
 
-/***** Faster atof from Jussi **************/
 const double _UtilPower10[] = { 1, 10, 100, 1000, 10000, 100000,
-								  1e6, 1e7, 1e8, 1e9 };
+				1e6, 1e7, 1e8, 1e9, 1e10, 1e11,
+			        1e12, 1e13 };
 const int _UtilMaxDecimals = sizeof _UtilPower10 / sizeof _UtilPower10[0];
+const int _UtilMaxIntPart = 9;
 
 inline double UtilAtof(char *str)
 {
+  const char *origStr = str;
+
   int sign = 1;
   if (*str == '-') {
     sign = -1;
@@ -71,22 +93,34 @@ inline double UtilAtof(char *str)
   } else if (*str == '+')
     str++;
 
-  int integer = atoi(str);
+  long int integer = atol(str);
+  char *start = str;
   while(isdigit(*str))
     str++;
+  if (str - start > _UtilMaxIntPart) {
+    // integer part is too long for this function to handle
+    // -- use libc version of atof to do the conversion
+    return atof(origStr);
+  }
 
   if (*str != '.' && *str != 'e')
     return sign * integer;
 
-  int fraction = 0;
+  long int fraction = 0;
   int decimals = 0;
 
   if (*str == '.') {
     char *start = ++str;
-    fraction = atoi(str);
+    fraction = atol(str);
     while(isdigit(*str))
       str++;
     decimals = str - start;
+  }
+
+  if (decimals > _UtilMaxIntPart) {
+    // integer part is too long for this function to handle
+    // -- use libc version of atof to do the conversion
+    return atof(origStr);
   }
 
   assert(decimals >= 0 && decimals < _UtilMaxDecimals);
