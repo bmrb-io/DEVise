@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/01/30 21:09:36  jussi
+#  Added DoSetBgColor but made it inactive because view parameters
+#  cannot be changed yet. Moved some procedures from control.tk.
+#
 #  Revision 1.1  1996/01/23 20:50:59  jussi
 #  Initial revision.
 #
@@ -1003,8 +1007,8 @@ proc DoViewAction {} {
 
 ############################################################
 
-proc DoSetBgColor {color} {
-    global curView
+proc DoSetBgColor {} {
+    global curView viewColor
 
     set but [dialog .setTitleWinError "Not Supported Yet" \
 	    "Changing view background color not supported yet." "" 0 OK ]
@@ -1018,7 +1022,15 @@ proc DoSetBgColor {color} {
     
     set curViewClass [GetClass view $curView]
     set param [DEVise getCreateParam view $curViewClass $curView]
-    set param [linsert [lrange $param 0 4] end $color]
+    set viewColor [lindex $param 5]
+    set oldViewColor $viewColor
+
+    getColor viewColor
+    if {$oldViewColor == $viewColor} {
+	return
+    }
+
+    set param [linsert [lrange $param 0 4] end $viewColor]
     set cmd "DEVise changeParam $param"
     eval $cmd
 }
