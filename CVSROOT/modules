@@ -46,7 +46,6 @@ dte		-a Makefile.common \
 			DTE DataReader graphics graphics.new \
 			scripts solaris solsparc src/include RTree tape
 devise		-a Makefile.common README \
-			DTE DataReader LM RTree \
 			aix alpha_osf20 compustat crsp csgroup cslib \
 			design_doc doc generic graphics graphics.new hp \
 			issm lib linux pmax_ul43a public releases run \
