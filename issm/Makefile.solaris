@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.21  1997/03/28 16:11:14  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -32,7 +36,7 @@ extract.o: /usr/include/stdlib.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
 extract.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
 extract.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 extract.o: /usr/include/sys/select.h /usr/include/sys/time.h
-extract.o: /usr/include/sys/time.h /s/X11/include/X11/X.h
+extract.o: /usr/include/time.h /s/X11/include/X11/X.h
 extract.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 extract.o: /usr/include/stddef.h rectape.h ../tape/tapedrive.h
 extract.o: ../graphics.new/machdep.h /usr/include/limits.h
@@ -60,7 +64,7 @@ rectape.o: /usr/include/sys/va_list.h ../graphics.new/machdep.h
 rectape.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
 rectape.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
 rectape.o: /usr/include/sys/select.h /usr/include/sys/time.h
-rectape.o: /usr/include/sys/time.h /usr/include/sys/param.h
+rectape.o: /usr/include/time.h /usr/include/sys/param.h
 rectape.o: /usr/include/sys/unistd.h /usr/include/sys/wait.h
 rectape.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
 rectape.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h

@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.35  1997/03/28 16:11:42  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -29,8 +33,8 @@ CycleCpuTimeMappingClassInfo.o: /usr/include/sys/feature_tests.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/types.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/isa_defs.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/machtypes.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/select.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/select.h /usr/include/time.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/math.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/floatingpoint.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/ieeefp.h
 CycleCpuTimeMappingClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
@@ -50,6 +54,8 @@ CycleCpuTimeMappingClassInfo.o: ../graphics/Transform.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/DevisePixmap.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/ETkIfc.h ../graphics/ETk.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/Xdef.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/Shape.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -130,7 +136,7 @@ CycleEffMappingClassInfo.o: /usr/include/sys/feature_tests.h
 CycleEffMappingClassInfo.o: /usr/include/sys/types.h
 CycleEffMappingClassInfo.o: /usr/include/sys/isa_defs.h
 CycleEffMappingClassInfo.o: /usr/include/sys/machtypes.h
-CycleEffMappingClassInfo.o: /usr/include/sys/select.h /usr/include/sys/time.h
+CycleEffMappingClassInfo.o: /usr/include/sys/select.h /usr/include/time.h
 CycleEffMappingClassInfo.o: /usr/include/math.h /usr/include/floatingpoint.h
 CycleEffMappingClassInfo.o: /usr/include/sys/ieeefp.h /s/tcl/include/tcl.h
 CycleEffMappingClassInfo.o: /usr/include/stdio.h /usr/include/sys/va_list.h
@@ -146,7 +152,8 @@ CycleEffMappingClassInfo.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 CycleEffMappingClassInfo.o: ../graphics/Transform.h
 CycleEffMappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 CycleEffMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
-CycleEffMappingClassInfo.o: /usr/include/sys/errno.h
+CycleEffMappingClassInfo.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
+CycleEffMappingClassInfo.o: ../graphics/ETk.h ../graphics/Xdef.h
 CycleEffMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleEffMappingClassInfo.o: ../graphics.new/Shape.h
 CycleEffMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -217,7 +224,7 @@ CycleOccMappingClassInfo.o: /usr/include/sys/feature_tests.h
 CycleOccMappingClassInfo.o: /usr/include/sys/types.h
 CycleOccMappingClassInfo.o: /usr/include/sys/isa_defs.h
 CycleOccMappingClassInfo.o: /usr/include/sys/machtypes.h
-CycleOccMappingClassInfo.o: /usr/include/sys/select.h /usr/include/sys/time.h
+CycleOccMappingClassInfo.o: /usr/include/sys/select.h /usr/include/time.h
 CycleOccMappingClassInfo.o: /usr/include/math.h /usr/include/floatingpoint.h
 CycleOccMappingClassInfo.o: /usr/include/sys/ieeefp.h /s/tcl/include/tcl.h
 CycleOccMappingClassInfo.o: /usr/include/stdio.h /usr/include/sys/va_list.h
@@ -233,7 +240,8 @@ CycleOccMappingClassInfo.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 CycleOccMappingClassInfo.o: ../graphics/Transform.h
 CycleOccMappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 CycleOccMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
-CycleOccMappingClassInfo.o: /usr/include/sys/errno.h
+CycleOccMappingClassInfo.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
+CycleOccMappingClassInfo.o: ../graphics/ETk.h ../graphics/Xdef.h
 CycleOccMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleOccMappingClassInfo.o: ../graphics.new/Shape.h
 CycleOccMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -305,7 +313,7 @@ CycleSuspendedMappingClassInfo.o: /usr/include/sys/types.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/isa_defs.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/machtypes.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/select.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
+CycleSuspendedMappingClassInfo.o: /usr/include/time.h /usr/include/math.h
 CycleSuspendedMappingClassInfo.o: /usr/include/floatingpoint.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/ieeefp.h
 CycleSuspendedMappingClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
@@ -329,6 +337,8 @@ CycleSuspendedMappingClassInfo.o: ../graphics/DevisePixmap.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Compress.h
 CycleSuspendedMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/errno.h
+CycleSuspendedMappingClassInfo.o: ../graphics/ETkIfc.h ../graphics/ETk.h
+CycleSuspendedMappingClassInfo.o: ../graphics/Xdef.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/Shape.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -413,8 +423,8 @@ CycleWorkingMappingClassInfo.o: /usr/include/sys/feature_tests.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/types.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/isa_defs.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/machtypes.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/select.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/select.h /usr/include/time.h
+CycleWorkingMappingClassInfo.o: /usr/include/math.h
 CycleWorkingMappingClassInfo.o: /usr/include/floatingpoint.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/ieeefp.h
 CycleWorkingMappingClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
@@ -434,6 +444,8 @@ CycleWorkingMappingClassInfo.o: ../graphics/Transform.h
 CycleWorkingMappingClassInfo.o: ../graphics/DevisePixmap.h
 CycleWorkingMappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
 CycleWorkingMappingClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
+CycleWorkingMappingClassInfo.o: ../graphics/ETkIfc.h ../graphics/ETk.h
+CycleWorkingMappingClassInfo.o: ../graphics/Xdef.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/Shape.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -513,7 +525,7 @@ HostMappingClassInfo.o: /usr/include/sys/time.h
 HostMappingClassInfo.o: /usr/include/sys/feature_tests.h
 HostMappingClassInfo.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 HostMappingClassInfo.o: /usr/include/sys/machtypes.h
-HostMappingClassInfo.o: /usr/include/sys/select.h /usr/include/sys/time.h
+HostMappingClassInfo.o: /usr/include/sys/select.h /usr/include/time.h
 HostMappingClassInfo.o: /usr/include/math.h /usr/include/floatingpoint.h
 HostMappingClassInfo.o: /usr/include/sys/ieeefp.h /s/tcl/include/tcl.h
 HostMappingClassInfo.o: /usr/include/stdio.h /usr/include/sys/va_list.h
@@ -529,9 +541,11 @@ HostMappingClassInfo.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 HostMappingClassInfo.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 HostMappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
 HostMappingClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
-HostMappingClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
-HostMappingClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
-HostMappingClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
+HostMappingClassInfo.o: ../graphics/ETkIfc.h ../graphics/ETk.h
+HostMappingClassInfo.o: ../graphics/Xdef.h ../graphics.new/RectShape.h
+HostMappingClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
+HostMappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
+HostMappingClassInfo.o: ../graphics.new/GDataRec.h
 HostMappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
 HostMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 HostMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
@@ -584,7 +598,7 @@ HostMappingClassInfo.o: HostRec.h map_host.h
 MappingClassInfo.o: /usr/include/sys/time.h /usr/include/sys/feature_tests.h
 MappingClassInfo.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 MappingClassInfo.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-MappingClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
+MappingClassInfo.o: /usr/include/time.h /usr/include/math.h
 MappingClassInfo.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 MappingClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
 MappingClassInfo.o: /usr/include/sys/va_list.h ../graphics/DeviseTypes.h
@@ -599,17 +613,19 @@ MappingClassInfo.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
 MappingClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
 MappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 MappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
-MappingClassInfo.o: /usr/include/sys/errno.h ../graphics.new/RectShape.h
-MappingClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
-MappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
-MappingClassInfo.o: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
-MappingClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
-MappingClassInfo.o: ../graphics/DualWindowRep.h ../graphics/Control.h
-MappingClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-MappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
-MappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
-MappingClassInfo.o: ../graphics/DevFont.h ../graphics.new/BasicStats.h
-MappingClassInfo.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
+MappingClassInfo.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
+MappingClassInfo.o: ../graphics/ETk.h ../graphics/Xdef.h
+MappingClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
+MappingClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+MappingClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
+MappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
+MappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
+MappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
+MappingClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+MappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
+MappingClassInfo.o: ../graphics/Cursor.h ../graphics/DevFont.h
+MappingClassInfo.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+MappingClassInfo.o: ../graphics.new/GdataStat.h
 MappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
 MappingClassInfo.o: ../graphics.new/DataSourceBuf.h
 MappingClassInfo.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
@@ -648,7 +664,7 @@ Message.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Message.o: /usr/include/sys/va_list.h /usr/include/sys/time.h
 Message.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 Message.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-Message.o: /usr/include/sys/time.h /usr/include/math.h
+Message.o: /usr/include/time.h /usr/include/math.h
 Message.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h MultiRec.h
 Message.o: ../graphics.new/TData.h ../graphics/DeviseTypes.h
 Message.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -679,7 +695,7 @@ TDataCycle.o: /usr/include/sys/va_list.h /usr/include/stdlib.h TDataCycle.h
 TDataCycle.o: ../graphics.new/TDataAscii.h /usr/include/sys/types.h
 TDataCycle.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 TDataCycle.o: /usr/include/sys/select.h /usr/include/sys/time.h
-TDataCycle.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
+TDataCycle.o: /usr/include/time.h ../graphics/DeviseTypes.h
 TDataCycle.o: /usr/include/values.h ../graphics/DevStatus.h
 TDataCycle.o: ../graphics/Dispatcher.h /usr/include/unistd.h
 TDataCycle.o: /usr/include/sys/unistd.h /usr/include/string.h
@@ -717,7 +733,7 @@ TDataHost.o: /usr/include/sys/va_list.h /usr/include/stdlib.h TDataHost.h
 TDataHost.o: ../graphics.new/TDataAscii.h /usr/include/sys/types.h
 TDataHost.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 TDataHost.o: /usr/include/sys/select.h /usr/include/sys/time.h
-TDataHost.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
+TDataHost.o: /usr/include/time.h ../graphics/DeviseTypes.h
 TDataHost.o: /usr/include/values.h ../graphics/DevStatus.h
 TDataHost.o: ../graphics/Dispatcher.h /usr/include/unistd.h
 TDataHost.o: /usr/include/sys/unistd.h /usr/include/string.h
@@ -755,7 +771,7 @@ TDataMulti.o: /usr/include/sys/va_list.h /usr/include/stdlib.h TDataMulti.h
 TDataMulti.o: ../graphics.new/TDataAscii.h /usr/include/sys/types.h
 TDataMulti.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 TDataMulti.o: /usr/include/sys/select.h /usr/include/sys/time.h
-TDataMulti.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
+TDataMulti.o: /usr/include/time.h ../graphics/DeviseTypes.h
 TDataMulti.o: /usr/include/values.h ../graphics/DevStatus.h
 TDataMulti.o: ../graphics/Dispatcher.h /usr/include/unistd.h
 TDataMulti.o: /usr/include/sys/unistd.h /usr/include/string.h
@@ -789,8 +805,8 @@ TDataMulti.o: ../graphics/Control.h ../graphics/Util.h /usr/include/ctype.h
 TDataMulti.o: /usr/include/math.h /usr/include/floatingpoint.h
 TDataMulti.o: /usr/include/sys/ieeefp.h ../graphics.new/DataSeg.h
 disp.o: /usr/include/math.h /usr/include/floatingpoint.h
-disp.o: /usr/include/sys/ieeefp.h /usr/include/sys/time.h
-disp.o: /usr/include/sys/time.h /usr/include/sys/feature_tests.h
+disp.o: /usr/include/sys/ieeefp.h /usr/include/time.h
+disp.o: /usr/include/sys/feature_tests.h /usr/include/sys/time.h
 disp.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 disp.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 disp.o: ../graphics/DeviseTypes.h /usr/include/values.h
@@ -802,7 +818,8 @@ disp.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
 disp.o: ../graphics/Pattern.h ../graphics/ColorMgr.h ../graphics/WindowRep.h
 disp.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 disp.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
-disp.o: /usr/include/sys/errno.h ../graphics.new/RectShape.h
+disp.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
+disp.o: ../graphics/Xdef.h ../graphics.new/RectShape.h
 disp.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
 disp.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
 disp.o: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h

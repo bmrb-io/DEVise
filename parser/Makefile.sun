@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.4  1997/03/28 16:12:00  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -23,10 +27,11 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-codegen.o: /usr/include/stdio.h /usr/include/string.h
-codegen.o: /usr/include/sys/stdtypes.h /usr/include/stdlib.h parse.h
-codegen.o: codegen.h
-main.o: parse.h /usr/include/stdio.h
-parse.o: /usr/include/stdio.h /usr/include/stdlib.h
-parse.o: /usr/include/sys/stdtypes.h parse.h tokens.h /usr/include/malloc.h
-parse.o: codegen.h
+codegen.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+codegen.o: /usr/include/sys/va_list.h /usr/include/string.h
+codegen.o: /usr/include/stdlib.h parse.h codegen.h
+main.o: parse.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
+main.o: /usr/include/sys/va_list.h
+parse.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+parse.o: /usr/include/sys/va_list.h /usr/include/stdlib.h parse.h tokens.h
+parse.o: /usr/include/malloc.h codegen.h
