@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.58  1999/10/12 17:59:25  wenger
+  Fixed bug in code for checking if the mouse is on a cursor that caused
+  devised to crash with JavaScreen; fixed Dispatcher problem that sometimes
+  caused core dump when DEVise is killed with INT signals; WindowRep
+  remembers last cursor hit type to avoid changing the mouse cursor unless
+  really necessary.
+
   Revision 1.57  1999/10/05 17:55:36  wenger
   Added debug log level.
 
@@ -388,6 +395,8 @@ Dispatcher::~Dispatcher()
 #if !defined(LINUX)
   signal(SIGSYS, SIG_DFL);
 #endif
+
+  DebugLog::DeleteAll();
 }
 
 

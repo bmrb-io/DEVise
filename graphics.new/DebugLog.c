@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1999/10/05 17:55:47  wenger
+  Added debug log level.
+
   Revision 1.8  1999/09/29 00:56:01  wenger
   Improved handing of session files in JavaScreen support: better error
   checking, devised won't go up from 'base' session directory;
@@ -82,6 +85,10 @@ static DebugLog *_defaultLog = NULL;
  */
 DebugLog::DebugLog(Level logLevel, const char *filename, long maxSize)
 {
+#if defined(DEBUG)
+  printf("DebugLog::DebugLog(%d, %s)\n", logLevel, filename);
+#endif
+
   if (Init::DoDebugLog()) {
     // Note: using open() intead of fopen() here so we can open an existing
     // file for writing without truncating it.  RKW 1999-07-16.
@@ -95,6 +102,11 @@ DebugLog::DebugLog(Level logLevel, const char *filename, long maxSize)
       char logBuf[1024];
       sprintf(logBuf, "BEGINNING OF DEVISE DEBUG LOG (%s)\n", GetTimeString());
       write(_fd, logBuf, strlen(logBuf));
+      sprintf(logBuf, "Log level is: %d\n", logLevel);
+      write(_fd, logBuf, strlen(logBuf));
+
+      _filename = CopyString(filename);
+      printf("DEVise debug log file is: %s\n", _filename);
     }
     _maxSize = maxSize;
     _logNum = 0;
@@ -117,7 +129,25 @@ DebugLog::~DebugLog()
     if (close(_fd) != 0) {
       fprintf(stderr, "Error (%d) closing debug log file\n", errno);
     }
+
+    if (_filename) {
+      printf("DEVise debug log file is: %s\n", _filename);
+      free(_filename);
+    }
   }
+}
+
+/*------------------------------------------------------------------------------
+ * function: DebugLog::SetLogLevel
+ * Log a message.
+ */
+void
+DebugLog::SetLogLevel(Level logLevel)
+{
+  _logLevel = logLevel;
+  char logBuf[1024];
+  sprintf(logBuf, "Log level set to: %d\n", _logLevel);
+  write(_fd, logBuf, strlen(logBuf));
 }
 
 /*------------------------------------------------------------------------------

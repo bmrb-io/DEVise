@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1999/10/05 17:55:37  wenger
+  Added debug log level.
+
   Revision 1.24  1999/08/25 14:55:31  wenger
   More improvements to JavaScreen argument handling; assertion failures are
   written to debug log.
@@ -182,7 +185,6 @@ void Exit::DoExit(int code)
 
 #if !defined(LIBCS) && !defined(ATTRPROJ)
     HangCheck::DestroyDefault();
-    DebugLog::DeleteAll();
 #endif
 
     exit(code);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.54  1999/10/05 17:55:38  wenger
+  Added debug log level.
+
   Revision 1.53  1999/07/19 19:46:33  wenger
   If Devise gets hung, it now detects this and kills itself (mainly for
   the sake of JavaScreen support).
@@ -896,6 +899,10 @@ void Init::DoInit(int &argc, char **argv)
 	  Usage(argv[0]);
 	}
 	_logLevel = atoi(argv[i+1]);
+	// In case the log already exists (normally the case).
+	if (DebugLog::DefaultLog()) {
+	  DebugLog::DefaultLog()->SetLogLevel((DebugLog::Level)_logLevel);
+	}
 	MoveArg(argc,argv,i,2);
       }
 

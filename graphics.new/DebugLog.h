@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/10/05 17:55:47  wenger
+  Added debug log level.
+
   Revision 1.5  1999/09/29 00:56:01  wenger
   Improved handing of session files in JavaScreen support: better error
   checking, devised won't go up from 'base' session directory;
@@ -62,6 +65,8 @@ public:
   void Message(Level level, const char *msg1, int argc,
       const char * const *argv, const char *msg2 = "\n");
 
+  void SetLogLevel(Level logLevel);
+
   static DebugLog *DefaultLog();
   static void DeleteAll();
 
@@ -79,6 +84,7 @@ private:
   int _fd;
   long _maxSize;
   Level _logLevel;
+  char *_filename;
 };
 
 #endif /* _DebugLog_h_ */
