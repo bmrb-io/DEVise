@@ -27,6 +27,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2001/08/20 18:20:08  wenger
+// Fixes to various font problems: XDisplay calculates point sizes correctly
+// and uses screen resolution in specifying font; JS passes *its* screen
+// resolution to the devised so that fonts show up correctly in the JS
+// (JS protocol version now 7.0); changed DEVise version to 1.7.4.
+//
 // Revision 1.4  2001/05/11 20:36:08  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -120,6 +126,9 @@ public final class DEViseJSValues
 
     public final class Session {
         public String defaultName = null;
+	public String clientLogName = null;
+	public boolean autoPlayback = false;
+	public boolean playbackOriginal = false;
     }
 
     public Canvas canvas = new Canvas();
