@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.46  1998/02/26 20:39:00  taodb
+#  Added support of building csgroup directory
+#
 #  Revision 1.45  1998/02/20 20:43:03  wenger
 #  Changed color and utils libraries to new export directory scheme for
 #  dealing with include files (email with complete explanation forthcoming).
@@ -211,15 +214,15 @@ GENERIC = $(CC) -o $@ generic.o StateMap.o CompDate.o \
 		$(ARCH_LDFLAGS) -L../DTE -L../graphics.new \
 		-lmonolith $(LDFLAGS)
 
-generic: generic.o StateMap.o $(ALLLIBS) $(MONOLITHLIB)
+generic: generic.o StateMap.o $(ALLLIBS) $(MONOLITHLIB) $(SERVERLIB)
 	$(FORCE_DATE)
 	$(GENERIC) $(ARCH_LDPOST)
 
-generic.pure: generic.o StateMap.o $(ALLLIBS) $(MONOLITHLIB)
+generic.pure: generic.o StateMap.o $(ALLLIBS) $(MONOLITHLIB) $(SERVERLIB)
 	$(FORCE_DATE)
 	$(PURIFY) $(PURE_OPT) $(GENERIC) $(ARCH_LDPOST)
 
-generic.static: generic.o StateMap.o $(ALLLIBS) $(MONOLITHLIB)
+generic.static: generic.o StateMap.o $(ALLLIBS) $(MONOLITHLIB) $(SERVERLIB)
 	$(FORCE_DATE)
 	$(GENERIC) $(ARCH_STATIC_LDPOST)
 

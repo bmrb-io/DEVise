@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/26 20:35:11  taodb
+  Removed ParaseAPI() interface, and added CommandObject interface
+
   Revision 1.2  1998/02/12 17:14:48  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -66,31 +69,31 @@ Datum NULL_DATUM;
 
 Datum::Datum() {
 	
-	dataval = NULL;
 	datasize = 0;
+	dataval = NULL;
 }
 
 Datum::Datum(char *bytearray, int size) {
 	
-	dataval = new(char) [size];
-	memmove(dataval, bytearray, size);
 	datasize = size;
+	dataval = new(char) [size];
+	if (dataval == NULL) { ERROR(FATAL, strerror(errno)); }
+	memmove(dataval, bytearray, size);
 }
 
 Datum::Datum(const Datum& d) {
 		
 	datasize = d.datasize;
 	dataval = new(char) [datasize];
-	if (dataval == NULL)
-		ERROR(FATAL, strerror(errno));
+	if (dataval == NULL) { ERROR(FATAL, strerror(errno)); }
 	memmove(dataval, d.dataval, datasize);
 }
 
 Datum::~Datum() {
 
+	datasize = 0;
 	delete [] dataval;
 	dataval = NULL;
-	datasize = 0;
 }
 
 char *
@@ -109,8 +112,11 @@ void
 Datum::set(char *bytearray, int size) {
 
 	delete [] dataval;
-	dataval = bytearray;
+
 	datasize = size;
+	dataval = new(char) [size];
+	if (dataval == NULL) { ERROR(FATAL, strerror(errno)); }
+	memmove(dataval, bytearray, size);
 }
 int
 Datum::fold() const {
@@ -128,10 +134,11 @@ Datum::operator=(const Datum& d) {
 	if (this == &d)
 		return *this;
 
+	delete [] dataval;
+
 	datasize = d.datasize;
-	if (dataval != NULL)
-		delete [] dataval;
 	dataval = new(char) [datasize];
+	if (dataval == NULL) { ERROR(FATAL, strerror(errno)); }
 	memmove(dataval, d.dataval, datasize);
 	return *this;
 }

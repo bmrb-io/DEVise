@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:15:06  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.4  1998/02/12 05:02:23  taodb
   Made code proceed even if DEVISE_COLLABORATOR environmental variable is not defined
 
@@ -110,7 +113,7 @@ AcptSwitchConnection(int sockfd, struct sockaddr *Address, int *size) {
 	else
 		printf("SO_KEEPALIVE is unset\n"); 
 	if ((acptfd = accept(sockfd, Address, size)) < 0) {
-		ERROR(FATAL, "Accept Failed");
+		{ ERROR(FATAL, "Accept Failed"); }
 	}
 	return acptfd;
 }
@@ -140,22 +143,22 @@ RPCInit(char *server, ConnectInfo Address) {
 	SwitchAddress.sin_port = SRV_PORT;
 
 	if ((MySocketfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-		ERROR(FATAL, "Socket Failed");
+		{ ERROR(FATAL, "Socket Failed"); }
 	}
 
 	if (setsockopt(MySocketfd, SOL_SOCKET, SO_REUSEADDR,
 			(char *) &code, sizeof(code)) < 0) {
-		ERROR(FATAL, "Setsockopt Failed");
+		{ ERROR(FATAL, "Setsockopt Failed"); }
 	}
 
 	if (bind(MySocketfd, (struct sockaddr *)&Address, 
 		 sizeof(Address)) < 0) {
 		printf("Error: %d", errno);
 		perror("Bind: ");
-		ERROR(FATAL, "Bind Failed");
+		{ ERROR(FATAL, "Bind Failed"); }
 	}
 	if (listen(MySocketfd, 5) < 0) {
-		ERROR(FATAL, "Listen Failed");
+		{ ERROR(FATAL, "Listen Failed"); }
 	}
 	return MySocketfd;
 }
@@ -386,7 +389,7 @@ ReConnect(void) {
 			}
 		 	if ((gInfo->fd = AcptSwitchConnection(MySocketfd, 
 				 (struct sockaddr *) &Address, &size)) <0){
-					ERROR(FATAL, "Accept Failed");
+					{ ERROR(FATAL, "Accept Failed"); }
 			}
 		}
 	}

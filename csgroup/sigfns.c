@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:15:08  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:24:10  liping
   Added CVS header
 
@@ -64,7 +67,7 @@ sig_install(int sig, SigHandler handler) {
 	sigemptyset(&act.sa_mask);
 	act.sa_flags = 0;
 	if (sigaction(sig, &act, 0) < 0) {
-		ERROR(FATAL, "SigAction Failed\n");
+		{ ERROR(FATAL, "SigAction Failed\n"); }
 	}
 }
 
@@ -73,11 +76,11 @@ sig_block(int sig) {
 	sigset_t set;
 
 	if (sigprocmask(SIG_SETMASK, 0, &set) < 0) {
-		ERROR(NON_FATAL, "Unable to read procmask");
+		{ ERROR(NON_FATAL, "Unable to read procmask"); }
 	}
 	sigaddset(&set, sig);
 	if (sigprocmask(SIG_SETMASK, &set, 0) < 0) {
-		ERROR(NON_FATAL, "Unable to set procmask");
+		{ ERROR(NON_FATAL, "Unable to set procmask"); }
 	}
 }
 
@@ -86,10 +89,10 @@ sig_unblock(int sig) {
 	sigset_t set;
 
 	if (sigprocmask(SIG_SETMASK, 0, &set) < 0) {
-		ERROR(NON_FATAL, "Unable to read procmask");
+		{ ERROR(NON_FATAL, "Unable to read procmask"); }
 	}
 	sigdelset(&set, sig);
 	if (sigprocmask(SIG_SETMASK, &set, 0) < 0) {
-		ERROR(NON_FATAL, "Unable to set procmask");
+		{ ERROR(NON_FATAL, "Unable to set procmask"); }
 	}
 }
