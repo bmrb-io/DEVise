@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.101  2001/04/17 15:51:36  xuk
+// Added the functionality of close debug window.
+//
 // Revision 1.100  2001/04/17 02:33:49  xuk
 // Added functionality to display logging info under the non-dubug mode.
 // 1. added msgBuffer to store all the logging info.
@@ -298,7 +301,9 @@ public class jsdevisec extends Panel
     private Button helpButton = new Button("Help");
     private Label commMode = new Label("");
     private Button modeButton = new Button("Mode");
-    private Button logButton = new Button("DisplayLog");
+    private final String displayLogStr = "Display Log";
+    private final String closeLogStr = "Close Log";
+    private Button logButton = new Button(displayLogStr);
 
     public DEViseAnimPanel animPanel = null;
     public DEViseViewInfo viewInfo = null;
@@ -436,11 +441,12 @@ public class jsdevisec extends Panel
 		//
         Component[] button = null;
         if (jsValues.uiglobals.inBrowser) {
-            button = new Component[4];
+            button = new Component[5];
             button[0] = restartButton;
             button[1] = stopButton;
             button[2] = modeButton;
-            button[3] = helpButton;
+            button[3] = logButton;
+            button[4] = helpButton;
         } else {
             button = new Component[10];
             button[0] = openButton;
@@ -716,7 +722,7 @@ public class jsdevisec extends Panel
     {
 	String label = logButton.getLabel();
 	
-	if (label.equals("DisplayLog")) {
+	if (label.equals(displayLogStr)) {
 	    jsValues.debug._debugLevel = 1;
 	    debugWindow = new YLogGUI(jsValues.debug._debugLevel);
 	    showDebug();
@@ -727,13 +733,13 @@ public class jsdevisec extends Panel
 	    }
 	    
 	    msgBuffer.removeAllElements();
-	    logButton.setLabel("CloseLog");
+	    logButton.setLabel(closeLogStr);
 	
 	} else {
 	    jsValues.debug._debugLevel = 0;
 	    hideDebug();
 	    debugWindow = null;
-	    logButton.setLabel("DisplayLog");
+	    logButton.setLabel(displayLogStr);
 	}
 
     }
