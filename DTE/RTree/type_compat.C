@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/03/28 16:07:52  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include <sys/types.h>
@@ -51,12 +55,12 @@ void *page_id_t::page_repr() const
   return ((void *) (&pid));
 }
 
-
 // Interprets a bit pattern produced from page_repr() and assigns this page_id_t
 // to the appropriate value (ie. the inverse of page_repr())
 void page_id_t::interp_pid_str (void *inp_data)
 {
-  pid = *((int *) inp_data);
+	memcpy(&pid, inp_data, sizeof(int));	
+//  pid = *((int *) inp_data);	// inp_data was not aligned
 }
 
 
