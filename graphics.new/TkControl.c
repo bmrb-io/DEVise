@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1995/11/28 00:02:13  jussi
+  Added printWindows command.
+
   Revision 1.11  1995/11/18 01:52:15  ravim
   defaultGroup removed. Groups associated with schema.
 
@@ -814,6 +817,15 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				Tcl_AppendElement(interp, buf);
 			}
 		}
+		else if (strcmp(argv[1], "ToggleStatistics") == 0) {
+		    View *vg = (View *)classDir->FindInstance(argv[2]);
+		    if (vg == NULL){
+			interp->result = "Can't find view in isMapped";
+			goto error;
+		      }
+		    /* Toggle value of DisplayStats */
+		    vg->ToggleDisplayStats();
+		  }
 		else {
 			interp->result = "wrong args";
 			goto error;

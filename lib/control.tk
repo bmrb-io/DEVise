@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.27  1995/11/28 00:03:41  jussi
+#	Added printing of views to menu.
+#
 #	Revision 1.26  1995/11/27 15:21:12  jussi
 #	Instead of reading a single, host-dependent config file, control.tk now
 #	reads a common, host-independent config file, followed by a smaller
@@ -363,6 +366,8 @@ menu .mbar.view.menu -tearoff 0
 	-command {DoToggleAxisAllViews X}
 .mbar.view.menu add command -label "Toggle Y Axes" \
 	-command {DoToggleAxisAllViews Y}
+.mbar.view.menu add command -label "Toggle Statistics" \
+	-command {DoToggleStatistics}
 #.mbar.view.menu add command -label "Action" -command DoViewAction
 #.mbar.view.menu add command -label "Save Pixmap" -command DoSavePixmap
 #.mbar.view.menu add command -label "Load Pixmap" -command DoLoadPixmap
@@ -3103,6 +3108,23 @@ proc DoToggleAxisAllViews { axis } {
 	set views [ DEVise get view $viewClass ]
 	foreach v $views {
 	    DEVise setAxisDisplay $v $axis $stat
+	}
+    }
+}
+
+proc DoToggleStatistics {} {
+    global curView
+    if { [ string compare $curView "" ] ==  0 } {
+	set but [dialog .toggleWinError "ToggleStatisticsError" \
+		"Please select a view by clicking in it" "" 0 OK ]
+	return
+    }
+
+    set viewClasses [ DEVise get view ]
+    foreach viewClass $viewClasses {
+	set views [ DEVise get view $viewClass ]
+	foreach v $views {
+	    DEVise ToggleStatistics $v
 	}
     }
 }
