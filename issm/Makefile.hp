@@ -1,0 +1,29 @@
+depend:
+	makedepend -fMakefile.hp \
+		-I../issm -I../tape -I/s/tcl/include \
+		*.C
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+binconv.o: /usr/include/math.h /usr/include/sys/stdsyms.h
+binconv.o: /usr/include/assert.h binconv.h /usr/include/string.h
+extract.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
+extract.o: /usr/include/assert.h /usr/include/string.h /usr/include/stdlib.h
+extract.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /usr/include/X11/Xlib.h
+extract.o: /usr/include/sys/types.h /usr/include/X11/X.h
+extract.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+extract.o: /usr/include/stddef.h rectape.h ../tape/tapedrive.h
+extract.o: ../tape/machdep.h /usr/include/limits.h /usr/include/sys/param.h
+extract.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
+extract.o: /usr/include/sys/time.h /usr/include/sys/ioctl.h
+extract.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+extract.o: /usr/include/sys/shm.h /usr/include/sys/sem.h binconv.h issmdata.h
+rectape.o: /usr/include/stdlib.h rectape.h /usr/include/assert.h
+rectape.o: ../tape/tapedrive.h /usr/include/stdio.h
+rectape.o: /usr/include/sys/stdsyms.h ../tape/machdep.h /usr/include/limits.h
+rectape.o: /usr/include/sys/param.h /usr/include/sys/types.h
+rectape.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
+rectape.o: /usr/include/sys/time.h /usr/include/sys/ioctl.h
+rectape.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+rectape.o: /usr/include/sys/shm.h /usr/include/sys/sem.h binconv.h
+rectape.o: /usr/include/string.h
