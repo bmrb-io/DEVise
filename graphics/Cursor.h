@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/01/30 21:14:08  jussi
+  Removed references to specific colors.
+
   Revision 1.3  1995/12/29 18:26:36  jussi
   Added FilterAboutToChange() to facilitate new cursor mechanism.
   Also added the copyright notice.
@@ -38,7 +41,7 @@ DefinePtrDList(DeviseCursorList, DeviseCursor *)
 
 class DeviseCursor : private ViewCallback {
 public:
-  DeviseCursor(char *name, VisualFlag flag, Color color = HighlightColor);
+  DeviseCursor(char *name, VisualFlag flag, Color color = ForegroundColor);
   virtual ~DeviseCursor();
 
   /* Set source view. Changing this view's visual filter
