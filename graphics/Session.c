@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.25  1998/05/14 18:21:08  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.24  1998/05/05 15:14:47  zhenhai
   Implemented 3D Cursor as a rectangular block in the destination view
   showing left, right, top, bottom, front and back cutting planes of the
@@ -775,6 +779,8 @@ Session::SaveView(char *category, char *devClass, char *instance,
   status += SaveParams(saveData, "getViewGDS", "setViewGDS", instance);
 
   status += SaveParams(saveData, "getHistogram", "setHistogram", instance);
+
+  status += SaveParams(saveData, "viewGetAlign", "viewSetAlign", instance);
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;
