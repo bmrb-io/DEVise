@@ -1,7 +1,24 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:16:11  jussi
+  Added CVS header.
+*/
 
 /* Xaw implementation for control panel */
 
@@ -25,6 +42,10 @@ public:
 	virtual char *FileName() { return _fileName; }
 	virtual char *FileAlias() { return _fileAlias; }
 
+#ifdef TK_WINDOW
+	virtual Tcl_Interp *GetInterp() { return _interp; }
+	virtual Tk_Window GetMainWindow() { return _mainWindow; }
+#endif
 
 	virtual void SelectView(View *view);
 
@@ -37,7 +58,7 @@ public:
 	/* Return name of view last accessed */
 	virtual char *ViewName() { return _viewName; }
 
-    /* Get current mode */
+	/* Get current mode */
 	virtual Mode GetMode();
 
 	/* Return TRUE if restoring a session */
