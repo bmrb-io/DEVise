@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.53  1999/07/13 17:34:10  wenger
+  Changed version to 1.6.4 because of new view symbol features.
+
   Revision 1.52  1999/06/25 15:58:25  wenger
   Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
   now uses DebugLog facility instead of printf; dispatcher logging is turned
@@ -298,7 +301,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.6.4";
+static const char *	version = "1.6.5";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1999";

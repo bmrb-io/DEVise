@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.123  1999/08/17 19:47:03  wenger
+  Converted Condor UserMonth session from high/low symbols to piles for
+  better representation of data; fixed some cursor/pile drawing bugs and
+  TData switching bugs that I found in the process.
+
   Revision 1.122  1999/08/12 16:03:56  wenger
   Implemented "inverse" zoom -- alt-drag zooms out instead of in.
 
@@ -725,16 +730,21 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
   _gds = NULL;
   _drawToScreen = true;
   _sendToSocket = false;
+
   _gdsParams.portNum = 0;
   _gdsParams.file = NULL;
   _gdsParams.sendText = true;
   _gdsParams.separator = ' ';
+  _gdsParams.rgbColor = true;
+
   _jsDrawToScreen = true;
   _jsSendToSocket = false;
+
   _jsGdsParams.portNum = 0;
   _jsGdsParams.file = NULL;
   _jsGdsParams.sendText = true;
   _jsGdsParams.separator = ' ';
+  _jsGdsParams.rgbColor = true;
 
   _countMapping = NULL;
   _dupElim = NULL;

@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.59  1999/09/07 19:00:31  wenger
+  dteInsertCatalogEntry command changed to tolerate an attempt to insert
+  duplicate entries without causing a problem (to allow us to get rid of
+  Tcl in session files); changed Condor session scripts to take out Tcl
+  control statements in data source definitions; added viewGetImplicitHome
+  and related code in Session class so this gets saved in session files
+  (still no GUI for setting this, though); removed SEQ-related code.
+
   Revision 1.58  1999/09/01 19:27:01  wenger
   Debug logging improved -- directory of log file can now be specified
   with the DEVISE_LOG_DIR environment variable (changed most startup scripts
@@ -289,7 +297,7 @@
 #include <stdlib.h>
 #include <sys/param.h>
 
-#include <tcl.h>
+#include <string>
 
 #include "Session.h"
 #include "DevError.h"
@@ -333,28 +341,31 @@ class ControlPanelSimple : public ControlPanel {
 public:
   // These member functions are unique to this class.
   ControlPanelSimple(DevStatus &status) {
-    _interp = Tcl_CreateInterp();
-    if (_interp == NULL) {
-      reportErrNosys("Unable to create Tcl interpreter");
-      status = StatusFailed;
-    }
+	_result = "";
   }
   virtual ~ControlPanelSimple() {
-    Tcl_DeleteInterp(_interp);
   }
 
   virtual int ReturnVal(u_short flag, char *result) {
     _valueReturned = true;
-    Tcl_SetResult(_interp, result, TCL_VOLATILE);
+	_result = result;
     return 1;
   }
   virtual int ReturnVal(int argc, char **argv) {
     _valueReturned = true;
-    Tcl_ResetResult(_interp);
-    for(int i = 0; i < argc; i++) 
-      Tcl_AppendElement(_interp, argv[i]);
+	_result = "";
+    for(int i = 0; i < argc; i++) {
+	  if (i > 0) _result += " ";
+	  Boolean needsBraces = (strlen(argv[i]) == 0) ||
+	      (strchr(argv[i], ' ') != NULL) || (strchr(argv[i], '\t') != NULL) ||
+		  (strchr(argv[i], '$') != NULL) || (strchr(argv[i], '"') != NULL);
+	  if (needsBraces) _result += "{";
+	  _result += argv[i];
+	  if (needsBraces) _result += "}";
+	}
     return 1;
   }
+  const char *GetResult() { return _result.c_str(); }
 
   // These member functions are called in ParseAPI(), and therefore need
   // to call the appropriate function in the "real" ControlPanel object.
@@ -369,7 +380,7 @@ public:
   virtual void RestartSession() { ControlPanel::Instance()->RestartSession(); }
 
   virtual void SetBatchMode(Boolean mode) {
-      ControlPanel::Instance()-> SetBatchMode(mode); }
+      ControlPanel::Instance()->SetBatchMode(mode); }
 
   virtual void SetSyncNotify() { ControlPanel::Instance()->SetSyncNotify(); }
 
@@ -392,7 +403,28 @@ public:
   virtual void SubclassDoInit() {}
 
   // This is the interpreter used for opening a session.
-  Tcl_Interp *_interp;
+  string _result;
+};
+
+class ArgsBuf {
+public:
+  ArgsBuf() {
+    _argc = 0;
+	_argv = NULL;
+	_buf = NULL;
+  };
+
+  ~ArgsBuf() {
+    delete[] _argv;
+	_argv = NULL;
+
+	delete[] _buf;
+	_buf = NULL;
+  }
+
+  int _argc;
+  char **_argv;
+  char *_buf;
 };
 
 static char *classNameList;
@@ -423,26 +455,13 @@ Session::Open(char *filename)
   ControlPanelSimple control(status);
 
   if (status.IsComplete()) {
-    Tcl_CreateCommand(control._interp, "DEVise", DEViseCmd, &control, 0);
-    Tcl_CreateCommand(control._interp, "OpenDataSource", OpenDataSourceCmd,
-	&control, 0);
-    Tcl_CreateCommand(control._interp, "scanDerivedSources",
-	scanDerivedSourcesCmd, &control, 0);
-    Tcl_CreateCommand(control._interp, "SetDescription", SetDescriptionCmd,
-	&control, 0);
-
-    Tcl_SetVar(control._interp, "template", "0", TCL_GLOBAL_ONLY);
-
 	// disable logging while evaluating the file
 	CmdLogRecord* cmdLog = cmdContainerp->getCmdLog();
 	int oldStatus = cmdLog->getLogStatus();
 	cmdLog->setLogStatus(false);
-    if (Tcl_EvalFile(control._interp, filename) != TCL_OK) {
-      char errBuf[256];
-      sprintf(errBuf, "Tcl error: %s", control._interp->result);
-      reportErrNosys(errBuf);
-      status = StatusFailed;
-    }
+
+    status += ReadSession(&control, filename);
+
 	// resume original logging status
 	cmdLog->setLogStatus(oldStatus);
   }
@@ -789,41 +808,32 @@ Session::CreateTData(char *name)
   char param[MAXPATHLEN];
   Boolean isDteSource;
   if (status.IsComplete()) {
-    Tcl_Interp* interp = Tcl_CreateInterp();
-    if (interp == NULL) {
-      reportErrNosys("Unable to create Tcl interpreter");
-      status = StatusFailed;
+
+    // This is a kludgey way of trying to figure out whether we have a
+    // DTE data source or a UNIXFILE -- it will fail if someone has a
+    // table with an attribute called UNIXFILE.  However, because of changes
+    // Donko has made to SQLViews, Tcl_SplitList() will barf on many
+    // SQLView data sources, so we have to decide whether it belongs to
+    // the DTE before with do Tcl_SplitList() on it.  RKW Mar. 12, 1998.
+	//
+	// Tcl_SplitList() has been replaced by ParseString().  RKW 1999-09-08.
+    if (strstr(catEntry, "UNIXFILE") != NULL) {
+      isDteSource = false;
     } else {
+      isDteSource = true;
+    }
 
-      // This is a kludgey way of trying to figure out whether we have a
-      // DTE data source or a UNIXFILE -- it will fail if someone has a
-      // table with an attribute called UNIXFILE.  However, because of changes
-      // Donko has made to SQLViews, Tcl_SplitList() will barf on many
-      // SQLView data sources, so we have to decide whether it belongs to
-      // the DTE before with do Tcl_SplitList() on it.  RKW Mar. 12, 1998.
-      if (strstr(catEntry, "UNIXFILE") != NULL) {
-        isDteSource = false;
-      } else {
-        isDteSource = true;
+    if (!isDteSource) {
+	  ArgsBuf args;
+
+	  DevStatus tmpStatus = ParseString(catEntry, args);
+	  status += tmpStatus;
+	  if (tmpStatus.IsComplete()) {
+        strcpy(schema, args._argv[3]);
+        strcpy(schemaFile, args._argv[4]);
+        strcpy(sourceType, args._argv[1]);
+        sprintf(param, "%s/%s", args._argv[8], args._argv[2]);
       }
-
-      if (!isDteSource) {
-        int argcOut;
-        char **argvOut;
-
-        if (Tcl_SplitList(interp, catEntry, &argcOut, &argvOut) != TCL_OK) {
-          reportErrNosys(interp->result);
-          status = StatusFailed;
-        } else {
-          strcpy(schema, argvOut[3]);
-          strcpy(schemaFile, argvOut[4]);
-          strcpy(sourceType, argvOut[1]);
-          sprintf(param, "%s/%s", argvOut[8], argvOut[2]);
-          free((char *) argvOut);
-        }
-      }
-
-      Tcl_DeleteInterp(interp);
     }
   }
 
@@ -905,12 +915,295 @@ Session::CreateTData(char *name)
 }
 
 /*------------------------------------------------------------------------------
+ * function: Session::ReadSession
+ * Read and execute a DEVise session file.
+ */
+DevStatus
+Session::ReadSession(ControlPanelSimple *control, char *filename)
+{
+#if defined(DEBUG)
+  printf("Session::ReadSession(%s)\n", filename);
+#endif
+
+  DevStatus result = StatusOk;
+
+  FILE *fp = fopen(filename, "r");
+  if (!fp) {
+	char errBuf[MAXPATHLEN * 2];
+	sprintf("Unable to open session file <%s>", filename);
+    reportErrSys(errBuf);
+  } else {
+    const int bufSize = 1024;
+	char lineBuf[bufSize];
+
+	while (fgets(lineBuf, bufSize, fp) && result.IsComplete()) {
+#if defined(DEBUG)
+      printf("  read line: %s", lineBuf);
+#endif
+
+	  if (!IsBlankOrComment(lineBuf)) {
+		ArgsBuf args;
+	    if (ParseString(lineBuf, args).IsComplete()) {
+#if defined(DEBUG)
+	      printf("Arguments: ");
+          PrintArgs(stdout, args._argc, args._argv, true);
+#endif
+		  result += RunCommand(control, args._argc, args._argv);
+	    }
+	  }
+	}
+
+    if (fclose(fp) != 0) {
+	  char errBuf[MAXPATHLEN * 2];
+	  sprintf("Error closing session file <%s>", filename);
+      reportErrSys(errBuf);
+	}
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::IsBlankOrComment
+ * Determine whether is string is a blank or comment string, or not.
+ * Comments have '#' as the first non-whitespace character.
+ */
+Boolean
+Session::IsBlankOrComment(const char *str)
+{
+#if defined(DEBUG)
+  printf("Session::IsBlankOrComment(%s)\n", str);
+#endif
+
+  Boolean result = true;
+
+  while (*str) {
+	if (*str == '#') {
+	  break;
+	} else if (!isspace(*str)) {
+	  result = false;
+	  break;
+	}
+    str++;
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::ParseString
+ * Parse a string into an argument list (does not alter the original string).
+ * Arguments delimited by whitespace, double quotes, or braces.
+ * Delete buf, argv when done.
+ */
+DevStatus
+Session::ParseString(const char *str, ArgsBuf &args)
+{
+#if defined(DEBUG)
+  printf("Session::ParseString(%s)\n", str);
+#endif
+
+  DevStatus result = StatusOk;
+
+  enum { ParseInvalid = 0, ParseNone, ParseWhite, ParseInArg,
+      ParseInDoublequote, ParseInBraces, ParseError }
+	  state = ParseNone;
+  char errBuf[MAXPATHLEN * 3];
+
+  args._buf = new (char)[strlen(str) + 1];
+  const char *inP = str;
+  char *outP = args._buf;
+
+  int argCount = 0;
+  const int maxArgs = 128;
+  char *argList[maxArgs];
+  int braceDepth;
+
+  while (*inP && state != ParseError) {
+    if (argCount >= maxArgs) {
+      reportErrNosys("Too many arguments");
+	  state = ParseError;
+    }
+
+    switch (state) {
+    case ParseNone:
+    case ParseWhite:
+	  if (*inP == '"') {
+	    state = ParseInDoublequote;
+	    argList[argCount] = outP;
+	    argCount++;
+	  } else if (*inP == '{') {
+	    state = ParseInBraces;
+	    braceDepth = 1;
+	    argList[argCount] = outP;
+	    argCount++;
+	  } else if (*inP == '}') {
+	    state = ParseInArg;
+	    argList[argCount] = outP;
+	    argCount++;
+		*outP++ = *inP;
+	  } else if (*inP == '\\') {
+		inP++;
+		if (*inP) {
+	      state = ParseInArg;
+	      argList[argCount] = outP;
+	      argCount++;
+		  *outP++ = *inP;
+		}
+	  } else if (isspace(*inP)) {
+	    state = ParseWhite;
+	  } else {
+	    state = ParseInArg;
+	    argList[argCount] = outP;
+	    argCount++;
+		*outP++ = *inP;
+	  }
+	  break;
+
+    case ParseInArg:
+	  if (*inP == '"') {
+		*outP++ = *inP;
+	  } else if (*inP == '{') {
+		*outP++ = *inP;
+	  } else if (*inP == '}') {
+		*outP++ = *inP;
+	  } else if (*inP == '\\') {
+		inP++;
+		if (*inP) {
+		  *outP++ = *inP;
+		}
+	  } else if (isspace(*inP)) {
+	    state = ParseWhite;
+	    *outP++ = '\0';
+	  } else {
+		*outP++ = *inP;
+	  }
+      break;
+
+    case ParseInDoublequote:
+	  if (*inP == '"') {
+	    state = ParseNone;
+	    *outP++ = '\0';
+	  } else if (*inP == '{') {
+		*outP++ = *inP;
+	  } else if (*inP == '}') {
+		*outP++ = *inP;
+	  } else if (*inP == '\\') {
+		inP++;
+		if (*inP) {
+		  *outP++ = *inP;
+		}
+	  } else if (isspace(*inP)) {
+		*outP++ = *inP;
+	  } else {
+		*outP++ = *inP;
+	  }
+      break;
+
+    case ParseInBraces:
+	  if (*inP == '"') {
+		*outP++ = *inP;
+	  } else if (*inP == '{') {
+	    braceDepth++;
+		*outP++ = *inP;
+	  } else if (*inP == '}') {
+	    braceDepth--;
+		if (braceDepth > 0) *outP++ = *inP;
+	  } else if (*inP == '\\') {
+		inP++;
+		if (*inP) {
+		  *outP++ = *inP;
+		}
+	  } else if (isspace(*inP)) {
+		*outP++ = *inP;
+	  } else {
+		*outP++ = *inP;
+	  }
+
+	  if (braceDepth == 0) {
+	    state = ParseNone;
+	    *outP++ = '\0';
+	  }
+      break;
+
+	case ParseError:
+	  // No op.
+	  break;
+
+	default:
+	  DOASSERT(false, "Illegal parse state");
+	  break;
+	}
+
+	inP++;
+  }
+  *outP = '\0';
+
+  if (state == ParseError) {
+    result = StatusFailed;
+	argCount = 0;
+  }
+
+  args._argc = argCount;
+  if (argCount > 0) {
+    args._argv = new (char *)[argCount];
+    for (int index = 0; index < argCount; index++) {
+      args._argv[index] = argList[index];
+    }
+  } else {
+    args._argv = NULL;
+	delete [] args._buf;
+	args._buf = NULL;
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::RunCommand
+ * Run the appropriate command.
+ */
+DevStatus
+Session::RunCommand(ControlPanelSimple *control, int argc, char *argv[])
+{
+#if defined(DEBUG)
+  printf("Session::RunCommand(");
+  PrintArgs(stdout, argc, argv, false);
+  printf(")\n");
+#endif
+
+  DevStatus result = StatusOk;
+  char errBuf[1024];
+
+  if (!strcmp(argv[0], "DEVise")) {
+    result += DEViseCmd(control, argc, argv);
+  } else if (!strcmp(argv[0], "OpenDataSource")) {
+	result += OpenDataSourceCmd(control, argc, argv);
+  } else if (!strcmp(argv[0], "scanDerivedSources")) {
+	result += ScanDerivedSourcesCmd(control, argc, argv);
+  } else if (!strcmp(argv[0], "SetDescription")) {
+	result += SetDescriptionCmd(control, argc, argv);
+  } else {
+    sprintf(errBuf, "Unrecognized command: <%s>", argv[0]);
+	reportErrNosys(errBuf);
+    result = StatusFailed;
+  }
+
+#if defined(DEBUG)
+  printf("  finished command %s; result = ", argv[1]);
+  result.Print();
+  printf("    result = {%s}\n", control->GetResult());
+#endif
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
  * function: Session::DEViseCmd
  * DEVise command procedure for session file interpreter.
  */
-int
-Session::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
-    int argc, char *argv[])
+DevStatus
+Session::DEViseCmd(ControlPanel *control, int argc, char *argv[])
 {
 #if defined(DEBUG)
   printf("Session::DEViseCmd() ");
@@ -920,36 +1213,30 @@ Session::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
   CmdSource cmdSrc(CmdSource::SESSION_PLAY, CLIENT_INVALID);
   CmdDescriptor cmdDes(cmdSrc, CmdDescriptor::UNDEFINED);
 
-  int status = TCL_OK;
+  DevStatus status = StatusOk;
 
   // Don't do anything for "DEVise create tdata...", "DEVise importFileType",
   // "DEVise dteImportFileType", and "DEVise dataSegment" commands.
   if (!strcmp(argv[1], "create") && !strcmp(argv[2], "tdata")) {
     // No op.
-    Tcl_SetResult(interp, "", TCL_VOLATILE);
+	control->ReturnVal(0, "");
   } else if (!strcmp(argv[1], "importFileType")) {
     // No op.
-    Tcl_SetResult(interp, "", TCL_VOLATILE);
+	control->ReturnVal(0, "");
   } else if (!strcmp(argv[1], "dteImportFileType")) {
     // No op.
-    Tcl_SetResult(interp, "", TCL_VOLATILE);
+	control->ReturnVal(0, "");
   } else if (!strcmp(argv[1], "dataSegment")) {
     // No op.
-    Tcl_SetResult(interp, "", TCL_VOLATILE);
+	control->ReturnVal(0, "");
   } else {
     // don't pass DEVise command verb (argv[0])
-    if (cmdContainerp->Run(argc-1, &argv[1],  (ControlPanel *) clientData, cmdDes) < 0) {
-      status = TCL_ERROR;
+    if (cmdContainerp->Run(argc-1, &argv[1], control, cmdDes) < 0) {
+      status = StatusFailed;
       fprintf(stderr, "Error in command: ");
       PrintArgs(stderr, argc, argv);
     }
   }
-
-#if defined(DEBUG)
-  printf("  finished command %s; status = %s\n", argv[1], status == TCL_OK ?
-      "TCL_OK" : "TCL_ERROR");
-  printf("    result = {%s}\n", interp->result);
-#endif
 
   return status;
 }
@@ -958,16 +1245,15 @@ Session::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
  * function: Session::OpenDataSourceCmd
  * OpenDataSource command procedure for session file interpreter.
  */
-int
-Session::OpenDataSourceCmd(ClientData clientData, Tcl_Interp *interp,
-    int argc, char *argv[])
+DevStatus
+Session::OpenDataSourceCmd(ControlPanel *control, int argc, char *argv[])
 {
 #if defined(DEBUG)
   printf("Session::OpenDataSourceCmd() ");
   PrintArgs(stdout, argc, argv);
 #endif
 
-  int status = TCL_OK;
+  DevStatus status = StatusOk;
 
   // Turn old-style (pre-DTE) name into new-style (DTE) name.
   char *result;
@@ -986,25 +1272,24 @@ Session::OpenDataSourceCmd(ClientData clientData, Tcl_Interp *interp,
     result = argv[1];
   }
 
-  Tcl_SetResult(interp, result, TCL_VOLATILE);
+  control->ReturnVal(0, result);
 
   return status;
 }
 
 /*------------------------------------------------------------------------------
- * function: Session::scanDerivedSourcesCmd
- * scanDerivedSources command procedure for session file interpreter.
+ * function: Session::ScanDerivedSourcesCmd
+ * ScanDerivedSources command procedure for session file interpreter.
  */
-int
-Session::scanDerivedSourcesCmd(ClientData clientData, Tcl_Interp *interp,
-    int argc, char *argv[])
+DevStatus
+Session::ScanDerivedSourcesCmd(ControlPanel *control, int argc, char *argv[])
 {
 #if defined(DEBUG)
-  printf("Session::scanDerivedSourcesCmd() ");
+  printf("Session::ScanDerivedSourcesCmd() ");
   PrintArgs(stdout, argc, argv);
 #endif
 
-  int status = TCL_OK;
+  DevStatus status = StatusOk;
 
   // This command is a no-op -- we just need to have the command exist
   // because it's in session files -- derived sources are goofed up
@@ -1017,16 +1302,15 @@ Session::scanDerivedSourcesCmd(ClientData clientData, Tcl_Interp *interp,
  * function: Session::SetDescriptionCmd
  * SetDescription command procedure for session file interpreter.
  */
-int
-Session::SetDescriptionCmd(ClientData clientData, Tcl_Interp *interp,
-    int argc, char *argv[])
+DevStatus
+Session::SetDescriptionCmd(ControlPanel *control, int argc, char *argv[])
 {
 #if defined(DEBUG)
   printf("Session::SetDescriptionCmd() ");
   PrintArgs(stdout, argc, argv);
 #endif
 
-  int status = TCL_OK;
+  DevStatus status = StatusOk;
 
   // This command is a no-op -- we just need to have the command exist
   // because it's in session files.
@@ -1142,10 +1426,9 @@ Session::SaveInterpMapping(char *category, char *devClass, char *instance,
     }
 
     char *result;
-    int argcOut;
-    char **argvOut;
-    status += CallParseAPI(saveData->control, result, false, argcOut, argvOut,
-        "isInterpretedGData", instance);
+	ArgsBuf args;
+    status += CallParseAPI(saveData->control, result, false, args,
+	    "isInterpretedGData", instance);
     if (status.IsComplete()) {
       int isInterpreted = atoi(result);
       if (isInterpreted) {
@@ -1265,17 +1548,15 @@ Session::SaveViewLinks(char *category, char *devClass, char *instance,
   DevStatus status = StatusOk;
 
   char *result;
-  int argcOut;
-  char **argvOut;
-  status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
+  ArgsBuf args;
+  status += CallParseAPI(saveData->control, result, true, args,
       "getLinkViews", instance);
   if (status.IsComplete()) {
     int index;
-    for (index = 0; index < argcOut; index++) {
+    for (index = 0; index < args._argc; index++) {
       fprintf(saveData->fp, "DEVise insertLink {%s} {%s}\n", instance,
-	  argvOut[index]);
+	      args._argv[index]);
     }
-    free((char *) argvOut);
   }
 
   status += SaveParams(saveData, "getLinkMaster", "setLinkMaster", instance,
@@ -1301,13 +1582,12 @@ Session::SaveCursor(char *category, char *devClass, char *instance,
   DevStatus status = StatusOk;
 
   char *result;
-  int argcOut;
-  char **argvOut;
-  status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
+  ArgsBuf args;
+  status += CallParseAPI(saveData->control, result, true, args,
       "getCursorViews", instance);
   if (status.IsComplete()) {
-    char *source = argvOut[0];
-    char *dest = argvOut[1];
+    char *source = args._argv[0];
+    char *dest = args._argv[1];
     if (strlen(source) > 0) {
       fprintf(saveData->fp, "DEVise setCursorSrc {%s} {%s}\n", instance,
           source);
@@ -1316,16 +1596,13 @@ Session::SaveCursor(char *category, char *devClass, char *instance,
       fprintf(saveData->fp, "DEVise setCursorDst {%s} {%s}\n", instance,
           dest);
     }
-    free((char *) argvOut);
   }
 
-  status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
+  status += CallParseAPI(saveData->control, result, true, args,
       "color", "GetCursorColor", instance);
   if (status.IsComplete()) {
     fprintf(saveData->fp, "DEVise color SetCursorColor {%s} %s\n", instance,
-	argvOut[0]);
-
-    free((char *) argvOut);
+	    args._argv[0]);
   }
 
   status += SaveParams(saveData, "getCursorFixedSize", "setCursorFixedSize",
@@ -1351,19 +1628,17 @@ Session::SaveViewMappings(char *category, char *devClass, char *instance,
   DevStatus status = StatusOk;
 
   char *result;
-  int argcOut;
-  char **argvOut;
-  status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
+  ArgsBuf args;
+  status += CallParseAPI(saveData->control, result, true, args,
       "getViewMappings", instance);
   if (status.IsComplete()) {
     int index;
-    for (index = 0; index < argcOut; index++) {
+    for (index = 0; index < args._argc; index++) {
       fprintf(saveData->fp, "DEVise insertMapping {%s} {%s}\n", instance,
-          argvOut[index]);
+          args._argv[index]);
       status += SaveParams(saveData, "getMappingLegend", "setMappingLegend",
-          instance, argvOut[index]);
+          instance, args._argv[index]);
     }
-    free((char *) argvOut);
   }
 
   if (status.IsError()) reportErrNosys("Error or warning");
@@ -1386,18 +1661,17 @@ Session::SaveWindowViews(char *category, char *devClass, char *instance,
   DevStatus status = StatusOk;
 
   char *result;
-  int argcOut;
-  char **argvOut;
-  status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
+  ArgsBuf args;
+  status += CallParseAPI(saveData->control, result, true, args,
       "getWinViews", instance);
   if (status.IsComplete()) {
     //
     // Insert views into windows.
     //
     int index;
-    for (index = 0; index < argcOut; index++) {
+    for (index = 0; index < args._argc; index++) {
       fprintf(saveData->fp, "DEVise insertWindow {%s} {%s}\n",
-	  argvOut[index], instance);
+	      args._argv[index], instance);
     }
 
     //
@@ -1408,13 +1682,11 @@ Session::SaveWindowViews(char *category, char *devClass, char *instance,
     LayoutMode mode;
     window->GetLayoutMode(mode);
     if (mode == CUSTOM) {
-      for (index = 0; index < argcOut; index++) {
+      for (index = 0; index < args._argc; index++) {
         status += SaveParams(saveData, "getViewGeometry", "setViewGeometry",
-            argvOut[index], NULL, NULL, false);
+            args._argv[index], NULL, NULL, false);
       }
     }
-    
-    free((char *) argvOut);
   }
 
   if (status.IsError()) reportErrNosys("Error or warning");
@@ -1459,17 +1731,15 @@ Session::SaveViewHistory(char *category, char *devClass, char *instance,
   fprintf(saveData->fp, "DEVise clearViewHistory {%s}\n", instance);
 
   char *result;
-  int argcOut;
-  char **argvOut;
-  status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
+  ArgsBuf args;
+  status += CallParseAPI(saveData->control, result, true, args,
       "getVisualFilters", instance);
   if (status.IsComplete()) {
     int index;
-    for (index = 0; index < argcOut; index++) {
+    for (index = 0; index < args._argc; index++) {
       fprintf(saveData->fp, "DEVise insertViewHistory {%s} %s\n", instance,
-          argvOut[index]);
+          args._argv[index]);
     }
-    free((char *) argvOut);
   }
 
   if (status.IsError()) reportErrNosys("Error or warning");
@@ -1492,14 +1762,12 @@ Session::SaveCamera(char *category, char *devClass, char *instance,
   DevStatus status = StatusOk;
 
   char *result;
-  int argcOut;
-  char **argvOut;
-  status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
+  ArgsBuf args;
+  status += CallParseAPI(saveData->control, result, true, args,
       "get3DLocation", instance);
   if (status.IsComplete()) {
     fprintf(saveData->fp, "DEVise set3DLocation {%s} ", instance);
-    PrintArgs(saveData->fp, 9, argvOut);
-    free((char *) argvOut);
+    PrintArgs(saveData->fp, 9, args._argv);
   }
 
   if (status.IsError()) reportErrNosys("Error or warning");
@@ -1560,9 +1828,8 @@ Session::SaveParams(SaveData *saveData, char *getCommand, char *setCommand,
   }
 
   char *result;
-  int argcOut;
-  char **argvOut;
-  status += CallParseAPI(saveData->control, result, false, argcOut, argvOut,
+  ArgsBuf args;
+  status += CallParseAPI(saveData->control, result, false, args,
       getCommand, arg0, arg1, arg2);
   if (status.IsComplete()) {
     if (strlen(result) > 0) {
@@ -1581,13 +1848,13 @@ Session::SaveParams(SaveData *saveData, char *getCommand, char *setCommand,
 
 /*------------------------------------------------------------------------------
  * function: Session::CallParseAPI
- * Get parameters from the given 'get' function, write out the given 'set'
- * function with those parameters.
+ * Run the given command; parse the result into individual arguments if
+ * requested.
  */
 DevStatus
-Session::CallParseAPI(ControlPanelSimple *control, char *&result,
-    Boolean splitResult, int &argcOut, char **&argvOut, char *arg0,
-    char *arg1 = NULL, char *arg2 = NULL, char *arg3 = NULL)
+Session::CallParseAPI(ControlPanelSimple *control, const char *&result,
+    Boolean splitResult, ArgsBuf &args, char *arg0, char *arg1 = NULL,
+	char *arg2 = NULL, char *arg3 = NULL)
 {
 #if defined(DEBUG)
   printf("Session::CallParseAPI(%s)\n", arg0);
@@ -1618,19 +1885,23 @@ Session::CallParseAPI(ControlPanelSimple *control, char *&result,
   argvIn[2] = arg2;
   argvIn[3] = arg3;
   if (cmdContainerp->Run(argcIn, argvIn, control, cmdDes) <= 0) {
-    reportErrNosys(control->_interp->result);
+    reportErrNosys(control->GetResult());
     status = StatusFailed;
   } else {
-    result = control->_interp->result;
+    result = control->GetResult();
+#if defined(DEBUG)
+    printf("  result = <%s>\n", result);
+#endif
     if (splitResult) {
-      if (Tcl_SplitList(control->_interp, control->_interp->result, &argcOut,
-	  &argvOut) != TCL_OK) {
-        reportErrNosys(control->_interp->result);
-        status = StatusFailed;
-      }
+      DevStatus tmpStatus = ParseString(result, args);
+	  if (!tmpStatus.IsComplete()) {
+        reportErrNosys(result);
+	  }
+      status += tmpStatus;
     } else {
-      argcOut = 0;
-      argvOut = NULL;
+	  args._buf = NULL;
+      args._argc = 0;
+      args._argv = NULL;
     }
   }
 

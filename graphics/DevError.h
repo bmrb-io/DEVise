@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/03/24 17:26:03  wenger
+  Non-DTE data source code prevents adding duplicate data source names;
+  added "nice axis" feature (sets axis limits to multiples of powers of
+  10 if enabled); improved the propagation of DEVise errors back to the
+  GUI; fixed bug 474 (problem with view home).
+
   Revision 1.5  1998/07/14 15:39:36  wenger
   Committed Matt's fix for egcs.
 
@@ -63,7 +69,8 @@ const int	devNoSyserr = -9999;
 class DevError
 {
 public:
-    static void ReportError(char *message, char *file, int line, int errnum);
+    static void ReportError(const char *message, char *file, int line,
+      int errnum);
     static Boolean SetEnabled(Boolean enabled) {
         Boolean old = _enabled;
         _enabled = enabled;

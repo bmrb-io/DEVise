@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/07/16 21:35:49  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.6  1999/04/02 16:48:46  wenger
   Added timestamp to error messages.
 
@@ -78,7 +86,7 @@ char DevError::_errBuf[MAXPATHLEN * 2];
  * to do something more sophisticated eventually.
  */
 void
-DevError::ReportError(char *message, char *file, int line, int errnum)
+DevError::ReportError(const char *message, char *file, int line, int errnum)
 {
     char * progName = "DEVise";
 

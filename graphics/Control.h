@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.27  1998/09/22 17:23:39  wenger
+  Devised now returns no image data if there are any problems (as per
+  request from Hongyu); added a bunch of debug and test code to try to
+  diagnose bug 396 (haven't figured it out yet); made some improvements
+  to the Dispatcher to make the main loop more reentrant; added some error
+  reporting to the xv window grabbing code; improved command-result
+  checking code.
+
   Revision 1.26  1998/08/10 19:08:21  wenger
   Moved command result buffer from DeviseCommand class to ControlPanel
   class -- saves 7 MB of memory!
@@ -358,6 +366,8 @@ private:
 
 protected:
   friend class DeviseCommand;
+  //TEMP -- it seems like this could be an automatic variable in
+  // DeviseCommand::Run().  RKW 1999-09-08.
   char resultBuf[10*1024];
 };
 

@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.14  1999/03/04 15:10:57  wenger
+  Implemented 'automatic filter update' features: views can be designated
+  to have their visual filters automatically updated with the 'Update
+  Filters' menu selection; alternatively, a session can be opened with
+  the 'Open, Update, and Save' selection, which updates the designated
+  filters and saves the updated session.
+
   Revision 1.13  1999/02/11 19:54:34  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -93,6 +100,7 @@
 
 class ControlPanel;
 class ControlPanelSimple;
+class ArgsBuf;
 
 class Session {
 public:
@@ -115,14 +123,19 @@ public:
   static Boolean OpeningSession() { return _openingSession; }
 
 private:
-  static int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
-      int argc, char *argv[]);
-  static int OpenDataSourceCmd(ClientData clientData, Tcl_Interp *interp,
-      int argc, char *argv[]);
-  static int scanDerivedSourcesCmd(ClientData clientData, Tcl_Interp *interp,
-      int argc, char *argv[]);
-  static int SetDescriptionCmd(ClientData clientData, Tcl_Interp *interp,
-      int argc, char *argv[]);
+  static DevStatus ReadSession(ControlPanelSimple *control, char *filename);
+  static Boolean IsBlankOrComment(const char *str);
+  static DevStatus ParseString(const char *str, ArgsBuf &args);
+  static DevStatus RunCommand(ControlPanelSimple *control, int argc,
+      char *argv[]);
+
+  static DevStatus DEViseCmd(ControlPanel *control, int argc, char *argv[]);
+  static DevStatus OpenDataSourceCmd(ControlPanel * control, int argc,
+      char *argv[]);
+  static DevStatus ScanDerivedSourcesCmd(ControlPanel * control, int argc,
+      char *argv[]);
+  static DevStatus SetDescriptionCmd(ControlPanel * control, int argc,
+      char *argv[]);
 
   struct SaveData {
     ControlPanelSimple *control;
@@ -173,9 +186,9 @@ private:
       char *setCommand, char *arg0, char *arg1 = NULL, char *arg2 = NULL,
       Boolean addBraces = false);
 
-  static DevStatus CallParseAPI(ControlPanelSimple *control, char *&result,
-      Boolean splitResult, int &argcOut, char **&argvOut, char *arg0,
-      char *arg1 = NULL, char *arg2 = NULL, char *arg3 = NULL);
+  static DevStatus CallParseAPI(ControlPanelSimple *control,
+      const char *&result, Boolean splitResult, ArgsBuf &args,
+	  char *arg0, char *arg1 = NULL, char *arg2 = NULL, char *arg3 = NULL);
 
   static Boolean _isJsSession;
   static Boolean _openingSession;
