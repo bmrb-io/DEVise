@@ -1,7 +1,7 @@
 LD = ld
 CC = g++
 LDFLAGS = $(ARCH_LDFLAGS) ../graphics.new/libobj.o \
-	../tape/tapeobj.o ../issm/issmobj.o \
+	../tape/tapeobj.o ../issm/issmobj.o ../compustat/cstatobj.o \
 	-ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm \
 	$(ARCH_LDPOST)
 CFLAGS = $(ARCH_FLAGS) -fexternal-templates -I../../graphics \
