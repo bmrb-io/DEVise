@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.50  1996/07/08 20:31:51  jussi
+  Pixmaps are restored now only if view is not a master of a record
+  link nor a slave of one.
+
   Revision 1.49  1996/07/05 17:10:33  jussi
   Added missing call to CompRhoPhiTheta().
 
@@ -276,9 +280,9 @@ View::View(char *name, VisualFilter &initFilter,
   _camera._dvs = 250;
   _camera._twist_angle = deg_rad(0.0);
   _camera._perspective = 1;
-  _camera.flag = false;
-  _camera.fix_focus = true;
-  _camera.spherical_coord = true;
+  _camera.flag = 0;
+  _camera.fix_focus = 1;
+  _camera.spherical_coord = 1;
   _camera.H = 0;
   _camera.V = 0;
 }
@@ -1136,7 +1140,7 @@ void View::CalcTransform(Transform2D &transform)
 void View::CalcTransform(Transform3D &transform)
 {
   CompRhoPhiTheta();
-  Map3D::CompViewingTransf(_camera);
+  GetWindowRep()->TopTransform3()->SetViewMatrix(_camera);
 
   int dx, dy, dw, dh;
   GetDataArea(dx, dy, dw, dh);
@@ -1415,6 +1419,11 @@ void View::HandleResize(WindowRep *w, int xlow, int ylow,
   printf("View::HandleResize(%d,%d,%d,%d)\n", xlow, ylow, width, height);
 #endif
   
+  /* is this a real size change? */
+  if (_hasGeometry && _x == xlow && _y == ylow &&
+      _width == width && _height == height)
+    return;
+
   /* base class should handle this, too */
   ViewWin::HandleResize(w, xlow, ylow, width, height);
   
@@ -2355,12 +2364,12 @@ void View::PrintStat()
 void View::CompRhoPhiTheta()
 {
 #ifdef DEBUG
-  printf ("<<<< x = %f y = %f z = %f\n",
-          _camera.x_, _camera.y_, _camera.z_);
-  printf ("<<<< fx = %f fy = %f fz = %f\n",
-          _camera.fx, _camera.fy, _camera.fz);
-  printf ("<<<< rho = %f phi = %f theta = %f\n\n",
-          _camera._rho, _camera._phi, _camera._theta);
+  printf("<<<< x = %f y = %f z = %f\n",
+         _camera.x_, _camera.y_, _camera.z_);
+  printf("<<<< fx = %f fy = %f fz = %f\n",
+         _camera.fx, _camera.fy, _camera.fz);
+  printf("<<<< rho = %f phi = %f theta = %f\n\n",
+         _camera._rho, _camera._phi, _camera._theta);
 #endif
 
   if (!_camera.spherical_coord) {
@@ -2375,7 +2384,7 @@ void View::CompRhoPhiTheta()
     else {
       _camera._phi = 0.0;
 #ifdef DEBUG
-      printf ("*********** WARNING *****************\n");
+      printf("*********** WARNING *****************\n");
 #endif
     }
 
@@ -2405,76 +2414,59 @@ void View::CompRhoPhiTheta()
       _camera._theta = (M_PI_2 + M_PI) + fabs(atan(Z / X));
 
     else {
-      printf ("cx = %f cy = %f cz = %f\n", X, Y, Z);
+      printf("cx = %f cy = %f cz = %f\n", X, Y, Z);
       DOASSERT(0, "Invalid coordinates");
     }
   } else {
     _camera.x_ = _camera._rho * sin(_camera._phi) * sin(_camera._theta);
+    _camera.x_ += _camera.fx;
     _camera.y_ = _camera._rho * cos(_camera._phi);
+    _camera.y_ += _camera.fy;
     _camera.z_ = -_camera._rho * sin(_camera._phi) * cos(_camera._theta);
+    _camera.z_ += _camera.fz;
   }
 
 #ifdef DEBUG
-  printf (">>>> x = %f y = %f z = %f\n",
-          _camera.x_, _camera.y_, _camera.z_);
-  printf (">>>> fx = %f fy = %f fz = %f\n",
-          _camera.fx, _camera.fy, _camera.fz);
-  printf (">>>> rho = %f phi = %f theta = %f\n\n",
-          _camera._rho, _camera._phi, _camera._theta);
+  printf(">>>> x = %f y = %f z = %f\n",
+         _camera.x_, _camera.y_, _camera.z_);
+  printf(">>>> fx = %f fy = %f fz = %f\n",
+         _camera.fx, _camera.fy, _camera.fz);
+  printf(">>>> rho = %f phi = %f theta = %f\n\n",
+         _camera._rho, _camera._phi, _camera._theta);
 #endif
 }
 
 void View::SetCamera(Camera new_camera)
 {
-  /* ignore new camera if same as current one */
-  if (new_camera.x_ == _camera.x_ && new_camera.y_ == _camera.y_ && 
-      new_camera.z_ == _camera.z_ && new_camera._dvs == _camera._dvs &&
+  /* see if 3D mapping needs to be updated */
+  Boolean newMap = false;
+  if (new_camera.x_ != _camera.x_ ||
+      new_camera.y_ != _camera.y_ || 
+      new_camera.z_ != _camera.z_ ||
+      new_camera._dvs != _camera._dvs ||
+      new_camera._rho != _camera._rho || 
+      new_camera._phi != _camera._phi || 
+      new_camera._theta != _camera._theta || 
+      new_camera.fx != _camera.fx ||
+      new_camera.fy != _camera.fy ||
+      new_camera.fz != _camera.fz || 
+      new_camera._perspective != _camera._perspective || 
+      new_camera._twist_angle != _camera._twist_angle || 
+      new_camera.H != _camera.H ||
+      new_camera.V != _camera.V)
+    newMap = true;
 
-      new_camera._rho == _camera._rho && 
-      new_camera._phi == _camera._phi && 
-      new_camera._theta == _camera._theta && 
+  _camera = new_camera;
 
-      new_camera.fx == _camera.fx && new_camera.fy == _camera.fy &&
-      new_camera.fz == _camera.fz && 
-      new_camera.flag == _camera.flag && 
-      new_camera._perspective == _camera._perspective && 
-      new_camera._twist_angle == _camera._twist_angle && 
-      new_camera.fix_focus == _camera.fix_focus &&
-      new_camera.spherical_coord == _camera.spherical_coord &&
-      new_camera.H == _camera.H && new_camera.V == _camera.V)
-    return;
+  if (newMap) {
+    CompRhoPhiTheta();
+    _updateTransform = true;
+    Refresh();
+  }
 
-#ifdef DEBUG
-  printf("camera changed\n");
-#endif
-
-  _camera.x_ = new_camera.x_;
-  _camera.y_ = new_camera.y_;
-  _camera.z_ = new_camera.z_;
-    
-  _camera._rho = new_camera._rho;
-  _camera._phi = new_camera._phi;
-  _camera._theta = new_camera._theta;
-
-  _camera._dvs = new_camera._dvs;
-  _camera.fx = new_camera.fx;
-  _camera.fy = new_camera.fy;
-  _camera.fz = new_camera.fz;
-  _camera._twist_angle = new_camera._twist_angle;
-  _camera._perspective = new_camera._perspective;
-  _camera.fix_focus = new_camera.fix_focus;
-  _camera.spherical_coord = new_camera.spherical_coord;
-  _camera.flag = new_camera.flag;
-  _camera.H = new_camera.H;
-  _camera.V = new_camera.V;
-
-  CompRhoPhiTheta();
-
-  /* this call causes the user interface to update the 3D query dialog */
-  SetVisualFilter(_filter);
-
-  _updateTransform = true;
-  Refresh();
+  /* these calls cause the user interface to update the 3D query dialog */
+  ReportFilterAboutToChange();
+  ReportFilterChanged(_filter, false);
 }
 
 void View::Draw3DAxis()
