@@ -1,13 +1,14 @@
 #include "ODBCSite.h"
 #include "ODBCIterator.h"
 
+
 Iterator* ODBCSite::createExec(){
-	ostrstream tmp;
+	ostringstream tmp;
 	tmp << "select ";
 	displayList(tmp, mySelect, ", ");
 	tmp << " from ";
 	myFrom->rewind();
-	tmp << tableName << *myFrom->get()->getAlias();
+	tmp << tableName << " " << *myFrom->get()->getAlias();
 	if(!myWhere->isEmpty()){
 		tmp << " where ";
 		displayList(tmp, myWhere, " and ");
@@ -18,5 +19,5 @@ Iterator* ODBCSite::createExec(){
 	int numFlds = getNumFlds();
 	const TypeID* types = getTypeIDs();
 	return new ODBCIterator(
-		dataSourceName, userName, passwd, query, numFlds, types);
+		dataSourceName, userName, passwd, tableName, query, numFlds, types);
 }

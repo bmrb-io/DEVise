@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/11/24 05:25:37  okan
+  *** empty log message ***
+
   Revision 1.12  1997/11/12 23:17:39  donjerko
   Improved error checking.
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1997/11/24 05:25:36  okan
+  *** empty log message ***
+
   Revision 1.33  1997/11/19 00:19:18  donjerko
   Added ODBC skeleton.
 

@@ -14,6 +14,8 @@
 using namespace std;
 #endif
 
+#include "ODBC.h"
+
 class Inserter;
 class TableName;
 class Site;
@@ -387,11 +389,9 @@ class ODBCInterface : public Interface {
 	string userName;
 	string passwd;
 	string tableName;
+	ODBC_Data* myODBC;
 
 #if defined(_WINDOWS) || defined(_CONSOLE)
-	HENV ODBC_Handle;
-	HDBC Connect_Handle;
-	SQLHSTMT Stmt_Handle;
 	SQLRETURN SQL_Result;
 #endif
 
@@ -399,13 +399,6 @@ class ODBCInterface : public Interface {
 public:
 	static string typeName;
 	ODBCInterface() {}
-	int ODBC_Connect();
-	void ODBC_disConnect();
-	int ODBC_Stmt_Handle();
-#if defined(_WINDOWS) || defined(_CONSOLE)
-	int ODBC_Error(SQLRETURN err_Stat,string err_msg);
-	void ODBC_Column_Info(short* types,string* attrs,SQLINTEGER* len, short col_Num);
-#endif
 	virtual ~ODBCInterface(){
 	}
 	virtual string getTypeNm(){
