@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:16:09  jussi
+  Added CVS header.
+*/
 
 #include <stdio.h>
 #include <libc.h>
@@ -112,8 +115,13 @@ void TkControlPanel::StartSession(){
 	Tcl_LinkVar(_interp,"template",(char *)&_template, TCL_LINK_INT);
 
 	/* Create a new tcl command for control panel */
-	Tcl_CreateCommand(_interp,"DEVise", ControlCmd,
-		this, NULL);
+	Tcl_CreateCommand(_interp, "DEVise", ControlCmd, this, NULL);
+
+	/* Create a new tcl command for ISSM stock data */
+	extern int extractStocksCmd(ClientData clientData, Tcl_Interp *interp,
+				    int argc, char *argv[]);
+	Tcl_CreateCommand(_interp, "issm_extractStocks", extractStocksCmd,
+			  0, 0);
 
 	char *envPath = getenv("DEVISE_LIB");
 	char *control;
