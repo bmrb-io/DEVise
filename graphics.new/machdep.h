@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/01/13 03:23:44  jussi
+  Moved file from tape/.
+
   Revision 1.4  1995/12/28 17:31:12  jussi
   Added SGI specific code.
 
@@ -131,7 +134,7 @@
   #include <time.h>
 #endif
 
-#ifdef __sun
+#if defined(__sun) || defined(__aix)
   EXTERNC int gettimeofday(struct timeval *,
 			   struct timezone *);
 #endif
