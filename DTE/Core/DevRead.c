@@ -19,6 +19,9 @@
 /*
     $Id$
     $Log$
+    Revision 1.14  1997/05/28 15:37:32  wenger
+    Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+
     Revision 1.13.4.1  1997/05/20 19:45:25  ssl
     Fixed stuff to allow empty tdata
 
@@ -250,7 +253,6 @@ String *DevRead::getTypeIDs()
     AttrList *attrListP = _tDataP->GetAttrList();
 
     attrListP->InitIterator();
-    ostrstream tmp;
     int len;
     char* tmpc;
     while (attrListP->More())
@@ -271,14 +273,16 @@ String *DevRead::getTypeIDs()
             result[j++] = "double";
             break;
 
-        case StringAttr:
+        case StringAttr: {
 	   	  len = attrInfoP->length;
 		  assert(len > 0);
+            ostrstream tmp;
 		  tmp << "string" << len << ends;
 		  tmpc = tmp.str();
             result[j++] = String(tmpc);
 		  delete tmpc;
             break;
+	   }
 
         case DateAttr:
             result[j++] = "date";
