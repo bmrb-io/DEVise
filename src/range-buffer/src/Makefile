@@ -43,18 +43,6 @@ demo:		$(OBJS) demo.c
 		mv demo $(RBMROOT)/bin/
 		mv $(OBJS) $(RBMROOT)/obj/
 
-testPhonyRAM:	$(OBJS) testPhonyRAM.c
-		$(CC) $(CFLAGS) testPhonyRAM.c  $(OBJS) \
-					-o testPhonyRAM
-		mv $(OBJS) $(RBMROOT)/obj/
-		mv testPhonyRAM $(RBMROOT)/bin/
-
-testRBM:	$(OBJS) testRBM.c
-		$(CC) $(CFLAGS) testRBM.c  $(OBJS) \
-					-o testRBM
-		mv testRBM $(RBMROOT)/bin/
-		mv $(OBJS) $(RBMROOT)/obj/
-
 clean:
 		\rm -f $(RBMROOT)/obj/$(OBJS)
 		\rm -f $(RBMROOT)/bin/*
