@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/07/16 15:56:10  wenger
+  Changes to accomodate new TData interface.
+
   Revision 1.4  1996/12/03 22:55:04  jussi
   Updated to reflect new TData interface.
 
@@ -40,9 +43,16 @@ int binarySearch = false;
 /* Get a record from TData */
 void GetRec(TData *tdata, RecId id, MultiRec &rec)
 {
-    TData::TDHandle handle = tdata->InitGetRecs(id,id);
+    Range range;
+    range.AttrName = "recId";
+    range.Low = id;
+    range.High = id;
+    range.Granularity = 0; // Not used.
+
+    TData::TDHandle handle = tdata->InitGetRecs(&range);
     double startRid; int numRecs, dataSize;
-    if(!tdata->GetRecs(handle,&rec,sizeof(MultiRec),startRid,numRecs,dataSize)) {
+
+    if (!tdata->GetRecs(handle, &rec, sizeof(MultiRec), &range, dataSize)) {
         fprintf(stderr,"GetRec: no record\n");
         Exit::DoExit(1);
     }
