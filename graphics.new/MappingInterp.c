@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.94  1999/09/02 17:26:04  wenger
+  Took out the ifdefs around the MARGINS code, since DEVise won't compile
+  without them; removed all of the TK_WINDOW code, and removed various
+  unnecessary includes of tcl.h, etc.
+
   Revision 1.93  1999/07/21 18:47:43  wenger
   Fixed bug in control of view symbol mappings by parent; fixed problem of
   GData values not getting properly reset when a mapping command is cleared.
@@ -895,7 +900,7 @@ InsertAttr(AttrList *attrList, int &attrNum, const char *name, int &offset,
 }
 
 //--------------------------------------------------------------------------
-AttrList *MappingInterp::InitCmd(char *name, int &gRecSize)
+AttrList *MappingInterp::InitCmd(const char *name, int &gRecSize)
 {
 #if defined(DEBUG)
   printf("MappingInterp::InitCmd(%s)\n", name);

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/07/14 20:34:16  jussi
+  Rewrote class to fork a process that does all data transfers
+  from the Web site.
+
   Revision 1.2  1996/07/12 19:39:02  jussi
   Web data source uses Timer services.
 
@@ -37,12 +41,12 @@
 class DataSourceWeb : public DataSourceFileStream
 {
 public:
-    DataSourceWeb(char *url, char *label, char *cache);
+    DataSourceWeb(char *url, const char *label, char *cache);
     virtual ~DataSourceWeb();
 
     virtual char *objectType() { return "DataSourceWeb"; }
     
-    virtual DevStatus Open(char *mode);
+    virtual DevStatus Open(const char *mode);
     virtual DevStatus Close();
 
     virtual size_t Fwrite(const char *buf, size_t size, size_t itemCount);

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.143  1999/12/02 16:26:45  wenger
+  Fixed bug 518 (confirm before saving a session the first time); got rid
+  of error message during normal Tasvir launch.
+
   Revision 1.142  1999/12/01 20:53:20  wenger
   Fixed bug 539 (possible lockup when partially piling windows).
 
@@ -1984,7 +1988,7 @@ void XWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 
   if (width == 1) {
     DOASSERT(num <= WINDOWREP_BATCH_SIZE, "points array will overflow");
-    struct XPoint points[WINDOWREP_BATCH_SIZE];
+    XPoint points[WINDOWREP_BATCH_SIZE];
     for(int i = 0; i < num; i++) {
       Coord tx, ty;
       Transform(x[i], y[i], tx, ty);
@@ -2365,7 +2369,7 @@ void XWindowRep::FillPoly(Point *pts, int n)
   }
 
   DOASSERT(n <= WINDOWREP_BATCH_SIZE, "points array will overflow");
-  struct XPoint points[WINDOWREP_BATCH_SIZE];
+  XPoint points[WINDOWREP_BATCH_SIZE];
   for(int i = 0; i < n; i++) {
     Coord tx, ty;
     Transform(pts[i].x, pts[i].y, tx, ty);
@@ -2435,7 +2439,7 @@ void XWindowRep::FillPixelPoly(Point *pts, int n)
   }
 
   DOASSERT(n <= WINDOWREP_BATCH_SIZE, "points array will overflow");
-  struct XPoint points[WINDOWREP_BATCH_SIZE];
+  XPoint points[WINDOWREP_BATCH_SIZE];
   for(int i = 0;  i < n; i++ ) {
     points[i].x = ROUND(short, pts[i].x);
     points[i].y = ROUND(short, pts[i].y);

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/11/30 22:28:19  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.5  1999/10/26 16:29:40  wenger
   Fixed bug 519 (problems with opening various sequences of soil science
   sessions, caused by stupid composite parsers not getting reset when a
@@ -64,7 +71,7 @@ void CompositeParser::Register(char *fileType, UserComposite *userComposite){
   _numEntries++;
 }
 
-void CompositeParser::Decode(char *fileType, RecInterp *recInterp)
+void CompositeParser::Decode(const char *fileType, RecInterp *recInterp)
 {
   if (_hintIndex >= 0 && !strcmp(fileType, _entries[_hintIndex].fileType)) {
     /* found it */

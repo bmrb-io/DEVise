@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.57  1999/11/19 21:29:15  wenger
+  Removed Journal class and related code (no longer works); removed various
+  other unused or unnecessary code.
+
   Revision 1.56  1999/11/16 17:01:44  wenger
   Removed all DTE-related conditional compiles; changed version number to
   1.7.0 because of removing DTE; removed DTE-related schema editing and
@@ -269,32 +273,6 @@
 #include "ETkIfc.h"
 #include "ClientAPI.h"
 #include "DebugLog.h"
-
-static char uniqueFileName[100];
-
-/*************************************************************
-Create unique temporary file name 
-**************************************************************/
-
-static char *CreateUniqueFileName(char *progname)
-{
-  progname = StripPath(progname);
-  pid_t pid = getpid();
-  for(char char1 = 'a'; char1 <= 'z'; char1++) {
-    for(char char2 = 'a'; char2 <= 'z'; char2++) {
-      sprintf(uniqueFileName, "work/%s_%05ld%c%c", progname,
-	      (long)pid, char1, char2);
-      int fd = open(uniqueFileName, O_WRONLY, 0666);
-      if (fd < 0)
-	return uniqueFileName;
-      close(fd);
-    }
-  }
-
-  DOASSERT(0, "Cannot create unique temporary file name");
-
-  return NULL; /* keep compiler happy */
-}
 
 Boolean Init::_savePopup = false;
 

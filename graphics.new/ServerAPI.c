@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.44  1999/11/30 22:28:25  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.43  1999/10/18 15:36:42  wenger
   Window destroy events are handled better (DEVise doesn't crash); messages
   such as window destroy notifications are now passed to the client in
@@ -438,10 +445,11 @@ void ServerAPI::FilterChanged(View *view, VisualFilter &filter,
     sprintf(yHighBuf, "%.2f", filter.yHigh);
   }
   
-  char *args[] = { "ProcessViewFilterChange", view->GetName(),
+  const char *args[] = { "ProcessViewFilterChange", view->GetName(),
 		   (flushed ? "1" : "0"), xLowBuf, yLowBuf,
 		   xHighBuf, yHighBuf, "0" };
-  SendControl(8, args, true);
+  //TEMP -- typecast here should be removed.  RKW 2000-01-13.
+  SendControl(8, (char **)args, true);
 
   char *rep[] = { "setFilter", view->GetName(), xLowBuf,
 		  yLowBuf, xHighBuf, yHighBuf };

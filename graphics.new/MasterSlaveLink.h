@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/11/11 14:31:01  wenger
+  Implemented "highlight views" for record links and set links; improved
+  ClassDir::DestroyAllInstances() by having it destroy all links before
+  it destroys anything else -- this cuts down on propagation problems as
+  views are destroyed; added test code for timing a view's query and draw.
+
   Revision 1.3  1998/07/30 15:31:21  wenger
   Fixed bug 381 (problem with setting master and slave of a link to the same
   view); generally cleaned up some of the master-slave link related code.
@@ -59,7 +65,7 @@ public:
   virtual void InsertView(ViewGraph *view);
   virtual bool DeleteView(ViewGraph *view);
 
-  virtual char *GetFileName() = 0;
+  virtual const char *GetFileName() = 0;
   virtual void Initialize() = 0;
   virtual void InsertRecs(RecId recid, int num) = 0;
   virtual int  FetchRecs(RecId recid, RecId &rec, int &num) = 0;

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/18 15:32:27  jussi
+  Added synchronization method.
+
   Revision 1.3  1996/07/01 19:31:35  jussi
   Added an asynchronous I/O interface to the data source classes.
   Added a third parameter (char *param) to data sources because
@@ -50,12 +53,12 @@
 class DataSourceTape : public DataSource
 {
 public:
-	DataSourceTape(char *name, char *label, char *param = 0);
+	DataSourceTape(char *name, const char *label, char *param = 0);
 	virtual ~DataSourceTape();
 
 	virtual char *objectType() {return "DataSourceTape";};
 
-	virtual DevStatus Open(char *mode);
+	virtual DevStatus Open(const char *mode);
 	virtual Boolean IsOk();
 	virtual DevStatus Close();
 

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.28  1999/10/18 15:36:43  wenger
+  Window destroy events are handled better (DEVise doesn't crash); messages
+  such as window destroy notifications are now passed to the client in
+  client/server form.  (Parsing a string into arguments was moved from the
+  Session class to the ArgList class.)
+
   Revision 1.27  1999/10/04 19:37:11  wenger
   Mouse location is displayed in "regular" DEVise.
 
@@ -226,9 +232,10 @@ private:
   Tk_Window _mainWindow;
   char *_argv0;
 
-  virtual int ReturnVal(u_short flag, char *result) {
+  virtual int ReturnVal(u_short flag, const char *result) {
 	_valueReturned = true;
-    Tcl_SetResult(_interp, result, TCL_VOLATILE);
+    // I'm a little worried about the typecast here.  RKW 2000-01-13.
+    Tcl_SetResult(_interp, (char *)result, TCL_VOLATILE);
     return 1;
   }
   virtual int ReturnVal(int argc, char **argv) {

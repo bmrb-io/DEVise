@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -25,6 +25,13 @@
   $Id$
 
   $Log$
+  Revision 1.11  1999/11/30 22:28:20  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.10  1997/08/06 19:23:06  wenger
   Added some Timer::StartTimer() calls that were needed to balance
   Timer::StopTimer() calls.
@@ -92,7 +99,7 @@ static char * srcFile = __FILE__;
  * function: DataSourceWeb::DataSourceWeb
  * DataSourceWeb constructor.
  */
-DataSourceWeb::DataSourceWeb(char *url, char *label, char *cache) :
+DataSourceWeb::DataSourceWeb(char *url, const char *label, char *cache) :
 	DataSourceFileStream(cache, label)
 {
     DO_DEBUG(printf("DataSourceWeb::DataSourceWeb(%s,%s,%s)\n",
@@ -121,7 +128,7 @@ DataSourceWeb::~DataSourceWeb()
  * Open Web data source.
  */
 DevStatus
-DataSourceWeb::Open(char *mode)
+DataSourceWeb::Open(const char *mode)
 {
     DO_DEBUG(printf("DataSourceWeb::Open()\n"));
 

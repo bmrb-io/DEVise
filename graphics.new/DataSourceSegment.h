@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/11/24 23:14:50  weaver
+  Changes for the new ColorManager.
+
   Revision 1.7.10.1  1997/05/21 20:40:25  weaver
   Changes for new ColorManager
 
@@ -86,7 +89,7 @@ public:
 
     virtual char *objectType();
 
-    virtual DevStatus Open(char *mode);
+    virtual DevStatus Open(const char *mode);
     virtual char IsOk();
     virtual DevStatus Close();
 

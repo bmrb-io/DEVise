@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-1999
+  (c) Copyright 1998-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.94  1999/12/27 19:33:14  wenger
+  Cursor grids can now be applied to the edges of a cursor, rather than the
+  center, if desired.
+
   Revision 1.93  1999/12/17 15:55:01  wenger
   Added missing return value in setLinkType command.
 
@@ -624,7 +628,7 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 }
 
 int
-DeviseCommand::ReturnVal(u_short flag, char *result)
+DeviseCommand::ReturnVal(u_short flag, const char *result)
 {
 #if defined(DEBUG)
     printf("DeviseCommand::ReturnVal(%d, %s)\n", flag, result);
@@ -1225,7 +1229,7 @@ DeviseCommand_getTDataName::Run(int argc, char** argv)
             ReturnVal(API_NAK, "Cannot find TData");
             return -1;
         }
-        char *tname = tdata->GetName();
+        const char *tname = tdata->GetName();
         ReturnVal(API_ACK, tname); 
         return 1;
       }

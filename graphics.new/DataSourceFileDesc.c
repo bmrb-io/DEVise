@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -26,7 +26,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/07/01 19:21:25  jussi
+  Initial revision.
+*/
 
 #define _DataSourceFileDesc_c_
 
@@ -54,7 +57,7 @@ static char *	srcFile = __FILE__;
  * function: DataSourceFileDesc::DataSourceFileDesc
  * DataSourceFileDesc constructor.
  */
-DataSourceFileDesc::DataSourceFileDesc(int fd, char *label) :
+DataSourceFileDesc::DataSourceFileDesc(int fd, const char *label) :
      DataSourceFileStream("no file", label)
 {
     DO_DEBUG(printf("DataSourceFileDesc::DataSourceFileDesc(%d,%s)\n",
@@ -79,7 +82,7 @@ DataSourceFileDesc::~DataSourceFileDesc()
  * Do an fdopen() on the file descriptor.
  */
 DevStatus
-DataSourceFileDesc::Open(char *mode)
+DataSourceFileDesc::Open(const char *mode)
 {
     DO_DEBUG(printf("DataSourceFileDesc::Open()\n"));
 

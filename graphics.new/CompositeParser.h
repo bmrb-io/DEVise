@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/10/26 16:29:40  wenger
+  Fixed bug 519 (problems with opening various sequences of soil science
+  sessions, caused by stupid composite parsers not getting reset when a
+  session is closed).
+
   Revision 1.5  1996/09/05 23:14:17  kmurli
   Added a destructor to free the fileType char pointer after use.
   CVS ----------------------------------------------------------------------
@@ -66,7 +71,7 @@ public:
   static void Register(char *fileType, UserComposite *userComposite);
 
   /* called by parser when it needs a composite attribute parsed */
-  static void Decode(char *fileType, RecInterp *recInterp);
+  static void Decode(const char *fileType, RecInterp *recInterp);
 
   // Uninitialize all composite parsers (should be called when a session
   // is closed).

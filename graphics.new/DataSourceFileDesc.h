@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -19,7 +19,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/07/01 19:21:26  jussi
+  Initial revision.
+*/
 
 #ifndef _DataSourceFileDesc_h_
 #define _DataSourceFileDesc_h_
@@ -29,12 +32,12 @@
 class DataSourceFileDesc : public DataSourceFileStream
 {
 public:
-    DataSourceFileDesc(int fd, char *label);
+    DataSourceFileDesc(int fd, const char *label);
     virtual ~DataSourceFileDesc();
 
     virtual char *objectType() {return "DataSourceFileDesc";};
 
-    virtual DevStatus Open(char *mode);
+    virtual DevStatus Open(const char *mode);
     virtual Boolean IsOk();
     virtual DevStatus Close();
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/02/20 06:16:56  beyer
+  resurected histograms
+
   Revision 1.6  1997/04/21 22:50:49  guangshu
   Added function IsBufWritten.
 
@@ -66,12 +69,12 @@ class DataSourceBuf : public DataSource
 {
 public:
 	DataSourceBuf(char *buffer, int buffer_size, 
-		      int data_size, char *label);
+		      int data_size, const char *label);
 	virtual ~DataSourceBuf();
 
 	virtual char *objectType() {return "DataSourceBuf";};
 
-	virtual DevStatus Open(char *mode);
+	virtual DevStatus Open(const char *mode);
 	virtual Boolean IsOk() { return true; }
 	virtual DevStatus Close();
 

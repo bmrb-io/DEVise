@@ -22,6 +22,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/01/07 19:28:45  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.1.12.1  1998/01/07 15:59:31  wenger
   Removed replica cababilities (since this will be replaced by collaboration
   library); integrated cslib into DEVise server; commented out references to
@@ -50,7 +55,7 @@ public:
   virtual void SetBusy() {}
   virtual void SetIdle() {}
   virtual Boolean IsBusy() { return false; }
-  virtual int ReturnVal(u_short flag, char *result) { return 0; }
+  virtual int ReturnVal(u_short flag, const char *result) { return 0; }
   virtual int ReturnVal(int argc, char **argv) { return 0; }
   virtual GroupDir *GetGroupDir() { return NULL; }
   virtual MapInterpClassInfo *GetInterpProto() { return NULL; }

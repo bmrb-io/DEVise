@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/03 20:36:07  jussi
+  Added support for concurrent I/O.
+
   Revision 1.5  1996/11/18 22:29:02  jussi
   Added DataSize() method.
 
@@ -62,13 +65,13 @@ class DataSourceFileStream : public DataSource
 {
 public:
 
-	DataSourceFileStream(char *filename, char *label);
+	DataSourceFileStream(const char *filename, const char *label);
 
 	virtual ~DataSourceFileStream();
 
-	virtual char *objectType() {return "DataSourceFileStream";};
+	virtual const char *objectType() {return "DataSourceFileStream";};
 
-	virtual DevStatus Open(char *mode);
+	virtual DevStatus Open(const char *mode);
 	virtual Boolean IsOk();
 	virtual DevStatus Close();
 

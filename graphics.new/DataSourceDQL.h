@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/11/13 16:49:14  wenger
+  Fixed error in Seek declaration.
+
   Revision 1.1  1996/11/01 19:28:18  kmurli
   Added DQL sources to include access to TDataDQL. This is equivalent to
   TDataAscii/TDataBinary. The DQL type in the Tcl/Tk corresponds to this
@@ -46,12 +49,12 @@
 class DataSourceDQL : public DataSource
 {
 public:
-    DataSourceDQL(char *url, char *label);
+    DataSourceDQL(char *url, char *name);
     virtual ~DataSourceDQL();
 
     virtual char *objectType() { return "DataSourceDQL"; }
     
-    virtual DevStatus Open(char *mode);
+    virtual DevStatus Open(const char *mode);
     virtual DevStatus Close();
 
     virtual size_t Fwrite(const char *buf, size_t size, size_t itemCount);

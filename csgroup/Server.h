@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1999/11/24 15:44:07  wenger
+  Removed (unnecessary) CommandObj class; commands are now logged for the
+  monolithic form, not just the client/server form; other command-related
+  cleanups; added GUI for playing back command logs.
+
   Revision 1.7  1998/05/02 08:38:58  taodb
   Added command logging and playing support
   Added communication support for JAVA Screen
@@ -124,13 +129,13 @@ public:
     virtual void SingleStep();    // once throught the body of MainLoop
 
     virtual int ReturnVal(		  // send result to client
-		ClientID clientID, u_short flag, char *result) 
+		ClientID clientID, u_short flag, const char *result) 
 	{
 		return ReturnVal(clientID, flag, 1, &result, false); 
 	}
 
     virtual int ReturnVal(		  // send result to client
-		ClientID clientID, u_short flag, int argc, char **argv,
+		ClientID clientID, u_short flag, int argc, const char * const *argv,
 	    int addBraces = true);
 
     virtual int SendControl(		  // send command to all clients

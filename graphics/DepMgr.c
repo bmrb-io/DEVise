@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1997/09/05 22:35:54  wenger
+  Dispatcher callback requests only generate one callback; added Scheduler;
+  added DepMgr (dependency manager); various minor code cleanups.
+
  */
 
 
@@ -143,7 +147,7 @@ DepMgr::PrintEvent()
   printf("DepMgr::PrintEvent()\n");
 #endif
 
-  char *objectName = _object != NULL ? _object->DispatchedName() : "";
+  const char *objectName = _object != NULL ? _object->DispatchedName() : "";
   printf("Current event: 0x%p (%s): %s\n", _object, objectName,
     EventToString(_event));
 }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.25  1999/11/30 22:28:00  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.24  1999/10/08 19:57:43  wenger
   Fixed bugs 470 and 513 (crashes when closing a session while a query
   is running), 510 (disabling actions in piles), and 511 (problem in
@@ -212,7 +219,7 @@ void ClassDir::InsertClass(ClassInfo *cInfo)
 #define ARG_ARRAY_SIZE 512
 char *argArray[ARG_ARRAY_SIZE];
 
-void ClassDir::ClassNames(char *category, int &num, char **&names)
+void ClassDir::ClassNames(const char *category, int &num, char **&names)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   num = 0;
@@ -232,7 +239,7 @@ void ClassDir::ClassNames(char *category, int &num, char **&names)
 
 /* Get pointers to all instances */
 
-void ClassDir::InstancePointers(char *category, char *className,
+void ClassDir::InstancePointers(const char *category, const char *className,
 				int &num, char **&instanceNames)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
@@ -256,7 +263,7 @@ void ClassDir::InstancePointers(char *category, char *className,
 
 /* Get names of all instances */
 
-void ClassDir::InstanceNames(char *category, char *className,
+void ClassDir::InstanceNames(const char *category, const char *className,
 			     int &num, char **&instanceNames)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
@@ -280,7 +287,7 @@ void ClassDir::InstanceNames(char *category, char *className,
 
 /* Get creation parameters for a class */
 
-void ClassDir::GetParams(char *category, char *className, 
+void ClassDir::GetParams(const char *category, const char *className, 
 			 int &numParams, char **&params)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
@@ -304,7 +311,7 @@ void ClassDir::GetParams(char *category, char *className,
 
 /* Set default values for class parameters*/
 
-void ClassDir::SetDefault(char *category, char *className,
+void ClassDir::SetDefault(const char *category, const char *className,
 			  int numParams, char **params)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
@@ -324,7 +331,7 @@ void ClassDir::SetDefault(char *category, char *className,
 
 /* Create a new instance given the parameters */
 
-char *ClassDir::CreateWithParams(char *category, char *className,
+char *ClassDir::CreateWithParams(const char *category, const char *className,
 				 int numParams, char **paramNames)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
@@ -419,7 +426,7 @@ void *ClassDir::FindInstance(const char *name)
 /* Find the ClassInfo object for a given instance. */
 
 ClassInfo *
-ClassDir::FindClassInfo(char *instanceName)
+ClassDir::FindClassInfo(const char *instanceName)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
 #if defined(DEBUG)
@@ -498,7 +505,7 @@ void ClassDir::DestroyAllInstances()
 
 /* Destroy category */
 void
-ClassDir::DestroyCategory(char *categoryName)
+ClassDir::DestroyCategory(const char *categoryName)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
 
@@ -527,7 +534,7 @@ ClassDir::DestroyCategory(char *categoryName)
 
 /* Destroy instance */
 
-void ClassDir::DestroyInstance(char *name)
+void ClassDir::DestroyInstance(const char *name)
 {
 #if defined(DEBUG)
   printf("ClassDir::DestroyInstance(%s)\n", name);
@@ -610,8 +617,8 @@ void ClassDir::DestroyTransientClasses()
 
 /* Get creation parameter for instance */
 
-void ClassDir::CreateParams(char *category, char *className,
-			    char *instanceName, 
+void ClassDir::CreateParams(const char *category, const char *className,
+			    const char *instanceName, 
 			    int &numParams, char **&params)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
@@ -704,7 +711,7 @@ void ClassInfo::GetDefaultParams(int &argc, char **&argv)
 
 /* Find instance with given name */
 
-Boolean ClassDir::Changeable(char *name)
+Boolean ClassDir::Changeable(const char *name)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {
@@ -723,7 +730,7 @@ Boolean ClassDir::Changeable(char *name)
 
 /* Change params */
 
-void ClassDir::ChangeParams(char *name, int num, char **paramNames)
+void ClassDir::ChangeParams(const char *name, int num, char **paramNames)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {
@@ -740,7 +747,7 @@ void ClassDir::ChangeParams(char *name, int num, char **paramNames)
 
 /* Get params */
 
-void ClassDir::GetParams(char *name, int &num, char **&paramNames)
+void ClassDir::GetParams(const char *name, int &num, char **&paramNames)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {
@@ -759,7 +766,7 @@ void ClassDir::GetParams(char *name, int &num, char **&paramNames)
 
 /* Get user info for a class */
 
-void *ClassDir::UserInfo(char *category, char *className)
+void *ClassDir::UserInfo(const char *category, const char *className)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {

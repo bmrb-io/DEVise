@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/28 16:10:27  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
   Revision 1.2  1995/09/05 22:15:48  jussi
   Added CVS header.
 */
@@ -44,7 +48,7 @@ public:
 	TDataAppend(char *name, int recSize);
 	virtual ~TDataAppend();
 
-	virtual char *GetName() { return _name; }
+	virtual const char *GetName() { return _name; }
 
 	/********************************************************************
 	Page Oriented Interface

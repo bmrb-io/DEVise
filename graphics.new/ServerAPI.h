@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.20  1999/10/18 15:36:43  wenger
+  Window destroy events are handled better (DEVise doesn't crash); messages
+  such as window destroy notifications are now passed to the client in
+  client/server form.  (Parsing a string into arguments was moved from the
+  Session class to the ArgList class.)
+
   Revision 1.19  1999/10/04 19:37:10  wenger
   Mouse location is displayed in "regular" DEVise.
 
@@ -181,7 +187,7 @@ private:
   int _busy;
   static MapInterpClassInfo *_interpProto;
 
-  virtual int ReturnVal(u_short flag, char *result) {
+  virtual int ReturnVal(u_short flag, const char *result) {
 	_valueReturned = true;
     return _server->ReturnVal(flag, result);
   }

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/12/06 18:41:04  wenger
+  Simplified and improved command logging (includes fixing bug 537, command
+  logs are now human-readable); added standard header to debug logs.
+
   Revision 1.5  1998/03/27 15:08:53  wenger
   Added dumping of logical session description, added GUI for dumping
   logical or physical description; cleaned up some of the command code
@@ -70,7 +74,7 @@ static char *	srcFile = __FILE__;
  * Get the DEVise file header for the given file type.
  */
 char *
-DevFileHeader::Get(char *fileType)
+DevFileHeader::Get(const char *fileType)
 {
 	static char		headerBuf[1024];
 

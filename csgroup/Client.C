@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1999/01/29 15:18:23  wenger
+  Fixed egcs 1.1.1 fixes -- taking out array constructor arguments caused
+  problems in some places.
+
   Revision 1.10  1999/01/18 18:11:12  beyer
   fixed compile errors and warnings for egcs version 1.1.1
 
@@ -179,7 +183,7 @@ Client::readInteger(int fd, int&num)
 
 
 void
-Client::SendPanelErr(char* err)
+Client::SendPanelErr(const char* err)
 {
 	char	info[128] = "ERROR: ";
 
@@ -527,7 +531,7 @@ Client::ServerCmd(int argc, char **argv)
 	int		retval = 0;
 	if (!strcmp(argv[0],"GroupCmd"))
 	{
-		char	*errmsg = NULL;
+		const char	*errmsg = NULL;
 
 		if (!strcmp(argv[1],"QueryGroup"))
 		{

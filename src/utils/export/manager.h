@@ -146,21 +146,21 @@ class manager
 // Constructors and Destructors (Inline)
 //******************************************************************************
 
-template <class Key, class T, class Compare = less<Key> >
+template <class Key, class T, class Compare >
 inline manager<Key, T, Compare>::manager(void)
 {
 	nextKey = Key();
 //	  mutex_init(&mutex, 0, NULL);			  // Initialize synchronization
 }
 
-template <class Key, class T, class Compare = less<Key> >
+template <class Key, class T, class Compare >
 inline manager<Key, T, Compare>::manager(const manager<Key, T, Compare>& x)
 	: heap(x.heap), nextKey(x.nextKey)
 {
 //	  mutex_init(&mutex, 0, NULL);			  // Initialize a *unique* mutex
 }
 
-template <class Key, class T, class Compare = less<Key> >
+template <class Key, class T, class Compare >
 inline manager<Key, T, Compare>&
 manager<Key, T, Compare>::operator=(const manager<Key, T, Compare>& x)
 {
@@ -174,7 +174,7 @@ manager<Key, T, Compare>::operator=(const manager<Key, T, Compare>& x)
 	return *this;
 }
 
-template <class Key, class T, class Compare = less<Key> >
+template <class Key, class T, class Compare >
 inline manager<Key, T, Compare>::~manager(void)
 {
 //	mutex_destroy(&mutex);
@@ -187,7 +187,7 @@ inline manager<Key, T, Compare>::~manager(void)
 // Returns a unique Key after allocating a new {key,t} pair in the heap. The
 // Key is created by expanding the Key space. The heap[key] statement has
 // unusual semantics; refer to p.37 of the STL spec for a description.
-template <class Key, class T, class Compare = less<Key> >
+template <class Key, class T, class Compare >
 inline const Key	manager<Key, T, Compare>::GetID(void)
 {
 	Key		key;
@@ -205,7 +205,7 @@ inline const Key	manager<Key, T, Compare>::GetID(void)
 
 // Deallocates a {key,t} pair from the heap if it exists for the supplied
 // argument key. Returns true if the key was successfully returned.
-template <class Key, class T, class Compare = less<Key> >
+template <class Key, class T, class Compare >
 inline bool		manager<Key, T, Compare>::PutID(const Key& key)
 {
 	bool	result = true;
@@ -226,7 +226,7 @@ inline bool		manager<Key, T, Compare>::PutID(const Key& key)
 
 // If the pair {key,t} exists in the heap for the supplied argument key, returns
 // a pointer to t is returned, else returns NULL.
-template <class Key, class T, class Compare = less<Key> >
+template <class Key, class T, class Compare >
 inline T*	manager<Key, T, Compare>::Find(const Key& key)
 {
 	T*	t_ptr = NULL;
@@ -245,7 +245,7 @@ inline T*	manager<Key, T, Compare>::Find(const Key& key)
 
 // If the pair {key,t} exists in the heap for the supplied argument key, returns
 // a pointer to t is returned, else returns NULL.
-template <class Key, class T, class Compare = less<Key> >
+template <class Key, class T, class Compare >
 inline const T*		manager<Key, T, Compare>::Find(const Key& key) const
 {
 	const T*	t_ptr = NULL;

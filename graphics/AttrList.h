@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.16  1999/06/30 17:38:39  wenger
+  Data color of parent view's mapping (if specified) now controls the
+  background color of view symbols; defined constant strings for GData
+  attribute values to avoid potential problems.
+
   Revision 1.15  1998/11/25 22:31:11  wenger
   Reduced the amount of memory allocated in the MappingInterp constructor,
   mainly by improving the AttrList class.
@@ -118,7 +123,7 @@ const int MIN_ATTRLIST_SIZE = 32;
 
 class AttrList {
 public:
-  AttrList(char *name, int startSize = MIN_ATTRLIST_SIZE);
+  AttrList(const char *name, int startSize = MIN_ATTRLIST_SIZE);
   ~AttrList();
 
   /* Copy constructor */
@@ -139,7 +144,7 @@ public:
 		  Boolean hasLoVal = false, 
 		  AttrVal *loVal = (AttrVal *)NULL);
 
-  char *GetName() { return _name; }
+  const char *GetName() { return _name; }
 
   /* Find an attribute, or NULL if not found */
   AttrInfo *Find(const char *name);
@@ -174,7 +179,7 @@ private:
   int   _arraySize; // size of _attrs array
   int   _size; // actual number of entries
   int   _index;
-  char *_name;
+  const char *_name;
 
   static void PrintVal(AttrVal *aval, AttrType atype);
   void EnlargeArray();

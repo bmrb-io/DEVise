@@ -1,8 +1,7 @@
-
-	/*
+/*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -17,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1999/09/24 22:02:18  wenger
+  C++ code no longer allows a session to be opened while one is already
+  open.
+
   Revision 1.10  1998/11/11 14:30:41  wenger
   Implemented "highlight views" for record links and set links; improved
   ClassDir::DestroyAllInstances() by having it destroy all links before
@@ -142,35 +145,33 @@ public:
 	void InsertClass(ClassInfo *cInfo);
 
 	/* Get name of all classes in a category */
-	void ClassNames(char *category, int &numClasses, char **&classNames);
+	void ClassNames(const char *category, int &numClasses,
+	                char **&classNames);
 
 	/* Get creation parameters for a class */
-	void GetParams(char *category, char *className, 
+	void GetParams(const char *category, const char *className, 
 		int &numParams, char **&paramNames);
-	void GetParams(char *inst, int &numParams, char **&paramNames);
+	void GetParams(const char *inst, int &numParams, char **&paramNames);
 
 	/* Get user info for a class */
-	void *UserInfo(char *category, char *className);
+	void *UserInfo(const char *category, const char *className);
 
 	/* Set default parameter values for a class */
-	void SetDefault(char *category, char *className, int numParams,
-		char **params);
+	void SetDefault(const char *category, const char *className,
+	                int numParams, char **params);
 
 	/* Create a new instance with parameters. Return the name  of
 	new instance, or NULL if not successful */
-	char *CreateWithParams(char *category, char *className,
+	char *CreateWithParams(const char *category, const char *className,
 		int numParams, char **paramNames);
 
 
 	/* Get name of all instances for a given class */
-	void InstanceNames(char *category, char *className,
+	void InstanceNames(const char *category, const char *className,
 		int &num, char **&instanceNames);
 
-	/* Get param names for instance */
-	void InstanceNames(char *name, int &num, char **&instanceNames);
-
 	/* Get pointer to all instances for a given class */
-	void InstancePointers(char *category, char *className,
+	void InstancePointers(const char *category, const char *className,
 		int &num, char **&instancePointers);
 
 	/* Find instance with given name */
@@ -180,29 +181,30 @@ public:
 	char *FindInstanceName(const void *instance);
 
 	/* Find ClassInfo object for a given instance */
-	ClassInfo *FindClassInfo(char *instanceName);
+	ClassInfo *FindClassInfo(const char *instanceName);
 
 	/* Destroy all instances */
 	void DestroyAllInstances();
 
 	/* Destroy all classes and instances in at category */
-	void DestroyCategory(char *categoryName);
+	void DestroyCategory(const char *categoryName);
 
 	/* Destroy an instance */
-	void DestroyInstance(char *instanceName);
+	void DestroyInstance(const char *instanceName);
 
 	/* Destroy all transient classes */
 	void DestroyTransientClasses();
 
 	/* REturn true if instance is changeable */
-	Boolean Changeable(char *name);
+	Boolean Changeable(const char *name);
 
 	/* Change with params */
-	void ChangeParams(char *instance, int num, char **paramNames);
+	void ChangeParams(const char *instance, int num, char **paramNames);
 
 	/* Get the creation parameters for an instance */
-	void CreateParams(char *category, char *className, char *instanceName,
-		int &numParams, char **&params);
+	void CreateParams(const char *category, const char *className,
+	                  const char *instanceName, int &numParams,
+			  char **&params);
 
 	void Print();
 

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.30  1999/10/18 15:36:28  wenger
+  Window destroy events are handled better (DEVise doesn't crash); messages
+  such as window destroy notifications are now passed to the client in
+  client/server form.  (Parsing a string into arguments was moved from the
+  Session class to the ArgList class.)
+
   Revision 1.29  1999/10/04 19:36:55  wenger
   Mouse location is displayed in "regular" DEVise.
 
@@ -264,7 +270,7 @@ public:
   virtual void DoAbort(const char *reason) {}
 
   /* return one or multiple values to caller of API */
-  virtual int ReturnVal(u_short flag, char *result) = 0;
+  virtual int ReturnVal(u_short flag, const char *result) = 0;
   virtual int ReturnVal(int argc, char **argv) = 0;
   virtual int ReturnVal(int flag, int argc, char **argv, bool addBrace)
   {

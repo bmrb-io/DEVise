@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/01/14 16:39:18  wenger
+  Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
+
   Revision 1.6.16.1  1998/01/12 20:38:12  wenger
   Fixed some other dynamic memory errors.
 
@@ -63,7 +66,7 @@ GroupDir::~GroupDir()
   }
 }
 
-void GroupDir::add_entry(char *schema)
+void GroupDir::add_entry(const char *schema)
 {
   SchemaList *elem = new SchemaList;
   elem->sname = new char[strlen(schema) + 1];
@@ -76,7 +79,7 @@ void GroupDir::add_entry(char *schema)
 // Searches for the given schema in the directory.
 // If found, returns 1, else returns 0.
 
-int GroupDir::find_entry(char *schema)
+int GroupDir::find_entry(const char *schema)
 {
   SchemaList *curr = list;
 
@@ -89,7 +92,7 @@ int GroupDir::find_entry(char *schema)
   return 1;
 }
 
-void GroupDir::add_topgrp(char *schema, Group *gp)
+void GroupDir::add_topgrp(const char *schema, Group *gp)
 {
   SchemaList *curr = list;
   
@@ -107,7 +110,7 @@ void GroupDir::add_topgrp(char *schema, Group *gp)
 
 // Find all top level groups in the given schema.
 
-void GroupDir::top_level_groups(char *result, char *schema)
+void GroupDir::top_level_groups(char *result, const char *schema)
 {
   Group *currgrp = 0;
   SchemaList *curr = list;
@@ -132,8 +135,8 @@ void GroupDir::top_level_groups(char *result, char *schema)
   }
 }
 
-void GroupDir::get_items(char *result, char *schema,
-			 char *topgname, char *gname)
+void GroupDir::get_items(char *result, const char *schema,
+			 const char *topgname, const char *gname)
 {
   SchemaList *curr = list;
   Group *currgrp, *retgrp;
@@ -169,7 +172,7 @@ void GroupDir::get_items(char *result, char *schema,
 }
    
 
-Group *GroupDir::find_grp(Group *gp, char *gname)
+Group *GroupDir::find_grp(Group *gp, const char *gname)
 {
   Group *ret;
   Group *curr;
@@ -187,7 +190,7 @@ Group *GroupDir::find_grp(Group *gp, char *gname)
   return ret;
 }
 
-int GroupDir::num_topgrp(char *schema)
+int GroupDir::num_topgrp(const char *schema)
 {
   SchemaList *curr = list;
   Group *currgrp;

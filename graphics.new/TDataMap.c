@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.37  1999/11/30 22:28:30  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.36  1999/07/21 18:51:14  wenger
   Moved alignment and data font information from view into mapping.
 
@@ -470,10 +477,10 @@ Boolean TDataMap::PageHint(TData *tdata, Coord x, Boolean isPrefetch,
 /***********************************************************
 Make a name for GData
 ************************************************************/
-char *TDataMap::CreateGDataName(char *tdataName, char *mappingName)
+char *TDataMap::CreateGDataName(const char *tdataName, char *mappingName)
 {
   char *name;
-  char *tname= StripPath(tdataName);
+  const char *tname= StripPath(tdataName);
   name = new char [strlen(tname) + strlen(mappingName) + 20];
   sprintf(name,"%s.%d.%s.G", tname, _incarnation, mappingName);
   return name;

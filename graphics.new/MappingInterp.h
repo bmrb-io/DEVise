@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.50  1999/09/02 17:26:05  wenger
+  Took out the ifdefs around the MARGINS code, since DEVise won't compile
+  without them; removed all of the TK_WINDOW code, and removed various
+  unnecessary includes of tcl.h, etc.
+
   Revision 1.49  1999/07/13 17:32:44  wenger
   Parent view can now control attribute(s) in child view's mapping;
   cleaned up some of the mapping-related code; better command logging.
@@ -367,7 +372,7 @@ protected:
 private:
   /* Initialize command by converting _cmd into _tclCmd,
      and initializing _tdataFlag */
-  AttrList *InitCmd(char *name, int &gRecSize);
+  AttrList *InitCmd(const char *name, int &gRecSize);
 
   void SubstituteParentValue();
 

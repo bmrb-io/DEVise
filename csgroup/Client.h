@@ -19,6 +19,10 @@
 /*
   $Id$
   $Log$
+  Revision 1.4  1998/05/02 08:38:51  taodb
+  Added command logging and playing support
+  Added communication support for JAVA Screen
+
   Revision 1.3  1998/03/11 18:25:05  wenger
   Got DEVise 1.5.2 to compile and link on Linux; includes drastically
   reducing include dependencies between csgroup code and the rest of
@@ -99,7 +103,7 @@ protected:
 			  char **argv){};			// process server general command
   
 	virtual void SendPanelCmd();		// send command to the panel
-	virtual void SendPanelErr(char* msg);
+	virtual void SendPanelErr(const char* msg);
 	virtual void SetPanelMajorCmd(char* cmd);
 	virtual void SetPanelSubCmd(char* cmd);
 	virtual void SetPanelInfo(char* cmd);

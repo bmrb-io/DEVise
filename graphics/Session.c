@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.75  1999/12/06 20:03:20  wenger
+  Windows are forced to be on-screen when opening or saving a session.
+
   Revision 1.74  1999/12/06 18:40:48  wenger
   Simplified and improved command logging (includes fixing bug 537, command
   logs are now human-readable); added standard header to debug logs.
@@ -1367,7 +1370,7 @@ Session::SaveInterpMapping(char *category, char *devClass, char *instance,
 	" may have errors");
     }
 
-    char *result;
+    const char *result;
 	ArgList args;
     status += CallParseAPI(saveData->control, result, false, args,
 	    "isInterpretedGData", instance);
@@ -1489,7 +1492,7 @@ Session::SaveViewLinks(char *category, char *devClass, char *instance,
 
   DevStatus status = StatusOk;
 
-  char *result;
+  const char *result;
   ArgList args;
   status += CallParseAPI(saveData->control, result, true, args,
       "getLinkViews", instance);
@@ -1523,7 +1526,7 @@ Session::SaveCursor(char *category, char *devClass, char *instance,
 
   DevStatus status = StatusOk;
 
-  char *result;
+  const char *result;
   ArgList args;
   status += CallParseAPI(saveData->control, result, true, args,
       "getCursorViews", instance);
@@ -1570,7 +1573,7 @@ Session::SaveViewMappings(char *category, char *devClass, char *instance,
 
   DevStatus status = StatusOk;
 
-  char *result;
+  const char *result;
   ArgList args;
   status += CallParseAPI(saveData->control, result, true, args,
       "getViewMappings", instance);
@@ -1603,7 +1606,7 @@ Session::SaveWindowViews(char *category, char *devClass, char *instance,
 
   DevStatus status = StatusOk;
 
-  char *result;
+  const char *result;
   ArgList args;
   status += CallParseAPI(saveData->control, result, true, args,
       "getWinViews", instance);
@@ -1673,7 +1676,7 @@ Session::SaveViewHistory(char *category, char *devClass, char *instance,
 
   fprintf(saveData->fp, "DEVise clearViewHistory {%s}\n", instance);
 
-  char *result;
+  const char *result;
   ArgList args;
   status += CallParseAPI(saveData->control, result, true, args,
       "getVisualFilters", instance);
@@ -1704,7 +1707,7 @@ Session::SaveCamera(char *category, char *devClass, char *instance,
 
   DevStatus status = StatusOk;
 
-  char *result;
+  const char *result;
   ArgList args;
   status += CallParseAPI(saveData->control, result, true, args,
       "get3DLocation", instance);
@@ -1770,7 +1773,7 @@ Session::SaveParams(SaveData *saveData, char *getCommand, char *setCommand,
     rightBrace = "";
   }
 
-  char *result;
+  const char *result;
   ArgList args;
   status += CallParseAPI(saveData->control, result, false, args,
       getCommand, arg0, arg1, arg2);

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.26  2000/01/11 22:28:32  wenger
+  TData indices are now saved when they are built, rather than only when a
+  session is saved; other improvements to indexing; indexing info added
+  to debug logs; moved duplicate TDataAscii and TDataBinary code up into
+  TData class.
+
   Revision 1.25  1999/05/21 14:52:44  wenger
   Cleaned up GData-related code in preparation for including bounding box
   info.
@@ -617,7 +623,7 @@ TData::InvalidateTData()
 char *
 TData::MakeCacheFileName(char *name, char *type)
 {
-  char *fname = StripPath(name);
+  const char *fname = StripPath(name);
   char *cacheDir = Init::CacheDir();
   int nameLen = strlen(cacheDir) + 1 + strlen(fname) + 1 + strlen(type) + 1;
   char *fn = new char [nameLen];
@@ -704,7 +710,7 @@ TData::GetModTime()
 char *
 TData::MakeIndexFileName(char *name, char *type)
 {
-  char *fname = StripPath(name);
+  const char *fname = StripPath(name);
   int nameLen = strlen(Init::WorkDir()) + 1 + strlen(fname) + 1;
   char *fn = new char[nameLen];
   sprintf(fn, "%s/%s", Init::WorkDir(), fname);

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999
+  (c) Copyright 1999-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1999/12/06 18:40:47  wenger
+  Simplified and improved command logging (includes fixing bug 537, command
+  logs are now human-readable); added standard header to debug logs.
+
   Revision 1.1  1999/11/22 18:11:47  wenger
   Fixed 'command buffer conflict' errors, other command-related cleanup.
 
@@ -53,7 +57,7 @@ public:
   virtual ~ControlPanelSimple() {
   }
 
-  virtual int ReturnVal(u_short flag, char *result) {
+  virtual int ReturnVal(u_short flag, const char *result) {
     _valueReturned = true;
 	_result = result;
     return 1;

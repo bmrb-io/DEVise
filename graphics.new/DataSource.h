@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/02/07 22:01:10  liping
+  Fixed complile problem
+
   Revision 1.11  1997/02/03 19:45:20  ssl
   1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
   2) ViewLens.[Ch] : new implementation of piled views
@@ -107,11 +110,11 @@ class ViewGraph;
 class DataSource
 {
       public:
-        DataSource(char *label = "", ViewGraph* controlling_view = NULL);
+        DataSource(const char *label = "", ViewGraph* controlling_view = NULL);
 
 	virtual ~DataSource();
 
-	virtual char *objectType() {return "DataSource";};
+	virtual const char *objectType() {return "DataSource";};
 
 	virtual char *getLabel();
 
@@ -119,7 +122,7 @@ class DataSource
 	// functions of the same name.  The names are capitalized to avoid
 	// conflicts with macros in some system header files that redefine
 	// symbols such as ftell, etc.
-	virtual DevStatus Open(char *mode) = 0;
+	virtual DevStatus Open(const char *mode) = 0;
 	virtual Boolean IsOk() = 0;
 	virtual DevStatus Close() = 0;
 

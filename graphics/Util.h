@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.23  1999/07/16 21:35:52  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.22  1999/01/18 22:34:46  wenger
   Considerable changes to the DataReader:  reading is now per-field rather
   than per-character (except for dates); the "extractor" functions now do
@@ -155,7 +163,7 @@ extern void CheckDirSpace(char *dirname, char *envVar,
                           int warnSize, int exitSize);
 
 /* strip file of path name */
-inline char *StripPath(char *name) {
+inline const char *StripPath(const char *name) {
   char *last;
   if ((last = strrchr(name,'/')) == (char *)NULL)
     return name;

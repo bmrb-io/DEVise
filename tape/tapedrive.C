@@ -7,6 +7,13 @@
   $Id$
 
   $Log$
+  Revision 1.20  1999/11/30 22:28:51  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.19  1998/10/28 19:22:46  wenger
   Added code to check all data sources (runs through the catalog and tries
   to open all of them); this includes better error handling in a number of
@@ -116,7 +123,7 @@ char *TapeDrive::_mt_op_name[] = { "WEOF", "FSF", "BSF", "FSR",
                                    "RETEN", "ERASE", "EOM", "NBSF",
                                    "SRSZ", "GRSZ", "LOAD" };
 
-TapeDrive::TapeDrive(char *name, char *mode, int fno, int blockSz) :
+TapeDrive::TapeDrive(const char *name, const char *mode, int fno, int blockSz) :
 	initialized(0), fileNo(fno), blockSize(blockSz),
 	haveTarHeader(0), tarFileSize(0), tarFileOffset(0)
 {

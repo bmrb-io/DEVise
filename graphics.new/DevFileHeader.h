@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/12/06 18:41:04  wenger
+  Simplified and improved command logging (includes fixing bug 537, command
+  logs are now human-readable); added standard header to debug logs.
+
   Revision 1.6  1998/03/27 15:08:54  wenger
   Added dumping of logical session description, added GUI for dumping
   logical or physical description; cleaned up some of the command code
@@ -80,7 +84,7 @@
 class DevFileHeader
 {
 public:
-    static char *Get(char *fileType);
+    static char *Get(const char *fileType);
     //static DevStatus Write();
     //static DevStatus Read();
     //static DevStatus Parse();

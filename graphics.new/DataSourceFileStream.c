@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/03/04 19:11:00  wenger
+  Fixed some more dynamic memory errors.
+
   Revision 1.10  1998/01/14 16:39:16  wenger
   Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
 
@@ -100,7 +103,7 @@ static char *	srcFile = __FILE__;
  * function: DataSourceFileStream::DataSourceFileStream
  * DataSourceFileStream constructor.
  */
-DataSourceFileStream::DataSourceFileStream(char *filename, char *label)
+DataSourceFileStream::DataSourceFileStream(const char *filename, const char *label)
 : DataSource(label)
 {
 	DO_DEBUG(printf("DataSourceFileStream::DataSourceFileStream(%s, %s)\n",
@@ -127,7 +130,7 @@ DataSourceFileStream::~DataSourceFileStream()
  * Do an fopen() on the file corresponding to the DataSourceFileStream object.
  */
 DevStatus
-DataSourceFileStream::Open(char *mode)
+DataSourceFileStream::Open(const char *mode)
 {
 	DO_DEBUG(printf("DataSourceFileStream::Open()\n"));
 

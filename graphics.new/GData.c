@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.23  2000/01/11 22:28:32  wenger
+  TData indices are now saved when they are built, rather than only when a
+  session is saved; other improvements to indexing; indexing info added
+  to debug logs; moved duplicate TDataAscii and TDataBinary code up into
+  TData class.
+
   Revision 1.22  1999/11/30 22:28:22  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -197,7 +203,7 @@ Boolean GData::LastID(RecId &recId)
   return _tdata->LastID(recId);
 }
 
-char *GData::GetName()
+const char *GData::GetName()
 {
   return _recFile != NULL ? _recFile->GetName() : "None";
 }

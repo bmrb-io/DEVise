@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/11/23 21:07:21  jussi
+  Fixed interface to TapeDrive object.
+
   Revision 1.5  1996/10/07 22:53:58  wenger
   Added more error checking and better error messages in response to
   some of the problems uncovered by CS 737 students.
@@ -72,7 +75,7 @@ static char *	srcFile = __FILE__;
  * function: DataSourceTape::DataSourceTape
  * DataSourceTape constructor.
  */
-DataSourceTape::DataSourceTape(char *filename, char *label, char *param) :
+DataSourceTape::DataSourceTape(char *filename, const char *label, char *param) :
      DataSource(label)
 {
 	DO_DEBUG(printf("DataSourceTape::DataSourceTape(%s, %s)\n", filename,
@@ -99,7 +102,7 @@ DataSourceTape::~DataSourceTape()
  * Create a TapeDrive object corresponding to the file named in this object.
  */
 DevStatus
-DataSourceTape::Open(char *mode)
+DataSourceTape::Open(const char *mode)
 {
 	DO_DEBUG(printf("DataSourceTape::Open()\n"));
 

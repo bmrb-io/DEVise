@@ -1,7 +1,7 @@
 /*
    ========================================================================
    DEVise Data Visualization Software
-   (c) Copyright 1992-1996
+   (c) Copyright 1992-2000
    By the DEVise Development Group
    Madison, Wisconsin
    All Rights Reserved.
@@ -20,6 +20,9 @@
    $Id$
 
    $Log$
+   Revision 1.11  1998/02/26 00:19:23  zhenhai
+   Implementation for spheres and line segments in OpenGL 3D graphics.
+
    Revision 1.10  1998/02/20 08:45:59  beyer
    resurected histograms
 
@@ -95,7 +98,7 @@ static char *	srcFile = __FILE__;
  * DataSourceBuf constructor.
  */
 DataSourceBuf::DataSourceBuf(char *buffer, int buffer_size,
-			     int data_size, char *label)
+			     int data_size, const char *label)
 : DataSource(label)
 {
     DO_DEBUG(printf("DataSourceBuf::DataSourceBuf(%s)\n",
@@ -126,7 +129,7 @@ DataSourceBuf::~DataSourceBuf()
  * Simulate an fopen() on the DataSourceBuf object.
  */
 DevStatus
-DataSourceBuf::Open(char *)
+DataSourceBuf::Open(const char *)
 {
     DO_DEBUG(printf("DataSourceBuf::Open(%s)\n",
 		    (_label != NULL) ? _label : "<null>"));

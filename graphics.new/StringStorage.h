@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/11/06 17:59:53  wenger
+  Multiple string tables fully working -- allows separate tables for the
+  axes in a given view.
+
   Revision 1.10  1998/11/04 20:34:00  wenger
   Multiple string tables partly working -- loading and saving works, one
   table per mapping works; need multiple tables per mapping, API and GUI,
@@ -119,8 +123,10 @@ class StringStorage {
         return key % numBuckets;
     }
 
-    static int SortComp(char **string1, char **string2) {
-        return strcmp(*string1, *string2);
+    static int SortComp(const void *arg1, const void *arg2) {
+	const char **string1P = (const char **)arg1;
+	const char **string2P = (const char **)arg2;
+        return strcmp(*string1P, *string2P);
     }
 
     int _stringNum;                   // sequence number for string

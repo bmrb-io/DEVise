@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/07/30 15:31:22  wenger
+  Fixed bug 381 (problem with setting master and slave of a link to the same
+  view); generally cleaned up some of the master-slave link related code.
+
   Revision 1.10  1998/04/10 18:29:30  wenger
   TData attribute links (aka set links) mostly implemented through table
   insertion; a crude GUI for creating them is implemented; fixed some
@@ -86,7 +90,7 @@ class RecordLink : public MasterSlaveLink {
 
   virtual void SetFlag(VisualFlag flag);
 
-  virtual char *GetFileName() { return (_file ? _file->GetName() : "none"); }
+  virtual const char *GetFileName() { return (_file ? _file->GetName() : "none"); }
 
   virtual void Initialize();
   virtual void InsertRecs(RecId recid, int num);

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1999/04/20 14:13:31  wenger
+  Improved debug output.
+
   Revision 1.1  1996/12/20 16:50:14  wenger
   Fonts for view label, x axis, and y axis can now be changed.
 
@@ -117,9 +120,9 @@ DevFont::SetWinFont(WindowRep *win)
   static const int familyCount = sizeof(familyTable) / sizeof(familyTable[0]);
 
   char *familyName = familyTable[_family % familyCount];
-  char *weight = _bold ? "Bold" : "Medium";
-  char *slant = _italic ? "i" : "r";
-  char *width = "Normal";
+  const char *weight = _bold ? "Bold" : "Medium";
+  const char *slant = _italic ? "i" : "r";
+  const char *width = "Normal";
 
   win->SetFont(familyName, weight, slant, width, _pointSize);
 }

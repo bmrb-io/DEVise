@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -69,7 +69,7 @@ DataSourceDQL::~DataSourceDQL()
  * Open DQL data source.
  */
 DevStatus
-DataSourceDQL::Open(char *mode)
+DataSourceDQL::Open(const char *mode)
 {
     return StatusOk;
 }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.26  1999/11/30 22:27:26  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.25  1999/11/24 15:44:05  wenger
   Removed (unnecessary) CommandObj class; commands are now logged for the
   monolithic form, not just the client/server form; other command-related
@@ -1253,7 +1260,7 @@ Server::GetCmd(int argc, char **argv)
 }
 
 int
-Server::ReturnVal(ClientID clientID, u_short flag, int argc, char **argv,
+Server::ReturnVal(ClientID clientID, u_short flag, int argc, const char * const *argv,
     int addBraces)
 {
 #if defined(DEBUG)
@@ -1272,8 +1279,9 @@ Server::ReturnVal(ClientID clientID, u_short flag, int argc, char **argv,
         fprintf(stderr, "Is this really a return value?\n");
     }
 
+    //TEMP -- typecast on argv should be removed. RKW 2000-01-13.
     int status = NetworkSend(_clients[clientID].fd, flag, addBraces, argc,
-      argv);
+      (char **)argv);
 
     if (status < 0) {
 		fprintf(stderr, "Client error.\n");

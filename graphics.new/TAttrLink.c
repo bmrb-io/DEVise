@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -29,6 +29,11 @@
   $Id$
 
   $Log$
+  Revision 1.16  1999/11/16 17:02:08  wenger
+  Removed all DTE-related conditional compiles; changed version number to
+  1.7.0 because of removing DTE; removed DTE-related schema editing and
+  data source creation GUI.
+
   Revision 1.15  1998/11/16 18:58:48  wenger
   Added options to compile without DTE code (NO_DTE), and to warn whenever
   the DTE is called (DTE_WARN).
@@ -283,7 +288,7 @@ TAttrLink::Initialize()
     return;
   }
 
-  char *curTDName = NULL;
+  const char *curTDName = NULL;
   TData *tdata = GetTData(_masterView, TDataPhys);
   if (tdata != NULL) {
     curTDName = tdata->GetName();

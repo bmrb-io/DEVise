@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/08/04 21:59:50  beyer
+  Added UpdateLinks that allow one view to be told to update by another view.
+  Changed TData so that all TData's have a DataSource (for UpdateLinks).
+  Changed all of the subclasses of TData to conform.
+  A RecFile is now a DataSource.
+  Changed the stats buffers in ViewGraph to be DataSources.
+
   Revision 1.3  1996/05/31 15:40:34  jussi
   Cleaned up a bit. Added copyright notice.
 
@@ -68,7 +75,7 @@ public:
   // The following functions are included to make RecFiles complete
   // DataSources without having to specify these.  I suppose that
   // the should support them sometime...
-  DevStatus Open(char*) { return StatusFailed; }
+  DevStatus Open(const char*) { return StatusFailed; }
   char IsOk() { return true; }
   DevStatus Close() { return StatusFailed; }
   int Seek(long, int) { return -1; }

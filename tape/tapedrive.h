@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1999/01/18 18:15:35  beyer
+  fixed compile warning
+
   Revision 1.11  1996/12/18 15:28:10  jussi
   Made waitForChildProcess() public. Improved error handling.
 
@@ -108,7 +111,7 @@ const int TAPE_BLOCKSIZE = 32768;       // blocking factor on tape
 class TapeDrive {
 public:
   // Initialize tape interface
-  TapeDrive(char *name, char *mode, int fileno = -1,
+  TapeDrive(const char *name, const char *mode, int fileno = -1,
 	    int blockSize = TAPE_BLOCKSIZE);
 
   // Clean up

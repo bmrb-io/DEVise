@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.39  1999/07/21 18:51:14  wenger
+  Moved alignment and data font information from view into mapping.
+
   Revision 1.38  1999/07/13 17:32:44  wenger
   Parent view can now control attribute(s) in child view's mapping;
   cleaned up some of the mapping-related code; better command logging.
@@ -279,7 +282,7 @@ class TDataMap
   virtual Boolean IsInterpreted() { return false; }
   virtual Boolean IsComplexShape(ShapeID shape) { return false; }
 
-  char *GetName() { return _mappingName; }    /* type of mapping */
+  const char *GetName() { return _mappingName; }    /* type of mapping */
   char *GetGDataName() { return _gdataName; } /* name of GData */
 
   // Create a GData, whether or not we already have one.  Added to reduce
@@ -652,7 +655,7 @@ private:
   static int _incarnation;
   
   /* Create name of GData */
-  char *CreateGDataName(char *tdataName, char *mappingName);
+  char *CreateGDataName(const char *tdataName, char *mappingName);
   char *CreateGDataPath(char *gdataName);
 
   /* default values */

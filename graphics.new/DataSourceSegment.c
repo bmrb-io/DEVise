@@ -1,7 +1,7 @@
 /*
    ========================================================================
    DEVise Data Visualization Software
-   (c) Copyright 1992-1996
+   (c) Copyright 1992-2000
    By the DEVise Development Group
    Madison, Wisconsin
    All Rights Reserved.
@@ -20,6 +20,9 @@
    $Id$
 
    $Log$
+   Revision 1.14  1997/11/24 23:14:49  weaver
+   Changes for the new ColorManager.
+
    Revision 1.13.10.1  1997/05/21 20:40:24  weaver
    Changes for new ColorManager
 
@@ -156,7 +159,7 @@ char* DataSourceSegment::objectType()
  * function: DataSourceSegment::Open
  * Open the file or other data source corresponding to this object.
  */
-DevStatus DataSourceSegment::Open(char *mode)
+DevStatus DataSourceSegment::Open(const char *mode)
 {
     DO_DEBUG(printf("DataSourceSegment::Open()\n"));
 

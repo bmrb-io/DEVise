@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1999/03/12 18:46:05  wenger
+  Implemented duplicate symbol elimination.
+
   Revision 1.20  1999/02/17 15:09:57  wenger
   Added "Next in Pile" button to query dialog; more pile fixes; fixed bug
   in mapping dialog updating when a view is selected.
@@ -120,7 +123,7 @@ static const int RecordChunkSize = 1024;
 
 static char *MakeFileName(char *linkname)
 {
-  char *fname = StripPath(linkname);
+  const char *fname = StripPath(linkname);
   int nameLen = strlen(Init::TmpDir()) + 1 + strlen(fname) + 5 + 1;
   char *name = new char [nameLen];
   sprintf(name, "%s/%s.link", Init::TmpDir(), fname);

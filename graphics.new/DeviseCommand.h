@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.50  1999/12/14 17:57:36  wenger
+  Added enableDrawing command (totally enables or disables drawing) to
+  allow Omer to avoid "flashing" when he inserts views into windows.
+
   Revision 1.49  1999/11/30 22:28:21  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -302,7 +306,7 @@ class DeviseCommand
 			delete _controlStack;
 		}
 		virtual int Run(int argc, char** argv) = 0;
-		virtual int ReturnVal(u_short flag, char *result);
+		virtual int ReturnVal(u_short flag, const char *result);
 		virtual int ReturnVal(int argc, char **argv);
 	protected:
         char		*_result;

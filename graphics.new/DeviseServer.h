@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -25,6 +25,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1999/11/24 15:44:23  wenger
+  Removed (unnecessary) CommandObj class; commands are now logged for the
+  monolithic form, not just the client/server form; other command-related
+  cleanups; added GUI for playing back command logs.
+
   Revision 1.8  1998/05/02 09:00:43  taodb
   Added support for JAVA Screen and command logging
 
@@ -101,11 +106,11 @@ public:
   virtual int getCurrentClient(){ return _currentClient;}
   virtual int WriteImagePort(const void* buf, int nsize);
 
-  virtual int ReturnVal(ClientID cid, u_short flag, char *result){
+  virtual int ReturnVal(ClientID cid, u_short flag, const char *result){
 	return Server::ReturnVal(cid, flag, 1, &result, false);
   }
 
-  virtual int ReturnVal(u_short flag, char *result){
+  virtual int ReturnVal(u_short flag, const char *result){
 	return Server::ReturnVal(_currentClient, flag, 1, &result, false);
   }
 
