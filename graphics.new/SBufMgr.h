@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/11/23 21:05:01  jussi
+  MemMgr now manages multi-page chunks instead of single pages.
+
   Revision 1.10  1996/11/15 20:34:02  jussi
   Removed MemMgr::Release() method. IOTask::Write() no longer
   deallocates the page it gets from the caller.
@@ -71,39 +74,19 @@
 #ifndef SBufMgr_h
 #define SBufMgr_h
 
-//
-// Configuration of the buffer manager
-// -----------------------------------
-//
-// Choose one of the following feature combinations by uncommenting
-// the corresponding #define's.
-//
-//   Processes, shared memory, with or without buffering
-//   Threads, local memory, with or without buffering
-//
+#define SBM_PROCESS
+//#define SBM_THREAD
+#define SBM_SHARED_MEMORY
 
-//#define PROCESS_TASK
-//#define THREAD_TASK
-//#define SHARED_MEMORY
-
-#if defined(SOLARIS)
-//#define THREAD_TASK
-#define PROCESS_TASK
-#define SHARED_MEMORY
-#else
-#define PROCESS_TASK
-#define SHARED_MEMORY
-#endif
-
-#if !defined(PROCESS_TASK) && !defined(THREAD_TASK)
+#if !defined(SBM_PROCESS) && !defined(SBM_THREAD)
 #error "Must use either process or thread tasks"
 #endif
 
-#if defined(PROCESS_TASK) && defined(THREAD_TASK)
+#if defined(SBM_PROCESS) && defined(SBM_THREAD)
 #error "Cannot use both process and thread tasks"
 #endif
 
-#if defined(PROCESS_TASK) && !defined(SHARED_MEMORY)
+#if defined(SBM_PROCESS) && !defined(SBM_SHARED_MEMORY)
 #error "Must have shared memory for process tasks"
 #endif
 
@@ -111,176 +94,29 @@
 #include <sys/uio.h>
 #include <unistd.h>
 
-#ifdef THREAD_TASK
+#ifdef SBM_THREAD
 #include <pthread.h>
 #endif
 
-#include "tapedrive.h"
 #include "DeviseTypes.h"
+#include "MemMgr.h"
+
+#ifndef ATTRPROJ
+#include "tapedrive.h"
 #include "HashTable.h"
-#include "DCE.h"
-#include "DList.h"
-
-struct PageRange {
-    int start;
-    int end;
-};
-
-DefineDList(PageRangeList, PageRange);
-
-// Memory manager
-
-class MemMgr {
-  public:
-    MemMgr(int numPages, int pageSize, int &status);
-    ~MemMgr();
-
-    // Page types
-    enum PageType { Cache, Buffer };
-
-    // Allocate a memory buffer of one page; block until memory available
-    int Allocate(PageType type, char *&buf) {
-        int pages = 1;
-        return Allocate(type, buf, pages);
-    }
-
-    // Allocate a memory buffer of given size; block until at least one
-    // page available
-    int Allocate(PageType type, char *&buf, int &pages, Boolean block = true);
-
-    // Try to allocate a memory buffer of one page; return -1 if no
-    // memory available
-    int Try(PageType type, char *&buf) {
-        int pages = 1;
-        return Try(type, buf, pages);
-    }        
-
-    // Try to allocate a memory buffer of given size; return -1 if no
-    // memory available
-    int Try(PageType type, char *&buf, int &pages) {
-        return Allocate(type, buf, pages, false);
-    }
-
-    // Deallocate a memory buffer of given size
-    int Deallocate(PageType type, char *buf, int pages = 1);
-
-    // Convert buffer memory to cache memory, or vice versa
-    int Convert(char *buf, PageType oldType, PageType &newType);
-
-    // Return number of free memory size in pages
-    int NumFree() {
-        AcquireMutex();
-        int num = _count->free;
-        ReleaseMutex();
-        return num;
-    }
-
-    int PageSize() { return _pageSize; }
-    int NumPages() { return _numPages; }
-
-    static MemMgr *Instance() { return _instance; }
-
-  protected:
-    // Initialization
-    int Initialize();
-
-    // Acquire and release mutex
-    void AcquireMutex() { _sem->acquire(1); }
-    void ReleaseMutex() { _sem->release(1); }
-
-    // Acquire and release free semaphore
-    void AcquireFree() { _free->acquire(1); }
-    void ReleaseFree() { _free->release(1); }
-
-    // Dump contents of free page table
-    void Dump();
-
-    // Number of memory pages, free page table size, and page size
-    const int _numPages;
-    const int _tableSize;
-    const int _pageSize;
-
-    // Base address of memory
-    char *_buf;
-
-    char **_freePage;                   // table of free memory chunks
-    int *_freePageCount;                // # of pages in each chunk
-    struct CountStruct {
-        int entries;                    // valid entries in free table
-        int free;                       // # of free pages left
-        int cache;                      // # of cache pages in use
-        int buffer;                     // # of buffer pages in use
-    } *_count;
-
-    // Maximum ratio of buffer pages to total pages
-    const float _maxBuff;
-
-    // An instance of this class
-    static MemMgr *_instance;
-
-    // Mutex for synchronization
-    SemaphoreV *_sem;
-    SemaphoreV *_free;
-
-#ifdef SHARED_MEMORY
-    // Shared memory
-    SharedMemory *_shm;
 #endif
-};
-
-// Data Pipe
-
-class DataPipe {
-  public:
-    DataPipe(int maxPages);
-    ~DataPipe();
-
-    int Consume(char *&buf);
-    int Produce(char *buf, int bytes);
-
-  protected:
-    // Acquire and release mutex
-    void AcquireMutex() { _sem->acquire(1); }
-    void ReleaseMutex() { _sem->release(1); }
-
-    // Acquire and release free semaphore
-    void AcquireFree() { _free->acquire(1); }
-    void ReleaseFree() { _free->release(1); }
-
-    // Acquire and release data semaphore
-    void AcquireData() { _data->acquire(1); }
-    void ReleaseData() { _data->release(1); }
-
-    SemaphoreV *_sem;                   // mutex for synchronization
-    SemaphoreV *_free;
-    SemaphoreV *_data;
-
-#ifdef SHARED_MEMORY
-    SharedMemory *_shm;                 // shared memory
-#endif
-
-    int _maxPages;                      // maximum pipe size
-
-    char **_streamData;                 // stream data structures
-    int *_streamBytes;
-    int *_streamHead;
-    int *_streamTail;
-    int *_streamFree;
-};
 
 // I/O task
 
 class IOTask {
   public:
     // Create and destroy I/O task
-    IOTask(int blockSize = -1);
+    IOTask(int &status, int blockSize = -1);
     virtual int WriteEOF() { return 0; }
     virtual ~IOTask();
 
     // Read specified byte range from file
-    int Read(unsigned long long offset,
-             unsigned long bytes,
-             char *&addr);
+    int Read(streampos_t offset, iosize_t bytes, char *&addr);
 
     // Read specified block range
     int ReadP(int blockOffset, int blocks, char *&addr) {
@@ -291,9 +127,7 @@ class IOTask {
     }
 
     // Write specified byte range to file
-    int Write(unsigned long long offset,
-              unsigned long bytes,
-              char *addr);
+    int Write(streampos_t offset, iosize_t bytes, char *addr);
 
     // Write specified block range
     int WriteP(int blockOffset, int blocks, char *&addr) {
@@ -304,15 +138,15 @@ class IOTask {
     }
 
     // Read stream
-    int ReadStream(unsigned long bytes, int pipeSize);
-    int Consume(char *&buf) {
-        return _dataPipe->Consume(buf);
+    int ReadStream(streampos_t offset, iosize_t bytes, int pipeSize);
+    int Consume(char *&buf, streampos_t &offset, iosize_t &bytes) {
+        return _dataPipe->Consume(buf, offset, bytes);
     }
 
     // Write stream
     int WriteStream(int pipeSize);
-    int Produce(char *buf, int bytes) {
-        return _dataPipe->Produce(buf, bytes);
+    int Produce(char *buf, streampos_t offset, iosize_t bytes) {
+        return _dataPipe->Produce(buf, offset, bytes);
     }
 
     // Terminate I/O stream
@@ -330,8 +164,8 @@ class IOTask {
     // Request structure
     struct Request {
         ReqType type;
-        unsigned long long offset;
-        unsigned long bytes;
+        streampos_t offset;
+        iosize_t bytes;
         char *addr;
         int result;
     };
@@ -344,10 +178,10 @@ class IOTask {
     virtual void DeviceIO(Request &req, Request &reply) = 0;
 
     // Return current offset
-    virtual unsigned long long Offset() = 0;
+    virtual streampos_t Offset() = 0;
 
     // Read stream
-    void _ReadStream(unsigned long bytes);
+    void _ReadStream(streampos_t offset, iosize_t bytes);
 
     // Write stream
     void _WriteStream();
@@ -362,16 +196,17 @@ class IOTask {
     DataPipe *_dataPipe;                // data pipe
     Boolean _readStream;                // read streaming enabled
     Boolean _writeStream;               // write streaming enabled
-    unsigned long _readStreamLength;
+    streampos_t _streamOffset;          // offset of data stream
+    iosize_t _streamLength;             // length of data stream
 
-    unsigned long long int _readBytes;  // # bytes read
-    unsigned long long int _writeBytes; // # bytes written
-    unsigned long long int _seekBytes;  // total seek distance in bytes
+    bytecount_t _readBytes;             // # bytes read
+    bytecount_t _writeBytes;            // # bytes written
+    bytecount_t _seekBytes;             // total seek distance in bytes
 
-#ifdef PROCESS_TASK
+#ifdef SBM_PROCESS
     pid_t _child;                       // pid of child process
 #endif
-#ifdef THREAD_TASK
+#ifdef SBM_THREAD
     pthread_t _child;                   // thread id of child
 #endif
 
@@ -383,25 +218,26 @@ class IOTask {
 class FdIOTask : public IOTask {
   public:
     // Create I/O task using file descriptors
-    FdIOTask(int fd, int blockSize = -1);
+    FdIOTask(int &status, int fd, int blockSize = -1);
 
   protected:
     // Function for handling actual I/O
     virtual void DeviceIO(Request &req, Request &reply);
 
     // Return current offset
-    virtual unsigned long long Offset() { return _offset; }
+    virtual streampos_t Offset() { return _offset; }
 
     int _fd;                            // fd of device
-    unsigned long long _offset;         // current offset on device
+    streampos_t _offset;                // current offset on device
 };
 
+#ifndef ATTRPROJ
 // I/O task for Web connections
 
 class WebIOTask : public FdIOTask {
   public:
     // Create Web I/O task
-    WebIOTask(char *url, Boolean isInput, int blockSize = -1);
+    WebIOTask(int &status, char *url, Boolean isInput, int blockSize = -1);
     virtual ~WebIOTask();
 
     // Finish writing to HTTP
@@ -425,7 +261,7 @@ class WebIOTask : public FdIOTask {
     Boolean _isInput;                   // true if input Web resource
     FILE *_cache;                       // cache file pointer
     char *_cacheName;                   // name of cache file
-    unsigned long int _cacheSize;       // current size of cache file
+    bytecount_t _cacheSize;             // current size of cache file
 };
 
 // I/O task for TapeDrive objects
@@ -433,17 +269,17 @@ class WebIOTask : public FdIOTask {
 class TapeIOTask : public IOTask {
   public:
     // Create tape I/O task
-    TapeIOTask(TapeDrive &tape);
+    TapeIOTask(int &status, TapeDrive &tape);
 
   protected:
     // Function for handling actual I/O
     virtual void DeviceIO(Request &req, Request &reply);
 
     // Return current offset
-    virtual unsigned long long Offset() { return _offset; }
+    virtual streampos_t Offset() { return _offset; }
 
     TapeDrive &_tape;                   // tape device
-    unsigned long long _offset;         // current offset on tape
+    streampos_t _offset;                // current offset on tape
 };
 
 // Page address information
@@ -509,7 +345,7 @@ class PageFrame {
 
 class CacheMgr {
   public:
-    CacheMgr(MemMgr &mgr, int frames);
+    CacheMgr(MemMgr &mgr, int frames, int &status);
     virtual ~CacheMgr();  
 
     // Request types
@@ -551,14 +387,6 @@ class CacheMgr {
         ReleaseMutex();
         return result;
     }
-    int InMemory(IOTask *stream, int pageStart, int pageEnd,
-                 PageRangeList *&inMemory) {
-        AcquireMutex();
-        int result = _InMemory(stream, pageStart, pageEnd, inMemory);
-        ReleaseMutex();
-        return result;
-    }
-
     static CacheMgr *Instance() { return _instance; }
 
  protected:
@@ -574,8 +402,6 @@ class CacheMgr {
     int _UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
                    int size = -1, Boolean force = false);
     int _UnPin(IOTask *stream, Boolean dirty);
-    int _InMemory(IOTask *stream, int pageStart, int pageEnd,
-                  PageRangeList *&inMemory);
 
     // An instance of this class
     static CacheMgr *_instance;
@@ -595,10 +421,10 @@ class CacheMgr {
     int _reqFd[2];
     int _replyFd[2];
 
-#ifdef PROCESS_TASK
+#ifdef SBM_PROCESS
     pid_t _child;                       // pid of child process
 #endif
-#ifdef THREAD_TASK
+#ifdef SBM_THREAD
     pthread_t _child;                   // thread id of child
 #endif
 #endif
@@ -622,7 +448,7 @@ class CacheMgr {
 
     // Page frames
     PageFrame *_frames;
-#ifdef SHARED_MEMORY
+#ifdef SBM_SHARED_MEMORY
     SharedMemory *_frmShm;
 #else
     // Hash table of page addresses
@@ -637,7 +463,7 @@ class CacheMgr {
 
 class CacheMgrLRU : public CacheMgr {
   public:
-    CacheMgrLRU(MemMgr &mgr, int frames);
+    CacheMgrLRU(MemMgr &mgr, int frames, int &status);
     virtual ~CacheMgrLRU() {}
 
  protected:
@@ -647,5 +473,6 @@ class CacheMgrLRU : public CacheMgr {
     // Clock hand for Clock page replacement algorithm
     int _clockHand;
 };
+#endif
 
 #endif

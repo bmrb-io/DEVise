@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/11/23 21:05:00  jussi
+  MemMgr now manages multi-page chunks instead of single pages.
+
   Revision 1.11  1996/11/15 20:33:24  jussi
   Removed MemMgr::Release() method. IOTask::Write() no longer deallocates
   the page it gets from the caller. CacheMgr dellocates pages only
@@ -88,223 +91,32 @@
 #endif
 
 #include "SBufMgr.h"
-#include "Web.h"
 #include "Exit.h"
 #include "DevError.h"
+#include "Util.h"
 
-#ifdef PROCESS_TASK
+#ifndef ATTRPROJ
+#include "Web.h"
+#endif
+
+#ifdef SBM_PROCESS
 #include <sys/wait.h>
 #endif
 
 #define DEBUGLVL 0
 
-static int readn(int fd, char *buf, int nbytes)
-{
-#if DEBUGLVL >= 9
-    printf("readn reading %d bytes...", nbytes);
-#endif
-
-    int nleft = nbytes;
-    while (nleft > 0) {
-        int nread = read(fd, buf, nleft);
-        if (nread < 0) {                // error?
-            if (errno == EINTR)
-                continue;
-#if DEBUGLVL >= 9
-            printf(" error\n");
-#endif
-            return nread;
-        }
-        if (nread == 0)                 // EOF?
-            break;
-        nleft -= nread;
-        buf   += nread;
-    }
-    
-#if DEBUGLVL >= 9
-    printf(" done\n");
-#endif
-
-    return nbytes - nleft;
-}
-  
-static int writen(int fd, char *buf, int nbytes)
-{
-    int nleft = nbytes;
-    while (nleft > 0) {
-        int nwritten = write(fd, buf, nleft);
-        if (nwritten < 0) {             // error?
-            if (errno == EINTR)
-                continue;
-            return nwritten;
-        }
-        nleft -= nwritten;
-        buf   += nwritten;
-    }
-
-    return nbytes - nleft;
-}
-
-DataPipe::DataPipe(int maxPages) : _maxPages(maxPages)
-{
-    if (_maxPages < 2) {
-        _maxPages = 2;
-        fprintf(stderr, "Adjusting pipe size to %d\n", _maxPages);
-    }
-
-#if DEBUGLVL >= 1
-    printf("Creating new data pipe, size %d\n", _maxPages);
-#endif
-
-    int status;
-    _sem = new SemaphoreV(Semaphore::newKey(), status, 1);
-    DOASSERT(_sem, "Out of memory");
-    DOASSERT(status >= 0, "Cannot create semaphore");
-    _sem->setValue(1);
-
-    _free = new SemaphoreV(Semaphore::newKey(), status, 1);
-    DOASSERT(_free, "Out of memory");
-    DOASSERT(status >= 0, "Cannot create semaphore");
-    _free->setValue(0);
-
-    _data = new SemaphoreV(Semaphore::newKey(), status, 1);
-    DOASSERT(_data, "Out of memory");
-    DOASSERT(status >= 0, "Cannot create semaphore");
-    _data->setValue(0);
-
-    int size = _maxPages * (sizeof(char *) + sizeof(int)) + 3 * sizeof(int);
-    char *buf = 0;
-
-#ifdef SHARED_MEMORY
-    key_t _shmKey = SharedMemory::newKey();
-    int created = 0;
-    _shm = new SharedMemory(_shmKey, size, buf, created);
-    DOASSERT(_shm, "Out of memory");
-    if (!created)
-        printf("Warning: pre-existing shared memory initialized\n");
-#if DEBUGLVL >= 1
-    printf("Created a %d-byte shared memory segment (key %d) at 0x%p\n",
-           size, _shmKey, buf);
-#endif
-#else
-    buf = new char [size];
-#if DEBUGLVL >= 1
-    printf("Created a %d-byte local memory area at 0x%p\n", size, buf);
-#endif
-#endif
-
-    DOASSERT(buf, "Out of memory");
-
-    _streamData = (char **)buf;
-    _streamBytes = (int *)(buf + _maxPages * sizeof(char *));
-    _streamHead = _streamBytes + _maxPages;
-    _streamTail = _streamHead + 1;
-    _streamFree = _streamTail + 1;
-
-    for(int i = 0; i < _maxPages; i++) {
-        _streamData[i] = 0;
-        _streamBytes[i] = 0;
-    }
-    *_streamHead = *_streamTail = 0;
-    *_streamFree = _maxPages;
-}
-
-DataPipe::~DataPipe()
-{
-#ifdef SHARED_MEMORY
-    delete _shm;
-#else
-    delete _streamData;
-#endif
-
-    _data->destroy();
-    delete _data;
-
-    _free->destroy();
-    delete _free;
-
-    _sem->destroy();
-    delete _sem;
-}
-
-int DataPipe::Produce(char *buf, int bytes)
-{
-    AcquireMutex();
-
-    while (!*_streamFree) {
-#if DEBUGLVL >= 3
-        printf("Pipe 0x%p has to wait for consumer's free space\n", this);
-#endif
-        ReleaseMutex();
-        AcquireFree();
-        AcquireMutex();
-    }
-
-    (*_streamFree)--;
-
-#if DEBUGLVL >= 3
-    printf("Pipe 0x%p has %d free space left\n", this, *_streamFree);
-#endif
-
-    _streamData[*_streamHead] = buf;
-    _streamBytes[*_streamHead] = bytes;
-    *_streamHead = (*_streamHead + 1) % _maxPages;
-    if (*_streamFree == _maxPages - 1) {
-#if DEBUGLVL >= 3
-        printf("Pipe 0x%p signaling consumer about data\n", this);
-#endif
-        ReleaseData();
-    }
-
-    ReleaseMutex();
-
-    return 0;
-}
-
-int DataPipe::Consume(char *&buf)
-{
-    AcquireMutex();
-
-    while (*_streamFree == _maxPages) {
-#if DEBUGLVL >= 3
-        printf("Pipe 0x%p has to wait for producer's data\n", this);
-#endif
-        ReleaseMutex();
-        AcquireData();
-        AcquireMutex();
-    }
-
-    buf = _streamData[*_streamTail];
-    int bytes = _streamBytes[*_streamTail];
-    *_streamTail = (*_streamTail + 1) % _maxPages;
-
-    (*_streamFree)++;
-#if DEBUGLVL >= 3
-    printf("Pipe 0x%p has %d free space left\n", this, *_streamFree);
-#endif
-
-    if (*_streamFree == 1) {
-#if DEBUGLVL >= 3
-        printf("Pipe 0x%p signaling producer about free space\n", this);
-#endif
-        ReleaseFree();
-    }
-
-    ReleaseMutex();
-
-    return bytes;
-}
-
-IOTask::IOTask(int blockSize) :
+IOTask::IOTask(int &status, int blockSize) :
 	_pageSize(MemMgr::Instance()->PageSize()), _blockSize(blockSize),
 	_dataPipe(0), _readStream(false), _writeStream(false),
-        _readStreamLength(0), _readBytes(0), _writeBytes(0),
-        _seekBytes(0), _child(0)
+        _streamOffset(0), _streamLength(0), _readBytes(0),
+        _writeBytes(0), _seekBytes(0), _child(0)
 {
-    int status;
     _isBusy = new SemaphoreV(Semaphore::newKey(), status, 1);
-    DOASSERT(_isBusy, "Out of memory");
-    DOASSERT(status >= 0, "Cannot create semaphore");
+    if (!_isBusy || status < 0) {
+      fprintf(stderr, "Cannot create semaphore\n");
+      status = -1;
+      return;
+    }
     _isBusy->setValue(1);
 }
 
@@ -327,16 +139,23 @@ IOTask::~IOTask()
 
 int IOTask::StartChild(int pipeSize)
 {
-    DOASSERT(!_dataPipe, "Data pipe exists already");
+    if (_dataPipe) {
+      fprintf(stderr, "Data pipe exists already\n");
+      return -1;
+    }
 
-    _dataPipe = new DataPipe(pipeSize);
-    DOASSERT(_dataPipe, "Invalid data pipe");
+    int status;
+    _dataPipe = new DataPipe(pipeSize, status);
+    if (!_dataPipe || status < 0) {
+      fprintf(stderr, "Cannot create data pipe\n");
+      return -1;
+    }
 
 #if DEBUGLVL >= 1
     printf("Creating I/O task process/thread...\n");
 #endif
 
-#ifdef PROCESS_TASK
+#ifdef SBM_PROCESS
     _child = fork();
     if (_child < 0) {
         perror("IOTask::StartChild: fork");
@@ -349,7 +168,7 @@ int IOTask::StartChild(int pipeSize)
     }
 #endif
 
-#ifdef THREAD_TASK
+#ifdef SBM_THREAD
     if (pthread_create(&_child, 0, DoStream, this)) {
         perror("IOTask::StartChild: pthread_create");
         return -1;
@@ -357,7 +176,7 @@ int IOTask::StartChild(int pipeSize)
 #endif
 
 #if DEBUGLVL >= 1
-    printf("Created I/O task process/thread %ld\n", (long int)_child);
+    printf("Created I/O task process/thread %ld\n", (long)_child);
 #endif
 
     return 0;
@@ -371,10 +190,10 @@ int IOTask::Terminate()
     }
 
 #if DEBUGLVL >= 1
-    printf("Terminating child process/thread %ld...\n", (long int)_child);
+    printf("Terminating child process/thread %ld...\n", (long)_child);
 #endif
 
-#ifdef PROCESS_TASK
+#ifdef SBM_PROCESS
     while(1) {
         int status;
         pid_t child = wait(&status);
@@ -389,7 +208,7 @@ int IOTask::Terminate()
             break;
     }
 #endif
-#ifdef THREAD_TASK
+#ifdef SBM_THREAD
     (void)pthread_join(_child, 0);
 #endif
 
@@ -405,9 +224,7 @@ int IOTask::Terminate()
     return 0;
 }
     
-int IOTask::Read(unsigned long long offset,
-                     unsigned long bytes,
-                     char *&addr)
+int IOTask::Read(streampos_t offset, iosize_t bytes, char *&addr)
 {
     if (!addr) {
 #if DEBUGLVL >= 3
@@ -435,9 +252,7 @@ int IOTask::Read(unsigned long long offset,
     return reply.bytes;
 }
 
-int IOTask::Write(unsigned long long offset,
-                      unsigned long bytes,
-                      char *addr)
+int IOTask::Write(streampos_t offset, iosize_t bytes, char *addr)
 {
     if (!addr)
         return -1;
@@ -455,14 +270,15 @@ int IOTask::Write(unsigned long long offset,
     return reply.bytes;
 }
 
-int IOTask::ReadStream(unsigned long bytes, int pipeSize)
+int IOTask::ReadStream(streampos_t offset, iosize_t bytes, int pipeSize)
 {
     if (_readStream || _writeStream) {
-        fprintf(stderr, "Already participating in one stream\n");
+        fprintf(stderr, "Already participating in a stream\n");
         return -1;
     }
 
-    _readStreamLength = bytes;
+    _streamOffset = offset;
+    _streamLength = bytes;
     _readStream = true;
 
     if (StartChild(pipeSize) < 0)
@@ -474,7 +290,7 @@ int IOTask::ReadStream(unsigned long bytes, int pipeSize)
 int IOTask::WriteStream(int pipeSize)
 {
     if (_readStream || _writeStream) {
-        fprintf(stderr, "Already participating in one stream\n");
+        fprintf(stderr, "Already participating in a stream\n");
         return -1;
     }
 
@@ -494,7 +310,7 @@ void *IOTask::DoStream(void *arg)
 
 void *IOTask::DoStream()
 {
-#ifdef THREAD_TASK
+#ifdef SBM_THREAD
     // Find out the priority of this thread
     int policy;
     struct sched_param sparam;
@@ -508,7 +324,7 @@ void *IOTask::DoStream()
 #endif
 
     if (_readStream)
-        _ReadStream(_readStreamLength);
+        _ReadStream(_streamOffset, _streamLength);
     else
         _WriteStream();
 
@@ -519,34 +335,34 @@ void *IOTask::DoStream()
     return 0;
 }
 
-void IOTask::_ReadStream(unsigned long totbytes)
+void IOTask::_ReadStream(streampos_t offset, iosize_t totbytes)
 {
     SetDeviceBusy();
 
-    unsigned long long offset = 0;
+    iosize_t bytes = 0;
 
-    while (!totbytes || offset < totbytes) {
+    while (!totbytes || bytes < totbytes) {
         char *page;
         int status = MemMgr::Instance()->Allocate(MemMgr::Buffer, page);
         DOASSERT(status >= 0 && page, "Failed to allocate buffer space\n");
-        unsigned long reqsize = _pageSize;
-        if (totbytes > 0 && totbytes - offset < reqsize)
-            reqsize = totbytes - offset;
+        iosize_t reqsize = _pageSize;
+        if (totbytes > 0 && totbytes - bytes < reqsize)
+            reqsize = totbytes - bytes;
         Request req = { ReadReq, offset, reqsize, page };
         Request reply;
-#if 1
         DeviceIO(req, reply);
-#else
-        reply.result = req.bytes;
-#endif
         if (reply.result >= 0) {
-            if (Produce(page, reply.result) < 0)
-                break;
+            int status = Produce(page, offset, reply.result);
+            DOASSERT(status >= 0, "Cannot produce data");
         }
         if (reply.result < _pageSize)
             break;
         offset += _pageSize;
+        bytes += _pageSize;
     }
+
+    int status = Produce(0, offset, 0);
+    DOASSERT(status >= 0, "Cannot produce data");
 
     SetDeviceIdle();
 }
@@ -555,26 +371,25 @@ void IOTask::_WriteStream()
 {
     SetDeviceBusy();
 
-    unsigned long long offset = 0;
-
     while(1) {
         char *page;
-        int bytes = Consume(page);
-        if (bytes <= 0)
+        streampos_t offset;
+        iosize_t bytes;
+        int status = Consume(page, offset, bytes);
+        DOASSERT(status >= 0, "Cannot consume data");
+        if (!bytes)
             break;
         Request req = { WriteReq, offset, bytes, page };
         Request reply;
-#if 1
         DeviceIO(req, reply);
-#else
-        reply.result = req.bytes;
-#endif
-        if (reply.result != bytes)
+        if (reply.result != (int)bytes)
             break;
-        int status = MemMgr::Instance()->Deallocate(MemMgr::Buffer, page);
+        status = MemMgr::Instance()->Deallocate(MemMgr::Buffer, page);
         DOASSERT(status >= 0 && page, "Failed to deallocate buffer space\n");
         offset += bytes;
     }
+
+    (void)WriteEOF();
 
     SetDeviceIdle();
 }
@@ -589,10 +404,17 @@ Boolean IOTask::IsBusy()
     return false;
 }
 
-FdIOTask::FdIOTask(int fd, int blockSize) :
-	IOTask(blockSize), _fd(fd)
+FdIOTask::FdIOTask(int &status, int fd, int blockSize) :
+	IOTask(status, blockSize), _fd(fd)
 {
-    _offset = lseek(fd, SEEK_CUR, 0);
+    if (status < 0)
+      return;
+    
+    if (fd >= 0) {
+        _offset = lseek(fd, SEEK_CUR, 0);
+        status = (int)_offset;
+    } else
+        status = fd;
 }
 
 void FdIOTask::DeviceIO(Request &req, Request &reply)
@@ -655,14 +477,9 @@ void FdIOTask::DeviceIO(Request &req, Request &reply)
         _offset += reply.bytes;
 }
 
-TapeIOTask::TapeIOTask(TapeDrive &tape) :
-	IOTask(tape.getBlockSize()), _tape(tape)
-{
-    _offset = _tape.tell();
-}
-
-WebIOTask::WebIOTask(char *url, Boolean isInput, int blockSize) :
-	FdIOTask(OpenURL(url, isInput), blockSize)
+#ifndef ATTRPROJ
+WebIOTask::WebIOTask(int &status, char *url, Boolean isInput, int blockSize) :
+	FdIOTask(status, OpenURL(url, isInput), blockSize)
 {
 }
 
@@ -701,7 +518,7 @@ int WebIOTask::WriteEOF()
     if (_isInput || !_url || strncmp(_url, "http://", 7))
         return 0;
 
-    DOASSERT(_webfd < 0 && _cache >= 0, "Invalid parameters");
+    DOASSERT(_webfd < 0 && _cache, "Invalid parameters");
 
     // Write cached HTTP file to Web site, then reverse direction
     // of data flow
@@ -776,8 +593,8 @@ int WebIOTask::OpenURL(char *url, Boolean isInput)
 
 char *WebIOTask::MakeCacheName(char *url)
 {
-    unsigned long int sum = 0;
-    unsigned long int xor = 0;
+    unsigned long sum = 0;
+    unsigned long xor = 0;
     for(unsigned int i = 0; i < strlen(url); i++) {
         sum += url[i];
         xor ^= url[i];
@@ -795,11 +612,11 @@ char *WebIOTask::MakeCacheName(char *url)
 void WebIOTask::WriteHTTP()
 {
 #if DEBUGLVL >= 3
-    printf("Writing cached HTTP file (%ld bytes) to %s\n",
+    printf("Writing cached HTTP file (%llu bytes) to %s\n",
            _cacheSize, _url);
 #endif
 
-    DOASSERT(!_isInput && _webfd < 0 && _cache > 0, "Invalid parameters");
+    DOASSERT(!_isInput && _webfd < 0 && _cache, "Invalid parameters");
 
     size_t totlen = _cacheSize;
     _webfd = open_http(_url, _isInput, &totlen);
@@ -809,7 +626,7 @@ void WebIOTask::WriteHTTP()
         return;
     }
 
-    unsigned long int sent = 0;
+    iosize_t sent = 0;
 
     while (sent < _cacheSize) {
         if (_offset != sent) {
@@ -935,6 +752,14 @@ void WebIOTask::DeviceIO(Request &req, Request &reply)
     FdIOTask::DeviceIO(req, reply);
 }
 
+TapeIOTask::TapeIOTask(int &status, TapeDrive &tape) :
+	IOTask(status, tape.getBlockSize()), _tape(tape)
+{
+    if (status < 0)
+      return;
+    _offset = _tape.tell();
+}
+
 void TapeIOTask::DeviceIO(Request &req, Request &reply)
 {
     reply = req;
@@ -973,352 +798,41 @@ void TapeIOTask::DeviceIO(Request &req, Request &reply)
     _offset += reply.bytes;
 }
 
-MemMgr *MemMgr::_instance = 0;
+CacheMgr *CacheMgr::_instance = 0;
 
-MemMgr::MemMgr(int numPages, int pageSize, int &status) :
-	_numPages(numPages), _tableSize(numPages),
-        _pageSize(pageSize), _maxBuff(0.3)
+CacheMgr::CacheMgr(MemMgr &mgr, int frames, int &status) :
+	_mgr(mgr), _numFrames(frames),
+        _pageSize(mgr.PageSize())
+#ifndef SBM_SHARED_MEMORY
+        , _ht(103, AddrHash)
+#endif
 {
     _instance = this;
 
     status = Initialize();
 }
 
-int MemMgr::Initialize()
-{
-    int status;
-    _sem = new SemaphoreV(Semaphore::newKey(), status, 1);
-    DOASSERT(_sem, "Out of memory");
-    DOASSERT(status >= 0, "Cannot create semaphore");
-    _sem->setValue(1);
-
-    _free = new SemaphoreV(Semaphore::newKey(), status, 1);
-    DOASSERT(_free, "Out of memory");
-    DOASSERT(status >= 0, "Cannot create semaphore");
-    _free->setValue(0);
-
-    // We need space for page and also address in _freePage
-    int size = _numPages * _pageSize
-               + _tableSize * (sizeof(char *) + sizeof(int))
-               + sizeof(CountStruct);
-
-#ifdef SHARED_MEMORY
-    key_t _shmKey = SharedMemory::newKey();
-    int created = 0;
-    _shm = new SharedMemory(_shmKey, size, _buf, created);
-    DOASSERT(_shm, "Out of memory");
-    if (!created)
-        printf("Warning: pre-existing shared memory initialized\n");
-#if DEBUGLVL >= 1
-    printf("Created a %d-byte shared memory segment at 0x%p\n", size, _buf);
-#endif
-#else
-    _buf = new char [size];
-#if DEBUGLVL >= 1
-    printf("Created a %d-byte local memory area at 0x%p\n", size, _buf);
-#endif
-#endif
-
-    DOASSERT(_buf, "Out of memory");
-
-#if DEBUGLVL >= 1
-    printf("Initializing memory manager\n");
-#endif
-
-    memset(_buf, 0, _numPages * _pageSize);
-
-#if DEBUGLVL >= 1
-    printf("Creating free, cache, and buffer lists\n");
-#endif
-
-    _freePage = (char **)(_buf + _numPages * _pageSize);
-    _freePageCount = (int *)(_freePage + _tableSize);
-    _count = (CountStruct *)(_freePageCount + _tableSize);
-
-    // Initially, there is one contiguous free memory area
-    _freePage[0] = _buf;
-    _freePageCount[0] = _numPages;
-
-    for(int i = 1; i < _tableSize; i++) {
-        _freePage[i] = 0;
-        _freePageCount[i] = 0;
-    }
-
-    _count->entries = 1;
-    _count->free = _numPages;
-    _count->cache = 0;
-    _count->buffer = 0;
-
-    return 0;
-}
-
-MemMgr::~MemMgr()
-{
-#ifdef SHARED_MEMORY
-    delete _shm;
-#else
-    delete _buf;
-#endif
-
-    _sem->destroy();
-    delete _sem;
-
-    _free->destroy();
-    delete _free;
-}
-
-int MemMgr::Allocate(PageType type, char *&buf, int &pages, Boolean block)
-{
-    // Return immediately if no pages requested
-    if (pages <= 0)
-        return -1;
-
-    AcquireMutex();
-
-    // Return immediately if no free pages available in non-blocking mode
-    if (!block && !_count->free) {
-        ReleaseMutex();
-        return -1;
-    }
-
-    while (!_count->free) {
-#if DEBUGLVL >= 5
-        printf("Out of free pages: %d cache, %d buffer\n",
-               _count->cache, _count->buffer);
-#endif
-        ReleaseMutex();
-        AcquireFree();
-        AcquireMutex();
-#if DEBUGLVL >= 5
-        printf("Woke up from sleep, %d free pages, %d cache, %d buffer\n",
-               _count->free, _count->cache, _count->buffer);
-#endif
-    }
-           
-    // Find first contiguous area that is at least the size requested.
-    // Make note of largest contiguous area smaller than requested size.
-
-    int pick = -1;
-    int i = 0;
-    for(; i < _count->entries; i++) {
-        if (_freePageCount[i] >= pages) {
-#if DEBUGLVL >= 3
-            printf("Found %d-page contiguous block at index %d\n",
-                   _freePageCount[i], i);
-#endif
-            pick = i;
-            break;
-        }
-        if (pick < 0 || _freePageCount[i] > _freePageCount[pick])
-            pick = i;
-    }
-
-    DOASSERT(pick >= 0 && pick < _count->entries, "Invalid index");
-
-    if (_freePageCount[pick] < pages) {
-#if DEBUGLVL >= 3
-        printf("Reducing %d-page request to largest available %d\n",
-               pages, _freePageCount[pick]);
-#endif
-        pages = _freePageCount[pick];
-        DOASSERT(pages > 0, "Invalid page count");
-    }
-
-    DOASSERT(_count->free >= pages, "Invalid free count");
-    _count->free -= pages;
-    buf = _freePage[pick];
-    DOASSERT(buf, "Invalid page");
-    _freePageCount[pick] -= pages;
-
-    // If nothing left of memory chunk, move another chunk into this
-    // table position. Otherwise, adjust memory chunk location.
-
-    if (!_freePageCount[pick]) {
-        _count->entries--;
-        if (pick < _count->entries) {
-            _freePage[pick] = _freePage[_count->entries];
-            _freePageCount[pick] = _freePageCount[_count->entries];
-            _freePage[_count->entries] = 0;
-            _freePageCount[_count->entries] = 0;
-        } else {
-            _freePage[pick] = 0;
-        }
-    } else {
-        _freePage[i] = buf + pages * _pageSize;
-    }
-
-    if (type == Buffer)
-        _count->buffer += pages;
-    else
-        _count->cache += pages;
-
-#if DEBUGLVL >= 3
-    printf("Allocated %d %s page(s) at 0x%p\n",
-           pages, (type == Cache ? "cache" : "buffer"), buf);
-#endif
-
-#if DEBUGLVL >= 5
-    printf("Memory allocation table now:\n");
-    Dump();
-#endif
-
-    ReleaseMutex();
-
-    return 0;
-}
-
-int MemMgr::Deallocate(PageType type, char *buf, int pages)
-{
-    AcquireMutex();
-
-    DOASSERT(_count->free + pages <= _numPages, "Invalid page 2");
-
-    // Find free page area that merges perfectly with deallocated range.
-
-    char *endBuf = buf + pages * _pageSize;
-    int mergeLeft = -1;
-    int mergeRight = -1;
-    for(int i = 0; i < _count->entries; i++) {
-        DOASSERT(_freePageCount[i] > 0, "Invalid free page count");
-        DOASSERT(_freePage[i], "Invalid free memory area");
-        char *endFreeBuf = _freePage[i] + _freePageCount[i] * _pageSize;
-        if (_freePage[i] == endBuf)
-            mergeLeft = i;
-        if (buf == endFreeBuf)
-            mergeRight = i;
-    }
-
-    if (mergeLeft >= 0 && mergeRight >= 0) {
-        // Freed area sits perfectly between two previously freed areas
-        DOASSERT(mergeLeft != mergeRight, "Impossible merge");
-        _freePageCount[mergeRight] += pages + _freePageCount[mergeLeft];
-        _count->entries--;
-        if (mergeLeft < _count->entries) {
-            _freePage[mergeLeft] = _freePage[_count->entries];
-            _freePageCount[mergeLeft] = _freePageCount[_count->entries];
-            _freePage[_count->entries] = 0;
-            _freePageCount[_count->entries] = 0;
-        } else {
-            _freePageCount[mergeLeft] = 0;
-            _freePage[mergeLeft] = 0;
-        }
-    } else if (mergeLeft >= 0) {
-        // Freed area is just to the left of a previously freed area
-        _freePage[mergeLeft] -= pages * _pageSize;
-        _freePageCount[mergeLeft] += pages;
-    } else if (mergeRight >= 0) {
-        // Freed area is just to the right of a previously freed area
-        _freePageCount[mergeRight] += pages;
-    } else {
-        // Freed area is not adjacent to any previously freed area
-        int freeEntry = _count->entries;
-        DOASSERT(freeEntry <= _tableSize, "Inconsistent state");
-        DOASSERT(!_freePage[freeEntry] && !_freePageCount[freeEntry],
-                 "Entry not free");
-        _freePage[freeEntry] = buf;
-        _freePageCount[freeEntry] = pages;
-        _count->entries++;
-    }
-
-    _count->free += pages;
-
-#if DEBUGLVL >= 3
-    printf("Deallocated %d %s page(s) at 0x%p\n",
-           pages, (type == Cache ? "cache" : "buffer"), buf);
-#endif
-
-    if (type == Buffer) {
-        _count->buffer -= pages;
-#if DEBUGLVL >= 3
-        printf("Now %d buffer pages remain in use\n", _count->buffer);
-#endif
-    } else {
-        _count->cache -= pages;
-#if DEBUGLVL >= 3
-        printf("Now %d cache pages remain in use\n", _count->cache);
-#endif
-    }
-
-#if DEBUGLVL >= 5
-    printf("Memory allocation table now:\n");
-    Dump();
-#endif
-
-    // If someone is waiting for a free page, signal it
-    if (_count->free == pages)
-        ReleaseFree();
-
-    ReleaseMutex();
-
-    return 0;
-}
-
-int MemMgr::Convert(char *page, PageType oldType, PageType &newType)
-{
-    AcquireMutex();
-
-    page = page;
-
-    if (oldType != newType) {
-        if (oldType == Cache) {
-            _count->cache--;
-            _count->buffer++;
-        } else {
-            _count->cache++;
-            _count->buffer--;
-        }
-
-#if DEBUGLVL >= 3
-        printf("Memory manager now has %d cache pages, %d buffer pages\n",
-               _count->cache, _count->buffer);
-#endif
-    }
-
-    ReleaseMutex();
-
-    return 0;
-}
-
-void MemMgr::Dump()
-{
-    printf("Free pages %d, buffer %d, cache %d, entries %d\n",
-           _count->free, _count->buffer, _count->cache, _count->entries);
-    for(int i = 0; i < (_tableSize > 10 ? 10 : _tableSize); i++) {
-        printf("memory[%d] = 0x%p, %d pages\n", i, _freePage[i],
-               _freePageCount[i]);
-    }
-}
-
-CacheMgr *CacheMgr::_instance = 0;
-
-CacheMgr::CacheMgr(MemMgr &mgr, int frames) :
-	_mgr(mgr), _numFrames(frames),
-        _pageSize(mgr.PageSize())
-#ifndef SHARED_MEMORY
-        , _ht(103, AddrHash)
-#endif
-{
-    _instance = this;
-
-    (void)Initialize();
-}
-
 int CacheMgr::Initialize()
 {
     int status;
     _mutex = new SemaphoreV(Semaphore::newKey(), status);
-    DOASSERT(_mutex, "Out of memory");
-    DOASSERT(status >= 0, "Cannot create semaphore");
+    if (!_mutex || status < 0) {
+      fprintf(stderr, "Cannot create semaphore\n");
+      return -1;
+    }
     _mutex->setValue(1);
 
-#ifdef SHARED_MEMORY
+#ifdef SBM_SHARED_MEMORY
     printf("Creating buffer manager frame table in shared memory\n");
     key_t _frmShmKey = SharedMemory::newKey();
     int created = 0;
     char *buf;
     _frmShm = new SharedMemory(_frmShmKey, _numFrames * sizeof(PageFrame),
                                buf, created);
-    DOASSERT(_frmShm, "Out of memory");
+    if (!_frmShm) {
+      fprintf(stderr, "Cannot create page table in shared memory\n");
+      return -1;
+    }
     if (!created)
         printf("Warning: pre-existing shared memory initialized\n");
 #if DEBUGLVL >= 1
@@ -1329,7 +843,10 @@ int CacheMgr::Initialize()
 #else
     printf("Creating buffer manager frame table in local memory\n");
     _frames = new PageFrame [_numFrames];
-    DOASSERT(_frames, "Out of memory");
+    if (!_frames) {
+      fprintf(stderr, "Cannot create page table in local memory\n");
+      return -1;
+    }
 #endif
  
     for(int i = 0; i < _numFrames; i++) {
@@ -1346,7 +863,7 @@ CacheMgr::~CacheMgr()
 {
     _DeallocMemory();
 
-#ifdef SHARED_MEMORY
+#ifdef SBM_SHARED_MEMORY
     delete _frmShm;
 #else
     delete [] _frames;
@@ -1380,7 +897,7 @@ int CacheMgr::_PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
 
     int index;
     PageAddr addr = { stream, pageNo };
-#ifdef SHARED_MEMORY
+#ifdef SBM_SHARED_MEMORY
     for(index = 0; index < _numFrames; index++) {
         PageFrame &frame = _frames[index];
         if (frame.valid && frame.addr == addr)
@@ -1393,7 +910,7 @@ int CacheMgr::_PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
 
     if (status >= 0) {                  // frame found
         PageFrame &frame = _frames[index];
-        DOASSERT(frame.valid, "Invalid page frame 1");
+        DOASSERT(frame.valid, "Invalid page frame");
         frame.pinCnt++;
     } else {
         if ((index = AllocFrame()) < 0) {
@@ -1401,9 +918,9 @@ int CacheMgr::_PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
             return index;
         }
         PageFrame &frame = _frames[index];
-#ifndef SHARED_MEMORY
+#ifndef SBM_SHARED_MEMORY
         if ((status = _ht.insert(addr, index)) < 0) {
-            printf("Cannot insert to hash table\n");
+            fprintf(stderr, "Cannot insert to hash table\n");
             return status;
         }
 #endif
@@ -1411,7 +928,7 @@ int CacheMgr::_PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
     }
 
     PageFrame &frame = _frames[index];
-    DOASSERT(frame.valid, "Invalid page frame 2");
+    DOASSERT(frame.valid, "Invalid page frame");
     frame.refbit = true;
 
     if (!frame.page) {
@@ -1427,13 +944,13 @@ int CacheMgr::_PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
     }
 
     page = frame.page;
-    DOASSERT(page, "Invalid page address 2");
+    DOASSERT(page, "Invalid page address");
 
     if (read) {
         frame.iopending = true;
         ReleaseMutex();
-        if ((status = stream->Read(((unsigned long long)pageNo) *
-                                   ((unsigned long long)_pageSize),
+        if ((status = stream->Read(((streampos_t)pageNo) *
+                                   ((streampos_t)_pageSize),
                                    _pageSize, frame.page)) < 0) {
             printf("Cannot read page\n");
             return status;
@@ -1463,7 +980,7 @@ int CacheMgr::_UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
 
     int index;
     PageAddr addr = { stream, pageNo };
-#ifdef SHARED_MEMORY
+#ifdef SBM_SHARED_MEMORY
     for(index = 0; index < _numFrames; index++) {
         PageFrame &frame = _frames[index];
         if (frame.valid && frame.addr == addr)
@@ -1479,7 +996,7 @@ int CacheMgr::_UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
     }
 
     PageFrame &frame = _frames[index];
-    DOASSERT(frame.valid, "Invalid page frame 3");
+    DOASSERT(frame.valid, "Invalid page frame");
 
     if (!frame.pinCnt) {
         printf("Page pin count zero\n");
@@ -1495,7 +1012,7 @@ int CacheMgr::_UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
     // See if this is the last pin of this page
 
     if (frame.pinCnt == 1) {
-        DOASSERT(frame.page, "Invalid page address 3");
+        DOASSERT(frame.page, "Invalid page address");
         if (frame.dirty && force) {
 #if DEBUGLVL >= 5
             printf("Forcing page %ld to device\n", frame.addr.pageNo);
@@ -1504,8 +1021,8 @@ int CacheMgr::_UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
             ReleaseMutex();
             // Write dirty pages if forced
             int status = frame.addr.stream->Write(
-                            ((unsigned long long)frame.addr.pageNo) *
-                            ((unsigned long long)_pageSize),
+                            ((streampos_t)frame.addr.pageNo) *
+                            ((streampos_t)_pageSize),
                                                   frame.size, frame.page);
             if (status < 0)
                 return status;
@@ -1539,7 +1056,7 @@ int CacheMgr::_UnPin(IOTask *stream, Boolean dirty)
             printf("Releasing frame %d\n", i);
 #endif
             int status;
-#ifndef SHARED_MEMORY
+#ifndef SBM_SHARED_MEMORY
             if ((status = _ht.remove(frame.addr)) < 0)
                 return status;
 #endif
@@ -1547,12 +1064,12 @@ int CacheMgr::_UnPin(IOTask *stream, Boolean dirty)
 #if DEBUGLVL >= 5
                 printf("Flushing page %ld to device\n", frame.addr.pageNo);
 #endif
-                DOASSERT(frame.page, "Invalid page address 4");
+                DOASSERT(frame.page, "Invalid page address");
                 frame.iopending = true;
                 ReleaseMutex();
                 status = frame.addr.stream->Write(
-                            ((unsigned long long)frame.addr.pageNo) *
-                            ((unsigned long long)_pageSize),
+                            ((streampos_t)frame.addr.pageNo) *
+                            ((streampos_t)_pageSize),
                                                   frame.size, frame.page);
                 if (status < 0)
                     return status;
@@ -1576,30 +1093,6 @@ int CacheMgr::_UnPin(IOTask *stream, Boolean dirty)
     return 0;
 }
 
-int CacheMgr::_InMemory(IOTask *stream, int pageStart, int pageEnd,
-                       PageRangeList *&inMemory)
-{
-    if (!stream) {
-        printf("No stream\n");
-        return -1;
-    }
-
-    inMemory = 0;
-    pageStart = pageEnd;
-
-    for(int i = 0; i < _numFrames; i++) {
-        PageFrame &frame = _frames[i];
-        if (!frame.valid || frame.addr.stream != stream)
-            continue;
-#if DEBUGLVL >= 5
-        printf("Adding frame %d, page %ld to page list\n",
-               i, frame.addr.pageNo);
-#endif
-    }
-
-    return 0;
-}
-
 int CacheMgr::AllocFrame()
 {
     int i = PickVictim();
@@ -1611,7 +1104,7 @@ int CacheMgr::AllocFrame()
     PageFrame &frame = _frames[i];
     if (frame.valid && frame.dirty)
         Dump();
-    DOASSERT(!frame.valid || !frame.dirty, "Invalid page frame 4");
+    DOASSERT(!frame.valid || !frame.dirty, "Invalid page frame");
 
     return i;
 }
@@ -1635,8 +1128,8 @@ void CacheMgr::Dump()
     }
 }
 
-CacheMgrLRU::CacheMgrLRU(MemMgr &mgr, int frames) :
-	CacheMgr(mgr, frames), _clockHand(_numFrames - 1)
+CacheMgrLRU::CacheMgrLRU(MemMgr &mgr, int frames, int &status) :
+	CacheMgr(mgr, frames, status), _clockHand(_numFrames - 1)
 {
 }
 
@@ -1689,7 +1182,7 @@ int CacheMgrLRU::PickVictim()
 
         // found victim page (might be dirty)
 
-#ifndef SHARED_MEMORY
+#ifndef SBM_SHARED_MEMORY
         int status = _ht.remove(frame.addr);
         if (status < 0)
             return status;
@@ -1698,7 +1191,7 @@ int CacheMgrLRU::PickVictim()
         int status;
 
         if (frame.dirty) {              // page has unwritten data on it
-            DOASSERT(frame.page, "Invalid page address 5");
+            DOASSERT(frame.page, "Invalid page address");
 #if DEBUGLVL >= 5
             printf("Flushing page %ld from frame %d\n", frame.addr.pageNo,
                    selectedFrame);
@@ -1706,8 +1199,8 @@ int CacheMgrLRU::PickVictim()
             frame.iopending = true;
             ReleaseMutex();
             status = frame.addr.stream->Write(
-                            ((unsigned long long)frame.addr.pageNo) *
-                            ((unsigned long long)_pageSize),
+                            ((streampos_t)frame.addr.pageNo) *
+                            ((streampos_t)_pageSize),
                                               frame.size, frame.page);
             if (status < 0)
                 return status;
@@ -1728,3 +1221,4 @@ int CacheMgrLRU::PickVictim()
         return selectedFrame;
     }
 }
+#endif
