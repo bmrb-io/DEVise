@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/01/30 21:16:06  jussi
+  Removed references to specific colors.
+
   Revision 1.9  1996/01/20 00:47:13  jussi
   Disabled debugging, which I forgot to do in last check-in.
 
@@ -131,6 +134,17 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
   _boundWidth = 9.0; _boundHeight = 9.0;
   
   _hintInitialized = false;
+}
+
+TDataMap::~TDataMap()
+{
+#ifdef OLD_CODE
+  delete _boundingBoxBitmap;
+#endif
+
+  if (_gdata)
+    delete _gdata;
+  delete _shapeAttrs;
 }
 
 void TDataMap::SetDimensionInfo(VisualFlag *dimensionInfo, int numDimensions)
