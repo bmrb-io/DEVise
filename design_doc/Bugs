@@ -1787,6 +1787,16 @@ Num Date        Status  Description
 			jsdemo Condor/cant_move_cursor.ds session. (ml/rkw)
 			(Fixed by rkw, 2/23/99.)
 
+466 03/02/99	OPEN	QueryProcFull does a binary search on an expression
+			on a sorted attribute even if there's a negative
+			coefficient on that attribute -- leads to query
+			not delivering the correct records. (rkw)
+			(See Test/negative_sorted.ds, zoom in X.)
+
+467 03/02/99	OPEN	If you start out with a sorted attribute for X, and
+			then change the mapping to an unsorted attribute,
+			the query is still run using binary search. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
