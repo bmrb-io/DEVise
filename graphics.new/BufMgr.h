@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/01/11 20:59:31  jussi
+  Fix for bug #106. Simplified processing of record links.
+
   Revision 1.6  1996/12/03 20:37:53  jussi
   Added definition of BufMgrRequest, and improved Init/Get/Done interface.
 
@@ -49,8 +52,8 @@
 /* Report info about what has been inserted/delete from the buffer manager */
 class BufMgrCallback {
 public:
-    virtual void Inserted(TData *tdata, RecId low, RecId high) = 0;
-    virtual void Deleted(TData *tdata, RecId low, RecId high) = 0;
+    virtual void Inserted(TData *tdata, Coord low, Coord high) = 0;
+    virtual void Deleted(TData *tdata, Coord low, Coord high) = 0;
 };
 
 DefinePtrDList(BufMgrCallbackList, BufMgrCallback *)
@@ -72,8 +75,8 @@ public:
         TData *tdata;                     /* requested TData */
         GData *gdata;                     /* requested GData */
         QPRange processed;                /* list of processed ranges */
-        RecId low;                        /* start of requested record range */
-        RecId high;                       /* end of requested record range */
+        Coord low;                        /* start of requested record range */
+        Coord high;                       /* end of requested record range */
         Boolean asyncAllowed;             /* asynchronous I/O allowed */
         Boolean inMemoryOnly;             /* return in-memory data only */
         Boolean randomized;               /* return records in random order */
@@ -85,10 +88,10 @@ public:
         RangeList *gdataInMemory;         /* GData ranges in memory */
         RangeInfo *inMemoryHead;          /* head of in-memory range list */
         RangeInfo *inMemoryCur;           /* current in-memory record range */
-        RecId currentRec;                 /* current record being considered */
+        Coord currentRec;                 /* current record being considered */
         Boolean getRange;                 /* need to get scanLow, scanHigh */
-        RecId scanLow;                    /* low ID of current GData range */
-        RecId scanHigh;                   /* high ID of current GData range */
+        Coord scanLow;                    /* low ID of current GData range */
+        Coord scanHigh;                   /* high ID of current GData range */
     };
     
     typedef BufMgrRequest *BMHandle;
@@ -101,7 +104,7 @@ public:
        If asyncAllowed is true, asynchronous I/O can be used.
     */
     virtual BMHandle InitGetRecs(TData *tdata, GData *gdata,
-                                 RecId lowId, RecId highId,
+                                 Coord lowId, Coord highId,
                                  Boolean tdataOnly = false,
                                  Boolean inMemoryOnly = false,
                                  Boolean randomized = false,
@@ -120,7 +123,7 @@ public:
        The record range is indicated by startRecId and numRecs.
     */
     virtual Boolean GetRecs(BMHandle handle, Boolean &isTData,
-                            RecId &startRecId, int &numRecs,
+                            Coord &startRecId, int &numRecs,
                             char *&buf) = 0;
     
     /*
@@ -144,7 +147,7 @@ public:
     virtual void PhaseHint(BufferPolicy::Phase phase) = 0;
     
     /* Provide a hint about the center of focus */
-    virtual void FocusHint(RecId id, TData *tdata, GData *gdata) = 0;
+    virtual void FocusHint(Coord id, TData *tdata, GData *gdata) = 0;
     
     /* Receive notification for released chunk of memory */
     virtual void ReleaseMemory(MemMgr::PageType type,
@@ -161,8 +164,8 @@ public:
        These methods are used by derived class to report records
        inserted/deleted from buffer.
     */
-    void ReportInserted(TData *tdata, RecId low, RecId high);
-    void ReportDeleted(TData *tdata, RecId low, RecId high);
+    void ReportInserted(TData *tdata, Coord low, Coord high);
+    void ReportDeleted(TData *tdata, Coord low, Coord high);
     
     BufMgrCallbackList _callbacks;
 };

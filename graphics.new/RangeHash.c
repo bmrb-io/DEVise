@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/12 15:23:31  jussi
+  Replaced libc.h with stdlib.h. Added copyright notice.
+
   Revision 1.2  1995/09/05 22:15:21  jussi
   Added CVS header.
 */
@@ -44,7 +47,7 @@ Insert buffer into hash table. Error if already exists
 void RangeHash::Insert(RangeInfo *rangeInfo)
 {
   TData *tdata= rangeInfo->GetTData();
-  RecId id = rangeInfo->low;
+  Coord id = rangeInfo->low;
   
   RangeInfo *temp;
   if (Find(tdata,id, temp)) {
@@ -67,7 +70,7 @@ Delete buffer from hash table.
 void RangeHash::Delete(RangeInfo *buf)
 {
   TData *tdata = buf->GetTData();
-  RecId id = buf->low;
+  Coord id = buf->low;
   
   if (buf->prevHash == NULL){
     /* deleting 1st element */
@@ -88,7 +91,7 @@ void RangeHash::Delete(RangeInfo *buf)
 Find buffer entry for the given page. Return TRUE if found 
 ********************************************************************/
 
-Boolean RangeHash::Find(TData *tdata, RecId id, RangeInfo *& buf)
+Boolean RangeHash::Find(TData *tdata, Coord id, RangeInfo *& buf)
 {
   int bucket = Hash(tdata, id);
   _numFind++;

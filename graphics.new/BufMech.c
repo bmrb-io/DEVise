@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/12/14 21:15:55  jussi
+  Replaced 0x%x with 0x%p. Added copyright notice.
+
   Revision 1.1  1995/09/22 17:04:59  jussi
   Restoring this file; it had disappeared.
 
@@ -49,7 +52,7 @@ BufMech::BufMech(int bufSize, BufferPolicy *policy){
 
 /******* Retrieving records *******/
 
-void BufMech::InitGet(TData *tdata, RecId lowId, RecId highId){
+void BufMech::InitGet(TData *tdata, Coord lowId, Coord highId){
 	int recSize = tdata->RecSize();
 	if (recSize <= 0){
 		fprintf(stderr,"can't handle variable size records yet\n");
@@ -82,7 +85,7 @@ void BufMech::Free(RangeInfo *info){
 }
 
 /* Get info about TData ranges */
-void BufMech::GetInMemRanges(TData *tdata, RecId lowId, RecId highId,
+void BufMech::GetInMemRanges(TData *tdata, Coord lowId, Coord highId,
 	RangeInfo **&info, int &numInfo){
 	int index = 0;
 	int i;
@@ -100,7 +103,7 @@ void BufMech::GetInMemRanges(TData *tdata, RecId lowId, RecId highId,
 
 /* Fetch a range from TData, handling misses */
 RangeInfo *BufMech::FetchRange(TData *tdata, int recsPerPage,
-	RecId startId){
+	Coord startId){
 
 	RangeInfo *rangeInfo;
 	if (_rangeHash->Find(tdata,startId, rangeInfo)){

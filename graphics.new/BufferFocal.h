@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/11/23 21:11:22  jussi
+  Pushed all policy-independent code up to BufferPolicy.h. Then moved
+  remaining code from .c file to .h. Then removed empty policy .c files.
+
   Revision 1.3  1996/01/15 21:58:25  jussi
   Added copyright notice and cleaned up the code.
 
@@ -46,13 +50,13 @@ public:
             return PickFifo(rangeArrays, arrayNum, pos);
         }
         
-        RecId low, high;
+        Coord low, high;
         int i;
         
         /* find 1st valid range */
         Boolean found = false;
         int index = 0;
-        RecId furthestId = 0;
+        Coord furthestId = 0;
         for(i = 0; i < rangeArrays->Size(0); i++) {
             RangeInfo *rangeInfo = rangeArrays->GetRange(0, i);
             if (!rangeInfo->InUse() && 
@@ -74,8 +78,8 @@ public:
             if (!rangeInfo->InUse() &&
                 (rangeInfo->GetTData()== _focusTData
                  || rangeInfo->GetTData()== _focusGData) &&
-                Distance(low, _focusId) >
-                Distance(furthestId, _focusId)) {
+                Distance((RecId)low, (RecId)_focusId) >
+                Distance((RecId)furthestId, (RecId)_focusId)) {
                 index = i;
                 furthestId = low;
             }
@@ -90,7 +94,7 @@ public:
         _phase = phase; 
     }
     
-    virtual void FocusHint(RecId focus, TData *tdata, GData *gdata) {
+    virtual void FocusHint(Coord focus, TData *tdata, GData *gdata) {
         _hasFocus = true;
         _focusId = focus;
         _focusTData = tdata;
@@ -123,7 +127,7 @@ public:
     }
     
     Boolean _hasFocus;                  /* has focus point */
-    RecId _focusId;	                /* id that's the center of focus */
+    Coord _focusId;	                /* id that's the center of focus */
     TData *_focusTData;
     GData *_focusGData;
 };

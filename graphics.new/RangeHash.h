@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/28 16:10:26  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
   Revision 1.2  1995/09/05 22:15:22  jussi
   Added CVS header.
 */
@@ -40,7 +44,7 @@ public:
 	void Delete(RangeInfo *buf);
 
 	/* Find buffer entry for the given page. Return TRUE if found */
-	Boolean Find(TData *tdata, RecId lowId , RangeInfo *& buf);
+	Boolean Find(TData *tdata, Coord lowId , RangeInfo *& buf);
 
 	/* print the buffers in the hash table */
 	void Print();
@@ -51,7 +55,7 @@ public:
 private:
 
 	/* hash function */
-	int Hash(TData *tdata, RecId lowId) { 
+	int Hash(TData *tdata, Coord lowId) { 
 		return ((unsigned)(lowId % RANGE_HASH_TABLE_SIZE));
 	};
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/18 15:35:12  jussi
+  Merged GetGDataInMem() and GetTDataInMem().
+
   Revision 1.6  1996/12/12 22:02:17  jussi
   Added destructor.
 
@@ -61,7 +64,7 @@ class BufMgrFull: public BufMgr {
     void ClearData(TData *data);
 
     virtual BMHandle InitGetRecs(TData *tdata, GData *gdata,
-                                 RecId lowId, RecId highId,
+                                 Coord lowId, Coord highId,
                                  Boolean tdataOnly = false,
                                  Boolean inMemoryOnly = false,
                                  Boolean randomized = false,
@@ -70,7 +73,7 @@ class BufMgrFull: public BufMgr {
     virtual BMHandle SelectReady();
 
     virtual Boolean GetRecs(BMHandle handle, Boolean &isTData,
-                            RecId &startRecId, int &numRecs, char *&buf);
+                            Coord &startRecId, int &numRecs, char *&buf);
 	
     virtual void DoneGetRecs(BMHandle handle);
 
@@ -84,7 +87,7 @@ class BufMgrFull: public BufMgr {
         _policy->PhaseHint(phase);
     }
 
-    virtual void FocusHint(RecId id, TData *tdata, GData *gdata) {
+    virtual void FocusHint(Coord id, TData *tdata, GData *gdata) {
         _policy->FocusHint(id, tdata, gdata);
     }
 
@@ -106,14 +109,14 @@ class BufMgrFull: public BufMgr {
     /* Calculate return parameters for a record range to be returned */
     void CalcRetArgs(Boolean isTData, Boolean isInMem,
                      TData *tdata, RangeInfo *rangeInfo,
-                     RecId lowId, RecId highId, 
-                     char *&buf,RecId &starRid,int &numRecs);
+                     Coord lowId, Coord highId, 
+                     char *&buf, Coord &starRid,int &numRecs);
     
     /* Advance to next range of in-memory range list */
     Boolean GetNextRangeInMem(BufMgrRequest *req, RangeInfo *&range);
     
     /* Get in-memory GData/TData */
-    Boolean GetDataInMem(BufMgrRequest *req, RecId &startRecId,
+    Boolean GetDataInMem(BufMgrRequest *req, Coord &startRecId,
                          int &numRecs, char *&buf);
     
     /* Initiate I/O to get disk-resident GData */
@@ -123,12 +126,12 @@ class BufMgrFull: public BufMgr {
     Boolean InitTDataScan(BufMgrRequest *req);
     
     /* Consume data produced by I/O initiated in InitGDataScan/InitTDataScan */
-    Boolean ScanDiskData(BufMgrRequest *req, RecId &startRecId,
+    Boolean ScanDiskData(BufMgrRequest *req, Coord &startRecId,
                          int &numRecs, char *&buf);
 
     /* Consume data from the pipe of a TData */
     Boolean ConsumePipeData(BufMgrRequest *req, DataSource *data,
-                            char *buf, RecId &startRid, int &numRecs,
+                            char *buf, Coord &startRid, int &numRecs,
                             int &dataSize);
 
     /* Mark range as being in use (pinned) */

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/18 15:31:05  jussi
+  Changed syntax of SearchExact().
+
   Revision 1.3  1996/11/23 21:18:47  jussi
   Simplified code.
 
@@ -77,11 +80,11 @@ public:
     /* Search for the 1st RangeInfo that contains recIds <= id.
        Return NULL if no such RagneData is found.
        Update _hint. */
-    RangeInfo *Search(RecId id);
+    RangeInfo *Search(Coord id);
 
     /* Search for the RangeInfo that matches the given range exactly.
        Return NULL if none is found */
-    RangeInfo *SearchExact(RecId low, RecId high);
+    RangeInfo *SearchExact(Coord low, Coord high);
 
 private:
     /* main initialization for constructor */

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/11/23 21:18:35  jussi
+  Simplified code.
+
   Revision 1.4  1996/09/27 15:53:21  wenger
   Fixed a number of memory leaks.
 
@@ -57,7 +60,7 @@ public:
     TData *GetTData() { return tdata; }
 
     /* Get record ID associated with this range */
-    void RecIds(RecId &lowId, RecId &highId) {
+    void RecIds(Coord &lowId, Coord &highId) {
         lowId = low;
         highId = high;
     }
@@ -99,7 +102,7 @@ public:
     char *data;	             /* pointer to beginning of data.
                                 There might be a gap in the beginning. */
     int dataSize;	     /* size of data */
-    RecId low, high;         /* record IDs */
+    Coord low, high;         /* record IDs */
     
     friend class RangeList;
     friend class BufMgrFull;

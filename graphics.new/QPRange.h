@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/08/20 22:11:04  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.5.8.2  1997/08/20 18:36:24  wenger
   QueryProcFull and QPRange now deal correctly with interrupted draws.
   (Some debug output still turned on.)
@@ -50,14 +54,14 @@
 
 struct QPRangeRec {
     QPRangeRec *next, *prev;
-    RecId low, high;
+    Coord low, high;
 };
 
 class QPRangeCallback {
 public:
     /* Info that IDs from low to high have just been inserted
        into the range */
-    virtual void QPRangeInserted(RecId low, RecId high,
+    virtual void QPRangeInserted(Coord low, Coord high,
 				 int &recordsProcessed)=0;
 };
 
@@ -72,7 +76,7 @@ class QPRange {
     /* Insert a range, and call callback for every subrange inserted.
        This function detects where (low,high) does not overlap
        with the existing ranges, and returns those */
-    void Insert(RecId low, RecId high, QPRangeCallback *callback,
+    void Insert(Coord low, Coord high, QPRangeCallback *callback,
 		Boolean *incomplete = NULL);
 
     /* Return number of ranges */
@@ -86,13 +90,13 @@ class QPRange {
     
     /* Get next unprocessed recId range >= currentId
        Return true if high is not set (no upper bound).  */
-    Boolean NextUnprocessed(RecId currentId,  RecId &low, RecId &high);
+    Boolean NextUnprocessed(Coord currentId,  Coord &low, Coord &high);
     
     Boolean EmptyRange() { return _rangeListSize == 0 ; }
     
     /* Search for 1st QPRangeRec that contains id numbers <= id.
        Return NULL if no such record is found. Update _hint */
-    QPRangeRec *Search(RecId id);
+    QPRangeRec *Search(Coord id);
     
     /* print the list */
     void Print();

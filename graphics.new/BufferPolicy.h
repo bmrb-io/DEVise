@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/11/23 21:11:22  jussi
+  Pushed all policy-independent code up to BufferPolicy.h. Then moved
+  remaining code from .c file to .h. Then removed empty policy .c files.
+
   Revision 1.2  1995/09/05 22:14:31  jussi
   Added CVS header.
 */
@@ -53,7 +57,7 @@ class BufferPolicy {
         _hasConverted = false;
     }
     
-    virtual void FocusHint(RecId focus, TData *tdata, GData *gdata) {}
+    virtual void FocusHint(Coord focus, TData *tdata, GData *gdata) {}
     
     /* Return the info about this buffer policy */
     virtual void Info(int &numArrays, int &policyFlag) {

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/09/05 22:36:25  wenger
+  Dispatcher callback requests only generate one callback; added Scheduler;
+  added DepMgr (dependency manager); various minor code cleanups.
+
   Revision 1.22  1997/08/20 22:11:08  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -300,7 +304,7 @@ protected:
   RecId _rangeStartId;
   int _rangeNumRecs;
   Boolean _rangeTData;
-  virtual void QPRangeInserted(RecId low, RecId high, int &recordsProcessed);
+  virtual void QPRangeInserted(Coord low,  Coord high, int &recordsProcessed);
   
   /* list of mappings */
   TDataMap *_mappings[QPFULL_MAX_MAPPINGS];

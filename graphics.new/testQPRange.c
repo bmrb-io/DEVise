@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/28 16:10:32  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
   Revision 1.2  1995/09/05 22:16:46  jussi
   Added CVS header.
 */
@@ -71,7 +75,9 @@ main(){
 				/* prints next unprocessed */
 				RecId cur = (RecId )atoi(args[1]);
 				RecId low, high;
-				Boolean noHigh = range->NextUnprocessed(cur, low, high);
+				Coord LOW, HIGH;
+				Boolean noHigh = range->NextUn/rocessed(cur, LOW, HIGH);
+				low=LOW;high=HIGH;
 				if (noHigh){
 					printf("[%d, ]\n", low);
 				}

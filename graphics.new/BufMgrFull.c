@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/08/07 16:42:15  wenger
+  Merged through improve_stop_branch_1.
+
   Revision 1.22.2.1  1997/08/07 16:33:44  wenger
   Buffer manager now re-checks the list of in-memory data from the
   beginning each time a query gets data (this is needed for allowing
@@ -127,9 +130,9 @@ static const int BM_RANDOM_SKIPS = 10;
 */
 static const int BMFULL_RECS_PER_BATCH = 1024;
 
-static inline void LimitRecords(RecId &rangeLow, RecId &rangeHigh)
+static inline void LimitRecords(Coord &rangeLow, Coord &rangeHigh)
 {
-  RecId maxRec = rangeLow + BMFULL_RECS_PER_BATCH - 1;
+  Coord maxRec = rangeLow + BMFULL_RECS_PER_BATCH - 1;
   if (rangeHigh > maxRec) {
     rangeHigh = maxRec;
   }
@@ -216,7 +219,7 @@ Boolean BufMgrFull::GetNextRangeInMem(BufMgrRequest *req, RangeInfo *&range)
     req->inMemoryCur = req->inMemoryCur->next;
 
     while (req->inMemoryCur != req->inMemoryHead) {
-        RecId low, high;
+        Coord low, high;
         req->inMemoryCur->RecIds(low, high);
 
         if (!(low > req->high || high < req->low)) {
@@ -251,7 +254,7 @@ Boolean BufMgrFull::GetNextRangeInMem(BufMgrRequest *req, RangeInfo *&range)
    pointer in the request structure.
 */
 
-Boolean BufMgrFull::GetDataInMem(BufMgrRequest *req, RecId &startRecId,
+Boolean BufMgrFull::GetDataInMem(BufMgrRequest *req, Coord &startRecId,
                                  int &numRecs, char *&buf)
 {
 #if DEBUGLVL >= 3
@@ -301,7 +304,7 @@ Boolean BufMgrFull::GetDataInMem(BufMgrRequest *req, RecId &startRecId,
 
         DOASSERT(inMem, "Invalid record range");
 
-        RecId uLow, uHigh;
+        Coord uLow, uHigh;
         Boolean noHigh = req->processed.NextUnprocessed(req->currentRec,
                                                         uLow, uHigh);
         if (noHigh || uHigh > inMem->high)
@@ -372,20 +375,27 @@ Boolean BufMgrFull::InitGDataScan(BufMgrRequest *req)
            req->low, req->high);
 #endif
     
-    RecId rangeLow, rangeHigh;
+    Coord rangeLow, rangeHigh;
 
     while (1) {
 
         if (req->getRange) {
             /* Find next GData range that overlaps [req->low,req->high]. */
             do {
-                if (!req->gdata->NextRange(req->scanLow, req->scanHigh) ||
+		RecId TempLow, TempHigh;
+		TempLow = (RecId)(req->scanLow);
+		TempHigh = (RecId)(req->scanHigh);
+                if (!req->gdata->NextRange(TempLow, TempHigh) ||
                     req->scanLow > req->high) {
+			req->scanLow = TempLow;
+                	req->scanHigh = TempHigh;
 #if DEBUGLVL >= 3
 		    printf("End of disk-resident GData ranges\n");
 #endif
                     return false;
                 }
+		req->scanLow = TempLow;
+		req->scanHigh = TempHigh;
             } while (req->scanHigh < req->low);
                 
             /* Truncate [scanLow,scanHigh] to fit inside [low,high]. */
@@ -435,7 +445,7 @@ Boolean BufMgrFull::InitGDataScan(BufMgrRequest *req)
     if (rangeHigh > req->high)
         rangeHigh = req->high;
         
-    req->bytesLeft = (rangeHigh - rangeLow + 1) * req->gdata->RecSize();
+    req->bytesLeft = ((RecId)rangeHigh - (RecId)rangeLow + 1) * req->gdata->RecSize();
     req->tdhandle = req->gdata->InitGetRecs(rangeLow, rangeHigh,
                                             req->asyncAllowed, this);
 #if DEBUGLVL >= 3
@@ -466,7 +476,7 @@ Boolean BufMgrFull::InitTDataScan(BufMgrRequest *req)
            req->low, req->high);
 #endif    
 
-    RecId rangeLow, rangeHigh;
+    Coord rangeLow, rangeHigh;
 
     Boolean noHighId = req->processed.NextUnprocessed(req->currentRec,
                                                       rangeLow, rangeHigh);
@@ -502,7 +512,7 @@ Boolean BufMgrFull::InitTDataScan(BufMgrRequest *req)
     if (req->currentRec > req->high)
         req->currentRec = req->low;
 
-    req->bytesLeft = (rangeHigh - rangeLow + 1) * req->tdata->RecSize();
+    req->bytesLeft = ((RecId)rangeHigh - (RecId)rangeLow + 1) * req->tdata->RecSize();
     req->tdhandle = req->tdata->InitGetRecs(rangeLow, rangeHigh,
                                             req->asyncAllowed, this);
 #if DEBUGLVL >= 3
@@ -524,7 +534,7 @@ Boolean BufMgrFull::InitTDataScan(BufMgrRequest *req)
    all data produced by I/O has been consumed.
 */
 
-Boolean BufMgrFull::ScanDiskData(BMHandle req, RecId &startRid,
+Boolean BufMgrFull::ScanDiskData(BMHandle req, Coord &startRid,
                                  int &numRecs, char *&buf)
 {
 #if DEBUGLVL >= 3
@@ -548,11 +558,9 @@ Boolean BufMgrFull::ScanDiskData(BMHandle req, RecId &startRid,
     RangeInfo *range = AllocRange(BufSize(req->bytesLeft));
 
     int dataSize;
-    double startVal;
     Boolean status = tdata->GetRecs(req->tdhandle, range->buf,
-                                    range->bufSize, startVal,
+                                    range->bufSize, startRid,
                                     numRecs, dataSize);
-	startRid = (RecId)startVal;
     DOASSERT(status && dataSize > 0, "Cannot get TData");
 
 #if DEBUGLVL >= 3
@@ -578,7 +586,7 @@ Boolean BufMgrFull::ScanDiskData(BMHandle req, RecId &startRid,
        overlapping areas of the same TData, and one request completes
        after the other is initialized but before it completes.
     */
-    RecId rangeLow, rangeHigh;
+    Coord rangeLow, rangeHigh;
     Boolean noHigh = req->processed.NextUnprocessed(range->low, rangeLow,
                                                     rangeHigh);
     if (noHigh)
@@ -645,7 +653,7 @@ Boolean BufMgrFull::ScanDiskData(BMHandle req, RecId &startRid,
 */
 
 BufMgr::BMHandle BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
-                                         RecId lowId, RecId highId,
+                                         Coord lowId, Coord highId,
                                          Boolean tdataOnly,
                                          Boolean inMemoryOnly,
                                          Boolean randomized,
@@ -658,10 +666,11 @@ BufMgr::BMHandle BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
 
     DOASSERT(tdata->RecSize() >= 0, "Cannot handle variable records");
 
-    RecId firstId;
-    RecId lastId;
-    Boolean hasFirst = tdata->HeadID(firstId);
-    Boolean hasLast = tdata->LastID(lastId);
+    Coord firstId;
+    Coord lastId;
+    RecId TMPFIRST, TMPLAST;
+    Boolean hasFirst = tdata->HeadID(TMPFIRST);
+    Boolean hasLast = tdata->LastID(TMPLAST); firstId = TMPFIRST; lastId = TMPLAST;
     DOASSERT(hasFirst && hasLast && lowId >= firstId && highId <= lastId,
              "Invalid record IDs");
 
@@ -788,7 +797,7 @@ BufMgr::BMHandle BufMgrFull::SelectReady()
 */
 
 Boolean BufMgrFull::GetRecs(BMHandle req, Boolean &isTData,
-                            RecId &startRid, int &numRecs, char *&buf)
+                            Coord &startRid, int &numRecs, char *&buf)
 {
 #if DEBUGLVL >= 3
     printf("BufMgrFull::GetRecs(handle 0x%p)\n", req);
@@ -1046,16 +1055,16 @@ void BufMgrFull::ClearUse(char *buf, Boolean dirty)
 
 void BufMgrFull::CalcRetArgs(Boolean isTData, Boolean isInMemory,
                              TData *tdata, RangeInfo *range,
-                             RecId lowId, RecId highId, char *&buf,
-                             RecId &startRid, int &numRecs)
+                             Coord lowId, Coord highId, char *&buf,
+                             Coord &startRid, int &numRecs)
 {
     DOASSERT(tdata, "Invalid TData");
 
     CheckRange(range);
 
-    RecId low, high;
+    Coord low, high;
     range->RecIds(low, high);
-    numRecs = high - low + 1;
+    numRecs = (RecId)high - (RecId)low + 1;
 
     /* Set up initial values of return parameters */
     buf = (char *)range->GetData();
@@ -1064,14 +1073,14 @@ void BufMgrFull::CalcRetArgs(Boolean isTData, Boolean isInMemory,
 
     /* Modify return parameters */
     if (lowId > low) {
-        int diff = lowId - low;
+        int diff = (RecId)lowId - (RecId)low;
         startRid = lowId;
         buf += diff * recSize;
         numRecs -= diff;
     }
         
     if (highId < high) {
-        int diff = high - highId;
+        int diff = (RecId)high - (RecId)highId;
         numRecs -= diff;
     }
 
@@ -1106,7 +1115,7 @@ void BufMgrFull::CheckRange(RangeInfo *range)
     return;
     
     printf("Range error: buf 0x%p, data 0x%p, id [%ld,%ld], buf %d, data %d\n",
-           range->buf, range->data, range->low, range->high,
+           range->buf, range->data, (RecId)(range->low), (RecId)(range->high),
            range->BufSize(), range->DataSize());
     DOASSERT(0, "Invalid range");
 }
@@ -1121,7 +1130,7 @@ void BufMgrFull::Print(TData *tdata)
     printf("Low\tHigh\tData\tBuf\tGap\n");
 
     for(RangeInfo *cur = head->next; cur != head; cur = cur->next) {
-        printf("%ld\t%ld\t%d\t%d\t%d\n", cur->low, cur->high,
+        printf("%ld\t%ld\t%d\t%d\t%d\n", (RecId)(cur->low), (RecId)(cur->high),
                cur->DataSize(), cur->BufSize(), cur->GapSize());
     }
 }
@@ -1175,7 +1184,7 @@ void BufMgrFull::Clear()
             RangeInfo *range = _memoryRanges->Next(i);
             if (range->InUse())
                 fprintf(stderr, "Warning: range [%ld,%ld] still in use (%d)\n",
-                        range->low, range->high, range->_inUse);
+                        (RecId)(range->low), (RecId)(range->high), range->_inUse);
             int status = _memMgr->Deallocate(MemMgr::Cache,
                                              (char *)range->GetBuffer(),
                                              range->BufSize() / _pageSize);
@@ -1282,8 +1291,8 @@ RangeInfo *BufMgrFull::AllocRange(int size)
     
     if (range->Dirty()) {
         /* Write dirty range out*/
-        range->tdata->WriteRecs(range->low,
-                                range->high - range->low + 1,
+        range->tdata->WriteRecs((RecId)(range->low),
+                                (RecId)(range->high) - (RecId)(range->low) + 1,
                                 range->GetData());
         range->ClearDirty();
     }

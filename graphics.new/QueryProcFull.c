@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.66  1997/09/05 22:36:23  wenger
+  Dispatcher callback requests only generate one callback; added Scheduler;
+  added DepMgr (dependency manager); various minor code cleanups.
+
   Revision 1.65  1997/08/20 22:11:07  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -896,7 +900,9 @@ void QueryProcFull::PrepareProcessedList(QPFullData *query)
       RecId current = tlow;
       while (1) {
 	RecId low, high;
-	Boolean noHigh = unprocessed.NextUnprocessed(current, low, high);
+	Coord LOW, HIGH;
+	Boolean noHigh = unprocessed.NextUnprocessed(current, LOW, HIGH);
+	low = (RecId)LOW; high = (RecId)HIGH;
 	if (low > thigh)
 	  break;
 	if (noHigh)
@@ -994,8 +1000,13 @@ Boolean QueryProcFull::InitQueries()
 
     if (query->state == QPFull_ScanState) {
         Boolean tdataOnly = UseTDataQuery(query->tdata, query->filter);
+
+	// temporarily used for RecId to Coord changes
+	Coord TEMPlow, TEMPhigh;
+	TEMPlow = query->low;
+	TEMPhigh = query->high;
         query->handle = _mgr->InitGetRecs(query->tdata, query->gdata,
-                                          query->low, query->high,
+                                          TEMPlow, TEMPhigh,
                                           tdataOnly, false,
                                           query->isRandom, true);
 #if DEBUGLVL >= 3
@@ -1051,9 +1062,13 @@ void QueryProcFull::ProcessScan(QPFullData *query)
         int numRecs;
         char *buf;
         Boolean isTData;
+
+	// temp change for RecId to Coord changes
+	Coord	startVal;
         
         Boolean gotData = _mgr->GetRecs(query->handle, isTData,
-                                        startRid, numRecs, buf);
+                                        startVal, numRecs, buf);
+	startRid = (RecId)startVal;
 
         /* Query is finished when buffer manager finds no more data */
         if (!gotData) {
@@ -1094,9 +1109,12 @@ void QueryProcFull::ProcessScan(QPFullData *query)
                Data is sorted along the X axis and the filter
                has an X attribute.
             */
+	    Coord ULOW, UHIGH;
             RecId uLow, uHigh;
             Boolean noHigh = query->processed->NextUnprocessed(query->low,
-                                                               uLow, uHigh);
+                                                               ULOW, UHIGH);
+	    uLow=(RecId)ULOW;
+	    uHigh=(RecId)UHIGH;
             if (uLow >= startRid) {
                 /*
                    There is nothing left on the "left" side of the
@@ -1621,7 +1639,7 @@ Boolean QueryProcFull::UseTDataQuery(TData *tdata, VisualFilter &filter)
   return false;
 }
 
-void QueryProcFull::QPRangeInserted(RecId low, RecId high,
+void QueryProcFull::QPRangeInserted(Coord low, Coord high,
 				    int &recordsProcessed)
 {
 #if DEBUGLVL >= 5
@@ -1640,14 +1658,14 @@ void QueryProcFull::QPRangeInserted(RecId low, RecId high,
 
     if (!_rangeTData) {
         /* Inserted GData range can be forwarded in one chunk */
-        char *ptr = (char *)_rangeBuf + (low - _rangeStartId) * gRecSize;
-        _rangeQuery->bytes += (high - low + 1) * gRecSize;
+        char *ptr = (char *)_rangeBuf + ((RecId)low - _rangeStartId) * gRecSize;
+        _rangeQuery->bytes += ((RecId)high - (RecId)low + 1) * gRecSize;
 #if DEBUGLVL >= 5
         printf("Returning GData [%ld,%ld], map 0x%p, buf 0x%p\n",
                low, high, _rangeQuery->map, _gdataBuf);
 #endif
-        _rangeQuery->callback->ReturnGData(_rangeQuery->map, low,
-                                           ptr, high - low + 1,
+        _rangeQuery->callback->ReturnGData(_rangeQuery->map, (RecId)low,
+                                           ptr, (int)(high - low + 1),
 					   recordsProcessed);
 #if DEBUGLVL >= 5
 	printf("Records %d - %d of %d - %d processed\n", (int) low,
@@ -1663,15 +1681,15 @@ void QueryProcFull::QPRangeInserted(RecId low, RecId high,
        of GData individually.
     */
 
-    _rangeQuery->bytes += (high - low + 1) * tRecSize;
+    _rangeQuery->bytes += ((RecId)high - (RecId)low + 1) * tRecSize;
     int numRecsPerBatch = GDATA_BUF_SIZE / gRecSize;
     
-    int numRecs = high - low + 1;
+    int numRecs = (RecId)high - (RecId)low + 1;
     
     int recsLeft = numRecs;
-    int offset = low - _rangeStartId;
+    int offset = (RecId)low - _rangeStartId;
     char *dbuf = (char *)_rangeBuf + offset * tRecSize;
-    RecId recId = low;
+    RecId recId = (RecId)low;
     
     recordsProcessed = 0;
     while (recsLeft > 0) {
@@ -1844,8 +1862,13 @@ Boolean QueryProcFull::DoInMemGDataConvert(TData *tdata, GData *gdata,
          For each unconverted range, find all in-memory ranges and
          convert them.
       */
+	
+	// temporarily used for RecId to Coord changes
+        Coord TEMPlow, TEMPhigh;
+        TEMPlow = uLow;
+        TEMPhigh = uHigh;
 
-      BufMgr::BMHandle handle = _mgr->InitGetRecs(tdata, gdata, uLow, uHigh,
+      BufMgr::BMHandle handle = _mgr->InitGetRecs(tdata, gdata, TEMPlow, TEMPhigh,
                                                   true, true);
 
       QPRange *processed = _mgr->GetProcessedRange(handle);
@@ -1856,8 +1879,13 @@ Boolean QueryProcFull::DoInMemGDataConvert(TData *tdata, GData *gdata,
           char *buf;
           Boolean isTData;
 
-          Boolean gotit = _mgr->GetRecs(handle, isTData, startRid,
+	// temp change for RecId to Coord changes
+        Coord  startVal;
+
+          Boolean gotit = _mgr->GetRecs(handle, isTData, startVal,
                                         numRecs, buf);
+	startRid = (RecId)startVal;
+
           if (!gotit)
               break;
           DOASSERT(isTData, "Did not get TData");
@@ -2137,9 +2165,15 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
   }
 
   /* Initialize buffer manager scan */
+
+	// temporarily used for RecId to Coord changes
+        Coord TEMPlow, TEMPhigh;
+        TEMPlow = _tdataQuery->low;
+        TEMPhigh = _tdataQuery->high;
+
   _tdataQuery->handle = _mgr->InitGetRecs(tdata, map->GetGData(),
-                                          _tdataQuery->low,
-                                          _tdataQuery->high,
+                                          TEMPlow,
+                                          TEMPhigh,
                                           true);
 
   _tdataQuery->processed = _mgr->GetProcessedRange(_tdataQuery->handle);
@@ -2165,14 +2199,20 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
     TData *tdata = _tdataQuery->tdata;
     TDataMap *map = _tdataQuery->map;
     Boolean isTData;
+    Coord startVal;
+    Boolean result;
 
     GDataAttrOffset *gdataOffsets = map->GetGDataOffset();
 
     while (1) {
         if (!_hasTqueryRecs) {
             /* go to buffer manager to get more records */
-            if (!_mgr->GetRecs(_tdataQuery->handle, isTData, _tqueryStartRid,
-                               _tqueryNumRecs, _tqueryBuf)) {
+	    result=_mgr->GetRecs(_tdataQuery->handle, isTData, startVal,
+                               _tqueryNumRecs, _tqueryBuf); 
+		_tqueryNumRecs= (RecId)startVal;
+
+          	if (!result)
+                {
                 _mgr->DoneGetRecs(_tdataQuery->handle);
                 _tdataQuery->state = QPFull_EndState;
                 return false;
@@ -2320,16 +2360,25 @@ void QueryProcFull::GetX(QPFullData *query, RecId id, Coord &x)
       return;
   }
 
+	// temporarily used for RecId to Coord changes
+        Coord TEMPlow, TEMPhigh;
+        TEMPlow = id;
+        TEMPhigh = id;
   BufMgr::BMHandle handle = _mgr->InitGetRecs(query->tdata,
                                               query->map->GetGData(),
-                                              id, id, false, false,
+                                              TEMPlow, TEMPhigh, false, false,
                                               true, true);
   RecId startRid;
   int numRecs;
   char *buf;
   Boolean isTData;
 
-  Boolean gotit = _mgr->GetRecs(handle, isTData, startRid, numRecs, buf);
+	// temp purpose for RecId to Coord change
+	Coord	startVal;
+
+  Boolean gotit = _mgr->GetRecs(handle, isTData, startVal, numRecs, buf);
+	startRid = (RecId)startVal;
+
   DOASSERT(gotit, "Did not get data");
   DOASSERT(numRecs == 1, "Did not get one record");
 

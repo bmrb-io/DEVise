@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/03 20:37:52  jussi
+  Added definition of BufMgrRequest, and improved Init/Get/Done interface.
+
   Revision 1.3  1996/01/15 16:53:58  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -30,7 +33,7 @@ void BufMgr::RegisterCallback(BufMgrCallback *c)
     _callbacks.Append(c);
 }
 
-void BufMgr::ReportInserted(TData *tdata, RecId low, RecId high)
+void BufMgr::ReportInserted(TData *tdata, Coord low, Coord high)
 {
     int index = _callbacks.InitIterator();
     while (_callbacks.More(index)) {
@@ -40,7 +43,7 @@ void BufMgr::ReportInserted(TData *tdata, RecId low, RecId high)
     _callbacks.DoneIterator(index);
 }
 
-void BufMgr::ReportDeleted(TData *tdata, RecId low, RecId high)
+void BufMgr::ReportDeleted(TData *tdata, Coord low, Coord high)
 {
     int index = _callbacks.InitIterator();
     while (_callbacks.More(index)) {

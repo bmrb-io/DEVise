@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/01/11 20:56:43  jussi
+  Improved error detection and graceful termination.
+
   Revision 1.7  1996/12/30 17:06:29  wenger
   Improved error messages.
 
@@ -83,7 +86,7 @@ RangeList::~RangeList()
   <= id. Return NULL if no such RagneData is found.  Update _hint. 
 *************************************************************************/
 
-RangeInfo *RangeList::Search(RecId id)
+RangeInfo *RangeList::Search(Coord id)
 {
     _numSearch++;
     RangeInfo *current;
@@ -143,7 +146,7 @@ RangeInfo *RangeList::Search(RecId id)
   Return NULL if none is found.
 *************************************************************************/
 
-RangeInfo *RangeList::SearchExact(RecId low, RecId high)
+RangeInfo *RangeList::SearchExact(Coord low, Coord high)
 {
     RangeInfo *info = Search(low);
     if (info == NULL || info->low != low || info->high != high);
@@ -160,7 +163,7 @@ void RangeList::Insert(RangeInfo *rangeInfo, RangeListMergeInfo info,
 {
     disposed = _disposed;
 
-    RecId low,high;
+    Coord low,high;
     rangeInfo->RecIds(low,high);
 
     RangeInfo *current = Search(low);
@@ -349,7 +352,7 @@ void RangeList::Print()
     printf("low\thi\tdata\tdataSize\tbuf\tbufSize\n");
     RangeInfo *data;
     for (data = _rangeList.next; data != &_rangeList; data = data->next) {
-        printf("%ld\t%ld\t0x%p\t%d\t0x%p\t%d\n",data->low, data->high,
+        printf("%ld\t%ld\t0x%p\t%d\t0x%p\t%d\n",(RecId)data->low, (RecId)data->high,
                data->data,data->dataSize,data->buf,data->bufSize);
         if (++num > 7) {
             printf("\n");

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/28 16:09:41  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
   Revision 1.2  1995/09/05 22:14:09  jussi
   Added CVS header.
 */
@@ -46,7 +50,7 @@ public:
 
 	/* Initialization to get RangeInfos within recId ranges.
 	*/
-	void InitGet(TData *tdata, RecId lowId, RecId highId);
+	void InitGet(TData *tdata, Coord lowId, Coord highId);
 
 	/* Retrieve next rangeInfo.  Return false if no more.*/
 	Boolean Get(RangeInfo *&range);
@@ -55,7 +59,7 @@ public:
 	void Free(RangeInfo *rangeInfo );
 
 	/* Get info about TData ranges */
-	void GetInMemRanges(TData *tdata, RecId low, RecId high,
+	void GetInMemRanges(TData *tdata, Coord low, Coord high,
 		RangeInfo **&info, int &numInfo);
 
 	/* Print contents of the lists */
@@ -64,7 +68,7 @@ private:
 	/* Fetch a range from TData, handling misses.
 	note: startId must be aligned to beginning of range, if it's
 	already in memory. */
-	RangeInfo *FetchRange(TData *tdata, int recsPerPage,RecId startId);
+	RangeInfo *FetchRange(TData *tdata, int recsPerPage, Coord startId);
 
 	int _bufSize;
 	int _numArrays;
@@ -74,7 +78,7 @@ private:
 	RangeInfoArrays *_rangeArrays;
 
 	/* for fetching */
-	RecId _highId, _nextId;
+	Coord _highId, _nextId;
 	TData *_tdata;
 	int _recsPerPage;
 

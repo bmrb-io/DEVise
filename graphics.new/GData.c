@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/07/03 01:53:34  liping
+  changed query interface to TData from RecId to double
+
   Revision 1.14  1996/12/03 20:37:20  jussi
   Updated to reflect new TData interface.
 
@@ -388,7 +391,9 @@ int GData::UserAttr(int attrNum)
    Return true if open ended (no high limit) */
 Boolean GData::NextUnConverted(RecId id, RecId &low, RecId &high)
 {
-  return _rangeMap->NextUnprocessed(id, low, high);
+	Boolean result;
+  	result=_rangeMap->NextUnprocessed(id, low, high);
+	return result;
 }
 
 void GData::PrintConverted()

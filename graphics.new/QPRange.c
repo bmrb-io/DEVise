@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/08/20 22:11:03  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.10.8.3  1997/08/20 19:33:02  wenger
   Removed/disabled debug output for interruptible drawing.
 
@@ -98,7 +102,7 @@ void QPRange::Clear()
    range, return that.
 */
 
-QPRangeRec *QPRange::Search(RecId id)
+QPRangeRec *QPRange::Search(Coord id)
 {
     if (EmptyRange())
         return NULL;
@@ -214,7 +218,7 @@ void QPRange::DeleteRec(QPRangeRec *rec)
 }
 
 // Note: *incomplete is not set if callback is NULL.
-void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback,
+void QPRange::Insert(Coord low, Coord high, QPRangeCallback *callback,
 		     Boolean *incomplete)
 {
 #if defined(DEBUG)
@@ -324,7 +328,7 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback,
             /* merge range with the next one. Truncate
                [low,high] to the gap between current and next */
             if (callback) {
-		RecId hiRec = next->low - 1;
+		Coord hiRec = next->low - 1;
                 callback->QPRangeInserted(low, hiRec, recordsProcessed);
 	        if (incomplete != NULL) *incomplete =
 		    recordsProcessed < (int) (high - low + 1);
@@ -345,8 +349,8 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback,
     case MERGE_BOTH :
             /* merge [low,high] with current and next */
             if (callback) {
-		RecId loRec = current->high + 1;
-		RecId hiRec = next->low - 1;
+		Coord loRec = current->high + 1;
+		Coord hiRec = next->low - 1;
                 callback->QPRangeInserted(loRec, hiRec, recordsProcessed);
 	        if (incomplete != NULL) *incomplete =
 		    recordsProcessed < (int) (high - low + 1);
@@ -368,7 +372,7 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback,
             /* merge [low,high] with current, assuming
                high > current->high + 1*/
             if (callback) {
-		RecId loRec = current->high + 1;
+		Coord loRec = current->high + 1;
                 callback->QPRangeInserted(loRec, high, recordsProcessed);
 	        if (incomplete != NULL) *incomplete =
 		    recordsProcessed < (int) (high - low + 1);
@@ -396,7 +400,7 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback,
    the right of currentId. Return true if high is not set (no upper bound).
    */
 
-Boolean QPRange::NextUnprocessed(RecId currentId, RecId &low, RecId &high)
+Boolean QPRange::NextUnprocessed(Coord currentId, Coord &low, Coord &high)
 {
     QPRangeRec *current = Search(currentId);
     
@@ -435,8 +439,6 @@ void QPRange::Print()
 {
     printf("QPRange list has %d elements: ", _rangeListSize);
     for(QPRangeRec *rec = _rangeList.next; rec != &_rangeList; rec = rec->next)
-        printf("[%ld,%ld] ", rec->low, rec->high);
+        printf("[%ld,%ld] ", (RecId)(rec->low), (RecId)(rec->high));
     printf("\n");
 }
-
-
