@@ -16,158 +16,123 @@
   $Id$
 
   $Log$
-  Revision 1.6  1996/04/16 19:46:24  jussi
-  Added DoAbort() method.
-
-  Revision 1.5  1996/01/27 00:21:36  jussi
-  Added ExecuteScript() method.
-
-  Revision 1.4  1995/12/29 18:27:00  jussi
-  Added FilterAboutToChange() to facilitate new cursor mechanism.
-
-  Revision 1.3  1995/11/29 15:10:23  jussi
-  Added copyright notice and added primitives for Tk window support.
-
-  Revision 1.2  1995/09/05 22:16:11  jussi
-  Added CVS header.
+  Revision 1.1  1996/05/09 18:14:39  kmurli
+  Modified Group.C and GroupDir.C to include an oiverloaded functions for
+  get_items, subitems to take in a char * instead of Tcp_interp *. This
+  is for use in the ServerAPI.c
 */
-
-/* Xaw implementation for control panel */
 
 #ifndef TkControl_h
 #define TkControl_h
-#include <tcl.h>
+
 #include <tk.h>
+#include <tcl.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/types.h>
+#include <arpa/inet.h>
+
 #include "Dispatcher.h"
 #include "Control.h"
 #include "ViewCallback.h"
 
-
-enum FLAG { ERROR,OK};
-class View;
-class MapInterpClassInfo;
-class TkControlPanel: public ControlPanel, public DispatcherCallback,
-private ViewCallback{
-public:
-	TkControlPanel(int = -1);
-	//virtual ~TkControlPanel();
-	/* Return name of file current being worked on */
-	virtual char *FileName() { return _fileName; }
-	virtual char *FileAlias() { return _fileAlias; }
-
-#ifdef TK_WINDOW
-	virtual Tcl_Interp *GetInterp() { return _interp; }
-	virtual Tk_Window GetMainWindow() { return _mainWindow; }
+#ifdef SUN
+#include "missing.h"
 #endif
 
-	virtual void SelectView(View *view);
+enum FLAG { ERROR, OK };
 
-	/* Return name of window last accessed */
-	virtual char *WindowName(){ return _winName; }
+class View;
+class MapInterpClassInfo;
 
-	/* Return name of gData last accessed */
-	virtual char *GDataName() { return _gdataName; }
-					
-	/* Return name of view last accessed */
-	virtual char *ViewName() { return _viewName; }
+class ServerAPI: public ControlPanel, public DispatcherCallback,
+                 private ViewCallback
+{
+public:
+  ServerAPI();
 
-	/* Get current mode */
-	virtual Mode GetMode();
+  virtual void SelectView(View *view);
 
-	/* Return TRUE if restoring a session */
-	virtual Boolean Restoring();
+  /* Get current mode */
+  virtual Mode GetMode();
 
-	/* Set busy status, should be called in pairs. */
-	virtual void SetBusy();
-	virtual void SetIdle();
+  /* Set busy status, should be called in pairs. */
+  virtual void SetBusy();
+  virtual void SetIdle();
 
-	/* Get current busy status */
-	virtual Boolean IsBusy();
+  /* Get current busy status */
+  virtual Boolean IsBusy();
 
-	virtual void StartSession();
-	virtual char *SessionName() ;
-	virtual void SetSessionName(char *name);
+  virtual void StartSession();
 
-	/* Execute script */
-	virtual void ExecuteScript(char *script);
+  /* Execute script */
+  virtual void ExecuteScript(char *script);
 
-	/* Abort program */
-	virtual void DoAbort(char *reason);
+  /* Abort program */
+  virtual void DoAbort(char *reason);
 
 protected:
-    virtual void SubclassInsertDisplay(DeviseDisplay *disp,Coord x, Coord y,
-			Coord w,Coord h);
-	virtual void SubclassRegisterView(View *view);
-	virtual void SubclassUnregisterView(View *view);
-	virtual void SubclassDoInit();
-	virtual void SubclassDoViewPerspectiveChanged(View *view,
-		Coord x, Coord y, Coord w, Coord h);
-	int socketFd;
-	int controlFd;
-	int readSocket();
-	
-	char *_fileName;
-	char *_fileAlias;
-	char *_winName;
-	char *_gdataName;
-	char *_viewName;
-	char *_sessionName;
-	char *_argv0;
-	int _template; /* true if we are loading file as a template */
-	int _restoring;
-	int _busy; /* >0 if system is busy processing queries */
+  virtual void SubclassInsertDisplay(DeviseDisplay *disp,
+				     Coord x, Coord y,
+				     Coord w, Coord h);
+  virtual void SubclassRegisterView(View *view);
+  virtual void SubclassUnregisterView(View *view);
+  virtual void SubclassDoInit();
+  virtual void SubclassDoViewPerspectiveChanged(View *view,
+						Coord x, Coord y,
+						Coord w, Coord h);
+
+  int ReadSocket();
+  int GotoConnectedMode();
+  void GotoDisconnectedMode();
+  void DestroyClientData();
+
+  int _listenFd;                        // socket for listening for clients
+
+  int _socketFd;                        // socket for receiving commands
+  int _controlFd;                       // socket for back channel
+  struct sockaddr_in _client_addr;      // address of client
+
+  int _busy;                  /* >0 if system is busy processing queries */
+
 private:
-	virtual void FilterAboutToChange(View *view) {}
-	virtual void FilterChanged(View *view, VisualFilter &filter,
-				   int flushed);
-	virtual void ViewCreated(View *view);
-	virtual void ViewDestroyed(View *view);
-/* process tcl command */
-	virtual int ControlCmd(int argc, char *argv[]){
-	  return printf(" Control Cmd wrong calls \n");
-	}
+  virtual void FilterAboutToChange(View *view) {}
+  virtual void FilterChanged(View *view, VisualFilter &filter,
+			     int flushed);
+  virtual void ViewCreated(View *view);
+  virtual void ViewDestroyed(View *view);
 
-	/* from DispatcherCallback */
-	char *DispatchedName() {
-		return "TkControlPanel";
-	}
-	virtual void Run();
+  virtual int ControlCmd(int argc, char *argv[]);
 
-	//Tcl_Interp *_interp;
-	//Tk_Window _mainWindow;
+  char *DispatchedName() {
+    return "ServerAPI";
+  }
+  virtual void Run();
 
-	static ControlPanel::Mode _mode;
-	static MapInterpClassInfo *_interpProto; /* proto interpreted mapping */
+  static ControlPanel::Mode _mode;
+  static MapInterpClassInfo *_interpProto; /* proto interpreted mapping */
 
-	virtual int sendClient(enum FLAG b,char * c) { 
-		b = b; c = c; return 1;
-	} ; 
-												// compiler is happy 
-	virtual int SendReturnVals(int b ,char **a){ 
-		b = b; a = a; return 1 ;
-	};
-	virtual int sendControlClient(enum FLAG a,char * b){
-		b = b; a = a ;
-		return 1;
-	}
+  virtual int Send(int fd, enum FLAG flag, int bracket,
+			 int argc, char **argv);
+  virtual int SendClient(enum FLAG flag, char *result) {
+    return Send(_socketFd, flag, 0, 1, &result);
+  }
+  virtual int SendClient(int argc, char **argv) {
+    return Send(_socketFd, OK, 1, argc, argv);
+  }
+  virtual int SendControl(enum FLAG flag, char *result) {
+    if (_controlFd < 0)
+      return 1;
+    return Send(_controlFd, flag, 0, 1, &result);
+  }
+  virtual int SendControl(int argc, char **argv) {
+    if (_controlFd < 0)
+      return 1;
+    return Send(_controlFd, OK, 1, argc, argv);
+  }
 
-	const int SERV_PORT_NUM =6100;
-
-};
-
-class ServerControl: public TkControlPanel{
-	
-	public:
-		virtual void Run();
-		ServerControl(int);
-		virtual ~ServerControl();
-	private:
-		virtual int sendClient(enum FLAG , char *);
-		virtual int SendReturnVals(int,char **);
-		void openConnection(char *,u_short);
-		virtual int ControlCmd(int, char *[]);
-		virtual int sendControlClient(enum FLAG,char *);
-
+  const int SERV_PORT_NUM = 6100;
 };
 
 #endif
