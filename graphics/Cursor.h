@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  2000/02/16 18:51:20  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.25  2000/02/15 16:16:14  wenger
   Cursors in child views "remember" their size and location when
   switching TDatas or parent attributes.
@@ -173,7 +176,7 @@ class DeviseCursor : private ViewCallback
   View *GetDst() { return _dst; }
   
   /* Get current visual filter. return TRUE if it exists. */
-  Boolean GetVisualFilter(VisualFilter *&filter);
+  Boolean GetVisualFilter(const VisualFilter *&filter);
 
   VisualFlag GetFlag() { return _visFlag; }
 
@@ -189,12 +192,7 @@ class DeviseCursor : private ViewCallback
     gridY = _gridY;
     edgeGrid = _edgeGrid;
   }
-  void SetGrid(Boolean useGrid, Coord gridX, Coord gridY, Boolean edgeGrid) {
-    _useGrid = useGrid;
-    _gridX = gridX;
-    _gridY = gridY;
-    _edgeGrid = edgeGrid;
-  }
+  void SetGrid(Boolean useGrid, Coord gridX, Coord gridY, Boolean edgeGrid);
   void ReadCursorStore(WindowRep*);
   void DrawCursorStore(WindowRep*);
   void DrawCursorFill(WindowRep*);
@@ -205,11 +203,22 @@ class DeviseCursor : private ViewCallback
 
   const char *GetName() { return _name; }
 
-  // Get or set "fixed size".  This doesn't do anything, except get passed
-  // to the JavaScreen to tell it to not allow the user to change the size
-  // of the cursor.
+  // Get or set "fixed size".
   Boolean GetFixedSize() { return _fixedSize; }
   void SetFixedSize(Boolean fixed) { _fixedSize = fixed; }
+
+  // Get or set "part of cursor in destination view".  If this is true,
+  // and the dest view visual filter is changed in such a way that the
+  // cursor is entirely outside of the dest view, the cursor will be
+  // moved into the dest view.
+  Boolean GetPartInDest() { return _partInDest; }
+  void SetPartInDest(Boolean partInDest);
+
+  // Get or set "all of cursor in destination view".  If this is true,
+  // all of the cursor is constrained to be within the destination
+  // view.
+  Boolean GetAllInDest() { return _allInDest; }
+  void SetAllInDest(Boolean allInDest);
 
   // Figure out whether the given location is on the cursor, and if so,
   // where.
@@ -237,8 +246,18 @@ private:
   virtual void FilterChanged(View *view, const VisualFilter &filter,
       int flushed);
   virtual void ViewDestroyed(View *view);
-  void MatchGrid(Coord x, Coord y, Coord width, Coord height,
-      VisualFilter &filter);
+
+  struct CursorLocation {
+      Coord xCen;
+	  Coord yCen;
+	  Coord width;
+	  Coord height;
+  };
+  void SatisfyConstraints();
+  void SatisfyConstraints(CursorLocation& location);
+  void MatchGrid(CursorLocation& location);
+  void PartInDest(CursorLocation& location);
+  void AllInDest(CursorLocation &location);
 
   char *_name;                          /* name of cursor */
   View *_src, *_dst;                    /* source and destination views */
@@ -251,6 +270,8 @@ private:
   CursorStore _cursor_store[12];
   PColorID _cursorColor;
   Boolean _fixedSize;
+  Boolean _partInDest;
+  Boolean _allInDest;
 
   Boolean _oldPixelsValid;
   int _oldPixX1;

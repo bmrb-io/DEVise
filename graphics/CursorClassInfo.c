@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  2000/03/14 17:05:05  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.12  2000/02/16 18:51:20  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -218,7 +222,7 @@ CursorClassInfo::Dump(FILE *fp)
     fprintf(fp, "Cursor `%s'\n", _name);
 
     fprintf(fp, "  Type: ");
-    VisualFilter *filter;
+    const VisualFilter *filter;
     _cursor->GetVisualFilter(filter);
     if (filter != NULL) {
       if (filter->flag & VISUAL_X) fprintf(fp, "X ");

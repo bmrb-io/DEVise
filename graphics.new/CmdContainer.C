@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.65  2000/07/12 20:49:26  wenger
+  Added first version of metavisualization session description; changed
+  DEVise version to 1.7.1.
+
   Revision 1.64  2000/06/20 22:17:04  wenger
   Added floating-point format for axes and mouse location display.
 
@@ -642,6 +646,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setXAxisFloatFormat)
 	REGISTER_COMMAND(setYAxisFloatFormat)
 	REGISTER_COMMAND(writeMetaVisDesc)
+	REGISTER_COMMAND(getCursorConstraints)
+	REGISTER_COMMAND(setCursorConstraints)
 }
 
 CmdContainer::~CmdContainer()

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.87  2000/08/07 16:23:14  wenger
+  Added comment about why a command is not written to session files if
+  the string length of the corresponding info is zero.
+
   Revision 1.86  2000/06/20 22:16:54  wenger
   Added floating-point format for axes and mouse location display.
 
@@ -1794,8 +1798,8 @@ Session::SaveCursor(char *category, char *devClass, char *instance,
 	    args.GetArgs()[0]);
   }
 
-  status += SaveParams(saveData, "getCursorFixedSize", "setCursorFixedSize",
-      instance);
+  status += SaveParams(saveData, "getCursorConstraints",
+      "setCursorConstraints", instance);
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;

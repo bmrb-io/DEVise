@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  2000/05/16 13:54:32  wenger
+  Found and fixed bug 587 (cursor size problem).
+
   Revision 1.36  2000/02/16 18:51:19  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -222,6 +225,8 @@ DeviseCursor::DeviseCursor(char *name, VisualFlag flag,
   _edgeGrid = edgeGrid;
   _cursorColor = GetPColorID(whiteColor);
   _fixedSize = false;
+  _partInDest = true;
+  _allInDest = false;
   _oldPixelsValid = false;
 
   View::InsertViewCallback(this);
@@ -318,7 +323,7 @@ void DeviseCursor::SetDst(View *view)
 
 /* Get current visual filter. return TRUE if it exists. */
 
-Boolean DeviseCursor::GetVisualFilter(VisualFilter *&filter)
+Boolean DeviseCursor::GetVisualFilter(const VisualFilter *&filter)
 {
   if (!_src)
     return false;
@@ -348,34 +353,7 @@ void DeviseCursor::FilterChanged(View *view, const VisualFilter &filter,
   printf("DeviseCursor(%s)::FilterChanged(%s)\n", GetName(), view->GetName());
 #endif
 
-  if (_src && view == _dst) {
-    // Figure out whether any part of the cursor is within the destination
-    // view's new visual filter.
-    VisualFilter *cFilter;
-    GetVisualFilter(cFilter);
-    Boolean outside = false;
-    if ((cFilter->flag & VISUAL_X) &&
-        (cFilter->xHigh < filter.xLow || cFilter->xLow > filter.xHigh)) {
-      outside = true;
-    }
-    if ((cFilter->flag & VISUAL_Y) &&
-        (cFilter->yHigh < filter.yLow || cFilter->yLow > filter.yHigh)) {
-      outside = true;
-    }
-    // Don't do this if destination view is unmapped because we're probably
-    // in the middle of changing around child views.
-    if (outside && _dst && _dst->Mapped()) {
-      // The cursor is outside the visual filter -- move it to the center
-      // of the destination view.
-#if defined(DEBUG)
-      printf("Moving cursor <%s> because cursor is outside destination view "
-          "visual filter\n", GetName());
-#endif
-      Coord newX = (filter.xLow + filter.xHigh) / 2.0;
-      Coord newY = (filter.yLow + filter.yHigh) / 2.0;
-      MoveSource(newX, newY);
-    }
-  }
+  SatisfyConstraints();
 
   if (_dst && view == _src) {
     (void)_dst->DrawCursors();
@@ -402,8 +380,7 @@ void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height,
       width, height);
 #endif
 
-  if (!_src)
-    return;
+  if (!_src) return;
 
   VisualFilter filter;
   // Note: we must get the filter directly from the source view here
@@ -420,13 +397,18 @@ void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height,
     height = filter.yHigh - filter.yLow;
   }
 
-  if (_fixedSize) {
-    // Force the new width and height to be the same as the old ones.
-    width = filter.xHigh - filter.xLow;
-    height = filter.yHigh - filter.yLow;
-  }
+  CursorLocation location;
+  location.xCen = x;
+  location.yCen = y;
+  location.width = width;
+  location.height = height;
 
-  MatchGrid(x, y, width, height, filter);
+  SatisfyConstraints(location);
+
+  filter.xLow = location.xCen - location.width / 2.0;
+  filter.xHigh = location.xCen + location.width / 2.0;
+  filter.yLow = location.yCen - location.height / 2.0;
+  filter.yHigh = location.yCen + location.height / 2.0;
 
   if (!(filter == oldFilter)) {
     if (_dst) {
@@ -447,7 +429,7 @@ void DeviseCursor::ReadCursorStore(WindowRep*w)
   printf("DeviseCursor(%s)::ReadCursorStore()\n", _name);
 #endif
 
-  VisualFilter *filter;
+  const VisualFilter *filter;
 
   GetVisualFilter(filter);
 
@@ -542,7 +524,7 @@ void DeviseCursor::DrawCursorFill(WindowRep* w)
   printf("DeviseCursor(%s)::DrawCursorFill()\n", _name);
 #endif
 
-  VisualFilter *filter;
+  const VisualFilter *filter;
   GetVisualFilter(filter);
 
   if (_src && _src->GetNumDimensions()==2
@@ -573,7 +555,7 @@ void DeviseCursor::DrawCursorBorder(WindowRep* w)
   printf("DeviseCursor(%s)::DrawCursorBorder()\n", _name);
 #endif
 
-  VisualFilter *filter;
+  const VisualFilter *filter;
   GetVisualFilter(filter);
 
   w->SetForeground(_dst->GetForeground());
@@ -873,14 +855,18 @@ DeviseCursor::FindNewPosition(int pixX1, int pixY1, int pixX2, int pixY2,
     filter.yHigh = oldFilter.yHigh;
   }
 
-  MatchGrid((filter.xLow + filter.xHigh) / 2.0,
-      (filter.yLow + filter.yHigh) / 2.0,
-      filter.xHigh - filter.xLow, filter.yHigh - filter.yLow, filter);
+  CursorLocation location;
+  location.xCen = (filter.xLow + filter.xHigh) / 2.0;
+  location.width = filter.xHigh - filter.xLow;
+  location.yCen = (filter.yLow + filter.yHigh) / 2.0;
+  location.height = filter.yHigh - filter.yLow;
 
-  dataXLow = filter.xLow;
-  dataYLow = filter.yLow;
-  dataXHigh = filter.xHigh;
-  dataYHigh = filter.yHigh;
+  SatisfyConstraints(location);
+
+  dataXLow = location.xCen - location.width / 2.0;
+  dataXHigh = location.xCen + location.width / 2.0;
+  dataYLow = location.yCen - location.height / 2.0;
+  dataYHigh = location.yCen + location.height / 2.0;
 
 #if defined(DEBUG)
   printf("  New filter = (%g, %g), (%g, %g)\n", dataXLow, dataYLow, dataXHigh,
@@ -1020,20 +1006,14 @@ DeviseCursor::GetDestPixels(Coord dataXLow, Coord dataYLow, Coord dataXHigh,
 }
 
 void
-DeviseCursor::MatchGrid(Coord x, Coord y, Coord width, Coord height,
-    VisualFilter &filter)
+DeviseCursor::MatchGrid(CursorLocation &location)
 {
-#if defined(DEBUG)
-  printf("DeviseCursor(%s)::MatchGrid(%f, %f, %f, %f)\n", GetName(), x, y,
-      width, height);
-#endif
-
   if (_visFlag & VISUAL_X) {
     if (_useGrid && (_gridX != 0.0)) {
       /* Round location to nearest grid point. */
 	  if (_edgeGrid) {
-	    Coord xLow = x - width / 2.0;
-	    Coord xHi = x + width / 2.0;
+	    Coord xLow = location.xCen - location.width / 2.0;
+	    Coord xHi = location.xCen + location.width / 2.0;
 
 		// The extra 0.5s here put the cursor edges halfway between multiples
 		// of the grid size.
@@ -1042,24 +1022,21 @@ DeviseCursor::MatchGrid(Coord x, Coord y, Coord width, Coord height,
         tmp = (int)floor((xHi / _gridX) + 0.5 + 0.5);
 		xHi = _gridX * (tmp - 0.5);
 
-		width = ABS(xHi - xLow); // ABS() just to be safe.
-		x = (xLow + xHi) / 2.0;
+		location.width = ABS(xHi - xLow); // ABS() just to be safe.
+		location.xCen = (xLow + xHi) / 2.0;
 	  } else {
-        int tmp = (int)floor((x / _gridX) + 0.5);
-        x = _gridX * tmp;
+        int tmp = (int)floor((location.xCen / _gridX) + 0.5);
+        location.xCen = _gridX * tmp;
 	  }
     }
-    Coord newXLow = x - width / 2.0;
-    filter.xLow = newXLow;
-    filter.xHigh = newXLow + width;
   }
 
   if (_visFlag & VISUAL_Y) {
     if (_useGrid && (_gridY != 0.0)) {
       /* Round location to nearest grid point. */
 	  if (_edgeGrid) {
-	    Coord yLow = y - height / 2.0;
-	    Coord yHi = y + height / 2.0;
+	    Coord yLow = location.yCen - location.height / 2.0;
+	    Coord yHi = location.yCen + location.height / 2.0;
 
 		// The extra 0.5s here put the cursor edges halfway between multiples
 		// of the grid size.
@@ -1068,16 +1045,13 @@ DeviseCursor::MatchGrid(Coord x, Coord y, Coord width, Coord height,
         tmp = (int)floor((yHi / _gridY) + 0.5 + 0.5);
 		yHi = _gridY * (tmp - 0.5);
 
-		height = ABS(yHi - yLow); // ABS() just to be safe.
-		y = (yLow + yHi) / 2.0;
+		location.height = ABS(yHi - yLow); // ABS() just to be safe.
+		location.yCen = (yLow + yHi) / 2.0;
 	  } else {
-        int tmp = (int)floor((y / _gridY) + 0.5);
-        y = _gridY * tmp;
+        int tmp = (int)floor((location.yCen / _gridY) + 0.5);
+        location.yCen = _gridY * tmp;
 	  }
     }
-    Coord newYLow = y - height / 2.0;
-    filter.yLow = newYLow;
-    filter.yHigh = newYLow + height;
   }
 }
 
@@ -1121,6 +1095,162 @@ DeviseCursor::InvalidateOldDestPixels()
 #endif
 
   _oldPixelsValid = false;
+}
+
+void
+DeviseCursor::SetGrid(Boolean useGrid, Coord gridX, Coord gridY,
+    Boolean edgeGrid)
+{
+  _useGrid = useGrid;
+  _gridX = gridX;
+  _gridY = gridY;
+  _edgeGrid = edgeGrid;
+
+  if (_useGrid) {
+    SatisfyConstraints();
+  }
+}
+
+void
+DeviseCursor::SetPartInDest(Boolean partInDest)
+{
+  _partInDest = partInDest;
+
+  if (_partInDest) {
+    SatisfyConstraints();
+  }
+}
+
+void
+DeviseCursor::SetAllInDest(Boolean allInDest)
+{
+  _allInDest = allInDest;
+
+  if (_allInDest) {
+    SatisfyConstraints();
+  }
+}
+
+void
+DeviseCursor::SatisfyConstraints()
+{
+#if defined(DEBUG)
+  printf("DeviseCursor(%s)::SatisfyConstraints()\n", GetName());
+#endif
+
+  VisualFilter filter;
+  _src->GetVisualFilter(filter);
+
+  Coord xCen = (filter.xLow + filter.xHigh) / 2.0;
+  Coord yCen = (filter.yLow + filter.yHigh) / 2.0;
+  Coord width = filter.xHigh - filter.xLow;
+  Coord height = filter.yHigh - filter.yLow;
+
+  MoveSource(xCen, yCen, width, height);
+}
+
+void
+DeviseCursor::SatisfyConstraints(CursorLocation& location)
+{
+  if (_fixedSize) {
+    VisualFilter filter;
+    _src->GetVisualFilter(filter);
+
+    // Force the new width and height to be the same as the old ones.
+    location.width = filter.xHigh - filter.xLow;
+    location.height = filter.yHigh - filter.yLow;
+  }
+
+  if (_partInDest) {
+    PartInDest(location);
+  }
+
+  if (_allInDest) {
+    AllInDest(location);
+  }
+
+  MatchGrid(location);
+}
+
+// Make sure at least part of the cursor is within the destination view.
+void
+DeviseCursor::PartInDest(CursorLocation& location)
+{
+  if (_dst) {
+    Coord xLo = location.xCen - (location.width / 2.0);
+    Coord xHi = location.xCen + (location.width / 2.0);
+	Coord yLo = location.yCen - (location.height / 2.0);
+	Coord yHi = location.yCen + (location.height / 2.0);
+
+    //
+    // Figure out whether any part of the cursor is within the destination
+    // view's new visual filter.
+    //
+    const VisualFilter *dFilter = _dst->GetVisualFilter();
+    Boolean outside = false;
+    if ((_visFlag & VISUAL_X) &&
+        (xHi < dFilter->xLow ||
+        xLo > dFilter->xHigh)) {
+      outside = true;
+    }
+    if ((_visFlag & VISUAL_Y) &&
+        (yHi < dFilter->yLow ||
+        yLo > dFilter->yHigh)) {
+      outside = true;
+    }
+
+    //
+    // Don't do this if destination view is unmapped because we're probably
+    // in the middle of changing around child views.
+    //
+    if (outside && _dst->Mapped()) {
+      // The cursor is outside the visual filter -- move it to the center
+      // of the destination view.
+      location.xCen = (dFilter->xLow + dFilter->xHigh) / 2.0;
+      location.yCen = (dFilter->yLow + dFilter->yHigh) / 2.0;
+    }
+  }
+}
+
+// Make sure all of the cursor is within the destination view.
+void
+DeviseCursor::AllInDest(CursorLocation &location)
+{
+  if (_dst) {
+    const VisualFilter *filter = _dst->GetVisualFilter();
+
+    Coord xLo = location.xCen - (location.width / 2.0);
+    Coord xHi = location.xCen + (location.width / 2.0);
+	Coord yLo = location.yCen - (location.height / 2.0);
+	Coord yHi = location.yCen + (location.height / 2.0);
+
+    if (location.width > filter->xHigh - filter->xLow) {
+	  xLo = filter->xLow;
+	  xHi = filter->xHigh;
+	} else if (xLo < filter->xLow) {
+	  xLo = filter->xLow;
+	  xHi = xLo + location.width;
+	} else if (xHi > filter->xHigh) {
+	  xHi = filter->xHigh;
+	  xLo = xHi - location.width;
+	}
+
+    if (location.height > filter->yHigh - filter->yLow) {
+	  yLo = filter->yLow;
+	  yHi = filter->yHigh;
+	} else if (yLo < filter->yLow) {
+	  yLo = filter->yLow;
+	  yHi = yLo + location.height;
+	} else if (yHi > filter->yHigh) {
+	  yHi = filter->yHigh;
+	  yLo = yHi - location.height;
+	}
+
+	location.xCen = (xLo + xHi) / 2.0;
+	location.width = xHi - xLo;
+	location.yCen = (yLo + yHi) / 2.0;
+	location.height = yHi - yLo;
+  }
 }
 
 //******************************************************************************

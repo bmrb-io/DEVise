@@ -2419,6 +2419,17 @@ Num Date        Status  Description
 612 8/17/00	OPEN	peptide-cgi: data files have _stop as the last
 			line. (rkw)
 
+613 8/21/00	FIXED	peptide-cgi: code relies on specific names for
+			relaxation save frames. (rkw)
+			(Fixed by rkw, 8/29/00.)
+
+614 8/29/00	OPEN	JavaScreen: looks like it re-parses the mouse format
+			strings every time a value is displayed. (rkw)
+
+615 8/30/00	OPEN	If you have both 'all in dest' and a grid set for
+			a cursor, the grid code can move a cursor edge
+			outside of the destination view. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

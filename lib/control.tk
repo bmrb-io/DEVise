@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.217  2000/07/12 20:49:34  wenger
+#	Added first version of metavisualization session description; changed
+#	DEVise version to 1.7.1.
+#	
 #	Revision 1.216  2000/06/24 14:49:46  wenger
 #	Added GUI for implicit view home.
 #	
@@ -1090,10 +1094,10 @@ source $libdir/viewgeom.tcl
 source $libdir/auto_filter.tcl
 source $libdir/dup_elim.tcl
 source $libdir/nice_axes.tcl
-source $libdir/fixed_cursor.tcl
 source $libdir/action_disable.tcl
 source $libdir/view_help.tcl
 source $libdir/show_mouse.tcl
+source $libdir/cursor_constraints.tcl
 
 set mode 0
 DEVise changeMode $mode
@@ -1678,8 +1682,8 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 .mbar.view.menu.cursorMenu add separator
 .mbar.view.menu.cursorMenu add command -label "Set Grid..." \
 	-command DoSetCursorGrid
-.mbar.view.menu.cursorMenu add command -label "Set Fixed Size..." \
-        -command EditFixedCursor
+.mbar.view.menu.cursorMenu add command -label "Set Constraints..." \
+        -command EditCursorConstraints
 #.mbar.view.menu.cursorMenu add separator
 #.mbar.view.menu.cursorMenu add command -label "Set Record Cursor..." \
 #	-command DoSetRecordCursor

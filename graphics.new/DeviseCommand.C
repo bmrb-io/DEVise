@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.107  2000/08/16 14:14:33  wenger
+  Removed _args and _numArgs (used automatic variables instead).
+
   Revision 1.106  2000/08/15 19:21:19  wenger
   Got rid of a bunch of conditionaled-out code.
 
@@ -6629,6 +6632,70 @@ IMPLEMENT_COMMAND_BEGIN(writeMetaVisDesc)
 		}
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in writeMetaVisDesc\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+
+IMPLEMENT_COMMAND_BEGIN(getCursorConstraints)
+    // Arguments: <cursor name>
+	// Returns: <fixed size> <part in dest> <all in dest>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        DeviseCursor *cursor = (DeviseCursor *)_classDir->FindInstance(argv[1]);
+        if (!cursor) {
+    	    ReturnVal(API_NAK, "Cannot find cursor");
+    	    return -1;
+        }
+
+		Boolean fixedSize = cursor->GetFixedSize();
+		Boolean partInDest = cursor->GetPartInDest();
+		Boolean allInDest = cursor->GetAllInDest();
+
+		char buf[128];
+		sprintf(buf, "%d %d %d", fixedSize, partInDest, allInDest);
+        ReturnVal(API_ACK, buf);
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in getCursorConstraints\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+
+IMPLEMENT_COMMAND_BEGIN(setCursorConstraints)
+    // Arguments: <cursor name> <fixed size> <part in dest> <all in dest>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 5) {
+        DeviseCursor *cursor = (DeviseCursor *)_classDir->FindInstance(argv[1]);
+        if (!cursor) {
+    	    ReturnVal(API_NAK, "Cannot find cursor");
+    	    return -1;
+        }
+
+		Boolean fixedSize = (atoi(argv[2]) != 0);
+		Boolean partInDest = (atoi(argv[3]) != 0);
+		Boolean allInDest = (atoi(argv[4]) != 0);
+
+		cursor->SetFixedSize(fixedSize);
+		cursor->SetPartInDest(partInDest);
+		cursor->SetAllInDest(allInDest);
+
+        ReturnVal(API_ACK, "done");
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in setCursorConstraints\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.60  2000/08/16 14:14:44  wenger
+  Removed _args and _numArgs (used automatic variables instead).
+
   Revision 1.59  2000/07/12 20:49:27  wenger
   Added first version of metavisualization session description; changed
   DEVise version to 1.7.1.
@@ -1983,6 +1986,18 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(writeMetaVisDesc) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getCursorConstraints) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setCursorConstraints) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_
