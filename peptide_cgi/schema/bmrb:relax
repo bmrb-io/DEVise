@@ -8,7 +8,7 @@
 type relax ascii
 comment #
 whitespace ' '
-sorted attr Residue_seq_code int lo 0
+attr Residue_seq_code int lo 0
 attr Residue_label string 4
 attr Atom_name string 4
 attr relax_value float
