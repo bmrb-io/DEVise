@@ -9,11 +9,13 @@ public class Schema {
   TypeDesc[] typeIDs;
   String[] attributeNames;
 
-  public Schema( String str ) {
+  public Schema(){}
+
+  public Schema(int nf,  String str ) {
     if( str != null ){
 
       StringTokenizer st = new StringTokenizer( str );
-      int numFlds = (int) st.nextToken();
+      int numFlds = nf;
 
       typeIDs = new TypeDesc[numFlds];
       attributeNames = new String[ numFlds ];
@@ -85,8 +87,8 @@ public class Schema {
     }
   
     if( st.ttype == StreamTokenizer.TT_NUMBER ){
-      typeIDs = new TypeDesc[st.nval];
-      attributeNames = new String[st.nval];
+      typeIDs = new TypeDesc[(int)st.nval];
+      attributeNames = new String[(int)st.nval];
       
       for(count=0; count<st.nval; count++){
 	if(st.nextToken() == StreamTokenizer.TT_WORD){
@@ -113,21 +115,22 @@ public class Schema {
   }
   
 
-  public int getnumFlds() throws IOException {
-    if( typesIDs.length == attribueNames.length)
+  public int getnumFlds() {
+    if( typeIDs.length == attributeNames.length)
       return typeIDs.length;
-    else throw IOException("Numbers of Types and ATTRNMs expected to equal");
+    else 
+      return 0;
   }
 
   public String getString(){
     String str = new String( );
     str += typeIDs.length;
   
-    for(int count=0; i< typeIDs.length; i++){
+    for(int i=0; i< typeIDs.length; i++){
       str += " ";
-      str += typeIDs[count].getString();
+      str += typeIDs[i].getString();
       str += " ";
-      str += attributeNames[count];
+      str += attributeNames[i];
     }
   
     return str;  
@@ -153,6 +156,7 @@ public class Schema {
     System.out.println( str);
   }
 }
+
 
 
 
