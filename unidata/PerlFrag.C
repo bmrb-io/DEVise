@@ -53,6 +53,22 @@ void PerlFrag::enlist(PerlFrag *pf)
 }
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+// Make a routine for formats.
+// Currently limited to 10 sub-fields, but we need $` and $& to be set.
+void PerlFrag::set_fmt(char *fmt)
+{
+  _src = new char[strlen(fmt) + XTRA_SPCE + 130];
+
+  memset(_src, ' ', XTRA_SPCE);
+  sprintf( &(_src[XTRA_SPCE]),
+  "{my($in)=@_;\nreturn(length($`)+length($&),$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) if ($in=~%s);\nreturn();}",
+    fmt);
+
+  _nrets = 2;
+  delete [] fmt;
+}
+
+// o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 // Compile the code stored.
 void PerlFrag::compile(unsigned int& subrcnt, char *flat_name)
 {

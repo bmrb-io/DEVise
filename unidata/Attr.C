@@ -99,7 +99,7 @@ Attr::~Attr()
     }
     delete prev;
 
-    delete [] _format;
+    delete _format;
     delete _value;
     delete _filter;
     delete _reader;
@@ -201,10 +201,7 @@ int Attr::uses_perl()
 // Provide a Perl Interpreter to use.
 void Attr::set_interp(PerlInterpreter *perl)
 {
-    // NYI
-  /*
     _format->set_interp(perl);
-  */
     _value->set_interp(perl);
     _filter->set_interp(perl);
     _reader->set_interp(perl);
@@ -325,10 +322,7 @@ void Attr::grab_var(char *field)
 // compile all perl subroutines for later use.
 void Attr::compile(unsigned int& subrcnt)
 {
-    // NYI
-  /*
-    _format->compile(subrcnt);
-  */
+    _format->compile(subrcnt,_flat_name);
     _value->compile(subrcnt,_flat_name);
     _filter->compile(subrcnt,_flat_name);
     _reader->compile(subrcnt,_flat_name);
@@ -527,11 +521,10 @@ void Attr::assign(Attr *src)
     _func_of = src->_func_of->dup();
 
 
-    delete [] _format;
-    if (src->_format) {
-        _format = new char [strlen(src->_format)+1];
-        strcpy(_format,src->_format);
-    } else
+    delete _format;
+    if (src->_format)
+        _format = src->_format->dup();
+    else
         _format = NULL; 
 
     delete _value;
@@ -641,7 +634,7 @@ ostream& operator<< (ostream& out, const Attr& attr)
     }
 
     if (attr._format)
-        out << "Format: " << attr._format << endl;
+        out << "Format: " << *(attr._format) << endl;
 
     if (attr._value)
         out << "Value: " << *(attr._value) << endl;

@@ -27,6 +27,8 @@ extern "C" {
 #    undef   explicit
 }
 
+#include "Lexer.h"
+
 class Attr;
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
@@ -73,6 +75,8 @@ class PerlFrag {
     }
 
     void set_src(char *src) { delete [] _src; _src = src; }
+
+    void set_fmt(char *fmt);
 
     void set_nrets(int nr) { if (this) _nrets = nr; }
 

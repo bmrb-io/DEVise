@@ -755,13 +755,6 @@ int Schema::subParse(Attr *attr)
                 MATCH(KY_SEMICOLON, &ult);
                 break;
     
-            case KY_FORMAT:
-                MATCH(KY_EQ, &ult);
-                MATCH(REG_EXPR, &ult);
-                attr->set_format(ult.RegExpr);
-                MATCH(KY_SEMICOLON, &ult);
-                break;
-    
             case KY_DATE_FRMT:
                 MATCH(KY_EQ, &ult);
                 MATCH(STRING, &ult);
@@ -769,6 +762,13 @@ int Schema::subParse(Attr *attr)
                 MATCH(KY_SEMICOLON, &ult);
                 break;
 
+            case KY_FORMAT:
+                MATCH(KY_EQ, &ult);
+                MATCH(REG_EXPR, &ult);
+                attr->set_format(ult.RegExpr);
+                MATCH(KY_SEMICOLON, &ult);
+                break;
+    
             case KY_FILTER:
                 MATCH(KY_EQ, &ult);
 

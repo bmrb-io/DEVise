@@ -106,7 +106,7 @@ class Attr {
 
     FuncOf   *_func_of;    // List of attrs this attr is a function_of.
 
-    char     *_format;
+    PerlFrag *_format;     // Perl format.
     PerlFrag *_reader;     // Perl attribute reader.
     PerlFrag *_value;      // Perl computed attribute.
     PerlFrag *_filter;     // Perl filter routine.
@@ -151,7 +151,7 @@ class Attr {
     int  lpos() { return _lpos; }
     int  rpos() { return _rpos; }
 
-    char *delimiter() { return (_delimit != NULL ? _delimit : ""); }
+    char *delimiter() { return(_delimit); }
     char *seperator() { return (_seper != NULL ? _seper : ""); }
     char *whitespace() { return (_white != NULL ? _white : ""); }
 
@@ -177,7 +177,13 @@ class Attr {
                         return(nw);
                       }
 
-    void set_format(char *fmt) { _format = fmt; }
+    void set_format(char *fmt) {
+        if (_format)
+            delete _format;
+        _format = new PerlFrag(this,FT_SUBR);
+        _format->set_fmt(fmt);
+    }
+
     void set_value(FragType type, char *val) {
         if (_value)
             delete _value;
@@ -201,9 +207,8 @@ class Attr {
         _reader->set_src(rdr);
     }
 
-    char *format() { return _format; }
-
-    PerlFrag *value() { return _value; }
+    PerlFrag *format() { return _format; }
+    PerlFrag *value()  { return _value; }
     PerlFrag *filter() { return _filter; }
     PerlFrag *reader() { return _reader; }
 
