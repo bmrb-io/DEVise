@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.38  1997/08/28 18:21:14  wenger
+  Moved duplicate code from ViewScatter, TDataViewX, and ViewLens classes
+  up into ViewGraph (parent class).
+
   Revision 1.37  1997/06/05 21:08:42  wenger
   User-configurability of '4', '5', and '6' keys is now completed.
 
@@ -176,6 +180,8 @@
 #include "UpdateLink.h"
 #include "AssoArray.h"
 #include "QueryProc.h"
+#include "GDataSock.h"
+#include "Util.h"
 
 const int MAXCOLOR = 43;
 
@@ -389,6 +395,26 @@ public:
 
   virtual void *GetObj() { return this; }
 
+  Boolean GetDrawToScreen() { return _drawToScreen; }
+  Boolean GetSendToSocket() { return _sendToSocket; }
+  void GetSendParams(GDataSock::Params &params) { params = _gdsParams; }
+
+  void SetDrawToScreen(Boolean drawToScreen) { _drawToScreen = drawToScreen; }
+  void SetSendToSocket(Boolean sendToSocket) { _sendToSocket = sendToSocket; }
+  void SetSendParams(const GDataSock::Params &params) {
+    _gdsParams = params;
+    _gdsParams.file = CopyString(_gdsParams.file);
+  }
+
+  DevStatus Send(void **gdataArray, TDataMap *map, int recCount) {
+    if (_gds != NULL) {
+      return _gds->Send(this, gdataArray, map, recCount);
+    } else {
+      reportErrNosys("No GDataSock object");
+      return StatusFailed;
+    }
+  }
+
  protected:
   virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs){};
 
@@ -460,6 +486,11 @@ public:
 
   ViewHomeInfo _homeInfo;
   ViewPanInfo _horPanInfo;
+
+  GDataSock *_gds;
+  Boolean _drawToScreen;
+  Boolean _sendToSocket;
+  GDataSock::Params _gdsParams;
 };
 
 #endif

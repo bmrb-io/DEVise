@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.43  1997/08/20 22:10:59  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.42.2.3  1997/08/20 19:33:00  wenger
   Removed/disabled debug output for interruptible drawing.
 
@@ -233,6 +237,7 @@
 #include <sys/param.h>
 #include <iostream.h>
 
+#include "ViewGraph.h"
 #include "MapInterpShape.h"
 #include "Map3D.h"
 #include "Init.h"

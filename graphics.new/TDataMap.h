@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/08/20 22:11:11  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.22.2.1  1997/08/07 16:56:43  wenger
   Partially-complete code for improved stop capability (includes some
   debug code).
@@ -127,7 +131,7 @@
 #include "VisualArg.h"
 #include "RecId.h"
 #include "GDataRec.h"
-#include "ViewGraph.h"
+#include "AttrList.h"
 
 class AttrList;
 
@@ -135,6 +139,7 @@ class TData;
 class GData;
 class Symbol;
 class WindowRep;
+class ViewGraph;
 
 /* Offsets for GData attributes. Not all offsets are valid (negative). */
 

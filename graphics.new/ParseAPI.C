@@ -22,6 +22,10 @@
   $Id$
 
   $Log$
+  Revision 1.78  1997/11/12 15:46:38  wenger
+  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+  into the trunk.
+
   Revision 1.77.2.1  1997/11/11 19:13:58  wenger
   Added getWindowImageAndSize and waitForQueries commands; fixed bug in
   WindowRep::ExportGIF() inheritance.
@@ -381,6 +385,7 @@
 #include "StringStorage.h"
 #include "DepMgr.h"
 #include "Session.h"
+#include "GDataSock.h"
 
 #define PURIFY 0
 
@@ -1822,6 +1827,31 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
+
+    if (!strcmp(argv[0], "getViewGDS")) {
+      // Argument: <view name>
+      // Returns: <draw to screen> <send to socket> <port number> <file>
+      //  <send text> <separator>
+#if defined(DEBUG)
+      printf("getViewGDS <%s>\n", argv[1]);
+#endif
+      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+      if (!view) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      Boolean drawToScreen = view->GetDrawToScreen();
+      Boolean sendToSocket = view->GetSendToSocket();
+
+      GDataSock::Params params;
+      view->GetSendParams(params);
+      if (params.file == NULL) params.file = "{}";
+      char buf[1024];
+      sprintf(buf, "%d %d %d %s %d %c", drawToScreen, sendToSocket,
+	params.portNum, params.file, params.sendText, params.separator);
+      control->ReturnVal(API_ACK, buf);
+      return 1;
+    }
   }
 
   if (argc == 3) {
@@ -2733,6 +2763,33 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	c.spherical_coord = true;
 	view->SetCamera(c);
       }
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+
+    if (!strcmp(argv[0], "setViewGDS")) {
+      // Argument: <view name> <draw to screen> <send to socket>
+      //   <port number> <file> <send text> <separator>
+      // Returns: "done"
+#if defined(DEBUG)
+      printf("setViewGDS <%s>\n", argv[1]);
+#endif
+      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+      if (!view) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+
+      view->SetDrawToScreen(atoi(argv[2]));
+      view->SetSendToSocket(atoi(argv[3]));
+
+      GDataSock::Params params;
+      params.portNum = atoi(argv[4]);
+      params.file = argv[5];
+      params.sendText = atoi(argv[6]);
+      params.separator = argv[7][0];
+      view->SetSendParams(params);
+
       control->ReturnVal(API_ACK, "done");
       return 1;
     }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/08/27 14:47:38  wenger
+  Removed some unnecessary include dependencies.
+
   Revision 1.10  1997/08/20 22:10:55  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -57,6 +60,7 @@
 #include "Util.h"
 #include "DevError.h"
 #include "StringStorage.h"
+#include "ViewGraph.h"
 
 //#define DEBUG
 

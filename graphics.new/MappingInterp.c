@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.64  1997/11/12 15:46:36  wenger
+  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+  into the trunk.
+
   Revision 1.63.4.1  1997/11/04 18:48:30  wenger
   Fixed bug 238 (core dump in search engine demo).
 
@@ -303,6 +307,7 @@
 #include "Color.h"
 #include "WindowRep.h"
 #include "MappingInterp.h"
+#include "ViewGraph.h"
 #include "MapInterpShape.h"
 #ifdef VIEW_SHAPE
 #include "ViewShape.h"
@@ -312,6 +317,7 @@
 #include "Util.h"
 #include "Init.h"
 #include "StringStorage.h"
+#include "GDataSock.h"
 
 double     *MappingInterp::_tclAttrs     = NULL;
 double      MappingInterp::_interpResult = 0.0;
@@ -719,44 +725,54 @@ void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
     win, num);
 #endif
 
-  if (_offsets->shapeOffset < 0) {
-    /* constant shape */
-    ShapeID shape = GetDefaultShape();
+  if (view->GetDrawToScreen()) {
+    if (_offsets->shapeOffset < 0) {
+      /* constant shape */
+      ShapeID shape = GetDefaultShape();
 #if defined(DEBUG)
-    printf("Drawing shape %d\n", shape);
+      printf("Drawing shape %d\n", shape);
 #endif
-    _shapes[shape]->DrawGDataArray(win, gdataArray, num, this,
-				   view, GetPixelWidth(), recordsProcessed);
-  } else {
-    /* dynamic shape */
-    recordsProcessed = 0;
-    int i = 0;
-    while (i < num) {
-      ShapeID shape = *((ShapeID *)(gdataArray[i]+_offsets->shapeOffset));
-      int j;
-      for(j = i + 1; j < num; j++) {
-	ShapeID nextShape =
-	              *((ShapeID *)(gdataArray[j]+_offsets->shapeOffset));
-	if (shape != nextShape)
-	  break;
+      _shapes[shape]->DrawGDataArray(win, gdataArray, num, this,
+				     view, GetPixelWidth(), recordsProcessed);
+    } else {
+      /* dynamic shape */
+      recordsProcessed = 0;
+      int i = 0;
+      Boolean timedOut = false;
+      while (i < num && !timedOut) {
+        ShapeID shape = *((ShapeID *)(gdataArray[i]+_offsets->shapeOffset));
+        int j;
+        for(j = i + 1; j < num; j++) {
+	  ShapeID nextShape =
+	                *((ShapeID *)(gdataArray[j]+_offsets->shapeOffset));
+	  if (shape != nextShape)
+	    break;
+        }
+        /* gdataArray[i..j-1] have the same shape */
+#if defined(DEBUG)
+        printf("Drawing shape %d (records %d thru %d)\n", shape, i, j - 1);
+#endif
+        int tmpRecs;
+        _shapes[shape]->DrawGDataArray(win, &gdataArray[i], j - i, this,
+				       view, GetPixelWidth(), tmpRecs);
+        recordsProcessed = i + tmpRecs;
+        if (tmpRecs != j - i) {
+	  timedOut = true;
+        }
+        i = j;
       }
-      /* gdataArray[i..j-1] have the same shape */
-#if defined(DEBUG)
-      printf("Drawing shape %d (records %d thru %d)\n", shape, i, j - 1);
-#endif
-      int tmpRecs;
-      _shapes[shape]->DrawGDataArray(win, &gdataArray[i], j - i, this,
-				     view, GetPixelWidth(), tmpRecs);
-      recordsProcessed = i + tmpRecs;
-      if (tmpRecs != j - i) {
-#if defined(DEBUG)
-        printf("  %d records processed\n", recordsProcessed);
-#endif
-	return;
-      }
-      i = j;
     }
+  } else {
+    recordsProcessed = num;
   }
+
+  if (view->GetSendToSocket()) {
+#if defined(DEBUG)
+    printf("  sending %d GData records to socket\n", recordsProcessed);
+#endif
+    (void) view->Send(gdataArray, this, recordsProcessed);
+  }
+
 #if defined(DEBUG)
   printf("  %d records processed\n", recordsProcessed);
 #endif

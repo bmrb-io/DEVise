@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.68  1997/10/10 21:13:44  liping
+  The interface between TData and BufMgr and the interface between BufMgr and
+  QueryProc were changed
+  The new interface carries the information of 1. LowId 2. HighId 3. AttrName
+          4. Granularity in the structure "Range"
+
   Revision 1.67  1997/10/07 17:06:04  liping
   RecId to Coord(double) changes of the BufMgr/QureyProc interface
 
@@ -311,6 +317,7 @@
 #include "BufMgrFull.h"
 #include "TDataMap.h"
 #include "MappingInterp.h"
+#include "ViewGraph.h"
 #include "GDataBin.h"
 #include "TData.h"
 #include "GData.h"

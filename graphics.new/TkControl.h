@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/11/12 15:46:41  wenger
+  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+  into the trunk.
+
   Revision 1.18.12.1  1997/11/11 19:14:01  wenger
   Added getWindowImageAndSize and waitForQueries commands; fixed bug in
   WindowRep::ExportGIF() inheritance.
@@ -84,7 +88,7 @@
 #ifndef TkControl_h
 #define TkControl_h
 
-#define OPEN_TEST_FILE 0
+#define OPEN_TEST_FILE 1
 
 #include <tcl.h>
 #include <tk.h>
@@ -154,7 +158,7 @@ public:
 #if OPEN_TEST_FILE
   int fd;
   virtual void OpenDataChannel(int port) { fd = open("/tmp/devise_tst",
-      O_RDWR | O_CREAT, 0644); }
+      O_RDWR | O_CREAT | O_TRUNC, 0644); }
   virtual int getFd(){ return fd;} 
 #else
   virtual void OpenDataChannel(int port) { }

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.38  1997/08/20 22:11:00  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.37.2.1  1997/08/07 16:56:35  wenger
   Partially-complete code for improved stop capability (includes some
   debug code).
@@ -168,6 +172,8 @@
 #include "Transform.h"
 #include "Geom.h"
 #include "RectShape.h"
+
+class ViewGraph;
 
 //#define DEBUG
 

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.29  1997/08/20 22:11:09  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.28.8.1  1997/08/07 16:56:42  wenger
   Partially-complete code for improved stop capability (includes some
   debug code).
@@ -143,6 +147,7 @@
 #include "TDataMap.h"
 #include "WindowRep.h"
 #include "Temp.h"
+#include "ViewGraph.h"
 
 #define GetAttr(ptr, attrName, attrType, offset) \
 	*((attrType *)(ptr+offset->attrName))

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.60  1997/08/28 18:21:13  wenger
+  Moved duplicate code from ViewScatter, TDataViewX, and ViewLens classes
+  up into ViewGraph (parent class).
+
   Revision 1.59  1997/08/20 22:11:14  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -337,6 +341,14 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter, QueryProc *qp,
   _map = 0;
   _index = -1;
   _queryFilter = initFilter;
+
+  _gds = NULL;
+  _drawToScreen = true;
+  _sendToSocket = false;
+  _gdsParams.portNum = 0;
+  _gdsParams.file = NULL;
+  _gdsParams.sendText = true;
+  _gdsParams.separator = ' ';
 }
 
 ViewGraph::~ViewGraph()
@@ -383,6 +395,9 @@ ViewGraph::~ViewGraph()
     _gstatY.Clear();
     _glistX.DeleteAll();
     _glistY.DeleteAll();
+
+    delete _gdsParams.file;
+    delete _gds;
 }
 
 void ViewGraph::AddAsMasterView(RecordLink *link)
@@ -1407,6 +1422,19 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
 #endif
     _pstorage.Clear();
     _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
+
+    if (_sendToSocket) {
+      if (_gds != NULL) {
+        reportErrNosys("Duplicate GDataSock creation");
+      } else {
+        _gds = new GDataSock(_gdsParams);
+        if (!_gds->GetStatus().IsComplete()) {
+	  reportErrNosys("Error creating GDataSock object");
+	  delete _gds;
+	  _gds = NULL;
+        }
+      }
+    }
   } else {
 #ifdef DEBUG
     printf("View has no mappings; reporting query as done\n");
@@ -1462,6 +1490,9 @@ void ViewGraph::QueryDone(int bytes, void *userData, TDataMap *map)
     DoneMappingIterator(_index);
     _map = 0;
     _index = -1;
+
+    delete _gds;
+    _gds = NULL;
 
     _allStats.Done();
     _allStats.Report();

@@ -953,6 +953,9 @@ Num Date        Status  Description
 239 11/10/97	FIXED	Print exclusion of windows doesn't work in 'print
 			all windows' mode. (ad/rkw)
 
+240 11/18/97	OPEN	Streaming buffer manager doesn't consistently
+			clean up semaphores. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
