@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -17,6 +17,12 @@
   $Id$
 
   $Log$
+  Revision 1.56  1998/12/15 14:55:14  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.55  1998/11/06 17:59:49  wenger
   Multiple string tables fully working -- allows separate tables for the
   axes in a given view.
@@ -296,6 +302,7 @@
 #include "DevError.h"
 #include "StringStorage.h"
 #include "DrawTimer.h"
+#include "Display.h"
 
 //#define DEBUG
 #define USE_TIMER 1
@@ -2687,8 +2694,13 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
     Coord x = GetX(gdata, map, offset);
     Coord y = GetY(gdata, map, offset);
     Coord pointSize = GetSize(gdata, map, offset);
-    if (pointSize <= 1.0)
-      pointSize = 12.0;
+    if (pointSize <= 1.0) {
+	  // Size of font is defined as a fraction of the screen height.
+      Coord displayWidth, displayHeight;
+	  DeviseDisplay::DefaultDisplay()->Dimensions(displayWidth, displayHeight);
+	  pointSize = pointSize * displayHeight *
+		DeviseDisplay::DefaultDisplay()->PointsPerPixel();
+	}
 	Coord orientation = GetOrientation(gdata, map, offset);
 
     /* Find or generate the label string. */

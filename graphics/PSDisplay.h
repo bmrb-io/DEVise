@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/05/14 18:21:04  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.17  1997/11/24 23:14:28  weaver
   Changes for the new ColorManager.
 
@@ -182,6 +186,10 @@ public:
       Coord &yMargin);
 
     virtual void SetTasvirServer(const char *server);
+
+    virtual Coord PointsPerPixel() {
+      return DeviseDisplay::DefaultDisplay()->PointsPerPixel();
+    }
 
 protected:
 #ifndef LIBCS

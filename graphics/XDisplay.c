@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.71  1998/09/22 17:23:45  wenger
+  Devised now returns no image data if there are any problems (as per
+  request from Hongyu); added a bunch of debug and test code to try to
+  diagnose bug 396 (haven't figured it out yet); made some improvements
+  to the Dispatcher to make the main loop more reentrant; added some error
+  reporting to the xv window grabbing code; improved command-result
+  checking code.
+
   Revision 1.70  1998/09/10 23:21:10  wenger
   Fixed bug 388 (missing window in JavaScreen) (caused by '/' in window
   name, which was then used as part of temp file name); default for
@@ -461,29 +469,7 @@ void XDisplay::SetFont(char *family, char *weight, char *slant,
      pixel to point conversion depending on the resolution of the
      screen  -  hope that works fine and everywhere .... sanj */
 
-  int screen_number  = XDefaultScreen(_display);
-  int display_height_inPixels = XDisplayHeight(_display,screen_number);
-  int display_height_inMM = XDisplayHeightMM(_display,screen_number);
-
-  int display_width_inPixels = XDisplayWidth(_display,screen_number);
-  int display_width_inMM = XDisplayWidthMM(_display,screen_number);
-
-#if defined (DEBUG)  
-  cout << "height(pixels) =" <<  display_height_inPixels << endl;
-  cout << "height(MM) =" <<   display_height_inMM << endl;
-
-  cout << "width(pixels) = " <<   display_width_inPixels << endl;
-  cout << "width(MM) = " <<   display_width_inMM << endl;
-#endif
-
-  /* 25.4 from inches to mm conversion 
-     72   point  is  1/72 of an inch  */
- 
-  float pixeltoPoints = pointSize *
-                       ((float)(display_width_inPixels * 25.4))/
-                       ((float)(display_width_inMM * 72));
-  
-  pointSize = pixeltoPoints;
+  float pixelSize = pointSize / PointsPerPixel();
   
     XFontStruct *oldFont = _fontStruct;
 
@@ -497,7 +483,7 @@ void XDisplay::SetFont(char *family, char *weight, char *slant,
        Attempt to load font as specified. If font cannot be loaded,
        increase point size by one unit and try again.
     */
-    for(float p = pointSize; p <= pointSize + 5.0; p += 1.0) {
+    for(float p = pixelSize; p <= pixelSize + 5.0; p += 1.0) {
         char fname[128];
                 sprintf(fname, "-*-%s-%s-%s-%s-*-*-%d-*-*-*-*-*-*",
                   family, weight, slant, width, (int) (p * 10.0));
@@ -519,7 +505,7 @@ void XDisplay::SetFont(char *family, char *weight, char *slant,
             return;
         }
     }
-    fprintf(stderr, "Warning: could not find font %s %f\n", family, pointSize);
+    fprintf(stderr, "Warning: could not find font %s %f\n", family, pixelSize);
     _fontStruct = _normalFontStruct;
 }
 
@@ -1316,3 +1302,42 @@ int XDisplay::HandleXEvent(XEvent &event)
   return 1;
 }
 #endif
+
+Coord XDisplay::PointsPerPixel()
+{
+  int screen_number  = XDefaultScreen(_display);
+
+  int display_height_inPixels = XDisplayHeight(_display,screen_number);
+  int display_height_inMM = XDisplayHeightMM(_display,screen_number);
+
+  int display_width_inPixels = XDisplayWidth(_display,screen_number);
+  int display_width_inMM = XDisplayWidthMM(_display,screen_number);
+
+#if defined (DEBUG)
+  cout << "height(pixels) =" <<  display_height_inPixels << endl;
+  cout << "height(MM) =" <<   display_height_inMM << endl;
+
+  cout << "width(pixels) = " <<   display_width_inPixels << endl;
+  cout << "width(MM) = " <<   display_width_inMM << endl;
+#endif
+
+  /* 25.4 from inches to mm conversion 
+     72   point  is  1/72 of an inch  */
+ 
+  Coord pointsPerPixelHor = ((float)(display_width_inMM * 72)) /
+    ((float)(display_width_inPixels * 25.4));
+
+  Coord pointsPerPixelVert = ((float)(display_height_inMM * 72)) /
+    ((float)(display_height_inPixels * 25.4));
+
+  if (fabs(pointsPerPixelHor - pointsPerPixelVert) > 0.01) {
+    fprintf(stderr,
+      "Warning: horizontal and vertical points per pixel differ!\n");
+  }
+
+#if defined (DEBUG)
+  printf("%f points per pixel\n", pointsPerPixelHor);
+#endif
+
+  return pointsPerPixelHor;
+}

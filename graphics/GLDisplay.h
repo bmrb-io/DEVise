@@ -141,6 +141,9 @@ protected:
       realHeight = height * winHeight;
     }
 
+    // Temporary -- don't yet know how to figure this out.  RKW 1998-12-15.
+    virtual Coord PointsPerPixel() { return 1.0; }
+
 private:
     Display *_display;		    /* X display */
     GLWindowRepList _winList;        /* list of X windows created */

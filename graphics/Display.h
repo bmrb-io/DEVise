@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.30  1998/05/14 18:21:01  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.29  1997/11/24 23:14:20  weaver
   Changes for the new ColorManager.
 
@@ -252,6 +256,8 @@ public:
   virtual int &DesiredScreenWidth() { return _desiredScreenWidth; }
   virtual int &DesiredScreenHeight() { return _desiredScreenHeight; }
 #endif
+
+  virtual Coord PointsPerPixel() = 0;
 
 protected:
 #ifndef LIBCS

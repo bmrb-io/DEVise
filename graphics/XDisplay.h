@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.33  1998/02/19 23:24:54  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
   Revision 1.32  1997/12/16 17:53:56  zhenhai
   Added OpenGL features to graphics.
 
@@ -222,6 +230,8 @@ class XDisplay : public DeviseDisplay
 
     virtual void SetTasvirServer(const char *server);
     virtual void SetETkServer(const char *server);
+
+    virtual Coord PointsPerPixel();
 
 protected:
 #if !defined(LIBCS)

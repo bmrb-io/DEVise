@@ -1703,6 +1703,11 @@ Num Date        Status  Description
 			numbers under the location cursors do not get updated.
 			(ml/rkw)
 
+444 12/15/98	OPEN	Text comes out at the wrong place in view when
+			printing to PostScript. (rkw)
+
+445 12/15/98	OPEN	Text symbols don't work in OpenGL. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
