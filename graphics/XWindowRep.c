@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.64  1996/09/04 21:24:51  wenger
+  'Size' in mapping now controls the size of Dali images; improved Dali
+  interface (prevents Dali from getting 'bad window' errors, allows Devise
+  to kill off the Dali server); added devise.dali script to automatically
+  start Dali server along with Devise; fixed bug 037 (core dump if X is
+  mapped to a constant); improved diagnostics for bad command-line arguments.
+
   Revision 1.63  1996/08/29 22:13:24  guangshu
   Changed arguments of ConvertAndWriteGIF and ExportGIF.
 
@@ -670,13 +677,15 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
   if (format == GIF) {
     FILE *fp = fopen(filename, "wb");
     if (!fp) {
-         fprintf(stderr, "Cannot open file %s for writing\n", filename);
-         return;
+        fprintf(stderr, "Cannot open file %s for writing\n", filename);
+        return;
     }
     ExportGIF(fp);
+    if (fp != stderr && fp != stdout)
+        fclose(fp);
     return;
   }
-  printf("%d\n", format);
+
   DOASSERT(_win, "Exporting a pixmap not supported yet");
 
   Window win = FindTopWindow(_win);
@@ -881,7 +890,7 @@ void XWindowRep::CoalescePixmaps(XWindowRep *root)
   if (!root->GetPixmapId())
     return;
 
-  // recursively copy the contents of subpixmaps onto the parent pixmap
+  // recursively copy the contents of sub-drawables onto the parent
 
   int index = root->_children.InitIterator();
 
@@ -1745,6 +1754,23 @@ void XWindowRep::HandleEvent(XEvent &event)
     }
     break;
 
+  case GraphicsExpose:
+#ifdef DEBUG
+    printf("XWin 0x%lx receives graphics expose event (%d more)\n",
+           event.xgraphicsexpose.drawable, event.xgraphicsexpose.count);
+    printf("    at %d,%d size %dx%d\n", event.xgraphicsexpose.x,
+           event.xgraphicsexpose.y,  event.xgraphicsexpose.width,
+           event.xgraphicsexpose.height);
+#endif
+    break;
+
+  case NoExpose:
+#ifdef DEBUG
+    printf("XWin 0x%lx receives no-expose event\n",
+           event.xnoexpose.drawable);
+#endif
+    break;
+
   default:
     printf("Unexpected event %d for window 0x%lx\n",
            event.xany.type, event.xany.window);
@@ -2025,7 +2051,8 @@ into _dstBitmap (0,0,dstWidth, dstHeight). X windows coords are used.
 void XWindowRep::CopyBitmap(int width,int height,int dstWidth,int dstHeight)
 {
 #ifdef DEBUG
-  printf("XWindowRep::CopyBitmap: %d,%d,%d,%d\n", width, height, dstWidth, dstHeight);
+  printf("XWindowRep::CopyBitmap: %d,%d,%d,%d\n", width, height,
+         dstWidth, dstHeight);
 #endif
 
   if (dstWidth > _dstBitmap.width || dstHeight > _dstBitmap.height)
