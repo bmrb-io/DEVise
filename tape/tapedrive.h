@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/22 15:43:33  jussi
+  Added copyright message.
+
   Revision 1.2  1995/09/05 20:31:57  jussi
   Added CVS header.
 */
@@ -36,7 +39,16 @@
 #endif
 
 #include <stdio.h>
+#include <tar.h>
 #include "machdep.h"
+
+#ifndef TBLOCK
+#define TBLOCK 512                      // tar file block size
+#endif
+
+#ifndef NAMSIZ
+#define NAMSIZ 100                      // tar header block filename size
+#endif
 
 const int TAPE_BLOCKSIZE = 32768;       // blocking factor on tape
 
@@ -54,6 +66,12 @@ public:
 
   // Return 1 if properly initialized
   virtual operator int() { return initialized; }
+
+  // Read tar header block
+  void readTarHeader();
+
+  // Convert octal number (in ASCII) to decimal number (in binary)
+  unsigned long int oct2int(char *buf);
 
   // Move on tape
   virtual long seek(long offset);
@@ -149,6 +167,26 @@ protected:
   long bufferBlock;                     // block number of cached block
   char *buffer;                         // block size on tape
   int  atEof;                           // 1 if tape at EOF
+
+  int haveTarHeader;                    // 1 if we've read a tar header
+  unsigned long int tarFileSize;        // file size for file in tar archive
+  unsigned long int tarFileOffset;      // file offset for file in tar archive
+
+public:
+  union hblock {                        // tar header block
+    char dummy[TBLOCK];
+    struct header {
+      char name[NAMSIZ];
+      char mode[8];
+      char uid[8];
+      char gid[8];
+      char size[12];
+      char mtime[12];
+      char chksum[8];
+      char linkflag;
+      char linkname[NAMSIZ];
+    } dbuf;
+  } tarHeader;
 };
 
 #endif

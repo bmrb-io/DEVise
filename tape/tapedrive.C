@@ -1,9 +1,9 @@
 /*
   ========================================================================
-  DEVise Software
+  DEVise Data Visualization Software
   (c) Copyright 1992-1995
   By the DEVise Development Group
-  University of Wisconsin at Madison
+  Madison, Wisconsin
   All Rights Reserved.
   ========================================================================
 
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/22 15:46:22  jussi
+  Added copyright message.
+
   Revision 1.2  1995/09/05 20:31:56  jussi
   Added CVS header.
 */
@@ -24,6 +27,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <assert.h>
+#include <tar.h>
 
 #include "tapedrive.h"
 
@@ -38,7 +42,8 @@
 #endif
 
 TapeDrive::TapeDrive(char *name, char *mode, int fno, int blockSz) :
-	initialized(0), fileNo(fno), blockSize(blockSz)
+	initialized(0), fileNo(fno), blockSize(blockSz),
+	haveTarHeader(0), tarFileSize(0), tarFileOffset(0)
 {
 #ifdef __alpha
   cerr << "Warning: In Alpha/OSF/1, file number and block number inquiry"
@@ -102,6 +107,27 @@ void TapeDrive::printStats()
        << "\t" << write_time / (write_ios ? write_ios : 1) << endl;
 }
 
+void TapeDrive::readTarHeader()
+{
+  assert(!haveTarHeader);
+
+  int bytes = read(&tarHeader, sizeof tarHeader);
+  assert(bytes == sizeof tarHeader);
+  tarFileSize = oct2int(tarHeader.dbuf.size);
+  tarFileOffset = 0;
+
+  haveTarHeader = 1;
+}
+
+unsigned long int TapeDrive::oct2int(char *buf)
+{
+  unsigned long int num = 0;
+  while(*buf == ' ') buf++;
+  while(*buf != ' ')
+    num = 8 * num + (*buf++ - '0');
+  return num;
+}
+
 long TapeDrive::seek(long offset)
 {
   if (bufferType == writeBuffer) {      // flush out write buffer
@@ -143,13 +169,31 @@ int TapeDrive::read(void *buf, int recSize, int binary)
   assert(bufferBytes >= 0 && bufferBytes <= blockSize);
   assert(bufferOffset <= bufferBytes);
 
+#ifdef TARFILESIZE
+  if (haveTarHeader                     // is file in a tar archive?
+      && tarFileOffset >= tarFileSize)  // and at end of file?
+    atEof = 1;
+#endif
+
   if (atEof)                            // already at end of tape file?
     return 0;
 
   if (bufferOffset >= bufferBytes) {    // no more bytes in buffer?
     fillBuffer();                       // get next block from file
-    if (!bufferBytes)                   // end of file?
+    if (!bufferBytes) {                 // end of file?
+
+#ifdef TARFILESIZE
+      // for non-tar files, end of tape file is the natural end of
+      // user file; for tar files, the file size indicated in the
+      // tar header should trigger the atEof statement a few lines
+      // up; it is an error if the tape file (tar file) ends before
+      // the file inside the tar file
+      if (haveTarHeader)
+	cerr << "File in tar archive prematurely terminated." << endl;
+#endif
+
       return 0;
+    }
   }
 
   read_cnt++;
@@ -162,6 +206,13 @@ int TapeDrive::read(void *buf, int recSize, int binary)
 
   if (recSize > bufferBytes - bufferOffset)
     recSize = bufferBytes - bufferOffset;
+
+#ifdef TARFILESIZE
+  if (haveTarHeader                     // past EOF of file in tar archive?
+      && recSize > tarFileSize - tarFileOffset)
+    recSize = tarFileSize - tarFileOffset;
+#endif
+
   if (!binary) {                        // reading an ASCII record?
     char *end = (char *)memchr(start, 0, recSize);
     assert(end);
@@ -177,6 +228,13 @@ int TapeDrive::read(void *buf, int recSize, int binary)
 #else
 
   int bytesLeft = recSize;
+
+#ifdef TARFILESIZE
+  if (haveTarHeader                     // past EOF of file in tar archive?
+      && bytesLeft > tarFileSize - tarFileOffset)
+    bytesLeft = tarFileSize - tarFileOffset;
+#endif
+
   recSize = 0;
   char *p = (char *)buf;
   while(bytesLeft > 0) {
@@ -207,6 +265,13 @@ int TapeDrive::read(void *buf, int recSize, int binary)
       && bufferOffset < bufferBytes     // still data left but...
       && !buffer[bufferOffset])         // end of logical file (NULL char)?
     bufferOffset = bufferBytes;         // must try to fetch block next time
+#endif
+
+#ifdef TARFILESIZE
+  if (haveTarHeader) {
+     tarFileOffset += recSize;
+     assert(tarFileOffset <= tarFileSize);
+  }
 #endif
 
   return recSize;
@@ -323,6 +388,8 @@ void TapeDrive::fillBuffer()
   atEof = 0;
 
   if (status < 0) {                     // read error?
+    cerr << "Read failed: fd " << FILE2FD(file) << ", buffer "
+         << (void *)buffer << ", bytes " << blockSize << endl;
     perror("read");
     exit(1);
   }
