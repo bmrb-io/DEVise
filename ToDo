@@ -427,6 +427,25 @@ instead of 'Back One' that just does 'do, undo'. (rkw 11/25/97)
 Data source definition dialog should have a button that brings up the
 schema definition dialog. (ml 11/25/97)
 
+Deal better with views that are removed from a window but not destroyed:
+either don't create them when you open a session, or ask the user whether
+to save them when they save a session. (td/rkw 12/4/97)
+
+Remove timers and incorporate similar functionality into the dispatcher
+to prevent interrupted system calls. (devel 12/4/97)
+
+Disable Layout Manager menu selection until the layout manager is
+fully integrated. (devel 12/4/97)
+
+Get color back into Tcl/Tk windows. (devel 12/4/97)
+
+Have separate templates.c files for each library. (devel 12/4/97)
+
+Clean up the Devise startup scripts -- perhaps get rid of environment
+variables, and use configuration files; perhaps split up the scripts
+into one determining which program is run and another determining
+which sessions, catalog, etc., are used. (devel 12/4/97)
+
 
 
 COMPLETED
