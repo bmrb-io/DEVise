@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.14  1996/08/03 15:51:52  jussi
+#  3D view parameters are preserved when a merged view is split.
+#
 #  Revision 1.13  1996/08/03 15:34:39  jussi
 #  When views are merged, the 3D parameters of the currently selected
 #  view will determine the 3D parameters of the composite view.
@@ -750,6 +753,7 @@ proc DoWindowPile {} {
         if {$v != $curView} {
             puts "Inserting $link into $v"
             DEVise insertLink $link $v
+	    DEVise refreshView $curView
         }
         puts "Setting $v to pile mode"
         DEVise setViewPileMode $v 1
@@ -757,7 +761,6 @@ proc DoWindowPile {} {
 
     # set window to stacked mode
     DEVise setWindowLayout $win -1 -1 1
-    DEVise refreshView $curView
 }
 
 ############################################################

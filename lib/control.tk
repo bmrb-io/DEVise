@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.98  1996/11/26 09:36:37  beyer
+#	control-c and q now quit devise when typed on the control panel.
+#
 #	Revision 1.97  1996/11/25 22:31:31  beyer
 #	1. extended .devise.rc search
 #	2. added DestroyView command
@@ -485,6 +488,7 @@ source $libdir/history.tcl
 source $libdir/query.tcl
 source $libdir/window.tcl
 source $libdir/tdata.tk
+source $libdir/lens.tcl
 
 set mode 0
 DEVise changeMode $mode
@@ -762,8 +766,13 @@ menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "Remove" -command { RemoveWindow "" }
 .mbar.window.menu add command -label "Duplicate" -command DupWindow
 .mbar.window.menu add separator
+
 .mbar.window.menu add command -label "Stack Control" \
 	-command { DoWindowStackControl }
+######################MODIFIED SSL 11/3########################################
+.mbar.window.menu add command -label "Lens Control" \
+	-command { DoWindowLensControl }
+######################MODIFIED SSL 11/3########################################
 .mbar.window.menu add separator
 .mbar.window.menu add command -label "Swap Views" -command DoSwapView
 .mbar.window.menu add command -label "Move View" -command DoViewMove
