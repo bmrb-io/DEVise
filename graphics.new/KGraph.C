@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/07/14 04:04:42  jussi
+  ViewKGraph is now derived from KGraph instead of declaring
+  KGraph as its member variable. This allows ViewKGraph to
+  intercept WindowDestroy events and destroy the graph.
+
   Revision 1.11  1996/07/13 17:28:41  jussi
   Added window flush call.
 
@@ -241,7 +246,7 @@ void KGraph::ShowVal()
   // For each axes display value
   for(int i = 0; i < _naxes; i++) {
     char buf[15];
-    sprintf(buf, "%4.2f", _pts[i]);
+    sprintf(buf, "%g", _pts[i]);
     _win->AbsoluteText(buf, startx, starty, 500, 13, WindowRep::AlignWest);
     starty += 17;
   }
@@ -284,7 +289,7 @@ Boolean KGraph::HandlePopUp(WindowRep *w, int x, int y, int button,
   sprintf(_msgBuf[2], "Values clockwise from 0");
   
   for(int i = 0; i < _naxes; i++)
-    sprintf(_msgBuf[3+i], "%4.2f", _pts[i]);
+    sprintf(_msgBuf[3+i], "%g", _pts[i]);
 
   numMsgs = _naxes + 3;
   return true;
