@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.43  1996/06/20 21:40:14  jussi
+  Added call to SetVisualFilter() to SetCamera() which causes the
+  (non-existent) filter change to be reported to clients, including
+  the 3D query dialog.
+
   Revision 1.42  1996/06/16 02:06:56  jussi
   Various improvements in debugging.
 
@@ -183,12 +188,12 @@
 #include "Control.h"
 #include "TimeStamp.h"
 #include "Parse.h"
+#include "Map3D.h"
 #ifdef JPEG
 #include "Jpeg.h"
 #endif
 
 //#define DEBUG
-// #define YLC
 
 /* width/height of sensitive area for cursor */
 static const int VIEW_CURSOR_SENSE = 10;
@@ -518,10 +523,10 @@ void View::HandleExpose(WindowRep *w, int x, int y, unsigned width,
     int maxX2 = x + width - 1;
     int maxY2 = y + height - 1;
     
-    _exposureRect.xLow = MinMax::min(minX1, minX2);
-    _exposureRect.yLow = MinMax::min(minY1, minY2);
-    _exposureRect.xHigh = MinMax::max(maxX1, maxX2);
-    _exposureRect.yHigh = MinMax::max(maxY1, maxY2);
+    _exposureRect.xLow = MIN(minX1, minX2);
+    _exposureRect.yLow = MIN(minY1, minY2);
+    _exposureRect.xHigh = MAX(maxX1, maxX2);
+    _exposureRect.yHigh = MAX(maxY1, maxY2);
   }
 
   Dispatcher::InsertMarker(writeFd);
@@ -755,18 +760,12 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
   }
 
   if (_numDimensions == 3) {
-#ifdef YLC1
-	printf ("````````````````````````````` DrawAxesLabel ........\n");
-	printf ("\t\t\t\tFg color = %d\n", GetBgColor());
-#endif
-	// CompRhoPhiTheta();
-	win->SetFgColor(0);   // draw the axis black
-     win->DrawRefAxis(_camera);
+    win->SetFgColor(BlackColor);
+    Map3D::DrawRefAxis(win, _camera);
   }
 
   win->PopClip();
-
-} // end of DrawAxesLabel
+}
 
 void View::DrawLabel()
 {
@@ -1080,10 +1079,10 @@ void View::FindWorld(int sx1,int sy1, int sx2, int sy2,
   Coord x1, x2, y1, y2;
   transform.InverseTransform(sx1, sy1, x1, y1);
   transform.InverseTransform(sx2, sy2, x2, y2);
-  xLow = MinMax::min(x1, x2);
-  xHigh = MinMax::max(x1, x2);
-  yLow = MinMax::min(y1, y2);
-  yHigh = MinMax::max(y1, y2);
+  xLow = MIN(x1, x2);
+  xHigh = MAX(x1, x2);
+  yLow = MIN(y1, y2);
+  yHigh = MAX(y1, y2);
 }
 
 /* Calculate the transformation matrix used to translate from
@@ -1131,16 +1130,16 @@ void View::CalcTransform(Transform3D &transform)
 	 dataWidth, dataHeight);
 #endif
   
-	CompRhoPhiTheta();
-	transform.SetViewMatrix(_camera);
-#ifdef YLC
-	printf ("View.c: rho = %f phi = %f theta = %f\n", 
-		_camera._rho, _camera._phi, _camera._theta);
+  CompRhoPhiTheta();
+  transform.SetViewMatrix(_camera);
+
+#ifdef DEBUG
+  printf ("View.c: rho = %f phi = %f theta = %f\n", 
+	  _camera._rho, _camera._phi, _camera._theta);
 #endif
 
 }
 
-/* For query processing */
 /* For query processing */
 
 void View::ReportQueryDone(int bytes)
@@ -1305,17 +1304,17 @@ void View::Run()
 	   _exposureRect.xHigh, _exposureRect.yHigh);
 #endif
     
-    _exposureRect.xLow = MinMax::max(_exposureRect.xLow, 0);
-    _exposureRect.xLow = MinMax::min(_exposureRect.xLow, scrnWidth - 1);
-    _exposureRect.xHigh = MinMax::max(_exposureRect.xLow,
+    _exposureRect.xLow = MAX(_exposureRect.xLow, 0);
+    _exposureRect.xLow = MIN(_exposureRect.xLow, scrnWidth - 1);
+    _exposureRect.xHigh = MAX(_exposureRect.xLow,
 				      _exposureRect.xHigh);
-    _exposureRect.xHigh = MinMax::min(_exposureRect.xHigh, scrnWidth - 1);
+    _exposureRect.xHigh = MIN(_exposureRect.xHigh, scrnWidth - 1);
     
-    _exposureRect.yLow = MinMax::max(_exposureRect.yLow, 0);
-    _exposureRect.yLow = MinMax::min(_exposureRect.yLow, scrnHeight - 1);
-    _exposureRect.yHigh = MinMax::max(_exposureRect.yLow,
+    _exposureRect.yLow = MAX(_exposureRect.yLow, 0);
+    _exposureRect.yLow = MIN(_exposureRect.yLow, scrnHeight - 1);
+    _exposureRect.yHigh = MAX(_exposureRect.yLow,
 				      _exposureRect.yHigh);
-    _exposureRect.yHigh = MinMax::min(_exposureRect.yHigh, scrnHeight - 1);
+    _exposureRect.yHigh = MIN(_exposureRect.yHigh, scrnHeight - 1);
     
 #ifdef DEBUG
     printf("--> (%d,%d),(%d,%d)\n",
@@ -1425,10 +1424,8 @@ void View::UpdateTransform(WindowRep *winRep)
      CalcTransform(transform);
      winRep->PostMultiply(&transform);
   } else {
-     winRep->ClearTransformStack3();
      Transform3D transform;
      CalcTransform(transform);
-     // winRep->PostMultiply(&transform);
   }
 }
 
@@ -1499,10 +1496,10 @@ inline void FindRealCoord(WindowRep *winRep, Coord xlow, Coord ylow,
   Coord xl,yl, xh, yh;
   winRep->Transform(xlow, ylow, xl, yl);
   winRep->Transform(xhigh, yhigh, xh, yh);
-  txlow = (int)MinMax::min(xl, xh);
-  txhigh = (int)MinMax::max(xl, xh);
-  tylow = (int)MinMax::min(yl, yh);
-  tyhigh = (int)MinMax::max(yl,yh);
+  txlow = (int)MIN(xl, xh);
+  txhigh = (int)MAX(xl, xh);
+  tylow = (int)MIN(yl, yh);
+  tyhigh = (int)MAX(yl,yh);
 }
 
 /* Update filter by scrolling.
@@ -1880,10 +1877,10 @@ void View::DoDrawCursors()
     cursor->GetVisualFilter(filter, color);
 
     Coord xLow, yLow, xHigh, yHigh;
-    xLow = MinMax::max(_filter.xLow, filter->xLow);
-    xHigh = MinMax::min(_filter.xHigh, filter->xHigh);
-    yLow = MinMax::max(_filter.yLow, filter->yLow);
-    yHigh = MinMax::min(_filter.yHigh, filter->yHigh);
+    xLow = MAX(_filter.xLow, filter->xLow);
+    xHigh = MIN(_filter.xHigh, filter->xHigh);
+    yLow = MAX(_filter.yLow, filter->yLow);
+    yHigh = MIN(_filter.yHigh, filter->yHigh);
 
     if ((filter->flag & VISUAL_X) && (filter->flag & VISUAL_Y)) {
 #ifdef DEBUG
@@ -2511,9 +2508,6 @@ void View::SetCamera(Camera new_camera)
 
 void View::SetViewDir(int H, int V)
 {
-  if (_camera.H != H || _camera.V != V) {
-    _camera.H = H;
-    _camera.V = V;
-  }
+  _camera.H = H;
+  _camera.V = V;
 }
-
