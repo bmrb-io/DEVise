@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/11/10 18:49:48  jussi
+  Initial revision.
+*/
 
 // File containing routine that extracts a security from a CRSP tape
 
@@ -108,7 +111,7 @@ int crsp_create(char *tapeDrive, char *tapeFile, char *tapeBsize,
 	cerr << "Cannot create file " << argv[spos_arr[i] + 1] << endl;
 	perror("create");
       } else {
-	// outfile << s.print;
+	s.print_security(outfile);
 	outfile.close();
       }
     }
