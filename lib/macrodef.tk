@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.77  1997/03/20 20:46:06  donjerko
+#	DTE Tdata generates unique names by appending sequential numbers to the
+#	end of the table name. This way, same table can be opened multiple times.
+#
 #	Revision 1.76  1997/03/06 02:37:43  donjerko
 #	Added window to create StandardTable
 #
@@ -525,7 +529,7 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
 
        set sourcedef [OpenDataSource $sname]
 
-	   puts "OpenDataSource returns: $sourcedef"
+	puts "OpenDataSource returns: $sourcedef"
         if {$sourcedef == ""} {
             return ""
         }
@@ -555,43 +559,40 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
         # way of checking is to see that we have no groups defined under the 
         # logical schema name
 
-	   if { [isDTEType $stype] } {
-			set schema $sname
- 			set result [DEVise dteImportFileType $sname]
-			set topgrps [DEVise getTopGroups $sname]
-   		} else {
-        set topgrps [DEVise getTopGroups [file tail $schemafile]]
-        if {[llength $topgrps] == 0} {
+	if { [isDTEType $stype] } {
+		set schema $sname
+ 		set result [DEVise dteImportFileType $sname]
+		set topgrps [DEVise getTopGroups $sname]
+   	} else {
+          	set topgrps [DEVise getTopGroups [file tail $schemafile]]
+        	if {[llength $topgrps] == 0} {
 
-	   	  puts "list topgrps is empty"
+	   	    puts "list topgrps is empty"
 
-            if {![file readable $schemafile]} {
-                dialog .schemaError "Schema Not Found" \
-                        "Cannot open schema $schemafile" "" 0 OK
-                return ""
-            }
+            	    if {![file readable $schemafile]} {
+                	dialog .schemaError "Schema Not Found" \
+                          "Cannot open schema $schemafile" "" 0 OK
+                	return ""
+            	    }
 			# Send the file type UNIXFILE etc.. 
 			# followed by schemaFile Name
 			# followed by the dataFile name (param)
 			
-			puts "before import file"
-
 			# this call appears to parse the schema ??? DD
 			#
-            	set result [DEVise importFileType $stype $schemafile $param]
+            	    set result [DEVise importFileType $stype $schemafile $param]
 			#set result $schema
-			puts "after import file"
             
-			if {$result == ""} {
-                return ""
-            }
-            if {$result != $schema} {
-                puts "File $schemafile appears to contain schema $result,\
-                        not $schema"
-                set schema $result
-            }
-        }
-	   puts "before creating tdata"
+		    if {$result == ""} {
+                	return ""
+                    }
+            	    if {$result != $schema} {
+                	puts "File $schemafile appears to contain schema $result,\
+                        	not $schema"
+                	set schema $result
+            	    }
+                }
+	}
 
         statusWindow .info "Status" \
                 "Creating an index on \"$sname\".\n\n\This may take a while."
@@ -601,8 +602,6 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
 	   puts "creating UNIXFILE tdata $schema $sname $stype $param"
         set result [DEVise create tdata $schema $sname $stype $param]
 
-	   puts "after creating tdata"
-
         catch {destroy .info}
 
         if {$result == ""} {
@@ -610,14 +609,13 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
                     "Cannot open data stream $sname" "" 0 OK
             return ""
         }
-	   }
-
     }
-	if { [isDTEType $stype] } {
-		return [list [lindex $snames 0] $sname 1]
-	} else {
-		return [list [lindex $snames 0] [file tail $schemafile] 0]
-	}
+
+    if { [isDTEType $stype] } {
+	return [list [lindex $snames 0] $sname]
+    } else {
+	return [list [lindex $snames 0] [file tail $schemafile]]
+    }
 }
 
 ############################################################
@@ -813,8 +811,8 @@ proc MacroImport {mode derivedOnly} {
     if {$mode && $derivedOnly} {
 	StatText $tdata $schemafile
     } else {
-#    set schemaname [file tail $schemafile]
-	MacroDefAuto $tdata $schemaname $is_dte_type
+        set schemaname [file tail $schemafile]
+	MacroDefAuto $tdata $schemaname
     }
 }
 
@@ -914,8 +912,7 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
 	return
     }
 	
-	puts "In MacroDefAuto($tdata, $schemaname)"
-
+    set schema [DEVise getSchema $tdata]
 #   set schemaname [file tail $schemafile]
 	
     set topgrp [SelectTopGroup $schemaname]
@@ -1089,6 +1086,7 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
 	    "" 0 OK
 	   return
 	}
+
 	foreach yname [array names yvar] {
 	    if {$yvar($yname) > 0} {
 		set cancel 0
@@ -1121,8 +1119,8 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
 	}
     }
     
-    puts "The value of x is $x"
-    puts "The ylist is $ylist"
+#    puts "The value of x is $x"
+#    puts "The ylist is $ylist"
     
     if {$is_dte_type} {
 	    set result [DEVise create tdata $tdata $tdata "$x $ylist"]
@@ -1137,11 +1135,16 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
 proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
                          titlesel xaxissel yaxissel x ylist
                          newgdata} {
+
+#    puts "In MacroDefAutoActual $tdata $viewsel $linksel $window $bgcolor
+#		$titlesel $xaxissel $yaxissel $x $ylist $newgdata"
     global viewDefault DEViseShapes
 
     set pos ""
     set subder ""
     set vname ""
+    set tdata [string trimleft $tdata "{"]
+    set tdata [string trimright $tdata "}"]
     set pos [string first : $tdata]
     if {$pos > 0} {
         set subder [string range  $tdata 0 [expr $pos-1]]
@@ -1151,6 +1154,7 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
     } 
 
     set schema [DEVise getSchema $tdata]
+    puts "In MacroDefAutoActual, schema = $schema"
 
     set colorAttr ""
     set sortedx 0
@@ -1206,7 +1210,7 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
         set xhi [expr $xhi + 1]
     }
 
-    # puts "Mapping will have xlo $xlo and xhi $xhi"
+    #puts "Mapping will have xlo $xlo and xhi $xhi"
     if {$sortedx > 0} {
         set sortedx SortedX
     } else {
@@ -1245,9 +1249,24 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
         set shapeAttr1 1
     }
 
+    puts "schema=$schema"
     foreach attr $schema {
         set name [lindex $attr 0]
-        if {[lsearch $ylist $name] < 0} { continue }
+	set clean_name ""
+	if { [string first "max(" $name ] > 0 } {
+	     set clean_name "Max"
+	} elseif { [string first "min(" $name] > 0} {
+	     set clean_name "Min"
+	} elseif { [string first "avg(" $name] > 0} {
+	     set clean_name "Avg"
+	} elseif { [string first "count(" $name] > 0} {
+	     set clean_name "Count"
+	} elseif { [string first "sum(" $name] > 0} {
+	     set clean_name "Sum"
+	} else {
+	     set clean_name $name
+	}
+        if {[lsearch $ylist $clean_name] < 0} { continue }
 
         set type [lindex $attr 1]
         set sorted [lindex $attr 2]
@@ -1300,32 +1319,39 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
             set yhi [expr $yhi + 1]
         }
 
-        # puts "Mapping will have ylo $ylo and yhi $yhi"
+        #puts "Mapping will have ylo $ylo and yhi $yhi"
 	
-        if {$subder == "Stat" || $subder == "Gstat"} {
-            if {$name=="Max"} {
-                 set shapeAttr0 0.1
+        if {$subder == "Stat" || $subder == "GstatX" || $subder == "GstatY"} {
+            if {$clean_name=="Max"} {
+                 set shapeAttr0 0.2
             }
-            if {$name=="Mean"} {
-                 set shapeAttr0 0.5
+            if {$clean_name=="Avg" || $clean_name=="Mean"} {
+                 set shapeAttr0 0.2
             }
-            if {$name=="Min"||$name=="Count"} {
-                 set shapeAttr0 1
+            if {$clean_name=="Min"||$clean_name=="Count"} {
+                 set shapeAttr0 0.2
             }
-    	} elseif {$subder == "Hist"} {
-	    set shape [findNumericCaseValue $DEViseShapes {Line Shade}]
+#	    if {$subder == "GstatX" || $subder == "GstatY"} { 
+#		set shape [findNumericCaseValue $DEViseShapes {Line Shade}] }
+	    if {$subder == "Stat" } { 
+		if {$clean_name=="Min"||$clean_name=="Max"||$clean_name=="Avg"} {
+			set shape [findNumericCaseValue $DEViseShapes {RectX}] 
+		}
+	    }
+    	} elseif {$subder == "Hist"  } {
+	    set shape [findNumericCaseValue $DEViseShapes {Bar}]
         }
-
-	
 
         # ask DEVise to create view instance
         set sorted $sortedx
 #TEMPTEMP?        set viewbasename "View"
         set viewbasename "View 1"
 
-	set mmm_list {Max Mean Min}	
-	set stat_list {Stat Gstat}
-	if {[lsearch $stat_list $subder] < 0 || !$view_exist || [lsearch $mmm_list $name] < 0} {
+	set mmm_list {Max Mean Avg Min}	
+	set stat_list {Stat GstatX GstatY}
+
+	if {[lsearch $stat_list $subder] < 0 || !$view_exist 
+		|| [lsearch $mmm_list $clean_name] < 0} {
 	    set viewinstance [UniqueName $viewbasename]
 	    if {[lsearch [ViewSet] $viewinstance] >= 0} {
 		dialog .viewError "View Error" \
@@ -1339,7 +1365,8 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
 			"Error creating view $viewinstance" "" 0 OK
 		return
 	    }
-	    if {$name == "Max" || $name == "Mean" || $name == "Min" } {
+	    if {$clean_name == "Max" || $clean_name == "Mean" || $clean_name == "Avg"
+			|| $clean_name == "Min" } {
 		set view_exist 1 
 	    	set mmm_view $viewinstance 
 	    }
@@ -1348,8 +1375,9 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
 	}
 	     
         # ask DEVise to turn on/off label
-	if {$subder == "Stat" || $subder == "Gstat"} {
-	    if {$name == "Max" || $name == "Mean" || $name == "Min"} {
+	if {$subder == "Stat" || $subder == "GstatX" || $subder == "GstatY"} {
+	    if {$clean_name == "Max" || $clean_name == "Mean" || $clean_name == "Avg" 
+			|| $clean_name == "Min"} {
 		if {$mmmtext==""} {
 		    set titletext "$name vs. $x"
 		    set mmmtext $titletext
@@ -1389,6 +1417,12 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
         if {$colorAttr != ""} {
             set mapColor \$$colorAttr
         }
+#	if {$subder == "Stat" && $clean_name == "Max"} {
+#	    set mapColor \$$colorAttr\+1
+#	}
+#	if {$subder == "Stat" && $clean_name == "Avg"} {
+#	    set mapColor \$$colorAttr\+2
+#	}
 
         set mapname [format "%s_vs_%s" $name $x]
 
@@ -1428,6 +1462,6 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
         DEVise insertViewHistory $viewinstance $xlo $ylo $xhi $yhi 0
 
         ProcessViewSelected $viewinstance
-        incr color
+        if {$colorAttr == ""} { incr color }
     }
 }
