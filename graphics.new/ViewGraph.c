@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.54  1997/04/30 21:45:40  wenger
+  Fixed non-constant strings in complex mappings bug; TDataAsciiInterp
+  no longer gives warning message on blank data lines; added makefile
+  targets to make a Purify'd version of multi; fixed uninitialized memory
+  read in the DList code; fixed bug that caused 1.4 version of multi to
+  always crash; better error messages in DTE command parser; version is
+  now 1.4.4.
+
   Revision 1.53  1997/04/21 23:01:29  guangshu
   Considered various cases of statistics, esp date type.
 
@@ -241,6 +249,8 @@
 
 #include "MappingInterp.h"
 
+#define STEP_SIZE 20
+
 ImplementDList(GStatList, double)
 
 ViewGraph::ViewGraph(char *name, VisualFilter &initFilter, 
@@ -287,6 +297,16 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
 
     _gstatInMem = true;
     histViewName = NULL;
+
+    _homeInfo.mode = HomeAuto;
+    _homeInfo.autoXMargin = 0.0;
+    _homeInfo.autoYMargin = 0.0;
+    //_homeInfo.autoXMargin = 10.0;//TEMPTEMP
+    //_homeInfo.autoYMargin = 100.0;//TEMPTEMP
+
+    _horPanInfo.mode = PanModeRelative;
+    _horPanInfo.relPan = 0.5;
+    //_horPanInfo.relPan = 0.1;//TEMPTEMP
 }
 
 ViewGraph::~ViewGraph()
@@ -449,7 +469,7 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
 #endif
 //    	PrepareStatsBuffer(map);
 //    }
-//    UpdateAutoScale();
+//    GoHome();
 
     Refresh();
 }
@@ -542,10 +562,10 @@ void ViewGraph::DrawLegend()
     win->PopTransform();
 }
 
-void ViewGraph::UpdateAutoScale()
+void ViewGraph::GoHome()
 {
 #if defined(DEBUG)
-    printf("ViewGraph::UpdateAutoScale()\n");
+    printf("ViewGraph::GoHome()\n");
 #endif
 
     /* show all data records in view i.e. set filter to use the
@@ -567,29 +587,57 @@ void ViewGraph::UpdateAutoScale()
     if (GetNumDimensions() == 2) {
         VisualFilter filter;
         GetVisualFilter(filter);
-        if (xAttr) {
-            if (xAttr->hasHiVal)
-              filter.xHigh = AttrList::GetVal(&xAttr->hiVal, xAttr->type);
-            if (xAttr->hasLoVal)
-              filter.xLow = AttrList::GetVal(&xAttr->loVal, xAttr->type);
-            if (filter.xHigh == filter.xLow) {
-                filter.xHigh += 1.0;
-                filter.xLow -= 1.0;
-            }
-        }
-        if (yAttr) {
-            if (yAttr->hasHiVal)
-              filter.yHigh = AttrList::GetVal(&yAttr->hiVal, yAttr->type);
-            if (yAttr->hasLoVal)
-              filter.yLow = AttrList::GetVal(&yAttr->loVal, yAttr->type);
-            if (filter.yHigh == filter.yLow) {
-                filter.yHigh += 1.0;
-                filter.yLow -= 1.0;
-            }
-        }
-        if (!IsScatterPlot()) {
-          filter.yLow = MIN(filter.yLow, 0.0);
+
+	switch (_homeInfo.mode) {
+	case HomeAuto: {
+          if (xAttr) {
+              if (xAttr->hasLoVal)
+                filter.xLow = AttrList::GetVal(&xAttr->loVal, xAttr->type) -
+		  _homeInfo.autoXMargin;
+              if (xAttr->hasHiVal)
+                filter.xHigh = AttrList::GetVal(&xAttr->hiVal, xAttr->type) +
+		  _homeInfo.autoXMargin;
+
+              if (filter.xHigh == filter.xLow) {
+                  filter.xHigh += 1.0;
+                  filter.xLow -= 1.0;
+              }
+          }
+          if (yAttr) {
+              if (yAttr->hasLoVal)
+                filter.yLow = AttrList::GetVal(&yAttr->loVal, yAttr->type) -
+		  _homeInfo.autoYMargin;
+              if (yAttr->hasHiVal)
+                filter.yHigh = AttrList::GetVal(&yAttr->hiVal, yAttr->type) +
+		  _homeInfo.autoYMargin;
+
+              if (filter.yHigh == filter.yLow) {
+                  filter.yLow -= 1.0;
+                  filter.yHigh += 1.0;
+              }
+          }
+          if (!IsScatterPlot()) {
+            filter.yLow = MIN(filter.yLow, 0.0);
+	  }
+
+	  break;
 	}
+
+	case HomeManual: {
+	  filter.xLow = _homeInfo.manXLo;
+	  filter.xHigh = _homeInfo.manXHi;
+	  filter.yLow = _homeInfo.manYLo;
+	  filter.yHigh = _homeInfo.manYHi;
+	  break;
+	}
+
+	default:
+	  DOASSERT(false, "Bad home mode");
+	  return;
+	  break;
+
+	}
+
         SetVisualFilter(filter);
     } else {
         Camera c = GetCamera();
@@ -614,6 +662,74 @@ void ViewGraph::UpdateAutoScale()
     }
 
     DoneMappingIterator(index);
+}
+
+void ViewGraph::PanLeftOrRight(PanDirection direction)
+{
+#if defined(DEBUG)
+  printf("ViewGraph(0x%p)::PanLeftOrRight(%d)\n", this, (int) direction);
+#endif
+
+    int panFactor;
+
+    switch(direction) {
+    case PanDirLeft:
+      panFactor = -1;
+      break;
+
+    case PanDirRight:
+      panFactor = 1;
+      break;
+
+    default:
+      DOASSERT(false, "Illegal pan direction");
+      return;
+      break;
+    }
+
+    if (GetNumDimensions() == 2) {
+      VisualFilter filter;
+      GetVisualFilter(filter);
+      Coord width = filter.xHigh - filter.xLow;
+
+      Coord panDist;
+      switch (_horPanInfo.mode) {
+      case PanModeRelative:
+        panDist = (filter.xHigh - filter.xLow) * _horPanInfo.relPan;
+	break;
+
+      case PanModeAbsolute:
+	panDist = _horPanInfo.absPan;
+	break;
+
+      default:
+	DOASSERT(false, "Bad pan mode");
+	return;
+	break;
+      }
+
+      filter.xLow += panFactor * panDist;
+      filter.xHigh = filter.xLow + width;
+      SetVisualFilter(filter);
+    } else { 
+      Camera camera = GetCamera();
+      double incr_ = 0.0;
+      if (!camera.spherical_coord) {
+	/* when further away, it will move faster */
+	incr_ = fabs(camera.x_ / STEP_SIZE);
+	if (incr_ < 0.1)
+	  incr_ = 0.1;
+	camera.x_ += panFactor * incr_;
+	if (!camera.fix_focus)
+	  camera.fx += panFactor * incr_;
+      } else {
+	incr_ = M_PI / STEP_SIZE;
+	camera._theta += panFactor * incr_;
+      }
+      SetCamera(camera);
+    }
+
+    return;
 }
 
 void ViewGraph::WriteMasterLink(RecId start, int num)

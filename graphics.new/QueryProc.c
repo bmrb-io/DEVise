@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/05/28 15:39:26  wenger
+  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+
   Revision 1.9.8.1  1997/05/20 16:11:12  ssl
   Added layout manager to DEVise
 
@@ -104,7 +107,7 @@ void QueryProc::RefreshTData(TData *tdata)
             vg->AbortQuery();
             vg->Refresh();
             if (vg->GetAutoScale())
-              vg->UpdateAutoScale();
+              vg->GoHome();
         }
     }
     View::DoneViewIterator(index);

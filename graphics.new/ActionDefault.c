@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/02/26 16:31:21  wenger
+  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+
   Revision 1.26.4.2  1997/02/14 23:29:12  wenger
   Fixed off-by-one-hour error in YyDdd_HhMmComposite composite parser;
   fixed another bug in point queries.
@@ -199,7 +202,7 @@ void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
       case DeviseKey::KP_5:
       case DeviseKey::BEGIN:
       case DeviseKey::KP_BEGIN: {
-	  view->UpdateAutoScale();
+	  view->GoHome();
 	  break;
       }
       default: {

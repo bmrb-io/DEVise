@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.64  1997/05/28 15:39:25  wenger
+  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+
   Revision 1.63.4.1  1997/05/20 16:11:11  ssl
   Added layout manager to DEVise
 
@@ -1635,6 +1638,44 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, result);
       return 1;
     }
+    if (!strcmp(argv[0], "viewGetHome")) {
+      // Arguments: <viewName>
+      // Returns: <mode> <autoXMargin> <autoYMargin> <manXLo> <manYLo>
+      // <manXHi> <manYHi>
+#if defined(DEBUG)
+      printf("viewGetHome <%s>\n", argv[1]);
+#endif
+      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+      if (!view) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      ViewHomeInfo info;
+      view->GetHomeInfo(info);
+      char buf[100];
+      sprintf(buf, "%d %f %f %f %f %f %f", (int) info.mode, info.autoXMargin,
+	info.autoYMargin, info.manXLo, info.manYLo, info.manXHi, info.manYHi);
+      control->ReturnVal(API_ACK, buf);
+      return 1;
+    }
+    if (!strcmp(argv[0], "viewGetHorPan")) {
+      // Arguments: <viewName>
+      // Returns: <mode> <relativePan> <absolutePan>
+#if defined(DEBUG)
+      printf("viewGetHorPan <%s>\n", argv[1]);
+#endif
+      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+      if (!view) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      ViewPanInfo info;
+      view->GetHorPanInfo(info);
+      char buf[100];
+      sprintf(buf, "%d %f %f", (int) info.mode, info.relPan, info.absPan);
+      control->ReturnVal(API_ACK, buf);
+      return 1;
+    }
   }
   if (argc == 3) {
 
@@ -2394,6 +2435,25 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
+    if (!strcmp(argv[0], "viewSetHorPan")) {
+      // Arguments: <viewName> <mode> <relativePan> <absolutePan>
+#if defined(DEBUG)
+      printf("viewSetHorPan <%s> <%s> <%s> <%s>\n", argv[1], argv[2], argv[3],
+	argv[4]);
+#endif
+      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+      if (!view) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      ViewPanInfo info;
+      info.mode = (ViewPanMode) atoi(argv[2]);
+      info.relPan = atof(argv[3]);
+      info.absPan = atof(argv[4]);
+      view->SetHorPanInfo(info);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
   }
 
   if (argc == 6) {
@@ -2508,8 +2568,36 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       return 1;
     }
   }
+ 
+  if (argc == 9) {
+    if (!strcmp(argv[0], "viewSetHome")) {
+      // Arguments: <viewName> <mode> <autoXMargin> <autoYMargin> <manXLo>
+      // <manYLo> <manXHi> <manYHi>
+#if defined(DEBUG)
+      printf("viewSetHome <%s> <%s> <%s> <%s> <%s> <%s> <%s> <%s>\n", argv[1],
+	argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8]);
+#endif
+      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+      if (!view) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      ViewHomeInfo info;
+      info.mode = (ViewHomeMode) atoi(argv[2]);
+      info.autoXMargin = atof(argv[3]);
+      info.autoYMargin = atof(argv[4]);
+      info.manXLo = atof(argv[5]);
+      info.manYLo = atof(argv[6]);
+      info.manXHi = atof(argv[7]);
+      info.manYHi = atof(argv[8]);
+      view->SetHomeInfo(info);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+  }
 
-  fprintf(stderr, "Unrecognized command: %s\n", argv[0]);
+  fprintf(stderr, "Unrecognized command or wrong number of args: %s\n",
+    argv[0]);
   fprintf(stderr, "argc = %d\n", argc);
   control->ReturnVal(API_NAK, "Unrecognized command");
   return -1;

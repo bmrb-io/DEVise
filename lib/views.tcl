@@ -15,6 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.35  1997/04/21 23:11:57  guangshu
+#    1. Make statistics deal with different DATE types.
+#    2. Make Aggregates on TData and GData.
+#    3. Change Max Avg Min to be HighLow shape
+#    4. Improved title.
+#    5. etc.
+#
 #  Revision 1.34  1997/03/22 00:00:14  guangshu
 #  Monor fix.
 #
@@ -431,6 +438,9 @@ proc DoActualViewCopy {view tdata gdata newGdata window} {
     eval DEVise setAxisDisplay {$newView} X $stat
     set stat [DEVise getAxisDisplay $view Y]
     eval DEVise setAxisDisplay {$newView} Y $stat
+
+    eval DEVise viewSetHome {$newView} [DEVise viewGetHome $view]
+    eval DEVise viewSetHorPan {$newView} [DEVise viewGetHorPan $view]
 	
     DEVise insertWindow $newView $window
     DEVise insertMapping $newView $newGdata

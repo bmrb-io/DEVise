@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/01/23 17:40:27  jussi
+  Removed references to GetXMin().
+
   Revision 1.18  1996/12/12 22:01:55  jussi
   Updated to use Dispatcher::Terminate().
 
@@ -169,30 +172,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
   case DeviseKey::LEFT:
   case DeviseKey::KP_LEFT: {
     /* pan left - scroll data right */
-    if (view->GetNumDimensions() == 2) {
-      view->GetVisualFilter(filter);
-      Coord width = filter.xHigh - filter.xLow;
-      Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
-      filter.xLow -= halfWidth;
-      filter.xHigh = filter.xLow + width;
-      view->SetVisualFilter(filter);
-    } else {
-      Camera camera = view->GetCamera();
-      double incr_ = 0.0;
-      if (!camera.spherical_coord) {
-	/* when further away, it will move faster */
-	incr_ = fabs(camera.x_ / STEP_SIZE);
-	if (incr_ < 0.1)
-	  incr_ = 0.1;
-	camera.x_ -= incr_;
-	if (!camera.fix_focus)
-	  camera.fx -= incr_;
-      } else {
-	incr_ = M_PI / STEP_SIZE;
-	camera._theta -= incr_;
-      }
-      view->SetCamera(camera);
-    }
+    view->PanLeftOrRight(PanDirLeft);
     break;
   }
   case '<':
@@ -202,30 +182,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
   case DeviseKey::RIGHT:
   case DeviseKey::KP_RIGHT: {
     /* pan right - scroll data left */
-    if (view->GetNumDimensions() == 2) {
-      view->GetVisualFilter(filter);
-      Coord width = filter.xHigh - filter.xLow;
-      Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
-      filter.xLow += halfWidth;
-      filter.xHigh = filter.xLow + width;
-      view->SetVisualFilter(filter);
-    } else { 
-      Camera camera = view->GetCamera();
-      double incr_ = 0.0;
-      if (!camera.spherical_coord) {
-	/* when further away, it will move faster */
-	incr_ = fabs(camera.x_ / STEP_SIZE);
-	if (incr_ < 0.1)
-	  incr_ = 0.1;
-	camera.x_ += incr_;
-	if (!camera.fix_focus)
-	  camera.fx += incr_;
-      } else {
-	incr_ = M_PI / STEP_SIZE;
-	camera._theta += incr_;
-      }
-      view->SetCamera(camera);
-    }
+    view->PanLeftOrRight(PanDirRight);
     break;
   }
   case '2':

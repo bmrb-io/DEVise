@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.36  1997/04/30 18:27:24  wenger
+#  Added session text description capability.
+#
 #  Revision 1.35  1997/04/29 14:34:50  wenger
 #  User interface improvments: Quit and Close don't ask for confirmation
 #  if there is no session open; the file selection box gives better info
@@ -929,6 +932,11 @@ proc SaveViews { fileId viewDictRef asBatchScript } {
 	    puts $fileId "DEVise setFont $viewName {x axis} $font"
 	    set font [DEVise getFont $inst "y axis"]
 	    puts $fileId "DEVise setFont $viewName {y axis} $font"
+
+	    set homeInfo [DEVise viewGetHome $inst]
+	    puts $fileId "DEVise viewSetHome $viewName $homeInfo"
+	    set horPanInfo [DEVise viewGetHorPan $inst]
+	    puts $fileId "DEVise viewSetHorPan $viewName $horPanInfo"
 
 	    set viewDict [DictInsert $viewDict $inst $viewVar]
 	    incr viewNum

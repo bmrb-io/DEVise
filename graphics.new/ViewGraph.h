@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1997/04/21 23:01:56  guangshu
+  Small changes.
+
   Revision 1.34  1997/04/03 16:36:48  wenger
   Reduced memory and CPU usage in statistics; fixed a memory leak in the
   statistics code; switched devised back to listening on port 6100
@@ -198,6 +201,39 @@ struct MappingInfo {
   char *label;
 };
 
+enum PanDirection {
+  PanDirInvalid = 0,
+  PanDirLeft,
+  PanDirRight
+};
+
+enum ViewHomeMode {
+  HomeInvalid = 0,
+  HomeAuto,
+  HomeManual
+};
+
+struct ViewHomeInfo {
+  ViewHomeMode mode;
+  Coord autoXMargin, autoYMargin;
+  //TEMPTEMP -- should the following be in a union?
+  Coord manXLo, manYLo;	// data units
+  Coord manXHi, manYHi;	// data units
+};
+
+enum ViewPanMode {
+  PanModeInvalid = 0,
+  PanModeRelative,
+  PanModeAbsolute
+};
+
+struct ViewPanInfo {
+  ViewPanMode mode;
+  //TEMPTEMP -- should the following be in a union?
+  Coord relPan;	// fraction of view width
+  Coord absPan;	// data units
+};
+
 DefinePtrDList(MappingInfoList, MappingInfo *);
 DefinePtrDList(RecordLinkList, RecordLink *);
 
@@ -268,13 +304,22 @@ public:
   virtual void DrawLegend();
 
   /* Update automatic scaling information */
-  virtual void UpdateAutoScale();
   virtual void SetAutoScale(Boolean autoScale) { _autoScale = autoScale; }
   virtual Boolean GetAutoScale() { return _autoScale; }
   virtual Boolean IsGStatInMem() { return _gstatInMem; }
   virtual void ResetGStatInMem() { _gstatInMem = true; }
   virtual Boolean IsXDateType();
   virtual Boolean IsYDateType();
+
+  /* Update visual filter in various ways. */
+  virtual void GoHome();
+  virtual void PanLeftOrRight(PanDirection direction);
+
+  /* Get and set the home and panning info. */
+  virtual void GetHomeInfo(ViewHomeInfo &info) { info = _homeInfo; }
+  virtual void SetHomeInfo(const ViewHomeInfo &info) { _homeInfo = info; }
+  virtual void GetHorPanInfo(ViewPanInfo &info) { info = _horPanInfo; }
+  virtual void SetHorPanInfo(const ViewPanInfo &info) { _horPanInfo = info; }
 
   /* Toggle the value of DisplayStats */
   char *GetDisplayStats() { return _DisplayStats; }
@@ -376,6 +421,9 @@ public:
   /* Handle pop-up */
   virtual Boolean HandlePopUp(WindowRep *, int x, int y, int button,
 			      char **&msgs, int &numMsgs);
+
+  ViewHomeInfo _homeInfo;
+  ViewPanInfo _horPanInfo;
 };
 
 #endif
