@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/11/23 21:23:30  donjerko
+  Added ODBC stuff.
+
   Revision 1.10  1997/11/20 05:30:42  okan
   *** empty log message ***
 
@@ -59,8 +62,8 @@
 
 //#include <stdlib.h>   erased for sysdep.h
 //#include <unistd.h>   erased for sysdep.h
+//#include <iostream.h>  erased for sysdep.h 
 #include "sysdep.h"
-#include <iostream.h>
 #include <string>
 // #include <netdb.h>
 //#include "machdep.h"	// Could be removed in standalone case
@@ -156,15 +159,21 @@ Cor_sockbuf::Cor_sockbuf(unsigned short _port)
 Cor_sockbuf::~Cor_sockbuf()
 {
     close();
+    delete _buffer;
 }
 
 // *************************************************************************
 void Cor_sockbuf::init()
 {
     _socketfd = -1;
+    _buffer = NULL;
     get_buffer_size = 4096;
     put_buffer_size = 1024;
+#if defined(__GNUG__)
     allocate();
+#else
+    doallocate();
+#endif
 }
 
 // *************************************************************************
@@ -278,7 +287,10 @@ int Cor_sockbuf::doallocate()
     if( cp == NULL ) {
         return(EOF);
     }
-    setb(cp, cp + buffer_size, 1);
+    _buffer = cp;
+#if defined(__GNUG__)
+    setb(cp, cp + buffer_size, 0);
+#endif
 
         // Get buffer is empty
     setg(cp, cp, cp-1);
@@ -394,4 +406,4 @@ int Cor_sockbuf::more()
 }
 #endif    
 // *************************************************************************
-    
+

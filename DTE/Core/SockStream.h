@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/11/23 21:23:30  donjerko
+  Added ODBC stuff.
+
   Revision 1.6  1997/09/05 22:56:08  donjerko
   *** empty log message ***
 
@@ -127,6 +130,7 @@ class Cor_sockbuf : public streambuf {
     char  host[HOSTNAME_LENGTH];
     unsigned short port;         
 
+    char* _buffer;
     int get_buffer_size;
     int put_buffer_size;
 
