@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1996/05/31 19:14:30  jussi
+#  Fixed calls to DEVise removeView; there is no return value from
+#  the call.
+#
 #  Revision 1.7  1996/05/11 03:01:13  jussi
 #  Minor fix in DoActualCreateWindow.
 #
@@ -222,6 +226,7 @@ proc DupWindow {} {
 	    }
 	}
 
+        # set view statistics and axes
 	set viewLabelParams [DEVise getLabel $view]
 	eval DEVise setLabel {$newView} $viewLabelParams
 	set viewStatParams [DEVise getViewStatistics $view]
@@ -231,6 +236,12 @@ proc DupWindow {} {
 	set stat [DEVise getAxisDisplay $view Y]
 	eval DEVise setAxisDisplay {$newView} Y $stat
 	
+        # set 2D/3D and camera location
+        set numDim [DEVise getViewDimensions $view]
+        eval DEVise setViewDimensions {$newView} $numDim
+	set camera [DEVise get3DLocation $view]
+        eval DEVise set3DLocation {$newView} [lrange $camera 1 6]
+
 	DEVise insertWindow $newView $newWin
 
 	set maps [DEVise getViewMappings $view]
