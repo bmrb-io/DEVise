@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/08/29 22:00:50  guangshu
+  Added functions OpenDataChannel and getFd for DEVise Server to open
+  data channel and get the fd of that socket.
+
   Revision 1.15  1996/08/07 19:25:32  jussi
   Added methods which allow query processor to control when
   a synchronization message is sent to client.
@@ -124,9 +128,7 @@ public:
 
   /* Start/restart session */
   virtual void StartSession() {}
-  virtual void DestroySessionData() { _batchMode = false;
-                                      _syncNotify = false;
-                                      _syncAllowed = false; }
+  virtual void DestroySessionData();
   virtual void RestartSession() {}
 
   /* Get/set batch mode */
