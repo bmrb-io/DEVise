@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/14 21:17:02  jussi
+  *** empty log message ***
+
   Revision 1.6  1995/12/14 17:57:45  jussi
   *** empty log message ***
 
@@ -59,7 +62,8 @@ Initializer
 
 GDataBin::GDataBin()
 {
-  for(int i = 0; i < GDATA_BIN_MAX_PIXELS; i++)
+  int i;
+  for(i = 0; i < GDATA_BIN_MAX_PIXELS; i++)
     _timestamp[i] = 0;
   _iteration = 1;
   _returnIndex = 0;
@@ -151,7 +155,8 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
 
   /* Eliminate overlap here */
 
-  for(int i = startIndex; i < numRecs; i += incr) {
+  int i;
+  for(i = startIndex; i < numRecs; i += incr) {
 
     GDataBinRec *sym = (GDataBinRec *)ptr;
 

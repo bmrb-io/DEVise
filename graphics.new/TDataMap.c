@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/14 15:41:24  jussi
+  Added some debugging statements.
+
   Revision 1.4  1995/11/28 00:08:01  jussi
   Replaced constant RectShapeID with 0.
 
@@ -108,7 +111,7 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
 
   _numShapeAttr = MAX_MAPPING_SHAPE_ATTRS;
   _shapeAttrs = new Coord[MAX_MAPPING_SHAPE_ATTRS];
-  for (int i = 0; i < MAX_MAPPING_SHAPE_ATTRS; i++)
+  for(unsigned int i = 0; i < MAX_MAPPING_SHAPE_ATTRS; i++)
     _shapeAttrs[i] = 0.1;
   
   _boundWidth = 9.0; _boundHeight = 9.0;
@@ -291,7 +294,7 @@ RecId TDataMap::GetFocusId() { return _focusId; }
 
 void TDataMap::SetDefaultShapeAttr(int attrNum, Coord shapeAttr)
 {
-  if (attrNum < 0 || attrNum >= MAX_MAPPING_SHAPE_ATTRS) {
+  if (attrNum < 0 || attrNum >= (int)MAX_MAPPING_SHAPE_ATTRS) {
     fprintf(stderr,"Mapping::SetDefaultShapeAttr: attrNum %d\n",
 	    attrNum);
     Exit::DoExit(1);
@@ -302,7 +305,7 @@ void TDataMap::SetDefaultShapeAttr(int attrNum, Coord shapeAttr)
 void TDataMap::SetDefaultShape(ShapeID shapeID, int numAttr,
 			       ShapeAttr *shapeAttr)
 {
-  if (numAttr > MAX_MAPPING_SHAPE_ATTRS) {
+  if (numAttr > (int)MAX_MAPPING_SHAPE_ATTRS) {
     fprintf(stderr,"Mapping::SetDefaultShape: too many attrs %d\n",
 	    numAttr);
     Exit::DoExit(1);

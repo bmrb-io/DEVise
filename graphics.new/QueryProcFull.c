@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/14 21:18:17  jussi
+  Replaced 0x%x with 0x%p.
+
   Revision 1.4  1995/12/14 17:51:27  jussi
   Small fixes to get rid of g++ -Wall warnings.
 
@@ -273,7 +276,8 @@ void QueryProcFull::AbortQuery(TDataMap *map, QueryCallback *callback)
 
 void QueryProcFull::ClearQueries()
 {
-  for(int index = _queries->InitIterator(); _queries->More(index);) {
+  int index;
+  for(index = _queries->InitIterator(); _queries->More(index);) {
     QPFullData *qd = _queries->Next(index);
     _queries->DeleteCurrent(index);
     FreeEntry(qd);
@@ -287,7 +291,8 @@ void QueryProcFull::ClearQueries()
 /* Clear info about GData from qp */
 void QueryProcFull::ClearGData(GData *gdata)
 {
-  for(int index = _queries->InitIterator(); _queries->More(index);) {
+  int index;
+  for(index = _queries->InitIterator(); _queries->More(index);) {
     QPFullData *qd = _queries->Next(index);
     if (qd->gdata == gdata) {
       switch(qd->state) {
@@ -302,7 +307,8 @@ void QueryProcFull::ClearGData(GData *gdata)
 
 void QueryProcFull::ResetGData(TData *tdata, GData *gdata)
 {
-  for(int index = _queries->InitIterator(); _queries->More(index);) {
+  int index;
+  for(index = _queries->InitIterator(); _queries->More(index);) {
     QPFullData *qd = _queries->Next(index);
     if (qd->tdata == tdata) {
       qd->gdata = gdata;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/11/22 17:51:01  jussi
+  Added missing DoubleAttr case in Decode().
+
   Revision 1.4  1995/11/22 17:04:14  jussi
   Added IsValid() method and cleaned up the code.
 
@@ -203,7 +206,8 @@ Boolean TDataAsciiInterp::Decode(RecId id, void *recordBuf, char *line)
 
   int maxArgs = MinMax::min(numArgs, _numAttrs);
 
-  for(int i = 0; i < _numMatchingAttrs; i++)
+  int i;
+  for(i = 0; i < _numMatchingAttrs; i++)
     if (_matchingAttrs[i]->attrNum >= maxArgs)
       return false;
 
@@ -211,10 +215,14 @@ Boolean TDataAsciiInterp::Decode(RecId id, void *recordBuf, char *line)
 
     AttrInfo *info = _attrList->Get(i);
     char *ptr = (char *)recordBuf + info->offset;
+    int intVal;
+    float floatVal;
+    double doubleVal;
+    time_t tm;
 
     switch(info->type) {
     case IntAttr:
-      int intVal = atoi(args[i]);
+      intVal = atoi(args[i]);
       if (info->hasMatchVal && intVal != info->matchVal.intVal)
 	return false;
       *(int *)ptr = intVal;
@@ -222,7 +230,7 @@ Boolean TDataAsciiInterp::Decode(RecId id, void *recordBuf, char *line)
       break;
 
     case FloatAttr:
-      float floatVal = UtilAtof(args[i]);
+      floatVal = UtilAtof(args[i]);
       if (info->hasMatchVal && floatVal != info->matchVal.floatVal)
 	return false;
       *(float *)ptr = floatVal;
@@ -230,7 +238,7 @@ Boolean TDataAsciiInterp::Decode(RecId id, void *recordBuf, char *line)
       break;
 
     case DoubleAttr:
-      double doubleVal = UtilAtof(args[i]);
+      doubleVal = UtilAtof(args[i]);
       if (info->hasMatchVal && doubleVal != info->matchVal.doubleVal)
 	return false;
       *(double *)ptr = doubleVal;
@@ -250,7 +258,7 @@ Boolean TDataAsciiInterp::Decode(RecId id, void *recordBuf, char *line)
 	fprintf(stderr,"TDataAsciiInterp: date attr match not implemented\n");
 	Exit::DoExit(2);
       }
-      time_t tm = atoi(args[i]);
+      tm = atoi(args[i]);
       *(time_t *)ptr = tm;
       break;
 
