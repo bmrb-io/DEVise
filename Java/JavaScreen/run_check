@@ -19,7 +19,13 @@ set path = ( /s/std/bin /usr/ucb /bin /p/devise/run . $path )
 # For yola.
 set path = ( $path /usr/people/zoo/bin /usr/local/zoobin /usr/freeware/bin /usr/people/zoo/zoobin /usr/sbin /usr/bsd /sbin /usr/bin /usr/bin/X11 /usr/freeware/bin /bmrb/bin /bmrb/irix/bin /usr/java/bin /usr/local/bin /usr/people/zoo/perl /usr1/local/share /usr1/local/bin /usr/bin/X11 )
 
-set outfile = /tmp/run_check.out
+if ($#argv > 0) then
+  set idstr = $1
+else
+  set idstr = regular
+endif
+
+set outfile = /tmp/run_check.out.$idstr
 
 if (-e $outfile) then
     rm $outfile
@@ -30,12 +36,20 @@ endif
 # All this garbage because Sun's current crond on Intel/Solaris won't
 # send mail correctly.
 if (-e $outfile && ! -z $outfile) then
+    set tmpfile = tmp.$idstr
+    if (-e $tmpfile) then
+        rm $tmpfile
+    endif
+    set header = "Error message from check_jsall ($idstr) on `hostname`"
+    echo $header > $tmpfile
+    cat $outfile >> $tmpfile
     if (`hostname` == "yola") then
         # Note: stupid mail on SGI doesn't take -s argument!
-        cat $outfile | mail `whoami`
+        cat $tmpfile | mail `whoami`
     else
-        cat $outfile | mail -s "Error message from check_jsall on `hostname`" `whoami`
+        cat $tmpfile | mail -s "$header" `whoami`
     endif
+    mv $tmpfile $outfile
 endif
 
 touch /tmp/js_check

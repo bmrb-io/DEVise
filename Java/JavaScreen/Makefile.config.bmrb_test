@@ -22,7 +22,6 @@
 
 #-----------------------------------------------------------
 # Directories for executables we need.
-
 # BIN2 is for JSS and devised.
 JAVA_BIN2 = /usr/bin
 PERL_BIN2 = /usr/bin
@@ -32,9 +31,9 @@ XVFB_BIN2 = /usr/X11R6/bin
 JAVA_BIN2P = /usr/java/bin
 PERL_BIN2P = /usr/freeware/bin
 
-POP_DIR = /bmrb/htdocs/devise/jspop
-SERV_DIR = /p/devise/js.installed
-JAR_DIR = /bmrb/htdocs/devise
-CGI_DIR = /bmrb/htdocs/cgi-bin
-IDSTR = regular
+POP_DIR = /bmrb/htdocs/devise.test/jspop
+SERV_DIR = /p/devise/js.installed.test
+JAR_DIR = /bmrb/htdocs/devise.test
+CGI_DIR = /bmrb/htdocs/cgi-bin/js.test
+IDSTR = test
 INSTALL_HOST = aden.bmrb.wisc.edu

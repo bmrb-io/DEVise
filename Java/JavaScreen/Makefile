@@ -21,7 +21,7 @@
 
 include Makefile.config
 
-JAVAC = $(JAVA_BIN)/javac -d .
+JAVAC = $(JAVA_BIN2)/javac -d .
 
 all: js jsa jspop jss
 js: js.class

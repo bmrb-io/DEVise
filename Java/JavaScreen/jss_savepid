@@ -32,6 +32,9 @@ do
   elif [ $arg = "-idtst2" ]
   then
     idStr="tst2"
+  elif [ $arg = "-idwave" ]
+  then
+    idStr="wave"
   fi
 done
 
@@ -68,7 +71,8 @@ touch $doutfile
 # pid file when the jss exits.
 #
 
-bin2/java JavaScreen.jss -debug $* >> $joutfile 2>&1 &
+javaexec=`cat bin2/java`
+$javaexec JavaScreen.jss -debug $* >> $joutfile 2>&1 &
 
 host=`hostname`
 pidfile="jss_pid:$idStr:$host:$!"

@@ -8,4 +8,5 @@
 
 ############################################################
 
-bin2/java JavaScreen.js -cgiurl/cgi-bin/js.cgi $*
+set javaexec = `cat bin2/java`
+$javaexec JavaScreen.js -cgiurl/cgi-bin/js.cgi $*

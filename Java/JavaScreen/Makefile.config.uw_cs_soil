@@ -23,9 +23,15 @@
 #-----------------------------------------------------------
 # Directories for executables we need.
 # Java 1.1.
-JAVA_BIN = /s/java-1/bin
-PERL_BIN = /s/std/bin
-XVFB_BIN = /s/std/bin
+
+# BIN2 is for JSS and devised.
+JAVA_BIN2 = /s/java-1/bin
+PERL_BIN2 = /s/std/bin
+XVFB_BIN2 = /s/std/bin
+
+# BIN2P is for JSPoP.
+JAVA_BIN2P = /s/java-1/bin
+PERL_BIN2P = /s/std/bin
 
 POP_DIR = /local.pumori/devise/js.soil
 SERV_DIR = /local.pumori/devise/js.soil

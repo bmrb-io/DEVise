@@ -64,7 +64,8 @@ s2d_props:
 bin: cgi-bin/bin
 cgi-bin/bin:
 	mkdir cgi-bin/bin
-	ln -s $(JAVA_BIN)/java cgi-bin/bin
+	sed -e 's%java%$(JAVA_BIN)/java%' cgi-bin/java_tmpl > cgi-bin/bin/java
+	chmod 755 cgi-bin/bin/java
 	ln -s $(PERL_BIN)/perl cgi-bin/bin
 
 select_html: $(SELECT_HTML_FILE)

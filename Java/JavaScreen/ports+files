@@ -57,6 +57,11 @@ else
     set popPort = 8322
     set jssPort = 7311
 
+  else if ($idStr == "wave") then
+    set cmdPort = 6866
+    set popPort = 9822
+    set jssPort = 9811
+
   else
     #TEMP -- needs to go to stderr
     #echo "Warning: unrecognized ID string; using standard port numbers"

@@ -22,6 +22,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.128  2001/11/07 22:31:29  wenger
+// Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
+// js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
+// accidentally merged onto the bmrb_dist_br branch previously).
+// (These changes include JS heartbeat improvements and the fix to get
+// CGI mode working again.)
+//
 // Revision 1.127  2001/11/06 16:27:20  xuk
 // Reset collaboration follower's screen size and resolution to deal with different screen size from leaders.
 //
@@ -65,6 +72,10 @@
 // Added display control command line argument/parameter for auto playback.
 // For JS application: command-line argument: -playbackdisplayoff to turn off display, default is turning on display;
 // For JS applet: parameter playbackdisplay = true|false to turn on|off display.
+//
+// Revision 1.117.2.3  2001/11/07 20:13:20  wenger
+// Fixed bug 725 (-cgiurl command line argument and parameter were not
+// used by the CGI GUI).
 //
 // Revision 1.117  2001/10/05 20:00:26  xuk
 // Fixed bug 701: command log playwork can work for URL and simple file path.
@@ -2162,7 +2173,7 @@ class SetCgiUrlDlg extends Dialog
 	url.setForeground(jsc.jsValues.uiglobals.textFg);
         url.setFont(jsc.jsValues.uiglobals.textFont);
 
-        url.setText("/cgi-bin/js.cgi");
+        url.setText(jsc.jsValues.connection.cgiURL);
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();

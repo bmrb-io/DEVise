@@ -7,4 +7,4 @@
 ############################################################
 
 set javaexec = `cat bin2/java`
-$javaexec JavaScreen.js -cmdport5966 $*
+$javaexec JavaScreen.js -cgiurl/cgi-bin/js_wave/js.cgi -cmdport6866 $*

@@ -22,9 +22,15 @@
 
 #-----------------------------------------------------------
 # Directories for executables we need.
-JAVA_BIN = /usr/bin
-PERL_BIN = /usr/bin
-XVFB_BIN = /usr/openwin/bin
+
+# BIN2 is for JSS and devised.
+JAVA_BIN2 = /usr/bin
+PERL_BIN2 = /usr/bin
+XVFB_BIN2 = /usr/openwin/bin
+
+# BIN2P is for JSPoP.
+JAVA_BIN2P = /usr/bin
+PERL_BIN2P = /usr/bin
 
 POP_DIR = /p/devise/js.installed
 SERV_DIR = /p/devise/js.installed

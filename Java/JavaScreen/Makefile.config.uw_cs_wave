@@ -23,13 +23,19 @@
 #-----------------------------------------------------------
 # Directories for executables we need.
 # Java 1.1.
-JAVA_BIN = /s/java-1/bin
-PERL_BIN = /s/std/bin
-XVFB_BIN = /s/std/bin
 
-POP_DIR = /local.pumori/devise/js.regular
-SERV_DIR = /local.pumori/devise/js.regular
-JAR_DIR = /var/home/www/public
-CGI_DIR = /var/home/www/cgi-bin
-IDSTR = regular
+# BIN2 is for JSS and devised.
+JAVA_BIN2 = /s/java-1/bin
+PERL_BIN2 = /s/std/bin
+XVFB_BIN2 = /s/std/bin
+
+# BIN2P is for JSPoP.
+JAVA_BIN2P = /s/java-1/bin
+PERL_BIN2P = /s/std/bin
+
+POP_DIR = /local.pumori/devise/js.wave
+SERV_DIR = /local.pumori/devise/js.wave
+JAR_DIR = /var/home/www/public/waveletidr
+CGI_DIR = /var/home/www/cgi-bin/js_wave
+IDSTR = wave
 INSTALL_HOST = pumori.cs.wisc.edu

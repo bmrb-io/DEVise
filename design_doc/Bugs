@@ -2866,9 +2866,10 @@ Num Date        Status  Description
 716 10/18/01	OPEN	JavaScreen: the JSPoP main thread is not registered
 			with the thread checker. (rkw)
 
-717 10/19/01	OPEN	JavaScreen: needs better GUI for switching into and
+717 10/19/01	FIXED	JavaScreen: needs better GUI for switching into and
 			out of collaboration mode (separate this from socket
 			vs. CGI). (elu/rkw)
+			(Fixed by xuk, 11/??/01.)
 
 718 10/22/01	FIXED	JavaScreen: client sockets seem to never get removed
 			from active sockets list in JSPoP. (rkw)
@@ -2894,7 +2895,22 @@ Num Date        Status  Description
 			the collaborator sends a command, the JSPoP doesn't
 			necessarily distinguish it from the leader.)
 
-723 10/24/01	OPEN	JavaScreen: CGI mode doesn't work anymore. (rkw)
+723 10/24/01	FIXED	JavaScreen: CGI mode doesn't work anymore. (rkw)
+			(Fixed by rkw, 11/07/01.)
+
+724 10/28/01	OPEN	JavaScreen: command/socket code parses commands
+			unnecessarily and doesn't unabiguously preserve
+			argument divisions (e.g., spaces within arguments
+			can cause problems). (rkw)
+
+725 10/29/01	FIXED	JavaScreen: -cgiurl command-line argument doesn't work
+			in client. (rkw)
+			(Fixed by rkw, 11/07/01.)
+
+726 11/01/01	OPEN	JavaScreen: if the jspop is running, but there is
+			no devised, and a client connects, the JSPoP should
+			return an error message to the client, rather than
+			just leaving it hanging. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

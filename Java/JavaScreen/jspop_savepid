@@ -32,6 +32,9 @@ do
   elif [ $arg = "-idtst2" ]
   then
     idStr="tst2"
+  elif [ $arg = "-idwave" ]
+  then
+    idStr="wave"
   fi
 done
 
@@ -56,7 +59,8 @@ touch $outfile
 # Fire up the jspop, creating the appropriate pid file, and
 # deleting the pid file when the jspop exits.
 #
-bin2/java JavaScreen.jspop -debug $* >> $outfile 2>&1 &
+javaexec=`cat bin2/java`
+$javaexec JavaScreen.jspop -debug $* >> $outfile 2>&1 &
 
 host=`hostname`
 pidfile="jspop_pid:$idStr:$host:$!"

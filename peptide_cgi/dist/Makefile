@@ -57,6 +57,7 @@ cgi-bin-setup:
 	ln -s ../../../cgi-bin/make_view .
 	ln -s ../../../cgi-bin/s2d .
 	ln -s ../../../cgi-bin/set_modes .
+	ln -s ../../../cgi-bin/java_tmpl .
 
 .PHONEY : dynamic_sessions-setup
 dynamic_sessions-setup:

@@ -16,4 +16,5 @@ endif
 limit cputime 10
 limit coredumpsize 0
 
-bin2/java JavaScreen.DEViseCheckPop $*
+set javaexec = `cat bin2/java`
+$javaexec JavaScreen.DEViseCheckPop $*

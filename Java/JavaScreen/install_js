@@ -45,11 +45,14 @@ endif
 #-----------------------------------------------------------
 # Make sure we have the files we need.
 
+#TEMP -- bin2p/perl should be in this list, but -e test doesn't work for
+# a symlink that points to nothing (needed for BMRB install on yola/aden).
+# RKW 2001-11-01.
 set files = (JavaScreen/jspop.class JavaScreen/jss.class JavaScreen/js.class \
     jsa1.jar jsa2.jar jsb1.jar jsb2.jar bin/devised bin/Tasvir bin2/java \
-    bin2/perl bin2/Xvfb)
+    bin2/perl bin2/Xvfb bin2p/java)
 foreach file ($files)
-  if (! -f $file) then
+  if (! -e $file) then
     echo "File $file missing.  Cannot proceed with install."
     exit 1
   endif
@@ -200,16 +203,16 @@ endif
 cp -p bin/Tasvir $servdir/bin
 chmod 755 $servdir/bin/Tasvir
 
-# Install bin2 directory (java, perl, Xvfb *links*) into server and cgi
-# directories.
+# Install bin2 directory (java, perl, Xvfb *links*) into server directory.
 tar cf bin2.tar bin2
 set curdir = `pwd`
 cd $servdir
+if (-e bin2) then
+  \rm -rf bin2
+endif
 tar xf $curdir/bin2.tar
 chmod 755 bin2
-cd $cgidir
-tar xf $curdir/bin2.tar
-chmod 755 bin2
+chmod 755 bin2/*
 cd $curdir
 rm bin2.tar
 
@@ -243,14 +246,32 @@ chmod 644 $popdir/JavaScreen/*.class
 cp -p *.gif $popdir
 chmod 644 $popdir/*.gif
 
-# Install bin2 directory (java, perl, Xvfb *links*) pop directory.
-tar cf bin2.tar bin2
+# Install bin2p directory (java, perl, *links*) into pop and CGI directories.
+tar cf bin2p.tar bin2p
 set curdir = `pwd`
-cd $popdir
-tar xf $curdir/bin2.tar
-chmod 755 bin2
+
+if ($popdir != $servdir) then
+  cd $popdir
+  if (-e bin2) then
+    \rm -rf bin2
+  endif
+  tar xf $curdir/bin2p.tar
+  chmod 755 bin2p
+  chmod 755 bin2p/*
+  mv bin2p bin2
+endif
+
+cd $cgidir
+if (-e bin2) then
+  \rm -rf bin2
+endif
+tar xf $curdir/bin2p.tar
+chmod 755 bin2p
+chmod 755 bin2p/*
+mv bin2p bin2
+
 cd $curdir
-rm bin2.tar
+rm bin2p.tar
 
 # Install misc. scripts, etc.
 if (! -f $popdir/users.cfg) then
@@ -266,9 +287,9 @@ cp -p scripts/* $popdir/scripts
 chmod 755 $popdir/scripts/*
 
 # Create the logs directory if necessary.
-if (! -d $servdir/logs) then
-  mkdir $servdir/logs
-  chmod 777 $servdir/logs
+if (! -d $popdir/logs) then
+  mkdir $popdir/logs
+  chmod 777 $popdir/logs
 endif
 
 # Keep run_check last because of cron job.

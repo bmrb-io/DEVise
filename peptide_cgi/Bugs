@@ -10,3 +10,6 @@ Num Date        Status  Description
 
 003 09/21/01	OPEN	hxrates.base and order.base should be working
 			session files. (rkw)
+
+004 11/02/01	OPEN	s2d can't find set_modes on yola (BMRB).  (./set_modes
+			doesn't work, explicit full path does). (rkw)

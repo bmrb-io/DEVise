@@ -6,4 +6,5 @@
 
 ############################################################
 
-bin2/java js -usecgi -cgiurl/cgi-bin/js.cgi -cmdport6266 $*
+set javaexec = `cat bin2/java`
+$javaexec js -usecgi -cgiurl/cgi-bin/js.cgi -cmdport6266 $*
