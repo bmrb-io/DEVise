@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.53  1997/03/02 00:42:40  donjerko
+  Attribute recId as not added to the schema in this file, it is done
+  by DTE now. This might screw up the UNIXFILE because they are not
+  handled by DTE, but UNIXFILE will be gone soon anyway.
+
   Revision 1.52  1997/02/26 16:31:39  wenger
   Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
 
@@ -866,7 +871,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 //    control->ReturnVal(numAttrs + 1, args) ;
       control->ReturnVal(numAttrs, args) ;
 	 delete [] args;
-      delete args;
       return 1;
     }
     if (!strcmp(argv[0], "getAction")) {

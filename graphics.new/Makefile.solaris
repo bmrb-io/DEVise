@@ -1100,6 +1100,13 @@ ParseCat.o: /usr/include/ctype.h /usr/include/math.h
 ParseCat.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Group.h
 ParseCat.o: MapInterpClassInfo.h GroupDir.h ItemList.h DataSourceBuf.h
 ParseCat.o: DataSourceFileStream.h ParseCat.h ../graphics/DevError.h
+ParseCatAux.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ParseCatAux.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+ParseCatAux.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
+ParseCatAux.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+ParseCatAux.o: /usr/include/sys/time.h /usr/include/sys/time.h
+ParseCatAux.o: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Exit.h
+ParseCatAux.o: ../graphics/Init.h ../graphics/BufPolicy.h
 QPRange.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 QPRange.o: /usr/include/sys/va_list.h ../graphics/Exit.h QPRange.h
 QPRange.o: ../graphics/DeviseTypes.h /usr/include/values.h
@@ -1201,7 +1208,7 @@ QueryProcFull.o: ViewStats.h GdataStat.h ../tape/HashTable.h
 QueryProcFull.o: DataSourceFixedBuf.h DataSourceBuf.h UpdateLink.h
 QueryProcFull.o: VisualLink.h Action.h PointStorage.h MappingInterp.h
 QueryProcFull.o: /s/tcl/include/tcl.h Bitmap.h GDataBin.h RecordLink.h
-QueryProcFull.o: RecFile.h
+QueryProcFull.o: RecFile.h Shape.h ../graphics/Temp.h ../graphics/Map3D.h
 RangeCallback.o: RangeCallback.h ../graphics/DeviseTypes.h
 RangeCallback.o: /usr/include/values.h ../graphics/DevStatus.h
 RangeCallback.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
@@ -3153,7 +3160,8 @@ RecordLink.o: ../graphics/Control.h ../graphics/ClassDir.h
 RecordLink.o: ../graphics/AttrList.h ../graphics/Cursor.h
 RecordLink.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
 RecordLink.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
-RecordLink.o: UpdateLink.h Action.h PointStorage.h
+RecordLink.o: UpdateLink.h Action.h PointStorage.h TDataMap.h ShapeID.h
+RecordLink.o: GDataRec.h
 SBufMgr.o: /usr/include/memory.h /usr/include/fcntl.h
 SBufMgr.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 SBufMgr.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
