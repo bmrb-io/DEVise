@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1998/02/20 06:17:13  beyer
+  resurected histograms
+
   Revision 1.21  1997/05/28 15:39:29  wenger
   Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
 
@@ -292,9 +295,9 @@ TData::~TData()
 {
     if( _data && _data->DeleteRef() )
         delete _data;
-    delete _param;
-    delete _type;
-    delete _name;
+    delete [] _param;
+    delete [] _type;
+    delete [] _name;
 }
 
 /*------------------------------------------------------------------------------

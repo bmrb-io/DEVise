@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.126  1998/02/26 00:19:04  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.125  1998/02/16 15:41:24  wenger
   Fixed (I believe) bug 287.
 
@@ -732,7 +735,7 @@ View::~View(void)
 
 	DOASSERT(!_querySent, "Query still active");
 
-	delete _label.name;
+	delete [] _label.name;
 	delete _cursors;
 	delete _filterQueue;
 

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/01/14 16:39:16  wenger
+  Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
+
   Revision 1.16  1997/12/11 04:25:42  beyer
   Shared memory and semaphores are now released properly when devise
   terminates normally.
@@ -148,7 +151,7 @@ DataSource::~DataSource()
 	     "Deleting datasource with dangling references");
     
     if (_label != NULL) {
-	delete _label;
+	free(_label);
     }
 }
 

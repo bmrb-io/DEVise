@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/02/12 17:17:11  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.14  1998/02/09 18:10:59  wenger
   Removed ViewScatter class (totally replaced by ViewData, which is a
   renamed version of TDataViewX); removed ViewRanges class (not used);
@@ -134,7 +137,7 @@ ViewClassInfo::ViewClassInfo(char *name, ViewGraph *view)
 
 ViewClassInfo::~ViewClassInfo()
 {
-  delete _name;
+  delete [] _name;
   delete _view;
 }
 

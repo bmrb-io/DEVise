@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/03 20:39:16  jussi
+  Improved error checking.
+
   Revision 1.6  1996/09/27 15:53:19  wenger
   Fixed a number of memory leaks.
 
@@ -94,7 +97,7 @@ GDataRangeMap::~GDataRangeMap()
     printf("GDataRangeMap destructor write %s, 0x%p\n", _fname, this);
 #endif
     WriteRecords(_fname);
-    delete _fname;
+    delete [] _fname;
   }
 
   // Free the list of GDataRangeMapRecs.  Note that this delete algorithm

@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.62  1997/12/23 23:35:38  liping
+  Changed internal structure of BufMgrFull and classes it called
+  The buffer manager is now able to accept queries on any attribute from the
+          Query Processor
+  The buffer manager is also able to issue queries on various attributes to DTE
+  Instead of keeping an in memory list for each T/GData, the buffer manager keeps
+          a list for each (T/GData, AttrName, Granularity) combination
+  The class Range was replaced by Interval
+
   Revision 1.61  1997/11/24 23:15:17  weaver
   Changes for the new ColorManager.
 
@@ -378,7 +387,7 @@ TDataAscii::~TDataAscii()
   Dispatcher::Current()->Unregister(this);
 
   delete _indexP;
-  delete _indexFileName;
+  delete [] _indexFileName;
 }
 
 Boolean TDataAscii::CheckFileStatus()

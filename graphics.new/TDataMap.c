@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.21  1998/02/19 23:25:17  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
   Revision 1.20  1997/11/24 23:15:19  weaver
   Changes for the new ColorManager.
 
@@ -177,7 +185,7 @@ TDataMap::~TDataMap()
 {
   if (_gdata)
     delete _gdata;
-  delete _shapeAttrs;
+  delete [] _shapeAttrs;
 }
 
 //******************************************************************************

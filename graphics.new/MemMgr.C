@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/12/19 00:05:56  donjerko
+  Changes made be Kevin to get DTE to compile.
+
   Revision 1.7  1997/12/11 04:25:42  beyer
   Shared memory and semaphores are now released properly when devise
   terminates normally.
@@ -177,7 +180,7 @@ MemMgr::~MemMgr()
     if (_shm)
         _shm->destroy();
     else
-        delete _buf;
+        delete [] _buf;
     delete _shm;
 
     delete _sem;

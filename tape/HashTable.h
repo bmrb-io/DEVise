@@ -19,6 +19,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/11/24 23:16:26  weaver
+  Changes for the new ColorManager.
+
   Revision 1.9  1997/07/16 15:49:29  wenger
   Moved string allocation/deallocation within StringStorage class, fixed
   memory leak of strings.
@@ -314,7 +317,7 @@ template <class Index, class Value>
 HashTable<Index,Value>::~HashTable()
 {
   clear();
-  delete ht;
+  delete [] ht;
 }
 
 #ifdef DEBUGHASH

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/08/05 19:48:53  wenger
+  Fixed compile errors caused by some of Kevin's recent changes; changed
+  the attrproj stuff to make a .a file instead of a .o; added some more
+  TData file writing stuff; misc. cleanup.
+
   Revision 1.1  1996/06/04 14:21:40  wenger
   Ascii data can now be read from session files (or other files
   where the data is only part of the file); added some assertions
@@ -66,7 +71,7 @@ DataSeg::Set(char *label, char *filename, long offset, long length)
 
 	if (_label != NULL)
 	{
-		delete _label;
+		free(_label);
 		_label = NULL;
 	}
 	if (label != NULL) _label = strdup(label);

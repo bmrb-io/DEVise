@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/01/14 16:39:16  wenger
+  Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
+
   Revision 1.9.16.1  1998/01/12 20:38:11  wenger
   Fixed some other dynamic memory errors.
 
@@ -115,7 +118,7 @@ DataSourceFileStream::~DataSourceFileStream()
 {
 	DO_DEBUG(printf("DataSourceFileStream::~DataSourceFileStream()\n"));
 
-	delete _filename;
+	if (_filename != NULL) free(_filename);
 	if (_file != NULL) fclose(_file);
 }
 
