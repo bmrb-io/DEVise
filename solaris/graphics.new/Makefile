@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16  1998/03/04 18:41:11  wenger
+#  Added <arch>/Makefile.config files that now hold stuff like the
+#  PERL_CORE definitions so those don't have to be repeated in all
+#  of the lower level makefiles; various other compile fixes; changed
+#  version to 1.5.2.
+#
 #  Revision 1.15  1998/02/20 06:06:42  beyer
 #  updated make depend
 #
@@ -57,5 +63,10 @@ include ../Makefile.config
 ARCH_LDFLAGS = -lsocket -lnsl
 
 VPATH = ../../graphics.new
+
+ifeq ($(DEV_DEBUG_GRAPHICS_NEW),1)
+  DEV_DEBUG = 1
+endif
+
 include $(VPATH)/Makefile.base
 include Makefile.depend
