@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/03/18 08:19:38  zhenhai
+  Added visual links between 3D graphics.
+
   Revision 1.10  1998/03/12 22:58:42  wenger
   Fixed bug 324 (view sometimes not fully redrawing); turned off some
   OpenGL debug code.
@@ -1614,6 +1617,7 @@ void GLWindowRep::SetXorMode()
   printf("GLWindowRep(0x%p)::SetXorMode\n",this);
 #endif
   MAKECURRENT();
+  glEnable(GL_INDEX_LOGIC_OP);
   glLogicOp(GL_XOR);
 
 }
@@ -1624,7 +1628,8 @@ void GLWindowRep::SetCopyMode()
   printf("GLWindowRep(0x%p)::SetCopyMode\n",this);
 #endif
   MAKECURRENT();
-  glLogicOp(GL_COPY);
+  glDisable(GL_INDEX_LOGIC_OP);
+//  glLogicOp(GL_COPY);
 }
 
 void GLWindowRep::SetOrMode()
@@ -1633,6 +1638,7 @@ void GLWindowRep::SetOrMode()
   printf("GLWindowRep(0x%p)::SetOrMode\n",this);
 #endif
   MAKECURRENT();
+  glEnable(GL_INDEX_LOGIC_OP);
   glLogicOp(GL_OR);
 }
 
@@ -1866,7 +1872,6 @@ void GLWindowRep::Init()
   _unobscured = false;
   // use double buffer. Use color index mode instead of RGB mode
 
-  glEnable(GL_INDEX_LOGIC_OP);
   SetCopyMode();
   GLCHECKERROR();
   SetLineWidth(0);
@@ -2514,6 +2519,7 @@ void GLWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow, int &xhigh,
   GLMATRIXMODE(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();
+  glEnable(GL_INDEX_LOGIC_OP);
   glLogicOp(GL_INVERT);
 
   DrawRubberband(x1, y1, x2, y2);
@@ -2550,6 +2556,7 @@ void GLWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow, int &xhigh,
     }
   }
   glPopMatrix();
+  glDisable(GL_INDEX_LOGIC_OP);
 
   xlow = MIN(x1, x2);
   ylow = MIN(y1, y2);
