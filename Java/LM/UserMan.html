@@ -1,0 +1,221 @@
+<HTML>
+<TITLE> Layout Manager User Manual </TITLE>
+
+This user manual gives a very brief description of the various menu options of the layout
+manager and how to create a session. For a detailed description of the conceptual ideas
+refer to the masters thesis report by Shilpa Lawande.
+<p>
+
+<H1> Description of menus:</H1>
+
+<UL>Application
+<LI> New  : Start another instance of the application, this creates a new UI window and everything
+	    within this application is self-contained. Thus two sessions can be edited simultaneously. 
+<LI> Close : Closes this particular instance of the application 
+<LI> Exit : Closes all existing instances of the application and exits.
+</UL>
+
+<UL>File
+<LI> New : Opens a new session. A newly created session has only one view which is the display and all
+           other panels are empty.
+<LI> Open : Opens a previously saved session. Prompts for a file name for the session to be opened.
+            If a session is already open, it prompts to save it. The user may choose to save the old session. 
+<LI> Close : Closes the session in progress. Once this is done, all panels are empty and no views exist.
+	     The only operation that can be done now is creating or opening a session.
+<LI> Save : Saves the currently open session to a file. If the session has been previously opened from
+	    a saved file, this overwrites that file. If the session has not been saved previously, it
+	    prompts for a file name.
+<LI> SaveAs : Prompts for a file name to save the session in.
+</UL>
+
+<UL>View
+<LI> New  : Creates a new view. Exactly one view should be selected to create a new view. The
+	    new view is created as a child of the selected view.  A selected view is shown with
+	    a thick highlighted border. If the selected view has a custom layout mode, the layout
+	    editor user-interface is brought up. The user can then create a layout as described
+	    in the section <A HREF="#layouteditor">Layout Editor</A> in this document. Otherwise,
+	    the new view is placed along with its siblings according to the layout mode of the selected view.
+<LI> Delete : Deletes the selected views. 
+<LI> SetCurrent : currently unimplemented. (should allow the user select a view out of a list of views)
+<LI> Properties : shows the properties of the selected view, such as position, dimensions, fg, bg colors etc.
+		  in a dialog. The user can edit these properties and the changes get reflected in the 
+		  layout.
+<LI> LayoutMode : lets the user change the layout mode of the selected view. Rearranges the child views
+		  of the selected view according to the new layout mode.
+</UL>
+
+<UL>Layout
+<LI> Edit  : Brings up the layout editor to edit a custom layout for the selected view. Is enabled only
+	     if the selected view has a custom layout mode.
+<LI> Custom : Sets the layout mode of the selected view to custom.
+<LI> Grid  : Sets the layout mode of the selected view to a default grid. In this mode, the number of 
+	     rows and columns are automatically calculated.
+<LI> Pile : Piles all the child views of the selected views one below the other.
+<LI> Unpile  : Restores the previous layout of the selected view. Is enabled only if the selected view
+	       is in piled mode.
+<LI> FlipForward  : Rearranges the child views of the selected view so that the first view is now second, 
+		    second the third and so on and the last is the first.
+<LI> FlipBackward : Rearranges the child views of the selected view so that the second view is now third, 
+		    third the second and so on and the first is the last.
+<LI> Swap : Swaps two selected views. 
+</UL>
+
+<UL>TData/Mapping
+<UL>New
+<LI> TData : Creates a new TData. Currently we use a dummy catalog. The info needed to create a tdata is
+	     a data file name, schema file and a table name. The created tdata appears as an item in the
+	     active tables side panel.
+<LI> Mapping : Creates a new mapping. Currently mappings cannot have expressions in them and support for
+	       colors, patterns etc is not general. Newly created mapping is given a name and appears
+	       as an item in the mapping side panel.
+</UL> 
+<UL>Delete 
+<LI> TData  : Deletes one or more tdata selected on the active tables side panel. Removes the tdata 
+	      from any views that use it.
+<LI> Mapping : Deletes one or more mappings selected on the mappings side panel. Removes the mapping
+	      from any views that use it.
+</UL>
+<LI> SetViewTData : Sets the selected tdata as the tdata for one or more selected views. If selected view
+		    has a mapping then the mapping and tdata should have identical schema.
+<LI> SetViewMapping : Sets the selected mappings as the mapping for one or more selected views. If selected
+		    view has a tdata then the mapping and tdata should have identical schema.
+<LI> UnsetViewTData : Sets the tdata of the selected views to null.
+<LI> UnsetViewMapping : Sets the mapping of the selected views to null.
+<LI> EditMapping : brings up a dialog to edit the selected mapping.
+<LI> BrowseCatalog : brings up the dummy catalog which lets the user create and delete tables etc.
+<LI> BrowseSchemas : brings up schema informations and lets the user create new schema, edit existing ones etc.
+<LI> ShowTData : shows tdata information along with the views in the display panel.(Toggle).
+<LI> ShowMapping : shows mapping information along with the views in the display panel.(Toggle).
+</UL>
+
+
+<UL>VisualLink
+<LI> Link : links the selected view by a link of the selected type. Currently only XX and YY links
+	    are supported. to support a xy link the linking attribute will have to be specified 
+            for each view.
+<LI> Unlink : unlinks the selected views from a link.
+<LI> Split : currently unimplemented - unlinks the selected views from the link and links all of them 
+	     together. Effectively spliting an equivalence class into two.
+<LI> Show : shows link lines on top of views in the display panel.(Toggle).
+</UL>
+
+<UL>RecordLink
+<LI> New  : creates a new record link with specified attribute (currently the attribute cannot be 
+	    chosen and is record id by default).  New record link appears as an item on the side panel.
+<LI> Delete : deletes the selected record links - unlinks any views linked by it. 
+<UL>Link
+<LI> Master : sets the selected view as master of the selected record link.
+<LI> Slave : links the selected views as slaves of the selected record link.
+</UL> 
+<UL>Unlink
+<LI> Master : unsets the current master of the link and sets the master to null.
+<LI> Slave : unlinks the selected views if they are slaves of the selected link.
+</UL>
+<LI> Show : shows record links as directed lines from master to slave. (Toggle).
+</UL>
+
+<UL>Cursor
+<LI> New : creates a new cursor which appears as an item in the cursor panel.
+<LI> Delete : deletes the cursor selected in the cursor panel.
+<UL>Set
+<LI> Source : sets the selected view as the source of the selected cursor
+<LI> Destination : sets the selected view as the destination of the selected cursor.
+</UL>
+<LI> Show : shows cursor line on the display panel. Destination is represented as a rectangle.(Toggle).
+</UL>
+
+
+<H2>Selection</H2>
+
+An item can be selected by clicking the left mouse on it. Subsequent items can be selected by 
+holding down the shift key while clicking on the left mouse button. Selected items on the
+side panels are highlighted with a blue border and a selected view is highlighted by a thick 
+blue border. If the visual links are shown as lines then lines corresponding to a selected
+visual link type are highlighted by thickening the line and changing color. Similar behavior
+occurs for other items.
+
+
+<H2> Tool bars </H2>
+
+Toolbar buttons have a help bubble that appears when the mouse is moved over it. This doesnt
+seem to work as fast as it should. Bug in gjt !? These are not documented here as this 
+user interface is transient and can be changed easily.
+
+
+<H2> 
+<A NAME="layouteditor">Layout Editor</A> </H2>
+
+This section documents the user interface for the layout editor tool. Most operations are done using
+rubberbands of different colors. By default, the rubberband is the view selection rubberband. Rubberband
+operations used to create views and select edges may be performed in the appropriate modes as described
+in this section. The colors used by the rubberbands can be customized.
+
+Multiple selections can be done either using the shift key or by rubberbanding arouund the boxes
+to be selected. The rubberband should completely contain the items to be selected. Selected boxes
+are shown with white rectangular sizing handles at corners and midpoints of sides. Selected edges
+are shown in red.
+
+<UL>File
+<LI> Open : currently unimplemented (should open a saved layout)
+<LI> Save : currently unimplemented (save the layout to a file )
+<LI> SaveAs : currently unimplemented 
+<LI> Apply : applies changes - updates the layout with changes, new views and deletions to the actual
+	     display of views.
+</UL>
+
+<UL>Draw
+<LI> NewView : allows the user to create a new view with a rubberband operation. Only one box can be
+	       created in this way. There is a toolbar button that is a counterpart of this menu item
+	       which also allows multiple views to be created. Single clicking on the button is equivalent
+	       to this menu option and double clicking leaves the button depressed. Now multiple views
+	       may be created until the button is clicked again to its normal mode.
+<LI> Group : groups all views currently selected so that they move/resize together. 
+<LI> Ungroup : ungroups all views in the selected group.
+</UL>
+
+<UL>Edit
+<LI> Cut  : not implemented ( for cut and paste operation )
+<LI> Copy : copies the selected box and places it at an offset. Holding the control key down while
+	    selecting also creates a copy of the box.
+<LI> Paste : not implemented ( for cut and paste operation )
+<LI> Delete : deletes the selected boxes
+<LI> Refresh : repaints the screen
+<LI> Clear : clears the screen
+</UL>
+
+<UL>Layout
+<UL>Align
+<LI> Left : aligns the selected boxes along their left edges 
+<LI> Center : aligns the selected boxes along their centers vertically
+<LI> Right : aligns the selected boxes along their right edges
+<LI> Top : aligns the selected boxes along their top edges
+<LI> Middle : aligns the selected boxes along their bottom edges
+<LI> Bottom : aligns the selected boxes along their center horizontally
+<LI> Edges : aligns the selected edges of the boxes. Edges have to be parallel to be aligned.
+<LI> Rivet : rivets selected edges ; rivet is shown as a thick white cloud around the edges. Rivetted
+	     edges must be parallel. If edges to be rivetted are part of another rivet the rivets
+	     are combined.
+<LI> Unrivet : unrivets the selected edges from the rivet.
+<UL>Equalize
+<LI> Width : makes the selected boxes of same width
+<LI> Height : makes the selected boxes of same height
+<LI> Size : makes the selected boxes of same width and height
+</UL>
+<UL>Distribute
+<LI> Horizontally : distributes the space between the boxes evenly horizontally
+<LI> Vertically : distributes the space between the boxes evenly vertically
+<LI> Rubberbands : Configures colors for rubberbands of different kinds
+<LI> EditColors : Configures colors for boxes, edges, group boxes etc.
+</UL>
+
+
+
+
+
+
+
+
+
+
+
+
