@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/02/28 17:39:57  yuc
+  Added _xsegs as a protected variable. This is used in 3D display.
+
   Revision 1.10  1996/02/26 23:45:16  jussi
   Added GetSmallFontHeight().
 
@@ -82,7 +85,14 @@ public:
 	virtual void Undecorate();
 #endif
 
+	/* Reparent this window to 'other' or vice versa. */
 	virtual void Reparent(Boolean child, void *other, int x, int y);
+
+	/* Raise window to top of stacking order */
+	virtual void Raise();
+
+	/* Lower window to bottom of stacking order */
+	virtual void Lower();
 
 	/* Flush windowRep's content to display */
 	virtual void Flush();

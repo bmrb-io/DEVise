@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/02/06 19:32:57  jussi
+  Added top margin with Devise logo to root windows.
+
   Revision 1.6  1996/01/30 00:03:38  jussi
   Made code refer to ForegroundColor and BackgroundColor instead
   of black and white.
@@ -82,7 +85,6 @@ public:
 
 	/* Delete ViewWin from parent */
 	void DeleteFromParent();
-
 	
 	/* These are called by parents */
 	virtual void Map(int x, int y, unsigned w, unsigned h);
@@ -96,6 +98,9 @@ public:
 	virtual ~ViewWin();
 
 	int GetWeight() { return _weight; }
+
+	virtual void Raise();
+	virtual void Lower();
 
 #if defined(MARGINS) || defined(TK_WINDOW)
 	/* Get size of margin controls */

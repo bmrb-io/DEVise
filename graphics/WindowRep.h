@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/02/28 17:46:21  yuc
+  Added a bunch of public functions for 3D: MakeIdentity3,
+  TopTransform3, PostMultiply, Transform, PrintTransform3,
+  ClearTransformStack3, CompRhoPhiTheta, CompViewingTransf,
+  CompLocationOnViewingSpace, MapAllPoints, and MapAllSegments, DrawRefAxis.
+  Also added some protected variables: _rho, _phi, _theta, _twist_angle,
+  _dvs, _camera, _TransformViewMatrix, _perspective, _NumXSegs, _AxisPt,
+  and _Axis.
+
   Revision 1.12  1996/02/26 23:45:08  jussi
   Added GetSmallFontHeight().
 
@@ -152,6 +161,12 @@ public:
 
   /* Reparent this window to 'other' or vice versa. */
   virtual void Reparent(Boolean child, void *other, int x, int y) = 0;
+
+  /* Raise window to top of stacking order */
+  virtual void Raise() = 0;
+
+  /* Lower window to bottom of stacking order */
+  virtual void Lower() = 0;
 
   /* Flush windowRep's content to display */
   virtual void Flush() = 0;

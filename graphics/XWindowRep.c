@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/03/29 18:14:05  wenger
+  Got testWindowRep to compile and run, added drawing in
+  windows; fixed a few more compile warnings, etc.
+
   Revision 1.27  1996/03/27 17:55:02  wenger
   Changes to get DEVise to compile and run on Linux.
 
@@ -1496,9 +1500,10 @@ void XWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
 	 x, y, w, h);
 #endif
 
-  /* Tell X to move/resize window. We will be notify by an event
+  /* Tell X to move/resize window. We will be notified by an event
      when it's done */
   XMoveResizeWindow(_display, _win, x, y, w, h);
+  UpdateWinDimensions();
 }
 
 /* Iconify window. Not guaranteed to succeed. */
@@ -1699,13 +1704,32 @@ void XWindowRep::ScrollAbsolute(int x, int y, unsigned width, unsigned height,
 	    dstX, dstY);
 }
 
+/* Raise window to top of stacking order */
+
+void XWindowRep::Raise()
+{
+#ifdef DEBUG
+  printf("XWindowRep::Raise window 0x%lx:\n", _win);
+#endif
+
+  XRaiseWindow(_display, _win);
+}
+
+/* Lower window to bottom of stacking order */
+
+void XWindowRep::Lower()
+{
+#ifdef DEBUG
+  printf("XWindowRep::Lower window 0x%lx:\n", _win);
+#endif
+
+  XLowerWindow(_display, _win);
+}
+
 /* Flush windowRep's content to display */
 
 void XWindowRep::Flush()
 {
-  /*
-     XFlush(_display);
-  */
   /* Do a sync to force output */
   XSync(_display, false);
 }
@@ -1863,7 +1887,6 @@ void XWindowRep::TkWindowSizeChanged()
   h -= _topMargin + _bottomMargin;
 
   MoveResize(x, y, w, h);
-  UpdateWinDimensions();
   WindowRep::HandleResize(x, y, w, h);
 
   char cmd[256];
@@ -1971,7 +1994,6 @@ void XWindowRep::EmbedInTkWindow(XWindowRep *parent,
   w -= _leftMargin + _rightMargin;
   h -= _topMargin + _bottomMargin;
   MoveResize(_leftMargin, _topMargin, w, h);
-  UpdateWinDimensions();
 
   // then optionally make the Tk window a child of this window's parent
   // i.e. the Tk window gets inserted between this window and its parent
