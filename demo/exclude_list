@@ -3,3 +3,5 @@ dynamic_sessions
 *.ds.commands
 *.ds.data
 .tmp
+.Old
+.bak*
