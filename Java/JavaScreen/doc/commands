@@ -33,10 +33,12 @@ see comments in DEViseCommSocket.java.
 
     2.1 JAVAC_Connect
     Purpose: establish connection between JavaScreen and JSPoP
-    Arguments: 3
+    Arguments: 4
         <username>: default is "guest"
         <password>: default is ""
         <protocol-version>:
+	<collaboration info>: a string indicating whether allowing
+                              collaboration on this user.
 
     2.2 JAVAC_GetServerState
     Purpose: get current JSPoP status
@@ -68,6 +70,11 @@ see comments in DEViseCommSocket.java.
     Arguments: 1
         <status>: a string containing a list of values indicating JSPoP
                   status.
+
+    3.4 JAVAC_Clients
+    Purpose: send the active client list to collaboration JavaScreen
+    Arguments: variable number of IDs of active clients.
+        
 
 
 4. JavaScreen to devised (via JSPoP)
