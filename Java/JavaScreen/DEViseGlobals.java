@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.47  2001/01/30 03:05:50  xuk
+// Add API_JAVA_CID = 9, for collabration JavaScreen.
+//
 // Revision 1.46  2001/01/22 17:08:12  wenger
 // Added DEViseCheckPop to actually connect to the jspop when checking
 // with cron; added JAVAC_CheckPop command to make this possible; cleaned
@@ -186,6 +189,8 @@ public final class DEViseGlobals
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");
     public static final String DEFAULTHOST = new String("localhost");
+    public static final String DISABLECOLLAB = new String("disablecollaboration");
+    public static final String ENABLECOLLAB = new String("enablecollaboration");
 
     public static final int CHECKINTERVAL = 600000, // check interval for dead JS, 10 minutes
 	                    KILLINTERVAL = 3600000, // kill a JS for not response after 60 minutes
