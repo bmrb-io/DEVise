@@ -1,0 +1,50 @@
+depend:
+	makedepend -fMakefile.solaris -I../graphics -I../graphics.new \
+		-I../tape *.c
+# DO NOT DELETE
+
+ApControl.o: /usr/include/unistd.h /usr/include/sys/feature_tests.h
+ApControl.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+ApControl.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+ApControl.o: /usr/include/sys/time.h /usr/include/sys/time.h
+ApControl.o: /usr/include/sys/unistd.h ../graphics/Control.h
+ApControl.o: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
+ApControl.o: ../graphics/Color.h ../graphics/DList.h ../graphics/Exit.h
+ApExit.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+ApExit.o: /usr/include/stdlib.h ../graphics/Exit.h
+ApGroup.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h ApGroup.h
+ApGroup.o: /usr/include/stdlib.h ApItemList.h
+ApGroupDir.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+ApGroupDir.o: /usr/include/string.h ApGroupDir.h ApItemList.h ApGroup.h
+ApGroupDir.o: /usr/include/stdlib.h
+ApInit.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+ApInit.o: /usr/include/unistd.h /usr/include/sys/types.h
+ApInit.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+ApInit.o: /usr/include/sys/select.h /usr/include/sys/time.h
+ApInit.o: /usr/include/sys/time.h /usr/include/sys/unistd.h
+ApInit.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h /usr/include/stdlib.h
+ApInit.o: /usr/include/string.h /usr/include/signal.h
+ApInit.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
+ApInit.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+ApInit.o: ../graphics/Exit.h ApInit.h ../graphics/DeviseTypes.h
+ApInit.o: ../graphics/BufPolicy.h ../graphics/Time.h ../graphics/Journal.h
+ApInit.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Timer.h
+ApInit.o: ../graphics/Util.h /usr/include/ctype.h
+ApItemList.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+ApItemList.o: ApItemList.h ApGroup.h /usr/include/stdlib.h
+ApParseCat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+ApParseCat.o: ApParseCat.h ../graphics/DeviseTypes.h ../graphics/AttrList.h
+ApParseCat.o: /usr/include/sys/time.h /usr/include/sys/types.h
+ApParseCat.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+ApParseCat.o: /usr/include/sys/select.h /usr/include/sys/time.h
+ApParseCat.o: ../graphics/Config.h ../graphics/DList.h ../graphics/Exit.h
+ApParseCat.o: ApGroup.h /usr/include/stdlib.h ApGroupDir.h ApItemList.h
+ApParseCat.o: ../graphics/Parse.h ApInit.h ../graphics/BufPolicy.h
+ApParseCat.o: ../graphics/Util.h /usr/include/string.h /usr/include/ctype.h
+aptest.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+aptest.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+aptest.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+aptest.o: /usr/include/sys/time.h /usr/include/sys/time.h
+aptest.o: ../graphics.new/ParseCat.h ../graphics/DeviseTypes.h
+aptest.o: ../graphics/ClassDir.h ../graphics/AttrList.h ../graphics/Config.h
+aptest.o: ../graphics/DList.h ../graphics/Exit.h

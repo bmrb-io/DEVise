@@ -1,0 +1,41 @@
+.c.o:
+	$(CC) -c $(CFLAGS) $<
+
+CC = g++
+
+LDFLAGS = $(ARCH_LDFLAGS) $(ALLOBJ) -ltcl -lm $(ARCH_LDPOST)
+CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
+	-fexternal-templates -Wall -Wno-unused -O -DUNIX
+
+TESTSRC = aptest.c
+TESTOBJ = $(TESTSRC:.c=.o)
+
+LOCALSRC = ApExit.c ApGroup.c ApGroupDir.c ApInit.c ApItemList.c ApParseCat.c
+LOCALOBJ = $(LOCALSRC:.c=.o)
+
+LIBOBJ = \
+	../graphics/Parse.o \
+	../graphics/AttrList.o \
+	../graphics/Time.o \
+	../graphics/Util.o \
+	$(LOCALOBJ)
+
+LIB = AttrProj.o
+
+ALLOBJ = $(TESTOBJ) $(LIB)
+
+all: aptest
+
+aptest: $(ALLOBJ)
+	$(CC) -o $@ $(LDFLAGS)
+
+$(LIB): $(LIBOBJ)
+	$(LD) -r -o $@ $(LIBOBJ)
+
+.PHONY: clean mostlyclean
+
+clean: mostlyclean
+	-rm aptest
+
+mostlyclean:
+	-rm $(TESTOBJ) $(LOCALOBJ) $(LIB)

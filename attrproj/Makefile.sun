@@ -1,0 +1,44 @@
+depend:
+	makedepend -fMakefile.sun -I../graphics -I../graphics.new \
+		-I../tape *.c
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+ApControl.o: /usr/include/unistd.h /usr/include/sys/types.h
+ApControl.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+ApControl.o: ../graphics/Control.h ../graphics/DeviseTypes.h
+ApControl.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/DList.h
+ApControl.o: ../graphics/Exit.h
+ApExit.o: /usr/include/stdio.h /usr/include/stdlib.h
+ApExit.o: /usr/include/sys/stdtypes.h ../graphics/Exit.h
+ApGroup.o: /usr/include/stdio.h ApGroup.h /usr/include/stdlib.h
+ApGroup.o: /usr/include/sys/stdtypes.h ApItemList.h
+ApGroupDir.o: /usr/include/stdio.h /usr/include/string.h
+ApGroupDir.o: /usr/include/sys/stdtypes.h ApGroupDir.h ApItemList.h ApGroup.h
+ApGroupDir.o: /usr/include/stdlib.h
+ApInit.o: /usr/include/stdio.h /usr/include/unistd.h /usr/include/sys/types.h
+ApInit.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+ApInit.o: /usr/include/fcntl.h /usr/include/sys/fcntlcom.h
+ApInit.o: /usr/include/sys/stat.h /usr/include/stdlib.h /usr/include/string.h
+ApInit.o: /usr/include/signal.h /usr/include/sys/signal.h
+ApInit.o: /usr/include/vm/faultcode.h ../graphics/Exit.h ApInit.h
+ApInit.o: ../graphics/DeviseTypes.h ../graphics/BufPolicy.h
+ApInit.o: ../graphics/Time.h /usr/include/sys/time.h /usr/include/sys/time.h
+ApInit.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+ApInit.o: ../graphics/Timer.h ../graphics/Util.h /usr/include/ctype.h
+ApItemList.o: /usr/include/stdio.h ApItemList.h ApGroup.h
+ApItemList.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+ApParseCat.o: /usr/include/stdio.h ApParseCat.h ../graphics/DeviseTypes.h
+ApParseCat.o: ../graphics/AttrList.h /usr/include/sys/time.h
+ApParseCat.o: /usr/include/sys/time.h ../graphics/Config.h
+ApParseCat.o: ../graphics/DList.h ../graphics/Exit.h ApGroup.h
+ApParseCat.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h ApGroupDir.h
+ApParseCat.o: ApItemList.h ../graphics/Parse.h ApInit.h
+ApParseCat.o: ../graphics/BufPolicy.h ../graphics/Util.h
+ApParseCat.o: /usr/include/string.h /usr/include/ctype.h
+aptest.o: /usr/include/stdio.h /usr/include/sys/types.h
+aptest.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+aptest.o: ../graphics.new/ParseCat.h ../graphics/DeviseTypes.h
+aptest.o: ../graphics/ClassDir.h ../graphics/AttrList.h
+aptest.o: /usr/include/sys/time.h /usr/include/sys/time.h
+aptest.o: ../graphics/Config.h ../graphics/DList.h ../graphics/Exit.h
