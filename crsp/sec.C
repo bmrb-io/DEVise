@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/15 07:01:25  ravim
+  Generates data file in print_security method.
+
   Revision 1.2  1995/11/09 22:42:35  jussi
   Converted to use tape drive instead of regular file. Added assertions
   just after each 'new' call. Modified get_field; dynamic memory allocation
@@ -37,7 +40,20 @@
 
 Security::Security(TapeDrive &drive) : tape(drive)
 {
+  // Initialize pointers
   reccount = 0;
+  names = NULL;
+  dists = NULL;
+  shares = NULL;
+  delist = NULL;
+  nasdin = NULL;
+  bidlo = NULL;
+  askhi = NULL;
+  prc = NULL;
+  vol = NULL;
+  ret = NULL;
+  sxret = bxret =  NULL;
+  yrval = NULL;
 
   // Generate all the arrays in order - header has to be extracted first
   // since the foll. arrays use the header info in determining the size.
@@ -88,35 +104,38 @@ void Security::print_security(ostream& out)
   // ret
 
   int sdate = header.begdat;
-  while (sdate < header.enddat)
+  while (sdate <= header.enddat)
   {
     // DATE
-    out << sdate;
+    out << sdate << " ";
     // BIDLO and ASKHI
     if ((header.begsp == 0) || 
 	(sdate < header.begsp) || (sdate > header.endsp))
-      out << 0 << 0;
+      out << 0 << " "<< 0 << " ";
     else
-      out << bidlo[sdate - header.begsp] << askhi[sdate - header.begsp];
+      out << bidlo[sdate - header.begsp] << " "
+	<< askhi[sdate - header.begsp] << " ";
     // PRC
     if ((header.begprc == 0) || 
 	(sdate < header.begprc) || (sdate > header.endprc))
-      out << 0;
+      out << 0 << " ";
     else
-      out << prc[sdate - header.begprc];
+      out << prc[sdate - header.begprc] << " ";
     // VOL
     if ((header.begvol == 0) || 
 	(sdate < header.begvol) || (sdate > header.endvol))
-      out << 0;
+      out << 0 << " ";
     else
-      out << vol[sdate - header.begvol];
+      out << vol[sdate - header.begvol] << " ";
     // RET
     if ((header.begret == 0) || 
 	(sdate < header.begret) || (sdate > header.endret))
-      out << 0;
+      out << 0 << " ";
     else
-      out << ret[sdate - header.begret];
+      out << ret[sdate - header.begret] << " ";
     
+    // NEWLINE
+    out << endl;
     sdate++;
   }
 }
