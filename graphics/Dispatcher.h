@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.35  1998/11/24 19:31:19  wenger
+  Fixed problem with soil science sessions sometimes locking up the
+  JavaScreen by disallowing input from file descriptors while waiting for
+  queries to finish; JavaScreen support code now omits sending windows for
+  which the print exclusion flag is set (allows "control windows") to not
+  be displayed in the JavaScreen.
+
   Revision 1.34  1998/09/22 17:23:41  wenger
   Devised now returns no image data if there are any problems (as per
   request from Hongyu); added a bunch of debug and test code to try to
@@ -268,6 +275,8 @@ public:
   /* Check callback list for self-consistency. */
   Boolean CallbacksOk();
 
+  int GetTag() { return _tag; }
+
   /***********************************************************************
     the following static functions are no longer needed, since there
     is only one dispatcher. I left them here to avoid changing a lot of
@@ -343,6 +352,8 @@ private:
 
   int _processingDepth;
   Boolean _waitingForQueries;
+
+  int _tag;
 };
 
 #if 0

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.22  1999/07/16 21:35:49  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.21  1998/11/16 18:58:58  wenger
   Added options to compile without DTE code (NO_DTE), and to warn whenever
   the DTE is called (DTE_WARN).
@@ -120,6 +128,7 @@
   #include "InitShut.h"
 #endif
 #include "DebugLog.h"
+#include "HangCheck.h"
 #endif
 
 void Exit::DoExit(int code)
@@ -164,6 +173,7 @@ void Exit::DoExit(int code)
 #endif
 
 #if !defined(LIBCS) && !defined(ATTRPROJ)
+    HangCheck::DestroyDefault();
     DebugLog::DeleteAll();
 #endif
 

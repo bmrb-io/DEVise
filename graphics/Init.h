@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.25  1999/06/25 15:58:12  wenger
+  Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
+  now uses DebugLog facility instead of printf; dispatcher logging is turned
+  on by default, and commands and queries are logged; added -debugLog command
+  line flag to turn logging on and off.
+
   Revision 1.24  1998/06/23 17:51:39  wenger
   Added client timeout to Devise -- quits if no commands from client
   within specified period.
@@ -212,6 +218,8 @@ class Init {
 
     static Boolean DoDebugLog() { return _doDebugLog; }
 
+    static Boolean DoHangCheck() { return _doHangCheck; }
+
 protected:
     static Boolean _savePopup;     /* true if pop-up window should be saved and
                                       wait for button even to remove it */
@@ -278,6 +286,7 @@ protected:
 	static int _clientTimeout;	   /* quit if client doesn't send commands */
 
 	static Boolean _doDebugLog;
+	static Boolean _doHangCheck;
 };
 
 #endif

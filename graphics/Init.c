@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.52  1999/06/25 15:58:12  wenger
+  Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
+  now uses DebugLog facility instead of printf; dispatcher logging is turned
+  on by default, and commands and queries are logged; added -debugLog command
+  line flag to turn logging on and off.
+
   Revision 1.51  1999/02/12 20:15:40  wenger
   Improved buffer size usage message.
 
@@ -338,6 +344,7 @@ char* Init::_switchname = DefaultSwitchName;
 int Init::_maxclients = DefaultMaxClients;
 
 Boolean Init::_doDebugLog = true;
+Boolean Init::_doHangCheck = true;
 
 Boolean Init::_quitOnDisconnect = false;
 int Init::_clientTimeout = 0;
@@ -411,6 +418,7 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-clientTimeout <value>: quit if client doesn't send"
 					" a command for <value> minutes\n");
   fprintf(stderr, "\t-debugLog 0|1: write debug log or not\n");
+  fprintf(stderr, "\t-hangCheck 0|1: do hang check or not\n");
 
   Exit::DoExit(1);
 }
@@ -872,6 +880,15 @@ void Init::DoInit(int &argc, char **argv)
 	  Usage(argv[0]);
 	}
 	_doDebugLog = !(atoi(argv[i+1]) == 0);
+	MoveArg(argc,argv,i,2);
+      }
+
+      else if (strcmp(&argv[i][1], "hangCheck") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_doHangCheck = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
 

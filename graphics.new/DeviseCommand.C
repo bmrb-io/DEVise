@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.74  1999/07/16 21:36:06  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.73  1999/07/14 18:42:51  wenger
   Added the capability to have axes without ticks and tick labels.
 
@@ -349,6 +357,8 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <assert.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include "DeviseCommand.h"
 #include "ParseAPI.h"
@@ -4803,8 +4813,24 @@ IMPLEMENT_COMMAND_END
 IMPLEMENT_COMMAND_BEGIN(test)
 // Note: modify this code to do whatever you need to test.
     if (argc == 1) {
-		PileStack::DumpAll(stdout);
-		DevWindow::DumpAll(stdout);
+		// For testing hang detection...
+		printf("Before sleep\n");
+#if 0
+		int fd = socket(AF_INET, SOCK_STREAM, 0);
+		fd_set fdread;
+		FD_ZERO(&fdread);
+		FD_SET(fd, &fdread);
+		struct timeval timeout;
+		timeout.tv_sec = 100;
+		timeout.tv_usec = 0;
+		select(fd+1, &fdread, NULL, NULL, &timeout);
+		close(fd);
+#else
+        for (int foo = 0; foo < 100000000; foo++) {
+		  double xxx = sin((double)foo);
+		}
+#endif
+		printf("After sleep\n");
     	ReturnVal(API_ACK, "done");
     	return 1;
 	} else {

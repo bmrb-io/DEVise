@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.75  1999/03/01 17:47:32  wenger
+#  Implemented grouping/ungrouping of views to allow custom view geometries.
+#
 #  Revision 1.74  1999/02/11 19:54:32  wenger
 #  Merged newpile_br through newpile_br_1 (new PileStack class controls
 #  pile and stacks, allows non-linked piles; various other improvements
@@ -271,7 +274,8 @@ LIBSRC = AttrList.c \
 	Map3D.C PSWindowRep.c PSDisplay.c DaliIfc.c DaliPatron.c \
 	DevStatus.c DualWindowRep.c DevFont.c \
 	ETkIfc.c ETkClient.c SessionDesc.c Scheduler.c DepMgr.c Session.c\
-	GLDebug.c GDataSock.c CursorStore.c RangeDesc.c PileStack.c ViewGeom.c
+	GLDebug.c GDataSock.c CursorStore.c RangeDesc.c PileStack.c \
+	ViewGeom.c HangCheck.c
 
 SRCc = $(filter %.c,$(LIBSRC))
 SRCC = $(filter %.C,$(LIBSRC))

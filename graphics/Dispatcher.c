@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.55  1999/06/25 15:58:00  wenger
+  Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
+  now uses DebugLog facility instead of printf; dispatcher logging is turned
+  on by default, and commands and queries are logged; added -debugLog command
+  line flag to turn logging on and off.
+
   Revision 1.54  1999/06/01 17:37:22  wenger
   Fixed various compiler warnings.
 
@@ -339,6 +345,8 @@ Dispatcher::Dispatcher(StateFlag state)
 				     _nextFilter, _nextHint,
 				     d1, d2, d3, d4);
   }
+
+  _tag = 0;
 }
 
 
@@ -674,6 +682,8 @@ long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 void Dispatcher::Run1()
 {
   static int waitfor_secs = 0;
+
+  _tag++;
 
 #if defined(DEBUG_LOG)
   sprintf(_logBuf, "Dispatcher::Run1()\n");

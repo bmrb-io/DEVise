@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.61  1999/04/23 21:40:34  wenger
+  Made date composite parsers y2k-compliant; things will still get goofed
+  up in 2038, though.
+
   Revision 1.60  1998/12/15 14:54:44  wenger
   Reduced DEVise memory usage in initialization by about 6 MB: eliminated
   Temp.c (had huge global arrays); eliminated Object3D class and greatly
@@ -280,6 +284,7 @@
 #include "DevError.h"
 #include "StateMap.h"
 #include "Util.h"
+#include "HangCheck.h"
 
 static time_t GetTime(struct tm &now)
 {
@@ -1595,6 +1600,8 @@ int main(int argc, char **argv)
   (void)setbuf(stdout, NULL);
 
   Init::DoInit(argc,argv);
+
+  HangCheck::CreateDefault();
 	
  // Reads the composite file from the DEVISE_LIB directory
   
