@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/15 21:58:05  jussi
+  Added copyright notice and cleaned up the code.
+
   Revision 1.2  1995/09/05 22:15:23  jussi
   Added CVS header.
 */
@@ -99,6 +102,7 @@ class RangeInfoAlloc {
 public:
   /* bufSize == # of buffers */
   RangeInfoAlloc(int bufSize);
+  ~RangeInfoAlloc();
 
   /* allocate a new range with the requested size.
      The returned range can be bigger or smaller than the requested size.
@@ -121,6 +125,7 @@ public:
 
 private:
   void *_startAddr; /* start address of buffer */
+  void *_origStartAddr; /* start address of buffer before any rounding */
   int _bufSize;     /* size of buffer */
 
   /* Allocate/free RangeInfo */

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/06/13 00:16:31  jussi
+  Added support for views that are slaves of more than one record
+  link. This allows one to express disjunctive queries.
+
   Revision 1.11  1996/05/31 15:41:25  jussi
   Added support for record links.
 
@@ -66,6 +70,9 @@
 #include "GDataBin.h"
 #include "TDataCMap.h"
 #include "Color.h"
+#include "DList.h"
+
+DefineDList(BStatList, BasicStats *)
 
 class TDataViewX: public ViewGraph, private QueryCallback,
 	private GDataBinCallback {
@@ -124,6 +131,8 @@ private:
   Boolean      _dispSymbols;
   Boolean      _dispConnectors;
   TDataCMap    *_cMap;
+
+  BStatList    _blist;	// Keep a list of BasicStats so we can delete them.
 };
 
 #endif

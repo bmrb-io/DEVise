@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/07/19 17:24:40  jussi
+  Added canElimRecords parameter to InsertSymbol().
+
   Revision 1.7  1996/07/19 03:22:35  jussi
   Added RecId to GDataBinRec.
 
@@ -84,6 +87,7 @@ class GDataBin {
 
 public:
   GDataBin();
+  ~GDataBin();
 
   /* Init before any data is returned from query processor */
   void Init(TDataMap *map, VisualFilter *filter, Transform2D *transform,

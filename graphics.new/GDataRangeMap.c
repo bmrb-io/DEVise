@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/14 21:17:26  jussi
+  Replaced 0x%x with 0x%p.
+
   Revision 1.4  1995/12/14 18:06:17  jussi
   Small fixes to get rid of g++ -Wall warnings.
 
@@ -71,6 +74,7 @@ void GDataRangeMap::FreeRec(GDataRangeMapRec *rec)
   }
   
   rec->next = _freeList;
+  rec->prev = NULL;
   _freeList = rec;
 }
 
@@ -81,7 +85,7 @@ Constructor
 GDataRangeMap::GDataRangeMap(int recSize, char *fname, Boolean trunc)
 {
 #ifdef DEBUG
-  printf("new GDataRangeMap 0x%p\n", this);
+  printf("GDataRangeMap::GDataRangeMap(0x%p)\n", this);
 #endif
 
   if (recSize > MAX_RANGE_REC_SIZE) {
@@ -95,7 +99,7 @@ GDataRangeMap::GDataRangeMap(int recSize, char *fname, Boolean trunc)
   _head.next = _head.prev = &_head;
 
   if (fname != NULL) {
-    _fname = new char[strlen(fname)+1];
+    _fname = new char[strlen(fname)+1];//TEMPTEMP -- leaked
     strcpy(_fname,fname);
 #ifdef DEBUG
     printf("GDataRangeMap::GDataRangeMap() file name %s\n", _fname);
@@ -112,11 +116,25 @@ Destructor
 
 GDataRangeMap::~GDataRangeMap()
 {
+#ifdef DEBUG
+  printf("GDataRangeMap::~GDataRangeMap(0x%p)\n", this);
+#endif
   if (_fname != NULL) {
 #ifdef DEBUG
     printf("GDAtaRangeMap destructor write %s, 0x%p\n", _fname, this);
     WriteRecords(_fname);
 #endif
+  }
+
+  // Free the list of GDataRangeMapRecs.  Note that this delete algorithm
+  // only works  for deleting the whole list, since we're not updating the
+  // prev pointers as we go.
+  GDataRangeMapRec* nodeP = _head.next;
+  GDataRangeMapRec* nextP = nodeP->next;
+  while (nodeP != &_head) {
+    FreeRec(nodeP);
+    nodeP = nextP;
+    nextP = nodeP->next;
   }
 }
 

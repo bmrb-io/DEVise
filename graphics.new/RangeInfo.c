@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/01/15 21:57:44  jussi
+  Added copyright notice and cleaned up the code.
+
   Revision 1.5  1996/01/12 15:23:55  jussi
   Replaced libc.h with stdlib.h.
 
@@ -76,12 +79,22 @@ void RangeInfo::RecIds(RecId &lowId, RecId &highId)
 
 RangeInfoAlloc::RangeInfoAlloc(int bufSize)
 {
+#if defined(DEBUG)
+  printf("RangeInfoAlloc::RangeInfoAlloc(%d)\n", bufSize);
+#endif
   _rangeInfoFreeList = NULL;
+
+  // Note: 32 is added to buf size in case we have to round up start
+  // address below.
   if ((_startAddr = (char *)malloc(bufSize + 32))== NULL) {
     fprintf(stderr, "Cannot allocate %.2f MB of main memory.\n",
 	    1.0 * bufSize / (1024 * 1024));
     Exit::DoExit(1);
   }
+
+  // Keep the original start address around so Purify doesn't think this
+  // is leaked memory.
+  _origStartAddr = _startAddr;
 
   unsigned int addr = (unsigned)_startAddr;
   if (addr % 32 != 0) {
@@ -100,6 +113,10 @@ RangeInfoAlloc::RangeInfoAlloc(int bufSize)
   printf("Allocated %.2f MB, buffer start = 0x%p, end = 0x%p\n",
 	 1.0 * bufSize / (1024 * 1024), _startAddr, _startAddr + bufSize - 1);
 #endif
+}
+
+RangeInfoAlloc::~RangeInfoAlloc()
+{
 }
 
 /**********************************************************

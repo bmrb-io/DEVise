@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.76  1996/09/19 20:11:53  wenger
+  More PostScript output code (still disabled); some code for drawing
+  view borders (disabled).
+
   Revision 1.75  1996/09/10 20:07:10  wenger
   High-level parts of new PostScript output code are in place (conditionaled
   out for now so that the old code is used until the new code is fully
@@ -461,6 +465,7 @@ View::~View()
 
   delete _label.name;
   delete _cursors;
+  delete _filterQueue;
 
   Unmap();
   DeleteFromParent();

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.40  1996/09/10 20:07:23  wenger
+  High-level parts of new PostScript output code are in place (conditionaled
+  out for now so that the old code is used until the new code is fully
+  working); changed (c) (tm) in windows so images are not copyrighted
+  by DEVise; minor bug fixes; added more debug code in the course of working
+  on the PostScript stuff.
+
   Revision 1.39  1996/09/04 21:25:02  wenger
   'Size' in mapping now controls the size of Dali images; improved Dali
   interface (prevents Dali from getting 'bad window' errors, allows Devise
@@ -343,6 +350,18 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
   AttrInfo *info = attrList->Find("x");
   if ((info != NULL) && (info->isSorted))
     SetDimensionInfo(new VisualFlag(VISUAL_X), 1);
+}
+
+MappingInterp::~MappingInterp()
+{
+  delete _tclCmd;
+  delete _simpleCmd;
+
+  delete _offsets;
+  SetGDataOffset(NULL);
+
+  delete GDataAttrList();
+  SetGDataAttrList(NULL);
 }
 
 void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,

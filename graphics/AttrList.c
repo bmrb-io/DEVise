@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/07/23 20:12:39  wenger
+  Preliminary version of code to save TData (schema(s) and data) to a file.
+
   Revision 1.8  1996/05/07 16:14:19  jussi
   Added copy constructor and GetVal() method.
 
@@ -77,7 +80,7 @@ AttrList::AttrList(AttrList &attrs)
   attrs.InitIterator();
   while(attrs.More()) {
     AttrInfo *info = attrs.Next();
-    InsertAttr(info->attrNum, CopyString(info->name), info->offset,
+    InsertAttr(info->attrNum, info->name, info->offset,
 	       info->length, info->type, info->hasMatchVal,
 	       &info->matchVal, info->isComposite, info->isSorted,
 	       info->hasHiVal, &info->hiVal, info->hasLoVal,

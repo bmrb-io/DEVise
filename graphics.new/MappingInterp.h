@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/07/19 02:53:41  jussi
+  Increase number of shapes to 15 (LineShape and LineShadeShape
+  were added). RecId is now the first GData attribute in all
+  GData records.
+
   Revision 1.23  1996/07/15 17:02:02  jussi
   Added support for string attributes in GData.
 
@@ -171,6 +176,7 @@ public:
 		unsigned long int flag,
 		unsigned long int attrFlag,
 		VisualFlag *dimensionInfo, int numDimensions);
+  ~MappingInterp();
 
   MappingInterpCmd *GetMappingCmd() { return _cmd; }
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.39  1996/08/05 18:37:40  beyer
+  Minor simplification of stats gathering
+
   Revision 1.38  1996/08/04 21:59:55  beyer
   Added UpdateLinks that allow one view to be told to update by another view.
   Changed TData so that all TData's have a DataSource (for UpdateLinks).
@@ -170,6 +173,8 @@
 
 //#define DEBUG
 
+ImplementDList(BStatList, BasicStats *)
+
 TDataViewX::TDataViewX(char *name, VisualFilter &initFilter, QueryProc *qp, 
 		       Color fg, Color bg, AxisLabel *xAxis, AxisLabel *yAxis,
 		       Action *action) :
@@ -198,6 +203,15 @@ TDataViewX::~TDataViewX()
   SubClassUnmapped();
 
   delete _dataBin;
+
+  int index = _blist.InitIterator();
+  while (_blist.More(index)) {
+    delete _blist.Next(index);
+  }
+  _blist.DoneIterator(index);
+  _blist.DeleteAll();
+  _gstat.Clear();
+  _glist.DeleteAll();
 }
 
 void TDataViewX::InsertMapping(TDataMap *map)
@@ -226,11 +240,17 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
   for(int i = 0; i < MAXCOLOR; i++)
     _stats[i].Init(this);
 
+  int index = _blist.InitIterator();
+  while (_blist.More(index)) {
+    delete _blist.Next(index);
+  }
+  _blist.DoneIterator(index);
+  _blist.DeleteAll();
   _gstat.Clear();     /* Clear the hashtable and calculate it again */
   _glist.DeleteAll(); /* Clear the gdata list */
 
   // Initialize record links whose master this view is
-  int index = _masterLink.InitIterator();
+  index = _masterLink.InitIterator();
   while(_masterLink.More(index)) {
     RecordLink *link = _masterLink.Next(index);
     link->Initialize();
@@ -392,6 +412,7 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 		  _glist.InsertOrderly(X, 1);
 		  bs->Sample(x, y);
 		  _gstat.Insert(X, bs);
+		  _blist.Insert(bs);
 	      } 
 	  } 
       }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/07/19 17:25:20  jussi
+  Added canElimOverlap parameter to InsertSymbol().
+
   Revision 1.10  1996/04/16 20:08:30  jussi
   Replaced assert() calls with DOASSERT macro.
 
@@ -70,6 +73,10 @@ Initializer
 
 GDataBin::GDataBin()
 {
+#if defined(DEBUG)
+  printf("GDataBin::GDataBin(); new'ing %d connectors (%d each)\n",
+    GDATA_BIN_MAX_PIXELS, sizeof(Connector));
+#endif
   int i;
   for(i = 0; i < GDATA_BIN_MAX_PIXELS; i++)
     _timestamp[i] = 0;
@@ -81,6 +88,21 @@ GDataBin::GDataBin()
   /* Init space for connectors */
   for(i = 0; i < GDATA_BIN_MAX_PIXELS; i++)
     _connectors[i] = new Connector;
+}
+
+/********************************************************************
+Destructor.
+**********************************************************************/
+
+GDataBin::~GDataBin()
+{
+#if defined(DEBUG)
+  printf("GDataBin::~GDataBin()\n");
+#endif
+  int i;
+  for(i = 0; i < GDATA_BIN_MAX_PIXELS; i++) {
+    delete _connectors[i];
+  }
 }
 
 /**********************************************************************
