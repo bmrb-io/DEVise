@@ -2,17 +2,20 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/02/28 17:49:41  yuc
+  Added 4 new types (for 3D shapes): POINT, EDGE, VERTEX, and BLOCK.
+
   Revision 1.2  1995/09/05 21:12:51  jussi
   Added/update CVS header.
 */
 
 #ifndef Geom_h
 #define Geom_h
-#include "DeviseTypes.h"
-#include <math.h>
-#ifdef DEBUG_GEOM
+
 #include <stdio.h>
-#endif
+#include <math.h>
+
+#include "DeviseTypes.h"
 
 /* A point */
 class Point {
