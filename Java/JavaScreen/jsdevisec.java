@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.106  2001/04/21 20:52:53  xuk
+// Added functionality to disable collaboration.
+// Added isCollab variable.
+// Added disableCollab() function.
+//
 // Revision 1.105  2001/04/20 20:27:05  xuk
 // Fixed bug 659: if no leaders are available for ollaboration, the selection dialog will not be shown.
 //
@@ -1003,7 +1008,7 @@ public class jsdevisec extends Panel
 	dispatcher.setStatus(0);
 
 	animPanel.stop();
-	stopButton.setBackground( jsValues.uiglobals.bg);
+	stopButton.setBackground(jsValues.uiglobals.bg);
 	jscreen.updateScreen(false);
 
 	// go back to normal mode

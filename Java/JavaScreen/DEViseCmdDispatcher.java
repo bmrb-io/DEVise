@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.92  2001/04/12 15:29:25  xuk
+// When collaboration leader exits, followers don't exit; instead they go back to normal mode.
+//
 // Revision 1.91  2001/04/11 21:16:29  xuk
 // A collaboration leader could find out the followers hostname.
 //
@@ -570,6 +573,13 @@ public class DEViseCmdDispatcher implements Runnable
 		  "}\n" + cmd;
 	    }
 	    _connectedAlready = true;
+
+	    // for JS switched back from collaboration
+	    if ((jsc.specialID == -1) && (jsc.sessionSaved)) {
+		jsc.isSessionOpened = true;
+		jsc.sessionSaved = false;
+		cmd = cmd + "\n" + DEViseCommands.REOPEN_SESSION;
+	    }
 
 	    // Start the heartbeat thread.
 	    if (jsc.specialID == -1)
