@@ -508,6 +508,30 @@ destination view (the view the cursor is drawn in). (rkw 5/22/98)
 Allow the user to specify which keys cause which actions (zoom, home, etc.).
 (rr/rkw 6/28/98)
 
+Possibly have the DataReader output tuples in the same format that the DTE
+uses internally, to avoid an extra conversion step. (kb/rkw 10/13/98)
+
+Move UNIXFILES underneath the DTE or dump them. (rr/rkw 10/13/98)
+
+If possible, have Jussi's buffer manager use pthreads on SPARC/Solaris and
+Intel/Solaris. (kb/rkw 10/13/98)
+
+Possibly change the record link creation code (in VisualLinkClassInfo) to
+actually implement record links as set links (can't be done if UNIXFILES
+are still outside the DTE). (rr/rkw 10/13/98)
+
+GUI improvements to make sessions easier to understand:
+- Mapping should show data source name.
+- Display a table of all links, of the following form, sorted by link name:
+  <link name> <link type> <view name> <view title> [master|slave]
+- If title is shown in view, also show (internal) view name.
+(rr/rkw 10/13/98)
+
+Eliminate Jussi's buffer manager from DEVise. (rr/rkw 10/13/98)
+
+The JavaScreen needs to allow dragging and resizing windows, and sending
+them to the back and bringing them to the front. (rr/rkw 10/13/98)
+
 
 COMPLETED
 ---------
