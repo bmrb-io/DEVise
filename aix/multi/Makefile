@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/07/08 18:14:25  wenger
+#  Fixed multi makefiles with ARCH_SYSLIBS macro like generic so that
+#  multi will compile for HP.
+#
 #  Revision 1.3  1996/05/31 15:45:32  jussi
 #  A customized Makefile.base.aix is used in AIX.
 #
@@ -33,5 +37,5 @@ ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lXaw -lXmu -lXt -lXext -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../multi
-include $(VPATH)/Makefile.base.aix
+include $(VPATH)/Makefile.base
 include $(VPATH)/Makefile.aix
