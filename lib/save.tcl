@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.21  1996/07/12 18:25:07  wenger
+#  Fixed bugs with handling file headers in schemas; added DataSourceBuf
+#  to TDataAscii.
+#
 #  Revision 1.20  1996/07/12 00:26:19  jussi
 #  Added protective braces around TData names in addDataSource calls.
 #  Fixed source definitions of non-UNIXFILE data sources in exported
@@ -315,6 +319,10 @@ proc DoActualSave { infile asTemplate asExport withData } {
     puts $f "DEVise changeMode 0"
     puts $f ""
 
+    # Save the commands needed to create the views.
+    set viewDict ""
+    SaveViews $f viewDict
+
     # Save the commands needed to create the data sources.
     set positionOffsets(dummy) ""
     set lengthOffsets(dummy) ""
@@ -328,10 +336,6 @@ proc DoActualSave { infile asTemplate asExport withData } {
     # Save the commands needed to create the mappings.
     set mapDict ""
     SaveMappings $f $fileDict mapDict
-
-    # Save the commands needed to create the views.
-    set viewDict ""
-    SaveViews $f viewDict $fileDict
 
     SaveMisc $f $asTemplate $asExport $viewDict $mapDict
 
@@ -560,7 +564,7 @@ proc SaveDataSources { fileId asExport asTemplate withData posOffRef \
     lenOffRef } {
     upvar $posOffRef positionOffsets
     upvar $lenOffRef lengthOffsets
-    global sourceList
+    global sourceList derivedSourceList
 
     puts $fileId "# Import file (Create TData)"
     puts $fileId ""
@@ -588,7 +592,10 @@ proc SaveDataSources { fileId asExport asTemplate withData posOffRef \
 	    foreach inst [DEVise get tdata $class] {
 		set params [DEVise getCreateParam tdata $class $inst]
 		set fileAlias [lindex $params 0]
-		set sourcedef $sourceList($fileAlias)
+                set err [catch {set sourcedef $derivedSourceList($fileAlias)}]
+                if {$err} {
+                    set sourcedef $sourceList($fileAlias)
+                }
                 set type [lindex $sourcedef 0]
 
                 # For non-UNIXFILE data sources, we cannot store $filename
@@ -619,7 +626,9 @@ proc SaveDataSources { fileId asExport asTemplate withData posOffRef \
 		} else {
 		    set "positionOffsets($fileAlias)" 0
 		    set "lengthOffsets($fileAlias)" 0
-		    puts $fileId "addDataSource \{$fileAlias\} \[list $sourcedef\]"
+                    if {$type != "BASICSTAT"} {
+                        puts $fileId "addDataSource \{$fileAlias\} \[list $sourcedef\]"
+                    }
 		}
 	    }
 	}
@@ -733,7 +742,7 @@ proc SaveMappings { fileId fileDict mapDictRef } {
 ############################################################
 
 # Save views to the given file.
-proc SaveViews { fileId viewDictRef fileDict } {
+proc SaveViews { fileId viewDictRef } {
     upvar $viewDictRef viewDict
 
     puts $fileId "# Create views"
@@ -742,18 +751,9 @@ proc SaveViews { fileId viewDictRef fileDict } {
     foreach viewClass [ DEVise get view ] {
 	foreach inst [ DEVise get view $viewClass ] {
 	    set params [DEVise getCreateParam view $viewClass $inst]
-	    set viewMap [lindex [DEVise getViewMappings $inst] 0]
 	    set viewVar view_$viewNum
-	    if {$viewMap == ""} { 
-		puts $fileId "set $viewVar $inst"
-	    } else {
-		set viewTData [DEVise getMappingTData $viewMap]
-		set tdataVar [DictLookup $fileDict $viewTData]
-		regsub $viewTData $inst \%s viewExpr
-		puts $fileId "set $viewVar \[ format \"$viewExpr\" \$$tdataVar \]"
-	    }
+            puts $fileId "set $viewVar \{$inst\}"
 	    puts $fileId "DEVise create view $viewClass \$$viewVar [lrange $params 1 end]"
-
 	    set viewLabelParams [DEVise getLabel $inst]
 	    puts $fileId "DEVise setLabel \$$viewVar $viewLabelParams"
 	    set viewStatParams [DEVise getViewStatistics $inst]
@@ -765,6 +765,8 @@ proc SaveViews { fileId viewDictRef fileDict } {
 	    set viewNum [expr $viewNum+1]
 	}
     }
+    puts $fileId ""
+    puts $fileId "scanDerivedSources"
     puts $fileId ""
 }
 
@@ -889,10 +891,13 @@ proc SaveAllData { fileId positionOffsets lengthOffsets } {
 #     must write the length of the data in the output file.
 
 proc SaveOneData { fileId tdata positionOffset lengthOffset } {
-    global sourceList
+    global sourceList derivedSourceList
 
     # Get the source information for this TData.
-    set source $sourceList($tdata)
+    set err [catch {set source $derivedSourceList($tdata)}]
+    if {$err} {
+        set source $sourceList($tdata)
+    }
 
     # Make sure this TData is a UNIXFILE, otherwise we can't save it yet.
     set type [lindex $source 0]
