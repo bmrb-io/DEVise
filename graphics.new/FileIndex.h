@@ -21,13 +21,16 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/10/04 17:44:14  wenger
+  Moved handling of indices from TDataAscii and TDataBinary to new
+  FileIndex class.
+
  */
 
 #ifndef _FileIndex_h_
 #define _FileIndex_h_
 
 
-#include <stdio.h>
 #include <sys/types.h>
 
 #include "RecId.h"
