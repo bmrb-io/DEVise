@@ -229,8 +229,9 @@ void ViewGraph::AddAsMasterView(RecordLink *link)
 {
     // remove this view from the slave view list of the link; then add
     // the link as one of the links whose master this view is
-
-    DropAsSlaveView(link);
+    
+    if (link->VisualLink::DeleteView(this))
+      DropAsSlaveView(link);
     if (!_masterLink.Find(link)) {
 #ifdef DEBUG
         printf("View %s becomes master of record link %s\n", GetName(),
