@@ -63,8 +63,8 @@ client: *.java
 	    DEViseViewInfo.java YImageCanvas.java YLogGUI.java YMsgBox.java \
 	    jsdevisec.java DEVisePlayback.java 
 
-appletclass: DEViseJSApplet.java
-	$(JAVAC) DEViseJSApplet.java
+appletclass: DEViseJSApplet.java 
+	$(JAVAC) DEViseJSApplet.java DEViseJSTimer.java
 
 loader: *.java
 	$(JAVAC) jsb.java DEViseJSLoader.java
