@@ -1,0 +1,75 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+set files = "sgi/generic/generic lib/control.tk doc/Agreement \
+	doc/Copyright doc/Disclaimer"
+set target = /usr/people/zoo/devise
+
+if ($#argv > 0) then
+  set target = $1
+endif
+
+foreach file ($files)
+  if ($file == "") then
+    continue
+  endif
+  if (! -f $file) then
+    echo File $file missing. Cannot proceed with release procedure.
+    exit 1
+  endif
+end
+
+echo You are about to release YOUR copy of Devise to the
+echo general public. The target directory is $target.
+echo ""
+echo The release includes SGI executables,
+echo Tcl/Tk code, and user and other documentation.
+echo ""
+echo -n "Are you absolutely sure you want to do this? [N] "
+
+set answer = $<
+if ($answer != y && $answer != Y) then
+  echo Aborted.
+  exit 1
+endif
+
+echo ""
+echo Executing release procedures...
+sleep 1
+
+echo ""
+echo Releasing new copy of Devise executables...
+ls -l sgi/generic/generic $target/bin/devise
+cp -p sgi/generic/generic $target/bin/devise
+
+echo ""
+echo Releasing new Tcl/Tk code...
+cp -p lib/[a-z]* $target/lib
+
+echo ""
+echo Releasing documentation...
+cp -p doc/Agreement $target/doc
+cp -p doc/Copyright $target/doc
+cp -p doc/Disclaimer $target/doc
+
+echo ""
+echo Done!
