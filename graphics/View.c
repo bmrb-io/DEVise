@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.66  1996/08/05 17:28:59  beyer
+  Added is_safe() which checks to see if a double is safe value (ie, not
+  NaN or Infinity).  Made SetVisualFilter check the new filter for safety.
+
   Revision 1.65  1996/08/05 16:35:16  beyer
   Made the _viewList statically allocated.  Sometimes the _viewList can
   be queried before any views (and, as was the case, the _viewList) are
@@ -493,7 +497,7 @@ void View::SubClassUnmapped()
 
 void View::SetVisualFilter(VisualFilter &filter)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("%s View::SetVisualFilter %f %f %f %f %f, %f, %f, %f\n", GetName(),
 	 filter.xLow, filter.yLow,
 	 filter.xHigh, filter.yHigh,_filter.xLow, _filter.yLow,
@@ -509,7 +513,7 @@ void View::SetVisualFilter(VisualFilter &filter)
     if (_filter.xLow != filter.xLow || _filter.xHigh != filter.xHigh
 	|| _filter.yLow != filter.yLow || _filter.yHigh != filter.yHigh) {
 
-#ifdef DEBUG
+#if defined(DEBUG)
       printf("filter changed\n");
 #endif
 
@@ -589,7 +593,7 @@ Boolean View::CheckCursorOp(WindowRep *win, int x, int y, int button)
 void View::HandleExpose(WindowRep *w, int x, int y, unsigned width, 
 			unsigned height)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("View::HandleExpose %d,%d,%u,%u\n", x, y, width, height);
 #endif
 
@@ -813,7 +817,7 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
   unsigned int winWidth, winHeight;
   Geometry(x, y, winWidth, winHeight);
   
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("View::GetDataArea: full area at %d,%d, size %d, %d\n",
 	 x, y, winWidth, winHeight);
 #endif
@@ -851,14 +855,14 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
   if (width <= 0) width = 1;
   if (height <= 0) height = 1;
   
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("View::GetDataArea %s %d %d %d %d\n", GetName(), x, y, width, height);
 #endif
 }
 
 void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("View::DrawAxesLabel %s %d %d %d %d\n", GetName(), x, y, w, h);
 #endif
 
@@ -927,7 +931,7 @@ void View::DrawLabel()
 
 void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("View::DrawXAxis %s %d %d %d %d\n", GetName(), x, y, w, h);
 #endif
   
@@ -940,7 +944,7 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
   int maxX = x + w - 1;
   int maxY = y + h - 1;
   if (!Geom::RectRectIntersect(x,y,maxX,maxY,axisX,axisY,axisMaxX,axisMaxY)) {
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("do not intersect\n");
 #endif
     return;
@@ -1033,7 +1037,7 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
 
 void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("View::DrawYAxis %s %d %d %d %d\n", GetName(), x, y, w, h);
 #endif
   
@@ -1050,7 +1054,7 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
   Coord maxY = y + h;
   if (!Geom::RectRectIntersect(x, y, maxX, maxY, axisX, axisY,
 			       axisMaxX, axisMaxY)) {
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("do not intersect\n");
 #endif
     return;
@@ -1171,7 +1175,7 @@ void View::OptimizeTickMarks(Coord low, Coord high, int numTicks,
     mantissa = 10.0;
 
   inc = mantissa * pow(10, tickpow);
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("Old tickIncrement %g, new %g\n", tickIncrement, inc);
 #endif
 
@@ -1184,7 +1188,7 @@ void View::OptimizeTickMarks(Coord low, Coord high, int numTicks,
   Coord newMidPoint = ((int)multTick) * inc;
   if (multTick - (int)multTick >= 0.5)
     newMidPoint += inc;
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("Old midpoint %g, new %g\n", midPoint, newMidPoint);
 #endif
 
@@ -1192,7 +1196,7 @@ void View::OptimizeTickMarks(Coord low, Coord high, int numTicks,
   start = newMidPoint
           - ((int)((newMidPoint - low) / inc)) * inc;
   num = (int)((high - start) / inc) + 1;
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("%d ticks from %g to %g @ %g\n", num, start, high, inc);
 #endif
 }
@@ -1224,7 +1228,7 @@ void View::CalcTransform(Transform2D &transform)
   int dataX, dataY, dataWidth, dataHeight;
   GetDataArea(dataX, dataY, dataWidth, dataHeight);
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("transform data: %d,%d,%d,%d\n", dataX, dataY,
 	 dataWidth, dataHeight);
 #endif
@@ -1261,7 +1265,7 @@ void View::CalcTransform(Transform3D &transform)
 
 void View::ReportQueryDone(int bytes, Boolean aborted)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("View::ReportQueryDone\n");
 #endif
 
@@ -1286,7 +1290,7 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
         vw = parent->Next(index);
         View *view = FindViewByName(vw->GetName());
         DOASSERT(view, "Cannot find view");
-#ifdef DEBUG
+#if defined(DEBUG)
         printf("View %s refreshes view %s\n", GetName(), view->GetName());
 #endif
         view->_pileViewHold = false;
@@ -1308,7 +1312,7 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
 
   ControlPanel::Instance()->SetIdle();
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("View %s completed\n", GetName());
 #endif
 
@@ -1337,7 +1341,7 @@ void View::Run()
     parent->DoneIterator(index);
     if (this != vw) {
       if (_pileViewHold) {
-#ifdef DEBUG
+#if defined(DEBUG)
         printf("View %s cannot continue\n", GetName());
 #endif
         if (_querySent) {
@@ -1346,12 +1350,12 @@ void View::Run()
         }
         return;
       }
-#ifdef DEBUG
+#if defined(DEBUG)
       printf("Bottom pile view %s continues\n", GetName());
 #endif
       _pileViewHold = true;
     } else {
-#ifdef DEBUG
+#if defined(DEBUG)
       printf("Top pile view %s continues\n", GetName());
 #endif
       /* make sure top view is visible */
@@ -1360,7 +1364,7 @@ void View::Run()
   }
 
   ControlPanel::Mode mode = ControlPanel::Instance()->GetMode();
-#ifdef DEBUGxxx
+#if defined(DEBUG)xxx
   if (mode == ControlPanel::LayoutMode)
     printf("layout mode ");
   else
@@ -1382,7 +1386,7 @@ void View::Run()
   if (_querySent) {
     if (_hasExposure || _filterChanged || _refresh || _updateTransform
         || !Mapped()) {
-#ifdef DEBUG
+#if defined(DEBUG)
       printf("View:: aborting\n");
 #endif
       DerivedAbortQuery();
@@ -1417,7 +1421,7 @@ void View::Run()
   
   if (!Iconified() && !_pileMode && _numDimensions == 2 &&
       RestorePixmap(_filter, newFilter) == PixmapTotal) {
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("View::Run: Restored complete pixmap for\n  %s\n", GetName());
 #endif
 
@@ -1493,13 +1497,13 @@ void View::Run()
     DOASSERT(parent->More(index), "Parent view has no children");
     ViewWin *firstChild = parent->Next(index);
     if (this != firstChild) {
-#ifdef DEBUG
+#if defined(DEBUG)
       printf("View %s follows first child %s\n", GetName(),
              firstChild->GetName());
 #endif
       piledDisplay = true;
     } else {
-#ifdef DEBUG
+#if defined(DEBUG)
       printf("View %s is first child\n", GetName());
 #endif
     }
@@ -1516,7 +1520,7 @@ void View::Run()
 
   if (_hasExposure) {
     /* limit exposure to the size of the window */
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("exposure (%d,%d),(%d,%d) ",
 	   _exposureRect.xLow, _exposureRect.yLow,
 	   _exposureRect.xHigh, _exposureRect.yHigh);
@@ -1532,7 +1536,7 @@ void View::Run()
     _exposureRect.yHigh = MAX(_exposureRect.yLow, _exposureRect.yHigh);
     _exposureRect.yHigh = MIN(_exposureRect.yHigh, scrnHeight - 1);
     
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("--> (%d,%d),(%d,%d)\n",
 	   _exposureRect.xLow, _exposureRect.yLow,
 	   _exposureRect.xHigh, _exposureRect.yHigh);
@@ -1544,7 +1548,7 @@ void View::Run()
 	      _queryFilter.xLow, _queryFilter.yLow, 
 	      _queryFilter.xHigh, _queryFilter.yHigh);
     
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("exposure world %f,%f,%f,%f\n",
 	   _queryFilter.xLow, _queryFilter.yLow,
 	   _queryFilter.xHigh, _queryFilter.yHigh);
@@ -1586,7 +1590,7 @@ void View::Run()
 
   /* blank out area to be drawn */
   if (!piledDisplay) {
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Clearing data area in window 0x%p\n", winRep);
 #endif
     winRep->SetFgColor(GetBgColor());
@@ -1616,7 +1620,7 @@ void View::Run()
     winRep->PopClip();
   }
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("after Run %d %d %d %d\n",
 	 _hasExposure, _filterChanged, _refresh, _updateTransform);
 #endif
@@ -1625,7 +1629,7 @@ void View::Run()
 void View::HandleResize(WindowRep *w, int xlow, int ylow,
 			unsigned width, unsigned height)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("View::HandleResize(%d,%d,%d,%d)\n", xlow, ylow, width, height);
 #endif
   
@@ -1644,7 +1648,7 @@ void View::HandleResize(WindowRep *w, int xlow, int ylow,
 
 void View::UpdateTransform(WindowRep *winRep)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("View::UpdateTransform %s\n", GetName());
 #endif
 
@@ -1745,7 +1749,7 @@ Return:
 
 View::UpdateFilterStat View::UpdateFilterWithScroll()
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("UpdateFilterWithScroll: _refresh %d, _filterChanged %d, _hasExposure %d\n",
 	 _refresh, _filterChanged, _hasExposure);
 #endif
@@ -1793,7 +1797,7 @@ View::UpdateFilterStat View::UpdateFilterWithScroll()
     int dataX, dataY, dataW, dataH;
     GetDataArea(dataX, dataY, dataW, dataH);
 
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("data: x:%d, y:%d, w:%d, h:%d\n", dataX, dataY, dataW, dataH);
 #endif
 
@@ -1834,7 +1838,7 @@ View::UpdateFilterStat View::UpdateFilterWithScroll()
       return SameFilter;
     }
 
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("after scroll exposure (%d,%d),(%d,%d)\n",
 	   _exposureRect.xLow, _exposureRect.yLow,
 	   _exposureRect.xHigh, _exposureRect.yHigh);
@@ -1869,7 +1873,7 @@ void View::ReportViewCreated()
   for(index = _viewCallbackList->InitIterator(); 
       _viewCallbackList->More(index);) {
     ViewCallback *callBack = _viewCallbackList->Next(index);
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Calling ViewCreated callback 0x%p for view 0x%p\n",
 	   callBack, this);
 #endif
@@ -1887,7 +1891,7 @@ void View::ReportViewRecomputed()
   for(index = _viewCallbackList->InitIterator(); 
       _viewCallbackList->More(index);) {
     ViewCallback *callBack = _viewCallbackList->Next(index);
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Calling ViewRecomputed callback 0x%p for view 0x%p\n",
 	   callBack, this);
 #endif
@@ -1905,7 +1909,7 @@ void View::ReportViewDestroyed()
   for(index = _viewCallbackList->InitIterator(); 
       _viewCallbackList->More(index);) {
     ViewCallback *callBack = _viewCallbackList->Next(index);
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Calling ViewDestroyed callback 0x%p for view 0x%p\n",
 	   callBack, this);
 #endif
@@ -1923,7 +1927,7 @@ void View::ReportFilterAboutToChange()
   for(index = _viewCallbackList->InitIterator(); 
       _viewCallbackList->More(index);) {
     ViewCallback *callBack = _viewCallbackList->Next(index);
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Calling FilterAboutToChange callback 0x%p for view 0x%p\n",
 	   callBack, this);
 #endif
@@ -1941,7 +1945,7 @@ void View::ReportFilterChanged(VisualFilter &filter, int flushed)
   for(index = _viewCallbackList->InitIterator(); 
       _viewCallbackList->More(index);) {
     ViewCallback *callBack = _viewCallbackList->Next(index);
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Calling FilterChanged callback 0x%p for view 0x%p\n",
 	   callBack, this);
 #endif
@@ -1957,7 +1961,7 @@ void View::InsertViewCallback(ViewCallback *callBack)
     
   DOASSERT(_viewCallbackList, "Invalid view callback list");
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("Inserting 0x%p to view callback list\n", callBack);
 #endif
 
@@ -1968,7 +1972,7 @@ void View::DeleteViewCallback(ViewCallback *callBack)
 {
   DOASSERT(_viewCallbackList, "Invalid view callback list");
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("Removing 0x%p from view callback list\n", callBack);
 #endif
 
@@ -1987,13 +1991,13 @@ void View::Iconify(Boolean iconified)
 
 void View::ModeChange(ControlPanel::Mode mode)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("Change mode %d,%d,%d,%d\n", _hasExposure,
 	 _filterChanged, _refresh, _updateTransform);
 #endif
 
   if (mode == ControlPanel::LayoutMode && _querySent) {
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("abort query from mode change\n");
 #endif
     DerivedAbortQuery();
@@ -2006,7 +2010,7 @@ void View::ModeChange(ControlPanel::Mode mode)
 
 void View::Highlight(Boolean flag)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("Highlight view %s %d\n", GetName(), flag);
 #endif
 
@@ -2083,12 +2087,12 @@ Boolean View::DrawCursors()
 {
   DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("DrawCursors for %s\n", GetName());
 #endif
 
   if (!Mapped()) {
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("not mapped\n");
 #endif
     return false;
@@ -2105,12 +2109,12 @@ Boolean View::DrawCursors()
 
 Boolean View::HideCursors()
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("HideCursors for %s\n", GetName());
 #endif
 
   if (!Mapped()) {
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("not mapped\n");
 #endif
     return false;
@@ -2127,7 +2131,7 @@ Boolean View::HideCursors()
 
 void View::DoDrawCursors()
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("DoDrawCursors\n");
 #endif
 
@@ -2148,21 +2152,21 @@ void View::DoDrawCursors()
     yHigh = MIN(_filter.yHigh, filter->yHigh);
 
     if ((filter->flag & VISUAL_X) && (filter->flag & VISUAL_Y)) {
-#ifdef DEBUG
+#if defined(DEBUG)
       printf("DoDrawCursors: Drawing XY cursor in\n  %s\n", GetName());
 #endif
       if (!(filter->xHigh < _filter.xLow || filter->xLow > _filter.xHigh
 	    || filter->yHigh < _filter.yLow || filter->yLow > _filter.yHigh))
 	winRep->FillRect(xLow, yLow, xHigh - xLow, yHigh - yLow);
     } else if (filter->flag & VISUAL_X) {
-#ifdef DEBUG
+#if defined(DEBUG)
       printf("DoDrawCursors: Drawing X cursor in\n  %s\n", GetName());
 #endif
       if (!(filter->xHigh < _filter.xLow || filter->xLow > _filter.xHigh))
 	winRep->FillRect(xLow, _filter.yLow, xHigh - xLow,
 			 _filter.yHigh - _filter.yLow);
     } else if (filter->flag & VISUAL_Y) {
-#ifdef DEBUG
+#if defined(DEBUG)
       printf("DoDrawCursors: Drawing Y cursor in\n  %s\n", GetName());
 #endif
       if (!(filter->yHigh < _filter.yLow || filter->yLow > _filter.yHigh))
@@ -2203,7 +2207,7 @@ View::PixmapStat View::RestorePixmap(VisualFilter filter,
   unsigned int width, height;
   Geometry(x, y, width, height);
 
-#ifdef DEBUG
+#if defined(DEBUG)
   if (_pixmap) {
     printf("RestorePixmap %s\n", GetName());
     printf("cur filter: %f,%f,%f,%f\n", filter.xLow, filter.xHigh,
@@ -2244,7 +2248,7 @@ void View::InvalidatePixmaps()
 
 void View::SavePixmaps(FILE *file)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("SavePixmap at bytes %ld\n", ftell(file));
   printf("View SavePixmaps bytes %d\n", _bytes);
 #endif
@@ -2305,7 +2309,7 @@ void View::SavePixmaps(FILE *file)
   
   DOASSERT(pixmap, "No pixmap");
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("Saving Pixmap for %s, data %d bytes\n", GetName(), _bytes);
 #endif
 
@@ -2326,7 +2330,7 @@ void View::SavePixmaps(FILE *file)
 			 pixmap->filter.yHigh);
   }
   
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("SavePixmap filter %f,%f,%f,%f\n",
 	 pixmap->filter.xLow, pixmap->filter.xHigh,
 	 pixmap->filter.yLow, pixmap->filter.yHigh);
@@ -2378,7 +2382,7 @@ void View::SavePixmaps(FILE *file)
   pixmap->dataBytes = _bytes;
   pixmap->filter = _filter;
   
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("pixMap dataBytes %d, imageBytes %d, width %d, height %d, bpl %d, pad %d\n",
 	 pixmap->dataBytes, pixmap->imageBytes, pixmap->width,
 	 pixmap->height, pixmap->bytes_per_line, pixmap->padding);
@@ -2391,7 +2395,7 @@ void View::SavePixmaps(FILE *file)
   }
 #endif
   
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("before compress, at %d\n", ftell(file));
 #endif
 
@@ -2422,7 +2426,7 @@ void View::SavePixmaps(FILE *file)
   fwrite(&posNow, sizeof(int), 1, file);
   fseek(file, posNow, 0);
   
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("after compress, at %d\n", ftell(file));
 #endif
 #endif
@@ -2467,14 +2471,14 @@ void View::LoadPixmaps(FILE *file)
     DOASSERT(0, "Cannot read pixmap file");
   }
   if (!saved) {
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("View::LoadPixmaps: %s not saved\n", GetName());
 #endif
     _pixmap = NULL;
     return;
   }
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("Loading pixmap for %s\n", GetName());
 #endif
 
@@ -2486,7 +2490,7 @@ void View::LoadPixmaps(FILE *file)
     DOASSERT(0, "Cannot read pixmap file");
   }
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("LoadPixmap filter %f,%f,%f,%f\n",
 	 pixmap->filter.xLow, pixmap->filter.xHigh,
 	 pixmap->filter.yLow, pixmap->filter.yHigh);
@@ -2532,13 +2536,13 @@ void View::LoadPixmaps(FILE *file)
     DOASSERT(0, "Cannot read pixmap file");
   }
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("pixMap dataBytes %d, imageBytes %d, width %d, height %d, bpl %d pad %d\n",
 	 _pixmap->dataBytes, _pixmap->imageBytes, _pixmap->width,
 	 _pixmap->height, _pixmap->bytes_per_line, _pixmap->padding);
 #endif
   
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("before decompress, at %d\n", ftell(file));
 #endif
 
@@ -2551,7 +2555,7 @@ void View::LoadPixmaps(FILE *file)
   (void)jpeg_read_header(&cinfo,TRUE);
   jpeg_start_decompress(&cinfo);
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("allocating %d bytes\n", _pixmap->imageBytes);
 #endif
 
@@ -2562,7 +2566,7 @@ void View::LoadPixmaps(FILE *file)
   unsigned char *buffer[1];
   for(int i = 0; i < _pixmap->height; i++) {
     buffer[0] = &data[i * _pixmap->bytes_per_line];
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("reading line %d\n", i);
 #endif
     jpeg_read_scanlines(&cinfo,buffer,1);
@@ -2571,7 +2575,7 @@ void View::LoadPixmaps(FILE *file)
   (void)jpeg_finish_decompress(&cinfo);
   jpeg_destroy_decompress(&cinfo);
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("after decompress, at %d\n", ftell(file));
 #endif
 #endif
@@ -2600,7 +2604,7 @@ void View::PrintStat()
 
 void View::CompRhoPhiTheta()
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("<<<< x = %f y = %f z = %f\n",
          _camera.x_, _camera.y_, _camera.z_);
   printf("<<<< fx = %f fy = %f fz = %f\n",
@@ -2620,7 +2624,7 @@ void View::CompRhoPhiTheta()
       _camera._phi = acos(Y / _camera._rho);
     else {
       _camera._phi = 0.0;
-#ifdef DEBUG
+#if defined(DEBUG)
       printf("*********** WARNING *****************\n");
 #endif
     }
@@ -2663,7 +2667,7 @@ void View::CompRhoPhiTheta()
     _camera.z_ += _camera.fz;
   }
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf(">>>> x = %f y = %f z = %f\n",
          _camera.x_, _camera.y_, _camera.z_);
   printf(">>>> fx = %f fy = %f fz = %f\n",
@@ -2708,7 +2712,7 @@ void View::SetCamera(Camera new_camera)
 
 void View::Draw3DAxis()
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("Drawing 3D axis\n");
 #endif
 
