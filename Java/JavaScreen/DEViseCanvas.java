@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.80  2001/09/26 15:11:57  wenger
+// Fixed bugs 694 (JS rubberband line now reflects X-only zoom) and 695
+// (JS now properly deals with disallowed cursor movement).
+//
 // Revision 1.79  2001/09/25 18:49:11  wenger
 // Fixed bug 689 (JS no longer draws a rubberband line on mouse drags in
 // non-zoomable views); found bugs 693-695.
@@ -492,6 +496,10 @@ public class DEViseCanvas extends Container
 
     public void paint(Graphics gc)
     {
+	// for command log playback
+	if (jsc.isPlayback && !jsc.isDisplay)
+	    return;
+	
         if (jsc.jsValues.canvas.isInteractive) {
             if (jsc.jsValues.canvas.sourceCanvas != this) {
                 return;
