@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/01/20 00:46:27  jussi
+  Small fixes to produce better debugging output.
+
   Revision 1.17  1996/01/13 23:08:51  jussi
   Added support for Z attribute and shape attribute 2.
 
@@ -994,6 +997,14 @@ Boolean MappingInterp::ConvertSimpleCmd(char *cmd,
     if ( *(cmd+1) == '\0' )
       return false;
 
+    if (!strcmp(cmd + 1, "recId")) {
+      entry.cmdType = MappingSimpleCmdEntry::AttrCmd;
+      entry.cmd.attr = 0;
+      type = IntAttr;
+      isSorted = true;
+      return true;
+    }
+
     if ((info = _attrList->Find(cmd+1)) != NULL) {
       entry.cmdType = MappingSimpleCmdEntry::AttrCmd;
       entry.cmd.attr = info;
@@ -1097,7 +1108,10 @@ void MappingInterp::PrintSimpleCmdEntry(MappingSimpleCmdEntry *entry)
 {
   switch(entry->cmdType) {
   case MappingSimpleCmdEntry::AttrCmd:
-    printf("\"%s\"", entry->cmd.attr->name);
+    if (entry->cmd.attr)
+      printf("\"%s\"", entry->cmd.attr->name);
+    else
+      printf("\"recId\"");
     break;
 
   case MappingSimpleCmdEntry::ConstCmd:
@@ -1223,11 +1237,12 @@ inline double ConvertOne(char *from, MappingSimpleCmdEntry *entry,
   char *ptr;
 
   switch(entry->cmdType) {
+
   case MappingSimpleCmdEntry::AttrCmd:
-    /*
-       printf("returning attr\n");
-    */
     info = entry->cmd.attr;
+    if (!info)
+      return MappingInterp::_tclRecId;
+
     offset = info->offset;
     ptr = from + offset;
 

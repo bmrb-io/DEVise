@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/01/13 23:10:18  jussi
+  Added support for Z attribute and shape attribute 2.
+
   Revision 1.8  1996/01/09 22:27:59  jussi
   Added 3D block shape.
 
@@ -101,6 +104,9 @@ class AttrList;
 const int MaxInterpShapes = 7;
 
 class MappingInterp: public TDataMapDispatch {
+  friend double ConvertOne(char *from, MappingSimpleCmdEntry *entry,
+			   double defaultVal);
+
 public:
   MappingInterp(char *name,
 		TData *tdata, MappingInterpCmd *cmd, int flag,int attrFlag,
