@@ -175,14 +175,14 @@ const Tuple* DataReadExec::getNext()
   if(!ud->isOk()){	// should not happen
     return NULL;
   }
-  buff[offsets[1]] = '\0';
   stat = ud->getRecord(buff);
-  if ((stat == FOUNDEOF) && (buff[offsets[1]] == '\0')) {
+  if (ud->getInValid()) {
+	  return NULL;
+  }
+  if (stat == FOUNDEOF) {
     return NULL;
   }
-  if (stat != OK && stat != FOUNDEOL && stat != FOUNDEOF) {
-    return NULL;
-  }
+  assert((stat == OK) || (stat == FOUNDEOL) || (stat == FOUNDEOF));
   intCopy((Type*) recId, tuple[0]);
   for(int i = 1; i < numFlds; i++){
     unmarshalPtrs[i](&buff[offsets[i]], tuple[i]);
