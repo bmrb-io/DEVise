@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/02 21:28:01  jussi
+  Added support for TK_WINDOW but the first implementation is
+  obsoleted and renamed TK_WINDOW_old. Added various debugging
+  output statements.
+
   Revision 1.6  1995/11/29 15:11:15  jussi
   Minor fix to really #ifdef out WritePostscript debugging output.
 
@@ -1004,9 +1009,9 @@ void XWindowRep::AbsoluteText(char *text, Coord x, Coord y,
 void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
 		      TextAlignment alignment, Boolean skipLeadingSpace)
 {
-  /*
-     printf("text: %s at %.2f,%.2f,%.2f,%.2f\n",text,x,y,width,height);
-  */
+#ifdef DEBUG
+  printf("text: %s at %.2f,%.2f,%.2f,%.2f\n", text, x, y, width, height);
+#endif
 
   /* transform into window coords */
   Coord tx1,ty1,tx2,ty2;
@@ -1045,10 +1050,11 @@ void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
     textWidth = XTextWidth(fontStruct, text, textLength);
   }
   
-  /*
-     printf("transformed to x=%d,y=%d,w=%d,h=%d\n", winX,winY,winWidth,winHeight);
-     printf("textwidth = %d, textHeight = %d\n",textWidth,textHeight);
-  */
+#ifdef DEBUG
+  printf("transformed to x=%d,y=%d,w=%d,h=%d\n", winX, winY,
+	 winWidth, winHeight);
+  printf("textwidth = %d, textHeight = %d\n", textWidth, textHeight);
+#endif
 
   /* draw text in source bitmap */
   XDrawImageString(_display,_srcBitmap.pixmap,_srcBitmap.gc, 
@@ -1058,11 +1064,11 @@ void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
   int dstWidth = ROUND(int, textWidth * scale);
   int dstHeight = ROUND(int, textHeight*scale);
 
-  /*
-     printf("scale= %.2f, textWidth = %d, textHeight = %d, dstw=%d, dstH = %d\n",
-     scale,textWidth, textHeight,dstWidth, dstHeight);
-     printf("dstwidth = %d, dstHeight = %d\n",dstWidth,dstHeight);
-  */
+#ifdef DEBUG
+  printf("scale= %.2f, textWidth = %d, textHeight = %d, dstw=%d, dstH = %d\n",
+	 scale, textWidth, textHeight, dstWidth, dstHeight);
+  printf("dstwidth = %d, dstHeight = %d\n", dstWidth, dstHeight);
+#endif
 
   CopyBitmap(textWidth, textHeight, dstWidth, dstHeight);
   
@@ -1111,8 +1117,8 @@ void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
     break;
   }
   
-  XCopyPlane(_display,_dstBitmap.pixmap, _win, _gc, 
-	     0,0, dstWidth,dstHeight, startX, startY, 1);
+  XCopyPlane(_display, _dstBitmap.pixmap, _win, _gc, 
+	     0, 0, dstWidth, dstHeight, startX, startY, 1);
 }
 
 /**********************************************************************
@@ -1195,7 +1201,7 @@ void XWindowRep::AllocBitmap(XBitmapInfo &info, int width, int height)
   info.inUse = true;
   info.width = width;
   info.height = height;
-  info.pixmap = XCreatePixmap(_display,_win, width, height, 1);
+  info.pixmap = XCreatePixmap(_display, _win, width, height, 1);
   info.gc = XCreateGC(_display,info.pixmap, 0 , NULL);
   
   /* set foreground to 1 and background to 0 for later XCopyPlane()*/
@@ -1203,7 +1209,8 @@ void XWindowRep::AllocBitmap(XBitmapInfo &info, int width, int height)
   
   XSetFont(_display,info.gc,
 	   ((XDisplay *)WindowRep::GetDisplay())->GetFontStruct()->fid);
-  info.image = XGetImage(_display, info.pixmap,0,0,width, height, 1,XYPixmap);
+  info.image = XGetImage(_display, info.pixmap, 0, 0, width, height,
+			 1, XYPixmap);
 }
 
 /* Get Window dimensions */
@@ -1212,7 +1219,7 @@ void XWindowRep::UpdateWinDimensions()
 {
   Window root;
   unsigned int border_width, depth;
-  XGetGeometry(_display,_win,&root,&_x,&_y,&_width,&_height,
+  XGetGeometry(_display, _win, &root, &_x, &_y, &_width, &_height,
 	       &border_width, &depth);
 }
 
@@ -1224,7 +1231,7 @@ void XWindowRep::Dimensions(unsigned int &width, unsigned int &height)
   height = _height;
 }
 
-/* get window rep origin */
+/* Get window rep origin */
 
 void XWindowRep::Origin(int &x, int &y)
 {
@@ -1246,18 +1253,18 @@ void XWindowRep::AbsoluteOrigin(int &x, int &y)
     /* add distace to parent */
     Window winRoot;
     int winX, winY; unsigned winW, winH, winBorder, winDepth;
-    XGetGeometry(_display,current, &winRoot, &winX, &winY,
+    XGetGeometry(_display, current, &winRoot, &winX, &winY,
 		 &winW, &winH, &winBorder, &winDepth);
     x += winX;
     y += winY;
     
     Window *children;
     unsigned int nchildren;
-    if (!XQueryTree(_display,current,
-		    &root,&parent,&children,&nchildren)) {
+    if (!XQueryTree(_display, current, &root, &parent,
+		    &children, &nchildren)) {
       fprintf(stderr,"XwindowRep::HandleEvent QueryTree\n");
       Exit::DoExit(1);
-		}
+    }
     if (children != NULL)
       XFree(children);
   } while (parent != root);
@@ -1308,68 +1315,48 @@ void XWindowRep::DoPopup(int x, int y, int button)
   
   long bgnd = GetLocalColor(WhiteColor);
   long fgnd = GetLocalColor(BlackColor);
+
   /* Create window */
-  XSetWindowAttributes    attr;
-  attr.background_pixmap = None;
-  attr.background_pixel   = bgnd;
-  attr.border_pixmap          = CopyFromParent;
-  attr.border_pixel       = fgnd;
-  attr.bit_gravity        = ForgetGravity /*CenterGravity*/;
-  attr.win_gravity        = NorthWestGravity;
-  attr.backing_store          = /* Always*/ NotUseful ;
-  attr.backing_planes         = AllPlanes;
-  attr.backing_pixel          = 0;
-  attr.save_under             = True;
-  attr.event_mask             = 0;
-  attr.do_not_propagate_mask= 0;
-  attr.override_redirect      = True;
-  attr.colormap   = DefaultColormap(_display, DefaultScreen(_display));
-  attr.cursor                 = None;
+  XSetWindowAttributes attr;
+  attr.background_pixmap	= None;
+  attr.background_pixel		= bgnd;
+  attr.border_pixmap		= CopyFromParent;
+  attr.border_pixel		= fgnd;
+  attr.bit_gravity		= ForgetGravity /*CenterGravity*/;
+  attr.win_gravity		= NorthWestGravity;
+  attr.backing_store		= /* Always*/ NotUseful ;
+  attr.backing_planes		= AllPlanes;
+  attr.backing_pixel		= 0;
+  attr.save_under		= True;
+  attr.event_mask		= 0;
+  attr.do_not_propagate_mask	= 0;
+  attr.override_redirect	= True;
+  attr.colormap			= DefaultColormap(_display,
+						  DefaultScreen(_display));
+  attr.cursor			= None;
   
   /* Create the window. */
   Window win;
   if (x < 0) x = 0;
   if (y < 0) y = 0;
   
-  Window root, current;
-  Window parent = _win;
-  
-  /* Find the offset from root window */
-  do {
-    current = parent;
-    
-    /* add distace to parent */
-    Window winRoot;
-    int winX, winY; unsigned winW, winH, winBorder, winDepth;
-    XGetGeometry(_display,current, &winRoot, &winX, &winY,
-		 &winW, &winH, &winBorder, &winDepth);
-    x += winX;
-    y += winY;
-    
-    Window *children;
-    unsigned int nchildren;
-    if (!XQueryTree(_display,current,
-		    &root,&parent,&children,&nchildren)) {
-      fprintf(stderr,"XwindowRep::HandleEvent QueryTree\n");
-      Exit::DoExit(1);
-    }
-    if (children != NULL)
-      XFree(children);
-  } while (parent != root);
-  
+  int absX, absY;
+  AbsoluteOrigin(absX, absY);
+  x += absX;
+  y += absY;
+
   /* Make bottom right of window appear at cursor position */
-  textWidth += 2; /* allow for border */
-  textHeight +=2; /* allow for border */
-  x = x-textWidth+1;
-  y = y-textHeight+1;
+  textWidth +=  2; /* allow for border */
+  textHeight += 2; /* allow for border */
+  x = x - textWidth + 1;
+  y = y - textHeight + 1;
   if (x < 0) x = 0;
   if (y < 0) y = 0;
   
-  if ((win = XCreateWindow(_display, root, (unsigned)x,
-			   (unsigned)y, (unsigned)textWidth, (unsigned)textHeight, 
-			   /* border width */1, 0, InputOutput, CopyFromParent, AllPlanes , 
-			   &attr)) == 0) {
-    fprintf(stderr,"DoPopup::DoPopup: can't create window\n");
+  if ((win = XCreateWindow(_display, DefaultRootWindow(_display), x, y,
+			   textWidth, textHeight, 1, 0, InputOutput,
+			   CopyFromParent, AllPlanes, &attr)) == 0) {
+    fprintf(stderr,"XWindowRep::DoPopup: can't create window\n");
     Exit::DoExit(1);
   }
   
@@ -1377,12 +1364,12 @@ void XWindowRep::DoPopup(int x, int y, int button)
   
   /* Map the window so that it appears on the display. */
   if (XMapWindow(_display, win) < 0) {
-    fprintf(stderr,"DoPopup: can't map window\n");
+    fprintf(stderr,"XWindowRep::DoPopup: can't map window\n");
     Exit::DoExit(2);
   }
   
   /* Do a sync to force the window to appear immediately */
-  XSync(_display,false);
+  XSync(_display, false);
   
   XGCValues gcVal;
   gcVal.function = GXcopy;
@@ -1390,27 +1377,28 @@ void XWindowRep::DoPopup(int x, int y, int button)
   gcVal.foreground = fgnd;
   gcVal.background = bgnd;
   gcVal.font = fontStruct->fid;
-  GC popUpGc = XCreateGC(_display, win, 
-		 GCFunction| GCPlaneMask| GCForeground | GCBackground | GCFont,
+  GC popUpGc = XCreateGC(_display, win, GCFunction | GCPlaneMask
+			 | GCForeground | GCBackground | GCFont,
 			 &gcVal);
   /*
-     XSetState(_display,popUpGc, fgnd, bgnd, GXcopy,AllPlanes);
+     XSetState(_display, popUpGc, fgnd, bgnd, GXcopy,AllPlanes);
   */
   
   Boolean savePopup = Init::SavePopup();
   if (!savePopup)
     XGrabServer(_display);
+
   while(1) {
     XEvent event;
     /* check parent for button release */
     if (savePopup) {
-      if (XCheckWindowEvent(_display,win,ButtonPressMask,&event)) {
+      if (XCheckWindowEvent(_display, win, ButtonPressMask, &event)) {
 	/* done */
 	XDestroyWindow(_display, win);
 	break;
       }
     } else {
-      if (XCheckWindowEvent(_display,_win,ButtonReleaseMask,&event)) {
+      if (XCheckWindowEvent(_display, _win, ButtonReleaseMask, &event)) {
 	if (event.xbutton.button == button) {
 	  /* done */
 	  XDestroyWindow(_display, win);
@@ -1420,15 +1408,16 @@ void XWindowRep::DoPopup(int x, int y, int button)
     }
     
     /* check popUp window for exposure */
-    if (XCheckWindowEvent(_display,win,ExposureMask,&event)) {
+    if (XCheckWindowEvent(_display, win, ExposureMask, &event)) {
       /* Draw the text messages into window */
       for(int i = 0; i < numMsgs; i++) {
-	int startY = charHeight*i;
-	XDrawString(_display, win, popUpGc, 1, startY+charAscent, 
+	int startY = charHeight * i;
+	XDrawString(_display, win, popUpGc, 1, startY + charAscent, 
 		    msgs[i], strlen(msgs[i]));
       }
     }
   }
+
   XFreeGC(_display, popUpGc);
   if (!savePopup)
     XUngrabServer(_display);
@@ -1501,7 +1490,7 @@ void XWindowRep::Flush()
      XFlush(_display);
   */
   /* Do a sync to force output */
-  XSync(_display,false);
+  XSync(_display, false);
 }
 
 const int MAX_PIXMAP_BUF_SIZE = 262144;
@@ -1518,7 +1507,7 @@ DevisePixmap *XWindowRep::GetPixmap()
   Window root;
   int x,y;
   unsigned int width, height,border_width, depth;
-  XGetGeometry(_display,_win,&root,&x,&y,&width,&height,
+  XGetGeometry(_display, _win, &root, &x, &y, &width, &height,
 	       &border_width, &depth);
   
   DevisePixmap *pixmap = new DevisePixmap;
@@ -1528,23 +1517,22 @@ DevisePixmap *XWindowRep::GetPixmap()
   int outIndex = 0;
 
   for(int i = 0; i < height; i++) {
-    XImage *image = XGetImage(_display, _win, 0, i,width, 1,
+    XImage *image = XGetImage(_display, _win, 0, i, width, 1,
 			      AllPlanes, ZPixmap);
-    if (image == NULL) {
+    if (!image)
       return NULL;
-    }
     if (initPixmap) {
-      pixmap->imageBytes = image->bytes_per_line*height;
+      pixmap->imageBytes = image->bytes_per_line * height;
       pixmap->bytes_per_line = image->bytes_per_line;
       pixmap->padding = image->bitmap_pad;
       pixmap->data = (unsigned char *)image->data;
       initPixmap = false;
     }
     int outCount;
-    char *cBuf = _compress->CompressLine(image->data,image->bytes_per_line,
+    char *cBuf = _compress->CompressLine(image->data, image->bytes_per_line,
 					 outCount);
     XDestroyImage(image);
-    if (outCount + outIndex+sizeof(int) > MAX_PIXMAP_BUF_SIZE ) {
+    if (outCount + outIndex + sizeof(int) > MAX_PIXMAP_BUF_SIZE ) {
       /* no more buffer */
       delete pixmap;
       return NULL;
@@ -1557,7 +1545,7 @@ DevisePixmap *XWindowRep::GetPixmap()
   
   pixmap->compressedBytes = outIndex;
   pixmap->data = (unsigned char *)malloc(outIndex);
-  if (pixmap->data == NULL) {
+  if (!pixmap->data) {
     delete pixmap;
     return NULL;
   }
