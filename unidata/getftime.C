@@ -20,8 +20,11 @@
 #include   <stdlib.h>
 #include   <string.h>
 #include   <ctype.h>
+#include   <iostream.h>
 
 #include   "getftime.h"
+
+/*  #define    VERBOSE_ERROR  */
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 
@@ -183,8 +186,12 @@ int getftime(char *buf, char *format, struct tm *tme)
                      // %a - abbreviated weekday name, eg, "Mon"
               case 'a':
                 v = findstr(buf,day_abbrs);
-                if ((v < 0) || (v > 6))
+                if ((v < 0) || (v > 6)) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Day abbr '" << buf << "' not found.\n";
+#endif
                     return 0;
+                }
                 tme->tm_wday = v;
                 buf += 3;
                 tot += 3;
@@ -193,8 +200,12 @@ int getftime(char *buf, char *format, struct tm *tme)
                     // %A - full weekday name, eg, "Monday"
               case 'A':
                 v = findstr(buf,day_names);
-                if ((v < 0) || (v > 6))
+                if ((v < 0) || (v > 6)) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Day name '" << buf << "' not found.\n";
+#endif
                     return 0;
+                }
                 tme->tm_wday = v;
                 len = strlen(day_names[v]);
                 buf += len;
@@ -204,8 +215,12 @@ int getftime(char *buf, char *format, struct tm *tme)
                     // %b - abbreviated month name, eg, "Feb"
               case 'b':
                 v = findstr(buf,mnth_abbrs);
-                if ((v < 0) || (v > 11))
+                if ((v < 0) || (v > 11)) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Month abbr '" << buf << "' not found.\n";
+#endif
                     return 0;
+                }
                 tme->tm_mon = v;
                 buf += 3;
                 tot += 3;
@@ -214,8 +229,12 @@ int getftime(char *buf, char *format, struct tm *tme)
                     // %B - full month name, eg, "Febuary"
               case 'B':
                 v = findstr(buf,mnth_names);
-                if ((v < 0) || (v > 11))
+                if ((v < 0) || (v > 11)) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Month name '" << buf << "' not found.\n";
+#endif
                     return 0;
+                }
                 tme->tm_mon = v;
                 len = strlen(mnth_names[v]);
                 buf += len;
@@ -225,8 +244,13 @@ int getftime(char *buf, char *format, struct tm *tme)
                     // %d - day of the month as an int (01-31)
               case 'd':
                 v = atoin(buf,repeat);
-                if ((v < 1) || (v > 31))
+                if ((v < 1) || (v > 31)) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Invalid day of month (" << v << "): '"
+                         << buf << "'.\n";
+#endif
                     return 0;
+                }
                 tme->tm_mday = v;
 
                 if (repeat)
@@ -243,8 +267,13 @@ int getftime(char *buf, char *format, struct tm *tme)
                     // %H - the hour (24-hour clock) as an int (00-23)
               case 'H':
                 v = atoin(buf,repeat);
-                if ((v < 0) || (v > 23))
+                if ((v < 0) || (v > 23)) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Invalid 24-hour clock hour (" << v << "): '"
+                         << buf << "'.\n";
+#endif
                     return 0;
+                }
                 tme->tm_hour = v;
                 have_hour = 1;
 
@@ -262,8 +291,13 @@ int getftime(char *buf, char *format, struct tm *tme)
                     // %I - the hour (12-hour clock) as an int (01-12)
               case 'I':
                 v = atoin(buf,repeat);
-                if ((v < 1) || (v > 12))
+                if ((v < 1) || (v > 12)) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Invalid 12-hour clock hour (" << v << "): '"
+                         << buf << "'.\n";
+#endif
                     return 0;
+                }
                 hour_sum += v-1;   // Need AM/PM too.
 
                 if (repeat)
@@ -280,8 +314,13 @@ int getftime(char *buf, char *format, struct tm *tme)
                     // %j - day of the year as a decimal number (001-366)
               case 'j':
                 v = atoin(buf,repeat);
-                if ((v < 1) || (v > 366))
+                if ((v < 1) || (v > 366)) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Invalid day of year (" << v << "): '"
+                         << buf << "'.\n";
+#endif
                     return 0;
+                }
                 tme->tm_yday = v-1;
 
                 if (repeat)
@@ -300,8 +339,13 @@ int getftime(char *buf, char *format, struct tm *tme)
                     // %m - month, as a decimal number (01-12)
               case 'm':
                 v = atoin(buf,repeat);
-                if ((v < 1) || (v > 12))
+                if ((v < 1) || (v > 12)) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Invalid month (" << v << "): '"
+                         << buf << "'.\n";
+#endif
                     return 0;
+                }
                 tme->tm_mon = v-1;
 
                 if (repeat)
@@ -318,8 +362,13 @@ int getftime(char *buf, char *format, struct tm *tme)
                     // %M - minute, as a decimal number (00-59)
               case 'M':
                 v = atoin(buf,repeat);
-                if ((v < 0) || (v > 59))
+                if ((v < 0) || (v > 59)) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Invalid minute (" << v << "): '"
+                         << buf << "'.\n";
+#endif
                     return 0;
+                }
                 tme->tm_min = v;
 
                 if (repeat)
@@ -336,8 +385,12 @@ int getftime(char *buf, char *format, struct tm *tme)
                     // %P - AM/PM designation for 12-hour clock (AM)
               case 'P':
                 v = findstr(buf,am_or_pm);
-                if ((v < 0) || (v > 1))
+                if ((v < 0) || (v > 1)) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Invalid AM/PM designation " << buf << "'.\n";
+#endif
                     return 0;
+                }
                 hour_sum += 12 * v;   // Need 12-hour clock too.
 
                 len = 2;
@@ -349,8 +402,13 @@ int getftime(char *buf, char *format, struct tm *tme)
                     //      (allows for up to 2 leap-seconds - 60 and 61)
               case 'S':
                 v = atoin(buf,repeat);
-                if ((v < 0) || (v > 61))
+                if ((v < 0) || (v > 61)) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Invalid second (" << v << "): '"
+                         << buf << "'.\n";
+#endif
                     return 0;
+                }
                 tme->tm_sec = v;
 
                 if (repeat)
@@ -369,8 +427,13 @@ int getftime(char *buf, char *format, struct tm *tme)
                     //      days are week 0.) 
               case 'U':
                 v = atoin(buf,repeat);
-                if ((v < 0) || (v > 53))
+                if ((v < 0) || (v > 53)) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Invalid week of year (" << v << "): '"
+                         << buf << "'.\n";
+#endif
                     return 0;
+                }
 
                 weeknum = v;
 
@@ -388,8 +451,13 @@ int getftime(char *buf, char *format, struct tm *tme)
                     // %w - weekday as a decimal number (0-6, Sunday=0)
               case 'w':
                 v = atoin(buf,repeat);
-                if ((v < 0) || (v > 6))
+                if ((v < 0) || (v > 6)) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Invalid weekday number (" << v << "): '"
+                         << buf << "'.\n";
+#endif
                     return 0;
+                }
                 tme->tm_wday = v;
 
                 if (repeat)
@@ -406,8 +474,13 @@ int getftime(char *buf, char *format, struct tm *tme)
                     //      days are week 0.) 
               case 'W':
                 v = atoin(buf,repeat);
-                if ((v < 0) || (v > 53))
+                if ((v < 0) || (v > 53)) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Invalid week number (" << v << "): '"
+                         << buf << "'.\n";
+#endif
                     return 0;
+                }
 
                 weeknum1 = v;
 
@@ -425,8 +498,13 @@ int getftime(char *buf, char *format, struct tm *tme)
                     // %y - year without century as a decimal number (00-99)
               case 'y':
                 v = atoin(buf,repeat);
-                if ((v < 0) || (v > 99))
+                if ((v < 0) || (v > 99)) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Invalid 2-digit year (" << v << "): '"
+                         << buf << "'.\n";
+#endif
                     return 0;
+                }
                   // We should really smite them for not being
                   // more specific, but for now, round up for < 50.
                 tme->tm_year = v + ((v <= 50) ? 100 : 0);
@@ -445,8 +523,13 @@ int getftime(char *buf, char *format, struct tm *tme)
                     // %Y - year with century as a decimal number, eg, 1952
               case 'Y':
                 v = atoin(buf,repeat);
-                if (v < 0)
+                if (v < 0) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Invalid 4-digit year (" << v << "): '"
+                         << buf << "'.\n";
+#endif
                     return 0;
+                }
                   // struct tm is offset for some reason.
                 tme->tm_year = v - 1900;  
 
@@ -463,8 +546,13 @@ int getftime(char *buf, char *format, struct tm *tme)
                     //      (CST, GMT, EST, CDT, ...)
               case 'z':
                 v = findstr(buf,time_zones);
-                if (v < 0)
+                if (v < 0) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Invalid timezone (" << v << "): '"
+                         << buf << "'.\n";
+#endif
                     return 0;
+                }
                 // NYI - What to do with this info?
 
                 len = strlen(time_zones[v]);
@@ -474,8 +562,13 @@ int getftime(char *buf, char *format, struct tm *tme)
 
                     // %% - A single %
               case '%':
-                if (*buf != *format)
+                if (*buf != *format) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Literal char mismatch '" << *buf
+                         << "' vs '" << *format << "'.\n";
+#endif
                     return 0;
+                }
                 tot++;
                 buf++;
                 break;
@@ -502,6 +595,9 @@ int getftime(char *buf, char *format, struct tm *tme)
                 break;
 
               default:
+#ifdef    VERBOSE_ERROR
+                    cout << "Unknown conversion char '" << *format << "'.\n";
+#endif
                 return 0;    // Unknown conversion char.
             }
  
@@ -509,8 +605,13 @@ int getftime(char *buf, char *format, struct tm *tme)
             got_fn = 1;
             repeat = 0;
         } else {
-            if (*buf != *format)
+            if (*buf != *format) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Literal char mismatch '" << *buf
+                         << "' vs '" << *format << "'.\n";
+#endif
                 return 0;
+            }
             tot++;
             buf++;
         }
@@ -518,8 +619,12 @@ int getftime(char *buf, char *format, struct tm *tme)
 
       // Build a 24-hour clock from 12-hour plus am/pm.
     if (!have_hour) {
-        if (hour_sum > 23)
+        if (hour_sum > 23) {
+#ifdef    VERBOSE_ERROR
+                    cout << "Error converting to 24-hour clock\n";
+#endif
             return 0;
+        }
         tme->tm_hour = hour_sum;
     }
 
