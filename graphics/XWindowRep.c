@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.102  1998/01/30 02:16:48  wenger
+  Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
+
   Revision 1.101  1998/01/23 20:37:57  zhenhai
   Fixed a bug on transformation which was caused by inconsistency between origins
   or XWindows (Upper left) and OpenGL (Lower left). Also fixed a bug for
@@ -1100,8 +1103,15 @@ XWindowRep::ETk_CreateWindow(Coord x, Coord y,
     
     DevStatus result = StatusOk;
 
-    if (_etkServer == NULL)
-    {
+    if (!_win) { // Drawing to a pixmap instead of window...
+#if defined(DEBUG) || defined(DEBUG_ETK)
+      printf("Can't create ETk windows into a pixmap.\n");
+#endif
+      handle = 0;
+      return result;
+    }
+
+    if (_etkServer == NULL) {
       char *serverName;
       DevStatus tmpResult = ETkIfc::LaunchServer(serverName);
       result += tmpResult;
@@ -1112,13 +1122,10 @@ XWindowRep::ETk_CreateWindow(Coord x, Coord y,
       }
     }
     
-    if (_etkServer == NULL)
-    {
+    if (_etkServer == NULL) {
 	reportError("No ETk server specified", devNoSyserr);
 	result = StatusFailed;
-    }
-    else
-    {
+    } else {
 	if (filename == NULL)
 	    filename = "-";
 
@@ -1134,8 +1141,7 @@ XWindowRep::ETk_CreateWindow(Coord x, Coord y,
 				       argc, (const char **) argv,
 				       handle);
 	
-	if (result.IsComplete())
-	{
+	if (result.IsComplete()) {
 #if defined(DEBUG) || defined(DEBUG_ETK)
 	    printf("Displayed ETk window. handle = %d\n", handle);
 #endif
@@ -1155,7 +1161,6 @@ XWindowRep::ETk_CreateWindow(Coord x, Coord y,
     }
     
     return result;
-
 }
 
 //------------------------------------------------------------------------

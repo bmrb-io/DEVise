@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/11/24 23:14:21  weaver
+  Changes for the new ColorManager.
+
   Revision 1.1  1997/11/18 23:26:34  wenger
   First version of GData to socket capability; removed some extra include
   dependencies; committed test version of TkControl::OpenDataChannel().
@@ -142,6 +145,11 @@ GDataSock::~GDataSock()
   }
 
   if (_fd >= 0) {
+    char controlD = '\x04';
+    if (write(_fd, &controlD, 1) != 1) {
+      reportErrSys("Error writing to data channel");
+    }
+
     if (close(_fd) != 0) {
       reportErrSys("Error closing data channel");
     }

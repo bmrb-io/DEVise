@@ -1078,13 +1078,13 @@ Num Date        Status  Description
 276 01/29/98	OPEN	Printing all windows or printing display only prints
 			one window in batch mode (1.4.7 and 1.5.0). (rkw)
 
-277 01/30/98	OPEN	XWindowRep should avoid creating Tcl/Tk objects
+277 01/30/98	FIXED	XWindowRep should avoid creating Tcl/Tk objects
 			when drawing to pixmaps (otherwise they pop up
 			on the screen). (rkw)
 
-278 01/30/98	OPEN	Can't bring up schema editing GUI. (rkw)
+278 01/30/98	FIXED	Can't bring up schema editing GUI. (rkw)
 
-279 01/31/98	OPEN	Devised doesn't kill off EmbeddedTk server when it
+279 01/31/98	FIXED	Devised doesn't kill off EmbeddedTk server when it
 			gets <ctl-C><ctl-C> and quits. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.41  1998/01/14 16:39:43  wenger
+#  Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
+#
 #  Revision 1.40  1998/01/07 19:30:41  wenger
 #  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
 #  server library into Devise); updated solaris, sun, linux, and hp
@@ -645,7 +648,7 @@ proc newschemawin {} {
 	    .newschema.atype.string .newschema.atype.float \
 	    .newschema.atype.date  -side left -fill x -padx 1m 
 
-    label .newschema.astrlen.label -text "Max string length" # -fg gray
+    label .newschema.astrlen.label -text "Max string length"
     entry .newschema.astrlen.entry -width 25 -relief sunken -bd 2 \
          -textvariable astrlen -state disabled
     set astrlen ""
@@ -1000,19 +1003,19 @@ proc unidata_newschemawin {} {
     pack .newschema.morespec.but -in .newschema.morespec -side left \
     	    -padx 3m -pady 1m
     	
-    label .newschema.dateformat.label -text "Date Format  " # -fg gray
+    label .newschema.dateformat.label -text "Date Format  "
     entry .newschema.dateformat.entry -width 25 -relief sunken -bd 2 \
     	    -textvariable dateformat -state disabled
     pack .newschema.dateformat.label .newschema.dateformat.entry -side left \
     	    -padx 3m -pady 1m
 
-    label .newschema.position.label -text "Position  " # -fg white
+    label .newschema.position.label -text "Position  "
     entry .newschema.position.entry -width 25 -relief sunken -bd 2 \
     	    -textvariable position
     pack .newschema.position.label .newschema.position.entry -side left \
     	    -padx 3m -pady 1m
 
-    label .newschema.length.label -text "Length  " # -fg white
+    label .newschema.length.label -text "Length  "
     entry .newschema.length.entry -width 25 -relief sunken -bd 2 \
     	    -textvariable length
     pack .newschema.length.label .newschema.length.entry -side left \
@@ -1053,7 +1056,7 @@ proc unidata_newschemawin {} {
     pack .newschema.attrnametype.typelabel .newschema.attrnametype.typebut \
     	    -side left -padx 3m -pady 1m
 
-    label .newschema.astrlen.label -text "Max string length" # -fg gray
+    label .newschema.astrlen.label -text "Max string length"
     entry .newschema.astrlen.entry -width 25 -relief sunken -bd 2 \
          -textvariable astrlen -state disabled
     set astrlen ""
