@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.40  1998/03/10 19:52:32  wenger
+  Merged cleanup_1_4_7_br_10 through cleanup_1_4_7_br_11 (fixes callback
+  list problems on SGIs).
+
   Revision 1.39  1998/01/07 19:28:26  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -404,6 +408,10 @@ void Dispatcher::Terminate(int sig)
   if (dispatcher._firstIntr) {
     printf("\nReceived interrupt. Terminating program.\n");
     dispatcher._quit = true;
+#if 1 //TEMP
+    Cleanup();
+    Exit::DoExit(0);
+#endif
   } else {
     printf("\nReceived interrupt. Hit interrupt once more to quit.\n");
     dispatcher._firstIntr = true;
