@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.46  2000/05/22 17:52:48  wenger
+// JavaScreen handles fonts much more efficiently to avoid the problems with
+// GData text being drawn very slowly on Intel platforms.
+//
 // Revision 1.45  2000/05/12 20:43:45  wenger
 // Added more comments to the DEViseScreen, DEViseCanvas, and jsdevisec
 // classes and cleaned up the code; commented out unused code; added
@@ -91,6 +95,10 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.46  2000/05/22 17:52:48  wenger
+// JavaScreen handles fonts much more efficiently to avoid the problems with
+// GData text being drawn very slowly on Intel platforms.
+//
 // Revision 1.45  2000/05/12 20:43:45  wenger
 // Added more comments to the DEViseScreen, DEViseCanvas, and jsdevisec
 // classes and cleaned up the code; commented out unused code; added
@@ -246,7 +254,7 @@ public class DEViseCanvas extends Container
     private boolean isImageUpdated = false;
 
     boolean isMouseDragged = false, isInViewDataArea = false, isInDataArea = false;
-    DEViseCursor selectedCursor = null;
+    private DEViseCursor selectedCursor = null;
 
     // See DEViseCursor.side* for values.
     private int whichCursorSide = DEViseCursor.sideNone;
@@ -261,6 +269,18 @@ public class DEViseCanvas extends Container
     public static boolean isInterative = false;
 
     public static int totalpaintcount = 0;
+
+    //
+    // This is a fix to a problem that seems to be in the JVM itself:
+    // when a mouse button press is closely followed in time by moving
+    // the mouse, Java calls the mouseMoved() method of the
+    // MouseMotionListener as opposed to the mouseDragged() method,
+    // even though it has already called mousePressed() in the
+    // MouseListener.  RKW 2000-05-24.
+    //
+    private boolean buttonIsDown = false;
+
+    private static final int _debug = 0; // 0 - 3
 
     // v is base view if there is a pile in this canvas.
     public DEViseCanvas(DEViseView v, Image img)
@@ -637,6 +657,16 @@ public class DEViseCanvas extends Container
     {
         int id = event.getID();
 
+        if (_debug >= 1) {
+            System.out.println("DEViseCanvas.processMouseEvent()");
+            if (id == MouseEvent.MOUSE_PRESSED) System.out.println(
+	      "  Mouse pressed");
+            if (id == MouseEvent.MOUSE_CLICKED) System.out.println(
+	      "  Mouse clicked");
+            if (id == MouseEvent.MOUSE_RELEASED) System.out.println(
+	      "  Mouse released");
+        }
+
         jsc.jscreen.finalMousePosition.x = view.viewLoc.x + event.getX();
         jsc.jscreen.finalMousePosition.y = view.viewLoc.y + event.getY();
 
@@ -656,6 +686,10 @@ public class DEViseCanvas extends Container
 
     protected void processMouseMotionEvent(MouseEvent event)
     {
+        if (_debug >= 2) {
+            System.out.println("DEViseCanvas.processMouseMotionEvent()");
+        }
+
         int id = event.getID();
 
         jsc.jscreen.finalMousePosition.x = view.viewLoc.x + event.getX();
@@ -824,6 +858,14 @@ public class DEViseCanvas extends Container
         // event sequence: 1. mousePressed 2. mouseReleased 3. mouseClicked
         public void mousePressed(MouseEvent event)
         {
+            if (_debug >= 1) {
+                System.out.println(
+		  "DEViseCanvas.ViewMouseListener.mousePressed()");
+            }
+
+	    // Bug fix -- see notes at variable declaration.
+            buttonIsDown = true;
+
             // The starting point will be in this view, otherwise this event
 	    // will not be caught.
 
@@ -856,6 +898,14 @@ public class DEViseCanvas extends Container
 
         public void mouseReleased(MouseEvent event)
         {
+	    if (_debug >= 1) {
+	        System.out.println(
+		  "DEViseCanvas.ViewMouseListener.mouseReleased()");
+	    }
+
+	    // Bug fix -- see notes at variable declaration.
+	    buttonIsDown = false;
+
             // Each mouse click will be here once, so double click actually
 	    // will enter this twice. Also, this event will always reported
 	    // with each mouse click and before the mouseClick event is
@@ -882,7 +932,7 @@ public class DEViseCanvas extends Container
 		      activeView.getY(ep.y));
 
                     int dx = ep.x - sp.x, dy = ep.y - sp.y;
-                    DEViseCursor cursor= selectedCursor;
+                    DEViseCursor cursor = selectedCursor;
 
                         if (cursor.gridx > 0) {
                             dx = (int)Math.round(Math.round((dx *
@@ -959,6 +1009,11 @@ public class DEViseCanvas extends Container
 
         public void mouseClicked(MouseEvent event)
         {
+            if (_debug >= 1) {
+                System.out.println(
+		  "DEViseCanvas.ViewMouseListener.mouseClicked()");
+            }
+
             if (view.viewDimension == 3) {
                 DEViseCanvas.lastKey = KeyEvent.VK_UNDEFINED;
                 return;
@@ -1045,6 +1100,11 @@ public class DEViseCanvas extends Container
 
         public void mouseDragged(MouseEvent event)
         {
+            if (_debug >= 2) {
+                System.out.println(
+		  "DEViseCanvas.ViewMouseMotionListener.mouseDragged()");
+            }
+
             Point p = event.getPoint();
             isMouseDragged = true;
 
@@ -1113,6 +1173,17 @@ public class DEViseCanvas extends Container
 
         public void mouseMoved(MouseEvent event)
         {
+            if (_debug >= 2) {
+                System.out.println(
+		  "DEViseCanvas.ViewMouseMotionListener.mouseMoved()");
+            }
+
+	    // Bug fix -- see notes at variable declaration.
+	    if (buttonIsDown) {
+	        mouseDragged(event);
+		return;
+	    }
+
             // the position of this event will be relative to this view
 	    // and will not exceed the range of this view, ie, p.x >= 0 &&
 	    // p.x < view.width, p.y >= 0 && p.y < view.height
@@ -1145,6 +1216,11 @@ public class DEViseCanvas extends Container
     public synchronized void checkMousePos(Point p, boolean checkDispatcher)
       throws YError
     {
+        if (_debug >= 3) {
+            System.out.println("DEViseCanvas.checkMousePos(" + p.x + ", " +
+	      p.y + ")");
+        }
+
         // initialize value
         whichCursorSide = DEViseCursor.sideNone;
         selectedCursor = null;
@@ -1168,50 +1244,68 @@ public class DEViseCanvas extends Container
 
                 case DEViseCursor.sideMiddle:
 		    // Inside a cursor, you can move this cursor.
+                    if (_debug >= 3) System.out.println(
+		      "whichCursorSide = DEViseCursor.sideMiddle");
                     tmpCursor = DEViseUIGlobals.moveCursor;
                     break;
 
                 case DEViseCursor.sideLeft:
 		    // On left side of a cursor, you can resize this cursor.
+                    if (_debug >= 3) System.out.println(
+		      "whichCursorSide = DEViseCursor.sideLeft");
                     tmpCursor = DEViseUIGlobals.lrsCursor;
                     break;
 
                 case DEViseCursor.sideRight:
 		    // On right side of a cursor, you can resize this cursor.
+                    if (_debug >= 3) System.out.println(
+		      "whichCursorSide = DEViseCursor.sideRight");
                     tmpCursor = DEViseUIGlobals.rrsCursor;
                     break;
 
                 case DEViseCursor.sideTop:
 		    // On top side of a cursor, you can resize this cursor.
+                    if (_debug >= 3) System.out.println(
+		      "whichCursorSide = DEViseCursor.sideTop");
                     tmpCursor = DEViseUIGlobals.trsCursor;
                     break;
 
                 case DEViseCursor.sideBottom:
 		    // On bottom side of a cursor, you can resize this cursor.
+                    if (_debug >= 3) System.out.println(
+		      "whichCursorSide = DEViseCursor.sideBottom");
                     tmpCursor = DEViseUIGlobals.brsCursor;
                     break;
 
                 case DEViseCursor.sideTopLeft:
 		    // On left-top corner of a cursor, you can resize
 		    // this cursor.
+                    if (_debug >= 3) System.out.println(
+		      "whichCursorSide = DEViseCursor.sideTopLeft");
                     tmpCursor = DEViseUIGlobals.tlrsCursor;
                     break;
 
                 case DEViseCursor.sideBottomLeft:
 		    // On left-bottom corner of a cursor, you can resize
 		    // this cursor.
+                    if (_debug >= 3) System.out.println(
+		      "whichCursorSide = DEViseCursor.sideBottomLeft");
                     tmpCursor = DEViseUIGlobals.blrsCursor;
                     break;
 
                 case DEViseCursor.sideTopRight:
 		    // On right-top corner of a cursor, you can resize
 		    // this cursor.
+                    if (_debug >= 3) System.out.println(
+		      "whichCursorSide = DEViseCursor.sideTopRight");
                     tmpCursor = DEViseUIGlobals.trrsCursor;
                     break;
 
                 case DEViseCursor.sideBottomRight:
 		    // 0n right-bottom corner of a cursor, you can resize
 		    // this cursor.
+                    if (_debug >= 3) System.out.println(
+		      "whichCursorSide = DEViseCursor.sideBottomRight");
                     tmpCursor = DEViseUIGlobals.brrsCursor;
                     break;
 
@@ -1297,6 +1391,8 @@ public class DEViseCanvas extends Container
 	    if (cursorSide != DEViseCursor.sideNone) {
                 activeView = v;
                 whichCursorSide = cursorSide;
+                if (_debug >= 3) System.out.println(
+		  "Setting selected cursor to " + cursor.name);
                 selectedCursor = cursor;
                 isInViewDataArea = true;
                 return true;
