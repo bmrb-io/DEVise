@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/06 21:23:15  jussi
+  Added ClosestColor() method.
+
   Revision 1.3  1995/12/02 21:30:38  jussi
   Tried if letting Tcl/Tk handle all X events and pass a copy
   of each event to us would solve the problem with TK_WINDOW_old.
@@ -79,7 +82,8 @@ public:
 
 protected:
 	/* from DeviseDisplay */
-        Boolean ClosestColor(Colormap &map, XColor &color, Color &c);
+        Boolean ClosestColor(Colormap &map, XColor &color, Color &c,
+			     float &error);
 	virtual void AllocColor(char *name, Color globalColor);
 	virtual void AllocColor(double r, double g, double b, Color globalColor);
 
@@ -134,7 +138,7 @@ private:
 	Pixmap _stipples[XNumBitmaps]; /* bitmaps for patterns */
 	XFontStruct *_fontStruct;
 
-
+	Color baseColor;                /* base color */
 };
 
 #endif
