@@ -1958,6 +1958,9 @@ Num Date        Status  Description
 502 07/21/99	OPEN	Non-center symbol alignment seems to goof up drill-
 			down. (rkw)
 
+503 07/22/99	OPEN	EmbeddedTk doesn't work on Linux/Intel with Tcl/Tk
+			8.0. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
