@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/07/23 20:12:59  wenger
+  Preliminary version of code to save TData (schema(s) and data) to a file.
+
   Revision 1.23  1996/07/23 15:40:40  jussi
   Added set/getViewDisplayDataValues and set/getViewPileMode commands.
 
@@ -824,7 +827,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       /* Return setting of solid/wireframe 3D objects */
-      sprintf(result, "%d", (vg->GetSolid3D() ? 1 : 0));
+      sprintf(result, "%d", vg->GetSolid3D());
       control->ReturnVal(API_ACK, result);
       return 1;
     }
@@ -976,7 +979,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       /* Set solid or wireframe 3D objects */
-      vg->SetSolid3D(atoi(argv[2]) ? true : false);
+      vg->SetSolid3D(atoi(argv[2]));
       control->ReturnVal(API_ACK, "done");
       return 1;
     }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.61  1996/07/25 14:22:58  jussi
+  Added aborted parameter to ReportQueryDone().
+
   Revision 1.60  1996/07/23 21:18:02  jussi
   Added a couple of debugging statements, removed extra callback
   request to the dispatcher.
@@ -339,7 +342,7 @@ View::View(char *name, VisualFilter &initFilter,
 
   _cursorsOn = false;
   _numDimensions = 2;
-  _solid3D = true;
+  _solid3D = 2;
 
   _xyZoom = true;
   _dispDataValues = false;
@@ -615,7 +618,7 @@ void View::SetNumDimensions(int d)
 
 /* set solid or wideframe 3D objects */
 
-void View::SetSolid3D(Boolean solid)
+void View::SetSolid3D(int solid)
 {
   if (solid == _solid3D)
     return;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/07/23 15:41:01  jussi
+  Added toggle for displaying data values.
+
   Revision 1.11  1996/07/21 02:19:54  jussi
   Added testing of xyZoom flag to determine zoom mode (XY or X/Y).
 
@@ -130,8 +133,9 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
   }
 
   if (key == 'w' || key == 'W') {
-    Boolean solid = view->GetSolid3D();
-    view->SetSolid3D(!solid);
+    int solid = view->GetSolid3D();
+    solid = (solid + 1) % 3;
+    view->SetSolid3D(solid);
   }
 
   if (key == 'v' || key == 'V') {
