@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.49  2000/07/21 16:26:19  venkatan
+// *** empty log message ***
+//
 // Revision 1.48  2000/07/20 22:38:27  venkatan
 // Mouse Location Format display:
 // 1. Both X and Y axis formats are recognised.
@@ -635,32 +638,6 @@ class PrintfFormatter {
     
     private String exp_format(double d)
     {  
-	
-	/*  token = new StringTokenizer(d.toString(), "Ee");
-	    if(token.countTokens <=1){
-	    
-	    token = new StringTokenizer(d.toString(), ".");
-	    throw new IllegalArgumentException("Invalid floating point format");
-	    }
-	    else{
-	    boolean addZero = false;
-	    mantissa = token.nextToken();
-	    int exponent = Integer.parseInt(token.nextToken()); 
-	    exponent+= checkDotPos(mantissa);
-	    if(!addZero && mantissa.length < precision){
-	    mantissa = mantissa + ".";
-	    }
-	    while(addZero && mantissa.length() <= precision ){
-	    mantissa = mantissa + "0";
-	    }
-	    token = new StringTokenizer(d.toString(), "Ee");
-	*/
-	
-	
-	
-	
-	
-	
 	String f = "";
 	int e = 0;
 	double dd = d;
@@ -683,9 +660,11 @@ class PrintfFormatter {
 	    p = p + e;
 	    }
 	else
-	    {  f = f + "-";
-	    p = p + (-e);
-	    }
+	{
+	  int temp = -e;
+	  f = f + "-";
+	  p = p + temp;
+        }
 	
 	return f + p.substring(p.length() - 3, p.length());
     }
