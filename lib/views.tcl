@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/02/02 21:27:03  jussi
+#  User is given a palette of colors to choose from rather than
+#  a list of names of colors.
+#
 #  Revision 1.2  1996/01/30 21:09:36  jussi
 #  Added DoSetBgColor but made it inactive because view parameters
 #  cannot be changed yet. Moved some procedures from control.tk.
@@ -1091,6 +1095,19 @@ proc DoSetTitle {} {
     pack .setTitle.bot.but.ok .setTitle.bot.but.clear \
 	    .setTitle.bot.but.delete .setTitle.bot.but.cancel \
 	    -side left -padx 3m
+}
+
+############################################################
+
+proc DoSetViewDimensions { dim } {
+    global curView
+    if {$curView == ""} {
+	set but [dialog .toggleWinError "No Current View" \
+		"Select a view first by clicking in it." "" 0 OK ]
+	return
+    }
+    
+    DEVise setViewDimensions $curView $dim
 }
 
 ############################################################
