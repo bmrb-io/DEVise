@@ -19,6 +19,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/07/15 14:58:06  jussi
+  Updated copyright information to reflect original source.
+
   Revision 1.3  1995/09/22 15:43:26  jussi
   Added copyright message.
 
@@ -52,8 +55,10 @@ class HashTable {
  public:
   HashTable(int tableSize,
 	    int (*hashfcn)(Index &index,
-			   int numBuckets)); // constructor  
-  ~HashTable();                              // destructor
+			   int numBuckets),
+            int (*compare)(Index &index1,
+                           Index &index2) = 0);
+  ~HashTable();
 
   int insert(Index &index, Value &value);
   int lookup(Index &index, Value &value);
@@ -70,7 +75,9 @@ class HashTable {
   int tableSize;                             // size of hash table
   HashBucket<Index, Value> **ht;             // actual hash table
   int (*hashfcn)(Index &index,
-		 int numBuckets);            // user-provided hash function
+		 int numBuckets);            // hash function
+  int (*compfcn)(Index &index1,
+                 Index &index2);             // comparison function
 };
 
 // Construct hash table. Allocate memory for hash table and
@@ -79,8 +86,10 @@ class HashTable {
 template <class Index, class Value>
 HashTable<Index,Value>::HashTable(int tableSz,
 				  int (*hashF)(Index &index,
-					       int numBuckets)) :
-	tableSize(tableSz), hashfcn(hashF)
+					       int numBuckets),
+                                  int (*compF)(Index &index1,
+                                               Index &index2)) :
+	tableSize(tableSz), hashfcn(hashF), compfcn(compF)
 {
   if (!(ht = new HashBucket<Index, Value>* [tableSize])) {
     cerr << "Insufficient memory for hash table" << endl;
@@ -130,7 +139,8 @@ int HashTable<Index,Value>::lookup(Index &index, Value &value)
     cerr << "%%  Comparing " << *(long *)&bucket->index
          << " vs. " << *(long *)index << endl;
 #endif
-    if (bucket->index == index) {
+    if ((!compfcn && bucket->index == index)
+        || !compfcn(bucket->index, index)) {
       value = bucket->value;
       return 0;
     }
@@ -165,7 +175,8 @@ int HashTable<Index,Value>::getNext(Index &index, void *current,
   }
 
   while(bucket) {
-    if (bucket->index == index) {
+    if ((!compfcn && bucket->index == index)
+        || !compfcn(bucket->index, index)) {
       value = bucket->value;
       next = bucket;
       return 0;
@@ -192,7 +203,8 @@ int HashTable<Index,Value>::remove(Index &index)
   HashBucket<Index, Value> *prevBuc = ht[idx];
 
   while(bucket) {
-    if (bucket->index == index) {
+    if ((!compfcn && bucket->index == index)
+        || !compfcn(bucket->index, index)) {
       if (bucket == ht[idx]) 
 	ht[idx] = bucket->next;
       else
