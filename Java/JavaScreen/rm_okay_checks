@@ -20,15 +20,22 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  2001/09/05 19:31:22  wenger
+#  Added bin2 and dyn_lib directories in JavaScreen release and install,
+#  and made corresponding changes to scripts; other distribution-related
+#  changes.
+#
 #  Revision 1.1  2001/03/26 16:06:34  wenger
 #  Perl script to remove check_connect.out.* logs that are okay.
 #
 
 ############################################################
 
+use strict;
+
 die "usage: rm_okay_checks [idStr]\n" if ($#ARGV != -1);
 
-$debug = 0;
+my $debug = 0;
 
 opendir THISDIR, "." or die "Can't open this directory!!: $!";
 
