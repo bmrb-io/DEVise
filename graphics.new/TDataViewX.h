@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.18.8.1  1997/08/07 16:56:45  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.18  1997/03/20 22:23:18  guangshu
+  Changed QueyDone.
+
   Revision 1.17  1997/02/14 16:47:48  wenger
   Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
 
@@ -134,7 +141,8 @@ protected:
 
 private:
   /* From GDataBinCallback */
-  virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs);
+  virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs,
+				  int &recordsProcessed);
   virtual void ReturnGDataBinConnectors(TDataCMap *cmap,
 					Connector **connectors, int num);
 
@@ -143,7 +151,8 @@ private:
   virtual void QueryInit(void *userData);
   
   virtual void ReturnGData(TDataMap *mapping, RecId id,
-			   void *gdata, int numGData);
+			   void *gdata, int numGData,
+			   int &recordsProcessed);
   
   /* Done with query */
   virtual void QueryDone(int bytes, void *userData, TDataMap *map=NULL);

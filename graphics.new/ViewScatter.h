@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.15.2.1  1997/08/07 16:56:48  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.15  1997/05/28 15:39:32  wenger
+  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+
   Revision 1.14.4.1  1997/05/20 16:11:18  ssl
   Added layout manager to DEVise
 
@@ -124,7 +131,8 @@ private:
   virtual void QueryInit(void *userData);
 
   virtual void ReturnGData(TDataMap *mapping, RecId id,
-			   void *gdata, int numGData);
+			   void *gdata, int numGData,
+			   int &recordsProcessed);
   
   /* Done with query */
   virtual void QueryDone(int bytes, void *userData, TDataMap *map=NULL);
@@ -134,7 +142,6 @@ private:
   QueryProc    *_queryProc;
   TDataMap     *_map;
   int          _index;
-  void         *_recs[WINDOWREP_BATCH_SIZE]; /* max # of pointers */
 
   BStatList    _blist;  // Keep a list of BasicStats so we can delete them
 };

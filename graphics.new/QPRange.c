@@ -16,6 +16,23 @@
   $Id$
 
   $Log$
+  Revision 1.10.8.3  1997/08/20 19:33:02  wenger
+  Removed/disabled debug output for interruptible drawing.
+
+  Revision 1.10.8.2  1997/08/20 18:36:24  wenger
+  QueryProcFull and QPRange now deal correctly with interrupted draws.
+  (Some debug output still turned on.)
+
+  Revision 1.10.8.1  1997/08/07 16:56:38  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.10  1997/02/03 19:45:31  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
   Revision 1.9  1996/12/03 20:33:39  jussi
   Made callbacks conditional.
 
@@ -196,15 +213,31 @@ void QPRange::DeleteRec(QPRangeRec *rec)
     _rangeListSize--;
 }
 
-void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
+// Note: *incomplete is not set if callback is NULL.
+void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback,
+		     Boolean *incomplete)
 {
+#if defined(DEBUG)
+    printf("QPRange::Insert(%d, %d)\n", (int) low, (int) high);
+#endif
+
+    int recordsProcessed;
+
     if (EmptyRange()) {
         QPRangeRec *rec = AllocRec();
         rec->low = low;
         rec->high = high;
+        if (callback) {
+            callback->QPRangeInserted(low, high, recordsProcessed);
+	    if (incomplete != NULL) *incomplete =
+		recordsProcessed < (int) (high - low + 1);
+	    rec->high = low + recordsProcessed - 1;
+	}
         InsertRec(&_rangeList, rec);
-        if (callback)
-            callback->QPRangeInserted(low, high);
+
+#if defined(DEBUG)
+        Print();
+#endif
         return;
     }
     
@@ -268,12 +301,21 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
             rec = AllocRec();
             rec->low = low;
             rec->high = high;
-            if (current == NULL)
+            if (callback) {
+                callback->QPRangeInserted(low, high, recordsProcessed);
+	        if (incomplete != NULL) *incomplete =
+		    recordsProcessed < (int) (high - low + 1);
+		if (recordsProcessed != (int) (high - low + 1)) {
+		    Insert(low, low + recordsProcessed - 1, NULL);
+		    return;
+		}
+	    }
+
+            if (current == NULL) {
                 InsertRec(&_rangeList,rec);
-            else InsertRec(current,rec);
-            
-            if (callback)
-                callback->QPRangeInserted(low,high);
+            } else {
+		InsertRec(current,rec);
+	    }
             
             low = high + 1;
             break;
@@ -281,8 +323,17 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
           case MERGE_RIGHT :
             /* merge range with the next one. Truncate
                [low,high] to the gap between current and next */
-            if (callback)
-                callback->QPRangeInserted(low,next->low - 1);
+            if (callback) {
+		RecId hiRec = next->low - 1;
+                callback->QPRangeInserted(low, hiRec, recordsProcessed);
+	        if (incomplete != NULL) *incomplete =
+		    recordsProcessed < (int) (high - low + 1);
+		if (recordsProcessed != (int) (hiRec - low + 1)) {
+		    Insert(low, low + recordsProcessed - 1, NULL);
+		    return;
+		}
+	    }
+
             next->low = low;
             if (high > next->high)
                 low = next->high + 1;
@@ -293,8 +344,18 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
             
     case MERGE_BOTH :
             /* merge [low,high] with current and next */
-            if (callback)
-                callback->QPRangeInserted(current->high + 1, next->low - 1);
+            if (callback) {
+		RecId loRec = current->high + 1;
+		RecId hiRec = next->low - 1;
+                callback->QPRangeInserted(loRec, hiRec, recordsProcessed);
+	        if (incomplete != NULL) *incomplete =
+		    recordsProcessed < (int) (high - low + 1);
+		if (recordsProcessed != (int) (hiRec - loRec + 1)) {
+		    Insert(loRec, loRec + recordsProcessed - 1, NULL);
+		    return;
+		}
+	    }
+
             if (high > next->high)
                 low = next->high + 1;
             else
@@ -306,8 +367,16 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
     case MERGE_CURRENT:
             /* merge [low,high] with current, assuming
                high > current->high + 1*/
-            if (callback)
-                callback->QPRangeInserted(current->high + 1, high);
+            if (callback) {
+		RecId loRec = current->high + 1;
+                callback->QPRangeInserted(loRec, high, recordsProcessed);
+	        if (incomplete != NULL) *incomplete =
+		    recordsProcessed < (int) (high - low + 1);
+		if (recordsProcessed != (int) (high - loRec + 1)) {
+		    Insert(loRec, loRec + recordsProcessed - 1, NULL);
+		    return;
+		}
+	    }
             current->high = high;
             low = high + 1;
             break;
@@ -317,6 +386,9 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
             break;
         }
     }
+#if defined(DEBUG)
+        Print();
+#endif
 }
 
 /*

@@ -16,6 +16,20 @@
   $Id$
 
   $Log$
+  Revision 1.64.2.3  1997/08/20 19:33:06  wenger
+  Removed/disabled debug output for interruptible drawing.
+
+  Revision 1.64.2.2  1997/08/20 18:36:25  wenger
+  QueryProcFull and QPRange now deal correctly with interrupted draws.
+  (Some debug output still turned on.)
+
+  Revision 1.64.2.1  1997/08/07 16:56:40  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.64  1997/07/16 15:55:36  wenger
+  Changes to accomodate new TData interface.
+
   Revision 1.63  1997/06/18 15:33:14  wenger
   Fixed bug 177; improved workaround of bug 137; incremented version
   number (because of Unidata being added).
@@ -293,6 +307,7 @@
 #include "RecordLink.h"
 #include "BufPolicy.h"
 #include "Shape.h"
+#include "DrawTimer.h"
 
 #define DEBUGLVL 0
 //#define DEBUG_NEG_LINKS 0
@@ -590,7 +605,7 @@ void QueryProcFull::AssociateMappingWithCoordinateTable(TDataMap *map)
 
 void QueryProcFull::AbortQuery(TDataMap *map, QueryCallback *callback)
 {
-#if DEBUGLVL >= 3 
+#if DEBUGLVL >= 3
   printf("abort query for %s %s\n", map->GetTData()->GetName(),
 	 map->GetName());
 #endif
@@ -1025,6 +1040,8 @@ void QueryProcFull::ProcessScan(QPFullData *query)
 
     int recsScanned = 0;
 
+    DrawTimer::Set();
+
     do {
         RecId startRid;
         int numRecs;
@@ -1050,9 +1067,12 @@ void QueryProcFull::ProcessScan(QPFullData *query)
 	  }
 	#endif
 
-        DistributeData(query, isTData, startRid, numRecs, buf);
+	Boolean drawTimedOut;
+        DistributeData(query, isTData, startRid, numRecs, buf, drawTimedOut);
         
         _mgr->FreeRecs(buf);
+        // Need to break out of loop here if not all records were processed.
+	if (drawTimedOut) break;
 
         recsScanned += numRecs;
 
@@ -1098,6 +1118,8 @@ void QueryProcFull::ProcessScan(QPFullData *query)
         }
 
     } while (recsScanned < QPFULL_RECS_PER_BATCH);
+
+    DrawTimer::Cancel();
 
 #if DEBUGLVL >= 3
     printf("Done getting records from buffer manager\n");
@@ -1593,7 +1615,8 @@ Boolean QueryProcFull::UseTDataQuery(TData *tdata, VisualFilter &filter)
   return false;
 }
 
-void QueryProcFull::QPRangeInserted(RecId low, RecId high)
+void QueryProcFull::QPRangeInserted(RecId low, RecId high,
+				    int &recordsProcessed)
 {
 #if DEBUGLVL >= 5
     printf("QPRangeInserted [%ld,%ld], buf 0x%p, [%ld,%ld], %d\n",
@@ -1602,6 +1625,7 @@ void QueryProcFull::QPRangeInserted(RecId low, RecId high)
 #endif
 
     if( _rangeQuery->callback == NULL ) {
+      recordsProcessed = (int) (high - low + 1);
       return;
     }
 
@@ -1617,7 +1641,12 @@ void QueryProcFull::QPRangeInserted(RecId low, RecId high)
                low, high, _rangeQuery->map, _gdataBuf);
 #endif
         _rangeQuery->callback->ReturnGData(_rangeQuery->map, low,
-                                           ptr, high - low + 1);
+                                           ptr, high - low + 1,
+					   recordsProcessed);
+#if DEBUGLVL >= 5
+	printf("Records %d - %d of %d - %d processed\n", (int) low,
+	  (int) low + recordsProcessed - 1, (int) low, (int) high);
+#endif
         return;
     }
 
@@ -1638,27 +1667,35 @@ void QueryProcFull::QPRangeInserted(RecId low, RecId high)
     char *dbuf = (char *)_rangeBuf + offset * tRecSize;
     RecId recId = low;
     
+    recordsProcessed = 0;
     while (recsLeft > 0) {
-        int numToConvert = numRecsPerBatch;
-        if (numToConvert > recsLeft)
-            numToConvert = recsLeft;
+	int numToConvert = MIN(numRecsPerBatch, recsLeft);
         _rangeQuery->map->ConvertToGData(recId, dbuf, numToConvert, _gdataBuf);
 #if DEBUGLVL >= 5
         printf("Returning converted GData [%ld,%ld], map 0x%p, buf 0x%p\n",
                recId, recId + numToConvert - 1, _rangeQuery->map, _gdataBuf);
 #endif
+	int tmpRecs;
         _rangeQuery->callback->ReturnGData(_rangeQuery->map, recId,
-                                           _gdataBuf, numToConvert);
-        recsLeft -= numToConvert;
-        recId += numToConvert;
-        dbuf += tRecSize * numToConvert;
+                                           _gdataBuf, numToConvert,
+					   tmpRecs);
+#if DEBUGLVL >= 5
+	printf("Records %d - %d of %d - %d processed\n", (int) recId,
+	  (int) recId + tmpRecs - 1, (int) recId, (int) low + numToConvert - 1);
+#endif
+	recordsProcessed += tmpRecs;
+	if (tmpRecs < numToConvert) break;
+        recsLeft -= tmpRecs;
+        recId += tmpRecs;
+        dbuf += tRecSize * tmpRecs;
     }
 }
 
 /* Distribute TData/GData to all queries that need it */
 
 void QueryProcFull::DistributeData(QPFullData *query, Boolean isTData,
-                                   RecId startRid, int numRecs, char *buf)
+                                   RecId startRid, int numRecs, char *buf,
+				   Boolean &drawTimedOut)
 {
 #if DEBUGLVL >= 5
     printf("DistributeData map %s, [%ld,%ld]\n", query->map->GetName(),
@@ -1697,7 +1734,8 @@ void QueryProcFull::DistributeData(QPFullData *query, Boolean isTData,
             tempHigh = otherQ->high;
         if (tempHigh >= tempLow) {
             _rangeQuery = otherQ;
-            otherQ->processed->Insert(tempLow, tempHigh, this);
+            otherQ->processed->Insert(tempLow, tempHigh, this, &drawTimedOut);
+	    if (drawTimedOut) break;
         }
     }
     
@@ -2297,7 +2335,8 @@ void QueryProcFull::GetX(QPFullData *query, RecId id, Coord &x)
       x = ((GDataBinRec *)buf)->x;
   }
 
-  DistributeData(query, isTData, id, 1, buf);
+  Boolean drawTimedOut;
+  DistributeData(query, isTData, id, 1, buf, drawTimedOut);
 
   _mgr->FreeRecs(buf);
 

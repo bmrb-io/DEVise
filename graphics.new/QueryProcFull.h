@@ -16,6 +16,20 @@
   $Id$
 
   $Log$
+  Revision 1.21.8.2  1997/08/20 18:36:26  wenger
+  QueryProcFull and QPRange now deal correctly with interrupted draws.
+  (Some debug output still turned on.)
+
+  Revision 1.21.8.1  1997/08/07 16:56:41  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.21  1997/02/03 19:45:33  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
   Revision 1.20  1997/01/23 17:40:58  jussi
   Added distribution of records from GetX().
 
@@ -256,7 +270,8 @@ protected:
 
   /* Distribute TData/GData to all queries that need it */
   void DistributeData(QPFullData *query, Boolean isTData,
-                      RecId startRid, int numRecs, char *buf);
+                      RecId startRid, int numRecs, char *buf,
+		      Boolean &drawTimedOut);
   
   /* Prepare processed list */
   void PrepareProcessedList(QPFullData *query);
@@ -280,7 +295,7 @@ protected:
   RecId _rangeStartId;
   int _rangeNumRecs;
   Boolean _rangeTData;
-  virtual void QPRangeInserted(RecId low, RecId high);
+  virtual void QPRangeInserted(RecId low, RecId high, int &recordsProcessed);
   
   /* list of mappings */
   TDataMap *_mappings[QPFULL_MAX_MAPPINGS];

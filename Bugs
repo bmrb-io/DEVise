@@ -866,6 +866,13 @@ Num Date        Status  Description
 
 213 07/28/97	OPEN	Switching TData doesn't work. (rkw)
 
+214 08/08/97	OPEN	Record links don't work if symbols in master view
+			are "complex". (rkw)
+
+215 08/13/97	FIXED	View statistics in Query dialog are sometimes incorrect
+			if you stop force a view to redraw by resizing its
+			window (applying the mapping fixes it!) (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

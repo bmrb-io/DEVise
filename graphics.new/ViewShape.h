@@ -16,7 +16,8 @@ class FullMapping_ViewShape
   
   virtual void DrawGDataArray (WindowRep *win, void **gdataArray, 
 			       int numSyms, TDataMap *map,
-			       ViewGraph *view, int pixelSize);
+			       ViewGraph *view, int pixelSize,
+			       int &recordsProcessed);
 };
 #endif
 

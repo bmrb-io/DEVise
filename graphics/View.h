@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.52.2.1  1997/08/14 16:15:52  wenger
+  Statistics, etc., now work correctly for timed-out draw in ViewScatter-
+  type views; bumped up version because of improved stop capability.
+
+  Revision 1.52  1997/07/17 19:50:31  wenger
+  Added menu selections to report number of strings and save string space.
+
   Revision 1.51  1997/05/28 15:38:58  wenger
   Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
 
@@ -498,6 +505,20 @@ class View
 	static void UpdateViewTable();
 	static DataSourceBuf* GetViewTable();
 #endif
+
+	static Boolean InVisualFilter(const VisualFilter &filter, Coord xLoc,
+				      Coord yLoc, Coord width = 0.0,
+				      Coord height = 0.0)
+	{
+	  if ((xLoc + (width / 2.0) < filter.xLow) ||
+	      (xLoc - (width / 2.0) > filter.xHigh) ||
+	      (yLoc + (height / 2.0) < filter.yLow) ||
+	      (yLoc - (height / 2.0) > filter.yHigh)) {
+	    return false;
+	  } else {
+	    return true;
+	  }
+	}
 
 protected:
 	/* called by base class when it has been mapped/unmapped */

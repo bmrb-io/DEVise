@@ -17,6 +17,22 @@
   $Id$
 
   $Log$
+  Revision 1.42.2.3  1997/08/20 19:33:00  wenger
+  Removed/disabled debug output for interruptible drawing.
+
+  Revision 1.42.2.2  1997/08/15 23:06:28  wenger
+  Interruptible drawing now pretty much working for TDataViewX class,
+  too (connector drawing may need work, needs a little more testing).
+  (Some debug output still turned on.)
+
+  Revision 1.42.2.1  1997/08/07 16:56:33  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.42  1997/07/18 20:24:53  wenger
+  Orientation now works on Rect and RectX symbols; code also includes
+  some provisions for locating symbols other than at their centers.
+
   Revision 1.41  1997/06/13 18:07:45  wenger
   Orientation is now working for text labels and fixed text labels.
 
@@ -223,8 +239,10 @@
 #include "Util.h"
 #include "DevError.h"
 #include "StringStorage.h"
+#include "DrawTimer.h"
 
 //#define DEBUG
+#define USE_TIMER 1
 
 #define IMAGE_TYPE_GIF_LOCAL		(0)
 #define IMAGE_TYPE_DALI_FILE		(1)
@@ -244,13 +262,14 @@ int FullMapping_RectShape::NumShapeAttrs()
 
 void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 					   int numSyms, TDataMap *map,
-					   ViewGraph *view, int pixelSize)
+					   ViewGraph *view, int pixelSize, int &recordsProcessed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
-	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
+	  recordsProcessed);
 	return;
 	}
 
@@ -290,6 +309,7 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		// size of a screen pixel.
 		DrawPixelArray(win, gdataArray, numSyms, map, view,
 						   pixelSize, true);
+		recordsProcessed = numSyms;
 		return;
 	}
 	}
@@ -367,12 +387,15 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (firstColor == XorColor)
 	  win->SetCopyMode();
 	}
+
+	recordsProcessed = numSyms;
 }
 		 
 void FullMapping_RectShape::Draw3DGDataArray(WindowRep *win,
 											 void **gdataArray,
 											 int numSyms, TDataMap *map,
-											 ViewGraph *view, int pixelSize)
+											 ViewGraph *view, int pixelSize,
+											 int &recordsProcessed)
 {
   GDataAttrOffset *offset = map->GetGDataOffset();
   
@@ -432,6 +455,8 @@ void FullMapping_RectShape::Draw3DGDataArray(WindowRep *win,
 			  view->GetCamera(), w, h);
 	Map3D::DrawPlanes(win, solidFrame);
   }
+
+  recordsProcessed = numSyms;
 }
 
 //---------------------------------------------------------------------------
@@ -443,13 +468,15 @@ int FullMapping_RectXShape::NumShapeAttrs()
 
 void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 						int numSyms, TDataMap *map,
-						ViewGraph *view, int pixelSize)
+						ViewGraph *view, int pixelSize, int &recordsProcessed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
+
 	if (view->GetNumDimensions() == 3) {
-	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
+	  recordsProcessed);
 	return;
 	}
 
@@ -476,6 +503,7 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		// size of a screen pixel.
 		DrawPixelArray(win, gdataArray, numSyms, map, view,
 						   pixelSize, false);
+		recordsProcessed = numSyms;
 		return;
 	}
 	}
@@ -529,6 +557,8 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (color == XorColor)
 	  win->SetCopyMode();
 	}
+
+	recordsProcessed = numSyms;
 }
 
 
@@ -564,13 +594,14 @@ void FullMapping_BarShape::MaxSymSize(TDataMap *map, void *gdata, int numSyms,
 
 void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
-				ViewGraph *view, int pixelSize) 
+				ViewGraph *view, int pixelSize, int &recordsProcessed) 
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
-	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
+	  recordsProcessed);
 	return;
 	}
 	
@@ -619,6 +650,8 @@ void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (color == XorColor)
 	  win->SetCopyMode();
 	}
+
+	recordsProcessed = numSyms;
 }
 
 
@@ -636,13 +669,14 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
 							 int numSyms,
 							 TDataMap *map,
 							 ViewGraph *view,
-							 int pixelSize) 
+							 int pixelSize, int &recordsProcessed) 
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
-	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
+	  recordsProcessed);
 	return;
 	}
 
@@ -676,6 +710,7 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
 		// size of a screen pixel.
 		DrawPixelArray(win, gdataArray, numSyms, map, view,
 						   pixelSize, false);
+		recordsProcessed = numSyms;
 		return;
 	}
 	}
@@ -719,6 +754,8 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
 	if (color == XorColor)
 	  win->SetCopyMode();
 	}
+
+	recordsProcessed = numSyms;
 }
 
 
@@ -733,13 +770,14 @@ int FullMapping_OvalShape::NumShapeAttrs()
 
 void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 					   int numSyms, TDataMap *map,
-					   ViewGraph *view, int pixelSize)
+					   ViewGraph *view, int pixelSize, int &recordsProcessed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
-	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
+	  recordsProcessed);
 	return;
 	}
 
@@ -768,6 +806,7 @@ void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		// size of a screen pixel.
 		DrawPixelArray(win, gdataArray, numSyms, map, view,
 						   pixelSize, false);
+		recordsProcessed = numSyms;
 		return;
 	}
 	}
@@ -800,6 +839,8 @@ void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (color == XorColor)
 	  win->SetCopyMode();
 	}
+
+	recordsProcessed = numSyms;
 }
 
 
@@ -814,13 +855,14 @@ int FullMapping_VectorShape::NumShapeAttrs()
 
 void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 						 int numSyms, TDataMap *map,
-						 ViewGraph *view, int pixelSize)
+						 ViewGraph *view, int pixelSize, int &recordsProcessed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
-	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
+	  recordsProcessed);
 	return;
 	}
 
@@ -849,6 +891,7 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		// size of a screen pixel.
 		DrawPixelArray(win, gdataArray, numSyms, map, view,
 						   pixelSize, false);
+		recordsProcessed = numSyms;
 		return;
 	}
 	}
@@ -922,6 +965,8 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (color == XorColor)
 	  win->SetCopyMode();
 	}
+
+	recordsProcessed = numSyms;
 }
 
 
@@ -939,13 +984,14 @@ void FullMapping_HorLineShape::MaxSymSize(TDataMap *map, void *gdata,
 
 void FullMapping_HorLineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 						  int numSyms, TDataMap *map,
-						  ViewGraph *view, int pixelSize)
+						  ViewGraph *view, int pixelSize, int &recordsProcessed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
-	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
+	  recordsProcessed);
 	return;
 	}
 
@@ -976,6 +1022,8 @@ void FullMapping_HorLineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (color == XorColor)
 	  win->SetCopyMode();
 	}
+
+	recordsProcessed = numSyms;
 }
 
 
@@ -1016,13 +1064,14 @@ void FullMapping_SegmentShape::MaxSymSize(TDataMap *map, void *gdata,
 
 void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 						  int numSyms, TDataMap *map,
-						  ViewGraph *view, int pixelSize)
+						  ViewGraph *view, int pixelSize, int &recordsProcessed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
-	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
+	  recordsProcessed);
 	return;
 	}
 
@@ -1053,6 +1102,7 @@ void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		// size of a screen pixel.
 		DrawPixelArray(win, gdataArray, numSyms, map, view,
 						   pixelSize, false);
+		recordsProcessed = numSyms;
 		return;
 	}
 	}
@@ -1082,13 +1132,16 @@ void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (color == XorColor)
 	  win->SetCopyMode();
 	}
+
+	recordsProcessed = numSyms;
 }
 
 
 void FullMapping_SegmentShape::Draw3DGDataArray(WindowRep *win,
 												void **gdataArray,
 												int numSyms, TDataMap *map,
-												ViewGraph *view, int pixelSize)
+												ViewGraph *view, int pixelSize,
+												int &recordsProcessed)
 {
 	GDataAttrOffset *offset = map->GetGDataOffset();
 
@@ -1123,6 +1176,8 @@ void FullMapping_SegmentShape::Draw3DGDataArray(WindowRep *win,
 	Map3D::ClipLineSegments(win, _object3D, numSyms, view->GetCamera(), w, h);
 	Map3D::MapLineSegments(win, _object3D, numSyms, view->GetCamera(), w, h);
 	Map3D::DrawSegments(win);
+
+	recordsProcessed = numSyms;
 }
 
 
@@ -1160,13 +1215,15 @@ void FullMapping_HighLowShape::MaxSymSize(TDataMap *map, void *gdata,
 
 void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 						  int numSyms, TDataMap *map,
-						  ViewGraph *view, int pixelSize)
+						  ViewGraph *view, int pixelSize,
+						  int &recordsProcessed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
-	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
+	  recordsProcessed);
 	return;
 	}
 
@@ -1198,6 +1255,7 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		// size of a screen pixel.
 		DrawPixelArray(win, gdataArray, numSyms, map, view,
 						   pixelSize, false);
+		recordsProcessed = numSyms;
 		return;
 	}
 	}
@@ -1235,6 +1293,8 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (color == XorColor)
 	  win->SetCopyMode();
 	}
+
+	recordsProcessed = numSyms;
 }
 
  
@@ -1287,13 +1347,15 @@ void FullMapping_PolylineShape::MaxSymSize(TDataMap *map, void *gdata,
 void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 						   void **gdataArray,
 						   int numSyms, TDataMap *map,
-						   ViewGraph *view, int pixelSize)
+						   ViewGraph *view, int pixelSize,
+						   int &recordsProcessed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
-	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
+	  recordsProcessed);
 	return;
 	}
 
@@ -1323,6 +1385,7 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 		// size of a screen pixel.
 		DrawPixelArray(win, gdataArray, numSyms, map, view,
 						   pixelSize, false);
+		recordsProcessed = numSyms;
 		return;
 	}
 	}
@@ -1373,6 +1436,8 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 	if (color == XorColor)
 	  win->SetCopyMode();
 	}
+
+	recordsProcessed = numSyms;
 }
 
  
@@ -1397,15 +1462,18 @@ void FullMapping_GifImageShape::MaxSymSize(TDataMap *map, void *gdata,
 void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 					       void **gdataArray,
 					       int numSyms, TDataMap *map,
-					       ViewGraph *view, int pixelSize)
+					       ViewGraph *view, int pixelSize,
+						   int &recordsProcessed)
 {
 #if defined(DEBUG)
     printf("%s\n", __PRETTY_FUNCTION__);
 #endif
+
     const Boolean sendImageOnSocket = false;
     
     if (view->GetNumDimensions() == 3) {
-	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
+	  recordsProcessed);
 	return;
     }
     
@@ -1422,6 +1490,16 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
     // then at least the user sees some symbol in the window
     
     for (int i = 0; i < numSyms; i++) {
+#if USE_TIMER
+	  // Always draw at least one symbol so we are sure to make progress.
+	  if ((i > 0) && DrawTimer::Expired()) {
+#if defined(DEBUG)
+        printf("Draw timed out\n");
+#endif
+		recordsProcessed = i;
+		return;
+	  }
+#endif
 	
 	char *gdata = (char *)gdataArray[i];
 	Coord x = GetX(gdata, map, offset);
@@ -1517,6 +1595,7 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	    
 	  default:
 	    reportError("Illegal image type", devNoSyserr);
+		recordsProcessed = numSyms;
 	    return;
 	    break;
 	}
@@ -1570,6 +1649,8 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	    reportError("Illegal image type", devNoSyserr);
 	}
     }
+
+	recordsProcessed = numSyms;
 }
 
 
@@ -1595,13 +1676,14 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 						   void **gdataArray,
 						   int numSyms, TDataMap *map,
 						   ViewGraph *view,
-						   int pixelSize)
+						   int pixelSize, int &recordsProcessed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
-	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
+	  recordsProcessed);
 	return;
 	}
 
@@ -1692,6 +1774,8 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 	if (color == XorColor)
 	  win->SetCopyMode();
 	}
+
+	recordsProcessed = numSyms;
 }
 
  
@@ -1716,14 +1800,16 @@ void FullMapping_TextLabelShape::MaxSymSize(TDataMap *map, void *gdata,
 void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 						void **gdataArray,
 						int numSyms, TDataMap *map,
-						ViewGraph *view, int pixelSize)
+						ViewGraph *view, int pixelSize,
+						int &recordsProcessed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 
   if (view->GetNumDimensions() == 3) {
-    Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+    Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
+	  recordsProcessed);
     return;
   }
 
@@ -1769,6 +1855,17 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
   Coord oldPointSize = -9999.9;
 
   for(int i = 0; i < numSyms; i++) {
+#if USE_TIMER
+	  // Always draw at least one symbol so we are sure to make progress.
+	  if ((i > 0) && DrawTimer::Expired()) {
+#if defined(DEBUG)
+        printf("Draw timed out\n");
+#endif
+		recordsProcessed = i;
+		return;
+	  }
+#endif
+
     char *gdata = (char *)gdataArray[i];
     Coord x = GetX(gdata, map, offset);
     Coord y = GetY(gdata, map, offset);
@@ -1858,6 +1955,8 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
     if (color == XorColor)
       win->SetCopyMode();
   }
+
+	recordsProcessed = numSyms;
 }
 
 
@@ -1882,14 +1981,16 @@ void FullMapping_FixedTextLabelShape::MaxSymSize(TDataMap *map, void *gdata,
 void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
 						void **gdataArray,
 						int numSyms, TDataMap *map,
-						ViewGraph *view, int pixelSize)
+						ViewGraph *view, int pixelSize,
+						int &recordsProcessed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 
   if (view->GetNumDimensions() == 3) {
-    Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+    Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
+	  recordsProcessed);
     return;
   }
 
@@ -1933,6 +2034,17 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
   Coord oldPointSize = -9999.9;
 
   for(int i = 0; i < numSyms; i++) {
+#if USE_TIMER
+	  // Always draw at least one symbol so we are sure to make progress.
+	  if ((i > 0) && DrawTimer::Expired()) {
+#if defined(DEBUG)
+        printf("Draw timed out\n");
+#endif
+		recordsProcessed = i;
+		return;
+	  }
+#endif
+
     char *gdata = (char *)gdataArray[i];
     Coord x = GetX(gdata, map, offset);
     Coord y = GetY(gdata, map, offset);
@@ -2004,6 +2116,8 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
     if (color == XorColor)
       win->SetCopyMode();
   }
+
+	recordsProcessed = numSyms;
 }
 
 
@@ -2020,7 +2134,8 @@ void FullMapping_LineShape::MaxSymSize(TDataMap *map, void *gdata, int numSyms,
 
 void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 					   int numSyms, TDataMap *map,
-					   ViewGraph *view, int pixelSize)
+					   ViewGraph *view, int pixelSize,
+					   int &recordsProcessed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
@@ -2028,7 +2143,8 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 #endif
 
 	if (view->GetNumDimensions() == 3) {
-	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
+	  recordsProcessed);
 	return;
 	}
 
@@ -2095,6 +2211,8 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	} else {
 		view->GetPointStorage()->Insert(recId + numSyms - 1, x0, y0, c0);
 	}
+
+	recordsProcessed = numSyms;
 }
 
 
@@ -2257,7 +2375,4 @@ void FullMapping_LineShadeShape::DrawConnectingLine(WindowRep *win,
 						  x1, y1, c1);
 }
 
-
 //---------------------------------------------------------------------------
-
-

@@ -16,6 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.11.8.2  1997/08/20 19:33:08  wenger
+  Removed/disabled debug output for interruptible drawing.
+
+  Revision 1.11.8.1  1997/08/07 16:56:45  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.11  1997/02/03 19:45:37  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
   Revision 1.10  1996/11/26 16:51:41  ssl
   Added support for piled viws
 

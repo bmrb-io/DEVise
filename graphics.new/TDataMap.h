@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.22.2.1  1997/08/07 16:56:43  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.22  1997/05/28 15:39:31  wenger
+  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+
   Revision 1.21.4.1  1997/05/20 16:11:17  ssl
   Added layout manager to DEVise
 
@@ -268,7 +275,8 @@ public:
   }
 
   virtual void DrawGDataArray(ViewGraph *view, WindowRep *win,
-			      void **gdataArray, int num) = 0;
+			      void **gdataArray, int num,
+			      int &recordsProcessed) = 0;
 
   /* Get the AttrInfo for a GData attribute. The argument should be
      one of the MappingCmd_??? constants defined in MappingInterp.h */

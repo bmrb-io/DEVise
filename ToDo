@@ -402,6 +402,9 @@ propagated to other views it links to. (ml/rkw 7/29/97)
 There seem to be many copies of the VisualFilter for a given view -- this
 should be changed so that there is only one. (rkw 7/31/97)
 
+Allow multiple clients to connect to a single Devise server simultaneously.
+(rkw/dk 8/19/97)
+
 
 COMPLETED
 ---------
@@ -500,6 +503,7 @@ When drilling down, allow showing of longer strings in the output. (ak/rkw
 ak = alain@cs.wisc.edu = Alain Kagi
 at = andyt@cs.wisc.edu = Andrew Therber
 bb = wlbland@facstaff.wisc.edu = Bill Bland
+dk = Denis Koelewijn = denis@dutian.twi.tudelft.nl
 ds = sorin@cae.wisc.edu = Dan Sorin
 ff = 
 gc = 

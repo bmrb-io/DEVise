@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.28.8.1  1997/08/14 15:46:27  wenger
+  Fixed bug 215; cleaned up duplicate code in BasicStats.C.
+
+  Revision 1.28  1997/04/15 18:33:16  wenger
+  Minor fixes to statistics code (as prompted by Guangshun).
+
   Revision 1.27  1997/04/03 16:36:42  wenger
   Reduced memory and CPU usage in statistics; fixed a memory leak in the
   statistics code; switched devised back to listening on port 6100
@@ -116,37 +122,33 @@ const int StatLineWidth = 1;
 
 BasicStats::BasicStats()
 {
+#if defined(DEBUG)
+  printf("BasicStats(0x%p)::BasicStats()\n", this);
+#endif
+
   _vw = 0;
   hist_min = hist_max = width = 0;
   numBuckets = DEFAULT_NUM;  //default number of buckets = 50
 
-  xsum = xsum_sqr = xmax = xmin = 0;
-  ysum = ysum_sqr = ymin = ymax = 0;
-  avg_x = var_x = std_x = xysum = avg_xy = 0;
-  xatymax = xatymin = 0;
-  int_x = int_y = 0;
-  avg = std = var = 0;
-  line_a = line_b = 0;
-  for (int i = 0; i < NUM_Z_VALS; i++)
-    clow[i] = chigh[i] = 0;
-
-  nval = 0;
-  nsamples = 0;
-  if (numBuckets > 0 ){
-    hist = new int[numBuckets];
-    for(int j=0; j<numBuckets; j++){
-        hist[j]=0;
-    }
-  }
+  hist = NULL;
+  Init(_vw);
 }
 
 BasicStats::~BasicStats()
 {
+#if defined(DEBUG)
+  printf("BasicStats(0x%p)::~BasicStats()\n", this);
+#endif
+
   if (hist) delete [] hist;
 }
 
 void BasicStats::Init(ViewGraph *vw)
 {
+#if defined(DEBUG)
+  printf("BasicStats(0x%p)::Init()\n", this);
+#endif
+
   xsum = xsum_sqr = xmax = xmin = 0;
   ysum = ysum_sqr = ymin = ymax = 0;
   avg_x = var_x = std_x = xysum = avg_xy = 0;
@@ -211,6 +213,10 @@ void BasicStats::Histogram(double y)
 
 void BasicStats::Done()
 {
+#if defined(DEBUG)
+  printf("BasicStats(0x%p)::Done()\n", this);
+#endif
+
   if (nsamples > 0) {
     avg = ysum / nsamples;
     avg_x = xsum / nsamples;
@@ -250,6 +256,10 @@ void BasicStats::Done()
 
 void BasicStats::Report()
 {
+#if defined(DEBUG)
+  printf("BasicStats(0x%p)::Report()\n", this);
+#endif
+
   if (!_vw || (atoi(_vw->GetDisplayStats()) == 0))
     return;
 
@@ -357,6 +367,10 @@ Coord BasicStats::GetHistMax()
 
 void BasicStats::SetHistWidth(Coord min, Coord max)
 {
+#if defined(DEBUG)
+  printf("BasicStats(0x%p)::SetHistWidth()\n", this);
+#endif
+
     if(numBuckets == 0) numBuckets = DEFAULT_NUM; 
 #if defined(DEBUG)
     printf("set width: min:%g max:%g\n", min, max);
@@ -378,8 +392,9 @@ void BasicStats::SetHistWidth(Coord min, Coord max)
 void BasicStats::SetnumBuckets(int num)
 {
 #if defined(DEBUG)
-	printf("SetnumBuckets num=%d for BasicStats %p\n",num, this);
+  printf("BasicStats(0x%p)::SetNumBuckets(%d)\n", this, num);
 #endif
+
   if(num > 0) 
   {
      numBuckets = num;

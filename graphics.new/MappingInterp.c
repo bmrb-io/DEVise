@@ -16,6 +16,23 @@
   $Id$
 
   $Log$
+  Revision 1.61.2.3  1997/08/15 23:06:30  wenger
+  Interruptible drawing now pretty much working for TDataViewX class,
+  too (connector drawing may need work, needs a little more testing).
+  (Some debug output still turned on.)
+
+  Revision 1.61.2.2  1997/08/14 16:16:02  wenger
+  Statistics, etc., now work correctly for timed-out draw in ViewScatter-
+  type views; bumped up version because of improved stop capability.
+
+  Revision 1.61.2.1  1997/08/07 16:56:36  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.61  1997/07/16 15:49:19  wenger
+  Moved string allocation/deallocation within StringStorage class, fixed
+  memory leak of strings.
+
   Revision 1.60  1997/07/15 14:29:57  wenger
   Moved hashing of strings from TData*Interp classes to MappingInterp
   class; cleaned up a few extra includes of StringStorage.h.
@@ -284,7 +301,6 @@
 #include "ETkWindowShape.h"
 #include "Exit.h"
 #include "Util.h"
-#include "Exit.h"
 #include "Init.h"
 #include "StringStorage.h"
 
@@ -410,6 +426,8 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
     _shapes = new Shape *[MaxInterpShapes];
     /* Note: this shape-value mapping must correspond to that in the
      * DEViseShapes variable in lib/control.tk.  RKW 4/29/97. */
+    /* Note: if these values are changed, MappingInterp::IsComplexShape()
+     * may also need to be changed. */
     _shapes[0]  = new FullMapping_RectShape;
     _shapes[1]  = new FullMapping_RectXShape;
     _shapes[2]  = new FullMapping_BarShape;
@@ -684,12 +702,14 @@ void MappingInterp::UpdateMaxSymSize(void *gdata, int numSyms)
 }
 
 void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
-				   void **gdataArray, int num)
+				   void **gdataArray, int num,
+				   int &recordsProcessed)
 {
 #if defined(DEBUG)
   printf("MappingInterp::DrawGDataArray(%s, 0x%p, %d)\n", view->GetName(),
     win, num);
 #endif
+
   if (_offsets->shapeOffset < 0) {
     /* constant shape */
     ShapeID shape = GetDefaultShape();
@@ -697,9 +717,10 @@ void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
     printf("Drawing shape %d\n", shape);
 #endif
     _shapes[shape]->DrawGDataArray(win, gdataArray, num, this,
-				   view, GetPixelWidth());
+				   view, GetPixelWidth(), recordsProcessed);
   } else {
     /* dynamic shape */
+    recordsProcessed = 0;
     int i = 0;
     while (i < num) {
       ShapeID shape = *((ShapeID *)(gdataArray[i]+_offsets->shapeOffset));
@@ -711,14 +732,25 @@ void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
 	  break;
       }
       /* gdataArray[i..j-1] have the same shape */
-#ifdef DEBUG
-      printf("Drawing shape %d\n", shape);
+#if defined(DEBUG)
+      printf("Drawing shape %d (records %d thru %d)\n", shape, i, j - 1);
 #endif
+      int tmpRecs;
       _shapes[shape]->DrawGDataArray(win, &gdataArray[i], j - i, this,
-				     view, GetPixelWidth());
+				     view, GetPixelWidth(), tmpRecs);
+      recordsProcessed = i + tmpRecs;
+      if (tmpRecs != j - i) {
+#if defined(DEBUG)
+        printf("  %d records processed\n", recordsProcessed);
+#endif
+	return;
+      }
       i = j;
     }
   }
+#if defined(DEBUG)
+  printf("  %d records processed\n", recordsProcessed);
+#endif
 }
 
 /*

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.5.12.1  1997/08/20 21:20:49  wenger
+  Changed multi versions of DrawGData functions to have recordsProcessed
+  argument needed for interruptible draws.
+
+  Revision 1.5  1996/07/19 03:49:47  jussi
+  Changed View * to ViewGraph *.
+
   Revision 1.4  1996/07/03 22:54:10  jussi
   Updated to reflect new Shape interface.
 
@@ -94,8 +101,11 @@ public:
 
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
                               int numSyms, TDataMap *map,
-                              ViewGraph *view, int pixelSize) {
+                              ViewGraph *view, int pixelSize,
+			      int &recordsProcessed) {
 		
+    recordsProcessed = numSyms;
+
     if (view->GetNumDimensions() == 3)
       return;
 

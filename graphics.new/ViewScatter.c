@@ -16,6 +16,27 @@
   $Id$
 
   $Log$
+  Revision 1.35.2.4  1997/08/20 15:33:11  wenger
+  Interruptible drawing now working for TDataViewX class (including
+  GDataBin class); improvements to reverseIndex in ViewScatter class.
+  (Some debug output still turned on.)
+
+  Revision 1.35.2.3  1997/08/14 16:16:07  wenger
+  Statistics, etc., now work correctly for timed-out draw in ViewScatter-
+  type views; bumped up version because of improved stop capability.
+
+  Revision 1.35.2.2  1997/08/13 19:12:17  wenger
+  First fully-working (statistics work right) version of ViewScatter.c for
+  improved stop mods.  (Still has debug code in place.)
+
+  Revision 1.35.2.1  1997/08/07 16:56:47  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.35  1997/06/18 15:33:19  wenger
+  Fixed bug 177; improved workaround of bug 137; incremented version
+  number (because of Unidata being added).
+
   Revision 1.34  1997/05/28 15:39:32  wenger
   Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
 
@@ -208,6 +229,9 @@ void ViewScatter::InsertMapping(TDataMap *map)
 
 void ViewScatter::DerivedStartQuery(VisualFilter &filter, int timestamp)
 {
+#if defined(DEBUG)
+  printf("ViewScatter::DerivedStartQuery()\n");
+#endif
   // Initialize statistics collection
   _allStats.Init(this);
 
@@ -284,11 +308,24 @@ void ViewScatter::QueryInit(void *userData)
 }
 
 void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
-			      void *gdata, int numGData)
+			      void *gdata, int numGData,
+			      int &recordsProcessed)
 {
+#if defined(DEBUG)
+  printf("ViewScatter::ReturnGData(0x%p, %d)\n", gdata, numGData);
+#endif
+
+  // In case window is iconified, we have to say that we "processed" all
+  // of the records, even if they didn't actually get drawn.
+  recordsProcessed = numGData;
+
   if( _index < 0 ) {
     return;
   }
+  
+  void *recs[WINDOWREP_BATCH_SIZE];
+  int reverseIndex[WINDOWREP_BATCH_SIZE + 1];
+  reverseIndex[0] = 0;
   
 #if defined(DEBUG) || 0
   printf("ViewScatter %d recs buf start 0x%p\n", numGData, gdata);
@@ -311,7 +348,6 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
   
   GDataAttrOffset *offset = mapping->GetGDataOffset();
   int gRecSize = mapping->GDataRecordSize();
-  char *ptr = (char *)gdata;
   int recIndex = 0;
   int firstRec = 0;
 
@@ -336,40 +372,102 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
 #endif
   }
 
-
-  for(int i = 0; i < numGData; i++) {
+  /* Draw symbols. */
+  char *ptr = (char *) gdata;
+  Boolean timedOut = false;
+  for (int i = 0; i < numGData && !timedOut; i++) {
     // Extract X, Y, shape, and color information from gdata record
     Coord x = ShapeGetX(ptr, mapping, offset);
     Coord y = ShapeGetY(ptr, mapping, offset);
-
     ShapeID shape = GetShape(ptr, mapping, offset);
-#if 0
-    Coord width  = GetWidth(ptr, mapping, offset);
-    Coord height = GetHeight(ptr, mapping, offset);
-    Coord x1 = x - width/2;
-    Coord x2 = x + width/2;
-    Coord y1 = y - height/2;
-    Coord y2 = y + height/2;
+    Boolean complexShape = mapping->IsComplexShape(shape);
+    complexShape |= (GetNumDimensions() == 3);
+
+    // I don't know why the heck we draw a "complex" symbol here even if
+    // it falls outside the visual filter; this also goofs up record links
+    // if master view has complex symbols. RKW Aug. 8, 1997.
+
+    // Use of maxWidth and maxHeight here is probably goofed up if symbols
+    // are rotated.  RKW Aug. 8, 1997.
+    if (complexShape || InVisualFilter(_queryFilter, x, y, maxWidth,
+	maxHeight)) {
+
+      // reverseIndex is set up this way because if you have some records
+      // outside the visual filter, you want to count all such records as
+      // processed if they're before the last record actually drawn.
+      reverseIndex[recIndex + 1] = i + 1;
+
+      // Draw data only if window is not iconified
+      if (!Iconified()) {
+        recs[recIndex++] = ptr;
+        if (recIndex == WINDOWREP_BATCH_SIZE) {
+	  int tmpRecs;
+	  mapping->DrawGDataArray(this, win, recs, recIndex, tmpRecs);
+
+	  // Note: if first records are outside visual filter, you might
+	  // have _processed_ some records even if you didn't draw any.
+	  recordsProcessed = reverseIndex[tmpRecs];
+
+#if defined(DEBUG)
+          printf("  tmpRecs = %d, recordsProcessed = %d\n", tmpRecs,
+	    recordsProcessed);
 #endif
+          if (tmpRecs < recIndex) timedOut = true; // Draw timed out.
+          recIndex = 0;
+        }
+      }
+    } else {
+      reverseIndex[recIndex] = i + 1;
+
+      // Put records _outside_ the visual filter into the record link.
+      if (!MoreMapping(_index)) {
+	if (i > firstRec) {
+	  WriteMasterLink(recId + firstRec, i - firstRec);
+	}
+	// Next contiguous batch of record ids starts at i+1
+	  firstRec = i + 1;
+      }
+    }
+
+    ptr += gRecSize;
+  }
+
+  if (!MoreMapping(_index)) {
+    if (numGData > firstRec) {
+      WriteMasterLink(recId + firstRec, numGData - firstRec);
+    }
+  }
+
+  if (!Iconified() && recIndex > 0 && !timedOut) {
+    int tmpRecs;
+    mapping->DrawGDataArray(this, win, recs, recIndex, tmpRecs);
+    recordsProcessed = reverseIndex[tmpRecs];
+#if defined(DEBUG)
+    printf("  tmpRecs = %d, recordsProcessed = %d\n", tmpRecs,
+      recordsProcessed);
+#endif
+  }
+
+  /* Do statistics only on the data corresponding to the symbols that
+   * actually got drawn (note: if the window is iconified, we do the
+   * statistics on all records). */
+  ptr = (char *) gdata;
+  for (int recNum = 0; recNum < recordsProcessed; recNum++) {
+    // Extract X, Y, shape, and color information from gdata record
+    Coord x = ShapeGetX(ptr, mapping, offset);
+    Coord y = ShapeGetY(ptr, mapping, offset);
+    ShapeID shape = GetShape(ptr, mapping, offset);
     GlobalColor color = mapping->GetDefaultColor();
     if (offset->colorOffset >= 0)
       color = *(GlobalColor *)(ptr + offset->colorOffset);
-    Boolean complexShape = mapping->IsComplexShape(shape);
-    complexShape |= (GetNumDimensions() == 3);
-    
-    /* Collect statistics from last mapping and only those records
-     * that match the filter''s X and Y range
-     */
-    if (!MoreMapping(_index) &&
-	x >= _queryFilter.xLow && x <= _queryFilter.xHigh &&
-	y >= _queryFilter.yLow && y <= _queryFilter.yHigh) {
+
+    if (InVisualFilter(_queryFilter, x, y, 0.0, 0.0)) {
       if ((color >= 0) && (color < MAXCOLOR)) _stats[color].Sample(x, y);
       _allStats.Sample(x, y);
 
       _allStats.Histogram(y);
 
       if(_glistX.Size() <= MAX_GSTAT) {
-//          int X = (int) x;
           double X = x;
           BasicStats *bsx;
           if(_gstatX.Lookup(x, bsx)) {
@@ -384,11 +482,11 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
               _gstatX.Insert(X, bsx);
               _blist.Insert(bsx);
           }
-        } else {
+      } else {
 	  _gstatInMem = false;  /* mark gstatBuf faulse and submit
 				  the query to DTE */
-	}
-        if(_glistY.Size() <= MAX_GSTAT) {
+      }
+      if(_glistY.Size() <= MAX_GSTAT) {
               double Y =  y;
               BasicStats *bsy = NULL;
               if(_gstatY.Lookup(y, bsy)) {
@@ -404,71 +502,21 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
                   _blist.Insert(bsy);
               }
 
-        } else {
-              /* mark gstatBuf faulse cleanup the gstat list, the group
+      } else {
+              /* mark gstatBuf false cleanup the gstat list, the group
                  by query will be submitted to DTE when requested  */
 
               _gstatInMem = false;
-        }
-    }
-
-    /* Contiguous ranges which match the filter''s X and Y range
-     * are stored in the record link
-     */
-    if (!complexShape &&
-	(x + maxWidth / 2 < _queryFilter.xLow || 
-	 x - maxWidth / 2 > _queryFilter.xHigh || 
-	 y + maxHeight / 2 < _queryFilter.yLow || 
-	 y - maxHeight / 2 > _queryFilter.yHigh)) {
-      if (!MoreMapping(_index)) {
-	if (i > firstRec) {
-	  WriteMasterLink(recId + firstRec, i - firstRec);
-	}
-	// Next contiguous batch of record ids starts at i+1
-	  firstRec = i + 1;
       }
-      
-      ptr += gRecSize;
-      continue;
     }
-
-#if defined(DEBUG)
-    printf("ViewScatter::ReturnGData: adding record #%ld (X+-W,Y+-H)="
-	   "(%g+-%g, %g+-%g)\n"
-	   "                          filter(X1,X2,Y1,Y2) = (%g, %g, %g, %g)\n",
-	   //	   recId + i, x, width, y, height,
-	   recId + i, x, maxWidth, y, maxHeight,
-	   _queryFilter.xLow, _queryFilter.xHigh,
-	   _queryFilter.yLow, _queryFilter.yHigh);
-#endif
-
-    // Draw data only if window is not iconified
-      if (!Iconified()) {
-	_recs[recIndex++] = ptr;
-	if (recIndex == WINDOWREP_BATCH_SIZE) {
-	  mapping->DrawGDataArray(this, win, _recs, recIndex);
-	  recIndex = 0;
-	}
-      }
-    
     ptr += gRecSize;
-    }
-  
-  if (!MoreMapping(_index)) {
-    if (numGData > firstRec) {
-      WriteMasterLink(recId + firstRec, numGData - firstRec);
-    }
-  }
-
-  if (!Iconified() && recIndex > 0) {
-    mapping->DrawGDataArray(this, win, _recs, recIndex);
   }
 }
 
 /* Done with query */
 void ViewScatter::QueryDone(int bytes, void *userData, TDataMap *map=NULL)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("ViewScatter::Query done, index = %d, bytes = %d\n", _index, bytes);
 #endif
 

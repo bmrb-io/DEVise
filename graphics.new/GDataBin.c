@@ -16,6 +16,29 @@
   $Id$
 
   $Log$
+  Revision 1.16.12.4  1997/08/20 18:36:22  wenger
+  QueryProcFull and QPRange now deal correctly with interrupted draws.
+  (Some debug output still turned on.)
+
+  Revision 1.16.12.3  1997/08/20 15:33:04  wenger
+  Interruptible drawing now working for TDataViewX class (including
+  GDataBin class); improvements to reverseIndex in ViewScatter class.
+  (Some debug output still turned on.)
+
+  Revision 1.16.12.2  1997/08/15 23:06:26  wenger
+  Interruptible drawing now pretty much working for TDataViewX class,
+  too (connector drawing may need work, needs a little more testing).
+  (Some debug output still turned on.)
+
+  Revision 1.16.12.1  1997/08/07 16:56:31  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.16  1997/01/14 15:48:22  wenger
+  Fixed bug 105; changed '-noshm' flag to '-sharedMem 0|1' for more
+  flexibility in overriding startup script default; fixed bug 116
+  (off-by-one error in BufMgrFull caused buffer overflow in XWindowRep).
+
   Revision 1.15  1996/11/20 20:35:19  wenger
   Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
   some Makefile improvements so compile works first time; fixed up files
@@ -140,7 +163,7 @@ void GDataBin::Init(TDataMap *mapping, VisualFilter *filter,
 		    Boolean dispConnector, TDataCMap *cMap,
 		    GDataBinCallback *callback)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("GDataBin::Init: dispConnector = %s, cMap = 0x%p\n",
 	 (dispConnector ? "on" : "off"), cMap);
   printf("  Transform: ");
@@ -183,7 +206,8 @@ Insert symbol into bin. The bin will push the symbols to Gdata when done
 ****************************************************************************/
 
 void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
-			    int startIndex, int incr, Boolean canElimRecords)
+			    int &recordsProcessed, int startIndex,
+			    int incr, Boolean canElimRecords)
 {
 #if defined(DEBUG)
   printf("GDataBin::InsertSymbol(%ld,0x%p,%d,%d,%d,%d)\n",
@@ -193,6 +217,7 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
   _numSyms += numRecs;
 
   if (_dispSymbol) {
+    Boolean timedOut = false;
 
     /* pointer to next record to process */
     char *ptr = (char *)recs + startIndex * _gRecSize; 
@@ -202,16 +227,32 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
   
     if (!_elimOverlap || !canElimRecords) {
       /* DO NOT eliminate overlap */
-      for(int i = startIndex; i < numRecs; i += incr) {
+      recordsProcessed = 0;
+      for(int i = startIndex; i < numRecs && !timedOut; i += incr) {
 	_returnSyms[_returnIndex++] = (GDataBinRec *)ptr;
-	if (_returnIndex >= GDATA_BIN_MAX_PIXELS)
-	  ReturnSymbols();
+	if (_returnIndex >= GDATA_BIN_MAX_PIXELS) {
+	  int recordsToProcess = _returnIndex;
+	  int tmpRecProc;
+	  ReturnSymbols(tmpRecProc);
+	  if (tmpRecProc < recordsToProcess) timedOut = true;
+	  if (timedOut) printf("%s: %d: Draw timed out\n", __FILE__, __LINE__);
+	  recordsProcessed += tmpRecProc;
+	}
 	ptr += ptrIncr;
+      }
+      // flush any remaining symbols to screen
+      if (!timedOut) {
+        int tmpRecProc;
+        ReturnSymbols(tmpRecProc);
+        recordsProcessed += tmpRecProc;
       }
     } else {
       /* Eliminate overlap here */
       
-      for(int i = startIndex; i < numRecs; i += incr) {
+      int reverseIndex[GDATA_BIN_MAX_PIXELS + 1];
+      reverseIndex[0] = 0;
+      recordsProcessed = 0;
+      for(int i = startIndex; i < numRecs && !timedOut; i += incr) {
 	
 	GDataBinRec *sym = (GDataBinRec *)ptr;
 	
@@ -242,22 +283,34 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
 	  DOASSERT(_returnIndex < GDATA_BIN_MAX_PIXELS,
 		   "Illegal value for returnIndex");
 	  _returnSyms[_returnIndex++] = sym;
+	  reverseIndex[_returnIndex] = i + 1;
 	  
 	  // flush cache of symbols to screen?
-	  if (_returnIndex >= GDATA_BIN_MAX_PIXELS)
-	    ReturnSymbols();
+	  if (_returnIndex >= GDATA_BIN_MAX_PIXELS) {
+	    int recordsToProcess = _returnIndex;
+	    int tmpRecProc;
+	    ReturnSymbols(tmpRecProc);
+	    if (tmpRecProc < recordsToProcess) timedOut = true;
+	    if (timedOut) printf("%s: %d: Draw timed out\n", __FILE__, __LINE__);
+	    recordsProcessed += reverseIndex[tmpRecProc];
+	  }
 	} else {
 #ifdef DEBUGx
 	  printf("Not adding x %f, X pixel %d\n", sym->x, thisPixelX);
 #endif
+	  reverseIndex[_returnIndex] = i + 1;
 	}
 	
 	ptr += ptrIncr;
       }
-    }
     
-    // flush any remaining symbols to screen
-    ReturnSymbols();
+      // flush any remaining symbols to screen
+      if (!timedOut) {
+        int tmpRecProc;
+        ReturnSymbols(tmpRecProc);
+        recordsProcessed += reverseIndex[tmpRecProc];
+      }
+    }
   }
   
   // return if connectors should not be displayed
@@ -281,7 +334,8 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
   int index = 0;
   ptr += ptrIncr;
   
-  for(int i = startIndex + 1; i < numRecs; i++) {
+  // Draw connectors only for records that were drawn.
+  for(int i = startIndex + 1; i < recordsProcessed; i++) {
     GDataBinRec *sym = (GDataBinRec *)ptr;
     
     _transform->Transform(sym->x, sym->y, x, y);
@@ -333,10 +387,12 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
 Return symbols
 ************************************************************************/
 
-void GDataBin::ReturnSymbols()
+void GDataBin::ReturnSymbols(int &recordsProcessed)
 {
-  if (_returnIndex <= 0)
+  if (_returnIndex <= 0) {
+    recordsProcessed = 0;
     return;
+  }
 
   _numSymsReturned += _returnIndex;
 
@@ -353,7 +409,8 @@ void GDataBin::ReturnSymbols()
 #endif
 
   _callBack->ReturnGDataBinRecs(_mapping, (void **)_returnSyms,
-				_returnIndex);
+				_returnIndex, recordsProcessed);
+
   _returnIndex = 0;
   _iteration++;
 }

@@ -16,6 +16,20 @@
   $Id$
 
   $Log$
+  Revision 1.5.8.2  1997/08/20 18:36:24  wenger
+  QueryProcFull and QPRange now deal correctly with interrupted draws.
+  (Some debug output still turned on.)
+
+  Revision 1.5.8.1  1997/08/07 16:56:39  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.5  1997/02/03 19:45:31  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
   Revision 1.4  1996/11/23 21:17:40  jussi
   Simplified code.
 
@@ -43,7 +57,8 @@ class QPRangeCallback {
 public:
     /* Info that IDs from low to high have just been inserted
        into the range */
-    virtual void QPRangeInserted(RecId low, RecId high)=0;
+    virtual void QPRangeInserted(RecId low, RecId high,
+				 int &recordsProcessed)=0;
 };
 
 class QPRange {
@@ -57,7 +72,8 @@ class QPRange {
     /* Insert a range, and call callback for every subrange inserted.
        This function detects where (low,high) does not overlap
        with the existing ranges, and returns those */
-    void Insert(RecId low, RecId high, QPRangeCallback *callback);
+    void Insert(RecId low, RecId high, QPRangeCallback *callback,
+		Boolean *incomplete = NULL);
 
     /* Return number of ranges */
     int NumRanges() { return _rangeListSize; }

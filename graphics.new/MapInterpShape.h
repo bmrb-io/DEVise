@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.37.2.1  1997/08/07 16:56:35  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.37  1997/07/18 20:24:55  wenger
+  Orientation now works on Rect and RectX symbols; code also includes
+  some provisions for locating symbols other than at their centers.
+
   Revision 1.36  1997/04/29 17:35:11  wenger
   Minor fixes to new text labels; added fixed text label shape;
   CheckDirSpace() no longer prints an error message if it can't get disk
@@ -174,13 +182,15 @@ class FullMapping_RectShape
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
-				ViewGraph *view, int pixelSize);
+				ViewGraph *view, int pixelSize,
+				int &recordsProcessed);
     
   protected:
     
     virtual void Draw3DGDataArray(WindowRep *win, void **gdataArray,
                                 int numSyms, TDataMap *map,
-				  ViewGraph *view, int pixelSize);
+				  ViewGraph *view, int pixelSize,
+				  int &recordsProcessed);
 };
  
 // -----------------------------------------------------------------
@@ -194,7 +204,8 @@ class FullMapping_RectXShape
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
-				ViewGraph *view, int pixelSize);
+				ViewGraph *view, int pixelSize,
+				int &recordsProcessed);
 };
 
 // -----------------------------------------------------------------
@@ -211,7 +222,8 @@ class FullMapping_BarShape
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
-				ViewGraph *view, int pixelSize);
+				ViewGraph *view, int pixelSize,
+				int &recordsProcessed);
 };
 
 // -----------------------------------------------------------------
@@ -225,7 +237,8 @@ class FullMapping_RegularPolygonShape
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
-				ViewGraph *view, int pixelSize);
+				ViewGraph *view, int pixelSize,
+				int &recordsProcessed);
 };
 
 // -----------------------------------------------------------------
@@ -239,7 +252,8 @@ class FullMapping_OvalShape
 
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
-				ViewGraph *view, int pixelSize);
+				ViewGraph *view, int pixelSize,
+				int &recordsProcessed);
 };
 
 // -----------------------------------------------------------------
@@ -253,7 +267,8 @@ class FullMapping_VectorShape
 
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
-				ViewGraph *view, int pixelSize);
+				ViewGraph *view, int pixelSize,
+				int &recordsProcessed);
 };
 
 // -----------------------------------------------------------------
@@ -268,7 +283,8 @@ class FullMapping_HorLineShape
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
-				ViewGraph *view, int pixelSize);
+				ViewGraph *view, int pixelSize,
+				int &recordsProcessed);
 };
 
 // -----------------------------------------------------------------
@@ -285,13 +301,15 @@ class FullMapping_SegmentShape
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
-				ViewGraph *view, int pixelSize);
+				ViewGraph *view, int pixelSize,
+				int &recordsProcessed);
 
   protected:
 
     virtual void Draw3DGDataArray(WindowRep *win, void **gdataArray,
 				  int numSyms, TDataMap *map,
-				  ViewGraph *view, int pixelSize);
+				  ViewGraph *view, int pixelSize,
+				  int &recordsProcessed);
 };
 
 // -----------------------------------------------------------------
@@ -308,7 +326,8 @@ class FullMapping_HighLowShape
 
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
-				ViewGraph *view, int pixelSize);
+				ViewGraph *view, int pixelSize,
+				int &recordsProcessed);
 };
  
 // -----------------------------------------------------------------
@@ -325,7 +344,8 @@ class FullMapping_PolylineShape
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
-				ViewGraph *view, int pixelSize);
+				ViewGraph *view, int pixelSize,
+				int &recordsProcessed);
 };
  
 // -----------------------------------------------------------------
@@ -342,7 +362,8 @@ class FullMapping_GifImageShape
 
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
-				ViewGraph *view, int pixelSize);
+				ViewGraph *view, int pixelSize,
+				int &recordsProcessed);
 };
  
 // -----------------------------------------------------------------
@@ -359,7 +380,8 @@ class FullMapping_PolylineFileShape
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
-				ViewGraph *view, int pixelSize);
+				ViewGraph *view, int pixelSize,
+				int &recordsProcessed);
 };
  
 // -----------------------------------------------------------------
@@ -376,7 +398,8 @@ class FullMapping_TextLabelShape
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
-				ViewGraph *view, int pixelSize);
+				ViewGraph *view, int pixelSize,
+				int &recordsProcessed);
 };
 
 // -----------------------------------------------------------------
@@ -393,7 +416,8 @@ class FullMapping_FixedTextLabelShape
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
-				ViewGraph *view, int pixelSize);
+				ViewGraph *view, int pixelSize,
+				int &recordsProcessed);
 };
 
 // -----------------------------------------------------------------
@@ -408,7 +432,8 @@ class FullMapping_LineShape
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
-				ViewGraph *view, int pixelSize);
+				ViewGraph *view, int pixelSize,
+				int &recordsProcessed);
 
     virtual void DrawConnectingLine(WindowRep *win, ViewGraph *view,
 				    Pattern pattern, int line_width,

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.12.2.1  1997/08/07 16:56:39  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.12  1997/05/28 15:39:26  wenger
+  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+
   Revision 1.11.4.1  1997/05/20 16:11:13  ssl
   Added layout manager to DEVise
 
@@ -80,7 +87,8 @@ class QueryCallback {
   
   /* Return a batch of records */
   virtual void ReturnGData(TDataMap *mapping, RecId id,
-			   void *gdata, int numGData) = 0;
+			   void *gdata, int numGData,
+			   int &recordsProcessed) = 0;
   
   /* Done with query. bytes == # of TData bytes used in
      processing this query. */

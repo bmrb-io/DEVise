@@ -16,6 +16,22 @@
   $Id$
 
   $Log$
+  Revision 1.54.8.3  1997/08/20 18:36:27  wenger
+  QueryProcFull and QPRange now deal correctly with interrupted draws.
+  (Some debug output still turned on.)
+
+  Revision 1.54.8.2  1997/08/15 23:06:32  wenger
+  Interruptible drawing now pretty much working for TDataViewX class,
+  too (connector drawing may need work, needs a little more testing).
+  (Some debug output still turned on.)
+
+  Revision 1.54.8.1  1997/08/07 16:56:44  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.54  1997/04/21 23:00:26  guangshu
+  Small changes.
+
   Revision 1.53  1997/03/20 22:22:34  guangshu
   Enhanced statistics to allow user specified number of buckets in histograms
   and goup by X and Y etc.
@@ -364,7 +380,10 @@ void TDataViewX::DerivedAbortQuery()
   }
   _masterLink.DoneIterator(index);
 
-  _dataBin->Final();
+  // I think recordsProcessed is pretty meaningless at this point.
+  // RKW Aug. 15, 1997.
+  int recordsProcessed;
+  _dataBin->Final(recordsProcessed);
 }
 
 Boolean TDataViewX::DisplaySymbols(Boolean state)
@@ -435,15 +454,19 @@ void TDataViewX::QueryInit(void *userData)
 }
 
 void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
-			     void *gdata, int numGData)
+			     void *gdata, int numGData,
+			     int &recordsProcessed)
 {
   VisualFilter filter;
   GetVisualFilter(filter);
   ResetGStatInMem();
 
 #if defined(DEBUG)
-  printf("TDataViewX::ReturnGData()\n");
+  printf("TDataViewX::ReturnGData(%d)\n", numGData);
 #endif
+
+  recordsProcessed = numGData;
+
   if( _index < 0 ) return;
 
   mapping->UpdateMaxSymSize(gdata, numGData);
@@ -479,12 +502,46 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
                 yMax, yMin, filter.yHigh, filter.yLow, _allStats.GetHistWidth());
 #endif
   }
-  // Collect statistics and update record links only for last mapping
+
+
+
+
+  // Draw data only if window is not iconified
+  if (!Iconified()) {
+    if (_batchRecs) {
+      _dataBin->InsertSymbol(recId, gdata, numGData, recordsProcessed, 0, 1,
+	canElimRecords);
+#ifdef DEBUG
+      _dataBin->PrintStat();
+#endif
+    } else {
+      char *ptr = (char *)gdata;
+      recordsProcessed = 0;
+      Boolean timedOut = false;
+      for(int i = 0; i < numGData && !timedOut; i++) {
+        int tmpRecsProc;
+        _dataBin->InsertSymbol(recId, ptr, 1, tmpRecsProc, 0, 1,
+	  canElimRecords);
+	recordsProcessed += tmpRecsProc;
+	if (tmpRecsProc < 1) timedOut = true;
+        recId++;
+        ptr += gRecSize;
+      }
+    }
+  }
+
+
+
+
+
+  // Collect statistics and update record links only for last mapping;
+  // and only for the records that actually got drawn (unless the view
+  // was iconified).
   if (!MoreMapping(_index)) {
 
     int firstRec = 0;
 
-    for(int i = 0; i < numGData; i++) {
+    for(int i = 0; i < recordsProcessed; i++) {
       // Extract X, Y, shape, and color information from gdata record
       Coord x = ShapeGetX(tp, mapping, offset);
       Coord y = ShapeGetY(tp, mapping, offset);
@@ -548,9 +605,7 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 	     _queryFilter.xLow , x, _queryFilter.xHigh,
 	     _queryFilter.yLow , y, _queryFilter.yHigh);
 #endif      
-      if (!complexShape &&
-          (x < _queryFilter.xLow || x > _queryFilter.xHigh
-           || y < _queryFilter.yLow || y > _queryFilter.yHigh)) {
+      if (!complexShape && !InVisualFilter(_queryFilter, x, y, 0.0, 0.0)) {
 	if (i > firstRec)
 	  WriteMasterLink(recId + firstRec, i - firstRec);
 
@@ -561,25 +616,8 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
       tp += gRecSize;
     }
 
-    if (numGData > firstRec)
-      WriteMasterLink(recId + firstRec, numGData - firstRec);
-  }
-  
-  // Draw data only if window is not iconified
-  if (!Iconified()) {
-    if (_batchRecs) {
-      _dataBin->InsertSymbol(recId, gdata, numGData, 0, 1, canElimRecords);
-#ifdef DEBUG
-      _dataBin->PrintStat();
-#endif
-    } else {
-      char *ptr = (char *)gdata;
-      for(int i = 0; i < numGData; i++) {
-        _dataBin->InsertSymbol(recId, ptr, 1, 0, 1, canElimRecords);
-        recId++;
-        ptr += gRecSize;
-      }
-    }
+    if (recordsProcessed > firstRec)
+      WriteMasterLink(recId + firstRec, recordsProcessed - firstRec);
   }
 }
 
@@ -616,7 +654,10 @@ void TDataViewX::QueryDone(int bytes, void *userData, TDataMap *map=NULL)
 
     PrepareStatsBuffer(map);
 
-    _dataBin->Final();
+    // I think recordsProcessed is pretty meaningless at this point.
+    // RKW Aug. 15, 1997.
+    int recordsProcessed;
+    _dataBin->Final(recordsProcessed);
 
     DrawLegend();
 
@@ -632,10 +673,12 @@ void TDataViewX::QueryDone(int bytes, void *userData, TDataMap *map=NULL)
   }
 }
 
-void TDataViewX::ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs)
+void TDataViewX::ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs,
+				    int &recordsProcessed)
 {
 #if defined(DEBUG)
-  printf("TDataViewX %d recs buf start 0x%p\n", numRecs, recs);
+  printf("TDataViewX::ReturnGDataBinRecs() %d recs buf start 0x%p\n",
+    numRecs, recs);
 #endif
 
   WindowRep *win = GetWindowRep();
@@ -649,13 +692,16 @@ void TDataViewX::ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs)
 #endif
   }
       
-  map->DrawGDataArray(this, win, recs, numRecs);
+  map->DrawGDataArray(this, win, recs, numRecs, recordsProcessed);
+#if defined(DEBUG)
+  printf("  %d of %d records processed\n", recordsProcessed, numRecs);
+#endif
 }
 
 void TDataViewX::ReturnGDataBinConnectors(TDataCMap *cmap,
 					  Connector **connectors, int num)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("TDataViewX drawing %d connectors\n", num);
 #endif
 

@@ -16,6 +16,20 @@
   $Id$
 
   $Log$
+  Revision 1.10.12.2  1997/08/15 23:06:26  wenger
+  Interruptible drawing now pretty much working for TDataViewX class,
+  too (connector drawing may need work, needs a little more testing).
+  (Some debug output still turned on.)
+
+  Revision 1.10.12.1  1997/08/07 16:56:31  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.10  1996/11/20 20:35:19  wenger
+  Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
+  some Makefile improvements so compile works first time; fixed up files
+  to correspond to new query catalog name.
+
   Revision 1.9  1996/09/27 15:53:19  wenger
   Fixed a number of memory leaks.
 
@@ -83,7 +97,8 @@ const int GDATA_BIN_MAX_PIXELS = 2048;
 
 class GDataBinCallback {
 public:
-  virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs) {}
+  virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs,
+				  int &recordsProcessed) {}
   virtual void ReturnGDataBinConnectors(TDataCMap *cmap,
 					Connector **connectors, int num) {}
 };
@@ -100,13 +115,13 @@ public:
 	    GDataBinCallback *callback);
 
   /* Finalize */
-  void Final() { ReturnSymbols(); }
+  void Final(int &recordsProcessed) { ReturnSymbols(recordsProcessed); }
 
   /* Insert symbol into bin. The bin will push the symbols to Gdata
      when done */
   void InsertSymbol(RecId rid, void *recs, int numRecs,
-                    int startIndex = 0, int incr = 1,
-                    Boolean canElimRecords = true);
+                    int &recordsProcessed, int startIndex = 0,
+		    int incr = 1, Boolean canElimRecords = true);
   
   /* Print statistics */
   void PrintStat();
@@ -114,7 +129,7 @@ public:
 private:
 
   /* Return symbols in the array */
-  void ReturnSymbols();
+  void ReturnSymbols(int &recordsProcessed);
 
   int _gRecSize;	/* size of GData record */
 

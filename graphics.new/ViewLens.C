@@ -20,6 +20,18 @@
   $Id$
 
   $Log$
+  Revision 1.6.8.2  1997/08/15 23:06:35  wenger
+  Interruptible drawing now pretty much working for TDataViewX class,
+  too (connector drawing may need work, needs a little more testing).
+  (Some debug output still turned on.)
+
+  Revision 1.6.8.1  1997/08/07 16:56:46  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.6  1997/03/20 22:26:03  guangshu
+  Changed function QueryDone.
+
   Revision 1.5  1997/02/14 16:47:49  wenger
   Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
 
@@ -48,6 +60,7 @@
 #include "Shape.h"
 #include "Util.h"
 #include "RecordLink.h"
+#include "DrawTimer.h"
 
 //#define DEBUG
 
@@ -520,11 +533,21 @@ void ViewLens::QueryInit(void *userData)
 }
 
 void ViewLens::ReturnGData(TDataMap *mapping, RecId recId,
-                           void *gdata, int numGData)
+                           void *gdata, int numGData,
+			   int &recordsProcessed)
 {
 #if defined(DEBUG)
+  printf("ViewLens::ReturnGData()\n");
 //  printf("ViewLens %d recs buf start 0x%p\n", numGData, gdata);
 #endif
+
+  recordsProcessed = numGData;
+
+  /* Cancel the draw timeout for now, so we don't have to deal with
+   * the possibility that some symbols won't be drawn.  This should
+   * be changed to allow the timeout to happen once we have a chance
+   * to test this code.  RKW Aug. 15, 1997. */
+  DrawTimer::Cancel();
 
   Coord maxWidth, maxHeight, maxDepth;
   mapping->UpdateMaxSymSize(gdata, numGData);
@@ -567,7 +590,7 @@ void ViewLens::ReturnGData(TDataMap *mapping, RecId recId,
     if (!Iconified()) {
       _recs[recIndex++] = ptr;
       if (recIndex == WINDOWREP_BATCH_SIZE) {
-        mapping->DrawGDataArray(this, win, _recs, recIndex);
+        mapping->DrawGDataArray(this, win, _recs, recIndex, recordsProcessed);
         recIndex = 0;
       }
     }
@@ -579,7 +602,7 @@ void ViewLens::ReturnGData(TDataMap *mapping, RecId recId,
     WriteMasterLink(recId + firstRec, numGData - firstRec);
 
   if (!Iconified() && recIndex > 0) {
-    mapping->DrawGDataArray(this, win, _recs, recIndex);
+    mapping->DrawGDataArray(this, win, _recs, recIndex, recordsProcessed);
   }
 }
 

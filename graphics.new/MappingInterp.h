@@ -16,6 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.31.8.2  1997/08/14 16:16:03  wenger
+  Statistics, etc., now work correctly for timed-out draw in ViewScatter-
+  type views; bumped up version because of improved stop capability.
+
+  Revision 1.31.8.1  1997/08/07 16:56:37  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.31  1997/04/29 17:35:13  wenger
+  Minor fixes to new text labels; added fixed text label shape;
+  CheckDirSpace() no longer prints an error message if it can't get disk
+  status.
+
   Revision 1.30  1997/04/25 22:48:58  ssl
   Fixed bug in TData flush. MappingInterp doesn't store attr info anymore
   as DTE can change it.
@@ -224,9 +237,10 @@ public:
 
   virtual Boolean IsInterpreted() { return true; }
 				  
+  // See assignments to _shapes array in constructor for meanings of ShapeID
+  // values.
   virtual Boolean IsComplexShape(ShapeID shape) {
-    if (shape <= 10)
-      return false;
+    if (shape <= 8) return false;
     return true;
   }
 
@@ -243,7 +257,8 @@ public:
   void UpdateMaxSymSize(void *gdata, int numSyms);
   
   virtual void DrawGDataArray(ViewGraph *view, WindowRep *win,
-			      void **gdataArray, int num);
+			      void **gdataArray, int num,
+			      int &recordsProcessed);
 
   /* Get the AttrInfo for a GData attribute. which_attr should be
      one of the MappingCmd_??? constants defined at the top of 

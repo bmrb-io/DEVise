@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.38.2.2  1997/08/20 19:32:41  wenger
+  Removed/disabled debug output for interruptible drawing.
+
+  Revision 1.38.2.1  1997/08/07 16:56:08  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.38  1997/06/18 15:33:01  wenger
+  Fixed bug 177; improved workaround of bug 137; incremented version
+  number (because of Unidata being added).
+
   Revision 1.37  1997/05/05 16:53:44  wenger
   Devise now automatically launches Tasvir and/or EmbeddedTk servers if
   necessary.
@@ -255,6 +266,8 @@ Boolean Init::_useSharedMem = false;
 Boolean Init::_forceBinarySearch = false;
 Boolean Init::_forceTapeSearch = false;
 
+float Init::_drawTimeout = 10.0;
+
 /**************************************************************
 Remove positions from index to index+len-1 from argv
 Update argc.
@@ -312,6 +325,7 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-sharedMem 0|1: use shared memory or not\n");
   fprintf(stderr, "\t-forceBinarySearch: force binary search on tape files\n");
   fprintf(stderr, "\t-forceTapeSearch: force searching on tape files\n");
+  fprintf(stderr, "\t-drawTO <value>: symbol drawing timeout\n");
 
   Exit::DoExit(1);
 }
@@ -610,6 +624,15 @@ void Init::DoInit(int &argc, char **argv)
 	  Usage(argv[0]);
 	}
 	_tasvirTimeout = atof(argv[i+1]);
+	MoveArg(argc,argv,i,2);
+      }
+
+      else if (strcmp(&argv[i][1], "drawTO") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_drawTimeout = atof(argv[i+1]);
 	MoveArg(argc,argv,i,2);
       }
 

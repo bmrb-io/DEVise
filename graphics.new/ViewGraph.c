@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.58.2.1  1997/08/15 23:06:33  wenger
+  Interruptible drawing now pretty much working for TDataViewX class,
+  too (connector drawing may need work, needs a little more testing).
+  (Some debug output still turned on.)
+
+  Revision 1.58  1997/06/18 21:06:30  wenger
+  Fixed problems saving to batch scripts.
+
   Revision 1.57  1997/06/10 19:22:08  wenger
   Removed (some) debug output.
 
@@ -751,7 +759,7 @@ void ViewGraph::WriteMasterLink(RecId start, int num)
     int index = _masterLink.InitIterator();
     while(_masterLink.More(index)) {
         RecordLink *link = _masterLink.Next(index);
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("*********inserting recs (%ld, %ld) into %s\n", 
 	       start, start + num - 1, link->GetName());
 #endif

@@ -18,6 +18,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.58.2.1  1997/08/07 16:56:32  wenger
+#  Partially-complete code for improved stop capability (includes some
+#  debug code).
+#
+#  Revision 1.58  1997/05/28 15:39:16  wenger
+#  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+#
 #  Revision 1.57.4.1  1997/05/20 16:11:01  ssl
 #  Added layout manager to DEVise
 #
@@ -118,7 +125,7 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	DataSourceFileStream.c DataSourceTape.c DataSourceFileDesc.c \
 	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C DataSourceDQL.c  \
         StringStorage.C PointStorage.C SBufMgr.C MapIntToInt.C MemMgr.C \
-	ETkWindowShape.C
+	ETkWindowShape.C DrawTimer.c
 
 QPSrc += ViewShape.C
 	

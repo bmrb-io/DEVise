@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.14.8.1  1997/08/20 21:20:40  wenger
+  Changed multi versions of DrawGData functions to have recordsProcessed
+  argument needed for interruptible draws.
+
+  Revision 1.14  1997/03/28 16:11:53  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 struct MultiMapping_GData {
@@ -129,8 +137,11 @@ public:
 
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
                               int numSyms, TDataMap *map,
-                              ViewGraph *view, int pixelSize) {
+                              ViewGraph *view, int pixelSize,
+			      int &recordsProcessed) {
 		
+    recordsProcessed = numSyms;
+
     if (view->GetNumDimensions() == 3)
       return;
 
@@ -315,8 +326,10 @@ public:
 		                       _maxSymWidth, _maxSymHeight);
 	}
 
-	virtual void DrawGDataArray(ViewGraph *view, WindowRep *win, void **syms, int numSyms) {
-		_shapes[0]->DrawGDataArray(win, syms, numSyms, this, view, TDataMap::GetPixelWidth());
+	virtual void DrawGDataArray(ViewGraph *view, WindowRep *win,
+	    void **syms, int numSyms, int &recordsProcessed) {
+		_shapes[0]->DrawGDataArray(win, syms, numSyms, this, view,
+		    TDataMap::GetPixelWidth(), recordsProcessed);
 	}
 
 private:

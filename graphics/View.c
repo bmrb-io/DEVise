@@ -16,6 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.114.2.3  1997/08/20 19:32:44  wenger
+  Removed/disabled debug output for interruptible drawing.
+
+  Revision 1.114.2.2  1997/08/14 15:46:20  wenger
+  Fixed bug 215; cleaned up duplicate code in BasicStats.C.
+
+  Revision 1.114.2.1  1997/08/07 16:56:12  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.114  1997/07/17 19:50:29  wenger
+  Added menu selections to report number of strings and save string space.
+
   Revision 1.113  1997/06/25 17:05:27  wenger
   Fixed bug 192 (fixed problem in the PSWindowRep::FillPixelRect() member
   function, disabled updating of record links during print, print dialog
@@ -1973,11 +1986,22 @@ void View::Run()
 	       _exposureRect.xHigh, _exposureRect.yHigh);
 #endif
 	
+	// I don't understand at all why we're changing the query filter
+	// here.  It makes the query filter not correspond to the visual
+	// filter, and it means that simply resizing the view changes
+	// the query filter, thus changing the view statistics as well.
+	// For that matter, I don't understand why we have two different
+	// filters (_queryFilter and _filter).  And then we've got _lastFilter
+	// and _filterQueue -- why do we have so damn many copies of the
+	// visual filter(s)?  RKW Aug. 14, 1997.
+
+#if 0
 	_queryFilter.flag = VISUAL_LOC; 
 	FindWorld(_exposureRect.xLow, _exposureRect.yLow,
 		  _exposureRect.xHigh, _exposureRect.yHigh,
 		  _queryFilter.xLow, _queryFilter.yLow, 
 		  _queryFilter.xHigh, _queryFilter.yHigh);
+#endif
 	
 #if defined(DEBUG)
 	printf("exposure world %f,%f,%f,%f\n",
@@ -2336,6 +2360,9 @@ View::UpdateFilterStat View::UpdateFilterWithScroll()
 
 void View::AbortQuery()
 {
+#if defined(DEBUG)
+  printf("View(%s)::AbortQuery()\n", _name);
+#endif
   // If the View object is really anything other than a
   // TDataViewX, ViewRanges, or ViewScatter, and _querySent is true,
   // this will call a pure virtual function.

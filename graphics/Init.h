@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.17.8.1  1997/08/07 16:56:10  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.17  1997/05/05 16:53:44  wenger
+  Devise now automatically launches Tasvir and/or EmbeddedTk servers if
+  necessary.
+
   Revision 1.16  1997/03/25 17:58:52  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -152,6 +160,8 @@ class Init {
     static Boolean ForceBinarySearch() { return _forceBinarySearch; }
     static Boolean ForceTapeSearch() { return _forceTapeSearch; }
 
+    static float DrawTimeout() { return _drawTimeout; }
+
 protected:
     static Boolean _savePopup;     /* true if pop-up window should be saved and
                                       wait for button even to remove it */
@@ -203,6 +213,8 @@ protected:
     static Boolean _useSharedMem;  /* use shared memory */
     static Boolean _forceBinarySearch; /* force binary search on tape */
     static Boolean _forceTapeSearch;   /* force search for tape sources */
+
+    static float _drawTimeout;     /* timeout for drawing a "chunk" of data */
 };
 
 #endif

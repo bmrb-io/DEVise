@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.9.2.1  1997/08/07 16:56:30  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.9  1997/07/15 14:29:51  wenger
+  Moved hashing of strings from TData*Interp classes to MappingInterp
+  class; cleaned up a few extra includes of StringStorage.h.
+
   Revision 1.8  1997/05/28 20:01:27  andyt
   Shape attributes for 'Tcl/Tk Window' shape can now be variables, numeric
   constants, or string constants. Used to assume that all attributes except
@@ -81,7 +89,8 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 						void **gdataArray,
 						int numSyms, TDataMap *map,
 						ViewGraph *view,
-						int pixelSize)
+						int pixelSize,
+						int &recordsProcessed)
 {
     BEGIN_ETK_TRACE(__FUNCTION__);
     
@@ -103,7 +112,8 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
     
     if (view->GetNumDimensions() == 3)
     {
-	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
+	  recordsProcessed);
 	return;
     }
     
@@ -267,6 +277,8 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 	
     }
     
+    recordsProcessed = numSyms;
+
     END_ETK_TRACE(__FUNCTION__);
 
 }

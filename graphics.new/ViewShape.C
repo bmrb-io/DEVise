@@ -31,14 +31,16 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
 					   void **gdataArray,
 					   int numSyms, TDataMap *map, 
 					   ViewGraph *view, 
-					   int pixelSize)
+					   int pixelSize,
+					   int &recordsProcessed)
 {
 #if defined(DEBUG)
   printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 
   if (view->GetNumDimensions() == 3) {
-    Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+    Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
+      recordsProcessed);
     return;
   }
   ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
@@ -185,6 +187,7 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
       win->SetCopyMode();
   }
   
+  recordsProcessed = numSyms;
 }
 #endif
 

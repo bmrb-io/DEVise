@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.4.8.1  1997/08/07 16:56:46  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.4  1997/03/20 22:26:30  guangshu
+  Changed function QueryDone.
+
   Revision 1.3  1997/02/03 19:45:39  ssl
   1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
   2) ViewLens.[Ch] : new implementation of piled views
@@ -160,7 +167,8 @@ protected:
   virtual void QueryInit(void *userData);
 
   virtual void ReturnGData(TDataMap *mapping, RecId id,
-			   void *gdata, int numGData);
+			   void *gdata, int numGData,
+			   int &recordsProcessed);
   virtual void *GetObj() { return this; }
   
   /* Done with query */

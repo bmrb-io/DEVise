@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.28.8.1  1997/08/07 16:56:42  wenger
+  Partially-complete code for improved stop capability (includes some
+  debug code).
+
+  Revision 1.28  1997/02/26 16:31:45  wenger
+  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+
   Revision 1.27  1997/02/14 16:47:47  wenger
   Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
 
@@ -298,14 +305,17 @@ class Shape {
   /* Draw GData symbols. */
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
                               int numSyms, TDataMap *map,
-                              ViewGraph *view, int pixelSize) {}
+                              ViewGraph *view, int pixelSize,
+			      int &recordsProcessed) {}
 
  protected:
 
   /* By default, the shapes cannot display themselves in 3D */
   virtual void Draw3DGDataArray(WindowRep *win, void **gdataArray,
                                 int numSyms, TDataMap *map,
-                                ViewGraph *view, int pixelSize) {}
+                                ViewGraph *view, int pixelSize,
+				int &recordsProcessed)
+				{ recordsProcessed = numSyms; }
 
   /* Draw each GData symbol as a single pixel. Used by derived classes
      as a common method in cases where symbols are smaller than one
