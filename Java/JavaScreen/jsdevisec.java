@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.105  2001/04/20 20:27:05  xuk
+// Fixed bug 659: if no leaders are available for ollaboration, the selection dialog will not be shown.
+//
 // Revision 1.104  2001/04/20 19:57:54  xuk
 // Added JavaScreen version in "Option" dialog.
 //
@@ -362,6 +365,8 @@ public class jsdevisec extends Panel
     // message buffer for logging
     public Vector msgBuffer = new Vector();
 
+    // enable/disable collaboration
+    public boolean isCollab = false;
 
     // images[0-9] are the gears; 10 and 11 are "traffic lights"
     //   (devise[0-10].gif).
@@ -823,6 +828,13 @@ public class jsdevisec extends Panel
         collabpassdlg = new CollabPassDlg(this, parentFrame, isCenterScreen);
         collabpassdlg.open();
 	collabpassdlg = null;
+    }
+
+    public void disableCollab()
+    {
+	String command = new String();
+	command = DEViseCommands.DISABLE_COLLAB;
+	dispatcher.start(command);
     }
 
     public void enterCollabPass()
@@ -2090,6 +2102,7 @@ class SetModeDlg extends Dialog
     public Button cgiButton = new Button("CGI");
     public Button collabButton = new Button("Start Collaboration");
     public Button enCollabButton = new Button("Enable Collaboration");
+    public Button disCollabButton = new Button("Disable Collaboration");
     public Button cancelButton = new Button("Cancel");
     private boolean status = false; // true means this dialog is showing
 
@@ -2122,12 +2135,19 @@ class SetModeDlg extends Dialog
         collabButton.setForeground(jsc.jsValues.uiglobals.fg);
         collabButton.setFont(jsc.jsValues.uiglobals.font);
 
-	if (jsc.specialID == -1)
+	if ((jsc.specialID == -1) && (!jsc.isCollab))
 	    enCollabButton.setBackground(jsc.jsValues.uiglobals.bg);
 	else 
 	    enCollabButton.setBackground(Color.red);
         enCollabButton.setForeground(jsc.jsValues.uiglobals.fg);
         enCollabButton.setFont(jsc.jsValues.uiglobals.font);
+
+	if ((jsc.specialID == -1) && (jsc.isCollab))
+	    disCollabButton.setBackground(jsc.jsValues.uiglobals.bg);
+	else 
+	    disCollabButton.setBackground(Color.red);
+        disCollabButton.setForeground(jsc.jsValues.uiglobals.fg);
+        disCollabButton.setFont(jsc.jsValues.uiglobals.font);
 
         cancelButton.setBackground(jsc.jsValues.uiglobals.bg);
         cancelButton.setForeground(jsc.jsValues.uiglobals.fg);
@@ -2157,6 +2177,8 @@ class SetModeDlg extends Dialog
         add(collabButton);
         gridbag.setConstraints(enCollabButton, c);
         add(enCollabButton);
+        gridbag.setConstraints(disCollabButton, c);
+        add(disCollabButton);
         gridbag.setConstraints(cancelButton, c);
         add(cancelButton);
 
@@ -2298,14 +2320,25 @@ class SetModeDlg extends Dialog
                     }
                 });
 
-	if (jsc.specialID == -1)
+	if ((jsc.specialID == -1) && (!jsc.isCollab))
 	    enCollabButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			//jsc.isAbleCollab = true;
+			jsc.isCollab = true;
 			close();
 			jsc.showCollabPass();
+                    }
+                });
+
+	if ((jsc.specialID == -1) && (jsc.isCollab))
+	    disCollabButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+			jsc.isCollab = false;
+			close();
+			jsc.disableCollab();
                     }
                 });
 
