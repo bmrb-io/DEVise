@@ -6,6 +6,7 @@ CC = g++
 LDFLAGS = $(ARCH_LDFLAGS) \
 	../graphics.new/libobj.o ../tape/tapeobj.o ../issm/issmobj.o \
 	../compustat/cstatobj.o \
+	../crsp/crspobj.o \
 	-ltcl -ltk -lXaw -lXmu -lXt -lXext -lX11 -lm \
 	$(ARCH_LDPOST)
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
@@ -14,9 +15,9 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
 all: generic issm
 
 generic: generic.o ../graphics.new/libobj.o ../tape/tapeobj.o \
-	../issm/issmobj.o ../compustat/cstatobj.o
+	../issm/issmobj.o ../compustat/cstatobj.o ../crsp/crspobj.o
 	$(CC) -o $@ $@.o $(LDFLAGS)
 
 issm:   issm.o ../graphics.new/libobj.o ../tape/tapeobj.o \
-	../issm/issmobj.o ../compustat/cstatobj.o
+	../issm/issmobj.o ../compustat/cstatobj.o ../crsp/crspobj.o
 	$(CC) -o $@ $@.o $(LDFLAGS)
