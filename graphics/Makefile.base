@@ -1,0 +1,67 @@
+CC = g++ 
+
+# flags: 
+#	-DUNIX: 
+#	-DRECTX_PIXEL: set this to draw RectXShape as a single point.
+#			file affected: RectShape.h
+#	-DGRAPHICS: set this to draw grpahics. Dont' set if no graphics
+#		is to be sent to xlib. file affected: XWindowRep.c
+
+CFLAGS=  $(ARCH_FLAGS) -O -DUNIX -DGRAPHICS -fexternal-templates
+
+LD = ld
+
+.c.o:
+	$(CC) -c $(CFLAGS) $<
+
+LIBSRC=  Action.c ActionClassInfo.c AttrList.c AxisLabelClassInfo.c \
+	ClassDir.c ColorMgr.c Compress.c Control.c Cursor.c CursorClassInfo.c \
+	DevisePixmap.c Dispatcher.c  Display.c DList.c\
+	Exit.c FilterQueue.c Geom.c \
+	Init.c Journal.c Parse.c Selection.c  Time.c Timer.c TimeStamp.c \
+	Util.c View.c ViewWin.c ViewWinVer.c VisualLink.c \
+	VisualLinkClassInfo.c XawControl.c XawWidget.c \
+	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c
+
+LIBOBJ=  Action.o ActionClassInfo.o AttrList.o AxisLabelClassInfo.o \
+	ClassDir.o ColorMgr.o Compress.o Control.o Cursor.o CursorClassInfo.o \
+	DevisePixmap.o Dispatcher.o Display.o DList.o\
+	Exit.o FilterQueue.o Geom.o \
+	Init.o Journal.o Parse.o Selection.o  Time.o Timer.o TimeStamp.o \
+	Util.o View.o ViewWin.o  ViewWinVer.o VisualLink.o \
+	VisualLinkClassInfo.o XawControl.o XawWidget.o \
+	WindowRep.o WinClassInfo.o XBitmap.o XDisplay.o XWindowRep.o
+
+OTHERSRC= testWindowRep.c testViewWin.c testView.c jstat.c
+
+allobj.o: $(LIBOBJ)
+	$(LD) -r -o $@.o $(LIBOBJ)
+
+count:
+	wc $(LIBSRC) 
+
+ALLSRC= $(LIBSRC) $(OTHERSRC)
+
+LIBNAME= libgraphics.a
+
+install: $(LIBNAME)
+	install $(LIBNAME) /u1/mcheng/lib
+
+lib: $(LIBOBJ) 
+	ar ru $(LIBNAME) $(LIBOBJ)
+	ranlib $(LIBNAME)
+
+jstat: jstat.o $(LIBOBJ)
+	$(CC) -o jstat jstat.o $(LIBOBJ) -lXaw -lXmu -lXt -lXext -lX11 -lm
+
+testView: allobj.o testView.o
+	$(CC) -o testView testView.o allobj.o -lXaw -lXmu -lXt -lXext \
+		-lX11 -lm -l44bsd
+
+testViewWin: allobj.o testViewWin.o
+	$(CC) -o testViewWin testViewWin.o allobj.o -lXaw -lXmu -lXt -lXext \
+		-lX11 -lm -l44bsd
+	
+testWindowRep: testWindowRep.o allobj.o
+	$(CC) -o testWindowRep testWindowRep.o allobj.o -lXaw -lXmu -lXt \
+		-lXext -lX11 -lm -l44bsd
