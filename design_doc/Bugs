@@ -2951,9 +2951,10 @@ Num Date        Status  Description
 			fixed by putting each parent view in its own window.
 			See PaulB/sample3_bug733.ds for version that fails.)
 
-734 11/27/01	OPEN	Creation of debug log file fails if the
+734 11/27/01	FIXED	Creation of debug log file fails if the
 			/tmp/<usr>-devise-tmp directory doesn't already
 			exist. (rkw)
+			(Fixed by rkw, 3/14/02.)
 
 735 11/28/01	FIXED	'Home' (5) doesn't work right in the JS demo session
 			PaulB/sample3.ds (in the child views).  If you do

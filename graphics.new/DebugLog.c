@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  2001/10/03 19:09:56  wenger
+  Various improvements to error logging; fixed problem with return value
+  from JavaScreenCmd::Run().
+
   Revision 1.15  2001/05/27 18:51:15  wenger
   Improved buffer checking with snprintfs.
 
@@ -257,13 +261,22 @@ DebugLog *
 DebugLog::DefaultLog()
 {
   if (_defaultLog == NULL) {
-    char *logDir = getenv("DEVISE_LOG_DIR");
+    const char *logDir = getenv("DEVISE_LOG_DIR");
     if (!logDir) {
       logDir = ".";
     }
     char filename[MAXPATHLEN];
     sprintf(filename, "%s/devise_debug_log_%ld", logDir, (long)getpid());
     _defaultLog = new DebugLog((Level)Init::LogLevel(), filename);
+
+    if (_defaultLog->LogFile() == NULL) {
+      const char *defaultLogDir = "/tmp";
+      if (strcmp(logDir, defaultLogDir)) {
+        logDir = defaultLogDir;
+        sprintf(filename, "%s/devise_debug_log_%ld", logDir, (long)getpid());
+        _defaultLog = new DebugLog((Level)Init::LogLevel(), filename);
+      }
+    }
   }
 
   return _defaultLog;
