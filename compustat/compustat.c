@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1995/11/14 22:55:06  jussi
+  Changed interface with Tcl. Tcl scripts now pass both company
+  name and cache file where data should be extracted to.
+
   Revision 1.7  1995/10/18 21:03:36  ravim
   Extracts all the attrs from compustat database.
 
@@ -58,8 +62,7 @@ static Tcl_Interp *globalInterp = 0;
 
 int comp_create(char *tapeDrive, char *tapeFile, char *tapeBsize,
 		char *idxFile, char **, int);
-int create_comp_dat(TapeDrive &tape, char *idxFile, char *fname,
-		    char *fvalue, char *file);
+int create_comp_dat(TapeDrive &tape, char *idxFile, char *fvalue, char *file);
 
 int comp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 {
@@ -100,7 +103,6 @@ int comp_create(char *tapeDrive, char *tapeFile, char *tapeBsize,
   int *offset_arr;
   int *spos_arr;
   int tmp, i, j;
-  char tmpp[COMP_MAX_STR_LEN];
   int num = argc / 2;
 
   assert(argc % 2 == 0);
@@ -119,7 +121,8 @@ int comp_create(char *tapeDrive, char *tapeFile, char *tapeBsize,
   for (i = 0; i < num; i++)
   {
     spos_arr[i] = i * 2;
-    find_rec(idxfile, "SMBL", argv[i * 2], &offset_arr[i], &tmp, tmpp);
+    if ((offset_arr[i] = find_rec(idxfile, argv[i * 2])) == -1)
+      printf("ERROR:could not find selected cusip in the index file\n");
     rewind(idxfile);
   }
 
@@ -146,7 +149,7 @@ int comp_create(char *tapeDrive, char *tapeFile, char *tapeBsize,
   /* Call create_comp_dat for every symbol in turn */
   for (i = 0; i < num; i++)
   {
-    if (create_comp_dat(tape, idxFile, "SMBL", argv[spos_arr[i]],
+    if (create_comp_dat(tape, idxFile, argv[spos_arr[i]],
 			argv[spos_arr[i] + 1]) != TCL_OK) {
       fprintf(stderr, "Error in extracting %s\n", argv[spos_arr[i]]);
     }
@@ -164,16 +167,15 @@ int comp_create(char *tapeDrive, char *tapeFile, char *tapeBsize,
 /* This function extracts the fields in the data and outputs them into
    a DeVise style file.
 */
-int create_comp_dat(TapeDrive &tape, char *idxFile,
-		    char *fname, char *fvalue, char *file)
+int create_comp_dat(TapeDrive &tape, char *idxFile, char *fvalue, char *file)
 {
   FILE *idxfile;
   FILE *outfile;
   int i, j;
   int recoffset, year;
+  char yrbuf[3];
   char recbuf1[COMP_REC_LENGTH];
   char recbuf2[COMP_REC_LENGTH];
-  char smbl_val[COMP_MAX_STR_LEN];
 
   /* Get the index file pointer */
   if ((idxfile = fopen(idxFile, "r")) == NULL)
@@ -184,14 +186,14 @@ int create_comp_dat(TapeDrive &tape, char *idxFile,
 
   /* Find the record for the company in the index file and open an output
      file with the appropriate name */
-  if (find_rec(idxfile, fname, fvalue, &recoffset, &year, smbl_val) == FALSE)
+  if ((recoffset = find_rec(idxfile, fvalue)) == -1)
   {
-    printf("Error: Invalid field name, value combination\n");
+    printf("Error: Could not find company with selected cusip number.\n");
     fclose(idxfile);
     return TCL_ERROR;
   }
 
-  printf("Creating Compustat file %s for %s %s\n", file, fname, fvalue);
+  printf("Creating Compustat file %s for %s \n", file, fvalue);
 
   /* Open file pointer for the data file */
   if ((outfile = fopen(file, "w")) == NULL)
@@ -214,6 +216,11 @@ int create_comp_dat(TapeDrive &tape, char *idxFile,
     /* Read record for the other set of attrs eg : (1,5), (2,6), .. */
     tape.seek(recoffset + 4*COMP_REC_LENGTH);
     tape.read(recbuf2, (size_t)COMP_REC_LENGTH);
+
+    /* Extract the data year value */
+    memcpy(yrbuf, recbuf1+ 64, 2);
+    yrbuf[2] = '\0';
+    year = atoi(yrbuf);
 
     /* Loop  for five years - pass in pointers to data arrays for each of
        the two sets of attrs */
@@ -238,73 +245,34 @@ int create_comp_dat(TapeDrive &tape, char *idxFile,
 /*-------------------------------------------------------------------*/
 
 /* This function scans the index file and finds the record corr. to the
-   passed fname and fvalue.
-   In that record, return the OFFSET, YEAR and SMBL fields. */
+   passed cusip number.
+   In that record, return the OFFSET field. */
 
-int find_rec(FILE *idxfile, char fname[], char fvalue[], int *off, 
-	     int *year, char *smbl_val)
+int find_rec(FILE *idxfile, char cval[])
 {
-  int i;
-  int offset_pos, year_pos, smbl_pos, fname_pos;
-  int offset_val;
-  int year_val;
-  char *fname_val;
-  char tmpval[COMP_MAX_STR_LEN];
-
-  /* First do some preprocessing : find the field numbers for OFFSET, YEAR,
-     SMBL and fname fields. */
-  
-  offset_pos = comp_get_pos("OFFSET");
-  year_pos = comp_get_pos("YEAR");
-  smbl_pos = comp_get_pos("SMBL");
-  fname_pos = comp_get_pos(fname);
-  if (fname_pos == -1)		/* Invalid field name */
-  {
-    printf("Error : Invalid field name %s\n", fname);
-    return FALSE;
-  }
-  /* If fname is also SMBL, we should read the field only once from the
-     stream - so make fname_val point to smbl_val */
-  if (fname_pos == smbl_pos)
-    fname_val = (char *)&(smbl_val[0]);
-  else
-    fname_val = (char *)malloc(COMP_MAX_STR_LEN);
+  int tmpval;
+  char tmpbuf[200];     // large enough to hold one line of index file
+  unsigned long int offval;
+  char fval[10];	// stores cusip here
 
   /* Go in a loop - In every record save the values of OFFSET, YEAR, SMBL
-     and fname fields. At the end of the loop check if the value of fname
-     field is fvalue. If so, quit the loop. */
+     fields. At the end of the loop check if the value of smbl
+     field is smblval. If so, quit the loop. */
 
   do
   {
-    for (i=0; i < COMP_NUM_IDX_FIELDS; i++)
-    {
-      if (i == fname_pos)
-	fscanf(idxfile, "%s", fname_val);
-      else if (i == offset_pos)
-	fscanf(idxfile, "%d", &offset_val);
-      else if (i == year_pos)
-	fscanf(idxfile, "%d", &year_val);
-      else if (i == smbl_pos)
-	fscanf(idxfile, "%s", smbl_val);
-      else 
-	fscanf(idxfile, "%s", tmpval);
-    }
-    
-  }while ((!comp_compare(fvalue, fname_val, fname_pos)) &&
-	  (!feof(idxfile)));
+    /* get the cusip */
+    fscanf(idxfile, "%lu,%d,%6s", &offval, &tmpval, fval);
 
-  if (comp_compare(fvalue, fname_val, fname_pos))
-  {
-    *off = offset_val;
-    *year = year_val;
-    free(fname_val);
-    return TRUE;
-  }
+    /* Ignore rest of line */
+    fgets(tmpbuf, 200, idxfile);
+
+  }while ((strcmp(cval, fval)) && (!feof(idxfile)));
+
+  if (!strcmp(cval, fval))
+    return offval;
   
-  printf("Error: field value %s not found for field name %s\n",
-	 fvalue, fname);
-  free(fname_val);
-  return FALSE;
+  return -1;
 }
 
 /*-------------------------------------------------------------------*/
@@ -350,43 +318,6 @@ void generate_dat(char *dat1, char *dat2, int year,
 
   /* Output new line - end of record for this year */
   fprintf(outfile, "\n");
-}
-
-/*-------------------------------------------------------------------*/
-
-/* This function returns the field position in the index file record for
-   the field with the passed name. This info is got by scanning through the
-   comp_idx_form struct. */
-int comp_get_pos(char fname[])
-{
-  int pos = 0;
-  
-  while (pos < COMP_NUM_IDX_FIELDS)
-    if (!strcmp(comp_idx_form[2*pos], fname))
-      return pos;
-    else
-      pos++;
-
-  return -1;
-}
-	
-/*-------------------------------------------------------------------*/
-
-/* This function checks if val1 and val2 are identical. Returns 1 if
-   identical, 0 otherwise.
-   val1 and val2 are passed as strings - but they might be either string
-   values or integers. So, comparison might be using strcmp or "==".
-   Use pos to check in comp_idx_form struct and find out the type. */
-int comp_compare(char *val1, char *val2, int pos)
-{
-  if (!strcmp(comp_idx_form[2*pos + 1], "I"))	/* Integer field */
-    if (atoi(val1) == atoi(val2))
-      return 1;
-    else return 0;
-  else						/* String field */
-    if (!strcmp(val1, val2))
-      return 1;
-    else return 0;
 }
 
 /*-------------------------------------------------------------------*/
