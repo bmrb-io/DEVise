@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -15,20 +15,20 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/11/09 15:30:52  ravim
+  Initial revision
+*/
 
 #ifndef _CAL_H_
 #define _CAL_H_
 
-#include <iostream.h>
-#include <sys/types.h>
-#include <sys/uio.h>
-#include <unistd.h>
+#include <stdio.h>
 
-class Calendar 
+class Calendar
 {
 public:
-  Calendar(int fdes);
+  Calendar(FILE *fp);
   ~Calendar();
 
   // Loads the day info corr. to the specified record number
@@ -39,24 +39,23 @@ public:
 
   // Type definition for the stuct for each day
   typedef struct day_t {
-      int caldt;
-      float vwretd;
-      float vwretx;
-      float ewretd;
-      float ewretx;
-      float totval;
-      int totcnt;
-      float usdval;
-      int usdcnt;
-      float spindx;
-      float sprtrn;
-    } day_t;
+    int caldt;      // DAILY TRADING DATE.
+    float vwretd;   // VALUE-WEIGHTED MARKET RETURN, INCLUDING DIVIDENDS.
+    float vwretx;   // VALUE-WEIGHTED MARKET RETURN, EXCLUDING DIVIDENDS.
+    float ewretd;   // EQUAL-WEIGHTED MARKET RETURN, INCLUDING DIVIDENDS.
+    float ewretx;   // EQUAL-WEIGHTED MARKET RETURN, EXCLUDING DIVIDENDS.
+    float totval;   // TOTAL VALUE OF STOCKS WITH NON-MISSING DATA.
+    int totcnt;     // TOTAL COUNT OF STOCKS WITH NON-MISSING DATA.
+    float usdval;   // TOTAL VALUE OF STOCKS USED FOR VALUE-WEIGHTING.
+    int usdcnt;     // TOTAL COUNT OF STOCKS USED FOR VALUE-WEIGHTING.
+    float spindx;   // LEVEL OF STANDARD AND POORS 500 COMPOSITE INDEX.
+    float sprtrn;   // RETURN OF STANDARD AND POORS 500 COMPOSITE INDEX.
+  } day_t;
 
-  // Constant declarations
-  const int REC_LEN=130;
+  const int REC_LEN = 130;
 
   // Variable declarations
-  int fildes;
+  FILE *fp;
 
   day_t cal;		// stores info about a day
 
