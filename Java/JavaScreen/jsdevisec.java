@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.122  2001/10/18 15:15:26  xuk
+// Fixed bug 714: can't switch out of collabration mode in Netscape.
+//
 // Revision 1.121  2001/10/17 15:54:25  wenger
 // Fixed bug 712 (JS collaboration doesn't work); various other code
 // cleanup.
@@ -1117,6 +1120,12 @@ public class jsdevisec extends Panel
     {
 	commMode.setForeground(Color.red);
         commMode.setText("Disconnected");
+    }
+
+    public void playbackMode()
+    {
+	commMode.setForeground(Color.white);
+        commMode.setText("Playback");
     }
 
     public synchronized void collabQuit()

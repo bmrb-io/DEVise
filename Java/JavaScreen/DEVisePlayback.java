@@ -17,6 +17,10 @@
 
 // ------------------------------------------------------------------------
 // $Log$
+// Revision 1.9  2001/10/16 23:30:34  wenger
+// Client logs use client ID for file name uniqueness; added human-readable
+// datestamp.
+//
 // Revision 1.8  2001/10/16 22:14:28  wenger
 // Major cleanup of command playback code; fixed bug 711 (problem with
 // command log playback).
@@ -76,6 +80,7 @@ public class DEVisePlayback implements Runnable
 
 	try {
 	    _jsc.isPlayback = true;
+	    _jsc.playbackMode();
 
 	    if (_filename == null) {
 		_jsc.showMsg("No log file name specified. Stop playback.");
@@ -185,6 +190,7 @@ public class DEVisePlayback implements Runnable
 	    }
 	    _jsc.isDisplay = true;
 	    _jsc.isPlayback = false;
+	    -jsc.socketMode();
 	    stop();
 	}
     }
