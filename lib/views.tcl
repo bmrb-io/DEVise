@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1996/05/13 18:08:48  jussi
+#  Removed ProcessViewCreated and ProcessViewSelected procedures
+#  because they were empty and not used.
+#
 #  Revision 1.6  1996/04/13 22:00:10  jussi
 #  When copying a view, the user is no longer asked for the name of
 #  the new view. It is automatically generated.
@@ -357,8 +361,9 @@ proc DoViewRemove {} {
 
     # Remove view
     set ans [DEVise removeView $viewToRemove]
+    puts $ans
     if {$ans != ""} {
-	dialogList .removeError "Cannot Remove View" $ans "" 0 OK
+	dialog .removeError "Cannot Remove View" "" 0 OK
 	return
     }
 }
@@ -589,7 +594,8 @@ proc DoLinkCreate {} {
 
     set but [dialogCkBut .createLink "Create Link" \
 	    "Enter parameters for creating a new link" "" \
-	    0 {Cancel OK} name {x y color size pattern orientation shape} {3}]
+	    0 {Cancel OK} name \
+	    {x y color size pattern orientation shape record} {3}]
     if { $but != 1 } {
 	return ""
     }
@@ -597,21 +603,21 @@ proc DoLinkCreate {} {
     set flag $dialogCkButVar(selected)
     set name $dialogCkButVar(entry)
     if {$name == ""} {
-	set but [dialog .noName "NoName" \
-		"Error: No name for link specified" "" 0 {Continue }]
+	set but [dialog .noName "No Name" \
+		"No Link Name Specified" "" 0 OK]
 	return 
     }
     
     if { [DEVise exists $name ] } {
-	set but [dialog .linkExists "LinkExists" \
-		"Error: Link name $name already exists" "" 0 {Continue }]
+	set but [dialog .linkExists "Link Exists" \
+		"Link $name already exists" "" 0 OK]
 	return 
     }
 
     set result [DEVise create link Visual_Link $name $flag]
     if {$result == ""} {
-	set but [ dialog .linkError "LinkError" \
-		"Can't create link" "" 0 OK ]
+	set but [ dialog .linkError "Link Error" \
+		"Cannot create link $name" "" 0 OK]
 	return
     }
 
@@ -624,11 +630,11 @@ proc DoLinkCreate {} {
 proc DisplayLinkInfo { link } {
     set views [DEVise getLinkViews $link]
     if { [llength $views] == 0 } {
-	dialog .linkInfo "LinkInfo" \
-		"Link $link currently does not link any view" "" 0 OK ]
+	dialog .linkInfo "No Views in Link" \
+		"Link $link currently does not link any view" "" 0 OK
 	return
     }
-    dialogList .linkInfo "LinkInfo" "Views linked by $link" "" 0 OK $views
+    dialogList .linkInfo "Link Info" "Views linked by $link" "" 0 OK $views
 }
 
 ############################################################
@@ -649,8 +655,8 @@ proc DoViewLink {} {
 		break
 	    }
 	} else {
-	    set answer [ dialogList .getLink "GetLink" "Select a link for\
-		    view\n$curView" "" 0 \
+	    set answer [ dialogList .getLink "Select Link" \
+		    "Select a link for view\n$curView" "" 0 \
 		    { Info New Cancel OK } $linkSet ]
 	    if { $answer == 0 } {
 		if {$dialogListVar(selected) != ""} {
@@ -672,11 +678,7 @@ proc DoViewLink {} {
 	return
     }
 
-    set anwer [DEVise insertLink $link $curView]
-    # if {$anwer != 0 } {
-	# set but [ dialog .linkError "LinkError" \
-		# "Can't insert view $curView into link $link" "" 0 OK ]
-    #}
+    DEVise insertLink $link $curView
 }
 
 ############################################################
@@ -716,6 +718,77 @@ proc DoViewUnlink {} {
 
 ############################################################
 
+# Set current view as master
+proc DoSetLinkMaster {} {
+    global curView dialogListVar
+
+    if {![CurrentView]} {
+	return
+    }
+
+    set linkSet [LinkSet]
+    if { [llength $linkSet] == 0 } {
+	set link [DoLinkCreate]
+	if {$link == ""} {
+	    return
+	}
+    }
+    
+    while { 1 } {
+	set linkSet [LinkSet]
+	set answer [ dialogList .getLink "Select Link" \
+		"Select a link for view\n$curView" "" 0 \
+		{ Info New Cancel OK } $linkSet ]
+	if { $answer == 0 } {
+	    if {$dialogListVar(selected) != ""} {
+		DisplayLinkInfo $dialogListVar(selected)
+	    }
+	} elseif { $answer == 1 } {
+	    DoLinkCreate
+	} elseif {$answer == 2 || $dialogListVar(selected) == ""} {
+	    return
+	} else {
+	    set link $dialogListVar(selected)
+	    break
+	}
+    }
+
+    DEVise setLinkMaster $link $curView
+}
+
+############################################################
+
+# Set link to be without a master
+proc DoResetLinkMaster {} {
+    global dialogListVar
+
+    set linkSet [LinkSet]
+    if { [llength $linkSet] == 0 } {
+	dialog .noLinks "No Links" "There are no links." "" 0 OK
+	return
+    }
+
+    while {1} {
+	set answer [ dialogList .getLink "Select Link" \
+		"Select a link to reset" "" 0 \
+		{ Info Cancel OK } $linkSet ]
+	if { $answer == 0 } {
+	    if {$dialogListVar(selected) != ""} {
+		DisplayLinkInfo $dialogListVar(selected)
+	    }
+	} elseif {$answer == 1 || $dialogListVar(selected) == ""} {
+	    return
+	} else {
+	    set link $dialogListVar(selected)
+	    break
+	}
+    }
+
+    DEVise resetLinkMaster $link
+}
+
+############################################################
+
 # Modify parameters of a link
 proc DoModifyLink {} {
     global dialogCkButVar dialogListVar
@@ -732,7 +805,7 @@ proc DoModifyLink {} {
 	    { Cancel OK } $linkSet ]
     if { $answer == 0 } {
 	return
-    } elseif { [ string compare $dialogListVar(selected) "" ] == 0 } {
+    } elseif { $dialogListVar(selected) == "" } {
 	return
     } else {
 	set link $dialogListVar(selected)
@@ -824,8 +897,7 @@ proc DoGetAxisLabel {} {
 		"" 0 { New Cancel OK } $axisSet ]
 	if { $answer == 0 } {
 	    set axisLabel [ DoCreateAxisLabel ]
-	} elseif { $answer == 1 || \
-		[ string compare $dialogListVar(selected) "" ] == 0 } {
+	} elseif { $answer == 1 || $dialogListVar(selected) == "" } {
 	    set axisLabel ""
 	} else {
 	    set axisLabel $dialogListVar(selected)
@@ -865,7 +937,7 @@ proc DoActualCreateAction { type } {
     
     set cmd "DEVise create action $type $dialogParamVar(params)"
     set result [eval $cmd ]
-    if { [string compare $result "" ] == 0 } {
+    if { $result == "" } {
 	set but [ dialog .actionError "ActionError" \
 		"Can't create action" "" 0 OK ]
 	return
@@ -881,8 +953,7 @@ proc DoCreateAction {} {
     set actionTypes [ DEVise get action]
     set answer [ dialogList .createAction "CreateAction"  \
 	    "Select type of action to create" "" "" { Cancel Ok } $actionTypes]
-    if { $answer == 0 || \
-	    [ string compare $dialogListVar(selected) "" ] == 0 } {
+    if { $answer == 0 || $dialogListVar(selected) == "" } {
 	return
     } else {
 	return [ DoActualCreateAction $dialogListVar(selected) ]
@@ -896,15 +967,14 @@ proc DoGetAction {} {
     global curView dialogListVar
     set actionSet [ActionSet ]
     if { [llength $actionSet] == 0 } {
-	set action [ DoCreateAction]
+	set action [ DoCreateAction ]
     } else {
-	set answer [dialogList .getAction "GetAction" "Select an \
-		action for view\n$curView"\
+	set answer [dialogList .getAction "Select Action" \
+		"Select an action for view\n$curView"\
 		"" 0 { New Cancel OK } $actionSet]
 	if { $answer == 0 } {
 	    set action [ DoCreateAction]
-	} elseif { $answer == 1 || \
-		[ string compare $dialogListVar(selected) "" ] == 0 } {
+	} elseif { $answer == 1 || $dialogListVar(selected) == "" } {
 	    set action ""
 	} else {
 	    set action $dialogListVar(selected)
