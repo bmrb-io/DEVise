@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/08/01 23:56:14  jussi
+  Interval timer is now set for just one interval/interrupt at a
+  time. There were occasional problems (SIGALRM's not caught properly)
+  with the old scheme.
+
   Revision 1.10  1996/07/12 18:45:08  jussi
   Added check for negative "next event" case.
 
@@ -71,6 +76,7 @@ Boolean Timer::_timerRunning = false;
 TimerQueueEntry *Timer::_head = 0;
 TimerQueueEntry *Timer::_freeHead = 0;
 long Timer::_now = 0;
+long Timer::_nexthop = 0;
 
 /***********************************************************
 Alloc timer queue entry
@@ -247,15 +253,13 @@ void Timer::StopTimer()
     timerVal.it_interval.tv_usec = 0;
     setitimer(ITIMER_REAL, &timerVal, &oldTimerVal);
 
-    long vdelta = oldTimerVal.it_value.tv_sec * 1000
-                  + oldTimerVal.it_value.tv_usec / 1000;
-    long idelta = oldTimerVal.it_interval.tv_sec * 1000
-                  + oldTimerVal.it_interval.tv_usec / 1000;
+    long left = oldTimerVal.it_value.tv_sec * 1000
+                + oldTimerVal.it_value.tv_usec / 1000;
 
-    if (vdelta < idelta)
-        _now += idelta - vdelta;
+    if (left < _nexthop)
+        _now += _nexthop - left;
     else
-        _now += idelta;
+        _now += _nexthop;
 
 #ifdef DEBUG
     printf("Timer now at %ld\n", _now);
@@ -280,22 +284,22 @@ void Timer::StartTimer()
 
     _timerRunning = true;
 
-    long ms = _head->when - _now;
+    _nexthop = _head->when - _now;
 
 #ifdef DEBUG
-    printf("Next timer event is after %ld ms\n", ms);
+    printf("Next timer event is after %ld ms\n", _nexthop);
 #endif
 
-    if (ms < 1) {
+    if (_nexthop < 1) {
         /* cannot set to zero, as the timer would be canceled */
-        ms = 1;
+        _nexthop = 1;
     }
 
     /* Set timer */
     struct itimerval timerVal;
     timerVal.it_interval.tv_sec = 0;
     timerVal.it_interval.tv_usec = 0;
-    timerVal.it_value.tv_sec = ms / 1000;
-    timerVal.it_value.tv_usec = (ms % 1000) * 1000;
+    timerVal.it_value.tv_sec = _nexthop / 1000;
+    timerVal.it_value.tv_usec = (_nexthop % 1000) * 1000;
     setitimer(ITIMER_REAL, &timerVal, 0);
 }

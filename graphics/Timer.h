@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/08/01 23:56:19  jussi
+  Interval timer is now set for just one interval/interrupt at a
+  time. There were occasional problems (SIGALRM's not caught properly)
+  with the old scheme.
+
   Revision 1.6  1996/07/12 18:14:29  jussi
   Rewrote Timer code to use fewer timer interrupts and also
   allow for timer events which should precede any events
@@ -85,6 +90,7 @@ private:
   static Boolean _timerRunning; /* TRUE if timer running */
 
   static long _now;	        /* current time in ms from beginning */
+  static long _nexthop;	        /* number of ms to hop until next event */
 
   static TimerQueueEntry *_head;        /* head of timer queue */
   static TimerQueueEntry *_freeHead;	/* head of free list */
