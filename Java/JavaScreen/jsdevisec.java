@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.98  2001/04/11 21:16:29  xuk
+// A collaboration leader could find out the followers hostname.
+//
 // Revision 1.97  2001/04/05 16:14:15  xuk
 // Fixed bugs for JSPoP status query.
 // Modified serverStateDlg() to display JSPoP status correctly.
@@ -907,6 +910,34 @@ System.out.println("Creating new debug window");
     {
         commMode.setText("CGI");
     }
+
+    public synchronized void collabQuit()
+    {
+	pn("Quit from collaboration mode.");
+
+	if (dispatcher.commSocket != null) {
+	    dispatcher.commSocket.closeSocket();
+	    dispatcher.commSocket = null;
+	}
+
+	dispatcher._connectedAlready = false;
+	dispatcher.isOnline = false;
+	dispatcher.setAbortStatus(false);
+	dispatcher.setStatus(0);
+
+	animPanel.stop();
+	stopButton.setBackground( jsValues.uiglobals.bg);
+	jscreen.updateScreen(false);
+
+	// go back to normal mode
+	specialID = -1;
+	socketMode();
+
+	if (dispatcher.dispatcherThread != null) {
+	    dispatcher.dispatcherThread.stop();
+	    dispatcher.dispatcherThread = null;
+	}
+    }	
 }
 
 // ------------------------------------------------------------------------
@@ -2096,7 +2127,6 @@ class SetModeDlg extends Dialog
 
 			// switch out off the collaboration mode
 			if (jsc.specialID != -1) {
-
 
 			    if (jsc.dispatcher.dispatcherThread != null) {
 				jsc.dispatcher.dispatcherThread.stop();
