@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/04/23 20:33:14  jussi
+  Added LatLonComposite parser which translates integer
+  latitude/longitude numbers (in millionths of degrees)
+  to floating-point numbers.
+
   Revision 1.16  1996/04/23 14:03:06  jussi
   Refined StateLatLon composite parser. It now disperses multiple
   records from the same state with some randomness, forming a
@@ -678,6 +683,7 @@ main(int argc, char **argv)
   CompositeParser::Register("DOL_DATA", new DOLDateComposite);
   CompositeParser::Register("DOWJONES", new MmDdYyComposite);
   CompositeParser::Register("LANDSEND", new StateLatLonComposite);
+  CompositeParser::Register("MARKETING", new StateLatLonComposite);
   CompositeParser::Register("CENSUS_PLACES", new LatLonComposite);
   CompositeParser::Register("CENSUS_ZIP", new LatLonComposite);
 
