@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.59  1999/03/01 17:47:35  wenger
+  Implemented grouping/ungrouping of views to allow custom view geometries.
+
   Revision 1.58  1999/02/11 19:54:45  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -654,13 +657,8 @@ private:
 			   int &yhigh, int button);
 #endif
 
-	virtual void DrawText(Boolean scaled, char *text, Coord x, Coord y,
-			      Coord width, Coord height,
-			      SymbolAlignment alignment = AlignCenter,
-			      Boolean skipLeadingSpaces = false,
-			      Coord orientation = 0.0);
-
-	virtual void DrawDataText(Boolean scaled, char *text, Coord x, Coord y,
+	virtual void NewDrawText(Boolean isDataText,
+				  Boolean scaled, char *text, Coord x, Coord y,
     			          Coord width, Coord height,
     			          SymbolAlignment alignment = AlignCenter,
     			          Boolean skipLeadingSpaces = false,
