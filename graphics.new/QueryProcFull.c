@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.49  1997/01/11 20:59:34  jussi
+  Fix for bug #106. Simplified processing of record links.
+
   Revision 1.48  1997/01/09 19:30:05  jussi
   Added measurement of query elapsed time (debugging output).
 
@@ -257,47 +260,13 @@ static const int QPFULL_RANDOM_RECS = 10240;
    is less than this number, data is skipped by reading instead.
 */
 static const int MByte = 1024 * 1024;
-static const int QPFULL_TAPE_MIN_SEEK = 2 * MByte;
+static const int QPFULL_TAPE_MIN_SEEK = 8 * MByte;
 
 /*
    Min number of records to keep as a separation between sorted table
    entries.
 */
 static const int QPFULL_TAPE_MARK_SEPARATION = 2048;
-
-/* Get X coordinate associated with a recId */
-
-static void GetX(BufMgr *mgr, TData *tdata, TDataMap *map, RecId id, Coord &x)
-{
-  if (!(map->GetDynamicArgs() & VISUAL_X)) {
-      x = map->GetDefaultX();
-      return;
-  }
-
-  RecId startRid;
-  int numRecs;
-  char *buf;
-  Boolean isTData;
-
-  BufMgr::BMHandle handle = mgr->InitGetRecs(tdata, map->GetGData(),
-                                             id, id, false, false,
-                                             true, true);
-  Boolean gotit = mgr->GetRecs(handle, isTData, startRid, numRecs, buf);
-  DOASSERT(gotit, "Did not get data");
-  DOASSERT(numRecs == 1, "Did not get one record");
-
-  if (isTData) {
-      /* Coordinate values are assigned dynamically */
-      map->ConvertToGData(id, buf, 1, _gdataBuf);
-      x = ((GDataBinRec *)_gdataBuf)->x;
-  } else {
-      x = ((GDataBinRec *)buf)->x;
-  }
-
-  mgr->FreeRecs(buf);
-
-  mgr->DoneGetRecs(handle);
-}
 
 QueryProcFull::QueryProcFull()
 {
@@ -395,7 +364,7 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
       RecId low, high;
       if (!Init::ForceTapeSearch()
           && query->tdata->HeadID(low) && query->tdata->LastID(high)
-          && (high - low + 1) * query->tdata->RecSize() < 200 * MByte) {
+          && (high - low + 1) * query->tdata->RecSize() < 1024 * MByte) {
           /* If tape file is small, force linear processing (no search). */
           numDimensions = 0;
           numTDimensions = 0;
@@ -654,20 +623,14 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
 
   if (!Init::ForceBinarySearch() && query->tdata->GetDataSource()->isTape()) {
       /* Find first record that matches filter */
-      if (!DoLinearSearch(_mgr, query->tdata, query->map,
-                          query->filter.xLow, false, query->low)) {
+      if (!DoLinearSearch(query, query->filter.xLow, false, query->low)) {
         AdvanceState(query, QPFull_EndState);
         return;
       }
 
-      /* Find last record that matches filter */
-      RecId lastId;
-      (void)query->tdata->LastID(lastId);
-      if (!DoLinearSearch(_mgr, query->tdata, query->map,
-                          query->filter.xHigh, false, query->high,
-                          true, query->low, lastId, false)) {
-          query->high = lastId;
-      }
+      /* Set last record of file as the end of search range */
+      Boolean gotHigh = query->tdata->LastID(query->high);
+      DOASSERT(gotHigh, "Cannot get last record ID of file");
 
       query->hintId = (query->high + query->low) / 2;
       _mgr->FocusHint(query->high, query->tdata, query->gdata);
@@ -680,29 +643,28 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
   }
 
   /* Find first record that matches filter */
-  if (!DoBinarySearch(_mgr, query->tdata, query->map,
-                      query->filter.xLow, false, query->low)) {
+  if (!DoBinarySearch(query, query->filter.xLow, false, query->low)) {
     AdvanceState(query, QPFull_EndState);
     return;
   }
 
-  /* Find last record that matches filter */
-  RecId lastId;
-  (void)query->tdata->LastID(lastId);
-  if (!DoBinarySearch(_mgr, query->tdata, query->map,
-                      query->filter.xHigh, false, query->high, true,
-                      query->low, lastId, false)) {
-      query->high = lastId;
+  /* Set last record of file as the end of search range */
+  Boolean gotHigh = query->tdata->LastID(query->high);
+  DOASSERT(gotHigh, "Cannot get last record ID of file");
+
+  query->isRandom = false;
+  if (!query->tdata->GetDataSource()->isTape()) {
+      RecId lastId = query->high;
+      if (DoBinarySearch(query, query->filter.xHigh, false,
+                         lastId, true, query->low, query->high, false))
+          query->high = lastId;
+      if (query->high - query->low > QPFULL_RANDOM_RECS)
+          query->isRandom = Init::Randomize();
   }
   query->hintId = (query->high + query->low) / 2;
   _mgr->FocusHint(query->hintId, query->tdata, query->gdata);
   AdvanceState(query, QPFull_ScanState);
   query->map->SetFocusId(query->low);
-  if (!query->tdata->GetDataSource()->isTape() &&
-      query->high - query->low > QPFULL_RANDOM_RECS)
-      query->isRandom = Init::Randomize();
-  else
-      query->isRandom = false;
 #if DEBUGLVL >= 5
   printf("search [%ld,%ld]\n", query->low, query->high);
 #endif
@@ -942,6 +904,47 @@ void QueryProcFull::ProcessScan(QPFullData *query)
 
         recsScanned += numRecs;
 
+        /*
+           Query is finished also if data is sorted along the X axis
+           and we're past the high end of the X filter and there
+           is nothing left on the "left" side of the data chunk
+           that was just returned.
+        */
+        VisualFlag *dimensionInfo;
+        int numDimensions = query->map->DimensionInfo(dimensionInfo);
+        if (numDimensions == 1 && dimensionInfo[0] == VISUAL_X
+            && (query->filter.flag & VISUAL_X)) {
+            /*
+               Data is sorted along the X axis and the filter
+               has an X attribute.
+            */
+            RecId uLow, uHigh;
+            Boolean noHigh = query->processed->NextUnprocessed(query->low,
+                                                               uLow, uHigh);
+            if (uLow >= startRid) {
+                /*
+                   There is nothing left on the "left" side of the
+                   data chunk that was just returned.
+                */
+                Coord x = 0;
+                if (isTData) {
+                    /* Coordinate values are assigned dynamically */
+                    query->map->ConvertToGData(startRid, buf, 1, _gdataBuf);
+                    x = ((GDataBinRec *)_gdataBuf)->x;
+                } else {
+                    x = ((GDataBinRec *)buf)->x;
+                }
+                if (x > query->filter.xHigh) {
+#if DEBUGLVL >= 0
+                    printf("Query finished (%g > %g)\n",
+                           x, query->filter.xHigh);
+#endif
+                    AdvanceState(query, QPFull_EndState);
+                    return;
+                }
+            }
+        }
+
     } while (recsScanned < QPFULL_RECS_PER_BATCH);
 
 #if DEBUGLVL >= 3
@@ -1062,7 +1065,7 @@ void QueryProcFull::EndQuery(QPFullData *query)
 
 void QueryProcFull::ReportQueryElapsedTime(QPFullData *query)
 {
-#if DEBUGLVL >= 1
+#if DEBUGLVL >= 0
   struct timeval stop;
   gettimeofday(&stop, 0);
   double seconds = stop.tv_sec - query->started.tv_sec
@@ -1079,18 +1082,22 @@ void QueryProcFull::ReportQueryElapsedTime(QPFullData *query)
   Return true if found.
 ***********************************************************************/
 
-Boolean QueryProcFull::DoBinarySearch(BufMgr *mgr,
-	TData *tdata, TDataMap *map, Coord xVal, Boolean isPrefetch,
-	RecId &id,Boolean bounded, RecId lowBound, RecId highBound,
-	Boolean maxLower)
+Boolean QueryProcFull::DoBinarySearch(QPFullData *query,
+                                      Coord xVal, Boolean isPrefetch,
+                                      RecId &id, Boolean bounded,
+                                      RecId lowBound, RecId highBound,
+                                      Boolean maxLower)
 {
 #if DEBUGLVL >= 5
   printf("DoBinarySearch xVal = %f, maxLower = %d\n", xVal, maxLower);
 #endif
 
-  mgr->PhaseHint(BufferPolicy::BinSearchPhase);
+  _mgr->PhaseHint(BufferPolicy::BinSearchPhase);
 
-  Coord x;
+  TData *tdata = query->tdata;
+  TDataMap *map = query->map;
+
+  Coord x = 0;
   RecId low,high, mid;
   if (bounded) {
     low = lowBound;
@@ -1098,11 +1105,11 @@ Boolean QueryProcFull::DoBinarySearch(BufMgr *mgr,
   } else {
     if (!tdata->HeadID(low)) {
       /* no id */
-      mgr->PhaseHint(BufferPolicy::ScanPhase);
+      _mgr->PhaseHint(BufferPolicy::ScanPhase);
       return false;
     }
     if (!tdata->LastID(high)) {
-      mgr->PhaseHint(BufferPolicy::ScanPhase);
+      _mgr->PhaseHint(BufferPolicy::ScanPhase);
       return false;
     }
     
@@ -1120,7 +1127,7 @@ Boolean QueryProcFull::DoBinarySearch(BufMgr *mgr,
 
   do {
     /* Get the data for mid */
-    GetX(mgr, tdata, map, mid, x);
+    GetX(query, mid, x);
     
     /* change high or low for next search */
     if (x < xVal) {
@@ -1133,26 +1140,26 @@ Boolean QueryProcFull::DoBinarySearch(BufMgr *mgr,
   
   /* Scan backwards until we found an ID whose x < filter.xLow */
   if (maxLower) {
-    GetX(mgr, tdata, map, mid, x);
+    GetX(query, mid, x);
 #if DEBUGLVL >= 9
     printf("midVal = %.2f\n", x);
 #endif
     while (mid > firstId && x >= xVal) {
       mid--;
-      GetX(mgr, tdata, map, mid, x);
+      GetX(query, mid, x);
 #if DEBUGLVL >= 9
       printf("midVal = %.2f\n", x);
 #endif
     }
     id = mid;
   } else {
-    GetX(mgr, tdata, map, mid, x);
+    GetX(query, mid, x);
 #if DEBUGLVL >= 9
     printf("midVal = %.2f\n", x);
 #endif
     while (mid < lastId && x <= xVal) {
       mid++;
-      GetX(mgr, tdata, map, mid, x);
+      GetX(query, mid, x);
 #if DEBUGLVL >= 9
       printf("midVal = %.2f\n", x);
 #endif
@@ -1160,7 +1167,7 @@ Boolean QueryProcFull::DoBinarySearch(BufMgr *mgr,
     id = mid;
   }
   
-  mgr->PhaseHint(BufferPolicy::ScanPhase);
+  _mgr->PhaseHint(BufferPolicy::ScanPhase);
 
   return true;
 }
@@ -1172,8 +1179,7 @@ Boolean QueryProcFull::DoBinarySearch(BufMgr *mgr,
   Otherwise, find the minimum record with x > xVa.
   Return true if found.
   ************************************************************************/
-Boolean QueryProcFull::DoLinearSearch(BufMgr *mgr,
-				      TData *tdata, TDataMap *map,
+Boolean QueryProcFull::DoLinearSearch(QPFullData *query,
 				      Coord xVal, Boolean isPrefetch,
 				      RecId &id, Boolean bounded,
 				      RecId lowBound, RecId highBound,
@@ -1182,6 +1188,9 @@ Boolean QueryProcFull::DoLinearSearch(BufMgr *mgr,
 #if DEBUGLVL >= 5
   printf("DoLinearSearch xVal = %.2f, maxLower = %d\n", xVal, maxLower);
 #endif
+
+  TData *tdata = query->tdata;
+  TDataMap *map = query->map;
 
   SortedTable<Coord, RecId> *table =
     (SortedTable<Coord, RecId> *)map->GetUserData();
@@ -1262,10 +1271,15 @@ Boolean QueryProcFull::DoLinearSearch(BufMgr *mgr,
   int maxSkip = (high - low + 1) / 10;
   if (maxSkip < minSkip)
     maxSkip = minSkip;
-  if ((int)(high - low) < minSkip)
+  if ((int)(high - low) < minSkip) {
+#if DEBUGLVL >= 7
+    printf("Performing search as a scan, not as a seek (%ld < %d)\n",
+           high - low, minSkip);
+#endif
     maxSkip = 0;
+  }
 
-  Coord x;
+  Coord x = 0;
   RecId previous = low;
   RecId current = previous + 1;
 
@@ -1275,13 +1289,13 @@ Boolean QueryProcFull::DoLinearSearch(BufMgr *mgr,
 
   /* Repeat progressive jump loop until we're past the record */
   if (maxSkip > 0) {
-    mgr->PhaseHint(BufferPolicy::BinSearchPhase);
+    _mgr->PhaseHint(BufferPolicy::BinSearchPhase);
     while (1) {
       /* Get data for current record */
 #if DEBUGLVL >= 9
       printf("at %ld: ", current);
 #endif
-      GetX(mgr, tdata, map, current, x);
+      GetX(query, current, x);
 #if DEBUGLVL >= 9
       printf("value is %.2f\n", x);
 #endif
@@ -1305,7 +1319,10 @@ Boolean QueryProcFull::DoLinearSearch(BufMgr *mgr,
 #if DEBUGLVL >= 9
 	printf("starting another progressive search\n");
 #endif
+        high = current - 1;             /* this is the new high bound */
 	current = previous + 1;         /* Start another progressive search */
+        if (high < current)
+            high = current;
 	continue;
       }
 
@@ -1320,7 +1337,7 @@ Boolean QueryProcFull::DoLinearSearch(BufMgr *mgr,
       if (current > high)
         current = high;
     }
-    mgr->PhaseHint(BufferPolicy::ScanPhase);
+    _mgr->PhaseHint(BufferPolicy::ScanPhase);
   }
 
   if (previous == high) {               /* End of file or range? */
@@ -1340,7 +1357,7 @@ Boolean QueryProcFull::DoLinearSearch(BufMgr *mgr,
 
   /* Read until record is found */
   while (current <= high) {
-    GetX(mgr, tdata, map, current, x);
+    GetX(query, current, x);
     if ((maxLower && x < xVal)
 	|| (!maxLower && x <= xVal)) {
       current++;
@@ -1368,6 +1385,9 @@ Boolean QueryProcFull::DoLinearSearch(BufMgr *mgr,
 
   return true;
 }
+
+#undef DEBUGLVL
+#define DEBUGLVL 0
 
 /*
    Return true if sum of GData record sizes exceeds the size of 
@@ -1499,6 +1519,10 @@ void QueryProcFull::DistributeData(QPFullData *query, Boolean isTData,
     while (_queries->More(index)) {
         QPFullData *otherQ = _queries->Next(index);
         
+        /* Do not distribute data if other query is not in Scan state */
+        if (otherQ->state != QPFull_ScanState)
+            continue;
+
         /* Do not distribute data if other query uses different TData */
         if ((isTData && query->tdata != otherQ->tdata) ||
             (!isTData && query->gdata != otherQ->gdata))
@@ -1543,11 +1567,6 @@ void QueryProcFull::JournalReport()
 Boolean QueryProcFull::Idle()
 {
     return (_queries->Size() == 0);
-}
-
-BufMgr *QueryProcFull::GetMgr()
-{
-    return _mgr;
 }
 
 void QueryProcFull::PrintStat()
@@ -1881,7 +1900,7 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
     break;
     
   case QPFull_X:
-    if (DoBinarySearch(_mgr, tdata, map, _tdataQuery->filter.xLow,
+    if (DoBinarySearch(_tdataQuery, _tdataQuery->filter.xLow,
 		       false, _tdataQuery->low)) {
 #if DEBUGLVL >= 3
       printf("binary search startId %ld\n", _tdataQuery->low);
@@ -1889,7 +1908,7 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
       /* Find where we have to stop */
       RecId lastId;
       (void)_tdataQuery->tdata->LastID(lastId);
-      if (!DoBinarySearch(_mgr, tdata, map, filter.xHigh, false,
+      if (!DoBinarySearch(_tdataQuery, filter.xHigh, false,
 			  _tdataQuery->high, true,
 			  _tdataQuery->low, lastId, false)) {
 	_tdataQuery->high = lastId;
@@ -2090,39 +2109,44 @@ void QueryProcFull::DoneTDataQuery()
   }
 }
 
-/* Get minimum X value for mapping. Return true if found */
+/* Get X coordinate associated with a recId */
 
-Boolean QueryProcFull::GetMinX(TDataMap *map, Coord &minX)
+void QueryProcFull::GetX(QPFullData *query, RecId id, Coord &x)
 {
-#if DEBUGLVL >= 9
-  printf("QueryProcFull::GetMinX\n");
-#endif
+  DOASSERT(query, "Invalid query");
 
-  int numDimensions;
-  VisualFlag *dimensionInfo;
-  numDimensions = map->DimensionInfo(dimensionInfo);
-  TData *tdata = map->GetTData();
-  int numTDimensions, sizeTDimensions[10];
-  numTDimensions = tdata->Dimensions(sizeTDimensions);
-
-  RecId firstId;
-  Boolean hasFirst = tdata->HeadID(firstId);
-  if (hasFirst && numDimensions == 1 && dimensionInfo[0] == VISUAL_X &&
-      numTDimensions == 1) {
-    GetX(_mgr, tdata, map, firstId, minX);
-#if DEBUGLVL >= 9
-    printf("minX = %.2f\n", minX);
-#endif
-    return true;
+  if (!(query->map->GetDynamicArgs() & VISUAL_X)) {
+      x = query->map->GetDefaultX();
+      return;
   }
 
-#if DEBUGLVL >= 9
-  printf("no minX\n");
-#endif
+  BufMgr::BMHandle handle = _mgr->InitGetRecs(query->tdata,
+                                              query->map->GetGData(),
+                                              id, id, false, false,
+                                              true, true);
+  RecId startRid;
+  int numRecs;
+  char *buf;
+  Boolean isTData;
 
-  return false;
+  Boolean gotit = _mgr->GetRecs(handle, isTData, startRid, numRecs, buf);
+  DOASSERT(gotit, "Did not get data");
+  DOASSERT(numRecs == 1, "Did not get one record");
+
+  if (isTData) {
+      /* Coordinate values are assigned dynamically */
+      query->map->ConvertToGData(id, buf, 1, _gdataBuf);
+      x = ((GDataBinRec *)_gdataBuf)->x;
+  } else {
+      x = ((GDataBinRec *)buf)->x;
+  }
+
+  DistributeData(query, isTData, id, 1, buf);
+
+  _mgr->FreeRecs(buf);
+
+  _mgr->DoneGetRecs(handle);
 }
-
 
 void QueryProcFull::AdvanceState(QPFullData* query, QPFullState state)
 {

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/01/09 19:30:07  jussi
+  Added measurement of query elapsed time (debugging output).
+
   Revision 1.18  1996/12/18 22:12:12  beyer
   Query abort (especially for statistical views) bug fixed.
 
@@ -158,8 +161,6 @@ public:
       Timer::Queue(QP_TIMER_INTERVAL, this, 0);
   }
 
-  virtual BufMgr *GetMgr();
-
   /* TRUE if this qp is idle */
   virtual Boolean Idle();
 
@@ -184,9 +185,6 @@ public:
   /* Clear info about GData from qp and bufmgr */
   virtual void ClearGData(GData *gdata);
   virtual void ResetGData(TData *tdata, GData *gdata);
-
-  /* Get minimum X value for mapping. Return true if found */
-  virtual Boolean GetMinX(TDataMap *map, Coord &minX);
 
   void ReOrderQueries();
   void PrintQueryData(QPFullData *query);
@@ -221,6 +219,9 @@ protected:
   /* Report elapsed time of query */
   void ReportQueryElapsedTime(QPFullData *query);
 
+  /* Find X coordinate value at given record */
+  void GetX(QPFullData *query, RecId id, Coord &x);
+
   /*
      Do Binary Search, and return the Id of first matching record.
      isPrefetch == TRUE if we're doing prefetch.
@@ -228,18 +229,19 @@ protected:
      Otherwise, find min records with x > xVal.
      Return true if found.
   */
-  Boolean DoBinarySearch(BufMgr *mgr, TData *tdata, TDataMap *map,
-			 Coord xVal, Boolean isPrefetch, RecId &id,
-                         Boolean bounded = false, RecId lowBound = 0,
-                         RecId highBound = 0, Boolean maxLower = true);
+  Boolean DoBinarySearch(QPFullData *query, Coord xVal, Boolean isPrefetch,
+                         RecId &id, Boolean bounded = false,
+                         RecId lowBound = 0, RecId highBound = 0,
+                         Boolean maxLower = true);
 	
-  /* Do Linear Search, and return the Id of first matching record.
+  /*
+     Do Linear Search, and return the Id of first matching record.
      The parameters are the same as those of DoBinarySearch().
   */
-  Boolean DoLinearSearch(BufMgr *mgr, TData *tdata, TDataMap *map,
-                         Coord xVal, Boolean isPrefetch, RecId &id, 
-			 Boolean bounded = false, RecId lowBound = 0,
-			 RecId highBound = 0, Boolean maxLower = true);
+  Boolean DoLinearSearch(QPFullData *query, Coord xVal, Boolean isPrefetch,
+                         RecId &id, Boolean bounded = false,
+                         RecId lowBound = 0, RecId highBound = 0,
+                         Boolean maxLower = true);
   
   /*
      Return true if we should only retrieve TDAta from 
