@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1999
+#  (c) Copyright 1999-2001
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.21  2001/09/24 15:36:48  wenger
+#  Changed fonts to match DEVise font fix.
+#
 #  Revision 1.20  2001/09/18 21:54:51  wenger
 #  Added 'strict'; other improvements.
 #
@@ -193,8 +196,21 @@ sub CreateSession {
   open(SES_OUT, ">$session_file") or
       die "Can't create session_file $session_file: $!";
 
-  #TEMP -- add std header??
-  print SES_OUT "# DEVise session file created by create_condor_session\n\n";
+  my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdat) =
+      localtime(time());
+  $mon++;
+  $year += 1900;
+
+  print SES_OUT "# DEVise startHeader\n";
+  print SES_OUT "# file type: session\n";
+  print SES_OUT "# file date: ";
+  printf SES_OUT "%d-%.2d-%.2d %.2d:%.2d:%.2d\n", $year, $mon, $mday, $hour,
+      $min, $sec;
+  print SES_OUT "# DEVise version: none\n";
+  print SES_OUT "# DEVise date: none\n";
+  print SES_OUT "# DEVise endHeader\n";
+
+  print SES_OUT "\n# DEVise session file created by create_2users\n\n";
 
   my $data_prefix = "Condor_";
 

@@ -20,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  2001/09/18 21:54:58  wenger
+#  Added 'strict'; other improvements.
+#
 #  Revision 1.6  2001/09/17 20:07:40  wenger
 #  Fixed problems that led to goofed-up data (assuming fixed-width timestamp
 #  values).
@@ -81,10 +84,6 @@ close(DATA_IN);
 sub GetUsers {
   my $line;
   while ($line = <DATA_IN>) {
-    #TEMP? fix for columns running together
-    #TEMPTEMP? $line =~ s/edu/edu /g;
-    #TEMPTEMP? $line =~ s/Total/Total /g;
-
     print "line = $line" if ($debug);
     my $tmpuser = GetUserFromLine($line);
     print "  tmpuser = $tmpuser\n" if ($debug);

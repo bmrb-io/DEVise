@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.18  2001/09/18 21:54:58  wenger
+#  Added 'strict'; other improvements.
+#
 #  Revision 1.17  2001/07/30 14:58:06  wenger
 #  Changed UserThumb.ds session slightly because home now takes bounding
 #  boxes into account.
@@ -148,8 +151,21 @@ sub CreateSession {
   open(SES_OUT, ">$session_file") or
       die "Can't create session_file $session_file: $!";
 
-  #TEMP -- add std header??
-  print SES_OUT "# DEVise session file created by create_condor_session\n\n";
+  my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdat) =
+      localtime(time());
+  $mon++;
+  $year += 1900;
+
+  print SES_OUT "# DEVise startHeader\n";
+  print SES_OUT "# file type: session\n";
+  print SES_OUT "# file date: ";
+  printf SES_OUT "%d-%.2d-%.2d %.2d:%.2d:%.2d\n", $year, $mon, $mday, $hour, 
+      $min, $sec;
+  print SES_OUT "# DEVise version: none\n";
+  print SES_OUT "# DEVise date: none\n";
+  print SES_OUT "# DEVise endHeader\n";
+
+  print SES_OUT "# DEVise session file created by create_user_thumbnails\n\n";
 
   my $data_prefix = "Condor_";
 
