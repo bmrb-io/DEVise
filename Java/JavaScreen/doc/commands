@@ -33,13 +33,11 @@ see comments in DEViseCommSocket.java.
 
     2.1 JAVAC_Connect
     Purpose: establish connection between JavaScreen and JSPoP
-    Arguments: 4
+    Arguments: 3
         <username>: default is "guest"
         <password>: default is "guest"
         <protocol-version>: the JavaScreen protocol version, in the form
 	                    <major>.<minor>.
-	<collaboration password>: the password for collaboration; I don't
-	  know what is sent here if you are not trying to start collaboration.
 
     2.2 JAVAC_GetServerState
     Purpose: get current JSPoP status
@@ -72,6 +70,16 @@ see comments in DEViseCommSocket.java.
     2.8 JAVAC_ReopenSession
     Purpose: Reopen saved session when a user goes back to "socket" mode
              from collaboration mode
+    Arguments: 0
+
+    2.9 JAVAC_Collaborate
+    Purpose: Client starts to collaborate.
+    Arguments: 2
+        <ID>: id of leader client
+        <password>: password of leader client
+
+    2.10 JAVAC_AskCollabLeader
+    Purpose: Query the avilable collaboration leaders
     Arguments: 0
 
 
