@@ -21,6 +21,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.3.2.1  2001/02/22 19:28:30  wenger
+// Fixed problem with reading back deltashift values in exponential format;
+// error messages when checking for a protein are printed only if debug
+// output is turned on; fixed problems with set_modes script.
+//
+// Revision 1.3  2001/01/30 17:11:59  wenger
+// Modified code to take account of the fact that Star file tags, etc.,
+// are not supposed to be case-sensitive.
+//
 // Revision 1.2  2001/01/25 16:37:45  wenger
 // Fixed a bug that could cause an infinite loop in the perecent assignment
 // calculations; put filesize, cpu, and coredump limits in s2d script;
@@ -227,12 +236,12 @@ public class S2DChemShift {
 	// Calculate the CSI values and write them to the data file.
 	//
         FileWriter csiWriter = null;
-	LineTokens dsLine = null;
+	S2DDsReader dsLine = null;
 	try {
             csiWriter = new FileWriter(_dataDir + "/" +
 	      _accessionNum + S2DNames.CSI_SUFFIX + frameIndex +
 	      S2DNames.DAT_SUFFIX);
-	    dsLine = new LineTokens(new StreamTokenizer(
+	    dsLine = new S2DDsReader(new StreamTokenizer(
 	      new FileReader(_dataDir + "/" + _accessionNum +
 	        S2DNames.DELTASHIFT_SUFFIX + frameIndex +
 		S2DNames.DAT_SUFFIX)));

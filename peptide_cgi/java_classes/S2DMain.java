@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2001/03/08 20:33:24  wenger
+// Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+// to the trunk.
+//
+// Revision 1.5.2.2  2001/02/22 19:52:54  wenger
+// Made most coupling constant values optional; added (optional) coupling
+// constant error values.
+//
 // Revision 1.5.2.1  2001/02/09 16:57:12  wenger
 // Added heteronuclear NOE; made T1 and T2 relaxation errors optional
 // (conversion doesn't fail if they are not found); added an X margin of
@@ -519,31 +527,38 @@ public class S2DMain {
 	// Get the values we need from the Star file.
 	//
 	//TEMP -- change strings to named constants
-	String[] couplingConstCodes = star.getFrameValues(frame,
-	  "_Coupling_constant_value", "_Coupling_constant_code");
-
 	String[] atom1ResSeqs = star.getFrameValues(frame,
 	  "_Coupling_constant_value", "_Atom_one_residue_seq_code");
-
-	String[] atom1ResLabels = star.getFrameValues(frame,
-	  "_Coupling_constant_value", "_Atom_one_residue_label");
-
-	String[] atom1Names = star.getFrameValues(frame,
-	  "_Coupling_constant_value", "_Atom_one_name");
 
 	String[] atom2ResSeqs = star.getFrameValues(frame,
 	  "_Coupling_constant_value", "_Atom_two_residue_seq_code");
 
-	String[] atom2ResLabels = star.getFrameValues(frame,
-	  "_Coupling_constant_value", "_Atom_two_residue_label");
-
-	String[] atom2Names = star.getFrameValues(frame,
-	  "_Coupling_constant_value", "_Atom_two_name");
-
 	String[] couplingConstValues = star.getFrameValues(frame,
 	  "_Coupling_constant_value", "_Coupling_constant_value");
 
-	String[] couplingConstErrors = null;//TEMP -- get this if possible
+	String[] couplingConstCodes = star.getOptionalFrameValues(frame,
+	  "_Coupling_constant_value", "_Coupling_constant_code",
+	  atom1ResSeqs.length, "0");
+
+	String[] atom1ResLabels = star.getOptionalFrameValues(frame,
+	  "_Coupling_constant_value", "_Atom_one_residue_label",
+	  atom1ResSeqs.length, "0");
+
+	String[] atom1Names = star.getOptionalFrameValues(frame,
+	  "_Coupling_constant_value", "_Atom_one_name",
+	  atom1ResSeqs.length, "0");
+
+	String[] atom2ResLabels = star.getOptionalFrameValues(frame,
+	  "_Coupling_constant_value", "_Atom_two_residue_label",
+	  atom1ResSeqs.length, "0");
+
+	String[] atom2Names = star.getOptionalFrameValues(frame,
+	  "_Coupling_constant_value", "_Atom_two_name",
+	  atom1ResSeqs.length, "0");
+
+	String[] couplingConstErrors = star.getOptionalFrameValues(frame,
+	  "_Coupling_constant_value", "_Coupling_constant_value_error",
+	  atom1ResSeqs.length, "0");
 
 	_summary.startFrame(star.getFrameDetails(frame));
 

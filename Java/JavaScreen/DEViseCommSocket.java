@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.19  2001/03/03 20:14:02  xuk
+// Restore old state if user goes into, then out of, collaboration mode.
+//
 // Revision 1.18  2001/02/20 20:02:22  wenger
 // Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
 // to the trunk.
@@ -183,6 +186,8 @@ public class DEViseCommSocket
     private int numberRead = 0;
 
     public int cmdId = 0;
+
+    //TEMP -- document what this means -- -1 seems to mean collaboration
     public int flag = 0;
 
     //===================================================================
@@ -473,8 +478,9 @@ public class DEViseCommSocket
                 totalSize = DEViseGlobals.toUshort(dataRead, 8);
 
 		// for collabration JS
-		if (msgType == DEViseGlobals.API_JAVA_CID)
+		if (msgType == DEViseGlobals.API_JAVA_CID) {
 		    flag = -1; //TEMP use cgiFlag=-1 to indicate collab JS
+                }
 
                 dataRead = null;
                 isControl = false;

@@ -23,6 +23,11 @@
 
 use strict;
 
+my($err_file);
+$err_file = "error_summary";
+unlink $err_file;
+open(ERRFILE, ">$err_file") or die "Can't open error summary file: $!\n";
+
 #TEMP -- arg for file name??
 my($input_file);
 $input_file = "star_file_list.html";
@@ -38,6 +43,7 @@ while ($line = <INPUT>) {
 }
 
 close(INPUT);
+close(ERRFILE);
 
 #-----------------------------------------------------------
 # Test a specific star file.
@@ -59,12 +65,20 @@ sub test_star {
   $sess_names = $star_num . '*.ds';
   if (system("./s2d $star_num")) {
     print STDERR "ERROR processing star file $star_name\n";
+    print ERRFILE "-----------------\n";
+    print ERRFILE "ERROR processing star file $star_name\n\n";
+    copy_resfile();
+
     system("mv s2d.out s2d.out.$star_num");
     system("mv data_dir/$dat_names data_dir/bad_data");
     system("mv data_dir/$html_names data_dir/bad_data");
     system("mv session_dir/$sess_names session_dir/bad_sessions");
   } elsif (-s "s2d.out") {
     print STDERR "Possible error or warning processing star file $star_name\n";
+    print ERRFILE "-----------------\n";
+    print ERRFILE "Possible error or warning processing star file $star_name\n\n";
+    copy_resfile();
+
     system("mv s2d.out s2d.out.$star_num");
     system("mv data_dir/$dat_names data_dir/bad_data");
     system("mv data_dir/$html_names data_dir/bad_data");
@@ -75,10 +89,27 @@ sub test_star {
     system("rm data_dir/$html_names");
     system("rm session_dir/$sess_names");
   }
+}
 
-  # report if error
-  # save outfile if error
-  # delete data files if not error
+#-----------------------------------------------------------
+# Copy s2d.out to the error summary file.
+
+# Parameters:
+#   none
+
+sub copy_resfile {
+  my($resfile);
+  $resfile = "s2d.out";
+  open(RESULT, $resfile) or die "Can't open $resfile: $!\n";
+
+
+  my($line);
+  while ($line = <RESULT>) {
+    print ERRFILE "    $line";
+  }
+  print ERRFILE "\n";
+
+  close(RESULT);
 }
 
 ############################################################

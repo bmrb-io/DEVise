@@ -21,6 +21,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.2.1  2001/02/22 19:52:54  wenger
+// Made most coupling constant values optional; added (optional) coupling
+// constant error values.
+//
+// Revision 1.2  2001/01/19 15:39:06  wenger
+// Added T1 and T2 relaxation; removed some unnecessary variables from
+// coupling constants; added schema files to installation, unified T1
+// and T2 relaxation schema.
+//
 // Revision 1.1  2001/01/17 20:00:06  wenger
 // Restructured the peptide-cgi code to make it much more maintainable.
 //
@@ -104,7 +113,7 @@ public class S2DCoupling {
 		  " " + _atom1Names[index] + " " + _atom2ResSeqs[index] +
 		  " " + _atom2ResLabels[index] + " " + _atom2Names[index] +
 		  " " + _couplingConstValues[index] + " " +
-		  //TEMP _couplingConstErrors[index] +
+		  _couplingConstErrors[index] +
 		  "\n");
 	    }
 

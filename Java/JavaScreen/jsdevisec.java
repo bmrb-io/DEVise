@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.92  2001/03/05 16:47:01  xuk
+// *** empty log message ***
+//
 // Revision 1.91  2001/03/04 22:02:59  xuk
 // Disabled some buttons when JS in "collaboration" mode.
 //
@@ -2078,7 +2081,7 @@ class SetModeDlg extends Dialog
 			    }
 			    try {
 				jsc.pn("Sending: \"" + DEViseCommands.EXIT +"\"");
-				jsc.dispatcher.socketSendCom(DEViseCommands.EXIT);
+				jsc.dispatcher.sockSendCmd(DEViseCommands.EXIT);
 			    } catch (YException e) {
 				jsc.showMsg(e.getMsg());
 			    }
@@ -2119,11 +2122,11 @@ class SetModeDlg extends Dialog
                         if (jsc.isSessionOpened) {
 			    jsc.sessionSaved = true;
 			    try {
-				jsc.dispatcher.socketSendCom(DEViseCommands.SAVE_CUR_SESSION);
+				jsc.dispatcher.sockSendCmd(DEViseCommands.SAVE_CUR_SESSION);
 			    } catch (YException e) {
 			    }
                         }
-			// if already in "collabortion" mode,
+			// if already in "collaboration" mode,
 			// send JAVAC_Exit to exit from previous collaboration
 			if (jsc.specialID != -1) {
 			    if (jsc.dispatcher.dispatcherThread != null) {
@@ -2132,7 +2135,7 @@ class SetModeDlg extends Dialog
 			    }
 			    try {
 				jsc.pn("Sending: \"" + DEViseCommands.EXIT +"\"");
-				jsc.dispatcher.socketSendCom(DEViseCommands.EXIT);
+				jsc.dispatcher.sockSendCmd(DEViseCommands.EXIT);
 			    } catch (YException e) {
 				jsc.showMsg(e.getMsg());
 			    }

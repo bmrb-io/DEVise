@@ -21,6 +21,20 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2001/03/08 20:33:24  wenger
+// Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+// to the trunk.
+//
+// Revision 1.5.2.4  2001/02/22 19:28:30  wenger
+// Fixed problem with reading back deltashift values in exponential format;
+// error messages when checking for a protein are printed only if debug
+// output is turned on; fixed problems with set_modes script.
+//
+// Revision 1.5.2.3  2001/02/21 18:13:46  wenger
+// Eliminated "Details not available for this save frame." message; error
+// details are not propagated to html output if Star-to-DEVise conversion
+// fails.
+//
 // Revision 1.5.2.2  2001/02/15 15:59:23  wenger
 // More details in some error messages.
 //
@@ -335,8 +349,10 @@ public class S2DStarIfc {
 	    String molPolymerClass = node.getValue();
             if (molPolymerClass.equalsIgnoreCase("protein")) result = true;
 	} catch (S2DException ex) {
-	    System.err.println("S2DException checking for protein: " +
-	      ex.getMessage());
+	    if (DEBUG >= 1) {
+	        System.err.println("S2DException checking for protein: " +
+	          ex.getMessage());
+	    }
 	    result = false;
 	}
 
@@ -419,8 +435,6 @@ public class S2DStarIfc {
         if (details.size() == 1) {
             DataItemNode node = (DataItemNode)details.elementAt(0);
 	    result = node.getValue();
-        } else {
-	    result = "Details not available for this save frame.";
         }
 
         return result;

@@ -25,6 +25,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2001/03/08 20:33:24  wenger
+// Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+// to the trunk.
+//
+// Revision 1.2.2.2  2001/02/21 18:13:46  wenger
+// Eliminated "Details not available for this save frame." message; error
+// details are not propagated to html output if Star-to-DEVise conversion
+// fails.
+//
 // Revision 1.2.2.1  2001/02/09 16:57:13  wenger
 // Added heteronuclear NOE; made T1 and T2 relaxation errors optional
 // (conversion doesn't fail if they are not found); added an X margin of
@@ -118,7 +127,9 @@ public class S2DSummaryHtml {
     {
 	try {
             _writer.write("\n<hr>\n");
-	    _writer.write("<p><b>" + frameDetails + "</b>\n");
+	    if (frameDetails != null) {
+	        _writer.write("<p><b>" + frameDetails + "</b>\n");
+	    }
 	    _writer.write("<ul>\n");
 	} catch (IOException ex) {
 	    System.err.println("IOException writing to summary file: " +

@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.82  2001/03/05 16:46:48  xuk
+// Clear follower's JavaScreen when leader close session.
+// Changes in processReceivedCommand() ro process JAVAC_CloseSession Command.
+//
 // Revision 1.81  2001/03/03 20:12:07  xuk
 // Restore old state if user goes into, then out of, collaboration mode.
 //
@@ -65,6 +69,10 @@
 //
 // Revision 1.71  2001/01/30 03:03:28  xuk
 // Add collabration function. Mainly changes are in run(), socketSendCom(), destroy().
+//
+// Revision 1.70.2.8  2001/02/23 19:56:41  wenger
+// Moved the details of client-side CGI communication into its own class;
+// combined separate socket and CGI code that largely duplicated each other.
 //
 // Revision 1.70.2.7  2001/02/20 15:55:35  wenger
 // JavaScreen client now checks the availability of a CGI connection
@@ -393,10 +401,7 @@ public class DEViseCmdDispatcher implements Runnable
     // ADD COMMENT -- what does this mean?
     private boolean isAbort = false;
 
-    private URL cgiURL = null;
-    //TEMP -- this doesn't seem to get set to null when we're done
-    //TEMP -- this perhaps shouldn't be an object variable
-    private DataInputStream cgiInput = null;
+    private DEViseCommCgi _commCgi = null;
 
     private static final boolean _debug = false;
 
@@ -455,6 +460,10 @@ public class DEViseCmdDispatcher implements Runnable
     // by newlines).
     public synchronized void start(String cmd)
     {
+        if (_debug) {
+            System.out.println("DEViseCmdDispatcher.start(" + cmd + ")");
+        }
+
         if (getStatus() != 0) {
             jsc.showMsg("JavaScreen is busy working\nPlease try again later");
             return;
@@ -501,8 +510,9 @@ public class DEViseCmdDispatcher implements Runnable
 	}	
 
 	// for collabration JavaScreen	
-	if (jsc.specialID != -1)
+	if (jsc.specialID != -1) {
 	    jsc.pn("We entered one collabration JavaScreen.");
+        }
  
 	// If we don't have a connection yet, prepend a connection request
 	// command to whatever was passed in.
@@ -616,12 +626,7 @@ public class DEViseCmdDispatcher implements Runnable
 		}
 
                 jsc.pn("Sending: \"" + DEViseCommands.EXIT +"\"");
-                if (jsc.jsValues.connection.cgi) {
-                    // cgi routing
-                    cgi_sendCommand(DEViseCommands.EXIT);
-                } else {
-                    socketSendCom(DEViseCommands.EXIT);
-                }
+                sendCmd(DEViseCommands.EXIT);
             } catch (YException e) {
                 jsc.showMsg(e.getMsg());
             }
@@ -630,7 +635,7 @@ public class DEViseCmdDispatcher implements Runnable
 	if (jsc.specialID != -1) {
 	    try {
                 jsc.pn("Sending: \"" + DEViseCommands.EXIT +"\"");
-                socketSendCom(DEViseCommands.EXIT);
+                sockSendCmd(DEViseCommands.EXIT);
             } catch (YException e) {
                 jsc.showMsg(e.getMsg());
             }
@@ -712,12 +717,7 @@ public class DEViseCmdDispatcher implements Runnable
 		if (commands[i].startsWith(DEViseCommands.CLOSE_SESSION)) {
 		    jsc.jscreen.updateScreen(false);
 		    try {
-		        if (jsc.jsValues.connection.cgi) {
-		            // cgi routing
-			    cgi_processCmd(commands[i]);
-		        } else {
-			    processCmd(commands[i]);
-		        }
+		        processCmd(commands[i]);
 		    } catch (YException e1) {
 			jsc.showMsg(e1.getMsg());
 			disconnect();
@@ -725,31 +725,16 @@ public class DEViseCmdDispatcher implements Runnable
 		} else if (commands[i].startsWith(DEViseCommands.HEART_BEAT)) {
 		    try {
 			jsc.pn("Sending: \"" + commands[i] + "\"");
-			if (jsc.jsValues.connection.cgi) {
-			    // cgi routing
-			    cgi_sendCommand(commands[i]);
-			} else {
-			    socketSendCom(commands[i]);
-			}
+                        sendCmd(commands[i]);
 		    } catch (YException e1) {
 			jsc.showMsg(e1.getMsg());
 			disconnect();
 		    }
 		} else if (commands[i].startsWith(DEViseCommands.OPEN_SESSION)) {
 		    jsc.jscreen.updateScreen(false);
-		    if (jsc.jsValues.connection.cgi) {
-		        // cgi routing
-			cgi_processCmd(commands[i]);
-		    } else {
-			processCmd(commands[i]);
-		    }
+		    processCmd(commands[i]);
 		} else {
-		    if (jsc.jsValues.connection.cgi) {
-		        // cgi routing
-			cgi_processCmd(commands[i]);
-		    } else {
-			processCmd(commands[i]);
-		    }
+		    processCmd(commands[i]);
 		}
 	    }
 
@@ -780,12 +765,7 @@ public class DEViseCmdDispatcher implements Runnable
 		try {
 		    jsc.pn("Sending: \"" + DEViseCommands.CLOSE_SESSION +
 			   "\"");
-		    if (jsc.jsValues.connection.cgi) {
-		        // cgi routing
-			cgi_sendCommand(DEViseCommands.CLOSE_SESSION);
-		    } else {
-			socketSendCom(DEViseCommands.CLOSE_SESSION);
-		    }
+                    sendCmd(DEViseCommands.CLOSE_SESSION);
 		} catch (YException e1) {
 		    jsc.showMsg(e1.getMsg());
 		    disconnect();
@@ -816,6 +796,8 @@ public class DEViseCmdDispatcher implements Runnable
 
     }
 
+    // Send a command to the server, wait for the replies, and process
+    // them.
     private void processCmd(String command) throws YException
     {
         if (_debug) {
@@ -825,7 +807,7 @@ public class DEViseCmdDispatcher implements Runnable
 
         // sending command to server, and wait until server finish processing and
         // returned a list of commands
-        String[] rsp = sendCommand(command);
+        String[] rsp = sendRcvCmd(command);
 
         // turn on the 'process' light
         jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_PROCESSING, true);
@@ -846,6 +828,8 @@ public class DEViseCmdDispatcher implements Runnable
 	      " Total mem: " + Runtime.getRuntime().totalMemory());
 	    jsc.jsValues.debug.log("  Done with command " + rsp[i]);
         }
+
+	_commCgi = null;
 
         // turn off the 'process' light
         jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_PROCESSING, false);
@@ -1197,9 +1181,9 @@ public class DEViseCmdDispatcher implements Runnable
 
 	byte[] imageData;
 	if (jsc.jsValues.connection.cgi) {
-	    imageData = cgi_receiveData(imageSize);
+	    imageData = _commCgi.receiveData(imageSize);
         } else {
-	    imageData = receiveData(imageSize);
+	    imageData = sockReceiveData(imageSize);
         }
 
         MediaTracker tracker = new MediaTracker(jsc);
@@ -1262,9 +1246,9 @@ public class DEViseCmdDispatcher implements Runnable
 
         byte[] gdata;
 	if (jsc.jsValues.connection.cgi) {
-	    gdata = cgi_receiveData(gdataSize);
+	    gdata = _commCgi.receiveData(gdataSize);
         } else {
-	    gdata= receiveData(gdataSize);
+	    gdata= sockReceiveData(gdataSize);
         }
 
         String gdataStr = new String(gdata);
@@ -1431,10 +1415,10 @@ public class DEViseCmdDispatcher implements Runnable
         }
     }
 
-    private byte[] receiveData(int size) throws YException
+    private byte[] sockReceiveData(int size) throws YException
     {
 	if (_debug) {
-	    System.out.println("DEViseCmdDispatcher.receiveData(" + size +
+	    System.out.println("DEViseCmdDispatcher.sockReceiveData(" + size +
 	      ")");
 	}
 
@@ -1461,36 +1445,42 @@ public class DEViseCmdDispatcher implements Runnable
         jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, false);
 
         if (imgData == null) {
-            throw new YException("Invalid response received from server", "DEViseCmdDispatcher::receiveData()", 1);
+            throw new YException("Invalid response received from server",
+	      "DEViseCmdDispatcher::sockReceiveData()", 1);
         }
 
         return imgData;
     }
 
     // Send a command and receive any responses.
-    private String[] sendCommand(String command) throws YException
+    private String[] sendRcvCmd(String command) throws YException
     {
 	if (_debug) {
-	    System.out.println("DEViseCmdDispatcher.sendCommand(" +
+	    System.out.println("DEViseCmdDispatcher.sendRcvCmd(" +
 	      command + ")");
 	}
 
-        String response = null;
-        boolean isEnd = false, isFinish = false;
         Vector rspbuf = new Vector();
 
-	if (jsc.specialID == -1 || command != null) { // for formal JS
+        if (jsc.specialID == -1 || command != null) { // for formal JS
 	    // turn on the 'send' light
 	    jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_SENDING, true);
-	    // sending command to server, and expect an immediate response of "JAVAC_Ack"
+	    // sending command to server, and expect an immediate response
+            // of "JAVAC_Ack"
 	    jsc.pn("Sending: \"" + command + "\"");
-	    socketSendCom(command);
-	
+
+            if (jsc.jsValues.connection.cgi) {
+                _commCgi = new DEViseCommCgi(jsc.jsValues);
+                _commCgi.sendCmd(command);
+            } else {
+	        sockSendCmd(command);
+            }
+
 	    // turn off the 'send' light
 	    jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_SENDING, false);
-	}
-	else // for collabration JS
+	} else { // for collabration JS
 	    jsc.pn("We are waiting at null command...");
+        }
 
         // turn on the counter
         jsc.viewInfo.updateCount(0);
@@ -1499,33 +1489,56 @@ public class DEViseCmdDispatcher implements Runnable
         jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, true);
 
         // wait to receive the response from server
+        String response = null;
 
 	// isEnd is true when we have finished receiving *all* commands.
+        boolean isEnd = false;
         while (!isEnd) {
 	    // isFinish is true when we have finished receiving the current
 	    // command.
-            isFinish = false;
+            boolean isFinish = false;
+
+            // Kludgey fix for bug 630.  RKW 2000-12-22.
+            if (jsc.jsValues.connection.cgi &&
+              DEViseCommands.EXIT.equals(command)) {
+                isEnd = true;
+                isFinish = true;
+                response = DEViseCommands.DONE;
+            }
 
             while (!isFinish) {
                 try {
-                    response = commSocket.receiveCmd();
+                    if (jsc.jsValues.connection.cgi) {
+                        response = _commCgi.receiveCmd();
+                        if (response == "cgi no response") {
+                            jsc.pn("CGI no response");
+                            return null;
+                        }
+                    } else {
+                        response = commSocket.receiveCmd();
+                    }
                     jsc.pn("Receive: \"" + response + "\"");
                     isFinish = true;
                 } catch (InterruptedIOException e) {
                     if (getAbortStatus()) {
 	                //TEMP -- what about message type????
-                        commSocket.sendCmd(DEViseCommands.ABORT);
+                        if (jsc.jsValues.connection.cgi) {
+                            sendRcvCmd(DEViseCommands.ABORT);
+                        } else {
+                            commSocket.sendCmd(DEViseCommands.ABORT);
+                        }
                         setAbortStatus(false);
                     }
                 }
             }
 
             if (response == null || response.length() == 0) {
-                throw new YException("Unexpected response received from server", "DEViseCmdDispatcher::sendCommand()", 1);
+                throw new YException("Unexpected response received from server",
+                  "DEViseCmdDispatcher::sendRcvCmd()", 1);
             } else {
                 String[] cmds = DEViseGlobals.parseString(response);
                 if (cmds == null || cmds.length == 0) {
-                    throw new YException("Ill-formated command received from server \"" + response + "\"", "DEViseCmdDispatcher::sendCommand()", 2);
+                    throw new YException("Ill-formated command received from server \"" + response + "\"", "DEViseCmdDispatcher::sendRcvCmd()", 2);
                 } else {
                     String cmd = cmds[0];
                     // Rip off the { and } around the command but not the arguments
@@ -1536,6 +1549,9 @@ public class DEViseCmdDispatcher implements Runnable
                         if (cmd.startsWith(DEViseCommands.ACK)) {
                             jsc.animPanel.setActiveImageNumber(5);
                         } else {
+			    // Note: JAVAC_Clients is a special case --
+			    // JAVAC_Done is not sent.  (I don't know
+			    // why Kai set it up that way.)  RKW 2001-03-08.
                             if (cmd.startsWith(DEViseCommands.DONE) ||
 			      cmd.startsWith(DEViseCommands.ERROR) ||
 			      cmd.startsWith(DEViseCommands.FAIL) ||
@@ -1566,10 +1582,31 @@ public class DEViseCmdDispatcher implements Runnable
         return rspstr;
     }
 
-    public synchronized void socketSendCom(String command) throws YException 
+    private void sendCmd(String command) throws YException
     {
         if (_debug) {
-            System.out.println("DEViseCmdDispatcher.socketSendCom(" +
+            System.out.println("DEViseCmdDispatcher.sendCmd(" +
+              command + ")");
+        }
+
+        if (jsc.jsValues.connection.cgi) {
+            // cgi routing -- we must send *and* receive for the CGI
+            // to work right.
+            sendRcvCmd(command);
+        } else {
+            sockSendCmd(command);
+        }
+    }
+
+    // Send a command in socket mode.
+    // Note: I don't really like having this be a public method, because
+    // if we call it from another class we're bypassing part of the "normal"
+    // command processing.  However, because of the way Kai has implemented
+    // collaboration, it has to be public for now.  RKW 2001-03-08.
+    public synchronized void sockSendCmd(String command) throws YException 
+    {
+        if (_debug) {
+            System.out.println("DEViseCmdDispatcher.sockSendCmd(" +
 	      command + ")");
         }
 
@@ -1587,386 +1624,6 @@ public class DEViseCmdDispatcher implements Runnable
 	}
     }
 
-    private void cgi_processCmd(String command) throws YException
-    {
-        // sending command to server, and wait until server finish processing and
-        // returned a list of commands
-        String[] rsp = cgi_sendCommand(command);
-
-        // turn on the 'process' light
-        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_PROCESSING, true);
-
-        for (int i = 0; i < rsp.length; i++) {
-            // adjust the counter
-            jsc.viewInfo.updateCount(rsp.length - 1 - i);
-
-	    jsc.pn("Processing cgi-command (" + (rsp.length - 1 - i) + ") " +
-	      rsp[i]);
-            jsc.jsValues.debug.log("Processing cgi-command (" +
-	      (rsp.length - 1 - i) + ") " + rsp[i]);
-
-	    processReceivedCommand(command, rsp[i]);
-
-	    jsc.pn("  Done with command " + rsp[i]);
-	    jsc.pn("  Free mem: " + Runtime.getRuntime().freeMemory() +
-	      " Total mem: " + Runtime.getRuntime().totalMemory());
-	    jsc.jsValues.debug.log("  Done with command " + rsp[i]);
-        }
-
-        // turn off the 'process' light
-        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_PROCESSING, false);
-
-        System.gc();
-
-    }
-
-
-    private String[] cgi_sendCommand(String command)
-      throws YException
-    {
-        if (_debug) {
-            System.out.println("DEViseCmdDispatcher.cgi_sendCommand(" +
-	      command + ")");
-        }
-
-        Vector rspbuf = new Vector();
-	URLConnection cgiConn = null;
-        DataOutputStream cgiOutput = null;
-
-        // turn on the 'send' light
-        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_SENDING, true);
-        // sending command to server, and expect an immediate response of "JAVAC_Ack"
-        jsc.pn("Sending cgi command: \"" + command + "\"");
-	try {
-	    cgiURL = new URL("http", jsc.jsValues.connection.hostname,
-			     jsc.jsValues.connection.cgiURL);
-
-	    //cgiURL = new URL(jsc.jsValues.connection.cgiURL);
-	    cgiConn = cgiURL.openConnection();
-	    cgiConn.setDoOutput(true);
-	    cgiOutput = new DataOutputStream(cgiConn.getOutputStream());
-
-	    String[] cmdBuffer = DEViseGlobals.parseString(command, true);
-
-	    // nelem is the number of "elements" (arguments); size is
-	    // the total size of the arguments plus the length value
-	    // for each argument.
-	    int nelem, size = 0;
-
-	    nelem = cmdBuffer.length;
-            
-	    for (int i = 0; i < nelem; i++)  {
-		// Note: for some reason, having nulls in the string
-		// sent to the CGI script causes problems when the JS
-		// is run as an applet (but not when it's run as an
-		// application), even though the CGI script seems to
-		// receive everything correctly.  RKW 2000-12-21.
-
-		//TEMPTEMP -- appending a null (how it was previously) goofs
-		// up CGI mode when running in netscape; not appending
-		// anything totally goofs things up.  RKW 2000-12-21.
-		cmdBuffer[i] = cmdBuffer[i] + "_";//TEMPTEMP
-		// Note: the "2" here is for the length value (short).
-                size = size + 2 + cmdBuffer[i].length();
-            }
-
-	    cgiOutput.writeBytes("cmdport=" + jsc.jsValues.connection.cmdport);
-	    cgiOutput.writeBytes("&msgtype=" + DEViseGlobals.API_JAVA_WID);
-	    cgiOutput.writeBytes("&id=" + jsc.jsValues.connection.connectionID);
-	    cgiOutput.writeBytes("&nelem=" + nelem);
-	    cgiOutput.writeBytes("&size=" + size);
-	    
-            for (int i = 0; i < nelem; i++) {
-                cgiOutput.writeBytes("&len" + i + "=" + cmdBuffer[i].length());
-		cgiOutput.writeBytes("&arg" + i + "=" + cmdBuffer[i]);
-            }
-	    
-	    cgiOutput.flush();
-
-	    jsc.pn("Cgi command has been sent");
-
-	} catch(MalformedURLException excpt) {
-	    jsc.pn("Badly formed URL: " + excpt);
-	} catch(IOException excpt) {
-	    jsc.pn("Failed I/O: " + excpt);
-	} catch(Exception ex) {
-	    System.err.println("Exception sending cgi command: " +
-	      ex.getMessage());
-	    throw new YException(ex.getMessage());
-	}
-
-	// turn off the 'send' light
-	jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_SENDING, false);
-
-        // turn on the counter
-	jsc.viewInfo.updateCount(0);
-
-        // turn on the 'receive' light
-	jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, true);
-
-        // wait to receive the response from server
-        String response = null;
-
-	// isEnd is true when we have finished receiving *all* commands.
-        boolean isEnd = false;
-	while (!isEnd) {
-	    // isFinish is true when we have finished receiving the current
-	    // command.
-            boolean isFinish = false;
-
-	    // Kludgey fix for bug 630.  RKW 2000-12-22.
-	    if (DEViseCommands.EXIT.equals(command)) {
-	        isEnd = true;
-		isFinish = true;
-		response = DEViseCommands.DONE;
-	    }
-
-	    while (!isFinish) {
-		try {
-		    //TEMP -- problems here if cgiConn is null (exception
-		    // was thrown and caught earlier).
-		    response = cgi_receiveCmd(cgiConn);
-		    if (response == "cgi no response") {
-			jsc.pn("CGI no response");
-			return null;
-		    }
-
-		    jsc.pn("Receive cgi command: \"" + response + "\"");
-		    isFinish = true;
-
-		} catch (InterruptedIOException e) {
-		    if (getAbortStatus()) {
-		        cgi_sendCommand(DEViseCommands.ABORT);
-		        setAbortStatus(false);
-		    }
-	        }
-	    }
-
-	    if (response == null || response.length() == 0) {
-	        throw new YException(
-		  "Unexpected response received from server",
-		  "DEViseCmdDispatcher::sendCommand()", 1);
-	    } else {
-	        String[] cmds = DEViseGlobals.parseString(response);
-	        if (cmds == null || cmds.length == 0) {
-		    throw new YException(
-		      "Ill-formated command received from server \"" +
-		      response + "\"",
-		      "DEViseCmdDispatcher::sendCommand()", 2);
-		} else {
-		    String cmd = cmds[0];
-                    // Rip off the { and } around the command but not the
-		    // arguments.
-		    for (int j = 1; j < cmds.length; j++) {
-		        cmd = cmd + " {" + cmds[j] + "}";
-		    }
-
-		    if (cmd.startsWith(DEViseCommands.JS_PREFIX)) {
-		        if (cmd.startsWith(DEViseCommands.ACK)) {
-			    jsc.animPanel.setActiveImageNumber(5);
-		        } else {
-			    if (cmd.startsWith(DEViseCommands.DONE) ||
-			      cmd.startsWith(DEViseCommands.ERROR) ||
-			      cmd.startsWith(DEViseCommands.FAIL)) {
-			        isEnd = true;
-			    }
-
-			    rspbuf.addElement(cmd);
-
-			    jsc.viewInfo.updateCount(rspbuf.size());
-			}
-		    } else {
-		        throw new YException("Unsupported command (" +
-			  response + ")received from server",
-			  "DEViseCmdDispatcher::processCmd()", 2);
-		    }
-		}
-            }
-	}
-
-	String[] rspstr = new String[rspbuf.size()];
-	for (int i = 0; i < rspbuf.size(); i++) {
-	    rspstr[i] = (String)rspbuf.elementAt(i);
-        }
-
-        // turn off the 'receive' light
-	jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, false);
-
-	return rspstr;
-    }
-
-    private synchronized String cgi_receiveCmd(URLConnection cgiConn)
-      throws YException, InterruptedIOException
-    {
-        if (_debug) {
-            System.out.println("DEViseCmdDispatcher.cgi_receiveCmd()");
-        }
-
-        int msgType = 0, numberOfElement = 0, totalSize = 0;
-	int cmdId = 0, cgiFlag = 0;
-        byte[] dataRead = null;
-        int numberRead = 0;
-        
-      	try {
-             cgiInput = new DataInputStream(cgiConn.getInputStream());
-
-	     if (dataRead == null) {
-               dataRead = new byte[10];
-               numberRead = 0;
-             }
-
-             int b;
-             for (int i = numberRead; i < 10; i++) {
-		 b = cgiInput.read();
-                 if (b < 0) {
-		     //TEMP -- is this safe?
-		     return "cgi no response";
-		     //throw new YException(
-		     //"Abrupt end of input stream reached",
-		     //"cgi_receiveCmd()");
-                 }
-
-                 dataRead[numberRead] = (byte)b;
-                 numberRead++;
-             }
-
-             msgType = DEViseGlobals.toUshort(dataRead);
-	     cmdId = DEViseGlobals.toUshort(dataRead, 2);
-	     cgiFlag = DEViseGlobals.toUshort(dataRead, 4);
-             numberOfElement = DEViseGlobals.toUshort(dataRead, 6);
-             totalSize = DEViseGlobals.toUshort(dataRead, 8);
-
-             dataRead = null;
-
-             if (numberOfElement <= 0 || totalSize <= 0) { 
-		 throw new YException(
-		   "Invalid control information received", "cgi_receiveCmd()");
-             }
-            
-             if (dataRead == null) {
-                dataRead = new byte[totalSize];
-                numberRead = 0;
-             }
-
-             for (int i = numberRead; i < totalSize; i++) {
-                b = cgiInput.read();
-
-                if (b < 0) {
-		    throw new YException(
-		      "Abrupt end of input stream reached",
-		      "cgi_receiveCmd()");
-                }
-
-                dataRead[numberRead] = (byte)b;
-                numberRead++;
-            }
-        } catch (InterruptedIOException e) {
-	    System.err.println("InterruptedIOException in cgi_receiveCmd: " + e.getMessage());
-            throw e;
-        } catch (IOException e) {
-	    System.err.println("IOException in cgi_receiveCmd: " + e.getMessage());
-            throw new YException("Error occurs while reading from " +
-	      "input stream in cgi_receiveCmd()", "cgi_receiveCmd()");
-        }
-
-        int argsize = 0;
-        int pastsize = 0;
-        String response = new String("");
-        for (int i = 0; i < numberOfElement; i++) {
-            if (totalSize < pastsize + 2) {
-                throw new YException("Inconsistant data received",
-		"cgi_receiveCmd()");
-            }
-
-            argsize = DEViseGlobals.toUshort(dataRead, pastsize);
-            pastsize += 2;
-
-            if (totalSize < pastsize + argsize) {
-                throw new YException("Inconsistant data received",
-		  "cgi_receiveCmd()");
-            }
-
-            // use argsize - 1 instead of argsize is to skip the string ending '\0'
-            // use one space to seperate different parts of the response command
-            response += new String(dataRead, pastsize, argsize - 1) + " ";
-            pastsize += argsize;
-        }
-
-        // resetData();
-
-        return response;
-    }
-
-    private byte[] cgi_receiveData(int size) throws YException
-    {
-        byte[] imgData = null;
-        byte[] dataRead = null;
-        int numberRead = 0;
-
-        // turn on the receive light
-        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, true);
-
-        jsc.pn("Trying to receive cgi-data (" + size + ")...");
-	//jsc.pn("  Bytes available: " + commSocket.dataAvailable());
-        jsc.jsValues.debug.log("Trying to receive cgi-data (" + size +
-	  ") from socket ...");
-
-        // simply give up receiving if input size is invalid
-        if (size <= 0) {
-            return null;
-        }
-
-        try {
-            if (dataRead == null) {
-                dataRead = new byte[size];
-                numberRead = 0;
-            }
-
-	    //TEMP -- make this into a method?
-            int offset = 0;
-	    int bytesRemaining = size;
-	    while (bytesRemaining > 0) {
-		try {
-	            int bytesRead = cgiInput.read(dataRead, offset,
-		      bytesRemaining);
-		    offset += bytesRead;
-		    bytesRemaining -= bytesRead;
-		} catch(InterruptedIOException e) {
-		    // Note: this may happen if the data transfer is too slow.
-		    jsc.jsValues.debug.log("Error reading data: " +
-		      e.getMessage());
-		    try {
-		        Thread.sleep(100); // wait for some more data on socket
-		    } catch (InterruptedException ex) {
-		    }
-		}
-	    }
-
-	    imgData = dataRead;
-
-        } catch (IOException e) {
-            throw new YException(
-	      "Error occurs while reading from input stream",
-	      "cgi_receiveData()");
-        }
-
-
-        jsc.pn("Successfully received cgi ata (" + size + ")...");
-	jsc.pn("  Last byte = " + imgData[imgData.length - 1]);
-        jsc.jsValues.debug.log("Successfully received data (" + size +
-	  ") from socket ...");
-
-        // turn off the receive light
-        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, false);
-
-        if (imgData == null) {
-            throw new YException("Invalid response received from CGI",
-	      "cgi_receiveData()", 1);
-        }
-
-        return imgData;
-    }
-
     // Test whether a CGI connection to the JSPoP works.  Returns true if
     // it does.
     boolean testCgi() {
@@ -1977,7 +1634,10 @@ public class DEViseCmdDispatcher implements Runnable
 	boolean result = true;
 
 	try {
-            String[] response = cgi_sendCommand(DEViseCommands.CHECK_POP);
+            jsc.jsValues.connection.cgi = true;
+            String[] response = sendRcvCmd(DEViseCommands.CHECK_POP);
+            jsc.jsValues.connection.cgi = false;
+            _commCgi = null;
 	    if (response == null || response.length != 1 ||
 	      !response[0].equals(DEViseCommands.DONE))
 	    {

@@ -53,13 +53,7 @@ $data_dir = $current_dir . '/data_dir';
 if (! -e $data_dir . "/" . $summary_page) {
   if (system ("./s2d $acc_num" ) ) {
     my ($tmpmsg);
-    $tmpmsg = "";
-    if (open(SUMM_OUT, "s2d.out")) {
-      while (<SUMM_OUT>) {
-        $tmpmsg .= $_ . '<p>';
-      }
-      close(SUMM_OUT);
-    }
+    $tmpmsg = "Unable to process data for accession number " . $acc_num . ".";
     dienice($tmpmsg);
   }
 } # end if summary page doesn't exist

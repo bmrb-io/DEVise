@@ -36,5 +36,4 @@ if (-e $outfile) then
 endif
 touch $outfile
 
-chmod 644 data_dir/$accNum* >> $outfile
-chmod 644 session_dir/$accNum* >> $outfile
+chmod 644 data_dir/$accNum* session_dir/$accNum* >>& $outfile
