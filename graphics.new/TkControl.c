@@ -1,7 +1,24 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
   $Log$
+  Revision 1.13  1995/11/28 05:34:18  ravim
+  Support for statistics.
+
   Revision 1.12  1995/11/28 00:02:13  jussi
   Added printWindows command.
 
@@ -266,6 +283,7 @@ Commands:
 	setLinkFlag link flag: set flag for link
 
 	insertWindow view window: insert view into window
+	saveWindowImage window file: save window image as Postscript to file
 	removeView viewName: remove view from its window
 	isMapped view: Return true if view is mapped.
 	setDefault category class [params]: set defaults for a class
@@ -831,24 +849,6 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			goto error;
 		}
 	}
-	else if (strcmp(argv[1], "printWindows") == 0) {
-	  if (argc < 4) {
-	    fprintf(stderr, "TkControl:cmd printWindows argc < 4\n");
-	    Exit::DoExit(2);
-	  }
-	  for(int i = 3; i < argc; i++) {
-	    ViewWin *viewWin = (ViewWin *)classDir->FindInstance(argv[i]);
-	    if (!viewWin) {
-	      fprintf(stderr,
-		      "TkControl:cmd printWindows can't find window %s\n",
-		      argv[i]);
-	      continue;
-	    }
-	    char filename[256];
-	    sprintf(filename, argv[2], i - 3);
-	    viewWin->GetWindowRep()->WritePostscript(true, filename);
-	  }
-	}
 	else if (argc == 4) {
 		if (strcmp(argv[1],"writeLine") == 0){
 			FILE *file = (FILE *)atol(argv[3]);
@@ -1088,6 +1088,20 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			}
 			view->DeleteFromParent();
 			view->AppendToParent(win);
+		}
+		else if (strcmp(argv[1], "saveWindowImage") == 0) {
+		  ViewWin *viewWin = (ViewWin *)classDir->FindInstance(argv[2]);
+		  if (!viewWin) {
+		    fprintf(stderr,
+			    "TkControl:cmd saveWindowImage can't find window %s\n",
+			    argv[2]);
+		    Exit::DoExit(2);
+		  }
+		  viewWin->GetWindowRep()->WritePostscript(true, argv[3]);
+		}
+		else {
+			interp->result = "wrong args";
+			goto error;
 		}
 	}
 	else if (strcmp(argv[1],"swapView") == 0 ) {
