@@ -13,14 +13,18 @@
 #  Development Group.
 
 #  This is a script for the jspop to use to kill a devised.  Optional
-#  argument is port number devised is listening on, to make sure you
-#  kill the right one.
+#  argument is ID string for devised, to make sure you kill the right one.
 
 ############################################################
 
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  2000/04/17 20:01:05  wenger
+#  Modified DEVise.kill, check_jspop, and run_check so that they work
+#  on Linux as well as Solaris; changed pid-finding code in them to be
+#  more reliable.
+#
 #  Revision 1.5  2000/02/18 22:21:15  wenger
 #  Various changes to make cron scripts work better with new two-machine
 #  setup: added -id argument to devise, jspop, jss; updated cron scripts
