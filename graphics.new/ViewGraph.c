@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/14 15:26:23  jussi
+  Added a "return false" statement to ToRemoveStat.
+
   Revision 1.4  1995/12/07 02:20:51  ravim
   The set of stats to be displayed is given as a binary string. The
   data is refreshed only if necessary.
@@ -41,7 +44,8 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
   if (action == NULL)
     SetAction(new ActionDefault("default"));
 
-  _DisplayStats = false;
+  // initialize statistics toggles to ASCII zero (not binary zero)
+  memset(_DisplayStats, '0', STAT_NUM);
 }
 
 void ViewGraph::InsertMapping(TDataMap *map)
@@ -84,14 +88,20 @@ void ViewGraph::DoneMappingIterator()
 /* Turn On/Off DisplayStats */
 void ViewGraph::SetDisplayStats(char *stat)
 {
+  // must use strlen in strncpy below to avoid having stat's
+  // terminating NULL overwrite existing stat settings
+  // in _DisplayStats
+
+  int statlen = strlen(stat);
+
   if (ToRemoveStats(_DisplayStats, stat) == true)
   {
-    strncpy(_DisplayStats, stat, STAT_NUM);
+    strncpy(_DisplayStats, stat, (statlen < STAT_NUM ? statlen : STAT_NUM));
     Refresh();
   }
   else 
   {
-    strncpy(_DisplayStats, stat, STAT_NUM);
+    strncpy(_DisplayStats, stat, (statlen < STAT_NUM ? statlen : STAT_NUM));
     _stats.Report();
   }
 }
