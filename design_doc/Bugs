@@ -2329,6 +2329,9 @@ Num Date        Status  Description
 593 05/23/00	OPEN	JavaScreen: no longer asks for confirmation when
 			you click Exit with a session open. (rkw)
 
+594 06/05/00	OPEN	JavaScreen: JS inside Netscape doesn't seem to
+			pick up keystrokes in 3D views. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
