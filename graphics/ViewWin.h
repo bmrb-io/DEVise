@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1999/05/12 21:01:03  wenger
+  Views containing view symbols can now be piled.
+
   Revision 1.37  1999/05/07 16:09:39  wenger
   Fixed bug in the ordering of viewsym piles.
 
@@ -394,6 +397,9 @@ class ViewWin : public Coloring
 	void SetMyPileStack(PileStack *ps);
 
 	PileStack *GetParentPileStack() { return _parentPileStack; }
+
+	void Dump(FILE *fp);
+
 protected:
 	void SetParentPileStack(PileStack *ps);
 

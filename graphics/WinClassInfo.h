@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.10  1999/01/04 15:33:21  wenger
+  Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
+  compiles; added code (GUI is currently disabled) to manually set view
+  geometry (not yet saved to sessions).
+
   Revision 1.9  1998/09/10 23:24:30  wenger
   Fixed JavaScreen client switch GIF geometry problem.
 
@@ -76,6 +81,8 @@ public:
   static Boolean More(int index) { return _windowList.More(index);}
   static ClassInfo *Next(int index) { return _windowList.Next(index);}
   static void DoneIterator(int index) { _windowList.DoneIterator(index);};
+
+  static void DumpAll(FILE *fp);
 
 protected:
   friend class TileLayoutInfo;

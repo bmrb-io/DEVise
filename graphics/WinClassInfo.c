@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.21  1999/05/07 14:13:46  wenger
+  Piled view symbols now working: pile name is specified in parent view's
+  mapping, views are piled by Z specified in parent's mapping; changes
+  include improvements to the Dispatcher because of problems exposed by
+  piled viewsyms; for now, view symbol piles are always linked (no GUI or
+  API to change this).
+
   Revision 1.20  1999/02/11 19:54:40  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -122,6 +129,21 @@ static char buf1[256], buf2[80], buf3[80], buf4[80], buf5[80], buf6[80],
   buf7[80];
 
 DevWinList DevWindow::_windowList;
+
+void
+DevWindow::DumpAll(FILE *fp)
+{
+  fprintf(fp, "ViewWin objects:\n");
+  int index = DevWindow::InitIterator();
+  while (DevWindow::More(index)) {
+    ClassInfo *info = DevWindow::Next(index);
+    ViewWin *window = (ViewWin *)info->GetInstance();
+    if (window) {
+      window->Dump(fp);
+    }
+  }
+  DevWindow::DoneIterator(index);
+}
 
 TileLayoutInfo::TileLayoutInfo()
 {

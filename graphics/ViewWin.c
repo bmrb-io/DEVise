@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.59  1999/06/11 20:46:49  wenger
+  Fixed bug that caused DEVise to crash when closing the
+  SoilSci/TwoStations.ds demo session.
+
   Revision 1.58  1999/05/12 21:01:02  wenger
   Views containing view symbols can now be piled.
 
@@ -1311,6 +1315,28 @@ ViewWin::SetFont(const char *which, int family, float pointSize,
     vw->SetFont(which, family, pointSize, bold, italic, notifyPile);
   }
   DoneIterator(index);
+}
+
+void
+ViewWin::Dump(FILE *fp)
+{
+  fprintf(fp, "  <%s>\n", GetName());
+  if (NumChildren() > 0) {
+    fprintf(fp, "    children:\n");
+    int index = InitIterator();
+    while (More(index)) {
+      ViewWin *view = Next(index);
+      fprintf(fp, "      <%s>\n", view->GetName());
+    }
+    DoneIterator(index);
+
+    index = InitIterator();
+    while (More(index)) {
+      ViewWin *view = Next(index);
+      view->Dump(fp);
+    }
+    DoneIterator(index);
+  }
 }
 
 //******************************************************************************

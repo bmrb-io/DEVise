@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.65  1999/06/11 14:47:03  wenger
+  Added the capability (mostly for the JavaScreen) to disable rubberband
+  lines, cursor movement, drill down, and key actions in views (the code
+  to send this info to the JS is still conditionaled out until the JS is
+  ready for it).
+
   Revision 1.64  1999/05/17 18:37:57  wenger
   Views now have GData sending configuration that is only employed when
   connecting to the JavaScreen (eliminates the need for the current kludgey
@@ -4748,6 +4754,7 @@ IMPLEMENT_COMMAND_BEGIN(test)
 // Note: modify this code to do whatever you need to test.
     if (argc == 1) {
 		PileStack::DumpAll(stdout);
+		DevWindow::DumpAll(stdout);
     	ReturnVal(API_ACK, "done");
     	return 1;
 	} else {
