@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  2000/03/14 21:51:28  wenger
+  Added more invalid object checking; had to take some memory checking
+  out of client-side stuff for linking reasons.
+
   Revision 1.13  2000/03/14 17:04:49  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -508,7 +512,7 @@ Client::SendServerCmd(int args, ...)
 	// the client will potentially hangs, if he does not receive 
 	// any acknowledgement information from the server
 	do {
-		if (NetworkReceive(_serverFd, 1, flag, rargc, rargv) <= 0) {
+		if (NetworkReceive(_serverFd, 1, flag, rargc, rargv, 10) <= 0) {
 			fprintf(stderr, "Server has terminated. Client exits.\n");
 			exit(1);
 		}
@@ -696,7 +700,7 @@ Client::ServerCmd(int argc, char **argv)
 		int rargc;
 		char **rargv;
 		do{
-			if (NetworkReceive(_serverFd, 1, flag, rargc, rargv) <= 0) {
+			if (NetworkReceive(_serverFd, 1, flag, rargc, rargv, 10) <= 0) {
 				fprintf(stderr, "Server has terminated. Client exits.\n");
 				return -1;
 			}
@@ -725,8 +729,9 @@ void Client::ReadServer()
 	u_short flag;
 	int argc;
 	char **argv;
-	if (NetworkReceive(_serverFd, 1, flag, argc, argv) <= 0)
+	if (NetworkReceive(_serverFd, 1, flag, argc, argv, 10) <= 0)
 	{
+		fprintf(stderr, "Server has terminated. Client exits.\n");
 		exit(-1);
 	}
 

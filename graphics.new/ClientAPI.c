@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1999/11/01 17:53:35  wenger
+  More debug info.
+
   Revision 1.21  1999/05/20 19:32:04  wenger
   Minor improvement to debug output.
 
@@ -120,6 +123,11 @@
 
 //#define DEBUG
 
+// Note: we are not using the regular DevError stuff here because that
+// isn't linked into the DEVise client.  RKW 2000-09-01.
+#define reportErr(message) \
+  fprintf(stderr, "Error at %s, %d: %s\n", __FILE__, __LINE__, message);
+
 int NetworkNonBlockMode(int fd)
 {
 #ifdef SUN
@@ -175,7 +183,7 @@ char *NetworkPaste(int argc, char **argv)
   }
 
   if (ptr - cmd != size - 1) {
-    fprintf(stderr, "Internal error.\n");
+    reportErr("Internal error.");
     return 0;
   }
 
@@ -186,22 +194,25 @@ int NetworkOpen(char *servName, int portNum)
 {
 	return	NetworkModedOpen(servName, portNum, CONNECT_ONCE,0);
 }
+
 int NetworkModedOpen(char *servName, int portNum, ConnectMode mode, int seconds)
 {
   int fd = socket(AF_INET, SOCK_STREAM, 0);
   if (fd < 0){
-    perror("Cannot create socket");
+	reportErr("Cannot create socket");
+    perror("socket()");
     return -1;
   }
 
   struct hostent *servEnt = gethostbyname(servName);
   if (!servEnt) {
-    perror("Cannot translate server name");
+    reportErr("Cannot translate server name");
+    perror("gethostbyname()");
     close(fd);
     return -1;
   }
   if (servEnt->h_addrtype != AF_INET) {
-    fprintf(stderr, "Unsupported address type\n");
+    reportErr("Unsupported address type");
     close(fd);
     return -1;
   }
@@ -225,7 +236,8 @@ int NetworkModedOpen(char *servName, int portNum, ConnectMode mode, int seconds)
   	if (result < 0) {
 		if (mode == CONNECT_ONCE)
 		{
-    		perror("Cannot connect to server");
+    		reportErr("Cannot connect to server");
+    		perror("connect()");
     		close(fd);
     		return -1;
 		}
@@ -238,7 +250,8 @@ int NetworkModedOpen(char *servName, int portNum, ConnectMode mode, int seconds)
 		close(fd);
   		fd = socket(AF_INET, SOCK_STREAM, 0);
   		if (fd < 0){
-    		perror("Cannot create socket");
+    		reportErr("Cannot create socket");
+    		perror("socket()");
     		return -1;
   		}
   	}
@@ -249,7 +262,7 @@ int NetworkModedOpen(char *servName, int portNum, ConnectMode mode, int seconds)
 
 //
 //extract header information from a header
-void NetworkAnalyseHeader(const char *headerbuf, int& numElements, int&tsize)
+void NetworkAnalyseHeader(const char *headerbuf, int& numElements, int& tsize)
 {
   NetworkHeader *hdr;
 
@@ -262,55 +275,82 @@ void NetworkAnalyseHeader(const char *headerbuf, int& numElements, int&tsize)
 
 //
 
-int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
+// maxRetries is how many times to retry header if we get no data.
+// -1 to keep retrying indefinitely.
+// Returns -1 if error, 1 if okay, 0 if ?.
+int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av,
+	int maxRetries)
 {
 #if defined(DEBUG)
-  printf("NetworkReceive()\n");
+  printf("NetworkReceive(%d, %d)\n", fd, block);
 #endif
 
-  static int recBuffSize = 0;
-  static char *recBuff = 0;
-  int    numElements; 
-  int    tsize;
-
+  // Note: non-blocking mode doesn't seem to be used.  RKW 2000-09-01.
   if (!block) {
-    if (NetworkNonBlockMode(fd) < 0)
+    if (NetworkNonBlockMode(fd) < 0) {
       return -1;
+    }
   } else {
-    if (NetworkBlockMode(fd) < 0)
+    if (NetworkBlockMode(fd) < 0) {
       return -1;
+    }
   }
 
-#ifdef DEBUG
-  if (block)
+  //
+  // Get the message header.
+  //
+
+#if defined(DEBUG)
+  if (block) {
     printf("Getting header\n");
+  }
 #endif
 
   NetworkHeader hdr;
-  while(1) {
-   
+  int tries = 0;
+  while (true) {
 	errno = 0;
 	int res = recv(fd, (char *)&hdr, sizeof hdr, 0);
 	
 #if 0
+	// Warning: turning this on may generate an awful lot of output.
 	printf(" Received %d bytes\n", res);
 	printf(" errno  = %d\n", errno);
 #endif
     
-	if (res == (int)sizeof hdr)
+	if (res == (int)sizeof hdr) {
+	  // We got the header.
       break;
-	if (res == 0) {
-	  continue;
 	}
+
+	if (res == 0) {
+	  // Got nothing.
+	  if (maxRetries >= 0 && tries >= maxRetries) {
+		// Note: if select() reported the fd is ready for reading, but there
+		// is no data, that probably means that the process on the other
+		// end of the socket died without closing the socket.  RKW 2000-09-01.
+	    reportErr("No data available on socket");
+	    return -1;
+	  } else {
+		tries++;
+	    // Sleep here so we don't suck up loads of CPU.
+	    sleep(1);
+	    continue;
+	  }
+	}
+
     if (res < 0 && errno == EINTR) {
 #if defined(DEBUG)
       printf("Call to recv interrupted, continuing\n");
 #endif
       continue;
     }
+
+	// An error other than EINTR, or got part of the header.
     if (block) {
 	  printf("Error at %s: %d: ", __FILE__, __LINE__);
-      perror("recv");
+	  reportErr("Error receiving message header from socket");
+      perror("recv()");
 #if defined(DEBUG)
       printf("errno = %d\n", errno);
       printf("res = %d\n", res);
@@ -320,21 +360,31 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
     return -1;
   }
   flag = ntohs(hdr.flag);
-  NetworkAnalyseHeader((char*)&hdr,numElements, tsize);
 
-#ifdef DEBUG
+  int    numElements; 
+  int    tsize;
+  NetworkAnalyseHeader((char*)&hdr, numElements, tsize);
+
+#if defined(DEBUG)
   printf("Got flag %u, numElements = %u, size = %u\n",flag,numElements,tsize);
 #endif
+
+  //
+  // We've gotten the header, now get the body of the message.
+  //
+
+  static int recBuffSize = 0;
+  static char *recBuff = NULL;
 
   if (!recBuff || tsize >= recBuffSize) {
     delete recBuff;
     recBuffSize = tsize + 1;
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Increasing size of recBuff to %d bytes\n", recBuffSize);
 #endif
     recBuff = new char [recBuffSize];
     if (!recBuff) {
-      fprintf(stderr, "Out of memory\n");
+      reportErr("Out of memory\n");
       return -1;
     }
   }
@@ -344,40 +394,60 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
   int totrem = tsize;
   while(totrem > 0) {
     int res = 0;
-    while(1) {
+    while (true) {
 	  errno = 0;
       res = recv(fd, ptr, totrem, 0);
-      if (!res)
+      if (res == 0) {
+		// Got nothing.  Note: I'm not sure why here we give up totally if
+		// we got nothing, whereas when we're getting the header we keep
+		// trying if we got nothing.  RKW 2000-09-01.
         return 0;
-      if (res > 0)
+	  }
+      if (res > 0) {
+		// Got at least part of the message.
         break;
+	  }
+
       if (errno == EINTR) {
-#ifdef DEBUG
+#if defined(DEBUG)
         printf("Call to recv interrupted, continuing\n");
 #endif
         continue;
       }
-	  printf("Error at %s: %d: ", __FILE__, __LINE__);
-      perror("recv");
+
+	  // An error other than EINTR.
+	  reportErr("Error receiving message body from socket");
+	  perror("recv()");
       return -1;
     }
     ptr += res;
     totrem -= res;
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Got %d bytes of message, %d remaining\n", res, totrem);
 #endif
   }
 
   if (totrem != 0) {
-    fprintf(stderr, "Invalid protocol message.\n");
+    reportErr("Invalid protocol message.");
     return -1;
   }
   ac = numElements;
   int result = NetworkParse((const char*)recBuff, ac,av);
+
 #if defined(DEBUG)
   printf("  Message is: ");
-  PrintArgs(stdout, ac, av, true);
+
+  // Note: not using PrintArgs() here because that's not linked into the
+  // client.
+  int index;
+  char *prefix = "";
+  for (index = 0; index < ac; index++) {
+    printf("%s<%s>", prefix, av[index]);
+    prefix = ", ";
+  }
+  printf("\n");
 #endif
+
   return result;
 }
 
@@ -393,12 +463,12 @@ int NetworkParse(const char *recBuff, int numElements, char **&av)
     if (argv != 0)
       delete argv;
     argc = numElements;
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Increasing size of argv to %d elements\n", argc);
 #endif
     argv = new char * [argc];
     if (!argv) {
-      fprintf(stderr, "Out of memory\n");
+      reportErr("Out of memory");
       return -1;
     }
   }
@@ -410,18 +480,18 @@ int NetworkParse(const char *recBuff, int numElements, char **&av)
     memcpy(&size, ptr, sizeof size);
     size = ntohs(size);
     ptr += sizeof size;
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Element %d is %u bytes\n", i, size);
 #endif
 
     if (ptr[size - 1]) {
       // argument must be terminated with NULL
 	  printf(" proper vales = %c %c %c \n",ptr[size -2],ptr[size-1],ptr[size ]);
-      fprintf(stderr, "Invalid procotol argument.\n");
+      reportErr("Invalid procotol argument");
       return -1;
     }
 
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Element %d is \"%s\"\n", i, ptr);
 #endif
     // Note: casting 'const char *' to 'char *' here to get rid of compiler
@@ -432,7 +502,7 @@ int NetworkParse(const char *recBuff, int numElements, char **&av)
     ptr += size;
   }
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("Parsed complete message\n\n");
 #endif
 
@@ -462,13 +532,14 @@ int NetworkSend(int fd, u_short flag, u_short bracket, int argc, char **argv)
   {
     int result = send(fd, recBuffer, msgsize, 0);
     if (result < (int)sizeof (NetworkHeader)) {
-      perror("send");
+	  reportErr("Error sending message");
+      perror("send()");
       return -1;
     }
   }
   recBuffer = 0;
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("Complete message sent\n\n");
 #endif
 
@@ -501,12 +572,12 @@ int NetworkPrepareMsg(u_short flag,
   if (!recBuff || msgsize >= recBuffSize) {
     delete recBuff;
     recBuffSize = msgsize + 1;
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Increasing size of recBuff to %d bytes\n", recBuffSize);
 #endif
     recBuff = new char [recBuffSize];
     if (!recBuff) {
-      fprintf(stderr, "Out of memory\n");
+      reportErr("Out of memory");
       return -1;
     }
   }
@@ -522,7 +593,7 @@ int NetworkPrepareMsg(u_short flag,
     if (bracket) {
       size += 2;
     }
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Sending size of element %d: %u\n", i, size);
 #endif
     u_short nsize = htons(size);
@@ -533,7 +604,7 @@ int NetworkPrepareMsg(u_short flag,
     }
 
     if (bracket) {
-#ifdef DEBUG
+#if defined(DEBUG)
       printf("Sending element %d: \"{%s}\"\n", i, argv[i]);
 #endif
       *buff++ = '{';
@@ -543,7 +614,7 @@ int NetworkPrepareMsg(u_short flag,
       *buff++ = '}';
       *buff++ = 0;
     } else {
-#ifdef DEBUG
+#if defined(DEBUG)
       printf("Sending element %d: \"%s\"\n", i, argv[i]);
 #endif
       memcpy(buff, argv[i], size);

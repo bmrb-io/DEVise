@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
    $Id$
 
    $Log$
+   Revision 1.14  1998/05/02 09:00:37  taodb
+   Added support for JAVA Screen and command logging
+
    Revision 1.13  1998/02/12 17:16:10  wenger
    Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -70,7 +73,8 @@ extern int NetworkModedOpen(char *hostName, int port,
 extern void NetworkAnalyseHeader(const char *headerbuf, int& numElements, int&tsize); 
 extern int NetworkParse(const char *recBuff, int numElements, char **&av);
 extern int NetworkReceive(int fd, int block, u_short &flag,
-			  int &argc, char **&argv);
+			  int &argc, char **&argv,
+			  int maxRetries = 0);
 extern int NetworkSend(int fd, u_short flag, u_short bracket,
 		       int argc, char **argv);
 extern int NetworkPrepareMsg(u_short flag, u_short bracket,

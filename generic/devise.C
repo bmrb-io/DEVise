@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  2000/03/23 20:34:27  wenger
+  Updated dependencies, got everything to compile on pumori (Linux 2.2.12,
+  g++ 2.95.2).
+
   Revision 1.20  1999/11/30 22:27:52  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -295,7 +299,7 @@ int SetGetImage(ClientData clientData, Tcl_Interp *interp,
    char **rargv;
    do {
      // Note: this bypasses the client/server library.  RKW Jan. 6, 1998.
-     if (NetworkReceive(_client->ServerFd(), 1, flag, rargc, rargv) <= 0) {
+     if (NetworkReceive(_client->ServerFd(), 1, flag, rargc, rargv, 10) <= 0) {
          fprintf(stderr, "Server has terminated. Client exits.\n");
          exit(1);
      }

@@ -2431,8 +2431,9 @@ Num Date        Status  Description
 			a cursor, the grid code can move a cursor edge
 			outside of the destination view. (rkw)
 
-616 8/31/00	OPEN	Start jspop/jss/devised; kill jspop and jss ->
+616 8/31/00	FIXED	Start jspop/jss/devised; kill jspop and jss ->
 			devised starts to gobble up CPU. (rkw)
+			(Fixed by rkw, 9/1/00.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
