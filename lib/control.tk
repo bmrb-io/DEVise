@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.51  1996/01/19 18:32:36  jussi
+#	GetTDataTemplate now uses stream catalog and not files
+#	directly. Fixed minor bug in session files and pixel
+#	maps.
+#
 #	Revision 1.50  1996/01/18 18:02:05  jussi
 #	Added View/Destroy but made it not accessible to the user
 #	because of pending questions whether all necessary data
@@ -2927,6 +2932,8 @@ proc DoViewAction {} {
 
 # Close current session
 proc DoClose {} {
+    global sessionName
+
     set but [dialog .open "Open Session" "Close Current Session?" \
 	    "" 1 Cancel Ok ]
     if { $but == 0 } {
@@ -2977,7 +2984,10 @@ proc DoClose {} {
 
     DEVise clearQP
     DEVise clearInterp
-    
+    DEVise clearTopGroups
+
+    set sessionName "session.tk"
+
     return 1
 }
 
@@ -3730,13 +3740,24 @@ proc GetTDataTemplate {type total num} {
 	}
 
 	# see if data stream already open
-	if {[lsearch [TdataSet] $sname] < 0} {
-	    break
+	if {[lsearch [TdataSet] $sname] >= 0} {
+	    dialog .fileExist "Data Stream Open" \
+		    "Data stream $sname already open.\n\
+		    Please select another stream." "" 0 Continue
+	    continue
 	}
 
-	dialog .fileExist "Data Stream Open" \
-		"Data stream $sname already open.\n\
-		Please select another stream." "" 0 Continue
+	set schema [lindex $sourceList($sname) 2]
+	if {$type != $schema} {
+	    dialog .fileExist "Incorrect Schema" \
+		    "Schema of data stream\n\
+		    $sname\n\
+		    is not $type.\n\
+		    Please select another stream." "" 0 Continue
+	    continue
+	}
+
+	break
     }
 
     # make sure data is cached on disk

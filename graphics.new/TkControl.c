@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/01/17 20:53:51  jussi
+  Added support for additional image export formats.
+
   Revision 1.29  1996/01/13 20:51:20  jussi
   Added references to www_extract.
 
@@ -465,6 +468,10 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		}
 		else if (strcmp(argv[1],"clearInterp") == 0){
 			control->_interpProto->ClearMapClasses();
+		}
+		else if (strcmp(argv[1],"clearTopGroups") == 0){
+			delete gdir;
+			gdir = new GroupDir();
 		}
 		else if (strcmp(argv[1],"printDispatcher") == 0){
 			Dispatcher::Current()->Print();
