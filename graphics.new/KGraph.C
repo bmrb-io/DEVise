@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/05/31 20:58:50  jussi
+  Fixed problem with calculation of center and size of circle.
+
   Revision 1.9  1996/02/02 21:52:20  jussi
   Removed SetFgColor() right after SetXorMode() which changed the
   effect of the xor function.
@@ -128,6 +131,8 @@ void KGraph::Display()
   PlotPoints();
   // Draw Axes
   DrawAxes();
+  // Flush window
+  _win->Flush();
 }
 
 void KGraph::ClearGraph()
