@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/05/05 15:14:45  zhenhai
+  Implemented 3D Cursor as a rectangular block in the destination view
+  showing left, right, top, bottom, front and back cutting planes of the
+  source view.
+
   Revision 1.14  1998/03/05 08:10:24  zhenhai
   Added ability to view 3D graphs from six directions. Use -gl option to run,
   and click key x,y,z and X,Y,Z to select the direction you are viewing.
@@ -749,8 +754,8 @@ Point3D Map3D::CompLocationOnViewingSpace(WindowRep *win, Point3D &pt)
 
 Point Map3D::CompProjectionOnViewingPlane(Point3D &viewPt, Camera camera)
 {
-#if 0
   Point screenPt;
+#if 0
   double z_over_dvs = viewPt.z_ / camera._dvs;
 
   if (camera._perspective) {
@@ -767,9 +772,12 @@ Point Map3D::CompProjectionOnViewingPlane(Point3D &viewPt, Camera camera)
   // we want it to be.
   screenPt.x += camera.H;
   screenPt.y = camera.V - screenPt.y;
+#else
+  screenPt.x = 0;
+  screenPt.y = 0;
+#endif
 
   return screenPt;
-#endif
 }
 
 // ---------------------------------------------------------- 

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.31  1998/05/21 18:18:33  wenger
+  Most code for keeping track of 'dirty' GIFs in place; added 'test'
+  command to be used for generic test code that needs to be controlled
+  by GUI; added debug code in NetworkSend().
+
   Revision 1.30  1998/05/05 15:14:54  zhenhai
   Implemented 3D Cursor as a rectangular block in the destination view
   showing left, right, top, bottom, front and back cutting planes of the
@@ -166,7 +171,7 @@ Boolean WindowRep::_destroyPending = false;
 //******************************************************************************
 
 WindowRep::WindowRep(DeviseDisplay* disp, Pattern p)
-	:	_display(disp), _numDim(0)
+	:	_display(disp), _numDim(2)
 {
   _callbackList = new WindowRepCallbackList;
   DOASSERT(_callbackList, "Out of memory");

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/05/14 18:21:02  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.16  1998/05/05 15:14:43  zhenhai
   Implemented 3D Cursor as a rectangular block in the destination view
   showing left, right, top, bottom, front and back cutting planes of the
@@ -2138,10 +2142,13 @@ void    GLWindowRep::SetForeground(PColorID fgid)
 void GLWindowRep::ClearBackground(Coord xlow, Coord ylow, Coord width,
                         Coord height)
 {
+#if defined(DEBUG)
+  printf("GLWindowRep(0x%p)::ClearBackground()\n", this);
+#endif
   
-    if (_numDim==2)
+    if (_numDim==2) {
       FillRect(xlow, ylow, width, height);
-    else {
+    } else {
 #if defined(USERGB)
       glClearColor( GLdouble(_bgrgb.r)/GLdouble(65535), 
 		GLdouble(_bgrgb.g)/GLdouble(65535), 
@@ -2735,6 +2742,10 @@ void GLWindowRep::UpdateWinDimensions()
 }
 
 void GLWindowRep::SetNumDim(int numDim) {
+#if defined(DEBUG)
+  printf("GLWindowRep(0x%p)::SetNumDim(%d)\n", this, numDim);
+#endif
+
   GLsizei w, h;
   if (_numDim==numDim)
     return;

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/05/05 15:14:38  zhenhai
+  Implemented 3D Cursor as a rectangular block in the destination view
+  showing left, right, top, bottom, front and back cutting planes of the
+  source view.
+
   Revision 1.14  1998/04/13 22:24:42  zhenhai
   Optimized 2D cursors to read and draw individual patches instead
   of patches for the whole region. Added 3D cursors to show directions.
@@ -374,7 +379,7 @@ void DeviseCursor::DrawCursor(WindowRep* w)
   VisualFilter *filter;
   GetVisualFilter(filter);
 
-  w->SetForeground(whiteColor);
+  w->SetForeground(_dst->GetForeground());
 
   if (_src && _src->GetNumDimensions()==2
    && _dst&& _dst->GetNumDimensions()==2) {
@@ -383,7 +388,6 @@ void DeviseCursor::DrawCursor(WindowRep* w)
               filter->xHigh/2+filter->xLow/2, filter->yHigh, 1);
     w->Line(filter->xHigh, filter->yLow, filter->xHigh, filter->yHigh, 1);
 
-    w->SetForeground(blackColor);
     w->Line(filter->xLow, filter->yLow, filter->xHigh, filter->yLow, 1);
     w->Line(filter->xLow, filter->yLow/2+filter->yHigh/2,
               filter->xHigh, filter->yLow/2+filter->yHigh/2, 1);
