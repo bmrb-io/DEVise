@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/05/07 16:39:10  jussi
+  Added MapGAttr2TAttr() method for translating GData attributes
+  to TData attributes.
+
   Revision 1.10  1996/04/16 20:42:32  jussi
   Removed #include assert.h.
 
@@ -211,7 +215,7 @@ public:
   virtual void DrawGDataArray(View *view, WindowRep *win,
 			      void **gdataArray, int num) = 0;
   
-  virtual AttrInfo *MapGAttr2TAttr(char *attrName) = 0;
+  virtual AttrInfo *MapGAttr2TAttr(char *attrName) { return 0; }
 
   /* Hint for current focus in GData */
   void SetFocusId(RecId id);
