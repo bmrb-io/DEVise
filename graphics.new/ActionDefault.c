@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:13:59  jussi
+  Added CVS header.
+*/
 
 #include <stdio.h>
 #include <time.h>
@@ -145,6 +148,24 @@ void ActionDefault::KeySelected(View *view, char key, Coord x, Coord y){
 		*/
 		if (useRight && filter.xHigh > right)
 			filter.xHigh = right;
+		view->SetVisualFilter(filter);
+	}
+	else if (key == '8'){
+		/* scroll data up */
+		view->GetVisualFilter(filter);
+		Coord height = filter.yHigh - filter.yLow;
+		Coord halfHeight = height / 2.0;
+		filter.yLow -= halfHeight;
+		filter.yHigh = filter.yLow + height;
+		view->SetVisualFilter(filter);
+	}
+	else if (key == '2'){
+		/* scroll data down */
+		view->GetVisualFilter(filter);
+		Coord height = filter.yHigh - filter.yLow;
+		Coord halfHeight = height / 2.0;
+		filter.yLow += halfHeight;
+		filter.yHigh = filter.yLow + height;
 		view->SetVisualFilter(filter);
 	}
 	else if (key == 's' || key == 'S' || key == '1'){
