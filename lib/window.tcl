@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1996/05/09 18:15:21  kmurli
+#  No changes, just inserted some debugging print statements and removed them
+#
 #  Revision 1.5  1996/05/07 16:48:12  jussi
 #  Rotation of mappings not done if there is just one mappings
 #  in a view.
@@ -292,9 +295,11 @@ proc DoCreateWindow { message } {
 proc DoActualCreateWindow { winType } {
     global dialogParamVar windowName
 
-    set windowName [UniqueName DEViseWn0]
-	DEVise setWindowName 
     set paramNames [ DEVise getparam window $winType ]
+    set windowName [UniqueName DEViseWn0]
+    set nameParm [lindex $paramNames 0]
+    set nameParm [lreplace $nameParm 1 1 $windowName]
+    set paramNames [lreplace $paramNames 0 0 $nameParm]
 
     set button [ dialogParam .windowParam "Create Window" \
 	    "Enter window parameters"\
