@@ -19,6 +19,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/03/04 19:11:22  wenger
+  Fixed some more dynamic memory errors.
+
   Revision 1.10  1997/11/24 23:16:26  weaver
   Changes for the new ColorManager.
 
@@ -98,10 +101,11 @@ class HashTable {
   int num() { return _num; }
 #endif
 
- private:
 #ifdef DEBUGHASH
   void dump();                               // dump contents of hash table
 #endif
+
+ private:
 
   int tableSize;                             // size of hash table
 #ifdef MODIFIED
