@@ -1,0 +1,3 @@
+#! /bin/csh -f
+
+touch `grep -l NO_DTE */*.[cCh] */*/*.[cCh]`
