@@ -1,7 +1,24 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1996
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
   $Log$
+  Revision 1.6  1996/06/21 19:27:37  jussi
+  Cleaned up and moved BLOCK data structures to Map3D.h.
+
   Revision 1.5  1996/06/15 07:07:19  yuc
   Add the following structures to the system: POINT_ (for 3D point),
   EDGE_ (for 3D object), and BLOCK (for a block object).
