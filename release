@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.14  1997/06/05 21:18:39  wenger
+#  Added layout manager Tcl/Tk code to release procedure.
+#
 #  Revision 1.13  1997/02/26 16:30:51  wenger
 #  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
 #
@@ -203,7 +206,9 @@ end
 
 set runfiles = "run_public/devise run_public/devise.tasvir \
 	run_public/deviseweb run_public/dumpgif.script \
-	run_public/multi run_public/devise.etk"
+	run_public/multi run_public/devise.etk run_public/devise.demo \
+	run_public/devise1.3.demo run_public/multi.demo \
+	run_public/multi1.3.demo"
 
 foreach file ($runfiles)
   if ($file == "") then
