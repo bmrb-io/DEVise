@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2000/08/17 21:16:14  wenger
+// Got rid of Double.parseDouble() calls so this code can work with
+// Java 1.1.
+//
 // Revision 1.7  2000/08/17 17:21:10  wenger
 // Summary html file has cleaner format.
 //
@@ -61,13 +65,13 @@ import ShiftDataManager.Pair;
 public class Star2Devise {
 
     private static final int DEBUG = 0;
-    private static final String RESIDUE_CODE = "_Residue_seq_code";
 
     private StarNode aStarTree;
     private String file_name;
     private Vector value_vector;
     
-    // Location of RESIDUE_CODE tag in average_refined_structure,
+    //TEMP -- I don't trust this!
+    // Location of RESIDUE_SEQ_CODE tag in average_refined_structure,
     //   the first LoopTableNode in value_vector
     private static final int RESIDUE_LOCATION = 2;
 
@@ -100,6 +104,7 @@ public class Star2Devise {
             s2d = new Star2Devise(file_name, stream);
 	} catch(FileNotFoundException ex) {
 	    System.err.println("Unable to open or read " + ex.getMessage());
+	    if (DEBUG >= 1) ex.printStackTrace();
 	    throw new S2DException("Unable to get data in star file " +
 	      file_name);
 	}
@@ -114,11 +119,11 @@ public class Star2Devise {
         Star2Devise s2d = null;
 	try {
 	    java.net.URL starfile =
-	      new java.net.URL("http://www.bmrb.wisc.edu/data_library/files/" +
-	      file_name);
+	      new java.net.URL(S2DNames.BMRB_STAR_URL + file_name);
 	    s2d = new Star2Devise(file_name, starfile.openStream());
 	} catch(java.io.IOException ex) {
 	    System.err.println("Unable to open or read " + ex.getMessage());
+	    if (DEBUG >= 1) ex.printStackTrace();
 	    throw new S2DException("Unable to get data in star file " +
 	      file_name);
 	}
@@ -146,9 +151,11 @@ public class Star2Devise {
 	} catch (ParseException e) {
 	    System.err.println("NMR-Star file parse error: " +
 	      e.getMessage() );
+	    if (DEBUG >= 1) e.printStackTrace();
 	    throw new S2DException("Unable to parse " + file_name);
 	} catch(Exception ex) {
 	    System.err.println("Exception: " + ex.getMessage() );
+	    if (DEBUG >= 1) ex.printStackTrace();
 	    throw new S2DException("Unable to parse " + file_name);
 	}
     }
@@ -226,94 +233,14 @@ public class Star2Devise {
 	    return true;
 	} catch (IOException e) {
 	    System.err.println("IOException: " + e.getMessage() );
+	    if (DEBUG >= 1) e.printStackTrace();
 	    throw new S2DException("Unable to output data for " + file_name);
 	} catch(Exception ex) {
 	    System.err.println("Exception: " + ex.getMessage() );
+	    if (DEBUG >= 1) ex.printStackTrace();
 	    throw new S2DException("Unable to output data for " + file_name);
 	}
     }
-
-
-    // ----------------------------------------------------------------------
-    /* Function processStrData
-     * Parameters:
-     *   saveFrameName: the name of the save frame to output
-     *   outFileName: the name of the output file, as ASCII text for DEVise
-     * Return value: true iff data is successfully processed; false otherwise.
-     */
-    public boolean processStrData( String saveFrameName, String outFileName )
-      throws S2DException
-    {
-        if (DEBUG >= 1) {
-	    System.out.println("Star2Devise.processStrData(" +
-	      saveFrameName + ", " + outFileName + ")");
-	}
-
-	try {
-	    
-	    VectorCheckType saveFrameVec =
-	      aStarTree.searchByName(saveFrameName);
-
-	    // this vector should have size 1 because there should
-	    // only be one SaveFrame with this name
-	    if (saveFrameVec.size() == 1) {
-		// the last element should be a DataLoopNode
-		// containing RESIDUE_CODE
-		DataLoopNode lastLoop =
-		    (DataLoopNode)
-		    ( (SaveFrameNode) saveFrameVec.elementAt(0) )
-		    .lastElement();
-		// make sure that this is the correct DataLoopNode
-		// this should find just one instance, because this
-		// tag only appears once in the saveframe
-		VectorCheckType checkForTag =
-		    lastLoop.searchByName(RESIDUE_CODE);
-// doesn't work for coupling constants
-// 		if (checkForTag.size() != 1)
-// 		    throw new S2DException
-// 			("Found "
-// 			 + checkForTag.size()
-// 			 + " " + RESIDUE_CODE + " tags"
-// 			 + ", expect 1.");
-		
-		LoopTableNode values = lastLoop.getVals();
-		
-
-		// output the data
-		File outFile = new File(outFileName);
-		FileOutputStream outStream = 
-		    new FileOutputStream(outFile);
-		StarUnparser theUnparser = new StarUnparser(outStream);
-		
-		// speed up computation time a bit
-		theUnparser.setFormatting( false );
-
-		// writes out a LoopTableNode of values
-  		theUnparser.writeOut(values, 0);
-		outStream.close();
-
-		return true;
-		
-	    } else if (saveFrameVec.size() == 0) { // none found
-		return false;
-
-	    } else {		// multiple search strings found
-		throw new S2DException("Found " +
-		  saveFrameVec.size() + " " + saveFrameName +
-		  " save frames," + " expect exactly 1.");
-	    }
-	    
-	} catch (IOException e) {
-	    System.err.println("IOException: " + e.getMessage() );
-	    throw new S2DException("Unable to process save frame " +
-	      saveFrameName);
-	} catch (Exception e) {
-	    System.err.println("Exception: " + e.getMessage() );
-	    throw new S2DException("Unable to process save frame " +
-	      saveFrameName);
-	}
-    } // end function processStrData()
-    
 
     // ----------------------------------------------------------------------
     /* Function findBackbone
@@ -344,7 +271,7 @@ public class Star2Devise {
 	    // only be one SaveFrame with this name
 	    if (saveFrameVec.size() == 1) {
 		// the last element should be a DataLoopNode
-		// containing RESIDUE_CODE
+		// containing RESIDUE_SEQ_CODE
 		DataLoopNode lastLoop =
 		    (DataLoopNode)
 		    ( (SaveFrameNode) saveFrameVec.elementAt(0) )
@@ -354,13 +281,13 @@ public class Star2Devise {
 		// this should find just one instance, because this
 		// tag only appears once in the saveframe
 		VectorCheckType checkForTag =
-		    lastLoop.searchByName(RESIDUE_CODE);
+		    lastLoop.searchByName(S2DNames.RESIDUE_SEQ_CODE);
 
 		if (checkForTag.size() != 1)
 		    throw new S2DException
 			("Found "
 			 + checkForTag.size()
-			 + " " + RESIDUE_CODE + " tags"
+			 + " " + S2DNames.RESIDUE_SEQ_CODE + " tags"
 			 + ", expect 1.");
 		
 		LoopTableNode avg_struct_vals = lastLoop.getVals();
@@ -379,7 +306,7 @@ public class Star2Devise {
 		    // is CA, add it to backbone
 		    if (avg_struct_vals.elementAt(atom)
 			.elementAt(ATOM_NAME_INDEX)
-			.getValue().equals("CA")) {
+			.getValue().equals(S2DNames.BACKBONE_ATOM_NAME)) {
 			
 			curr_vector = new LoopRowNode();
 			
@@ -489,181 +416,16 @@ public class Star2Devise {
 	    
 	} catch (IOException e) {
 	    System.err.println("IOException: " + e.getMessage() );
+	    if (DEBUG >= 1) e.printStackTrace();
 	    throw new S2DException("Unable to find backbone for save frame " +
 	      saveFrameName);
 	} catch(Exception ex) {
 	    System.err.println("Exception: " + ex.getMessage() );
+	    if (DEBUG >= 1) ex.printStackTrace();
 	    throw new S2DException("Unable to find backbone for save frame " +
 	      saveFrameName);
 	}
     } // end findBackbone
-
-
-    // ----------------------------------------------------------------------
-    /* Function addLogColumn
-     * Parameters:
-     *   inFileName: the name of the input file, in NMR-Star format
-     *   operandName: the name of the field for which you wish to take the log.
-     *   outFileName: the name of the output file, as ASCII text for DEVise
-     * Return value: true iff column is added; false otherwise.
-     */
-    public boolean addLogColumn(String saveFrameName, String operandName,
-      String outFileName) throws S2DException
-    {
-	if (DEBUG >= 1) {
-	    System.out.println("Star2Devise.addLogColumn(" +
-	      saveFrameName + ", " + operandName + ", " + outFileName + ")");
-	}
-
-	try {
-
-	    VectorCheckType saveFrameVec;
-	    saveFrameVec = 
-		aStarTree.searchByName(saveFrameName);
-	    
-	    // this vector should have size 1 because there should
-	    // only be one SaveFrame with this name
-	    if (saveFrameVec.size() == 1) {
-		// the last element should be a DataLoopNode
-		// containing RESIDUE_CODE
-		DataLoopNode valuableDataLoop =
-		    (DataLoopNode)
-		    ( (SaveFrameNode) saveFrameVec.firstElement() )
-		    .lastElement();
-		// make sure that this is the correct DataLoopNode
-		// this should find just one instance, because this
-		// tag only appears once in the saveframe
-		VectorCheckType checkForTag =
-		    valuableDataLoop.searchByName(RESIDUE_CODE);
-		if (checkForTag.size() != 1)
-		    throw new S2DException
-			("Found "
-			 + checkForTag.size()
-			 + " " + RESIDUE_CODE + " tags"
-			 + ", expect 1.");
-		
-		LoopTableNode values = valuableDataLoop.getVals();
- 		DataLoopNameListNode names = valuableDataLoop.getNames();
-
-		// find value
-		VectorCheckType operands =
-		    names.searchByName(operandName);
-
-		if (operands.size() != 1)
-		    throw new S2DException
-			("Found "
-			 + operands.size()
-			 + " " + operandName + " tags"
-			 + ", expect 1.");
-		
-		int op_index = 
-		    names.firstElement().indexOf 
-		    ( ((DataNameNode) operands.firstElement()) );
-
-		// find error
-// 		operands = names.searchByName(operandName + "_error");
-		
-// 		if (operands.size() != 1)
-// 		    throw new S2DException
-// 			("Found "
-// 			 + operands.size()
-// 			 + " " + operandName + "_error tags"
-// 			 + ", expect 1.");
-		
-// 		int op_err_index = 
-// 		    names.firstElement().indexOf 
-// 		    ( ((DataNameNode) operands.firstElement()) );
-
-		// now edit the values.  values is a LoopTableNode of
-		// LoopRowNodes, each of which contains many
-		// DataValueNodes.  We need to copy all the values and
-		// create a new LoopRowNode, because we can't insert
-		// values into row already in a DataLoopNode.
-		Double origValue;
-
-		for (int outer = 0; outer < values.size(); outer++) {
-		    LoopRowNode row_copy = new LoopRowNode();
-		    // copy all old elements
-		    for (int inner=0; inner < values.elementAt(outer).size();
-			 inner++) {
- 			row_copy.insertElementAt
-			    (values.elementAt(outer).elementAt(inner), inner);
-		    }
-		    
-		    // convert value from a String to a Double object
-		    if (row_copy.elementAt(op_index).getValue().equals("."))
-			row_copy.addElement( new DataValueNode("."));
-		    else {
-			origValue = new Double(row_copy.elementAt(op_index)
-					       .getValue() );
-			
-			// take the log, and convert back to a String
-			row_copy.addElement( new DataValueNode
-					     ((new Float
-					       ((Math.log
-						 (origValue.doubleValue() )
-						 / Math.log(10.0) ) ))
-					      .toString()));
-		    }
-
-		    // do the same for error
-// 		    if (row_copy.elementAt(op_err_index).getValue()
-// 			.equals("."))
-// 			row_copy.addElement( new DataValueNode("."));
-// 		    else {
-// 			origValue = new Double(row_copy.elementAt(op_err_index)
-// 					       .getValue() );
-			
-// 			// take the log, and convert back to a String
-// 			row_copy.addElement( new DataValueNode
-// 					     ((new Float
-// 					       ((Math.log
-// 						 (origValue.doubleValue() )
-// 						 / Math.log(10.0) ) ))
-// 					      .toString()));
-// 		    }
-
-		    
-		    // now replace the old value with the new one
-		    values.setElementAt(row_copy, outer);
-		}
-
-		// output the data
-		File outFile = new File(outFileName);
-		FileOutputStream outStream = 
-		    new FileOutputStream(outFile);
-		StarUnparser theUnparser = new StarUnparser(outStream);
-		
-		// speed up computation time a bit
-		theUnparser.setFormatting( false );
-		
-		// writes out a LoopTableNode of values
-   		theUnparser.writeOut(values, 0);
-		outStream.close();
-		return true;
-		
-	    } else if (saveFrameVec.size() == 0) // none found
-		return false;
-	    
-	    else {		// too many found
-		throw new S2DException
-		    ("Found " + saveFrameVec.size()
-		     + " save frames,"
-		     + " expect exactly 1.");
-	    }
-	} catch (IOException e) {
-	    System.err.println("IOException: " + e.getMessage() );
-	    throw new S2DException(
-	      "Unable to find add log column for save frame " +
-	      saveFrameName);
-	} catch(Exception ex) {
-	    System.err.println("Exception: " + ex.getMessage() );
-	    throw new S2DException(
-	      "Unable to find add log column for save frame " +
-	      saveFrameName);
-	}
-    } // end function addLogColumn()
-
 
     // ----------------------------------------------------------------------
     /* Function calcChemShifts
@@ -696,8 +458,8 @@ public class Star2Devise {
 	    _refTable = new ShiftDataManager( CHEMSHIFT_FILE );
 	    
 	    //Create tagname and datavalue
-	    final String tagName = "_Saveframe_category";
-	    final String dataValue = "assigned_chemical_shifts";
+	    final String tagName = S2DNames.SAVEFRAME_CATEGORY;
+	    final String dataValue = S2DNames.ASSIGNED_CHEM_SHIFTS;
 	    
 	    //Find list of all occurences in the star file
 	    
@@ -723,7 +485,8 @@ public class Star2Devise {
 			= ((SaveFrameNode)currSaveFrame).getLabel();
 		    
 		    //Strip the save_
-		    saveFrameName = saveFrameName.substring("save_".length());
+		    saveFrameName = saveFrameName.substring(
+		      S2DNames.SAVEFRAME_PREFIX.length());
 		} else {
 		    saveFrameName = "N/A" ;
 		}
@@ -742,7 +505,7 @@ public class Star2Devise {
 		    = currSaveFrame.searchForTypeByName
 		    ( Class.forName( StarValidity.pkgName()
 				     + ".DataLoopNode"),
-		      "_Chem_shift_value" );
+		      S2DNames.CHEM_SHIFT_VALUE);
 		
 		// There should be only one data loop.
 		if (loopMatches.size() != 1) {
@@ -784,14 +547,17 @@ public class Star2Devise {
 	    return true;
 	} catch (ClassNotFoundException e) {
 	    System.err.println("ClassNotFoundException: " + e.getMessage() );
+	    if (DEBUG >= 1) e.printStackTrace();
 	    throw new S2DException(
 	      "Unable to find/calculate chem shifts for " + _accNum);
 	} catch (IOException e) {
 	    System.err.println("IOException: " + e.getMessage() );
+	    if (DEBUG >= 1) e.printStackTrace();
 	    throw new S2DException(
 	      "Unable to find/calculate chem shifts for " + _accNum);
 	} catch(Exception ex) {
 	    System.err.println("Exception: " + ex.getMessage() );
+	    if (DEBUG >= 1) ex.printStackTrace();
 	    throw new S2DException(
 	      "Unable to find/calculate chem shifts for " + _accNum);
 	} finally {
@@ -812,7 +578,7 @@ public class Star2Devise {
         RemoteInt nestLevel = new RemoteInt();
 
 	//And now retrieve chemical shift values
-	_currentDataLoop.getNames().tagPositionDeep("_Chem_shift_value",
+	_currentDataLoop.getNames().tagPositionDeep(S2DNames.CHEM_SHIFT_VALUE,
 	  nestLevel, returnIndex);
 
 	if (returnIndex.num == -1) {
@@ -822,8 +588,8 @@ public class Star2Devise {
 	}
 		
 	//Retrieve atom name
-	_currentDataLoop.getNames().tagPositionDeep("_Atom_name", nestLevel,
-	  returnIndex );
+	_currentDataLoop.getNames().tagPositionDeep(S2DNames.ATOM_NAME,
+	  nestLevel, returnIndex );
 
 	if (returnIndex.num == -1) {
 	    throw new S2DException("Can't get index for atom names");
@@ -832,7 +598,7 @@ public class Star2Devise {
 	}
 		
 	//Retrieve residue label
-	_currentDataLoop.getNames().tagPositionDeep("_Residue_label",
+	_currentDataLoop.getNames().tagPositionDeep(S2DNames.RESIDUE_LABEL,
 	  nestLevel, returnIndex );
 
 	if (returnIndex.num == -1) {
@@ -842,7 +608,7 @@ public class Star2Devise {
 	}
 		  
 	//Retrieve sequence numbers
-	_currentDataLoop.getNames().tagPositionDeep("_Residue_seq_code",
+	_currentDataLoop.getNames().tagPositionDeep(S2DNames.RESIDUE_SEQ_CODE,
 	  nestLevel, returnIndex);
 
 	if (returnIndex.num == -1) {
@@ -852,8 +618,8 @@ public class Star2Devise {
         }
 
 	//Retrieve atom type
-	_currentDataLoop.getNames().tagPositionDeep("_Atom_type", nestLevel,
-	  returnIndex);
+	_currentDataLoop.getNames().tagPositionDeep(S2DNames.ATOM_TYPE,
+	  nestLevel, returnIndex);
 
 	if (returnIndex.num == -1) {
 	    throw new S2DException("Can't get index for atom types");
@@ -867,7 +633,8 @@ public class Star2Devise {
     private void writeDeltashifts() throws IOException, S2DException
     {
 	//Do the shift computations here
-	FileWriter deltashift_writer = new FileWriter( _accNum + "d.dat" );
+	FileWriter deltashift_writer = new FileWriter( _accNum +
+	  S2DNames.DELTASHIFT_DAT_SUFFIX);
 		
 	_currResSeqCode = -1;
 	_prevResSeqCode = -1;
@@ -888,10 +655,11 @@ public class Star2Devise {
 	    
 	    try {
 	        _currChemShiftValue = (new Double(currRow.elementAt(
-		  _chemShiftValueIndex) .getValue())).doubleValue();
+		  _chemShiftValueIndex).getValue())).doubleValue();
 	    } catch(Exception ex) {
 	        System.err.println("Error parsing chem shift value: " +
 		  ex.getMessage());
+	        if (DEBUG >= 1) ex.printStackTrace();
 		_currChemShiftValue = 0.0;
 	    }
 	    
@@ -901,6 +669,7 @@ public class Star2Devise {
 	    } catch(Exception ex) {
 	        System.err.println("Error parsing residue sequence code: " +
 		  ex.getMessage());
+	        if (DEBUG >= 1) ex.printStackTrace();
 		_currResSeqCode = 0;
 	    }
 	    
@@ -985,139 +754,143 @@ public class Star2Devise {
     // Write out the CSI info.
     private void writeCsi() throws IOException, S2DException
     {
-	// now get csi vals out
-	int ha_csi = 0, c_csi = 0, ca_csi = 0, 
-	    cb_csi = 0, cons_csi = 0;
+        if (DEBUG >= 2) {
+	    System.out.println("writeCsi()");
+	}
 
-	FileWriter csi_writer = new FileWriter( _accNum + "c.dat" );
+	FileWriter csi_writer = new FileWriter( _accNum +
+	  S2DNames.CSI_DAT_SUFFIX );
 
-	LineTokens currentLine 
-	    = new LineTokens(new StreamTokenizer
-			     (new FileReader
-			      ( _accNum + "d.dat" )));
-	currentLine.readAndTokenLine();
-	
+	LineTokens deltaShiftLine = new LineTokens(new StreamTokenizer(
+	  new FileReader(_accNum + S2DNames.DELTASHIFT_DAT_SUFFIX)));
+
+	// The CSI values (initialized "for real" inside the loop).
+	int ha_csi = 0, c_csi = 0, ca_csi = 0, cb_csi = 0, cons_csi = 0;
+
+	int prevCsSeq = -1;
+	int currCsSeq = -1;
+	int currDelSeq = -1;
+        boolean hasCsiInfo = false;
+
 	int maxRows  = _currentDataLoop.getVals().size();
-	for (int currRowNum = 0; currRowNum < maxRows; currRowNum++)
-	{
-	    LoopRowNode currRow
-		= _currentDataLoop.getVals().elementAt(currRowNum);
-	
+	for (int currRowNum = 0; currRowNum < maxRows; currRowNum++) {
+
+	    //
+	    // Get the next row of chem shift info and get its sequence number.
+	    //
+	    LoopRowNode currRow =
+	      _currentDataLoop.getVals().elementAt(currRowNum);
+
 	    try {
-	        _currChemShiftValue = (new Double(currRow.elementAt(
-		  _chemShiftValueIndex).getValue())).doubleValue();
-	    } catch(Exception ex) {
-	        System.err.println("Error parsing chem shift value: " +
-		  ex.getMessage());
-		_currChemShiftValue = 0.0;
-	    }
-	      
-	    try {
-	        _currResSeqCode = Integer.parseInt(
+	        currCsSeq = Integer.parseInt(
 		  currRow.elementAt(_residueSeqIndex).getValue());
 	    } catch(Exception ex) {
 	        System.err.println("Error parsing residue sequence code: " +
 		  ex.getMessage());
-		_currResSeqCode = 0;
+	        if (DEBUG >= 1) ex.printStackTrace();
+		currCsSeq = -1;
 	    }
 
-	    String currAtomName 
- 		= currRow.elementAt(_atomNameIndex).getValue();
+	    //
+	    // If the current chem shift row's sequence number is different
+	    // from the previous one, we are done with the previous sequence
+	    // number (if there is one) and we need to write out the
+	    // chem shift info and read the deltashifts for the new
+	    // sequence number.
+	    //
+            if (currCsSeq != prevCsSeq && currCsSeq != -1) {
+                if (hasCsiInfo) {
+		    csi_writer.write(prevCsSeq + " " + ha_csi + " " + c_csi +
+		      " " + ca_csi + " " + cb_csi + " " + cons_csi + "\n");
+	        }
 
-	    if (_currResSeqCode != _prevResSeqCode &&
-		_currResSeqCode != 1) 
-	    { // assume code starts at 1
-		
-		if (_prevResSeqCode != currentLine.seqNumber) {
- 		    System.err.println("Consensus csi sequence number"
-				       + " doesn't match that of "
- 				       + "other sequence csi's!");
-		}
-		
-		csi_writer.write(_prevResSeqCode + " " 
-				 + ha_csi + " "
-				 + c_csi + " "
-				 + ca_csi + " "
-				 + cb_csi + " "
-				 + cons_csi + "\n");
+	        while (currDelSeq < currCsSeq) {
+		    deltaShiftLine.readAndTokenLine();
+		    currDelSeq = deltaShiftLine.seqNumber;
+	        }
 
-		// re-initialize values
+		// Initialize.
+	        prevCsSeq = currCsSeq;
+	        hasCsiInfo = false;
+
 		ha_csi = 0;
 		c_csi = 0;
 		ca_csi = 0;
 		cb_csi = 0;
-		cons_csi = 0;
+		cons_csi = deltaShiftLine.csi;
+            }
 
-		_prevResSeqCode = _currResSeqCode;
-		_prevAtomName = currAtomName;
-		currentLine.readAndTokenLine();
-		cons_csi = currentLine.csi;
-			 
-	    } else if (_currResSeqCode == 1)
-	    { // init data
-		_prevResSeqCode = _currResSeqCode;
-		_prevAtomName
-		    = currAtomName;
-	    }
-		    
+	    //
+	    // If the chem shift sequence number matches the deltashift
+	    // sequence number, do the calculations for this chem shift
+	    // row.
+	    //
+            if (currCsSeq == currDelSeq) {
+                hasCsiInfo = true;
+        
+	        try {
+	            _currChemShiftValue = (new Double(currRow.elementAt(
+		      _chemShiftValueIndex).getValue())).doubleValue();
+	        } catch(Exception ex) {
+	            System.err.println("Error parsing chem shift value: " +
+		      ex.getMessage());
+	            if (DEBUG >= 1) ex.printStackTrace();
+		    _currChemShiftValue = 0.0;
+	        }
 
- 	    String currResLabel 
- 		= currRow.elementAt(_residueLabelIndex).getValue();
+	        String currAtomName =
+		  currRow.elementAt(_atomNameIndex).getValue();
 
-	    //Computes delta delta
-	    Pair  standardValue = 
-		_refTable.returnValues(_error,
-				      currResLabel, currAtomName);
+ 	        String currResLabel =
+		  currRow.elementAt(_residueLabelIndex).getValue();
+
+	        // Computes delta delta
+	        Pair  standardValue = _refTable.returnValues(_error,
+		  currResLabel, currAtomName);
 	    
-	    if(standardValue.chemshift > 0.0) {
-		float deltashift
-		    =  (float)(_currChemShiftValue 
-			- standardValue.chemshift);
-			  			  
+	        if(standardValue.chemshift > 0.0) {
+		    float deltashift = (float)(_currChemShiftValue -
+		      standardValue.chemshift);
 			
-		//And now to compute the CSI's
-		int csi ;
-		if (deltashift > standardValue.offset) {
-		    csi = 1;
-		} else if(deltashift < -1.0*standardValue.offset) {
-		    csi = -1;
-		} else {
-		    csi = 0;
-		}
+		    // And now to compute the CSI's
+		    int csi ;
+		    if (deltashift > standardValue.offset) {
+		        csi = 1;
+		    } else if(deltashift < -1.0*standardValue.offset) {
+		        csi = -1;
+		    } else {
+		        csi = 0;
+		    }
 		    
-		//The special cases of combining HA with HA2
-		//and HA3 with CB as per algorithm
-		if(currAtomName.compareTo("HA") == 0
-		   || (currAtomName.compareTo("HA2") == 0
-		       && currResLabel.compareTo("GLY") == 0))
-		{
-		    ha_csi = csi;
-		    _prevAtomName = "HA";
-		} else if (currAtomName.compareTo("C") == 0) {
-		    c_csi = csi;
-		} else if (currAtomName.compareTo("CA") == 0) {
-		    ca_csi = csi;
-		} else if (currAtomName.compareTo("CB") == 0
+		    // The special cases of combining HA with HA2
+		    // and HA3 with CB as per algorithm
+		    if(currAtomName.compareTo("HA") == 0 ||
+		      (currAtomName.compareTo("HA2") == 0 &&
+		      currResLabel.compareTo("GLY") == 0))
+		    {
+		        ha_csi = csi;
+		    } else if (currAtomName.compareTo("C") == 0) {
+		        c_csi = csi;
+		    } else if (currAtomName.compareTo("CA") == 0) {
+		        ca_csi = csi;
+		    } else if (currAtomName.compareTo("CB") == 0
 			 || (currAtomName.compareTo("HA3") == 0
-			     && currResLabel.compareTo("GLY") ==0))
-		{
-		    cb_csi = csi;
-		    _prevAtomName = "CB";
-		}
+			     && currResLabel.compareTo("GLY") == 0)) {
+		        cb_csi = csi;
+		    }
+	        } // if chemshift value > 0.0
+            }
+        }
 
-	    } // if chemshift value > 0.0
-    
-	}
+	//
+	// Write out the chem shift info for the last sequence.
+	//
+        if (hasCsiInfo) {
+	    csi_writer.write(prevCsSeq + " " + ha_csi + " " + c_csi + " " +
+	      ca_csi + " " + cb_csi + " " + cons_csi + "\n");
+        }
 
-	// write out the last entry		
-	csi_writer.write(_prevResSeqCode + " " 
-			 + ha_csi + " "
-			 + c_csi + " "
-			 + ca_csi + " "
-			 + cb_csi + " "
-			 + cons_csi + "\n");
 	csi_writer.close();
-//  	System.out.println("Finished csi.");
     }
 
     // ----------------------------------------------------------------------
@@ -1127,11 +900,11 @@ public class Star2Devise {
 	//Do the atom assignment computation here
 	int starnumH, starnumC, starnumN, numH, numC, numN;
 	  
-	FileWriter percent_writer = new FileWriter( _accNum + "p.dat" );
+	FileWriter percent_writer = new FileWriter( _accNum +
+	  S2DNames.PERCENT_ASSIGN_DAT_SUFFIX );
 	
-        final String CHEMASSG_FILE = "assignments.txt";
 	AssgDataManager assgTable 
-	    = new AssgDataManager( CHEMASSG_FILE );
+	    = new AssgDataManager( S2DNames.CHEMASSG_FILE );
 	
 	int maxRows  = _currentDataLoop.getVals().size();
 	int currRowNum = 0;
@@ -1209,15 +982,6 @@ public class Star2Devise {
     }
 
     // ----------------------------------------------------------------------
-    /* Function sequence
-       Determine the amino acid sequence?
-     */
-//     public boolean sequence( String outFileName) {
-// 	// cf processstrdata
-// 	return false;
-//     }
-
-    // ----------------------------------------------------------------------
     /* Function summarize
      * Return value: true iff summary is successful; false otherwise.
      */
@@ -1230,9 +994,9 @@ public class Star2Devise {
 
 	try {
 	    VectorCheckType saveFrameVec =
-		aStarTree.searchByName( "save_entry_information" );
+		aStarTree.searchByName( S2DNames.SAVE_ENTRY_INFO );
 	    if (DEBUG >= 2) {
-	        System.out.println("  summarizing save_entry_information");
+	        System.out.println("  summarizing " + S2DNames.SAVE_ENTRY_INFO);
 	    }
 
 	    // this vector should have size 1 because there should
@@ -1249,20 +1013,23 @@ public class Star2Devise {
 	    try {
 	        title = ((DataItemNode)
 		  ((SaveFrameNode) saveFrameVec.firstElement())
-		  .searchByName("_Entry_title") .firstElement()).getValue();
+		  .searchByName(S2DNames.ENTRY_TITLE) .firstElement()).
+		  getValue();
             } catch(Exception ex) {
 	        System.err.println("Exception getting title: " +
 		  ex.getMessage());
+	        if (DEBUG >= 1) ex.printStackTrace();
 	    }
 
             String system_name = "unknown";
 	    try {
 	        system_name = ((DataItemNode)
-		  aStarTree.searchByName("_Mol_system_name")
+		  aStarTree.searchByName(S2DNames.MOL_SYSTEM_NAME)
 		  .firstElement()).getValue();
             } catch(Exception ex) {
 	        System.err.println("Exception getting system name: " +
 		  ex.getMessage());
+	        if (DEBUG >= 1) ex.printStackTrace();
 	    }
 
 	    VectorCheckType category_vec =
@@ -1280,8 +1047,7 @@ public class Star2Devise {
 	    DataLoopNode category_loop = 
 		((DataLoopNode) category_vec.firstElement() );
 
-	    LoopTableNode category_vals =
-		((DataLoopNode) category_vec.firstElement() ).getVals();
+	    LoopTableNode category_vals = category_loop.getVals();
 
 	    // generate a web page here
 	    String the_number = null;
@@ -1290,8 +1056,10 @@ public class Star2Devise {
 	    } else {
 	        the_number = outFileName;
 	    }
+
   	    FileOutputStream outStream 
-		= new FileOutputStream(the_number + "y.html");
+		= new FileOutputStream(the_number +
+		S2DNames.SUMMARY_HTML_SUFFIX);
  	    PrintWriter summary_writer 
  		= new PrintWriter(new BufferedWriter
  				  ( new OutputStreamWriter ( outStream ))) ;
@@ -1304,169 +1072,165 @@ public class Star2Devise {
 	    
 	    // new display- pages generated my make_view
 	    String display_link_base = "<br><br><a href=\"" + the_number;
-	    String display_link = display_link_base + "c.html";
 	    
+
+            //
+	    // Save the data available in this STAR file.
+	    //
+	    boolean savedChemShifts = false;
+	    boolean savedRelax = false;
+	    boolean savedHExch = false;
+	    boolean savedCoupling = false;
+	    boolean savedS2Params = false;
+
 	    // DataLoopNode contains DataLoopNameListNode, and LoopTableNode
 	    for ( int i = 0; i < category_vals.size(); i++) {
 		String current_tag =
 		    category_vals.elementAt(i).firstElement().getValue();
-		if (current_tag.equals("assigned_chemical_shifts")) {
-	            if (DEBUG >= 2) {
-	                System.out.println(
-			  "  summarizing assigned_chemical_shifts");
-	            }
+		if (DEBUG >= 2) {
+		    System.out.println("Tag = " + current_tag);
+		}
+
+		if (current_tag.equals(S2DNames.ASSIGNED_CHEM_SHIFTS)) {
+		    savedChemShifts = calcChemShifts(null);
 		    
-		    // generate the files
-		    calcChemShifts(null);
+		} else if (current_tag.equals(S2DNames.T1_RELAX)) {
+		    try {
+		        saveGeneric(the_number, S2DNames.T1_RELAX,
+		          S2DNames.RESIDUE_SEQ_CODE, S2DNames.T1_DAT_SUFFIX,
+			  null);
+		        savedRelax = true;
+		    } catch (Exception ex) {
+		        System.err.println("Exception saving T1 relaxation: "
+			  + ex.getMessage());
+		    }
 
-		    // and create links
-		    summary_writer.print(display_link);
-		    summary_writer.println("\">Chemical Shift Index</a>");
+		} else if (current_tag.equals(S2DNames.T2_RELAX)) {
+		    try {
+		        saveGeneric(the_number, S2DNames.T2_RELAX,
+		          S2DNames.RESIDUE_SEQ_CODE, S2DNames.T2_DAT_SUFFIX,
+			  null);
+		        savedRelax = true;
+		    } catch (Exception ex) {
+		        System.err.println("Exception saving T2 relaxation: "
+			  + ex.getMessage());
+		    }
 
-	            display_link = display_link_base + "d.html";
-		    summary_writer.print(display_link);
-		    summary_writer.println
-			("\">Chemical Shift Delta</a>");
+		} else if (current_tag.equals(S2DNames.HETERONUCLEAR_NOE)) {
+		    try {
+		        saveGeneric(the_number, S2DNames.HETERONUCLEAR_NOE,
+		          S2DNames.RESIDUE_SEQ_CODE, "n", null);
+		        savedRelax = true;
+		    } catch (Exception ex) {
+		        System.err.println(
+			  "Exception saving heteronuclear NOE: " +
+			  ex.getMessage());
+		    }
 
-	            display_link = display_link_base + "p.html";
-		    summary_writer.print(display_link);
-		    summary_writer.println
-			("\">Percent Assigned Atoms</a>");
-		    
-		} 
-		
-		if (current_tag.equals("T1_relaxation")) {
-	            if (DEBUG >= 2) {
-	                System.out.println(
-			  "  summarizing T1_relaxation");
-	            }
+		// Watch out for RATE vs. RATES!!
+		} else if (current_tag.equals(S2DNames.H_EXCHANGE_RATE)) {
+		    try {
+		        saveGeneric(the_number, S2DNames.H_EXCHANGE_RATES,
+		          S2DNames.RESIDUE_SEQ_CODE, "r",
+			  S2DNames.H_EXCHANGE_RATE_VALUE);
+		        savedHExch = true;
+		    } catch (Exception ex) {
+		        System.err.println(
+			  "Exception saving H exchange rates: " +
+			  ex.getMessage());
+		    }
 
-		    // generate the files
-		    if (! processStrData("save_T1_750", 
-						  the_number + "o.dat") )
-			System.err.println
-			    ("T1 relaxation save frame not found.");
-	
-		    if (! processStrData("save_T2_750", 
-						  the_number + "t.dat") )
-			System.err.println
-			    ("T2 750 relaxation save frame not found.");
-	
-		    if (! processStrData("save_T2_600",
-						  the_number + "u.dat") )
-			System.err.println
-			    ("T2 600 relaxation save frame not found.");
+		} else if (current_tag.equals(S2DNames.COUPLING_CONSTANTS)) {
+		    try {
+		        saveGeneric(the_number, S2DNames.COUPLING_CONSTANTS,
+		          S2DNames.COUPLING_CONSTANT_CODE, "g", null);
+		        savedCoupling = true;
+		    } catch (Exception ex) {
+		        System.err.println(
+			  "Exception saving coupling constants: " +
+			  ex.getMessage());
+		    }
 
-		    if (! processStrData("save_heteronuclear_NOE_750",
-						  the_number + "n.dat") )
-			System.err.println
-			    ("Heteronuclear NOE save frame not found.");
+		} else if (current_tag.equals(S2DNames.H_EXCHANGE_PROT_FACT)) {
+		    try {
+		        saveGeneric(the_number, S2DNames.H_EXCHANGE_PROT_FACT,
+		          S2DNames.RESIDUE_SEQ_CODE, "f",
+			  S2DNames.H_EXCHANGE_PROT_FACT_VALUE);
+		        savedHExch = true;
+		    } catch (Exception ex) {
+		        System.err.println(
+			  "Exception saving H exchange protection factors: " +
+			  ex.getMessage());
+		    }
 
-		    if (! addLogColumn("save_H_exch_rates",
-				       "_H_exchange_rate_value",
-				       the_number + "r.dat") )
-			System.err.println
-			    ("H-exchange rates save frame not found.");
-
-
-		    if (! processStrData("save_HNHA_J_values",
-					 the_number + "g.dat") )
-			System.err.println
-			    ("Coupling constants save frame not found.");
-
-
-		    // we want to plot the log of the next value
-		    if (! addLogColumn
-			("save_protection_factors_label",
-			 "_H_exchange_protection_factor_value",
-			 the_number + "f.dat") )
-			System.err.println
-			    ("H-exchange protection factors save "
-			     + "frame not found.");
-
-		    if (! processStrData("save_S2", 
-						  the_number + "s.dat") )
-			System.err.println("Kinetic order parameters (S2)" +
-					   "save frame not found.");
-
-		    // and create the links
-	            display_link = display_link_base + "h.html";
-		    summary_writer.print(display_link);
-		    summary_writer.println("\">H-Exchange Rates</a>");
-
-	            display_link = display_link_base + "o.html";
-		    summary_writer.print(display_link);
-		    summary_writer.println("\">Order Parameters</a>");
-
-	            display_link = display_link_base + "r.html";
-		    summary_writer.print(display_link);
-		    summary_writer.println("\">Relaxation Parameters</a>");
-
-	            display_link = display_link_base + "g.html";
-		    summary_writer.print(display_link);
-		    summary_writer.println("\">Coupling Constants</a>");
+		} else if (current_tag.equals(S2DNames.S2_PARAMS)) {
+		    try {
+		        saveGeneric(the_number, S2DNames.S2_PARAMS,
+		          S2DNames.RESIDUE_SEQ_CODE, "s", null);
+		        savedS2Params = true;
+		    } catch (Exception ex) {
+		        System.err.println("Exception saving S2 parameters: "
+			  + ex.getMessage());
+		    }
 		}
 	    }
 
+
+	    //
+	    // Now make links in the summary page to the html files
+	    // that display the data we saved.
+	    //
+	    String display_link;
+
+            if (savedChemShifts) {
+		display_link = display_link_base +
+		  S2DNames.CHEM_SHIFT_HTML_SUFFIX;
+		summary_writer.print(display_link);
+		summary_writer.println("\">Chemical Shift Index</a>");
+
+	        display_link = display_link_base + S2DNames.DELTA_HTML_SUFFIX;
+		summary_writer.print(display_link);
+		summary_writer.println("\">Chemical Shift Delta</a>");
+
+	        display_link = display_link_base +
+		  S2DNames.PCT_ASSIGNED_HTML_SUFFIX;
+		summary_writer.print(display_link);
+		summary_writer.println("\">Percent Assigned Atoms</a>");
+	    }
+
+	    if (the_number.equals("4096")) { //TEMP -- current code/installation
+	      // treats 4096 as a special case
+	    if (savedRelax) {
+	        display_link = display_link_base + S2DNames.RELAX_HTML_SUFFIX;
+		summary_writer.print(display_link);
+		summary_writer.println("\">Relaxation Parameters</a>");
+	    }
+
+	    if (savedHExch) {
+	        display_link = display_link_base +
+		  S2DNames.H_EXCH_HTML_SUFFIX;
+		summary_writer.print(display_link);
+		summary_writer.println("\">H-Exchange Rates</a>");
+	    }
+
+	    if (savedCoupling) {
+	        display_link = display_link_base +
+		  S2DNames.COUPLING_HTML_SUFFIX;
+		summary_writer.print(display_link);
+		summary_writer.println("\">Coupling Constants</a>");
+	    }
+
+	    if (savedS2Params) {
+	        display_link = display_link_base + S2DNames.ORDER_HTML_SUFFIX;
+		summary_writer.print(display_link);
+		summary_writer.println("\">Order Parameters</a>");
+	    }
+	    } //TEMP
+
 	    summary_writer.print("</body>\n</html>\n");
-
-// loop_
-// _Saveframe_category_type 
-// _Saveframe_category_type_count 
-// coupling_constants 1 
-// T1_relaxation 1 
-// T2_relaxation 2 
-// heteronuclear_NOE 1 
-// S2_parameters 1 
-// H_exchange_rate 1 
-// H_exchange_protection_factors 1 
-// representative_structure 1 
-// structure_coordinate_set 1 
-// stop_
-
-
-	    // to print out a DataLoopNode
-// 	    DataLoopNode categoryLoop =
-// 		(DataLoopNode)
-// 		(( (SaveFrameNode) categoryVec.elementAt(0) )
-// 		 .lastElement());
-
-//   	    StarUnparser theUnparser = new StarUnparser(outStream);
-
-// 	    // speed up computation time a bit
-// 	    theUnparser.setFormatting( false );
-	    
-// 	    // writes out a LoopTableNode of values
-//   	    theUnparser.writeOut((DataLoopNode)categoryVec.firstElement(), 0);
-//    	    theUnparser.writeOut(category_vals, 0);
-
-	    summary_writer.println("</body></html>");
-
-
 
 	    summary_writer.close();
  	    outStream.close();
-
-
-
-	    
-// 	    VectorCheckType chemshiftVec =
-// 		categoryLoop.searchForTypeByName
-// 		( Class.forName( StarValidity.pkgName()+".LoopRowNode"),
-// 		  "assigned_chemical_shifts" );
-
-// 	    //assert that this list has just 1 item in it!
-// 	    if( chemshiftVec.size() == 1 )
-// 	    {
-// 		int assg_chem_shift_count =
-// 		    new Integer( ((LoopRowNode) chemshiftVec.firstElement())
-// 				 .elementAt(1).getValue() ).intValue();
-// 		System.out.println("Chem shift count = " +
-// 				   assg_chem_shift_count);
-// // 		return true;
-// 	    }
-
-	    // Now check for other data...
 	    
 	    return true;
 
@@ -1515,7 +1279,7 @@ public class Star2Devise {
 	// find number of residues
 	VectorCheckType saveFrameVec;
 	saveFrameVec = 
-	    aStarTree.searchByName("save_GMG4");
+	    aStarTree.searchByName(S2DNames.SAVE_GMG4);
 
 	if (saveFrameVec.size() == 0) {
 	    return false;
@@ -1529,7 +1293,7 @@ public class Star2Devise {
 	    Integer.parseInt
 	    (((DataItemNode)
 	       ( ((SaveFrameNode) saveFrameVec.firstElement())
-		 .searchByName("_Residue_count") ).firstElement() )
+		 .searchByName(S2DNames.RESIDUE_COUNT) ).firstElement() )
 	      .getValue());
 	
 	if (DEBUG >= 2) {
@@ -1538,7 +1302,7 @@ public class Star2Devise {
 
 	// count the distance constraints per residue
 	saveFrameVec =
-	    aStarTree.searchByName("save_distance_constraints");
+	    aStarTree.searchByName(S2DNames.SAVE_DIST_CONSTRAINTS);
 	 
 	if (saveFrameVec.size() == 0) // none found
 	    return false;
@@ -1566,9 +1330,10 @@ public class Star2Devise {
 		    lastLoop.elementAt(id).elementAt(5).getValue();
 
 		if (lastLoop.elementAt(id).elementAt(1).getValue()
-		    .equals("HEME")) {
+		    .equals(S2DNames.HEME)) {
 		    
-		    if (! lastLoop.elementAt(id).elementAt(4).equals("HEME")) {
+		    if (! lastLoop.elementAt(id).elementAt(4).equals(
+		      S2DNames.HEME)) {
 			
 			constraint_count[Integer.parseInt(second_residue)]++;
 		    }
@@ -1578,7 +1343,7 @@ public class Star2Devise {
 
 		if (! first_residue.equals(second_residue)
 		    && ! lastLoop.elementAt(id).elementAt(4).getValue()
-		    .equals("HEME"))
+		    .equals(S2DNames.HEME))
 		    
 		    constraint_count[Integer.parseInt(second_residue)]++;
 		}
@@ -1591,7 +1356,7 @@ public class Star2Devise {
 	float[][] avg_coords = new float[num_residues + 1][3];
 	saveFrameVec =
 	    aStarTree.searchByName
-	    ("save_conformer_statistical_characteristics");
+	    (S2DNames.SAVE_CONF_STAT);
 
 
 //  	for (int rcount = 1; rcount < num_residues + 1; rcount++) {
@@ -1606,7 +1371,7 @@ public class Star2Devise {
 	// ** current working pos
 	saveFrameVec =
 	    aStarTree.searchByName
-	    ("save_conformer_statistical_characteristics");
+	    (S2DNames.SAVE_CONF_STAT);
 	
 	if (saveFrameVec.size() == 0) // none found
 	    return false;
@@ -1623,7 +1388,7 @@ public class Star2Devise {
 	    Integer.parseInt
 	    (((DataItemNode)
 	      ( ((SaveFrameNode) saveFrameVec.firstElement())
-		.searchByName("_Conformer_submitted_total_number") )
+		.searchByName(S2DNames.CONF_SUB_TOTAL) )
 	      .firstElement() )
 	     .getValue());
 	
@@ -1631,6 +1396,7 @@ public class Star2Devise {
  	    System.out.println(" " + num_conformers + " conformers");
 	}
 	
+	//TEMP -- this is probably wrong!
 	saveFrameVec =
 	    aStarTree.searchByName("save_GMH4CO_conformer_family");
 	
@@ -1721,7 +1487,8 @@ public class Star2Devise {
 	    PrintWriter out_writer = 
 		new PrintWriter
 		(new BufferedWriter
-		 (new FileWriter(the_number + "i.dat")));
+		 (new FileWriter(the_number +
+		 S2DNames.CONSTRAINTS_DAT_SUFFIX)));
 		    
 	    for (int outcount = 1; 
 		 outcount < num_residues + 1; 
@@ -1751,4 +1518,230 @@ public class Star2Devise {
 	super.finalize();
     }
 
+    // ----------------------------------------------------------------------
+    // Save a "generic" save frame.
+    // Parameters:
+    //   accNo: accession number
+    //   categoryType: NMR-STAR file save frame category type, e.g.,
+    //     "heteronuclear_NOE"
+    //   loopTag: a tag in the data loop we want to save, e.g.
+    //     "_Residue_seq_code"
+    //   logOperand: loop value to take the logarithm of, if any (can be null)
+    private void saveGeneric(String accNo, String categoryType,
+      String loopTag, String suffix, String logOperand)
+      throws S2DException
+    {
+        if (DEBUG >= 2) {
+            System.out.println("saveGeneric(" + categoryType + ")");
+        }
+
+        VectorCheckType saveFrames = getSaveFramesByTagValue(
+	  S2DNames.SAVEFRAME_CATEGORY, categoryType);
+
+        if (saveFrames.size() <= 0) {
+	    throw new S2DException(categoryType + " save frame not found");
+	}
+
+        for (int index = 0; index < saveFrames.size(); index++) {
+	    SaveFrameNode saveFrame =
+	      (SaveFrameNode)saveFrames.elementAt(index);
+
+	    String indexOut;
+	    if (index == 0) {
+	        indexOut = "";
+	    } else {
+	        indexOut = String.valueOf(index);
+	    }
+	    outputSaveFrame(saveFrame, accNo + suffix + indexOut + ".dat",
+	      loopTag, logOperand);
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // Get a list of save frames (if any) with the specified tag/value
+    // combination.
+    private VectorCheckType getSaveFramesByTagValue(String tag, String value)
+    {
+        VectorCheckType result = new VectorCheckType();
+	try {
+	    //
+	    // Set up the result VectorCheckType.
+	    //
+	    result.addType(Class.forName(
+	      StarValidity.pkgName() + ".SaveFrameNode"));
+	    result.freezeTypes();
+
+	    //
+	    // Find any DataItemNodes with the specified tag/value combo.
+	    //
+            VectorCheckType dataNodes = aStarTree.searchForTypeByTagValue(
+	      Class.forName(StarValidity.pkgName() + ".DataItemNode"),
+	      tag, value);
+
+	    //
+	    // Get the save frames for the DataItemNodes, and add them to the
+	    // VectorCheckType that we will return.
+	    //
+            for (int index = 0; index < dataNodes.size(); index++) {
+	        Class desiredClass = Class.forName(StarValidity.pkgName() +
+	          ".SaveFrameNode");
+		StarNode node = (StarNode)dataNodes.elementAt(index);
+		while (node != null && node.getClass() != desiredClass) {
+		    node = node.getParent();
+		}
+
+		if (node == null) {
+		    throw new S2DException("Can't get save frame for " +
+		      tag + ", " + value);
+		}
+
+	        SaveFrameNode saveFrame = (SaveFrameNode)node;
+	        result.addElement(saveFrame);
+            }
+	} catch (Exception ex) {
+	    System.err.println("Exception getting save frames(" + tag + ", " +
+	      value + "): " + ex.getMessage());
+	}
+
+	return result;
+    }
+
+    // ----------------------------------------------------------------------
+    // Output the given save frame.
+    // Parameters:
+    //   saveFrame: the save frame to output
+    //   outFileName: the file to output to
+    //   loopTag: a tag in the data loop we want to save, e.g.
+    //     "_Residue_seq_code"
+    //   logOperand: loop value to take the logarithm of, if any (can be null)
+    private void outputSaveFrame(SaveFrameNode saveFrame, String outFileName,
+      String loopTag, String logOperand)
+      throws S2DException
+    {
+        if (DEBUG >= 2) {
+            System.out.println("outputSaveFrame(" + saveFrame.getLabel() +
+	      ", " + outFileName + ", " + loopTag + ", " + logOperand + ")");
+        }
+
+	try {
+	    //
+	    // Find the data loop with the given tag in this save frame.
+	    //
+	    VectorCheckType tagList = saveFrame.searchByName(loopTag);
+	    if (tagList.size() != 1) {
+	        throw new S2DException(
+		  "Should have found one tag; found " + tagList.size());
+	    }
+
+	    Class desiredClass = Class.forName(StarValidity.pkgName() +
+	      ".DataLoopNode");
+            StarNode node = (StarNode)tagList.elementAt(0);
+	    while (node != null && node.getClass() != desiredClass) {
+	        node = node.getParent();
+	    }
+
+	    if (node == null) {
+	        throw new S2DException("Could not find data loop with tag " +
+		  loopTag + " in save frame " + saveFrame.getLabel());
+	    }
+
+	    DataLoopNode dataLoop = (DataLoopNode)node;
+	    LoopTableNode values = dataLoop.getVals();
+
+	    if (logOperand != null) {
+ 		DataLoopNameListNode names = dataLoop.getNames();
+		doLogarithm(logOperand, names, values);
+	    }
+
+	    //
+	    // Output the data.
+	    //
+	    File outFile = new File(outFileName);
+	    FileOutputStream outStream = 
+	        new FileOutputStream(outFile);
+	    StarUnparser theUnparser = new StarUnparser(outStream);
+	
+	    // Speed up computation time a bit.
+	    theUnparser.setFormatting( false );
+
+	    // Write out a LoopTableNode of values.
+  	    theUnparser.writeOut(values, 0);
+
+	    outStream.close();
+	} catch (IOException e) {
+	    System.err.println("IOException: " + e.getMessage() );
+	    throw new S2DException("Unable to process save frame " +
+	      saveFrame.getLabel());
+	} catch (Exception e) {
+	    System.err.println("Exception: " + e.getMessage() );
+	    throw new S2DException("Unable to process save frame " +
+	      saveFrame.getLabel());
+	}
+    }
+
+    // ----------------------------------------------------------------------
+    // Take the logarithm of the given column in a table.
+    // Parameters:
+    //   operand: loop value to take the logarithm of, if any (can be null)
+    //   names: the column names of the table
+    //   values: the values of the table
+    private void doLogarithm(String operand, DataLoopNameListNode names,
+      LoopTableNode values)
+      throws S2DException
+    {
+        if (DEBUG >= 2) {
+            System.out.println("doLogarithm(" + operand + ")");
+        }
+
+		// find value
+		VectorCheckType operands =
+		    names.searchByName(operand);
+
+		if (operands.size() != 1)
+		    throw new S2DException
+			("Found "
+			 + operands.size()
+			 + " " + operand + " tags"
+			 + ", expect 1.");
+		
+		int op_index = 
+		    names.firstElement().indexOf 
+		    ( ((DataNameNode) operands.firstElement()) );
+
+		// now edit the values.  values is a LoopTableNode of
+		// LoopRowNodes, each of which contains many
+		// DataValueNodes.  We need to copy all the values and
+		// create a new LoopRowNode, because we can't insert
+		// values into row already in a DataLoopNode.
+		Double origValue;
+
+		for (int outer = 0; outer < values.size(); outer++) {
+		    LoopRowNode row_copy = new LoopRowNode();
+		    // copy all old elements
+		    for (int inner=0; inner < values.elementAt(outer).size();
+			 inner++) {
+ 			row_copy.insertElementAt
+			    (values.elementAt(outer).elementAt(inner), inner);
+		    }
+		    
+		    // convert value from a String to a Double object
+		    if (row_copy.elementAt(op_index).getValue().equals("."))
+			row_copy.addElement( new DataValueNode("."));
+		    else {
+			origValue = new Double(row_copy.elementAt(op_index)
+					       .getValue() );
+			
+			// take the log, and convert back to a String
+			row_copy.addElement( new DataValueNode
+					     ((new Float
+					       ((Math.log
+						 (origValue.doubleValue() )
+						 / Math.log(10.0) ) ))
+					      .toString()));
+		    }
+
+		    // now replace the old value with the new one
+		    values.setElementAt(row_copy, outer);
+		}
+    }
 }

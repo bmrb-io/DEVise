@@ -84,7 +84,8 @@ if (! -e $summary_page) {
   }
 
   # Then, additional stuff like in bmr4096.str.
-  if (-e $acc_num.'o.dat') {
+  #TEMP -- this is not general
+  if (-e $acc_num.'g.dat') {
     gen_html('coupling');
     gen_html('hxrates');
     gen_html('order');

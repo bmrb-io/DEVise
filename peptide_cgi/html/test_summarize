@@ -53,16 +53,23 @@ sub test_star {
   $star_num =~ s/^bmr//;
   $star_num =~ s/.str$//;
 
+  my($dat_names, $html_names);
+  $dat_names = $star_num . '*.dat';
+  $html_names = $star_num . '*.html';
   if (system("./summarize $star_name")) {
     print STDERR "ERROR processing star file $star_name\n";
     system("mv summarize.out summarize.out.$star_num");
+    system("mv $dat_names data");
+    system("mv $html_names data");
+  } elsif (-s "summarize.out") {
+    print STDERR "Possible error or warning processing star file $star_name\n";
+    system("mv summarize.out summarize.out.$star_num");
+    system("mv $dat_names data");
+    system("mv $html_names data");
   } else {
     print "Successfully processed star file $star_name\n";
-    my($dat_names);
-    $dat_names = $star_num . '*.dat';
     system("rm $dat_names");
-    $dat_names = $star_num . '*.html';
-    system("rm $dat_names");
+    system("rm $html_names");
   }
 
   # report if error
