@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1996/08/06 20:12:05  wenger
+#  Set up makefiles to easily compile with -g flag; other cleanup of
+#  makefiles.
+#
 
 ############################################################
 
@@ -34,7 +38,7 @@ LIBNAME = libissm.a
 all: $(LIBNAME)
 
 $(LIBNAME): $(LIBOBJ)
-	ar cr $@ $(LIBOBJ)
+	$(AR) cr $@ $(LIBOBJ)
 	ranlib $@
 
 .PHONY: clean mostlyclean

@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.17  1996/08/06 20:11:08  wenger
+#  Set up makefiles to easily compile with -g flag; other cleanup of
+#  makefiles.
+#
 
 ############################################################
 
@@ -85,8 +89,8 @@ show: $(ALLSHOWOBJ) $(LIB)
                 -lattrproj -ltcl -lm $(ARCH_LDPOST)
 
 $(LIB): $(LIBOBJ)
-	ar cr $@ $(LIBOBJ)
-	ranlib $@
+	$(AR) cr $@ $(LIBOBJ)
+	$(RANLIB) $@
 
 .PHONY: clean mostlyclean
 

@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.41  1996/08/06 20:11:47  wenger
+#  Set up makefiles to easily compile with -g flag; other cleanup of
+#  makefiles.
+#
 
 ############################################################
 
@@ -101,24 +105,24 @@ all: $(LIBNAME) libclient.a libserver.a libmonolith.a
 #		-fkeep-inline-functions -c $<
 
 libmonolith.a: TkControl.o
-	ar cr $@ TkControl.o
-	ranlib $@
+	$(AR) cr $@ TkControl.o
+	$(RANLIB) $@
 
 libclient.a: ClientAPI.o Version.o
-	ar cr $@ ClientAPI.o Version.o
-	ranlib $@
+	$(AR) cr $@ ClientAPI.o Version.o
+	$(RANLIB) $@
 
 libserver.a: ServerAPI.o ClientAPI.o
-	ar cr $@ ServerAPI.o ClientAPI.o
-	ranlib $@
+	$(AR) cr $@ ServerAPI.o ClientAPI.o
+	$(RANLIB) $@
 
 $(LIBNAME): $(LIBOBJ)
-	ar cr $@ $(LIBOBJ)
-	ranlib $@
+	$(AR) cr $@ $(LIBOBJ)
+	$(RANLIB) $@
 
 libbufmgr.a: $(BufMgrObj)
-	ar cr $@ $(BufMgrObj)
-	ranlib $@
+	$(AR) cr $@ $(BufMgrObj)
+	$(RANLIB) $@
 
 testExtBufMgr: testExtBufMgr.o ExtBufMgr.o DCE.o
 	$(CC) -o $@ $(ARCH_LDFLAGS) $@.o ExtBufMgr.o DCE.o \

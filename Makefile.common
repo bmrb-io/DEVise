@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/08/09 15:39:46  wenger
+#  Modified makefiles to allow making static and Purify'd executables.
+#
 #  Revision 1.1  1996/08/06 20:10:45  wenger
 #  Set up makefiles to easily compile with -g flag; other cleanup of
 #  makefiles.
@@ -27,6 +30,8 @@
 # Define our linker and compiler.
 LD = ld
 CC = g++
+AR = /s/binutils/bin/ar
+RANLIB = ranlib
 
 # Set up for optimize or debug compiling.
 ifeq ($(DEV_DEBUG),)

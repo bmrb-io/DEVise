@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1996/08/06 20:11:28  wenger
+#  Set up makefiles to easily compile with -g flag; other cleanup of
+#  makefiles.
+#
 
 ############################################################
 
@@ -42,8 +46,8 @@ LIBNAME = libcrsp.a
 all: $(LIBNAME)
 
 $(LIBNAME): $(LIBOBJ)
-	ar cr $@ $(LIBOBJ)
-	ranlib $@
+	$(AR) cr $@ $(LIBOBJ)
+	$(RANLIB) $@
 
 main:	main.o $(LIBNAME) ../tape/libtape.a
 	$(CC) -o $@ $@.o ../graphics/ExitClean.o $(LDFLAGS)

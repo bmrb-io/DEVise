@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1996/08/06 20:11:17  wenger
+#  Set up makefiles to easily compile with -g flag; other cleanup of
+#  makefiles.
+#
 
 ############################################################
 
@@ -39,8 +43,8 @@ LIBNAME = libcstat.a
 all: $(LIBNAME)
 
 $(LIBNAME): $(LIBOBJ)
-	ar cr $@ $(LIBOBJ)
-	ranlib $@
+	$(AR) cr $@ $(LIBOBJ)
+	$(RANLIB) $@
 
 index:	index.o $(LIBNAME) ../tape/libtape.a
 	$(CC) -o $@ $@.o ../graphics/ExitClean.o $(LDFLAGS)

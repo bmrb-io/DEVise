@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.25  1996/08/06 20:11:56  wenger
+#  Set up makefiles to easily compile with -g flag; other cleanup of
+#  makefiles.
+#
 
 ############################################################
 
@@ -54,8 +58,8 @@ LIBNAME = libgraphics.a
 all: $(LIBNAME)
 
 $(LIBNAME): $(LIBOBJ) 
-	ar cr $@ $(LIBOBJ)
-	ranlib $@
+	$(AR) cr $@ $(LIBOBJ)
+	$(RANLIB) $@
 
 xvgifwr.o:	xvgifwr.c
 	gcc -c $(CFLAGS) $<
