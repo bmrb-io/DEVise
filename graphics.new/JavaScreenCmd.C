@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.65  1999/08/05 21:42:50  wenger
+  Cursor improvements: cursors can now be dragged in "regular" DEVise;
+  cursors are now drawn with a contrasting border for better visibility;
+  fixed bug 468 (cursor color not working).
+
   Revision 1.64  1999/07/13 21:26:46  wenger
   Fixed minor problem in debug logging.
 
@@ -2115,7 +2120,19 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 
 	DIR *directory = opendir(_sessionDir);
 	if (directory == NULL) {
-		reportErrSys("Can't open session directory");
+	    char errBuf[MAXPATHLEN * 2];
+		sprintf(errBuf, "Can't open session directory (%s)", _sessionDir);
+		reportErrSys(errBuf);
+
+	    // Reset things to the "base" session directory and try again.
+		delete [] _sessionDir;
+		_sessionDir = CopyString(getenv("DEVISE_SESSION"));
+	    directory = opendir(_sessionDir);
+	}
+	if (directory == NULL) {
+	    char errBuf[MAXPATHLEN * 2];
+		sprintf(errBuf, "Can't open session directory (%s)", _sessionDir);
+		reportErrSys(errBuf);
 		errmsg = "Can't open session directory";
 		_status = ERROR;
 		return;
