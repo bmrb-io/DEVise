@@ -21,6 +21,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.2  1997/06/05 18:11:45  wenger
+# Pretty much working now.  I need to clean up diagnostic code and get
+# the blanking out of sections according to mode working.
+#
 # Revision 1.1  1997/05/30 15:41:38  wenger
 # Most of the way to user-configurable '4', '5', and '6' keys -- committing
 # this stuff now so it doesn't get mixed up with special stuff for printing
@@ -62,13 +66,13 @@ menu .mbar.file.menu -tearoff false
 .mbar.file.menu add command -label "Quit" -command { destroy . }
 
 menu .mbar.view.menu -tearoff false
-.mbar.view.menu add cascade -label "Configuration"  \
+.mbar.view.menu add cascade -label "Keypad Config"  \
     -menu .mbar.view.menu.configmenu
 
 menu .mbar.view.menu.configmenu -tearoff false
 .mbar.view.menu.configmenu add command -label "Home" \
     -command { GetViewHome }
-.mbar.view.menu.configmenu add command -label "Horiz. Pan" \
+.mbar.view.menu.configmenu add command -label "Horiz. Scroll" \
     -command { GetViewHorPan }
 
 ##########################################################################
@@ -85,23 +89,19 @@ proc DEVise { command args } {
 
   if { $command == "viewSetHome" } {
     set viewHome [lrange $args 1 7]
-    puts "DIAG viewHome = $viewHome"
     return
   }
 
   if { $command == "viewSetHorPan" } {
     set viewHorPan [lrange $args 1 3]
-    puts "DIAG viewHorPan = $viewHorPan"
     return
   }
 
   if { $command == "viewGetHome" } {
-    puts "DIAG viewHome = $viewHome"
     return $viewHome
   }
 
   if { $command == "viewGetHorPan" } {
-    puts "DIAG viewHorPan = $viewHorPan"
     return $viewHorPan
   }
 

@@ -20,6 +20,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.2  1997/06/05 18:11:40  wenger
+# Pretty much working now.  I need to clean up diagnostic code and get
+# the blanking out of sections according to mode working.
+#
 # Revision 1.1  1997/05/30 15:41:38  wenger
 # Most of the way to user-configurable '4', '5', and '6' keys -- committing
 # this stuff now so it doesn't get mixed up with special stuff for printing
@@ -58,9 +62,9 @@ proc GetViewHome {} {
     # See ViewGraph.h for mode values...
     global viewHomeMode
     radiobutton .getViewHome.auto -text "Automatic" -variable viewHomeMode \
-      -value 1
-    radiobutton .getViewHome.man -text "Manual" -variable viewHomeMode \
-      -value 2
+      -value 1 -command "SwitchHomeMode"
+    radiobutton .getViewHome.man -text "Fixed" -variable viewHomeMode \
+      -value 2 -command "SwitchHomeMode"
 
     global viewHomeXMar viewHomeYMar
     label .getViewHome.xMarLab -text "X Margin:"
@@ -89,19 +93,21 @@ proc GetViewHome {} {
     button .getViewHome.setCurrent -text "Set to Current Query" \
       -command "SetHomeToCurrent"
 
-    # Pack everything into the frames.
+    # These frames are for spacing only.
+    frame .getViewHome.row2a -width 10m -height 6m
+    frame .getViewHome.row4a -width 10m -height 6m
+    frame .getViewHome.row7a -width 10m -height 4m
+
+    # Pack some widgets into the frames.  Other widges will be packed in
+    # the SwitchHomeMode procedure.
     pack .getViewHome.row1 -side bottom -pady 4m
     pack .getViewHome.row2 -side top
-    pack .getViewHome.row3 -side top
-    pack .getViewHome.row4 -side top
-    pack .getViewHome.row5 -side top
-    pack .getViewHome.row6 -side top
-    pack .getViewHome.row7 -side top
+    pack .getViewHome.row2a -side top
 
     pack .getViewHome.ok .getViewHome.cancel -in .getViewHome.row1 \
       -side left -padx 3m
     pack .getViewHome.auto .getViewHome.man -in .getViewHome.row2 \
-      -side top
+      -side top -pady 1m
     pack .getViewHome.xMarLab .getViewHome.xMarEnt -in .getViewHome.row3 \
       -side left
     pack .getViewHome.yMarLab .getViewHome.yMarEnt -in .getViewHome.row4 \
@@ -116,7 +122,6 @@ proc GetViewHome {} {
     # Returns: <mode> <autoXMargin> <autoYMargin> <manXLo> <manYLo>
     # <manXHi> <manYHi>
     set home [DEVise viewGetHome $curView]
-    puts "DIAG $home"
     set viewHomeMode [lindex $home 0]
     set viewHomeXMar [lindex $home 1]
     set viewHomeYMar [lindex $home 2]
@@ -124,11 +129,38 @@ proc GetViewHome {} {
     set viewHomeYLow [lindex $home 4]
     set viewHomeXHigh [lindex $home 5]
     set viewHomeYHigh [lindex $home 6]
+    SwitchHomeMode
 
     # Wait for the user to make a selection from this window.
     tkwait visibility .getViewHome
     grab set .getViewHome
     tkwait window .getViewHome
+}
+
+##########################################################################
+
+proc SwitchHomeMode {} {
+  global viewHomeMode
+
+  if {$viewHomeMode == 1} {
+    pack .getViewHome.row3 -after .getViewHome.row2a -pady 1m
+    pack .getViewHome.row4 -after .getViewHome.row3 -pady 1m
+    pack .getViewHome.row4a -after .getViewHome.row4 -pady 1m
+
+    pack forget .getViewHome.row5
+    pack forget .getViewHome.row6
+    pack forget .getViewHome.row7
+    pack forget .getViewHome.row7a
+  } else {
+    pack forget .getViewHome.row3
+    pack forget .getViewHome.row4
+    pack forget .getViewHome.row4a
+
+    pack .getViewHome.row5 -after .getViewHome.row2a -pady 1m
+    pack .getViewHome.row6 -after .getViewHome.row5 -pady 1m
+    pack .getViewHome.row7 -after .getViewHome.row6 -pady 1m
+    pack .getViewHome.row7a -after .getViewHome.row7
+  }
 }
 
 ##########################################################################
@@ -139,10 +171,8 @@ proc SetHomeToCurrent {} {
     global viewHomeYLow viewHomeYHigh
 
     set filters [DEVise getVisualFilters $curView]
-    puts "DIAG filters = $filters"
     # Filter is <x low> <y low> <x high> <y high> <something>
     set filter [lindex $filters [expr [llength $filters]-1]]
-    puts "DIAG filter = $filter"
 
     set viewHomeXLow [lindex $filter 0]
     set viewHomeYLow [lindex $filter 1]
@@ -158,15 +188,6 @@ proc SetViewHome {} {
     global viewHomeXMar viewHomeYMar
     global viewHomeXLow viewHomeXHigh
     global viewHomeYLow viewHomeYHigh
-
-    puts "DIAG SetViewHome"
-    puts "DIAG viewHomeMode = $viewHomeMode"
-    puts "DIAG viewHomeXMar = $viewHomeXMar"
-    puts "DIAG viewHomeYMar = $viewHomeYMar"
-    puts "DIAG viewHomeXLow = $viewHomeXLow"
-    puts "DIAG viewHomeXHigh = $viewHomeXHigh"
-    puts "DIAG viewHomeYLow = $viewHomeYLow"
-    puts "DIAG viewHomeYHigh = $viewHomeYHigh"
 
     # Arguments: <viewName> <mode> <autoXMargin> <autoYMargin> <manXLo>
     # <manYLo> <manXHi> <manYHi>
@@ -187,7 +208,7 @@ proc GetViewHorPan {} {
     # Create the top level widget and the frames we'll later use for
     # positioning.
     toplevel .getViewHorPan
-    wm title .getViewHorPan "Set View Horizontal Pan"
+    wm title .getViewHorPan "Set View Horizontal Scroll"
 
     frame .getViewHorPan.row1
     frame .getViewHorPan.row2
@@ -203,9 +224,9 @@ proc GetViewHorPan {} {
     # See ViewGraph.h for mode values...
     global viewHorPanMode
     radiobutton .getViewHorPan.rel -text "Relative" -variable viewHorPanMode \
-      -value 1
+      -value 1 -command "SwitchHorPanMode"
     radiobutton .getViewHorPan.abs -text "Absolute" -variable viewHorPanMode \
-      -value 2
+      -value 2 -command "SwitchHorPanMode"
 
     global viewHorPanRel viewHorPanAbs
     label .getViewHorPan.relLab -text "Relative pan:"
@@ -216,16 +237,21 @@ proc GetViewHorPan {} {
     entry .getViewHorPan.absEnt -width 20 -relief sunken \
       -textvariable viewHorPanAbs
 
-    # Pack everything into the frames.
+    # These frames are for spacing only.
+    frame .getViewHorPan.row2a -width 10m -height 6m
+    frame .getViewHorPan.row4a -width 10m -height 4m
+
+    # Pack some widgets into the frames.  Other widges will be packed in
+    # the SwitchHomeMode procedure.
     pack .getViewHorPan.row1 -side bottom -pady 4m
     pack .getViewHorPan.row2 -side top
-    pack .getViewHorPan.row3 -side top
-    pack .getViewHorPan.row4 -side top
+    pack .getViewHorPan.row2a -side top
+    pack .getViewHorPan.row4a -side top -pady 1m
 
     pack .getViewHorPan.ok .getViewHorPan.cancel -in .getViewHorPan.row1 \
       -side left -padx 3m
     pack .getViewHorPan.rel .getViewHorPan.abs -in .getViewHorPan.row2 \
-      -side top
+      -side top -pady 1m
     pack .getViewHorPan.relLab .getViewHorPan.relEnt .getViewHorPan.relLab2 \
       -in .getViewHorPan.row3 -side left
     pack .getViewHorPan.absLab .getViewHorPan.absEnt -in .getViewHorPan.row4 \
@@ -234,11 +260,11 @@ proc GetViewHorPan {} {
     # Get the current values from the view and set the GUI accordingly.
     # Returns: <mode> <relativePan> <absolutePan>
     set horPan [DEVise viewGetHorPan $curView]
-    puts "DIAG $horPan"
     set viewHorPanMode [lindex $horPan 0]
     # Convert to percent.
     set viewHorPanRel [expr [lindex $horPan 1] * 100.0]
     set viewHorPanAbs [lindex $horPan 2]
+    SwitchHorPanMode
 
     # Wait for the user to make a selection from this window.
     tkwait visibility .getViewHorPan
@@ -248,16 +274,26 @@ proc GetViewHorPan {} {
 
 ##########################################################################
 
+proc SwitchHorPanMode {} {
+    global viewHorPanMode
+
+    if {$viewHorPanMode == 1} {
+      pack .getViewHorPan.row3 -after .getViewHorPan.row2a -pady 1m
+
+      pack forget .getViewHorPan.row4
+    } else {
+      pack forget .getViewHorPan.row3
+
+      pack .getViewHorPan.row4 -after .getViewHorPan.row2a -pady 1m
+    }
+}
+
+##########################################################################
+
 proc SetViewHorPan {} {
     global curView
     global viewHorPanMode
     global viewHorPanRel viewHorPanAbs
-
-    puts "DIAG SetViewHorPan"
-
-    puts "DIAG viewHorPanMode = $viewHorPanMode"
-    puts "DIAG viewHorPanRel = $viewHorPanRel"
-    puts "DIAG viewHorPanAbs = $viewHorPanAbs"
 
     # Arguments: <viewName> <mode> <relativePan> <absolutePan>
     # Convert relativePan from percent to fraction.

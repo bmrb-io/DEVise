@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.36  1997/05/30 15:41:21  wenger
+  Most of the way to user-configurable '4', '5', and '6' keys -- committing
+  this stuff now so it doesn't get mixed up with special stuff for printing
+  Mitre demo.
+
   Revision 1.35  1997/04/21 23:01:56  guangshu
   Small changes.
 
@@ -216,7 +221,6 @@ enum ViewHomeMode {
 struct ViewHomeInfo {
   ViewHomeMode mode;
   Coord autoXMargin, autoYMargin;
-  //TEMPTEMP -- should the following be in a union?
   Coord manXLo, manYLo;	// data units
   Coord manXHi, manYHi;	// data units
 };
@@ -229,7 +233,6 @@ enum ViewPanMode {
 
 struct ViewPanInfo {
   ViewPanMode mode;
-  //TEMPTEMP -- should the following be in a union?
   Coord relPan;	// fraction of view width
   Coord absPan;	// data units
 };

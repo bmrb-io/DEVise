@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.55  1997/05/30 15:41:21  wenger
+  Most of the way to user-configurable '4', '5', and '6' keys -- committing
+  this stuff now so it doesn't get mixed up with special stuff for printing
+  Mitre demo.
+
   Revision 1.54  1997/04/30 21:45:40  wenger
   Fixed non-constant strings in complex mappings bug; TDataAsciiInterp
   no longer gives warning message on blank data lines; added makefile
@@ -301,12 +306,10 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
     _homeInfo.mode = HomeAuto;
     _homeInfo.autoXMargin = 0.0;
     _homeInfo.autoYMargin = 0.0;
-    //_homeInfo.autoXMargin = 10.0;//TEMPTEMP
-    //_homeInfo.autoYMargin = 100.0;//TEMPTEMP
 
     _horPanInfo.mode = PanModeRelative;
     _horPanInfo.relPan = 0.5;
-    //_horPanInfo.relPan = 0.1;//TEMPTEMP
+    _horPanInfo.absPan = 1.0;
 }
 
 ViewGraph::~ViewGraph()

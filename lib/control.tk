@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.132  1997/05/30 20:46:16  wenger
+#	Added GUI to allow user to specify windows to exclude from display
+#	print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
+#	implemented but pixmap printing is not.
+#
 #	Revision 1.131  1997/05/28 15:39:50  wenger
 #	Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
 #
@@ -710,6 +715,7 @@ source $libdir/lensgui.tk
 source $libdir/win_print_config.tcl
 source $libdirLM/DEViseLMComm.tk
 source $libdirLM/DEViseIfc.tk
+source $libdir/view_config.tcl
 
 set mode 0
 DEVise changeMode $mode
@@ -1192,6 +1198,8 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 .mbar.view.menu add cascade -label "Kiviat Graph" -menu .mbar.view.menu.kmenu
 .mbar.view.menu add separator
 .mbar.view.menu add cascade -label "Dimensions" -menu .mbar.view.menu.dimmenu
+.mbar.view.menu add cascade -label "Keypad Config"  \
+    -menu .mbar.view.menu.configmenu
 .mbar.view.menu add command -label "Color Override" -command DoSetOverrideColor
 .mbar.view.menu add command -label "3D Query" -command Do3DQuery
 
@@ -1260,6 +1268,12 @@ menu .mbar.view.menu.dimmenu -tearoff 0
 	-command { DoSetViewDimensions 2 }
 .mbar.view.menu.dimmenu add command -label "Three Dimensions" \
 	-command { DoSetViewDimensions 3 }
+
+menu .mbar.view.menu.configmenu -tearoff false
+.mbar.view.menu.configmenu add command -label "Home" \
+    -command { GetViewHome }
+.mbar.view.menu.configmenu add command -label "Horiz. Scroll" \
+    -command { GetViewHorPan }
 
 menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "Toggle X Axis" \
