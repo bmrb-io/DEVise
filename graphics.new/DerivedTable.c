@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/06/15 19:55:07  wenger
+  Fixed bugs 338 and 363 (problems with special cases of set links).
+
   Revision 1.2  1998/05/06 22:04:52  wenger
   Single-attribute set links are now working except where the slave of
   one is the master of another.
@@ -355,7 +358,7 @@ DerivedTable::InsertValues(TData *tdata, int recCount, void **tdataRecs)
 
     for (int recNum = 0; recNum < recCount; recNum++) {
       void *recordP = tdataRecs[recNum];
-      void *attrP = recordP + attrInfo->offset;
+      void *attrP = (char *)recordP + attrInfo->offset;
 
       switch (attrInfo->type) {
         case IntAttr: {

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  1998/05/06 22:04:59  wenger
+  Single-attribute set links are now working except where the slave of
+  one is the master of another.
+
   Revision 1.25  1998/04/30 14:24:21  wenger
   DerivedTables are now owned by master views rather than links;
   views now unlink from master and slave links in destructor.
@@ -191,7 +195,7 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
   _numShapeAttr = MAX_GDATA_ATTRS;
   _shapeAttrs = new Coord [MAX_GDATA_ATTRS];
   DOASSERT(_shapeAttrs, "Out of memory");
-  for(unsigned int i = 0; i < MAX_GDATA_ATTRS; i++)
+  for(unsigned int i = 0; i < (unsigned int)MAX_GDATA_ATTRS; i++)
     _shapeAttrs[i] = 0.1;
   
   _maxSymWidth = 0.0;

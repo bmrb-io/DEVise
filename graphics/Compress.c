@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/28 18:39:36  jussi
+  Minor fixes to remove compiler warnings.
+
   Revision 1.4  1995/12/14 16:53:50  jussi
   Small fix.
 
@@ -106,7 +109,7 @@ char *SimpleCompress::DecompressLine(char *line, int count, int &outCount)
   for(int i = 0; i < count; i += 2) {
     unsigned int num = (unsigned char)line[i];
     unsigned char c = (unsigned char)line[i + 1];
-    if (outIndex + num > COMPRESS_BUF_SIZE){
+    if (outIndex + num > (unsigned int)COMPRESS_BUF_SIZE){
       fprintf(stderr, "SimpleCompress::Decompress:buf overflow %d\n",
 	      outIndex + num);
       Exit::DoExit(1);

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/12/02 18:44:44  wenger
+  Fixed problems dealing with DST in dates (including all date composite
+  parsers); added more error checking to date composite parsers.
+
   Revision 1.9  1996/05/11 03:15:52  jussi
   The extraction routine now takes a list of stock symbols, sorts
   them according to file offset on tape, and then extracts them
@@ -344,7 +348,7 @@ static void genExtractData(char *file)
       }
 #endif
 
-#ifdef 0
+#if 0
       // disable quote extraction for now
 
       float aprice = 1.0 * priask[i] / den;

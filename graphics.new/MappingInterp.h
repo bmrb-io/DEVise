@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1998/04/16 21:51:42  wenger
+  Committed Sanjay's text code.
+
   Revision 1.36  1998/02/26 22:59:52  wenger
   Added "count mappings" to views, except for API and GUI (waiting for
   Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
@@ -240,9 +243,9 @@ class CGraphicExpr;
 class Shape;
 class AttrList;
 #ifdef VIEW_SHAPE 
-const int MaxInterpShapes = 19;
+const unsigned int MaxInterpShapes = 19;
 #else 
-const int MaxInterpShapes = 18;
+const unsigned int MaxInterpShapes = 18;
 #endif
 
 

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.45  1998/06/03 17:09:41  wenger
+  Rubberband line in JavaScreen now sends updates of all changed windows
+  using the "dirty GIF" flag; updated DEVise version to 1.5.3.
+
   Revision 1.44  1998/03/04 18:40:11  wenger
   Added <arch>/Makefile.config files that now hold stuff like the
   PERL_CORE definitions so those don't have to be repeated in all
@@ -255,7 +259,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.5.3";
+static const char *	version = "1.5.4";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1998";

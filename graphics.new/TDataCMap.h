@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/11/24 23:15:19  weaver
+  Changes for the new ColorManager.
+
   Revision 1.6.10.1  1997/05/21 20:40:48  weaver
   Changes for new ColorManager
 
@@ -74,6 +77,7 @@ class TDataCMap
 			_shapeId = ContLineConnectorID;
 			_numShapeAttrs = 0;
 		}
+		virtual ~TDataCMap() {}
 
 		// Getters and Setters
 		Coloring&			GetColoring(void)			{ return coloring;	}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/07/24 04:37:50  donjerko
+  *** empty log message ***
+
   Revision 1.11  1998/06/04 23:06:48  donjerko
   Added DataReader.
 
@@ -85,7 +88,7 @@ public:
 	}
 	void insert(const Tuple* tuple){ // throws
 		assert(out);
-		for(int i = 0; i < writePtrs.size(); i++){
+		for(int i = 0; i < (int)writePtrs.size(); i++){
 			writePtrs[i](*out, tuple[i]);
 			*out << " ";
 		}

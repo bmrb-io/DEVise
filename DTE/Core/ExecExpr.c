@@ -26,6 +26,8 @@ ExecExpr* ExecExpr::createExpr(const string& fnname, ExprList* argp)
   else{
     return new ExecConstructor(argp, fn);
   }
+
+  return NULL; // so compiler is happy
 }
 
 

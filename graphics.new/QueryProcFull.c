@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.85  1998/07/06 21:06:55  wenger
+  More memory leak hunting -- partly tracked down some in the DTE.
+
   Revision 1.84  1998/07/03 23:42:21  wenger
   Fixed some memory leaks; added provision to print data segment size
   at certain places in the code.
@@ -872,7 +875,7 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
 #endif
 
           query->high = lastId;
-      if (query->high - query->low > QPFULL_RANDOM_RECS)
+      if ((int)query->high - (int)query->low > QPFULL_RANDOM_RECS)
           query->isRandom = Init::Randomize();
   }
   query->hintId = (query->high + query->low) / 2;
@@ -2233,8 +2236,8 @@ void QueryProcFull::AddCoordMapping(TDataMap *map, RecId id, Coord coord)
   printf("Current %ld, lower %ld, higher %ld\n", id, lower, higher);
 #endif
 
-  if ((lowExists < 0 || id - lower >= QPFULL_TAPE_MARK_SEPARATION)
-      && (highExists < 0 || higher - id >= QPFULL_TAPE_MARK_SEPARATION))
+  if ((lowExists < 0 || (int)id - (int)lower >= QPFULL_TAPE_MARK_SEPARATION)
+      && (highExists < 0 || (int)higher - (int)id >= QPFULL_TAPE_MARK_SEPARATION))
     (void)table->insertOne(coord, id);
 }
 

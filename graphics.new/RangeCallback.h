@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/28 16:10:26  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
   Revision 1.2  1995/09/05 22:15:20  jussi
   Added CVS header.
 */
@@ -38,6 +42,8 @@ DefinePtrDList(RangeCallbackList, RangeCallback *)
 /* Source of range information */
 class RangeSource {
 public:
+	virtual ~RangeSource() {}
+
 	void RegisterCallback(RangeCallback *c);
 	void DeleteCallback(RangeCallback *c);
 

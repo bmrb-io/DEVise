@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/01/09 18:46:53  jussi
+  Flush stdout before forking a process.
+
   Revision 1.16  1996/12/18 15:28:10  jussi
   Made waitForChildProcess() public. Improved error handling.
 
@@ -140,7 +143,7 @@ TapeDrive::TapeDrive(char *name, char *mode, int fno, int blockSz) :
 
   atEof = (mode[0] == 'w');
 
-  for(unsigned int i = 0; i < _max_mt_op; i++)
+  for(unsigned int i = 0; (int)i < _max_mt_op; i++)
     mt_tim[i] = mt_ios[i] = mt_cnt[i] = 0;
   read_time = read_ios = read_cnt = 0;
   write_time = write_ios = write_cnt = 0;
@@ -188,7 +191,7 @@ void TapeDrive::printStats()
 {
   cout << "Tape usage statistics:" << endl;
   cout << "  cmd\tcalls\tcount\tavgtime" << endl;
-  for(unsigned int i = 0; i < _max_mt_op; i++) {
+  for(unsigned int i = 0; (int)i < _max_mt_op; i++) {
     if (mt_ios[i] > 0) {
       cout << "  " << _mt_op_name[i]
            << "\t" << mt_ios[i]

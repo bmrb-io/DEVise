@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/04/10 18:29:35  wenger
+  TData attribute links (aka set links) mostly implemented through table
+  insertion; a crude GUI for creating them is implemented; fixed some
+  bugs in link GUI; changed order in session file for TData attribute links.
+
   Revision 1.13  1998/02/19 23:25:21  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -432,7 +437,7 @@ DevisePixmap *ViewLens::OverlayPixmap(DevisePixmap *basepixmap,
     delete tmpbasebuf;
     //printf("cBuf = %s\n", cBuf);
 
-    if (outCount1 + outIndex1 + sizeof(int) > MAX_PIXMAP_BUF_SIZE ) {
+    if (outCount1 + outIndex1 + sizeof(int) > (unsigned int)MAX_PIXMAP_BUF_SIZE ) {
       return NULL;
     }
 

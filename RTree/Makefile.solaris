@@ -106,8 +106,7 @@ dbJussi.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 dbJussi.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
 dbJussi.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
 dbJussi.o: /usr/include/sys/netconfig.h ../../../tape/tapedrive.h
-dbJussi.o: ../../../tape/HashTable.h /s/gcc/lib/g++-include/iostream.h
-dbJussi.o: /s/gcc/lib/g++-include/streambuf.h /s/gcc/lib/g++-include/libio.h
+dbJussi.o: ../../../tape/HashTable.h
 
 alignedsortedpage.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 alignedsortedpage.o: /usr/include/sys/va_list.h /usr/include/string.h
@@ -209,10 +208,7 @@ test_rtree_jussi.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 test_rtree_jussi.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
 test_rtree_jussi.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
 test_rtree_jussi.o: /usr/include/sys/netconfig.h ../../../tape/tapedrive.h
-test_rtree_jussi.o: ../../../tape/HashTable.h
-test_rtree_jussi.o: /s/gcc/lib/g++-include/iostream.h
-test_rtree_jussi.o: /s/gcc/lib/g++-include/streambuf.h
-test_rtree_jussi.o: /s/gcc/lib/g++-include/libio.h /usr/include/fcntl.h
+test_rtree_jussi.o: ../../../tape/HashTable.h /usr/include/fcntl.h
 test_rtree_jussi.o: /usr/include/sys/fcntl.h ../../src/RTree/rtree.h
 test_rtree_jussi.o: ../../src/index.h ../../src/Common/int_key.h
 test_rtree_jussi.o: /usr/include/math.h /usr/include/floatingpoint.h
@@ -276,6 +272,17 @@ convert_bulk.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 convert_bulk.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 convert_bulk.o: /usr/include/sys/time.h /usr/include/time.h
 convert_bulk.o: /usr/include/string.h ../../src/Common/correct_math.h
+convert_bulk.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+convert_bulk.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+convert_bulk.o: /usr/include/sys/machlock.h /usr/include/sys/sleepq.h
+convert_bulk.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
+convert_bulk.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
+convert_bulk.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+convert_bulk.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+convert_bulk.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+convert_bulk.o: /usr/include/sys/resource.h /usr/include/vm/seg_enum.h
+convert_bulk.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+convert_bulk.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
 generate_testfile.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 generate_testfile.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 interp_file.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
@@ -298,6 +305,17 @@ typed_key.o: /usr/include/assert.h /usr/include/stdio.h
 typed_key.o: /usr/include/sys/va_list.h /usr/include/math.h
 typed_key.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 typed_key.o: ../../src/Common/bit_vec.h ../../src/Common/correct_math.h
+typed_key.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+typed_key.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+typed_key.o: /usr/include/sys/machlock.h /usr/include/sys/sleepq.h
+typed_key.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
+typed_key.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
+typed_key.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+typed_key.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+typed_key.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+typed_key.o: /usr/include/sys/resource.h /usr/include/vm/seg_enum.h
+typed_key.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+typed_key.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
 typed_rtree.o: typed_rtree.h ../../src/RTree/rtree.h ../../src/index.h
 typed_rtree.o: ../../src/dbinterface.h /usr/include/stddef.h
 typed_rtree.o: ../../src/setup.h /usr/include/assert.h

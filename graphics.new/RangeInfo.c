@@ -87,7 +87,7 @@ Boolean RangeInfo::ReturnRecs(Coord lowVal, Coord highVal, char *&buf,
 			noMoreRecs = true;
 
 		iterater += recSize;
-		DOASSERT(( iterater < GetData() + DataSize()) || noMoreRecs,
+		DOASSERT(( iterater < (char *)GetData() + DataSize()) || noMoreRecs,
 			"end of T/GData buffer for this range but wants more");
 	}
 

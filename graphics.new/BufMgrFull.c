@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1998/02/24 22:55:25  beyer
+  Fixed histogram session restore bug.
+
   Revision 1.27  1997/12/23 23:35:13  liping
   Changed internal structure of BufMgrFull and classes it called
   The buffer manager is now able to accept queries on any attribute from the
@@ -1432,13 +1435,13 @@ RangeInfo *BufMgrFull::Truncate(RangeInfo *oldRange, int bufSize)
         DOASSERT(numRecs > 0, "inconsistent state");
 
 	double value_minus;
-	oldRange->GetAttrVal((char*)(oldRange->GetData() + recSize * (numRecs - 1)), 
+	oldRange->GetAttrVal((char*)oldRange->GetData() + recSize * (numRecs - 1), 
                              oldRange->interval.AttrName, value_minus);   
 
         ReportDeleted(oldRange->GetTData(), oldRange->interval.Low, value_minus);
 
 	double value;
-	oldRange->GetAttrVal((char*)(oldRange->GetData() + recSize * numRecs),
+	oldRange->GetAttrVal((char*)oldRange->GetData() + recSize * numRecs,
 			     oldRange->interval.AttrName, value);
         oldRange->interval.Low = value;
 	oldRange->interval.NumRecs -= numRecs;

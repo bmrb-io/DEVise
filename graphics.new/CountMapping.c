@@ -28,6 +28,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/02/26 22:59:46  wenger
+  Added "count mappings" to views, except for API and GUI (waiting for
+  Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
+  of VisualFilter struct; did some cleanup of MappingInterp class.
+
  */
 
 #include <stdio.h>
@@ -182,9 +187,9 @@ CountMapping::ProcessRecord(void *gdataRec)
 
   // Note: we are assuming that the GData is aligned on double (8-bit)
   // boundaries.
-  double *xP = (double *)(gdataRec + _xOffset);
-  double *yP = (double *)(gdataRec + _yOffset);
-  double *putP = (double *)(gdataRec + _putOffset);
+  double *xP = (double *)((char *)gdataRec + _xOffset);
+  double *yP = (double *)((char *)gdataRec + _yOffset);
+  double *putP = (double *)((char *)gdataRec + _putOffset);
 
   Coord oldX = (Coord)(*xP);
   Coord oldY = (Coord)(*yP);

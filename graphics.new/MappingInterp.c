@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.72  1998/07/10 21:20:06  wenger
+  Minor cleanups and improvements.
+
   Revision 1.71  1998/04/16 21:51:40  wenger
   Committed Sanjay's text code.
 
@@ -782,11 +785,11 @@ void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
       int i = 0;
       Boolean timedOut = false;
       while (i < num && !timedOut) {
-        ShapeID shape = *((ShapeID *)(gdataArray[i]+_offsets->shapeOffset));
+        ShapeID shape = *((ShapeID *)((char *)gdataArray[i]+_offsets->shapeOffset));
         int j;
         for(j = i + 1; j < num; j++) {
 	  ShapeID nextShape =
-	                *((ShapeID *)(gdataArray[j]+_offsets->shapeOffset));
+	                *((ShapeID *)((char *)gdataArray[j]+_offsets->shapeOffset));
 	  if (shape != nextShape)
 	    break;
         }
