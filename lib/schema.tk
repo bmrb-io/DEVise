@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1995/12/12 01:46:29  ravim
+#  Physical/Logical schema support.
+#
 #  Revision 1.9  1995/12/11 18:02:31  ravim
 #  Enhanced schema creation. Now also displays list of attributes.
 #
@@ -65,6 +68,18 @@ source $catalogFile
 #-----------------------------------------------------------
 #		PROCEDURES
 #-----------------------------------------------------------
+
+# Procedure called from the control panel - figures out which procedure
+# to execute based on the user mode specified in the .rc file
+proc SchemaBrowse {} {
+    global UserMode
+
+    if {$UserMode == 0} {
+	SchemaSuperuser
+    } else {
+	SchemaUser
+    }
+}
 
 # Schema browser for  a normal user - can manipulate only the logical schema
 proc SchemaUser {} {
