@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/06/15 16:12:27  jussi
+  Cleaned up a bit (debug statements etc.).
+
   Revision 1.3  1996/06/15 07:13:23  yuc
   Clean-up the original version and add 3D cursor control and toggle
   keys to the system.  Here are the special addtions: "i", "o", "r", and
@@ -86,6 +89,7 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
   Boolean connectorsOn = view->DisplayConnectors();
 
   Boolean isScatterPlot = view->IsScatterPlot();
+  isScatterPlot |= (view->GetNumDimensions() != 2);
 
   Boolean zoomInX  = (key == '7');
   Boolean zoomOutX = (key == '9');
@@ -105,13 +109,13 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
       (void)view->DisplaySymbols(true);
   }
 
-  else if (key == 's') {
+  if (key == 's') {
     (void)view->DisplaySymbols(!symbolsOn);
     if (!connectorsOn && symbolsOn)
       (void)view->DisplayConnectors(true);
   }
 
-  else if (key == '>' || key == '.' || key == '6') {
+  if (key == '>' || key == '.' || key == '6') {
     /* scroll data right */
     if (view->GetNumDimensions() == 2) {
       view->GetVisualFilter(filter);
@@ -157,7 +161,7 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
     }
   }
 
-  else if (key == '<' || key == ',' || key == '4') {
+  if (key == '<' || key == ',' || key == '4') {
     /* scroll data left */
     if (view->GetNumDimensions() == 2) {
       view->GetVisualFilter(filter);
@@ -200,7 +204,7 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
     }
   }
 
-  else if (key == '8') {
+  if (key == '8') {
     /* scroll data up */
     if (view->GetNumDimensions() == 2) {
       view->GetVisualFilter(filter);
@@ -242,7 +246,7 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
     }
   }
 
-  else if (key == '2') {
+  if (key == '2') {
     /* scroll data down */
     if (view->GetNumDimensions() == 2) {
       view->GetVisualFilter(filter);
@@ -284,7 +288,7 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
     }
   }
 
-  else if (isScatterPlot && key == '7') {
+  if (zoomInX) {
     /* zoom in X */
     if (view->GetNumDimensions() == 2) {
       view->GetVisualFilter(filter);
@@ -314,7 +318,7 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
     }
   }
 
-  else if (isScatterPlot && key == '9') {
+  if (zoomOutX) {
     /* zoom out X */
     if (view->GetNumDimensions() == 2) {
       view->GetVisualFilter(filter);
@@ -337,7 +341,7 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
     }
   }
 
-  else if (isScatterPlot && key == '1') {
+  if (zoomInY) {
     /* zoom in Y */
     if (view->GetNumDimensions() == 2) {
       view->GetVisualFilter(filter);
@@ -360,7 +364,7 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
     }
   }
 
-  else if (isScatterPlot && key == '3') {
+  if (zoomOutY) {
     /* zoom out Y */
     if (view->GetNumDimensions() == 2) {
       view->GetVisualFilter(filter);
@@ -379,7 +383,7 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
     }
   }
 
-  else if (key == 'i' || key == 'I') {
+  if (key == 'i' || key == 'I') {
     if (view->GetNumDimensions() == 3) {
       Camera camera = view->GetCamera();
       double incr_ = 0.0;
@@ -414,7 +418,7 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
     }
   }
 
-  else if (key == 'o' || key == 'O') {
+  if (key == 'o' || key == 'O') {
     if (view->GetNumDimensions() == 3) {
       Camera camera = view->GetCamera();
       double incr_ = 0.0;
@@ -451,7 +455,7 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
 
   /* this will let us fix the focus point or move the focus pt
      with the camera */
-  else if (key == 'f' || key == 'F') {
+  if (key == 'f' || key == 'F') {
     if (view->GetNumDimensions() == 3) {
       Camera camera = view->GetCamera();
       if (camera.fix_focus == 1)
@@ -467,7 +471,7 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
     }
   }
 
-  else if (key == 'r' || key == 'R') {
+  if (key == 'r' || key == 'R') {
     if (view->GetNumDimensions() == 3) {
       Camera camera = view->GetCamera();
       if (camera.spherical_coord == 1)
