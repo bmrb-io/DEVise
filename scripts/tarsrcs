@@ -1,7 +1,7 @@
 #! /bin/csh -f
 tar cvfXz sources.tar.gz scripts/src_exclude \
     CVS DTE DataReader EmbeddedTk ImTools \
-    LM Makefile.common QCIMS README RTree aix compustat crsp csgroup cslib \
+    Makefile.common QCIMS README RTree aix compustat crsp csgroup cslib \
     design_doc doc generic graphics graphics.new hp issm lib linux \
     public run run_public scripts sgi \
     solaris solsparc src sun tape unidata util xvertext
