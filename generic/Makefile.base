@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.21  1996/11/01 19:04:31  kmurli
+#  Makefile changed to include DQL sources
+#
 #  Revision 1.20  1996/08/09 15:40:01  wenger
 #  Modified makefiles to allow making static and Purify'd executables.
 #
@@ -76,7 +79,6 @@ generic.static: generic.o $(ALLLIBS) $(MONOLITHLIB)
 	$(FORCE_DATE)
 	$(GENERIC) $(ARCH_STATIC_LDPOST)
 
-
 DEVISED = $(CC) -o $@ generic.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new \
 	-lserver $(LDFLAGS) $(ARCH_LDPOST)
 
@@ -112,10 +114,19 @@ deviseb.pure: deviseb.o $(CLIENTLIB)
 	$(FORCE_DATE)
 	$(PURIFY) $(PURE_OPT) $(DEVISEB)
 
+
+TESTWS = $(CC) -o $@ testWindowSpeed.o CompDate.o $(ARCH_LDFLAGS) \
+        -L../graphics.new -lmonolith $(LDFLAGS)
+
+testWindowSpeed: testWindowSpeed.o $(ALLLIBS) $(MONOLITHLIB)
+	$(FORCE_DATE)
+	$(TESTWS) $(ARCH_LDPOST)
+
+
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm generic devised devise deviseb
+	-rm generic devised devise deviseb testWindowSpeed
 	-rm generic.pure devised.pure devise.pure deviseb.pure
 	-rm generic.static
 
