@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/02/26 23:45:08  jussi
+  Added GetSmallFontHeight().
+
   Revision 1.11  1996/02/05 23:55:15  jussi
   Added support for small fonts.
 
@@ -319,6 +322,54 @@ public:
     MakeIdentity();
   }
 
+// ---------------------------------------------------------- 
+// 3D
+
+  void MakeIdentity3() {
+    _transforms3[_current].MakeIdentity();
+  }
+
+  /* return the transform on top of the stack. */
+  Transform3D *TopTransform3() {
+    return &_transforms3[_current];
+  }
+
+  void PostMultiply(Transform3D *t) {
+    _transforms3[_current].PostMultiply(t);
+  }
+
+  void Transform(Coord x, Coord y, Coord z, Coord &newX, 
+	Coord &newY, Coord &newZ) {
+    _transforms3[_current].Transform(x,y,z,newX,newY,newZ);
+  }
+
+  void PrintTransform3() {
+    _transforms3[_current].Print();
+  }
+
+  /* Clear the transformation stack and put an identity 
+     matrix as top of the stack */
+  void ClearTransformStack3() {
+    _current = 0;
+    MakeIdentity3();
+  }
+
+  // based on the camera's coordinates, compute rho, phi, theta
+  void CompRhoPhiTheta();
+
+  // compute the viewing transformation matrix
+  void CompViewingTransf();
+
+  virtual POINT CompLocationOnViewingSpace(POINT) = 0;
+
+  virtual void MapAllPoints(BLOCK *block_data, int numSyms) = 0;
+  virtual void MapAllSegments(BLOCK *block_data, int numSyms) = 0;
+  virtual void DrawXSegments() = 0;
+  virtual void DrawRefAxis() = 0;
+
+
+// ---------------------------------------------------------- 
+
   /* called by derived class to get current clip region */
   Boolean ClipTop(Coord &x, Coord &y, Coord &w, Coord &h){
     if (_clipCurrent < 0)
@@ -400,10 +451,24 @@ protected:
   WindowRep(DeviseDisplay *disp, Color fgndColor=ForegroundColor,
 	    Color bgndColor=BackgroundColor, Pattern p = Pattern0);
   
+  // ---------------------------------------------------------- 
+  // 3D stuffs
+  double _rho, _phi, _theta;
+  double _twist_angle;
+  int _dvs;
+  POINT _camera;
+  double _TransformViewMatrix[4][4];
+  int _perspective;
+  int _NumXSegs;
+
+  POINT _AxisPt[4]; // 0 == origin, 1 == on x, 2 = on y, 3 == on z
+  EDGE _Axis[3];    // 0 == x, 1 == y, 2 = z
+
 private:
   /* DList<WindowRepCallback *> *_callbackList;*/
   WindowRepCallbackList  *_callbackList;
   Transform2D _transforms[WindowRepTransformDepth];
+  Transform3D _transforms3[WindowRepTransformDepth];
   ClipRect _clippings[WindowRepClipDepth];
   /* DList<ClipRect *> _damageRects; */
   ClipRectList  _damageRects; /* damaged areas*/
@@ -414,6 +479,8 @@ private:
   Color _fgndColor, _bgndColor;
   Pattern _pattern;
   DeviseDisplay *_display;
+
 };
 
 #endif
+
