@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.46  1996/08/29 22:29:31  guangshu
+#	Changed puts to proc Puts in case the client wants to be quiet.
+#
 #	Revision 1.45  1996/07/22 23:50:57  guangshu
 #	Added statistics for gdata. The statistics includes count, ysum, max, mean, min.
 #
@@ -281,7 +284,10 @@ proc updateStreamDef {} {
 	set schematype [format "%s.%s" [string trim $source] \
 		[string trim $key]]
     }
-
+	if {$source == "DQL"} {
+      set schemafile [format "%s.%s" [string trim $source] [string trim $key]]
+      set schematype $schemafile 
+    }
     if {$dispname == "" || $key == "" || $schemafile == ""} {
 	dialog .noName "Missing Information" \
 		"Please enter all requested information." \
@@ -298,7 +304,14 @@ proc updateStreamDef {} {
 	    uncacheData $oldDispName "Query changed."
 	}
     }
-    if {$source != "SEQ"} {
+    if {$editonly && $source == "DQL"} {
+    set oldCommand [lindex $sourceList($oldDispName) 7]
+    if {$oldCommand != $command} {
+        uncacheData $oldDispName "Query changed."
+    }
+    }
+
+    if {$source != "SEQ" && $source != "DQL" } {
 	set newschematype [scanSchema $schemafile]
 	if {$newschematype == ""} { return }
 	set schematype $newschematype
@@ -306,7 +319,7 @@ proc updateStreamDef {} {
 
     set sourcedef [list $source $key $schematype $schemafile \
 	    $cachefile $evaluation $priority $command]
-	
+		
     set conflict [getSourceByCache $cachefile]
     if {!$editonly && $conflict != ""} {
 	dialog .existsAlready "Data Stream Exists" \
@@ -331,7 +344,7 @@ proc updateStreamDef {} {
 		"" 0 OK
 	return
     }
-
+	
     set "sourceList($dispname)" $sourcedef
     saveSources
     updateSources
@@ -573,8 +586,8 @@ proc isCached {dispname startrec endrec} {
     set cachefile [lindex $sourcedef 4]
     set command [lindex $sourcedef 7]
     
-    if {$source == "WWW" || $source == "BASICSTAT" || $source == "HISTOGRAM" \
-		|| $source == "GDATASTAT"} {
+    if {$source == "DQL" || $source == "WWW" || $source == "BASICSTAT" \
+			|| $source == "HISTOGRAM" || $source == "GDATASTAT"} {
         return $command
     }
 
@@ -857,7 +870,7 @@ proc selectSourceKey {source} {
 	return [selectUnixFile]
     }
     if {$source == "COMMAND" || $source == "SEQ" || $source == "SQL" \
-	|| $source == "WWW"} {
+	|| $source == "WWW" || $source == "DQL" } {
 	return [list "default" "$source Default"]
     }
     if {$source == "COMPUSTAT"} {

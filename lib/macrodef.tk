@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.63  1996/10/22 18:25:07  jussi
+#	Replaced incr statements with conventional expressions because
+#	incr doesn't work on floating point numbers.
+#
 #	Revision 1.62  1996/10/15 22:01:14  guangshu
 #	Fixed Bug #051 when open text stat for views which have . in the names.
 #
@@ -318,7 +322,7 @@ proc OpenDataSource {sname} {
 	    break
 	}
 	set sname [lindex $sname 0]
-    }
+    mpo}
 
     # cache data to disk right now
     if {[isCached $sname -1 -1] == ""} {
@@ -343,13 +347,12 @@ proc OpenDataSource {sname} {
     DEVise dataSegment $sname $fname [lindex $fileSeg 0] [lindex $fileSeg 1]
 
     set stype [lindex $sourceList($sname) 0]
-    if {$stype != "WWW" && $stype != "UNIXFILE"} {
+    if {$stype != "DQL" && $stype != "WWW" && $stype != "UNIXFILE"} {
         set stype "UNIXFILE"
     }
 
     return [list $sname $fname $stype]
 }
-
 ############################################################
 
 proc CacheMultipleDataSources {snames} {
@@ -421,7 +424,8 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
         set sname [lindex $sourcedef 0]
         set param [lindex $sourcedef 1]
         set stype [lindex $sourcedef 2]
-        
+       
+		
 	if {$derivedOnly} {
 	    set schema [lindex $derivedSourceList($sname) 2]
 	    set schemafile [lindex $derivedSourceList($sname) 3]
@@ -435,7 +439,11 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
         # physical schema may be shared by several logical schemas - the best
         # way of checking is to see that we have no groups defined under the 
         # logical schema name
-    
+	   if {$stype == "DQL"} {
+            	set result [DEVise importFileDQLType $schema $param]
+				set topgrps [DEVise getTopGroups $schema]
+				set [lindex $sourceList($sname) 3] $schema
+   		} else {	
         set topgrps [DEVise getTopGroups [file tail $schemafile]]
         if {[llength $topgrps] == 0} {
             if {![file readable $schemafile]} {
@@ -443,7 +451,8 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
                         "Cannot open schema file $schemafile" "" 0 OK
                 return ""
             }
-            set result [DEVise importFileType $schemafile]
+			# Probably call something else..
+            	set result [DEVise importFileType $schemafile]
             if {$result == ""} {
                 return ""
             }
@@ -453,7 +462,7 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
                 set schema $result
             }
         }
-    
+		}
         statusWindow .info "Status" \
                 "Creating an index on \"$sname\".\n\n\This may take a while."
         update
@@ -677,6 +686,7 @@ proc StatText {tdata schemafile} {
 	 
      set schema [DEVise getSchema $tdata]
      set schemaname [file tail $schemafile]
+	 puts " TOP GROUP IS CALLE DIN STAT TEXT "
      set topgrp [SelectTopGroup $schemaname]
 
      toplevel .$vname
@@ -747,8 +757,11 @@ proc MacroDefAuto {tdata schemafile} {
 	return
     }
 	
-    set schema [DEVise getSchema $tdata]
+	set schema [DEVise getSchema $tdata]
     set schemaname [file tail $schemafile]
+	
+	# set schemaname "DQL.newDQL"
+
     set topgrp [SelectTopGroup $schemaname]
 
     toplevel .auto
