@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/06/27 19:04:50  jussi
+  The user can now switch between 2D and 3D display, the
+  data is refreshed and displayed accordingly.
+
   Revision 1.26  1996/06/27 15:43:58  jussi
   Added method AbortAndReexecuteQuery which allows the QueryProc
   to ask the view to re-issue queries when TData has changed.
@@ -182,12 +186,6 @@ public:
 		AxisLabel *xAxis = NULL, AxisLabel *yAxis = NULL,
 		int weight = 1, Boolean boundary = false);
 	virtual ~View();
-
-	char *GetName() { return ViewWin::GetName(); }
-	void Geometry(int &x, int &y, unsigned int &w, unsigned int &h) {
-	  ViewWin::Geometry(x,y,w,h);
-	}
-	WindowRep *GetWindowRep() { return ViewWin::GetWindowRep(); }
 
 	/* Highlight a view of depending on flag.*/
 	void Highlight(Boolean flag);
