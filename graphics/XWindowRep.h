@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/07/10 16:21:14  jussi
+  Improvements and simplifications to the code.
+
   Revision 1.19  1996/06/21 19:30:36  jussi
   Moved all 3D-related code to Map3D.C and Map3D.h.
 
@@ -185,7 +188,6 @@ public:
 	virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width);
 	virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width);
 
-
 	virtual void Text(char *text, Coord x, Coord y, Coord width,
 			  Coord height, TextAlignment alignment = AlignCenter,
 			  Boolean skipLeadingSpaces = false);
@@ -210,12 +212,12 @@ public:
 	/* Get window rep dimensions */
 	virtual void Dimensions(unsigned int &width, unsigned int &height);
 
-	/* get window rep origin */
+	/* Get window rep origin */
 	virtual void Origin(int &x, int &y);
 
 	/* Get absolute window rep origin from upper left corner
 	   of the screen */
-	virtual void AbsoluteOrigin(int &x,int &y);
+	virtual void AbsoluteOrigin(int &x, int &y);
 
 	// ---------------------------------------------------------- 
 
@@ -238,7 +240,7 @@ protected:
 
 	/* called by XDisplay to create new X window */
  	XWindowRep(Display *display, Window window, XDisplay *DVDisp, 
-		   Color fgndColor, Color bgndColor,
+		   XWindowRep *parent, Color fgndColor, Color bgndColor,
 		   Boolean backingStore = false); 
 
 	/* called by XDisplay to create new X pixmap */
@@ -281,6 +283,12 @@ protected:
 
 	/* return pixmap identifier */
 	Pixmap GetPixmapId() { return _pixmap; }
+
+        /* get geometry of root window enclosing this window */
+        void GetRootGeometry(int &x, int &y, unsigned int &w, unsigned int &h);
+
+        /* find top window */
+        Window FindTopWindow(Window win);
 
 	/* export window image as GIF */
 	void ExportGIF(char *filename);
