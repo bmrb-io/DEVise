@@ -21,6 +21,13 @@
   $Id$
 
   $Log$
+  Revision 1.59  1999/06/04 16:32:30  wenger
+  Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
+  with key presses in piled views in the JavaScreen); made other pile-
+  related improvements (basically, I removed a bunch of pile-related code
+  from the XWindowRep class, and implemented that functionality in the
+  PileStack class).
+
   Revision 1.58  1999/05/17 20:55:20  wenger
   Partially-kludged fix for bug 488 (problems with cursors in piled views
   in the JavaScreen).
@@ -352,6 +359,7 @@ char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 	"JAVAC_DeleteChildViews",
 	"JAVAC_ViewDataArea",
 	"JAVAC_UpdateViewImage",
+	"JAVAC_DisableActions",
 
 	"JAVAC_Done",
 	"JAVAC_Error",
@@ -1966,15 +1974,29 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	}
 
 	//
+	// Get the cursor grid information.
+	//
+	Boolean useGrid;
+	Coord gridX, gridY;
+	cursor->GetGrid(useGrid, gridX, gridY);
+	if (!useGrid) {
+	  gridX = gridY = -1.0;
+	}
+
+	//
     // Generate the command to send.
 	//
+#if 0 //TEMPTEMP
+	const int argCount = 11;
+#else //TEMPTEMP
 	const int argCount = 9;
+#endif //TEMPTEMP
 	char *argv[argCount];
 	int	pos = 0;
 	argv[pos++] = _controlCmdName[DRAWCURSOR];
 	argv[pos++] = (char *)cursor->GetName();
 	argv[pos++] = view->GetName();
-#if 1
+#if 1 //TEMPTEMP
     // This is a kludgey fix for bug 488 -- always say that we're drawing
 	// the cursor in the last (top) view of the pile.  RKW 1999-05-17.
     if (view->IsInPileMode()) {
@@ -1987,6 +2009,10 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	FillInt(argv, pos, height);
 	argv[pos++] = movement;
 	argv[pos++] = fixedSize;
+#if 0 //TEMPTEMP
+	FillDouble(argv, pos, gridX);
+	FillDouble(argv, pos, gridY);
+#endif //TEMPTEMP
 	DOASSERT(pos == argCount, "Incorrect argCount");
 
 	//
@@ -2043,11 +2069,11 @@ JavaScreenCmd::ReturnVal(int argc, char** argv)
 #if defined(DEBUG)
     printf("JavaScreenCmd(0x%p)::ReturnVal(", this);
 	PrintArgs(stdout, argc, argv, false);
-	printf(")\n");
+	printf(")");
 
     struct timeval cmdTime;
     if (gettimeofday(&cmdTime, NULL) >= 0) {
-		printf("  %s\n", DateString(cmdTime.tv_sec));
+		printf(" at %s\n", DateString(cmdTime.tv_sec));
     }
 #endif
 
@@ -2377,20 +2403,19 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 	char *yAxisType = "none";
 	
 	// Don't draw axes for 3D views.
+	// Note that the type is send for 2D views even if the axes are not
+	// drawn, so that the JS knows how to display the cursor position.
 	if (view->GetNumDimensions() == 2) {
-		if (view->xAxis.inUse) {
-			if (view->GetXAxisAttrType() == DateAttr) {
-				xAxisType = "date";
-			} else {
-				xAxisType = "real";
-			}
+		if (view->GetXAxisAttrType() == DateAttr) {
+			xAxisType = "date";
+		} else {
+			xAxisType = "real";
 		}
-		if (view->yAxis.inUse) {
-			if (view->GetYAxisAttrType() == DateAttr) {
-				yAxisType = "date";
-			} else {
-				yAxisType = "real";
-			}
+
+		if (view->GetYAxisAttrType() == DateAttr) {
+			yAxisType = "date";
+		} else {
+			yAxisType = "real";
 		}
 	}
 
@@ -2402,38 +2427,64 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 		viewTitle = view->_label.name;
 	}
 
-	const int argCount = 17;
-	char *argv[argCount];
-	int	pos = 0;
-	argv[pos++] = _controlCmdName[CREATEVIEW];
-	argv[pos++] = view->GetName();
-	argv[pos++] = parent ? parent->GetName() : "";
-	FillInt(argv, pos, viewX);
-	FillInt(argv, pos, viewY);
-	FillInt(argv, pos, viewWidth);
-	FillInt(argv, pos, viewHeight);
-	FillDouble(argv, pos, viewZ);
-	FillInt(argv, pos, dataX);
-	FillInt(argv, pos, dataY);
-	FillInt(argv, pos, dataWidth);
-	FillInt(argv, pos, dataHeight);
-	argv[pos++] = (char *)fgColorStr.c_str();
-	argv[pos++] = (char *)bgColorStr.c_str();
-	argv[pos++] = xAxisType;
-	argv[pos++] = yAxisType;
-	argv[pos++] = viewTitle;
-	DOASSERT(pos == argCount, "Incorrect argCount");
+	{ // limit variable scopes
+	  const int argCount = 17;
+	  char *argv[argCount];
+	  int	pos = 0;
+	  argv[pos++] = _controlCmdName[CREATEVIEW];
+	  argv[pos++] = view->GetName();
+	  argv[pos++] = parent ? parent->GetName() : "";
+	  FillInt(argv, pos, viewX);
+	  FillInt(argv, pos, viewY);
+	  FillInt(argv, pos, viewWidth);
+	  FillInt(argv, pos, viewHeight);
+	  FillDouble(argv, pos, viewZ);
+	  FillInt(argv, pos, dataX);
+	  FillInt(argv, pos, dataY);
+	  FillInt(argv, pos, dataWidth);
+	  FillInt(argv, pos, dataHeight);
+	  argv[pos++] = (char *)fgColorStr.c_str();
+	  argv[pos++] = (char *)bgColorStr.c_str();
+	  argv[pos++] = xAxisType;
+	  argv[pos++] = yAxisType;
+	  argv[pos++] = viewTitle;
+	  DOASSERT(pos == argCount, "Incorrect argCount");
 
-	ReturnVal(argCount, argv);
+	  ReturnVal(argCount, argv);
 
-	delete [] argv[3];
-	delete [] argv[4];
-	delete [] argv[5];
-	delete [] argv[6];
-	delete [] argv[7];
-	delete [] argv[8];
-	delete [] argv[9];
-	delete [] argv[10];
+	  delete [] argv[3];
+	  delete [] argv[4];
+	  delete [] argv[5];
+	  delete [] argv[6];
+	  delete [] argv[7];
+	  delete [] argv[8];
+	  delete [] argv[9];
+	  delete [] argv[10];
+	}
+
+#if 0 //TEMPTEMP
+	{ // limit variable scopes
+	  Boolean rubberbandDisabled, clickDisabled, doubleclickDisabled;
+	  view->GetDisabledActions(rubberbandDisabled, clickDisabled,
+	      doubleclickDisabled);
+
+	  const int argCount = 5;
+	  char *argv[argCount];
+	  int	pos = 0;
+	  argv[pos++] = _controlCmdName[DISABLEACTIONS];
+	  argv[pos++] = view->GetName();
+	  FillInt(argv, pos, rubberbandDisabled);
+	  FillInt(argv, pos, clickDisabled);
+	  FillInt(argv, pos, doubleclickDisabled);
+//TEMPTEMP -- need to disable keys?
+
+	  ReturnVal(argCount, argv);
+
+	  delete [] argv[2];
+	  delete [] argv[3];
+	  delete [] argv[4];
+	}
+#endif //TEMPTEMP
 }
 
 //====================================================================

@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1999/05/04 17:17:08  wenger
+  Merged js_viewsyms_br thru js_viewsyms_br_1 (code for new JavaScreen
+  protocol that deals better with view symbols).
+
   Revision 1.19.4.2  1999/02/24 21:02:49  wenger
   Cursor drawing for JavaScreen is now working again (testing without the
   JavaScreen).
@@ -155,6 +159,7 @@ class JavaScreenCmd
 			DELETECHILDVIEWS,
 			VIEWDATAAREA,
 			UPDATEVIEWIMAGE,
+			DISABLEACTIONS,
 
 			DONE,
 			ERROR,

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/10/20 19:39:47  wenger
+  Various small code cleanups.
+
   Revision 1.7  1998/06/09 20:06:01  wenger
   2D OpenGL cursor now drawn as shaded outline plus every-other-point
   "mesh"; OpenGL CursorStore and GLWindowRep on SGI now use color indices
@@ -131,7 +134,7 @@ ClassInfo *CursorClassInfo::CreateWithParams(int argc, char **argv)
   Coord gridY = 1.0;
   if (argc >= 3) useGrid = atoi(argv[2]);
   if (argc >= 4) gridX = atof(argv[3]);
-  if (argc >= 5) gridX = atof(argv[4]);
+  if (argc >= 5) gridY = atof(argv[4]);
   DeviseCursor *cursor = new DeviseCursor(name, flag,
 										  useGrid, gridX, gridY);
   return new CursorClassInfo(name, flag, cursor);
