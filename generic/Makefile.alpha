@@ -3,28 +3,23 @@
 
 CC = g++
 
-BUFMGR_DIR = /p/miron/miron/DEVise/src/graphics
-DV_DIR = /p/miron/miron/DEVise/src/graphics.new
-TAPE_DIR = /p/miron/miron/DEVise/src/tape
 LDFLAGS = $(ARCH_LDFLAGS) -L/usr/unsup/lib ../graphics.new/libobj.o \
 	../tape/tapeobj.o -tcl -ltk \
 	-lXaw -lXmu -lXt -lXext -lX11 -lm
-CFLAGS = -g -I$(BUFMGR_DIR) -I$(DV_DIR) -I$(TAPE_DIR) $(ARCH_FLAGS) \
+CFLAGS = -g -I../../graphics -I../../graphics.new -I../../tape $(ARCH_FLAGS) \
          -fexternal-templates
 
-GENERIC_SRC = generic.c
-GENERIC_OBJ = generic.o
+all: generic issm
 
-ALLSRC = $(GENERIC_SRC)
+generic: generic.o ../graphics.new/libobj.o ../tape/tapeobj.o
+	$(CC) -o $@ $@.o $(LDFLAGS)
 
-all: generic
-
-generic: $(GENERIC_OBJ) ../graphics.new/libobj.o ../tape/tapeobj.o
-	$(CC) -o generic $(GENERIC_OBJ) $(LDFLAGS)
+issm:   issm.o ../graphics.new/libobj.o ../tape/tapeobj.o
+	$(CC) -o $@ $@.o $(LDFLAGS)
 
 depend:
 	makedepend -fMakefile.alpha -I/usr/misc/C++/include \
-                   -I$(BUFMGR_DIR) -I$(DV_DIR) -I$(TAPE_DIR) $(ALLSRC)
+        	-I../graphics -I../graphics.new -I../tape *.c
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
