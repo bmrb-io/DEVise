@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.4  1995/09/26 23:09:02  jussi
+#	Added color/shape/size/pattern/orientation settings to view
+#	definition.
+#
 #	Revision 1.3  1995/09/22 17:33:47  jussi
 #	Added copyright message.
 #
@@ -334,7 +338,7 @@ proc MacroDefHelp {} {
 ############################################################
 
 proc MacroDefAuto {tdata} {
-    global schemas modified x xtype sortedx yvar
+    global schemas modified x xtype sortedx yvar selgrp schema
     global macroSelectColor macroMenuSelectColor
 
     # see if .auto window already exists; if so, just return
@@ -357,67 +361,102 @@ proc MacroDefAuto {tdata} {
 
     label .auto.xsel.label -text "Select X" -width 15
     menubutton .auto.xsel.attr -relief raised \
-	    -textvariable x -menu .auto.xsel.attr.menu -width 15
+	    -textvariable x -menu .auto.xsel.attr.$selgrp -width 15
     pack .auto.xsel.label -side left
     pack .auto.xsel.attr -side left
 
     label .auto.ysel.label -text "Select Y" -width 15
     pack .auto.ysel.label -side top -fill x -expand 1 -pady 3m
 
-    menu .auto.xsel.attr.menu -tearoff 0
+    #  For selecting Y attrs - a button here will pop up a new window
+    # containing a list of name from which a selection can be made
+    button .auto.ysel.sel -text "Attributes from Group : $selgrp" \
+           -command {selYAuto $selgrp}
+    pack .auto.ysel.sel -side top -fill x -expand 1 -pady 3m
+
+
+    # Have a list containing the name of the selected group.
+    # In every iteration of the loop, create a menu with the name ending
+    # with the group name.
+    set addname($selgrp) .auto.xsel.attr.$selgrp
+    set grplist $selgrp
+    while {[llength $grplist] > 0} {
+	set grpname [lindex $grplist 0]
+	set grplist [lreplace $grplist 0 0]
+	menu $addname($grpname) -tearoff 0
+	set subgrps [DEVise getItems $grpname]
+        foreach sub $subgrps {
+		set subname [lindex $sub 0]
+		if {[lindex $sub 1] != "intr"} {
+			$addname($grpname) add radiobutton \
+				-label $subname -variable x -value $subname 
+		} else {
+			$addname($grpname) add cascade \
+				-label $subname \
+				-menu $addname($grpname).$subname
+			set grplist [linsert $grplist 0 $subname]
+			set addname($subname) $addname($grpname).$subname
+		}
+	}
+    }
+
+
+#    menu .auto.xsel.attr.menu -tearoff 0
+
     set sname [lindex $schemas($tdata) 0]
     set schema [ElimStringAttr [lindex $schemas($tdata) 1]]
     set x ""
     set xtype ""
     set sortedx 0
 
-    set row -1
-    set col -1
-    set maxcol 4
-    set varcnt 0
+#    set row -1
+#    set col -1
+#    set maxcol 4
+#    set varcnt 0
 
-    foreach attr $schema {
-	set name [lindex $attr 0]
-	set type [lindex $attr 1]
-	set sorted [lindex $attr 2]
-	.auto.xsel.attr.menu add radiobutton -label $name \
-		-variable x -value $name
-	if {$sorted > 0 && $name != "recId" && $x == ""} {
-	    set x $name
-	    set xtype $type
-	    set sortedx $sorted
-	}
-	if {$col < 0} {
-	    incr row
-	    set col 0
-	    frame .auto.ysel.row$row
-	    pack .auto.ysel.row$row -side top -fill x -expand 1
-	}
-	checkbutton .auto.ysel.row$row.col$col -text $name \
-		-variable yvar($name) -width 15 -anchor w \
-		-indicatoron 0 -selectcolor $macroSelectColor
-	set yvar($name) 0
-	pack .auto.ysel.row$row.col$col -side left -fill x -expand 1
-	incr col
-	if {$col >= $maxcol} {
-	    set col -1
-	}
-    }
+#    foreach attr $schema {
+#	set name [lindex $attr 0]
+#	set type [lindex $attr 1]
+#	set sorted [lindex $attr 2]
+#	.auto.xsel.attr.menu add radiobutton -label $name \
+#		-variable x -value $name
+#	if {$sorted > 0 && $name != "recId" && $x == ""} {
+#	    set x $name
+#	    set xtype $type
+#	    set sortedx $sorted
+#	}
+#	if {$col < 0} {
+#	    incr row
+#	    set col 0
+#	    frame .auto.ysel.row$row
+#	    pack .auto.ysel.row$row -side top -fill x -expand 1
+#	}
+#	checkbutton .auto.ysel.row$row.col$col -text $name \
+#		-variable yvar($name) -width 15 -anchor w \
+#		-indicatoron 0 -selectcolor $macroSelectColor
+#	set yvar($name) 0
+#	pack .auto.ysel.row$row.col$col -side left -fill x -expand 1
+#	incr col
+#	if {$col >= $maxcol} {
+#	    set col -1
+#	}
+#    }
 
     # add empty frame to end of last row so that existing buttons
     # on that row won't get expanded more than buttons on other
     # (full) rows
-    for {} {$row >= 0 && $col >= 0 && $col < $maxcol} {incr col} {
-	label .auto.ysel.row$row.col$col -text "" -width 15 \
-		-relief flat -borderwidth 4
-	pack .auto.ysel.row$row.col$col -side left -fill x -expand 1
-    }
+#    for {} {$row >= 0 && $col >= 0 && $col < $maxcol} {incr col} {
+#	label .auto.ysel.row$row.col$col -text "" -width 15 \
+#		-relief flat -borderwidth 4
+#	pack .auto.ysel.row$row.col$col -side left -fill x -expand 1
+#    }
 
     if {$x == ""} {
 	set x [lindex [lindex $schema 0] 0]
 	set xtype [lindex [lindex $schema 0] 1]
 	set sortedx [lindex [lindex $schema 0] 2]
     }
+
 
     tk_menuBar .auto.xsel .auto.xsel.attr
 
@@ -434,6 +473,20 @@ proc MacroDefAuto {tdata} {
 		    Y attributes for automatic\n\
 		    mapping." "" 0 OK
 	} else {
+            # We have the correct value for x only - need to find 
+            # out the values for xtype and sortedx before calling
+            # this function
+            foreach attr $schema {
+                 set name [lindex $attr 0]
+                 if {$name != $x} {continue}
+                 set xtype [lindex $attr 1]
+                 set sortedx [lindex $attr 2]
+                 break
+            }
+            puts "The value of x is $x"
+            puts "The value of xtype is $xtype"
+            puts "The value of sortedx is $sortedx"
+	    puts "The ylist is $ylist"
 	    MacroDefAutoActual $tdata $x $xtype $sortedx $ylist
 	    destroy .auto
 	}
@@ -520,6 +573,8 @@ proc MacroDefAutoActual {tdata x xtype sortedx ylist} {
 	set sorted [lindex $attr 2]
 	if {[lsearch $ylist $name] < 0} { continue }
 
+	puts "Creating mapping for $name"
+
 	set mapname [format "%s_vs_%s" $name $x]
 	set err [catch {set exists $mappings($mapname)}]
 	if {$err > 0} {
@@ -553,6 +608,8 @@ proc MacroDefAutoActual {tdata x xtype sortedx ylist} {
 	    set views($viewname) $defn
 	}
 
+	puts "Here"
+
 	# ask DEVise to create view instance
 	set sorted $sortedx
 	set viewinstance "$tdata#$viewname#$x#$name"
@@ -569,12 +626,16 @@ proc MacroDefAutoActual {tdata x xtype sortedx ylist} {
 	    return
 	}
 	
+	puts "Here"
+
 	if {[lsearch [DEVise get mapping] $mapname] < 0} {
 	    # ask DEVise to create interpreted mapping
 	    # parameter format: x y color size pattern orientation shape
 	    set result [DEVise createInterp $tdata $mapname "" \$$x \$$name \
 		    $color "" "" "" $shape "" ""]
 	}
+
+	puts "Here"
 
 	set mapinstance "$tdata#$mapname"
 	if {[lsearch [GdataSet] $mapinstance] < 0} {
@@ -586,20 +647,31 @@ proc MacroDefAutoActual {tdata x xtype sortedx ylist} {
 	    puts "$mapinstance exists already -- not creating"
 	}
 
+	puts "Here"
+
 	# ask DEVise to insert $viewinstance into $mapinstance
+	puts "DEVise insertMapping $viewinstance $mapinstance"
 	set result [DEVise insertMapping $viewinstance $mapinstance]
 	# seems that there's no error code returned
+
+	puts "Here"
 
 	# ask DEVise to insert $viewinstance into $window
 	set result [DEVise insertWindow $viewinstance $window]
 	# seems that there's no error code returned
 
+	puts "Here"
+
 	# ask DEVise to link $viewinstance to $linkname
 	set result [DEVise insertLink $linkname $viewinstance]
 	# seems that there's no error code returned
 
+	puts "Here"
+
 	DEVise clearViewHistory $viewinstance
 	DEVise insertViewHistory $viewinstance $xlo $ylo $xhi $yhi 0
+
+	puts "Here"
 
 	ProcessViewSelected $viewinstance
 	# DoToggleAxis X
@@ -902,7 +974,8 @@ proc MacroDefLinks {m default} {
 ############################################################
 
 proc DefSource {} {
-    global tdatas schemas maps fsBox sname datadir dialogListVar
+    global tdatas schemas maps fsBox sname datadir dialogListVar topgrps \
+	selgrp
 
     # see if .source window already exists; if so, just return
     set err [catch {set exists [wm state .source]}]
@@ -1023,6 +1096,39 @@ proc DefSource {} {
 		    "Error reading file $fname" "" 0 OK
 	    return ""
 	}
+
+	# get the list of top level group names from DEVise
+	set topgrps [DEVise getTopGroups]
+
+        if {[llength $topgrps] == 0} {
+            set selgrp "__default"
+            DEVise defaultGroup $sname
+        } else {
+	    # Create window to show list of top level group names
+	    toplevel .topgrps
+	    wm title .topgrps "Choose Group"
+	    wm geometry .topgrps +100+100
+	    selection clear .topgrps
+	    listbox .topgrps.list -relief raised -borderwidth 2 \
+		    -yscrollcommand ".topgrps.scroll set"
+	    scrollbar .topgrps.scroll -command ".topgrps.list yview"
+	    button .topgrps.ok -text "OK" -command {
+		set selgrp [.topgrps.list get active]
+		destroy .topgrps
+	    }
+	    pack .topgrps.ok -side bottom
+	    pack .topgrps.list -side left
+	    pack .topgrps.scroll -side right -fill y
+	    
+	    foreach i $topgrps {
+		.topgrps.list insert end $i
+	    }
+
+	    tkwait visibility .topgrps
+	    grab set .topgrps
+	    tkwait window .topgrps
+        }
+		
 	set sdef [DEVise getSchema $sname]
 	lappend tdatas [list $sname $source]
 	set schemas($sname) [list $schema $sdef]
@@ -1688,7 +1794,81 @@ proc CreateBitmapMenuButton { w file varname } {
     return $w
 }
 
+
+# Procedure for displaying Y coordinates in Auto mode
+proc selYAuto {grpname} {
+	global yvar macroSelectColor
+
+	#Check if the window already exists
+        set err [catch {set exists [wm state .selY$grpname]}]
+	if {!$err} {wm deiconify .selY$grpname; return}
+
+	# Create new window
+	toplevel .selY$grpname
+	wm title .selY$grpname "Group : $grpname"
+	wm geometry .selY$grpname +100+100
+	
+	label .selY$grpname.label -text "Select Y parameters"
+	frame .selY$grpname.sel -relief groove -borderwidth 2
+	frame .selY$grpname.but 
+	pack .selY$grpname.label -side top -pady 3m -fill x -expand 1
+	pack .selY$grpname.sel -side top -pady 3m -fill x -expand 1
+	pack .selY$grpname.but -side top -pady 3m -fill x -expand 1
+
+	set row -1
+	set col -1
+	set maxcol 4
+	set varcnt 0
+
+	set grplist [DEVise getItems $grpname]
+
+	foreach itm $grplist {
+		set subname [lindex $itm 0]
+		set type [lindex $itm 1]
+		if {$col < 0} {
+			incr row
+			set col 0
+			frame .selY$grpname.sel.row$row
+			pack .selY$grpname.sel.row$row -side top -fill x \
+				-expand 1
+		}
+		if {$type != "intr"} {
+			checkbutton .selY$grpname.sel.row$row.col$col \
+				-text $subname -variable yvar($subname) \
+				-width 15 -anchor w -indicatoron 0 \
+				-selectcolor $macroSelectColor
+			set yvar($subname) 0
+		} else {
+			button .selY$grpname.sel.row$row.col$col \
+				-text $subname -width 15 \
+				-command \
+				    [format "selYAuto %s" $subname] 
+		}
+		pack .selY$grpname.sel.row$row.col$col -side left \
+			-fill x -expand 1
+		incr col
+		if {$col >= $maxcol} {
+			set col -1
+		}
+	}
+
+	#Add empty frames at end of last row
+	for {} {$row >= 0 && $col >= 0 && $col < $maxcol} {incr col} {
+		label .selY$grpname.sel.row$row.col$col -text "" \
+			-width 15 -relief flat -borderwidth 4
+		pack .selY$grpname.sel.row$row.col$col -side left -fill x \
+			-expand 1
+	}
+
+	button .selY$grpname.but.ok -text OK -width 20 -command \
+		[format "destroy .selY%s" $grpname]
+
+	pack .selY$grpname.but.ok -side left -fill x -expand 1
+}
+			
+
+
 ############################################################
 
-# initialize macro definition utility
+# INITIALIZE  macro definition utility
 MacroDefInit
