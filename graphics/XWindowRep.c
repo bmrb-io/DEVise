@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.145  2000/03/14 17:05:17  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.144  2000/01/13 23:06:53  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -2638,7 +2642,7 @@ void XWindowRep::DoButtonPress(int x, int y, int &pixX1, int &pixY1,
   y1 = y2 = y;
 
   /* draw rubberband rectangle */
-  cb->MouseDrag(x1, y1, x2, y2);
+  cb->MouseDrag(x1, y1, x2, y2, button);
   
   Boolean done = false;
   long buttonMask = buttonMasks[button - 1];
@@ -2649,7 +2653,7 @@ void XWindowRep::DoButtonPress(int x, int y, int &pixX1, int &pixY1,
     case ButtonRelease:
       if (event.xbutton.button == (unsigned int)button) {
 	/* final button position */
-        cb->MouseDrag(x1, y1, x2, y2);
+        cb->MouseDrag(x1, y1, x2, y2, button);
 	x2 = event.xbutton.x;
 	y2 = event.xbutton.y;
         _mouseX = event.xmotion.x;
@@ -2659,7 +2663,8 @@ void XWindowRep::DoButtonPress(int x, int y, int &pixX1, int &pixY1,
       }
       break;
     case MotionNotify:
-      cb->MouseDrag(x1, y1, x2, y2);
+      // Erase previous rubberband line.
+      cb->MouseDrag(x1, y1, x2, y2, button);
       
       /* get rid of all remaining motion events */
       do {
@@ -2667,7 +2672,7 @@ void XWindowRep::DoButtonPress(int x, int y, int &pixX1, int &pixY1,
 	y2 = event.xmotion.y;
       } while(XCheckWindowEvent(_display,_win, buttonMask, &event));
       
-      cb->MouseDrag(x1, y1, x2, y2);
+      cb->MouseDrag(x1, y1, x2, y2, button);
       break;
     }
   }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.47  2000/03/14 21:51:39  wenger
+  Added more invalid object checking; had to take some memory checking
+  out of client-side stuff for linking reasons.
+
   Revision 1.46  2000/03/14 17:05:15  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -510,7 +514,7 @@ private:
 		  cursorHit._hitType = CursorHit::CursorNone;
 		  cursorHit._cursor = NULL; }
 
-        virtual void MouseDrag(int x1, int y1, int x2, int y2) {}
+        virtual void MouseDrag(int x1, int y1, int x2, int y2, int button) {}
 		
 		// Don't do anything in a window that doesn't have a view.
 		virtual void ShowMouseLocation(int *mouseX, int *mouseY) {}
@@ -589,9 +593,9 @@ class ViewWin_WindowRepCallback : public WindowRepCallback
 			_parent->IsOnCursor(pixX, pixY, cursorHit);
 		}
 
-		virtual void MouseDrag(int x1, int y1, int x2, int y2)
+		virtual void MouseDrag(int x1, int y1, int x2, int y2, int button)
         {
-		    _parent->MouseDrag(x1, y1, x2, y2);
+		    _parent->MouseDrag(x1, y1, x2, y2, button);
 		}
 
 		virtual void ShowMouseLocation(int *mouseX, int *mouseY)

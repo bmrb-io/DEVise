@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.42  2001/01/08 20:32:52  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.40.2.1  2000/12/27 19:39:17  wenger
   Merged changes from js_restart_improvements thru zero_js_cache_check from
   the trunk onto the js_cgi_br branch.
@@ -215,8 +219,8 @@ void Action::AreaSelected(ViewGraph *view, Coord xlow, Coord ylow,
 			  Coord xhigh, Coord yhigh, int button)
 {
 #if defined(DEBUG)
-  printf("Action::AreaSelected(%s: (%f, %f); (%f, %f))\n", view->GetName(),
-      xlow, ylow, xhigh, yhigh);
+  printf("Action::AreaSelected(%s: (%f, %f); (%f, %f), %d)\n", view->GetName(),
+      xlow, ylow, xhigh, yhigh, button);
 #endif
 
   if (xlow == xhigh || ylow == yhigh) {

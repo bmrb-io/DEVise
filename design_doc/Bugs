@@ -2758,17 +2758,20 @@ Num Date        Status  Description
 			anything, the session file shouldn't be different
 			(except for the date in the header). (rkw)
 
-693 09/25/01	OPEN	If you are doing an X-only zoom, the rubberband
+693 09/25/01	FIXED	If you are doing an X-only zoom, the rubberband
 			line that is drawn should reflect this. (rkw)
+			(Fixed by rkw, 09/26/01.)
 
 694 09/25/01	FIXED	JavaScreen: if you are doing an X-only zoom, the
 			rubberband line that is drawn should reflect this.
 			(rkw)
+			(Fixed by rkw, 09/26/01.)
 
 695 09/25/01	FIXED	JavaScreen: if cursor movement is disallowed in
 			a view, the user shouldn't be able to drag the
 			drawn cursor, and no command should be sent to
 			the devised. (rkw)
+			(Fixed by rkw, 09/26/01.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

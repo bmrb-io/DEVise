@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.238  2001/08/03 18:13:04  wenger
+  Removed all OpenGL-related code.
+
   Revision 1.237  2001/07/27 18:32:11  wenger
   Found and fixed bug 684 (problem with home on linked views).
 
@@ -4544,17 +4547,29 @@ View::DoIsOnCursor(int pixX, int pixY, CursorHit &cursorHit)
 }
 
 void
-View::MouseDrag(int x1, int y1, int x2, int y2)
+View::MouseDrag(int x1, int y1, int x2, int y2, int button)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-  printf("View(%s)::MouseDrag(%d, %d, %d, %d)\n", GetName(), x1, y1, x2, y2);
+  // Note: we can't print here, because that causes the display to lock up.
+  const int bufLen = 256;
+  char buf[bufLen];
+  int formatted = snprintf(buf, bufLen,
+      "View(%s)::MouseDrag(%d, %d, %d, %d, %d)\n", GetName(), x1, y1, x2,
+      y2, button);
+  checkAndTermBuf(buf, bufLen, formatted);
+  DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, buf);
 #endif
 
   WindowRep *winRep = GetWindowRep();
 
   CursorHit::HitType hitType = WindowRep::GetCursorHit()._hitType;
   if (hitType == CursorHit::CursorNone) {
+    if (button == 1) { // X-only zoom
+      y1 = 0;
+      y2 = MAXINT;
+    }
+
     (void) ForceIntoDataArea(x1, y1);
     (void) ForceIntoDataArea(x2, y2);
     if (x1 != x2 && y1 != y2 && !GetRubberbandDisabled()) {
@@ -4564,7 +4579,7 @@ View::MouseDrag(int x1, int y1, int x2, int y2)
     DeviseCursor *cursor = WindowRep::GetCursorHit()._cursor;
     DOASSERT(cursor, "No cursor specified");
     if (cursor->GetDst() != this) {
-      cursor->GetDst()->MouseDrag(x1, y1, x2, y2);
+      cursor->GetDst()->MouseDrag(x1, y1, x2, y2, button);
     } else {
       Coord dataXLow, dataYLow, dataXHigh, dataYHigh;
       cursor->FindNewPosition(x1, y1, x2, y2, hitType, dataXLow, dataYLow,

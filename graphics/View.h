@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.117  2001/05/03 19:39:02  wenger
+  Changed negative axis flag to multiplicative factor to be more flexible;
+  pass multiplicative factor to JS to correct mouse location display (mods
+  to JAVAC_ViewDataArea command); corrected mouse location display in DEVise
+  Tcl GUI.
+
   Revision 1.116  2001/04/23 18:58:32  wenger
   Added negative axis label option (no GUI yet) to allow us to display
   chemical shifts the way the BMRB people want.
@@ -1111,7 +1117,7 @@ protected:
         virtual void IsOnCursor(int pixX, int pixY, CursorHit &cursorHit);
         virtual void DoIsOnCursor(int pixX, int pixY, CursorHit &cursorHit);
 
-        virtual void MouseDrag(int x1, int y1, int x2, int y2);
+        virtual void MouseDrag(int x1, int y1, int x2, int y2, int button);
 
 		virtual void ShowMouseLocation(int *mouseX, int *mouseY);
 

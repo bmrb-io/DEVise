@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.86  2000/02/16 18:23:17  wenger
+  Added ClipDepth() function for debugging.
+
   Revision 1.85  1999/10/12 17:59:27  wenger
   Fixed bug in code for checking if the mouse is on a cursor that caused
   devised to crash with JavaScreen; fixed Dispatcher problem that sometimes
@@ -496,7 +499,7 @@ public:
 	cursorHit._hitType = CursorHit::CursorNone; 
     cursorHit._cursor = NULL; }
 
-  virtual void MouseDrag(int x1, int y1, int x2, int y2) {}
+  virtual void MouseDrag(int x1, int y1, int x2, int y2, int button) {}
 
   virtual void ShowMouseLocation(int *mouseX, int *mouseY) {}
 };
