@@ -7,6 +7,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/10/04 19:59:45  wenger
+  Temporarily (?) removed threads from Devise (removed -lpthread from
+  some Makefiles so Purify works); other minor cleanups.
+
   Revision 1.7  1996/09/26 18:55:43  jussi
   Added support for 64-bit file offsets. Tape commands are now
   executed in a subprocess or thread which increases parallelism
@@ -218,14 +222,14 @@ protected:
   int  atEof;                           // 1 if tape at EOF
 
 #ifdef THREAD_TASK
+  static void *ProcessCmd(void *arg);   // thread/process for commands
   pthread_t _child;                     // ID of child thread
+  short _proc_mt_op;                    // cached value for ProcessCmd()
+  daddr_t _proc_mt_count;               // cached value for ProcessCmd()
 #else
   pid_t _child;                         // ID of child process
 #endif
-  short _proc_mt_op;                    // cached value for ProcessCmd()
-  daddr_t _proc_mt_count;               // cached value for ProcessCmd()
 
-  static void *ProcessCmd(void *arg);   // thread/process for commands
   void *ProcessCmd(short mt_op,
                    daddr_t mt_count);   // recoverable tape command processing
   int ProcessCmdNR(short mt_op,

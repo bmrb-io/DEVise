@@ -7,6 +7,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/10/02 15:24:02  wenger
+  Improved error handling (modified a number of places in the code to use
+  the DevError class).
+
   Revision 1.12  1996/09/26 18:55:42  jussi
   Added support for 64-bit file offsets. Tape commands are now
   executed in a subprocess or thread which increases parallelism
@@ -61,6 +65,7 @@
 */
 
 //#define TAPE_DEBUG
+//#define TAPE_DEBUG2
 
 #include <iostream.h>
 #include <unistd.h>
@@ -220,9 +225,18 @@ void TapeDrive::waitForChildProcess()
 #ifdef THREAD_TASK
     (void)pthread_join(_child, 0);
 #else
-    if (wait(0) < 0) {
-      reportErrSys("wait");
-      exit(1);
+    while(1) {
+        int status;
+        pid_t child = wait(&status);
+        if (child < 0) {
+            if (errno == EINTR)
+                continue;
+            if (errno != ECHILD) {
+                reportErrSys("wait");
+                exit(1);
+            }
+        } else
+            break;
     }
 #endif
     TAPEDBG(cout << "Tape " << fileno(file) << " has become idle" << endl);
@@ -492,11 +506,13 @@ void TapeDrive::Recover(struct mtget &otstat, short mt_op,
   DOASSERT(status >= 0, "Recovery attempt failed");
 }
 
+#ifdef THREAD_TASK
 void *TapeDrive::ProcessCmd(void *arg)
 {
   TapeDrive &me = *(TapeDrive *)arg;
   return me.ProcessCmd(me._proc_mt_op, me._proc_mt_count);
 }
+#endif
 
 void *TapeDrive::ProcessCmd(short mt_op, daddr_t mt_count)
 {
@@ -528,7 +544,7 @@ int TapeDrive::ProcessCmdNR(short mt_op, daddr_t mt_count)
 {
   static struct mtop cmd;
   cmd.mt_op = mt_op;
-  cmd.mt_count = _proc_mt_count;
+  cmd.mt_count = mt_count;
 
   DOASSERT(mt_op >= 0 && mt_op < _max_mt_op, "Invalid tape command");
   mt_ios[mt_op]++;
@@ -564,6 +580,8 @@ int TapeDrive::command(short mt_op, daddr_t mt_count)
       return -1;
   }
 #else
+  // There seems to be a problem forking the tape command. Do it
+  // in same process for now.
   _child = fork();
 
   if (!_child) {
@@ -607,13 +625,32 @@ void TapeDrive::fillBuffer()
   TAPEDBG2(cout << "Bufferblock " << bufferBlock << ", bufferOffset "
            << bufferOffset << endl);
 
-//  startTimer();
-#ifdef USE_FREAD
-  size_t status = fread(buffer, blockSize, 1, file);
-#else
-  int status = ::read(fileno(file), buffer, blockSize);
+#if 0
+  startTimer();
 #endif
-//  read_time += getTimer();
+
+#ifdef USE_FREAD
+  size_t status;
+#else
+  int status;
+#endif
+
+  while (1) {
+#ifdef USE_FREAD
+      status = fread(buffer, blockSize, 1, file);
+      if (!status && ferror(file) && errno == EINTR)
+          continue;
+#else
+      status = ::read(fileno(file), buffer, blockSize);
+      if (status < 0 && errno == EINTR)
+          continue;
+#endif
+      break;
+  }
+
+#if 0
+  read_time += getTimer();
+#endif
 
   bufferBlock++;
   bufferOffset = 0;
@@ -625,7 +662,8 @@ void TapeDrive::fillBuffer()
   if (!status) {                        // end of tape file?
 #endif
     atEof = 1;
-    int status = command(MTBSF, 1);     // back up past file mark
+    TAPEDBG(cout << "Backing up past file mark we just passed" << endl);
+    int status = command(MTBSF, 1);
     DOASSERT(status >= 0, "Cannot operate tape drive");
     return;
   }
@@ -663,12 +701,24 @@ void TapeDrive::flushBuffer()
   if (bufferOffset < blockSize)
     memset(buffer + bufferOffset, 0, blockSize - bufferOffset);
 
-//  startTimer();
-  if (fwrite(buffer, blockSize, 1, file) < 1) {
-    reportErrSys("fwrite");
-    exit(1);
+#if 0
+  startTimer();
+#endif
+
+  while (1) {
+      size_t status = fwrite(buffer, blockSize, 1, file);
+      if (!status && ferror(file) && errno == EINTR)
+          continue;
+      if (status < 1) {
+          reportErrSys("fwrite");
+          exit(1);
+      }
+      break;
   }
-//  write_time += getTimer();
+
+#if 0
+  write_time += getTimer();
+#endif
 
   bufferBlock++;
   bufferOffset = 0;
@@ -706,6 +756,8 @@ void TapeDrive::gotoBlock(long block)
 
 void TapeDrive::gotoBeginningOfFile()
 {
+  TAPEDBG(cout << "Going to beginning of file" << endl);
+
   int status = fseek(file, 0, SEEK_SET);
   if (status < 0)
     reportErrSys("fseek");
