@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.52  2001/05/03 16:23:48  xuk
+// Added multiply factor for displaying mouse postion.
+// Changed updateInfo() function.
+//
 // Revision 1.51  2001/01/08 20:31:54  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -140,7 +144,8 @@ public class DEViseViewInfo extends Panel
         add(mouseY);
     }
 
-    public void updateInfo(String name, String x, String y, float factor)
+    public void updateInfo(String name, String x, String y, 
+			   float factorX, float factorY)
     {
         if (name == null) {
             //viewName.setText("");
@@ -161,7 +166,7 @@ public class DEViseViewInfo extends Panel
 		Float floatX = new Float(x);
 		float fX = floatX.floatValue();
 
-		fX = fX * factor;
+		fX = fX * factorX;
 		String strX = String.valueOf(fX);
 		mouseX.setText(strX);
 	    } catch (NumberFormatException e) {
@@ -176,7 +181,7 @@ public class DEViseViewInfo extends Panel
 		Float floatY = new Float(y);
 		float fY = floatY.floatValue();
 
-		fY = fY * factor;
+		fY = fY * factorY;
 		String strY = String.valueOf(fY);
 		mouseY.setText(strY);
 	    } catch (NumberFormatException e) {
@@ -188,9 +193,9 @@ public class DEViseViewInfo extends Panel
     }
 
 
-    public void updateInfo(String x, String y, float factor)
+    public void updateInfo(String x, String y, float factorX, float factorY)
     {
-        updateInfo(null, x, y, factor);
+        updateInfo(null, x, y, factorX, factorY);
     }
 
     public void updateInfo()

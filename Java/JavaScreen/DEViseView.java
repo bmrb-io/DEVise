@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.57  2001/05/03 16:26:42  xuk
+// Added multiply factor for displaying mouse postion.
+// Changed updateDateRange() function to set factor argument.
+//
 // Revision 1.56  2000/08/07 20:21:24  wenger
 // Fixed problems with DEViseView.getFirstCursor() method; cleanup of
 // DEViseCanvas CVS log, and other minor cleanup.
@@ -180,8 +184,10 @@ public class DEViseView
     public boolean isFirstTime = true;
 
     private static final boolean _debug = false;
-
-    float factor = 1; // mouse position multiply factor
+    
+    // mouse position multiply factors
+    float factorX = 1; 
+    float factorY = 1;
 
     public DEViseView(jsdevisec panel, String pn, String name, String piledname, String title, Rectangle loc, float Z, int dim, int bg, int fg, Rectangle dl, String xt, String yt, float gx, float gy, int rb, int cm, int dd, int ky)
     {
@@ -474,7 +480,7 @@ public class DEViseView
     }
 
     // Update the data range of the given axis.
-     void updateDataRange(String axis, float min, float max, String format, float f)
+     void updateDataRange(String axis, float min, float max, String format, float factor)
       throws YError
     {
       
@@ -487,7 +493,8 @@ public class DEViseView
             dataXStep = 0.0f;
             if (viewDataLoc.width > 0)
                 dataXStep = (viewDataXMax - viewDataXMin) / viewDataLoc.width;
-
+	    factorX = factor;
+	    
         } else if (axis.equals("Y")) {
             viewDataYMin = min;
             viewDataYMax = max;
@@ -497,11 +504,11 @@ public class DEViseView
             dataYStep = 0.0f;
             if (viewDataLoc.height > 0)
                 dataYStep = (viewDataYMax - viewDataYMin) / viewDataLoc.height;
+	    factorY = factor;
         } else {
 	    throw new YError("Illegal axis type (" + axis + ")");
 	}
 
-	factor = f;
     }
 
     // Note: getX and getY should probably be combined into a single
