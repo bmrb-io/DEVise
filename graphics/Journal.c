@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/02 20:55:11  jussi
+  Substituted DeviseTime for Time and added copyright notice.
+
   Revision 1.2  1995/09/05 21:12:54  jussi
   Added/updated CVS header.
 */
@@ -26,11 +29,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <limits.h> 
-#if defined(SUN) || defined(PENTIUM)
 #include <string.h>
-#else
-#include <strings.h>
-#endif
 #include <time.h>
 #include "Journal.h"
 #include "Init.h"
