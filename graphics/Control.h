@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/05/13 18:05:38  jussi
+  Changed type of "flag" argument to ReturnVal().
+
   Revision 1.8  1996/05/11 19:10:30  jussi
   Added virtual function prototypes for replica management.
 
@@ -102,6 +105,10 @@ public:
   virtual void StartSession() {}
   virtual void DestroySessionData() {}
   virtual void RestartSession() {}
+
+  /* Get/set batch mode */
+  virtual Boolean GetBatchMode() { return _batchMode; }
+  virtual void SetBatchMode(Boolean mode) { _batchMode = mode; }
 
   /* Execute script */
   virtual void ExecuteScript(char *script) = 0;
@@ -219,7 +226,8 @@ protected:
 
   ControlPanel();
   static ControlPanel *_controlPanel;
-  static Mode _mode;
+  static Mode _mode;                    // layout or display mode
+  static Boolean _batchMode;            // true if we're in batch mode
 
 private:
   void UpdateNewDispatcher() {}
