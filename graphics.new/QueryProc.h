@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/02/03 19:45:32  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
   Revision 1.9  1997/01/23 17:40:18  jussi
   Removed references to GetMgr() and GetXMin().
 
@@ -72,7 +78,7 @@ class QueryCallback {
   
   /* Done with query. bytes == # of TData bytes used in
      processing this query. */
-  virtual void QueryDone(int bytes, void *userData) = 0;
+  virtual void QueryDone(int bytes, void *userData, TDataMap *map=NULL) = 0;
 
   /* Return list of record links whose slave the view is */
   virtual RecordLinkList *GetRecordLinkList() { return 0; }
