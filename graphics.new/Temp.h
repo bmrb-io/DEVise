@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/02/12 22:02:58  jussi
+  Removed redundant size declarations.
+
   Revision 1.3  1996/01/09 22:14:12  jussi
   Added support for 3D data.
 
@@ -36,4 +39,9 @@ extern Coord _width[];
 extern Coord _height[];
 extern Coord _depth[];
 
+// ---------------------------------------------------------- 
+
+extern BLOCK block_data[];
+
 #endif
+
