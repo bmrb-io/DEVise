@@ -1,0 +1,272 @@
+#! /s/std/bin/perl
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1999
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  This script takes a file of Condor user data, splits it into separate
+#  files for each user, and creates a DEVise session file that displays
+#  each user's data as a view symbol.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+$debug = 0;
+
+die "usage: create_condor_session <data file> <session file>\n",
+    "  <user list schema file> <data schema file>\n" if ($#ARGV != 3);
+
+$data_file = shift(@ARGV);
+$session_file = shift(@ARGV);
+$user_schema = shift(@ARGV);
+$data_schema = shift(@ARGV);
+
+open(DATA_IN, "$data_file") || die "Couldn't open data file $data_file: $!\n";
+
+
+# Find all of the users listed in the data file.
+%userlist = ();
+GetUsers();
+
+
+# Dump each user into the top-level data file.
+$data_dir = "userdat";
+mkdir $data_dir, 0755;
+
+$top_level_file = "UserList";
+UserTopLevel();
+
+
+# Dump a data file for each user.
+SplitUserData();
+
+
+close(DATA_IN);
+
+
+# Create the session file.
+CreateSession($session_file);
+
+#-----------------------------------------------------------
+
+sub GetUsers {
+  while ($line = <DATA_IN>) {
+    print "line = $line" if ($debug);
+    $tmpuser = GetUserFromLine($line);
+    print "  tmpuser = $tmpuser\n" if ($debug);
+    $userlist{$tmpuser} = 1;
+  }
+  print "\n" if ($debug);
+}
+
+#-----------------------------------------------------------
+
+sub GetUserFromLine {
+  my $line = shift(@_);
+
+  # Note: assumes that timestamp is always 9 digits.
+  my @tmpuser = split(" ", substr($line, 9));
+
+  # Change dots in name to underscores because data source names cannot
+  # contain dots.
+  $tmpuser[0] =~ s/\./_/g;
+
+  return $tmpuser[0];
+}
+
+#-----------------------------------------------------------
+
+sub UserTopLevel {
+  $userNum = 0;
+  $outfile = $data_dir . "/" . $top_level_file;
+  open(TOP_OUT, ">$outfile") || die "Can't create file $outfile: $!";
+  foreach $user (sort keys %userlist) {
+    print "User: $user\n" if ($debug);
+    print TOP_OUT "$user\t${user}_view\t$userNum\t0\n";
+    $userNum++;
+  }
+  close(TOP_OUT);
+}
+
+#-----------------------------------------------------------
+
+sub SplitUserData {
+  foreach $user (sort keys %userlist) {
+    seek DATA_IN, 0, 0;
+
+    $userfile = "$data_dir/" . $user . ".dat";
+    open(USER_OUT, ">$userfile") || die "Can't create file $userfile: $!\n";
+
+    while ($line = <DATA_IN>) {
+      if (GetUserFromLine($line) eq $user) {
+        print "line = $line" if ($debug);
+        print USER_OUT $line;
+      }
+    }
+    close(USER_OUT);
+  }
+}
+
+#-----------------------------------------------------------
+
+sub CreateSession {
+  my $session_file = shift(@_);
+
+  open(SES_OUT, ">$session_file") ||
+      die "Can't create session_file $session_file: $!";
+
+  #TEMP -- add std header??
+  print SES_OUT "# DEVise session file created by create_condor_session\n\n";
+
+  my $data_prefix = "Condor_";
+
+  # Define data sources.
+  DefineData($data_prefix);
+
+  # Create views.
+  CreateViews();
+
+  # Create the mapping class and mappings.
+  $mapClass = CreateMappings($data_prefix);
+
+  # Insert mappings into views.
+  InsertMappings($mapClass);
+
+  # Create a window and insert the UserList_view view.
+  CreateWindow();
+
+  # Force the visual filters to get updated when this session is opened.
+  print SES_OUT "DEVise updateFilters\n";
+
+  close(SES_OUT);
+}
+
+#-----------------------------------------------------------
+
+sub DefineData {
+  my $data_prefix = shift(@_);
+
+  print SES_OUT "# Define data sources\n";
+
+  use Cwd;
+  $data_path = cwd() . "/$data_dir";
+
+  # Create a data source for the top-level data (list of users).
+  #TEMP -- name should probably be a variable
+  my $dataName = $data_prefix . "UserList";
+  my $dataFile = $top_level_file;
+
+  #TEMP?
+  my $schemaType = "CondorUserList";
+
+  print SES_OUT "DEVise dteInsertCatalogEntry . {\"$dataName\" UNIXFILE $dataFile $schemaType $user_schema \"\" 100 50 \"$data_path\" \"\"\} ;\n";
+
+  #TEMP?
+  $schemaType = "CondorUser";
+
+  # Create a data source for each user's data.
+  my $user;
+  foreach $user (sort keys %userlist) {
+    $dataName = $data_prefix . $user;
+    $dataFile = $user . ".dat";
+
+    print SES_OUT "DEVise dteInsertCatalogEntry . {\"$dataName\" UNIXFILE $dataFile $schemaType $data_schema \"\" 100 50 \"$data_path\" \"\"\} ;\n";
+  }
+}
+
+#-----------------------------------------------------------
+
+sub CreateViews {
+  print SES_OUT "\n# Create views\n";
+
+  print SES_OUT "DEVise create {view} {Scatter} UserList_view 0 1 0 1 36 1\n";
+  print SES_OUT "DEVise setViewAutoFilter UserList_view 1\n";
+  print SES_OUT "\n";
+
+  my $user;
+  foreach $user (sort keys %userlist) {
+    print SES_OUT "DEVise create {view} {Scatter} ${user}_view 0 1 0 1 36 3\n";
+    print SES_OUT "DEVise setLabel {${user}_view} 1 16 $user\n";
+    print SES_OUT "DEVise setViewAutoFilter ${user}_view 1\n";
+
+    #TEMP -- add more non-default stuff here
+
+    print SES_OUT "\n";
+  }
+}
+
+#-----------------------------------------------------------
+
+sub CreateMappings {
+  my $data_prefix = shift(@_);
+
+  print SES_OUT "\n# Create mapping class\n";
+
+  # Just use a single mapping class for all mappings.  Not the way
+  # DEVise does it, but there doesn't seem to be any reason for
+  # multiple mapping classes.
+  my $mappingClass = "condor_user_mc";
+  print SES_OUT "DEVise createMappingClass {$mappingClass}\n";
+
+  print SES_OUT "\n# Create mappings\n";
+
+  my $dataName = "${data_prefix}UserList";
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "UserList#$mappingClass {} {\$X} {\$Y} {} 8 0.9 0 0 17 {\$ViewName} ",
+      "1 1 {} {} {} {} {} {} {}\n";
+
+  my $user;
+  foreach $user (sort keys %userlist) {
+    $dataName = "${data_prefix}${user}";
+
+    # Arguments: mappingClass tDataName mappingName dimensions x y z color size
+    # pattern orientation shape shapeAttrs
+    #TEMP --  X and Y are hard-coded
+    print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+        "$user#$mappingClass {} {\$time} {\$jobs_running} {} 8 1 0 0 2 {} {} {} ",
+	"{} {} {} {} {} {} {}\n";
+  }
+
+  return $mappingClass;
+}
+
+#-----------------------------------------------------------
+
+sub InsertMappings {
+  my $mappingClass = shift(@_);
+
+  print SES_OUT "\n# Insert mappings into views\n";
+
+  print SES_OUT "DEVise insertMapping {UserList_view} ",
+      "{UserList#$mappingClass}\n";
+
+  my $user;
+  foreach $user (sort keys %userlist) {
+    print SES_OUT "DEVise insertMapping {${user}_view} {$user#$mappingClass}\n";
+  }
+}
+
+#-----------------------------------------------------------
+
+sub CreateWindow {
+  print SES_OUT "\n# Create a window and insert the UserList_view view\n";
+
+  print SES_OUT "DEVise create {window} {TileLayout} UserList_win ",
+      "0.014648 0.662760 0.969727 0.296875 0 0\n";
+  print SES_OUT "DEVise insertWindow {UserList_view} {UserList_win}\n";
+}
+
+#-----------------------------------------------------------
