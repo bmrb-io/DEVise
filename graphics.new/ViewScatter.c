@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/06/27 15:48:03  jussi
+  Added some debugging statements.
+
   Revision 1.16  1996/06/24 19:30:37  jussi
   Fixed problem with some mappings not getting drawn to a window.
 
@@ -184,14 +187,14 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
 	 gdata, ((char *)gdata) + numGData * gRecSize - 1);
 #endif
 
-  int gRecSize = mapping->GDataRecordSize();
-  int recIndex = 0;
-  
-  char *ptr = (char *)gdata;
-  Coord maxWidth, maxHeight;
-  mapping->MaxBoundingBox(maxWidth, maxHeight);
-  GDataAttrOffset *offset = mapping->GetGDataOffset();
+  Coord maxWidth, maxHeight, maxDepth;
+  mapping->UpdateMaxSymSize(gdata, numGData);
+  mapping->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
 
+  GDataAttrOffset *offset = mapping->GetGDataOffset();
+  int gRecSize = mapping->GDataRecordSize();
+  char *ptr = (char *)gdata;
+  int recIndex = 0;
   int firstRec = 0;
 
   for(int i = 0; i < numGData; i++) {
@@ -200,6 +203,8 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
     Coord x = GetX(ptr, mapping, offset);
     Coord y = GetY(ptr, mapping, offset);
     ShapeID shape = GetShape(ptr, mapping, offset);
+    Coord width, height;
+    
     Boolean complexShape = mapping->IsComplexShape(shape);
     Color color = mapping->GetDefaultColor();
     if (offset->colorOffset >= 0)

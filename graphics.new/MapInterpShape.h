@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/06/27 22:54:26  jussi
+  Added support for XOR color value.
+
   Revision 1.21  1996/06/27 19:06:52  jussi
   Merged 3D block shape into 2D rect shape, the appropriate shape
   is chosen based on current view setting. Removed Block and 3DVector
@@ -128,8 +131,8 @@ public:
 			    offset->shapeAttrOffset[1] < 0 ? true : false);
 
     if (fixedSymSize) {
-      Coord maxWidth, maxHeight;
-      map->MaxBoundingBox(maxWidth, maxHeight);
+      Coord maxWidth, maxHeight, maxDepth;
+      map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
 
       // pixelWidth is how many X units one pixel corresponds to
       // pixelHeight is how many Y units one pixel corresponds to
@@ -210,8 +213,8 @@ public:
 			    offset->shapeAttrOffset[1] < 0 ? true : false);
 
     if (fixedSymSize) {
-      Coord maxWidth, maxHeight;
-      map->MaxBoundingBox(maxWidth, maxHeight);
+      Coord maxWidth, maxHeight, maxDepth;
+      map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
 
       Coord x0, y0, x1, y1;
       win->Transform(0, 0, x0, y0);
@@ -266,18 +269,21 @@ public:
 
 class FullMapping_BarShape: public BarShape {
 public:
-  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
-				Coord &width, Coord &height) {
+  virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
+                          Coord &width, Coord &height) {
     width = 0.0;
     height = 0.0;
 
     GDataAttrOffset *offset = map->GetGDataOffset();
+    int gRecSize = map->GDataRecordSize();
+    char *ptr = (char *)gdata;
+
     for(int i = 0; i < numSyms; i++) {
-      char *gdata = (char *)gdataArray[i];
-      Coord temp = fabs(GetShapeAttr0(gdata, map, offset));
+      Coord temp = fabs(GetShapeAttr0(ptr, map, offset));
       if (temp > width) width = temp;
-      temp = fabs(GetY(gdata, map, offset));
+      temp = fabs(GetY(ptr, map, offset));
       if (temp > height) height = temp;
+      ptr += gRecSize;
     }
   }
   
@@ -345,8 +351,8 @@ public:
 			    offset->shapeAttrOffset[1] < 0 ? true : false);
 
     if (fixedSymSize) {
-      Coord maxWidth, maxHeight;
-      map->MaxBoundingBox(maxWidth, maxHeight);
+      Coord maxWidth, maxHeight, maxDepth;
+      map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
 
       Coord x0, y0, x1, y1;
       win->Transform(0, 0, x0, y0);
@@ -415,8 +421,8 @@ public:
 			    offset->shapeAttrOffset[1] < 0 ? true : false);
 
     if (fixedSymSize) {
-      Coord maxWidth, maxHeight;
-      map->MaxBoundingBox(maxWidth, maxHeight);
+      Coord maxWidth, maxHeight, maxDepth;
+      map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
 
       Coord x0, y0, x1, y1;
       win->Transform(0, 0, x0, y0);
@@ -478,8 +484,8 @@ public:
 			    offset->shapeAttrOffset[1] < 0 ? true : false);
 
     if (fixedSymSize) {
-      Coord maxWidth, maxHeight;
-      map->MaxBoundingBox(maxWidth, maxHeight);
+      Coord maxWidth, maxHeight, maxDepth;
+      map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
 
 #ifdef DEBUG
       printf("VectorShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
@@ -551,8 +557,8 @@ public:
 
 class FullMapping_HorLineShape: public HorLineShape {
 public:
-  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
-				Coord &width, Coord &height) {
+  virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
+                          Coord &width, Coord &height) {
     width = 1e9;
     height = 0.0;
   }
@@ -592,20 +598,23 @@ public:
 
 class FullMapping_SegmentShape: public SegmentShape {
 public:
-  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
-				Coord &width, Coord &height) {
+  virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
+                          Coord &width, Coord &height) {
     width = 0.0;
     height = 0.0;
 
     GDataAttrOffset *offset = map->GetGDataOffset();
+    int gRecSize = map->GDataRecordSize();
+    char *ptr = (char *)gdata;
+
     for(int i = 0; i < numSyms; i++) {
-      char *gdata = (char *)gdataArray[i];
       // double the width and height because segment starts at
       // at (X,Y) and is not centered at (X,Y)
-      Coord w = 2 * GetShapeAttr0(gdata, map, offset);
-      Coord h = 2 * GetShapeAttr1(gdata, map, offset);
+      Coord w = 2 * GetShapeAttr0(ptr, map, offset);
+      Coord h = 2 * GetShapeAttr1(ptr, map, offset);
       if (w > width) width = w;
       if (h > height) height = h;
+      ptr += gRecSize;
     }
   }
   
@@ -629,8 +638,8 @@ public:
 			    offset->shapeAttrOffset[1] < 0 ? true : false);
 
     if (fixedSymSize) {
-      Coord maxWidth, maxHeight;
-      map->MaxBoundingBox(maxWidth, maxHeight);
+      Coord maxWidth, maxHeight, maxDepth;
+      map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
 
 #ifdef DEBUG
       printf("SegmentShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
@@ -666,19 +675,22 @@ public:
 
 class FullMapping_HighLowShape: public HighLowShape {
 public:
-  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
-				Coord &width, Coord &height) {
+  virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
+                          Coord &width, Coord &height) {
     width = 0.0;
     height = 0.0;
 
     GDataAttrOffset *offset = map->GetGDataOffset();
+    int gRecSize = map->GDataRecordSize();
+    char *ptr = (char *)gdata;
+
     for(int i = 0; i < numSyms; i++) {
-      char *gdata = (char *)gdataArray[i];
-      Coord temp = fabs(GetShapeAttr0(gdata, map, offset));
+      Coord temp = fabs(GetShapeAttr0(ptr, map, offset));
       if (temp > width) width = temp;
-      temp = GetShapeAttr1(gdata, map,  offset);
-      temp -= GetShapeAttr2(gdata, map, offset);
+      temp = GetShapeAttr1(ptr, map, offset);
+      temp -= GetShapeAttr2(ptr, map, offset);
       if (temp > height) height = temp;
+      ptr += gRecSize;
     }
   }
   
@@ -703,8 +715,8 @@ public:
     Coord pixelHeight = 1 / fabs(y1 - y0);
 
     if (fixedSymSize) {
-      Coord maxWidth, maxHeight;
-      map->MaxBoundingBox(maxWidth, maxHeight);
+      Coord maxWidth, maxHeight, maxDepth;
+      map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
 
 #ifdef DEBUG
       printf("HighLowShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
@@ -747,25 +759,29 @@ public:
 
 class FullMapping_PolylineShape: public PolylineShape {
 public:
-  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
-				Coord &width, Coord &height) {
+  virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
+                          Coord &width, Coord &height) {
     width = 0;
     height = 0;
 
     GDataAttrOffset *offset = map->GetGDataOffset();
+    int gRecSize = map->GDataRecordSize();
+    char *ptr = (char *)gdata;
+
     for(int i = 0; i < numSyms; i++) {
-      char *gdata = (char *)gdataArray[i];
       int npOff = offset->shapeAttrOffset[0];
-      if (npOff < 0)
+      if (npOff < 0) {
+        ptr += gRecSize;
 	continue;
-      int np = (int)*(Coord *)(gdata + npOff);
+      }
+      int np = (int)*(Coord *)(ptr + npOff);
       for(int j = 1; j <= 2 * np; j++) {
 	if (j >= MAX_GDATA_ATTRS)
 	  continue;
 	int off = offset->shapeAttrOffset[j];
 	if (off < 0)
 	  continue;
-	Coord temp = *(Coord *)(gdata + off);
+	Coord temp = *(Coord *)(ptr + off);
 	// every other shape attribute is X, every other is Y
 	if (j % 2) {
 	  if (temp > width) width = temp;
@@ -773,6 +789,7 @@ public:
 	  if (temp > height) height = temp;
 	}
       }
+      ptr += gRecSize;
     }
   }
   
@@ -797,8 +814,8 @@ public:
     Coord pixelHeight = 1 / fabs(y1 - y0);
 
     if (fixedSymSize) {
-      Coord maxWidth, maxHeight;
-      map->MaxBoundingBox(maxWidth, maxHeight);
+      Coord maxWidth, maxHeight, maxDepth;
+      map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
 
 #ifdef DEBUG
       printf("PolylineShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
@@ -859,8 +876,8 @@ public:
 
 class FullMapping_GifImageShape: public GifImageShape {
 public:
-  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
-				Coord &width, Coord &height) {
+  virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
+                          Coord &width, Coord &height) {
     width = 0.0;
     height = 0.0;
   }
@@ -917,8 +934,8 @@ public:
 
 class FullMapping_PolylineFileShape: public PolylineFileShape {
 public:
-  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
-				Coord &width, Coord &height) {
+  virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
+                          Coord &width, Coord &height) {
     width = 0;
     height = 0;
   }
@@ -1001,8 +1018,8 @@ public:
 
 class FullMapping_TextLabelShape: public TextLabelShape {
 public:
-  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
-				Coord &width, Coord &height) {
+  virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
+                          Coord &width, Coord &height) {
     width = 0;
     height = 0;
   }

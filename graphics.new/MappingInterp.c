@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.31  1996/06/27 19:06:54  jussi
+  Merged 3D block shape into 2D rect shape, the appropriate shape
+  is chosen based on current view setting. Removed Block and 3DVector
+  shapes. Added empty default 3D drawing routine to all other
+  shapes.
+
   Revision 1.30  1996/06/16 01:53:35  jussi
   Added PolylineShape, PolylineFileShape, and TextLabelShape.
   Made cmdFlag and cmdAttrFlag unsigned long int's.
@@ -334,15 +340,6 @@ MappingInterpCmd *MappingInterp::GetCmd(unsigned long int &cmdFlag,
   return _cmd;
 }
 
-/* find the max box bounding for all records */
-#if 0
-void MappingInterp::UpdateBoundingBox(int pageNum,
-				      void **gdataArray, 
-				      int numRecs)
-{
-}
-#endif
-
 AttrInfo *MappingInterp::MapGAttr2TAttr(char *attrName)
 {
   MappingSimpleCmdEntry entry;
@@ -369,6 +366,49 @@ AttrInfo *MappingInterp::MapGAttr2TAttr(char *attrName)
     return entry.cmd.attr;
 
   return 0;
+}
+
+void MappingInterp::UpdateMaxSymSize(void *gdata, int numSyms)
+{
+  _maxSymWidth = 0;
+  _maxSymHeight = 0;
+  _maxSymDepth = 0;
+
+  if (_offsets->shapeOffset < 0) {
+    /* constant shape */
+    ShapeID shape = GetDefaultShape();
+    _shapes[shape]->MaxSymSize(this, gdata, numSyms,
+                               _maxSymWidth, _maxSymHeight);
+#ifdef DEBUG
+    printf("Max symbol size is %.2f, %.2f\n", _maxSymWidth, _maxSymHeight);
+#endif
+    return;
+  }
+
+  /* dynamic shape */
+  int gRecSize = GDataRecordSize();
+  char *ptr = (char *)gdata;
+  int i = 0;
+  while (i < numSyms) {
+    char *start = ptr + i * gRecSize;
+    ShapeID shape = *((ShapeID *)(start + _offsets->shapeOffset));
+    int j;
+    for(j = i + 1; j < numSyms; j++) {
+      char *end = ptr + j * gRecSize;
+      ShapeID nextShape = *((ShapeID *)(end + _offsets->shapeOffset));
+      if (shape != nextShape)
+        break;
+    }
+    /* gdataArray[i..j-1] have the same shape */
+    Coord w, h;
+    _shapes[shape]->MaxSymSize(this, start, j - 1, w, h);
+    if (w > _maxSymWidth) _maxSymWidth = w;
+    if (h > _maxSymHeight) _maxSymHeight = h;
+    i = j;
+  }
+#ifdef DEBUG
+  printf("Max symbol size is %.2f, %.2f\n", _maxSymWidth, _maxSymHeight);
+#endif
 }
 
 void MappingInterp::DrawGDataArray(View *view, WindowRep *win,
@@ -640,9 +680,6 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 
 AttrList *MappingInterp::InitCmd(char *name)
 {
-  Coord pixelWidth = 0.1;               // width of pixel in X units
-  Coord pixelHeight = 0.1;              // height of pixel in Y units
-
   AttrList *attrList = new AttrList(name);
 
   /* Init offsets to GData attributes */
@@ -798,10 +835,6 @@ AttrList *MappingInterp::InitCmd(char *name)
 	  MappingSimpleCmdEntry::ConstCmd) {
 	/* constant */
 	SetDefaultShapeAttr(j, (Coord)_simpleCmd->shapeAttrCmd[j].cmd.num);
-	if (j == 0)
-	  pixelWidth = (Coord)_simpleCmd->shapeAttrCmd[j].cmd.num;
-	else if (j == 1)
-	  pixelHeight = (Coord)_simpleCmd->shapeAttrCmd[j].cmd.num;
       } else {
 	char attrName [80];
 	sprintf(attrName, "shapeAttr_%d", j);
@@ -813,8 +846,6 @@ AttrList *MappingInterp::InitCmd(char *name)
       }
     }
   }
-
-  UpdateBoundingBox(pixelWidth, pixelHeight);
 
 #ifdef DEBUG
   printf("Command is %s\n", name);

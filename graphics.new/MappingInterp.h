@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/06/27 19:06:56  jussi
+  Merged 3D block shape into 2D rect shape, the appropriate shape
+  is chosen based on current view setting. Removed Block and 3DVector
+  shapes. Added empty default 3D drawing routine to all other
+  shapes.
+
   Revision 1.19  1996/06/16 01:53:56  jussi
   Added PolylineShape, PolylineFileShape, and TextLabelShape.
   Made cmdFlag and cmdAttrFlag unsigned long int's.
@@ -90,6 +96,7 @@
 #include <tcl.h>
 
 #include "TDataMapDispatch.h"
+#include "Bitmap.h"
 #include "GDataRec.h"
 #include "TData.h"
 #include "AttrList.h"
@@ -172,11 +179,9 @@ public:
   MappingInterpCmd *GetCmd(unsigned long int &cmdFlag,
 			   unsigned long int &attrFlag);
   
-  /* find the max box bounding for all records */
-#if 0
-  virtual void UpdateBoundingBox(int pageNum, void **gdataArray, int numRecs);
-#endif
-
+  /* Update maximum symbol size */
+  void UpdateMaxSymSize(void *gdata, int numSyms);
+  
   virtual void DrawGDataArray(View *view, WindowRep *win,
 			      void **gdataArray, int num);
 
@@ -189,7 +194,7 @@ protected:
   virtual void ConvertToGData(RecId startRecId, void *buf,
 			      void **tRecs, int numRecs,
 			      void *gdataPtr);
-  
+
 private:
   /* Initialize command by converting _cmd into _tclCmd,
      and initializing _tdataFlag */

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/06/27 19:06:58  jussi
+  Merged 3D block shape into 2D rect shape, the appropriate shape
+  is chosen based on current view setting. Removed Block and 3DVector
+  shapes. Added empty default 3D drawing routine to all other
+  shapes.
+
   Revision 1.12  1996/04/15 16:08:29  jussi
   Added GetShape() method.
 
@@ -153,20 +159,23 @@ class Shape {
     return 0;
   }
 
-  /* Find bounding box for GData. By default, use 0th and 1st shape
+  /* Find maximum symbol size. By default, use 0th and 1st shape
      attribute as the width and height, respectively.  */
-  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
-				Coord &width, Coord &height) {
+  virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
+                          Coord &width, Coord &height) {
     width = 0.0;
     height = 0.0;
 
     GDataAttrOffset *offset = map->GetGDataOffset();
+    int gRecSize = map->GDataRecordSize();
+    char *ptr = (char *)gdata;
+
     for(int i = 0; i < numSyms; i++) {
-      char *gdata = (char *)gdataArray[i];
-      Coord temp = fabs(GetShapeAttr0(gdata, map, offset));
+      Coord temp = fabs(GetShapeAttr0(ptr, map, offset));
       if (temp > width) width = temp;
-      temp = fabs(GetShapeAttr1(gdata, map,  offset));
+      temp = fabs(GetShapeAttr1(ptr, map,  offset));
       if (temp > height) height = temp;
+      ptr += gRecSize;
     }
   }
 

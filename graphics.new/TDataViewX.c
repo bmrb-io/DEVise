@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/06/27 15:48:02  jussi
+  Added some debugging statements.
+
   Revision 1.22  1996/06/20 17:10:24  guangshu
   Added support for color statistics.
 
@@ -279,9 +282,11 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 {
   DOASSERT(_index >= 0, "Invalid iterator index");
 
+  mapping->UpdateMaxSymSize(gdata, numGData);
+  int gRecSize = mapping->GDataRecordSize();
+
   _totalGData += numGData;
   _numBatches++;
-  int gRecSize = mapping->GDataRecordSize();
 
   // Collect statistics and update record links only for last mapping
   if (!MoreMapping(_index)) {
