@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.74  1999/06/04 16:32:32  wenger
+  Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
+  with key presses in piled views in the JavaScreen); made other pile-
+  related improvements (basically, I removed a bunch of pile-related code
+  from the XWindowRep class, and implemented that functionality in the
+  PileStack class).
+
   Revision 1.73  1999/05/26 19:50:55  wenger
   Added bounding box info to GData, so that the selection of records by the
   visual filter is more accurate.  (Note that at this time the bounding box
@@ -841,10 +848,10 @@ public:
 		{ DOASSERT(false, "Call in derived class only"); }
 
 		// Callback methods (WindowRepCallback)
-		virtual void	HandlePress(WindowRep *, int xlow, int ylow,
-									int xhigh, int yhigh, int button);
-		virtual void	DoHandlePress(WindowRep *, int xlow, int ylow,
-									  int xhigh, int yhigh, int button);
+		virtual void	HandlePress(WindowRep *, int x1, int y1,
+									int x2, int y2, int button);
+		virtual void	DoHandlePress(WindowRep *, int x1, int y1,
+									  int x2, int y2, int button);
 		virtual void	HandleKey(WindowRep*, int key, int x, int y);
 		virtual void	DoHandleKey(WindowRep*, int key, int x, int y);
 		virtual Boolean HandlePopUp(WindowRep*, int x, int y, int button,

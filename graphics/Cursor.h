@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  1999/07/30 21:27:02  wenger
+  Partway to cursor dragging: code to change mouse cursor when on a DEVise
+  cursor is in place (but disabled).
+
   Revision 1.20  1999/04/29 17:36:33  wenger
   Implemented 'fixed cursor size' option (for the sake of the JavaScreen).
 
@@ -184,13 +188,29 @@ class DeviseCursor : private ViewCallback
   Boolean GetFixedSize() { return _fixedSize; }
   void SetFixedSize(Boolean fixed) { _fixedSize = fixed; }
 
+  // Figure out whether the given location is on the cursor, and if so,
+  // where.
   CursorHit::HitType IsOnCursor(Coord dataX, Coord dataY, Coord dataXTol,
       Coord dataYTol);
+
+  // Figure out the resulting new cursor position if the mouse is dragged
+  // from (pixX1, pixY1) to (pixX2, pixY2).
+  void FindNewPosition(int pixX1, int pixY1, int pixX2, int pixY2,
+      CursorHit::HitType hitType, Coord &dataXLow, Coord &dataYLow,
+	  Coord &dataXHigh, Coord &dataYHigh);
+
+  // Get the pixels that should be used to draw the cursor in the
+  // destination view; returns true if values are valid.
+  Boolean GetDestPixels(int &pixX1, int &pixY1, int &pixX2, int &pixY2);
+  Boolean GetDestPixels(Coord dataXLow, Coord dataYLow, Coord dataXHigh,
+      Coord dataYHigh, int &pixX1, int &pixY1, int &pixX2, int &pixY2);
 
 private:
   virtual void FilterAboutToChange(View *view);
   virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
   virtual void ViewDestroyed(View *view);
+  void MatchGrid(Coord x, Coord y, Coord width, Coord height,
+      VisualFilter &filter);
 
   char *_name;                          /* name of cursor */
   View *_src, *_dst;                    /* source and destination views */

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.91  1999/07/30 21:27:05  wenger
+  Partway to cursor dragging: code to change mouse cursor when on a DEVise
+  cursor is in place (but disabled).
+
   Revision 1.90  1999/07/21 18:51:02  wenger
   Moved alignment and data font information from view into mapping.
 
@@ -977,11 +981,10 @@ protected:
 		virtual void	HandleResize(WindowRep* w, int xlow, int ylow,
 									 unsigned width, unsigned height);
 
-        virtual CursorHit::HitType IsOnCursor(int pixX, int pixY,
-	        DeviseCursor *&cursor);
-        virtual CursorHit::HitType DoIsOnCursor(int pixX, int pix,
-	        DeviseCursor *&cursorY);
+        virtual void IsOnCursor(int pixX, int pixY, CursorHit &cursorHit);
+        virtual void DoIsOnCursor(int pixX, int pixY, CursorHit &cursorHit);
 
+        virtual void MouseDrag(int x1, int y1, int x2, int y2);
 
 		char *_xAxisDateFormat;
 		char *_yAxisDateFormat;

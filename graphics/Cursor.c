@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.27  1999/07/30 21:26:49  wenger
+  Partway to cursor dragging: code to change mouse cursor when on a DEVise
+  cursor is in place (but disabled).
+
   Revision 1.26  1999/07/21 18:47:01  wenger
   Fixed bug with cursor grid when cursor location is negative.
 
@@ -361,33 +365,7 @@ void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height)
   _src->GetVisualFilter(filter);
   VisualFilter oldFilter = filter;
 
-  if (_visFlag & VISUAL_X) {
-    if (_useGrid && (_gridX != 0.0)) {
-      /* Round location to nearest grid point. */
-      int tmp = (int)floor((x / _gridX) + 0.5);
-      x = _gridX * tmp;
-    }
-    if (width < 0.0) {
-      width = filter.xHigh - filter.xLow;
-    }
-    Coord newXLow = x - width / 2.0;
-    filter.xLow = newXLow;
-    filter.xHigh = newXLow + width;
-  }
-
-  if (_visFlag & VISUAL_Y) {
-    if (_useGrid && (_gridY != 0.0)) {
-      /* Round location to nearest grid point. */
-      int tmp = (int)floor((y / _gridY) + 0.5);
-      y = _gridY * tmp;
-    }
-    if (height < 0.0) {
-      height = filter.yHigh - filter.yLow;
-    }
-    Coord newYLow = y - height / 2.0;
-    filter.yLow = newYLow;
-    filter.yHigh = newYLow + height;
-  }
+  MatchGrid(x, y, width, height, filter);
 
   if (filter.xLow != oldFilter.xLow || filter.xHigh != oldFilter.xHigh ||
     filter.yLow != oldFilter.yLow || filter.yHigh != oldFilter.yHigh) {
@@ -644,11 +622,15 @@ void DeviseCursor::SetCursorColor(PColorID color)
   printf("DeviseCursor(%s)::SetCursorColor(%ld)\n", _name, color);
 #endif
 
+  // Force all cursors in the destination view to be redrawn.
+  if (_dst != NULL) {
+    _dst->HideCursors();
+  }
+
   _cursorColor = color;
 
   // Force all cursors in the destination view to be redrawn.
   if (_dst != NULL) {
-    _dst->HideCursors();
     _dst->DrawCursors();
   }
 }
@@ -731,6 +713,245 @@ DeviseCursor::IsOnCursor(Coord dataX, Coord dataY, Coord dataXTol,
   }
 
   return result;
+}
+
+void
+DeviseCursor::FindNewPosition(int pixX1, int pixY1, int pixX2, int pixY2, 
+    CursorHit::HitType hitType, Coord &dataXLow, Coord &dataYLow,
+    Coord &dataXHigh, Coord &dataYHigh)
+{
+#if defined(DEBUG)
+  printf("DeviseCursor::FindNewPosition((%d, %d), (%d, %d), %d)\n", pixX1, pixY1,
+      pixX2, pixY2, hitType);
+#endif
+
+  VisualFilter filter;
+  _src->GetVisualFilter(filter);
+
+#if defined(DEBUG)
+  printf("  Old filter = (%g, %g), (%g, %g)\n", filter.xLow, filter.yLow,
+      filter.xHigh, filter.yHigh);
+#endif
+
+  Coord dataX1, dataY1, dataX2, dataY2;
+  WindowRep *winRep = _dst->GetWindowRep();
+  winRep->InverseTransform(pixX1, pixY1, dataX1, dataY1);
+  winRep->InverseTransform(pixX2, pixY2, dataX2, dataY2);
+
+#if defined(DEBUG)
+  printf("  Transformed points = (%g, %g), (%g, %g)\n", dataX1, dataY1,
+      dataX2, dataY2);
+#endif
+
+  VisualFilter oldFilter = filter;
+
+  switch (hitType) {
+  case CursorHit::CursorNone:
+    DOASSERT(false, "Function shouldn't be called if no cursor hit");
+    break;
+
+  case CursorHit::CursorNW:
+    filter.xLow += (dataX2 - dataX1);
+    filter.yHigh += (dataY2 - dataY1);
+    break;
+
+  case CursorHit::CursorN:
+    filter.yHigh += (dataY2 - dataY1);
+    break;
+
+  case CursorHit::CursorNE:
+    filter.xHigh += (dataX2 - dataX1);
+    filter.yHigh += (dataY2 - dataY1);
+    break;
+
+  case CursorHit::CursorW:
+    filter.xLow += (dataX2 - dataX1);
+    break;
+
+  case CursorHit::CursorMid:
+    filter.xLow += (dataX2 - dataX1);
+    filter.yLow += (dataY2 - dataY1);
+    filter.xHigh += (dataX2 - dataX1);
+    filter.yHigh += (dataY2 - dataY1);
+    break;
+
+  case CursorHit::CursorE:
+    filter.xHigh += (dataX2 - dataX1);
+    break;
+
+  case CursorHit::CursorSW:
+    filter.xLow += (dataX2 - dataX1);
+    filter.yLow += (dataY2 - dataY1);
+    break;
+
+  case CursorHit::CursorS:
+    filter.yLow += (dataY2 - dataY1);
+    break;
+
+  case CursorHit::CursorSE:
+    filter.xHigh += (dataX2 - dataX1);
+    filter.yLow += (dataY2 - dataY1);
+    break;
+
+  default:
+    DOASSERT(false, "Illegal/invalid CursorHit::HitType value");
+    break;
+  }
+
+  if (!(GetFlag() & VISUAL_X)) {
+    filter.xLow = oldFilter.xLow;
+    filter.xHigh = oldFilter.xHigh;
+  }
+  if (!(GetFlag() & VISUAL_Y)) {
+    filter.yLow = oldFilter.yLow;
+    filter.yHigh = oldFilter.yHigh;
+  }
+
+  MatchGrid((filter.xLow + filter.xHigh) / 2.0,
+      (filter.yLow + filter.yHigh) / 2.0,
+      filter.xHigh - filter.xLow, filter.yHigh - filter.yLow, filter);
+
+  dataXLow = filter.xLow;
+  dataYLow = filter.yLow;
+  dataXHigh = filter.xHigh;
+  dataYHigh = filter.yHigh;
+
+#if defined(DEBUG)
+  printf("  New filter = (%g, %g), (%g, %g)\n", dataXLow, dataYLow, dataXHigh,
+      dataYHigh);
+#endif
+}
+
+Boolean
+DeviseCursor::GetDestPixels(int &pixX1, int &pixY1, int &pixX2, int &pixY2)
+{
+#if defined(DEBUG)
+  printf("DeviseCursor(%s)::GetDestPixels()\n", GetName());
+#endif
+
+  Boolean result = true;
+
+  if (_src) {
+    VisualFilter cFilter;
+    _src->GetVisualFilter(cFilter);
+    result = GetDestPixels(cFilter.xLow, cFilter.yLow, cFilter.xHigh,
+        cFilter.yHigh, pixX1, pixY1, pixX2, pixY2);
+  } else {
+#if defined(DEBUG)
+    printf("  Cursor has no source\n");
+#endif
+    result = false;
+  }
+
+  return result;
+}
+
+Boolean
+DeviseCursor::GetDestPixels(Coord dataXLow, Coord dataYLow, Coord dataXHigh,
+    Coord dataYHigh,int &pixX1, int &pixY1, int &pixX2, int &pixY2)
+{
+#if defined(DEBUG)
+  printf("DeviseCursor(%s)::GetDestPixels()\n", GetName());
+#endif
+
+  Boolean result = true;
+
+  VisualFilter cFilter, vFilter;
+
+  cFilter.xLow = dataXLow;
+  cFilter.yLow = dataYLow;
+  cFilter.xHigh = dataXHigh;
+  cFilter.yHigh = dataYHigh;
+
+  if (_dst) {
+    _dst->GetVisualFilter(vFilter);
+  } else {
+#if defined(DEBUG)
+    printf("  Cursor has no destination\n");
+#endif
+    result = false;
+  }
+
+  // Make sure at least part of the cursor is within the destination view.
+  if (GetFlag() & VISUAL_X) {
+    if (cFilter.xHigh < vFilter.xLow || cFilter.xLow > vFilter.xHigh) {
+      result = false;
+    }
+  }
+  if (GetFlag() & VISUAL_Y) {
+    if (cFilter.yHigh < vFilter.yLow || cFilter.yLow > vFilter.yHigh) {
+      result = false;
+    }
+  }
+
+  if (result) {
+    Coord dataXLow = MAX(cFilter.xLow, vFilter.xLow);
+    Coord dataYLow = MAX(cFilter.yLow, vFilter.yLow);
+    Coord dataXHigh = MIN(cFilter.xHigh, vFilter.xHigh);
+    Coord dataYHigh = MIN(cFilter.yHigh, vFilter.yHigh);
+
+    if (!(GetFlag() & VISUAL_X)) {
+      dataXLow = vFilter.xLow;
+      dataXHigh = vFilter.xHigh;
+    }
+
+    if (!(GetFlag() & VISUAL_Y)) {
+      dataYLow = vFilter.yLow;
+      dataYHigh = vFilter.yHigh;
+    }
+
+    WindowRep *winRep = _dst->GetWindowRep();
+    Coord pixX1C, pixY1C, pixX2C, pixY2C;
+    winRep->Transform(dataXLow, dataYLow, pixX1C, pixY1C);
+    winRep->Transform(dataXHigh, dataYHigh, pixX2C, pixY2C);
+    pixX1 = (int)floor(pixX1C + 0.5);
+    pixY1 = (int)floor(pixY1C + 0.5);
+    pixX2 = (int)floor(pixX2C + 0.5);
+    pixY2 = (int)floor(pixY2C + 0.5);
+
+#if defined(DEBUG)
+    printf("  Pixels: (%d, %d), (%d, %d)\n", pixX1, pixY1, pixX2, pixY2);
+#endif
+  }
+
+#if defined(DEBUG)
+    printf("  Returning %d\n", result);
+#endif
+
+  return result;
+}
+
+void
+DeviseCursor::MatchGrid(Coord x, Coord y, Coord width, Coord height,
+    VisualFilter &filter)
+{
+  if (_visFlag & VISUAL_X) {
+    if (_useGrid && (_gridX != 0.0)) {
+      /* Round location to nearest grid point. */
+      int tmp = (int)floor((x / _gridX) + 0.5);
+      x = _gridX * tmp;
+    }
+    if (width < 0.0) {
+      width = filter.xHigh - filter.xLow;
+    }
+    Coord newXLow = x - width / 2.0;
+    filter.xLow = newXLow;
+    filter.xHigh = newXLow + width;
+  }
+
+  if (_visFlag & VISUAL_Y) {
+    if (_useGrid && (_gridY != 0.0)) {
+      /* Round location to nearest grid point. */
+      int tmp = (int)floor((y / _gridY) + 0.5);
+      y = _gridY * tmp;
+    }
+    if (height < 0.0) {
+      height = filter.yHigh - filter.yLow;
+    }
+    Coord newYLow = y - height / 2.0;
+    filter.yLow = newYLow;
+    filter.yHigh = newYLow + height;
+  }
 }
 
 //******************************************************************************

@@ -1812,7 +1812,8 @@ Num Date        Status  Description
 			the query is still run using binary search. (rkw)
 			(Fixed by rkw, 03/02/99.)
 
-468 03/09/99	OPEN	Changing cursor color seems to have no effect. (rkw)
+468 03/09/99	FIXED	Changing cursor color seems to have no effect. (rkw)
+			(Fixed by rkw, 08/05/99.)
 
 469 03/15/99	FIXED	'5' (home) key doesn't work right in views that are
 			followers of record links, because the TData attribute

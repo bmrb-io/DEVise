@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.79  1999/07/30 21:27:06  wenger
+  Partway to cursor dragging: code to change mouse cursor when on a DEVise
+  cursor is in place (but disabled).
+
   Revision 1.78  1999/07/16 21:35:56  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -395,12 +399,17 @@
 #include "Color.h" // Note: this includes X-specific stuff -- bad!!
 #include "Coloring.h"
 
+class DeviseCursor;
+
 enum DisplayExportFormat { POSTSCRIPT, EPS, GIF };
 
 class CursorHit {
 public:
   enum HitType { CursorInvalid = 0, CursorNone, CursorNW, CursorN, CursorNE,
     CursorW, CursorMid, CursorE, CursorSW, CursorS, CursorSE };
+
+  HitType _hitType;
+  DeviseCursor *_cursor;
 };
 
 
@@ -428,8 +437,8 @@ public:
 			    int button, int state, int type) {}
 #else
   /* Handle button press event */
-  virtual void HandlePress(WindowRep *w, int xlow, int ylow,
-                           int xhigh, int yhigh, int button) {}
+  virtual void HandlePress(WindowRep *w, int x1, int y1,
+                           int x2, int y2, int button) {}
 #endif
 
   /* Handle resize */
@@ -457,10 +466,11 @@ public:
   virtual Boolean HandleWindowDestroy(WindowRep *w) { return true; }
 
   // Figure out whether the given location is on a cursor.
-  virtual CursorHit::HitType IsOnCursor(int pixX, int pixY,
-      DeviseCursor *&cursor) {
-    cursor = NULL;
-    return CursorHit::CursorNone; }
+  virtual void IsOnCursor(int pixX, int pixY, CursorHit &cursorHit) {
+	cursorHit._hitType = CursorHit::CursorNone; 
+    cursorHit._cursor = NULL; }
+
+  virtual void MouseDrag(int x1, int y1, int x2, int y2) {}
 };
 
 const int WindowRepTransformDepth = 10;	/* max # of transforms in the stack */
@@ -1076,6 +1086,8 @@ public:
   // Set this window rep's output back to its own window.
   virtual void ResetOutput() = 0;
 
+  static CursorHit &GetCursorHit() { return _cursorHit; }
+
 protected:
 
   /* called by derived class to cache current clip region */
@@ -1124,8 +1136,8 @@ protected:
 #else
   /* called by derived class when button presssed: Report event to all
      callbacks */
-  virtual void HandleButtonPress(int xlow, int ylow, 
-				 int xhigh, int yhigh, int button);
+  virtual void HandleButtonPress(int x1, int y1, 
+				 int x2, int y2, int button);
 #endif
   
   /* called by derived class when key pressed. report event to all
@@ -1167,6 +1179,9 @@ protected:
   int _numDim;
 
   Boolean _gifDirty; // true iff image changed since last GIF dump
+
+  // Info about the cursor, if any, the mouse is currently on.
+  static CursorHit _cursorHit;
 };
 
 //******************************************************************************

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/11/24 23:14:52  weaver
+  Changes for the new ColorManager.
+
   Revision 1.6.10.1  1997/05/21 20:40:27  weaver
   Changes for new ColorManager
 
@@ -116,8 +119,8 @@ protected:
 	protected:
 
 		// Callback methods (WindowRepCallback)
-		virtual void	HandlePress(WindowRep* w, int xlow, int ylow, int xhigh,
-									int yhigh, int button);
+		virtual void	HandlePress(WindowRep* w, int x1, int y1, int x2,
+									int y2, int button);
 		virtual void	HandleResize(WindowRep* w, int xlow, int ylow,
 									 unsigned width, unsigned height);
 		virtual Boolean	HandlePopUp(WindowRep* w, int x, int y, int button, 

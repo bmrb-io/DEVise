@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.64  1999/07/13 21:26:46  wenger
+  Fixed minor problem in debug logging.
+
   Revision 1.63  1999/06/25 15:58:23  wenger
   Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
   now uses DebugLog facility instead of printf; dispatcher logging is turned
@@ -1895,70 +1898,8 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 		return;
 	}
 
-	//
-	// Get the cursor's visual filter (the same as the source view's).
-	//
-	VisualFilter cursorFilter;
-	{
-        VisualFilter *filter;
-	    cursor->GetVisualFilter(filter);
-	    cursorFilter = *filter;
-	}
-#if defined(DEBUG_LOG)
-    sprintf(logBuf, "Cursor vis. filter: (%g, %g), (%g, %g)\n",
-	  cursorFilter.xLow, cursorFilter.yLow, cursorFilter.xHigh,
-	  cursorFilter.yHigh);
-    DebugLog::DefaultLog()->Message(logBuf);
-#endif
-
-	//
-	// Get the destination view's visual filter, and change the cursor filter
-	// to fit the view filter according to whether the cursor is X, Y, or XY.
-	//
-	VisualFilter viewFilter;
-	view->GetVisualFilter(viewFilter);
-
-    if (!(cursorFilter.flag & VISUAL_X)) {
-		cursorFilter.xLow = viewFilter.xLow;
-		cursorFilter.xHigh = viewFilter.xHigh;
-	} 
-	if (!(cursorFilter.flag & VISUAL_Y)) {
-		cursorFilter.yLow = viewFilter.yLow;
-		cursorFilter.yHigh = viewFilter.yHigh;
-	}
-
-	//
-	// Make sure the cursor's visual filter doesn't go outside destination
-	// view's visual filter.
-	//
-	cursorFilter.xLow = MAX(cursorFilter.xLow, viewFilter.xLow);
-	cursorFilter.yLow = MAX(cursorFilter.yLow, viewFilter.yLow);
-	cursorFilter.xHigh = MIN(cursorFilter.xHigh, viewFilter.xHigh);
-	cursorFilter.yHigh = MIN(cursorFilter.yHigh, viewFilter.yHigh);
-
-#if defined(DEBUG_LOG)
-    sprintf(logBuf, "Modified cursor vis. filter: (%g, %g), (%g, %g)\n",
-	  cursorFilter.xLow, cursorFilter.yLow, cursorFilter.xHigh,
-	  cursorFilter.yHigh);
-    DebugLog::DefaultLog()->Message(logBuf);
-#endif
-
-	//
-	// Transform data coordinates to pixels.
-	//
 	int xPixLow, yPixLow, xPixHigh, yPixHigh;
-	{
-		Coord xPix1, yPix1, xPix2, yPix2;
-		WindowRep *winRep = view->GetWindowRep();
-		winRep->Transform(cursorFilter.xLow, cursorFilter.yLow, xPix1, yPix1);
-		winRep->Transform(cursorFilter.xHigh, cursorFilter.yHigh, xPix2,
-	  	  yPix2);
-	
-		xPixLow = ROUND_TO_INT(MIN(xPix1, xPix2));
-		yPixLow = ROUND_TO_INT(MIN(yPix1, yPix2));
-		xPixHigh = ROUND_TO_INT(MAX(xPix1, xPix2));
-		yPixHigh = ROUND_TO_INT(MAX(yPix1, yPix2));
-	}
+	cursor->GetDestPixels(xPixLow, yPixLow, xPixHigh, yPixHigh);
 
 #if defined(DEBUG_LOG)
     sprintf(logBuf, "Pixels: (%d, %d), (%d, %d)\n", xPixLow, yPixLow,

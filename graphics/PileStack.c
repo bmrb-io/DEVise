@@ -26,6 +26,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1999/07/30 21:27:02  wenger
+  Partway to cursor dragging: code to change mouse cursor when on a DEVise
+  cursor is in place (but disabled).
+
   Revision 1.15  1999/07/14 18:42:25  wenger
   Added the capability to have axes without ticks and tick labels.
 
@@ -990,24 +994,21 @@ PileStack::SetYAxisDateFormat(const char *format)
  * function: PileStack::IsOnCursor
  * Finds out if given coordinates are on a cursor for all views in the pile.
  */
-CursorHit::HitType
-PileStack::IsOnCursor(int pixX, int pixY, DeviseCursor *&cursor)
+void
+PileStack::IsOnCursor(int pixX, int pixY, CursorHit &cursorHit)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 1)
   printf("PileStack(%s)::IsOnCursor()\n", _name);
 #endif
 
-  CursorHit::HitType result = CursorHit::CursorNone;
-
   int index = GetViewList()->InitIterator();
-  while (GetViewList()->More(index) && result == CursorHit::CursorNone) {
+  while (GetViewList()->More(index) &&
+      cursorHit._hitType == CursorHit::CursorNone) {
     View *view = (View *)GetViewList()->Next(index);
-    result = view->DoIsOnCursor(pixX, pixY, cursor);
+    view->DoIsOnCursor(pixX, pixY, cursorHit);
   }
   GetViewList()->DoneIterator(index);
-
-  return result;
 }
 
 /*------------------------------------------------------------------------------
@@ -1054,8 +1055,8 @@ PileStack::ViewIsSelected()
  * Handle a button press on a pile (see also ViewGraph::HandlePress()).
  */
 void
-PileStack::HandlePress(WindowRep *, int xlow, int ylow, int xhigh,
-    int yhigh, int button)
+PileStack::HandlePress(WindowRep *, int x1, int y1, int x2,
+    int y2, int button)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 1)
@@ -1068,15 +1069,17 @@ PileStack::HandlePress(WindowRep *, int xlow, int ylow, int xhigh,
   // Do cursor operations for *all* views before selecting a view (fixes
   // bug 495).  RKW 1999-06-03.
   //
-  if ((xlow == xhigh) && (ylow == yhigh)) {
-    int index = InitIterator();
-    while (More(index)) {
-      View *view = (View *)Next(index);
-      if (view->CheckCursorOp(xlow, ylow)) {
-        didCursorOp = true;
+  if (WindowRep::GetCursorHit()._hitType == CursorHit::CursorNone) {
+    if ((x1 == x2) && (y1 == y2)) {
+      int index = InitIterator();
+      while (More(index)) {
+        View *view = (View *)Next(index);
+        if (view->CheckCursorOp(x1, y1)) {
+          didCursorOp = true;
+        }
       }
+      DoneIterator(index);
     }
-    DoneIterator(index);
   }
 
   if (!didCursorOp) {
@@ -1092,7 +1095,7 @@ PileStack::HandlePress(WindowRep *, int xlow, int ylow, int xhigh,
     int index = InitIterator();
     while (More(index)) {
       ViewGraph *view = (ViewGraph *)Next(index);
-      view->DoHandlePress(NULL, xlow, ylow, xhigh, yhigh, button);
+      view->DoHandlePress(NULL, x1, y1, x2, y2, button);
     }
     DoneIterator(index);
   }

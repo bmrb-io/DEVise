@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.185  1999/07/30 21:27:02  wenger
+  Partway to cursor dragging: code to change mouse cursor when on a DEVise
+  cursor is in place (but disabled).
+
   Revision 1.184  1999/07/21 18:51:00  wenger
   Moved alignment and data font information from view into mapping.
 
@@ -2910,54 +2914,31 @@ View::DoDrawCursor(WindowRep *winRep, DeviseCursor *cursor)
   printf("DoDrawCursor(%s)\n", cursor->GetName());
 #endif
 
-  VisualFilter *cFilter;
+  int pixX1, pixY1, pixX2, pixY2;
+  if (cursor->GetDestPixels(pixX1, pixY1, pixX2, pixY2)) {
+    Coord pixXLow = MIN(pixX1, pixX2);
+    Coord pixXHigh = MAX(pixX1, pixX2);
+    Coord pixYLow = MIN(pixY1, pixY2);
+    Coord pixYHigh = MAX(pixY1, pixY2);
 
-  // GetVisualFilter() returns false if cursor has no source.
-  if (cursor->GetVisualFilter(cFilter)) {
-#if defined(DEBUG)
-    printf("  Cursor filter = (%g, %g), (%g, %g), %d\n", cFilter->xLow,
-	    cFilter->yLow, cFilter->xHigh, cFilter->yHigh, cFilter->flag);
-#endif
-
+    // Set things up to draw the cursor.
     winRep->SetPattern(Pattern0);
     winRep->SetLineWidth(0);
     winRep->SetXorMode();
+    winRep->SetForeground(cursor->GetCursorColor());
 
-    Coord xLow, yLow, xHigh, yHigh;
-    xLow = MAX(_filter.xLow, cFilter->xLow);
-    xHigh = MIN(_filter.xHigh, cFilter->xHigh);
-    yLow = MAX(_filter.yLow, cFilter->yLow);
-    yHigh = MIN(_filter.yHigh, cFilter->yHigh);
+    // Fill in the cursor area, leaving space for the border.
+    winRep->FillPixelRect(pixXLow, pixYLow,
+        pixXHigh - pixXLow - 1.0,
+        pixYHigh - pixYLow - 1.0, 1.0, 1.0, WindowRep::AlignNorthWest);
 
-    if ((cFilter->flag & VISUAL_X) && (cFilter->flag & VISUAL_Y)) {
-#if defined(DEBUG)
-      printf("DoDrawCursor: Drawing XY cursor %s in\n  %s\n",
-          cursor->GetName(), GetName());
-#endif
-      if (!(cFilter->xHigh < _filter.xLow || cFilter->xLow > _filter.xHigh
-          || cFilter->yHigh < _filter.yLow || cFilter->yLow > _filter.yHigh)) {
-        winRep->ClearBackground(xLow, yLow, xHigh - xLow, yHigh - yLow);
-      }
-    } else if (cFilter->flag & VISUAL_X) {
-#if defined(DEBUG)
-      printf("DoDrawCursor: Drawing X cursor %s in\n  %s\n",
-          cursor->GetName(), GetName());
-#endif
-      if (!(cFilter->xHigh < _filter.xLow || cFilter->xLow > _filter.xHigh)) {
-	    winRep->ClearBackground(xLow, _filter.yLow, xHigh - xLow,
-	        _filter.yHigh - _filter.yLow);
-      }
-    } else if (cFilter->flag & VISUAL_Y) {
-#if defined(DEBUG)
-      printf("DoDrawCursor: Drawing Y cursor %s in\n  %s\n",
-          cursor->GetName(), GetName());
-#endif
-      if (!(cFilter->yHigh < _filter.yLow || cFilter->yLow > _filter.yHigh)) {
-	    winRep->ClearBackground(_filter.xLow, yLow,
-	        _filter.xHigh - _filter.xLow, yHigh - yLow);
-      }
-    }
+    // Draw the border.
+    winRep->SetForeground(whiteColor);
+    winRep->SetPattern((Pattern)-1);
+    winRep->FillPixelRect(pixXLow, pixYLow, pixXHigh - pixXLow,
+        pixYHigh - pixYLow, 1.0, 1.0, WindowRep::AlignNorthWest);
 
+    // Reset the window rep.
     winRep->SetCopyMode();
   }
 }
@@ -4303,31 +4284,33 @@ void	View::HandleResize(WindowRep* w, int xlow, int ylow,
     Refresh(true);
 }
 
-CursorHit::HitType
-View::IsOnCursor(int pixX, int pixY, DeviseCursor *&cursor)
+void
+View::IsOnCursor(int pixX, int pixY, CursorHit &cursorHit)
 {
 #if defined(DEBUG)
   printf("View(%s)::IsOnCursor(%d, %d)\n", GetName(), pixX, pixY);
 #endif
 
-  cursor = NULL;
+  cursorHit._hitType = CursorHit::CursorNone;
+  cursorHit._cursor = NULL;
 
   if (IsInPileMode()) {
-    return GetParentPileStack()->IsOnCursor(pixX, pixY, cursor);
+    GetParentPileStack()->IsOnCursor(pixX, pixY, cursorHit);
   } else {
-    return DoIsOnCursor(pixX, pixY, cursor);
+    DoIsOnCursor(pixX, pixY, cursorHit);
   }
 }
 
-CursorHit::HitType
-View::DoIsOnCursor(int pixX, int pixY, DeviseCursor *&cursor)
+void
+View::DoIsOnCursor(int pixX, int pixY, CursorHit &cursorHit)
 {
 #if defined(DEBUG)
   printf("View(%s)::DoIsOnCursor(%d, %d)\n", GetName(), pixX, pixY);
 #endif
 
-  CursorHit::HitType result = CursorHit::CursorNone;
-
+  //
+  // How close you have to be to "catch" an edge.
+  //
   const int pixTol = 4;
 
   //
@@ -4344,15 +4327,47 @@ View::DoIsOnCursor(int pixX, int pixY, DeviseCursor *&cursor)
   // Go thru all cursors and see if we're on one.
   //
   int index = _cursors->InitIterator();
-  while (_cursors->More(index) && result == CursorHit::CursorNone) {
+  while (_cursors->More(index) &&
+      cursorHit._hitType == CursorHit::CursorNone) {
     DeviseCursor *tmpCursor = _cursors->Next(index);
-    result = tmpCursor->IsOnCursor(dataX, dataY, dataX - dataX2,
+    cursorHit._hitType = tmpCursor->IsOnCursor(dataX, dataY, dataX - dataX2,
         dataY - dataY2);
-    if (result != CursorHit::CursorNone) cursor = tmpCursor;
+    if (cursorHit._hitType != CursorHit::CursorNone) {
+      cursorHit._cursor = tmpCursor;
+    }
   }
   _cursors->DoneIterator(index);
+}
 
-  return result;
+void
+View::MouseDrag(int x1, int y1, int x2, int y2)
+{
+#if defined(DEBUG)
+  printf("View(%s)::MouseDrag(%d, %d, %d, %d)\n", GetName(), x1, y1, x2, y2);
+#endif
+
+  WindowRep *winRep = GetWindowRep();
+
+  CursorHit::HitType hitType = WindowRep::GetCursorHit()._hitType;
+  if (hitType == CursorHit::CursorNone) {
+    if (x1 != x2 && y1 != y2) {
+      winRep->DrawRubberband(x1, y1, x2, y2);
+    }
+  } else {
+    DeviseCursor *cursor = WindowRep::GetCursorHit()._cursor;
+    DOASSERT(cursor, "No cursor specified");
+    if (cursor->GetDst() != this) {
+      cursor->GetDst()->MouseDrag(x1, y1, x2, y2);
+    } else {
+      Coord dataXLow, dataYLow, dataXHigh, dataYHigh;
+      cursor->FindNewPosition(x1, y1, x2, y2, hitType, dataXLow, dataYLow,
+          dataXHigh, dataYHigh);
+      int x3, y3, x4, y4;
+	  cursor->GetDestPixels(dataXLow, dataYLow, dataXHigh, dataYHigh,
+	      x3, y3, x4, y4);
+      winRep->DrawRubberband(x3, y3, x4, y4);
+    }
+  }
 }
 
 void View::SetViewDir(ViewDir dir)

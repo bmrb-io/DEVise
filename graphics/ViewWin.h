@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.40  1999/07/30 21:27:05  wenger
+  Partway to cursor dragging: code to change mouse cursor when on a DEVise
+  cursor is in place (but disabled).
+
   Revision 1.39  1999/06/15 18:09:44  wenger
   Added dumping of ViewWin objects to help with pile debugging.
 
@@ -492,8 +496,8 @@ private:
 		virtual void	HandleButton(WindowRep* w, int x, int y,
 									 int button, int state, int type) {}
 #else
-		virtual void	HandlePress(WindowRep* w, int xlow, int ylow,
-									int xhigh, int yhigh, int button) {}
+		virtual void	HandlePress(WindowRep* w, int x1, int y1,
+									int x2, int y2, int button) {}
 #endif
 
 		virtual void	HandleResize(WindowRep* w, int xlow, int ylow,
@@ -509,10 +513,11 @@ private:
 		virtual void	HandleWindowMappedInfo(WindowRep* w, Boolean mapped);
 		virtual Boolean	HandleWindowDestroy(WindowRep *w);
 
-		virtual CursorHit::HitType IsOnCursor(int pixX, int pixY,
-		    DeviseCursor *&cursor) {
-		  cursor = NULL;
-		  return CursorHit::CursorNone; }
+		virtual void IsOnCursor(int pixX, int pixY, CursorHit &cursorHit) {
+		  cursorHit._hitType = CursorHit::CursorNone;
+		  cursorHit._cursor = NULL; }
+
+        virtual void MouseDrag(int x1, int y1, int x2, int y2) {}
 };
 
 //******************************************************************************
@@ -579,10 +584,14 @@ class ViewWin_WindowRepCallback : public WindowRepCallback
 			return _parent->HandleWindowDestroy(w);
 		}
 
-		virtual CursorHit::HitType IsOnCursor(int pixX, int pixY,
-		    DeviseCursor *&cursor)
+		virtual void IsOnCursor(int pixX, int pixY, CursorHit &cursorHit)
 		{
-			return _parent->IsOnCursor(pixX, pixY, cursor);
+			_parent->IsOnCursor(pixX, pixY, cursorHit);
+		}
+
+		virtual void MouseDrag(int x1, int y1, int x2, int y2)
+        {
+		    _parent->MouseDrag(x1, y1, x2, y2);
 		}
 };
 

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.119  1999/07/16 21:36:09  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.118  1999/06/30 17:38:50  wenger
   Data color of parent view's mapping (if specified) now controls the
   background color of view symbols; defined constant strings for GData
@@ -2309,28 +2317,60 @@ void	ViewGraph::PrintLinkInfo(void)
 
 // See PileStack::HandlePress().
 
-void	ViewGraph::HandlePress(WindowRep *, int xlow, int ylow,
-							   int xhigh, int yhigh, int button)
+void	ViewGraph::HandlePress(WindowRep *, int x1, int y1,
+							   int x2, int y2, int button)
 {
 #if defined(DEBUG)
     printf("ViewGraph(0x%p, <%s>)::HandlePress(%d, %d, %d, %d, %d)\n", this,
-	  GetName(), xlow, ylow, xhigh, yhigh, button);
+	  GetName(), x1, y1, x2, y2, button);
 #endif
 
+  if (WindowRep::GetCursorHit()._hitType == CursorHit::CursorNone) {
+	// Don't zoom if rubberband region is too small.
+	const int minZoomPix = 5;
+	if (ABS(x2 - x1) <= minZoomPix || ABS(y2 - y1) <= minZoomPix) {
+	  x2 = x1;
+	  y2 = y1;
+	}
+  }
+
   if (IsInPileMode()) {
-    GetParentPileStack()->HandlePress(NULL, xlow, ylow, xhigh, yhigh, button);
+    GetParentPileStack()->HandlePress(NULL, x1, y1, x2, y2, button);
   } else {
-    DoHandlePress(NULL, xlow, ylow, xhigh, yhigh, button);
+    DoHandlePress(NULL, x1, y1, x2, y2, button);
   }
 }
 
-void	ViewGraph::DoHandlePress(WindowRep *, int xlow, int ylow,
-							     int xhigh, int yhigh, int button)
+void	ViewGraph::DoHandlePress(WindowRep *, int x1, int y1,
+							     int x2, int y2, int button)
 {
 #if defined(DEBUG)
     printf("ViewGraph(0x%p, <%s>)::DoHandlePress(%d, %d, %d, %d, %d)\n", this,
-	  GetName(), xlow, ylow, xhigh, yhigh, button);
+	  GetName(), x1, y1, x2, y2, button);
 #endif
+
+    if (WindowRep::GetCursorHit()._hitType != CursorHit::CursorNone) {
+	  DeviseCursor *cursor = WindowRep::GetCursorHit()._cursor;
+	  if (cursor->GetDst() == this) {
+#if defined(DEBUG)
+        printf("Moving cursor <%s> in view <%s>\n", cursor->GetName(),
+		    GetName());
+#endif
+	    Coord dataX1, dataY1, dataX2, dataY2;
+		cursor->FindNewPosition(x1, y1, x2, y2,
+		    WindowRep::GetCursorHit()._hitType, dataX1, dataY1,
+			dataX2, dataY2);
+	    cursor->MoveSource((dataX1 + dataX2) / 2.0,
+		    (dataY1 + dataY2) / 2.0,
+			ABS(dataX2 - dataX1), ABS(dataY2 - dataY1));
+	  }
+	  return;
+	}
+
+    int xlow = MIN(x1, x2);
+	int ylow = MIN(y1, y2);
+	int xhigh = MAX(x1, x2);
+	int yhigh = MAX(y1, y2);
 
 	if (!IsInPileMode()) {
 	  if ((xlow == xhigh) && (ylow == yhigh) &&

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/01/07 19:27:55  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.2  1997/12/08 18:17:58  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_4 tag
   into the trunk (split of libcs into libdevcs and libdevwin).
@@ -64,8 +69,8 @@ class WinServer : public Server, public WindowRepCallback {
 			      int button, int state, int type) {}
 #else
     /* Handle button press event */
-    virtual void HandlePress(WindowRep *w, int xlow,
-			     int ylow, int xhigh, int yhigh,
+    virtual void HandlePress(WindowRep *w, int x1,
+			     int y1, int x2, int y2,
 			     int button) {}
 #endif
     

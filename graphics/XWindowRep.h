@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.62  1999/07/30 21:27:08  wenger
+  Partway to cursor dragging: code to change mouse cursor when on a DEVise
+  cursor is in place (but disabled).
+
   Revision 1.61  1999/07/16 21:35:59  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -666,8 +670,8 @@ private:
 #ifndef RAWMOUSEEVENTS
 	/* Handle button press event. Return the region covered by
 	   the selection in window coordinates */
-	void DoButtonPress(int x, int y, int &xlow, int &ylow, int &xhigh,
-			   int &yhigh, int button);
+	void DoButtonPress(int x, int y, int &pixX1, int &pixY1, int &pixX2,
+			   int &pixY2, int button);
 #endif
 
 	virtual void NewDrawText(Boolean isDataText,

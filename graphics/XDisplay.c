@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.77  1999/07/30 21:27:06  wenger
+  Partway to cursor dragging: code to change mouse cursor when on a DEVise
+  cursor is in place (but disabled).
+
   Revision 1.76  1999/07/16 21:35:56  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -1062,7 +1066,7 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
                            | Button2MotionMask | Button3MotionMask
                            | StructureNotifyMask | KeyPressMask
                            | VisibilityChangeMask;
-  //TEMP mask |= PointerMotionMask; // For cursor dragging.
+  mask |= PointerMotionMask; // For cursor dragging.
 
 #ifdef RAWMOUSEEVENTS
   mask |= PointerMotionMask;

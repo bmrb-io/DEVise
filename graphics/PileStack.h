@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1999/07/30 21:27:02  wenger
+  Partway to cursor dragging: code to change mouse cursor when on a DEVise
+  cursor is in place (but disabled).
+
   Revision 1.12  1999/07/14 18:42:38  wenger
   Added the capability to have axes without ticks and tick labels.
 
@@ -145,13 +149,12 @@ public:
   void SetXAxisDateFormat(const char *format);
   void SetYAxisDateFormat(const char *format);
 
-  CursorHit::HitType IsOnCursor(int pixX, int pixY, DeviseCursor *&cursor);
+  void IsOnCursor(int pixX, int pixY, CursorHit &cursor);
 
   void SelectView();
   Boolean ViewIsSelected();
 
-  void HandlePress(WindowRep *, int xlow, int ylow, int xhigh,
-      int yhigh, int button);
+  void HandlePress(WindowRep *, int x1, int y1, int x2, int y2, int button);
   void HandleKey(WindowRep *, int key, int xVal, int yVal);
 
   void Refresh();

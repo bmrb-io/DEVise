@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.35  1999/07/30 21:27:05  wenger
+  Partway to cursor dragging: code to change mouse cursor when on a DEVise
+  cursor is in place (but disabled).
+
   Revision 1.34  1999/06/04 16:32:01  wenger
   Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
   with key presses in piled views in the JavaScreen); made other pile-
@@ -179,6 +183,7 @@
 //#define DEBUG
 
 Boolean WindowRep::_destroyPending = false;
+CursorHit WindowRep::_cursorHit = { CursorHit::CursorNone, NULL };
 
 //******************************************************************************
 // Constructor and Destructors
@@ -260,18 +265,18 @@ void WindowRep::HandleButton(int x, int y, int button, int state, int type)
 #else
 /* called by derived class when button pressed */
 
-void WindowRep::HandleButtonPress(int xlow, int ylow, 
-				  int xhigh, int yhigh, int button)
+void WindowRep::HandleButtonPress(int x1, int y1, 
+				  int x2, int y2, int button)
 {
 #if defined(DEBUG)
   printf("WindowRep::HandleButtonPress(%d,%d,%d,%d,%d)\n",
-         xlow, ylow, xhigh, yhigh, button);
+         x1, y1, x2, y2, button);
 #endif
 
   int index;
   for(index = InitIterator(); More(index); ){
     WindowRepCallback *c = Next(index);
-    c->HandlePress(this, xlow, ylow, xhigh, yhigh, button);
+    c->HandlePress(this, x1, y1, x2, y2, button);
   }
   DoneIterator(index);
 }

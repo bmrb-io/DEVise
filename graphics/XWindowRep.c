@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.129  1999/07/30 21:27:06  wenger
+  Partway to cursor dragging: code to change mouse cursor when on a DEVise
+  cursor is in place (but disabled).
+
   Revision 1.128  1999/07/16 21:35:57  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -835,8 +839,10 @@ void	XWindowRep::SetForeground(PColorID fgid)
 	WindowRep::SetForeground(fgid);
 
 #ifdef GRAPHICS
-	if (_dispGraphics)
+	if (_dispGraphics) {
 		XSetForeground(_display, _gc, xfgid);
+		XSetForeground(_display, _rectGc, xfgid);
+    }
 #endif
 }
 
@@ -847,8 +853,10 @@ void	XWindowRep::SetBackground(PColorID bgid)
 	WindowRep::SetBackground(bgid);
 
 #ifdef GRAPHICS
-	if (_dispGraphics)
+	if (_dispGraphics) {
 		XSetBackground(_display, _gc, xbgid);
+		XSetBackground(_display, _rectGc, xbgid);
+    }
 #endif
 }
 
@@ -2509,7 +2517,17 @@ void XWindowRep::DrawRubberband(int x1, int y1, int x2, int y2)
   unsigned width = maxX - minX;
   unsigned height = maxY - minY;
   
+  SetForeground(whiteColor);
   XDrawRectangle(_display, _win, _rectGc, minX, minY, width, height);
+
+  // Draw a second (hopefully contrasting) rectangle to make this more
+  // visible.
+  if (width > 2 && height > 2) {
+    PColorID oldColor = GetForeground();
+    SetForeground(blackColor);
+    XDrawRectangle(_display, _win, _rectGc, minX+1, minY+1, width-2, height-2);
+    SetForeground(oldColor);
+  }
 }
 
 #ifndef RAWMOUSEEVENTS
@@ -2522,14 +2540,26 @@ Handle button press event. Return the region covered by
 the selection in window coordinates. 
 ***********************************************************************/
 
-void XWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow, 
-			       int &xhigh, int &yhigh, int button)
+void XWindowRep::DoButtonPress(int x, int y, int &pixX1, int &pixY1, 
+			       int &pixX2, int &pixY2, int button)
 {
 #if defined(DEBUG)
   printf("XWindowRep(0x%p)::DoButtonPress()\n", this);
 #endif
 
   DOASSERT(_win, "Cannot handle button press in pixmap");
+
+  if (_callbackList->Size() > 1) {
+	// I don't know what will happen here if the WindowRep has more than
+	// one callback -- should that be prohibited?  RKW 1999-08-05.
+	reportErrNosys("Warning: more than one callback -- may cause problems");
+  }
+  WindowRepCallback *cb;
+  int index = InitIterator();
+  if (More(index)) {
+    cb = Next(index);
+  }
+  DoneIterator(index);
 
   /* grab server */
   XGrabServer(_display);
@@ -2539,7 +2569,7 @@ void XWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow,
   y1 = y2 = y;
 
   /* draw rubberband rectangle */
-  DrawRubberband(x1, y1, x2, y2);
+  cb->MouseDrag(x1, y1, x2, y2);
   
   Boolean done = false;
   long buttonMask = buttonMasks[button - 1];
@@ -2550,14 +2580,14 @@ void XWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow,
     case ButtonRelease:
       if (event.xbutton.button == (unsigned int)button) {
 	/* final button position */
-	DrawRubberband(x1,y1,x2,y2);
+        cb->MouseDrag(x1, y1, x2, y2);
 	x2 = event.xbutton.x;
 	y2 = event.xbutton.y;
 	done = true;
       }
       break;
     case MotionNotify:
-      DrawRubberband(x1, y1, x2, y2);
+      cb->MouseDrag(x1, y1, x2, y2);
       
       /* get rid of all remaining motion events */
       do {
@@ -2565,21 +2595,16 @@ void XWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow,
 	y2 = event.xmotion.y;
       } while(XCheckWindowEvent(_display,_win, buttonMask, &event));
       
-      DrawRubberband(x1, y1, x2, y2);
+      cb->MouseDrag(x1, y1, x2, y2);
       break;
     }
   }
   
-  xlow = MIN(x1, x2);
-  ylow = MIN(y1, y2);
-  xhigh = MAX(x1, x2);
-  yhigh = MAX(y1, y2);
-  
-  if (xhigh - xlow <= 5 || yhigh - ylow <= 5) {
-    xhigh = xlow;
-    yhigh = ylow;
-  }
-  
+  pixX1 = x1;
+  pixY1 = y1;
+  pixX2 = x2;
+  pixY2 = y2;
+
   /* ungrab server */
   XUngrabServer(_display);
   XSync(_display,false);
@@ -2685,20 +2710,20 @@ void XWindowRep::HandleEvent(XEvent &event)
     printf("ButtonPress: button = %d, x = %d, y = %d\n", event.xbutton.button,
 	event.xbutton.x, event.xbutton.y);
 #endif
-    int buttonXlow, buttonYlow, buttonXhigh, buttonYhigh;
+    int buttonX1, buttonY1, buttonX2, buttonY2;
     if (event.xbutton.button == 2) {
       /* handle popup */
       DoPopup(event.xbutton.x, event.xbutton.y, event.xbutton.button);
     } else if (event.xbutton.button <= 3) {
       DoButtonPress(event.xbutton.x, event.xbutton.y,
-		    buttonXlow, buttonYlow, buttonXhigh, buttonYhigh,
+		    buttonX1, buttonY1, buttonX2, buttonY2,
 		    event.xbutton.button);
       
       /*
 	 if (buttonXhigh > buttonXlow && buttonYhigh > buttonYlow) {
       */
-      WindowRep::HandleButtonPress(buttonXlow, buttonYlow,
-				   buttonXhigh, buttonYhigh,
+      WindowRep::HandleButtonPress(buttonX1, buttonY1,
+				   buttonX2, buttonY2,
 				   event.xbutton.button);
 
 #if 0 // This is now handled in the PileStack class.
@@ -2726,10 +2751,8 @@ void XWindowRep::HandleEvent(XEvent &event)
     int index;
     for(index = InitIterator(); More(index); ){
       WindowRepCallback *c = Next(index);
-      DeviseCursor *cursor;
-      CursorHit::HitType cursorHit =
-          c->IsOnCursor(event.xmotion.x, event.xmotion.y, cursor);
-      SetMouseCursor(cursorHit);
+      c->IsOnCursor(event.xmotion.x, event.xmotion.y, _cursorHit);
+      SetMouseCursor(_cursorHit._hitType);
     }
     DoneIterator(index);
     break;
