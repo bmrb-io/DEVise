@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.53  2001/03/05 16:45:26  xuk
+// Clear follower's JavaScreen when leader close session.
+// Changes in cmdCloseSession().
+//
 // Revision 1.52  2001/03/04 22:04:27  xuk
 // Fixed bugs for JAVAC_CloseSession command in cmdCloseSession().
 //
@@ -547,7 +551,6 @@ public class DEViseServer implements Runnable
 			
       			continue;
                     }
-		    pop.pn("We got: " + clientCmd); 
 		    processServerCmd(serverDatas);
                 } catch (YException e) {
                     pop.pn("DEViseServer failed1");
