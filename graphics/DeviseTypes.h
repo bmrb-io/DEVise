@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/10/10 21:11:51  liping
+  Adding the definition of "Range" which is used by TData and BufMgr, etc.
+
   Revision 1.14  1997/09/23 19:59:25  wenger
   Fix compile warning.
 
@@ -80,13 +83,21 @@ typedef char Boolean;
 
 typedef struct
 {
-	char 	*AttrName;
-	Coord	Low;
-	Coord	High;
-	Coord	Granularity;
-	int	NumRecs;  // ONLY used in GetRecs for convenience;
-			  // redundant and I'll try to get rid of it later;
-}Range;
+    char 	*AttrName;
+    Coord	Low;
+    Coord	High;
+    Coord	Granularity;
+    int		NumRecs;
+
+    Boolean has_left;           // there should be a meaningful left_adjacent
+    Boolean has_right;          // there should be a meaningful right_adjacent
+
+    Coord left_adjacent;        // the expected high value of the interval
+                                // immediately to the left of this interval
+    Coord right_adjacent;       // the expected low value of the interval
+                                // immediately to the right of this interval
+
+}Interval;
 
 #if defined(HPUX) || defined(SUN) || defined(SOLARIS) || defined(LINUX)
 inline int trunc(float num) {
