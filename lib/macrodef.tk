@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.37  1996/02/05 19:55:12  jussi
+#	Background color is chosen from a palette of colors instead of
+#	a list of color names.
+#
 #	Revision 1.36  1996/02/01 18:31:13  jussi
 #	Improved handling of errors in extracting from data from
 #	external source.
@@ -784,12 +788,12 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
 	set yhi ""
 	set hasyhi [lindex $attr 3]
 	if {$hasyhi} {
-	    set yhi [lindex $attr 4]
+	    set yhi [ScaleUpper [lindex $attr 4]]
 	}
 	set ylo ""
 	set hasylo [lindex $attr 5]
 	if {$hasylo} {
-	    set ylo [lindex $attr 6]
+	    set ylo [ScaleLower [lindex $attr 6]]
 	}
 
 	# also consult lo/hi values defined in .rc file
@@ -806,17 +810,17 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
 	    }
 	}
 
-	# for bar shape, make ylo zero
-	if {$shape == 2} {
-	    set ylo 0
-	}
-
 	# if no defaults specified anywhere, resort to these defaults
 	if {$yhi == ""} {
 	    set yhi 0
 	}
 	if {$ylo == ""} {
 	    set ylo 100
+	}
+
+	# for bar shape, make ylo zero
+	if {$shape == 2} {
+	    set ylo 0
 	}
 
 	# puts "Mapping will have ylo $ylo and yhi $yhi"
@@ -2468,12 +2472,12 @@ proc MacroDefAutoActualNew {tdata viewsel linksel window bgcolor layout
 	set yhi ""
 	set hasyhi [lindex $attr 3]
 	if {$hasyhi} {
-	    set yhi [lindex $attr 4]
+	    set yhi [ScaleUpper [lindex $attr 4]]
 	}
 	set ylo ""
 	set hasylo [lindex $attr 5]
 	if {$hasylo} {
-	    set ylo [lindex $attr 6]
+	    set ylo [ScaleLower [lindex $attr 6]]
 	}
 
 	# also consult lo/hi values defined in .rc file
@@ -2490,17 +2494,17 @@ proc MacroDefAutoActualNew {tdata viewsel linksel window bgcolor layout
 	    }
 	}
 
-	# for bar shape, make ylo zero
-	if {$shape == 2} {
-	    set ylo 0
-	}
-
 	# if no defaults specified anywhere, resort to these defaults
 	if {$yhi == ""} {
 	    set yhi 0
 	}
 	if {$ylo == ""} {
 	    set ylo 100
+	}
+
+	# for bar shape, make ylo zero
+	if {$shape == 2} {
+	    set ylo 0
 	}
 
 	# puts "Mapping will have ylo $ylo and yhi $yhi"
