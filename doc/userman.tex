@@ -1,6 +1,10 @@
 \documentstyle[epsf,fullpage,verbatim]{article}
 
-\def\Devise{{\tt DEVise} }
+\renewcommand{\topfraction}{1.0}
+\renewcommand{\bottomfraction}{1.0}
+\renewcommand{\textfraction}{0.0}
+\advance\intextsep by 5pt
+
 \def\filename#1{{\tt #1}}
 \def\code#1{{\tt #1}}
 \def\menu#1{{\tt #1}}
@@ -22,8 +26,8 @@
 }
 
 \begin{document}
-\title{\Devise User Manual}
-\author{The \Devise Development Group \\
+\title{DEVise User Manual}
+\author{The DEVise Development Group \\
 \code{devise@cs.wisc.edu}
 }
 \date{\today}
@@ -32,13 +36,13 @@
 
 \section{Introduction}
 
-\section{Installing \Devise}
+\section{Installing DEVise}
 
 \subsection{Extracting Files from the \code{tar} Archive}
 
 \subsection{Customization}
 
-\section{Running \Devise}
+\section{Running DEVise}
 
 \subsection{Path Names and Environment Variables}
 
@@ -46,48 +50,47 @@
 
 \subsection{Customization with \filename{devise.rc}}
 
-\section{Tutorial Session with \Devise}
+\section{Tutorial Session with DEVise}
 
 {\em The tutorial session is intended to give you a feel for
-\Devise. If you already know how to use it fairly well, you can skip
+DEVise. If you already know how to use it fairly well, you can skip
 to the next section.}
-
-\scaleepspic[0.6\textwidth]{screen1.eps}{Control Panel\label{screen1}}
-\scaleepspic[0.6\textwidth]{screen2.ps}{File select Window\label{screen2}}
 
 \subsection{Open a session}
 	
 Now that you have successfully installed the system, the next thing
-to do is to get a feel for \Devise and what it can do for you.
+to do is to get a feel for DEVise and what it can do for you.
 
 Go to the \filename{run} directory and type \filename{devise} to start
-up \Devise. If all goes well and your installation was right, you will
+up DEVise. If all goes well and your installation was right, you will
 get a window named {\em DEVise}. This is the {\em Control Panel}, the
-nerve center of \Devise. Now click on Session (you can also type Alt-S
+nerve center of DEVise. Now click on Session (you can also type Alt-S
 if you like the keyboard better). This would bring up the session
-window. For the moment, a session in \Devise is nothing but a
+window. For the moment, a session in DEVise is nothing but a
 collection of windows and mappings. Now click on Open. This brings up
 a window named {\em Select file} with a lot of \filename{tk} files in
 it. Now open the \filename{demo.tk} file. You can do this by double
 clicking on the \filename{demo.tk} name or clicking once and pressing
 OK. {\em Almost everywhere in case of selection, you can double click
-on the option or filename etc., or click once on them and then click
-on the OK button.}
+on the option or filename, or click once and then click on the OK
+button.}
+
+\scaleepspic[0.6\textwidth]{screen1.eps}{Control Panel\label{screen1}}
+\scaleepspic[0.6\textwidth]{screen2.eps}{File Select Window\label{screen2}}
 
 \subsection{Visualization}
 
 \scaleepspic[\textwidth]{screen3.eps}{Data Display Windows\label{screen3}}
 
-The screen would now be filled with 3 windows named {\em Global view},
-{\em Trade Price} and {\em Trade Volume}. The various graphs represent
-the stock trade price and volume data for different companies. The
-various lines are in fact the actual field values. Each graph is
-called a {\em view}. Any view can be made {\em current} by clicking
-within its boundary. The current view is highlighted by either a
-thick, vertical line to the left of the view, or by a thin rectangle
-surrounding the view. Whatever action you do is done on the current
-view (though as you will see later, there can be side effects on other
-views).
+The screen is now filled with 3 windows named {\em Global view}, {\em
+Trade Price} and {\em Trade Volume}. The various graphs represent the
+stock trade price and volume data for different companies. The various
+lines are the actual field values. Each graph is called a {\em
+view}. Any view can be made {\em current} by clicking within its
+boundary. The current view is highlighted by either a vertical bar to
+the left of the view, or by a rectangle surrounding the view. Whatever
+action you do is done on the current view (though as you will see
+later, there can be side effects on other views).
 
 You can play around with these windows as any other normal X window
 i.e. you can resize the windows, move them around, close them etc.
@@ -95,13 +98,12 @@ i.e. you can resize the windows, move them around, close them etc.
 What you see in the views is a partial snapshot of the trade prices
 and trade volumes of various companies. Now lets get down to exploring
 the views. Click on the IBM price view in the Trade Price window. Make
-sure the number lock is on and start using the numeric keypad now.
-
-You can use the numeric keypad to scroll, zoom in and zoom out. The
-numbers 4 and 6 scroll the view left and right, respectively. Now as
-you do the scrolling you can find two interesting things
-happening. One is that the other views (except the global view) also
-scroll. And two, a colored block moves in the global view.
+sure the number lock is on. You can use the numeric keypad to scroll
+or zoom in and out. The numbers 4 and 6 scroll the view left and
+right, respectively. Now as you do the scrolling you can find two
+interesting things happening. One is that the other views (except the
+global view) also scroll. And two, a colored block moves in the global
+view.
 
 \subsection{Links and Cursors}
 
@@ -110,37 +112,36 @@ X-axis. What this means is that the X axis ranges (high and low) are
 the same for all the views linked. Thus you can see the snapshot of
 all the companies for the same X value (here it is date) at the same
 time. In this way you can also link the views (either all of them or
-some of them) along the Y axis or on a color, shape, etc. Thus this
-linking essentially helps to you to view the required graphs in the
-same range on any attribute.
+some of them) along the Y axis or on a color, shape, etc. Linking
+essentially helps to you to view the required graphs in the same range
+on any attribute.
 
-Next let us go to exploring the colored band in the global view. This
-is called the {\em cursor}. The width of the colored band corresponds
-to the X range visible in all other views. The global view happens to
+Next let us explore the colored band in the global view. This is
+called the {\em cursor}. The width of the colored band corresponds to
+the X range visible in all other views. The global view happens to
 display all records in the IBM file (hence the name global view) and
 the cursor marks the part that you are seeing in the other views. The
 IBM price view and the global view are linked by this cursor. When you
 zoom in on the X axis (using 7) in the IBM price view, the cursor
 becomes smaller since the view is now a smaller portion of the overall
-data. You can also move the cursor from the global view window, by
-clicking under the X axis (on the global view window) . As you can see
-the cursor is repositioned to that point and all the views also
-change. Thus interesting patterns on the global view can be analyzed
-by moving the cursor to that point and zooming in on the
-view. Similarly, as you zoom out on the trade price or trade volume
-views the cursor is enlarged.
+data. You can also move the cursor by clicking under the X axis in the
+global view window. As you can see the cursor is repositioned to that
+point and all the views also change. Thus interesting patterns on the
+global view can be analyzed by moving the cursor to that point and
+zooming in on the view. Similarly, as you zoom out on the trade price
+or trade volume views the cursor is enlarged.
 
 \subsection{Y Axis Actions}
 
 Keys 8 and 2 are for scrolling up and down on the Y axis. As you may
 have guessed keys 1 and 3 are for zooming in and zooming out on the Y
 axis, but just a moment. Zooming out on the Y axis would change the Y
-range to be from some lower, negative value value to some higher,
-positive value. The bar chart that we are displaying contains no
-information on the negative side. So to zoom in on the Y axis only on
-the positive side, use the combination of scrolling down/up and
-zooming up/down. For instance, to zoom in Y use 1 {\em followed by} 8
-and to zoom out use 2 {\em followed by} 3.
+range to be from some lower, negative value to some higher, positive
+value. The bar chart that we are displaying contains no information on
+the negative side. So to zoom in on the Y axis only on the positive
+side, use the combination of scrolling down/up and zooming
+up/down. For instance, to zoom in Y use 1 {\em followed by} 8 and to
+zoom out use 2 {\em followed by} 3.
 
 Now that you know how to play around with the views, let us go to some
 other interesting stuff, like hiding a unwanted view, reviving and
@@ -156,19 +157,18 @@ concentrate on some of them.
 
 \subsubsection{Moving Around Views}
 
-First let us look at the swap position. This helps to swap the
-position of the last two views clicked. The two views to be swapped
-must be in the same window. Click on the views you need to swap in
-sequence. Now click on the \menu{Swap Position} command in the
-\menu{View} menu. The two views exchange places.
+You can swap the position of two views that are in the same
+window. Click on the views you need to swap in sequence. Now click on
+the \menu{Swap Position} command in the \menu{View} menu. The two
+views exchange places.
 
 You can throw away any view that you do not like from a window, by
 using the \menu{Remove from window} command. As an example click on
-the IBM price view in the trade Price window. Now use the \menu{Remove
+the IBM price view in the Trade Price window. Now use the \menu{Remove
 from window} command to junk this view. The view disappears from the
-window but not from \Devise's internal world.
+window but not from DEVise's internal world.
 
-To bring back any view, use the \menu{Bring back to window}
+To bring back any view, use the \menu{Bring Back to Window}
 command. This one gives you a list of all views, including those that
 are displayed and those that have been removed. Click on the Close Vs
 Date4 entry and then click on OK (or double click on Close vs Date4).
@@ -206,10 +206,11 @@ to the statistics part.
 
 All along you might have wondered about the presence of a line across
 each view. This is the statistical mean line for the view and for that
-particular X range. This can be set or reset using the Statistics
-menu. This menu yields a {\em tear-off} sub-menu. By clicking on the
-dashed lines at the top of the sub-menu you can make it an independent
-window and use the options directly from that window.
+particular X range. It can be set or reset using the
+\menu{View/Statistics} menu. This menu yields a {\em tear-off}
+window. By clicking on the dashed lines at the top of the sub-menu,
+you get a new, independent window which you use to control the
+statistics settings of views.
 
 So now click on the dashed line and move the resulting window to a
 desired position on the screen. You will find that the Mean option has
@@ -228,18 +229,18 @@ view.
 You can also use the Kiviat graph tool to analyze the views. The
 KGraph sub-menu is also a tear-off one. As in the case of the
 statistical sub-menu you can select the Mean, Max, Min or Count (but
-only one of them for each Kiviat graph). You can ask \Devise to give
+only one of them for each Kiviat graph). You can ask DEVise to give
 you a new Kiviat graph or reuse the last one. This graph is also
 computed only for the particular X range. So scrolling the views would
-also change the graph displayed. Also you can use the middle button of
-the mouse to know the value of the record.
+also change the graph displayed. You can also use the middle mouse
+button inside the Kiviat graph to display the statistical values.
 
 \subsection{Undoing}
 
-\scaleepspic[0.7\textwidth]{screen4.eps}{The history screen\label{screen4}}
+\scaleepspic[0.7\textwidth]{screen4.eps}{History Screen\label{screen4}}
 
 If you inadvertently zoom in or out or scroll and want to go back,
-there is a history system maintained by \Devise. The \menu{back one}
+there is a history system maintained by DEVise. The \menu{back one}
 command in the control panel sets the X and Y values to the previous
 values. Then press \menu{use} to apply the values. Also clicking on
 \menu{history} gives you a list of recently used X and Y axis
@@ -249,16 +250,16 @@ values. You can click on any one of them and then press
 
 \subsection{Mouse control}
 
-If you like to use the mouse only, for the scrolling and zooming etc.,
-you can do that too! \Devise's control panel has the arrow symbols in
-its left corner. The keys function like the numeric keys.
+If you like to use the mouse for scrolling and zooming, you can do
+that too! DEVise's control panel has the arrow symbols in its left
+corner. Clicking on the symbols functions like the numeric keys.
 
 \subsection{One Last Trick}
 
-You might be curious about the button labeled display mode in the
+You might be curious about the button labeled Display mode in the
 control panel. This is useful when you are resizing windows. If a
 large data set is being visualized, then while resizing the windows,
-you may want \Devise not to redisplay data every time but instead wait
+you may want DEVise not to redisplay data every time but instead wait
 until you have finalized the window sizes, positions, etc. So clicking
 on this toggles it to Layout mode in which none of the views are
 computed nor displayed. Then go ahead resize the windows and toggle
@@ -270,16 +271,14 @@ To finish the session use the \menu{Close} command under the
 \menu{Session} menu. To exit from the program use the \menu{Quit}
 command.
 	
-Now that you have a feel for \Devise you can go ahead and continue
+Now that you have a feel for DEVise you can go ahead and continue
 with the rest of the chapters that deal in-depth with many other
 features and commands. And so ends our tutorial section. Hope it was
 fun.
 
-\section{\Devise Concepts}
+\section{DEVise Concepts}
 
-This section gives an in-depth view of the concepts behind this
-tool. In particular, the various Data Streams, schema, Graphical data
-and view properties.
+This section gives an in-depth view of the concepts behind DEVise.
 
 \subsection{Data Stream}
 
@@ -292,33 +291,32 @@ a database query. Some data streams come from magnetic tapes.
 Each data stream is associated with a data source such as the ones
 mentioned above. Also associated with each stream is a schema that
 describes the layout and the data fields of the stream, and a key to
-uniquely identify the stream from the other streams. In the case of a
+uniquely identify the stream from other streams. In the case of a
 database stream, a query can be given as the input and the results of
 the query are computed and cached as a data stream. The definition of
-data streams is edited in the Data Stream window.
+data streams is edited in the Data Streams window which you can access
+by selecting \menu{Visualize/Import} or \menu{Visualize/Define}.
 
-Following is a description of the various types of data streams.
+The following is a description of the various types of data streams.
 
 \subsubsection{Unix File}
 
 This data stream is just a normal UNIX file. The data fields are
-separated by a standard delimiter specified in the schema. A sample
-set of records (or tuples) is shown below.
+separated by a standard delimiter specified in the schema. An ASCII
+file containing $sin(t)$ and $cos(t)$ might contain the following
+records (or tuples):
 
-An ASCII file containing $sin(t)$ and $cos(t)$ might look like this:
-
-\begin{tabbing}
-XXXXXXXXXx \= XXXXXXXXXX \= XXXXXXXXXX \kill
-\#  time \> sin \> cos \\
-0.000000.2 \> 1.000000.2 \> 0.000000.2 \\
-0.017453.2 \> 0.999848.2 \> 0.017452.2 \\
-0.034906.2 \> 0.999391.2 \> 0.034898.2 \\
-0.052358.2 \> 0.998630.2 \> 0.052334.2 \\
+\begin{verbatim}
+# time   sin      cos
+0.000000 1.000000 0.000000
+0.017453 0.999848 0.017452
+0.034906 0.999391 0.034898
+0.052358 0.998630 0.052334
 ... 
-\end{tabbing}
+\end{verbatim}
 
 The output of any program that generates similar sequences of data can
-visualized in \Devise as a UNIXFILE stream. The schema defines the
+be visualized in DEVise as a UNIXFILE stream. The schema defines the
 delimiter (here a blank space), comment character (here \#) as
 mentioned above and also assigns the meaning (name) to the various
 columns. The file is selected by pressing the select button next to
@@ -326,27 +324,26 @@ the key field.
 
 \subsubsection{WWW Data}
 
-This data stream may come from any WWW source. The URL (Uniform
-Resource Locator) could either be one using the \code{ftp} or
-\code{http} protocol. The data is fetched from the Web and cached
-locally. This method offers the advantage of directly using the WWW
-data without additional effort. As in the case of the UNIXFILE type,
-the stream delimiter and comment characters must be specified in the
-schema. The key is assigned by the user and must be a unique name
+This type of data stream may come from any World Wide Web source. The
+URL (Uniform Resource Locator) could either be one using the
+\code{ftp} or \code{http} protocol. The data is fetched from the Web
+and cached locally. This method offers the advantage of directly using
+the WWW data without additional effort. As in the case of the UNIXFILE
+type, the stream delimiter and comment characters must be specified in
+the schema. The key is assigned by the user and must be a unique name
 within this stream type.
 
 \subsubsection{SEQ Query}
 
 A sequence query can be specified and executed in a SEQ database
-server.  The result of the query is cached on to the disk using the
-key value given. The key name needs to be distinct for the SEQ data
-source type.
+server.  The result of the query is cached on disk using the key value
+given. The key name needs to be distinct for the SEQ data source type.
 
 \subsubsection{CRSP Data}
 
 CRSP (Center for Research in Security Prices) provides comprehensive
 stock price data via two primary files, the NYSE/AMEX file and the
-Nasdaq file. The CRSP data is available on a tape. The information
+Nasdaq file. The CRSP data is available on tape. The information
 stored consists of company name, distribution, share, delisting and
 Nasdaq information. The NYSE/AMEX Daily file contains data beginning
 July 2 1962 and tracks roughly 7,250 securities. The Nasdaq file
@@ -372,7 +369,7 @@ from 1990 to the present. The data record consists of trades and
 quotes timed to the tick. Ancillary information such as CUSIP numbers,
 firm names, shares outstanding and dividend information are also
 provided. One of the most heavily traded firm (IBM) for example had
-over 800,000 trades and quotes in 1992. This is also available in tape
+over 900,000 trades and quotes in 1992. This is also available in tape
 form.
 
 \subsubsection{SQL Query}
@@ -383,10 +380,9 @@ again must be a unique name within the SQL domain.
 
 \subsubsection{Command Output}
 
-\Devise executes the (Unix) command specified in the Info/Command
-entry, and caches the result of the program execution. A key must be
-assigned to identify this data stream from other Command Output data
-streams.
+DEVise executes the (Unix) command specified in the Info/Command
+entry and caches the output of the program. A key must be assigned to
+identify this data stream from other Command Output data streams.
 
 \subsubsection{Network Data}
 
@@ -396,30 +392,32 @@ A schema file describes the layout of the input data stream. It is
 used to convey the name, type, and range of attributes, characters
 that separate the attributes in the file, and characters that should
 be ignored while reading the file. The attribute range information is
-optional. For our example file, the schema file looks like: \\
+optional. For our example file, the schema file looks like:
 
- type Sensor ascii \\
- comment \# \\
- whitespace ' ' \\
- attr time double hi 1000 lo 0 \\
- attr sin double hi 1 lo -1 \\
- attr cos double hi 1 lo -1 \\
+\begin{verbatim}
+type Sensor ascii
+comment #
+whitespace ' '
+attr time double hi 1000 lo 0
+attr sin double hi 1 lo -1
+attr cos double hi 1 lo -1
+\end{verbatim}
 
 The first line names the file type: Sensor. All sensor files have data
 stored in the same format. More than one file type can be imported
-into \Devise, each having its own schema file. For example, we can
+into DEVise, each having its own schema file. For example, we can
 also create a Stock file type to read information about stock prices,
-with data stored in a different format. The second line tells \Devise
-to ignore lines that start with '\#'. The third line tells \Devise to
+with data stored in a different format. The second line tells DEVise
+to ignore lines that start with '\#'. The third line tells DEVise to
 treat spaces as whitespace in the input stream and as a separator
 between field values. The remaining lines describe attribute names,
 types, and ranges.
 
 The physical schema describes the actual layout of the input stream
 with all its attributes. The physical schema may be browsed using the
-\menu{Schema} command in the control panel. Every data stream is
-associated with a physical schema, and it is using this schema, that
-\Devise parses the file to extract the various fields.
+\menu{Schema} menu in the control panel. Every data stream is
+associated with a physical schema, and the schema is used by DEVise
+to extract the data values from the data stream.
 
 \subsubsection{Attribute Name}
 
@@ -427,8 +425,6 @@ The attribute name identifies a particular field of a record. For
 example in the schema described above, sin is the name of the first
 attribute. This name is used when defining the attributes to be used
 for the X and Y axes in defining views.
-
-The attribute name can be changed by using the schema editor.
 
 \subsubsection{Attribute Type}
 
@@ -440,29 +436,29 @@ double.
 \subsubsection{Attribute Value Range}
 
 The attributes may be defined to have a maximum and a minimum
-range. This is useful for \Devise to choose the range values when
+range. This is useful for DEVise to choose the range values when
 displaying the field values. For example, if the range value of an
 attribute were to go from 0 to 200, then when displaying the attribute
-on one of the axes, \Devise would automatically choose a range of 0 to
-200. If no range is defined, by default, \Devise chooses a range of 0
+on one of the axes, DEVise would automatically choose a range of 0 to
+200. If no range is defined, by default, DEVise chooses a range of 0
 to 100 for that attribute.
 
 \subsubsection{Sorted vs.\ Unsorted}
 
 The records in the stream may be sorted on a field, say YEAR. This can
-also be specified in the physical schema. \Devise uses this
+also be specified in the physical schema. DEVise uses this
 information to optimize data access. Data is also displayed in an
 interleaved fashion instead of displaying the data in a continuous
-fashion left to right (which may take quite some time for dense
+fashion from left to right (which may take quite some time for dense
 data). This helps in seeing an outline of the data quicker.
 
 \subsection{Logical Schema}
 
 The logical schema defines a logical view on the physical schema
-defined. It is useful to provide a restricted range of viewing of the
-attributes in the schema. For example in the COMPUSTAT database there
-are 350 attributes. For a person interested only in the Current
-assets, income tax, price close etc. he/she can create a logical group
+defined. It is useful for providing a restricted range of viewing of
+the attributes in the schema. For example in the COMPUSTAT database
+there are 350 attributes. A person interested only in the current
+assets, income tax, and stock price can create a logical group
 involving these attributes and can then use that to define the
 views. In this way the user need not search around for the usual
 attributes that are needed for visualization. Each logical schema may
@@ -481,19 +477,17 @@ name as that of the physical schema is created with all the attributes
 in the physical schema. It is basically one group consisting of all
 the attributes.
 
-%%% This is how far I got
-
 \subsubsection{Name of Physical Schema}
 
-Each logical schema is a view definition of one physical schema (only
-one physical schema) The physical schema name in the logical schema
-associates the logical schema with the particular physical schema. As
-said already a default logical schema is created for every physical
-schema that has the same name as the physical schema with all the
-attributes. Any creation or modification to a logical schema needs to
-proceed first by the selection of the appropriate physical schema, so
-the name of the physical schema is implicitly built in to the logical
-schema definition.
+Each logical schema is a view definition based on one physical
+schema. The physical schema name in the logical schema associates the
+logical schema with the particular physical schema. A default logical
+schema is created for every physical schema that has the same name as
+the physical schema with all the attributes. Any creation or
+modification to a logical schema needs to proceed first by the
+selection of the appropriate physical schema, so the name of the
+physical schema is implicitly built in to the logical schema
+definition.
 
 \subsubsection{Group Name}
 
@@ -501,7 +495,7 @@ Each logical schema may consist of a number of groups. The group name
 identifies the particular group within a logical schema. When
 visualizing the data stream, the user is automatically prompted to
 choose the proper group, for defining the mappings. The group name
-muse be unique within the logical schema and to a certain extent must
+must be unique within the logical schema and to a certain extent must
 be comprehensible to the user. This group is called the top level
 group. We can define any number of groups within this group in a
 nested fashion.
@@ -516,34 +510,29 @@ the attribute in the logical group to the actual physical one.
 
 \subsection{Graphical Data}
 
-The graphical data or GData as it is called, is the second
-intermediate stage in the processing of the data records before they
-are displayed. As described in the earlier section, the raw data is
-first parsed using the schema and TData is created. Now on this TData,
-the user can select the required attributes to be displayed, their
-color, shape etc. This mapping is used to form another intermediate
-representation called GData or Graphical Data. This GData is the one
-used to actually show the records on the screen.
+The graphical data is the second intermediate stage in the processing
+of the data records before they are displayed. As described in the
+earlier section, the raw data is first parsed using the schema and
+TData is created. Now on this TData, the user can select the required
+attributes to be displayed, their color, shape etc. This mapping is
+used to form another intermediate representation called GData or
+Graphical Data. This GData is the one used to actually show the
+records on the screen.
 
-Thus the GData is the graphical representation of TData. It consists
-of attributes: x, y, color, pattern, size, orientation, shape and
-shape specific attributes.
+GData is the graphical representation of TData. It consists of the
+following attributes: X, Y, color, pattern, size, orientation, shape
+and shape-specific attributes.
 
 The mapping can be specified using the visualization window. This is
-automatically generated when a data is to be imported. The window
-basically picturizes the various attributes in the logical schema of
-the relation. The user can choose the attributes to be displayed as
-views and also the color, layout mode, window name and title. The plot
-can be done using a bar chart, image plot or scatter plot. A bar
-chart draws the bar lines from the Y = 0 line to the filed value. A
-scatter plot simply plots the point on the graph.
+automatically generated when a data is imported. The window list the
+various attributes in the logical schema of the relation. The user can
+choose the attributes to be displayed as views and also the color,
+layout mode, window name and title. The plot can be done using a bar
+chart, image plot or scatter plot.
 
-The view thus defined can then be modified using the Edit mapping
-choice under the View main option.
-
-The mapping can be edited to change any one or all of the following.
-X axis field, Y axis field, color, orientation, size, pattern, shape
-and shape attributes.
+The view thus defined can then be modified using \menu{View/Edit
+Mapping}. The mapping can be edited to change any one or all of the
+GData attributes.
 
 For all of these the values may either be defined as a constant or as
 a variable taking its value from one of the attributes itself, or as
@@ -551,49 +540,46 @@ the value of the expression of attributes.
 
 \subsubsection{Location: X, Y, and Z}
 
-The Location parameters namely X,Y and Z options help to change the
-attribute begin currently displayed on the respective axis of the
-current view. A constant value on any one of these axis displays the
-values of the other attributes for this particular value of this
-attribute. For example if the Y axis is YEAR and we want to see the
-value of the X axis for records from year 1995 only, then we can
-specify the Y axis value as a constant of 1995.The variable in this
-case is the attribute to be displayed. The expression can also be
-used.
-
-%% This is still a question...
+The location parameters X, Y and Z specify the values to use on the
+corresponding axes.
 
 \subsubsection{Size}
 
-The values of records can be displayed as objects. The size attribute
-is used to change the size of the object displayed in the view. The
-constant specifies the factor of enlargement of the object
-displayed. The variable value is interesting to use in the case when
-we need the object displayed for a record to vary according to the
-value of some attribute of the record. For example, if we are using a
-square object to represent the points and X,Y axis represent the date
-and closing price respectively, say. Then we can vary the size of the
-squares according to the amount of trading on the stock on that day,
-which would yield an interesting graph. The expression is even more
-powerful as the size can then be varied according to a combination of
-attribute values.
+The size attribute is used to change the size of the object displayed
+in the view. The constant specifies the factor of enlargement of the
+object displayed. The variable value is interesting to use in the case
+when we need the object displayed for a record to vary according to
+the value of some attribute of the record. For example, if we are
+using a square object to represent the points and X,Y axis represent
+the date and closing price respectively, say. Then we can vary the
+size of the squares according to the amount of trading on the stock on
+that day, which would yield an interesting graph. The expression is
+even more powerful as the size can then be varied according to a
+combination of attribute values.
 
 \subsubsection{Color}
 
-Similar to the size of the attribute, the color can also be made as a constant or variable or an expression. There are currently 43 colors defined and any expression or variable value computed is mapped to one of these colors. The use of variable color also yields interesting results. For example in a scatter plot we can change the color according to the rainfall on a day, with date and temperature on the axes. This would yield a plot with varying colors indicating the amount of rainfall on a day.
+Similar to the size of the attribute, the color can also be made as a
+constant or variable or an expression. Currently, there are 43 colors
+defined and any expression or variable value computed is mapped to one
+of these colors. The use of variable color also yields interesting
+results. For example in a scatter plot we can change the color
+according to the rainfall on a day, with date and temperature on the
+axes. This would yield a plot with varying colors indicating the
+amount of rainfall on a day.
 
 \subsubsection{Pattern}
 
-The pattern may also be changed for the objects. The pattern
-essentially decides the type of pattern to be used for filling the
-objects displayed.
+The pattern may also be changed for the objects. It specifies the type
+of pattern to be used for filling the objects displayed. This feature
+is not supported yet.
 
 \subsubsection{Orientation}
 
-The orientation decides the tilt of the objects that would be
-displayed for the filed values. This is useful for objects like
-rectangles for example to get a diamond object. As before this also
-can be defined as a constant, variable or as an expression.
+The orientation specifies the tilt or rotation of the objects. This is
+useful for objects like rectangles for example to get a diamond
+object. As before this also can be defined as a constant, variable or
+as an expression. This feature is not supported yet.
 
 \subsubsection{Shape}
 
@@ -602,26 +588,34 @@ Square (RectX), Bar, Polygon, Oval, Vector or Block. The shapes again
 may be defined as a constant or variable values. The default is the
 bar. The square (RectX) gives a visual square shape, block represents
 a 3 dimensional block, and a polygon represents a dodecagon. The
-vector is a directional one, with an arrow at the end. The bar begins
-from the point (x,0) to the point (x,y).
+vector is a directional one, with an arrow at the end. The bar is
+drawn from (X,0) to (X,Y).
 
 \subsubsection{Shape Attributes}
 
 The shapes have associated with them the width, height and other
-values. This can also be modified in the Edit window. The shape
-attributes vary for each shape. It is summarized below.
+values. This can also be modified in the Edit Mapping window. The
+shape attributes are summarized in Table~\ref{shapeattrs}.
 
-\begin{tabbing}
-Polygonx \= Directional vectorx \= ShapeAttr0x \= Shaprattr1x \= Shaperattr2x \kill
-Shape \> Meaning \> ShapeAttr0 \> ShapeAttr1 \> ShapeAttr2 \\ \\
-Rect  \> Rectangle \>  Width \> Height \> N.A.  \\
-Bar   \> Bar from X axis\> Width \> N.A. \> N.A. \\
-Oval  \> Oval \> Xwidth \> Yheight \> N.A.\\
-Vector \> Directional Vector \> Xwidth \> Yheight \> N.A. \\
-Block \> cuboid \> Xwidth \>\\
-RectX \> square \> Xside\\
-Polygon \> do-decagon \> Xwidth \> Ywidth\\  
-\end{tabbing}
+\begin{table}[htbp]
+\begin{center}
+\caption{Shape Attributes\label{shapeattrs}}
+\bigskip
+\begin{tabular}{l|l|l|l|l}
+Shape   & Meaning      & ShapeAttr0 & ShapeAttr1 & ShapeAttr2 \\
+\hline
+Rect    & Rectangle    & Width      & Height     & n/a \\
+RectX   & Square       & Width      & n/a        & n/a \\
+Bar     & Vertical Bar & Width      & n/a        & n/a \\
+Oval    & Oval         & Width      & Height     & n/a \\
+Polygon & Dodecagon    & Width      & Height     & n/a \\  
+Vector  & Vector       & X delta    & Y delta    & n/a \\
+Block   & Cuboid       & Width      & Height     & Depth
+\end{tabular}
+\end{center}
+\end{table}
+
+%%% This is how far I got
 
 \subsection{View Properties}
 
@@ -633,12 +627,12 @@ required results.
 \subsubsection{Title}
 
 The view title is independent of the graph displayed and may be
-modified by the user. As a default the view name is "$<X attrib name >
-VS <Y attrib name >$" (e.g. DATE VS SALES. The title may be edited
+modified by the user. As a default the view name is "$<X attrib name>
+VS <Y attrib name>$" (e.g. DATE VS SALES. The title may be edited
 using the Title choice under the View option.  The title may be
 deleted in which case the {\em current view indicator} which is
 normally a rectangular boundary surrounding the view becomes a
-rectangular bar on the left edge. \Devise attaches no significance of
+rectangular bar on the left edge. DEVise attaches no significance of
 the title and the data displayed in that view. It is left to the
 discretion of the user.
 
@@ -689,7 +683,7 @@ manipulated in many ways for effective visualization.
 
 A window provides the screen real estate used by views to draw the
 gdata. It it also responsible for arranging views in its
-boundaries. Currently, \Devise supports tiled/automatic, vertical, and
+boundaries. Currently, DEVise supports tiled/automatic, vertical, and
 horizontal window layouts.
 
 A view can be removed from a window to reduce clutter, or be moved to
@@ -706,11 +700,11 @@ way viz. Horizontal or Vertical and the number of views to be stacked
 either horizontally or vertically may also be defined.
 
 When changing the window sizes, sometimes (particularly when the data
-set is large) it may be desirable to stop \Devise from redrawing the
+set is large) it may be desirable to stop DEVise from redrawing the
 graphs as the windows are altered and instead draw after all the
 changes have been done. Such a provision is provided by the Layout/
 Display button in the control panel. Toggling it to the Layout mode
-stops \Devise from redrawing any views, while the window shapes may be
+stops DEVise from redrawing any views, while the window shapes may be
 altered. After the changes are done, toggling the switch back to
 Display mode starts the activity again.
 
@@ -758,13 +752,13 @@ used by clicking on the appropriate value in the history window and
 then {\em using} it.
 
 The history mechanism also provides for {\em marking} of filters,
-that forces \Devise to store them in the buffer, in the case when the
+that forces DEVise to store them in the buffer, in the case when the
 buffer becomes full and some older filter values need to be thrown
 away.
 
 \subsection{Statistics}
 
-\Devise provides Mean, Max and Min calculations along with the Kiviat
+DEVise provides Mean, Max and Min calculations along with the Kiviat
 Graph method. These are discussed below.
 
 \subsubsection{Min, Max, and Mean}
@@ -804,7 +798,7 @@ consists of all the mappings etc. which can be applied to any data
 stream confirming to the schema. This is useful to view the data of
 different streams under the same mappings and state.
 
-The current state of the \Devise can be stored as either a session or
+The current state of the DEVise can be stored as either a session or
 as a template. The required data stream is to supplied by the user
 when opening a template.
 
@@ -864,7 +858,7 @@ CO. This name must be unique within the catalog.
 The source option indicates the source from which data is to be
 retrieved. There are 9 possible sources namely, COMPUSTAT, CRSP,
 COMMAND, NETWORK, ISSM, WWW, SQL, SEQ and UNIXFILE. The source
-determines where \Devise has to search for, in order to get the data
+determines where DEVise has to search for, in order to get the data
 for caching. The COMPUSTAT, CRSP and ISSM, by default are tape
 oriented. The WWW needs a URL to extract the data. The SEQ and SQL
 need queries to evaluate and the COMMAND option needs a valid UNIX
@@ -892,14 +886,14 @@ these are considered different.
 
 \item
 For the ISSM database, the key chosen must be the 3 alphabet code for
-the company. \Devise provides an automatic listing of the 3 digit Alpha
+the company. DEVise provides an automatic listing of the 3 digit Alpha
 codes for all the companies through the Select option.
 \end{enumerate}
 
 \subsubsection{Schema}
 
 The schema option is used to associate the correct schema for the
-stream. Remember that \Devise parses and understands the stream with
+stream. Remember that DEVise parses and understands the stream with
 the help of the schema. The schema is not actually used to retrieve
 the data, but is used when caching it on to the TData form. The schema
 must be previously defined and stored in a file, whose name is
@@ -912,7 +906,7 @@ option provided.
 
 The evaluation factor specifies the relative time at which the data
 stream is to be extracted from the specified source and cached on to
-the local disk. A evaluation factor of 100 would force \Devise to get
+the local disk. A evaluation factor of 100 would force DEVise to get
 the data from the source, as soon as the stream is defined and cache
 it. A low value of the evaluation factor delays this procedure and a
 value of 0 would postpone this to the time of actual visualization of
@@ -922,7 +916,7 @@ the stream.
 
 The cache priority indicates the priority to be given to this stream
 in the disk cache. When a large number of items are cached, the disk
-would run out of space. At this point \Devise uses the cache priority
+would run out of space. At this point DEVise uses the cache priority
 specified and removes the least priority item from the disk cache. As
 a default it is specified as 50\%.
 
@@ -997,10 +991,10 @@ window.
 
 \subsection{User and Superuser Modes}
 
-\Devise can be brought up in one of two modes --- the user mode or the
+DEVise can be brought up in one of two modes --- the user mode or the
 superuser mode.  This is decided by the value of the variable
 \variable{UserMode} defined in the \filename{.rc} file read by
-\Devise.  A value of 1 indicates that it is run in the user mode and 0
+DEVise.  A value of 1 indicates that it is run in the user mode and 0
 indicates the superuser mode.
 
 The mode determines the capabilities and presentation of the schema
@@ -1015,7 +1009,7 @@ the attributes and their high and low values (if defined). The schemas
 can also be modified, new attributes inserted, range values modified,
 etc. Entirely new schemas can also be defined.  This is an operation
 that would be performed by the superuser when a new data source (with
-a new data layout) is to be visualized through \Devise.
+a new data layout) is to be visualized through DEVise.
 
 \subsection{Schema Browsing in User Mode}
 
@@ -1163,7 +1157,7 @@ the X axis attribute for the views to be defined. The option
 automatically provides all the attributes available for
 selection. When importing a file with many logical groups the groups
 needs to be selected prior to using the Define visualization window
-(This is automatically asked for by \Devise). Hence only the attributes
+(This is automatically asked for by DEVise). Hence only the attributes
 present in the top level groups selected are displayed.
 
 \subsection{Y Attributes}
@@ -1229,7 +1223,7 @@ press use to commit it or use undo-edit to undo the change.
 
 \subsection{Filter History}
 
-\Devise maintains a filter history, which is nothing but a list of X
+DEVise maintains a filter history, which is nothing but a list of X
 and Y extremes stored in the reverse order in which they were last
 used. Users can go back to those filter values by clicking on the
 entry in the history window, and then clicking the `use' button on the
@@ -1311,7 +1305,7 @@ view to that window.
 
 To remove a view, simply click on it and then use the Remove option
 under the View menu. This removes the view visually from the window,
-but not from \Devise's memory.
+but not from DEVise's memory.
 
 \subsection{Bring a View Back}
 
@@ -1372,12 +1366,12 @@ This section deals with the manipulation of windows.
 
 The view layout may be changed by using the Window/layout option. The
 user is presented with three options viz. Automatic/ Vertical/
-Horizontal. The Horizontal mode forces \Devise to display the views
+Horizontal. The Horizontal mode forces DEVise to display the views
 side by side, whereas the Vertical mode makes it display the views one
 on top of each other. The automatic mode adjusts the layout depending
 on the dimensions of the window. If the window is long and
 lean,(longer on the horizontal direction than the vertical direction)
-then \Devise goes in for horizontal layout mode, whereas if the window
+then DEVise goes in for horizontal layout mode, whereas if the window
 is short and wide (i.e. longer on the vertical direction) it goes in
 for vertical layout.
 
@@ -1390,7 +1384,7 @@ displayed on top of one another in the horizontal layout mode.
 
 \subsection{Duplicate Window}
 
-\Devise provides a method of duplicating a window. This is available
+DEVise provides a method of duplicating a window. This is available
 under Window/Duplicate option. This duplicates the while window
 including the layout, visual filters, colors etc. This is useful in
 defining cursors and switching TData options. The new window is given
@@ -1492,7 +1486,7 @@ cursor band displayed on the corresponding views.
 
 \section{Statistics}
 
-As already explained, \Devise provides for two type of statistics
+As already explained, DEVise provides for two type of statistics
 measurement. One is the use of visual lines to represent the mean, max
 or min in the view. Another is the use of Kiviat graphs. The usage of
 these is described below.
@@ -1558,7 +1552,7 @@ mappings, window preferences, etc. In short it contains enough
 information to recreate the same screen as viewed before. When the
 user initially starts with importing the data, then creating all the
 view mappings, window styles etc., he is basically running a session
-with \Devise. The session may be saved and retrieved later in 2 ways as
+with DEVise. The session may be saved and retrieved later in 2 ways as
 described in the following sub sections.
 
 \subsection{Save Session}
@@ -1589,14 +1583,14 @@ To restore the session stored, use the open option in the session menu
 and choose the desired session. The session may be restored as a
 template, i.e. the session may be invoked as a template and by
 choosing a new data stream for the template, one can get a new
-visualization. When opening the session as a template, \Devise prompts
+visualization. When opening the session as a template, DEVise prompts
 for the data streams to be associated with the template. This is
 equivalent to storing the original session as a template and opening
 the template as explained below.
 
 \subsection{Restore Session as Template}
 
-The restoration of templates is similar and \Devise would prompt for
+The restoration of templates is similar and DEVise would prompt for
 the data streams to be chosen. The user needs to choose as many data
 streams as they were in the session that was stored as a template. The
 streams chosen must match the schema of the original streams. After
@@ -1632,18 +1626,18 @@ menu in the Control panel. There is also help available for the Data
 definition windows and some others. There is however no context
 sensitive help yet!
 
-\section{Exiting \Devise}
+\section{Exiting DEVise}
 
-To exit \Devise, use the Quit option under the Session menu. Remember
-\Devise does not confirm whether the current session is to be saved. It
+To exit DEVise, use the Quit option under the Session menu. Remember
+DEVise does not confirm whether the current session is to be saved. It
 only confirms of you do want to quit, so make sure that you have saved
-whatever relevant needs to be saved before exiting. Upon exit, \Devise
+whatever relevant needs to be saved before exiting. Upon exit, DEVise
 removes all the windows and graphs that it created during the
 sessions.
 
 \section{Internet Information Resources}
 
-The \Devise WWW page at
+The DEVise WWW page at
 \code{http://www.cs.wisc.edu/~jussi/devise/devise.html} contains a
 browseable version of this document.
 
