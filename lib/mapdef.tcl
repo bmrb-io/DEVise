@@ -1,3 +1,23 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1995
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
 # This file contains several pieces of information that are relevant while
 # generating the mapping table and while using them for visualization of
 # data
@@ -21,6 +41,6 @@ set LoadPgm(CRSP) crspcreate
 # The info for a data type A consists of a list of entries each of which is:
 # <Data type to which it is mapped B, mapping file name, index of A, index B>
 
-set "MapTable(COMPUSTAT)" {{CRSP /p/devise/dat/comp_crsp.table 0 1}}
-set "MapTable(CRSP)" {{COMPUSTAT /p/devise/dat/comp_crsp.table 1 0}}
+set "MapTable(COMPUSTAT)" {{CRSP $datadir/comp_crsp.table 0 1}}
+set "MapTable(CRSP)" {{COMPUSTAT $datadir/comp_crsp.table 1 0}}
 
