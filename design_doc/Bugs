@@ -2546,6 +2546,10 @@ Num Date        Status  Description
 			the process. (rkw)
 			(Fixed by rkw, 2/19/01.)
 
+643 02/23/01	FIXED	JavaScreen: jspop doesn't get JAVAC_Exit command
+			when JS is in CGI mode. (rkw)
+			(Fixed by rkw, 3/9/01.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
