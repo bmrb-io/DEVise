@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/01/30 00:04:58  jussi
+  Made code refer to ForegroundColor and BackgroundColor instead
+  of black and white.
+
   Revision 1.9  1996/01/17 20:54:11  jussi
   Added support for additional image export formats.
 
@@ -229,6 +233,10 @@ public:
   /* Set XOR or normal drawing mode on */
   virtual void SetXorMode() = 0;
   virtual void SetCopyMode() = 0;
+
+  /* Set normal or small font */
+  virtual void SetNormalFont() = 0;
+  virtual void SetSmallFont() = 0;
 
   /* Get window rep dimensions */
   virtual void Dimensions(unsigned int &width, unsigned int &height ) =0;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/01/31 21:35:31  jussi
+  Refined Xor stuff.
+
   Revision 1.19  1996/01/30 21:13:51  jussi
   Removed references to specific colors.
 
@@ -116,17 +119,17 @@ XWindowRep:: XWindowRep(Display *display, Window window, XDisplay *DVDisp,
   XSetState(_display, _rectGc, AllPlanes, AllPlanes, GXxor, AllPlanes);
   
   /* init temp storage for storing points */
-  _xpoints= new XPoint[20];
+  _xpoints = new XPoint[20];
   _num_points = 20;
   
   /* set default pattern to pattern 0: no stipple */
   WindowRep::SetPattern(Pattern0);
   XSetFillStyle(_display, _gc, FillSolid);
   
-  /* load font */
+  /* set normal font */
+  SetNormalFont(); 
   XFontStruct *fontStruct = ((XDisplay *)GetDisplay())->GetFontStruct();
-  XSetFont(_display, _gc, fontStruct->fid);
-  
+ 
   /* create pixmaps for character manipulation */
   _srcBitmap.inUse = false;
   _dstBitmap.inUse = false;
@@ -1268,6 +1271,20 @@ void XWindowRep::SetCopyMode()
 	    ((XDisplay *)GetDisplay())->GetLocalColor(GetBgColor()),
 	    GXcopy, AllPlanes);
 #endif
+}
+
+void XWindowRep::SetNormalFont()
+{
+  ((XDisplay *)GetDisplay())->SetNormalFont();
+  XFontStruct *fontStruct = ((XDisplay *)GetDisplay())->GetFontStruct();
+  XSetFont(_display, _gc, fontStruct->fid);
+}
+
+void XWindowRep::SetSmallFont()
+{
+  ((XDisplay *)GetDisplay())->SetSmallFont();
+  XFontStruct *fontStruct = ((XDisplay *)GetDisplay())->GetFontStruct();
+  XSetFont(_display, _gc, fontStruct->fid);
 }
 
 /**********************************************************************

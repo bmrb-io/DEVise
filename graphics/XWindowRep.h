@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/01/17 20:54:06  jussi
+  Added support for additional image export formats.
+
   Revision 1.7  1995/12/28 21:28:53  jussi
   Got rid of strings.h and stuck with string.h.
 
@@ -145,6 +148,10 @@ public:
 	/* Set XOR or normal drawing mode on */
 	virtual void SetXorMode();
 	virtual void SetCopyMode();
+
+	/* Set normal or small font */
+	virtual void SetNormalFont();
+	virtual void SetSmallFont();
 
 	/* Get window rep dimensions */
 	virtual void Dimensions(unsigned int &width, unsigned int &height );

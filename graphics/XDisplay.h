@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/01/30 00:03:28  jussi
+  Fixed spelling of void.
+
   Revision 1.6  1996/01/30 00:01:42  jussi
   Made code refer to ForegroundColor and BackgroundColor instead
   of black and white.
@@ -104,8 +107,16 @@ protected:
     /* Get stipple for pattern */
     Pixmap GetPatternStipple(Pattern p){ return _stipples[p]; };
     
-    /* get structure for font */
-    XFontStruct *GetFontStruct(){ return _fontStruct; };
+    /* get structure for fonts */
+    XFontStruct *GetFontStruct()       { return _fontStruct; };
+    XFontStruct *GetNormalFontStruct() { return _normalFontStruct; };
+    XFontStruct *GetSmallFontStruct()  { return _smallFontStruct; };
+    void SetNormalFont() {
+      _fontStruct = _normalFontStruct;
+    }
+    void SetSmallFont() {
+      _fontStruct = _smallFontStruct;
+    }
 
     /* Get width and height of X window */
     void WinDimensions(Window win,Coord &winWidth, Coord &winHeight) {
@@ -136,16 +147,18 @@ protected:
 			       Coord &realWidth, Coord &realHeight){
       Coord winWidth, winHeight;
       WinDimensions(win,winWidth, winHeight);
-      realWidth = width*winWidth;
-      realHeight = height*winHeight;
+      realWidth = width * winWidth;
+      realHeight = height * winHeight;
     }
 		
 private:
-    Display *_display;		   /* X display */
-    XWindowRepList _winList;       /* list of X windows created */
-    Pixmap _stipples[XNumBitmaps]; /* bitmaps for patterns */
-    XFontStruct *_fontStruct;      /* font used in window */
-    Color baseColor;               /* base color */
+    Display *_display;		    /* X display */
+    XWindowRepList _winList;        /* list of X windows created */
+    Pixmap _stipples[XNumBitmaps];  /* bitmaps for patterns */
+    XFontStruct *_fontStruct;       /* current font */
+    XFontStruct *_normalFontStruct; /* big font used in window */
+    XFontStruct *_smallFontStruct;  /* small font used in window */
+    Color baseColor;                /* base color */
 };
 
 #endif

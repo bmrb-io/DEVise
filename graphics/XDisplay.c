@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/01/13 20:58:38  jussi
+  Made system display the name of the base color when another
+  color is mapped to it.
+
   Revision 1.9  1996/01/10 20:59:03  jussi
   Failure to allocate all colors will now cause a base color
   (black) to be substituted.
@@ -93,12 +97,21 @@ XDisplay::XDisplay(char *name)
   /* init colors from the color manager. */
   DeviseDisplay::InitializeColors();
   
-  /* get font */
-  if (!(_fontStruct = XLoadQueryFont(_display, "7x13"))) {
-    fprintf(stderr, "XDisplay: can not load font\n");
+  /* get normal font */
+  if (!(_normalFontStruct = XLoadQueryFont(_display, "7x13"))) {
+    fprintf(stderr, "XDisplay: can not load font 7x13\n");
+    Exit::DoExit(1);
+  }
+
+  /* get small font */
+  if (!(_smallFontStruct = XLoadQueryFont(_display, "5x7"))) {
+    fprintf(stderr, "XDisplay: can not load font 5x7\n");
     Exit::DoExit(1);
   }
   
+  /* set big font to be current font */
+  _fontStruct = _normalFontStruct;
+
   /* init stipples for patterns*/
   Window win = XCreateSimpleWindow(_display, DefaultRootWindow(_display),
 				   (unsigned)0, (unsigned)0, (unsigned)10,
