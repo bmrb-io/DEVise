@@ -20,3 +20,6 @@ index:	index.o
 
 extract:	extract.o $(LIBOBJS)
 	$(CC) $(CPPFLAGS) -o $@ $@.o $(LIBOBJS) ../tape/tapedrive.o
+
+project:	project.o
+	$(CC) $(CPPFLAGS) -o $@ $@.o ../tape/tapedrive.o
