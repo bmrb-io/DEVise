@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.60  1996/02/28 18:20:33  yuc
+#	Added 2 new shapes: Block and 3DVector.
+#
 #	Revision 1.59  1996/02/25 23:03:45  jussi
 #	Default tmpdir is "tmp", not ".". See Init.c.
 #
@@ -368,9 +371,8 @@ menu .mbar.vis.menu -tearoff 0
 .mbar.vis.menu add command -label "Define" -command { MacroImport 1 }
 #.mbar.vis.menu add separator
 #.mbar.vis.menu add command -label "Sources..." -command NotImplemented
-.mbar.vis.menu add separator
-.mbar.vis.menu add cascade -label "Obsolete..." \
-	-menu .mbar.vis.menu.obsmenu
+#.mbar.vis.menu add separator
+#.mbar.vis.menu add cascade -label "Obsolete..." -menu .mbar.vis.menu.obsmenu
 
 menu .mbar.vis.menu.obsmenu -tearoff 0
 .mbar.vis.menu.obsmenu add command -label "Manual Define" -command MacroDef
@@ -402,7 +404,9 @@ menu .mbar.view.menu -tearoff 0
 .mbar.view.menu add cascade -label "Show KGraph" \
 	-menu .mbar.view.menu.kmenu
 .mbar.view.menu add separator
-.mbar.view.menu add command -label "Background..." -command DoSetBgColor
+#.mbar.view.menu add command -label "Background..." -command DoSetBgColor
+.mbar.view.menu add cascade -label "Dimensions" \
+	-menu .mbar.view.menu.dimmenu
 .mbar.view.menu add command -label "Title" -command DoSetTitle
 
 #.mbar.view.menu add command -label "Action" -command DoViewAction
@@ -471,6 +475,12 @@ menu .mbar.view.menu.kmenu -tearoff 1
 set kval 0
 set kcurr 1
 set knew 0
+
+menu .mbar.view.menu.dimmenu -tearoff 0
+.mbar.view.menu.dimmenu add command -label "Two Dimensions" \
+	-command {DoSetViewDimensions 2}
+.mbar.view.menu.dimmenu add command -label "Three Dimensions" \
+	-command {DoSetViewDimensions 3}
 
 # menu .mbar.link.menu -tearoff 0
 #.mbar.link.menu add command -label "Create" -command DoLinkCreate
