@@ -1268,6 +1268,10 @@ Num Date        Status  Description
 			source needed by a session. (rkw)
 			(Fixed by rkw 4/01/98)
 
+333 04/06/98	OPEN	Selecting Session->Collaboration->Create/Join Group
+			when DEVISE_COLLABORATOR environment variable is not
+			defined causes devised to crash. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
