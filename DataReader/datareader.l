@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/06/24 09:24:15  okan
+  *** empty log message ***
+
   Revision 1.4  1998/06/16 16:30:54  wenger
   Added standard headers to DataReader sources.
 
@@ -85,7 +88,7 @@ comment     return COMMENT_TOKEN;
 				BEGIN BRACKET;
 			}
 
-<BRACKET>\][\+]? { if (yytext[1] == '\+') {
+<BRACKET>\][\+]? { if (yytext[1] == '+') {
 					myString << '+' ;
 				}
 				myString << '\0' ;
