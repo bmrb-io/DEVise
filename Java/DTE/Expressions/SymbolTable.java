@@ -10,24 +10,21 @@ public class SymbolTable {
 	private Hashtable table;
 
 	public SymbolTable( ){
-		table = new hashTable( );
+		table = new HashTable( );
 	}
 
-	public SymbolTable( Schema schema ){
-		this( );
-		// insert Expressions from the given schema
-	}
-
-	public boolean contains(String exprStr){
+	public boolean containsKey(String exprStr){
 		return table.containsKey( exprStr );
 	}
 
-	public void insert(Expression expr){
-		if ( !table.contains( expr ) )
-			table.put( expr.toString( ), expr );
+	public void put(Expression expr){
+
+		// if ( !table.contains( expr ) )
+
+		table.put( expr.toString( ), expr );
 	}
 
-	public Expression lookup(String exprStr){
+	public Expression get(String exprStr){
 		return table.get( exprStr );	
 	}
 }
