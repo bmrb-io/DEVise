@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/01/30 21:13:51  jussi
+  Removed references to specific colors.
+
   Revision 1.18  1996/01/30 00:04:17  jussi
   Made code refer to ForegroundColor and BackgroundColor instead
   of black and white.
@@ -105,12 +108,11 @@ XWindowRep:: XWindowRep(Display *display, Window window, XDisplay *DVDisp,
   _display = display,
   _win = window;
   UpdateWinDimensions();
+
   _gc = XCreateGC(_display, window, 0, NULL);
-  _rectGc = XCreateGC(_display, window, 0, NULL); /* for rubberbanding*/
-  
-  XSetState(_display, _gc, DVDisp->GetLocalColor(fgndColor),
-	    DVDisp->GetLocalColor(bgndColor), GXcopy, AllPlanes);
-  
+  SetCopyMode();
+
+  _rectGc = XCreateGC(_display, window, 0, NULL);
   XSetState(_display, _rectGc, AllPlanes, AllPlanes, GXxor, AllPlanes);
   
   /* init temp storage for storing points */
@@ -147,8 +149,8 @@ XWindowRep:: XWindowRep(Display *display, Window window, XDisplay *DVDisp,
 
 XWindowRep::~XWindowRep()
 {
-  XFreeGC(_display,_gc);
-  XFreeGC(_display,_rectGc);
+  XFreeGC(_display, _gc);
+  XFreeGC(_display, _rectGc);
   
   FreeBitmap(_srcBitmap);
   FreeBitmap(_dstBitmap);
@@ -823,10 +825,10 @@ Draw rubberband
 
 void XWindowRep::DrawRubberband(int x1, int y1, int x2, int y2)
 {
-  int minX = MinMax::min(x1,x2);
-  int minY = MinMax::min(y1,y2);
-  int maxX = MinMax::max(x1,x2);
-  int maxY = MinMax::max(y1,y2);
+  int minX = MinMax::min(x1, x2);
+  int minY = MinMax::min(y1, y2);
+  int maxX = MinMax::max(x1, x2);
+  int maxY = MinMax::max(y1, y2);
   unsigned width = maxX - minX;
   unsigned height = maxY - minY;
   
@@ -842,7 +844,7 @@ Handle button press event. Return the region covered by
 the selection in window coordinates. 
 ***********************************************************************/
 
-void XWindowRep::DoButtonPress(int x,int y, int &xlow, int &ylow, 
+void XWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow, 
 			       int &xhigh, int &yhigh, int button)
 {
   /* grab server */
@@ -1250,7 +1252,7 @@ void XWindowRep::SetXorMode()
 #endif
 
 #ifdef GRAPHICS
-  XSetFunction(_display, _gc, GXxor);
+  XSetState(_display, _gc, AllPlanes, AllPlanes, GXxor, AllPlanes);
 #endif
 }
 
@@ -1261,7 +1263,10 @@ void XWindowRep::SetCopyMode()
 #endif
 
 #ifdef GRAPHICS
-  XSetFunction(_display, _gc, GXcopy);
+  XSetState(_display, _gc,
+	    ((XDisplay *)GetDisplay())->GetLocalColor(GetFgColor()),
+	    ((XDisplay *)GetDisplay())->GetLocalColor(GetBgColor()),
+	    GXcopy, AllPlanes);
 #endif
 }
 
