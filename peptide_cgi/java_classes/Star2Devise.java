@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2000/10/10 21:44:01  wenger
+// HA2 counts as an HA for '80% test'.
+//
 // Revision 1.14  2000/10/10 21:09:32  wenger
 // Added '80% HA test' to CSI code; did a little extra cleanup.
 //
@@ -58,7 +61,7 @@
 // bmr4267.str).
 //
 // Revision 1.5  2000/08/16 21:50:09  wenger
-// Split , summary_writercalcChemShifts into several smaller methods to make it easier to
+// Split , nummary_writercalcChemShifts into several smaller methods to make it easier to
 // deal with.
 //
 // Revision 1.4  2000/08/11 21:41:34  wenger
@@ -540,7 +543,6 @@ public class Star2Devise {
 	    throw new S2DException(
 	      "Unable to find/calculate chem shifts for " + _accNum);
 	} finally {
-	    _accNum = null;
 	    _currentDataLoop = null;
 	    _refTable = null;
 	    _error = null;
@@ -579,15 +581,7 @@ public class Star2Devise {
 	//
 	// Get save frame details and output them to the summary page.
 	//
-	VectorCheckType details = csFrame.searchByName(S2DNames.DETAILS);
-	if (details.size() == 1) {
-	    DataItemNode node = (DataItemNode)details.elementAt(0);
-            summary_writer.println("\n<br>");
-            summary_writer.println("<p><b>" + node.getValue() + "</b>");
-	} else {
-            summary_writer.println("<p><b>Details not available for this " +
-	      "save frame.</b>");
-	}
+	saveDetails(csFrame, summary_writer);
 
         summary_writer.println("<ul>");
             
@@ -712,6 +706,10 @@ public class Star2Devise {
     {
         //TEMP -- do we want that "extra" first line of deltashifts??
 	// (bmr4001.str)
+
+        if (DEBUG >= 2) {
+  	    System.out.println("Star2Devise.writeDeltashifts(" + index + ")");
+        }
 
 	//Do the shift computations here
 	FileWriter deltashift_writer = new FileWriter(_accNum +
@@ -848,7 +846,7 @@ public class Star2Devise {
       throws IOException, S2DException
     {
         if (DEBUG >= 2) {
-	    System.out.println("writeCsi()");
+	    System.out.println("Star2Devise.writeCsi(" + index + ")");
 	}
 
 	FileWriter csi_writer = new FileWriter(_accNum +
@@ -997,6 +995,9 @@ public class Star2Devise {
 
         writeDataPage(S2DNames.CSI_SUFFIX, index);
 
+        if (DEBUG >= 2) {
+  	    System.out.println("Finished CSI vals.");
+        }
     }
 
     // ----------------------------------------------------------------------
@@ -1005,6 +1006,10 @@ public class Star2Devise {
       String display_link_base)
       throws IOException, S2DException
     {
+        if (DEBUG >= 2) {
+  	    System.out.println("Star2Devise.writeAssignments(" + index + ")");
+        }
+
 	//Do the atom assignment computation here
 	int starnumH, starnumC, starnumN, numH, numC, numN;
 	  
@@ -1097,7 +1102,9 @@ public class Star2Devise {
 
 	writeDataPage(S2DNames.PERCENT_ASSIGN_SUFFIX, index);
 
-//  	System.out.println("Finished percent assignments.");
+        if (DEBUG >= 2) {
+  	    System.out.println("Finished percent assignments.");
+        }
     }
 
     // ----------------------------------------------------------------------
@@ -1214,55 +1221,68 @@ public class Star2Devise {
 		    display_link_base);
 		    
 		} else if (current_tag.equals(S2DNames.T1_RELAX)) {
+/*TEMP
 		    try {
 		        saveGeneric(the_number, S2DNames.T1_RELAX,
 		          S2DNames.RESIDUE_SEQ_CODE, S2DNames.T1_SUFFIX,
-			  null);
+			  null, summary_writer, display_link_base, null);
 		        savedRelax = true;
 		    } catch (Exception ex) {
 		        System.err.println("Exception saving T1 relaxation: "
 			  + ex.getMessage());
 		    }
+TEMP*/
 
 		} else if (current_tag.equals(S2DNames.T2_RELAX)) {
+/*TEMP
 		    try {
 		        saveGeneric(the_number, S2DNames.T2_RELAX,
 		          S2DNames.RESIDUE_SEQ_CODE, S2DNames.T2_SUFFIX,
-			  null);
+			  null, summary_writer, display_link_base, null);
 		        savedRelax = true;
 		    } catch (Exception ex) {
 		        System.err.println("Exception saving T2 relaxation: "
 			  + ex.getMessage());
 		    }
+TEMP*/
 
 		} else if (current_tag.equals(S2DNames.HETERONUCLEAR_NOE)) {
+/*TEMP
 		    try {
 		        saveGeneric(the_number, S2DNames.HETERONUCLEAR_NOE,
-		          S2DNames.RESIDUE_SEQ_CODE, "n", null);
+		          S2DNames.RESIDUE_SEQ_CODE,
+			  S2DNames.HETERONUCLEAR_NOE_SUFFIX, null,
+			  summary_writer, display_link_base, null);
 		        savedRelax = true;
 		    } catch (Exception ex) {
 		        System.err.println(
 			  "Exception saving heteronuclear NOE: " +
 			  ex.getMessage());
 		    }
+TEMP*/
 
 		// Watch out for RATE vs. RATES!!
 		} else if (current_tag.equals(S2DNames.H_EXCHANGE_RATE)) {
+/*TEMP
 		    try {
 		        saveGeneric(the_number, S2DNames.H_EXCHANGE_RATES,
-		          S2DNames.RESIDUE_SEQ_CODE, "r",
-			  S2DNames.H_EXCHANGE_RATE_VALUE);
+		          S2DNames.RESIDUE_SEQ_CODE, S2DNames.HX_RATE_SUFFIX,
+			  S2DNames.H_EXCHANGE_RATE_VALUE, summary_writer,
+			  display_link_base, null);
 		        savedHExch = true;
 		    } catch (Exception ex) {
 		        System.err.println(
 			  "Exception saving H exchange rates: " +
 			  ex.getMessage());
 		    }
+TEMP*/
 
 		} else if (current_tag.equals(S2DNames.COUPLING_CONSTANTS)) {
 		    try {
 		        saveGeneric(the_number, S2DNames.COUPLING_CONSTANTS,
-		          S2DNames.COUPLING_CONSTANT_CODE, "g", null);
+		          S2DNames.COUPLING_CONSTANT_CODE,
+			  S2DNames.COUPLING_SUFFIX, null, summary_writer,
+			  display_link_base, "Coupling Constants");
 		        savedCoupling = true;
 		    } catch (Exception ex) {
 		        System.err.println(
@@ -1271,26 +1291,33 @@ public class Star2Devise {
 		    }
 
 		} else if (current_tag.equals(S2DNames.H_EXCHANGE_PROT_FACT)) {
+/*TEMP
 		    try {
 		        saveGeneric(the_number, S2DNames.H_EXCHANGE_PROT_FACT,
-		          S2DNames.RESIDUE_SEQ_CODE, "f",
-			  S2DNames.H_EXCHANGE_PROT_FACT_VALUE);
+		          S2DNames.RESIDUE_SEQ_CODE,
+			  S2DNames.HX_PROT_FACTOR_SUFFIX,
+			  S2DNames.H_EXCHANGE_PROT_FACT_VALUE, summary_writer,
+			  display_link_base, null);
 		        savedHExch = true;
 		    } catch (Exception ex) {
 		        System.err.println(
 			  "Exception saving H exchange protection factors: " +
 			  ex.getMessage());
 		    }
+TEMP*/
 
 		} else if (current_tag.equals(S2DNames.S2_PARAMS)) {
+/*TEMP
 		    try {
 		        saveGeneric(the_number, S2DNames.S2_PARAMS,
-		          S2DNames.RESIDUE_SEQ_CODE, "s", null);
+		          S2DNames.RESIDUE_SEQ_CODE, S2DNames.S2_SUFFIX, null,
+			  summary_writer, display_link_base, null);
 		        savedS2Params = true;
 		    } catch (Exception ex) {
 		        System.err.println("Exception saving S2 parameters: "
 			  + ex.getMessage());
 		    }
+TEMP*/
 		}
 	    }
 
@@ -1305,49 +1332,6 @@ public class Star2Devise {
             if (savedChemShifts) {
 		plotsAvailable = true;
 	    }
-
-	    if (the_number.equals("4096")) { //TEMP -- current code/installation
-	      // treats 4096 as a special case
-
-	    summary_writer.println("<ul>");
-
-	    if (savedRelax) {
-		plotsAvailable = true;
-
-	        display_link = display_link_base + S2DNames.RELAX_HTML_SUFFIX;
-		summary_writer.print(display_link);
-		summary_writer.println("\">Relaxation Parameters</a>");
-	    }
-
-	    if (savedHExch) {
-		plotsAvailable = true;
-
-	        display_link = display_link_base +
-		  S2DNames.H_EXCH_HTML_SUFFIX;
-		summary_writer.print(display_link);
-		summary_writer.println("\">H-Exchange Rates</a>");
-	    }
-
-	    if (savedCoupling) {
-		plotsAvailable = true;
-
-	        display_link = display_link_base +
-		  S2DNames.COUPLING_HTML_SUFFIX;
-		summary_writer.print(display_link);
-		summary_writer.println("\">Coupling Constants</a>");
-	    }
-
-	    if (savedS2Params) {
-		plotsAvailable = true;
-
-	        display_link = display_link_base + S2DNames.ORDER_HTML_SUFFIX;
-		summary_writer.print(display_link);
-		summary_writer.println("\">Order Parameters</a>");
-	    }
-
-	    summary_writer.println("</ul>");
-
-	    } //TEMP
 
 	    if (!plotsAvailable) {
 	        summary_writer.print("<p>No DEVise plots currently" +
@@ -1655,8 +1639,9 @@ public class Star2Devise {
     //     "_Residue_seq_code"
     //   logOperand: loop value to take the logarithm of, if any (can be null)
     private void saveGeneric(String accNo, String categoryType,
-      String loopTag, String suffix, String logOperand)
-      throws S2DException
+      String loopTag, String suffix, String logOperand,
+      PrintWriter summary_writer, String display_link_base, String link_text)
+      throws S2DException, FileNotFoundException, IOException
     {
         if (DEBUG >= 2) {
             System.out.println("saveGeneric(" + categoryType + ")");
@@ -1673,14 +1658,29 @@ public class Star2Devise {
 	    SaveFrameNode saveFrame =
 	      (SaveFrameNode)saveFrames.elementAt(index);
 
-	    String indexOut;
-	    if (index == 0) {
-	        indexOut = "";
-	    } else {
-	        indexOut = String.valueOf(index);
+	    int fileIndex = index + 1;
+	    int count = outputSaveFrame(saveFrame, accNo + suffix +
+	      fileIndex + S2DNames.DAT_SUFFIX, loopTag, logOperand);
+
+	    if (link_text != null) {
+                saveDetails(saveFrame, summary_writer);
+
+                summary_writer.print("<ul>");
+
+                String display_link = display_link_base + suffix +
+	          fileIndex + S2DNames.HTML_SUFFIX;
+                summary_writer.print(display_link);
+                summary_writer.println("\">" + link_text + "</a> (" + count +
+		  ")");
+
+                summary_writer.print("</ul>");
 	    }
-	    outputSaveFrame(saveFrame, accNo + suffix + indexOut +
-	      S2DNames.DAT_SUFFIX, loopTag, logOperand);
+
+            writeDataPage(suffix, fileIndex);
+        }
+
+        if (DEBUG >= 2) {
+            System.out.println("Finished " + categoryType + " values");
         }
     }
 
@@ -1741,7 +1741,8 @@ public class Star2Devise {
     //   loopTag: a tag in the data loop we want to save, e.g.
     //     "_Residue_seq_code"
     //   logOperand: loop value to take the logarithm of, if any (can be null)
-    private static void outputSaveFrame(SaveFrameNode saveFrame,
+    // Return value: number of values output
+    private static int outputSaveFrame(SaveFrameNode saveFrame,
       String outFileName, String loopTag, String logOperand)
       throws S2DException
     {
@@ -1749,6 +1750,8 @@ public class Star2Devise {
             System.out.println("outputSaveFrame(" + saveFrame.getLabel() +
 	      ", " + outFileName + ", " + loopTag + ", " + logOperand + ")");
         }
+
+	int result = 0;
 
 	try {
 	    //
@@ -1795,6 +1798,8 @@ public class Star2Devise {
   	    theUnparser.writeOut(values, 0);
 
 	    outStream.close();
+
+	    result = values.size();
 	} catch (IOException e) {
 	    System.err.println("IOException: " + e.getMessage() );
 	    throw new S2DException("Unable to process save frame " +
@@ -1804,6 +1809,8 @@ public class Star2Devise {
 	    throw new S2DException("Unable to process save frame " +
 	      saveFrame.getLabel());
 	}
+
+        return result;
     }
 
     // ----------------------------------------------------------------------
@@ -1999,6 +2006,10 @@ public class Star2Devise {
     private void writeDataPage(String dataSuffix, int index)
       throws FileNotFoundException, IOException
     {
+	if (DEBUG >= 2) {
+	    System.out.println("Star2Devise.writeDataPage(" + dataSuffix +
+	      ", " + index + ")");
+	}
 
         String fileName = _accNum + dataSuffix + index + S2DNames.HTML_SUFFIX;
 
@@ -2098,6 +2109,7 @@ public class Star2Devise {
 	outStream.close(); //TEMP -- do we need this?
     }
 
+    // ----------------------------------------------------------------------
     private int getResidueCount() throws S2DException
     {
         if (DEBUG >= 2) {
@@ -2120,6 +2132,7 @@ public class Star2Devise {
 	return residueCount;
     }
 
+    // ----------------------------------------------------------------------
     private int getHAChemShiftCount()
     {
         if (DEBUG >= 2) {
@@ -2145,5 +2158,21 @@ public class Star2Devise {
         }
 
 	return haCsCount;
+    }
+
+    // ----------------------------------------------------------------------
+    // Save save frame details.
+    private static void saveDetails(SaveFrameNode saveFrame,
+      PrintWriter summary_writer)
+    {
+	VectorCheckType details = saveFrame.searchByName(S2DNames.DETAILS);
+	if (details.size() == 1) {
+	    DataItemNode node = (DataItemNode)details.elementAt(0);
+            summary_writer.println("\n<br>");
+            summary_writer.println("<p><b>" + node.getValue() + "</b>");
+	} else {
+            summary_writer.println("<p><b>Details not available for this " +
+	      "save frame.</b>");
+	}
     }
 }

@@ -9,7 +9,7 @@
 DEVise setSessionDesc {}
 
 # Per-session data source definitions
-DEVise dteInsertCatalogEntry . {"4096g" UNIXFILE 4096g.dat CouplingConstant /p/devise/demo/schema/schema/physical/bmrb:CouplingConstant "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"4096g1" UNIXFILE 4096g1.dat CouplingConstant /p/devise/demo/schema/schema/physical/bmrb:CouplingConstant "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb:AxisLabel /p/devise/demo/schema/schema/physical/bmrb:AxisLabel "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
 
 # Create views
@@ -104,10 +104,10 @@ DEVise createMappingClass {Coupling_constant_value_vs_Atom_two_residue_seq_code}
 DEVise createMappingClass {Label_text_vs_recId}
 
 # Create mapping instances (GData)
-DEVise create {mapping} {Coupling_constant_value_vs_Atom_one_residue_seq_code} .4096g .4096g#Coupling_constant_value_vs_Atom_one_residue_seq_code {} {$Atom_one_residue_seq_code} {$Coupling_constant_value - ($Coupling_constant_value_error / 2)} {} 7 2 0 0 2 0.1 {$Coupling_constant_value + ($Coupling_constant_value_error / 2)} {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.4096g#Coupling_constant_value_vs_Atom_one_residue_seq_code} 1
-DEVise create {mapping} {Coupling_constant_value_vs_Atom_two_residue_seq_code} .4096g .4096g#Coupling_constant_value_vs_Atom_two_residue_seq_code {} {$Atom_two_residue_seq_code} {$Coupling_constant_value - ($Coupling_constant_value_error / 2)} {} 7 1 0 0 2 0.1 {$Coupling_constant_value + ($Coupling_constant_value_error / 2)} {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.4096g#Coupling_constant_value_vs_Atom_two_residue_seq_code} 1
+DEVise create {mapping} {Coupling_constant_value_vs_Atom_one_residue_seq_code} .4096g1 .4096g1#Coupling_constant_value_vs_Atom_one_residue_seq_code {} {$Atom_one_residue_seq_code} {$Coupling_constant_value} {} 7 2 0 0 2 0.1 {$Coupling_constant_value} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.4096g1#Coupling_constant_value_vs_Atom_one_residue_seq_code} 1
+DEVise create {mapping} {Coupling_constant_value_vs_Atom_two_residue_seq_code} .4096g1 .4096g1#Coupling_constant_value_vs_Atom_two_residue_seq_code {} {$Atom_two_residue_seq_code} {$Coupling_constant_value} {} 7 1 0 0 2 0.1 {$Coupling_constant_value} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.4096g1#Coupling_constant_value_vs_Atom_two_residue_seq_code} 1
 DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 14 0 0 16 {"Sequence Number"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId} 1
 
@@ -150,8 +150,8 @@ DEVise setAxisTicks {View 3} {Y} 1
 # Put axis label into views
 
 # Insert mappings into views
-DEVise insertMapping {View 1} {.4096g#Coupling_constant_value_vs_Atom_one_residue_seq_code}
-DEVise insertMapping {View 2} {.4096g#Coupling_constant_value_vs_Atom_two_residue_seq_code}
+DEVise insertMapping {View 1} {.4096g1#Coupling_constant_value_vs_Atom_one_residue_seq_code}
+DEVise insertMapping {View 2} {.4096g1#Coupling_constant_value_vs_Atom_two_residue_seq_code}
 DEVise insertMapping {View 3} {.label#Label_text_vs_recId}
 
 # Link views
