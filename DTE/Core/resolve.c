@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/12/03 23:51:02  donjerko
+  The begining of the support for indexes, also a minor bug fix for select *.
+
   Revision 1.2  1996/11/26 02:01:48  donjerko
   Added the files that will perform aggregate functions
 
@@ -272,11 +275,11 @@ bool Operator::isIndexable(
 	SelectID ls = left->selectID();
 	SelectID rs = right->selectID();
 	ostrstream os;
-	if(ls == SELECT_ID && (rs == STRING_ID || rs == INT_ID)){
+	if(ls == SELECT_ID && rs == CONST_ID){
 		left->getPath()->display(os);
 		value = right;
 	}
-	else if(rs == SELECT_ID && (ls == STRING_ID || ls == INT_ID)){
+	else if(rs == SELECT_ID && ls == CONST_ID){
 		right->getPath()->display(os);
 		value = left;
 	}

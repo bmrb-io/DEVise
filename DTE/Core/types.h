@@ -4,6 +4,7 @@
 #include <iostream.h>
 #include <assert.h>
 #include <String.h>
+#include <string.h>
 #include <sys/types.h>
 #include <netinet/in.h>
 #include "exception.h"
@@ -301,6 +302,10 @@ class IString {
 public:
      IString() : length(0), string(NULL){}
 	IString(char* s) : length(strlen(s) + 1), string(s){}
+	IString(String* s){
+		length = s->length() + 1; 
+		string = strdup(s->chars());
+	}
      IString(char* s, int l) : length(l), string(s){}
 	char* getValue(){
 		return string;

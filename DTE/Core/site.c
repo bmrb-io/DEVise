@@ -202,8 +202,9 @@ bool IndexScan::isIndexable(BaseSelection* predicate){
 		for(int i = 0; i < index->numAttrs; i++){
 			if(index->attrNames[i] == attr){
 				cout << "Updating rtree query on att " << i;
-				cout << "with: " << opName << endl;
+				cout << "with: " << opName << " ";
 				constant->display(cout);
+				cout << endl;
 				rTreeQuery[i].update(opName, constant);
 				return true;
 			}

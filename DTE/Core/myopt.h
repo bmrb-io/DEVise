@@ -13,14 +13,13 @@
 #include "listop.h"
 
 typedef enum SelectID {
-	BASE_ID, SELECT_ID, GLOBAL_ID, OP_ID, INT_ID, PATH_ID, METHOD_ID, 
-	EXEC_ID, STRING_ID
+	BASE_ID, SELECT_ID, GLOBAL_ID, OP_ID, CONST_ID, PATH_ID, METHOD_ID, 
+	EXEC_ID,
 };
 
 class Path {
 friend class GlobalSelect;
 friend class BaseSelection;
-friend class IntegerConstant;
 friend class Operator;
 friend class PrimeSelection;
 protected:
@@ -127,6 +126,23 @@ protected:
 	Path* nextPath;
 public:
      BaseSelection(Path* np) : nextPath(np) {}
+	String toString(){
+		ostrstream os;
+		display(os);
+		char* tmp = os.str();
+		String retVal(tmp);
+		delete tmp;
+		return retVal;
+	}
+	virtual bool operator <(BaseSelection arg){
+		assert(0);
+	}
+	virtual bool operator >(BaseSelection arg){
+		assert(0);
+	}
+	virtual bool operator ==(BaseSelection arg){
+		assert(0);
+	}
      virtual void display(ostream& out, int detail = 0){
           if(nextPath){
 			out << ".";
@@ -358,12 +374,14 @@ public:
 	}
 };
 		
-class IntegerConstant : public BaseSelection {
-     int value;
+class ConstantSelection : public BaseSelection {
+	TypeID typeID;
+     Type* value;
 public:
-	IntegerConstant(int i) : BaseSelection(NULL), value(i) {}
+	ConstantSelection(TypeID typeID, Type* value) : 
+		BaseSelection(NULL), typeID(typeID), value(value) {}
 	virtual void display(ostream& out, int detail = 0){
-		out << value;
+		displayAs(out, value, typeID);
 		BaseSelection::display(out, detail);
 	}
 	virtual BaseSelection* filter(Site* site){
@@ -381,7 +399,7 @@ public:
 		}
 	}
 	virtual BaseSelection* duplicate(){
-		return new IntegerConstant(value);
+		return new ConstantSelection(typeID, value);
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to){
 		if(nextPath){
@@ -389,81 +407,18 @@ public:
 		}
 	}
      virtual SelectID selectID(){
-          return INT_ID;
+          return CONST_ID;
      }
 	virtual bool match(BaseSelection* x, Path*& upTo){
           if(!(selectID() == x->selectID())){
                return false;
           }
-		IntegerConstant* y = (IntegerConstant*) x;
-		if(value != y->value){
-			return false;
-		}
-		return BaseSelection::match(y, upTo);
-	}
-     virtual BaseSelection* enumerate(
-          String site1, List<BaseSelection*>* list1,
-          String site2, List<BaseSelection*>* list2){
-          TRY(BaseSelection::enumerate(site1, list1, site2, list2), NULL);
-		return new IntegerConstant(value);
-     }
-     virtual TypeID typify(List<Site*>* sites){
-		return "int";
-	}
-     virtual TypeID getTypeID(){
-          return "int";
-     }
-	virtual Type* evaluate(Tuple* left, Tuple* right){
-		return new IInt(value);
-	}
-	virtual int getSize(){
-		return 4;
-	}
-	virtual bool checkOrphan(){
-		return true;
-	}
-};
-
-class StringConstant : public BaseSelection {
-     String* value;
-public:
-	StringConstant(String* i) : BaseSelection(NULL), value(i) {}
-	virtual void display(ostream& out, int detail = 0){
-		out << *value;
-		BaseSelection::display(out, detail);
-	}
-	virtual BaseSelection* filter(Site* site){
-		if(nextPath){
-               nextPath->propagate(site);
-          }
-          return NULL;
-	}
-	virtual bool exclusive(Site* site){
-		if(nextPath){
-			return nextPath->exclusive(site);
-		}
-		else{
-			return true;
-		}
-	}
-	virtual BaseSelection* duplicate(){
-		String* newvalue = new String(*value);
-		return new StringConstant(newvalue);
-	}
-	virtual void collect(Site* s, List<BaseSelection*>* to){
-		if(nextPath){
-			nextPath->collect(s, to);
-		}
-	}
-     virtual SelectID selectID(){
-          return STRING_ID;
-     }
-	virtual bool match(BaseSelection* x, Path*& upTo){
-          if(!(selectID() == x->selectID())){
-               return false;
-          }
-		StringConstant* y = (StringConstant*) x;
-		if(*value != *(y->value)){
+		ConstantSelection* y = (ConstantSelection*) x;
+		TypeID tmp;
+		GeneralPtr* genPtr = getOperatorPtr("=", typeID, y->typeID, tmp);
+		assert(tmp == "bool");
+		assert(genPtr && genPtr->opPtr);
+		if(!genPtr->opPtr(value, y->value)){
 			return false;
 		}
 		return BaseSelection::match(y, upTo);
@@ -475,16 +430,16 @@ public:
 		return duplicate();
      }
      virtual TypeID typify(List<Site*>* sites){
-		return "string";
+		return typeID;
 	}
      virtual TypeID getTypeID(){
-          return "string";
+          return typeID;
      }
 	virtual Type* evaluate(Tuple* left, Tuple* right){
-		return new IString((char*) value->chars());
+		return value;		// may need to duplicate
 	}
 	virtual int getSize(){
-		return value->length();
+		return packSize(value, typeID);
 	}
 	virtual bool checkOrphan(){
 		return true;

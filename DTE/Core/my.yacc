@@ -119,10 +119,10 @@ selection :
 		$$ = new PrimeSelection(dummy, new Method($1, $3, NULL));
 	}
 	| STRING_CONST {
-		$$ = new StringConstant($1);
+		$$ = new ConstantSelection("string", new IString($1));
 	}
 	| INT {
-		$$ = new IntegerConstant($1);
+		$$ = new ConstantSelection("int", new IInt($1));
 	}
 	| '(' predicate ')' {
 		$$ = $2;
