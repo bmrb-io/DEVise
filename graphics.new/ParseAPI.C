@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/07/09 16:00:16  wenger
+  Added master version number and compile date to C++ code (also displayed
+  in the user interface); added -usage and -version command line arguments;
+  updated usage message.
+
   Revision 1.15  1996/06/27 00:01:39  jussi
   Changed number of parameters of set3DLocation.
 
@@ -270,10 +275,11 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       Camera c = view->GetCamera();
-      sprintf(result, "%d %g %g %g %g %g %g %g %g %g",
+      sprintf(result, "%d %g %g %g %g %g %g %g %g %g %d %d",
 	      c.spherical_coord,
 	      c.x_, c.y_, c.z_, c.fx, c.fy, c.fz,
-	      c._theta, c._phi, c._rho);
+	      c._theta, c._phi, c._rho,
+              c.fix_focus, c._perspective);
       control->ReturnVal(API_ACK, result);
       return 1;
     }
