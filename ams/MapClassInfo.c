@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/16 19:29:34  jussi
+  Removed references to ControlPanel::File_Alias().
+
   Revision 1.5  1995/12/14 18:45:26  jussi
   Removed #include "ViewWinVer.h".
 
@@ -45,7 +48,7 @@
 #include "Selection.h"
 #include "VisualArg.h"
 #include "Init.h"
-#include "TDataMapDispatch.h"
+#include "TDataMap.h"
 #include "DispQueryProc.h"
 #include "BufMgr.h"
 #include "Temp.h"

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/16 19:27:01  jussi
+  Removed references to ControlPanel::File_Alias().
+
   Revision 1.3  1996/05/07 21:13:10  jussi
   Renamed MappingInfo to MultiMappingInfo.
 
@@ -41,7 +44,7 @@
 #include "Selection.h"
 #include "VisualArg.h"
 #include "Init.h"
-#include "TDataMapDispatch.h"
+#include "TDataMap.h"
 #include "DispQueryProc.h"
 #include "BufMgr.h"
 #include "TDataMulti.h"

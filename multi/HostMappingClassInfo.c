@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/05/16 19:27:01  jussi
+  Removed references to ControlPanel::File_Alias().
+
   Revision 1.2  1995/12/14 19:24:17  jussi
   Added copyright notice and CVS header. Removed reference to
   ViewWinVer.h.
@@ -38,7 +41,7 @@
 #include "Selection.h"
 #include "VisualArg.h"
 #include "Init.h"
-#include "TDataMapDispatch.h"
+#include "TDataMap.h"
 #include "DispQueryProc.h"
 #include "BufMgr.h"
 #include "TDataHost.h"
