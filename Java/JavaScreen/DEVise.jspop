@@ -33,7 +33,6 @@ setenv HOSTNAME `hostname | sed -e s/\\..\*//`
 
 setenv DEVISE_ROOT		/p/devise/demo
 #setenv DEVISE_ROOT		/p/devise/wenger
-setenv DEVISE_PUB               /p/devise/public
 
 setenv DEVISE_DAT		$DEVISE_ROOT/dat
 setenv DEVISE_HOME_TABLE	$DEVISE_ROOT/schema/schema/catalog.js.dte
@@ -53,11 +52,8 @@ setenv DEVISE_WORK		/tmp/$USER-devise-work
 setenv LM_DAT			/tmp/LM/dat
 setenv LM_TMP			/tmp/LM/dat
 
-setenv DEVISE_LIB               $DEVISE_PUB/lib
+setenv DEVISE_LIB               lib
 setenv LM_LIB                   $DEVISE_LIB/LM 
-#setenv DEVISE_EXEC              $DEVISE_PUB/bin/devised
-#setenv DEVISE_EXEC              ../../solaris/generic/devised
-#setenv DEVISE_EXEC              /p/devise/wenger/tmp/hongyu/devised
 setenv DEVISE_EXEC              ./devised
 
 $DEVISE_EXEC $* -logLevel 4 -jscache 1>>& $outfile &

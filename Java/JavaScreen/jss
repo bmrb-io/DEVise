@@ -32,7 +32,8 @@ set doutfile = `echo $info | cut -d' ' -f7`
 
 # Fire up Xvfb and set DISPLAY accordingly.
 if (`hostname` == "aden.bmrb.wisc.edu") then
-  nohup Xvfb :1 -screen 0 1280x1024x8 -fp "unix/:-1" &
+  nohup Xvfb :1 -screen 0 1280x1024x8 &
+  #nohup Xvfb :1 -screen 0 1280x1024x8 -fp "unix/:-1" &
 else
   nohup /s/std/bin/Xvfb :1 -screen 0 1280x1024x8 &
   #nohup /s/std/bin/Xvfb :1 -screen 0 1024x768x8 &

@@ -21,6 +21,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  2000/12/13 22:02:03  wenger
+#  Added more paths to perl.
+#
 #  Revision 1.7  2000/12/06 19:52:40  wenger
 #  Improved comment.
 #
@@ -64,11 +67,11 @@ if ($#ARGV >= 0) {
     #TEMP -ww option in ps goofs things up; but without it we may goof
     # up if path is too long
     #TEMPopen PS, "ps -axww >& 1 |" or die "can't fork: $!";
-    open PS, "ps -ax >& 1 |" or die "can't fork: $!";
+    open PS, "ps ax >& 1 |" or die "can't fork: $!";
 } else {
     $pattern = "devised";
     # c option prevents path from being shown as part of command name
-    open PS, "ps -axc >& 1 |" or die "can't fork: $!";
+    open PS, "ps axc >& 1 |" or die "can't fork: $!";
 }
 
 while (<PS>) {
