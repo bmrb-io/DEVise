@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/05/31 15:45:25  jussi
+#  A customized Makefile.base.aix is used in AIX.
+#
 #  Revision 1.2  1996/05/22 21:00:37  jussi
 #  Merged Makefile.base.aix with Makefile.base.
 #
@@ -26,8 +29,9 @@
 
 ARCH_FLAGS   = -DAIX -I/u2/ratnakar/tcl/include -I/u2/ratnakar/tk/include
 ARCH_LDFLAGS = -L/u2/ratnakar/tcl/lib -L/u2/ratnakar/tk/lib
+ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lXaw -lXmu -lXt -lXext -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../generic
-include $(VPATH)/Makefile.base.aix
+include $(VPATH)/Makefile.base
 include $(VPATH)/Makefile.aix

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/05/22 21:05:10  jussi
+  Added HighLowShape. Added tentative version of GifImageShape.
+
   Revision 1.16  1996/05/07 16:39:09  jussi
   Added MapGAttr2TAttr() method for translating GData attributes
   to TData attributes.
@@ -163,6 +166,7 @@ public:
 protected:	
   /* convert from Tdata to Gdata. buf contains
      buffer for data. tRecs are pointers to variable size records only. */
+  /* WARNING: gdataPtr must be aligned on a double (8 byte) boundary. */
   virtual void ConvertToGData(RecId startRecId, void *buf,
 			      void **tRecs, int numRecs,
 			      void *gdataPtr);
@@ -195,6 +199,7 @@ private:
   void PrintCmd();
   
   /* Do convert to GData for simple command */
+  /* WARNING: gdataPtr must be aligned on a double (8 byte) boundary. */
   void ConvertToGDataSimple(RecId startRecId,void *buf,
 			    void **tRecs,int numRecs,void *gdataPtr);
   

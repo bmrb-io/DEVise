@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/05/31 15:41:26  jussi
+  Added support for record links.
+
   Revision 1.15  1996/05/15 16:44:42  jussi
   Added support for the new server synchronization mechanism.
 
@@ -81,8 +84,12 @@
 //#define DEBUG
 
 /* temp page to hold data for converting tdata into gdata. */
-static const int GDATA_BUF_SIZE = 51200;
-static char _gdataBuf[GDATA_BUF_SIZE];
+static const int GDATA_BUF_SIZE = 6400 * sizeof(double);
+
+// Force _gdataBuf to be aligned for doubles.  RKW 5/31/96.
+static double _gdataDoubleBuf[GDATA_BUF_SIZE / sizeof(double)];
+static char* _gdataBuf = (char *) _gdataDoubleBuf;
+
 static const int TDATA_BUF_SIZE = 40960;
 static char _tdataBuf[TDATA_BUF_SIZE];
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/05/15 16:44:52  jussi
+  Added support for the new server synchronization mechanism.
+
   Revision 1.8  1996/04/20 19:56:53  kmurli
   QueryProcFull now uses the Marker calls of Dispatcher class to call
   itself when needed instead of being continuosly polled by the Dispatcher.
@@ -119,8 +122,11 @@ rids in gdata a superset of rids in in tdata, and vice versa.
 #include "Display.h"
 
 /* temp page to hold data for converting tdata into gdata. */
-static const int GDATA_BUF_SIZE = 51200;
-static char _gdataBuf[GDATA_BUF_SIZE];
+static const int GDATA_BUF_SIZE = 6400 * sizeof(double);
+
+// Force _gdataBuf to be aligned for doubles.  RKW 5/31/96.
+static double _gdataDoubleBuf[GDATA_BUF_SIZE / sizeof(double)];
+static char* _gdataBuf = (char *) _gdataDoubleBuf;
 
 /* Get X associated with a recId */
 inline void GetX(BufMgr *mgr, TData *tdata, TDataMap *map, 	

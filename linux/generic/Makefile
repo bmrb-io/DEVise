@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/03/27 18:04:01  wenger
+#  Changes to get DEVise to compile and run on Linux.
+#
 #  Revision 1.3  1996/02/26 16:44:32  jussi
 #  Makes a statically linked executable.
 #
@@ -29,6 +32,7 @@
 
 ARCH_FLAGS   = -DLINUX -I/usr/include/tcl
 ARCH_LDFLAGS = -L/usr/lib -L/usr/X11R6/lib
+ARCH_SYSLIBS = -ltk -ltcl -lXmu -lXt -lXext -lX11 -lm
 ARCH_LDPOST  = -lSM -lICE -static
 
 VPATH = ../../generic

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/02/26 16:44:32  jussi
+#  Makes a statically linked executable.
+#
 #  Revision 1.2  1996/01/17 22:37:29  jussi
 #  Removed -static from ARCH_LDPOST.
 #
@@ -26,6 +29,7 @@
 
 ARCH_FLAGS   = -DHPUX -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/tcl/lib
+ARCH_SYSLIBS = -ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm
 ARCH_LDPOST  = -lSM -lICE -static
 
 VPATH = ../../generic
