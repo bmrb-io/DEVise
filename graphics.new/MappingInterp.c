@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/06/04 14:20:25  wenger
+  Ascii data can now be read from session files (or other files
+  where the data is only part of the file); added some assertions
+  to check for pointer alignment in functions that rely on this;
+  Makefile changes to make compiling with debugging easier.
+
   Revision 1.28  1996/05/22 21:05:09  jussi
   Added HighLowShape. Added tentative version of GifImageShape.
 
@@ -154,7 +160,8 @@ Boolean MappingInterp::IsConstCmd(char *cmd, Coord &val)
 
 /* Return the size of GData records, given command and attribute flags */
 int MappingInterp::FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
-				 int flag, int attrFlag)
+				 unsigned long int flag,
+				 unsigned long int attrFlag)
 {
   _attrList = attrList;
   int size = 0;
@@ -212,7 +219,8 @@ int MappingInterp::FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
 
 MappingInterp::MappingInterp(char *name, TData *tdata,
 			     MappingInterpCmd *cmd,
-			     int flag, int attrFlag,
+			     unsigned long int flag,
+			     unsigned long int attrFlag,
 			     VisualFlag *dimensionInfo, int numDimensions):
 	TDataMapDispatch(name, tdata, name,
 			 FindGDataSize(cmd, tdata->GetAttrList(),
@@ -222,8 +230,8 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
 			 dimensionInfo, numDimensions, true)
 {
 #ifdef DEBUG
-  printf("MappingInterp: 0x%p, %d dimensions, cmdFlag 0x%x, attrFlag 0x%x\n",
-	 this, numDimensions, flag, attrFlag);
+  printf("MappingInterp: 0x%p, %d dimensions, cmdFlag 0x%p, attrFlag 0x%p\n",
+	 this, numDimensions, (void *)flag, (void *)attrFlag);
 #endif
 
   _tclCmd = new MappingInterpCmd();
@@ -236,7 +244,7 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
     _shapes[0]  = new FullMapping_RectShape;
     _shapes[1]  = new FullMapping_RectXShape;
     _shapes[2]  = new FullMapping_BarShape;
-    _shapes[3]  = new FullMapping_PolygonShape;
+    _shapes[3]  = new FullMapping_RegularPolygonShape;
     _shapes[4]  = new FullMapping_OvalShape;
     _shapes[5]  = new FullMapping_VectorShape;
     _shapes[6]  = new FullMapping_BlockShape;
@@ -244,7 +252,10 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
     _shapes[8]  = new FullMapping_HorLineShape;
     _shapes[9]  = new FullMapping_SegmentShape;
     _shapes[10] = new FullMapping_HighLowShape;
-    _shapes[11] = new FullMapping_GifImageShape;
+    _shapes[11] = new FullMapping_PolylineShape;
+    _shapes[12] = new FullMapping_GifImageShape;
+    _shapes[13] = new FullMapping_PolylineFileShape;
+    _shapes[14] = new FullMapping_TextLabelShape;
 
     _interp = Tcl_CreateInterp();
     if (!_interp || Tcl_Init(_interp) == TCL_ERROR) {
@@ -290,8 +301,11 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
     SetDimensionInfo(new VisualFlag(VISUAL_X), 1);
 }
 
-void MappingInterp::ChangeCmd(MappingInterpCmd *cmd, int flag, int attrFlag,
-			      VisualFlag *dimensionInfo, int numDimensions)
+void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,
+			      unsigned long int flag,
+			      unsigned long int attrFlag,
+			      VisualFlag *dimensionInfo,
+			      int numDimensions)
 {
   _cmd = cmd;
   _cmdFlag = flag;
@@ -310,7 +324,8 @@ void MappingInterp::ChangeCmd(MappingInterpCmd *cmd, int flag, int attrFlag,
 }
 
 /* Get current commands */
-MappingInterpCmd *MappingInterp::GetCmd(int &cmdFlag, int &attrFlag)
+MappingInterpCmd *MappingInterp::GetCmd(unsigned long int &cmdFlag,
+					unsigned long int &attrFlag)
 {
   cmdFlag = _cmdFlag;
   attrFlag = _cmdAttrFlag;
@@ -333,13 +348,19 @@ AttrInfo *MappingInterp::MapGAttr2TAttr(char *attrName)
   Boolean isSorted;
   Boolean simpleCmd = false;
 
-  if (!strcmp(attrName, "x"))
+  if (!strcmp(attrName, "x")) {
+    if (!(_cmdFlag & MappingCmd_X))
+      return 0;
     simpleCmd = ConvertSimpleCmd(_cmd->xCmd, entry, attrType, isSorted);
-  else if (!strcmp(attrName, "y"))
+  } else if (!strcmp(attrName, "y")) {
+    if (!(_cmdFlag & MappingCmd_Y))
+      return 0;
     simpleCmd = ConvertSimpleCmd(_cmd->yCmd, entry, attrType, isSorted);
-  else if (!strcmp(attrName, "z"))
+  } else if (!strcmp(attrName, "z")) {
+    if (!(_cmdFlag & MappingCmd_Z))
+      return 0;
     simpleCmd = ConvertSimpleCmd(_cmd->zCmd, entry, attrType, isSorted);
-  else
+  } else
     return 0;
 
   if (simpleCmd && entry.cmdType == MappingSimpleCmdEntry::AttrCmd)
