@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1996/09/13 23:06:06  guangshu
+  Added saveDisplayImageAndMap for saving map files.
+
   Revision 1.30  1996/09/10 20:07:24  wenger
   High-level parts of new PostScript output code are in place (conditionaled
   out for now so that the old code is used until the new code is fully
@@ -1429,6 +1432,16 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
+    if (!strcmp(argv[0], "saveDisplayView")) {
+      DisplayExportFormat format = POSTSCRIPT;
+      if (!strcmp(argv[1], "eps"))
+	 format = EPS;
+      else if (!strcmp(argv[1], "gif"))
+	 format = GIF;
+      DeviseDisplay::DefaultDisplay()->ExportView(format, argv[2]);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
     if (!strcmp(argv[0], "saveTdata")) {
       TData *tdata = (TData *)classDir->FindInstance(argv[1]);
       if (!tdata) {
@@ -1456,7 +1469,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
         return -1;
       }
       FILE *fp = fdopen(control->getFd(), "wb");
-      DeviseDisplay::DefaultDisplay()->ExportGIF(fp);
+      DeviseDisplay::DefaultDisplay()->ExportGIF(fp, 0);
       close(control->getFd());
       control->ReturnVal(API_ACK, "done");
       return 1;
