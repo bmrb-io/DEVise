@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/05/11 01:53:34  jussi
+  Condensed the code by removing some unnecessary Tcl/Tk parts
+  which are not used by the server. Changed the client-server
+  protocol somewhat.
+
   Revision 1.1  1996/05/09 18:14:39  kmurli
   Modified Group.C and GroupDir.C to include an oiverloaded functions for
   get_items, subitems to take in a char * instead of Tcp_interp *. This
@@ -36,15 +41,13 @@
 #include "Dispatcher.h"
 #include "Control.h"
 #include "ViewCallback.h"
-
-#ifdef SUN
-#include "missing.h"
-#endif
-
-enum FLAG { ERROR, OK };
+#include "GroupDir.h"
+#include "ParseAPI.h"
 
 class View;
 class MapInterpClassInfo;
+
+extern GroupDir *gdir;
 
 class ServerAPI: public ControlPanel, public DispatcherCallback,
                  private ViewCallback
@@ -54,17 +57,15 @@ public:
 
   virtual void SelectView(View *view);
 
-  /* Get current mode */
-  virtual Mode GetMode();
-
-  /* Set busy status, should be called in pairs. */
+  /* Get/set busy status. */
   virtual void SetBusy();
   virtual void SetIdle();
-
-  /* Get current busy status */
   virtual Boolean IsBusy();
 
-  virtual void StartSession();
+  /* Start/restart session */
+  virtual void StartSession() {}
+  virtual void DestroySessionData();
+  virtual void RestartSession();
 
   /* Execute script */
   virtual void ExecuteScript(char *script);
@@ -72,21 +73,37 @@ public:
   /* Abort program */
   virtual void DoAbort(char *reason);
 
+  /* Get GroupDir info */
+  virtual GroupDir *GetGroupDir() { return gdir; }
+
+  /* Get MapInterpClassInfo info */
+  virtual MapInterpClassInfo *GetInterpProto() { return _interpProto; }
+
 protected:
   virtual void SubclassInsertDisplay(DeviseDisplay *disp,
 				     Coord x, Coord y,
-				     Coord w, Coord h);
-  virtual void SubclassRegisterView(View *view);
-  virtual void SubclassUnregisterView(View *view);
-  virtual void SubclassDoInit();
+				     Coord w, Coord h) {}
+  virtual void SubclassRegisterView(View *view) {}
+  virtual void SubclassUnregisterView(View *view) {}
+  virtual void SubclassDoInit() {}
   virtual void SubclassDoViewPerspectiveChanged(View *view,
 						Coord x, Coord y,
-						Coord w, Coord h);
+						Coord w, Coord h) {}
 
-  int ReadSocket();
+private:
+  virtual void FilterAboutToChange(View *view) {}
+  virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
+  virtual void ViewCreated(View *view);
+  virtual void ViewDestroyed(View *view);
+
+  char *DispatchedName() { return "ServerAPI"; }
+  virtual void Run();
+
+  int _busy;
+  static MapInterpClassInfo *_interpProto;
+
   int GotoConnectedMode();
-  void GotoDisconnectedMode();
-  void DestroyClientData();
+  int ReadSocket();
 
   int _listenFd;                        // socket for listening for clients
 
@@ -94,34 +111,17 @@ protected:
   int _controlFd;                       // socket for back channel
   struct sockaddr_in _client_addr;      // address of client
 
-  int _busy;                  /* >0 if system is busy processing queries */
+  int _replicate;                       // number of servers to replicate to
 
-private:
-  virtual void FilterAboutToChange(View *view) {}
-  virtual void FilterChanged(View *view, VisualFilter &filter,
-			     int flushed);
-  virtual void ViewCreated(View *view);
-  virtual void ViewDestroyed(View *view);
-
-  virtual int ControlCmd(int argc, char *argv[]);
-
-  char *DispatchedName() {
-    return "ServerAPI";
-  }
-  virtual void Run();
-
-  static ControlPanel::Mode _mode;
-  static MapInterpClassInfo *_interpProto; /* proto interpreted mapping */
-
-  virtual int Send(int fd, enum FLAG flag, int bracket,
-			 int argc, char **argv);
-  virtual int SendClient(enum FLAG flag, char *result) {
+  virtual int Send(int fd, int flag, int bracket,
+		   int argc, char **argv);
+  virtual int ReturnVal(int flag, char *result) {
     return Send(_socketFd, flag, 0, 1, &result);
   }
-  virtual int SendClient(int argc, char **argv) {
-    return Send(_socketFd, OK, 1, argc, argv);
+  virtual int ReturnVal(int argc, char **argv) {
+    return Send(_socketFd, API_OK, 1, argc, argv);
   }
-  virtual int SendControl(enum FLAG flag, char *result) {
+  virtual int SendControl(int flag, char *result) {
     if (_controlFd < 0)
       return 1;
     return Send(_controlFd, flag, 0, 1, &result);
@@ -129,10 +129,10 @@ private:
   virtual int SendControl(int argc, char **argv) {
     if (_controlFd < 0)
       return 1;
-    return Send(_controlFd, OK, 1, argc, argv);
+    return Send(_controlFd, API_OK, 1, argc, argv);
   }
-
-  const int SERV_PORT_NUM = 6100;
 };
+
+const int DefaultDevisePort = 6100;
 
 #endif
