@@ -1,4 +1,4 @@
-#! /bin/csh -f
+#! /bin/csh
 
 ############################################################
 
@@ -10,36 +10,49 @@
 
 ############################################################
 
-# Set output file name according to ID string (if any).
-set joutfile = "jss.out"
-set doutfile = "devised.out"
+# Set log file names according to ID string (if any).
+set idStr = ""
 foreach arg ($argv[*])
-  if ($arg == "-idregular") then
-    set joutfile = "jss.out.regular"
-    set doutfile = "devised.out.regular"
+  if (xxx$arg == "xxx-idregular") then
+    set idStr = "regular"
     break
-  else if ($arg == "-idsoil") then
-    set joutfile = "jss.out.soil"
-    set doutfile = "devised.out.soil"
+  else if (xxx$arg == "xxx-idsoil") then
+    set idStr = "soil"
     break
-  else if ($arg == "-idtest") then
-    set joutfile = "jss.out.test"
-    set doutfile = "devised.out.test"
+  else if (xxx$arg == "xxx-idtest") then
+    set idStr = "test"
     break
   endif
 end
 
-nohup /s/std/bin/Xvfb :1 -screen 0 1280x1024x8 &
-#nohup Xvfb :1 -screen 0 1280x1024x8 -fp "unix/:-1" &
-#nohup /s/std/bin/Xvfb :1 -screen 0 1024x768x8 &
+set info = `ports+files $idStr`
+set joutfile = `echo $info | cut -d' ' -f6`
+set doutfile = `echo $info | cut -d' ' -f7`
+
+
+# Fire up Xvfb and set DISPLAY accordingly.
+if (`hostname` == "aden.bmrb.wisc.edu") then
+  nohup Xvfb :1 -screen 0 1280x1024x8 -fp "unix/:-1" &
+else
+  nohup /s/std/bin/Xvfb :1 -screen 0 1280x1024x8 &
+  #nohup /s/std/bin/Xvfb :1 -screen 0 1024x768x8 &
+endif
+
 setenv DISPLAY unix:1.0
+
 
 # Make sure Xvfb gets going before starting the jss.
 sleep 10
 
+
+# Re-initialize the log files.
 \rm -f $joutfile
 \rm -f $doutfile
 touch $joutfile
 touch $doutfile
 
-nohup java jss -debug $* >& $joutfile &
+
+# Note: I would also like to save stderr to the log file here, but
+# for some strange reason that goofs up everything when this script is
+# run via rsh.  RKW 2000-12-08.
+nohup java jss -debug $* > $joutfile &

@@ -1,1 +1,1 @@
-5,15,25,35,45,55 * * * * cd /usr/people/zoo/devise/js.installed; ./run_check_jspop
+5,15,25,35,45,55 * * * * cd /usr/people/zoo/devise/js.installed; ./run_check regular aden /p/devise/js.installed

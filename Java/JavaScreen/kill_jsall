@@ -11,7 +11,7 @@
 ############################################################
 
 if ($#argv > 1) then
-  echo "Usage: kill_all [id_string]"
+  echo "Usage: kill_jsall [id_string]"
   exit
 endif
 

@@ -1,0 +1,52 @@
+#! /bin/csh
+
+############################################################
+
+# Check all JavaScreen-related processes and restart them
+# if necessary.
+
+#-----------------------------------------------------------
+
+# $Id$
+
+############################################################
+
+# Check the arguments.
+if ($#argv == 2 || $#argv > 3) then
+  echo "Usage: check_jsall [id_string [jss_host jss_path]]"
+  exit
+endif
+
+set idStr = "regular"
+if ($#argv >= 1) then
+  set idStr = $argv[1]
+endif
+
+set jssHost = ""
+set jssPath = ""
+if ($#argv >= 3) then
+  set jssHost = $argv[2]
+  set jssPath = $argv[3]
+endif
+
+
+# Check whether all of the processes are running.
+set popCheck = `check_jspop $idStr`
+if ($jssHost == "") then
+  set jssCheck = `check_jss $idStr`
+else
+  set jssCheck = `rsh $jssHost "cd $jssPath; check_jss $idStr"`
+endif
+
+set date = `date`
+if ($popCheck != "OK") then
+  echo "No jspop process found (at $date)"
+endif
+
+if ($jssCheck != "OK") then
+  echo "No jss/devised processes found (at $date)"
+endif
+
+if ($popCheck != "OK" || $jssCheck != "OK") then
+  restart_jspop $idStr $jssHost $jssPath
+endif

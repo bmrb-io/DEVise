@@ -1,0 +1,68 @@
+#! /bin/csh -f
+
+############################################################
+
+# Define ports and log files for JavaScreen-related processes.
+
+# Note: if port values are changed here, the appropriate html
+# files must also be changed so that the client tries to connect
+# to the correct ports.
+
+#-----------------------------------------------------------
+
+# $Id$
+
+############################################################
+
+if ($#argv > 1) then
+  echo "Usage: ports+files [id_string]"
+  echo "Output: <cmd_port> <img_port> <pop_port> <jss_port> <pop_file> <jss_file> <devised_file>"
+  exit
+endif
+
+set idStr = ""
+if ($#argv == 1) then
+  set idStr = $argv[1]
+endif
+
+# "Standard" values.  Note: these should correspond to the values in
+# DEViseGlobals.java.
+set cmdPort = 6666
+set imgPort = 6644
+set popPort = 1689
+set jssPort = 1688
+set pFile = "jspop.out"
+set sFile = "jss.out"
+set dFile = "devised.out"
+
+if ($idStr == "") then
+  # Leave "standard" values alone.
+
+else
+  if ($idStr == "regular") then
+    # Use "standard" port numbers.
+
+  else if ($idStr == "soil") then
+    set cmdPort = 5966
+    set imgPort = 5944
+    set popPort = 8922
+    set jssPort = 7911
+
+  else if ($idStr == "test") then
+    set cmdPort = 6266
+    set imgPort = 6244
+    set popPort = 8822
+    set jssPort = 7811
+
+  else
+    #TEMP -- needs to go to stderr
+    #echo "Warning: unrecognized ID string; using standard port numbers"
+
+  endif
+
+  set pFile = $pFile.$idStr
+  set sFile = $sFile.$idStr
+  set dFile = $dFile.$idStr
+endif
+
+echo "$cmdPort $imgPort $popPort $jssPort $pFile $sFile $dFile"

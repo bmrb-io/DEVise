@@ -1,4 +1,4 @@
-#! /bin/csh -f
+#! /bin/csh
 
 ############################################################
 
@@ -10,22 +10,34 @@
 
 ############################################################
 
-# Set output file name according to ID string (if any).
-set outfile = "jspop.out"
+# Set log file name according to ID string (if any).
+set idStr = ""
 foreach arg ($argv[*])
-  if ($arg == "-idregular") then
-    set outfile = "jspop.out.regular"
+  if (xxx$arg == "xxx-idregular") then
+    set idStr = "regular"
     break
-  else if ($arg == "-idsoil") then
-    set outfile = "jspop.out.soil"
+  else if (xxx$arg == "xxx-idsoil") then
+    set idStr = "soil"
     break
-  else if ($arg == "-idtest") then
-    set outfile = "jspop.out.test"
+  else if (xxx$arg == "xxx-idtest") then
+    set idStr = "test"
     break
   endif
 end
 
+set info = `ports+files $idStr`
+set outfile = `echo $info | cut -d' ' -f5`
+
+
+if (`hostname` == "yola") then
+  unsetenv DISPLAY
+  unsetenv LD_LIBRARY_PATH
+endif
+
+
+# Re-initialize the log file.
 \rm -f $outfile
 touch $outfile
+
 
 nohup java jspop -debug $* >& $outfile &

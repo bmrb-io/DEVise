@@ -1,4 +1,4 @@
-#! /bin/csh -f
+#! /bin/csh
 
 ############################################################
 
@@ -11,16 +11,20 @@
 ############################################################
 
 # Set output file name according to ID string (if any).
-set outfile = "devised.out"
+set idStr = ""
 @ index = 0
 while ($index < $#argv)
-  if ($argv[$index] == "-id") then
+  if (xxx$argv[$index] == "xxx-id") then
     @ next = $index + 1
-    set outfile = $outfile.$argv[$next]
+    set idStr = $argv[$next]
     break
   endif
   @ index = $index + 1
 end
+
+set info = `ports+files $idStr`
+set outfile = `echo $info | cut -d' ' -f7`
+
 
 # For Tasvir and EmbeddedTk.
 set path = ( $path /p/devise/public/bin )

@@ -1,0 +1,15 @@
+#! /s/std/bin/perl
+
+############################################################
+
+# Reports current timestamp (seconds since the epoch).  This
+# is used to generate names for renamed log files.
+
+#-----------------------------------------------------------
+
+# $Id$
+
+############################################################
+
+$timestamp = time();
+print "$timestamp\n";

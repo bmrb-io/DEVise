@@ -1,0 +1,1 @@
+37 * * * * (cd /p/devise/wenger/devise.dev2/Java/JavaScreen; /s/std/bin/runauth ./run_check test tiger /p/devise/wenger/devise.dev2/Java/JavaScreen)

@@ -1,0 +1,68 @@
+#! /bin/csh
+
+############################################################
+
+# Kills jss and devised(s) (with the given ID string, if any),
+# and starts a new jss (with the given ID string, if any).
+
+#-----------------------------------------------------------
+
+# $Id$
+
+############################################################
+
+# Check the arguments.
+if ($#argv > 2) then
+  echo "Usage: restart_jss [id_string [jspop_host]]"
+  exit
+endif
+
+set idStr = "regular"
+if ($#argv >= 1) then
+  set idStr = $argv[1]
+endif
+
+set jspopHost = ""
+if ($#argv >= 2) then
+  set jspopHost = $argv[2]
+endif
+
+
+# Get the port numbers and log file names.
+set info = `ports+files $idStr`
+set popPort = `echo $info | cut -d' ' -f3`
+set jssPort = `echo $info | cut -d' ' -f4`
+set jssFile = `echo $info | cut -d' ' -f6`
+set dFile = `echo $info | cut -d' ' -f7`
+
+
+echo "Restarting jss and associated processes on `hostname`."
+
+
+# Kill the existing processes.
+jss.kill -id$idStr
+DEVise.kill -id $idStr
+
+
+# Rename the log files.
+set timestamp = `get_timestamp`
+set jssFile_new = $jssFile.$timestamp
+set dFile_new = $dFile.$timestamp
+echo "Saving log files as $jssFile_new and $dFile_new"
+mv $jssFile $jssFile_new
+mv $dFile $dFile_new
+
+
+# Start a new jss.
+sleep 5
+
+set hostArg = ""
+if ($jspopHost != "") then
+  set hostArg = "-jspophost$jspopHost"
+endif
+
+set scriptArg = ""
+if ($idStr == "soil") then
+  set scriptArg = "-devisescriptDEVise.jspop_soil"
+endif
+jss -id$idStr $hostArg -jssport$jssPort -jspopport$popPort $scriptArg
