@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/09/23 19:58:19  wenger
+  Opening and saving of sessions now working with new scheme of mapping
+  automatically creating the appropriate TData.
+
   Revision 1.14  1997/08/21 21:04:50  donjerko
   Implemented view materialization
 
@@ -85,7 +89,7 @@ char* executeQuery(const string& query){
 		return NULL;
 	}
 	TRY(const TypeID* typeIDs = engine.getTypeIDs(), NULL);
-	WritePtr* writePtrs = newWritePtrs(typeIDs, numFlds);
+	TRY(WritePtr* writePtrs = newWritePtrs(typeIDs, numFlds), NULL);
 	assert(writePtrs);
 	engine.initialize();
 	ostrstream out;

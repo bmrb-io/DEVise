@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.55  1997/09/17 02:35:01  donjerko
+# *** empty log message ***
+#
 # Revision 1.54  1997/09/05 22:19:07  donjerko
 # *** empty log message ***
 #
@@ -1026,8 +1029,9 @@ site.o: /s/gcc/lib/g++-include/streambuf.h /s/gcc/lib/g++-include/libio.h
 site.o: /s/gcc/lib/g++-include/algobase.h /s/gcc/lib/g++-include/pair.h
 site.o: /s/gcc/lib/g++-include/bool.h /s/gcc/lib/g++-include/iterator.h
 site.o: /s/gcc/lib/g++-include/function.h /s/gcc/lib/g++-include/tree.h
-site.o: /s/gcc/lib/g++-include/projectn.h /s/gcc/lib/g++-include/algo.h
-site.o: ../RTree/tools/heap.h /s/gcc/lib/g++-include/tempbuf.h
+site.o: /s/gcc/lib/g++-include/projectn.h /s/gcc/lib/g++-include/algorithm
+site.o: /s/gcc/lib/g++-include/algo.h ../RTree/tools/heap.h
+site.o: /s/gcc/lib/g++-include/tempbuf.h
 types.o: ../../unidata/sysdep.h /usr/include/varargs.h
 types.o: /usr/include/sys/va_list.h types.h /s/gcc/lib/g++-include/string
 types.o: /s/gcc/lib/g++-include/std/string.h

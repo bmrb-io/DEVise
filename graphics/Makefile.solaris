@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.72  1997/09/17 02:36:27  donjerko
+# *** empty log message ***
+#
 # Revision 1.71  1997/08/28 18:23:17  wenger
 # Re-made solaris dependencies.
 #
@@ -268,6 +271,13 @@ DaliPatron.o: /usr/include/sys/byteorder.h /usr/include/stdio.h
 DaliPatron.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 DaliPatron.o: /usr/include/string.h /usr/include/unistd.h
 DaliPatron.o: /usr/include/errno.h /usr/include/sys/errno.h Dali.h
+DepMgr.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+DepMgr.o: /usr/include/sys/va_list.h DepMgr.h /usr/include/sys/types.h
+DepMgr.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+DepMgr.o: /usr/include/sys/select.h /usr/include/sys/time.h
+DepMgr.o: /usr/include/time.h Dispatcher.h DeviseTypes.h
+DepMgr.o: /usr/include/values.h DevStatus.h DList.h Exit.h Journal.h
+DepMgr.o: VisualArg.h Color.h Pattern.h
 DevError.o: DevError.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DevError.o: /usr/include/sys/va_list.h /usr/include/errno.h
 DevError.o: /usr/include/sys/errno.h DeviseTypes.h /usr/include/values.h
@@ -562,6 +572,13 @@ Parse.o: /usr/include/ctype.h /usr/include/time.h /usr/include/sys/types.h
 Parse.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 Parse.o: /usr/include/sys/select.h /usr/include/sys/time.h Init.h
 Parse.o: DeviseTypes.h /usr/include/values.h DevStatus.h BufPolicy.h Exit.h
+Scheduler.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+Scheduler.o: /usr/include/sys/va_list.h Scheduler.h /usr/include/sys/types.h
+Scheduler.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+Scheduler.o: /usr/include/sys/select.h /usr/include/sys/time.h
+Scheduler.o: /usr/include/time.h Dispatcher.h DeviseTypes.h
+Scheduler.o: /usr/include/values.h DevStatus.h DList.h Exit.h Journal.h
+Scheduler.o: VisualArg.h Color.h Pattern.h
 Selection.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 Selection.o: /usr/include/stdio.h /usr/include/sys/va_list.h Selection.h
 Selection.o: View.h Dispatcher.h /usr/include/sys/types.h
@@ -712,7 +729,7 @@ View.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 View.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 View.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 View.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-View.o: ../graphics.new/VisualLink.h
+View.o: ../graphics.new/VisualLink.h Scheduler.h DepMgr.h
 ViewWin.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ViewWin.o: /usr/include/sys/va_list.h /usr/include/string.h
 ViewWin.o: /usr/include/errno.h /usr/include/sys/errno.h ViewWin.h DList.h

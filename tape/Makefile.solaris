@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.38  1997/08/28 18:23:31  wenger
+# Re-made solaris dependencies.
+#
 # Revision 1.37  1997/03/28 16:12:53  wenger
 # Added headers to all source files that didn't have them; updated
 # solaris, solsparc, and hp dependencies.
@@ -65,6 +68,7 @@ Templates.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 Templates.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 Templates.o: /usr/include/sys/byteorder.h ../graphics.new/GData.h
 Templates.o: ../graphics.new/RangeList.h ../graphics.new/RangeInfo.h
+Templates.o: ../graphics/Scheduler.h
 devtype.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 devtype.o: /usr/include/sys/stat.h /usr/include/sys/time.h
 devtype.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
