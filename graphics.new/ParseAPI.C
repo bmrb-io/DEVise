@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/07/20 18:49:09  jussi
+  Added getViewSolid3D and setViewSolid3D commands.
+
   Revision 1.20  1996/07/18 01:16:53  jussi
   Added saveDisplayImage command.
 
@@ -819,6 +822,17 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, result);
       return 1;
     }
+    if (!strcmp(argv[0], "getViewXYZoom")) {
+      View *vg = (View *)classDir->FindInstance(argv[1]);
+      if (!vg) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      /* Return setting of XY or X/Y zoom */
+      sprintf(result, "%d", (vg->IsXYZoom() ? 1 : 0));
+      control->ReturnVal(API_ACK, result);
+      return 1;
+    }
     if (!strcmp(argv[0], "getViewOverrideColor")) {
       View *view = (View *)classDir->FindInstance(argv[1]);
       if (!view) {
@@ -935,6 +949,17 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       }
       /* Set solid or wireframe 3D objects */
       vg->SetSolid3D(atoi(argv[2]) ? true : false);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+    if (!strcmp(argv[0], "setViewXYZoom")) {
+      View *vg = (View *)classDir->FindInstance(argv[1]);
+      if (!vg) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      /* Set XY or X/Y zoom */
+      vg->SetXYZoom(atoi(argv[2]) ? true : false);
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
