@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.70  1998/02/24 22:55:26  beyer
+  Fixed histogram session restore bug.
+
   Revision 1.69  1998/02/20 06:17:15  beyer
   resurected histograms
 
@@ -318,6 +321,7 @@
 #include "AssoArray.h"
 
 #include "MappingInterp.h"
+#include "CountMapping.h"
 
 #define STEP_SIZE 20
 
@@ -459,6 +463,12 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
   _gdsParams.file = NULL;
   _gdsParams.sendText = true;
   _gdsParams.separator = ' ';
+
+  _countMapping = NULL;
+#if 0 // TEMP: This is for testing only; remove it when "count mapping" GUI is
+      // added.
+  _countMapping = new CountMapping(CountMapping::AttrY, CountMapping::AttrX);
+#endif
 }
 
 ViewGraph::~ViewGraph(void)
@@ -509,6 +519,7 @@ ViewGraph::~ViewGraph(void)
     delete _gdsParams.file;
     delete _gds;
 	delete queryCallback;
+	delete _countMapping;
 }
 
 //******************************************************************************
@@ -1488,6 +1499,11 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
     DoneMappingIterator(_index);
     _map = 0;
     _index = -1;
+  }
+
+  if (_countMapping) {
+    DevStatus result = _countMapping->Init(this);
+    DOASSERT(result.IsComplete(), "Initialization of CountMapping failed");
   }
 }
 

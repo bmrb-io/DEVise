@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.26  1998/02/19 23:25:18  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
   Revision 1.25  1997/11/24 23:15:20  weaver
   Changes for the new ColorManager.
 
@@ -130,11 +138,7 @@
 #ifndef TDataMap_h
 #define TDataMap_h
 
-#include <stdio.h>
-
 #include "DeviseTypes.h"
-#include "Exit.h"
-#include "DList.h"
 #include "Pattern.h"
 #include "ShapeID.h"
 #include "VisualArg.h"
@@ -142,7 +146,6 @@
 #include "GDataRec.h"
 #include "AttrList.h"
 
-//#include "ViewGraph.h"
 #include "Color.h"
 #include "XColor.h"
 #include "Coloring.h"

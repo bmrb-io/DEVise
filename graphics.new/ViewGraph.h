@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1998/02/20 06:17:16  beyer
+  resurected histograms
+
   Revision 1.44  1998/02/10 21:13:17  wenger
   Changed signatures of ReturnGData() in QueryCallback and its subclasses
   to pass back lists of records drawn (not implemented yet); moved
@@ -253,6 +256,7 @@ DefineDList(BStatList, BasicStats *)
 
 class TDataMap;
 class RecordLink;
+class CountMapping;
 
 struct MappingInfo {
   TDataMap *map;
@@ -502,6 +506,8 @@ class ViewGraph : public View
   int          _index;
 
   BStatList    _blist;  // Keep a list of BasicStats so we can delete them.
+
+  CountMapping *_countMapping;
 
  private:
   Boolean ToRemoveStats(char *oldset, char *newset);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/02/20 06:17:14  beyer
+  resurected histograms
+
   Revision 1.3  1998/02/13 15:51:36  wenger
   Changed ViewData to be based on old ViewScatter class instead of
   TDataViewX; ViewData now returns a list of the records drawn to
@@ -31,6 +34,7 @@
 #include "Util.h"
 #include "RecordLink.h"
 #include "BooleanArray.h"
+#include "CountMapping.h"
 
 //#define DEBUG
 
@@ -114,6 +118,11 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	char *dataP = (char *) gdata;
 	SymbolInfo *symArray = new SymbolInfo[numGData];
 	for (int recNum = 0; recNum < numGData; recNum++) {
+      if (_countMapping) {
+	    DevStatus result = _countMapping->ProcessRecord(dataP);
+		DOASSERT(result.IsComplete(), "CountMapping::ProcessRecord() failed");
+	  }
+
 	  Coord x = symArray[recNum].x = ShapeGetX(dataP, mapping, offset);
 	  Coord y = symArray[recNum].y = ShapeGetY(dataP, mapping, offset);
 	  ShapeID shape = symArray[recNum].shape = GetShape(dataP, mapping, offset);

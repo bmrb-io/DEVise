@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.37  1998/02/26 18:55:42  wenger
+# Got everything to compile on haha -- still have a link problem, though.
+#
 # Revision 1.36  1998/02/19 23:25:51  wenger
 # Improved color library and got client/server test code to work
 # (except for setting colors by RGB): reduced compile interdependencies,
@@ -130,7 +133,6 @@ all: date
 
 clean mostlyclean:
 	for i in $(MODULES); do echo -- $$i; cd $$i; make $@; cd ..; done
-	-rm ../src/include/*.h
 
 date:
 	cd generic; make CompDate.o

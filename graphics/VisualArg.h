@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/12/16 17:53:53  zhenhai
+  Added OpenGL features to graphics.
+
   Revision 1.6  1997/11/24 23:14:37  weaver
   Changes for the new ColorManager.
 
@@ -46,9 +49,11 @@
 #define VisualArg_h
 
 #include "DeviseTypes.h"
-#include "Pattern.h"
 
+#if 0 // Not currently used.  RKW Feb. 25, 1998.
+#include "Pattern.h"
 #include "Color.h"
+#endif
 
 /* Index of the attributes */
 
@@ -97,12 +102,14 @@ struct VisualFilter {
 				      set to 0 if no filter  */
   Coord xLow, xHigh;               /* X filter */
   Coord yLow, yHigh;               /* y filter */
+#if 0 // Not currently used.  RKW Feb. 25, 1998.
   int lastN;		           /* # of records to examine */
   Coord sizeLow, sizeHigh;         /* size filter */
   Pattern patternLow, patternHigh; /* pattern filter */
   PColorID colorLow, colorHigh;	// Color filter
   Coord orientationLow, orientationHigh; /* orientation filter*/
   int shapeLow, shapeHigh;         /* shape filter */
+#endif
   
   Boolean marked;                  /* TRUE if this is marked in the
 				      control panel list box */

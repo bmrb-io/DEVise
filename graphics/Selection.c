@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/09/05 22:36:00  wenger
+  Dispatcher callback requests only generate one callback; added Scheduler;
+  added DepMgr (dependency manager); various minor code cleanups.
+
   Revision 1.4  1995/12/28 18:47:02  jussi
   Small fixes to remove compiler warnings.
 
@@ -275,6 +279,7 @@ void Selection::SetVisualFilters(View *selView, Boolean hasHint,
       tempFilter.yHigh = _filter.yHigh;
       change = true;
     }
+#if 0 // Not currently used.  RKW Feb. 25, 1998.
     if ((testFlag & VISUAL_COLOR) && 
 	(tempFilter.colorLow != _filter.colorLow 
 	 || tempFilter.colorHigh != _filter.colorHigh)){
@@ -303,6 +308,7 @@ void Selection::SetVisualFilters(View *selView, Boolean hasHint,
       tempFilter.orientationHigh = _filter.orientationHigh;
       change = true;
     }
+#endif
     
     if (change){
       // What the heck does hasHint mean here?  RKW Sep. 5, 1997.

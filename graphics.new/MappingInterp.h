@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.35  1998/01/30 21:53:18  wenger
+  Did some cleaning up of the MappingInterp and NativeExpr code
+  (NativeExpr still needs a lot more); NativeExpr code can now
+  parse expressions containing constant strings (they are treated
+  as numerical zero for now) (this fixes bug 275).
+
   Revision 1.34  1997/12/04 18:31:39  wenger
   Merged new expression evaluation code thru the expression_br_2 tag.
 
@@ -171,10 +177,10 @@
 #include "TDataMap.h"
 #include "Bitmap.h"
 #include "GDataRec.h"
-#include "TData.h"
 #include "AttrList.h"
 
-/* structure used to store the commands for mapping */
+class TData;
+
 const int MappingCmd_X           = (1 << 0);
 const int MappingCmd_Y           = (1 << 1);
 const int MappingCmd_Z           = (1 << 2);
@@ -185,6 +191,7 @@ const int MappingCmd_Orientation = (1 << 6);
 const int MappingCmd_Shape       = (1 << 7);
 const int MappingInterpAllFlags  = 0xffff;
 
+/* structure used to store the commands for mapping */
 struct MappingInterpCmd {
   char *xCmd;
   char *yCmd;
@@ -244,9 +251,12 @@ double ConvertOne(char *from,
 		  MappingSimpleCmdEntry *entry,
 		  double defaultVal);
 public:
+  // cmdFlag tells which attributes have some kind of value given for them
+  // (see MappingCmd_X, etc.).  attrFlag tells which shape attributes have
+  // some kind of value.
   MappingInterp(char *name,
 		TData *tdata, MappingInterpCmd *cmd,
-		unsigned long int flag,
+		unsigned long int cmdFlag,
 		unsigned long int attrFlag,
 		VisualFlag *dimensionInfo, int numDimensions);
   ~MappingInterp();
@@ -269,13 +279,18 @@ public:
   }
 
   /* change the commands */
-  void ChangeCmd(MappingInterpCmd *cmd, unsigned long int flag,
+  // cmdFlag tells which attributes have some kind of value given for them
+  // (see MappingCmd_X, etc.).  attrFlag tells which shape attributes have
+  // some kind of value.
+  void ChangeCmd(MappingInterpCmd *cmd, unsigned long int cmdFlag,
 		 unsigned long int attrFlag, VisualFlag *dimensionInfo,
 		 int NumDimensions);
   
+#if 0 // Not currently used.  RKW Feb. 26, 1998.
   /* Get current commands */
   MappingInterpCmd *GetCmd(unsigned long int &cmdFlag,
 			   unsigned long int &attrFlag);
+#endif
   
   /* Update maximum symbol size */
   void UpdateMaxSymSize(void *gdata, int numSyms);
@@ -318,8 +333,9 @@ private:
      and set entry to the converted command entry.
      If entry is an attribute, also return the attribute type,
      and whether it's sorted.*/
-  Boolean ConvertSimpleCmd(char *cmd, MappingSimpleCmdEntry &entry,
-			   AttrType &type, Boolean &isSorted);
+  static Boolean ConvertSimpleCmd(char *cmd, AttrList *attrList,
+  				  MappingSimpleCmdEntry &entry,
+			          AttrType &type, Boolean &isSorted);
   
   /* Print one entry of simple command */
   void PrintSimpleCmdEntry(MappingSimpleCmdEntry *entry);
@@ -333,10 +349,11 @@ private:
 			    int numRecs, void *gdataPtr);
   
   /* Find size of GData given attribute flag information */
-  FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
-		unsigned long int flag, unsigned long int attrFlag);
+  static FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
+		       unsigned long int cmdFlag, unsigned long int attrFlag);
   
-  Boolean IsConstCmd(char *cmd, Coord &val, AttrType &attrType);
+  static Boolean IsConstCmd(char *cmd, AttrList *attrList, Coord &val,
+			    AttrType &attrType);
   
   /* command for the mapping and the associated flags */
   MappingInterpCmd *_cmd;
@@ -349,7 +366,6 @@ private:
   
   GDataAttrOffset *_offsets;   /* Offsets of GData attributes */
   
-  AttrList *_attrList;         /* list of tdata attributes */
   Bitmap *_tdataFlag;          /* bit i set if ith attribute of TData is used */
   int _maxTDataAttrNum;        /* max # of attributes in TData used */
   int _maxGDataShapeAttrNum;   /* max shape attribute number encountered */
@@ -362,6 +378,8 @@ private:
   // native expression analysis engine
   // (only used for "complex" commands
   CGraphicExpr *_pNativeExpr;  
+
+  TData *_tdata;
 };
 
 #endif

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/09/05 22:36:33  wenger
+  Dispatcher callback requests only generate one callback; added Scheduler;
+  added DepMgr (dependency manager); various minor code cleanups.
+
   Revision 1.7  1997/01/23 17:40:03  jussi
   Removed references to GetXMin().
 
@@ -222,6 +226,7 @@ void VisualLink::SetVisualFilter(View *view, VisualFilter &filter)
     change = true;
   }
 
+#if 0 // Not currently used.  RKW Feb. 25, 1998.
   if ((testFlag & VISUAL_COLOR) && 
       (tempFilter.colorLow != filter.colorLow 
        || tempFilter.colorHigh != filter.colorHigh)) {
@@ -261,6 +266,7 @@ void VisualLink::SetVisualFilter(View *view, VisualFilter &filter)
     tempFilter.shapeHigh = filter.shapeHigh;
     change = true;
   }
+#endif
   
   if (change)
     view->SetVisualFilter(tempFilter, false);
