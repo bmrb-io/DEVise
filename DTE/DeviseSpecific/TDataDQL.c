@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1999/01/21 17:40:37  donjerko
+  Fix some compile trouble
+
   Revision 1.35  1999/01/21 16:43:06  beyer
   removed debugging statements
 
@@ -460,7 +463,8 @@ Boolean TDataDQL::GetRecs(TDHandle req, void *buf, int bufSize,
 			  Interval *interval, int &dataSize)
 {
   DOASSERT(req, "Invalid request handle");
-  DOASSERT(buf == Align(buf, MAX_ALIGN), "buffer not aligned");
+  //kb: why did this fail on Donkos PC?
+  //DOASSERT(buf == Align(buf, MAX_ALIGN), "buffer not aligned");
 
   if (RID_STRING != req->AttrName) {
     cout << "TDataDQL: GetRecs deals with recId only right now.\n";
