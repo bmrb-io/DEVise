@@ -1,0 +1,15 @@
+To Install DTE for Winnt :
+
+	Install native drivers of database (e.g. SQLNET for Oracle). For Oracle, after installing the native drivers, you can copy the listener.ora and tnsnames.ora files to NT's /oracle/network/admin directory. Execute the SQLPlus program, enter the following
+		User name : scott
+		Password  : tiger
+		Host String : devise_oracle
+	If you can connect by this, Oracle is working. 
+	Install the proper ODBC Driver. 
+	Then create the project directory as :
+		"C:\Program Files\DevStudio\MyProjects\DTE"
+	Copy the "djtypes.h" , "unistd.h" files in this directory.
+	Create a directory named "windows" in this directory and put the config.h file there. 
+	Execute Visual C++, Click File menu, choose Open Workspace and select DTE Workspace which is in 	P:\devise\your_user\winnt\DTE (Donko, yours may be in P:\coral\...)
+	Click Project menu, choose Settings. In this window, select the C/C++ tab and adjust the Include directories (that are indicated by /I "....." in the Project Options part) to point your devise directory.
+	Compile the project.
