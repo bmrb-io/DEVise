@@ -25,6 +25,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/10/02 19:47:15  jussi
+  Added support for opening an HTTP connection for writing (posting)
+  Web data.
+
   Revision 1.5  1996/10/02 15:23:48  wenger
   Improved error handling (modified a number of places in the code to use
   the DevError class).
@@ -184,7 +188,7 @@ DataSourceWeb::ChildProc()
     size_t totlen = 0;
 
     if (!strncmp(_url, "ftp://", 6))
-        fd = open_ftp(_url);
+        fd = open_ftp(_url, 1);
     else
         fd = open_http(_url, 1, &totlen);
 
