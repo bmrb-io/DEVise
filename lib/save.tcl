@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.24  1996/07/21 02:22:45  jussi
+#  Added saving of flags indicating solid/wireframe 3D objects and
+#  XY vs. X/Y zoom mode.
+#
 #  Revision 1.23  1996/07/16 23:47:37  jussi
 #  Added support for saving a session as a batch script (no Tcl variable
 #  names used or if statements or anything, just a sequential list
@@ -437,7 +441,7 @@ proc DoSave {} {
     global sessionName templateMode
 
     if {$sessionName == "session.tk"} {
-	DoSaveAs 0 0 0
+	DoSaveAs 0 0 0 0
 	return
     }
 
@@ -830,6 +834,12 @@ proc SaveViews { fileId viewDictRef asBatchScript } {
 	    puts $fileId "DEVise setViewSolid3D $viewName $viewSolid3D"
 	    set viewXYZoom [DEVise getViewXYZoom $inst]
 	    puts $fileId "DEVise setViewXYZoom $viewName $viewXYZoom"
+	    set viewDataDisp [DEVise getViewDisplayDataValues $inst]
+	    puts $fileId "DEVise setViewDisplayDataValues $viewName $viewDataDisp"
+	    set viewPileMode [DEVise getViewPileMode $inst]
+	    puts $fileId "DEVise setViewPileMode $viewName $viewPileMode"
+	    set viewOverride [DEVise getViewOverrideColor $inst]
+	    puts $fileId "DEVise setViewOverrideColor $viewName $viewOverride"
 
 	    set viewDict [DictInsert $viewDict $inst $viewVar]
 	    incr viewNum
