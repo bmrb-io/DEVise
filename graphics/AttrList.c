@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/01/10 00:38:16  jussi
+  Minor changes.
+
   Revision 1.6  1995/12/20 07:04:08  ravim
   High and low values of attrs can be specified.
 
@@ -34,6 +37,7 @@
 */
 
 #include <stdio.h>
+
 #include "AttrList.h"
 #include "Util.h"
 
@@ -51,6 +55,28 @@ AttrList::~AttrList()
     if (_attrs[i] != NULL)
       delete _attrs[i];
   }
+}
+
+/* Copy constructor */
+AttrList::AttrList(AttrList &attrs)
+{
+  for(int i = 0; i < MAX_ATTRLIST_SIZE; i++)
+    _attrs[i] = NULL;
+  _size = 0;
+  _name = CopyString(attrs.GetName());
+
+  /* copy attributes from attrs to this list */
+
+  attrs.InitIterator();
+  while(attrs.More()) {
+    AttrInfo *info = attrs.Next();
+    InsertAttr(info->attrNum, CopyString(info->name), info->offset,
+	       info->length, info->type, info->hasMatchVal,
+	       &info->matchVal, info->isComposite, info->isSorted,
+	       info->hasHiVal, &info->hiVal, info->hasLoVal,
+	       &info->loVal);
+  }
+  attrs.DoneIterator();
 }
 
 /* Insert attribute into list of attributes */
@@ -124,9 +150,8 @@ AttrInfo *AttrList::Find(char *name)
 {
   for(int index = 0; index < _size; index++) {
     AttrInfo *info = _attrs[index];
-    if ( info != NULL && !strcmp(info->name,name)){
+    if (info && !strcmp(info->name, name))
       return info;
-    }
   }
   return NULL;
 }
@@ -140,6 +165,31 @@ AttrInfo *AttrList::Get(int n)
   return _attrs[n];
 }
 
+
+double AttrList::GetVal(AttrVal *aval, AttrType atype)
+{
+  switch(atype) {
+    case IntAttr:
+      return aval->intVal;
+    case FloatAttr:
+      return aval->floatVal;
+      break;
+    case DoubleAttr:
+      return aval->doubleVal;
+    case StringAttr:
+      DOASSERT(0, "Cannot get value of string attribute");
+      break;
+    case DateAttr:
+      return aval->dateVal;
+    default:
+      DOASSERT(0, "Unknown attribute type");
+      break;
+  }
+
+  /* make compiler happy */
+  return -1;
+}
+
 void AttrList::Print()
 {
   printf("AttrList:\n");
@@ -147,7 +197,7 @@ void AttrList::Print()
     AttrInfo *info = Next();
     printf("  name %s, num %d, offset %d, length %d, composite %d, ",
 	   info->name, info->attrNum, info->offset, info->length,
-	   (info->isComposite? 1: 0));
+	   (info->isComposite? 1 : 0));
     switch(info->type){
     case IntAttr:
       printf("int");
@@ -167,17 +217,17 @@ void AttrList::Print()
     }
     if (info->hasHiVal) {
       printf(", hi ");
-      printVal(&(info->hiVal), info->type);
+      PrintVal(&(info->hiVal), info->type);
     }
     if (info->hasLoVal) {
       printf(", lo ");
-      printVal(&(info->loVal), info->type);
+      PrintVal(&(info->loVal), info->type);
     }
     printf("\n");
   }
 }
 
-void AttrList::printVal(AttrVal *aval, AttrType atype)
+void AttrList::PrintVal(AttrVal *aval, AttrType atype)
 {
   switch(atype) {
     case IntAttr:
