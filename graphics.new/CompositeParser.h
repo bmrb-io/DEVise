@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/07/21 02:25:13  jussi
+  Increased max. number of composite parsers from 20 to 100.
+
   Revision 1.3  1996/03/26 20:22:08  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -53,6 +56,7 @@ public:
 
   /* called by parser when it needs a composite attribute parsed */
   static void Decode(char *fileType, RecInterp *recInterp);
+  ~CompositeParser();
 
 private:
   static CompositeEntry _entries[MAX_COMPOSITE_ENTRIES];

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/03/26 20:22:01  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 22:14:35  jussi
   Added CVS header.
 */
@@ -25,18 +28,25 @@
 #include "RecInterp.h"
 #include "CompositeParser.h"
 #include "Exit.h"
+#include <malloc.h>
 
 CompositeEntry CompositeParser::_entries[MAX_COMPOSITE_ENTRIES];
 int CompositeParser::_numEntries = 0;
 int CompositeParser::_hintIndex = -1;
 
+CompositeParser::~CompositeParser()
+{
+  for(int i = 0; i < _numEntries; i++) 
+	free(_entries[i].fileType);
+}
+	
 void CompositeParser::Register(char *fileType, UserComposite *userComposite){
   if (_numEntries >= MAX_COMPOSITE_ENTRIES) {
     fprintf(stderr,"CompositeParser:: too many entries\n");
     Exit::DoExit(2);
   }
 
-  _entries[_numEntries].fileType = fileType;
+  _entries[_numEntries].fileType = (char * )fileType;
   _entries[_numEntries].userComposite = userComposite;
   _numEntries++;
 }
@@ -50,6 +60,7 @@ void CompositeParser::Decode(char *fileType, RecInterp *recInterp)
   }
 
   /* search for a matching file type */
+
   for(int i = 0; i < _numEntries; i++) {
     if (!strcmp(fileType,_entries[i].fileType)) {
       /* found it */
