@@ -21,9 +21,12 @@ public:
   const DteTupleAdt& getTypes() const { return typeDesc; }
 
   const Tuple* getTuple(int slot) const { return (Tuple*)getSlot(slot); }
+
   Tuple* getTuple(int slot) { return (Tuple*)getSlot(slot); }
 
 protected:
+
+  DteTupleAdt typeDesc;
 
   const Tuple* finishAdd(char* tup, int used) {
     if( used < 0 ) {            // didn't fit!
@@ -32,6 +35,21 @@ protected:
     used = Align(used, POINTER_ALIGN);
     addSlot(used);
     return (Tuple*)tup;
+  }
+
+  //kb: should these be public?
+  void swizzlePage() {
+    int n = getNumSlots();
+    for(int i = 0 ; i < n ; i++) {
+      typeDesc.swizzle( getTuple(i), page );
+    }
+  }
+
+  void unswizzlePage() {
+    int n = getNumSlots();
+    for(int i = 0 ; i < n ; i++) {
+      typeDesc.unswizzle( getTuple(i), page );
+    }
   }
 
 public:
@@ -154,25 +172,6 @@ public:
 
   // x must have the same schema as this page!
   void copy(const DteAdtPage& x) { copy(x.page); }
-
-protected:
-
-  DteTupleAdt typeDesc;
-
-  //kb: should these be public?
-  void swizzlePage() {
-    int n = getNumSlots();
-    for(int i = 0 ; i < n ; i++) {
-      typeDesc.swizzle( getTuple(i), page );
-    }
-  }
-
-  void unswizzlePage() {
-    int n = getNumSlots();
-    for(int i = 0 ; i < n ; i++) {
-      typeDesc.unswizzle( getTuple(i), page );
-    }
-  }
 
 private:
 

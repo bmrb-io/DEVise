@@ -13,25 +13,6 @@
 
 class DtePage
 {
-public:
-
-  DtePage();
-
-  //kb: should I make this virtual??
-  ~DtePage() {}
-
-  // p is a page buffer of size DTE_PAGESIZE that **contains garbage**
-  void initPage(PageBuf* p);
-
-  // p is a page buffer of size DTE_PAGESIZE that **contains valid data**
-  void setPage(PageBuf* p);
-
-  // the number of slots that are used on a this page
-  int getNumSlots() const { return header()->numSlots; }
-
-  // the number of bytes that are still free on this page
-  int getBytesFree() { return endFree - startFree; }
-
 protected:
 
   typedef int4 Slot;
@@ -56,16 +37,37 @@ protected:
   //kb: const char*?
   char* getSlot(int i) const { return page + slot[-i]; }
 
-  // uses this->page to init this 
-  void resetPage() {
-    data = Align(page + sizeof(header_t), MAX_ALIGN);
-    slot = (Slot*)AlignDown((page + DTE_PAGESIZE - sizeof(Slot)),
-                            SLOT_ALIGN);
-    int r = header()->numSlots;
-    startFree = page + slot[-r];
-    endFree = (char*)(&slot[-r]);
+
+public:
+
+  DtePage();
+
+  //kb: should I make this virtual??
+  ~DtePage() {}
+
+  // p is a page buffer of size DTE_PAGESIZE that **contains garbage**
+  void initPage(PageBuf* p) {
+    page = p->data;
+    reinitPage();
   }
 
+  // p is a page buffer of size DTE_PAGESIZE that **contains valid data**
+  void setPage(PageBuf* p) {
+    page = p->data;
+    resetPage();
+  }
+
+  // the number of slots that are used on a this page
+  int getNumSlots() const { return header()->numSlots; }
+
+  // the number of bytes that are still free on this page
+  int getBytesFree() { return endFree - startFree; }
+
+  // uses this->page to init this; page contains garbage
+  void reinitPage();
+
+  // uses this->page to init this; page contains valid data
+  void resetPage();  //kb: should this be protected?
 
 private:
 
@@ -85,9 +87,8 @@ DtePage::DtePage()
 }
 
 inline
-void DtePage::initPage(PageBuf* p)
+void DtePage::reinitPage()
 {
-  page = p->data;
   data = Align(page + sizeof(header_t), MAX_ALIGN);
   slot = (Slot*)AlignDown((page + DTE_PAGESIZE - sizeof(Slot)),
                              SLOT_ALIGN);
@@ -99,10 +100,13 @@ void DtePage::initPage(PageBuf* p)
 
 
 inline
-void DtePage::setPage(PageBuf* p)
+void DtePage::resetPage()
 {
-  page = p->data;
-  resetPage();
+  data = Align(page + sizeof(header_t), MAX_ALIGN);
+  slot = (Slot*)AlignDown((page + DTE_PAGESIZE - sizeof(Slot)), SLOT_ALIGN);
+  int r = header()->numSlots;
+  startFree = page + slot[-r];
+  endFree = (char*)(&slot[-r]);
 }
 
 
