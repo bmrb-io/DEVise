@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/04/23 20:35:41  jussi
+  Added Segment shape which just connects two end points.
+
   Revision 1.14  1996/04/16 20:54:14  jussi
   Added HorLineShape, a 2D horizontal line shape that is used
   by statistical views.
@@ -148,6 +151,8 @@ public:
 
   virtual void DrawGDataArray(View *view, WindowRep *win,
 			      void **gdataArray, int num);
+
+  virtual AttrInfo *MapGAttr2TAttr(char *attrName);
 
 protected:	
   /* convert from Tdata to Gdata. buf contains

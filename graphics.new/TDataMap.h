@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/04/16 20:42:32  jussi
+  Removed #include assert.h.
+
   Revision 1.9  1996/04/09 22:54:08  jussi
   Added View parameter to DrawGDataArray().
 
@@ -208,6 +211,8 @@ public:
   virtual void DrawGDataArray(View *view, WindowRep *win,
 			      void **gdataArray, int num) = 0;
   
+  virtual AttrInfo *MapGAttr2TAttr(char *attrName) = 0;
+
   /* Hint for current focus in GData */
   void SetFocusId(RecId id);
   RecId GetFocusId();

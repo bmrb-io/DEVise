@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/04/23 20:35:40  jussi
+  Added Segment shape which just connects two end points.
+
   Revision 1.25  1996/04/16 20:53:47  jussi
   Added HorLineShape. Replaced DoExit() calls with DOASSERT macro.
 
@@ -134,7 +137,7 @@ Boolean MappingInterp::IsConstCmd(char *cmd, Coord &val)
   MappingSimpleCmdEntry entry;
   AttrType attrType;
   Boolean isSorted;
-  if (ConvertSimpleCmd(cmd, entry,attrType, isSorted)
+  if (ConvertSimpleCmd(cmd, entry, attrType, isSorted)
       && entry.cmdType == MappingSimpleCmdEntry::ConstCmd) {
     val = entry.cmd.num;
     return true;
@@ -313,6 +316,28 @@ void MappingInterp::UpdateBoundingBox(int pageNum,
 {
 }
 #endif
+
+AttrInfo *MappingInterp::MapGAttr2TAttr(char *attrName)
+{
+  MappingSimpleCmdEntry entry;
+  AttrType attrType;
+  Boolean isSorted;
+  Boolean simpleCmd = false;
+
+  if (!strcmp(attrName, "x"))
+    simpleCmd = ConvertSimpleCmd(_cmd->xCmd, entry, attrType, isSorted);
+  else if (!strcmp(attrName, "y"))
+    simpleCmd = ConvertSimpleCmd(_cmd->yCmd, entry, attrType, isSorted);
+  else if (!strcmp(attrName, "z"))
+    simpleCmd = ConvertSimpleCmd(_cmd->zCmd, entry, attrType, isSorted);
+  else
+    return 0;
+
+  if (simpleCmd && entry.cmdType == MappingSimpleCmdEntry::AttrCmd)
+    return entry.cmd.attr;
+
+  return 0;
+}
 
 void MappingInterp::DrawGDataArray(View *view, WindowRep *win,
 				   void **gdataArray, int num)
@@ -599,11 +624,11 @@ AttrList *MappingInterp::InitCmd(char *name)
   _tdataFlag->ClearBitmap();
   _maxTDataAttrNum = 0;
   
-  AttrType attrType;
-  Boolean isSorted;
-
   int offset = 0;
   _isSimpleCmd = true;
+  Boolean isSorted;
+  AttrType attrType;
+
   int j;
 
   if (_cmdFlag & MappingCmd_X) {
@@ -614,8 +639,8 @@ AttrList *MappingInterp::InitCmd(char *name)
       SetDefaultX((Coord)_simpleCmd->xCmd.cmd.num);
     } else {
       _offsets->xOffset = offset = WordBoundary(offset, sizeof(double));
-      attrList->InsertAttr(0, "x",offset,sizeof(double), attrType,
-			   false, NULL, false, isSorted);
+      attrList->InsertAttr(0, "x", offset, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
       offset += sizeof(double);
     }
   }
@@ -627,9 +652,9 @@ AttrList *MappingInterp::InitCmd(char *name)
       /* constant */
       SetDefaultY((Coord)_simpleCmd->yCmd.cmd.num);
     } else {
-      _offsets->yOffset = offset = WordBoundary(offset,sizeof(double));
-      attrList->InsertAttr(1, "y", offset, sizeof(double), attrType,
-			   false,  NULL, false, isSorted);
+      _offsets->yOffset = offset = WordBoundary(offset, sizeof(double));
+      attrList->InsertAttr(1, "y", offset, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
       offset += sizeof(double);
     }
   }
@@ -642,8 +667,8 @@ AttrList *MappingInterp::InitCmd(char *name)
       SetDefaultZ((Coord)_simpleCmd->zCmd.cmd.num);
     } else {
       _offsets->zOffset = offset = WordBoundary(offset, sizeof(double));
-      attrList->InsertAttr(2, "z",offset,sizeof(double), attrType,
-			   false, NULL, false, isSorted);
+      attrList->InsertAttr(2, "z", offset, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
       offset += sizeof(double);
     }
   }
@@ -657,8 +682,8 @@ AttrList *MappingInterp::InitCmd(char *name)
       SetDefaultColor((Color)_simpleCmd->colorCmd.cmd.num);
     } else {
       _offsets->colorOffset = offset = WordBoundary(offset, sizeof(Color));
-      attrList->InsertAttr(3, "color",offset,sizeof(double),attrType,
-			   false,  NULL, false, isSorted);
+      attrList->InsertAttr(3, "color", offset, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
       offset += sizeof(Color);
     }
   }
@@ -671,9 +696,9 @@ AttrList *MappingInterp::InitCmd(char *name)
       /* constant */
       SetDefaultSize((Coord)_simpleCmd->sizeCmd.cmd.num);
     } else {
-      _offsets->sizeOffset = offset = WordBoundary(offset,sizeof(double));
-      attrList->InsertAttr(4, "size",offset,sizeof(double),attrType,
-			   false,  NULL, false, isSorted);
+      _offsets->sizeOffset = offset = WordBoundary(offset, sizeof(double));
+      attrList->InsertAttr(4, "size", offset, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
       offset += sizeof(double);
     }
   }
@@ -686,9 +711,9 @@ AttrList *MappingInterp::InitCmd(char *name)
       /* constant */
       SetDefaultPattern((Pattern)_simpleCmd->patternCmd.cmd.num);
     } else {
-      _offsets->patternOffset = offset = WordBoundary(offset,sizeof(Pattern));
-      attrList->InsertAttr(5, "pattern",offset,sizeof(double),attrType,
-			   false,  NULL, false, isSorted);
+      _offsets->patternOffset = offset = WordBoundary(offset, sizeof(Pattern));
+      attrList->InsertAttr(5, "pattern", offset, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
       offset += sizeof(Pattern);
     }
   }
@@ -704,16 +729,17 @@ AttrList *MappingInterp::InitCmd(char *name)
 	shape = 0;
       SetDefaultShape(shape);
     } else {
-      _offsets->shapeOffset = offset = WordBoundary(offset,sizeof(ShapeID));
-      attrList->InsertAttr(6, "shape",offset,sizeof(double),attrType,
-			   false,  NULL, false, isSorted);
+      _offsets->shapeOffset = offset = WordBoundary(offset, sizeof(ShapeID));
+      attrList->InsertAttr(6, "shape", offset, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
       offset += sizeof(ShapeID);
     }
   }
 
   if (_cmdFlag & MappingCmd_Orientation) {
     if (!ConvertSimpleCmd(_cmd->orientationCmd,
-			  _simpleCmd->orientationCmd, attrType, isSorted))
+			  _simpleCmd->orientationCmd, attrType,
+			  isSorted))
       goto complexCmd;
     if (_simpleCmd->orientationCmd.cmdType == 
 	MappingSimpleCmdEntry::ConstCmd) {
@@ -722,8 +748,8 @@ AttrList *MappingInterp::InitCmd(char *name)
     } else {
       _offsets->orientationOffset = offset = WordBoundary(offset,
 							  sizeof(double));
-      attrList->InsertAttr(7, "orientation",offset,sizeof(double),attrType,
-			   false,  NULL, false, isSorted);
+      attrList->InsertAttr(7, "orientation", offset, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
       offset += sizeof(double);
     }
   }
@@ -733,7 +759,8 @@ AttrList *MappingInterp::InitCmd(char *name)
     if (_cmdAttrFlag & (1 << j)) {
       _maxGDataShapeAttrNum = j;
       if (!ConvertSimpleCmd(_cmd->shapeAttrCmd[j],
-			    _simpleCmd->shapeAttrCmd[j], attrType, isSorted))
+			    _simpleCmd->shapeAttrCmd[j], attrType,
+			    isSorted))
 	goto complexCmd;
       if (_simpleCmd->shapeAttrCmd[j].cmdType ==
 	  MappingSimpleCmdEntry::ConstCmd) {
@@ -749,7 +776,7 @@ AttrList *MappingInterp::InitCmd(char *name)
 	_offsets->shapeAttrOffset[j] = offset = WordBoundary(offset,
 							     sizeof(double));
 	attrList->InsertAttr(8 + j, attrName, offset, sizeof(double),
-			     attrType, false,  NULL, false, isSorted);
+			     attrType, false, NULL, false, isSorted);
 	offset += sizeof(double);
       }
     }
@@ -1081,16 +1108,11 @@ char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
 	buf[len] = 0;
 	
 	AttrInfo *info = _attrList->Find(buf);
-	if (info == NULL) {
+	if (!info) {
 	  /* can't find variable name */
 	  InsertChar('$');
 	  InsertString(buf);
-	  /*
-	     InsertString("1.0");
-	  */
-
 	} else {
-
 	  /* found the attribute */
 	  if (info->isSorted)
 	    isSorted = true;
@@ -1107,7 +1129,7 @@ char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
 	    sprintf(buf, "$interpAttr_%d",info->attrNum);
 	  InsertString(buf);
 	}
-	cmd = ptr-1;
+	cmd = ptr - 1;
       }
     } else
       InsertChar(*cmd);
