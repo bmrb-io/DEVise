@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/08/05 19:48:57  wenger
+  Fixed compile errors caused by some of Kevin's recent changes; changed
+  the attrproj stuff to make a .a file instead of a .o; added some more
+  TData file writing stuff; misc. cleanup.
+
   Revision 1.5  1996/08/04 21:59:51  beyer
   Added UpdateLinks that allow one view to be told to update by another view.
   Changed TData so that all TData's have a DataSource (for UpdateLinks).
@@ -146,6 +151,7 @@ TData::TData(char* name, char* type, char* param, int recSize)
     }
     else if (!strcmp(_type, "WWW")) {
 	char *file = MakeCacheFileName(_name, _type);
+        _data = new DataSourceWeb(param, _name, file);
 	delete file;
     }
 #endif
