@@ -20,10 +20,10 @@ AxisLabelClassInfo.o: /usr/include/unistd.h /usr/include/string.h DList.h
 AxisLabelClassInfo.o: Exit.h Journal.h VisualArg.h Color.h Pattern.h
 AxisLabelClassInfo.o: ViewWin.h WindowRep.h Geom.h /usr/include/math.h
 AxisLabelClassInfo.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-AxisLabelClassInfo.o: Transform.h DevisePixmap.h Compress.h Control.h
-AxisLabelClassInfo.o: ViewCallback.h AttrList.h /usr/include/sys/time.h
-AxisLabelClassInfo.o: /usr/include/sys/time.h Config.h Cursor.h Util.h
-AxisLabelClassInfo.o: /usr/include/ctype.h
+AxisLabelClassInfo.o: Transform.h DevisePixmap.h Compress.h DualWindowRep.h
+AxisLabelClassInfo.o: Control.h ViewCallback.h AttrList.h
+AxisLabelClassInfo.o: /usr/include/sys/time.h /usr/include/sys/time.h
+AxisLabelClassInfo.o: Config.h Cursor.h Util.h /usr/include/ctype.h
 ClassDir.o: /usr/include/stdio.h ClassDir.h DeviseTypes.h
 ClassDir.o: /usr/include/values.h DevStatus.h /usr/include/sys/types.h
 ClassDir.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h Exit.h
@@ -75,8 +75,8 @@ Cursor.o: ViewCallback.h View.h Dispatcher.h /usr/include/stdio.h
 Cursor.o: /usr/include/stdlib.h /usr/include/unistd.h /usr/include/string.h
 Cursor.o: Journal.h ViewWin.h WindowRep.h Geom.h /usr/include/math.h
 Cursor.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Transform.h
-Cursor.o: DevisePixmap.h Compress.h Control.h ClassDir.h AttrList.h
-Cursor.o: /usr/include/sys/time.h /usr/include/sys/time.h Config.h
+Cursor.o: DevisePixmap.h Compress.h DualWindowRep.h Control.h ClassDir.h
+Cursor.o: AttrList.h /usr/include/sys/time.h /usr/include/sys/time.h Config.h
 CursorClassInfo.o: /usr/include/stdio.h CursorClassInfo.h ClassDir.h
 CursorClassInfo.o: DeviseTypes.h /usr/include/values.h DevStatus.h
 CursorClassInfo.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
@@ -126,26 +126,25 @@ Dispatcher.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stdtypes.h
 Dispatcher.o: /usr/include/sys/stat.h /usr/include/sys/types.h
 Dispatcher.o: /usr/include/sys/sysmacros.h ../graphics.new/machdep.h
 Dispatcher.o: /usr/include/limits.h /usr/include/sys/param.h
-Dispatcher.o: /usr/include/machine/param.h /usr/include/sys/signal.h
-Dispatcher.o: /usr/include/vm/faultcode.h /usr/include/sys/wait.h
-Dispatcher.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-Dispatcher.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-Dispatcher.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-Dispatcher.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
-Dispatcher.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-Dispatcher.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-Dispatcher.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-Dispatcher.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-Dispatcher.o: /usr/include/netdb.h /usr/include/sys/socket.h
-Dispatcher.o: /usr/include/netinet/in.h Dispatcher.h /usr/include/stdio.h
-Dispatcher.o: /usr/include/stdlib.h /usr/include/unistd.h
-Dispatcher.o: /usr/include/string.h DeviseTypes.h /usr/include/values.h
-Dispatcher.o: DevStatus.h DList.h Exit.h Journal.h VisualArg.h Color.h
-Dispatcher.o: Pattern.h Control.h ClassDir.h Init.h BufPolicy.h Selection.h
-Dispatcher.o: View.h ViewWin.h WindowRep.h Geom.h /usr/include/math.h
-Dispatcher.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-Dispatcher.o: Transform.h DevisePixmap.h Compress.h ViewCallback.h AttrList.h
-Dispatcher.o: Config.h Cursor.h Time.h
+Dispatcher.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+Dispatcher.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+Dispatcher.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+Dispatcher.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+Dispatcher.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+Dispatcher.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+Dispatcher.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+Dispatcher.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+Dispatcher.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+Dispatcher.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+Dispatcher.o: Dispatcher.h /usr/include/stdio.h /usr/include/stdlib.h
+Dispatcher.o: /usr/include/unistd.h /usr/include/string.h DeviseTypes.h
+Dispatcher.o: /usr/include/values.h DevStatus.h DList.h Exit.h Journal.h
+Dispatcher.o: VisualArg.h Color.h Pattern.h Control.h ClassDir.h Init.h
+Dispatcher.o: BufPolicy.h Selection.h View.h ViewWin.h WindowRep.h Geom.h
+Dispatcher.o: /usr/include/math.h /usr/include/floatingpoint.h
+Dispatcher.o: /usr/include/sys/ieeefp.h Transform.h DevisePixmap.h Compress.h
+Dispatcher.o: DualWindowRep.h ViewCallback.h AttrList.h Config.h Cursor.h
+Dispatcher.o: Time.h
 Display.o: XDisplay.h Display.h DeviseTypes.h /usr/include/values.h
 Display.o: DevStatus.h /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 Display.o: /usr/include/sys/sysmacros.h Geom.h /usr/include/stdio.h
@@ -157,8 +156,22 @@ Display.o: WindowRep.h Transform.h DevisePixmap.h Compress.h Xdef.h
 Display.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 Display.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 Display.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h XWindowRep.h
-Display.o: XBitmap.h PSDisplay.h Util.h /usr/include/sys/time.h
-Display.o: /usr/include/ctype.h Init.h BufPolicy.h
+Display.o: Util.h /usr/include/sys/time.h /usr/include/ctype.h XBitmap.h
+Display.o: PSDisplay.h Init.h BufPolicy.h
+DualWindowRep.o: /usr/include/stdio.h DualWindowRep.h
+DualWindowRep.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
+DualWindowRep.o: /usr/include/sys/sysmacros.h WindowRep.h
+DualWindowRep.o: /usr/include/stdlib.h Geom.h /usr/include/math.h
+DualWindowRep.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+DualWindowRep.o: DeviseTypes.h /usr/include/values.h DevStatus.h Color.h
+DualWindowRep.o: Transform.h VisualArg.h Pattern.h DList.h Exit.h
+DualWindowRep.o: DevisePixmap.h Compress.h XWindowRep.h /usr/include/string.h
+DualWindowRep.o: Xdef.h /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
+DualWindowRep.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+DualWindowRep.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h Util.h
+DualWindowRep.o: /usr/include/sys/time.h /usr/include/ctype.h PSWindowRep.h
+DualWindowRep.o: Display.h Dispatcher.h /usr/include/unistd.h Journal.h
+DualWindowRep.o: ColorMgr.h
 Exit.o: /usr/include/stdio.h /usr/include/stdlib.h
 Exit.o: /usr/include/sys/stdtypes.h Exit.h Init.h DeviseTypes.h
 Exit.o: /usr/include/values.h DevStatus.h /usr/include/sys/types.h
@@ -199,9 +212,10 @@ Journal.o: Color.h Pattern.h Init.h BufPolicy.h Selection.h View.h
 Journal.o: Dispatcher.h /usr/include/stdlib.h DList.h Exit.h ViewWin.h
 Journal.o: WindowRep.h Geom.h /usr/include/math.h
 Journal.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Transform.h
-Journal.o: DevisePixmap.h Compress.h Control.h ClassDir.h ViewCallback.h
-Journal.o: AttrList.h /usr/include/sys/time.h Config.h Cursor.h Time.h
-Journal.o: DevError.h /usr/include/errno.h /usr/include/sys/errno.h
+Journal.o: DevisePixmap.h Compress.h DualWindowRep.h Control.h ClassDir.h
+Journal.o: ViewCallback.h AttrList.h /usr/include/sys/time.h Config.h
+Journal.o: Cursor.h Time.h DevError.h /usr/include/errno.h
+Journal.o: /usr/include/sys/errno.h
 NullDisplay.o: NullDisplay.h Display.h DeviseTypes.h /usr/include/values.h
 NullDisplay.o: DevStatus.h /usr/include/sys/types.h
 NullDisplay.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
@@ -253,7 +267,7 @@ Selection.o: /usr/include/unistd.h DList.h Exit.h Journal.h VisualArg.h
 Selection.o: Color.h Pattern.h ViewWin.h WindowRep.h Geom.h
 Selection.o: /usr/include/math.h /usr/include/floatingpoint.h
 Selection.o: /usr/include/sys/ieeefp.h Transform.h DevisePixmap.h Compress.h
-Selection.o: Control.h ClassDir.h ViewCallback.h AttrList.h
+Selection.o: DualWindowRep.h Control.h ClassDir.h ViewCallback.h AttrList.h
 Selection.o: /usr/include/sys/time.h /usr/include/sys/time.h Config.h
 Selection.o: Cursor.h
 Temp.o: Temp.h DeviseTypes.h /usr/include/values.h DevStatus.h
@@ -270,12 +284,10 @@ Time.o: /usr/include/sys/time.h ../graphics.new/machdep.h
 Time.o: /usr/include/limits.h /usr/include/sys/types.h
 Time.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
 Time.o: /usr/include/sys/param.h /usr/include/machine/param.h
-Time.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-Time.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-Time.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-Time.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-Time.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-Time.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
+Time.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+Time.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+Time.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
+Time.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
 Time.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
 Time.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
 Time.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
@@ -290,17 +302,16 @@ Timer.o: /usr/include/sys/time.h /usr/include/sys/time.h
 Timer.o: ../graphics.new/machdep.h /usr/include/limits.h
 Timer.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 Timer.o: /usr/include/sys/param.h /usr/include/machine/param.h
-Timer.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-Timer.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-Timer.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
-Timer.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
-Timer.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-Timer.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-Timer.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-Timer.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-Timer.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-Timer.o: /usr/include/sys/socket.h /usr/include/netinet/in.h Timer.h
-Timer.o: DeviseTypes.h /usr/include/values.h DevStatus.h
+Timer.o: /usr/include/machine/devaddr.h /usr/include/sys/wait.h
+Timer.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+Timer.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+Timer.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+Timer.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+Timer.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+Timer.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+Timer.o: /usr/include/netdb.h /usr/include/sys/socket.h
+Timer.o: /usr/include/netinet/in.h Timer.h DeviseTypes.h
+Timer.o: /usr/include/values.h DevStatus.h
 Util.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 Util.o: /usr/include/sys/sysmacros.h /usr/include/stdio.h
 Util.o: /usr/include/sys/stat.h /usr/include/sys/dir.h /usr/include/unistd.h
@@ -318,7 +329,7 @@ View.o: /usr/include/values.h DevStatus.h /usr/include/sys/types.h
 View.o: /usr/include/sys/sysmacros.h Exit.h View.h Dispatcher.h
 View.o: /usr/include/unistd.h DList.h Journal.h VisualArg.h Color.h Pattern.h
 View.o: ViewWin.h WindowRep.h Geom.h Transform.h DevisePixmap.h Compress.h
-View.o: Control.h ClassDir.h ViewCallback.h AttrList.h
+View.o: DualWindowRep.h Control.h ClassDir.h ViewCallback.h AttrList.h
 View.o: /usr/include/sys/time.h Config.h Cursor.h FilterQueue.h TimeStamp.h
 View.o: Parse.h Map3D.h Display.h ColorMgr.h PSDisplay.h Init.h BufPolicy.h
 View.o: DaliIfc.h Xdef.h /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
@@ -332,10 +343,10 @@ ViewWin.o: /usr/include/values.h DevStatus.h /usr/include/sys/types.h
 ViewWin.o: /usr/include/sys/sysmacros.h WindowRep.h /usr/include/stdlib.h
 ViewWin.o: Geom.h /usr/include/math.h /usr/include/floatingpoint.h
 ViewWin.o: /usr/include/sys/ieeefp.h Color.h Transform.h VisualArg.h
-ViewWin.o: Pattern.h DevisePixmap.h Compress.h Display.h Dispatcher.h
-ViewWin.o: /usr/include/unistd.h Journal.h ColorMgr.h ClassDir.h Control.h
-ViewWin.o: Init.h BufPolicy.h DevError.h ../graphics.new/Version.h Util.h
-ViewWin.o: /usr/include/sys/time.h /usr/include/ctype.h PSDisplay.h
+ViewWin.o: Pattern.h DevisePixmap.h Compress.h DualWindowRep.h Display.h
+ViewWin.o: Dispatcher.h /usr/include/unistd.h Journal.h ColorMgr.h ClassDir.h
+ViewWin.o: Control.h Init.h BufPolicy.h DevError.h ../graphics.new/Version.h
+ViewWin.o: Util.h /usr/include/sys/time.h /usr/include/ctype.h PSDisplay.h
 WinClassInfo.o: Display.h DeviseTypes.h /usr/include/values.h DevStatus.h
 WinClassInfo.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 WinClassInfo.o: /usr/include/sys/sysmacros.h Geom.h /usr/include/stdio.h
@@ -345,8 +356,8 @@ WinClassInfo.o: /usr/include/stdlib.h /usr/include/unistd.h
 WinClassInfo.o: /usr/include/string.h DList.h Exit.h Journal.h VisualArg.h
 WinClassInfo.o: Pattern.h ColorMgr.h WindowRep.h Transform.h DevisePixmap.h
 WinClassInfo.o: Compress.h Control.h ClassDir.h WinClassInfo.h TileLayout.h
-WinClassInfo.o: ViewLayout.h ViewWin.h Util.h /usr/include/sys/time.h
-WinClassInfo.o: /usr/include/ctype.h
+WinClassInfo.o: ViewLayout.h ViewWin.h DualWindowRep.h Util.h
+WinClassInfo.o: /usr/include/sys/time.h /usr/include/ctype.h
 WindowRep.o: WindowRep.h /usr/include/stdio.h /usr/include/stdlib.h
 WindowRep.o: /usr/include/sys/stdtypes.h Geom.h /usr/include/math.h
 WindowRep.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
@@ -367,12 +378,12 @@ XDisplay.o: Pattern.h ColorMgr.h WindowRep.h Transform.h DevisePixmap.h
 XDisplay.o: Compress.h Xdef.h /s/X11/include/X11/Xlib.h
 XDisplay.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
 XDisplay.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
-XDisplay.o: /s/X11/include/X11/Xutil.h XWindowRep.h XBitmap.h Control.h
+XDisplay.o: /s/X11/include/X11/Xutil.h XWindowRep.h Util.h
+XDisplay.o: /usr/include/sys/time.h /usr/include/ctype.h XBitmap.h Control.h
 XDisplay.o: ClassDir.h Init.h BufPolicy.h ../graphics.new/Version.h xv.h
 XDisplay.o: /s/X11/include/X11/Xos.h /usr/include/fcntl.h
 XDisplay.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h
-XDisplay.o: /usr/include/sys/time.h /usr/include/sys/time.h
-XDisplay.o: /usr/include/ctype.h /usr/include/errno.h
+XDisplay.o: /usr/include/sys/time.h /usr/include/errno.h
 XDisplay.o: /usr/include/sys/errno.h /usr/include/malloc.h
 XDisplay.o: /s/X11/include/X11/cursorfont.h /s/X11/include/X11/keysym.h
 XDisplay.o: /s/X11/include/X11/keysymdef.h /s/X11/include/X11/Intrinsic.h
@@ -380,7 +391,7 @@ XDisplay.o: /s/X11/include/X11/Xresource.h /s/X11/include/X11/Core.h
 XDisplay.o: /s/X11/include/X11/Composite.h /s/X11/include/X11/Constraint.h
 XDisplay.o: /s/X11/include/X11/Object.h /s/X11/include/X11/RectObj.h
 XDisplay.o: /s/X11/include/X11/Xmd.h /usr/include/signal.h
-XDisplay.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h Util.h
+XDisplay.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
 XWindowRep.o: /usr/include/unistd.h /usr/include/sys/types.h
 XWindowRep.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
 XWindowRep.o: /usr/include/errno.h /usr/include/sys/errno.h
@@ -394,20 +405,20 @@ XWindowRep.o: Transform.h VisualArg.h Pattern.h DList.h Exit.h DevisePixmap.h
 XWindowRep.o: Compress.h Xdef.h /s/X11/include/X11/Xlib.h
 XWindowRep.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
 XWindowRep.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
-XWindowRep.o: /s/X11/include/X11/Xutil.h XDisplay.h Display.h Dispatcher.h
-XWindowRep.o: Journal.h ColorMgr.h XBitmap.h DevError.h DaliIfc.h Init.h
-XWindowRep.o: BufPolicy.h xv.h /s/X11/include/X11/Xos.h /usr/include/fcntl.h
+XWindowRep.o: /s/X11/include/X11/Xutil.h Util.h /usr/include/sys/time.h
+XWindowRep.o: XDisplay.h Display.h Dispatcher.h Journal.h ColorMgr.h
+XWindowRep.o: XBitmap.h DevError.h DaliIfc.h Init.h BufPolicy.h xv.h
+XWindowRep.o: /s/X11/include/X11/Xos.h /usr/include/fcntl.h
 XWindowRep.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h
-XWindowRep.o: /usr/include/sys/time.h /usr/include/sys/time.h
-XWindowRep.o: /usr/include/malloc.h /s/X11/include/X11/cursorfont.h
-XWindowRep.o: /s/X11/include/X11/Intrinsic.h /s/X11/include/X11/Xresource.h
-XWindowRep.o: /s/X11/include/X11/Core.h /s/X11/include/X11/Composite.h
-XWindowRep.o: /s/X11/include/X11/Constraint.h /s/X11/include/X11/Object.h
-XWindowRep.o: /s/X11/include/X11/RectObj.h /s/X11/include/X11/Xatom.h
-XWindowRep.o: /s/X11/include/X11/Xmd.h /usr/include/signal.h
-XWindowRep.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-XWindowRep.o: ../graphics.new/MapIntToInt.h ../graphics.new/DeviseKey.h
-XWindowRep.o: Util.h
+XWindowRep.o: /usr/include/sys/time.h /usr/include/malloc.h
+XWindowRep.o: /s/X11/include/X11/cursorfont.h /s/X11/include/X11/Intrinsic.h
+XWindowRep.o: /s/X11/include/X11/Xresource.h /s/X11/include/X11/Core.h
+XWindowRep.o: /s/X11/include/X11/Composite.h /s/X11/include/X11/Constraint.h
+XWindowRep.o: /s/X11/include/X11/Object.h /s/X11/include/X11/RectObj.h
+XWindowRep.o: /s/X11/include/X11/Xatom.h /s/X11/include/X11/Xmd.h
+XWindowRep.o: /usr/include/signal.h /usr/include/sys/signal.h
+XWindowRep.o: /usr/include/vm/faultcode.h ../graphics.new/MapIntToInt.h
+XWindowRep.o: ../graphics.new/DeviseKey.h
 XawControl.o: /usr/include/stdio.h /usr/include/stdlib.h
 XawControl.o: /usr/include/sys/stdtypes.h /usr/include/sys/time.h
 XawControl.o: /usr/include/sys/time.h /usr/include/sys/resource.h
@@ -468,6 +479,20 @@ jstat.o: /usr/include/sys/ieeefp.h Journal.h DeviseTypes.h
 jstat.o: /usr/include/values.h DevStatus.h /usr/include/sys/types.h
 jstat.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h VisualArg.h
 jstat.o: Color.h Pattern.h
+junk.o: ../graphics.new/machdep.h /usr/include/limits.h
+junk.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
+junk.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
+junk.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+junk.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+junk.o: /usr/include/sys/time.h /usr/include/sys/time.h
+junk.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
+junk.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+junk.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+junk.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+junk.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+junk.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+junk.o: /usr/include/netdb.h /usr/include/sys/socket.h
+junk.o: /usr/include/netinet/in.h
 test.o: /usr/include/stdio.h /usr/include/sys/time.h Util.h
 test.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 test.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
@@ -581,13 +606,13 @@ TileLayout.o: DList.h Exit.h DeviseTypes.h /usr/include/values.h DevStatus.h
 TileLayout.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 TileLayout.o: /usr/include/sys/sysmacros.h WindowRep.h /usr/include/stdio.h
 TileLayout.o: /usr/include/stdlib.h Geom.h Color.h Transform.h VisualArg.h
-TileLayout.o: Pattern.h DevisePixmap.h Compress.h Display.h Dispatcher.h
-TileLayout.o: /usr/include/unistd.h /usr/include/string.h Journal.h
-TileLayout.o: ColorMgr.h
+TileLayout.o: Pattern.h DevisePixmap.h Compress.h DualWindowRep.h Display.h
+TileLayout.o: Dispatcher.h /usr/include/unistd.h /usr/include/string.h
+TileLayout.o: Journal.h ColorMgr.h
 ViewLayout.o: /usr/include/math.h /usr/include/floatingpoint.h
 ViewLayout.o: /usr/include/sys/ieeefp.h ViewLayout.h ViewWin.h DList.h Exit.h
 ViewLayout.o: DeviseTypes.h /usr/include/values.h DevStatus.h
 ViewLayout.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 ViewLayout.o: /usr/include/sys/sysmacros.h WindowRep.h /usr/include/stdio.h
 ViewLayout.o: /usr/include/stdlib.h Geom.h Color.h Transform.h VisualArg.h
-ViewLayout.o: Pattern.h DevisePixmap.h Compress.h
+ViewLayout.o: Pattern.h DevisePixmap.h Compress.h DualWindowRep.h

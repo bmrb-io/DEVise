@@ -27,13 +27,13 @@ QueryProcTape.o: ../graphics.new/ViewGraph.h ../graphics/View.h
 QueryProcTape.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
 QueryProcTape.o: ../graphics/Geom.h /usr/include/math.h
 QueryProcTape.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-QueryProcTape.o: ../graphics/Compress.h ../graphics/Control.h
-QueryProcTape.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-QueryProcTape.o: ../graphics/AttrList.h /usr/include/sys/time.h
-QueryProcTape.o: ../graphics/Config.h ../graphics/Cursor.h
-QueryProcTape.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
-QueryProcTape.o: ../graphics.new/GdataStat.h HashTable.h
-QueryProcTape.o: ../graphics.new/DataSourceFixedBuf.h
+QueryProcTape.o: ../graphics/Compress.h ../graphics/DualWindowRep.h
+QueryProcTape.o: ../graphics/Control.h ../graphics/ClassDir.h
+QueryProcTape.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+QueryProcTape.o: /usr/include/sys/time.h ../graphics/Config.h
+QueryProcTape.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
+QueryProcTape.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
+QueryProcTape.o: HashTable.h ../graphics.new/DataSourceFixedBuf.h
 QueryProcTape.o: ../graphics.new/DataSourceBuf.h ../graphics.new/UpdateLink.h
 QueryProcTape.o: ../graphics.new/VisualLink.h ../graphics.new/Action.h
 QueryProcTape.o: ../graphics.new/PointStorage.h ../graphics.new/GDataBin.h

@@ -3,6 +3,7 @@ depend:
 		-I/s/X11/include -I/s/tcl/include *.C
 # DO NOT DELETE
 
+CallStk.o: /usr/include/string.h /usr/include/sys/feature_tests.h CallStk.h
 atof.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 atof.o: /usr/include/assert.h /usr/include/ctype.h /usr/include/time.h
 atof.o: /usr/include/math.h /usr/include/floatingpoint.h

@@ -22,6 +22,12 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/10/18 20:34:04  wenger
+  Transforms and clip masks now work for PostScript output; changed
+  WindowRep::Text() member functions to ScaledText() to make things
+  more clear; added WindowRep::SetDaliServer() member functions to make
+  Dali stuff more compatible with client/server library.
+
  */
 
 #ifndef _DualWindowRep_h_
@@ -48,7 +54,7 @@ public:
   WindowRep *GetFileWinRep() { return _fileWinRep; }
 
   void SetScreenOutput();
-  void SetFileOutput();
+  void SetFileOutput(const Rectangle &viewGeom, const Rectangle &parentGeom);
 
   Boolean IsScreenOutput() { return _windowRep == _screenWinRep; }
   Boolean IsFileOutput() { return _windowRep == _fileWinRep; }

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/10/18 20:34:10  wenger
+  Transforms and clip masks now work for PostScript output; changed
+  WindowRep::Text() member functions to ScaledText() to make things
+  more clear; added WindowRep::SetDaliServer() member functions to make
+  Dali stuff more compatible with client/server library.
+
   Revision 1.19  1996/09/19 20:11:54  wenger
   More PostScript output code (still disabled); some code for drawing
   view borders (disabled).
@@ -108,6 +114,8 @@
 #include <tk.h>
 #endif
 
+#define DIRECT_POSTSCRIPT 0
+
 ViewWin::ViewWin(char *name, Color fg, Color bg, int weight, Boolean boundary)
 {
   DO_DEBUG(printf("ViewWin::ViewWin(%s, this = %p)\n", name, this));
@@ -145,7 +153,7 @@ ViewWin::ExportImage(DisplayExportFormat format, char *filename)
   DO_DEBUG(printf("ViewWin::ExportImage(_parent = %p)\n", _parent));
   DevStatus result = StatusOk;
 
-#if 0 //TEMPTEMP
+#if DIRECT_POSTSCRIPT
   if (format == POSTSCRIPT || format == EPS)
   {
     ViewWin *printWinP = this;
@@ -474,6 +482,7 @@ void ViewWin::HandleResize(WindowRep *w, int xlow, int ylow,
 #endif
 
   _hasGeometry = true;
+  /* Why are these forced to zero?  RKW 10/24/96. */
   _x = _y = 0;
   _width = width;
   _height = height;

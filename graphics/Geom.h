@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/08/03 15:36:29  jussi
+  Added line segment width.
+
   Revision 1.8  1996/07/20 18:47:57  jussi
   Added 3D line segment shape and renamed some 3D type names to
   be more general.
@@ -70,6 +73,12 @@ public:
   Point pt[3];              // three corners of the triangle
   Color color;              // color of triangle
   Coord dist;               // distance from camera (for sorting)
+};
+
+class Rectangle {           // rectangle in 2D space
+public:
+  Coord x, y;               // upper left corner unless otherwise noted TEMPTEMP
+  Coord width, height;
 };
 
 // ---------------------------------------------------------- 

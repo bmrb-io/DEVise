@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/09/19 20:11:50  wenger
+  More PostScript output code (still disabled); some code for drawing
+  view borders (disabled).
+
   Revision 1.2  1996/09/10 20:07:08  wenger
   High-level parts of new PostScript output code are in place (conditionaled
   out for now so that the old code is used until the new code is fully
@@ -40,6 +44,8 @@
 #include "Journal.h"
 #include "Init.h"
 #endif
+
+const float pointsPerInch = 72.0;
 
 /*******************************************************************
 Open a new display
@@ -390,4 +396,19 @@ void PSDisplay::PrintPSTrailer()
   //TEMPTEMP?
   fprintf(_printFile, "\nshowpage\n");
   fprintf(_printFile, "%%%%Trailer\n");
+}
+
+/**************************************************************
+Get the geometry of the output page.
+**************************************************************/
+
+void PSDisplay::GetPageGeom(Coord &width, Coord &height, Coord &xMargin,
+  Coord &yMargin)
+{
+  /* Note: the fixed sizes are just temporary -- we need to be able
+   * to set the sizes.  RKW 10/25/96. */
+  width = 8.5 * pointsPerInch;
+  height = 11.0 * pointsPerInch;
+  xMargin = 0.5 * pointsPerInch;
+  yMargin = 0.5 * pointsPerInch;
 }

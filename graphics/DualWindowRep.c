@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/10/18 20:34:03  wenger
+  Transforms and clip masks now work for PostScript output; changed
+  WindowRep::Text() member functions to ScaledText() to make things
+  more clear; added WindowRep::SetDaliServer() member functions to make
+  Dali stuff more compatible with client/server library.
+
  */
 
 #define _DualWindowRep_c_
@@ -29,6 +35,8 @@
 #include <stdio.h>
 
 #include "DualWindowRep.h"
+#include "XWindowRep.h"
+#include "PSWindowRep.h"
 #include "Util.h"
 
 
@@ -116,37 +124,20 @@ DualWindowRep::SetScreenOutput()
  * correctly.
  */
 void
-DualWindowRep::SetFileOutput()
+DualWindowRep::SetFileOutput(const Rectangle &viewGeom,
+  const Rectangle &parentGeom)
 {
   DO_DEBUG(printf("DualWindowRep::SetFileOutput()\n"));
 
-  int count;
+  /* Set up the "pixel" to point transform. This MUST be done before
+   * the WindowRep state is copied so that the "pixel" to point transform
+   * is in place for the PushClips. */
+  ((PSWindowRep *) _fileWinRep)->SetPPTrans(viewGeom, parentGeom);
 
-// Copy 2D transforms.
-  _fileWinRep->ClearTransformStack();
-  for (count = 0; count <= _screenWinRep->_current; count++)
-  {
-    _fileWinRep->_transforms[count].Copy(_screenWinRep->_transforms[count]);
-  }
-  _fileWinRep->_current = _screenWinRep->_current;
+  /* Copy state from screen WindowRep. */
+  _fileWinRep->CopyState(_screenWinRep);
 
-// Copy 3D transforms.
-  _fileWinRep->ClearTransformStack3();
-  for (count = 0; count <= _screenWinRep->_current3; count++)
-  {
-    _fileWinRep->_transforms3[count].Copy(_screenWinRep->_transforms3[count]);
-  }
-  _fileWinRep->_current3 = _screenWinRep->_current3;
-
-// Copy clip masks.
-  ClipRect clip;
-  for (count = 0; count <= _screenWinRep->_clipCurrent; count++)
-  {
-    clip = _screenWinRep->_clippings[count];
-    _fileWinRep->PushClip(clip.x, clip.y, clip.width, clip.height);
-  }
-
-// Set to file output.
+  /* Set to file output. */
   _windowRep = _fileWinRep;
 }
 

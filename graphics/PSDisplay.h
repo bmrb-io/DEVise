@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/09/26 20:25:00  jussi
+  Added missing methods for LIBCS environment.
+
   Revision 1.5  1996/09/19 20:11:51  wenger
   More PostScript output code (still disabled); some code for drawing
   view borders (disabled).
@@ -48,7 +51,7 @@ class PSDisplay: public DeviseDisplay {
 public:
     PSDisplay(char *name = 0);
     //TEMPTEMP -- what about destructor?
-    // destructor should close _printFile if its open
+    // destructor should close _printFile if it's open
 
     /* get file descriptor for connection */
     virtual int fd() { return -1; }
@@ -95,6 +98,9 @@ public:
 
     void PrintPSHeader();
     void PrintPSTrailer();
+
+    void GetPageGeom(Coord &width, Coord &height, Coord &xMargin,
+      Coord &yMargin);
 
 #ifdef LIBCS
     /* Translate RGB colors to pixel values and back */

@@ -4,6 +4,7 @@ depend:
 
 # DO NOT DELETE
 
+CallStk.o: /usr/include/string.h /usr/include/sys/stdsyms.h CallStk.h
 atof.o: /usr/include/stdlib.h /usr/include/sys/stdsyms.h
 atof.o: /usr/include/assert.h /usr/include/ctype.h /usr/include/time.h
 atof.o: /usr/include/sys/time.h /usr/include/math.h ../graphics/Util.h

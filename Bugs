@@ -180,6 +180,12 @@ Num Date        Status  Description
 055 10/22/96	OPEN	You can't find the name (not title) of a view from
 			the GUI. (rkw)
 
+056 10/24/96	OPEN	Too hard to hit the middle of boxes to display
+			record data. (rkw)
+
+057 10/24/96	OPEN	When you switch the layout of a window (e.g., vertical
+			to horizontal) the window often is not redrawn. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.

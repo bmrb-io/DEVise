@@ -4,21 +4,24 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-DevRead.o: /usr/include/stdio.h /usr/include/ansi_compat.h
-DevRead.o: /usr/include/string.h DevRead.h ../graphics/DeviseTypes.h
+DevRead.o: /usr/include/stdio.h /usr/include/string.h
+DevRead.o: /usr/include/sys/stdtypes.h DevRead.h ../graphics/DeviseTypes.h
 DevRead.o: /usr/include/values.h ../graphics/DevStatus.h
-DevRead.o: /usr/include/sys/types.h ../graphics.new/RecId.h types.h
-DevRead.o: /usr/include/assert.h /usr/include/netinet/in.h marshal.h
-DevRead.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/time.h
-DevRead.o: /usr/include/ctype.h /usr/include/math.h ../graphics/Exit.h
+DevRead.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+DevRead.o: ../graphics.new/RecId.h types.h /usr/include/assert.h
+DevRead.o: /usr/include/netinet/in.h marshal.h ../graphics/Util.h
+DevRead.o: /usr/include/stdlib.h /usr/include/time.h /usr/include/ctype.h
+DevRead.o: /usr/include/math.h /usr/include/floatingpoint.h
+DevRead.o: /usr/include/sys/ieeefp.h ../graphics/Exit.h
 DevRead.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
 DevRead.o: ../graphics.new/DataSource.h ../graphics/AttrList.h
 DevRead.o: /usr/include/sys/time.h ../graphics/Config.h ../graphics/DList.h
 DevRead.o: ../graphics.new/DataSeg.h
-drtest.o: /usr/include/stdio.h /usr/include/ansi_compat.h
-drtest.o: /usr/include/sys/types.h DevRead.h ../graphics/DeviseTypes.h
-drtest.o: /usr/include/values.h ../graphics/DevStatus.h
-drtest.o: ../graphics.new/RecId.h types.h /usr/include/assert.h
-drtest.o: /usr/include/netinet/in.h marshal.h
+drtest.o: /usr/include/stdio.h /usr/include/sys/types.h
+drtest.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h DevRead.h
+drtest.o: ../graphics/DeviseTypes.h /usr/include/values.h
+drtest.o: ../graphics/DevStatus.h ../graphics.new/RecId.h types.h
+drtest.o: /usr/include/assert.h /usr/include/netinet/in.h marshal.h
 types.o: types.h /usr/include/assert.h /usr/include/sys/types.h
-types.o: /usr/include/ansi_compat.h /usr/include/netinet/in.h
+types.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+types.o: /usr/include/netinet/in.h

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/10/18 20:34:06  wenger
+  Transforms and clip masks now work for PostScript output; changed
+  WindowRep::Text() member functions to ScaledText() to make things
+  more clear; added WindowRep::SetDaliServer() member functions to make
+  Dali stuff more compatible with client/server library.
+
   Revision 1.3  1996/09/24 19:06:27  wenger
   PostScript code for lines, rects, text at least partially working (disabled
   for commit).  Still needs scaling and colors.  Added files for tarring
@@ -50,7 +56,7 @@ typedef struct {
 } XRectangle;
     
 /**********************************************************************
-Initializer
+Constructor.
 ***********************************************************************/
 
 PSWindowRep::PSWindowRep(DeviseDisplay *display,
@@ -71,12 +77,17 @@ PSWindowRep::PSWindowRep(DeviseDisplay *display,
   Init();
 }
 
+/**********************************************************************
+Initializer
+***********************************************************************/
+
 void PSWindowRep::Init()
 {
 #if defined(DEBUG)
   printf("PSWindowRep::Init(%p)\n", this);
 #endif
   UpdateWinDimensions();
+  _pixToPointTrans.MakeIdentity();
 }
 
 /**************************************************************
@@ -114,7 +125,7 @@ void PSWindowRep::Reparent(Boolean child, void *other, int x, int y)
 void PSWindowRep::PushClip(Coord x, Coord y, Coord w, Coord h)
 {
 #if defined(DEBUG)
-  printf("PSWindowRep::PushClip(%.2f,%.2f,%.2f,%.2f)\n", x, y, w, h);
+  printf("PSWindowRep::PushClip(%.2f, %.2f, %.2f, %.2f)\n", x, y, w, h);
 #endif
 
   Coord xlow, ylow, xhi, yhi, width, height;
@@ -128,8 +139,8 @@ void PSWindowRep::PushClip(Coord x, Coord y, Coord w, Coord h)
   width = xhi - xlow + 1;
   height = yhi - ylow + 1;
   
-#ifdef DEBUG
-  printf("PSWindowRep::PushClip: transformed into (%.2f,%.2f,%.2f,%.2f)\n",
+#if defined(DEBUG)
+  printf("PSWindowRep::PushClip: transformed into (%.2f, %.2f, %.2f, %.2f)\n",
 	 xlow, ylow, width, height);
 #endif
 
@@ -138,6 +149,10 @@ void PSWindowRep::PushClip(Coord x, Coord y, Coord w, Coord h)
   PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
   FILE * printFile = psDispP->GetPrintFile();
 
+  /* Note: the PostScript Ref. Manual says it's dangerous to to an initclip,
+   * but there doesn't seem to be any other way to get rid of the clip mask
+   * for the previous view (if any) when setting things up for this view. */
+  fprintf(printFile, "initclip\n");
   fprintf(printFile, "newpath\n");
   fprintf(printFile, "%f %f moveto\n", xlow, ylow);
   fprintf(printFile, "%f %f lineto\n", xlow, yhi);
@@ -146,6 +161,7 @@ void PSWindowRep::PushClip(Coord x, Coord y, Coord w, Coord h)
   fprintf(printFile, "%f %f lineto\n", xlow, ylow);
   fprintf(printFile, "closepath\n");
   fprintf(printFile, "clip\n");
+  fprintf(printFile, "newpath\n");
 #endif
 
   WindowRep::_PushClip(xlow, ylow, width, height);
@@ -701,12 +717,12 @@ void PSWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
   PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
   FILE * printFile = psDispP->GetPrintFile();
 
-  Coord x1new = x1;
-  Coord y1new = y1;
-  Coord x2new = x2;
-  Coord y2new = y2;
-  TransPixToPoint(x1new, y1new);
-  TransPixToPoint(x2new, y2new);
+  Coord x1new;
+  Coord y1new;
+  Coord x2new;
+  Coord y2new;
+  TransPixToPoint(x1, y1, x1new, y1new);
+  TransPixToPoint(x2, y2, x2new, y2new);
 
   DrawLine(printFile, x1new, y1new, x2new, y2new);
 #endif
@@ -811,8 +827,14 @@ void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
 
   fprintf(printFile, "/Times-Roman findfont\n");//TEMPTEMP
   fprintf(printFile, "15 scalefont\n");//TEMPTEMP
-  fprintf(printFile, "setfont\n");//TEMPTEMP
-  fprintf(printFile, "%f %f moveto\n", tx1, ty1);//TEMPTEMP
+  fprintf(printFile, "setfont\n");
+  fprintf(printFile, "/textX %f def\n", tx1);
+  fprintf(printFile, "/textY %f def\n", ty1);
+
+//TEMPTEMP -- position text here
+  //TEMPTEMPfprintf(printFile, "(%s) stringwidth textWidth textHeight\n", text);
+
+  fprintf(printFile, "textX textY moveto\n");
   fprintf(printFile, "(%s) show\n", text);
 #endif
 }
@@ -923,6 +945,55 @@ void PSWindowRep::Origin(int &x, int &y)
 void PSWindowRep::AbsoluteOrigin(int &x, int &y)
 {
   /* do something */
+}
+
+/* Set up the "pixel" to point transform according to the size and location
+ * of the screen window, and the size of the page to output. */
+
+void PSWindowRep::SetPPTrans(const Rectangle &viewGeom,
+  const Rectangle &parentGeom, Boolean maintainAspect)
+{
+#if defined(DEBUG)
+  printf("PSWindowRep::SetPPTrans()\n");
+  printf("  %f %f %f %f\n", viewGeom.x, viewGeom.y, viewGeom.width,
+    viewGeom.height);
+  printf("  %f %f %f %f\n", parentGeom.x, parentGeom.y, parentGeom.width,
+    parentGeom.height);
+#endif
+
+  /* Get geometry of output page here. */
+  Coord pageWidth;
+  Coord pageHeight;
+  Coord xMargin;
+  Coord yMargin;
+
+  // Note: get rid of cast -- not safe.  RKW 9/19/96.
+  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+  psDispP->GetPageGeom(pageWidth, pageHeight, xMargin, yMargin);
+
+  pageWidth -= 2 * xMargin;
+  pageHeight -= 2 * yMargin;
+
+  if (maintainAspect) {
+    double screenAspect = parentGeom.height / parentGeom.width;
+    double pageAspect = pageHeight / pageWidth;
+
+    if (screenAspect > pageAspect) {
+      pageWidth = pageHeight / screenAspect;
+    } else {
+      pageHeight = pageWidth * screenAspect;
+    }
+  }
+
+  _pixToPointTrans.MakeIdentity();
+
+  Coord xScale = pageWidth / parentGeom.width;
+  Coord yScale = -1.0 * pageHeight / parentGeom.height;
+  _pixToPointTrans.Scale(xScale, yScale);
+  Coord widthAdj = viewGeom.x / parentGeom.width * pageWidth;
+  Coord heightAdj = viewGeom.y / parentGeom.height * pageHeight;
+  _pixToPointTrans.Translate(widthAdj + xMargin,
+    pageHeight - heightAdj + yMargin);
 }
 
 /* Move and resize window, relative to the parent */

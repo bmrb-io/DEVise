@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.32  1996/10/18 20:34:12  wenger
+  Transforms and clip masks now work for PostScript output; changed
+  WindowRep::Text() member functions to ScaledText() to make things
+  more clear; added WindowRep::SetDaliServer() member functions to make
+  Dali stuff more compatible with client/server library.
+
   Revision 1.31  1996/09/06 06:59:45  beyer
   - Improved support for patterns, modified the pattern bitmaps.
   - possitive pattern numbers are used for opaque fills, while
@@ -390,6 +396,12 @@ public:
 
   // ---------------------------------------------------------- 
 
+  /* Copy the "state" (2D transforms, 3D transforms, clip mask)
+     of the given WindowRep. */
+  void CopyState(WindowRep *winRepP);
+
+  // ---------------------------------------------------------- 
+
   /* 2D transformation matrix operations */
   
   /* Push a copy of the top of stack onto the stack */
@@ -543,8 +555,6 @@ public:
   virtual void FreePixmap(DevisePixmap *pixmap) = 0;
 
 protected:
-
-  friend class DualWindowRep;
 
   /* called by derived class to cache current clip region */
   void _PushClip(Coord x, Coord y, Coord w, Coord h) {

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.41  1996/09/19 20:11:54  wenger
+  More PostScript output code (still disabled); some code for drawing
+  view borders (disabled).
+
   Revision 1.40  1996/09/10 20:07:11  wenger
   High-level parts of new PostScript output code are in place (conditionaled
   out for now so that the old code is used until the new code is fully
@@ -434,9 +438,6 @@ protected:
 
 	/* When a query is done, derived class must inform the base class */
 	void ReportQueryDone(int bytes, Boolean aborted = false);
-
-	/* Report size of data display area. */
-	/* void GetDataArea(int &x, int &y, int &width,int &height); */
 
 	/* Find World coord given screen coord */
 	void FindWorld(int sx1, int sy1, int sx2, int sy2,

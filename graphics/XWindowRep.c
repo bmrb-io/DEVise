@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.71  1996/10/18 20:34:13  wenger
+  Transforms and clip masks now work for PostScript output; changed
+  WindowRep::Text() member functions to ScaledText() to make things
+  more clear; added WindowRep::SetDaliServer() member functions to make
+  Dali stuff more compatible with client/server library.
+
   Revision 1.70  1996/09/26 20:39:24  jussi
   Removed duplicate default argument.
 
@@ -599,7 +605,7 @@ void XWindowRep::Reparent(Boolean child, void *other, int x, int y)
 
 void XWindowRep::PushClip(Coord x, Coord y, Coord w, Coord h)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("XWindowRep::PushClip(%.2f,%.2f,%.2f,%.2f)\n", x, y, w, h);
 #endif
 
@@ -614,7 +620,7 @@ void XWindowRep::PushClip(Coord x, Coord y, Coord w, Coord h)
   width = xhi - xlow + 1;
   height = yhi - ylow + 1;
   
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("XwindowRep::PushClip: transformed into (%.2f,%.2f,%.2f,%.2f)\n",
 	 xlow, ylow, width, height);
 #endif

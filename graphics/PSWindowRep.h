@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/10/18 20:34:07  wenger
+  Transforms and clip masks now work for PostScript output; changed
+  WindowRep::Text() member functions to ScaledText() to make things
+  more clear; added WindowRep::SetDaliServer() member functions to make
+  Dali stuff more compatible with client/server library.
+
   Revision 1.5  1996/10/18 15:24:33  jussi
   Added RGB color selection methods for LIBCS compiles.
 
@@ -44,6 +50,7 @@
 #include "WindowRep.h"
 #include "Display.h"
 #include "DList.h"
+#include "Geom.h"
 
 class PSWindowRep;
 
@@ -168,14 +175,23 @@ public:
     virtual void FreePixmap(DevisePixmap *pixmap) {}
 
     virtual void Transform(Coord x, Coord y, Coord &newX, Coord &newY) {
-      _transforms[_current].Transform(x, y, newX, newY);
-      TransPixToPoint(newX, newY);
+      Coord tmpX, tmpY;
+      _transforms[_current].Transform(x, y, tmpX, tmpY);
+      TransPixToPoint(tmpX, tmpY, newX, newY);
     }	
 
+    /* Set up the "pixel" to point transform according to the size and location
+     * of the screen window, and the size of the page to output.  If
+     * maintainAspect is true, the printed output will maintain the same
+     * aspect ratio as the screen window.  Otherwise, the printed output
+     * will be stretched to fill the page. */
+    void SetPPTrans(const Rectangle &viewDim, const Rectangle &parentDim,
+      Boolean maintainAspect = true);
+
     /* Transform from "pixels" to points. */
-    virtual void TransPixToPoint(Coord &newX, Coord &newY) {
-      newY *= -1.0;
-      //TEMPTEMP -- need more scaling stuff here
+    virtual void TransPixToPoint(Coord oldX, Coord oldY, Coord &newX,
+	Coord &newY) {
+      _pixToPointTrans.Transform(oldX, oldY, newX, newY);
     }
 
 
@@ -209,6 +225,9 @@ private:
     /* child/parent links for windows */
     PSWindowRep    *_parent;
     PSWindowRepList _children;
+
+    /* "Pixel" to point transform. */
+    Transform2D _pixToPointTrans;
 };
 
 #endif

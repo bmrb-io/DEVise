@@ -23,8 +23,9 @@ generic.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
 generic.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
 generic.o: ../graphics.new/MapInterpClassInfo.h
 generic.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
-generic.o: ../graphics/ViewWin.h ../graphics/ViewCallback.h
-generic.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
+generic.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
+generic.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+generic.o: ../graphics/Config.h ../graphics/Cursor.h
 generic.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
 generic.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
 generic.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h

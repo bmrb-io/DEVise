@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.79  1996/10/18 20:34:09  wenger
+  Transforms and clip masks now work for PostScript output; changed
+  WindowRep::Text() member functions to ScaledText() to make things
+  more clear; added WindowRep::SetDaliServer() member functions to make
+  Dali stuff more compatible with client/server library.
+
   Revision 1.78  1996/10/02 15:23:38  wenger
   Improved error handling (modified a number of places in the code to use
   the DevError class).
@@ -2864,11 +2870,28 @@ View::PrintPS()
   PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
 
   // Switch this view over to PostScript drawing mode.
-  _winReps.SetFileOutput();
+  Rectangle viewGeom;
+  int xVal, yVal;
+  /* Get the origin from the XWindowRep instead of the ViewWin because
+   * the ViewWin's origin is always set to (0, 0) for some reason. */
+  _winReps.GetScreenWinRep()->Origin(xVal, yVal);
+  viewGeom.x = xVal;
+  viewGeom.y = yVal;
+  viewGeom.width = _width;
+  viewGeom.height = _height;
+
+  Rectangle parentGeom;
+  unsigned int width, height;
+  _parent->Geometry(xVal, yVal, width, height);
+  parentGeom.x = xVal;
+  parentGeom.y = yVal;
+  parentGeom.width = width;
+  parentGeom.height = height;
+
+  _winReps.SetFileOutput(viewGeom, parentGeom);
 
   // Force a refresh to print the PostScript.
   fprintf(psDispP->GetPrintFile(), "\n%% Start of view '%s'\n", _name);
-  fprintf(psDispP->GetPrintFile(), "50 700 translate\n");//TEMPTEMP
   Refresh();
 
   return result;

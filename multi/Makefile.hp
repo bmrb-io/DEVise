@@ -32,6 +32,7 @@ CycleCpuTimeMappingClassInfo.o: ../graphics.new/RecId.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/GDataRec.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/ViewGraph.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/DualWindowRep.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/ViewCallback.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
@@ -92,10 +93,11 @@ CycleEffMappingClassInfo.o: ../graphics.new/TDataMap.h
 CycleEffMappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
 CycleEffMappingClassInfo.o: ../graphics.new/GDataRec.h
 CycleEffMappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
-CycleEffMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/Control.h
-CycleEffMappingClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-CycleEffMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
-CycleEffMappingClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
+CycleEffMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
+CycleEffMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
+CycleEffMappingClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+CycleEffMappingClassInfo.o: ../graphics/Config.h ../graphics/Cursor.h
+CycleEffMappingClassInfo.o: ../graphics.new/BasicStats.h
 CycleEffMappingClassInfo.o: ../graphics.new/ViewStats.h
 CycleEffMappingClassInfo.o: ../graphics.new/GdataStat.h
 CycleEffMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
@@ -150,10 +152,11 @@ CycleOccMappingClassInfo.o: ../graphics.new/TDataMap.h
 CycleOccMappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
 CycleOccMappingClassInfo.o: ../graphics.new/GDataRec.h
 CycleOccMappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
-CycleOccMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/Control.h
-CycleOccMappingClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-CycleOccMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
-CycleOccMappingClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
+CycleOccMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
+CycleOccMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
+CycleOccMappingClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+CycleOccMappingClassInfo.o: ../graphics/Config.h ../graphics/Cursor.h
+CycleOccMappingClassInfo.o: ../graphics.new/BasicStats.h
 CycleOccMappingClassInfo.o: ../graphics.new/ViewStats.h
 CycleOccMappingClassInfo.o: ../graphics.new/GdataStat.h
 CycleOccMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
@@ -217,6 +220,7 @@ CycleSuspendedMappingClassInfo.o: ../graphics.new/RecId.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/GDataRec.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/ViewGraph.h
 CycleSuspendedMappingClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
+CycleSuspendedMappingClassInfo.o: ../graphics/DualWindowRep.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Control.h
 CycleSuspendedMappingClassInfo.o: ../graphics/ClassDir.h
 CycleSuspendedMappingClassInfo.o: ../graphics/ViewCallback.h
@@ -285,6 +289,7 @@ CycleWorkingMappingClassInfo.o: ../graphics.new/RecId.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/GDataRec.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/ViewGraph.h
 CycleWorkingMappingClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
+CycleWorkingMappingClassInfo.o: ../graphics/DualWindowRep.h
 CycleWorkingMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 CycleWorkingMappingClassInfo.o: ../graphics/ViewCallback.h
 CycleWorkingMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
@@ -342,10 +347,11 @@ HostMappingClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
 HostMappingClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 HostMappingClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
 HostMappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
-HostMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/Control.h
-HostMappingClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-HostMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
-HostMappingClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
+HostMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
+HostMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
+HostMappingClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+HostMappingClassInfo.o: ../graphics/Config.h ../graphics/Cursor.h
+HostMappingClassInfo.o: ../graphics.new/BasicStats.h
 HostMappingClassInfo.o: ../graphics.new/ViewStats.h
 HostMappingClassInfo.o: ../graphics.new/GdataStat.h
 HostMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
@@ -392,11 +398,12 @@ MappingClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
 MappingClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 MappingClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
 MappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
-MappingClassInfo.o: ../graphics/ViewWin.h ../graphics/Control.h
-MappingClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-MappingClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
-MappingClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
-MappingClassInfo.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
+MappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
+MappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
+MappingClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+MappingClassInfo.o: ../graphics/Config.h ../graphics/Cursor.h
+MappingClassInfo.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+MappingClassInfo.o: ../graphics.new/GdataStat.h
 MappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
 MappingClassInfo.o: ../graphics.new/DataSourceBuf.h
 MappingClassInfo.o: ../graphics.new/DataSource.h ../graphics.new/UpdateLink.h
@@ -484,9 +491,10 @@ disp.o: ../graphics/Compress.h ../graphics.new/RectShape.h
 disp.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
 disp.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
 disp.o: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
-disp.o: ../graphics/View.h ../graphics/ViewWin.h ../graphics/Control.h
-disp.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-disp.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
+disp.o: ../graphics/View.h ../graphics/ViewWin.h ../graphics/DualWindowRep.h
+disp.o: ../graphics/Control.h ../graphics/ClassDir.h
+disp.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+disp.o: ../graphics/Config.h ../graphics/Cursor.h
 disp.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
 disp.o: ../graphics.new/GdataStat.h ../graphics.new/DataSourceFixedBuf.h
 disp.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/10/18 20:34:11  wenger
+  Transforms and clip masks now work for PostScript output; changed
+  WindowRep::Text() member functions to ScaledText() to make things
+  more clear; added WindowRep::SetDaliServer() member functions to make
+  Dali stuff more compatible with client/server library.
+
   Revision 1.18  1996/09/06 06:59:44  beyer
   - Improved support for patterns, modified the pattern bitmaps.
   - possitive pattern numbers are used for opaque fills, while
@@ -251,4 +257,44 @@ void WindowRep::HandleWindowDestroy()
 Color WindowRep::GetLocalColor(Color globalColor)
 {
   return _display->GetLocalColor(globalColor);
+}
+
+/* Copy the "state" (2D transforms, 3D transforms, clip mask)
+   of the given WindowRep. */
+void
+WindowRep::CopyState(WindowRep *winRepP)
+{
+  int count;
+
+  /* The clip masks much be copied with an identity transform in place
+   * because they've already been transformed once by the WindowRep
+   * we're copying from. */
+
+  /* Copy clip masks. */
+  ClearTransformStack();
+  ClipRect clip;
+  _clipCurrent = -1; // Get rid of all current clip masks.
+  for (count = 0; count <= winRepP->_clipCurrent; count++)
+  {
+    clip = winRepP->_clippings[count];
+    PushClip(clip.x, clip.y, clip.width, clip.height);
+  }
+
+  /* Copy 2D transforms. */
+  ClearTransformStack();
+  for (count = 0; count <= winRepP->_current; count++)
+  {
+    _transforms[count].Copy(winRepP->_transforms[count]);
+  }
+  _current = winRepP->_current;
+
+  /* Copy 3D transforms. */
+  ClearTransformStack3();
+  for (count = 0; count <= winRepP->_current3; count++)
+  {
+    _transforms3[count].Copy(winRepP->_transforms3[count]);
+  }
+  _current3 = winRepP->_current3;
+
+  return;
 }
