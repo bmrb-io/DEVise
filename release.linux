@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/12/13 18:20:48  wenger
+#  Added release.linux; incremented DEVise revision.
+#
 #  Revision 1.9  1996/10/17 23:30:01  wenger
 #  Added sample data, session, and schema files to sources; modified
 #  the release script so that these files get installed into the target
@@ -134,7 +137,7 @@ foreach dir ($rundirs)
   endif
 end
 
-set runfiles = "run_public/devise run_public/devise.dali \
+set runfiles = "run_public/devise run_public/devise.tasvir \
 	run_public/deviseweb run_public/dumpgif.script \
 	run_public/multi"
 
