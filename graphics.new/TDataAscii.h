@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/01/09 18:48:27  jussi
+  Added controlling of live data update frequency.
+
   Revision 1.21  1996/12/18 19:34:06  jussi
   Fixed minor bugs in ReadRecAsync(). Added FlushDataPipe().
 
@@ -243,7 +246,6 @@ private:
 
 	long _totalRecs;                // total number of records
 	long _lastPos;                  // position of last record in file
-	long _currPos;                  // current file position
         long _lastIncompleteLen;        // length of last incomplete record
 
         Boolean _fileOpen;              // true if file is okay

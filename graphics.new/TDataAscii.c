@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.54  1997/01/09 18:48:27  jussi
+  Added controlling of live data update frequency.
+
   Revision 1.53  1996/12/20 16:13:41  jussi
   Removed extraneous message about not being able to use concurrent I/O.
 
@@ -279,7 +282,6 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
     _bytesFetched = 0;
     
     _lastPos = 0;
-    _currPos = 0;
     _lastIncompleteLen = 0;
 
     _totalRecs = 0;
@@ -395,15 +397,15 @@ Boolean TDataAscii::LastID(RecId &recId)
 
   if (!_data->isTape()) {
     /* See if file has shrunk or grown */
-    _currPos = _data->gotoEnd();
+    long currPos = _data->gotoEnd();
 #if DEBUGLVL >= 5
     printf("TDataAscii::LastID: currpos: %ld, lastpos: %ld\n", 
-	   _currPos, _lastPos);
+	   currPos, _lastPos);
 #endif
-    if (_currPos < _lastPos) {
+    if (currPos < _lastPos) {
       /* File has shrunk, rebuild index from scratch */
       InvalidateTData();
-    } else if (_currPos > _lastPos) {
+    } else if (currPos > _lastPos) {
       /* Don't update view more frequently than at 1-second intervals */
       time_t now = time(NULL);
       if (now != _lastFileUpdate) {
@@ -429,7 +431,7 @@ TData::TDHandle TDataAscii::InitGetRecs(RecId lowId, RecId highId,
                                         ReleaseMemoryCallback *callback)
 {
 #if DEBUGLVL >= 3
-  cout << " RecID lowID  = " << lowId << " highId " << highId << endl;
+  printf("TDataAscii::InitGetRecs [%ld,%ld]\n", lowId, highId);
 #endif
 
   DOASSERT((long)lowId < _totalRecs && (long)highId < _totalRecs
@@ -472,11 +474,11 @@ TData::TDHandle TDataAscii::InitGetRecs(RecId lowId, RecId highId,
              offset, bytes, this, req->iohandle);
 #endif
       req->pipeFlushed = false;
-      _currPos = offset;
   }
 
   req->lastChunk = req->lastOrigChunk = NULL;
   req->lastChunkBytes = 0;
+  req->nextChunk = offset;
 
   return req;
 }
@@ -521,6 +523,10 @@ void TDataAscii::DoneGetRecs(TDHandle req)
 {
   DOASSERT(req, "Invalid request handle");
 
+#if DEBUGLVL >= 3
+  printf("TDataAscii::DoneGetRecs: handle %d\n", req->iohandle);
+#endif
+
   /*
      Release chunk of memory cached from pipe.
   */
@@ -534,6 +540,10 @@ void TDataAscii::DoneGetRecs(TDHandle req)
 
 void TDataAscii::FlushDataPipe(TDataRequest *req)
 {
+#if DEBUGLVL >= 3
+  printf("TDataAscii::FlushDataPipe: handle %d\n", req->iohandle);
+#endif
+
   if (req->pipeFlushed)
     return;
 
@@ -548,6 +558,11 @@ void TDataAscii::FlushDataPipe(TDataRequest *req)
     iosize_t bytes;
     int status = _data->Consume(chunk, offset, bytes);
     DOASSERT(status >= 0, "Cannot consume data");
+#if DEBUGLVL >= 3
+    printf("TDataAscii::FlushDataPipe: flushed %lu bytes at offset %llu\n",
+           bytes, offset);
+#endif
+
     if (bytes <= 0)
       break;
     /*
@@ -626,20 +641,18 @@ void TDataAscii::Checkpoint()
 	 _totalRecs, _totalRecs - _initTotalRecs);
   
   if (_lastPos == _initLastPos && _totalRecs == _initTotalRecs)
-    /* no need to checkpoint */
-    return;
+      /* no need to checkpoint */
+      return;
   
   if (!_indexP->Checkpoint(_indexFileName, _data, this, _lastPos,
-    _totalRecs).IsComplete()) goto error;
+                           _totalRecs).IsComplete())
+      return;
 
-  /* This seems unnecessary but it is here to improve tape performance */
+  /*
+     This may appear unnecessary but it is here to
+     improve tape performance.
+  */
   _data->Seek(0, SEEK_SET);
-  _currPos = _data->Tell();
-
-  return;
-  
- error:
-  _currPos = _data->Tell();
 }
 
 
@@ -662,16 +675,16 @@ void TDataAscii::BuildIndex()
   char recBuf[_recSize];
   int oldTotal = _totalRecs;
   
-  _currPos = _lastPos - _lastIncompleteLen;
+  long currPos = _lastPos - _lastIncompleteLen;
 
   /* Don't bother to extend index on tape files */
-  if (_data->isTape() && _currPos > 0) {
+  if (_data->isTape() && currPos > 0) {
       printf("Not extending index on tape file.\n");
       return;
   }
 
   /* First go to last valid position of file */
-  if (_data->Seek(_currPos, SEEK_SET) < 0) {
+  if (_data->Seek(currPos, SEEK_SET) < 0) {
     reportErrSys("fseek");
     return;
   }
@@ -689,8 +702,8 @@ void TDataAscii::BuildIndex()
 
     if (len > 0 && buf[len - 1] == '\n') {
       buf[len - 1] = 0;
-      if (Decode(recBuf, _currPos, buf)) {
-	_indexP->Set(_totalRecs++, _currPos);
+      if (Decode(recBuf, currPos, buf)) {
+	_indexP->Set(_totalRecs++, currPos);
       } else {
 #if DEBUGLVL >= 7
 	printf("Ignoring invalid record: \"%s\"\n", buf);
@@ -704,7 +717,7 @@ void TDataAscii::BuildIndex()
       _lastIncompleteLen = len;
     }
 
-    _currPos += len;
+    currPos += len;
   }
 
   /*
@@ -712,7 +725,7 @@ void TDataAscii::BuildIndex()
      bufferOffset to the next block, past the EOF, when tape file ends.
   */
   _lastPos = _data->Tell();
-  DOASSERT(_lastPos >= _currPos, "Incorrect file position");
+  DOASSERT(_lastPos >= currPos, "Incorrect file position");
 
 #if DEBUGLVL >= 3
   printf("Index for %s: %ld total records, %ld new\n", _name,
@@ -723,9 +736,11 @@ void TDataAscii::BuildIndex()
       fprintf(stderr, "No valid records for data stream %s\n"
               "    (check schema/data correspondence)\n", _name);
 
-  /* This seems unnecessary but it is here to improve tape performance */
+  /*
+     This seems unnecessary but it is here to
+     improve tape performance.
+  */
   _data->Seek(0, SEEK_SET);
-  _currPos = _data->Tell();
 }
 
 /* Rebuild index */
@@ -755,33 +770,33 @@ TD_Status TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
   char line[LINESIZE];
   
   char *ptr = (char *)buf;
+  long currPos = -1;
 
   for(int i = 0; i < numRecs; i++) {
 
-    int len;
-    if (_currPos != (long) _indexP->Get(id + i)) {
-      if (_data->Seek(_indexP->Get(id + i), SEEK_SET) < 0) {
-        perror("fseek");
-        DOASSERT(0, "Cannot perform file seek");
-      }
-      _currPos = _indexP->Get(id + i);
+    if (currPos != (long)_indexP->Get(id + i)) {
+        if (_data->Seek(_indexP->Get(id + i), SEEK_SET) < 0) {
+            perror("fseek");
+            DOASSERT(0, "Cannot perform file seek");
+        }
+        currPos = (long)_indexP->Get(id + i);
     }
     if (_data->Fgets(line, LINESIZE) == NULL) {
       reportErrSys("fgets");
       DOASSERT(0, "Cannot read from file");
     }
-    len = strlen(line);
+    int len = strlen(line);
 
     if (len > 0 ) {
       DOASSERT(line[len - 1] == '\n', "Data record too long");
       line[len - 1] = '\0';
     }
 
-    Boolean valid = Decode(ptr, _currPos, line);
+    Boolean valid = Decode(ptr, currPos, line);
     DOASSERT(valid, "Inconsistent validity flag");
     ptr += _recSize;
 
-    _currPos += len;
+    currPos += len;
   }
 
   return TD_OK;
@@ -810,8 +825,11 @@ TD_Status TDataAscii::ReadRecAsync(TDataRequest *req, RecId id,
         streampos_t offset;
         int status = _data->Consume(chunk, offset, bytes);
         DOASSERT(status >= 0, "Cannot consume data");
-        DOASSERT((off_t)offset == _currPos, "Invalid data chunk consumed");
-        _currPos += bytes;
+        if (offset != req->nextChunk)
+            printf("Got %lu bytes at offset %llu, not at %llu\n",
+                   bytes, offset, req->nextChunk);
+        DOASSERT(offset == req->nextChunk, "Invalid data chunk consumed");
+        req->nextChunk += bytes;
         origChunk = chunk;
     } else {
         req->lastChunk = req->lastOrigChunk = NULL;
@@ -869,7 +887,7 @@ TD_Status TDataAscii::ReadRecAsync(TDataRequest *req, RecId id,
 #endif
       }
 
-      Boolean valid = Decode(ptr, _currPos, record);
+      Boolean valid = Decode(ptr, req->nextChunk, record);
       if (valid) {
         ptr += _recSize;
         recs++;
@@ -923,7 +941,6 @@ void TDataAscii::WriteRecs(RecId startRid, int numRecs, void *buf)
   }
 
   _lastPos = _data->Tell();
-  _currPos = _lastPos;
 }
 
 void TDataAscii::WriteLine(void *line)
@@ -938,7 +955,6 @@ void TDataAscii::WriteLine(void *line)
   }
 
   _lastPos = _data->Tell();
-  _currPos = _lastPos;
 }
 
 void TDataAscii::Cleanup()

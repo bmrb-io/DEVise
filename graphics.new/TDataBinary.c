@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1997/01/09 18:51:59  jussi
+  Added controlling of live data update frequency.
+
   Revision 1.29  1996/12/20 16:13:53  jussi
   Removed extraneous message about not being able to use concurrent I/O.
 
@@ -201,7 +204,6 @@ TDataBinary::TDataBinary(char *name, char *type, char *param,
   _bytesFetched = 0;
   
   _lastPos = 0;
-  _currPos = 0;
   _lastIncompleteLen = 0;
 
   _totalRecs = 0;
@@ -296,15 +298,15 @@ Boolean TDataBinary::LastID(RecId &recId)
 
   if (!_data->isTape()) {
     /* See if file has shrunk or grown */
-    _currPos = _data->gotoEnd();
+    long currPos = _data->gotoEnd();
 #if DEBUGLVL >= 5
     printf("TDataBinary::LastID: currpos: %ld, lastpos: %ld\n", 
-	   _currPos, _lastPos);
+	   currPos, _lastPos);
 #endif
-    if (_currPos < _lastPos) {
+    if (currPos < _lastPos) {
       /* File has shrunk, rebuild index from scratch */
       InvalidateTData();
-    } else if (_currPos > _lastPos) {
+    } else if (currPos > _lastPos) {
       /* Don't update view more frequently than at 1-second intervals */
       time_t now = time(NULL);
       if (now != _lastFileUpdate) {
@@ -374,11 +376,11 @@ TData::TDHandle TDataBinary::InitGetRecs(RecId lowId, RecId highId,
              offset, bytes, this, req->iohandle);
 #endif
       req->pipeFlushed = false;
-      _currPos = offset;
   }
 
   req->lastChunk = req->lastOrigChunk = NULL;
   req->lastChunkBytes = 0;
+  req->nextChunk = offset;
 
   return req;
 }
@@ -537,20 +539,18 @@ void TDataBinary::Checkpoint()
 	 _totalRecs, _totalRecs - _initTotalRecs);
   
   if (_lastPos == _initLastPos && _totalRecs == _initTotalRecs)
-    /* no need to checkpoint */
-    return;
+      /* no need to checkpoint */
+      return;
 
   if (!_indexP->Checkpoint(_indexFileName, _data, this, _lastPos,
-    _totalRecs).IsComplete()) goto error;
+                           _totalRecs).IsComplete())
+      return;
 
-  /* This seems unnecessary but it is here to improve tape performance */
+  /*
+     This seems unnecessary but it is here to
+     improve tape performance.
+  */
   _data->Seek(0, SEEK_SET);
-  _currPos = _data->Tell();
-
-  return;
-  
- error:
-  _currPos = _data->Tell();
 }
 
 /* Build index for the file. This code should work when file size
@@ -563,16 +563,16 @@ void TDataBinary::BuildIndex()
   char recBuf[_recSize];
   int oldTotal = _totalRecs;
   
-  _currPos = _lastPos - _lastIncompleteLen;
+  long currPos = _lastPos - _lastIncompleteLen;
 
   // Don't bother to extend index on tape files
-  if (_data->isTape() && _currPos > 0) {
+  if (_data->isTape() && currPos > 0) {
       printf("Not extending index on tape file.\n");
       return;
   }
 
   // First go to last valid position of file
-  if (_data->Seek(_currPos, SEEK_SET) < 0) {
+  if (_data->Seek(currPos, SEEK_SET) < 0) {
     reportErrSys("fseek");
     return;
   }
@@ -590,8 +590,8 @@ void TDataBinary::BuildIndex()
     DOASSERT(len >= 0, "Cannot read data stream");
 
     if (len == _physRecSize) {
-      if (Decode(recBuf, _currPos / _physRecSize, physRec)) {
-	_indexP->Set(_totalRecs++, _currPos);
+      if (Decode(recBuf, currPos / _physRecSize, physRec)) {
+	_indexP->Set(_totalRecs++, currPos);
       } else {
 #if DEBUGLVL >= 3
 	printf("Ignoring invalid or non-matching record\n");
@@ -605,14 +605,14 @@ void TDataBinary::BuildIndex()
       _lastIncompleteLen = len;
     }
 
-    _currPos += len;
+    currPos += len;
   }
 
   // last position is > current position because TapeDrive advances
   // bufferOffset to the next block, past the EOF, when tape file
   // ends
   _lastPos = _data->Tell();
-  DOASSERT(_lastPos >= _currPos, "Incorrect file position");
+  DOASSERT(_lastPos >= currPos, "Incorrect file position");
 
 #ifdef    DEBUG
   printf("Index for %s: %ld total records, %ld new\n", _name,
@@ -623,9 +623,11 @@ void TDataBinary::BuildIndex()
       fprintf(stderr, "No valid records for data stream %s\n"
               "    (check schema/data correspondence)\n", _name);
 
-  /* This seems unnecessary but it is here to improve tape performance */
+  /*
+     This seems unnecessary but it is here to
+     improve tape performance.
+  */
   _data->Seek(0, SEEK_SET);
-  _currPos = _data->Tell();
 }
 
 /* Rebuild index */
@@ -649,28 +651,29 @@ TD_Status TDataBinary::ReadRec(RecId id, int numRecs, void *buf)
 #endif
 
   char *ptr = (char *)buf;
+  long currPos = -1;
 
   for(int i = 0; i < numRecs; i++) {
 
     long recloc = _indexP->Get(id + i);
 
-    if (_currPos != recloc) {
+    if (currPos != recloc) {
       if (_data->Seek(recloc, SEEK_SET) < 0) {
 	reportErrSys("fseek");
 	DOASSERT(0, "Cannot perform file seek");
       }
-      _currPos = recloc;
+      currPos = recloc;
     }
     if (_data->Fread(ptr, _physRecSize, 1) != 1) {
       reportErrSys("fread");
       DOASSERT(0, "Cannot read from file");
     }
 
-    Boolean valid = Decode(ptr, _currPos / _physRecSize, ptr);
+    Boolean valid = Decode(ptr, currPos / _physRecSize, ptr);
     DOASSERT(valid, "Inconsistent validity flag");
 
     ptr += _recSize;
-    _currPos += _physRecSize;
+    currPos += _physRecSize;
   }
 
   return TD_OK;
@@ -698,8 +701,8 @@ TD_Status TDataBinary::ReadRecAsync(TDataRequest *req, RecId id,
         streampos_t offset;
         int status = _data->Consume(chunk, offset, bytes);
         DOASSERT(status >= 0, "Cannot consume data");
-        DOASSERT((off_t)offset == _currPos, "Invalid data chunk consumed");
-        _currPos += bytes;
+        DOASSERT(offset == req->nextChunk, "Invalid data chunk consumed");
+        req->nextChunk += bytes;
         origChunk = chunk;
 #if DEBUGLVL >= 3
         printf("Consumed %ld bytes from data source\n", bytes);
@@ -733,7 +736,7 @@ TD_Status TDataBinary::ReadRecAsync(TDataRequest *req, RecId id,
          outer loop if there is a fragment of it left.
       */
 
-      long realCurrPos = _currPos - bytes;
+      long realCurrPos = req->nextChunk - bytes;
       if (partialRecSize > 0) {
           memcpy(&ptr[partialRecSize], chunk, _physRecSize - partialRecSize);
           chunk += _physRecSize - partialRecSize;
@@ -802,7 +805,6 @@ void TDataBinary::WriteRecs(RecId startRid, int numRecs, void *buf)
   }
 
   _lastPos = _data->Tell();
-  _currPos = _lastPos;
 }
 
 void TDataBinary::WriteLine(void *rec)
