@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.52  2001/04/20 21:05:11  wenger
+// Changed 3D version of JAVAC_ShowRecords to use the previously-defined
+// JAVAC_ShowRecords3D command; DEVise accepts that command but doesn't
+// but doesn't actually return records yet; updated JavaScreen version;
+// updated command documentation and protocol version.
+//
 // Revision 1.51  2001/04/18 16:04:53  wenger
 // Changed the JSA version of the JavaScreen to have two rows of buttons
 // because we're running out of space; changed JS version to 4.1.
@@ -197,7 +203,7 @@ public final class DEViseGlobals
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
     public static final String VERSION = new String("4.2");
-    public static final String PROTOCOL_VERSION = new String("6.1");
+    public static final String PROTOCOL_VERSION = new String("6.2");
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");
