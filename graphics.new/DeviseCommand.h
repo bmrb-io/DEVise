@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  1999/03/10 19:11:07  wenger
+  Implemented DataReader schema GUI; made other improvements to schema
+  editing GUI, such as sorting the schema lists.
+
   Revision 1.27  1999/03/04 15:11:11  wenger
   Implemented 'automatic filter update' features: views can be designated
   to have their visual filters automatically updated with the 'Update
@@ -1603,6 +1607,18 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(parseDRSchema) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getDupElim) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setDupElim) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

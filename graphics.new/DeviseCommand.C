@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.49  1999/03/10 19:11:05  wenger
+  Implemented DataReader schema GUI; made other improvements to schema
+  editing GUI, such as sorting the schema lists.
+
   Revision 1.48  1999/03/04 15:11:10  wenger
   Implemented 'automatic filter update' features: views can be designated
   to have their visual filters automatically updated with the 'Update
@@ -5416,7 +5420,7 @@ IMPLEMENT_COMMAND_BEGIN(parseDRSchema)
     if (argc == 2) {
 		char *list = DRSchema2TclList(argv[1]);
 		if (list == NULL) {
-    	  ReturnVal(API_NAK, "Unable to parse schema file");
+          ReturnVal(API_NAK, "Unable to parse schema file");
     	  return -1;
 		}
 
@@ -5425,6 +5429,54 @@ IMPLEMENT_COMMAND_BEGIN(parseDRSchema)
 		return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in parseDRSchema\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getDupElim)
+    // Arguments: <view name>
+    // Returns: <duplicate elmination enabled (Boolean)>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+		if (view == NULL) {
+          ReturnVal(API_NAK, "Cannot find view");
+    	  return -1;
+		}
+
+		char buf[256];
+		sprintf(buf, "%d", view->GetDupElim());
+       	ReturnVal(API_ACK, buf);
+		return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in getDupElim\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setDupElim)
+    // Arguments: <view name> <enable duplicate elimination (Boolean)>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 3) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+		if (view == NULL) {
+          ReturnVal(API_NAK, "Cannot find view");
+    	  return -1;
+		}
+
+		Boolean enable = atoi(argv[2]);
+		view->SetDupElim(enable);
+       	ReturnVal(API_ACK, "done");
+		return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in setDupElim\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}

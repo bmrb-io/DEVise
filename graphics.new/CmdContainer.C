@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.32  1999/03/10 19:11:04  wenger
+  Implemented DataReader schema GUI; made other improvements to schema
+  editing GUI, such as sorting the schema lists.
+
   Revision 1.31  1999/03/04 15:11:10  wenger
   Implemented 'automatic filter update' features: views can be designated
   to have their visual filters automatically updated with the 'Update
@@ -466,6 +470,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setViewAutoFilter)
 	REGISTER_COMMAND(updateFilters)
 	REGISTER_COMMAND(parseDRSchema)
+	REGISTER_COMMAND(getDupElim)
+	REGISTER_COMMAND(setDupElim)
 }
 
 CmdContainer::~CmdContainer()

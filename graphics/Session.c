@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.45  1999/03/04 15:10:47  wenger
+  Implemented 'automatic filter update' features: views can be designated
+  to have their visual filters automatically updated with the 'Update
+  Filters' menu selection; alternatively, a session can be opened with
+  the 'Open, Update, and Save' selection, which updates the designated
+  filters and saves the updated session.
+
   Revision 1.44  1999/03/01 17:47:32  wenger
   Implemented grouping/ungrouping of views to allow custom view geometries.
 
@@ -1019,6 +1026,9 @@ Session::SaveView(char *category, char *devClass, char *instance,
       instance, NULL, NULL, true);
 
   status += SaveParams(saveData, "getViewAutoFilter", "setViewAutoFilter",
+      instance, NULL, NULL, true);
+
+  status += SaveParams(saveData, "getDupElim", "setDupElim",
       instance, NULL, NULL, true);
 
   if (status.IsError()) reportErrNosys("Error or warning");

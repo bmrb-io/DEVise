@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.95  1999/03/03 18:22:04  wenger
+  Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
+  and 467 (query errors with sorted attributes); minor improvements to
+  view symbols.
+
   Revision 1.94  1998/12/22 19:39:30  wenger
   User can now change date format for axis labels; fixed bug 041 (axis
   type not being changed between float and date when attribute is changed);
@@ -441,6 +446,7 @@
 #include "MappingInterp.h"
 #include "CountMapping.h"
 #include "DepMgr.h"
+#include "DupElim.h"
 #define STEP_SIZE 20
 
 ImplementDList(GStatList, double)
@@ -595,6 +601,7 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
   _gdsParams.separator = ' ';
 
   _countMapping = NULL;
+  _dupElim = NULL;
 
   _slaveTable = new SlaveTable(this);
   _stringXTableName = NULL;
@@ -656,6 +663,7 @@ ViewGraph::~ViewGraph(void)
     delete _gds;
 	delete queryCallback;
 	delete _countMapping;
+	delete _dupElim;
 
     UnlinkMasterSlave();
 
@@ -1819,7 +1827,13 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
   }
 
   if (_countMapping) {
-    DevStatus result = _countMapping->Init(this);
+	//TEMP -- don't ignore return value??
+    (void) _countMapping->Init(this);
+  }
+
+  if (_dupElim) {
+	//TEMP -- don't ignore return value??
+    (void) _dupElim->Init(this);
   }
 
 #if defined(REPORT_QUERY_TIME)
@@ -2289,6 +2303,29 @@ ViewGraph::UpdateAxisTypes()
           SetZAxisAttrType(FloatAttr);
 	}
       }
+    }
+  }
+}
+
+Boolean
+ViewGraph::GetDupElim()
+{
+  return _dupElim != NULL;
+}
+
+void
+ViewGraph::SetDupElim(Boolean enable)
+{
+  if (enable) {
+    if (!_dupElim) {
+      _dupElim = new DupElim();
+      Refresh();
+    }
+  } else {
+    if (_dupElim) {
+      delete _dupElim;
+      _dupElim = NULL;
+      Refresh();
     }
   }
 }

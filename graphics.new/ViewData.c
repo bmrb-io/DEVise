@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.16  1999/03/03 18:22:04  wenger
+  Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
+  and 467 (query errors with sorted attributes); minor improvements to
+  view symbols.
+
   Revision 1.15  1999/02/11 19:54:59  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -93,6 +98,7 @@
 #include "BooleanArray.h"
 #include "CountMapping.h"
 #include "DerivedTable.h"
+#include "DupElim.h"
 
 //#define DEBUG
 //#define TEST_FILTER_LINK // TEMP -- remove later. RKW 1998-10-29.
@@ -333,7 +339,9 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 			// Draw data only if window is not iconified
 			if (!Iconified())
 			{
-				recs[recIndex++] = ptr;
+				if (!_dupElim || _dupElim->DrawSymbol(ptr)) {
+				    recs[recIndex++] = ptr;
+				}
 
 				if (recIndex == WINDOWREP_BATCH_SIZE)
 				{
@@ -361,11 +369,15 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 			recsFiltered = true;
 			reverseIndex[recIndex] = i + 1;
 
-			// Put records _outside_ the visual filter into the record link.
+			// Here we have a record outside the visual filter.  If the
+			// previous record was _inside_ the visual filter, write
+			// the previous contiguous batch of "inside the filter"
+			// records to the link.
 			if (!MoreMapping(_index))
 			{
-				if (i > firstRec)
+				if (i > firstRec) {
 					WriteMasterLink(recId + firstRec, i - firstRec);
+				}
 
 				// Next contiguous batch of record ids starts at i+1
 				firstRec = i + 1;

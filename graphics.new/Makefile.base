@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.94  1999/03/10 19:11:07  wenger
+#  Implemented DataReader schema GUI; made other improvements to schema
+#  editing GUI, such as sorting the schema lists.
+#
 #  Revision 1.93  1999/01/20 22:47:10  beyer
 #  Major changes to the DTE.
 #  * Added a new type system.
@@ -314,7 +318,7 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
         StringStorage.C PointStorage.C SBufMgr.C MapIntToInt.C MemMgr.C \
 	ETkWindowShape.C DrawTimer.c ViewShape.C NativeExpr.c CountMapping.c \
 	CmdContainer.C DeviseCommand.C ExtStack.C DeviseLink.c DebugLog.c \
-	JavaScreenCmd.h JavaScreenCmd.C DRUtils.c
+	JavaScreenCmd.h JavaScreenCmd.C DRUtils.c DupElim.c
 
 QPSrcc = $(filter %.c,$(QPSrc))
 QPSrcC = $(filter %.C,$(QPSrc))

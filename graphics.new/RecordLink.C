@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1999/02/17 15:09:57  wenger
+  Added "Next in Pile" button to query dialog; more pile fixes; fixed bug
+  in mapping dialog updating when a view is selected.
+
   Revision 1.19  1998/11/11 14:31:01  wenger
   Implemented "highlight views" for record links and set links; improved
   ClassDir::DestroyAllInstances() by having it destroy all links before
@@ -276,7 +280,7 @@ void RecordLink::Initialize()
 void RecordLink::InsertRecs(RecId recid, int num)
 {
 #if defined(DEBUG)
-  printf("RecordLink(%s)::InsertRecs()\n", _name);
+  printf("RecordLink(%s)::InsertRecs(%d, %d)\n", _name, recid, num);
 #endif
 
   if (_disableUpdates) {

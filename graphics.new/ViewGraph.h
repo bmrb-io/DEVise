@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.60  1999/03/03 18:22:04  wenger
+  Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
+  and 467 (query errors with sorted attributes); minor improvements to
+  view symbols.
+
   Revision 1.59  1998/12/22 19:39:31  wenger
   User can now change date format for axis labels; fixed bug 041 (axis
   type not being changed between float and date when attribute is changed);
@@ -388,6 +393,7 @@ DefinePtrDList(MappingInfoList, MappingInfo *);
 DefinePtrDList(MSLinkList, MasterSlaveLink *);
 
 class GDataBin;
+class DupElim;
 
 //******************************************************************************
 // class ViewGraph
@@ -567,6 +573,9 @@ public:
   void GetCountMapping(Boolean &enabled, char *&countAttr, char *&putAttr);
   DevStatus SetCountMapping(Boolean enabled, char *countAttr, char *putAttr);
 
+  Boolean GetDupElim();
+  void SetDupElim(Boolean enable);
+
   void SetStringTable(TDataMap::TableType type, char *name);
   char *GetStringTable(TDataMap::TableType type) {
     return *TableType2NameP(type);
@@ -638,6 +647,7 @@ public:
   BStatList    _blist;  // Keep a list of BasicStats so we can delete them.
 
   CountMapping *_countMapping;
+  DupElim *_dupElim;
 
   Boolean _dataRangesValid;
   Boolean _dataRangeFirst;

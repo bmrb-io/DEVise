@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.180  1999/03/10 19:11:14  wenger
+#	Implemented DataReader schema GUI; made other improvements to schema
+#	editing GUI, such as sorting the schema lists.
+#	
 #	Revision 1.179  1999/03/04 15:11:18  wenger
 #	Implemented 'automatic filter update' features: views can be designated
 #	to have their visual filters automatically updated with the 'Update
@@ -916,6 +920,7 @@ source $libdir/string_table.tcl
 source $libdir/dateformat.tcl
 source $libdir/viewgeom.tcl
 source $libdir/auto_filter.tcl
+source $libdir/dup_elim.tcl
 
 set mode 0
 DEVise changeMode $mode
@@ -1418,6 +1423,8 @@ menu .mbar.gdata.menu -tearoff 0
 
 .mbar.gdata.menu add command -label "Edit Mapping" -command DoEditMapping
 .mbar.gdata.menu add command -label "Count Mapping" -command EditCountMapping
+.mbar.gdata.menu add command -label "Duplicate Elimination" \
+        -command EditDupElim
 .mbar.gdata.menu add command -label "Copy/Edit" -command DoViewCopy
 .mbar.gdata.menu add command -label "Switch TData" -command DoSwitchTData
 .mbar.gdata.menu add command -label "Flush TData" -command DoFlushTData
