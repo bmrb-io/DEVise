@@ -12,9 +12,9 @@ CC	= g++ $(CFLAGS)
 LD	= ld 
 RANLIB	= ranlib
  
-LIBDIR = -L/usr/local/packages/gcc-2.6.3/lib -L/usr/local/packages/local/lib 
+LIBDIR = -L/usr/local/packages/gcc-2.7.2/lib -L/usr/local/packages/local/lib 
  
-INCLUDES = -I/usr/local/packages/gcc-2.6.3/lib/g++-include \
+INCLUDES = -I/usr/local/packages/gcc-2.7.2/lib/g++-include \
 	-I/usr/local/packages/local/include 
  
 #for solaris: command to to make depend 

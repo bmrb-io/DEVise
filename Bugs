@@ -358,6 +358,9 @@ Num Date        Status  Description
 103 12/20/96	OPEN	Bold, italic, and New Century Schoolbook fonts
 			don't work in PostScript. (rkw)
 
+104 12/23/96	CLOSED	AttrProj::LastRecId should report an error when
+			called on TData that doesn't have an index.  (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

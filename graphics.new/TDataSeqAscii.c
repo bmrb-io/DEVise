@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/03 20:31:34  jussi
+  Updated to reflect new TData interface.
+
   Revision 1.3  1996/11/25 18:15:15  wenger
   Changes to non-indexed attrproj to match other changes to TData;
   changes to compile non-index attrproj and to get the rest of Devise
@@ -53,6 +56,7 @@
 #include "DevError.h"
 #include "DataSeg.h"
 #include "QueryProc.h"
+#include "DevError.h"
 
 #ifdef ATTRPROJ
 #   include "ApInit.h"
@@ -157,6 +161,7 @@ Boolean TDataSeqAscii::HeadID(RecId &recId)
 
 Boolean TDataSeqAscii::LastID(RecId &recId)
 {
+  reportErrNosys("LastID is not valid on non-indexed TDatas");
   return false;
 }
 
@@ -289,7 +294,7 @@ TD_Status TDataSeqAscii::ReadRec(RecId id, int numRecs, void *buf)
 
     int len;
 
-    fprintf(stdout, "In ReadRec id: %ld  numRecs: %d\n",id,numRecs);
+    //fprintf(stdout, "In ReadRec id: %ld  numRecs: %d\n",id,numRecs);
     if (_prevRid + 1 == id + i) {
         // We're reading sequentially, _currPos is valid.
         _prevPos = _currPos;
