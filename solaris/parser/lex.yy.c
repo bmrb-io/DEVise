@@ -400,10 +400,31 @@ static char *yy_last_accepting_cpos;
 char *yytext;
 #line 1 "../../parser/scan.lex"
 #define INITIAL 0
-/* definitions */
-#line 4 "../../parser/scan.lex"
+#line 2 "../../parser/scan.lex"
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+  $Id$
+
+  $Log$
+  Revision 1.6  1995/11/25 19:35:37  jussi
+  Added copyright notice and CVS header. Cleaned up the code a bit.
+*/
+
 #include "tokens.h"
-#line 407 "lex.yy.c"
+#line 428 "lex.yy.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -550,9 +571,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 7 "../../parser/scan.lex"
+#line 27 "../../parser/scan.lex"
 
-#line 556 "lex.yy.c"
+#line 577 "lex.yy.c"
 
 	if ( yy_init )
 		{
@@ -637,120 +658,120 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 8 "../../parser/scan.lex"
+#line 28 "../../parser/scan.lex"
 return(TOKEN_X);
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 9 "../../parser/scan.lex"
+#line 29 "../../parser/scan.lex"
 return(TOKEN_Y);
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 10 "../../parser/scan.lex"
+#line 30 "../../parser/scan.lex"
 return(TOKEN_COLOR);
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 11 "../../parser/scan.lex"
+#line 31 "../../parser/scan.lex"
 return(TOKEN_SHAPE);
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 12 "../../parser/scan.lex"
+#line 32 "../../parser/scan.lex"
 return(TOKEN_ORIENTATION);
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 13 "../../parser/scan.lex"
+#line 33 "../../parser/scan.lex"
 return(TOKEN_SHAPEATTR);
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 14 "../../parser/scan.lex"
+#line 34 "../../parser/scan.lex"
 return(TOKEN_LEFT_BRACKET);
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 15 "../../parser/scan.lex"
+#line 35 "../../parser/scan.lex"
 return(TOKEN_RIGHT_BRACKET);
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 16 "../../parser/scan.lex"
+#line 36 "../../parser/scan.lex"
 return(TOKEN_MAPPING);
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 17 "../../parser/scan.lex"
+#line 37 "../../parser/scan.lex"
 return(TOKEN_DYNAMIC);
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 18 "../../parser/scan.lex"
+#line 38 "../../parser/scan.lex"
 return(TOKEN_STATIC);
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 19 "../../parser/scan.lex"
+#line 39 "../../parser/scan.lex"
 return(TOKEN_SEMI_COLON);
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 20 "../../parser/scan.lex"
+#line 40 "../../parser/scan.lex"
 return(TOKEN_COMMA);
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 21 "../../parser/scan.lex"
+#line 41 "../../parser/scan.lex"
 return(TOKEN_LEFT_BRACE);
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 22 "../../parser/scan.lex"
+#line 42 "../../parser/scan.lex"
 return(TOKEN_RIGHT_BRACE);
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 23 "../../parser/scan.lex"
+#line 43 "../../parser/scan.lex"
 return(TOKEN_INT);
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 24 "../../parser/scan.lex"
+#line 44 "../../parser/scan.lex"
 return(TOKEN_INT);
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 25 "../../parser/scan.lex"
+#line 45 "../../parser/scan.lex"
 return(TOKEN_IDENT);
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 26 "../../parser/scan.lex"
+#line 46 "../../parser/scan.lex"
 ;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 27 "../../parser/scan.lex"
+#line 47 "../../parser/scan.lex"
 ;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 28 "../../parser/scan.lex"
+#line 48 "../../parser/scan.lex"
 ;
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 29 "../../parser/scan.lex"
+#line 49 "../../parser/scan.lex"
 syntax_error();
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 30 "../../parser/scan.lex"
+#line 50 "../../parser/scan.lex"
 ECHO;
 	YY_BREAK
-#line 754 "lex.yy.c"
+#line 775 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1610,70 +1631,76 @@ int main()
 	return 0;
 	}
 #endif
-#line 30 "../../parser/scan.lex"
+#line 50 "../../parser/scan.lex"
+
 
 /* user subroutines */
-void syntax_error(){
-	printf("syntax error , buffer contains %s\n", yytext);
-	exit(2);
+
+void syntax_error()
+{
+  printf("syntax error, buffer contains %s\n", yytext);
+  exit(2);
 }
 
 /*******************************************************************
 Read text until a matching '}' is found
-**********************************************************************/
-char *GetText(){
-char buf[2048];
-char c;
-int level = 1;
-int done = 0;
-int index = 0;
-char *text;
+********************************************************************/
 
-    while (!done){
-        c = yyinput();
-        if (c == 0)
-            syntax_error();
-        else if (c == '{'){
-            level++;
-            buf[index++] = c;
-        }
-        else if (c == '}'){
-            if (--level == 0){
-				unput(c);
-                done = 1;
-			}
-            else buf[index++] = c;
-        }
-        else {
-            buf[index++] = c;
-        }
+char *GetText()
+{
+  char buf[2048];
+  int level = 1;
+  int done = 0;
+  int index = 0;
+  char *text;
+
+  while (!done) {
+    char c = yyinput();
+    if (c == 0)
+      syntax_error();
+    else if (c == '{') {
+      level++;
+      buf[index++] = c;
     }
-	buf[index++] = '\0';
+    else if (c == '}') {
+      if (--level == 0) {
+	unput(c);
+	done = 1;
+      } else {
+	buf[index++] = c;
+      }
+    } else {
+      buf[index++] = c;
+    }
+  }
+  buf[index++] = '\0';
+  
+  if (!(text = (char *)malloc(index))) {
+    printf("no memory\n");
+    exit(2);
+  }
 
-	if ((text = (char *)malloc(index))==NULL){
-		printf("no memory\n");
-		exit(2);
-	}
-	bcopy(buf,text,index);
-	return text;
+  memcpy(text, buf, index);
+
+  return text;
 }
 
 /********************************************************************
 Return the current text
-********************************************************************/
-char *GetTokenText(){
-	char *text;
+*********************************************************************/
 
-	if ((text=(char *)malloc(yyleng+1))==NULL){
-		printf("no memory\n");
-		exit(2);
-	}
-	strcpy(text, yytext);
-	return text;
+char *GetTokenText()
+{
+  char *text;
+
+  if (!(text = (char *)malloc(yyleng + 1))) {
+    printf("no memory\n");
+    exit(2);
+  }
+  strcpy(text, yytext);
+  return text;
 }
 
 yywrap()
 {
-
-
 }
