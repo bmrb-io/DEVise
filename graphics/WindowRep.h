@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.85  1999/10/12 17:59:27  wenger
+  Fixed bug in code for checking if the mouse is on a cursor that caused
+  devised to crash with JavaScreen; fixed Dispatcher problem that sometimes
+  caused core dump when DEVise is killed with INT signals; WindowRep
+  remembers last cursor hit type to avoid changing the mouse cursor unless
+  really necessary.
+
   Revision 1.84  1999/10/08 22:04:33  wenger
   Fixed bugs 512 and 514 (problems related to cursor moving).
 
@@ -1062,6 +1069,7 @@ public:
   virtual void PushClip(Coord x, Coord y, Coord w, Coord h) = 0;
   /* pop the clip region. */
   virtual void PopClip() = 0;
+  int ClipDepth() { return _clipCurrent; } // for debugging
   
   /* called by derived class to get current clip region */
 
