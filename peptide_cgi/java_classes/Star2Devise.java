@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2000/08/16 21:50:09  wenger
+// Split calcChemShifts into several smaller methods to make it easier to
+// deal with.
+//
 // Revision 1.4  2000/08/11 21:41:34  wenger
 // Fixed problems with the code assuming that BMRB accession numbers always
 // have four digits.
@@ -774,15 +778,15 @@ public class Star2Devise {
 	} catch (ClassNotFoundException e) {
 	    System.err.println("ClassNotFoundException: " + e.getMessage() );
 	    throw new S2DException(
-	      "Unable to find calculate chem shifts " + acc_num);
+	      "Unable to find/calculate chem shifts for " + _accNum);
 	} catch (IOException e) {
 	    System.err.println("IOException: " + e.getMessage() );
 	    throw new S2DException(
-	      "Unable to find calculate chem shifts " + acc_num);
+	      "Unable to find/calculate chem shifts for " + _accNum);
 	} catch(Exception ex) {
 	    System.err.println("Exception: " + ex.getMessage() );
 	    throw new S2DException(
-	      "Unable to find calculate chem shifts " + acc_num);
+	      "Unable to find/calculate chem shifts for " + _accNum);
 	} finally {
 	    _accNum = null;
 	    _currentDataLoop = null;
@@ -875,14 +879,23 @@ public class Star2Devise {
 	    LoopRowNode currRow 
 		= _currentDataLoop.getVals().elementAt(currRowNum);
 	    
-	    _currChemShiftValue
-		= Double.parseDouble(currRow
-				     .elementAt(_chemShiftValueIndex)
-				     .getValue());
+	    try {
+	        _currChemShiftValue = Double.parseDouble(
+		  currRow.elementAt(_chemShiftValueIndex) .getValue());
+	    } catch(Exception ex) {
+	        System.err.println("Error parsing chem shift value: " +
+		  ex.getMessage());
+		_currChemShiftValue = 0.0;
+	    }
 	    
-	    _currResSeqCode
-		= Integer.parseInt(currRow.elementAt(_residueSeqIndex)
-				   .getValue());
+	    try {
+	    _currResSeqCode = Integer.parseInt(
+	      currRow.elementAt(_residueSeqIndex).getValue());
+	    } catch(Exception ex) {
+	        System.err.println("Error parsing residue sequence code: " +
+		  ex.getMessage());
+		_currResSeqCode = 0;
+	    }
 	    
 	    String currAtomName 
 		= currRow.elementAt(_atomNameIndex).getValue();
@@ -983,15 +996,23 @@ public class Star2Devise {
 	    LoopRowNode currRow
 		= _currentDataLoop.getVals().elementAt(currRowNum);
 	
-	    _currChemShiftValue
-		= Double.parseDouble(currRow
-				     .elementAt(_chemShiftValueIndex)
-				     .getValue());
+	    try {
+	        _currChemShiftValue = Double.parseDouble(
+		  currRow.elementAt(_chemShiftValueIndex).getValue());
+	    } catch(Exception ex) {
+	        System.err.println("Error parsing chem shift value: " +
+		  ex.getMessage());
+		_currChemShiftValue = 0.0;
+	    }
 	      
-	    _currResSeqCode
-		= Integer.parseInt(currRow
-				   .elementAt(_residueSeqIndex)
-				   .getValue());
+	    try {
+	        _currResSeqCode = Integer.parseInt(
+		  currRow.elementAt(_residueSeqIndex).getValue());
+	    } catch(Exception ex) {
+	        System.err.println("Error parsing residue sequence code: " +
+		  ex.getMessage());
+		_currResSeqCode = 0;
+	    }
 
 	    String currAtomName 
  		= currRow.elementAt(_atomNameIndex).getValue();
