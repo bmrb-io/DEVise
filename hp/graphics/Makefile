@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/04/05 20:14:00  wenger
+#  Fixed error causing pure virtual function to be called
+#  if a session was closed during a query; fixed an error
+#  in one of the Linux Makefiles; updated other Makefiles
+#  to allow testWindowRep to be built on all architectures.
+#
 #  Revision 1.3  1996/01/12 18:00:16  jussi
 #  Switched to newer compiler version with all necessary header files.
 #
@@ -28,7 +34,7 @@
 
 ############################################################
 
-ARCH_FLAGS = -DHPUX
+ARCH_FLAGS = -DHPUX -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/tcl/lib
 
 VPATH = ../../graphics

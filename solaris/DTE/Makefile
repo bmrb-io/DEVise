@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1997/03/05 18:31:53  donjerko
+#  Added target gui.
+#
 #  Revision 1.9  1997/02/25 22:17:40  donjerko
 #  *** empty log message ***
 #
@@ -46,6 +49,11 @@
 
 ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include 
 ARCH_LDFLAGS =
+ARCH_GUILDFLAGS = -L/s/X11/lib -L/s/tcl/lib
+ARCH_SYSLIBS = -lm
+ARCH_GUISYSLIBS = -ltk -ltcl -lX11 -lm
+ARCH_LDPOST  = -lsocket -lnsl
+ARCH_ENDIAN =
 
 DTE_DIR = ../../DTE
 VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
@@ -54,21 +62,5 @@ VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
 
 include $(DTE_DIR)/Makefile.base
 include $(DTE_DIR)/Makefile.solaris
-
-dte: $(STAND_ALONE_OBJ)
-	$(CC) -gstabs -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread -lm -lsocket -lnsl
-
-script: $(SCRIPT_OBJ)
-	$(CC) -o script $(SCRIPT_OBJ) -L../devread -ldevread -lm -lsocket -lnsl
-
-gui: $(GUI_OBJ)
-	$(CC) -gstabs -o gui $(GUI_OBJ) -L../devread -L/s/X11/lib -L/s/tcl/lib \
-	-ldevread -lm -ltk -ltcl -lX11 -lsocket -lnsl
-
-FormatVolume: FormatVolume.C
-	$(CC) $< -o $@
-
-convert_bulk: convert_bulk.C correct_math.C heap.o
-	$(CC) heap.o $< -o $@
 
 # DO NOT DELETE

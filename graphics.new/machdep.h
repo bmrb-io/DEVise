@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/12/30 17:51:13  wenger
+  Got latest sources to compile on Linux; updated Linux dependencies;
+  changes devise.dali to devise.tasvir in release script.
+
   Revision 1.17  1996/12/27 17:00:13  wenger
   Got latest code to compile for sun, solsparc, and hp; updated dependencies;
   changed 'Import' to 'New Table' in main window GUI to reflect change of
@@ -477,6 +481,7 @@ EXTERNC unsigned sleep(unsigned);
                                                 /* "double" */
 #define DBL_MIN         2.2250738585072014E-308 /* min decimal value of a */
                                                 /* "double" */
+#define FILENAME_MAX	1024	/* max # of characters in a path name */
 #endif
 
 #if defined(__linux)

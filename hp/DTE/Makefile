@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1997/03/11 22:50:16  donjerko
+#  *** empty log message ***
+#
 #  Revision 1.7  1997/02/03 04:12:27  donjerko
 #  Catalog management moved to DTE
 #
@@ -43,7 +46,12 @@
 ############################################################
 
 ARCH_FLAGS = -DHPUX -I/s/tcl/include
-ARCH_LDFLAGS = -L/s/tcl/lib
+ARCH_LDFLAGS =
+ARCH_GUILDFLAGS = -L/s/X11/lib -L/s/tcl/lib
+ARCH_SYSLIBS = -lm
+ARCH_GUISYSLIBS = -ltk -ltcl -lX11 -lm
+ARCH_LDPOST =
+ARCH_ENDIAN =
 
 DTE_DIR = ../../DTE
 VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
@@ -52,16 +60,3 @@ VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
 
 include $(DTE_DIR)/Makefile.base
 include $(DTE_DIR)/Makefile.hp
-
-dte: $(STAND_ALONE_OBJ)
-	$(CC) -gstabs -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread -lm 
-
-script: $(SCRIPT_OBJ)
-	$(CC) -o script $(SCRIPT_OBJ) -L../devread -ldevread -lm
-
-gui: $(GUI_OBJ)
-	$(CC) -gstabs -o gui $(GUI_OBJ) -L../devread -L/s/X11/lib -L/s/tcl/lib \
-	-ldevread -lm -ltk -ltcl -lX11
-
-FormatVolume: FormatVolume.c
-	$(CC) $< -o $@

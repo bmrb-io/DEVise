@@ -32,7 +32,8 @@ DTE_INCLUDES = \
 	-I../../graphics \
 	-I../../graphics.new \
 	-I../../attrproj \
-	-I$(DTE_DIR)/GUI
+	-I$(DTE_DIR)/GUI \
+	-I$(DTE_DIR)/Script
 
 CFLAGS = -gstabs $(ARCH_FLAGS) $(DTE_INCLUDES)\
 	-Wall -Wno-unused \
@@ -131,6 +132,28 @@ LIBNAME = libdte.a
 all: $(LIBNAME) dte FormatVolume convert_bulk gui
 lib: $(LIBNAME)
 
+dte: $(STAND_ALONE_OBJ)
+	$(CC) -gstabs -o dte $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
+	-L../devread -ldevread $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+
+pure: $(STAND_ALONE_OBJ)
+	purify $(CC) -gstabs -o dte.pure $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
+	-L../devread -ldevread $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+
+script: $(SCRIPT_OBJ)
+	$(CC) -o script $(SCRIPT_OBJ) $(ARCH_LDFLAGS) -L../devread \
+	-ldevread $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+
+gui: $(GUI_OBJ)
+	$(CC) -gstabs -o gui $(GUI_OBJ) $(ARCH_GUILDFLAGS) -L../devread \
+	-ldevread $(ARCH_GUISYSLIBS) $(ARCH_LDPOST)
+
+FormatVolume: FormatVolume.C
+	$(CC) $< -o $@
+
+convert_bulk: convert_bulk.C correct_math.C heap.o
+	$(CC) $(ARCH_ENDIAN) heap.o $< -o $@
+
 devread: 
 	$(foreach item, $(DEVREAD_OBJ), \
 		cd $(dir $(item)); make $(notdir $(item));) \
@@ -152,7 +175,7 @@ $(DTE_DIR)/Core/lex.yy.c: $(DTE_DIR)/Core/my.lex
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm $(LIBNAME) dte FormatVolume convert_bulk
+	-rm $(LIBNAME) dte FormatVolume convert_bulk gui
 
 mostlyclean:
-	-rm $(LIBOBJ) $(STAND_ALONE_OBJ)
+	-rm $(LIBOBJ) $(STAND_ALONE_OBJ) $(GUI_OBJ)
