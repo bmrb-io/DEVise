@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1995/12/14 21:14:02  jussi
+  Replaced 0x%x with 0x%p.
+
   Revision 1.10  1995/12/14 17:22:01  jussi
   Small fixes to get rid of g++ -Wall warnings.
 
@@ -540,6 +543,50 @@ virtual void XWindowRep::FillRect(Coord xlow, Coord ylow, Coord width,
 #endif
 }
 
+virtual void XWindowRep::InvertFillRect(Coord xlow, Coord ylow, Coord width, 
+					Coord height)
+{
+#ifdef DEBUG
+  printf("InvertFillRect: x %.2f, y %.2f, width %.2f, height %.2f\n", 
+	 xlow, ylow, width, height);
+#endif
+
+  /* XXX: need to clip rect against window dimensions */
+
+  Coord txlow, tylow, txmax, tymax;
+  Coord x1, y1, x2, y2;
+  WindowRep::Transform(xlow, ylow + height, x1, y1);
+  WindowRep::Transform(xlow + width, ylow, x2, y2);
+  txlow = MinMax::min(x1, x2);
+  txmax = MinMax::max(x1, x2);
+  tylow = MinMax::min(y1, y2);
+  tymax = MinMax::max(y1, y2);
+  
+  /* fill rectangle, remember that the window coordinate
+     system starts at the upper left corner */
+
+  unsigned pixelWidth = (unsigned)(ROUND(int, txmax) - ROUND(int, txlow) + 1);
+  if (pixelWidth == 0)
+    pixelWidth = 1;
+  unsigned pixelHeight = (unsigned)(ROUND(int, tymax) - ROUND(int, tylow) + 1);
+  if (pixelHeight == 0)
+    pixelHeight = 1;
+  
+#ifdef DEBUG
+  printf("After transformation: x %d, y %d, width %d, height %d\n",
+	 ROUND(int, txlow), ROUND(int, tylow), pixelWidth, pixelHeight);
+#endif
+
+#ifdef GRAPHICS
+  if (_dispGraphics) {
+    XSetFunction(_display, _gc, GXxor);
+    XFillRectangle(_display,_win, _gc, ROUND(int, txlow), ROUND(int, tylow),
+		   pixelWidth, pixelHeight);
+    XSetFunction(_display, _gc, GXcopy);
+  }
+#endif
+}
+
 /* Fill rectangle. All coordinates are in pixels. x and y are
    at the center of the rectangle */
 
@@ -709,6 +756,29 @@ virtual void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
   }
 #endif
 }
+
+virtual void XWindowRep::InvertLine(Coord x1, Coord y1, Coord x2, Coord y2, 
+				    Coord width)
+{
+#ifdef DEBUG
+  printf("XWindowRep::InvertLine %.2f,%.2f,%.2f,%.2f\n", x1, y1, x2, y2);
+#endif
+  
+  Coord tx1, ty1, tx2, ty2;
+  WindowRep::Transform(x1 ,y1, tx1, ty1);
+  WindowRep::Transform(x2, y2, tx2, ty2);
+#ifdef GRAPHICS
+  if (_dispGraphics) {
+    XSetFunction(_display, _gc, GXxor);
+    XSetLineAttributes(_display, _gc, ROUND(int, width), LineSolid, CapButt,
+		       JoinRound);
+    XDrawLine(_display, _win, _gc, ROUND(int, tx1), ROUND(int, ty1),
+	      ROUND(int, tx2), ROUND(int, ty2));
+    XSetFunction(_display, _gc, GXcopy);
+  }
+#endif
+}
+
 
 void XWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
 {
