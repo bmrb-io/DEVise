@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/04/16 00:17:33  jussi
+  Fixed bug in DestroyInstance() and DestroyTransientClasses(). The
+  array of instances/classes was improperly shifted (one-off error).
+
   Revision 1.3  1996/04/14 00:15:35  jussi
   Added copyright notice and cleaned up the code quite a bit.
   Fixed bug in Print() method.
@@ -233,6 +237,23 @@ void *ClassDir::FindInstance(char *name)
   }
 
   return NULL;
+}
+
+/* Destroy all instances */
+
+void ClassDir::DestroyAllInstances()
+{
+  for(int i = 0; i < _numCategories; i++) {
+    CategoryRec *catRec = _categories[i];
+    for(int j = 0; j < catRec->_numClasses; j++) {
+      ClassRec *classRec = catRec->_classRecs[j];
+      for(int k = 0; k < classRec->_numInstances; k++) {
+	ClassInfo *instRec = classRec->_instances[k];
+	delete instRec;
+      }
+      classRec->_numInstances = 0;
+    }
+  }
 }
 
 /* Destroy instance */

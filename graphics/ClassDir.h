@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/04/13 23:39:38  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.3  1995/09/09 00:24:52  jussi
   Increased MaxClasses from 50 to 100.
 
@@ -151,6 +154,9 @@ public:
 
 	/* Find name for instance */
 	char *FindInstanceName(void *instance);
+
+	/* Destroy all instances */
+	void DestroyAllInstances();
 
 	/* Destroy an instance */
 	void DestroyInstance(char *instanceName);
