@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1997/01/24 02:16:45  wenger
+#  Added first versions of automatic test scripts.
+#
 
 ############################################################
 
@@ -24,6 +27,6 @@
 
 ############################################################
 
-crash_test
-export1_test
-export2_test
+crash/crash_test
+export/export1_test
+export/export2_test
