@@ -20,6 +20,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  2001/01/08 20:31:55  wenger
+#  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+#  back onto the trunk.
+#
 #  Revision 1.1.2.9  2000/12/22 15:03:45  wenger
 #  More minor fixes to the CGI stuff.
 #
@@ -68,7 +72,6 @@
 
 ############################################################
 
-use CGI; # qw/:standard :html3/;
 use strict;
 use Socket;
 
@@ -86,7 +89,7 @@ print "Content-type:java_screen\n\n";
 my $tmpbuf;
 read(STDIN, $tmpbuf, $ENV{'CONTENT_LENGTH'});
   print LOG "tmpbuf = <$tmpbuf>\n" if $debug;
-my $query = new CGI($tmpbuf);
+my %cgiArgs = processCGI($tmpbuf);
 
 
 #
@@ -94,11 +97,11 @@ my $query = new CGI($tmpbuf);
 #
 my ($port, $msgtype, $id, $cgi, $nelem, $size);
 
-my @params = $query->param;
+my @params = keys %cgiArgs;
   print LOG "Parameters: @params\n" if $debug;
 
 if (grep /port/, @params) {
-  $port = $query->param('cmdport');
+  $port = $cgiArgs{"cmdport"};
 } else {
   $port = 6666;
 }
@@ -106,14 +109,14 @@ if (grep /port/, @params) {
 
 
 if (grep /msgtype/, @params) {
-  $msgtype = $query->param('msgtype');
+  $msgtype = $cgiArgs{"msgtype"};
     print LOG "msgtype = $msgtype\n" if $debug;
 } else {
   dienice("msgtype not specified");
 }
 
 if (grep /id/, @params) {
-  $id = $query->param('id');
+  $id = $cgiArgs{"id"};
     print LOG "id = $id\n" if $debug;
 } else {
   dienice("id not specified");
@@ -122,14 +125,14 @@ if (grep /id/, @params) {
 $cgi = 1;
 
 if (grep /nelem/, @params) {
-  $nelem = $query->param('nelem');
+  $nelem = $cgiArgs{"nelem"};
     print LOG "nelem = $nelem\n" if $debug;
 } else {
   dienice("nelem not specified");
 }
 
 if (grep /size/, @params) {
-  $size = $query->param('size');
+  $size = $cgiArgs{"size"};
     print LOG "size = $size\n" if $debug;
 } else {
   dienice("size not specified");
@@ -169,14 +172,14 @@ for ($n = 0; $n < $nelem; $n++) {
 
     # Argument length.
     $name = 'len' . $n;
-    $length = $query->param($name);
+    $length = $cgiArgs{$name};
     $out = pack "n", $length;
     $written = syswrite(SOCK, $out, 2) || dienice("send: $!");
     dienice("System write error: $!\n") unless defined $written;
 
     # Argument value.
     $name = 'arg' . $n;
-    $out = $query->param($name);
+    $out = $cgiArgs{$name};
       print LOG "Arg $n = <$out>\n" if ($debug >= 2);
     my $foo = substr($out, 0, -1); #TEMPTEMP? -- strip off last char
     $out = $foo . "\0"; # Append null to match command format.
@@ -212,6 +215,10 @@ exit;
 
 #------------------------------------------------------------------------
 # Die, saving message to debug log file.
+# Arguments:
+#   error message
+# Returns:
+#   nothing
 
 sub dienice {
   my ($errmsg);
@@ -220,4 +227,28 @@ sub dienice {
     print LOG "$errmsg\n";
   }
   die $errmsg;
+}
+
+#------------------------------------------------------------------------
+# Used to parse the CGI arguments, because the CGI package doesn't seem
+# to work at BMRB.
+# Arguments:
+#   buffer containing CGI command string
+# Returns:
+#   hash of name/value pairs
+
+sub processCGI {
+  my $buf = $_[0];
+  print LOG "processCGI($buf)\n" if $debug;
+
+  my @tmpargs = split /&/, $buf;
+
+  my %cgiVals = ();
+  my $tmparg;
+  foreach $tmparg (@tmpargs) {
+    my ($tmpname, $tmpval) = split /=/, $tmparg;
+    $cgiVals{$tmpname} = $tmpval;
+  }
+
+  return %cgiVals;
 }
