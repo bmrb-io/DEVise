@@ -520,7 +520,7 @@ Num Date        Status  Description
 			up. (rkw)
 			Assigned: Kent
 
-126 01/22/97	OPEN	When views are unstacked, they're not always redrawn
+126 01/22/97	FIXED	When views are unstacked, they're not always redrawn
 			correctly. (rkw)
 			Assigned: Jussi
 
