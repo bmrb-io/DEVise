@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/01/30 00:01:42  jussi
+  Made code refer to ForegroundColor and BackgroundColor instead
+  of black and white.
+
   Revision 1.5  1996/01/10 20:59:26  jussi
   Added member variable baseColor.
 
@@ -117,7 +121,7 @@ protected:
 
     /* translate from normalized dimensions of (0,0) to (1,1) into
        real window coordinates.  */
-    vood RealWindowDimensions(Window win, Coord x, Coord y, Coord w, Coord h,
+    void RealWindowDimensions(Window win, Coord x, Coord y, Coord w, Coord h,
 			      Coord &realX, Coord &realY, Coord &realWidth,
 			      Coord &realHeight) {
       Coord winWidth, winHeight;
