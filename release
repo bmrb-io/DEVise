@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/03/24 20:48:08  jussi
+#  Fixed *.txt path.
+#
 #  Revision 1.3  1996/03/24 20:47:16  jussi
 #  Added *.txt to documentation copy command.
 #
@@ -29,9 +32,10 @@
 
 ############################################################
 
-set files = "solaris/generic/generic sun/generic/generic hp/generic/generic \
-	lib/control.tk doc/userman.ps doc/sysman.ps doc/Agreement \
-	doc/Copyright doc/Disclaimer"
+set files = "solaris/generic/generic solsparc/generic/generic \
+	sun/generic/generic hp/generic/generic \
+	lib/control.tk doc/userman.ps doc/sysman.ps \
+	doc/Agreement doc/Copyright doc/Disclaimer"
 set target = /p/devise/public
 
 if ($#argv > 0) then
@@ -70,10 +74,14 @@ echo ""
 echo Releasing new copy of Devise executables...
 ls -l solaris/generic/generic $target/sunx86_54/devise
 cp -p solaris/generic/generic $target/sunx86_54/devise
+ls -l solsparc/generic/generic $target/sun4m_54/devise
+cp -p solsparc/generic/generic $target/sun4m_54/devise
 ls -l sun/generic/generic $target/sun4m_412/devise
 cp -p sun/generic/generic $target/sun4m_412/devise
 ls -l hp/generic/generic $target/hp700_ux90/devise
 cp -p hp/generic/generic $target/hp700_ux90/devise
+#ls -l aix/generic/generic $target/rs_aix32/devise
+#cp -p aix/generic/generic $target/rs_aix32/devise
 
 echo ""
 echo Releasing new Tcl/Tk code...
