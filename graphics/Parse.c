@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/01/11 21:02:06  jussi
+  Added ParseSQLTimestamp() function.
+
   Revision 1.6  1996/01/11 17:17:31  jussi
   Removed bug in call to strcmp(). Month hint was returned too
   eagerly.
@@ -33,12 +36,12 @@
   Added/updated CVS header.
 */
 
-#include <sys/types.h>
-#include <sys/time.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <time.h>
-#include <stdio.h>
-#include <libc.h>
+#include <sys/types.h>
+#include <sys/time.h>
 
 #include "Config.h"
 #include "Exit.h"
