@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.18  1995/11/20 22:22:54  jussi
+#	Changed sequence of caching data from tape to disk.
+#	Restored missing history log.
+#
 #	Revision 1.17  1995/11/19 06:04:29  ravim
 #	New way of displaying attributes and groups.
 #
@@ -145,7 +149,10 @@ proc MacroDefStart {} {
 	    set pattern [lindex $params 7]
 	    set orient [lindex $params 8]
 	    set shape [lindex $params 9]
-	    set defn [list $x $y $color $size $pattern $orient $shape]
+	    set shapeAttr0 [lindex $params 10]
+	    set shapeAttr1 [lindex $params 11]
+	    set defn [list $x $y $color $size $pattern $orient $shape \
+		    $shapeAttr0 $shapeAttr1]
 	    
 	    set mappings($mapname) $defn
 	    if {[string first $mapname $maps($schema)] < 0} {
@@ -279,6 +286,8 @@ proc MacroDefNewMapping {} {
     set pattern [lindex $mappings($gdata) 4]
     set orient [lindex $mappings($gdata) 5]
     set shape [lindex $mappings($gdata) 6]
+    set shapeAttr0 ""
+    set shapeAttr1 ""
 
     # ask DEVise to create view instance
     set sorted SortedX
@@ -300,14 +309,15 @@ proc MacroDefNewMapping {} {
 	# ask DEVise to create interpreted mapping
 	# parameter format: x y color size pattern orientation shape
 	set result [DEVise createInterp $tdata $gdata "" \$$x \$$y \
-		$color $size $pattern $orient $shape "" ""]
+		$color $size $pattern $orient $shape $shapeAttr0 $shapeAttr1]
     }
 
     set mapinstance "$tdata#$gdata" 
     if {[lsearch [GdataSet] $mapinstance] < 0} {
 	# ask DEVise to create an instance of mapping
 	set result [DEVise create mapping $gdata $tdata $mapinstance \
-		"" \$$x \$$y $color $size $pattern $orient $shape "" ""]
+		"" \$$x \$$y $color $size $pattern $orient $shape \
+		$shapeAttr0 $shapeAttr1]
 	DEVise setPixelWidth $mapinstance 1
     }
 
@@ -386,7 +396,7 @@ proc MacroDefHelp {} {
 
 proc MacroDefAuto {tdata} {
     global schemas modified x xtype sortedx yvar selgrp schemaname schema
-    global macroSelectColor macroMenuSelectColor
+    global viewsel viewselname macroSelectColor macroMenuSelectColor
 
     # see if .auto window already exists; if so, just return
     set err [catch {set exists [wm state .auto]}]
@@ -444,19 +454,46 @@ proc MacroDefAuto {tdata} {
     selection clear .auto
 
     label .auto.label -text "Select Auto Parameters"
-    frame .auto.xsel -relief groove -borderwidth 2
+    frame .auto.top
     frame .auto.ysel -relief groove -borderwidth 2
     frame .auto.but
     pack .auto.label -side top -pady 3m -fill x -expand 1
-    pack .auto.xsel -side top -pady 3m -ipady 5m -ipadx 5m
+    pack .auto.top -side top -pady 3m
     pack .auto.ysel -side top -pady 3m -fill x -expand 1
     pack .auto.but -side top -pady 3m -fill x -expand 1
 
-    label .auto.xsel.label -text "Select X" -width 15
+    frame .auto.xsel -relief groove -borderwidth 2
+    frame .auto.viewsel -relief groove -borderwidth 2
+    pack .auto.xsel -in .auto.top -side left -ipady 3m -ipadx 3m -padx 3m
+    pack .auto.viewsel -in .auto.top -side left -ipady 3m -ipadx 3m -padx 3m
+
+    label .auto.xsel.label -text "Select X"
     menubutton .auto.xsel.attr -relief raised \
 	    -textvariable x -menu .auto.xsel.attr.g$selgrp -width 15
-    pack .auto.xsel.label -side left
-    pack .auto.xsel.attr -side left
+    pack .auto.xsel.label .auto.xsel.attr -side left -padx 3m
+
+    label .auto.viewsel.label -text "View Type"
+    menubutton .auto.viewsel.view -relief raised \
+	    -textvariable viewselname -menu .auto.viewsel.view.menu -width 15
+    pack .auto.viewsel.label .auto.viewsel.view -side left -padx 3m
+
+    menu .auto.viewsel.view.menu -tearoff 0
+    .auto.viewsel.view.menu add radiobutton -label "Scatter Plot" \
+	    -variable viewselname -value "Scatter Plot" -command {
+	set viewsel 0
+    }
+    .auto.viewsel.view.menu add radiobutton -label Image \
+	    -variable viewselname -value Image -command {
+	set viewsel 1
+    }
+    .auto.viewsel.view.menu add radiobutton -label "Bar Chart" \
+	    -variable viewselname -value "Bar Chart" -command {
+	set viewsel 2
+    }
+    set viewselname "Bar Chart"
+    set viewsel 2
+
+    tk_menuBar .auto.xsel .auto.xsel.attr
 
     if {$selgrp == "__default"} {
 	set slabel "Select Y"
@@ -467,7 +504,7 @@ proc MacroDefAuto {tdata} {
     }
     label .auto.ysel.label -text $slabel -width $swidth
     pack .auto.ysel.label -side top -fill x -expand 1 -pady 2m
-    frame .auto.ysel.sel -relief groove -borderwidth 2
+    frame .auto.ysel.sel
     pack .auto.ysel.sel -side top -padx 3m -pady 1m -expand 1
     setupButtons .auto.ysel.sel $selgrp $selgrp
 
@@ -477,13 +514,13 @@ proc MacroDefAuto {tdata} {
 #           -command {selYAuto $selgrp $selgrp}
 #    pack .auto.ysel.sel -side top -padx 3m -pady 1m -ipadx 2m -expand 1
 
-
     # Have a list containing the name of the selected group.
     # In every iteration of the loop, create a menu with the name ending
     # with the group name.
+
     set addname($selgrp) .auto.xsel.attr.g$selgrp
     set grplist $selgrp
-   set topgrp $selgrp
+    set topgrp $selgrp
     while {[llength $grplist] > 0} {
 	set grpname [lindex $grplist 0]
 	set grplist [lreplace $grplist 0 0]
@@ -503,7 +540,6 @@ proc MacroDefAuto {tdata} {
 		}
 	}
     }
-
 
 #    menu .auto.xsel.attr.menu -tearoff 0
 
@@ -558,7 +594,7 @@ proc MacroDefAuto {tdata} {
 
     tk_menuBar .auto.xsel .auto.xsel.attr
 
-    button .auto.but.ok -text OK -width 20 -command {
+    button .auto.but.ok -text OK -width 15 -command {
 	set ylist ""
 	foreach yname [array names yvar] {
 	    if {$yvar($yname) > 0} {
@@ -570,26 +606,26 @@ proc MacroDefAuto {tdata} {
 		    "Please select one or more\n\
 		    Y attributes for automatic\n\
 		    mapping." "" 0 OK
-	} else {
-            # We have the correct value for x only - need to find 
-            # out the values for xtype and sortedx before calling
-            # this function
-            foreach attr $schema {
-                 set name [lindex $attr 0]
-                 if {$name != $x} {continue}
-                 set xtype [lindex $attr 1]
-                 set sortedx [lindex $attr 2]
-                 break
-            }
-#            puts "The value of x is $x"
-#            puts "The value of xtype is $xtype"
-#            puts "The value of sortedx is $sortedx"
-#            puts "The ylist is $ylist"
-	    MacroDefAutoActual $tdata $x $xtype $sortedx $ylist
-	    destroy .auto
+	    return
 	}
+	# We have the correct value for x only - need to find 
+	# out the values for xtype and sortedx before calling
+	# this function
+	foreach attr $schema {
+	    set name [lindex $attr 0]
+	    if {$name != $x} {continue}
+	    set xtype [lindex $attr 1]
+	    set sortedx [lindex $attr 2]
+	    break
+	}
+	# puts "The value of x is $x"
+	# puts "The value of xtype is $xtype"
+	# puts "The value of sortedx is $sortedx"
+	# puts "The ylist is $ylist"
+	MacroDefAutoActual $tdata $viewsel $x $xtype $sortedx $ylist
+	destroy .auto
     }
-    button .auto.but.cancel -text Cancel -width 20 -command {
+    button .auto.but.cancel -text Cancel -width 15 -command {
 	destroy .auto
     }
     pack .auto.but.ok .auto.but.cancel -side left -expand 1 -padx 3m
@@ -599,7 +635,7 @@ proc MacroDefAuto {tdata} {
 
 ############################################################
 
-proc MacroDefAutoActual {tdata x xtype sortedx ylist} {
+proc MacroDefAutoActual {tdata viewsel x xtype sortedx ylist} {
     global schemas maps mappings views links windows modified none
     global viewDefault
 
@@ -660,10 +696,19 @@ proc MacroDefAutoActual {tdata x xtype sortedx ylist} {
     set sname [lindex $schemas($tdata) 0]
     set schema [ElimStringAttr [lindex $schemas($tdata) 1]]
     set color 2
-    set shape 2
+    set shape $viewsel
     set size 1
     set pattern 0
     set orient 0
+    set shapeAttr0 ""
+    set shapeAttr1 ""
+
+    if {$shape == 1} {
+	# set pixel width and height to one for image displays
+	set shape 0
+	set shapeAttr0 1
+	set shapeAttr1 1
+    }
 
     foreach attr $schema {
 	set name [lindex $attr 0]
@@ -724,14 +769,16 @@ proc MacroDefAutoActual {tdata x xtype sortedx ylist} {
 	    # ask DEVise to create interpreted mapping
 	    # parameter format: x y color size pattern orientation shape
 	    set result [DEVise createInterp $tdata $mapname "" \$$x \$$name \
-		    $color $size $pattern $orient $shape "" ""]
+		    $color $size $pattern $orient $shape $shapeAttr0 \
+		    $shapeAttr1]
 	}
 
 	set mapinstance "$tdata#$mapname"
 	if {[lsearch [GdataSet] $mapinstance] < 0} {
 	    # ask DEVise to create an instance of mapping
 	    set result [DEVise create mapping $mapname $tdata $mapinstance \
-		    "" \$$x \$$name $color $size $pattern $orient $shape "" ""]
+		    "" \$$x \$$name $color $size $pattern $orient $shape \
+		    $shapeAttr0 $shapeAttr1]
 	    DEVise setPixelWidth $mapinstance 1
 	} else {
 	    puts "$mapinstance exists already -- not creating"
@@ -1396,7 +1443,7 @@ proc DefMapping {tdata schema} {
 	set pidx 0
 	set oidx 0
 	set sidx $devshapes($shape)
-	set defn [list $x $y $cidx $size $pidx $oidx $sidx]
+	set defn [list $x $y $cidx $size $pidx $oidx $sidx "" ""]
 	set mappings($mapname) $defn
     }
 
