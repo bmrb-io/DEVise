@@ -1991,18 +1991,20 @@ Num Date        Status  Description
 511 10/05/99	FIXED	Save hangs if .bak file can't be written. (rkw)
 			(Fixed by rkw, 10/5/99.)
 
-512 10/07/99	OPEN	When you move a cursor by clicking, DEVise doesn't
+512 10/07/99	FIXED	When you move a cursor by clicking, DEVise doesn't
 			realized that the mouse is now on a cursor until
 			the mouse is moved. (rkw)
+			(Fixed by rkw, 10/8/99.)
 
 513 10/07/99	FIXED	Quit while query is running causes DEVise to crash
 			(at least some times). (rkw)
 			(Fixed by rkw, 10/8/99.)
 
-514 10/07/99	OPEN	If there are two piled views, each with a cursor,
+514 10/07/99	FIXED	If there are two piled views, each with a cursor,
 			a mouse click moves both cursors; but in a single view
 			with two cursors, a mouse click only moves one
 			cursor.  (We should make these consistent.) (rkw)
+			(Fixed by rkw, 10/8/99.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

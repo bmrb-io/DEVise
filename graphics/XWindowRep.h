@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.65  1999/09/21 18:58:31  wenger
+  Devise looks for an already-running Tasvir before launching one; Devise
+  can also launch a new Tasvir at any time if Tasvir has crashed; added
+  warning if you use -gl flag with non-OpenGL linked DEVise.
+
   Revision 1.64  1999/09/02 17:25:55  wenger
   Took out the ifdefs around the MARGINS code, since DEVise won't compile
   without them; removed all of the TK_WINDOW code, and removed various
@@ -691,6 +696,7 @@ private:
 				      Coord orientation,
 				      XPoint *points = NULL);
 
+	virtual void UpdateCursorHit();
     void SetMouseCursor(CursorHit::HitType cursorHit);
     static void SetDaliInfo(const char *serverName, Boolean killServer);
 
@@ -749,6 +755,9 @@ private:
 				   // X window
 	XWindowRep *_outWR; // XWindowRep whose X window we're currently
 			    // outputting to, if not our own
+
+	// Last mouse location.
+    int _mouseX, _mouseY;
 };
 
 //******************************************************************************

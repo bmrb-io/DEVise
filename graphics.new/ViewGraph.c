@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.126  1999/10/08 19:57:57  wenger
+  Fixed bugs 470 and 513 (crashes when closing a session while a query
+  is running), 510 (disabling actions in piles), and 511 (problem in
+  saving sessions); also fixed various problems related to cursors on
+  piled views.
+
   Revision 1.125  1999/10/05 17:55:51  wenger
   Added debug log level.
 
@@ -2395,6 +2401,8 @@ void	ViewGraph::HandlePress(WindowRep *, int x1, int y1,
   } else {
     DoHandlePress(NULL, x1, y1, x2, y2, button, state, allowZoom);
   }
+
+  GetWindowRep()->UpdateCursorHit();
 }
 
 void	ViewGraph::DoHandlePress(WindowRep *, int x1, int y1,

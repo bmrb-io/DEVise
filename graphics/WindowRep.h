@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.83  1999/10/04 19:36:59  wenger
+  Mouse location is displayed in "regular" DEVise.
+
   Revision 1.82  1999/09/02 17:25:51  wenger
   Took out the ifdefs around the MARGINS code, since DEVise won't compile
   without them; removed all of the TK_WINDOW code, and removed various
@@ -1091,6 +1094,7 @@ public:
   // Set this window rep's output back to its own window.
   virtual void ResetOutput() = 0;
 
+  virtual void UpdateCursorHit() {}
   static CursorHit &GetCursorHit() { return _cursorHit; }
 
 protected:

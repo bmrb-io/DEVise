@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.135  1999/10/08 19:57:47  wenger
+  Fixed bugs 470 and 513 (crashes when closing a session while a query
+  is running), 510 (disabling actions in piles), and 511 (problem in
+  saving sessions); also fixed various problems related to cursors on
+  piled views.
+
   Revision 1.134  1999/10/04 19:37:00  wenger
   Mouse location is displayed in "regular" DEVise.
 
@@ -2760,14 +2766,9 @@ void XWindowRep::HandleEvent(XEvent &event)
     break;
 
   case MotionNotify:
-    int index;
-    for(index = InitIterator(); More(index); ){
-      WindowRepCallback *c = Next(index);
-      c->IsOnCursor(event.xmotion.x, event.xmotion.y, _cursorHit);
-      SetMouseCursor(_cursorHit._hitType);
-      c->ShowMouseLocation(&event.xmotion.x, &event.xmotion.y);
-    }
-    DoneIterator(index);
+    _mouseX = event.xmotion.x;
+    _mouseY = event.xmotion.y;
+    UpdateCursorHit();
     break;
 #endif
 
@@ -2918,6 +2919,7 @@ void XWindowRep::HandleEvent(XEvent &event)
     break;
 
   case LeaveNotify:
+    int index;
     for(index = InitIterator(); More(index); ){
       WindowRepCallback *c = Next(index);
       c->ShowMouseLocation(NULL, NULL);
@@ -4349,6 +4351,23 @@ XWindowRep::SetDaliInfo(const char *serverName, Boolean killServer)
   Init::SetDaliServer(serverName);
   Init::SetDaliQuit(killServer);
 #endif
+}
+
+void
+XWindowRep::UpdateCursorHit()
+{
+#if defined(DEBUG)
+  printf("XWindowRep(0x%p)::UpdateCursorHit()\n", this);
+#endif
+
+  int index;
+  for(index = InitIterator(); More(index); ){
+    WindowRepCallback *c = Next(index);
+    c->IsOnCursor(_mouseX, _mouseY, _cursorHit);
+    c->ShowMouseLocation(&_mouseX, &_mouseY);
+  }
+  DoneIterator(index);
+  SetMouseCursor(_cursorHit._hitType);
 }
 
 //******************************************************************************

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.197  1999/10/08 19:57:44  wenger
+  Fixed bugs 470 and 513 (crashes when closing a session while a query
+  is running), 510 (disabling actions in piles), and 511 (problem in
+  saving sessions); also fixed various problems related to cursors on
+  piled views.
+
   Revision 1.196  1999/10/05 17:55:38  wenger
   Added debug log level.
 
@@ -1357,13 +1363,15 @@ Boolean View::CheckCursorOp(int x, int y)
   // cursor to where the mouse click happened?  RKW 1998-09-25.
   Coord worldXLow, worldYLow, worldXHigh, worldYHigh;
   FindWorld(x, y, x + 1, y - 1, worldXLow, worldYLow, worldXHigh, worldYHigh);
-  DeviseCursor *cursor = _cursors->GetFirst();
-  DOASSERT(cursor, "Invalid cursor");
-  cursor->MoveSource((worldXHigh + worldXLow) / 2.0,
-		     (worldYHigh + worldYLow) / 2.0);
 
-  //TEMP -- need to update whether mouse is on cursor here
-  // click to move cursor -- DEVise doesn't realize mouse is now on cursor
+  int index = _cursors->InitIterator();
+  while (_cursors->More(index)) {
+    DeviseCursor *cursor = _cursors->Next(index);
+    DOASSERT(cursor, "Invalid cursor");
+    cursor->MoveSource((worldXHigh + worldXLow) / 2.0,
+		       (worldYHigh + worldYLow) / 2.0);
+  }
+  _cursors->DoneIterator(index);
 
   return true;
 }
