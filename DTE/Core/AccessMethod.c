@@ -8,6 +8,7 @@
 #include "DataRead.h"
 #include "DevRead.h"
 #include "DataReader.h"
+#include "Engine.h"
 #include "DTE/types/DteIntAdt.h"
 #include "DTE/types/DteDoubleAdt.h"
 #include "DTE/types/DteStringAdt.h"
@@ -187,3 +188,21 @@ TypeID DataReaderAM::translateUDType(Attr* at){
    return "unknown";
 }
 #endif
+
+// *** YL
+
+Iterator* ViewAM::createExec()
+{
+  Engine engine (query);
+  engine.optimize ();
+  return engine.createExec();
+}
+
+vector<OptExpr*> ViewAM::getProjectList(const string& alias) const
+{
+	vector<OptExpr*> retVal;
+	for(int i = 0; i < numFlds; i++){
+		retVal.push_back(new OptField(alias, attributeNames[i]));
+	}
+	return retVal;
+}

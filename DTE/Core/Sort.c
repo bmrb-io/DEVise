@@ -119,7 +119,7 @@ void SortExec::generate_runs(HeapInserter* tempFile)
   const Tuple* tup;
   while( (tup = inpIter->getNext()) != NULL ) {
     //kb: make runs based on memory, rather than num tuples
-    table[N++] = tupleLoader.insert(tup);
+    ((const Tuple **) (table))[N++] = tupleLoader.insert(tup);
     if( N == MAX_RUN_SIZE ) {
       //cerr << "read time: " << time.ElapsedTime() << endl;
       sort_and_write_run(table, N, tempFile);

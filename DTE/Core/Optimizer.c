@@ -379,7 +379,7 @@ string GestaltQueryProduced::toString() const
 }
 
 Iterator* SPQueryProduced::createExec(const Query& q, bool isTop) const 
-{
+{	
 	assert(bestAlt);
 
 	OptExprList inputProj = bestAlt->getProjectList(aliasM);

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.24  1999/01/20 22:46:06  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.23  1998/07/24 04:37:48  donjerko
   *** empty log message ***
 
@@ -162,9 +168,13 @@ public:
 	}
         */
 
+	// *** YL
 	virtual Iterator* createExec(){
-		assert(0);
-		return 0;
+	  //assert(0);
+	  //return 0;
+	  Iterator *tmp = topNodeIt;
+	  topNodeIt = 0;
+	  return tmp;
 	}
 };
 
@@ -178,3 +188,4 @@ public:
 };
 
 #endif
+

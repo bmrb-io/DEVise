@@ -794,6 +794,14 @@ vector<AccessMethod*> GestaltInterface::createAccessMethods()
 */
 }
 
+// *** YL
+vector<AccessMethod*> ViewInterface::createAccessMethods()
+{
+	vector<AccessMethod*> retVal;
+	AccessMethod* sr= new ViewAM(query, numFlds, attributeNames);
+	retVal.push_back (sr);
+	return retVal;
+}
 
 istream& CatalogInterface::read(istream& in){
 	in >> urlString;

@@ -235,6 +235,8 @@ public:
 	virtual Interface* copyTo(void* space){
 		return new (space) ViewInterface(*this);
 	}
+
+	virtual vector<AccessMethod*> createAccessMethods();
 };
 
 class MaterViewInterface : public Interface {

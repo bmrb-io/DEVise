@@ -48,6 +48,25 @@ public:
 	virtual vector<OptExpr*> getProjectList(const string& alias) const;
 };
 
+class ViewAM: public AccessMethod 
+{
+  string query;
+  int numFlds;
+  vector<string> attributeNames;
+  
+public:
+  ViewAM(const string& q, int n, string *attrNames) : query(q), numFlds (n)
+    {
+      for (int i = 0; i < numFlds; attributeNames.push_back (attrNames [i ++]));
+    }
+      
+  ~ViewAM () {}
+  virtual string getName () const { return "ViewAcess"; }
+  virtual Iterator* createExec ();
+  virtual Cost getCost() const { return 0; }
+  virtual vector<OptExpr*> getProjectList (const string& alias) const;
+};
+
 class DataReader;
 class Attr;
 
@@ -75,3 +94,4 @@ public:
 };
 
 #endif
+
