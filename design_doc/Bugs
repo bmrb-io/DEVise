@@ -2975,6 +2975,11 @@ Num Date        Status  Description
 			collaboration mode or enter the wrong collaboration
 			password. (rkw)
 
+740 12/10/01	OPEN	When saving a session file with per-session data
+			source definitions, environment variable names should
+			be substituted in as they are when writing to the
+			main data source catalog. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
