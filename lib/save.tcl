@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/03/07 17:00:23  jussi
+#  Added support for number of dimensions.
+#
 #  Revision 1.1  1996/01/23 20:50:58  jussi
 #  Initial revision.
 #
@@ -268,16 +271,14 @@ proc DoActualSave { infile asTemplate } {
     puts $f  ""
 
     puts $f "# Create interpreted mapping classes "
-    set mapClasses [ DEVise interpMapClassInfo ]
+    set mapClasses [ DEVise get mapping ]
     foreach mclass $mapClasses {
 	# puts "mclass $mclass"
-	set mapTData [DictLookup $fileDict [lindex $mclass 0]]
-	puts $f "DEVise createInterp \$$mapTData [lrange $mclass 1 end]"
+	puts $f "DEVise createMappingClass $mclass"
     }
     puts $f ""
 
     puts $f "# Create mappings instances (and GData)"
-    set mapClasses [DEVise get mapping]
     set mapDict ""
     set mapNum 1
     foreach mapClass $mapClasses {
