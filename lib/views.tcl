@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.46  1998/02/20 06:17:23  beyer
+#  resurected histograms
+#
 #  Revision 1.45  1998/02/03 23:46:51  wenger
 #  Fixed a problem Hongyu had with getting GData on socket; fixed bugs
 #  283 and 285 (resulted from problems in color manager merge);
@@ -2071,16 +2074,16 @@ proc DoGroupByStat {} {
 ############################################################
 proc DoHistStat {} {
     global curView windowsel
-#    global viewsel linksel windowsel bgcolor
-#    global titlesel xaxissel yaxissel byAttr ylist newgdata
 
-#    if {[WindowVisible .histStat]} {
-#	return 
-#    }
+    if {[WindowVisible .histStat]} {
+        destroy .histStat
+    }
     if {$curView == ""} {
         dialog .viewNotFound "No view selected" "" 0 OK
         return
     }
+
+puts [DEVise getHistViewname $curView]
 
     set histdata [DEVise getHistogram $curView]
     set min [lindex $histdata 0]
@@ -2094,12 +2097,20 @@ proc DoHistStat {} {
     wm geometry .histStat +150+150
 
     set labelwidth 10
+    set entrywidth 20
+
+    frame .histStat.viewFrame
+    label .histStat.viewLabel -text "view" -width $labelwidth
+    label .histStat.viewValue -text $curView -width $entrywidth -anchor w
+    pack .histStat.viewLabel .histStat.viewValue \
+            -in .histStat.viewFrame -side left
+    pack .histStat.viewFrame -side top
 
     frame .histStat.winFrame
     label .histStat.windowLabel -text "window" -width $labelwidth
     menubutton .histStat.windowsel -relief raised \
 		-textvariable windowsel -menu .histStat.windowsel.windowMenu \
-		-width 20
+		-width $entrywidth
     pack .histStat.windowLabel .histStat.windowsel -in .histStat.winFrame \
 		-side left -pady 1m
     pack .histStat.winFrame -side top
@@ -2109,7 +2120,6 @@ proc DoHistStat {} {
         .histStat.windowsel.windowMenu add command -label $w \
                 -command "set windowsel {$w}"
     }
-
     .histStat.windowsel.windowMenu add separator
     .histStat.windowsel.windowMenu add command -label "New..." -command {
         set newwin [DoCreateWindow "Select window type"]
@@ -2122,32 +2132,44 @@ proc DoHistStat {} {
 
     frame .histStat.minFrame
     label .histStat.minLabel -text "min" -width $labelwidth
-    entry .histStat.minEntry
+    entry .histStat.minEntry -width $entrywidth
     .histStat.minEntry insert 0 $min
     pack .histStat.minLabel .histStat.minEntry -in .histStat.minFrame -side left
     pack .histStat.minFrame -side top
 
     frame .histStat.maxFrame
     label .histStat.maxLabel -text "max" -width $labelwidth
-    entry .histStat.maxEntry
+    entry .histStat.maxEntry -width $entrywidth
     .histStat.maxEntry insert 0 $max
     pack .histStat.maxLabel .histStat.maxEntry -in .histStat.maxFrame -side left
     pack .histStat.maxFrame -side top
 
     frame .histStat.bucketsFrame
     label .histStat.bucketsLabel -text "buckets" -width $labelwidth
-    entry .histStat.bucketsEntry
+    entry .histStat.bucketsEntry -width $entrywidth
     .histStat.bucketsEntry insert 0 $buckets
     pack .histStat.bucketsLabel .histStat.bucketsEntry \
             -in .histStat.bucketsFrame -side left
     pack .histStat.bucketsFrame -side top
 
+    set bucketWidth [expr (double($max) - $min) / $buckets ]
+    frame .histStat.widthFrame
+    label .histStat.widthLabel -text "width" -width $labelwidth
+    label .histStat.widthValue -text $bucketWidth -width $entrywidth \
+            -anchor w
+    pack .histStat.widthLabel .histStat.widthValue \
+            -in .histStat.widthFrame -side left
+    pack .histStat.widthFrame -side top
+
     frame .histStat.bottom
-    button .histStat.ok -text OK -width 15 -command {
+    button .histStat.apply -text Apply -width 15 -command {
         set min [.histStat.minEntry get]
         set max [.histStat.maxEntry get]
         set buckets [.histStat.bucketsEntry get]
-	set tdata "Hist: $curView"
+        set bucketWidth [expr (double($max) - $min) / $buckets ]
+        .histStat.widthValue configure -text $bucketWidth
+        set view [.histStat.viewValue cget -text]
+	set tdata "Hist: $view"
         DEVise setHistogram $curView $min $max $buckets
 	if {![DEVise exists $tdata]} { 
             set viewsel 2  
@@ -2171,16 +2193,16 @@ proc DoHistStat {} {
             MacroDefAutoActual "{$tdata}" $viewsel $linksel $windowsel \
                     $titlesel $xaxissel $yaxissel $x $ylist $newgdata 
         }
-        destroy .histStat
     }
 
-    button .histStat.cancel -text Cancel -width 15 \
+    button .histStat.close -text Close -width 15 \
             -command { destroy .histStat }
-    pack .histStat.ok .histStat.cancel -in .histStat.bottom -side left -pady 1m 
+    pack .histStat.apply .histStat.close \
+            -in .histStat.bottom -side left -pady 1m 
     pack .histStat.bottom -side top
 
-    grab set .histStat
-    tkwait window .histStat
+#    grab set .histStat
+#    tkwait window .histStat
 }
 
 ############################################################
