@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/10/12 21:24:19  wenger
+  Fixed bugs 405, 406, and 408 (all DataReader problems); considerably
+  increased the robustness of the DataReader (partly addresses bug 409);
+  added test targets in the makefile, and corresponding data and schemas.
+
   Revision 1.8  1998/10/06 20:06:32  wenger
   Partially fixed bug 406 (dates sometimes work); cleaned up DataReader
   code without really changing functionality: better error handling,
@@ -75,7 +80,6 @@ private:
 	Holder* _comment; //Comment string
 	char* _EOLCheck; //char array used for comparing current character to EOL 
 	char** _separatorCheck; //same as EOLCheck, we use different arrays for each attribute
-
 	// temporary values
 	DateInfo _curDate;
 	int _posTarget; // Applies only while reading a string attribute
@@ -94,10 +98,13 @@ private:
 	Status checkEOL(char curChar); //Checks if the next character sequence is EOL
 	Status checkSeparator(char curChar, Attribute* myAttr); // Checks if the next character sequence is a Separator
 	Status checkAll(char curChar, Attribute* myAttr); // Combination of EOL & Separator
-	Status checkComment(); // Check if this record begins with a comment
 	
 	// Reads n characters from file stream and calculates the integer value
 	Status getInt(int maxValLen, int& value);
+	
+	// Reads n characters from file stream and calculates the integer value
+	// Also adds extra 0's for fractional seconds
+	Status getFracInt(int maxValLen, int& value);
 
 	// This function is used to match a given string in a given array of strings
 	// I use this function to find the number of the given month
@@ -113,6 +120,9 @@ private:
 	int _nAttr;
 	char** _months; // array of month names
 	char** _monthAbbr; // array of abbreviated month names
+	char* _tmpB; // temporary Buffer for double types
+	char* _tmpBStart;
+	bool _dataInValid;
 
 public:
 	Buffer(const char* fileName, DRSchema* myDRSchema, Status &status); // constructor
@@ -150,6 +160,8 @@ public:
 	// reads a date field from data file
 	Status getDate(Attribute* myAttr, char* dest);
 
+	Status checkComment(); // Check if this record begins with a comment
+
 	// to make the interface easier, a single function is 
 	// used for reading fields, this function calls proper
 	// extractors using void function pointer arrays
@@ -161,7 +173,9 @@ public:
 
 	// consume any remaining charaters before the end of the current
 	// record; does nothing if no record delimiter is defined
-	Status consumeRecord();
+	Status consumeRecord(Status tmpS);
+	void unSetInValid() { _dataInValid = true;}
+	bool getInValid() { return _dataInValid;}
 };
 
 #endif

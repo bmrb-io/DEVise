@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/10/20 15:15:47  beyer
+  workaround for proper eof detection (first field must be zero).
+
   Revision 1.16  1998/10/16 21:29:35  beyer
   fixed length integers can have leading spaces
 
@@ -67,6 +70,7 @@
 
 #include "Buffer.h"
 #include "DateTime.h"
+#include "Util.h"
 
 //#define DEBUG
 //#define DEBUG_DATE
@@ -100,8 +104,12 @@ Buffer::Buffer(const char* fileName, DRSchema* myDRSchema, Status &status) {
 		_EOL = myDRSchema->getDelimiter();
 		for (i = 0 ; i < _EOL->length ; i++) {
 			//TEMP -- array bounds error here if delimiter char is > 127
+			//TEMPANS -- I designed this for unix knowing that there are only
+			//           127 chars in ASCII, this can be changed easily if needed
 			_EOLCheck[_EOL->data[i]] = 1;
 		}
+	} else {
+		_EOL = NULL;
 	}
 
 	_separatorCheck = new char*[myDRSchema->qAttr];
@@ -146,6 +154,8 @@ Buffer::Buffer(const char* fileName, DRSchema* myDRSchema, Status &status) {
 	maxLens = new int[myDRSchema->qAttr];
 	fieldLens = new int[myDRSchema->qAttr];
 	quoteChars = new char[myDRSchema->qAttr];
+	_tmpB = new char[40];
+	_tmpBStart = _tmpB;
 
 
 	// Initialize _separatorCheck to make faster separator comparison
@@ -166,6 +176,8 @@ Buffer::Buffer(const char* fileName, DRSchema* myDRSchema, Status &status) {
 
 		//TEMP -- why do we copy all of this stuff into here instead
 		// of just referencing the schema?
+		//TEMPANS -- Just to speed up the code, we can read these by calling these 
+		//           functions, but it will slow down the program
 		maxLens[i] = myDRSchema->tableAttr[i]->getMaxLen();
 		fieldLens[i] = myDRSchema->tableAttr[i]->getFieldLen();
 		quoteChars[i] = myDRSchema->tableAttr[i]->getQuote();
@@ -173,7 +185,7 @@ Buffer::Buffer(const char* fileName, DRSchema* myDRSchema, Status &status) {
 		if (myDRSchema->tableAttr[i]->getFieldLen() != -1) {
 			switch (myDRSchema->tableAttr[i]->getType())	{
 				case TYPE_INVALID:
-					cerr << "Invalid attribute type\n";
+					cerr << "InValid attribute type\n";
 					break;
 				case TYPE_INT:
 					extFunc[i] = &getIntLen;
@@ -198,9 +210,11 @@ Buffer::Buffer(const char* fileName, DRSchema* myDRSchema, Status &status) {
 			valFunc[i] = &getStringVal;
 		} else {
 			//TEMP -- why two switches????
+			//TEMPANS -- The first one is for variable length fields and this one is for
+			//           fixed length fields, these two are implemented in different ways
 			switch (myDRSchema->tableAttr[i]->getType()) {
 				case TYPE_INVALID:
-					cerr << "Invalid attribute type\n";
+					cerr << "InValid attribute type\n";
 					break;
 				case TYPE_INT:
 					extFunc[i] = &getIntTo;
@@ -283,27 +297,14 @@ Status Buffer::setBufferPos(int cPos) {
 }
 
 void Buffer::getDoubleVal(char* dest) {
-// Double fields have two components : Mantissa and Exponent
-// Double extractor functions stores the Mantissa value in Exponent first
-// and if this function finds an exponent, moves Mantissa value from Exponent
-// variable to _fRetVal
-
-	double retVal = 0;
-	double retExp = 0;
-	if (_fRetVal == 0) 
-		retVal = _exponent * (_sign == true ? -1.0 : 1.0);
-	else {
-		retVal = _fRetVal * (_sign == true ? -1.0 : 1.0);
-		retExp = _exponent * (_expSign == true ? -1.0 : 1.0);
-		retVal = (retVal == 0 ? 1 : retVal * pow(10.0,retExp));
-	}
+// Returns value of _fRetVal, which is calculated by UtilAtof()
 
 #if defined(DEBUG)
 	cout << "Buffer::getDoubleVal(" << retVal << ")\n";
 #endif
 
 	// We MUST use memcpy() here in case dest is not aligned.
-	memcpy(dest, &retVal, sizeof(retVal));
+	memcpy(dest, &_fRetVal, sizeof(_fRetVal));
 }
 
 void Buffer::getIntVal(char* dest) {
@@ -395,33 +396,38 @@ Status Buffer::checkComment() {
 // delimiter, otherwise backs up ifstream and returns OK
 
 	char tmpChar;
-
-	for (int i = 0; i < _comment->length; i++) {
-		if ((tmpChar = getChar()) == 0) {
-			return FOUNDEOF;
-		}
-		if (tmpChar != _comment->data[i]) {
-			_in.seekg((-1)*(i+1), ios::cur);
-			return OK;
-		}
-	}
-
 	Status tSt;
 
+	if (_comment == NULL) {
+		return OK;
+	}
+
 	while (true) {
-
-		if ((tmpChar = getChar()) == 0) {
-			return FOUNDEOF;
+		for (int i = 0; i < _comment->length; i++) {
+			if ((tmpChar = getChar()) == 0) {
+				return FOUNDEOF;
+			}
+			if (tmpChar != _comment->data[i]) {
+				_in.seekg((-1)*(i+1), ios::cur);
+				return OK;
+			}
 		}
 
-		tSt = checkEOL(tmpChar);
+		while (true) {
 
-		if (tSt == FOUNDEOF) {
-			return tSt;
-		} else if (tSt == FOUNDEOL) {
-			return FOUNDCOMMENT;
+			if ((tmpChar = getChar()) == 0) {
+				return FOUNDEOF;
+			}
+
+			tSt = checkEOL(tmpChar);
+
+			if (tSt == FOUNDEOF) {
+				return tSt;
+			} else if (tSt == FOUNDEOL) {
+				break;
+			}
+
 		}
-
 	}
 
 	// Should never get here.
@@ -521,6 +527,30 @@ Status Buffer::getInt(int maxValLen, int& value) {
 
 }
 
+Status Buffer::getFracInt(int maxValLen, int& value) {
+
+	value = 0;
+	int i;
+	for (i = 0; i < maxValLen; i++) {
+
+		if ((_curChar = getChar()) == 0) {
+			return FOUNDEOF;
+		}
+		if (!isdigit(_curChar)) {
+			// If we got to here, we presumably hit a separator character,
+			// so put it back.  This allows '1/1/98', for example, to be a
+			// legal date field if the format is 'm/d/y'; '01/01/98' is still
+			// okay.  RKW 1998-10-09
+			_in.putback(_curChar);
+			break;
+		}
+
+		value = value*10 + (int)(_curChar - DIGITSTART);
+	}
+	value = value * (int)(pow(10 , 6 - i));
+	return OK;
+}
+
 Status Buffer::checkString(char** values, int distinct, int arrayLength, int& val) {
 
 // This function finds the given (value of current field) string in an array of strings, e.g.
@@ -531,6 +561,9 @@ Status Buffer::checkString(char** values, int distinct, int arrayLength, int& va
 // val : index of given string in the array
 	
 	//TEMP -- what if arrayLength < 12???
+	//TEMPANS -- This function was designed for finding monthname, and it is only used for finding this, as 
+	//           there are only 12 months, I limited array length to 12
+
 	int howMany[12] = { 0,1,2,3,4,5,6,7,8,9,10,11 };
 	int i,j;
 	int where = arrayLength;
@@ -613,6 +646,7 @@ Status Buffer::getIntTo(Attribute* myAttr, char* target) {
 		if (!ignoreRest) {
 			ignoreRest = !(isdigit(_curChar));
 			_iRetVal = (ignoreRest ? _iRetVal : _iRetVal * 10 + (_curChar - DIGITSTART));
+			_dataInValid = false;
 		}
 
 		if ((_curChar = getChar()) == 0) {
@@ -627,83 +661,36 @@ Status Buffer::getDoubleTo(Attribute* myAttr, char* target = NULL) {
 	
 // reads a double from data file up to defined separator
 // this function checks e/E for exponents
+// Also, this function reads the proper field and calls UtilAtof to 
+// to calculate the corresponding value
 // target : not used in this function, we have a single interface for
 //          every extractor function
 // myAttr : Attribute object assigned to current field
 
-	double fraction = 10 , dividend = 1 , gross = 1;
 
-// if a non-digit value find before the separator, we ignore the rest
-
-	bool ignoreRest = false;
-	int stage = 0;
 	Status status;
 	target++; //just to compiler avoid warning
 
-// sign of value if the field and exponent are defined with -/+
-	_sign = false;
-	_expSign = false;
-
-	_fRetVal = 0;
-	_exponent = 0;
-
-	if ((_curChar = getChar()) == 0)
-		return FOUNDEOF;
-
-	if ((_curChar == PLUS) || (_curChar == MINUS)) {
-		_sign = (_curChar == MINUS) ;
-		if ((_curChar = getChar()) == 0) 
-			return FOUNDEOF;
-	}
+// Buffer for UtilAtof(), first reset pointer to beginning of buffer
+	_tmpB = _tmpBStart;
+	*_tmpB = '\0'; // in case field is not valid
 
 	while (true) {
-		
-		status = checkAll(_curChar,myAttr);
-		if (status != OK) 
-			return status;
-
-		if (!ignoreRest) {
-			if (!isdigit(_curChar)) {
-				if (_curChar == DOT) {
-					if ((stage != 0) && (stage != 2)) 
-						ignoreRest = true;
-					else {
-						fraction = 1;
-						dividend = 10;
-						gross = 10;
-						stage = 1;
-					}
-				} else if ((_curChar == EXPONENTS) || (_curChar == EXPONENTC)) {
-					if ((stage != 1) && (stage != 0))
-						ignoreRest = true;
-					else {
-						if ((_curChar = getChar()) == 0) 
-							return FOUNDEOF;
-
-						if ((_curChar == MINUS) || (_curChar == PLUS)) {
-							_expSign = (_curChar == MINUS) ;
-						} else {
-							_in.putback(_curChar);
-						}
-						_fRetVal = _exponent;
-						fraction = 10;
-						_exponent = 0;
-						dividend = 1;
-						gross = 1;
-						stage = 2;
-					}
-				} else 
-					ignoreRest = true;
-			} else {
-				_exponent = (_exponent* fraction) + (((double)(_curChar - DIGITSTART)) / dividend);
-				dividend *= gross;
-			}
+		if ((*_tmpB = getChar()) == 0) {
+			status = FOUNDEOF;
+			break;
 		}
-		if ((_curChar = getChar()) == 0) 
-			return FOUNDEOF;
+
+		status = checkAll(*_tmpB,myAttr);
+		if (status != OK) 
+			break;
+		_dataInValid = false;
+		_tmpB++;
 	}
-	cerr << "Couldn't Extract field : " << myAttr->getFieldName() << " from data file" << endl;
-	return FAIL;
+	_tmpB++;
+	*_tmpB = '\0'; // mark end of record in case _tmpB contains results of previous
+	_fRetVal = UtilAtof(_tmpBStart);
+	return status;
 }
 
 Status Buffer::getStringTo(Attribute* myAttr, char* target) {
@@ -739,6 +726,7 @@ Status Buffer::getStringTo(Attribute* myAttr, char* target) {
 		if (_posTarget < maxLen) {
 			target[_posTarget] = _curChar;
 			_posTarget++;
+			_dataInValid = false;
 		}
 	}
 	cerr << "Couldn't Extract field : " << myAttr->getFieldName() << " from data file" << endl;
@@ -806,6 +794,7 @@ Status Buffer::getIntLen(Attribute* myAttr, char* target = NULL) {
 		if (!ignoreRest) {
 			ignoreRest = !(isdigit(_curChar));
 			_iRetVal = (ignoreRest ? _iRetVal : _iRetVal * 10 + (_curChar - DIGITSTART));
+			_dataInValid = false;
 		}
 
 		count++;
@@ -837,100 +826,58 @@ Status Buffer::getDoubleLen(Attribute* myAttr, char* target = NULL) {
 
 // reads a double from data file with a given length
 // this function checks e/E for exponents
+// Also, this function reads the proper field and calls UtilAtof to 
+// to calculate the corresponding value
 // target : not used in this function, we have a single interface for
 //          every extractor function
 // myAttr : Attribute object assigned to current field
 
-	double fraction = 10, dividend = 1, gross = 1;
 	int count = 0;
 
-// if a non-digit value find before the separator, we ignore the rest
-	bool ignoreRest = false;
-	int stage = 0;
 	int fieldLen = fieldLens[myAttr->whichAttr];
 	Status status;
 	target++; //just to avoid warning
 
-// sign of value if the field and exponent are defined with -/+
-	_sign = false;
-	_expSign = 0;
-	_fRetVal = 0;
-	_exponent = 0;
+//  _tmpB is the buffer area for UtilAtof(), first reset pointer to beginning
+	_tmpB = _tmpBStart;
+	*_tmpB = '\0'; // mark beginning in case we can't retrieve any value
 
-	if ((_curChar = getChar()) == 0)
-		return FOUNDEOF;
-	
-	if ((_curChar == PLUS) || (_curChar == MINUS)) {
-		_sign = (_curChar == MINUS);
-		count++;
-		if ((_curChar = getChar()) == 0)
-			return FOUNDEOF;
-	}
 
 	while (true) {
+		
+		if ((*_tmpB = getChar()) == 0) {
+			status = FOUNDEOF;
+			break;
+		}
+
 		status = checkEOL(_curChar);
 
 		if (status != OK)
-			return status;
-
-		if (!ignoreRest) {
-			if (!isdigit(_curChar)) {
-				if (_curChar == DOT) {
-					if ((stage != 0) && (stage != 2)) 
-						ignoreRest = true;
-					else {
-						fraction = 1;
-						dividend = 10;
-						gross = 10;
-						stage = 1;
-					}
-				} else if ((_curChar == EXPONENTS) || (_curChar == EXPONENTC)) {
-					if ((stage != 1) && (stage != 0)) 
-						ignoreRest = true;
-					else {
-						if ((_curChar = getChar()) == 0)
-							return FOUNDEOF;
-
-						if ((_curChar == MINUS) || (_curChar == PLUS)) {
-							_expSign = (_curChar == MINUS);
-							count++;
-						} else
-							_in.putback(_curChar);
-						
-						_fRetVal = _exponent;
-						_exponent = 0;
-						fraction = 10;
-						dividend = 1;
-						gross = 1;
-						stage = 2;
-					}
-				} else 
-					ignoreRest = true;
-			} else {
-				_exponent = (_exponent * fraction) + (((double)(_curChar - DIGITSTART)) / dividend);
-				dividend *= gross;
-			}
-		}
+			break;
 
 		count++;
+		_dataInValid = false;
 
-		if (count >= fieldLen) {
-			if ((_curChar = getChar()) == 0) 
-				return FOUNDEOF;
+		if (count >= fieldLen) { 
+
+			if ((_curChar = getChar()) == 0) {
+				status = FOUNDEOF;
+				break;
+			}
+
 			status = checkEOL(_curChar);
-			if (status != OK)
-				return status;
-			else
+			if (status == OK) {
 				_in.putback(_curChar);
-
-			return FOUNDSEPARATOR;
+				status = FOUNDSEPARATOR;
+			}
+			break;
 		}
-
-		if ((_curChar = getChar()) == 0)
-			return FOUNDEOF;
+		_tmpB++;
 	}
-	cerr << "Couldn't Extract field : " << myAttr->getFieldName() << " from data file" << endl;
-	return FAIL;
+	_tmpB++;
+	*_tmpB = '\0';
+	_fRetVal = UtilAtof(_tmpBStart);
+	return status;
 }
 
 Status Buffer::getStringLen(Attribute* myAttr, char* target) {
@@ -963,6 +910,7 @@ Status Buffer::getStringLen(Attribute* myAttr, char* target) {
 
 		target[_posTarget] = _curChar;
 		_posTarget++ ;
+		_dataInValid = false;
 		target[_posTarget] = '\0'; //kb: should get null at return
 
 		if (_posTarget >= fieldLen) {
@@ -1030,6 +978,7 @@ Status Buffer::getStringQuote(Attribute* myAttr, char* target) {
 		}
 
 		if (count == 0) {
+			
 			// Check for quote character and skip it.
 			if (_curChar != quoteChar) {
 				cerr << "Field : " << myAttr->getFieldName() <<
@@ -1037,6 +986,7 @@ Status Buffer::getStringQuote(Attribute* myAttr, char* target) {
 				(void) consumeField(myAttr);
 				return FAIL;
 			}
+			_dataInValid = false;
 		} else {
 			// Check for escape character and skip it if it's there.
 			if (_curChar == ESCAPE) {
@@ -1174,7 +1124,8 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 			case 'f':
 				//TEMP -- does this really mean nanosec or microsec????
 				// RKW 1998-10-09
-				err = getInt(6,_curDate.nanosec);
+				// TEMPANS -- microsec
+				err = getFracInt(6,_curDate.nanosec);
 #if defined(DEBUG_DATE)
 				cout << "_curDate.nanosec = " << _curDate.nanosec << endl;
 #endif
@@ -1262,6 +1213,7 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 					return FAIL;
 				}
 		}
+		_dataInValid = false;
 		dFormat++;
 	}
 
@@ -1295,21 +1247,6 @@ Status Buffer::extractField(Attribute* myAttr, char* dest) {
 	// Clear out the destination in case we don't find anything
 	memset(dest, 0, myAttr->getLength());
 
-	// check for comment at the beginning of the record
-	if (_comment != NULL) {
-		while (true) {
-			retSt = checkComment();
-			if (retSt == OK) {
-				break;
-			} else if (retSt == FOUNDEOF) {
-#if defined(DEBUG)
-				cout << "  Buffer::extractField() retSt: " << retSt << endl;
-#endif
-				return retSt;
-			}
-		}
-	}
-		
 	retSt = (this->*(extFunc[myAttr->whichAttr]))(myAttr,dest);
 // kb: this should only happen if extract was successful
 	(this->*(valFunc[myAttr->whichAttr]))(dest);
@@ -1343,7 +1280,7 @@ Buffer::consumeField(Attribute *attr)
 	}
 }
 
-Status Buffer::consumeRecord() {
+Status Buffer::consumeRecord(Status tmpS) {
 #if defined(DEBUG)
 	cout << "Buffer::consumeRecord()\n";
 #endif
@@ -1352,7 +1289,7 @@ Status Buffer::consumeRecord() {
 // string and/or escaped.
 
 	if (_EOL == NULL) {
-		return FOUNDSEPARATOR;
+		return tmpS;
 	} else {
 		Status status;
 		while ((status = checkEOL(getChar())) == OK) {}

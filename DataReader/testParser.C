@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/10/13 15:41:39  wenger
+  Purify'd DataReader.
+
   Revision 1.7  1998/10/12 21:24:22  wenger
   Fixed bugs 405, 406, and 408 (all DataReader problems); considerably
   increased the robustness of the DataReader (partly addresses bug 409);
@@ -94,14 +97,25 @@ int main(int ARGV, char **ARGC) {
  **********************************************************************/
 
 	int recordNum = 0;
+	bool writeData; 
+
 	while (true) {
+		writeData = true;
 #if defined(DEBUG)
 		cout << "\nBefore getRecord()\n";
 #endif
+
+		results[0] = '\0';
 		status = myDataReader->getRecord(results);
+
 #if defined(DEBUG)
 		cout << "  After getRecord(); status = " << status << endl;
 #endif
+
+		if (myDataReader->getInValid()) {
+			writeData = false;
+		}
+
 		if (status == OK || status == FOUNDEOL || status == FOUNDEOF) {
 			// these are okay
 		} else if (status == FAIL) {
@@ -116,53 +130,59 @@ int main(int ARGV, char **ARGC) {
 		}
 
 #ifndef TESTDATAREADER
-		cout << "Record " << recordNum << ": ";
+		if (writeData) {
+			
+			cout << "Record " << recordNum << ": ";
 
-		for (int i = 0 ; i < aa ; i++) {
-			char* tmp;
-			EncodedDTF tmpDate;
-			switch (myDataReader->myDRSchema->tableAttr[i]->getType()) {
-				case TYPE_INVALID:
-					cerr << "Invalid attribute type\n";
-					break;
-				case TYPE_INT:
-					cout << "{" << *(int*)(results+
-					  (myDataReader->myDRSchema->tableAttr[i]->offset)) <<
-					  "} " ;
-					break;
+			for (int i = 0 ; i < aa ; i++) {
+				char* tmp;
+				EncodedDTF tmpDate;
+				if (myDataReader->myDRSchema->tableAttr[i]->getFieldName() == NULL) {
+					continue;
+				}
+				switch (myDataReader->myDRSchema->tableAttr[i]->getType()) {
+					case TYPE_INVALID:
+						cerr << "Invalid attribute type\n";
+						break;
+					case TYPE_INT:
+						cout << "{" << *(int*)(results+
+						  (myDataReader->myDRSchema->tableAttr[i]->offset)) <<
+						  "} " ;
+						break;
 
-				case TYPE_DOUBLE:
-					cout << "{" << *(double*)(results+
-					  (myDataReader->myDRSchema->tableAttr[i]->offset)) <<
-					  "} " ;
-					break;
+					case TYPE_DOUBLE:
+						cout << "{" << *(double*)(results+
+						  (myDataReader->myDRSchema->tableAttr[i]->offset)) <<
+						  "} " ;
+						break;
 
-				case TYPE_STRING:
-					tmp = results +
-					  (myDataReader->myDRSchema->tableAttr[i]->offset);
-					cout << "{" << tmp << "} " ;
-					break;
+					case TYPE_STRING:
+						tmp = results +
+						  (myDataReader->myDRSchema->tableAttr[i]->offset);
+						cout << "{" << tmp << "} " ;
+						break;
 
-				case TYPE_DATE:
-					memcpy(&tmpDate,
-					  results+(myDataReader->myDRSchema->tableAttr[i]->offset),
-					  sizeof(tmpDate));
-					{
-						double secs = tmpDate.getSec() +
-						  tmpDate.getNanoSec() * 1.0e-6;
-						cout << "{" << tmpDate.getYear() << "-" <<
-						  tmpDate.getMonth() << "-" << tmpDate.getDay() << " " <<
-						  tmpDate.getHour() << ":" << tmpDate.getMin() << ":" <<
-						  secs << "} ";
-					}
-					break;
+					case TYPE_DATE:
+						memcpy(&tmpDate,
+						  results+(myDataReader->myDRSchema->tableAttr[i]->offset),
+						  sizeof(tmpDate));
+						{
+							double secs = tmpDate.getSec() +
+							  tmpDate.getNanoSec() * 1.0e-6;
+							cout << "{" << tmpDate.getYear() << "-" <<
+							  tmpDate.getMonth() << "-" << tmpDate.getDay() << " " <<
+							  tmpDate.getHour() << ":" << tmpDate.getMin() << ":" <<
+							  secs << "} ";
+						}
+						break;
 
-				default:
-					cerr << "Illegal attribute type.\n";
-					break;
+					default:
+						cerr << "Illegal attribute type.\n";
+						break;
+				}
 			}
+			cout << endl << endl;
 		}
-		cout << endl << endl;
 #endif
 
 		if (status == FOUNDEOF) {

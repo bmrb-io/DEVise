@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/10/12 21:24:20  wenger
+  Fixed bugs 405, 406, and 408 (all DataReader problems); considerably
+  increased the robustness of the DataReader (partly addresses bug 409);
+  added test targets in the makefile, and corresponding data and schemas.
+
   Revision 1.5  1998/06/16 16:30:53  wenger
   Added standard headers to DataReader sources.
 
@@ -81,7 +86,7 @@ class DataReaderParser
     int drparse();
 
     void drerror(char* msg) {
-        cerr << line_nr << ": " << msg << " at " << YYText() << '\n';
+        cerr << "DRSCHEMA PARSE ERROR AT LINE " << line_nr << " : " << msg << '\n';
     }
 
   private:

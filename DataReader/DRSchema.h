@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/10/06 20:06:33  wenger
+  Partially fixed bug 406 (dates sometimes work); cleaned up DataReader
+  code without really changing functionality: better error handling,
+  removed unused class members, added debug output, close data file (never
+  closed before), various other cleanups.
+
   Revision 1.4  1998/10/02 17:19:59  wenger
   Fixed bug 404 (DataReader gets out-of-sync with records); made other
   cleanups and simplifications to DataReader code.
@@ -316,6 +322,8 @@ public:
 	void setNullIf(char* nullIf) {
 		_nullIf = nullIf;
 	}
+
+	bool checkNameExists(char* curName);
 
 	// Date Format defined by the user and used by the date extractor function are different
 	// for simplicity, user can define multi-character formats for date components (eg : yyyy for year)

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/10/06 20:06:33  wenger
+  Partially fixed bug 406 (dates sometimes work); cleaned up DataReader
+  code without really changing functionality: better error handling,
+  removed unused class members, added debug output, close data file (never
+  closed before), various other cleanups.
+
   Revision 1.6  1998/10/02 17:20:00  wenger
   Fixed bug 404 (DataReader gets out-of-sync with records); made other
   cleanups and simplifications to DataReader code.
@@ -41,6 +47,7 @@ class DataReader {
 private:
 	Buffer* myBuffer; // Buffer Object used for extracting fields
 	Status _uStat; // Status of DataReader
+	bool _dataInValid;
 
 public:
 	DataReader(const char* dataFile, const char* schemaFile);
@@ -52,6 +59,7 @@ public:
 	friend ostream& operator<<(ostream &out, const DataReader &dr);
 
 	DRSchema* myDRSchema; // DRSchema Object associated with this Reader
+	bool getInValid() { return _dataInValid;}
 };
 
 #endif

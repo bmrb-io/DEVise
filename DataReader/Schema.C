@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/10/13 15:41:38  wenger
+  Purify'd DataReader.
+
   Revision 1.11  1998/10/12 21:24:21  wenger
   Fixed bugs 405, 406, and 408 (all DataReader problems); considerably
   increased the robustness of the DataReader (partly addresses bug 409);
@@ -198,8 +201,10 @@ DRSchema::~DRSchema() {
 	delete [] tableAttr;
 	tableAttr = NULL;
 
-	delete _delimiter;
-	_delimiter = NULL;
+	if (_delimiter != NULL) {
+		delete _delimiter;
+		_delimiter = NULL;
+	}
 
 	delete [] _nullIf;
 	_nullIf = NULL;
@@ -227,6 +232,7 @@ void DRSchema::addAttribute(Attribute* newAttr) {
 	qAttr++;
 }
 
+
 Status DRSchema::finalizeDRSchema() {
 	int curOff = 0;
 	int i,j,k;
@@ -251,7 +257,11 @@ Status DRSchema::finalizeDRSchema() {
 		_delimiter->data = tmpC;
 		_delimiter->repeating = true;
 	}
-	
+
+	if (_delimiter->data[0] == '\0') {
+		delete _delimiter;
+		_delimiter = NULL;
+	} 
 
 	if (_separator == NULL) { //default separator = [\t ]+
 		char* tmpC = new char[2];
@@ -345,20 +355,6 @@ Status DRSchema::finalizeDRSchema() {
 			tableAttr[i]->setQuote(_quote);
 		}
 		
-		if ((tableAttr[i]->getSeparator() == NULL) &&
-		  (tableAttr[i]->getQuote() == -1) &&
-		  (tableAttr[i]->getFieldLen() == -1)) {
-
-			// Attribute object must 'own' the separator object
-			// and its string.
-			Holder *tmpSep = new Holder;
-			tmpSep->data = new char[strlen(_separator->data)+1];
-			strcpy(tmpSep->data, _separator->data);
-			tmpSep->repeating = _separator->repeating;
-			tmpSep->length = _separator->length;
-			tableAttr[i]->setSeparator(tmpSep);
-		}
-
 		if (tableAttr[i]->getType() == TYPE_DATE) {
 
 			// normalize date format
@@ -380,6 +376,7 @@ Status DRSchema::finalizeDRSchema() {
 
 		// TEMP -- why do we do the separator twice?  (see code a few lines
 		// above this).  RKW 1998-10-13.
+		// TEMPANS -- You are right, I deleted the previous one.
 		if (_separator != NULL) {
 			if (tableAttr[i]->getSeparator() == NULL) {
 				if ((tableAttr[i]->getQuote() == -1) &&
@@ -653,6 +650,19 @@ Status DRSchema::normalizeDate(char*& curDate) {
 	strcpy(curDate,tmpString.str());
 	delete [] tmp1;
 	return OK;
+}
+
+bool DRSchema::checkNameExists(char* curName) {
+	bool equals = false;
+	for (int i=0; i < (int)(qAttr); i++) {
+		if (tableAttr[i]->getFieldName() != NULL) {
+			if (strcmp(tableAttr[i]->getFieldName(),curName) == 0) {
+				equals = true;
+				break;
+			}
+		}
+	}
+	return equals;
 }
 
 ostream&

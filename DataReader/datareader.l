@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/10/12 21:24:21  wenger
+  Fixed bugs 405, 406, and 408 (all DataReader problems); considerably
+  increased the robustness of the DataReader (partly addresses bug 409);
+  added test targets in the makefile, and corresponding data and schemas.
+
   Revision 1.7  1998/09/30 17:26:59  beyer
   remove 'y' and 'n' as key words.
 
@@ -55,13 +60,14 @@ digit	[0-9]+
 %x	COMMENT
 
 %%
-[ \t\n]+ ;
-"//".*\n ;
-"#".*\n ;
+[ \t]+ ;
+\n			{ line_nr++;};
+"//".*\n 	{ line_nr++;};
+"#".*\n  	{ line_nr++;};
 "/*"		BEGIN COMMENT;
 <COMMENT>"*/" BEGIN INITIAL;
 <COMMENT>. ;
-<COMMENT>\n	;
+<COMMENT>\n { line_nr++;};
 
 schema		return SCHEMA_TOKEN;
 delimiter	return DELIM_TOKEN;
@@ -143,6 +149,5 @@ comment     return COMMENT_TOKEN;
 				return IDENT_TOKEN;
 			}
 
-.|\n		{ return yytext[0]; }
-
+.			{ return yytext[0]; }
 %%

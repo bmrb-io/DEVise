@@ -202,7 +202,7 @@ comment = "##";<BR>
 
 <UL>
 
-<LI>The 'delimiter' keyword indicates what character an input record ends.  If delimiter is not used, fields are counted to find the end of a record.  '+' character at the end of a delimiter specification can be used for ignoring repetitions.<BR>
+<LI>The 'delimiter' keyword indicates what character an input record ends.  If delimiter is not used, default delimiter value is used. If delimiter is specified as empty, fields are counted to find the end of a record.  '+' character at the end of a delimiter specification can be used for ignoring repetitions.<BR>
 
 <BR>
 
@@ -215,6 +215,8 @@ Sample Use:<BR>
 delimiter = [\n];<BR>
 
 delimiter = [\n]+;<BR>
+
+delimiter = []; // No delimiter, fields are counted to find the end of record.<BR>
 
 <BR>
 
@@ -423,7 +425,7 @@ CodeReplaced By <BR><BR>
 
 <UL>
 
-<LI>The 'length' keyword is used for fixed-length attributes and defines the length of the attribute.  maxlen and length can't be used together.  Also, quoted strings can't specify length.<BR>
+<LI>The 'length' keyword is used for fixed-length attributes and defines the length of the attribute.  maxlen and length can't be used together.  Separator can not be specified if length is used, also quoted strings can't specify length. <BR>
 
 <BR>
 

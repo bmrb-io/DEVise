@@ -47,8 +47,11 @@ char* tmpKey;
 
 beginschema: SCHEMA_TOKEN getident '{' getschema '}' ;
 
-getident:	IDENT_TOKEN { if (myDRSchema->getDRSchemaName() != NULL) 
-								drerror("DRSchema name can't be entered twice!");
+getident:	IDENT_TOKEN { if (myDRSchema->getDRSchemaName() != NULL)  {
+								ostrstream tmp;
+								tmp << "Schema Name : " << myDRSchema->getDRSchemaName() << " is already defined, schema name can not be entered twice !..." << ends;
+								drerror(tmp.str());
+						  }
 						  char* tmpSCN = new char[strlen($1)+1];
 						  strcpy(tmpSCN,$1);
 						  myDRSchema->setDRSchemaName(tmpSCN); 
@@ -67,7 +70,7 @@ getanyschema: getdelim ';'
 			  | getattribute
 			  ;
 getdelim: DELIM_TOKEN '=' BRACKET_TOKEN {	if (myDRSchema->getDelimiter() != NULL)
-												drerror("DRSchema Delimiter can't be entered twice !...");
+												drerror("Schema Delimiter is already defined, delimiter can not be specified twice !...");
 											if ($3 == NULL)
 												drerror("DRSchema Delimiter NULL ??? ") ;
 											char* tmpChar = new char[strlen($3)+1];
@@ -86,7 +89,7 @@ getdelim: DELIM_TOKEN '=' BRACKET_TOKEN {	if (myDRSchema->getDelimiter() != NULL
                                         }
 			;
 getcomment: COMMENT_TOKEN '=' STRINGVAL_TOKEN {	if (myDRSchema->getComment() != NULL)
-												drerror("DRSchema Comment can't be entered twice !...");
+												drerror("Schema Comment character is already specified, comment character can not be specified twice !...");
 											if ($3 == NULL)
 												drerror("DRSchema Comment NULL ??? ") ;
 											char* tmpCom = new char[strlen($3)+1];
@@ -102,7 +105,7 @@ getcomment: COMMENT_TOKEN '=' STRINGVAL_TOKEN {	if (myDRSchema->getComment() != 
 			;
 getupsep: SEPARATOR_TOKEN '=' BRACKET_TOKEN {
 											if (myDRSchema->getSeparator() != NULL) 
-												drerror("DRSchema Separator can't be entered twice!...");
+												drerror("Schema Level Separator is already defined, Schema Level Separator can not be specified twice!...");
 											char* tmpSChar = new char[strlen($3)+1];
 											strcpy(tmpSChar,$3);
 											Holder* tmpHolder = new Holder;
@@ -121,7 +124,7 @@ getupsep: SEPARATOR_TOKEN '=' BRACKET_TOKEN {
 
 getupqu: QUOTE_TOKEN '=' BRACKET_TOKEN {
 											if (myDRSchema->getQuote() != -1) 
-												drerror("DRSchema Quote can't be entered twice!...");
+												drerror("Schema Quote is already defined, Quote can not be specified twice!...");
 											char* tmpQChar = new char[strlen($3)+1];
 											strcpy(tmpQChar,$3);
 
@@ -138,7 +141,7 @@ getkey: KEY_TOKEN '=' '(' { tmpVector = new vector<char*> ;}
 getsorted: SORTED_TOKEN '=' '(' { tmpVector = new vector<char*> ; }
 						getkeys ')' { if (myDRSchema->setSorted(tmpVector) == FAIL) {
 											delete tmpVector;
-											drerror("Sorted can't be entered twice !...");
+											drerror("Sort order is already defined, it can not be specified twice !...");
 									  }
 								    }
 		;
@@ -164,6 +167,11 @@ getattrtype: ATTR_TOKEN getattributename
 
 getattributename: IDENT_TOKEN { char* tmpFN = new char[strlen($1)+1];
 								strcpy(tmpFN,$1);
+								if (myDRSchema->checkNameExists(tmpFN)) {
+									ostrstream tmp;
+									tmp << "Duplicate Attribute Name at : \'" << tmpFN << "\' , Attribute Names should be unique !..." << ends;
+									drerror(tmp.str());
+								}
 								tmpAttr = new Attribute(tmpFN); 
 							  } ;
 							
@@ -183,7 +191,9 @@ getanyattribute: getseparator ';'
 
 getseparator: SEPARATOR_TOKEN '=' BRACKET_TOKEN {
 													if (tmpAttr->getSeparator() != NULL)  {
-														drerror("Attribute Separator can't be defined twice !...");
+														ostrstream tmp;
+														tmp << "Attribute Level Separator for : " << (tmpAttr->getFieldName() == NULL ? "skip attribute": tmpAttr->getFieldName()) << " is already defined, it can not be specified twice !..." << ends ;
+														drerror(tmp.str());
 													}
 													char* tmpS = new char[strlen($3)+1];
 													strcpy(tmpS,$3);
@@ -207,24 +217,37 @@ getwhattype: INT_TOKEN {tmpAttr->setType(TYPE_INT);}
 			 | DOUBLE_TOKEN {tmpAttr->setType(TYPE_DOUBLE);}
 			 | DATE_TOKEN {tmpAttr->setType(TYPE_DATE);}
 			 ;
-getmaxlen: MAXLEN_TOKEN '=' INTVAL_TOKEN {	if (tmpAttr->getMaxLen() != -1)
-                                                drerror("Field Max Length can't be defined twice !...");
+getmaxlen: MAXLEN_TOKEN '=' INTVAL_TOKEN {	if (tmpAttr->getMaxLen() != -1) {
+			   									ostrstream tmp;
+												tmp << "Field Max Length for : " << (tmpAttr->getFieldName() == NULL? "skip attribute": tmpAttr->getFieldName()) << " is already defined, it can not be specified twice !..." << ends;
+                                                drerror(tmp.str());
+										    }
 											tmpAttr->setMaxLen($3); } ;
 
-getquote: QUOTE_TOKEN '=' BRACKET_TOKEN { 	if (tmpAttr->getQuote() != -1) 
-												drerror("Attribute Quote can't be defined twice !...");
+getquote: QUOTE_TOKEN '=' BRACKET_TOKEN { 	if (tmpAttr->getQuote() != -1) {
+			   									ostrstream tmp;
+												tmp << "Quote Character for : " << (tmpAttr->getFieldName() == NULL? "skip attribute": tmpAttr->getFieldName()) << " is already defined, it can not be specified twice !..." << ends;
+                                                drerror(tmp.str());
+										    }
 											char* tmpQ = new char[strlen($3)+1];
 											strcpy(tmpQ,$3);
 											tmpAttr->setQuote(tmpQ[0]);
 											delete [] tmpQ;
 										}
 		  ;
-getlength: LENGTH_TOKEN '=' INTVAL_TOKEN {	if (tmpAttr->getFieldLen() != -1)
-												drerror("Field Length can't be defined twice !...");
+getlength: LENGTH_TOKEN '=' INTVAL_TOKEN {	if (tmpAttr->getFieldLen() != -1) {
+			   									ostrstream tmp;
+												tmp << "Field Length for : " << (tmpAttr->getFieldName() == NULL? "skip attribute": tmpAttr->getFieldName()) << " is already defined, it can not be specified twice !..." << ends;
+                                                drerror(tmp.str());
+										    }
 											tmpAttr->setFieldLen($3); } ;
 
-gethidden: HIDDEN_TOKEN '=' BRACKET_TOKEN { if (tmpAttr->getHidden() != -1)
-                                                drerror("Attribute Quote can't be defined twice !...");
+gethidden: HIDDEN_TOKEN '=' BRACKET_TOKEN { if (tmpAttr->getHidden() != -1) {
+			   									ostrstream tmp;
+												tmp << "Hidden Character for : " << (tmpAttr->getFieldName() == NULL? "skip attribute": tmpAttr->getFieldName()) << " is already defined, it can not be specified twice !..." << ends;
+                                                drerror(tmp.str());
+										    }
+
 											char* tmpHC = new char[strlen($3)+1];
 											strcpy(tmpHC,$3);
 											if (!((tmpHC[0] == 'Y') || (tmpHC[0] == 'y') || (tmpHC[0] == 'N') || (tmpHC[0] == 'n')))

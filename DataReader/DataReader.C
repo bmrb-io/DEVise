@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/10/12 21:24:20  wenger
+  Fixed bugs 405, 406, and 408 (all DataReader problems); considerably
+  increased the robustness of the DataReader (partly addresses bug 409);
+  added test targets in the makefile, and corresponding data and schemas.
+
   Revision 1.8  1998/10/06 20:06:33  wenger
   Partially fixed bug 406 (dates sometimes work); cleaned up DataReader
   code without really changing functionality: better error handling,
@@ -129,6 +134,19 @@ Status DataReader::getRecord(char* dest) {
 
 	int lastAttrProcessed;
 	bool endOfRecord = false;
+
+	// Check for comments at the beginning of the record and if the last line
+	// of a datafile is commented, then just return FOUNDEOF.
+	// Upper Layer will just do nothing
+
+	myBuffer->unSetInValid();
+	_dataInValid = true;
+
+	status = myBuffer->checkComment();
+	if (status == FOUNDEOF) {
+		return status;
+	}
+
 	for (int attrNum = 0 ; attrNum < (int)(myDRSchema->qAttr) && !endOfRecord;
 	  attrNum++) {
 		lastAttrProcessed = attrNum;
@@ -166,9 +184,14 @@ Status DataReader::getRecord(char* dest) {
 			break;
 		}
 	}
+	_dataInValid = myBuffer->getInValid();
 
-	if (lastAttrProcessed < (int)(myDRSchema->qAttr) - 1) {
+	if ((lastAttrProcessed < (int)(myDRSchema->qAttr) - 1)  && (!_dataInValid)) {
 		cerr << "Not enough fields in record\n";
+	} else {
+		if ((myDRSchema->getDelimiter() == NULL) && (status == FOUNDSEPARATOR)) {
+			status = FOUNDEOL;
+		}
 	}
 
 	// Zero out any fields that weren't read.
@@ -181,7 +204,7 @@ Status DataReader::getRecord(char* dest) {
 	// Consume the rest of this record (does nothing if record delimiter
 	// not defined).
 	if (!endOfRecord) {
-		status = myBuffer->consumeRecord();
+		status = myBuffer->consumeRecord(status);
 	}
 
 	return status;
