@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.26  1996/11/22 21:15:58  flisakow
+#  An example of how to use the new Sequential (no index) TData class.
+#  You need to set USE_SEQ to "yes" in the Makefile to build to the
+#  new example.
+#
 #  Revision 1.25  1996/11/18 18:12:33  donjerko
 #  Added DTE make stuff
 #
@@ -59,7 +64,7 @@ include ../../Makefile.common
 USE_SEQ = no
 
 CFLAGS = $(ARCH_FLAGS) -I../../attrproj -I../../graphics \
-	-I../../graphics.new -I../../tape -I../../DTE \
+	-I../../graphics.new -I../../tape -I../../DTE -I../../DTE/Core \
 	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX \
 	-DATTRPROJ -DLIBCS
 
