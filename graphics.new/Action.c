@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.28  1998/05/05 15:15:10  zhenhai
+  Implemented 3D Cursor as a rectangular block in the destination view
+  showing left, right, top, bottom, front and back cutting planes of the
+  source view.
+
   Revision 1.27  1998/04/01 17:11:33  wenger
   4/left arrow, 5 (home), and 6/right arrow keys, and cursor movements
   now get sent to slaves during collaboration.
@@ -173,8 +178,7 @@ void Action::AreaSelected(ViewGraph *view, Coord xlow, Coord ylow,
   		CommandObj *	cmdObj = GetCommandObj();
 		cmdObj->SetVisualFilter(view, &filter);
 	}
-	else
-	if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
+	else if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
 	{
 		view->SetVisualFilter(filter);
 	}
@@ -188,7 +192,7 @@ void Action::AreaSelected(ViewGraph *view, Coord xlow, Coord ylow,
   		CommandObj *	cmdObj = GetCommandObj();
 		cmdObj->SetVisualFilter(view, &filter);
 	}
-	if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
+	else if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
 	{
 		view->SetVisualFilter(filter);
 	}

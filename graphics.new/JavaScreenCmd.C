@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/05/26 14:09:19  wenger
+  Now puts curly brackets on arguments to allow spaces in arguments;
+  committed with debug code on for Hongyu.
+
   Revision 1.6  1998/05/21 18:18:49  wenger
   Most code for keeping track of 'dirty' GIFs in place; added 'test'
   command to be used for generic test code that needs to be controlled
@@ -64,13 +68,53 @@
 #include "Session.h"
 #include "WinClassInfo.h"
 #include "ViewWin.h"
+#include "ViewGraph.h"
 #include "Init.h"
 #include "Timer.h"
 #include "QueryProc.h"
 
-#define DEBUG//TEMP
+//#define DEBUG
 
 off_t getFileSize(const char* filename);
+
+// Wait for all queries to finish before continuing.
+static void
+WaitForQueries()
+{
+    QueryProc *qp = QueryProc::Instance();
+    do {
+      Dispatcher::SingleStepCurrent();
+    } while (!qp->Idle());
+}
+
+// Determine whether the given point is within the given rectangle.
+static Boolean
+PointInRect(int px, int py, int rx1, int ry1, int rx2, int ry2)
+{
+    if (rx1 > rx2) {
+		int tmp = rx1;
+		rx1 = rx2;
+		rx2 = tmp;
+	}
+
+	if (ry1 > ry2) {
+		int tmp = ry1;
+		ry1 = ry2;
+		ry2 = tmp;
+	}
+
+	if (px < rx1) {
+		return false;
+	} else if (px > rx2) {
+		return false;
+	} else if (py < ry1) {
+		return false;
+	} else if (py > ry2) {
+		return false;
+	} else {
+		return true;
+	}
+}
 
 void
 JavaScreenCmd::GetSessionList()
@@ -118,6 +162,8 @@ JavaScreenCmd::OpenSession()
 		return;
 	}
 
+	printf("Session:%s requested!\n", _argv[0]);
+
 	// Set batch mode so the server makes pixmaps instead of windows.
 	ControlPanel::Instance()->SetBatchMode(true);
 
@@ -131,15 +177,9 @@ JavaScreenCmd::OpenSession()
 	}
 
 	// Wait for all queries to finish before continuing.
-    QueryProc *qp = QueryProc::Instance();
-    do {
-      Dispatcher::SingleStepCurrent();
-    } while (!qp->Idle());
+	WaitForQueries();
 
-
-	// Dump all window images to files: e.g. window1.gif, window2.gif...
-	printf("Session:%s requested!\n", _argv[0]);
-
+	// Dump all window images to files.
 	int winIndex = DevWindow::InitIterator();
 	while (DevWindow::More(winIndex))
 	{
@@ -205,9 +245,9 @@ JavaScreenCmd::OpenSession()
 			  viewW, viewH);
 #endif
 
-		  view->AbsoluteOrigin(viewX, viewY);
+		  view->GetWindowRep()->Origin(viewX, viewY);
 #if defined(DEBUG)
-          printf("  view AbsoluteOrigin = %d, %d\n", viewX, viewY);
+          printf("  view WindowRep Origin = %d, %d\n", viewX, viewY);
 #endif
 
 		  JavaRectangle viewRect(viewX, viewY, viewX + viewW - 1,
@@ -321,35 +361,112 @@ JavaScreenCmd::MouseAction_RubberBand()
 
 	if (_argc != 5)
 	{
-		errmsg = "{Usage: MouseAction_RubberBand <view name>}"
+		errmsg = "{Usage: MouseAction_RubberBand <window name>}"
 				 " <x1> <y1> <x2> <y2>";
+		// Note: (x1, y1) is where mouse started; Y is down from the top of
+		// the window.  RKW May 28, 1998.
 		_status = ERROR;
 		return;
 	}
 
-	// ADD---begin
-	char *fileName = "window2.gif";
+	int startX = atoi(_argv[1]);
+	int startY = atoi(_argv[2]);
+	int endX = atoi(_argv[3]);
+	int endY = atoi(_argv[4]);
 
+#if defined(DEBUG)
+    printf("Rubberband line from (%d, %d) to (%d, %d) in window %s\n",
+	  startX, startY, endX, endY, _argv[0]);
+#endif
+
+	//
+	// Figure out which view the rubberband line started out in -- if it
+	// overlaps more than one view (not allowed in the "regular" DEVise)
+	// only zoom in the first view.
+	//
+    ViewWin *window = (ViewWin *)ControlPanel::FindInstance(_argv[0]);
+	DOASSERT(window != NULL && !strcmp(window->GetName(), _argv[0]),
+	  "Bad window name");
+
+	int index = window->InitIterator();
+	while (window->More(index)) {
+		ViewWin *view = window->Next(index);
+
+		int viewX, viewY;
+		unsigned viewW, viewH;
+		view->Geometry(viewX, viewY, viewW, viewH);
+		view->GetWindowRep()->Origin(viewX, viewY);
+
+		// Start and end of rubberband line relative to the view, not the
+		// window.
+		int viewStartX, viewStartY, viewEndX, viewEndY;
+
+		if (PointInRect(startX, startY, viewX, viewY, viewX+viewW-1,
+	      viewY+viewH-1)) {
+			viewStartX = startX - viewX;
+			viewStartY = startY - viewY;
+
+			// If the rubberband line goes out of the view it starts in,
+			// we only include the part within that view.
+			if (endX < viewX) {
+				viewEndX = 0;
+			} else if (endX > viewX + (int)viewW - 1) {
+				viewEndX = viewW - 1;
+			} else {
+				viewEndX = endX - viewX;
+			}
+
+			if (endY < viewY) {
+				viewEndY = 0;
+			} else if (endY > viewY + (int)viewH - 1) {
+				viewEndY = viewH - 1;
+			} else {
+				viewEndY = endY - viewY;
+			}
+
+#if defined(DEBUG)
+		    printf("Rubberband from (%d, %d) to (%d, %d) in view %s\n",
+			  viewStartX, viewStartY, viewEndX, viewEndY, view->GetName());
+#endif
+
+			// Update the visual filter of the view that the
+			// rubberband line started in.
+			VisualFilter filter;
+			((ViewGraph *)view)->GetVisualFilter(filter);
+			((ViewGraph *)view)->FindWorld(viewStartX, viewStartY, viewEndX,
+			  viewEndY, filter.xLow, filter.yLow, filter.xHigh, filter.yHigh);
+			((ViewGraph *)view)->SetVisualFilter(filter);
+
+			// Make sure everything has actually been re-drawn before we
+			// continue.
+			WaitForQueries();
+
+
+			// Send the updated window image.
+			// TEMP: this needs to be changed to send images of all windows
+			// that are "dirty".
+			char *fileName = "/tmp/window.gif";
+			window->ExportImage(GIF, fileName);
 	
-	
-	
-	
-	// ADD---end
-	int	filesize;
-	filesize = getFileSize(fileName);
-	if (filesize >0)
-	{
-		_status =RequestUpdateWindow(_argv[1] ,filesize);
-		ControlCmd(_status);
-		if (_status == DONE)
-		{
-			_status = SendWindowImage(fileName, filesize);
+			int	filesize;
+			filesize = getFileSize(fileName);
+			if (filesize >0)
+			{
+				_status = RequestUpdateWindow(_argv[0] ,filesize);
+				ControlCmd(_status);
+				if (_status == DONE)
+				{
+					_status = SendWindowImage(fileName, filesize);
+				}
+		
+				// avoid unnecessary JAVAC_Done command, after sending
+				// back images
+				if (_status == DONE)
+					_status = NULL_COMMAND;
+			}
 		}
-
-		// avoid unnecessary JAVAC_Done command, after sending back images
-		if (_status == DONE)
-			_status = NULL_COMMAND;
 	}
+	window->DoneIterator(index);
 }
 
 void
@@ -686,7 +803,8 @@ JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo)
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::RequestCreateWindow()\n");
+    printf("JavaScreenCmd::RequestCreateWindow(%s)\n",
+	winInfo._winName.c_str());
 	fflush(stdout);
 #endif
 

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.64  1998/05/06 22:04:45  wenger
+  Single-attribute set links are now working except where the slave of
+  one is the master of another.
+
   Revision 1.63  1998/05/05 15:14:51  zhenhai
   Implemented 3D Cursor as a rectangular block in the destination view
   showing left, right, top, bottom, front and back cutting planes of the
@@ -355,6 +359,7 @@ class View : public ViewWin
 {
 		friend class View_ControlPanelCallback;
 		friend class View_DispatcherCallback;
+		friend class JavaScreenCmd;
 
 		// This is here to allow direct access to dispatcherCallback
 		friend class ActionDefault;
