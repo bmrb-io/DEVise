@@ -15,14 +15,17 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/05/16 18:24:33  jussi
+  Initial revision.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <tar.h>
-#include <sys/fcntl.h>
+#include <fcntl.h>
 
 #if !defined(FD_READ) && !defined(FILE_READ)
 #define FD_READ
