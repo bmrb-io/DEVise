@@ -25,6 +25,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2001/05/08 18:24:18  wenger
+// Fixed problem getting residue count if a star file contains info for
+// more than one protein; added residue counts to 'all shifts' and 'H
+// vs. N' visualizations.
+//
 // Revision 1.8  2001/04/30 17:45:23  wenger
 // Added special link to 3D 4096 visualization to 4096 summary page;
 // added "No chemical shift data available" message to appropriate
@@ -163,7 +168,7 @@ public class S2DSummaryHtml {
 		if (_accNum == 4096) {
 		    _writer.write("<hr>\n");
 		    _writer.write("Under development: <a href=" +
-		      "\"http://www.bmrb.wisc.edu/devise/4096_side3h.html\"" +
+		      "\"" + S2DNames.BMRB_3D_URL + "\"" +
 		      ">3D visualization of 4096</a>");
 		}
 

@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.19  2001/07/25 17:46:49  wenger
+// Added -usage and -version args to S2DMain, changed version to 2.12;
+// slightly improved s2d error messages; install script now uses find
+// to change the mode of html/data files to avoid argument overflow;
+// distribution now generates tar file name with version number.
+//
 // Revision 1.18  2001/05/21 18:57:04  wenger
 // Updated peptide-cgi code to match JavaScreen with package.
 //
@@ -164,11 +170,41 @@ public class S2DMain {
 	    System.out.print(")\n");
 	}
 
+	getProperties();
 	checkArgs(args);
     }
 
     //===================================================================
     // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    // Get configuration-specific properties and set variables accordingly.
+    private void getProperties() throws S2DException
+    {
+        Properties props = new Properties();
+	try {
+	    props.load(new BufferedInputStream(
+	      new FileInputStream("s2d.props")));
+        } catch (FileNotFoundException ex) {
+	    throw new S2DError("Can't find s2d properties file: " +
+	      ex.getMessage());
+	} catch (IOException ex) {
+	    throw new S2DError("Error reading s2d properties file: " +
+	      ex.getMessage());
+	}
+
+	S2DNames.BMRB_STAR_URL = props.getProperty("bmrb_mirror.star_url");
+	if (S2DNames.BMRB_STAR_URL == null) {
+	    throw new S2DError("Unable to get value for " +
+	      "bmrb_mirror.star_url property");
+	}
+
+	S2DNames.BMRB_3D_URL = props.getProperty("bmrb_mirror.3d_url");
+	if (S2DNames.BMRB_3D_URL == null) {
+	    throw new S2DError("Unable to get value for " +
+	      "bmrb_mirror.3d_url property");
+	}
+    }
 
     //-------------------------------------------------------------------
     // Check arguments to constructor, set member variables accordingly.

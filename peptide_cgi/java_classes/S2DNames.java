@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2001/05/14 18:08:26  wenger
+// Parameterized all star file tag names, etc.
+//
 // Revision 1.9  2001/05/08 18:24:18  wenger
 // Fixed problem getting residue count if a star file contains info for
 // more than one protein; added residue counts to 'all shifts' and 'H
@@ -156,10 +159,16 @@ public class S2DNames
     public static final String PROTEIN = "protein";
 
     //
-    // URL for getting NMR-STAR files from BMRB.
+    // URL for getting NMR-STAR files from BMRB.  Note: this will be
+    // set according to the s2d.props file value.
     //
-    public static final String BMRB_STAR_URL =
-      "http://www.bmrb.wisc.edu/data_library/files/";
+    public static String BMRB_STAR_URL = null;
+
+    //
+    // URL for 3D example.  Note: this will be set according to the
+    // s2d.props file value.
+    //
+    public static String BMRB_3D_URL = null;
 
     //
     // NMR-Star file name components.
