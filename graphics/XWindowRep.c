@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.41  1996/06/16 01:52:54  jussi
+  Minor improvements here and there, mostly debugging
+  statements.
+
   Revision 1.40  1996/06/15 13:49:56  jussi
   Added SetWindowBgColor() which allows Devise to change
   the view background color at runtime.
@@ -257,17 +261,6 @@ void XWindowRep::Init()
   AllocBitmap(_srcBitmap, bitmapWidth, bitmapHeight);
   AllocBitmap(_dstBitmap, 3 * bitmapWidth, 3 * bitmapHeight);
 
-  _NumXSegs = 0;
-  // set the reference axis
-  _AxisPt[1].x_ = _AxisPt[3].z_ = 1.5;  _AxisPt[2].y_ = _AxisPt[1].x_ * 1.5;
-  _AxisPt[1].y_ = _AxisPt[1].z_ = 0.0;
-  _AxisPt[2].x_ = _AxisPt[2].z_ = 0.0;
-  _AxisPt[3].x_ = _AxisPt[3].y_ = 0.0;
-  _AxisPt[0].x_ = _AxisPt[0].y_ = _AxisPt[0].z_ = 0.0;
-  _Axis[0].p = 0;  _Axis[0].q = 1;  // x axis
-  _Axis[1].p = 0;  _Axis[1].q = 2;  // y axis
-  _Axis[2].p = 0;  _Axis[2].q = 3;  // z axis
-
 #ifdef TK_WINDOW_old
   _tkPathName[0] = 0;
   _tkWindow = 0;
@@ -335,10 +328,10 @@ void XWindowRep::PushClip(Coord x, Coord y, Coord w, Coord h)
   Coord x1, y1, x2, y2;
   WindowRep::Transform(x, y, x1, y1);
   WindowRep::Transform(x + w, y + h, x2, y2);
-  xlow = MinMax::min(x1, x2);
-  xhi = MinMax::max(x1, x2);
-  ylow = MinMax::min(y1, y2);
-  yhi = MinMax::max(y1, y2);
+  xlow = MIN(x1, x2);
+  xhi = MAX(x1, x2);
+  ylow = MIN(y1, y2);
+  yhi = MAX(y1, y2);
   width = xhi - xlow + 1;
   height = yhi - ylow + 1;
   
@@ -747,10 +740,10 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
     Coord txlow, tylow, txmax, tymax;
     WindowRep::Transform(xlow[i], ylow[i] + height[i], x1, y1);
     WindowRep::Transform(xlow[i] + width[i], ylow[i], x2, y2);
-    txlow = MinMax::min(x1, x2);
-    txmax = MinMax::max(x1, x2);
-    tylow = MinMax::min(y1, y2);
-    tymax = MinMax::max(y1, y2);
+    txlow = MIN(x1, x2);
+    txmax = MAX(x1, x2);
+    tylow = MIN(y1, y2);
+    tymax = MAX(y1, y2);
     
     /* make it fit inside real window boundaries.
        We assume window resolution can't be 10000x10000 */
@@ -758,10 +751,10 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
 	tymax < 0.0 || tylow >= 10000.0)
       continue;
     
-    txlow = MinMax::max(txlow, -10000.0);
-    txmax = MinMax::min(txmax, 10000.0);
-    tylow = MinMax::max(tylow, -10000.0);
-    tymax = MinMax::min(tymax, 10000.0);
+    txlow = MAX(txlow, -10000.0);
+    txmax = MIN(txmax, 10000.0);
+    tylow = MAX(tylow, -10000.0);
+    tymax = MIN(tymax, 10000.0);
     
     unsigned pixelWidth = (unsigned)(txmax - txlow + 1);
     if (pixelWidth == 0) pixelWidth = 1;
@@ -820,10 +813,10 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
     Coord x1,y1,x2,y2;
     WindowRep::Transform(xlow[i], ylow[i] + height, x1, y1);
     WindowRep::Transform(xlow[i] + width, ylow[i], x2, y2);
-    txlow = MinMax::min(x1, x2);
-    txmax= MinMax::max(x1, x2);
-    tylow = MinMax::min(y1, y2);
-    tymax = MinMax::max(y1, y2);
+    txlow = MIN(x1, x2);
+    txmax= MAX(x1, x2);
+    tylow = MIN(y1, y2);
+    tymax = MAX(y1, y2);
 
     unsigned pixelWidth = (unsigned)(txmax - txlow+1);
     if (pixelWidth == 0) pixelWidth = 1;
@@ -869,10 +862,10 @@ void XWindowRep::FillRect(Coord xlow, Coord ylow, Coord width,
   Coord x1, y1, x2, y2;
   WindowRep::Transform(xlow, ylow + height, x1, y1);
   WindowRep::Transform(xlow + width, ylow, x2, y2);
-  txlow = MinMax::min(x1, x2);
-  txmax = MinMax::max(x1, x2);
-  tylow = MinMax::min(y1, y2);
-  tymax = MinMax::max(y1, y2);
+  txlow = MIN(x1, x2);
+  txmax = MAX(x1, x2);
+  tylow = MIN(y1, y2);
+  tymax = MAX(y1, y2);
   
   /* fill rectangle, remember that the window coordinate
      system starts at the upper left corner */
@@ -908,8 +901,8 @@ void XWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
 #endif
 
   int pixelX, pixelY;
-  unsigned pixelWidth = (unsigned)MinMax::max(minWidth, width);
-  unsigned pixelHeight = (unsigned)MinMax::max(minHeight, height);
+  unsigned pixelWidth = (unsigned)MAX(minWidth, width);
+  unsigned pixelHeight = (unsigned)MAX(minHeight, height);
   pixelX = ROUND(int, x - pixelWidth / 2);
   pixelY = ROUND(int, y - pixelHeight / 2);
 
@@ -1103,10 +1096,10 @@ void XWindowRep::DrawRubberband(int x1, int y1, int x2, int y2)
 {
   DOASSERT(_win, "Cannot draw rubberband in pixmap");
 
-  int minX = MinMax::min(x1, x2);
-  int minY = MinMax::min(y1, y2);
-  int maxX = MinMax::max(x1, x2);
-  int maxY = MinMax::max(y1, y2);
+  int minX = MIN(x1, x2);
+  int minY = MIN(y1, y2);
+  int maxX = MAX(x1, x2);
+  int maxY = MAX(y1, y2);
   unsigned width = maxX - minX;
   unsigned height = maxY - minY;
   
@@ -1168,10 +1161,10 @@ void XWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow,
     }
   }
   
-  xlow = MinMax::min(x1, x2);
-  ylow = MinMax::min(y1, y2);
-  xhigh = MinMax::max(x1, x2);
-  yhigh = MinMax::max(y1, y2);
+  xlow = MIN(x1, x2);
+  ylow = MIN(y1, y2);
+  xhigh = MAX(x1, x2);
+  yhigh = MAX(y1, y2);
   
   if (xhigh - xlow <= 5 || yhigh - ylow <= 5) {
     xhigh = xlow;
@@ -1338,10 +1331,10 @@ void XWindowRep::AbsoluteText(char *text, Coord x, Coord y,
   WindowRep::Transform(x, y, tx1, ty1);
   WindowRep::Transform(x + width, y + height, tx2, ty2);
   int winX, winY, winWidth, winHeight;
-  winX = ROUND(int, MinMax::min(tx1, tx2));
-  winY = ROUND(int, MinMax::min(ty1, ty2));
-  winWidth = ROUND(int, MinMax::max(tx1, tx2)) - winX + 1;
-  winHeight = ROUND(int, MinMax::max(ty1, ty2)) - winY + 1;
+  winX = ROUND(int, MIN(tx1, tx2));
+  winY = ROUND(int, MIN(ty1, ty2));
+  winWidth = ROUND(int, MAX(tx1, tx2)) - winX + 1;
+  winHeight = ROUND(int, MAX(ty1, ty2)) - winY + 1;
   
   if (skipLeadingSpace) {
     /* skip leading spaces before drawing text */
@@ -1440,10 +1433,10 @@ void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
   WindowRep::Transform(x, y, tx1, ty1);
   WindowRep::Transform(x + width, y + height, tx2, ty2);
   int winX, winY, winWidth, winHeight; /* box in window coord */
-  winX = ROUND(int, MinMax::min(tx1, tx2));
-  winY = ROUND(int, MinMax::min(ty1, ty2));
-  winWidth = ROUND(int, MinMax::max(tx1, tx2)) - winX + 1;
-  winHeight = ROUND(int, MinMax::max(ty1, ty2)) - winY + 1;
+  winX = ROUND(int, MIN(tx1, tx2));
+  winY = ROUND(int, MIN(ty1, ty2));
+  winWidth = ROUND(int, MAX(tx1, tx2)) - winX + 1;
+  winHeight = ROUND(int, MAX(ty1, ty2)) - winY + 1;
 
   int textLength = strlen(text);
   if (textLength == 0) return;
@@ -1462,7 +1455,7 @@ void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
      dimensions (winWidth, winHeight)*/
   double xscale = (double)winWidth / (double)textWidth;
   double yscale = (double)winHeight / (double)textHeight;
-  double scale = MinMax::min(xscale, yscale);
+  double scale = MIN(xscale, yscale);
   
   if (skipLeadingSpace) {
     /* skip leading spaces before drawing text */
@@ -1809,7 +1802,7 @@ void XWindowRep::DoPopup(int x, int y, int button)
     fontStruct->max_bounds.descent;
 
   for(int i = 0; i < numMsgs; i++) {
-    textWidth = MinMax::max(textWidth,
+    textWidth = MAX(textWidth,
 			    XTextWidth(fontStruct, msgs[i], strlen(msgs[i])));
   }
   textHeight = charHeight * numMsgs;
@@ -1953,10 +1946,10 @@ void XWindowRep::Scroll(Coord x, Coord y, Coord w, Coord h,
   Coord x1, y1, x2, y2;
   WindowRep::Transform(x, y, x1, y1);
   WindowRep::Transform(x + w, y + h, x2, y2);
-  xlow = MinMax::min(x1, x2);
-  xhi = MinMax::max(x1, x2);
-  ylow = MinMax::min(y1, y2);
-  yhi = MinMax::max(y1, y2);
+  xlow = MIN(x1, x2);
+  xhi = MAX(x1, x2);
+  ylow = MIN(y1, y2);
+  yhi = MAX(y1, y2);
   width = xhi - xlow + 1;
   height = yhi - ylow + 1;
   
@@ -2336,272 +2329,4 @@ void XWindowRep::DetachFromTkWindow()
   _tkPathName[0] = 0;
   _tkWindow = 0;
 }
-
 #endif
-
-// ---------------------------------------------------------- 
-// draw the edges of the shapes
-// ---------------------------------------------------------- 
-
-void XWindowRep::DrawXSegments()
-{
-  int  index = 0,
-  requestSize = (int)((XMaxRequestSize(_display) - 3) / 2),
-  evenAmount = (_NumXSegs / requestSize) * requestSize,
-  remainder  = _NumXSegs - evenAmount;
-
-#ifdef DEBUG
-  printf ("---------- Begin DrawXSegments ---- \n");
-  printf ("\treqSize = %d evenA = %d remain = %d\n", requestSize,
-	  evenAmount, remainder);
-#endif
-
-  // this while-loop allow the programs to handle arbitary
-  // segments that are sent to this function; because
-  // XDrawSegments can only handle so many segments at once
-  while (index < evenAmount) {
-    XDrawSegments (_display, DRAWABLE, _gc, &_xsegs[index], requestSize);
-    index += requestSize;
-  }
-
-  if (remainder)
-    XDrawSegments (_display, DRAWABLE, _gc, &_xsegs[index], remainder);
-}
-
-// ---------------------------------------------------------- 
-// map the actual user data points, use XFillArcs to make the 
-// points a little bigger
-// ---------------------------------------------------------- 
-
-void XWindowRep::MapAllXPoints(BLOCK *block_data, int numSyms,
-			       Camera camera, int H, int V)
-{
-  POINT tmppt;
-  int arc_size = 5;
-  Point pt;
-  XPoint lxpts[numSyms]; // local xpts
-  int xsize = sizeof (XPoint), ang1 = 0, ang2 = 64 * 360;
-  XArc x_arcs[numSyms];
-  int numArcs = 0;
-  double x1 = 0.0, y1 = 0.0, z1 = 0.0;
-
-  for(int i = 0; i < numSyms; i++) {
-
-    // ---------  CLIPPING BEGINS HERE -------------
-    block_data[i].clipout = FALSE;  // by default
-
-    if (block_data[i].pt.x_ >= 0 && camera.x_ >= 0)
-      x1 = fabs(block_data[i].pt.x_ - camera.x_);
-    else if (block_data[i].pt.x_ < 0 && camera.x_ < 0)
-      x1 = fabs(block_data[i].pt.x_ - camera.x_);
-    else x1 = block_data[i].W + 1;
-    if (block_data[i].pt.y_ >= 0 && camera.y_ >= 0)
-      y1 = fabs(block_data[i].pt.y_ - camera.y_);
-    else if (block_data[i].pt.y_ < 0 && camera.y_ < 0)
-      y1 = fabs(block_data[i].pt.y_ - camera.y_);
-    else y1 = block_data[i].D + 1;
-    if (block_data[i].pt.z_ >= 0 && camera.z_ >= 0)
-      z1 = fabs(block_data[i].pt.z_ - camera.z_);
-    else if (block_data[i].pt.z_ < 0 && camera.z_ < 0)
-      z1 = fabs(block_data[i].pt.z_ - camera.z_);
-    else z1 = block_data[i].H + 1;
-    
-    if (x1<block_data[i].W && y1<block_data[i].D && z1<block_data[i].H)
-      // if camera is inside a shape, clip out that pt
-      block_data[i].clipout = TRUE;
-    else {
-      if ( (camera.x_ > 0 && 
-	    block_data[i].pt.x_ == (camera.x_+block_data[i].W*2.0)) ||
-	  (camera.x_ < 0 && 
-	   block_data[i].pt.x_ == (camera.x_-block_data[i].W*2.0)) ||
-	  (camera.y_ > 0 && 
-	   block_data[i].pt.y_ == (camera.y_+block_data[i].H*2.0)) ||
-	  (camera.y_ < 0 && 
-	   block_data[i].pt.y_ == (camera.y_-block_data[i].H*2.0)) ||
-	  (camera.z_ > 0 && 
-	   block_data[i].pt.z_ == (camera.z_+block_data[i].D*2.0)) ||
-	  (camera.z_ < 0 && 
-	   block_data[i].pt.z_ == (camera.z_-block_data[i].D*2.0)))
-	// when a camera and a pt at the same place, clip pt
-	block_data[i].clipout = TRUE;
-#define _closeness_ 1.3
-      else if ( (block_data[i].pt.x_ > 0 && camera.x_ > 0 && 
-		 camera.x_ < block_data[i].pt.x_ && 
-		 block_data[i].pt.x_ * _closeness_ > camera._rho) ||
-	       (block_data[i].pt.x_ < 0 && camera.x_ < 0 && 
-		camera.x_ > block_data[i].pt.x_ &&
-		block_data[i].pt.x_ * _closeness_ < -camera._rho) ||
-	       (block_data[i].pt.y_ > 0 && camera.y_ > 0 && 
-		camera.y_ < block_data[i].pt.y_ &&
-		block_data[i].pt.y_ * _closeness_ > camera._rho) ||
-	       (block_data[i].pt.y_ < 0 && camera.y_ < 0 && 
-		camera.y_ > block_data[i].pt.y_ &&
-		block_data[i].pt.y_ * _closeness_ < -camera._rho) ||
-	       (block_data[i].pt.z_ > 0 && camera.z_ > 0 && 
-		camera.z_ < block_data[i].pt.z_ &&
-		block_data[i].pt.z_ * _closeness_ > camera._rho) ||
-	       (block_data[i].pt.z_ < 0 && camera.z_ < 0 && 
-		camera.z_ > block_data[i].pt.z_ &&
-		block_data[i].pt.z_ * _closeness_ < -camera._rho)) {
-	// when a pt is behind the camera, clip pt
-	block_data[i].clipout = TRUE;
-      } else
-	// everything else display it
-	block_data[i].clipout = FALSE;
-    }
-    // ---------  CLIPPING ENDS HERE -------------
-    
-    if (! block_data[i].clipout) {
-      tmppt = CompLocationOnViewingSpace(block_data[i].pt);
-      pt = CompProjectionOnViewingPlane(tmppt, camera);
-      lxpts[i].x = (short)pt.x;
-      lxpts[i].y = (short)pt.y;
-      if (abs(lxpts[i].x) > (H * 1.2) || abs(lxpts[i].y) > (V * 1.2))
-	block_data[i].clipout = TRUE;
-      else
-	XFillArc (_display, DRAWABLE, _gc, 
-		  lxpts[i].x - arc_size / 2, 
-		  lxpts[i].y - arc_size / 2,
-		  arc_size, arc_size, ang1, ang2);
-#ifdef DEBUG
-      printf("\tcamera:x = %f  y = %f  z = %f\n",
-	     camera.x_,camera.y_,camera.z_);
-      printf("\tblk.pt:x = %f  y = %f  z = %f\n",
-	     block_data[i].pt.x_,block_data[i].pt.y_,block_data[i].pt.z_);
-      printf("\ttmppt: x = %f  y = %f  z = %f\n",
-	     tmppt.x_,tmppt.y_,tmppt.z_);
-      printf("\tpt:    x = %f  y = %f\n", pt.x, pt.y);
-      printf("\t       H = %d  V = %d\n", H, V);
-#endif
-    }
-  }
-}
-
-// ---------------------------------------------------------- 
-
-void XWindowRep::MapAllXSegments(BLOCK *block_data, int numSyms,
-				 Camera camera, int H, int V)
-{
-  int vsize = sizeof (XPoint);
-  int ssize = sizeof(XSegment);
-  XPoint xpts[numSyms][BLOCK_VERTEX];
-  
-  _NumXSegs = 0;
-  for(int i = 0; i < numSyms; i++) {
-    for(int j = 0; j < BLOCK_VERTEX && ! block_data[i].clipout; j++) {
-      POINT tmppt = CompLocationOnViewingSpace(block_data[i].vt[j]);
-      Point pt = CompProjectionOnViewingPlane(tmppt, camera);
-      xpts[i][j].x = (short)pt.x;
-      xpts[i][j].y = (short)pt.y;
-    } // 1st inner for-loop
-    
-    for(int j = 0; j < BLOCK_EDGES && ! block_data[i].clipout; j++) {
-      _xsegs[_NumXSegs].x1 = xpts[i][block_data[i].ed[j].p].x;
-      _xsegs[_NumXSegs].y1 = xpts[i][block_data[i].ed[j].p].y;
-      _xsegs[_NumXSegs].x2 = xpts[i][block_data[i].ed[j].q].x;
-      _xsegs[_NumXSegs].y2 = xpts[i][block_data[i].ed[j].q].y;
-      _NumXSegs++;
-    }
-  }
-
-#ifdef DEBUG
-  printf ("\n.................... NumXSegs = %d\n\n", _NumXSegs);
-#endif
-}
-
-// ---------------------------------------------------------- 
-
-void XWindowRep::DrawRefAxis(Camera camera)
-{
-  int H = _width / 2;
-  int V = _height / 2;
-
-  POINT sa_pts;    // screen axis pts
-  XPoint xtmp[4];  // temp XPoints for axis pts
-  Point pt;
-
-#ifdef DEBUG
-  printf ("\t\t---------- Begin DrawRefAxis ---- \n");
-#endif
-
-  for(int j = 0; j < 4; j++) {
-    sa_pts = CompLocationOnViewingSpace(_AxisPt[j]);
-    pt = CompProjectionOnViewingPlane(sa_pts, camera);
-    xtmp[j].x = (short)pt.x;
-    xtmp[j].y = (short)pt.y;
-  }
-
-  char string[3][5] = { "X", "Y", "Z" };
-  int  len = strlen(string[0]);
-  int i;
-  for (i = 0; i < 3; i++) {
-    // make sure the points of are on the same pixel
-    if (abs(xtmp[_Axis[i].p].x - xtmp[_Axis[i].q].x) < 2)
-      xtmp[_Axis[i].p].x = xtmp[_Axis[i].q].x;
-    if (abs(xtmp[_Axis[i].p].y - xtmp[_Axis[i].q].y) < 2)
-      xtmp[_Axis[i].p].y = xtmp[_Axis[i].q].y;
-    
-    // draw the axis
-    XDrawLine(_display, DRAWABLE, _gc,
-	      xtmp[_Axis[i].p].x, xtmp[_Axis[i].p].y,
-	      xtmp[_Axis[i].q].x, xtmp[_Axis[i].q].y);
-    // label the axis
-    XDrawString(_display, DRAWABLE, _gc, xtmp[_Axis[i].q].x + 1,
-		xtmp[_Axis[i].q].y + 1, string[i], len);
-  }
-
-#ifdef DEBUG
-  printf ("\t\t---------- End DrawRefAxis ---- \n");
-#endif
-
-  // this portion defines the aim (or focus) axis
-  // it draws the camera axis
-
-  _AimAxisPt[0].x_ = camera.fx;
-  _AimAxisPt[0].y_ = camera.fy;
-  _AimAxisPt[0].z_ = camera.fz;
-  
-  _AimAxisPt[1].x_ = _AimAxisPt[0].x_ + 1.0;
-  _AimAxisPt[1].y_ = _AimAxisPt[0].y_;
-  _AimAxisPt[1].z_ = _AimAxisPt[0].z_;
-  
-  _AimAxisPt[2].x_ = _AimAxisPt[0].x_;
-  _AimAxisPt[2].y_ = _AimAxisPt[0].y_ + 1.0;
-  _AimAxisPt[2].z_ = _AimAxisPt[0].z_;
-  
-  _AimAxisPt[3].x_ = _AimAxisPt[0].x_;
-  _AimAxisPt[3].y_ = _AimAxisPt[0].y_;
-  _AimAxisPt[3].z_ = _AimAxisPt[0].z_ + 1.0;
-  
-  _AimAxis[0].p = 0;  _AimAxis[0].q = 1;  // x axis
-  _AimAxis[1].p = 0;  _AimAxis[1].q = 2;  // y axis
-  _AimAxis[2].p = 0;  _AimAxis[2].q = 3;  // z axis
-
-  for(int j = 0; j < 4; j++) {
-    sa_pts = CompLocationOnViewingSpace(_AimAxisPt[j]);
-    pt = CompProjectionOnViewingPlane(sa_pts, camera);
-    xtmp[j].x = (short)pt.x;
-    xtmp[j].y = (short)pt.y;
-  }
-	
-  strcpy(string[0], "x");
-  strcpy(string[1], "y");
-  strcpy(string[2], "z");
-
-  len = strlen(string[0]);
-  for (i = 0; i < 3; i++) {
-    // make sure the points of are on the same pixel
-    if ( abs(xtmp[_Axis[i].p].x - xtmp[_Axis[i].q].x) < 2)
-      xtmp[_Axis[i].p].x = xtmp[_Axis[i].q].x;
-    if ( abs(xtmp[_Axis[i].p].y - xtmp[_Axis[i].q].y) < 2)
-      xtmp[_Axis[i].p].y = xtmp[_Axis[i].q].y;
-
-    // draw the axis
-    XDrawLine(_display, DRAWABLE, _gc,
-	      xtmp[_Axis[i].p].x, xtmp[_Axis[i].p].y,
-	      xtmp[_Axis[i].q].x, xtmp[_Axis[i].q].y);
-    // label the axis
-    XDrawString(_display, DRAWABLE, _gc, xtmp[_Axis[i].q].x + 1,
-		xtmp[_Axis[i].q].y + 1, string[i], len);
-  }
-}
