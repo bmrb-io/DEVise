@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.108  2000/11/17 22:59:06  wenger
+  Fixed problems with command logging of cursor movements and pile/stack
+  flips.
+
   Revision 1.107  2000/07/28 17:01:19  wenger
   Added support for x-only zoom in the JavaScreen.
 
@@ -519,7 +523,30 @@ static const int protocolMinorVersion = 3;
 
 JavaScreenCache JavaScreenCmd::_cache;
 
-// be very careful that this order agree with the ControlCmdType definition
+// be very careful that this order agrees with the ServiceCmdType definition
+char *JavaScreenCmd::_serviceCmdName[] =
+{
+    "JAVAC_GetSessionList",
+    "JAVAC_OpenSession",
+    "JAVAC_MouseAction_Click",
+    "JAVAC_ShowRecords",
+    "JAVAC_ShowRecords3D",
+    "JAVAC_MouseAction_RubberBand",
+    "JAVAC_Exit",
+    "JAVAC_CloseCurrentSession",
+    "JAVAC_SetDisplaySize",
+    "JAVAC_KeyAction",
+    "JAVAC_SaveSession",
+    "JAVAC_ServerExit",
+    "JAVAC_ServerCloseSocket",
+    "JAVAC_ImageChannel",
+    "JAVAC_CursorChanged",
+    "JAVAC_ProtocolVersion",
+    "JAVAC_ResetFilters",
+    "JAVAC_GetViewHelp"
+};
+
+// be very careful that this order agrees with the ControlCmdType definition
 char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 {
 	"JAVAC_UpdateSessionList",
@@ -914,8 +941,8 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 	ServiceCmdType ctype, int argc, char** argv)
 {
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "JavaScreenCmd(0x%p)::JavaScreenCmd(%d)\n", this,
-	  (int)ctype);
+    sprintf(logBuf, "JavaScreenCmd(0x%p)::JavaScreenCmd(%d = %s)\n", this,
+	  (int)ctype, _serviceCmdName[(int)ctype]);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -2497,14 +2524,16 @@ int
 JavaScreenCmd::ReturnVal(int argc, char** argv)
 {
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "JavaScreenCmd(0x%p)::ReturnVal(", this);
+    sprintf(logBuf, "JavaScreenCmd(0x%p, %s)::ReturnVal(", this,
+	  _serviceCmdName[_ctype]);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf, argc, argv,
 	  ")\n");
     sprintf(logBuf, "_cache.IsPlayingBack() = %d", _cache.IsPlayingBack());
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 #if defined(DEBUG)
-    printf("JavaScreenCmd::ReturnVal(");
+    printf("JavaScreenCmd(0x%p, %s)::ReturnVal(", this,
+	  _serviceCmdName[_ctype]);
     PrintArgs(stdout, argc, argv, false);
     printf(")\n");
 #endif

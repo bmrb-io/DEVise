@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.39  2000/06/16 18:28:40  wenger
+  Fixed bug 598 (JavaScreen crashing on bmrb/4096_side3f.ds session).
+
   Revision 1.38  2000/06/05 16:22:42  wenger
   Basically finished command/GData/GIF caching for JavaScreen support
   (there are a few refinements that could still be added); changed the
@@ -273,9 +276,10 @@ class JavaScreenCmd
 		  Boolean doChecksum, int &checksumValue);
 
 	private:
+		static char* _serviceCmdName[];
 		static char* _controlCmdName[CONTROLCMD_NUM];
 		ControlPanel	*_control;
-		int				_ctype;
+		int				_ctype; // really enum ServiceCmdType
 		int				_argc;
 		char** 			_argv;
 
