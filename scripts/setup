@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1998/06/03 21:12:37  wenger
+#  Moved various scripts into the new 'scripts' directory, and 'Bugs' and
+#  'ToDo' into 'design_doc' to clean up the top-level directory; changed
+#  various scripts accordingly; added new 'devise' module in CVS.
+#
 #  Revision 1.11  1998/05/19 14:35:02  wenger
 #  Added Inquery code (including related code written by Sanjay) to the
 #  repository.
@@ -54,123 +59,195 @@
 
 ############################################################
 
-cd run
+if (-d run) then
+  cd run
 
-if (! -d bin) then
-  ln -s '@sys' bin
+  if (! -d bin) then
+    ln -s '@sys' bin
+  endif
+
+  if (! -d sunx86_55) then
+    ln -s ../solaris sunx86_55
+  endif
+
+  if (! -d sunx86_54) then
+    ln -s ../solaris sunx86_54
+  endif
+
+  if (! -d sun4m_54) then
+    ln -s ../solsparc sun4m_54
+  endif
+
+  if (! -d sun4m_412) then
+    ln -s ../sun sun4m_412
+  endif
+
+  if (! -d hp700_ux90) then
+    ln -s ../hp hp700_ux90
+  endif
+
+  if (! -d rs_aix32) then
+    ln -s ../aix rs_aix32
+  endif
+
+  if (! -d alpha_osf20) then
+    ln -s ../alpha_osf20 .
+  endif
+
+  if (! -d pmax_ul43a) then
+    ln -s ../pmax_ul43a .
+  endif
+
+  ln -fs /p/devise/dat/*.idx . >& /dev/null
+  ln -fs /p/devise/dat/dsi94.dat . >& /dev/null
+
+  cd ..
 endif
 
-if (! -d sunx86_55) then
-  ln -s ../solaris sunx86_55
+if (-d solaris) then
+  cd solaris
+  ln -s dev mul
+  cd ..
 endif
 
-if (! -d sunx86_54) then
-  ln -s ../solaris sunx86_54
+if (-d solsparc) then
+  cd solsparc
+  ln -s ../solaris/Makefile . >& /dev/null
+  ln -s ../solaris/dev . >& /dev/null
+  ln -s ../solaris/dev mul >& /dev/null
+  cd ..
 endif
 
-if (! -d sun4m_54) then
-  ln -s ../solsparc sun4m_54
+if (-d sun) then
+  cd sun
+  ln -s ../solaris/Makefile . >& /dev/null
+  ln -s ../solaris/dev . >& /dev/null
+  ln -s ../solaris/dev mul >& /dev/null
+  cd ..
 endif
 
-if (! -d sun4m_412) then
-  ln -s ../sun sun4m_412
+if (-d hp) then
+  cd hp
+  ln -s ../solaris/Makefile . >& /dev/null
+  ln -s ../solaris/dev . >& /dev/null
+  ln -s ../solaris/dev mul >& /dev/null
+  cd ..
 endif
 
-if (! -d hp700_ux90) then
-  ln -s ../hp hp700_ux90
+if (-d sgi) then
+  cd sgi
+  ln -s ../solaris/Makefile . >& /dev/null
+  ln -s ../solaris/dev . >& /dev/null
+  ln -s ../solaris/dev mul >& /dev/null
+  cd ..
 endif
 
-if (! -d rs_aix32) then
-  ln -s ../aix rs_aix32
+if (-d linux) then
+  cd linux
+  ln -s ../solaris/Makefile . >& /dev/null
+  ln -s ../solaris/dev . >& /dev/null
+  ln -s ../solaris/dev mul >& /dev/null
+  cd ..
 endif
 
-if (! -d alpha_osf20) then
-  ln -s ../alpha_osf20 .
+if (-d aix) then
+  cd aix
+  ln -s ../solaris/Makefile . >& /dev/null
+  ln -s ../solaris/dev . >& /dev/null
+  ln -s ../solaris/dev mul >& /dev/null
+  cd ..
 endif
 
-if (! -d pmax_ul43a) then
-  ln -s ../pmax_ul43a .
+if (-d alpha_osf20) then
+  cd alpha_osf20
+  ln -s ../solaris/Makefile . >& /dev/null
+  ln -s ../solaris/dev . >& /dev/null
+  ln -s ../solaris/dev mul >& /dev/null
+  cd ..
 endif
 
-ln -fs /p/devise/dat/*.idx . >& /dev/null
-ln -fs /p/devise/dat/dsi94.dat . >& /dev/null
+if (-d pmax_ul43a) then
+  cd pmax_ul43a
+  ln -s ../solaris/Makefile . >& /dev/null
+  ln -s ../solaris/dev . >& /dev/null
+  ln -s ../solaris/dev mul >& /dev/null
+  cd ..
+endif
 
-cd ../solaris
-ln -s dev mul
-cd ../solsparc >& /dev/null
-ln -s ../solaris/Makefile . >& /dev/null
-ln -s ../solaris/dev . >& /dev/null
-ln -s ../solaris/dev mul >& /dev/null
-cd ../sun
-ln -s ../solaris/Makefile . >& /dev/null
-ln -s ../solaris/dev . >& /dev/null
-ln -s ../solaris/dev mul >& /dev/null
-cd ../hp
-ln -s ../solaris/Makefile . >& /dev/null
-ln -s ../solaris/dev . >& /dev/null
-ln -s ../solaris/dev mul >& /dev/null
-cd ../sgi
-ln -s ../solaris/Makefile . >& /dev/null
-ln -s ../solaris/dev . >& /dev/null
-ln -s ../solaris/dev mul >& /dev/null
-cd ../linux
-ln -s ../solaris/Makefile . >& /dev/null
-ln -s ../solaris/dev . >& /dev/null
-ln -s ../solaris/dev mul >& /dev/null
-cd ../aix
-ln -s ../solaris/Makefile . >& /dev/null
-ln -s ../solaris/dev . >& /dev/null
-ln -s ../solaris/dev mul >& /dev/null
-cd ../alpha_osf20
-ln -s ../solaris/Makefile . >& /dev/null
-ln -s ../solaris/dev . >& /dev/null
-ln -s ../solaris/dev mul >& /dev/null
-cd ../pmax_ul43a
-ln -s ../solaris/Makefile . >& /dev/null
-ln -s ../solaris/dev . >& /dev/null
-ln -s ../solaris/dev mul >& /dev/null
+if (-d aix/cslib) then
+  cd aix/cslib
+  ln -s ../../cslib/client.tcl . >& /dev/null
+  ln -s ../../cslib/ETkSample.tcl . >& /dev/null
+  ln -s ../../cslib/earth.gif . >& /dev/null
+  cd ../..
+endif
 
-cd ..
+if (-d alpha_osf20/cslib) then
+  cd alpha_osf20/cslib
+  ln -s ../../cslib/client.tcl . >& /dev/null
+  ln -s ../../cslib/ETkSample.tcl . >& /dev/null
+  ln -s ../../cslib/earth.gif . >& /dev/null
+  cd ../..
+endif
 
-cd aix/cslib
-ln -s ../../cslib/client.tcl . >& /dev/null
-ln -s ../../cslib/ETkSample.tcl . >& /dev/null
-ln -s ../../cslib/earth.gif . >& /dev/null
-cd ../../alpha_osf20/cslib
-ln -s ../../cslib/client.tcl . >& /dev/null
-ln -s ../../cslib/ETkSample.tcl . >& /dev/null
-ln -s ../../cslib/earth.gif . >& /dev/null
-cd ../../hp/cslib
-ln -s ../../cslib/client.tcl . >& /dev/null
-ln -s ../../cslib/ETkSample.tcl . >& /dev/null
-ln -s ../../cslib/earth.gif . >& /dev/null
-cd ../../linux/cslib
-ln -s ../../cslib/client.tcl . >& /dev/null
-ln -s ../../cslib/ETkSample.tcl . >& /dev/null
-ln -s ../../cslib/earth.gif . >& /dev/null
-cd ../../pmax_ul43a/cslib
-ln -s ../../cslib/client.tcl . >& /dev/null
-ln -s ../../cslib/ETkSample.tcl . >& /dev/null
-ln -s ../../cslib/earth.gif . >& /dev/null
-cd ../../sgi/cslib
-ln -s ../../cslib/client.tcl . >& /dev/null
-ln -s ../../cslib/ETkSample.tcl . >& /dev/null
-ln -s ../../cslib/earth.gif . >& /dev/null
-cd ../../solaris/cslib
-ln -s ../../cslib/client.tcl . >& /dev/null
-ln -s ../../cslib/ETkSample.tcl . >& /dev/null
-ln -s ../../cslib/earth.gif . >& /dev/null
-cd ../../solsparc/cslib
-ln -s ../../cslib/client.tcl . >& /dev/null
-ln -s ../../cslib/ETkSample.tcl . >& /dev/null
-ln -s ../../cslib/earth.gif . >& /dev/null
-cd ../../sun/cslib
-ln -s ../../cslib/client.tcl . >& /dev/null
-ln -s ../../cslib/ETkSample.tcl . >& /dev/null
-ln -s ../../cslib/earth.gif . >& /dev/null
+if (-d hp/cslib) then
+  cd hp/cslib
+  ln -s ../../cslib/client.tcl . >& /dev/null
+  ln -s ../../cslib/ETkSample.tcl . >& /dev/null
+  ln -s ../../cslib/earth.gif . >& /dev/null
+  cd ../..
+endif
 
-cd ../..
+if (-d linux/cslib) then
+  cd linux/cslib
+  ln -s ../../cslib/client.tcl . >& /dev/null
+  ln -s ../../cslib/ETkSample.tcl . >& /dev/null
+  ln -s ../../cslib/earth.gif . >& /dev/null
+  cd ../..
+endif
 
-cd inquery
-setup
-cd ..
+if (-d pmax_ul43a/cslib) then
+  cd pmax_ul43a/cslib
+  ln -s ../../cslib/client.tcl . >& /dev/null
+  ln -s ../../cslib/ETkSample.tcl . >& /dev/null
+  ln -s ../../cslib/earth.gif . >& /dev/null
+  cd ../..
+endif
+
+if (-d ../../sgi/cslib) then
+  cd ../../sgi/cslib
+  ln -s ../../cslib/client.tcl . >& /dev/null
+  ln -s ../../cslib/ETkSample.tcl . >& /dev/null
+  ln -s ../../cslib/earth.gif . >& /dev/null
+  cd ../..
+endif
+
+if (-d solaris/cslib) then
+  cd solaris/cslib
+  ln -s ../../cslib/client.tcl . >& /dev/null
+  ln -s ../../cslib/ETkSample.tcl . >& /dev/null
+  ln -s ../../cslib/earth.gif . >& /dev/null
+  cd ../..
+endif
+
+if (-d solsparc/cslib) then
+  cd solsparc/cslib
+  ln -s ../../cslib/client.tcl . >& /dev/null
+  ln -s ../../cslib/ETkSample.tcl . >& /dev/null
+  ln -s ../../cslib/earth.gif . >& /dev/null
+  cd ../..
+endif
+
+if (-d sun/cslib) then
+  cd sun/cslib
+  ln -s ../../cslib/client.tcl . >& /dev/null
+  ln -s ../../cslib/ETkSample.tcl . >& /dev/null
+  ln -s ../../cslib/earth.gif . >& /dev/null
+  cd ../..
+endif
+
+if (-d inquery) then
+  cd inquery
+  setup
+  cd ..
+endif
