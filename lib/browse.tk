@@ -16,6 +16,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1995/10/11 17:08:40  ravim
+#  Initial Version.
+#
 
 ############################################################
 
@@ -30,6 +33,7 @@ if { [info exists env(DEVISE_DAT)] } {
 }
 
 source $libdir/FSBox.tk
+source $libdir/macrodef.tk
 source $libdir/schema.tk
 
 toplevel .schema
