@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/07/23 15:34:46  jussi
+  Added mechanism for bypassing the Devise internal color map.
+
   Revision 1.21  1996/07/18 01:22:50  jussi
   Added GetRootGeometry() method.
 
@@ -106,7 +109,7 @@ struct XBitmapInfo {
 	int height;
 };
 
-class Compmression;
+class Compression;
 
 class XWindowRep: public WindowRep {
 public:
