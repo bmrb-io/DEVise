@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1995/12/14 21:20:00  jussi
+  Replaced 0x%x with 0x%p.
+
   Revision 1.8  1995/12/05 17:07:34  jussi
   Statistics are now part of ViewGraph, the subclass of TDataViewX.
 
@@ -45,6 +48,7 @@
   Added CVS header.
 */
 
+#include <assert.h>
 #include "Init.h"
 #include "TDataViewX.h"
 #include "TDataMap.h"
@@ -62,14 +66,17 @@ TDataViewX::TDataViewX(char *name,
   _dataBin = new GDataBin();
   _queryProc = qp;
   _map = NULL;
-  _cMap = NULL;
   _totalGData = _numBatches = 0;
   _batchRecs = Init::BatchRecs();
+
+  _dispSymbols = true;
+  _dispConnectors = false;
+  _cMap = NULL;
 }
 
 void TDataViewX::InsertMapping(TDataMap *map)
 {
-  if ( _map) {
+  if (_map) {
     fprintf(stderr,"TDataViewX: can't handle > 1 mapping\n");
     return;
   }
@@ -110,12 +117,59 @@ void TDataViewX::DerivedAbortQuery()
   _dataBin->Final();
 }
 
+Boolean TDataViewX::DisplaySymbols(Boolean state)
+{
+  if (state == _dispSymbols)
+    return state;
+
+  Boolean oldState = _dispSymbols;
+  _dispSymbols = state;
+
+#ifdef DEBUG
+  printf("DisplaySymbols now %s\n", (_dispSymbols ? "on" : "off"));
+#endif
+
+  InvalidatePixmaps();
+  Refresh();
+
+  return oldState;
+}
+
+Boolean TDataViewX::DisplayConnectors(Boolean state)
+{
+  if (state == _dispConnectors)
+    return state;
+
+  if (!state) {
+    assert(_cMap);
+    delete _cMap;
+    _cMap = NULL;
+  } else {
+    assert(!_cMap);
+    _cMap = new TDataCMap;
+    assert(_cMap);
+    _cMap->SetDefaultColor(GetFgColor());
+  }
+
+  Boolean oldState = _dispConnectors;
+  _dispConnectors = state;
+
+#ifdef DEBUG
+  printf("DisplayConnectors now %s\n", (_dispConnectors ? "on" : "off"));
+#endif
+
+  InvalidatePixmaps();
+  Refresh();
+
+  return oldState;
+}
+
 /* Query data ready to be returned. Do initialization here.*/
 
 void TDataViewX::QueryInit(void *userData)
 {
   _dataBin->Init(_map, &_queryFilter, GetWindowRep()->TopTransform(),
-		 (_cMap != NULL? true : false), _cMap, this);
+		 _dispSymbols, _dispConnectors, _cMap, this);
 }
 
 void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
@@ -126,14 +180,9 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
   int gRecSize = mapping->GDataRecordSize();
 
   // Update stats based on gdata
-  struct GDataTemp 
-  {
-    Coord x, y;
-  };
   char *tp = (char *)gdata;
-  for (int tmp = 0; tmp < numGData; tmp++) 
-  {
-    GDataTemp *gt = (GDataTemp *)tp;
+  for(int tmp = 0; tmp < numGData; tmp++) {
+    GDataBinRec *gt = (GDataBinRec *)tp;
 
     // eliminate records which won't appear on the screen
     //
@@ -145,14 +194,11 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
     // plot type is known only later (may even depend on a record field)
     // so the above elimination can't be done yet
 
-    if ((gt->x < _queryFilter.xLow) ||
-	(gt->x > _queryFilter.xHigh) ||
-	(gt->y < _queryFilter.yLow)) 
-    {
-      tp += gRecSize;
-      continue;
-    }
-    _stats.Sample(gt->x, gt->y);
+    if (gt->x >= _queryFilter.xLow &&
+	gt->x <= _queryFilter.xHigh &&
+	gt->y >= _queryFilter.yLow)
+      _stats.Sample(gt->x, gt->y);
+
     tp += gRecSize;
   }
   
@@ -193,17 +239,20 @@ void TDataViewX::ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs)
 void TDataViewX::ReturnGDataBinConnectors(TDataCMap *cmap,
 					  Connector **connectors, int num)
 {
-  WindowRep *winRep = GetWindowRep();
+#ifdef DEBUG
+  printf("TDataViewX drawing %d connectors\n", num);
+#endif
+
   for(int i = 0; i < num; i++)
-    ConnectorShapeRegistrar::DrawConnection(winRep, connectors[i]);
+    ConnectorShapeRegistrar::DrawConnection(GetWindowRep(), connectors[i]);
 }
 
 void TDataViewX::PrintStat()
 {
   if (Init::PrintViewStat()) {
     View::PrintStat();
-    printf("%d GData records, %d batches, %d per batch\n",
-	   _totalGData, _numBatches, _totalGData/_numBatches);
+    printf("%d GData records, %d batches, %.2f per batch\n",
+	   _totalGData, _numBatches, 1.0 * _totalGData / _numBatches);
     _dataBin->PrintStat();
   }
 }

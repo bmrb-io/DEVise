@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1995/12/28 19:52:02  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.7  1995/12/14 21:17:02  jussi
   *** empty log message ***
 
@@ -72,7 +75,7 @@ GDataBin::GDataBin()
 
   /* Init space for connectors */
   for(i = 0; i < GDATA_BIN_MAX_PIXELS; i++)
-    _returnConnectors[i] = new Connector;
+    _connectors[i] = new Connector;
 }
 
 /**********************************************************************
@@ -80,24 +83,28 @@ Init before any data is returned from query processor
 ************************************************************************/
 
 void GDataBin::Init(TDataMap *mapping, VisualFilter *filter,
-		    Transform2D *transform, Boolean dispConnector,
-		    TDataCMap *cMap, GDataBinCallback *callback)
+		    Transform2D *transform, Boolean dispSymbol,
+		    Boolean dispConnector, TDataCMap *cMap,
+		    GDataBinCallback *callback)
 {
+#ifdef DEBUG
+  printf("GDataBin::Init: dispConnector = %s, cMap = 0x%p\n",
+	 (dispConnector ? "on" : "off"), cMap);
+  printf("  Transform: ");
+  transform->Print();
+  printf("\n");
+#endif
+
   if (_returnIndex != 0) {
     fprintf(stderr,"symbolBin::Init: _returnIndex <> 0\n");
     Exit::DoExit(2);
   }
   
-#ifdef DEBUG
-  printf("GDataBinInit::Transform: ");
-  transform->Print();
-  printf("\n");
-#endif
-
   _numSyms = 0;
   _numSymsReturned = 0;
 
   _mapping = mapping;
+  _dispSymbol = dispSymbol;
   _dispConnector = dispConnector;
   _cMap = cMap;
 
@@ -113,7 +120,7 @@ void GDataBin::Init(TDataMap *mapping, VisualFilter *filter,
   if (!(_maxYPixels > 0 && _maxYPixels < GDATA_BIN_MAX_PIXELS))
     printf("GDataBin: yhigh %.2f, ylow %.2f, _maxYPixels: %d\n",
 	   yhigh, ylow, _maxYPixels);
-  assert(_maxYPixels > 0 && _maxYPixels < GDATA_BIN_MAX_PIXELS);
+  assert(_maxYPixels >= 0 && _maxYPixels < GDATA_BIN_MAX_PIXELS);
 
   _needX = true;
   _callBack = callback;
@@ -128,138 +135,139 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
 			    int startIndex, int incr)
 {
 #ifdef DEBUG
-  printf("GDataBin::InsertSymbol(%d,0x%p,%d,%d,%d)\n",
+  printf("GDataBin::InsertSymbol(%ld,0x%p,%d,%d,%d)\n",
 	 startRid, recs, numRecs, startIndex, incr);
 #endif
   
   _numSyms += numRecs;
 
-  /* pointer to next record to process */
+  if (_dispSymbol) {
+
+    /* pointer to next record to process */
+    char *ptr = (char *)recs + startIndex * _gRecSize; 
+  
+    /* amount to increment pointer each iter*/
+    int ptrIncr = incr * _gRecSize;	
+  
+    if (!_elimOverlap) {
+      /* DO NOT eliminate overlap */
+      for(int i = startIndex; i < numRecs; i += incr) {
+	_returnSyms[_returnIndex++] = (GDataBinRec *)ptr;
+	if (_returnIndex >= GDATA_BIN_MAX_PIXELS)
+	  ReturnSymbols();
+	ptr += ptrIncr;
+      }
+    } else {
+      /* Eliminate overlap here */
+      
+      for(int i = startIndex; i < numRecs; i += incr) {
+	
+	GDataBinRec *sym = (GDataBinRec *)ptr;
+	
+	// compute X pixel value for this symbol and see if it differs
+	// from X pixel value for current bin
+	
+	Coord x, y;
+	_transform->Transform(sym->x, sym->y, x, y);
+	int thisPixelX = ROUND(int, x);
+	int thisPixelY = ROUND(int, y);
+	
+	if (_needX) {
+	  _pixelX = thisPixelX;
+	  _needX = false;
+	} else if (thisPixelX != _pixelX) {
+	  _iteration++;
+	  _pixelX = thisPixelX;
+	}
+	
+	/* put symbol in the array */
+	if (thisPixelY < 0)
+	  thisPixelY = 0;
+	else if (thisPixelY > _maxYPixels)
+	  thisPixelY = _maxYPixels;
+	
+	if (_timestamp[thisPixelY] != _iteration) {
+	  _timestamp[thisPixelY] = _iteration;
+	  assert(_returnIndex < GDATA_BIN_MAX_PIXELS);
+	  _returnSyms[_returnIndex++] = sym;
+	  
+	  // flush cache of symbols to screen?
+	  if (_returnIndex >= GDATA_BIN_MAX_PIXELS)
+	    ReturnSymbols();
+	} else {
+#ifdef DEBUGx
+	  printf("Not adding x %f, X pixel %d\n", sym->x, thisPixelX);
+#endif
+	}
+	
+	ptr += ptrIncr;
+      }
+    }
+    
+    // flush any remaining symbols to screen
+    ReturnSymbols();
+  }
+  
+  // return if connectors should not be displayed
+  if (!_dispConnector || incr != 1)
+    return;
+
+  /* display connector has been set to true and
+     we are looking at records one at a time */
+    
   char *ptr = (char *)recs + startIndex * _gRecSize; 
   
-  /* amount to increment pointer each iter*/
-  int ptrIncr = incr * _gRecSize;	
+  GDataBinRec *lastSym = (GDataBinRec *)ptr;
+  Coord x, y;
+  _transform->Transform(lastSym->x, lastSym->y, x, y);
+  int lastPixelX = ROUND(int, x);
+  int lastPixelY = ROUND(int, y);
   
-  if (!_elimOverlap){
-    /* DO NOT eliminate overlap */
-    for(int i = startIndex; i < numRecs; i += incr) {
-      _returnSyms[_returnIndex++] = (GDataBinRec *)ptr;
-      if (_returnIndex >= GDATA_BIN_MAX_PIXELS)
-	ReturnSymbols();
-      ptr += ptrIncr;
-    }
-    if (_returnIndex > 0)
-      ReturnSymbols();
-    return;
-  }
-
-  /* Eliminate overlap here */
-
-  int i;
-  for(i = startIndex; i < numRecs; i += incr) {
-
+  /* amount to increment pointer in each iteration */
+  
+  int ptrIncr = _gRecSize;	
+  int index = 0;
+  ptr += ptrIncr;
+  
+  for(int i = startIndex + 1; i < numRecs; i++) {
     GDataBinRec *sym = (GDataBinRec *)ptr;
-
-    // compute X pixel value for this symbol and see if it differs
-    // from X pixel value for current bin
-
-    Coord x, y;
+    
     _transform->Transform(sym->x, sym->y, x, y);
     int thisPixelX = ROUND(int, x);
     int thisPixelY = ROUND(int, y);
-
-    if (_needX) {
-      _pixelX = thisPixelX;
-      _needX = false;
-    } else if (thisPixelX != _pixelX) {
-      _iteration++;
-      _pixelX = thisPixelX;
+    
+    if (lastPixelX != thisPixelX || lastPixelY != thisPixelY) {
+      
+#ifdef DEBUG
+      printf("mapping syms: (%d,%d) (%d,%d): ",
+	     lastPixelX, lastPixelY, thisPixelX, thisPixelY);
+#endif
+      
+      /* draw a connection */
+      if (_cMap->MapToConnection(lastSym, sym, _connectors[index])) {
+#ifdef DEBUG
+	printf("accepted\n");
+#endif
+	if (++index >= GDATA_BIN_MAX_PIXELS) {
+	  _callBack->ReturnGDataBinConnectors(_cMap, _connectors, index);
+	  index = 0;
+	}
+      } else {
+#ifdef DEBUG
+	printf("rejected\n");
+#endif
+      }
     }
     
-    /* put symbol in the array */
-    if (thisPixelY < 0)
-      thisPixelY = 0;
-    else if (thisPixelY > _maxYPixels)
-      thisPixelY = _maxYPixels;
-
-    if (_timestamp[thisPixelY] != _iteration) {
-      _timestamp[thisPixelY] = _iteration;
-      assert(_returnIndex < GDATA_BIN_MAX_PIXELS);
-      _returnSyms[_returnIndex++] = sym;
-
-      // flush cache of symbols to screen?
-      if (_returnIndex >= GDATA_BIN_MAX_PIXELS)
-	ReturnSymbols();
-    } else {
-#ifdef DEBUGx
-      printf("Not adding x %f, X pixel %d\n", sym->x, thisPixelX);
-#endif
-    }
-
+    lastSym = sym;
+    lastPixelX = thisPixelX;
+    lastPixelY = thisPixelY;
+    
     ptr += ptrIncr;
   }
   
-  if (_dispConnector && incr == 1 ) {
-
-    /* display connector has been set to true and
-       we are looking at records one at a time */
-    
-    char *ptr = (char *)recs + startIndex * _gRecSize; 
-
-    GDataBinRec *lastSym = (GDataBinRec *)ptr;
-    Coord x, y;
-    _transform->Transform(lastSym->x, lastSym->y, x, y);
-    int lastPixelX = ROUND(int, x);
-    int lastPixelY = ROUND(int, y);
-    
-    /* amount to increment pointer in each iteration */
-
-    int ptrIncr = _gRecSize;	
-    int index = 0;
-    ptr += ptrIncr;
-
-    for(i = startIndex+1; i < numRecs; i++) {
-      GDataBinRec *sym = (GDataBinRec *)ptr;
-
-      _transform->Transform(sym->x, sym->y, x, y);
-      int thisPixelX = ROUND(int, x);
-      int thisPixelY = ROUND(int, y);
-
-#ifdef DEBUG
-      printf("testing syms: (%d,%d) (%d,%d)\n",
-	     lastPixelX, lastPixelY, thisPixelX, thisPixelY);
-#endif
-
-      if (lastPixelX != thisPixelX || lastPixelY != thisPixelY) {
-
-	/* draw a connection */
-	if (_cMap->MapToConnection(lastSym, sym, 
-				   _returnConnectors[index])) {
-#ifdef DEBUG
-	  printf("accepted\n");
-#endif
-	  if (++index >= GDATA_BIN_MAX_PIXELS){
-	    _callBack->ReturnGDataBinConnectors(_cMap,
-						_returnConnectors, index);
-	    index = 0;
-	  }
-	}
-      }
-      
-      lastSym = sym;
-      lastPixelX = thisPixelX;
-      lastPixelY = thisPixelY;
-
-      ptr += ptrIncr;
-    }
-    
-    if (index > 0)
-      _callBack->ReturnGDataBinConnectors(_cMap,
-					  _returnConnectors, index);
-  }
-
-  // flush any remaining symbols to screen
-  ReturnSymbols();
+  if (index > 0)
+    _callBack->ReturnGDataBinConnectors(_cMap, _connectors, index);
 }
 
 /***********************************************************************

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/11/25 01:24:25  jussi
+  Removed #ifdef CALCULATE_DIRECTLY which allowed one to quickly
+  switch back to the xPerPixel and yPerPixel method for testing.
+
   Revision 1.4  1995/11/25  01:20:09  jussi
   This code now uses Transform matrix operations to convert user/world
   coordinates to screen pixel coordinates. This is to avoid any future
@@ -69,7 +73,7 @@ public:
 
   /* Init before any data is returned from query processor */
   void Init(TDataMap *map, VisualFilter *filter, Transform2D *transform,
-	    Boolean dispConnector, TDataCMap *cMap,
+	    Boolean dispSymbol, Boolean dispConnector, TDataCMap *cMap,
 	    GDataBinCallback *callback);
 
   /* finalize */
@@ -99,10 +103,11 @@ private:
   int _returnIndex;
   
   /* connectors to be returned */
-  Connector *_returnConnectors[GDATA_BIN_MAX_PIXELS]; 
+  Connector *_connectors[GDATA_BIN_MAX_PIXELS]; 
   
+  Boolean _dispSymbol;    /* TRUE if display symbol */
   Boolean _dispConnector; /* TRUE if display connector */
-  TDataCMap *_cMap;	/* connector mapping */
+  TDataCMap *_cMap;	  /* connector mapping */
   
   Boolean _needX; /* TRUE if we need to get X value for the bin */
   int _pixelX;	/* get the X value for the bin */

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/05 17:07:58  jussi
+  Statistics are now part of ViewGraph, the subclass of TDataviewX.
+
   Revision 1.4  1995/11/28  05:26:28  ravim
   Support for statistics.
 
@@ -43,9 +46,9 @@ class TDataViewX: public ViewGraph, private QueryCallback,
 public:
 
   TDataViewX(char *name, VisualFilter &initFilter, QueryProc *qp, 
-	     Color fg= BlackColor, Color bg= WhiteColor,
-	     AxisLabel *xAxis=NULL, AxisLabel *yAxis=NULL,
-	     Action *action=NULL);
+	     Color fg = BlackColor, Color bg = WhiteColor,
+	     AxisLabel *xAxis = NULL, AxisLabel *yAxis = NULL,
+	     Action *action = NULL);
 	
   virtual void InsertMapping(TDataMap *map);
 
@@ -54,6 +57,11 @@ protected:
   virtual void DerivedStartQuery(VisualFilter &filter, int timestamp);
   virtual void DerivedAbortQuery();
   
+  virtual Boolean DisplaySymbols() { return _dispSymbols; }
+  virtual Boolean DisplaySymbols(Boolean state);
+  virtual Boolean DisplayConnectors() { return _dispConnectors; }
+  virtual Boolean DisplayConnectors(Boolean state);
+
   virtual void PrintStat();
 
 private:
@@ -73,11 +81,15 @@ private:
   virtual void QueryDone(int bytes, void *userData);
   
   VisualFilter _queryFilter;
-  QueryProc *_queryProc;
-  TDataMap *_map;
-  TDataCMap *_cMap;
-  GDataBin *_dataBin;
-  int _totalGData, _numBatches;
-  Boolean _batchRecs; /* true to batch records */
+  QueryProc    *_queryProc;
+  TDataMap     *_map;
+  GDataBin     *_dataBin;
+  int          _totalGData;
+  int          _numBatches;
+  Boolean      _batchRecs;
+
+  Boolean      _dispSymbols;
+  Boolean      _dispConnectors;
+  TDataCMap    *_cMap;
 };
 #endif

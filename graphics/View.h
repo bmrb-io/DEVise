@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1995/12/29 18:28:26  jussi
+  Added new cursor mechanism; cursors are drawn as inverted rectangles
+  which are easier to see than the old cursor lines.
+
   Revision 1.9  1995/12/05 17:02:13  jussi
   Moved _stats to ViewGraph (superclass) so that statistics can be
   turned on and displayed without having to redisplay the data itself.
@@ -118,8 +122,8 @@ class View: public ViewWin, private DispatcherCallback,
 	private ControlPanelCallback {
 public:
 	View(char *name, Action *action, VisualFilter &initFilter,
-		Color foreground= BlackColor, Color background = BlackColor,
-		AxisLabel *xAxis=NULL, AxisLabel *yAxis = NULL,
+		Color foreground = BlackColor, Color background = WhiteColor,
+		AxisLabel *xAxis = NULL, AxisLabel *yAxis = NULL,
 		int weight = 1, Boolean boundary = false);
 	~View();
 
@@ -238,6 +242,14 @@ public:
 
 	/*Print view statistics */
 	virtual void PrintStat();
+
+	/* Toggle symbol display */
+	virtual Boolean DisplaySymbols() { return false; }
+	virtual Boolean DisplaySymbols(Boolean state) { return state; }
+
+	/* Toggle connector display */
+	virtual Boolean DisplayConnectors() { return false; }
+	virtual Boolean DisplayConnectors(Boolean state) { return state; }
 
 protected:
     /* called by base class when it has been mapped/unmapped */
