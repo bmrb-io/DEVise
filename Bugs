@@ -956,6 +956,25 @@ Num Date        Status  Description
 240 11/18/97	OPEN	Streaming buffer manager doesn't consistently
 			clean up semaphores. (rkw)
 
+241 11/25/97	FIXED	Mapping dialog doesn't update shape attribute names
+			when symbol type is changed. (ml/rkw)
+
+242 11/26/97	OPEN	UniData schema editor GUI doesn't let you choose
+			between separator and whitespace. (rkw)
+
+243 11/26/97	OPEN	UniData schema editor GUI is taller than screen
+			when 'More Spec' is selected. (rkw)
+
+244 11/26/97	OPEN	Schema editor GUIs for both types of schema allow
+			you to add a string attribute without specifying
+			the maximum length. (rkw)
+
+245 12/01/97	OPEN	Dots or spaces in data source names goof up the DTE.
+			(dk/rkw)
+
+246 12/01/97	OPEN	Data source definition GUI shouldn't let you add
+			data source names with dots or spaces. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
