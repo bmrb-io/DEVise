@@ -391,9 +391,7 @@ public:
 };
 
 class ODBCInterface : public Interface {
-	string dataSourceName;
-	string userName;
-	string passwd;
+	string connectString;
 	string tableName;
 	ODBC_Data* myODBC;
 	int ODBC_Exist;

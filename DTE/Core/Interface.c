@@ -552,8 +552,8 @@ Site* DBServerInterface::getSite(){
 }
 
 istream& ODBCInterface::read(istream& in){
-	in >> dataSourceName;
-	in >> userName >> passwd >> tableName;
+	in >> connectString;
+	in >> tableName;
 	if(!in){
 		THROW(new Exception("Incorrect ODBCInterface format"), in);
 	}
@@ -561,9 +561,8 @@ istream& ODBCInterface::read(istream& in){
 }
 
 void ODBCInterface::write(ostream& out) const {
-	out << typeName << " ";
-	out << dataSourceName << " " << userName << " " << passwd 
-		<< " " << tableName;
+	out << connectString << " ";
+	out << tableName;
 	Interface::write(out);
 }
 

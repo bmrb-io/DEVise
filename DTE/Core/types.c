@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.47  1997/12/22 17:54:11  donjerko
+  Initial version of Saeed's sequence similarity search.
+
   Revision 1.46  1997/12/10 00:00:38  okan
   ODBC Interface Changes ...
 
@@ -251,7 +254,12 @@ void seqSimilar(const Type* arg1, const Type* arg2, Type*& result, size_t&){
 void seqAddTup(const Type* arg1, const Type* arg2, Type*& result, size_t&){
 	SeqSimVec* val1 = ((SeqSimVec*) arg1);
 	double * val2 = ((double*)arg2);
-	((SeqSimVec*) result) = val1->addTup(val2);
+
+	//((SeqSimVec*) result) = val1->addTup(val2);
+	// The above thing would not compile, lets hope that this works
+
+	result = val1->addTup(val2);
+
 }
 
 // This function is called while calculating the moving aggregate for the
@@ -262,7 +270,9 @@ void seqAddTup(const Type* arg1, const Type* arg2, Type*& result, size_t&){
 void seqSubTup(const Type* arg1, const Type* arg2, Type*& result, size_t&){
 	SeqSimVec* val1 = ((SeqSimVec*) arg1);
 	double * val2 = ((double*)arg2);
-	((SeqSimVec*) result) = val1->subTup(val2);
+//	((SeqSimVec*) result) = val1->subTup(val2);
+	// The above thing would not compile, lets hope that this works
+	result = val1->subTup(val2);
 }
 
 
@@ -625,7 +635,17 @@ void indexDescRead(istream& in, Type*& adt){
 
 // This function is to read the type 'seqsv'. It reads it from the file
 // stream into the structure of SeqSimVec
+
 void seqVecRead(istream& in, Type*& adt){
+	SeqSimVec* ssv = (SeqSimVec*) adt;
+	for (int i=0; i < 2*NFA+2;  i++){
+		in >> ssv->DFT_pts[i];
+	}
+	assert(!"This has to be fixed. SeqSimVec constructor has to create legal objects");
+	/*
+
+	// This old code would not compile on NT
+
 	SeqSimVec * temp;	
 	int i;
 	temp = new SeqSimVec;
@@ -635,6 +655,7 @@ void seqVecRead(istream& in, Type*& adt){
 	for (i=0; i < 2*NFA+2;  i++)
 		((SeqSimVec*) adt)->DFT_pts[i] = temp->DFT_pts[i];
 	delete temp;
+	*/
 }
 
 void intWrite(ostream& out, const Type* adt){
@@ -1371,8 +1392,9 @@ void time_tDestroy(Type* adt){
 	delete (ITime_t*) adt;
 }
 
-void dateDestroy(Type* adt){
-	delete (EncodedDTF*) adt;
+void dateDestroy(Type* adt){ 
+//  This doesn't work in NT, it is core dumping.. 
+//	delete (EncodedDTF*) adt;
 }
 
 // This function is called to destroy a structure of type ISeqSimVec
@@ -1461,7 +1483,8 @@ void dateCopy(const Type* arg, Type*& result, size_t& sz){
 // This function is called to copy a value and make it into a SeqSimVec
 void seqSimVecCopy(const Type* arg, Type*& result, size_t& sz){
 // Add code to initialize the seqVector
-	((SeqSimVec*)result)->SeqSimVec();
+//	((SeqSimVec*)result)->SeqSimVec();
+	assert(!"This has to be fixed. SeqSimVec constructor has to create legal objects");
    ((SeqSimVec*)result)->addTup((double*)arg);
 
 }

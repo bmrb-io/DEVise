@@ -554,11 +554,12 @@ const Tuple* MovGroupByExec::flushWindow(){
 }
 
 const Tuple* MovSeqGroupByExec::flushWindow(){
+	int i;
   while (currWindowHeight) { // window has been flushed
-  	for(int i = 0; i < numAggs; i++){
+  	for(i = 0; i < numAggs; i++){
    	 aggExecs[aggPos[i]]->dequeue(toDeque);  
   	}
-  	for (int i = 0; i < seqByPosLen; i++){
+  	for (i = 0; i < seqByPosLen; i++){
    	 aggExecs[seqByPos[i]]->dequeue(1); // values in seqby Q are unique
   	}    
 
@@ -570,10 +571,10 @@ const Tuple* MovSeqGroupByExec::flushWindow(){
       return NULL; // end of file
     }
 
-    for(int i = 0; i < numAggs; i++){
+    for(i = 0; i < numAggs; i++){
       aggExecs[aggPos[i]]->dequeue(toDeque);  
     }
-    for (int i = 0; i < seqByPosLen; i++){
+    for (i = 0; i < seqByPosLen; i++){
       aggExecs[seqByPos[i]]->dequeue(1);
     }    
 
