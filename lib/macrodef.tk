@@ -372,7 +372,7 @@ proc MacroDefAuto {tdata} {
 
     label .auto.xsel.label -text "Select X" -width 15
     menubutton .auto.xsel.attr -relief raised \
-	    -textvariable x -menu .auto.xsel.attr.$selgrp -width 15
+	    -textvariable x -menu .auto.xsel.attr.g$selgrp -width 15
     pack .auto.xsel.label -side left
     pack .auto.xsel.attr -side left
 
@@ -404,7 +404,7 @@ proc MacroDefAuto {tdata} {
 		} else {
 			$addname($grpname) add cascade \
 				-label $subname \
-				-menu $addname($grpname).$subname
+				-menu $addname($grpname).g$subname
 			set grplist [linsert $grplist 0 $subname]
 			set addname($subname) $addname($grpname).g$subname
 		}
