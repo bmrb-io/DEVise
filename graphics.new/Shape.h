@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/07/19 02:52:33  jussi
+  Added LineShape and LineShadeShape.
+
   Revision 1.17  1996/07/15 21:33:23  jussi
   Added support for the 'size' gdata parameter. Added GetSize()
   and GetOrientation() functions.
@@ -263,6 +266,29 @@ class Shape {
       i = colorIndex;
     }
   }
+
+  virtual void ComputeDataLabelFrame(View *view) {
+    VisualFilter filter;
+    view->GetVisualFilter(filter);
+    dataLabelWidth = filter.xHigh - filter.xLow;
+    dataLabelHeight = filter.yHigh - filter.yLow;
+    dataLabelYOffset = dataLabelHeight * 0.05;
+  }
+
+  virtual void DisplayDataLabel(WindowRep *win, Coord x,
+                                Coord y, Coord value) {
+    win->SetPattern(Pattern0);
+    char label[32];
+    sprintf(label, "%g", value);
+    win->AbsoluteText(label, x - dataLabelWidth / 2,
+                      y + dataLabelYOffset - dataLabelHeight / 2,
+                      dataLabelWidth, dataLabelHeight,
+                      WindowRep::AlignCenter, true);
+  }
+
+  Coord dataLabelWidth;
+  Coord dataLabelHeight;
+  Coord dataLabelYOffset;
 };
 
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1996/07/20 18:49:42  jussi
+  Added 3D line segment shape. Improved performance of line shade shape.
+
   Revision 1.30  1996/07/19 14:37:46  jussi
   Removed extra code.
 
@@ -184,6 +187,8 @@ public:
       }
     }
 
+    ComputeDataLabelFrame(view);
+
     int i = 0;
     while (i < numSyms) {
 
@@ -224,7 +229,16 @@ public:
       else
         win->SetFgColor(firstColor);
       win->SetPattern(firstPattern);
+
       win->FillRectArray(_x, _y, _width, _height, count);
+
+      if (view->GetDisplayDataValues()) {
+        for(int s = 0; s < count; s++)
+          DisplayDataLabel(win, _x[s] + _width[s] / 2,
+                           _y[s] + _height[s] / 2,
+                           _y[s] + _height[2] / 2);
+      }
+
       if (firstColor == XorColor)
         win->SetCopyMode();
     }
@@ -278,12 +292,16 @@ public:
     Coord x0, y0, x1, y1;
     win->Transform(0.0, 0.0, x0, y0);
     
+    ComputeDataLabelFrame(view);
+
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
+      Coord x = GetX(gdata, map, offset);
+      Coord y = GetY(gdata, map, offset);
       Coord tx, ty;
       Coord width, height;
-      win->Transform(GetX(gdata, map, offset), GetY(gdata, map, offset),
-                     tx, ty);
+      
+      win->Transform(x, y, tx, ty);
       win->Transform(fabs(GetSize(gdata, map, offset)
                           * GetShapeAttr0(gdata, map, offset)), 0.0,
 		     x1, y1);
@@ -303,7 +321,12 @@ public:
       else
         win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
+
       win->FillPixelRect(tx, ty, width, height);
+
+      if (view->GetDisplayDataValues())
+        DisplayDataLabel(win, x, y, y);
+
       if (color == XorColor)
         win->SetCopyMode();
     }
@@ -355,9 +378,12 @@ public:
     printf("BarShape: pixelW %.2f\n", pixelWidth);
 #endif
 
+    ComputeDataLabelFrame(view);
+
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
       Coord x = GetX(gdata, map, offset);
+      Coord y = GetY(gdata, map, offset);
       Coord width = fabs(GetSize(gdata, map, offset)
                          * GetShapeAttr0(gdata, map, offset));
 #if 0
@@ -368,7 +394,6 @@ public:
 #endif
       if (width > pixelWidth)
 	x -= width / 2.0;
-      Coord y = GetY(gdata, map, offset);
 
       Color color = GetColor(view, gdata, map, offset);
       if (color == XorColor)
@@ -376,7 +401,12 @@ public:
       else
         win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
+
       win->FillRect(x, 0.0, width, y);
+
+      if (view->GetDisplayDataValues())
+        DisplayDataLabel(win, x + width / 2, y, y);
+
       if (color == XorColor)
         win->SetCopyMode();
     }
@@ -426,6 +456,8 @@ public:
       }
     }
 
+    ComputeDataLabelFrame(view);
+
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
       Coord width = fabs(GetSize(gdata, map, offset)
@@ -451,7 +483,12 @@ public:
       else
         win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
+
       win->FillPoly(points, segments);
+
+      if (view->GetDisplayDataValues())
+        DisplayDataLabel(win, x, y, y);
+
       if (color == XorColor)
         win->SetCopyMode();
     }
@@ -499,6 +536,8 @@ public:
       }
     }
 
+    ComputeDataLabelFrame(view);
+
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
       Coord width = fabs(GetSize(gdata, map, offset)
@@ -513,7 +552,12 @@ public:
       else
         win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
+
       win->Arc(x, y, width, height, 0, 2 * PI);
+
+      if (view->GetDisplayDataValues())
+        DisplayDataLabel(win, x, y, y);
+
       if (color == XorColor)
         win->SetCopyMode();
     }
@@ -561,6 +605,8 @@ public:
       }
     }
 
+    ComputeDataLabelFrame(view);
+
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
       Coord w = GetSize(gdata, map, offset)
@@ -576,6 +622,9 @@ public:
         win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
       win->Line(x, y, x + w, y + h, 1);
+
+      if (view->GetDisplayDataValues())
+        DisplayDataLabel(win, x + w / 2, y + h / 2, y + h / 2);
 
       if (w == 0 && h == 0) {
         if (color == XorColor)
@@ -637,12 +686,14 @@ public:
       return;
     }
 
-    GDataAttrOffset *offset = map->GetGDataOffset();
+    ComputeDataLabelFrame(view);
 
     VisualFilter filter;
     view->GetVisualFilter(filter);
     Coord xLow = filter.xLow;
     Coord xHigh = filter.xHigh;
+
+    GDataAttrOffset *offset = map->GetGDataOffset();
 
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
@@ -653,7 +704,12 @@ public:
       else
         win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
+
       win->Line(xLow, y, xHigh, y, 2);
+
+      if (view->GetDisplayDataValues())
+        DisplayDataLabel(win, (xLow + xHigh) / 2, y, y);
+
       if (color == XorColor)
         win->SetCopyMode();
     }
@@ -697,6 +753,8 @@ public:
       return;
     }
 
+    ComputeDataLabelFrame(view);
+
     GDataAttrOffset *offset = map->GetGDataOffset();
 
     Coord x0, y0, x1, y1;
@@ -737,7 +795,12 @@ public:
       else
         win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
+
       win->Line(x, y, x + w, y + h, 1);
+
+      if (view->GetDisplayDataValues())
+        DisplayDataLabel(win, x + w / 2, y + h / 2, y + h / 2);
+
       if (color == XorColor)
         win->SetCopyMode();
     }
@@ -784,6 +847,8 @@ public:
       return;
     }
 
+    ComputeDataLabelFrame(view);
+
     GDataAttrOffset *offset = map->GetGDataOffset();
 
     Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
@@ -828,10 +893,15 @@ public:
       else
         win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
+
       win->FillRect(x - tw, low, 2 * tw, high - low);
       win->Line(x - hw, y, x + hw, y, 1);
       win->Line(x - hw, low, x + hw, low, 1);
       win->Line(x - hw, high, x + hw, high, 1);
+
+      if (view->GetDisplayDataValues())
+        DisplayDataLabel(win, x, y, y);
+
       if (color == XorColor)
         win->SetCopyMode();
     }
@@ -1159,6 +1229,11 @@ public:
       return;
     }
 
+    VisualFilter filter;
+    view->GetVisualFilter(filter);
+    Coord filterWidth = filter.xHigh - filter.xLow;
+    Coord filterHeight = filter.yHigh - filter.yLow;
+
     GDataAttrOffset *offset = map->GetGDataOffset();
 
     for(int i = 0; i < numSyms; i++) {
@@ -1187,13 +1262,13 @@ public:
         win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
 
-      // Pretend that there's a 500x500 box in which the text has to
+      // Pretend that there's a large box in which the text has to
       // be drawn; this is done because we don't know the size of the
       // the label in pixels, and if we pass a width or height that
       // is too tight, AbsoluteText() will try to scale the text.
-      Coord fakeSize = 500;
-      win->AbsoluteText(label, x - fakeSize / 2, y - fakeSize / 2,
-			fakeSize, fakeSize, WindowRep::AlignCenter, true);
+      win->AbsoluteText(label, x - filterWidth / 2, y - filterHeight / 2,
+			filterWidth, filterHeight,
+                        WindowRep::AlignCenter, true);
 
       if (color == XorColor)
         win->SetCopyMode();
@@ -1220,6 +1295,8 @@ public:
       return;
     }
 
+    ComputeDataLabelFrame(view);
+
     GDataAttrOffset *offset = map->GetGDataOffset();
 
     /* get coordinates of first data point in this batch */
@@ -1240,6 +1317,8 @@ public:
             DrawConnectingLine(win, view,
                                GetPattern(gdata, map, offset),
                                xp, yp, cp, x0, y0, c0);
+            if (view->GetDisplayDataValues())
+              DisplayDataLabel(win, x0, y0, y0);
             (void)view->GetPointStorage()->Remove(recId - 1);
         } else {
             view->GetPointStorage()->Insert(recId, x0, y0, c0);
@@ -1256,6 +1335,8 @@ public:
         DrawConnectingLine(win, view,
                            GetPattern(gdata, map, offset),
                            x0, y0, c0, x, y, color);
+        if (view->GetDisplayDataValues())
+          DisplayDataLabel(win, x, y, y);
         x0 = x;
         y0 = y;
         c0 = color;
@@ -1338,6 +1419,16 @@ public:
       y1 = MIN(filter.yHigh, y1);
       y0 = MAX(filter.yLow, y0);
       y1 = MAX(filter.yLow, y1);
+
+      /* very slim filled polygons have the problem that depending
+         on the fill_rule (see GC description in an Xlib manual)
+         the interior might not be filled in all cases; to compensate
+         for this, we draw a 1-pixel wide line underneath the
+         polygon */
+
+      FullMapping_LineShape::DrawConnectingLine(win, view, pattern,
+                                                x0, y0, c0,
+                                                x1, y1, c1);
 
       win->SetPattern(pattern);
       if (c0 == XorColor)
