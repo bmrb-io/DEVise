@@ -1,4 +1,4 @@
-ARCH_FLAGS = -DSUN -I../../parser -g
+ARCH_FLAGS = -DSUN -I../../parser
 
 VPATH = ../../parser
 include $(VPATH)/Makefile.base

@@ -1,4 +1,4 @@
-ARCH_FLAGS = -DSUN -g
+ARCH_FLAGS = -DSUN
 
 VPATH = ../../graphics
 include $(VPATH)/Makefile.base
