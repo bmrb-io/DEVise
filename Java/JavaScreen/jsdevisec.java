@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.103  2001/04/18 16:04:53  wenger
+// Changed the JSA version of the JavaScreen to have two rows of buttons
+// because we're running out of space; changed JS version to 4.1.
+//
 // Revision 1.102  2001/04/17 17:49:17  wenger
 // Button to show or hide debug log is now also in the JSB version.
 //
@@ -1457,6 +1461,7 @@ class SessionDlg extends Frame
 class SettingDlg extends Dialog
 {
     jsdevisec jsc = null;
+
     public TextField screenX = new TextField(4);
     public TextField screenY = new TextField(4);
     public Button setButton = new Button("   Set   ");
@@ -1534,9 +1539,21 @@ class SettingDlg extends Dialog
 
         c.insets = new Insets(10, 10, 0, 0);
         c.gridwidth = 1;
-        Label label1 = new Label("JavaScreen Size:");
+        Label label1 = new Label("JavaScreen Version:");
         gridbag.setConstraints(label1, c);
         add(label1);
+
+        c.insets = new Insets(10, 0, 0, 5);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        Label version = new Label(DEViseGlobals.VERSION);
+        gridbag.setConstraints(version, c);
+        add(version);
+
+        c.insets = new Insets(10, 10, 0, 0);
+        c.gridwidth = 1;
+        Label label2 = new Label("JavaScreen Size:");
+        gridbag.setConstraints(label1, c);
+        add(label2);
 
         c.insets = new Insets(10, 0, 0, 5);
         gridbag.setConstraints(screenX, c);
@@ -1552,9 +1569,9 @@ class SettingDlg extends Dialog
 
         c.insets = new Insets(10, 10, 10, 0);
         c.gridwidth = 1;
-        Label label2 = new Label("JSPOP Status:");
+        Label label3 = new Label("JSPOP Status:");
         gridbag.setConstraints(label2, c);
-        add(label2);
+        add(label3);
 
         c.insets = new Insets(10, 0, 10, 10);
         c.gridwidth = GridBagConstraints.REMAINDER;
@@ -1563,9 +1580,9 @@ class SettingDlg extends Dialog
 
         c.insets = new Insets(10, 10, 10, 0);
         c.gridwidth = 1;
-        Label label3 = new Label("Collaboration Status:");
+        Label label4 = new Label("Collaboration Status:");
         gridbag.setConstraints(label3, c);
-        add(label3);
+        add(label4);
 
         c.insets = new Insets(10, 0, 10, 10);
         c.gridwidth = GridBagConstraints.REMAINDER;
