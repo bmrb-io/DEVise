@@ -20,6 +20,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1999/07/01 14:48:17  wenger
+#  Added sleep after killing jspop and Xvfb to fix problem with the new Xvfb
+#  sometimes starting before the old one is done being killed.
+#
 #  Revision 1.2  1999/06/30 18:23:10  wenger
 #  check_jspop now causes jspop to run two deviseds; jspop script sleeps
 #  after launching Xvfb.
@@ -74,7 +78,8 @@ if (!$foundJspop) {
 
   # Make sure the first Xvfb done getting killed before we start things up.
   sleep 15;
-  system("jspop -server2 &");
+  @args = ("jspop" "-server2" "&");
+  system(@args);
 }
 
 #-----------------------------------------------------------
