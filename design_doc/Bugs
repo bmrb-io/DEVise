@@ -2821,6 +2821,9 @@ Num Date        Status  Description
 			command. (rkw)
 			(Fixed by xuk, 10/05/01.)
 
+706 10/05/01	OPEN	JavaScreen: if you quit while the JS is talking to
+			the server, the JS process doesn't seem to actually
+			exit. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
