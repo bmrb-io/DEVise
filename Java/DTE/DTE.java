@@ -37,9 +37,14 @@ public class DTE {
 		    System.out.println(e);
 		    System.exit(1);
 		  }
+		
+		System.out.println();
 
 		System.out.println("Type checked Query is: " + query.printTypes());
 		PlanNode plan = query.optimize();
+	
+		System.out.println();
+		System.out.println("Query Answer is:");
 		
 		try {
 		  Iterator topIter = plan.createIterator();

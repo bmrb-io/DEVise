@@ -13,7 +13,7 @@
 7832 moulton    math
 8340 nouton     stat
 1784 ronna      stat
-6292 honghong   math
+6292 honna   math
 8383 dewitt     cs
 7346 meyer      cs
 8934 wabba      stat
@@ -31,7 +31,7 @@
 8327 gangju     math
 8234 smith      engr
 0234 williams   cs 
-3344 hopes      cs
+3344 Thomas     cs
 8231 fenjee     music
 8002 jees       cs
 8324 hounwqer   cs
@@ -42,7 +42,7 @@
 9424 peppen     cs
 1092 rodamma    phys
 8421 cai        cs
-9828 brotherw   cs 
+9828 Mathews    cs 
 9342 ally       math
 3491 julia      cs
 9023 austin     engr
