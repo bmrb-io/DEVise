@@ -1,12 +1,28 @@
-								Bugs in DEVise
-								$Revision$
+							Bugs in DEVise
+							$Revision$
 
 Num Date        Status  Description
---- --------    ------  --------------------------------------------------------
-001	05/14/96	OPEN	There are a number of memory leaks. (rkw)
+--- --------    ------  -------------------------------------------------------
+001 05/14/96	OPEN	There are a number of memory leaks. (rkw)
 
-002	05/14/96	OPEN	DEVise hogs an awful lot of CPU cycles even when
-						you are not doing anything. (rkw/kb)
+002 05/14/96	OPEN	DEVise hogs an awful lot of CPU cycles even when
+			you are not doing anything. (rkw/kb)
 
-003	05/14/96	OPEN	Numeric keypad keys don't always work correctly
-						on Suns running SunOS 4.x. (rkw)
+003 05/14/96	OPEN	Numeric keypad keys don't always work correctly
+			on Suns running SunOS 4.x. (rkw)
+
+004 05/16/96	OPEN	Physical schema editor does not support the length
+			parameter of string attribute types. (jpm)
+
+005 05/16/96	OPEN	Physical schema editor does not support multi-word
+			high-low values (e.g. 'Jan 1 1990 00:00:00'). (jpm)
+
+006 05/16/96	OPEN	Date attribute type cannot handle dates before
+			Jan 1 1970 (Unix zero time value). (jpm)
+
+007 05/16/96	OPEN	Kiviat graph cannot be destroyed once created.
+			Destroying it through the window manager causes
+			Devise to crash. (jpm)
+
+008 05/16/96	OPEN	View window cannot be destroyed through the
+			window manager causes Devise to crash. (jpm)
