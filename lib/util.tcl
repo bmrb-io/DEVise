@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.29  1996/09/13 23:09:33  guangshu
+#  Added support to save maps when saving the display.
+#
 #  Revision 1.28  1996/09/06 14:23:30  jussi
 #  Added missing parameter to dialog procedure call.
 #
@@ -480,8 +483,7 @@ proc PrintViewSetUp {} {
     
     set toprinter 1
     set printcmd "lpr "
-#    set filename "/tmp/devise"
-    set filename "/u/g/u/guangshu/public/html/pictures/map/"
+    set filename "/tmp/devise"
     set printsrc 0 
 
     frame .printdef.top -relief groove -borderwidth 2
