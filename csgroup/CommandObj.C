@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/03/11 18:25:06  wenger
+  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
+  reducing include dependencies between csgroup code and the rest of
+  the code, and within the csgroup code.  (Note: running collaboration
+  doesn't work yet.)
+
  */
 
 #include "CommandObj.h"
@@ -42,15 +48,17 @@ CommandObj::CommandObj(Server* server)
 
 	_server = (DeviseServer*)server;
 	argc	= 0;
-	for (i=0; i< argc; ++i)
+	for (i=0; i< MAX_ARGS; ++i) {
 		argv[i] = NULL;
+    }
 }
 
 CommandObj::~CommandObj()
 {
 	int	i;
-	for (i=0; i< argc; ++i)
+	for (i=0; i< MAX_ARGS; ++i) {
 		free(argv[i]);
+    }
 }
 
 bool
@@ -123,20 +131,23 @@ CommandObj::Serialize(int args,...)
 			case TYP_INTEGER:
 				intArg = va_arg(pvar, int*);
 				sprintf(buf, "%d", *intArg);
-				if (argv[index] != NULL)
+				if (argv[index] != NULL) {
 					free(argv[index]);
+				}
 				argv[index++] = strdup(buf);
 				break;
 			case TYP_STRING:
 				strArg = va_arg(pvar, char*);
-				if (argv[index] != NULL)
+				if (argv[index] != NULL) {
 					free(argv[index]);
+				}
 				argv[index++] = strdup(strArg);
 				break;
 			case TYP_DOUBLE:
 				doubleArg = va_arg(pvar, double*);
-				if (argv[index] != NULL)
+				if (argv[index] != NULL) {
 					free(argv[index]);
+				}
 				sprintf(buf, "%f", *doubleArg);
 				argv[index++] = strdup(buf);
 				break;

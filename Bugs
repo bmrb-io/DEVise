@@ -1175,7 +1175,7 @@ Num Date        Status  Description
 309 03/04/98	FIXED	Copying a view does not copy the background color
 			to the new view. (ml/rkw)
 
-310 03/04/98	OPEN	The collaborator uses lots of CPU when idle. (rkw)
+310 03/04/98	FIXED	The collaborator uses lots of CPU when idle. (rkw)
 
 311 03/06/98	FIXED	Visual links don't always update correctly (see the CustomerAna.ds
 			session in the BankOne demo). (ml/rkw)
@@ -1207,11 +1207,18 @@ Num Date        Status  Description
 
 320 03/11/98	OPEN	SQLViews don't work. (rkw)
 
-321 03/11/98	OPEN	Rubberband line on Linux client/server form causes
+321 03/11/98	FIXED	Rubberband line on Linux client/server form causes
 			crash. (rkw)
 
 322 03/11/98	OPEN	Can't run client/server form on Linux without
 			collaborator. (rkw)
+322.1		FIXED	devised crashes if DEVISE_COLLABORATOR environment
+			variable is not set.
+322.2		OPEN	devised crashes if DEVISE_COLLABORATOR is set but
+			no collaborator is running.
+
+323 03/11/98	OPEN	Arrow keys, numeric keys in views don't get passes
+			to slaves in collaboration. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

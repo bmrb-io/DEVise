@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/03/11 18:25:08  wenger
+  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
+  reducing include dependencies between csgroup code and the rest of
+  the code, and within the csgroup code.  (Note: running collaboration
+  doesn't work yet.)
+
   Revision 1.6  1998/03/05 17:10:30  taodb
   Temporarily disabled multiple-client connect, and enabled mutiple pair of
   C/Ss on the same machine
@@ -152,10 +158,13 @@ Server::Server(char *name, int swt_port, int clnt_port, char* swtname,
 	_numClients = 0;
     _cmd = NULL;
 	_listenSwtFd = RPCInit(switchname, switchaddr);
-	if (_listenSwtFd >0)
+	if (_listenSwtFd >0) {
 		(void)Dispatcher::Current()->Register(this, 10, AllState, 
 		true, _listenSwtFd);
-	_channel = new ControlChannel();
+	}
+	if (_listenSwtFd >0) {
+	    _channel = new ControlChannel();
+    }
 
 	// initialize the command object
 	cmdObj = new CommandObj(this);
@@ -346,13 +355,9 @@ void Server::WaitForConnection()
     clientfd = accept(_listenFd, (struct sockaddr *)&tempaddr, &len);
     if (clientfd < 0)
     {
+        fprintf(stderr, "Warning: ");
 		perror("accept() failed");
-		if (errno == EINTR)
-		{
-	    	fprintf(stderr, "Server exits.\n");
-	    	exit(1);
-		}
-		DO_ASSERT(0, "Error in network interface");
+		return;
     }
     int slot = FindIdleClientSlot();
     if (slot < 0)
@@ -466,8 +471,9 @@ void Server::ReadCmd()
 		char errBuf[MAXPATHLEN + 256];
 		sprintf(errBuf, "select() failed at %s: %d", __FILE__, __LINE__);
 		perror(errBuf);
+		return;
     }
-    DO_ASSERT(numFds > 0, "Internal error");
+
     //
     // Handle a new connection request
     if (FD_ISSET(_listenFd, &fdset))

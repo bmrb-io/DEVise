@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.40  1998/03/05 20:36:39  wenger
+# Fixed bugs 304 and 309 (problems with view colors); fixed a few other
+# problems related to *ClassInfo classes.
+#
 # Revision 1.39  1998/03/04 18:40:56  wenger
 # Added <arch>/Makefile.config files that now hold stuff like the
 # PERL_CORE definitions so those don't have to be repeated in all
@@ -177,6 +181,10 @@ multi.pure: libs
 	
 static: libs
 	cd generic; make static; cd ..
+
+collaborator:
+	cd csgroup; make lib; cd ..
+	cd generic; make collaborator; cd ..
 
 strip:
 	- strip generic/generic generic/generic.static

@@ -92,7 +92,10 @@ server_prog_1(int fd);
 void
 svc_MainLoop(void) {
 	fd_set tmp_fdset;
-	struct timeval timeout = {0, 0};
+	// Timeout needs to be non-zero so we don't hog loads of CPU by
+	// polling!!
+	const struct timeval defTimeout = {0, 100000};
+	struct timeval timeout = defTimeout;
 	int rqts;
 	int nxtfdtoserve = 0;
 	int fd;
@@ -103,6 +106,12 @@ svc_MainLoop(void) {
 	    while(Tk_DoOneEvent(TK_DONT_WAIT));
 #endif /* __tcltk */
 		memmove(&tmp_fdset, &svc_Fdset, sizeof(fd_set));
+
+#if defined(LINUX)
+		// select() in Linux resets timeout to {0, 0} each time thru!
+	    timeout = defTimeout;
+#endif
+
 		if ((rqts=select(svc_Maxfd+1, &tmp_fdset, 
 				 NULL, NULL, &timeout)) < 0) {
 			break;

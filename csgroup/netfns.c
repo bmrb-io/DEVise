@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/03/11 18:25:15  wenger
+  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
+  reducing include dependencies between csgroup code and the rest of
+  the code, and within the csgroup code.  (Note: running collaboration
+  doesn't work yet.)
+
   Revision 1.3  1998/03/03 20:54:04  wenger
   Fixed bad free in csgroup code; cleaned up (somewhat) the use of the
   (highly-dangerous) ERROR macro.
@@ -100,8 +106,11 @@ ConnectWithTimeout(int sockfd, struct sockaddr *Address,
 		 return -1;
 	} 
 	if (connect(sockfd, Address, size) < 0) {
+		 // Unfortunately, on Linux we end up here with an EINPROGRESS
+		 // whether or not there's a collaborator running.  If there isn't
+		 // a collaborator running, we crash with a broken pipe later on.
 		 perror("Connect: ");
-		if (errno != EINPROGRESS) {
+	 	 if (errno != EINPROGRESS) {
 		        { ERROR(NON_FATAL, "Connect Failed"); }
 			return -1;
 		 }

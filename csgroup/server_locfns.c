@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/03/11 18:25:18  wenger
+  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
+  reducing include dependencies between csgroup code and the rest of
+  the code, and within the csgroup code.  (Note: running collaboration
+  doesn't work yet.)
+
   Revision 1.3  1998/03/03 20:54:05  wenger
   Fixed bad free in csgroup code; cleaned up (somewhat) the use of the
   (highly-dangerous) ERROR macro.
@@ -131,7 +137,8 @@ RPCInit(char *server, ConnectInfo Address) {
 	switchname =Init::SwitchName();
 	if (!strcmp(switchname,DefaultSwitchName))
 	{
-		cerr << "Environmental variable DEVISE_COLLABORATOR not defined\n";
+		cerr << "Environment variable DEVISE_COLLABORATOR not defined\n";
+		return -1;
 	}
 	hst = gethostbyname(switchname);
 	if (h_errno == HOST_NOT_FOUND)

@@ -1,0 +1,39 @@
+#! /bin/csh -f
+# Run two DEVise client/server pairs, with collaborator.
+
+# $Id$
+
+setenv DEVISE_ROOT              /p/devise
+
+# Set up the 'standard' data, sessions, etc., so these will be used
+# if something is missing from the demo or personal versions.
+setenv DEVISE_DAT               $DEVISE_ROOT/dat
+setenv DEVISE_HOME_TABLE        $DEVISE_ROOT/schema/schema/catalog.dte
+setenv DEVISE_INDEX_TABLE       $DEVISE_ROOT/schema/schema/sysind.dte
+setenv DEVISE_MINMAX_TABLE      $DEVISE_ROOT/schema/schema/minmax.dte
+setenv DEVISE_MINMAX_DIR        $DEVISE_ROOT/dat
+setenv DEVISE_MATERIAL_DIR      $DEVISE_ROOT/dat
+setenv DEVISE_CACHE             $DEVISE_ROOT/cache
+setenv DEVISE_SCHEMA            $DEVISE_ROOT/schema/schema
+setenv DEVISE_SESSION           $DEVISE_ROOT/session
+setenv DEVISE_PALETTE           $DEVISE_ROOT/palette
+
+setenv DEVISE_LIB               $cwd/../lib
+setenv DEVISE_COLLABORATOR `hostname`
+
+
+\rm -f /tmp/Group.log
+\rm -f /tmp/*master*
+\rm -f /tmp/*server*
+
+generic/collaborator &
+
+sleep 5
+
+generic/devised -port 6101 -switchport 6201 &
+sleep 5
+generic/devise -p 6101 &
+
+generic/devised -port 6102 &
+sleep 5
+generic/devise -p 6102 &

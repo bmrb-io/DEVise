@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.47  1998/03/03 20:53:53  wenger
+#  Fixed bad free in csgroup code; cleaned up (somewhat) the use of the
+#  (highly-dangerous) ERROR macro.
+#
 #  Revision 1.46  1998/02/26 20:39:00  taodb
 #  Added support of building csgroup directory
 #
@@ -258,7 +262,7 @@ COLLABORATOR = $(CC) -o $@ -D __tcltk collaborator.o $(ARCH_LDFLAGS) \
 collaborator: collaborator.o $(SERVERLIB) 
 	$(COLLABORATOR)
 
-collaborator.pure: ../csgroup/main.o $(SERVERLIB) 
+collaborator.pure: collaborator.o $(SERVERLIB) 
 	$(PURIFY) $(PURE_OPT) $(COLLABORATOR)
 
 DEVISEB = $(CC) -o $@ deviseb.o DeviseBatchClient.o ../graphics.new/Version.o \
