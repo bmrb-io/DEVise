@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2001/01/08 20:31:51  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.2.4.4  2001/01/05 19:15:45  wenger
 // Updated copyright dates.
 //
@@ -45,6 +49,9 @@
 //
 
 // ------------------------------------------------------------------------
+
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
 
 import  java.util.*;
 import  java.text.*;

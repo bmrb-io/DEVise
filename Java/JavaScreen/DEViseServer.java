@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.65  2001/04/25 19:41:49  xuk
+// Fixed bug 661: when a JS goes into Collaboration mode from Socket mode,
+// It will not become an available collaboration leader.
+//
 // Revision 1.64  2001/04/17 02:30:14  xuk
 // *** empty log message ***
 //
@@ -241,6 +245,9 @@
 // ========================================================================
 
 // DEViseServer.java
+
+//TEMP package edu.wisc.cs.devise.js.jspop;
+package JavaScreen;
 
 import java.net.*;
 import java.io.*;

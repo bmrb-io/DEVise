@@ -15,47 +15,76 @@
 
 # $Id$
 
+JAVAC=javac -d . -depend
+
 all: js jsa jspop jss
 js: js.class
 
 jsa: jsa.class
+jsb: jsb.class
 
 jspop: jspop.class
 
 jss: jss.class
 
-js.class: *.java
-	javac *.java
+js.class: *.java utils client
+	$(JAVAC) js.java
 
-jsa.class: *.java
-	javac *.java
+jsa.class: *.java utils client applet
+	$(JAVAC) jsa.java
+
+jsb.class: *.java utils client applet
+	$(JAVAC) jsb.java
 
 jspop.class: *.java
-	javac *.java
+	$(JAVAC) *.java
 
-jss.class: *.java
-	javac *.java
+jss.class: *.java utils
+	$(JAVAC) jss.java
+
+utils: *.java
+	$(JAVAC) DEViseCommands.java DEViseGlobals.java YError.java \
+	    YException.java YGlobals.java
+
+client: *.java
+	$(JAVAC) DEVise3DLCS.java DEViseAnimPanel.java \
+	    DEViseAtomInCrystal.java DEViseAtomType.java DEViseCanvas.java \
+	    DEViseCmdDispatcher.java DEViseCommCgi.java DEViseCommSocket.java \
+	    DEViseComponentPanel.java DEViseCrystal.java DEViseCursor.java \
+	    DEViseDebugLog.java DEViseFonts.java DEViseGData.java \
+	    DEViseHeartbeat.java DEViseJSValues.java DEViseScreen.java \
+	    DEViseTrafficLight.java DEViseUIGlobals.java DEViseView.java \
+	    DEViseViewInfo.java YImageCanvas.java YLogGUI.java YMsgBox.java \
+	    jsdevisec.java
+
+applet: *.java
+	$(JAVAC) DEViseJSApplet.java
+
+loader: *.java
+	$(JAVAC) DEViseJSLoader.java
 
 jar:
 	make jara jarb
 
 jara:
-	-rm *.class
+	-rm JavaScreen/*.class
 	-rm jsa1.jar jsa2.jar
-	javac DEViseJSLoader.java
-	javac jsa.java
-	jar cf jsa1.jar DEViseJSLoader.class jsa.class
-	rm DEViseJSLoader.class jsa.class
-	jar cf jsa2.jar *.class  *.gif
+	make jsa
+	make loader
+	cp *.gif JavaScreen
+	jar cf jsa1.jar JavaScreen/DEViseJSLoader.class JavaScreen/jsa.class
+	rm JavaScreen/DEViseJSLoader.class JavaScreen/jsa.class
+	jar cf jsa2.jar JavaScreen/*.class  JavaScreen/*.gif
 
 jarb:
-	-rm *.class
+	-rm JavaScreen/*.class
 	-rm jsb1.jar jsb2.jar
-	javac DEViseJSLoader.java
-	javac jsb.java
-	jar cf jsb1.jar DEViseJSLoader.class jsb.class
-	rm DEViseJSLoader.class jsb.class
-	jar cf jsb2.jar *.class  *.gif
+	make jsb
+	make loader
+	cp *.gif JavaScreen
+	jar cf jsb1.jar JavaScreen/DEViseJSLoader.class JavaScreen/jsb.class
+	rm JavaScreen/DEViseJSLoader.class JavaScreen/jsb.class
+	jar cf jsb2.jar JavaScreen/*.class  JavaScreen/*.gif
 
 clean:
-	-rm *.class *.jar
+	-rm JavaScreen/*.class JavaScreen/*.gif *.jar

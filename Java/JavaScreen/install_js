@@ -83,7 +83,7 @@ endif
 
 # Make sure we have the files we need.
 
-set files = "jspop.class jss.class js.class jsa1.jar jsa2.jar jsb1.jar jsb2.jar devised"
+set files = "JavaScreen/jspop.class JavaScreen/jss.class JavaScreen/js.class jsa1.jar jsa2.jar jsb1.jar jsb2.jar devised"
 foreach file ($files)
   if (! -f $file) then
     echo "File $file missing.  Cannot proceed with install."
@@ -147,8 +147,12 @@ chmod 755 $cgidir/js.cgi
 
 # Install the jss and devised.
 
-cp -p *.class $servdir
-chmod 644 $servdir/*.class
+if (! -d $servdir/JavaScreen) then
+  mkdir $servdir/JavaScreen
+  chmod 755 $servdir/JavaScreen
+endif
+cp -p *.class $servdir/JavaScreen
+chmod 644 $servdir/JavaScreen/*.class
 cp -p *.java $servdir
 chmod 644 $servdir/*.java
 
@@ -171,8 +175,12 @@ chmod 755 $servdir/devised
 
 # Install the jspop.
 
-cp -p *.class $popdir
-chmod 644 $popdir/*.class
+if (! -d $popdir/JavaScreen) then
+  mkdir $popdir/JavaScreen
+  chmod 755 $popdir/JavaScreen
+endif
+cp -p *.class $popdir/JavaScreen
+chmod 644 $popdir/JavaScreen/*.class
 cp -p *.java $popdir
 chmod 644 $popdir/*.java
 

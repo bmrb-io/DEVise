@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2000/06/26 16:47:36  wenger
+// Added timestamp to jspop log.
+//
 // Revision 1.4  2000/03/23 16:26:17  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -29,6 +32,9 @@
 // ========================================================================
 
 // YLogConsole.java
+
+//TEMP package edu.wisc.cs.devise.js.jspop;
+package JavaScreen;
 
 import  java.util.*;
 import  java.text.*;

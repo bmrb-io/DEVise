@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2001/05/07 21:53:26  wenger
+// Found and fixed bug 670; jss checks for /tmp.X1-lock before starting
+// Xvfb.
+//
 // Revision 1.13  2001/02/20 20:02:25  wenger
 // Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
 // to the trunk.
@@ -95,6 +99,9 @@
 // ========================================================================
 
 // jsb.java
+
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
 
 import  java.awt.*;
 import  java.io.*;

@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2001/04/21 20:53:31  xuk
+// Added functionality to disable collaboration.
+// Added JAVAC_DisableCollab command.
+//
 // Revision 1.12  2001/04/20 21:05:11  wenger
 // Changed 3D version of JAVAC_ShowRecords to use the previously-defined
 // JAVAC_ShowRecords3D command; DEVise accepts that command but doesn't
@@ -79,6 +83,9 @@
 // ========================================================================
 
 // DEViseCommands.java
+
+//TEMP package edu.wisc.cs.devise.js.util;
+package JavaScreen;
 
 public final class DEViseCommands
 {

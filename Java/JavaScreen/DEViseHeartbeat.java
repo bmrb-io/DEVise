@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000
+// (c) Copyright 2000-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2001/01/08 20:31:52  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.1.2.2  2000/12/29 22:41:38  wenger
 // Fixed problems with the JavaScreen client not getting destroyed
 // properly, except that it still doesn't work right if you go to a
@@ -31,6 +35,9 @@
 //
 
 // ========================================================================
+
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
 
 public class DEViseHeartbeat implements Runnable
 {

@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2001/04/02 16:44:36  wenger
+// Minor cleanups; added cpu limit to JavaScreen checking process.
+//
 // Revision 1.7  2001/04/01 03:51:18  xuk
 // Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
 //
@@ -44,6 +47,9 @@
 // Added standard headers to source files.
 //
 // ========================================================================
+
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
 
 // 3D linear coordinate system, the reference coordinate system is a cartesian unit coordinate system
 // assume in this coordinate system, all vectors are row vectors

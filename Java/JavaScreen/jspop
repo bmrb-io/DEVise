@@ -46,4 +46,4 @@ touch $outfile
 
 
 set path = ( /s/java-1/bin $path )
-nohup java jspop -debug $* >& $outfile &
+nohup java JavaScreen.jspop -debug $* >& $outfile &

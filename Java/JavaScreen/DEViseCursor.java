@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2000/06/27 16:44:45  wenger
+// Considerably cleaned up and simplified the cursor-related code; moved
+// cursor grid implementation from the DEViseCanvas class to the DEViseCursor
+// class.
+//
 // Revision 1.19  2000/05/12 20:43:56  wenger
 // Added more comments to the DEViseScreen, DEViseCanvas, and jsdevisec
 // classes and cleaned up the code; commented out unused code; added
@@ -68,6 +73,9 @@
 // ========================================================================
 
 // DEViseCursor.java
+
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
 
 import java.awt.*;
 

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2001/01/08 20:31:53  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.10.4.3  2000/11/22 17:43:59  wenger
 // Finished cleanup of static variables fix; re-changed CGI command code to
 // match the current version of the CGI script.
@@ -75,6 +79,8 @@
 
 // ------------------------------------------------------------------------
 
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
 
 import java.util.*;
 import java.awt.*;

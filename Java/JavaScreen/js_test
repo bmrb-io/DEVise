@@ -6,4 +6,4 @@
 
 ############################################################
 
-java js -cgiurl/cgi-bin/js.cgi -cmdport6266 $*
+java JavaScreen.js -cgiurl/cgi-bin/js.cgi -cmdport6266 $*

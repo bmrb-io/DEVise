@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.22  2001/04/06 19:32:14  wenger
+// Various cleanups of collaboration code (working on strange hang
+// that Miron has seen); added more debug output; turned heartbeat
+// back on (it somehow got turned off by accident).
+//
 // Revision 1.21  2001/03/20 20:11:39  wenger
 // Added more debug output to the JS client and jspop.
 //
@@ -160,6 +165,9 @@
 // ========================================================================
 
 // DEViseCommSocket.java
+
+//TEMP package edu.wisc.cs.devise.js.comm;
+package JavaScreen;
 
 import  java.io.*;
 import  java.net.*;

@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.109  2001/05/07 21:53:26  wenger
+// Found and fixed bug 670; jss checks for /tmp.X1-lock before starting
+// Xvfb.
+//
 // Revision 1.108  2001/04/25 19:41:49  xuk
 // Fixed bug 661: when a JS goes into Collaboration mode from Socket mode,
 // It will not become an available collaboration leader.
@@ -293,6 +297,9 @@
 // ========================================================================
 
 // jsdevisec.java
+
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
 
 import  java.applet.*;
 import  java.awt.*;

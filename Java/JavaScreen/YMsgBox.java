@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2000/05/22 17:52:50  wenger
+// JavaScreen handles fonts much more efficiently to avoid the problems with
+// GData text being drawn very slowly on Intel platforms.
+//
 // Revision 1.6  2000/03/23 16:26:18  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -27,6 +31,8 @@
 //
 // ========================================================================
 
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
 
 import java.awt.*;
 import java.awt.event.*;

@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2001/05/07 21:53:25  wenger
+// Found and fixed bug 670; jss checks for /tmp.X1-lock before starting
+// Xvfb.
+//
 // Revision 1.2  2001/01/08 20:31:52  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -43,6 +47,9 @@
 // ========================================================================
 
 // DEViseJSValues.java
+
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
 
 import java.awt.*;
 import java.awt.event.*;

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2001/01/08 20:31:54  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.8.4.2  2000/11/22 17:44:00  wenger
 // Finished cleanup of static variables fix; re-changed CGI command code to
 // match the current version of the CGI script.
@@ -56,6 +60,8 @@
 // YLogGUI.java
 // last updated on 09/27/99
 
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
 
 import java.awt.*;
 import java.awt.event.*;

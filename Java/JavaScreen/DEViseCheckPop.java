@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2001/04/02 16:44:36  wenger
+// Minor cleanups; added cpu limit to JavaScreen checking process.
+//
 // Revision 1.5  2001/03/26 15:26:56  wenger
 // DEViseCheckPop now removed log file if the check is okay.
 //
@@ -51,6 +54,9 @@
 //
 
 // ========================================================================
+
+//TEMP package edu.wisc.cs.devise.js.comm;
+package JavaScreen;
 
 import java.io.*;
 import java.text.*;

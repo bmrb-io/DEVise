@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2001/04/20 01:25:06  xuk
+// Added Functionality for 3D view drill-down.
+//
 // Revision 1.8  2000/07/14 21:13:01  wenger
 // Speeded up 3D GData processing by a factor of 2-3: improved the parser
 // used for GData; eliminated Z sorting for bonds-only 3D views; eliminated
@@ -46,6 +49,9 @@
 // Added standard headers to source files.
 //
 // ========================================================================
+
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
 
 import java.awt.*;
 

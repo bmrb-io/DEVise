@@ -26,6 +26,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2001/04/12 15:54:06  wenger
+// Made some minor improvements to the hang checking.
+//
 // Revision 1.1  2001/04/11 16:49:39  wenger
 // Added a new thread to the jspop that checks whether other threads may
 // be hung.
@@ -34,6 +37,9 @@
 // ========================================================================
 
 // DEViseThreadChecker.java
+
+//TEMP package edu.wisc.cs.devise.js.jspop;
+package JavaScreen;
 
 import  java.util.*;
 

@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2001/03/09 20:24:37  wenger
+// Merged changes from no_collab_br_3 thru no_collab_br_4 from the branch
+// to the trunk; updated linux and solaris dependencies.
+//
 // Revision 1.2  2001/03/08 21:10:12  wenger
 // Merged changes from no_collab_br_2 thru no_collab_br_3 from the branch
 // to the trunk.
@@ -35,6 +39,9 @@
 // ========================================================================
 
 // DEViseCommCgi.java
+
+//TEMP package edu.wisc.cs.devise.js.comm;
+package JavaScreen;
 
 import  java.io.*;
 import  java.net.*;

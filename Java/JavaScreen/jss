@@ -64,4 +64,4 @@ touch $doutfile
 # for some strange reason that goofs up everything when this script is
 # run via rsh.  RKW 2000-12-08.
 set path = ( /s/java-1/bin $path )
-nohup java jss -debug $* > $joutfile &
+nohup java JavaScreen.jss -debug $* > $joutfile &

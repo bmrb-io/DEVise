@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.58  2001/05/03 19:34:38  xuk
+// Added two factors for displaying mouse position.
+//
 // Revision 1.57  2001/05/03 16:26:42  xuk
 // Added multiply factor for displaying mouse postion.
 // Changed updateDateRange() function to set factor argument.
@@ -126,6 +129,9 @@
 // ========================================================================
 
 // DEViseView.java
+
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
 
 import  java.awt.*;
 import  java.util.*;

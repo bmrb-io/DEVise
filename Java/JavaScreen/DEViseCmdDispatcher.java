@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.95  2001/05/03 16:24:36  xuk
+// Added multiply factor for displaying mouse postion.
+// Changed viewDataArea() function to parse factor argument.
+//
 // Revision 1.94  2001/04/25 19:41:43  xuk
 // Fixed bug 661: when a JS goes into Collaboration mode from Socket mode,
 // It will not become an available collaboration leader.
@@ -413,6 +417,9 @@
 // ========================================================================
 
 // DEViseCmdDispatcher.java
+
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
 
 import java.awt.*;
 import java.awt.event.*;

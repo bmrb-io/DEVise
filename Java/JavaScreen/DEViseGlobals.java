@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.53  2001/05/03 16:28:01  xuk
+// Changed version to 6.2
+//
 // Revision 1.52  2001/04/20 21:05:11  wenger
 // Changed 3D version of JAVAC_ShowRecords to use the previously-defined
 // JAVAC_ShowRecords3D command; DEVise accepts that command but doesn't
@@ -185,6 +188,9 @@
 // ========================================================================
 
 // DEViseGlobals.java
+
+//TEMP package edu.wisc.cs.devise.js.util;
+package JavaScreen;
 
 import java.util.*;
 

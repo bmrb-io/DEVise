@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2001/04/18 16:04:52  wenger
+// Changed the JSA version of the JavaScreen to have two rows of buttons
+// because we're running out of space; changed JS version to 4.1.
+//
 // Revision 1.8  2001/01/08 20:31:51  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -52,6 +56,9 @@
 // ========================================================================
 
 // DEViseComponentPanel.java
+
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
 
 import  java.awt.*;
 

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000
+// (c) Copyright 2000-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2001/01/08 20:31:51  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.3.4.1  2000/11/22 17:43:57  wenger
 // Finished cleanup of static variables fix; re-changed CGI command code to
 // match the current version of the CGI script.
@@ -34,6 +38,9 @@
 // GData text being drawn very slowly on Intel platforms.
 //
 // ------------------------------------------------------------------------
+
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
 
 import java.util.*;
 import java.awt.*;

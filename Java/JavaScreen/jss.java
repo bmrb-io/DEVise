@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2001/01/08 20:31:59  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.11.4.4  2000/12/14 00:42:32  wenger
 // Devise doesn't listen when image port is set to -1; jss starts devised
 // that way so we don't use up extra ports.
@@ -79,6 +83,8 @@
 
 // ========================================================================
 
+//TEMP package edu.wisc.cs.devise.js.jss;
+package JavaScreen;
 
 import  java.io.*;
 import  java.net.*;

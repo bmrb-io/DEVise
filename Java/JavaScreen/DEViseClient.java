@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.41  2001/04/21 20:53:54  xuk
+// Added functionality to disable collaboration.
+// Changed getCmd().
+//
 // Revision 1.40  2001/04/12 18:18:17  wenger
 // Added more diagnostic code to the JSPoP.
 //
@@ -190,6 +194,9 @@
 // ========================================================================
 
 // DEViseClient.java
+
+//TEMP package edu.wisc.cs.devise.js.jspop;
+package JavaScreen;
 
 import java.io.*;
 import java.net.*;

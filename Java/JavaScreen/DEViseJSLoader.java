@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2001/02/20 20:02:23  wenger
+// Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+// to the trunk.
+//
 // Revision 1.2.2.1  2001/02/05 22:02:10  wenger
 // Fixed bugs 639 and 640 and other problems associated with destroying
 // and re-starting the JavaScreen applets.
@@ -54,6 +58,9 @@
 
 // ========================================================================
 
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
+
 import java.applet.*;
 import java.awt.*;
 
@@ -77,7 +84,7 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
 	// Get "real applet" name from applet parameters.
 	appletToLoad = getParameter("applet");
         if (appletToLoad == null) {
-	    appletToLoad = "jsb";
+	    appletToLoad = "JavaScreen.jsb";
 	}
 
         label = new Label(
@@ -112,6 +119,7 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
             realApplet.init();
             realApplet.start();
         } catch (Exception e) {
+	    System.err.println("Error loading applet: " + e.getMessage());
             label.setText("Error loading applet.");
         }
         validate();

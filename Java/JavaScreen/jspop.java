@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.52  2001/04/25 19:41:50  xuk
+// Fixed bug 661: when a JS goes into Collaboration mode from Socket mode,
+// It will not become an available collaboration leader.
+//
 // Revision 1.51  2001/04/12 18:18:17  wenger
 // Added more diagnostic code to the JSPoP.
 //
@@ -225,6 +229,9 @@
 // ========================================================================
 
 // jspop.java
+
+//TEMP package edu.wisc.cs.devise.js.jspop;
+package JavaScreen;
 
 import  java.io.*;
 import  java.net.*;

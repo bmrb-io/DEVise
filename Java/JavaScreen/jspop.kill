@@ -21,6 +21,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  2001/01/08 20:31:59  wenger
+#  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+#  back onto the trunk.
+#
 #  Revision 1.1.4.2  2000/12/27 19:38:37  wenger
 #  Merged changes from js_restart_improvements thru zero_js_cache_check from
 #  the trunk onto the js_cgi_br branch.
@@ -45,9 +49,9 @@
 ############################################################
 
 if ($#ARGV >= 0) {
-    $pattern = "java jspop .*@ARGV";
+    $pattern = "java JavaScreen.jspop .*@ARGV";
 } else {
-    $pattern = "java jspop";
+    $pattern = "java JavaScreen.jspop";
 }
 
 if (`hostname` eq "yola\n") {

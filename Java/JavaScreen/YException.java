@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2001/01/08 20:31:54  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.13.4.1  2000/11/16 17:13:13  wenger
 // Made static variables into static final variables.
 //
@@ -34,6 +38,8 @@
 //
 // ========================================================================
 
+//TEMP package edu.wisc.cs.devise.js.util;
+package JavaScreen;
 
 public class YException extends Exception
 {

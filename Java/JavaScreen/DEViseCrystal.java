@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.23  2001/04/20 19:22:20  xuk
+// Changes for 3D drill-down of segment objects.
+//
 // Revision 1.22  2001/04/20 01:24:14  xuk
 // Added Functionality for 3D view drill-down.
 // Added drillDown3D() function.
@@ -85,6 +88,8 @@
 //
 // ========================================================================
 
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
 
 import java.awt.*;
 import java.util.*;

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -32,6 +32,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.69  2001/05/03 16:25:56  xuk
+// Added multiply factor for displaying mouse postion.
+// Changed updateViewDataRange() function;
+// Added factor argument when calling updateInfo().
+//
 // Revision 1.68  2001/04/01 03:51:17  xuk
 // Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
 //
@@ -188,6 +193,9 @@
 // ========================================================================
 
 // DEViseScreen.java
+
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
 
 import java.awt.*;
 import java.awt.event.*;

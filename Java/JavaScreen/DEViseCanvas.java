@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.77  2001/05/03 19:34:39  xuk
+// Added two factors for displaying mouse position.
+//
 // Revision 1.76  2001/05/03 16:27:18  xuk
 // Added multiply factor for displaying mouse postion.
 // Added factor argument when calling updateInfo().
@@ -292,6 +295,9 @@
 // ========================================================================
 
 // DEViseCanvas.java
+
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
 
 import  java.awt.*;
 import  java.applet.*;

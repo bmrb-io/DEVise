@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2000/06/21 18:37:28  wenger
+// Removed a bunch of unused code (previously just commented out).
+//
 // Revision 1.10  2000/05/24 14:07:09  wenger
 // Cleaned up and commented 3D-related classes (DEViseCrystal, DEViseAtomType,
 // DEViseAtomInCrystal, DEVise3DLCS).
@@ -46,6 +49,8 @@
 //
 // ========================================================================
 
+//TEMP package edu.wisc.cs.devise.js.jsc;
+package JavaScreen;
 
 import java.awt.*;
 import java.awt.image.*;
