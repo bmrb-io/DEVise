@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/06/27 18:11:59  wenger
+  Re-integrated most of the attribute projection code (most importantly,
+  all of the TData code) into the main code base (reduced the number of
+  modules used only in attribute projection).
+
   Revision 1.5  1996/06/17 20:01:03  wenger
   First version of 'show' program for dumping projections to stdout.
 
@@ -730,16 +735,16 @@ ParseCatPhysical(char *catFile, char *dataFile, Boolean physicalOnly,
 	{
 		if (isAscii) {
 		  printf("default source, recSize %d\n",recSize);
-		  tDataP = new TDataAsciiInterp(dataFile, catFile, recSize,
-			attrs, sep, numSep, hasSeparator, commentString);
+		  tDataP = new TDataAsciiInterp(catFile, "UNIXFILE", dataFile,
+			recSize, attrs, sep, numSep, hasSeparator, commentString);
 		}
 		else
 		{
 		  printf("default binary source, recSize %d\n",recSize);
 		  // Note: the second use of recSize is for the physical
 		  // record size.  This needs to get changed.  RKW 96/06/27.
-		  tDataP = new TDataBinaryInterp(dataFile, catFile, recSize,
-			recSize/*TEMP*/, attrs);
+		  tDataP = new TDataBinaryInterp(catFile, "UNIXFILE", dataFile,
+			recSize, recSize/*TEMP*/, attrs);
 		}
 	}
 
