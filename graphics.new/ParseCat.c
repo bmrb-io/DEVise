@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/04/25 21:42:15  wenger
+  Temporary version of code to parse schemas in session files --
+  writes schema to a temporary file (currently not implemented for
+  logical schemas).
+
   Revision 1.20  1996/04/22 18:35:02  wenger
   Unfixed a memory leak that I fixed earlier.  The fix caused errors
   in sessions with multiple physical schemas.
@@ -1037,16 +1042,11 @@ ParseCat(char *catFile)
  * Parse a schema from buffer(s).
  */
 char *
-//ParseSchema(char *schemaName, char *physSchema, char *logSchema)
-ParseSchema(char *schemaName, char *logSchema, char *physSchema)
+ParseSchema(char *schemaName, char *physSchema, char *logSchema)
 {
 	char *		result = NULL;
 
-	if ((logSchema != NULL) && (strcmp(logSchema, "")))
-	{
-		DOASSERT(false, "Logical schemas in session files not yet implemented");
-	}
-	else
+	if ((physSchema != NULL) && strcmp(physSchema, ""))
 	{
 		char	tmpPhysFile[MAXPATHLEN];
 
@@ -1064,6 +1064,32 @@ ParseSchema(char *schemaName, char *logSchema, char *physSchema)
       		result = ParseCatPhysical(tmpPhysFile, true);
 
 			unlink(tmpPhysFile);
+		}
+	}
+	else
+	{
+		fprintf(stderr, "No physical schema specified\n");
+	}
+
+
+	if ((logSchema != NULL) && strcmp(logSchema, ""))
+	{
+		char	tmpLogFile[MAXPATHLEN];
+
+		tmpnam(tmpLogFile);
+		int fd = open(tmpLogFile, O_WRONLY | O_CREAT, 0600);
+		if (fd == -1)
+		{
+			fprintf(stderr, "Creation of temporary schema file failed\n");
+		}
+		else
+		{
+			write(fd, logSchema, strlen(logSchema));
+			close(fd);
+
+      		result = ParseCatLogical(tmpLogFile, result);
+
+			unlink(tmpLogFile);
 		}
 	}
 
