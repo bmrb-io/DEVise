@@ -12,18 +12,45 @@ ODBCGetHandle myHandles;
 
 void ODBC_Data::ODBC_Connect() {
 
-TRY(ConnectHandle* tempHand=myHandles.getHandle(dataSourceName,userName,passwd),NVOID);
+TRY(ConnectHandle* tempHand=myHandles.getHandle(connectString),NVOID);
 ODBC_Handle = tempHand->ODBC_Handle;
 Connect_Handle = tempHand->Connect_Handle;
-
+	
 SQL_Result = SQLAllocHandle(SQL_HANDLE_STMT,Connect_Handle,&Stmt_Handle);
 TRY(ODBC_Error(SQL_Result,"Cannot Allocate Statement Handle for ODBC"),NVOID);
+TRY(checkSpecific(),NVOID);
 
 } 
 
 void ODBC_Data::ODBC_Error(SQLRETURN err_Stat,string err_msg) {
 	if (err_Stat != SQL_SUCCESS) {
 		THROW(new Exception(err_msg),NVOID);
+	}
+}
+void ODBC_Data::checkSpecific() {
+	
+	SQLPOINTER dbtype ;
+	dbtype = new UCHAR[100];
+	short int retlen;
+	SQL_Result = SQLGetInfo(Connect_Handle,SQL_DBMS_VER,dbtype,100,&retlen); //GET DB TYPE
+
+	TRY(ODBC_Error(SQL_Result,"Cannot get database type from ODBC"),NVOID);
+
+	int wtype;
+	wtype = memcmp(dbtype,(UCHAR*)("SQL Server"),10); //Check if it is Sybase
+
+	if (wtype == 0) {
+		
+		UCHAR* tempstm = (unsigned char*)("set quoted_identifier on");
+		SQL_Result = SQLExecDirect(Stmt_Handle,tempstm,SQL_NTS); //Set quoted_identifier)
+		TRY(ODBC_Error(SQL_Result,"Can't sent DB Specific attribute for ODBC"),NVOID);
+		
+		SQL_Result = SQLFreeHandle(SQL_HANDLE_STMT,Stmt_Handle);  //Free Current Handle
+		TRY(ODBC_Error(SQL_Result,"Can't free Statement Handle of ODBC"),NVOID);
+
+		SQL_Result = SQLAllocHandle(SQL_HANDLE_STMT,Connect_Handle,&Stmt_Handle);  //Get New Handle
+		TRY(ODBC_Error(SQL_Result,"Cannot Allocate Statement Handle for ODBC"),NVOID);
+
 	}
 }
 

@@ -23,7 +23,7 @@ class ODBCGetHandle {
 	map <string,ConnectHandle*> myHandle;
 public:
 	ODBCGetHandle() {} ;
-	ConnectHandle* getHandle(const string& dataSourceName,const string& userName,const string& passwd);
+	ConnectHandle* getHandle(const string& connectString);
 	void Handle_Error(SQLRETURN err_Stat,string err_msg);
 	~ODBCGetHandle();
 };

@@ -4,15 +4,11 @@
 #include "site.h"
 
 class ODBCSite : public Site {
-     string dataSourceName;
-     string userName;
-     string passwd;
+     string connectString;
 	 string tableName;
 public:
-	ODBCSite(const string& dataSourceName, const string& userName,
-		const string& passwd, const string& tableName) 
-		: dataSourceName(dataSourceName), userName(userName),
-		passwd(passwd), tableName(tableName) {}
+	ODBCSite(const string& connectString, const string& tableName) 
+		: connectString(connectString), tableName(tableName) {}
 
 	virtual Iterator* createExec();
 };

@@ -1,11 +1,16 @@
 #include "GetHandle.h"
 
 
-ConnectHandle* ODBCGetHandle::getHandle(const string& dataSourceName,const string& userName,const string& passwd) {
+ConnectHandle* ODBCGetHandle::getHandle(const string& connectString) {
 
-	string temComp = dataSourceName + userName + passwd ;
-	if (myHandle[temComp]) {
-		return myHandle[temComp];
+	short int coStrlen = strlen(connectString.c_str());
+	UCHAR* outStr ;
+	outStr = new UCHAR[1024];
+	short int inBuflen;
+
+
+	if (myHandle[connectString]) {
+		return myHandle[connectString];
 	} else {
 		ConnectHandle* newHandle;
 		newHandle = new ConnectHandle;
@@ -24,10 +29,13 @@ ConnectHandle* ODBCGetHandle::getHandle(const string& dataSourceName,const strin
 		TRY(Handle_Error(SQL_Result,"Cannot Allocate Connect Handle for ODBC"),NULL);
 
 		//Connect to ODBC 
-		SQL_Result = SQLConnect(newHandle->Connect_Handle,(UCHAR*)(dataSourceName.c_str()),SQL_NTS,(UCHAR*)(userName.c_str()),SQL_NTS,(UCHAR*)(passwd.c_str()),SQL_NTS);
+//		SQL_Result = SQLConnect(newHandle->Connect_Handle,(UCHAR*)(dataSourceName.c_str()),SQL_NTS,(UCHAR*)(userName.c_str()),SQL_NTS,(UCHAR*)(passwd.c_str()),SQL_NTS);
+
+		SQL_Result = SQLDriverConnect(newHandle->Connect_Handle,NULL,(UCHAR*)(connectString.c_str()),coStrlen,outStr,1024,&inBuflen,SQL_DRIVER_NOPROMPT);
+
 		TRY(Handle_Error(SQL_Result,"Cannot Connect to ODBC"),NULL);
 
-		myHandle[temComp] = newHandle;
+		myHandle[connectString] = newHandle;
 		return newHandle;
 	}
 }

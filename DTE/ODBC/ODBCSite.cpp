@@ -15,9 +15,9 @@ Iterator* ODBCSite::createExec(){
 	}
 	tmp << ends;
 	string query = tmp.str();
-	cerr << "query is: " << query << ";" << endl;
+	cerr << "query is: " << query << endl;
 	int numFlds = getNumFlds();
 	const TypeID* types = getTypeIDs();
 	return new ODBCIterator(
-		dataSourceName, userName, passwd, query, numFlds, types);
+		connectString, query, numFlds, types);
 }

@@ -2,11 +2,9 @@
 #include "ODBC.h"
 
 ODBCIterator::ODBCIterator(
-	const string& dataSourceName, const string& userName,
-	const string& passwd, const string& query, int numFlds,
+	const string& connectString, const string& query, int numFlds,
 	const TypeID* typeIDs)
-	: dataSourceName(dataSourceName), userName(userName),
-	passwd(passwd), query(query), numFlds(numFlds), destroyPtrs(NULL)
+	: connectString(connectString), query(query), numFlds(numFlds), destroyPtrs(NULL)
 {
 	this->typeIDs = new TypeID[numFlds];
 	next = new Tuple[numFlds];
@@ -29,7 +27,7 @@ ODBCIterator::ODBCIterator(
 void ODBCIterator::initialize(){
 
 	int aa;
-	myODBC = new ODBC_Data(dataSourceName,userName,passwd,query);
+	myODBC = new ODBC_Data(connectString,query);
 	TRY(myODBC->ODBC_Connect(),NVOID);  //Connect to ODBC driver
 
 	TRY(myODBC->ODBC_Column_Info(),NVOID);  //Get Column Info for given query

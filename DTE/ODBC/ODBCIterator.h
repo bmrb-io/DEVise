@@ -6,9 +6,7 @@
 
 class ODBCIterator : public Iterator {
 protected:
-    string dataSourceName;
-    string userName;
-    string passwd;
+    string connectString;
 	string query;
 	Tuple* next;
 	Tuple* typePtrs;
@@ -17,8 +15,7 @@ protected:
 	TypeID* typeIDs;
 	ODBC_Data* myODBC;
 public:
-	ODBCIterator(const string& dataSourceName, const string& userName,
-		const string& passwd, const string& query, int numFlds,
+	ODBCIterator(const string& dataSourceName, const string& query, int numFlds,
 		const TypeID* typeIDs);
 
 	virtual ~ODBCIterator(){

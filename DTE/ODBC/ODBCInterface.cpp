@@ -15,11 +15,11 @@
 
 const ISchema* ODBCInterface::getISchema(TableName* table){
 
-	string myQuery = "Select * from " + tableName + " where 1=2;"; //construct query for getting info, you can retrieve column info by sending a query that returns nothing
+	string myQuery = "Select * from " + tableName + " where 1=2"; //construct query for getting info, you can retrieve column info by sending a query that returns nothing
 
 	cerr << "table = " << tableName << endl;
 
-	myODBC = new ODBC_Data(dataSourceName,userName,passwd,myQuery);
+	myODBC = new ODBC_Data(connectString,myQuery);
 	ODBC_Exist = 1;
 
 	TRY(myODBC->ODBC_Connect(),NULL);  //Connect to ODBC driver
@@ -32,7 +32,7 @@ const ISchema* ODBCInterface::getISchema(TableName* table){
 }
 
 Site* ODBCInterface::getSite(){
-	return new ODBCSite(dataSourceName, userName, passwd, tableName);
+	return new ODBCSite(connectString , tableName);
 }
 
 ODBCInterface::~ODBCInterface(){

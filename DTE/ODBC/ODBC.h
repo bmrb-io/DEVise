@@ -21,9 +21,7 @@
 
 class ODBC_Data {
 	
-	string dataSourceName;		//Name of ODBC Data Source
-	string userName;			//Username for Database
-	string passwd;				//Password for Database
+	string connectString;		//ODBC Connect String
 	string query;				//Query String (SQL Statement)
 	ADTCopyPtr* adtCopyPtrs;	//Needed for Iterator
 
@@ -41,15 +39,14 @@ public:
 	string* attrs;				//Names of Columns
 	string* DTE_Types;			//DTE types for Columns  (string, date, etc.)
 
-	ODBC_Data(const string& dSN, const string& uN,const string& pw,const string& qry) {
-	dataSourceName = dSN ;
-	userName = uN;
-	passwd = pw;
+	ODBC_Data(const string& coStr,const string& qry) {
+	connectString = coStr;
 	query = qry;
 	}
 
 	void ODBC_Connect();
 	int ODBC_Get_Rec(Tuple* results);	//Get Next Tuple from database, return -1 if EOF
+	void checkSpecific();
 	
 	#if defined(_WINDOWS) || defined(_CONSOLE)
 		SQLINTEGER* len;				//length of Columns
