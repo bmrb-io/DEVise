@@ -1,3 +1,3 @@
-select S.sname, S.major
-from   1.3 as E, 1.1 as S
-where  E.dname='math' and E.cno=210 and E.sid=S.sid
+select Student.sname, Student.major
+from   1.3 as Enroll, 1.1 as Student
+where  Enroll.dname='math' and Enroll.cno=210 and Enroll.sid=Student.sid

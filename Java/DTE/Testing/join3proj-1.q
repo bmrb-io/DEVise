@@ -1,3 +1,4 @@
-select C.dname, C.cno, C.cname
-from   1.0 as C, 1.1 as S, 1.3 as E
-where  S.sname='jamme' and S.sid=E.sid and E.dname=C.dname and E.cno=C.cno
+select Course.dname, Course.cno, Course.cname
+from   1.0 as Course, 1.1 as Student, 1.3 as Enroll
+where  Student.sname='jamme' and Student.sid=Enroll.sid 
+       and Enroll.dname=Course.dname and Enroll.cno=Course.cno
