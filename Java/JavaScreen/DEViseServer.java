@@ -305,7 +305,7 @@ public class DEViseServer implements Runnable
                     try {
                         String[] cmd = sendCommand("JAVAC_SaveSession {" + client.getLastSavedSession() + "}");
                         if (cmd == null) {
-                            throw new YException("Invalid response received from server!", 5);
+                            throw new YException("Invalid response received from server while trying to save session!", 5);
                         } else {
                             flag = true;
 
@@ -315,6 +315,20 @@ public class DEViseServer implements Runnable
                                 YGlobals.Ydebugpn(cmd[0]);
                             }
                         }
+                        
+                        cmd = sendCommand("JAVAC_CloseCurrentSession");
+                        if (cmd == null) {
+                            throw new YException("Invalid response received from server while trying to close session!", 5);
+                        } else {
+                            flag = true;
+
+                            if (cmd.length == 1 && cmd[0].equals("JAVAC_Done")) {
+                                client.setStage(5);
+                            } else {
+                                YGlobals.Ydebugpn(cmd[0]);
+                            }
+                        }
+                            
                     } catch (YException e) {
                         YGlobals.Ydebugpn(e.getMessage());
 
