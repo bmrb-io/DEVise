@@ -15,6 +15,12 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.39  1996/07/11 17:26:17  wenger
+#	Devise now writes headers to some of the files it writes;
+#	DataSourceSegment class allows non-fixed data length with non-zero
+#	offset; GUI for editing schema files can deal with comment lines;
+#	added targets to top-level makefiles to allow more flexibility.
+#
 #	Revision 1.38  1996/07/08 17:50:54  jussi
 #	Further change to fix derived data source.
 #
@@ -549,7 +555,7 @@ proc isCached {dispname startrec endrec} {
     set cachefile [lindex $sourcedef 4]
     set command [lindex $sourcedef 7]
     
-    if {$source == "WWW"} {
+    if {$source == "WWW" || $source == "BASICSTAT"} {
         return $command
     }
 
@@ -806,7 +812,7 @@ proc uncacheData {dispname reason} {
 proc getCacheName {source key} {
     global cachedir
 
-    if {$source == "UNIXFILE" || $source == "WWW"} {
+    if {$source == "UNIXFILE" || $source == "WWW" || $source == "BASICSTAT"} {
 	return ""
     }
 
@@ -1145,30 +1151,20 @@ proc updateSources {} {
 ############################################################
 
 proc scanDerivedSources {} {
-    global derivedSourceList schemadir env
+    global derivedSourceList schemadir
 
     catch { unset derivedSourceList }
 
-    set workdir "work"
-    if { [info exists env(DEVISE_WORK)] } {
-	set workdir $env(DEVISE_WORK)
-    }
-
-    foreach cachefile [glob -nocomplain [format "%s/*.stat" $workdir]] {
-	set sname [file tail $cachefile]
-	set source "UNIXFILE"
-	set key $sname
+    foreach view [ViewSet] {
+	set sname "Stat: $view"
+	set source "BASICSTAT"
+	set key $view
 	set schematype COLORSTAT
 	set schemafile $schemadir/physical/COLORSTAT
+        set cachefile ""
 	set evaluation 100
 	set priority 50
-	set command $workdir
-
-	if {![file readable $schemafile]} {
-	    puts "Schema file $schemafile does not exist."
-	    puts "Cannot handle derived data streams."
-	    return
-	}
+	set command "View:$view"
 
 	set sourcedef [list $source $key $schematype $schemafile \
 		$cachefile $evaluation $priority $command]
@@ -1306,5 +1302,3 @@ proc mapFollow {newtype} {
 	    clicking on Edit." "" 0 OK
 
 }
-
-scanDerivedSources
