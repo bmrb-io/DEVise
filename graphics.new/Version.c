@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.48  1999/02/11 19:54:59  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.47.2.1  1999/02/11 18:24:22  wenger
   PileStack objects are now fully working (allowing non-linked piles) except
   for a couple of minor bugs; new PileStack state is saved to session files;
@@ -277,10 +282,10 @@
 static const char *	version = "1.6.1";
 
 // Master DEVise copyright dates.
-static const char *	copyright = "Copyright (c) 1992-1998";
+static const char *	copyright = "Copyright (c) 1992-1999";
 
 // Trademark logo for each DEVise window.
-static const char *	winLogo = "Visualization by DEVise (tm) 1998";
+static const char *	winLogo = "Visualization by DEVise (tm) 1999";
 
 
 #if !defined(lint) && defined(RCSID)
