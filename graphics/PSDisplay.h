@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/09/19 20:11:51  wenger
+  More PostScript output code (still disabled); some code for drawing
+  view borders (disabled).
+
   Revision 1.4  1996/09/18 20:13:30  guangshu
   Added function ExportView and modified function ExportGIF.
 
@@ -91,6 +95,16 @@ public:
 
     void PrintPSHeader();
     void PrintPSTrailer();
+
+#ifdef LIBCS
+    /* Translate RGB colors to pixel values and back */
+    virtual Color FindLocalColor(float r, float g, float b) {
+        return 0;
+    }
+    virtual void FindLocalColor(Color c, float &r, float &g, float &b) {
+        r = g = b = 0;
+    }
+#endif
 
 protected:
 #ifndef LIBCS
