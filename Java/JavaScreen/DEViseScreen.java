@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.43  1999/12/07 23:18:21  hongyu
+// *** empty log message ***
+//
 // Revision 1.42  1999/11/03 08:00:49  hongyu
 // *** empty log message ***
 //
@@ -407,7 +410,7 @@ public class DEViseScreen extends Panel
             if (currentView.getCanvas() != null) {
                 currentView.getCanvas().requestFocus();
                 currentView.getCanvas().repaint();
-            }    
+            }
         }
     }
 
@@ -543,7 +546,7 @@ public class DEViseScreen extends Panel
     }
 
     // Enable double-buffering
-    public void update(Graphics gc)
+    public synchronized void update(Graphics gc)
     {
         if (offScrImg == null) {
             offScrImg = createImage(screenDim.width, screenDim.height);

@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  1999/12/10 15:37:00  wenger
+// Added standard headers to source files.
+//
 
 
 import java.awt.*;
@@ -31,11 +34,11 @@ public class DEViseAtomType {
     public int red, green, blue;
 
     // The index color array for the atom
-    private byte[] data;
+    private byte[] data, selectedData;
     // How to draw this atom, default is 0
     private int scheme = 1;
     // The image for this atom after apply drawScheme
-    private Image image = null;
+    private Image image = null, selectedImage = null;
 
     // The minimum display size for the atom in pixel
     public int minD = 10;
@@ -51,6 +54,22 @@ public class DEViseAtomType {
 
         // use default value for all other data
         color = new Color(red, green, blue);
+        XORcolor = new Color(xorcolor(color.getRGB()));
+    }
+
+    public DEViseAtomType(String n, Color c)
+    {
+        if (n != null) {
+            name = n;
+        }
+
+        // use default value for all other data
+        if (c != null) {
+            color = c;
+        } else {
+            color = new Color(red, green, blue);
+        }
+
         XORcolor = new Color(xorcolor(color.getRGB()));
     }
 
@@ -91,31 +110,30 @@ public class DEViseAtomType {
         color = new Color(red, green, blue);
         XORcolor = new Color(xorcolor(color.getRGB()));
     }
-    
+
     public void setColor(Color c)
     {
         if (c != null) {
             color = c;
-            red = color.getRed();
-            green = color.getGreen();
-            blue = color.getBlue();
             XORcolor = new Color(xorcolor(color.getRGB()));
             image = null;
             data = null;
         }
     }
-    
+
     public void setSelectColor(Color c)
     {
         if (c != null) {
             selectedColor = c;
+            selectedImage = null;
+            selectedData = null;
         }
     }
-    
+
     public void setRadius(int r)
-    {   
+    {
         int oldR = R;
-        
+
         R = r;
         if (R < 5) {
             R = 5;
@@ -123,26 +141,26 @@ public class DEViseAtomType {
         if (R > 50) {
             R = 50;
         }
-        
+
         D = 2 * R;
         rangeD = D - minD;
-        
+
         radius = radius * (double)R / oldR;
-        
+
         data = null;
         image = null;
     }
-    
+
     public void setRadius(double r)
-    {   
+    {
         double oldradius = radius;
-        
+
         if (r > 0) {
             radius = r;
         } else {
             return;
         }
-        
+
         R = (int)(R * radius / oldradius);
         if (R < 5) {
             R = 5;
@@ -156,9 +174,9 @@ public class DEViseAtomType {
         rangeD = D - minD;
 
         data = null;
-        image = null;            
-    }    
-           
+        image = null;
+    }
+
     public void reset(double pixelToUnit)
     {
         if (pixelToUnit <= 0.0) {
@@ -179,15 +197,24 @@ public class DEViseAtomType {
 
         data = null;
         image = null;
+        selectedData = null;
+        selectedImage = null;
     }
 
-    private void createImage(Component component)
+    private void createImage(Component component, boolean isSelected)
     {
         if (component == null) {
             return;
         }
 
-        data = new byte[D * D];
+        byte[] newdata = new byte[D * D];
+        Image newimage = null;
+        Color newcolor = null;
+        if (isSelected) {
+            newcolor = selectedColor;
+        } else {
+            newcolor = color;
+        }
 
         if (scheme == 1) {
             int maxR = 0, hx = (int)(0.2 * D + 0.5), hy = (int)(0.2 * D + 0.5);
@@ -213,7 +240,7 @@ public class DEViseAtomType {
 
                     // recording the position realR into data array, later on, we will use an index color
                     // model to dim or intensify the color according to the magnitude of this position
-                    data[pos++] = (r <= 0 ? (byte)1 : (byte)r);
+                    newdata[pos++] = (r <= 0 ? (byte)1 : (byte)r);
                 }
             }
 
@@ -221,6 +248,9 @@ public class DEViseAtomType {
             icmR[0] = (byte)255;
             icmG[0] = (byte)255;
             icmB[0] = (byte)255;
+            red = newcolor.getRed();
+            green = newcolor.getGreen();
+            blue = newcolor.getBlue();
             for (int i = 1; i <= maxR; i++) {
                 float factor = (float)i / maxR;
                 icmR[i] = (byte)blend(red, 255, factor);
@@ -229,7 +259,13 @@ public class DEViseAtomType {
             }
 
             IndexColorModel model = new IndexColorModel(8, maxR + 1, icmR, icmG, icmB, 0);
-            image = component.createImage(new MemoryImageSource(D, D, model, data, 0, D));
+            newimage = component.createImage(new MemoryImageSource(D, D, model, newdata, 0, D));
+
+            if (isSelected) {
+                selectedImage = newimage;
+            } else {
+                image = newimage;
+            }
         }
     }
 
@@ -268,32 +304,31 @@ public class DEViseAtomType {
             return;
         }
 
-        if (image == null) {
-            createImage(component);
-            if (image == null) {
-                return;
-            }
-        }
-        
-	if (DEViseCanvas.isInteractive) {
-            if (lastDrawStyle == 1) {
-                gc.setColor(selectedColor);
-            } else {
-                gc.setColor(color);
-            }    
-            gc.fillOval(x - drawSize / 2, y - drawSize / 2, drawSize, drawSize);
-	    return;
-	}
-        if (lastDrawStyle == 1 || lastDrawStyle == 2) {
+        if (lastDrawStyle == 2) {
             Color oldcolor = gc.getColor();
-            if (lastDrawStyle == 1) {
-                gc.setColor(selectedColor);
-            } else {
-                gc.setColor(XORcolor);
-            }    
+            gc.setColor(color);
             gc.fillOval(x - drawSize / 2, y - drawSize / 2, drawSize, drawSize);
             gc.setColor(oldcolor);
+        } else if (lastDrawStyle == 3) {
+            Color oldcolor = gc.getColor();
+            gc.setColor(selectedColor);
+            gc.fillOval(x - drawSize / 2, y - drawSize / 2, drawSize, drawSize);
+            gc.setColor(oldcolor);
+        } else if (lastDrawStyle == 1) {
+            if (selectedImage == null) {
+                createImage(component, true);
+                if (selectedImage == null) {
+                    return;
+                }
+            }
+            gc.drawImage(selectedImage, x - drawSize / 2, y - drawSize / 2, drawSize, drawSize, component);
         } else {
+            if (image == null) {
+                createImage(component, false);
+                if (image == null) {
+                    return;
+                }
+            }
             gc.drawImage(image, x - drawSize / 2, y - drawSize / 2, drawSize, drawSize, component);
         }
     }

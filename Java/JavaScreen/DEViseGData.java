@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.24  1999/11/03 15:29:44  wenger
+// Fixed text alignment problems.
+//
 // Revision 1.23  1999/11/03 08:00:49  hongyu
 // *** empty log message ***
 //
@@ -73,7 +76,7 @@ public class DEViseGData
     public Rectangle GDataLocInScreen = null;
 
     public int x = 0, y = 0, z = 0, width = 0, height = 0;
-    public double x0, y0, z0;
+    public double x0, y0, z0, x1, y1, z1;
 
     public String[] data = null;
     public Component symbol = null;
@@ -131,6 +134,9 @@ public class DEViseGData
 	    // 4 is Oval
 	    Oval(size, xm, ym);
 
+	    } else if (symbolType == 7) {
+
+            stick(size, xm, ym);
         } else {
 	    DefaultSymbol(size, xm, ym);
         }
@@ -242,7 +248,7 @@ public class DEViseGData
         }
 
 	AlignText(align);
-            
+
         x = parentView.viewLocInCanvas.x + x;
         y = parentView.viewLocInCanvas.y + y;
     }
@@ -311,7 +317,7 @@ public class DEViseGData
         }
 
 	AlignText(align);
-            
+
         x = parentView.viewLocInCanvas.x + x;
         y = parentView.viewLocInCanvas.y + y;
     }
@@ -375,8 +381,28 @@ public class DEViseGData
             height = -height;
 
         color = DEViseGlobals.convertColor(data[3]);
-        
+
         string = data[10];
+    }
+
+    protected void stick(double size, double xm, double ym)
+    {
+        isJavaSymbol = false;
+
+        width = (int)(size * xm);
+        height = (int)(size * ym);
+        if (width < 0)
+            width = -width;
+        if (height < 0)
+            height = -height;
+
+        color = DEViseGlobals.convertColor(data[3]);
+        string = "bond";
+
+        x1 = x0 + size * (Double.valueOf(data[8])).doubleValue();
+        y1 = y0 + size * (Double.valueOf(data[9])).doubleValue();
+        z1 = z0 + size * (Double.valueOf(data[10])).doubleValue();
+        //z1 = (int)(z0 + size * ym * z1 );
     }
 
     protected void DefaultSymbol(double size, double xm, double ym)

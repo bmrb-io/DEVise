@@ -13,6 +13,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.28  1999/12/10 15:30:12  wenger
+// Molecule dragging greatly speeded up by drawing plain (unshaeded) circles
+// during drag; split off protocol version from "main" version.
+//
+// $Log$
 // Revision 1.27  1999/12/07 23:18:20  hongyu
 // *** empty log message ***
 //
@@ -110,10 +115,10 @@ public class DEViseCanvas extends Container
 
     Point sp = new Point(), ep = new Point(), op = new Point();
     public static int lastKey = KeyEvent.VK_UNDEFINED;
-    
+
     public static DEViseCanvas sourceCanvas = null;
-    public static boolean isInteractive = false;
-    
+    public static boolean isInterative = false;
+
     public static int totalpaintcount = 0;
 
     public DEViseCanvas(DEViseView v, Image img)
@@ -216,12 +221,12 @@ public class DEViseCanvas extends Container
 
     public void paint(Graphics gc)
     {
-        if (DEViseCanvas.isInteractive) {
+        if (DEViseCanvas.isInterative) {
             if (DEViseCanvas.sourceCanvas != this) {
                 return;
             }
         }
-        
+
         // draw 3D molecular view
         if (paintCrystal(gc)) {
             paintBorder(gc);
@@ -257,15 +262,14 @@ public class DEViseCanvas extends Container
         }
     }
 
-    //TEMP -- why do we have this *and* DEViseCrystal.paint()????
     private synchronized boolean paintCrystal(Graphics gc)
     {
         if (view.viewDimension != 3) {
             return false;
         }
-        
+
         //jsc.pn("crystal is been painted " + totalpaintcount++);
-        
+
         if (crystal == null) {
             createCrystal();
             if (crystal == null) {
@@ -276,7 +280,7 @@ public class DEViseCanvas extends Container
 
         if (action3d == 0) {
             paintBackground(gc);
-            crystal.paint(this, gc);
+            crystal.paint(this, gc, isMouseDragged);
         } else if (action3d == 1) {
             action3d = 0;
 
@@ -289,7 +293,7 @@ public class DEViseCanvas extends Container
 
                 //gc.drawImage(offScrImg, 0, 0, this);
                 paintBackground(gc);
-                crystal.paint(this, gc);
+                crystal.paint(this, gc, false);
             } else if (highlightAtomIndex >= 0) {
                 DEViseAtomInCrystal atom = crystal.getAtom(highlightAtomIndex);
                 oldHighlightAtomIndex = highlightAtomIndex;
@@ -765,11 +769,12 @@ public class DEViseCanvas extends Container
             // this twice. Also, this event will always reported with each mouse click
             // and before the mouseClick event is reported.
 
-            DEViseCanvas.isInteractive = false;
-            
+            DEViseCanvas.isInterative = false;
+
             if (view.viewDimension == 3) {
                 DEViseCanvas.lastKey = KeyEvent.VK_UNDEFINED;
-		repaint();
+                isMouseDragged = false;
+                repaint();
                 return;
             }
 
@@ -844,7 +849,7 @@ public class DEViseCanvas extends Container
                 whichCursorSide = -1;
                 isMouseDragged = false;
                 DEViseCanvas.lastKey = KeyEvent.VK_UNDEFINED;
-                
+
                 repaint();
             }
         }
@@ -901,7 +906,7 @@ public class DEViseCanvas extends Container
                 selectedCursor = null;
                 whichCursorSide = -1;
                 isMouseDragged = false;
-                
+
                 repaint();
             }
         }
@@ -920,7 +925,7 @@ public class DEViseCanvas extends Container
             Point p = event.getPoint();
             isMouseDragged = true;
 
-            if (view.viewDimension == 3 && crystal != null) {                
+            if (view.viewDimension == 3 && crystal != null) {
                 int dx = p.x - op.x, dy = p.y - op.y;
                 op.x = p.x;
                 op.y = p.y;
@@ -934,8 +939,8 @@ public class DEViseCanvas extends Container
                 } else {
                     crystal.rotate(dx, dy);
                 }
-                
-                DEViseCanvas.isInteractive = true;
+
+                DEViseCanvas.isInterative = true;
                 DEViseCanvas.sourceCanvas = DEViseCanvas.this;
                 repaint();
                 return;
@@ -967,8 +972,8 @@ public class DEViseCanvas extends Container
                         whichCursorSide = cursor.updateCursorLoc(dx, dy, 2, whichCursorSide, false);
                     }
                 }
-            
-                DEViseCanvas.isInteractive = true;
+
+                DEViseCanvas.isInterative = true;
                 DEViseCanvas.sourceCanvas = DEViseCanvas.this;
                 repaint();
             }
@@ -984,7 +989,7 @@ public class DEViseCanvas extends Container
             if (view.viewDimension == 3 && crystal != null) {
                 point.x = p.x;
                 point.y = p.y;
-                
+
                 jsc.lastCursor = DEViseGlobals.rbCursor;
                 setCursor(jsc.lastCursor);
 
@@ -993,7 +998,7 @@ public class DEViseCanvas extends Container
                 if (jscreen.getCurrentView() != activeView) {
                     jscreen.setCurrentView(activeView);
                 }
-                
+
 		//int index = crystal.find(p.x, p.y);
 		//if (index != oldHighlightAtomIndex) {
 		//    action3d = 1;
@@ -1002,13 +1007,13 @@ public class DEViseCanvas extends Container
 		//    action3d = 1;
 		//    repaint();
                 //}
-                
+
 		        return;
             }
 
             checkMousePos(p, true);
-            
-            //DEViseCanvas.isInteractive = true;
+
+            //DEViseCanvas.isInterative = true;
             //DEViseCanvas.sourceCanvas = DEViseCanvas.this;
             //repaint();
         }
@@ -1196,41 +1201,92 @@ public class DEViseCanvas extends Container
                     DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
                     DEViseAtomInCrystal atom = crystal.getAtom(i);
                     atom.type.setColor(gdata.color);
-                }                
+                }
             } catch (YException e) {
                 jsc.pn(e.getMessage());
                 crystal = null;
 		        return;
             }
-            */ 
+            */
             int size = view.viewGDatas.size();
-            double[][] atomPos = new double[size][3];
-            String[] atomName = new String[size];
+            //double[][] atomPos = new double[size][3];
+            //double[][][] bondPos = new double[size][
+            //String[] atomName = new String[size];
+            Vector aPos = new Vector(size), aName = new Vector(size), aColor = new Vector(size), bPos = new Vector(size), bColor = new Vector(size);
             for (int i = 0; i < size; i++) {
                 DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
-                atomName[i] = gdata.string;
-                atomPos[i][0] = gdata.x0;
-                atomPos[i][1] = gdata.y0;
-                atomPos[i][2] = gdata.z0;
+                if (gdata.string.equals("bond")) {
+                    double[][] pos = new double[2][3];
+                    pos[0][0] = gdata.x0;
+                    pos[0][1] = gdata.y0;
+                    pos[0][2] = gdata.z0;
+                    pos[1][0] = gdata.x1;
+                    pos[1][1] = gdata.y1;
+                    pos[1][2] = gdata.z1;
+                    bPos.addElement(pos);
+                    bColor.addElement(gdata.color);
+                } else {
+                    aName.addElement(gdata.string);
+                    double[] pos = new double[3];
+                    pos[0] = gdata.x0;
+                    pos[1] = gdata.y0;
+                    pos[2] = gdata.z0;
+                    aPos.addElement(pos);
+                    aColor.addElement(gdata.color);
+                }
             }
-            
+
+            String[] atomName = null;
+            double[][] atomPos = null;
+            double[][][] bondPos = null;
+            Color[] bondColor = null;
+            Color[] atomColor = null;
+            if (aName.size() > 0) {
+                atomName = new String[aName.size()];
+                for (int i = 0; i < atomName.length; i++) {
+                    atomName[i] = (String)aName.elementAt(i);
+                }
+            }
+
+            if (aPos.size() > 0) {
+                atomPos = new double[aPos.size()][3];
+                for (int i = 0; i < atomPos.length; i++) {
+                    atomPos[i] = (double[])aPos.elementAt(i);
+                }
+            }
+
+            if (aColor.size() > 0) {
+                atomColor = new Color[aColor.size()];
+                for (int i = 0; i < atomColor.length; i++) {
+                    atomColor[i] = (Color)aColor.elementAt(i);
+                }
+            }
+
+            if (bPos.size() > 0) {
+                bondPos = new double[bPos.size()][2][3];
+                for (int i = 0; i < bondPos.length; i++) {
+                    bondPos[i] = (double[][])bPos.elementAt(i);
+                }
+            }
+
+            if (bColor.size() > 0) {
+                bondColor = new Color[bColor.size()];
+                for (int i = 0; i < bondColor.length; i++) {
+                    bondColor[i] = (Color)bColor.elementAt(i);
+                }
+            }
+
             try {
                 DEVise3DLCS lcs = new DEVise3DLCS();
-                crystal = new DEViseCrystal(canvasDim.width - 10, canvasDim.height - 10, 5, lcs, -1, -1, atomName, atomPos);
+                crystal = new DEViseCrystal(canvasDim.width - 10, canvasDim.height - 10, 5, lcs, -1, -1, atomName, atomPos, atomColor, bondPos, bondColor);
             } catch (YException e) {
                 jsc.pn(e.getMessage());
                 crystal = null;
                 return;
             }
-
-            for (int i = 0; i < size; i++) {
-                DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
-                DEViseAtomInCrystal atom = crystal.getAtom(i);
-                atom.type.setColor(gdata.color);
-            }
         }
 
-        if (view.viewPiledViews.size() > 0) { 	
+        if (view.viewPiledViews.size() > 0) {
             crystal.setSelect();
 
             for (int i = 0; i < view.viewPiledViews.size(); i++) {
@@ -1238,7 +1294,7 @@ public class DEViseCanvas extends Container
 		        for (int j = 0; j < v.viewGDatas.size(); j++) {
                     DEViseGData gdata = (DEViseGData)v.viewGDatas.elementAt(j);
                     crystal.setSelect(gdata.x0, gdata.y0, gdata.z0, gdata.color);
-                } 
+                }
             }
         }
     }
@@ -1336,7 +1392,7 @@ public class DEViseCanvas extends Container
                                                     && atomPos[i][2] >= 0.0 && atomPos[i][2] < 1.0,
                                                     "Incorrect atom position for unit cell basis (valid atom position must be less than 1.0 and greater than or equals to 0.0) at line " + input.lineno());
                                 }
-                                
+
                                 for (int j = 0; j < i; j++) {
                                     YGlobals.ythrow(!(atomPos[i][0] == atomPos[j][0]
                                                     && atomPos[i][1] == atomPos[j][1]
