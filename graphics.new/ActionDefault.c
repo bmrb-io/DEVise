@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/06/16 01:33:24  jussi
+  Added handling of case where xlow == xhigh or ylow == yhigh
+  in zooming functions.
+
   Revision 1.16  1996/06/15 16:11:05  jussi
   Added '5'-key functionality to 3D views.
 
@@ -183,9 +187,9 @@ void ActionDefault::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
 	  c.y_ = 0;
 	  c.z_ = minZ;
 	} else {
-	  c._theta = M_PI;
-	  c._phi = -M_PI_2;
-	  c._rho = minZ;
+	  c._theta = 0;
+	  c._phi = M_PI_2;
+	  c._rho = fabs(minZ);
 	}
 	view->SetCamera(c);
       }
