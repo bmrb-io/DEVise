@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/01/17 20:53:34  jussi
+  Added support for additional image export formats.
+
   Revision 1.13  1995/12/28 18:59:23  jussi
   Small fixes to remove compiler warnings.
 
@@ -266,7 +269,7 @@ rm /tmp/devise.xwd /tmp/devise.rgb",
   } else if (format == EPS) {
     sprintf(cmd, "xwd -frame -id %ld > /tmp/devise.xwd; \
 fromxwd /tmp/devise.xwd /tmp/devise.rgb; \
-tops -eps /tmp/devise.rgb > %s; \
+tops /tmp/devise.rgb -eps > %s; \
 rm /tmp/devise.xwd /tmp/devise.rgb",
 	    _win, filename);
   } else if (format == GIF) {
