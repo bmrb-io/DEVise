@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/03/26 21:29:40  jussi
+  Removed references to TDataTape.
+
   Revision 1.10  1996/01/23 20:53:33  jussi
   Added isAscii parameter to Gen().
 
@@ -106,30 +109,30 @@ int GetMonth(char *month)
 const int NUM_QUAL_ATTRS = 24;
 int qualOffset[NUM_QUAL_ATTRS]; /* offset of quality attributes */
 char *qualAttrs[] = {
-"QUAL_OBS_DATE",
-"QUAL_OBS_TIME",
-"QUAL_DRY_BULB_TEMP",
-"QUAL_WET_BULB_TEMP",
-"QUAL_ATMOSIC_PRESS",
-"QUAL_ACCUM_RAINFALL",
-"QUAL_RAINFALL_RATE",
-"QUAL_U_COMPNT_WIND_VELOC",
-"QUAL_V_COMPNT_WIND_VELOC",
-"QUAL_W_COMPNT_WIND_VELOC",
-"QUAL_MAX_WIND_SPEED",
-"QUAL_W_COMPNT_WIND_VELOC_SDEV",
-"QUAL_SURF_TEMP",
-"QUAL_SOIL_TEMP_10CM",
-"QUAL_SOIL_TEMP_50CM",
-"QUAL_SHORTWAVE_SOLAR_REFL",
-"QUAL_NET_RADTN",
-"QUAL_INCIDENT_LONGWAVE_RADTN",
-"QUAL_DOME_TEMP",
-"QUAL_INSTR_TEMP",
-"QUAL_TOTAL_INCIDENT_RADTN",
-"QUAL_TOTAL_INCIDENT_PAR",
-"QUAL_DIFFUSE_INCIDENT_RADTN",
-"QUAL_DIFFUSE_INCIDENT_PAR"
+  "QUAL_OBS_DATE",
+  "QUAL_OBS_TIME",
+  "QUAL_DRY_BULB_TEMP",
+  "QUAL_WET_BULB_TEMP",
+  "QUAL_ATMOSIC_PRESS",
+  "QUAL_ACCUM_RAINFALL",
+  "QUAL_RAINFALL_RATE",
+  "QUAL_U_COMPNT_WIND_VELOC",
+  "QUAL_V_COMPNT_WIND_VELOC",
+  "QUAL_W_COMPNT_WIND_VELOC",
+  "QUAL_MAX_WIND_SPEED",
+  "QUAL_W_COMPNT_WIND_VELOC_SDEV",
+  "QUAL_SURF_TEMP",
+  "QUAL_SOIL_TEMP_10CM",
+  "QUAL_SOIL_TEMP_50CM",
+  "QUAL_SHORTWAVE_SOLAR_REFL",
+  "QUAL_NET_RADTN",
+  "QUAL_INCIDENT_LONGWAVE_RADTN",
+  "QUAL_DOME_TEMP",
+  "QUAL_INSTR_TEMP",
+  "QUAL_TOTAL_INCIDENT_RADTN",
+  "QUAL_TOTAL_INCIDENT_PAR",
+  "QUAL_DIFFUSE_INCIDENT_RADTN",
+  "QUAL_DIFFUSE_INCIDENT_PAR"
 };
 
 /* User composite to parse date */
@@ -143,8 +146,9 @@ public:
 		timestr= *tstr;
 		lasttstr = *tstr;
 		lasttime = clk;
-		_first =true;
+		_first = true;
 		_init = true;
+		_dateAttr = 0;
 	}
 
 	/* This is called by the Composite parser to parse composite attributes */
@@ -173,6 +177,7 @@ public:
 				errorAttr = "DATE";
 				goto error;
 			}
+			_dateAttr = info;
 			dateOffset = info->offset;
 
 			if ((info = recInterp->GetAttrInfo("OBS_DATE")) == NULL){
@@ -241,7 +246,18 @@ public:
 		  lasttime = time;
 		}
 
-		*datePtr  = time;
+		*datePtr = time;
+
+		if (!_dateAttr->hasHiVal
+		    || *datePtr > _dateAttr->hiVal.dateVal) {
+		  _dateAttr->hiVal.dateVal = *datePtr;
+		  _dateAttr->hasHiVal = true;
+		}
+		if (!_dateAttr->hasLoVal
+		    || *datePtr < _dateAttr->loVal.dateVal) {
+		  _dateAttr->loVal.dateVal = *datePtr;
+		  _dateAttr->hasLoVal = true;
+		}
 
 		if (_first){
 			/*
@@ -264,17 +280,21 @@ public:
 			else *qualPtr = 2;
 		}
 		return;
+
 	error:
 		fprintf(stderr,"Ams composite attr: can't find attr %s\n",
 			errorAttr);
 		Exit::DoExit(2);
 	}
+
 private:
 	struct tm timestr;              /* current time */
 	struct tm lasttstr;             /* cached value of last time */
 	time_t    lasttime;             /* cached value of last time */
 	Boolean _first;
 	Boolean _init;
+	AttrInfo *_dateAttr;            /* date attribute info */
+
 	int qualStrOffset; /* offset of quality string */
 	int dateOffset; /* offset of date attribute */
 	int obsDateOffset; /* offset of observed date */
@@ -291,6 +311,7 @@ public:
 		lasttime = clk;
 		timestr= *tstr;
 		_init = true;
+		_dateAttr = 0;
 	}
 
 	/* This is called by the Composite parser to parse composite attributes */
@@ -310,6 +331,7 @@ public:
 				errorAttr = "DATE";
 				goto error;
 			}
+			_dateAttr = info;
 			_dateOffset = info->offset;
 
 			if ((info = recInterp->GetAttrInfo("OBS_DATE")) == NULL){
@@ -365,17 +387,32 @@ public:
 		}
 
 		*datePtr  = time;
+
+		if (!_dateAttr->hasHiVal
+		    || *datePtr > _dateAttr->hiVal.dateVal) {
+		  _dateAttr->hiVal.dateVal = *datePtr;
+		  _dateAttr->hasHiVal = true;
+		}
+		if (!_dateAttr->hasLoVal
+		    || *datePtr < _dateAttr->loVal.dateVal) {
+		  _dateAttr->loVal.dateVal = *datePtr;
+		  _dateAttr->hasLoVal = true;
+		}
+
 		return;
+
 	error:
 		fprintf(stderr,"Basel composite attr: can't find attr %s\n",
 			errorAttr);
 		Exit::DoExit(2);
 	}
+
 private:
 	struct tm timestr;              /* current time */
 	struct tm lasttstr;             /* cached value of last time */
 	time_t    lasttime;             /* cached value of last time */
 	Boolean _init;
+	AttrInfo *_dateAttr;            /* date attribute info */
 	int _dateOffset;
 	int _obsDateOffset;
 	int _obsTimeOffset;
@@ -386,46 +423,45 @@ QueryProc *genQueryProcTape()
   return new QueryProcTape;
 }
 
-main(int argc, char **argv){
-
- Init::DoInit(argc, argv);
+main(int argc, char **argv)
+{
+  Init::DoInit(argc, argv);
    
- /* Register composite parser */
- CompositeParser::Register("Soil", new AmsComposite);
-   
- CompositeParser::Register("Basel92", new BaselComposite);
-   
- /* Register known query processors */
- QueryProc::Register("Tape", genQueryProcTape);
-   
- /* Register known classes  with control panel */
- ControlPanel::RegisterClass(new TileLayoutInfo);
- ControlPanel::RegisterClass(new ViewXInfo);
- ControlPanel::RegisterClass(new ViewScatterInfo);
- ControlPanel::RegisterClass(new VisualLinkClassInfo());
- ControlPanel::RegisterClass(new CursorClassInfo());
-   
- /* Create compiled mappings for solar radiation and rain */
- ControlPanel::RegisterClass(new MapInfo(MapInfo::SolDnType));
- ControlPanel::RegisterClass(new MapInfo(MapInfo::RainType));
- ControlPanel::RegisterClass(new MapInfo(MapInfo::TempType));
-   
- /* hack to start control panel so that it'll read the RC files */
- ControlPanel *ctrl = ControlPanel::Instance();
- 
- /* This is a hack to create a display before running Dispatcher.
-    Otherwise, we'll get an error */
- DeviseDisplay *disp = DeviseDisplay::DefaultDisplay();
- 
- /* Start session (possibly restoring an old one */
- ctrl->StartSession();
- 
- /* Create a command class to read input from keyboard */
- Command *cmd = new Command(QueryProc::Instance());
- 
- /* keep compiler happy */
- disp = disp;
- cmd = cmd;
- 
- Dispatcher::RunNoReturn();
+  /* Register composite parser */
+  CompositeParser::Register("Soil", new AmsComposite);
+  CompositeParser::Register("Basel92", new BaselComposite);
+  
+  /* Register known query processors */
+  QueryProc::Register("Tape", genQueryProcTape);
+  
+  /* Register known classes with control panel */
+  ControlPanel::RegisterClass(new TileLayoutInfo);
+  ControlPanel::RegisterClass(new ViewXInfo);
+  ControlPanel::RegisterClass(new ViewScatterInfo);
+  ControlPanel::RegisterClass(new VisualLinkClassInfo());
+  ControlPanel::RegisterClass(new CursorClassInfo());
+  
+  /* Create compiled mappings for solar radiation and rain */
+  ControlPanel::RegisterClass(new MapInfo(MapInfo::SolDnType));
+  ControlPanel::RegisterClass(new MapInfo(MapInfo::RainType));
+  ControlPanel::RegisterClass(new MapInfo(MapInfo::TempType));
+  
+  /* hack to start control panel so that it'll read the RC files */
+  ControlPanel *ctrl = ControlPanel::Instance();
+  
+  /* This is a hack to create a display before running Dispatcher.
+     Otherwise, we'll get an error */
+  DeviseDisplay *disp = DeviseDisplay::DefaultDisplay();
+  
+  /* Start session (possibly restoring an old one */
+  ctrl->StartSession();
+  
+  /* Create a command class to read input from keyboard */
+  Command *cmd = new Command(QueryProc::Instance());
+  
+  /* keep compiler happy */
+  disp = disp;
+  cmd = cmd;
+  
+  Dispatcher::RunNoReturn();
 }
