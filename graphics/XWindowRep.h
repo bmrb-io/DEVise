@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/04/17 20:33:26  jussi
+  Added ExportGIF() method.
+
   Revision 1.12  1996/04/11 17:56:25  jussi
   Added Raise() and Lower().
 
@@ -57,10 +60,16 @@
 #ifndef XWindowRep_h
 #define XWindowRep_h
 
-#include "WindowRep.h"
-#include "Xdef.h"
 #include <string.h>
 #include <math.h>
+
+#include "WindowRep.h"
+#include "Xdef.h"
+#include "DList.h"
+
+class XWindowRep;
+
+DefinePtrDList(XWindowRepList, XWindowRep *);
 
 /* Bitmap info */
 struct XBitmapInfo {
@@ -76,7 +85,6 @@ class Compmression;
 
 class XWindowRep: public WindowRep {
 public:
-	/* From class WindowRep */
 
 #ifdef TK_WINDOW_old
 	/* Decorate window */
@@ -106,8 +114,7 @@ public:
 	/* Iconify window. Not guaranteed to succeed.  */
 	virtual void Iconify();
 
-	virtual void PushClip(Coord x,Coord y,Coord w,Coord h);
-
+	virtual void PushClip(Coord x, Coord y, Coord w, Coord h);
 	virtual void PopClip();
 
 	/* export window image */
@@ -119,11 +126,11 @@ public:
 
 	/* Scroll a region in the window */
 	virtual void Scroll(Coord x, Coord y, Coord width, Coord height,
-			Coord dstX, Coord dstY);
+			    Coord dstX, Coord dstY);
 
-    /* Scroll absoluate */
-	virtual void ScrollAbsolute(int x, int y, unsigned width, unsigned height,
-			int dstX, int dstY);
+	/* Scroll absoluate */
+	virtual void ScrollAbsolute(int x, int y, unsigned width,
+				    unsigned height, int dstX, int dstY);
 
 
 	virtual void SetFgColor(Color fg);
@@ -131,22 +138,22 @@ public:
 
 	virtual void SetPattern(Pattern p);
 
-	virtual void FillRect(Coord xlow, Coord ylow, Coord width, Coord height);
+	virtual void FillRect(Coord xlow, Coord ylow, Coord width,
+			      Coord height);
 	/* Fill rectangles, variable width/height */
 	virtual void FillRectArray(Coord *xlow, Coord *ylow, Coord *width, 
-			Coord *height, int num);
+				   Coord *height, int num);
 	/* Fill rectangles, same width/height */
 	virtual void FillRectArray(Coord *xlow, Coord *ylow, Coord width,
-			Coord height, int num);
-
+				   Coord height, int num);
 
 	virtual void DrawPixel(Coord x, Coord y);
 	virtual void DrawPixelArray(Coord *x, Coord *y, int num, int width);
 
-	/* fill rectangle. All coordinates are in pixels. x and y are
-	at the center of the rectangle */
+	/* Fill rectangle. All coordinates are in pixels. x and y are
+	   at the center of the rectangle */
 	virtual void FillPixelRect(Coord x, Coord y, Coord width, Coord height,
-		Coord minWidth = 1.0, Coord minHeigh = 1.0);
+				   Coord minWidth = 1.0, Coord minHeigh = 1.0);
 	virtual void FillPoly(Point *, int n);
 	virtual void FillPixelPoly(Point *, int n);
 	virtual void Arc(Coord x, Coord y, Coord w, Coord h,
@@ -156,13 +163,14 @@ public:
 	virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width);
 
 
-	virtual void Text(char *text, Coord x, Coord y, Coord width, Coord height,
-		TextAlignment alignment= AlignCenter,
-		Boolean skipLeadingSpaces = false);
+	virtual void Text(char *text, Coord x, Coord y, Coord width,
+			  Coord height, TextAlignment alignment = AlignCenter,
+			  Boolean skipLeadingSpaces = false);
 
 	virtual void AbsoluteText(char *text, Coord x, Coord y, Coord width, 
-		Coord height, TextAlignment alignment= AlignCenter,
-		Boolean skipLeadingSpaces = false);
+				  Coord height,
+				  TextAlignment alignment = AlignCenter,
+				  Boolean skipLeadingSpaces = false);
 
 	/* Set XOR or normal drawing mode on */
 	virtual void SetXorMode();
@@ -174,13 +182,13 @@ public:
 	virtual int  GetSmallFontHeight();
 
 	/* Get window rep dimensions */
-	virtual void Dimensions(unsigned int &width, unsigned int &height );
+	virtual void Dimensions(unsigned int &width, unsigned int &height);
 
 	/* get window rep origin */
 	virtual void Origin(int &x, int &y);
 
 	/* Get absolute window rep origin from upper left corner
-	of the screen */
+	   of the screen */
 	virtual void AbsoluteOrigin(int &x,int &y);
 
 	// ---------------------------------------------------------- 
@@ -197,8 +205,7 @@ public:
 
 	// ---------------------------------------------------------- 
 
-    /******* Pixmap ***************/
-	/* Generate pixmap for current window, or NULL if insufficient memory  */
+	/* Return contents of window as a pixmap */
 	virtual DevisePixmap *GetPixmap();
 
 	/* Display pixmap in window */
@@ -213,23 +220,28 @@ public:
 #endif
 
 protected:
-	/* called by the XDisplay to create a new XWindowRep, and
-	handle X events. */
 	friend class XDisplay;
 
-	XWindowRep(Display *display,Window window, XDisplay * DVDisp, 
+	/* called by XDisplay to create new X window */
+ 	XWindowRep(Display *display, Window window, XDisplay *DVDisp, 
 		   Color fgndColor, Color bgndColor,
 		   Boolean backingStore = false); 
+
+	/* called by XDisplay to create new X pixmap */
+ 	XWindowRep(Display *display, Pixmap pixmap, XDisplay *DVDisp, 
+		   XWindowRep *parent, Color fgndColor, Color bgndColor,
+		   int x, int y); 
+
+	/* called by constructors to initialize object */
+	void Init();
 
 	/* destructor */
 	~XWindowRep();
 
 	void HandleEvent(XEvent &event);
 
-	// ---------------------------------------------------------- 
-	// 3D
+	/* data structures for 3D images */
 	XSegment _xsegs[WINDOWREP_BATCH_SIZE * BLOCK_EDGES];
-
 
 #ifdef TK_WINDOW_old
 	/* Assign window to a new parent. */
@@ -253,60 +265,77 @@ protected:
 	Tk_Window _tkWindow;
 #endif
 
-	Window GetWin() { return _win; }
+	/* return window identifier */
+	Window GetWinId() { return _win; }
+
+	/* return pixmap identifier */
+	Pixmap GetPixmapId() { return _pixmap; }
 
 	/* export window image as GIF */
 	void ExportGIF(char *filename);
 
+	/* recursively copy the contents of subpixmaps onto parent pixmap */
+	static void CoalescePixmaps(XWindowRep *root);
+
 private:
-	/* Update window dimensions; globals:
-		_x, _y, _width, _height */
+	/* Update window dimensions; globals: _x, _y, _width, _height */
 	void UpdateWinDimensions();
 
 	/* draw rubberbanding rectangle */
 	void DrawRubberband(int x1,int y1, int x2, int y2);
 
 	/* Handle button press event. Return the region covered by
-	the selection in window coordinates */
-	void DoButtonPress(int x,int y, int &xlow, int &ylow, int &xhigh,
-		int &yhigh, int button);
+	   the selection in window coordinates */
+	void DoButtonPress(int x, int y, int &xlow, int &ylow, int &xhigh,
+			   int &yhigh, int button);
 
 	/* allocate a bitmap of the given width and height into the
-	given info. Free old bitmap data if necessary.*/
+	   given info. Free old bitmap data if necessary */
 	void AllocBitmap(XBitmapInfo &info, int width, int height);
 
 	/* free bitmap, if not already free */
-	void FreeBitmap(XBitmapInfo &info){
-		if (info.inUse){
-			/* free old bitmap*/
-			XFreeGC(_display,info.gc);
-			XDestroyImage(info.image);
-			XFreePixmap(_display,info.pixmap);
-			info.inUse = false;
-		}
+	void FreeBitmap(XBitmapInfo &info) {
+	  if (info.inUse) {
+	    /* free old bitmap */
+	    XFreeGC(_display, info.gc);
+	    XDestroyImage(info.image);
+	    XFreePixmap(_display, info.pixmap);
+	    info.inUse = false;
+	  }
 	}
 
 	/* copy bimtap from source to destination. Used to scale text. */
-	void CopyBitmap(int width,int height,int dstWidth,int dstHeight);
+	void CopyBitmap(int width, int height, int dstWidth, int dstHeight);
 
 	/* current dimensions of window */
 	int _x, _y;
 	unsigned int _width, _height;
 
 	Display *_display;
-	Window _win ;
+	Window _win;
 	GC _gc;
-	GC _rectGc; /* GC for rubber-banding */
-	XPoint *_xpoints; /* temp variables to hold points */
+
+	/* pixmap and child/parent links for pixmaps */
+	Pixmap _pixmap;
+	XWindowRep    *_parent;
+	XWindowRepList _children;
+
+	/* GC for rubber-banding */
+	GC _rectGc;
+
+	/* temp variables to hold points */
+	XPoint *_xpoints;
 	int _num_points;
-	XBitmapInfo _srcBitmap, _dstBitmap; /* bitmaps for drawing/scaling text*/
+
+	/* bitmaps for drawing/scaling text*/
+	XBitmapInfo _srcBitmap, _dstBitmap;
 
 	/* Pop-up window Manipulation:
 	1) display messages
 	2) wait till button is released. */
 	void DoPopup(int x, int y, int button);
 
-	Boolean _backingStore; /* TRUE if window has backingstore */
+	Boolean _backingStore;  /* TRUE if window has backingstore */
 	Boolean _unobscured; 	/* TRUE if window is totally unobscured */
 
 	/* for compression */
@@ -317,4 +346,3 @@ private:
 };
 
 #endif
-

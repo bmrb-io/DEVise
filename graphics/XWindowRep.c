@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1996/04/17 20:33:41  jussi
+  Added ExportGIF() method.
+
   Revision 1.30  1996/04/16 19:49:41  jussi
   Replaced assert() calls with DOASSERT().
 
@@ -132,6 +135,7 @@ extern "C" {
 #define MAXPIXELDUMP 0
 
 #define ROUND(type, value) ((type)(value + 0.5))
+#define DRAWABLE           (_win ? _win : _pixmap)
 
 /**********************************************************************
 Initializer
@@ -142,20 +146,51 @@ XWindowRep:: XWindowRep(Display *display, Window window, XDisplay *DVDisp,
 			Boolean backingStore) :
 	WindowRep(DVDisp, fgndColor, bgndColor)
 {
+  _display = display;
+  _win = window;
+  _pixmap = 0;
+  _parent = 0;
+  _backingStore = false;
+
+  Init();
+}
+
+XWindowRep:: XWindowRep(Display *display, Pixmap pixmap, XDisplay *DVDisp,
+			XWindowRep *parent, Color fgndColor, Color bgndColor,
+			int x, int y) :
+	WindowRep(DVDisp, fgndColor, bgndColor)
+{
+  _display = display;
+  _win = 0;
+  _pixmap = pixmap;
+  _parent = parent;
+  if (_parent)
+    _parent->_children.Append(this);
+  _backingStore = false;
+
+  _x = x;
+  _y = y;
+
+  Init();
+
+  // clear all pixels in pixmap
+  SetFgColor(bgndColor);
+  XFillRectangle(_display, _pixmap, _gc, 0, 0, _width, _height);
+}
+
+void XWindowRep::Init()
+{
   _dispGraphics = Init::DispGraphics();
   _compress = new SimpleCompress();
 
-  _backingStore = backingStore;
-  _unobscured = false;
-
-  _display = display,
-  _win = window;
   UpdateWinDimensions();
 
-  _gc = XCreateGC(_display, window, 0, NULL);
+  _unobscured = false;
+
+  _gc = XCreateGC(_display, DRAWABLE, 0, NULL);
   SetCopyMode();
 
-  _rectGc = XCreateGC(_display, window, 0, NULL);
+  _rectGc = XCreateGC(_display, DRAWABLE, 0, NULL);
   XSetState(_display, _rectGc, AllPlanes, AllPlanes, GXxor, AllPlanes);
   
   /* init temp storage for storing points */
@@ -199,9 +234,15 @@ XWindowRep::~XWindowRep()
   FreeBitmap(_dstBitmap);
   delete _xpoints;
   
-  /* This should be called by the display. 
-     XDestroyWindow(_display,_win);
-  */
+  /* _win or _pixmap is destroyed by XDisplay */
+
+  if (_parent) {
+    if (!_parent->_children.Delete(this))
+      fprintf(stderr, "Cannot remove child from parent window\n");
+  }
+
+  if (_children.Size() > 0)
+    fprintf(stderr, "Child windows should have been destroyed first\n");
 }
 
 /******************************************************************
@@ -213,6 +254,8 @@ XWindowRep::~XWindowRep()
 
 void XWindowRep::Reparent(Boolean child, void *other, int x, int y)
 {
+  DOASSERT(_win, "Cannot reparent a pixmap");
+
   Window newParent = (child ? _win : (Window)other);
   Window newChild = (child ? (Window)other : _win);
 
@@ -302,12 +345,14 @@ void XWindowRep::PopClip()
 
 void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
 {
-  char cmd[256];
-
   if (format == GIF) {
     ExportGIF(filename);
     return;
   }
+
+  DOASSERT(_win, "Exporting a pixmap not supported yet");
+
+  char cmd[256];
 
 #if defined(SUN) || defined(HPUX) || defined(LINUX)
   if (format == POSTSCRIPT || format == EPS) {
@@ -385,15 +430,37 @@ rm /tmp/devise.xwd /tmp/devise.rgb",
 void XWindowRep::ExportGIF(char *filename)
 {
   XWindowAttributes xwa;
-  if (!XGetWindowAttributes(_display, _win, &xwa)) {
-    fprintf(stderr, "Cannot get window attributes\n");
-    return;
+
+  if (_win) {
+    if (!XGetWindowAttributes(_display, _win, &xwa)) {
+      fprintf(stderr, "Cannot get window attributes\n");
+      return;
+    }
+  } else {
+    // Cannot get attributes of pixmap using XGetWindowAttributes
+    // so let's get the attributes from the root window and then
+    // patch xwa with the pixmap's information
+    if (!XGetWindowAttributes(_display, DefaultRootWindow(_display), &xwa)) {
+      fprintf(stderr, "Cannot get window attributes\n");
+      return;
+    }
+    xwa.x = _x;
+    xwa.y = _y;
+    xwa.width = _width;
+    xwa.height = _height;
+
+    // now we must copy all child windows to this window because they
+    // are stored in separate (non-overlapping) pixmaps; we want the
+    // dump to look the same as on screen where the windows would
+    // overlap
+
+    CoalescePixmaps(this);
   }
 
-  XImage *image = XGetImage(_display, _win, 0, 0, xwa.width, xwa.height,
+  XImage *image = XGetImage(_display, DRAWABLE, 0, 0, xwa.width, xwa.height,
 			    AllPlanes, ZPixmap);
   if (!image || !image->data) {
-    fprintf(stderr, "Cannot get X pixmap\n");
+    fprintf(stderr, "Cannot get image of window or pixmap\n");
     return;
   }
 
@@ -432,13 +499,41 @@ void XWindowRep::ExportGIF(char *filename)
   grabPic = 0;
 }
 
+void XWindowRep::CoalescePixmaps(XWindowRep *root)
+{
+  if (!root->GetPixmapId())
+    return;
+
+  // recursively copy the contents of subpixmaps onto the parent pixmap
+
+  int index = root->_children.InitIterator();
+
+  while(root->_children.More(index)) {
+
+    XWindowRep *win = root->_children.Next(index);
+    if (!win->GetPixmapId())
+      continue;
+
+    CoalescePixmaps(win);
+
+#ifdef DEBUG
+    printf("Copying from 0x%p to 0x%p, width %u, height %u, x %d, y %d\n",
+	   win, root, win->_width, win->_height, win->_x, win->_y);
+#endif
+    XCopyArea(root->_display, win->GetPixmapId(), root->GetPixmapId(),
+	      root->_gc, 0, 0, win->_width, win->_height, win->_x, win->_y);
+  }
+
+  root->_children.DoneIterator(index);
+}
+
 /* drawing primitives */
 void XWindowRep::SetFgColor(Color fg)
 {
   WindowRep::SetFgColor(fg);
 #ifdef GRAPHICS
   if (_dispGraphics)
-    XSetForeground(_display,_gc, WindowRep::GetLocalColor(fg));
+    XSetForeground(_display, _gc, WindowRep::GetLocalColor(fg));
 #endif
 }
 
@@ -447,7 +542,7 @@ void XWindowRep::SetBgColor(Color bg)
   WindowRep::SetBgColor(bg);
 #ifdef GRAPHICS
   if (_dispGraphics)
-    XSetBackground(_display,_gc, WindowRep::GetLocalColor(bg));
+    XSetBackground(_display, _gc, WindowRep::GetLocalColor(bg));
 #endif
 }
 
@@ -462,7 +557,7 @@ void XWindowRep::DrawPixel(Coord x, Coord y)
 
 #ifdef GRAPHICS
   if (_dispGraphics)
-    XDrawPoint(_display,_win, _gc, ROUND(int, tx), ROUND(int, ty));
+    XDrawPoint(_display, DRAWABLE, _gc, ROUND(int, tx), ROUND(int, ty));
 #endif
 }
 
@@ -511,7 +606,7 @@ void XWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 
 #ifdef GRAPHICS
     if (_dispGraphics)
-      XDrawPoints(_display,_win, _gc, points, num, CoordModeOrigin);
+      XDrawPoints(_display, DRAWABLE, _gc, points, num, CoordModeOrigin);
 #endif
 
     return;
@@ -543,7 +638,7 @@ void XWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 
 #ifdef GRAPHICS
   if (_dispGraphics)
-    XFillRectangles(_display,_win, _gc, rectAngles, num);
+    XFillRectangles(_display, DRAWABLE, _gc, rectAngles, num);
 #endif
 }
 
@@ -620,7 +715,7 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
 
 #ifdef GRAPHICS
   if (_dispGraphics && index > 0)
-    XFillRectangles(_display, _win, _gc, rectAngles, index);
+    XFillRectangles(_display, DRAWABLE, _gc, rectAngles, index);
 #endif
 }
 
@@ -680,7 +775,7 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
 
 #ifdef GRAPHICS
   if (_dispGraphics)
-    XFillRectangles(_display, _win, _gc, rectAngles, num);
+    XFillRectangles(_display, DRAWABLE, _gc, rectAngles, num);
 #endif
 }
 
@@ -720,8 +815,8 @@ void XWindowRep::FillRect(Coord xlow, Coord ylow, Coord width,
 
 #ifdef GRAPHICS
   if (_dispGraphics)
-    XFillRectangle(_display,_win, _gc, ROUND(int, txlow), ROUND(int, tylow),
-		   pixelWidth, pixelHeight);
+    XFillRectangle(_display, DRAWABLE, _gc, ROUND(int, txlow),
+		   ROUND(int, tylow), pixelWidth, pixelHeight);
 #endif
 }
 
@@ -749,7 +844,7 @@ void XWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
 
 #ifdef GRAPHICS
   if (_dispGraphics)
-    XFillRectangle(_display, _win, _gc, pixelX, pixelY, 
+    XFillRectangle(_display, DRAWABLE, _gc, pixelX, pixelY, 
 		   pixelWidth, pixelHeight);
 #endif
 }
@@ -804,7 +899,7 @@ void XWindowRep::FillPoly(Point *points, int n)
 
 #ifdef GRAPHICS
   if (_dispGraphics)
-    XFillPolygon(_display, _win, _gc, _xpoints, n, Nonconvex, CoordModeOrigin);
+    XFillPolygon(_display, DRAWABLE, _gc, _xpoints, n, Nonconvex, CoordModeOrigin);
 #endif
 }
 
@@ -843,7 +938,7 @@ void XWindowRep::FillPixelPoly(Point *points, int n)
 
 #ifdef GRAPHICS
   if (_dispGraphics)
-    XFillPolygon(_display, _win, _gc, _xpoints, n, Nonconvex, CoordModeOrigin);
+    XFillPolygon(_display, DRAWABLE, _gc, _xpoints, n, Nonconvex, CoordModeOrigin);
 #endif
 }
 
@@ -867,7 +962,7 @@ void XWindowRep::Arc(Coord x, Coord y, Coord w, Coord h,
 #ifdef GRAPHICS
   if (_dispGraphics) {
     XSetLineAttributes(_display, _gc, 0, LineSolid, CapButt, JoinRound);
-    XDrawArc(_display, _win, _gc, ROUND(int, tx), ROUND(int, ty),
+    XDrawArc(_display, DRAWABLE, _gc, ROUND(int, tx), ROUND(int, ty),
 	     realWidth, realHeight, realStart, realEnd);
   }
 #endif
@@ -889,7 +984,7 @@ void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
   if (_dispGraphics) {
     XSetLineAttributes(_display, _gc, ROUND(int, width), LineSolid, CapButt,
 		       JoinRound);
-    XDrawLine(_display, _win, _gc, ROUND(int, tx1), ROUND(int, ty1),
+    XDrawLine(_display, DRAWABLE, _gc, ROUND(int, tx1), ROUND(int, ty1),
 	      ROUND(int, tx2), ROUND(int, ty2));
     XSetLineAttributes(_display, _gc, 0, LineSolid, CapButt, JoinMiter);
   }
@@ -906,7 +1001,7 @@ void XWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
   if (_dispGraphics) {
     XSetLineAttributes(_display, _gc, ROUND(int, width), LineSolid, CapButt,
 		       JoinRound);
-    XDrawLine(_display, _win, _gc, x1, y1, x2, y2);
+    XDrawLine(_display, DRAWABLE, _gc, x1, y1, x2, y2);
     XSetLineAttributes(_display, _gc, 0, LineSolid, CapButt, JoinMiter);
   }
 #endif
@@ -930,6 +1025,8 @@ Draw rubberband
 
 void XWindowRep::DrawRubberband(int x1, int y1, int x2, int y2)
 {
+  DOASSERT(_win, "Cannot draw rubberband in pixmap");
+
   int minX = MinMax::min(x1, x2);
   int minY = MinMax::min(y1, y2);
   int maxX = MinMax::max(x1, x2);
@@ -952,6 +1049,8 @@ the selection in window coordinates.
 void XWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow, 
 			       int &xhigh, int &yhigh, int button)
 {
+  DOASSERT(_win, "Cannot handle button press in pixmap");
+
   /* grab server */
   XGrabServer(_display);
   int x1,x2;
@@ -960,10 +1059,10 @@ void XWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow,
   y1 = y2 = y;
 
   /* draw rubberband rectangle */
-  DrawRubberband(x1,y1,x2,y2);
+  DrawRubberband(x1, y1, x2, y2);
   
   Boolean done = false;
-  long buttonMask = buttonMasks[button-1];
+  long buttonMask = buttonMasks[button - 1];
   while(!done) {
     XEvent event;
     XWindowEvent(_display, _win, ButtonReleaseMask | buttonMask, &event);
@@ -979,26 +1078,25 @@ void XWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow,
       }
       break;
     case MotionNotify:
-      DrawRubberband(x1,y1,x2,y2);
+      DrawRubberband(x1, y1, x2, y2);
       
       /* get rid of all remaining motion events */
       do {
 	x2 = event.xmotion.x;
 	y2 = event.xmotion.y;
-      } while(XCheckWindowEvent(_display,_win,
-				buttonMask,&event));
+      } while(XCheckWindowEvent(_display,_win, buttonMask, &event));
       
-      DrawRubberband(x1,y1,x2,y2);
+      DrawRubberband(x1, y1, x2, y2);
       break;
     }
   }
   
-  xlow = MinMax::min(x1,x2);
-  ylow = MinMax::min(y1,y2);
-  xhigh = MinMax::max(x1,x2);
-  yhigh = MinMax::max(y1,y2);
+  xlow = MinMax::min(x1, x2);
+  ylow = MinMax::min(y1, y2);
+  xhigh = MinMax::max(x1, x2);
+  yhigh = MinMax::max(y1, y2);
   
-  if (xhigh-xlow <= 5 || yhigh-ylow <= 5 ) {
+  if (xhigh - xlow <= 5 || yhigh - ylow <= 5) {
     xhigh = xlow;
     yhigh = ylow;
   }
@@ -1014,6 +1112,8 @@ Handle the next X event
 
 void XWindowRep::HandleEvent(XEvent &event)
 {
+  DOASSERT(_win, "Cannot handle events for pixmap");
+
   char buf[40];
   XEvent ev;
   int count;
@@ -1022,18 +1122,18 @@ void XWindowRep::HandleEvent(XEvent &event)
   case KeyPress:
     KeySym keysym;
     XComposeStatus compose;
-    count = XLookupString((XKeyEvent *)&event,buf,40,&keysym,&compose);
+    count = XLookupString((XKeyEvent *)&event, buf, 40, &keysym, &compose);
     if (count == 1) {
       /* regular key */
-      WindowRep::HandleKey(buf[0],event.xkey.x,event.xkey.y);
+      WindowRep::HandleKey(buf[0], event.xkey.x, event.xkey.y);
     }
     break;
 
   case ButtonPress:
-    int buttonXlow, buttonYlow,buttonXhigh,buttonYhigh;
+    int buttonXlow, buttonYlow, buttonXhigh, buttonYhigh;
     if (event.xbutton.button == 2) {
       /* handle popup */
-      DoPopup(event.xbutton.x,event.xbutton.y, event.xbutton.button);
+      DoPopup(event.xbutton.x, event.xbutton.y, event.xbutton.button);
     } else if (event.xbutton.button <= 3) {
       DoButtonPress(event.xbutton.x, event.xbutton.y,
 		    buttonXlow, buttonYlow, buttonXhigh, buttonYhigh,
@@ -1228,7 +1328,7 @@ void XWindowRep::AbsoluteText(char *text, Coord x, Coord y,
     break;
   }
   
-  XDrawString(_display, _win, _gc, startX, startY, text, textLength);
+  XDrawString(_display, DRAWABLE, _gc, startX, startY, text, textLength);
 }
 
 /* Draw scale text */
@@ -1346,7 +1446,7 @@ void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
     break;
   }
   
-  XCopyPlane(_display, _dstBitmap.pixmap, _win, _gc, 
+  XCopyPlane(_display, _dstBitmap.pixmap, DRAWABLE, _gc, 
 	     0, 0, dstWidth, dstHeight, startX, startY, 1);
 }
 
@@ -1475,11 +1575,12 @@ void XWindowRep::AllocBitmap(XBitmapInfo &info, int width, int height)
   info.inUse = true;
   info.width = width;
   info.height = height;
-  info.pixmap = XCreatePixmap(_display, _win, width, height, 1);
-  info.gc = XCreateGC(_display,info.pixmap, 0 , NULL);
+  info.pixmap = XCreatePixmap(_display, DRAWABLE, width, height, 1);
+  DOASSERT(info.pixmap, "Cannot create pixmap");
+  info.gc = XCreateGC(_display, info.pixmap, 0, NULL);
   
-  /* set foreground to 1 and background to 0 for later XCopyPlane()*/
-  XSetState(_display,info.gc, 1, 0, GXcopy,AllPlanes);
+  /* set foreground to 1 and background to 0 for later XCopyPlane() */
+  XSetState(_display, info.gc, 1, 0, GXcopy, AllPlanes);
   
   XSetFont(_display,info.gc,
 	   ((XDisplay *)WindowRep::GetDisplay())->GetFontStruct()->fid);
@@ -1493,8 +1594,17 @@ void XWindowRep::UpdateWinDimensions()
 {
   Window root;
   unsigned int border_width, depth;
-  XGetGeometry(_display, _win, &root, &_x, &_y, &_width, &_height,
-	       &border_width, &depth);
+
+  if (_win) {
+    XGetGeometry(_display, _win, &root, &_x, &_y, &_width, &_height,
+		 &border_width, &depth);
+  } else {
+    // pixmaps don't have position information so XGetGeometry returns
+    // X = 0 and Y = 0... just ignore them
+    int dummyX, dummyY;
+    XGetGeometry(_display, _pixmap, &root, &dummyX, &dummyY, &_width, &_height,
+		 &border_width, &depth);
+  }
 }
 
 /* Get window rep dimensions */
@@ -1515,6 +1625,8 @@ void XWindowRep::Origin(int &x, int &y)
 
 void XWindowRep::AbsoluteOrigin(int &x, int &y)
 {
+  DOASSERT(_win, "Cannot get screen position of pixmap");
+
   /* Find the offset from root window */
   x = 0;
   y = 0;
@@ -1526,7 +1638,8 @@ void XWindowRep::AbsoluteOrigin(int &x, int &y)
     
     /* add distace to parent */
     Window winRoot;
-    int winX, winY; unsigned winW, winH, winBorder, winDepth;
+    int winX, winY;
+    unsigned winW, winH, winBorder, winDepth;
     XGetGeometry(_display, current, &winRoot, &winX, &winY,
 		 &winW, &winH, &winBorder, &winDepth);
     x += winX;
@@ -1552,9 +1665,25 @@ void XWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
 	 x, y, w, h);
 #endif
 
-  /* Tell X to move/resize window. We will be notified by an event
-     when it's done */
-  XMoveResizeWindow(_display, _win, x, y, w, h);
+  if (_win) {
+    /* Tell X to move/resize window. We will be notified by an event
+       when it's done */
+    XMoveResizeWindow(_display, _win, x, y, w, h);
+  } else {
+    /* Resizing a pixmap involves deleting it and creating a new one */
+    XFreePixmap(_display, _pixmap);
+    unsigned int depth = DefaultDepth(_display, DefaultScreen(_display));
+    _pixmap = XCreatePixmap(_display, DefaultRootWindow(_display),
+			    w, h, depth);
+    DOASSERT(_pixmap, "Cannot create pixmap");
+    _x = x;
+    _y = y;
+
+    // clear all pixels in pixmap
+    SetFgColor(GetBgColor());
+    XFillRectangle(_display, _pixmap, _gc, 0, 0, w, h);
+  }
+
   UpdateWinDimensions();
 }
 
@@ -1562,11 +1691,14 @@ void XWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
 
 void XWindowRep::Iconify()
 {
+  DOASSERT(_win, "Cannot iconify pixmap");
   XIconifyWindow(_display, _win, 0);
 }
 
 void XWindowRep::DoPopup(int x, int y, int button)
 {
+  DOASSERT(_win, "Cannot display pop-up window in pixmap");
+
   char **msgs;
   int numMsgs;
   if (!HandlePopUp(x, y, button, msgs, numMsgs) || numMsgs <= 0)
@@ -1633,7 +1765,7 @@ void XWindowRep::DoPopup(int x, int y, int button)
     DOASSERT(0, "Cannot create popup window");
   }
   
-  XSelectInput(_display, win, ExposureMask|ButtonPressMask);
+  XSelectInput(_display, win, ExposureMask | ButtonPressMask);
   
   /* Map the window so that it appears on the display. */
   if (XMapWindow(_display, win) < 0) {
@@ -1737,9 +1869,9 @@ void XWindowRep::Scroll(Coord x, Coord y, Coord w, Coord h,
 	 ROUND(int, height), ROUND(int, tdx), ROUND(int, tdy));
 #endif
   
-  XCopyArea(_display,_win, _win, _gc, ROUND(int, xlow), ROUND(int, ylow),
-	    ROUND(unsigned int, width), ROUND(unsigned int, height),
-	    ROUND(int, tdx), ROUND(int, tdy));
+  XCopyArea(_display, DRAWABLE, DRAWABLE, _gc, ROUND(int, xlow),
+	    ROUND(int, ylow), ROUND(unsigned int, width),
+	    ROUND(unsigned int, height), ROUND(int, tdx), ROUND(int, tdy));
 }
 
 void XWindowRep::ScrollAbsolute(int x, int y, unsigned width, unsigned height,
@@ -1750,7 +1882,7 @@ void XWindowRep::ScrollAbsolute(int x, int y, unsigned width, unsigned height,
 	 x, y, width, height, dstX, dstY);
 #endif
 
-  XCopyArea(_display, _win, _win, _gc, x, y, width, height,
+  XCopyArea(_display, DRAWABLE, DRAWABLE, _gc, x, y, width, height,
 	    dstX, dstY);
 }
 
@@ -1762,7 +1894,17 @@ void XWindowRep::Raise()
   printf("XWindowRep::Raise window 0x%lx:\n", _win);
 #endif
 
-  XRaiseWindow(_display, _win);
+  if (_win)
+    XRaiseWindow(_display, _win);
+  else {
+    if (!_parent)
+      return;
+    if (!_parent->_children.Delete(this)) {
+      fprintf(stderr, "Cannot remove child from parent\n");
+      return;
+    }
+    _parent->_children.Append(this);
+  }
 }
 
 /* Lower window to bottom of stacking order */
@@ -1773,7 +1915,17 @@ void XWindowRep::Lower()
   printf("XWindowRep::Lower window 0x%lx:\n", _win);
 #endif
 
-  XLowerWindow(_display, _win);
+  if (_win)
+    XLowerWindow(_display, _win);
+  else {
+    if (!_parent)
+      return;
+    if (!_parent->_children.Delete(this)) {
+      fprintf(stderr, "Cannot remove child from parent\n");
+      return;
+    }
+    _parent->_children.Insert(this);
+  }
 }
 
 /* Flush windowRep's content to display */
@@ -1796,9 +1948,9 @@ DevisePixmap *XWindowRep::GetPixmap()
 #endif
 
   Window root;
-  int x,y;
-  unsigned int width, height,border_width, depth;
-  XGetGeometry(_display, _win, &root, &x, &y, &width, &height,
+  int dummyX, dummyY;
+  unsigned int width, height, border_width, depth;
+  XGetGeometry(_display, DRAWABLE, &root, &dummyX, &dummyY, &width, &height,
 	       &border_width, &depth);
   
   DevisePixmap *pixmap = new DevisePixmap;
@@ -1808,7 +1960,7 @@ DevisePixmap *XWindowRep::GetPixmap()
   int outIndex = 0;
 
   for(int i = 0; i < (int)height; i++) {
-    XImage *image = XGetImage(_display, _win, 0, i, width, 1,
+    XImage *image = XGetImage(_display, DRAWABLE, 0, i, width, 1,
 			      AllPlanes, ZPixmap);
     if (!image)
       return NULL;
@@ -1859,7 +2011,7 @@ void XWindowRep::DisplayPixmap(DevisePixmap *pixmap)
 
   int screen = DefaultScreen(_display);
   int depth = DefaultDepth(_display,screen);
-  Visual *visual = DefaultVisual(_display,screen);
+  Visual *visual = DefaultVisual(_display, screen);
   
   int index = 0;
   unsigned char *data = pixmap->data;
@@ -1876,7 +2028,8 @@ void XWindowRep::DisplayPixmap(DevisePixmap *pixmap)
     DOASSERT(outCount == pixmap->bytes_per_line, "Invalid pixmap format");
     XImage *image = XCreateImage(_display, visual, depth, ZPixmap,
 				 0, buf, pixmap->width, 1, pixmap->padding, 0);
-    XPutImage(_display,_win, _gc, image, 0, 0, 0, i, image->width, 1);
+    DOASSERT(image, "Cannot create image");
+    XPutImage(_display, DRAWABLE, _gc, image, 0, 0, 0, i, image->width, 1);
     image->data = NULL;
     XDestroyImage(image);
   }
@@ -1958,6 +2111,8 @@ void XWindowRep::EmbedInTkWindow(XWindowRep *parent,
 				 unsigned int min_width,
 				 unsigned int min_height)
 {
+  DOASSERT(_win, "Cannot embed pixmap in Tk window");
+
   extern Tcl_Interp *ControlPanelTclInterp;
   extern Tk_Window ControlPanelMainWindow;
 
@@ -2042,6 +2197,8 @@ void XWindowRep::EmbedInTkWindow(XWindowRep *parent,
 
 void XWindowRep::DetachFromTkWindow()
 {
+  DOASSERT(_win, "Cannot detach pixmap from Tk window");
+
   extern Tcl_Interp *ControlPanelTclInterp;
 
 #ifdef DEBUG
@@ -2132,17 +2289,17 @@ XPoint XWindowRep::CompProjectionOnViewingPlane(POINT viewPt)
 void XWindowRep::DrawXSegments()
 {
 	int  index = 0,
-		requestSize = (int)((XMaxRequestSize(_display) - 3) / 2),
-		evenAmount = (_NumXSegs / requestSize) * requestSize,
-		remainder  = _NumXSegs - evenAmount;
-
+	requestSize = (int)((XMaxRequestSize(_display) - 3) / 2),
+	evenAmount = (_NumXSegs / requestSize) * requestSize,
+	remainder  = _NumXSegs - evenAmount;
+	
 	while (index < evenAmount) {
-		XDrawSegments (_display, _win, _gc, &_xsegs[index], requestSize);
-		index += requestSize;
+	  XDrawSegments (_display, DRAWABLE, _gc, &_xsegs[index], requestSize);
+	  index += requestSize;
 	}
-	if (remainder)
-		XDrawSegments (_display, _win, _gc, &_xsegs[index], remainder);
 
+	if (remainder)
+	  XDrawSegments (_display, DRAWABLE, _gc, &_xsegs[index], remainder);
 } // end of MapAllPoints()
 
 // ---------------------------------------------------------- 
@@ -2176,7 +2333,7 @@ void XWindowRep::MapAllPoints(BLOCK *block_data, int numSyms)
 		x_arcs[i].angle1 = ang1;
 		x_arcs[i].angle2 = ang2;
 	} // end of for-loop
-	XFillArcs (_display, _win, _gc, x_arcs, numSyms);
+	XFillArcs (_display, DRAWABLE, _gc, x_arcs, numSyms);
 } // end of MapAllPoints()
 
 // ---------------------------------------------------------- 
@@ -2229,11 +2386,11 @@ void XWindowRep::DrawRefAxis()
      int  len = strlen(string[0]);
      for (i = 0; i < 3; i++) {
           // draw the axis
-          XDrawLine(_display, _win, _gc,
+          XDrawLine(_display, DRAWABLE, _gc,
                xtmp[_Axis[i].p].x, xtmp[_Axis[i].p].y,
                xtmp[_Axis[i].q].x, xtmp[_Axis[i].q].y);
           // label the axis
-          XDrawString(_display, _win, _gc, xtmp[_Axis[i].q].x + 1,
+          XDrawString(_display, DRAWABLE, _gc, xtmp[_Axis[i].q].x + 1,
                xtmp[_Axis[i].q].y + 1, string[i], len);
      }
 } // end of DrawRefAxis
