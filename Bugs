@@ -1304,6 +1304,9 @@ Num Date        Status  Description
 342 05/11/98	OPEN	Opening the COD1.ds session while running with OpenGL
 			causes DEVise to crash. (rkw)
 
+343 05/11/98	OPEN	cat_url hangs if it's run on a web URL on a non-
+			networked system. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
