@@ -42,7 +42,7 @@ DTE_INCLUDES = \
 #no-comment is for the perl files
 
 CFLAGS = $(ARCH_ENDIAN) $(DTE_INCLUDES) $(ARCH_FLAGS) \
-	-Wall -Wno-unused -Wno-comment $(OPTFLAG) \
+	-Wall -Wno-unused -Wno-comment -pedantic $(OPTFLAG) \
 	-DUNIX -DLIBCS -DHAVE_CONFIG_H
 #	-fexternal-templates \
 
