@@ -6,7 +6,7 @@
 # It uses the CGI.pm package
 
 # Parameters:
-#  acc_no - actually a file name, such as bmr4101.str
+#  number - the number of the file, ie 4101
 
 # can call using
 # http://biron/cgi-bin/bmrb/make_view?acc_no=bmr4033.str
@@ -18,10 +18,14 @@ use strict;
 my ($acc_no, $number, $summary_page, $query);
 $query = new CGI;
 
-$acc_no = $query->param('acc_no') || 'bmr4101.str';
+# $acc_no = $query->param('acc_no') || 'bmr4101.str';
+#$summary_page = substr($acc_no, 3, 4) . 'y.html';
+#$number = substr($acc_no, 3, 4);
 
-$summary_page = substr($acc_no, 3, 4) . 'y.html';
-$number = substr($acc_no, 3, 4);
+$number = $query->param('number') || '4101';
+$acc_no = 'bmr' . $number . '.str';
+$summary_page = $number . 'y.html';
+
 #$mode = 0644;
 
 #chdir ('/p/devise/demo/session.js/bmrb/dynamic_sessions') 
