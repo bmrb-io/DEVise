@@ -28,7 +28,7 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	Bitmap.c ParseCat.c ItemList.C Group.C GroupDir.C\
 	DispQueryProc.c QueryProc.c QueryProcSimple.c QueryProcFull.c \
 	RecInterp.c TDataAsciiInterp.c TDataBinaryInterp.c TDataMap.c \
-	GDataBin.c TDataAscii.c TDataBinary.c \
+	GDataBin.c TDataAscii.c TDataBinary.c GdataStat.C\
 	TDataRec.c TData2DRec.c PageRange.c  RecFile.c UnixRecFile.c \
 	GDataRangeMap.c GData.c TData.c TDataViewX.c ViewScatter.c \
 	ViewRanges.c ViewGraph.c QPRange.c ParseAPI.C \
