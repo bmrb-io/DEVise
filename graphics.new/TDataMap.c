@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/09/27 21:09:37  wenger
+  GDataBin class doesn't allocate space for connectors (no longer used
+  anyhow); fixed some more memory leaks and made notes in the code about
+  some others that I haven't fixed yet; fixed a few other minor problems
+  in the code.
+
   Revision 1.16  1996/07/10 00:02:41  jussi
   Added memory allocation checks. Got rid of TDataMapDispatch class.
 
@@ -68,13 +74,13 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "Config.h"
 #include "Init.h"
 #include "TDataMap.h"
 #include "GData.h"
 #include "GDataBin.h"
 #include "TData.h"
 #include "QueryProc.h"
+#include "Util.h"
 
 //#define DEBUG
 
@@ -83,8 +89,8 @@
 int TDataMap::_incarnation= 0; 
 
 TDataMap::TDataMap(char *name, TData *tdata, char *gdataName, 
-		   int gdataRecSize,
-		   VisualFlag dynamicArgs, int dynamicAttrs, int maxGDataPages,
+		   int gdataRecSize, VisualFlag dynamicArgs,
+                   int dynamicAttrs, int maxGDataPages,
 		   VisualFlag *dimensionInfo, int numDimensions,
 		   Boolean createGData)
 {
@@ -122,7 +128,7 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
     printf("Creating new instance of GData with recSize %d\n", _gRecSize);
 #endif
     _gdata = new GData(_tdata, _gdataPath, _gRecSize, 
-		       maxGDataPages * DEVISE_PAGESIZE);
+		       maxGDataPages * Init::PageSize());
     DOASSERT(_gdata, "Out of memory");
   }
   
@@ -263,18 +269,6 @@ Boolean TDataMap::PageHint(TData *tdata, Coord x, Boolean isPrefetch,
 #endif
 }
 
-/*******************************************************
-Strip file name of preceding path name
-*********************************************************/
-static char *StripPath(char *name)
-{
-  char *last = strrchr(name,'/');
-  if (!last)
-    return name;
-
-  return last + 1;
-}
-
 /***********************************************************
 Make a name for GData
 ************************************************************/
@@ -304,8 +298,13 @@ int TDataMap::TDataRecordSize()
 }
 
 /* Hint for current focus in GData */
-void TDataMap::SetFocusId(RecId id) { _focusId = id; }
-RecId TDataMap::GetFocusId() { return _focusId; }
+void TDataMap::SetFocusId(RecId id) {
+  _focusId = id;
+}
+
+RecId TDataMap::GetFocusId() {
+  return _focusId;
+}
 
 void TDataMap::SetDefaultShapeAttr(int attrNum, Coord shapeAttr)
 {
@@ -351,7 +350,7 @@ void TDataMap::ResetGData(int gRecSize)
     printf("Creating new instance of GData with recSize %d\n", _gRecSize);
 #endif
     _gdata = new GData(_tdata, _gdataPath, _gRecSize,
-		       _maxGDataPages * DEVISE_PAGESIZE);
+		       _maxGDataPages * Init::PageSize());
     QueryProc::Instance()->ResetGData(_tdata, _gdata);
   }
 }

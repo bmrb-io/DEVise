@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/11/13 16:57:10  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.16  1996/07/19 02:54:10  jussi
   Changed view parameter to DrawGDataArray().
 
@@ -189,8 +199,7 @@ public:
      buffer for data. tRecs are pointers to variable size
      records only. */
   virtual void ConvertToGData(RecId startRecId, void *buf,
-			      void **tRecs, int numRecs,
-			      void *gdataPtr) = 0;
+			      int numRecs, void *gdataPtr) = 0;
 
   /* Get the GData file for the mapping */
   GData *GetGData() { return _gdata; }
