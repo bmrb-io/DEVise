@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/06/23 20:36:17  jussi
+  Minor fix with header files.
+
   Revision 1.14  1996/06/23 20:31:21  jussi
   Cleaned up marker and pipe mechanism. Moved a couple #defines to
   the .c file so that not all of Devise needs to be recompiled when
@@ -97,11 +100,6 @@ public:
   virtual void Cleanup() {}
 };
 
-class DispatcherTimerCallback {
-public:
-  virtual void TimeUp() {}
-};
-
 typedef unsigned StateFlag;
 const unsigned GoState   = 0x1;
 const unsigned StopState = 0x2;
@@ -122,7 +120,6 @@ class Selection;
 
 DefinePtrDList(DeviseWindowList, DeviseWindow *);
 DefinePtrDList(DispatcherInfoList, DispatcherInfo *);
-DefinePtrDList(DispatcherTimerCallbackList, DispatcherTimerCallback *);
 DefinePtrDList(DispatcherList, Dispatcher *);
 
 class Dispatcher {
@@ -140,12 +137,11 @@ public:
   static void InsertMarker(int writeFd) {
     // Insert one marker to the pipe
     char tempBuff = 'a';
-    if (writeFd != -1)
-      write(writeFd, &tempBuff, sizeof tempBuff);
+    (void)write(writeFd, &tempBuff, sizeof tempBuff);
   }
-  static void FlushMarker(int readFd) {
-    // Consume all markers from the pipe
-      char tempBuff;
+  static void FlushMarkers(int readFd) {
+    // Consume one marker from the pipe
+    char tempBuff;
     while(read(readFd, &tempBuff, sizeof tempBuff) > 0);
   }
   static void CloseMarker(int readFd, int writeFd);
@@ -155,20 +151,6 @@ public:
     if (!_current_dispatcher)
       _current_dispatcher = new Dispatcher();
     return _current_dispatcher;
-  }
-
-  /* Register to be called by dispatcher on timer up */
-  static void RegisterTimer(DispatcherTimerCallback *callback) {
-    if (!_current_dispatcher)
-      _current_dispatcher = new Dispatcher();
-    _current_dispatcher->DoRegisterTimer(callback);
-  }
-  
-  /* Unregister timer */
-  static void UnregisterTimer(DispatcherTimerCallback *callback) {
-    if (!_current_dispatcher)
-      _current_dispatcher = new Dispatcher();
-    _current_dispatcher->DoUnregisterTimer(callback);
   }
 
   /* Register window */
@@ -274,16 +256,6 @@ public:
   /* Deactivate dispatcher. Default: inform all windows */
   void DeactivateDispatcher();
   
-  /* Do actual registration of timer */
-  void DoRegisterTimer(DispatcherTimerCallback *c) {
-    _timerCallbacks.Append(c);
-  }
-
-  /* Do actual unregistration of timer */
-  void DoUnregisterTimer(DispatcherTimerCallback *c) {
-    _timerCallbacks.Delete(c);
-  }
-  
   /* Print what's in the queue */
   void Print();
 
@@ -340,9 +312,6 @@ private:
   /* Callback list (and add/delete list) for ALL dispatchers */
   static DispatcherInfoList _allCallbacks;
   static DispatcherInfoList _toInsertAllCallbacks, _toDeleteAllCallbacks; 
-
-  /* Timer callback list */
-  DispatcherTimerCallbackList _timerCallbacks;
 
   static Dispatcher *_current_dispatcher;
   StateFlag _stateFlag;
