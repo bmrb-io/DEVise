@@ -7,18 +7,23 @@ public class DEViseCursor
 {
     public int x, y, width, height;
     public boolean isXMovable, isYMovable, isXResizable, isYResizable;
+    public double gridxx, gridyy;
+    public int gridx, gridy;
     public String name = null, viewname = null;
     public Image image = null;
     public DEViseView parentView = null;
 
-    public DEViseCursor(String cn, String vn, Rectangle rect, String move, String resize) throws YException
+    public DEViseCursor(String cn, String vn, Rectangle rect, String move, String resize, double gx, double gy) throws YException
     {
         if (cn == null || vn == null)
             throw new YException("Invalid view name or cursor name");
 
         viewname = vn;
         name = cn;
-
+        
+        gridxx = gx;
+        gridyy = gy;        
+        
         if (rect == null)
             throw new YException("Invalid cursor location");
 

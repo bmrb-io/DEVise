@@ -28,10 +28,15 @@ public class DEViseView
     public String viewDataXType = null, viewDataYType = null;
 
     public DEViseView parentView = null;
+    public DEViseView piledView = null;
+    public Vector viewPiledViews = new Vector();
     public Vector viewChilds = new Vector();
     public Vector viewGDatas = new Vector();
     public Vector viewCursors = new Vector();
-    public Vector viewPiledViews = new Vector();
+    
+    public boolean isRubberBand, isCursorMove, isDrillDown, isKey;
+    public double dataXStep, dataYStep;
+    public double gridx, gridy;
 
     // whichSide = 0 indicate inside current cursor
     // whichSide = 1 indicate at left side of current cursor
@@ -45,7 +50,7 @@ public class DEViseView
     public int whichChild, whichCursor, whichSide;
     public boolean isFirstTime = true;
 
-    public DEViseView(jsdevisec panel, String pn, String name, String title, Rectangle loc, double Z, int bg, int fg, Rectangle dl, String xt, String yt)
+    public DEViseView(jsdevisec panel, String pn, String name, String piledname, String title, Rectangle loc, double Z, int bg, int fg, Rectangle dl, String xt, String yt, double gx, double gy, int rb, int cm, int dd, int ky)
     {
         jsc = panel;
 
@@ -61,7 +66,35 @@ public class DEViseView
         viewDataYType = yt;
 
         parentView = jsc.jscreen.getView(pn);
-
+        piledView = jsc.jscreen.getView(piledname);
+        
+        gridx = gx;
+        gridy = gy;
+        
+        if (rb == 1) {
+            isRubberBand = true;
+        } else {
+            isRubberBand = false;
+        }
+        
+        if (cm == 1) {
+            isCursorMove = true;
+        } else {
+            isCursorMove = false;
+        }
+        
+        if (dd == 1) {
+            isDrillDown = true;
+        } else {
+            isDrillDown = false;
+        }
+        
+        if (ky == 1) {
+            isKey = true;
+        } else {
+            isKey = false;
+        }
+        
         curlyName = "{" + viewName + "}";
     }
 
@@ -74,13 +107,13 @@ public class DEViseView
     {
         if (canvas == null) {
             if (parentView == null) {
-                return null;
-            } else {
-                if (parentView.canvas == null) {
+                if (piledView == null) {
                     return null;
                 } else {
-                    return parentView.canvas;
-                }
+                    return piledView.canvas;
+                }    
+            } else {
+                return parentView.canvas;
             }
         } else {
             return canvas;
@@ -118,7 +151,14 @@ public class DEViseView
 
         viewChilds.addElement(view);
     }
-
+    
+    public void addPile(DEViseView view) 
+    {
+        if (view != null) {
+            viewPiledViews.addElement(view);
+        }
+    }
+    
     public boolean addCursor(DEViseCursor cursor)
     {
         if (cursor == null)
@@ -132,16 +172,54 @@ public class DEViseView
                     return false;
                 } else {
                     viewCursors.removeElementAt(i);
+                    if (piledView != null) {
+                        piledView.viewCursors.removeElement(c);
+                    }
+                            
                     cursor.parentView = this;
+                    
+                    if (dataXStep != 0.0) {                    
+                        cursor.gridx = (int)(cursor.gridxx / dataXStep);
+                    } else {
+                        cursor.gridx = 0;
+                    }
+                    
+                    if (dataYStep != 0.0) {                        
+                        cursor.gridy = (int)(cursor.gridyy / dataYStep);
+                    } else {
+                        cursor.gridy = 0;
+                    }
+                    
                     cursor.image = null;
                     viewCursors.addElement(cursor);
+                    if (piledView != null) {
+                        piledView.viewCursors.addElement(cursor);
+                    }
+                    
                     return true;
                 }
             }
         }
 
         cursor.parentView = this;
+        
+        if (dataXStep != 0.0) {                    
+            cursor.gridx = (int)(cursor.gridxx / dataXStep);
+        } else {
+            cursor.gridx = 0;
+        }
+        
+        if (dataYStep != 0.0) {                        
+            cursor.gridy = (int)(cursor.gridyy / dataYStep);
+        } else {
+            cursor.gridy = 0;
+        }
+                    
         viewCursors.addElement(cursor);
+        if (piledView != null) {
+            piledView.viewCursors.addElement(cursor);
+        }
+        
         return true;
     }
 
@@ -152,6 +230,9 @@ public class DEViseView
 
         viewGDatas.addElement(gdata);
         gdata.parentView = this;
+        if (piledView != null) {
+            piledView.viewGDatas.addElement(gdata);
+        }
     }
 
     public void removeChild(DEViseView view)
@@ -166,11 +247,21 @@ public class DEViseView
             viewChilds.removeElement(view);
         }
     }
-
+     
+    public void removePile(DEViseView view)
+    {
+        if (view != null) {
+            viewPiledViews.removeElement(view);
+        }
+    }
+         
     public void removeCursor(DEViseCursor cursor)
     {
         if (cursor != null) {
             viewCursors.removeElement(cursor);
+            if (piledView != null) {
+                piledView.viewCursors.removeElement(cursor);
+            }
         }
     }
 
@@ -181,6 +272,10 @@ public class DEViseView
                 DEViseCursor cursor = (DEViseCursor)viewCursors.elementAt(i);
                 if (cursor.name.equals(name)) {
                     viewCursors.removeElement(cursor);
+                    if (piledView != null) {
+                        piledView.viewCursors.removeElement(cursor);
+                    }
+                    
                     return true;
                 }
             }
@@ -195,16 +290,33 @@ public class DEViseView
     {
         if (gdata != null) {
             viewGDatas.removeElement(gdata);
+            if (piledView != null) {
+                piledView.viewGDatas.removeElement(gdata);
+            }
         }
     }
 
     public void removeAllGData()
-    {
+    {   
+        if (piledView != null) {
+            for (int i = 0; i < viewGDatas.size(); i++) {
+                DEViseGData gdata = (DEViseGData)viewGDatas.elementAt(i);
+                piledView.viewGDatas.removeElement(gdata);
+            }
+        }
+            
         viewGDatas.removeAllElements();
     }
 
     public void removeAllCursor()
     {
+        if (piledView != null) {
+            for (int i = 0; i < viewCursors.size(); i++) {
+                DEViseCursor cursor = (DEViseCursor)viewCursors.elementAt(i);
+                piledView.viewCursors.removeElement(cursor);
+            }
+        } 
+        
         viewCursors.removeAllElements();
     }
 
@@ -218,7 +330,12 @@ public class DEViseView
 
         viewChilds.removeAllElements();
     }
-
+    
+    public void removeAllPile()
+    {
+        viewPiledViews.removeAllElements();
+    }
+    
     public Rectangle getBoundsInScreen()
     {
         if (parentView != null) {
@@ -255,10 +372,19 @@ public class DEViseView
     {
         if (axis.equals("X")) {
             viewDataXMin = min;
-            viewDataXMax = max;
+            viewDataXMax = max; 
+            
+            dataXStep = 0.0;
+            if (viewDataLoc.width > 0) 
+                dataXStep = (viewDataXMax - viewDataXMin) / viewDataLoc.width;
+                
         } else if (axis.equals("Y")) {
             viewDataYMin = min;
             viewDataYMax = max;
+            
+            dataYStep = 0.0;
+            if (viewDataLoc.height > 0)
+                dataYStep = (viewDataYMax - viewDataYMin) / viewDataLoc.height;            
         }
     }
 
@@ -280,9 +406,10 @@ public class DEViseView
             return "";
         }
 
-        double xstep = 0.0;
-        if (viewDataLoc.width > 0)
-            xstep = (viewDataXMax - viewDataXMin) / viewDataLoc.width;
+        //double xstep = 0.0;
+        double xstep = dataXStep;
+        //if (viewDataLoc.width > 0)
+        //    xstep = (viewDataXMax - viewDataXMin) / viewDataLoc.width;
 
         // x0 represent the value at the left side of that pixel x
         double x0 = (x - viewDataLoc.x) * xstep + viewDataXMin;
@@ -326,9 +453,10 @@ public class DEViseView
             return "";
         }
 
-        double ystep = 0.0;
-        if (viewDataLoc.height > 0)
-            ystep = (viewDataYMax - viewDataYMin) / viewDataLoc.height;
+        //double ystep = 0.0;
+        double ystep = dataYStep;
+        //if (viewDataLoc.height > 0)
+        //    ystep = (viewDataYMax - viewDataYMin) / viewDataLoc.height;
 
         // y0 represent the value at the top side of that pixel
         double y0 = viewDataYMax - (y - viewDataLoc.y) * ystep;

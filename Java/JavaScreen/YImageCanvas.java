@@ -128,14 +128,15 @@ public class YImageCanvas extends Canvas
             return;
 
         if (offScrImg == null) {
-            offScrImg = createImage(imageWidth, imageHeight);
+            offScrImg = createImage(imageWidth, imageHeight);            
         }    
         
         if (offScrImg == null) {
             paint(g);
             return;
         } else {
-            int waittime = 0;
+            /*
+            int waittime = 0;            
             while (offScrImg.getWidth(this) < 0 || offScrImg.getHeight(this) < 0) {
                 try {
                     Thread.sleep(50);
@@ -146,7 +147,7 @@ public class YImageCanvas extends Canvas
                     }
                 }
             }
-            
+            */
             Graphics og = offScrImg.getGraphics();
             paint(og);
             g.drawImage(offScrImg, 0, 0, this);

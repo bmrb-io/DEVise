@@ -16,13 +16,17 @@ public class DEViseCanvas extends Container
 
     public DEViseView view = null;
     public DEViseView activeView = null;
+    
+    //public Vector allCursors = new Vector();
+    //public Vector allGDatas = new Vector();
+    
     private Image image = null;
 
     private Dimension canvasDim = null;
     private Rectangle canvasLoc = null;
 
     private Image offScrImg = null;
-
+        
     // indicate whether or not mouse is dragged
     boolean isMouseDragged = false;
 
@@ -90,7 +94,8 @@ public class DEViseCanvas extends Container
         img = createImage(source);
         if (img == null) {
             return null;
-        } else {            
+        } else {
+            /*            
             int waittime = 0;
             while (img.getWidth(this) < 0 || img.getHeight(this) < 0) {
                 try {
@@ -102,7 +107,8 @@ public class DEViseCanvas extends Container
                         return null;
                     }
                 }
-            }            
+            }
+            */            
         }
             
         return img;
@@ -125,7 +131,7 @@ public class DEViseCanvas extends Container
         // Necessary to draw correct image because double-buffering is used
         offScrImg = null;
 
-        // Need to rebuild all cursor images, including cursors for child view
+        // Need to rebuild all cursor images, including cursors for child view and piled view
         Rectangle loc = null;
         if (view.viewCursors.size() != 0) {
             for (int i = 0; i < view.viewCursors.size(); i++) {
@@ -134,7 +140,7 @@ public class DEViseCanvas extends Container
                 cursor.image = getCroppedXORImage(loc);
             }
         }
-
+        
         if (view.viewChilds.size() != 0) {
             for (int i = 0; i < view.viewChilds.size(); i++) {
                 DEViseView v = view.getChild(i);
@@ -147,7 +153,7 @@ public class DEViseCanvas extends Container
                     cursor.image = getCroppedXORImage(loc);
                 }
             }
-        }
+        }        
     }
 
     // Enable double-buffering
@@ -181,8 +187,9 @@ public class DEViseCanvas extends Container
             g.fillRect(0, 0, canvasDim.width, canvasDim.height);
         }
 
-        // draw all the cursors, include the cursors for child view
+        // draw all the cursors, include the cursors for child view and piled view
         Rectangle loc = null;
+        
         if (view.viewCursors.size() != 0) {
             for (int i = 0; i < view.viewCursors.size(); i++) {
                 DEViseCursor cursor = view.getCursor(i);
@@ -231,7 +238,7 @@ public class DEViseCanvas extends Container
                     }                                        
                 }
             }
-        }
+        }        
         
         if (activeView != null && activeView == jscreen.getCurrentView()) {
             if (isMouseDragged) {
@@ -433,7 +440,7 @@ public class DEViseCanvas extends Container
                 }
             }
 
-            if (actualKey != 0 && activeView != null) {
+            if (actualKey != 0 && activeView != null && activeView.isKey) {
                 String cmd = "";
                 if (activeView.isFirstTime) {
                     cmd = cmd + "JAVAC_MouseAction_Click " + activeView.getCurlyName() + " " +  0 + " " + 0 + "\n";
@@ -582,7 +589,7 @@ public class DEViseCanvas extends Container
                     if (h < 0)
                         h = -h;
 
-                    if (w > DEViseGlobals.rubberBandLimit.width || h > DEViseGlobals.rubberBandLimit.height) {
+                    if (w > DEViseGlobals.rubberBandLimit.width || h > DEViseGlobals.rubberBandLimit.height && activeView.isRubberBand) {
                         if (activeView.isFirstTime) {
                             cmd = cmd + "JAVAC_MouseAction_Click " + activeView.getCurlyName() + " " +  activeView.xtome(ep.x) + " " + activeView.ytome(ep.y) + "\n";
                         }
@@ -600,14 +607,35 @@ public class DEViseCanvas extends Container
                     String xpos = activeView.getX(ep.x), ypos = activeView.getY(ep.y);
                     jsc.viewInfo.updateInfo(xpos, ypos);
 
-                    activeView.updateCursorLoc(activeView.whichCursor, 1, ep.x - op.x, ep.y - op.y);
+                    //activeView.updateCursorLoc(activeView.whichCursor, 1, ep.x - op.x, ep.y - op.y);
+                    int dx = ep.x - op.x, dy = ep.y - op.y;
+                    
+                    if (activeView.whichCursor >= 0 && activeView.whichCursor < activeView.viewCursors.size()) {
+                        DEViseCursor cursor = (DEViseCursor)activeView.viewCursors.elementAt(activeView.whichCursor);
+                    
+                        if (cursor.gridx > 0) {
+                            dx = (dx / cursor.gridx) * cursor.gridx;
+                        }
+                    
+                        if (cursor.gridy > 0) {
+                            dy = (dy / cursor.gridy) * cursor.gridy;
+                        }
+                    
+                        activeView.updateCursorLoc(activeView.whichCursor, 1, dx, dy);
+                    }
+                
+                    //op.x = ep.x;
+                    op.x = op.x + dx;
+                    //op.y = ep.y;
+                    op.y = op.y + dy;
 
                     if (activeView.isFirstTime) {
                         cmd = cmd + "JAVAC_MouseAction_Click " + activeView.getCurlyName() + " " +  activeView.xtome(ep.x) + " " + activeView.ytome(ep.y) + "\n";
                     }
 
                     DEViseCursor cursor = activeView.getCursor(activeView.whichCursor);
-                    cmd = cmd + "JAVAC_CursorChanged " + activeView.getCurlyName() + " "
+                    //cmd = cmd + "JAVAC_CursorChanged " + activeView.getCurlyName() + " "
+                    cmd = cmd + "JAVAC_CursorChanged " + cursor.name + " "
                           + cursor.x + " "
                           + cursor.y + " "
                           + cursor.width + " "
@@ -631,7 +659,8 @@ public class DEViseCanvas extends Container
                     }
 
                     DEViseCursor cursor = activeView.getCursor(activeView.whichCursor);
-                    cmd = cmd + "JAVAC_CursorChanged " + activeView.getCurlyName() + " "
+                    //cmd = cmd + "JAVAC_CursorChanged " + activeView.getCurlyName() + " "
+                    cmd = cmd + "JAVAC_CursorChanged " + cursor.name + " "
                           + cursor.x + " "
                           + cursor.y + " "
                           + cursor.width + " "
@@ -659,7 +688,7 @@ public class DEViseCanvas extends Container
             // the position for this event will be within the range of this view
 
             if (!isMouseDragged && (mousePosition > 0 && mousePosition != 4)) {
-                if (event.getClickCount() > 1) {
+                if (event.getClickCount() > 1 && activeView.isDrillDown) {
                     wt.setDC(true);
 
                     String cmd = "";
@@ -725,11 +754,27 @@ public class DEViseCanvas extends Container
 
                 String xpos = activeView.getX(ep.x), ypos = activeView.getY(ep.y);
                 jsc.viewInfo.updateInfo(xpos, ypos);
-
-                activeView.updateCursorLoc(activeView.whichCursor, 1, ep.x - op.x, ep.y - op.y);
-
-                op.x = ep.x;
-                op.y = ep.y;
+                                    
+                int dx = ep.x - op.x, dy = ep.y - op.y;
+                
+                if (activeView.whichCursor >= 0 && activeView.whichCursor < activeView.viewCursors.size()) {
+                    DEViseCursor cursor = (DEViseCursor)activeView.viewCursors.elementAt(activeView.whichCursor);
+                    
+                    if (cursor.gridx > 0) {
+                        dx = (dx / cursor.gridx) * cursor.gridx;
+                    }
+                    
+                    if (cursor.gridy > 0) {
+                        dy = (dy / cursor.gridy) * cursor.gridy;
+                    }
+                    
+                    activeView.updateCursorLoc(activeView.whichCursor, 1, dx, dy);
+                }
+                
+                //op.x = ep.x;
+                op.x = op.x + dx;
+                //op.y = ep.y;
+                op.y = op.y + dy;
 
                 repaint();
             } else if (mousePosition == 3 || mousePosition == 7) {
@@ -889,7 +934,7 @@ class WaitThread implements Runnable
 
     public void run()
     {
-        if (!getDC()) {
+        if (!getDC() && view.isCursorMove) {
             String cmd = "";
             if (view.isFirstTime) {
                 cmd = cmd + "JAVAC_MouseAction_Click " + view.getCurlyName() + " " +  viewx + " " + viewy + "\n";

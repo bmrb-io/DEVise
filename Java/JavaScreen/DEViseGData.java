@@ -12,7 +12,10 @@ public class DEViseGData
     public int x = 0, y = 0, width = 0, height = 0;
     public String[] data = null;
     public Component symbol = null;
-
+    public boolean isJavaSymbol = false; 
+    public int symbolType = 0;
+    
+    // GData format: <x> <y> <z> <color> <size> <pattern> <orientation> <symbol type> <shape attr 0> ... <shape attr 9>
     public DEViseGData(String name, String gdata, double xm, double xo, double ym, double yo) throws YException
     {
         if (name == null)
@@ -31,6 +34,8 @@ public class DEViseGData
             y0 = (Double.valueOf(data[1])).doubleValue();
             y = (int)(y0 * ym + yo);
             size = (Double.valueOf(data[4])).doubleValue();
+            symbolType = Integer.parseInt(data[7]);
+            
             width = (int)(size * xm);
             height = (int)(size * ym);
             if (width < 0)
@@ -47,8 +52,10 @@ public class DEViseGData
             throw new YException("Invalid GData!");
         }
 
-        if (data[7].length() > 0) { // check symbol type
-            Button button = new Button(data[10]);
+        if (symbolType == 15) { // check symbol type
+            isJavaSymbol = true;
+            
+            Button button = new Button(data[11]);
             button.setActionCommand(data[10]);
             button.setFont(new Font("Monospaced", Font.PLAIN, 10));
             button.addActionListener(new ActionListener()
@@ -70,6 +77,10 @@ public class DEViseGData
                 });
 
             symbol = button;
+        } else if (symbolType == 12 || symbolType == 16) {
+            isJavaSymbol = false;
+        } else {
+            isJavaSymbol = false;
         }
     }
 

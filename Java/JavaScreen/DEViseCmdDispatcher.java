@@ -317,30 +317,37 @@ public class DEViseCmdDispatcher implements Runnable
                 jsc.showServerState(cmd[1]);
             } else if (rsp[i].startsWith("JAVAC_CreateView")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null || cmd.length != 17) {
+                if (cmd == null || cmd.length != 24) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                 }
 
                 String viewname = cmd[1];
                 String parentname = cmd[2];
+                String piledname = cmd[3];
                 try {
-                    int x = Integer.parseInt(cmd[3]);
-                    int y = Integer.parseInt(cmd[4]);
-                    int w = Integer.parseInt(cmd[5]);
-                    int h = Integer.parseInt(cmd[6]);
-                    double z = (Double.valueOf(cmd[7])).doubleValue();
+                    int x = Integer.parseInt(cmd[4]);
+                    int y = Integer.parseInt(cmd[5]);
+                    int w = Integer.parseInt(cmd[6]);
+                    int h = Integer.parseInt(cmd[7]);
+                    double z = (Double.valueOf(cmd[8])).doubleValue();
                     Rectangle viewloc = new Rectangle(x, y, w, h);
-                    x = Integer.parseInt(cmd[8]);
-                    y = Integer.parseInt(cmd[9]);
-                    w = Integer.parseInt(cmd[10]);
-                    h = Integer.parseInt(cmd[11]);
+                    x = Integer.parseInt(cmd[9]);
+                    y = Integer.parseInt(cmd[10]);
+                    w = Integer.parseInt(cmd[11]);
+                    h = Integer.parseInt(cmd[12]);
                     Rectangle dataloc = new Rectangle(x, y, w, h);
                     int bg = (Color.white).getRGB();
                     int fg = (Color.black).getRGB();
-                    String xtype = cmd[14], ytype = cmd[15];
-                    String viewtitle = cmd[16];
-
-                    DEViseView view = new DEViseView(jsc, parentname, viewname, viewtitle, viewloc, z, bg, fg, dataloc, xtype, ytype);
+                    String xtype = cmd[15], ytype = cmd[16];
+                    String viewtitle = cmd[17];                    
+                    double gridx = (Double.valueOf(cmd[18])).doubleValue();
+                    double gridy = (Double.valueOf(cmd[19])).doubleValue();
+                    int rb = Integer.parseInt(cmd[20]);
+                    int cm = Integer.parseInt(cmd[21]);
+                    int dd = Integer.parseInt(cmd[22]);
+                    int ky = Integer.parseInt(cmd[23]); 
+                    
+                    DEViseView view = new DEViseView(jsc, parentname, viewname, piledname, viewtitle, viewloc, z, bg, fg, dataloc, xtype, ytype, gridx, gridy, rb, cm, dd, ky);
                     jsc.jscreen.addView(view);
                 } catch (NumberFormatException e) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
@@ -446,13 +453,14 @@ public class DEViseCmdDispatcher implements Runnable
                 jsc.showSession(cmd, true);
             } else if (rsp[i].startsWith("JAVAC_DrawCursor")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null || cmd.length != 9) {
+                if (cmd == null || cmd.length != 11) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                 }
 
                 try {
                     String cursorName = cmd[1];
                     String viewname = cmd[2];
+                    
                     int x0 = Integer.parseInt(cmd[3]);
                     int y0 = Integer.parseInt(cmd[4]);
                     int w = Integer.parseInt(cmd[5]);
@@ -460,9 +468,12 @@ public class DEViseCmdDispatcher implements Runnable
                     String move = cmd[7];
                     String resize = cmd[8];
                     Rectangle rect = new Rectangle(x0, y0, w, h);
+                    double gridx = (Double.valueOf(cmd[9])).doubleValue();
+                    double gridy = (Double.valueOf(cmd[10])).doubleValue();
+                    
                     DEViseCursor cursor = null;
                     try {
-                        cursor = new DEViseCursor(cursorName, viewname, rect, move, resize);
+                        cursor = new DEViseCursor(cursorName, viewname, rect, move, resize, gridx, gridy);
                     } catch (YException e1) {
                         throw new YException("Invalid cursor data received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                     }

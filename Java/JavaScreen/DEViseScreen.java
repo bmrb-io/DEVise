@@ -15,7 +15,7 @@ public class DEViseScreen extends Panel
     Vector allCanvas = new Vector();
     Vector allViews = new Vector();
     Hashtable viewTable = new Hashtable();
-    Vector allGDatas = new Vector();
+    Vector javaGDatas = new Vector();
 
     DEViseView currentView = null;
     public DEViseView lastActionView = null;
@@ -118,7 +118,11 @@ public class DEViseScreen extends Panel
         if (view.parentView != null) {
             view.parentView.addChild(view);
         }
-
+        
+        if (view.piledView != null) {
+            view.piledView.addPile(view);
+        }
+        
         allViews.addElement(view);
         viewTable.put(view.viewName, view);
     }
@@ -206,7 +210,10 @@ public class DEViseScreen extends Panel
                 Vector gdata = view.viewGDatas;
                 if (gdata.size() > 0) {
                     for (int i = 0; i < gdata.size(); i++) {
-                        allGDatas.removeElement(view.getGData(i));
+                        DEViseGData data = view.getGData(i);
+                        if (data.isJavaSymbol) {
+                            javaGDatas.removeElement(view.getGData(i));
+                        }   
                     }
 
                     view.removeAllGData();
@@ -217,7 +224,11 @@ public class DEViseScreen extends Panel
             } else {
                 view.parentView.removeChild(view);
             }
-
+            
+            if (view.piledView != null) {
+                view.piledView.removePile(view);
+            }
+            
             if (view.canvas != null) {
                 allCanvas.removeElement(view.canvas);
                 isCanvasDeleted = true;
@@ -273,23 +284,31 @@ public class DEViseScreen extends Panel
             // remove old GData if any
             // Only top level view will have gdata
             Vector gdata = view.viewGDatas;
+            whichGDataDeleted = new Vector();
             if (gdata.size() > 0) {
                 for (int i = 0; i < gdata.size(); i++) {
                     //remove(gdata[i].symbol);
-                    allGDatas.removeElement(view.getGData(i));
+                    DEViseGData data = view.getGData(i);
+                    if (data.isJavaSymbol) {
+                        javaGDatas.removeElement(data);
+                        whichGDataDeleted.addElement(data);
+                    }    
                 }
 
                 view.removeAllGData();
 
                 isGDataDeleted = true;
-                whichGDataDeleted = gdata;
+                //whichGDataDeleted = gdata;
             }
 
             if (vect != null && vect.size() > 0) {
                 for (int i = 0; i < vect.size(); i++) {
                     DEViseGData g = (DEViseGData)vect.elementAt(i);
+                    if (g.isJavaSymbol) {
+                        javaGDatas.addElement(g);
+                    }
+                                 
                     view.addGData(g);
-                    allGDatas.addElement(g);
                 }
 
                 isGDataAdded = true;
@@ -307,13 +326,13 @@ public class DEViseScreen extends Panel
         DEViseView view = getView(name);
 
         if (view != null) {
-            if (cursor != null) {
+            if (cursor != null) {                
                 if (view.addCursor(cursor)) {
                     repaint();
                 }
             }
         } else {
-            jsc.pn("Invalid view name in DEViseScreen::addCursor");
+            jsc.pn("Invalid view name in DEViseScreen::updateCursor");
         }
     }
 
@@ -365,7 +384,7 @@ public class DEViseScreen extends Panel
 
             allCanvas.removeAllElements();
             allViews.removeAllElements();
-            allGDatas.removeAllElements();
+            javaGDatas.removeAllElements();
             viewTable = new Hashtable();
 
             currentView = null;
@@ -463,7 +482,9 @@ public class DEViseScreen extends Panel
         if (isGDataDeleted && whichGDataDeleted != null) {
             for (int i = 0; i < whichGDataDeleted.size(); i++) {
                 DEViseGData gdata = (DEViseGData)whichGDataDeleted.elementAt(i);
-                remove(gdata.symbol);
+                if (gdata.isJavaSymbol) {
+                    remove(gdata.symbol);
+                }    
             }
 
             isGDataDeleted = false;
@@ -473,9 +494,11 @@ public class DEViseScreen extends Panel
         if (isGDataAdded && whichGDataAdded != null) {
             for (int i = 0; i < whichGDataAdded.size(); i++) {
                 DEViseGData gdata = (DEViseGData)whichGDataAdded.elementAt(i);
-                Component gs = gdata.symbol;
-                add(gs);
-                gs.setBounds(gdata.getBoundsInScreen());
+                if (gdata.isJavaSymbol) {
+                    Component gs = gdata.symbol;
+                    add(gs);
+                    gs.setBounds(gdata.getBoundsInScreen());
+                }    
             }
 
             isGDataAdded = false;

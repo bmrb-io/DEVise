@@ -95,10 +95,10 @@ public class jsdevisec extends Panel
 
         Component[] button = null;
         if (DEViseGlobals.inBrowser) {
-            button = new Component[3];
-            button[0] = openButton;
-            button[1] = closeButton;
-            button[2] = stopButton;
+            button = new Component[2];
+            button[0] = restartButton;
+            button[1] = stopButton;
+            //button[2] = stopButton;
         } else {
             button = new Component[7];
             button[0] = openButton;
