@@ -34,3 +34,7 @@ Num Date        Status  Description
 010	05/31/96	OPEN	In TDataMap.c, call to ConvertToGData with _tmpPtr
 						as argument may not be work correctly (alignment of
 						_tmpPtr). (rkw)
+
+OPEN = problem/bug exists and needs to be addressed.
+FIXED = bug fixed.
+NB = not (really) a bug.
