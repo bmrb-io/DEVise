@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/28 21:12:03  jussi
+  Small fix to remove compiler warning.
+
   Revision 1.3  1995/12/14 18:10:01  jussi
   Small fixes to get rid of g++ -Wall warnings.
 
@@ -27,8 +30,6 @@
 
 #include "Exit.h"
 #include "QPRange.h"
-
-/* free list */
 
 QPRangeRec *QPRange::_freeList = NULL;
 
@@ -43,7 +44,7 @@ QPRange::~QPRange()
 {
   /* Free all allocated records */
   QPRangeRec *rec;
-  for (rec = _rangeList.next; rec != &_rangeList; ){
+  for (rec = _rangeList.next; rec != &_rangeList;) {
     QPRangeRec *temp = rec;
     rec = rec->next;
     FreeRec(temp);
@@ -52,21 +53,22 @@ QPRange::~QPRange()
 
 QPRangeRec *QPRange::Search(RecId id)
 {
-  QPRangeRec *current;
   if (EmptyRange())
     return NULL;
   
-  if (_hint != NULL)
+  QPRangeRec *current;
+
+  if (_hint)
     /* start from hint */
     current = _hint;
   else
     current = _rangeList.next;
   
-  if (id < current->low){
+  if (id < current->low) {
     /* search backwards */
     for (current = current->prev; current != &_rangeList;
-	 current = current->prev){
-      if (id >= current->low){
+	 current = current->prev) {
+      if (id >= current->low) {
 	/* found */
 	_hint = current;
 	return current;
@@ -75,17 +77,17 @@ QPRangeRec *QPRange::Search(RecId id)
     /* not found */
     return NULL;
   }
-  else if (id > current->high){
+  else if (id > current->high) {
     /* search forwards */
     for (current = current->next; current != &_rangeList;
-	 current = current->next){
-      if (id < current->low){
+	 current = current->next) {
+      if (id < current->low) {
 	/* recId is beyond previous range. */
 	_hint = current->prev;
 	return current->prev;
       }
-      else if (id <= current->high){
-	/* id number is within this rnage */
+      else if (id <= current->high) {
+	/* id number is within this range */
 	_hint = current;
 	return current;
       }
@@ -108,10 +110,10 @@ QPRangeRec *QPRange::NextRec(QPRangeRec *cur)
 {
   QPRangeRec *next;
   if (cur != NULL){
-    if ((next=cur->next) == &_rangeList)
+    if ((next = cur->next) == &_rangeList)
       next = NULL;
   }
-  else if (!EmptyRange()){
+  else if (!EmptyRange()) {
     next = _rangeList.next;
   }
   else next = NULL;
@@ -121,7 +123,7 @@ QPRangeRec *QPRange::NextRec(QPRangeRec *cur)
 QPRangeRec *QPRange::AllocRec()
 {
   QPRangeRec *rec;
-  if (_freeList != NULL){
+  if (_freeList != NULL) {
     rec = _freeList;
     _freeList = _freeList->next;
   }
@@ -146,7 +148,7 @@ void QPRange::InsertRec(QPRangeRec *cur, QPRangeRec *rec)
 
 void QPRange::DeleteRec(QPRangeRec *rec)
 {
-  if (_hint == rec){
+  if (_hint == rec) {
     _hint = _hint->next;
     if (_hint == &_rangeList)
       _hint = NULL;
@@ -161,8 +163,8 @@ void QPRange::DeleteRec(QPRangeRec *rec)
 
 void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
 {
-  if (EmptyRange()){
-    QPRangeRec *rec = AllocRec();;
+  if (EmptyRange()) {
+    QPRangeRec *rec = AllocRec();
     rec->low = low;
     rec->high = high;
     InsertRec(&_rangeList,rec);
@@ -182,26 +184,26 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
 
   /* Go through all the ranges and merge them if we can */
   int action;
-  while( low <= high){
+  while( low <= high) {
     QPRangeRec *next = NextRec(current);
     
-    if (current == NULL){
+    if (current == NULL) {
       if (high+1 < next->low)
 	action = CREATE_RANGE;
       else action = MERGE_RIGHT;
     }
     else {
       /* current not NULL */
-      if (low < current->low){
+      if (low < current->low) {
 	/* can't be. */
 	fprintf(stderr,"QPRangREc::Insert internal error\n");
 	Exit::DoExit(2);
       }
       
-      if (high < current->high ){
+      if (high < current->high) {
 	action = NO_ACTION;
       }
-      else if (next == NULL){
+      else if (next == NULL) {
 	/* at tail of list */
 	if (low <= current->high+1)
 	  action = MERGE_CURRENT;
@@ -222,7 +224,7 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
     
     QPRangeRec *rec;
 
-    switch(action){
+    switch(action) {
     case NO_ACTION:
       /* no action to take */
       low = high +1;
@@ -245,7 +247,7 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
 	 [low,high] to the gap between current and next */
       callback->QPRangeInserted(low,next->low-1);
       next->low = low;
-      if (high > next->high){
+      if (high > next->high) {
 	low = next->high+1;
       }
       else low = high+1;
@@ -284,50 +286,45 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
 /* Get next unprocessed recId range >= currentId
    Return true if high is not set (no upper bound).  */
 
-Boolean QPRange::NextUnprocessed(RecId currentId,  RecId &low, RecId &high)
+Boolean QPRange::NextUnprocessed(RecId currentId, RecId &low, RecId &high)
 {
   QPRangeRec *current = Search(currentId);
-  if (current == NULL){
+
+  if (!current) {
     /* next unprocessed is currentId */
-    low  = currentId;
+    low = currentId;
     
-    if (EmptyRange()){
+    if (EmptyRange()) {
       /* no high limit */
       return true;
     }
-    else {
-      high = _rangeList.next->low-1;
-      return false;
-    }
+
+    high = _rangeList.next->low - 1;
+    return false;
   }
-  else if (currentId > current->high){
+
+  if (currentId > current->high) {
     low = currentId;
-    if (current->next == &_rangeList){
-      return true;
-    }
-    else {
-      high = current->next->low-1;
-      return false;
-    }
-  }
-  else {
-    /* currentId is within [current->low, current->high]. Look
-       for next valid range */
-    low = current->high+1;
     if (current->next == &_rangeList)
       return true;
-    else {
-      high = current->next->low-1;
-      return false;
-    }
+    high = current->next->low - 1;
+    return false;
   }
+
+  /* currentId is within [current->low, current->high]. Look
+     for next valid range */
+  low = current->high + 1;
+  if (current->next == &_rangeList)
+    return true;
+  high = current->next->low - 1;
+  return false;
 }
 
 void QPRange::Print()
 {
   printf("QPRange list has %d elements: ", _rangeListSize);
   QPRangeRec *rec;
-  for (rec = _rangeList.next; rec != &_rangeList; rec = rec->next){
+  for (rec = _rangeList.next; rec != &_rangeList; rec = rec->next) {
     printf("[%ld,%ld] ",rec->low, rec->high);
   }
   printf("\n");
