@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.29  1998/05/21 18:18:32  wenger
+  Most code for keeping track of 'dirty' GIFs in place; added 'test'
+  command to be used for generic test code that needs to be controlled
+  by GUI; added debug code in NetworkSend().
+
   Revision 1.28  1998/05/14 18:21:12  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -335,6 +340,8 @@ class ViewWin : public Coloring
     void SetPrintPixmap(Boolean pixmap) { _printAsPixmap = pixmap; }
     Boolean GetPrintPixmap() { return _printAsPixmap; }
 
+	Boolean WasResized() { return _wasResized; }
+
 protected:
     /* called by base class when it has been mapped/unmapped */
     virtual void SubClassMapped() = 0;
@@ -387,6 +394,8 @@ private:
 
     Boolean _excludeFromPrint;
     Boolean _printAsPixmap;
+
+	Boolean _wasResized;
 
 
 	protected:

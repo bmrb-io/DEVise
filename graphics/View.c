@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.143  1998/09/08 20:26:01  wenger
+  Added option to save which view is selected when saving a session -- for
+  JavaScreen client switching support.
+
   Revision 1.142  1998/08/25 20:56:23  wenger
   Implemented support for JavaScreen cursors (not yet fully tested).
 
@@ -4068,6 +4072,7 @@ void	View::HandleResize(WindowRep* w, int xlow, int ylow,
 #if defined(DEBUG)
 	printf("View(%s)::HandleResize(%d,%d,%d,%d)\n", GetName(), xlow, ylow,
 		   width, height);
+    printf("  Old size: %d, %d, %d, %d\n", _x, _y, _width, _height);
 #endif
 
 	// In case record links didn't get re-enabled after printing.

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/03/05 20:36:13  wenger
+  Fixed bugs 304 and 309 (problems with view colors); fixed a few other
+  problems related to *ClassInfo classes.
+
   Revision 1.15  1997/11/24 23:14:37  weaver
   Changes for the new ColorManager.
 
@@ -99,22 +103,39 @@ TileLayoutInfo::TileLayoutInfo()
   _name = NULL;
   _win = NULL;
 
+  _relativeX = -1.0;
+  _relativeY = -1.0;
+  _relativeWidth = -1.0;
+  _relativeHeight = -1.0;
+
   DevWindow::_windowList.Insert(this);
 }
 
 #ifndef NEW_LAYOUT
-TileLayoutInfo::TileLayoutInfo(char *name, TileLayout *win)
+TileLayoutInfo::TileLayoutInfo(char *name, TileLayout *win, double relativeX,
+  double relativeY, double relativeWidth, double relativeHeight)
 {
   _name = name;
   _win = win;
 
+  _relativeX = relativeX;
+  _relativeY = relativeY;
+  _relativeWidth = relativeWidth;
+  _relativeHeight = relativeHeight;
+
   DevWindow::_windowList.Insert(this);
 }
 #else 
-TileLayoutInfo::TileLayoutInfo(char *name, Layout *win)
+TileLayoutInfo::TileLayoutInfo(char *name, Layout *win, double relativeX,
+  double relativeY, double relativeWidth, double relativeHeight)
 {
   _name = name;
   _win = win;
+
+  _relativeX = relativeX;
+  _relativeY = relativeY;
+  _relativeWidth = relativeWidth;
+  _relativeHeight = relativeHeight;
 
   DevWindow::_windowList.Insert(this);
 }
@@ -122,10 +143,10 @@ TileLayoutInfo::TileLayoutInfo(char *name, Layout *win)
 
 TileLayoutInfo::~TileLayoutInfo()
 {
-//TEMPTEMP -- does _name need to get deleted??
+//TEMP -- does _name need to get deleted??
   delete _win;
 
-  //TEMPTEMP -- check return value
+  //TEMP -- check return value
   DevWindow::_windowList.Delete(this);
 }
 
@@ -168,6 +189,7 @@ ClassInfo *TileLayoutInfo::CreateWithParams(int argc, char **argv)
 {
 #if defined(DEBUG)
   printf("TileLayoutInfo::CreateWithParams(%s)\n", argv[0]);
+  PrintArgs(stdout, argc, argv);
 #endif
   if ((argc != 5) && (argc != 7)) {
     fprintf(stderr, "TileLayoutInfo::CreateWithParams wrong args %d\n",
@@ -179,16 +201,23 @@ ClassInfo *TileLayoutInfo::CreateWithParams(int argc, char **argv)
   Boolean printPixmap = false;
   if (argc >= 6) printExclude = atoi(argv[5]);
   if (argc >= 7) printPixmap = atoi(argv[6]);
+
+
+  double relativeX = atof(argv[1]);
+  double relativeY = atof(argv[2]);
+  double relativeWidth = atof(argv[3]);
+  double relativeHeight = atof(argv[4]);
 #ifndef NEW_LAYOUT
-  TileLayout *win = new TileLayout(name, atof(argv[1]), atof(argv[2]),
-				   atof(argv[3]), atof(argv[4]), printExclude,
+  TileLayout *win = new TileLayout(name, relativeX, relativeY,
+				   relativeWidth, relativeHeight, printExclude,
 				   printPixmap);
 #else 
-  Layout *win = new Layout(name, atof(argv[1]), atof(argv[2]), 
-			   atof(argv[3]), atof(argv[4]), printExclude,
+  Layout *win = new Layout(name, relativeX, relativeY, 
+			   relativeWidth, relativeHeight, printExclude,
 			   printPixmap);
 #endif
-  return new TileLayoutInfo(name, win);
+  return new TileLayoutInfo(name, win, relativeX, relativeY, relativeWidth,
+    relativeHeight);
 }
 
 char *TileLayoutInfo::InstanceName()
@@ -205,6 +234,10 @@ void *TileLayoutInfo::GetInstance()
 
 void TileLayoutInfo::CreateParams(int &argc, char **&argv)
 {
+#if defined(DEBUG)
+  printf("TileLayoutInfo(%s)::CreateParams()\n", InstanceName());
+#endif
+
   argc = 7;
   argv = arg;
   arg[0] = _name;
@@ -233,11 +266,30 @@ void TileLayoutInfo::CreateParams(int &argc, char **&argv)
   Coord dispWidth, dispHeight;
   DeviseDisplay::DefaultDisplay()->Dimensions(dispWidth, dispHeight);
   
-  sprintf(buf2, "%f", (double)x / dispWidth);
-  sprintf(buf3, "%f", (double)y / dispHeight);
-  sprintf(buf4, "%f", (double)w / dispWidth);
-  sprintf(buf5, "%f", (double)h / dispHeight);
+  // Avoid roundoff problems in creation params if window has not been
+  // resized.
+  if (_win->WasResized()) {
+#if defined(DEBUG)
+    printf("Window was resized\n");
+#endif
+    sprintf(buf2, "%f", (double)x / dispWidth);
+    sprintf(buf3, "%f", (double)y / dispHeight);
+    sprintf(buf4, "%f", (double)w / dispWidth);
+    sprintf(buf5, "%f", (double)h / dispHeight);
+  } else {
+#if defined(DEBUG)
+    printf("Window was NOT resized\n");
+#endif
+    sprintf(buf2, "%f", _relativeX);
+    sprintf(buf3, "%f", _relativeY);
+    sprintf(buf4, "%f", _relativeWidth);
+    sprintf(buf5, "%f", _relativeHeight);
+  }
 
   sprintf(buf6, "%d", _win->GetPrintExclude());
   sprintf(buf7, "%d", _win->GetPrintPixmap());
+
+#if defined(DEBUG)
+  PrintArgs(stdout, argc, argv);
+#endif
 }

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.46  1998/05/21 18:18:32  wenger
+  Most code for keeping track of 'dirty' GIFs in place; added 'test'
+  command to be used for generic test code that needs to be controlled
+  by GUI; added debug code in NetworkSend().
+
   Revision 1.45  1998/05/14 18:21:11  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -286,6 +291,8 @@ ViewWin::ViewWin(char* name, PColorID fgid, PColorID bgid,
 
 	_excludeFromPrint = false;
 	_printAsPixmap = false;
+
+	_wasResized = false;
 }
 
 ViewWin::~ViewWin(void)
@@ -1091,6 +1098,8 @@ void	ViewWin::HandleResize(WindowRep* w, int xlow, int ylow,
 	printf("ViewWin::HandleResize 0x%p, %d, %d, %u, %u\n",
 		   this, xlow, ylow, width, height);
 #endif
+
+	if (_width != 0 || _height != 0) _wasResized = true;
 
 	_hasGeometry = true;
 	_x = _y = 0;			// Why are these forced to zero?  RKW 10/24/96.

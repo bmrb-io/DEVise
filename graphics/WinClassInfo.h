@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/05/30 20:42:55  wenger
+  Added GUI to allow user to specify windows to exclude from display
+  print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
+  implemented but pixmap printing is not.
+
   Revision 1.7  1997/03/25 17:59:00  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -84,13 +89,17 @@ class Layout;
 class TileLayoutInfo: public ClassInfo {
 public:
   TileLayoutInfo();			       /* class constructor */
+
+  // Instance constructor.
 #ifndef NEW_LAYOUT
-  TileLayoutInfo(char *name, TileLayout *win); /* instance constructor */
+  TileLayoutInfo(char *name, TileLayout *win, double relativeX,
+    double relativeY, double relativeWidth, double relativeHeight);
 #else 
-  TileLayoutInfo(char *name, Layout *win);
+  TileLayoutInfo(char *name, Layout *win, double relativeX, double relativeY,
+    double relativeWidth, double relativeHeight);
 #endif
 
-  virtual ~TileLayoutInfo();		       /* class constructor */
+  virtual ~TileLayoutInfo();		       /* class destructor */
 
   /*********** Class methods **************************/
   virtual char *CategoryName() { return "window"; }
@@ -118,6 +127,13 @@ private:
 #else
   Layout *_win;
 #endif
+
+  // Save creation parameters to avoid roundoff problems if window is not
+  // resized.
+  double _relativeX;
+  double _relativeY;
+  double _relativeWidth;
+  double _relativeHeight;
 };
 
 #endif
