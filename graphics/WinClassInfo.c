@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/05/30 20:42:54  wenger
+  Added GUI to allow user to specify windows to exclude from display
+  print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
+  implemented but pixmap printing is not.
+
   Revision 1.11  1997/03/25 17:59:00  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -144,8 +149,8 @@ void TileLayoutInfo::ParamNames(int &argc, char **&argv)
     sprintf(buf5, "Height 0.5");
   }
 
-  sprintf(buf6, "printExclude");
-  sprintf(buf7, "printPixmap");
+  sprintf(buf6, "Exclude from Print");
+  sprintf(buf7, "Print Pixmap");
 }
 
 ClassInfo *TileLayoutInfo::CreateWithParams(int argc, char **argv)

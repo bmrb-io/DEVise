@@ -772,6 +772,11 @@ Num Date        Status  Description
 186 05/28/97	OPEN	Last record is sometimes not displayed even if
 			the X attribute is _not_ recId. (ml/rkw) (see also 184)
 
+187 06/06/97	FIXED	If you do a click in a window with a cursor, and the
+			click does not result in the cursor moving (because
+			of the cursor grid, for example), the cursor is
+			erased and not redrawn. (rkw)
+
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

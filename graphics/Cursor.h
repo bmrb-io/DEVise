@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/11/13 16:56:05  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.7  1996/07/13 17:21:29  jussi
   Removed unnecessary code.
 
@@ -55,7 +65,8 @@ DefinePtrDList(DeviseCursorList, DeviseCursor *)
 class DeviseCursor : private ViewCallback {
 public:
   DeviseCursor(char *name, VisualFlag flag,
-    GlobalColor color = ForegroundColor);
+    GlobalColor color = ForegroundColor, Boolean useGrid = false, Coord
+    gridX = 1.0, Coord gridY = 1.0);
   virtual ~DeviseCursor();
 
   /* Set source view. Changing this view's visual filter
@@ -74,6 +85,18 @@ public:
   /* Move the X and Y coords of source */
   void MoveSource(Coord x, Coord y);
 
+  /* Get or set the grid parameters. */
+  void GetGrid(Boolean &useGrid, Coord &gridX, Coord &gridY) {
+    useGrid = _useGrid;
+    gridX = _gridX;
+    gridY = _gridY;
+  }
+  void SetGrid(Boolean useGrid, Coord gridX, Coord gridY) {
+    _useGrid = useGrid;
+    _gridX = gridX;
+    _gridY = gridY;
+  }
+
 private:
   virtual void FilterAboutToChange(View *view);
   virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
@@ -84,6 +107,9 @@ private:
   VisualFilter _filter;                 /* current filter */
   VisualFlag _visFlag;                  /* valid components in filter */
   GlobalColor _color;                   /* cursor color */
+  Boolean _useGrid;
+  Coord _gridX;
+  Coord _gridY;
 };
 
 #endif

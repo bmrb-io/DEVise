@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.67  1997/05/30 21:18:54  wenger
+  Oops!  Minor error in new print config. stuff.
+
   Revision 1.66  1997/05/30 20:45:31  wenger
   Added GUI to allow user to specify windows to exclude from display
   print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
@@ -1700,6 +1703,25 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, buf);
       return 1;
     }
+    if (!strcmp(argv[0], "getCursorGrid")) {
+      // Arguments: <cursorName>
+      // Returns: <useGrid> <gridX> <gridY>
+#if defined(DEBUG)
+      printf("getCursorGrid <%s>\n", argv[1]);
+#endif
+      DeviseCursor *cursor = (DeviseCursor *) classDir->FindInstance(argv[1]);
+      if (!cursor) {
+	control->ReturnVal(API_NAK, "Cannot find cursor");
+	return -1;
+      }
+      Boolean useGrid;
+      Coord gridX, gridY;
+      cursor->GetGrid(useGrid, gridX, gridY);
+      char buf[100];
+      sprintf(buf, "%d %f %f", useGrid, gridX, gridY);
+      control->ReturnVal(API_ACK, buf);
+      return 1;
+    }
   }
   if (argc == 3) {
 
@@ -2488,6 +2510,23 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       info.relPan = atof(argv[3]);
       info.absPan = atof(argv[4]);
       view->SetHorPanInfo(info);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+    if (!strcmp(argv[0], "setCursorGrid")) {
+      // Arguments: <cursorName> <useGrid> <gridX> <gridY>
+#if defined(DEBUG)
+      printf("getCursorGrid <%s>\n", argv[1]);
+#endif
+      DeviseCursor *cursor = (DeviseCursor *) classDir->FindInstance(argv[1]);
+      if (!cursor) {
+	control->ReturnVal(API_NAK, "Cannot find cursor");
+	return -1;
+      }
+      Boolean useGrid = atoi(argv[2]);
+      Coord gridX = atof(argv[3]);
+      Coord gridY = atof(argv[4]);
+      cursor->SetGrid(useGrid, gridX, gridY);
       control->ReturnVal(API_ACK, "done");
       return 1;
     }

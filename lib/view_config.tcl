@@ -20,6 +20,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.3  1997/06/05 21:08:56  wenger
+# User-configurability of '4', '5', and '6' keys is now completed.
+#
 # Revision 1.2  1997/06/05 18:11:40  wenger
 # Pretty much working now.  I need to clean up diagnostic code and get
 # the blanking out of sections according to mode working.
@@ -94,7 +97,7 @@ proc GetViewHome {} {
       -command "SetHomeToCurrent"
 
     # These frames are for spacing only.
-    frame .getViewHome.row2a -width 10m -height 6m
+    frame .getViewHome.row2a -width 130m -height 6m
     frame .getViewHome.row4a -width 10m -height 6m
     frame .getViewHome.row7a -width 10m -height 4m
 
@@ -238,7 +241,7 @@ proc GetViewHorPan {} {
       -textvariable viewHorPanAbs
 
     # These frames are for spacing only.
-    frame .getViewHorPan.row2a -width 10m -height 6m
+    frame .getViewHorPan.row2a -width 90m -height 6m
     frame .getViewHorPan.row4a -width 10m -height 4m
 
     # Pack some widgets into the frames.  Other widges will be packed in

@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.133  1997/06/05 21:08:54  wenger
+#	User-configurability of '4', '5', and '6' keys is now completed.
+#
 #	Revision 1.132  1997/05/30 20:46:16  wenger
 #	Added GUI to allow user to specify windows to exclude from display
 #	print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
@@ -716,6 +719,7 @@ source $libdir/win_print_config.tcl
 source $libdirLM/DEViseLMComm.tk
 source $libdirLM/DEViseIfc.tk
 source $libdir/view_config.tcl
+source $libdir/cursor_grid.tcl
 
 set mode 0
 DEVise changeMode $mode
@@ -1187,6 +1191,9 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 	-command DoSetCursorSrc
 .mbar.view.menu.cursorMenu add command -label "Set Destination" \
 	-command DoSetCursorDst
+.mbar.view.menu.cursorMenu add separator
+.mbar.view.menu.cursorMenu add command -label "Set Grid" \
+	-command DoSetCursorGrid
 #.mbar.view.menu.cursorMenu add separator
 #.mbar.view.menu.cursorMenu add command -label "Set Record Cursor" \
 #	-command DoSetRecordCursor

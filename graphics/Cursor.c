@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/01/23 17:38:25  jussi
+  Removed references to GetXMin().
+
   Revision 1.8  1996/11/13 16:56:04  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -57,13 +60,17 @@
 #include "Cursor.h"
 #include "View.h"
 
-DeviseCursor::DeviseCursor(char *name, VisualFlag flag, GlobalColor color)
+DeviseCursor::DeviseCursor(char *name, VisualFlag flag, GlobalColor color,
+  Boolean useGrid, Coord gridX, Coord gridY)
 {
   _name = name;
   _visFlag = flag;
   _src = 0;
   _dst = 0;
   _color = color;
+  _useGrid = useGrid;
+  _gridX = gridX;
+  _gridY = gridY;
 
   View::InsertViewCallback(this);
 }
@@ -170,16 +177,23 @@ void DeviseCursor::ViewDestroyed(View *view)
 
 void DeviseCursor::MoveSource(Coord x, Coord y)
 {
+#if defined(DEBUG)
+  printf("DeviseCursor::MoveSource(%f, %f)\n", x, y);
+#endif
+
   if (!_src)
     return;
 
-  if (_dst)
-    (void)_dst->HideCursors();
-
-  VisualFilter filter;
+  VisualFilter filter, oldFilter;
   _src->GetVisualFilter(filter);
+  oldFilter = filter;
 
   if (_visFlag & VISUAL_X) {
+    if (_useGrid && (_gridX != 0.0)) {
+      /* Round location to nearest grid point. */
+      int tmp = (int) ((x / _gridX) + 0.5);
+      x = _gridX * tmp;
+    }
     Coord width = filter.xHigh - filter.xLow;
     Coord newXLow = x - width / 2.0;
     filter.xLow = newXLow;
@@ -187,11 +201,23 @@ void DeviseCursor::MoveSource(Coord x, Coord y)
   }
 
   if (_visFlag & VISUAL_Y) {
+    if (_useGrid && (_gridY != 0.0)) {
+      /* Round location to nearest grid point. */
+      int tmp = (int) ((y / _gridY) + 0.5);
+      y = _gridY * tmp;
+    }
     Coord height = filter.yHigh - filter.yLow;
     Coord newYLow = y - height / 2.0;
     filter.yLow = newYLow;
     filter.yHigh = newYLow + height;
   }
 
-  _src->SetVisualFilter(filter);
+  if (filter.xLow != oldFilter.xLow || filter.xHigh != oldFilter.xHigh ||
+    filter.yLow != oldFilter.yLow || filter.yHigh != oldFilter.yHigh) {
+    if (_dst) {
+      (void)_dst->HideCursors();
+    }
+
+    _src->SetVisualFilter(filter);
+  }
 }

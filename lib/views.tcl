@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.36  1997/05/30 15:41:39  wenger
+#  Most of the way to user-configurable '4', '5', and '6' keys -- committing
+#  this stuff now so it doesn't get mixed up with special stuff for printing
+#  Mitre demo.
+#
 #  Revision 1.35  1997/04/21 23:11:57  guangshu
 #    1. Make statistics deal with different DATE types.
 #    2. Make Aggregates on TData and GData.
@@ -686,6 +691,23 @@ proc DoSetCursorDst {} {
     }
     
     set answer [DEVise setCursorDst $cursor $curView]
+}
+
+############################################################
+
+proc DoSetCursorGrid {} {
+    global curView
+
+    if {![CurrentView]} {
+	return
+    }
+
+    set cursor [DoGetCursor "Select cursor for grid"]
+    if {$cursor == ""} {
+	return
+    }
+
+    GetCursorGrid $cursor
 }
 
 ############################################################
