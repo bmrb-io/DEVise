@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.49  1999/01/29 15:18:16  wenger
+  Fixed egcs 1.1.1 fixes -- taking out array constructor arguments caused
+  problems in some places.
+
   Revision 1.48  1999/01/18 18:25:13  beyer
   fixed compile errors for egcs v 1.1.1
 
@@ -1503,7 +1507,8 @@ JavaScreenCmd::CursorChanged()
     printf(")\n");
 #endif
 
-	// Note: x and y are relative to GIF origin.  This used to be the
+	// Note: x and y are the location of the upper left corner of the cursor
+	// relative to GIF origin (upper left).  This used to be the
 	// DEVise window, but now it's the view.
 	if (_argc != 5)
 	{
@@ -1552,11 +1557,22 @@ JavaScreenCmd::CursorChanged()
 	// and set the visual filter of the source view (that's what actually
 	// moves the cursor).
 	//
-	Coord dataX1, dataY1, dataX2, dataY2;
+	Coord dataXLow, dataYLow, dataXHigh, dataYHigh;
+	view->FindWorld(pixX, pixY, pixX + pixWidth - 1, pixY + pixHeight - 1,
+	  dataXLow, dataYLow, dataXHigh, dataYHigh);
+
 	VisualFilter filter;
 	srcView->GetVisualFilter(filter);
-	view->FindWorld(pixX, pixY, pixX + pixWidth - 1, pixY + pixHeight - 1,
-	  filter.xLow, filter.yLow, filter.xHigh, filter.yHigh);
+
+	VisualFlag cursorFlag = cursor->GetFlag();
+	if (cursorFlag & VISUAL_X) {
+		filter.xLow = dataXLow;
+		filter.xHigh = dataXHigh;
+	}
+	if (cursorFlag & VISUAL_Y) {
+		filter.yLow = dataYLow;
+		filter.yHigh = dataYHigh;
+	}
 	srcView->SetVisualFilter(filter);
 
 	// Make sure everything has actually been re-drawn before we
