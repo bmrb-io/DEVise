@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.170  1999/05/13 18:58:54  wenger
+  Removed _queryFilter member from View class to avoid confusion with
+  _queryFilter in ViewGraph.
+
   Revision 1.169  1999/05/12 21:01:00  wenger
   Views containing view symbols can now be piled.
 
@@ -3429,6 +3433,8 @@ View::SetFont(const char *which, int family, float pointSize,
       _yAxisFont.Set(family, pointSize, bold, italic);
     } else if (!strcmp(which, "z axis")) {
       _zAxisFont.Set(family, pointSize, bold, italic);
+    } else if (!strcmp(which, "data")) {
+      _dataFont.Set(family, pointSize, bold, italic);
     } else {
       reportErrNosys("Illegal font selection");
     }
@@ -3455,6 +3461,8 @@ View::GetFont(const char *which, int &family, float &pointSize,
     _yAxisFont.Get(family, pointSize, bold, italic);
   } else if (!strcmp(which, "z axis")) {
     _zAxisFont.Get(family, pointSize, bold, italic);
+  } else if (!strcmp(which, "data")) {
+    _dataFont.Get(family, pointSize, bold, italic);
   } else {
     reportErrNosys("Illegal font selection");
   }

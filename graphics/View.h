@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.85  1999/05/13 18:58:55  wenger
+  Removed _queryFilter member from View class to avoid confusion with
+  _queryFilter in ViewGraph.
+
   Revision 1.84  1999/05/12 21:01:02  wenger
   Views containing view symbols can now be piled.
 
@@ -737,6 +741,8 @@ class View : public ViewWin
 	Boolean AutoUpdateFilter() { return _autoUpdate; }
 	void SetAutoUpdate(Boolean autoUpdate) { _autoUpdate = autoUpdate; }
 
+	DevFont &GetDataFont() { return _dataFont; }
+
 protected:
 	/* called by base class when it has been mapped/unmapped */
 	virtual void SubClassMapped();   /* called just after mapping */
@@ -897,6 +903,7 @@ protected:
 	DevFont _xAxisFont;
 	DevFont _yAxisFont;
 	DevFont _zAxisFont;
+	DevFont _dataFont;
 
 	Boolean _isHighlightView;
 

@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.62  1999/05/10 20:02:21  wenger
+  Added error indication option (as per request from Eldon) to bar shape;
+  added "Pile" to the GUI for view symbols.
+
   Revision 1.61  1999/04/29 15:50:04  wenger
   Changed HighLow symbols so that Y is the top rather than the middle (so
   visual filter and home work better); changed Condor session scripts
@@ -1959,6 +1963,8 @@ GetAlignment(ViewGraph *view, WindowRep::SymbolAlignment &alignment)
 	return okay;
 }
 
+static const Coord minBoldFont = 16.0;
+
 void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 						void **gdataArray,
 						int numSyms, TDataMap *map,
@@ -2036,7 +2042,6 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 	win->Transform(1, 1, x1, y1);
 	Coord pointSize = height * fabs(y1 - y0) *
 	  DeviseDisplay::DefaultDisplay()->PointsPerPixel();
-
 	pointSize = (Coord) ((int) (pointSize + 0.5));
 
     /* Find or generate the label string. */
@@ -2048,7 +2053,8 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
     win->SetForeground(GetPColorID(gdata, map, offset));
     win->SetPattern(GetPattern(gdata, map, offset));
     if (pointSize != oldPointSize) {
-      win->SetFont("Courier", "Bold", "r", "Normal", pointSize);
+      view->GetDataFont().SetSize(pointSize);
+      view->GetDataFont().SetWinFont(win);
       oldPointSize = pointSize;
     }
 
@@ -2195,6 +2201,7 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
 
     Coord pixelperUnit = size * (MIN(pixelperUnitWidth,pixelperUnitHeight));
 	pixelperUnit  = (Coord) ((int) (pixelperUnit + 0.5));
+	char *weight = "Bold";
 
     /* Find or generate the label string. */
     char labelBuf[128];
@@ -2205,7 +2212,8 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
     win->SetForeground(GetPColorID(gdata, map, offset));
     win->SetPattern(GetPattern(gdata, map, offset));
     if (pixelperUnit != oldpixelperUnit) {
-      win->SetFont("Courier", "Bold", "r", "Normal", pixelperUnit);
+      view->GetDataFont().SetSize(pixelperUnit);
+      view->GetDataFont().SetWinFont(win);
       oldpixelperUnit = pixelperUnit ;
     }
 
@@ -2307,6 +2315,12 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
 	  pointSize = pointSize * displayHeight *
 		DeviseDisplay::DefaultDisplay()->PointsPerPixel();
 	}
+
+	char *weight = "Bold";
+	if (pointSize < minBoldFont) {
+	  weight = "Medium";
+	}
+
 	Coord orientation = GetOrientation(gdata, map, offset);
 
     /* Find or generate the label string. */
@@ -2318,10 +2332,10 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
 	win->SetForeground(GetPColorID(gdata, map, offset));
     win->SetPattern(GetPattern(gdata, map, offset));
     if (pointSize != oldPointSize) {
-      win->SetFont("Helvetica", "Bold", "r", "Normal", pointSize);
+      view->GetDataFont().SetSize(pointSize);
+      view->GetDataFont().SetWinFont(win);
       oldPointSize = pointSize;
     }
-
 
 
     WindowRep::SymbolAlignment alignment;

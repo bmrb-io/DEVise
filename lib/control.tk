@@ -15,6 +15,13 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.188  1999/05/07 14:14:01  wenger
+#	Piled view symbols now working: pile name is specified in parent view's
+#	mapping, views are piled by Z specified in parent's mapping; changes
+#	include improvements to the Dispatcher because of problems exposed by
+#	piled viewsyms; for now, view symbol piles are always linked (no GUI or
+#	API to change this).
+#	
 #	Revision 1.187  1999/05/04 17:17:19  wenger
 #	Merged js_viewsyms_br thru js_viewsyms_br_1 (code for new JavaScreen
 #	protocol that deals better with view symbols).
@@ -1624,6 +1631,8 @@ menu .mbar.view.menu.fontsmenu -tearoff false
     -command { GetFont "x axis" }
 .mbar.view.menu.fontsmenu add  command -label "Y Axis"\
     -command { GetFont "y axis" }
+.mbar.view.menu.fontsmenu add  command -label "Data"\
+    -command { GetFont "data" }
 # TEMPTEMP? use this to bring up mapping window
 #.mbar.view.menu.fontsmenu add  command -label "Data Labels"
 

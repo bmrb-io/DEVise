@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/12/20 16:50:15  wenger
+  Fonts for view label, x axis, and y axis can now be changed.
+
  */
 
 #ifndef _DevFont_h_
@@ -41,6 +44,7 @@ public:
 
   void Set(int family, float pointSize, Boolean bold, Boolean italic);
   void Get(int &family, float &pointSize, Boolean &bold, Boolean &italic);
+  void SetSize(float pointSize) { _pointSize = pointSize; }
 
   void SetWinFont(WindowRep *win);
 

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.50  1999/04/29 17:36:31  wenger
+  Implemented 'fixed cursor size' option (for the sake of the JavaScreen).
+
   Revision 1.49  1999/04/26 20:25:02  wenger
   Fixed bug 486.
 
@@ -1023,10 +1026,9 @@ Session::SaveView(char *category, char *devClass, char *instance,
       "setViewDisplayDataValues", instance);
 
   status += SaveParams(saveData, "getFont", "setFont", instance, "title");
-
   status += SaveParams(saveData, "getFont", "setFont", instance, "x axis");
-
   status += SaveParams(saveData, "getFont", "setFont", instance, "y axis");
+  status += SaveParams(saveData, "getFont", "setFont", instance, "data");
 
   status += SaveParams(saveData, "viewGetHome", "viewSetHome", instance);
 

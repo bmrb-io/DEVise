@@ -19,6 +19,12 @@
 # $Id$
 
 # $Log$
+# Revision 1.4  1999/04/21 20:35:50  wenger
+# Improved interface for changing fonts, titles, etc.:
+# * Fonts can now be set on a window-wide basis.
+# * Setting fonts, title, or axis date format in a piled view automatically
+# changes all views in the pile accordingly.
+#
 # Revision 1.3  1997/04/09 18:24:45  wenger
 # Fixed various makefiles (removed extra -gstabs flags, etc.);
 # setup script now links client.tcl into all cslib directories;
@@ -76,6 +82,9 @@ proc GetFont { which {isWindow 0} } {
     label .getFont.sizelabel -text "Size:"
     menubutton .getFont.size -relief raised -bd 2 -text $size \
       -menu .getFont.size.menu
+    if {$which == "data"} {
+        .getFont.size configure -state disabled
+    }
 
     checkbutton .getFont.bold -variable isBold -relief raised -bd 2 \
       -text "Bold" -padx 2m -pady 1m
