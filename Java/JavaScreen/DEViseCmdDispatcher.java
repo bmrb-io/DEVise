@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.81  2001/03/03 20:12:07  xuk
+// Restore old state if user goes into, then out of, collaboration mode.
+//
 // Revision 1.80  2001/02/22 17:11:56  xuk
 // Close collaboration JSs when "leader" JS exits.
 // In processReceivedCommand(), process JAVAC_CollabExit command.
@@ -883,6 +886,10 @@ public class DEViseCmdDispatcher implements Runnable
 
         } else if (args[0].equals(DEViseCommands.FAIL)) {
             jsc.showMsg(response);
+            jsc.jscreen.updateScreen(false);
+	    
+        } else if (args[0].equals(DEViseCommands.CLOSE_SESSION)) {
+            // this command is for collaboration JS
             jsc.jscreen.updateScreen(false);
 
         } else if (args[0].equals(DEViseCommands.ERROR)) {
