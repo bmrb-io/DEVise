@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  2000/02/23 18:57:53  wenger
+  Added option to do checksum on GIFs and GData sent to JavaScreen.
+
   Revision 1.29  2000/02/08 22:12:00  wenger
   Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
   edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
@@ -228,7 +231,8 @@ class JavaScreenCmd
 		static char* JavaScreenCmdName(JavaScreenCmd::ControlCmdType);
 
 	protected:
-		void ReturnVal(int argc, char** argv);
+		// < 0 if error
+		int ReturnVal(int argc, char** argv);
 
 	private:
 		static char* _controlCmdName[CONTROLCMD_NUM];
@@ -276,7 +280,10 @@ class JavaScreenCmd
 		void DrawAllCursors();
 		void DoCloseSession();
 		void DoOpenSession(char *fullpath);
-		void CreateView(View *view, View *parent);
+
+		// < 0 if error
+		int CreateView(View *view, View *parent);
+
 		ControlCmdType SendChangedViews(Boolean update);
 		void DeleteChildViews(View *view);
 		void SendViewDataArea(View *view);
@@ -299,8 +306,8 @@ public:
   void FillInt(int value);
   void FillDouble(double value);
 
-  void ReturnVal(JavaScreenCmd *jsCmd) {
-    jsCmd->ReturnVal(_argc, (char **)_argv);
+  int ReturnVal(JavaScreenCmd *jsCmd) {
+    return jsCmd->ReturnVal(_argc, (char **)_argv);
   }
 
 private:

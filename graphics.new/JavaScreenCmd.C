@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.94  2000/02/23 23:32:54  wenger
+  Fixed bug 567 (problem with JAVAC_ResetFilters command; added LogFileLine()
+  macro to DebugLog.
+
   Revision 1.93  2000/02/23 18:57:51  wenger
   Added option to do checksum on GIFs and GData sent to JavaScreen.
 
@@ -1207,11 +1211,17 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 	int viewIndex = _topLevelViews.InitIterator();
 	while (_topLevelViews.More(viewIndex)) {
 		View *view = (View *)_topLevelViews.Next(viewIndex);
-		CreateView(view, NULL);
+		if (CreateView(view, NULL) < 0) {
+		    errmsg = "Error opening session";
+		    _status = ERROR;
+			break;
+		}
 	}
 	_topLevelViews.DoneIterator(viewIndex);
 
-	SendChangedViews(false);
+    if (_status == DONE) {
+	    SendChangedViews(false);
+	}
 
     // avoid unnecessary JAVAC_Done command, after sending back images
     if (_status == DONE) {
@@ -1987,7 +1997,10 @@ JavaScreenCmd::SendChangedViews(Boolean update)
                 _postponeCursorCmds = savePostpone;
 
 			    subView->SetZ(view->GetZ() + 1.0);
-			    CreateView(subView, view);
+			    if (CreateView(subView, view) < 0) {
+				    result = ERROR;
+					return result;
+				}
 			    SendViewDataArea(subView);
 		    }
 		    view->DoneIterator(subViewIndex);
@@ -2410,7 +2423,7 @@ JavaScreenCmd::EraseCursor(View *view, DeviseCursor *cursor)
 }
 
 //====================================================================
-void
+int
 JavaScreenCmd::ReturnVal(int argc, char** argv)
 {
 #if defined(DEBUG_LOG)
@@ -2424,39 +2437,13 @@ JavaScreenCmd::ReturnVal(int argc, char** argv)
     printf(")\n");
 #endif
 
-#if 0 // I don't understand what the heck all of this junk is for, and taking
-	  // it out doesn't seem to change how anything works.  RKW 1998-08-28.
-	static	char* buf = NULL;
-	static	int bufsize = 0;
-	int		eleSize = 0;
-
-	// Append end-of-command marker
-	char** nargv = new (char*)[argc](NULL);
-	int	i;
-	for (i=0; i< argc-1; ++i)
-		nargv[i] = argv[i];
-
-	eleSize = strlen(argv[argc-1]);
-
-	if ((buf == NULL)||(eleSize > bufsize))
-	{
-		if (!buf)
-			delete buf;
-		buf = new char[strlen(argv[argc-1])+3];
+	// send the command out
+	int status = _control->ReturnVal(API_JAVACMD, argc, argv, true);
+	if (status < 0) {
+	    reportErrNosys("Error returning value to JavaScreen");
 	}
 
-	// We can also send back multiple commands by seperating them with "\n"
-	sprintf(buf,"%s",argv[argc-1]);
-	nargv[argc-1]= buf;
-		nargv[argc-1] = argv[argc-1];
-
-	// send the command out
-	_control->ReturnVal(API_JAVACMD, argc, nargv, true);
-	delete []nargv;
-#else
-	// send the command out
-	_control->ReturnVal(API_JAVACMD, argc, argv, true);
-#endif
+	return status;
 }
 
 //====================================================================
@@ -2713,7 +2700,7 @@ JavaScreenCmd::SendViewGData(ViewGraph *view)
 }
 
 //====================================================================
-void
+int
 JavaScreenCmd::CreateView(View *view, View* parent)
 {
 #if defined(DEBUG_LOG)
@@ -2721,6 +2708,8 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 	  parent ? parent->GetName() : "none");
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
+
+    int status = 0;
 
 	//
 	// Get view geometry.
@@ -2908,8 +2897,10 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 		  args.FillInt(italic);
 	  }
 
-	  args.ReturnVal(this);
+	  if (args.ReturnVal(this) < 0) status = -1;
 	}
+
+	return status;
 }
 
 //====================================================================

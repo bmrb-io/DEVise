@@ -2222,8 +2222,9 @@ Num Date        Status  Description
 			(hy/rkw)
 			(Fixed by rkw, 2/23/00.)
 
-568 03/06/00	CD	Load Misc/COD1.ds in the JavaScreen -- the devised
+568 03/06/00	FIXED	Load Misc/COD1.ds in the JavaScreen -- the devised
 			crashes. (rkw)
+			(Fixed by rkw, 3/8/00.)
 
 569 03/08/00	OPEN	Group/ungroup of views causes crash. (rkw)
 

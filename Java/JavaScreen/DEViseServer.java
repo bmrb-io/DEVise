@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.33  2000/03/06 08:09:19  hongyu
+// fix the 'invalid image data' bug --- hongyu
+//
 // Revision 1.32  2000/02/22 10:00:48  hongyu
 // *** empty log message ***
 //
@@ -72,7 +75,7 @@ public class DEViseServer implements Runnable
     public int dataPort = 0, cmdPort = 0, switchPort = 0;
     public int jssport = 0;
     private DEViseCommSocket socket = null;
-    private int devisedTimeout = 10 * 1000;
+    private int devisedTimeout = 180 * 1000;
     private int socketTimeout = 1000;
 
     private DEViseClient newClient = null;
@@ -203,7 +206,8 @@ public class DEViseServer implements Runnable
             time += timestep;
 
             try {
-                socket = new DEViseCommSocket(hostname, cmdPort, dataPort, 1000);
+                socket = new DEViseCommSocket(hostname, cmdPort, dataPort,
+				  socketTimeout);
 
                 pop.pn("Successfully connect to devised ...");
 
