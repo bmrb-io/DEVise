@@ -1,7 +1,24 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:15:53  jussi
+  Added CVS header.
+*/
 
 /* implements default mapping for connectors.
    Default:
@@ -11,6 +28,7 @@
 
 #ifndef TDataCMap_h
 #define TDataCMap_h
+
 #include "Color.h"
 #include "Pattern.h"
 #include "ConnectorShape.h"
@@ -20,61 +38,62 @@
 
 class Stream;
 class Connector;
-class TDataCMap{
+
+class TDataCMap {
 public:
-	TDataCMap(){
-		defaultColor = WhiteColor;
-		defaultPattern = Pattern0;
-		_shapeId = ContLineConnectorID;
-		_numShapeAttrs = 0;
-	};
+  TDataCMap(){
+    defaultColor = WhiteColor;
+    defaultPattern = Pattern0;
+    _shapeId = ContLineConnectorID;
+    _numShapeAttrs = 0;
+  }
 
-	/* called by to map 2 gdata to one connection */
-	virtual Boolean MapToConnection(void *grec1,void *grec2, Connector *c){
-		GDataBinRec *s1 = (GDataBinRec *)grec1;
-		GDataBinRec *s2 = (GDataBinRec *)grec2;
-		c->x1 = s1->x;
-		c->y1 = s1->y;
-		c->x2 = s2->x;
-		c->y2 = s2->y;
-		c->pattern = defaultPattern;
-		c->color = defaultColor;
-		c->cShapeID = _shapeId;
-		c->numShapeAttrs = _numShapeAttrs;
-		for (int i=0; i < _numShapeAttrs; i++){
-			c->shapeAttrs[i] = _shapeAttrs[i];
-		}
-
-		return Map(grec1,grec2,c);
-	};
+  /* called by to map 2 gdata to one connection */
+  virtual Boolean MapToConnection(void *grec1,void *grec2, Connector *c) {
+    GDataBinRec *s1 = (GDataBinRec *)grec1;
+    GDataBinRec *s2 = (GDataBinRec *)grec2;
+    c->x1 = s1->x;
+    c->y1 = s1->y;
+    c->x2 = s2->x;
+    c->y2 = s2->y;
+    c->pattern = defaultPattern;
+    c->color = defaultColor;
+    c->cShapeID = _shapeId;
+    c->numShapeAttrs = _numShapeAttrs;
+    for (int i=0; i < _numShapeAttrs; i++){
+      c->shapeAttrs[i] = _shapeAttrs[i];
+    }
+    
+    return Map(grec1,grec2,c);
+  }
 
 protected:
+  /* this is specified by the user */
+  virtual Boolean Map(void *, void *, Connector *) { return false; }
 
-	/* this is specified by the user */
-	virtual Boolean Map(void *, void *, Connector *){ return false;};
-
-	void SetDefaultColor(Color c) { defaultColor = c; };
-	void SetDefaultPattern(Pattern p){ defaultPattern = p; };
-	void SetDefaultConnectorShape(ConnectorShapeID shapeId,
-		int numAttrs=0,ShapeAttr *shapeAttr= NULL){
-		if (numAttrs > MAX_CONNECTOR_SHAPE_ATTRS){
-			fprintf(stderr,"ConnectorMapping::SetDefaultShape:too many attrs %d\n", numAttrs);
-			Exit::DoExit(1);
-		}
-		_shapeId = shapeId;
-		_numShapeAttrs = numAttrs;
-		_shapeAttrs= shapeAttr;
-	}
-	Color GetDefaultColor(){ return defaultColor;};
-	Pattern GetDefaultPattern() { return defaultPattern; };
-
+  void SetDefaultColor(Color c) { defaultColor = c; };
+  void SetDefaultPattern(Pattern p){ defaultPattern = p; };
+  void SetDefaultConnectorShape(ConnectorShapeID shapeId,
+				int numAttrs = 0,
+				ShapeAttr *shapeAttr = NULL) {
+    if (numAttrs > (int)MAX_CONNECTOR_SHAPE_ATTRS){
+      fprintf(stderr, "ConnectorMapping::SetDefaultShape:too many attrs %d\n",
+	      numAttrs);
+      Exit::DoExit(1);
+    }
+    _shapeId = shapeId;
+    _numShapeAttrs = numAttrs;
+    _shapeAttrs= shapeAttr;
+  }
+  Color GetDefaultColor(){ return defaultColor;}
+  Pattern GetDefaultPattern() { return defaultPattern; }
 
 private:
-	Color defaultColor;
-	Pattern defaultPattern;
-	ConnectorShapeID _shapeId;
-	int _numShapeAttrs;
-	ShapeAttr *_shapeAttrs;
+  Color defaultColor;
+  Pattern defaultPattern;
+  ConnectorShapeID _shapeId;
+  int _numShapeAttrs;
+  ShapeAttr *_shapeAttrs;
 };
 
 #endif
