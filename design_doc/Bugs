@@ -2894,6 +2894,8 @@ Num Date        Status  Description
 			the collaborator sends a command, the JSPoP doesn't
 			necessarily distinguish it from the leader.)
 
+723 10/24/01	OPEN	JavaScreen: CGI mode doesn't work anymore. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
