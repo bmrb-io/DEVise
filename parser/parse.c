@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/11/25 19:01:13  jussi
+  Updated copyright notice and cleaned up the code a bit.
+
   Revision 1.4  1995/09/23  00:03:53  ravim
   Parser changed to ANSI style - g++ now used uniformly
 
@@ -125,6 +128,8 @@ Parse dynamic attributes
 
 void ParseAttrs(MappingRec *rec)
 {
+  int num = 0;
+
   while (token != TOKEN_LEFT_BRACE) {
     switch(token) {
 
@@ -162,7 +167,7 @@ void ParseAttrs(MappingRec *rec)
       if (GetToken() != TOKEN_INT) {
 	syntax_error();
       }
-      int num = atoi(yytext);
+      num = atoi(yytext);
       if (num < 0 || num > MAX_ATTRS) {
 	printf("shape attr %d invalid\n", num);
 	exit(2);
