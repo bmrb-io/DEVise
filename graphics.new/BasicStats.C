@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.29  1997/08/20 22:10:50  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.28.8.1  1997/08/14 15:46:27  wenger
   Fixed bug 215; cleaned up duplicate code in BasicStats.C.
 
@@ -114,6 +118,7 @@
 //#define DEBUG
 
 #include <stdio.h>
+#include <math.h>
 
 #include "BasicStats.h"
 #include "ViewGraph.h"
@@ -221,35 +226,40 @@ void BasicStats::Done()
     avg = ysum / nsamples;
     avg_x = xsum / nsamples;
     avg_xy = xysum / nsamples;
-
-    // this doesn't appear to be the right formula for var and std
-    // but it seems to be correct for the usage in computing clow
-    // and chigh below
-    var = ysum_sqr  - nsamples * avg * avg;
+    var = ysum_sqr/nsamples - avg * avg;
     std = sqrt(var);
-    // Compute confidence interval - for now use z85, z90 and z95
+    var_x = xsum_sqr/nsamples - avg_x * avg_x;
+    std_x = sqrt(var_x);
+    cov_xy = avg_xy - avg * avg_x;
+    if(var_x != 0 ) {
+      line_a = avg - (cov_xy/var_x) * avg_x;
+      line_b = cov_xy / var_x;
+    } else {
+      line_a = 0;
+      line_b = 0;
+    }
+
+    // Compute confidence intervals for the true mean, mu.
+    // (for now use z85, z90 and z95)
     for(int i = 0; i < NUM_Z_VALS; i++) {
       clow[i] = avg - (zval[i] * std) / (sqrt(nsamples));
       chigh[i] = avg + (zval[i] * std) / (sqrt(nsamples)); 
     }
 
-    // recompute var and std with correct formulas
-    if (nsamples >= 1) {
-      var = ysum_sqr/nsamples - avg * avg;
-      std = sqrt(var);
-      var_x = xsum_sqr/nsamples - avg_x * avg_x;
-      std_x = sqrt(var_x);
-      cov_xy = avg_xy - avg * avg_x;
-      if(var_x != 0 ) {
-	 line_a = avg - (cov_xy/var_x) * avg_x;
-	 line_b = cov_xy / var_x;
-       } else {
-	 line_a = 0;
-	 line_b = 0;
-       }
-    } else {
-      var = 0;
-      std = 0;
+  } else {                      // no samples!
+    avg = 0;
+    avg_x = 0;
+    avg_xy = 0;
+    var = 0;
+    std = 0;
+    var_x = 0;
+    std_x = 0;
+    cov_xy = 0;
+    line_a = 0;
+    line_b = 0;
+    for(int i = 0; i < NUM_Z_VALS; i++) {
+      clow[i] = avg;
+      chigh[i] = avg;
     }
   }
 }
