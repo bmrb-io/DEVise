@@ -884,6 +884,12 @@ Num Date        Status  Description
 			symbols from being drawn (see Mars demo, MolBio
 			demo). (rkw)
 
+219 09/11/97    OPEN    Group by's are not working.  Seems related to new
+                        schema file format. (ksb)
+
+220 09/11/97    OPEN    '5' doesn't go to 0 on bar graphs. (ksb)
+
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
