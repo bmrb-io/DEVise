@@ -6,7 +6,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/07/12 03:52:28  jussi
+  Initial revision.
+*/
 
 #define MODIFIED
 
@@ -32,10 +35,13 @@
 #ifndef DCE_H
 #define DCE_H
 
+#ifndef ULTRIX
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/sem.h>
 #include <sys/shm.h>
+#endif
+
 #include <errno.h>
 #include <assert.h>
 
