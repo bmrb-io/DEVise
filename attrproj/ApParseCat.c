@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/06/07 19:40:34  wenger
+  Integrated some of the special attribute projection sources back
+  into the regular Devise sources.
+
   Revision 1.3  1996/04/30 15:31:37  wenger
   Attrproj code now reads records via TData object; interface to Birch
   code now in place (but not fully functional).
@@ -482,7 +486,7 @@ ParseCatPhysical(char *catFile, char *dataFile, Boolean physicalOnly,
 		goto error;
 	}
 	_line = 0;
-	while (fgets(buf,LINESIZE, file) != NULL)
+	while ((fgets(buf,LINESIZE, file) != NULL) && strcmp(buf, "endSchema\n"))
 	{
 		StripTrailingNewline(buf);
 

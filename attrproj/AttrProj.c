@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/14 15:34:48  wenger
+  Added GetDataSize method to AttrProj class; removed vector.o from
+  AttrProjLib.o; various cleanups.
+
   Revision 1.4  1996/05/01 16:19:32  wenger
   Initial version of code to project attributes now working.
 
@@ -65,6 +69,12 @@ AttrProj::AttrProj(char *schemaFile, char *attrProjFile, char *dataFile)
 {
 	DO_DEBUG(printf("AttrProj::AttrProj(%s, %s, %s)\n", schemaFile,
 		attrProjFile, dataFile));
+
+	// Provision for having the schema in the data file.
+	if ((schemaFile == NULL) || !strcmp(schemaFile, ""))
+	{
+		schemaFile = dataFile;
+	}
 
 //TEMPTEMP  do something with return value
 	ParseCat(schemaFile, dataFile, _tDataP);

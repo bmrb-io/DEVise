@@ -3,12 +3,15 @@
 
 CC = g++
 
-LDFLAGS = $(ARCH_LDFLAGS) $(ALLOBJ) -ltcl -lm $(ARCH_LDPOST)
+#LDFLAGS = $(ARCH_LDFLAGS) $(ALLTESTOBJ) -ltcl -lm $(ARCH_LDPOST)
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
 	-fexternal-templates -Wall -Wno-unused -O -DUNIX -DATTRPROJ
 
 TESTSRC = aptest.c
 TESTOBJ = $(TESTSRC:.c=.o)
+
+SHOWSRC = show.c
+SHOWOBJ = $(SHOWSRC:.c=.o)
 
 LOCALSRC = AttrProj.c ApExit.c ApGroup.c ApGroupDir.c ApInit.c \
 	ApItemList.c ApParseCat.c ApTDataAsciiInterp.c ApTDataAscii.c \
@@ -29,12 +32,16 @@ LIBOBJ = \
 
 LIB = AttrProjLib.o
 
-ALLOBJ = $(TESTOBJ) $(LIB)
+ALLTESTOBJ = $(TESTOBJ) $(LIB)
+ALLSHOWOBJ = $(SHOWOBJ) $(LIB)
 
-all: aptest
+all: aptest show
 
-aptest: $(ALLOBJ)
-	$(CC) -o $@ $(LDFLAGS)
+aptest: $(ALLTESTOBJ)
+	$(CC) -o $@ $(ARCH_LDFLAGS) $(ALLTESTOBJ) -ltcl -lm $(ARCH_LDPOST)
+
+show: $(ALLSHOWOBJ)
+	$(CC) -o $@ $(ARCH_LDFLAGS) $(ALLSHOWOBJ) -ltcl -lm $(ARCH_LDPOST)
 
 $(LIB): $(LIBOBJ)
 	$(LD) -r -o $@ $(LIBOBJ)
