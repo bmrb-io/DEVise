@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.63  1997/11/23 21:23:11  donjerko
+# *** empty log message ***
+#
 # Revision 1.62  1997/11/12 23:16:37  donjerko
 # *** empty log message ***
 #
@@ -1495,6 +1498,43 @@ url.o: /s/gcc/lib/g++-include/std/cassert.h /usr/include/assert.h
 url.o: /s/gcc/lib/g++-include/std/sinst.h SockStream.h exception.h
 url.o: ../../unidata/sysdep.h /usr/include/varargs.h
 url.o: /usr/include/sys/va_list.h
+ODBCInterface.dummy.o: types.h /s/gcc/lib/g++-include/string
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/std/string.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/std/bastring.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/std/stddef.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/std/cstddef.h
+ODBCInterface.dummy.o: /usr/include/stddef.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/std/straits.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/std/cctype.h
+ODBCInterface.dummy.o: /usr/include/ctype.h /usr/include/sys/feature_tests.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/std/cstring.h
+ODBCInterface.dummy.o: /usr/include/string.h /s/gcc/lib/g++-include/cassert
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/std/cassert.h
+ODBCInterface.dummy.o: /usr/include/assert.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/std/sinst.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/new.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/std/new.h exception.h
+ODBCInterface.dummy.o: ../../unidata/sysdep.h /usr/include/varargs.h
+ODBCInterface.dummy.o: /usr/include/sys/va_list.h Utility.h queue.h Array.h
+ODBCInterface.dummy.o: Interface.h site.h myopt.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/vector
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/vector.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/function.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/bool.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/algobase.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/pair.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/iterator.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/iostream.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/streambuf.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/libio.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/defalloc.h
+ODBCInterface.dummy.o: /usr/include/stdlib.h /usr/include/limits.h
+ODBCInterface.dummy.o: /usr/include/sys/isa_defs.h url.h SockStream.h
+ODBCInterface.dummy.o: listop.h Iterator.h /s/gcc/lib/g++-include/set
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/set.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/tree.h
+ODBCInterface.dummy.o: /s/gcc/lib/g++-include/projectn.h DevRead.h
+ODBCInterface.dummy.o: StandardRead.h Inserter.h Engine.h catalog.h
 
 SBMInit.o: SBMInit.h ../../graphics.new/SBufMgr.h /usr/include/sys/types.h
 SBMInit.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
