@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.24  1996/12/16 11:14:28  kmurli
+#  No change
+#
 #  Revision 1.23  1996/11/18 18:12:38  donjerko
 #  Added DTE make stuff
 #
@@ -44,8 +47,8 @@ CFLAGS = -gstabs $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 # ksb: I created an unfortunate dependency from graphics to graphics.new
 # which caused -lgraphicsnew to be listed twice below...
 LDFLAGS = -L../DTE/ -L../graphics.new -L../graphics -L../tape -L../issm \
-	-L../crsp -L../compustat -lgraphicsnew -ldte -lgraphics \
-	-lgraphicsnew \
+	-L../crsp -L../compustat -lgraphicsnew -lgraphics \
+	-lgraphicsnew -ldte \
 	-lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS)
 
 SRC = generic.c devise.C deviseb.C CompDate.c

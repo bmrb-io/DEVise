@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.18  1996/11/18 18:13:40  donjerko
+#  Added final touches for DTE
+#
 #  Revision 1.17  1996/08/06 20:12:13  wenger
 #  Set up makefiles to easily compile with -g flag; other cleanup of
 #  makefiles.
@@ -54,8 +57,8 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
 # twice below.
 LDFLAGS = $(ARCH_LDFLAGS) \
 	-L../graphics.new -L../graphics -L../tape -L../issm -L../DTE \
-	-L../crsp -L../compustat -lmonolith -lgraphicsnew -ldte -lgraphics \
-	-lgraphicsnew -lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS) \
+	-L../crsp -L../compustat -lmonolith -lgraphicsnew -lgraphics \
+	-lgraphicsnew -ldte -lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS) \
 	$(ARCH_LDPOST)
 
 ALLSRC = disp.c TDataMulti.c TDataHost.c TDataCycle.c Message.c \
