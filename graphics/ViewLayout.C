@@ -15,11 +15,14 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+ * Revision 1.1  1995/12/02  20:53:05  jussi
+ * Initial revision.
+ **/
 
 #include "ViewLayout.h"
 
-#define DEBUG
+//#define DEBUG
 
 /* top level window */
 
