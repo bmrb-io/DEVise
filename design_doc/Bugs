@@ -2870,8 +2870,9 @@ Num Date        Status  Description
 			out of collaboration mode (separate this from socket
 			vs. CGI). (elu/rkw)
 
-718 10/22/01	OPEN	JavaScreen: client sockets seem to never get removed
+718 10/22/01	FIXED	JavaScreen: client sockets seem to never get removed
 			from active sockets list in JSPoP. (rkw)
+			(Fixed by rkw, 10/22/01.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

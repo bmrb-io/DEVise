@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.26  2001/10/12 19:12:41  wenger
+// Changed client ID generation to avoid any chance of duplicates;
+// updated command format documentation.
+//
 // Revision 1.25  2001/10/12 01:55:44  xuk
 // Using timestamp-based client ID.
 // 1. cmdId has been expanded to long int;
@@ -290,22 +294,25 @@ public class DEViseCommSocket
     public synchronized void closeSocket()
     {
         try {
-            if (os != null)
+            if (os != null) {
                 os.close();
+	    }
         } catch (IOException e) {
 	    System.err.println(e.getMessage());
         }
 
         try {
-            if (is != null)
+            if (is != null) {
                 is.close();
+	    }
         } catch (IOException e) {
 	    System.err.println(e.getMessage());
         }
 
         try {
-            if (socket != null)
+            if (socket != null) {
                 socket.close();
+	    }
         } catch (IOException e) {
 	    System.err.println(e.getMessage());
         }

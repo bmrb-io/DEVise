@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.62  2001/10/19 18:39:48  wenger
+// Changed socket receive timeout to 1000 millisec as emergency fix for
+// JSPoP restart problem.
+//
 // Revision 1.61  2001/10/12 19:12:42  wenger
 // Changed client ID generation to avoid any chance of duplicates;
 // updated command format documentation.
@@ -337,8 +341,7 @@ public class jspop implements Runnable
     private Vector activeClients = new Vector();
 
     // Sockets that are connected to a JS.
-    //private Vector activeSockets = new Vector();
-    public Vector activeSockets = new Vector();
+    private Vector activeSockets = new Vector();
 
     // Maximum number of client objects allowed.
     private int maxClient = DEViseGlobals.DEFAULTMAXCLIENT;
@@ -657,6 +660,10 @@ public class jspop implements Runnable
 		       "\"");		
 
 		    activeSockets.addElement(socket);
+		    if (DEBUG >= 1) {
+		        System.out.println(activeSockets.size() +
+			  " active client sockets in JSPoP");
+		    }
 			
 
 		    if (id == DEViseGlobals.DEFAULTID) { // new JS
@@ -822,7 +829,9 @@ public class jspop implements Runnable
 	    for (int i = 0; i < activeSockets.size(); i++) {
 		DEViseCommSocket socket = (DEViseCommSocket)activeSockets.elementAt(i);
 	    
-		if (socket != null) {
+		// Note: socket will never be null here; socket.is is null
+		// if the socket has been closed. RKW 2001-10-22.
+		if (socket.is != null) {
 		    if (! socket.isEmpty()) {
 			long id;
 			int cgi;
@@ -864,7 +873,11 @@ public class jspop implements Runnable
 			    throw new YException("No client for ID: " + id);
 			}
 		    }
-		} else { // socket == null
+		} else { // socket.is == null
+		    if (DEBUG >= 2) {
+		        System.out.println(
+			  "Removing client socket from active sockets list");
+		    }
 		    activeSockets.removeElement(socket);
 		}
 	    } // for
