@@ -2618,13 +2618,15 @@ Num Date        Status  Description
 			manually (as opposed to automatically because the
 			leader exited). (rkw)
 
-659 04/20/01	OPEN	JavaScreen: if no leaders are available for
+659 04/20/01	FIXED	JavaScreen: if no leaders are available for
 			collaboration, the selection dialog should not
 			be shown. (rkw)
+			(Fixed by xuk, 4/21/01.)
 
-660 04/20/01	OPEN	JavaScreen: there is no way for a user to tell
+660 04/20/01	FIXED	JavaScreen: there is no way for a user to tell
 			whether they've enabled collaboration if no follower
 			is connected to them. (rkw)
+			(Fixed by xuk, 4/21/01.)
 
 661 04/20/01	OPEN	JavaScreen: if the user enables collaboration and
 			then becomes a collaboration follower with that
@@ -2633,8 +2635,9 @@ Num Date        Status  Description
 			follower should disable being a collaboration
 			leader.) (rkw)
 
-662 04/20/01	OPEN	JavaScreen: there is no GUI to *disable* collaboration.
+662 04/20/01	FIXED	JavaScreen: there is no GUI to *disable* collaboration.
 			(rkw)
+			(Fixed by xuk, 4/21/01.)
 
 663 04/20/01	OPEN	JavaScreen: collaboration seems generally less
 			reliable if the follower had a pre-collaboration
