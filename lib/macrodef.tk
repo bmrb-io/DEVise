@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.79  1997/03/21 16:18:36  guangshu
+#	Minor change to color of stats.
+#
 #	Revision 1.78  1997/03/20 22:32:55  guangshu
 #	Changed statistics layout.
 #
@@ -917,7 +920,7 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
 	return
     }
 
-    puts "In MacroDefAuto($tdata, $schemaname)"
+#    puts "In MacroDefAuto($tdata, $schemaname)"
 	
 #    set schema [DEVise getSchema $tdata]
 #   set schemaname [file tail $schemafile]
@@ -1130,7 +1133,8 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
 #    puts "The ylist is $ylist"
     
     if {$is_dte_type} {
-	    DEVise create tdata $tdata $tdata "$x $ylist"
+            set result [DEVise create tdata $tdata $tdata "$x $ylist"]
+            set tdata $result
 	}
     MacroDefAutoActual $tdata $viewsel $linksel $windowsel $bgcolor \
 	    $titlesel $xaxissel $yaxissel $x $ylist $newgdata
