@@ -30,6 +30,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  2001/02/20 20:02:55  wenger
+  Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+  to the trunk.
+
   Revision 1.18.4.1  2001/02/16 21:38:00  wenger
   Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
   a web browser) on 'sets' of visual filters.
@@ -305,6 +309,10 @@ void VisualLink::Run()
   _filterLocked = false;
 }
 
+//TEMPTEMP -- this doesn't seem to work if views are piled, because only
+// the first view gets redrawn before we get here, so the data information
+// is not up-to-date.  (unless the top view in the pile is the one that
+// has auto filter updating turned on
 void
 VisualLink::GoHome(ViewGraph *view, Boolean explicitRequest)
 {
@@ -326,8 +334,8 @@ VisualLink::GoHome(ViewGraph *view, Boolean explicitRequest)
   // Get home of each view in the link, save the extremes.
   double xMin = DBL_MAX;
   double yMin = DBL_MAX;
-  double xMax = DBL_MIN;
-  double yMax = DBL_MIN;
+  double xMax = -DBL_MAX;
+  double yMax = -DBL_MAX;
 
   int index = _viewList->InitIterator();
   while (_viewList->More(index)) {
