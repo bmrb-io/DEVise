@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1998/08/25 20:56:31  wenger
+  Implemented support for JavaScreen cursors (not yet fully tested).
+
   Revision 1.21  1998/08/24 15:01:03  wenger
   Implemented support for JavaScreen drill-down.
 
@@ -119,7 +122,6 @@
 #include "ViewGraph.h"
 #include "Init.h"
 #include "Timer.h"
-#include "QueryProc.h"
 #include "Display.h"
 #include "ArgList.h"
 #include "Cursor.h"
@@ -129,16 +131,6 @@
 static char *_sessionDir = NULL;
 
 off_t getFileSize(const char* filename);
-
-// Wait for all queries to finish before continuing.
-static void
-WaitForQueries()
-{
-    QueryProc *qp = QueryProc::Instance();
-    do {
-      Dispatcher::SingleStepCurrent();
-    } while (!qp->Idle());
-}
 
 // Determine whether the given point is within the given rectangle.
 static Boolean
@@ -222,6 +214,14 @@ JavaScreenCmd::OpenSession()
 		return;
 	}
 
+	// Close the current session, if any, to prevent possible name conflicts
+	// and other problems.
+    int width = DeviseDisplay::DefaultDisplay()->DesiredScreenWidth();
+    int height = DeviseDisplay::DefaultDisplay()->DesiredScreenHeight();
+    ControlPanel::Instance()->DestroySessionData();
+    DeviseDisplay::DefaultDisplay()->DesiredScreenWidth() = width;
+    DeviseDisplay::DefaultDisplay()->DesiredScreenHeight() = height;
+
 	if (_sessionDir == NULL) {
 		_sessionDir = CopyString(getenv("DEVISE_SESSION"));
 	}
@@ -260,13 +260,13 @@ JavaScreenCmd::OpenSession()
     DevStatus result = Session::Open(fullpath);
 	if (!result.IsComplete())
 	{
-		errmsg = "{Error opening session}";
+		errmsg = "Error opening session";
 		_status = ERROR;
 		return;
 	}
 
 	// Wait for all queries to finish before continuing.
-	WaitForQueries();
+	Dispatcher::Current()->WaitForQueries();
 
 	// Dump all window images to files.
 	int winIndex = DevWindow::InitIterator();
@@ -356,6 +356,9 @@ JavaScreenCmd::OpenSession()
 	  }
 	}
 	DevWindow::DoneIterator(winIndex);
+#if defined(DEBUG)
+    printf("End of OpenSession; _status = %d\n", _status);
+#endif
 }
 
 void
@@ -389,7 +392,7 @@ JavaScreenCmd::MouseAction_Click()
 
 	// Make sure everything has actually been re-drawn before we
 	// continue.
-	WaitForQueries();
+	Dispatcher::Current()->WaitForQueries();
 
 	// Send the updated window image(s).
 	_status = SendChangedWindows();
@@ -482,7 +485,8 @@ JavaScreenCmd::MouseAction_RubberBand()
 	  "Bad window name");
 
 	int index = window->InitIterator();
-	while (window->More(index)) {
+	Boolean found = false;
+	while (window->More(index) && !found) {
 		ViewWin *view = window->Next(index);
 
 		int viewX, viewY;
@@ -532,11 +536,14 @@ JavaScreenCmd::MouseAction_RubberBand()
 
 			// Make sure everything has actually been re-drawn before we
 			// continue.
-			WaitForQueries();
+			Dispatcher::Current()->WaitForQueries();
 
 
 			// Send the updated window image(s).
 			_status = SendChangedWindows();
+
+			// Be sure to only do this once if there are piled views.
+			found = true;
 		}
 	}
 	window->DoneIterator(index);
@@ -615,7 +622,7 @@ JavaScreenCmd::KeyAction()
 
 		// Make sure everything has actually been re-drawn before we
 		// continue.
-		WaitForQueries();
+		Dispatcher::Current()->WaitForQueries();
 
 		// Send the updated window image(s).
 		_status = SendChangedWindows();
@@ -640,9 +647,14 @@ JavaScreenCmd::SaveSession()
 		return;
 	}
 
-	//TEMP -- is arg full path or just file name?
+	if (_sessionDir == NULL) {
+		_sessionDir = CopyString(getenv("DEVISE_SESSION"));
+	}
 
-	if (!Session::Save(_argv[0], false, false, false).IsComplete()) {
+	char fullpath[MAXPATHLEN];
+	sprintf(fullpath, "%s/%s", _sessionDir, _argv[0]);
+
+	if (!Session::Save(fullpath, false, false, false).IsComplete()) {
 		errmsg = "{Error saving session}";
 		_status = ERROR;
 	} else {
@@ -792,7 +804,7 @@ char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 	"JAVAC_EraseCursor",
 	"JAVAC_Done",
 	"JAVAC_Error",
-	"JAVAC_Fail"
+	"JAVAC_Fail",
 	"JAVAC_UpdateImage"
 };
 
@@ -1024,6 +1036,7 @@ JavaScreenCmd::SendWindowImage(const char* fileName, int& filesize)
 
 #if defined(DEBUG)
     printf("  done sending window image\n");
+	printf("  status = %d\n", status);
 #endif
 
 	return status;
@@ -1166,6 +1179,10 @@ JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo)
 		}
 		delete [] argv;
 	}
+#if defined(DEBUG)
+    printf("exiting JavaScreenCmd::RequestCreateWindow(); status = %d\n",
+	  status);
+#endif
 	return status;
 }
 
@@ -1280,6 +1297,8 @@ JavaScreenCmd::ReturnVal(int argc, char** argv)
 	printf(")\n");
 #endif
 
+#if 0 // I don't understand what the heck all of this junk is for, and taking
+	  // it out doesn't seem to change how anything works.  RKW 1998-08-28.
 	static	char* buf = NULL;
 	static	int bufsize = 0;
 	int		eleSize = 0;
@@ -1302,10 +1321,15 @@ JavaScreenCmd::ReturnVal(int argc, char** argv)
 	// We can also send back multiple commands by seperating them with "\n"
 	sprintf(buf,"%s",argv[argc-1]);
 	nargv[argc-1]= buf;
+		nargv[argc-1] = argv[argc-1];
 
 	// send the command out
 	_control->ReturnVal(API_JAVACMD, argc, nargv, true);
 	delete []nargv;
+#else
+	// send the command out
+	_control->ReturnVal(API_JAVACMD, argc, argv, true);
+#endif
 }
 
 void

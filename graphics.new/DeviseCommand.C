@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  1998/08/10 19:08:04  wenger
+  Moved command result buffer from DeviseCommand class to ControlPanel
+  class -- saves 7 MB of memory!
+
   Revision 1.20  1998/08/03 18:38:38  wenger
   Implemented JAVAC_ServerExit and JAVAC_SaveSession commands; partly
   implemented several other new commands for the JavaScreen.
@@ -1327,21 +1331,9 @@ DeviseCommand_getStringCount::Run(int argc, char** argv)
 int
 DeviseCommand_waitForQueries::Run(int argc, char** argv)
 {
-    {
-        {
-          // Arguments: none
-          // Returns: "done"
-    
-          // Always go once thru the dispatcher, in case there's a view that
-          // has requested a callback but hasn't started a query yet.
-          QueryProc *qp = QueryProc::Instance();
-          do {
-    	Dispatcher::SingleStepCurrent();
-          } while (!qp->Idle());
-          control->ReturnVal(API_ACK, "done");
-          return 1;
-        }
-    }
+    // Arguments: none
+    // Returns: "done"
+    Dispatcher::Current()->WaitForQueries();
     return true;
 }
 int

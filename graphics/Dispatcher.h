@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.32  1998/06/23 17:51:37  wenger
+  Added client timeout to Devise -- quits if no commands from client
+  within specified period.
+
   Revision 1.31  1998/05/02 09:02:27  taodb
   Added support for command logging
   Added support for registering events with delay
@@ -240,6 +244,12 @@ public:
   
   /* Print what's in the queue */
   void Print();
+
+  /* Wait for all pending queries to finish */
+  void WaitForQueries();
+
+  /* Number of pending callbacks */
+  int CallbacksPending();
 
   /* Check callback list for self-consistency. */
   Boolean CallbacksOk();

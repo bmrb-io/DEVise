@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.45  1998/06/23 17:51:36  wenger
+  Added client timeout to Devise -- quits if no commands from client
+  within specified period.
+
   Revision 1.44  1998/05/14 18:21:00  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -226,6 +230,7 @@
 #include "Display.h"
 #include "DebugLog.h"
 #include "Timer.h"
+#include "QueryProc.h"
 
 //#define DEBUG
 //#define DEBUG_LOG
@@ -812,6 +817,59 @@ Boolean Dispatcher::CallbacksOk()
 
   Timer::StartTimer();
   return result;
+}
+
+void
+ Dispatcher::WaitForQueries()
+{
+#if defined(DEBUG)
+  printf("Dispatcher::WaitForQueries()\n");
+#endif
+
+  int callbackLimit;
+  if (Init::ConvertGData()) {
+    callbackLimit = 1; // QP always requests callback
+  } else {
+    callbackLimit = 0;
+  }
+
+  QueryProc *qp = QueryProc::Instance();
+
+  int count = 0;
+  do {
+    Run1();
+    if (qp->Idle() && (CallbacksPending() <= callbackLimit)) {
+      count++;
+    } else {
+      count = 0;
+    }
+  } while (count < 2); // go thru twice just to be safe
+
+#if defined(DEBUG)
+  printf("Leaving Dispatcher::WaitForQueries()\n");
+#endif
+}
+
+int
+Dispatcher::CallbacksPending()
+{
+  Timer::StopTimer();
+
+  int callbackCount = 0;
+  int index;
+  for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
+    DispatcherInfo *info = _callbacks.Next(index);
+    if (info->callback_requested) callbackCount++;
+  }
+  _callbacks.DoneIterator(index);
+
+  Timer::StartTimer();
+
+#if defined(DEBUG)
+  printf("%d callbacks pending\n", callbackCount);
+#endif
+
+  return callbackCount;
 }
 
 void Dispatcher::RequestCallback(DispatcherID info)

@@ -1386,7 +1386,7 @@ Num Date        Status  Description
 
 366 06/15/98	OPEN	cslib test client core dumps on Linux. (rkw)
 
-367 06/19/98	OPEN	Piled views sometimes do not show up correctly in
+367 06/19/98	FIXED	Piled views sometimes do not show up correctly in
 			the JavaScreen (see
 			/p/devise/demo/session/FamMed_visits.tk).  (rkw)
 
