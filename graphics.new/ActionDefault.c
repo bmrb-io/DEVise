@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.43  1999/06/23 19:45:10  wenger
+  Increased the number of records drill-down can send to the screen; if there
+  are too many records, the message sent to the JavaScreen is now "Too much
+  data to show" instead of "see text window"; generally cleaned up the drill-
+  down code.
+
   Revision 1.42  1999/06/21 17:21:22  wenger
   Drill-down now works on all views in a pile.
 
@@ -323,6 +329,22 @@ static Boolean PutMessage(char *msg)
     return true;
 }
 
+static void
+PutTooMuchMsg()
+{
+  char buf[128];
+  sprintf(buf, "%s%s", "(more data than buffer can hold)",
+      Session::GetIsJsSession() ? "" : " (see text window)");
+  int length = strlen(buf) + 1;
+
+  while(numMsgs >= MAX_MSGS || msgIndex + length >= MSG_BUF_SIZE) {
+    numMsgs--;
+    msgIndex = msgPtr[numMsgs] - msgBuf;
+  }
+
+  PutMessage(buf);
+}
+
 static Boolean InitPutMessage(double x, AttrType xAttr,
 			      double y, AttrType yAttr)
 {
@@ -416,9 +438,7 @@ Boolean ActionDefault::PopUp(ViewGraph *view, Coord x, Coord y, Coord xHigh,
     }
 
     if (!printedRecords) {
-        InitPutMessage((x + xHigh) / 2.0, xAttr, (y + yHigh) / 2.0, yAttr);
-        PutMessage("");
-        PutMessage(errorMsg);
+        PutTooMuchMsg();
     }
 
     EndPutMessage(numMsgs, msgs);
