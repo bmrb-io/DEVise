@@ -1,0 +1,181 @@
+#!/s/perl/bin/perl -w
+
+# Richard Chang
+# 27 January 2000
+
+use FileHandle;
+
+# $number = substr($acc_no, 3, 4); # eg, if file == "bmr4096.str"
+$number = '4096';
+
+$BACKBONE = new FileHandle 'backbone.dat';
+die "Can't open backbone data file" unless (defined $BACKBONE);
+$COMBINED = new FileHandle '>'.$number.'_total.dat';
+die "Can't open combined.dat" unless (defined $COMBINED);
+
+$CSI = new FileHandle $number."c.dat";
+die "Can't open csi data file" unless (defined $CSI);
+&initData($CSI, \@c_data);
+
+$DELTA = new FileHandle $number."d.dat";
+die "Can't open delta shift data file" unless (defined $DELTA);
+&initData($DELTA, \@d_data);
+
+$PERCENT = new FileHandle $number."p.dat";
+die "Can't open percent data file" unless (defined $PERCENT);
+&initData($PERCENT, \@p_data);
+
+$COUPLING = new FileHandle $number."g.dat";
+die "Can't open coupling data file" unless (defined $COUPLING);
+&initData($COUPLING, \@g_data);
+
+$FILE_R = new FileHandle $number."r.dat";
+die "Can't open h-exchange rate data file" unless (defined $FILE_R);
+&initData($FILE_R, \@r_data);
+
+$FILE_F = new FileHandle $number."f.dat";
+die "Can't open h-exchange protection factor data file" 
+  unless (defined $FILE_F);
+&initData($FILE_F, \@f_data);
+
+$FILE_S = new FileHandle $number."s.dat";
+die "Can't open s2 data file" unless (defined $FILE_S);
+&initData($FILE_S, \@s_data);
+
+$FILE_N = new FileHandle $number."n.dat";
+die "Can't open NOE data file" unless (defined $FILE_N);
+&initData($FILE_N, \@n_data);
+
+$FILE_T = new FileHandle $number."t.dat";
+die "Can't open t2 data file" unless (defined $FILE_T);
+&initData($FILE_T, \@t_data);
+
+$FILE_U = new FileHandle $number."u.dat";
+die "Can't open t2_600 data file" unless (defined $FILE_U);
+&initData($FILE_U, \@u_data);
+
+$FILE_O = new FileHandle $number."o.dat";
+die "Can't open order data file" unless (defined $FILE_O);
+&initData($FILE_O, \@o_data);
+
+$FILE_I = new FileHandle $number."i.dat";
+die "Can't open distance constraint count data file" 
+  unless (defined $FILE_I);
+&initData($FILE_I, \@i_data);
+
+# additional files can go here
+# $FILE_X = new FileHandle "filename.dat";
+# die "Can't open x data file" unless (defined $FILE_X);
+# &initData($FILE_X, \@x_data);
+
+READ: while (<$BACKBONE>) {
+  chomp;
+  last READ if ($_ eq 'stop_');	# ignore last line
+
+  print $COMBINED $_;
+  @b_data = split(' ');
+  $curr_res = $b_data[2];
+
+  # percent 1H, 13C, 15N
+  @array = (2, 3, 4);
+  &addData($PERCENT, \@p_data, \@array);
+
+  # delta chemical shift
+  @array = (1, 3, 2, 4);
+  &addData($DELTA, \@d_data, \@array);
+
+  # consensus csi
+  @array = (5);
+  &addData($CSI, \@c_data, \@array);
+
+  # coupling constant
+  @array = (7, 8);
+  &addCouplingData($COUPLING, \@g_data, \@array);
+
+  
+  @array = (7);
+  &addData($FILE_R, \@r_data, \@array);
+  
+  @array = (6);
+  &addData($FILE_F, \@f_data, \@array);
+
+  @array = (3, 4, 5, 6, 7, 8);
+  &addData($FILE_S, \@s_data, \@array);
+  
+  @array = (3);
+  &addData($FILE_N, \@n_data, \@array);
+  
+  @array = (3, 4);
+  &addData($FILE_T, \@t_data, \@array);
+
+  @array = (3, 4);
+  &addData($FILE_U, \@u_data, \@array);
+
+  @array = (3, 4);
+  &addData($FILE_O, \@o_data, \@array);
+
+  @array = (1);
+  &addData($FILE_I, \@i_data, \@array);
+
+  # additional elements here
+  # @array is a list of the elements to save
+  print $COMBINED "\n";
+
+}
+
+
+sub initData {
+  my ($filehandle, $data) = @_;
+  my $line;
+  chomp($line = <$filehandle>);
+  @$data = split(' ', $line);
+}
+
+
+sub addData {
+  my ($filehandle, $data, $out_array) = @_;
+  my $line;
+
+  while ($data->[0] < $curr_res) {
+    if (defined($line = <$filehandle>)) {
+      chomp($line);
+    } else {
+      $line = '';
+    }
+    @$data = split(' ', $line);
+  }
+
+  if ($data->[0] > $curr_res) {	# no data available
+    while (my $data_index = shift @$out_array) {
+      print $COMBINED ' .';
+    }
+  } elsif ($data->[0] == $curr_res) {
+    while (my $data_index = shift @$out_array) {
+      print $COMBINED " $data->[$data_index]";
+    }
+  }
+}
+
+sub addCouplingData {
+  my ($filehandle, $data, $out_array) = @_;
+  my $line;
+
+  while ($data->[1] < $curr_res) {
+    if (defined($line = <$filehandle>)) {
+      chomp($line);
+    } else {
+      $line = '';
+    }
+    @$data = split(' ', $line);
+  }
+
+  if ($data->[1] > $curr_res) {	# no data available
+    while (my $data_index = shift @$out_array) {
+      print $COMBINED ' .';
+    }
+  } elsif ($data->[1] == $curr_res) {
+    while (my $data_index = shift @$out_array) {
+      print $COMBINED " $data->[$data_index]";
+    }
+  }
+}

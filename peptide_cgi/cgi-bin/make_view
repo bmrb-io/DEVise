@@ -34,7 +34,7 @@ $number = substr($acc_no, 3, 4);
 chdir ('/p/devise/demo/dat/bmrb/BMRB')
   || dienice('Could not change directory to BMRB');
 
- if ( -e $summary_page) {
+ if (! -e $summary_page) {
   system ("java -classpath .:/u/p/d/pdc/public/pub_research/ " .
 	  "Summarize $acc_no" ) 
     && dienice("could not generate data files with java");
@@ -64,9 +64,6 @@ chdir ('/p/devise/demo/dat/bmrb/BMRB')
     chdir ('/p/devise/demo/session.js/bmrb/dynamic_sessions') 
       || dienice('Could not change directory to dynamic_sessions');
 
- system('touch foo')
-  && die ("can't create foo");
-   
     change_file('Csi','csi');
     change_file('DeltaShift','deltashift');
     change_file('Percent','percent');
