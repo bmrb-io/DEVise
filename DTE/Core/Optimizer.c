@@ -617,11 +617,13 @@ RemQueryProduced::RemQueryProduced(const Query& query, TableMap tableMap, const 
 
 	ostringstream out;
 	out << "select ";
-	print_list(out, selectList);
+	print_ptr_list(out, selectList);
 	out << " from ";
 	out << remName << " as " << alias;
-	out << " where ";
-	print_list(out, predList, " and ");
+        if( predList.size() > 0 ) {
+          out << " where ";
+          print_ptr_list(out, predList, " and ");
+        }
 	queryToShip = out.str();
 }
 
