@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/10/01 17:54:17  wenger
+  Implemented the sending of GData to the JavaScreen.
+
   Revision 1.16  1998/09/15 17:34:07  wenger
   Changed JavaScreen communication protocol so that image data is sent
   after all associated commands (fixes bug 387); made opening a session
@@ -241,6 +244,7 @@ class JavaScreenCmd
 		void UpdateSessionList(char *dirName);
 		void DrawAllCursors();
 		void DoCloseSession();
+		void DoOpenSession(char *fullpath);
 
 	protected:
 		friend class View;

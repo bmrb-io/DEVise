@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/11/06 17:59:33  wenger
+  Multiple string tables fully working -- allows separate tables for the
+  axes in a given view.
+
   Revision 1.6  1998/11/04 20:33:44  wenger
   Multiple string tables partly working -- loading and saving works, one
   table per mapping works; need multiple tables per mapping, API and GUI,
@@ -62,6 +66,7 @@
 //#define DEBUG
 
 int GDataSock::_objectCount = 0;
+int GDataSock::_sockOutputCount = 0;
 
 struct AttrVals {
   char *name;
@@ -101,27 +106,30 @@ GDataSock::GDataSock(Params &params)
     params.sendText, params.separator);
 #endif
 
+  _params = params;
+  _params.file = CopyString(_params.file);
+
   // Note: at the present time I'm only allowing one view to output to the
   // data socket to keep things simple.  If we want to allow multiple views
   // to output to sockets, I think we would need a separate socket for
   // each view, and the rest of DEVise can't handle that right now.
   // RKW Nov. 18, 1997.
-  if (_objectCount > 0) {
-    reportErrNosys("Only one view can output to socket or file at a time");
-    _status = StatusFailed;
+  if (_params.file == NULL) {
+    if (_sockOutputCount > 0) {
+      reportErrNosys("Only one view can output to socket at a time");
+      _status = StatusFailed;
+    }
+    _sockOutputCount++;
   }
 
   _objectCount++;
 
-  if (!params.sendText) {
+  if (!_params.sendText) {
     reportErrNosys("Sending binary GData is not yet implemented\n");
     _status = StatusFailed;
   }
 
   if (_status.IsComplete()) {
-    _params = params;
-    _params.file = CopyString(_params.file);
-
     if (_params.file != NULL) {
 #if defined(DEBUG)
       printf("  Opening file <%s>.\n", _params.file);
@@ -145,13 +153,6 @@ GDataSock::GDataSock(Params &params)
         _status = StatusFailed;
       }
     }
-  } else {
-    // Set values that will be safe for the destructor.
-    _params.portNum = -1;
-    _params.file = NULL;
-    _params.sendText = true;
-    _params.separator = ' ';
-    _fd = -1;
   }
 }
 
@@ -165,6 +166,9 @@ GDataSock::~GDataSock()
   printf("GDataSock(0x%p)::~GDataSock()\n", this);
 #endif
 
+  if (_params.file == NULL) {
+    _sockOutputCount--;
+  }
   _objectCount--;
 
   if (_objectCount < 0) {

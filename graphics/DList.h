@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/09/22 17:23:39  wenger
+  Devised now returns no image data if there are any problems (as per
+  request from Hongyu); added a bunch of debug and test code to try to
+  diagnose bug 396 (haven't figured it out yet); made some improvements
+  to the Dispatcher to make the main loop more reentrant; added some error
+  reporting to the xv window grabbing code; improved command-result
+  checking code.
+
   Revision 1.10  1997/04/30 21:45:23  wenger
   Fixed non-constant strings in complex mappings bug; TDataAsciiInterp
   no longer gives warning message on blank data lines; added makefile
@@ -432,6 +440,7 @@ public:\
 		_voidList.InsertBeforeCurrent(indx,v);\
 	}\
 	void DoneIterator(int index){_voidList.DoneIterator(index);}\
+	void DeleteAll() {_voidList.DeleteAll();}\
 	void PrintIterators() {_voidList.PrintIterators();}\
 \
 	int ListOk() { return _voidList.ListOk(); } \

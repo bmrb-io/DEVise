@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1998/12/07 19:43:38  wenger
+  Removed "old" layout manager code.
+
   Revision 1.37  1998/12/01 20:04:30  wenger
   More reductions of memory usage in DEVise -- basically eliminated the
   histogram capability (this really saves a lot, since there are big
@@ -4663,21 +4666,28 @@ IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(test)
 // Note: modify this code to do whatever you need to test.
-    if (argc == 2) {
-		if (RangeDesc::Dump(argv[1]).IsComplete()) {
-#if 0 // Check for memory leaks.
-        printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
-		for (int count = 0; count < 1000; count++) {
-		  (void) RangeDesc::Dump(argv[1]);
+    if (argc == 1) {
+		int index = DevWindow::InitIterator();
+		while (DevWindow::More(index)) {
+			ClassInfo *info = DevWindow::Next(index);
+			ViewWin *window = (ViewWin *)info->GetInstance();
+			if (window != NULL) {
+				printf("Window <%s>; dirty = %d\n", window->GetName(),
+				  window->GetGifDirty());
+			}
 		}
-        printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
-#endif
-        	ReturnVal(API_ACK, "done");
-			return 1;
-		} else {
-            ReturnVal(API_NAK, "Error dumping range description");
-            return -1;
+		DevWindow::DoneIterator(index);
+
+		index = View::InitViewIterator();
+		while (View::MoreView(index)) {
+			View *view = View::NextView(index);
+			printf("View <%s>; dirty = %d\n", view->GetName(),
+			  view->GetGifDirty());
 		}
+		View::DoneViewIterator(index);
+		
+       	ReturnVal(API_ACK, "done");
+		return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in test\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1997/11/18 23:26:36  wenger
+  First version of GData to socket capability; removed some extra include
+  dependencies; committed test version of TkControl::OpenDataChannel().
+
  */
 
 #ifndef _GDataSock_h_
@@ -52,6 +56,7 @@ public:
 
 private:
   static int _objectCount;
+  static int _sockOutputCount;
 
   DevStatus _status;
   Params _params;

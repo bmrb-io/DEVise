@@ -4,7 +4,7 @@
 echo "launching jspop"
 jspop -debug >& jspop.out &
 
-sleep 5
+sleep 15
 
 \rm js.out
 echo "launching JavaScreen"

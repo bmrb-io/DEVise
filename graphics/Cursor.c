@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/09/25 22:07:07  wenger
+  Found and fixed bug 397 (another problem with a cursor not connected to
+  any views).
+
   Revision 1.18  1998/06/10 18:04:01  wenger
   Improved new cursor drawing (bug in Mesa implementation sometimes makes
   it look ugly); cursor color now saved in sessions.
@@ -257,7 +261,7 @@ void DeviseCursor::ViewDestroyed(View *view)
 void DeviseCursor::MoveSource(Coord x, Coord y)
 {
 #if defined(DEBUG)
-  printf("DeviseCursor::MoveSource(%f, %f)\n", x, y);
+  printf("DeviseCursor(%s)::MoveSource(%f, %f)\n", GetName(), x, y);
 #endif
 
   if (!_src)
