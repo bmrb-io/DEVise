@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.26  1999/09/02 17:26:06  wenger
+  Took out the ifdefs around the MARGINS code, since DEVise won't compile
+  without them; removed all of the TK_WINDOW code, and removed various
+  unnecessary includes of tcl.h, etc.
+
   Revision 1.25  1998/09/28 20:05:55  wenger
   Fixed bug 383 (unnecessary creation of QueryProc); moved all
   DestroySessionData() code from subclasses of ControlPanel into base class,
@@ -154,6 +159,8 @@ public:
   virtual ~TkControlPanel();
 
   virtual void SelectView(View *view);
+
+  virtual void ShowMouseLocation(char *dataX, char *dataY);
 
   /* Get/set busy status. */
   virtual void SetBusy();

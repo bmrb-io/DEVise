@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.133  1999/09/21 18:58:29  wenger
+  Devise looks for an already-running Tasvir before launching one; Devise
+  can also launch a new Tasvir at any time if Tasvir has crashed; added
+  warning if you use -gl flag with non-OpenGL linked DEVise.
+
   Revision 1.132  1999/09/02 17:25:54  wenger
   Took out the ifdefs around the MARGINS code, since DEVise won't compile
   without them; removed all of the TK_WINDOW code, and removed various
@@ -2561,6 +2566,8 @@ void XWindowRep::DoButtonPress(int x, int y, int &pixX1, int &pixY1,
   DoneIterator(index);
 
   /* grab server */
+  // Note: grabbing the server here prevents updated mouse locations from
+  // being shown while the drag is going on.  RKW 1999-10-04.
   XGrabServer(_display);
   int x1,x2;
   x1 = x2 = x;
@@ -2587,6 +2594,7 @@ void XWindowRep::DoButtonPress(int x, int y, int &pixX1, int &pixY1,
       break;
     case MotionNotify:
       cb->MouseDrag(x1, y1, x2, y2);
+      cb->ShowMouseLocation(&x2, &y2);
       
       /* get rid of all remaining motion events */
       do {
@@ -2595,6 +2603,7 @@ void XWindowRep::DoButtonPress(int x, int y, int &pixX1, int &pixY1,
       } while(XCheckWindowEvent(_display,_win, buttonMask, &event));
       
       cb->MouseDrag(x1, y1, x2, y2);
+      cb->ShowMouseLocation(&x2, &y2);
       break;
     }
   }
@@ -2754,6 +2763,7 @@ void XWindowRep::HandleEvent(XEvent &event)
       WindowRepCallback *c = Next(index);
       c->IsOnCursor(event.xmotion.x, event.xmotion.y, _cursorHit);
       SetMouseCursor(_cursorHit._hitType);
+      c->ShowMouseLocation(&event.xmotion.x, &event.xmotion.y);
     }
     DoneIterator(index);
     break;
@@ -2903,6 +2913,14 @@ void XWindowRep::HandleEvent(XEvent &event)
     printf("XWin 0x%lx receives no-expose event\n",
            event.xnoexpose.drawable);
 #endif
+    break;
+
+  case LeaveNotify:
+    for(index = InitIterator(); More(index); ){
+      WindowRepCallback *c = Next(index);
+      c->ShowMouseLocation(NULL, NULL);
+    }
+    DoneIterator(index);
     break;
 
   default:

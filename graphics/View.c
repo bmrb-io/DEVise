@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.194  1999/09/24 21:02:16  wenger
+  Devised changes to correspond with the latest JavaScreen code:
+  JAVAC_CreateView command sends more info; JS protocol version is now
+  3.0; devised doesn't draw titles in JS views (JS draws the titles).
+
   Revision 1.193  1999/09/20 18:59:54  wenger
   Fixed problem with titles not being displayed in the JavaScreen (premature
   commit of code to avoid drawing titles in JS sessions).
@@ -4236,6 +4241,81 @@ View::InvalidateCursors()
     cursor->InvalidateOldDestPixels();
   }
   _cursors->DoneIterator(cursorIndex);
+}
+
+void
+View::ShowMouseLocation(int *mouseX, int *mouseY)
+{
+#if defined(DEBUG)
+  printf("View::ShowMouseLocation(");
+  if (mouseX) {
+    printf("%d, ", *mouseX);
+  } else {
+    printf("NULL, ");
+  }
+  if (mouseY) {
+    printf("%d", *mouseY);
+  } else {
+    printf("NULL");
+  }
+  printf(")\n");
+#endif
+
+  Coord dataX = 0.0;
+  Coord dataY = 0.0;
+  if (mouseX || mouseY) {
+    WindowRep *wr = GetWindowRep();
+
+    Coord tmpX, tmpY;
+    if (mouseX) {
+      tmpX = *mouseX;
+    } else {
+      tmpX = 0.0;
+    }
+
+    if (mouseY) {
+      tmpY = *mouseY;
+    } else {
+      tmpY = 0.0;
+    }
+
+    wr->InverseTransform(tmpX, tmpY, dataX, dataY);
+#if defined(DEBUG)
+    printf("  data x, y: %g, %g\n", dataX, dataY);
+#endif
+
+    VisualFilter filter;
+    GetVisualFilter(filter);
+    if (!InVisualFilter(filter, dataX, dataY)) {
+      mouseX = NULL;
+	  mouseY = NULL;
+    }
+  }
+
+  const int mouseFieldWidth = 6;
+  const int mouseFieldPrec = 4;
+  char xBuf[32], yBuf[32];
+  if (mouseX) {
+	if (GetXAxisAttrType() == DateAttr) {
+	  strcpy(xBuf, DateString((time_t)dataX, GetXAxisDateFormat()));
+	} else {
+      sprintf(xBuf, "%*.*g", mouseFieldWidth, mouseFieldPrec, dataX);
+	}
+  } else {
+    sprintf(xBuf, "%*s", mouseFieldWidth, "");
+  }
+
+  if (mouseY) {
+	if (GetYAxisAttrType() == DateAttr) {
+	  strcpy(yBuf, DateString((time_t)dataY, GetYAxisDateFormat()));
+	} else {
+      sprintf(yBuf, "%*.*g", mouseFieldWidth, mouseFieldPrec, dataY);
+	}
+  } else {
+    sprintf(yBuf, "%*s", mouseFieldWidth, "");
+  }
+
+  ControlPanel::Instance()->ShowMouseLocation(xBuf, yBuf);
 }
 
 //******************************************************************************

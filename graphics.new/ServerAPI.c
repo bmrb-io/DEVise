@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.40  1999/06/25 15:58:24  wenger
+  Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
+  now uses DebugLog facility instead of printf; dispatcher logging is turned
+  on by default, and commands and queries are logged; added -debugLog command
+  line flag to turn logging on and off.
+
   Revision 1.39  1998/11/04 20:33:59  wenger
   Multiple string tables partly working -- loading and saving works, one
   table per mapping works; need multiple tables per mapping, API and GUI,
@@ -435,6 +441,17 @@ void ServerAPI::SelectView(View *view)
 
   char *args[] = { "ProcessViewSelected", view->GetName() };
   SendControl(2, args, true);
+}
+
+void
+ServerAPI::ShowMouseLocation(char *dataX, char *dataY)
+{
+#if defined(DEBUG)
+  printf("ServerAPI(0x%p)::ShowMouseLocation(%s, %s)\n", this, dataX, dataY);
+#endif
+
+  char *args[] = { "ShowMouseLocation", dataX, dataY };
+  SendControl(3, args, true);
 }
 
 void ServerAPI::SyncNotify()

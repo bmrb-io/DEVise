@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  1999/09/08 20:56:08  wenger
+  Removed all Tcl dependencies from the devised (main changes are in the
+  Session class); changed version to 1.6.5.
+
   Revision 1.27  1998/09/22 17:23:39  wenger
   Devised now returns no image data if there are any problems (as per
   request from Hongyu); added a bunch of debug and test code to try to
@@ -179,6 +183,9 @@ public:
 
   /* Make view the current view */
   virtual void SelectView(View *view) = 0;
+
+  /* Show mouse location. */
+  virtual void ShowMouseLocation(char *dataX, char *dataY) = 0;
 
   /* Find pointer to instance with given name */
   static void *FindInstance(const char *name) {

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.82  1999/09/02 17:25:51  wenger
+  Took out the ifdefs around the MARGINS code, since DEVise won't compile
+  without them; removed all of the TK_WINDOW code, and removed various
+  unnecessary includes of tcl.h, etc.
+
   Revision 1.81  1999/08/12 16:02:48  wenger
   Implemented "inverse" zoom -- alt-drag zooms out instead of in.
 
@@ -479,6 +484,8 @@ public:
     cursorHit._cursor = NULL; }
 
   virtual void MouseDrag(int x1, int y1, int x2, int y2) {}
+
+  virtual void ShowMouseLocation(int *mouseX, int *mouseY) {}
 };
 
 const int WindowRepTransformDepth = 10;	/* max # of transforms in the stack */

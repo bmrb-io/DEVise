@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.62  1999/09/02 17:25:50  wenger
+  Took out the ifdefs around the MARGINS code, since DEVise won't compile
+  without them; removed all of the TK_WINDOW code, and removed various
+  unnecessary includes of tcl.h, etc.
+
   Revision 1.61  1999/09/01 19:27:02  wenger
   Debug logging improved -- directory of log file can now be specified
   with the DEVISE_LOG_DIR environment variable (changed most startup scripts
@@ -1175,5 +1180,3 @@ ViewWin::Dump(FILE *fp)
     DoneIterator(index);
   }
 }
-
-//******************************************************************************

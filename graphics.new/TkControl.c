@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.90  1999/09/07 19:00:57  wenger
+  dteInsertCatalogEntry command changed to tolerate an attempt to insert
+  duplicate entries without causing a problem (to allow us to get rid of
+  Tcl in session files); changed Condor session scripts to take out Tcl
+  control statements in data source definitions; added viewGetImplicitHome
+  and related code in Session class so this gets saved in session files
+  (still no GUI for setting this, though); removed SEQ-related code.
+
   Revision 1.89  1999/09/02 17:26:06  wenger
   Took out the ifdefs around the MARGINS code, since DEVise won't compile
   without them; removed all of the TK_WINDOW code, and removed various
@@ -629,6 +637,19 @@ void TkControlPanel::SelectView(View *view)
 {
   char cmd[256];
   sprintf(cmd, "ProcessViewSelected {%s}", view->GetName());
+  (void)Tcl_Eval(_interp, cmd);
+  Run();
+}
+
+void
+TkControlPanel::ShowMouseLocation(char *dataX, char *dataY)
+{
+#if defined(DEBUG)
+  printf("TkControlPanel::ShowMouseLocation(%s, %s)\n", dataX, dataY);
+#endif
+
+  char cmd[256];
+  sprintf(cmd, "ShowMouseLocation {%s} {%s}", dataX, dataY);
   (void)Tcl_Eval(_interp, cmd);
   Run();
 }

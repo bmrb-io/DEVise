@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.63  1999/09/24 22:02:19  wenger
+  C++ code no longer allows a session to be opened while one is already
+  open.
+
   Revision 1.62  1999/09/23 15:46:23  wenger
   Added per-session data source capability:  data sources defined in a
   session file are added to a separate catalog which is delete when the
@@ -411,6 +415,7 @@ public:
   // The following member functions are needed just because they are pure
   // virtual in the base class.
   virtual void SelectView(View *view) {}
+  virtual void ShowMouseLocation(char *dataX, char *dataY) {}
   virtual Boolean IsBusy() { return false; }
   virtual void SubclassInsertDisplay(DeviseDisplay *disp, Coord x, Coord y,
       Coord w, Coord h) {}

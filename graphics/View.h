@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.94  1999/08/31 21:46:18  wenger
+  Found and fixed bug 506 (problem with cursor drawing when source and
+  destination views are in the same window).
+
   Revision 1.93  1999/08/18 20:46:06  wenger
   First step for axis drawing improvement: moved code to new DevAxis
   class with unchanged functionality.
@@ -975,6 +979,8 @@ protected:
         virtual void DoIsOnCursor(int pixX, int pixY, CursorHit &cursorHit);
 
         virtual void MouseDrag(int x1, int y1, int x2, int y2);
+
+		virtual void ShowMouseLocation(int *mouseX, int *mouseY);
 
 		Boolean _autoUpdate;
 

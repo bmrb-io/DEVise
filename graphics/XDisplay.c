@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.79  1999/09/02 17:25:52  wenger
+  Took out the ifdefs around the MARGINS code, since DEVise won't compile
+  without them; removed all of the TK_WINDOW code, and removed various
+  unnecessary includes of tcl.h, etc.
+
   Revision 1.78  1999/08/05 21:42:38  wenger
   Cursor improvements: cursors can now be dragged in "regular" DEVise;
   cursors are now drawn with a contrasting border for better visibility;
@@ -1060,6 +1065,7 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
                            | StructureNotifyMask | KeyPressMask
                            | VisibilityChangeMask;
   mask |= PointerMotionMask; // For cursor dragging.
+  mask |= LeaveWindowMask; // For mouse position display.
 
 #ifdef RAWMOUSEEVENTS
   mask |= PointerMotionMask;
