@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/09/19 20:04:11  wenger
+  Now saving complete session info; works for tables as well as unixfiles;
+  derived data not yet tested.
+
   Revision 1.2  1997/09/18 15:15:18  wenger
   Now writes a useable session file (at least in some cases).
 
@@ -96,6 +100,10 @@ private:
   static DevStatus SaveParams(SaveData *saveData, char *getCommand,
       char *setCommand, char *arg0, char *arg1 = NULL, char *arg2 = NULL,
       Boolean addBraces = false);
+
+  static DevStatus CallParseAPI(ControlPanelSimple *control, char *&result,
+      Boolean splitResult, int &argcOut, char **&argvOut, char *arg0,
+      char *arg1 = NULL, char *arg2 = NULL, char *arg3 = NULL);
 
   static void PrintArgs(FILE *fp, int argc, char **argv);
 };

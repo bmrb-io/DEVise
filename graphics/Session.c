@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/09/19 20:04:10  wenger
+  Now saving complete session info; works for tables as well as unixfiles;
+  derived data not yet tested.
+
   Revision 1.2  1997/09/18 15:15:17  wenger
   Now writes a useable session file (at least in some cases).
 
@@ -38,12 +42,8 @@
 #include "DevError.h"
 #include "Control.h"
 #include "ParseAPI.h"
-#include "Control.h"
 #include "DevFileHeader.h"
-#include "ParseCat.h"
 #include "Util.h"
-#include "VisualLink.h"
-#include "ViewGraph.h"
 
 //#define DEBUG
 
@@ -333,21 +333,25 @@ Session::SaveSchemas(SaveData *saveData)
 
   fprintf(saveData->fp, "\n# Import schemas\n");
 
-  int argc;
-  char **argv;
-  CatFiles(argc, argv);//TEMPTEMP clean this up?
-
-  int index;
-  for (index = 0; index < argc; index++) {
-    char *schemaName = argv[index];
-    // This is a horrible hack to guess whether the DTE knows about this
-    // schema or not.  RKW Sep. 19, 1997.
-    if ((schemaName[0] == '.') && (schemaName[1] != '/') &&
-	(schemaName[1] != '.')) {
-      fprintf(saveData->fp, "DEVise dteImportFileType %s\n", schemaName);
-    } else {
-      fprintf(saveData->fp, "DEVise importFileType %s\n", schemaName);
+  char *result;
+  int argcOut;
+  char **argvOut;
+  status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
+      "catFiles");
+  if (status.IsComplete()) {
+    int index;
+    for (index = 0; index < argcOut; index++) {
+      char *schemaName = argvOut[index];
+      // This is a horrible hack to guess whether the DTE knows about this
+      // schema or not.  RKW Sep. 19, 1997.
+      if ((schemaName[0] == '.') && (schemaName[1] != '/') &&
+	  (schemaName[1] != '.')) {
+        fprintf(saveData->fp, "DEVise dteImportFileType %s\n", schemaName);
+      } else {
+        fprintf(saveData->fp, "DEVise importFileType %s\n", schemaName);
+      }
     }
+    free((char *) argvOut);
   }
 
   if (status.IsError()) reportErrNosys("Error or warning");
@@ -423,33 +427,19 @@ Session::SaveTData(char *category, char *devClass, char *instance,
 
   DevStatus status = StatusOk;
 
-  int argc = 4;
-  char *argv[4];
-  argv[0] = "getCreateParam";
-  argv[1] = category;
-  argv[2] = devClass;
-  argv[3] = instance;
-  if (ParseAPI(argc, argv, saveData->control) <= 0) {
-    reportErrNosys(saveData->control->_interp->result);
-    status = StatusFailed;
-  } else {
-    int argcOut;
-    char **argvOut;
-    if (Tcl_SplitList(saveData->control->_interp,
-	saveData->control->_interp->result, &argcOut,
-	&argvOut) != TCL_OK) {
-      reportErrNosys(saveData->control->_interp->result);
-      status = StatusFailed;
-    } else {
-      PrintArgs(stdout, argcOut, argvOut);
-      char *argv1 = (argcOut > 1) ? argvOut[1] : "";
-      char *argv2 = (argcOut > 2) ? argvOut[2] : "";
-      fprintf(saveData->fp, "DEVise dataSegment {%s} {%s} 0 0\n", argvOut[0],
-	  argv2);
-      fprintf(saveData->fp, "DEVise create tdata {%s} {%s} {%s} {%s}\n",
-	  devClass, argvOut[0], argv1, argv2);
-      free((char *) argvOut);
-    }
+  char *result;
+  int argcOut;
+  char **argvOut;
+  status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
+      "getCreateParam", category, devClass, instance);
+  if (status.IsComplete()) {
+    char *argv1 = (argcOut > 1) ? argvOut[1] : "";
+    char *argv2 = (argcOut > 2) ? argvOut[2] : "";
+    fprintf(saveData->fp, "DEVise dataSegment {%s} {%s} 0 0\n", argvOut[0],
+        argv2);
+    fprintf(saveData->fp, "DEVise create tdata {%s} {%s} {%s} {%s}\n",
+        devClass, argvOut[0], argv1, argv2);
+    free((char *) argvOut);
   }
 
   if (status.IsError()) reportErrNosys("Error or warning");
@@ -470,21 +460,17 @@ Session::SaveInterpMapping(char *category, char *devClass, char *instance,
 #endif
 
   DevStatus status = StatusOk;
-  Boolean isInterpreted;
 
-  int argc = 2;
-  char *argv[2];
-  argv[0] = "isInterpretedGData";
-  argv[1] = instance;
-  if (ParseAPI(argc, argv, saveData->control) <= 0) {
-    reportErrNosys(saveData->control->_interp->result);
-    status = StatusFailed;
-  } else {
-    isInterpreted = atoi(saveData->control->_interp->result);
-  }
-
-  if (status.IsComplete() && isInterpreted) {
-    fprintf(saveData->fp, "DEVise createMappingClass {%s}\n", devClass);
+  char *result;
+  int argcOut;
+  char **argvOut;
+  status += CallParseAPI(saveData->control, result, false, argcOut, argvOut,
+      "isInterpretedGData", instance);
+  if (status.IsComplete()) {
+    int isInterpreted = atoi(result);
+    if (isInterpreted) {
+      fprintf(saveData->fp, "DEVise createMappingClass {%s}\n", devClass);
+    }
   }
 
   if (status.IsError()) reportErrNosys("Error or warning");
@@ -549,31 +535,22 @@ Session::SaveViewAxisLabels(char *category, char *devClass, char *instance,
 
   DevStatus status = StatusOk;
 
-  int argc = 3;
-  char *argv[3];
-  argv[0] = "getAxis";
-  argv[1] = instance;
-  argv[2] = "x";
-  if (ParseAPI(argc, argv, saveData->control) <= 0) {
-    reportErrNosys(saveData->control->_interp->result);
-    status = StatusFailed;
-  } else {
-    if (strlen(saveData->control->_interp->result) > 0) {
-      fprintf(saveData->fp, "DEVise setAxis {%s} {%s} x\n", instance,
-          saveData->control->_interp->result);
-    }
+  char *result;
+  int argcOut;
+  char **argvOut;
+  DevStatus tmpStatus = CallParseAPI(saveData->control, result, false,
+      argcOut, argvOut, "getAxis", instance, "x");
+  if (tmpStatus.IsComplete() && strlen(result) > 0) {
+      fprintf(saveData->fp, "DEVise setAxis {%s} {%s} x\n", instance, result);
   }
+  status += tmpStatus;
 
-  argv[2] = "y";
-  if (ParseAPI(argc, argv, saveData->control) <= 0) {
-    reportErrNosys(saveData->control->_interp->result);
-    status = StatusFailed;
-  } else {
-    if (strlen(saveData->control->_interp->result) > 0) {
-      fprintf(saveData->fp, "DEVise setAxis {%s} {%s} y\n", instance,
-          saveData->control->_interp->result);
-    }
+  tmpStatus += CallParseAPI(saveData->control, result, false, argcOut,
+      argvOut, "getAxis", instance, "y");
+  if (tmpStatus.IsComplete() && strlen(result) > 0) {
+    fprintf(saveData->fp, "DEVise setAxis {%s} {%s} y\n", instance, result);
   }
+  status += tmpStatus;
 
   status += SaveParams(saveData, "getAxisDisplay", "setAxisDisplay",
       instance, "X");
@@ -618,19 +595,18 @@ Session::SaveViewLinks(char *category, char *devClass, char *instance,
 
   DevStatus status = StatusOk;
 
-//TEMPTEMP -- clean this up?
-  ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
-  VisualLink *link = (VisualLink *) classDir->FindInstance(instance);
-  if (link == NULL) {
-    reportErrNosys("Can't find link");
-    status = StatusFailed;
-  } else {
-    int index = link->InitIterator();
-    while(link->More(index)) {
-      ViewGraph *view = (ViewGraph *) link->Next(index);
-      fprintf(saveData->fp, "DEVise insertLink {%s} {%s}\n", instance, view->GetName());
+  char *result;
+  int argcOut;
+  char **argvOut;
+  status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
+      "getLinkViews", instance);
+  if (status.IsComplete()) {
+    int index;
+    for (index = 0; index < argcOut; index++) {
+      fprintf(saveData->fp, "DEVise insertLink {%s} {%s}\n", instance,
+	  argvOut[index]);
     }
-    link->DoneIterator(index);
+    free((char *) argvOut);
   }
 
   status += SaveParams(saveData, "getLinkMaster", "setLinkMaster", instance,
@@ -655,34 +631,23 @@ Session::SaveCursor(char *category, char *devClass, char *instance,
 
   DevStatus status = StatusOk;
 
-  int argc = 2;
-  char *argv[2];
-  argv[0] = "getCursorViews";
-  argv[1] = instance;
-  if (ParseAPI(argc, argv, saveData->control) <= 0) {
-    reportErrNosys(saveData->control->_interp->result);
-    status = StatusFailed;
-  } else {
-    int argcOut;
-    char **argvOut;
-    if (Tcl_SplitList(saveData->control->_interp,
-	saveData->control->_interp->result, &argcOut,
-	&argvOut) != TCL_OK) {
-      reportErrNosys(saveData->control->_interp->result);
-      status = StatusFailed;
-    } else {
-      char *source = argvOut[0];
-      char *dest = argvOut[1];
-      if (strlen(source) > 0) {
-	fprintf(saveData->fp, "DEVise setCursorSrc {%s} {%s}\n", instance,
-	    source);
-      }
-      if (strlen(dest) > 0) {
-	fprintf(saveData->fp, "DEVise setCursorDst {%s} {%s}\n", instance,
-	    dest);
-      }
-      free((char *) argvOut);
+  char *result;
+  int argcOut;
+  char **argvOut;
+  status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
+      "getCursorViews", instance);
+  if (status.IsComplete()) {
+    char *source = argvOut[0];
+    char *dest = argvOut[1];
+    if (strlen(source) > 0) {
+      fprintf(saveData->fp, "DEVise setCursorSrc {%s} {%s}\n", instance,
+          source);
     }
+    if (strlen(dest) > 0) {
+      fprintf(saveData->fp, "DEVise setCursorDst {%s} {%s}\n", instance,
+          dest);
+    }
+    free((char *) argvOut);
   }
 
   if (status.IsError()) reportErrNosys("Error or warning");
@@ -704,31 +669,20 @@ Session::SaveViewMappings(char *category, char *devClass, char *instance,
 
   DevStatus status = StatusOk;
 
-  int argc = 2;
-  char *argv[2];
-  argv[0] = "getViewMappings";
-  argv[1] = instance;
-  if (ParseAPI(argc, argv, saveData->control) <= 0) {
-    reportErrNosys(saveData->control->_interp->result);
-    status = StatusFailed;
-  } else {
-    int argcOut;
-    char **argvOut;
-    if (Tcl_SplitList(saveData->control->_interp,
-	saveData->control->_interp->result, &argcOut,
-	&argvOut) != TCL_OK) {
-      reportErrNosys(saveData->control->_interp->result);
-      status = StatusFailed;
-    } else {
-      int index;
-      for (index = 0; index < argcOut; index++) {
-        fprintf(saveData->fp, "DEVise insertMapping {%s} {%s}\n", instance,
-	    argvOut[index]);
-        status += SaveParams(saveData, "getMappingLegend", "setMappingLegend",
-	    instance, argvOut[index]);
-      }
-      free((char *) argvOut);
+  char *result;
+  int argcOut;
+  char **argvOut;
+  status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
+      "getViewMappings", instance);
+  if (status.IsComplete()) {
+    int index;
+    for (index = 0; index < argcOut; index++) {
+      fprintf(saveData->fp, "DEVise insertMapping {%s} {%s}\n", instance,
+          argvOut[index]);
+      status += SaveParams(saveData, "getMappingLegend", "setMappingLegend",
+          instance, argvOut[index]);
     }
+    free((char *) argvOut);
   }
 
   if (status.IsError()) reportErrNosys("Error or warning");
@@ -750,19 +704,18 @@ Session::SaveWindowViews(char *category, char *devClass, char *instance,
 
   DevStatus status = StatusOk;
 
-//TEMPTEMP -- clean this up?
-  ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
-  ViewWin *win = (ViewWin*) classDir->FindInstance(instance);
-  if (win == NULL) {
-    reportErrNosys("Can't find window");
-    status = StatusFailed;
-  } else {
-    int index = win->InitIterator();
-    while (win->More(index)) {
-      ViewWin *view = (ViewWin *)win->Next(index);
-      fprintf(saveData->fp, "DEVise insertWindow {%s} {%s}\n", view->GetName(), instance);
+  char *result;
+  int argcOut;
+  char **argvOut;
+  status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
+      "getWinViews", instance);
+  if (status.IsComplete()) {
+    int index;
+    for (index = 0; index < argcOut; index++) {
+      fprintf(saveData->fp, "DEVise insertWindow {%s} {%s}\n",
+	  argvOut[index], instance);
     }
-    win->DoneIterator(index);
+    free((char *) argvOut);
   }
 
   if (status.IsError()) reportErrNosys("Error or warning");
@@ -786,29 +739,18 @@ Session::SaveViewHistory(char *category, char *devClass, char *instance,
 
   fprintf(saveData->fp, "DEVise clearViewHistory {%s}\n", instance);
 
-  int argc = 2;
-  char *argv[2];
-  argv[0] = "getVisualFilters";
-  argv[1] = instance;
-  if (ParseAPI(argc, argv, saveData->control) <= 0) {
-    reportErrNosys(saveData->control->_interp->result);
-    status = StatusFailed;
-  } else {
-    int argcOut;
-    char **argvOut;
-    if (Tcl_SplitList(saveData->control->_interp,
-	saveData->control->_interp->result, &argcOut,
-	&argvOut) != TCL_OK) {
-      reportErrNosys(saveData->control->_interp->result);
-      status = StatusFailed;
-    } else {
-      int index;
-      for (index = 0; index < argcOut; index++) {
-        fprintf(saveData->fp, "DEVise insertViewHistory {%s} %s\n", instance,
-	    argvOut[index]);
-      }
-      free((char *) argvOut);
+  char *result;
+  int argcOut;
+  char **argvOut;
+  status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
+      "getVisualFilters", instance);
+  if (status.IsComplete()) {
+    int index;
+    for (index = 0; index < argcOut; index++) {
+      fprintf(saveData->fp, "DEVise insertViewHistory {%s} %s\n", instance,
+          argvOut[index]);
     }
+    free((char *) argvOut);
   }
 
   if (status.IsError()) reportErrNosys("Error or warning");
@@ -830,25 +772,15 @@ Session::SaveCamera(char *category, char *devClass, char *instance,
 
   DevStatus status = StatusOk;
 
-  int argc = 2;
-  char *argv[2];
-  argv[0] = "get3DLocation";
-  argv[1] = instance;
-  if (ParseAPI(argc, argv, saveData->control) <= 0) {
-    reportErrNosys(saveData->control->_result);
-    status = StatusFailed;
-  } else {
-    int argcOut;
-    char **argvOut;
-    if (Tcl_SplitList(saveData->control->_interp,
-	saveData->control->_interp->result, &argcOut, &argvOut) != TCL_OK) {
-      reportErrNosys(saveData->control->_interp->result);
-      status = StatusFailed;
-    } else {
-      fprintf(saveData->fp, "DEVise set3DLocation {%s} ", instance);
-      PrintArgs(saveData->fp, 6, &argvOut[1]);
-      free((char *) argvOut);
-    }
+  char *result;
+  int argcOut;
+  char **argvOut;
+  status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
+      "get3DLocation", instance);
+  if (status.IsComplete()) {
+    fprintf(saveData->fp, "DEVise set3DLocation {%s} ", instance);
+    PrintArgs(saveData->fp, 6, &argvOut[1]);
+    free((char *) argvOut);
   }
 
   if (status.IsError()) reportErrNosys("Error or warning");
@@ -880,33 +812,75 @@ Session::SaveParams(SaveData *saveData, char *getCommand, char *setCommand,
     rightBrace = "";
   }
 
-  int argc;
-  if (arg1 != NULL) {
-    if (arg2 != NULL) {
-      argc = 4;
-    } else {
-      argc = 3;
-    }
-  } else {
-    argc = 2;
-  }
-  char *argv[4];
-  argv[0] = getCommand;
-  argv[1] = arg0;
-  argv[2] = arg1;
-  argv[3] = arg2;
-  if (ParseAPI(argc, argv, saveData->control) <= 0) {
-    reportErrNosys(saveData->control->_interp->result);
-    status = StatusFailed;
-  } else {
-    if (strlen(saveData->control->_interp->result) > 0) {
+  char *result;
+  int argcOut;
+  char **argvOut;
+  status += CallParseAPI(saveData->control, result, false, argcOut, argvOut,
+      getCommand, arg0, arg1, arg2);
+  if (status.IsComplete()) {
+    if (strlen(result) > 0) {
       fprintf(saveData->fp, "DEVise %s {%s} ", setCommand, arg0);
-      if (argc > 2) {
+      if (arg1 != NULL) {
         // Note: arg2 is not passed to 'set' command.
 	fprintf(saveData->fp, "{%s} ", arg1);
       }
-      fprintf(saveData->fp, "%s%s%s\n", leftBrace,
-	  saveData->control->_interp->result, rightBrace);
+      fprintf(saveData->fp, "%s%s%s\n", leftBrace, result, rightBrace);
+    }
+  }
+
+  if (status.IsError()) reportErrNosys("Error or warning");
+  return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::CallParseAPI
+ * Get parameters from the given 'get' function, write out the given 'set'
+ * function with those parameters.
+ */
+DevStatus
+Session::CallParseAPI(ControlPanelSimple *control, char *&result,
+    Boolean splitResult, int &argcOut, char **&argvOut, char *arg0,
+    char *arg1 = NULL, char *arg2 = NULL, char *arg3 = NULL)
+{
+#if defined(DEBUG)
+  printf("Session::CallParseAPI(%s)\n", arg0);
+#endif
+
+  DevStatus status = StatusOk;
+
+  int argcIn;
+  if (arg1 != NULL) {
+    if (arg2 != NULL) {
+      if (arg3 != NULL) {
+        argcIn = 4;
+      } else {
+        argcIn = 3;
+      }
+    } else {
+      argcIn = 2;
+    }
+  } else {
+    argcIn = 1;
+  }
+  char *argvIn[4];
+  argvIn[0] = arg0;
+  argvIn[1] = arg1;
+  argvIn[2] = arg2;
+  argvIn[3] = arg3;
+  if (ParseAPI(argcIn, argvIn, control) <= 0) {
+    reportErrNosys(control->_interp->result);
+    status = StatusFailed;
+  } else {
+    result = control->_interp->result;
+    if (splitResult) {
+      if (Tcl_SplitList(control->_interp, control->_interp->result, &argcOut,
+	  &argvOut) != TCL_OK) {
+        reportErrNosys(control->_interp->result);
+        status = StatusFailed;
+      }
+    } else {
+      argcOut = 0;
+      argvOut = NULL;
     }
   }
 
