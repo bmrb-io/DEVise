@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.47  1996/11/19 15:23:46  wenger
+  Conditionaled out some debug code.
+
   Revision 1.46  1996/11/18 22:50:15  jussi
   Commented out debugging statement.
 
@@ -605,7 +608,7 @@ void TDataAscii::RebuildIndex()
   BuildIndex();
 }
 
-void TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
+TD_Status TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
 {
 #ifdef DEBUG
   printf("TDataAscii::ReadRec %ld,%d,0x%p\n", id, numRecs, buf);
@@ -642,6 +645,8 @@ void TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
 
     _currPos += len;
   }
+
+  return TD_OK;
 }
 
 void TDataAscii::WriteRecs(RecId startRid, int numRecs, void *buf)

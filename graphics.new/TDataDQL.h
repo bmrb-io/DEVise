@@ -149,7 +149,7 @@ private:
 	void BuildIndex();
 	void RebuildIndex();
 
-	void ReadRec(RecId id, int numRecs, void *buf);
+	TD_Status ReadRec(RecId id, int numRecs, void *buf);
 
 	/* Print indices */
 	void PrintIndices();

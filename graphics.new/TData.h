@@ -16,6 +16,13 @@
    $Id$
 
    $Log$
+   Revision 1.8  1996/11/12 17:21:24  jussi
+   Put back the 'virtual' keyword from the int RecSize() declaration.
+   It had somehow disappeared, with the result that GData was never
+   cached in memory! In QueryProcFull.c, tdata->RecSize() was supposed
+   to return the GData recsize but instead returned zero because the
+   method was not declared virtual.
+
    Revision 1.7  1996/10/04 17:24:15  wenger
    Moved handling of indices from TDataAscii and TDataBinary to new
    FileIndex class.
@@ -55,6 +62,12 @@
 #include "RecOrder.h"
 #include "DataSource.h"
 
+// A simple Status for TData
+enum TD_Status {
+    TD_OK = 0,
+    TD_EOF,
+    TD_FAIL
+};
 
 class AttrList;
 const int MAX_TDATA_ATTRS = 256; /* max number of TData attributes allowed */

@@ -13,9 +13,9 @@
 */
 
 /*
-  $Id:
+  $Id$
 
-  $Log: 
+  $Log$
 */
 
 /* interpreted sequential TData (no index) using parsed information */

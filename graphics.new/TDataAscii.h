@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/10/04 17:24:16  wenger
+  Moved handling of indices from TDataAscii and TDataBinary to new
+  FileIndex class.
+
   Revision 1.16  1996/08/04 21:59:53  beyer
   Added UpdateLinks that allow one view to be told to update by another view.
   Changed TData so that all TData's have a DataSource (for UpdateLinks).
@@ -216,7 +220,7 @@ private:
 	void BuildIndex();
 	void RebuildIndex();
 
-	void ReadRec(RecId id, int numRecs, void *buf);
+	TD_Status ReadRec(RecId id, int numRecs, void *buf);
 
 	/* Print indices */
 	void PrintIndices();

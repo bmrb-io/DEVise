@@ -13,9 +13,9 @@
 */
 
 /*
-  $Id:
+  $Id$
 
-  $Log:
+  $Log$
 */
 
 /* Textual data virtual base class */

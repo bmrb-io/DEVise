@@ -216,7 +216,7 @@ void TDataDQL::BuildIndex()
 
 }
 
-void TDataDQL::ReadRec(RecId id, int numRecs, void *buf){
+TD_Status TDataDQL::ReadRec(RecId id, int numRecs, void *buf){
 
 	for(long unsigned int i = id  ; i < numRecs + id; i++){
 		for(int j = 0; j < _numFlds; j++){
@@ -224,6 +224,8 @@ void TDataDQL::ReadRec(RecId id, int numRecs, void *buf){
 			buf += _sizes[j];
 		}
 	}
+
+    return TD_OK;
 }
 
 void TDataDQL::WriteRecs(RecId startRid, int numRecs, void *buf)

@@ -13,9 +13,9 @@
 */
 
 /*
-  $Id:
+  $Id$
 
-  $Log:
+  $Log$
 */
 
 #include <string.h>

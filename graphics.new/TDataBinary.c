@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/11/18 22:50:32  jussi
+  Added estimation of total number of records in data set.
+
   Revision 1.22  1996/10/08 21:49:09  wenger
   ClassDir now checks for duplicate instance names; fixed bug 047
   (problem with FileIndex class); fixed various other bugs.
@@ -494,7 +497,7 @@ void TDataBinary::RebuildIndex()
   BuildIndex();
 }
 
-void TDataBinary::ReadRec(RecId id, int numRecs, void *buf)
+TD_Status TDataBinary::ReadRec(RecId id, int numRecs, void *buf)
 {
 #ifdef DEBUG
   printf("TDataBinary::ReadRec %ld,%d,0x%p\n", id, numRecs, buf);
@@ -527,6 +530,8 @@ void TDataBinary::ReadRec(RecId id, int numRecs, void *buf)
     ptr += _recSize;
     _currPos += _physRecSize;
   }
+
+  return TD_OK;
 }
 
 void TDataBinary::WriteRecs(RecId startRid, int numRecs, void *buf)
