@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/11/09 15:30:50  ravim
+  Initial revision
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,8 +28,8 @@
 Calendar::Calendar(int fdes)
 {
   fildes = fdes;
-  cal.caldt = cal.vwretd = cal.vwretx = cal.ewretd = cal.ewretx = 0;
-  cal.totval = cal.totcnt = cal.usdval = cal.usdcnt = 0;
+  cal.caldt = cal.totcnt = cal.usdcnt = 0;
+  cal.vwretd = cal.vwretx = cal.ewretd = cal.ewretx = cal.usdval = 0;
   cal.spindx = cal.sprtrn = 0;
 }
 
