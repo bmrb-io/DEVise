@@ -131,7 +131,7 @@ public:
 		time = 0 ;
 		nanosec  = 0 ;
 	}
-	 ~EncodedDTF() {}
+	~EncodedDTF() {}
 	EncodedDTF(int d, int t, int n) {
 		date = d ;
 		time = t ;
@@ -157,7 +157,6 @@ public:
 		time = etf.time;
 		nanosec = etf.nanosec;
 	}
-	~EncodedDTF(){}
 	operator ==(const EncodedDTF& x) const {
 		return date == x.date && time == x.time && nanosec == x.nanosec;
 	}
