@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.215  2000/06/20 22:17:12  wenger
+#	Added floating-point format for axes and mouse location display.
+#	
 #	Revision 1.214  2000/06/20 16:57:50  wenger
 #	Added commands and GUI to enable/disable the display of mouse location
 #	in various views, and globally.
@@ -1700,6 +1703,7 @@ menu .mbar.view.menu.statMenu -tearoff 0
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Assign String Tables..." -command EditStringTables 
 .mbar.view.menu add command -label "Auto Filter Update..." -command EditAutoFilter
+.mbar.view.menu add command -label "Implicit Home..." -command {GetViewHome 1}
 .mbar.view.menu add command -label "Disable Actions..." \
   -command EditActionDisable
 .mbar.view.menu add command -label "Show Mouse Location..." \
@@ -1783,7 +1787,7 @@ menu .mbar.view.menu.dimmenu -tearoff 0
 
 menu .mbar.view.menu.configmenu -tearoff false
 .mbar.view.menu.configmenu add command -label "Home..." \
-    -command { GetViewHome }
+    -command { GetViewHome 0 }
 .mbar.view.menu.configmenu add command -label "Horiz. Scroll..." \
     -command { GetViewHorPan }
 .mbar.view.menu.configmenu add command -label "Vert. Scroll..." \

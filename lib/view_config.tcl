@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-1999
+# (c) Copyright 1992-2000
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -20,6 +20,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.6  1999/05/14 16:47:00  wenger
+# View vertical scroll can now be configured by the user.
+#
 # Revision 1.5  1999/03/16 17:10:26  wenger
 # Improved 'view home' configuration: user can select whether home changes
 # X, Y, or both parts of visual filter; added explicit option to force Y
@@ -44,8 +47,13 @@
 
 ############################################################
 
-proc GetViewHome {} {
+# If implicit is non-zero, we're editing the parameters for implicit view
+# home (used by automatic filter updating); otherwise, we're editing the
+# parameters for explicit view home (the '5' key).
+proc GetViewHome {implicit} {
     global curView
+    global editingImplicitHome
+    set editingImplicitHome $implicit
 
     # If this window already exists, raise it to the top and return.
     if {[WindowVisible .getViewHome]} {
@@ -55,7 +63,11 @@ proc GetViewHome {} {
     # Create the top level widget and the frames we'll later use for
     # positioning.
     toplevel .getViewHome
-    wm title .getViewHome "Set View Home"
+    if {$implicit} {
+        wm title .getViewHome "Set Implicit View Home"
+    } else {
+        wm title .getViewHome "Set View Home"
+    }
 
     frame .getViewHome.row0
     frame .getViewHome.row1
@@ -148,7 +160,11 @@ proc GetViewHome {} {
     # Get the current values from the view and set the GUI accordingly.
     # Returns: <mode> <autoXMargin> <autoYMargin> <manXLo> <manYLo>
     # <manXHi> <manYHi>
-    set home [DEVise viewGetHome $curView]
+    if {$implicit} {
+        set home [DEVise viewGetImplicitHome $curView]
+    } else {
+        set home [DEVise viewGetHome $curView]
+    }
     set viewHomeDoX [lindex $home 0]
     set viewHomeDoY [lindex $home 1]
     set viewHomeMode [lindex $home 2]
@@ -222,10 +238,16 @@ proc SetViewHome {} {
     global viewHomeYLow viewHomeYHigh
     global viewHomeDoX viewHomeDoY
     global viewHomeYZero
+    global editingImplicitHome
 
     # Arguments: <viewName> <mode> <autoXMargin> <autoYMargin> <manXLo>
     # <manYLo> <manXHi> <manYHi>
-    DEVise viewSetHome $curView $viewHomeDoX $viewHomeDoY $viewHomeMode \
+    if {$editingImplicitHome} {
+        set commandName "viewSetImplicitHome"
+    } else {
+        set commandName "viewSetHome"
+    }
+    DEVise $commandName $curView $viewHomeDoX $viewHomeDoY $viewHomeMode \
       $viewHomeYZero \
       $viewHomeXMar $viewHomeYMar $viewHomeXLow $viewHomeYLow $viewHomeXHigh \
       $viewHomeYHigh
