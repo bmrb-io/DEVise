@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.25  1999/01/20 22:46:25  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.24  1998/11/23 19:18:51  donjerko
   Added support for gestalts
 
@@ -128,26 +134,32 @@ void StandReadExec::initialize()
 {
   if( !first_pass ) {
     // check for first pass because this could fail...
+    in->clear();
     in->seekg(0, ios::beg);
     if( !in->good() ) {
       cerr << "attempt to rewind from bad stream in StandReadExec\n";
     }
   }
   first_pass = false;
-  currentLine = 1;
+  //currentLine = 1;
+  currentOffset = 0;
 }
-
 
 const Tuple* StandReadExec::getNext()
 {
   assert(in);
-  int used = resultAdt.fromAscii(*in, pageBuf);
-  if( used < 0 ) {
-    //THROW
-    cerr << "tuple didn't fit on a page!!\nfile: "
-         << url << " at line " << currentLine << endl;
+
+  if( !in->good() ) {
+    cerr << "error before reading file: " << url << endl;
     return NULL;
   }
+  currentOffset = in->tellg();
+  if( !in->good() ) {
+    // this file cannot not get offsets (eg, socket)
+    in->clear();
+    currentOffset = -1;
+  }
+  const Tuple* tup = resultAdt.fromAscii(*in, pageBuf);
   if( in->eof() ) {
     return NULL;
   }
@@ -155,8 +167,8 @@ const Tuple* StandReadExec::getNext()
     cerr << "error reading file: " << url << endl;
     return NULL;
   }
-  currentLine++;
-  return (Tuple*)(pageBuf.data);
+  //currentLine++;
+  return tup;
 }
 
 
@@ -164,13 +176,17 @@ const Tuple* StandReadExec::getThis(Offset offset)
 {
   assert(in);
   if( offset.isNull() ) {
+    cerr << "seek to bad offset in StandReadExec\n";
     return NULL;
   }
-  currentLine = -9999999;
+  //currentLine = -9999999;
   streampos pos = offset.offset;
+  //in->clear(~ios::eofbit & in->rdstate());
+  in->clear();
   in->seekg(pos, ios::beg);
   if( !in->good() ) {
-    cerr << "attempt to seek from bad stream in StandReadExec\n";
+    cerr << "attempt to seek from bad stream in StandReadExec (offset="
+	 << offset.offset <<  ", state=" << in->rdstate() << ")\n";
     return NULL;
   }
   return StandReadExec::getNext();
@@ -180,12 +196,13 @@ const Tuple* StandReadExec::getThis(Offset offset)
 Offset StandReadExec::getOffset()
 {
   assert(in);
-  streampos pos = in->tellg();
-  if( !in->good() ) {
-    cerr << "attempt to get offset from bad stream in StandReadExec\n";
-    return Offset();
-  }
-  return Offset(pos);
+  //streampos pos = in->tellg();
+  //if( !in->good() ) {
+  //cerr << "attempt to get offset from bad stream in StandReadExec\n";
+  //return Offset();
+  //}
+  //return Offset(pos);
+  return Offset(currentOffset);
 }
 
 //---------------------------------------------------------------------------

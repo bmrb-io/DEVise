@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.29  1999/01/20 22:46:26  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.28  1998/11/23 19:18:52  donjerko
   Added support for gestalts
 
@@ -136,7 +142,8 @@ protected:
 
   istream* in;
   string url;
-  int currentLine;
+  //int currentLine;
+  streampos currentOffset;
   bool first_pass;
   PageBuf pageBuf;
 };
