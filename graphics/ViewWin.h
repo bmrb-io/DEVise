@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/03/25 17:58:59  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.20  1997/02/03 19:40:02  ssl
   1) Added a new Layout interface which handles user defined layouts
   2) Added functions to set geometry and remap views as changes in the
@@ -279,6 +282,7 @@ protected:
     Boolean _iconified;
     Boolean _winBoundary;
     Boolean _hasGeometry; /* TRUE if we have the geometry */
+    Boolean _histViewExist; /* TRUE if the histogram view exist */
     int _x, _y;           /* current location */
     unsigned int _width;  /* current width */
     unsigned int _height; /* current height */
