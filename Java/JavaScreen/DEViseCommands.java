@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2001/02/21 17:45:34  xuk
+// Added JAVAC_SetCollabPass command for setting collaboration passwd.
+//
 // Revision 1.6  2001/02/19 20:31:42  xuk
 // Added command(s) and GUI so that a collaboration leader can find out who is
 // collaborating with it.
@@ -148,6 +151,7 @@ public final class DEViseCommands
     public static final String COLLAB_STATE = JS_PREFIX + "CollabState";
 
     public static final String SET_COLLAB_PASS = JS_PREFIX + "SetCollabPass";
+    public static final String COLLAB_EXIT = JS_PREFIX + "CollabExit";
 
     // -------------------------------------------------------------------
     // JSS commands.
