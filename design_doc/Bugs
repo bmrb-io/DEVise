@@ -2347,6 +2347,10 @@ Num Date        Status  Description
 			jspop) other than when the jss is started. (rkw)
 			(Fixed by rkw, 6/15/00.)
 
+598 6/15/00     OPEN    JavaScreen: open the bmrb/4096_side3f.ds session,
+                        move the rightmost cursor a few times ->
+                        java.lang.OutOfMemoryError. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
