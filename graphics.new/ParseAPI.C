@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/13 21:57:53  jussi
+  Added setBatchMode command.
+
   Revision 1.4  1996/05/13 18:14:13  jussi
   Changed type of "flag" parameter. Changed code to reflect new
   flag values: API_CMD, API_ACK, API_NAK, API_CTL.
@@ -1182,6 +1185,17 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
+	if (!strcmp(argv[0], "parseSchema"))
+	{
+	  char *name = ParseSchema(argv[1], argv[2], argv[3]);
+	  if (name == NULL)
+	  {
+		control->ReturnVal(API_NAK, "Cannot parse schema(s)");
+		return -1;
+	  }
+      control->ReturnVal(API_ACK, name);
+      return 1;
+	}
 
     control->ReturnVal(API_NAK, "wrong args");
     return -1;

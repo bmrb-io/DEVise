@@ -1,0 +1,12 @@
+								Bugs in DEVise
+								$Revision$
+
+Num Date        Status  Description
+--- --------    ------  --------------------------------------------------------
+001	05/14/96	OPEN	There are a number of memory leaks. (rkw)
+
+002	05/14/96	OPEN	DEVise hogs an awful lot of CPU cycles even when
+						you are not doing anything. (rkw/kb)
+
+003	05/14/96	OPEN	Numeric keypad keys don't always work correctly
+						on Suns running SunOS 4.x. (rkw)
