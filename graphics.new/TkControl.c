@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1996/03/26 19:09:17  jussi
+  Disabled debugging.
+
   Revision 1.36  1996/03/26 17:20:03  jussi
   Streamlined DEVise getSchema command.
 
@@ -739,8 +742,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			sprintf(buf,"%d", map->GetPixelWidth());
 			Tcl_AppendElement(interp,buf);
 		}
-		else if (strcmp(argv[1], "getTopGroups") == 0)
-		{
+		else if (strcmp(argv[1], "getTopGroups") == 0) {
 		  gdir->top_level_groups(interp, argv[2]);
 		}
 		else if (strcmp(argv[1], "getWindowLayout") == 0) {
@@ -873,25 +875,24 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		}
 		else if (strcmp(argv[1],"get") == 0) {
 			classDir->ClassNames(argv[2],numArgs, args);
-			/*
+#if 0
 			printf("get %s, got %d args\n", argv[2], numArgs);
-			int ind;
-			for (ind=0; ind < numArgs; ind++) {
-				printf("%s\n",args[ind]);
+			for(int ind = 0; ind < numArgs; ind++) {
+			  printf("%s\n", args[ind]);
 			}
-			*/
+#endif
 			MakeReturnVals(interp, numArgs, args);
 		} else if (strcmp(argv[1],"changeMode") == 0) {
 			if (strcmp(argv[2],"0") == 0) {
-				if( _mode != ControlPanel::DisplayMode) {
-					/* Set display mode  and make all views refresh*/
-					_mode = ControlPanel::DisplayMode;
-					ControlPanel::Instance()->ReportModeChange(_mode);
-				}
+			  if( _mode != ControlPanel::DisplayMode) {
+			    /* Set display mode  and make all views refresh*/
+			    _mode = ControlPanel::DisplayMode;
+			  ControlPanel::Instance()->ReportModeChange(_mode);
+			  }
 			} else if(_mode != ControlPanel::LayoutMode) {
-				/* set layout mode */
-				_mode = ControlPanel::LayoutMode;
-				ControlPanel::Instance()->ReportModeChange(_mode);
+			  /* set layout mode */
+			  _mode = ControlPanel::LayoutMode;
+			  ControlPanel::Instance()->ReportModeChange(_mode);
 			}
 		}
 		else if (strcmp(argv[1],"exists") == 0) {
@@ -1036,6 +1037,17 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		    }
 		    /* Return status of statistics display */
 		    sprintf(interp->result, "%d", vg->GetNumDimensions());
+		}
+		else if (strcmp(argv[1],"getViewOverrideColor") == 0) {
+		  View *view = (View *)classDir->FindInstance(argv[2]);
+		  if (!view) {
+		    interp->result = "Can't find view in getViewOverrideColor";
+		    goto error;
+		  }
+		  Boolean active;
+		  Color color = view->GetOverrideColor(active);
+		  sprintf(interp->result, "%d %d", (active ? 1 : 0),
+			  (int)color);
 		}
 		else {
 			interp->result = "wrong args";
@@ -1458,6 +1470,15 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
               Exit::DoExit(2);
 	    }
 	    viewWin->GetWindowRep()->ExportImage(format, argv[4]);
+	  }
+	  else if (strcmp(argv[1], "setViewOverrideColor") == 0) {
+	    View *view = (View *)classDir->FindInstance(argv[2]);
+	    if (view == NULL) {
+	      fprintf(stderr,"TkControl:Cmd setViewOverrideColor can't find view %s\n", argv[2]);
+	    Exit::DoExit(2);
+	    }
+	    Boolean active = (atoi(argv[3]) == 1);
+	    view->SetOverrideColor(atoi(argv[4]), active);
 	  }
 	  else {
 	    interp->result = "wrong args";
