@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/09/27 23:59:50  ravim
+  Fixed some bugs. Added some new functions for handling groups.
+
   Revision 1.1  1995/09/22 20:09:29  ravim
   Group structure for viewing schema
 */
@@ -45,11 +48,19 @@ ItemList::~ItemList()
 
 void ItemList::add_entry(Group *itmp)
 {
-  GroupItem *newitem = new(GroupItem);
+  // Find end of list
+  GroupItem *ptr = list;
+  while (ptr && (ptr->nxt))
+    ptr = ptr->nxt;
 
+  GroupItem *newitem = new(GroupItem);
   newitem->itm = itmp;
-  newitem->nxt = list;
-  list = newitem;
+  newitem->nxt = NULL;
+
+  if (ptr)
+    ptr->nxt = newitem;
+  else
+    list = newitem;
 }
 
 void ItemList::remove_entry(Group *itmp)
