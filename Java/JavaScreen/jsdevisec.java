@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.91  2001/03/04 22:02:59  xuk
+// Disabled some buttons when JS in "collaboration" mode.
+//
 // Revision 1.90  2001/03/03 20:03:04  xuk
 // Restore old state if user goes into, then out of, collaboration mode.
 // 1.When "Start Collaboration" button is pressed while a normal session is open, send JAVAC_SaveCurSession command to JSpop.
@@ -2586,7 +2589,7 @@ class EnterCollabPassDlg extends Dialog
 
     public TextField pass = new TextField(20);
     public Button setButton = new Button("Set");
-    public Button cancelButton = new Button("Cancel");
+    //public Button cancelButton = new Button("Cancel");
     private boolean status = false; // true means this dialog is showing
 
     public EnterCollabPassDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -2607,10 +2610,6 @@ class EnterCollabPassDlg extends Dialog
         setButton.setForeground(jsc.jsValues.uiglobals.fg);
         setButton.setFont(jsc.jsValues.uiglobals.font);
 
-        cancelButton.setBackground(jsc.jsValues.uiglobals.bg);
-        cancelButton.setForeground(jsc.jsValues.uiglobals.fg);
-        cancelButton.setFont(jsc.jsValues.uiglobals.font);
-
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
         GridBagConstraints  c = new GridBagConstraints();
@@ -2625,9 +2624,8 @@ class EnterCollabPassDlg extends Dialog
 
 	pass.setText(DEViseGlobals.DEFAULTPASS);
 
-        Button [] button = new Button[2];
+        Button [] button = new Button[1];
         button[0] = setButton;
-        button[1] = cancelButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
 	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
 
@@ -2700,36 +2698,6 @@ class EnterCollabPassDlg extends Dialog
 			close();
                     }
                 });
-
-        cancelButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-			if (jsc.dispatcher.dispatcherThread != null) {
-			    jsc.dispatcher.dispatcherThread.stop();
-			    jsc.dispatcher.dispatcherThread = null;
-			}
-
-			if (jsc.dispatcher.commSocket != null) {
-			    jsc.dispatcher.commSocket.closeSocket();
-			    jsc.dispatcher.commSocket = null;
-			}
-			jsc.dispatcher._connectedAlready = false;
-			jsc.dispatcher.isOnline = false;
-
-			jsc.animPanel.stop();
-			jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-			jsc.jscreen.updateScreen(false);
-
-			if (jsc.dispatcher.getStatus() != 0) {
-			    jsc.dispatcher.setAbortStatus(true);
-			}
-			jsc.dispatcher.setStatus(0);
-			jsc.specialID = -1;
-                        close();
-                    }
-                });
-
     }
 
     protected void processEvent(AWTEvent event)
