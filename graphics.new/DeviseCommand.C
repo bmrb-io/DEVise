@@ -4644,9 +4644,9 @@ DeviseCommand_set3DLocation::Run(int argc, char** argv)
           c.fz = atof(argv[7]);
           view->SetCamera(c);
           if (isSphere) {
-    	c = view->GetCamera();
-    	c.spherical_coord = true;
-    	view->SetCamera(c);
+	    c = view->GetCamera();
+	    c.spherical_coord = true;
+	    view->SetCamera(c);
           }
           control->ReturnVal(API_ACK, "done");
           return 1;

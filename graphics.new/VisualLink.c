@@ -30,6 +30,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/03/08 00:01:16  wenger
+  Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
+  update problems) -- major changes to visual links.
+
   Revision 1.9  1998/02/26 22:59:58  wenger
   Added "count mappings" to views, except for API and GUI (waiting for
   Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
@@ -166,6 +170,12 @@ void VisualLink::FilterChanged(View *view, VisualFilter &filter,
 	  filterDifferent = true;
 	}
       }
+      if (!filterDifferent) {
+        if ((_linkAttrs & VISUAL_ORIENTATION) &&
+             !(filter.camera == _filter.camera))
+         filterDifferent = true;
+        }
+
 
       if (filterDifferent) {
 #if defined(DEBUG)
@@ -277,6 +287,12 @@ void VisualLink::SetVisualFilter(View *view, VisualFilter &filter)
     change = true;
   }
 #endif
+
+  if ((testFlag & VISUAL_ORIENTATION) &&
+      !(tempFilter.camera == filter.camera)) {
+     tempFilter.camera = filter.camera;
+     change = true;
+  }
 
   if (change) {
     view->SetVisualFilter(tempFilter, false);

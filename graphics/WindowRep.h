@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.66  1998/03/05 08:10:29  zhenhai
+  Added ability to view 3D graphs from six directions. Use -gl option to run,
+  and click key x,y,z and X,Y,Z to select the direction you are viewing.
+  Use arrow keys to pan left right up and down.
+
   Revision 1.65  1998/02/26 00:19:07  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -793,6 +798,7 @@ public:
     DEBUGE(_current--);
   }
 
+  virtual void SetViewCamera(const Camera & c) {}
   virtual void ViewNegX(){}
   virtual void ViewPosX(){}
   virtual void ViewNegY(){}

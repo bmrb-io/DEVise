@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/03/08 00:00:54  wenger
+  Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
+  update problems) -- major changes to visual links.
+
   Revision 1.8  1998/02/26 22:59:37  wenger
   Added "count mappings" to views, except for API and GUI (waiting for
   Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
@@ -62,6 +66,8 @@
 #include "Color.h"
 #endif
 
+#include "ViewDir.h"
+
 /* Index of the attributes */
 
 const unsigned VISUAL_X_INDEX = 0;
@@ -72,6 +78,8 @@ const unsigned VISUAL_COLOR_INDEX = 4;
 const unsigned VISUAL_ORIENTATION_INDEX = 5;
 const unsigned VISUAL_SHAPE_INDEX = 6;
 const unsigned VISUAL_RECORD_INDEX = 7;
+const unsigned VISUAL_CAMERA_INDEX = 8;
+const unsigned VISUAL_ANTICAMERA_INDEX = 9;
 
 /*
    A VisualFlag is the union of visual attributes.
@@ -93,7 +101,7 @@ const unsigned VISUAL_RECORD      = (1 << VISUAL_RECORD_INDEX);
 const unsigned VISUAL_ALLBITS     = (VISUAL_X | VISUAL_Y | VISUAL_LOC |
 				     VISUAL_COLOR | VISUAL_SIZE |
 				     VISUAL_PATTERN | VISUAL_ORIENTATION
-				     | VISUAL_SHAPE);
+				     | VISUAL_SHAPE );
 
 /* Complement visual flag */
 
@@ -101,32 +109,6 @@ inline unsigned VisualComplement(VisualFlag flag)
 {
   return (flag ^ VISUAL_ALLBITS);
 }
-
-/* A visual filter: used to filter symbols inside a view. */
-
-class VisualFilter {
-public:
-  VisualFlag flag;	           /* which attribute is to test.
-				      set to 0 if no filter  */
-  Coord xLow, xHigh;               /* X filter */
-  Coord yLow, yHigh;               /* y filter */
-#if 0 // Not currently used.  RKW Feb. 25, 1998.
-  int lastN;		           /* # of records to examine */
-  Coord sizeLow, sizeHigh;         /* size filter */
-  Pattern patternLow, patternHigh; /* pattern filter */
-  PColorID colorLow, colorHigh;	// Color filter
-  Coord orientationLow, orientationHigh; /* orientation filter*/
-  int shapeLow, shapeHigh;         /* shape filter */
-#endif
-  
-  Boolean marked;                  /* TRUE if this is marked in the
-				      control panel list box */
-
-  void Print(FILE *stream = stdout) {
-    fprintf(stream, "Visual filter X (%f, %f), Y (%f, %f)\n", xLow, xHigh,
-	  yLow, yHigh);
-  }
-};
 
 /* A CameraFlag indicates whether the attributes are changeable or tested */
 typedef unsigned CameraFlag;
@@ -148,6 +130,40 @@ struct Camera {
 					   the original screen coordiate sys, 
 					   original screen coordinate sys is at the
 					   upper lefthand corner of the screen */
+// new definition of camera
+	ViewDir view_dir;
+	Coord pan_right, pan_up;
+
+	friend unsigned char operator == (Camera const &a, Camera const &b)
+	{ return (a.view_dir==b.view_dir)
+		&&(a.pan_right==b.pan_right)
+		&&(a.pan_up==b.pan_up);}
+};
+
+/* A visual filter: used to filter symbols inside a view. */
+
+struct VisualFilter {
+  VisualFlag flag;	           /* which attribute is to test.
+				      set to 0 if no filter  */
+  Coord xLow, xHigh;               /* X filter */
+  Coord yLow, yHigh;               /* y filter */
+#if 0 // Not currently used.  RKW Feb. 25, 1998.
+  int lastN;		           /* # of records to examine */
+  Coord sizeLow, sizeHigh;         /* size filter */
+  Pattern patternLow, patternHigh; /* pattern filter */
+  PColorID colorLow, colorHigh;	// Color filter
+  Coord orientationLow, orientationHigh; /* orientation filter*/
+  int shapeLow, shapeHigh;         /* shape filter */
+#endif
+  Camera camera;
+  
+  Boolean marked;                  /* TRUE if this is marked in the
+				      control panel list box */
+  friend unsigned char operator ==
+    (VisualFilter const &a, VisualFilter const &b) {
+    return a.flag==b.flag && a.xLow==b.xLow && a.xHigh==b.xHigh
+           && a.yLow==b.yLow && a.yHigh==b.yHigh && a.camera == b.camera;
+  }
 };
 
 //******************************************************************************

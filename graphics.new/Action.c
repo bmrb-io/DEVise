@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.25  1998/03/05 08:10:51  zhenhai
+  Added ability to view 3D graphs from six directions. Use -gl option to run,
+  and click key x,y,z and X,Y,Z to select the direction you are viewing.
+  Use arrow keys to pan left right up and down.
+
   Revision 1.24  1998/02/26 20:48:30  taodb
   Replaced ParseAPI() with Command Object Interface
 
@@ -205,22 +210,22 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 
   switch( key ) {
   case 'X':
-    view->ViewPosX();
+    view->SetViewDir(PosX);
     break;
   case 'x':
-    view->ViewNegX();
+    view->SetViewDir(NegX);
     break;
   case 'Y':
-    view->ViewPosY();
+    view->SetViewDir(PosY);
     break;
   case 'y':
-    view->ViewNegY();
+    view->SetViewDir(NegY);
     break;
   case 'Z':
-    view->ViewPosZ();
+    view->SetViewDir(PosZ);
     break;
   case 'z':
-    view->ViewNegZ();
+    view->SetViewDir(NegZ);
     break;
   case '>':
   case '.':

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.130  1998/03/13 18:10:37  wenger
+  Fixed bug 327 (gaps in view background colors).
+
   Revision 1.129  1998/03/08 00:00:52  wenger
   Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
   update problems) -- major changes to visual links.
@@ -709,23 +712,26 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 
 	_displaySymbol = true;
 
-	_camera.x_ = 4.6;
-	_camera.y_ = 4.0;
-	_camera.z_ = -4.0;
-	_camera.fx = 0.0;
-	_camera.fy = 0.0;
-	_camera.fz = 0.0;
-	_camera._rho = 7.0;
-	_camera._phi = 1.0;
-	_camera._theta = 0.9;
-	_camera._dvs = 250;
-	_camera._twist_angle = deg_rad(0.0);
-	_camera._perspective = 1;
-	_camera.flag = 0;
-	_camera.fix_focus = 1;
-	_camera.spherical_coord = 1;
-	_camera.H = 0;
-	_camera.V = 0;
+	_filter.camera.x_ = 4.6;
+	_filter.camera.y_ = 4.0;
+	_filter.camera.z_ = -4.0;
+	_filter.camera.fx = 0.0;
+	_filter.camera.fy = 0.0;
+	_filter.camera.fz = 0.0;
+	_filter.camera._rho = 7.0;
+	_filter.camera._phi = 1.0;
+	_filter.camera._theta = 0.9;
+	_filter.camera._dvs = 250;
+	_filter.camera._twist_angle = deg_rad(0.0);
+	_filter.camera._perspective = 1;
+	_filter.camera.flag = 0;
+	_filter.camera.fix_focus = 1;
+	_filter.camera.spherical_coord = 1;
+	_filter.camera.H = 0;
+	_filter.camera.V = 0;
+	_filter.camera.view_dir = NegZ;
+	_filter.camera.pan_right = 0.0;
+	_filter.camera.pan_up = 0.0;
 
 	_id = ++_nextId;
 
@@ -888,8 +894,7 @@ void View::SetVisualFilter(VisualFilter &filter, Boolean registerEvent)
       filter.xLow < filter.xHigh && filter.yLow < filter.yHigh) {
 
     /* ignore new filter if same as current one */
-    if (_filter.xLow != filter.xLow || _filter.xHigh != filter.xHigh
-	|| _filter.yLow != filter.yLow || _filter.yHigh != filter.yHigh) {
+    if (!(_filter==filter)) {
 
 #if defined(DEBUG)
       printf("filter changed\n");
@@ -1713,35 +1718,8 @@ void View::CalcTransform3(WindowRep *winRep)
 #endif
   // need to figure out the correct positioning of camera later...
 
-  /* Translate to beginning of data area. */
-  // winRep->Translate(dataX, dataY);
-
-  /* scale to size of the screen */
-  //winRep->Scale((Coord)dataWidth / (_filter.xHigh -  _filter.xLow),
-  //	  (Coord)(dataHeight) / (_filter.yHigh - _filter.yLow));
-
-  /* translate to 0, 0 */
-  //winRep->Translate(-_filter.xLow, -_filter.yLow);
-
-  
-  SetViewDir(dataWidth / 2, dataHeight / 2);
+  winRep->SetViewCamera(_filter.camera);
 }
-
-/* Calculate the transformation matrix used to translate from
-   world to screen coordinates */
-
-#if 0
-// Nowhere calls this function
-void View::CalcTransform(Transform3D &transform)
-{
-  CompRhoPhiTheta();
-  GetWindowRep()->TopTransform3()->SetViewMatrix(_camera);
-
-  int dx, dy, dw, dh;
-  GetDataArea(dx, dy, dw, dh);
-  SetViewDir(dw / 2, dh / 2);
-}
-#endif
 
 /* For query processing */
 
@@ -2846,101 +2824,103 @@ void View::CompRhoPhiTheta()
 {
 #if defined(DEBUG)
   printf("<<<< x = %f y = %f z = %f\n",
-         _camera.x_, _camera.y_, _camera.z_);
+         _filter.camera.x_, _filter.camera.y_, _filter.camera.z_);
   printf("<<<< fx = %f fy = %f fz = %f\n",
-         _camera.fx, _camera.fy, _camera.fz);
+         _filter.camera.fx, _filter.camera.fy, _filter.camera.fz);
   printf("<<<< rho = %f phi = %f theta = %f\n\n",
-         _camera._rho, _camera._phi, _camera._theta);
+         _filter.camera._rho, _filter.camera._phi, _filter.camera._theta);
 #endif
 
-  if (!_camera.spherical_coord) {
-    double X = _camera.x_ - _camera.fx;
-    double Y = _camera.y_ - _camera.fy;
-    double Z = -(_camera.z_ - _camera.fz);
+  if (!_filter.camera.spherical_coord) {
+    double X = _filter.camera.x_ - _filter.camera.fx;
+    double Y = _filter.camera.y_ - _filter.camera.fy;
+    double Z = -(_filter.camera.z_ - _filter.camera.fz);
 
-    _camera._rho = sqrt(SQUARE(X) + SQUARE(Y) + SQUARE(Z));
+    _filter.camera._rho = sqrt(SQUARE(X) + SQUARE(Y) + SQUARE(Z));
 
-    if (_camera._rho > 0)
-      _camera._phi = acos(Y / _camera._rho);
+    if (_filter.camera._rho > 0)
+      _filter.camera._phi = acos(Y / _filter.camera._rho);
     else {
-      _camera._phi = 0.0;
+      _filter.camera._phi = 0.0;
 #if defined(DEBUG)
       printf("*********** WARNING *****************\n");
 #endif
     }
 
-    if (_camera._rho == 0)
-      _camera._theta = 0.0;
+    if (_filter.camera._rho == 0)
+      _filter.camera._theta = 0.0;
 
     // ------------- on yz-axis
     else if (X == 0 && Z >= 0)  // on +z axis
-      _camera._theta = 0.0;
+      _filter.camera._theta = 0.0;
     else if (X == 0 && Z < 0)   // on -z axis
-      _camera._theta = M_PI;
+      _filter.camera._theta = M_PI;
     
     // ------------- on xy-axis
     else if (Z == 0 && X > 0) // on +x axis
-      _camera._theta = M_PI_2;
+      _filter.camera._theta = M_PI_2;
     else if (Z == 0 && X < 0) // on -x axis
-      _camera._theta = M_PI_2 + M_PI;    // pi * 2 / 3
+      _filter.camera._theta = M_PI_2 + M_PI;    // pi * 2 / 3
     
     // ------------- four quadrants
     else if (X > 0 && Z > 0)
-      _camera._theta = atan(X / Z);
+      _filter.camera._theta = atan(X / Z);
     else if (X > 0 && Z < 0)
-      _camera._theta = M_PI + atan(X / Z);
+      _filter.camera._theta = M_PI + atan(X / Z);
     else if (X < 0 && Z < 0)
-      _camera._theta = M_PI + atan(X / Z);
+      _filter.camera._theta = M_PI + atan(X / Z);
     else if (X < 0 && Z > 0)
-      _camera._theta = (M_PI_2 + M_PI) + fabs(atan(Z / X));
+      _filter.camera._theta = (M_PI_2 + M_PI) + fabs(atan(Z / X));
 
     else {
       printf("cx = %f cy = %f cz = %f\n", X, Y, Z);
       DOASSERT(0, "Invalid coordinates");
     }
   } else {
-    _camera.x_ = _camera._rho * sin(_camera._phi) * sin(_camera._theta);
-    _camera.x_ += _camera.fx;
-    _camera.y_ = _camera._rho * cos(_camera._phi);
-    _camera.y_ += _camera.fy;
-    _camera.z_ = -_camera._rho * sin(_camera._phi) * cos(_camera._theta);
-    _camera.z_ += _camera.fz;
+    _filter.camera.x_ = _filter.camera._rho * sin(_filter.camera._phi) * sin(_filter.camera._theta);
+    _filter.camera.x_ += _filter.camera.fx;
+    _filter.camera.y_ = _filter.camera._rho * cos(_filter.camera._phi);
+    _filter.camera.y_ += _filter.camera.fy;
+    _filter.camera.z_ = -_filter.camera._rho * sin(_filter.camera._phi) * cos(_filter.camera._theta);
+    _filter.camera.z_ += _filter.camera.fz;
   }
+  _filter.camera=_filter.camera;
 
 #if defined(DEBUG)
   printf(">>>> x = %f y = %f z = %f\n",
-         _camera.x_, _camera.y_, _camera.z_);
+         _filter.camera.x_, _filter.camera.y_, _filter.camera.z_);
   printf(">>>> fx = %f fy = %f fz = %f\n",
-         _camera.fx, _camera.fy, _camera.fz);
+         _filter.camera.fx, _filter.camera.fy, _filter.camera.fz);
   printf(">>>> rho = %f phi = %f theta = %f\n\n",
-         _camera._rho, _camera._phi, _camera._theta);
+         _filter.camera._rho, _filter.camera._phi, _filter.camera._theta);
 #endif
 }
 
-void View::SetCamera(Camera new_camera)
+void View::SetCamera(Camera camera)
 {
   /* see if 3D mapping needs to be updated */
-  Boolean newMap = false;
-  if (new_camera.x_ != _camera.x_ ||
-      new_camera.y_ != _camera.y_ || 
-      new_camera.z_ != _camera.z_ ||
-      new_camera._dvs != _camera._dvs ||
-      new_camera._rho != _camera._rho || 
-      new_camera._phi != _camera._phi || 
-      new_camera._theta != _camera._theta || 
-      new_camera.fx != _camera.fx ||
-      new_camera.fy != _camera.fy ||
-      new_camera.fz != _camera.fz || 
-      new_camera._perspective != _camera._perspective || 
-      new_camera._twist_angle != _camera._twist_angle || 
-      new_camera.H != _camera.H ||
-      new_camera.V != _camera.V)
-    newMap = true;
-
-  _camera = new_camera;
-
-  if (newMap) {
-    CompRhoPhiTheta();
+#if 0
+  if (camera.x_ != _filter.camera.x_ ||
+      camera.y_ != _filter.camera.y_ || 
+      camera.z_ != _filter.camera.z_ ||
+      camera._dvs != _filter.camera._dvs ||
+      camera._rho != _filter.camera._rho || 
+      camera._phi != _filter.camera._phi || 
+      camera._theta != _filter.camera._theta || 
+      camera.fx != _filter.camera.fx ||
+      camera.fy != _filter.camera.fy ||
+      camera.fz != _filter.camera.fz || 
+      camera._perspective != _filter.camera._perspective || 
+      camera._twist_angle != _filter.camera._twist_angle || 
+      camera.H != _filter.camera.H ||
+      camera.V != _filter.camera.V ||
+      camera.view_dir != _filter.camera.view_dir ||
+      camera.pan_right != _filter.camera.pan_right ||
+      camera.pan_up != _filter.camera.pan_up)
+#endif
+  if (!(camera == _filter.camera)) {
+    _filter.camera = camera;
+//    CompRhoPhiTheta();
     _updateTransform = true;
     DepMgr::Current()->RegisterEvent(dispatcherCallback,
 									 DepMgr::EventViewCameraCh);
@@ -2961,13 +2941,7 @@ void View::Draw3DAxis()
   WindowRep*	win = GetWindowRep();
 
   win->SetForeground(GetForeground());
-  Map3D::DrawRefAxis(win, _camera);
-}
-
-void View::SetViewDir(int H, int V)
-{
-  _camera.H = H;
-  _camera.V = V;
+  Map3D::DrawRefAxis(win, _filter.camera);
 }
 
 DevStatus
@@ -3953,75 +3927,19 @@ void	View::HandleResize(WindowRep* w, int xlow, int ylow,
 		return;
 
 	ViewWin::HandleResize(w, xlow, ylow, width, height);
-	_updateTransform = true;			// Update the transformation
-
+	_updateTransform = true;// Update the transformation
 	DepMgr::Current()->RegisterEvent(dispatcherCallback, 
 									 DepMgr::EventViewResize);
 	Scheduler::Current()->RequestCallback(_dispatcherID);
 }
 
-void View::ViewNegX()
+void View::SetViewDir(ViewDir dir)
 {
-  GetWindowRep()->ViewNegX();
-  DepMgr::Current()->RegisterEvent(dispatcherCallback,
-				   DepMgr::EventViewCameraCh);
-  Refresh();
-}
-
-void View::ViewPosX()
-{
-  GetWindowRep()->ViewPosX();
-  DepMgr::Current()->RegisterEvent(dispatcherCallback,
-				   DepMgr::EventViewCameraCh);
-  Refresh();
-}
-
-void View::ViewNegY()
-{
-  GetWindowRep()->ViewNegY();
-  DepMgr::Current()->RegisterEvent(dispatcherCallback,
-				   DepMgr::EventViewCameraCh);
-  Refresh();
-}
-
-void View::ViewPosY()
-{
-  GetWindowRep()->ViewPosY();
-  DepMgr::Current()->RegisterEvent(dispatcherCallback,
-				   DepMgr::EventViewCameraCh);
-  Refresh();
-}
-
-void View::ViewNegZ()
-{
-  GetWindowRep()->ViewNegZ();
-  DepMgr::Current()->RegisterEvent(dispatcherCallback,
-				   DepMgr::EventViewCameraCh);
-  Refresh();
-}
-
-void View::ViewPosZ()
-{
-  GetWindowRep()->ViewPosZ();
-  DepMgr::Current()->RegisterEvent(dispatcherCallback,
-				   DepMgr::EventViewCameraCh);
-  Refresh();
-}
-
-void View::PanRightAmount(Coord dx)
-{
-  GetWindowRep()->PanRightAmount(dx);
-  DepMgr::Current()->RegisterEvent(dispatcherCallback,
-				   DepMgr::EventViewCameraCh);
-  Refresh();
-}
-
-void View::PanUpAmount(Coord dy)
-{
-  GetWindowRep()->PanUpAmount(dy);
-  DepMgr::Current()->RegisterEvent(dispatcherCallback,
-				   DepMgr::EventViewCameraCh);
-  Refresh();
+  Camera c;
+  c.view_dir=dir;
+  c.pan_right=0.0;
+  c.pan_up=0.0;
+  SetCamera(c);
 }
 
 //******************************************************************************

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.61  1998/03/05 08:10:28  zhenhai
+  Added ability to view 3D graphs from six directions. Use -gl option to run,
+  and click key x,y,z and X,Y,Z to select the direction you are viewing.
+  Use arrow keys to pan left right up and down.
+
   Revision 1.60  1998/02/26 00:19:05  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -280,6 +285,7 @@
 
 #include "Color.h"
 #include "Coloring.h"
+#include "ViewDir.h"
 
 //******************************************************************************
 
@@ -549,20 +555,9 @@ class View : public ViewWin
 
 	/* 3D functions */
         void Draw3DAxis();
-	Camera GetCamera() { return _camera; }
+	Camera GetCamera() { return _filter.camera; }
 	void SetCamera(Camera new_camera);
-	void ViewNegX();
-	void ViewPosX();
-	void ViewNegY();
-	void ViewPosY();
-	void ViewNegZ();
-	void ViewPosZ();
-	void PanRightAmount(Coord dx);
-	void PanUpAmount(Coord dy);
-
-
-
-	void SetViewDir(int H, int V);
+	void SetViewDir(ViewDir dir);
 	void CompRhoPhiTheta();
 
 	// Print this view (and any child views) to PostScript.
@@ -752,7 +747,6 @@ protected:
 
         Boolean _XORflag;    /* draw view on XOR layer */
 	/* 3D data structures */
-	Camera _camera;
 	
 	Boolean _doneRefresh;   /* for any dependent views to determine the 
 				 * state of the view 

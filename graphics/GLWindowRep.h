@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/03/05 08:10:23  zhenhai
+  Added ability to view 3D graphs from six directions. Use -gl option to run,
+  and click key x,y,z and X,Y,Z to select the direction you are viewing.
+  Use arrow keys to pan left right up and down.
+
   Revision 1.6  1998/02/26 17:19:15  wenger
   Fixed problems with yesterday's commit.
 
@@ -36,6 +41,7 @@
 
 #include "Color.h"
 #include "XColor.h"
+#include "ViewDir.h"
 
 class GLWindowRep;
 
@@ -73,7 +79,7 @@ public:
 
   /* called by GLDisplay to create new X window */
   GLWindowRep(Display *display, Window window, GLDisplay *DVDisp, 
-	      GLWindowRep *parent, Boolean backingStore = false); 
+              GLWindowRep *parent, GLXContext gc, GLboolean double_buffer);
 
   /* called by GLDisplay to create new X pixmap */
   GLWindowRep(Display *display, Pixmap pixmap, GLDisplay *DVDisp, 
@@ -224,6 +230,7 @@ public:
 
   virtual void SetNumDim(int numDim);
 
+  virtual void SetViewCamera(const Camera & c);
   virtual void ViewNegX();
   virtual void ViewPosX();
   virtual void ViewNegY();
@@ -238,11 +245,13 @@ public:
   virtual void Scale(Coord sx, Coord sy);
   virtual void Translate(Coord dx, Coord dy);
   virtual void MakeIdentity();
+  virtual void Transform(Coord x, Coord y, Coord &newX, Coord &newY);
   virtual void InverseTransform(Coord x, Coord y, Coord &newX, Coord &newY);
   // Convert win coordinate to object coordinate
 
   /* return the transform on top of the stack. */
   virtual Transform2D *TopTransform();
+  virtual Transform3D *TopTransform3();
   virtual void PrintTransform();
 
   /* Clear the transformation stack and put an identity 
@@ -457,7 +466,6 @@ private:
 
   Display *_display;
   Window _win;
-  GLXContext _gc;  
 
   /* pixmap and child/parent links for pixmaps */
   Pixmap _pixmap;
@@ -477,7 +485,6 @@ private:
   void DoPopup(int x, int y, int button);
 #endif
   
-  Boolean _backingStore;  /* TRUE if window has backingstore */
   Boolean _unobscured; 	/* TRUE if window is totally unobscured */
   
   /* for compression */
@@ -498,16 +505,17 @@ private:
   // for openGL
   static GLWindowRep * currWinRep; // current gl graphical context
   GLboolean makeCurrent();
-  GLboolean double_buffer;
   XFontStruct *_specialfontstruct;
   GLuint _specialfont;
   XFontStruct *_normalfontstruct;
   GLuint _normalfont;
   XFontStruct *_currentfontstruct;
   GLuint _currentfont;
+  GLXContext _gc;  
+  GLboolean _double_buffer;
   XColorID _xbgid;
 
-  enum Dir {PosX, NegX, PosY, NegY, PosZ, NegZ} _viewdir;
+  ViewDir _viewdir;
   friend class RubberbandBuffer {
   public:
     RubberbandBuffer(int xx1, int yy1, int xx2, int yy2);
@@ -520,6 +528,3 @@ private:
 };
 
 #endif
-
-
-

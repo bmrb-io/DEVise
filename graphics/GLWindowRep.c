@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/03/12 22:58:42  wenger
+  Fixed bug 324 (view sometimes not fully redrawing); turned off some
+  OpenGL debug code.
+
   Revision 1.9  1998/03/05 08:10:21  zhenhai
   Added ability to view 3D graphs from six directions. Use -gl option to run,
   and click key x,y,z and X,Y,Z to select the direction you are viewing.
@@ -299,7 +303,7 @@ void GLWindowRep::Flush()
 #endif
   // force the output
   MAKECURRENT();
-  if (double_buffer)
+  if (_double_buffer)
     glXSwapBuffers(_display, _win);
   else
     glFlush();
@@ -310,7 +314,7 @@ void GLWindowRep::Flush()
 /* Find out whether window has backing store. */
 Boolean GLWindowRep::HasBackingStore()
 {
-  return Boolean(double_buffer);
+  return Boolean(_double_buffer);
 }
 
 /* Move and resize window, relative to the parent */
@@ -1065,7 +1069,7 @@ Boolean GLWindowRep::Scrollable()
      printf("GLWindowRep(0x%p)::Scrollable: 0x%p backingstore: %d, unobscured %d\n",this,
      this, _backingStore, _unobscured);
      */
-  if (_backingStore || _unobscured)
+  if (_double_buffer || _unobscured)
     return true;
   else return false;
 }
@@ -1212,7 +1216,7 @@ void GLWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
     for(k = 0; k < (num > MAXPIXELDUMP ? MAXPIXELDUMP : num); k++) {
       if ((k + 1) % 6 == 0)
         printf("\n");
-      printf("(%.2f,%.2f,%.2f,%.2f)", xlow[k], ylow[k], width[k], height[k]);
+      printf("(%.8f,%.8f,%.8f,%.8f)", xlow[k], ylow[k], width[k], height[k]);
     }
     printf("\n");
   }
@@ -1266,7 +1270,15 @@ void GLWindowRep::DrawPixel(Coord x, Coord y)
 #ifdef DEBUG
   printf("GLWindowRep(0x%p)::DrawPixel: %.2f %.2f\n",this, x, y);
 #endif
- /* DrawPixel not supported */
+#ifdef GRAPHICS
+  if (_dispGraphics) {
+    GLCHECKERROR();
+    GLBEGIN(GL_POINTS);
+    glVertex2d(x,y);
+    GLEND();
+    GLCHECKERROR();
+  }
+#endif
 }
 
 void GLWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
@@ -1288,7 +1300,16 @@ void GLWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
   printf("\n");
 #endif
 #endif
- /* DrawPixelArray not supported */
+#ifdef GRAPHICS
+  if (_dispGraphics) {
+    GLCHECKERROR();
+    GLBEGIN(GL_POINTS);
+    for (int i=0; i<num; i++)
+      glVertex2d(x[i],y[i]);
+    GLEND();
+    GLCHECKERROR();
+  }
+#endif
 }
 
 /* Fill rectangle. All coordinates are in pixels. x and y are
@@ -1776,12 +1797,12 @@ void GLWindowRep::TkWindowSizeChanged()
 #endif
 
 /* called by GLDisplay to create new X window */
-GLWindowRep::GLWindowRep(Display *display, Window window, GLDisplay *DVDisp, 
-			 GLWindowRep *parent, Boolean backingStore = false):
-  WindowRep(DVDisp),_display(0),_win(0),_gc(0),
+GLWindowRep::GLWindowRep(Display *display, Window window, GLDisplay *DVDisp,
+	GLWindowRep *parent, GLXContext gc, GLboolean double_buffer):
+  WindowRep(DVDisp),_display(0),_win(0),
   _specialfontstruct(0),_specialfont(0),
   _normalfontstruct(0),_normalfont(0),_currentfont(0),
-  _viewdir(NegZ)
+  _gc(gc), _double_buffer(double_buffer), _xbgid(0), _viewdir(NegZ)
 {
 #if defined(DEBUG)
   printf("GLWindowRep::GLWindowRep(this = %p, parent = %p,
@@ -1793,7 +1814,6 @@ GLWindowRep::GLWindowRep(Display *display, Window window, GLDisplay *DVDisp,
   _parent = parent;
   if (_parent)
     _parent->_children.Append(this);
-  _backingStore = false;
   _lineStyle = LineSolid;
   _daliServer = NULL;
   _etkServer = NULL;
@@ -1803,7 +1823,10 @@ GLWindowRep::GLWindowRep(Display *display, Window window, GLDisplay *DVDisp,
 /* called by GLDisplay to create new X pixmap */
 GLWindowRep::GLWindowRep(Display *display, Pixmap pixmap, GLDisplay *DVDisp, 
 			 GLWindowRep *parent, int x, int y):
-  WindowRep(DVDisp),_display(0),_win(0),_gc(0),_viewdir(NegZ)
+  WindowRep(DVDisp),_display(0),_win(0),
+  _specialfontstruct(0),_specialfont(0),
+  _normalfontstruct(0),_normalfont(0),_currentfont(0),
+  _gc(0), _double_buffer(GL_FALSE), _xbgid(0), _viewdir(NegZ)
 {
 #if defined(DEBUG)
   printf("GLWindowRep::GLWindowRep(this = %p, parent = %p, "
@@ -1815,7 +1838,7 @@ GLWindowRep::GLWindowRep(Display *display, Pixmap pixmap, GLDisplay *DVDisp,
   _parent = parent;
   if (_parent)
     _parent->_children.Append(this);
-  _backingStore = false;
+  _double_buffer = false;
 
   _x = x;
   _y = y;
@@ -1831,7 +1854,6 @@ void GLWindowRep::Init()
   printf("GLWindowRep(0x%p)::Init()\n",this);
 #endif
 
-  XVisualInfo *vi;
 
 #if defined(LIBCS)
   _dispGraphics = true;
@@ -1843,29 +1865,7 @@ void GLWindowRep::Init()
   UpdateWinDimensions();
   _unobscured = false;
   // use double buffer. Use color index mode instead of RGB mode
-/*  int configuration[] = {GLX_DOUBLEBUFFER, GLX_DEPTH_SIZE, 12,
-			 GLX_RED_SIZE, 1, GLX_BLUE_SIZE, 1,
-			 GLX_GREEN_SIZE, 1, None};*/
-  int configuration[] = {GLX_DEPTH_SIZE, 12,
-			 GLX_RED_SIZE, 1, GLX_BLUE_SIZE, 1,
-			 GLX_GREEN_SIZE, 1, None};
-  int configuration2[] = {None};
 
-  vi = glXChooseVisual(_display, DefaultScreen(_display), configuration);
-  if (vi == NULL) {
-    vi = glXChooseVisual(_display, DefaultScreen(_display), configuration2);
-    DOASSERT(vi != NULL, "no appropriate RGB visual with depth buffer");
-    double_buffer=GL_FALSE;
-  }
-  else
-//    double_buffer=GL_TRUE;
-    double_buffer=GL_FALSE; // changed temperarily
-
-  GLCHECKERROR();
-  _gc = glXCreateContext(_display, vi,
-			 /* No sharing of display lists */ NULL,
-			 /* Direct rendering if possible */ True);
-  GLCHECKERROR();
   glEnable(GL_INDEX_LOGIC_OP);
   SetCopyMode();
   GLCHECKERROR();
@@ -3096,6 +3096,21 @@ void GLWindowRep::MakeIdentity() {
   GLCHECKERROR();
 }
 
+void GLWindowRep::Transform(Coord x, Coord y, Coord &newX, Coord &newY)
+{
+  GLdouble model[16];
+  GLdouble proj[16];
+  GLint view[4];
+  glGetDoublev(GL_MODELVIEW_MATRIX, model);
+  glGetDoublev(GL_PROJECTION_MATRIX, proj);
+  glGetIntegerv(GL_VIEWPORT, view);
+  GLdouble objectX, objectY, objectZ;
+  gluProject((GLdouble)x,(GLdouble)y, (GLdouble)0,
+	       model, proj, view, &objectX, &objectY, &objectZ);
+  newX=objectX;
+  newY=objectY;
+}
+
 void GLWindowRep::InverseTransform(Coord x, Coord y, Coord &newX, Coord &newY)
 {
   GLdouble model[16];
@@ -3121,6 +3136,13 @@ Transform2D *GLWindowRep::TopTransform() {
  return 0;
 }
 
+Transform3D *GLWindowRep::TopTransform3() {
+#if defined(DEBUG)
+  printf("GLWindowRep(0x%p)::TopTransform(): ###############Not Implemented\n",this);
+#endif
+ return 0;
+}
+
 void GLWindowRep::PrintTransform()
 {
   GLCHECKERROR();
@@ -3137,7 +3159,7 @@ void GLWindowRep::PrintTransform()
   printf("Transform matrix for 0x%p\n", this);
   for (int i=0; i<4; i++) {
     for (int j=0; j<4; j++)
-      printf("%.2f\t", a[i+j*4]);
+      printf("%.8f\t", a[i+j*4]);
     printf("\n");
   }
   GLCHECKERROR();
@@ -3150,7 +3172,7 @@ void GLWindowRep::PrintTransform()
   printf("Projection matrix for 0x%p\n", this);
   for (int i=0; i<4; i++) {
     for (int j=0; j<4; j++)
-      printf("%.2f\t", a[i+j*4]);
+      printf("%.8f\t", a[i+j*4]);
     printf("\n");
   }
   GLCHECKERROR();
@@ -3189,6 +3211,20 @@ void GLWindowRep::ViewNegX()
   _viewdir = NegX;
 }
 
+void GLWindowRep::SetViewCamera(const Camera & c)
+{
+  switch (c.view_dir) {
+    case PosX: ViewPosX(); break;
+    case PosY: ViewPosY(); break;
+    case PosZ: ViewPosZ(); break;
+    case NegX: ViewNegX(); break;
+    case NegY: ViewNegY(); break;
+    case NegZ: ViewNegZ(); break;
+  }
+  PanRightAmount(c.pan_right);
+  PanUpAmount(c.pan_up);
+	
+}
 void GLWindowRep::ViewPosX()
 {
   MAKECURRENT();

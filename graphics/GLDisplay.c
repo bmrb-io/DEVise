@@ -635,7 +635,18 @@ WindowRep *GLDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 				     Boolean relative, Boolean winBoundary)
 {
   DO_DEBUG(printf("GLDisplay::CreateWindowRep(%s)\n", name));
-  Window parent = DefaultRootWindow(_display);
+  Window parent;// = DefaultRootWindow(_display);
+
+  if (parentRep)
+    parent = ((GLWindowRep *)parentRep)->GetWinId();
+  else
+    parent = DefaultRootWindow(_display);
+
+  unsigned int border_width;
+  if (winBoundary)
+    border_width = (!parentRep ? 5 : 1);
+  else
+    border_width = (!parentRep ? 5 : 0);
 
   Coord realX, realY, realWidth, realHeight;
   Coord real_min_width, real_min_height;
@@ -690,8 +701,37 @@ WindowRep *GLDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 #ifdef RAWMOUSEEVENTS
   mask |= PointerMotionMask;
 #endif
+
+  XVisualInfo *vi;
+
+/*  int configuration[] = {GLX_DOUBLEBUFFER, GLX_DEPTH_SIZE, 12,
+                         GLX_RED_SIZE, 1, GLX_BLUE_SIZE, 1,
+                         GLX_GREEN_SIZE, 1, None};
+*/
+  int configuration[] = {GLX_DEPTH_SIZE, 12,
+                         GLX_RED_SIZE, 1, GLX_BLUE_SIZE, 1,
+                         GLX_GREEN_SIZE, 1, None};
+  int configuration2[] = {None};
+  GLboolean double_buffer;
+
+  vi = glXChooseVisual(_display, DefaultScreen(_display), configuration);
+  if (vi == NULL) {
+    vi = glXChooseVisual(_display, DefaultScreen(_display), configuration2);
+    DOASSERT(vi != NULL, "no appropriate RGB visual with depth buffer");
+    double_buffer=GL_FALSE;
+  }
+  else {
+//    double_buffer=GL_TRUE;
+    double_buffer=GL_FALSE;
+  }
   
   /* Define window attributes. */
+#ifdef SGI
+  Colormap cmap = XCreateColormap(_display, RootWindow(_display, vi->screen), vi->visual, AllocNone);
+  //  Colormap cmap = XCopyColormapAndFree(_display, DefaultColormap(_display, DefaultScreen(_display)));
+#else
+  Colormap cmap	= DefaultColormap(_display, DefaultScreen(_display));
+#endif
 
   XSetWindowAttributes attr;
   attr.background_pixmap 	= None;
@@ -707,25 +747,46 @@ WindowRep *GLDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   attr.event_mask  		= mask;
   attr.do_not_propagate_mask	= 0;
   attr.override_redirect  	= False;
-  attr.colormap	= DefaultColormap(_display, DefaultScreen(_display));
+  attr.colormap			= cmap;
   attr.cursor  			= None;
 
   /* Create the window. */
 
-  if (parentRep)
-    parent = ((GLWindowRep *)parentRep)->GetWinId();
 
-  unsigned int border_width;
-  if (winBoundary)
-    border_width = (!parent ? 5 : 1);
-  else
-    border_width = (!parent ? 5 : 0);
 
+
+#ifndef SGI
   Window w = XCreateWindow(_display, parent, (unsigned)realX, (unsigned)realY, 
 			   (unsigned)realWidth, (unsigned)realHeight,
-			   border_width, 0, InputOutput, CopyFromParent,
+			   border_width, vi->depth, InputOutput, vi->visual,
 			   AllPlanes, &attr);
+#else
+  Window w = XCreateWindow(_display, parent,
+    (unsigned)realX, (unsigned)realY, (unsigned)realWidth, (unsigned)realHeight,
+    border_width, vi->depth,
+    InputOutput, vi->visual,
+/* These bits caused invalid config error on SGI:
+   CWBorderPixmap
+*/
+    CWBackPixmap | CWBackPixel | CWBorderPixel |
+    CWBitGravity | CWWinGravity |
+    CWBackingStore | CWBackingPlanes | CWBackingPixel |
+    CWOverrideRedirect | CWSaveUnder | 
+    CWEventMask | CWDontPropagate | CWColormap | CWCursor,
+    &attr);
+#endif
+
+/*  Window w = XCreateWindow(_display, RootWindow(_display, vi->screen),
+    0, 0, 300, 300, 0, vi->depth,
+    InputOutput, vi->visual, CWBorderPixel | CWColormap | CWEventMask, &swa);
+*/
+
   DOASSERT(w, "Cannot create window");
+
+  GLXContext gc = glXCreateContext(_display, vi,
+                         /* No sharing of display lists */ NULL,
+                         /* Direct rendering if possible */ True);
+
 
 #ifdef DEBUG
   printf("GLDisplay: Created X window 0x%lx to parent 0x%lx at %u,%u,\n",
@@ -797,7 +858,7 @@ WindowRep *GLDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   /* Return the GLWindowRep structure. */
 
   GLWindowRep *xwin = new GLWindowRep(_display, w, this,
-                                    (GLWindowRep *)parentRep, false);
+                                    (GLWindowRep *)parentRep, gc, double_buffer);
   DOASSERT(xwin, "Cannot create GLWindowRep");
   _winList.Insert(xwin);
   

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.73  1998/03/08 00:01:14  wenger
+  Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
+  update problems) -- major changes to visual links.
+
   Revision 1.72  1998/03/05 08:10:56  zhenhai
   Added ability to view 3D graphs from six directions. Use -gl option to run,
   and click key x,y,z and X,Y,Z to select the direction you are viewing.
@@ -851,7 +855,7 @@ void ViewGraph::GoHome()
 
         SetVisualFilter(filter);
     } else {
-        Camera c = GetCamera();
+        Camera c=GetCamera();
         c.fx = 0;
         c.fy = 0;
         c.fz = 0;
@@ -869,6 +873,8 @@ void ViewGraph::GoHome()
             c._phi = M_PI_2;
             c._rho = fabs(minZ);
         }
+        c.pan_right=0;
+        c.pan_up=0;
         SetCamera(c);
     }
 
@@ -923,24 +929,9 @@ void ViewGraph::PanLeftOrRight(PanDirection direction)
       filter.xHigh = filter.xLow + width;
       SetVisualFilter(filter);
     } else { 
-#if 0
       Camera camera = GetCamera();
-      double incr_ = 0.0;
-      if (!camera.spherical_coord) {
-	/* when further away, it will move faster */
-	incr_ = fabs(camera.x_ / STEP_SIZE);
-	if (incr_ < 0.1)
-	  incr_ = 0.1;
-	camera.x_ += panFactor * incr_;
-	if (!camera.fix_focus)
-	  camera.fx += panFactor * incr_;
-      } else {
-	incr_ = M_PI / STEP_SIZE;
-	camera._theta += panFactor * incr_;
-      }
+      camera.pan_right+=0.10*panFactor;
       SetCamera(camera);
-#endif
-      PanRightAmount(0.10*panFactor);
     }
 
     return;
@@ -964,8 +955,11 @@ void ViewGraph::PanUpOrDown(PanDirection direction)
       return;
       break;
     }
-    if (GetNumDimensions() == 3)
-      PanUpAmount(0.10*panFactor);
+    if (GetNumDimensions() == 3) {
+      Camera camera = GetCamera();
+      camera.pan_up+=0.10*panFactor;
+      SetCamera(camera);
+    }
 }
 
 void ViewGraph::WriteMasterLink(RecId start, int num)
