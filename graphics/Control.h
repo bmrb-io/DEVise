@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/05/11 19:10:30  jussi
+  Added virtual function prototypes for replica management.
+
   Revision 1.7  1996/05/11 17:28:45  jussi
   Reorganized the code somewhat in order to match the ParseAPI
   interface.
@@ -39,6 +42,8 @@
 
 #ifndef Control_h
 #define Control_h
+
+#include <sys/types.h>
 
 #include "DeviseTypes.h"
 #include "VisualArg.h"
@@ -129,7 +134,7 @@ public:
   virtual void DoAbort(char *reason) {}
 
   /* return one or multiple values to caller of API */
-  virtual int ReturnVal(int flag, char *result) = 0;
+  virtual int ReturnVal(u_short flag, char *result) = 0;
   virtual int ReturnVal(int argc, char **argv) = 0;
   
   /* Get ClassDir info */
