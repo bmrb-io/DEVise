@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/07/29 14:19:41  wenger
+  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+  allow static linking on Linux.
+
   Revision 1.14  1998/06/23 17:51:29  wenger
   Added client timeout to Devise -- quits if no commands from client
   within specified period.
@@ -115,7 +119,6 @@
 #define MAXNAMELEN 1024
 #endif
 
-
 #if defined(LINUX)
 #include <sys/time.h>
 #endif
@@ -134,6 +137,8 @@
 #include "Csprotocols.h"
 #include "Util.h"
 #include "Init.h"
+
+#define USE_JS_PROTOCOL // Whether to use protocol as defined by API.txt.
 
 Server* _ThisServer;
 
@@ -464,21 +469,29 @@ void Server::WaitForConnection()
     	_numClients++;
 	}
 
+#if defined(USE_JS_PROTOCOL)
 	// echo back the "slot" number as a handle for the client
 	// a JAVA client will later use this handle to identify a connection
 	int nbytes = writeInteger(clientfd, slot);
+#endif
     if (slot < 0)
     {
 		fprintf(stderr, "WARNING: Too many clients. Connection denied\n");
 		close(clientfd);
     }
+#if defined(USE_JS_PROTOCOL)
 	if (nbytes <0)
 	{
 		printf("Failed to send back slot number to the client\n");
 		if (slot >=0)
 			CloseClient(slot);
 	}
+#endif
+#if defined(USE_JS_PROTOCOL)
 	if ((nbytes>0)&&(slot >=0))
+#else
+	if (slot >= 0)
+#endif
 	{
     	printf("Connection established to client %d\n", slot);
     	BeginConnection(slot);
@@ -560,6 +573,7 @@ Server::WaitForImageportConnection()
 	}
 	*/
 
+#if defined(USE_JS_PROTOCOL)
 	//
 	// this blocking read should be moved to scheduler later
 	// because we cannot have the server blocking for a malicious client
@@ -603,6 +617,7 @@ Server::WaitForImageportConnection()
 			ReturnVal(slotno, API_JAVACMD, 1, &argv[0], false);
 		}
 	}
+#endif
 }
 
 void Server::ProcessCmd(ClientID clientID, int argc, char **argv)
