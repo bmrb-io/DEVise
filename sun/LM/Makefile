@@ -18,8 +18,8 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include 
+ARCH_FLAGS = -DSUN -I/s/X11/include -I/s/tcl/include 
 
 VPATH = ../../LM
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.solaris
+include $(VPATH)/Makefile.sun

@@ -18,7 +18,7 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include 
+ARCH_FLAGS = -DLINUX
 
 VPATH = ../../LM
 include $(VPATH)/Makefile.base

@@ -18,8 +18,10 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include 
+depend:
+	makedepend  -fMakefile.linux  -I../graphics -I../tape \
+		-I../DTE/DeviseSpecific -I../DTE/Core \
+		-I/s/X11/include -I/s/tcl/include *.c *.C
 
-VPATH = ../../LM
-include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.solaris
+# DO NOT DELETE
+

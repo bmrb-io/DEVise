@@ -1,0 +1,81 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1997
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+depend:
+	makedepend  -fMakefile.sun  -I../graphics -I../tape \
+		-I../DTE/DeviseSpecific -I../DTE/Core \
+		-I/s/X11/include -I/s/tcl/include *.c *.C
+
+# DO NOT DELETE
+
+LMAPI.o: /usr/include/stdio.h /usr/include/string.h
+LMAPI.o: /usr/include/sys/stdtypes.h /usr/include/stdlib.h LMAPI.h
+LMAPI.o: LMControl.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
+LMAPI.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
+LMAPI.o: /usr/include/sys/sysmacros.h /s/X11/include/X11/X.h
+LMAPI.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+LMAPI.o: /usr/include/stddef.h LMWindow.h LMHashTable.h LMLayout.h
+LMAPI.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
+LMAPI.o: /usr/include/unistd.h ../graphics/DeviseTypes.h
+LMAPI.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Journal.h
+LMAPI.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+LMAPI.o: LMError.h
+LMControl.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+LMControl.o: /usr/include/string.h LMControl.h /s/tcl/include/tcl.h
+LMControl.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
+LMControl.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+LMControl.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+LMControl.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h LMWindow.h
+LMControl.o: LMHashTable.h LMLayout.h ../graphics/DList.h ../graphics/Exit.h
+LMControl.o: ../graphics/Dispatcher.h /usr/include/stdio.h
+LMControl.o: /usr/include/unistd.h ../graphics/DeviseTypes.h
+LMControl.o: /usr/include/values.h ../graphics/DevStatus.h
+LMControl.o: ../graphics/Journal.h ../graphics/VisualArg.h
+LMControl.o: ../graphics/Color.h ../graphics/Pattern.h LMAPI.h
+LMHashTable.o: /usr/include/string.h /usr/include/sys/stdtypes.h
+LMHashTable.o: LMHashTable.h
+LMLayout.o: LMLayout.h /usr/include/stdio.h /usr/include/math.h
+LMLayout.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h LMWindow.h
+LMLayout.o: LMHashTable.h ../graphics/DList.h ../graphics/Exit.h
+LMMain.o: LMControl.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
+LMMain.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
+LMMain.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+LMMain.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+LMMain.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h LMWindow.h
+LMMain.o: LMHashTable.h LMLayout.h ../graphics/DList.h ../graphics/Exit.h
+LMMain.o: ../graphics/Dispatcher.h /usr/include/stdio.h /usr/include/stdlib.h
+LMMain.o: /usr/include/unistd.h /usr/include/string.h
+LMMain.o: ../graphics/DeviseTypes.h /usr/include/values.h
+LMMain.o: ../graphics/DevStatus.h ../graphics/Journal.h
+LMMain.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+LMWindow.o: LMWindow.h LMHashTable.h LMLayout.h ../graphics/DList.h
+LMWindow.o: ../graphics/Exit.h LMControl.h /s/tcl/include/tcl.h
+LMWindow.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
+LMWindow.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
+LMWindow.o: /usr/include/sys/sysmacros.h /s/X11/include/X11/X.h
+LMWindow.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+LMWindow.o: /usr/include/stddef.h ../graphics/Dispatcher.h
+LMWindow.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/unistd.h
+LMWindow.o: /usr/include/string.h ../graphics/DeviseTypes.h
+LMWindow.o: /usr/include/values.h ../graphics/DevStatus.h
+LMWindow.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+LMWindow.o: ../graphics/Pattern.h
+main.o: ../tape/HashTable.h
+main1.o: ../tape/HashTable.h
