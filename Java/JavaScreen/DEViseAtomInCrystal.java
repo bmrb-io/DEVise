@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999
+// (c) Copyright 1999-2000
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -10,12 +10,22 @@
 // or altered in any way without prior permission from the DEVise
 // Development Group.
 
+// ------------------------------------------------------------------------
+
+// ADD COMMENT: overall description of the function of this class
+
+// ------------------------------------------------------------------------
+
 // $Id$
 
 // $Log$
+// Revision 1.4  2000/02/04 15:51:44  hongyu
+// *** empty log message ***
+//
 // Revision 1.3  1999/12/10 15:37:00  wenger
 // Added standard headers to source files.
 //
+// ========================================================================
 
 import java.awt.*;
 

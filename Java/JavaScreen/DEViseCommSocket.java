@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999
+// (c) Copyright 1999-2000
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -10,9 +10,18 @@
 // or altered in any way without prior permission from the DEVise
 // Development Group.
 
+// ------------------------------------------------------------------------
+
+// ADD COMMENT: overall description of the function of this class
+
+// ------------------------------------------------------------------------
+
 // $Id$
 
 // $Log$
+// Revision 1.7  2000/03/06 08:09:10  hongyu
+// fix the 'invalid image data' bug --- hongyu
+//
 // Revision 1.6  1999/12/07 20:37:44  wenger
 // Changed reading of data from socket to a single system call to speed things
 // up.

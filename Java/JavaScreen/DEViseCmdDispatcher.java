@@ -10,9 +10,18 @@
 // or altered in any way without prior permission from the DEVise
 // Development Group.
 
+// ------------------------------------------------------------------------
+
+// ADD COMMENT: overall description of the function of this class
+
+// ------------------------------------------------------------------------
+
 // $Id$
 
 // $Log$
+// Revision 1.45  2000/02/23 21:12:12  hongyu
+// *** empty log message ***
+//
 // Revision 1.44  2000/02/16 15:15:31  wenger
 // Temporary change so that the JavaScreen accepts the current form
 // of the JAVAC_DrawCursor command.

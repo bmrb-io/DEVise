@@ -10,9 +10,18 @@
 // or altered in any way without prior permission from the DEVise
 // Development Group.
 
+// ------------------------------------------------------------------------
+
+// ADD COMMENT: overall description of the function of this class
+
+// ------------------------------------------------------------------------
+
 // $Id$
 
 // $Log$
+// Revision 1.5  2000/03/23 16:07:41  wenger
+// Added standard header.
+//
 
 // ========================================================================
 

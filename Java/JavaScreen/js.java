@@ -10,9 +10,22 @@
 // or altered in any way without prior permission from the DEVise
 // Development Group.
 
+// ------------------------------------------------------------------------
+
+// ADD COMMENT: overall description of the function of this class
+
+// ------------------------------------------------------------------------
+
 // $Id$
 
 // $Log$
+// Revision 1.33  2000/02/18 22:21:17  wenger
+// Various changes to make cron scripts work better with new two-machine
+// setup: added -id argument to devise, jspop, jss; updated cron scripts
+// that check status of jspop, etc.; improved usage messages of jspop,
+// jss, js; improved DEVise.kill script; removed obsolete sections of
+// Java code.
+//
 // Revision 1.32  1999/10/10 08:49:54  hongyu
 // Major changes to JAVAScreen have been commited in this update, including:
 // 1. restructure of JavaScreen internal structure to adapt to vast changes

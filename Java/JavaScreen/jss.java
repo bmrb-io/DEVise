@@ -10,9 +10,18 @@
 // or altered in any way without prior permission from the DEVise
 // Development Group.
 
+// ------------------------------------------------------------------------
+
+// ADD COMMENT: overall description of the function of this class
+
+// ------------------------------------------------------------------------
+
 // $Id$
 
 // $Log$
+// Revision 1.9  2000/02/23 10:44:02  hongyu
+// *** empty log message ***
+//
 // Revision 1.8  2000/02/22 10:00:48  hongyu
 // *** empty log message ***
 //

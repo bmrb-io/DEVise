@@ -12,7 +12,18 @@
 
 // $Id$
 
+// ------------------------------------------------------------------------
+
+// ADD COMMENT: overall description of the function of this class
+
+// ------------------------------------------------------------------------
+
 // $Log$
+// Revision 1.34  2000/03/08 21:23:25  wenger
+// Fixed bug 568 (crash when opening some sessions in the JavaScreen):
+// reset devised timeout in jspop to a better value; JavaScreenCmd now
+// deals better with the possibility of a communications failure.
+//
 // Revision 1.33  2000/03/06 08:09:19  hongyu
 // fix the 'invalid image data' bug --- hongyu
 //

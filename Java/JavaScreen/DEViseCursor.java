@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999
+// (c) Copyright 1999-2000
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -10,9 +10,18 @@
 // or altered in any way without prior permission from the DEVise
 // Development Group.
 
+// ------------------------------------------------------------------------
+
 // $Id$
 
+// ------------------------------------------------------------------------
+
+// ADD COMMENT: overall description of the function of this class
+
 // $Log$
+// Revision 1.15  2000/02/16 08:53:58  hongyu
+// *** empty log message ***
+//
 // Revision 1.14  1999/10/12 00:08:43  hongyu
 // *** empty log message ***
 //

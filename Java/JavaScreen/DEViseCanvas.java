@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999
+// (c) Copyright 1999-2000
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -10,9 +10,18 @@
 // or altered in any way without prior permission from the DEVise
 // Development Group.
 
+// ------------------------------------------------------------------------
+
+// ADD COMMENT: overall description of the function of this class
+
+// ------------------------------------------------------------------------
+
 // $Id$
 
 // $Log$
+// Revision 1.35  2000/02/23 21:12:11  hongyu
+// *** empty log message ***
+//
 // Revision 1.34  2000/02/23 10:44:01  hongyu
 // *** empty log message ***
 //
@@ -33,6 +42,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.35  2000/02/23 21:12:11  hongyu
+// *** empty log message ***
+//
 // Revision 1.34  2000/02/23 10:44:01  hongyu
 // *** empty log message ***
 //

@@ -10,9 +10,18 @@
 // or altered in any way without prior permission from the DEVise
 // Development Group.
 
+// ------------------------------------------------------------------------
+
+// ADD COMMENT: overall description of the function of this class
+
+// ------------------------------------------------------------------------
+
 // $Id$
 
 // $Log$
+// Revision 1.24  2000/02/22 10:00:48  hongyu
+// *** empty log message ***
+//
 // Revision 1.23  2000/02/18 22:21:17  wenger
 // Various changes to make cron scripts work better with new two-machine
 // setup: added -id argument to devise, jspop, jss; updated cron scripts

@@ -12,7 +12,16 @@
 
 // $Id$
 
+// ------------------------------------------------------------------------
+
+// ADD COMMENT: overall description of the function of this class
+
+// ------------------------------------------------------------------------
+
 // $Log$
+// Revision 1.34  2000/02/23 21:12:13  hongyu
+// *** empty log message ***
+//
 // Revision 1.33  2000/02/16 15:16:15  wenger
 // Changed default jspophost to localhost; changed overall JS version to 3.2.
 //
