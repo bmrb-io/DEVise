@@ -86,24 +86,47 @@ if (! -e $summary_page) {
   }
       
   # Generate new sessions
-  my($index);
+  my($index, $found_any);
   $index = 1;
-  while (1) {
+  $found_any = 1;
+  while ($found_any) {
+    $found_any = 0;
+
     my($check_file);
+
+    # CSI.
     $check_file = $acc_num . 'c' . $index . '.dat';
     if (-e $check_file) {
+      $found_any = 1;
       chdir ($session_dir) 
         or dienice('Could not change to session_directory ($session_dir)');
-  
       change_file2('csi', $index, 4081);
-      change_file2('deltashift', $index, 4081);
-      change_file2('percent', $index, 4081);
-
       chdir ($data_dir) 
         or dienice('Could not change to data_dir ($data_dir)');
-    } else {
-      last;
     }
+      
+    # Delta shifts.
+    $check_file = $acc_num . 'd' . $index . '.dat';
+    if (-e $check_file) {
+      $found_any = 1;
+      chdir ($session_dir) 
+        or dienice('Could not change to session_directory ($session_dir)');
+      change_file2('deltashift', $index, 4081);
+      chdir ($data_dir) 
+        or dienice('Could not change to data_dir ($data_dir)');
+    }
+
+    # Percent assignments.
+    $check_file = $acc_num . 'p' . $index . '.dat';
+    if (-e $check_file) {
+      $found_any = 1;
+      chdir ($session_dir) 
+        or dienice('Could not change to session_directory ($session_dir)');
+      change_file2('percent', $index, 4081);
+      chdir ($data_dir) 
+        or dienice('Could not change to data_dir ($data_dir)');
+    }
+
     $index++;
   }
   
