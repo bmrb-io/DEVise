@@ -17,11 +17,15 @@ else
   set batchfile = /tmp/update_filter.batch
   \rm $batchfile
   touch $batchfile
+  echo "DEVise changeMode 1" >> $batchfile
+  echo "DEVise openSession $session" >> $batchfile
   echo "DEVise viewGoHome {$view}" >> $batchfile
   echo "DEVise saveSession $session 0 0 0" >> $batchfile
   echo "DEVise exit" >> $batchfile
 
-  /p/devise/run/devise -session $session -batch $batchfile
+  /p/devise/run/devised.jsdemo -quit 1 &
+  sleep 5
+  /p/devise/public/bin/deviseb < $batchfile
 
   \rm $batchfile
 endif
