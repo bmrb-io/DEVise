@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1997
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/12/12 21:10:08  jussi
+  Tmp directories removed after clean-up.
+
   Revision 1.12  1996/09/05 21:31:26  jussi
   Added resetting of screen size parameters.
 
@@ -57,7 +60,6 @@
 
 #include "Init.h"
 #include "Control.h"
-#include "XawControl.h"
 #include "StringArray.h"
 #include "Dispatcher.h"
 #include "Journal.h"
