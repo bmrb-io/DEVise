@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/28 18:56:02  jussi
+  Small fix to remove compiler warning.
+
   Revision 1.4  1995/12/14 15:29:38  jussi
   Replaced WinVertical and WinHorizontal with TileLayout which can
   do both, depending on run-time, user-settable parameters.
@@ -119,8 +122,13 @@ void TileLayoutInfo::CreateParams(int &argc, char **&argv)
 
   int x, y;
   unsigned int w, h;
-  _win->Geometry(x, y, w, h);
   _win->AbsoluteOrigin(x, y); /* need to use offset from top-left of screen*/
+
+#if defined(MARGINS) || defined(TK_WINDOW)
+  _win->RealGeometry(x, y, w, h);
+#else
+  _win->Geometry(x, y, w, h);
+#endif
 
   // need to allow for window manager's borders; the height of the title
   // bar above the window is around 20 pixels (in fvwm, at least), and
