@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/29 15:12:07  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 21:13:38  jussi
   Added/updated CVS header.
 */
@@ -309,7 +312,7 @@ Internal non-blocking event processing .
 
 void XDisplay::InternalProcessing()
 {
-#if 1
+#if 0
   static first = true;
   if (first) {
     printf("first XDisplay::InternalProcessing\n");
