@@ -26,6 +26,13 @@
   $Id$
 
   $Log$
+  Revision 1.13  1999/06/04 16:31:59  wenger
+  Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
+  with key presses in piled views in the JavaScreen); made other pile-
+  related improvements (basically, I removed a bunch of pile-related code
+  from the XWindowRep class, and implemented that functionality in the
+  PileStack class).
+
   Revision 1.12  1999/05/17 20:55:11  wenger
   Partially-kludged fix for bug 488 (problems with cursors in piled views
   in the JavaScreen).
@@ -292,6 +299,21 @@ PileStack::Flip()
     //
     if (_state == PSStacked) {
       GetViewList()->GetFirst()->Raise();
+    }
+
+    if (IsPiled()) {
+      //
+      // Make sure that all WindowReps of piled views output to the first
+      // view in the pile (so we're always consistent).  This is important
+      // for the JavaScreen.
+      //
+      int index = InitIterator();
+      while (More(index)) {
+        View *view = (View *)Next(index);
+        view->SetPileMode(false);
+        view->SetPileMode(true);
+      }
+      DoneIterator(index);
     }
   }
 
