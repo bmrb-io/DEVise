@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.14  1996/01/09 16:37:30  jussi
+#	Changed call to seq_extract.
+#
 #	Revision 1.13  1995/12/29 17:26:35  jussi
 #	Replaced absolute path names to schema dir with $schemadir.
 #
@@ -25,9 +28,9 @@
 #	Physical/logical schema distinction handled.
 #
 #	Revision 1.10  1995/11/29 15:53:29  jussi
-#	Made inclusion of sourcedef.tcl conditional. Provided default values for
-#	sourceTypes. Removed constant window size definitions because they
-#	produce unexpected results on some window managers.
+#	Made inclusion of sourcedef.tcl conditional. Provided default values
+#	for sourceTypes. Removed constant window size definitions because
+#	they produce unexpected results on some window managers.
 #
 #	Revision 1.9  1995/11/24 21:39:42  jussi
 #	Changed width of schema filename to 40. Added code to extract the
@@ -269,7 +272,11 @@ proc defineStream {base edit} {
 	    -fill x -expand 1
 
     button .srcdef.but.ok -text OK -width 10 -command {
-	if {$dispname == ""} {
+	if {$source == "SEQ"} {
+	    set schemafile $schemadir/physical/SEQ.$key.schema
+	    set schematype "SEQ.$key"
+	}
+	if {$dispname == "" || $key == "" || $schemafile == ""} {
 	    dialog .noName "Missing Information" \
 		    "Please enter all requested information." \
 		    "" 0 OK
@@ -277,9 +284,18 @@ proc defineStream {base edit} {
 	}
 	set cachefile [getCacheName $source $key]
 	set command [string trim [.srcdef.top.row5.e1 get 1.0 end]]
-	set newschematype [scanSchema $schemafile]
-	if {$newschematype == ""} { return }
-	set schematype $newschematype
+	if {$source == "SEQ"} {
+	    if {[getSEQSchema $command $schemafile $schematype] < 0} {
+		dialog .error "No Schema" \
+			"Cannot define a SEQ query while server cannot\n\
+			be reached." "" 0 OK
+		return
+	    }
+	} else {
+	    set newschematype [scanSchema $schemafile]
+	    if {$newschematype == ""} { return }
+	    set schematype $newschematype
+	}
 
 	set sourcedef [list $source $key $schematype $schemafile \
 		$cachefile $evaluation $priority $command]
@@ -323,6 +339,36 @@ proc defineStream {base edit} {
 	    -side left -padx 7m
 
     tkwait visibility .srcdef
+}
+
+############################################################
+
+proc getSEQSchema {command schemafile schematype} {
+    global sourceConfig
+
+    set host [lindex $sourceConfig(SEQ) 0]
+    set port [lindex $sourceConfig(SEQ) 1]
+    # add a disjoint from-to clause which causes the SEQ server
+    # to return an empty data set; just the schema is returned
+    set command "$command from \"1996-01-01 00:00:00\" \
+	    to \"1995-01-01 00:00:00\""
+    set cmd "seq_extract $host $port \{$command;\} /dev/null \
+	    $schemafile $schematype"
+
+    update
+    if {[catch { eval $cmd }] > 0} {
+	puts "Cannot execute command:"
+	puts "  $cmd"
+	dialog .error "Error Occurred" \
+		"An error occurred while extracting the schema\n\
+		from the SEQ server. See text window for\n\
+		the error message." \
+		"" 0 OK
+	catch { exec rm $schemafile }
+	return -1
+    }
+
+    return 0
 }
 
 ############################################################
@@ -420,6 +466,8 @@ proc cacheData {dispname startrec endrec} {
 
     set source [lindex $sourcedef 0]
     set key [lindex $sourcedef 1]
+    set schematype [lindex $sourcedef 2]
+    set schemafile [lindex $sourcedef 3]
     set cachefile [lindex $sourcedef 4]
     set priority [lindex $sourcedef 6]
     set command [lindex $sourcedef 7]
@@ -434,7 +482,8 @@ proc cacheData {dispname startrec endrec} {
     } elseif {$source == "SEQ"} {
 	set host [lindex $sourceConfig($source) 0]
 	set port [lindex $sourceConfig($source) 1]
-	set cmd "seq_extract $host $port \{$command\} $cachefile /dev/null"
+	set cmd "seq_extract $host $port \{$command;\} $cachefile \
+		$schemafile $schematype"
     } elseif {$source == "SQL"} {
 	set prog [lindex $sourceConfig($source) 0]
 	set port [lindex $sourceConfig($source) 1]
@@ -477,7 +526,7 @@ proc cacheData {dispname startrec endrec} {
 	    puts "Cannot execute command:"
 	    puts "  $cmd"
 	    dialog .error "Error Occurred" \
-		    "An error occurred in extracting data\n\
+		    "An error occurred while extracting data\n\
 		    from the data source. See text window for\n\
 		    the error message." \
 		    "" 0 OK
@@ -539,7 +588,7 @@ proc selectSourceKey {source} {
     }
     if {$source == "COMMAND" || $source == "SEQ" || $source == "SQL" \
 	|| $source == "WWW"} {
-	return "default Default"
+	return [list "default" "$source Default"]
     }
     if {$source == "COMPUSTAT"} {
 	return [cstatMain]
