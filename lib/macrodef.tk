@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.94  1997/09/14 23:18:49  donjerko
+#	Tables are not open if they already exist. (topGroup thing)
+#
 #	Revision 1.93  1997/08/21 21:06:38  donjerko
 #	Added Materialize button, added isDTEType to some code in views.tcl
 #
@@ -1326,7 +1329,7 @@ proc ProcessAttrInfo { attr aname atype issorted ahi alo color whichattr \
 	    if {$hi == "" && $pname == "xhigh"} {
 		set hi $value
 	    }
-	} else if { $whichattr == "y" } {
+	} elseif { $whichattr == "y" } {
 	    if {$lo == "" &&  $pname == "ylow"} {
 		set lo $value
 	    }
