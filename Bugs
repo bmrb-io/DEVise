@@ -1307,6 +1307,26 @@ Num Date        Status  Description
 343 05/11/98	OPEN	cat_url hangs if it's run on a web URL on a non-
 			networked system. (rkw)
 
+344 05/20/98	OPEN	Symbol alignment is not saved in sessions. (ml/rkw)
+
+345 05/20/98	OPEN	Adding a record link doesn't force the slave view
+			to redraw. (ml/rkw)
+
+346 05/20/98	OPEN	Symbol alignment doesn't work for non-zero text
+			orientation. (ml/rkw)
+
+347 05/21/98	OPEN	3D with OpenGL: objects suddenly disappear as you
+			zoom out. (rkw)
+
+348 05/21/98	OPEN	3D with OpenGL: redrawing is awfully slow. (rkw)
+
+349 05/21/98	OPEN	3D with OpenGL: 3D query dialog (and regular query
+			dialog) don't work. (rkw)
+
+350 05/21/98	OPEN	3D with OpenGL: moving around is very awkward,
+			especially when the objects you are viewing are not
+			very close to the origin. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
