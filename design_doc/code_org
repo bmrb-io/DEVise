@@ -3,95 +3,111 @@
 
 The following directories contain source code that's part of DEVise:
 
-* BTree
-    Lines of code: 0?
+* BTree: not used.
+    Lines of code: 0
 
-* DTE
+* DTE: the Data Translation Engine.
     Lines of code: 30352
 
-* RTree
+* RTree: Jonathan's RTree code, used by the DTE to build RTree indices.
     Lines of code: 8103
 
 * ams
     Lines of code: 2214
 
-* compustat?
+* compustat
     Lines of code: 1400
 
 * crsp
     Lines of code: 1540
 
-* csgroup
+* csgroup: the collaboration code.  Handles client/server communication
+  and message forwarding.
     Lines of code: 14605
 
-* cslib
+* cslib: client/server communication with no collaboration.  We need to check
+  whether any of this code is still used at all.
     Lines of code: 2323
 
-* devread: obsolete?
+* devread: obsolete; was used by pre-Unidata DTE.
     Lines of code: 885
 
-* generic
+* generic: code for the main() functions of the various executables.
     Lines of code: 3334
 
-* graphics
+* graphics: this directory really does have quite a bit of graphics-related
+  code (Views, WindowReps, Displays, etc.) in it.  It also has a number of
+  other things such as the Dispatcher.
     Lines of code: 52891
 
-* graphics.new
+* graphics.new: this is the 'everything but the kitchen sink' directory.
+  It has some graphics-related code (some of the View subclasses, for example),
+  and lots of other code such as the query processor, buffer manager, mapping,
+  TData, GData, DataSource, link, and some client/server code.
     Lines of code: 77198
 
 * issm
     Lines of code: 1707
 
-* lib
+* lib: the Tcl/Tk code for the 'standard' user interface.
     Lines of code: 29204
 
-* multi
+* multi: code for the special version of DEVise with compiled mappings, used
+  to display the PVM traces.  This version of DEVise is not built at the
+  present time because the code has not compiled since the color manager was
+  incorporated into DEVise.
     Lines of code: 5294
 
 * parser
     Lines of code: 932
 
-* src/color
+* src/color: code for the color manager (written by Chris Weaver).
     Lines of code: 4471
 
-* src/utils
+* src/utils: utility code.
     Lines of code: 865
 
 * tape
     Lines of code: 2160
 
-* unidata (old or new?)
+* unidata: code for reading data, based on schemas describing the data files.
+  Originally written by Shaun Flisakowski, this is being re-written by
+  Okan Alper.
     Lines of code: 11508
 
-* util
+* util: utility code.
     Lines of code: 1350
 
-* xvertext
+* xvertext: code for displaying rotated text in X Windows (gotten of off the
+  net).
     Lines of code: 2406
 
-Total lines of code in DEVise:
+Total lines of code in DEVise: 245308 (including blank and comment lines,
+but not including totally unused code).
+
 what about lex and yacc?
 
 
 The following directories are where DEVise is built for various architectures:
-aix/
-alpha_osf20/
-hp/
-linux/
-pmax_ul43a/
-sgi/
-solaris/
-solsparc/
-sun/
-winnt/
+* aix
+* alpha_osf20
+* hp
+* linux
+* pmax_ul43a
+* sgi
+* solaris
+* solsparc
+* sun
+* winnt
 
 The following directories contain documentation, etc.:
-design_doc/
-doc/
-html/
+* design_doc
+* doc
+* html
 
 The following directories contain source code that's not part of DEVise
 itself, but is part of related programs:
+
 * EmbeddedTk
     Lines of code: 4800
 
