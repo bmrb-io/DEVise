@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  2000/03/14 17:05:04  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.21  2000/01/13 23:06:50  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -92,6 +96,7 @@
 #include "AttrList.h"
 #include "Util.h"
 #include "DevError.h"
+#include "GDataRec.h"
 
 static char *GetTypeString(AttrType type);
 static void WriteVal(int fd, AttrVal *aval, AttrType atype);
@@ -261,7 +266,7 @@ AttrInfo *AttrList::Find(const char *name)
 AttrInfo *AttrList::FindShapeAttr(int i)
 {
     char attrName[40];
-    sprintf(attrName, "shapeAttr_%d", i);
+    sprintf(attrName, "%s%d", gdataShapeAttrName, i);
     return Find(attrName);
 }
 
@@ -297,7 +302,7 @@ AttrInfo *AttrList::Get(int n)
 }
 
 
-double AttrList::GetVal(AttrVal *aval, AttrType atype)
+double AttrList::GetVal(const AttrVal *aval, AttrType atype)
 {
   switch(atype) {
     case IntAttr:
@@ -326,22 +331,27 @@ void AttrList::Print()
   printf("AttrList:\n");
   for (InitIterator(); More(); ){
     AttrInfo *info = Next();
-    printf("  name %s, num %d, offset %d, length %d, composite %d, ",
-	   info->name, info->attrNum, info->offset, info->length,
-	   (info->isComposite? 1 : 0));
-    printf("%s", GetTypeString(info->type));
-    if (info->hasHiVal) {
-      printf(", hi ");
-      PrintVal(&(info->hiVal), info->type);
-    }
-    if (info->hasLoVal) {
-      printf(", lo ");
-      PrintVal(&(info->loVal), info->type);
-    }
-    printf("\n");
+    PrintAttr(info);
   }
 
   DoneIterator();
+}
+
+void AttrList::PrintAttr(const AttrInfo *info)
+{
+  printf("  name %s, num %d, offset %d, length %d, composite %d, ",
+      info->name, info->attrNum, info->offset, info->length,
+      (info->isComposite? 1 : 0));
+  printf("%s", GetTypeString(info->type));
+  if (info->hasHiVal) {
+    printf(", hi ");
+    PrintVal(&(info->hiVal), info->type);
+  }
+  if (info->hasLoVal) {
+    printf(", lo ");
+    PrintVal(&(info->loVal), info->type);
+  }
+  printf("\n");
 }
 
 void AttrList::Write(int fd)
@@ -420,7 +430,7 @@ void AttrList::Write(int fd)
   DoneIterator();
 }
 
-void AttrList::PrintVal(AttrVal *aval, AttrType atype)
+void AttrList::PrintVal(const AttrVal *aval, AttrType atype)
 {
   switch(atype) {
     case IntAttr:

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.41  2000/03/10 16:32:00  wenger
+  Found and fixed bug 572 (problem with switching stations in ASOS and
+  AWON sessions).
+
   Revision 1.40  2000/01/13 23:07:13  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -300,12 +304,24 @@ class TDataMap
   
   RecId GetDefaultRecId() const { return 0; }
 
+  // Returns true iff the given GData attribute has a defined value.
+  Boolean HasAttr(const char *attrName);
+  Boolean HasShapeAttr(int attrNum);
+
+  // Get the type of the given GData attribute; returns InvalidAttr if
+  // the attribute is not defined.
+  AttrType GetAttrType(const char *attrName);
+  AttrType GetShapeAttrType(int attrNum);
+
+  // Note: this seems to always return 0xffff.  RKW 2001-04-03.
   VisualFlag GetDynamicArgs() { return _dynamicArgs; }
 
+  // This seems to specify which shape attrs have values.
   unsigned long GetDynamicShapeAttrs() { return _dynamicAttrs; }
   void SetDynamicShapeAttrs(unsigned long attrs) { _dynamicAttrs = attrs; }
   
   // Default GData values.
+  // Note: GetDefaultNumShapeAttrs() seems to always return 0.  RKW 2001-04-03.
   void GetDefaultLocation(Coord &x, Coord &y) const {
     x = _defaults._x; y = _defaults._y; }
   Coord GetDefaultX() const { return _defaults._x; }
@@ -404,22 +420,28 @@ class TDataMap
 			      int &recordsProcessed,
 			      Boolean timeoutAllowed) = 0;
 
-  /* Get the AttrInfo for a GData attribute. The argument should be
-     one of the MappingCmd_??? constants defined in MappingInterp.h */
-  virtual AttrInfo *MapGAttr2TAttr(int which_attr) { return 0; }
-  virtual char *MapTAttr2GAttr(char *tname) { return 0; }
+  // Get the AttrInfo for a GData attribute. The argument should be
+  // one of the MappingCmd_??? constants defined in MappingInterp.h.
+  // Returns NULL if the given GData attribute does not directly
+  // correspond to a TData attribute (e.g, if it's an expression or
+  // a constant).
+  virtual const AttrInfo *MapGAttr2TAttr(int which_attr) { return 0; }
+
+  virtual const char *MapTAttr2GAttr(char *tname) { return 0; }
   
-  /* Get the AttrInfo for shape attribute i */
-  virtual AttrInfo *MapShapeAttr2TAttr(int i) { return 0; }
+  // Get the AttrInfo for shape attribute i.
+  // Returns NULL if the given GData attribute does not directly
+  // correspond to a TData attribute (e.g, if it's an expression or
+  // a constant).
+  virtual const AttrInfo *MapShapeAttr2TAttr(int i) { return 0; }
 
   /* Hint for current focus in GData */
   void SetFocusId(RecId id);
   RecId GetFocusId();
   
   /* Setting and getting offsets of GData attributes */
-  GDataAttrOffset*			GetGDataOffset(void)		{ return _gOffset; }
   const GDataAttrOffset*	GetGDataOffset(void) const	{ return _gOffset; }
-		void	SetGDataOffset(GDataAttrOffset *offset) { _gOffset = offset; }
+  void	SetGDataOffset(GDataAttrOffset *offset) { _gOffset = offset; }
   
   void InsertUserData(void *data) { _userData = data; }
   void *GetUserData() { return _userData; }

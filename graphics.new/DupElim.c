@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999
+  (c) Copyright 1999-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1999/05/21 14:52:23  wenger
+  Cleaned up GData-related code in preparation for including bounding box
+  info.
+
   Revision 1.1  1999/03/12 18:46:04  wenger
   Implemented duplicate symbol elimination.
 
@@ -116,7 +120,7 @@ DupElim::Init(ViewGraph *view)
   // Find the offsets for the GData attributes we'll have to access.
   if (result.IsComplete()) {
     TDataMap *gdataMap = view->GetFirstMap();
-    GDataAttrOffset *offsets = gdataMap->GetGDataOffset();
+    const GDataAttrOffset *offsets = gdataMap->GetGDataOffset();
 
     _xOffset = offsets->_xOffset;
     _yOffset = offsets->_yOffset;

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1999/08/23 21:23:29  wenger
+  Removed Shape::NumShapeAttrs() method -- not used.
+
   Revision 1.19  1999/05/28 16:32:42  wenger
   Finished cleaning up bounding-box-related code except for PolyLineFile
   symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
@@ -129,7 +132,7 @@ FullMapping_ETkWindowShape::FindBoundingBoxes(void *gdataArray, int numRecs,
   printf("FullMapping_ETkWindowShape::FindBoundingBoxes(%d)\n", numRecs);
 #endif
 
-  GDataAttrOffset *offsets = tdMap->GetGDataOffset();
+  const GDataAttrOffset *offsets = tdMap->GetGDataOffset();
 
   if (offsets->_bbULxOffset < 0 && offsets->_bbULyOffset < 0 &&
       offsets->_bbLRxOffset < 0 && offsets->_bbLRyOffset < 0) {
@@ -178,7 +181,7 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
     int i, j;
     char *script;
     char *gdata;
-    GDataAttrOffset *offset;
+    const GDataAttrOffset *offset;
     Coord x, y, tx, ty, size;
     Coord x0, y0, x1, y1, width, height;
     int argc;
@@ -364,9 +367,7 @@ GetShapeAttrValue(int i,
 		  Coord &attrValue,
 		  AttrType &attrType)
 {
-    GDataAttrOffset *offset;
-    const ShapeAttr *defaultAttrs;
-    int gdataOffset;
+    const GDataAttrOffset *offset;
     AttrInfo *attrInfo;
     
     if (i < 0 || i >= MAX_SHAPE_ATTRS)
@@ -380,17 +381,7 @@ GetShapeAttrValue(int i,
     }
     
     attrType = attrInfo->type;
-    offset = map->GetGDataOffset();
-    defaultAttrs = map->GetDefaultShapeAttrs();
-    
-    if ((gdataOffset = offset->_shapeAttrOffset[i]) < 0)
-    {
-	attrValue = Coord(defaultAttrs[i]);
-    }
-    else
-    {
-	attrValue = *(Coord *) (gdataBuffer + gdataOffset);
-    }
+    attrValue = map->GetShapeAttr(gdataBuffer, i);
     
     return true;
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  2000/01/13 23:06:50  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.16  1999/06/30 17:38:39  wenger
   Data color of parent view's mapping (if specified) now controls the
   background color of view symbols; defined constant strings for GData
@@ -91,7 +94,8 @@
 
 #define REC_ID_NAME "recId"
 
-enum AttrType { IntAttr, FloatAttr, DoubleAttr, StringAttr, DateAttr };
+enum AttrType { InvalidAttr, IntAttr, FloatAttr, DoubleAttr, StringAttr,
+  DateAttr };
 
 union AttrVal {
 	double doubleVal;          /* double value */
@@ -168,9 +172,10 @@ public:
   void DoneIterator();
 
   void Print();
+  static void PrintAttr(const AttrInfo *info);
   void Write(int fd);
 
-  static double GetVal(AttrVal *aval, AttrType atype);
+  static double GetVal(const AttrVal *aval, AttrType atype);
 
   void AttrList::Clear();
 
@@ -181,7 +186,7 @@ private:
   int   _index;
   const char *_name;
 
-  static void PrintVal(AttrVal *aval, AttrType atype);
+  static void PrintVal(const AttrVal *aval, AttrType atype);
   void EnlargeArray();
 };
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  2001/01/08 20:32:41  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.15.2.1  2000/10/18 20:31:53  wenger
   Merged changes from fixed_bug_616 through link_gui_improvements onto
   the branch.
@@ -275,7 +279,7 @@ GDataSock::Send(ViewGraph *view, void **gdataArray, TDataMap *tdMap,
     AttrInfo *attrInfos[MAX_SHAPE_ATTRS];
     for (int attrNum = 0; attrNum < MAX_SHAPE_ATTRS; attrNum++) {
       char buf[128];
-      sprintf(buf, "shapeAttr_%d", attrNum);
+      sprintf(buf, "%s%d", gdataShapeAttrName, attrNum);
       attrInfos[attrNum] = attrList->Find(buf);
     }
 

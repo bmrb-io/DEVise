@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2000
+  (c) Copyright 1998-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  2000/07/12 20:49:28  wenger
+  Added first version of metavisualization session description; changed
+  DEVise version to 1.7.1.
+
   Revision 1.27  2000/03/10 16:32:01  wenger
   Found and fixed bug 572 (problem with switching stations in ASOS and
   AWON sessions).
@@ -129,7 +133,7 @@ FullMapping_ViewShape::FindBoundingBoxes(void *gdataArray, int numRecs,
   printf("FullMapping_ViewShape::FindBoundingBoxes(%d)\n", numRecs);
 #endif
 
-  GDataAttrOffset *offsets = tdMap->GetGDataOffset();
+  const GDataAttrOffset *offsets = tdMap->GetGDataOffset();
 
   if (offsets->_bbULxOffset < 0 && offsets->_bbULyOffset < 0 &&
       offsets->_bbLRxOffset < 0 && offsets->_bbLRyOffset < 0) {
@@ -199,13 +203,12 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
   //   attr[1] = width of symbol to be drawn 
   //   attr[2] = height of symbol to be drawn 
   //
-  unsigned long attrflags = map->GetDynamicShapeAttrs();
-  if (!(attrflags & (1 << 0))) {
+  if (!map->HasShapeAttr(0)) {
     reportErrNosys("No view name specified in GData");
     return;
   } 
 
-  GDataAttrOffset *offset = map->GetGDataOffset();
+  const GDataAttrOffset *offset = map->GetGDataOffset();
   StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
 
   for (int i = 0; i < numSyms; i++) {

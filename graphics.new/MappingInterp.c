@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.97  2000/03/14 21:51:47  wenger
+  Added more invalid object checking; had to take some memory checking
+  out of client-side stuff for linking reasons.
+
   Revision 1.96  2000/03/14 17:05:30  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -653,7 +657,7 @@ MappingInterpCmd *MappingInterp::GetCmd(unsigned long int &cmdFlag,
 
 //--------------------------------------------------------------------------
 /* Get the AttrInfo for a GData attribute. */
-AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)
+const AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
@@ -733,11 +737,11 @@ AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)
 
 
 //--------------------------------------------------------------------------
-char *MappingInterp::MapTAttr2GAttr(char *tname)
+const char *MappingInterp::MapTAttr2GAttr(char *tname)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
     int i;
-    AttrInfo *info;
+    const AttrInfo *info;
     char *gname = new char[64];
     for (i = 1; i <= 8; ) {
     	info = MapGAttr2TAttr(i);
@@ -768,7 +772,7 @@ char *MappingInterp::MapTAttr2GAttr(char *tname)
 
 //--------------------------------------------------------------------------
 /* Get the AttrInfo for shape attribute i */
-AttrInfo *MappingInterp::MapShapeAttr2TAttr(int i)
+const AttrInfo *MappingInterp::MapShapeAttr2TAttr(int i)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)

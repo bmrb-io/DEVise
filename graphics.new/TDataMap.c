@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  2000/01/13 23:07:13  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.37  1999/11/30 22:28:30  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -203,6 +206,7 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
   printf("TDataMap::TDataMap(%s)\n", name);
   printf("  dimensionInfo = %d\n", *dimensionInfo);
   printf("  numDimensions = %d\n", numDimensions);
+  printf("  dynamicArgs = 0x%x\n", dynamicArgs);
 #endif
 
   _gOffset = NULL;
@@ -587,6 +591,44 @@ void TDataMap::ResetGData(int gRecSize)
 		       _maxGDataPages * Init::PageSize());
     QueryProc::Instance()->ResetGData(_tdata, _gdata);
   }
+}
+
+Boolean
+TDataMap::HasAttr(const char *attrName)
+{
+  return (_gdataAttrList->Find(attrName) != NULL);
+}
+
+Boolean
+TDataMap::HasShapeAttr(int attrNum)
+{
+  return (_gdataAttrList->FindShapeAttr(attrNum) != NULL);
+}
+
+AttrType
+TDataMap::GetAttrType(const char *attrName)
+{
+  AttrType result = InvalidAttr;
+
+  AttrInfo *info = _gdataAttrList->Find(attrName);
+  if (info) {
+    result = info->type;
+  }
+
+  return result;
+}
+
+AttrType
+TDataMap::GetShapeAttrType(int attrNum)
+{
+  AttrType result = InvalidAttr;
+
+  AttrInfo *info = _gdataAttrList->FindShapeAttr(attrNum);
+  if (info) {
+    result = info->type;
+  }
+
+  return result;
 }
 
 void

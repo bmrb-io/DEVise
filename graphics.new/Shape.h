@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1999/08/23 21:23:31  wenger
+  Removed Shape::NumShapeAttrs() method -- not used.
+
   Revision 1.36  1999/05/28 16:32:45  wenger
   Finished cleaning up bounding-box-related code except for PolyLineFile
   symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
@@ -216,7 +219,7 @@ class Shape {
     printf("Shape::FindBoundingBoxes(%d)\n", numRecs);
 #endif
 
-    GDataAttrOffset *offsets = tdMap->GetGDataOffset();
+    const GDataAttrOffset *offsets = tdMap->GetGDataOffset();
 
     if (offsets->_bbULxOffset < 0 && offsets->_bbULyOffset < 0 &&
         offsets->_bbLRxOffset < 0 && offsets->_bbLRyOffset < 0) {
@@ -280,7 +283,7 @@ class Shape {
                               int numSyms, TDataMap *map,
                               ViewGraph *view, int pixelSize,
                               Boolean canRandomize) {
-    GDataAttrOffset *offset = map->GetGDataOffset();
+    const GDataAttrOffset *offset = map->GetGDataOffset();
     int i = 0;
     Coord xArray[WINDOWREP_BATCH_SIZE], yArray[WINDOWREP_BATCH_SIZE];
     while (i < numSyms) {

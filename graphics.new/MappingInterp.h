@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.53  2000/03/14 21:51:48  wenger
+  Added more invalid object checking; had to take some memory checking
+  out of client-side stuff for linking reasons.
+
   Revision 1.52  2000/03/10 16:31:59  wenger
   Found and fixed bug 572 (problem with switching stations in ASOS and
   AWON sessions).
@@ -362,11 +366,12 @@ public:
   /* Get the AttrInfo for a GData attribute. which_attr should be
      one of the MappingCmd_??? constants defined at the top of 
      this file. */
-  virtual AttrInfo *MapGAttr2TAttr(int which_attr);
-  virtual char *MapTAttr2GAttr(char *tname);
+  virtual const AttrInfo *MapGAttr2TAttr(int which_attr);
+
+  virtual const char *MapTAttr2GAttr(char *tname);
 
   /* Get the AttrInfo for shape attribute i */
-  virtual AttrInfo *MapShapeAttr2TAttr(int i);
+  virtual const AttrInfo *MapShapeAttr2TAttr(int i);
 
   virtual void SetParentValue(const char *value);
   virtual const char *GetParentValue() { return _parentValue; }

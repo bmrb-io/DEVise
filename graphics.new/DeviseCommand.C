@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.115  2001/04/02 16:09:57  wenger
+  Devised now saves configuration for 3D JavaScreen views to sessions,
+  and passes it to the JavaScreen when necessary (note: JS protocol
+  version is now 6.0).
+
   Revision 1.114  2001/03/23 18:06:39  wenger
   Color palettes are now associated with sessions; added borders to
   color chooser buttons so they're visible even if they're the same
@@ -1610,7 +1615,7 @@ DeviseCommand_mapG2TAttr::Run(int argc, char** argv)
     	ReturnVal(API_NAK, "Cannot find Mapping");
             return -1;
         }
-        AttrInfo *attr = NULL;
+        const AttrInfo *attr = NULL;
         if (!strcasecmp(argv[2], "X")) {
           	attr = map->MapGAttr2TAttr(MappingCmd_X);
         } else if (!strcasecmp(argv[2], "Y")) {
@@ -1640,7 +1645,7 @@ DeviseCommand_mapT2GAttr::Run(int argc, char** argv)
 {
     {
         {
-        char *gname = NULL;
+        const char *gname = NULL;
         ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
         if (!view) {
             ReturnVal(API_NAK, "Cannot find view");

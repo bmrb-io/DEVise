@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.74  2000/08/10 16:10:51  wenger
+  Phase 1 of getting rid of shared-memory-related code.
+
   Revision 1.73  2000/06/16 19:45:25  wenger
   Fixed bug 596 (height of text in JavaScreen vs. "regular" DEVise).
 
@@ -384,6 +387,7 @@
 #include "DrawTimer.h"
 #include "Display.h"
 #include "WinClassInfo.h"
+#include "ExtProc.h"
 
 //#define DEBUG
 #define USE_TIMER 1
@@ -409,7 +413,7 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	return;
 	}
 
-	GDataAttrOffset *offset = map->GetGDataOffset();
+	const GDataAttrOffset *offset = map->GetGDataOffset();
 
 	Coord x0, y0, x1, y1;
 	win->Transform(0, 0, x0, y0);
@@ -557,7 +561,7 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	return;
 	}
 
-	GDataAttrOffset *offset = map->GetGDataOffset();
+	const GDataAttrOffset *offset = map->GetGDataOffset();
 
 #if defined(PIXELOPTIMIZE)
 	Boolean fixedSymSize = (offset->_shapeAttrOffset[0] < 0 &&
@@ -645,7 +649,7 @@ FullMapping_BarShape::FindBoundingBoxes(void *gdataArray, int numRecs,
   printf("FullMapping_BarShape::FindBoundingBoxes(%d)\n", numRecs);
 #endif
 
-  GDataAttrOffset *offsets = tdMap->GetGDataOffset();
+  const GDataAttrOffset *offsets = tdMap->GetGDataOffset();
 
   if (offsets->_bbULxOffset < 0 && offsets->_bbULyOffset < 0 &&
       offsets->_bbLRxOffset < 0 && offsets->_bbLRyOffset < 0) {
@@ -715,7 +719,7 @@ void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	return;
 	}
 	
-	GDataAttrOffset *offset = map->GetGDataOffset();
+	const GDataAttrOffset *offset = map->GetGDataOffset();
 	
 	Coord x0, y0, x1, y1;
 	win->Transform(0, 0, x0, y0);
@@ -746,7 +750,7 @@ void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
     Boolean hasError = false;
 	Coord error;
-	if (map->GDataAttrList()->Find(gdataShapeAttr1Name)) {
+	if (map->HasShapeAttr(1)) {
 	  hasError = true;
 	  error = map->GetShapeAttr1(gdata);
 	}
@@ -793,7 +797,7 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
 	return;
 	}
 
-	GDataAttrOffset *offset = map->GetGDataOffset();
+	const GDataAttrOffset *offset = map->GetGDataOffset();
 
 #if defined(PIXELOPTIMIZE)
 	Boolean fixedSymSize = (offset->_shapeAttrOffset[0] < 0 &&
@@ -884,7 +888,7 @@ void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	return;
 	}
 
-	GDataAttrOffset *offset = map->GetGDataOffset();
+	const GDataAttrOffset *offset = map->GetGDataOffset();
 
 #if defined(PIXELOPTIMIZE)
 	Boolean fixedSymSize = (offset->_shapeAttrOffset[0] < 0 &&
@@ -951,7 +955,7 @@ void FullMapping_OvalShape::Draw3DGDataArray(WindowRep *win, void **gdataArray,
 					   int &recordsProcessed,
 					   Boolean timeoutAllowed)
 {
-  GDataAttrOffset *offset = map->GetGDataOffset();
+  const GDataAttrOffset *offset = map->GetGDataOffset();
   Coord x, y, z, r;
   // 0 = wireframe only, 1 = solid, 2 = solid + wireframe
   Boolean wireframe = (view->GetSolid3D() == 0);
@@ -988,7 +992,7 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	return;
 	}
 
-	GDataAttrOffset *offset = map->GetGDataOffset();
+	const GDataAttrOffset *offset = map->GetGDataOffset();
 
 	Coord x0, y0, x1, y1;
 	win->Transform(0, 0, x0, y0);
@@ -1097,7 +1101,7 @@ FullMapping_HorLineShape::FindBoundingBoxes(void *gdataArray,
   printf("FullMapping_HorLineShape::FindBoundingBoxes(%d)\n", numRecs);
 #endif
 
-  GDataAttrOffset *offsets = tdMap->GetGDataOffset();
+  const GDataAttrOffset *offsets = tdMap->GetGDataOffset();
 
   if (offsets->_bbULxOffset < 0 && offsets->_bbULyOffset < 0 &&
       offsets->_bbLRxOffset < 0 && offsets->_bbLRyOffset < 0) {
@@ -1148,7 +1152,7 @@ void FullMapping_HorLineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	Coord xLow = filter.xLow;
 	Coord xHigh = filter.xHigh;
 
-	GDataAttrOffset *offset = map->GetGDataOffset();
+	const GDataAttrOffset *offset = map->GetGDataOffset();
 
 	for(int i = 0; i < numSyms; i++) {
 	char *gdata = (char *)gdataArray[i];
@@ -1186,7 +1190,7 @@ void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 	ComputeDataLabelFrame(view);
 
-	GDataAttrOffset *offset = map->GetGDataOffset();
+	const GDataAttrOffset *offset = map->GetGDataOffset();
 
 	Coord x0, y0, x1, y1;
 	win->Transform(0, 0, x0, y0);
@@ -1250,7 +1254,7 @@ Draw3DGDataArray(WindowRep *win, void **gdataArray,
 		 int &recordsProcessed,
 		 Boolean timeoutAllowed)
 {
-	GDataAttrOffset *offset = map->GetGDataOffset();
+	const GDataAttrOffset *offset = map->GetGDataOffset();
 	
 	for(int i = 0; i < numSyms; i++) {
 	  char *gdata = (char *)gdataArray[i];
@@ -1284,7 +1288,7 @@ FullMapping_HighLowShape::FindBoundingBoxes(void *gdataArray,
   printf("FullMapping_HighLowShape::FindBoundingBoxes(%d)\n", numRecs);
 #endif
 
-  GDataAttrOffset *offsets = tdMap->GetGDataOffset();
+  const GDataAttrOffset *offsets = tdMap->GetGDataOffset();
 
   if (offsets->_bbULxOffset < 0 && offsets->_bbULyOffset < 0 &&
       offsets->_bbLRxOffset < 0 && offsets->_bbLRyOffset < 0) {
@@ -1348,7 +1352,7 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 	ComputeDataLabelFrame(view);
 
-	GDataAttrOffset *offset = map->GetGDataOffset();
+	const GDataAttrOffset *offset = map->GetGDataOffset();
 	
 #if defined(PIXELOPTIMIZE)
 	Boolean fixedSymSize = (offset->_shapeAttrOffset[0] < 0 &&
@@ -1459,7 +1463,7 @@ FullMapping_PolylineShape::FindBoundingBoxes(void *gdataArray,
   printf("FullMapping_PolylineShape::FindBoundingBoxes(%d)\n", numRecs);
 #endif
 
-  GDataAttrOffset *offsets = tdMap->GetGDataOffset();
+  const GDataAttrOffset *offsets = tdMap->GetGDataOffset();
 
   if (offsets->_bbULxOffset < 0 && offsets->_bbULyOffset < 0 &&
       offsets->_bbLRxOffset < 0 && offsets->_bbLRyOffset < 0) {
@@ -1526,7 +1530,7 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 	return;
 	}
 
-	GDataAttrOffset *offset = map->GetGDataOffset();
+	const GDataAttrOffset *offset = map->GetGDataOffset();
 
 #if defined(PIXELOPTIMIZE)
 	Boolean fixedSymSize = (offset->_shapeAttrOffset[0] < 0 &&
@@ -1605,7 +1609,7 @@ FullMapping_GifImageShape::FindBoundingBoxes(void *gdataArray,
   printf("FullMapping_GifImageShape::FindBoundingBoxes(%d)\n", numRecs);
 #endif
 
-  GDataAttrOffset *offsets = tdMap->GetGDataOffset();
+  const GDataAttrOffset *offsets = tdMap->GetGDataOffset();
 
   if (offsets->_bbULxOffset < 0 && offsets->_bbULyOffset < 0 &&
       offsets->_bbLRxOffset < 0 && offsets->_bbLRyOffset < 0) {
@@ -1666,7 +1670,7 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
     DOASSERT(directory != NULL, "Can't get current directory");
     sprintf(defaultFile, "%s/image.gif", directory);
     
-    GDataAttrOffset *offset = map->GetGDataOffset();
+    const GDataAttrOffset *offset = map->GetGDataOffset();
 	StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
     
     // first draw a cross mark at each GIF image location;
@@ -1706,14 +1710,12 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	
 	// Get the name of the image file or the image itself.  (Print a warning
 	// if this isn't a string attribute.)
-    AttrList *attrList = map->GDataAttrList();
-    AttrInfo *attrInfo = attrList->Find(gdataShapeAttr0Name);
-    if (attrInfo == NULL) {
+    if (map->HasShapeAttr(0)) {
 #if defined(DEBUG)
       reportErrNosys("Can't find AttrInfo for " gdataShapeAttr0Name);
 #endif
     } else {
-	  if (attrInfo->type != StringAttr) {
+	  if (map->GetShapeAttrType(0) != StringAttr) {
 		printf("Warning: image or image filename attribute is not a string attribute\n");
 	  }
     }
@@ -1844,7 +1846,7 @@ FullMapping_PolylineFileShape::FindBoundingBoxes(void *gdataArray,
   printf("FullMapping_PolylineFileShape::FindBoundingBoxes(%d)\n", numRecs);
 #endif
 
-  GDataAttrOffset *offsets = tdMap->GetGDataOffset();
+  const GDataAttrOffset *offsets = tdMap->GetGDataOffset();
 
   if (offsets->_bbULxOffset < 0 && offsets->_bbULyOffset < 0 &&
       offsets->_bbLRxOffset < 0 && offsets->_bbLRyOffset < 0) {
@@ -1890,7 +1892,7 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 	return;
 	}
 
-	GDataAttrOffset *offset = map->GetGDataOffset();
+	const GDataAttrOffset *offset = map->GetGDataOffset();
 	StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
 
 	for(int i = 0; i < numSyms; i++) {
@@ -2015,7 +2017,7 @@ GetLabelText(char *gdata, TDataMap *map,
     Boolean labelAttrValid, AttrType labelAttrType,
 	Boolean labelFormatValid, AttrType labelFormatType, char labelBuf[])
 {
-    GDataAttrOffset *offset = map->GetGDataOffset();
+    const GDataAttrOffset *offset = map->GetGDataOffset();
     StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
 
     //TEMP -- should be const char * for assignment from DateString() --
@@ -2193,7 +2195,7 @@ FullMapping_TextLabelShape::FindBoundingBoxes(void *gdataArray,
   printf("FullMapping_TextLabelShape::FindBoundingBoxes(%d)\n", numRecs);
 #endif
 
-  GDataAttrOffset *offsets = tdMap->GetGDataOffset();
+  const GDataAttrOffset *offsets = tdMap->GetGDataOffset();
 
   if (offsets->_bbULxOffset < 0 && offsets->_bbULyOffset < 0 &&
       offsets->_bbLRxOffset < 0 && offsets->_bbLRyOffset < 0) {
@@ -2292,7 +2294,7 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
   Coord filterWidth = filter.xHigh - filter.xLow;
   Coord filterHeight = filter.yHigh - filter.yLow;
 
-  GDataAttrOffset *offset = map->GetGDataOffset();
+  const GDataAttrOffset *offset = map->GetGDataOffset();
   StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
 
   int oldFontFamily;
@@ -2424,7 +2426,7 @@ FullMapping_TextDataLabelShape::FindBoundingBoxes(void *gdataArray,
   printf("FullMapping_TextDataLabelShape::FindBoundingBoxes(%d)\n", numRecs);
 #endif
 
-  GDataAttrOffset *offsets = tdMap->GetGDataOffset();
+  const GDataAttrOffset *offsets = tdMap->GetGDataOffset();
 
   if (offsets->_bbULxOffset < 0 && offsets->_bbULyOffset < 0 &&
       offsets->_bbLRxOffset < 0 && offsets->_bbLRyOffset < 0) {
@@ -2520,7 +2522,7 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
   GetTextAttrInfo(attrList, labelAttrValid, labelAttrType,
 	labelFormatValid, labelFormatType);
 
-  GDataAttrOffset *offset = map->GetGDataOffset();
+  const GDataAttrOffset *offset = map->GetGDataOffset();
   StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
 
   int oldFontFamily;
@@ -2627,7 +2629,7 @@ FullMapping_FixedTextLabelShape::FindBoundingBoxes(void *gdataArray,
   printf("FullMapping_FixedTextLabelShape::FindBoundingBoxes(%d)\n", numRecs);
 #endif
 
-  GDataAttrOffset *offsets = tdMap->GetGDataOffset();
+  const GDataAttrOffset *offsets = tdMap->GetGDataOffset();
 
   if (offsets->_bbULxOffset < 0 && offsets->_bbULyOffset < 0 &&
       offsets->_bbLRxOffset < 0 && offsets->_bbLRyOffset < 0) {
@@ -2687,7 +2689,7 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
   Coord filterWidth = filter.xHigh - filter.xLow;
   Coord filterHeight = filter.yHigh - filter.yLow;
 
-  GDataAttrOffset *offset = map->GetGDataOffset();
+  const GDataAttrOffset *offset = map->GetGDataOffset();
   StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
 
   int oldFontFamily;
@@ -2784,7 +2786,7 @@ FullMapping_LineShape::FindBoundingBoxes(void *gdataArray,
   printf("FullMapping_LineShape::FindBoundingBoxes(%d)\n", numRecs);
 #endif
 
-  GDataAttrOffset *offsets = tdMap->GetGDataOffset();
+  const GDataAttrOffset *offsets = tdMap->GetGDataOffset();
 
   if (offsets->_bbULxOffset < 0 && offsets->_bbULyOffset < 0 &&
       offsets->_bbLRxOffset < 0 && offsets->_bbLRyOffset < 0) {
@@ -2831,7 +2833,7 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 	ComputeDataLabelFrame(view);
 
-	GDataAttrOffset *offset = map->GetGDataOffset();
+	const GDataAttrOffset *offset = map->GetGDataOffset();
 
 	/* get coordinates of first data point in this batch */
 
@@ -2906,7 +2908,7 @@ void FullMapping_LineShape::Draw3DGDataArray(WindowRep *win, void **gdataArray,
 					   int &recordsProcessed,
 					   Boolean timeoutAllowed)
 {
-  	GDataAttrOffset *offset = map->GetGDataOffset();
+  	const GDataAttrOffset *offset = map->GetGDataOffset();
 
 	char*	gdata = (char *)gdataArray[0];
 	Coord	x0 = map->GetX(gdata);
@@ -2966,7 +2968,7 @@ FullMapping_LineShadeShape::FindBoundingBoxes(void *gdataArray,
   printf("FullMapping_LineShadeShape::FindBoundingBoxes(%d)\n", numRecs);
 #endif
 
-  GDataAttrOffset *offsets = tdMap->GetGDataOffset();
+  const GDataAttrOffset *offsets = tdMap->GetGDataOffset();
 
   if (offsets->_bbULxOffset < 0 && offsets->_bbULyOffset < 0 &&
       offsets->_bbLRxOffset < 0 && offsets->_bbLRyOffset < 0) {

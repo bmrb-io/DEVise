@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.100  2001/02/20 20:02:54  wenger
+  Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+  to the trunk.
+
   Revision 1.99.4.1  2001/02/16 21:37:59  wenger
   Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
   a web browser) on 'sets' of visual filters.
@@ -2496,7 +2500,7 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
     Interval interval;
     Boolean result;
 
-    GDataAttrOffset *gdataOffsets = map->GetGDataOffset();
+    const GDataAttrOffset *gdataOffsets = map->GetGDataOffset();
 
     while (1) {
         if (!_hasTqueryRecs) {

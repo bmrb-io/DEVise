@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.149  2001/02/20 20:02:55  wenger
+  Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+  to the trunk.
+
   Revision 1.148.2.1  2001/02/16 21:38:00  wenger
   Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
   a web browser) on 'sets' of visual filters.
@@ -1130,7 +1134,7 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
       // this is the first mapping
       if( GetHistogramBuckets() == 0 ) {
         // create default histogram
-        AttrInfo *yAttr = map->MapGAttr2TAttr(MappingCmd_Y);
+        const AttrInfo *yAttr = map->MapGAttr2TAttr(MappingCmd_Y);
         if( yAttr && yAttr->hasLoVal && yAttr->hasHiVal ) {
           // y min & max known for the file, so use those to define buckets
           double lo = AttrList::GetVal(&yAttr->loVal, yAttr->type);
@@ -1319,8 +1323,8 @@ ViewGraph::GetHome2D(Boolean explicitRequest, VisualFilter &filter)
     TDataMap *map = NextMapping(index)->map;
     DoneMappingIterator(index);
 
-    AttrInfo *xAttr = map->MapGAttr2TAttr(MappingCmd_X);
-    AttrInfo *yAttr = map->MapGAttr2TAttr(MappingCmd_Y);
+    const AttrInfo *xAttr = map->MapGAttr2TAttr(MappingCmd_X);
+    const AttrInfo *yAttr = map->MapGAttr2TAttr(MappingCmd_Y);
 
     Boolean hasFirstRec, hasLastRec;
     RecId firstRec, lastRec;
@@ -2230,7 +2234,7 @@ void ViewGraph::SetHistogramWidthToFilter()
 	int index = InitMappingIterator();
 	if (MoreMapping(index)) {
 	    MappingInfo *info = NextMapping(index);
-	    AttrInfo *yAttr = info->map->MapGAttr2TAttr(MappingCmd_Y);
+	    const AttrInfo *yAttr = info->map->MapGAttr2TAttr(MappingCmd_Y);
 	    if( yAttr && yAttr->hasLoVal && yAttr->hasHiVal ) {
 		lo = AttrList::GetVal(&yAttr->loVal, yAttr->type);
 		hi = AttrList::GetVal(&yAttr->hiVal, yAttr->type);

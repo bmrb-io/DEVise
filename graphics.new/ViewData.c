@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.25  2000/03/14 21:51:48  wenger
+  Added more invalid object checking; had to take some memory checking
+  out of client-side stuff for linking reasons.
+
   Revision 1.24  1999/07/21 18:51:14  wenger
   Moved alignment and data font information from view into mapping.
 
@@ -296,7 +300,7 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 
 	reverseIndex[0] = 0;
 
-	GDataAttrOffset*	offset = mapping->GetGDataOffset();
+	const GDataAttrOffset*	offset = mapping->GetGDataOffset();
 	int					gRecSize = mapping->GDataRecordSize();
 	int					recIndex = 0;
 	int					firstRec = 0;
