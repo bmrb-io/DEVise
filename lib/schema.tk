@@ -1,185 +1,215 @@
-#! /s/std/bin/wish -f
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1995
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
 
-toplevel .schema
-wm title .schema "Schema Browser"
-wm iconname .schema "Schema Browser"
+############################################################
 
-frame .schema.msg -relief raised -bd 1
-pack .schema.msg -side top -fill both 
+#  $Id$
 
-frame .schema.opt -relief raised -bd 1
-pack .schema.opt -side bottom -fill both
+#  $Log$
+#  Revision 1.4  1995/10/11 17:02:38  ravim
+#  Decoupled the main program. Uses datadir to display schema files.
+#
+#  Revision 1.3  1995/10/11 01:48:28  ravim
+#  Added colors. Can modify attributes in place.
+#
+#  Revision 1.2  1995/10/04 20:48:33  ravim
+#  Handled case when no schema file is selected.
+#
+# Revision 1.1  1995/10/03  03:40:53  ravim
+# Initial revision
+#
 
-message .schema.msg.msg -width 3i -text "New schema files can be created \
-or existing ones browsed. Make your selection ..." -justify left
-pack .schema.msg.msg -side right -expand 1 -fill both \
-	-padx 3m -pady 3m
-label .schema.msg.bitmap -bitmap @schema.xbm
-pack .schema.msg.bitmap -side left -padx 3m -pady 3m
-
-button .schema.opt.new -text New -command newschema
-button .schema.opt.open -text Open -command openschema
-button .schema.opt.quit -text Quit -command exit
-pack .schema.opt.new .schema.opt.open .schema.opt.quit -side left \
-	-padx 3m -pady 3m -ipadx 2m -ipady 1 -expand 1
-
+############################################################
 
 #-----------------------------------------------------------
 #		PROCEDURES
 #-----------------------------------------------------------
 
-proc newschema {} {
-global attrnum
-
-toplevel .newschema 
-wm title .newschema "New Schema"
-wm iconname .newschema "New Schema"
-
-# Top level rows in the window
-frame .newschema.firstrow -relief raised 
-frame .newschema.secondrow -relief raised -bd 1
-frame .newschema.opt -relief raised -bd 1
-frame .newschema.attr -relief raised -bd 1
-pack .newschema.firstrow .newschema.secondrow .newschema.attr \
-	.newschema.opt 	-side top -fill x -padx 3m -pady 1m
-
-#-----------------------------------------------------------
-# Within first row - name and type
-frame .newschema.fname -relief raised -bd 1
-frame .newschema.ftype -relief raised -bd 1
-pack .newschema.fname .newschema.ftype -in .newschema.firstrow \
-	-side left -fill x -padx 3m -pady 1m
-
-label .newschema.fname.label -text "Schema Name "
-entry .newschema.fname.entry -width 25 -relief sunken -bd 2 \
-	-textvariable sname
-pack .newschema.fname.label .newschema.fname.entry -side left -padx 1m \
-	-pady 1m
-
-label .newschema.ftype.label -text "File Type"
-radiobutton .newschema.ftype.ascii -text Ascii -variable ftype \
-	-value ascii -anchor nw
-radiobutton .newschema.ftype.binary -text Binary -variable ftype \
-	-value binary -anchor nw
-pack .newschema.ftype.label .newschema.ftype.ascii .newschema.ftype.binary \
-	-side top -fill x
-# Default is ascii
-set ftype ascii
-
-#-----------------------------------------------------------
-# Comment and separator characters
-frame .newschema.comm -relief raised 
-frame .newschema.separ -relief raised 
-pack .newschema.comm -side left  -in .newschema.secondrow \
-	-padx 3m -pady 1m
-pack .newschema.separ -side right  -in .newschema.secondrow \
-	-padx 3m -pady 1m
-
-label .newschema.comm.label -text "Comment characters"
-entry .newschema.comm.entry -width 5 -relief sunken -bd 2 \
-	-textvariable comm
-pack .newschema.comm.label .newschema.comm.entry -side left \
-	-padx 1m -pady 1m
-
-label .newschema.separ.label -text "Separator characters"
-entry .newschema.separ.entry -width 5 -relief sunken -bd 2 \
-	-textvariable separ
-pack .newschema.separ.label .newschema.separ.entry -side left \
-	-padx 1m -pady 1m
-#default
-set comm "//"
-#default
-set separ " "
-
-#-----------------------------------------------------------
-# Attributes
-frame .newschema.attrlist -relief raised -bd 1
-frame .newschema.attradd -relief raised -bd 1
-pack .newschema.attrlist -in .newschema.attr \
-	-side left -padx 3m -pady 1m
-pack .newschema.attradd -in .newschema.attr \
-	-side right -padx 3m -pady 1m
-
-label .newschema.attrlist.label -text "List of Attributes"
-pack .newschema.attrlist.label -side top -fill x
-listbox .newschema.attrlist.list -relief raised -bd 1 \
-	-yscrollcommand ".newschema.attrlist.scroll set"
-scrollbar .newschema.attrlist.scroll \
-	-command ".newschema.attrlist.list yview"
-pack .newschema.attrlist.scroll -side right -fill y
-pack .newschema.attrlist.list
-	
-
-frame .newschema.attrname -relief raised -bd 1
-frame .newschema.attrtype -relief raised
-frame .newschema.attrop -relief raised -bd 1
-pack .newschema.attrname .newschema.attrtype .newschema.attrop \
-	-in .newschema.attradd -side top -fill x -padx 3m -pady 1m
-
-label .newschema.attrname.label -text "Attribute Name "
-entry .newschema.attrname.entry -width 15 -relief sunken -bd 2 \
-	-textvariable aname
-pack .newschema.attrname.label .newschema.attrname.entry -side left -padx 1m \
-	-pady 1m
-
-frame .newschema.atype -relief raised -bd 1
-frame .newschema.asort -relief raised -bd 1
-pack .newschema.atype -in .newschema.attrtype \
-	-side left -padx 3m 
-pack .newschema.asort -in .newschema.attrtype \
-	-side right -padx 3m 
-
-label .newschema.atype.label -text "Type"
-radiobutton .newschema.atype.double -text double -variable atype \
-	-value double -anchor nw
-radiobutton .newschema.atype.integer -text integer -variable atype \
-	-value integer -anchor nw
-radiobutton .newschema.atype.string -text string -variable atype \
-	-value string -anchor nw
-pack .newschema.atype.label .newschema.atype.double .newschema.atype.integer \
-	.newschema.atype.string -side top -fill x
-label .newschema.asort.label -text "Sorted"
-radiobutton .newschema.asort.yes -text Yes -variable asort \
-	-value sorted -anchor nw
-radiobutton .newschema.asort.no -text No -variable asort \
-	-value unsorted -anchor nw
-pack .newschema.asort.label .newschema.asort.yes .newschema.asort.no \
-	-side top -fill x
+# This procedure creates a window depicting all the fields for the schema
+# and their values if any.
+proc newschemawin {} {
+global sname ftype comm separ attrlist aname atype asort attrnum
 
 # Count number of attributes
 set attrnum 0
 
-button .newschema.attrop.add -text "Add item" -command {
+toplevel .newschema -bg DarkRed
+wm title .newschema "Schema Description"
+wm iconname .newschema "Schema"
+
+# Top level rows in the window
+frame .newschema.firstrow -relief raised -bg honeydew2
+frame .newschema.commseprow -relief raised  -bg honeydew2
+frame .newschema.opt -relief raised  -bg honeydew2
+frame .newschema.attr -relief raised -bg honeydew2
+pack .newschema.firstrow .newschema.attr .newschema.commseprow\
+	.newschema.opt 	-side top -fill x -padx 1m -pady 1m
+
+#-----------------------------------------------------------
+# Within first row - name and type
+frame .newschema.fname -relief raised -bd 1 -bg honeydew2
+frame .newschema.ftype -relief raised -bd 1 -bg DarkRed
+pack .newschema.fname .newschema.ftype -in .newschema.firstrow \
+	-side left -fill x -padx 3m -pady 1m
+
+label .newschema.fname.label -text "Schema Name " -bg honeydew2 -fg red
+entry .newschema.fname.entry -width 25 -relief sunken -bd 2 \
+	-textvariable sname -bg bisque
+pack .newschema.fname.label .newschema.fname.entry -side left -padx 1m \
+	-pady 1m
+
+label .newschema.ftype.label -text "File Type"  -bg honeydew2 -fg red
+radiobutton .newschema.ftype.ascii -text Ascii -variable ftype \
+	-value ascii -anchor nw -bg honeydew2
+radiobutton .newschema.ftype.binary -text Binary -variable ftype \
+	-value binary -anchor nw -bg honeydew2
+pack .newschema.ftype.label .newschema.ftype.ascii .newschema.ftype.binary \
+	-side top -fill x
+
+#-----------------------------------------------------------
+# Comment and separator characters
+frame .newschema.comm -relief raised -bg honeydew2
+frame .newschema.separ -relief raised -bg honeydew2
+pack .newschema.comm -side left  -in .newschema.commseprow \
+	-padx 3m -pady 1m 
+pack .newschema.separ -side right  -in .newschema.commseprow \
+	-padx 3m -pady 1m
+
+label .newschema.comm.label -text "Comment characters"  -bg honeydew2 -fg red
+entry .newschema.comm.entry -width 5 -relief sunken -bd 2 \
+	-textvariable comm -bg bisque
+pack .newschema.comm.label .newschema.comm.entry -side left \
+	-padx 1m -pady 1m
+
+label .newschema.separ.label -text "Separator characters"  -bg honeydew2 -fg red
+entry .newschema.separ.entry -width 5 -relief sunken -bd 2 \
+	-textvariable separ -bg bisque
+pack .newschema.separ.label .newschema.separ.entry -side left \
+	-padx 1m -pady 1m 
+
+#-----------------------------------------------------------
+# Attributes
+frame .newschema.attrlist -relief raised  -bg honeydew2
+frame .newschema.attradd -relief raised -bg honeydew2
+pack .newschema.attrlist -in .newschema.attr \
+	-side top -padx 3m -pady 1m -fill x
+pack .newschema.attradd -in .newschema.attr \
+	-side bottom -padx 3m -pady 1m -fill x
+
+label .newschema.attrlist.label -text "List of Attributes" -bg honeydew2 -fg red
+pack .newschema.attrlist.label -side top -fill x
+listbox .newschema.attrlist.list -relief raised -bd 1 \
+	-yscrollcommand ".newschema.attrlist.scroll set" \
+	-font 9x15 -selectmode extended -bg honeydew2
+scrollbar .newschema.attrlist.scroll \
+	-command ".newschema.attrlist.list yview" -bg honeydew2
+pack .newschema.attrlist.scroll -side right -fill y
+pack .newschema.attrlist.list -fill x
+
+# By default insert all elements of attrlist into the list
+foreach attr $attrlist {
+    # Format before inserting
+    set tname [lindex $attr 0]
+    set ttype [lindex $attr 1]
+    set tsort [lindex $attr 2]
+    set fstr [format "%-15s  %-8s  %s" $tname $ttype $tsort]
+    .newschema.attrlist.list insert end $fstr
+    set attrnum [expr $attrnum+1]
+}
+
+frame .newschema.attrspec -relief raised -bg honeydew2
+frame .newschema.attrop -relief raised -bg honeydew2
+pack .newschema.attrspec .newschema.attrop \
+	-in .newschema.attradd -side left -fill y -expand 1 -padx 3m -pady 1m
+frame .newschema.attrname -relief raised -bd 1 -bg honeydew2
+frame .newschema.attrtype -relief raised  -bg honeydew2
+pack .newschema.attrname .newschema.attrtype \
+	-in .newschema.attrspec -side top -fill x -padx 3m -pady 1m
+
+label .newschema.attrname.label -text "Attribute Name " -bg honeydew2 -fg red
+entry .newschema.attrname.entry -width 15 -relief sunken -bd 2 \
+	-textvariable aname -bg bisque
+pack .newschema.attrname.label .newschema.attrname.entry -side left -padx 1m \
+	-pady 1m
+
+frame .newschema.atype -relief raised -bd 1 -bg DarkRed
+frame .newschema.asort -relief raised -bd 1 -bg DarkRed
+pack .newschema.atype -in .newschema.attrtype \
+	-side left -padx 3m 
+pack .newschema.asort -in .newschema.attrtype \
+	-side left -padx 3m 
+
+label .newschema.atype.label -text "Type" -bg honeydew2 -fg red
+radiobutton .newschema.atype.double -text double -variable atype \
+	-value "double" -anchor nw -bg honeydew2
+radiobutton .newschema.atype.integer -text integer -variable atype \
+	-value "integer" -anchor nw -bg honeydew2
+radiobutton .newschema.atype.string -text string -variable atype \
+	-value "string" -anchor nw -bg honeydew2
+pack .newschema.atype.label .newschema.atype.double .newschema.atype.integer \
+	.newschema.atype.string -side top -fill x
+label .newschema.asort.label -text "Sorted"  -bg honeydew2 -fg red
+radiobutton .newschema.asort.yes -text Yes -variable asort \
+	-value "sorted" -anchor nw -bg honeydew2
+radiobutton .newschema.asort.no -text No -variable asort \
+	-value "unsorted" -anchor nw -bg honeydew2
+pack .newschema.asort.label .newschema.asort.yes .newschema.asort.no \
+	-side top -fill x
+
+button .newschema.attrop.add -text "Add item" -bg gray75 -fg IndianRed4 -command {
     if {$aname == ""} {
 	showmesg "Attribute name has not been specified. Cannot insert it \
 		into the schema. "
     } else {
-	# Insert into list and clear selection
-	.newschema.attrlist.list insert end [list $aname $atype $asort]
-	set aname ""
-	set atype double
-	set asort unsorted
 	# Increment count
 	set attrnum [expr $attrnum+1]
+	# Insert into list and clear selection
+	set fstr [format "%-15s %-8s %s" $aname $atype $asort]
+	.newschema.attrlist.list insert end $fstr
+	set aname ""
+	set atype "double"
+	set asort "unsorted"
     }
 }
-button .newschema.attrop.delete -text "Delete item" -command {
+button .newschema.attrop.delete -text "Delete item" -bg gray75 -fg IndianRed4\
+	-command {
     .newschema.attrlist.list delete active
     # Decrement count
     set attrnum [expr $attrnum-1]
 }
-pack .newschema.attrop.add .newschema.attrop.delete -side left \
-	-padx 3m -pady 1m -expand 1
-
-
-#default
-set atype double
-#default
-set asort unsorted
+# Set up key binding for modify list
+bind .newschema.attrlist.list <Double-Button-1> {
+    set attrl [.newschema.attrlist.list get active]
+    set aname [lindex $attrl 0]
+    set atype [lindex $attrl 1]
+    set asort [lindex $attrl 2]
+}
+    
+button .newschema.attrop.modify -text "Modify item" -bg gray75 -fg IndianRed4\
+	-command {
+    set fstr [format "%-15s  %-8s  %s" $aname $atype $asort]
+    .newschema.attrlist.list insert active $fstr
+    .newschema.attrlist.list delete active
+    # Clear selection
+    set aname ""
+    set atype "double"
+    set asort "unsorted"
+}
+pack .newschema.attrop.add .newschema.attrop.delete \
+	.newschema.attrop.modify -side top -padx 3m -pady 1m -expand 1
 
 #-----------------------------------------------------------
 # Bottom portion of window
-button .newschema.opt.save -text Save -command {
+button .newschema.opt.save -text Save -bg gray75 -fg IndianRed4 -command {
     if {$sname == ""} {
 	showmesg "Schema name is not specified. Cannot save a schema \
 		without a name."
@@ -205,7 +235,7 @@ button .newschema.opt.save -text Save -command {
 	destroy .newschema
     }
 }
-button .newschema.opt.quit -text Cancel -command { 
+button .newschema.opt.quit -text Cancel -bg gray75 -fg IndianRed4 -command { 
     destroy .newschema }
 pack .newschema.opt.save .newschema.opt.quit  -side left \
 	-padx 3m -pady 1m -expand 1
@@ -218,27 +248,70 @@ tkwait window .newschema
 }
 
 #-----------------------------------------------------------
+proc newschema {} {
+    global sname ftype comm separ attrlist aname atype asort
+    # First set up some global variables
+    set sname ""
+    set ftype ascii
+    set comm "//"
+    set separ " "
+    set attrlist ""
+    set aname ""
+    set atype "double"
+    set asort "unsorted"
+
+    # Call function to display the window
+    newschemawin
+}
+
+#-----------------------------------------------------------
 proc openschema {} {
+    global sname ftype comm separ attrlist aname atype asort fsBox datadir
 
+    # Display a file selection box and get the file name
+    set fsBox(path) $datadir
+    set fsBox(pattern) *.schema*
+    set filename [FSBox "Select schema file"]
+    # If no file selected, return
+    if {$filename == ""} {
+	return 
+    }
+    puts " File : $filename"
 
+    # Set some defaults
+    set sname ""
+    set ftype ascii
+    set comm "//"
+    set separ " "
+    set attrlist ""
+    set aname ""
+    set atype double
+    set asort unsorted
+
+    # Read the file and get the contents
+    readfile $filename
+
+    # Call function to display the schema
+    newschemawin
 }
 
 
 #-----------------------------------------------------------
 # General function to display a message
 proc showmesg {str} {
-    toplevel .msg
+    toplevel .msg -bg honeydew2 
     wm title .msg Message
     wm iconname .msg Message
     
-    frame .msg.str -relief raised -bd 1
-    frame .msg.ok -relief raised -bd 1
+    frame .msg.str -relief raised -bd 1 -bg honeydew2
+    frame .msg.ok -relief raised -bg honeydew2
     pack .msg.str .msg.ok -side top -fill x -padx 3m -pady 3m
 
-    message .msg.str.msg -width 3i -text $str
+    message .msg.str.msg -width 3i -text $str -bg honeydew2 -fg red
     pack .msg.str.msg -side right -expand 1 -fill both -padx 3m -pady 3m
 
-    button .msg.ok.but -text OK -command {destroy .msg}
+    button .msg.ok.but -text OK -bg gray75 -fg IndianRed4 \
+	    -command {destroy .msg}
     pack .msg.ok.but -side top -expand 1 -padx 3m -pady 1m
 
     tkwait visibility .msg
@@ -254,7 +327,7 @@ proc writefile {name type comm sep alist} {
 
     puts $f "type $name $type" 
     puts $f "comment $comm"
-    puts $f "separator '$sep'\n"
+    puts $f "separator '$sep'"
     
     foreach attr $alist {
 	set aname [lindex $attr 0]
@@ -267,5 +340,53 @@ proc writefile {name type comm sep alist} {
 	puts $f "attr $aname $atype"
     }
 
+    close $f
+}
+
+#-----------------------------------------------------------
+proc readfile {filename} {
+    global sname ftype comm separ attrlist
+    set attrlist ""
+
+    # Open file for reading
+    set f [open $filename r]
+
+    # First line is the schema name and type
+    set line [gets $f]
+    scan $line "type %s %s" sname ftype
+
+    # Second line is comment
+    set line [gets $f]
+    scan $line "comment %s" comm
+
+    # Third line is separator
+    set line [gets $f]
+    # everything between the 's is the separator
+    set lstart [string first "'" $line]
+    set lend [string last "'" $line]
+    set lstart [expr $lstart+1]
+    set lend [expr $lend-1]
+    set separ [string range $line $lstart $lend]
+
+    # Following are all attr declarations
+    set len [gets $f line]
+    set num 0
+    while {$len != -1} {
+	set first [lindex $line 0]
+	if {$first != "sorted"} {
+	    scan $line "attr %s %s" attrname attrtype
+	    set attr [list $attrname $attrtype unsorted]
+	} else {
+	    scan $line "sorted attr %s %s" attrname attrtype
+	    set attr [list $attrname $attrtype sorted]
+	}
+
+	puts "Inserting .. $attr"
+	set attrlist [linsert $attrlist $num $attr]
+	set len [gets $f line]
+	set num [expr $num+1]
+    }
+	    
+    # Close file
     close $f
 }

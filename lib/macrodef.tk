@@ -377,13 +377,13 @@ proc MacroDefAuto {tdata} {
     pack .auto.xsel.attr -side left
 
     label .auto.ysel.label -text "Select Y" -width 15
-    pack .auto.ysel.label -side top -fill x -expand 1 -pady 3m
+    pack .auto.ysel.label -side top -fill x -expand 1 -pady 2m
 
     #  For selecting Y attrs - a button here will pop up a new window
     # containing a list of name from which a selection can be made
     button .auto.ysel.sel -text "Attributes from Group : $selgrp" \
            -command {selYAuto $selgrp}
-    pack .auto.ysel.sel -side top -fill x -expand 1 -pady 3m
+    pack .auto.ysel.sel -side top -padx 3m -pady 1m -ipadx 2m -expand 1
 
 
     # Have a list containing the name of the selected group.
@@ -425,17 +425,17 @@ proc MacroDefAuto {tdata} {
 #    set maxcol 4
 #    set varcnt 0
 
-#    foreach attr $schema {
-#	set name [lindex $attr 0]
-#	set type [lindex $attr 1]
-#	set sorted [lindex $attr 2]
+    foreach attr $schema {
+	set name [lindex $attr 0]
+	set type [lindex $attr 1]
+	set sorted [lindex $attr 2]
 #	.auto.xsel.attr.menu add radiobutton -label $name \
 #		-variable x -value $name
-#	if {$sorted > 0 && $name != "recId" && $x == ""} {
-#	    set x $name
-#	    set xtype $type
-#	    set sortedx $sorted
-#	}
+	if {$sorted > 0 && $name != "recId" && $x == ""} {
+	    set x $name
+	    set xtype $type
+	    set sortedx $sorted
+	}
 #	if {$col < 0} {
 #	    incr row
 #	    set col 0
@@ -451,7 +451,7 @@ proc MacroDefAuto {tdata} {
 #	if {$col >= $maxcol} {
 #	    set col -1
 #	}
-#    }
+    }
 
     # add empty frame to end of last row so that existing buttons
     # on that row won't get expanded more than buttons on other
@@ -505,7 +505,7 @@ proc MacroDefAuto {tdata} {
     button .auto.but.cancel -text Cancel -width 20 -command {
 	destroy .auto
     }
-    pack .auto.but.ok .auto.but.cancel -side left -expand 1
+    pack .auto.but.ok .auto.but.cancel -side left -expand 1 -padx 3m
 
     tkwait visibility .auto
 }
@@ -1801,9 +1801,9 @@ proc selYAuto {grpname} {
 	label .selY$grpname.label -text "Select Y parameters"
 	frame .selY$grpname.sel -relief groove -borderwidth 2
 	frame .selY$grpname.but 
-	pack .selY$grpname.label -side top -pady 3m -fill x -expand 1
-	pack .selY$grpname.sel -side top -pady 3m -fill x -expand 1
-	pack .selY$grpname.but -side top -pady 3m -fill x -expand 1
+	pack .selY$grpname.label -side top -pady 2m -fill x -expand 1
+	pack .selY$grpname.sel -side top -pady 2m -fill x -expand 1
+	pack .selY$grpname.but -side top -pady 2m -fill x -expand 1
 
 	set row -1
 	set col -1
@@ -1853,7 +1853,7 @@ proc selYAuto {grpname} {
 	button .selY$grpname.but.ok -text OK -width 20 -command \
 		[format "destroy .selY%s" $grpname]
 
-	pack .selY$grpname.but.ok -side left -expand 1
+	pack .selY$grpname.but.ok -side top -expand 1 -padx 3m
 }
 			
 
