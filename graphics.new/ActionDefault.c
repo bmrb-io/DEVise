@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1999/08/11 16:51:12  wenger
+  Point query for drill-down now makes use of symbol bounding boxes.
+
   Revision 1.44  1999/07/19 22:19:03  wenger
   Drill-down now shows as much as it can if buffer fills up.
 
@@ -537,13 +540,24 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
     printf("Didn't get any records on the first try.\n");
 #endif
 
+    //
+    // Continue only if we have a constant Fixed Text Label symbol type
+    // (bounding boxes for that symbol type don't work).
+    //
+    TDataMap *tdMap = view->GetFirstMap();
+    const GDataAttrOffset *gdOffsets = tdMap->GetGDataOffset();
+    if (gdOffsets->_shapeOffset >= 0) {
+      // symbol type isn't constant
+      return(!tooMuch);
+    } else if (tdMap->GetShape(NULL) != 16) {
+      // symbol type isn't Fixed Text Label
+      return(!tooMuch);
+    }
+
 //~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-#if 0 // We don't have to do this now because we're taking into account
-      // the symbol bounding boxes.  RKW 1999-08-11.
-
-    // Try it again, this time trying to take the size
-    // of the structures being viewed into account.
+    // Try it again, with a larger visual filter to try to find
+    // records.
 
     // for scatter plot, we filter using Y coordinates as well;
     // allow user inaccuracy that is five times larger than for
@@ -551,15 +565,11 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
     // roughly five pixels in each direction
     filter.flag = VISUAL_X | VISUAL_Y;
 
-    Coord height, width, depth;
-    map->GetMaxSymSize(width,height,depth);
-
-    /* Don't let the visual filter for the point query get any larger
-     * than 10% of the view in either direction.  (10% is just chosen
-     * fairly arbitrarily.) */
+    // Make the visual filter 20% of the view's width and 20% of the
+    // view's height (values chosen fairly arbitrarily).
     const VisualFilter *viewVisFilterP = view->GetVisualFilter();
-    width = MIN(width, (viewVisFilterP->xHigh - viewVisFilterP->xLow) * 0.1);
-    height = MIN(height, (viewVisFilterP->yHigh - viewVisFilterP->yLow) * 0.1);
+    Coord width = (viewVisFilterP->xHigh - viewVisFilterP->xLow) * 0.2;
+    Coord height = (viewVisFilterP->yHigh - viewVisFilterP->yLow) * 0.1;
 
     filter.xLow  = x - width / 2;
     filter.xHigh = x + width / 2;
@@ -574,7 +584,6 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
     qp->InitTDataQuery(map, filter, approxFlag);
     tooMuch = GetRecords(qp, recInterp, tdata, errorMsg, numRecs);
     qp->DoneTDataQuery();
-#endif
 
     return(!tooMuch);
 }
