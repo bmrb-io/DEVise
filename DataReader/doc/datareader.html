@@ -45,6 +45,7 @@
 	<LI><H2><A HREF="#Reserve">Reserved Words</A></H2>
 	<LI><H2><A HREF="#Level1">Schema-Level Options</A></H2>
 	<LI><H2><A HREF="#Level2">Attribute-Level Options</A></H2>
+	<LI><H2><A HREF="#Examples">Examples</A></H2>
 </UL>
 
 
@@ -641,6 +642,75 @@ Default value: none<br>
 
 
 </UL>
+
+<H2><A NAME="Examples">Examples</A></H2>
+
+<h3>Example 1:</h3>
+
+<p>A schema to read three integers, plus one skip field:
+<pre>
+	datareader 2.0;
+
+	record_separator = [\n]+;
+	field_separator = [ \t]+ ;
+	comment = "#";
+	quote = ["];
+
+	int x;
+	int field_separator = [ \t]; # skip
+	int y field_separator = [%\t]+;
+	int z;
+</pre>
+
+<p>Data read by this schema:
+<pre>
+	-1	999	2%3
+	12	999	-22		32
+	1	888	2		3
+	82	999	25%%35
+</pre>
+
+<p>The values that were read:
+<pre>
+	{-1} {2} {3} 
+	{12} {-22} {32} 
+	{1} {2} {3} 
+	{82} {25} {35} 
+</pre>
+
+
+<h3>Example 2:</h3>
+
+<p>A schema to read a double, a date, a string, and an int:
+<pre>
+	datareader 2.0;
+
+	record_separator = [\n]+;
+	field_separator = [ 	]+ ;
+	comment = "#";
+	date_format = "%m/%d/%y %H:%M:%S.%f";
+	key = (sci_const);
+	
+	double sci_const;
+	date date1;
+	string str1[10];
+	int last;
+</pre>
+
+<p>Data read by this schema:
+<pre>
+	3.14159	10/05/98 11:23:55.6	Hel\ lo	999	abc
+	183000	05/22/00 01:02:42.123456	Abraham\ L\'incoln	888
+	2.718	01/31/91 15:36:5.0	\'Ben\ F\'ranklin	777
+</pre>
+
+<p>The values that were read:
+<pre>
+	{3.14159} {1998-10-5 11:23:55.6} {Hel lo} {999} 
+	{183000} {1900-5-22 1:2:42.1235} {Abraham L} {888} 
+	{2.718} {1991-1-31 15:36:5} {'Ben F'ra} {777} 
+</pre>
+
 
 <hr>
 

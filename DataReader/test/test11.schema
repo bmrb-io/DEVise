@@ -10,4 +10,4 @@ date date2
   date_format = "%Y %m"
 #  length = 7
   ;
-date date3 date_format = "%H %P";
+date date3 date_format = "\"%H %P\"";

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/11/03 17:53:33  okan
+  Fixed Several bugs and changed DataReader to use UtilAtof
+
   Revision 1.6  1998/10/12 21:24:20  wenger
   Fixed bugs 405, 406, and 408 (all DataReader problems); considerably
   increased the robustness of the DataReader (partly addresses bug 409);
@@ -78,8 +81,18 @@ class DataReaderParser
     // old code was not fully resetting the string each time a new string
     // started, so if the previous string was longer the next string got
     // garbage on the end.
-    char stringBuf[1024];
+	static const int stringBufSize = 1024;
+    char stringBuf[stringBufSize];
     int stringIndex;
+
+	void ResetStr() { stringIndex = 0; }
+	void StrAddChar(char c) {
+		if (stringIndex >= stringBufSize) {
+			cerr << "String constant too long at line: " << line_nr << endl;
+		} else {
+			stringBuf[stringIndex++] = c;
+		}
+	}
 
     int yylex();
 

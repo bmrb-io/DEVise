@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1999/02/04 20:04:27  wenger
+  Implemented simplified DataReader schema format; field separators
+  now propagate to quoted string attributes; fixed some bugs in some
+  special cases; updated documentation (still needs some work).
+
   Revision 1.10  1999/01/18 18:08:06  beyer
   added support for '\r'
 
@@ -49,7 +54,6 @@
 #include "sysdep.h"
 #include "DataReaderParser.h"
 #include "datareader.tab.h"
-int escCheck = 0;
 
 %}
 
@@ -98,54 +102,58 @@ url			return URLSTYLE_TOKEN;
 noescape	return NOESCAPESTYLE_TOKEN;
 comment     return COMMENT_TOKEN;
 
-\[			{ 	stringIndex = 0;
-				escCheck = 0;
+\[			{ 	ResetStr();
 				BEGIN BRACKET;
 			}
 
 <BRACKET>\][\+]? { if (yytext[1] == '+') {
-					stringBuf[stringIndex++] = '+' ;
+					StrAddChar('+') ;
 				}
-				stringBuf[stringIndex++] = '\0' ;
+				StrAddChar('\0') ;
 				yylval.string_val = stringBuf;
-				escCheck = 0;
 				BEGIN INITIAL;
 				return BRACKET_TOKEN;
 			}
-<BRACKET>.	{	if (escCheck == 1) {
-					switch (yytext[0]) {
-						case 'n':
-							stringBuf[stringIndex++] = '\n';
-							break;
-						case 't':
-							stringBuf[stringIndex++] = '\t';
-							break;
-						case 'r':
-							stringBuf[stringIndex++] = '\r';
-							break;
-						default:
-							stringBuf[stringIndex++] = yytext[0];
-					}
-					escCheck = 0;
-				} else {
-					if (yytext[0] == '\\')
-						escCheck = 1;
-					else {
-						stringBuf[stringIndex++] = yytext[0] ;
-					}
-				}
+<BRACKET>\\n	{	/* newline */
+				StrAddChar('\n');
+			}
+<BRACKET>\\r	{	/* return */
+				StrAddChar('\r');
+			}
+<BRACKET>\\t	{	/* tab */
+				StrAddChar('\t');
+			}
+<BRACKET>\\.	{	/* other escaped character */
+				StrAddChar(yytext[1]);
+			}
+<BRACKET>.	{
+				StrAddChar(yytext[0]);
 			}
 
-\"			{	stringIndex = 0;
+\"			{	/* opening quote of string */
+				ResetStr();
 				BEGIN STR;
 			}
-
-<STR>\"		{	stringBuf[stringIndex++] = '\0';
+<STR>\"		{	/* closing quote of string */
+				StrAddChar('\0');
 				yylval.string_val = stringBuf;
 				BEGIN INITIAL;
 				return STRINGVAL_TOKEN;
 			}
-<STR>.		{	stringBuf[stringIndex++] = yytext[0];
+<STR>\\n		{	/* newline */
+				StrAddChar('\n');
+			}
+<STR>\\r		{	/* return */
+				StrAddChar('\r');
+			}
+<STR>\\t		{	/* tab */
+				StrAddChar('\t');
+			}
+<STR>\\.	{	/* other escaped character */
+				StrAddChar(yytext[1]);
+			}
+<STR>.		{	/* a character within a string */
+				StrAddChar(yytext[0]);
 			}
 
 {digit}		{	yylval.int_val = atoi(yytext);

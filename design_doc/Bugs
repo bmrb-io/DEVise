@@ -1559,7 +1559,8 @@ Num Date        Status  Description
 406 10/05/98	FIXED	Date attributes don't work in DataReader. (rkw)
 			(Fixed by rkw 10/9/98.)
 
-407 10/05/98	OPEN	Skip attributes don't work in DataReader. (rkw)
+407 10/05/98	FIXED	Skip attributes don't work in DataReader. (rkw)
+			(Fixed by rkw.)
 
 408 10/06/98	FIXED	String field in data longer than maxlen goofs up
 			subsequent fields in DataReader. (rkw)
@@ -1588,9 +1589,10 @@ Num Date        Status  Description
 414 10/12/98	FIXED	DataReader should recognize blank lines in data file
 			as being like comment lines (skip them). (rkw)
 
-415 10/12/98	OPEN	In DataReader, record separators/delimiters other than
+415 10/12/98	FIXED	In DataReader, record separators/delimiters other than
 			tab and newline (or trying not to have a record
 			separator at all) don't seem to work. (rkw)
+			(Fixed by rkw.)
 
 416 10/12/98	OPEN	'float' type should be implemented in DataReader. (rkw)
 
@@ -1744,14 +1746,23 @@ Num Date        Status  Description
 454 02/02/99	OPEN	'sorted' and 'key' in DataReader schemas don't do
 			anything. (rkw)
 
-455 02/03/99	OPEN	Date formats in DataReader cannot contain double
+455 02/03/99	FIXED	Date formats in DataReader cannot contain double
 			quotes ("). (rkw)
+			(Fixed by rkw, 02/09/99.)
 
 456 02/03/99	OPEN	The DataReader doesn't do anything with the
 			encoding option. (rkw)
 
-457 02/07/99	OPEN	DataReader should allow escaped quotes in date_format
+457 02/07/99	FIXED	DataReader should allow escaped quotes in date_format
 			strings. (rkw)
+			(Duplicates 455.)
+
+458 02/08/99	OPEN	DataReader can't differentiate between [\t+] and
+			[\t]+ in a schema. (rkw)
+
+459 02/08/99	FIXED	date_format doesn't work at schema level in DataReader
+			schemas. (rkw)
+			(Fixed by rkw, 2/8/99.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

@@ -4,7 +4,7 @@ datareader 2.0;
 # defined purely by the field count
 
 record_separator = [];
-field_separator = [	]+;
+field_separator = [\n\t]+;
 
 string rider maxlen = 25;
 string race maxlen = 25;

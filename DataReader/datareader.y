@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1999/02/04 20:04:28  wenger
+  Implemented simplified DataReader schema format; field separators
+  now propagate to quoted string attributes; fixed some bugs in some
+  special cases; updated documentation (still needs some work).
+
  */
 
 %{
@@ -26,6 +31,7 @@
 #define drparse DataReaderParser::drparse
 vector<char*>* tmpVector;
 char* tmpKey;
+Holder * StrToHolder(char *str, bool allowRepeating);
 %}
 
 %token SCHEMA_TOKEN
@@ -65,14 +71,15 @@ char* tmpKey;
 
 beginschema: SCHEMA_TOKEN VERSION_TOKEN ';' getschema ;
 
-getschema: getanyschema
-		| getschema getanyschema
+getschema: getschemapart
+		| getschema getschemapart
 		;
 
-getanyschema: getrecsep ';'
+getschemapart: getrecsep ';'
 		| getcomment ';'
 		| getupsep ';'
 		| getupqu ';'
+		| getupdateform ';'
 		| getkey ';'
 		| getsorted ';'
 		| getattribute
@@ -82,72 +89,42 @@ getrecsep: REC_SEP_TOKEN '=' BRACKET_TOKEN {
 	if (myDRSchema->getDelimiter() != NULL) {
 		drerror("Schema record separator is already defined, record "
 		  "separator cannot be specified twice!...");
-	}
-	if ($3 == NULL) {
-		drerror("DRSchema record separator NULL ??? ") ;
-	}
-	char* tmpChar = new char[strlen($3)+1];
-	strcpy(tmpChar,$3);
-	Holder* tmpHolder = new Holder;
-
-	if (tmpChar[strlen(tmpChar)-1] == '+') {
-		tmpHolder->repeating = true;
-		tmpChar[strlen(tmpChar)-1] = '\0';
 	} else {
-		tmpHolder->repeating = false;
+		myDRSchema->setDelimiter(StrToHolder($3, true));
 	}
-
-	tmpHolder->data = tmpChar;
-	tmpHolder->length = strlen(tmpChar);
-	myDRSchema->setDelimiter(tmpHolder);
 } ;
 
 getcomment: COMMENT_TOKEN '=' STRINGVAL_TOKEN {
 	if (myDRSchema->getComment() != NULL) {
 		drerror("Schema Comment character is already specified, comment "
 		  "character can not be specified twice !...");
+	} else {
+		myDRSchema->setComment(StrToHolder($3, false));
 	}
-	if ($3 == NULL) {
-		drerror("DRSchema comment NULL ??? ") ;
-	}
-	char* tmpCom = new char[strlen($3)+1];
-	strcpy(tmpCom,$3);
-	Holder* tmpHolderC = new Holder;
-
-	tmpHolderC->repeating = false;
-
-	tmpHolderC->data = tmpCom;
-	tmpHolderC->length = strlen(tmpCom);
-	myDRSchema->setComment(tmpHolderC);
 } ;
 
 getupsep: FLD_SEP_TOKEN '=' BRACKET_TOKEN {
 	if (myDRSchema->getSeparator() != NULL) {
 		drerror("Schema level field separator is already defined, schema "
 		  "level field separator can not be specified twice!...");
-	}
-	char* tmpSChar = new char[strlen($3)+1];
-	strcpy(tmpSChar,$3);
-	Holder* tmpHolder = new Holder;
-
-	if (tmpSChar[strlen(tmpSChar)-1]  == '+') {
-		tmpHolder->repeating = true;
-		tmpSChar[strlen(tmpSChar)-1] = '\0';
 	} else {
-		tmpHolder->repeating = false;
+		myDRSchema->setSeparator(StrToHolder($3, true));
 	}
-
-	tmpHolder->data = tmpSChar;
-	tmpHolder->length = strlen(tmpSChar);
-	myDRSchema->setSeparator(tmpHolder);
 } ;
 
 getupqu: QUOTE_TOKEN '=' BRACKET_TOKEN {
 	if (myDRSchema->getQuote() != -1) {
 		drerror("Schema Quote is already defined, Quote can not be "
 		  "specified twice!...");
+	} else {
+		myDRSchema->setQuote($3[0]);
 	}
-	myDRSchema->setQuote($3[0]);
+} ;
+
+getupdateform: DATE_FORMAT_TOKEN '='  STRINGVAL_TOKEN {
+	char* tmpD = new char[strlen($3)+1];
+	strcpy(tmpD,$3);
+	myDRSchema->setDateFormat(tmpD);
 } ;
 
 getkey: KEY_TOKEN '=' '(' {
@@ -196,17 +173,18 @@ get_attr_type: INT_TOKEN {
 	tmpAttr->setType(TYPE_DATE);
 } ;
 
-get_attr_name: /* empty */
+get_attr_name: /* empty -- implies a "skip" attribute */
 		| IDENT_TOKEN {
-	char* tmpFN = new char[strlen($1)+1];
-	strcpy(tmpFN,$1);
-	if (myDRSchema->checkNameExists(tmpFN)) {
+	if (myDRSchema->checkNameExists($1)) {
 		ostrstream tmp;
-		tmp << "Duplicate attribute name \'" << tmpFN <<
+		tmp << "Duplicate attribute name \'" << $1 <<
 		  "\'; attribute names should be unique!..." << ends;
 		drerror(tmp.str());
+	} else {
+		char* tmpFN = new char[strlen($1)+1];
+		strcpy(tmpFN,$1);
+		tmpAttr->setFieldName(tmpFN);
 	}
-	tmpAttr->setFieldName(tmpFN);
 } ;
 
 get_attr_maxlen: /* empty */
@@ -217,8 +195,9 @@ get_attr_maxlen: /* empty */
 		  "skip attribute": tmpAttr->getFieldName()) <<
 		  " is already defined, it can not be specified twice!..." << ends;
 		drerror(tmp.str());
+	} else {
+		tmpAttr->setMaxLen(atoi($1));
 	}
-	tmpAttr->setMaxLen(atoi($1));
 } ;
 							
 get_attr_options: /* empty */
@@ -246,20 +225,9 @@ getseparator: FLD_SEP_TOKEN '=' BRACKET_TOKEN {
 		  tmpAttr->getFieldName()) <<
 		  " is already defined, it can not be specified twice !..." << ends ;
 		drerror(tmp.str());
-	}
-	char* tmpS = new char[strlen($3)+1];
-	strcpy(tmpS,$3);
-	Holder* tmpH= new Holder;
-
-	if (tmpS[strlen(tmpS)-1] == '+') {
-		tmpH->repeating = true;
-		tmpS[strlen(tmpS)-1] = '\0';
 	} else {
-		tmpH->repeating = false;
+		tmpAttr->setSeparator(StrToHolder($3, true));
 	}
-	tmpH->data = tmpS;
-	tmpH->length = strlen(tmpS);
-	tmpAttr->setSeparator(tmpH);
 } ;
 
 getmaxlen: MAXLEN_TOKEN '=' INTVAL_TOKEN {
@@ -269,8 +237,9 @@ getmaxlen: MAXLEN_TOKEN '=' INTVAL_TOKEN {
 		  "skip attribute": tmpAttr->getFieldName()) <<
 		  " is already defined, it can not be specified twice!..." << ends;
 		drerror(tmp.str());
+	} else {
+		tmpAttr->setMaxLen($3);
 	}
-	tmpAttr->setMaxLen($3);
 } ;
 
 getquote: QUOTE_TOKEN '=' BRACKET_TOKEN {
@@ -280,8 +249,9 @@ getquote: QUOTE_TOKEN '=' BRACKET_TOKEN {
 		  "skip attribute": tmpAttr->getFieldName()) <<
 		  " is already defined, it can not be specified twice!..." << ends;
 		drerror(tmp.str());
+	} else {
+		tmpAttr->setQuote($3[0]);
 	}
-	tmpAttr->setQuote($3[0]);
 } ;
 
 getlength: LENGTH_TOKEN '=' INTVAL_TOKEN {
@@ -291,8 +261,9 @@ getlength: LENGTH_TOKEN '=' INTVAL_TOKEN {
 		  "skip attribute": tmpAttr->getFieldName()) <<
 		  " is already defined, it can not be specified twice!..." << ends;
 		drerror(tmp.str());
+	} else {
+		tmpAttr->setFieldLen($3);
 	}
-	tmpAttr->setFieldLen($3);
 } ;
 
 gethidden: HIDDEN_TOKEN '=' BRACKET_TOKEN {
@@ -302,16 +273,17 @@ gethidden: HIDDEN_TOKEN '=' BRACKET_TOKEN {
 		  "skip attribute": tmpAttr->getFieldName()) <<
 		  " is already defined, it can not be specified twice!..." << ends;
 		drerror(tmp.str());
-	}
-	char* tmpHC = new char[strlen($3)+1];
-	strcpy(tmpHC,$3);
-	if (!((tmpHC[0] == 'Y') || (tmpHC[0] == 'y') || (tmpHC[0] == 'N') ||
-	  (tmpHC[0] == 'n'))) {
-		YYABORT;
-	}
+	} else {
+		char* tmpHC = new char[strlen($3)+1];
+		strcpy(tmpHC,$3);
+		if (!((tmpHC[0] == 'Y') || (tmpHC[0] == 'y') || (tmpHC[0] == 'N') ||
+	  	(tmpHC[0] == 'n'))) {
+			YYABORT;
+		}
 
-	tmpAttr->setHidden(tmpHC[0]); 
-	delete [] tmpHC;
+		tmpAttr->setHidden(tmpHC[0]); 
+		delete [] tmpHC;
+	}
 } ;
 
 getencoding: ENCODING_TOKEN '=' getwhatencod ;
@@ -329,3 +301,23 @@ getdateformat: DATE_FORMAT_TOKEN '='  STRINGVAL_TOKEN {
 } ;
 
 %%
+
+Holder *
+StrToHolder(char *str, bool allowRepeating)
+{
+	char* tmpChar = new char[strlen(str)+1];
+	strcpy(tmpChar, str);
+	Holder* tmpHolder = new Holder;
+
+	if (allowRepeating && tmpChar[strlen(tmpChar)-1] == '+') {
+		tmpHolder->repeating = true;
+		tmpChar[strlen(tmpChar)-1] = '\0';
+	} else {
+		tmpHolder->repeating = false;
+	}
+
+	tmpHolder->data = tmpChar;
+	tmpHolder->length = strlen(tmpChar);
+
+	return tmpHolder;
+}
