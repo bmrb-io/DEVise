@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/06/24 19:48:55  jussi
+  Improved the interaction between query processors and the dispatcher.
+  The query processors now also get called every time a 1-second timer
+  expires. This will allow the QP to notice if data files have increased
+  in size or otherwise changed.
+
   Revision 1.11  1996/06/04 19:58:46  wenger
   Added the data segment option to TDataBinary; various minor cleanups.
 
@@ -1123,6 +1129,11 @@ void QueryProcSimple::DoneTDataQuery()
 }
 
 void QueryProcSimple::ClearQueries()
+{
+}
+
+/* Clear info about TData from qp and bufmgr */
+void QueryProcSimple::ClearTData(TData *tdata)
 {
 }
 

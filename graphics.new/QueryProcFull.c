@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/06/24 19:48:53  jussi
+  Improved the interaction between query processors and the dispatcher.
+  The query processors now also get called every time a 1-second timer
+  expires. This will allow the QP to notice if data files have increased
+  in size or otherwise changed.
+
   Revision 1.20  1996/06/24 16:58:32  wenger
   Fixed bug causing internal error.
 
@@ -380,21 +386,37 @@ void QueryProcFull::ClearQueries()
   _mgr->Clear();
 }
 
-/* Clear info about GData from qp */
+/* Clear info about TData from qp and bufmgr */
+void QueryProcFull::ClearTData(TData *tdata)
+{
+  /* abort existing queries that use this TData and re-execute them */
+
+  RefreshTData(tdata);
+
+  /* clear GData in all mappings that use this tdata */
+
+  for(int i = 0; i < _numMappings; i++) {
+    TDataMap *map = _mappings[i];
+    if (map->GetTData() == tdata)
+      _mgr->ClearData(map->GetGData());
+  }
+
+  /* clear TData from bufmgr */
+
+  _mgr->ClearData(tdata);
+}
+
+/* Clear info about GData from qp and bufmgr */
 void QueryProcFull::ClearGData(GData *gdata)
 {
   int index;
   for(index = _queries->InitIterator(); _queries->More(index);) {
     QPFullData *qd = _queries->Next(index);
-    if (qd->gdata == gdata) {
-      switch(qd->state) {
-      default: break;
-      }
+    if (qd->gdata == gdata)
       qd->gdata = NULL;
-    }
   }
   _queries->DoneIterator(index);
-  _mgr->ClearGData(gdata);
+  _mgr->ClearData(gdata);
 }
 
 void QueryProcFull::ResetGData(TData *tdata, GData *gdata)
@@ -402,9 +424,8 @@ void QueryProcFull::ResetGData(TData *tdata, GData *gdata)
   int index;
   for(index = _queries->InitIterator(); _queries->More(index);) {
     QPFullData *qd = _queries->Next(index);
-    if (qd->tdata == tdata) {
+    if (qd->tdata == tdata)
       qd->gdata = gdata;
-    }
   }
   _queries->DoneIterator(index);
 }
@@ -422,13 +443,13 @@ void QueryProcFull::InitQPFullX(QPFullData *qData)
   /* Init replacement policy */
   qData->mgr->InitPolicy(_policy);
 
-  if (DoBinarySearch(qData->mgr,qData->tdata, qData->map,
+  if (DoBinarySearch(qData->mgr, qData->tdata, qData->map,
 		     qData->filter.xLow, false, qData->current)) {
     /* Find where we have to stop */
     RecId lastId;
     (void)qData->tdata->LastID(lastId);
-    if (!DoBinarySearch(qData->mgr,qData->tdata,qData->map,
-			qData->filter.xHigh, false,qData->high, true,
+    if (!DoBinarySearch(qData->mgr, qData->tdata, qData->map,
+			qData->filter.xHigh, false, qData->high, true,
 			qData->current, lastId, false)) {
       qData->high = lastId;
     }
@@ -449,7 +470,6 @@ void QueryProcFull::InitQPFullX(QPFullData *qData)
 #endif
   } else {
     /* done */
-    EndQPFullX(qData);
     qData->state = QPFull_EndState;
   }
 }
@@ -464,21 +484,22 @@ void QueryProcFull::InitQPFullScatter(QPFullData *qData)
   /* Call initialization of query */
   qData->callback->QueryInit(qData->userData);
 
-  /* Init replacement policy. . */
+  /* Init replacement policy */
   qData->mgr->InitPolicy(_policy);
 
   TData *tdata = qData->tdata;
-  if (tdata->HeadID(qData->current)) {
-    (void)tdata->LastID(qData->high);
+  if (tdata->HeadID(qData->current) && tdata->LastID(qData->high)) {
     qData->state = QPFull_ScanState;
     qData->isRandom = false;
+#ifdef DEBUG
+    printf("InitQPFullScatter search [%ld,%ld]\n", qData->current, qData->high);
+#endif
   } else {
     qData->state = QPFull_EndState;
-  }
-
 #ifdef DEBUG
-  printf("InitQPFullScatter search [%ld,%ld]\n", qData->current, qData->high);
+    printf("InitQPFullScatter no data, no search\n");
 #endif
+  }
 }
 
 /* Initialize all queries. Return false if no query is in initial state */
@@ -692,9 +713,15 @@ void QueryProcFull::ProcessScan(QPFullData *qData)
 
 void QueryProcFull::ProcessQPFullX(QPFullData *qData)
 {
+  if (qData->state == QPFull_EndState) {
+      EndQPFullX(qData);
+      return;
+  }
+
   ProcessScan(qData);
-  if (qData->state == QPFull_EndState)
-    EndQPFullX(qData);
+  if (qData->state == QPFull_EndState) {
+      EndQPFullX(qData);
+  }
 }
 
 void QueryProcFull::ProcessQPFullYX(QPFullData *qData)
@@ -704,9 +731,14 @@ void QueryProcFull::ProcessQPFullYX(QPFullData *qData)
 
 void QueryProcFull::ProcessQPFullScatter(QPFullData *qData)
 {
+  if (qData->state == QPFull_EndState) {
+      EndQPFullScatter(qData);
+      return;
+  }
+
   ProcessScan(qData);
   if (qData->state == QPFull_EndState) {
-    EndQPFullScatter(qData);
+      EndQPFullScatter(qData);
   }
 }
 
@@ -739,12 +771,6 @@ void QueryProcFull::ProcessQuery()
 	 first->map->GetName());
 #endif
 
-  if (first->state == QPFull_EndState) {
-	/* InitQueries could have finished this query */
-	DeleteFirstQuery();
-	return;
-  }
-
   switch(first->qType) {
   case QPFull_X:
 	ProcessQPFullX(first);
@@ -758,14 +784,14 @@ void QueryProcFull::ProcessQuery()
   }
   
   if (first->state == QPFull_EndState) {
-	/* finished with this query */
-	DeleteFirstQuery();
+    /* finished with this query */
+    DeleteQuery(first);
   }
 }
 
 void QueryProcFull::EndQPFullX(QPFullData *qData)
 {
-  qData->callback->QueryDone(qData->bytes,qData->userData);
+  qData->callback->QueryDone(qData->bytes, qData->userData);
   JournalReport();
 }
 
@@ -775,7 +801,7 @@ void QueryProcFull::EndQPFullYX(QPFullData *qData)
 
 void QueryProcFull::EndQPFullScatter(QPFullData *qData)
 {
-  qData->callback->QueryDone(qData->bytes,qData->userData);
+  qData->callback->QueryDone(qData->bytes, qData->userData);
   JournalReport();
 }
 
@@ -818,15 +844,16 @@ Boolean QueryProcFull::DoBinarySearch(BufMgr *mgr,
       /* process hint from mapping */
     }
   }
+
   RecId firstId = low;
   RecId lastId = high;
 
   /* calculate midpoint of where to start */
-  mid = (high+low)/2;
+  mid = (high + low) / 2;
 
   do {
     /* Get the data for mid */
-    GetX(mgr,tdata,map,mid,x);
+    GetX(mgr, tdata, map,mid, x);
     
     /* change high or low for next search */
     if (x < xVal) {
@@ -834,7 +861,7 @@ Boolean QueryProcFull::DoBinarySearch(BufMgr *mgr,
     } else {
       high = mid;
     }
-    mid = (high+low)/2;
+    mid = (high + low) / 2;
   } while (mid > low);
   
   /* Scan backwards until we found an ID whose x < filter.xLow */
@@ -845,20 +872,20 @@ Boolean QueryProcFull::DoBinarySearch(BufMgr *mgr,
 #endif
     while (mid > firstId && x >= xVal) {
       mid--;
-      GetX(mgr,tdata,map,mid,x);
+      GetX(mgr, tdata, map, mid, x);
 #ifdef DEBUG
       printf("midVal = %.2f\n", x);
 #endif
     }
     id = mid;
   } else {
-    GetX(mgr,tdata,map,mid,x);
+    GetX(mgr, tdata, map, mid, x);
 #ifdef DEBUG
     printf("midVal = %.2f\n", x);
 #endif
     while (mid < lastId && x <= xVal) {
       mid++;
-      GetX(mgr,tdata,map,mid,x);
+      GetX(mgr, tdata, map, mid, x);
 #ifdef DEBUG
       printf("midVal = %.2f\n", x);
 #endif
@@ -1149,11 +1176,10 @@ QPFullData *QueryProcFull::FirstQuery()
   return ((QPFullData *)_queries->GetFirst());
 }
 
-void QueryProcFull::DeleteFirstQuery()
+void QueryProcFull::DeleteQuery(QPFullData *qp)
 {
-  QPFullData *first = FirstQuery();
-  _queries->Delete(first);
-  FreeEntry(first);
+  _queries->Delete(qp);
+  FreeEntry(qp);
 }
 
 /*********************************************************
@@ -1219,9 +1245,14 @@ void QueryProcFull::ClearMapping()
 }
 
 /* Convert what's in memory for tdata. Return false if no more to convert.*/
+
 Boolean QueryProcFull::DoInMemGDataConvert(TData *tdata, GData *gdata,
 					   TDataMap *map)
 {
+#ifdef DEBUG
+  printf("In DoInMemGDataConvert\n");
+#endif
+
   _mgr->InitTDataInMem(tdata);
   RecId inMemLow, inMemHigh;
   int gRecSize = gdata->RecSize();
@@ -1345,7 +1376,8 @@ void QueryProcFull::DoGDataConvert()
       continue;
 
     startId = map->GetFocusId();
-    if (!tdata->HeadID(firstId) || !tdata->LastID(lastId))
+    (void)tdata->HeadID(firstId);
+    if (!tdata->LastID(lastId))
       continue;
   
     noHigh = gdata->NextUnConverted(startId, low, high);

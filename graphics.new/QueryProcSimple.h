@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/06/24 19:48:55  jussi
+  Improved the interaction between query processors and the dispatcher.
+  The query processors now also get called every time a 1-second timer
+  expires. This will allow the QP to notice if data files have increased
+  in size or otherwise changed.
+
   Revision 1.7  1996/06/12 14:56:25  wenger
   Added GUI and some code for saving data to templates; added preliminary
   graphical display of TDatas; you now have the option of closing a session
@@ -101,6 +107,9 @@ public:
 
   /* abort all queries */
   virtual void ClearQueries();
+
+  /* Clear info about TData from qp and bufmgr */
+  virtual void ClearTData(TData *tdata);
 
   /* Protocol to reset GData to a different one:
      first call ClearGData() to clear any info,

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/06/23 20:33:01  jussi
+  Cleaned up.
+
   Revision 1.4  1996/06/12 14:56:24  wenger
   Added GUI and some code for saving data to templates; added preliminary
   graphical display of TDatas; you now have the option of closing a session
@@ -33,6 +36,11 @@
 
 #include "QueryProc.h"
 #include "DispQueryProc.h"
+#include "Control.h"
+#include "ClassDir.h"
+#include "ViewGraph.h"
+#include "TDataMap.h"
+#include "TData.h"
 #include "Init.h"
 #include "Exit.h"
 
@@ -71,4 +79,39 @@ QueryProc *QueryProc::Instance()
   }
 
   return _queryProc;
+}
+
+/* Abort existing queries that use given TData and re-execute the queries */
+
+void QueryProc::RefreshTData(TData *tdata)
+{
+    ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
+
+    int index = View::InitViewIterator();
+    while(View::MoreView(index)) {
+        View *v = View::NextView(index);
+        ViewGraph *vg = (ViewGraph *)classDir->FindInstance(v->GetName());
+        DOASSERT(vg, "Cannot find view");
+
+        Boolean usesTData = false;
+        int idx = vg->InitMappingIterator();
+        while(vg->MoreMapping(idx)) {
+            TDataMap *map = vg->NextMapping(idx)->map;
+            if (map->GetTData() == tdata) {
+                usesTData = true;
+                break;
+            }
+        }
+        vg->DoneMappingIterator(idx);
+        if (usesTData) {
+#ifdef DEBUG
+            printf("Reexecuting query for view %s with new data...\n",
+                   vg->GetName());
+#endif
+            vg->AbortAndReexecuteQuery();
+            if (vg->GetAutoScale())
+              vg->UpdateAutoScale();
+        }
+    }
+    View::DoneViewIterator(index);
 }

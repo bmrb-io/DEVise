@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/06/13 00:16:27  jussi
+  Added support for views that are slaves of more than one record
+  link. This allows one to express disjunctive queries.
+
   Revision 1.4  1996/05/31 15:41:28  jussi
   Added support for record links.
 
@@ -43,9 +47,10 @@ class RecordLinkList;
 /* Used to return query results */
 class QueryCallback {
  public:
-  /* Query data ready to be returned. Do initialization here.*/
+  /* Query data ready to be returned. Do initialization here. */
   virtual void QueryInit(void *userData) = 0;
   
+  /* Return a batch of records */
   virtual void ReturnGData(TDataMap *mapping, RecId id,
 			   void *gdata, int numGData) = 0;
   
@@ -53,6 +58,7 @@ class QueryCallback {
      processing this query. */
   virtual void QueryDone(int bytes, void *userData) = 0;
 
+  /* Return list of record links whose slave the view is */
   virtual RecordLinkList *GetRecordLinkList() { return 0; }
 };
 
@@ -70,7 +76,7 @@ struct QPRec {
 
 class QueryProc {
 public:
-  /* get one and only instances of query processor */
+  /* get one and only instance of query processor */
   static QueryProc *Instance();
 
   /* batch a query. For now, we'll just queue it up.  */
@@ -83,6 +89,12 @@ public:
 
   /* Abort all queries, including prefetching  */
   virtual void ClearQueries() = 0;
+
+  /* Abort and reexecute queries that use the specified tdata */
+  virtual void RefreshTData(TData *tdata);
+
+  /* Clear info about TData from qp and bufmgr */
+  virtual void ClearTData(TData *tdata) = 0;
 
   /* Protocol to reset GData to a different one:
      first call ClearGData() to clear any info,

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/06/24 19:48:54  jussi
+  Improved the interaction between query processors and the dispatcher.
+  The query processors now also get called every time a 1-second timer
+  expires. This will allow the QP to notice if data files have increased
+  in size or otherwise changed.
+
   Revision 1.7  1996/06/13 00:16:29  jussi
   Added support for views that are slaves of more than one record
   link. This allows one to express disjunctive queries.
@@ -127,7 +133,10 @@ public:
   /* Clear all queries from query processor */
   virtual void ClearQueries();
 
-  /* Clear info about GData from qp */
+  /* Clear info about TData from qp and bufmgr */
+  virtual void ClearTData(TData *tdata);
+
+  /* Clear info about GData from qp and bufmgr */
   virtual void ClearGData(GData *gdata);
   virtual void ResetGData(TData *tdata, GData *gdata);
 
@@ -208,10 +217,11 @@ private:
   void DistributeGData(QPFullData *qData, RecId startRid,
 		       int numRecs, void *buf, void **recs);
   
+  /* Return first query in query list */
   QPFullData *FirstQuery();
 
-  /* Delete first query in the list of queries */
-  void DeleteFirstQuery();
+  /* Delete a query from query list */
+  void DeleteQuery(QPFullData *qp);
 
   /* Return true if range is empty */
   Boolean NoQueries();
