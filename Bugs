@@ -189,6 +189,13 @@ Num Date        Status  Description
 058 10/29/96	OPEN	Changing line width doesn't work in direct PostScript.
 			(rkw)
 
+059 11/05/96	OPEN	Keyboard callback function for SGI version of client/
+			server library doesn't work. (rkw/na)
+
+060 11/05/96	OPEN	WinServer's HandleButton(..) callback routine
+			in client/server library can't handle continuous
+			calls (holding down mouse button). (rkw/na)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.
