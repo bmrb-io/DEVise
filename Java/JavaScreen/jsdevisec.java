@@ -22,6 +22,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.87  2001/02/21 17:44:33  xuk
+// Added the collaboration security features.
+// When a user opens a session normally, the default will be that their
+// connection is not available for collaboration;
+// User can set password for collaboration:
+// 	Added collabPass (default = "guest");
+// 	Added CollabPassDlg() and showCollabPass() for set collaboration passwd;
+// Enter password for collaboration:
+// 	Added enterCollabPass() and EnterCollabPassDlg().
+//
 // Revision 1.86  2001/02/20 20:02:26  wenger
 // Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
 // to the trunk.
@@ -1368,7 +1378,11 @@ class SettingDlg extends Dialog
         statButton.setForeground(jsc.jsValues.uiglobals.fg);
         statButton.setFont(jsc.jsValues.uiglobals.font);
 
-        collabButton.setBackground(jsc.jsValues.uiglobals.bg);
+	if (jsc.specialID == -1) 
+	    collabButton.setBackground(jsc.jsValues.uiglobals.bg);
+	else 
+	    collabButton.setBackground(Color.red);
+	    
         collabButton.setForeground(jsc.jsValues.uiglobals.fg);
         collabButton.setFont(jsc.jsValues.uiglobals.font);
 
@@ -1508,7 +1522,8 @@ class SettingDlg extends Dialog
                     }
                 });
 
-        collabButton.addActionListener(new ActionListener()
+	if (jsc.specialID == -1) 
+	    collabButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
                     {
@@ -2223,25 +2238,6 @@ class CollabDlg extends Frame
                                 if (idx != -1) {
 				    String clientID = clientList.getItem(idx);
 				    jsc.specialID = Integer.parseInt(clientID);
-
-				    /*
-				    if (jsc.dispatcher.dispatcherThread != null) {
-					jsc.dispatcher.dispatcherThread.stop();
-					jsc.dispatcher.dispatcherThread = null;
-				    }
-				    jsc.dispatcher.disconnect();
-
-				    jsc.animPanel.stop();
-				    jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-				    jsc.jscreen.updateScreen(false);
-
-				    if (jsc.dispatcher.getStatus() != 0) {
-					jsc.dispatcher.setAbortStatus(true);
-				    }
-				    jsc.dispatcher.setStatus(0);
-
-                                    jsc.dispatcher.start(null);
-				    */
                                     close();
 				    jsc.enterCollabPass();
                                 }
@@ -2259,24 +2255,7 @@ class CollabDlg extends Frame
                             if (idx != -1) {
                                     String clientID = clientList.getItem(idx);
 				    jsc.specialID = Integer.parseInt(clientID);
-				    /*
-				    if (jsc.dispatcher.dispatcherThread != null) {
-					jsc.dispatcher.dispatcherThread.stop();
-					jsc.dispatcher.dispatcherThread = null;
-				    }
-				    jsc.dispatcher.disconnect();
 
-				    jsc.animPanel.stop();
-				    jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-				    jsc.jscreen.updateScreen(false);
-
-				    if (jsc.dispatcher.getStatus() != 0) {
-					jsc.dispatcher.setAbortStatus(true);
-				    }
-				    jsc.dispatcher.setStatus(0);
-
-				    jsc.dispatcher.start(null);
-				    */
                                     close();
 				    jsc.enterCollabPass();
                             }
@@ -2288,6 +2267,21 @@ class CollabDlg extends Frame
                 {
                     public void actionPerformed(ActionEvent event)
                     {
+			if (jsc.dispatcher.dispatcherThread != null) {
+			    jsc.dispatcher.dispatcherThread.stop();
+			    jsc.dispatcher.dispatcherThread = null;
+			}
+			jsc.dispatcher.disconnect();
+
+			jsc.animPanel.stop();
+			jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+			jsc.jscreen.updateScreen(false);
+
+			if (jsc.dispatcher.getStatus() != 0) {
+			    jsc.dispatcher.setAbortStatus(true);
+			}
+			jsc.dispatcher.setStatus(0);
+			jsc.specialID = -1;
                         close();
                     }
                 });
@@ -2609,6 +2603,21 @@ class EnterCollabPassDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
+			if (jsc.dispatcher.dispatcherThread != null) {
+			    jsc.dispatcher.dispatcherThread.stop();
+			    jsc.dispatcher.dispatcherThread = null;
+			}
+			jsc.dispatcher.disconnect();
+
+			jsc.animPanel.stop();
+			jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+			jsc.jscreen.updateScreen(false);
+
+			if (jsc.dispatcher.getStatus() != 0) {
+			    jsc.dispatcher.setAbortStatus(true);
+			}
+			jsc.dispatcher.setStatus(0);
+			jsc.specialID = -1;
                         close();
                     }
                 });
