@@ -15,6 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/11/25 22:31:32  beyer
+#  1. extended .devise.rc search
+#  2. added DestroyView command
+#  3. query window updated properly, history window update changed
+#  4. filter properly set to (0,100) instead of (100,0) when high,low values
+#     are not known.
+#
 #  Revision 1.2  1996/04/11 18:23:00  jussi
 #  Major changes in the organization of the user interface.
 #
@@ -26,7 +33,7 @@
 
 proc ProcessMarkSelected { sel } {
     global curView
-    set mark [.historyWin.listMark get $sel]
+    set mark [.history.listMark get $sel]
     if {$mark == "*"} {
 	set newMark " "
 	set newVal 0
@@ -34,43 +41,32 @@ proc ProcessMarkSelected { sel } {
 	set newMark "*"
 	set newVal 1
     }
-    set index [expr [.historyWin.listMark size]-$sel-1]
+    set index [expr [.history.listMark size]-$sel-1]
     DEVise markViewFilter $curView $index $newVal
-    .historyWin.listMark insert [expr $sel+1] $newMark
-    .historyWin.listMark delete $sel
+    .history.listMark insert [expr $sel+1] $newMark
+    .history.listMark delete $sel
 }
 
 ############################################################
 
 proc ProcessHistorySelected { sel } {
-    global queryWinOpened
-
-    if {$queryWinOpened} {
+    if {[WindowExists .query]} {
 	foreach i { xlow ylow xhigh yhigh } {
 	    .query.$i delete 0 end
 	}
 	
-	.query.xlow  insert 0 [.historyWin.listXlow get $sel]
-	.query.ylow  insert 0 [.historyWin.listYlow get $sel]
-	.query.xhigh insert 0 [.historyWin.listXhigh get $sel]
-	.query.yhigh insert 0 [.historyWin.listYhigh get $sel]
+	.query.xlow  insert 0 [.history.listXlow get $sel]
+	.query.ylow  insert 0 [.history.listYlow get $sel]
+	.query.xhigh insert 0 [.history.listXhigh get $sel]
+	.query.yhigh insert 0 [.history.listYhigh get $sel]
     }
 }
 
 ############################################################
 
-proc CloseHistory {} {
-    global historyWinOpened
-    destroy .historyWin
-    set historyWinOpened 0
-}
-
-############################################################
-
 proc DoHistoryToggle {} {
-    global historyWinOpened
-    if { $historyWinOpened} {
-	CloseHistory
+    if {[WindowExists .history]} {
+	destroy .history
     } else {
 	OpenHistory
     }
@@ -79,13 +75,14 @@ proc DoHistoryToggle {} {
 ############################################################
 
 proc OpenHistory {} {
-    global curView historyWinOpened LightBlue
+    global curView LightBlue
     
-    if { $historyWinOpened } {
+    set w .history
+
+    if {[WindowVisible $w]} {
 	return
     }
     
-    set w .historyWin
     toplevel $w 
     wm title $w "DEVise history"
     wm geometry $w +100+100
@@ -111,39 +108,39 @@ proc OpenHistory {} {
 		-relief raised -selectmode single
     }
     bind $w.listMark <Button-1> {
-	set sel [.historyWin.listMark nearest %y]
+	set sel [.history.listMark nearest %y]
 	if {$sel >= 0} {
 	    ProcessMarkSelected $sel
 	}
     }
     
     bind $w.listXlow <Button-1> {
-	set sel [.historyWin.listXlow nearest %y]
+	set sel [.history.listXlow nearest %y]
 	if {$sel >= 0} {
 	    ProcessHistorySelected $sel
 	}
     }
     bind $w.listXhigh <Button-1> {
-	set sel [.historyWin.listXhigh nearest %y]
+	set sel [.history.listXhigh nearest %y]
 	if {$sel >= 0} {
 	    ProcessHistorySelected $sel
 	}
     }
     bind $w.listYlow <Button-1> {
-	set sel [.historyWin.listYlow nearest %y]
+	set sel [.history.listYlow nearest %y]
 	if {$sel >= 0} {
 	    ProcessHistorySelected $sel
 	}
     }
     bind $w.listYhigh <Button-1> {
-	set sel [.historyWin.listYhigh nearest %y]
+	set sel [.history.listYhigh nearest %y]
 	if {$sel >= 0} {
 	    ProcessHistorySelected $sel
 	}
     }
     scrollbar $w.scroll -command "DoScrollBar"
     
-    button $w.close -text Close -command CloseHistory -width 10
+    button $w.close -text Close -width 10 -command { destroy .history }
     
     pack $w.close -side bottom
     
@@ -154,35 +151,36 @@ proc OpenHistory {} {
     
     pack $w.heading $w.lists -side top -fill x -expand 1
     
-    set historyWinOpened 1
     UpdateHistoryWindow
 }
 
 ############################################################
 
 proc UpdateHistoryWindow {} {
-    global curView historyWinOpened
-    if { !$historyWinOpened } {
+    global curView
+
+    if {![WindowExists .history]} {
         return
     }
+
     foreach i {listMark listXlow listXhigh listYlow listYhigh} {
-        selection clear .historyWin.$i
-        .historyWin.$i delete 0 end
+        selection clear .history.$i
+        .history.$i delete 0 end
     }
     if { $curView != "" } {
 	# Init history with history of current view
 	set filters [DEVise getVisualFilters $curView]
 	foreach filter $filters {
-	    .historyWin.listXlow insert 0 [lindex $filter 0]
-	    .historyWin.listXhigh insert 0 [lindex $filter 2]
-	    .historyWin.listYlow insert 0 [lindex $filter 1]
-	    .historyWin.listYhigh insert 0 [lindex $filter 3]
+	    .history.listXlow insert 0 [lindex $filter 0]
+	    .history.listXhigh insert 0 [lindex $filter 2]
+	    .history.listYlow insert 0 [lindex $filter 1]
+	    .history.listYhigh insert 0 [lindex $filter 3]
 	    if { [lindex $filter 4] == 0 } {
 		set mark " "
 	    } else {
 		set mark "*"
 	    }
-	    .historyWin.listMark insert 0 $mark
+	    .history.listMark insert 0 $mark
 	}
     }
 }
@@ -192,19 +190,19 @@ proc UpdateHistoryWindow {} {
 # note: DoScrollBar takes variable number of arguments
 proc DoScrollBar args {
     foreach i {listMark listXlow listXhigh listYlow listYhigh} {
-	eval .historyWin.$i yview $args
+	eval .history.$i yview $args
     }
 }
 
 ############################################################
 
 proc ClearHistory {} {
-    global historyWinOpened
+    if {![WindowExists .history]} {
+        return
+    }
 
-    if {$historyWinOpened} {
-	foreach i {listMark listXlow listXhigh listYlow listYhigh} {
-	    selection clear .historyWin.$i
-	    .historyWin.$i delete 0 end
-	}
+    foreach i {listMark listXlow listXhigh listYlow listYhigh} {
+        selection clear .history.$i
+        .history.$i delete 0 end
     }
 }
