@@ -189,9 +189,11 @@ Improve sizing of Dali images so that they work like other symbols.
 
 Change name of 'Shape' in GData mapping GUI. (rr/rkw/ 9/12/96)
 
-Add a "dashed line" drawing function in the WindowRep classes. (na/rkw 960920)
+Add a "dashed line" drawing function in the WindowRep classes. (na/rkw 9/20/96)
 
-Add a "wiggly line" drawing function in the WindowRep classes. (na/rkw 960920)
+Add a "wiggly line" drawing function in the WindowRep classes. (na/rkw 9/20/96)
+
+Display session name somewhere. (rkw 9/26/96)
 
 
 COMPLETED
