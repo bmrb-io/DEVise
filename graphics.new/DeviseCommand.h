@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.46  1999/11/19 18:19:02  wenger
+  Removed (not really used) DeviseCommandOption class and related code.
+
   Revision 1.45  1999/09/07 19:00:56  wenger
   dteInsertCatalogEntry command changed to tolerate an attempt to insert
   duplicate entries without causing a problem (to allow us to get rid of
@@ -255,6 +258,8 @@ class DeviseCommand
 	friend ostream& operator <<(ostream&, DeviseCommand&);
 	public:
 		static ControlPanel* getDefaultControl();
+		static int GetCmdDepth() { return _cmdDepth; }
+
 	private:
 		static	ControlPanel* _defaultControl;
 		static void setDefaultControl(ControlPanel* defaultControl);
@@ -268,6 +273,8 @@ class DeviseCommand
 			 _controlStack->pop();
 			 _control =(ControlPanel*) _controlStack->top();
 		}
+		static int _cmdDepth;
+
 	protected:
 		// only friend class can construct this class
 		ControlPanel* _control;

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.205  1999/11/19 17:17:28  wenger
+  Added View::SetVisualFilterCommand() method to clean up command-related
+  code for filter setting.
+
   Revision 1.204  1999/11/15 22:54:52  wenger
   Fixed bug 534 ("disappearing" data in SoilSci/TwoStation5Var.ds session
   caused by highlight view/pile problems).
@@ -945,6 +949,7 @@
 #include "CommandObj.h"
 #include "CmdContainer.h"
 #include "ArgList.h"
+#include "ControlPanelSimple.h"
 
 //******************************************************************************
 
@@ -1258,7 +1263,16 @@ void View::SubClassUnmapped()
 
 void View::SetVisualFilterCommand(VisualFilter &filter, Boolean registerEvent)
 {
-  if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
+#if defined(DEBUG)
+  printf("View(%s)::SetVisualFilterCommand()\n", GetName());
+#endif
+
+  if (DeviseCommand::GetCmdDepth() > 1)
+  {
+    // We don't want this to be sent to collaborating deviseds, etc.
+    SetVisualFilter(filter, registerEvent);
+  }
+  else if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
   {
     CommandObj *	cmdObj = GetCommandObj();
     cmdObj->SetVisualFilter(this, &filter);
@@ -1279,8 +1293,8 @@ void View::SetVisualFilterCommand(VisualFilter &filter, Boolean registerEvent)
     sprintf(tmpBuf, "%g", filter.yHigh);
     args.AddArg(tmpBuf);
 
-    ControlPanel *control = ControlPanel::Instance();
-    cmdContainerp->RunOneCommand(args.GetCount(), args.GetArgs(), control);
+    ControlPanelSimple control;
+    cmdContainerp->RunOneCommand(args.GetCount(), args.GetArgs(), &control);
   }
 }
 

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.84  1999/11/19 15:18:47  wenger
+  Added dispatcherRun1 command (for debugging).
+
   Revision 1.83  1999/11/16 17:02:05  wenger
   Removed all DTE-related conditional compiles; changed version number to
   1.7.0 because of removing DTE; removed DTE-related schema editing and
@@ -457,6 +460,8 @@
 #define DEBUG_LOG
 #define PURIFY 0
 
+int DeviseCommand::_cmdDepth = 0;
+
 #define IMPLEMENT_COMMAND_BEGIN(command) \
 int DeviseCommand_##command::Run(int argc, char** argv)\
 {
@@ -531,6 +536,7 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 	// reset the control each time you run a command
 	_control = cntl;
 	pushControl(cntl);
+	_cmdDepth++;
 
 	_classDir = _control->GetClassDir();
     if (_result == _control->resultBuf) {
@@ -553,6 +559,7 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 	_result = NULL;
 
 	// restore the orignal value to control
+	_cmdDepth--;
 	popControl();
 
 #if defined(DEBUG)
