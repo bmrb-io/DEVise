@@ -1,0 +1,48 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Mar 17 1997 13:06:11
+# DEVise version: 1.4.1
+# DEVise date: Mar 16 1997
+# DEVise endHeader
+
+schema date2 {
+
+    type = text;
+    comment = '//';
+    whitespace = ' \t';
+
+    attr Date {
+        type = datetime;
+        date_format = '%Y-%m-%d %H:%M:%S';
+    }
+
+    attr year {
+        type = int;
+  	   value = $Date{year};
+    }
+
+    attr month {
+        type = int;
+        value = $Date{month};
+    }
+
+    attr day {
+        type = int;
+        value = $Date{day};
+    }
+
+    attr hour {
+        type = int;
+        value = $Date{hour};
+    }
+
+    attr minute {
+        type = int;
+        value = $Date{min};
+    }
+
+    attr sec {
+        type = int;
+        value = $Date{sec};
+    }
+}
