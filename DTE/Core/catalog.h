@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/04/04 23:10:28  donjerko
+  Changed the getNext interface:
+  	from: Tuple* getNext()
+  	to:   bool getNext(Tuple*)
+  This will make the code more efficient in memory allocation.
+
   Revision 1.11  1997/02/25 22:14:53  donjerko
   Enabled RTree to store data attributes in addition to key attributes.
 
@@ -144,10 +150,12 @@ class ViewInterface : public Interface {
 	String query;
 public:
 	ViewInterface(String tableNm) : tableNm(tableNm), attributeNames(NULL) {
-		// cout << "ViewInterface constructor" << endl;}
+		// cout << "ViewInterface constructor" << endl;
+	}
 	ViewInterface(int numFlds, String* attributeNames, String query) 
 		: numFlds(numFlds), attributeNames(attributeNames), query(query) {
-		// cout << "ViewInterface constructor" << endl;}
+		// cout << "ViewInterface constructor" << endl;
+	}
 	virtual ~ViewInterface(){
 		// cout << "~ViewInterface destuctor" << endl;
 		delete [] attributeNames;
