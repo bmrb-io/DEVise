@@ -1,0 +1,23 @@
+#! /bin/csh -f
+
+limit coredumpsize 0
+limit descriptors 1024
+
+setenv DEVISE_ROOT    /p/devise
+
+setenv DEVISE_DAT     $DEVISE_ROOT/dat
+setenv DEVISE_CACHE   $DEVISE_ROOT/cache
+setenv DEVISE_SCHEMA  $DEVISE_ROOT/schema/schema
+setenv DEVISE_SESSION $DEVISE_ROOT/session
+setenv DEVISE_LIB     $DEVISE_ROOT/jussi/lib
+setenv DEVISE_TMP     /tmp/`whoami`-devise-tmp
+setenv DEVISE_WORK    /tmp/`whoami`-devise-work
+setenv DEVISE_EXEC    bin/generic/devised
+
+if (! -f $DEVISE_EXEC) then
+  echo "Cannot find Devise executable ($DEVISE_EXEC)."
+  echo "Perhaps you haven't compiled for this platform?"
+  exit 1
+endif
+
+$DEVISE_EXEC $*
