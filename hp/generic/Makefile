@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/01/17 22:37:29  jussi
+#  Removed -static from ARCH_LDPOST.
+#
 #  Revision 1.1  1995/10/15 19:12:16  jussi
 #  Initial revision.
 #
@@ -23,7 +26,7 @@
 
 ARCH_FLAGS   = -DHPUX -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/tcl/lib
-ARCH_LDPOST  =
+ARCH_LDPOST  = -lSM -lICE -static
 
 VPATH = ../../generic
 include $(VPATH)/Makefile.base
