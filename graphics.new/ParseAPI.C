@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/07/11 17:25:47  wenger
+  Devise now writes headers to some of the files it writes;
+  DataSourceSegment class allows non-fixed data length with non-zero
+  offset; GUI for editing schema files can deal with comment lines;
+  added targets to top-level makefiles to allow more flexibility.
+
   Revision 1.17  1996/07/10 19:01:14  jussi
   Get3DLocation now reports fix_focus and perspective flags.
 
@@ -110,6 +116,11 @@
 static char result[10 * 1024];
 static ViewKGraph *vkg = 0;
 
+void ResetVkg()
+{
+  vkg = 0;
+}
+
 int ParseAPI(int argc, char **argv, ControlPanel *control)
 {
   ClassDir *classDir = control->GetClassDir();
@@ -169,12 +180,12 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	 continuously display the previously defined KGraph
       */
       vkg = new ViewKGraph;
-      assert(vkg);
+      DOASSERT(vkg, "Out of memory");
     }
     /* Number of views */
     int nview = argc - 4;
     ViewGraph **vlist = new (ViewGraph *) [nview];
-    assert(vlist);
+    DOASSERT(vlist, "Out of memory");
     for(int i = 0; i < nview; i++) {
       vlist[i] = (ViewGraph *)classDir->FindInstance(argv[4 + i]);
       if (!vlist[i]) {
@@ -191,7 +202,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       return -1;
     }
     delete vlist;
-    if (vkg->Display(atoi(argv[2])) == false) {
+    if (!vkg->Display(atoi(argv[2]))) {
       control->ReturnVal(API_NAK, "Could not display Kiviat graph");
       return -1;
     }
