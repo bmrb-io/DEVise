@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/12/03 20:24:58  jussi
+  Renamed preprocessor flags.
+
   Revision 1.14  1996/11/23 21:33:35  jussi
   Fixed some bugs when compiled with PROCESS_TASK.
 
@@ -243,8 +246,9 @@ void TapeDrive::waitForChildProcess()
     }
 #endif
     TAPEDBG(cout << "Tape " << fileno(file) << " has become idle" << endl);
-    _child = 0;
   }
+
+  _child = 0;
 }
 
 long long TapeDrive::seek(long long offset)
@@ -594,7 +598,9 @@ int TapeDrive::command(short mt_op, daddr_t mt_count)
 
   if (_child < 0) {
       reportErrSys("fork");
-      return -1;
+      fprintf(stderr, "Executing tape command synchronously.\n");
+      (void)ProcessCmd(mt_op, mt_count);
+      _child = 0;
   }
 #endif
 
@@ -736,8 +742,12 @@ void TapeDrive::gotoBlock(long block)
 
   if (fileNo != tstat.mt_fileno         // oops, we're in another file
       || tstat.mt_blkno > 900000000) {  // unsure about location
+    TAPEDBG(cout << "Unsure about location -- going to beginning of file"
+            << endl);
     gotoBeginningOfFile();
     getStatus();
+    TAPEDBG(cout << "New location: file " << tstat.mt_fileno
+            << ", block " << tstat.mt_blkno << endl);
   }
 
   long diff = block - tstat.mt_blkno;   // difference in block numbers

@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/12/03 20:24:59  jussi
+  Renamed preprocessor flags.
+
   Revision 1.9  1996/11/23 21:33:35  jussi
   Fixed some bugs when compiled with PROCESS_TASK.
 
@@ -145,6 +148,9 @@ public:
   // Append to tape
   virtual int append(void *buf, int recSize);
 
+  // Wait for child process to complete
+  virtual void waitForChildProcess();
+
 protected:
   // Read a record from tape
   int read(void *buf, int recSize, int binary);
@@ -186,9 +192,6 @@ protected:
            + ((int)((stopTime.tv_usec - startTime.tv_usec) / 1e3)) / 1e3;
     return diff;
   }
-
-  // Wait for child process to complete
-  void waitForChildProcess();
 
   int initialized;                      // 1 if properly initialized
 
