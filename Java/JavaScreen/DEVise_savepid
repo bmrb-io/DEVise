@@ -83,7 +83,7 @@ export DEVISE_EXEC
 # Fire up the DEVise executable, creating the appropriate pid file, and
 # deleting the pid file when DEVise exits.
 #
-$DEVISE_EXEC $* -logLevel 4 -jscache 1 >> $outfile 2>&1 &
+$DEVISE_EXEC $* -logLevel 4 -jscache 1 -fontkludge 0 >> $outfile 2>&1 &
 
 host=`hostname`
 pidfile="devised_pid:$idStr:$host:$!"

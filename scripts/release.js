@@ -19,6 +19,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  2001/08/30 16:47:11  wenger
+#  Various improvements to release and install scripts.
+#
 #  Revision 1.3  2001/08/29 17:39:44  wenger
 #  Major changes to DEVise and JavaScreen release scripts.
 #
@@ -42,7 +45,7 @@ set dest = $desttop/JavaScreen
 # Make sure we have the files we need to do the release.
 
 set files = ($src/jsa1.jar $src/JavaScreen/jspop.class \
-    $src/JavaScreen/jss.class)
+    $src/JavaScreen/jss.class $src/bin2/java)
 foreach file ($files)
   if (! -f $file) then
     echo "File $file missing."
@@ -112,6 +115,20 @@ endif
 popd >& /dev/null
 
 #-----------------------------------------------------------
+# Set up the bin2 directory.
+
+pushd $src >& /dev/null
+tar c --exclude=CVS bin2 | tar x --directory=$dest
+popd >& /dev/null
+
+#-----------------------------------------------------------
+# Set up the dyn_lib directory.
+
+pushd $src >& /dev/null
+tar c --exclude=CVS dyn_lib | tar x --directory=$dest
+popd >& /dev/null
+
+#-----------------------------------------------------------
 # Set up the lib directory.
 
 echo ""
@@ -129,6 +146,7 @@ echo ""
 echo "Releasing misc. files"
 
 pushd $src > /dev/null
+
 set files = (check_jss restart_jss jss DEVise.kill jss.kill ports+files \
     DEVise.jspop DEVise.jspop_soil get_timestamp jss_savepid \
     DEVise_savepid js.cgi check_connect check_jsall check_jspop jspop \
@@ -147,6 +165,18 @@ foreach file ($files)
 end
 
 popd >& /dev/null
+
+
+if (! -e $dest/scripts) then
+  mkdir $dest/scripts
+endif
+cp -p $src/scripts/[a-z]* $dest/scripts
+chmod 755 $dest/scripts/*
+
+
+cp -p $src/Makefile.config.* $dest
+cp -p $src/Makefile.setup $dest
+chmod 644 $dest/Makefile*
 
 #-----------------------------------------------------------
 # Release the GIFs.

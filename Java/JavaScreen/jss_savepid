@@ -45,14 +45,7 @@ doutfile=`echo $info | cut -d' ' -f6`
 #
 if [ ! -f /tmp/.X11-unix/X1 ]
 then
-  if [ `hostname` = "aden.bmrb.wisc.edu" ]
-  then
-    nohup Xvfb :1 -screen 0 1280x1024x8 &
-    #nohup Xvfb :1 -screen 0 1280x1024x8 -fp "unix/:-1" &
-  else
-    nohup /s/std/bin/Xvfb :1 -screen 0 1280x1024x8 &
-    #nohup /s/std/bin/Xvfb :1 -screen 0 1024x768x8 &
-  fi
+    nohup bin2/Xvfb :1 -screen 0 1280x1024x8 &
 
   # Make sure Xvfb gets going before starting the jss.
   sleep 10
@@ -75,7 +68,7 @@ touch $doutfile
 # pid file when the jss exits.
 #
 
-java JavaScreen.jss -debug $* >> $joutfile 2>&1 &
+bin2/java JavaScreen.jss -debug $* >> $joutfile 2>&1 &
 
 host=`hostname`
 pidfile="jss_pid:$idStr:$host:$!"

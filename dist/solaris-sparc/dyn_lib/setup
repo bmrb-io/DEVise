@@ -37,3 +37,5 @@ cp /s/XFree86-4.0.3/@sys/lib/libSM.so.6.0 .
 cp /s/XFree86-4.0.3/@sys/lib/libICE.so.6.3 .
 cp /s/XFree86-4.0.3/@sys/lib/libXext.so.6.4 .
 cp /usr/platform/SUNW,Ultra-5_10/lib/libc_psr.so.1 .
+
+chmod 644 *.so*

@@ -1,0 +1,5 @@
+#! /bin/csh -f
+
+if (! -e dyn_lib) then
+  ln -s ../dyn_lib .
+endif

@@ -13,9 +13,15 @@
 
 # Makefile for JavaScreen.
 
+############################################################
+
 # $Id$
 
-JAVAC=javac -d .
+############################################################
+
+include Makefile.config
+
+JAVAC = $(JAVA_BIN)/javac -d .
 
 all: js jsa jspop jss
 js: js.class
@@ -88,3 +94,8 @@ jarb:
 
 clean:
 	-rm JavaScreen/*.class JavaScreen/*.gif *.jar
+
+.PHONY: setup
+setup:
+	setup
+	make -f Makefile.setup setup

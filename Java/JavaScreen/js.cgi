@@ -1,5 +1,4 @@
-#!/s/std/bin/perl
-#!/usr/freeware/bin/perl
+#! bin2/perl
 
 #  ========================================================================
 #  DEVise Data Visualization Software
@@ -21,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  2001/04/11 16:49:59  wenger
+#  Fixed description.
+#
 #  Revision 1.4  2001/01/25 18:41:03  wenger
 #  Minor fixes to a couple of scripts; fixed port numbers in 'test' html
 #  files.

@@ -6,4 +6,4 @@
 
 ############################################################
 
-java js -usecgi -cgiurl/cgi-bin/js.cgi $*
+bin2/java js -usecgi -cgiurl/cgi-bin/js.cgi $*

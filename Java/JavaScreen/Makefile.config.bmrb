@@ -1,5 +1,3 @@
-#! /bin/csh -f
-
 #  ========================================================================
 #  DEVise Data Visualization Software
 #  (c) Copyright 2001
@@ -12,7 +10,9 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  Run this script to set up the solaris-intel/dyn_lib directory.
+#  Makefile with configuration info for JavaScreen.
+
+#  Edit this makefile according to your system configuration.
 
 ############################################################
 
@@ -20,20 +20,9 @@
 
 ############################################################
 
-cp /s/X11/lib/libX11.so.6.2 .
-cp /usr/lib/libsocket.so.1 .
-cp /usr/lib/libnsl.so.1 .
-cp /s/gcc-2.95.3/lib/libstdc++.so.2.10.0 .
-cp /usr/lib/libm.so.1 .
-cp /usr/lib/libc.so.1 .
-cp /usr/lib/libdl.so.1 .
-cp /usr/lib/libmp.so.2 .
-
-cp /s/X11/lib/libX11.so.6.2 .
-cp /s/X11/lib/libXmu.so.6.2 .
-cp /s/XFree86-4.0.3/@sys/lib/libXt.so.6.0 .
-cp /s/XFree86-4.0.3/@sys/lib/libSM.so.6.0 .
-cp /s/XFree86-4.0.3/@sys/lib/libICE.so.6.3 .
-cp /s/XFree86-4.0.3/@sys/lib/libXext.so.6.4 .
-
-chmod 644 *.so*
+#-----------------------------------------------------------
+# Directories for executables we need.
+#TEMPTEMP -- what about different directories for yola and aden????
+JAVA_BIN = /s/std/bin
+PERL_BIN = /s/std/bin
+XVFB_BIN = /s/std/bin

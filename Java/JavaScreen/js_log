@@ -1,4 +1,4 @@
-#! /s/std/bin/perl
+#! bin2/perl
 
 #  ========================================================================
 #  DEVise Data Visualization Software
@@ -19,6 +19,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  2000/06/26 16:48:32  wenger
+#  Added client-side JavaScreen debug logging.
+#
 
 ############################################################
 

@@ -8,4 +8,4 @@
 
 ############################################################
 
-java JavaScreen.js -cgiurl/cgi-bin/js.cgi $*
+bin2/java JavaScreen.js -cgiurl/cgi-bin/js.cgi $*

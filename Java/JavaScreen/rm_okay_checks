@@ -1,5 +1,4 @@
-#! /s/std/bin/perl
-#! /usr/freeware/bin/perl
+#! bin2/perl
 
 #  ========================================================================
 #  DEVise Data Visualization Software
@@ -21,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  2001/03/26 16:06:34  wenger
+#  Perl script to remove check_connect.out.* logs that are okay.
+#
 
 ############################################################
 

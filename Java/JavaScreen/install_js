@@ -91,7 +91,8 @@ endif
 # Make sure we have the files we need.
 
 set files = (JavaScreen/jspop.class JavaScreen/jss.class JavaScreen/js.class \
-    jsa1.jar jsa2.jar jsb1.jar jsb2.jar bin/devised bin/Tasvir)
+    jsa1.jar jsa2.jar jsb1.jar jsb2.jar bin/devised bin/Tasvir bin2/java \
+    bin2/perl bin2/Xvfb)
 foreach file ($files)
   if (! -f $file) then
     echo "File $file missing.  Cannot proceed with install."
@@ -102,6 +103,7 @@ end
 #-----------------------------------------------------------
 # Make sure we've sent an appropriate warning email.
 
+echo ""
 echo -n "Have you send an appropriate email warning? [n] "
 set answer = $<
 if ($answer != y && $answer != Y) then
@@ -112,6 +114,7 @@ endif
 #-----------------------------------------------------------
 # Make sure the jspop has been killed.
 
+echo ""
 echo -n "Have you killed the appropriate jspop and associated processes? [n] "
 set answer = $<
 if ($answer != y && $answer != Y) then
@@ -180,6 +183,7 @@ chmod 755 $cgidir/js.cgi
 echo ""
 echo "Installing server programs (jss, devised, and Tasvir)"
 
+# Create directories.
 if (! -d $servdir) then
   mkdir $servdir
   chmod 755 $servdir
@@ -188,9 +192,12 @@ if (! -d $servdir/JavaScreen) then
   mkdir $servdir/JavaScreen
   chmod 755 $servdir/JavaScreen
 endif
+
+# Install class files.
 cp -p JavaScreen/*.class $servdir/JavaScreen
 chmod 644 $servdir/JavaScreen/*.class
 
+# Install misc. scripts.
 set files = (check_jss restart_jss jss DEVise.kill jss.kill ports+files \
     DEVise.jspop DEVise.jspop_soil get_timestamp jss_savepid \
     DEVise_savepid)
@@ -199,6 +206,7 @@ foreach file ($files)
   chmod 755 $servdir/$file
 end
 
+# Install lib files (for devised).
 if (! -d $servdir/lib) then
   mkdir $servdir/lib
   chmod 755 $servdir/lib
@@ -206,6 +214,7 @@ endif
 cp -p lib/composite.ini $servdir/lib
 chmod 644 $servdir/lib/composite.ini
 
+# Create bin directory, and install devised and Tasvir.
 if (! -d $servdir/bin) then
   mkdir $servdir/bin
   chmod 755 $servdir/bin
@@ -223,12 +232,31 @@ endif
 cp -p bin/Tasvir $servdir/bin
 chmod 755 $servdir/bin/Tasvir
 
+# Install bin2 directory (java, perl, Xvfb *links*).
+tar cf bin2.tar bin2
+set curdir = `pwd`
+cd $servdir
+tar xf $curdir/bin2.tar
+cd $cgidir
+tar xf $curdir/bin2.tar
+cd $curdir
+rm bin2.tar
+
+# Install dynamic library directory (for devised and Tasvir).
+if (-e dyn_lib) then
+  if (! -e $servdir/dyn_lib) then
+    mkdir $servdir/dyn_lib
+  endif
+  cp -p dyn_lib/* $servdir/dyn_lib
+endif
+
 #-----------------------------------------------------------
 # Install the jspop.
 
 echo ""
 echo "Installing the JSPoP"
 
+# Create directories.
 if (! -d $popdir) then
   mkdir $popdir
   chmod 755 $popdir
@@ -237,11 +265,22 @@ if (! -d $popdir/JavaScreen) then
   mkdir $popdir/JavaScreen
   chmod 755 $popdir/JavaScreen
 endif
+
+# Install class files.
 cp -p JavaScreen/*.class $popdir/JavaScreen
 chmod 644 $popdir/JavaScreen/*.class
 cp -p *.gif $popdir
 chmod 644 $popdir/*.gif
 
+# Install bin2 directory (java, perl, Xvfb *links*).
+tar cf bin2.tar bin2
+set curdir = `pwd`
+cd $popdir
+tar xf $curdir/bin2.tar
+cd $curdir
+rm bin2.tar
+
+# Install misc. scripts, etc.
 if (! -f $popdir/users.cfg) then
   cp -p users.cfg $popdir
   chmod 644 $popdir/users.cfg
