@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/09/18 15:15:18  wenger
+  Now writes a useable session file (at least in some cases).
+
   Revision 1.1  1997/09/17 18:44:00  wenger
   Opening sessions works except for Tcl interpreter handling result; saving
   is most of the way there.
@@ -75,7 +78,11 @@ private:
       char *instance, SaveData *saveData);
   static DevStatus SaveViewAxisLabels(char *category, char *devClass,
       char *instance, SaveData *saveData);
+  static DevStatus SaveViewActions(char *category, char *devClass,
+      char *instance, SaveData *saveData);
   static DevStatus SaveViewLinks(char *category, char *devClass,
+      char *instance, SaveData *saveData);
+  static DevStatus SaveCursor(char *category, char *devClass,
       char *instance, SaveData *saveData);
   static DevStatus SaveViewMappings(char *category, char *devClass,
       char *instance, SaveData *saveData);
@@ -87,7 +94,8 @@ private:
       char *instance, SaveData *saveData);
 
   static DevStatus SaveParams(SaveData *saveData, char *getCommand,
-      char *setCommand, char *arg0, char *arg1 = NULL, char *arg2 = NULL);
+      char *setCommand, char *arg0, char *arg1 = NULL, char *arg2 = NULL,
+      Boolean addBraces = false);
 
   static void PrintArgs(FILE *fp, int argc, char **argv);
 };

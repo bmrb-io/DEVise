@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/09/18 15:15:17  wenger
+  Now writes a useable session file (at least in some cases).
+
   Revision 1.1  1997/09/17 18:43:59  wenger
   Opening sessions works except for Tcl interpreter handling result; saving
   is most of the way there.
@@ -39,12 +42,10 @@
 #include "DevFileHeader.h"
 #include "ParseCat.h"
 #include "Util.h"
-#include "WinClassInfo.h"
 #include "VisualLink.h"
 #include "ViewGraph.h"
-#include "TDataMap.h"
 
-#define DEBUG //TEMPTEMP
+//#define DEBUG
 
 // Note: we're defining this class just so we have a ControlPanel * to pass
 // to ParseAPI so it can return its results.
@@ -168,6 +169,7 @@ Session::Open(char *filename)
   status.Print();
 #endif
 
+  if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
 
@@ -213,6 +215,7 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
   if (status.IsComplete()) {
     char *header = DevFileHeader::Get(FILE_TYPE_SESSION);
     fprintf(saveData.fp, "%s", header);
+    fprintf(saveData.fp, "# Saved by C++ code\n");//TEMPTEMP
 
     status += SaveSchemas(&saveData);
 
@@ -249,13 +252,17 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
     fprintf(saveData.fp, "\n# Put labels into views\n");
     status += ForEachInstance("view", SaveViewAxisLabels, &saveData);
 
-// Put action into view
+    fprintf(saveData.fp, "\n# Put action into view\n");
+    status += ForEachInstance("view", SaveViewActions, &saveData);
 
     fprintf(saveData.fp, "\n# Link views\n");
     status += ForEachInstance("link", SaveViewLinks, &saveData);
 
-// Put views in cursors
-// Put axis label into views
+    fprintf(saveData.fp, "\n# Put views in cursors\n");
+    status += ForEachInstance("cursor", SaveCursor, &saveData);
+
+    fprintf(saveData.fp, "\n# Put axis label into views\n");
+    // Note: the Tcl code didn't do anything here.
 
     fprintf(saveData.fp, "\n# Insert mappings into views\n");
     status += ForEachInstance("view", SaveViewMappings, &saveData);
@@ -277,6 +284,7 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
     }
   }
 
+  if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
 
@@ -284,11 +292,13 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
  * function: Session::DEViseCmd
  * DEVise command procedure for session file interpreter.
  */
-int Session::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
+int
+Session::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
     int argc, char *argv[])
 {
 #if defined(DEBUG)
-  printf("Session::DEViseCmd(%s)\n", argv[1]);
+  printf("Session::DEViseCmd() ");
+  PrintArgs(stdout, argc, argv);
 #endif
 
   int status = TCL_OK;
@@ -296,6 +306,8 @@ int Session::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
   // don't pass DEVise command verb (argv[0])
   if (ParseAPI(argc - 1, &argv[1], (ControlPanel *) clientData) < 0) {
     status = TCL_ERROR;
+    fprintf(stderr, "Error in command: ");
+    PrintArgs(stderr, argc, argv);
   }
 
 #if defined(DEBUG)
@@ -323,13 +335,22 @@ Session::SaveSchemas(SaveData *saveData)
 
   int argc;
   char **argv;
-  CatFiles(argc, argv);
+  CatFiles(argc, argv);//TEMPTEMP clean this up?
 
   int index;
   for (index = 0; index < argc; index++) {
-    fprintf(saveData->fp, "DEVise importFileType %s\n", argv[index]);
+    char *schemaName = argv[index];
+    // This is a horrible hack to guess whether the DTE knows about this
+    // schema or not.  RKW Sep. 19, 1997.
+    if ((schemaName[0] == '.') && (schemaName[1] != '/') &&
+	(schemaName[1] != '.')) {
+      fprintf(saveData->fp, "DEVise dteImportFileType %s\n", schemaName);
+    } else {
+      fprintf(saveData->fp, "DEVise importFileType %s\n", schemaName);
+    }
   }
 
+  if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
 
@@ -384,6 +405,7 @@ Session::SaveView(char *category, char *devClass, char *instance,
 
   status += SaveParams(saveData, "viewGetHorPan", "viewSetHorPan", instance);
 
+  if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
 
@@ -419,19 +441,18 @@ Session::SaveTData(char *category, char *devClass, char *instance,
       reportErrNosys(saveData->control->_interp->result);
       status = StatusFailed;
     } else {
+      PrintArgs(stdout, argcOut, argvOut);
+      char *argv1 = (argcOut > 1) ? argvOut[1] : "";
+      char *argv2 = (argcOut > 2) ? argvOut[2] : "";
       fprintf(saveData->fp, "DEVise dataSegment {%s} {%s} 0 0\n", argvOut[0],
-	  argvOut[2]);
+	  argv2);
       fprintf(saveData->fp, "DEVise create tdata {%s} {%s} {%s} {%s}\n",
-	  devClass, argvOut[0], argvOut[1], argvOut[2]);
+	  devClass, argvOut[0], argv1, argv2);
       free((char *) argvOut);
     }
   }
-#if 0 //TEMPTEMP
-  fprintf(saveData->fp, "DEVise dataSegment {%s} <param> 0 0\n", instance);
-  status += SaveParams(saveData, "getCreateParam", "create", category,
-      devClass, instance);
-#endif//TEMPTEMP
 
+  if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
 
@@ -451,29 +472,28 @@ Session::SaveInterpMapping(char *category, char *devClass, char *instance,
   DevStatus status = StatusOk;
   Boolean isInterpreted;
 
-  ControlPanelDummy control;
   int argc = 2;
   char *argv[2];
   argv[0] = "isInterpretedGData";
   argv[1] = instance;
-  if (ParseAPI(argc, argv, &control) <= 0) {
-    reportErrNosys(control._result);
+  if (ParseAPI(argc, argv, saveData->control) <= 0) {
+    reportErrNosys(saveData->control->_interp->result);
     status = StatusFailed;
   } else {
-    isInterpreted = atoi(control._result);
+    isInterpreted = atoi(saveData->control->_interp->result);
   }
 
   if (status.IsComplete() && isInterpreted) {
-    FILE *fp = (FILE *) saveData;
     fprintf(saveData->fp, "DEVise createMappingClass {%s}\n", devClass);
   }
 
+  if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
 
 /*------------------------------------------------------------------------------
  * function: Session::SaveGData
- * Save information about the given GData (if it is interpreted).
+ * Save information about the given GData.
  */
 DevStatus
 Session::SaveGData(char *category, char *devClass, char *instance,
@@ -485,26 +505,12 @@ Session::SaveGData(char *category, char *devClass, char *instance,
 #endif
 
   DevStatus status = StatusOk;
-  Boolean isInterpreted;
 
-  ControlPanelDummy control;
-  int argc = 2;
-  char *argv[2];
-  argv[0] = "isInterpretedGData";
-  argv[1] = instance;
-  if (ParseAPI(argc, argv, &control) <= 0) {
-    reportErrNosys(control._result);
-    status = StatusFailed;
-  } else {
-    isInterpreted = atoi(control._result);
-  }
+  status += SaveParams(saveData, "getCreateParam", "create", "mapping",
+      devClass, instance);
+  status += SaveParams(saveData, "getPixelWidth", "setPixelWidth", instance);
 
-  if (status.IsComplete() && isInterpreted) {
-    FILE *fp = (FILE *) saveData;
-    SaveParams(saveData, "getCreateParam", "create", "mapping", devClass, instance);
-    SaveParams(saveData, "getPixelWidth", "setPixelWidth", instance);
-  }
-
+  if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
 
@@ -524,6 +530,7 @@ Session::SaveWindowLayout(char *category, char *devClass, char *instance,
   DevStatus status = SaveParams(saveData, "getWindowLayout",
       "setWindowLayout", instance);
 
+  if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
 
@@ -540,13 +547,59 @@ Session::SaveViewAxisLabels(char *category, char *devClass, char *instance,
       instance);
 #endif
 
-  DevStatus status = SaveParams(saveData, "getAxis", "setAxis", instance, "x");
-  status += SaveParams(saveData, "getAxis", "setAxis", instance, "y");
+  DevStatus status = StatusOk;
+
+  int argc = 3;
+  char *argv[3];
+  argv[0] = "getAxis";
+  argv[1] = instance;
+  argv[2] = "x";
+  if (ParseAPI(argc, argv, saveData->control) <= 0) {
+    reportErrNosys(saveData->control->_interp->result);
+    status = StatusFailed;
+  } else {
+    if (strlen(saveData->control->_interp->result) > 0) {
+      fprintf(saveData->fp, "DEVise setAxis {%s} {%s} x\n", instance,
+          saveData->control->_interp->result);
+    }
+  }
+
+  argv[2] = "y";
+  if (ParseAPI(argc, argv, saveData->control) <= 0) {
+    reportErrNosys(saveData->control->_interp->result);
+    status = StatusFailed;
+  } else {
+    if (strlen(saveData->control->_interp->result) > 0) {
+      fprintf(saveData->fp, "DEVise setAxis {%s} {%s} y\n", instance,
+          saveData->control->_interp->result);
+    }
+  }
+
   status += SaveParams(saveData, "getAxisDisplay", "setAxisDisplay",
       instance, "X");
   status += SaveParams(saveData, "getAxisDisplay", "setAxisDisplay",
       instance, "Y");
 
+  if (status.IsError()) reportErrNosys("Error or warning");
+  return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::SaveViewActions
+ * Save actions for the given view.
+ */
+DevStatus
+Session::SaveViewActions(char *category, char *devClass, char *instance,
+    SaveData *saveData)
+{
+#if defined(DEBUG)
+  printf("Session::SaveViewActions({%s} {%s} {%s})\n", category, devClass,
+      instance);
+#endif
+
+  DevStatus status = SaveParams(saveData, "getAction", "setAction", instance);
+
+  if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
 
@@ -564,8 +617,8 @@ Session::SaveViewLinks(char *category, char *devClass, char *instance,
 #endif
 
   DevStatus status = StatusOk;
-  FILE *fp = (FILE *) saveData;
 
+//TEMPTEMP -- clean this up?
   ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
   VisualLink *link = (VisualLink *) classDir->FindInstance(instance);
   if (link == NULL) {
@@ -580,8 +633,59 @@ Session::SaveViewLinks(char *category, char *devClass, char *instance,
     link->DoneIterator(index);
   }
 
-  status += SaveParams(saveData, "getLinkMaster", "setLinkMaster", instance);
+  status += SaveParams(saveData, "getLinkMaster", "setLinkMaster", instance,
+      NULL, NULL, true);
 
+  if (status.IsError()) reportErrNosys("Error or warning");
+  return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::SaveCursor
+ * Save mappings for the given view.
+ */
+DevStatus
+Session::SaveCursor(char *category, char *devClass, char *instance,
+    SaveData *saveData)
+{
+#if defined(DEBUG)
+  printf("Session::SaveCursor({%s} {%s} {%s})\n", category, devClass,
+      instance);
+#endif
+
+  DevStatus status = StatusOk;
+
+  int argc = 2;
+  char *argv[2];
+  argv[0] = "getCursorViews";
+  argv[1] = instance;
+  if (ParseAPI(argc, argv, saveData->control) <= 0) {
+    reportErrNosys(saveData->control->_interp->result);
+    status = StatusFailed;
+  } else {
+    int argcOut;
+    char **argvOut;
+    if (Tcl_SplitList(saveData->control->_interp,
+	saveData->control->_interp->result, &argcOut,
+	&argvOut) != TCL_OK) {
+      reportErrNosys(saveData->control->_interp->result);
+      status = StatusFailed;
+    } else {
+      char *source = argvOut[0];
+      char *dest = argvOut[1];
+      if (strlen(source) > 0) {
+	fprintf(saveData->fp, "DEVise setCursorSrc {%s} {%s}\n", instance,
+	    source);
+      }
+      if (strlen(dest) > 0) {
+	fprintf(saveData->fp, "DEVise setCursorDst {%s} {%s}\n", instance,
+	    dest);
+      }
+      free((char *) argvOut);
+    }
+  }
+
+  if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
 
@@ -599,24 +703,35 @@ Session::SaveViewMappings(char *category, char *devClass, char *instance,
 #endif
 
   DevStatus status = StatusOk;
-  FILE *fp = (FILE *) saveData;
 
-  ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
-  ViewGraph *view = (ViewGraph *) classDir->FindInstance(instance);
-  if (view == NULL) {
-    reportErrNosys("Can't find view");
+  int argc = 2;
+  char *argv[2];
+  argv[0] = "getViewMappings";
+  argv[1] = instance;
+  if (ParseAPI(argc, argv, saveData->control) <= 0) {
+    reportErrNosys(saveData->control->_interp->result);
     status = StatusFailed;
   } else {
-    int index = view->InitMappingIterator();
-    while (view->MoreMapping(index)) {
-      char *mapping = view->NextMapping(index)->map->GetName();
-
-      fprintf(saveData->fp, "DEVise insertMapping {%s} {%s}\n", instance, mapping);
-      SaveParams(saveData, "getMappingLegend", "setMappingLegend", instance,
-	  mapping);
+    int argcOut;
+    char **argvOut;
+    if (Tcl_SplitList(saveData->control->_interp,
+	saveData->control->_interp->result, &argcOut,
+	&argvOut) != TCL_OK) {
+      reportErrNosys(saveData->control->_interp->result);
+      status = StatusFailed;
+    } else {
+      int index;
+      for (index = 0; index < argcOut; index++) {
+        fprintf(saveData->fp, "DEVise insertMapping {%s} {%s}\n", instance,
+	    argvOut[index]);
+        status += SaveParams(saveData, "getMappingLegend", "setMappingLegend",
+	    instance, argvOut[index]);
+      }
+      free((char *) argvOut);
     }
   }
 
+  if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
 
@@ -634,8 +749,8 @@ Session::SaveWindowViews(char *category, char *devClass, char *instance,
 #endif
 
   DevStatus status = StatusOk;
-  FILE *fp = (FILE *) saveData;
 
+//TEMPTEMP -- clean this up?
   ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
   ViewWin *win = (ViewWin*) classDir->FindInstance(instance);
   if (win == NULL) {
@@ -650,6 +765,7 @@ Session::SaveWindowViews(char *category, char *devClass, char *instance,
     win->DoneIterator(index);
   }
 
+  if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
 
@@ -667,7 +783,6 @@ Session::SaveViewHistory(char *category, char *devClass, char *instance,
 #endif
 
   DevStatus status = StatusOk;
-  FILE *fp = (FILE *) saveData;
 
   fprintf(saveData->fp, "DEVise clearViewHistory {%s}\n", instance);
 
@@ -696,6 +811,7 @@ Session::SaveViewHistory(char *category, char *devClass, char *instance,
     }
   }
 
+  if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
 
@@ -735,6 +851,7 @@ Session::SaveCamera(char *category, char *devClass, char *instance,
     }
   }
 
+  if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
 
@@ -744,14 +861,24 @@ Session::SaveCamera(char *category, char *devClass, char *instance,
  * function with those parameters.
  */
 DevStatus
-Session::SaveParams(SaveData *saveData, char *getCommand,
-    char *setCommand, char *arg0, char *arg1, char *arg2)
+Session::SaveParams(SaveData *saveData, char *getCommand, char *setCommand,
+    char *arg0, char *arg1, char *arg2, Boolean addBraces)
 {
 #if defined(DEBUG)
   printf("Session::SaveParams(%s)\n", arg0);
 #endif
 
   DevStatus status = StatusOk;
+
+  char *leftBrace;
+  char *rightBrace;
+  if (addBraces) {
+    leftBrace = "{";
+    rightBrace = "}";
+  } else {
+    leftBrace = "";
+    rightBrace = "";
+  }
 
   int argc;
   if (arg1 != NULL) {
@@ -773,17 +900,17 @@ Session::SaveParams(SaveData *saveData, char *getCommand,
     status = StatusFailed;
   } else {
     if (strlen(saveData->control->_interp->result) > 0) {
+      fprintf(saveData->fp, "DEVise %s {%s} ", setCommand, arg0);
       if (argc > 2) {
         // Note: arg2 is not passed to 'set' command.
-        fprintf(saveData->fp, "DEVise %s {%s} {%s} %s\n", setCommand, arg0,
-	    arg1, saveData->control->_interp->result);
-      } else {
-        fprintf(saveData->fp, "DEVise %s {%s} %s\n", setCommand, arg0,
-	    saveData->control->_interp->result);
+	fprintf(saveData->fp, "{%s} ", arg1);
       }
+      fprintf(saveData->fp, "%s%s%s\n", leftBrace,
+	  saveData->control->_interp->result, rightBrace);
     }
   }
 
+  if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
 
@@ -830,6 +957,7 @@ Session::SaveCategory(SaveData *saveData, char *category)
 
   FreeArgs(classArgc, classArgv);
 
+  if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
 
@@ -860,6 +988,7 @@ Session::SaveClass(SaveData *saveData, char *category, char *devClass)
 
   FreeArgs(instArgc, instArgv);
 
+  if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
 
@@ -878,6 +1007,7 @@ Session::SaveInstance(SaveData *saveData, char *category, char *devClass,
   DevStatus status = SaveParams(saveData, "getCreateParam", "create", category,
       devClass, instance);
 
+  if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
 
@@ -919,8 +1049,8 @@ Session::ForEachInstance(char *category, InstanceFuncP function,
       printf("  Instance: {%s} {%s} {%s}\n", category, classArgv[classIndex],
 	  instArgv[instIndex]);
 #endif
-      (*function)(category, classArgv[classIndex], instArgv[instIndex],
-	  saveData);
+      status += (*function)(category, classArgv[classIndex],
+	  instArgv[instIndex], saveData);
     }
 
     FreeArgs(instArgc, instArgv);
@@ -928,6 +1058,7 @@ Session::ForEachInstance(char *category, InstanceFuncP function,
 
   FreeArgs(classArgc, classArgv);
 
+  if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
 
