@@ -6,7 +6,7 @@ struct HostMapping_GData {
 	double shapeAttr_1;
 };
 
-# 1 "/p/devise/parser/proto/RectShape_proto.h"
+# 1 "../parser/proto/RectShape_proto.h"
  
 
 
@@ -134,7 +134,7 @@ public:
 	_x[0] = (gdata->x) ;
 	_y[0] = (gdata->y) ;
 
-	Color lastColor = (gdata->color) ;
+	GlobalColor lastColor = (GlobalColor) (gdata->color) ;
 
 
 	int colorIndex;
@@ -173,7 +173,7 @@ public:
 	_height[0] = height;
 
 
-	Color lastColor = (gdata->color) ;
+	GlobalColor lastColor = (GlobalColor) (gdata->color) ;
 
 
 	int colorIndex;
@@ -199,7 +199,7 @@ public:
 	}
 
 
-	win->SetFgColor((gdata->color) );
+	win->SetFgColor((GlobalColor) (gdata->color) );
 
 	win->FillRectArray(_x, _y, _width, _height, count);
 	i = colorIndex;

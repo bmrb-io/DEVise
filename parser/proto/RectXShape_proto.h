@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/07/19 03:49:52  jussi
+  Changed View * to ViewGraph *.
+
   Revision 1.5  1996/07/03 22:54:13  jussi
   Updated to reflect new Shape interface.
 
@@ -127,7 +130,7 @@ public:
 	_x[0] = GDATA_X;
 	_y[0] = GDATA_Y;
 #ifdef DYNAMIC_COLOR
-	Color lastColor = GDATA_COLOR;
+	GlobalColor lastColor = (GlobalColor) GDATA_COLOR;
 #endif
 
 	int colorIndex;

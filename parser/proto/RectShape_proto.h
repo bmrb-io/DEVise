@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/07/19 03:49:35  jussi
+  Changed View * to ViewGraph *.
+
   Revision 1.4  1996/07/03 22:54:11  jussi
   Updated to reflect new Shape interface.
 
@@ -109,7 +112,7 @@ public:
     Coord pixelHeight = 1 / fabs(y1 - y0);
 
 #ifndef DYNAMIC_COLOR
-    win->SetFgColor(GDATA_COLOR);
+    win->SetFgColor((GlobalColor) GDATA_COLOR);
 #endif
 
     if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
@@ -122,7 +125,7 @@ public:
 	_x[0] = GDATA_X;
 	_y[0] = GDATA_Y;
 #ifdef DYNAMIC_COLOR
-	Color lastColor = GDATA_COLOR;
+	GlobalColor lastColor = (GlobalColor) GDATA_COLOR;
 #endif
 
 	int colorIndex;
@@ -161,7 +164,7 @@ public:
 	_height[0] = height;
 
 #ifdef DYNAMIC_COLOR
-	Color lastColor = GDATA_COLOR;
+	GlobalColor lastColor = (GlobalColor) GDATA_COLOR;
 #endif
 
 	int colorIndex;
@@ -187,7 +190,7 @@ public:
 	}
 
 #ifdef DYNAMIC_COLOR
-	win->SetFgColor(GDATA_COLOR);
+	win->SetFgColor((GlobalColor) GDATA_COLOR);
 #endif
 	win->FillRectArray(_x, _y, _width, _height, count);
 	i = colorIndex;

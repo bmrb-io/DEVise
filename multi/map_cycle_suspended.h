@@ -4,7 +4,7 @@ struct CycleSuspendedMapping_GData {
 	double shapeAttr_0;
 };
 
-# 1 "/p/devise/parser/proto/RectShape_proto.h"
+# 1 "../parser/proto/RectShape_proto.h"
  
 
 
@@ -119,7 +119,7 @@ public:
     Coord pixelHeight = 1 / fabs(y1 - y0);
 
 
-    win->SetFgColor((map->GetDefaultColor()) );
+    win->SetFgColor((GlobalColor) (map->GetDefaultColor()) );
 
 
     if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {

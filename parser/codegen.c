@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/07/19 03:49:19  jussi
+  Changed View * to ViewGraph *.
+
   Revision 1.14  1996/07/10 00:07:44  jussi
   Replaced TDataMapDispatch with TDataMap.
 
@@ -64,7 +67,7 @@
 #include "parse.h"
 #include "codegen.h"
 
-#define PROTODIR  "/p/devise/parser/proto"
+#define PROTODIR  "../parser/proto"
 
 extern "C" int unlink(char *path);
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/07/10 00:01:25  jussi
+  TDataMapDispatch replaced with TDataMap.
+
   Revision 1.3  1996/05/16 19:27:01  jussi
   Removed references to ControlPanel::File_Alias().
 
@@ -52,8 +55,8 @@
 #include "HostRec.h"
 #include "Util.h"
 
-Color all_busyColor;
-Color some_idleColor;
+GlobalColor all_busyColor;
+GlobalColor some_idleColor;
 
 #include "map_host.h"
 
