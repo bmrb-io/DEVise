@@ -19,7 +19,7 @@ public class Selection implements Expression {
         return alias + "." + attribute;
     }
 
-    public TypeDesc getTypeDesc( ) {
+    public TypeDesc getType( ) {
         return type;
     }
 

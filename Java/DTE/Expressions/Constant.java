@@ -23,7 +23,7 @@ public class Constant implements Expression {
 		return value.toString( );
 	}
 
-	public TypeDesc getTypeDesc( )
+	public TypeDesc getType( )
 	{
 		return type;
 	}

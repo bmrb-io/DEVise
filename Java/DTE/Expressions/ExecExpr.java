@@ -14,5 +14,5 @@ public interface ExecExpr {
 	expression is evaluated as a part of a unary operator,
 	such as file-scan. */
  
-	public void evaluate(Tuple left, Tuple right, DTE_Type result);
+	public DTE_Type evaluate(Tuple left, Tuple right);
 }

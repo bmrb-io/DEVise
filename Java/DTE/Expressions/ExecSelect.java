@@ -11,7 +11,7 @@ public class ExecSelect implements ExecExpr {
 		fieldNo = field;
 	}
 
-     	public void evaluate(Tuple left, Tuple right, DTE_Type result) {
+     	public DTE_Type evaluate(Tuple left, Tuple right) {
 		DTE_Type[] fields = { };
 
 		if(leftRight == 0)
@@ -19,7 +19,7 @@ public class ExecSelect implements ExecExpr {
 		else 
 			fields = right.get_fields( );
 
-		result = fields[ fieldNo ];
+		return fields[ fieldNo ];
      	}
 }
 

@@ -12,7 +12,7 @@ import Types.*;
 public interface Expression {
 	public String toString();
 
-	public TypeDesc getTypeDesc( );
+	public TypeDesc getType( );
 
 	/** Type check this expression, based on the information present in
 	the symbol table. Symbol table contains previously type checked

@@ -7,19 +7,20 @@ public class ExecOperator implements ExecExpr{
     EvalOperator evalOp;
     ExecExpr left;
     ExecExpr right;
+    DTE_Type value;
 
     public ExecOperator( EvalOperator op, ExecExpr l, ExecExpr r ){
 	left = l;
 	right = r;
 	evalOp = op;
+	value = DTE_Type.typeFor( evalOp.getType( ) );
     }
 
-    public void evaluate(Tuple leftT, Tuple rightT, DTE_Type result) {
-	DTE_Type arg1 = null;
-        left.evaluate( leftT, rightT, arg1 );
-	DTE_Type arg2 = null;
-        right.evaluate( leftT, rightT, arg2 );
+    public DTE_Type evaluate(Tuple leftT, Tuple rightT) {
+	DTE_Type arg1 = left.evaluate( leftT, rightT );
+	DTE_Type arg2 = right.evaluate( leftT, rightT );
 
-	evalOp.evaluate( arg1, arg2, result );
+	evalOp.evaluate( arg1, arg2, value );
+	return value;
     }
 }

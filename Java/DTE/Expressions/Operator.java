@@ -25,7 +25,7 @@ public class Operator implements Expression {
         return left.toString() +" "+ operator +" "+ right.toString();
     }
 
-    public TypeDesc getTypeDesc( ) {
+    public TypeDesc getType( ) {
         return type;
     }
 
