@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.35  1996/03/25 22:59:46  jussi
+  Reverted back to the state where maps are inserted to views but
+  views are not inserted to maps. Currently TDataMap only stores
+  one view which is not enough.
+
   Revision 1.34  1996/03/22 18:25:47  jussi
   Fixed problem with insertWindow.
 
@@ -155,6 +160,8 @@
 #include "ViewLayout.h"
 #include "ViewKGraph.h"
 
+#define DEBUG
+
 #ifdef TK_WINDOW
 Tcl_Interp *ControlPanelTclInterp = 0;
 Tk_Window ControlPanelMainWindow = 0;
@@ -247,7 +254,7 @@ TkControlPanel::TkControlPanel()
   /*
      if (Tk_DefineBitmap(_interp,
      Tk_GetUid("idle"), idle_bits, idle_width,idle_height)
-     == TCL_ERROR){
+     == TCL_ERROR) {
      fprintf(stderr,"TkControlPanel::can't init bitmap\n");
      Exit::DoExit(1);
      }
@@ -313,7 +320,7 @@ void TkControlPanel::StartSession()
     _restoring = true;
     int code = Tcl_EvalFile(_interp,_sessionName);
     _restoring = false;
-    if (code != TCL_OK){
+    if (code != TCL_OK) {
       fprintf(stderr,"Can't restore session file %s\n",_sessionName);
       fprintf(stderr,"%s\n", _interp->result);
       Exit::DoExit(1);
@@ -333,7 +340,7 @@ void TkControlPanel::SetSessionName(char *name)
 
 inline void MakeReturnVals(Tcl_Interp *interp, int numArgs, char **args)
 {
-  for (int i=0; i < numArgs; i++){
+  for (int i=0; i < numArgs; i++) {
     Tcl_AppendElement(interp,args[i]);
   }
 }
@@ -469,7 +476,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			time_t tm = time((time_t *)0);
 			sprintf(interp->result,"%s",DateString(tm));
 		}
-		else if (strcmp(argv[1],"clearQP") == 0){
+		else if (strcmp(argv[1],"clearQP") == 0) {
 			/*
 			classDir->Print();
 			*/
@@ -481,17 +488,17 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			/* Clear all catalog files */
 			ClearCats();
 		}
-		else if (strcmp(argv[1],"clearInterp") == 0){
+		else if (strcmp(argv[1],"clearInterp") == 0) {
 			control->_interpProto->ClearMapClasses();
 		}
-		else if (strcmp(argv[1],"clearTopGroups") == 0){
+		else if (strcmp(argv[1],"clearTopGroups") == 0) {
 			delete gdir;
 			gdir = new GroupDir();
 		}
-		else if (strcmp(argv[1],"printDispatcher") == 0){
+		else if (strcmp(argv[1],"printDispatcher") == 0) {
 			Dispatcher::Current()->Print();
 		}
-		else if (strcmp(argv[1],"interpMapClassInfo") == 0){
+		else if (strcmp(argv[1],"interpMapClassInfo") == 0) {
 			int num;
 			MapInterpClassInfo **infos;
 			_interpProto->MapClasses(num, infos);
@@ -499,13 +506,13 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			/*
 			Tcl_AppendResult(interp," { ", NULL);
 			*/
-			for (i=0; i < num; i++){
+			for (i=0; i < num; i++) {
 				MapInterpClassInfo *cInfo = infos[i];
 				int numArgs; char **args;
 				cInfo->CreateParams(numArgs, args);
 				int j;
 				Tcl_AppendResult(interp," {", NULL);
-				for (j=0; j < numArgs; j++){
+				for (j=0; j < numArgs; j++) {
 					if (args[j] == NULL)
 						Tcl_AppendResult(interp, " {} ", NULL);
 					else Tcl_AppendResult(interp, " {", args[j], "} ", NULL);
@@ -516,11 +523,11 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			Tcl_AppendResult(interp," } ", NULL);
 			*/
 		}
-		else if (strcmp(argv[1],"catFiles") == 0){
+		else if (strcmp(argv[1],"catFiles") == 0) {
 			CatFiles(numArgs, args);
 			MakeReturnVals(interp, numArgs, args);
 		}
-		else if (strcmp(argv[1],"exit")== 0){
+		else if (strcmp(argv[1],"exit")== 0) {
 			QueryProc::Instance()->PrintStat();
 			control->DoQuit();
 		}
@@ -562,10 +569,10 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 	      }
 	    free(vlist);
 	  }
-	else if (argc == 3){
+	else if (argc == 3) {
 		if (strcmp(argv[1],"invalidatePixmap") == 0 ) {
 			View *vg = (View *)classDir->FindInstance(argv[2]);
-			if (vg == NULL){
+			if (vg == NULL) {
 				interp->result = "Can't find view";
 				goto error;
 			}
@@ -578,7 +585,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			if (len > 0 && interp->result[len-1] == '\n')
 					interp->result[len-1] = '\0';
 		}
-		else if (strcmp(argv[1],"close") == 0){
+		else if (strcmp(argv[1],"close") == 0) {
 			FILE *file = (FILE *)atol(argv[2]);
 			fclose(file);
 		}
@@ -591,7 +598,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			}
 			sprintf(interp->result,"%d",(vg->Mapped()? 1: 0 ));
 		}
-		else if (strcmp(argv[1],"getLabel") == 0){
+		else if (strcmp(argv[1],"getLabel") == 0) {
 			View *vg = (View *)classDir->FindInstance(argv[2]);
 			if (vg == NULL) {
 			  sprintf(interp->result,"Can't find view %s in getLabelParam",
@@ -606,17 +613,17 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				(occupyTop ? 1 : 0), extent,
 				(name ? name : ""));
 		}
-		else if (strcmp(argv[1],"tdataFileName") == 0){
+		else if (strcmp(argv[1],"tdataFileName") == 0) {
 			TData *tdata = (TData *)classDir->FindInstance(argv[2]);
-			if (tdata == NULL){
+			if (tdata == NULL) {
 				interp->result = "Can't find tdata in tdataFileName";
 				goto error;
 			}
 			sprintf(interp->result,"%s",tdata->GetName());
 		}
-		else if (strcmp(argv[1],"getViewWin") == 0){
+		else if (strcmp(argv[1],"getViewWin") == 0) {
 			View *view = (View *)classDir->FindInstance(argv[2]);
-			if (view == NULL){
+			if (view == NULL) {
 				interp->result = "Can't find view in getViewWin";
 				goto error;
 			}
@@ -625,19 +632,19 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				interp->result = "";
 			else sprintf(interp->result,"%s",viewWin->GetName());
 		}
-		else if (strcmp(argv[1],"clearViewHistory") == 0){
+		else if (strcmp(argv[1],"clearViewHistory") == 0) {
 			View *view = (View *)classDir->FindInstance(argv[2]);
-			if (view == NULL){
+			if (view == NULL) {
 				interp->result = "Can't find cursor in getCursorViews";
 				goto error;
 			}
 			FilterQueue *queue = view->GetHistory();
 			queue->Clear();
 		}
-		else if (strcmp(argv[1],"getCursorViews") == 0){
+		else if (strcmp(argv[1],"getCursorViews") == 0) {
 			DeviseCursor *cursor = (DeviseCursor *)
 				classDir->FindInstance(argv[2]);
-			if (cursor == NULL){
+			if (cursor == NULL) {
 				interp->result = "Can't find cursor in getCursorViews";
 				goto error;
 			}
@@ -653,50 +660,50 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 
 			sprintf(interp->result,"{%s} {%s}",name1,name2);
 		} 
-		else if (strcmp(argv[1],"getMappingTData") == 0){
+		else if (strcmp(argv[1],"getMappingTData") == 0) {
 			TDataMap *map= (TDataMap *)classDir->FindInstance(argv[2]);
-			if (map== NULL){
+			if (map== NULL) {
 				interp->result = "Can't find mapping in getPixelWidth";
 				goto error;
 			}
 			TData *tdata = map->GetTData();
 			sprintf(interp->result,"%s",classDir->FindInstanceName(tdata));
 		}
-		else if (strcmp(argv[1],"openSession") == 0 ){
+		else if (strcmp(argv[1],"openSession") == 0 ) {
 			(void)Tcl_Eval(interp,"set template 0");
 			control->_restoring = true;
 			code = Tcl_EvalFile(interp,argv[2]);
 			control->_restoring = false;
-			if (code != TCL_OK){
+			if (code != TCL_OK) {
 				interp->result = "can't restore session file\n";
 				goto error;
 			}
 			control->SetSessionName(argv[2]);
 		}
-		else if (strcmp(argv[1],"openTemplate") == 0 ){
+		else if (strcmp(argv[1],"openTemplate") == 0 ) {
 			(void)Tcl_Eval(interp,"set template 1");
 			control->_restoring = true;
 			code = Tcl_EvalFile(interp,argv[2]);
 			control->_restoring = false;
-			if (code != TCL_OK){
+			if (code != TCL_OK) {
 				interp->result = "can't restore template file\n";
 				goto error;
 			}
 			control->SetSessionName(argv[2]);
 		}
-		else if (strcmp(argv[1],"destroy") == 0 ){
+		else if (strcmp(argv[1],"destroy") == 0 ) {
 			classDir->DestroyInstance(argv[2]);
 		}
-		else if (strcmp(argv[1],"parseDateFloat") == 0 ){
+		else if (strcmp(argv[1],"parseDateFloat") == 0 ) {
 			char buf[80];
 			double val;
 			(void)ParseFloatDate(argv[2], val);
 			sprintf(buf,"%f",val);
 			interp->result= buf;
 		}
-		else if (strcmp(argv[1],"isInterpretedGData") == 0 ){
+		else if (strcmp(argv[1],"isInterpretedGData") == 0 ) {
 			TDataMap *map= (TDataMap *)classDir->FindInstance(argv[2]);
-			if (map== NULL){
+			if (map== NULL) {
 				interp->result = "Can't find mapping in getPixelWidth";
 				goto error;
 			}
@@ -704,9 +711,9 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				interp->result = "1";
 			else interp->result = "0";
 		}
-		else if (strcmp(argv[1],"isInterpreted") == 0 ){
+		else if (strcmp(argv[1],"isInterpreted") == 0 ) {
 			int *isInterp = (int *)classDir->UserInfo("mapping", argv[2]);
-			if (isInterp== NULL){
+			if (isInterp== NULL) {
 				/*
 				interp->result = "Can't find mapping in isInterpreted";
 				goto error;
@@ -719,9 +726,9 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				else interp->result = "0";
 			}
 		}
-		else if (strcmp(argv[1],"getPixelWidth") == 0 ){
+		else if (strcmp(argv[1],"getPixelWidth") == 0 ) {
 			TDataMap *map= (TDataMap *)classDir->FindInstance(argv[2]);
-			if (map== NULL){
+			if (map== NULL) {
 				interp->result = "Can't find mapping in getPixelWidth";
 				goto error;
 			}
@@ -745,80 +752,78 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		  layout->GetPreferredLayout(v, h);
 		  sprintf(interp->result, "%d %d", v, h);
 		}
-		else if (strcmp(argv[1],"getSchema") == 0 ){
+		else if (strcmp(argv[1],"getSchema") == 0) {
 
 			TData *tdata = (TData *)classDir->FindInstance(argv[2]);
-			if (tdata == NULL){
-				interp->result = "Can't find tdata in getSchema";
-				goto error;
+			if (tdata == NULL) {
+			  interp->result = "Can't find tdata in getSchema";
+			  goto error;
 			}
 			AttrList *attrList = tdata->GetAttrList();
-			if (attrList != NULL){
-				/*
-				printf("getSchema: \n");
-				attrList->Print();
-				*/
-				char attrBuf[160];
-				int numAttrs = attrList->NumAttrs();
-				Tcl_AppendElement(interp,"recId int 1 0 0 0 0");
-				for(int i = 0; i < numAttrs; i++) {
-					AttrInfo *info = attrList->Get(i);
-					/*
-					printf("inserting %s\n",info->name);
-					*/
-					switch(info->type){
-						case FloatAttr:
-							sprintf(attrBuf,"%s float %d %d %g %d %g",
-								info->name, info->isSorted,
-								info->hasHiVal,
-								(info->hasHiVal ? info->hiVal.floatVal : 100),
-								info->hasLoVal,
-								(info->hasLoVal ? info->loVal.floatVal : 0));
-							break;
-						case DoubleAttr:
-							sprintf(attrBuf,"%s double %d %d %g %d %g",
-								info->name, info->isSorted,
-								info->hasHiVal,
-								(info->hasHiVal ? info->hiVal.doubleVal : 100),
-								info->hasLoVal,
-								(info->hasLoVal ? info->loVal.doubleVal : 0));
-							break;
-						case StringAttr:
-							sprintf(attrBuf,"%s string %d 0 0 0 0",info->name,
-								info->isSorted);
-							break;
-						case IntAttr:
-							sprintf(attrBuf,"%s int %d %d %ld %d %ld",
-								info->name, info->isSorted,
-								info->hasHiVal,
-								(long)(info->hasHiVal ? info->hiVal.intVal : 100),
-								info->hasLoVal,
-								(long)(info->hasLoVal ? info->loVal.intVal : 0));
-							break;
-						case DateAttr:
-							sprintf(attrBuf,"%s date %d %d %ld %d %ld",
-								info->name, info->isSorted,
-								info->hasHiVal,
-								(long)(info->hasHiVal ? info->hiVal.dateVal : 100),
-								info->hasLoVal,
-								(long)(info->hasLoVal ? info->loVal.dateVal : 0));
-							break;
-						default:
-							printf("TkControl:unknown attr\n");
-							Exit::DoExit(1);
-					}
-					Tcl_AppendElement(interp,attrBuf);
-				}
+			if (!attrList) {
+			  interp->result = "NULL attribute list";
+			  goto error;
 			}
-			else {
-				/*
-				printf("NULL attr List\n");
-				*/
+
+#ifdef DEBUG
+			printf("getSchema: \n");
+			attrList->Print();
+#endif
+			char attrBuf[160];
+			int numAttrs = attrList->NumAttrs();
+			Tcl_AppendElement(interp,"recId int 1 0 0 0 0");
+			for(int i = 0; i < numAttrs; i++) {
+			  AttrInfo *info = attrList->Get(i);
+#ifdef DEBUG
+			  printf("inserting %s\n",info->name);
+#endif
+			  switch(info->type) {
+			  case FloatAttr:
+			    sprintf(attrBuf,"%s float %d %d %g %d %g",
+				    info->name, info->isSorted,
+				    info->hasHiVal,
+				    (info->hasHiVal ? info->hiVal.floatVal : 100),
+				    info->hasLoVal,
+				    (info->hasLoVal ? info->loVal.floatVal : 0));
+			    break;
+			  case DoubleAttr:
+			    sprintf(attrBuf,"%s double %d %d %g %d %g",
+				    info->name, info->isSorted,
+				    info->hasHiVal,
+				    (info->hasHiVal ? info->hiVal.doubleVal : 100),
+				    info->hasLoVal,
+				    (info->hasLoVal ? info->loVal.doubleVal : 0));
+			    break;
+			  case StringAttr:
+			    sprintf(attrBuf,"%s string %d 0 0 0 0", info->name,
+				    info->isSorted);
+			    break;
+			  case IntAttr:
+			    sprintf(attrBuf,"%s int %d %d %ld %d %ld",
+				    info->name, info->isSorted,
+				    info->hasHiVal,
+				    (long)(info->hasHiVal ? info->hiVal.intVal : 100),
+				    info->hasLoVal,
+				    (long)(info->hasLoVal ? info->loVal.intVal : 0));
+			    break;
+			  case DateAttr:
+			    sprintf(attrBuf,"%s date %d %d %ld %d %ld",
+				    info->name, info->isSorted,
+				    info->hasHiVal,
+				    (long)(info->hasHiVal ? info->hiVal.dateVal : 100),
+				    info->hasLoVal,
+				    (long)(info->hasLoVal ? info->loVal.dateVal : 0));
+			    break;
+			  default:
+			    printf("TkControl:unknown attr\n");
+			    Exit::DoExit(1);
+			  }
+			  Tcl_AppendElement(interp, attrBuf);
 			}
-		}
+	        }
 		else if (strcmp(argv[1],"getAction") == 0 ) {
 			View *view = (View *)classDir->FindInstance(argv[2]);
-			if (view == NULL){
+			if (view == NULL) {
 				interp->result = "Can't find view";
 				goto error;
 			}
@@ -837,25 +842,25 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			sprintf(interp->result,"%d",link->GetFlag());
 		}
 		else if (strcmp(argv[1],"importFileType") == 0) {
-			if ((name=ParseCat(argv[2])) == NULL){
+			if ((name=ParseCat(argv[2])) == NULL) {
 				interp->result= "";
 			}
 			else interp->result = name;
 		}
-		else if (strcmp(argv[1],"changeableParam") == 0){
+		else if (strcmp(argv[1],"changeableParam") == 0) {
 			Boolean changeable = classDir->Changeable(argv[2]);
 			if (changeable)
 				interp->result = "1";
 			else interp->result = "0";
 		}
-		else if (strcmp(argv[1],"getInstParam") == 0){
+		else if (strcmp(argv[1],"getInstParam") == 0) {
 			/* get current parameters for instance */
 			/*printf("getInstParam %s\n", argv[2]); */
 			classDir->GetParams(argv[2],numArgs, args);
 			/* printf("getInstParam %s: got %d args\n",argv[2], numArgs);*/
 			MakeReturnVals(interp, numArgs, args);
 		}
-		else if (strcmp(argv[1],"tcheckpoint") == 0){
+		else if (strcmp(argv[1],"tcheckpoint") == 0) {
 			/* checkpoint all tdata */
 			TData *tdata;
 			control->SetBusy();
@@ -863,42 +868,42 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				tdata->Checkpoint();
 			control->SetIdle();
 		}
-		else if (strcmp(argv[1],"get") == 0){
+		else if (strcmp(argv[1],"get") == 0) {
 			classDir->ClassNames(argv[2],numArgs, args);
 			/*
 			printf("get %s, got %d args\n", argv[2], numArgs);
 			int ind;
-			for (ind=0; ind < numArgs; ind++){
+			for (ind=0; ind < numArgs; ind++) {
 				printf("%s\n",args[ind]);
 			}
 			*/
 			MakeReturnVals(interp, numArgs, args);
-		} else if (strcmp(argv[1],"changeMode") == 0){
-			if (strcmp(argv[2],"0") == 0){
+		} else if (strcmp(argv[1],"changeMode") == 0) {
+			if (strcmp(argv[2],"0") == 0) {
 				if( _mode != ControlPanel::DisplayMode) {
 					/* Set display mode  and make all views refresh*/
 					_mode = ControlPanel::DisplayMode;
 					ControlPanel::Instance()->ReportModeChange(_mode);
 				}
-			} else if(_mode != ControlPanel::LayoutMode){
+			} else if(_mode != ControlPanel::LayoutMode) {
 				/* set layout mode */
 				_mode = ControlPanel::LayoutMode;
 				ControlPanel::Instance()->ReportModeChange(_mode);
 			}
 		}
-		else if (strcmp(argv[1],"exists") == 0){
+		else if (strcmp(argv[1],"exists") == 0) {
 			void *ptr = classDir->FindInstance(argv[2]);
 			if ( ptr == (void *)NULL )
 				interp->result = "0";
 			else interp->result = "1";
 		} 
-		else if (strcmp(argv[1],"removeView") == 0){
+		else if (strcmp(argv[1],"removeView") == 0) {
 			ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
-			if (view == NULL){
+			if (view == NULL) {
 				interp->result = "can't find view";
 				goto error;
 			}
-			if (!view->Mapped()){
+			if (!view->Mapped()) {
 				interp->result = "view not in any window";
 				goto error;
 			}
@@ -909,11 +914,11 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			printf("finding view '%s'\n",argv[2]);
 			*/
 			ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
-			if (view == NULL){
+			if (view == NULL) {
 				interp->result = "can't find view";
 				goto error;
 			}
-			for (view->InitMappingIterator(); view->MoreMapping(); ){
+			for (view->InitMappingIterator(); view->MoreMapping(); ) {
 				TDataMap *map = view->NextMapping();
 				Tcl_AppendElement(interp,map->GetGDataName());
 			}
@@ -924,7 +929,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			printf("finding view '%s'\n",argv[2]);
 			*/
 			View *view = (View *)classDir->FindInstance(argv[2]);
-			if (view == NULL){
+			if (view == NULL) {
 				interp->result = "can't find view";
 				goto error;
 			}
@@ -937,7 +942,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				goto error;
 			}
 			int index;
-			for(index = win->InitIterator(); win->More(index); ){
+			for(index = win->InitIterator(); win->More(index); ) {
 				ViewWin *view = (ViewWin *)win->Next(index);
 				Tcl_AppendElement(interp, view->GetName());
 			}
@@ -949,15 +954,15 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				goto error;
 			}
 			int index;
-			for (index=link->InitIterator(); link->More(index); ){
+			for (index=link->InitIterator(); link->More(index); ) {
 				ViewWin *view = (ViewWin *)link->Next(index);
 				Tcl_AppendElement(interp, view->GetName());
 			}
 			link->DoneIterator(index);
 		}
-		else if (strcmp(argv[1],"getCurVisualFilter") == 0){
+		else if (strcmp(argv[1],"getCurVisualFilter") == 0) {
 			View *view = (View *)classDir->FindInstance(argv[2]);
-			if (view == NULL){
+			if (view == NULL) {
 				interp->result = "can't find view";
 				goto error;
 			}
@@ -975,20 +980,20 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			sprintf(buf,"%.2f", filter->yHigh);
 			Tcl_AppendElement(interp, buf);
 		}
-		else if (strcmp(argv[1],"getVisualFilters") == 0){
+		else if (strcmp(argv[1],"getVisualFilters") == 0) {
 			View *view = (View *)classDir->FindInstance(argv[2]);
-			if (view == NULL){
+			if (view == NULL) {
 				interp->result = "can't find view";
 				goto error;
 			}
 			FilterQueue *queue = view->GetHistory();
 			int i;
-			for (i=0; i < queue->Size(); i++){
+			for (i=0; i < queue->Size(); i++) {
 				VisualFilter filter;
 				queue->Get(i,filter);
 				char buf[256];
 				char xLowBuf[40],xHighBuf[40],yLowBuf[40],yHighBuf[40];
-				if (view->GetXAxisAttrType() == DateAttr){
+				if (view->GetXAxisAttrType() == DateAttr) {
 					sprintf(xLowBuf,"%s",DateString(filter.xLow));
 					sprintf(xHighBuf,"%s",DateString(filter.xHigh));
 				}
@@ -997,7 +1002,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 					sprintf(xHighBuf,"%.2f",filter.xHigh);
 				}
 				
-				if (view->GetYAxisAttrType() == DateAttr){
+				if (view->GetYAxisAttrType() == DateAttr) {
 					sprintf(yLowBuf,"%s",DateString(filter.yLow));
 					sprintf(yHighBuf,"%s",DateString(filter.yHigh));
 				}
@@ -1035,7 +1040,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	}
 	else if (argc == 4) {
-		if (strcmp(argv[1],"writeLine") == 0){
+		if (strcmp(argv[1],"writeLine") == 0) {
 			FILE *file = (FILE *)atol(argv[3]);
 			/*
 			printf("writeLIne %s file is %d\n", argv[2], argv[3]);
@@ -1043,9 +1048,9 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			fputs(argv[2],file);
 			fputs("\n",file);
 		}
-		else if (strcmp(argv[1],"open") == 0){
+		else if (strcmp(argv[1],"open") == 0) {
 			FILE *file = fopen(argv[2],argv[3]);
-			if (file == NULL){
+			if (file == NULL) {
 				fprintf(stderr,"can't open file %s\n", argv[2]);
 				Exit::DoExit(1);
 			}
@@ -1072,12 +1077,12 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		    /* Turn on/off display of statistics */
 		    vg->SetNumDimensions(atoi(argv[3]));
 		}
-		else if (strcmp(argv[1],"savePixmap") == 0){
+		else if (strcmp(argv[1],"savePixmap") == 0) {
 			/*
 			printf("savePixmap %s %s %s\n",argv[1],argv[2],argv[3]);
 			*/
 			View *vg = (View *)classDir->FindInstance(argv[2]);
-			if (vg == NULL){
+			if (vg == NULL) {
 				interp->result = "Can't find view in savePixmap";
 				goto error;
 			}
@@ -1087,12 +1092,12 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			*/
 			vg->SavePixmaps(file);
 		}
-		else if (strcmp(argv[1],"loadPixmap") == 0){
+		else if (strcmp(argv[1],"loadPixmap") == 0) {
 			/*
 			printf("loadPixmap %s %s %s\n",argv[1],argv[2],argv[3]);
 			*/
 			View *vg = (View *)classDir->FindInstance(argv[2]);
-			if (vg == NULL){
+			if (vg == NULL) {
 				interp->result = "Can't find view in loadPixmap";
 				goto error;
 			}
@@ -1104,7 +1109,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		}
 		else if (strcmp(argv[1],"getAxisDisplay") == 0 ) {
 			View *vg = (View *)classDir->FindInstance(argv[2]);
-			if (vg == NULL){
+			if (vg == NULL) {
 				interp->result = "Can't find view in getAxisDisplay";
 				goto error;
 			}
@@ -1122,12 +1127,12 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		else if (strcmp(argv[1],"replaceView") == 0) {
 			View *view1 = (View *)classDir->FindInstance(argv[2]);
 			View *view2 = (View *)classDir->FindInstance(argv[3]);
-			if (view1 == NULL || view2 == NULL){
+			if (view1 == NULL || view2 == NULL) {
 				fprintf(stderr,"TkControl: can't find view for replaceView\n");
 				Exit::DoExit(1);
 			}
 			ViewWin *win = view1->GetParent();
-			if (win == NULL){
+			if (win == NULL) {
 				fprintf(stderr,"TkControl: can't find window for replaceView\n");
 				Exit::DoExit(1);
 			}
@@ -1135,12 +1140,12 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		} else if (strcmp(argv[1],"setCursorSrc") == 0 ) {
 			DeviseCursor *cursor = (DeviseCursor *)
 				classDir->FindInstance(argv[2]);
-			if (cursor == NULL){
+			if (cursor == NULL) {
 				interp->result = "Can't find cursor";
 				goto error;
 			}
 			View *view = (View *)classDir->FindInstance(argv[3]);
-			if (view == NULL){
+			if (view == NULL) {
 				interp->result = "Can't find view";
 				goto error;
 			}
@@ -1149,20 +1154,20 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		else if (strcmp(argv[1],"setCursorDst") == 0) {
 			DeviseCursor *cursor = (DeviseCursor *)
 				classDir->FindInstance(argv[2]);
-			if (cursor == NULL){
+			if (cursor == NULL) {
 				interp->result = "Can't find cursor";
 				goto error;
 			}
 			View *view = (View *)classDir->FindInstance(argv[3]);
-			if (view == NULL){
+			if (view == NULL) {
 				interp->result = "Can't find view";
 				goto error;
 			}
 			cursor->SetDst(view);
 		} 
-		else if (strcmp(argv[1],"setPixelWidth") == 0 ){
+		else if (strcmp(argv[1],"setPixelWidth") == 0 ) {
 			TDataMap *map= (TDataMap *)classDir->FindInstance(argv[2]);
-			if (map== NULL){
+			if (map== NULL) {
 				interp->result = "Can't find mapping in setPixelWidth";
 				goto error;
 			}
@@ -1172,7 +1177,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		}
 		else if (strcmp(argv[1],"getAxis") == 0 ) {
 			View *view = (View *)classDir->FindInstance(argv[2]);
-			if (view == NULL){
+			if (view == NULL) {
 				interp->result = "Can't find view";
 				goto error;
 			}
@@ -1185,7 +1190,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				interp->result = "";
 			else interp->result = label->GetName();
 		}
-		else if (strcmp(argv[1],"setAction") == 0){
+		else if (strcmp(argv[1],"setAction") == 0) {
 			View *view = (View *)classDir->FindInstance(argv[2]);
 			if (view == NULL) {
 				interp->result = "can't find view";
@@ -1207,80 +1212,80 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			VisualFlag flag = atoi(argv[3]);
 			link->ChangeFlag(flag);
 		}
-		else if (strcmp(argv[1], "highlightView") == 0){
+		else if (strcmp(argv[1], "highlightView") == 0) {
 			View *view = (View *)classDir->FindInstance(argv[2]);
-			if (view == NULL){
+			if (view == NULL) {
 				fprintf(stderr,"TkControl:Cmd highlightView can't find view %s\n", argv[2]);
 				Exit::DoExit(2);
 			}
 			view->Highlight(atoi(argv[3]));
 		}
-		else if (strcmp(argv[1],"get") == 0){
+		else if (strcmp(argv[1],"get") == 0) {
 			classDir->InstanceNames(argv[2],argv[3], numArgs, args);
 			MakeReturnVals(interp, numArgs, args);
 		}
-		else if (strcmp(argv[1],"getparam") == 0){
+		else if (strcmp(argv[1],"getparam") == 0) {
 			classDir->GetParams(argv[2],argv[3],numArgs, args);
 			MakeReturnVals(interp, numArgs, args);
 		}
-		else if (strcmp(argv[1],"insertMapping") == 0){
+		else if (strcmp(argv[1],"insertMapping") == 0) {
 			ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
-			if (view == NULL){
+			if (view == NULL) {
 				fprintf(stderr,"TkControl:Cmd insertMapping can't find view %s\n", argv[2]);
 				Exit::DoExit(2);
 			}
 			TDataMap *map = (TDataMap *)classDir->FindInstance(argv[3]);
-			if (view == NULL){
+			if (view == NULL) {
 				fprintf(stderr,"TkControl:Cmd insertMapping can't find map %s\n", argv[3]);
 				Exit::DoExit(2);
 			}
 			view->InsertMapping(map);
 		}
-		else if (strcmp(argv[1],"insertLink") == 0){
+		else if (strcmp(argv[1],"insertLink") == 0) {
 			VisualLink *link = (VisualLink *)classDir->FindInstance(argv[2]);
-			if (link == NULL){
+			if (link == NULL) {
 				fprintf(stderr,"TkControl:Cmd insertLink can't find link %s\n", argv[2]);
 				Exit::DoExit(2);
 			}
 			View *view = (View *)classDir->FindInstance(argv[3]);
-			if (view == NULL){
+			if (view == NULL) {
 				fprintf(stderr,"TkControl:Cmd insertMapping can't find view %s\n", argv[3]);
 				Exit::DoExit(2);
 			}
 			link->InsertView(view);
 		}
-		else if (strcmp(argv[1],"viewInLink") == 0){
+		else if (strcmp(argv[1],"viewInLink") == 0) {
 			VisualLink *link = (VisualLink *)classDir->FindInstance(argv[2]);
-			if (link == NULL){
+			if (link == NULL) {
 				fprintf(stderr,"TkControl:Cmd insertLink can't find link %s\n", argv[2]);
 				Exit::DoExit(2);
 			}
 			View *view = (View *)classDir->FindInstance(argv[3]);
-			if (view == NULL){
+			if (view == NULL) {
 				fprintf(stderr,"TkControl:Cmd insertMapping can't find view %s\n", argv[3]);
 				Exit::DoExit(2);
 			}
-			if (link->ViewInLink(view)){
+			if (link->ViewInLink(view)) {
 				interp->result = "1";
 			}
 			else {
 				interp->result = "0";
 			}
 		}
-		else if (strcmp(argv[1],"unlinkView") == 0){
+		else if (strcmp(argv[1],"unlinkView") == 0) {
 			VisualLink *link = (VisualLink *)classDir->FindInstance(argv[2]);
-			if (link == NULL){
+			if (link == NULL) {
 				fprintf(stderr,"TkControl:Cmd insertLink can't find link %s\n", argv[2]);
 				Exit::DoExit(2);
 			}
 			View *view = (View *)classDir->FindInstance(argv[3]);
-			if (view == NULL){
+			if (view == NULL) {
 				fprintf(stderr,"TkControl:Cmd insertMapping can't find view %s\n", argv[3]);
 				Exit::DoExit(2);
 			}
 			link->DeleteView(view);
 		}
-		else if (strcmp(argv[1],"insertWindow") == 0){
+		else if (strcmp(argv[1],"insertWindow") == 0) {
 			ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
 			if (!view) {
 				fprintf(stderr,
@@ -1308,7 +1313,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			interp->result = "Can't find view or window in swapView ";
 			goto error;
 		}
-		if (view1->GetParent() != viewWin || view2->GetParent() != viewWin){
+		if (view1->GetParent() != viewWin || view2->GetParent() != viewWin) {
 			interp->result = "Views not in same window in swapView\n";
 			goto error;
 		}
@@ -1316,7 +1321,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 	}
 	else if (strcmp(argv[1],"setAxisDisplay") == 0 ) {
 		View *vg = (View *)classDir->FindInstance(argv[2]);
-		if (vg == NULL){
+		if (vg == NULL) {
 			interp->result = "Can't find view in setAxisDisplay";
 			goto error;
 		}
@@ -1326,9 +1331,9 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		else
 		  vg->YAxisDisplayOnOff(stat);
 	}
-	else if (strcmp(argv[1],"insertViewHistory") == 0 ){
+	else if (strcmp(argv[1],"insertViewHistory") == 0 ) {
 		View *view = (View *)classDir->FindInstance(argv[2]);
-		if (view == NULL){
+		if (view == NULL) {
 			fprintf(stderr,"TkControl:Cmd insertViewHistory find view %s\n", 
 				argv[2]);
 			Exit::DoExit(2);
@@ -1341,9 +1346,9 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		filter.marked = atoi(argv[7]);
 		view->InsertHistory(filter);
 	}
-	else if (strcmp(argv[1],"markViewFilter") == 0 ){
+	else if (strcmp(argv[1],"markViewFilter") == 0 ) {
 		View *view = (View *)classDir->FindInstance(argv[2]);
-		if (view == NULL){
+		if (view == NULL) {
 			fprintf(stderr,"TkControl:Cmd markViewFiltercan't find view %s\n", 
 				argv[2]);
 			Exit::DoExit(2);
@@ -1353,18 +1358,18 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		view->Mark(index, mark);
 	}
 	else if (strcmp(argv[1],"setAxis") == 0 ) {
-		if (argc != 5){
+		if (argc != 5) {
 			fprintf(stderr,"TkControl:setAxis needs 5 params\n");
 			Exit::DoExit(2);
 		}
 		View *view = (View *)classDir->FindInstance(argv[2]);
-		if (view == NULL){
+		if (view == NULL) {
 			fprintf(stderr,"TkControl:Cmd setAxis can't find view %s\n", 
 				argv[2]);
 			Exit::DoExit(2);
 		}
 		AxisLabel *label = (AxisLabel *)classDir->FindInstance(argv[3]);
-		if (label == NULL){
+		if (label == NULL) {
 			fprintf(stderr,"TkControl:Cmd setAxis can't find label %s\n", 
 				argv[3]);
 			Exit::DoExit(2);
@@ -1373,20 +1378,20 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			view->SetXAxisLabel(label);
 		else view->SetYAxisLabel(label);
 	}
-	else if (strcmp(argv[1],"changeParam") == 0){
+	else if (strcmp(argv[1],"changeParam") == 0) {
 		classDir->ChangeParams(argv[2],argc-3,&argv[3]);
 	}
-	else if (strcmp(argv[1],"createInterp") == 0){
+	else if (strcmp(argv[1],"createInterp") == 0) {
 		/*
 		printf("CreateInterp %d args\n", argc-2);
 		int i;
-		for (i=0; i < argc; i++){
+		for (i=0; i < argc; i++) {
 			printf("arg %d: %s\n", i, argv[i]);
 		}
 		*/
 		ClassInfo *classInfo = 
 			_interpProto->CreateWithParams(argc-2,&argv[2]);
-		if (classInfo == NULL){
+		if (classInfo == NULL) {
 			interp->result = "Can't create mapping";
 			goto error;
 		}
@@ -1402,7 +1407,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		char *name = classDir->CreateWithParams(argv[2],argv[3],
 			argc-4, &argv[4]);
 		control->SetIdle();
-		if (name == NULL){
+		if (name == NULL) {
 			interp->result = "";
 		}
 		else {
@@ -1410,14 +1415,14 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	}
 	else if (strcmp(argv[1],"setDefault") == 0) {
-		if (argc < 5){
+		if (argc < 5) {
 			interp->result = "wrong args";
 			goto error;
 		}
 		classDir->SetDefault(argv[2],argv[3],argc-4,&argv[4]);
 	}
 	else if (argc == 5) {
-	  if (strcmp(argv[1],"getCreateParam") == 0){
+	  if (strcmp(argv[1],"getCreateParam") == 0) {
 	    /* getCreateParam category class instance: 
 	       get parameters used to recreate an instance */
 	    classDir->CreateParams(argv[2],argv[3],argv[4],numArgs,args);
@@ -1472,9 +1477,9 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	}
 	else if (argc == 7 ) {
-		if (strcmp(argv[1],"setFilter") == 0){
+		if (strcmp(argv[1],"setFilter") == 0) {
 			View *view = (View *)classDir->FindInstance(argv[2]);
-			if (view == NULL){
+			if (view == NULL) {
 				fprintf(stderr,"TkControl:Cmd insertWindow can't find view %s\n", argv[2]);
 				Exit::DoExit(2);
 			}
@@ -1483,7 +1488,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			if (!ParseFloatDate(argv[3],filter.xLow) ||
 				!ParseFloatDate(argv[4], filter.yLow) ||
 				!ParseFloatDate(argv[5], filter.xHigh) ||
-				!ParseFloatDate(argv[6], filter.yHigh)){
+				!ParseFloatDate(argv[6], filter.yHigh)) {
 				interp->result = "invalid date or float";
 				goto error;
 			}
@@ -1571,7 +1576,7 @@ void TkControlPanel::FilterChanged(View *view, VisualFilter &filter,
 
   char cmd[256];
   char xLowBuf[80], yLowBuf[80], xHighBuf[80], yHighBuf[80];
-  if (view->GetXAxisAttrType() == DateAttr){
+  if (view->GetXAxisAttrType() == DateAttr) {
     sprintf(xLowBuf, "%s", DateString(filter.xLow));
     sprintf(xHighBuf, "%s", DateString(filter.xHigh));
   } else {
@@ -1579,7 +1584,7 @@ void TkControlPanel::FilterChanged(View *view, VisualFilter &filter,
     sprintf(xHighBuf, "%.2f", filter.xHigh);
   }
 				
-  if (view->GetYAxisAttrType() == DateAttr){
+  if (view->GetYAxisAttrType() == DateAttr) {
     sprintf(yLowBuf, "%s", DateString(filter.yLow));
     sprintf(yHighBuf, "%s", DateString(filter.yHigh));
   } else {
@@ -1588,7 +1593,7 @@ void TkControlPanel::FilterChanged(View *view, VisualFilter &filter,
   }
   
   sprintf(cmd, "ProcessViewFilterChange {%s} %d {%s} {%s} {%s} {%s} 0",
-	  view->GetName(),  flushed,  xLowBuf,  yLowBuf,  xHighBuf,  yHighBuf);
+	  view->GetName(), flushed, xLowBuf, yLowBuf, xHighBuf, yHighBuf);
   (void)Tcl_Eval(_interp, cmd);
 }
 
