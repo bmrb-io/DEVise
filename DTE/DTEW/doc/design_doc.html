@@ -1,0 +1,938 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEADER>
+<TITLE>DTE Window Design Document</TITLE>
+</HEADER>
+
+<BODY>
+<CENTER>
+<H1>DTE Window Design Document</H1>
+<P><H4>Yunrui Li<BR>CS Dept. UW-Madison</H4><P>
+</CENTER>
+<HR><P><BR>
+
+<H2>Introduction</H2>
+DTE Window (DTEW) is written primarily in Java, with only a few C codes. 
+There are totally 33 java classes, roughly divided into the following 
+6 categories:
+<P>
+
+<TABLE BORDER=2 ALIGN="CENTER">
+<TR><TD VALIGN="TOP">
+<B>Utility Classes:</B>
+<BR><BR>
+PairVector
+</TD>
+
+<TD VALIGN="TOP">
+<B>GUI Accessory Classes:</B>
+<BR><BR>
+AreaPrintWriter<BR>
+AreaPrintWriter.AreaOutputStream<BR>
+ScreenScale<BR>
+</TD>
+
+<TD VALIGN="TOP">
+<B>DTE Specific Classes:</B>
+<BR><BR>
+Catalog<BR>
+Catalog.Line<BR>
+Catalog.ParseException<BR>
+Environment<BR>
+</TD>
+</TR>
+
+<TR><TD VALIGN="TOP">
+<B>Window, Pane, Panel Classes:</B>
+<BR><BR>
+DTEWindow<BR>
+OutputerPane<BR>
+CatalogPanel<BR>
+CatalogPanel.EntryButton<BR>
+ResultPanel<BR>
+UpperPanel<BR>
+UpperComponent<BR>
+CreateTablePane<BR>
+CreateViewPane<BR>
+CreateGestaltPane<BR>
+CreateIndexPane<BR>
+ShowGestaltPane<BR>
+ODBCPane<BR>
+ExecuteSQLPane<BR>
+ShowEnvironmentsPane<BR>
+MiscPane<BR>
+</TD>
+
+<TD VALIGN="TOP">
+<B>Common Interfaces:</B>
+<BR><BR>
+ResultOutputer<BR>
+DialogShower<BR>
+CatalogRefresher<BR>
+SizedComponent<BR>
+</TD>
+
+<TD VALIGN="TOP">
+<B>GUI Components:</B>
+<BR><BR>
+ListActionPanel<BR>
+SingleListPanel<BR>
+SizedList<BR>
+SizedTextArea<BR>
+TitledInputPanel<BR>
+</TD></TR>
+</TABLE>
+
+<P><BR>
+<H2>A Quick Go-through</H2>
+Before describing the classes in detail, let's go through the six 
+categories of classes briefly here so that the reader can have an rough idea of
+what all these classes are about. By doing this, we hope to
+save the user from possible confusion about the complex
+inheritance relations among the classes.<P>
+
+<H3>Utility Classes:</H3>
+<UL><LI><B>PairVector</B><BR>Logically, a <B>PairVector</B> instance
+is a vector of pairs of <B>Object</B>s.</LI><P>
+</UL><P>
+
+<H3>GUI Accessory Classes:</H3>
+<UL>
+<LI><B>AreaPrintWriter</B><BR>The subclass of <B>PrintWriter</B> that 
+outputs data to a <B>TextArea</B>.</LI><P>
+<LI><B>AreaPrintWriter.AreaOutputStream</B><BR>The subclass of
+<B>OutputStream</B> that outputs data to a <B>TextArea</B>.</LI><P>
+<LI><B>ScreenScale</B><BR>The class that converts the size and 
+location of a GUI component from the virtual screen (1280*1024) 
+to the actual screen.</LI><P>
+</UL><P>
+
+<H3>DTE Specific Classes:</H3>
+<UL>
+<LI><B>Catalog</B><BR>A <B>Catalog</B> instance represents a DTE 
+catalog.</LI><P>
+<LI><B>Catalog.Line</B><BR>A class used in reading a catalog from an
+input stream.</LI><P>
+<LI><B>Catalog.ParseException</B><BR>The subclass of <B>Exception</B>
+associated with catalog file reading failure.</LI><P>
+<LI><B>Environment</B><BR>The current environment variable
+settings.</LI><P>
+</UL><P>
+
+<H3>Window, Pane, Panel Classes:</H3>
+<UL>
+<LI><B>DTEWindow</B><BR>The main class of the whole DTE Window program.
+class <B>DTEWindow</B> represents the whole window frame.</LI><P>
+<LI><B>OutputerPane</B><BR>A subclass of <B>ScrollPane</B> and
+<B>ResultOutputer</B> (described below). An <B>OutputerPane</B>
+instance redirects all messages (query results, error messages) to 
+another <B>ResultOutputer</B> instance. Class <B>OutputerPane</B>
+is inherited by class <B>CatalogPanel</B> and <B>UpperComponent</B>.
+</LI><P>
+<LI><B>CatalogPanel</B><BR>The 
+<A HREF="users_guide.html#Catalog">Catalog Pane</A> 
+where the user can browse
+the contents of a catalog. The Catalog Pane forms the bottom-left part
+of the whole DTEW window.</LI><P>
+<LI><B>CatalogPanel.EntryButton</B><BR>Class 
+<B>CatalogPanel.EntryButton</B> represents the "in-line" buttons in 
+the Catalog Pane.</LI><P>
+<LI><B>ResultPanel</B><BR>The 
+<A HREF="users_guide.html#Output">Output Pane</A> where all query 
+results and
+error messages are displayed. The Output Pane forms the bottom-right
+part of the whole DTEW window.</LI><P>
+<LI><B>UpperPanel</B><BR>The upper panel of the whole DTEW window
+(the panel in the upper part of the whole DTEW window).</LI><P>
+<LI><B>UpperComponent</B><BR>Each <B>UpperComponent</B> instance 
+represents a different 
+<A HREF="users_guide.html#Command">Command Pane</A>. 
+Class <B>UpperComponent</B> is
+inherited by class <B>CreateTablePane</B>, <B>CreateViewPane</B>,
+<B>CreateGestaltPane</B>, <B>CreateIndexPane</B>, 
+<B>ShowGestaltPane</B>, <B>ODBCPane</B>, <B>ExecuteSQLPane</B>,
+<B>ShowEnvironmentsPane</B> and <B>MiscPane</B>.</LI><P>
+<LI><B>CreateTablePane</B><BR>The 
+<A HREF="users_guide.html#CT">Create Table Pane</A></LI><P>
+<LI><B>CreateViewPane</B><BR>The 
+<A HREF="users_guide.html#CV">Create View Pane</A></LI><P>
+<LI><B>CreateGestaltPane</B><BR>The 
+<A HREF="users_guide.html#CG">Create Gestalt Pane</A></LI><P>
+<LI><B>CreateIndexPane</B><BR>The 
+<A HREF="users_guide.html#CI">Create Index Pane</A></LI><P>
+<LI><B>ShowGestaltPane</B><BR>The 
+<A HREF="users_guide.html#SG">Show Gestalt Pane</A></LI><P>
+<LI><B>ODBCPane</B><BR>The 
+<A HREF="users_guide.html#ODBC">ODBC Pane</A></LI><P>
+<LI><B>ExecuteSQLPane</B><BR>The
+<A HREF="users_guide.html#ES">Execute SQL Pane</A></LI><P>
+<LI><B>ShowEnvironmentsPane</B><BR>The 
+<A HREF="users_guide.html#SE">Show Environments Pane</A></LI><P>
+<LI><B>MiscPane</B><BR>The 
+<A HREF="users_guide.html#MISC">Miscellaneous Pane</A></LI><P>
+</UL><P>
+
+<H3>Common Interfaces:</H3>
+<UL>
+<LI><B>ResultOutputer</B><BR>Defines a collection of methods that
+output query results or error messages. Class <B>ResultOutputer</B> is
+inherited by class <B>OutputerPane</B> and <B>ResultPanel</B>.</LI><P>
+<LI><B>DialogShower</B><BR>Defines only one method that processes an
+internal command. An internal command consists of a command ID and a
+parameter. All internal commands originally come from the "in-line"
+buttons of the Catalog Pane. Class <B>DialogShower</B> is inherited 
+by class <B>CatalogPanel</B>, <B>UpperPanel</B>, <B>UpperComponent</B>,
+<B>CreateIndexPane</B> and <B>ShowGestaltPane</B>.
+Class <B>CatalogPanel</B> processes internal commands by redirecting
+them to the <B>UpperPanel</B>. Class <B>UpperPanel</B> processes 
+internal commands by redirecting them to all its components (class
+<B>UpperCompoent</B>). Class <B>CreateIndexPane</B> and
+<B>ShowGestaltPane</B> processes "create index" and "show gestalt"
+command respectively.</LI><P>
+<LI><B>CatalogRefresher</B><BR>Defines a collection of methods that
+handle the event that the home catalog or any catalog
+has just been modified. Class <B>CatalogRefresher</B> is inherited
+by class <B>CatalogPanel</B> and <B>UpperComponent</B>. Class
+<B>CatalogPanel</B> processes these catalog update events by 
+possible reloading of 
+the displayed catalog. The <B>UpperComponent</B> class processes these
+catalog update events by redirecting them to the <B>CatalogPanel</B>.
+</LI><P>
+<LI><B>SizedComponent</B><BR>Defines only one method which returns
+the preferred size of the component. Class <B>SizedComponent</B> is
+inherited by class <B>CatalogPanel</B>, <B>ResultPanel</B>,
+<B>UpperComponent</B>, <B>SizedList</B> and <B>SizedTextArea</B>.</LI>
+<P>
+</UL><P>
+
+<H3>GUI Components:</H3>
+<UL>
+<LI><B>ListActionPanel</B><BR>The class that encapsulates together a list,
+text fields and buttons to add
+new members into the list or modify existing members of the list,
+a "Move Up" button, a "Move Down" button, a "Remove" button, a name
+text field, an optional description text field and a main action
+button. Class
+<B>ListActionPanel</B> is used in the Create Table Pane, the Create 
+View Pane and the Create Gestalt Pane.</LI><P>
+<LI><B>SingleListPanel</B><BR>The class that encapsulates together a list, a
+text field and a button to modify existing members of the list, a
+"Move Up" button, a "Move Down" button and a "Remove" button.
+Class <B>SingleListPanel</B> is used twice in the Create Index Pane.
+</LI><P>
+<LI><B>SizedList</B><BR>The subclass of <B>List</B> that implements
+the method defined in <B>SizedComponent</B>.</LI><P>
+<LI><B>SizedTextArea</B><BR>The subclass of <B>TextArea</B> that
+implements the method defined in <B>SizedComponent</B>.</LI><P>
+<LI><B>TitledInputPanel</B><BR>A line of zero to three text fields with prompts,
+together with a title label and an action button. Class <B>TitledInputPanel</B>
+is used in the ODBC Pane.</LI><P>
+</UL><P>
+
+<P><BR>
+<H2>Detailed Description of Classes</H2>
+
+We now describe each class in detail, elaborating on main data
+members/methods of them.
+
+<UL>
+<LI><B>PairVector</B></LI><P>
+An instance of class <B>PairVector</B> is logically a vector of pairs 
+of <B>Object</B>s. The main data members/methods of <B>PairVector</B>
+include:<P>
+<UL>
+<LI><B>private Vector firstVector;</B> -- The vector that contains the
+first part of the pairs.</LI>
+<LI><B>private Vector secondVector;</B> -- The vector that contains the
+second part of the pairs.</LI>
+<LI><B>public final void addElement (Object f, Object s);</B> -- Add a
+pair of <B>Object</B>s.</LI>
+<LI><B>public final void setElementAt (Object f, Object s, int i);</B>
+ -- Add a pair of <B>Object</B>s at a given index.</LI>
+<LI><B>public final Object elementAtFirst (int i);</B> -- Return the
+first part of the pair at a given index.</LI>
+<LI><B>public final Object elementAtSecond (int i);</B> -- Return the
+second part of the pair at a given index. </LI>
+<LI><B>public final int size ();</B> -- Return the size of the pair
+vector.</LI>
+<LI><B>public final Object find (Object o);</B> -- Find the 
+corresponding second part of a pair given the first part of the pair.
+</LI></UL><P>
+
+<LI><B>AreaPrintWriter</B></LI><P>
+Class <B>AreaPrintWriter</B> extends class <B>PrintWriter</B> by
+outputing data to a <B>TextArea</B>. The main data members/methods of
+<B>AreaPrintWriter</B> include:<P>
+<UL>
+<LI><B>private TextArea text;</B> -- The <B>TextArea</B> to output to.
+</LI>
+<LI><B>public AreaPrintWriter (TextArea t);</B> -- Constructor.</LI>
+<LI><B>public final void clear ();</B> -- Clear the contents of
+the <B>TextArea</B> object.</LI>
+<LI><B>public final void validate ();</B> -- Flush data and redraw
+the <B>TextArea</B> object.</LI>
+</UL><P>
+
+<LI><B>AreaPrintWriter.AreaOutputStream</B></LI><P>
+Class <B>AreaPrintWriter.AreaOutputStream</B> is a private class to
+class <B>AreaPrintWriter</B>. It extends class <B>OutputStream</B> by
+outputing data to a <B>TextArea</B>. The main data members/methods of
+<B>AreaPrintWriter.AreaOutputStream</B> include:<P>
+<UL>
+<LI><B>private TextArea text;</B> -- The <B>TextArea</B> to output to.
+</LI>
+<LI><B>public AreaOutputStream (TextArea t);</B> -- Constructor.</LI>
+<LI><B>public final void write (int b);</B> -- Write a single 
+charater into the <B>TextArea</B> object.</LI>
+</UL><P>
+
+<LI><B>ScreenScale</B></LI><P>
+Class <B>ScreenScale </B> translates virtual screen coordinates to
+actual screen coordinates. The main data members/methods of
+<B>ScreenScale</B> include:<P>
+<UL>
+<LI><B>private static final int standardX = 1280;</B> -- The width of
+the virtual screen.</LI>
+<LI><B>private static final int standardY = 1024;</B> -- The height of
+the virtual screen.</LI>
+<LI><B>public static final Dimension getDimension (int x, int y);</B>
+ -- Convert virtual screen dimension to actual screen dimension.</LI>
+<LI><B>public static final void setLocation (int x, int y, Component
+	  c);</B> -- Set the location of a component to a virtual
+screen coordinate.</LI>
+</UL><P>
+
+<LI><B>Catalog</B></LI><P>
+Class <B>Catalog</B> represents DTE catalog. 
+The main data members/methods of
+<B>Catalog</B> include:<P>
+<UL>
+<LI><B>private Vector v;</B> -- The vector that holds catalog entries.
+Each catalog entry is an element in the vector and is stored as a 
+<B>PairVector</B> object. 
+Each element of the <B>PairVector</B> objects is a pair
+of <B>String</B>s. The first <B>String</B> is the name of the an
+attribute (such as "Name:", "Type:", "Schema:", etc.) that describes 
+the catalog entry. The second <B>String</B> in the pair is the 
+ value of the corresponding attribute.</LI>
+<LI><B>public static final Catalog load (Environment env) throws
+ParseException;</B> -- Load the home catalog.</LI>
+<LI><B>public static Catalog load (BufferedReader bf) throws
+ParseException;</B> -- Load catalog from a <B>BufferedReader</B>.</LI>
+<LI><B>public final Vector getVector ();</B> -- return the catalog
+entries.</LI>
+</UL><P>
+
+<LI><B>Catalog.Line</B></LI><P>
+Class <B>Catalog.Line</B> is a private class to class <B>Catalog</B>.
+It is used in reading a catalog from an <B>BufferedReader</B>.
+The main data members/methods of
+<B>Catalog.Line</B> include:<P>
+<UL>
+<LI><B>private String s;</B> -- A string buffer for reading.</LI>
+<LI><B>private int pos;</B> -- The current reading position in the 
+string.</LI>
+<LI><B>public Line (BufferedReader bf);</B> -- Constructor.</LI>
+<LI><B>public String next () throws IOException;</B> -- Return the
+next token read.</LI>
+</UL><P>
+
+
+<LI><B>Catalog.ParseException</B></LI><P>
+Class <B>Catalog.ParseException</B> is the <B>Exception</B> subclass
+associated with catalog reading failure.
+The main data members/methods of
+<B>Catalog.ParseException</B> include:<P>
+<UL>
+<LI><B>public ParseException (String s);</B> -- Constructor.</LI>
+<LI><B>public ParseException (Throwable e);</B> -- Constructor.
+Converts other kinds of exceptions to <B>Catalog.ParseException</B>.</LI>
+</UL><P>
+
+<LI><B>Environment</B></LI><P>
+Class <B>Environment</B> deals with everything about the current
+environment variable settings.
+The main data members/methods of
+<B>Environment</B> include:<P>
+<UL>
+<LI><B>private static final String [] envVar;</B> -- A list of 
+Devise/DTE related environment variable names.</LI>
+<LI><B>private static final String [] envVarDTEW</B> -- A list of
+DTEW related environment variable names.</LI>
+<LI><B>private static String [] envDTEWDefs;</B> -- Default values
+for DTEW related environment variables.</LI>
+<LI><B>private PairVector v;</B> -- Vector of Devise/DTE/DTEW 
+environment variable settings.</LI>
+<LI><B>private static PairVector otherEnv;</B> -- Vector of other
+environment variable settings.</LI>
+<LI><B>public Environment ();</B> -- Constructor.</LI>
+<LI><B>private static native String getSystemEnv (String var);</B> -- 
+Get the value of an environment variable.</LI>
+<LI><B>public static final void runCommand (String [] s) throws
+IOException</B> 
+-- Execute a command.</LI>
+<LI><B>private static void loadEnvironments ();</B> -- Load in all
+environment variable settings.</LI>
+<LI><B>public void setenv (String var, String value);</B> -- Set the
+value of an environment variable.</LI>
+<LI><B>public final String getenv (String var);</B> -- Get the value
+of an environment variable.</LI>
+<LI><B>public final String getHomeTable ();</B> -- Get the home 
+catalog file name.</LI>
+<LI><B>public final PairVector getenv ();</B> -- Get all the
+environment variable settings.</LI>
+<LI><B>public void runQuery (String q, ResultOutputer outputer);</B> 
+-- Execute an SQL query and output the results to 
+a <B>ResultOutputer</B>.</LI>
+<LI><B>public InputStream [] runQuery (String query) throws
+IOException;</B> 
+-- Execute an SQL query and return the stdout and stderr output of
+that query as two <B>InputStream</B> objects.</LI>
+</UL><P>
+
+<LI><B>DTEWindow</B></LI><P>
+Class <B>DTEWindow</B> represents the whole DTEW window.
+The main data members/methods of
+<B>DTEWindow</B> include:<P>
+<UL>
+<LI><B>private UpperPanel upperPanel;</B> -- The upper panel that
+contains all the Command Panes..</LI>
+<LI><B>private CatalogPanel catalogPanel;</B> -- The Catalog Pane.</LI>
+<LI><B>private ResultPanel resultPanel;</B> -- The Output Pane.</LI>
+<LI><B>private static final String szTitle = "DTE Window";</B> -- 
+The window title.</LI>
+<LI><B>private Environment env;</B> -- The current environment
+variable settings.</LI>
+<LI><B>public DTEWindow (Environment e);</B> -- Constructor.</LI>
+<LI><B>public void draw ();</B> -- Draw the window.</LI>
+<LI><B>private final void loadCatalogPanel (Environment env);</B> -- 
+Load the Catalog Pane.</LI>
+<LI><B>private final void loadResultPanel ();</B> -- Load the
+Output Pane.</LI>
+<LI><B>private final void loadUpperPanel ();</B> -- Load the 
+Command Panes.</LI>
+<LI><B>private void createMenu ();</B> -- Create menu items.</LI>
+<LI><B>public static void main (String [] args);</B> -- The main
+function of DTEW. Create a <B>DTEWindow</B> object and show it.</LI>
+</UL><P>
+
+<LI><B>OutputerPane</B></LI><P>
+Class <B>OutputerPane</B> is the combination of class
+<B>ScrollPane</B> and interface <B>ResultOutputer</B>. An
+<B>OutputerPane</B> object redirects all outputs to another
+<B>ResultOutputer</B> object.
+The main data members/methods of
+<B>OutputerPane</B> include:<P>
+<UL>
+<LI><B>private ResultOutputer redirect;</B> -- The redirect 
+<B>ResultOutputer</B> object.</LI>
+<LI><B>public OutputerPane ();</B> -- Constructor.</LI>
+<LI><B>public OutputerPane (int scroll);</B> -- Constructor.</LI>
+<LI><B>public final void setOutputerRedirect (ResultOutputer r);</B> 
+-- Set the redirect <B>ResultOutputer</B> object.</LI>
+</UL><P>
+
+<LI><B>CatalogPanel</B></LI><P>
+Class <B>CatalogPanel</B> represents the Catalog Pane.
+The main data members/methods of
+<B>CatalogPanel</B> include:<P>
+<UL>
+<LI><B>private TextField catField;</B> -- The text field to input the
+catalog name or catalog file name.</LI>
+<LI><B>private Button catButton;</B> -- The "Load Catalog" button.</LI>
+<LI><B>private Button fileButton;</B> -- The "Load File" button.</LI>
+<LI><B>private Button clearButton;</B> -- The "Clear" button.</LI>
+<LI><B>private Catalog catalog;</B> -- The catalog being shown.</LI>
+<LI><B>private Environment env;</B> -- The environment variable
+settings.</LI>
+<LI><B>private boolean isHome;</B> -- A flag of if the current
+catalog shown is the home catalog.</LI>
+<LI><B>private boolean isTable;</B> -- A flag of if the current catalog
+was loaded by "Load by Name" mode or "Load by File" mode. This flag
+is true if it is loaded "by Name".</LI>
+<LI><B>private String tName;</B> -- The name of the current catalog
+if it was loaded "by Name".</LI>
+<LI><B>private String pName;</B> -- The file name of the current
+catalog if it was loaded "by File".</LI>
+<LI><B>private DialogShower shower;</B> -- The redirect
+<B>DialogShower</B> object.</LI>
+<LI><B>public CatalogPanel (Environment env);</B> -- Constructor.</LI>
+<LI><B>private void processEntryCommand (EntryButton o, String
+ com);</B> 
+-- Process a command from an "in-line" button.</LI>
+<LI><B>private void redrawPane (String path);</B> -- Reload a catalog
+and redraw the pane.</LI>
+<LI><B>Color colorMap (String type);</B> -- Return the color 
+associated with each catalog entry type.</LI>
+<LI><B>public void loadFile (String path);</B> -- Reload a catalog
+by file.</LI>
+<LI><B>public void loadCatalog (String path, boolean output);</B> -- 
+Reload a catalog by name, with flag to indicate if the result should
+be outputed.</LI>
+<LI><B>public InputStream getCatalog (String name, boolean output) throws Catalog.ParseException
+</B> -- Get the <B>InputStream</B> from the name of a catalog.</LI>
+<LI><B>public final void loadCatalog ();</B> -- Load the home catalog.
+</LI>
+<LI><B>private final void reload ();</B> -- Reload the current 
+catalog shown.</LI>
+<LI><B>public final void updateHome ();</B> -- Handle the event that
+the home catalog has just been modified.</LI>
+<LI><B>public final void updateTable (String table);</B> -- Handle
+the event that some catalog has just been modified.</LI>
+</UL><P>
+
+<LI><B>CatalogPanel.EntryButton</B></LI><P>
+Class <B>CatalogPanel.EntryButton</B> represents the "in-line" buttons
+in the Catalog Pane.
+The main data members/methods of
+<B>CatalogPanel.EntryButton</B> include:<P>
+<UL>
+<LI><B>private PairVector pv;</B> -- The attribute-value pair vector
+associated with the catalog entry associated.</LI>
+<LI><B> public EntryButton (String com, PairVector pv, Color c);</B> 
+-- Constructor.</LI>
+<LI><B>public final PairVector getPairVector ();</B> -- Return the
+attribute-value pair vector.</LI>
+<LI><B>public final String getName ();</B> -- Get the name of the
+catalog entry associated.</LI>
+<LI><B>public final String getType ();</B> -- Get the type of the 
+catalog entry associated.</LI>
+</UL><P>
+
+<LI><B>ResultPanel</B></LI><P>
+Class <B>ResultPanel</B> represents the Output Pane.
+The main data members/methods of
+<B>ResultPanel</B> include:<P>
+<UL>
+<LI><B>private TextArea outArea;</B> -- The text area to output query
+results.</LI>
+<LI><B>private TextArea errArea;</B> -- The text area to output error
+messages.</LI>
+<LI><B>public ResultPanel ();</B> -- Constructor.</LI>
+<LI><B>private AreaPrintWriter outWriter;</B> -- The 
+<B>PrintWriter</B> object for outputing query results.</LI>
+<LI><B>private AreaPrintWriter errWriter;</B> -- The 
+<B>PrintWriter</B> object for outputing error messages.</LI>
+<LI><B>private final void outputText (String s, AreaPrintWriter
+ a);</B>
+ -- Output a string to one of the two <B>AreaPrintWriter</B> contained in
+this object.</LI>
+<LI><B>private void outputText (InputStream i, AreaPrintWriter a);</B>
+ -- Output to one of the two <B>AreaPrintWriter</B> contained in
+this object. The source of the data to be outputed comes from an
+<B>InputStream</B> object.</LI>
+<LI><B>public final void writeOutput (InputStream i);</B> -- Read
+query results from an <B>InputStream</B> object and output them.</LI>
+<LI><B>public final void writeOutput (String s);</B> -- Ouptut query
+results.</LI>
+<LI><B>public final void writeError (InputStream i);</B> -- Read
+error messages from an <B>InputStream</B> object and output them.</LI>
+<LI><B>public final void writeError (String s);</B> -- Output error
+messages.</LI>
+<LI><B>public final void writeError (Throwable e);</B> -- Output
+exception information.</LI>
+</UL><P>
+
+<LI><B>UpperPanel</B></LI><P>
+Class <B>UpperPanel</B> represents the upper panel of the whole DTEW
+window. Contained in the upper panel are the Command Panes..
+The main data members/methods of
+<B>UpperPanel</B> include:<P>
+<UL>
+<LI><B>private final UpperComponent [] components;</B> -- The
+Command Panes.</LI>
+<LI><B>public static final String [] comNames;</B> -- The menu item
+names associated with the Command Panes.</LI>
+<LI><B>public UpperPanel (Environment env);</B> -- Constructor.</LI>
+<LI><B>public final void setOutputerRedirect (ResultOutputer r);</B> 
+-- Set the redirect <B>ResultOutputer</B> for each Command Panes.</LI>
+<LI><B>public final void setCatalogRefresher (CatalogRefresher r);</B>
+ -- Set the redirect <B>CatalogRefresher</B> for each Command Panes.
+</LI>
+<LI><B>public final void showDialog (int dialog, String param);</B> 
+-- Handle an internal command. It passes the command to all the
+Command Panes.</LI>
+</UL><P>
+
+<LI><B>UpperComponent</B></LI><P>
+An instance of class <B>UpperComponent</B> is a Command Pane.
+The main data members/methods of
+<B>UpperComponent</B> include:<P>
+<UL>
+<LI><B>protected Environment env;</B> -- The environment variable
+settings.</LI>
+<LI><B>protected CatalogRefresher ref;</B> -- The redirect 
+<B>CatalogRefresher</B> object.</LI>
+<LI><B>public UpperComponent ();</B> -- Constructor.</LI>
+<LI>
+<B>public final void setCatalogRefresher (CatalogRefresher ref);</B> 
+-- Set the redirect <B>CatalogRefresher</B> object.</LI>
+</UL><P>
+
+<LI><B>CreateTablePane</B></LI><P>
+Class <B>CreateTablePane</B> represents the Create Table Pane.
+The main data members/methods of
+<B>CreateTablePane</B> include:<P>
+<UL>
+<LI><B>protected ListActionPanel mainPanel;</B> -- The main panel.</LI>
+<LI><B>public CreateTablePane ();</B> -- Constructor.</LI>
+<LI><B>private void create ();</B> -- Create the table.</LI>
+</UL><P>
+
+<LI><B>CreateViewPane</B></LI><P>
+Class <B>CreateViewPane</B> represents the Create View Pane.
+The main data members/methods of
+<B>CreateViewPane</B> include:<P>
+<UL>
+<LI><B>protected ListActionPanel mainPanel;</B> -- The main panel.</LI>
+<LI><B>public CreateViewPane ();</B> -- Constructor.</LI>
+<LI><B>private void create ();</B> -- Create the view.</LI>
+</UL><P>
+
+<LI><B>CreateGestaltPane</B></LI><P>
+Class <B>CreateGestaltPane</B> represents the Create Gestalt Pane.
+The main data members/methods of
+<B>CreateGestaltPane</B> include:<P>
+<UL>
+<LI><B>protected ListActionPanel mainPanel;</B> -- The main panel.</LI>
+<LI><B>public CreateGestaltPane ();</B> -- Constructor.</LI>
+<LI><B>private void create ();</B> -- Create the gestalt.</LI>
+</UL><P>
+
+<LI><B>CreateIndexPane</B></LI><P>
+Class <B>CreateIndexPane</B> represents the Create Index Pane.
+The main data members/methods of
+<B>CreateIndexPane</B> include:<P>
+<UL>
+<LI><B>private SingleListPanel leftPanel;</B> -- The panel to show
+the key attribute list and related buttons.</LI>
+<LI><B>private SingleListPanel middlePanel;</B> -- The panel to show
+the non-key attribute list and related buttons.</LI>
+<LI><B>private Button bAddKey;</B> -- The "Add As Key" button.</LI>
+<LI><B>private Button bAddNonkey;</B> -- The "Add As Non-key" button.
+</LI>
+<LI><B>private Button bClear;</B> -- The "Clear" button.</LI>
+<LI><B>private Button bCreate;</B> -- The "Create" button.</LI>
+<LI><B>private TextField tBottom;</B> -- The bottom text field.</LI>
+<LI><B>private TextField tIndex;</B> -- The "Index:" text field.</LI>
+<LI><B>private TextField tTable;</B> -- The "On Table:" text field.
+</LI>
+<LI><B>public CreateIndexPane ();</B> -- Constructor.</LI>
+<LI><B>private Panel makeBottomPanel ();</B> -- Draw the bottom panel.
+</LI>
+<LI><B>private final void enableAction ();</B> -- Enable/Disable the 
+"Create" button based on the current inputs.</LI>
+<LI><B>private void create ();</B> -- Create the index.</LI>
+<LI><B>public final void showDialog (int dialog, String param);</B> 
+-- Process an "internal command", particularly, the "create index"
+command.</LI>
+</UL><P>
+
+<LI><B>ShowGestaltPane</B></LI><P>
+Class <B>ShowGestaltPane</B> represents the Show Gestalt Pane.
+The main data members/methods of
+<B>ShowGestaltPane</B> include:<P>
+<UL>
+<LI><B>private List l;</B> -- The member list on the left.</LI>
+<LI><B>private Button bReg;</B> -- The "Register" button.</LI>
+<LI><B>private Button bUnreg;</B> -- The "Unregister" button.</LI>
+<LI><B>private Button bShow;</B> -- The "Show" button.</LI>
+<LI><B>private Button bClear;</B> -- The "Clear" button.</LI>
+<LI><B>private TextField tReg;</B> -- The "Register" text field.</LI>
+<LI><B>private TextField tUnreg;</B> -- The disabled text field that
+displays the name of the selected member in the member list.</LI>
+<LI><B>private TextField tName;</B> -- The "Gestalt Name" text field.
+</LI>
+<LI><B>public ShowGestaltPane ();</B> -- Constructor.</LI>
+<LI><B>private final void loadAll (String var);</B> -- Load a new
+gestalt by name.</LI>
+<LI><B>private void register ();</B> -- Register a new member into 
+the current gestalt.</LI>
+<LI><B>private void unregister ();</B> -- Unregister a member from
+the current gestalt.</LI>
+<LI><B>public final void showDialog (int dialog, String param);</B> 
+-- Process an "internal command", particularly, the "show gestalt"
+command.</LI>
+</UL><P>
+
+<LI><B>ODBCPane</B></LI><P>
+Class <B>ODBCPane</B> represents the ODBC Pane.
+The main data members/methods of
+<B>ODBCPane</B> include:<P>
+<UL>
+<LI><B>private TitledInputPanel pCreateDSN;</B> -- The
+Create ODBC DSN panel line.</LI>
+<LI><B>private TitledInputPanel pCreateTable;</B> -- The Create ODBC
+Table panel line.</LI>
+<LI><B>private TitledInputPanel pShowDSN;</B> -- The Show ODBC DSNs panel
+line.</LI>
+<LI><B>private TitledInputPanel pShowTable;</B> -- The Show ODBC
+Tables panel line.</LI>
+<LI><B>private TitledInputPanel pDeleteDSN;</B> -- The Delete ODBC
+DSN panel line.</LI>
+<LI><B>private TitledInputPanel pDeleteTable;</B> -- The Delete ODBC
+Table panel line.</LI>
+<LI><B>public ODBCPane ();</B> -- Constructor.</LI>
+<LI><B>private final void createDSN ();</B> -- Create an ODBC DSN.</LI>
+<LI><B>private final void createTable ();</B> -- Create an ODBC
+table.</LI>
+<LI><B>private final void showDSN ();</B> -- Show all ODBC DSNs.</LI>
+<LI><B>private final void showTable ();</B> -- Show all ODBC tables.
+</LI>
+<LI><B>private final void deleteDSN ();</B> -- Delete an ODBC DSN.</LI>
+<LI><B>private final void deleteTable ();</B> -- Delete an ODBC table.
+</LI>
+</UL><P>
+
+<LI><B>ExecuteSQLPane</B></LI><P>
+Class <B>ExecuteSQLPane</B> represents the Execute SQL Pane.
+The main data members/methods of
+<B>ExecuteSQLPane</B> include:<P>
+<UL>
+<LI><B>private TextArea ta;</B> -- The central text area.</LI>
+<LI><B>private Button bExecute;</B> -- The "Execute" button.</LI>
+<LI><B>private Button bClear;</B> -- The "Clear" button.</LI>
+<LI><B>public ExecuteSQLPane ();</B> -- Constructor.</LI>
+</UL><P>
+
+<LI><B>ShowEnvironmentsPane</B></LI><P>
+Class <B>ShowEnvironmentsPane</B> represents the Show Environments 
+Pane. The main data members/methods of
+<B>ShowEnvironmentsPane</B> include:<P>
+<UL>
+<LI><B>private List l;</B> -- The central environment variable list.
+</LI>
+<LI><B>private Button bSet;</B> -- The "Set" button.</LI>
+<LI><B>private Button bClear;</B> -- The "Clear" button.</LI>
+<LI><B>private TextField tVar;</B> -- The bottom-left text field (on
+the left side of the '=' sign).</LI>
+<LI><B>private TextField tValue;</B> -- The bottom-right text field
+(on the right side of the '=' sign).</LI>
+<LI><B>public ShowEnvironmentsPane ();</B> -- Constructor.</LI>
+<LI><B>public final void setEnvironment (Environment env);</B> -- 
+Load in the whole environment variable settings.</LI>
+<LI><B>private final void loadEnvironments (String var);</B> -- Update the central list with respect to the change of a
+single environment variable. </LI>
+</UL><P>
+
+<LI><B>MiscPane</B></LI><P>
+Class <B>MiscPane</B> represents the Miscellaneous Pane.
+The main data members/methods of
+<B>MiscPane</B> include:<P>
+<UL>
+<LI><B>private Panel pDropEntry;</B> -- The Drop Catalog Entry panel
+line.</LI>
+<LI><B>private Panel pDropIndex;</B> -- The Drop Index panel line.</LI>
+<LI><B>private Panel pShow;</B> -- The Show Schema panel line.</LI>
+<LI><B>private Panel pMater;</B> -- The Materialize View panel line.
+</LI>
+<LI><B>public MiscPane ();</B> -- Constructor.</LI>
+<LI><B>private void dropEntry ();</B> -- Drop a catalog entry.</LI>
+<LI><B>private void dropIndex ();</B> -- Drop an index.</LI>
+<LI><B>private void showSchema ();</B> -- Show schema of a catalog
+entry.</LI>
+<LI><B>private void materialize ();</B> -- Materialize a view.</LI>
+</UL><P>
+
+<LI><B>ResultOutputer</B></LI><P>
+Interface <B>ResultOutputer</B> defines a collection of methods to
+output query results and error messages.
+The data members/methods defined in interface
+<B>ResultOutputer</B> are:<P>
+<UL>
+<LI><B>public void writeOutput (InputStream i);</B> -- Read query
+results from an <B>InputStream</B> and output them.</LI>
+<LI><B>public void writeError (InputStream i);</B> -- Read error
+messages from an <B>InputStream</B> and output them.</LI>
+<LI><B>public void writeOutput (String s);</B> -- Output query
+results.</LI>
+<LI><B>public void writeError (String s);</B> -- Output error
+messages.</LI>
+<LI><B>public void writeError (Throwable e);</B> -- Output exception
+information.</LI>
+</UL><P>
+
+<LI><B>DialogShower</B></LI><P>
+Interface <B>DialogShower</B> defines a method to process an
+"internal command".
+The data members/methods defined in interface
+<B>DialogShower</B> are:<P>
+<UL>
+<LI><B>public static final int CREATE_INDEX = 0;</B> -- The command ID
+for "create index" command.</LI>
+<LI><B>public static final int SHOW_GESTALT = 1;</B> -- The command ID
+for "show gestalt" command.</LI>
+<LI><B>public void showDialog (int dialog, String param);</B> -- The
+method to process an internal command.</LI>
+</UL><P>
+
+<LI><B>CatalogRefresher</B></LI><P>
+Interface <B>CatalogRefresher</B> defines methods to handle the event
+that the home catalog or some other catalog has just been modified.
+The data members/methods defined in interface
+<B>CatalogRefresher</B> are:<P>
+<UL>
+<LI><B>public void updateHome ();</B> -- Handle the event that
+the home catalog has just been modified.</LI>
+<LI><B>public void updateTable (String table);</B> -- Handle the event
+that some catalog has just been modified.</LI>
+</UL><P>
+
+<LI><B>SizedComponent</B></LI><P>
+Interface <B>SizedComponent</B> defines a method to return the
+preferred size of the object:<P>
+<UL>
+<LI><B>public Dimension getPreferredSize ();</B></LI>
+</UL><P>
+
+<LI><B>ListActionPanel</B></LI><P>
+Class <B>ListActionPanel</B> encapsulates together a list, text fields and 
+buttons to add new members into the list or modify existing members 
+of the list, a "Move Up" button, a "Move Down" button, a "Remove" 
+button, a name text field, an optional description text field and a 
+main action button. The list can be a list of strings
+(like the one in the Create View Pane) or a list of pairs of strings
+(like the one in the Create Table Pane).
+The main data members/methods of
+<B>ListActionPanel</B> include:<P>
+<UL>
+<LI><B>private List l;</B> -- The main list.</LI>
+<LI><B>private Button bAction;</B> -- The main action button.</LI>
+<LI><B>private Button bSet;</B> -- The button to modify an existing
+list item (like the "Modify Field" button in Create Table Pane).</LI>
+<LI><B>private Button bAdd;</B> -- The "Add" button.</LI>
+<LI><B>private Button bClear;</B> -- The "Clear" button.</LI>
+<LI><B>private Button bMoveUp;</B> -- The "Move Up" button.</LI>
+<LI><B>private Button bMoveDown;</B> -- The "Move Down" button.</LI>
+<LI><B>private Button bRemove;</B> -- The "Remove" button.</LI>
+<LI><B>private TextField tName;</B> -- The name text field.</LI>
+<LI><B>private TextField tDesc;</B> -- The description text field.</LI>
+<LI><B>private TextField tsPart1;</B> -- The text field to modify an
+existing list item.</LI>
+<LI><B>private TextField tsPart2;</B> -- The additional text field
+to modify an existing list item.</LI>
+<LI><B>private TextField taPart1;</B> -- The text field to add a new
+list item.</LI>
+<LI><B>private TextField taPart2;</B> -- The additional text field
+to add a new list item.</LI>
+<LI><B>private boolean notsingle;</B> -- A flag to indicate if the
+list is a list of pairs of strings or a list of strings.</LI>
+<LI><B>private boolean optional;</B> -- A flag to indicate if the
+description field is additional for the main action button to be
+active.</LI>
+<LI><B>private boolean notempty;</B> -- A flag to indicate if the
+current list is not empty.</LI>
+<LI><B>public ListActionPanel (ActionListener parent, String name, 
+String desc, String action, int x, int y,
+boolean descoptional, String part1, String part2, String set);</B> -- 
+Constructor.</LI>
+<LI><B>public ListActionPanel (ActionListener parent, String name, 
+String desc, String action, int x, int y,
+boolean descoptional, String part1, String part2);</B> -- Constructor.
+</LI>
+<LI><B>public final String getNameString ();</B> -- Get the text in
+the name text field.</LI>
+<LI><B>public final String getDesc ();</B> -- Get the text in the
+description text field.</LI>
+<LI><B>public final String [] getListItems ();</B> -- Get the list
+items.</LI>
+<LI><B>private final void redraw (int index);</B> -- Redraw the whole
+panel.</LI>
+<LI><B>private final void enableAction ();</B> -- Enable/Disable the
+main action button based on the current inputs.</LI>
+</UL><P>
+
+<LI><B>SingleListPanel</B></LI><P>
+Class <B>SingleListPanel</B> encapsulates rogether a list, a text field and a
+button to modify existing members of the list, a "Move Up" button, 
+a "Move Down" button and a "Remove" button.
+The main data members/methods of
+<B>SingleListPanel</B> include:<P>
+<UL>
+<LI><B>private Button bMoveUp;</B> -- The "Move Up" button.</LI>
+<LI><B>private Button bMoveDown;</B> -- The "Move Down" button.</LI>
+<LI><B>private Button bRemove;</B> -- The "Remove" button.</LI>
+<LI><B>private Button bSet;</B> -- The button to modify an existing
+list item.</LI>
+<LI><B>private List l;</B> -- The main list.</LI>
+<LI><B>private TextField t;</B> -- The text field to modify an 
+existing list item.</LI>
+<LI><B>public SingleListPanel (String title, String prompt, String 
+action, ActionListener parent, int x, int y);</B> -- Constructor.</LI>
+<LI><B>public final String [] getListItems ();</B> -- Get the list
+items.</LI>
+<LI><B>public final int getItemCount ();</B> -- Get the total count
+of the list items.</LI>
+<LI><B>public final void addItem (String s);</B> -- Add a new item
+into the list.</LI>
+<LI><B>private final void redraw (int index);</B> -- Redraw the
+whole panel.</LI>
+</UL><P>
+
+<LI><B>SizedList</B></LI><P>
+Class <B>SizedList</B> is a subclass of <B>List</B> that implements
+interface <B>SizedComponent</B>.
+The main data members/methods of
+<B>SizedList</B> include:<P>
+<UL>
+<LI><B>public SizedList (int x, int y);</B> -- Constructor.</LI>
+<LI><B>public final Dimension getPreferredSize ();</B> -- Return
+the preferred size.</LI>
+</UL><P>
+
+<LI><B>SizedTextArea</B></LI><P>
+Class <B>SizedTextArea</B> is a subclass of <B>TextArea</B> that implements
+interface <B>SizedComponent</B>.
+The main data members/methods of
+<B>SizedTextArea</B> include:<P>
+<UL>
+<LI><B>public SizedTextArea (int x, int y);</B> -- Constructor.</LI>
+<LI><B>public final Dimension getPreferredSize ();</B> -- Return
+the preferred size.</LI>
+</UL><P>
+
+<LI><B>TitledInputPanel</B></LI><P>
+Class <B>TitledInputPanel</B> encapsulates together zero to three text fields
+with label prompts, a title label and an action button.
+The main data members/methods of
+<B>TitledInputPanel</B> include:<P>
+<UL>
+<LI><B>private String title;</B> -- The title.</LI>
+<LI><B>private String [] prompts;</B> -- The prompts.</LI>
+<LI><B>private int size;</B> -- Number of text fields.</LI>
+<LI><B>private TextField [] ts;</B> -- The text fields.</LI>
+<LI><B>private Button bAction;</B> -- The action button.</LI>
+<LI><B>public TitledInputPanel (String title, String action, 
+ActionListener parent);</B> -- Constructor.</LI>
+<LI><B>public TitledInputPanel (String title, String action, 
+ActionListener parent, String p);
+</B> -- Constructor.</LI>
+<LI><B>ublic TitledInputPanel (String title, String action, 
+ActionListener parent, String p1, String p2);</B> -- Constructor.</LI>
+<LI><B>public TitledInputPanel (String title, String action, 
+ActionListener parent, String [] prompts);</B> -- Constructor.</LI>
+<LI><B>private void init (String title, String action, 
+ActionListener parent, String [] prompts);</B> -- Create and 
+initialize the components in the panel.</LI>
+<LI><B>public final String getText (int i);</B> -- Returned the 
+text in the i'th text field (starting from 0).</LI>
+</UL><P>
+
+</UL>
+
+<P><BR>
+<H2>C Code Part</H2>
+
+File "Environment.c" contains the 
+implementaion of the native method <B>String getSystemEnv(String
+var);</B> 
+of class "Environment". File 
+"Execute.c" is a standalone C program that executes a command with
+stdin, stdout and stderr redirected from/to files. 
+It accepts up to 4 command line
+arguments: the command to execute, the name of the file from which 
+stdin is redirected, the name of the file to which stdout is 
+redirected and the name of the file to which stderr is redirected.
+
+</BODY>
+</HTML>

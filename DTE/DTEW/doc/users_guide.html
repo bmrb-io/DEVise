@@ -1,0 +1,555 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEADER>
+<TITLE>DTE Window User's Guide</TITLE>
+</HEADER>
+
+<BODY>
+<CENTER>
+<H1>DTE Window User's Guide</H1>
+<P><H4>Yunrui Li<BR>CS Dept. UW-Madison</H4><P>
+</CENTER>
+<HR><P><BR>
+
+<H2>General Description</H2><P>
+DTEW (DTE Window) provides a GUI interface for standalone DTE. DTEW
+is targeted for users who are not familiar with the language of SQL,
+although the user can still ask SQL queries directly through DTEW.
+<P><BR>
+
+<H3>Look and Feel</H3><P>
+Below is the picture of the actual DTE Window. From the picture we can 
+see that the whole window frame consists of 3 parts:
+<UL>
+<LI>Catalog Pane</LI><P>
+The Catalog Pane forms the bottom-left part of the whole window. It
+shows the contents of a catalog. By default, the contents of the 
+"home catalog" of DTE is displayed in the Catalog Pane when DTEW is 
+first brought up. More details of the Catalog Pane are describe
+<A HREF="#Catalog">here</A>.<P>
+
+<A NAME="Output">
+<LI>Output Pane</LI><P>
+The Output Pane forms the bottom-right part of the whole window.
+The Output Pane is divided into two parts. The upper part is used to
+show query results. The lower part is used to show any error messages
+or miscellaneous messages.<P>
+
+<LI>Command Panes</LI><P>
+The Command Panes form the upper part of the whole window. There are
+total of 9 Command Panes, each associated with a different menu 
+item. All these Command Panes share the same space (the upper part of 
+the whole window). The user can only see one of the Command Panes at 
+any time. More details of the Command Panes are described
+<A HREF="#Command">here</A>.<P>
+</UL><P>
+
+<IMG WIDTH="900" SRC="look.jpg">
+
+<P><BR>
+
+<H3>Environment Variables</H3><P>
+DTEW is written in Java. The main class is "DTEWindow". To run it,
+simply type<P>
+<UL><I>java DTEWindow</I></UL><P>
+in your command line. However, before you run DTEW, you need to set up
+some environment variables correctly. Some of them are need by 
+Devise/DTE and some are need by DTEW only. Here is the list of 
+environment variables the user need to set:
+<UL>
+<LI><B>DTEW_WORK_DIR</B>, Needed by DTEW. It specifies the main DTEW
+working directory. The default value for <B>DTEW_WORK_DIR</B> is the 
+current directory.</LI><P>
+<LI><B>DTEW_DTE_EXEC</B>. Needed by DTEW. It specifies the name of the
+DTE executable file. DTEW searches the DTE executable file under the
+directory specified by variable <B>DTEW_WORK_DIR</B>. The default
+value of <B>DTEW_DTE_EXEC</B> is "dte".</LI><P>
+<LI><B>DTEW_TEMP_STDIN</B>, <B>DTEW_TEMP_STDOUT</B>,
+<B>DTEW_TEMP_STDERR</B>, Needed by DTEW. They specify the names of
+the temporary files created by DTEW. DTEW may create these temporary
+files under the directory specified by variable <B>DTEW_WORK_DIR</B>
+for the purpose of stdin, stdout and stderr redirection. The default
+value for these three variables are "temp.input", "temp.output" and
+"temp.error" respectively.</LI><P>
+<LI><B>DEVISE_HOME_TABLE</B>, Needed by DTE. It specifies the path
+of the main catalog file. The default value of this variable is
+"./catalog.dte".</LI><P>
+<LI><B>DEVISE_MATER_DIR</B>, Needed by DTE. It specifies the name of
+the directory where the DTE puts materialized views and gestalt member
+files in.</LI><P>
+<LI><B>DEVISE_MINMAX_DIR</B>, <B>DEVISE_TEMP_FILE_DIR</B>,
+<B>DEVISE_ID_FILE</B>, <B>DEVISE_DEF_FILE</B>, 
+<B>DEVISE_INDEX_TABLE</B>, <B>DEVISE_CONVERT_BULK</B>,
+<B>DEVISE_TEMP_FILE_DIR</B>, Other environment variables needed by
+individual commands of Devise/DTE.</LI><P>
+</UL><P><BR><BR>
+
+<A NAME="Catalog">
+<H2>Catalog Pane</H2><P>
+In the Catalog Pane, the user can browse the contents of a catalog. 
+A catalog is a table(file) where the information of all the locally
+accessible data sources (such as tables, views, remote DTE servers,
+etc.) is stored. Each catalog entry (data source) has a name and a 
+type, and some other information (such as schema, data file, etc.)
+specific to that type. A catalog entry is of one of the following
+types:
+<UL>
+<LI><B>Standard Table</B>, standard DTE table, whose data are
+stored in a data file.</LI><P>
+<LI><B>View</B>, non-materialized view, defined by a SQL select
+query.</LI><P>
+<LI><B>Materialized View</B>, materialized view, whose contents
+(result of definitin query) are stored in a file.</LI><P>
+<LI><B>Gestalt</B>, gestalt, (a collection of data sources with
+the same schema), associated with a member file.</LI><P>
+<LI><B>Remote DTE Server</B>, remote DTE server, through which
+we can access remote data sources.</LI><P>
+<LI><B>Catalog File</B>, catalog file.</LI><P>
+<LI><B>Devise Table</B>, table used by Devise.</LI><P>
+<LI><B>ODBC Table</B>, (Windows NT/95 only) ODBC table, whose data
+is accessible through an ODBC driver.</LI><P>
+<LI><B>CGI Interface</B>, a kind of data source associated with
+a certain remote CGI server. It remains in DTE catalog only for 
+historical reasons.</LI><P>
+<LI><B>UNIX File</B>, a kind of file used by Devise only.</LI><P>
+</UL><P>
+
+Associated with each catalog entry there is zero or more "in-line"
+buttons. They are:
+<UL>
+<LI><B>Create Index ...</B>, associted with a <B>Standard Table</B> 
+type entry. It brings up the <A HREF="#CI">Create Index Pane</A>, 
+where the user can create a R-Tree index for the table. </LI><P>
+<LI><B>Show ...</B>, associated with a <B>Gestalt</B> type entry.
+It brings up the <A HREF="#SG">Show Gestalt Pane</A>, where the user 
+can browse the member file of the gestalt, register new members into 
+the gestalt or unregister a member from the gestalt.</LI><P>
+<LI><B>Load</B>, associated with a <B>Remote DTE Server</B> or a
+<B>Catalog File</B> type entry. It loads the contents of the catalog
+of the remote DTE server (or the catalog file) into the Catalog Pane.
+</LI><P>
+<LI><B>Show Schema</B>, associated with a <B>View</B> or a
+<B>Materialized View</B> type entry. It shows the schema of the view
+in the Output Pane. (It does this by issuing query 
+"SCHEMA <I>name</I>" to DTE).</LI><P>
+<LI><B>Materialzie</B>, associated with a <B>View</B> type entry.
+It materializes the view. If successful, the type of this entry is
+changed to <B>Materialized View</B>.</LI><P>
+</UL><P>
+
+The user can load any catalog into the Catalog Pane. This can be done
+is one of the two ways:
+<UL>
+<LI>Load by Name</LI><P>
+Enter the name of the catalog in the text field on the very top of the
+Catalog Pane, and press "Load Catalog" button. Here are some
+example catalog names:<P>
+<UL>
+<LI><B>.</B>&#9;&#32;(the home catalog)</LI>
+<LI><B>CarsServer</B> (the name of a <B>Remote DTE Server</B> entry or 
+<B>Catalog File</B> entry in the home catalog, the user can also write
+this as <B>.CarsServer</B>).</LI>
+<LI><B>CarsServer1.CarsServer2.catalog2</B> (the name of a
+<B>Remote DTE Server</B> entry or <B>Catalog File</B> entry in a
+remote DTE server (accssible through a chains of remote DTE servers).
+</LI>
+</UL><P>
+
+<LI>Load by File</LI><P>
+Enter the file name (or any environment variable name prefixed with 
+'$' that expands to a file name) of the catalog in the text field on
+the very top of the Catalog pane, and press "Load File" button. Here
+are some examples:<P>
+<UL>
+<LI><B>/u/y/u/yunrui/catalog.dte</B> (file name of a catalog)</LI>
+<LI><B>$DEVISE_HOME_TABLE</B> (an environment variable prefixed 
+with '$' that expands to the file name of a catalog. $DEVISE_HOME_TABLE
+expands to the file name of the home catalog).</LI>
+<LI><B>$</B> (a short cut for $DEVISE_HOME_TABLE).</LI>
+</UL><P>
+
+If the user loads a catalog in "Load by File" fashion, 
+there will be no "in-line" buttons. This is because DTE has no
+knowledge of the name of the catalog being loaded.
+</UL><P><BR><BR>
+
+<A NAME="Command">
+<H2>Command Panes</H2><P>
+
+There are 9 independent Command Panes in DTEW, each associated with 
+a different menu item. The user can only see one of the Command Panes
+at any time. The user brings up a particular Command Pane by selecting
+its corresponding menu item.<P><BR>
+
+<A NAME="CT">
+<H3>Create Table Pane</H3><P>
+
+<I>Functionality:</I>
+<UL>Create a local <B>Standard Table</B>. </UL>
+
+<I>Menu Item:</I>
+<UL>Create | Create Table</UL>
+
+<I>Usage:</I>
+<UL>
+<LI>Enter the name of the table in the "Table Name:" text field.</LI>
+<LI>Enter the file name of the data file in the "Data File:" text
+field.</LI>
+<LI>The list on the left shows the schema of the new table. To add a 
+new attribute to the schema, enter the attribute name into the bottom 
+"Field Name:" text field, and the attribute type into the bottom 
+"Type:" text field, then press "Add" button.</LI>
+<LI>The "Clear" button clears the contents of the two bottom text 
+fields.</LI>
+<LI>The center "Field Name:" text field and "Type:" text field show 
+the currently selected attribute in the schema. To modify the 
+name or type of this attribute, simply modify the string in the center 
+"Field Name:" and "Type:" text field and press "Modify Field" button.
+</LI>
+<LI>Use "Move Up" button or "Move Down" button to change the order of
+the attributes in the schema. Use "Remove" button to remove an
+attribute from the schema.</LI>
+<LI>Press "Create" button to create the new table.</LI>
+</UL>
+
+<I>Queries/Commands issued:</I>
+<UL>The create table operation is achieved by issusing command
+"INSERT INTO . VALUES ('<I>name</I> StandardTable
+<I>schema</I> <I>data file</I>');" to DTE.</UL>
+
+<I>Limits/Problems:</I>
+<UL>
+<LI>DTEW does not check the validness of the table name, attribute 
+names and attribute types, nor does it check duplicate attribute 
+names.</LI>
+<LI>DTEW does not check if a catalog entry with the same name has 
+already been in the home catalog either.</LI></UL>
+<P><BR>
+
+<A NAME="CV">
+<H3>Create View Pane</H3><P>
+
+<I>Functionality:</I>
+<UL>Create a local <B>View</B>. </UL>
+
+<I>Menu Item:</I>
+<UL>Create | Create View</UL>
+
+<I>Usage:</I>
+<UL>
+<LI>Enter the name of the view in the "View Name:" text field.</LI>
+<LI>Enter the definition of the view in the "SQL Query:" text field.
+</LI>
+<LI>The list on the left shows the attribute names of the new view.
+To add a new attribute name, enter the attribute name in the 
+"Field Name:" text field, then press "Add" button.</LI>
+<LI>The "Clear" button clears the contents of the bottom text field.
+</LI>
+<LI>The center "Field Name:" text field shows
+the currently selected attribute in the schema. To modify the 
+name of this attribute, simply modify the string in the center 
+"Field Name:" text field and press "Modify Field" button.
+</LI>
+<LI>Use "Move Up" button or "Move Down" button to change the order of
+the attribute names on the left list. Use "Remove" button to remove an
+attribute name from the list.</LI>
+<LI>Press "Create" button to create the new view.</LI>
+</UL>
+
+<I>Queries/Commands issued:</I>
+<UL>The create view operation is achieved by issusing command
+"INSERT INTO . VALUES ('<I>name</I> SQLView
+<I>attribute names</I> <I>definition</I>');" to DTE.</UL>
+
+<I>Limits/Problems:</I>
+<UL>
+<LI>DTEW does not check the validness of the view name, attribute 
+names, nor does it check duplicate attribute names.</LI>
+<LI>DTEW does
+not check if a catalog entry with the same name has already been
+in the home catalog.</LI>
+<LI>DTEW does not check if the SQL query entered
+is a valid SQL select query.</LI>
+<LI>DTEW does not check if the number of 
+attribute names on the left list equals to that returned from the
+SQL query.</LI></UL>
+<P><BR>
+
+<A NAME="CG">
+<H3>Create Gestalt Pane</H3><P>
+
+<I>Functionality:</I>
+<UL>Create a local <B>Gestalt</B>. </UL>
+
+<I>Menu Item:</I>
+<UL>Create | Create Gestalt</UL>
+
+<I>Usage:</I>
+<UL>
+<LI>Enter the name of the gestalt in the "Gestalt Name:" text field.
+</LI>
+<LI>Optionally, enter the file name of the member file in the 
+"Member File (Optional):" text field.</LI>
+<LI>The list on the left shows the schema of the new gestalt. To add a 
+new attribute to the schema, enter the attribute name into the bottom 
+"Field Name:" text field, and the attribute type into the bottom 
+"Type:" text field, then press "Add" button.</LI>
+<LI>The "Clear" button clears the contents of the two bottom text 
+fields.</LI>
+<LI>The center "Field Name:" text field and "Type:" text field show 
+the currently selected attribute in the schema. To modify the 
+name or type of this attribute, simply modify the string in the center 
+"Field Name:" and "Type:" text field and press "Modify Field" button.
+</LI>
+<LI>Use "Move Up" button or "Move Down" button to change the order of
+the attributes in the schema. Use "Remove" button to remove an
+attribute from the schema.</LI>
+<LI>Press "Create" button to create the new gestalt.</LI>
+</UL>
+
+<I>Queries/Commands issued:</I>
+<UL>
+<LI>If the member file name is entered, DTEW sends command
+"INSERT INTO . VALUES ('<I>name</I> Gestalt
+<I>schema</I> <I>member file</I>');" to DTE.</LI>
+<LI>If the member file name is not entered, DTEW sends
+command "CREATE GESTALT <I>name</I> <I>schema</I>" to DTE.</LI></UL>
+
+<I>Limits/Problems:</I>
+<UL>
+<LI>DTEW does not check the validness of the gestalt name, attribute 
+names and attribute types, nor does it check duplicate attribute 
+names.</LI>
+<LI>DTEW does not check if a catalog entry with the same name has 
+already been in the home catalog.</LI>
+<LI>DTEW does not check the validness of the member file name entered.
+</LI></UL>
+<P><BR>
+
+<A NAME="CI">
+<H3>Create Index Pane</H3><P>
+
+<I>Functionality:</I>
+<UL>Create a R-Tree index on a <B>Standard Table</B>. </UL>
+
+<I>Menu Item:</I>
+<UL>Create | Create Index</UL>
+
+<I>Usage:</I>
+<UL>
+<LI>Enter the name of the index in the "Index Name:" text field.</LI>
+<LI>Enter the name of the table upon which the index is to be built 
+in the "On Table:" text field.</LI>
+<LI>The list on the left shows the key attributes of the index. The 
+list in the center shows the non-key attributes of the index. To add
+a new attribute to either of the two lists, enter the attribute name
+into the bottom "Field:" text field, and press either 
+"Add As Key Field" button or "Add As Non-key Field" button.</LI>
+<LI>The "Clear" button clears the contents of the bottom text 
+field.</LI>
+<LI>The center two "Field:" text fields show the name of the currently
+selected attribute in the two lists respectively. To modify a name, 
+simply modify it in the corresponding text field and press the 
+corresponding "Modify Key Field" or "Modify Non-key Field" button.</LI>
+<LI>Use corresponding "Move Up" button or "Move Down" button to change 
+the order of the attributes in either of two lists. Use corresponding
+"Remove" button to remove an attribute from either of the two lists.
+</LI>
+<LI>Press "Create Index" button to create the new index.</LI>
+</UL>
+
+<I>Queries/Commands issued:</I>
+<UL>DTEW sends command
+"CREATE rtree INDEX <I>name</I> ON <I>table</I> 
+(<I>key attributes</I>) (<I>non-key attributes</I>);" to DTE.</UL>
+
+<I>Limits/Problems:</I>
+<UL>By the time this document is written (5/4/99), DTE only supports 
+R-Tree index and it does not work correctly.</UL>
+<P><BR>
+
+<A NAME="SG">
+<H3>Show Gestalt Pane</H3><P>
+
+<I>Functionality:</I>
+<UL>Show the list of members of a local <B>Gestalt</B>. Register new 
+members into a gestalt, unregister new members from a gestalt.</UL>
+
+<I>Menu Item:</I>
+<UL>Others | Show Gestalt</UL>
+
+<I>Usage:</I>
+<UL>
+<LI>Enter the name of the gestalt in the "Name:" text field, press
+"Show" button. A list of members of the gestalt will appear on
+the list on the left.</LI>
+<LI>Enter the name of a new member in the text field on the right,
+and press "Register" button to register it into the current shown
+gestalt.</LI>
+<LI>Press "Unregister" button to unregister the currently selected
+member in the member list from the gestalt.</LI>
+<LI>The "Clear" button clears the contents of the "Register" text 
+field.</LI>
+</UL>
+
+<I>Queries/Commands issued:</I>
+<UL>
+<LI>To register a member into the gestalt, DTEW sends command
+"REGISTER <I>new member</I> INTO GESTALT <I>gestalt name</I>;" to
+DTE.</LI>
+<LI>To unregister a member from the gestalt, DTEW sends command
+"UNREGISTER <I>member</I> FROM GESTALT <I>gestalt name</I>;" to DTE.
+</LI>
+</UL>
+
+<I>Limits/Problems:</I>
+<UL>
+<LI>Only local gestalts can be manipulated in this pane.</LI>
+<LI> For register
+command, DTE does not check if the new member is already a member of
+the gestalt.</LI>
+<LI>DTEW does not check if the new member is a valid catalog entry,
+or if the schema of the new member conforms to
+the schema of the gestalt either.</LI></UL>
+<P><BR>
+
+<A NAME="ODBC">
+<H3>ODBC Pane</H3><P>
+
+<I>Functionality:</I>
+<UL>Various commands related to ODBC, including 
+creating/displaying/deleting ODBC DSNs, creating/displaying/deleting
+ODBC Tables.</UL>
+
+<I>Menu Item:</I>
+<UL>Others | ODBC Commands</UL>
+
+<I>Usage:</I>
+<UL>
+<LI>To create an ODBC DSN, in the "Create ODBC DSN" line, enter the
+DSN name and the connect string, then press "Create" button.</LI>
+<LI>To create an ODBC Table, in the "Create ODBC Table" line, enter
+the DTE table name, ODBC DSN name and the ODBC table name, then press
+"Create" button.</LI>
+<LI>To show a list of ODBC DSNs, press the "Show" button in the 
+"Show ODBC DSNs" line.</LI>
+<LI>To show a list of ODBC tables under a certain DSN, in the 
+"Show ODBC Tables" line, enter the ODBC DSN name and press "Show"
+button.</LI>
+<LI>To delete an ODBC DSN, in the "Delete ODBC DSN" line, enter the
+DSN name and press "Delete" button.</LI>
+<LI>To delete an ODBC table, in the "Delete ODBC Table" line, enter
+the ODBC table name and press "Delete" button.</LI>
+</UL>
+
+<I>Queries/Commands issued:</I>
+<UL>
+<LI>To create an ODBC DSN, DTEW sends command 
+"CREATE ODBCDSN <I>DSN name</I>, <I>connect string</I>;" to DTE.
+</LI>
+<LI>To create an ODBC table, DTEW sends command
+"CREATE ODBCTABLE <I>DTE table name</I>, <I>DSN name</I>,
+<I>ODBC table name</I>;" to DTE.</LI>
+<LI>To show a list of ODBC DSNs, DTEW sends query "DSNENTRIES;" to
+DTE.</LI>
+<LI>To show a list of ODBC tables under a certain DSN, DTEW sends 
+query "ODBCTABLES <I>DSN name</I>;" to DTE.</LI>
+<LI>To delete an ODBC DSN, DTEW sends command 
+"DELETE ODBCDSN <I>DSN name</I>;" to DTE.</LI>
+<LI>To delete an ODBC table, DTEW sends command
+"DELETE ODBCTABLE <I>table name</I>;" to DTE.</LI>
+</UL>
+
+<I>Limits/Problems:</I>
+<UL>All the ODBC commands only work on Windows NT/95 platform, with
+appropriate ODBC driver running. By the time this document is written
+(5/4/99), DTE hardly compiles on Windows NT any more.</UL>
+<P><BR>
+
+<A NAME="ES">
+<H3>Execute SQL Pane</H3><P>
+
+<I>Functionality:</I>
+<UL>Any SQL commands accepted by DTE.</UL>
+
+<I>Menu Item:</I>
+<UL>Others | Execute SQL</UL>
+
+<I>Usage:</I>
+<UL>
+<LI>Enter whatever SQL command in the center text area, press
+"Execute" command to execute the SQL command entered.</LI>
+<LI>The "Clear" button clears the contents of the center text area.
+</LI>
+</UL>
+
+<I>Queries/Commands issued:</I>
+<UL>Whatever SQL command the user enters.</UL>
+<P><BR>
+
+<A NAME="SE">
+<H3>Show Environments Pane</H3><P>
+
+<I>Functionality:</I>
+<UL>Browse environment variables, modify them or add new environment
+variables.</UL>
+
+<I>Menu Item:</I>
+<UL>Others | Show Environments</UL>
+
+<I>Usage:</I>
+<UL>
+<LI>The center part of the pane is the list of environment variables
+and their values. To set an environment variable to a certain value
+(modifying the value of an existing variable or setting the value of 
+a new variable), enter the name of the 
+variable and its value in the bottom two text fields and press "Set"
+button.</LI>
+<LI>The "Clear" button clears the bottom two text fields.</LI>
+</UL>
+<P><BR>
+
+<A NAME="MISC">
+<H3>Miscellaneous Pane</H3><P>
+
+<I>Functionality:</I>
+<UL>Various miscellaneous commands, including dropping a catalog
+entry, dropping an index, showing schema of catalog entry, 
+materializing a view.</UL>
+
+<I>Menu Item:</I>
+<UL>Others | Miscellaneous Commands</UL>
+
+<I>Usage:</I>
+<UL>
+<LI>To drop a catalog entry, in the "Drop Catalog Entry:" line, enter
+the name of the entry to be dropped and press "Drop" button.</LI>
+<LI>To drop an index on a table, in the "Drop Index Of Table:" line,
+enter the table name and the index name, then press "Drop Index"
+button.</LI>
+<LI>To show the schema of a catalog entry, in the "Show Schema Of:" 
+line, enter the name of the entry, and press "Show Schema"
+button.</LI>
+<LI>To materialize a view, in the "Materialize View:" line, enter
+the name of the view and press "Materialize" button.</LI>
+</UL>
+
+<I>Queries/Commands issued:</I>
+<UL>
+<LI>To drop a catalog entry, DTEW sends command
+"DELETE FROM . AS T WHERE T.NAME = <I>name</I>;" to DTE.</LI>
+<LI>To drop an index of a table, DTEW sends command
+"DROP INDEX <I>table</I> <I>index</I>;" to DTE.</LI>
+<LI>To show the schema of a catalog entry, DTEW sends command
+"SCHEMA <I>name</I>;" to DTE.</LI>
+<LI>To materialize a view, DTEW sends command 
+"MATERIALIZE <I>view name</I>;" to DTE.</LI>
+</UL>
+
+<I>Limits/Problems:</I>
+<UL>The drop catalog entry command only works for catalog entries
+in the local home catalog.</UL>
+<P><BR>
+
+</BODY>
+</HTML>
