@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/09/10 20:07:24  wenger
+  High-level parts of new PostScript output code are in place (conditionaled
+  out for now so that the old code is used until the new code is fully
+  working); changed (c) (tm) in windows so images are not copyrighted
+  by DEVise; minor bug fixes; added more debug code in the course of working
+  on the PostScript stuff.
+
   Revision 1.29  1996/09/05 22:19:03  jussi
   Added setScreenSize command. Renamed connectData as getWindowImage.
   Added getDisplayImage command.
@@ -1676,6 +1683,17 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
+    if(!strcmp(argv[0], "saveDisplayImageAndMap")) {
+      DisplayExportFormat format = POSTSCRIPT;
+      if (!strcmp(argv[1], "eps"))
+        format = EPS;
+      else if (!strcmp(argv[1], "gif"))
+        format = GIF;
+      DeviseDisplay::DefaultDisplay()->ExportImageAndMap(format, argv[2], argv[3], argv[4], argv[5]);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+
   }
   
   if (argc == 7) {
