@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/08/07 19:28:25  wenger
+  Get this to compile on hpux.
+
   Revision 1.15  1997/05/21 21:05:13  andyt
   Support for multiple clients in client-server library. Single-client mode
   still supported by compiling with -DSINGLE_CLIENT. Client-server library
@@ -100,8 +103,7 @@
 #include <string.h>
 #include <assert.h>
 
-#if defined(HPUX)
-//TEMPTEMPchar *getcwd(char *, size_t);
+#if defined(HPUX) || defined(SUN)
 #include <sys/unistd.h>	// for getcwd()
 #endif
 
