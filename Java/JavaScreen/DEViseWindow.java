@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.6  1998/08/14 17:48:09  hongyu
+// *** empty log message ***
+//
 // Revision 1.2  1998/06/11 15:07:48  wenger
 // Added standard header to Java files.
 //
@@ -320,9 +323,6 @@ public class DEViseWindow extends Canvas
     // start of class ViewKeyListener
     class ViewKeyListener extends KeyAdapter
     {  
-        //boolean isKeyPressed;
-        //int lastKey;
-        
         public void keyPressed(KeyEvent event)
         {
             isKeyPressed = true;
@@ -344,6 +344,7 @@ public class DEViseWindow extends Canvas
             repaint();
             
             dispatcher.addCmd("JAVAC_KeyAction {" + currentView.getName() + "} " + (int)key);            
+	    //dispatcher.addCmd("JAVAC_KeyAction {" + currentView.getName() + "}" + key);
         }
     }
     // end of class ViewKeyListener
