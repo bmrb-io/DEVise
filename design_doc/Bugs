@@ -2260,6 +2260,9 @@ Num Date        Status  Description
 			size. (rkw)
 			(Fixed by rkw, 4/6/00.)
 
+578 04/18/00	OPEN	Displaying a data source from the 'Edit Data Stream
+			Definition' dialog doesn't work. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
