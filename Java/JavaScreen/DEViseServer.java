@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.68  2001/10/12 02:07:44  xuk
+// ng timestamp-based client ID.
+//
 // Revision 1.67  2001/08/20 18:20:08  wenger
 // Fixes to various font problems: XDisplay calculates point sizes correctly
 // and uses screen resolution in specifying font; JS passes *its* screen
@@ -639,8 +642,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 			
 			// close client socket for cgi version
 			if (client != null && client.useCgi()) {
-			    client.getSocket().closeSocket();
-			    client.setSocket(null);
+			    client.closeSocket();
 			    pop.pn("Socket between client and cgi is closed.");
 			}
 			
@@ -682,8 +684,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 		    pop.pn("Done sending all data to client(s)");
 		    
 		    if (client.useCgi()) {
-			client.getSocket().closeSocket();
-			client.setSocket(null);
+			client.closeSocket();
 			pop.pn("Socket between client and cgi is closed.");
 		    }
                     if (isRemoveClient) {
@@ -800,12 +801,12 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 	pop.pn("We send the close_session command.");
 	cmdCloseSession();
 	// keep the current session opened
-	if (!client.isSessionOpened )
+	if (!client.isSessionOpened) {
 	    client.isSessionOpened = true;
-        if (client.socket != null) {
-            client.socket.closeSocket();
-            client.socket = null;
-        }	
+	}
+
+	//TEMP -- *why* are we closing the socket here????
+	client.closeSocket();
     }
 
     public void cmdReopenSession() throws YException
@@ -840,19 +841,19 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 	// also close the collaboration JSs
 	if (!client.collabInit) {
 	    for (int i = 0; i < client.collabSockets.size(); i++) {
-		DEViseCommSocket sock = 
-		    (DEViseCommSocket)client.collabSockets.elementAt(i);			
-		if (!sock.isEmpty()) {
-		    try {
-			String clientCmd = sock.receiveCmd();
-			
-			if (clientCmd.startsWith(DEViseCommands.EXIT))
-			    client.removeCollabSocket(sock);
-		    } catch (InterruptedIOException e) {}
+		DEViseClientSocket clientSock = 
+		    (DEViseClientSocket)client.collabSockets.elementAt(i);			
+		if (clientSock.hasCommand()) {
+		    String clientCmd = clientSock.getCommand();
+		    clientSock.clearCommand();
+		
+		    if (clientCmd.startsWith(DEViseCommands.EXIT)) {
+		        client.removeCollabSocket(clientSock);
+	            }
 		} else {
 		    pop.pn("Sending command " + DEViseCommands.CLOSE_SESSION
 			   + " to collabration client" + " " + i);
-		    sock.sendCmd(DEViseCommands.CLOSE_SESSION);
+		    clientSock.sendCommand(DEViseCommands.CLOSE_SESSION);
 		}			    
 	    }
 	} // if (!client.collabInit)
@@ -967,27 +968,28 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 	sendCmd(clientCmd);
 
 	// send config to collaborated JSs
-	try {
-	    for (int i = 0; i < client.collabSockets.size(); i++) {
-		DEViseCommSocket sock = (DEViseCommSocket)client.collabSockets.elementAt(i);			
-		if (!sock.isEmpty()) {
-		    String cmd = sock.receiveCmd();
-		    
-		    if (cmd.startsWith(DEViseCommands.EXIT))
-			client.removeCollabSocket(sock);
-		    else {
-			pop.pn("Sending command to collabration client " + i + ": " + clientCmd);
-			sock.sendCmd(clientCmd);
-			sock.sendCmd(DEViseCommands.DONE);
-		    } 
-		} else {
-		    pop.pn("Sending command to collabration client " + i + ": " + clientCmd);
-		    sock.sendCmd(clientCmd);
-		    sock.sendCmd(DEViseCommands.DONE);
-		}			    
-	    }
-	} catch (InterruptedIOException e) {
-	}
+	//TEMP -- why isn't this handled by the DEViseClient object????
+        for (int i = 0; i < client.collabSockets.size(); i++) {
+	    DEViseClientSocket clientSock =
+	      (DEViseClientSocket)client.collabSockets.elementAt(i);			
+	    if (clientSock.hasCommand()) {
+	        String cmd = clientSock.getCommand();
+	        clientSock.clearCommand();
+	    
+	        if (cmd.startsWith(DEViseCommands.EXIT)) {
+		    client.removeCollabSocket(clientSock);
+	        } else {
+		    pop.pn("Sending command to collabration client " + i +
+		      ": " + clientCmd);
+		    clientSock.sendCommand(clientCmd);
+		    clientSock.sendCommand(DEViseCommands.DONE);
+	        } 
+	    } else {
+	        pop.pn("Sending command to collabration client " + i + ": " + clientCmd);
+	        clientSock.sendCommand(clientCmd);
+	        clientSock.sendCommand(DEViseCommands.DONE);
+	    }			    
+        }
     }
 
 // ------------------------------------------------------------------------

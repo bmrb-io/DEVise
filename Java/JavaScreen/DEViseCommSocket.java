@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.28  2001/10/22 18:38:24  wenger
+// A few more cleanups to the previous fix.
+//
 // Revision 1.27  2001/10/22 18:06:49  wenger
 // Fixed bug 718 (client sockets never deleted in JSPoP).
 //
@@ -226,6 +229,15 @@ public class DEViseCommSocket
     //TEMP -- document what this means -- -1 seems to mean collaboration
     public int flag = 0;
 
+    // Use these objects for mutex on reading and writing.  I am making
+    // the reading and writing methods non-synchronized because it makes
+    // sense for one thread to read from the socket and another to write
+    // to it at the same time; however we don't want to allow multiple
+    // threads to write to the socket, or multiple threads to read from
+    // the socket, at the same time.  RKW 2001-10-24.
+    private Boolean readSync = new Boolean(false);
+    private Boolean writeSync = new Boolean(false);
+
     //===================================================================
     // PUBLIC METHODS
 
@@ -334,9 +346,10 @@ public class DEViseCommSocket
     }
 
     //-------------------------------------------------------------------
-    // if at the moment of calling, there is something coming from the input stream,
-    // isEmpty will return false, otherwise, it will return true
-    public synchronized boolean isEmpty() throws YException
+    // if at the moment of calling, there is something coming from the
+    // input stream, isEmpty will return false, otherwise, it will return
+    // true.
+    public boolean isEmpty() throws YException
     {
         try {
             if (is != null && is.available() > 0) {
@@ -356,7 +369,7 @@ public class DEViseCommSocket
     //-------------------------------------------------------------------
     // if at the moment of calling, there is something wrong with the socket
     // isAvailable will return false, otherwise, it will return true
-    public synchronized boolean isAvailable() throws YException
+    public boolean isAvailable() throws YException
     {
         try {
             int b = is.available();
@@ -371,13 +384,13 @@ public class DEViseCommSocket
             //throw new YException("Can not read from input stream",
 	    //  "DEViseCommSocket:isEmpty()");
         }
+
 	return true;
-    
     }
 
     //-------------------------------------------------------------------
     // Clear all incoming data off of the sockets.
-    public synchronized void clearSocket() throws YException
+    public void clearSocket() throws YException
     {
         clearSocket(-1);
     }
@@ -385,28 +398,30 @@ public class DEViseCommSocket
     //-------------------------------------------------------------------
     // Clear all incoming data off of the sockets.
     // imageBytes = -1 if size of image unknown
-    public synchronized void clearSocket(int imageBytes) throws YException
+    public void clearSocket(int imageBytes) throws YException
     {
-        resetData();
+	synchronized (readSync) {
+            resetData();
 
-        try {
-            if (socket != null && is != null) {
-                socket.setSoTimeout(0);
+            try {
+                if (socket != null && is != null) {
+                    socket.setSoTimeout(0);
 
-                if (imageBytes < 0) {
-		    clearStream(is, checkingSocketTimeout);
-                } else if (imageBytes > 0) {
-		    is.skipBytes(imageBytes);
-                } 
+                    if (imageBytes < 0) {
+		        clearStream(is, checkingSocketTimeout);
+                    } else if (imageBytes > 0) {
+		        is.skipBytes(imageBytes);
+                    } 
 
-                socket.setSoTimeout(timeout);
+                    socket.setSoTimeout(timeout);
+                }
+            } catch (IOException e) {
+                closeSocket();
+	        System.err.println(e.getMessage());
+                throw new YException(
+	          "Error occurs while reading from input stream",
+	          "DEViseCommSocket:clearSocket()");
             }
-        } catch (IOException e) {
-            closeSocket();
-	    System.err.println(e.getMessage());
-            throw new YException(
-	      "Error occurs while reading from input stream",
-	      "DEViseCommSocket:clearSocket()");
         }
     }
 
@@ -425,7 +440,7 @@ public class DEViseCommSocket
     // ...
 
     //-------------------------------------------------------------------
-    public synchronized void sendCmd(String cmd, short msgType, long ID)
+    public void sendCmd(String cmd, short msgType, long ID)
       throws YException
     {
         if (DEBUG >= 1) {
@@ -433,6 +448,168 @@ public class DEViseCommSocket
 	      msgType + ", " + ID + ")");
         }
 
+	synchronized (writeSync) {
+	    doSendCmd(cmd, msgType, ID);
+	}
+    }
+
+    //-------------------------------------------------------------------
+    public void sendCmd(String cmd, short msgType) throws YException
+    {
+        sendCmd(cmd, msgType, DEViseGlobals.DEFAULTID);
+    }
+
+    //-------------------------------------------------------------------
+    public void sendCmd(String cmd) throws YException
+    {
+        sendCmd(cmd, DEViseGlobals.API_JAVA, DEViseGlobals.DEFAULTID);
+    }
+
+    //-------------------------------------------------------------------
+    // Receive a command.  Note that this method may be interrupted by
+    // the socket timeout.  If so, it can be repeatedly called until
+    // an entire command has been received.
+    public String receiveCmd()
+      throws YException, InterruptedIOException
+    {
+        synchronized (readSync) {
+	    return doReceiveCmd();
+	}
+    }
+
+    //-------------------------------------------------------------------
+    public void sendData(byte[] data) throws YException
+    {
+        if (DEBUG >= 1) {
+            System.out.println("DEViseCommSocket.sendData(" + data.length +
+	      " bytes)");
+        }
+
+	synchronized (writeSync) {
+	    doSendData(data);
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Number of bytes available on data socket.
+    public int dataAvailable()
+    {
+	int bytes;
+
+        if (is == null) {
+	    bytes = 0;
+	} else {
+	    try {
+	        bytes = is.available();
+	    } catch (IOException e) {
+		System.err.println("Exception " + e.getMessage() +
+		  "while getting number of bytes available");
+	        bytes = 0;
+	    }
+	}
+
+	return bytes;
+    }
+
+    //-------------------------------------------------------------------
+    // The number of bytes that have been written to the socket.
+    public int bytesWritten()
+    {
+        return os.size();
+    }
+
+    //-------------------------------------------------------------------
+    // Receive data.  This method now does not return until all of the
+    // requested data has been read.
+    public byte[] receiveData(int dataSize)
+      throws YException
+    {
+        synchronized (readSync) {
+	    return doReceiveData(dataSize);
+	}
+    }
+
+    //===================================================================
+    // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    private void createSocket(String hostname, int port, int to)
+      throws YException
+    {
+        if (DEBUG >= 1) {
+            System.out.println("DEViseCommSocket.createSocket(" + hostname +
+	      ", " + port + ", " + to + ")");
+	}
+
+        if (hostname == null)
+            throw new YException("Invalid hostname in arguments",
+	      "DEViseCommSocket.createSocket");
+
+        if (port < 1024 || port > 65535)
+            throw new YException("Invalid port number in arguments",
+	      "DEViseCommSocket.createSocket");
+
+        if (to < 0) {
+            timeout = 0;
+        } else {
+            timeout = to;
+	}
+
+        try {
+            socket = new Socket(hostname, port);
+        } catch (NoRouteToHostException e) {
+	    System.err.println("Exception in DEViseCommSocket.createSocket: " +
+	      e.getMessage());
+            closeSocket();
+            throw new YException(
+	      "Can not find route to host, may caused by an internal firewall", 
+	      "DEViseCommSocket.createSocket");
+        } catch (UnknownHostException e) {
+	    System.err.println("Exception in DEViseCommSocket.createSocket: " +
+	      e.getMessage());
+            closeSocket();
+            throw new YException("Unknown host {" + hostname + "}",
+	      "DEViseCommSocket:constructor");
+        } catch (IOException e) {
+	    System.err.println("Exception in DEViseCommSocket.createSocket: " +
+	      e.getMessage());
+            closeSocket();
+            throw new YException("Can not open socket connection to host {"
+	      + hostname + "}", "DEViseCommSocket.createSocket");
+	}
+
+	CreateStreams();
+    }
+
+    //-------------------------------------------------------------------
+    // Create input and output streams if we already have the sockets.
+    private void CreateStreams() throws YException
+    {
+        try {
+            os = new DataOutputStream(new BufferedOutputStream(
+	      socket.getOutputStream(), bufferSize));
+            is = new DataInputStream(socket.getInputStream());
+            socket.setSoTimeout(timeout);
+        } catch (NoRouteToHostException e) {
+            closeSocket();
+            throw new YException(
+	      "Can not find route to host, may caused by an internal firewall",
+	      "DEViseCommSocket:constructor");
+        } catch (SocketException e) {
+            closeSocket();
+            throw new YException("Can not set timeout for sockets",
+	      "DEViseCommSocket:constructor");
+        } catch (IOException e) {
+            closeSocket();
+            throw new YException("Can not open i/o stream for sockets",
+	      "DEViseCommSocket:constructor");
+        }
+    }
+
+    //-------------------------------------------------------------------
+    private void doSendCmd(String cmd, short msgType, long ID)
+      throws YException
+    {
         if (os == null) {
             closeSocket();
             throw new YException("Invalid output stream",
@@ -440,13 +617,18 @@ public class DEViseCommSocket
         }
 
         // for invalid cmd, simply discard it
-        if (cmd == null || cmd.length() == 0)
-             return;
+        if (cmd == null || cmd.length() == 0) {
+	    System.err.println("Zero-length command");
+            return;
+        }
 
         // for invalid cmd, simply discard it
         String[] cmdBuffer = DEViseGlobals.parseString(cmd, true);
-        if (cmdBuffer == null || cmdBuffer.length == 0)
+        if (cmdBuffer == null || cmdBuffer.length == 0) {
+	    System.err.println("Unparseable command");
             return;
+        }
+
 
         int nelem = 0, size = 0;
         int flushedSize = 0;
@@ -498,22 +680,10 @@ public class DEViseCommSocket
     }
 
     //-------------------------------------------------------------------
-    public void sendCmd(String cmd, short msgType) throws YException
-    {
-        sendCmd(cmd, msgType, DEViseGlobals.DEFAULTID);
-    }
-
-    //-------------------------------------------------------------------
-    public void sendCmd(String cmd) throws YException
-    {
-        sendCmd(cmd, DEViseGlobals.API_JAVA, DEViseGlobals.DEFAULTID);
-    }
-
-    //-------------------------------------------------------------------
     // Receive a command.  Note that this method may be interrupted by
     // the socket timeout.  If so, it can be repeatedly called until
     // an entire command has been received.
-    public synchronized String receiveCmd()
+    private String doReceiveCmd()
       throws YException, InterruptedIOException
     {
         if (is == null) {
@@ -620,13 +790,8 @@ public class DEViseCommSocket
     }
 
     //-------------------------------------------------------------------
-    public synchronized void sendData(byte[] data) throws YException
+    private void doSendData(byte[] data) throws YException
     {
-        if (DEBUG >= 1) {
-            System.out.println("DEViseCommSocket.sendData(" + data.length +
-	      " bytes)");
-        }
-
         if (os == null) {
             closeSocket();
             throw new YException("Invalid output stream", "DEViseCommSocket:sendData()");
@@ -652,37 +817,9 @@ public class DEViseCommSocket
     }
 
     //-------------------------------------------------------------------
-    // Number of bytes available on data socket.
-    public int dataAvailable()
-    {
-	int bytes;
-
-        if (is == null) {
-	    bytes = 0;
-	} else {
-	    try {
-	        bytes = is.available();
-	    } catch (IOException e) {
-		System.err.println("Exception " + e.getMessage() +
-		  "while getting number of bytes available");
-	        bytes = 0;
-	    }
-	}
-
-	return bytes;
-    }
-
-    //-------------------------------------------------------------------
-    // The number of bytes that have been written to the socket.
-    public int bytesWritten()
-    {
-        return os.size();
-    }
-
-    //-------------------------------------------------------------------
     // Receive data.  This method now does not return until all of the
     // requested data has been read.
-    public synchronized byte[] receiveData(int dataSize)
+    private byte[] doReceiveData(int dataSize)
       throws YException
     {
         if (is == null) {
@@ -734,83 +871,6 @@ public class DEViseCommSocket
             throw new YException(
 	      "Error occurs while reading from input stream",
 	      "DEViseCommSocket:receiveData()");
-        }
-    }
-
-    //===================================================================
-    // PRIVATE METHODS
-
-    //-------------------------------------------------------------------
-    private void createSocket(String hostname, int port, int to)
-      throws YException
-    {
-        if (DEBUG >= 1) {
-            System.out.println("DEViseCommSocket.createSocket(" + hostname +
-	      ", " + port + ", " + to + ")");
-	}
-
-        if (hostname == null)
-            throw new YException("Invalid hostname in arguments",
-	      "DEViseCommSocket.createSocket");
-
-        if (port < 1024 || port > 65535)
-            throw new YException("Invalid port number in arguments",
-	      "DEViseCommSocket.createSocket");
-
-        if (to < 0) {
-            timeout = 0;
-        } else {
-            timeout = to;
-	}
-
-        try {
-            socket = new Socket(hostname, port);
-        } catch (NoRouteToHostException e) {
-	    System.err.println("Exception in DEViseCommSocket.createSocket: " +
-	      e.getMessage());
-            closeSocket();
-            throw new YException(
-	      "Can not find route to host, may caused by an internal firewall", 
-	      "DEViseCommSocket.createSocket");
-        } catch (UnknownHostException e) {
-	    System.err.println("Exception in DEViseCommSocket.createSocket: " +
-	      e.getMessage());
-            closeSocket();
-            throw new YException("Unknown host {" + hostname + "}",
-	      "DEViseCommSocket:constructor");
-        } catch (IOException e) {
-	    System.err.println("Exception in DEViseCommSocket.createSocket: " +
-	      e.getMessage());
-            closeSocket();
-            throw new YException("Can not open socket connection to host {"
-	      + hostname + "}", "DEViseCommSocket.createSocket");
-	}
-
-	CreateStreams();
-    }
-
-    //-------------------------------------------------------------------
-    // Create input and output streams if we already have the sockets.
-    private void CreateStreams() throws YException
-    {
-        try {
-            os = new DataOutputStream(new BufferedOutputStream(
-	      socket.getOutputStream(), bufferSize));
-            is = new DataInputStream(socket.getInputStream());
-            socket.setSoTimeout(timeout);
-        } catch (NoRouteToHostException e) {
-            closeSocket();
-            throw new YException(
-	      "Can not find route to host, may caused by an internal firewall",
-	      "DEViseCommSocket:constructor");
-        } catch (SocketException e) {
-            closeSocket();
-            throw new YException("Can not set timeout for sockets",
-	      "DEViseCommSocket:constructor");
-        } catch (IOException e) {
-            closeSocket();
-            throw new YException("Can not open i/o stream for sockets",
-	      "DEViseCommSocket:constructor");
         }
     }
 

@@ -38,8 +38,8 @@ see comments in DEViseCommSocket.java.
         <password>: default is "guest"
         <protocol-version>: the JavaScreen protocol version, in the form
 	                    <major>.<minor>.
-	<collaboration info>: a string indicating whether allowing
-                              collaboration on this user.
+	<collaboration password>: the password for collaboration; I don't
+	  know what is sent here if you are not trying to start collaboration.
 
     2.2 JAVAC_GetServerState
     Purpose: get current JSPoP status

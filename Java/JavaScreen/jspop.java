@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.64  2001/10/22 18:38:24  wenger
+// A few more cleanups to the previous fix.
+//
 // Revision 1.63  2001/10/22 18:06:50  wenger
 // Fixed bug 718 (client sockets never deleted in JSPoP).
 //
@@ -314,7 +317,7 @@ public class jspop implements Runnable
     //      default: No Debug information is written
     //
 
-    private static final int SOCK_REC_TIMEOUT = 1000; // milliseconds
+    private static final int SOCK_REC_TIMEOUT = 100000; // milliseconds
 
     private ServerSocket cmdServerSocket = null;
     //private ServerSocket dataServerSocket = null;
@@ -622,74 +625,26 @@ public class jspop implements Runnable
 
     private void handleConnection(Socket socket1, String hostname)
     {
-	//TEMP -- do we need two separate try blocks?
+        if (DEBUG >= 2) {
+            System.out.println("jspop.handleConnection() in thread " +
+              Thread.currentThread());
+        }
+
         try {
             //
             // If we get to here, we've connected on both the
             // command socket and data socket, so create a new
             // DEViseClient corresponding to the connection.
             //
-            DEViseCommSocket socket = new DEViseCommSocket(socket1,
+	    DEViseClientSocket clientSock = new DEViseClientSocket(socket1,
 	      SOCK_REC_TIMEOUT);
+            clientSock.setHostname(hostname);
 
-            try {
-
-                pn("Before reading command");
-                if (DEBUG >= 1) {
-		    System.out.println(socket.dataAvailable() +
-		      " bytes available for receiving command" +
-		      " in thread " + Thread.currentThread());
-                }
-
-      		String cmd = socket.receiveCmd();
-                pn("After reading command");
-
-	        long id = socket.cmdId;
-		int flag = socket.flag;
-		if (flag == -1) { // collaboration JS
-		    pn("Received collaboration request for client: " + id + ".");
-		    onCollab(socket, id, cmd, hostname);
-		} else {
-		    boolean cgi;
-		    if (flag == 1) {
-			cgi = true;
-			pn("A CGI client connection.");
-		    } else {
-			cgi  = false;
-			pn("A direct socket client connection.");
-		    }
-
-		    pn("Received command from client(" + id + ") :  \"" + cmd +
-		       "\"");		
-
-		    activeSockets.addElement(socket);
-		    if (DEBUG >= 1) {
-		        System.out.println(activeSockets.size() +
-			  " active client sockets in JSPoP");
-		    }
-			
-
-		    if (id == DEViseGlobals.DEFAULTID) { // new JS
-			pn("New client");
-			DEViseClient client = createClient(hostname, socket, cgi);
-			client.addNewCmd(cmd);
-		    } else { // old JS
-			pn("Existing client");
-			DEViseClient client = findClientById(id);
-			if (client != null) {
-			    // set cgi flag; added for mode changing
-			    client.setCgi(cgi); 
-			    client.setSocket(socket);
-			    client.addNewCmd(cmd);
-			} else {
-			    throw new YException("No client for ID: " + id);
-			}
-		    }
-		}
-            } catch(IOException ex) {
-	        pn("Exception receiving command from client: " +
-		  ex.getMessage());
-            }
+	    activeSockets.addElement(clientSock);
+	    if (DEBUG >= 1) {
+	        System.out.println(activeSockets.size() +
+		  " active client sockets in JSPoP");
+	    }
         } catch (YException e) {
             pn(e.getMsg() + "\nClose socket connection to client \"" +
 	      hostname + "\"");
@@ -814,6 +769,9 @@ public class jspop implements Runnable
     //
     // this method will only be called in client dispatcher thread
     // this method will also check which client need to be removed and remove it
+
+    // TEMP -- we should probably re-think this method because of the
+    // new DEViseClientSocket class.  RKW 2001-10-24.
     public synchronized DEViseClient getNextRequestingClient()
     {
         if (debugLevel >= 2) {
@@ -830,50 +788,33 @@ public class jspop implements Runnable
 	        System.out.println("DIAG before checking sockets");
 	    }
 	    for (int i = 0; i < activeSockets.size(); i++) {
-		DEViseCommSocket socket = (DEViseCommSocket)activeSockets.elementAt(i);
+		DEViseClientSocket clientSock =
+		  (DEViseClientSocket)activeSockets.elementAt(i);
 	    
 		// Note: socket will never be null here; socket.is is null
 		// if the socket has been closed. RKW 2001-10-22.
-		if (socket.isOpen()) {
-		    if (! socket.isEmpty()) {
+		if (clientSock.isOpen()) {
+		    if (clientSock.hasCommand()) {
 			long id;
 			int cgi;
 			boolean cgiflag;
 
-                        pn("Before reading command");
-                        if (DEBUG >= 1) {
-		            System.out.println(socket.dataAvailable() +
-		              " bytes available for receiving command" +
-			      " in thread " + Thread.currentThread());
-                        }
-			String cmd = socket.receiveCmd();
-                        pn("After reading command");
+                        pn("Before getting command");
+			String cmd = clientSock.getCommand();
+                        pn("After getting command");
 
-			id = socket.cmdId;
-	    		pn("Received command from client(" + id + ") :  \"" + cmd + "\"");		
-			cgi = socket.flag;
-			if (cgi != 0) {
-			    //TEMP -- we may never get here?
-			    cgiflag = true;
-			    pn("Receiving command CGI.");
-			} else {
-			    cgiflag = false;
-			    pn("Receiving command via socket.");
-			}
+			id = clientSock.getCmdId();
+			cgi = clientSock.getCmdCgiFlag();
+			boolean firstCommand = clientSock.isFirstCommand();
+			clientSock.clearCommand();
+	    		pn("Received command from client(" + id +
+			  ") :  \"" + cmd + "\"");		
 
-			DEViseClient client = findClientById(id);
-			if (client != null) {
-		            // set cgi flag; added for mode changing
-			    client.setCgi(cgiflag);
-       			    client.setSocket(socket);
-			    client.addNewCmd(cmd);
-			    // disable collaboration
-			    if ((cmd.startsWith(DEViseCommands.SAVE_CUR_SESSION)) && (client.isAbleCollab)) {
-				client.isAbleCollab = false;
-				pn("Disable collaboration." + client.isAbleCollab);
-			    }
+			if (firstCommand) {
+			    processFirstCommand(clientSock.getHostname(),
+			      clientSock, cmd, id, cgi);
 			} else {
-			    throw new YException("No client for ID: " + id);
+			    processCommand(clientSock, cmd, id, cgi);
 			}
 		    }
 		} else { // !socket.isOpen
@@ -881,14 +822,12 @@ public class jspop implements Runnable
 		        System.out.println(
 			  "Removing client socket from active sockets list");
 		    }
-		    activeSockets.removeElement(socket);
+		    activeSockets.removeElement(clientSock);
 		}
 	    } // for
 	    if (DEBUG >= 3) {
 	        System.out.println("DIAG after checking sockets");
 	    }
-	} catch(IOException e) {
-	    pn("checking active sockets fails!");
         } catch (YException e) {
             pn(e.getMsg());
         }    
@@ -1181,9 +1120,10 @@ public class jspop implements Runnable
     }
 
     //----------------------------------------------------------------------
-    private DEViseClient createClient(String clientHost, DEViseCommSocket socket, boolean cgi)
+    private DEViseClient createClient(String clientHost,
+      DEViseClientSocket clientSock, boolean cgi)
     {
-	DEViseClient client = new DEViseClient(this, clientHost, socket,
+	DEViseClient client = new DEViseClient(this, clientHost, clientSock,
 	  getID(), cgi);
 
 	// Note: a new client gets added into the suspended clients list;
@@ -1443,75 +1383,181 @@ public class jspop implements Runnable
         }
     }
 
-    private synchronized void onCollab(DEViseCommSocket socket, long id, String cmd, String hostname)
+    private void processFirstCommand(String hostname,
+      DEViseClientSocket clientSock, String cmd, long id, int flag)
+      throws YException
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("jspop.processFirstCommand(" + hostname +
+	      cmd + ")");
+	}
+
+	if (flag == -1) { // collaboration JS
+	    pn("Received collaboration request for client: " + id + ".");
+	    onCollab(clientSock, id, cmd, hostname);
+	} else {
+	    boolean cgi;
+	    if (flag == 1) {
+		cgi = true;
+		pn("A CGI client connection.");
+	    } else {
+		cgi  = false;
+		pn("A direct socket client connection.");
+	    }
+
+	    pn("Received command from client(" + id + ") :  \"" + cmd + "\"");		
+	    if (id == DEViseGlobals.DEFAULTID) { // new JS
+		pn("New client");
+		DEViseClient client = createClient(hostname, clientSock, cgi);
+		client.addNewCmd(cmd);
+	    } else { // old JS
+		pn("Existing client");
+		DEViseClient client = findClientById(id);
+		if (client != null) {
+		    // set cgi flag; added for mode changing
+		    client.setCgi(cgi); 
+		    client.setSocket(clientSock);
+		    client.addNewCmd(cmd);
+		} else {
+		    throw new YException("No client for ID: " + id);
+		}
+	    }
+	}
+    }
+
+    private void processCommand(DEViseClientSocket clientSock, String cmd,
+      long id, int cgi) throws YException
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("jspop.processCommand(" + cmd + ")");
+	}
+
+	boolean cgiflag;
+
+	if (cgi != 0) {
+	    //TEMP -- we may never get here?
+	    cgiflag = true;
+	    pn("Receiving command CGI.");
+	} else {
+	    cgiflag = false;
+	    pn("Receiving command via socket.");
+	}
+
+	DEViseClient client = findClientById(id);
+	if (client != null) {
+            // set cgi flag; added for mode changing
+	    client.setCgi(cgiflag);
+       	    client.setSocket(clientSock);
+	    client.addNewCmd(cmd);
+	    // disable collaboration
+	    if ((cmd.startsWith(DEViseCommands.SAVE_CUR_SESSION)) &&
+	      (client.isAbleCollab)) {
+		client.isAbleCollab = false;
+		pn("Disable collaboration." + client.isAbleCollab);
+	    }
+	} else {
+	    throw new YException("No client for ID: " + id);
+	}
+    }
+
+    private synchronized void onCollab(DEViseClientSocket clientSock,
+      long id, String cmd, String hostname)
     {   
 	try {	
-	    // first connection for collaboration
 	    if (id == 0) {
-		String command = new String(DEViseCommands.CLIENTS);
-
-		for (int i = 0; i < activeClients.size(); i++) {
-		    DEViseClient tmpClient =
-			(DEViseClient) activeClients.elementAt(i);
-		    if (tmpClient != null && tmpClient.isAbleCollab) 
-			command = command + " {" + tmpClient.getConnectionID() + 
-			    "}" + " {  " + tmpClient.hostname + ":}" + " { " + 
-			    tmpClient.sessionName + "}";
-		}
-
-		for (int i = 0; i < suspendClients.size(); i++) {
-		    DEViseClient tmpClient =
-			(DEViseClient) suspendClients.elementAt(i);
-		    if (tmpClient != null && tmpClient.isAbleCollab) 
-			command = command + " {" + tmpClient.getConnectionID() + 
-			    "}" + " {  " + tmpClient.hostname + ":}" + 
-			    " { " + tmpClient.sessionName + "}";
-		}    
-		command = command.trim();
-		pn("Send clients list to collaboration JS: " + command);
-		socket.sendCmd(command);
-		socket.sendCmd(DEViseCommands.DONE);
-		socket.closeSocket();	
-	    
-		return;
-	    }
-	
-	    // find the proper client;
-	    DEViseClient client = findClientById(id);
-	
-		
-       	    if (client != null) {
-		// check for enable collaboration status
-		if (client.isAbleCollab) {
-		    String[] cmds = DEViseGlobals.parseString(cmd);
-		    String requestPass = new String(cmds[4]);
-		    pn("We got request passwd: " + requestPass);
-		    if (client.checkPass(requestPass)) {
-			client.addCollabSocket(socket, hostname);
-			DEViseServer server = getNextAvailableServer();
-			if (server != null && 
-			    (server.getCurrentClient()) != client) {
-			    server.setCurrentClient(client);
-			}
-		    } else { // wrong passwd
-			socket.sendCmd(DEViseCommands.ERROR + " {Incorrect password. Please try again.}");
-			socket.closeSocket();	
-			pn("Incorrect password.");
-		    }
-		} else { // disable collaboration
-		    socket.sendCmd(DEViseCommands.ERROR + " {Disabled to collaborate with client.}");
-		    socket.closeSocket();	
-		    pn("Disabled to collaborate with client.");
-		}
+	        // first connection for collaboration
+	        sendCollabLeaders(clientSock);
 	    } else {
-		pn("No client for ID: " + id);
-		socket.sendCmd(DEViseCommands.ERROR + " {Can not find such user}");
-		socket.closeSocket();
+		// second connection
+	        setUpCollab(clientSock, cmd, id, hostname);
 	    }
 	} catch (YException e) {
-	    socket.closeSocket();
-	    pn("No client for ID: " + id);
+	    clientSock.closeSocket();
+	    pn(e.getMessage());
         }
     }
 
+    // Send a list of possible collaboration leaders to the client.
+    private void sendCollabLeaders(DEViseClientSocket clientSock)
+      throws YException
+    {
+	String command = new String(DEViseCommands.CLIENTS);
+
+	for (int i = 0; i < activeClients.size(); i++) {
+	    DEViseClient tmpClient =
+	      (DEViseClient) activeClients.elementAt(i);
+	    if (tmpClient != null && tmpClient.isAbleCollab) {
+		command = command + " {" + tmpClient.getConnectionID() +
+		  "}" + " {  " + tmpClient.hostname + ":}" + " { " +
+		  tmpClient.sessionName + "}";
+	    }
+	}
+
+	for (int i = 0; i < suspendClients.size(); i++) {
+	    DEViseClient tmpClient =
+	      (DEViseClient) suspendClients.elementAt(i);
+	    if (tmpClient != null && tmpClient.isAbleCollab) {
+		command = command + " {" + tmpClient.getConnectionID() +
+		  "}" + " {  " + tmpClient.hostname + ":}" +
+		  " { " + tmpClient.sessionName + "}";
+	    }
+	}
+
+	command = command.trim();
+	pn("Send clients list to collaboration JS: " + command);
+	clientSock.sendCommand(command);
+	clientSock.sendCommand(DEViseCommands.DONE);
+	clientSock.closeSocket();	
+	// Note: client will reconnect(!) to actually establish the
+	// collaboration.  RKW 2001-10-23.
+    }
+
+    // Set up the client as a collaboration follower.
+    private void setUpCollab(DEViseClientSocket clientSock, String cmd,
+      long id, String hostname) throws YException
+    {
+        // find the proper client;
+        DEViseClient client = findClientById(id);
+
+        if (client != null) {
+	    // check for enable collaboration status
+	    if (client.isAbleCollab) {
+	        String[] cmds = DEViseGlobals.parseString(cmd);
+		if (!cmds[0].equals(DEViseCommands.CONNECT)) {
+		    throw new YException("Incorrect command!");
+		}
+
+	        String collabPass = new String(cmds[4]);
+	        pn("We got collaboration passwd: " + collabPass);
+
+	        if (client.checkPass(collabPass)) {
+		    // TEMP -- if you have > 1 server, might this cause
+		    // an unnecessary client switch, if you happen to get
+		    // the server that's connected to the other client??
+		    // RKW 2001-10-23.
+		    client.addCollabSocket(clientSock, hostname);
+		    DEViseServer server = getNextAvailableServer();
+		    if (server != null && 
+		        (server.getCurrentClient()) != client) {
+		        server.setCurrentClient(client);
+		    }
+	        } else { // wrong passwd
+		    clientSock.sendCommand(DEViseCommands.ERROR +
+		      " {Incorrect password. Please try again.}");
+		    clientSock.closeSocket();	
+		    pn("Incorrect password.");
+	        }
+	    } else { // disable collaboration
+	        clientSock.sendCommand(DEViseCommands.ERROR +
+	          " {Client " + id + "does not allow collaboration.}");
+	        clientSock.closeSocket();	
+	        pn("Disabled to collaborate with client.");
+	    }
+        } else {
+	    pn("No client for ID: " + id);
+	    clientSock.sendCommand(DEViseCommands.ERROR +
+	      " {Cannot find client " + id + "}");
+	    clientSock.closeSocket();
+        }
+    }
 }

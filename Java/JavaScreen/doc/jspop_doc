@@ -48,6 +48,8 @@ The following threads exist in the JSPoP:
 - One for each DEViseServer object.
 - One for the scheduler.
 - One for logging and checkpointing.
+- One for each DEViseClientSocket object.
+- TEMP -- checking thread? -- checks whether others are hung
 
 
 * Ports:
@@ -56,6 +58,8 @@ The following threads exist in the JSPoP:
 
 
 * Main operation:
+
+TEMP -- probably needs updates because of DEViseClientSocket
 
 The JSPoP receives commands from the JavaScreen; in a few cases it is able
 to reply to the command itself, but in most cases it simply forwards the

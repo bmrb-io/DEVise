@@ -2878,8 +2878,9 @@ Num Date        Status  Description
 			receiving a connection request from a client with an
 			invalid ID. (rkw)
 
-720 10/22/01	OPEN	JavaScreen: all clients are blocked if the JSPoP
+720 10/22/01	FIXED	JavaScreen: all clients are blocked if the JSPoP
 			blocks while reading a client command. (rkw)
+			(Fixed by rkw, 10/24/01.)
 
 721 10/23/01	OPEN	JavaScreen: when a collaboration client exits or
 			goes out of collaboration mode, the corresponding
