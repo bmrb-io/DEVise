@@ -2490,6 +2490,16 @@ Num Date        Status  Description
 			running applet in Netscape produces a communication
 			error. (rkw)
 
+630 12/22/00	OPEN	JavaScreen: when running in CGI mode in Netscape,
+			there's a communications error when you exit the
+			client. (rkw)
+
+631 12/22/00	OPEN	JavaScreen: command arguments in CGI mode have '_'
+			appended to them on the way from the client to the
+			CGI script, because having null-terminated strings
+			somehow goofs up the CGI communication, and not having
+			an extra character goofs things up, too. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
