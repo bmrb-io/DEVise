@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/07/18 01:16:53  jussi
+  Added saveDisplayImage command.
+
   Revision 1.19  1996/07/14 04:05:34  jussi
   Added (kludgy) ResetVkg() function which allows ViewKGraph
   to inform ParseAPI that the current KGraph has been
@@ -800,8 +803,19 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	control->ReturnVal(API_NAK, "Cannot find view");
 	return -1;
       }
-      /* Return status of statistics display */
+      /* Return number of dimensions in view */
       sprintf(result, "%d", vg->GetNumDimensions());
+      control->ReturnVal(API_ACK, result);
+      return 1;
+    }
+    if (!strcmp(argv[0], "getViewSolid3D")) {
+      View *vg = (View *)classDir->FindInstance(argv[1]);
+      if (!vg) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      /* Return setting of solid/wireframe 3D objects */
+      sprintf(result, "%d", (vg->GetSolid3D() ? 1 : 0));
       control->ReturnVal(API_ACK, result);
       return 1;
     }
@@ -910,6 +924,17 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       }
       /* Turn on/off display of statistics */
       vg->SetNumDimensions(atoi(argv[2]));
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+    if (!strcmp(argv[0], "setViewSolid3D")) {
+      View *vg = (View *)classDir->FindInstance(argv[1]);
+      if (!vg) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      /* Set solid or wireframe 3D objects */
+      vg->SetSolid3D(atoi(argv[2]) ? true : false);
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
