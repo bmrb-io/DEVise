@@ -13,6 +13,15 @@ AttrList.o: DeviseTypes.h /usr/include/values.h DevStatus.h DList.h Exit.h
 AttrList.o: Init.h BufPolicy.h Util.h /usr/include/stdlib.h
 AttrList.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
 AttrList.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+AttrList.old.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+AttrList.old.o: AttrList.h /usr/include/sys/time.h /usr/include/sys/types.h
+AttrList.old.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+AttrList.old.o: /usr/include/sys/select.h /usr/include/sys/time.h
+AttrList.old.o: DeviseTypes.h /usr/include/values.h DevStatus.h DList.h
+AttrList.old.o: Exit.h Init.h BufPolicy.h Util.h /usr/include/stdlib.h
+AttrList.old.o: /usr/include/string.h /usr/include/ctype.h
+AttrList.old.o: /usr/include/math.h /usr/include/floatingpoint.h
+AttrList.old.o: /usr/include/sys/ieeefp.h
 AxisLabelClassInfo.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 AxisLabelClassInfo.o: AxisLabelClassInfo.h DeviseTypes.h
 AxisLabelClassInfo.o: /usr/include/values.h DevStatus.h
@@ -502,6 +511,30 @@ ViewWin.o: Dispatcher.h /usr/include/unistd.h /usr/include/sys/unistd.h
 ViewWin.o: Journal.h ColorMgr.h ClassDir.h Control.h Init.h BufPolicy.h
 ViewWin.o: DevError.h ../graphics.new/Version.h Util.h /usr/include/ctype.h
 ViewWin.o: PSDisplay.h
+ViewWinHor.o: ViewWinHor.h ViewLayout.h ViewWin.h DList.h Exit.h
+ViewWinHor.o: DeviseTypes.h /usr/include/values.h DevStatus.h
+ViewWinHor.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
+ViewWinHor.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+ViewWinHor.o: /usr/include/sys/select.h /usr/include/sys/time.h
+ViewWinHor.o: /usr/include/sys/time.h WindowRep.h /usr/include/stdio.h
+ViewWinHor.o: /usr/include/stdlib.h Geom.h /usr/include/math.h
+ViewWinHor.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Color.h
+ViewWinHor.o: Transform.h VisualArg.h Pattern.h DevisePixmap.h Compress.h
+ViewWinHor.o: DualWindowRep.h Display.h Dispatcher.h /usr/include/unistd.h
+ViewWinHor.o: /usr/include/sys/unistd.h /usr/include/string.h Journal.h
+ViewWinHor.o: ColorMgr.h
+ViewWinVer.o: ViewWinVer.h ViewLayout.h ViewWin.h DList.h Exit.h
+ViewWinVer.o: DeviseTypes.h /usr/include/values.h DevStatus.h
+ViewWinVer.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
+ViewWinVer.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+ViewWinVer.o: /usr/include/sys/select.h /usr/include/sys/time.h
+ViewWinVer.o: /usr/include/sys/time.h WindowRep.h /usr/include/stdio.h
+ViewWinVer.o: /usr/include/stdlib.h Geom.h /usr/include/math.h
+ViewWinVer.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Color.h
+ViewWinVer.o: Transform.h VisualArg.h Pattern.h DevisePixmap.h Compress.h
+ViewWinVer.o: DualWindowRep.h Display.h Dispatcher.h /usr/include/unistd.h
+ViewWinVer.o: /usr/include/sys/unistd.h /usr/include/string.h Journal.h
+ViewWinVer.o: ColorMgr.h
 WinClassInfo.o: Display.h DeviseTypes.h /usr/include/values.h DevStatus.h
 WinClassInfo.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 WinClassInfo.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
@@ -663,6 +696,31 @@ testAtof.o: DeviseTypes.h /usr/include/values.h DevStatus.h
 testAtof.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 testAtof.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 testAtof.o: /usr/include/sys/time.h Exit.h
+testView.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h Init.h
+testView.o: DeviseTypes.h /usr/include/values.h DevStatus.h
+testView.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+testView.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+testView.o: /usr/include/sys/time.h /usr/include/sys/time.h BufPolicy.h
+testView.o: ViewWinVer.h ViewLayout.h ViewWin.h DList.h Exit.h WindowRep.h
+testView.o: /usr/include/stdlib.h Geom.h /usr/include/math.h
+testView.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Color.h
+testView.o: Transform.h VisualArg.h Pattern.h DevisePixmap.h Compress.h
+testView.o: DualWindowRep.h View.h Dispatcher.h /usr/include/unistd.h
+testView.o: /usr/include/sys/unistd.h /usr/include/string.h Journal.h
+testView.o: Control.h ClassDir.h ViewCallback.h AttrList.h Cursor.h
+testView.o: ../graphics.new/Action.h
+testViewWin.o: Dispatcher.h /usr/include/stdio.h
+testViewWin.o: /usr/include/sys/feature_tests.h /usr/include/stdlib.h
+testViewWin.o: /usr/include/unistd.h /usr/include/sys/types.h
+testViewWin.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+testViewWin.o: /usr/include/sys/select.h /usr/include/sys/time.h
+testViewWin.o: /usr/include/sys/time.h /usr/include/sys/unistd.h
+testViewWin.o: /usr/include/string.h DeviseTypes.h /usr/include/values.h
+testViewWin.o: DevStatus.h DList.h Exit.h Journal.h VisualArg.h Color.h
+testViewWin.o: Pattern.h ViewWinVer.h ViewLayout.h ViewWin.h WindowRep.h
+testViewWin.o: Geom.h /usr/include/math.h /usr/include/floatingpoint.h
+testViewWin.o: /usr/include/sys/ieeefp.h Transform.h DevisePixmap.h
+testViewWin.o: Compress.h DualWindowRep.h ViewWinHor.h
 testWindowRep.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testWindowRep.o: Dispatcher.h /usr/include/stdlib.h /usr/include/unistd.h
 testWindowRep.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
