@@ -53,3 +53,4 @@ devise		-a Makefile.common README \
 			run_public \
 			scripts sgi solaris solsparc src sun tape test \
 			unidata util winnt xvertext
+devisefull	-a devise Java/JavaJavaScreen EmbeddedTk ImTools QCIMS
