@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.94  1998/12/22 19:39:30  wenger
+  User can now change date format for axis labels; fixed bug 041 (axis
+  type not being changed between float and date when attribute is changed);
+  got dates to work semi-decently as Y axis labels; view highlight is now
+  always drawn by outlining the view; fixed some bugs in drawing the highight.
+
   Revision 1.93  1998/12/01 20:04:33  wenger
   More reductions of memory usage in DEVise -- basically eliminated the
   histogram capability (this really saves a lot, since there are big
@@ -462,9 +468,10 @@ class ViewGraph_QueryCallback : public QueryCallback
 		}
 
 		virtual void	QueryDone(int bytes, void* userData,
+								  Boolean allDataReturned,
 								  TDataMap* map = NULL)
 		{
-			_parent->QueryDone(bytes, userData, map);
+			_parent->QueryDone(bytes, userData, allDataReturned, map);
 		}
 
 		virtual void*	GetObj(void)
@@ -594,6 +601,8 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
   _stringYTableName = NULL;
   _stringZTableName = NULL;
   _stringGenTableName = NULL;
+
+  _dataRangesValid = false;
 }
 
 ViewGraph::~ViewGraph(void)
@@ -938,7 +947,7 @@ void ViewGraph::DrawLegend()
 void ViewGraph::GoHome()
 {
 #if defined(DEBUG)
-    printf("ViewGraph::GoHome()\n");
+    printf("ViewGraph(%s)::GoHome()\n", GetName());
 #endif
 
     /* show all data records in view i.e. set filter to use the
@@ -965,7 +974,6 @@ void ViewGraph::GoHome()
       TData *tdata = map->GetPhysTData();
       hasFirstRec = tdata->HeadID(firstRec);
       hasLastRec = tdata->LastID(lastRec);
-      
     }
 
     if (GetNumDimensions() == 2) {
@@ -974,56 +982,93 @@ void ViewGraph::GoHome()
 
 	switch (_homeInfo.mode) {
 	case HomeAuto: {
+	  Boolean setXLow = false;
+	  Boolean setXHigh = false;
+
           if (xAttr) {
               if (xAttr->hasLoVal) {
                 filter.xLow = AttrList::GetVal(&xAttr->loVal, xAttr->type) -
 		  _homeInfo.autoXMargin;
+	        setXLow = true;
 	      } else if (!strcmp(xAttr->name, REC_ID_NAME)) {
 		if (hasFirstRec) {
                   filter.xLow = (Coord)firstRec;
+	          setXLow = true;
 		}
 	      }
 
               if (xAttr->hasHiVal) {
                 filter.xHigh = AttrList::GetVal(&xAttr->hiVal, xAttr->type) +
 		  _homeInfo.autoXMargin;
+	        setXHigh = true;
 	      } else if (!strcmp(xAttr->name, REC_ID_NAME)) {
 		if (hasLastRec) {
                   filter.xHigh = (Coord)lastRec;
+	          setXHigh = true;
 		}
 	      }
-
-              if (filter.xHigh == filter.xLow) {
-                  filter.xHigh += 1.0;
-                  filter.xLow -= 1.0;
-              }
           }
+
+	  if (_dataRangesValid) {
+	    if (!setXLow) {
+	      filter.xLow = _dataXMin;
+	    }
+	    if (!setXHigh) {
+	      filter.xHigh = _dataXMax;
+	    }
+	  }
+
+          if (filter.xHigh == filter.xLow) {
+            filter.xHigh += 1.0;
+            filter.xLow -= 1.0;
+          }
+
+
+	  Boolean setYLow = false;
+	  Boolean setYHigh = false;
           if (yAttr) {
               if (yAttr->hasLoVal) {
                 filter.yLow = AttrList::GetVal(&yAttr->loVal, yAttr->type) -
 		  _homeInfo.autoYMargin;
-	      } else if (!strcmp(xAttr->name, REC_ID_NAME)) {
+	        setYLow = true;
+	      } else if (!strcmp(yAttr->name, REC_ID_NAME)) {
 		if (hasFirstRec) {
                   filter.yLow = (Coord)firstRec;
+	          setYLow = true;
 		}
 	      }
               if (yAttr->hasHiVal) {
                 filter.yHigh = AttrList::GetVal(&yAttr->hiVal, yAttr->type) +
 		  _homeInfo.autoYMargin;
-	      } else if (!strcmp(xAttr->name, REC_ID_NAME)) {
+	        setYHigh = true;
+	      } else if (!strcmp(yAttr->name, REC_ID_NAME)) {
 		if (hasLastRec) {
                   filter.yHigh = (Coord)lastRec;
+	          setYHigh = true;
 		}
 	      }
-
-              if (filter.yHigh == filter.yLow) {
-                  filter.yLow -= 1.0;
-                  filter.yHigh += 1.0;
-              }
           }
+
+	  if (_dataRangesValid) {
+	    if (!setYLow) {
+	      filter.yLow = _dataYMin;
+	    }
+	    if (!setYHigh) {
+	      filter.yHigh = _dataYMax;
+	    }
+          }
+
+          if (filter.yHigh == filter.yLow) {
+            filter.yLow -= 1.0;
+            filter.yHigh += 1.0;
+          }
+
+
+#if 0
           if (!IsScatterPlot()) {
             filter.yLow = MIN(filter.yLow, 0.0);
 	  }
+#endif
 
 	  break;
 	}
@@ -1853,7 +1898,8 @@ ViewGraph::SetSendParams(const GDataSock::Params &params)
 // Callback Methods (QueryCallback)
 //******************************************************************************
 
-void	ViewGraph::QueryDone(int bytes, void* userData, TDataMap* map)
+void	ViewGraph::QueryDone(int bytes, void* userData,
+  Boolean allDataReturned,TDataMap* map)
 {
 #if defined(REPORT_QUERY_TIME)
 	struct timeval queryEndTime;

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.91  1999/03/01 23:09:10  wenger
+  Fixed a number of memory leaks and removed unused code.
+
   Revision 1.90  1998/12/15 14:55:20  wenger
   Reduced DEVise memory usage in initialization by about 6 MB: eliminated
   Temp.c (had huge global arrays); eliminated Object3D class and greatly
@@ -1457,7 +1460,8 @@ void QueryProcFull::EndQuery(QPFullData *query)
 #endif
   ReportQueryElapsedTime(query);
   if( query->callback != NULL ) {
-    query->callback->QueryDone(query->bytes, query->userData, query->map);
+    query->callback->QueryDone(query->bytes, query->userData,
+      query->qType == QPFull_Scatter, query->map);
   }
 #ifdef DEBUG_NEG_LINKS
   printf("****************************EndQuery %p (slave : %d) \n", query,

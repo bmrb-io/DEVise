@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/04/30 14:24:22  wenger
+  DerivedTables are now owned by master views rather than links;
+  views now unlink from master and slave links in destructor.
+
   Revision 1.5  1998/04/29 17:53:57  wenger
   Created new DerivedTable class in preparation for moving the tables
   from the TAttrLinks to the ViewDatas; found bug 337 (potential big
@@ -86,6 +90,7 @@ class ViewData : public ViewGraph
 		// Callback methods (QueryCallback)
 		virtual void QueryInit(void* userData);
 		virtual void QueryDone(int bytes, void* userData,
+							   Boolean allDataReturned,
 						       TDataMap* map = NULL);
 		virtual void*	GetObj(void) { return this; }
 		virtual MSLinkList*	GetMasterLinkList(void) { return &_masterLink; }

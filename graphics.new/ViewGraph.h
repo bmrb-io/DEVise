@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.59  1998/12/22 19:39:31  wenger
+  User can now change date format for axis labels; fixed bug 041 (axis
+  type not being changed between float and date when attribute is changed);
+  got dates to work semi-decently as Y axis labels; view highlight is now
+  always drawn by outlining the view; fixed some bugs in drawing the highight.
+
   Revision 1.58  1998/12/01 20:04:34  wenger
   More reductions of memory usage in DEVise -- basically eliminated the
   histogram capability (this really saves a lot, since there are big
@@ -633,6 +639,11 @@ public:
 
   CountMapping *_countMapping;
 
+  Boolean _dataRangesValid;
+  Boolean _dataRangeFirst;
+  Coord _dataXMin, _dataXMax;
+  Coord _dataYMin, _dataYMax;
+
  private:
   Boolean ToRemoveStats(char *oldset, char *newset);
   void StatsXOR(char *oldstat, char *newstat, char *result);
@@ -655,6 +666,7 @@ public:
 		// Callback methods (QueryCallback)
 		virtual void	QueryInit(void* userData) {}
 		virtual void	QueryDone(int bytes, void* userData,
+								  Boolean allDataReturned,
 								  TDataMap* map = NULL);
 		virtual void*	GetObj(void) { return this; }
 		virtual MSLinkList*		GetMasterLinkList()

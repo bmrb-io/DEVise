@@ -1634,10 +1634,11 @@ Num Date        Status  Description
 			put recId in the AS clause, but this query is
 			then rejected because recId is a reserved name. (rkw)
 
-426 10/21/98	OPEN	Doing the '5' (home) key on a view with a constant
+426 10/21/98	FIXED	Doing the '5' (home) key on a view with a constant
 			mapping does not work and may cause a crash. (rkw)
 			(Partly fixed by rkw, 11/3/98 -- doesn't work right,
 			but doesn't crash.)
+			(Fixed by rkw, 3/3/99.)
 
 427 10/27/98	OPEN	It's impossible to add a data source to an empty
 			directory with the GUI, because you always get the
@@ -1656,11 +1657,12 @@ Num Date        Status  Description
 431 11/03/98	OPEN	Plusses for embedded Tk objects are drawn in the
 			wrong place. (rkw)
 
-432 11/03/98	OPEN	Doing the '5' (home) key on a view with a mapping
+432 11/03/98	FIXED	Doing the '5' (home) key on a view with a mapping
 			with expressions does not work and may cause a crash.
 			(rkw)
 			(Partly fixed by rkw, 11/3/98 -- doesn't work right,
 			but doesn't crash.)
+			(Fixed by rkw, 3/3/99.)
 
 433 11/06/98	FIXED	Load session Test/tree_w_cursor.ds: drill-down works
 			abominably. (rkw)
@@ -1787,15 +1789,17 @@ Num Date        Status  Description
 			jsdemo Condor/cant_move_cursor.ds session. (ml/rkw)
 			(Fixed by rkw, 2/23/99.)
 
-466 03/02/99	OPEN	QueryProcFull does a binary search on an expression
+466 03/02/99	FIXED	QueryProcFull does a binary search on an expression
 			on a sorted attribute even if there's a negative
 			coefficient on that attribute -- leads to query
 			not delivering the correct records. (rkw)
 			(See Test/negative_sorted.ds, zoom in X.)
+			(Fixed by rkw, 03/02/99.)
 
-467 03/02/99	OPEN	If you start out with a sorted attribute for X, and
+467 03/02/99	FIXED	If you start out with a sorted attribute for X, and
 			then change the mapping to an unsorted attribute,
 			the query is still run using binary search. (rkw)
+			(Fixed by rkw, 03/02/99.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.81  1999/01/04 15:33:32  wenger
+  Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
+  compiles; added code (GUI is currently disabled) to manually set view
+  geometry (not yet saved to sessions).
+
   Revision 1.80  1998/11/25 22:31:17  wenger
   Reduced the amount of memory allocated in the MappingInterp constructor,
   mainly by improving the AttrList class.
@@ -582,8 +587,9 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
   /* sorted in the X direction? */
   AttrInfo *info = attrList->Find("x");
   if ((info != NULL) && (info->isSorted)) {
-    //TEMP -- VisualFlag may be leaked
     SetDimensionInfo(new VisualFlag(VISUAL_X), 1);
+  } else {
+    SetDimensionInfo(new VisualFlag(0), 0);
   }
 
   _pNativeExpr = NULL;
@@ -640,8 +646,9 @@ void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,
   /* sorted in the X direction? */
   AttrInfo *info = attrList->Find("x");
   if ((info != NULL) && (info->isSorted)) {
-    //TEMP -- VisualFlag may be leaked
     SetDimensionInfo(new VisualFlag(VISUAL_X), 1);
+  } else {
+    SetDimensionInfo(new VisualFlag(0), 0);
   }
 
   TDataMap::ResetGData(FindGDataSize(cmd, _tdata->GetAttrList(), flag,
@@ -1357,7 +1364,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       SetDefaultX((Coord)constVal);
       _tclCmd->xCmd = "";
       attrList->InsertAttr(0, "x", -1, sizeof(double), attrType,
-			   false, NULL, false, isSorted);
+			   false, NULL, false, false);
     } else {
       _tclCmd->xCmd = ConvertCmd(_cmd->xCmd, attrType, isSorted);
       _offsets->xOffset = offset = WordBoundary(offset,sizeof(double));
@@ -1372,7 +1379,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       SetDefaultY((Coord)constVal);
       _tclCmd->yCmd = "";
       attrList->InsertAttr(1, "y", -1, sizeof(double), attrType,
-			   false, NULL, false, isSorted);
+			   false, NULL, false, false);
     } else {
       _tclCmd->yCmd = ConvertCmd(_cmd->yCmd, attrType, isSorted);
       _offsets->yOffset = offset = WordBoundary(offset,sizeof(double));
@@ -1387,7 +1394,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       SetDefaultZ((Coord)constVal);
       _tclCmd->zCmd = "";
       attrList->InsertAttr(2, "z", -1, sizeof(double), attrType,
-			   false, NULL, false, isSorted);
+			   false, NULL, false, false);
     } else {
       _tclCmd->zCmd = ConvertCmd(_cmd->zCmd, attrType, isSorted);
       _offsets->zOffset = offset = WordBoundary(offset,sizeof(double));
@@ -1407,7 +1414,7 @@ AttrList *MappingInterp::InitCmd(char *name)
 			GetColoring().SetForeground(pcid);
 			_tclCmd->colorCmd = "";
 			attrList->InsertAttr(3, "color", -1, sizeof(double), attrType,
-								 false, NULL, false, isSorted);
+								 false, NULL, false, false);
 		}
 		else
 		{
@@ -1425,7 +1432,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       SetDefaultSize(constVal);
       _tclCmd->sizeCmd = "";
       attrList->InsertAttr(4, "size", -1, sizeof(double), attrType,
-			   false, NULL, false, isSorted);
+			   false, NULL, false, false);
     } else {
       _tclCmd->sizeCmd = ConvertCmd(_cmd->sizeCmd, attrType, isSorted);
       _offsets->sizeOffset = offset = WordBoundary(offset,sizeof(double));
@@ -1440,7 +1447,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       SetDefaultPattern((Pattern)constVal);
       _tclCmd->patternCmd = "";
       attrList->InsertAttr(5, "pattern", -1, sizeof(double), attrType,
-			   false, NULL, false, isSorted);
+			   false, NULL, false, false);
     } else {
       _tclCmd->patternCmd = ConvertCmd(_cmd->patternCmd, attrType, isSorted);
       _offsets->patternOffset = offset = WordBoundary(offset,sizeof(Pattern));
@@ -1458,7 +1465,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       SetDefaultShape(shape);
       _tclCmd->shapeCmd = "";
       attrList->InsertAttr(6, "shape", -1, sizeof(double), attrType,
-			   false, NULL, false, isSorted);
+			   false, NULL, false, false);
     } else {
       _tclCmd->shapeCmd = ConvertCmd(_cmd->shapeCmd, attrType, isSorted);
       _offsets->shapeOffset = offset = WordBoundary(offset,sizeof(ShapeID));
@@ -1473,7 +1480,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       SetDefaultOrientation(constVal);
       _tclCmd->orientationCmd = "";
       attrList->InsertAttr(7, "orientation", -1, sizeof(double), attrType,
-			   false, NULL, false, isSorted);
+			   false, NULL, false, false);
     } else {
       _tclCmd->orientationCmd = ConvertCmd(_cmd->orientationCmd, attrType, 
 					   isSorted);
@@ -1494,7 +1501,7 @@ AttrList *MappingInterp::InitCmd(char *name)
 	SetDefaultShapeAttr(j,constVal);
 	_tclCmd->shapeAttrCmd[j] = "";
 	attrList->InsertAttr(8 + j, attrName, -1, sizeof(double),
-			     attrType, false, NULL, false, isSorted);
+			     attrType, false, NULL, false, false);
       } else {
 	_tclCmd->shapeAttrCmd[j] = 
 	  ConvertCmd(_cmd->shapeAttrCmd[j], attrType, isSorted);
@@ -1655,6 +1662,9 @@ Boolean MappingInterp::ConvertSimpleCmd(char *cmd, AttrList *attrList,
   return false;
 }
 
+// Note: sorted will now be set to false if the command is anything but
+// a simple invocation of a sorted attribute.  This fixes bug 466.
+// RKW 1999-03-02.
 char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
 				Boolean &isSorted)
 {
@@ -1665,7 +1675,7 @@ char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
   InitString();
 
   attrType = DoubleAttr;
-  isSorted = false;
+  isSorted = true;
   
   while (*cmd != '\0') {
     if (*cmd == '$') {
@@ -1679,6 +1689,7 @@ char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
       }
       if (ptr == cmd+1) {
 	    /* did not get a variable name */
+	      isSorted = false;
 	      InsertChar(*cmd);
       } else {
 		    /* from cmd+1 to ptr-1 is a variable name */
@@ -1700,8 +1711,9 @@ char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
 		        reportErrNosys(errBuf);
 			    } else {
 			      /* found the attribute */
-			      if (info->isSorted)
-			        isSorted = true;
+			      if (!info->isSorted) {
+			        isSorted = false;
+				  }
 			      if (info->type == DateAttr) {
 			        attrType = DateAttr;
 			      } else if (info->type == StringAttr) {
@@ -1719,6 +1731,7 @@ char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
 			  cmd = ptr - 1;
       }
     } else {
+	  isSorted = false;
       InsertChar(*cmd);
     }
     cmd++;

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.10  1999/01/04 15:33:33  wenger
+  Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
+  compiles; added code (GUI is currently disabled) to manually set view
+  geometry (not yet saved to sessions).
+
  */
 
 #include <sys/param.h>
@@ -113,6 +118,16 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     unsigned pixWd = (unsigned)ABS(pixX1 - pixX2) + 1;
     unsigned pixHt = (unsigned)ABS(pixY1 - pixY2) + 1;
 
+#if 0
+    // Draw rectangle for debugging.
+    {
+      PColorID	pcid = view->GetForeground();
+      win->SetForeground(pcid);
+      win->SetPattern(GetPattern(gdata, map, offset));
+      win->SetLineWidth(GetLineWidth(gdata, map, offset));
+      win->FillRect(dataX - dataWd / 2.0, dataY - dataHt / 2.0, dataWd, dataHt);
+    }
+#endif
 
     //
     // Find the view name for the symbol from the GData.
@@ -130,6 +145,24 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
       continue;
     }
 
+#if 1
+    // Draw rectangle and view name for debugging.
+    {
+      PColorID	pcid = view->GetForeground();
+      win->SetForeground(pcid);
+      win->SetPattern(GetPattern(gdata, map, offset));
+      win->SetLineWidth(GetLineWidth(gdata, map, offset));
+      // 2.1, 0.9 are a kludge so rect is no larger than the view symbol.
+      win->FillRect(dataX - dataWd / 2.0, dataY - dataHt / 2.1, dataWd * 0.9,
+        dataHt * 0.9);
+
+      pcid = view->GetBackground();
+      win->SetForeground(pcid);
+      win->ScaledText(viewname, dataX - dataWd / 2.0, dataY - dataHt / 2.0,
+        dataWd, dataHt);
+    }
+#endif
+
     //
     // Find the actual view object for the symbol.
     //
@@ -141,16 +174,6 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
       continue;
     }
 
-
-#if 0
-    // Draw rectangle for debugging.
-    PColorID	pcid = viewsym->GetBackground();
-    win->SetForeground(pcid);
-    win->SetPattern(GetPattern(gdata, map, offset));
-    win->SetLineWidth(GetLineWidth(gdata, map, offset));
-    win->FillRect(dataX - dataWd / 2.0, dataY - dataHt / 2.0, dataWd, dataHt);
-#endif
-    
     if (view->GetDisplayDataValues()) {
       win->SetForeground(view->GetForeground());
       DisplayDataLabel(win, dataX, dataY, dataY);

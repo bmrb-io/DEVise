@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/11/09 20:33:23  wenger
+  Fixed bug 433 (drill-down problem); improved debug output in various
+  related modules.
+
   Revision 1.19  1998/09/28 20:05:52  wenger
   Fixed bug 383 (unnecessary creation of QueryProc); moved all
   DestroySessionData() code from subclasses of ControlPanel into base class,
@@ -126,6 +130,7 @@ class QueryCallback
 
 		// Query done. bytes == # of TData bytes used processing it.
 		virtual void	QueryDone(int bytes, void* userData,
+								  Boolean allDataReturned,
 								  TDataMap* map = NULL) = 0;
 
 		// Return this QueryCallback

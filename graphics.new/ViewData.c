@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.15  1999/02/11 19:54:59  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.14.2.1  1998/12/29 17:25:13  wenger
   First version of new PileStack objects implemented -- allows piles without
   pile links.  Can't be saved or restored in session files yet.
@@ -169,11 +174,15 @@ ViewData::QueryInit(void* userData)
   }
   _derivedTables.DoneIterator(index);
 
+  _dataRangesValid = false;
+  _dataRangeFirst = true;
+
   ViewGraph::QueryInit(userData);
 }
 
 void
-ViewData::QueryDone(int bytes, void* userData, TDataMap* map)
+ViewData::QueryDone(int bytes, void* userData, Boolean allDataReturned,
+  TDataMap* map)
 {
 #if defined(DEBUG)
   printf("ViewData::QueryDone(%d)\n", bytes);
@@ -190,7 +199,15 @@ ViewData::QueryDone(int bytes, void* userData, TDataMap* map)
   }
   _derivedTables.DoneIterator(index);
 
-  ViewGraph::QueryDone(bytes, userData, map);
+  if (allDataReturned) {
+    _dataRangesValid = true;
+#if defined(DEBUG)
+    printf("View <%s>: X: %g, %g; Y: %g, %g\n", GetName(), _dataXMin,
+      _dataXMax, _dataYMin, _dataYMax);
+#endif
+  }
+
+  ViewGraph::QueryDone(bytes, userData, allDataReturned, map);
 }
 
 void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
@@ -260,6 +277,18 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 
 	  Coord x = symArray[recNum].x = ShapeGetX(dataP, mapping, offset);
 	  Coord y = symArray[recNum].y = ShapeGetY(dataP, mapping, offset);
+
+      if (_dataRangeFirst) {
+		_dataXMin = _dataXMax = x;
+		_dataYMin = _dataYMax = y;
+	    _dataRangeFirst = false;
+	  } else {
+	    _dataXMin = MIN(_dataXMin, x);
+		_dataXMax = MAX(_dataXMax, x);
+		_dataYMin = MIN(_dataYMin, y);
+		_dataYMax = MAX(_dataYMax, y);
+	  }
+
 	  ShapeID shape = symArray[recNum].shape = GetShape(dataP, mapping, offset);
       symArray[recNum].isComplex = mapping->IsComplexShape(shape) ||
 		  (GetNumDimensions() == 3);

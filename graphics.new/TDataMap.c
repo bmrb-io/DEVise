@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1999/03/01 23:09:11  wenger
+  Fixed a number of memory leaks and removed unused code.
+
   Revision 1.30  1998/11/09 20:33:26  wenger
   Fixed bug 433 (drill-down problem); improved debug output in various
   related modules.
@@ -316,6 +319,7 @@ XColorID	TDataMap::GetXColorID(const char* recPtr) const
 
 void TDataMap::SetDimensionInfo(VisualFlag *dimensionInfo, int numDimensions)
 {
+  delete _dimensionInfo;
   _dimensionInfo = dimensionInfo;
   _numDimensions = numDimensions;
 }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.32  1998/11/06 17:59:54  wenger
+  Multiple string tables fully working -- allows separate tables for the
+  axes in a given view.
+
   Revision 1.31  1998/11/04 20:34:01  wenger
   Multiple string tables partly working -- loading and saving works, one
   table per mapping works; need multiple tables per mapping, API and GUI,
@@ -238,6 +242,8 @@ class TDataMap
   AttrList *GDataAttrList() { return _gdataAttrList; }
 
   /* Get/Set info about the dimensions of the GData */
+  // I think this info tells you the number of dimensions and which
+  // dimensions are mapped to a sorted TData attribute.  RKW 1999-03-02.
   void SetDimensionInfo(VisualFlag *dimensionInfo, int numDimensions);
   int DimensionInfo(VisualFlag *&dimensionInfo) { 
     dimensionInfo = _dimensionInfo;
