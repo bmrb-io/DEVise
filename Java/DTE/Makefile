@@ -19,3 +19,10 @@ hj:
 
 doc:
 	javadoc $(PACKAGES) -d /u/d/o/donjerko/public/html/Dte/
+
+
+Parser/SQLParser.java: Parser/SQLParser.jj
+	cd Parser && javacc SQLParser.jj && cd ..
+
+parser: Parser/SQLParser.java
+	javac ParserTest.java -d $(CLASSES)
