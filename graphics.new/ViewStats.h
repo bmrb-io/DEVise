@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/14 21:57:58  jussi
+  Added initialization of _vw to null.
+
   Revision 1.3  1995/12/14 17:25:40  jussi
   Class with virtual functions must have a virtual destructor.
 
@@ -37,8 +40,7 @@ class ViewGraph;
 // Abstract Base Class for the statistics collection and display of the
 // data shown in a view.
 
-class ViewStats
-{
+class ViewStats {
 public:
   ViewStats() : _vw(0) {}
   virtual ~ViewStats() {}
@@ -56,7 +58,6 @@ public:
   virtual void Report() = 0;
 
   ViewGraph *_vw;
-
-private:
 };
+
 #endif

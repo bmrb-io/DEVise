@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15  1996/07/13 00:35:23  jussi
+#  Added check for return value from OpenAndDefineDataSources.
+#
 #  Revision 1.14  1996/07/13 00:21:25  jussi
 #  Added DoColorStat.
 #
@@ -1357,7 +1360,7 @@ proc DoColorStat {} {
 
     set schemafile [lindex $sourcedef 3]
 
-    MacroDefAutoNew $sname $schemafile
+    MacroDefAuto $sname $schemafile
 }
 
 ############################################################
