@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1999/11/29 21:07:52  wenger
+  Fixed bug 535 and partially fixed bug 532 (problems with view order in
+  piles); removed (unused) replaceView command and related ViewWin methods
+
   Revision 1.19  1999/11/15 22:54:52  wenger
   Fixed bug 534 ("disappearing" data in SoilSci/TwoStation5Var.ds session
   caused by highlight view/pile problems).
@@ -201,6 +205,8 @@ public:
 
   void SetXAxisDateFormat(const char *format);
   void SetYAxisDateFormat(const char *format);
+  void SetXAxisFloatFormat(const char *format);
+  void SetYAxisFloatFormat(const char *format);
 
   void SetNumDimensions(int dimensions);
 

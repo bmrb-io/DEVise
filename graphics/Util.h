@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.27  2000/04/26 19:38:51  wenger
+  JavaScreen caching code is largely implemented except for checking
+  the validity of the cache files; committing with caching disabled
+  to work on cursor draw command ordering (includes improvements to
+  DevFileHeader class).
+
   Revision 1.26  2000/04/07 17:36:01  wenger
   String file path in session file is specified with $DEVISE_SESSION.
 
@@ -215,6 +221,8 @@ inline Boolean IsBlank(char *string)
 
     return true;
 }
+
+const char *GetDefaultDateFormat();
 
 /* convert double to string */
 const char *DateString(time_t tm, const char *format = NULL);

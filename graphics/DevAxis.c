@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  2000/03/14 17:05:05  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.2  1999/08/30 19:34:24  wenger
   Unified X and Y axis drawing code; found and fixed bug 505 (changing axis
   date format didn't force redraw).
@@ -59,11 +63,14 @@ DevAxis::DevAxis(View *view, AxisType type, Boolean inUse,
   _withTicksWidth = withTicksWidth;
   _noTicksWidth = noTicksWidth;
   _width = _withTicksWidth; // default is ticks enabled
-  _significantDigits = significantDigits;
   _labelWidth = labelWidth;
 
   _attrType = FloatAttr;
-  _dateFormat = NULL;
+  _dateFormat = CopyString(GetDefaultDateFormat());
+
+  char buf[128];
+  sprintf(buf, "%%.%dg", significantDigits);
+  _floatFormat = CopyString(buf);
 
   switch (_type) {
   case AxisX:
@@ -145,6 +152,23 @@ DevAxis::SetDateFormat(const char *format)
   if (_dateFormat == NULL || strcmp(format, _dateFormat)) {
     FreeString(_dateFormat);
     _dateFormat = CopyString(format);
+  }
+}
+
+//-----------------------------------------------------------------------------
+// Set the floating-point format.
+void
+DevAxis::SetFloatFormat(const char *format)
+{
+  if (format == NULL) format = "";
+
+#if defined(DEBUG)
+  printf("DevAxis::SetFloatFormat(%s)\n", format);
+#endif
+
+  if (_floatFormat == NULL || strcmp(format, _floatFormat)) {
+    FreeString(_floatFormat);
+    _floatFormat = CopyString(format);
   }
 }
 
@@ -374,7 +398,7 @@ DevAxis::DrawFloatTicks(WindowRep *win, AxisInfo &info)
     win->Line(info._tickX, info._tickY, info._tickX + _tickdrawX, info._tickY + _tickdrawY, 1);
 
     char buf[32];
-    sprintf(buf, "%.*g", _significantDigits, tickMark);
+    sprintf(buf, _floatFormat, tickMark);
 
 	*info._labelPixVar = *info._tickPixVar - _labelWidth / 2;
 

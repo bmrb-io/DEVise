@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.63  2000/06/20 16:57:43  wenger
+  Added commands and GUI to enable/disable the display of mouse location
+  in various views, and globally.
+
   Revision 1.62  2000/03/30 16:27:11  wenger
   Added printInstances command; destroy command now reports an error
   if the instance is not found.
@@ -630,6 +634,10 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(printInstances)
 	REGISTER_COMMAND(setShowMouseLocation)
 	REGISTER_COMMAND(getShowMouseLocation)
+	REGISTER_COMMAND(getXAxisFloatFormat)
+	REGISTER_COMMAND(getYAxisFloatFormat)
+	REGISTER_COMMAND(setXAxisFloatFormat)
+	REGISTER_COMMAND(setYAxisFloatFormat)
 }
 
 CmdContainer::~CmdContainer()

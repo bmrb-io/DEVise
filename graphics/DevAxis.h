@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999
+  (c) Copyright 1999-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1999/08/30 19:34:24  wenger
+  Unified X and Y axis drawing code; found and fixed bug 505 (changing axis
+  date format didn't force redraw).
+
   Revision 1.1  1999/08/18 20:46:04  wenger
   First step for axis drawing improvement: moved code to new DevAxis
   class with unchanged functionality.
@@ -66,6 +70,9 @@ public:
   const char *GetDateFormat() { return _dateFormat; }
   void SetDateFormat(const char *format);
 
+  const char *GetFloatFormat() { return _floatFormat; }
+  void SetFloatFormat(const char *format);
+
 protected:
   struct AxisInfo {
     Boolean _drawAxis;
@@ -105,7 +112,6 @@ protected:
 private:
   AxisType _type;
   Boolean _inUse;          // TRUE if this axis is in use
-  int _significantDigits;  // # of significant digits
   int _labelWidth;         // height (for Y axis) or width (X axis)
 
   int _width;              // width (for Y axis) or height (X axis)
@@ -119,6 +125,7 @@ private:
 
   AttrType _attrType;      // type of axis attribute
   char *_dateFormat;       // format for labels if date type
+  char *_floatFormat;       // format for labels if float type
 
   int _tickLength;
   int _tickdrawX, _tickdrawY; // values to draw the ticks

@@ -2353,6 +2353,10 @@ Num Date        Status  Description
 			java.lang.OutOfMemoryError. (rkw)
 			(Fixed by rkw, 6/16/00.)
 
+599 6/20/00	OPEN	If you zoom in too far, especially with a low-
+			precision axis format, you can end up with multiple
+			axis ticks with identical labels. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.39  2000/04/26 19:38:50  wenger
+  JavaScreen caching code is largely implemented except for checking
+  the validity of the cache files; committing with caching disabled
+  to work on cursor draw command ordering (includes improvements to
+  DevFileHeader class).
+
   Revision 1.38  2000/04/20 16:10:12  wenger
   Improved RemoveEnvFromPath() function.
 
@@ -389,6 +395,15 @@ AddEnvToPath(const char *envVar, const char *path)
   return result;
 }
 
+// Note: ParseFloatDate() depends on this format.
+static const char *_defaultDateFormat = "%b %d %Y %T";
+
+const char *
+GetDefaultDateFormat()
+{
+  return _defaultDateFormat;
+}
+
 const char *DateString(time_t tm, const char *format)
 {
 #if 0
@@ -401,10 +416,7 @@ const char *DateString(time_t tm, const char *format)
 
   static char dateBuf[32];
 
-  // Note: ParseFloatDate() depends on this format.
-  const char *defaultFormat = "%b %d %Y %T";
-
-  if (format == NULL || strlen(format) == 0) format = defaultFormat;
+  if (format == NULL || strlen(format) == 0) format = _defaultDateFormat;
 
   // Note: second arg. of cftime() should be declared const in system header
   // files.

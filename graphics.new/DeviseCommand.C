@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.102  2000/06/20 16:57:44  wenger
+  Added commands and GUI to enable/disable the display of mouse location
+  in various views, and globally.
+
   Revision 1.101  2000/04/18 16:47:47  wenger
   Removed compile dependencies on DTE header files.
 
@@ -6558,6 +6562,105 @@ IMPLEMENT_COMMAND_BEGIN(getShowMouseLocation)
         return 1;
 	} else {
 		fprintf(stderr, "Wrong # of arguments: %d in getShowMouseLocation\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+
+IMPLEMENT_COMMAND_BEGIN(getXAxisFloatFormat)
+    // Arguments: <view name>
+    // Returns: <format (printf() format string)>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+		const char *format = view->GetXAxisFloatFormat();
+		if (format == NULL) format = "";
+        ReturnVal(API_ACK, (char *)format);
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in getXAxisFloatFormat\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getYAxisFloatFormat)
+    // Arguments: <view name>
+    // Returns: <format (printf() format string)>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+		const char *format = view->GetYAxisFloatFormat();
+		if (format == NULL) format = "";
+        ReturnVal(API_ACK, (char *)format);
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in getYAxisFloatFormat\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setXAxisFloatFormat)
+    // Arguments: <view name> <format (printf() format string)>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 3) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+		view->SetXAxisFloatFormat(argv[2]);
+        ReturnVal(API_ACK, "done");
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in setXAxisFloatFormat\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setYAxisFloatFormat)
+    // Arguments: <view name> <format (printf() format string)>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 3) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+		view->SetYAxisFloatFormat(argv[2]);
+        ReturnVal(API_ACK, "done");
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in setYAxisFloatFormat\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.57  2000/06/20 16:57:45  wenger
+  Added commands and GUI to enable/disable the display of mouse location
+  in various views, and globally.
+
   Revision 1.56  2000/03/30 16:27:12  wenger
   Added printInstances command; destroy command now reports an error
   if the instance is not found.
@@ -1947,6 +1951,30 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(getShowMouseLocation)
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getXAxisFloatFormat) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getYAxisFloatFormat) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setXAxisFloatFormat) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setYAxisFloatFormat) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.108  2000/06/20 16:57:34  wenger
+  Added commands and GUI to enable/disable the display of mouse location
+  in various views, and globally.
+
   Revision 1.107  2000/03/21 17:12:26  wenger
   Removed various unused methods from the View class.
 
@@ -812,6 +816,13 @@ class View : public ViewWin
 	void SetXAxisDateFormat(const char *format, Boolean notifyPile = true);
 	const char *GetYAxisDateFormat() { return _yAxis.GetDateFormat(); }
 	void SetYAxisDateFormat(const char *format, Boolean notifyPile = true);
+
+	const char *GetXAxisFloatFormat() { return _xAxis.GetFloatFormat(); }
+	void SetXAxisFloatFormat(const char *format,
+	    Boolean notifyPile = true);
+	const char *GetYAxisFloatFormat() { return _yAxis.GetFloatFormat(); }
+	void SetYAxisFloatFormat(const char *format,
+	    Boolean notifyPile = true);
 
 	// Z coordinate of views.  Initially, at least, this is used only for
 	// drawing the views in the JavaScreen.  RKW 1999-03-17.

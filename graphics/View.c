@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.225  2000/06/20 16:57:29  wenger
+  Added commands and GUI to enable/disable the display of mouse location
+  in various views, and globally.
+
   Revision 1.224  2000/06/16 18:28:32  wenger
   Fixed bug 598 (JavaScreen crashing on bmrb/4096_side3f.ds session).
 
@@ -1079,11 +1083,11 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 		   AxisLabel *, int weight, Boolean boundary)
 	: ViewWin(name, fgid, bgid, weight, boundary),
 	  _xAxis(this, DevAxis::AxisX, false, _defaultXAxisWidth,
-	      _noTicksXAxisWidth, 6, 60),
+	      _noTicksXAxisWidth, 4, 60),
       _yAxis(this, DevAxis::AxisY, false, _defaultYAxisWidth,
-	      _noTicksYAxisWidth, 6, 20),
+	      _noTicksYAxisWidth, 4, 20),
       _zAxis(this, DevAxis::AxisZ, false, _defaultZAxisWidth,
-	      _noTicksZAxisWidth, 6, 40)
+	      _noTicksZAxisWidth, 4, 40)
 {
 #if defined(DEBUG)
 	printf("View::View(%s, this = %p)\n", name, this);
@@ -4563,6 +4567,38 @@ View::SetYAxisDateFormat(const char *format, Boolean notifyPile)
 }
 
 void
+View::SetXAxisFloatFormat(const char *format, Boolean notifyPile)
+{
+#if defined(DEBUG)
+  printf("View(%s)::SetXAxisFloatFormat(%s)\n", GetName(), format);
+#endif
+
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+  if (_pileMode && notifyPile) {
+    GetParentPileStack()->SetXAxisFloatFormat(format);
+  } else {
+    _xAxis.SetFloatFormat(format);
+    Refresh();
+  }
+}
+
+void
+View::SetYAxisFloatFormat(const char *format, Boolean notifyPile)
+{
+#if defined(DEBUG)
+  printf("View(%s)::SetYAxisFloatFormat(%s)\n", GetName(), format);
+#endif
+
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+  if (_pileMode && notifyPile) {
+    GetParentPileStack()->SetYAxisFloatFormat(format);
+  } else {
+    _yAxis.SetFloatFormat(format);
+    Refresh();
+  }
+}
+
+void
 View::CleanUpViewSyms()
 {
 #if defined(DEBUG)
@@ -4656,7 +4692,7 @@ View::ShowMouseLocation(int *mouseX, int *mouseY)
 	if (GetXAxisAttrType() == DateAttr) {
 	  strcpy(xBuf, DateString((time_t)dataX, GetXAxisDateFormat()));
 	} else {
-      sprintf(xBuf, "%*.*g", mouseFieldWidth, mouseFieldPrec, dataX);
+      sprintf(xBuf, GetXAxisFloatFormat(), dataX);
 	}
   } else {
     sprintf(xBuf, "%*s", mouseFieldWidth, "");
@@ -4666,7 +4702,7 @@ View::ShowMouseLocation(int *mouseX, int *mouseY)
 	if (GetYAxisAttrType() == DateAttr) {
 	  strcpy(yBuf, DateString((time_t)dataY, GetYAxisDateFormat()));
 	} else {
-      sprintf(yBuf, "%*.*g", mouseFieldWidth, mouseFieldPrec, dataY);
+      sprintf(yBuf, GetYAxisFloatFormat(), dataY);
 	}
   } else {
     sprintf(yBuf, "%*s", mouseFieldWidth, "");

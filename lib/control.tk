@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.214  2000/06/20 16:57:50  wenger
+#	Added commands and GUI to enable/disable the display of mouse location
+#	in various views, and globally.
+#	
 #	Revision 1.213  2000/03/20 21:08:12  wenger
 #	Added mouse/key help.
 #	
@@ -1075,6 +1079,7 @@ source $libdir/link.tcl
 source $libdir/count_mapping.tcl
 source $libdir/string_table.tcl
 source $libdir/dateformat.tcl
+source $libdir/floatformat.tcl
 source $libdir/viewgeom.tcl
 source $libdir/auto_filter.tcl
 source $libdir/dup_elim.tcl
@@ -1616,6 +1621,8 @@ menu .mbar.view.menu -tearoff 0
 .mbar.view.menu add cascade -label "Fonts" -menu .mbar.view.menu.fontsmenu
 .mbar.view.menu add cascade -label "Date Formats" \
     -menu .mbar.view.menu.dateformatmenu
+.mbar.view.menu add cascade -label "Float Formats" \
+    -menu .mbar.view.menu.floatformatmenu
 
 .mbar.view.menu add separator
 .mbar.view.menu add cascade -label "Links" \
@@ -1762,6 +1769,12 @@ menu .mbar.view.menu.dateformatmenu -tearoff false
 .mbar.view.menu.dateformatmenu add command -label "Y Axis..." \
     -command { EditDateFormat Y }
 
+menu .mbar.view.menu.floatformatmenu -tearoff false
+.mbar.view.menu.floatformatmenu add command -label "X Axis..." \
+    -command { EditFloatFormat X }
+.mbar.view.menu.floatformatmenu add command -label "Y Axis..." \
+    -command { EditFloatFormat Y }
+
 menu .mbar.view.menu.dimmenu -tearoff 0
 .mbar.view.menu.dimmenu add command -label "Two Dimensions" \
 	-command { DoSetViewDimensions 2 }
@@ -1899,23 +1912,23 @@ label .panel.center.status.session1 -text "Session:" \
 set currSessFile ""
 label .panel.center.status.session2 -textvariable currSessFile \
 	-font -*-times-medium-r-normal--*-120-*-*-*-*-*-* \
-	-background $colors(controlPanelStatus)
+	-background $colors(controlPanelStatus) -width 10
 
 label .panel.center.status.mouseX1 -text " X:" \
 	-font -*-times-medium-r-normal--*-120-*-*-*-*-*-* \
 	-background $colors(controlPanelStatus)
-set mouseX "      "
+set mouseX ""
 label .panel.center.status.mouseX2 -textvariable mouseX \
 	-font -*-courier-medium-r-normal--*-120-*-*-*-*-*-* \
-	-background $colors(controlPanelStatus)
+	-background $colors(controlPanelStatus) -width 20
 
 label .panel.center.status.mouseY1 -text " Y:" \
 	-font -*-times-medium-r-normal--*-120-*-*-*-*-*-* \
 	-background $colors(controlPanelStatus)
-set mouseY "      "
+set mouseY ""
 label .panel.center.status.mouseY2 -textvariable mouseY \
 	-font -*-courier-medium-r-normal--*-120-*-*-*-*-*-* \
-	-background $colors(controlPanelStatus)
+	-background $colors(controlPanelStatus) -width 10
 
 pack  .panel.center.label -side top -expand 1 -fill both -ipadx 100 -padx 0 \
 		-pady 0

@@ -26,6 +26,10 @@
   $Id$
 
   $Log$
+  Revision 1.24  2000/03/14 17:05:08  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.23  1999/11/29 21:07:41  wenger
   Fixed bug 535 and partially fixed bug 532 (problems with view order in
   piles); removed (unused) replaceView command and related ViewWin methods
@@ -1188,6 +1192,58 @@ PileStack::SetYAxisDateFormat(const char *format)
   while (GetViewList()->More(index)) {
     View *view = (View *)GetViewList()->Next(index);
     view->SetYAxisDateFormat(format, false);
+  }
+  GetViewList()->DoneIterator(index);
+
+  // Make sure we start queries in the right order.
+  if (IsPiled() && RefreshPending()) {
+    CancelAllRefreshes();
+    if (GetFirstView()) GetFirstView()->Refresh(false);
+  }
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::SetXAxisFloatFormat
+ * Set the X axis floating-point format for all views in the pile.
+ */
+void
+PileStack::SetXAxisFloatFormat(const char *format)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 1)
+  printf("PileStack(%s)::SetXAxisFloatFormat(%s)\n", _name, format);
+#endif
+
+  int index = GetViewList()->InitIterator();
+  while (GetViewList()->More(index)) {
+    View *view = (View *)GetViewList()->Next(index);
+    view->SetXAxisFloatFormat(format, false);
+  }
+  GetViewList()->DoneIterator(index);
+
+  // Make sure we start queries in the right order.
+  if (IsPiled() && RefreshPending()) {
+    CancelAllRefreshes();
+    if (GetFirstView()) GetFirstView()->Refresh(false);
+  }
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::SetYAxisFloatFormat
+ * Set the Y axis floating-point format for all views in the pile.
+ */
+void
+PileStack::SetYAxisFloatFormat(const char *format)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 1)
+  printf("PileStack(%s)::SetYAxisFloatFormat(%s)\n", _name, format);
+#endif
+
+  int index = GetViewList()->InitIterator();
+  while (GetViewList()->More(index)) {
+    View *view = (View *)GetViewList()->Next(index);
+    view->SetYAxisFloatFormat(format, false);
   }
   GetViewList()->DoneIterator(index);
 

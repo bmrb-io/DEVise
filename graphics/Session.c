@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.85  2000/06/20 16:57:18  wenger
+  Added commands and GUI to enable/disable the display of mouse location
+  in various views, and globally.
+
   Revision 1.84  2000/04/19 16:16:28  wenger
   Found and fixed bug 579 (crash if opening session fails); found bug
   580; better handling of session opening errors on the Tcl side;
@@ -1549,6 +1553,11 @@ Session::SaveView(char *category, char *devClass, char *instance,
   status += SaveParams(saveData, "getXAxisDateFormat", "setXAxisDateFormat",
       instance, NULL, NULL, true);
   status += SaveParams(saveData, "getYAxisDateFormat", "setYAxisDateFormat",
+      instance, NULL, NULL, true);
+
+  status += SaveParams(saveData, "getXAxisFloatFormat", "setXAxisFloatFormat",
+      instance, NULL, NULL, true);
+  status += SaveParams(saveData, "getYAxisFloatFormat", "setYAxisFloatFormat",
       instance, NULL, NULL, true);
 
   status += SaveParams(saveData, "getViewAutoFilter", "setViewAutoFilter",
