@@ -2,12 +2,17 @@
    $Id$
 
    $Log$
+   Revision 1.3  1995/09/19 14:59:45  jussi
+   Added log message.
+
    Revision 1.1  1995/09/18 18:30:35  jussi
    Initial revision of archive.
 */
 
 #ifndef _INDEX_H_
 #define _INDEX_H_
+
+#include "tapedrive.h"
 
 /* Some basic stuff */
 #define TRUE 1
@@ -54,7 +59,7 @@ int comp_idx_2[COMP_NUM_FIELDS_2 * COMP_NUM_PER_FIELD] = {
   };
 
 /* prototype declarations for functions */
-void create_index(FILE *infile, FILE *outfile);
+void create_index(TapeDrive &tape, FILE *outfile);
 
 void extract_fields(int num_fields, int field_arr[], char recbuf[], 
 		    FILE *outfile);
