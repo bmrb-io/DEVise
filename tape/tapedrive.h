@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/07/12 00:55:40  jussi
+  Updated copyright information to reflect original source.
+
   Revision 1.4  1995/10/31 17:12:59  jussi
   Added tar archive handling routines and data structures.
 
@@ -50,7 +53,9 @@
 #endif
 
 #include <stdio.h>
-#include <tar.h>
+#ifndef ULTRIX
+  #include <tar.h>
+#endif
 #include "machdep.h"
 
 #ifndef TBLOCK
