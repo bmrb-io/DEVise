@@ -15,6 +15,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.23  1998/04/13 22:28:23  zhenhai
+#  Optimized 2D cursors to read and draw individual patches instead
+#  of patches for the whole region. Added 3D cursors to show directions.
+#  After adding a 3D cursor (same as adding 2D cursors by first
+#  creating the cursor, then selecting the source and destination),
+#  the direction of the cone (where its top is pointing to) in one graph shows the
+#  location and direction of the camera in another graph.
+#
 #  Revision 1.22  1998/03/05 08:12:32  zhenhai
 #  Added ability to use "DEV_DEBUG_GENERIC" environment variable to toggle on
 #  the -gstabs option for generic
@@ -87,7 +95,7 @@
 include ../Makefile.config
 
 ARCH_LDFLAGS = -L/s/mesa-2.4/lib -R/s/mesa-2.4/lib \
-               -L/s/X11/lib -L /s/tcl/lib -R /s/X11/lib
+               -L/s/X11/lib -L /s/tcl7.4/lib -R /s/X11/lib
 ARCH_SYSLIBS = -lMesaGLU -lMesaGL \
                -ltk -ltcl -lXaw -lXpm -lXt -lXmu -lX11 -lm
 ARCH_LDPOST  = -lsocket -lnsl
