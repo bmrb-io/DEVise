@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/04/16 16:53:18  wenger
+  Temporarily bypassed catalog checking stuff so we can create mappings
+  with TAttrLink slave TDatas.
+
   Revision 1.19  1998/04/10 18:29:11  wenger
   TData attribute links (aka set links) mostly implemented through table
   insertion; a crude GUI for creating them is implemented; fixed some
@@ -379,7 +383,7 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
 DevStatus
 Session::CreateTData(char *name)
 {
-#if defined(DEBUG) || 1 //TEMPTEMP
+#if defined(DEBUG) || 0 //TEMPTEMP
   printf("Session::CreateTData(%s)\n", name);
 #endif
 
@@ -415,17 +419,17 @@ Session::CreateTData(char *name)
   	if (cmdContainerp->Run(6, argvIn, &control)< 0) {
       status = StatusFailed;
     }
-/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
+//*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
     return status;
   }
 
-#if 1 //TEMPTEMP
+#if 0 //TEMPTEMP
   char *catEntry = NULL;
 #else
   // Get the DTE catalog entry for this data source.
-/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
+//*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
   char *catEntry = dteShowCatalogEntry(name);
-/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
+//*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
   if ((catEntry == NULL) || (strlen(catEntry) == 0)) {
     char errBuf[256];
     sprintf(errBuf, "No catalog entry for data source {%s}", name);
@@ -433,9 +437,9 @@ Session::CreateTData(char *name)
     status = StatusFailed;
   }
 #endif
-/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
+//*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 
-#if 0 //TEMPTEMP
+#if 1 //TEMPTEMP
   // Get rid of braces surrounding the whole catalog entry and semicolon at
   // the end so it can get parsed.
   if (status.IsComplete()) {
@@ -450,9 +454,9 @@ Session::CreateTData(char *name)
     if (semicolon != NULL) *semicolon = ' ';
   }
 #endif
-/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
+//*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 
-#if 1 //TEMPTEMP
+#if 0 //TEMPTEMP
   char *schema = NULL;
   char *schemaFile = NULL;
   char *sourceType = NULL;
@@ -486,7 +490,7 @@ Session::CreateTData(char *name)
       } else {
         isDteSource = true;
       }
-/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
+//*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 
       if (!isDteSource) {
         if (Tcl_SplitList(interp, catEntry, &argcOut, &argvOut) != TCL_OK) {
@@ -505,7 +509,7 @@ Session::CreateTData(char *name)
     }
   }
 #endif
-/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
+//*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 
   // Parse the schema file for the given data source, and re-set the
   // schema type if the type in the file is different from the type
@@ -523,7 +527,7 @@ Session::CreateTData(char *name)
       }
     }
   }
-/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
+//*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 
   // Execute dataSegment command.
   if (status.IsComplete()) {
@@ -544,7 +548,7 @@ Session::CreateTData(char *name)
       status = StatusFailed;
     }
   }
-/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
+//*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 
   // Create the TData object.
   if (status.IsComplete()) {
@@ -567,12 +571,12 @@ Session::CreateTData(char *name)
       status = StatusFailed;
     }
   }
-/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
+//*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 
   if (catEntry != NULL) free(catEntry);
 
   if (status.IsError()) reportErrNosys("Error or warning");
-/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
+//*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
   return status;
 }
 
