@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1998/09/30 18:01:55  wenger
+  Oops!  Forgot one change for previous fix.
+
   Revision 1.37  1998/09/30 17:44:45  wenger
   Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
   bug 401 (improper saving of window positions).
@@ -254,7 +257,8 @@ PointInRect(int px, int py, int rx1, int ry1, int rx2, int ry2)
 }
 
 //====================================================================
-static Boolean IsSessionFile(const char *filename)
+static Boolean
+IsSessionFile(const char *filename)
 {
 	Boolean isSession = false;
 
@@ -268,6 +272,7 @@ static Boolean IsSessionFile(const char *filename)
 	return isSession;
 }
 
+//====================================================================
 static JavaWindowInfo *
 CreateWinInfo(ViewWin *window)
 {
@@ -386,6 +391,15 @@ FillInt(char** argv, int& pos, const int x)
 
 //====================================================================
 static void
+FillDouble(char** argv, int& pos, const double x)
+{
+	char buf[128];
+	sprintf(buf, "%.10g", x);
+	argv[pos++] = CopyString(buf);
+}
+
+//====================================================================
+static void
 FillArgv(char** argv, int& pos, const JavaRectangle& jr)
 {
 	char	buf[128];
@@ -397,6 +411,79 @@ FillArgv(char** argv, int& pos, const JavaRectangle& jr)
 	argv[pos ++] = CopyString(buf);
 	sprintf(buf,"%.0f", jr._height);
 	argv[pos ++] = CopyString(buf);
+}
+
+//====================================================================
+// Change the files that GData is dumped to so that they're unique to
+// this process, in case any other process has the same session open
+// at the same time.
+static void
+SetGDataFiles()
+{
+#if defined(DEBUG)
+    printf("SetGDataFiles()\n");
+#endif
+
+	int winIndex = DevWindow::InitIterator();
+	while (DevWindow::More(winIndex)) {
+		ClassInfo *info = DevWindow::Next(winIndex);
+		ViewWin *window = (ViewWin *)info->GetInstance();
+		if (window != NULL) {
+			int viewIndex = window->InitIterator();
+			while (window->More(viewIndex)) {
+				ViewGraph *view = (ViewGraph *)window->Next(viewIndex);
+				if (view->GetSendToSocket()) {
+					GDataSock::Params params;
+					view->GetSendParams(params);
+
+					delete [] params.file;
+					params.file = tempnam(Init::TmpDir(), NULL);
+#if defined(DEBUG)
+					printf("Setting GData file for view %s to %s\n",
+					  view->GetName(), params.file);
+#endif
+					view->SetSendParams(params);
+					delete [] params.file;
+				}
+			}
+			window->DoneIterator(viewIndex);
+		}
+    }
+	DevWindow::DoneIterator(winIndex);
+}
+
+//====================================================================
+// Delete all files that GData is dumped to.
+static void
+DeleteGDataFiles()
+{
+#if defined(DEBUG)
+    printf("DeleteGDataFiles()\n");
+#endif
+
+	int winIndex = DevWindow::InitIterator();
+	while (DevWindow::More(winIndex)) {
+		ClassInfo *info = DevWindow::Next(winIndex);
+		ViewWin *window = (ViewWin *)info->GetInstance();
+		if (window != NULL) {
+			int viewIndex = window->InitIterator();
+			while (window->More(viewIndex)) {
+				ViewGraph *view = (ViewGraph *)window->Next(viewIndex);
+				if (view->GetSendToSocket()) {
+					GDataSock::Params params;
+					view->GetSendParams(params);
+					if (params.file != NULL) {
+#if defined(DEBUG)
+						printf("Deleting GData file: %s\n", params.file);
+#endif
+						(void) unlink(params.file);
+					}
+				}
+			}
+			window->DoneIterator(viewIndex);
+		}
+    }
+	DevWindow::DoneIterator(winIndex);
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -651,15 +738,27 @@ JavaScreenCmd::OpenSession()
 		return;
 	}
 
+	SetGDataFiles();
+
 	// Wait for all queries to finish before continuing.
+#if defined(DEBUG)
+	printf("Before WaitForQueries()\n");
+#endif
+
 	Dispatcher::Current()->WaitForQueries();
+
+#if defined(DEBUG)
+	printf("After WaitForQueries()\n");
+#endif
 
     int winCount = DevWindow::GetCount() - 1;
 	char **imageNames = new char *[winCount];
 	int winNum = 0;
 
+	//
 	// Dump all window images to files and send commands requesting the
 	// creation of the windows in the JavaScreen.
+	//
 	int winIndex = DevWindow::InitIterator();
 	while (DevWindow::More(winIndex) && (_status == DONE))
 	{
@@ -667,6 +766,10 @@ JavaScreenCmd::OpenSession()
 	  ViewWin *window = (ViewWin *)info->GetInstance();
 	  if (window != NULL)
 	  {
+		//
+		// Dump the window image and send a "CreateWindow" command to the
+		// JavaScreen.
+		//
 		JavaWindowInfo *winInfo = CreateWinInfo(window);
 
         if (!window->ExportImage(GIF,
@@ -694,6 +797,40 @@ JavaScreenCmd::OpenSession()
 		DOASSERT(winNum == winCount, "Incorrect number of windows");
 	}
 
+
+	//
+	// Go through all of the windows again, and see if there are any views
+	// for which we need to send GData.
+	//
+	ViewWinList gDataViews;
+	winIndex = DevWindow::InitIterator();
+	while (DevWindow::More(winIndex) && (_status == DONE))
+	{
+		ClassInfo *info = DevWindow::Next(winIndex);
+		ViewWin *window = (ViewWin *)info->GetInstance();
+		if (window != NULL)
+		{
+			int viewIndex = window->InitIterator();
+			while (window->More(viewIndex)) {
+				ViewGraph *view = (ViewGraph *)window->Next(viewIndex);
+				if (view->GetSendToSocket()) {
+					if (RequestUpdateGData(view) == DONE) {
+						gDataViews.Insert(view);
+					} else {
+						_status = ERROR;
+					}
+				}
+			}
+			window->DoneIterator(viewIndex);
+		}
+	}
+	DevWindow::DoneIterator(winIndex);
+
+
+	//
+	// Okay, now that the JavaScreen knows about all of the windows,
+	// we can go ahead and ask it to draw the cursors.
+	//
 	_postponeCursorCmds = false;
 	if (_status == DONE) {
 		DrawAllCursors();
@@ -709,11 +846,20 @@ JavaScreenCmd::OpenSession()
 	// Send the window images.
     for (winNum = 0; winNum < winCount; winNum++) {
 		if (_status == DONE) {
-			(void) SendWindowImage(imageNames[winNum]);
+			(void) SendWindowData(imageNames[winNum]);
 		}
+		(void) unlink(imageNames[winNum]);
 		delete [] imageNames[winNum];
 	}
 	delete [] imageNames;
+
+	// Send GData, if any.
+	int viewIndex = gDataViews.InitIterator();
+	while (gDataViews.More(viewIndex)) {
+		ViewGraph *view = (ViewGraph *)gDataViews.Next(viewIndex);
+		(void) SendViewGData(view);
+	}
+	gDataViews.DoneIterator(viewIndex);
 
 	// avoid unnecessary JAVAC_Done command, after sending back images
 	if (_status == DONE) {
@@ -956,6 +1102,7 @@ JavaScreenCmd::CloseCurrentSession()
 		return;
 	}
 
+	DeleteGDataFiles();
 	DoCloseSession();
 
 	_status = DONE;
@@ -1181,10 +1328,10 @@ JavaScreenCmd::ControlCmd(JavaScreenCmd::ControlCmdType  status)
 
 //====================================================================
 JavaScreenCmd::ControlCmdType
-JavaScreenCmd::SendWindowImage(const char* fileName)
+JavaScreenCmd::SendWindowData(const char* fileName)
 {
 #if defined (DEBUG)
-    printf("\nJavaScreenCmd::SendWindowImage(%s)\n", fileName);
+    printf("\nJavaScreenCmd::SendWindowData(%s)\n", fileName);
 #endif
 
 	ControlCmdType	status = DONE;
@@ -1258,7 +1405,14 @@ JavaScreenCmd::SendChangedWindows()
 
 	char **imageNames = new char *[DevWindow::GetCount() - 1];
 	int dirtyWinCount = 0;
+	ViewWinList dirtyWinList;
 
+	//
+	// For all windows, check whether they're "dirty"; if so, dump a GIF
+	// of the window; also add it to the list of dirty windows so we can
+	// go back through it to send GData for any views for which that is
+	// necessary.
+	//
 	int winIndex = DevWindow::InitIterator();
 	while (DevWindow::More(winIndex)) {
 	  ClassInfo *info = DevWindow::Next(winIndex);
@@ -1269,7 +1423,9 @@ JavaScreenCmd::SendChangedWindows()
 		  printf("GIF of window %s is \"dirty\".\n", window->GetName());
 #endif
 
-    		JavaScreenCmd::ControlCmdType tmpResult = DONE;
+			dirtyWinList.Insert(window);
+
+    		ControlCmdType tmpResult = DONE;
 			int	filesize;
 
 			char *fileName = tempnam(Init::TmpDir(), NULL);
@@ -1304,6 +1460,45 @@ JavaScreenCmd::SendChangedWindows()
     }
 	DevWindow::DoneIterator(winIndex);
 
+	DOASSERT(dirtyWinCount == dirtyWinList.Size(),
+	  "Error in dirty window list");
+
+
+	//
+	// Now go through the dirty window list and check whether we need to
+	// send GData from any of the views (we need to keep the dirty window
+	// list because the dirty flags are cleared by dumping the window images,
+	// so all of the dirty flags are reset at this point).
+	//
+	ViewWinList gDataViews;
+	winIndex = dirtyWinList.InitIterator();
+	while (dirtyWinList.More(winIndex)) {
+		ViewWin *window = dirtyWinList.Next(winIndex);
+
+		//
+		// Now go through all views and check whether we need to send
+		// GData.  Note: we may send GData we don't strictly need to, since
+		// the dirty flag applies at the window level, not the view level.
+		//
+		int viewIndex = window->InitIterator();
+		while (window->More(viewIndex)) {
+   			ControlCmdType tmpResult = DONE;
+
+			ViewGraph *view = (ViewGraph *)window->Next(viewIndex);
+			if (view->GetSendToSocket()) {
+				if (RequestUpdateGData(view) == DONE) {
+					gDataViews.Insert(view);
+				} else {
+					tmpResult = ERROR;
+				}
+			}
+
+			if (tmpResult != DONE) result = tmpResult;
+		}
+		window->DoneIterator(viewIndex);
+    }
+	dirtyWinList.DoneIterator(winIndex);
+
 	// Send DONE here so jspop and js start reading from the image socket.
     if (_status == DONE) {
 		char *argv[1];
@@ -1313,11 +1508,22 @@ JavaScreenCmd::SendChangedWindows()
 
 	// Send the actual images.
     for (int winNum = 0; winNum < dirtyWinCount; winNum++) {
-		(void) SendWindowImage(imageNames[winNum]);
+		if (result == DONE) {
+			(void) SendWindowData(imageNames[winNum]);
+		}
 		(void) unlink(imageNames[winNum]);
 		delete [] imageNames[winNum];
 	}
 	delete [] imageNames;
+
+	// Send the GData, if any.
+	// Send GData, if any.
+	int viewIndex = gDataViews.InitIterator();
+	while (gDataViews.More(viewIndex)) {
+		ViewGraph *view = (ViewGraph *)gDataViews.Next(viewIndex);
+		(void) SendViewGData(view);
+	}
+	gDataViews.DoneIterator(viewIndex);
 
 	// avoid unnecessary JAVAC_Done command, after sending
 	// back images
@@ -1416,8 +1622,101 @@ JavaScreenCmd::RequestUpdateWindow(char* winName, int imageSize)
 	argv[pos++] = _controlCmdName[UPDATEWINDOW];
 	argv[pos++] = winName;
 	FillInt(argv, pos, imageSize);
+
 	ReturnVal(3, argv);
 	delete [] argv[2];
+
+	return DONE;
+}
+
+//====================================================================
+JavaScreenCmd::ControlCmdType
+JavaScreenCmd::RequestUpdateGData(ViewGraph *view)
+{
+#if defined (DEBUG)
+    printf("\nJavaScreenCmd::RequestUpdateGData(%s)\n", view->GetName());
+#endif
+
+	//
+	// Make sure the GData is dumped to a file, rather than to the data
+	// socket, and get the size of the file.
+	//
+	GDataSock::Params gdParams;
+	view->GetSendParams(gdParams);
+
+	if (gdParams.file == NULL) {
+		char errBuf[1024];
+		sprintf(errBuf, "Can't update GData for view %s; must send GData "
+		  "to file, not socket", view->GetName());
+		reportErrNosys(errBuf);
+		return ERROR;
+	}
+
+	int gdSize = getFileSize(gdParams.file);
+
+
+	//
+	// Figure out the multipliers and offsets that the JavaScreen will
+	// use to translate data units in the GData to pixels.
+	//
+    double xMult, xOffset;
+    double yMult, yOffset;
+    
+    WindowRep *winRep = view->GetWindowRep();
+	Transform2D *transform = winRep->TopTransform();
+	Coord a00, a01, a02, a10, a11, a12;
+	transform->GetCoords(a00, a01, a02, a10, a11, a12);
+	if (a01 != 0.0 || a10 != 0.0) {
+		char errBuf[1024];
+		sprintf(errBuf, "Transform for view %s has rotation\n",
+		  view->GetName());
+		reportErrNosys(errBuf);
+		return ERROR;
+	}
+
+	xMult = a00;
+	xOffset = a02;
+	yMult = a11;
+	yOffset = a12;
+
+	// Compensate for the fact that the XWindowRep inverts the direction of
+	// Y *outside* of the transform.
+    unsigned int viewWidth, viewHeight;
+	winRep->Dimensions(viewWidth, viewHeight);
+	yMult *= -1.0;
+	yOffset = viewHeight - yOffset - 1;
+
+    // Convert from view origin to window origin.
+	int viewX, viewY;
+	winRep->Origin(viewX, viewY);
+	xOffset += viewX;
+	yOffset += viewY;
+
+	//
+	// Send the command...
+	//
+	char* argv[7];
+	int	pos = 0;
+	argv[pos++] = _controlCmdName[UPDATEGDATA];
+	argv[pos++] = view->GetName();
+	FillDouble(argv, pos, xMult);
+	FillDouble(argv, pos, xOffset);
+	FillDouble(argv, pos, yMult);
+	FillDouble(argv, pos, yOffset);
+	FillInt(argv, pos, gdSize);
+
+#if 1 //TEMP
+	ReturnVal(7, argv);
+#else //TEMP
+	PrintArgs(stderr, 7, argv);
+#endif //TEMP
+
+	delete [] argv[2];
+	delete [] argv[3];
+	delete [] argv[4];
+	delete [] argv[5];
+	delete [] argv[6];
+
 	return DONE;
 }
 
@@ -1756,11 +2055,39 @@ JavaScreenCmd::DoCloseSession()
     int width = DeviseDisplay::DefaultDisplay()->DesiredScreenWidth();
     int height = DeviseDisplay::DefaultDisplay()->DesiredScreenHeight();
 
-    Session::Close();
+	Session::Close();
 	Dispatcher::Current()->WaitForQueries();
 
     DeviseDisplay::DefaultDisplay()->DesiredScreenWidth() = width;
     DeviseDisplay::DefaultDisplay()->DesiredScreenHeight() = height;
 
 	_postponeCursorCmds = savePostpone;
+}
+
+//====================================================================
+JavaScreenCmd::ControlCmdType
+JavaScreenCmd::SendViewGData(ViewGraph *view)
+{
+#if defined(DEBUG)
+    printf("JavaScreenCmd::SendViewGData(%s)\n", view->GetName());
+#endif
+
+	ControlCmdType status = DONE;
+
+	GDataSock::Params gdParams;
+	view->GetSendParams(gdParams);
+
+	if (gdParams.file == NULL) {
+		char errBuf[1024];
+		sprintf(errBuf, "Can't send GData for view %s; must send GData "
+		  "to file, not socket", view->GetName());
+		reportErrNosys(errBuf);
+		status = ERROR;
+	} else {
+#if 1 //TEMP
+		status = SendWindowData(gdParams.file);
+#endif
+	}
+
+	return status;
 }

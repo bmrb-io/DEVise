@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/09/15 17:34:07  wenger
+  Changed JavaScreen communication protocol so that image data is sent
+  after all associated commands (fixes bug 387); made opening a session
+  and updating a session more similar to each other; fixed some other
+  JavaScreen support bugs.
+
   Revision 1.15  1998/09/14 14:57:56  wenger
   Reorganized code somewhat for clarity (no change in functionality except
   for some better error checking).
@@ -89,6 +95,7 @@ typedef string GDataVal;
 
 class DeviseServer;
 class ControlPanel;
+class ViewGraph;
 
 class JavaRectangle
 {
@@ -220,13 +227,15 @@ class JavaScreenCmd
 		ControlCmdType RequestUpdateSessionList(int argc, char** argv);
 		ControlCmdType RequestCreateWindow(JavaWindowInfo& winInfo,
 		  int imageSize);
+		ControlCmdType RequestUpdateGData(ViewGraph *view);
 		ControlCmdType RequestUpdateRecordValue(int argc, char** argv);
 		ControlCmdType RequestUpdateWindow(char* winName, int imageSize);
 
 		// Convenience functions
 		void CloseJavaConnection();
-		ControlCmdType SendWindowImage(const char* fileName);
+		ControlCmdType SendWindowData(const char* fileName);
 		ControlCmdType SendChangedWindows();
+		ControlCmdType SendViewGData(ViewGraph *view);
 		int  ControlCmd(ControlCmdType  status);
 		void ReturnVal(int argc, char** argv);
 		void UpdateSessionList(char *dirName);

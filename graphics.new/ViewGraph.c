@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.83  1998/09/08 20:26:19  wenger
+  Added option to save which view is selected when saving a session -- for
+  JavaScreen client switching support.
+
   Revision 1.82  1998/07/30 15:31:23  wenger
   Fixed bug 381 (problem with setting master and slave of a link to the same
   view); generally cleaned up some of the master-slave link related code.
@@ -589,7 +593,7 @@ ViewGraph::~ViewGraph(void)
     _glistX.DeleteAll();
     _glistY.DeleteAll();
 
-    delete _gdsParams.file;
+    delete [] _gdsParams.file;
     delete _gds;
 	delete queryCallback;
 	delete _countMapping;
