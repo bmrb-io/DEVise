@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -30,6 +30,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  2001/07/27 18:32:17  wenger
+  Found and fixed bug 684 (problem with home on linked views).
+
   Revision 1.21  2001/07/19 17:19:50  wenger
   Fixed bug in home on linked/piled views.
 
@@ -357,14 +360,15 @@ VisualLink::GoHome(ViewGraph *view, Boolean explicitRequest)
   }
   _viewList->DoneIterator(index);
 #if (DEBUG >= 4)
-    printf("Link filter: (%g, %g), (%g, %g)\n", xMin, yMin, xMax, yMax);
+    printf("Link {%s} filter: (%g, %g), (%g, %g)\n", GetName(), xMin, yMin,
+	    xMax, yMax);
 #endif
 
   // Set the visual filter of the view that called us (it doesn't really
   // matter which view in the link we set the filter for, because of the
   // link).
   VisualFilter filter;
-  view->GetHome2D(explicitRequest, filter);
+  view->GetVisualFilter(filter);
   if (_linkAttrs & VISUAL_X) {
     filter.xLow = xMin;
     filter.xHigh = xMax;
@@ -373,6 +377,12 @@ VisualLink::GoHome(ViewGraph *view, Boolean explicitRequest)
     filter.yLow = yMin;
     filter.yHigh = yMax;
   }
+
+#if (DEBUG >= 4)
+    printf("Link {%s} final filter: (%g, %g), (%g, %g)\n", GetName(),
+	    filter.xLow, filter.yLow, filter.xHigh, filter.yHigh);
+#endif
+
   view->SetVisualFilter(filter);
 }
 

@@ -2936,7 +2936,7 @@ Num Date        Status  Description
 			to doing a home on the whole pile once all views are
 			in place. (rkw)
 
-732 11/27/01	OPEN	Home on child views doesn't work right in JS demo
+732 11/27/01	DUP	Home on child views doesn't work right in JS demo
 			session PaulB/sample3.ds.  It seems like it's partly
 			the record links, and partly the piling of views; and
 			maybe the fact that the views are child views also
@@ -2954,10 +2954,11 @@ Num Date        Status  Description
 			/tmp/<usr>-devise-tmp directory doesn't already
 			exist. (rkw)
 
-735 11/28/01	OPEN	'Home' (5) doesn't work right in the JS demo session
+735 11/28/01	FIXED	'Home' (5) doesn't work right in the JS demo session
 			PaulB/sample3.ds (in the child views).  If you do
 			home twice in a row, you get a different filter value.
 			(rkw)
+			(Fixed by rkw, 1/11/02.)
 
 736 11/28/01	OPEN	JavaScreen: dragging one side of a cursor past the
 			other ("flipping" the cursor) doesn't work right.
@@ -3001,14 +3002,18 @@ Num Date        Status  Description
 			it should. (rkw)
 			(Fixed by rkw, 12/28/01.)
 
-745 1/7/02	OPEN	JavaScreen: display of mouse X location doesn't
+745 1/7/02	FIXED	JavaScreen: display of mouse X location doesn't
 			work right in Asos.ds. (rkw)
+			(Shows up only in older JS version.)
 
 746 1/7/02	OPEN	JavaScreen: mouse location display shows 0.0 even
 			when the format is - (blank). (rkw)
 
 747 1/10/02	OPEN	Axis multiplication factor doesn't get copied when
 			a view is copied. (rkw)
+
+748 1/11/02	OPEN	Y-only home sets Y axis based on all data, not just
+			the data within the current X range. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
