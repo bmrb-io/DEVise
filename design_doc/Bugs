@@ -2966,6 +2966,15 @@ Num Date        Status  Description
 			(rkw)
 			(Fixed by rkw, 11/30/01.)
 
+738 11/30/01	OPEN	JavaScreen: attempting to start collaboration when
+			the leader does not have a session open causes
+			problems. (rkw)
+
+739 11/30/01	OPEN	JavaScreen: pre-collaboration state is not restored
+			if you cancel before completely going into
+			collaboration mode or enter the wrong collaboration
+			password. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
