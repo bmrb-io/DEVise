@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/11 20:44:19  jussi
+  Moved output statement for "exit" command from ParseAPI.C to
+  ServerAPI.c.
+
   Revision 1.5  1996/05/11 19:08:24  jussi
   Added replica management.
 
@@ -72,7 +76,7 @@ ServerAPI::ServerAPI()
   View::InsertViewCallback(this);
 	
   _busy = false;
-  _listenFd = _socketFd = _controlFd = -1;
+  _listenFd = _socketFd = -1;
 
   _replicate = 0;
 
@@ -84,7 +88,7 @@ void ServerAPI::DoAbort(char *reason)
   fprintf(stderr, "An internal error has occurred. Reason:\n  %s\n", reason);
   char cmd[256];
   sprintf(cmd, "AbortProgram {%s}", reason);
-  SendControl(API_OK, reason);
+  SendControl(API_CTL, reason);
   fprintf(stderr, "Server aborts.\n");
   exit(0);
 }
@@ -141,14 +145,6 @@ int ServerAPI::AddReplica(char *hostName, int port)
     return -1;
   }
   
-  u_short cport = htons(0);
-  result = send(fd, (char *)&cport, sizeof cport, 0);
-  if (result < (int)sizeof cport) {
-    perror("Cannot send port number to replica server");
-    close(fd);
-    return -1;
-  }
-
   u_short size = htons(0);
   result = send(fd, (char *)&size, sizeof size, 0);
   if (result < (int)sizeof size) {
@@ -200,7 +196,7 @@ int ServerAPI::RemoveReplica(char *hostName, int port)
 void ServerAPI::Replicate(int argc, char **argv)
 {
   for(int i = 0; i < _replicate; i++) {
-    if (Send(_replicas[i].fd, API_OK, 0, argc, argv) < 0) {
+    if (Send(_replicas[i].fd, API_CMD, 0, argc, argv) < 0) {
       fprintf(stderr,
 	      "Failed to replicate command to %s:%d. Disconnecting.\n",
 	      _replicas[i].host, _replicas[i].port);
@@ -236,7 +232,7 @@ void ServerAPI::Run()
   printf("In ServerAPI::Run\n");
 #endif
 
-  DOASSERT((_socketFd < 0 && _controlFd < 0 && _listenFd >= 0) ||
+  DOASSERT((_socketFd < 0 && _listenFd >= 0) ||
 	   (_socketFd >= 0 && _listenFd < 0), "Invalid sockets");
 
   if (_socketFd >= 0) {
@@ -275,6 +271,28 @@ void ServerAPI::Run()
   Dispatcher::Current()->Register(this, 10, AllState, true, _socketFd);
 }
 
+int ServerAPI::NonBlockingMode(int fd)
+{
+#ifdef SUN
+  int result = fcntl(fd, F_SETFL, FNDELAY);
+#else
+  int result = fcntl(fd, F_SETFL, O_NDELAY);
+#endif
+  if (result < 0)
+    return -1;
+
+  return 1;
+}
+
+int ServerAPI::BlockingMode(int fd)
+{
+  int result = fcntl(fd, F_SETFL, 0);
+  if (result < 0)
+    return -1;
+
+  return 1;
+}
+
 int ServerAPI::ReadSocket()
 {
   DOASSERT(_socketFd >= 0, "Invalid socket");
@@ -283,12 +301,12 @@ int ServerAPI::ReadSocket()
   static char **buff = 0;
 
 #ifdef DEBUG9
-  printf("Getting error flag\n");
+  printf("Getting flag\n");
 #endif
 
-  u_short errflag;
-  int result = recv(_socketFd, (char *)&errflag, sizeof errflag, 0);
-  if (result < (int)sizeof errflag) {
+  u_short flag;
+  int result = recv(_socketFd, (char *)&flag, sizeof flag, 0);
+  if (result < (int)sizeof flag) {
 #ifdef DEBUG9
     perror("recv");
 #endif
@@ -304,16 +322,11 @@ int ServerAPI::ReadSocket()
     return -1;
   }
 
-  errflag = ntohs(errflag);
+  flag = ntohs(flag);
 
   // set socket to blocking mode
+  (void)BlockingMode(_socketFd);
 
-  result = fcntl(_socketFd, F_SETFL, 0);
-  if (result < 0) {
-    perror("fcntl");
-    return -1;
-  }
-    
 #ifdef DEBUG
   printf("Getting bracket\n");
 #endif
@@ -322,7 +335,7 @@ int ServerAPI::ReadSocket()
   result = recv(_socketFd, (char *)&bracket, sizeof bracket, 0);
   if (result < (int)sizeof bracket) {
     perror("recv");
-    return -1;
+    goto error;
   }
   bracket = ntohs(bracket);
 
@@ -334,7 +347,7 @@ int ServerAPI::ReadSocket()
   result = recv(_socketFd, (char *)&numElements, sizeof numElements, 0);
   if (result < (int)sizeof numElements) {
     perror("recv");
-    return -1;
+    goto error;
   }
   numElements = ntohs(numElements);
 
@@ -384,6 +397,11 @@ int ServerAPI::ReadSocket()
   printf("Executing command\n");
 #endif
 
+  if (flag != API_CMD) {
+    fprintf(stderr, "Received unexpected type of message: %u\n", flag);
+    goto error;
+  }
+
   if (ParseAPI(numElements, buff, this) < 0) {
     fprintf(stderr, "Devise API command error\n");
   } else {
@@ -409,59 +427,27 @@ int ServerAPI::ReadSocket()
   for(i = 0; i < numElements; i++)
     delete buff[i];
 
-  // When client executes an exit command, _socketFd will be
-  // closed in DEViseCmd()
-
-  if (_socketFd >= 0) {
-    // set socket back to non-blocking mode
-
-#ifdef SUN
-    result = fcntl(_socketFd, F_SETFL, FNDELAY);
-#else
-    result = fcntl(_socketFd, F_SETFL, O_NDELAY);
-#endif
-    if (result < 0) {
-      perror("fcntl");
-      return -1;
-    }
-  }
+  // go back to non-blocking mode
+  (void)NonBlockingMode(_socketFd);
 
   return 1;
 
  error:
-  // set socket back to non-blocking mode
-
-#ifdef SUN
-  result = fcntl(_socketFd, F_SETFL, FNDELAY);
-#else
-  result = fcntl(_socketFd, F_SETFL, O_NDELAY);
-#endif
-  if (result < 0)
-    perror("fcntl");
-
+  // go back to non-blocking mode
+  (void)NonBlockingMode(_socketFd);
   return -1;
 }
 
 int ServerAPI::GotoConnectedMode()
 {
-  DOASSERT(_socketFd >= 0 && _controlFd < 0, "Invalid sockets");
+  DOASSERT(_socketFd >= 0, "Invalid socket");
 
   printf("Setting up client connection.\n");
     
-  // we will receive the port number of the clients back channel
-
-  u_short port;
-  int result = recv(_socketFd, (char *)&port, sizeof port, 0);
-  if (result < (int)sizeof port) {
-    perror("recv");
-    return -1;
-  }
-  port = ntohs(port);
-
-  // next we receive the name of the display at the client (DISPLAY)
+  // first we receive the name of the display at the client (DISPLAY)
 
   u_short size;
-  result = recv(_socketFd, (char *)&size, sizeof size, 0);
+  int result = recv(_socketFd, (char *)&size, sizeof size, 0);
   if (result < (int)sizeof size) {
     perror("recv");
     return -1;
@@ -479,45 +465,11 @@ int ServerAPI::GotoConnectedMode()
   printf("Client sent display name: %s\n", displayName);
 #endif
 
-  if (port > 0) {
-    _controlFd = socket(AF_INET, SOCK_STREAM, 0);
-    if (_controlFd < 0) {
-      perror("socket");
-      return -1;
-    }
+  // set socket to non-blocking mode
 
-    struct sockaddr_in backChannel;
-    memcpy(&backChannel, &_client_addr, sizeof backChannel);
-    backChannel.sin_port = htons(port);
-    
-#ifdef DEBUG
-    printf("Connecting to client port %u\n", port);
-#endif
-
-    result = connect(_controlFd, (struct sockaddr *)&backChannel,
-		     sizeof(struct sockaddr));
-    if (result < 0) {
-      perror("connect");
-      return -1;
-    }
-  } else {
-#ifdef DEBUG
-    printf("No control channel.\n");
-#endif
-  }
-
-  // now set socket to non-blocking mode
-
-#ifdef SUN
-  result = fcntl(_socketFd, F_SETFL, FNDELAY);
-#else
-  result = fcntl(_socketFd, F_SETFL, O_NDELAY);
-#endif
-  if (result < 0) {
-    perror("fcntl");
+  if (NonBlockingMode(_socketFd) < 0)
     return -1;
-  }
-    
+
   printf("Client connection established.\n");
     
   return 1;
@@ -533,11 +485,6 @@ void ServerAPI::RestartSession()
     printf("Closing client connection.\n");
     close(_socketFd);
     _socketFd = -1;
-  }
-
-  if (_controlFd >= 0) {
-    close(_controlFd);
-    _controlFd = -1;
   }
 
   DOASSERT(_listenFd < 0, "Invalid socket");
@@ -595,18 +542,16 @@ void ServerAPI::RestartSession()
   Dispatcher::Current()->Register(this, 10, AllState, true, _listenFd);
 }
 
-int ServerAPI::Send(int fd, int flag, int bracket,
+int ServerAPI::Send(int fd, u_short flag, int bracket,
 		    int numArgs, char **argv)
 {
-  u_short errflag = (flag == API_OK ? 0 : 1);
-
 #ifdef DEBUG
-  printf("Sending error flag %d\n", errflag);
+  printf("Sending flag %d\n", flag);
 #endif
 
-  errflag = htons(errflag);
-  int result = send(fd, (char *)&errflag, sizeof errflag, 0);
-  if (result < (int)sizeof errflag) {
+  flag = htons(flag);
+  int result = send(fd, (char *)&flag, sizeof flag, 0);
+  if (result < (int)sizeof flag) {
     perror("send");
     return -1;
   }
@@ -671,7 +616,7 @@ int ServerAPI::Send(int fd, int flag, int bracket,
 void ServerAPI::SetBusy()
 {
   if (++_busy == 1)
-    SendControl(API_OK, "ChangeStatus 1");
+    SendControl(API_CTL, "ChangeStatus 1");
 }
 
 void ServerAPI::SetIdle()
@@ -679,7 +624,7 @@ void ServerAPI::SetIdle()
   DOASSERT(_busy > 0, "Control panel unexpectedly busy");
 
   if (--_busy == 0)
-    SendControl(API_OK, "ChangeStatus 0");
+    SendControl(API_CTL, "ChangeStatus 0");
 }
 
 Boolean ServerAPI::IsBusy()
@@ -691,7 +636,7 @@ void ServerAPI::ExecuteScript(char *script)
 {
   char cmd[256];
   sprintf(cmd, "ExecuteScript %s", script);
-  SendControl(API_OK, cmd);
+  SendControl(API_CTL, cmd);
 }
 
 void ServerAPI::FilterChanged(View *view, VisualFilter &filter,
@@ -721,7 +666,7 @@ void ServerAPI::FilterChanged(View *view, VisualFilter &filter,
   
   sprintf(cmd, "ProcessViewFilterChange {%s} %d {%s} {%s} {%s} {%s} 0",
 	  view->GetName(), flushed, xLowBuf, yLowBuf, xHighBuf, yHighBuf);
-  SendControl(API_OK, cmd);
+  SendControl(API_CTL, cmd);
 
   if (_replicate) {
     char *args[] = { "setFilter", view->GetName(), xLowBuf,
@@ -730,29 +675,9 @@ void ServerAPI::FilterChanged(View *view, VisualFilter &filter,
   }
 }
 
-void ServerAPI::ViewCreated(View *view)
-{
-#if 0
-  char cmd[256];
-  sprintf(cmd, "ProcessViewCreated {%s}", view->GetName());
-  SendControl(API_OK, cmd);
-#endif
-}
-
-void ServerAPI::ViewDestroyed(View *view)
-{
-#if 0
-  char cmd[256];
-  sprintf(cmd, "ProcessViewDestroyed {%s}", view->GetName());
-  SendControl(API_OK, cmd);
-#endif
-}
-
-/* Make view the current view in the control panel */
-
 void ServerAPI::SelectView(View *view)
 {
   char cmd[256];
   sprintf(cmd, "ProcessViewSelected {%s}", view->GetName());
-  SendControl(API_OK, cmd);
+  SendControl(API_CTL, cmd);
 }
