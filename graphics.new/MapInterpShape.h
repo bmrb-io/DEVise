@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1995/12/22 18:07:03  jussi
+  Added Vector shape.
+
   Revision 1.10  1995/12/14 17:35:39  jussi
   Made small fixes to get rid of g++ -Wall warnings.
 
@@ -414,6 +417,82 @@ public:
       win->MakeIdentity();
       win->FillPoly(points, 3);
       win->PopTransform();
+    }
+  }
+};
+
+class FullMapping_BlockShape: public BlockShape {
+public:
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
+			      TDataMap *map, int pixelSize) {
+		 
+    GDataAttrOffset *offset = map->GetGDataOffset();
+
+    Coord x0, y0, x1, y1;
+    win->Transform(0, 0, x0, y0);
+    win->Transform(1, 1, x1, y1);
+    Coord pixelWidth = 1 / fabs(x1 - x0);
+    Coord pixelHeight = 1 / fabs(y1 - y0);
+
+    Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
+			    offset->shapeAttrOffset[1] < 0 ? true : false);
+
+    if (fixedSymSize) {
+      Coord maxWidth, maxHeight;
+      map->MaxBoundingBox(maxWidth, maxHeight);
+
+      // pixelWidth is how many X units one pixel corresponds to
+      // pixelHeight is how many Y units one pixel corresponds to
+      // maxWidth is the maximum width of blockangles, measured in X units
+      // maxHeight is the maximum width of blockangles, measured in Y units
+      //
+      // see if one pixel is enough to cover the area whose width is
+      // pixelWidth and height is pixelHeight
+
+#ifdef DEBUG
+      printf("BlockShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
+	     maxWidth, maxHeight, pixelWidth, pixelHeight);
+#endif
+
+      if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
+	DrawPixelArray(win, gdataArray, numSyms, map, pixelSize);
+	return;
+      }
+    }
+
+    int i = 0;
+    while (i < numSyms) {
+
+      Color firstColor = 0;
+      int count = 0;
+
+      for(; i < numSyms; i++) {
+	char *gdata = (char *)gdataArray[i];
+
+	if (count > 0 && GetColor(gdata, map, offset) != firstColor)
+	  break;
+	
+	if (count == 0)
+	  firstColor = GetColor(gdata, map, offset);
+
+	_width[count] = fabs(GetShapeAttr0(gdata, map, offset));
+	_height[count] = fabs(GetShapeAttr1(gdata, map, offset));
+	_depth[count] = fabs(GetShapeAttr2(gdata, map, offset));
+	_x[count] = GetX(gdata, map, offset);
+	if (_width[count] > pixelWidth)
+	  _x[count] -= _width[count] / 2.0;
+	_y[count] = GetY(gdata, map, offset);
+	if (_height[count] > pixelHeight)
+	  _y[count] -= _height[count] / 2.0;
+	_z[count] = GetZ(gdata, map, offset);
+	if (_depth[count] > pixelHeight)
+	  _z[count] -= _depth[count] / 2.0;
+	
+	count++;
+      }
+      
+      win->SetFgColor(firstColor);
+      win->FillRectArray(_x, _y, _width, _height, count);
     }
   }
 };
