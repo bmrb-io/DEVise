@@ -1679,12 +1679,17 @@ Num Date        Status  Description
 438 11/13/98	OPEN	Drill-down popup window comes up at the wrong location
 			(in the y direction) in OpenGL windows. (rkw)
 
+			(in the y direction) in OpenGL windows. (rkw)
+
 439 11/19/98	OPEN	It's not possible to edit data sources that are in
 			subdirectories of the catalog (both with the DTE and
 			the DataCatalog class). (rkw)
 
-440 11/20/98	OPEN	Open the session Test/classTree.ds: DEVise creates
-			windows then starts to draw, but then crashes. (rkw)
+440 11/20/98	FIXED	Open the session Test/classTree.ds: DEVise creates
+			windows then starts to draw, but then crashes. (hs/rkw)
+			(Fixed by rkw, 11/20/98.  Caused by a combination of
+			no X command for some mappings and improper
+			initialization of the QPFullData objects.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

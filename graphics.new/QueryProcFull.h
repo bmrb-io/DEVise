@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.27  1998/11/09 20:33:25  wenger
+  Fixed bug 433 (drill-down problem); improved debug output in various
+  related modules.
+
   Revision 1.26  1998/09/22 17:23:59  wenger
   Devised now returns no image data if there are any problems (as per
   request from Hongyu); added a bunch of debug and test code to try to
@@ -157,7 +161,10 @@ const int QPFULL_MAX_MAPPINGS = 1024;
 
 const int QP_TIMER_INTERVAL = 1000;
 
-struct QPFullData {
+class QPFullData {
+public:
+  QPFullData();
+
   int priority;
   TData *tdata;
   GData *gdata;

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.88  1998/11/09 20:33:24  wenger
+  Fixed bug 433 (drill-down problem); improved debug output in various
+  related modules.
+
   Revision 1.87  1998/09/22 17:23:58  wenger
   Devised now returns no image data if there are any problems (as per
   request from Hongyu); added a bunch of debug and test code to try to
@@ -468,6 +472,25 @@ static const int QPFULL_TAPE_MIN_SEEK = 8 * MByte;
 */
 static const int QPFULL_TAPE_MARK_SEPARATION = 2048;
 
+QPFullData::QPFullData()
+{
+  priority = -1;
+  tdata = NULL;
+  gdata = NULL;
+  map = NULL;
+  filter.flag = 0;
+  callback = NULL;
+  qType = (QPFullType)(-1); // invalid
+  state = (QPFullState)(-1); // invalid
+  useCoordMap = false;
+  handle = NULL;
+  isRandom = false;
+  isRecLinkSlave = false;
+  processed = NULL;
+  bytes = 0;
+  userData = NULL;
+}
+
 QueryProcFull::QueryProcFull()
 {
   _queries = new QPFullDataList;
@@ -547,13 +570,10 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
   QPFullData *query = new QPFullData;//TEMP leaked
   DOASSERT(query, "Out of memory");
 
-  query->map = map;
-  query->userData = userData;
   query->tdata = tdata;
   query->gdata = map->GetGData();
-  query->bytes = 0;
-  query->handle = NULL;
-  query->callback = NULL;
+  query->map = map;
+  query->userData = userData;
 
   /* Find out if this query is a slave of a record link */
   query->isRecLinkSlave = false;
@@ -584,8 +604,9 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
   }
 
   /* If tape data, associate mapping with a coordinate mapping tables */
-  if (query->useCoordMap) 
+  if (query->useCoordMap) {
       AssociateMappingWithCoordinateTable(map);
+  }
 
   if (numDimensions == 0) {
     query->qType = QPFull_Scatter;
@@ -676,8 +697,9 @@ void QueryProcFull::AssociateMappingWithCoordinateTable(TDataMap *map)
   for(i = 0; i < _numCoordinateTables; i++) {
     TDataMap *smap = _coordinateTables[i]->map;
     /* Different TData? */
-    if (smap->GetPhysTData() != map->GetPhysTData())
+    if (smap->GetPhysTData() != map->GetPhysTData()) {
         continue;
+    }
     if (map->IsInterpreted() && smap->IsInterpreted()) {
         /*
            Two interpreted mappings can use the same coordinate table if
@@ -685,6 +707,7 @@ void QueryProcFull::AssociateMappingWithCoordinateTable(TDataMap *map)
         */
         MappingInterp *imap = (MappingInterp *)map;
         DOASSERT(_coordinateTables[i]->xCmd, "Invalid X command");
+        DOASSERT(imap->GetMappingCmd()->xCmd, "Invalid X command");
         if (strcmp(_coordinateTables[i]->xCmd, imap->GetMappingCmd()->xCmd))
             continue;
     } else if (!map->IsInterpreted() && !smap->IsInterpreted()) {

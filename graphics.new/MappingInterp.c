@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.78  1998/11/11 14:30:59  wenger
+  Implemented "highlight views" for record links and set links; improved
+  ClassDir::DestroyAllInstances() by having it destroy all links before
+  it destroys anything else -- this cuts down on propagation problems as
+  views are destroyed; added test code for timing a view's query and draw.
+
   Revision 1.77  1998/11/09 20:33:22  wenger
   Fixed bug 433 (drill-down problem); improved debug output in various
   related modules.
@@ -425,6 +431,13 @@ int MappingInterp::FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
   printf("MappingInterp::FindGDataSize()\n");
 #endif
 
+  if (cmd->xCmd == NULL) {
+    fprintf(stderr, "Warning: null X command in mapping\n");
+  }
+  if (cmd->yCmd == NULL) {
+    fprintf(stderr, "Warning: null Y command in mapping\n");
+  }
+
   /* Record ID is always first GData attribute */
   int size = sizeof(RecId);
   double val;
@@ -510,6 +523,13 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
 	 "attrFlag 0x%lx\n", this, numDimensions, flag, attrFlag);
 #endif
 
+  if (cmd->xCmd == NULL) {
+    fprintf(stderr, "Warning: null X command in mapping %s\n", GetName());
+  }
+  if (cmd->yCmd == NULL) {
+    fprintf(stderr, "Warning: null Y command in mapping %s\n", GetName());
+  }
+
   _tclCmd = new MappingInterpCmd();
   _tdata = tdata; // saved so we can get it's attribute list
   _simpleCmd = new MappingSimpleCmd();
@@ -591,6 +611,13 @@ void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,
   printf("MappingInterp::ChangeCmd(0x%p, %d dimensions, cmdFlag 0x%lx, "
 	 "attrFlag 0x%lx\n", this, numDimensions, flag, attrFlag);
 #endif
+
+  if (cmd->xCmd == NULL) {
+    fprintf(stderr, "Warning: null X command in mapping %s\n", GetName());
+  }
+  if (cmd->yCmd == NULL) {
+    fprintf(stderr, "Warning: null Y command in mapping %s\n", GetName());
+  }
 
   _cmd = cmd; // Note: cmd is allocated in MapInterpClassInfo.
   _cmdFlag = flag;

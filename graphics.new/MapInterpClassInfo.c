@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/04/01 18:54:27  wenger
+  Fixed bug 332.
+
   Revision 1.17  1997/11/24 23:15:06  weaver
   Changes for the new ColorManager.
 
@@ -235,10 +238,16 @@ MapInterpClassInfo::ExtractCommand(int argc, char **argv,
   if (NotEmpty(argv[3])) {
     cmd->xCmd = CopyString(argv[3]);
     cmdFlag |= MappingCmd_X;
+  } else {
+    // It's not safe to have a NULL command for X.
+    cmd->xCmd = CopyString("0");
   }
   if (NotEmpty(argv[4])) {
     cmd->yCmd = CopyString(argv[4]);
     cmdFlag |= MappingCmd_Y;
+  } else {
+    // It's not safe to have a NULL command for Y.
+    cmd->yCmd = CopyString("0");
   }
 
   // need to shift arguments if not old style (old style has no Z attribute)
