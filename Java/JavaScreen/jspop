@@ -7,6 +7,7 @@
 ############################################################
 
 nohup /s/std/bin/Xvfb :1 -screen 0 1280x1024x8 &
+#nohup /s/std/bin/Xvfb :1 -screen 0 1024x768x8 &
 setenv DISPLAY unix:1.0
 
 \rm devised.out
@@ -14,5 +15,5 @@ setenv DISPLAY unix:1.0
 touch devised.out
 touch jspop.out
 
-nohup java jspop $* >! jspop.out
+nohup java jspop -debug $* >! jspop.out
 setenv DISPLAY unix:0.0
