@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/09/27 23:59:46  ravim
+  Fixed some bugs. Added some new functions for handling groups.
+
   Revision 1.1  1995/09/22 20:09:26  ravim
   Group structure for viewing schema
 */
@@ -34,7 +37,7 @@
 #include "Util.h"
 #include "MapInterpClassInfo.h"
 
-#define MAX_STR_LEN 50
+#define MAX_STR_LEN 200
 
 #define TOPGRP 1
 #define SUBGRP 2
