@@ -1,5 +1,5 @@
 CPPFLAGS = $(ARCH_FLAGS) -Wall -Wno-unused -O -DUNIX  -I../../graphics \
-	-I../../graphics.new -fexternal-templates
+	-I../../graphics.new -I../../tape -fexternal-templates
 
 LIBSRC = tapedrive.C QueryProcTape.C Templates.C
 
