@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.62  2001/08/20 18:20:33  wenger
+  Fixes to various font problems: XDisplay calculates point sizes correctly
+  and uses screen resolution in specifying font; JS passes *its* screen
+  resolution to the devised so that fonts show up correctly in the JS
+  (JS protocol version now 7.0); changed DEVise version to 1.7.4.
+
   Revision 1.61  2001/05/18 19:25:35  wenger
   Implemented the DEVise end of 3D drill-down; changed DEVise version to
   1.7.3.
@@ -339,7 +345,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.7.4";
+static const char *	version = "1.7.5";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2001";
