@@ -1211,9 +1211,10 @@ Num Date        Status  Description
 319 03/11/98	OPEN	It is possible to create data sources with duplicate
 			names. (rkw)
 
-320 03/11/98	OPEN	SQLViews don't work. (rkw)
+320 03/11/98	FIXED	SQLViews don't work. (rkw)
 			(Partly fixed by Donko 3/12/98.)
 			(Partly fixed by rkw 3/12/98.)
+			(Fixed by Donko 3/12/98)
 
 321 03/11/98	FIXED	Rubberband line on Linux client/server form causes
 			crash. (rkw)
@@ -1242,10 +1243,11 @@ Num Date        Status  Description
 326 03/12/98	WORK	Lenses don't work (don't draw any data). (rkw)
 			(Workaround is disabling them in the GUI.)
 
-327 03/12/98	OPEN	Views don't quite fill up all the space they should
+327 03/12/98	FIXED	Views don't quite fill up all the space they should
 			(this can be seen as white lines between the views
 			if you set the background color to something non-
 			white). (ml/rkw)
+			(Fixed by rkw 3/13/98)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

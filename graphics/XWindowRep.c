@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.106  1998/03/12 22:58:44  wenger
+  Fixed bug 324 (view sometimes not fully redrawing); turned off some
+  OpenGL debug code.
+
   Revision 1.105  1998/02/19 23:24:56  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -2337,7 +2341,8 @@ void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
 void XWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
 {
 #ifdef DEBUG
-  printf("XWindowRep::AbsoluteLine %d,%d,%d,%d\n", x1, y1, x2, y2);
+  printf("XWindowRep::AbsoluteLine (%d, %d), (%d, %d), %d\n", x1, y1,
+      x2, y2, width);
 #endif
   
 #ifdef GRAPHICS

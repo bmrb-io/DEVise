@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.42  1998/02/16 15:41:26  wenger
+  Fixed (I believe) bug 287.
+
   Revision 1.41  1998/02/04 20:22:04  zhenhai
   Fixed bugs of displaying date and customized text at axis.
 
@@ -827,10 +830,8 @@ void ViewWin::DrawMargins()
   win->SetForeground(GetForeground());
   win->SetPattern(Pattern0);
   win->SetLineWidth(0);
-  //win->FillRect(x, y, w - 1, _topMargin - 1);
   win->FillRect(x, h-y-(_topMargin-1), w - 1, _topMargin - 1);
   win->SetForeground(GetBackground());
-  //  win->FillRect(x + 1, y + 1, w - 1 - 2, _topMargin - 1 - 2);
   win->FillRect(x + 1, h-(y + 1)-(_topMargin-1-2), w - 1 - 2,
 		_topMargin - 1 - 2);
   win->SetForeground(GetForeground());

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  1998/02/26 00:19:09  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.50  1998/01/23 20:37:58  zhenhai
   Fixed a bug on transformation which was caused by inconsistency between origins
   or XWindows (Upper left) and OpenGL (Lower left). Also fixed a bug for
@@ -426,7 +429,7 @@ class XWindowRep : public WindowRep
 
 	virtual void Transform(Coord x, Coord y, Coord &newX, Coord &newY) {
 		WindowRep::Transform(x,y,newX,newY);
-		newY=_height-newY;
+		newY=_height - newY - 1;
 	}
 
 	virtual void InverseTransform

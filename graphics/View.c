@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.129  1998/03/08 00:00:52  wenger
+  Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
+  update problems) -- major changes to visual links.
+
   Revision 1.128  1998/03/05 08:10:27  zhenhai
   Added ability to view 3D graphs from six directions. Use -gl option to run,
   and click key x,y,z and X,Y,Z to select the direction you are viewing.
@@ -1207,8 +1211,8 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
   Geometry(x, y, winWidth, winHeight);
   
 #if defined(DEBUG)
-  printf("View::GetDataArea: full area at %d,%d, size %d, %d\n",
-	 x, y, winWidth, winHeight);
+  printf("View(%s)::GetDataArea: window is %d, %d; %d, %d\n",
+	 GetName(), x, y, winWidth, winHeight);
 #endif
 
   if (_label.occupyTop) {
@@ -1224,9 +1228,8 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
     height = winHeight - _label.extent;
   } else {
     /* _label occupies left of view */
-    /* Have to add in two pixels here for some reason.  RKW 11/19/96. */
-    x += _label.extent + 2;
-    width = winWidth - (_label.extent + 2);
+    x += _label.extent;
+    width = winWidth - _label.extent;
     height = winHeight;
   }
   
@@ -1250,7 +1253,8 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
   if (height <= 0) height = 1;
   
 #if defined(DEBUG)
-  printf("View::GetDataArea %s %d %d %d %d\n", GetName(), x, y, width, height);
+  printf("  View %s data area is %d %d; %d %d\n", GetName(), x, y, width,
+      height);
 #endif
 }
 
@@ -1726,7 +1730,7 @@ void View::CalcTransform3(WindowRep *winRep)
 /* Calculate the transformation matrix used to translate from
    world to screen coordinates */
 
-#ifdef 0
+#if 0
 // Nowhere calls this function
 void View::CalcTransform(Transform3D &transform)
 {
