@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/06/24 09:24:14  okan
+  *** empty log message ***
+
   Revision 1.7  1998/06/22 23:46:59  okan
   Fixed Some bugs...
 
@@ -321,6 +324,10 @@ Status DRSchema::finalizeDRSchema() {
 }
 
 Status DRSchema::normalizeDate(char*& curDate) {
+#if defined(DEBUG) || 1
+    printf("DRSchema::normalizeDate(%s)\n", curDate);
+#endif
+
 	char* tmp = curDate;
 	char* boundary = curDate + strlen(curDate) - 1;
 	ostringstream tmpString;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/06/22 23:46:59  okan
+  Fixed Some bugs...
+
   Revision 1.4  1998/06/16 16:30:52  wenger
   Added standard headers to DataReader sources.
 
@@ -30,13 +33,11 @@ class DataReaderParser;
 // This class defines the DataReader interface for external programs
 class DataReader {
 private:
-	char* _dataFileName; // Name of DataFile
-	char* _schemaFileName; // Name of DRSchema File
 	Buffer* myBuffer; // Buffer Object used for extracting fields
 	DataReaderParser* myParser; // DRSchema Parser Object
-	ifstream schemaStream; // File Stream for DRSchema File
 	long* offset; // Offsets of each field in the destination buffer
 	Status _uStat; // Status of DataReader
+
 public:
 	DRSchema* myDRSchema; // DRSchema Object associated with this Reader
 	DataReader(const char* dataFile, const char* schemaFile);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/08/06 23:07:26  beyer
+  bug fixes
+
   Revision 1.11  1998/07/02 22:39:24  beyer
   fixed comment bug
 
@@ -46,14 +49,15 @@
 #include <math.h>
 #include "DateTime.h"
 
-Buffer::Buffer(char* fileName, DRSchema* myDRSchema) {
+//#define DEBUG
+
+Buffer::Buffer(const char* fileName, DRSchema* myDRSchema) {
 	int i,j;
 	Holder* temArr;
 	_nAttr = myDRSchema->qAttr;
-	_fileName = fileName;
-	_in.open(_fileName);
+	_in.open(fileName);
 	if (_in.fail()) {
-		cerr << "DataRedaer File : " << _fileName << " not found" << endl;
+		cerr << "DataReader File : " << fileName << " not found" << endl;
 		exit(1);
 	}
 
@@ -65,6 +69,7 @@ Buffer::Buffer(char* fileName, DRSchema* myDRSchema) {
 	if (myDRSchema->getDelimiter() != NULL) {
 		_EOL = myDRSchema->getDelimiter();
 		for (i = 0 ; i < _EOL->length ; i++) {
+			//TEMP -- array bounds error here if delimiter char is > 127
 			_EOLCheck[_EOL->data[i]] = 1;
 		}
 	}
@@ -270,12 +275,6 @@ char Buffer::getChar() {
 	return c;
 }
 
-bool Buffer::isDigit(char c) {
-	if ((c >= DIGITSTART) && (c <= DIGITEND))
-		return true;
-	return false;
-}
-
 Status Buffer::checkEOL(char curChar) {
 
 // checks if the next character sequence in the data file is
@@ -300,6 +299,10 @@ Status Buffer::checkEOL(char curChar) {
 }
 
 Status Buffer::checkComment() {
+
+#if defined(DEBUG)
+	printf("Buffer::checkComment()\n");
+#endif
 
 // This is called at the beginning of the record to check if
 // record begins with comment, if so skips the record till next
@@ -405,7 +408,7 @@ Status Buffer::getInt(int valLen, int& value) {
 		if ((_curChar = getChar()) == 0) {
 			return FOUNDEOF;
 		}
-		if (!isDigit(_curChar))
+		if (!isdigit(_curChar))
 			return OK;
 
 		value = value*10 + (int)(_curChar - DIGITSTART);
@@ -503,7 +506,7 @@ Status Buffer::getIntTo(Attribute* myAttr, char* target) {
 			return status;
 
 		if (!ignoreRest) {
-			ignoreRest = !(isDigit(_curChar));
+			ignoreRest = !(isdigit(_curChar));
 			_iRetVal = (ignoreRest ? _iRetVal : _iRetVal * 10 + (_curChar - DIGITSTART));
 		}
 
@@ -555,7 +558,7 @@ Status Buffer::getDoubleTo(Attribute* myAttr, char* target = NULL) {
 			return status;
 
 		if (!ignoreRest) {
-			if (!isDigit(_curChar)) {
+			if (!isdigit(_curChar)) {
 				if (_curChar == DOT) {
 					if ((stage != 0) && (stage != 2)) 
 						ignoreRest = true;
@@ -699,7 +702,7 @@ Status Buffer::getIntLen(Attribute* myAttr, char* target = NULL) {
         }
 
 		if (!ignoreRest) {
-			ignoreRest = !(isDigit(_curChar));
+			ignoreRest = !(isdigit(_curChar));
 			_iRetVal = (ignoreRest ? _iRetVal : _iRetVal * 10 + (_curChar - DIGITSTART));
 		}
 
@@ -770,7 +773,7 @@ Status Buffer::getDoubleLen(Attribute* myAttr, char* target = NULL) {
 			return status;
 
 		if (!ignoreRest) {
-			if (!isDigit(_curChar)) {
+			if (!isdigit(_curChar)) {
 				if (_curChar == DOT) {
 					if ((stage != 0) && (stage != 2)) 
 						ignoreRest = true;
@@ -1044,6 +1047,7 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 					_curDate->ampm = PM;
 				} else {
 					cerr << "Date Format for : " << myAttr->getFieldName() << " doesn't match the given date format : " << endl;
+//cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
 					return FAIL;
 				}
 
@@ -1052,6 +1056,7 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 				}
 				if ((_curChar != 'M') && (_curChar != 'm')) {
 					cerr << "Date Format for : " << myAttr->getFieldName() << " doesn't match the given date format : " << endl;
+//cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
 					return FAIL;
 				}
 
@@ -1094,6 +1099,7 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 					_curDate->adbc = true;
 				} else {
 					cerr << "Date Format for : " << myAttr->getFieldName() << " doesn't match the given date format : " << endl;
+//cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
 					return FAIL;
 				}
 
@@ -1102,6 +1108,7 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 				}
 				if ((_curChar != 'D') && (_curChar != 'd') && (_curChar != 'C') && (_curChar != 'c')) {
 					cerr << "Date Format for : " << myAttr->getFieldName() << " doesn't match the given date format : " << endl;
+//cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
 					return FAIL;
 				}
 			
@@ -1125,6 +1132,9 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 				}
 				if (_curChar != *dFormat) {
 					cerr << "Date Format for : " << myAttr->getFieldName() << " doesn't match the given date format : " << endl;
+//cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
+//cerr << "dFormat = " << dFormat << "\n";//TEMP
+//cerr << "_curChar = " << _curChar << "\n";//TEMP
 					return FAIL;
 				}
 		}
@@ -1169,4 +1179,14 @@ Status Buffer::extractField(Attribute* myAttr, char* dest) {
 	retSt = (this->*(extFunc[myAttr->whichAttr]))(myAttr,dest);
 	(this->*(valFunc[myAttr->whichAttr]))(dest);
 	return retSt;
+}
+
+Status Buffer::consumeRecord() {
+	if (_EOL == NULL) {
+		return FOUNDSEPARATOR;
+	} else {
+		Status status;
+		while ((status = checkEOL(getChar())) == OK) {}
+		return status;
+	}
 }

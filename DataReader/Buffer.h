@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/06/24 09:24:13  okan
+  *** empty log message ***
+
   Revision 1.5  1998/06/16 16:30:52  wenger
   Added standard headers to DataReader sources.
 
@@ -62,8 +65,6 @@ private:
 	Holder* _comment; //Comment string
 	char* _EOLCheck; //char array used for comparing current character to EOL 
 	char** _separatorCheck; //same as EOLCheck, we use different arrays for each attribute
-	char* _fileName; //Name of DataFile
-
 	// temporary values
 
 	DateInfo* _curDate; 
@@ -80,7 +81,6 @@ private:
 	char* quoteChars; // replicates quoteChar property of attributes, used for improving speed
 	
 	char getChar(); // Reads next character from data file
-	bool isDigit(char c); // Checks if the given character is a digit
 	Status checkEOL(char curChar); //Checks if the next character sequence is EOL
 	Status checkSeparator(char curChar, Attribute* myAttr); // Checks if the next character sequence is a Separator
 	Status checkAll(char curChar, Attribute* myAttr); // Combination of EOL & Separator
@@ -105,7 +105,7 @@ private:
 	char** _monthAbbr; // array of abbreviated month names
 
 public:
-	Buffer(char* fileName, DRSchema* myDRSchema); // constructor
+	Buffer(const char* fileName, DRSchema* myDRSchema); // constructor
 	~Buffer();
 
 	// read temporary private members and calculates the final result
@@ -143,8 +143,11 @@ public:
 	// to make the interface easier, a single function is 
 	// used for reading fields, this function calls proper
 	// extractors using void function pointer arrays
-
 	Status extractField(Attribute* myAttr, char* dest);
+
+	// consume any remaining charaters before the end of the current
+	// record; does nothing if no record delimiter is defined
+	Status consumeRecord();
 };
 
 #endif

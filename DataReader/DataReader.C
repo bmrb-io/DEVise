@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/06/29 17:18:23  wenger
+  Fixed bug 372 (crashed in DataReader caused by a pointer alignment problem).
+
   Revision 1.5  1998/06/16 16:30:52  wenger
   Added standard headers to DataReader sources.
 
@@ -25,18 +28,23 @@
 #include "DataReader.h"
 #include "DataReaderParser.h"
 
-DataReader::DataReader(const char* dataFile, const char* schemaFile) {
+//#define DEBUG
+
+DataReader::DataReader(const char* dataFile, const char* schemaFile)
+{
+#if defined(DEBUG)
+    printf("DataReader::DataReader(%s, %s)\n", dataFile, schemaFile);
+#endif
+
 	int rc;
 	_uStat = OK;
-	_dataFileName = new char[strlen(dataFile)+1];
-	strcpy(_dataFileName,dataFile);
-	_schemaFileName = new char[strlen(schemaFile)+1];
-	strcpy(_schemaFileName,schemaFile);
-	myDRSchema = new DRSchema(_schemaFileName);
+	myDRSchema = new DRSchema();
 
-	schemaStream.open(_schemaFileName);
+	ifstream schemaStream;
+	schemaStream.open(schemaFile);
 	if (schemaStream.fail()) {
-		cout << "DRSchema File can't be opened !..." << endl;
+		cout << "DRSchema File " << schemaFile << " can't be opened !..."
+		  << endl;
 		_uStat = FAIL;
 	} else {
 		myParser = new DataReaderParser(&schemaStream,0);
@@ -44,28 +52,26 @@ DataReader::DataReader(const char* dataFile, const char* schemaFile) {
 		rc = myParser->parse();
 		schemaStream.close();
 		if (rc != 0) {
-			cerr << "Parse Error, DRSchema file can't be parsed !" << endl;
+			cerr << "Parse Error, DRSchema file " << schemaFile <<
+			  " can't be parsed !" << endl;
 			_uStat = FAIL;
 		} else {
 			if (myDRSchema->finalizeDRSchema() == OK) {
 				offset = new long[myDRSchema->qAttr];
-				myBuffer = new Buffer(_dataFileName, myDRSchema);
+				myBuffer = new Buffer(dataFile, myDRSchema);
 			} else {
 				_uStat = FAIL;
 			}
-		   
 		}
 	}
+
+#if defined(DEBUG)
+    printf("  End of DataReader::DataReader(); _uStat = %d\n", _uStat);
+#endif
 }
 
 DataReader::~DataReader() {
 
-	if (_dataFileName != NULL)
-		delete [] _dataFileName;
-		
-	if (_schemaFileName != NULL)
-		delete [] _schemaFileName;
-		
 	if (myBuffer != NULL)
 		delete myBuffer;
 		
@@ -80,6 +86,10 @@ DataReader::~DataReader() {
 }
 
 Status DataReader::getRecord(char* dest) {
+#if defined(DEBUG)
+    printf("DataReader::getRecord()\n");
+#endif
+
 	Status status;
 	char* tmpPoint;
 
@@ -90,7 +100,10 @@ Status DataReader::getRecord(char* dest) {
 			return status;
 		}
 	}
-	return FOUNDSEPARATOR;
+
+	// Consume the rest of this record (does nothing if record delimiter
+	// not defined.
+	return myBuffer->consumeRecord();
 }
 Status DataReader::getRndRec(char* dest, int fileOffset) {
 	Status status;

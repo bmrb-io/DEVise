@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/06/24 09:24:14  okan
+  *** empty log message ***
+
   Revision 1.2  1998/06/16 16:30:52  wenger
   Added standard headers to DataReader sources.
 
@@ -31,14 +34,14 @@
 
 enum types { TYPE_INT, TYPE_STRING, TYPE_DOUBLE, TYPE_DATE };
 
-#define DIGITSTART 48
-#define DIGITEND 57
-#define MINUS 45 //ASCII value of '-'
-#define PLUS 43 //ASCII value of '+'
-#define DOT 46 //ASCII value of '.'
-#define ESCAPE 92 //ASCII value of '\'
-#define EXPONENTC 101 //ASCII value of 'e'
-#define EXPONENTS 69 //ASCII value of 'E'
+#define DIGITSTART '0'
+#define DIGITEND '9'
+#define MINUS '-' //ASCII value of '-'
+#define PLUS '+' //ASCII value of '+'
+#define DOT '.' //ASCII value of '.'
+#define ESCAPE '\\' //ASCII value of '\'
+#define EXPONENTC 'e' //ASCII value of 'e'
+#define EXPONENTS 'E' //ASCII value of 'E'
 
 enum Status { OK, FAIL, FOUNDEOF, FOUNDEOL, NOQUOTE, FOUNDSEPARATOR, FOUNDCOMMENT };
 
@@ -165,7 +168,6 @@ private:
 	Holder* _comment;   // Data Comment
 	Holder* _separator; // Default separator
 	char _quote;
-	char* _fileName; // DRSchema file name
 	char* _nullIf; // null string, not implemented yet
 	char* _schemaName; // Name of the schema
 	char* _dateFormat; // Default date format
@@ -187,8 +189,7 @@ public:
 	size_t qAttr; // Number of attributes in this schema
 	size_t tAttr; // Number of attributes - number of skip attributes
 
-	DRSchema(char* fileName) {
-		_fileName = fileName;
+	DRSchema() {
 		qAttr = 0;
 		tAttr = 0;
 		_delimiter = NULL;
@@ -272,14 +273,6 @@ public:
 
 	void setQuote(char quote) {
 		_quote = quote;
-	}
-
-	char* getFileName() {
-		return _fileName;
-	}
-
-	void setFileName(char* fileName) {
-		_fileName = fileName;
 	}
 
 	char* getDRSchemaName() {

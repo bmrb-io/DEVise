@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/06/16 16:30:55  wenger
+  Added standard headers to DataReader sources.
+
  */
 
 #include <iostream.h>
@@ -23,6 +26,8 @@
 #include "DataReader.h"
 
 //#define TESTDATAREADER  // ifdef, no output
+
+enum TestResult { TEST_OK, TEST_ERROR, TEST_PROB_ERROR };
 
 int main(int ARGV, char **ARGC) {
 
@@ -33,14 +38,18 @@ int main(int ARGV, char **ARGC) {
 	char* df = ARGC[1];
 	char* sf = ARGC[2];
 
+	TestResult testResult = TEST_OK;
+
 	int aa;
-	DataReader* myDataReader = new DataReader(df,sf);
-	if (!(myDataReader->isOk())) {
-		exit(1);
-	}
-	aa = myDataReader->myDRSchema->qAttr;
 	char* results = new char[2048];
 	Status status = OK;
+
+	DataReader* myDataReader = new DataReader(df,sf);
+	if (!(myDataReader->isOk())) {
+		testResult = TEST_ERROR;
+		goto end;
+	}
+	aa = myDataReader->myDRSchema->qAttr;
 
 /**********************************************************************
 	if (myDataReader->myDRSchema->getKeys() != NULL) {
@@ -62,30 +71,23 @@ int main(int ARGV, char **ARGC) {
 	} 
  **********************************************************************/
 
-#ifdef TESTDATAREADER
-
 	while (true) {
 		status = myDataReader->getRecord(results);
-		if ((status == FAIL) || (status == FOUNDEOF)) {
-			if (status == FAIL) {
-				cerr << "Encountered Error in DataReader " << endl;
-			} else {
-				cerr << "End Of File" << endl;
-			}
-			return 1;
-		}
-	}
-
-#else
-	int i;
-	char* tmp;
-	while (true) {
-		status = myDataReader->getRecord(results);
-		if (status == FAIL) {
+		if (status == OK || status == FOUNDEOL || status == FOUNDEOF) {
+			// these are okay
+		} else if (status == FAIL) {
 			cerr << "Error Occured in DataReader" << endl ;
-			return 1;
+			testResult = TEST_ERROR;
+			goto end;
+		} else {
+			cerr << "Possible error in DataReader" << endl;
+			cerr << "  status = " << status << endl;
+			testResult = TEST_PROB_ERROR;
 		}
-		for ( i = 0 ; i < aa ; i++) {
+
+#ifndef TESTDATAREADER
+		for (int i = 0 ; i < aa ; i++) {
+			char* tmp;
 			switch (myDataReader->myDRSchema->tableAttr[i]->getType()) {
 				case TYPE_INT:
 					cout << *(int*)(results+(myDataReader->myDRSchema->tableAttr[i]->offset)) << " " ;
@@ -99,13 +101,28 @@ int main(int ARGV, char **ARGC) {
 			}
 		}
 		cout << "->  Got One" << endl ;
+#endif
+
 		if (status == FOUNDEOF) {
-			cerr << "FOUND EOF" << endl;
-			return 1;
+			cerr << "End Of File" << endl;
+			break;
 		}
 	}
 
-#endif
+end:
+	cout << endl << "Test result: ";
+	switch (testResult) {
+	case TEST_OK:
+		cout << "OK";
+		break;
+	case TEST_ERROR:
+		cout << "Error";
+		break;
+	case TEST_PROB_ERROR:
+		cout << "Possible error";
+		break;
+	}
+	cout << endl;
 	
 	return 1;
 }

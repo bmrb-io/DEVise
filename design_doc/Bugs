@@ -1544,9 +1544,10 @@ Num Date        Status  Description
 
 403 09/30/98	OPEN	DataReader error messages are almost useless. (rkw)
 
-404 09/30/98	OPEN	DataReader can get out-of-synch with the beginnings
+404 09/30/98	FIXED	DataReader can get out-of-synch with the beginnings
 			of records if the number of attributes it finds in
 			a record is different than it expects. (rkw)
+			(Fixed by rkw 10/2/98.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
