@@ -17,6 +17,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.48  1998/03/12 02:09:16  wenger
+#  Fixed dynamic memory errors in collaboration code that caused core dump
+#  on Linux; collaboration code now tolerates interruption of accept() and
+#  select() in some cases; fixed excessive CPU usage by collaborator
+#  (select timeout now non-zero); fixed some other collaboration bugs.
+#
 #  Revision 1.47  1998/03/03 20:53:53  wenger
 #  Fixed bad free in csgroup code; cleaned up (somewhat) the use of the
 #  (highly-dangerous) ERROR macro.
@@ -159,7 +165,7 @@
 include ../../Makefile.common
 
 BASIC_CFLAGS = -D__tcltk $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
-	-I../../src/color/export -I../../tape \
+	-I../../src/color/export -I../../tape $(GLINCLUDE)\
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX -DNEW_LAYOUT
 
 CFLAGS =$(BASIC_CFLAGS) -I../../csgroup
