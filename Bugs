@@ -8,8 +8,8 @@ Num Date        Status  Description
 002 05/14/96	OPEN	DEVise hogs an awful lot of CPU cycles even when
 			you are not doing anything. (rkw/kb)
 
-003 05/14/96	OPEN	Numeric keypad keys don't always work correctly
-			on Suns running SunOS 4.x. (rkw)
+003	05/14/96	OPEN	Numeric keypad keys don't always work correctly
+						on Suns running SunOS 4.x. (rkw)
 
 004 05/16/96	OPEN	Physical schema editor does not support the length
 			parameter of string attribute types. (jpm)
@@ -26,3 +26,7 @@ Num Date        Status  Description
 
 008 05/16/96	OPEN	View window cannot be destroyed through the
 			window manager causes Devise to crash. (jpm)
+
+009	05/22/96	OPEN	OBJ in generic/Makefile.base doesn't get the
+						right list; causes 'make clean' to try to delete
+						source files. (rkw)
