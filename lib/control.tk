@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.14  1995/09/22 17:33:35  jussi
+#	Added copyright message.
+#
 #	Revision 1.13  1995/09/21 15:36:16  jussi
 #	Added import data types.
 #
@@ -72,6 +75,7 @@ set blue blue
 tk_bisque
 
 . configure -bg LightBlue
+
 # set colors and shapes
 set DEViseColors {{0 black} {1 white} {2 red} {3 blue} {4 orange} \
 	{5 tan} {6 green} {7 purple} {8 aquamarine} {9 peru} {10 chocolate} \
@@ -88,7 +92,6 @@ set DEViseShapes {{0 Rect} {1 RectX} {2 Bar}}
 set curView ""
 set lastView ""
 set historyWinOpened false
-# not reading files as template
 
 set libdir "."
 if { [info exists env(DEVISE_LIB)] } {
@@ -156,7 +159,7 @@ wm geometry . +0+0
 
 # Get all instances for a category
 proc CategoryInstances {category } {
-    set inst { }
+    set inst {}
     set classes [ DEVise get $category ]
     foreach c $classes {
 	set inst [ concat $inst [ DEVise get $category $c ] ]
@@ -180,18 +183,18 @@ proc GetClass { category instance } {
 
 # All instances of tdata that we have
 # Form: {tdatafilebasename1 tdatafilebasename2 ...}
-proc TdataSet { } {
+proc TdataSet {} {
     return [CategoryInstances "tdata" ]
 }
 
 # All instances of GData
 # Form: {gdataname1 gdataname2 ...}
-proc GdataSet { } {
+proc GdataSet {} {
     return [ CategoryInstances "mapping" ]
 }
 
 # All interpreted GData
-proc InterpretedGData { } {
+proc InterpretedGData {} {
     set gSet [ GdataSet ]
     set result ""
     foreach gdata  $gSet {
@@ -203,17 +206,17 @@ proc InterpretedGData { } {
 }
 
 # list of all views
-proc ViewSet { } {
+proc ViewSet {} {
     return [ CategoryInstances "view" ]
 }
 
 #list of all cursors
-proc CursorSet { } {
+proc CursorSet {} {
     return [ CategoryInstances "cursor" ]
 }
 
 # list of all links
-proc LinkSet { } { 
+proc LinkSet {} { 
     return [ CategoryInstances "link" ]
 }
 
@@ -223,12 +226,12 @@ proc WinSet {} {
 }
 
 # list of all axis 
-proc AxisSet { } {
+proc AxisSet {} {
     return [ CategoryInstances "axisLabel" ]
 }
 
 # list of all actions
-proc ActionSet { } {
+proc ActionSet {} {
     return [ CategoryInstances "action" ]
 }
 
@@ -246,8 +249,6 @@ menubutton .mbar.view -text View -underline 0 \
 #	-menu .mbar.link.menu -bg LightBlue
 menubutton .mbar.cursor -text Cursor -underline 0 \
 	-menu .mbar.cursor.menu -bg LightBlue
-# menubutton .mbar.window -text Window -underline 0 -menu .mbar.window.menu
-# menubutton .mbar.edit -text Edit -underline 0 -menu .mbar.edit.menu
 menubutton .mbar.window -text Window -underline 0 \
 	-menu .mbar.window.menu -bg LightBlue
 
@@ -256,12 +257,14 @@ menu .mbar.session.menu -tearoff 0
 .mbar.session.menu add command -label "Open as Template" -command {DoOpen 1}
 .mbar.session.menu add command -label "Close" -command DoClose
 .mbar.session.menu add command -label "Save" -command DoSave
-.mbar.session.menu add command -label "Save as" -command DoSaveAs
+.mbar.session.menu add command -label "Save as" -command {DoSaveAs 0}
+.mbar.session.menu add command -label "Save as Template" -command {DoSaveAs 1}
 .mbar.session.menu add command -label "Demo" -command DoDemo
 .mbar.session.menu add command -label "Quit" -command DoExit
 
 menu .mbar.import.menu -tearoff 0
 .mbar.import.menu add command -label "Unix File" -command importUnixFile
+.mbar.import.menu add command -label "Tape File" -command importTapeFile
 .mbar.import.menu add separator
 .mbar.import.menu add command -label "Stock Data" -command issmMain
 .mbar.import.menu add command -label "Compustat Data" -command cstatMain
@@ -288,7 +291,6 @@ menu .mbar.view.menu -tearoff 0
 .mbar.view.menu add command -label "Action" -command DoViewAction
 .mbar.view.menu add command -label "Edit Mapping" -command DoEditMapping
 .mbar.view.menu add command -label "Switch TData" -command DoSwitchTData
-# .mbar.view.menu add command -label "Dup TData" -command {}
 .mbar.view.menu add command -label "Toggle X Axes" \
 	-command {DoToggleAxisAllViews X}
 .mbar.view.menu add command -label "Toggle Y Axes" \
@@ -307,14 +309,6 @@ menu .mbar.cursor.menu -tearoff 0
 .mbar.cursor.menu add command -label "Set src" -command DoSetCursorSrc
 .mbar.cursor.menu add command -label "Set Dst" -command DoSetCursorDst
 
-# menu .mbar.edit.menu -tearoff 0
-# .mbar.edit.menu add command -label "GData Mapping" -command DoEditMapping
-
-# menu .mbar.window.menu -tearoff 0
-# .mbar.window.menu add command -label "Create" -command {}
-# .mbar.window.menu add command -label "Destroy" -command {}
-# .mbar.window.menu add command -label "Modify" -command {}
-
 menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "Help" -command DoHelp
 .mbar.window.menu add command -label "History" -command OpenHistory
@@ -322,19 +316,19 @@ menu .mbar.window.menu -tearoff 0
 
 pack .mbar.session .mbar.import .mbar.file .mbar.view .mbar.cursor \
 	.mbar.window -side left -fill x
-#	.mbar.edit .mbar.window .mbar.link .
-
 
 # status widgets
 frame .status  -background LightBlue 
 frame .status.left -background LightBlue 
 frame .status.right -relief sunken  -background LightBlue -background LightBlue
+
 # .status.right configure -background LightBlue
 if { $mode == 0 } {
     set modeText "display mode"
 } else {
     setmodeText "layout mode"
 }
+
 button .status.left.mode -text $modeText -command {ChangeMode} \
 	-background turquoise
 pack .status.left.mode -side left -fill x -expand 1
@@ -360,6 +354,7 @@ frame .control -relief sunken -background LightBlue
 frame .control.level1 -background LightBlue
 frame .control.level2 -background LightBlue
 frame .control.level3 -background LightBlue
+
 # Do the buttons
 button .control.left -bitmap @$libdir/left.bit \
 	-command { ProcessLeftButton} -bg cyan1
@@ -444,24 +439,11 @@ tk_menuBar .mbar .mbar.session .mbar.import .mbar.file .mbar.view \
 	.mbar.link .mbar.window .mbar.help
 focus .mbar
 
-# Trim the path name from a file name
-proc TrimPath { name } {
-	set index [ string first "/" $name ] 
-	if { $index < 0 } {
-		return $name
-	} else {
-		set lastIndex [string length $name]
-		set lastInsex [expr $lastIndex-1]
-		set trim [string range $name [expr $index+1] $lastIndex]
-		return [ TrimPath $trim]
-	}
-}
-
 # Create a new instance of file of the given type.
 proc DoCreateTData { file type } {
     global dialogParamVar fileName fileAlias
     set fileName $file
-    set fileAlias [ TrimPath $file ]
+    set fileAlias [ file tail $file ]
     set paramNames [ DEVise getparam tdata $type ]
     set tempParams [ lrange $paramNames 1 [expr [llength $paramNames]-1]]
 
@@ -505,7 +487,7 @@ proc DoCreateTData { file type } {
 
 #import a new file type
 #Return name of file type, or ""
-proc ImportFileType { } {
+proc ImportFileType {} {
     global fsBox datadir
     set fsBox(path) $datadir
     set fsBox(pattern) *.schema*
@@ -534,7 +516,7 @@ proc FileExist { file } {
 }
 
 # Select a file and make it into a TData
-proc DoSelectFile { } {
+proc DoSelectFile {} {
     global dialogListVar fsBox datadir
     # Get file name
     set fsBox(path) $datadir
@@ -600,7 +582,7 @@ proc DoSelectFile { } {
     return $alias
 }
 
-proc DoSelectTData { } {
+proc DoSelectTData {} {
     global dialogListVar
     set tdataSet [ TdataSet ]
     if { [ llength $tdataSet  ] == 0 } {
@@ -848,7 +830,7 @@ proc DoCreateGData { tdata } {
 }
 
 # Get a GData for display
-proc DoGetGData { } {
+proc DoGetGData {} {
     global dialogListVar
     set gdataSet [ GdataSet ]
     if { [ llength $gdataSet ] == 0 } {
@@ -994,7 +976,7 @@ proc DoCreateWindow { message } {
 }
 
 # Get a window 
-proc DoGetWindow { } {
+proc DoGetWindow {} {
     global dialogListVar
     set winSet [ WinSet ]
     if { [ llength $winSet ] == 0 } {
@@ -1014,12 +996,12 @@ proc DoGetWindow { } {
     }
 }
 
-proc DoVisualizeTData { } {
+proc DoVisualizeTData {} {
     set tdata [ DoSelectTData ]
     DoActualVisualizeTData $tdata
 }
 
-proc DoVisualizeFile { } {
+proc DoVisualizeFile {} {
     set tdata [ DoSelectFile ]
     DoActualVisualizeTData $tdata
 }
@@ -1055,7 +1037,7 @@ proc DoActualVisualizeTData { tdata } {
     ProcessViewSelected $view
 }
 
-proc DoVisualizeGData { } {
+proc DoVisualizeGData {} {
     set gdata [ DoGetGData ]
     if { [ string compare $gdata "" ] == 0 } {
 	return
@@ -1078,7 +1060,7 @@ proc DoVisualizeGData { } {
     ProcessViewSelected $view
 }
 
-proc DoExit { } {
+proc DoExit {} {
     set answer [ dialog .quit "Quit" \
 	    "Are you sure you want to quit?" "" 1 \
 	    { Cancel} { Ok } ]
@@ -1089,12 +1071,12 @@ proc DoExit { } {
 
 
 # Process View/Create menu
-proc DoViewCreate { } {
+proc DoViewCreate {} {
     set ans [ DoCreateView "Select a view type" ]
 }
 
 # Destroy a view
-proc DoViewDestroy { } {
+proc DoViewDestroy {} {
     set answer [ dialogList .destroyView "DestroyView" \
 	    "Select a view to destroy" "" 0 { Cancel OK } [ViewSet] ]
     if { $answer == 0 } {
@@ -1106,7 +1088,7 @@ proc DoViewDestroy { } {
 }
 
 # remove view from window
-proc DoViewRemove { } {
+proc DoViewRemove {} {
     global curView
     if { [string compare $curView ""] == 0 } {
 	dialog .removeView "Remove View" \
@@ -1130,7 +1112,7 @@ proc DoViewRemove { } {
 }
 
 # Move view to window
-proc DoViewMove { } {
+proc DoViewMove {} {
     global dialogListVar 
     set answer [ dialogList .removeView "Move View" \
 	    "Select view to move to a window" "" 0 { Cancel OK } [ViewSet] ]
@@ -1295,7 +1277,7 @@ proc SaveCursorViews { file dict} {
 }
 
 # Save session
-proc DoActualSave { infile } {
+proc DoActualSave { infile asTemplate } {
     global mode curView
 
     ChangeStatus 1
@@ -1353,15 +1335,22 @@ proc DoActualSave { infile } {
 	    set fileAlias [lindex $params 1]
 	    set fileDict [DictInsert $fileDict $fileAlias tdata_$fileNum]
 	    set tdataVar tdata_$fileNum
-	    puts $f "if \{ \$template \} \{"
-	    puts $f "\tset $tdataVar \[ GetTDataTemplate $class $totalTData $fileNum \]"
-	    puts $f "\tif \{ \[string compare \$$tdataVar \"\" \] == 0 \} \{"
-	    puts $f "\t\treturn 0"
-	    puts $f "\t\}"
-	    puts $f "\} else \{"
-	    puts $f "\tset $tdataVar \{$fileAlias\}"
-	    puts $f "\tDEVise create tdata $class $filePath \$$tdataVar"
-	    puts $f "\}"
+	    if {$asTemplate} {
+		puts $f "set $tdataVar \[ GetTDataTemplate $class $totalTData $fileNum \]"
+		puts $f "if \{\$$tdataVar == \"\"\} \{"
+		puts $f "\treturn 0"
+		puts $f "\}"
+	    } else {
+		puts $f "if \{ \$template \} \{"
+		puts $f "\tset $tdataVar \[ GetTDataTemplate $class $totalTData $fileNum \]"
+		puts $f "\tif \{\$$tdataVar == \"\"\} \{"
+		puts $f "\t\treturn 0"
+		puts $f "\t\}"
+		puts $f "\} else \{"
+		puts $f "\tset $tdataVar \{$fileAlias\}"
+		puts $f "\tDEVise create tdata $class $filePath \$$tdataVar"
+		puts $f "\}"
+	    }
 	    set fileNum [expr $fileNum+1]
 	}
     }
@@ -1486,6 +1475,9 @@ proc DoActualSave { infile } {
     foreach view $viewSet {
 	set viewVar [DictLookup $viewDict $view]
 	puts $f "DEVise clearViewHistory \$$viewVar"
+	if ($asTemplate) {
+	    continue
+	}
 	set historyList [DEVise getVisualFilters $view]
 	foreach hist $historyList {
 	    puts $f "DEVise insertViewHistory \$$viewVar {[lindex $hist 0]} {[lindex $hist 1]} {[lindex $hist 2]} {[lindex $hist 3]} {[lindex $hist 4]}"
@@ -1497,6 +1489,12 @@ proc DoActualSave { infile } {
 	puts $f "DEVise changeMode 1"
     }
 
+    if {$asTemplate} {
+	puts $f "return 1"
+	ChangeStatus 0
+	close $f
+	return
+    }
 
     # Save pixmaps 
     set bitmapFile $infile.pixmap
@@ -1540,16 +1538,22 @@ proc DoActualSave { infile } {
     close $f
 }
 
-proc DoSave { } {
+proc DoSave {} {
     global sessionName
+
+    if {$sessionName == ""} {
+	DoSaveAs 0
+	return
+    }
+
     set button [ dialog .saveSession "SaveSession" \
 	    "Save session to file\n$sessionName?"  "" 1  {Cancel} {Ok}  ]
     if { $button == 1 } {
-	DoActualSave $sessionName
+	DoActualSave $sessionName 0
     }
 }
 
-proc DoSaveAs { } {
+proc DoSaveAs { asTemplate } {
     global sessionName fsBox datadir
 
     # Get file name
@@ -1559,9 +1563,11 @@ proc DoSaveAs { } {
     
     set button [ dialog .saveSession "saveSession" \
 	    "Save session to file\n$file?"  "" 1  {Cancel} {Ok} ]
-    if { $button == 1 } {
-	DoActualSave $file
-	set sessionName $file
+    if {$button == 1} {
+	DoActualSave $file $asTemplate
+	if {!$asTemplate} {
+	    set sessionName $file
+	}
     }
 }
 
@@ -1573,7 +1579,7 @@ proc DoSaveAs { } {
 #	example: .afsio_rc
 # 3) next, check $argv0_rc
 #  example: afsio.rc
-set progName [ TrimPath $argv0 ]
+set progName [ file tail $argv0 ]
 set envName [ format "%s_RC" [string toupper $progName] ]
 set rcFile1 [ format ".%s_rc" $progName ]
 set rcFile2 [ format "%s.rc" $progName ]
@@ -1589,12 +1595,12 @@ if { [ info exists env($envName)] && [file exists env$(envName) ] } {
 }
 
 if {$rcFile != ""} {
-    puts "reading from $rcFile"
+    puts "Reading initialization from $rcFile"
     source $rcFile
 }
 
 # Refresh all views
-proc RefreshAllViews { } {
+proc RefreshAllViews {} {
     set classes [ DEVise get "view" ]
     foreach class $classes {
 	set instances [ DEVise get "view" $class ]
@@ -1605,7 +1611,7 @@ proc RefreshAllViews { } {
 }
 
 # Change mode
-proc ChangeMode { } {
+proc ChangeMode {} {
     global mode
     if { $mode == 0 } {
 	set mode 1
@@ -1747,7 +1753,7 @@ proc ProcessHistorySelected { sel } {
 }
 
 # Process "use" button pressed
-proc ProcessUseButton { } {
+proc ProcessUseButton {} {
     global curView
     set xlow [DEVise parseDateFloat [.history.xlow get ]]
     set ylow [DEVise parseDateFloat [.history.ylow get ]]
@@ -1767,7 +1773,7 @@ proc ProcessUseButton { } {
     }
 }
 
-proc ProcessLeftButton { } {
+proc ProcessLeftButton {} {
     global curView left_amount
     if { [string compare $curView "" ] == 0 } {
 	return
@@ -1793,7 +1799,7 @@ proc ProcessLeftButton { } {
     DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
 }
 
-proc ProcessRightButton { } { 
+proc ProcessRightButton {} { 
     global curView right_amount
     if { [string compare $curView "" ] == 0 } {
 	return
@@ -1819,7 +1825,7 @@ proc ProcessRightButton { } {
     DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
 }
 
-proc ProcessUpButton { } { 
+proc ProcessUpButton {} { 
     global curView up_amount
     if { [string compare $curView "" ] == 0 } {
 	return
@@ -1845,7 +1851,7 @@ proc ProcessUpButton { } {
     DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
 }
 
-proc ProcessDownButton { } {
+proc ProcessDownButton {} {
     global curView down_amount
     if { [string compare $curView "" ] == 0 } {
 	return
@@ -1871,7 +1877,7 @@ proc ProcessDownButton { } {
     DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
 }
 
-proc ProcessInButton { } {
+proc ProcessInButton {} {
     global curView in_amount
     if { [string compare $curView "" ] == 0 } {
 	return
@@ -1898,7 +1904,7 @@ proc ProcessInButton { } {
     DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
 }
 
-proc ProcessYInButton { } {
+proc ProcessYInButton {} {
     global curView in_amount
     if { [string compare $curView "" ] == 0 } {
 	return
@@ -1925,7 +1931,7 @@ proc ProcessYInButton { } {
     DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
 }
 
-proc ProcessOutButton { } { 
+proc ProcessOutButton {} { 
     global curView out_amount
     if { [string compare $curView "" ] == 0 } {
 	return
@@ -1951,7 +1957,7 @@ proc ProcessOutButton { } {
     
     DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
 }
-proc ProcessYOutButton { } { 
+proc ProcessYOutButton {} { 
     global curView out_amount
     if { [string compare $curView "" ] == 0 } {
 	return
@@ -1979,7 +1985,7 @@ proc ProcessYOutButton { } {
 }
 
 # Do editing for mapping
-proc DoEditMapping { } {
+proc DoEditMapping {} {
     global dialogParamVar dialogListVar DEViseColors DEViseShapes curView
     if {$curView == ""} {
 	dialog .editMapping "Edit Mapping" \
@@ -2077,7 +2083,7 @@ proc DoEditMapping { } {
 }
 
 # Create a Cursor, return its name
-proc DoCursorCreate { } {
+proc DoCursorCreate {} {
     global dialogCkButVar 
 
     set but [dialogCkBut .createCursor "Create Cursor" \
@@ -2110,7 +2116,7 @@ proc DoCursorCreate { } {
     return $name
 }
 
-proc DoGetCursor { } {
+proc DoGetCursor {} {
     global curView dialogListVar
 
     set cursorSet [CursorSet]
@@ -2134,7 +2140,7 @@ proc DoGetCursor { } {
 }
 
 
-proc DoSetCursorSrc { } {
+proc DoSetCursorSrc {} {
     global curView dialogListVar
 
     if { [ string compare $curView "" ] ==  0 } {
@@ -2151,7 +2157,7 @@ proc DoSetCursorSrc { } {
     set answer [DEVise setCursorSrc $cursor $curView]
 }
 
-proc DoSetCursorDst { } {
+proc DoSetCursorDst {} {
     global curView dialogListVar
 
     if { [ string compare $curView "" ] ==  0 } {
@@ -2169,7 +2175,7 @@ proc DoSetCursorDst { } {
 }
 
 # Create a link, return its name
-proc DoLinkCreate { } {
+proc DoLinkCreate {} {
     global dialogCkButVar 
 
     set but [dialogCkBut .createLink "Create Link" \
@@ -2215,7 +2221,7 @@ proc DisplayLinkInfo { link } {
 }
 
 # Link current view
-proc DoViewLink { } {
+proc DoViewLink {} {
     global curView dialogListVar
 
     if { [ string compare $curView "" ] ==  0 } {
@@ -2261,7 +2267,7 @@ proc DoViewLink { } {
 }
 
 # Unlink current view
-proc DoViewUnlink { } {
+proc DoViewUnlink {} {
     global curView dialogListVar
     if { [ string compare $curView "" ] ==  0 } {
 	set but [dialog .unlinkError "UnlinkViewError" \
@@ -2295,7 +2301,7 @@ proc DoViewUnlink { } {
 }
 
 # Modify parameters of a link
-proc DoModifyLink { } {
+proc DoModifyLink {} {
     global dialogCkButVar dialogListVar
     set linkSet [LinkSet]
     if { [llength $linkSet ] == 0 } {
@@ -2328,7 +2334,7 @@ proc DoModifyLink { } {
     DEVise setLinkFlag $link $flag
 }
 
-proc CheckView { } {
+proc CheckView {} {
     global curView
     if { [ string compare $curView "" ] ==  0 } {
 	set but [dialog .viewError "ViewError" \
@@ -2362,7 +2368,7 @@ proc DoActualCreateAxisLabel { type } {
 }
 
 # Create a new axis label
-proc DoCreateAxisLabel { } {
+proc DoCreateAxisLabel {} {
     global dialogListVar
     set axisTypes [ DEVise get axisLabel]
     set answer [ dialogList .createAxis "CreateAxis"  \
@@ -2377,7 +2383,7 @@ proc DoCreateAxisLabel { } {
 }
 
 # Get an axis label for current view
-proc DoGetAxisLabel { } {
+proc DoGetAxisLabel {} {
     global curView dialogListVar
     set axisSet [AxisSet]
     if { [llength $axisSet] == 0 } {
@@ -2435,7 +2441,7 @@ proc DoActualCreateAction { type } {
 }
 
 # Create an action
-proc DoCreateAction { } {
+proc DoCreateAction {} {
     global dialogListVar
     set actionTypes [ DEVise get action]
     set answer [ dialogList .createAction "CreateAction"  \
@@ -2449,7 +2455,7 @@ proc DoCreateAction { } {
 }
 
 # Get an action
-proc DoGetAction { } {
+proc DoGetAction {} {
     global curView dialogListVar
     set actionSet [ActionSet ]
     if { [llength $actionSet] == 0 } {
@@ -2471,7 +2477,7 @@ proc DoGetAction { } {
 }
 
 # Add an action for view
-proc DoViewAction { } {
+proc DoViewAction {} {
     global curView
     if { ! [CheckView] } {
 	return
@@ -2485,7 +2491,7 @@ proc DoViewAction { } {
 }
 
 # Close current session
-proc DoClose { } {
+proc DoClose {} {
     set but [dialog .open OpenSession "Close Current Session?" \
 	    "" 1 Cancel Ok ]
     if { $but == 0 } {
@@ -2540,12 +2546,10 @@ proc DoClose { } {
 }
 
 # Do open a session file
-proc DoOpen { asTemplate} {
+proc DoOpen { asTemplate } {
     global fsBox datadir
 
-    # DEVise printDispatcher
-
-    if {! [DoClose] } {
+    if {[DEVise get tdata] != "" && ![DoClose]} {
 	# abort opening a new session
 	return
     }
@@ -2555,21 +2559,18 @@ proc DoOpen { asTemplate} {
     set fsBox(pattern) *.tk
     set file [ FSBox "Select session file" ]
     
-    # puts "Got File: $file"
-
-    if { [ string compare $file "" ] == 0 } {
+    if {$file == ""} {
 	return
     }
 
-    # open the session 
-    if { $asTemplate} {
+    if {$asTemplate} {
 	DEVise openTemplate $file
     } else {
 	DEVise openSession $file
     }
 }
 
-proc DoDemo { } {
+proc DoDemo {} {
     global libdir fsBox
     set fsBox(path) $libdir/demo
     DoOpen 0
@@ -2653,7 +2654,7 @@ proc GetMapping { tdata mapClass} {
 # Switch to a different TData for current view.
 # We implement it by creating a new view and putting it it place
 # of the current one
-proc DoSwitchTData { } {
+proc DoSwitchTData {} {
     global curView
     if { [string compare $curView ""] == 0 } {
 	dialog .switchTData "Switch TData" \
@@ -2733,13 +2734,13 @@ proc DoSwitchTData { } {
     }
 }
 
-proc CloseHistory { } {
+proc CloseHistory {} {
     global historyWinOpened
     destroy .historyWin
     set historyWinOpened 0
 }
 
-proc DoHistoryToggle { } {
+proc DoHistoryToggle {} {
     global historyWinOpened
     if { $historyWinOpened} {
 	CloseHistory
@@ -2750,7 +2751,7 @@ proc DoHistoryToggle { } {
 
 
 # Do history command here.
-proc OpenHistory { } {
+proc OpenHistory {} {
     global curView historyWinOpened LightBlue
     
     if { $historyWinOpened } {
@@ -2853,7 +2854,7 @@ proc DoScrollBar args {
     }
 }
 
-proc ClearHistory { } {
+proc ClearHistory {} {
     global historyWinOpened
     if {$historyWinOpened} {
 	foreach i {listMark listXlow listXhigh listYlow listYhigh} {
@@ -2863,7 +2864,7 @@ proc ClearHistory { } {
     }
 }
 
-proc DoUndoEdit { } {
+proc DoUndoEdit {} {
     global curView
     
     if { [string compare $curView "" ] == 0 } {
@@ -2882,7 +2883,7 @@ proc DoUndoEdit { } {
     .history.yhigh insert 0 [lindex $filter 3]
 }
 
-proc DoGoBackOne { } {
+proc DoGoBackOne {} {
     global curView
     
     if { [string compare $curView "" ] == 0 } {
@@ -2907,7 +2908,7 @@ proc DoGoBackOne { } {
 
 
 # duplicate window
-proc DupWindow { } {
+proc DupWindow {} {
     global curView
     if {$curView == ""} {
 	set but [dialog .dupWinError "DupWindowError" \
@@ -2984,7 +2985,7 @@ proc DoToggleAxisAllViews { axis } {
     }
 }
 
-proc DoSwapView { } {
+proc DoSwapView {} {
     global curView lastView dialogListVar
     if { [ string compare $curView "" ] ==  0  ||
     [string compare $lastView "" ] == 0 ||
@@ -3008,7 +3009,7 @@ proc DoSwapView { } {
     DEVise swapView $win1 $curView $lastView
 }
 
-proc DoSavePixmap { } {
+proc DoSavePixmap {} {
     global curView lastView dialogListVar
     if { [ string compare $curView "" ] ==  0 } {
 	set but [dialog .swapViewError "SwapViewError" \
@@ -3022,7 +3023,7 @@ proc DoSavePixmap { } {
     DEVise close $file
 }
 
-proc DoLoadPixmap { } {
+proc DoLoadPixmap {} {
     global curView lastView
     if { [ string compare $curView "" ] ==  0 } {
 	set but [dialog .swapViewError "LoadPixmapError" \
@@ -3044,52 +3045,50 @@ proc DoLoadPixmap { } {
 #	num: number for the tdata, [1..total].
 # This procedure asks user for file name, and imports it as 
 # the new TData
+
 proc GetTDataTemplate { type total num} {
     global fsBox dialogParamVar datadir
 
-    # Get file name
     set fsBox(path) $datadir
     set fsBox(pattern) *
 
     while { 1 } {
 	set file [ FSBox "Select file $num of $total, type $type" ]
-	if { [ string compare $file "" ] == 0 } {
+	if {$file == ""} {
 	    return ""
 	}
 
-	if  { [FileExist $file ] } {
-	    set but [dialog .fileExist "File Exists" \
-		    "File $file already loaded\n\
-		    Please select another file" "" 0 Continue]
-	} else {
+	if  {![FileExist $file]} {
 	    break
 	}
+	set but [dialog .fileExist "File Exists" \
+		"File $file already loaded\n\
+		Please select another file" "" 0 Continue]
     }
 
     while { 1 } {
-	set fileAlias [ TrimPath $file ]
+	set fileAlias [ file tail $file ]
 	set tempParam [list [ list  FileAlias $fileAlias ] ]
 	set button [ dialogParam .fileParam "FileParam" \
-		"Enter Alias for file\n\
-		$file\n\
-		(Note: it may take a while for the program\n\
-		to come back after clicking <OK>)"  "" 1  \
-		{ Cancel OK } $tempParam]
-	if { $button == 0} {
+		"Enter Alias for file\n$file" "" 0 { OK Cancel } $tempParam]
+	if {$button == 1} {
 	    return ""
 	}
 	set fileAlias [ lindex $dialogParamVar(params) 0 ]
 	
-	if { [DEVise exists $fileAlias] } {
-	    # This file alias already exists in memory.
-	    set but [dialog .fileExist "FileExist" \
-		    "error: TData $fileAlias exists" "" 1 {continue}]
-	} else {
+	if {![DEVise exists $fileAlias]} {
 	    break
 	}
+	set but [dialog .fileExist "FileExist" \
+		"Alias $fileAlias exists already" "" 1 {continue}]
     }
 
+    statusWindow .info "Status" \
+	    "Creating an index on $fileAlias.\n\n\
+	    This may take a while."
     DEVise create tdata $type $file $fileAlias
+    catch {destroy .info}
+
     return $fileAlias
 }
 
