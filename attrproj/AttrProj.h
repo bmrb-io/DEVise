@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/14 15:34:51  wenger
+  Added GetDataSize method to AttrProj class; removed vector.o from
+  AttrProjLib.o; various cleanups.
+
   Revision 1.3  1996/05/01 16:19:35  wenger
   Initial version of code to project attributes now working.
 
@@ -59,6 +63,9 @@ public:
 	DevStatus GetDataSize(int &projCount, const int *&attrCounts,
 		const int *&projSizes);
 
+	/* Get the number of attributes and total size of an entire record. */
+	DevStatus GetWholeRecSize(int &attrCount, int &recSize);
+
 	/* Create a VectorArray properly set up to hold the attribute projections
 	 * specified in the attribute projection file. */
 	DevStatus CreateRecordList(VectorArray *&vecArray);
@@ -67,6 +74,9 @@ public:
 	 * of the combinations specified in the attribute projection file.
 	 * vecArray must have already been set up. */
 	DevStatus ReadRec(RecId recId, VectorArray &vecArray);
+
+	/* Read an entire record (not its projections). */
+	DevStatus ReadWholeRec(RecId recId, Vector &vector);
 
 private:
 	DevStatus ParseProjection(char *attrProjFile);

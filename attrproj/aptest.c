@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/22 18:50:44  wenger
+  Greatly simplified Init::DoInit() to only do what's necessary for
+  attribute projection; other minor changes.
+
   Revision 1.6  1996/05/14 15:34:58  wenger
   Added GetDataSize method to AttrProj class; removed vector.o from
   AttrProjLib.o; various cleanups.
@@ -89,6 +93,18 @@ main(
 	RecId			lastId;
 	RecId			recId;
 	VectorArray *	vecArrayP;
+	Vector			vec;
+
+	{
+		int			attrCount;
+		int			recSize;
+
+		apP->GetWholeRecSize(attrCount, recSize);
+		printf("whole record attribute count = %d\n", attrCount);
+		printf("whole record size = %d\n", recSize);
+
+		vec.Init(recSize / sizeof(double));
+	}
 
 	{
 		int			projCount;
@@ -123,6 +139,18 @@ main(
 	for (recId = firstId; recId <= lastId; recId++)
 	{
 		printf("\nRecord %d:\n", (int) recId);
+
+		apP->ReadWholeRec(recId, vec);
+		{
+			int count;
+
+			printf("  Whole record:\n   ");
+			for (count = 0; count < vec.dim; count++)
+			{
+				printf(" %f", vec.value[count]);
+			}
+			printf("\n");
+		}
 
 		apP->ReadRec(recId, *vecArrayP);
 		int			vecCount = vecArrayP->GetVecCount();

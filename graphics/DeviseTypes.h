@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/07/13 04:59:31  jussi
+  Added conditional for Linux.
+
   Revision 1.5  1996/06/21 19:29:11  jussi
   Cleaned up file and replaced MinMax class with simpler MIN/MAX macros.
 
@@ -49,13 +52,34 @@ inline int trunc(double num) {
 #define MAX3(a,b,c) ((a) > (b) ? MAX(a,c) : MAX(b,c))
 #endif
 
+// Status information (to be returned by a function, for example) and
+// functions to get information about the status.
 enum DevStatus {
   StatusInvalid = 0,
-  StatusOk = 10000,
-  StatusFailed,
-  StatusWarn,
-  StatusCancel,
-  StatusWarnCancel
+  StatusOk = 10000,	// Everything is OK.
+  StatusFailed,		// Failure -- the function did not complete.
+  StatusWarn,		// There was an error, but the function completed.
+  StatusCancel,		// The function was cancelled.
+  StatusWarnCancel	// There was a warning, and the function was cancelled.
 };
+
+// Did the function complete successfully?
+inline Boolean StatIsComplete(DevStatus status)
+{
+  return (status == StatusOk) || (status == StatusWarn);
+}
+
+// Was there an error?
+inline Boolean StatIsError(DevStatus status)
+{
+  return (status == StatusFailed) || (status == StatusWarn) ||
+    (status == StatusWarnCancel);
+}
+
+// Was the function cancelled (for example, by the user)?
+inline Boolean StatIsCancel(DevStatus status)
+{
+  return (status == StatusCancel) || (status == StatusWarnCancel);
+}
 
 #endif

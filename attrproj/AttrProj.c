@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/06/27 18:12:04  wenger
+  Re-integrated most of the attribute projection code (most importantly,
+  all of the TData code) into the main code base (reduced the number of
+  modules used only in attribute projection).
+
   Revision 1.7  1996/06/19 19:55:52  wenger
   Improved UtilAtof() to increase speed; updated code for testing it.
 
@@ -62,6 +67,11 @@
 #include "ProjectionList.h"
 #include "DataSeg.h"
 
+/* The type of data stored in a Vector. */
+#define VECTOR_TYPE	double
+
+static double AttrToDouble(AttrType type, char *valP);
+
 #if !defined(lint) && defined(RCSID)
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
@@ -85,9 +95,11 @@ AttrProj::AttrProj(char *schemaFile, char *attrProjFile, char *dataFile)
 		schemaFile = dataFile;
 	}
 
-//TEMPTEMP  do something with return value
-	ParseCat(schemaFile, dataFile, _tDataP);
-	ParseProjection(attrProjFile);
+	char *schemaName = ParseCat(schemaFile, dataFile, _tDataP);
+	DOASSERT(schemaName != NULL, "Can' parse schema");
+
+	DevStatus ppRes = ParseProjection(attrProjFile);
+	DOASSERT(StatIsComplete(ppRes), "Can't parse projection");
 
 	_recBufSize = _tDataP->RecSize();
 	_recBuf = new char[_recBufSize];
@@ -100,7 +112,7 @@ AttrProj::AttrProj(char *schemaFile, char *attrProjFile, char *dataFile)
 	while (projP != NULL)
 	{
 		_attrCounts[projNum] = projP->attrCount;
-		_projSizes[projNum] = projP->attrCount * sizeof(double);
+		_projSizes[projNum] = projP->attrCount * sizeof(VECTOR_TYPE);
 
 		projP = _projList.GetNextProj();
 		projNum++;
@@ -173,6 +185,35 @@ AttrProj::GetDataSize(int &projCount, const int *&attrCounts,
 }
 
 /*------------------------------------------------------------------------------
+ * function: AttrProj::GetWholeRecSize
+ * Returns information about the size of data that will be produced when
+ * an entire record (not its projections) is read.
+ */
+DevStatus
+AttrProj::GetWholeRecSize(int &attrCount, int &recSize)
+{
+	DO_DEBUG(printf("AttrProj::GetWholeRecSize()\n"));
+
+	DevStatus	result = StatusOk;
+
+	attrCount = 0;
+	recSize = 0;
+
+	AttrList *attrListP = _tDataP->GetAttrList();
+
+	attrListP->InitIterator();
+	while (attrListP->More())
+	{
+		AttrInfo *attrInfoP = attrListP->Next();
+		attrCount++;
+		recSize += sizeof(VECTOR_TYPE);
+	}
+	attrListP->DoneIterator();
+
+	return result;
+}
+
+/*------------------------------------------------------------------------------
  * function: AttrProj::CreateRecordList
  * Creates a record list (VectorArray) that can hold the projected
  * records specified in the attribute projection file.
@@ -232,48 +273,54 @@ AttrProj::ReadRec(RecId recId, VectorArray &vecArray)
 			{
 				int			attrNum = projP->attrList[projAttrNum];
 				AttrInfo *	attrInfoP = attrListP->Get(attrNum);
-				double		doubleVal;
-				float		floatVal;
-				int			intVal;
 
-
-				switch (attrInfoP->type)
-				{
-				case IntAttr:
-					intVal = *(int *)(_recBuf + attrInfoP->offset);
-					DO_DEBUG(printf("        %d\n", intVal));
-					vectorP->value[projAttrNum] = (double) intVal;
-					break;
-
-				case FloatAttr:
-					floatVal = *(float *)(_recBuf + attrInfoP->offset);
-					DO_DEBUG(printf("        %f\n", floatVal));
-					vectorP->value[projAttrNum] = (double) floatVal;
-					break;
-
-				case DoubleAttr:
-					doubleVal = *(double *)(_recBuf + attrInfoP->offset);
-					DO_DEBUG(printf("        %f\n", doubleVal));
-					vectorP->value[projAttrNum] = (double) doubleVal;
-					break;
-
-				case StringAttr:
-					DOASSERT(false, "Can't deal with string attribute");
-					break;
-
-				case DateAttr:
-					DOASSERT(false, "Can't deal with date attribute");
-					break;
-
-				default:
-					DOASSERT(false, "Illegal attribute type");
-					break;
-				}
+				vectorP->value[projAttrNum] = AttrToDouble(attrInfoP->type,
+					_recBuf + attrInfoP->offset);
 			}
 
 			projP = _projList.GetNextProj();
 			projNum++;
 		}
+	}
+
+	return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: AttrProj::ReadWholeRec
+ * Read an entire record (not its projections).
+ */
+DevStatus
+AttrProj::ReadWholeRec(RecId recId, Vector &vector)
+{
+	DO_DEBUG(printf("AttrProj::ReadWholeRec()\n"));
+
+	DevStatus	result = StatusOk;
+
+	_tDataP->InitGetRecs(recId, recId, RecIdOrder);
+
+	int			dataSize;
+	int			numRecs;
+
+	if (!_tDataP->GetRecs(_recBuf, _recBufSize, recId, numRecs, dataSize, NULL))
+	{
+		result = StatusFailed;
+	}
+	else
+	{
+		AttrList *	attrListP = _tDataP->GetAttrList();
+		int			attrNum = 0;
+
+		attrListP->InitIterator();
+		while (attrListP->More())
+		{
+			AttrInfo *attrInfoP = attrListP->Next();
+
+			vector.value[attrNum] = AttrToDouble(attrInfoP->type,
+				_recBuf + attrInfoP->offset);
+			attrNum++;
+		}
+		attrListP->DoneIterator();
 	}
 
 	return result;
@@ -356,6 +403,56 @@ AttrProj::ParseProjection(char *attrProjFile)
 		}
 
 		fclose(file);
+	}
+
+	return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: AttrToDouble
+ * Convert an attribute value to a double.
+ */
+static double
+AttrToDouble(AttrType type, char *valP)
+{
+	DO_DEBUG(printf("AttrToDouble()\n"));
+
+	double		doubleVal;
+	float		floatVal;
+	int			intVal;
+	double		result = 0.0;
+
+	switch (type)
+	{
+	case IntAttr:
+		intVal = *(int *) valP;
+		DO_DEBUG(printf("        %d\n", intVal));
+		result = (double) intVal;
+		break;
+
+	case FloatAttr:
+		floatVal = *(float *) valP;
+		DO_DEBUG(printf("        %f\n", floatVal));
+		result = (double) floatVal;
+		break;
+
+	case DoubleAttr:
+		doubleVal = *(double *) valP;
+		DO_DEBUG(printf("        %f\n", doubleVal));
+		result = (double) doubleVal;
+		break;
+
+	case StringAttr:
+		DOASSERT(false, "Can't deal with string attribute");
+		break;
+
+	case DateAttr:
+		DOASSERT(false, "Can't deal with date attribute");
+		break;
+
+	default:
+		DOASSERT(false, "Illegal attribute type");
+		break;
 	}
 
 	return result;
