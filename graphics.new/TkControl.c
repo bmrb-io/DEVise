@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1995/11/18 01:52:15  ravim
+  defaultGroup removed. Groups associated with schema.
+
   Revision 1.10  1995/11/15 18:19:34  jussi
   Added definition of crsp_extract command.
 
@@ -816,6 +819,24 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			goto error;
 		}
 	}
+	else if (strcmp(argv[1], "printWindows") == 0) {
+	  if (argc < 4) {
+	    fprintf(stderr, "TkControl:cmd printWindows argc < 4\n");
+	    Exit::DoExit(2);
+	  }
+	  for(int i = 3; i < argc; i++) {
+	    ViewWin *viewWin = (ViewWin *)classDir->FindInstance(argv[i]);
+	    if (!viewWin) {
+	      fprintf(stderr,
+		      "TkControl:cmd printWindows can't find window %s\n",
+		      argv[i]);
+	      continue;
+	    }
+	    char filename[256];
+	    sprintf(filename, argv[2], i - 3);
+	    viewWin->GetWindowRep()->WritePostscript(true, filename);
+	  }
+	}
 	else if (argc == 4) {
 		if (strcmp(argv[1],"writeLine") == 0){
 			FILE *file = (FILE *)atol(argv[3]);
@@ -1055,10 +1076,6 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			}
 			view->DeleteFromParent();
 			view->AppendToParent(win);
-		}
-		else {
-			interp->result = "wrong args";
-			goto error;
 		}
 	}
 	else if (strcmp(argv[1],"swapView") == 0 ) {
