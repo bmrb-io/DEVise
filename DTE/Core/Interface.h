@@ -4,6 +4,9 @@
 #include <string>
 //#include <iostream.h>   erased for sysdep.h
 #include "sysdep.h"
+#include <windows.h>
+#include "SQL.H"
+#include <sqlext.h>
 
 #ifndef __GNUG__
 using namespace std;
@@ -351,10 +354,17 @@ class ODBCInterface : public Interface {
 	string dataSourceName;
 	string userName;
 	string passwd;
+	HENV ODBC_Handle;
+	HDBC Connect_Handle;
+	SQLHSTMT Stmt_Handle;
+	SQLRETURN SQL_Result;
 	ISchema tmp;
 public:
 	static string typeName;
 	ODBCInterface() {}
+	int ODBC_Connect();
+	void ODBC_disConnect();
+	int ODBC_Stmt_Handle();
 	ODBCInterface(const ODBCInterface& x){
 	}
 	virtual ~ODBCInterface(){
