@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.74  1999/09/24 21:02:07  wenger
+  Devised changes to correspond with the latest JavaScreen code:
+  JAVAC_CreateView command sends more info; JS protocol version is now
+  3.0; devised doesn't draw titles in JS views (JS draws the titles).
+
   Revision 1.73  1999/09/01 19:27:09  wenger
   Debug logging improved -- directory of log file can now be specified
   with the DEVISE_LOG_DIR environment variable (changed most startup scripts
@@ -1039,19 +1044,26 @@ JavaScreenCmd::OpenSession()
 	sprintf(fullpath, "%s/%s", _sessionDir, _argv[0]);
 
 	struct stat buf;
-	stat(fullpath, &buf);
-	if (S_ISDIR(buf.st_mode)) {
-		UpdateSessionList(_argv[0]);
+	if (stat(fullpath, &buf) != 0) {
+		char errBuf[MAXPATHLEN + 128];
+		errmsg = "Can't get status for requested file or directory";
+		sprintf(errBuf, "%s <%s>", errmsg, fullpath);
+	    reportErrSys(errBuf);
+		_status = ERROR;
 	} else {
-		// Reset the session directory -- this matches the behavior of the
-		// "regular" DEVise, but it would probably make more sense to reset it
-		// when the JavaScreen disconnects.  RKW Jun 17, 1998.
-		delete [] _sessionDir;
-		_sessionDir = NULL;
+	    if (S_ISDIR(buf.st_mode)) {
+		    UpdateSessionList(_argv[0]);
+	    } else {
+		    // Reset the session directory -- this matches the behavior of the
+		    // "regular" DEVise, but it would probably make more sense to
+			// reset it // when the JavaScreen disconnects.  RKW Jun 17, 1998.
+		    delete [] _sessionDir;
+		    _sessionDir = NULL;
+    
+		    printf("Session:%s requested!\n", fullpath);
 
-		printf("Session:%s requested!\n", fullpath);
-
-		DoOpenSession(fullpath);
+		    DoOpenSession(fullpath);
+	    }
 	}
 }
 
@@ -1060,8 +1072,8 @@ void
 JavaScreenCmd::DoOpenSession(char *fullpath)
 {
 #if defined (DEBUG_LOG)
-    sprintf(logBuf, "JavaScreenCmd::DoOpenSession(%s)\n", fullpath);
-    DebugLog::DefaultLog()->Message(logBuf);
+    DebugLog::DefaultLog()->Message("JavaScreenCmd::DoOpenSession(",
+	  fullpath, ")\n");
 #endif
 
 #if JS_TIMER
@@ -2222,17 +2234,58 @@ JavaScreenCmd::CloseJavaConnection()
 //====================================================================
 void JavaScreenCmd::UpdateSessionList(char *dirName)
 {
+	const char *basePath = getenv("DEVISE_SESSION");
+
 	if (_sessionDir == NULL) {
-		_sessionDir = CopyString(getenv("DEVISE_SESSION"));
+		_sessionDir = CopyString(basePath);
 	}
 
+	//
+	// Add the specified directory name onto the current directory.
+	//
+	char newPath[MAXPATHLEN];
 	if (dirName != NULL) {
-	    char fullpath[MAXPATHLEN];
-	    sprintf(fullpath, "%s/%s", _sessionDir, dirName);
-		delete [] _sessionDir;
-		_sessionDir = CopyString(fullpath);
+	    sprintf(newPath, "%s/%s", _sessionDir, dirName);
+	} else {
+	    strcpy(newPath, _sessionDir);
 	}
 
+    //
+	// Make sure we're not going up from the base session directory.
+	//
+	char baseBuf[MAXPATHLEN];
+	char newBuf[MAXPATHLEN];
+
+	// resolvepath() doesn't terminate the strings(!).
+	memset(baseBuf, 0, MAXPATHLEN);
+	memset(newBuf, 0, MAXPATHLEN);
+
+    if (resolvepath(basePath, baseBuf, MAXPATHLEN) < 0) {
+	    reportErrSys("Error in resolvepath()");
+	} else if (resolvepath(newPath, newBuf, MAXPATHLEN) < 0) {
+	    reportErrSys("Error in resolvepath()");
+	} else {
+#if defined(DEBUG)
+        printf("baseBuf = <%s>\n", baseBuf);
+        printf("newBuf = <%s>\n", newBuf);
+#endif
+	    int length = strlen(baseBuf);
+		if (strncmp(baseBuf, newBuf, length)) {
+            errmsg = "Illegal session directory (can't go up from base)";
+			reportErrNosys(errmsg);
+			delete [] _sessionDir;
+			_sessionDir = CopyString(basePath);
+		} else {
+			// Copy newBuf to _sessionDir here so path doesn't keep getting
+			// longer if we repeatedly go up and down the directory tree.
+			delete [] _sessionDir;
+			_sessionDir = CopyString(newBuf);
+		}
+	}
+
+	//
+	// Now open the directory and assemble a list of its files.
+	//
 	ArgList files;
 
 	DIR *directory = opendir(_sessionDir);

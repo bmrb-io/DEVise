@@ -21,6 +21,14 @@
   $Id$
 
   $Log$
+  Revision 1.4  1999/07/16 21:36:06  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.3  1999/06/25 15:58:21  wenger
   Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
   now uses DebugLog facility instead of printf; dispatcher logging is turned
@@ -41,7 +49,8 @@
 
 class DebugLog {
 public:
-  void Message(const char *msg);
+  void Message(const char *msg1, const char *msg2 = NULL,
+      const char *msg3 = NULL);
   void Message(const char *msg1, int argc, const char * const *argv,
       const char *msg2 = "\n");
 

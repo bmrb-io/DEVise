@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/09/01 19:27:08  wenger
+  Debug logging improved -- directory of log file can now be specified
+  with the DEVISE_LOG_DIR environment variable (changed most startup scripts
+  to put it in the DEVise tmp directory); added logging of a bunch of elapsed
+  times to help figure out JavaScreen performance bottlenecks.
+
   Revision 1.6  1999/07/22 20:10:57  wenger
   Minor fixes for Linux compile.
 
@@ -113,13 +119,20 @@ DebugLog::~DebugLog()
  * Log a message.
  */
 void
-DebugLog::Message(const char *msg)
+DebugLog::Message(const char *msg1, const char *msg2 = NULL, 
+    const char *msg3 = NULL)
 {
   if (_fd != -1) {
     char logBuf[1024];
     sprintf(logBuf, "\n%d (%s): ", _logNum++, GetTimeString());
     write(_fd, logBuf, strlen(logBuf));
-    write(_fd, msg, strlen(msg));
+    write(_fd, msg1, strlen(msg1));
+    if (msg2) {
+      write(_fd, msg2, strlen(msg2));
+    }
+    if (msg3) {
+      write(_fd, msg3, strlen(msg3));
+    }
 
     if (lseek(_fd, 0, SEEK_CUR) > _maxSize) {
       if (lseek(_fd, 0, SEEK_SET) == -1) {
