@@ -1,0 +1,385 @@
+# DEVise startHeader
+# file type: session
+# file date: Dec 10 1999 17:54:36
+# DEVise version: 1.7.0
+# DEVise date: Dec  7 1999
+# DEVise endHeader
+
+# Per-session data source definitions
+DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb:AxisLabel /p/devise/demo/schema/schema/physical/bmrb:AxisLabel "" 100 50 "/afs/cs.wisc.edu/p/devise/demo/dat/bmrb/BMRB" ""}
+
+# Create views
+DEVise create {view} {SortedX} {View 1} 2.000000 147.000000 0.000000 1.070000 37 0
+DEVise setLabel {View 1} 1 16 {1/T1 at 750 MHz}
+DEVise setViewStatistics {View 1} 00000000
+DEVise setViewDimensions {View 1} 2
+DEVise setViewSolid3D {View 1} 2
+DEVise setViewXYZoom {View 1} 1
+DEVise setViewDisplayDataValues {View 1} 0
+DEVise setFont {View 1} {title} 2 12 0 0
+DEVise setFont {View 1} {x axis} 2 12 0 0
+DEVise setFont {View 1} {y axis} 2 12 0 0
+DEVise viewSetHome {View 1} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 1} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 1} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 1} 1 0.500000 1.000000
+DEVise setViewGDS {View 1} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 1} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 1} 0 1.07 10
+DEVise setCountMapping {View 1} 0 {} {}
+DEVise viewSetIsHighlight {View 1} 0
+DEVise setViewAutoFilter {View 1} {0}
+DEVise setDupElim {View 1} {0}
+DEVise setNiceAxes {View 1} 0 0
+DEVise viewSetDisabledActions {View 1} 0 0 0 0
+DEVise create {view} {SortedX} {View 2} 2.000000 147.000000 0.000000 26.000000 37 0
+DEVise setLabel {View 2} 1 16 {1/T2 at 750 MHz}
+DEVise setViewStatistics {View 2} 00000000
+DEVise setViewDimensions {View 2} 2
+DEVise setViewSolid3D {View 2} 2
+DEVise setViewXYZoom {View 2} 1
+DEVise setViewDisplayDataValues {View 2} 0
+DEVise setFont {View 2} {title} 2 12 0 0
+DEVise setFont {View 2} {x axis} 2 12 0 0
+DEVise setFont {View 2} {y axis} 2 12 0 0
+DEVise viewSetHome {View 2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 2} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 2} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 2} 1 0.500000 1.000000
+DEVise setViewGDS {View 2} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 2} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 2} 0 26 10
+DEVise setCountMapping {View 2} 0 {} {}
+DEVise viewSetIsHighlight {View 2} 0
+DEVise setViewAutoFilter {View 2} {0}
+DEVise setDupElim {View 2} {0}
+DEVise setNiceAxes {View 2} 0 0
+DEVise viewSetDisabledActions {View 2} 0 0 0 0
+DEVise create {view} {SortedX} {View 3} 2.000000 147.000000 5.000000 20.000000 37 0
+DEVise setLabel {View 3} 1 16 {1/T2 at 600 MHz}
+DEVise setViewStatistics {View 3} 00000000
+DEVise setViewDimensions {View 3} 2
+DEVise setViewSolid3D {View 3} 2
+DEVise setViewXYZoom {View 3} 1
+DEVise setViewDisplayDataValues {View 3} 0
+DEVise setFont {View 3} {title} 2 12 0 0
+DEVise setFont {View 3} {x axis} 2 12 0 0
+DEVise setFont {View 3} {y axis} 2 12 0 0
+DEVise viewSetHome {View 3} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 3} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 3} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 3} 1 0.500000 1.000000
+DEVise setViewGDS {View 3} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 3} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 3} 5 20 10
+DEVise setCountMapping {View 3} 0 {} {}
+DEVise viewSetIsHighlight {View 3} 0
+DEVise setViewAutoFilter {View 3} {0}
+DEVise setDupElim {View 3} {0}
+DEVise setNiceAxes {View 3} 0 0
+DEVise viewSetDisabledActions {View 3} 0 0 0 0
+DEVise create {view} {SortedX} {View 5} 2.000000 147.000000 0.100000 1.000000 37 0
+DEVise setLabel {View 5} 1 16 {Heteronuclear NOE}
+DEVise setViewStatistics {View 5} 00000000
+DEVise setViewDimensions {View 5} 2
+DEVise setViewSolid3D {View 5} 2
+DEVise setViewXYZoom {View 5} 1
+DEVise setViewDisplayDataValues {View 5} 0
+DEVise setFont {View 5} {title} 2 12 0 0
+DEVise setFont {View 5} {x axis} 2 12 0 0
+DEVise setFont {View 5} {y axis} 2 12 0 0
+DEVise viewSetHome {View 5} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 5} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 5} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 5} 1 0.500000 1.000000
+DEVise setViewGDS {View 5} 1 0 0 "" 1 " " 0
+DEVise viewSetJSSendP {View 5} 1 0 0 "" 1 " " 0
+DEVise setHistogram {View 5} 0.16 0.89 10
+DEVise setCountMapping {View 5} 0 {} {}
+DEVise viewSetIsHighlight {View 5} 0
+DEVise setViewAutoFilter {View 5} {0}
+DEVise setDupElim {View 5} {0}
+DEVise setNiceAxes {View 5} 0 0
+DEVise viewSetDisabledActions {View 5} 0 0 0 0
+DEVise create {view} {Scatter} {View 4} -1.000000 1.000000 -1.000000 1.000000 4 0
+DEVise setLabel {View 4} 0 12 {Label_text() vs. recId}
+DEVise setViewStatistics {View 4} 00000000
+DEVise setViewDimensions {View 4} 2
+DEVise setViewSolid3D {View 4} 2
+DEVise setViewXYZoom {View 4} 1
+DEVise setViewDisplayDataValues {View 4} 0
+DEVise setFont {View 4} {title} 0 12 0 0
+DEVise setFont {View 4} {x axis} 0 12 0 0
+DEVise setFont {View 4} {y axis} 0 12 0 0
+DEVise viewSetHome {View 4} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 4} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 4} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 4} 1 0.500000 1.000000
+DEVise setViewGDS {View 4} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 4} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 4} -1 1 10
+DEVise setCountMapping {View 4} 0 {} {}
+DEVise viewSetIsHighlight {View 4} 0
+DEVise setViewAutoFilter {View 4} {0}
+DEVise setDupElim {View 4} {0}
+DEVise setNiceAxes {View 4} 0 0
+DEVise viewSetDisabledActions {View 4} 0 0 0 0
+DEVise create {view} {Scatter} {View 6} -1.000000 1.000000 -1.000000 1.000000 4 0
+DEVise setLabel {View 6} 0 12 {Label_text() vs. recId}
+DEVise setViewStatistics {View 6} 00000000
+DEVise setViewDimensions {View 6} 2
+DEVise setViewSolid3D {View 6} 2
+DEVise setViewXYZoom {View 6} 1
+DEVise setViewDisplayDataValues {View 6} 0
+DEVise setFont {View 6} {title} 0 12 0 0
+DEVise setFont {View 6} {x axis} 0 12 0 0
+DEVise setFont {View 6} {y axis} 0 12 0 0
+DEVise viewSetHome {View 6} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 6} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 6} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 6} 1 0.500000 1.000000
+DEVise setViewGDS {View 6} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 6} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 6} -1 1 10
+DEVise setCountMapping {View 6} 0 {} {}
+DEVise viewSetIsHighlight {View 6} 0
+DEVise setViewAutoFilter {View 6} {0}
+DEVise setDupElim {View 6} {0}
+DEVise setNiceAxes {View 6} 0 0
+DEVise viewSetDisabledActions {View 6} 0 0 0 0
+DEVise create {view} {Scatter} {View 7} -1.000000 1.000000 -1.000000 1.000000 4 0
+DEVise setLabel {View 7} 0 12 {Label_text() vs. recId}
+DEVise setViewStatistics {View 7} 00000000
+DEVise setViewDimensions {View 7} 2
+DEVise setViewSolid3D {View 7} 2
+DEVise setViewXYZoom {View 7} 1
+DEVise setViewDisplayDataValues {View 7} 0
+DEVise setFont {View 7} {title} 0 12 0 0
+DEVise setFont {View 7} {x axis} 0 12 0 0
+DEVise setFont {View 7} {y axis} 0 12 0 0
+DEVise viewSetHome {View 7} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 7} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 7} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 7} 1 0.500000 1.000000
+DEVise setViewGDS {View 7} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 7} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 7} -1 1 10
+DEVise setCountMapping {View 7} 0 {} {}
+DEVise viewSetIsHighlight {View 7} 0
+DEVise setViewAutoFilter {View 7} {0}
+DEVise setDupElim {View 7} {0}
+DEVise setNiceAxes {View 7} 0 0
+DEVise viewSetDisabledActions {View 7} 0 0 0 0
+DEVise create {view} {Scatter} {View 8} -1.000000 1.000000 -1.000000 1.000000 4 0
+DEVise setLabel {View 8} 0 12 {Label_text() vs. recId}
+DEVise setViewStatistics {View 8} 00000000
+DEVise setViewDimensions {View 8} 2
+DEVise setViewSolid3D {View 8} 2
+DEVise setViewXYZoom {View 8} 1
+DEVise setViewDisplayDataValues {View 8} 0
+DEVise setFont {View 8} {title} 0 12 0 0
+DEVise setFont {View 8} {x axis} 0 12 0 0
+DEVise setFont {View 8} {y axis} 0 12 0 0
+DEVise viewSetHome {View 8} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 8} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 8} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 8} 1 0.500000 1.000000
+DEVise setViewGDS {View 8} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 8} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 8} -1 1 10
+DEVise setCountMapping {View 8} 0 {} {}
+DEVise viewSetIsHighlight {View 8} 0
+DEVise setViewAutoFilter {View 8} {0}
+DEVise setDupElim {View 8} {0}
+DEVise setNiceAxes {View 8} 0 0
+DEVise viewSetDisabledActions {View 8} 0 0 0 0
+
+# Create interpreted mapping classes
+DEVise createMappingClass {T1_value_vs_Residue_seq_code}
+DEVise createMappingClass {T2_value_vs_Residue_seq_code}
+DEVise createMappingClass {NOE_value_vs_Residue_seq_code}
+DEVise createMappingClass {Label_text_vs_recId}
+
+# Create mapping instances (GData)
+DEVise create {mapping} {T1_value_vs_Residue_seq_code} .t1 .t1#T1_value_vs_Residue_seq_code {} {$Residue_seq_code} {$T1_value - ($T1_error / 2)} {} 6 1 0 0 2 0.5 {$T1_value + ($T1_error / 2)} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.t1#T1_value_vs_Residue_seq_code} 1
+DEVise create {mapping} {T2_value_vs_Residue_seq_code} .t2 .t2#T2_value_vs_Residue_seq_code {} {$Residue_seq_code} {$T2_value - ($T2_error / 2)} {} 6 1 0 0 2 0.5 {$T2_value + ($T2_error / 2)} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.t2#T2_value_vs_Residue_seq_code} 1
+DEVise create {mapping} {T2_value_vs_Residue_seq_code} .t2_600 .t2_600#T2_value_vs_Residue_seq_code {} {$Residue_seq_code} {$T2_value - ($T2_error / 2)} {} 6 1 0 0 2 0.5 {$T2_value + ($T2_error / 2)} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.t2_600#T2_value_vs_Residue_seq_code} 1
+DEVise create {mapping} {NOE_value_vs_Residue_seq_code} .noe .noe#NOE_value_vs_Residue_seq_code {} {$Residue_seq_code} {$NOE_value} {} 6 1 0 0 2 0.5 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.noe#NOE_value_vs_Residue_seq_code} 1
+DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 12 0 90 16 {"1 / s"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.label#Label_text_vs_recId} 1
+DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 2} {} 0 0 {} 37 12 0 90 16 {"1 / s"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.label#Label_text_vs_recId 2} 1
+DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 3} {} 0 0 {} 37 12 0 90 16 {"1 / s"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.label#Label_text_vs_recId 3} 1
+DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 4} {} 0 0 {} 37 12 0 0 16 {"Sequence Number"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.label#Label_text_vs_recId 4} 1
+
+# Create windows
+DEVise create {window} {TileLayout} DEViseWn0 0.023438 0.000000 0.578125 0.546875 0 0
+DEVise create {window} {TileLayout} DEViseWn1 0.000000 0.000000 0.027344 0.404948 0 0
+DEVise create {window} {TileLayout} DEViseWn2 0.023438 0.546875 0.576172 0.046875 0 0
+
+# Set up window layouts
+DEVise setWindowLayout {DEViseWn0} -1 1 0
+DEVise setWindowLayout {DEViseWn1} -1 -1 0
+DEVise setWindowLayout {DEViseWn2} -1 -1 0
+
+# Create links
+DEVise create {link} {Visual_Link} {Residue_seq_code Link} 1
+
+# Create cursors
+
+# Create axislabel
+
+# Create actions
+
+# Put labels into views
+DEVise setAxisDisplay {View 1} {X} 1
+DEVise setAxisDisplay {View 1} {Y} 1
+DEVise setAxisTicks {View 1} {X} 0
+DEVise setAxisTicks {View 1} {Y} 1
+DEVise setAxisDisplay {View 2} {X} 1
+DEVise setAxisDisplay {View 2} {Y} 1
+DEVise setAxisTicks {View 2} {X} 0
+DEVise setAxisTicks {View 2} {Y} 1
+DEVise setAxisDisplay {View 3} {X} 1
+DEVise setAxisDisplay {View 3} {Y} 1
+DEVise setAxisTicks {View 3} {X} 0
+DEVise setAxisTicks {View 3} {Y} 1
+DEVise setAxisDisplay {View 5} {X} 1
+DEVise setAxisDisplay {View 5} {Y} 1
+DEVise setAxisTicks {View 5} {X} 1
+DEVise setAxisTicks {View 5} {Y} 1
+DEVise setAxisDisplay {View 4} {X} 0
+DEVise setAxisDisplay {View 4} {Y} 0
+DEVise setAxisTicks {View 4} {X} 1
+DEVise setAxisTicks {View 4} {Y} 1
+DEVise setAxisDisplay {View 6} {X} 0
+DEVise setAxisDisplay {View 6} {Y} 0
+DEVise setAxisTicks {View 6} {X} 1
+DEVise setAxisTicks {View 6} {Y} 1
+DEVise setAxisDisplay {View 7} {X} 0
+DEVise setAxisDisplay {View 7} {Y} 0
+DEVise setAxisTicks {View 7} {X} 1
+DEVise setAxisTicks {View 7} {Y} 1
+DEVise setAxisDisplay {View 8} {X} 0
+DEVise setAxisDisplay {View 8} {Y} 0
+DEVise setAxisTicks {View 8} {X} 1
+DEVise setAxisTicks {View 8} {Y} 1
+
+# Put action into view
+
+# Put views in cursors
+
+# Put axis label into views
+
+# Insert mappings into views
+DEVise insertMapping {View 1} {.t1#T1_value_vs_Residue_seq_code}
+DEVise insertMapping {View 2} {.t2#T2_value_vs_Residue_seq_code}
+DEVise insertMapping {View 3} {.t2_600#T2_value_vs_Residue_seq_code}
+DEVise insertMapping {View 5} {.noe#NOE_value_vs_Residue_seq_code}
+DEVise insertMapping {View 4} {.label#Label_text_vs_recId}
+DEVise insertMapping {View 6} {.label#Label_text_vs_recId 2}
+DEVise insertMapping {View 7} {.label#Label_text_vs_recId 3}
+DEVise insertMapping {View 8} {.label#Label_text_vs_recId 4}
+
+# Link views
+DEVise insertLink {Residue_seq_code Link} {View 1}
+DEVise insertLink {Residue_seq_code Link} {View 2}
+DEVise insertLink {Residue_seq_code Link} {View 3}
+DEVise insertLink {Residue_seq_code Link} {View 5}
+
+# Insert views into windows
+DEVise insertWindow {View 1} {DEViseWn0}
+DEVise insertWindow {View 2} {DEViseWn0}
+DEVise insertWindow {View 3} {DEViseWn0}
+DEVise insertWindow {View 5} {DEViseWn0}
+DEVise insertWindow {View 4} {DEViseWn1}
+DEVise insertWindow {View 6} {DEViseWn1}
+DEVise insertWindow {View 7} {DEViseWn1}
+DEVise insertWindow {View 8} {DEViseWn2}
+
+# Set window pile/stack state
+DEVise setPileStackState {DEViseWn0} 1
+DEVise setPileStackState {DEViseWn1} 1
+DEVise setPileStackState {DEViseWn2} 1
+
+# Init history of view
+DEVise clearViewHistory {View 1}
+DEVise insertViewHistory {View 1} {8.72} {0.00} {108.71} {1.00} 0
+DEVise insertViewHistory {View 1} {-41.27} {0.00} {158.70} {1.00} 0
+DEVise insertViewHistory {View 1} {8.72} {0.00} {108.71} {1.00} 0
+DEVise insertViewHistory {View 1} {-41.27} {0.00} {58.71} {1.00} 0
+DEVise insertViewHistory {View 1} {8.72} {0.00} {108.71} {1.00} 0
+DEVise insertViewHistory {View 1} {2.00} {0.74} {147.00} {1.07} 0
+DEVise insertViewHistory {View 1} {0.00} {0.00} {147.00} {1.07} 0
+DEVise insertViewHistory {View 1} {0.43} {0.00} {37.87} {1.07} 0
+DEVise insertViewHistory {View 1} {3.19} {0.00} {13.32} {1.07} 0
+DEVise insertViewHistory {View 1} {5.72} {0.00} {10.79} {1.07} 0
+DEVise insertViewHistory {View 1} {3.19} {0.00} {13.32} {1.07} 0
+DEVise insertViewHistory {View 1} {-1.88} {0.00} {18.39} {1.07} 0
+DEVise insertViewHistory {View 1} {8.26} {0.00} {28.52} {1.07} 0
+DEVise insertViewHistory {View 1} {-1.88} {0.00} {38.65} {1.07} 0
+DEVise insertViewHistory {View 1} {18.39} {0.00} {58.92} {1.07} 0
+DEVise insertViewHistory {View 1} {-1.88} {0.00} {38.65} {1.07} 0
+DEVise insertViewHistory {View 1} {2.00} {0.00} {147.00} {1.07} 0
+DEVise insertViewHistory {View 1} {0.00} {0.00} {147.00} {1.07} 0
+DEVise insertViewHistory {View 1} {32.12} {0.00} {75.68} {1.07} 0
+DEVise insertViewHistory {View 1} {2.00} {0.00} {147.00} {1.07} 0
+DEVise clearViewHistory {View 2}
+DEVise insertViewHistory {View 2} {2.00} {5.00} {147.00} {30.00} 0
+DEVise insertViewHistory {View 2} {0.00} {5.00} {147.00} {30.00} 0
+DEVise insertViewHistory {View 2} {0.43} {5.00} {37.87} {30.00} 0
+DEVise insertViewHistory {View 2} {3.19} {5.00} {13.32} {30.00} 0
+DEVise insertViewHistory {View 2} {5.72} {5.00} {10.79} {30.00} 0
+DEVise insertViewHistory {View 2} {3.19} {5.00} {13.32} {30.00} 0
+DEVise insertViewHistory {View 2} {-1.88} {5.00} {18.39} {30.00} 0
+DEVise insertViewHistory {View 2} {8.26} {5.00} {28.52} {30.00} 0
+DEVise insertViewHistory {View 2} {-1.88} {5.00} {38.65} {30.00} 0
+DEVise insertViewHistory {View 2} {18.39} {5.00} {58.92} {30.00} 0
+DEVise insertViewHistory {View 2} {-1.88} {5.00} {38.65} {30.00} 0
+DEVise insertViewHistory {View 2} {2.00} {7.21} {147.00} {23.63} 0
+DEVise insertViewHistory {View 2} {0.00} {0.00} {147.00} {23.63} 0
+DEVise insertViewHistory {View 2} {0.00} {0.00} {147.00} {25.00} 0
+DEVise insertViewHistory {View 2} {0.00} {0.00} {147.00} {27.00} 0
+DEVise insertViewHistory {View 2} {0.00} {0.00} {147.00} {26.00} 0
+DEVise insertViewHistory {View 2} {32.12} {0.00} {75.68} {26.00} 0
+DEVise insertViewHistory {View 2} {2.00} {0.00} {147.00} {26.00} 0
+DEVise clearViewHistory {View 3}
+DEVise insertViewHistory {View 3} {2.00} {5.00} {147.00} {20.00} 0
+DEVise insertViewHistory {View 3} {0.00} {5.00} {147.00} {20.00} 0
+DEVise insertViewHistory {View 3} {32.12} {5.00} {75.68} {20.00} 0
+DEVise insertViewHistory {View 3} {2.00} {5.00} {147.00} {20.00} 0
+DEVise clearViewHistory {View 5}
+DEVise insertViewHistory {View 5} {2.00} {0.10} {147.00} {1.00} 0
+DEVise insertViewHistory {View 5} {0.00} {0.10} {147.00} {1.00} 0
+DEVise insertViewHistory {View 5} {32.12} {0.10} {75.68} {1.00} 0
+DEVise insertViewHistory {View 5} {2.00} {0.10} {147.00} {1.00} 0
+DEVise clearViewHistory {View 4}
+DEVise insertViewHistory {View 4} {0.00} {0.00} {100.00} {100.00} 0
+DEVise insertViewHistory {View 4} {-1.00} {-1.00} {1.00} {1.00} 0
+DEVise clearViewHistory {View 6}
+DEVise insertViewHistory {View 6} {0.00} {0.00} {100.00} {100.00} 0
+DEVise insertViewHistory {View 6} {-1.00} {-1.00} {1.00} {1.00} 0
+DEVise clearViewHistory {View 7}
+DEVise insertViewHistory {View 7} {0.00} {0.00} {100.00} {100.00} 0
+DEVise insertViewHistory {View 7} {-1.00} {-1.00} {1.00} {1.00} 0
+DEVise clearViewHistory {View 8}
+DEVise insertViewHistory {View 8} {0.00} {0.00} {100.00} {100.00} 0
+DEVise insertViewHistory {View 8} {-1.00} {-1.00} {1.00} {1.00} 0
+
+# Set camera location for each view
+DEVise set3DLocation {View 1} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {View 2} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {View 3} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {View 5} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {View 4} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {View 6} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {View 7} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {View 8} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+
+# Set string tables for each view

@@ -1,0 +1,168 @@
+# DEVise startHeader
+# file type: session
+# file date: Dec 07 1999 17:39:09
+# DEVise version: 1.7.0
+# DEVise date: Dec  7 1999
+# DEVise endHeader
+
+# Per-session data source definitions
+DEVise dteInsertCatalogEntry . {"4096g" UNIXFILE 4096g.dat CouplingConstant /p/devise/demo/schema/schema/physical/bmrb:CouplingConstant "" 100 50 "/afs/cs.wisc.edu/p/devise/demo/dat/bmrb/BMRB" ""}
+DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb:AxisLabel /p/devise/demo/schema/schema/physical/bmrb:AxisLabel "" 100 50 "/afs/cs.wisc.edu/p/devise/demo/dat/bmrb/BMRB" ""}
+
+# Create views
+DEVise create {view} {SortedX} {View 1} 2.000000 147.000000 1.000000 10.000000 37 0
+DEVise setLabel {View 1} 1 16 {Coupling constants}
+DEVise setViewStatistics {View 1} 00000000
+DEVise setViewDimensions {View 1} 2
+DEVise setViewSolid3D {View 1} 2
+DEVise setViewXYZoom {View 1} 1
+DEVise setViewDisplayDataValues {View 1} 0
+DEVise setFont {View 1} {title} 2 12 0 0
+DEVise setFont {View 1} {x axis} 2 12 0 0
+DEVise setFont {View 1} {y axis} 2 12 0 0
+DEVise viewSetHome {View 1} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 1} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 1} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 1} 1 0.500000 1.000000
+DEVise setViewGDS {View 1} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 1} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 1} 1 10 10
+DEVise setCountMapping {View 1} 0 {} {}
+DEVise viewSetIsHighlight {View 1} 0
+DEVise setViewAutoFilter {View 1} {0}
+DEVise setDupElim {View 1} {0}
+DEVise setNiceAxes {View 1} 0 0
+DEVise viewSetDisabledActions {View 1} 0 0 0 0
+DEVise create {view} {Scatter} {View 2} 2.000000 147.000000 1.340000 9.300000 37 0
+DEVise setLabel {View 2} 1 16 {Coupling constant  vs. Atom two residue seq code}
+DEVise setViewStatistics {View 2} 00000000
+DEVise setViewDimensions {View 2} 2
+DEVise setViewSolid3D {View 2} 2
+DEVise setViewXYZoom {View 2} 1
+DEVise setViewDisplayDataValues {View 2} 0
+DEVise setFont {View 2} {title} 0 12 0 0
+DEVise setFont {View 2} {x axis} 0 12 0 0
+DEVise setFont {View 2} {y axis} 0 12 0 0
+DEVise viewSetHome {View 2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 2} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 2} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 2} 1 0.500000 1.000000
+DEVise setViewGDS {View 2} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 2} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 2} 1.34 9.3 10
+DEVise setCountMapping {View 2} 0 {} {}
+DEVise viewSetIsHighlight {View 2} 0
+DEVise setViewAutoFilter {View 2} {0}
+DEVise setDupElim {View 2} {0}
+DEVise setNiceAxes {View 2} 0 0
+DEVise viewSetDisabledActions {View 2} 0 0 0 0
+DEVise create {view} {Scatter} {View 3} -1.000000 1.000000 -1.000000 1.000000 4 0
+DEVise setLabel {View 3} 0 12 {Label_text() vs. recId}
+DEVise setViewStatistics {View 3} 00000000
+DEVise setViewDimensions {View 3} 2
+DEVise setViewSolid3D {View 3} 2
+DEVise setViewXYZoom {View 3} 1
+DEVise setViewDisplayDataValues {View 3} 0
+DEVise setFont {View 3} {title} 0 12 0 0
+DEVise setFont {View 3} {x axis} 0 12 0 0
+DEVise setFont {View 3} {y axis} 0 12 0 0
+DEVise viewSetHome {View 3} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 3} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 3} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 3} 1 0.500000 1.000000
+DEVise setViewGDS {View 3} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 3} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 3} 0 100 10
+DEVise setCountMapping {View 3} 0 {} {}
+DEVise viewSetIsHighlight {View 3} 0
+DEVise setViewAutoFilter {View 3} {0}
+DEVise setDupElim {View 3} {0}
+DEVise setNiceAxes {View 3} 0 0
+DEVise viewSetDisabledActions {View 3} 0 0 0 0
+
+# Create interpreted mapping classes
+DEVise createMappingClass {Coupling_constant_value_vs_Atom_one_residue_seq_code}
+DEVise createMappingClass {Coupling_constant_value_vs_Atom_two_residue_seq_code}
+DEVise createMappingClass {Label_text_vs_recId}
+
+# Create mapping instances (GData)
+DEVise create {mapping} {Coupling_constant_value_vs_Atom_one_residue_seq_code} .4096g .4096g#Coupling_constant_value_vs_Atom_one_residue_seq_code {} {$Atom_one_residue_seq_code} {$Coupling_constant_value - ($Coupling_constant_value_error / 2)} {} 7 2 0 0 2 0.1 {$Coupling_constant_value + ($Coupling_constant_value_error / 2)} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.4096g#Coupling_constant_value_vs_Atom_one_residue_seq_code} 1
+DEVise create {mapping} {Coupling_constant_value_vs_Atom_two_residue_seq_code} .4096g .4096g#Coupling_constant_value_vs_Atom_two_residue_seq_code {} {$Atom_two_residue_seq_code} {$Coupling_constant_value - ($Coupling_constant_value_error / 2)} {} 7 1 0 0 2 0.1 {$Coupling_constant_value + ($Coupling_constant_value_error / 2)} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.4096g#Coupling_constant_value_vs_Atom_two_residue_seq_code} 1
+DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 12 0 0 16 {"Sequence Number"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.label#Label_text_vs_recId} 1
+
+# Create windows
+DEVise create {window} {TileLayout} DEViseWn0 0.000000 0.000000 0.498047 0.319010 0 0
+DEVise create {window} {TileLayout} DEViseWn1 0.000000 0.328125 0.500000 0.037760 0 0
+
+# Set up window layouts
+DEVise setWindowLayout {DEViseWn0} -1 -1 0
+DEVise setWindowLayout {DEViseWn1} -1 -1 0
+
+# Create links
+DEVise create {link} {Visual_Link} {Atom_one_residue_seq_code Link} 1
+DEVise create {link} {Visual_Link} {Atom_two_residue_seq_code Link} 1
+
+# Create cursors
+
+# Create axislabel
+
+# Create actions
+
+# Put labels into views
+DEVise setAxisDisplay {View 1} {X} 1
+DEVise setAxisDisplay {View 1} {Y} 1
+DEVise setAxisTicks {View 1} {X} 1
+DEVise setAxisTicks {View 1} {Y} 1
+DEVise setAxisDisplay {View 2} {X} 1
+DEVise setAxisDisplay {View 2} {Y} 1
+DEVise setAxisTicks {View 2} {X} 1
+DEVise setAxisTicks {View 2} {Y} 1
+DEVise setAxisDisplay {View 3} {X} 0
+DEVise setAxisDisplay {View 3} {Y} 0
+DEVise setAxisTicks {View 3} {X} 1
+DEVise setAxisTicks {View 3} {Y} 1
+
+# Put action into view
+
+# Put views in cursors
+
+# Put axis label into views
+
+# Insert mappings into views
+DEVise insertMapping {View 1} {.4096g#Coupling_constant_value_vs_Atom_one_residue_seq_code}
+DEVise insertMapping {View 2} {.4096g#Coupling_constant_value_vs_Atom_two_residue_seq_code}
+DEVise insertMapping {View 3} {.label#Label_text_vs_recId}
+
+# Link views
+DEVise insertLink {Atom_one_residue_seq_code Link} {View 1}
+DEVise insertLink {Atom_two_residue_seq_code Link} {View 2}
+
+# Insert views into windows
+DEVise insertWindow {View 1} {DEViseWn0}
+DEVise insertWindow {View 3} {DEViseWn1}
+
+# Set window pile/stack state
+DEVise setPileStackState {DEViseWn0} 1
+DEVise setPileStackState {DEViseWn1} 1
+
+# Init history of view
+DEVise clearViewHistory {View 1}
+DEVise insertViewHistory {View 1} {2.00} {1.00} {147.00} {10.00} 0
+DEVise insertViewHistory {View 1} {28.16} {1.00} {109.80} {10.00} 0
+DEVise insertViewHistory {View 1} {2.00} {1.00} {147.00} {10.00} 0
+DEVise clearViewHistory {View 2}
+DEVise insertViewHistory {View 2} {2.00} {1.00} {147.00} {10.00} 0
+DEVise insertViewHistory {View 2} {2.00} {1.34} {147.00} {9.30} 0
+DEVise clearViewHistory {View 3}
+DEVise insertViewHistory {View 3} {0.00} {0.00} {100.00} {100.00} 0
+DEVise insertViewHistory {View 3} {-1.00} {-1.00} {1.00} {1.00} 0
+
+# Set camera location for each view
+DEVise set3DLocation {View 1} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {View 2} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {View 3} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+
+# Set string tables for each view
