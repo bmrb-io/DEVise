@@ -17,6 +17,9 @@ public abstract class DTE_Type {
 		if(type.getString( ).equals("string"))
 			return new DTE_String();
 
+		if(type.getString( ).equals("boolean"))
+			return new DTE_Boolean();
+
 		System.out.println("Unknown type: "+type.getString( ) );
 		return null;
 	}

@@ -13,6 +13,6 @@ public interface ExecExpr {
 	in a join method), or it can be only one tuple if this 
 	expression is evaluated as a part of a unary operator,
 	such as file-scan. */
-
-	DTE_Type evaluate(Tuple left, Tuple right);
+ 
+	public DTE_Type evaluate(Tuple left, Tuple right);
 }

@@ -14,7 +14,7 @@ public class Operator implements Expression {
     private EvalOperator evalOp;
 
     public Operator(String op, Expression l, Expression r){
-        operartor = op;
+        operator = op;
         left=l;
         right=r;
 	type = null;
@@ -31,7 +31,7 @@ public class Operator implements Expression {
 
     public Expression typeCheck( SymbolTable st ){
         String strRep = this.toString();
-        if ( containsKey( strRep ) 
+        if ( st.containsKey( strRep ) )
             return st.get(strRep);
 
         left = left.typeCheck( st );
