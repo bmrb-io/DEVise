@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/07/03 23:01:46  jussi
+  Added missing destructors.
+
   Revision 1.6  1996/06/24 19:48:51  jussi
   Improved the interaction between query processors and the dispatcher.
   The query processors now also get called every time a 1-second timer
@@ -40,16 +43,17 @@
 
 DispQueryProcSimple::DispQueryProcSimple()
 {
-  Dispatcher::CreateMarker(readFd, writeFd);
-  Dispatcher::Current()->Register(this, 20, GoState, false, readFd);
-  Dispatcher::InsertMarker(writeFd);
-  Timer::Queue(QP_TIMER_INTERVAL, this, 0);
+    Dispatcher::CreateMarker(readFd, writeFd);
+    Dispatcher::Current()->Register(this, 20, GoState, false, readFd);
+    Dispatcher::InsertMarker(writeFd);
+    Timer::Queue(QP_TIMER_INTERVAL, this, 0);
 }
 
 DispQueryProcSimple::~DispQueryProcSimple()
 {
-  Dispatcher::FlushMarkers(readFd);
-  Dispatcher::CloseMarker(readFd, writeFd);
+    Timer::Cancel(this, 0);
+    Dispatcher::FlushMarkers(readFd);
+    Dispatcher::CloseMarker(readFd, writeFd);
 }
 
 /********************************************************************8
@@ -58,24 +62,25 @@ Called by dispatcher when we can run
 
 void DispQueryProcSimple::Run()
 {
-  ProcessQuery();
+    ProcessQuery();
 }
 
 DispQueryProcFull::DispQueryProcFull()
 {
-  Dispatcher::CreateMarker(readFd, writeFd);
-  Dispatcher::Current()->Register(this, 20, GoState, false, readFd);
-  Dispatcher::InsertMarker(writeFd);
-  Timer::Queue(QP_TIMER_INTERVAL, this, 0);
+    Dispatcher::CreateMarker(readFd, writeFd);
+    Dispatcher::Current()->Register(this, 20, GoState, false, readFd);
+    Dispatcher::InsertMarker(writeFd);
+    Timer::Queue(QP_TIMER_INTERVAL, this, 0);
 }
 
 DispQueryProcFull::~DispQueryProcFull()
 {
-  Dispatcher::FlushMarkers(readFd);
-  Dispatcher::CloseMarker(readFd, writeFd);
+    Timer::Cancel(this, 0);
+    Dispatcher::FlushMarkers(readFd);
+    Dispatcher::CloseMarker(readFd, writeFd);
 }
 
 void DispQueryProcFull::Run()
 {
-  ProcessQuery();
+    ProcessQuery();
 }
