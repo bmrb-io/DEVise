@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.52  1996/01/19 18:58:51  jussi
+#	Added ClearTopGroups.
+#
 #	Revision 1.51  1996/01/19 18:32:36  jussi
 #	GetTDataTemplate now uses stream catalog and not files
 #	directly. Fixed minor bug in session files and pixel
@@ -294,128 +297,20 @@ source $libdir/sources.tcl
 source $libdir/schema.tk
 source $libdir/mapping.tk
 source $libdir/util.tcl
-
-# abstract data type for dictionary
-# Insert name and val into dictionary. Return new dictionary.
-proc DictInsert { dict name val }  {
-    set element [list $name $val]
-    return [lappend dict $element]
-}
-
-# lookup val based on name
-proc DictLookup { dict name } {
-    foreach element $dict {
-	if {$name == [lindex $element 0]} {
-	    return [lindex $element 1]
-	}
-    }
-    return ""
-}
-
-# Create a new unique name based on old name
-proc UniqueName { name} {
-    while { [DEVise exists $name] } {
-	set len [string length $name]
-	set lastChar [string index $name [expr $len - 1]]
-	if { [scan $lastChar "%d" temp] == 1 } {
-	    # numeric for the last character
-	    set name [format "%s%d" [string range $name 0 [expr $len - 2]] \
-		    [expr $lastChar + 1]]
-	} else {
-	    set name "$name 2"
-	}
-    }
-    return $name
-}
+source $libdir/views.tcl
+source $libdir/save.tcl
+source $libdir/history.tcl
 
 set helpWindowCreated 0
 # Create menu
 wm geometry . +0+0
 
-# Get all instances for a category
-proc CategoryInstances {category } {
-    set inst {}
-    set classes [ DEVise get $category ]
-    foreach c $classes {
-	set inst [ concat $inst [ DEVise get $category $c ] ]
-    }
-    return $inst
-}
-
-# Get the class of an instance belonging to category
-proc GetClass { category instance } {
-    set classes [DEVise get $category ]
-    foreach c $classes {
-	set insts [DEVise get $category $c]
-	foreach inst $insts {
-	    # puts "comparing $category $c $inst"
-	    if {$inst == $instance} {
-		return $c
-	    }
-	}
-    }
-}
-
-# All instances of tdata that we have
-# Form: {tdatafilebasename1 tdatafilebasename2 ...}
-proc TdataSet {} {
-    return [CategoryInstances "tdata" ]
-}
-
-# All instances of GData
-# Form: {gdataname1 gdataname2 ...}
-proc GdataSet {} {
-    return [ CategoryInstances "mapping" ]
-}
-
-# All interpreted GData
-proc InterpretedGData {} {
-    set gSet [ GdataSet ]
-    set result ""
-    foreach gdata  $gSet {
-	if { [DEVise isInterpretedGData $gdata ] } {
-	    lappend result $gdata
-	}
-    }
-    return $result
-}
-
-# list of all views
-proc ViewSet {} {
-    return [ CategoryInstances "view" ]
-}
-
-#list of all cursors
-proc CursorSet {} {
-    return [ CategoryInstances "cursor" ]
-}
-
-# list of all links
-proc LinkSet {} { 
-    return [ CategoryInstances "link" ]
-}
-
-# list of all windows
-proc WinSet {} {
-    return [ CategoryInstances "window" ]
-}
-
-# list of all axis 
-proc AxisSet {} {
-    return [ CategoryInstances "axisLabel" ]
-}
-
-# list of all actions
-proc ActionSet {} {
-    return [ CategoryInstances "action" ]
-}
-
 # build top level menu
 frame .mbar -relief raised -bd 2 -background LightBlue 
 menubutton .mbar.session -text Session -underline 0 \
 	-menu .mbar.session.menu -bg LightBlue
-menubutton .mbar.file -text Visualize -underline 7 \
-	-menu .mbar.file.menu -bg LightBlue
+menubutton .mbar.vis -text Visualize -underline 7 \
+	-menu .mbar.vis.menu -bg LightBlue
 menubutton .mbar.view -text View -underline 0 \
 	-menu .mbar.view.menu -bg LightBlue
 # menubutton .mbar.link -text Link -underline 0 \
@@ -439,18 +334,21 @@ menu .mbar.session.menu -tearoff 0
 .mbar.session.menu add command -label "Print" -command PrintView
 .mbar.session.menu add command -label "Quit" -command DoExit
 
-menu .mbar.file.menu -tearoff 0
-.mbar.file.menu add command -label "Define" -command MacroDefStart
-#.mbar.file.menu add separator
-#.mbar.file.menu add command -label "Sources..." -command NotImplemented
-.mbar.file.menu add separator
-.mbar.file.menu add cascade -label "Obsolete..." \
-	-menu .mbar.file.menu.obsmenu
+menu .mbar.vis.menu -tearoff 0
+.mbar.vis.menu add command -label "Import" -command { MacroImport 0 }
+.mbar.vis.menu add command -label "Define" -command { MacroImport 1 }
+#.mbar.vis.menu add separator
+#.mbar.vis.menu add command -label "Sources..." -command NotImplemented
+.mbar.vis.menu add separator
+.mbar.vis.menu add cascade -label "Obsolete..." \
+	-menu .mbar.vis.menu.obsmenu
 
-menu .mbar.file.menu.obsmenu -tearoff 0
-.mbar.file.menu.obsmenu add command -label "File" -command DoVisualizeFile
-.mbar.file.menu.obsmenu add command -label "TData" -command DoVisualizeTData
-.mbar.file.menu.obsmenu add command -label "GData" -command DoVisualizeGData
+menu .mbar.vis.menu.obsmenu -tearoff 0
+.mbar.vis.menu.obsmenu add command -label "Manual Define" -command MacroDef
+.mbar.vis.menu.obsmenu add separator
+.mbar.vis.menu.obsmenu add command -label "File" -command DoVisualizeFile
+.mbar.vis.menu.obsmenu add command -label "TData" -command DoVisualizeTData
+.mbar.vis.menu.obsmenu add command -label "GData" -command DoVisualizeGData
 
 menu .mbar.view.menu -tearoff 0
 .mbar.view.menu add command -label "Edit Mapping" -command DoEditMapping
@@ -577,7 +475,7 @@ menu .mbar.mapping.menu -tearoff 0
 .mbar.mapping.menu add command -label "Define" -command DefineMapping
 .mbar.mapping.menu add command -label "Resolve" -command ResolveMapping
 
-pack .mbar.session .mbar.file .mbar.view .mbar.cursor \
+pack .mbar.session .mbar.vis .mbar.view .mbar.cursor \
 	.mbar.window .mbar.schema .mbar.mapping -side left -fill x
 
 # status widgets
@@ -698,7 +596,7 @@ pack .history.heading1 .history.entry1 .history.heading2 \
 pack .mbar .status .viewFrame .topFrame -side top -fill x -expand 1
 pack .control .history -side left -fill x -expand 1
 
-tk_menuBar .mbar .mbar.session .mbar.file .mbar.view \
+tk_menuBar .mbar .mbar.session .mbar.vis .mbar.view \
 	.mbar.link .mbar.window .mbar.help
 focus .mbar
 
@@ -868,27 +766,6 @@ proc DoSelectTData {} {
     }
 }
 
-# eliminate string attributes from schema
-proc ElimStringAttr { attrs } {
-    set newAttrs ""
-    foreach attr $attrs {
-	set attrType [lindex $attr 1]
-	if {$attrType != "string"} {
-	    lappend newAttrs $attr
-	}
-    }
-    return $newAttrs
-}
-
-# drop attribute types and sorted flags
-proc DropAttrTypes { attrs } {
-    set newAttrs ""
-    foreach attr $attrs {
-	lappend newAttrs [list [lindex $attr 0]]
-    }
-    return $newAttrs
-}
-
 # Find default X attribute name.
 # The default is the sorted X attribute other than recId, if one exists.
 # Otherwise, it's the recId.
@@ -922,27 +799,12 @@ proc FindDefaultXAttr { attrs } {
     }
 }
 
-proc findNumericValue {list value} {
-    foreach item $list {
-	if {[lindex $item 1] == $value} {
-	    return [lindex $item 0]
-	}
-    }
-    return $value
-}
-
-proc findNameValue {list key} {
-    foreach item $list {
-	if {[lindex $item 0] == $key} {
-	    return [lindex $item 1]
-	}
-    }
-    return $key
-}
-
 # Create an interpreted mapping 
 proc CreateInterpretedMapping { tdata } {
-    global dialogParamVar DEViseColors DEViseShapes
+    global dialogParamVar DEViseColors DEViseShapes sourceList
+
+    set sfname [lindex $sourceList($tdata) 3]
+    set schemaname [file tail $sfname]
 
     set attrs [lsort [ElimStringAttr [DEVise getSchema $tdata]]]
     set simpleAttrs [DropAttrTypes $attrs]
@@ -956,11 +818,11 @@ proc CreateInterpretedMapping { tdata } {
     
     set parm [dialogMapping .enterMapping "Enter Mapping" \
 	    "Enter Mapping" ""  \
-	    $simpleAttrs \
+	    $schemaname \
 	    [list  \
-	    [list x $simpleAttrs $defX] \
-	    [list y $simpleAttrs $defY]\
-	    [list z $simpleAttrs $defZ]\
+	    [list x {0 1 2 3 4 5 6 7 8 9 10} $defX] \
+	    [list y {0 1 2 3 4 5 6 7 8 9 10} $defY]\
+	    [list z {0 1 2 3 4 5 6 7 8 9 10} $defZ]\
 	    [list color $DEViseColors $defColor]\
 	    [list shape $DEViseShapes $defShape]\
 	    ] 1 ] 
@@ -1341,632 +1203,6 @@ proc DoVisualizeGData {} {
     ProcessViewSelected $view
 }
 
-proc DoExit {} {
-    set answer [ dialog .quit "Quit" \
-	    "Are you sure you want to quit?" "" 1 \
-	    { Cancel} { Ok } ]
-    if { $answer == 1 } {
-	DEVise exit
-    }
-}
-
-# Process View/Create menu
-proc DoViewCreate {} {
-    set ans [ DoCreateView "Select a view type" ]
-}
-
-# Remove view from window
-proc DoViewRemove {} {
-    global curView
-    if {$curView == ""} {
-	dialog .removeView "No Current View" \
-		"Select a view first by clicking in it." "" 0 OK
-	return
-    }
-
-    set viewToRemove $curView
-
-    # Unselect current view
-    ProcessViewSelected ""
-
-    # Remove view
-    set ans [DEVise removeView $viewToRemove]
-    if {$ans != ""} {
-	dialogList .removeError "Cannot Remove View" $ans "" 0 OK
-	return
-    }
-}
-
-# Destroy view
-proc DoViewDestroy {} {
-    global curView dialogListVar
-
-    set viewName $curView
-
-    if {$viewName != ""} {
-	set but [ dialog .removeView "Destroy View" \
-		"Okay to destroy view $viewName?" "" 0 \
-		Cancel OK Another ]
-	if {$but == 0} {
-	    return
-	}
-	if {$but == 2} {
-	    set viewName ""
-	}
-    }
-
-    if {$viewName == ""} {
-	set answer [ dialogList .removeView "Destroy View" \
-		"Select view to move to a window" "" 0 \
-		{ Cancel OK } [ViewSet] ]
-	if {$answer == 0 || $dialogListVar(selected) == ""} {
-	    return
-	}
-	set viewName $dialogListVar(selected)
-    }
-
-    set inlink 0
-
-    foreach link [LinkSet] {
-	set views [DEVise getLinkViews $link]
-	if {[lsearch $views $viewName] >= 0} {
-	    puts "View $viewName has link $link."
-	    set inlink 1
-	}
-    }
-
-    if {$inlink} {
-	dialog .hasLinks "View Has Links" \
-		"Remove links from view before destroying it." \
-		"" -1 OK
-	return
-    }
-
-    set incursor 0
-
-    foreach cursor [CursorSet] {
-	set views [DEVise getCursorViews $cursor]
-	if {[lsearch $views $viewName] >= 0} {
-	    puts "View $viewName has cursor $cursor."
-	    set incursor 1
-	}
-    }
-
-    if {$incursor} {
-	dialog .hasCursors "View Has Cursors" \
-		"Remove cursors from view before destroying it." \
-		"" -1 OK
-	return
-    }
-
-    foreach gdata [GdataSet] {
-#	puts $gdata
-    }
-
-    # Unselect current view
-    ProcessViewSelected ""
-
-    # Remove view
-    set ans [DEVise removeView $viewName]
-    if {$ans != ""} {
-	dialogList .removeError "Cannot Remove View" $ans "" 0 OK
-	return
-    }
-
-    DEVise destroy $viewName
-}
-
-# Move view to another window
-proc DoViewMove {} {
-    global dialogListVar curView
-
-    if {$curView == ""} {
-	set answer [ dialogList .removeView "Move View" \
-		"Select view to move." "" 0 { Cancel OK } \
-		[ViewSet] ]
-	if {$answer == 0} {
-	    return
-	}
-	set viewName $dialogListVar(selected)
-    } else {
-	set viewName $curView
-    }    
-
-    set winName [ DoGetWindow ]
-    if {$winName == ""} {
-	return
-    }
-    
-    DEVise insertWindow $viewName $winName
-    ProcessViewSelected $viewName
-}
-
-# Bring back view to window
-proc DoBringView {} {
-    global dialogListVar
-
-    set answer [ dialogList .removeView "Move View" \
-	    "Select view to move to a window" "" 0 { Cancel OK } [ViewSet] ]
-    if {$answer == 0 || $dialogListVar(selected) == ""} {
-	return
-    }
-    set viewName $dialogListVar(selected)
-    
-    set winName [ DoGetWindow ]
-    if {$winName == ""} {
-	return
-    }
-    
-    DEVise insertWindow $viewName $winName
-    ProcessViewSelected $viewName
-}
-
-# Save a info about creating a class instance into file f
-proc SaveInstance { f category class instance } {
-    set params [ DEVise getCreateParam $category $class $instance ]
-    puts $f "DEVise create $category $class $params"
-    flush $f
-}
-
-# Save all instances of a given class into file f
-proc SaveClass { f category class } {
-    set instances [ DEVise get $category $class]
-    foreach i $instances {
-	SaveInstance $f $category $class $i 
-    }
-}
-
-# Save all instances of a given category into file f
-proc SaveCategory { f category } {
-    set classes [ DEVise get $category ]
-    foreach i $classes {
-	SaveClass $f $category $i 
-    }
-}
-
-# Print the name of all instances in category
-proc PrintCategory { category } {
-    set classes [ DEVise get $category ]
-    puts "classes $classes"
-    foreach c  $classes {
-	set instances [ DEVise get $category $c]
-	foreach i $instances {
-	    puts -nonewline "$i "
-	}
-    }
-    puts ""
-}
-
-# Save info about mappings to all views into file f
-proc SaveAllViewMappings { f mappingDict viewDict } {
-    # Get all mapping classes
-    set viewClasses [ DEVise get "view" ]
-    foreach vClass $viewClasses {
-	# Get all views for this class
-	set views [ DEVise get "view" $vClass ]
-	foreach v $views {
-	    set viewVar [DictLookup $viewDict $v]
-	    # Get all mappings for this view
-	    set mappings [ DEVise getViewMappings $v ]
-	    foreach map $mappings {
-		set mapVar [DictLookup $mappingDict $map]
-		puts $f "DEVise insertMapping \$$viewVar \$$mapVar"
-	    }
-	}
-    }
-}
-
-# Save info about axis labels to all views 
-proc SaveAllViewAxisLabel { f viewDict } {
-    set viewClasses [ DEVise get "view" ]
-    foreach vClass $viewClasses {
-	# Get all views for this class
-	set views [ DEVise get "view" $vClass ]
-	foreach v $views {
-	    set viewVar [DictLookup $viewDict $v]
-	    set xAxisLabel [ DEVise getAxis $v x]
-	    if {$xAxisLabel != ""} {
-		puts $f "DEVise setAxis \$$viewVar $xAxisLabel x"
-	    }
-	    
-	    set yAxisLabel [ DEVise getAxis $v y]
-	    if {$yAxisLabel != ""} {
-		puts $f "DEVise setAxis \$$viewVar $yAxisLabel y"
-	    }
-	    
-	    # Set axis display on/off.
-	    set stat [DEVise getAxisDisplay $v X]
-	    puts $f "DEVise setAxisDisplay \$$viewVar X $stat"
-	    
-	    set stat [DEVise getAxisDisplay $v Y]
-	    puts $f "DEVise setAxisDisplay \$$viewVar Y $stat"
-	}
-    }
-}
-
-# Save info about action
-proc SaveAllViewAction { f dict} {
-    set viewClasses [ DEVise get "view" ]
-    foreach vClass $viewClasses {
-	# Get all views for this class
-	set views [ DEVise get "view" $vClass ]
-	foreach v $views {
-	    set viewVar [DictLookup $dict $v]
-	    set action [DEVise getAction $v]
-	    if {$action != ""} {
-		puts $f "DEVise setAction \$$viewVar $action"
-	    }
-	}
-    }
-}
-
-# Save info about views inserted into windows into file f
-proc SaveAllWindowViews { f viewDict} {
-    # Get all window classes
-    set windowClasses [ DEVise get "window" ]
-    foreach winClass $windowClasses {
-	# Get all windows for this class
-	set windows [ DEVise get "window" $winClass ]
-	foreach win $windows {
-	    # Get all views inserted into this window
-	    set views [DEVise getWinViews $win ]
-	    foreach v $views {
-		set viewVar [DictLookup $viewDict $v]
-		puts $f "DEVise insertWindow \$$viewVar \{$win\}"
-	    }
-	}
-    }
-}
-
-# Save name of views in links
-proc SaveLinkViews { file dict} {
-    set linkSet [LinkSet]
-    foreach link $linkSet {
-	set views [DEVise getLinkViews $link]
-	foreach view $views {
-	    set viewVar [DictLookup $dict $view]
-	    puts $file "DEVise insertLink \{$link\} \$$viewVar"
-	}
-    }
-}
-
-# Save name of views in cursors
-proc SaveCursorViews { file dict} {
-    set cursorSet [CursorSet]
-    foreach cursor $cursorSet {
-	set views [DEVise getCursorViews $cursor]
-	set src [DictLookup $dict [lindex $views 0]]
-	set dst [DictLookup $dict [lindex $views 1]]
-	if {$src != ""} {
-	    puts $file "DEVise setCursorSrc \{$cursor\} \$$src"
-	}
-	if {$dst != ""} {
-	    puts $file "DEVise setCursorDst \{$cursor\} \$$dst"
-	}
-    }
-}
-
-# Save session
-proc DoActualSave { infile asTemplate } {
-    global mode curView
-
-    ChangeStatus 1
-    # copy existing file to a backup file
-    if { [ file exists $infile ] } {
-	set src [open $infile]
-	set dst [open $infile.bak w]
-	while { [gets $src line] >= 0 } {
-	    puts $dst $line
-	}
-	close $src
-	close $dst
-
-	if { ! [ file writable $infile ] } {
-	    set but [ dialog .saveError "File $infile not writable" \
-		    "" 0 OK ]
-	    ChangeStatus 0
-	    return
-	}
-    }
-
-    # checkpoint tdata
-    set classes [ DEVise get "tdata" ]
-    foreach class $classes {
-	set instances [ DEVise get "tdata" $class ]
-	foreach inst $instances {
-	    DEVise tcheckpoint $inst
-	}
-    }
-
-    set f [open $infile w ]
-
-    puts $f "# Import file types"
-    set catFiles [DEVise catFiles]
-    foreach file $catFiles {
-	puts $f "DEVise importFileType $file"
-    }
-    puts $f ""
-
-    puts $f "# Layout mode"
-    puts $f "DEVise changeMode 0"
-    puts $f ""
-
-    puts $f "# Import file (Create TData)"
-    puts $f ""
-    if {!$asTemplate} {
-	puts $f "set loadPixmap 1"
-	puts $f ""
-    } 
-
-    set fileDict ""
-    set fileNum 1
-    set classes [DEVise get tdata]
-    set totalTData [llength [TdataSet]]
-    foreach class $classes {
-	set instances [DEVise get tdata $class]
-	foreach inst $instances {
-	    set params [DEVise getCreateParam tdata $class $inst]
-	    set filePath [lindex $params 0]
-	    set fileAlias [lindex $params 1]
-	    set fileDict [DictInsert $fileDict $fileAlias tdata_$fileNum]
-	    set tdataVar tdata_$fileNum
-	    if {$asTemplate} {
-		puts $f "set $tdataVar \[ GetTDataTemplate $class $totalTData $fileNum \]"
-		puts $f "if \{\$$tdataVar == \"\"\} \{"
-		puts $f "\treturn 0"
-		puts $f "\}"
-	    } else {
-		puts $f "if \{ \$template \} \{"
-		puts $f "\tset loadPixmap 0"
-		puts $f "\tset $tdataVar \[ GetTDataTemplate $class $totalTData $fileNum \]"
-		puts $f "\tif \{\$$tdataVar == \"\"\} \{"
-		puts $f "\t\treturn 0"
-		puts $f "\t\}"
-		puts $f "\} else \{"
-		puts $f "\tset $tdataVar \{$fileAlias\}"
-		puts $f "\tset source \[OpenDataSource \$$tdataVar]"
-		puts $f "\tif \{\$source == \"\"\} \{"
-		puts $f "\t\treturn 0"
-		puts $f "\t\}"
-		puts $f "\tset dispname \[lindex \$source 0\]"
-		puts $f "\tset filePath \[lindex \$source 1\]"
-		puts $f "\tDEVise create tdata $class \$filePath \$dispname"
-		puts $f "\tif \{\$dispname != \$$tdataVar\} \{"
-		puts $f "\t\tset loadPixmap 0"
-		puts $f "\t\tset $tdataVar \$dispname"
-		puts $f "\t\}"
-		puts $f "\}"
-	    }
-	    set fileNum [expr $fileNum+1]
-	}
-    }
-    puts $f  ""
-
-    puts $f "# Create interpreted mapping classes "
-    set mapClasses [ DEVise interpMapClassInfo ]
-    foreach mclass $mapClasses {
-	# puts "mclass $mclass"
-	set mapTData [DictLookup $fileDict [lindex $mclass 0]]
-	puts $f "DEVise createInterp \$$mapTData [lrange $mclass 1 end]"
-    }
-    puts $f ""
-
-    puts $f "# Create mappings instances (and GData)"
-    set mapClasses [DEVise get mapping]
-    set mapDict ""
-    set mapNum 1
-    foreach mapClass $mapClasses {
-	set instances [DEVise get mapping $mapClass]
-	foreach inst $instances {
-	    set params [DEVise getCreateParam mapping $mapClass $inst]
-	    set fileAlias [lindex $params 0]
-	    set fileVar [DictLookup $fileDict $fileAlias]
-	    set gdataName [lindex $params 1]
-	    regsub $fileAlias $gdataName \%s gdataExpr
-	    puts $f "set map_$mapNum \[ format \"$gdataExpr\" \$$fileVar \]"
-	    puts $f "DEVise create mapping \{$mapClass\} \$$fileVar \$map_$mapNum [lrange $params 2 end]"
-	    set mapDict [DictInsert $mapDict $inst map_$mapNum]
-	    incr mapNum
-	}
-    }
-    puts $f ""
-
-    puts $f "# Save pixel width for mappings"
-    foreach map [GdataSet ] {
-	set width [DEVise getPixelWidth $map]
-	set gdataVar [DictLookup $mapDict $map]
-	puts $f "DEVise setPixelWidth \$$gdataVar $width"
-    }
-    puts $f  ""
-
-    puts $f "# Create views"
-    set viewDict ""
-    set viewNum 1
-    set viewClasses [DEVise get view]
-    foreach viewClass $viewClasses {
-	set instances [DEVise get view $viewClass]
-	foreach inst $instances {
-	    set params [DEVise getCreateParam view $viewClass $inst]
-	    set viewMap [lindex [DEVise getViewMappings $inst] 0]
-	    set viewVar view_$viewNum
-	    if {$viewMap == ""} { 
-		puts $f "set $viewVar $inst"
-	    } else {
-		set viewTData [DEVise getMappingTData $viewMap]
-		set tdataVar [DictLookup $fileDict $viewTData]
-		regsub $viewTData $inst \%s viewExpr
-		puts $f "set $viewVar \[ format \"$viewExpr\" \$$tdataVar \]"
-	    }
-	    puts $f "DEVise create view $viewClass \$$viewVar [lrange $params 1 end]"
-
-	    set viewLabelParams [DEVise getLabel $inst]
-	    puts $f "DEVise setLabel \$$viewVar $viewLabelParams"
-	    set viewStatParams [DEVise getViewStatistics $inst]
-	    puts $f "DEVise setViewStatistics \$$viewVar $viewStatParams"
-
-	    set viewDict [DictInsert $viewDict $inst $viewVar]
-	    set viewNum [expr $viewNum+1]
-	}
-    }
-    puts $f ""
-
-    puts $f "# Create windows"
-    SaveCategory $f "window" 
-    puts $f ""
-
-    puts $f "# Setup window layouts"
-    foreach win [WinSet] {
-	set layout [DEVise getWindowLayout $win]
-	puts $f "DEVise setWindowLayout \{$win\} $layout"
-    }
-    puts $f ""
-    
-    puts $f "# Create Links"
-    SaveCategory $f "link" 
-    puts $f ""
-
-    puts $f "# Create Cursors"
-    SaveCategory $f "cursor"
-    puts $f ""
-
-    puts $f "# Create axislabel"
-    SaveCategory $f "axisLabel"
-    puts $f ""
-
-    puts $f "# Create Actions"
-    SaveCategory $f "action"
-    puts $f ""
-
-    puts $f "# Put labels into views"
-    SaveAllViewAxisLabel $f $viewDict
-    puts $f ""
-
-    puts $f "# Put action into view"
-    SaveAllViewAction $f $viewDict
-    puts $f ""
-
-    puts $f "# Link views"
-    SaveLinkViews $f $viewDict
-    puts $f ""
-
-    puts $f "# Put views in cursors"
-    SaveCursorViews $f $viewDict
-    puts $f ""
-
-    puts $f "# Put axis label into views"
-    puts $f ""
-
-    puts $f "# Insert mappings into views"
-    SaveAllViewMappings $f $mapDict $viewDict 
-    puts $f ""
-
-    puts $f "# Insert views into windows"
-    SaveAllWindowViews $f $viewDict
-    puts $f ""
-
-    puts $f "# Init history of view"
-    set viewSet [ViewSet]
-    foreach view $viewSet {
-	set viewVar [DictLookup $viewDict $view]
-	puts $f "DEVise clearViewHistory \$$viewVar"
-	if ($asTemplate) {
-	    continue
-	}
-	set historyList [DEVise getVisualFilters $view]
-	foreach hist $historyList {
-	    puts $f "DEVise insertViewHistory \$$viewVar {[lindex $hist 0]} {[lindex $hist 1]} {[lindex $hist 2]} {[lindex $hist 3]} {[lindex $hist 4]}"
-	}
-    }
-
-    if { $mode == 1 } {
-        puts $f ""
-	puts $f "# Display mode"
-	puts $f "DEVise changeMode 1"
-    }
-
-    if {$asTemplate} {
-        puts $f ""
-	puts $f "return 1"
-	ChangeStatus 0
-	close $f
-	return
-    }
-
-    # Save pixmaps 
-    set bitmapFile $infile.pixmap
-    if { [ file exists $bitmapFile ] } {
-	if { ! [ file writable $bitmapFile ] } {
-	    set but [ dialog .saveError "File $bitmapFile not writable" \
-		    "" 0 OK ]
-	    ChangeStatus 0
-	    return
-	}
-    }
-
-    set bitF [DEVise open $bitmapFile wb]
-    set date [DEVise date]
-    DEVise writeLine $date $bitF
-    set savedCurView $curView
-    ProcessViewSelected ""
-
-    puts $f ""
-    puts $f "# Load pixmaps from views"
-    puts $f "set pixmapName $bitmapFile"
-    puts $f "if \{ \$loadPixmap && \[ file exists \$pixmapName \] \} \{"
-    puts $f "	set pixmapFile \[ DEVise open \$pixmapName rb \]"
-    puts $f "	set fileDate \[ DEVise readLine \$pixmapFile \]"
-    puts $f "	set sessionDate \{$date\}"
-    puts $f "	if \{\$fileDate == \$sessionDate\} \{ "
-    set viewSet [ViewSet]
-    foreach view $viewSet {
-	DEVise savePixmap $view $bitF
-	puts $f "		DEVise loadPixmap \{$view\} \$pixmapFile"
-    }
-    puts $f "	\}"
-    puts $f "	DEVise close \$pixmapFile"
-    puts $f "\}"
-    DEVise close $bitF
-
-    ProcessViewSelected $savedCurView
-
-    puts $f ""
-    puts $f "return 1"
-
-    ChangeStatus 0
-    close $f
-}
-
-proc DoSave {} {
-    global sessionName
-
-    if {$sessionName == "session.tk"} {
-	DoSaveAs 0
-	return
-    }
-
-    DoActualSave $sessionName 0
-}
-
-proc DoSaveAs { asTemplate } {
-    global sessionName fsBox sessiondir
-
-    # Get file name
-    set fsBox(path) $sessiondir
-    set fsBox(pattern) *.tk
-    set file [ FSBox ]
-    
-    if {$file == ""} { return }
-
-    set button [ dialog .saveSession "Save Session" \
-	    "Save session to file\n$file?"  "" 1  {Cancel} OK ]
-    if {$button != 1} { return }
-
-    DoActualSave $file $asTemplate
-    if {!$asTemplate} {
-	set sessionName $file
-    }
-}
-
 # read the .rc file
 # we check the following in sequence:
 # 1) if environment variable touuper($argv0)_RC exists, use it.
@@ -2000,18 +1236,6 @@ if {$rcFile != ""} {
     source $rcFile
 }
 
-# Refresh all views
-proc RefreshAllViews {} {
-    set classes [ DEVise get "view" ]
-    foreach class $classes {
-	set instances [ DEVise get "view" $class ]
-	foreach inst $instances {
-	    DEVise refreshView $inst
-	}
-    }
-}
-
-# Change mode
 proc ChangeMode {} {
     global mode
     if { $mode == 0 } {
@@ -2025,7 +1249,6 @@ proc ChangeMode {} {
     DEVise changeMode $mode
 }
 
-# change status display
 proc ChangeStatus { status } {
     global LightBlue red
     if { $status == 0 } {
@@ -2039,353 +1262,11 @@ proc ChangeStatus { status } {
     }
 }
 
-#**************************************************************
-# View Processing
-#**************************************************************
-
-proc ProcessViewCreated { view } {
-}
-
-proc ProcessViewDestroyed { view } {
-}
-
-# Process view selected 
-proc ProcessViewSelected { view } {
-    global curView lastView historyWinOpened
-
-    if {$view == $curView} {
-	return
-    } else {
-	set lastView $curView
-    }
-
-    if {$curView != ""} {
-	# unhighlight old view
-	DEVise highlightView $curView 0
-    }
-
-    set curView $view
-    .viewFrame.viewName configure -text $curView
-
-    ClearHistory
-
-    if {$curView == ""} {
-	return
-    }
-
-    # highlight new view
-    DEVise highlightView $curView 1
-
-    set filters [DEVise getVisualFilters $curView]
-    # puts "setting filter $curView $filters"
-    foreach filter $filters { 
-	ProcessViewFilterChange $curView -1 \
-		[lindex $filter 0] [lindex $filter 1] \
-		[lindex $filter 2] [lindex $filter 3] [lindex $filter 4]
-    }
-}
-
-# Process filter changed in a view
-proc ProcessViewFilterChange { view flushed xLow yLow xHigh yHigh marked} {
-    global curView historyWinOpened
-
-    if {$view != $curView} {
-	return
-    }
-
-    # Change the control panel's entry box
-    foreach i { xlow ylow xhigh yhigh} {
-	.history.$i delete 0 end
-    }
-    .history.xlow insert 0 $xLow
-    .history.ylow insert 0 $yLow
-    .history.xhigh insert 0 $xHigh
-    .history.yhigh insert 0 $yHigh
-
-    if {$historyWinOpened} {
-	if {$flushed >= 0} {
-	    # Remove last in the list 
-	    foreach i { listMark listXlow listXhigh listYlow listYhigh } {
-		set size [.historyWin.$i size]
-		.historyWin.$i delete [expr $size-$flushed-1]
-	    }
-	}
-
-	# Insert new filter 
-	.historyWin.listXlow insert 0 $xLow
-	.historyWin.listXhigh insert 0 $xHigh
-	.historyWin.listYlow insert 0 $yLow
-	.historyWin.listYhigh insert 0 $yHigh
-	if {$marked} {
-	    .historyWin.listMark insert 0 "*"
-	} else {
-	    .historyWin.listMark insert 0 " "
-	}
-    }
-}
-
-proc ProcessMarkSelected { sel } {
-    global curView
-    set mark [.historyWin.listMark get $sel]
-    if {$mark == "*"} {
-	set newMark " "
-	set newVal 0
-    } else {
-	set newMark "*"
-	set newVal 1
-    }
-    set index [expr [.historyWin.listMark size]-$sel-1]
-    DEVise markViewFilter $curView $index $newVal
-    .historyWin.listMark delete $sel
-    .historyWin.listMark insert $sel $newMark
-}
-
-proc ProcessHistorySelected { sel } {
-    foreach i { xlow ylow xhigh yhigh } {
-	.history.$i delete 0 end
-    }
-
-    .history.xlow  insert 0 [.historyWin.listXlow get $sel]
-    .history.ylow  insert 0 [.historyWin.listYlow get $sel]
-    .history.xhigh insert 0 [.historyWin.listXhigh get $sel]
-    .history.yhigh insert 0 [.historyWin.listYhigh get $sel]
-}
-
-# Process "use" button pressed
-proc ProcessUseButton {} {
-    global curView
-    set xlow [DEVise parseDateFloat [.history.xlow get ]]
-    set ylow [DEVise parseDateFloat [.history.ylow get ]]
-    set xhigh [DEVise parseDateFloat [.history.xhigh get ]]
-    set yhigh [DEVise parseDateFloat [.history.yhigh get ]]
-    if {$curView == ""} {
-	return
-    }
-
-    if { ($xlow >= $xhigh ) || ($ylow >= $yhigh)} {
-	set but [dialog .useError "UseError" \
-		"VisualFilter xlow($xlow) >= xhigh($xhigh)\n\
-		or ylow($ylow)>=yhigh($yhigh)" \
-		"" 0 {Cancel} ]
-    } else {
-	DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
-    }
-}
-
-proc ProcessLeftButton {} {
-    global curView left_amount
-    if {$curView == ""} {
-	return
-    }
-    set filter [DEVise getCurVisualFilter $curView ]
-
-    if { $left_amount <= 0.0 } {
-	set but [dialog .leftError "ScrollLeftError" \
-		"Can't scroll left $left_amount screen (should be > 0.0)" \
-		"" 0 {Cancel}  ]
-	return
-    }
-    set xlow [lindex $filter 0 ]
-    set ylow [lindex $filter 1 ]
-    set xhigh [lindex $filter 2 ]
-    set yhigh [lindex $filter 3 ]
-
-    set width [expr $xhigh-$xlow]
-    set scrollAmount [expr $width*$left_amount]
-    set xlow [expr $xlow+$scrollAmount]
-    set xhigh [expr $xhigh+$scrollAmount]
-    
-    DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
-}
-
-proc ProcessRightButton {} { 
-    global curView right_amount
-    if {$curView == ""} {
-	return
-    }
-    set filter [DEVise getCurVisualFilter $curView ]
-
-    if { $right_amount <= 0.0 } {
-	set but [dialog .rightError "ScrollRightError" \
-		"Can't scroll right $right_amount screen (should be > 0.0)" \
-		"" 0 {Cancel}  ]
-	return
-    }
-    set xlow [lindex $filter 0 ]
-    set ylow [lindex $filter 1 ]
-    set xhigh [lindex $filter 2 ]
-    set yhigh [lindex $filter 3 ]
-    
-    set width [expr $xhigh-$xlow]
-    set scrollAmount [expr $width*$right_amount]
-    set xlow [expr $xlow-$scrollAmount]
-    set xhigh [expr $xhigh-$scrollAmount]
-    
-    DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
-}
-
-proc ProcessUpButton {} { 
-    global curView up_amount
-    if {$curView == ""} {
-	return
-    }
-    set filter [DEVise getCurVisualFilter $curView ]
-    
-    if { $up_amount <= 0.0 } {
-	set but [dialog .upError "ScrollUpError" \
-		"Can't scroll up $up_amount screen (should be > 0.0)" \
-		"" 0 {Cancel}  ]
-	return
-    }
-    set xlow [lindex $filter 0 ]
-    set ylow [lindex $filter 1 ]
-    set xhigh [lindex $filter 2 ]
-    set yhigh [lindex $filter 3 ]
-    
-    set height [expr $yhigh-$ylow]
-    set scrollAmount [expr $height*$up_amount]
-    set ylow [expr $ylow-$scrollAmount]
-    set yhigh [expr $yhigh-$scrollAmount]
-    
-    DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
-}
-
-proc ProcessDownButton {} {
-    global curView down_amount
-    if {$curView == ""} {
-	return
-    }
-    set filter [DEVise getCurVisualFilter $curView ]
-    
-    if { $down_amount <= 0.0 } {
-	set but [dialog .downError "ScrollDownError" \
-		"Can't scroll down $up_amount screen (should be > 0.0)" \
-		"" 0 {Cancel}  ]
-	return
-    }
-    set xlow [lindex $filter 0 ]
-    set ylow [lindex $filter 1 ]
-    set xhigh [lindex $filter 2 ]
-    set yhigh [lindex $filter 3 ]
-    
-    set height [expr $yhigh-$ylow]
-    set scrollAmount [expr $height*$down_amount]
-    set ylow [expr $ylow+$scrollAmount]
-    set yhigh [expr $yhigh+$scrollAmount]
-    
-    DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
-}
-
-proc ProcessInButton {} {
-    global curView in_amount
-    if {$curView == ""} {
-	return
-    }
-    set filter [DEVise getCurVisualFilter $curView ]
-    
-    if { $in_amount <= 0.0 || $in_amount >= 1.0 } {
-	set but [dialog .inError "ZoomInError" \
-		"Can't Zoom in $in_amount screen (should be < 1.0 and > 0.0)" \
-		"" 0 {Cancel}  ]
-	return
-    }
-    set xlow [lindex $filter 0 ]
-    set ylow [lindex $filter 1 ]
-    set xhigh [lindex $filter 2 ]
-    set yhigh [lindex $filter 3 ]
-    
-    set width [expr $xhigh-$xlow]
-    set scrollAmount [expr $width*$in_amount]
-    set mid [ expr ($xhigh+$xlow)/2.0]
-    set xlow [expr $mid - ($scrollAmount/2.0) ]
-    set xhigh [expr $xlow+$scrollAmount]
-    
-    DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
-}
-
-proc ProcessYInButton {} {
-    global curView in_amount
-    if {$curView == ""} {
-	return
-    }
-    set filter [DEVise getCurVisualFilter $curView ]
-    
-    if { $in_amount <= 0.0 || $in_amount >= 1.0 } {
-	set but [dialog .inError "ZoomInError" \
-		"Can't Zoom in $in_amount screen (should be < 1.0 and > 0.0)" \
-		"" 0 {Cancel}  ]
-	return
-    }
-    set xlow [lindex $filter 0 ]
-    set ylow [lindex $filter 1 ]
-    set xhigh [lindex $filter 2 ]
-    set yhigh [lindex $filter 3 ]
-    
-    set width [expr $yhigh-$ylow]
-    set scrollAmount [expr $width*$in_amount]
-    set mid [ expr ($yhigh+$ylow)/2.0]
-    set ylow [expr $mid - ($scrollAmount/2.0) ]
-    set yhigh [expr $ylow+$scrollAmount]
-    
-    DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
-}
-
-proc ProcessOutButton {} { 
-    global curView out_amount
-    if {$curView == ""} {
-	return
-    }
-    set filter [DEVise getCurVisualFilter $curView ]
-    
-    if { $out_amount <= 1.0  } {
-	set but [dialog .outError "ZoomOutError" \
-		"Can't Zoom out $out_amount screen (should be > 1.0)" \
-		"" 0 {Cancel}  ]
-	return
-    }
-    set xlow [lindex $filter 0 ]
-    set ylow [lindex $filter 1 ]
-    set xhigh [lindex $filter 2 ]
-    set yhigh [lindex $filter 3 ]
-    
-    set width [expr $xhigh-$xlow]
-    set scrollAmount [expr $width*$out_amount]
-    set mid [ expr ($xhigh+$xlow)/2.0]
-    set xlow [expr $mid - ($scrollAmount/2.0) ]
-    set xhigh [expr $xlow+$scrollAmount]
-    
-    DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
-}
-proc ProcessYOutButton {} { 
-    global curView out_amount
-    if {$curView == ""} {
-	return
-    }
-    set filter [DEVise getCurVisualFilter $curView ]
-    
-    if { $out_amount <= 1.0  } {
-	set but [dialog .outError "ZoomOutError" \
-		"Can't Zoom out $out_amount screen (should be > 1.0)" \
-		"" 0 {Cancel}  ]
-	return
-    }
-    set xlow [lindex $filter 0 ]
-    set ylow [lindex $filter 1 ]
-    set xhigh [lindex $filter 2 ]
-    set yhigh [lindex $filter 3 ]
-    
-    set width [expr $yhigh-$ylow]
-    set scrollAmount [expr $width*$out_amount]
-    set mid [ expr ($yhigh+$ylow)/2.0]
-    set ylow [expr $mid - ($scrollAmount/2.0) ]
-    set yhigh [expr $ylow+$scrollAmount]
-    
-    DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
-}
-
 # Do editing for mapping
 proc DoEditMapping {} {
     global dialogParamVar dialogListVar DEViseColors DEViseShapes curView
+    global sourceList
+
     if {$curView == ""} {
 	dialog .editMapping "No Current View" \
 		"Select a view first by clicking in it." "" 0 { OK } 
@@ -2398,8 +1279,8 @@ proc DoEditMapping {} {
     # Find all interpreted mapping
     set maps [InterpretedGData ]
     if {$maps == ""} {
-	dialog .editError "EditMappingError" \
-		"No Interpreted Mapping" "" 0 OK
+	dialog .editError "No Interpreted Mappings" \
+		"View has a compiled mapping which cannot be edited." "" 0 OK
 	return
     }
     
@@ -2412,21 +1293,19 @@ proc DoEditMapping {} {
 	}
     }
     if {!$found} {
-	dialog .editError "EditMappingError" \
-		"Selected view does not contain interpreted mapping" \
-		"" 0 {Continue} 
+	dialog .editError "Mapping Not Interpreted" \
+		"View has a compiled mapping which cannot be edited." "" 0 OK
 	return
     }
     
     # Get parameters for the mapping
     set params [DEVise getInstParam $map]
     if {$params == ""} {
-	dialog .editError "EditMappingError" \
-		"No parameter for this mapping" "" 0 OK
+	dialog .editError "No Mapping Parameters" \
+		"Mapping has no parameters." "" 0 OK
 	return
     }
 
-    # puts "got params $params"
     set xParm [lindex [lindex $params 3] 1]
     set yParm [lindex [lindex $params 4] 1]
     set zParm [lindex [lindex $params 5] 1]
@@ -2440,25 +1319,26 @@ proc DoEditMapping {} {
     set shapeAttr2 [lindex [lindex $params 13] 1]
 
     set tdata [lindex [lindex $params 0] 1]
-    set simpleAttrs [lsort [ElimStringAttr [DEVise getSchema $tdata]]]
-    set simpleAttrs [DropAttrTypes $simpleAttrs]
+
+    set sfname [lindex $sourceList($tdata) 3]
+    set schemaname [file tail $sfname]
 
     # set attrs [DEVise getSchema $tdata]
     set parm [dialogMapping .editMapping "Edit Mapping" \
 	    "Edit Mapping" ""   \
-	    $simpleAttrs \
+	    $schemaname \
 	    [list \
-	    [list X {1 2 3 4 5 6 7 8 9 10} $xParm] \
-	    [list Y {1 2 3 4 5 6 7 8 9 10} $yParm] \
-	    [list Z {1 2 3 4 5 6 7 8 9 10} $zParm] \
+	    [list X {0 1 2 3 4 5 6 7 8 9 10} $xParm] \
+	    [list Y {0 1 2 3 4 5 6 7 8 9 10} $yParm] \
+	    [list Z {0 1 2 3 4 5 6 7 8 9 10} $zParm] \
 	    [list Color $DEViseColors $colorParm] \
 	    [list Orientation {1} $orientParm] \
 	    [list Size {0 1 2 3 4} $sizeParm] \
 	    [list Pattern {0} $patternParm] \
 	    [list Shape $DEViseShapes $shapeParm] \
-	    [list "ShapeAttr0" {0.1 0.5 1 2} $shapeAttr0] \
-	    [list "ShapeAttr1" {0.1 0.5 1 2} $shapeAttr1] \
-	    [list "ShapeAttr2" {0.1 0.5 1 2} $shapeAttr2] \
+	    [list "ShapeAttr0" {0 0.1 0.5 1 2} $shapeAttr0] \
+	    [list "ShapeAttr1" {0 0.1 0.5 1 2} $shapeAttr1] \
+	    [list "ShapeAttr2" {0 0.1 0.5 1 2} $shapeAttr2] \
 	    ] 0 ]
     
     if {$parm == ""} {
@@ -2483,7 +1363,6 @@ proc DoEditMapping {} {
 
     # Change parameter
     set cmd "DEVise changeParam \{$map\} $params"
-    # puts "ChangeParam $map $params"
     set result [eval $cmd]
     
     # Refresh all views that use this mapping
@@ -2498,436 +1377,10 @@ proc DoEditMapping {} {
 	    }
 	}
 	if {$contains > 0} {
-	    # puts "refreshView $view"
 	    DEVise invalidatePixmap $view
 	    DEVise refreshView $view
 	}
     }
-}
-
-# Create a Cursor, return its name
-proc DoCursorCreate {} {
-    global dialogCkButVar 
-
-    set but [dialogCkBut .createCursor "Create Cursor" \
-	    "Enter parameters for creating a new cursor" "" \
-	    0 {Cancel OK} name {x y} {3}]
-    if { $but != 1 } {
-	return ""
-    }
-
-    set flag $dialogCkButVar(selected)
-    set name $dialogCkButVar(entry)
-    if {$name == ""} {
-	dialog .noName "No Name Specified" \
-		"Error: No name for cursor specified" "" 0 OK
-	return 
-    }
-
-    if { [DEVise exists $name ] } {
-	dialog .linkExists "Cursor Exists" \
-		"Error: Cursor name $name already exists" "" 0 OK
-	return 
-    }
-
-    set result [DEVise create cursor Cursor $name $flag]
-    if {$result == ""} {
-	set but [ dialog .cursorError "CursorError" \
-		"Can't create cursor" "" 0 OK ]
-	return
-    }
-
-    return $name
-}
-
-# Create a Cursor, return its name
-proc DoCursorDelete {} {
-    set cursorSet [CursorSet]
-    if {[llength $cursorSet] == 0} {
-	return
-    }
-
-    set cursor [DoGetCursor "Select cursor to delete"]
-    if {$cursor == ""} {
-	return
-    }
-    
-    DEVise destroy $cursor
-}
-
-proc DoGetCursor {label} {
-    global curView dialogListVar
-
-    set cursorSet [CursorSet]
-    if { [llength $cursorSet] == 0 } {
-	set cursor [DoCursorCreate]
-    } else {
-	set answer [ dialogList .getCursor "GetCursor" $label "" 0 \
-		{ New Cancel OK } $cursorSet ]
-	if { $answer == 0 } {
-	    set cursor [ DoCursorCreate ]
-	} elseif {$answer == 1 || $dialogListVar(selected) == ""} {
-	    set cursor ""
-	} else {
-	    set cursor $dialogListVar(selected)
-	}
-    }
-
-    return $cursor
-}
-
-proc DoSetCursorSrc {} {
-    global curView dialogListVar
-
-    if {$curView == ""} {
-	set but [dialog .cursorError "No Current View" \
-		"Select a view first by clicking in it." "" 0 OK ]
-	return
-    }
-
-    set cursor [DoGetCursor "Select cursor for view\n$curView"]
-    if {$cursor == ""} {
-	return
-    }
-
-    set answer [DEVise setCursorSrc $cursor $curView]
-}
-
-proc DoSetCursorDst {} {
-    global curView dialogListVar
-
-    if {$curView == ""} {
-	set but [dialog .cursorError "No Current View " \
-		"Select a view first by clicking in it." "" 0 OK ]
-	return
-    }
-    
-    set cursor [DoGetCursor "Select cursor for view\n$curView"]
-    if {$cursor == ""} {
-	return
-    }
-    
-    set answer [DEVise setCursorDst $cursor $curView]
-}
-
-# Create a link, return its name
-proc DoLinkCreate {} {
-    global dialogCkButVar 
-
-    set but [dialogCkBut .createLink "Create Link" \
-	    "Enter parameters for creating a new link" "" \
-	    0 {Cancel OK} name {x y color size pattern orientation shape} {3}]
-    if { $but != 1 } {
-	return ""
-    }
-
-    set flag $dialogCkButVar(selected)
-    set name $dialogCkButVar(entry)
-    if {$name == ""} {
-	set but [dialog .noName "NoName" \
-		"Error: No name for link specified" "" 0 {Continue }]
-	return 
-    }
-    
-    if { [DEVise exists $name ] } {
-	set but [dialog .linkExists "LinkExists" \
-		"Error: Link name $name already exists" "" 0 {Continue }]
-	return 
-    }
-
-    set result [DEVise create link Visual_Link $name $flag]
-    if {$result == ""} {
-	set but [ dialog .linkError "LinkError" \
-		"Can't create link" "" 0 OK ]
-	return
-    }
-
-    return $name
-}
-
-# Display the views in a link 
-proc DisplayLinkInfo { link } {
-    set views [DEVise getLinkViews $link]
-    if { [llength $views] == 0 } {
-	dialog .linkInfo "LinkInfo" \
-		"Link $link currently does not link any view" "" 0 OK ]
-	return
-    }
-    dialogList .linkInfo "LinkInfo" "Views linked by $link" "" 0 OK $views
-}
-
-# Link current view
-proc DoViewLink {} {
-    global curView dialogListVar
-
-    if {$curView == ""} {
-	set but [dialog .linkError "No Current View" \
-		"Select a view first by clicking in it." "" 0 OK ]
-	return
-    }
-
-    while { 1 } {
-	set linkSet [LinkSet]
-	if { [llength $linkSet] == 0 } {
-	    set link [DoLinkCreate]
-	} else {
-	    set answer [ dialogList .getLink "GetLink" "Select a link for\
-		    view\n$curView" "" 0 \
-		    { Info New Cancel OK } $linkSet ]
-	    if { $answer == 0 } {
-		if {$dialogListVar(selected) != ""} {
-		    DisplayLinkInfo $dialogListVar(selected)
-		}
-	    } elseif { $answer == 1 } {
-		set link [ DoLinkCreate ]
-	    } elseif {$answer == 2 || $dialogListVar(selected) == ""} {
-		set link ""
-		break
-	    } else {
-		set link $dialogListVar(selected)
-		break
-	    }
-	}
-    }
-
-    if {$link == ""} {
-	return
-    }
-
-    set anwer [DEVise insertLink $link $curView]
-    # if {$anwer != 0 } {
-	# set but [ dialog .linkError "LinkError" \
-		# "Can't insert view $curView into link $link" "" 0 OK ]
-    #}
-}
-
-# Unlink current view
-proc DoViewUnlink {} {
-    global curView dialogListVar
-    if {$curView == ""} {
-	set but [dialog .unlinkError "No Current View" \
-		"Select a view first by clicking in it." "" 0 OK ]
-	return
-    }
-
-    set linkSet [LinkSet]
-    set viewLinks ""
-    foreach link $linkSet {
-	if { [DEVise viewInLink $link $curView] } {
-	    lappend viewLinks $link
-	}
-    }
-
-    if { [llength $viewLinks ] == 0 } {
-	set but [ dialog .removeLink "No Links" \
-		"View has no established link" "" 0 OK ]
-    } else {
-	set answer [ dialogList .getLink "Select Link" \
-		"Select a link to unlink" "" 0 \
-		{ Cancel OK } $linkSet ]
-	if { $answer == 0 } {
-	    return
-	} elseif { $dialogListVar(selected) == "" } {
-	    return
-	} else {
-	    DEVise unlinkView $dialogListVar(selected) $curView
-	}
-    }
-}
-
-# Modify parameters of a link
-proc DoModifyLink {} {
-    global dialogCkButVar dialogListVar
-    set linkSet [LinkSet]
-    if { [llength $linkSet ] == 0 } {
-	set but [dialog .linkModError "LinkModError" \
-		"No link has been created yet" "" 0 OK ]
-	return
-    }
-    
-    # Select a link
-    set answer [ dialogList .getLink "GetLink" \
-	    "Select a link to modify param" "" 0 \
-	    { Cancel OK } $linkSet ]
-    if { $answer == 0 } {
-	return
-    } elseif { [ string compare $dialogListVar(selected) "" ] == 0 } {
-	return
-    } else {
-	set link $dialogListVar(selected)
-    }
-
-    # enter parameters for the link
-    set flag [DEVise getLinkFlag $link]
-    set but [dialogCkBut .modLink "Modify Link" \
-	    "Enter parameters for link $link" "" \
-	    0 {Cancel OK} "" {x y color size pattern orientation shape} $flag]
-    if { $but != 1 } {
-	return ""
-    }
-    set flag $dialogCkButVar(selected)
-    DEVise setLinkFlag $link $flag
-}
-
-proc CheckView {} {
-    global curView
-    if { [ string compare $curView "" ] ==  0 } {
-	set but [dialog .viewError "No Current View" \
-		"Select a view first by clicking in it." "" 0 OK ]
-	return 0
-    }
-    return 1
-}
-
-# Actually create a new axis Label
-proc DoActualCreateAxisLabel { type } {
-    global dialogParamVar 
-    set paramNames [ DEVise getparam axisLabel $type]
-    
-    set button [ dialogParam .axisParam "AxisParam" \
-	    "Enter parameters to create axis $type"\
-	    "" 1 { Cancel OK } $paramNames ]
-    if { $button == 0} {
-	return
-    }
-
-    set cmd "DEVise create axisLabel $type $dialogParamVar(params)"
-    set result [ eval $cmd ]
-    if { $result == "" } {
-	set but [ dialog .axisError "AxisError" \
-		"Can't create axis" "" 0 OK ]
-	return
-    }
-
-    return $result
-}
-
-# Create a new axis label
-proc DoCreateAxisLabel {} {
-    global dialogListVar
-    set axisTypes [ DEVise get axisLabel]
-
-    if {![llength $axisTypes]} {
-	dialog .noAxisTypes "No Axis Types Defined" \
-		"No axis types have been defined." "" 0 OK
-	return ""
-    }
-
-    set answer [ dialogList .createAxis "CreateAxis"  \
-	    "Select type of axis label to create" "" "" \
-	    { Cancel Ok } $axisTypes ]
-    if { $answer == 0 || $dialogListVar(selected) == "" } {
-	return ""
-    }
-
-    return [ DoActualCreateAxisLabel $dialogListVar(selected) ]
-}
-
-# Get an axis label for current view
-proc DoGetAxisLabel {} {
-    global curView dialogListVar
-    set axisSet [AxisSet]
-    if { [llength $axisSet] == 0 } {
-	set axisLabel [DoCreateAxisLabel]
-    } else {
-	set answer [ dialogList .getAxisLabel "Select Axis Label" \
-		"Select an axis label for current view."\
-		"" 0 { New Cancel OK } $axisSet ]
-	if { $answer == 0 } {
-	    set axisLabel [ DoCreateAxisLabel ]
-	} elseif { $answer == 1 || \
-		[ string compare $dialogListVar(selected) "" ] == 0 } {
-	    set axisLabel ""
-	} else {
-	    set axisLabel $dialogListVar(selected)
-	}
-    }
-
-    return $axisLabel
-}
-
-proc DoViewAxis { axis } {
-    global curView
-    if { ! [CheckView] } {
-	return
-    }
-    set axisLabel [DoGetAxisLabel]
-    if {$axisLabel == ""} {
-	return
-    }
-    
-    DEVise setAxis $curView $axisLabel $axis
-}
-
-proc DoActualCreateAction { type } {
-    global dialogParamVar 
-    set paramNames [ DEVise getparam action $type]
-    
-    set button [ dialogParam .actionParam "ActionParam" \
-	    "Enter parameters to create action $type"\
-	    "" 1 { Cancel OK } $paramNames ]
-    if { $button == 0} {
-	return
-    }
-    
-    set cmd "DEVise create action $type $dialogParamVar(params)"
-    set result [eval $cmd ]
-    if { [string compare $result "" ] == 0 } {
-	set but [ dialog .actionError "ActionError" \
-		"Can't create action" "" 0 OK ]
-	return
-    }
-    return $result
-}
-
-# Create an action
-proc DoCreateAction {} {
-    global dialogListVar
-    set actionTypes [ DEVise get action]
-    set answer [ dialogList .createAction "CreateAction"  \
-	    "Select type of action to create" "" "" { Cancel Ok } $actionTypes]
-    if { $answer == 0 || \
-	    [ string compare $dialogListVar(selected) "" ] == 0 } {
-	return
-    } else {
-	return [ DoActualCreateAction $dialogListVar(selected) ]
-    }
-}
-
-# Get an action
-proc DoGetAction {} {
-    global curView dialogListVar
-    set actionSet [ActionSet ]
-    if { [llength $actionSet] == 0 } {
-	set action [ DoCreateAction]
-    } else {
-	set answer [dialogList .getAction "GetAction" "Select an \
-		action for view\n$curView"\
-		"" 0 { New Cancel OK } $actionSet]
-	if { $answer == 0 } {
-	    set action [ DoCreateAction]
-	} elseif { $answer == 1 || \
-		[ string compare $dialogListVar(selected) "" ] == 0 } {
-	    set action ""
-	} else {
-	    set action $dialogListVar(selected)
-	}
-    }
-    return $action
-}
-
-# Add an action for view
-proc DoViewAction {} {
-    global curView
-    if { ! [CheckView] } {
-	return
-    }
-    set action [DoGetAction]
-    if {$action == ""} {
-	return
-    }
-    
-    DEVise setAction $curView $action
 }
 
 # Close current session
@@ -3020,42 +1473,6 @@ proc DoDemo {} {
     global libdir fsBox
     set fsBox(path) $libdir/demo
     DoOpen 0
-}
-
-# Return line width of string. New lines are accounted for.
-# For example, "abc\ndefg" has a line width of 4
-proc LineWidth { txt } {
-    set strLen [string length $txt]
-    set width 0
-    set curWidth 0
-    for { set i 0} { $i < $strLen } {set i [expr $i+1] } {
-	if { [string compare [string index $txt $i] \n] == 0 } {
-	    if {$curWidth > $width} {
-		set width $curWidth
-	    }
-	    set curWidth 0
-	} else {
-	    set curWidth [expr $curWidth+1]
-	}
-    }
-    if {$curWidth > $width} {
-	set width $curWidth
-    }
-    return $width
-}
-
-# Return # of lines in string 
-# For example, "abc\ndefg" has 2 lines
-proc LineHeight { txt } {
-    set strLen [string length $txt]
-    set height 0
-    for { set i 0} { $i < $strLen } {set i [expr $i+1] } {
-	if { [string compare [string index $txt $i] \n] == 0 } {
-	    set height [expr $height+1]
-	}
-    }
-    set height [expr $height+1]
-    return $height
 }
 
 # Find a view that uses the specified TData, the mapping class, and
@@ -3207,177 +1624,6 @@ proc DoSwitchTData {} {
 	set curView ""
 	ProcessViewSelected $view
     }
-}
-
-proc CloseHistory {} {
-    global historyWinOpened
-    destroy .historyWin
-    set historyWinOpened 0
-}
-
-proc DoHistoryToggle {} {
-    global historyWinOpened
-    if { $historyWinOpened} {
-	CloseHistory
-    } else {
-	OpenHistory
-    }
-}
-
-# Do history command here.
-proc OpenHistory {} {
-    global curView historyWinOpened LightBlue
-    
-    if { $historyWinOpened } {
-	return
-    }
-    
-    set w .historyWin
-    toplevel $w 
-    wm title $w "DEVise history"
-    wm geometry $w +100+100
-    wm iconname $w "history"
-
-    frame $w.heading -background LightBlue
-    label $w.markHeading -text mark
-    label $w.xlowHeading -text xlow
-    label $w.xhighHeading -text xhigh
-    label $w.ylowHeading -text ylow
-    label $w.yhighHeading -text yhigh
-    
-    pack $w.markHeading -side left -in $w.heading 
-    pack $w.xlowHeading $w.xhighHeading $w.ylowHeading \
-	    $w.yhighHeading -side left -in $w.heading -expand 1 -fill x
-    
-    frame $w.lists -background LightBlue
-    listbox $w.listMark -yscrollcommand "$w.scroll set" \
-	    -relief raised -selectmode single -width 4
-    
-    foreach i { listXlow listYlow listXhigh listYhigh } {
-	listbox $w.$i -yscrollcommand "$w.scroll set" \
-		-relief raised -selectmode single
-    }
-    bind $w.listMark <Button-1> {
-	set sel [.historyWin.listMark nearest %y]
-	if {$sel >= 0} {
-	    ProcessMarkSelected $sel
-	}
-    }
-    
-    bind $w.listXlow <Button-1> {
-	set sel [.historyWin.listXlow nearest %y]
-	if {$sel >= 0} {
-	    ProcessHistorySelected $sel
-	}
-    }
-    bind $w.listXhigh <Button-1> {
-	set sel [.historyWin.listXhigh nearest %y]
-	if {$sel >= 0} {
-	    ProcessHistorySelected $sel
-	}
-    }
-    bind $w.listYlow <Button-1> {
-	set sel [.historyWin.listYlow nearest %y]
-	if {$sel >= 0} {
-	    ProcessHistorySelected $sel
-	}
-    }
-    bind $w.listYhigh <Button-1> {
-	set sel [.historyWin.listYhigh nearest %y]
-	if {$sel >= 0} {
-	    ProcessHistorySelected $sel
-	}
-    }
-    scrollbar $w.scroll -command "DoScrollBar"
-    
-    button $w.close -text Close -command CloseHistory -width 10
-    
-    pack $w.close -side bottom
-    
-    pack $w.scroll -in $w.lists -side right -fill both
-    pack  $w.listYhigh $w.listYlow $w.listXhigh $w.listXlow \
-	    -in $w.lists -side right 
-    pack $w.listMark -in $w.lists -side left 
-    
-    pack $w.heading $w.lists -side top -fill x -expand 1
-    
-    set historyWinOpened 1
-    
-    if { [string compare $curView "" ] != 0 } {
-	# Init history with history of current view
-	set filters [DEVise getVisualFilters $curView]
-	foreach filter $filters {
-	    .historyWin.listXlow insert 0 [lindex $filter 0]
-	    .historyWin.listXhigh insert 0 [lindex $filter 2]
-	    .historyWin.listYlow insert 0 [lindex $filter 1]
-	    .historyWin.listYhigh insert 0 [lindex $filter 3]
-	    if { [lindex $filter 4] == 0 } {
-		set mark " "
-	    } else {
-		set mark "*"
-	    }
-	    .historyWin.listMark insert 0 $mark
-	}
-    }
-}
- 
-# note: DoScrollBar takes variable number of arguments
-proc DoScrollBar args {
-    foreach i {listMark listXlow listXhigh listYlow listYhigh} {
-	eval .historyWin.$i yview $args
-    }
-}
-
-proc ClearHistory {} {
-    global historyWinOpened
-    if {$historyWinOpened} {
-	foreach i {listMark listXlow listXhigh listYlow listYhigh} {
-	    selection clear .historyWin.$i
-	    .historyWin.$i delete 0 end
-	}
-    }
-}
-
-proc DoUndoEdit {} {
-    global curView
-    
-    if { [string compare $curView "" ] == 0 } {
-	return
-    }
-    
-    set filters [DEVise getVisualFilters $curView] 
-    set filter [lindex $filters [expr [llength $filters]-1]]
-    
-    foreach i { xlow ylow xhigh yhigh} {
-	.history.$i delete 0 end
-    }
-    .history.xlow insert 0 [lindex $filter 0]
-    .history.ylow insert 0 [lindex $filter 1]
-    .history.xhigh insert 0 [lindex $filter 2]
-    .history.yhigh insert 0 [lindex $filter 3]
-}
-
-proc DoGoBackOne {} {
-    global curView
-    
-    if { [string compare $curView "" ] == 0 } {
-	return
-    }
-    
-    set filters [DEVise getVisualFilters $curView] 
-    set len [llength $filters ]
-    if { $len <= 1} {
-	return
-    }
-    set filter [lindex $filters [expr $len-2]]
-    
-    foreach i { xlow ylow xhigh yhigh} {
-	.history.$i delete 0 end
-    }
-    .history.xlow insert 0 [lindex $filter 0]
-    .history.ylow insert 0 [lindex $filter 1]
-    .history.xhigh insert 0 [lindex $filter 2]
-    .history.yhigh insert 0 [lindex $filter 3]
 }
 
 # remove window
