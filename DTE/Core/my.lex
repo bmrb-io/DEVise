@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1998/10/01 21:00:20  yunrui
+  Add Gestalt stuff
+
   Revision 1.33  1998/06/28 21:47:45  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -144,7 +147,6 @@ static int my_yyinput(char* buf, int max_size){
 
 IntLit       [0-9]+
 DecLit       (([0-9]+)|([0-9]*\.[0-9]+))([eE][+-]?[0-9]+)?
-SignedIntLit [+\-][0-9]+
 String       [A-Za-z][A-Za-z0-9_]*
 LessGreat    ">="|">"|"<="|"<"
 %%
@@ -190,7 +192,6 @@ LessGreat    ">="|">"|"<="|"<"
 {String}     {yylval.stringLit = new string(yytext); return STRING;}
 {IntLit}     {yylval.integer = atoi(yytext); return INTY;}
 {DecLit}     {yylval.stringLit = new string(yytext); return DOUBLEY;}
-{SignedIntLit}  {yylval.integer = atoi(yytext); return INTY;}
 {LessGreat}  {yylval.stringLit = new string(yytext); return LESSGREATER;}
 \'([^']|\'\')*\' {
 	yylval.stringLit = new string(stripSQLQuotes(yytext));

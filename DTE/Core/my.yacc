@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.43  1998/10/01 21:00:31  yunrui
+  Add Gestalt stuff
+
   Revision 1.42  1998/06/28 21:47:45  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -209,6 +212,7 @@ string* sortOrdering;
 %left <stringLit> LESSGREATER
 %left '-' '+'
 %left '*' '/'
+%nonassoc UMINUS
 %left <stringLit> STRING 
 
 // %type <stringLit> JoinString 
@@ -511,17 +515,45 @@ predicate : predicate OR predicate {
 	| predicate LESSGREATER predicate {
 		$$ = new Operator(*$2, $1, $3);
 	}
-     | predicate '+' predicate {
+        | predicate '+' predicate {
           $$ = new Operator("+", $1, $3);
 	}
-     | predicate '-' predicate {
+        | predicate '-' predicate {
           $$ = new Operator("-", $1, $3);
 	}
-     | predicate '*' predicate {
+        | predicate '*' predicate {
           $$ = new Operator("*", $1, $3);
 	}
-     | predicate '/' predicate {
+        | predicate '/' predicate {
           $$ = new Operator("/", $1, $3);
+	}
+        | '-' predicate %prec UMINUS {
+          //ksb: simplification should be done after parsing on all
+          //ksb: constant expressions, not just uminus
+          bool simplified = false;
+          if( $2->selectID() == CONST_ID ) { // simplify
+              ConstantSelection* c = (ConstantSelection*)$2;
+              TypeID t = c->getTypeID();
+              if( t == INT_TP ) {
+                  $$ = new ConstantSelection(INT_TP,
+                                             (Type*)(- (int)c->getValue()));
+                  delete c;
+                  simplified = true;
+              } else if( t == DOUBLE_TP ) {
+		  IDouble* d = new IDouble(- *(double*)(c->getValue()));
+                  $$ = new ConstantSelection(DOUBLE_TP, d);
+                  delete c;
+                  simplified = true;
+              }
+          }
+          if( !simplified ) {
+              //ksb: hack alert! use binary minus for unary minus
+              ConstantSelection* zero = new ConstantSelection(INT_TP, (Type*)0);
+              $$ = new Operator("-", zero, $2);
+          }
+	}
+        | '+' predicate %prec UMINUS {
+          $$ = $2;
 	}
 	| predicate STRING predicate {
 		$$ = new Operator(*$2, $1, $3);
