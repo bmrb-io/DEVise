@@ -1224,19 +1224,32 @@ int UniData::BinCopy_Native(char *dst, char *src, udParam *ud)
 }
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+// attr->whitespace() is called twice one in parent and on in here. So Asserts
+// are included to see if second call is needed, 
+//     tem_ws=strspn(src, ud->attr->whitespace());
+//     if (tem_ws > 0)
+//          assert("Extra Whitespace removal for doubles shouldn't be deleted !..") ;
+//     src += tem_ws ;
+// change this to :  src += strspn(src, ud->attr->whitespace());
+// for all int, float, etc.
+
+
 int UniData::TxtCopy_Int(char *dst, char *src, udParam *ud)
 {
     char *ptr;
                     // guarenteed to be aligned
     int *i = (int*) &(dst[ud->dst_off]);
+    int tem_ws ; 
 
 #ifdef DEBUG_UNIDATA
     if (((int)dst % INT_ALIGN) != 0)  // but we'll check to be sure.
         return 0;
     cout << "In " << __FUNCTION__ << " for string '" << src << "'\n";
 #endif
-
-    src += strspn(src, ud->attr->whitespace());
+	tem_ws=strspn(src, ud->attr->whitespace());
+	if (tem_ws > 0) 
+		assert("Extra Whitespace removal for ints shouldn't be deleted !..") ;
+    src += tem_ws ;
     *i = strtol(src, &ptr, 10);
 
     if (ud->use_slide)
@@ -1251,6 +1264,7 @@ int UniData::TxtCopy_Float(char *dst, char *src, udParam *ud)
     char *ptr;
                     // guarenteed to be aligned
     float *f = (float*) &(dst[ud->dst_off]);
+    int tem_ws ;
 
 #ifdef DEBUG_UNIDATA
     if (((int)dst % FLT_ALIGN) != 0)  // but we'll check to be sure.
@@ -1258,7 +1272,11 @@ int UniData::TxtCopy_Float(char *dst, char *src, udParam *ud)
     cout << "In " << __FUNCTION__ << " for string '" << src << "'\n";
 #endif
 
-    src += strspn(src, ud->attr->whitespace());
+     tem_ws=strspn(src, ud->attr->whitespace());
+	if (tem_ws > 0)
+		assert("Extra Whitespace removal for floats shouldn't be deleted !..") ;
+    	src += tem_ws ;
+	
     *f = UtilStrtod(src, &ptr);
 
     if (ud->use_slide)
@@ -1273,13 +1291,18 @@ int UniData::TxtCopy_Double(char *dst, char *src, udParam *ud)
     char *ptr;
                     // guarenteed to be aligned
     double *d = (double*) &(dst[ud->dst_off]);
+    int tem_ws ;
 
 #ifdef DEBUG_UNIDATA
     if (((int)dst % DOUB_ALIGN) != 0)  // but we'll check to be sure.
         return 0;
 #endif
 
-    src += strspn(src, ud->attr->whitespace());
+     tem_ws=strspn(src, ud->attr->whitespace());
+     if (tem_ws > 0)
+          assert("Extra Whitespace removal for doubles shouldn't be deleted !..") ;
+     src += tem_ws ;
+
     *d = UtilStrtod(src, &ptr);
 
     if (ud->use_slide)
@@ -1291,16 +1314,25 @@ int UniData::TxtCopy_Double(char *dst, char *src, udParam *ud)
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 // Delimiters are already handled in UniData::getRec_delimit(char *buff, off_t *offset)
 // So parts handling delimiters are erased.
+// attr->whitespace() is called twice, so temp_ws and asserts are added for
+// checking if second (in this function) one is needed
+//     if (ud->attr->whitespace())
+//		src += strspn(src, ud->attr->whitespace());
+
 
 int UniData::TxtCopy_String(char *dst, char *src, udParam *ud)
 {
-    int n, tmpn, has_qte;
+    int n, tmpn, has_qte, temp_ws;
     char *str = &(dst[ud->dst_off]);
 
     n = ud->sze()-1;
 
-    if (ud->attr->whitespace())
-      src += strspn(src, ud->attr->whitespace());
+    if (ud->attr->whitespace()) {
+    		temp_ws = strspn(src, ud->attr->whitespace());
+		if (temp_ws > 0 ) 
+			assert("Extra Whitespace removal shouldn't be deleted !..") ;
+    		src += temp_ws ;
+	}
 
     if ((has_qte = (*src == *(ud->attr->quote())) && (*src) )) {
       src++;
@@ -1326,12 +1358,16 @@ int UniData::TxtCopy_Enum(char *dst, char *src, udParam *ud)
     char *ptr;
                     // guarenteed to be aligned
     ushort *us = (ushort*) &(dst[ud->dst_off]);
+	int tem_ws ;
 
 #ifdef DEBUG_UNIDATA
     cout << "In " << __FUNCTION__ << " for input '" << src << "'\n";
 #endif
 
-    src += strspn(src, ud->attr->whitespace());
+     tem_ws=strspn(src, ud->attr->whitespace());
+     if (tem_ws > 0)
+          assert("Extra Whitespace removal for doubles shouldn't be deleted !..") ;
+     src += tem_ws ;
 
     *us = ud->my_enum->vfind(src, String_Attr);
 
@@ -1351,8 +1387,13 @@ int UniData::TxtCopy_DateTime(char *dst, char *src, udParam *ud)
 {
                     // guarenteed to be aligned
     TimeT *t = (TimeT*) &(dst[ud->dst_off]);
+	int tem_ws ;
 
-    src += strspn(src, ud->attr->whitespace());
+     tem_ws=strspn(src, ud->attr->whitespace());
+     if (tem_ws > 0)
+          assert("Extra Whitespace removal for doubles shouldn't be deleted !..") ;
+     src += tem_ws ;
+
     int n = getftime(src, ud->attr->date_format(), t);
 
     if (ud->use_slide)
@@ -1367,8 +1408,13 @@ int UniData::TxtCopy_UnixTime(char *dst, char *src, udParam *ud)
     char *ptr;
                     // guarenteed to be aligned
     time_t *t = (time_t*) &(dst[ud->dst_off]);
+	int tem_ws ;
 
-    src += strspn(src, ud->attr->whitespace());
+     tem_ws=strspn(src, ud->attr->whitespace());
+     if (tem_ws > 0)
+          assert("Extra Whitespace removal for doubles shouldn't be deleted !..") ;
+     src += tem_ws ;
+
     *t = strtol(src, &ptr, 10);
     if (ud->use_slide)
         _slbuf->set_init(ptr);
