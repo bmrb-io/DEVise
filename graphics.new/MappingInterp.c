@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.32  1996/07/02 22:45:59  jussi
+  The bounding box of symbols is now correctly computed. Scatter
+  plots sometimes did not have all necessary data displayed in
+  them, as bounding box used to be incorrectly computed.
+
   Revision 1.31  1996/06/27 19:06:54  jussi
   Merged 3D block shape into 2D rect shape, the appropriate shape
   is chosen based on current view setting. Removed Block and 3DVector
@@ -401,7 +406,7 @@ void MappingInterp::UpdateMaxSymSize(void *gdata, int numSyms)
     }
     /* gdataArray[i..j-1] have the same shape */
     Coord w, h;
-    _shapes[shape]->MaxSymSize(this, start, j - 1, w, h);
+    _shapes[shape]->MaxSymSize(this, start, j - i, w, h);
     if (w > _maxSymWidth) _maxSymWidth = w;
     if (h > _maxSymHeight) _maxSymHeight = h;
     i = j;
