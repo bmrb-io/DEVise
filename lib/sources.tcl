@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.41  1996/07/13 17:29:35  jussi
+#	Schema name for view statistics is now BASICSTAT.
+#
 #	Revision 1.40  1996/07/12 21:54:22  jussi
 #	Added BASICSTAT derived data source type.
 #
@@ -558,7 +561,7 @@ proc isCached {dispname startrec endrec} {
     set cachefile [lindex $sourcedef 4]
     set command [lindex $sourcedef 7]
     
-    if {$source == "WWW" || $source == "BASICSTAT"} {
+    if {$source == "WWW" || $source == "DERIVED"} {
         return $command
     }
 
@@ -815,7 +818,7 @@ proc uncacheData {dispname reason} {
 proc getCacheName {source key} {
     global cachedir
 
-    if {$source == "UNIXFILE" || $source == "WWW" || $source == "BASICSTAT"} {
+    if {$source == "UNIXFILE" || $source == "WWW" || $source == "DERIVED"} {
 	return ""
     }
 
@@ -1160,7 +1163,7 @@ proc scanDerivedSources {} {
 
     foreach view [ViewSet] {
 	set sname "Stat: $view"
-	set source "BASICSTAT"
+	set source "DERIVED"
 	set key $view
 	set schematype BASICSTAT
 	set schemafile $schemadir/physical/BASICSTAT
