@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/01/25 20:00:17  jussi
+  Added debugging output. #ifdef'd the dispatcher sleep option.
+
   Revision 1.5  1995/12/14 21:10:12  jussi
   Replaced 0x%x with 0x%p.
 
@@ -223,6 +226,14 @@ void Dispatcher::RunNoReturn()
     }
 #endif
   }
+}
+
+void Dispatcher::QuitNotify()
+{
+  if (!_quit)
+    printf("\nReceived interrupt from user.\n");
+
+  _quit = true;
 }
 
 /********************************************************************

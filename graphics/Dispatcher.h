@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/01/11 21:57:08  jussi
+  Replaced libc.h with stdlib.h.
+
   Revision 1.3  1995/12/28 18:15:54  jussi
   Added copyright notice and fixed for loop variable scope.
 
@@ -170,7 +173,7 @@ public:
   }
   
   /* Notify dispatcher that we need to quit program */
-  static void QuitNotify() { _quit = true; }
+  static void QuitNotify();
 
   /* cleanup all dispatchers */
   static void Cleanup() {
