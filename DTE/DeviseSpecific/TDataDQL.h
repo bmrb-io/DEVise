@@ -189,6 +189,7 @@ private:
 	RecId _nextToFetch;
 	Engine* engine;
 	string queryHeader;
+	const Tuple* tuple;
 };
 
 #endif

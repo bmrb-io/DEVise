@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1998/03/13 04:02:24  donjerko
+  *** empty log message ***
+
   Revision 1.24  1998/03/13 00:31:57  donjerko
   *** empty log message ***
 
@@ -120,10 +123,9 @@ char* executeQuery(const string& query){
 	TRY(const TypeID* typeIDs = engine.getTypeIDs(), NULL);
 	TRY(WritePtr* writePtrs = newWritePtrs(typeIDs, numFlds), NULL);
 	assert(writePtrs);
-	engine.initialize();
 	ostrstream out;
 	const Tuple* tup;
-	while((tup = engine.getNext())){
+	for(tup = engine.getFirst(); tup; tup = engine.getNext()){
 		out << "{";
 		for(int i = 0; i < numFlds; i++){
 			(writePtrs[i])(out, tup[i]);
@@ -188,8 +190,7 @@ char* dteShowCatalogEntry(const char* catName, const char* entryName){
 	Engine engine(query);
 	CHECK(engine.optimize(), err, 0);
 	string retVal;
-	engine.initialize();
-	const Tuple* tup = engine.getNext();
+	const Tuple* tup = engine.getFirst();
 	if(!tup){
 //		cerr << "query = " << query << endl << " is empty " << endl;
 		return strdup("");
@@ -356,9 +357,8 @@ char* dteListAttributes(const char* tableName){
 	assert(engine.getNumFlds() == 1);
 	const TypeID* types = engine.getTypeIDs();
 	assert(types[0] == "schema");
-	engine.initialize();
 	const Tuple* tuple;
-	assert((tuple = engine.getNext()));
+	assert((tuple = engine.getFirst()));
 	const ISchema* schema = (const ISchema*) tuple[0];
 	assert(!(tuple = engine.getNext()));
 	engine.finalize();
@@ -457,9 +457,8 @@ char* dteShowIndexDesc(const char* tableName, const char* indexName){
 	assert(engine.getNumFlds() == 1);
 	const TypeID* types = engine.getTypeIDs();
 	assert(types[0] == "indexdesc");
-	engine.initialize();
 	const Tuple* tuple;
-	assert((tuple = engine.getNext()));
+	assert((tuple = engine.getFirst()));
 	IndexDesc* indexDesc = (IndexDesc*) tuple[0];
 	assert(!(tuple = engine.getNext()));
 	engine.finalize();

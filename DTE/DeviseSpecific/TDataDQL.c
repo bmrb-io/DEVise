@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1998/03/12 18:23:46  donjerko
+  *** empty log message ***
+
   Revision 1.28  1997/12/23 23:34:19  liping
   Changed internal structure of BufMgrFull and classes it called
   The buffer manager is now able to accept queries on any attribute from the
@@ -149,7 +152,8 @@ TDataDQL::TDataDQL(
 	_sizes(sizes),
 	_attributeNames(NULL),
 	_marshalPtrs(NULL),
-	engine(NULL)
+	engine(NULL),
+	tuple(0)
 {
   
 #ifdef DEBUG
@@ -174,6 +178,7 @@ void TDataDQL::runQuery(){
 	Timer::StopTimer();
 
 	delete engine;
+	tuple = 0;
 	engine = new Engine(_query);
      TRY(engine->optimize(), );
      if(_numFlds != engine->getNumFlds() / 2){
@@ -195,10 +200,8 @@ void TDataDQL::runQuery(){
 			_marshalPtrs[i] = getMarshalPtr(_types[i]);
 		}
 	}
-     Tuple* tup;
 
-	TRY(engine->initialize(), );
-	const Tuple* firstTup = engine->getNext();
+	TRY(const Tuple* firstTup = engine->getFirst(), );
 	if(!firstTup){
 		cout << "Empty result set" << endl;
 	}
@@ -271,6 +274,7 @@ TDataDQL::TDataDQL(char* tableName, List<char*>* attrList, char* query) :
 	_attrs(tableName), 
 	_attributeNames(NULL),
 	engine(NULL),
+	tuple(0),
 	TData(strdup(tableName), strdup("DQL"), strdup("query"), 0) {
 	_tableName = strdup(tableName);
 	_marshalPtrs = NULL;
@@ -412,7 +416,7 @@ CATCH(
      exit(0);
 )
 
-  engine->initialize();
+  tuple = engine->getFirst();
 CATCH(
      cout << "DTE error coused by query: \n";
      cout << "   " << query << endl;
@@ -586,11 +590,8 @@ TD_Status TDataDQL::ReadRec(RecId, int numRecs, void *buf){
 
   int counter=0; // how many tuples have been written to buf;
 
-  const Tuple* tuple;
-
   while(counter < numRecs){
 
-		tuple = engine->getNext();
 		assert(tuple);
 		for(int j = 0; j < _numFlds; j++){
 			#if 0 
@@ -603,6 +604,7 @@ TD_Status TDataDQL::ReadRec(RecId, int numRecs, void *buf){
 		}
 		_nextToFetch++;
 		counter++;
+		tuple = engine->getNext();
 	}
 
     return TD_OK;
