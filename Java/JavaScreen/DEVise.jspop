@@ -10,15 +10,10 @@
 
 ############################################################
 
-# For Tasvir.
-set path = ( . $path )
-
-# For running on Solaris 2.7.
-setenv LD_LIBRARY_PATH dyn_lib:/s/gcc/lib
-
-setenv HOSTNAME `hostname | sed -e s/\\..\*//`
+source scripts/dev_prog.std
+source scripts/dev_vis.jsdemo
 
 # Note: for some reason, nohup is needed for this to work
 # when the jss is launched via rsh (pid files don't get removed
 # otherwise).
-nohup DEVise_savepid $* &
+nohup scripts/start_devised $* &

@@ -6,4 +6,4 @@
 
 ############################################################
 
-bin2/java js -cmdport5966 $*
+bin2/java JavaScreen.js -cmdport5966 $*

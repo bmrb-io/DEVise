@@ -155,11 +155,18 @@ chmod 644 $servdir/JavaScreen/*.class
 # Install misc. scripts.
 set files = (check_jss restart_jss jss DEVise.kill jss.kill ports+files \
     DEVise.jspop DEVise.jspop_soil get_timestamp jss_savepid \
-    DEVise_savepid kill_jsall)
+    kill_jsall)
 foreach file ($files)
   cp -p $file $servdir
   chmod 755 $servdir/$file
 end
+
+if (! -d $servdir/scripts) then
+  mkdir $servdir/scripts
+  chmod 755 $servdir/scripts
+endif
+cp -p scripts/* $servdir/scripts
+chmod 755 $servdir/scripts/*
 
 # Install lib files (for devised).
 if (! -d $servdir/lib) then
@@ -244,6 +251,13 @@ if (! -f $popdir/users.cfg) then
   cp -p users.cfg $popdir
   chmod 644 $popdir/users.cfg
 endif
+
+if (! -d $popdir/scripts) then
+  mkdir $popdir/scripts
+  chmod 755 $popdir/scripts
+endif
+cp -p scripts/* $popdir/scripts
+chmod 755 $popdir/scripts/*
 
 # Keep run_check last because of cron job.
 set files = (check_connect check_jsall check_jspop jspop js js_cgi \

@@ -1,0 +1,22 @@
+############################################################
+
+# Define the environment variables needed to run the DEVise.
+
+# $Id$
+
+############################################################
+
+limit coredumpsize 0
+limit descriptors 256
+
+setenv DEVISE_TMP		/tmp/$USER-devise-tmp
+setenv DEVISE_WORK		/tmp/$USER-devise-work
+setenv DEVISE_LIB		lib
+setenv DEVISE_EXEC		bin/devised
+
+setenv LD_LIBRARY_PATH dyn_lib:/s/gcc/lib
+
+setenv HOSTNAME `hostname | sed -e s/\\..\*//`
+
+# For Tasvir.
+set path = ( . $path )

@@ -1,0 +1,16 @@
+############################################################
+
+# Define the environment variables needed to run DEVise with
+# the JavaScreen demo data, sessions, etc.
+
+# $Id$
+
+############################################################
+
+setenv DEVISE_VIS    /p/devise/demo
+
+source scripts/dev_vis.gen
+
+# Special cases.
+setenv DEVISE_SESSION $DEVISE_VIS/session.js/SoilSci
+setenv DEVISE_HOME_TABLE	$DEVISE_SCHEMA/catalog.js.dte
