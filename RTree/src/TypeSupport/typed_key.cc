@@ -5,6 +5,26 @@
 
 #define maximum(A, B) ((A) > (B) ? (A) : (B))
 
+#include <sys/types.h>
+#include <netinet/in.h> 
+
+inline long long htonll(long long x)
+{
+#if defined(_LITTLE_ENDIAN)
+  int* p = (int*)&x;
+  int t = htonl(p[0]);
+  p[0] = htonl(p[1]);
+  p[1] = t;
+  x = *(long long*)p;
+#elif defined(_BIG_ENDIAN)
+  // nada
+#elif
+# error "what endian??"
+#endif;
+  return x;
+}
+
+
 typed_key_t::typed_key_t(const typed_key_t &key_to_copy)
 {
   num_dim = key_to_copy.num_dim;
@@ -46,7 +66,7 @@ typed_key_t::typed_key_t(const typed_key_t &key_to_copy)
     }
 }
 
-
+#include <iostream.h>
 typed_key_t::typed_key_t(char *bounds,
 			 int  in_dim,
 			 const char *in_types,
@@ -114,11 +134,13 @@ typed_key_t::typed_key_t(char *bounds,
 		  {
 		    values[dim_num] = new char [4];
 		    memcpy(values[dim_num], place_in_bounds, 4);
+                    // cerr << "tk: " << dim_num << ' ' << rep << ' ' << "got int: " << *(int*)(values[dim_num]) << endl;
 		  }
 		else
 		  {
 		    values[dim_num+num_dim] = new char [4];
 		    memcpy(values[dim_num+num_dim], place_in_bounds, 4);
+                    // cerr << "tk: " << dim_num << ' ' << rep << ' ' << num_dim << ' ' << "got int: " << *(int*)(values[dim_num+num_dim]) << endl;
 		  }
 		place_in_bounds += 4;
 		break;
@@ -143,11 +165,13 @@ typed_key_t::typed_key_t(char *bounds,
 		  {
 		    values[dim_num] = new char [len];
 		    memcpy(values[dim_num], place_in_bounds, len);
+                    // cerr << "tk: " << dim_num << ' ' << rep << ' ' << num_dim << ' ' << len << ' ' << "got string: " << (char*)values[dim_num] << endl;
 		  }
 		else
 		  {
 		    values[dim_num+num_dim] = new char [len];
 		    memcpy(values[dim_num+num_dim], place_in_bounds, len);
+                    // cerr << "tk: " << dim_num << ' ' << rep << ' ' << num_dim << ' ' << len << ' ' << "got string: " << (char*)values[dim_num+num_dim] << endl;
 		  }
 		place_in_bounds += len;
 		break;
@@ -245,21 +269,16 @@ typed_key_t::typed_key_t(int_key_t  &key,
 		sscanf(type_info_pl+2, "%d", &len);
 		type_info_pl = strpbrk(type_info_pl, "]");
 		len = maximum(8, len);
-		if (rep == 0)
-		  {
-		    values[dim_num] = new char [len];
-		    memcpy(values[dim_num], place_in_bounds, 8);
-		    memcpy(((char *)(values[dim_num]))+8, place_in_pre, len-8);
-		    place_in_pre += len-8;
-		  }
-		else
-		  {
-		    values[dim_num+num_dim] = new char [len];
-		    memcpy(values[dim_num+num_dim], place_in_bounds, 8);
-		    memcpy(((char *)(values[dim_num+num_dim]))+8, place_in_pre, 
-			   len-8);
-		    place_in_pre += len-8;
-		  }
+                long long x = htonll(*(long long*)place_in_bounds);
+                int p = dim_num + num_dim * rep;
+
+                values[p] = new char [minimum(len,8)];
+                memcpy(values[p], &x, 8);
+                if( len > 8 ) {
+                  int rest = len - 8;
+                  memcpy(((char *)(values[p]))+8, place_in_pre, rest);
+                  place_in_pre += rest;
+                }
 	      }
 	      break;
 	    default:
@@ -321,9 +340,11 @@ void typed_key_t::debug()
 		printf("%s ", (char *)values[dim_num]);
 	      else
 		printf("%s ", (char *)values[dim_num+num_dim]);
+	      type_info_pl = strpbrk(type_info_pl, "]");
 	      break;
 	    default:
-	      printf("bad type info in debug()\n");
+	      printf("bad type info in debug() rep=%d dim=%d type=x%x type='%c'\n",
+                     rep, dim_num, type_info_pl[0], type_info_pl[0]);
 	      assert(0);
 	      break;
 	    }
@@ -370,9 +391,9 @@ int_key_t *typed_key_t::conv_int_key() const
 		sscanf(type_info_pl+2, "%d", &len);
 		type_info_pl = strpbrk(type_info_pl, "]");
 		len = minimum(8, len);
+		bounds_pl[0] = 0;
 		memcpy((char *)bounds_pl, values[dim_num+num_dim*rep], len);
-		memcpy(((char *)bounds_pl)+len, 
-		       ((char *)values[dim_num+num_dim*rep])+len, 8-len);
+                bounds_pl[0] = htonll(bounds_pl[0]);
 	      }
 	      break;
 	    default:
@@ -431,6 +452,7 @@ bool typed_key_t::overlaps(const typed_key_t &key_to_comp)
 	    int len;
 	    sscanf(type_info_pl+2, "%d", &len);
 	    type_info_pl = strpbrk(type_info_pl, "]");
+            //cerr <<"overlaps s[" << len << "] (" << (char*)values[dim_num]<<","<<(char*)values[dim_num+num_dim]<<") and ("<<(char*)key_to_comp.values[dim_num+num_dim]<<","<<(char*)key_to_comp.values[dim_num]<<")\n";
 	    if (memcmp(values[dim_num], key_to_comp.values[dim_num+num_dim], len) 
 		> 0)
 	      return false;
