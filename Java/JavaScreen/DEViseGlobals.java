@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.65  2002/03/06 18:56:50  wenger
+// Changed JavaScreen protocol version from 11.0 to 10.1 (to allow backwards
+// compatibility with previous DEVised, because the new JAVAC_UpdateJS
+// command is never sent to the DEVised).
+//
 // Revision 1.64  2002/03/01 20:00:08  xuk
 // Added new command DEViseCommands.UpdateJS, now protocol number 11.0
 //
@@ -282,7 +287,9 @@ public final class DEViseGlobals
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
     public static final String VERSION = new String("5.0");
+
     public static final String PROTOCOL_VERSION = new String("10.1");
+
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");

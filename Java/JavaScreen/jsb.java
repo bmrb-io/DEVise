@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2002/03/05 23:01:24  xuk
+// Resize JavaScreen after reloading jsb in browser.
+// Added DEViseJSTimer class in jsb.java to destroy applet after the applet
+// has not been touched for an hour.
+//
 // Revision 1.16  2002/02/28 16:37:03  xuk
 // Keep old jsb applet instance when reloading a new HTML page.
 //
@@ -266,66 +271,6 @@ public class jsb extends DEViseJSApplet
         }
     }
 }
-
-
-class DEViseJSTimer implements Runnable
-{
-    private static final int DEBUG = 0;
-    private static final int INTERVAL = 60 * 60 * 1000; //one hour 
-    private jsb applet = null;
-    private Thread thread = null;
-    public static boolean stopped = false;
-
-    public DEViseJSTimer(jsb a) {
-        applet = a;
-
-	thread = new Thread(this);
-    }
-
-    public void start() 
-    {
-	if (DEBUG >= 1) {
-	    System.out.println("DEViseJSTimer.start()");
-	}
-
-	thread.start();
-    }
-
-    public void run()
-    {
-	if (DEBUG >= 1) {
-	    System.out.println("DEViseJSTimer.run()");
-	}
-
-	try {
-	    Thread.sleep(INTERVAL);
-
-	    if (stopped) {
-		stopped = false;
-		System.out.println("stop timer.");
-	    } else {
-		applet.destroy();
-		System.out.println("destroy applet.");
-	    }
-
-	    stop();
-	} catch (InterruptedException e) {
-	}
-    }
-
-    public void stop()
-    {
-	if (DEBUG >= 1) {
-	    System.out.println("DEViseJSTimer.stop()");
-	}
-        thread.stop();
-    }
-}
-
-
-
-
-
 
 
 
