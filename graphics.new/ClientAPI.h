@@ -17,7 +17,7 @@
 
 #include <sys/types.h>
 
-#ifdef SUN
+#if defined(SUN) || defined(AIX)
 #include "missing.h"
 #endif
 
