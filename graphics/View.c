@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.86  1996/11/20 20:34:55  wenger
+  Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
+  some Makefile improvements so compile works first time; fixed up files
+  to correspond to new query catalog name.
+
   Revision 1.85  1996/11/20 16:49:56  jussi
   Added AbortQuery() and removed AbortAndReexecute().
 
@@ -2927,8 +2932,7 @@ View::PrintPS()
 
   _printing = true;
 
-  // Note: get rid of cast -- not safe.  RKW 9/19/96.
-  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+  DeviseDisplay *psDispP = DeviseDisplay::GetPSDisplay();
 
   // Switch this view over to PostScript drawing mode.
   Rectangle viewGeom;
@@ -2977,8 +2981,7 @@ View::PrintPSDone()
 #endif
   DevStatus result(StatusOk);
 
-  // Note: get rid of cast -- not safe.  RKW 9/19/96.
-  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+  DeviseDisplay *psDispP = DeviseDisplay::GetPSDisplay();
 
   fprintf(psDispP->GetPrintFile(), "%% End of view '%s'\n", _name);
 

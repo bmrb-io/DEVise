@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/11/20 20:35:22  wenger
+  Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
+  some Makefile improvements so compile works first time; fixed up files
+  to correspond to new query catalog name.
+
   Revision 1.15  1996/11/18 23:11:32  wenger
   Added procedures to generated PostScript to reduce the size of the
   output and speed up PostScript processing; added 'small font' capability
@@ -107,7 +112,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.1.15";
+static const char *	version = "1.2.1";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/11/18 23:11:20  wenger
+  Added procedures to generated PostScript to reduce the size of the
+  output and speed up PostScript processing; added 'small font' capability
+  and trademark notice to PostScript output; improved text positioning in
+  PostScript output (but still a ways to go); added a little debug code;
+  fixed data/axis area bugs (left gaps); fixed misc. bugs in color handling.
+
   Revision 1.23  1996/11/13 16:56:15  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -189,8 +196,7 @@ ViewWin::ExportImage(DisplayExportFormat format, char *filename)
       printWinP = printWinP->_parent;
     }
 
-    // Note: get rid of cast -- not safe.  RKW 9/19/96.
-    PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+    DeviseDisplay *psDispP = DeviseDisplay::GetPSDisplay();
     if (!psDispP->OpenPrintFile(filename).IsComplete())
     {
       reportError("Can't open print file", errno);
@@ -198,7 +204,7 @@ ViewWin::ExportImage(DisplayExportFormat format, char *filename)
     }
     else
     {
-      psDispP->PrintPSHeader();
+      psDispP->PrintPSHeader("DEVise Visualization");
       result += printWinP->PrintPS();
     }
   }
@@ -847,8 +853,7 @@ ViewWin::PrintPS()
     }
     else
     {
-      // Note: get rid of cast -- not safe.  RKW 9/19/96.
-      PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+      DeviseDisplay *psDispP = DeviseDisplay::GetPSDisplay();
       psDispP->PrintPSTrailer();
       result += psDispP->ClosePrintFile();
       printf("Done generating print file\n");

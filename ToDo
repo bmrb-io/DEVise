@@ -265,6 +265,9 @@ If query window is open, it should be updated as you change other things.
 
 Show name of view in mapping window. (ml/rkw 11/21/96)
 
+RecId should be in the TData attribute lists so you can find the min and
+max (needed if RecId is mapped to X, Y, or Z in GData). (kb/rkw 11/25/96)
+
 
 COMPLETED
 ---------

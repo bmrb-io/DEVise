@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/11/13 16:56:16  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.20  1996/10/28 15:55:47  wenger
   Scaling and clip masks now work for printing multiple views in a window
   to PostScript; (direct PostScript printing still disabled pending correct
@@ -300,6 +310,15 @@ WindowRep::CopyState(WindowRep *winRepP)
     _transforms3[count].Copy(winRepP->_transforms3[count]);
   }
   _current3 = winRepP->_current3;
+
+  /* Copy the geometry. */
+  int xVal, yVal;
+  winRepP->AbsoluteOrigin(xVal, yVal);
+  SetAbsoluteOrigin(xVal, yVal);
+
+  unsigned int width, height;
+  winRepP->Dimensions(width, height);
+  SetDimensions(width, height);
 
   return;
 }

@@ -17,6 +17,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/11/23 00:23:48  wenger
+#  Incorporated all of the PostScript-related stuff into the client/server
+#  library; added printing to PostScript to the example client and server;
+#  made some fixes to PSDisplay, PSWindowRep, and XWindowRep classes as
+#  a result of testing with client/server stuff.
+#
 #  Revision 1.1  1996/10/18 15:21:22  jussi
 #  Initial revision.
 #
@@ -44,7 +50,7 @@ ln -s ../../graphics/Color.h ../../graphics/ColorMgr.h \
         ../../graphics/WindowRep.h ../../graphics/XBitmap.h \
         ../../graphics/XDisplay.h ../../graphics/XWindowRep.h \
         ../../graphics/Xdef.h ../../graphics/xv.h include \
-	../../graphics/DualWindowRep.h
+	../../graphics/DualWindowRep.h include
 ln -s ../../graphics.new/ClientAPI.h ../../graphics.new/DeviseKey.h \
         ../../graphics.new/MapIntToInt.h ../../graphics.new/ParseAPI.h \
         ../../graphics.new/Version.h ../../graphics.new/missing.h include

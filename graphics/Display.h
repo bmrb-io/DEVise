@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/11/13 16:56:05  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.18  1996/09/18 20:11:54  guangshu
   Added function ExportView to save each view in a window to a separate gif
   file. Modified function ExportGIF.
@@ -149,6 +159,22 @@ public:
 			char *mapFileame, char *url, char *defaultUrl) = 0;
   virtual void ExportGIF(FILE *fp, int isView) = 0;
   virtual void ExportView(DisplayExportFormat format, char *filename) = 0;
+
+
+  virtual DevStatus OpenPrintFile(char *filename) { return StatusFailed; }
+  virtual DevStatus ClosePrintFile() { return StatusFailed; }
+  virtual FILE *GetPrintFile() { return NULL; }
+
+  virtual void PrintPSHeader(char *title) {}
+  virtual void PrintPSTrailer() {}
+
+  /* Set page geometry in inches. */
+  virtual void SetUserPageGeom(Coord width, Coord height, Coord xMargin,
+    Coord yMargin) {}
+
+  /* Get page geometry -- units depend on which class you actually have. */
+  virtual void GetPageGeom(Coord &width, Coord &height, Coord &xMargin,
+    Coord &yMargin) {}
 
   /* Iterator to go through all displays */
   static int InitIterator() { return _displays.InitIterator(); }

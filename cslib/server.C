@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/11/23 00:24:02  wenger
+  Incorporated all of the PostScript-related stuff into the client/server
+  library; added printing to PostScript to the example client and server;
+  made some fixes to PSDisplay, PSWindowRep, and XWindowRep classes as
+  a result of testing with client/server stuff.
+
   Revision 1.1  1996/10/17 20:42:17  jussi
   Initial revision.
 */
@@ -207,7 +213,7 @@ void SampleWinServer::Print()
   /* Open the print file. */
   char *filename = "/tmp/client_server.0.ps";
   assert(((PSDisplay *) _fileDisp)->OpenPrintFile(filename).IsComplete());
-  ((PSDisplay *) _fileDisp)->PrintPSHeader();
+  ((PSDisplay *) _fileDisp)->PrintPSHeader("cslib sample server");
 
   /* Switch over to file output. */
   int xVal, yVal;
@@ -232,12 +238,7 @@ void SampleWinServer::Print()
   ((PSDisplay *) _fileDisp)->PrintPSTrailer();
   (void) ((PSDisplay *) _fileDisp)->ClosePrintFile();
 
-  /* Dump the output file to the printer. */
-  if (false /*TEMPTEMP dump to printer */) {
-    printf("Output sent to printer\n");
-  } else {
-    printf("Output in file '%s'\n", filename);
-  }
+  printf("Output in file '%s'\n", filename);
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/

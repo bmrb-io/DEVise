@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/11/23 00:24:11  wenger
+  Incorporated all of the PostScript-related stuff into the client/server
+  library; added printing to PostScript to the example client and server;
+  made some fixes to PSDisplay, PSWindowRep, and XWindowRep classes as
+  a result of testing with client/server stuff.
+
   Revision 1.10  1996/11/20 20:34:52  wenger
   Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
   some Makefile improvements so compile works first time; fixed up files
@@ -126,15 +132,10 @@ PSWindowRep::PSWindowRep(DeviseDisplay *display,
   _height = height;
 
 #ifdef LIBCS
-//TEMPTEMP -- for some reason, this writes past the end of the object
-// (according to Purify).  I think things will work without it for now.
-// RKW 11/22/96.
-#if 0 
   ColorMgr::GetColorRgb(fgndColor, _foreground.red, _foreground.green,
     _foreground.blue);
   ColorMgr::GetColorRgb(bgndColor, _background.red, _background.green,
     _background.blue);
-#endif
 #endif
 }
 
@@ -220,9 +221,7 @@ void PSWindowRep::PushClip(Coord x, Coord y, Coord w, Coord h)
 #endif
 
 #ifdef GRAPHICS
-  // Note: get rid of cast -- not safe.  RKW 9/19/96.
-  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-  FILE * printFile = psDispP->GetPrintFile();
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -256,9 +255,7 @@ void PSWindowRep::PopClip()
     y2 = y1 + height - 1;
 
 #ifdef GRAPHICS
-    // Note: get rid of cast -- not safe.  RKW 9/19/96.
-    PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-    FILE * printFile = psDispP->GetPrintFile();
+    FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
 #if defined(PS_DEBUG)
     fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -271,9 +268,7 @@ void PSWindowRep::PopClip()
 
     /* no more clipping */
 #ifdef GRAPHICS 
-    // Note: get rid of cast -- not safe.  RKW 9/19/96.
-    PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-    FILE * printFile = psDispP->GetPrintFile();
+    FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
 #if defined(PS_DEBUG)
     fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -340,9 +335,7 @@ void PSWindowRep::SetFgColor(GlobalColor fg)
 
   WindowRep::SetFgColor(fg);
 #ifdef GRAPHICS
-  // Note: get rid of cast -- not safe.  RKW 9/19/96.
-  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-  FILE * printFile = psDispP->GetPrintFile();
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
   
   //TEMPTEMP -- maybe this should go through the PSDisplay to be
   // consistent w/ X stuff
@@ -395,9 +388,7 @@ void PSWindowRep::SetFgRGB(float r, float g, float b)
   _foreground.blue = b;
 
 #ifdef GRAPHICS
-  // Note: get rid of cast -- not safe.  RKW 9/19/96.
-  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-  FILE * printFile = psDispP->GetPrintFile();
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
   
   fprintf(printFile, "%f %f %f setrgbcolor\n", r, g, b);
 #endif
@@ -447,9 +438,7 @@ void PSWindowRep::DrawPixel(Coord x, Coord y)
 #endif
 
 #ifdef GRAPHICS
-  // Note: get rid of cast -- not safe.  RKW 9/19/96.
-  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-  FILE * printFile = psDispP->GetPrintFile();
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -508,9 +497,7 @@ void PSWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 #endif
 
 #ifdef GRAPHICS
-    // Note: get rid of cast -- not safe.  RKW 9/19/96.
-    PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-    FILE * printFile = psDispP->GetPrintFile();
+    FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
 #if defined(PS_DEBUG)
     fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -551,9 +538,7 @@ void PSWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 #endif
 
 #ifdef GRAPHICS
-  // Note: get rid of cast -- not safe.  RKW 9/19/96.
-  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-  FILE * printFile = psDispP->GetPrintFile();
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -630,9 +615,7 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
 #endif
 
 #ifdef GRAPHICS
-  // Note: get rid of cast -- not safe.  RKW 9/19/96.
-  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-  FILE * printFile = psDispP->GetPrintFile();
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -706,9 +689,7 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
 #endif
 
 #ifdef GRAPHICS
-  // Note: get rid of cast -- not safe.  RKW 9/19/96.
-  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-  FILE * printFile = psDispP->GetPrintFile();
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -761,9 +742,7 @@ void PSWindowRep::FillRect(Coord xlow, Coord ylow, Coord width, Coord height)
 #endif
 
 #ifdef GRAPHICS
-  // Note: get rid of cast -- not safe.  RKW 9/19/96.
-  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-  FILE * printFile = psDispP->GetPrintFile();
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -805,9 +784,7 @@ void PSWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
 #endif
 
 #ifdef GRAPHICS
-  // Note: get rid of cast -- not safe.  RKW 9/19/96.
-  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-  FILE * printFile = psDispP->GetPrintFile();
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -868,9 +845,7 @@ void PSWindowRep::FillPoly(Point *pts, int pointCount)
 #endif
 
 #ifdef GRAPHICS
-  // Note: get rid of cast -- not safe.  RKW 9/19/96.
-  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-  FILE * printFile = psDispP->GetPrintFile();
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -971,9 +946,7 @@ void PSWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
   Transform(x2, y2, tx2, ty2);
 
 #ifdef GRAPHICS
-  // Note: get rid of cast -- not safe.  RKW 9/19/96.
-  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-  FILE * printFile = psDispP->GetPrintFile();
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -993,9 +966,7 @@ void PSWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
 #endif
   
 #ifdef GRAPHICS
-  // Note: get rid of cast -- not safe.  RKW 9/19/96.
-  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-  FILE * printFile = psDispP->GetPrintFile();
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -1113,9 +1084,7 @@ void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
   }
 
 #ifdef GRAPHICS
-  // Note: get rid of cast -- not safe.  RKW 9/19/96.
-  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-  FILE * printFile = psDispP->GetPrintFile();
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -1199,9 +1168,7 @@ void PSWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
     return;
 
 #ifdef GRAPHICS
-  // Note: get rid of cast -- not safe.  RKW 9/19/96.
-  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-  FILE * printFile = psDispP->GetPrintFile();
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -1255,9 +1222,7 @@ void PSWindowRep::SetCopyMode()
 void PSWindowRep::SetNormalFont()
 {
 #ifdef GRAPHICS
-  // Note: get rid of cast -- not safe.  RKW 9/19/96.
-  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-  FILE * printFile = psDispP->GetPrintFile();
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
   /* Set up the font.  For right now we're just using a fixed font, but
    * that should be changed eventually.  RKW 11/6/96. */
@@ -1274,9 +1239,7 @@ void PSWindowRep::SetNormalFont()
 void PSWindowRep::SetSmallFont()
 {
 #ifdef GRAPHICS
-  // Note: get rid of cast -- not safe.  RKW 9/19/96.
-  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-  FILE * printFile = psDispP->GetPrintFile();
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
   /* Set up the font.  For right now we're just using a fixed font, but
    * that should be changed eventually.  RKW 11/6/96. */
@@ -1320,9 +1283,30 @@ void PSWindowRep::Dimensions(unsigned int &width, unsigned int &height)
 
 
 /*---------------------------------------------------------------------------*/
+/* Set window rep dimensions */
+
+void PSWindowRep::SetDimensions(unsigned int width, unsigned int height)
+{
+  _width = width;
+  _height = height;
+}
+
+
+/*---------------------------------------------------------------------------*/
 /* Get window rep origin */
 
 void PSWindowRep::Origin(int &x, int &y)
+{
+  x = 0;
+  y = 0;
+}
+
+
+
+/*---------------------------------------------------------------------------*/
+/* Get window rep absolute origin */
+
+void PSWindowRep::AbsoluteOrigin(int &x, int &y)
 {
   x = _x;
   y = _y;
@@ -1331,10 +1315,12 @@ void PSWindowRep::Origin(int &x, int &y)
 
 
 /*---------------------------------------------------------------------------*/
-void PSWindowRep::AbsoluteOrigin(int &x, int &y)
+/* Set window rep absolute origin */
+
+void PSWindowRep::SetAbsoluteOrigin(int x, int y)
 {
-  DOASSERT(false, "PSWindowRep::AbsoluteOrigin() not yet implemented");
-  /* do something */
+  _x = x;
+  _y = y;
 }
 
 
@@ -1360,9 +1346,8 @@ void PSWindowRep::SetPPTrans(const Rectangle &viewGeom,
   Coord xMargin;
   Coord yMargin;
 
-  // Note: get rid of cast -- not safe.  RKW 9/19/96.
-  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
-  psDispP->GetPageGeom(pageWidth, pageHeight, xMargin, yMargin);
+  DeviseDisplay::GetPSDisplay()->GetPageGeom(pageWidth, pageHeight, xMargin,
+    yMargin);
 
   pageWidth -= 2 * xMargin;
   pageHeight -= 2 * yMargin;

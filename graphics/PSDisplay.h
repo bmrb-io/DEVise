@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/11/13 16:56:09  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.7  1996/10/28 15:55:41  wenger
   Scaling and clip masks now work for printing multiple views in a window
   to PostScript; (direct PostScript printing still disabled pending correct
@@ -97,14 +107,20 @@ public:
     virtual void ExportGIF(FILE *fp, int isView = 0) {}
     virtual void ExportView(DisplayExportFormat format, char *f) {}
 
-    DevStatus OpenPrintFile(char *filename);
-    DevStatus ClosePrintFile();
-    FILE *GetPrintFile() { return _printFile; }
 
-    void PrintPSHeader();
-    void PrintPSTrailer();
+    virtual DevStatus OpenPrintFile(char *filename);
+    virtual DevStatus ClosePrintFile();
+    virtual FILE *GetPrintFile() { return _printFile; }
 
-    void GetPageGeom(Coord &width, Coord &height, Coord &xMargin,
+    virtual void PrintPSHeader(char *title);
+    virtual void PrintPSTrailer();
+
+    /* Set page geometry in inches. */
+    virtual void SetUserPageGeom(Coord width, Coord height, Coord xMargin,
+      Coord yMargin);
+
+    /* Get page geometry in points. */
+    virtual void GetPageGeom(Coord &width, Coord &height, Coord &xMargin,
       Coord &yMargin);
 
 #ifdef LIBCS
@@ -128,6 +144,12 @@ protected:
 
 private:
     FILE *_printFile;
+
+    Coord _userWidth, _userHeight;
+    Coord _userXMargin, _userYMargin;
+
+    Coord _outputWidth, _outputHeight;
+    Coord _outputXMargin, _outputYMargin;
 };
 
 #endif

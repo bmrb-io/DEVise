@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/11/23 00:24:11  wenger
+  Incorporated all of the PostScript-related stuff into the client/server
+  library; added printing to PostScript to the example client and server;
+  made some fixes to PSDisplay, PSWindowRep, and XWindowRep classes as
+  a result of testing with client/server stuff.
+
   Revision 1.8  1996/11/21 19:13:46  wenger
   Fixed more compile warnings; updated devise.dali to match current
   command-line flags.
@@ -84,7 +90,11 @@ Open a new display
 PSDisplay::PSDisplay(char *name)
 {
   DO_DEBUG(printf("PSDisplay::PSDisplay(%s)\n", name != NULL ? name : "NULL"));
-  /* do something */
+
+  _outputWidth = _userWidth = 8.5;
+  _outputHeight = _userHeight = 11.0;
+  _outputXMargin = _userXMargin = 1.0;
+  _outputYMargin = _userYMargin = 1.0;
 }
 
 /*******************************************************************
@@ -125,11 +135,6 @@ WindowRep *PSDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 				     Boolean relative, Boolean winBoundary)
 {
   DO_DEBUG(printf("PSDisplay::CreateWindowRep(%s)\n", name));
-
-  /* Note: we may need to do some more thinking about what the dimensions
-   * mean for a PSWindowRep.  This is setting up the dimensions to be the
-   * same as the 'sibling' XWindowRep.  RKW 11/22/96. */
-  x = y = 0.0;
 
   return new PSWindowRep((DeviseDisplay *) this, fgnd, bgnd,
     (PSWindowRep *) parentRep, (int) x, (int) y, (int) width, (int) height);
@@ -192,7 +197,7 @@ PSDisplay::ClosePrintFile()
 Print PostScript header.
 **************************************************************/
 
-void PSDisplay::PrintPSHeader()
+void PSDisplay::PrintPSHeader(char *title)
 {
   DOASSERT(_printFile != NULL, "No print file");
 
@@ -215,7 +220,7 @@ void PSDisplay::PrintPSHeader()
   if (userName == NULL) userName = "user unknown";
   fprintf(_printFile, "%%%%Creator: %s\n", userName);
 
-  fprintf(_printFile, "%%%%Title: DEVise visualization\n");
+  fprintf(_printFile, "%%%%Title: %s\n", title);
 
   struct timeval tv;
   gettimeofday(&tv, NULL);
@@ -281,16 +286,48 @@ void PSDisplay::PrintPSTrailer()
 }
 
 /**************************************************************
+Set the geometry of the output page.
+**************************************************************/
+
+void PSDisplay::SetUserPageGeom(Coord width, Coord height, Coord xMargin,
+  Coord yMargin)
+{
+  const double maxOutputWidth = 8.5;
+  const double maxOutputHeight = 11.0;
+
+  if ((width > maxOutputWidth) || (height > maxOutputHeight)) {
+    /* If the page size is requested larger than 8.5 x 11.0, we draw it
+     * that size and then enlarge it with poster. */
+    _userWidth = width;
+    _userHeight = height;
+    _userXMargin = xMargin;
+    _userYMargin = yMargin;
+
+    double xScale = width / maxOutputWidth;
+    double yScale = height / maxOutputHeight;
+    double scale = MAX(xScale, yScale);
+
+    _outputWidth = width / scale;
+    _outputHeight = height / scale;
+    _outputXMargin = xMargin / scale;
+    _outputYMargin = yMargin / scale;
+  } else {
+    _outputWidth = _userWidth = width;
+    _outputHeight = _userHeight = height;
+    _outputXMargin = _userXMargin = xMargin;
+    _outputYMargin = _userYMargin = yMargin;
+  }
+}
+
+/**************************************************************
 Get the geometry of the output page.
 **************************************************************/
 
 void PSDisplay::GetPageGeom(Coord &width, Coord &height, Coord &xMargin,
   Coord &yMargin)
 {
-  /* Note: the fixed sizes are just temporary -- we need to be able
-   * to set the sizes.  RKW 10/25/96. */
-  width = 8.5 * pointsPerInch;
-  height = 11.0 * pointsPerInch;
-  xMargin = 0.5 * pointsPerInch;
-  yMargin = 0.5 * pointsPerInch;
+  width = _outputWidth * pointsPerInch;
+  height = _outputHeight * pointsPerInch;
+  xMargin = _outputXMargin * pointsPerInch;
+  yMargin = _outputYMargin * pointsPerInch;
 }

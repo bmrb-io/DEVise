@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/11/23 00:24:12  wenger
+  Incorporated all of the PostScript-related stuff into the client/server
+  library; added printing to PostScript to the example client and server;
+  made some fixes to PSDisplay, PSWindowRep, and XWindowRep classes as
+  a result of testing with client/server stuff.
+
   Revision 1.10  1996/11/18 23:11:18  wenger
   Added procedures to generated PostScript to reduce the size of the
   output and speed up PostScript processing; added 'small font' capability
@@ -186,14 +192,24 @@ public:
     /* Draw rubberbanding rectangle */
     virtual void DrawRubberband(int x1, int y1, int x2, int y2) {}
 
+    /* --------------------------------------------------------------------
+     * Note: the PSWindowRep dimensions and origin are normally _not_
+     * in points, but rather are the same as for the "sibling" XWindowRep. */
+
     /* Get window rep dimensions */
     virtual void Dimensions(unsigned int &width, unsigned int &height);
+
+    /* Set window rep dimensions */
+    virtual void SetDimensions(unsigned int width, unsigned int height);
 
     /* get window rep origin */
     virtual void Origin(int &x, int &y);
 
     /* Get absolute window rep origin from upper left corner of the screen */
     virtual void AbsoluteOrigin(int &x, int &y);
+
+    /* Set window rep absolute origin */
+    virtual void SetAbsoluteOrigin(int x, int y);
 
     /* Return contents of window as a pixmap */
     virtual DevisePixmap *GetPixmap() { return 0; }
