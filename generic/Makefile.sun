@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.38  1997/05/29 15:21:09  wenger
+# Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
+# compile on linux.
+#
 # Revision 1.37  1997/05/05 17:43:31  wenger
 # Updates solaris, sun, and hp dependecies.
 #
@@ -61,11 +65,11 @@ generic.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
 generic.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
 generic.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 generic.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
+generic.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 generic.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
 generic.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
 generic.o: ../graphics.new/MapInterpClassInfo.h
 generic.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
-generic.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 generic.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 generic.o: ../graphics/Cursor.h ../graphics/DevFont.h
 generic.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
@@ -122,3 +126,4 @@ testWindowSpeed.o: ../graphics/ETk.h ../graphics/Xdef.h
 testWindowSpeed.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 testWindowSpeed.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 testWindowSpeed.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
+testWindowSpeed.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h

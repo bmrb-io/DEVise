@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.15  1997/04/30 21:56:14  wenger
+# Updated solaris, sun, and hp dependencies.
+#
 # Revision 1.14  1997/03/28 16:07:17  wenger
 # Added headers to all source files that didn't have them; updated
 # solaris, solsparc, and hp dependencies.
@@ -715,6 +718,31 @@ InsertParse.o: ../../graphics/Init.h ../../graphics/BufPolicy.h Utility.h
 InsertParse.o: url.h /usr/include/sys/uio.h /usr/include/unistd.h
 InsertParse.o: SockStream.h listop.h site.h Iterator.h StandardRead.h
 InsertParse.o: FunctionRead.h catalog.h Inserter.h ParseTree.h
+PQueue.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h PQueue.h
+PQueue.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+PQueue.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+PQueue.o: /s/gcc-2.7.2/lib/g++-include/libio.h types.h /usr/include/assert.h
+PQueue.o: /s/gcc-2.7.2/lib/g++-include/String.h
+PQueue.o: /s/gcc-2.7.2/lib/g++-include/Regex.h /usr/include/string.h
+PQueue.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+PQueue.o: /usr/include/netinet/in.h /usr/include/time.h exception.h
+PQueue.o: /s/gcc-2.7.2/lib/g++-include/fstream.h /usr/include/sys/time.h
+PQueue.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../../graphics.new/machdep.h
+PQueue.o: /usr/include/limits.h /usr/include/sys/param.h
+PQueue.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+PQueue.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+PQueue.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+PQueue.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+PQueue.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+PQueue.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+PQueue.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+PQueue.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+PQueue.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+PQueue.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
+PQueue.o: ../../graphics/DeviseTypes.h /usr/include/values.h
+PQueue.o: ../../graphics/DevStatus.h ../../graphics/DList.h
+PQueue.o: ../../graphics/Exit.h ../../graphics/Init.h
+PQueue.o: ../../graphics/BufPolicy.h Utility.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/memory.h
@@ -748,7 +776,7 @@ QueryTree.o: ../../graphics/Init.h ../../graphics/BufPolicy.h Utility.h url.h
 QueryTree.o: /usr/include/sys/uio.h /usr/include/unistd.h SockStream.h
 QueryTree.o: listop.h site.h Iterator.h StandardRead.h FunctionRead.h
 QueryTree.o: catalog.h Inserter.h DevRead.h ../../graphics.new/RecId.h
-QueryTree.o: Aggregates.h ParseTree.h joins.h Sort.h
+QueryTree.o: Aggregates.h ParseTree.h joins.h Sort.h PQueue.h
 RTreeRead.o: RTreeRead.h StandardRead.h
 RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
@@ -825,16 +853,15 @@ SchemaParse.o: ../../graphics/Init.h ../../graphics/BufPolicy.h Utility.h
 SchemaParse.o: url.h /usr/include/sys/uio.h /usr/include/unistd.h
 SchemaParse.o: SockStream.h listop.h site.h Iterator.h StandardRead.h
 SchemaParse.o: FunctionRead.h catalog.h Inserter.h
-Sort.o: Sort.h site.h /usr/include/assert.h queue.h /usr/include/stdio.h
-Sort.o: types.h /s/gcc-2.7.2/lib/g++-include/iostream.h
+Sort.o: /usr/include/assert.h Sort.h /s/gcc-2.7.2/lib/g++-include/fstream.h
+Sort.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 Sort.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-Sort.o: /s/gcc-2.7.2/lib/g++-include/libio.h
-Sort.o: /s/gcc-2.7.2/lib/g++-include/String.h
+Sort.o: /s/gcc-2.7.2/lib/g++-include/libio.h site.h queue.h
+Sort.o: /usr/include/stdio.h types.h /s/gcc-2.7.2/lib/g++-include/String.h
 Sort.o: /s/gcc-2.7.2/lib/g++-include/Regex.h /usr/include/string.h
 Sort.o: /usr/include/sys/stdtypes.h /usr/include/sys/types.h
 Sort.o: /usr/include/sys/sysmacros.h /usr/include/netinet/in.h
-Sort.o: /usr/include/time.h exception.h
-Sort.o: /s/gcc-2.7.2/lib/g++-include/fstream.h /usr/include/sys/time.h
+Sort.o: /usr/include/time.h exception.h /usr/include/sys/time.h
 Sort.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../../graphics.new/machdep.h
 Sort.o: /usr/include/limits.h /usr/include/sys/param.h
 Sort.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
@@ -853,7 +880,7 @@ Sort.o: ../../graphics/BufPolicy.h Utility.h myopt.h
 Sort.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
 Sort.o: /s/gcc-2.7.2/lib/g++-include/strfile.h url.h /usr/include/sys/uio.h
 Sort.o: /usr/include/unistd.h SockStream.h listop.h Iterator.h StandardRead.h
-Sort.o: FunctionRead.h Inserter.h
+Sort.o: FunctionRead.h Inserter.h PQueue.h
 StandardRead.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
 StandardRead.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 StandardRead.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h

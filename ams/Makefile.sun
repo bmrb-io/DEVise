@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.38  1997/05/29 15:20:46  wenger
+# Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
+# compile on linux.
+#
 # Revision 1.37  1997/03/28 16:08:15  wenger
 # Added headers to all source files that didn't have them; updated
 # solaris, solsparc, and hp dependencies.
@@ -59,12 +63,12 @@ MapClassInfo.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
 MapClassInfo.o: ../graphics/ETk.h ../graphics/Xdef.h /usr/include/X11/Xlib.h
 MapClassInfo.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
 MapClassInfo.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h
-MapClassInfo.o: /usr/include/X11/Xutil.h ../graphics.new/RectShape.h
+MapClassInfo.o: /usr/include/X11/Xutil.h ../graphics/ViewWin.h
+MapClassInfo.o: ../graphics/DualWindowRep.h ../graphics.new/RectShape.h
 MapClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
 MapClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
 MapClassInfo.o: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
-MapClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
-MapClassInfo.o: ../graphics/DualWindowRep.h ../graphics/Control.h
+MapClassInfo.o: ../graphics/View.h ../graphics/Control.h
 MapClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 MapClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
 MapClassInfo.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
@@ -110,11 +114,11 @@ ams.o: ../graphics/DevError.h /usr/include/errno.h /usr/include/sys/errno.h
 ams.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
 ams.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 ams.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
-ams.o: /usr/include/stddef.h /usr/include/X11/Xutil.h ../graphics/Control.h
+ams.o: /usr/include/stddef.h /usr/include/X11/Xutil.h ../graphics/ViewWin.h
+ams.o: ../graphics/DualWindowRep.h ../graphics/Control.h
 ams.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
 ams.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
 ams.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
-ams.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 ams.o: ../graphics/ViewCallback.h ../graphics/AttrList.h ../graphics/Cursor.h
 ams.o: ../graphics/DevFont.h ../graphics/AxisLabelClassInfo.h
 ams.o: ../graphics.new/ViewClassInfo.h ../graphics.new/ViewGraph.h

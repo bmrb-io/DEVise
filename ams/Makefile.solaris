@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.41  1997/05/29 15:20:45  wenger
+# Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
+# compile on linux.
+#
 # Revision 1.40  1997/05/21 22:04:29  andyt
 # *** empty log message ***
 #
@@ -66,11 +70,11 @@ MapClassInfo.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 MapClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
 MapClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
 MapClassInfo.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
+MapClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 MapClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
 MapClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 MapClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
 MapClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
-MapClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 MapClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 MapClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 MapClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
@@ -122,11 +126,11 @@ ams.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
 ams.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 ams.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
 ams.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
-ams.o: ../graphics/Xdef.h ../graphics/Control.h ../graphics/ClassDir.h
-ams.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
+ams.o: ../graphics/Xdef.h ../graphics/ViewWin.h ../graphics/DualWindowRep.h
+ams.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
+ams.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
 ams.o: ../graphics.new/MapInterpClassInfo.h
 ams.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
-ams.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 ams.o: ../graphics/ViewCallback.h ../graphics/AttrList.h ../graphics/Cursor.h
 ams.o: ../graphics/DevFont.h ../graphics/AxisLabelClassInfo.h
 ams.o: ../graphics.new/ViewClassInfo.h ../graphics.new/ViewGraph.h

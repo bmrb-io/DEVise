@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.35  1997/05/29 15:22:12  wenger
+# Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
+# compile on linux.
+#
 # Revision 1.34  1997/03/28 16:11:44  wenger
 # Added headers to all source files that didn't have them; updated
 # solaris, solsparc, and hp dependencies.
@@ -80,6 +84,8 @@ CycleCpuTimeMappingClassInfo.o: /usr/include/X11/Xfuncproto.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/X11/Xosdefs.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/stddef.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/X11/Xutil.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/ViewWin.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/DualWindowRep.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/Shape.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -87,9 +93,8 @@ CycleCpuTimeMappingClassInfo.o: ../graphics.new/ShapeID.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/RecId.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/GDataRec.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/ViewGraph.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/DualWindowRep.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/View.h ../graphics/Control.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/ClassDir.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/ViewCallback.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
@@ -163,14 +168,14 @@ CycleEffMappingClassInfo.o: ../graphics/ETk.h ../graphics/Xdef.h
 CycleEffMappingClassInfo.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 CycleEffMappingClassInfo.o: /usr/include/X11/Xfuncproto.h
 CycleEffMappingClassInfo.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h
-CycleEffMappingClassInfo.o: /usr/include/X11/Xutil.h
+CycleEffMappingClassInfo.o: /usr/include/X11/Xutil.h ../graphics/ViewWin.h
+CycleEffMappingClassInfo.o: ../graphics/DualWindowRep.h
 CycleEffMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleEffMappingClassInfo.o: ../graphics.new/Shape.h
 CycleEffMappingClassInfo.o: ../graphics.new/TDataMap.h
 CycleEffMappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
 CycleEffMappingClassInfo.o: ../graphics.new/GDataRec.h
 CycleEffMappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
-CycleEffMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 CycleEffMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 CycleEffMappingClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 CycleEffMappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
@@ -241,14 +246,14 @@ CycleOccMappingClassInfo.o: ../graphics/ETk.h ../graphics/Xdef.h
 CycleOccMappingClassInfo.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 CycleOccMappingClassInfo.o: /usr/include/X11/Xfuncproto.h
 CycleOccMappingClassInfo.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h
-CycleOccMappingClassInfo.o: /usr/include/X11/Xutil.h
+CycleOccMappingClassInfo.o: /usr/include/X11/Xutil.h ../graphics/ViewWin.h
+CycleOccMappingClassInfo.o: ../graphics/DualWindowRep.h
 CycleOccMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleOccMappingClassInfo.o: ../graphics.new/Shape.h
 CycleOccMappingClassInfo.o: ../graphics.new/TDataMap.h
 CycleOccMappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
 CycleOccMappingClassInfo.o: ../graphics.new/GDataRec.h
 CycleOccMappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
-CycleOccMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 CycleOccMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 CycleOccMappingClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 CycleOccMappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
@@ -335,6 +340,8 @@ CycleSuspendedMappingClassInfo.o: /usr/include/X11/Xfuncproto.h
 CycleSuspendedMappingClassInfo.o: /usr/include/X11/Xosdefs.h
 CycleSuspendedMappingClassInfo.o: /usr/include/stddef.h
 CycleSuspendedMappingClassInfo.o: /usr/include/X11/Xutil.h
+CycleSuspendedMappingClassInfo.o: ../graphics/ViewWin.h
+CycleSuspendedMappingClassInfo.o: ../graphics/DualWindowRep.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/Shape.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -342,9 +349,7 @@ CycleSuspendedMappingClassInfo.o: ../graphics.new/ShapeID.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/RecId.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/GDataRec.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/ViewGraph.h
-CycleSuspendedMappingClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
-CycleSuspendedMappingClassInfo.o: ../graphics/DualWindowRep.h
-CycleSuspendedMappingClassInfo.o: ../graphics/Control.h
+CycleSuspendedMappingClassInfo.o: ../graphics/View.h ../graphics/Control.h
 CycleSuspendedMappingClassInfo.o: ../graphics/ClassDir.h
 CycleSuspendedMappingClassInfo.o: ../graphics/ViewCallback.h
 CycleSuspendedMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
@@ -430,6 +435,8 @@ CycleWorkingMappingClassInfo.o: /usr/include/X11/Xfuncproto.h
 CycleWorkingMappingClassInfo.o: /usr/include/X11/Xosdefs.h
 CycleWorkingMappingClassInfo.o: /usr/include/stddef.h
 CycleWorkingMappingClassInfo.o: /usr/include/X11/Xutil.h
+CycleWorkingMappingClassInfo.o: ../graphics/ViewWin.h
+CycleWorkingMappingClassInfo.o: ../graphics/DualWindowRep.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/Shape.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -437,9 +444,8 @@ CycleWorkingMappingClassInfo.o: ../graphics.new/ShapeID.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/RecId.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/GDataRec.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/ViewGraph.h
-CycleWorkingMappingClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
-CycleWorkingMappingClassInfo.o: ../graphics/DualWindowRep.h
-CycleWorkingMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
+CycleWorkingMappingClassInfo.o: ../graphics/View.h ../graphics/Control.h
+CycleWorkingMappingClassInfo.o: ../graphics/ClassDir.h
 CycleWorkingMappingClassInfo.o: ../graphics/ViewCallback.h
 CycleWorkingMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
 CycleWorkingMappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
@@ -506,12 +512,12 @@ HostMappingClassInfo.o: ../graphics/ETkIfc.h ../graphics/ETk.h
 HostMappingClassInfo.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h
 HostMappingClassInfo.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
 HostMappingClassInfo.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h
-HostMappingClassInfo.o: /usr/include/X11/Xutil.h ../graphics.new/RectShape.h
-HostMappingClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
-HostMappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
-HostMappingClassInfo.o: ../graphics.new/GDataRec.h
+HostMappingClassInfo.o: /usr/include/X11/Xutil.h ../graphics/ViewWin.h
+HostMappingClassInfo.o: ../graphics/DualWindowRep.h
+HostMappingClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
+HostMappingClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+HostMappingClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
 HostMappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
-HostMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 HostMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 HostMappingClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 HostMappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
@@ -571,11 +577,11 @@ MappingClassInfo.o: ../graphics/ETk.h ../graphics/Xdef.h
 MappingClassInfo.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 MappingClassInfo.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 MappingClassInfo.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
+MappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 MappingClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
 MappingClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 MappingClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
 MappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
-MappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 MappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 MappingClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 MappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
@@ -742,15 +748,14 @@ disp.o: ../graphics/DevError.h /usr/include/errno.h /usr/include/sys/errno.h
 disp.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
 disp.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 disp.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
-disp.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
-disp.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
-disp.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
-disp.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
-disp.o: ../graphics.new/ViewGraph.h ../graphics/View.h ../graphics/ViewWin.h
-disp.o: ../graphics/DualWindowRep.h ../graphics/Control.h
-disp.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-disp.o: ../graphics/AttrList.h ../graphics/Init.h ../graphics/BufPolicy.h
-disp.o: ../graphics/Cursor.h ../graphics/DevFont.h
+disp.o: /usr/include/stddef.h /usr/include/X11/Xutil.h ../graphics/ViewWin.h
+disp.o: ../graphics/DualWindowRep.h ../graphics.new/RectShape.h
+disp.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
+disp.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
+disp.o: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
+disp.o: ../graphics/View.h ../graphics/Control.h ../graphics/ClassDir.h
+disp.o: ../graphics/ViewCallback.h ../graphics/AttrList.h ../graphics/Init.h
+disp.o: ../graphics/BufPolicy.h ../graphics/Cursor.h ../graphics/DevFont.h
 disp.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
 disp.o: ../graphics.new/GdataStat.h ../graphics.new/DataSourceFixedBuf.h
 disp.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h

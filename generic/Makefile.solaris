@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.42  1997/05/29 15:21:09  wenger
+# Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
+# compile on linux.
+#
 # Revision 1.41  1997/05/21 22:05:07  andyt
 # *** empty log message ***
 #
@@ -68,11 +72,11 @@ generic.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 generic.o: /usr/include/sys/byteorder.h ../graphics/Transform.h
 generic.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 generic.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
-generic.o: ../graphics/Xdef.h ../graphics/Control.h ../graphics/ClassDir.h
-generic.o: ../graphics/Init.h ../graphics/BufPolicy.h
+generic.o: ../graphics/Xdef.h ../graphics/ViewWin.h
+generic.o: ../graphics/DualWindowRep.h ../graphics/Control.h
+generic.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
 generic.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
 generic.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
-generic.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 generic.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 generic.o: ../graphics/Cursor.h ../graphics/DevFont.h
 generic.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
@@ -133,3 +137,4 @@ testWindowSpeed.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 testWindowSpeed.o: ../graphics/Compress.h ../graphics/DevError.h
 testWindowSpeed.o: /usr/include/errno.h /usr/include/sys/errno.h
 testWindowSpeed.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
+testWindowSpeed.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h

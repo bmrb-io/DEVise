@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.6  1997/05/29 15:21:02  wenger
+# Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
+# compile on linux.
+#
 # Revision 1.5  1997/04/30 21:56:24  wenger
 # Updated solaris, sun, and hp dependencies.
 #
@@ -52,7 +56,8 @@ ClientServer.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 ClientServer.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 ClientServer.o: ../graphics/Compress.h ../graphics/DevError.h
 ClientServer.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
-ClientServer.o: /s/X11/include/X11/Xutil.h
+ClientServer.o: /s/X11/include/X11/Xutil.h ../graphics/ViewWin.h
+ClientServer.o: ../graphics/DualWindowRep.h
 client.o: /usr/include/stdio.h /usr/include/stdlib.h
 client.o: /usr/include/sys/stdtypes.h /usr/include/string.h ClientServer.h
 client.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
@@ -70,7 +75,8 @@ client.o: ../graphics/WindowRep.h ../graphics/Transform.h
 client.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 client.o: ../graphics/DevError.h /usr/include/errno.h
 client.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
-client.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h
+client.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h ../graphics/ViewWin.h
+client.o: ../graphics/DualWindowRep.h
 server.o: /usr/include/stdio.h /usr/include/stdlib.h
 server.o: /usr/include/sys/stdtypes.h /usr/include/string.h
 server.o: /usr/include/assert.h ClientServer.h /s/tcl/include/tcl.h
@@ -89,5 +95,5 @@ server.o: ../graphics/WindowRep.h ../graphics/Transform.h
 server.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 server.o: ../graphics/DevError.h /usr/include/errno.h
 server.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
-server.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h
+server.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h ../graphics/ViewWin.h
 server.o: ../graphics/DualWindowRep.h

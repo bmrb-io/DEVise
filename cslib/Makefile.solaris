@@ -15,6 +15,13 @@
 # $Id$
 
 # $Log$
+# Revision 1.6  1997/05/21 21:05:11  andyt
+# Support for multiple clients in client-server library. Single-client mode
+# still supported by compiling with -DSINGLE_CLIENT. Client-server library
+# can now display EmbeddedTk windows and Tasvir images. Added a sample
+# Embedded-Tk script and GIF image to the repository (ETkSample.tcl,
+# earth.gif). Modified tarcslib script to include all new files.
+#
 # Revision 1.5  1997/04/30 21:56:24  wenger
 # Updated solaris, sun, and hp dependencies.
 #
@@ -65,7 +72,8 @@ ClientServer.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 ClientServer.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 ClientServer.o: ../graphics/Compress.h ../graphics/DevError.h
 ClientServer.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
-ClientServer.o: /s/X11/include/X11/Xutil.h
+ClientServer.o: /s/X11/include/X11/Xutil.h ../graphics/ViewWin.h
+ClientServer.o: ../graphics/DualWindowRep.h
 client.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 client.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 client.o: /usr/include/string.h ClientServer.h /s/tcl/include/tcl.h
@@ -85,7 +93,8 @@ client.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 client.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 client.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
 client.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
-client.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h
+client.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h ../graphics/ViewWin.h
+client.o: ../graphics/DualWindowRep.h
 server.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 server.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 server.o: /usr/include/string.h /usr/include/assert.h ClientServer.h
@@ -105,5 +114,5 @@ server.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 server.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 server.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
 server.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
-server.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h
+server.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h ../graphics/ViewWin.h
 server.o: ../graphics/DualWindowRep.h

@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.48  1997/05/29 15:21:50  wenger
+# Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
+# compile on linux.
+#
 # Revision 1.47  1997/04/30 21:56:50  wenger
 # Updated solaris, sun, and hp dependencies.
 #
@@ -973,9 +977,9 @@ QueryProcFull.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
 QueryProcFull.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 QueryProcFull.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 QueryProcFull.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
+QueryProcFull.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 QueryProcFull.o: ../graphics/Init.h BufMgrFull.h TDataRangeList.h TDataMap.h
 QueryProcFull.o: ShapeID.h GDataRec.h ViewGraph.h ../graphics/View.h
-QueryProcFull.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 QueryProcFull.o: ../graphics/Control.h ../graphics/ClassDir.h
 QueryProcFull.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 QueryProcFull.o: ../graphics/Cursor.h ../graphics/DevFont.h BasicStats.h
@@ -2243,7 +2247,8 @@ KGraph.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 KGraph.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
 KGraph.o: /usr/include/string.h ../graphics/Display.h
 KGraph.o: ../graphics/Dispatcher.h /usr/include/unistd.h
-KGraph.o: ../graphics/Journal.h ../graphics/ColorMgr.h
+KGraph.o: ../graphics/Journal.h ../graphics/ColorMgr.h ../graphics/ViewWin.h
+KGraph.o: ../graphics/DualWindowRep.h
 MapIntToInt.o: MapIntToInt.h ../tape/HashTable.h
 MapInterpShape.o: /usr/include/sys/param.h /usr/include/machine/param.h
 MapInterpShape.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
