@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.72  1996/08/30 18:41:04  wenger
+  Fixed bug 036 (problem with piled views with client/server software).
+
   Revision 1.71  1996/08/30 15:56:02  wenger
   Modified View and QueryProcessor code to work correctly with current
   dispatcher semantics (call back forever unless cancelled).
@@ -503,6 +506,10 @@ void View::SubClassMapped()
 
   // cause pending Expose events to be retrieved from the X server
   DeviseDisplay::DefaultDisplay()->Run();
+
+  // in batch mode, force Run() method to be called so that
+  // (first) query gets properly started up
+  Dispatcher::Current()->RequestCallback(_dispatcherID);
 }
 	
 void View::SubClassUnmapped()
@@ -515,7 +522,6 @@ void View::SubClassUnmapped()
     ReportQueryDone(0, true);
   }
 }
-
 
 void View::SetVisualFilter(VisualFilter &filter)
 {
@@ -1356,6 +1362,7 @@ void View::Run()
 #if defined(DEBUG)
   printf("\nView::Run for view '%s' (0x%p)\n", GetName(), _dispatcherID);
 #endif
+
   /* if view is in pile mode but not the top view, it has to wait until
      the top view has erased the window and drawn axes and other
      decorations; the top view will send explicit refresh requests
@@ -1426,12 +1433,20 @@ void View::Run()
       DerivedAbortQuery();
       ReportQueryDone(0, true);
       _refresh = true;
-    } else
+    } else {
+#if defined(DEBUG)
+      printf("Query already sent, nothing to do\n");
+#endif
       return;
+    }
   }
   
-  if (!Mapped())
+  if (!Mapped()) {
+#if defined(DEBUG)
+    printf("Window not mapped, nothing to do\n");
+#endif
     return;
+  }
 
   if (Iconified()) {
     /* force "redrawing" of whole view (mainly for statistics and
@@ -1440,8 +1455,12 @@ void View::Run()
     _hasExposure = false;
   }
 
-  if (!_hasExposure && !_filterChanged && !_refresh)
+  if (!_hasExposure && !_filterChanged && !_refresh) {
+#if defined(DEBUG)
+    printf("View not refreshed and filter not changed, nothing to do\n");
+#endif
     return;
+  }
 
   WindowRep *winRep = GetWindowRep();
   int scrnX, scrnY, scrnWidth, scrnHeight;
