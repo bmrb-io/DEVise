@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/01/27 00:18:19  jussi
+  Made recId be evaluated as a simple command rather than as
+  a complex command.
+
   Revision 1.18  1996/01/20 00:46:27  jussi
   Small fixes to produce better debugging output.
 
@@ -540,8 +544,6 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 	  _interpResult = 0.0;
 	  sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->shapeAttrCmd[j]);
 	  code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
-	  printf("cmdbuf %d, offset %d: %s, result: %.2f\n",
-		 j, _offsets->shapeAttrOffset[j], cmdbuf, _interpResult);
 	}
 	/*
 	   printf("eval shapeAttr %d\n", j);
