@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1996/09/26 18:54:01  jussi
+#  Added -lpthread to get thread support.
+#
 #  Revision 1.10  1996/05/20 18:37:59  jussi
 #  Replaced PENTIUM flag with SOLARIS.
 #
@@ -37,3 +40,4 @@ VPATH = ../../graphics.new
 include $(VPATH)/Makefile.base
 include $(VPATH)/Makefile.solaris
 
+# DO NOT DELETE

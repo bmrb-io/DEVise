@@ -9,6 +9,7 @@ set "sourceTypes(SEQ)" {{SEQ Query Output} /p/devise/dat/seq.schema}
 set "sourceTypes(SQL)" {{SQL Query Output} /p/devise/dat/sql.schema}
 set "sourceTypes(UNIXFILE)" {{Unix File} /p/devise/dat/unixfile.schema}
 set "sourceTypes(WWW)" {{World Wide Web} /p/devise/dat/www.schema}
+set "sourceTypes(DQL)" {{DEVise Query Language} /p/devise/dat/dql.schema}
 
 # Data sources
 

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.17  1996/08/06 20:12:13  wenger
+#  Set up makefiles to easily compile with -g flag; other cleanup of
+#  makefiles.
+#
 #  Revision 1.16  1996/08/05 19:51:59  wenger
 #  Fixed compile errors caused by some of Kevin's recent changes; changed
 #  the attrproj stuff to make a .a file instead of a .o; added some more
@@ -49,8 +53,8 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
 # Kevin created a dependency that means that graphicsnew must be included
 # twice below.
 LDFLAGS = $(ARCH_LDFLAGS) \
-	-L../graphics.new -L../graphics -L../tape -L../issm \
-	-L../crsp -L../compustat -lmonolith -lgraphicsnew -lgraphics \
+	-L../graphics.new -L../graphics -L../tape -L../issm -L../DTE \
+	-L../crsp -L../compustat -lmonolith -lgraphicsnew -ldte -lgraphics \
 	-lgraphicsnew -lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS) \
 	$(ARCH_LDPOST)
 

@@ -3,9 +3,10 @@
 #
 
 MODULES = graphics graphics.new tape issm compustat crsp parser \
-	generic attrproj devread multi
+	attrproj devread DTE generic multi
 
-LIBMODULES = graphics graphics.new tape issm compustat crsp
+LIBMODULES = graphics graphics.new tape issm compustat crsp \
+	attrproj devread DTE 
 
 all clean mostlyclean:
 	for i in $(MODULES); do echo -- $$i; cd $$i; make $@; cd ..; done
@@ -35,3 +36,4 @@ pure: libs
 	
 static: libs
 	cd generic; make static; cd ..
+# DO NOT DELETE

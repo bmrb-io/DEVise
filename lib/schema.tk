@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.22  1996/11/03 02:41:52  kmurli
+#  Modified to include the query schema level. Also modified to include DQL
+#  processing
+#
 #  Revision 1.21  1996/10/28 23:20:03  flisakow
 #   Allows the entry of a tab in the Whitespace field, though the focus
 #   still changes to the next window.
@@ -107,7 +111,7 @@ if {![file exists $catalogFile]} {
 }
 source $catalogFile
 
-set queryCatalogFile $schemadir/queryCatalog.tcl
+set queryCatalogFile $schemadir/Querycatalog.tcl
 if {![file exists $queryCatalogFile]} {
     puts "Cannot read Query catalog file for logical to query associations"
     exit 1
