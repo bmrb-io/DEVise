@@ -20,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  2000/03/15 20:35:48  wenger
+#  Fixed problems with email in cron jobs; safer 'or' in Perl scripts.
+#
 #  Revision 1.4  1999/08/10 15:51:57  wenger
 #  Kind of kludgey fix for columns running together in data.
 #
@@ -88,14 +91,13 @@ sub GetUsers {
 sub GetUserFromLine {
   my $line = shift(@_);
 
-  # Note: assumes that timestamp is always 9 digits.
-  my @tmpuser = split(" ", substr($line, 9));
+  my @tmpuser = split(" ", $line);
 
   # Change dots in name to underscores because data source names cannot
   # contain dots.
-  $tmpuser[0] =~ s/\./_/g;
+  $tmpuser[1] =~ s/\./_/g;
 
-  return $tmpuser[0];
+  return $tmpuser[1];
 }
 
 #-----------------------------------------------------------

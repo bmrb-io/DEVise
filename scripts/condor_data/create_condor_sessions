@@ -1,10 +1,10 @@
 #! /bin/csh -f
-set dataFile = "UserLastMonth.dat"
+set dataFile = "UserLastWeek.dat"
 if (-f $dataFile) then
   rm $dataFile
 endif
 
-/p/condor/home/bin/condor_devise_userdata -lastweek > $dataFile
+./condor_devise_userdata -lastweek > $dataFile
 
 # Make sure the data file exists.
 if (! -f $dataFile) then
@@ -24,7 +24,7 @@ endif
 rm userdat/*
 
 # Split the data into one file per user.
-split_user_data $dataFile userdat
+./split_user_data $dataFile userdat
 
 # Remove the old 'raw' data file.
 if (-f $dataFile) then
@@ -32,10 +32,10 @@ if (-f $dataFile) then
 endif
 
 # Create the sessions.
-create_2users userdat UserMonth.ds \
+./create_2users userdat UserMonth.ds \
   /p/devise/demo/schema/schema/physical/Condor:userlist \
   /p/devise/demo/schema/schema/physical/Condor:user1
 
-create_user_thumbnails userdat UserThumb.ds \
+./create_user_thumbnails userdat UserThumb.ds \
   /p/devise/demo/schema/schema/physical/Condor:userlist \
   /p/devise/demo/schema/schema/physical/Condor:user1
