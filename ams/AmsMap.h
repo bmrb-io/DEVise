@@ -60,6 +60,9 @@ struct SolDnCompiled_GData {
 
 
 
+
+
+
 class SolDnCompiled_RectXShape  : public RectXShape {
 public:
   virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
@@ -75,7 +78,7 @@ public:
     height = ((map->GetDefaultShapeAttrs())[1]) ;
 
 
-# 85 "/p/devise/parser/proto/RectXShape_proto.h"
+# 88 "/p/devise/parser/proto/RectXShape_proto.h"
 
   }
 
@@ -110,7 +113,8 @@ public:
 
 
 
-	for(int colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
+	int colorIndex;
+	for(colorIndex = i + 1; colorIndex < numSyms; colorIndex++) {
 	  SolDnCompiled_GData  *gdata = (SolDnCompiled_GData  *)gdataArray[colorIndex];
 
 
@@ -490,6 +494,9 @@ struct TempCompiled_GData {
 
 
 
+
+
+
 class TempCompiled_RectXShape  : public RectXShape {
 public:
   virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
@@ -505,7 +512,7 @@ public:
     height = ((map->GetDefaultShapeAttrs())[1]) ;
 
 
-# 85 "/p/devise/parser/proto/RectXShape_proto.h"
+# 88 "/p/devise/parser/proto/RectXShape_proto.h"
 
   }
 
@@ -540,7 +547,8 @@ public:
 
 
 
-	for(int colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
+	int colorIndex;
+	for(colorIndex = i + 1; colorIndex < numSyms; colorIndex++) {
 	  TempCompiled_GData  *gdata = (TempCompiled_GData  *)gdataArray[colorIndex];
 
 
