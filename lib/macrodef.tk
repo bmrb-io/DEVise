@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.21  1995/12/04 18:02:33  jussi
+#	User can now choose to have a title, X axis, Y axis, X link enabled
+#	or disabled in automatically generated views. Window name can be
+#	specified too. Horizontal view layouts are available now.
+#
 #	Revision 1.20  1995/11/29 15:47:26  jussi
 #	Removed constant size definition from some toplevel windows
 #	because they will produce unexpected results on some window
@@ -708,13 +713,19 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
     set err [catch {set exists $windows($window)}]
     if {$err > 0} {
 	# ask DEVise to create window
-	set result [DEVise create window $layout $window 0.3 0.0 0.5 0.95]
+	if {$layout == "WinVertical" } {
+	    set winparam "0.3 0.15 0.5 0.7"
+	    set result [DEVise create window $layout $window 0.3 0.15 0.5 0.7]
+	} else {
+	    set winparam "0.15 0.3 0.7 0.5"
+	    set result [DEVise create window $layout $window 0.15 0.3 0.7 0.5]
+	}
 	if {$result == ""} {
 	    dialog .windowError "Window Error" \
 		    "Error creating window $window" "" 0 OK
 	    return
 	}
-	set windows($window) {0.3 0.0 0.5 0.95}
+	set windows($window) $winparam
     }
     
     if {$sortedx > 0} {
