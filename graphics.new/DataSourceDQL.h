@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/11/01 19:28:18  kmurli
+  Added DQL sources to include access to TDataDQL. This is equivalent to
+  TDataAscii/TDataBinary. The DQL type in the Tcl/Tk corresponds to this
+  class.
+
   Revision 1.3  1996/07/14 20:34:16  jussi
   Rewrote class to fork a process that does all data transfers
   from the DQL site.
@@ -57,7 +62,7 @@ public:
 	virtual Boolean IsOk(){
 		return false;
 	}
-	virtual int Seek(long x,int x){
+	virtual int Seek(long offset, int from){
 		return 0;
 	}
 	virtual long Tell(){
