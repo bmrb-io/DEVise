@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1997/10/02 02:27:34  donjerko
+  Implementing moving aggregates.
+
   Revision 1.35  1997/09/17 02:35:51  donjerko
   Fixed the broken remote DTE interface.
 
@@ -192,6 +195,12 @@ void dateAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	EncodedDTF* val1 = ((EncodedDTF*)arg1) ;
 	EncodedIDT* val2 = ((EncodedIDT*)arg2) ;
 	*((EncodedDTF*) result) = (*val1 + *val2) ;
+}
+
+void seqSimilar(const Type* arg1, const Type* arg2, Type*& result, size_t&){
+	SeqSimVec* val1 = ((SeqSimVec*)arg1) ;
+	SeqSimVec* val2 = ((SeqSimVec*)arg2) ;
+//	*((double*) result) = val1->similar(*val2);
 }
 
 void intervalEq(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
@@ -594,6 +603,10 @@ void time_tWrite(ostream& out, const Type* adt){
 
 int boolSize(int a, int b){
 	return 1;
+}
+
+int doubleSize(int a, int b){
+	return 4;
 }
 
 int sameSize(int a, int b){

@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1997/10/02 02:27:35  donjerko
+  Implementing moving aggregates.
+
   Revision 1.36  1997/09/17 02:35:52  donjerko
   Fixed the broken remote DTE interface.
 
@@ -170,6 +173,7 @@ const string DATE_TP = "date";
 const string INTERVAL_TP = "interval" ;
 const string STRING_TP = "string";
 const string INTERFACE_TP = "interface";
+const string SEQSV_TP = "seqsv";
 
 const string RID_STRING = "recId";
 
@@ -290,6 +294,7 @@ void intervalUnmarshal(char* from, Type*& adt);
 void time_tUnmarshal(char* from, Type*& adt);
 
 int boolSize(int a, int b);
+int doubleSize(int a, int b);
 int sameSize(int a, int b);
 int memberSameSize(int a);
 
@@ -358,6 +363,9 @@ void doubleToDouble(const Type* arg, Type*& result, size_t& = dummySz);
 void intToInt(const Type* arg, Type*& result, size_t& = dummySz);
 void stringLToString(const Type* arg, Type*& result, size_t& = dummySz);
 void stringToStringL(const Type* arg, Type*& result, size_t& sz);
+
+void seqSimilar(const Type* arg1, const Type* arg2, Type*& result, 
+	size_t& = dummySz);
 
 void doubleAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 void doubleSub(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
@@ -498,6 +506,29 @@ public:
 	}
 	static const int getInt(const Type* object){
 		return (int) object;
+	}
+};
+
+class SeqSimVec;
+
+class ISeqSimVec {
+//	SeqSimVec sv;
+public:
+	static GeneralPtr* getOperatorPtr(
+		string name, TypeID arg, TypeID& retType){
+		if(arg != SEQSV_TP){
+			return NULL;
+		}
+		if(name == "similar"){
+			retType = "double";
+			return new GeneralPtr(seqSimilar, doubleSize);
+		}
+		else{
+			return NULL;
+		}
+	}
+	static const SeqSimVec* getSeqSV(const Type* object){
+		return (SeqSimVec*) object;
 	}
 };
 

@@ -49,8 +49,12 @@ bool Aggregates::isApplicable(){
 			    aggFuncs[i] = new AvgAggregate();
 			  else if (*name == "sum")
 			    aggFuncs[i] = new SumAggregate();
-			  else if (*name == "count")
+			  else if (*name == "count"){
 			    aggFuncs[i] = new CountAggregate();
+                 }	
+			  else if (*name == "sv"){
+//			    aggFuncs[i] = new SeqSimVecAggregate();
+			  }
 			}
 			else if (numArgs == 3) {
 			  // moving aggregates
