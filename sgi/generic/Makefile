@@ -15,6 +15,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1998/01/07 19:31:34  wenger
+#  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+#  server library into Devise); updated solaris, sun, linux, and hp
+#  dependencies.
+#
+#  Revision 1.8.4.2  1998/02/23 19:52:51  wenger
+#  Got DEVise 1.4.7 to compile and link on haha; fixed bug 268.
+#
 #  Revision 1.8.4.1  1997/12/29 22:13:21  wenger
 #  Got DEVise 1.4.7 to compile, link, and run on SGI.
 #
@@ -50,12 +58,13 @@
 
 PERL_CORE = /usr/freeware/lib/perl5/irix/CORE
 
-ARCH_FLAGS   = -DSGI -I/usr/include/X11 -I/usr/local/include
+ARCH_FLAGS   = -DSGI -I/usr/include/X11 -I/usr/local/include \
+	-I/usr/freeware/include
 
 # Having -L /usr/local/lib here makes strstreams core dump! RKW Dec. 29, 1997.
-ARCH_LDFLAGS = -L /usr/lib/X11
+ARCH_LDFLAGS = -L /usr/lib/X11 -L /usr/freeware/lib
 
-ARCH_SYSLIBS = -ltk4.1 -ltcl7.5 -lX11 -lm
+ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
 ARCH_LDPOST  =
 ARCH_STATIC_LDPOST  = -static
 

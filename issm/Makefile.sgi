@@ -15,6 +15,13 @@
 # $Id$
 
 # $Log$
+# Revision 1.5.12.1  1998/02/23 19:52:02  wenger
+# Got DEVise 1.4.7 to compile and link on haha; fixed bug 268.
+#
+# Revision 1.5  1997/03/28 16:11:13  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -24,38 +31,33 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-binconv.o: /usr/include/math.h binconv.h /usr/include/string.h
-extract.o: /usr/include/stdio.h /usr/include/string.h /usr/include/stdlib.h
-extract.o: /usr/include/sgidefs.h /usr/local/include/tcl.h
-extract.o: /usr/local/include/tk.h /usr/include/X11/Xlib.h
-extract.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
-extract.o: /usr/include/sys/select.h /usr/include/X11/X.h
-extract.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
-extract.o: /usr/include/stddef.h rectape.h ../tape/tapedrive.h
-extract.o: ../graphics.new/machdep.h /usr/include/limits.h
+binconv.o: /usr/include/math.h /usr/include/sgidefs.h
+binconv.o: /usr/include/standards.h binconv.h /usr/include/string.h
+extract.o: /usr/include/stdio.h /usr/include/standards.h
+extract.o: /usr/include/sgidefs.h /usr/include/string.h /usr/include/stdlib.h
+extract.o: rectape.h ../tape/tapedrive.h ../graphics.new/machdep.h
+extract.o: /usr/include/limits.h /usr/include/sys/types.h
 extract.o: /usr/include/sys/param.h /usr/include/sys/signal.h
 extract.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-extract.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
-extract.o: /usr/include/sys/resource.h /usr/include/sys/ipc.h
-extract.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-extract.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
-extract.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
-extract.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
-extract.o: /usr/include/netdb.h /usr/include/sys/socket.h
-extract.o: /usr/include/netinet/in.h /usr/include/sys/endian.h binconv.h
-extract.o: issmdata.h
-rectape.o: /usr/include/stdlib.h /usr/include/sgidefs.h rectape.h
-rectape.o: ../tape/tapedrive.h /usr/include/stdio.h ../graphics.new/machdep.h
+extract.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+extract.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+extract.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
+extract.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
+extract.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
+extract.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
+extract.o: /usr/include/sys/select.h /usr/include/netinet/in.h
+extract.o: /usr/include/sys/endian.h binconv.h issmdata.h
+rectape.o: /usr/include/stdlib.h /usr/include/standards.h
+rectape.o: /usr/include/sgidefs.h rectape.h ../tape/tapedrive.h
+rectape.o: /usr/include/stdio.h ../graphics.new/machdep.h
 rectape.o: /usr/include/limits.h /usr/include/sys/types.h
-rectape.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
 rectape.o: /usr/include/sys/param.h /usr/include/sys/signal.h
 rectape.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-rectape.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
-rectape.o: /usr/include/sys/resource.h /usr/include/sys/ipc.h
-rectape.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-rectape.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
-rectape.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
-rectape.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
-rectape.o: /usr/include/netdb.h /usr/include/sys/socket.h
-rectape.o: /usr/include/netinet/in.h /usr/include/sys/endian.h binconv.h
-rectape.o: /usr/include/string.h
+rectape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+rectape.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+rectape.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
+rectape.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
+rectape.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
+rectape.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
+rectape.o: /usr/include/sys/select.h /usr/include/netinet/in.h
+rectape.o: /usr/include/sys/endian.h binconv.h /usr/include/string.h

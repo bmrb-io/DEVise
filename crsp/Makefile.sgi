@@ -15,6 +15,13 @@
 # $Id$
 
 # $Log$
+# Revision 1.5.12.1  1998/02/23 19:51:02  wenger
+# Got DEVise 1.4.7 to compile and link on haha; fixed bug 268.
+#
+# Revision 1.5  1997/03/28 16:08:39  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -24,67 +31,59 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-cal.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sgidefs.h
-cal.o: cal.h
-crsp_extract.o: /usr/include/stdlib.h /usr/include/sgidefs.h
-crsp_extract.o: /usr/include/string.h /usr/local/include/tcl.h
-crsp_extract.o: /usr/include/stdio.h /usr/local/include/tk.h
-crsp_extract.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
-crsp_extract.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
-crsp_extract.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
-crsp_extract.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h sec.h
-crsp_extract.o: ../tape/tapedrive.h ../graphics.new/machdep.h
-crsp_extract.o: /usr/include/limits.h /usr/include/sys/param.h
+cal.o: /usr/include/stdio.h /usr/include/standards.h /usr/include/sgidefs.h
+cal.o: /usr/include/stdlib.h cal.h
+crsp_extract.o: /usr/include/stdlib.h /usr/include/standards.h
+crsp_extract.o: /usr/include/sgidefs.h /usr/include/string.h sec.h
+crsp_extract.o: ../tape/tapedrive.h /usr/include/stdio.h
+crsp_extract.o: ../graphics.new/machdep.h /usr/include/limits.h
+crsp_extract.o: /usr/include/sys/types.h /usr/include/sys/param.h
 crsp_extract.o: /usr/include/sys/signal.h /usr/include/sys/time.h
-crsp_extract.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-crsp_extract.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
-crsp_extract.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-crsp_extract.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-crsp_extract.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
-crsp_extract.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
-crsp_extract.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
-crsp_extract.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-crsp_extract.o: /usr/include/sys/endian.h
-crsp_index.o: /usr/include/string.h /usr/include/stdlib.h
-crsp_index.o: /usr/include/sgidefs.h sec.h ../tape/tapedrive.h
-crsp_index.o: /usr/include/stdio.h ../graphics.new/machdep.h
-crsp_index.o: /usr/include/limits.h /usr/include/sys/types.h
-crsp_index.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
-crsp_index.o: /usr/include/sys/param.h /usr/include/sys/signal.h
-crsp_index.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-crsp_index.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
-crsp_index.o: /usr/include/sys/resource.h /usr/include/sys/ipc.h
+crsp_extract.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+crsp_extract.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+crsp_extract.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
+crsp_extract.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
+crsp_extract.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
+crsp_extract.o: /usr/include/netdb.h /usr/include/sys/socket.h
+crsp_extract.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+crsp_extract.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
+crsp_index.o: /usr/include/string.h /usr/include/standards.h
+crsp_index.o: /usr/include/stdlib.h /usr/include/sgidefs.h sec.h
+crsp_index.o: ../tape/tapedrive.h /usr/include/stdio.h
+crsp_index.o: ../graphics.new/machdep.h /usr/include/limits.h
+crsp_index.o: /usr/include/sys/types.h /usr/include/sys/param.h
+crsp_index.o: /usr/include/sys/signal.h /usr/include/sys/time.h
+crsp_index.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
 crsp_index.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
 crsp_index.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
 crsp_index.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
 crsp_index.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
 crsp_index.o: /usr/include/netdb.h /usr/include/sys/socket.h
+crsp_index.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
 crsp_index.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
 main.o: sec.h ../tape/tapedrive.h /usr/include/stdio.h
+main.o: /usr/include/standards.h /usr/include/sgidefs.h
 main.o: ../graphics.new/machdep.h /usr/include/limits.h
-main.o: /usr/include/sgidefs.h /usr/include/sys/types.h
-main.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
-main.o: /usr/include/sys/param.h /usr/include/sys/signal.h
-main.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-main.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
-main.o: /usr/include/sys/resource.h /usr/include/sys/ipc.h
-main.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-main.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
-main.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
-main.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
-main.o: /usr/include/netdb.h /usr/include/sys/socket.h
-main.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
-sec.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sgidefs.h
-sec.o: /usr/include/ctype.h sec.h ../tape/tapedrive.h
+main.o: /usr/include/sys/types.h /usr/include/sys/param.h
+main.o: /usr/include/sys/signal.h /usr/include/sys/time.h
+main.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
+main.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+main.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
+main.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
+main.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
+main.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
+main.o: /usr/include/sys/select.h /usr/include/netinet/in.h
+main.o: /usr/include/sys/endian.h
+sec.o: /usr/include/stdio.h /usr/include/standards.h /usr/include/sgidefs.h
+sec.o: /usr/include/stdlib.h /usr/include/ctype.h sec.h ../tape/tapedrive.h
 sec.o: ../graphics.new/machdep.h /usr/include/limits.h
-sec.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
-sec.o: /usr/include/sys/select.h /usr/include/sys/param.h
+sec.o: /usr/include/sys/types.h /usr/include/sys/param.h
 sec.o: /usr/include/sys/signal.h /usr/include/sys/time.h
-sec.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-sec.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
-sec.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
-sec.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
-sec.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
-sec.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
-sec.o: /usr/include/netdb.h /usr/include/sys/socket.h
-sec.o: /usr/include/netinet/in.h /usr/include/sys/endian.h cal.h
+sec.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
+sec.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+sec.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
+sec.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
+sec.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
+sec.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
+sec.o: /usr/include/sys/select.h /usr/include/netinet/in.h
+sec.o: /usr/include/sys/endian.h cal.h

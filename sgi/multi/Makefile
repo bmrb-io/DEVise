@@ -15,6 +15,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1998/01/07 19:31:41  wenger
+#  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+#  server library into Devise); updated solaris, sun, linux, and hp
+#  dependencies.
+#
+#  Revision 1.7.4.2  1998/02/23 19:53:19  wenger
+#  Got DEVise 1.4.7 to compile and link on haha; fixed bug 268.
+#
 #  Revision 1.7.4.1  1997/12/30 16:50:22  wenger
 #  Fixed a few compile problems.
 #
@@ -49,9 +57,10 @@
 
 PERL_CORE = /usr/freeware/lib/perl5/irix/CORE
 
-ARCH_FLAGS   = -DSGI -I/usr/include/X11 -I/usr/local/include
-ARCH_LDFLAGS = -L /usr/lib/X11 -L /usr/local/lib 
-ARCH_SYSLIBS = -ltk4.1 -ltcl7.5 -lX11 -lm
+ARCH_FLAGS   = -DSGI -I/usr/include/X11 -I/usr/local/include \
+	-I/usr/freeware/include
+ARCH_LDFLAGS = -L /usr/lib/X11 -L /usr/freeware/lib 
+ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../multi

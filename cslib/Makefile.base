@@ -17,6 +17,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.14  1998/02/19 23:24:18  wenger
+#  Improved color library and got client/server test code to work
+#  (except for setting colors by RGB): reduced compile interdependencies,
+#  especially in color library; color and utils libraries install headers
+#  as per code reorg plans; added standard DEVise headers to all color
+#  manager files; moved color initialization into Display constructors;
+#  fixed some compile warnings throughout the code.
+#
 #  Revision 1.13  1998/01/31 20:01:55  wenger
 #  Fixed bugs 277, 278, and 279; GData sent on socket now has <ctl-D>
 #  written at the end.
@@ -98,7 +106,7 @@
 include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
-	-I../../tape -I../../cslib -I../../src/include \
+	-I../../tape -I../../cslib -I../../src/color/export \
 	-I/s/mesa-2.4/include \
 	-Wall -Wno-unused -O $(TEMPLATE_FLAGS) $(OPTFLAG) \
 	-DGRAPHICS -DLIBCS -DUNIX -DRAWMOUSEEVENTS

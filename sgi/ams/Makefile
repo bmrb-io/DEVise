@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5.16.1  1998/02/23 19:52:22  wenger
+#  Got DEVise 1.4.7 to compile and link on haha; fixed bug 268.
+#
+#  Revision 1.5  1997/01/18 20:49:20  jussi
+#  Removed inclusion of Xaw and related X extensions.
+#
 #  Revision 1.4  1996/11/23 20:57:38  jussi
 #  Added ARCH_SYSLIBS.
 #
@@ -30,9 +36,10 @@
 
 ############################################################
 
-ARCH_FLAGS   = -DSGI -I/usr/include/X11 -I/usr/local/include
+ARCH_FLAGS   = -DSGI -I/usr/include/X11 -I/usr/local/include \
+	-I/usr/freeware/include
 ARCH_LDFLAGS = -L /usr/lib/X11 -L /usr/local/lib
-ARCH_SYSLIBS = -ltk4.1 -ltcl7.5 -lX11 -lm
+ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../ams

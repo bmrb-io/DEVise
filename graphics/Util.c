@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.23.2.1  1998/02/23 19:51:21  wenger
+  Got DEVise 1.4.7 to compile and link on haha; fixed bug 268.
+
+  Revision 1.23  1997/09/23 19:57:28  wenger
+  Opening and saving of sessions now working with new scheme of mapping
+  automatically creating the appropriate TData.
+
   Revision 1.22  1997/05/05 16:53:46  wenger
   Devise now automatically launches Tasvir and/or EmbeddedTk servers if
   necessary.
@@ -320,15 +327,16 @@ void CheckDirSpace(char *dirname, char *envVar, int warnSize, int exitSize)
   }
   else
   {
-    int bytesFree = stats.STAT_BAVAIL * stats.STAT_FRSIZE;
-    if (bytesFree < exitSize)
+    int minBlocksFree = exitSize / stats.STAT_FRSIZE;
+    int warnBlocksFree = warnSize / stats.STAT_FRSIZE;
+    if (stats.STAT_BAVAIL < minBlocksFree)
     {
       char errBuf[1024];
       sprintf(errBuf, "%s directory (%s) has less than %d bytes free\n",
 	envVar, dirname, exitSize);
       Exit::DoAbort(errBuf, __FILE__, __LINE__);
     }
-    else if (bytesFree < warnSize)
+    else if (stats.STAT_BAVAIL < warnBlocksFree)
     {
       fprintf(stderr,
 	"Warning: %s directory (%s) has less than %d bytes free\n",

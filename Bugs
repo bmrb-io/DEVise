@@ -1050,7 +1050,7 @@ Num Date        Status  Description
 267 12/19/97	FIXED	Tick marks and numbers on axes are drawn at the wrong
 			place (since OpenGL commit). (rkw)
 
-268 12/29/97	OPEN	Util.c:CheckDirSpace doesn't work with more than
+268 12/29/97	FIXED	Util.c:CheckDirSpace doesn't work with more than
 			2GB of free space (at least on Linux). (kb/rkw)
 
 269 01/06/98	OPEN	Client/server (but not monolithic) Devise crashes

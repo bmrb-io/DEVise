@@ -15,6 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1998/02/20 17:03:03  wenger
+#  Updated all architectures to use new dependency scheme in graphics and
+#  graphics.new directories.
+#
+#  Revision 1.4.16.1  1998/02/23 19:52:58  wenger
+#  Got DEVise 1.4.7 to compile and link on haha; fixed bug 268.
+#
 #  Revision 1.4  1995/12/29 18:54:38  jussi
 #  Removed -fno-for-scope compiler flag.
 #
@@ -31,7 +38,7 @@
 ############################################################
 
 ARCH_FLAGS = -DSGI -I/usr/include/X11 -I/usr/local/include \
-	-I/usr/include
+	-I/usr/include -I/usr/freeware/include
 
 VPATH = ../../graphics
 include $(VPATH)/Makefile.base
