@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1995/12/22 18:07:20  jussi
+  Added Vector shape.
+
   Revision 1.12  1995/12/14 21:17:57  jussi
   Replaced 0x%x with 0x%p.
 
@@ -284,7 +287,8 @@ void MappingInterp::DrawGDataArray(WindowRep *win, void **gdataArray, int num)
     int i = 0;
     while (i < num) {
       ShapeID shape = *((ShapeID *)(gdataArray[i]+_offsets->shapeOffset));
-      for(int j = i + 1; j < num; j++) {
+      int j;
+      for(j = i + 1; j < num; j++) {
 	ShapeID nextShape =
 	              *((ShapeID *)(gdataArray[j]+_offsets->shapeOffset));
 	if (shape != nextShape)
@@ -335,18 +339,23 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
        printf("setting attr values\n");
     */
 
-    for(int j = 0; j <= _maxTDataAttrNum; j++) {
+    int j;
+    for(j = 0; j <= _maxTDataAttrNum; j++) {
       if (_tdataFlag->TestBit(j)) {
 	/* jth attr of TData is to be used */
 	/*
 	   printf("bit %d set\n", j);
 	*/
 	AttrInfo *attrInfo = _attrList->Get(j);
+	int *intPtr;
+	float *fPtr;
+	double *dPtr;
+	time_t *tptr;
 
 	switch(attrInfo->type) {
 
 	case IntAttr:
-	  int *intPtr = (int *)(tPtr+attrInfo->offset);
+	  intPtr = (int *)(tPtr+attrInfo->offset);
 	  _tclAttrs[j] = (double)(*intPtr);
 	  /*
 	     printf("Setting int attr %d to %f\n",j, _tclAttrs[j]);
@@ -354,7 +363,7 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
 	  break;
 
 	case FloatAttr:
-	  float *fPtr = (float *)(tPtr+attrInfo->offset);
+	  fPtr = (float *)(tPtr+attrInfo->offset);
 	  _tclAttrs[j] = (double)(*fPtr);
 	  /*
 	     printf("Setting float attr %d to %f\n",j, _tclAttrs[j]);
@@ -362,7 +371,7 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
 	  break;
 
 	case DoubleAttr:
-	  double *dPtr = (double *)(tPtr+attrInfo->offset);
+	  dPtr = (double *)(tPtr+attrInfo->offset);
 	  _tclAttrs[j] = (*dPtr);
 	  /*
 	     printf("Setting float attr %d to %f\n",j, _tclAttrs[j]);
@@ -370,20 +379,12 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
 	  break;
 
 	case StringAttr:
-	  /*
-	     char *cPtr = tPtr+attrInfo->offset;
-	     _tclAttrs[j] = atof(cPtr);
-	  */
 	  _tclStrAttrs[j] = tPtr+attrInfo->offset;
 	  break;
 
 	case DateAttr:
-	  time_t *tptr = (time_t *)(tPtr+attrInfo->offset);
+	  tptr = (time_t *)(tPtr+attrInfo->offset);
 	  _tclAttrs[j] = (double)(*tptr);
-	  /*
-	     printf("Setting date attr %d to %f\n", j,
-	     _tclAttrs[j]);
-	  */
 	  break;
 
 	default:
@@ -549,7 +550,8 @@ AttrList *MappingInterp::InitCmd(char *name)
   _offsets->xOffset= _offsets->yOffset = _offsets->colorOffset = -1;
   _offsets->sizeOffset = _offsets->shapeOffset = -1;
   _offsets->patternOffset = _offsets->orientationOffset = -1;
-  for(int i = 0; i < MAX_GDATA_ATTRS; i++)
+  int i;
+  for(i = 0; i < MAX_GDATA_ATTRS; i++)
     _offsets->shapeAttrOffset[i] = -1;
   
   _tdataFlag->ClearBitmap();
@@ -989,9 +991,9 @@ char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
 	/* from cmd+1 to ptr-1 is a variable name */
 	char buf[80];
 	int len = ptr - 1 - (cmd + 1) + 1;
-	if (len >= sizeof buf) {
-	  fprintf(stderr, "can not handle variable name > %ld\n",
-		  sizeof buf);
+	if (len >= (int)(sizeof buf)) {
+	  fprintf(stderr, "can not handle variable name > %d\n",
+		  (int)(sizeof buf));
 	  Exit::DoExit(2);
 	}
 	memcpy(buf, cmd + 1, len);
@@ -1155,6 +1157,7 @@ inline double ConvertOne(char *from, MappingSimpleCmdEntry *entry,
 {
   AttrInfo *info;
   int offset;
+  char *ptr;
 
   switch(entry->cmdType) {
   case MappingSimpleCmdEntry::AttrCmd:
@@ -1163,7 +1166,7 @@ inline double ConvertOne(char *from, MappingSimpleCmdEntry *entry,
     */
     info = entry->cmd.attr;
     offset = info->offset;
-    char *ptr = from + offset;
+    ptr = from + offset;
 
     switch(info->type) {
     case IntAttr:
@@ -1201,11 +1204,13 @@ inline double ConvertOne(char *from, MappingSimpleCmdEntry *entry,
     */
     return defaultVal;
     break;
-
-  default:
-    fprintf(stderr, "Unknown MappingSimpleCmdEntry\n");
-    Exit::DoExit(1);
   }
+
+  fprintf(stderr, "Unknown MappingSimpleCmdEntry\n");
+  Exit::DoExit(1);
+
+  // keep compiler happy
+  return 0;
 }
 
 void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
