@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/11 03:24:30  jussi
+  Added interface to trade calendar, so now a "real" date
+  is extracted with each record.
+
   Revision 1.6  1996/04/16 20:57:11  jussi
   Replaced assert() calls with DOASSERT macro.
 
@@ -126,6 +130,8 @@ void Security::print_security(ostream& out)
     calendar = new Calendar(calfile);
 
   int sdate = header.begdat;
+  int lastrealdate = -1;
+
   while (sdate <= header.enddat) {
     // if calendar file is available, translate trading date to
     // real date
@@ -133,6 +139,11 @@ void Security::print_security(ostream& out)
     if (calendar) {
       if (calendar->load_day(sdate))
 	realdate = calendar->cal.caldt;
+      else {
+	if (lastrealdate > 0)
+	  realdate = lastrealdate + 1;
+      }
+      lastrealdate = realdate;
     }
 
     // DATE
