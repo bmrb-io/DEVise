@@ -16,4 +16,6 @@ insertMapping {Y vs. X} {testcolors#Y_vs_X}
 insertWindow {Y vs. X} {Test Colors}
 clearViewHistory {Y vs. X}
 insertViewHistory {Y vs. X} {9.00} {5.00} {20.00} {11.00} {0}
+sync
+saveWindowImage gif {Test Colors} testcolors.gif
 exit
