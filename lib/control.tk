@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.115  1997/02/03 04:12:37  donjerko
+#	Catalog management moved to DTE
+#
 #	Revision 1.114  1997/01/29 17:03:01  wenger
 #	Removed main help (but not help demo or history) from user interface.
 #
@@ -547,7 +550,7 @@ source $libdir/history.tcl
 source $libdir/query.tcl
 source $libdir/window.tcl
 source $libdir/tdata.tk
-source $libdir/lens.tcl
+source $libdir/layout.tk
 
 set mode 0
 DEVise changeMode $mode
@@ -922,6 +925,8 @@ menu .mbar.view.menu.linkMenu -tearoff 0
 	-command { DoSetLinkMaster }
 .mbar.view.menu.linkMenu add command -label "Reset Master" \
 	-command { DoResetLinkMaster}
+.mbar.view.menu.linkMenu add command -label "Set Link Type" \
+	-command { DoSetLinkType }
 
 .mbar.view.menu add separator
 .mbar.view.menu add cascade -label "Cursor" \
@@ -1011,6 +1016,7 @@ menu .mbar.view.menu.dimmenu -tearoff 0
 
 menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "Layout" -command { SetWindowLayout "" }
+.mbar.window.menu add command -label "Layout-Manager" -command { RootLayout }
 .mbar.window.menu add command -label "Remove" -command { RemoveWindow "" }
 .mbar.window.menu add command -label "Duplicate" -command DupWindow
 .mbar.window.menu add separator
