@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1999/12/06 18:41:04  wenger
+  Simplified and improved command logging (includes fixing bug 537, command
+  logs are now human-readable); added standard header to debug logs.
+
   Revision 1.11  1999/11/16 20:13:00  wenger
   Improvements to debug logging: the beginning of the log isn't overwritten
   when the log wraps around; the values of important environment variables
@@ -162,6 +166,18 @@ DebugLog::SetLogLevel(Level logLevel)
   char logBuf[1024];
   sprintf(logBuf, "Log level set to: %d\n", _logLevel);
   write(_fd, logBuf, strlen(logBuf));
+}
+
+/*------------------------------------------------------------------------------
+ * function: DebugLog::Message
+ * Log a message.
+ */
+void
+DebugLog::Message(Level level, const char *msg1, int value)
+{
+  char buf[32];
+  sprintf(buf, ": %d", value);
+  Message(level, msg1, buf);
 }
 
 /*------------------------------------------------------------------------------

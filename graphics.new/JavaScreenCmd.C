@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.93  2000/02/23 18:57:51  wenger
+  Added option to do checksum on GIFs and GData sent to JavaScreen.
+
   Revision 1.92  2000/02/23 16:08:50  wenger
   Added missing DebugLog call to SendWindowData() method.
 
@@ -1717,6 +1720,12 @@ JavaScreenCmd::JSResetFilters()
 	// Send the updated window image(s).
 	ControlCmdType tmpStatus = SendChangedViews(true);
 	if (tmpStatus == ERROR) _status = tmpStatus;
+
+    // Avoid unnecessary JAVAC_Done command, if things went okay.
+	// (SendChangedViews() sends JAVAC_Done.)
+    if (_status == DONE) {
+        _status = NULL_COMMAND;
+    }
 }
 
 //====================================================================

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1999/11/16 20:13:00  wenger
+  Improvements to debug logging: the beginning of the log isn't overwritten
+  when the log wraps around; the values of important environment variables
+  are logged at startup.
+
   Revision 1.7  1999/10/14 16:07:32  wenger
   Improvements to debug logging.
 
@@ -58,11 +63,15 @@
 #ifndef _DebugLog_h_
 #define _DebugLog_h_
 
+#define LogFileLine(logLevel) DebugLog::DefaultLog()->Message(logLevel, \
+    __FILE__, __LINE__)
+
 class DebugLog {
 public:
   enum Level {LevelFatalError = 0, LevelError, LevelWarning, LevelInfo0,
       LevelInfo1, LevelCommand, LevelInfo2, LevelDispatcher};
 
+  void Message(Level level, const char *msg1, int value);
   void Message(Level level, const char *msg1, const char *msg2 = NULL,
       const char *msg3 = NULL);
   void Message(Level level, const char *msg1, int argc,

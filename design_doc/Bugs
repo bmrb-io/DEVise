@@ -2215,10 +2215,11 @@ Num Date        Status  Description
 			are on different machines. (rkw)
 			(Fixed by Hongyu, 2/23/00.)
 
-567 02/23/00	OPEN	Load FamMed_pre_post_natal.ds in the JavaScreen,
+567 02/23/00	FIXED	Load FamMed_pre_post_natal.ds in the JavaScreen,
 			then do JAVAC_ResetFilter; after this, the devised
 			doesn't properly execute/respond to further commands.
 			(hy/rkw)
+			(Fixed by rkw, 2/23/00.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
