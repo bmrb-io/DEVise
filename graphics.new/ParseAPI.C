@@ -22,6 +22,9 @@
   $Id$
 
   $Log$
+  Revision 1.84  1997/12/12 05:50:42  weaver
+  *** empty log message ***
+
   Revision 1.83  1997/12/05 18:42:23  wenger
   Timers are now stopped whenever we're doing anything with the data
   socket.
@@ -738,9 +741,9 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
   }
 
   if (argc == 1) {
+#if 0
     if (!strcmp(argv[0], "startLayoutManager") ) {
       printf("starting Layout Manager\n");
-#if 0
       int childpid = fork();
       if (childpid == 0) {
 	char *args[] = {"/u/s/s/ssl/Work/LM/C++/LM", 0};
@@ -748,10 +751,10 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
       } else {
 	return 1;
       }
-#endif
       LMControl::GetLMControl()->Go();
       return 1;
     }
+#endif
     if (!strcmp(argv[0], "date")) {
       time_t tm = time((time_t *)0);
       control->ReturnVal(API_ACK, DateString(tm));

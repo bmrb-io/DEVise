@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.25  1997/12/12 16:37:53  wenger
+# Added 'strip' target.
+#
 # Revision 1.24  1997/12/02 17:35:38  wenger
 # Set up src/color and src/utils to compile "normally" for solaris and
 # solsparc.
@@ -57,7 +60,7 @@
 #
 
 LIBMODULES = graphics graphics.new tape issm compustat crsp \
-	unidata DTE RTree LM xvertext color utils
+	unidata DTE RTree xvertext color utils
 
 #devread is obsolete
 #attrproj is broken

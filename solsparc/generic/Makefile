@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1997/08/12 18:48:57  wenger
+#  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
+#  makefiles; various other makefile cleanups.
+#
 #  Revision 1.8  1997/01/18 20:48:47  jussi
 #  Removed inclusion of Xaw and related X extensions.
 #
@@ -48,8 +52,13 @@
 PERL_CORE = /s/perl/lib/CORE
 
 ARCH_FLAGS   = -DSOLARIS -I/s/X11/include -I/s/tcl/include
-ARCH_LDFLAGS = -L /s/X11/lib -L /s/tcl/lib -R /s/X11/lib
-ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
+
+# We need to explicitly specify /usr/lib here so we get the libm.a there
+# rather than from /s/mesa-2.4/lib.
+ARCH_LDFLAGS = -L/usr/lib -L/s/mesa-2.4/lib -R/s/mesa-2.4/lib \
+		-L /s/X11/lib -L /s/tcl/lib -R /s/X11/lib
+ARCH_SYSLIBS = -lMesaGLw -lMesaGLU -lMesaGL \
+		-ltk -ltcl -lXaw -lXpm -lXt -lXmu -lX11 -lm
 ARCH_LDPOST  = -lsocket -lnsl
 ARCH_STATIC_LDPOST  = -lsocket -lnsl -static
 # Note: Purify works on SPARC/Solaris without the collector being specified.

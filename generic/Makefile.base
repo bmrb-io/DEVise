@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.38  1997/12/02 17:35:22  wenger
+#  Set up src/color and src/utils to compile "normally" for solaris and
+#  solsparc.
+#
 #  Revision 1.37  1997/11/24 23:14:05  weaver
 #  Changes for the new ColorManager.
 #
@@ -102,7 +106,7 @@ LDFLAGS = -L../DTE/ -L../RTree -L../graphics.new -L../graphics -L../tape \
 	-L../crsp -L../compustat -L../LM -L../xvertext \
 	-lgraphicsnew -lgraphics -lutils -lcolor \
 	-ldte -lrtree -lgraphicsnew \
-	-llm -lXrot \
+	-lXrot \
 	-lissm -lcrsp -lcstat -ltape \
 	-L$(PERL_CORE) -L../unidata -lunidata -lperl $(ARCH_SYSLIBS)
 
@@ -127,7 +131,7 @@ ALLLIBS = ../utils/libutils.a ../color/libcolor.a \
 	../DTE/libdte.a \
 	../RTree/librtree.a \
 	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \
-	../crsp/libcrsp.a  ../LM/liblm.a ../xvertext/libXrot.a
+	../crsp/libcrsp.a ../xvertext/libXrot.a
 
 CLIENTLIB = ../graphics.new/libclient.a
 SERVERLIB = ../graphics.new/libserver.a
