@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  1999/07/14 18:42:53  wenger
+  Added the capability to have axes without ticks and tick labels.
+
   Revision 1.39  1999/06/16 18:28:33  wenger
   Fixed bug 499 (problem with 'Next in Pile' not working for piled view
   symbols).
@@ -1075,11 +1078,13 @@ DECLARE_CLASS_END
 DECLARE_CLASS_DeviseCommand_(testDataSock) 
 DECLARE_CLASS_END
 
+#if 0
 //
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(viewGetAlign) 
 DECLARE_CLASS_END
+#endif
 
 //
 //Class definition

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.38  1999/07/13 17:32:44  wenger
+  Parent view can now control attribute(s) in child view's mapping;
+  cleaned up some of the mapping-related code; better command logging.
+
   Revision 1.37  1999/05/28 16:32:45  wenger
   Finished cleaning up bounding-box-related code except for PolyLineFile
   symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
@@ -615,9 +619,9 @@ class TDataMap
   }
   
 protected:
+  void InitializeDefaults();
   
-  /* Set new defaults. Should only be done in the constructor of
-     derived classes.*/
+  /* Set new defaults. Should only be done in derived classes.*/
   void SetDefaultX(Coord x) { _defaults._x = x; }
   void SetDefaultY(Coord y) { _defaults._y = y; }
   void SetDefaultZ(Coord z) { _defaults._z = z; }
@@ -632,9 +636,6 @@ protected:
   void SetDefaultShape(ShapeID shapeID, int numAttr = 0, 
 		       ShapeAttr *shapeAttr = NULL);
   void SetDefaultShapeAttr(int attrNum, Coord shapeAttr);
-#if 0 // This doesn't seem to be implemented anywhere.  RKW 1999-05-18.
-  void SetDefaultShapeAttr(int attrNum, char *shapeAttr);
-#endif
 
   Coord _maxSymWidth; /* bounding box for symbol */
   Coord _maxSymHeight;

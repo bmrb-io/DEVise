@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.43  1999/07/14 18:42:51  wenger
+  Added the capability to have axes without ticks and tick labels.
+
   Revision 1.42  1999/06/16 18:28:33  wenger
   Fixed bug 499 (problem with 'Next in Pile' not working for piled view
   symbols).
@@ -418,7 +421,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(createTData)
 	REGISTER_COMMAND(getViewGDS)
 	REGISTER_COMMAND(testDataSock)
-	REGISTER_COMMAND(viewGetAlign)
+	//REGISTER_COMMAND(viewGetAlign)
 	REGISTER_COMMAND(setLinkMaster)
 	REGISTER_COMMAND(setLinkType)
 	REGISTER_COMMAND(setScreenSize)

@@ -17,6 +17,14 @@
   $Id$
 
   $Log$
+  Revision 1.69  1999/07/16 21:36:08  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.68  1999/06/30 17:38:48  wenger
   Data color of parent view's mapping (if specified) now controls the
   background color of view symbols; defined constant strings for GData
@@ -2117,18 +2125,20 @@ GetLabelText(char *gdata, TDataMap *map,
 }
 
 static Boolean // true if okay
-GetAlignment(ViewGraph *view, WindowRep::SymbolAlignment &alignment)
+GetAlignment(TDataMap *tdMap, char *gdataRec, int attrNum,
+  WindowRep::SymbolAlignment &alignment)
 {
-    int align_num = view->GetAlign();
+    int align_num = (int)tdMap->GetShapeAttr(gdataRec, attrNum);
+	align_num += 4; // make GData value of 0 be centered
     
     Boolean okay = true;
 
-    switch (align_num){
+    switch (align_num) {
     case 0:
        alignment = WindowRep::AlignNorthWest;
        break;
   
-     case 1:
+    case 1:
        alignment = WindowRep::AlignWest;
        break;
    
@@ -2161,11 +2171,78 @@ GetAlignment(ViewGraph *view, WindowRep::SymbolAlignment &alignment)
        break;
 
     default:
-       okay = false;
+       alignment = WindowRep::AlignCenter;
        break;
     }
 
 	return okay;
+}
+
+// Adjust bounding box according to alignment.
+static void
+AlignBoundingBox(WindowRep::SymbolAlignment alignment, Coord &left, Coord &top,
+  Coord &right, Coord &bottom)
+{
+    Coord halfWidth = (right - left) / 2.0;
+	Coord halfHeight = (top - bottom) / 2.0;
+
+    switch (alignment) {
+    case WindowRep::AlignNorthWest:
+	   left += halfWidth;
+	   right += halfWidth;
+	   top -= halfHeight;
+	   bottom -= halfHeight;
+       break;
+  
+    case WindowRep::AlignWest:
+	   left += halfWidth;
+	   right += halfWidth;
+       break;
+   
+    case WindowRep::AlignSouthWest:
+	   left += halfWidth;
+	   right += halfWidth;
+	   top += halfHeight;
+	   bottom += halfHeight;
+       break;
+   
+    case WindowRep::AlignNorth:
+	   top -= halfHeight;
+	   bottom -= halfHeight;
+       break;
+
+    case WindowRep::AlignCenter:
+	   // no change
+       break;
+
+    case WindowRep::AlignSouth:
+	   top += halfHeight;
+	   bottom += halfHeight;
+       break;
+
+    case WindowRep::AlignNorthEast:
+	   left -= halfWidth;
+	   right -= halfWidth;
+	   top -= halfHeight;
+	   bottom -= halfHeight;
+       break;
+
+    case WindowRep::AlignEast:
+	   left -= halfWidth;
+	   right -= halfWidth;
+       break;
+
+    case WindowRep::AlignSouthEast:
+	   left -= halfWidth;
+	   right -= halfWidth;
+	   top += halfHeight;
+	   bottom += halfHeight;
+       break;
+
+    default:
+       // no change
+       break;
+	}
 }
 
 
@@ -2222,9 +2299,17 @@ FullMapping_TextLabelShape::FindBoundingBoxes(void *gdataArray,
 	Coord halfWidth = symWidth / 2.0;
 	Coord halfHeight = symHeight / 2.0;
 
-    tdMap->SetBoundingBox(dataP, -halfWidth, halfHeight, halfWidth,
-	    -halfHeight);
+	Coord left = -halfWidth;
+	Coord right = halfWidth;
+	Coord top = halfHeight;
+	Coord bottom = -halfHeight;
 
+    WindowRep::SymbolAlignment alignment;
+	if (GetAlignment(tdMap, dataP, 5, alignment)) {
+	  AlignBoundingBox(alignment, left, top, right, bottom);
+	}
+
+    tdMap->SetBoundingBox(dataP, left, top, right, bottom);
     dataP += recSize;
   }
 
@@ -2271,7 +2356,10 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
   GDataAttrOffset *offset = map->GetGDataOffset();
   StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
 
-  Coord oldPointSize = -9999.9;
+  int oldFontFamily;
+  Coord oldPointSize;
+  Boolean oldBold;
+  Boolean oldItalic;
 
   for(int i = 0; i < numSyms; i++) {
 #if USE_TIMER
@@ -2315,6 +2403,10 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 	  DeviseDisplay::DefaultDisplay()->PointsPerPixel();
 	pointSize = (Coord) ((int) (pointSize + 0.5));
 
+	int fontFamily = (int)map->GetShapeAttr(gdata, 6);
+	Boolean bold = (Boolean)map->GetShapeAttr(gdata, 7);
+	Boolean italic =  (Boolean)map->GetShapeAttr(gdata, 8);
+
     /* Find or generate the label string. */
     char labelBuf[128];
     char *label = GetLabelText(gdata, map, labelAttrValid, labelAttrType,
@@ -2323,10 +2415,17 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 
     win->SetForeground(map->GetColor(gdata));
     win->SetPattern(map->GetPattern(gdata));
-    if (pointSize != oldPointSize) {
-      view->GetDataFont().SetSize(pointSize);
-      view->GetDataFont().SetWinFont(win);
+
+	if (i == 0 || oldFontFamily != fontFamily || oldPointSize != pointSize ||
+	    oldBold != bold || oldItalic != italic) {
+      DevFont dataFont;
+      dataFont.Set(fontFamily, pointSize, bold, italic);
+      dataFont.SetWinFont(win);
+
+	  oldFontFamily = fontFamily;
       oldPointSize = pointSize;
+	  oldBold = bold;
+	  oldItalic = italic;
     }
 
 #if defined(DEBUG)
@@ -2335,7 +2434,7 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
     
     WindowRep::SymbolAlignment alignment;
 
-    if (GetAlignment(view, alignment)) {
+    if (GetAlignment(map, gdata, 5, alignment)) {
       if  ((Boolean)map->GetShapeAttr4(gdata)) {
         Pattern oldPattern = win->GetPattern();
         win->SetPattern((Pattern)-1);
@@ -2425,8 +2524,17 @@ FullMapping_TextDataLabelShape::FindBoundingBoxes(void *gdataArray,
 	Coord halfWidth = symWidth / 2.0;
 	Coord halfHeight = symSize / 2.0;
 
-    tdMap->SetBoundingBox(dataP, -halfWidth, halfHeight, halfWidth,
-	    -halfHeight);
+	Coord left = -halfWidth;
+	Coord right = halfWidth;
+	Coord top = halfHeight;
+	Coord bottom = -halfHeight;
+
+    WindowRep::SymbolAlignment alignment;
+	if (GetAlignment(tdMap, dataP, 1, alignment)) {
+	  AlignBoundingBox(alignment, left, top, right, bottom);
+	}
+
+    tdMap->SetBoundingBox(dataP, left, top, right, bottom);
     dataP += recSize;
   }
 
@@ -2476,7 +2584,10 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
   GDataAttrOffset *offset = map->GetGDataOffset();
   StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
 
-  Coord oldpixelperUnit = -9999.9;
+  int oldFontFamily;
+  Coord oldpixelperUnit;
+  Boolean oldBold;
+  Boolean oldItalic;
 
   for(int i = 0; i < numSyms; i++) {
 #if USE_TIMER
@@ -2521,6 +2632,10 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
     Coord pixelperUnit = size * (MIN(pixelperUnitWidth,pixelperUnitHeight));
 	pixelperUnit  = (Coord) ((int) (pixelperUnit + 0.5));
 
+	int fontFamily = (int)map->GetShapeAttr(gdata, 2);
+	Boolean bold = (Boolean)map->GetShapeAttr(gdata, 3);
+	Boolean italic =  (Boolean)map->GetShapeAttr(gdata, 4);
+
     /* Find or generate the label string. */
     char labelBuf[128];
     char *label = GetLabelText(gdata, map, labelAttrValid, labelAttrType,
@@ -2529,10 +2644,18 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
 
     win->SetForeground(map->GetColor(gdata));
     win->SetPattern(map->GetPattern(gdata));
-    if (pixelperUnit != oldpixelperUnit) {
-      view->GetDataFont().SetSize(pixelperUnit);
-      view->GetDataFont().SetWinFont(win);
+
+	if (i == 0 || oldFontFamily != fontFamily ||
+	    oldpixelperUnit != pixelperUnit || oldBold != bold ||
+		oldItalic != italic) {
+      DevFont dataFont;
+      dataFont.Set(fontFamily, pixelperUnit, bold, italic);
+      dataFont.SetWinFont(win);
+
+	  oldFontFamily = fontFamily;
       oldpixelperUnit = pixelperUnit ;
+	  oldBold = bold;
+	  oldItalic = italic;
     }
 
 #if defined(DEBUG)
@@ -2544,7 +2667,7 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
 
     WindowRep::SymbolAlignment alignment;
 
-    if (GetAlignment(view, alignment)) {
+    if (GetAlignment(map, gdata, 1, alignment)) {
       win->ScaledDataText(label, x , y , width, height,
                           alignment, true, orientation); 
     }
@@ -2634,7 +2757,10 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
   GDataAttrOffset *offset = map->GetGDataOffset();
   StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
 
-  Coord oldPointSize = -9999.9;
+  int oldFontFamily;
+  Coord oldPointSize;
+  Boolean oldBold;
+  Boolean oldItalic;
 
   for(int i = 0; i < numSyms; i++) {
 #if USE_TIMER
@@ -2663,6 +2789,10 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
 
 	Coord orientation = map->GetOrientation(gdata);
 
+	int fontFamily = (int)map->GetShapeAttr(gdata, 3);
+	Boolean bold = (Boolean)map->GetShapeAttr(gdata, 4);
+	Boolean italic =  (Boolean)map->GetShapeAttr(gdata, 5);
+
     /* Find or generate the label string. */
     char labelBuf[128];
     char *label = GetLabelText(gdata, map, labelAttrValid, labelAttrType,
@@ -2671,16 +2801,23 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
 
 	win->SetForeground(map->GetColor(gdata));
     win->SetPattern(map->GetPattern(gdata));
-    if (pointSize != oldPointSize) {
-      view->GetDataFont().SetSize(pointSize);
-      view->GetDataFont().SetWinFont(win);
+
+	if (i == 0 || oldFontFamily != fontFamily || oldPointSize != pointSize ||
+	    oldBold != bold || oldItalic != italic) {
+      DevFont dataFont;
+      dataFont.Set(fontFamily, pointSize, bold, italic);
+      dataFont.SetWinFont(win);
+
+	  oldFontFamily = fontFamily;
       oldPointSize = pointSize;
+	  oldBold = bold;
+	  oldItalic = italic;
     }
 
 
     WindowRep::SymbolAlignment alignment;
 
-    if (GetAlignment(view, alignment)) {
+    if (GetAlignment(map, gdata, 2, alignment)) {
       // Pretend that there's a large box in which the text has to
       // be drawn; this is done because we don't know the size of the
       // the label in pixels, and if we pass a width or height that

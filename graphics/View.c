@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.183  1999/07/16 21:35:52  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.182  1999/07/15 19:26:19  wenger
   More Y axis drawing improvements -- spaced ticks out a little more.
 
@@ -1022,8 +1030,6 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	_filter.camera.pan_up = 0.0;
 
 	_id = ++_nextId;
-
-	_symbolAlign = WindowRep::AlignCenter;
 
 	_xAxisDateFormat = NULL;
 	_yAxisDateFormat = NULL;
@@ -3628,7 +3634,21 @@ View::SetFont(const char *which, int family, float pointSize,
     } else if (!strcmp(which, "z axis")) {
       _zAxisFont.Set(family, pointSize, bold, italic);
     } else if (!strcmp(which, "data")) {
-      _dataFont.Set(family, pointSize, bold, italic);
+      // Moved data font stuff into mapping -- RKW 1999-07-20.
+      fprintf(stderr,
+          "Warning: using deprecated command: setFont <view> %s\n", which);
+
+      int defFamily;
+      float defSize;
+      Boolean defBold, defItalic;
+      DevFont defFont;
+      defFont.Get(defFamily, defSize, defBold, defItalic);
+
+      if (family != defFamily || pointSize != defSize || bold != defBold ||
+          italic != defItalic) {
+        fprintf(stderr, "Set font parameters in view <%s> mapping\n\n",
+            GetName());
+      }
     } else {
       reportErrNosys("Illegal font selection");
     }
@@ -3655,8 +3675,10 @@ View::GetFont(const char *which, int &family, float &pointSize,
     _yAxisFont.Get(family, pointSize, bold, italic);
   } else if (!strcmp(which, "z axis")) {
     _zAxisFont.Get(family, pointSize, bold, italic);
+#if 0 // Moved data font stuff into mapping -- RKW 1999-07-20.
   } else if (!strcmp(which, "data")) {
     _dataFont.Get(family, pointSize, bold, italic);
+#endif
   } else {
     reportErrNosys("Illegal font selection");
   }

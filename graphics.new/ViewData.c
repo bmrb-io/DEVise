@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.23  1999/05/28 16:32:46  wenger
+  Finished cleaning up bounding-box-related code except for PolyLineFile
+  symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
+  drawing of Polyline symbols.
+
   Revision 1.22  1999/05/26 19:50:55  wenger
   Added bounding box info to GData, so that the selection of records by the
   visual filter is more accurate.  (Note that at this time the bounding box
@@ -322,15 +327,6 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
       ULy *= mapping->GetPixelWidth();
       LRx *= mapping->GetPixelWidth();
       LRy *= mapping->GetPixelWidth();
-
-	  // This is a really crude adjustment for alignment, partly because
-	  // some symbols implement alignment and some don't.
-	  if (GetAlign() != WindowRep::AlignCenter) {
-        ULx *= 1.5;
-        ULy *= 1.5;
-        LRx *= 1.5;
-        LRy *= 1.5;
-	  }
 
 	  // Make the bounding box absolute instead of relative to symbol
 	  // position.

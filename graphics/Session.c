@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.55  1999/07/14 18:42:38  wenger
+  Added the capability to have axes without ticks and tick labels.
+
   Revision 1.54  1999/06/11 14:46:52  wenger
   Added the capability (mostly for the JavaScreen) to disable rubberband
   lines, cursor movement, drill down, and key actions in views (the code
@@ -1042,7 +1045,6 @@ Session::SaveView(char *category, char *devClass, char *instance,
   status += SaveParams(saveData, "getFont", "setFont", instance, "title");
   status += SaveParams(saveData, "getFont", "setFont", instance, "x axis");
   status += SaveParams(saveData, "getFont", "setFont", instance, "y axis");
-  status += SaveParams(saveData, "getFont", "setFont", instance, "data");
 
   status += SaveParams(saveData, "viewGetHome", "viewSetHome", instance);
 
@@ -1054,8 +1056,6 @@ Session::SaveView(char *category, char *devClass, char *instance,
       instance, NULL, NULL, false);
 
   status += SaveParams(saveData, "getHistogram", "setHistogram", instance);
-
-  status += SaveParams(saveData, "viewGetAlign", "viewSetAlign", instance);
 
   status += SaveParams(saveData, "getCountMapping", "setCountMapping",
       instance);

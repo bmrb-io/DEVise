@@ -94,6 +94,12 @@ the specified rectangle
         2) width
         3) height
         4) whether to outline the rectangle
+        5) alignment (-4 = northwest, -3 = west, -2 = southwest, -1 = north,
+           0 = center, 1 = south, 2 = northeast, 3 = east, 4 = southeast)
+        6) font family (0 = Courier, 1 = Times, 2 = Helvetica, 3 = Lucida,
+           4 = New Century Schoolbook)
+        7) font weight (0 = regular, 1 = bold)
+        8) font slant (0 = regular, 1 = italic)
     Note: if width is < 0.0, it is ignored and the size of the text is
     determined only by the height (except that the text will be reduced if
     it doesn't fit within the view).  If orientation is non-zero, the text
@@ -105,6 +111,12 @@ font size
         0) string
         1) format string (for numerical attributes only) (not
            required)
+        2) alignment (-4 = northwest, -3 = west, -2 = southwest, -1 = north,
+           0 = center, 1 = south, 2 = northeast, 3 = east, 4 = southeast)
+        3) font family (0 = Courier, 1 = Times, 2 = Helvetica, 3 = Lucida,
+           4 = New Century Schoolbook)
+        4) font weight (0 = regular, 1 = bold)
+        5) font slant (0 = regular, 1 = italic)
     Note: size is normally in points; however, if it is <= 1.0, size is
     a fraction of the screen height.
 
@@ -131,3 +143,9 @@ VIEW - a view displayed as a symbol within the parent view
 TEXT DATA LABEL - some variation of text
     Attrs:
         0) string
+        1) alignment (-4 = northwest, -3 = west, -2 = southwest, -1 = north,
+           0 = center, 1 = south, 2 = northeast, 3 = east, 4 = southeast)
+        2) font family (0 = Courier, 1 = Times, 2 = Helvetica, 3 = Lucida,
+           4 = New Century Schoolbook)
+        3) font weight (0 = regular, 1 = bold)
+        4) font slant (0 = regular, 1 = italic)

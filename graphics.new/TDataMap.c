@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.35  1999/05/26 19:50:54  wenger
+  Added bounding box info to GData, so that the selection of records by the
+  visual filter is more accurate.  (Note that at this time the bounding box
+  info does not take into account symbol orientation; symbol alignment is
+  taken into account somewhat crudely.) This includes considerable
+  reorganization of the mapping-related classes.  Fixed problem with
+  pixelSize getting used twice in Rect shape (resulted in size being the
+  square of pixel size).
+
   Revision 1.34  1999/05/21 14:52:45  wenger
   Cleaned up GData-related code in preparation for including bounding box
   info.
@@ -225,22 +234,7 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
     DOASSERT(_gdata, "Out of memory");
   }
   
-  _defaults._x = 0.0;
-  _defaults._y = 0.0;
-  _defaults._z = 0.0;
-  _defaults._size = 1.0;
-  _defaults._pattern = Pattern0;
-  _defaults._orientation = 0.0;
-  _defaults._shape = 0;
-  _defaults._bbULx = 0.0;
-  _defaults._bbULy = 0.0;
-  _defaults._bbLRx = 0.0;
-  _defaults._bbLRy = 0.0;
-
-  _numShapeAttr = MAX_SHAPE_ATTRS;
-  for(unsigned int i = 0; i < (unsigned int)MAX_SHAPE_ATTRS; i++) {
-    _defaults._shapeAttrs[i] = 0.1;
-  }
+  InitializeDefaults();
 
   _maxSymWidth = 0.0;
   _maxSymHeight = 0.0;
@@ -257,6 +251,27 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
   _stringGenTableName = NULL;
 
   _objectValid.Set();
+}
+
+void
+TDataMap::InitializeDefaults()
+{
+  _defaults._x = 0.0;
+  _defaults._y = 0.0;
+  _defaults._z = 0.0;
+  _defaults._size = 1.0;
+  _defaults._pattern = Pattern0;
+  _defaults._orientation = 0.0;
+  _defaults._shape = 0;
+  _defaults._bbULx = 0.0;
+  _defaults._bbULy = 0.0;
+  _defaults._bbLRx = 0.0;
+  _defaults._bbLRy = 0.0;
+
+  _numShapeAttr = MAX_SHAPE_ATTRS;
+  for(unsigned int i = 0; i < (unsigned int)MAX_SHAPE_ATTRS; i++) {
+    _defaults._shapeAttrs[i] = 0.1;
+  }
 }
 
 TDataMap::~TDataMap()

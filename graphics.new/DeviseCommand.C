@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.75  1999/07/19 19:46:40  wenger
+  If Devise gets hung, it now detects this and kills itself (mainly for
+  the sake of JavaScreen support).
+
   Revision 1.74  1999/07/16 21:36:06  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -3294,6 +3298,8 @@ DeviseCommand_testDataSock::Run(int argc, char** argv)
     }
     return true;
 }
+
+#if 0 // Moved alignment to mapping.  RKW 1999-07-20.
 int
 DeviseCommand_viewGetAlign::Run(int argc, char** argv)
 {
@@ -3317,6 +3323,8 @@ DeviseCommand_viewGetAlign::Run(int argc, char** argv)
     }
     return true;
 }
+#endif
+
 int
 DeviseCommand_setLinkMaster::Run(int argc, char** argv)
 {
@@ -4036,32 +4044,28 @@ DeviseCommand_getFont::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_viewSetAlign::Run(int argc, char** argv)
 {
-    {
-        {
-          // Argument: <view name> <alignment value>
-          // Returns: "done"
-    #if defined(DEBUG)
-          printf("viewSetAlign <%s> <%s>\n", argv[1], argv[2]);
-    #endif
-          ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
-          if (!view) {
-    	    ReturnVal(API_NAK, "Cannot find view");
-    	    return -1;
-          }
-          int newAlign = atoi(argv[2]);
-          if (view->GetAlign() != newAlign) {
-            view->SetAlign(newAlign);
-    	view->Refresh();
-          }
-          ReturnVal(API_ACK, "done");
-          return 1;
-        }
-    }
+    // Argument: <view name> <alignment value>
+    // Returns: "done"
+#if defined(DEBUG)
+    printf("viewSetAlign <%s> <%s>\n", argv[1], argv[2]);
+#endif
+
+	const int alignCenter = 4;
+    fprintf(stderr, "\nWarning: using deprecated command: viewSetAlign\n");
+    int newAlign = atoi(argv[2]);
+	if (newAlign != alignCenter) {
+	    fprintf(stderr, "Please set alignment to %d in view <%s> mapping\n",
+		  newAlign - alignCenter, argv[1]);
+	}
+	fprintf(stderr, "\n");
+    ReturnVal(API_ACK, "done");
     return true;
 }
+
 int
 DeviseCommand_checkTDataForRecLink::Run(int argc, char** argv)
 {

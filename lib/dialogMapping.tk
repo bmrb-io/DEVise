@@ -15,6 +15,10 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.52  1999/07/13 17:32:55  wenger
+#       Parent view can now control attribute(s) in child view's mapping;
+#       cleaned up some of the mapping-related code; better command logging.
+#
 #       Revision 1.51  1999/06/22 18:31:03  wenger
 #       Visual filter values for view symbols can now be specified in the parent
 #       view's mapping.
@@ -773,15 +777,17 @@ set DEViseShapeAttrNames { \
 	{HorLine "" "" "" "" "Line Width"} \
 	{Segment Width Height "" "" "Line Width"} \
 	{HighLow Width "Mid" "Low (Y min)" "Color increment" \
-	"Line Width"} \
+	  "Line Width"} \
 	{Polyline "" "" "" "" ""} \
 	{Image "Filename/Image" "Image Type" "Aspect" "" ""} \
 	{"Polyline File" Filename Format "" "" "Line Width"} \
 	{"Text Label" "Label Text" "Format" "Width" "Height" "Outline"} \
 	{"Tcl/Tk Window" "Script File" "Arg Count" "Arg 0" "Arg 1" "Arg 2"} \
 	{"View" "View Name" Width Height TData Pile } \
-	{"Fixed Text Label" "Label Text" "Format" "" "" ""} \
-	{"Text Data Label" "Label Text" "" "" "" ""} \
+	{"Fixed Text Label" "Label Text" "Format" "Alignment" "Font Family" \
+	  "Bold"} \
+	{"Text Data Label" "Label Text" "Alignment" "Font Family" "Bold" \
+	  "Italic"} \
 }
 
 # Adjusts the labels of the five ShapeAttr menu labels to descriptive terms
@@ -810,6 +816,41 @@ proc UpdateShapeAttrs { w shape } {
 		$w.mapping.label.pShapeAttr9 config -text "Child Value"
 		pack $w.mapping.label.pShapeAttr9 -side top -fill x -pady 0.7m
 		pack $w.mapping.value.pShapeAttr9 -side top -fill x
+	} elseif {$shape == "Text Label"} {
+		$w.mapping.label.pShapeAttr5 config -text "Alignment"
+		pack $w.mapping.label.pShapeAttr5 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr5 -side top -fill x
+
+		$w.mapping.label.pShapeAttr6 config -text "Font Family"
+		pack $w.mapping.label.pShapeAttr6 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr6 -side top -fill x
+
+		$w.mapping.label.pShapeAttr7 config -text "Bold"
+		pack $w.mapping.label.pShapeAttr7 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr7 -side top -fill x
+
+		$w.mapping.label.pShapeAttr8 config -text "Italic"
+		pack $w.mapping.label.pShapeAttr8 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr8 -side top -fill x
+
+	    pack forget $w.mapping.label.pShapeAttr9
+	    pack forget $w.mapping.value.pShapeAttr9
+	} elseif {$shape == "Fixed Text Label"} {
+		$w.mapping.label.pShapeAttr5 config -text "Italic"
+		pack $w.mapping.label.pShapeAttr5 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr5 -side top -fill x
+
+	    pack forget $w.mapping.label.pShapeAttr6
+	    pack forget $w.mapping.value.pShapeAttr6
+
+	    pack forget $w.mapping.label.pShapeAttr7
+	    pack forget $w.mapping.value.pShapeAttr7
+
+	    pack forget $w.mapping.label.pShapeAttr8
+	    pack forget $w.mapping.value.pShapeAttr8
+
+	    pack forget $w.mapping.label.pShapeAttr9
+	    pack forget $w.mapping.value.pShapeAttr9
 	} else {
 	    pack forget $w.mapping.label.pShapeAttr5
 	    pack forget $w.mapping.value.pShapeAttr5

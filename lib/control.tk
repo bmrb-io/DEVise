@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.198  1999/07/14 18:43:02  wenger
+#	Added the capability to have axes without ticks and tick labels.
+#	
 #	Revision 1.197  1999/06/16 17:09:02  wenger
 #	Added raiseAllWindows command and corresponding GUI.
 #	
@@ -1004,7 +1007,6 @@ source $libdir/win_print_config.tcl
 source $libdir/view_config.tcl
 source $libdir/cursor_grid.tcl
 source $libdir/GDataSock.tcl
-source $libdir/symbol_align.tcl
 source $libdir/group.tk
 source $libdir/dr_schema.tcl
 source $libdir/link.tcl
@@ -1621,7 +1623,6 @@ menu .mbar.view.menu.statMenu -tearoff 0
 # .mbar.view.menu.statMenu add command -label "Group By..." -command DoGroupByStat
 .mbar.view.menu.statMenu add command -label "Histogram..." -command DoHistStat
 .mbar.view.menu add separator
-.mbar.view.menu add command -label "Symbol Alignment..." -command EditSymbolAlignment
 .mbar.view.menu add command -label "Assign String Tables..." -command EditStringTables 
 .mbar.view.menu add command -label "Auto Filter Update..." -command EditAutoFilter
 .mbar.view.menu add command -label "Disable Actions..." \
@@ -1674,8 +1675,6 @@ menu .mbar.view.menu.fontsmenu -tearoff false
     -command { GetFont "x axis" }
 .mbar.view.menu.fontsmenu add  command -label "Y Axis..."\
     -command { GetFont "y axis" }
-.mbar.view.menu.fontsmenu add  command -label "Data..."\
-    -command { GetFont "data" }
 
 menu .mbar.view.menu.niceaxismenu -tearoff false
 .mbar.view.menu.niceaxismenu add command -label "X Axis" \
@@ -1767,8 +1766,6 @@ menu .mbar.window.menu.fontsmenu -tearoff false
     -command { GetFont "x axis" 1 }
 .mbar.window.menu.fontsmenu add  command -label "Y Axis..."\
     -command { GetFont "y axis" 1 }
-.mbar.window.menu.fontsmenu add  command -label "Data..."\
-    -command { GetFont "data" 1 }
 
 # HELP MENU.
 menu .mbar.help.menu -tearoff 0

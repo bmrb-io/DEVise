@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.89  1999/07/14 18:42:41  wenger
+  Added the capability to have axes without ticks and tick labels.
+
   Revision 1.88  1999/06/11 14:46:55  wenger
   Added the capability (mostly for the JavaScreen) to disable rubberband
   lines, cursor movement, drill down, and key actions in views (the code
@@ -749,11 +752,6 @@ class View : public ViewWin
 
     Boolean IsSelected() { return _selected; }
 
-	// Note: this is temporary, should get moved into mapping.
-	// RKW Feb. 5, 1998.
-	int GetAlign() { return _symbolAlign; }
-	void SetAlign(int symbolAlign) { _symbolAlign = symbolAlign; }
-
 	const char *GetXAxisDateFormat() { return _xAxisDateFormat; }
 	void SetXAxisDateFormat(const char *format, Boolean notifyPile = true);
 	const char *GetYAxisDateFormat() { return _yAxisDateFormat; }
@@ -771,8 +769,6 @@ class View : public ViewWin
 
 	Boolean AutoUpdateFilter() { return _autoUpdate; }
 	void SetAutoUpdate(Boolean autoUpdate) { _autoUpdate = autoUpdate; }
-
-	DevFont &GetDataFont() { return _dataFont; }
 
 	// Disable certain actions in a view (mainly for JavaScreen).
 	void GetDisabledActions(Boolean &rubberbandDisabled,
@@ -956,7 +952,6 @@ protected:
 	DevFont _xAxisFont;
 	DevFont _yAxisFont;
 	DevFont _zAxisFont;
-	DevFont _dataFont;
 
 	Boolean _isHighlightView;
 
@@ -978,8 +973,6 @@ protected:
 									 unsigned width, unsigned height);
 		virtual void	HandleResize(WindowRep* w, int xlow, int ylow,
 									 unsigned width, unsigned height);
-
-		int _symbolAlign;
 
 		char *_xAxisDateFormat;
 		char *_yAxisDateFormat;

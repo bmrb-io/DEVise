@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.47  1999/05/28 16:32:43  wenger
+  Finished cleaning up bounding-box-related code except for PolyLineFile
+  symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
+  drawing of Polyline symbols.
+
   Revision 1.46  1999/05/26 19:50:51  wenger
   Added bounding box info to GData, so that the selection of records by the
   visual filter is more accurate.  (Note that at this time the bounding box
@@ -514,7 +519,8 @@ class FullMapping_TextLabelShape
           offsets->_shapeAttrOffset[0] >= 0 ||
           offsets->_shapeAttrOffset[1] >= 0 ||
           offsets->_shapeAttrOffset[2] >= 0 ||
-          offsets->_shapeAttrOffset[3] >= 0) {
+          offsets->_shapeAttrOffset[3] >= 0 ||
+          offsets->_shapeAttrOffset[5] >= 0) {
         result = true;
       }
       return result;
@@ -542,7 +548,8 @@ class FullMapping_TextDataLabelShape
     virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
       Boolean result = false;
       if (offsets->_sizeOffset >= 0 ||
-          offsets->_shapeAttrOffset[0] >= 0) {
+          offsets->_shapeAttrOffset[0] ||
+          offsets->_shapeAttrOffset[1] >= 0) {
         result = true;
       }
       return result;

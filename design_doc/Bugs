@@ -1955,6 +1955,9 @@ Num Date        Status  Description
 			(rkw)
 			(Fixed by rkw, 6/21/99.)
 
+502 07/21/99	OPEN	Non-center symbol alignment seems to goof up drill-
+			down. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
