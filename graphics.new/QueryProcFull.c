@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.57  1997/03/20 22:15:27  guangshu
+  *** empty log message ***
+
   Revision 1.56  1997/02/26 16:31:41  wenger
   Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
 
@@ -1945,7 +1948,7 @@ void QueryProcFull::AddCoordMapping(TDataMap *map, RecId id, Coord coord)
 void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
 				   Boolean approx)
 {
-#if DEBUGLVL >= 5 || 1
+#if DEBUGLVL >= 5
   printf("InitTdataQuery xLow: %f, xHigh %f, yLow %f, yHigh %f approx %d\n",
 	 filter.xLow, filter.xHigh, filter.yLow, filter.yHigh,
 	 approx);
