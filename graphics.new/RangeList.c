@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1997
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/30 17:06:29  wenger
+  Improved error messages.
+
   Revision 1.6  1996/12/18 15:31:04  jussi
   Changed syntax of SearchExact().
 
@@ -34,6 +37,7 @@
 
 #include <stdio.h>
 #include <errno.h>
+
 #include "Exit.h"
 #include "RangeList.h"
 #include "DevError.h"
@@ -44,6 +48,7 @@ int RangeList::_searchSteps = 0;
 /***************************************************************
   constructor
 ****************************************************************/
+
 RangeList::RangeList()
 {
     Init();
@@ -92,12 +97,12 @@ RangeInfo *RangeList::Search(RecId id)
     else /* start searching from beginning */
         current = _rangeList.next;
     
-    if (id < current->low){
+    if (id < current->low) {
         /* search backwards */
         for (current = current->prev; current != &_rangeList; 
-             current = current->prev){
+             current = current->prev) {
             _searchSteps++;
-            if (id >= current->low){
+            if (id >= current->low) {
                 /* found */
                 _hint = current;
                 return current;
@@ -110,14 +115,14 @@ RangeInfo *RangeList::Search(RecId id)
     if (id > current->high) {
         /* search forwards */
         for (current = current->next; current != &_rangeList; 
-             current = current->next){
+             current = current->next) {
             _searchSteps++;
-            if (id < current->low){
+            if (id < current->low) {
                 /* page is beyond previous page range. */
                 _hint = current->prev;
                 return current->prev;
             }
-            else if (id <= current->high){
+            else if (id <= current->high) {
                 /* page number is within this page range */
                 _hint = current;
                 return current;
@@ -158,8 +163,8 @@ void RangeList::Insert(RangeInfo *rangeInfo, RangeListMergeInfo info,
     RecId low,high;
     rangeInfo->RecIds(low,high);
 
-    RangeInfo *current= Search(low);
-    RangeInfo *next= NULL;
+    RangeInfo *current = Search(low);
+    RangeInfo *next = NULL;
 
     /* determine action to take:
        CREATE_RANGE: create new range data.
@@ -177,7 +182,7 @@ void RangeList::Insert(RangeInfo *rangeInfo, RangeListMergeInfo info,
     int action = CREATE_RANGE;
 
     /* find next range */
-    if (current != NULL){
+    if (current != NULL) {
         if ((next = current->next)== &_rangeList)
             next = NULL;
     }
@@ -185,13 +190,13 @@ void RangeList::Insert(RangeInfo *rangeInfo, RangeListMergeInfo info,
         next = _rangeList.next;
     
     /* figure out the action to take */
-    if (current == NULL){
-        if (next==NULL  || high < _rangeList.next->low-1){
+    if (current == NULL) {
+        if (next == NULL || high < _rangeList.next->low - 1) {
             /* create a new range */
             action = CREATE_RANGE;
-        }
-        else if (high == _rangeList.next->low-1){ 
-            if ( rangeInfo->data+rangeInfo->dataSize == _rangeList.next->data){
+        } else {
+            DOASSERT(high == _rangeList.next->low - 1, "Inconsistent state");
+            if (rangeInfo->data+rangeInfo->dataSize == _rangeList.next->data) {
                 if (info == MergeLeft || info == MergeIgnore)
                     /* create a new range since we can't merge with 
                        the next range */
@@ -203,30 +208,12 @@ void RangeList::Insert(RangeInfo *rangeInfo, RangeListMergeInfo info,
             else
                 action = CREATE_RANGE;
         }
-        else {
-            fprintf(stderr,
-                    "RangeList::Insert:inconsistent id: low %ld high %ld\n",
-                    low,high);
-            Print();
-          Exit::DoExit(2);
-        }
     } else {
         /* current not NULL */
-        if ( !(low > current->high)){
-	  char errBuf[1024];
-          sprintf(errBuf,
-	    "RangeList::Insert() recId %ld, %ld already processed", low, high);
-	  reportErrNosys(errBuf);
-          printf("current: %ld %ld, to be inserted:low %ld %ld\n", 
-                   current->low, current->high, rangeInfo->low,
-		   rangeInfo->high);
-          Print();
-          Exit::DoExit(1);
-        }
-        
-        if (next == NULL){
+        DOASSERT(low > current->high, "Inconsistent state");
+        if (next == NULL) {
             if (low == current->high+1 
-                && current->data+current->dataSize == rangeInfo->data){
+                && current->data+current->dataSize == rangeInfo->data) {
                 if (info == MergeRight || info == MergeIgnore)
                     /* can only merge with next range, but there is no
                        such range list */
@@ -239,16 +226,12 @@ void RangeList::Insert(RangeInfo *rangeInfo, RangeListMergeInfo info,
         }
         else {
             /* next range is not NULL */
-            if (high >= next->low){
-                fprintf(stderr,"RangeList::Insert(): overlap\n");
-              Exit::DoExit(2);
-            }
-            
-            Boolean canLeft = (low == current->high+1
-                               && current->data+current->dataSize == rangeInfo->data);
-            Boolean canRight = (high == next->low-1 &&
-                                rangeInfo->data + rangeInfo->dataSize == next->data);
-            if (canLeft && canRight){
+            DOASSERT(high < next->low, "Inconsistent state");
+            Boolean canLeft = (low == current->high + 1
+                  && current->data+current->dataSize == rangeInfo->data);
+            Boolean canRight = (high == next->low-1
+                  && rangeInfo->data + rangeInfo->dataSize == next->data);
+            if (canLeft && canRight) {
                 /* inbetween two ranges */
                 if (info == MergeLeft)
                     action = MERGE_CURRENT;
@@ -258,15 +241,14 @@ void RangeList::Insert(RangeInfo *rangeInfo, RangeListMergeInfo info,
                     action = CREATE_RANGE;
                 else action = MERGE_BOTH;
             }
-            else if (canLeft){
-                if (info == MergeRight ||
-                    info == MergeIgnore)
+            else if (canLeft) {
+                if (info == MergeRight || info == MergeIgnore)
                     /* can only merge with right, but there is
                        no such page */
                     action = CREATE_RANGE;
                 else action = MERGE_CURRENT;
             }
-            else if (canRight){
+            else if (canRight) {
                 if (info == MergeLeft || info == MergeIgnore)
                     /* can only merge with left, but there is no
                        such range */
@@ -278,11 +260,11 @@ void RangeList::Insert(RangeInfo *rangeInfo, RangeListMergeInfo info,
     }
     
     RangeInfo *data;
-    switch(action){
+    switch(action) {
       case CREATE_RANGE:
         /* create a new range after curent */
         data = rangeInfo;
-        if (current == NULL){
+        if (current == NULL) {
             /* insert as head of list */
             current = &_rangeList;
         }
@@ -353,7 +335,7 @@ void RangeList::Delete(RangeInfo *rangeInfo)
 
 /***********************************************************************
   Print the contents of the list, for debugging
-**************************************************************************/
+************************************************************************/
 
 void RangeList::Print()
 {
@@ -366,7 +348,7 @@ void RangeList::Print()
     int num = 0;
     printf("low\thi\tdata\tdataSize\tbuf\tbufSize\n");
     RangeInfo *data;
-    for (data = _rangeList.next; data != &_rangeList; data = data->next){
+    for (data = _rangeList.next; data != &_rangeList; data = data->next) {
         printf("%ld\t%ld\t0x%p\t%d\t0x%p\t%d\n",data->low, data->high,
                data->data,data->dataSize,data->buf,data->bufSize);
         if (++num > 7) {
