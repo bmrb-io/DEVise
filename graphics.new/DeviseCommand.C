@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.36  1998/11/19 21:12:49  wenger
+  Implemented non-DTE version of DEVise (new code handles data source catalog
+  functions; Tables, SQLViews, etc., are not implemented); changed version to
+  1.6.0.
+
   Revision 1.35  1998/11/16 18:58:43  wenger
   Added options to compile without DTE code (NO_DTE), and to warn whenever
   the DTE is called (DTE_WARN).
@@ -313,6 +318,9 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 
 #if defined(DEBUG)
     printf("  Done with command %s\n", argv[0]);
+#  if defined(DEBUG_MEM)
+    printf("  %s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
+#  endif
 #endif
 
 	return retval;
@@ -1079,6 +1087,11 @@ DeviseCommand_setDefault::Run(int argc, char** argv)
 int
 DeviseCommand_setHistogram::Run(int argc, char** argv)
 {
+#if VIEW_MIN_STATS
+		printf("Warning: histograms not implemented\n");
+        ReturnVal(API_ACK, "done");
+        return 1;
+#endif
     {
         {
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);

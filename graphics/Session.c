@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.37  1998/11/19 21:13:26  wenger
+  Implemented non-DTE version of DEVise (new code handles data source catalog
+  functions; Tables, SQLViews, etc., are not implemented); changed version to
+  1.6.0.
+
   Revision 1.36  1998/11/16 18:58:59  wenger
   Added options to compile without DTE code (NO_DTE), and to warn whenever
   the DTE is called (DTE_WARN).
@@ -205,6 +210,7 @@
 #include "CmdLog.h"
 #include "View.h"
 #include "DataCatalog.h"
+#include "DataSeg.h"
 
 
 //#define DEBUG
@@ -515,7 +521,6 @@ Session::CreateTData(char *name)
   CmdDescriptor cmdDes(cmdSrc, CmdDescriptor::UNDEFINED);
 
   DevStatus status = StatusOk;
-  ControlPanelSimple control(status);
 
   // check for derived sources
   if( strncmp(name, "Hist: ", 6) == 0 ) {
@@ -527,25 +532,14 @@ Session::CreateTData(char *name)
       "attr Value int\n";
     ParseSchema(schemaName, schemaText, NULL);
 
-    char *argvIn[6];
-    argvIn[0] = "dataSegment";
-    argvIn[1] = name;
-    argvIn[2] = "";
-    argvIn[3] = "0";
-    argvIn[4] = "0";
-  	if (cmdContainerp->Run(5, argvIn, &control, cmdDes)< 0) {
-      status = StatusFailed;
-    }
+    DataSeg::Set(name, "", 0, 0);
 
-    argvIn[0] = "create";
-    argvIn[1] = "tdata";
-    argvIn[2] = schemaName;
-    argvIn[3] = name;
-    argvIn[4] = schemaName;
-    argvIn[5] = "";
-  	if (cmdContainerp->Run(6, argvIn, &control, cmdDes)< 0) {
-      status = StatusFailed;
-    }
+    char *argvIn[3];
+    argvIn[0] = name;
+    argvIn[1] = schemaName;
+    argvIn[2] = "";
+    ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
+    classDir->CreateWithParams("tdata", schemaName, 3, argvIn);
     return status;
   }
 
@@ -604,8 +598,6 @@ Session::CreateTData(char *name)
       reportErrNosys("Unable to create Tcl interpreter");
       status = StatusFailed;
     } else {
-      int argcOut;
-      char **argvOut;
 
       // This is a kludgey way of trying to figure out whether we have a
       // DTE data source or a UNIXFILE -- it will fail if someone has a
@@ -620,11 +612,13 @@ Session::CreateTData(char *name)
       }
 
       if (!isDteSource) {
+        int argcOut;
+        char **argvOut;
+
         if (Tcl_SplitList(interp, catEntry, &argcOut, &argvOut) != TCL_OK) {
           reportErrNosys(interp->result);
           status = StatusFailed;
         } else {
-          isDteSource = false;
           strcpy(schema, argvOut[3]);
           strcpy(schemaFile, argvOut[4]);
           strcpy(sourceType, argvOut[1]);
@@ -632,6 +626,7 @@ Session::CreateTData(char *name)
           free((char *) argvOut);
         }
       }
+
       Tcl_DeleteInterp(interp);
     }
   }
@@ -673,44 +668,32 @@ Session::CreateTData(char *name)
 
   // Execute dataSegment command.
   if (status.IsComplete()) {
-    int argcIn = 5;
-    char *argvIn[5];
-    argvIn[0] = "dataSegment";
-    argvIn[1] = name;
+	char *filename;
     if (isDteSource) {
-      argvIn[2] = "";
+      filename = "";
     } else {
-      argvIn[2] = param;
+      filename = param;
     }
-    // Assume data is always full file for now.  This will have to get
-    // changed when we re-implement exported templates with data.
-    argvIn[3] = "0";
-    argvIn[4] = "0";
-    if (cmdContainerp->Run(argcIn, argvIn, &control, cmdDes) < 0) {
-      status = StatusFailed;
-    }
+    DataSeg::Set(name, filename, 0, 0);
   }
 
   // Create the TData object.
   if (status.IsComplete()) {
-    int argcIn = 6;
-    char *argvIn[6];
-    argvIn[0] = "create";
-    argvIn[1] = "tdata";
+	char *arg2;
+    char *argvIn[3];
     if (isDteSource) {
-      argvIn[2] = name;
-      argvIn[3] = name;
-      argvIn[4] = "";
-      argvIn[5] = "";
+      arg2 = name;
+      argvIn[0] = name;
+      argvIn[1] = "";
+      argvIn[2] = "";
     } else {
-      argvIn[2] = schema;
-      argvIn[3] = name;
-      argvIn[4] = sourceType;
-      argvIn[5] = param;
+      arg2 = schema;
+      argvIn[0] = name;
+      argvIn[1] = sourceType;
+      argvIn[2] = param;
     }
-    if (cmdContainerp->Run(argcIn, argvIn, &control, cmdDes) < 0) {
-      status = StatusFailed;
-    }
+    ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
+    classDir->CreateWithParams("tdata", arg2, 3, argvIn);
   }
 
   if (catEntry != NULL) free(catEntry);

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/11/09 20:33:26  wenger
+  Fixed bug 433 (drill-down problem); improved debug output in various
+  related modules.
+
   Revision 1.12  1998/10/29 21:46:08  wenger
   Added "proof-of-concept" code for filter links; added warning when
   more than one mapping is inserted into a view; updated bug and to-do
@@ -403,9 +407,11 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 		{
 			PColorID	pcid = mapping->GetPColorID(ptr);
 
+#if !VIEW_MIN_STATS
 			// Palette size variability warning...
 			if ((pcid != nullPColorID) && (pcid < gMaxNumColors))
 				_stats[pcid].Sample(x, y);
+#endif
 
 			_allStats.Sample(x, y);
 			_allStats.Histogram(y);

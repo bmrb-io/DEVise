@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.57  1998/11/11 14:31:04  wenger
+  Implemented "highlight views" for record links and set links; improved
+  ClassDir::DestroyAllInstances() by having it destroy all links before
+  it destroys anything else -- this cuts down on propagation problems as
+  views are destroyed; added test code for timing a view's query and draw.
+
   Revision 1.56  1998/11/06 17:59:55  wenger
   Multiple string tables fully working -- allows separate tables for the
   axes in a given view.
@@ -263,14 +269,12 @@
 
 #include <sys/time.h>
 
-//#include "HashTable.h"
 #include "View.h"
 #include "DList.h"
 #include "BasicStats.h"
 #include "GdataStat.h"
 #include "DataSourceFixedBuf.h"
 #include "UpdateLink.h"
-#include "AssoArray.h"
 #include "QueryProc.h"
 #include "GDataSock.h"
 #include "Util.h"
@@ -285,20 +289,37 @@
 /* Set this to 1 to implement "big" statistics (this was needed for the
  * March '97 demo in Washington, but at least right now should generally
  * be turned off). RKW 4/3/97. */
-#define BIG_STATS 0
+#define VIEW_BIG_STATS 0
 
-#if BIG_STATS
+// Set this to 1 to only have a minimal implementation of statistics
+// (some of the stuff probably won't even work, this is just simpler than
+// eliminating it from the code altogether).  Reducing the statistics
+// support to a minimal level reduces memory usage by megabytes!
+// RKW 1998-12-01.
+#define VIEW_MIN_STATS 1
+
+#if VIEW_BIG_STATS
   const int MAX_GSTAT = 10000;
   const int DERIVED_BUF_SIZE = 800000;
 #else
-  const int MAX_GSTAT = 199;
-  const int DERIVED_BUF_SIZE = 9600;
+  #if VIEW_MIN_STATS
+    const int MAX_GSTAT = 1;
+    const int DERIVED_BUF_SIZE = 1;
+  #else
+    const int MAX_GSTAT = 199;
+    const int DERIVED_BUF_SIZE = 9600;
+  #endif
 #endif
 
 const int HISTOGRAM_REC_SIZE = 24;
-const int MAX_HISTOGRAM_BUCKETS = 100;
+
+#if VIEW_MIN_STATS
+  const int MAX_HISTOGRAM_BUCKETS = 1;
+#else
+  const int MAX_HISTOGRAM_BUCKETS = 100;
+#endif
+
 const int HIST_BUF_SIZE = MAX_HISTOGRAM_BUCKETS * HISTOGRAM_REC_SIZE;
-const int STAT2D_BUF_SIZE = 131072;
 
 #include "Action.h"
 #include "RecId.h"
@@ -561,7 +582,9 @@ public:
   char *histViewName;
 
   BasicStats _allStats;            	/* basic stats for all categories */
+#if !VIEW_MIN_STATS
   BasicStats _stats[gMaxNumColors];     /* basic stats per category */
+#endif
 
   DataSourceFixedBuf* _statBuffer;         /* view statistics */
   DataSourceFixedBuf* _histBuffer;	   /* histograms */

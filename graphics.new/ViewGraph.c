@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.92  1998/11/11 14:31:03  wenger
+  Implemented "highlight views" for record links and set links; improved
+  ClassDir::DestroyAllInstances() by having it destroy all links before
+  it destroys anything else -- this cuts down on propagation problems as
+  views are destroyed; added test code for timing a view's query and draw.
+
   Revision 1.91  1998/11/09 20:33:27  wenger
   Fixed bug 433 (drill-down problem); improved debug output in various
   related modules.
@@ -665,7 +671,11 @@ double	ViewGraph::CalcDataColorEntropy(void)
 
 	for(int i=0; i<gMaxNumColors; i++)
 	{
+#if !VIEW_MIN_STATS
 		int		n = (int)(_stats[i].GetStatVal(STAT_COUNT));
+#else
+        int n = 0;
+#endif
 
 		if (n > 0)
 		{
@@ -1342,6 +1352,10 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
     _gdataStatBufferX->Clear();
     _gdataStatBufferY->Clear();
 
+#if VIEW_MIN_STATS
+    return;
+#endif
+
     VisualFilter filter;
     GetVisualFilter(filter);
     char *date_string;
@@ -1352,6 +1366,7 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
     int i;
     for(i = 0; i < gMaxNumColors; i++) {
 //	if( _stats[i].GetStatVal(STAT_COUNT) > 0 ) {
+#if !VIEW_MIN_STATS
 	    sprintf(line, "%d %d %g %g %g %g %g %g %g %g %g %g\n",
 		      i, (int)_stats[i].GetStatVal(STAT_COUNT),	
 		      _stats[i].GetStatVal(STAT_YSUM),
@@ -1364,6 +1379,9 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 		      _stats[i].GetStatVal(STAT_ZVAL90H),
 		      _stats[i].GetStatVal(STAT_ZVAL95L),
 		      _stats[i].GetStatVal(STAT_ZVAL95H));
+#else
+        sprintf(line, "NO STATS!!!\n");
+#endif
 	    int len = strlen(line);
 #if defined(DEBUG) || 0
     printf("Color stat buf line is %s\n", line);
@@ -1499,8 +1517,9 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 		 date[1], date[2], 0, 0.0, 0.0, 0.0, 0.0);
        	len = strlen(line);
         DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
-	if( (int) _gdataStatBufferX->Write(line, len) != len ) 
+	if( (int) _gdataStatBufferX->Write(line, len) != len ) {
     		fprintf(stderr, "******Out of GData Stat Buffer space\n");
+    }
 // 	printf("_gstatX buf line is %s\n", line);
 
 	sprintf(line, "%g %d %g %g %g %g\n", low, 0, 0.0, 0.0, 0.0, 0.0);
@@ -1510,8 +1529,9 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 #if defined(DEBUG) || 0
         printf("_gstatX buf line is %s\n", line);
 #endif 
-	if( (int) _gdataStatBufferX->Write(line, len) != len ) 
+	if( (int) _gdataStatBufferX->Write(line, len) != len ) {
 	    fprintf(stderr, "******Out of GData Stat Buffer space\n");
+    }
 //        printf("_gstatX buf line is %s\n", line);
 
         date_string = DateString(high);
@@ -1520,8 +1540,9 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
                    date[1], date[2], 0, 0.0, 0.0, 0.0, 0.0);
         len = strlen(line);
         DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
-        if( (int) _gdataStatBufferX->Write(line, len) != len ) 
+        if( (int) _gdataStatBufferX->Write(line, len) != len ) {
         	fprintf(stderr, "******Out of GData Stat Buffer space\n");
+        }
 //           printf("_gstatX buf line is %s\n", line);
 
         sprintf(line, "%g %d %g %g %g %g\n", high, 0, 0.0, 0.0, 0.0, 0.0);
@@ -1531,8 +1552,9 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 #if defined(DEBUG) || 0
            printf("_gstatX buf line is %s\n", line);
 #endif
-        if( (int) _gdataStatBufferX->Write(line, len) != len ) 
+        if( (int) _gdataStatBufferX->Write(line, len) != len ) {
             fprintf(stderr, "******Out of GData Stat Buffer space\n");
+        }
     }
 
     int getYRecs = 0;
@@ -1582,8 +1604,9 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
                  date[1], date[2], 0, 0.0, 0.0, 0.0, 0.0);
         len = strlen(line);
         DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
-        if( (int) _gdataStatBufferY->Write(line, len) != len ) 
+        if( (int) _gdataStatBufferY->Write(line, len) != len ) {
                 fprintf(stderr, "******Out of GData Stat Buffer space\n");
+        }
 
         sprintf(line, "%g %d %g %g %g %g\n", low, 0, 0.0, 0.0, 0.0, 0.0);
         len = strlen(line);
@@ -1592,8 +1615,9 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 #if defined(DEBUG) || 0
         printf("_gstatY buf line is %s\n", line);
 #endif
-        if( (int) _gdataStatBufferY->Write(line, len) != len ) 
+        if( (int) _gdataStatBufferY->Write(line, len) != len ) {
             fprintf(stderr, "******Out of GData Stat Buffer space\n");
+        }
 
         date_string = DateString(high);
         date = ExtractDate(date_string); 
@@ -1601,8 +1625,9 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
                    date[1], date[2], 0, 0.0, 0.0, 0.0, 0.0);
         len = strlen(line);
         DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
-        if( (int) _gdataStatBufferY->Write(line, len) != len ) 
+        if( (int) _gdataStatBufferY->Write(line, len) != len ) {
                 fprintf(stderr, "******Out of GData Stat Buffer space\n");
+        }
 
         sprintf(line, "%g %d %g %g %g %g\n", high, 0, 0.0, 0.0, 0.0, 0.0);
         len = strlen(line);
@@ -1611,8 +1636,9 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 #if defined(DEBUG) || 0
         printf("_gstatY buf line is %s\n", line);
 #endif
-        if( (int) _gdataStatBufferY->Write(line, len) != len )
+        if( (int) _gdataStatBufferY->Write(line, len) != len ) {
             fprintf(stderr, "******Out of GData Stat Buffer space\n");
+	    }
     }
 }
 
@@ -1694,8 +1720,10 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
   // Initialize statistics collection
   _allStats.Init(this);
 
+#if !VIEW_MIN_STATS
   for(int i = 0; i < gMaxNumColors; i++)
     _stats[i].Init(this);
+#endif
 
   int index = _blist.InitIterator();
   while (_blist.More(index)) {
@@ -1872,8 +1900,10 @@ void	ViewGraph::QueryDone(int bytes, void* userData, TDataMap* map)
     _allStats.Done();
     _allStats.Report();
 
+#if !VIEW_MIN_STATS
 	for(int i=0; i<gMaxNumColors; i++)
 		_stats[i].Done();
+#endif
 
 	PrepareStatsBuffer(map);
 	DrawLegend();

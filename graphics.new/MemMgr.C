@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/03/04 19:11:03  wenger
+  Fixed some more dynamic memory errors.
+
   Revision 1.8  1997/12/19 00:05:56  donjerko
   Changes made be Kevin to get DTE to compile.
 
@@ -54,6 +57,10 @@ MemMgr *MemMgr::_instance = 0;
 MemMgr::MemMgr(int numPages, int pageSize, bool sharedMem, int &status) :
 	_numPages(numPages), _tableSize(numPages), _pageSize(pageSize)
 {
+#if defined(DEBUG)
+    printf("MemMgr::MemMgr(%d, %d, %d)\n", numPages, pageSize, sharedMem);
+#endif
+
     _instance = this;
 
     _shm = NULL;
