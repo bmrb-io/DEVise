@@ -16,10 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/04/22 18:01:40  wenger
+  First version of "attribute projection" code.  The parser (with
+  the exception of instantiating any TData) compiles and runs.
+
 */
 
-#ifndef _GROUP_H_
-#define _GROUP_H_
+#ifndef _APGROUP_H_
+#define _APGROUP_H_
 
 #include <stdlib.h>
 

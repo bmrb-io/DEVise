@@ -16,10 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/04/22 18:01:44  wenger
+  First version of "attribute projection" code.  The parser (with
+  the exception of instantiating any TData) compiles and runs.
+
 */
 
-#ifndef Init_h
-#define Init_h
+#ifndef ApInit_h
+#define ApInit_h
 
 #include "DeviseTypes.h"
 #include "BufPolicy.h"

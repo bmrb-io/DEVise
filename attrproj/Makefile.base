@@ -10,7 +10,9 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
 TESTSRC = aptest.c
 TESTOBJ = $(TESTSRC:.c=.o)
 
-LOCALSRC = ApExit.c ApGroup.c ApGroupDir.c ApInit.c ApItemList.c ApParseCat.c
+LOCALSRC = AttrProj.c ApExit.c ApGroup.c ApGroupDir.c ApInit.c \
+	ApItemList.c ApParseCat.c ApTDataAsciiInterp.c ApTDataAscii.c \
+	ApTDataBinaryInterp.c ApTDataBinary.c
 LOCALOBJ = $(LOCALSRC:.c=.o)
 
 LIBOBJ = \
@@ -18,9 +20,13 @@ LIBOBJ = \
 	../graphics/AttrList.o \
 	../graphics/Time.o \
 	../graphics/Util.o \
+	../graphics.new/RecInterp.o \
+	../graphics.new/CompositeParser.o \
+	../graphics.new/TData.o \
+	../tape/tapedrive.o \
 	$(LOCALOBJ)
 
-LIB = AttrProj.o
+LIB = AttrProjLib.o
 
 ALLOBJ = $(TESTOBJ) $(LIB)
 

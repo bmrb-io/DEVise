@@ -20,23 +20,24 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/04/22 18:01:47  wenger
+  First version of "attribute projection" code.  The parser (with
+  the exception of instantiating any TData) compiles and runs.
+
 */
 
 #include <stdio.h>
 
 #include "ApParseCat.h"
 #include "AttrList.h"/*TEMPTEMP?*/
-#include "ApGroup.h"
+//TEMPTEMP?#include "ApGroup.h"
 #include "ApGroupDir.h"
 #include "Parse.h"
 #include "ApInit.h"
 #include "DeviseTypes.h"
-//TEMPTEMP#include "TDataAsciiInterp.h"
-//TEMPTEMP#include "TDataBinaryInterp.h"
+#include "ApTDataAsciiInterp.h"
+#include "ApTDataBinaryInterp.h"
 #include "Util.h"
-#if 0 /*TEMPTEMP*/
-#include "Control.h"
-#endif
 
 //#define DEBUG
 
@@ -44,10 +45,6 @@ GroupDir *gdir = new GroupDir();
 
 #define LINESIZE 512
 
-const int INIT_CAT_FILES     = 64;
-static char **_catFiles      = 0;
-static int _numCatFiles      = 0;
-static int _catFileArraySize = 0;
 static int numAttrs          = 0;
 static AttrList *attrs       = 0;
 
@@ -86,50 +83,6 @@ SetVal(AttrVal *aval, char *valstr, AttrType valtype)
       break;
     }
 }
-
-#if 0
-/*------------------------------------------------------------------------------
- * function: InsertCatFile
- * Insert a new catalog file name into the list of catalog files.
- */
-static void
-InsertCatFile(char *name)
-{
-  if (!_catFiles){
-    _catFiles = new char *[INIT_CAT_FILES];
-    _catFileArraySize = INIT_CAT_FILES;
-  } else if (_numCatFiles >= _catFileArraySize) {
-    char **temp = new char *[_catFileArraySize + INIT_CAT_FILES];
-    for(int i=0; i < _numCatFiles; i++) {
-      temp[i] = _catFiles[i];
-    }
-    delete _catFiles;
-    _catFiles = temp;
-    _catFileArraySize += INIT_CAT_FILES;
-  }
-  _catFiles[_numCatFiles++] = name;
-}
-
-/*------------------------------------------------------------------------------
- * function: CatFiles
- * Get the catalog files.
- */
-void
-CatFiles(int &numFiles, char **&fileNames)
-{
-  numFiles = _numCatFiles;
-  fileNames = _catFiles;
-}
-
-/*------------------------------------------------------------------------------
- * function: ClearCats
- * Clear the catalog files.
- */
-void ClearCats()
-{
-  _numCatFiles = 0;
-}
-#endif
 
 #ifndef NO_GEN_CLASS_INFO
 
@@ -482,7 +435,7 @@ ParseAttr(
  * schema and a logical schema) is being read.
  */
 static char *
-ParseCatPhysical(char *catFile, Boolean physicalOnly)
+ParseCatPhysical(char *catFile, char *dataFile, Boolean physicalOnly)
 {
 	FILE *file= NULL;
 	Boolean hasSource = false;
@@ -751,7 +704,7 @@ ParseCatPhysical(char *catFile, Boolean physicalOnly)
 		GenClassInfo *genInfo = FindGenClass(source);
 		ControlPanel::RegisterClass(
 			genInfo->Gen(source, isAscii, fileType,
-			attrs,recSize,sep, numSep, hasSeparator, commentString),
+			attrs, recSize,sep, numSep, hasSeparator, commentString),
 			true);
 #else
 		fprintf(stderr, "Illegal token 'source' in schema\n");
@@ -765,7 +718,7 @@ ParseCatPhysical(char *catFile, Boolean physicalOnly)
 		  printf("default source, recSize %d\n",recSize);
 		  ControlPanel::RegisterClass(
 		     new TDataAsciiInterpClassInfo(fileType,
-			attrs,recSize,sep, numSep, hasSeparator,
+			attrs, recSize,sep, numSep, hasSeparator,
 			commentString), true);
 		} else {
 		  printf("default binary source, recSize %d\n",recSize);
@@ -773,14 +726,24 @@ ParseCatPhysical(char *catFile, Boolean physicalOnly)
 		     new TDataBinaryInterpClassInfo(fileType, attrs, recSize),
 					      true);
 		}
+#else
+		if (isAscii) {
+		  printf("default source, recSize %d\n",recSize);
+#if 1 /*TEMPTEMP*/
+		  TData *junk = new TDataAsciiInterp(dataFile, recSize,
+			attrs, sep, numSep, hasSeparator,
+			commentString);
+#endif
+		} else {
+		  printf("default binary source, recSize %d\n",recSize);
+#if 1 /*TEMPTEMP*/
+		  TData *junk = new TDataBinaryInterp(dataFile, recSize, attrs);
+#endif
+		}
 #endif
 	}
 
 	fclose(file);
-
-#if 0
-	if (physicalOnly) InsertCatFile(CopyString(catFile));
-#endif
 
 	if (Init::PrintTDataAttr())
 		attrs->Print();
@@ -919,7 +882,7 @@ ParseCatLogical(char *catFile, char *sname)
  * Read and parse a schema file.
  */
 char *
-ParseCat(char *catFile) 
+ParseCat(char *catFile, char *dataFile) 
 {
   // Check the first line of catFile - if it is "physical abc",
   // call ParseCatPhysical(abc, false) and then ParseCatLogical(catFile)
@@ -938,7 +901,7 @@ ParseCat(char *catFile)
     if (fscanf(fp, "%s", buf) != 1 || strcmp(buf, "physical"))
 	{
       fclose(fp);
-      result = ParseCatPhysical(catFile, true);
+      result = ParseCatPhysical(catFile, dataFile, true);
     }
 	else
 	{
@@ -947,11 +910,7 @@ ParseCat(char *catFile)
       fclose(fp);
 
       char *sname;
-      if (!(sname = ParseCatPhysical(buf, false))) result = NULL;
-
-#if 0
-      InsertCatFile(CopyString(catFile));
-#endif
+      if (!(sname = ParseCatPhysical(buf, dataFile, false))) result = NULL;
 
       result = ParseCatLogical(catFile, sname);
 	}

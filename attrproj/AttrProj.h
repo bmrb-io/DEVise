@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -13,20 +13,27 @@
 */
 
 /*
+  Header file for AttrProj (attribute projection) class.
+ */
+
+/*
   $Id$
 
   $Log$
-*/
+ */
 
-#include <unistd.h>
+#ifndef _AttrProj_h_
+#define _AttrProj_h_
 
-#include "Control.h"
 
-/***************************************************************
-Register class info with control panel
-****************************************************************/
-
-void ControlPanel::RegisterClass(ClassInfo *cInfo, Boolean transient)
+class AttrProj
 {
-	DOASSERT(false, "ControlPanel::RegisterClass not implemented");
-}
+public:
+	AttrProj(char *schemaFile, char *attrProjFile, char *dataFile);
+	~AttrProj();
+};
+
+
+#endif /* _AttrProj_h_ */
+
+/*============================================================================*/

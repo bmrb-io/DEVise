@@ -16,10 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/04/22 18:01:46  wenger
+  First version of "attribute projection" code.  The parser (with
+  the exception of instantiating any TData) compiles and runs.
+
 */
 
-#ifndef _ITEMLIST_H_
-#define _ITEMLIST_H_
+#ifndef _APITEMLIST_H_
+#define _APITEMLIST_H_
 
 #include "ApGroup.h"
 

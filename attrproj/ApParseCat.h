@@ -16,10 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/04/22 18:01:48  wenger
+  First version of "attribute projection" code.  The parser (with
+  the exception of instantiating any TData) compiles and runs.
+
 */
 
-#ifndef ParseCat_h
-#define ParseCat_h
+#ifndef ApParseCat_h
+#define ApParseCat_h
 
 #include "DeviseTypes.h"
 #if 0
@@ -31,7 +35,7 @@
 
 /* Parse a catalog file and register new file type with the system.
    Return name of new file type if successful, else return NULL */
-extern char *ParseCat(char *catFile);
+extern char *ParseCat(char *catFile, char *dataFile);
 
 /* Parse schema(s) from buffer(s) and register new "file type" with
    the system.  Return the name of the new "file type" if successful,
