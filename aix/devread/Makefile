@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/08/14 20:00:14  flisakow
+#      types.c is not in it.
+#
 #  Revision 1.1  1996/08/14 19:04:53  flisakow
 #    Checkin of DevRead class, a near duplicate of the AttrProj class,
 #    it is an interface to reading data from Devise files.
@@ -37,4 +40,4 @@ ARCH_LDPOST  =
 
 VPATH = ../../devread:../../graphics:../../graphics.new
 include ../../devread/Makefile.base
-include ../../devread/Makefile.hp
+include ../../devread/Makefile.aix

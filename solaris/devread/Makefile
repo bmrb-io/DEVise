@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/10/04 17:11:27  wenger
+#  Added -lpthread for thread support.
+#
 #  Revision 1.1  1996/08/14 20:01:08  flisakow
 #      Need a devread directory for each m/c arch.
 #
@@ -40,4 +43,4 @@ ARCH_LDPOST  = -lpthread
 
 VPATH = ../../devread:../../graphics:../../graphics.new
 include ../../devread/Makefile.base
-include ../../devread/Makefile.hp
+include ../../devread/Makefile.solaris
