@@ -5,4 +5,9 @@ foreach (grep(/$ENV{'USER'}/, `ipcs`)) {
     ($type, $id) = split;
     $rm .= " -$type $id";
 }
-system($rm);
+if( $rm ne 'ipcrm' ) {
+    print "$rm\n";
+    system($rm);
+} else {
+    print "no resources to remove\n";
+}
