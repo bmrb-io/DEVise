@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.14  1997/12/04 18:32:04  wenger
+#  Merged new expression evaluation code thru the expression_br_2 tag.
+#
 #  Revision 1.13.18.2  1997/12/04 15:50:15  wenger
 #  Undid Haihong's temporary changes.
 #
@@ -51,4 +54,4 @@ ARCH_LDFLAGS = -lsocket -lnsl
 
 VPATH = ../../graphics.new
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.solaris
+include Makefile.depend
