@@ -18,6 +18,9 @@
 // ------------------------------------------------------------------------
 // ------------------------------------------------------------------------
 // $Log$
+// Revision 1.6  2001/10/05 20:13:31  xuk
+// *** empty log message ***
+//
 // Revision 1.5  2001/10/05 20:00:25  xuk
 // Fixed bug 701: command log playwork can work for URL and simple file path.
 //
@@ -58,6 +61,12 @@ public class DEVisePlayback implements Runnable
 
 	try {
 	    BufferedReader file = null;
+
+	    if (_filename == null) {
+		_jsc.showMsg("No log file name specified. Stop playback.");
+		stop();
+		return;
+	    }
 
 	    if ( _filename.startsWith("http") ) { 
 		URL myURL = new URL(_filename);
