@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16  1996/07/05 15:25:52  jussi
+#  The names of compiled mapping classes are no longer saved in session
+#  files. This behavior confused Devise and when the session was
+#  restored and re-saved, twice as many class names were saved etc.
+#
 #  Revision 1.15  1996/07/01 19:36:46  jussi
 #  Made changes to reflect the new TData constructor interface.
 #
@@ -620,14 +625,14 @@ proc SaveMappings { fileId fileDict mapDictRef } {
     foreach m [ InterpretedGData ] {
         set class [ GetClass mapping $m ]
         if {[lsearch $interpretedGDataClasses $class] < 0} {
-            puts "Adding class $class"
+            # puts "Adding class $class"
             lappend interpretedGDataClasses $class
         }
     }
 
     puts $fileId "# Create interpreted mapping classes"
     foreach mclass $interpretedGDataClasses {
-	puts "mclass $mclass"
+	# puts "mclass $mclass"
 	puts $fileId "DEVise createMappingClass $mclass"
     }
     puts $fileId ""
@@ -892,7 +897,6 @@ proc SavePixmaps { fileId infile savedCurViewRef } {
 
     set bitF [DEVise open $bitmapFile wb]
     set date [DEVise date]
-    puts "data = \"$date\""
     DEVise writeLine $date $bitF
     set savedCurView $curView
     ProcessViewSelected ""
