@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/07/12 18:24:30  wenger
+  Fixed bugs with handling file headers in schemas; added DataSourceBuf
+  to TDataAscii.
+
   Revision 1.8  1996/06/19 19:56:26  wenger
   Improved UtilAtof() to increase speed; updated code for testing it.
 
@@ -62,6 +66,10 @@
 extern long ModTime(char *fname);
 
 extern char *CopyString(char *str);
+
+#ifdef ULTRIX
+#define strdup(s) CopyString(s)
+#endif
 
 /* Clear contents of directory */
 void ClearDir(char *dir);
