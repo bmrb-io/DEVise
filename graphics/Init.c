@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.59  2000/02/18 22:21:27  wenger
+  Various changes to make cron scripts work better with new two-machine
+  setup: added -id argument to devise, jspop, jss; updated cron scripts
+  that check status of jspop, etc.; improved usage messages of jspop,
+  jss, js; improved DEVise.kill script; removed obsolete sections of
+  Java code.
+
   Revision 1.58  2000/01/13 23:06:51  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -339,6 +346,7 @@ int Init::_maxclients = DefaultMaxClients;
 Boolean Init::_doDebugLog = true;
 int Init::_logLevel = (int)DebugLog::LevelInfo2;
 Boolean Init::_doHangCheck = true;
+Boolean Init::_useJSCache = false;//TEMP
 
 Boolean Init::_quitOnDisconnect = false;
 int Init::_clientTimeout = 0;
@@ -413,6 +421,7 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-logLevel <value>: level of debug logging\n");
   fprintf(stderr, "\t-hangCheck 0|1: do hang check or not\n");
   fprintf(stderr, "\t-id <string> string to identify devise in ps output\n");
+  fprintf(stderr, "\t-jscache 0|1: use JavaScreen cache or not\n");
 
   Exit::DoExit(1);
 }
@@ -876,6 +885,15 @@ void Init::DoInit(int &argc, char **argv)
 	}
 	// Value is ignored -- this argument is provided just so we can
 	// tell deviseds for different jspops apart in ps output.
+	MoveArg(argc,argv,i,2);
+      }
+
+      else if (strcmp(&argv[i][1], "jscache") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_useJSCache = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
 

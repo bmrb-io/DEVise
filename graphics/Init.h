@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1999/10/05 17:55:38  wenger
+  Added debug log level.
+
   Revision 1.26  1999/07/19 19:46:34  wenger
   If Devise gets hung, it now detects this and kills itself (mainly for
   the sake of JavaScreen support).
@@ -225,6 +228,8 @@ class Init {
 
     static Boolean DoHangCheck() { return _doHangCheck; }
 
+    static Boolean UseJSCache() { return _useJSCache; }
+
 protected:
     static Boolean _savePopup;     /* true if pop-up window should be saved and
                                       wait for button even to remove it */
@@ -293,6 +298,7 @@ protected:
 	static Boolean _doDebugLog;
 	static int _logLevel;
 	static Boolean _doHangCheck;
+	static Boolean _useJSCache;
 };
 
 #endif
