@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.40  1996/07/12 21:54:22  jussi
+#	Added BASICSTAT derived data source type.
+#
 #	Revision 1.39  1996/07/11 17:26:17  wenger
 #	Devise now writes headers to some of the files it writes;
 #	DataSourceSegment class allows non-fixed data length with non-zero
@@ -1159,8 +1162,8 @@ proc scanDerivedSources {} {
 	set sname "Stat: $view"
 	set source "BASICSTAT"
 	set key $view
-	set schematype COLORSTAT
-	set schemafile $schemadir/physical/COLORSTAT
+	set schematype BASICSTAT
+	set schemafile $schemadir/physical/BASICSTAT
         set cachefile ""
 	set evaluation 100
 	set priority 50
