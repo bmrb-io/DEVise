@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/07/21 14:18:39  jussi
+  Mapping from state names to lat/lon coordinates is now through
+  a hash table.
+
   Revision 1.28  1996/07/21 01:15:57  jussi
   LANDSENDDAILY schema uses the YyMmDd composite parser.
 
@@ -340,6 +344,73 @@ public:
     now.tm_sec = *(int *)(buf + attrOffset[5]);
 
     time_t *datePtr = (time_t *)(buf + attrOffset[6]);
+    *datePtr = GetTime(now);
+  }
+
+private:
+  int       *attrOffset;          /* attribute offsets */
+  Boolean   _init;                /* true when instance initialized */
+};
+
+/* User composite function for dates computed as the number of days
+   from October 1, 1992 (that's when the Lands' End date begins) */
+
+class LandsendDateDiffComposite : public UserComposite {
+public:
+
+  LandsendDateDiffComposite() {
+    _init = false;
+    attrOffset = 0;
+  }
+
+  virtual ~LandsendDateDiffComposite() {
+    delete attrOffset;
+  }
+
+  virtual void Decode(RecInterp *recInterp) {
+
+    if (!_init) {
+      /* initialize by caching offsets of all the attributes we need */
+
+      char *primAttrs[] = { "DateDiff", "Date" };
+      const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
+      attrOffset = new int [numPrimAttrs];
+      DOASSERT(attrOffset, "Out of memory");
+
+      for(int i = 0; i < numPrimAttrs; i++) {
+	AttrInfo *info;
+	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
+	  fprintf(stderr, "Cannot find attribute %s\n", primAttrs[i]);
+	  DOASSERT(0, "Cannot find attribute");
+	}
+	attrOffset[i] = info->offset;
+      }
+      _init = true;
+    }
+
+    char *buf = (char *)recInterp->GetBuf();
+    
+    /* decode date */
+    static struct tm now;
+    float dateDiff = *(float *)(buf + attrOffset[0]);
+    int years = (int)(dateDiff / 360);
+    int months = (int)((dateDiff - years * 360) / 30);
+    int days = (int)(dateDiff - years * 360 - months * 30);
+    float secDiff = 24 * 3600 * (dateDiff - (int)dateDiff);
+    int hours = (int)(secDiff / 3600);
+    int minutes = (int)((secDiff - hours * 3600) / 60);
+    int seconds = (int)(secDiff - hours * 3600 - minutes * 60);
+    now.tm_year = 1992 + years - 1900;
+    now.tm_mon = 10 + months - 1;
+    now.tm_mday = 1 + days;
+    if (now.tm_mon > 11) {
+      now.tm_year++;
+      now.tm_mon -= 12;
+    }
+    now.tm_hour = hours;
+    now.tm_min = minutes;
+    now.tm_sec = seconds;
+    time_t *datePtr = (time_t *)(buf + attrOffset[1]);
     *datePtr = GetTime(now);
   }
 
@@ -970,9 +1041,13 @@ int main(int argc, char **argv)
   CompositeParser::Register("ISSM-Quote", new ObsDateComposite);
   CompositeParser::Register("DOL_DATA", new DOLDateComposite);
   CompositeParser::Register("DOWJONES", new MmDdYyComposite);
-  CompositeParser::Register("LANDSEND", new StateLatLonComposite);
+  CompositeParser::Register("LANDSEND", new StateLatLonComposite); 
   CompositeParser::Register("LANDSENDDAILY", new YyMmDdComposite);
+  CompositeParser::Register("BIRCHLE1", new LandsendDateDiffComposite);
+  CompositeParser::Register("BIRCHLE2", new LandsendDateDiffComposite);
+  CompositeParser::Register("BIRCHLE3", new LandsendDateDiffComposite);
   CompositeParser::Register("SALES", new StateLatLonComposite);
+  CompositeParser::Register("SALESDAILY", new YyMmDdComposite);
   CompositeParser::Register("CENSUS_PLACES", new LatLonComposite);
   CompositeParser::Register("CENSUS_ZIP", new LatLonComposite);
   CompositeParser::Register("IBMTRACE", new IBMAddressTraceComposite);
