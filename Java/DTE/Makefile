@@ -16,6 +16,12 @@ PACKAGES = Types Iterators Expressions NameToIdMaps DataSources Functions
 #.java.class: 
 #	javac $<
 
+dte:
+	javac DTE.java */*.java -d $(CLASSES)
+
+Parser/SQLParser.java: Parser/SQLParser.jj
+	cd Parser; javacc SQLParser.jj; cd ..
+
 all:
 	javac FileScanIteratorTest.java -d $(CLASSES)
 
