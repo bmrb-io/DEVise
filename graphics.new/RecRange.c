@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/14 18:17:31  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.2  1995/09/05 22:15:32  jussi
   Added CVS header.
 */
@@ -109,12 +112,12 @@ RecRangeData *RecRange::Search(int id){
 	else /* start searching from beginning */
 		current = _rangeList.next;
 
-	if (id < current->low){
+	if (id < (int)current->low){
 		/* search backwards */
 		for (current = current->prev; current != &_rangeList; 
 										current = current->prev){
 			_searchSteps++;
-			if (id >= current->low){
+			if (id >= (int)current->low){
 				/* found */
 				_hint = current;
 				return current;
@@ -123,17 +126,17 @@ RecRangeData *RecRange::Search(int id){
 		/* done searching, and didn't find a valid page range.*/
 		return NULL;
 	}
-	else if (id > current->high){
+	else if (id > (int)current->high){
 		/* search forwards */
 		for (current = current->next; current != &_rangeList; 
 							current = current->next){
 			_searchSteps++;
-			if (id < current->low){
+			if (id < (int)current->low){
 				/* page is beyond previous page range. */
 				_hint = current->prev;
 				return current->prev;
 			}
-			else if (id <= current->high){
+			else if (id <= (int)current->high){
 				/* page number is within this page rnage */
 				_hint = current;
 				return current;
@@ -188,7 +191,7 @@ Boolean RecRange::NextUnprocessed(RecId currentId, RecId &low, RecId &high){
 		int id = current->high+1;
 		for(current =current->next; current != &_rangeList; 
 							current = current->next){
-			if (id >= current->low )
+			if (id >= (int)current->low )
 				id = current->high+1;
 			else {
 				/* found it */
