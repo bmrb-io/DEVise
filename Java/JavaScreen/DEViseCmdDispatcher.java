@@ -115,7 +115,7 @@ public class DEViseCmdDispatcher implements Runnable
             return;
         }
         
-        //TEMP jsc.jscreen.setLastAction();
+        jsc.jscreen.setLastAction();
                         
         dispatcherThread = new Thread(this);
         dispatcherThread.start();

@@ -59,6 +59,7 @@ public class DEViseGData
                             if (DEViseGlobals.browser != null) {
                                 try {
                                     URL url = new URL(event.getActionCommand());
+                                    //DEViseGlobals.browser.showDocument(url, "_blank");
                                     DEViseGlobals.browser.showDocument(url, "_parent");
                                 } catch (MalformedURLException e) {
                                     //YGlobals.Ydebugpn("Invalid URL {" + event.getActionCommand() + "}");

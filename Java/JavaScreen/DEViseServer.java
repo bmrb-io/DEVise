@@ -34,9 +34,12 @@ public class DEViseServer implements Runnable
 
     private int action = DEViseServer.IDLE;
 
-    public DEViseServer(jspop j)
+    public DEViseServer(jspop j, String name)
     {
-        pop = j;        
+        pop = j;
+        if (name != null) {
+            hostname = new String(name);        
+        }    
     }
 
     public synchronized static int getPort()
@@ -182,14 +185,14 @@ public class DEViseServer implements Runnable
             proc = null;
         }
 
-        //Runtime currentRT = Runtime.getRuntime();
-        //try {
-        //    proc = currentRT.exec(DEViseServer.DEViseKill);
-        //} catch (IOException e) {
-        //    pn("IO Error while trying to start a new DEVise Server!");
-        //} catch (SecurityException e) {
-        //    pn("Security Error while trying to start a new DEVise Server!");
-        //}
+        Runtime currentRT = Runtime.getRuntime();
+        try {
+            proc = currentRT.exec(DEViseServer.DEViseKill + " " + cmdPort);
+        } catch (IOException e) {
+            pop.pn("IO Error while trying to kill an old devised!");
+        } catch (SecurityException e) {
+            pop.pn("Security Error while trying to kill an old devised!");
+        }
     }
 
     private boolean startDEVise()
@@ -471,18 +474,26 @@ public class DEViseServer implements Runnable
                                     if (client.screenDimX > 0 && client.screenDimY > 0) {
                                         if (!sendCmd("JAVAC_SetDisplaySize " + client.screenDimX + " " + client.screenDimY)) {
                                             error = true;
+                                        } else {
+                                            pop.pn("Switch error: can not send JAVAC_SetDisplaySize");
                                         }
                                     }
                                 
                                     if (!error) {    
                                         if (sendCmd("JAVAC_OpenSession {" + client.savedSessionName + "}")) {
                                             client.isSessionOpened = true;
+                                        } else {
+                                            pop.pn("Switch error: Can not send JAVAC_OpenSession " + client.savedSessionName);
                                         }
                                         
                                         // need to clear socket because there might be some useless data on data socket
                                         socket.clearSocket();                                        
                                     }    
-                                }                                
+                                } else {
+                                    pop.pn("Switch error: path is null");
+                                }                               
+                            } else {
+                                pop.pn("Switch error: client switch not successful");
                             }
                         }
 

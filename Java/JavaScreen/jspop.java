@@ -37,7 +37,8 @@ public class jspop implements Runnable
     private YLogFile logFile = null;
     private int debugLevel = 0;
     private YLogConsole debugConsole = null;
-
+    
+    private String localHostname = null;
     private int IDCount = 1;
     private int maxServerNumber = 1;
     private Thread popThread = null;
@@ -114,12 +115,20 @@ public class jspop implements Runnable
     {
         System.out.println("\nChecking command line arguments ...\n");
         checkArguments(args);
-
+        
+        try {
+            InetAddress address = InetAddress.getLocalHost();
+            localHostname = address.getHostName();
+        } catch (UnknownHostException e) {
+            System.out.println("Can not start jspop - unknown local host!");
+            System.exit(1);
+        }
+                
         System.out.println("Starting DEViseServer ...\n");
         try {
             DEViseServer newserver = null;
             for (int i = 0; i < maxServerNumber; i++) {
-                newserver = new DEViseServer(this);
+                newserver = new DEViseServer(this, localHostname);
                 newserver.start();
                 servers.addElement(newserver);
                 System.out.println("Successfully start DEViseServer " + (i + 1) + " out of " + maxServerNumber + "\n");

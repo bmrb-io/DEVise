@@ -18,6 +18,8 @@ public class DEViseScreen extends Panel
     Vector allGDatas = new Vector();
 
     DEViseView currentView = null;
+    public DEViseView lastActionView = null;
+    public boolean guiAction = false;
 
     boolean isDimChanged = false;
 
@@ -252,9 +254,9 @@ public class DEViseScreen extends Panel
 
         currentView = view;
 
-        if (currentView != null) {
-            currentView.isFirstTime = true;
-        }
+        //if (currentView != null) {
+        //    currentView.isFirstTime = true;
+        //}
 
         if (!jsc.isShowingMsg() && currentView != null) {
             requestFocus();
@@ -334,7 +336,26 @@ public class DEViseScreen extends Panel
             view.updateDataRange(axis, min, max);
         }
     }
-
+    
+    public void setLastAction()
+    {
+        if (guiAction) {
+            guiAction = false;
+            if (currentView != null) {
+                if (lastActionView != currentView) {
+                    if (lastActionView != null) {
+                        lastActionView.isFirstTime = true;
+                    } 
+                    
+                    lastActionView = currentView;
+                    if (currentView.isFirstTime) {
+                        currentView.isFirstTime = false;
+                    }
+                }
+            }
+        }                
+    }
+            
     public synchronized void updateScreen(boolean flag)
     {
         if (flag) {
@@ -348,6 +369,7 @@ public class DEViseScreen extends Panel
             viewTable = new Hashtable();
 
             currentView = null;
+            lastActionView = null;
 
             jsc.isSessionOpened = false;
 
