@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.63  1999/06/25 15:58:23  wenger
+  Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
+  now uses DebugLog facility instead of printf; dispatcher logging is turned
+  on by default, and commands and queries are logged; added -debugLog command
+  line flag to turn logging on and off.
+
   Revision 1.62  1999/06/22 19:46:58  wenger
   Devised support for JavaScreen improvements: cursors are now drawn in any
   view of a pile; mouse actions can be disabled in views; cursor grid info
@@ -594,7 +600,7 @@ FillScreen()
 		winH = (int)(winH * yMult);
 
 #if defined(DEBUG_LOG)
-        printf(logBuf, "window %s geometry changed to = %d, %d, %d, %d\n",
+        sprintf(logBuf, "window %s geometry changed to = %d, %d, %d, %d\n",
 		  window->GetName(), winX, winY, winW, winH);
         DebugLog::DefaultLog()->Message(logBuf);
 #endif
