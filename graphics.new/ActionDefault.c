@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/04/22 21:38:04  jussi
+  Fixed problem with simultaneous view refresh and record query
+  activities. Previously, there was a single iterator over the
+  mappings of a view, which caused the system to crash when a record
+  was queried while the data was still being displayed. Each activity
+  now gets its own iterator.
+
   Revision 1.10  1996/04/20 19:56:34  kmurli
   QueryProcFull now uses the Marker calls of Dispatcher class to call itself when
   needed instead of being continuosly polled by the Dispatcher.
@@ -218,11 +225,11 @@ Boolean ActionDefault::PopUp(View *view, Coord x, Coord y, Coord xHigh,
   AttrType xAttr = view->GetXAxisAttrType();
   AttrType yAttr = view->GetYAxisAttrType();
   
-  InitPutMessage((x+xHigh)/2.0, xAttr, (y+yHigh)/2.0, yAttr);
+  InitPutMessage((x + xHigh) / 2.0, xAttr, (y + yHigh) / 2.0, yAttr);
   
   char *errorMsg;
   if (!PrintRecords(view, x, y, xHigh, yHigh, errorMsg)) {
-    InitPutMessage((x+xHigh)/2.0, xAttr, (y+yHigh)/2.0, yAttr);
+    InitPutMessage((x + xHigh) / 2.0, xAttr, (y + yHigh) / 2.0, yAttr);
     PutMessage("");
     PutMessage(errorMsg);
   }
@@ -236,18 +243,18 @@ Boolean ActionDefault::PrintRecords(View *view, Coord x, Coord y,
 				    Coord xHigh, Coord yHigh, char *&errorMsg)
 {
 #ifdef DEBUG
- printf("ActionDefault::PrintRecords %s %.2f %.2f %.2f %.2f\n",
+  printf("ActionDefault::PrintRecords %s %.2f %.2f %.2f %.2f\n",
 	 view->GetName(), x, y, xHigh, yHigh);
 #endif
 
   static RecInterp *recInterp = NULL;
   
-  if (recInterp == NULL)
+  if (!recInterp)
     recInterp = new RecInterp;
   
   /* get mapping */
   ViewGraph *vg = (ViewGraph *)view;
- int index = vg->InitMappingIterator();
+  int index = vg->InitMappingIterator();
   if (!vg->MoreMapping(index)) {
     errorMsg = "No mapping found!";
     vg->DoneMappingIterator(index);
@@ -271,11 +278,6 @@ Boolean ActionDefault::PrintRecords(View *view, Coord x, Coord y,
   numDimensions = map->DimensionInfo(dimensionInfo);
   Boolean approxFlag = (numDimensions == 1 && dimensionInfo[0] == VISUAL_X);
   
-  if (!approxFlag) {
-    errorMsg = "Query of scatter plot to be implemented";
-    return false;
-  }
-  
   TData *tdata = map->GetTData();
   AttrList *attrs = tdata->GetAttrList();
   if (!attrs) {
@@ -295,6 +297,8 @@ Boolean ActionDefault::PrintRecords(View *view, Coord x, Coord y,
   
   Boolean tooMuch = false;
   qp->InitTDataQuery(map, filter, approxFlag);
+
+  int linesDisplayed = 0;
 
   while (qp->GetTData(startRid, numRecs, buf)) {
     char *ptr = buf;
@@ -319,11 +323,21 @@ Boolean ActionDefault::PrintRecords(View *view, Coord x, Coord y,
 	    tooMuch = true;
 	  }
 	} else {
-	  //puts(buf);
+	  puts(buf);
 	}
+	++linesDisplayed;
+      }
+
+      if (linesDisplayed > 500) {
+	printf("\nToo many records to display\n");
+	break;
       }
     }
+    
+    if (linesDisplayed > 500)
+      break;
   }
+
   qp->DoneTDataQuery();
 
   return !tooMuch;
