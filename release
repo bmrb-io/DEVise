@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13  1997/02/26 16:30:51  wenger
+#  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+#
 #  Revision 1.12.4.1  1997/02/20 20:50:23  wenger
 #  Changed mapping to use ShapeAttr4 for line width.
 #
@@ -178,6 +181,11 @@ if (! -d $target/lib) then
 endif
 cp -p lib/[a-z]* $target/lib
 cp -p lib/[A-Z]*.* $target/lib
+
+if (! -d $target/lib/LM) then
+  mkdir $target/lib/LM
+endif
+cp -p lib/LM/*.tk $target/lib/LM
 
 
 echo ""
