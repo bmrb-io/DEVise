@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.39  1996/04/10 15:30:07  jussi
+  Added removeMapping command verb.
+
   Revision 1.38  1996/04/09 22:52:25  jussi
   Added getViewOverrideColor and setViewOverrideColor.
 
@@ -757,8 +760,10 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		    Exit::DoExit(2);
 		  }
 		  int v, h;
-		  layout->GetPreferredLayout(v, h);
-		  sprintf(interp->result, "%d %d", v, h);
+		  Boolean stacked;
+		  layout->GetPreferredLayout(v, h, stacked);
+		  sprintf(interp->result, "%d %d %d", v, h,
+			  (stacked ? 1 : 0));
 		}
 		else if (strcmp(argv[1],"getSchema") == 0) {
 
@@ -1051,6 +1056,22 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		  Color color = view->GetOverrideColor(active);
 		  sprintf(interp->result, "%d %d", (active ? 1 : 0),
 			  (int)color);
+		}
+		else if (strcmp(argv[1],"raiseView") == 0) {
+		  View *view = (View *)classDir->FindInstance(argv[2]);
+		  if (view == NULL) {
+		    interp->result = "Can't find view in raiseView";
+		    goto error;
+		  }
+		  view->Raise();
+		}
+		else if (strcmp(argv[1],"lowerView") == 0) {
+		  View *view = (View *)classDir->FindInstance(argv[2]);
+		  if (view == NULL) {
+		    interp->result = "Can't find view in lowerView";
+		    goto error;
+		  }
+		  view->Lower();
 		}
 		else {
 			interp->result = "wrong args";
@@ -1510,6 +1531,17 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			}
 			view->SetLabelParam(atoi(argv[3]), atoi(argv[4]),
 					    argv[5]);
+		}
+		else if (strcmp(argv[1], "setWindowLayout") == 0) {
+		  ViewLayout *layout = (ViewLayout *)classDir->FindInstance(argv[2]);
+		  if (!layout) {
+		    fprintf(stderr,
+			    "TkControl:cmd setWindowLayout can't find window %s\n",
+			    argv[2]);
+		  Exit::DoExit(2);
+		  }
+		  layout->SetPreferredLayout(atoi(argv[3]), atoi(argv[4]),
+					     (atoi(argv[5]) ? true : false));
 		}
 		else {
 			interp->result = "wrong args";
