@@ -9,6 +9,10 @@ void initialize_system(const char FileName[],
                  int  VolumeSize)
 {
   FILE *in_file = fopen(FileName, "r");
+  if(!in_file){
+  	printf("No index file found (Run FormatVolume)\n");
+	return;
+  }
   fscanf(in_file, "%d", &NextEmptyPage);
   fclose(in_file);
   RTreeFile = open(FileName, O_RDWR|O_CREAT, 0600);
@@ -23,6 +27,10 @@ void shutdown_system(const char FileName[],
   munmap(FileArr, VolumeSize);
   close(RTreeFile);
   FILE *in_file = fopen(FileName, "r+");
+  if(!in_file){
+  	printf("No index file found (Run FormatVolume)\n");
+	return;
+  }
   fprintf(in_file, "%d", NextEmptyPage);
   fclose(in_file);
 }
