@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1995/11/20 22:39:21  jussi
+  Base tape offset received from calling program.
+
   Revision 1.9  1995/11/17 03:57:43  ravim
   New format of index file used. Uses CUSIP number to search for company.
 
@@ -65,7 +68,7 @@ static Tcl_Interp *globalInterp = 0;
 
 int comp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
 		char *tapeBsize, char *idxFile, char **, int);
-int create_comp_dat(TapeDrive &tape, char *idxFile, char *fvalue, char *file);
+int create_comp_dat(TapeDrive &tape, unsigned long int offset, char *file);
 
 int comp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 {
@@ -152,7 +155,7 @@ int comp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
   /* Call create_comp_dat for every symbol in turn */
   for (i = 0; i < num; i++)
   {
-    if (create_comp_dat(tape, idxFile, argv[spos_arr[i]],
+    if (create_comp_dat(tape, offset_arr[i],
 			argv[spos_arr[i] + 1]) != TCL_OK) {
       fprintf(stderr, "Error in extracting %s\n", argv[spos_arr[i]]);
     }
@@ -170,33 +173,16 @@ int comp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
 /* This function extracts the fields in the data and outputs them into
    a DeVise style file.
 */
-int create_comp_dat(TapeDrive &tape, char *idxFile, char *fvalue, char *file)
+int create_comp_dat(TapeDrive &tape, unsigned long int recoffset, char *file)
 {
-  FILE *idxfile;
   FILE *outfile;
   int i, j;
-  int recoffset, year;
+  int year;
   char yrbuf[3];
   char recbuf1[COMP_REC_LENGTH];
   char recbuf2[COMP_REC_LENGTH];
 
-  /* Get the index file pointer */
-  if ((idxfile = fopen(idxFile, "r")) == NULL)
-  {
-    printf("Error: could not open index file: %s\n", idxFile);
-    return TCL_ERROR;
-  }
-
-  /* Find the record for the company in the index file and open an output
-     file with the appropriate name */
-  if ((recoffset = find_rec(idxfile, fvalue)) == -1)
-  {
-    printf("Error: Could not find company with selected cusip number.\n");
-    fclose(idxfile);
-    return TCL_ERROR;
-  }
-
-  printf("Creating Compustat file %s for %s \n", file, fvalue);
+  printf("Creating Compustat file %s \n",file);
 
   /* Open file pointer for the data file */
   if ((outfile = fopen(file, "w")) == NULL)
@@ -237,8 +223,6 @@ int create_comp_dat(TapeDrive &tape, char *idxFile, char *fvalue, char *file)
   }
 
   /* Close files */
-  if (fclose(idxfile) == EOF)
-    perror("fclose");
   if (fclose(outfile) == EOF)
     perror("fclose");
 
