@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/06/16 16:30:53  wenger
+  Added standard headers to DataReader sources.
+
  */
 
 #ifndef DATETIME_H
@@ -46,7 +49,7 @@ class IntervalYM {
 public:
 	IntervalYM(int c_year, int c_month, bool c_Plus) ;
 	bool isValid() ;
-	V_2_Month() const ;
+	int V_2_Month() const ;
 	IntervalYM operator-(const IntervalYM& arg) ;
 	IntervalYM operator+(const IntervalYM& arg);
 	char* Write_Data();
@@ -268,7 +271,7 @@ public:
 	void setNanoSec(int nanosec){
 		this->nanosec = nanosec;
 	}
-	void maketm(struct tm& t){
+	void maketm(struct tm& t) const {
 		t.tm_year = getYear() - 1900;
 		t.tm_mon = getMonth() - 1;
 		t.tm_mday = getDay();
@@ -279,6 +282,7 @@ public:
 	}
 	friend ostream& operator <<(ostream& out, const EncodedDTF& edtf);
 	friend istream& operator >>(istream& in, EncodedDTF& edtf);
+  friend class DteDateAdt;
 };
 
 ostream& operator <<(ostream& out, const EncodedDTF& arg);
