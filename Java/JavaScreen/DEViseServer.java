@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.48  2001/02/06 16:38:40  xuk
+// Change for multiple collaborated JSs in run().
+//
 // Revision 1.47  2001/01/31 22:24:31  xuk
 // Fix bugs for wrong collaboration JS ID.
 //
@@ -609,7 +612,6 @@ public class DEViseServer implements Runnable
 
         } else {
 	    cmdClientDefault(clientCmd);
-
         }
 
 	return true;
