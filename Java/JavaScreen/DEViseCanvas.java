@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.62  2000/07/26 15:53:41  venkatan
+// Hand - Mouse Cursor is used in the 3D view
+//
 // Revision 1.61  2000/07/21 03:23:42  venkatan
 // Help Display - Multiple lines are now in a single "panel"
 //
@@ -151,6 +154,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.62  2000/07/26 15:53:41  venkatan
+// Hand - Mouse Cursor is used in the 3D view
+//
 // Revision 1.61  2000/07/21 03:23:42  venkatan
 // Help Display - Multiple lines are now in a single "panel"
 //
@@ -1296,6 +1302,14 @@ public class DEViseCanvas extends Container
                         } else {
                             cmd = cmd + " 0";
                         }
+
+			//Zoom in X only direction - modified by Ven
+
+                        if (DEViseCanvas.lastKey == KeyEvent.VK_CONTROL) {
+                            cmd = cmd + " 1";
+                        } else {
+                            cmd = cmd + " 0";
+                        } 
 
                         jscreen.guiAction = true;
                         dispatcher.start(cmd);
