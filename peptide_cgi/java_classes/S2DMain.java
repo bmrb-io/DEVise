@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2001/05/14 18:08:26  wenger
+// Parameterized all star file tag names, etc.
+//
 // Revision 1.15  2001/05/08 18:24:18  wenger
 // Fixed problem getting residue count if a star file contains info for
 // more than one protein; added residue counts to 'all shifts' and 'H
@@ -107,7 +110,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.9";
+    public static final String PEP_CGI_VERSION = "2.10";
 
     private int _accessionNum;
     private String _dataDir;
@@ -524,13 +527,20 @@ public class S2DMain {
 
 	SaveFrameNode tmpFrame = star.getMonoPolyFrame(frame);
 
-	String [] resSeqCodesTmp = star.getFrameValues(tmpFrame,
-	  S2DNames.RESIDUE_SEQ_CODE, S2DNames.RESIDUE_SEQ_CODE);
-	int [] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp);
-	resSeqCodesTmp = null;
+	int [] resSeqCodes = null;
+	String [] residueLabels = null;
+	try {
+	    String [] resSeqCodesTmp = star.getFrameValues(tmpFrame,
+	      S2DNames.RESIDUE_SEQ_CODE, S2DNames.RESIDUE_SEQ_CODE);
+	    resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp);
+	    resSeqCodesTmp = null;
 
-	String [] residueLabels = star.getFrameValues(tmpFrame,
-	  S2DNames.RESIDUE_SEQ_CODE, S2DNames.RESIDUE_LABEL);
+	    residueLabels = star.getFrameValues(tmpFrame,
+	      S2DNames.RESIDUE_SEQ_CODE, S2DNames.RESIDUE_LABEL);
+        } catch (S2DException ex) {
+	    System.err.println("Warning: unable to get residue counts: " +
+	      ex.getMessage());
+	}
 
         S2DResCount resCount = new S2DResCount(_accessionNum, _dataDir,
 	  resSeqCodes, residueLabels);

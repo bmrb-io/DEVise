@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2001/05/14 18:08:27  wenger
+// Parameterized all star file tag names, etc.
+//
 // Revision 1.1  2001/05/09 14:38:46  wenger
 // Oops!  Forgot to cvs add this before!!
 //
@@ -107,12 +110,13 @@ public class S2DResCount {
 	//
 	// Count up the number of each amino acid.
 	//
-	int prevCode = -1;
-        for (int index = 0; index < _resSeqCodes.length; index++) {
-	    if (_resSeqCodes[index] != prevCode) {
-
-		incrementCount(_residueLabels[index]);
-	        prevCode = _resSeqCodes[index];
+	if (_resSeqCodes != null && _residueLabels != null) {
+	    int prevCode = -1;
+            for (int index = 0; index < _resSeqCodes.length; index++) {
+	        if (_resSeqCodes[index] != prevCode) {
+		    incrementCount(_residueLabels[index]);
+	            prevCode = _resSeqCodes[index];
+	        }
 	    }
 	}
 
