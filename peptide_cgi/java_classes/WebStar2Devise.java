@@ -956,7 +956,7 @@ public class WebStar2Devise {
 		    summary_writer.print(display_link);
 		    summary_writer.print("\">Relaxation Parameters</a>");
 
-		    display_link.setCharAt(21, 'u');
+		    display_link.setCharAt(21, 'g');
 		    summary_writer.print(display_link);
 		    summary_writer.print("\">Coupling Constants</a>");
 		}

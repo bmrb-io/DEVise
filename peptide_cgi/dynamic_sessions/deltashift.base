@@ -6,7 +6,7 @@
 # DEVise endHeader
 
 # Per-session data source definitions
-DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb:AxisLabel /p/devise/demo/schema/schema/physical/bmrb:AxisLabel "" 100 50 "/afs/cs.wisc.edu/p/devise/demo/dat/bmrb/BMRB" ""}
+DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb:AxisLabel /p/devise/demo/schema/schema/physical/bmrb:AxisLabel "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
 
 # Create views
 DEVise create {view} {SortedX} {View 1} 1.000000 147.000000 -2.440000 1.000000 37 0
