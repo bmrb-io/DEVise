@@ -3,36 +3,50 @@
 
 // (C) 1998- Kevin S. Beyer
 
-// only include this for gcc
-//kb: add to devise/src/include/sysdep.h
 //kb: perhaps sysdep.h can go away if we use cygwin/egcs for windows
+
+/*
+  These classes makes the old strstreambuf class work as a
+  stringstreams.  These class should be removed for compilers that
+  have proper stringstream support.
+*/
+
 #ifdef __GNUG__
 
 #include <strstream.h>
 #include <string>
 
-/*
-  This class makes the old strstream class work as a stringstream.
-  This class should be removed ifdef'd out for compilers that have
-  proper stringstream support.
-  Users of this class should not take advantage of the fact that
-  stringstream is derived from strstream.
-*/
-class ostringstream
-: public ostrstream
+class ostringstreambase : virtual public ios
+{
+protected:
+
+  ostringstreambase() { init(&__my_sb); }
+
+public:
+
+  strstreambuf* rdbuf() { return &__my_sb; }
+
+private:
+
+  strstreambuf __my_sb;
+
+  ostringstreambase(const ostringstreambase& x);
+  ostringstreambase& operator=(const ostringstreambase& x);
+};
+
+
+class ostringstream : public ostringstreambase, public ostream
 {
 public:
 
   ostringstream() {}
 
-  ostringstream(const string& s) : ostrstream() {
-    *this << s;
-  }
+  //ostringstream(const string& s) { *this << s; }
 
   string str() /* const */ {
-    int len = ostrstream::pcount();
-    const char* cp = ostrstream::str();
-    ostrstream::freeze(0);      // allow more writes
+    int len = rdbuf()->pcount();
+    const char* cp = rdbuf()->str();
+    rdbuf()->freeze(0);         // allow more writes
     return string(cp, len);
   }
 
@@ -43,29 +57,46 @@ private:
 };
 
 
-/*
-  This class makes the old strstream class work as a istringstream.
-  This class should be removed ifdef'd out for compilers that have
-  proper stringstream support.
-  Users of this class should not take advantage of the fact that
-  istringstream is derived from strstreambase.
-*/
-class istringstream
-//: public strstreambase, public istream
-: public istrstream
+class istringstream : virtual public ios, public istream
 {
 public:
 
-  istringstream(const string& s) : istrstream(s.c_str()) {}
+  istringstream(const string& s)
+    : myString(s), __my_sb(myString.c_str(), myString.length()) {
+    init(&__my_sb);
+  }
 
-  // not yet supported:
-  // void str(const string& s) 
+  strstreambuf* rdbuf() { return &__my_sb; }
 
 private:
+
+  string myString;
+  strstreambuf __my_sb;
 
   istringstream(const istringstream& x);
   istringstream& operator=(const istringstream& x);
 };
+
+
+class stringstream : public ostringstreambase, public iostream
+{
+public:
+
+  stringstream() {}
+
+  string str() /* const */ {
+    int len = rdbuf()->pcount();
+    const char* cp = rdbuf()->str();
+    rdbuf()->freeze(0);         // allow more writes
+    return string(cp, len);
+  }
+
+private:
+
+  stringstream(const stringstream& x);
+  stringstream& operator=(const stringstream& x);
+};
+
 
 #endif // only gcc
 
