@@ -269,6 +269,7 @@ public class DEViseCmdDispatcher implements Runnable
                 clearCmdBuffer();
             } else {
                 jsc.animPanel.start();
+                jsc.viewControl.updateImage(2, 1);
 
                 if (command.equals("ExitDispatcher")) {
                     if (cmdSocket != null) { // normal exit
@@ -307,6 +308,9 @@ public class DEViseCmdDispatcher implements Runnable
                         processCmd(command);
                         YGlobals.Ydebugpn("Dispatcher finished processing command: " + command + "!");
                     } catch (YException e) {
+                        jsc.animPanel.stop();
+                        jsc.viewControl.updateImage(0, 0);
+
                         int id = e.getID();
                         YGlobals.Ydebugpn(e.getMessage());
 
@@ -410,6 +414,7 @@ public class DEViseCmdDispatcher implements Runnable
                 }
 
                 jsc.animPanel.stop();
+                jsc.viewControl.updateImage(0, 0);
 
                 // Except for the abort events that actually been catched, some of them
                 // might not been catched, so we need to reset abort on every run
@@ -445,6 +450,8 @@ public class DEViseCmdDispatcher implements Runnable
 
         String[] cmd = null;
         for (int i = 0; i < rsp.length; i++) {
+            jsc.viewControl.updateImage(1, rsp.length - 1 - i);
+
             if (rsp[i].startsWith("JAVAC_Done")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length != 1 || i != rsp.length - 1) {
@@ -597,6 +604,74 @@ public class DEViseCmdDispatcher implements Runnable
                     throw new YException("Can not create image for window " + winname + "!", 6);
 
                 jscreen.updateWindow(winname, image);
+            } else if (rsp[i].startsWith("JAVAC_UpdateGData")) {
+                cmd = DEViseGlobals.parseString(rsp[i]);
+                YGlobals.Ydebugpn(rsp[i]);
+
+                if (cmd == null || cmd.length != 7) {
+                    throw new YException("Ill-formated command " + rsp[i] + "!", 5);
+                }
+
+                try {
+                    String viewname = cmd[1];
+                    float xm = (Float.valueOf(cmd[2])).floatValue();
+                    float xo = (Float.valueOf(cmd[3])).floatValue();
+                    float ym = (Float.valueOf(cmd[4])).floatValue();
+                    float yo = (Float.valueOf(cmd[5])).floatValue();
+                    int gdataSize = Integer.parseInt(cmd[6]);
+
+                    YGlobals.Ydebugpn("Retrieving GData for view " + viewname + " ... ");
+                    byte[] gdata = receiveImg(gdataSize);
+                    YGlobals.Ydebugpn("Successfully retrieve GData for view " + viewname);
+
+                    if (gdata == null || gdata.length != gdataSize)
+                        throw new YException("Null GData received for view " + viewname + "!", 6);
+
+                    String gdataStr = new String(gdata);
+                    //YGlobals.Ydebugpn(gdataStr);
+                    String[] GData = YGlobals.Yparsestr(gdataStr, "\u0004");
+                    if (GData == null || GData.length != 1) {
+                        throw new YException("Invalid GData received for view " + viewname + "!", 6);
+                    }
+
+                    Vector rect = new Vector();
+                    for (int j = 0; j < GData.length; j++) {
+                        if (GData[j] == null)
+                            throw new YException("Invalid GData received for view " + viewname + "!", 6);
+
+                        //YGlobals.Ydebugpn(GData[j]);
+                        String[] results = DEViseGlobals.parseStr(GData[j]);
+                        if (results == null || results.length == 0)
+                            throw new YException("Invalid GData received for view " + viewname + "!", 6);
+
+                        for (int k = 0; k < results.length; k++) {
+                            String[] value = YGlobals.Yparsestr(results[k]);
+                            if (value == null || value.length < 5)
+                                throw new YException("Invalid GData received for view " + viewname + "!", 6);
+
+                            try {
+                                int x0 = (int)((Float.valueOf(value[0])).floatValue() * xm + xo);
+                                int y0 = (int)((Float.valueOf(value[1])).floatValue() * ym + yo);
+                                int w = (int)((Float.valueOf(value[4])).floatValue() * xm);
+                                int h = (int)((Float.valueOf(value[4])).floatValue() * ym);
+                                if (w < 0)
+                                    w = -w;
+                                if (h < 0)
+                                    h = -h;
+                                //YGlobals.Ydebugpn("rectangle: " + x0 + " " + y0 + " " + w + " " + h);
+                                rect.addElement(new Rectangle(x0, y0, w, h));
+                            } catch (NumberFormatException e1) {
+                                throw new YException("Invalid GData received for view " + viewname + "!", 6);
+                            }
+                        }
+
+                        YGlobals.Ydebugpn(viewname + " has " + rect.size() + " GData record!");
+                        jscreen.updateGData(viewname, rect);
+                    }
+                } catch (NumberFormatException e) {
+                    throw new YException("Incorrect data format for arguments " + cmd[2] + " " + cmd[3] + " " + cmd[4] + " " + cmd[5] + " " + cmd[6] + "!", 5);
+                }
+
             } else if (rsp[i].startsWith("JAVAC_UpdateSessionList")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
 
@@ -703,6 +778,8 @@ public class DEViseCmdDispatcher implements Runnable
 
         cmdSocket.sendCmd(command);
 
+        jsc.viewControl.updateImage(1, 0);
+
         while (!isEnd) {
             isFinish = false;
 
@@ -738,6 +815,8 @@ public class DEViseCmdDispatcher implements Runnable
                         }
 
                         rspbuf.addElement(cmd);
+
+                        jsc.viewControl.updateImage(1, rspbuf.size());
                     } else {
                         throw new YException("Unrecognized command " + response + "!", 5);
                     }

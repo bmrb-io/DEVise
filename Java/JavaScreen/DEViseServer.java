@@ -8,11 +8,11 @@ public class DEViseServer implements Runnable
     private static String DEViseExec = new String("DEVise.jspop");
 
     private jspop pop = null;
-    private int serverStartTimeout = 60 * 1000;
-    private int serverStartTimestep = 5 * 1000;
-    private int serverWaitTimeout = 60 * 1000;
-    private int cmdSocketTimeout = 1000;
-    private int imgSocketTimeout = 1000;
+    private int serverStartTimeout = 10 * 1000;
+    private int serverStartTimestep = 2 * 1000;
+    private int serverWaitTimeout = 30 * 1000;
+    private int cmdSocketTimeout = 500;
+    private int imgSocketTimeout = 500;
     // when is current client been serviced
     private long clientStartTime = 0;
 
@@ -147,7 +147,7 @@ public class DEViseServer implements Runnable
 
     private void stopDEVise()
     {
-        if (!isDEViseAlive()) {
+        if (isDEViseAlive()) {
             return;
         } else {
             proc.destroy();
@@ -224,16 +224,15 @@ public class DEViseServer implements Runnable
             } catch (InterruptedException e) {
             }
 
-            time += serverStartTimestep;
-
             if (!isDEViseAlive()) {
                 // start DEVise server if it is dead
                 if (!startDEVise()) {
                     YGlobals.Ydebugpn("Can not start DEVise Server!");
-                    //return false;
-                    continue;
+                    return false;
                 }
             }
+
+            time += serverStartTimestep;
 
             try {
                 cmdSocket = new DEViseCmdSocket(hostname, cmdPort, cmdSocketTimeout);
@@ -718,11 +717,11 @@ public class DEViseServer implements Runnable
                                 } catch (InterruptedIOException e) {
                                 }
                             }
-
+                            
                             if (client.getCmd() != null && client.getCmd().startsWith("JAVAC_Abort")) {
                                 client.removeCmd();
                                 suspendClient(true);
-
+                                
                                 // need to clear up img socket
                                 try {
                                     if (imgSocket == null)
@@ -792,6 +791,23 @@ public class DEViseServer implements Runnable
                                         }
                                     } else {
                                         throw new YException("Ill-formated update window command: " + serverCmds[i] + "!", 5);
+                                    }
+                                } else if (serverCmds[i].startsWith("JAVAC_UpdateGData")) {
+                                    String[] cmds = DEViseGlobals.parseString(serverCmds[i]);
+                                    if (cmds != null && cmds.length == 7) {
+                                        try {
+                                            int imgSize = Integer.parseInt(cmds[6]);
+                                            byte[] image = receiveImg(imgSize);
+                                            if (image == null) {
+                                                throw new YException("Can not read image data of size " + imgSize + "!", 6);
+                                            }
+
+                                            images.addElement(image);
+                                        } catch (NumberFormatException e) {
+                                            throw new YException("Invalid GData size in update GData command: " + cmds[6] + "!", 5);
+                                        }
+                                    } else {
+                                        throw new YException("Ill-formated update GData command: " + serverCmds[i] + "!", 5);
                                     }
                                 }
                             }

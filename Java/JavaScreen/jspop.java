@@ -37,8 +37,8 @@ public class jspop implements Runnable
     public Vector servers = new Vector();
     public int maxServer = 1;
 
-    public int serverStartTimeout = 5 * 60 * 1000; // wait for DEVise server to start up for 5 minutes before abort
-    public int serverWaitTimeout = 5 * 60 * 1000; // wait for DEVise server response for 5 minutes before abort
+    public int serverStartTimeout = 60 * 1000; // wait for DEVise server to start up for 1 minutes before abort
+    public int serverWaitTimeout = 60 * 1000; // wait for DEVise server response for 1 minutes before abort
     public int jspopWaitTimeout = 5 * 1000; // wait client connection for 5 seconds before disconnect
     public int dispatcherTimestep = 1 * 1000; // do scheduling every 1 seconds
     public int cmdSocketTimeout = 1 * 1000; // interrupt cmdSocket every 1 seconds
@@ -225,7 +225,7 @@ public class jspop implements Runnable
                                                     throw new YException("Invalid connection ID: " + id + "!");
                                                 } else {
                                                     c.setSockets(cmd, img);
-                                                    YGlobals.Ydebugpn("Old client connected with ID " + id + "!");
+                                                    isEnd = true;
                                                 }
                                             }
                                         } else {
@@ -238,7 +238,6 @@ public class jspop implements Runnable
                                             clients.put(newClient.getID(), newClient);
                                             u.addClient(newClient);
                                             dispatcher.addClient(newClient);
-                                            YGlobals.Ydebugpn("New client connected with ID " + id + "!");
                                         }
 
                                         cmd.sendCmd("JAVAC_User " + id);
@@ -313,7 +312,7 @@ public class jspop implements Runnable
             id = new Integer(IDCount);
         }
 
-        return IDCount++;
+        return IDCount;
     }
 
     private void checkArguments(String[] args)

@@ -68,12 +68,14 @@ public class DEViseAnimPanel extends Canvas implements Runnable
         minSize = new Dimension(imageWidth, imageHeight);
 
         imageCount = images.size();
-        if (imageCount == 0) {
+        if (imageCount < 4) {
             isAnimated = false;
             YGlobals.Ydebugpn("Empty image list received in DEViseAnimPanel constructor!");
             return;
         }
-
+        
+        imageCount = 4;
+        
         // all image in the list must has same size
         currentImg = (Image)images.elementAt(0);
         if (currentImg == null) {

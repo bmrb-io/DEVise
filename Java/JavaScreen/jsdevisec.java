@@ -78,7 +78,7 @@ public class jsdevisec extends Frame
                 Toolkit toolkit = this.getToolkit();
                 images = new Vector();
                 Image image = null;
-                for (int i = 0; i < 4; i++) {
+                for (int i = 0; i < 11; i++) {
                     image = toolkit.getImage("devise" + i + ".gif");
                     tracker.addImage(image, 0);
                     try  {
@@ -156,7 +156,7 @@ public class jsdevisec extends Frame
         titlePanel.add(panel);
 
         jscreen = new DEViseScreen(this);
-        viewControl = new DEViseViewControl(this);
+        viewControl = new DEViseViewControl(this, images);
         viewInfo = new DEViseViewInfo(this);
 
         add(titlePanel, BorderLayout.NORTH);
@@ -207,7 +207,13 @@ public class jsdevisec extends Frame
 
         viewInfo.updateInfo();
     }
-
+    
+    public void repaintActive()
+    {
+        if (jscreen != null && jscreen.getCurrentWindow() != null)
+            jscreen.getCurrentWindow().repaint();
+    }
+    
     public void addEventHandler(jsdevisec what)
     {
         final jsdevisec jsc = what;
@@ -215,19 +221,21 @@ public class jsdevisec extends Frame
         openButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
-                    {
+                    {   
                         if (dispatcher.getStatus() == 0)
                             return;
-
+                        
                         dispatcher.insertCmd("JAVAC_GetSessionList");
                     }
                 });
         closeButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
-                    {
-                        if (dispatcher.getStatus() == 0)
+                    {   
+                        if (dispatcher.getStatus() == 0) {
+                            repaintActive();
                             return;
+                        }
 
                         if (isSessionOpened) {
                             dispatcher.insertCmd("JAVAC_CloseCurrentSession");
@@ -237,7 +245,9 @@ public class jsdevisec extends Frame
         saveButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
-                    {
+                    {  
+                        repaintActive();
+                        
                         if (dispatcher.getStatus() == 0)
                             return;
 
@@ -249,7 +259,9 @@ public class jsdevisec extends Frame
         queryButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
-                    {
+                    {   
+                        repaintActive();
+                        
                         if (dispatcher.getStatus() == 0)
                             return;
 
@@ -258,7 +270,9 @@ public class jsdevisec extends Frame
         statButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
-                    {
+                    {   
+                        repaintActive();
+                        
                         if (dispatcher.getStatus() == 0)
                             return;
 
@@ -268,7 +282,9 @@ public class jsdevisec extends Frame
         stopButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
-                    {
+                    {   
+                        repaintActive();
+                        
                         if (dispatcher.isAbort())
                             return;
 
@@ -278,10 +294,13 @@ public class jsdevisec extends Frame
         refreshButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
-                    {
+                    {   
+                        repaintActive();
+                        
                         if (dispatcher.getStatus() == 0)
                             return;
-
+                        
+                        jscreen.updateScreen(true);
                         //if (isSessionOpened) {
                         //    dispatcher.insertCmd("JAVAC_Refresh");
                         //}
@@ -290,9 +309,12 @@ public class jsdevisec extends Frame
         exitButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
-                    {
-                        if (dispatcher.getStatus() == 0)
+                    {   
+                        repaintActive();
+                        
+                        if (dispatcher.getStatus() == 0) {
                             return;
+                        }
 
                         quit();
                     }
@@ -333,13 +355,13 @@ public class jsdevisec extends Frame
             return;
 
         if (dispatcher.getStatus() == 0) {
-            YGlobals.Yshowmsg(this, "Java Screen still talking to Server!\nPlease press STOP to stop it first!");
+            YGlobals.Yshowmsg(this, "Java Screen still talking to Server!\nPlease press STOP to stop it first!", false, false);
             return;
         }
 
         if (isSessionOpened) {
             //jscreen.updateScreen(false);
-            YGlobals.Yshowmsg(this, "Java Screen still has an opened session!\nPlease press CLOSE to close it first!");
+            YGlobals.Yshowmsg(this, "Java Screen still has an opened session!\nPlease press CLOSE to close it first!", false, false);
             return;
         }
 

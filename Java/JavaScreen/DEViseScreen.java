@@ -159,6 +159,17 @@ public class DEViseScreen extends Panel
         return currentWindow;
     }
 
+    public void updateGData(String name, Vector rect)
+    {
+        DEViseWindow win = getViewWindow(name);
+        if (win == null) {
+            YGlobals.Ydebugpn("GData window is null!");
+            return;
+        }
+
+        win.updateGData(rect);
+    }
+
     public void drawCursor(String name, Rectangle rect)
     {
         DEViseWindow win = getViewWindow(name);
