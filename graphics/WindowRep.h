@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.54  1997/07/18 20:25:06  wenger
+  Orientation now works on Rect and RectX symbols; code also includes
+  some provisions for locating symbols other than at their centers.
+
   Revision 1.53  1997/06/13 18:07:28  wenger
   Orientation is now working for text labels and fixed text labels.
 
@@ -263,9 +267,6 @@
 
 #ifndef WindowRep_h
 #define WindowRep_h
-
-#include <stdio.h>
-#include <stdlib.h>
 
 #include "Geom.h"
 #include "Transform.h"

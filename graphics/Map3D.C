@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/11/13 16:56:08  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.8  1996/08/03 15:35:42  jussi
   Added line segment width and commented out line segment clipping
   algorithm.
@@ -43,6 +53,9 @@
   Revision 1.1  1996/06/21 19:25:22  jussi
   Initial revision.
 */
+
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "Map3D.h"
 #include "WindowRep.h"
