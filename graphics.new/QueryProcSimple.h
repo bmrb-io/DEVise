@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/06/27 15:52:48  jussi
+  Added functionality which allows TDataAscii and TDataBinary to request
+  that views using a given TData be refreshed (existing queries are
+  aborted and new queries are issued). Fixed a few bugs in QueryProcFull
+  which became visible only when this new functionality was tested.
+
   Revision 1.8  1996/06/24 19:48:55  jussi
   Improved the interaction between query processors and the dispatcher.
   The query processors now also get called every time a 1-second timer
@@ -56,6 +62,7 @@
 #include "BufPolicy.h"
 #include "BufHint.h"
 #include "RecId.h"
+#include "Dispatcher.h"
 
 class BufMgr;
 class TData;
@@ -265,8 +272,7 @@ private:
   void DoneInMemConvert();
 
 protected:
-  int readFd;	                   /* read marker fd */
-  int writeFd;                     /* write marker fd */
+  DispatcherID _dispatcherID;
 };
 
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1996/07/23 17:16:30  jussi
+  Added support for piled views.
+
   Revision 1.33  1996/07/21 02:22:05  jussi
   Added _xyZoom variable and associated methods.
 
@@ -468,7 +471,7 @@ private:
 	AxisLabel *_xAxisLabel;
 	AxisLabel *_yAxisLabel;
 
-	int readFd, writeFd;
+	DispatcherID _dispatcherID;
 
 	/* TRUE if _filter has changed since last time query was sent */
 	Boolean _filterChanged; 

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/07/01 19:25:44  jussi
+  When a query is initialized in InitQueries(), the iterator must
+  be terminated before the initialization code is called because
+  the initialization may end up aborting the query.
+
   Revision 1.22  1996/06/27 15:52:45  jussi
   Added functionality which allows TDataAscii and TDataBinary to request
   that views using a given TData be refreshed (existing queries are
@@ -236,12 +241,12 @@ QueryProcFull::QueryProcFull()
   
   _tqueryQdata = AllocEntry();
   _tqueryQdata->isRandom = false;
+  _dispatcherID = NULL;
 }
 
 QueryProcFull::~QueryProcFull()
 {
-  Dispatcher::FlushMarkers(readFd);
-  Dispatcher::CloseMarker(readFd, writeFd);
+  Dispatcher::Current()->CancelCallback(_dispatcherID);
 }
 
 void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
@@ -345,7 +350,7 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
   _queries->DoneIterator(index);
 #endif
 
-  Dispatcher::InsertMarker(writeFd);
+  Dispatcher::Current()->RequestCallback(_dispatcherID);
 }
 
 /* Abort a query given the mapping and the callback */
@@ -766,6 +771,8 @@ void QueryProcFull::ProcessQuery()
     DoGDataConvert();
     return;
   }
+
+  Dispatcher::Current()->RequestCallback(_dispatcherID);
 
   if (InitQueries()) {
     /* Have initialized queries. Return now */
@@ -1322,7 +1329,7 @@ Boolean QueryProcFull::DoInMemGDataConvert(TData *tdata, GData *gdata,
 void QueryProcFull::DoGDataConvert()
 {
   if (!Init::ConvertGData() || !_numMappings) {
-    Dispatcher::FlushMarkers(readFd);
+    // Dispatcher::Current()->CancelCallback(_dispatcherID);
     return;
   }
 	
@@ -1409,7 +1416,7 @@ void QueryProcFull::DoGDataConvert()
 #ifdef DEBUG
     printf("Could not find any GData that needs disk conversion\n");
 #endif
-    Dispatcher::FlushMarkers(readFd);
+    // Dispatcher::Current()->CancelCallback(_dispatcherID);
     return;
   }
 

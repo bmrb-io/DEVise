@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/07/05 15:19:48  jussi
+  The dispatcher now properly destroys all session objects
+  (TData, GData, links, etc.)  when it shuts down.
+
   Revision 1.19  1996/06/27 15:44:58  jussi
   Added checking of exceptions to select(). A client is called
   when there is a read or exception event.
@@ -119,12 +123,7 @@ Boolean Dispatcher::_returnFlag;
    and exit. This is done with QuitNotify()
 */
 Boolean Dispatcher::_quit = false;
-
-#ifndef HPUX
 fd_set Dispatcher::fdset;
-#else
-int Dispatcher::fdset;
-#endif
 int Dispatcher::maxFdCheck = 0;
 
 Dispatcher::Dispatcher(StateFlag state)
@@ -132,12 +131,10 @@ Dispatcher::Dispatcher(StateFlag state)
   _stateFlag = state;
   AppendDispatcher();
 
-#ifndef HPUX
-  memset(&fdset, 0, sizeof fdset);
-#else
-  fdset = 0;
-#endif
+  FD_ZERO(&fdset);
   maxFdCheck = 0;
+
+  _callback_requests = 0;
 
   /* init current time */
   _oldTime = DeviseTime::Now();
@@ -157,25 +154,6 @@ Dispatcher::Dispatcher(StateFlag state)
   }
 }
 
-void Dispatcher::CreateMarker(int &readFd, int &writeFd)
-{
-  int pipeFd[2];
-  if (pipe(pipeFd) < 0) {
-    DOASSERT(0, "Cannot create pipe");
-  }
-
-  readFd = pipeFd[0];
-  writeFd = pipeFd[1];
-
-  int status = fcntl(readFd, F_SETFL, O_NDELAY);
-  DOASSERT(status >= 0, "Cannot fcntl pipe");
-}
-
-void Dispatcher::CloseMarker(int readFd, int writeFd)
-{
-  if (readFd) close(readFd);
-  if (writeFd) close(writeFd);
-}
 
 /***********************************************************
   The dispatcher keeps track of classes to dispatch via
@@ -187,9 +165,9 @@ void Dispatcher::CloseMarker(int readFd, int writeFd)
   is not using them.
 **************************************************************/
 
-void Dispatcher::Register(DispatcherCallback *c, int priority,
-			  StateFlag flag, Boolean allDispatchers,
-			  int fd)
+DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
+				  StateFlag flag, Boolean allDispatchers,
+				  int fd)
 {
 
 #ifdef DEBUG
@@ -202,17 +180,14 @@ void Dispatcher::Register(DispatcherCallback *c, int priority,
   info->flag = flag;
   info->priority = priority;
   info->fd = fd;
+  info->callback_requested = false;
 
 #ifdef DEBUG
   printf("In Dispatcher::Register, fd = %d\n", fd);
 #endif
 
   if (fd >= 0) {
-#ifndef HPUX
     FD_SET(fd, &fdset);
-#else
-    fdset |= 1 << fd;
-#endif
     if (fd > maxFdCheck)
       maxFdCheck = fd;
   }
@@ -222,6 +197,7 @@ void Dispatcher::Register(DispatcherCallback *c, int priority,
   } else {
     _toInsertCallbacks.Append(info);
   }
+  return info;
 }
 
 /********************************************************
@@ -275,12 +251,9 @@ void Dispatcher::Unregister(DispatcherCallback *c)
     DispatcherInfo *info = _callbacks.Next(index);
     if (info->callBack == c) {
       info->flag = 0;                   // prevent callback from being called
+      CancelCallback(info);		// cancel any user-requested calls
       if (info->fd >= 0) {
-#ifndef HPUX
 	FD_CLR(info->fd, &fdset);
-#else
-	fdset &= ~(1 << info->fd);
-#endif
       }
       _toDeleteCallbacks.Append(info);
       _callbacks.DoneIterator(index);
@@ -294,11 +267,7 @@ void Dispatcher::Unregister(DispatcherCallback *c)
     if (info->callBack == c) {
       info->flag = 0;                   // prevent callback from being called
       if (info->fd >= 0) {
-#ifndef HPUX
 	FD_CLR(info->fd, &fdset);
-#else
-	fdset &= ~(1 << info->fd);
-#endif
       }
       _toDeleteAllCallbacks.Append(info);
       _allCallbacks.DoneIterator(index);
@@ -396,6 +365,33 @@ void Dispatcher::QuitNotify()
 }
 
 /********************************************************************
+  Notify 
+*********************************************************************/
+
+void Dispatcher::ProcessCallbacks(DispatcherInfoList& cb_list,
+				  fd_set& fdread, fd_set& fdexc)
+{
+  int index;
+  for(index = cb_list.InitIterator(); cb_list.More(index);) {
+    DispatcherInfo *callback = cb_list.Next(index);
+    if (callback->flag & _stateFlag) {
+      if ( ( callback->fd >= 0
+	     && (  FD_ISSET(callback->fd, &fdread) 
+                || FD_ISSET(callback->fd, &fdexc)))
+	  || callback->callback_requested ) {
+#if defined(DEBUG)
+	printf("Check for correctness: called fd = %d  req = %d\n", callback->fd, callback->callback_requested); 
+#endif
+	CancelCallback(callback);
+	callback->callBack->Run();
+      }
+    }
+  }
+  cb_list.DoneIterator(index);
+}
+
+
+/********************************************************************
   Run once 
 *********************************************************************/
 
@@ -416,69 +412,39 @@ void Dispatcher::Run1()
      Use an infinite timeout if we're not in playback mode.
   */
 
-#ifndef HPUX
   fd_set fdread,fdexc;
-#else
-  int fdread,fdexc;
-#endif
   memcpy(&fdread, &fdset, sizeof fdread);
   memcpy(&fdexc, &fdset, sizeof fdread);
 
   struct timeval timeout;
   timeout.tv_sec = 0;
   timeout.tv_usec = 0;
+  struct timeval* timeoutp = NULL;
+  if( _callback_requests > 0 || _playback ) timeoutp = &timeout;
 
-  int NumberFdsReady = select(maxFdCheck + 1, &fdread, 0, &fdexc,
-			      (_playback ? &timeout : 0));
+#if defined(DEBUG)
+  if( !timeoutp ) printf("blocking select: %d userdefs\n", _callback_requests);
+  else printf("non-blocking select\n");
+#endif
+  int NumberFdsReady = select(maxFdCheck + 1, &fdread, 0, &fdexc, timeoutp);
+  if( NumberFdsReady < 0 ) {
+    NumberFdsReady = 0;
+    FD_ZERO(&fdread);
+    FD_ZERO(&fdexc);
+#if defined(DEBUG)
+    printf("select error: %s\n", strerror(errno));
+#endif
+  }
 
   // Check if any one of the fds have something to be read...
 
-  if (NumberFdsReady > 0) { 
-#ifdef DEBUG
-    printf("Checked %d fds, %d have data\n", maxFdCheck + 1, NumberFdsReady);
+  if (NumberFdsReady > 0 || _callback_requests > 0) { 
+#if defined(DEBUG)
+    printf("Checked %d fds, %d have data, %d user-defined\n",
+	   maxFdCheck + 1, NumberFdsReady, _callback_requests);
 #endif
-    int index;
-    for(index = _allCallbacks.InitIterator(); _allCallbacks.More(index);) {
-      DispatcherInfo *callback = _allCallbacks.Next(index);
-      if (callback->flag & _stateFlag) {
-	if (callback->fd >= 0) {
-#ifndef HPUX
-	  if (FD_ISSET(callback->fd, &fdread)
-	      || FD_ISSET(callback->fd, &fdexc)) {
-#else
-	  if ((fdread & (1 << callback->fd))
-	      || (fdexc & (1 << callback->fd))) {
-#endif
-#ifdef DEBUG
-	    printf("Check for correctness: called fd = %d\n", callback->fd); 
-#endif
-	    callback->callBack->Run();
-	  }
-	}
-      }
-    }
-    _allCallbacks.DoneIterator(index);
-
-    for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
-      DispatcherInfo *callback = _callbacks.Next(index);
-      if (callback->flag & _stateFlag) {
-	if (callback->fd >= 0) {
-#ifndef HPUX
-	  if (FD_ISSET(callback->fd, &fdread)
-	      || FD_ISSET(callback->fd, &fdexc)) {
-#else
-	  if ((fdread & (1 << callback->fd))
-	      || (fdexc & (1 << callback->fd))) {
-#endif
-#ifdef DEBUG
-	    printf("Check for correctness: called fd = %d\n", callback->fd);
-#endif
-	    callback->callBack->Run();
-	  }
-	}
-      }	
-    }
-    _callbacks.DoneIterator(index);
+    ProcessCallbacks(_allCallbacks, fdread, fdexc);
+    ProcessCallbacks(_callbacks, fdread, fdexc);
   } 
 
   /* end of call backs */

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/06/24 20:04:35  jussi
+  Added inclusion of sys/select.h for SOLARIS and AIX.
+
   Revision 1.16  1996/06/24 19:40:06  jussi
   Cleaned up the code a little.
 
@@ -99,6 +102,14 @@
 #include "Journal.h"
 #include "Exit.h"
 
+#if !defined(FD_SET)
+typedef int fd_set
+inline void FD_SET(int fd, fd_set* fd_set) { (*fdset) |= 1 << fd; }
+inline void FD_CLR(int fd, fd_set* fd_set) { (*fdset) &= ~(1 << fd); }
+inline void FD_ZERO(fd_set* fd_set) { memset((char*)fdset,0,sizeof(*fd_set)); }
+inline bool FD_ISSET(int fd, fd_set* fd_set) { return (*fd_set) & (1 << fd); }
+#endif
+
 class DispatcherCallback {
 public:
   virtual char *DispatchedName() = 0;
@@ -117,7 +128,12 @@ public:
   StateFlag flag;
   int priority;
   int fd;
+  bool callback_requested;
 };
+
+/* pointers to the DispatcherInfo are used as identifiers when the
+   user registers a callback, but they should not be peeked at! */
+typedef DispatcherInfo* DispatcherID;
 
 class DeviseWindow;
 class Dispatcher;
@@ -136,21 +152,24 @@ public:
     DeleteDispatcher();
   }
 
-  /* Create a pipe for markers, insert a marker, flush all markers,
-     and close pipe */
-
-  static void CreateMarker(int &readFd, int &writeFd);
-  static void InsertMarker(int writeFd) {
-    // Insert one marker to the pipe
-    char tempBuff = 'a';
-    (void)write(writeFd, &tempBuff, sizeof tempBuff);
+  /* schedule/deschedule a callback
+     WARNING: this code only works if there is one dispatcher or if
+     none of the callback requests are in the global pool (_allCallbacks) */
+  void RequestCallback(DispatcherID info) {
+    DOASSERT(info, "bad dispatcher id");
+    if( !(info->callback_requested) ) {
+      info->callback_requested = true;
+      _callback_requests++;
+    } 
   }
-  static void FlushMarkers(int readFd) {
-    // Consume one marker from the pipe
-    char tempBuff;
-    while(read(readFd, &tempBuff, sizeof tempBuff) > 0);
+  void CancelCallback(DispatcherID info) {
+    DOASSERT(info, "bad dispatcher id");
+    if( info->callback_requested ) {
+      info->callback_requested = false;
+      _callback_requests--;
+      DOASSERT(_callback_requests >= 0, "callback request count too low");
+    } 
   }
-  static void CloseMarker(int readFd, int writeFd);
 
   /* Return the current dispatcher */
   static Dispatcher *Current() {
@@ -170,9 +189,9 @@ public:
   }
 
   /* Register callback, all == TRUE if register with ALL dispatchers. */
-  void Register(DispatcherCallback *c, int priority = 10,
-		StateFlag flag = GoState, Boolean all = false,
-		int fd = -1); 
+  DispatcherID Register(DispatcherCallback *c, int priority = 10,
+			StateFlag flag = GoState, Boolean all = false,
+			int fd = -1); 
   
   /* Unregister callback */
   void Unregister(DispatcherCallback *c); 
@@ -253,6 +272,10 @@ public:
   /* Clean up before quitting */
   virtual void DoCleanup();
 
+  /* process any callbacks that have an fd set in fdread or fdexc,
+     or any callbacks that have callback_requested set */
+  void Dispatcher::ProcessCallbacks(DispatcherInfoList& cb_list,
+				    fd_set& fdread, fd_set& fdexc);
   /* Single step */
   virtual void Run1();
   
@@ -314,6 +337,7 @@ private:
   /* Callback list (and add/delete list) for this dispatcher */
   DispatcherInfoList _callbacks;
   DispatcherInfoList _toInsertCallbacks, _toDeleteCallbacks;
+  int                _callback_requests;
 
   /* Callback list (and add/delete list) for ALL dispatchers */
   static DispatcherInfoList _allCallbacks;
@@ -327,11 +351,7 @@ private:
   static DispatcherList _dispatchers;
   
   /* Set of file descriptors to inspect for potential input */
-#ifndef HPUX
   static fd_set fdset;
-#else
-  static int fdset;
-#endif
   static int maxFdCheck;
 
   /* Set to true when dispatcher should quit */

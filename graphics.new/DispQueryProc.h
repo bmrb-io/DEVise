@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/07/03 23:01:54  jussi
+  Added missing destructors.
+
   Revision 1.4  1996/06/24 19:48:52  jussi
   Improved the interaction between query processors and the dispatcher.
   The query processors now also get called every time a 1-second timer
@@ -50,7 +53,7 @@ public:
 
   /* active query processor when timer expires */
   virtual void TimerWake(int arg) {
-    Dispatcher::InsertMarker(writeFd);
+    Dispatcher::Current()->RequestCallback(_dispatcherID);
     Timer::Queue(QP_TIMER_INTERVAL, this, 0);
   }
 
@@ -69,7 +72,7 @@ public:
 
   /* active query processor when timer expires */
   virtual void TimerWake(int arg) {
-    Dispatcher::InsertMarker(writeFd);
+    Dispatcher::Current()->RequestCallback(_dispatcherID);
     Timer::Queue(QP_TIMER_INTERVAL, this, 0);
   }
 

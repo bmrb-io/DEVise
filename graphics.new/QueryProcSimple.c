@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/06/27 15:52:47  jussi
+  Added functionality which allows TDataAscii and TDataBinary to request
+  that views using a given TData be refreshed (existing queries are
+  aborted and new queries are issued). Fixed a few bugs in QueryProcFull
+  which became visible only when this new functionality was tested.
+
   Revision 1.12  1996/06/24 19:48:55  jussi
   Improved the interaction between query processors and the dispatcher.
   The query processors now also get called every time a 1-second timer
@@ -238,11 +244,12 @@ QueryProcSimple::QueryProcSimple()
     _mgr = new BufMgrFull(bufSize * 4096);
   else 
     _mgr = new BufMgrNull();
+  _dispatcherID = NULL;
 }
 
 QueryProcSimple::~QueryProcSimple()
 {
-  Dispatcher::CloseMarker(readFd, writeFd);
+  Dispatcher::Current()->CancelCallback(_dispatcherID);
 }
 
 /*************************************************************************
@@ -329,7 +336,7 @@ void QueryProcSimple::AppendQuery(TDataMap *map, VisualFilter &filter,
   qdata->prev->next = qdata;
   _queryHead.prev = qdata;
 
-  Dispatcher::InsertMarker(writeFd);
+  Dispatcher::Current()->RequestCallback(_dispatcherID);
 }
 
 /*******************************************************************
@@ -349,7 +356,7 @@ void QueryProcSimple::ProcessQuery()
       DeviseDisplay::DefaultDisplay()->Flush();
 
       /* Query processor doesn't need to be called anymore */
-      Dispatcher::FlushMarkers(readFd); 
+      Dispatcher::Current()->CancelCallback(_dispatcherID);
 
       /*
 	 If all queries have been executed (system

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/07/23 15:34:42  jussi
+  Added mechanism for bypassing the Devise internal color map.
+
   Revision 1.27  1996/07/21 02:15:32  jussi
   Changed value of backing_store from Always to WhenMapped.
 
@@ -412,7 +415,8 @@ Boolean XDisplay::ClosestColor(Colormap &map, XColor &color, Color &c,
   const int cmapSize = 256;
   XColor cols_in_map[cmapSize];
 
-  for(int i = 0; i < cmapSize; i++)
+  int i;
+  for(i = 0; i < cmapSize; i++)
     cols_in_map[i].pixel = (unsigned long)i;
 
   XQueryColors(_display, map, cols_in_map, cmapSize);
@@ -502,7 +506,7 @@ Boolean XDisplay::ClosestColor(Colormap &map, XColor &color, Color &c,
     }
   } 
 
-  for(int i = 0; i < NUM_COLS_TO_TRY; i++) {
+  for(i = 0; i < NUM_COLS_TO_TRY; i++) {
     if (best_index[i] < 0)
       return false;
     if (XAllocColor(_display, map, &cols_in_map[best_index[i]])) {

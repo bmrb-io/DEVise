@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/07/23 17:26:07  jussi
+  Added support for piled views.
+
   Revision 1.27  1996/07/22 23:44:31  guangshu
   Added statistics for gdata. The statistics includes count, ysum, max,
   mean, min.
@@ -510,7 +513,8 @@ void ViewGraph::PrepareStatsBuffer()
 
     /* put the statistics in the stat buffer */
     char line[128];
-    for(int i = 0; i <= j; i++) {
+    int i;
+    for(i = 0; i <= j; i++) {
         sprintf(line, "%d %d %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n",
                 i, (int)_stats[i].GetStatVal(STAT_COUNT),	
                 _stats[i].GetStatVal(STAT_MEAN),

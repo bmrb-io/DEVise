@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.58  1996/07/23 17:16:28  jussi
+  Added support for piled views.
+
   Revision 1.57  1996/07/21 02:21:22  jussi
   Added _xyZoom flag. Fixed problem when small exposures caused
   the whole view to be erased but not redrawn.
@@ -366,17 +369,14 @@ View::View(char *name, VisualFilter &initFilter,
   
   ControlPanel::Instance()->InsertCallback(this);
 
-  Dispatcher::CreateMarker(readFd, writeFd);
-  Dispatcher::Current()->Register(this, 10, GoState, false, readFd);
-  Dispatcher::InsertMarker(writeFd);
+  _dispatcherID = Dispatcher::Current()->Register(this, 10, GoState);
+  Dispatcher::Current()->RequestCallback(_dispatcherID);
 }
 
 View::~View()
 {
   _viewList->Delete(this);
 
-  Dispatcher::FlushMarkers(readFd);
-  Dispatcher::CloseMarker(readFd, writeFd);
   Dispatcher::Current()->Unregister(this);
 
   DOASSERT(!_querySent, "Query still active");
@@ -505,7 +505,7 @@ void View::SetVisualFilter(VisualFilter &filter)
   int flushed = _filterQueue->Enqueue(filter);
   ReportFilterChanged(filter, flushed);
 
-  Dispatcher::InsertMarker(writeFd);
+  Dispatcher::Current()->RequestCallback(_dispatcherID);
 }
 
 void View::GetVisualFilter(VisualFilter &filter)
@@ -584,7 +584,7 @@ void View::HandleExpose(WindowRep *w, int x, int y, unsigned width,
     _exposureRect.yHigh = MAX(maxY1, maxY2);
   }
 
-  Dispatcher::InsertMarker(writeFd);
+  Dispatcher::Current()->RequestCallback(_dispatcherID);
 }
 
 /* set dimensionality */
@@ -1287,8 +1287,6 @@ XXX: need to crop exposure against _filter before sending query.
 
 void View::Run()
 {
-  Dispatcher::FlushMarkers(readFd);
-
   /* if view is in pile mode but not the top view, it has to wait until
      the top view has erased the window and drawn axes and other
      decorations; the top view will send explicit refresh requests
@@ -1412,7 +1410,7 @@ void View::Run()
     return;
   }
   
-  Dispatcher::InsertMarker(writeFd);
+  Dispatcher::Current()->RequestCallback(_dispatcherID);
 
   if (!_updateTransform && !_hasExposure && !_refresh && _filterChanged) {
     /* Do scroll, if we can  */
@@ -1597,7 +1595,7 @@ void View::HandleResize(WindowRep *w, int xlow, int ylow,
   
   _updateTransform = true; /* need to update the transformation */
   
-  Dispatcher::InsertMarker(writeFd);
+  Dispatcher::Current()->RequestCallback(_dispatcherID);
 }
 
 void View::UpdateTransform(WindowRep *winRep)
@@ -1815,7 +1813,7 @@ void View::AbortAndReexecuteQuery()
 void View::Refresh()
 {
   _refresh = true;
-  Dispatcher::InsertMarker(writeFd);
+  Dispatcher::Current()->RequestCallback(_dispatcherID);
 }
 
 void View::ReportViewCreated()

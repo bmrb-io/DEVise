@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/07/12 16:39:05  jussi
+  Added cancellation of timers to query processor destructors.
+
   Revision 1.7  1996/07/03 23:01:46  jussi
   Added missing destructors.
 
@@ -43,17 +46,15 @@
 
 DispQueryProcSimple::DispQueryProcSimple()
 {
-    Dispatcher::CreateMarker(readFd, writeFd);
-    Dispatcher::Current()->Register(this, 20, GoState, false, readFd);
-    Dispatcher::InsertMarker(writeFd);
+    _dispatcherID = Dispatcher::Current()->Register(this, 20, GoState);
+    Dispatcher::Current()->RequestCallback(_dispatcherID);
     Timer::Queue(QP_TIMER_INTERVAL, this, 0);
 }
 
 DispQueryProcSimple::~DispQueryProcSimple()
 {
     Timer::Cancel(this, 0);
-    Dispatcher::FlushMarkers(readFd);
-    Dispatcher::CloseMarker(readFd, writeFd);
+    Dispatcher::Current()->Unregister(this);
 }
 
 /********************************************************************8
@@ -67,17 +68,15 @@ void DispQueryProcSimple::Run()
 
 DispQueryProcFull::DispQueryProcFull()
 {
-    Dispatcher::CreateMarker(readFd, writeFd);
-    Dispatcher::Current()->Register(this, 20, GoState, false, readFd);
-    Dispatcher::InsertMarker(writeFd);
+    _dispatcherID = Dispatcher::Current()->Register(this, 20, GoState);
+    Dispatcher::Current()->RequestCallback(_dispatcherID);
     Timer::Queue(QP_TIMER_INTERVAL, this, 0);
 }
 
 DispQueryProcFull::~DispQueryProcFull()
 {
     Timer::Cancel(this, 0);
-    Dispatcher::FlushMarkers(readFd);
-    Dispatcher::CloseMarker(readFd, writeFd);
+    Dispatcher::Current()->Unregister(this);
 }
 
 void DispQueryProcFull::Run()
