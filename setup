@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/05/16 19:47:30  jussi
+#  Minor fixes.
+#
 #  Revision 1.4  1996/05/16 19:38:52  jussi
 #  Added AIX and Solaris/Sparc.
 #
@@ -55,6 +58,14 @@ if (! -d rs_aix32) then
   ln -s ../aix rs_aix32
 endif
 
+if (! -d alpha_osf20) then
+  ln -s ../alpha_osf20 .
+endif
+
+if (! -d pmax_ul43a) then
+  ln -s ../pmax_ul43a .
+endif
+
 ln -fs /p/devise/dat/*.idx . >& /dev/null
 ln -fs /p/devise/dat/dsi94.dat . >& /dev/null
 
@@ -69,6 +80,10 @@ ln -s ../solaris/Makefile . >& /dev/null
 cd ../linux
 ln -s ../solaris/Makefile . >& /dev/null
 cd ../aix
+ln -s ../solaris/Makefile . >& /dev/null
+cd ../alpha_osf20
+ln -s ../solaris/Makefile . >& /dev/null
+cd ../pmax_ul43a
 ln -s ../solaris/Makefile . >& /dev/null
 
 cd ..
