@@ -147,6 +147,13 @@ Num Date        Status  Description
 047 10/08/96	FIXED	Load /p/devise/wenger/session/hourstats.tk, iconify
 			the window -> crash. (rkw)
 
+048 10/09/96	OPEN	Devise core dumps if data file named in catalog
+			does not exist. (rkw)
+
+049 10/11/96	OPEN	Load LandsEnd/a2_full.tk session -- DEVISE_TMP
+			directory gets huge amounts of stuff written to it.
+			(Running with '-convert 0' flag prevents this.) (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.
