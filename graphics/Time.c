@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/07/17 00:47:03  jussi
+  Switched the order of header file inclusions to get around
+  some problems.
+
   Revision 1.4  1996/03/26 15:34:36  wenger
   Fixed various compile warnings and errors; added 'clean' and
   'mostlyclean' targets to makefiles; changed makefiles so that
@@ -30,7 +34,7 @@
 
 #include <time.h>
 
-#include "../graphics.new/machdep.h"
+#include "machdep.h"
 #include "Time.h"
 
 struct timeval DeviseTime::_beginning;

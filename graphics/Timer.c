@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/08/02 00:38:08  jussi
+  Added variable _nexthop where the length of the next hop
+  is stored.
+
   Revision 1.11  1996/08/01 23:56:14  jussi
   Interval timer is now set for just one interval/interrupt at a
   time. There were occasional problems (SIGALRM's not caught properly)
@@ -58,7 +62,7 @@
 #include <signal.h>
 #include <sys/time.h>
 
-#include "../graphics.new/machdep.h"
+#include "machdep.h"
 #include "Timer.h"
 
 //#define DEBUG
