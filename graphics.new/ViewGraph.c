@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/05 17:04:16  jussi
+  Moved _stats from View (subclass) so that statistics can be turned
+  on and displayed without having to redisplay the data itself.
+
   Revision 1.2  1995/09/05 22:16:17  jussi
   Added CVS header.
 */
@@ -74,12 +78,25 @@ void ViewGraph::DoneMappingIterator()
 }
 
 /* Turn On/Off DisplayStats */
-void ViewGraph::SetDisplayStats(Boolean stat)
+void ViewGraph::SetDisplayStats(char *stat)
 {
-  _DisplayStats = stat;
-
-  if (_DisplayStats)
-    _stats.Report();
-  else
+  if (ToRemoveStats(_DisplayStats, stat) == true)
+  {
+    strncpy(_DisplayStats,stat, STAT_NUM);
     Refresh();
+  }
+  else 
+  {
+    strncpy(_DisplayStats,stat, STAT_NUM);
+    _stats.Report();
+  }
+}
+
+Boolean ViewGraph::ToRemoveStats(char *oldset, char *newset)
+{
+  /* Check if a 1 in "old" has become 0 in "new" - means that a stat previously
+     being displayed should now be removed. */
+  for (int i = 0; i < STAT_NUM; i++)
+    if ((oldset[i] == '1') && (newset[i] == '0'))
+      return true;
 }
