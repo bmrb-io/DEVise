@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/07/12 23:42:08  jussi
+  Integrated Init() method with the constructor.
+
   Revision 1.29  1996/07/08 20:31:01  jussi
   Added PixmapEnabled() method.
 
@@ -378,9 +381,10 @@ private:
 	void ModeChange(ControlPanel::Mode mode);
 
 	void ReportViewCreated();
-	void ReportViewDestroyed();
 	void ReportFilterAboutToChange();
 	void ReportFilterChanged(VisualFilter &filter, int flushed);
+	void ReportViewRecomputed();
+	void ReportViewDestroyed();
 
 	/* from DispatcherCallback */
 	/* when it's our turn to run: Send a query, if there is one. 
