@@ -389,7 +389,7 @@ proc MacroDefAuto {tdata} {
     # Have a list containing the name of the selected group.
     # In every iteration of the loop, create a menu with the name ending
     # with the group name.
-    set addname($selgrp) .auto.xsel.attr.$selgrp
+    set addname($selgrp) .auto.xsel.attr.g$selgrp
     set grplist $selgrp
     while {[llength $grplist] > 0} {
 	set grpname [lindex $grplist 0]
@@ -406,7 +406,7 @@ proc MacroDefAuto {tdata} {
 				-label $subname \
 				-menu $addname($grpname).$subname
 			set grplist [linsert $grplist 0 $subname]
-			set addname($subname) $addname($grpname).$subname
+			set addname($subname) $addname($grpname).g$subname
 		}
 	}
     }
