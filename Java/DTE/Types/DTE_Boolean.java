@@ -30,7 +30,7 @@ public class DTE_Boolean extends DTE_Type
   
   /** Return its String representation. */
   public String toString( ){
-      return String.valueOf( val );
+      return String.valueOf(val);
   }
 
   /** Return a BooleanDesc object. */

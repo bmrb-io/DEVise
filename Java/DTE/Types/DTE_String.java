@@ -94,7 +94,7 @@ public class DTE_String extends DTE_Type
   }
 
   public String toString( ) {
-      String str = new String( val );
+      String str = new String( "'"+val+"'" );
       return str;
   }
 
