@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/24 21:29:33  jussi
+  Added copyright notice and cleaned up code. Added debugging
+  statements.
+
   Revision 1.2  1995/09/05 21:13:41  jussi
   Added/updated CVS header.
 */
@@ -1479,19 +1483,19 @@ DevisePixmap *XWindowRep::GetPixmap()
       delete pixmap;
       return NULL;
     }
-    bcopy((char *)&outCount,&_pixmapBuf[outIndex],sizeof(int));
+    memcpy(&_pixmapBuf[outIndex], (char *)&outCount, sizeof(int));
     outIndex += sizeof(int);
-    bcopy(cBuf, &_pixmapBuf[outIndex], outCount);
+    memcpy(&_pixmapBuf[outIndex], cBuf, outCount);
     outIndex += outCount;
   }
   
   pixmap->compressedBytes = outIndex;
   pixmap->data = (unsigned char *)malloc(outIndex);
-  if (pixmap->data == NULL){
+  if (pixmap->data == NULL) {
     delete pixmap;
     return NULL;
   }
-  bcopy(_pixmapBuf,pixmap->data,outIndex);
+  memcpy(pixmap->data, _pixmapBuf, outIndex);
 
 #ifdef DEBUG
   printf("XWindowRep::GetPixmap: %d bytes\n",pixmap->compressedBytes);
@@ -1512,13 +1516,12 @@ void XWindowRep::DisplayPixmap(DevisePixmap *pixmap)
   int depth = DefaultDepth(_display,screen);
   Visual *visual = DefaultVisual(_display,screen);
   
-  int i;
   int index = 0;
   unsigned char *data = pixmap->data;
-  for (i=0; i < pixmap->height; i++){
+  for(int i = 0; i < pixmap->height; i++) {
     int count;
     int outCount;
-    bcopy((char *)&data[index],(char *)&count, sizeof(int));
+    memcpy((char *)&count, (char *)&data[index], sizeof(int));
     index += sizeof(int);
     if (index + count > pixmap->compressedBytes){
       fprintf(stderr,"XWindowRep::DisplayPixmap: pixmap format\n");
