@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/11/28  05:23:00  ravim
+  Support for statistics.
+
   Revision 1.5  1995/11/25 01:20:18  jussi
   This code now uses Transform matrix operations to convert user/world
   coordinates to screen pixel coordinates. This is to avoid any future
@@ -125,10 +128,20 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
   for (int tmp = 0; tmp < numGData; tmp++) 
   {
     GDataTemp *gt = (GDataTemp *)tp;
+
+    // eliminate records which won't appear on the screen
+    //
+    // for bar graphs, a vertical line is drawn from y = 0 to
+    //   y = gt->y, so we should eliminate record if 0 > filter.yHigh
+    //
+    // for scatter plots, we should eliminate record if gt->y > filter.yHigh
+    //
+    // plot type is known only later (may even depend on a record field)
+    // so the above elimination can't be done yet
+
     if ((gt->x < _queryFilter.xLow) ||
 	(gt->x > _queryFilter.xHigh) ||
-	(gt->y < _queryFilter.yLow) ||
-	(gt->y > _queryFilter.yHigh)) 
+	(gt->y < _queryFilter.yLow)) 
     {
       tp += gRecSize;
       continue;
