@@ -366,11 +366,12 @@ Num Date        Status  Description
 			through because the various background areas don't
 			quite touch each other. (rkw)
 
-106 12/30/96	OPEN	Load the session test/a2.tk; you get the following
+106 12/30/96	FIXED	Load the session test/a2.tk; you get the following
 			error: DEVise error: RangeList::Insert() recId 4,4
 			already processed at
 			../../graphics.new/RangeList.c: 219. (It doesn't
-			matter whether or not you're using shared memory.) (rkw)
+        		matter whether or not you're using shared memory.)
+                        (rkw/jpm)
 
 107 01/06/97	OPEN	If you have more than 19 views, those views are
 			named 'View 110', 'View 111', etc., instead of
@@ -395,9 +396,9 @@ Num Date        Status  Description
 			reason is: Inconsistent state
 			(../../graphics.new/TDataAscii.c:824). (rkw)
 
-112 01/10/97	OPEN	If a fatal error occurs while running with shared
+112 01/10/97	FIXED	If a fatal error occurs while running with shared
 			memory, you need to manually kill off processes
-			to clean up. (rkw)
+			to clean up. (rkw/jpm)
 
 113 01/10/97	OPEN	Devise does not clean up shared memory resources
 			if it crashes. (rkw)
