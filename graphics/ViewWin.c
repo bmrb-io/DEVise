@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/04/09 20:34:32  jussi
+  Minor fixes.
+
   Revision 1.10  1996/02/27 02:12:52  jussi
   TopMargin depends on height of small font.
 
@@ -307,8 +310,11 @@ void ViewWin::MoveResize(int x, int y, unsigned w, unsigned h)
   if (!_mapped) {
     fprintf(stderr,"ViewWin::MoveResize not mapped\n");
     Exit::DoExit(1);
-  } else
+  } else {
+    _hasGeometry = false;
     _windowRep->MoveResize(x, y, w, h);
+    HandleResize(_windowRep, x, y, w, h);
+  }
 }
 
 int ViewWin::TotalWeight()
@@ -403,6 +409,22 @@ void ViewWin::Replace(ViewWin *child1, ViewWin *child2)
 void ViewWin::SwapChildren(ViewWin *child1, ViewWin *child2)
 {
   _children.Swap(child1, child2);
+}
+
+/* Raise window to top of stacking order */
+
+void ViewWin::Raise()
+{
+  if (_windowRep)
+    _windowRep->Raise();
+}
+
+/* Lower window to bottom of stacking order */
+
+void ViewWin::Lower()
+{
+  if (_windowRep)
+    _windowRep->Lower();
 }
 
 #if defined(MARGINS) || defined(TK_WINDOW)
