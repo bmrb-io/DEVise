@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/01/25 20:22:58  jussi
+  Improved support for data files that grow while visualization
+  is being performed.
+
   Revision 1.5  1995/12/28 19:59:35  jussi
   Small fixes to remove compiler warnings.
 
@@ -36,11 +40,14 @@
 #define TDataAscii_h
 
 #include <stdio.h>
+#include <sys/types.h>
+
 #include "DeviseTypes.h"
 #include "Dispatcher.h"
 #include "TData.h"
 #include "RecId.h"
 #include "RecOrder.h"
+#include "tapedrive.h"
 
 const int INIT_INDEX_SIZE= 50000;            // initial index size
 const int INDEX_ALLOC_INCREMENT = 25000;     // allocation increment for index
@@ -53,13 +60,6 @@ const int LINESIZE = 4096;                   // maximum size of each line
 
 const int FILE_CONTENT_COMPARE_BYTES = 4096;
 
-/* offset for the cache */
-const int FILE_CONTENT_OFFSET = 0;
-const int SUBCLASS_OFFSET = 4096;
-const int LAST_POS_OFFSET = 5120;
-const int TOTAL_RECS_OFFSET = 5124;
-const int INDEX_OFFSET = 5128;
-
 class TDataAscii: public TData, private DispatcherCallback {
 public:
 	TDataAscii(char *name, int recSize);
@@ -67,10 +67,12 @@ public:
 	virtual ~TDataAscii();
 
 	/**** MetaData about TDataAscii ****/
-	virtual AttrList *GetAttrList(){ return NULL;}
 
-	/* Return # of dimensions and the size of each dimension,
-	or -1 if unknown */
+	// Get list of attributes
+	virtual AttrList *GetAttrList() { return NULL; }
+
+	// Return # of dimensions and the size of each dimension,
+	// or -1 if unknown
 	virtual int Dimensions(int *sizeDimension);
 
 	// Return record size, or -1 if variable record size
@@ -105,7 +107,6 @@ public:
 	/* Get RecId of last record, return true if available */
 	virtual Boolean LastID(RecId &recId);
 
-
 	/**** Getting Records ****/
 
 	/**************************************************************
@@ -133,13 +134,13 @@ public:
 	/* Given buffer space and RecId, set the array "recPtrs" to
 	the address of individual records. For varialbe size records. */
 	virtual void GetRecPointers(RecId startId, int numRecs,
-				void *buf, void **recPtrs);
+				    void *buf, void **recPtrs);
 
 	/* get the time file is modified. We only require that
 	files modified later has time > files modified earlier. */
 	virtual int GetModTime();
 
-    /* Do a checkpoint */
+	/* Do a checkpoint */
 	virtual void Checkpoint();
 
 	/* writing a record. For TDataAscii, the new record
@@ -155,12 +156,9 @@ protected:
 	/* should be called by the constructors of derived classes */
 	void Initialize();
 
-	// Decode a record; return false if this line is not valid
-	virtual Boolean IsValid(char *line) = 0;
-
 	/* Decode a record and put data into buffer. Return false if
 	this line is not valid. */
-	virtual Boolean Decode(RecId id, void *recordBuf, char *line)=0;
+	virtual Boolean Decode(void *recordBuf, char *line) = 0;
 
 	/* Read/Write specific to each subclass cache. The cached information
 	is to be read during file start up, and written when file closes,
@@ -168,8 +166,10 @@ protected:
 	file close. Return false and the index will be rebuilt
 	from scratch every time. Return true and the base class
 	will reuse the index it has cached. */
-	virtual Boolean WriteCache(int fd){ return false; }
-	virtual Boolean ReadCache(int fd){ return false;}
+	virtual Boolean WriteCache(int fd) { return false; }
+	virtual Boolean ReadCache(int fd) { return false; }
+
+	static char *MakeCacheName(char *file);
 
 private:
 	/* From DispatcherCallback */
@@ -193,6 +193,8 @@ private:
 	char *_cacheFileName;           // name of cache file
 	int _recSize;                   // size of record
 	FILE *_file;                    // file pointer
+	TapeDrive *_tape;               // pointer to tape drive
+	Boolean _fileGrown;             // true if file has grown
 
 	RecId _lowId, _highId;          // current range to read data
 	RecId _nextId, _endId;          // range of next retrieval

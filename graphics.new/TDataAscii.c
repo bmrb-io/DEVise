@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/03/05 22:06:04  jussi
+  Minor fix in debugging output.
+
   Revision 1.11  1996/02/01 18:04:41  jussi
   Disabled 'Ignoring invalid record.' because this message shouldn't
   appear for ignored comments.
@@ -72,16 +75,6 @@
 static char fileContent[FILE_CONTENT_COMPARE_BYTES];
 static char cachedFileContent[FILE_CONTENT_COMPARE_BYTES];
 
-static char *MakeCacheName(char *file)
-{
-  char *fname = StripPath(file);
-  unsigned int nameLen = strlen(Init::WorkDir()) + strlen(fname) + 8;
-  char *name = new char[nameLen];
-  sprintf(name, "%s/%s.cache", Init::WorkDir(), fname);
-  assert(strlen(name) < nameLen);
-  return name;
-}
-
 TDataAscii::TDataAscii(char *name, int recSize) : TData()
 {
   Dispatcher::Current()->Register(this);
@@ -89,19 +82,26 @@ TDataAscii::TDataAscii(char *name, int recSize) : TData()
   _name = name;
   _recSize = recSize;
 
-  _file = fopen(name, "r");
-  if (_file == NULL) {
-    fprintf(stderr, "TDataAscii: cannot open file '%s': ", name);
-    perror("fopen");
-    Exit::DoExit(1);
+  _file = NULL;
+  _tape = NULL;
+
+  if (!strncmp(name, "/dev/rmt", 8) || !strncmp(name, "/dev/nrmt", 9)
+      || !strncmp(name, "/dev/rst", 8) || !strncmp(name, "/dev/nrst", 9)) {
+    _tape = new TapeDrive(name, "r");
+    if (!_tape || !*_tape) {
+      fprintf(stderr, "Cannot open tape '%s': ", name);
+      perror("fopen");
+      Exit::DoExit(1);
+    }
+  } else {
+    _file = fopen(name, "r");
+    if (!_file) {
+      fprintf(stderr, "Cannot open file '%s': ", name);
+      perror("fopen");
+      Exit::DoExit(1);
+    }
   }
 
-  struct stat sbuf;
-  if (fstat(fileno(_file), &sbuf) < 0) {
-    perror("fstat");
-    Exit::DoExit(1);
-  }
-  
   _bytesFetched = 0;
   
   _lastPos = 0;
@@ -109,8 +109,11 @@ TDataAscii::TDataAscii(char *name, int recSize) : TData()
 
   _totalRecs = 0;
   _recBuf = new char[recSize];
-  _index = new long[INIT_INDEX_SIZE];
+
   _indexSize = INIT_INDEX_SIZE;
+  _index = new long[_indexSize];
+
+  _fileGrown = false;
 }
 
 TDataAscii::~TDataAscii()
@@ -119,8 +122,15 @@ TDataAscii::~TDataAscii()
   printf("TDataAscii destructor\n");
 #endif
 
+  delete _recBuf;
+  delete _index;
+
   Dispatcher::Current()->Unregister(this);
-  fclose(_file);
+
+  if (_tape)
+    delete _tape;
+  else
+    fclose(_file);
 }
 
 int TDataAscii::Dimensions(int *sizeDimension)
@@ -137,19 +147,23 @@ Boolean TDataAscii::HeadID(RecId &recId)
 
 Boolean TDataAscii::LastID(RecId &recId)
 {
-  // see if file has grown
-  if (fseek(_file, 0, SEEK_END) < 0) {
-    perror("TDAtaAscii::LastID");
-    Exit::DoExit(1);
+  if (_file) {
+    // see if file has grown
+    if (fseek(_file, 0, SEEK_END) < 0) {
+      perror("LastID:fseek");
+      Exit::DoExit(1);
+    }
+    _currPos = ftell(_file);
+    if (_currPos < 0) {
+      perror("LastID:ftell");
+      Exit::DoExit(1);
+    }
+    if (_currPos > _lastPos)
+      BuildIndex();
+  } else {
+    if (_fileGrown)
+      BuildIndex();
   }
-  _currPos = ftell(_file);
-  if (_currPos < 0) {
-    perror("TDataAscii::Init:ftell");
-    Exit::DoExit(1);
-  }
-  
-  if (_currPos > _lastPos)
-    BuildIndex();
   
   recId = _totalRecs - 1;
   return (_totalRecs > 0);
@@ -226,9 +240,18 @@ int TDataAscii::GetModTime()
   return (long)sbuf.st_mtime;
 }
 
+char *TDataAscii::MakeCacheName(char *file)
+{
+  char *fname = StripPath(file);
+  unsigned int nameLen = strlen(Init::WorkDir()) + strlen(fname) + 8;
+  char *name = new char[nameLen];
+  sprintf(name, "%s/%s.cache", Init::WorkDir(), fname);
+  assert(strlen(name) < nameLen);
+  return name;
+}
+
 void TDataAscii::Initialize()
 {
-  int indexErrors = 0;
   int i = 0;
 
   /* Read file contents into buffer */
@@ -240,62 +263,90 @@ void TDataAscii::Initialize()
     goto error;
   fileOpened = true;
   
+  unsigned long magicNumber;
+  if (read(cacheFd, &magicNumber, sizeof magicNumber) != sizeof magicNumber) {
+    perror("BuildIndex:read");
+    goto error;
+  }
+  if (magicNumber != 0xdeadbeef) {
+    printf("Cache file incompatible; rebuilding\n");
+    goto error;
+  }
+
   /* cache file exists. See if we are still working on the same
      file, and if we are, reinitialize */
-  if (fseek(_file, 0, SEEK_SET) < 0)
-    goto error;
-  
-  if (read(cacheFd, cachedFileContent, FILE_CONTENT_COMPARE_BYTES)
-      != FILE_CONTENT_COMPARE_BYTES  ||
-      fread(fileContent, FILE_CONTENT_COMPARE_BYTES, 1,_file) != 1 ||
-      memcmp(cachedFileContent, fileContent, FILE_CONTENT_COMPARE_BYTES) != 0)
-    goto error;
-  
-  /* Assume identical file */
+  if (_tape) {
+    if (_tape->seek(0) != 0) {
+      perror("BuildIndex:tapeseek");
+      goto error;
+    }
+    if (_tape->read(fileContent, FILE_CONTENT_COMPARE_BYTES)
+	!= FILE_CONTENT_COMPARE_BYTES) {
+      perror("BuildIndex:taperead");
+      goto error;
+    }
+  } else {
+    if (fseek(_file, 0, SEEK_SET) < 0) {
+      perror("BuildIndex:fseek");
+      goto error;
+    }
+    if (fread(fileContent, FILE_CONTENT_COMPARE_BYTES, 1, _file) != 1) {
+      perror("BuildIndex:fread");
+      goto error;
+    }
+  }
 
+  if (read(cacheFd, cachedFileContent, FILE_CONTENT_COMPARE_BYTES)
+      != FILE_CONTENT_COMPARE_BYTES) {
+    perror("BuildIndex:read");
+    goto error;
+  }
+  if (memcmp(cachedFileContent, fileContent, FILE_CONTENT_COMPARE_BYTES)) {
+    printf("Cache file invalid; rebuilding\n");
+    goto error;
+  }
+  
+  /* File has not changed since cache file was built */
+
+  /* Let subclass read cache */
+  if (!ReadCache(cacheFd))
+    goto error;
+  
   /* Read last file position */
-  if (lseek(cacheFd,LAST_POS_OFFSET,SEEK_SET) != LAST_POS_OFFSET)
+  if (read(cacheFd, &_lastPos, sizeof(_lastPos)) != sizeof _lastPos) {
+    perror("BuildIndex:read");
     goto error;
-  if (read(cacheFd, &_lastPos, sizeof(_lastPos))!= sizeof(_lastPos))
-    goto error;
+  }
   
   /* Read number of records */
-  if (lseek(cacheFd,TOTAL_RECS_OFFSET,SEEK_SET) != TOTAL_RECS_OFFSET)
-    goto error;
-  if (read(cacheFd,&_totalRecs, sizeof(_totalRecs))!= 
-      sizeof(_totalRecs)) {
+  if (read(cacheFd, &_totalRecs, sizeof(_totalRecs)) != sizeof _totalRecs) {
+    perror("BuildIndex:read");
     goto error;
   }
 
   if (_totalRecs >= _indexSize) {
     delete _index;
-    _index = new long[_totalRecs+INDEX_ALLOC_INCREMENT];
-    _indexSize = _totalRecs+INDEX_ALLOC_INCREMENT;
+    _indexSize = _totalRecs + INDEX_ALLOC_INCREMENT;
+#ifdef DEBUG
+    printf("BuildIndex:allocating %ld index elements\n", _indexSize);
+#endif
+    _index = new long[_indexSize];
   }
 
   /* read the index */
-  if (read(cacheFd,_index, _totalRecs*sizeof(long))
+  if (read(cacheFd, _index, _totalRecs * sizeof(long))
       != (int)(_totalRecs * sizeof(long))) {
+    perror("BuildIndex:read");
     goto error;
   }
   
   for(i = 1; i < _totalRecs; i++) {
     if (_index[i - 1] > _index[i]) {
-      printf("Error: index[%d] = %ld > index[%d] = %ld\n",
-	     i - 1, _index[i - 1], i, _index[i]);
-      ++indexErrors;
+      printf("Cached index inconsistent; rebuilding\n");
+      goto error;
     }
   }
-  assert(!indexErrors);
 
-  /* Let subclass read cache */
-  if (lseek(cacheFd,SUBCLASS_OFFSET,SEEK_SET) != SUBCLASS_OFFSET)
-    goto error;
-  
-  /* can't read cache? */
-  if (!ReadCache(cacheFd))
-    goto error;
-  
   close(cacheFd);
   
   _initTotalRecs = _totalRecs;
@@ -333,55 +384,63 @@ void TDataAscii::Checkpoint()
 		      | S_IROTH | S_IWOTH)) < 0)
   fileOpened = true;
   
-  if (fseek(_file,0,SEEK_SET) < 0) {
-    perror("TDataAscii::CheckPoint");
+  unsigned long magicNumber = 0xdeadbeef;
+  if (write(cacheFd, &magicNumber, sizeof magicNumber) != sizeof magicNumber) {
+    perror("Checkpoint:write");
     goto error;
   }
-  if (fread(fileContent,FILE_CONTENT_COMPARE_BYTES, 1,_file) != 1) {
-    goto error;
+
+  if (_tape) {
+    if (_tape->seek(0) != 0) {
+      perror("Checkpoint:fseek");
+      goto error;
+    }
+    if (_tape->read(fileContent, FILE_CONTENT_COMPARE_BYTES)
+	!= FILE_CONTENT_COMPARE_BYTES) {
+      perror("Checkpoint:fread");
+      goto error;
+    }
+  } else {
+    if (fseek(_file, 0, SEEK_SET) < 0) {
+      perror("Checkpoint:fseek");
+      goto error;
+    }
+    if (fread(fileContent, FILE_CONTENT_COMPARE_BYTES, 1, _file) != 1) {
+      perror("Checkpoint:fread");
+      goto error;
+    }
   }
   
   /* write contents of file to be compared later */
-  if (write(cacheFd,fileContent,FILE_CONTENT_COMPARE_BYTES)!=
-      FILE_CONTENT_COMPARE_BYTES)
-    goto error;
-  
-  /* subclass should write its contents */
-  if (lseek(cacheFd, SUBCLASS_OFFSET,SEEK_SET) != SUBCLASS_OFFSET) {
-    perror("TDataAScii::ChecPoint");
+  if (write(cacheFd, fileContent, FILE_CONTENT_COMPARE_BYTES) !=
+      FILE_CONTENT_COMPARE_BYTES) {
+    perror("Checkpoint:write");
     goto error;
   }
-  /* let subclass write */
+  
+  /* let subclass write its contents */
   if (!WriteCache(cacheFd))
     goto error;
   
   /* write last position in the file */
-  if (_lastPos > _initLastPos) {
-    if (lseek(cacheFd, LAST_POS_OFFSET,SEEK_SET) != LAST_POS_OFFSET) {
-      perror("TDataAScii::ChecPoint");
-      goto error;
-    }
-    if (write(cacheFd, &_lastPos, sizeof(_lastPos))!= sizeof(_lastPos))
-      goto error;
+  if (write(cacheFd, &_lastPos, sizeof(_lastPos)) != sizeof _lastPos) {
+    perror("Checkpoint:write");
+    goto error;
   }
   
   /* write # of records */
-  if (_totalRecs > _initTotalRecs) {
-    if (lseek(cacheFd, TOTAL_RECS_OFFSET,SEEK_SET) != TOTAL_RECS_OFFSET) {
-      perror("TDataAScii::ChecPoint");
-      goto error;
-    }
-    if (write(cacheFd, &_totalRecs, sizeof(_totalRecs))!=sizeof(_totalRecs))
-      goto error;
-    
-    /* write indices */
-    int indexOffset = INDEX_OFFSET + _initTotalRecs*sizeof(long);
-    if (lseek(cacheFd,indexOffset, SEEK_SET) != indexOffset)
-      goto error;
-    int bytes = (_totalRecs-_initTotalRecs)*sizeof(long);
-    if (write(cacheFd, &_index[_initTotalRecs], bytes) != bytes)
-      goto error;
+  if (write(cacheFd, &_totalRecs, sizeof(_totalRecs)) != sizeof _totalRecs) {
+    perror("Checkpoint:write");
+    goto error;
   }
+    
+  /* write indices */
+  if (write(cacheFd, _index, _totalRecs * sizeof(long))
+      != (int)(_totalRecs * sizeof(long))) {
+    perror("Checkpoint:write");
+    goto error;
+  }
+
   close(cacheFd);
 
   _currPos = ftell(_file);
@@ -403,28 +462,49 @@ void TDataAscii::Checkpoint()
 void TDataAscii::BuildIndex()
 {
 #ifdef DEBUG
-  cout << "Entering BuildIndex" << endl;
+  printf("Entering BuildIndex\n");
 #endif
 
   char buf[LINESIZE];
   int oldTotal = _totalRecs;
   
-  // File has been appended, extend index
-  if (fseek(_file, _lastPos, SEEK_SET) < 0) {
-    perror("TDataAscii::BuildIndex");
-    Exit::DoExit(1);
+  if (_tape) {
+    // File has been appended, extend index
+    if (_tape->seek(_lastPos) != _lastPos) {
+      perror("BuildIndex:tapeseek");
+      Exit::DoExit(1);
+    }
+  } else {
+    // File has been appended, extend index
+    if (fseek(_file, _lastPos, SEEK_SET) < 0) {
+      perror("BuildIndex:fseek");
+      Exit::DoExit(1);
+    }
   }
 
   _currPos = _lastPos;
 
   while(1) {
-    if (fgets(buf, LINESIZE, _file) == NULL)
-      break;
-  
-    int len = strlen(buf);
+
+    int len = 0;
+
+    if (_tape) {
+      len = _tape->gets(buf, LINESIZE);
+      if (!len)
+	break;
+      if (len < 0) {
+	perror("BuildIndex:taperead");
+	Exit::DoExit(1);
+      }
+    } else {
+      if (fgets(buf, LINESIZE, _file) == NULL)
+	break;
+      len = strlen(buf);
+    }
+
     if (len > 0 && buf[len - 1] == '\n') {
       buf[len - 1] = 0;
-      if (IsValid(buf)) {
+      if (Decode(_recBuf, buf)) {
 	if (_totalRecs >= _indexSize)     // index buffer too small?
 	  ExtendIndex();                  // extend it
 	_index[_totalRecs++] = _currPos;
@@ -440,10 +520,16 @@ void TDataAscii::BuildIndex()
     _currPos += len;
   }
 
-  _lastPos = ftell(_file);
+  if (_tape)
+    _lastPos = _tape->tell();
+  else
+    _lastPos = ftell(_file);
+
   if (_lastPos != _currPos)
     printf("lastPos %ld, currPos %ld\n", _lastPos, _currPos);
   assert(_lastPos == _currPos);
+
+  _fileGrown = false;
 
   printf("Index for %s: %ld total records, %ld new\n", _name,
 	 _totalRecs, _totalRecs - oldTotal);
@@ -458,35 +544,44 @@ void TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
   char line[LINESIZE];
   
   char *ptr = (char *)buf;
+
   for(int i = 0; i < numRecs; i++) {
-    if (_currPos != _index[id + i]) {
-      if (fseek(_file, _index[id + i], SEEK_SET) < 0) {
-	fprintf(stderr,"TDataAscii::ReadRec(%ld,%d,0x%p) seek\n",
-		id, numRecs, buf);
-	perror("fseek");
-	PrintIndices();
+
+    int len;
+    if (_tape) {
+      if (_tape->seek(_index[id + i]) != _index[id + i]) {
+	perror("ReadRec:tapeseek");
 	Exit::DoExit(1);
       }
-      _currPos = _index[id + i];
+      len = _tape->gets(line, LINESIZE);
+      if (len <= 0) {
+	perror("ReadRec:taperead");
+	Exit::DoExit(1);
+      }
+    } else {
+      if (_currPos != _index[id + i]) {
+	if (fseek(_file, _index[id + i], SEEK_SET) < 0) {
+	  perror("ReadRec:fseek");
+	  Exit::DoExit(1);
+	}
+	_currPos = _index[id + i];
+      }
+      if (fgets(line, LINESIZE, _file) == NULL) {
+	perror("ReadRec:fgets");
+	Exit::DoExit(1);
+      }
+      len = strlen(line);
     }
 
-    if (fgets(line, LINESIZE, _file) == NULL) {
-      fprintf(stderr,"TDataAscii::ReadRec(%ld,%d,0x%p) fgets pos %ld\n",
-	      id, numRecs, buf, _index[id + i]);
-      perror("fgets");
-      Exit::DoExit(1);
-    }
-
-    int len = strlen(line);
     if (len > 0 ) {
-      if (line[len-1] != '\n') {
-	fprintf(stderr,"TDataAscii::ReadRec: line too long\n");
+      if (line[len - 1] != '\n') {
+	fprintf(stderr,"ReadRec:line too long (%d)\n", len);
 	Exit::DoExit(1);
       }
-      line[len-1] = '\0';
+      line[len - 1] = '\0';
     }
 
-    Boolean valid = Decode(id + i, ptr, line);
+    Boolean valid = Decode(ptr, line);
     assert(valid);
     ptr += _recSize;
 
@@ -496,6 +591,11 @@ void TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
 
 void TDataAscii::ExtendIndex()
 {
+#ifdef DEBUG
+  printf("ExtendIndex:allocating %ld index elements\n",
+	 _indexSize + INDEX_ALLOC_INCREMENT);
+#endif
+
   long *newIndex = new long[_indexSize + INDEX_ALLOC_INCREMENT];
   memcpy(newIndex, _index, _indexSize * sizeof(long));
   delete _index;
@@ -505,42 +605,76 @@ void TDataAscii::ExtendIndex()
 
 void TDataAscii::WriteRecs(RecId startRid, int numRecs, void *buf)
 {
-  if (_totalRecs >= _indexSize)
-    /* index buffer too small, extend it */
-    ExtendIndex();
-
-  if (fseek(_file,_lastPos, SEEK_SET) < 0) {
-    perror("TDataAscii::WriteRecs");
+  if (_tape) {
+    fprintf(stderr, "Writing to tape not supported yet\n");
     Exit::DoExit(1);
   }
+
+  if (_totalRecs >= _indexSize)         // index buffer too small?
+    ExtendIndex();                      // extend it
 
   _index[_totalRecs++] = _lastPos;
-  if (fwrite(buf,strlen((char *)buf),1,_file) != 1) {
-    perror("TDataAScii::WriteRecs");
-    Exit::DoExit(1);
+  int len = strlen((char *)buf);
+
+  if (_tape) {
+    if (_tape->append(buf, len) != len) {
+      perror("WriteRecs:tapeappend");
+      Exit::DoExit(1);
+    }
+    _lastPos = _tape->tell();
+  } else {
+    if (fseek(_file, _lastPos, SEEK_SET) < 0) {
+      perror("WriteRecs:fseek");
+      Exit::DoExit(1);
+    }
+    if (fwrite(buf, len, 1, _file) != 1) {
+      perror("WriteRecs:fwrite");
+      Exit::DoExit(1);
+    }
+    _lastPos = ftell(_file);
   }
 
-  _currPos = _lastPos = ftell(_file);
+  _currPos = _lastPos;
+
+  _fileGrown = true;
 }
 
 void TDataAscii::WriteLine(void *line)
 {
-  if (fseek(_file,_lastPos, SEEK_SET) < 0) {
-    perror("TDataAscii::WriteLine");
-    Exit::DoExit(1);
+  int len = strlen((char *)line);
+
+  if (_tape) {
+    if (_tape->append(line, len) != len) {
+      perror("WriteLine:tapeappend");
+      Exit::DoExit(1);
+    }
+    _lastPos = _tape->tell();
+  } else {
+    if (fseek(_file, _lastPos, SEEK_SET) < 0) {
+      perror("WriteLine:fseek");
+      Exit::DoExit(1);
+    }
+    if (fwrite(line, len, 1, _file) != 1) {
+      perror("WriteLine:fwrite");
+      Exit::DoExit(1);
+    }
+    _lastPos = ftell(_file);
   }
 
-  if (fwrite(line,strlen((char *)line),1,_file) != 1) {
-    perror("TDataAScii::WriteRecs");
-    Exit::DoExit(1);
-  }
+  _currPos = _lastPos;
 
-  _currPos = _lastPos = ftell(_file);
+  _fileGrown = true;
 }
 
 void TDataAscii::Cleanup()
 {
   Checkpoint();
+
+  if (_tape) {
+    _tape->printStats();
+    delete _tape;
+    _tape = NULL;
+  }
 }
 
 void TDataAscii::PrintIndices()
