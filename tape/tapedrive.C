@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/07/18 02:48:24  jussi
+  Make this code compile in Ultrix.
+
   Revision 1.10  1996/07/12 00:55:39  jussi
   Updated copyright information to reflect original source.
 
@@ -59,6 +62,7 @@
 #include <string.h>
 
 #include "tapedrive.h"
+#include "DCE.h"
 #include "Exit.h"
 
 // Use fake fileno and blkno to make this file compile in Alpha
@@ -71,6 +75,14 @@
 #define mt_blkno  mt_resid * 0
 #endif
 
+#define USE_FWRITEBUF
+//#define USE_FREAD
+
+char *TapeDrive::_mt_op_name[] = { "WEOF", "FSF", "BSF", "FSR",
+                                   "BSR", "REW", "OFFL", "NOP",
+                                   "RETEN", "ERASE", "EOM", "NBSF",
+                                   "SRSZ", "GRSZ", "LOAD" };
+
 TapeDrive::TapeDrive(char *name, char *mode, int fno, int blockSz) :
 	initialized(0), fileNo(fno), blockSize(blockSz),
 	haveTarHeader(0), tarFileSize(0), tarFileOffset(0)
@@ -82,14 +94,33 @@ TapeDrive::TapeDrive(char *name, char *mode, int fno, int blockSz) :
        << endl;
 #endif
 
+  _child = 0;
+
   if (!(file = fopen(name, mode))) {
     perror("fopen");
     return;
   }
 
+#ifdef USE_FWRITEBUF
+  // fwrite() in flushBuffer() will write 8 kB blocks to tape even
+  // if we request larger blocks; we have to force it to use
+  // the specified block size
+  int fwriteBufSize = blockSize + 8;
+  _fwriteBuf = new char [fwriteBufSize];
+  DOASSERT(_fwriteBuf, "Out of memory");
+  if (setvbuf(file, _fwriteBuf, _IOFBF, fwriteBufSize) != 0) {
+      perror("setvbuf");
+      exit(1);
+  }
+#endif
+
+#if 0
+  setbuf(file, 0);
+#endif
+
   atEof = (mode[0] == 'w');
 
-  for(unsigned int i = 0; i < sizeof(mt_ios) / sizeof(mt_ios[0]); i++)
+  for(unsigned int i = 0; i < _max_mt_op; i++)
     mt_tim[i] = mt_ios[i] = mt_cnt[i] = 0;
   read_time = read_ios = read_cnt = 0;
   write_time = write_ios = write_cnt = 0;
@@ -121,17 +152,30 @@ TapeDrive::~TapeDrive()
     flushBuffer();
   delete buffer;
 
-  fclose(file);
+  waitForChildProcess();
+
+  setbuf(file, 0);
+
+  if (fclose(file))
+    perror("fclose");
+
+#ifdef USE_FWRITEBUF
+  delete _fwriteBuf;
+#endif
 }
 
 void TapeDrive::printStats()
 {
   cout << "Tape usage statistics:" << endl;
   cout << "  cmd\tcalls\tcount\tavgtime" << endl;
-  for(unsigned int i = 0; i < sizeof(mt_ios) / sizeof(mt_ios[0]); i++)
-    cout << "  " << i << "\t" << mt_ios[i]
-         << "\t" << mt_cnt[i]
-	 << "\t" << mt_tim[i] / (mt_cnt[i] ? mt_cnt[i] : 1) << endl;
+  for(unsigned int i = 0; i < _max_mt_op; i++) {
+    if (mt_ios[i] > 0) {
+      cout << "  " << _mt_op_name[i]
+           << "\t" << mt_ios[i]
+           << "\t" << mt_cnt[i]
+	   << "\t" << mt_tim[i] / (mt_cnt[i] ? mt_cnt[i] : 1) << endl;
+    }
+  }
   cout << "  read\t" << read_ios << "\t" << read_cnt
        << "\t" << read_time / (read_ios ? read_ios : 1) << endl;
   cout << "  write\t" << write_ios << "\t" << write_cnt
@@ -162,19 +206,45 @@ unsigned long int TapeDrive::oct2int(char *buf)
   return num;
 }
 
-long TapeDrive::seek(long offset)
+void TapeDrive::waitForChildProcess()
 {
+  if (_child > 0) {
+    TAPEDBG(cout << "Waiting for tape " << fileno(file)
+            << " to become idle" << endl);
+#ifdef THREAD_TASK
+    (void)pthread_join(_child, 0);
+#else
+    if (wait(0) < 0) {
+      perror("wait");
+      exit(1);
+    }
+#endif
+    TAPEDBG(cout << "Tape " << fileno(file) << " has become idle" << endl);
+    _child = 0;
+  }
+}
+
+long long TapeDrive::seek(long long offset)
+{
+  TAPEDBG(cout << "Seek to offset " << offset << " of tape "
+          << fileno(file) << endl);
+
+  DOASSERT(offset >= 0, "Invalid tape offset");
+
   if (bufferType == writeBuffer) {      // flush out write buffer
     flushBuffer();
     bufferType = readBuffer;
     bufferBlock = 0;
   }
 
-  long block = offset / blockSize;
-  long off = offset % blockSize;
+  long long lblock = offset / blockSize;
+  long long loff = offset % blockSize;
 
-  if (atEof)                            // system screwed up after reading
-    resynchronize();                    // to EOF; must resynchronize
+  long block = lblock;
+  long off = loff;
+
+  TAPEDBG(cout << "Seeking to lblock " << lblock << ", block "
+          << block << " of tape " << fileno(file) << endl);
 
   if (block != bufferBlock - 1) {       // not current block?
     gotoBlock(block);                   // goto new block location
@@ -194,9 +264,9 @@ long TapeDrive::seek(long offset)
 
 int TapeDrive::read(void *buf, int recSize, int binary)
 {
-  TAPEDBG(cout << "Read request for " << recSize << " "
-	  << (binary ? "binary" : "ASCII")
-	  << " bytes to " << (void *)buf << endl);
+  TAPEDBG2(cout << "Read request for " << recSize << " "
+           << (binary ? "binary" : "ASCII")
+           << " bytes to " << (void *)buf << endl);
 
   if (bufferType != readBuffer) {
     cerr << "Must do a seek before switching from writing to reading" << endl;
@@ -237,7 +307,7 @@ int TapeDrive::read(void *buf, int recSize, int binary)
 
   read_cnt++;
   if (read_cnt % 1000 == 0)
-    TAPEDBG(cout << read_cnt << " " << flush);
+    TAPEDBG2(cout << read_cnt << " " << flush);
 
 #ifdef TAPE_BLOCK_PADDING
   char *start = buffer + bufferOffset;        // starting point for this record
@@ -257,8 +327,8 @@ int TapeDrive::read(void *buf, int recSize, int binary)
     DOASSERT(end, "End of record not found");
     recSize = end - start;              // do not include record separator
   }
-  TAPEDBG(cout << "Copying " << recSize << " bytes to "
-	  << (void *)buf << endl);
+  TAPEDBG2(cout << "Copying " << recSize << " bytes to "
+           << (void *)buf << endl);
   memcpy(buf, start, recSize);
   bufferOffset += recSize + 1;          // go past record separator too
   if (!binary                           // in ASCII mode?
@@ -289,7 +359,7 @@ int TapeDrive::read(void *buf, int recSize, int binary)
       if (end)                          // found newline = end of record?
 	b = end - start + 1;
     }
-    TAPEDBG(cout << "Copying " << b << " bytes to " << (void *)p << endl);
+    TAPEDBG2(cout << "Copying " << b << " bytes to " << (void *)p << endl);
     memcpy(p, start, b);
     bufferOffset += b;
     bytesLeft -= b;
@@ -321,6 +391,9 @@ int TapeDrive::read(void *buf, int recSize, int binary)
 
 int TapeDrive::write(void *buf, int recSize)
 {
+  buf = buf;                            // make compiler happy
+  recSize = recSize;
+
   write_cnt++;
   DOASSERT(0, "Random writes not supported on tapes");
   return 0;
@@ -372,70 +445,193 @@ int TapeDrive::append(void *buf, int recSize)
   return recSize;
 }
 
-int TapeDrive::command(short mt_op, daddr_t mt_count)
+void TapeDrive::Recover(struct mtget &otstat, short mt_op,
+                        daddr_t mt_count)
+{
+  mt_count = mt_count;                  // make compiler happy
+  otstat = otstat;
+
+  int status = 0;
+
+  switch(mt_op) {
+    case MTFSF:
+      status = ProcessCmdNR(MTBSF, 1);
+      if (status >= 0)
+          ProcessCmdNR(MTFSF, 1);
+      break;
+    case MTBSF:
+      status = ProcessCmdNR(MTFSF, 1);
+      if (status >= 0)
+          ProcessCmdNR(MTBSF, 1);
+      break;
+    case MTFSR:
+      status = ProcessCmdNR(MTBSR, 1);
+      if (status >= 0)
+          ProcessCmdNR(MTFSR, 1);
+      break;
+    case MTBSR:
+      status = ProcessCmdNR(MTFSR, 1);
+      if (status >= 0)
+          ProcessCmdNR(MTBSR, 1);
+      break;
+    case MTREW:
+      status = ProcessCmdNR(MTFSF, 1);
+      break;
+    default:
+      cout << "Don't know how to recover from an error with op "
+           << mt_op << endl;
+      break;
+  }
+
+  DOASSERT(status >= 0, "Recovery attempt failed");
+}
+
+void *TapeDrive::ProcessCmd(void *arg)
+{
+  TapeDrive &me = *(TapeDrive *)arg;
+  return me.ProcessCmd(me._proc_mt_op, me._proc_mt_count);
+}
+
+void *TapeDrive::ProcessCmd(short mt_op, daddr_t mt_count)
+{
+  static struct mtget otstat;           // original tape status
+  int status = ioctl(fileno(file), MTIOCGET, (char *)&otstat);
+  if (status < 0)
+    perror("ioctl4");
+  DOASSERT(status >= 0, "Cannot get tape status");
+
+  for(int attempt = 0; attempt < 10; attempt++) {
+      if (attempt > 0) {
+          cout << "Sleeping 2 seconds..." << endl;
+          sleep(2);
+          cout << "Recovering..." << endl;
+          Recover(otstat, mt_op, mt_count);
+          cout << "Retrying..." << endl;
+      }
+      status = ProcessCmdNR(mt_op, mt_count);
+      if (status >= 0)
+          break;
+      cout << "Tape command " << mt_op << ", count " << mt_count
+           << " failed, attempt " << attempt << endl;
+  }
+  
+  return (void *)0;
+}
+
+int TapeDrive::ProcessCmdNR(short mt_op, daddr_t mt_count)
 {
   static struct mtop cmd;
   cmd.mt_op = mt_op;
-  cmd.mt_count = mt_count;
-  TAPEDBG(cout << "Tape command " << mt_op << ", count " << mt_count
-	  << ", " << flush);
+  cmd.mt_count = _proc_mt_count;
 
-  DOASSERT(mt_op >= 0 && mt_op < (int)(sizeof(mt_ios) / sizeof(mt_ios[0])),
-	 "Invalid tape command");
+  DOASSERT(mt_op >= 0 && mt_op < _max_mt_op, "Invalid tape command");
   mt_ios[mt_op]++;
   mt_cnt[mt_op] += (mt_count >= 0 ? mt_count : -mt_count);
+  
+  TAPEDBG(cout << "Tape " << fileno(file) << ", command " << mt_op
+          << ", count " << mt_count << " started" << endl);
 
   startTimer();
-  int status = ioctl(FILE2FD(file), MTIOCTOP, (char *)&cmd);
+  int status = ioctl(fileno(file), MTIOCTOP, (char *)&cmd);
   mt_tim[mt_op] += getTimer();
 
-  TAPEDBG(cout << "status = " << status << endl);
   if (status < 0)
-    perror("ioctl");
+      perror("ioctl");
+
+  TAPEDBG(cout << "Tape " << fileno(file) << ", command " << mt_op
+          << ", count " << mt_count << " finished, status = " << status
+          << endl);
 
   return status;
 }
 
+int TapeDrive::command(short mt_op, daddr_t mt_count)
+{
+  waitForChildProcess();
+  DOASSERT(_child <= 0, "Invalid child process ID");
+
+#ifdef THREAD_TASK
+  _proc_mt_op = mt_op;
+  _proc_mt_count = mt_count;
+  if (pthread_create(&_child, 0, ProcessCmd, this)) {
+      perror("pthread_create");
+      return -1;
+  }
+#else
+  _child = fork();
+
+  if (!_child) {
+    (void)ProcessCmd(mt_op, mt_count);
+    exit(1);
+  }
+
+  if (_child < 0) {
+      perror("fork");
+      return -1;
+  }
+#endif
+
+  return 0;
+}
+
 void TapeDrive::getStatus()
 {
+  waitForChildProcess();
+
 #if defined(__aix) || defined(_AIX)
   tstat.mt_resid  = 0;
   tstat.mt_fileno = 0;
   tstat.mt_blkno  = 0;
 #else
-  int status = ioctl(FILE2FD(file), MTIOCGET, (char *)&tstat);
+  int status = ioctl(fileno(file), MTIOCGET, (char *)&tstat);
   if (status < 0)
-    perror("ioctl");
+    perror("ioctl2");
   DOASSERT(status >= 0, "Cannot get tape status");
 #endif
 }
 
 void TapeDrive::fillBuffer()
 {
+  waitForChildProcess();
+
   read_ios++;
 
-  TAPEDBG(cout << "Reading " << blockSize << " bytes to " << (void *)buffer
-	  << " from fd " << FILE2FD(file) << endl);
-  TAPEDBG(cout << "Bufferblock " << bufferBlock << ", bufferOffset "
-	  << bufferOffset << endl);
+  TAPEDBG2(cout << "Reading " << blockSize << " bytes to " << (void *)buffer
+           << " from fd " << fileno(file) << endl);
+  TAPEDBG2(cout << "Bufferblock " << bufferBlock << ", bufferOffset "
+           << bufferOffset << endl);
 
 //  startTimer();
-  int status = ::read(FILE2FD(file), buffer, blockSize);
+#ifdef USE_FREAD
+  size_t status = fread(buffer, blockSize, 1, file);
+#else
+  int status = ::read(fileno(file), buffer, blockSize);
+#endif
 //  read_time += getTimer();
 
   bufferBlock++;
   bufferOffset = 0;
   bufferBytes = status;
 
+#ifdef USE_FREAD
+  if (!status && feof(file)) {          // end of tape file?
+#else
   if (!status) {                        // end of tape file?
+#endif
     atEof = 1;
+    int status = command(MTBSF, 1);     // back up past file mark
+    DOASSERT(status >= 0, "Cannot operate tape drive");
     return;
   }
 
   atEof = 0;
 
+#ifdef USE_FREAD
+  if (!status && ferror(file)) {        // read error?
+#else
   if (status < 0) {                     // read error?
-    cerr << "Read failed: fd " << FILE2FD(file) << ", buffer "
+#endif
+    cerr << "Read failed: fd " << fileno(file) << ", buffer "
          << (void *)buffer << ", bytes " << blockSize << endl;
     perror("read");
     exit(1);
@@ -451,19 +647,22 @@ void TapeDrive::fillBuffer()
 
 void TapeDrive::flushBuffer()
 {
+  waitForChildProcess();
+
   DOASSERT(bufferType == writeBuffer, "Inconsistent data");
   if (!bufferOffset)
     return;
+
   write_ios++;
   if (bufferOffset < blockSize)
     memset(buffer + bufferOffset, 0, blockSize - bufferOffset);
 
-  startTimer();
-  if (::write(FILE2FD(file), buffer, blockSize) < blockSize) {
-    perror("write");
+//  startTimer();
+  if (fwrite(buffer, blockSize, 1, file) < 1) {
+    perror("fwrite");
     exit(1);
   }
-  write_time += getTimer();
+//  write_time += getTimer();
 
   bufferBlock++;
   bufferOffset = 0;
@@ -471,11 +670,17 @@ void TapeDrive::flushBuffer()
 
 void TapeDrive::gotoBlock(long block)
 {
-  getStatus();
-  if (fileNo != tstat.mt_fileno)        // oops, we're in another file
-    gotoBeginningOfFile();
+  TAPEDBG(cout << "Go to block " << block << " of tape "
+          << fileno(file) << endl);
 
   getStatus();
+
+  if (fileNo != tstat.mt_fileno         // oops, we're in another file
+      || tstat.mt_blkno > 900000000) {  // unsure about location
+    gotoBeginningOfFile();
+    getStatus();
+  }
+
   long diff = block - tstat.mt_blkno;   // difference in block numbers
   if (!diff)                            // no movement required?
     return;
@@ -493,41 +698,27 @@ void TapeDrive::gotoBlock(long block)
   DOASSERT(status >= 0, "Cannot operate tape drive");
 }
 
-void TapeDrive::resynchronize()
-{
-  getStatus();
-  if (tstat.mt_fileno > 0) {            // not first file on tape?
-    int status = command(MTBSF, 1);     // move to end of previous file
-    DOASSERT(status >= 0, "Cannot operate tape drive");
-    status = command(MTBSR, 2);         // a couple of records backwards
-#if 0
-    // what if file has < 2 records?
-    DOASSERT(status >= 0, "Cannot operate tape drive");
-#endif
-  }  
-  gotoBeginningOfFile();                // find beginning of file again
-}
-
 void TapeDrive::gotoBeginningOfFile()
 {
+  int status = fseek(file, 0, SEEK_SET);
+  if (status < 0)
+    perror("fseek");
+  DOASSERT(status >= 0, "Cannot operate tape drive");
+
   if (!fileNo) {                        // first file? just rewind
     int status = command(MTREW, 1);
     DOASSERT(status >= 0, "Cannot operate tape drive");
-    gotoBlock(0);
+#if !defined(__alpha) && !defined(__ultrix)
+    tstat.mt_fileno = 0;
+    tstat.mt_blkno = 0;
+    tstat.mt_resid = 0;
+#endif
     return;
   }
 
   getStatus();
   long diff = fileNo - tstat.mt_fileno;
 
-#if 0
-  // quickest but may not be portable
-  int status = command(MTNBSF, diff);
-  DOASSERT(status >= 0, "Cannot operate tape drive");
-  gotoBlock(0);
-#endif
-
-  // portable and quick; may be unreliable on DLT
   if (diff > 0) {                       // go forward?
     int status = command(MTFSF, diff);
     DOASSERT(status >= 0, "Cannot operate tape drive");
@@ -538,19 +729,19 @@ void TapeDrive::gotoBeginningOfFile()
     DOASSERT(status >= 0, "Cannot operate tape drive");
   }
 
-  getStatus();
-  DOASSERT(tstat.mt_fileno == fileNo, "Inconsistent tape state");
-
-  int status = lseek(FILE2FD(file), 0, SEEK_SET);
-  if (status < 0)
-    perror("lseek");
-  DOASSERT(status >= 0, "Cannot operate tape drive");
+#if !defined(__alpha) && !defined(__ultrix)
+  tstat.mt_fileno = fileNo;
+  tstat.mt_blkno = 0;
+  tstat.mt_resid = 0;
+#endif
 }
 
 void TapeDrive::gotoEndOfFile()
 { 
   if (atEof)
     return;
+
+  waitForChildProcess();
 
   const unsigned long skipSize = 1000000;
   static struct mtop cmd;
@@ -560,7 +751,7 @@ void TapeDrive::gotoEndOfFile()
   while(1) {
     TAPEDBG(cout << "Tape command " << MTFSR << ", count " << skipSize
 	    << ", " << flush);
-    int status = ioctl(FILE2FD(file), MTIOCTOP, (char *)&cmd);
+    int status = ioctl(fileno(file), MTIOCTOP, (char *)&cmd);
     TAPEDBG(cout << "status = " << status << endl);
     if (status < 0) {
       getStatus();
@@ -571,7 +762,7 @@ void TapeDrive::gotoEndOfFile()
 	return;
       }
     }
-    perror("ioctl");
+    perror("ioctl3");
     DOASSERT(status >= 0, "Cannot operate tape drive");
   }
 }

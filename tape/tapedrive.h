@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/07/18 02:20:01  jussi
+  Made this compile in Ultrix.
+
   Revision 1.5  1996/07/12 00:55:40  jussi
   Updated copyright information to reflect original source.
 
@@ -42,9 +45,15 @@
 
 // uncomment the following #defines to enable features
 //#define TAPE_DEBUG                      // print out debugging information
+//#define TAPE_DEBUG2                     // print out debugging information
 #define TAPE_BLOCKING                   // blocked access to tape
 //#define TAPE_BLOCK_PADDING              // records do not cross blocks
 //#define PARTIAL_BLOCK_ERROR             // error if partial blocks read
+//#define THREAD_TASK                     // use threads
+
+#ifdef SOLARIS
+#define THREAD_TASK
+#endif
 
 #ifdef TAPE_DEBUG
   #define TAPEDBG(s) s
@@ -52,11 +61,21 @@
   #define TAPEDBG(s) // nothing
 #endif
 
+#ifdef TAPE_DEBUG2
+  #define TAPEDBG2(s) s
+#else
+  #define TAPEDBG2(s) // nothing
+#endif
+
 #include <stdio.h>
 #ifndef ULTRIX
   #include <tar.h>
 #endif
 #include "machdep.h"
+
+#ifdef THREAD_TASK
+#include <pthread.h>
+#endif
 
 #ifndef TBLOCK
 #define TBLOCK 512                      // tar file block size
@@ -89,11 +108,14 @@ public:
   // Convert octal number (in ASCII) to decimal number (in binary)
   unsigned long int oct2int(char *buf);
 
+  // Return block size
+  int getBlockSize() { return blockSize; }
+
   // Move on tape
-  virtual long seek(long offset);
+  virtual long long seek(long long offset);
 
   // Return current position on tape
-  virtual long tell() {
+  virtual long long tell() {
     if (!bufferBlock)                   // haven't read any data yet?
       return 0;
     return (bufferBlock - 1) * blockSize + bufferOffset;
@@ -153,14 +175,19 @@ protected:
     return diff;
   }
 
+  // Wait for child process to complete
+  void waitForChildProcess();
+
   int initialized;                      // 1 if properly initialized
 
   FILE *file;                           // pointer to open file
   int fileNo;                           // file number on tape
 
-  long mt_ios[12];                      // number of I/O calls
-  long mt_cnt[12];                      // number of I/O counts
-  double mt_tim[12];                    // times of I/O requests
+  const int _max_mt_op = 15;
+  long mt_ios[_max_mt_op];              // number of I/O calls
+  long mt_cnt[_max_mt_op];              // number of I/O counts
+  double mt_tim[_max_mt_op];            // times of I/O requests
+  static char *_mt_op_name[];           // names of I/O operations
 
   long read_cnt;                        // number of records read
   long read_ios;                        // number of read() calls
@@ -181,8 +208,26 @@ protected:
   int  bufferOffset;                    // current offset into buffer
   int  bufferBytes;                     // number of bytes in buffer
   long bufferBlock;                     // block number of cached block
-  char *buffer;                         // block size on tape
+  char *buffer;                         // block on tape
+  char *_fwriteBuf;                     // block given to fwrite()
   int  atEof;                           // 1 if tape at EOF
+
+#ifdef THREAD_TASK
+  pthread_t _child;                     // ID of child thread
+#else
+  pid_t _child;                         // ID of child process
+#endif
+  short _proc_mt_op;                    // cached value for ProcessCmd()
+  daddr_t _proc_mt_count;               // cached value for ProcessCmd()
+
+  static void *ProcessCmd(void *arg);   // thread/process for commands
+  void *ProcessCmd(short mt_op,
+                   daddr_t mt_count);   // recoverable tape command processing
+  int ProcessCmdNR(short mt_op,
+                   daddr_t mt_count);   // nonrecoverable processing
+  void Recover(struct mtget &tstat,
+               short mt_op,
+               daddr_t mt_count);       // recover from failed tape command
 
   int haveTarHeader;                    // 1 if we've read a tar header
   unsigned long int tarFileSize;        // file size for file in tar archive
