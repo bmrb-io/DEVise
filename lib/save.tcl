@@ -15,6 +15,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1996/06/12 14:57:58  wenger
+#  Added GUI and some code for saving data to templates; added preliminary
+#  graphical display of TDatas; you now have the option of closing a session
+#  in template mode without merging the template into the main data catalog;
+#  removed some unnecessary interdependencies among include files; updated
+#  the dependencies for Sun, Solaris, and HP; removed never-accessed code in
+#  ParseAPI.C.
+#
 #  Revision 1.6  1996/05/31 16:36:12  jussi
 #  Minor fix in DoActualSave.
 #
@@ -81,6 +89,10 @@ proc SaveAllViewMappings { f mappingDict viewDict } {
 	    foreach map $mappings {
 		set mapVar [DictLookup $mappingDict $map]
 		puts $f "DEVise insertMapping \$$viewVar \$$mapVar"
+		set label [DEVise getMappingLegend $v $map]
+		if {$label != ""} {
+		    puts $f "DEVise setMappingLegend \$$viewVar \$$mapVar $label"
+		}
 	    }
 	}
     }
