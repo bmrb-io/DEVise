@@ -92,7 +92,7 @@ public class Query {
                {
                   t = ( TableAlias )( fromClause.elementAt(i) );
                   if ( i != (fromClause.size() -1))
-                     s = s + t.toString() + " ";
+                     s = s + t.toString() + ", ";
                   else
                      s = s + t.toString();
                }

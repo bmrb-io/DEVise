@@ -36,19 +36,23 @@ SKIP :
 
 TOKEN :
 {
+< SELECTION: <ID> "." <ID> >
+|
   <AS : ["A","a"]["S","s"] >
+|
+  <JOINT: ((["A","a"]["N","n"]["D","d"])|( ["O","o"]["R","r"]) ) >  
 |
   <SELECT: ["S","s"]["E","e"]["L","l"]["E","e"]["C","c"]["T","t"]>
 |
   < FROM: ["F","f"]["R","r"]["O","o"]["M","m"] >
 |
-  < SELECTION: <ID> "." <ID> >
-|
   < WHERE:["W","w"]["H","h"]["E","e"]["R","r"]["E","e"] >
+|
+  < STRING: ("'" ( <ID> |< INTEGER> )+ "'") >
 |
   < ID: ["a"-"z","A"-"Z","_"] ( ["a"-"z","A"-"Z","_","0"-"9"] )* >
 |
-  <INTEGER: ( ["0"-"9"] )+ >
+  < INTEGER: ( ["0"-"9"] )+ >
 |
   < DOUBLE: ( ["0"-"9"] )+ "."( ["0"-"9"] )+  >
 |
@@ -57,8 +61,7 @@ TOKEN :
   < MULT: ("*"|"/"|"%") >
 |
   < LOGIC: ("<"|">"|"!="|"=") >
-|
-  < JOINT: ("||"|"&&") >
+
 }
 
 
@@ -66,7 +69,7 @@ Query query() :
 {
 	java.util.Vector selectClause;
 	java.util.Vector fromClause;
-	Expression whereClause = null;
+	Expression whereClause = ( Expression ) ( new Constant( new DTE_String(" ") ));;
 }
 {
         <SELECT> selectClause = SelectClause() 
@@ -138,12 +141,12 @@ java.util.Vector FromClause() :
 		{
 			relationIdList.addElement(r);
 		}
-	[  <AS>  alias=Alias()
+	[<AS>]  alias=Alias()
 		{
 			aliasList.setSize( count + 1 );
 			aliasList.setElementAt( alias,count);
 		}
-	]
+	
 
 
         (
@@ -154,11 +157,11 @@ java.util.Vector FromClause() :
                            count++;
 			   aliasList.setSize( count + 1 );
 		   }
-	   [  <AS> alias=Alias()
+	   [<AS>] alias=Alias()
 		   {
 			   aliasList.setElementAt(alias,count);
 		   }
- 	   ]
+ 	   
 
 
         )*
@@ -170,10 +173,9 @@ java.util.Vector FromClause() :
                {
                   rid = (RelationId) (relationIdList.elementAt(i));
                   
-                  if (aliasList.elementAt(i) != null )
-                      a = (String)(aliasList.elementAt(i));
-                  else
-                      a = "null";
+               
+                  a = (String)(aliasList.elementAt(i));
+               
                   ta = new TableAlias(  rid, a );
                   tableAliasList.addElement(ta);  
 
@@ -333,6 +335,8 @@ Expression UnaryExpression() :
         Double value;
   	Expression s;
 	String str;
+        String Str;
+        int length;
 	int pos = 0;
 }
 {
@@ -367,7 +371,13 @@ Expression UnaryExpression() :
           Value = new Integer( t.image );        
 	  return (Expression) (new Constant( new DTE_Int (Value.intValue() )) );
 	}
-
+| t=<STRING>
+        {
+          str = t.image;
+          length = str.length();
+          Str = str.substring( 1, length-1 );
+          return ( Expression ) ( new Constant( new DTE_String(Str) ));
+        }            
 
 
 
