@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/03/05 23:22:00  jussi
+  Cleaned up a bit.
+
   Revision 1.3  1996/01/12 15:31:02  jussi
   Replaced libc.h with stdlib.h. Added copyright notice.
 
@@ -113,7 +116,6 @@ Destructor
 
 UnixRecFile::~UnixRecFile()
 {
-  printf("~UnixRecFile fd %d\n", _fd);
   close(_fd);
 }
 
