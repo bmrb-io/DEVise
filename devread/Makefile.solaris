@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.14  2000/01/13 23:03:41  wenger
+# Updated dependencies.
+#
 # Revision 1.13  1998/06/24 22:15:09  donjerko
 # *** empty log message ***
 #
@@ -44,20 +47,20 @@ depend:
 # DO NOT DELETE
 
 DevRead.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-DevRead.o: /usr/include/sys/va_list.h /usr/include/string.h DevRead.h
-DevRead.o: ../graphics/DeviseTypes.h /usr/include/values.h
-DevRead.o: /usr/include/sys/isa_defs.h ../graphics/DevStatus.h
+DevRead.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
+DevRead.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
+DevRead.o: /usr/include/string.h DevRead.h ../graphics/DeviseTypes.h
+DevRead.o: /usr/include/values.h ../graphics/DevStatus.h
 DevRead.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
 DevRead.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 DevRead.o: /usr/include/sys/time.h /usr/include/time.h
 DevRead.o: ../graphics.new/RecId.h types.h /usr/include/assert.h
 DevRead.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
 DevRead.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-DevRead.o: /usr/include/sys/machlock.h /usr/include/sys/sleepq.h
-DevRead.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-DevRead.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
-DevRead.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-DevRead.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+DevRead.o: /usr/include/sys/machlock.h /usr/include/sys/param.h
+DevRead.o: /usr/include/sys/unistd.h /usr/include/sys/mutex.h
+DevRead.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+DevRead.o: /usr/include/sys/condvar.h /usr/include/sys/time_impl.h
 DevRead.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 DevRead.o: /usr/include/sys/resource.h /usr/include/vm/seg_enum.h
 DevRead.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
@@ -77,8 +80,9 @@ DevRead.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
 DevRead.o: ../graphics/DList.h ../graphics/AttrList.h ../graphics/Init.h
 DevRead.o: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
 drtest.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-drtest.o: /usr/include/sys/va_list.h /usr/include/sys/types.h
-drtest.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+drtest.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
+drtest.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
+drtest.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
 drtest.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 drtest.o: /usr/include/sys/time.h /usr/include/time.h DevRead.h
 drtest.o: ../graphics/DeviseTypes.h /usr/include/values.h
@@ -86,27 +90,25 @@ drtest.o: ../graphics/DevStatus.h ../graphics.new/RecId.h types.h
 drtest.o: /usr/include/assert.h /usr/include/netinet/in.h
 drtest.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
 drtest.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-drtest.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
 drtest.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-drtest.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-drtest.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-drtest.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+drtest.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+drtest.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+drtest.o: /usr/include/sys/time_impl.h /usr/include/sys/cred.h
 drtest.o: /usr/include/sys/uio.h /usr/include/sys/resource.h
 drtest.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 drtest.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
 drtest.o: /usr/include/sys/byteorder.h marshal.h
 types.o: types.h /usr/include/assert.h /usr/include/sys/types.h
-types.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
+types.o: /usr/include/sys/isa_defs.h /usr/include/sys/feature_tests.h
 types.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 types.o: /usr/include/sys/select.h /usr/include/sys/time.h
 types.o: /usr/include/time.h /usr/include/netinet/in.h
 types.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
 types.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-types.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
 types.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-types.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-types.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-types.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+types.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+types.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+types.o: /usr/include/sys/time_impl.h /usr/include/sys/cred.h
 types.o: /usr/include/sys/uio.h /usr/include/sys/resource.h
 types.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 types.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h

@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.61  1999/11/19 21:29:00  wenger
+# Removed Journal class and related code (no longer works); removed various
+# other unused or unnecessary code.
+#
 # Revision 1.60  1999/01/28 22:40:14  wenger
 # Updated solaris dependencies.
 #
@@ -109,49 +113,53 @@ depend:
 
 CompDate.o: CompDate.h
 DeviseBatchClient.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-DeviseBatchClient.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
-DeviseBatchClient.o: DeviseBatchClient.h ../graphics/DeviseTypes.h
-DeviseBatchClient.o: /usr/include/values.h /usr/include/sys/isa_defs.h
+DeviseBatchClient.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
+DeviseBatchClient.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
+DeviseBatchClient.o: /usr/include/stdlib.h DeviseBatchClient.h
+DeviseBatchClient.o: ../graphics/DeviseTypes.h /usr/include/values.h
 DeviseBatchClient.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 DeviseBatchClient.o: /usr/include/sys/machtypes.h
 DeviseBatchClient.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 DeviseBatchClient.o: /usr/include/sys/time.h /usr/include/time.h
 DeviseClient.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-DeviseClient.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
-DeviseClient.o: DeviseClient.h ../graphics/DeviseTypes.h
-DeviseClient.o: /usr/include/values.h /usr/include/sys/isa_defs.h
+DeviseClient.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
+DeviseClient.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
+DeviseClient.o: /usr/include/stdlib.h DeviseClient.h
+DeviseClient.o: ../graphics/DeviseTypes.h /usr/include/values.h
 DeviseClient.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 DeviseClient.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 DeviseClient.o: /usr/include/sys/select.h /usr/include/sys/time.h
 DeviseClient.o: /usr/include/time.h
 collaborator.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-collaborator.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
-collaborator.o: /usr/include/string.h /usr/include/signal.h
-collaborator.o: /usr/include/sys/signal.h /usr/include/sys/unistd.h
-collaborator.o: /usr/include/unistd.h /usr/include/sys/types.h
-collaborator.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+collaborator.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
+collaborator.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
+collaborator.o: /usr/include/stdlib.h /usr/include/string.h
+collaborator.o: /usr/include/signal.h /usr/include/sys/signal.h
+collaborator.o: /usr/include/sys/unistd.h /usr/include/unistd.h
+collaborator.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
 collaborator.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 collaborator.o: /usr/include/sys/time.h /usr/include/time.h
 collaborator.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
 collaborator.o: /usr/include/memory.h /usr/include/sys/resource.h
 collaborator.o: /usr/include/syslog.h /usr/include/sys/syslog.h
 generic.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-generic.o: /usr/include/sys/va_list.h /usr/include/errno.h
-generic.o: /usr/include/sys/errno.h /usr/include/time.h /usr/include/string.h
-generic.o: /usr/include/math.h /usr/include/sys/time.h
-generic.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-generic.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
-generic.o: /usr/include/sys/select.h ../graphics/DeviseTypes.h
-generic.o: /usr/include/values.h ../graphics/DevStatus.h
-generic.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-generic.o: ../src/utils/ObjectValid.h ../graphics/Display.h
-generic.o: ../graphics/Geom.h ../graphics/ViewWin.h ../graphics/WindowRep.h
-generic.o: ../graphics/Transform.h ../graphics/VisualArg.h
-generic.o: ../graphics/ViewDir.h ../graphics/Pattern.h
-generic.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-generic.o: ../graphics/DevError.h /usr/include/sys/param.h
-generic.o: /usr/include/sys/unistd.h ../graphics/ETkIfc.h ../graphics/ETk.h
-generic.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
+generic.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
+generic.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
+generic.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/time.h
+generic.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
+generic.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
+generic.o: /usr/include/sys/time.h /usr/include/string.h /usr/include/math.h
+generic.o: ../graphics/DeviseTypes.h /usr/include/values.h
+generic.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
+generic.o: ../graphics/DList.h ../graphics/Exit.h ../src/utils/ObjectValid.h
+generic.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/ViewWin.h
+generic.o: ../graphics/WindowRep.h ../graphics/Transform.h
+generic.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+generic.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+generic.o: ../graphics/Compress.h ../graphics/DevError.h
+generic.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+generic.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
+generic.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 generic.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 generic.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
 generic.o: ../graphics/GraphicsDebug.h ../graphics/Control.h
@@ -169,10 +177,11 @@ generic.o: ../graphics.new/StringStorage.h StateMap.h ../graphics/Util.h
 generic.o: /usr/include/stdlib.h /usr/include/ctype.h ../graphics/HangCheck.h
 generic.o: ../graphics/Timer.h
 testWindowSpeed.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-testWindowSpeed.o: /usr/include/sys/va_list.h /usr/include/time.h
-testWindowSpeed.o: /usr/include/sys/time.h /usr/include/sys/types.h
-testWindowSpeed.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-testWindowSpeed.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
+testWindowSpeed.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
+testWindowSpeed.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
+testWindowSpeed.o: /usr/include/time.h /usr/include/sys/types.h
+testWindowSpeed.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+testWindowSpeed.o: /usr/include/sys/select.h /usr/include/sys/time.h
 testWindowSpeed.o: ../graphics/TestControl.h ../graphics/Control.h
 testWindowSpeed.o: ../graphics/DeviseTypes.h /usr/include/values.h
 testWindowSpeed.o: ../graphics/DevStatus.h ../graphics/VisualArg.h

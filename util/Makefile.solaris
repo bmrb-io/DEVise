@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.32  2000/01/13 23:03:53  wenger
+# Updated dependencies.
+#
 # Revision 1.31  1999/01/28 22:40:39  wenger
 # Updated solaris dependencies.
 #
@@ -43,19 +46,21 @@ depend:
 # DO NOT DELETE
 
 atof.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
-atof.o: /usr/include/assert.h /usr/include/ctype.h /usr/include/time.h
-atof.o: /usr/include/math.h /usr/include/sys/time.h /usr/include/sys/types.h
-atof.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-atof.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
+atof.o: /usr/include/sys/isa_defs.h /usr/include/assert.h
+atof.o: /usr/include/ctype.h /usr/include/time.h /usr/include/sys/types.h
+atof.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+atof.o: /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/math.h
 atof.o: ../graphics/Util.h /usr/include/stdio.h /usr/include/sys/va_list.h
+atof.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
 atof.o: /usr/include/string.h ../graphics/DeviseTypes.h /usr/include/values.h
 atof.o: ../graphics/DevStatus.h ../graphics/Exit.h ../graphics/DevError.h
 atof.o: /usr/include/errno.h /usr/include/sys/errno.h
 atof.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
 http_url.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-http_url.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
-http_url.o: /usr/include/unistd.h /usr/include/sys/types.h
-http_url.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+http_url.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
+http_url.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
+http_url.o: /usr/include/stdlib.h /usr/include/unistd.h
+http_url.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
 http_url.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 http_url.o: /usr/include/sys/time.h /usr/include/time.h
 http_url.o: /usr/include/sys/unistd.h /usr/include/string.h
@@ -64,13 +69,12 @@ http_url.o: ../graphics.new/machdep.h /usr/include/limits.h
 http_url.o: /usr/include/sys/param.h /usr/include/sys/wait.h
 http_url.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
 http_url.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-http_url.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-http_url.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-http_url.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-http_url.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-http_url.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-http_url.o: /usr/include/sys/machlock.h /usr/include/sys/sleepq.h
-http_url.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+http_url.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
+http_url.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+http_url.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+http_url.o: /usr/include/netdb.h /usr/include/netinet/in.h
+http_url.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+http_url.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
 http_url.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
 http_url.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 http_url.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
@@ -79,8 +83,17 @@ http_url.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
 http_url.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
 http_url.o: /usr/include/sys/netconfig.h
 mk3dstruct.o: /usr/include/math.h /usr/include/time.h
-mk3dstruct.o: /usr/include/sys/feature_tests.h /usr/include/stdlib.h
+mk3dstruct.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
+mk3dstruct.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
+mk3dstruct.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
+mk3dstruct.o: /usr/include/sys/time.h /usr/include/stdlib.h
 mkbinfile.o: /usr/include/math.h /usr/include/time.h
-mkbinfile.o: /usr/include/sys/feature_tests.h /usr/include/stdlib.h
+mkbinfile.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
+mkbinfile.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
+mkbinfile.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
+mkbinfile.o: /usr/include/sys/time.h /usr/include/stdlib.h
 mkparfile.o: /usr/include/math.h /usr/include/time.h
-mkparfile.o: /usr/include/sys/feature_tests.h /usr/include/stdlib.h
+mkparfile.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
+mkparfile.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
+mkparfile.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
+mkparfile.o: /usr/include/sys/time.h /usr/include/stdlib.h
