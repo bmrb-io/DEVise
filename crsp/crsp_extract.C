@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/11/20 22:39:58  jussi
+  Base tape offset received from calling program.
+
   Revision 1.5  1995/11/17 04:41:02  ravim
   Fix bug.
 
@@ -84,7 +87,8 @@ int crsp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
                                   malloc(num*sizeof(unsigned long int));
   int *spos_arr = (int *)malloc(num*sizeof(int));
 
-  for (int i = 0; i < num; i++) {
+  int i;
+  for(i = 0; i < num; i++) {
     spos_arr[i] = i * 2;
     // find offset for this security by looking through the index file
     offset_arr[i] = find_offset(idxfile, argv[i * 2]);
@@ -96,8 +100,8 @@ int crsp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
   fclose(idxfile);
 
   // Now sort offset_arr - bubble sort for now
-  for (i = 0; i < num; i++) {
-    for (int j = i+1; j < num; j++) {
+  for(i = 0; i < num; i++) {
+    for(int j = i+1; j < num; j++) {
       if (offset_arr[i] > offset_arr[j]) {
 	unsigned long int tmp = offset_arr[i];
 	offset_arr[i] = offset_arr[j];
@@ -117,11 +121,12 @@ int crsp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
   }
 
   // Extract every security in turn
-  for (i = 0; i < num; i++) {
+  for(i = 0; i < num; i++) {
 #ifdef DEBUG
     cout << "Seeking to offset " << offset_arr[spos_arr[i]] << endl;
 #endif
-    if (tape.seek(offset_arr[spos_arr[i]]) != offset_arr[spos_arr[i]]) {
+    if ((unsigned long)tape.seek(offset_arr[spos_arr[i]])
+	!= offset_arr[spos_arr[i]]) {
       cerr << "Error in seeking to tape position " << offset_arr[spos_arr[i]]
 	   << endl;
       perror("seek");

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/15 21:12:21  ravim
+  Fix bug in constructor - init pointers to NULL.
+
   Revision 1.3  1995/11/15 07:01:25  ravim
   Generates data file in print_security method.
 
@@ -158,7 +161,8 @@ int Security::get_next_rec()
 
 void Security::trim_string(char *str)
 {
-  for(int i = strlen(str) - 1; i >= 0; i--)
+  int i;
+  for(i = strlen(str) - 1; i >= 0; i--)
     if (!isspace(str[i]))
       break;
   str[i + 1] = 0;

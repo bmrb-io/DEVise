@@ -1,9 +1,9 @@
 /*
   ========================================================================
-  DEVise Software
+  DEVise Data Visualization Software
   (c) Copyright 1992-1995
   By the DEVise Development Group
-  University of Wisconsin at Madison
+  Madison, Wisconsin
   All Rights Reserved.
   ========================================================================
 
@@ -16,11 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/22 15:46:12  jussi
+  Added copyright message.
+
   Revision 1.2  1995/09/05 20:31:43  jussi
   Added CVS header.
 */
-
-// QueryProcTape.c
 
 #include <assert.h>
 
@@ -251,7 +252,8 @@ void QueryProcTape::AssociateMappingWithSortedTable(TDataMap *map)
   MappingInterp *imap = (MappingInterp *)map;
 
   // find if same association already exists
-  for(int i = 0; i < _numSortedTables; i++) {
+  int i;
+  for(i = 0; i < _numSortedTables; i++) {
     if (_sortedTables[i]->tdata == map->GetTData()
 	&& !strcmp(_sortedTables[i]->xCmd, imap->GetMappingCmd()->xCmd)) {
       printf("Associating mapping %08x with existing table %08x\n",
@@ -406,7 +408,8 @@ void QueryProcTape::InitQPTapeScatter(QPTapeData *qData)
 Boolean QueryProcTape::InitQueries()
 {
   Boolean hasInit = false;
-  for(int index= _queries->InitIterator(); _queries->More(index);) {
+  int index;
+  for(index= _queries->InitIterator(); _queries->More(index);) {
 
     QPTapeData *qData = (QPTapeData *)_queries->Next(index);
     if (qData->state == QPTape_InitState) {
