@@ -13,9 +13,16 @@
 */
 
 /*
+  Module for reading physical and logical schemas.
+ */
+
+/*
   $Id$
 
   $Log$
+  Revision 1.16  1996/03/26 21:14:28  jussi
+  String attributes are not inserted into the group directory.
+
   Revision 1.15  1996/03/05 23:25:03  jussi
   Open file now properly closed in ParseCatLogical().
 
@@ -81,6 +88,7 @@
 #include "Init.h"
 #include "Group.h"
 #include "GroupDir.h"
+#include "DeviseTypes.h"
 
 //#define DEBUG
 
@@ -97,25 +105,14 @@ static AttrList *attrs       = 0;
 
 static int _line = 0;
 
-static char *getTail(char *fname)
+/*------------------------------------------------------------------------------
+ * function: SetVal
+ * Set the value field in aval to the value equivalent of valstr based
+ * on the valtype.
+ */
+static void
+SetVal(AttrVal *aval, char *valstr, AttrType valtype)
 {
-  /* Either the character string after the last slash or the entire string
-     if there are no slashes in it */
-
-  char *ret = fname;
-  int len = strlen(fname);
-  
-  for(int i = 0; i < len; i++)
-    if (fname[i] == '/')
-      ret = &(fname[i + 1]);
-
-  return ret;
-}
-
-static void SetVal(AttrVal *aval, char *valstr, AttrType valtype)
-{
-  /* Set the value field in aval to the value equivalent of valstr based
-     on the valtype */
 
   double tempval;
 
@@ -143,8 +140,12 @@ static void SetVal(AttrVal *aval, char *valstr, AttrType valtype)
     }
 }
 
-/* Insert a new file name into file */
-static void InsertCatFile(char *name)
+/*------------------------------------------------------------------------------
+ * function: InsertCatFile
+ * Insert a new catalog file name into the list of catalog files.
+ */
+static void
+InsertCatFile(char *name)
 {
   if (!_catFiles){
     _catFiles = new char *[INIT_CAT_FILES];
@@ -161,7 +162,12 @@ static void InsertCatFile(char *name)
   _catFiles[_numCatFiles++] = name;
 }
 
-void CatFiles(int &numFiles, char **&fileNames)
+/*------------------------------------------------------------------------------
+ * function: CatFiles
+ * Get the catalog files.
+ */
+void
+CatFiles(int &numFiles, char **&fileNames)
 {
   numFiles = _numCatFiles;
   fileNames = _catFiles;
@@ -180,7 +186,12 @@ static struct {
   GenClassInfo *genInfo;
 } _genClasses[MAX_GENCLASSINFO];
 
-void RegisterGenClassInfo(char *source, GenClassInfo *gen)
+/*------------------------------------------------------------------------------
+ * function: RegisterGenClassInfo
+ * Register the TData class generator for a given source.
+ */
+void
+RegisterGenClassInfo(char *source, GenClassInfo *gen)
 {
   if (_numGenClass == MAX_GENCLASSINFO) {
     fprintf(stderr, "too many interpreted TData class generator\n");
@@ -190,22 +201,31 @@ void RegisterGenClassInfo(char *source, GenClassInfo *gen)
   _genClasses[_numGenClass++].genInfo = gen;
 }
 
-GenClassInfo *FindGenClass(char *source)
+/*------------------------------------------------------------------------------
+ * function: FindGenClass
+ * Find the TData generator for a given source.
+ */
+static GenClassInfo *
+FindGenClass(char *source)
 {
   for(int i = 0; i < _numGenClass; i++) {
     if (strcmp(_genClasses[i].source,source) == 0)
       return _genClasses[i].genInfo;
   }
 
-  fprintf(stderr,"Can't find TData generator for input sourrce %s\n",source);
+  fprintf(stderr,"Can't find TData generator for input source %s\n",source);
   Exit::DoExit(1);
   
   // keep compiler happy
   return 0;
 }
 
-/* Parse a character, Return -1 if can't parse */
-static Boolean ParseChar(char *instr, char &c)
+/*------------------------------------------------------------------------------
+ * function: ParseChar
+ * Parse a character, Return false if can't parse.
+ */
+static Boolean
+ParseChar(char *instr, char &c)
 {
   char *str = instr;
   if (*str == '\\') {
@@ -241,7 +261,12 @@ const int MAX_SEPARATORS = 50;
 static char separators[MAX_SEPARATORS];
 static int numSeparators;
 
-Boolean ParseSeparator(int numArgs, char **args)
+/*------------------------------------------------------------------------------
+ * function: ParseSeparator
+ * Parse a separator; return false if can't parse.
+ */
+static Boolean
+ParseSeparator(int numArgs, char **args)
 {
   if (numArgs >= MAX_SEPARATORS) {
     fprintf(stderr, "ParseCat: too many separators, max = %d\n",
@@ -258,11 +283,16 @@ Boolean ParseSeparator(int numArgs, char **args)
   return true;
 }
 
-/* Parse white space */
+
 static char whitespaces[MAX_SEPARATORS];
 static int numWhitespace;
 
-Boolean ParseWhiteSpace(int numArgs, char **args)
+/*------------------------------------------------------------------------------
+ * function: ParseWhiteSpace
+ * Parse whitespace; return false if can't parse.
+ */
+static Boolean
+ParseWhiteSpace(int numArgs, char **args)
 {
   if (numArgs >= MAX_SEPARATORS) {
     fprintf(stderr, "ParseCat: too many separators, max = %d\n",
@@ -279,7 +309,225 @@ Boolean ParseWhiteSpace(int numArgs, char **args)
   return true;
 }
 
-char *ParseCatOriginal(char *catFile){
+/*------------------------------------------------------------------------------
+ * function: ParseAttr
+ * Parse an attribute.
+ */
+static DevStatus
+ParseAttr(
+	int &	numArgs,
+	char **	args,
+	int &	recSize,
+	Boolean	hasFileType,
+	char *	fileType)
+{
+	int			attrLength;
+	AttrType	attrType;
+	DevStatus	result = StatusOk;
+
+	/* an attribute */
+	Boolean isSorted = false;
+	if (strcmp(args[0],"sorted") == 0)
+	{
+		/* sorted attribute */
+		isSorted = true;
+		if (strcmp(args[1],"attr") && strcmp(args[1],"compattr"))
+		{
+			fprintf(stderr,"'sorted' must be followed by 'attr' or 'compattr'\n");
+			result = StatusFailed;
+			return result;
+		}
+		args = &args[1];
+		numArgs--;
+		isSorted = true;
+	}
+
+	Boolean isComposite;
+	if (strcmp(args[0],"attr") == 0)
+		isComposite = false;
+	else isComposite = true;
+
+	/* get attr type */
+	int attrNum = 0;
+	if (numArgs < 3)
+	{
+		fprintf(stderr,"attr needs at least 3 args\n");
+		result = StatusFailed;
+		return result;
+	}
+
+	if (strcmp(args[2],"int") == 0)
+	{
+		attrType = IntAttr;
+		attrLength = sizeof(int);
+		attrNum = 3;
+	}
+	else if (strcmp(args[2],"double") == 0)
+	{
+		attrType = DoubleAttr;
+		attrLength = sizeof(double);
+		attrNum = 3;
+	}
+	else if (strcmp(args[2],"float") == 0)
+	{
+		attrType = FloatAttr;
+		attrLength = sizeof(float);
+		attrNum = 3;
+	}
+	else if (strcmp(args[2],"date") == 0)
+	{
+		attrType = DateAttr;
+		attrLength = sizeof(long);
+		attrNum = 3;
+	}
+	else if (strcmp(args[2],"string") == 0)
+	{
+		attrType = StringAttr;
+		if (numArgs < 4)
+		{
+			fprintf(stderr,"string attr needs length\n");
+			result = StatusFailed;
+			return result;
+		}
+		attrLength = atoi(args[3]);
+		attrNum = 4;
+	}
+	else
+	{
+		fprintf(stderr,"unknown type %s\n",args[2]);
+		result = StatusFailed;
+		return result;
+	}
+
+	char *attrName = CopyString(args[1]);
+
+	Boolean hasMatchVal = false;
+	AttrVal matchVal;
+	Boolean hasHi = false;
+	Boolean hasLo = false;
+	AttrVal hiVal, loVal;
+
+	if ((attrNum < numArgs) && (!strcmp(args[attrNum], "=")))
+	{
+		attrNum++;
+		if (attrNum > numArgs-1)
+		{
+	    	fprintf(stderr,"expecting default value after '='\n");
+			result = StatusFailed;
+			return result;
+		}
+		hasMatchVal = true;
+		SetVal(&matchVal, args[attrNum], attrType);
+		attrNum++;
+	}
+			
+	if ((attrNum < numArgs) && 
+	    (strcmp(args[attrNum], "hi")) && 
+	    (strcmp(args[attrNum], "lo"))) 
+	{
+		fprintf(stderr, "Unrecognized chars in an attribute definition line\n");
+		result = StatusFailed;
+		return result;
+	} 
+	else if (attrNum < numArgs)
+	{
+		if (!strcmp(args[attrNum], "hi"))
+		{
+	    	hasHi = true;
+	    	attrNum++;
+	    	if (attrNum >= numArgs)
+	    	{
+	    		fprintf(stderr, "Expecting value after keyword hi\n");
+				result = StatusFailed;
+				return result;
+			}
+			SetVal(&hiVal, args[attrNum], attrType);
+			attrNum++;
+		}
+			  
+		if ((attrNum < numArgs) && 
+			(!strcmp(args[attrNum], "lo")))
+		{
+			hasLo = true;
+			attrNum++;
+			if (attrNum >= numArgs)
+			{
+				fprintf(stderr, "Expecting value after keyword lo\n");
+				return result;
+			}
+			SetVal(&loVal, args[attrNum], attrType);
+			attrNum++;
+		}
+
+		if (attrNum < numArgs)
+		{
+			fprintf(stderr, "Unrecognized chars in an attribute definition line\n");
+			result = StatusFailed;
+			return result;
+		} 
+	}
+
+	if (attrs == NULL)
+	{
+	    if (!hasFileType )
+		{
+	        fprintf(stderr,"no file type yet\n");
+			result = StatusFailed;
+			return result;
+		}
+		attrs = new AttrList(fileType);
+	}
+
+	int roundAmount = 0;
+	switch(attrType)
+	{
+	  case FloatAttr:
+	    roundAmount = sizeof(float);
+	    break;
+	  case DoubleAttr:
+	    roundAmount = sizeof(double);
+	    break;
+	  case StringAttr:
+	    roundAmount = sizeof(char);
+	    break;
+	  case DateAttr:
+	    roundAmount = sizeof(time_t);
+	    break;
+	  case IntAttr:
+	    roundAmount = sizeof(int);
+	    break;
+	  default:
+	    fprintf(stderr,"ParseCat: don't know type\n");
+	    Exit::DoExit(2);
+	}
+
+	if (recSize/roundAmount*roundAmount != recSize)
+	{
+		/* round to rounding boundaries */
+		recSize = (recSize/roundAmount+1)*roundAmount;
+	}
+
+	attrs->InsertAttr(numAttrs, attrName, recSize,
+			  attrLength, attrType, hasMatchVal,
+			  &matchVal, isComposite, isSorted,
+			  hasHi, &hiVal, hasLo, &loVal);
+	numAttrs++;
+	recSize += attrLength;
+
+	delete attrName;
+
+	return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: ParseCatPhysical
+ * Read and parse a physical schema from a catalog file.
+ * physicalOnly should be true if only a physical schema (not a physical
+ * schema and a logical schema) is being read.
+ */
+static char *
+ParseCatPhysical(char *catFile, Boolean physicalOnly)
+{
 	FILE *file= NULL;
 	Boolean hasSource = false;
 	char *source = 0; /* source of data. Which interpreter we use depends
@@ -299,10 +547,10 @@ char *ParseCatOriginal(char *catFile){
 	int recSize = 0;
 	char *sep = 0;
 	int numSep = 0;
-	int attrLength;
-	AttrType attrType;
 	char *commentString = 0;
 	Group *currgrp = NULL;
+
+	if (attrs != NULL) delete attrs;
 	attrs = NULL;
 	numAttrs = 0;
 
@@ -315,10 +563,9 @@ char *ParseCatOriginal(char *catFile){
 		goto error;
 	}
 	_line = 0;
-	while (fgets(buf,LINESIZE, file) != NULL) {
-		int len = strlen(buf);
-		if (len > 0 && buf[len-1] == '\n')
-			buf[len-1] = '\0';
+	while (fgets(buf,LINESIZE, file) != NULL)
+	{
+		StripTrailingNewline(buf);
 
 		_line++;
 		/*
@@ -338,12 +585,16 @@ char *ParseCatOriginal(char *catFile){
 #endif
 
 		if (strcmp(args[0],"end")== 0)
+		{
 			break;
-		else if (strcmp(args[0],"source") == 0){
+		}
+		else if (strcmp(args[0],"source") == 0)
+		{
 			source = CopyString(args[1]);
 			hasSource = true;
 		}
-		else if (strcmp(args[0],"separator")== 0){
+		else if (strcmp(args[0],"separator")== 0)
+		{
 			/* parse separator */
 			hasSeparator = ParseSeparator(numArgs, args);
 			if (!hasSeparator){
@@ -351,11 +602,13 @@ char *ParseCatOriginal(char *catFile){
 				goto error;
 			}
 		}
-		else if (strcmp(args[0],"whitespace")== 0){
+		else if (strcmp(args[0],"whitespace")== 0)
+		{
 			/* parse separator */
 			hasWhitespace = ParseWhiteSpace(numArgs, args);
 		}
-		else if (strcmp(args[0],"comment") == 0){
+		else if (strcmp(args[0],"comment") == 0)
+		{
 			if (numArgs != 2){
 				fprintf(stderr,"can't parse comment string\n");
 				goto error;
@@ -363,222 +616,75 @@ char *ParseCatOriginal(char *catFile){
 			hasComment = true;
 			commentString = CopyString(args[1]);
 		}
-		else if (strcmp(args[0],"type") == 0){
-			if (numArgs != 3){
+		else if (strcmp(args[0],"type") == 0)
+		{
+			if (numArgs != 3)
+			{
 				fprintf(stderr,"can't parse file type need 3 args\n");
 				goto error;
 			}
-			if (strcmp(args[2],"ascii") == 0){
+			if (strcmp(args[2],"ascii") == 0)
+			{
 				isAscii = true;
 			}
-			else if (strcmp(args[2],"binary") == 0){
+			else if (strcmp(args[2],"binary") == 0)
+			{
 				isAscii = false;
 			}
-			else {
+			else
+			{
 				fprintf(stderr,"don't know file type %s, must be ascii or binary", args[2]);
 				goto error;
 			}
 			fileType = CopyString(args[1]);
 			hasFileType = true;
-			/* Let's add the schema name to the directory now */
-			/* First check if the schema is already loaded, in
-			   which case we do nothing more */
-			if (gdir->find_entry(getTail(catFile)))
-			  GLoad = false;
-			else
+			if (physicalOnly)
 			{
-			  printf("Adding schema %s to directory \n", getTail(catFile));
-			  gdir->add_entry(getTail(catFile));
-			  GLoad = true;
-			}
-		} else if (strcmp(args[0],"attr") == 0 ||
-			   strcmp(args[0],"compattr") == 0 ||
-			   strcmp(args[0],"sorted") == 0) {
-			/* an attribute */
-			Boolean isSorted = false;
-			if (strcmp(args[0],"sorted") == 0) {
-				/* sorted attribute */
-				isSorted = true;
-				if (strcmp(args[1],"attr") && strcmp(args[1],"compattr")){
-					fprintf(stderr,"'sorted' must be followed by 'attr' or 'compattr'\n");
-					goto error;
+				/* Let's add the schema name to the directory now */
+				/* First check if the schema is already loaded, in
+				   which case we do nothing more */
+				if (gdir->find_entry(StripPath(catFile)))
+				{
+				  GLoad = false;
 				}
-				args = &args[1];
-				numArgs--;
-				isSorted = true;
-			}
-
-			Boolean isComposite;
-			if (strcmp(args[0],"attr") == 0)
-				isComposite = false;
-			else isComposite = true;
-
-			/* get attr type */
-			int attrNum = 0;
-			if (numArgs < 3){
-				fprintf(stderr,"attr needs at least 3 args\n");
-				goto error;
-			}
-			if (strcmp(args[2],"int") == 0){
-				attrType = IntAttr;
-				attrLength = sizeof(int);
-				attrNum = 3;
-			}
-			else if (strcmp(args[2],"double") == 0){
-				attrType = DoubleAttr;
-				attrLength = sizeof(double);
-				attrNum = 3;
-			}
-			else if (strcmp(args[2],"float") == 0){
-				attrType = FloatAttr;
-				attrLength = sizeof(float);
-				attrNum = 3;
-			}
-			else if (strcmp(args[2],"date") == 0){
-				attrType = DateAttr;
-				attrLength = sizeof(long);
-				attrNum = 3;
-			}
-			else if (strcmp(args[2],"string") == 0){
-				attrType = StringAttr;
-				if (numArgs < 4){
-					fprintf(stderr,"string attr needs length\n");
-					goto error;
+				else
+				{
+				  printf("Adding schema %s to directory \n", StripPath(catFile));
+				  gdir->add_entry(StripPath(catFile));
+				  GLoad = true;
 				}
-				attrLength = atoi(args[3]);
-				attrNum = 4;
 			}
-			else {
-				fprintf(stderr,"unknown type %s\n",args[2]);
-				goto error;
-			}
-
-			char *attrName = CopyString(args[1]);
-
-			Boolean hasMatchVal = false;
-			AttrVal matchVal;
-			Boolean hasHi = false;
-			Boolean hasLo = false;
-			AttrVal hiVal, loVal;
-
-			if ((attrNum < numArgs) && (!strcmp(args[attrNum], "=")))
-			{
-			  attrNum++;
-			  if (attrNum > numArgs-1){
-			      fprintf(stderr,"expecting default value after '='\n");
-			      goto error;
-			    }
-			  hasMatchVal = true;
-			  SetVal(&matchVal, args[attrNum], attrType);
-			  attrNum++;
-			}
-			
-			if ((attrNum < numArgs) && 
-			    (strcmp(args[attrNum], "hi")) && 
-			    (strcmp(args[attrNum], "lo"))) 
-			{
-			  fprintf(stderr, "Unrecognized chars in an attribute definition line\n");
-			  goto error;
-			} 
-			else if (attrNum < numArgs)
-			{
-			  if (!strcmp(args[attrNum], "hi"))
-			  {
-			    hasHi = true;
-			    attrNum++;
-			    if (attrNum >= numArgs)
-			    {
-			      fprintf(stderr, "Expecting value after keyword hi\n");
-			      goto error;
-			    }
-			    SetVal(&hiVal, args[attrNum], attrType);
-			    attrNum++;
-			  }
-			  
-			  if ((attrNum < numArgs) && 
-			      (!strcmp(args[attrNum], "lo")))
-			  {
-			    hasLo = true;
-			    attrNum++;
-			    if (attrNum >= numArgs)
-			    {
-			      fprintf(stderr, "Expecting value after keyword lo\n");
-			      goto error;
-			    }
-			    SetVal(&loVal, args[attrNum], attrType);
-			    attrNum++;
-			  }
-
-			  if (attrNum < numArgs)
-			  {
-			    fprintf(stderr, "Unrecognized chars in an attribute definition line\n");
-			    goto error;
-			  } 
-			}
-
-		if (attrs == NULL){
-		    if (!hasFileType ){
-		        fprintf(stderr,"no file type yet\n");
-			goto error;
-		      }
-		    attrs = new AttrList(fileType);
 		}
-
-		int roundAmount = 0;
-		switch(attrType){
-		  case FloatAttr:
-		    roundAmount = sizeof(float);
-		    break;
-		  case DoubleAttr:
-		    roundAmount = sizeof(double);
-		    break;
-		  case StringAttr:
-		    roundAmount = sizeof(char);
-		    break;
-		  case DateAttr:
-		    roundAmount = sizeof(time_t);
-		    break;
-		  case IntAttr:
-		    roundAmount = sizeof(int);
-		    break;
-		  default:
-		    fprintf(stderr,"ParseCat: don't know type\n");
-		    Exit::DoExit(2);
-		  }
-		if (recSize/roundAmount*roundAmount != recSize){
-		    /* round to rounding boundaries */
-		    recSize = (recSize/roundAmount+1)*roundAmount;
-		  }
-		attrs->InsertAttr(numAttrs, attrName, recSize,
-				  attrLength, attrType, hasMatchVal,
-				  &matchVal, isComposite, isSorted,
-				  hasHi, &hiVal, hasLo, &loVal);
-		numAttrs++;
-		recSize += attrLength;
-
-		delete attrName;
-		      }
-	else if (strcmp(args[0], "group") == 0)
+		else if (strcmp(args[0],"attr") == 0 ||
+			   strcmp(args[0],"compattr") == 0 ||
+			   strcmp(args[0],"sorted") == 0)
+		{
+			if (ParseAttr(numArgs, args, recSize, hasFileType, fileType) !=
+				StatusOk) goto error;
+		}
+		else if (physicalOnly && !strcmp(args[0], "group"))
 		{
 		  if (GLoad) {
 		      if (!currgrp)		/* Top level */
 		      {
 			currgrp = new Group(args[1], NULL, TOPGRP);
-			gdir->add_topgrp(getTail(catFile), currgrp);
+			gdir->add_topgrp(StripPath(catFile), currgrp);
 		      }
 		      else
 			currgrp = currgrp->insert_group(args[1]);
 		    }
 		}
-		else if (strcmp(args[0], "item") == 0)
+		else if (physicalOnly && !strcmp(args[0], "item"))
 		{
-		  if (GLoad) {
+		  if (GLoad)
+		  {
 		      currgrp->insert_item(args[1]);
 		  }
 		}
-		else if (strcmp(args[0], "endgroup") == 0)
+		else if (physicalOnly && !strcmp(args[0], "endgroup"))
 		{
-		  if (GLoad) {
+		  if (GLoad)
+		  {
 		      if (!currgrp)
 		      {
 			fprintf(stderr, "Group begins and ends not matched\n");
@@ -587,11 +693,12 @@ char *ParseCatOriginal(char *catFile){
 		      currgrp = currgrp->parent_group();
 		    }
 		}
-	else {
-	    fprintf(stderr,"ParseCat: unknown command %s\n", args[0]);
-	    goto error;
+		else
+		{
+	    	fprintf(stderr,"ParseCat: unknown command %s\n", args[0]);
+	    	goto error;
+		}
 	}
-	      }
 
 	/* round record size */
 	if (recSize/8*8 != recSize){
@@ -611,16 +718,19 @@ char *ParseCatOriginal(char *catFile){
 
 	int i,j;
 
+	if (physicalOnly)
+	{
 	/* If no group has been defined, create a default group */
-	if (GLoad && (gdir->num_topgrp(getTail(catFile)) == 0))
+	if (GLoad && (gdir->num_topgrp(StripPath(catFile)) == 0))
 	{
 	  Group *newgrp = new Group("__default", NULL, TOPGRP);
-	  gdir->add_topgrp(getTail(catFile), newgrp);
+	  gdir->add_topgrp(StripPath(catFile), newgrp);
 	  for (i=0; i < numAttrs; i++) {
 	    AttrInfo *iInfo = attrs->Get(i);
 	    if (iInfo->type != StringAttr)
 	      newgrp->insert_item(iInfo->name);
 	  }
+	}
 	}
 
 	/* test attribute names */
@@ -670,7 +780,14 @@ char *ParseCatOriginal(char *catFile){
 	  commentString = "#";
 	  
 	if (hasSource){
-		printf("source: %s\n",source);
+		if (physicalOnly)
+		{
+			printf("source: %s\n",source);
+		}
+		else
+		{
+			printf("schema: %s\n",source);
+		}
 		GenClassInfo *genInfo = FindGenClass(source);
 		ControlPanel::RegisterClass(
 			genInfo->Gen(source, isAscii, fileType,
@@ -693,7 +810,7 @@ char *ParseCatOriginal(char *catFile){
 
 	fclose(file);
 
-	InsertCatFile(CopyString(catFile));
+	if (physicalOnly) InsertCatFile(CopyString(catFile));
 
 	if (Init::PrintTDataAttr())
 		attrs->Print();
@@ -709,384 +826,12 @@ error:
 	return NULL;
 }
 
-char *ParseCatPhysical(char *catFile){
-	FILE *file= NULL;
-	Boolean hasSource = false;
-	char *source = 0; /* source of data. Which interpreter we use depends
-			     on this */
-
-	char buf[LINESIZE];
-	Boolean hasFileType = false;
-	Boolean hasSeparator = false;
-	Boolean hasWhitespace = false;
-	Boolean hasComment = false;
-
-	Boolean isAscii = false;
-	char *fileType = 0;
-	int numArgs;
-	char **args;
-	int recSize = 0;
-	char *sep = 0;
-	int numSep = 0;
-	int attrLength;
-	AttrType attrType;
-	char *commentString = 0;
-	attrs = NULL;
-	numAttrs = 0;
-
-	/*
-	printf("opening file %s\n", catFile);
-	*/
-	file = fopen(catFile, "r");
-	if (file == NULL){
-		fprintf(stderr,"ParseCat: can't open file %s\n", catFile);
-		goto error;
-	}
-	_line = 0;
-	while (fgets(buf,LINESIZE, file) != NULL) {
-		int len = strlen(buf);
-		if (len > 0 && buf[len-1] == '\n')
-			buf[len-1] = '\0';
-
-		_line++;
-		/*
-		printf("getting line %s\n", buf);
-		*/
-		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r')
-			continue;
-		Parse(buf,numArgs, args);
-		if (numArgs == 0)
-			continue;
-
-#ifdef DEBUG
-		printf("parse: ");
-		for(int ind = 0; ind < numArgs; ind++)
-		  printf("'%s' ", args[ind]);
-		printf("\n");
-#endif
-
-		if (strcmp(args[0],"end")== 0)
-			break;
-		else if (strcmp(args[0],"source") == 0){
-			source = CopyString(args[1]);
-			hasSource = true;
-		}
-		else if (strcmp(args[0],"separator")== 0){
-			/* parse separator */
-			hasSeparator = ParseSeparator(numArgs, args);
-			if (!hasSeparator){
-				fprintf(stderr,"can't parse separator\n");
-				goto error;
-			}
-		}
-		else if (strcmp(args[0],"whitespace")== 0){
-			/* parse separator */
-			hasWhitespace = ParseWhiteSpace(numArgs, args);
-		}
-		else if (strcmp(args[0],"comment") == 0){
-			if (numArgs != 2){
-				fprintf(stderr,"can't parse comment string\n");
-				goto error;
-			}
-			hasComment = true;
-			commentString = CopyString(args[1]);
-		}
-		else if (strcmp(args[0],"type") == 0){
-			if (numArgs != 3){
-				fprintf(stderr,"can't parse file type need 3 args\n");
-				goto error;
-			}
-			if (strcmp(args[2],"ascii") == 0){
-				isAscii = true;
-			}
-			else if (strcmp(args[2],"binary") == 0){
-				isAscii = false;
-			}
-			else {
-				fprintf(stderr,"don't know file type %s, must be ascii or binary", args[2]);
-				goto error;
-			}
-			fileType = CopyString(args[1]);
-			hasFileType = true;
-		} else if (strcmp(args[0],"attr") == 0 ||
-			   strcmp(args[0],"compattr") == 0 ||
-			   strcmp(args[0],"sorted") == 0) {
-			/* an attribute */
-			Boolean isSorted = false;
-			if (strcmp(args[0],"sorted") == 0) {
-				/* sorted attribute */
-				isSorted = true;
-				if (strcmp(args[1],"attr") && strcmp(args[1],"compattr")){
-					fprintf(stderr,"'sorted' must be followed by 'attr' or 'compattr'\n");
-					goto error;
-				}
-				args = &args[1];
-				numArgs--;
-				isSorted = true;
-			}
-
-			Boolean isComposite;
-			if (strcmp(args[0],"attr") == 0)
-				isComposite = false;
-			else isComposite = true;
-
-			/* get attr type */
-			int attrNum = 0;
-			if (numArgs < 3){
-				fprintf(stderr,"attr needs at least 3 args\n");
-				goto error;
-			}
-			if (strcmp(args[2],"int") == 0){
-				attrType = IntAttr;
-				attrLength = sizeof(int);
-				attrNum = 3;
-			}
-			else if (strcmp(args[2],"double") == 0){
-				attrType = DoubleAttr;
-				attrLength = sizeof(double);
-				attrNum = 3;
-			}
-			else if (strcmp(args[2],"float") == 0){
-				attrType = FloatAttr;
-				attrLength = sizeof(float);
-				attrNum = 3;
-			}
-			else if (strcmp(args[2],"date") == 0){
-				attrType = DateAttr;
-				attrLength = sizeof(long);
-				attrNum = 3;
-			}
-			else if (strcmp(args[2],"string") == 0){
-				attrType = StringAttr;
-				if (numArgs < 4){
-					fprintf(stderr,"string attr needs length\n");
-					goto error;
-				}
-				attrLength = atoi(args[3]);
-				attrNum = 4;
-			}
-			else {
-				fprintf(stderr,"unknown type %s\n",args[2]);
-				goto error;
-			}
-
-			char *attrName = CopyString(args[1]);
-
-			Boolean hasMatchVal = false;
-			AttrVal matchVal;
-			Boolean hasHi = false;
-			Boolean hasLo = false;
-			AttrVal hiVal, loVal;
-
-			if ((attrNum < numArgs) && (!strcmp(args[attrNum], "=")))
-			{
-			  attrNum++;
-			  if (attrNum > numArgs-1){
-			      fprintf(stderr,"expecting default value after '='\n");
-			      goto error;
-			    }
-			  hasMatchVal = true;
-			  SetVal(&matchVal, args[attrNum], attrType);
-			  attrNum++;
-			}
-
-			if ((attrNum < numArgs) && 
-			    (strcmp(args[attrNum], "hi")) && 
-			    (strcmp(args[attrNum], "lo"))) 
-			{
-			  fprintf(stderr, "Unrecognized chars in an attribute definition line\n");
-			  goto error;
-			} 
-			else if (attrNum < numArgs)
-			{
-			  if (!strcmp(args[attrNum], "hi"))
-			  {
-			    hasHi = true;
-			    attrNum++;
-			    if (attrNum >= numArgs)
-			    {
-			      fprintf(stderr, "Expecting value after keyword hi\n");
-			      goto error;
-			    }
-			    SetVal(&hiVal, args[attrNum], attrType);
-			    attrNum++;
-			  }
-			  
-			  if ((attrNum < numArgs) && 
-			      (!strcmp(args[attrNum], "lo")))
-			  {
-			    hasLo = true;
-			    attrNum++;
-			    if (attrNum >= numArgs)
-			    {
-			      fprintf(stderr, "Expecting value after keyword lo\n");
-			      goto error;
-			    }
-			    SetVal(&loVal, args[attrNum], attrType);
-			    attrNum++;
-			  }
-
-			  if (attrNum < numArgs)
-			  {
-			    fprintf(stderr, "Unrecognized chars in an attribute definition line\n");
-			    goto error;
-			  } 
-			}
-		      
-
-		if (attrs == NULL){
-		    if (!hasFileType ){
-			fprintf(stderr,"no file type yet\n");
-			goto error;
-		      }
-		    attrs = new AttrList(fileType);
-		  }
-
-		int roundAmount = 0;
-		switch(attrType){
-		  case FloatAttr:
-		    roundAmount = sizeof(float);
-		    break;
-		  case DoubleAttr:
-		    roundAmount = sizeof(double);
-		    break;
-		  case StringAttr:
-		    roundAmount = sizeof(char);
-		    break;
-		  case DateAttr:
-		    roundAmount = sizeof(time_t);
-		    break;
-		  case IntAttr:
-		    roundAmount = sizeof(int);
-		    break;
-		  default:
-		    fprintf(stderr,"ParseCat: don't know type\n");
-		    Exit::DoExit(2);
-		  }
-		if (recSize/roundAmount*roundAmount != recSize){
-		    /* round to rounding boundaries */
-		    recSize = (recSize/roundAmount+1)*roundAmount;
-		  }
-		attrs->InsertAttr(numAttrs, attrName, recSize,
-				  attrLength, attrType, hasMatchVal,
-				  &matchVal, isComposite, isSorted,
-				  hasHi, &hiVal, hasLo, &loVal);
-		numAttrs++;
-		recSize += attrLength;
-
-		delete attrName;
-		      }
-	else {
-	    fprintf(stderr,"ParseCat: unknown command %s\n", args[0]);
-	    goto error;
-	  }
-	      }
-
-	/* round record size */
-	if (recSize/8*8 != recSize){
-		/* round to rounding boundaries */
-		recSize = (recSize/8+1)*8;
-	}
-
-	if (!hasFileType ){
-		fprintf(stderr,"ParseCat: no file type specified\n");
-		goto error;
-	}
-
-	if (numAttrs == 0){
-		fprintf(stderr,"ParseCat: no attribute specified\n");
-		goto error;
-	}
-
-	int i,j;
-
-	/* test attribute names */
-	for (i=0 ; i < numAttrs-1;i++) {
-		AttrInfo *iInfo = attrs->Get(i);
-		if (strcmp(iInfo->name,"recId") == 0){
-			fprintf(stderr,"attribute name 'recId' is reserved\n");
-			goto error;
-		}
-		for (j=i+1; j < numAttrs; j++){
-			AttrInfo *jInfo = attrs->Get(j);
-			if (strcmp(iInfo->name,jInfo->name)== 0){
-				fprintf(stderr,"ParseCat:duplicate attribute name %s\n",
-					iInfo->name);
-				goto error;
-			}
-		}
-	}
-
-	if (isAscii) {
-	  if (hasSeparator && hasWhitespace){
-	    fprintf(stderr,"can't specify both whitespace and separator\n");
-	    goto error;
-	  }
-	  if (!(hasSeparator || hasWhitespace)){
-	    fprintf(stderr,"must specify either whitespace or separator\n");
-	    goto error;
-	  }
-	}
-
-	if (hasSeparator) {
-	  sep = new char[numSeparators];
-	  for (i=0; i < numSeparators; i++){
-	    sep[i] = separators[i];
-	  }
-	  numSep = numSeparators;
-	}
-	if (hasWhitespace) {
-	  sep = new char[numWhitespace];
-	  for (i=0; i < numWhitespace; i++){
-	    sep[i] = whitespaces[i];
-	  }
-	  numSep = numWhitespace;
-	}
-	
-	if (!hasComment)
-	  commentString = "#";
-	
-	if (hasSource){
-		printf("schema: %s\n",source);
-		GenClassInfo *genInfo = FindGenClass(source);
-		ControlPanel::RegisterClass(
-			genInfo->Gen(source, isAscii, fileType,
-			attrs,recSize,sep, numSep, hasSeparator, commentString),
-			true);
-	}
-	else {
-		if (isAscii) {
-		  printf("default source, recSize %d\n",recSize);
-		  ControlPanel::RegisterClass(
-		     new TDataAsciiInterpClassInfo(fileType,
-			attrs,recSize,sep, numSep, hasSeparator,
-			commentString), true);
-		} else {
-		  printf("default binary source, recSize %d\n",recSize);
-		  ControlPanel::RegisterClass(
-		     new TDataBinaryInterpClassInfo(fileType, attrs, recSize),
-					      true);
-		}
-	}
-
-	fclose(file);
-
-	if (Init::PrintTDataAttr())
-		attrs->Print();
-
-	return fileType;
-
-error:
-	if (file != NULL)
-		fclose(file);
-
-	if (attrs != NULL)
-		delete attrs;
-	fprintf(stderr,"error at line %d\n", _line);
-	return NULL;
-}
-
-char *ParseCatLogical(char *catFile, char *sname)
+/*------------------------------------------------------------------------------
+ * function: ParseCatLogical
+ * Read and parse a logical schema from a catalog file.
+ */
+static char *
+ParseCatLogical(char *catFile, char *sname)
 {
   Group *currgrp = NULL;
   FILE *file= NULL;
@@ -1113,19 +858,17 @@ char *ParseCatLogical(char *catFile, char *sname)
   /* First check if the schema is already loaded, in
      which case we do nothing more */
 
-  if (gdir->find_entry(getTail(catFile)))
+  if (gdir->find_entry(StripPath(catFile)))
     GLoad = false;
   else
   {
-    printf("Adding schema %s to directory \n", getTail(catFile));
-    gdir->add_entry(getTail(catFile));
+    printf("Adding schema %s to directory \n", StripPath(catFile));
+    gdir->add_entry(StripPath(catFile));
     GLoad = true;
   }
  
   while (fgets(buf,LINESIZE, file) != NULL) {
-      int len = strlen(buf);
-      if (len > 0 && buf[len-1] == '\n')
-	buf[len-1] = '\0';
+	  StripTrailingNewline(buf);
       
       _line++;
       /*
@@ -1150,7 +893,7 @@ char *ParseCatLogical(char *catFile, char *sname)
 	    if (!currgrp)		/* Top level */
 	    {
 	      currgrp = new Group(args[1], NULL, TOPGRP);
-	      gdir->add_topgrp(getTail(catFile), currgrp);
+	      gdir->add_topgrp(StripPath(catFile), currgrp);
 	    }
 	    else
 	      currgrp = currgrp->insert_group(args[1]);
@@ -1180,10 +923,10 @@ char *ParseCatLogical(char *catFile, char *sname)
   }
 
   /* If no group has been defined, create a default group */
-  if (GLoad && (gdir->num_topgrp(getTail(catFile)) == 0))
+  if (GLoad && (gdir->num_topgrp(StripPath(catFile)) == 0))
   {
     Group *newgrp = new Group("__default", NULL, TOPGRP);
-    gdir->add_topgrp(getTail(catFile), newgrp);
+    gdir->add_topgrp(StripPath(catFile), newgrp);
     for(int i = 0; i < numAttrs; i++) {
       AttrInfo *iInfo = attrs->Get(i);
       if (iInfo->type != StringAttr)
@@ -1203,33 +946,47 @@ char *ParseCatLogical(char *catFile, char *sname)
   return NULL;
 }
 
-char *ParseCat(char *catFile) 
+/*------------------------------------------------------------------------------
+ * function: ParseCat
+ * Read and parse a catalog file (reads in any schemas referenced by
+ * the catalog file).
+ */
+char *
+ParseCat(char *catFile) 
 {
   // Check the first line of catFile - if it is "physical abc",
-  // call ParseCatPhysical (abc) and then ParseCatLogical(catFile)
-  // Otherwise, simply call ParseCatPhysical(catFile).
+  // call ParseCatPhysical(abc, false) and then ParseCatLogical(catFile)
+  // Otherwise, simply call ParseCatPhysical(catFile, true).
+
+  char *	result = NULL;
 
   FILE *fp = fopen(catFile, "r");
-  if (!fp) {
+  if (!fp)
+  {
     fprintf(stderr,"ParseCat: can't open file %s\n", catFile);
-    return NULL;
+  }
+  else
+  {
+    char buf[100];
+    if (fscanf(fp, "%s", buf) != 1 || strcmp(buf, "physical"))
+	{
+      fclose(fp);
+      result = ParseCatPhysical(catFile, true);
+    }
+	else
+	{
+      // Read in the file name
+      fscanf(fp, "%s", buf);
+      fclose(fp);
+
+      char *sname;
+      if (!(sname = ParseCatPhysical(buf, false))) result = NULL;
+
+      InsertCatFile(CopyString(catFile));
+
+      result = ParseCatLogical(catFile, sname);
+	}
   }
 
-  char buf[100];
-  if (fscanf(fp, "%s", buf) != 1 || strcmp(buf, "physical")) {
-    fclose(fp);
-    return ParseCatOriginal(catFile);
-  }
-
-  // Read in the file name
-  fscanf(fp, "%s", buf);
-  fclose(fp);
-
-  char *sname;
-  if (!(sname = ParseCatPhysical(buf)))
-    return NULL;
-
-  InsertCatFile(CopyString(catFile));
-
-  return ParseCatLogical(catFile, sname);
+  return result;
 }

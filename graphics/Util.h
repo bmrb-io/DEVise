@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/28 21:29:02  jussi
+  Got rid of strings.h and stuck with string.h.
+
   Revision 1.3  1995/09/22 22:07:23  jussi
   Fixed problem with very high-precision numbers. Atoi of the decimal
   part overflowed, while counting the number of digits after the
@@ -51,6 +54,15 @@ inline char *StripPath(char *name) {
   if ((last = strrchr(name,'/')) == (char *)NULL)
     return name;
   return last + 1;
+}
+
+/* Strip the trailing newline (if any) from a string. */
+inline void StripTrailingNewline(char *string)
+{
+	int		len = strlen(string);
+	if (len > 0 && string[len-1] == '\n') string[len-1] = '\0';
+
+	return;
 }
 
 /* convert double to string */

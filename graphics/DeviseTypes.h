@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 21:12:39  jussi
+  Added/update CVS header.
+*/
 
 #ifndef DeviseTypes_h
 #define DeviseTypes_h
@@ -82,6 +85,15 @@ public:
 			answer = d;
 		return answer;
 	};
+};
+
+enum DevStatus {
+	StatusInvalid = 0,
+	StatusOk = 10000,
+	StatusFailed,
+	StatusWarn,
+	StatusCancel,
+	StatusWarnCancel
 };
 
 #endif
