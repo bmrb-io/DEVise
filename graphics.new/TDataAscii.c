@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1996/07/12 23:42:51  jussi
+  Derived data sources are compiled in only for non-ATTRPROJ executables.
+
   Revision 1.34  1996/07/12 21:54:00  jussi
   Buffer data sources are not checkpointed.
 
@@ -516,8 +519,10 @@ void TDataAscii::Initialize()
   if (!CheckFileStatus())
     return;
 
-  if (_data->isBuf())
+  if (_data->isBuf()) {
+      BuildIndex();
       return;
+  }
 
   Boolean fileOpened = false;
 
