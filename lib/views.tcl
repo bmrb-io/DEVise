@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1996/06/15 14:43:46  jussi
+#  Added yuc's changes for 3D support.
+#
 #  Revision 1.10  1996/06/15 14:26:28  jussi
 #  Added DoSetFgColor procedure.
 #
@@ -1227,6 +1230,7 @@ proc DoToggleStatistics {} {
     # corr. stat is to be displayed. Further, since "count" which is the 
     # fourth stat cannot currently be displayed meaningfully on the graph
     # always append a 0.
+
     set statcount 0
     set stat $statmean$statmax$statmin$statcount$statcilevel
 
@@ -1245,6 +1249,71 @@ proc DoToggleStatistics {} {
 	    DEVise setViewStatistics $v $stat
 	}
     }
+}
+
+############################################################
+
+proc DoStat {} {
+    global statmean statmax statmin statcurr statcilevel
+
+    if {[WindowVisible .statWin]} { return }
+
+    toplevel .statWin
+    wm title .statWin "Select Statistics"
+    wm geometry .statWin +100+100
+
+    frame .statWin.m -relief groove -bd 2
+    frame .statWin.ci -relief groove -bd 2
+    frame .statWin.ac
+    pack .statWin.m .statWin.ci .statWin.ac -expand 1 -side left -fill x \
+	    -padx 3m
+
+    frame .statWin.m.mean
+    frame .statWin.m.max
+    frame .statWin.m.min
+    pack .statWin.m.mean .statWin.m.max .statWin.m.min \
+	    -expand 1 -side top -fill y
+    
+    frame .statWin.ci.no
+    frame .statWin.ci.ci1
+    frame .statWin.ci.ci2
+    frame .statWin.ci.ci3
+    pack  .statWin.ci.no .statWin.ci.ci1 .statWin.ci.ci2 .statWin.ci.ci3 \
+	    -expand 1 -side top -fill y
+
+    frame .statWin.ac.applyAll
+    frame .statWin.ac.applyCur
+    frame .statWin.ac.cancel
+    pack .statWin.ac.applyAll .statWin.ac.applyCur .statWin.ac.cancel \
+	    -expand 1 -side top -fill y
+
+    checkbutton .statWin.m.mean.but -text "Mean" -width 10 \
+	    -anchor w -variable statmean
+    checkbutton .statWin.m.max.but -text "Max" -width 10 \
+	    -anchor w -variable statmax
+    checkbutton .statWin.m.min.but -text "Min" -width 10 \
+	    -anchor w -variable statmin
+    pack .statWin.m.mean.but .statWin.m.max.but .statWin.m.min.but -side top 
+    
+    radiobutton .statWin.ci.no.but -text "No CIs" -width 10 \
+	    -variable statcilevel -value "000"
+    radiobutton .statWin.ci.ci1.but -text "85% CI" -width 10 \
+	    -variable statcilevel -value "100"
+    radiobutton .statWin.ci.ci2.but -text "90% CI" -width 10 \
+	    -variable statcilevel -value "010"
+    radiobutton .statWin.ci.ci3.but -text "95% CI" \
+	    -variable statcilevel -value "001"
+    pack .statWin.ci.no.but .statWin.ci.ci1.but .statWin.ci.ci2.but \
+	    .statWin.ci.ci3.but -side top -padx 2m -pady 1m
+
+    button .statWin.ac.applyAll.but -text "Apply Current"\
+	    -width 15 -command { set statcurr 1; DoToggleStatistics }
+    button .statWin.ac.applyCur.but -text "Apply All" \
+	    -width 15 -command { set statcurr 0; DoToggleStatistics }
+    button .statWin.ac.cancel.but -text Close -width 15 \
+	    -command { destroy .statWin }
+    pack .statWin.ac.applyAll.but .statWin.ac.applyCur.but \
+	    .statWin.ac.cancel.but -side top
 }
 
 ############################################################
