@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/07/22 23:42:32  guangshu
+  Added statistics for gdata. The statistics includes count, ysum, max, mean, min.
+
   Revision 1.19  1996/07/19 18:00:27  guangshu
   Added support for histograms.
 
@@ -153,7 +156,7 @@ void BasicStats::Sample(double x, double y)
 
 void BasicStats::Histogram(double y)
 {
-       int index = (int) (y - ymin)/width;
+       int index = (int) ((y - ymin)/width);
        if(index>=HIST_NUM) index = HIST_NUM-1;
        DOASSERT(index >= 0 && index < HIST_NUM, "Invalid histogram index!");
        hist[index]++;
