@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/06/27 15:53:43  jussi
+  Changed a debugging statement.
+
   Revision 1.8  1996/05/20 18:42:26  jussi
   Merged with ClientServer library code.
 
@@ -177,6 +180,9 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
   if (!block) {
     if (NetworkNonBlockMode(fd) < 0)
       return -1;
+  } else {
+    if (NetworkBlockMode(fd) < 0)
+      return -1;
   }
 
 #ifdef DEBUG
@@ -185,14 +191,20 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
 #endif
 
   NetworkHeader hdr;
-  int res = recv(fd, (char *)&hdr, sizeof hdr, 0);
-  if (!res)
-    return 0;
-  if (res < (int)sizeof hdr) {
-#ifdef DEBUG
+  while(1) {
+    int res = recv(fd, (char *)&hdr, sizeof hdr, 0);
+    if (!res)
+      return 0;
+    if (res == (int)sizeof hdr)
+      break;
+    if (res < 0 && errno == EINTR) {
+#ifdef DBEUG
+      printf("Call to recv interrupted, continuing\n");
+#endif
+      continue;
+    }
     if (block)
       perror("recv");
-#endif
     return -1;
   }
 
@@ -244,13 +256,20 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
   char *ptr = recBuff;
   int totrem = tsize;
   while(totrem > 0) {
-    res = recv(fd, ptr, totrem, 0);
-    if (!res)
-      return 0;
-    if (res < 0) {
-#ifdef DEBUG
-      perror("recv");
+    int res = 0;
+    while(1) {
+      res = recv(fd, ptr, totrem, 0);
+      if (!res)
+        return 0;
+      if (res > 0)
+        break;
+      if (errno == EINTR) {
+#ifdef DBEUG
+        printf("Call to recv interrupted, continuing\n");
 #endif
+        continue;
+      }
+      perror("recv");
       return -1;
     }
     ptr += res;
