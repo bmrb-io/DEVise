@@ -143,13 +143,13 @@ COMMITTING AND MERGING
 
 	% cvs tag mgd_thru_<name>_br_1
 
-* Merging from trunk to branch.  I haven't actually done this yet, and the
-  cvs info isn't totally clear on it, but I suspect that you first need to
-  tag the trunk, and then update the branch, something like:
+* Merging from trunk to branch.  DON'T DO THIS!!  If you do, it's pretty
+  much impossible to eventually merge from the branch back into the trunk.
 
-    (on trunk) % cvs tag xyz
-
-    (on branch) % cvs update -j <name>_base -j xyz
+  If you need to do this, what you should really do is make a second
+  branch from the trunk, merge from the first branch to the second branch,
+  and abandon the first branch and continue development on the second
+  branch.
 
 * Other merging.  There are other merging possibilities, such as merging
   from one branch to another, that are not covered in this document, and
