@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/07/09 15:59:42  wenger
+  Added master version number and compile date to C++ code (also displayed
+  in the user interface); added -usage and -version command line arguments;
+  updated usage message.
+
   Revision 1.26  1996/06/07 19:36:15  wenger
   Further improvements to the composite parser for the fourth set of
   IBM traces.
@@ -921,6 +926,7 @@ int main(int argc, char **argv)
   CompositeParser::Register("DOL_DATA", new DOLDateComposite);
   CompositeParser::Register("DOWJONES", new MmDdYyComposite);
   CompositeParser::Register("LANDSEND", new StateLatLonComposite);
+  CompositeParser::Register("LANDSENDDAILY", new YyMmDdComposite);
   CompositeParser::Register("MARKETING", new StateLatLonComposite);
   CompositeParser::Register("CENSUS_PLACES", new LatLonComposite);
   CompositeParser::Register("CENSUS_ZIP", new LatLonComposite);
