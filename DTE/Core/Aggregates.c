@@ -279,6 +279,10 @@ void MovAggsExec::initialize(){
 	  numTuplesToBeDropped[nextDrop]++;
 	}
 
+	for(int i = 0; i < numFlds; i++){ 
+		retTuple[i] = aggExecs[i]->getValue();
+	}
+
 	// if window is greater than num of tuples, 
 	// set window height to number of tuples
 	
@@ -287,24 +291,27 @@ void MovAggsExec::initialize(){
 	  nextDrop = 0;
 	}
 
+	firstTime = true;
 	assert (currWindowHeight == fullWindowHeight); 
 }
 
 const Tuple* MovAggsExec::getNext(){
 
 	// the first window has been calculated before a call to this function
-	if (!currWindowHeight)
-	  return NULL;
 
-	// get aggregate of tuples currently in window 
-	for(int i = 0; i < numFlds; i++){ 
-		retTuple[i] = aggExecs[i]->getValue();
+	if (firstTime) {
+	  firstTime = false;
+	  return retTuple;
 	}
-	
+  
 	int toDeque = numTuplesToBeDropped[nextDrop];
 
 	// no more tuples left in the stream
 	if (!currInTup) { 
+
+	  if (!currWindowHeight)
+	    return NULL;
+
 	  for(int i = 0; i < numAggs; i++){
 	    aggExecs[aggPos[i]]->dequeue(toDeque);  
 	  }
@@ -339,6 +346,10 @@ const Tuple* MovAggsExec::getNext(){
 	  numTuplesToBeDropped[nextDrop]++; 
 	}
 	nextDrop = (nextDrop+1) % fullWindowHeight;
+
+	for(int i = 0; i < numFlds; i++){ 
+		retTuple[i] = aggExecs[i]->getValue();
+	}
 
 	return retTuple;
 }

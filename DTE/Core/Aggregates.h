@@ -789,6 +789,7 @@ class MovAggsExec : public StandGroupByExec {
   int nextDrop; // pointer to element in array numTuplesToBeDropped
   int currWindowHeight;
   const Tuple* currInTup;
+  bool firstTime; 
 
 public:
   
