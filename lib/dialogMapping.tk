@@ -15,6 +15,10 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.19  1997/03/20 01:32:18  wenger
+#       Fixed a bug in color allocation; color chooser for data shows old colors
+#       (temporarily); background conversion of GData defaults to off.
+#
 #       Revision 1.18  1997/02/26 16:32:04  wenger
 #       Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
 #
@@ -294,11 +298,15 @@ proc UpdateMappingDialog { w curView } {
 	 return
      }
 
+	puts "params ========== $params"
      set tdata [lindex [lindex $params 0] 1]
+	set nextToLast [string length $tdata]
+	set nextToLast [expr $nextToLast - 2]
+	set tdata [string range $tdata 0 $nextToLast]
 
+	puts "tdata = $tdata"
      set sourcedef [DEVise dteShowCatalogEntry $tdata]
-     set sourcedef [lindex $sourcedef 0]
-	set err [expr [llength $sourcedef] == 0]
+ 	set err [expr [llength $sourcedef] == 0]
 
 	if {$err == 0} {
 		
@@ -348,7 +356,13 @@ proc UpdateMappingDialog { w curView } {
 	     [list "ShapeAttr4" $shapeAttr4]]
 #		 [list "ShapePosition" $shapePosition]
      
-     set topgrp [SelectTopGroup $schemaname]
+#    set topgrp [SelectTopGroup $schemaname]
+
+#	it cannot find the top group for some reason???
+#	but it should be there!	 DD
+
+	set topgrp __default
+
 #     $w.mapping.value.p$itemname configure -state normal
 
      foreach item $mappings {

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.31  1997/02/03 04:12:39  donjerko
+#  Catalog management moved to DTE
+#
 #  Revision 1.30  1997/01/23 18:13:33  jussi
 #  Disabled saving of pixmaps due to bug #135 and #069.
 #
@@ -609,7 +612,7 @@ proc SaveOneSchema { fileId asExport schemaFile } {
 	puts $fileId "DEVise parseSchema $sname \$physSchema($sname) \$logSchema($sname)"
     } elseif {[string index $schemaFile 0] != "."} {
 
-    # this is just a hack to find out if dte has registered this schema
+    # this is a hack to find out if dte has registered this schema
     # dte schemas are just the table names and therefore start with .
 
  	puts $fileId "DEVise importFileType $schemaFile"
@@ -737,7 +740,11 @@ proc SaveCreateTDatas { fileId asTemplate fileDictRef asBatchScript } {
 	    set sname [lindex $params 0]
 	    set stype [lindex $params 1]
 	    set param [lindex $params 2]
-	    set fileDict [DictInsert $fileDict $sname tdata_$fileNum]
+
+#	    set fileDict [DictInsert $fileDict $sname tdata_$fileNum]
+# modified by DD
+
+ 	    set fileDict [DictInsert $fileDict $inst tdata_$fileNum]
 	    set tdataVar tdata_$fileNum
             if {$asBatchScript} {
 		puts $fileId "DEVise dataSegment \{$sname\} \{$param\} 0 0"
@@ -756,19 +763,27 @@ proc SaveCreateTDatas { fileId asTemplate fileDictRef asBatchScript } {
 		puts $fileId "\t\treturn 0"
 		puts $fileId "\t\}"
 		puts $fileId "\} else \{"
-		puts $fileId "\tset $tdataVar \{$sname\}"
-		puts $fileId "\tset source \[OpenDataSource $$tdataVar]"
-		puts $fileId "\tif \{\$source == \"\"\} \{"
-		puts $fileId "\t\treturn 0"
-		puts $fileId "\t\}"
-		puts $fileId "\tset sname \[lindex \$source 0\]"
-		puts $fileId "\tset param \[lindex \$source 1\]"
-		puts $fileId "\tset stype \[lindex \$source 2\]"
-		puts $fileId "\tDEVise create tdata \{$class\} \$sname \$stype \$param"
-		puts $fileId "\tif \{\$sname != \$$tdataVar\} \{"
-		puts $fileId "\t\tset loadPixmap 0"
-		puts $fileId "\t\tset $tdataVar \$sname"
-		puts $fileId "\t\}"
+		if {[string index $class 0] == "."} {
+
+			# this is a hack to find out if dte has registered this schema
+			# dte schemas are just the table names and therefore start with .
+
+			puts $fileId "\tset $tdataVar \[DEVise create tdata \{$class\} $params \]"
+		} else {
+			puts $fileId "\tset $tdataVar \{$sname\}"
+			puts $fileId "\tset source \[OpenDataSource $$tdataVar]"
+			puts $fileId "\tif \{\$source == \"\"\} \{"
+			puts $fileId "\t\treturn 0"
+			puts $fileId "\t\}"
+			puts $fileId "\tset sname \[lindex \$source 0\]"
+			puts $fileId "\tset param \[lindex \$source 1\]"
+			puts $fileId "\tset stype \[lindex \$source 2\]"
+			puts $fileId "\tDEVise create tdata \{$class\} \$sname \$stype \$param"
+			puts $fileId "\tif \{\$sname != \$$tdataVar\} \{"
+			puts $fileId "\t\tset loadPixmap 0"
+			puts $fileId "\t\tset $tdataVar \$sname"
+			puts $fileId "\t\}"
+		}
 		puts $fileId "\}"
 	    }
 
