@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.83  2001/02/16 17:51:16  xuk
+// Added new command and GUI for collaboration JS to collect active client ID list.
+// Added showClientList();
+// Changed CollabDlg() for new GUI.
+//
 // Revision 1.82  2001/02/15 03:21:35  xuk
 // Fixed bugs for collaboration JavaScreen.
 //
@@ -1840,6 +1845,7 @@ class SetModeDlg extends Dialog
     public Button cgiButton = new Button("CGI");
     public Button collabButton = new Button("Start Collaboration");
     public Button disCollabButton = new Button("Disable Collaboration");
+    public Button cancelButton = new Button("Cancel");
     private boolean status = false; // true means this dialog is showing
 
     public SetModeDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -1872,6 +1878,10 @@ class SetModeDlg extends Dialog
         disCollabButton.setForeground(jsc.jsValues.uiglobals.fg);
         disCollabButton.setFont(jsc.jsValues.uiglobals.font);
 
+        cancelButton.setBackground(jsc.jsValues.uiglobals.bg);
+        cancelButton.setForeground(jsc.jsValues.uiglobals.fg);
+        cancelButton.setFont(jsc.jsValues.uiglobals.font);
+
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
         GridBagConstraints  c = new GridBagConstraints();
@@ -1896,6 +1906,8 @@ class SetModeDlg extends Dialog
         add(collabButton);
         gridbag.setConstraints(disCollabButton, c);
         add(disCollabButton);
+        gridbag.setConstraints(cancelButton, c);
+        add(cancelButton);
 
         pack();
 
@@ -1973,6 +1985,14 @@ class SetModeDlg extends Dialog
                     {
 			jsc.isAbleCollab = false;
 			close();
+                    }
+                });
+
+        cancelButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        close();
                     }
                 });
 
