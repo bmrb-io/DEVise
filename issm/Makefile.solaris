@@ -1,6 +1,6 @@
 depend:
 	makedepend -fMakefile.solaris -I../issm -I../graphics.new -I../tape \
-		-I/usr/X11/include -I/s/tcl/include *.C
+		-I/s/X11/include -I/s/tcl/include *.C
 # DO NOT DELETE
 
 binconv.o: /usr/include/math.h /usr/include/floatingpoint.h
@@ -8,12 +8,14 @@ binconv.o: /usr/include/sys/ieeefp.h /usr/include/assert.h binconv.h
 binconv.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 extract.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 extract.o: /usr/include/assert.h /usr/include/string.h /usr/include/stdlib.h
-extract.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h rectape.h
+extract.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
+extract.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+extract.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+extract.o: /usr/include/sys/time.h /usr/include/sys/time.h
+extract.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+extract.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h rectape.h
 extract.o: ../tape/tapedrive.h /usr/include/tar.h ../graphics.new/machdep.h
-extract.o: /usr/include/limits.h /usr/include/sys/types.h
-extract.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-extract.o: /usr/include/sys/select.h /usr/include/sys/time.h
-extract.o: /usr/include/sys/time.h /usr/include/sys/param.h
+extract.o: /usr/include/limits.h /usr/include/sys/param.h
 extract.o: /usr/include/sys/unistd.h /usr/include/sys/wait.h
 extract.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
 extract.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
