@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/06/20 21:47:30  jussi
+  Added additional parameters to the return string of command
+  get3DLocation. Command set3DLocation now switches to rectangular
+  coordinate system temporarily when updating camera location.
+
   Revision 1.13  1996/06/15 14:49:29  jussi
   Added set3DLocation command.
 
@@ -585,7 +590,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       return 1;
     }
     if (!strcmp(argv[0], "get")) {
-      classDir->ClassNames(argv[1],numArgs, args);
+      classDir->ClassNames(argv[1], numArgs, args);
       control->ReturnVal(numArgs, args);
       return 1;
     }
@@ -1284,27 +1289,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 5) {
-    if (!strcmp(argv[0], "set3DLocation")) {
-      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
-      if (!view) {
-	control->ReturnVal(API_NAK, "Cannot find view");
-	return -1;
-      }
-      Camera c = view->GetCamera();
-      Boolean isSphere = c.spherical_coord;
-      c.spherical_coord = false;
-      c.x_ = atof(argv[2]);
-      c.y_ = atof(argv[3]);
-      c.z_ = atof(argv[4]);
-      view->SetCamera(c);
-      if (isSphere) {
-	c = view->GetCamera();
-	c.spherical_coord = true;
-	view->SetCamera(c);
-      }
-      control->ReturnVal(API_ACK, "done");
-      return 1;
-    }
     if (!strcmp(argv[0], "setLabel")) {
       View *view = (View *)classDir->FindInstance(argv[1]);
       if (!view) {
@@ -1369,6 +1353,33 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       (void)ParseFloatDate(argv[5],filter.yHigh);
       filter.marked = atoi(argv[6]);
       view->InsertHistory(filter);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+  }
+
+  if (argc == 8) {
+    if (!strcmp(argv[0], "set3DLocation")) {
+      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+      if (!view) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      Camera c = view->GetCamera();
+      Boolean isSphere = c.spherical_coord;
+      c.spherical_coord = false;
+      c.x_ = atof(argv[2]);
+      c.y_ = atof(argv[3]);
+      c.z_ = atof(argv[4]);
+      c.fx = atof(argv[5]);
+      c.fy = atof(argv[6]);
+      c.fz = atof(argv[7]);
+      view->SetCamera(c);
+      if (isSphere) {
+	c = view->GetCamera();
+	c.spherical_coord = true;
+	view->SetCamera(c);
+      }
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
