@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/06/27 15:46:12  jussi
+  Moved key '5' functionality to ViewGraph::UpdateAutoScale().
+
   Revision 1.21  1996/06/24 19:44:30  jussi
   Added a win->Flush() to force statistics on the screen.
 
@@ -114,6 +117,9 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
 
     // add terminating null
     _DisplayStats[STAT_NUM] = 0;
+
+    // no statistics yet
+    _statBuffer[0] = 0;
 
     // auto scaling is in effect by default
     _autoScale = true;
@@ -457,36 +463,15 @@ void ViewGraph::StatsXOR(char *oldstat, char *newstat, char *result)
       result[i] = ((oldstat[i] - '0')^(newstat[i] - '0')) + '0';
 }
 
-char *ViewGraph::MakeStatFileName()
+void ViewGraph::PrepareStatsBuffer()
 {
-    char *fname = StripPath(GetName());
-    unsigned int nameLen = strlen(Init::WorkDir()) + strlen(fname) + 6 + 1;
-    char *name = new char [nameLen];
-    sprintf(name, "%s/%s.stat", Init::WorkDir(), fname);
-    DOASSERT(strlen(name) < nameLen, "Name too long");
-    return name;
-}
+    /* initialize statistics buffer */
+    _statBuffer[0] = 0;
 
-void ViewGraph::WriteColorStatsToFile()
-{
-    char *statFile = MakeStatFileName();
-    FILE *file = fopen(statFile, "w");
-
-    if (!file) {
-        printf("Cannot create statistics file %s: ", statFile);
-        perror("fopen");
-        delete statFile;
-        return;
-    }
-
-    /* write column header */
-    fprintf(file,
-            "// Color Count Mean Max Min Z85L Z85H Z90L Z90H Z95L Z95H\n");
-    fprintf(file, "\n");
-
-    /* put the statistics in the stat file */
+    /* put the statistics in the stat buffer */
     for(int i = 0; i < MAXCOLOR; i++) {
-        fprintf(file, "%d %d %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n",
+        char line[128];
+        sprintf(line, "%d %d %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n",
                 i, (int)_stats[i].GetStatVal(STAT_COUNT),	
                 _stats[i].GetStatVal(STAT_MEAN),
                 _stats[i].GetStatVal(STAT_MAX),
@@ -497,12 +482,12 @@ void ViewGraph::WriteColorStatsToFile()
                 _stats[i].GetStatVal(STAT_ZVAL90H),
                 _stats[i].GetStatVal(STAT_ZVAL95L),
                 _stats[i].GetStatVal(STAT_ZVAL95H));
+        if (strlen(_statBuffer) + strlen(line) + 1 > sizeof _statBuffer) {
+            fprintf(stderr, "Out of statistics buffer space\n");
+            break;
+        }
+        strcat(_statBuffer, line);
     }
-
-    fclose(file);
-    delete statFile;
-
-    /* tell query processor to refresh views based on this file */
 }
 
 /* Handle button press event */

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/07/02 22:46:01  jussi
+  The bounding box of symbols is now correctly computed. Scatter
+  plots sometimes did not have all necessary data displayed in
+  them, as bounding box used to be incorrectly computed.
+
   Revision 1.17  1996/06/27 15:48:03  jussi
   Added some debugging statements.
 
@@ -284,7 +289,7 @@ void ViewScatter::QueryDone(int bytes, void *userData)
   for(int i = 0; i < MAXCOLOR; i++)
     _stats[i].Done();
 
-  WriteColorStatsToFile();
+  PrepareStatsBuffer();
 
   DrawLegend();
 

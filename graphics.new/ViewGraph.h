@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/07/08 20:30:49  jussi
+  Added PixmapEnabled() method.
+
   Revision 1.18  1996/06/27 15:46:12  jussi
   Moved key '5' functionality to ViewGraph::UpdateAutoScale().
 
@@ -88,6 +91,7 @@
 #include "DList.h"
 #include "Color.h"
 #include "BasicStats.h"
+#include "DerivedDataSource.h"
 
 const int MAXCOLOR = 43;
 
@@ -105,7 +109,7 @@ struct MappingInfo {
 DefinePtrDList(MappingInfoList, MappingInfo *);
 DefinePtrDList(RecordLinkList, RecordLink *);
 
-class ViewGraph: public View {
+class ViewGraph: public View, public DerivedDataSource {
 public:
   ViewGraph(char *name, VisualFilter &initFilter, 
 	    AxisLabel *xAxis, AxisLabel *yAxis,
@@ -158,8 +162,11 @@ public:
   char *GetDisplayStats() { return _DisplayStats; }
   void SetDisplayStats(char *stat);
   
-  /* There could be some problems for this function */
+  /* Get pointer to statistics object */
   BasicStats *GetStatObj() { return &_allStats; }
+
+  /* Return pointer to buffer with view statistics */
+  virtual char *GetViewStatistics() { return _statBuffer; }
 
   /* Set/get action */
   void SetAction(Action *action) { _action = action; }
@@ -169,9 +176,8 @@ public:
   Boolean IsScatterPlot();
       
  protected:
-  /* Create statistics file name and write statistics to file */
-  char *MakeStatFileName();
-  void WriteColorStatsToFile();
+  /* Write color statistics to memory buffer */
+  void PrepareStatsBuffer();
 
   /* Insert records into record links whose master this view is */
   void WriteMasterLink(RecId start, int num);
@@ -184,6 +190,7 @@ public:
 
   BasicStats _allStats;            /* basic stats for all categories */
   BasicStats _stats[MAXCOLOR];     /* basic stats per category */
+  char _statBuffer[3072];          /* view statistics */
 
   Action *_action;                 /* action in this view */
   RecordLinkList _masterLink;      /* links whose master this view is */
