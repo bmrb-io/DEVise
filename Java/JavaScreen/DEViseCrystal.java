@@ -337,7 +337,7 @@ public class DEViseCrystal
             if (dz > maxi) {
                 maxi = dz;
             }
-            newBoxLength = maxi;
+            newBoxLength = 2 * maxi;
             resetAll(true);
         }
     }
