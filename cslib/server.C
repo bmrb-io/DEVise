@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/05/21 21:05:13  andyt
+  Support for multiple clients in client-server library. Single-client mode
+  still supported by compiling with -DSINGLE_CLIENT. Client-server library
+  can now display EmbeddedTk windows and Tasvir images. Added a sample
+  Embedded-Tk script and GIF image to the repository (ETkSample.tcl,
+  earth.gif). Modified tarcslib script to include all new files.
+
   Revision 1.14  1997/04/21 15:01:48  wenger
   Added DrawRubberband() virtual function to WindowRep class, so that it
   doesn't have to be called directly through the XWindowRep class;
@@ -92,6 +99,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+
+#if defined(HPUX)
+//TEMPTEMPchar *getcwd(char *, size_t);
+#include <sys/unistd.h>	// for getcwd()
+#endif
 
 #include "ClientServer.h"
 #include "DualWindowRep.h"
