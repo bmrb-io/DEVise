@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.113  2001/03/15 20:34:06  wenger
+  Reading composite file /afs/cs.wisc.edu/p/devise/ext5/wenger/devise.dev2/solarisFixed bug 645 (problem with window duplication).
+
   Revision 1.112  2001/02/20 20:02:52  wenger
   Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
   to the trunk.
@@ -4882,25 +4885,24 @@ IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(test)
 // Note: modify this code to do whatever you need to test.
-    if (argc == 1) {
-		// For testing hang detection...
-		printf("Before sleep\n");
-#if 0
-		int fd = socket(AF_INET, SOCK_STREAM, 0);
-		fd_set fdread;
-		FD_ZERO(&fdread);
-		FD_SET(fd, &fdread);
-		struct timeval timeout;
-		timeout.tv_sec = 100;
-		timeout.tv_usec = 0;
-		select(fd+1, &fdread, NULL, NULL, &timeout);
-		close(fd);
-#else
-        for (int foo = 0; foo < 100000000; foo++) {
-		  double xxx = sin((double)foo);
-		}
-#endif
-		printf("After sleep\n");
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+
+        string fgColorStr, bgColorStr;
+        PColorID pColor = view->GetForeground();
+		printf("pColor = %ld\n", pColor);
+        RGB rgb;
+        if (PM_GetRGB(pColor, rgb)) {
+            fgColorStr = rgb.ToString();
+			cout << "fgColorStr = " << fgColorStr << endl;
+        } else {
+		    printf("Unable to get RGB\n");
+        }
+
     	ReturnVal(API_ACK, "done");
     	return 1;
 	} else {

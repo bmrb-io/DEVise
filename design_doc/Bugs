@@ -1381,8 +1381,9 @@ Num Date        Status  Description
 361 06/03/98	OPEN	Printing 3D OpenGL views to PostScript does not work.
 			(rkw)
 
-362 06/04/98	OPEN	You can't see the button for 'white' in the color
+362 06/04/98	FIXED	You can't see the button for 'white' in the color
 			chooser GUI. (rkw)
+			(Fixed by rkw, 3/23/01.)
 
 363 06/12/98	FIXED	TData attr links with no master don't work correctly --
 			the plot all data in the slave instead of no data.
@@ -1706,9 +1707,10 @@ Num Date        Status  Description
 			no X command for some mappings and improper
 			initialization of the QPFullData objects.)
 
-441 12/09/98	OPEN	If you load a session with a color palette defined
+441 12/09/98	FIXED	If you load a session with a color palette defined
 			in it, that palette seems to become the default
 			palette. (rkw)
+			(Fixed by rkw, 3/23/01.)
 
 442 12/09/98	OPEN	Should closing a session switch back to the default
 			color palette? (rkw)
@@ -2586,6 +2588,20 @@ Num Date        Status  Description
 			in collaboration mode, the "leader" JS and the jspop
 			may lock up. (rkw)
 			(Fixed by xuk, 3/20/01.)
+
+653 03/22/01	OPEN	If a 'control command' sent from the server to the
+			client contains a 'DEVise ...' command this fails
+			silently in client-server form (it works in monolithic
+			form). (rkw)
+
+654 03/23/01	OPEN	When selecting global, window, or view colors, the
+			wrong current color is often specified in the color
+			chooser dialog. (rkw)
+
+655 03/23/01	OPEN	The devised should reset the color palette to the
+			default when a client disconnects, even if the non-
+			default palette was not associated with a session.
+			(rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

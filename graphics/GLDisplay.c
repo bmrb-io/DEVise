@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.9  1999/11/30 22:28:02  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.8  1999/11/19 21:29:15  wenger
   Removed Journal class and related code (no longer works); removed various
   other unused or unnecessary code.
@@ -57,6 +64,13 @@
 
 #include "Color.h"
 #include "XColor.h"
+
+//#include "Session.h"
+// Note: other stuff in Session.h conflicts with X includes.
+class Session {
+public:
+  static void SetDefaultPalette();
+};
 
 #define String XVString
 #define black XVblack
@@ -160,6 +174,7 @@ GLDisplay::GLDisplay(char *name)
   }
 #endif
 
+  Session::SetDefaultPalette();
 }
 
 GLDisplay::~GLDisplay()

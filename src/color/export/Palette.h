@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1997-1998
+  (c) Copyright 1997-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -22,6 +22,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/06/24 14:44:36  beyer
+  added destructor
+
   Revision 1.1  1998/02/20 20:44:07  wenger
   Changed color and utils libraries to new export directory scheme for
   dealing with include files (email with complete explanation forthcoming).
@@ -131,18 +134,26 @@ typedef Palette*	PalettePtr;
 
 inline PaletteColor*	Palette::GetColor(PColorID pcid)
 {
-	if ((0 <= pcid) && (ulong(pcid) < colors.size()))
+	if ((0 <= pcid) && (ulong(pcid) < colors.size())) {
 		return &(colors[pcid]);
-	else
-		return NULL;
+	} else {
+		// Note: this is needed in case a palette switch causes some
+		// palette IDs to be out-of-range for the current palette.
+		// RKW 2001-03-23.
+		return &(colors[pcid % colors.size()]);
+    }
 }
 
 inline const PaletteColor*	Palette::GetColor(PColorID pcid) const
 {
-	if ((0 <= pcid) && (ulong(pcid) < colors.size()))
+	if ((0 <= pcid) && (ulong(pcid) < colors.size())) {
 		return &(colors[pcid]);
-	else
-		return NULL;
+	} else {
+		// Note: this is needed in case a palette switch causes some
+		// palette IDs to be out-of-range for the current palette.
+		// RKW 2001-03-23.
+		return &(colors[pcid & colors.size()]);
+    }
 }
 
 //******************************************************************************

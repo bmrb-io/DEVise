@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.25  2001/01/08 20:32:42  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.23.2.1  2000/10/18 20:31:53  wenger
   Merged changes from fixed_bug_616 through link_gui_improvements onto
   the branch.
@@ -153,6 +157,7 @@
 #include <tcl.h> // for ClientData
 
 #include "DevStatus.h"
+#include "Color.h" // for PaletteID
 
 class ControlPanel;
 class ControlPanelSimple;
@@ -189,6 +194,9 @@ public:
   // Session description.
   static void SetDescription(const char *description);
   static const char *GetDescription();
+
+  static void SetDefaultPalette();
+  static DevStatus CreateSessionPalette(const char *colors);
   
 protected:
   friend class DeviseCommand_setOpeningSession;
@@ -290,6 +298,9 @@ private:
   static char *_sessionFile;
 
   static char *_description;
+
+  static PaletteID _defaultPalette;
+  static PaletteID _sessionPalette;
 };
 
 #endif /* _Session_h_ */

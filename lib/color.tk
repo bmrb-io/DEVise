@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1995
+#  (c) Copyright 1992-2001
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -66,6 +66,9 @@ set curPaletteDir $paletteDir
 ## Methods (Initialization)
 ##******************************************************************************
 
+# ------------------------------------------------------------------------
+# Initialize colors -- set colors in the Tcl/Tk interface, call procedure
+# to initialize palettes.
 proc InitColor {} {
 	global monochrome colors
 
@@ -79,8 +82,14 @@ proc InitColor {} {
 				selectForeground $colors(controlPanelBackground)
 		. configure -bg $colors(controlPanelBackground)
 	}
+
+	# This must be done here in case the color palette is changed by
+	# a session file before we view the palette dialog.
+	InitPalettes
 }
 
+# ------------------------------------------------------------------------
+# Initialize the Color menu in the main DEVise GUI.
 proc InitColorMenu { m } {
 	menubutton $m.color -text Color -underline 0 \
 			-menu $m.color.menu -state normal
@@ -113,6 +122,9 @@ proc InitColorMenu { m } {
 ## Methods (Color)
 ##******************************************************************************
 
+# ------------------------------------------------------------------------
+# Show the color chooser dialog for setting view foreground or background
+# colors.
 proc DoColorDialog { isForeground {scope 0} } {
     global curView rgb isColorSelected colors pids
 
@@ -143,6 +155,8 @@ proc DoColorDialog { isForeground {scope 0} } {
     }
 }
 
+# ------------------------------------------------------------------------
+# Show the color dialog for selecting a color for a mapping.
 proc DoMappingColorDialog { varname background current } {
 	global $varname isColorSelected newRGB
 
@@ -154,6 +168,9 @@ proc DoMappingColorDialog { varname background current } {
 	}
 }
 
+# ------------------------------------------------------------------------
+# Select a cursor to set the color of, and show the color chooser dialog
+# accordingly.
 proc DoCursorColorDialog {} {
     global newRGB curView isColorSelected
 
@@ -173,6 +190,8 @@ proc DoCursorColorDialog {} {
 	}
 }
 
+# ------------------------------------------------------------------------
+# Show the color chooser dialog.
 proc ColorDialog { varname background current {type "A"} } {
     global $varname isColorSelected pids
 	global text
@@ -203,6 +222,7 @@ proc ColorDialog { varname background current {type "A"} } {
     pack .colorDialog.top -side top -fill both -expand 1
     pack .colorDialog.bot -side bottom -fill x
 
+	set colorNum 0
     foreach val $colorList {
 		set color $val
 
@@ -215,16 +235,25 @@ proc ColorDialog { varname background current {type "A"} } {
 
 		button .colorDialog.top.row$row.col$col -background $color \
 				-activebackground $color -highlightbackground $color \
-				-width $size -border 0 -cursor hand2 \
-				-command "set $foo $color"
+				-width $size -border 1 -cursor hand2 \
+				-command "set $foo $color" \
+				-text $colorNum
+
+        if {$color == $current} {
+			#TEMP -- don't do this until bug 654 is fixed.
+			#.colorDialog.top.row$row.col$col configure -relief sunken
+			#set text [concat $text "(color $colorNum)"]
+		}
 
 		pack .colorDialog.top.row$row.col$col -side left -fill x \
-				-padx 8 -pady 8 -expand 1
+				-padx 8 -pady 8 -expand 0
 		incr col
 
 		if {$col >= $maxcol} {
 			set col -1
 		}
+
+		set colorNum [expr $colorNum + 1]
 	}
 
     # Add empty frames at end of last row
@@ -254,6 +283,8 @@ proc ColorDialog { varname background current {type "A"} } {
     tkwait window .colorDialog
 }
 
+# ------------------------------------------------------------------------
+# Set color for the current view, window, or all views.
 proc SetColor { rgb isForeground {scope 0} } {
     global curView
 
@@ -305,6 +336,9 @@ proc SetColor { rgb isForeground {scope 0} } {
 # Methods (Palette)
 #*******************************************************************************
 
+# ------------------------------------------------------------------------
+# Initialize the color palette info in the GUI.  (Note that some info is
+# stored in the GUI and some is stored in the C++ code.)
 proc InitPalettes {} {
 	global curpalette palettes pids
 
@@ -314,20 +348,30 @@ proc InitPalettes {} {
 	set pids($curpalette) $pid
 }
 
+# Note: if we have a session-specific color palette (set by the session
+# file, not by the GUI) curpalette won't correspond to the actual palette
+# that is being used when we *enter* this procedure.  However, if the
+# user actually sets the palette, things will correspond.  RKW 2001-03-16.
+
+# ------------------------------------------------------------------------
+# Show the dialog to choose a color palette, set things if the user
+# changes the palette.
 proc DoPaletteDialog {} {
 	global curpalette palettes pids
 
-	if { ![info exists pids(def)] } {
-		InitPalettes
+    if { ![info exists pids(def)] } {
+	    InitPalettes
 	}
-
+	
 	set oldpalette $curpalette
 
 	PaletteDialog
 
-	if { $oldpalette == $curpalette } {
-		return
-	}
+	# Note: we must go ahead and call SetCurrentPalette here, even if
+	# curpalette and oldpalette are the same, because of the possibility
+	# of a session-specific palette.  If the old and new palettes are
+	# *really* the same, this will be taken care of in the C++ code.
+	# RKW 2001-03-16.
 
 	set pid [DEVise color SetCurrentPalette $pids($curpalette)]
 
@@ -339,6 +383,8 @@ proc DoPaletteDialog {} {
 	}
 }
 
+# ------------------------------------------------------------------------
+# Show the dialog to choose a color palette.
 proc PaletteDialog {} {
 	global curpalette palettes .paletteDialog
 
@@ -382,6 +428,8 @@ proc PaletteDialog {} {
     tkwait window .paletteDialog
 }
 
+# ------------------------------------------------------------------------
+# Show the dialog to create a new palette, create it if the user requests it.
 proc NewPalette {} {
 	global palettes pids .paletteDialog
 
@@ -399,6 +447,8 @@ proc NewPalette {} {
 	pack .paletteDialog.body.item$newpalette -side top -fill x
 }
 
+# ------------------------------------------------------------------------
+# Show the file select dialog to allow the user to select a palette file.
 proc LoadPalette {} {
 	global curPaletteDir fsBox paletteDir palettes
 
@@ -438,6 +488,8 @@ proc LoadPalette {} {
 	return $newpalette
 }
 
+# ------------------------------------------------------------------------
+# Returns a list of the colors available in the current palette.
 proc PaletteColors {} {
 	global curpalette palettes pids
 

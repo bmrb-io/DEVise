@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.83  1999/11/30 22:28:08  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.82  1999/11/19 21:29:16  wenger
   Removed Journal class and related code (no longer works); removed various
   other unused or unnecessary code.
@@ -413,6 +420,14 @@ extern "C" {
 //#define DEBUG_MORE
 
 #include "Util.h"
+
+//#include "Session.h"
+// Note: other stuff in Session.h conflicts with X includes.
+class Session {
+public:
+  static void SetDefaultPalette();
+};
+
 #ifndef LIBCS
 #include "WinClassInfo.h"
 #endif
@@ -466,6 +481,7 @@ XDisplay::XDisplay(char *name)
                 1, &cmap)) {
     reportErrNosys("Color initialization failed");
   }
+  Session::SetDefaultPalette();
 }
 
 XDisplay::~XDisplay()

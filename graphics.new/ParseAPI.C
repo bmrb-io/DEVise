@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -22,6 +22,9 @@
   $Id$
 
   $Log$
+  Revision 1.105  2000/08/10 16:10:53  wenger
+  Phase 1 of getting rid of shared-memory-related code.
+
   Revision 1.104  1999/11/16 17:02:06  wenger
   Removed all DTE-related conditional compiles; changed version number to
   1.7.0 because of removing DTE; removed DTE-related schema editing and
@@ -475,36 +478,11 @@
 #include <sys/stat.h>
 
 #include "ParseAPI.h"
-#include "ClassDir.h"
 #include "Control.h"
 #include "ViewKGraph.h"
-#include "Util.h"
-#include "ParseCat.h"
-#include "TData.h"
-#include "TDataMap.h"
-#include "Parse.h"
-#include "GroupDir.h"
-#include "ViewLayout.h"
-#include "VisualLink.h"
-#include "RecordLink.h"
-#include "FilterQueue.h"
-#include "DataSeg.h"
-#include "Version.h"
-#include "CompDate.h"
-#include "DevFileHeader.h"
 #include "Display.h"
-#include "TDataAscii.h"
-#include "DevError.h"
-#include "WinClassInfo.h"
-#include "VisualLinkClassInfo.h"
-#include "CursorClassInfo.h"
-#include "MappingInterp.h"
-#include "QueryProc.h"
-
-#include "SessionDesc.h"
-#include "StringStorage.h"
-#include "DepMgr.h"
 #include "Session.h"
+
 #include "Timer.h"
 
 #include "Color.h"
@@ -694,6 +672,11 @@ WriteFileToDataSock(ControlPanel *control, int port, char *tmpFile)
 int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control)
 {
 	Trace("ParseAPIColorCommands()");
+#if defined(DEBUG)
+    printf("ParseAPIColorCommands(");
+	PrintArgs(stdout, argc, argv, false);
+	printf(")\n");
+#endif
 
 	char		result[10 * 1024];
 	ClassDir*	classDir = control->GetClassDir();
@@ -964,7 +947,9 @@ int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control)
 			s += rgbList[i].ToString();
 
 			if (i < rgbList.size() - 1)
-				s += ' ';
+			{
+				s += '\n';
+		    }
 		}
 
 		strcpy(result, s.c_str());
@@ -1134,6 +1119,33 @@ int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control)
 		sprintf(result, "%f", distance);
 		control->ReturnVal(API_ACK, result);
 		return 1;
+	}
+
+	// Set the palette associated with a given session.  Note: this command
+	// should only be called from a session file.
+	if (!strcmp(argv[1], "SessionPalette"))
+	{
+	    if (argc == 3)
+		{
+			if (Session::CreateSessionPalette(argv[2]).IsComplete())
+			{
+		        control->ReturnVal(API_ACK, "done");
+		        return 1;
+			}
+			else
+			{
+		        control->ReturnVal(API_NAK,
+				  (char *)DevError::GetLatestError());
+		        return -1;
+			}
+		}
+		else
+		{
+            fprintf(stderr,
+			  "Wrong # of arguments: %d in color SessionPalette\n", argc);
+			control->ReturnVal(API_NAK, "Wrong # of arguments");
+			return -1;
+		}
 	}
 
 	control->ReturnVal(API_NAK, "Unknown color command");

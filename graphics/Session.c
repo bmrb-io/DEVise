@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.91  2001/02/20 20:02:43  wenger
+  Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+  to the trunk.
+
   Revision 1.90.2.1  2001/02/16 21:37:46  wenger
   Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
   a web browser) on 'sets' of visual filters.
@@ -480,6 +484,11 @@ DataCatalog *Session::_dataCat = NULL;
 char *Session::_catFile = NULL;
 char *Session::_sessionFile = NULL;
 char *Session::_description = NULL;
+PaletteID Session::_defaultPalette = nullPaletteID;
+PaletteID Session::_sessionPalette = nullPaletteID;
+
+static const char *_sessionPaletteName = "session";
+static const char *_defaultPaletteName = "def";
 
 /*------------------------------------------------------------------------------
  * function: Session::Open
@@ -526,7 +535,6 @@ Session::Open(const char *filename)
 
   status += CheckWindowLocations();
 
-
 #if defined(DEBUG)
   printf("  finished Session::Open(%s)\n", filename);
   status.Print();
@@ -554,6 +562,43 @@ Session::Close()
   }
   _sessionFile = NULL;
 
+  if (_sessionPalette != nullPaletteID) {
+    //
+    // Get rid of the session-specific color palette, if any.
+    //
+    if (!PM_SetCurrentPalette(_defaultPalette)) {
+      reportErrNosys("Error resetting color palette to default");
+      status += StatusFailed;
+    }
+
+    // Note: it seems like maybe you should delete the palette colors
+    // here, but that just seems to produce errors.  RKW 2001-03-23.
+
+    if (!PM_DeletePalette(_sessionPalette)) {
+      reportErrNosys("Error deleting session-specific color palette");
+      status += StatusFailed;
+    }
+    _sessionPalette = nullPaletteID;
+
+	//
+	// Get rid of references to the session-specific color palette in
+	// the GUI.
+	//
+    ControlPanel *control = ControlPanel::Instance();
+
+	char cmdBuf[1024];
+    control->NotifyFrontEnd("global curpalette palettes pids");
+
+	sprintf(cmdBuf, "set curpalette %s", _defaultPaletteName);
+    control->NotifyFrontEnd(cmdBuf);
+
+	sprintf(cmdBuf, "unset pids(%s)", _sessionPaletteName);
+    control->NotifyFrontEnd(cmdBuf);
+
+	sprintf(cmdBuf, "unset palettes(%s)", _sessionPaletteName);
+    control->NotifyFrontEnd(cmdBuf);
+  }
+
   if (_description) {
     FreeString(_description);
   }
@@ -569,6 +614,7 @@ Session::Close()
   DeleteDataSources();
   CompositeParser::ResetAll();
   _isJsSession = false;
+
   return status;
 }
 
@@ -634,7 +680,6 @@ Session::Save(const char *filename, Boolean asTemplate, Boolean asExport,
       FreeString(stringWithEnv);
     }
 
-#if 0 // Temporarily disabling because of bug 441.
     fprintf(saveData.fp, "\n# Load color palette\n");
     PaletteID pid = PM_GetCurrentPalette();
     if (pid != nullPaletteID) {
@@ -644,11 +689,10 @@ Session::Save(const char *filename, Boolean asTemplate, Boolean asExport,
         status += StatusFailed;
       } else {
         string colors = palette->ToString();
-	fprintf(saveData.fp, "DEVise color CreateAndSetPalette \"%s\"\n",
+	fprintf(saveData.fp, "DEVise color SessionPalette {%s}\n",
 	  colors.c_str());
       }
     }
-#endif
 
     status += SaveDataSources(saveData.fp);
 
@@ -1137,6 +1181,88 @@ Session::GetDescription()
   return _description ? _description : "";
 }
 
+/*------------------------------------------------------------------------------
+ * function: Session::SetDefaultPalette
+ * Record the PaletteID of the default color palette.
+ */
+void
+Session::SetDefaultPalette()
+{
+#if defined(DEBUG)
+  printf("Session::SetDefaultPalette()\n");
+#endif
+
+  _defaultPalette = PM_GetCurrentPalette();
+
+#if defined(DEBUG)
+  printf("  default palette ID is: %ld\n", _defaultPalette);
+#endif
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::CreateSessionPalette
+ */
+DevStatus
+Session::CreateSessionPalette(const char *colors)
+{
+#if defined(DEBUG)
+  printf("Session::CreateSessionPalette(%s)\n", colors);
+#endif
+
+  DevStatus result(StatusOk);
+
+  string colStr(colors);
+  _sessionPalette = PM_NewPalette(colStr);
+
+  if (_sessionPalette == nullPaletteID) {
+    reportErrNosys("Couldn't create session-specific color palette");
+    result += StatusFailed;
+  } else {
+    if (!PM_SetCurrentPalette(_sessionPalette)) {
+      if (!PM_DeletePalette(_sessionPalette)) {
+        reportErrNosys("Error deleting session-specific color palette");
+      }
+      _sessionPalette = nullPaletteID;
+      reportErrNosys("Couldn't set session-specific color palette");
+      result += StatusFailed;
+    }
+  }
+
+  //
+  // Set up the Tcl/Tk GUI to reflect the new palette.
+  //
+  if (result.IsComplete()) {
+	const int bufSize = 1024 * 4;
+    char cmdBuf[bufSize];
+	cmdBuf[bufSize - 1] = '\0';
+    ControlPanel *control = ControlPanel::Instance();
+
+    control->NotifyFrontEnd("global curpalette palettes pids");
+    sprintf(cmdBuf, "set curpalette %s", _sessionPaletteName);
+    control->NotifyFrontEnd(cmdBuf);
+
+    PaletteID pid = PM_GetCurrentPalette();
+    sprintf(cmdBuf, "set pids(%s) %d", _sessionPaletteName, (int)pid);
+    control->NotifyFrontEnd(cmdBuf);
+
+    Palette* palette = PM_GetPalette(pid);
+	if (palette == nullPaletteID) {
+	  reportErrNosys("Error getting current palette");
+	  result += StatusFailed;
+	} else {
+      // Note: pColors *should* be the same as colors, but get it from
+      // the palette to be safe.  RKW 2001-03-22.
+      string pColors = palette->ToString();
+      sprintf(cmdBuf, "set palettes(%s) {%s}", _sessionPaletteName,
+	      pColors.c_str());
+      control->NotifyFrontEnd(cmdBuf);
+    }
+
+	DOASSERT(cmdBuf[bufSize - 1] == '\0', "Command buffer overflow");
+  }
+
+  return result;
+}
 
 /*------------------------------------------------------------------------------
  * function: Session::GetDataCatalog
@@ -1186,7 +1312,7 @@ Session::ReadSession(ControlPanelSimple *control, const char *filename, CommandP
     reportErrSys(errBuf);
 	result += StatusFailed;
   } else {
-    const int bufSize = 1024;
+    const int bufSize = 1024 * 4;
 	char lineBuf[bufSize];
 
 	while (ReadCommand(fp, lineBuf, bufSize) && result.IsComplete()) {

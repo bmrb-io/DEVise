@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.31  2001/01/08 20:32:19  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.29.2.4  2000/12/14 00:42:46  wenger
   Devise doesn't listen when image port is set to -1; jss starts devised
   that way so we don't use up extra ports.
@@ -1347,6 +1351,12 @@ Server::ReturnVal(ClientID clientID, u_short flag, int argc, const char * const 
 bool
 Server::ServerClientCmd(u_short flag, int argc, char** argv)
 {
+#if defined(DEBUG)
+    printf("Server::ServerClientCmd(");
+	PrintArgs(stdout, argc, argv, false);
+	printf(")\n");
+#endif
+
 	bool	success = true;
 	int		i;
 	char	*errmsg = NoError;
@@ -1368,7 +1378,7 @@ int
 Server::SendControl(u_short flag, int argc, char **argv, int addBraces)
 {
 #if defined(DEBUG)
-    printf("SendControl(");
+    printf("Server::SendControl(");
     int num;
     for (num = 0; num < argc; num++) {
       printf("<%s> ", argv[num]);
