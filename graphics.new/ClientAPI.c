@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.3  1996/05/11 01:52:17  jussi
+  Initial revision.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -96,27 +99,6 @@ static int OpenControlSocket()
   }
 
   return port;
-}
-
-int DeviseHost(char *hostName, int &port)
-{
-  const char *file = "server.dat";
-
-  FILE *fp = fopen(file, "r");
-  if (!fp) {
-    perror("Cannot open server.dat");
-    return -1;
-  }
-
-  if (fscanf(fp, "%s %d", hostName, &port) != 2) {
-    fclose(fp);
-    fprintf(stderr, "Cannot find server name in %s.\n", file);
-    return -1;
-  }
-
-  fclose(fp);
-
-  return 1;
 }
 
 int DeviseOpen(char *servName, int portNum, int control)

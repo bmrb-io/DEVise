@@ -15,10 +15,11 @@
 #ifndef ClientAPI_h
 #define ClientAPI_h
 
-extern int DeviseHost(char *hostName, int &port);
 extern int DeviseOpen(char *hostName, int port, int control);
 extern int DeviseReceive(char *result, int &flag, char *errorMsg);
 extern int DeviseSend(char **argv, int num);
 extern int DeviseClose();
+
+const int DefaultDevisePort = 6100;
 
 #endif
