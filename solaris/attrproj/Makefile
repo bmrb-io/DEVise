@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1996/11/05 19:46:55  wenger
+#  Fixed some bugs in the attribute projection code (handles blanks lines
+#  and much longer lines in projection files); removed unneeded -lpthread
+#  from Makefile for solaris attribute projection.
+#
 #  Revision 1.6  1996/09/26 18:54:00  jussi
 #  Added -lpthread to get thread support.
 #
@@ -42,7 +47,6 @@
 ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
 ARCH_LDPOST  = 
-#ARCH_LDPOST  = -lpthread
 
 VPATH = ../../attrproj:../../graphics:../../graphics.new
 include ../../attrproj/Makefile.base

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/09/26 18:53:45  jussi
+#  Added -lpthread to get thread support.
+#
 #  Revision 1.4  1996/07/18 14:17:24  jussi
 #  Removed -static flag to save disk space.
 #
@@ -31,7 +34,7 @@
 
 ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
-ARCH_LDPOST  = -lpthread
+ARCH_LDPOST  =
 
 VPATH = ../../attrproj:../../graphics:../../graphics.new
 include ../../attrproj/Makefile.base

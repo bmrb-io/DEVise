@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1996/10/04 19:59:25  wenger
+#  Temporarily (?) removed threads from Devise (removed -lpthread from
+#  some Makefiles so Purify works); other minor cleanups.
+#
 #  Revision 1.5  1996/09/26 18:53:46  jussi
 #  Added -lpthread to get thread support.
 #
@@ -39,7 +43,7 @@ ARCH_FLAGS   = -DSOLARIS -I/s/X11/include -I/s/tcl/include
 ARCH_LDFLAGS = -L /s/X11/lib -L /s/tcl/lib -R /s/X11/lib
 ARCH_SYSLIBS = -ltk -ltcl -lXmu -lXt -lXext -lX11 -lm
 ARCH_LDPOST  = -lsocket -lnsl
-ARCH_STATIC_LDPOST  = -lsocket -lnsl -lpthread -static
+ARCH_STATIC_LDPOST  = -lsocket -lnsl -static
 # Note: Purify works on SPARC/Solaris without the collector being specified.
 #ARCH_COLLECTOR	= /usr/ccs/bin/ld
 

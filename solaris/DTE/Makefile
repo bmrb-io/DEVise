@@ -15,13 +15,16 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/11/23 01:53:29  donjerko
+#  added standalone option
+#
 #  Revision 1.1  1996/11/18 21:08:05  donjerko
 #  *** empty log message ***
 #
 ############################################################
 
 ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include 
-#ARCH_LDFLAGS = -lpthread
+ARCH_LDFLAGS =
 
 DTE_DIR = ../../DTE
 VPATH = $(DTE_DIR)/Core $(DTE_DIR) $(DTE_DIR)/StandAlone

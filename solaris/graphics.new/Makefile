@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1996/11/18 18:14:21  donjerko
+#  Added final touches for DTE
+#
 #  Revision 1.11  1996/09/26 18:54:01  jussi
 #  Added -lpthread to get thread support.
 #
@@ -34,10 +37,8 @@
 ############################################################
 
 ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include 
-ARCH_LDFLAGS = -lpthread
+ARCH_LDFLAGS = -lsocket -lnsl
 
 VPATH = ../../graphics.new
 include $(VPATH)/Makefile.base
 include $(VPATH)/Makefile.solaris
-
-# DO NOT DELETE
