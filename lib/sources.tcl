@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.28  1996/02/05 19:55:40  jussi
+#	Location of dialog boxes changed a little.
+#
 #	Revision 1.27  1996/01/26 18:45:53  jussi
 #	Minor fix.
 #
@@ -681,11 +684,42 @@ proc cachePrune {avoid} {
 ############################################################
 
 proc uncacheData {dispname reason} {
-    global sourceList sourceConfig
+    global sourceList sourceConfig tmpdir env
+
+    # see if data stream open
+    if {[lsearch [TdataSet] $dispname] >= 0} {
+	dialog .cantUncache "Cannot uncache open stream" \
+		"Stream \"$dispname\" is open. Cannot remove\
+		cache and other files. Close session and then retry." \
+		"" 0 OK
+	return 0
+    }
+
+    set workdir "work"
+    if { [info exists env(DEVISE_WORK)] } {
+	set workdir $env(DEVISE_WORK)
+    }
+
+    set realCacheFile [isCached $dispname -1 -1]
+
+    # remove index and gdata files if they exist
+    set indexfile [format "$workdir/%s.cache" [file tail $realCacheFile]]
+    if {[file exists $indexfile]} {
+	# puts "Removing index file $indexfile..."
+	exec rm $indexfile
+    }
+
+    set gdatapattern [format "$tmpdir/DEVise_%ld/$dispname#*" [pid]]
+    foreach gdatafile [glob -nocomplain $gdatapattern] {
+	# puts "Removing gdata file $gdatafile..."
+	exec rm $gdatafile
+    }
 
     set sourcedef $sourceList($dispname)
     set cachefile [lindex $sourcedef 4]
 
+    # can't remove non-existent cache file (UNIXFILE sets cache
+    # file to an empty string)
     if {$cachefile == "" || $cachefile == "/dev/null"} {
 	return 0
     }
