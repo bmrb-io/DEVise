@@ -26,6 +26,12 @@ public class DEViseGData
                 width = -width;
             if (height < 0) 
                 height = -height;
+            x = x - width / 2;    
+            y = y - height / 2;
+            if (x < 0)
+                x = 0;
+            if (y < 0);
+                y = 0;    
         } catch (NumberFormatException e) {
             throw new YException("Invalid GData!");
         }

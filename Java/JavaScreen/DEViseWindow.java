@@ -226,7 +226,9 @@ public class DEViseWindow extends Component
             
             for (int i = 0; i < viewCursor.length; i++) 
                 viewCursor[i] = (DEViseCursor)tmp.elementAt(i);
-        }         
+        }
+        
+        repaint();         
     } 
     
     private void buildCursorImage()
@@ -280,7 +282,9 @@ public class DEViseWindow extends Component
             
             for (int i = 0; i < viewGData.length; i++) 
                 viewGData[i] = (DEViseGData)tmp.elementAt(i);
-        } 
+        }
+        
+        repaint(); 
     }
 
     public void buildGDataImage()
@@ -342,7 +346,7 @@ public class DEViseWindow extends Component
 
                 if (GDataImage != null) {
                     for (int i = 0; i < GDataImage.length; i++) {
-                        g.drawImage(GDataImage[i], viewGData[i].x - viewGData[i].width / 2, viewGData[i].y - viewGData[i].height / 2, this);
+                        g.drawImage(GDataImage[i], viewGData[i].x, viewGData[i].y, this);
                     }
                 }
             }

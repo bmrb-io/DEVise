@@ -635,35 +635,39 @@ public class DEViseCmdDispatcher implements Runnable
                         throw new YException("Null GData received for view " + viewname + "!", 6);
 
                     String gdataStr = new String(gdata);
-                    //YGlobals.Ydebugpn(gdataStr);
-                    String[] GData = YGlobals.Yparsestr(gdataStr, "\u0004");
-                    if (GData == null || GData.length != 1) {
-                        throw new YException("Invalid GData received for view " + viewname + "!", 6);
-                    }
-
-                    Vector rect = new Vector();
-                    for (int j = 0; j < GData.length; j++) {
-                        if (GData[j] == null)
+                    if (gdataStr.equals("\u0004")) {
+                        jscreen.updateGData(viewname, null);
+                    } else {
+                        //YGlobals.Ydebugpn(gdataStr);
+                        String[] GData = YGlobals.Yparsestr(gdataStr, "\u0004");
+                        if (GData == null || GData.length != 1) {
                             throw new YException("Invalid GData received for view " + viewname + "!", 6);
-
-                        //YGlobals.Ydebugpn(GData[j]);
-                        String[] results = DEViseGlobals.parseStr(GData[j]);
-                        if (results == null || results.length == 0)
-                            throw new YException("Invalid GData received for view " + viewname + "!", 6);
-
-                        for (int k = 0; k < results.length; k++) {
-                            DEViseGData data = null;
-                            try {
-                                data = new DEViseGData(results[k], xm, xo, ym, yo);
-                            } catch (YException e1) {
-                                throw new YException("Invalid GData received for view " + viewname + "!", 6);
-                            }
-
-                            rect.addElement(data);
                         }
-
-                        //YGlobals.Ydebugpn(viewname + " has " + rect.size() + " GData record!");
-                        jscreen.updateGData(viewname, rect);
+                    
+                        Vector rect = new Vector();
+                        for (int j = 0; j < GData.length; j++) {
+                            if (GData[j] == null)
+                                throw new YException("Invalid GData received for view " + viewname + "!", 6);
+                    
+                            //YGlobals.Ydebugpn(GData[j]);
+                            String[] results = DEViseGlobals.parseStr(GData[j]);
+                            if (results == null || results.length == 0)
+                                throw new YException("Invalid GData received for view " + viewname + "!", 6);
+                    
+                            for (int k = 0; k < results.length; k++) {
+                                DEViseGData data = null;
+                                try {
+                                    data = new DEViseGData(results[k], xm, xo, ym, yo);
+                                } catch (YException e1) {
+                                    throw new YException("Invalid GData received for view " + viewname + "!", 6);
+                                }
+                    
+                                rect.addElement(data);
+                            }
+                    
+                            //YGlobals.Ydebugpn(viewname + " has " + rect.size() + " GData record!");
+                            jscreen.updateGData(viewname, rect);
+                        }
                     }
                 } catch (NumberFormatException e) {
                     throw new YException("Incorrect data format for arguments " + cmd[2] + " " + cmd[3] + " " + cmd[4] + " " + cmd[5] + " " + cmd[6] + "!", 5);
