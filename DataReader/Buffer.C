@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/06/24 09:24:10  okan
+  *** empty log message ***
+
   Revision 1.7  1998/06/24 01:33:20  okan
   *** empty log message ***
 
@@ -143,8 +146,8 @@ Buffer::Buffer(char* fileName, DRSchema* myDRSchema) {
 		} else {
 			switch (myDRSchema->tableAttr[i]->getType()) {
 				case TYPE_INT:
-					extFunc[i] = getIntTo;
-					valFunc[i] = getIntVal;
+					extFunc[i] = &getIntTo;
+					valFunc[i] = &getIntVal;
 					break;
 				case TYPE_DOUBLE:
 					extFunc[i] = &getDoubleTo;
@@ -1140,7 +1143,7 @@ Status Buffer::extractField(Attribute* myAttr, char* dest) {
 		}
 	}
 		
-	retSt = extFunc[myAttr->whichAttr](myAttr,dest);
-	valFunc[myAttr->whichAttr](dest);
+	retSt = (this->*(extFunc[myAttr->whichAttr]))(myAttr,dest);
+	(this->*(valFunc[myAttr->whichAttr]))(dest);
 	return retSt;
 }
