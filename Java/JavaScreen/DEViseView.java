@@ -12,13 +12,22 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// This class holds view properties (such as location, cursors,
+// pile information, and so on).  Methods of this class are mostly
+// called by the DEViseCanvas class.
+
+// There is one instance of this class for each view in the session.
+// (This includes view symbols, piled views, etc.)
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.42  2000/04/05 15:42:24  wenger
+// Changed JavaScreen version to 3.3 because of memory fixes; other minor
+// improvements in code; conditionaled out some debug code.
+//
 // Revision 1.41  2000/04/05 06:25:39  hongyu
 // fix excessive memory usage problem associated with gdata
 //
@@ -168,6 +177,7 @@ public class DEViseView
 	removeAllGData();
     }
 
+    // ADD COMMENT -- what is a curly name??
     public String getCurlyName()
     {
         return curlyName;

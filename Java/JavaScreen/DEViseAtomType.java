@@ -12,13 +12,21 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// This class holds information for each atom "type" (element).
+// There is an image that is used to redraw the atoms by scaling
+// the image, unless the difference in size between the image and
+// what we need is too great.
+
+// There is one instance of this class for each "type" of atom (e.g., element).
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.8  2000/04/05 06:25:36  hongyu
+// fix excessive memory usage problem associated with gdata
+//
 // Revision 1.7  2000/03/23 16:26:12  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -40,7 +48,7 @@ public class DEViseAtomType {
 
     // the radius in data unit
     public float radius = 1.0f;
-    // The radius, diameter in pixel
+    // The radius, diameter in pixels
     public int R, D;
     // The color for the atom
     public Color color = null, XORcolor = null, selectedColor = Color.cyan;
@@ -49,6 +57,7 @@ public class DEViseAtomType {
     // The index color array for the atom
     private byte[] data, selectedData;
     // How to draw this atom, default is 0
+    // ADD COMMENT -- what does this mean??
     private int scheme = 1;
     // The image for this atom after apply drawScheme
     private Image image = null, selectedImage = null;
@@ -257,19 +266,28 @@ public class DEViseAtomType {
                 }
             }
 
+	    // Shade the atom.  Make part of it lighter, and part of it
+	    // darker.
             byte[] icmR = new byte[256], icmG = new byte[256], icmB = new byte[256];
-            icmR[0] = (byte)255;
-            icmG[0] = (byte)255;
-            icmB[0] = (byte)255;
             red = newcolor.getRed();
             green = newcolor.getGreen();
             blue = newcolor.getBlue();
-            for (int i = 1; i <= maxR; i++) {
-                float factor = (float)i / maxR;
+            int endLighter = maxR / 2;
+	    for (int i = 0; i <= endLighter; i++) {
+                float factor = (float)i / endLighter;
                 icmR[i] = (byte)blend(red, 255, factor);
                 icmG[i] = (byte)blend(green, 255, factor);
                 icmB[i] = (byte)blend(blue, 255, factor);
-            }
+	    }
+	    for (int i = endLighter + 1; i <= maxR; i++) {
+                float factor = (float)i / maxR;
+		factor = 1.0F - factor;
+		factor += 0.5; // avoid making things too dark...
+		factor = Math.min(factor, 1.0F);
+                icmR[i] = (byte)blend(red, 0, factor);
+                icmG[i] = (byte)blend(green, 0, factor);
+                icmB[i] = (byte)blend(blue, 0, factor);
+	    }
 
             IndexColorModel model = new IndexColorModel(8, maxR + 1, icmR, icmG, icmB, 0);
             newimage = component.createImage(new MemoryImageSource(D, D, model, newdata, 0, D));
@@ -282,6 +300,7 @@ public class DEViseAtomType {
         }
     }
 
+    // Factor = 0 -> returns bg; factor = 1 -> returns fg.
     private int blend(int fg, int bg, float fgfactor)
     {
         return (int)(bg + (fg - bg) * fgfactor);

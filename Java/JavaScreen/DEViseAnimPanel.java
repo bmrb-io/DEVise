@@ -12,13 +12,18 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// This class forks a thread to use to animate the gears in the corner
+// of the JavaScreen.  It does the animation by putting a new GIF onto
+// the screen several times a second.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.38  2000/03/23 16:26:11  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.37  1999/06/23 20:59:14  wenger
 // Added standard DEVise header.
 //

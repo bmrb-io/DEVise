@@ -12,13 +12,16 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// Subclass of Exception for our exceptions.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.12  2000/03/23 16:26:16  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.11  1999/12/10 15:37:01  wenger
 // Added standard headers to source files.
 //
@@ -34,7 +37,7 @@ public class YException extends Exception
     // indicate the error message
     private String msg = null;
 
-    private static String defaultMsg = "YException has been throwed!";
+    private static String defaultMsg = "YException has been thrown!";
 
     public YException()
     {

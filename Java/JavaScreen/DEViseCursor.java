@@ -12,13 +12,19 @@
 
 // ------------------------------------------------------------------------
 
-// $Id$
+// ADD COMMENT: overall description of the function of this class
+
+// There is one instance of this class for each cursor in the
+// session.
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// $Id$
 
 // $Log$
+// Revision 1.17  2000/04/05 06:25:39  hongyu
+// fix excessive memory usage problem associated with gdata
+//
 // Revision 1.16  2000/03/23 16:26:14  wenger
 // Cleaned up headers and added requests for comments.
 //

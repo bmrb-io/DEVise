@@ -10,15 +10,18 @@
 // or altered in any way without prior permission from the DEVise
 // Development Group.
 
-// $Id$
-
 // ------------------------------------------------------------------------
 
 // ADD COMMENT: overall description of the function of this class
 
 // ------------------------------------------------------------------------
 
+// $Id$
+
 // $Log$
+// Revision 1.35  2000/03/23 16:26:14  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.34  2000/03/08 21:23:25  wenger
 // Fixed bug 568 (crash when opening some sessions in the JavaScreen):
 // reset devised timeout in jspop to a better value; JavaScreenCmd now

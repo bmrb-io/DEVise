@@ -12,13 +12,19 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// This class is used to display the mouse location in data units
+// in the text boxes in the upper right corner of the JavaScreen.
+
+// There is only one instance of this class.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.43  2000/03/23 16:26:15  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.42  1999/10/10 08:49:53  hongyu
 // Major changes to JAVAScreen have been commited in this update, including:
 // 1. restructure of JavaScreen internal structure to adapt to vast changes

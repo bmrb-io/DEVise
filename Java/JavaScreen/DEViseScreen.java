@@ -10,15 +10,20 @@
 // or altered in any way without prior permission from the DEVise
 // Development Group.
 
-// $Id$
-
 // ------------------------------------------------------------------------
 
 // ADD COMMENT: overall description of the function of this class
 
+// There is one instance of this class for the entire JavaScreen.
+
 // ------------------------------------------------------------------------
 
+// $Id$
+
 // $Log$
+// Revision 1.50  2000/04/05 06:25:39  hongyu
+// fix excessive memory usage problem associated with gdata
+//
 // Revision 1.49  2000/03/31 19:29:16  wenger
 // Changed code so that views and GData objects get garbage collected when
 // a session is closed; added debug code for tracking construction and

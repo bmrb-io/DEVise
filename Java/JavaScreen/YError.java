@@ -12,13 +12,16 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// Subclass of Error for our errors.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.6  2000/03/23 16:26:16  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.5  1999/12/10 15:37:01  wenger
 // Added standard headers to source files.
 //
@@ -27,7 +30,7 @@
 
 public class YError extends Error
 {
-    private static String defaultMsg = "YError has been throwed!";
+    private static String defaultMsg = "YError has been thrown!";
 
     public YError()
     {

@@ -12,13 +12,20 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// Three-dimensional linear coordinate system.
+
+// This class implements various mathematical functions (translation,
+// rotation, etc.) relating to 3D transformations.  Note that this
+// class is rather general, not specific to the DEVise JavaScreen.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.4  2000/04/05 06:25:26  hongyu
+// fix excessive memory usage problem associated with gdata
+//
 // Revision 1.3  2000/03/23 16:26:11  wenger
 // Cleaned up headers and added requests for comments.
 //

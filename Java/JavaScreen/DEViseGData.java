@@ -10,15 +10,22 @@
 // or altered in any way without prior permission from the DEVise
 // Development Group.
 
-// $Id$
-
 // ------------------------------------------------------------------------
 
 // ADD COMMENT: overall description of the function of this class
 
+// There is once instance of this class for each GData record the
+// JavaScreen is handling.
+
 // ------------------------------------------------------------------------
 
+// $Id$
+
 // $Log$
+// Revision 1.30  2000/04/05 15:42:23  wenger
+// Changed JavaScreen version to 3.3 because of memory fixes; other minor
+// improvements in code; conditionaled out some debug code.
+//
 // Revision 1.29  2000/04/05 06:25:39  hongyu
 // fix excessive memory usage problem associated with gdata
 //

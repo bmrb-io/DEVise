@@ -10,15 +10,20 @@
 // or altered in any way without prior permission from the DEVise
 // Development Group.
 
+// ------------------------------------------------------------------------
+
+// This class contains a number of constants and utility functions.
+// Note: all members are static.
+
+// ------------------------------------------------------------------------
+
 // $Id$
 
-// ------------------------------------------------------------------------
-
-// ADD COMMENT: overall description of the function of this class
-
-// ------------------------------------------------------------------------
-
 // $Log$
+// Revision 1.36  2000/04/05 15:42:23  wenger
+// Changed JavaScreen version to 3.3 because of memory fixes; other minor
+// improvements in code; conditionaled out some debug code.
+//
 // Revision 1.35  2000/03/23 16:26:14  wenger
 // Cleaned up headers and added requests for comments.
 //

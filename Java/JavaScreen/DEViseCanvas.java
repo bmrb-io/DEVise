@@ -14,11 +14,18 @@
 
 // ADD COMMENT: overall description of the function of this class
 
+// There is one instance of this class for each top-level view in
+// the session (note that if top-level views are piled, there's only
+// one DEViseCanvas for the entire pile).
+
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.38  2000/04/05 06:25:36  hongyu
+// fix excessive memory usage problem associated with gdata
+//
 // Revision 1.37  2000/04/03 22:24:52  wenger
 // Added named constants for GData symbol types; 3D GData symbols are now
 // differentiated by symbol type instead of string; removed some commented-
@@ -50,6 +57,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.38  2000/04/05 06:25:36  hongyu
+// fix excessive memory usage problem associated with gdata
+//
 // Revision 1.37  2000/04/03 22:24:52  wenger
 // Added named constants for GData symbol types; 3D GData symbols are now
 // differentiated by symbol type instead of string; removed some commented-
