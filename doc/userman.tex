@@ -50,7 +50,7 @@
 \section{Tutorial Session with \Devise}
 {\em
   
-  This session is intended to give a feel for DEVise. If you do know fairly how to use it, skip on to the next section.
+  This session is intended to give a feel for DEVise. If you do know how to use it fairly well, skip on to the next section.
 
 }
 
@@ -58,19 +58,19 @@
 \scaleepspic[0.4\textwidth]{screen2.ps}{File select Window\label{screen2}}
 
 
-\subsection{ The Conquest begins..}
+\subsection{ Open a session}
 	
 
 	Now that you have successfully installed the system , the next thing to do is to get a feel for DEVise and what it can do for you.
 
 
-	Go to the {\em run } directory and type run to startup DEVise. If all goes well and your installation was right, you would get a window named {\em DEVise}. This is the {\em Control Panel }, the nerve center of DEVise. Now click on Session. ( You can also type Alt-S if you like the keyboard better ! ) This would bring up the session window. A session in DEVise is nothing but a collection of windows and mappings. ( for the moment ! ) Now click on Open . This brings up a window named {\em Select file } with a lot of tk files. Now open the demo.tk file. You can do this by double clicking on the demo.tk name or clicking once and pressing OK. {\em Almost everywhere in case of selection, you can double click on the option or filename etc.., or click once on them and then click on the OK button }
+	Go to the {\em run } directory and type run to startup DEVise. If all goes well and your installation was right, you would get a window named {\em DEVise}. This is the {\em Control Panel }, the nerve center of DEVise. Now click on Session. (You can also type Alt-S if you like the keyboard better!) This would bring up the session window. A session in DEVise is nothing but a collection of windows and mappings. (for the moment!) Now click on Open . This brings up a window named {\em Select file } with a lot of tk files. Now open the demo.tk file. You can do this by double clicking on the demo.tk name or clicking once and pressing OK. {\em Almost everywhere in case of selection, you can double click on the option or filename etc.., or click once on them and then click on the OK button }
 
-\subsection{ The visualization }
+\subsection{ Visualization }
 
 \scaleepspic[\textwidth]{screen3.eps}{Data Display Windows\label{screen3}}
 
-	The screen would now be filled with  3 windows named {\em Global view}, {\em Trade Price} and {\em Trade Volume}. The various graphs represent the trade price and volume data from different company files. The various lines are in fact the actual field values. Each graph is called a {\em view}. Any view can be made {\em current } by clicking within its boundary. Whatever action that you do, is essentially done on the current view.( though as you will see later, there can be side-reactions.) You can see that the current view is marked with a colored rectangle surrounding the view.
+	The screen would now be filled with  3 windows named {\em Global view}, {\em Trade Price} and {\em Trade Volume}. The various graphs represent the trade price and volume data from different company files. The various lines are in fact the actual field values. Each graph is called a {\em view}. Any view can be made {\em current } by clicking within its boundary. Whatever action that you do, is essentially done on the current view.(though as you will see later, there can be side-reactions.) You can see that the current view is marked with a colored rectangle surrounding the view.
 
 
 	You can play around with these windows as any other normal X-term window. i.e. you can resize the windows, move them around, close them etc..
@@ -79,88 +79,88 @@
 	What you see in the views is a partial snapshot of the trade prices and trade volumes of various companies. Now lets get down to exploring the views. Click on the IBM price view in the Trade Price window. Make sure the number lock is on and start using the numeric keypad now.
 
 
-	You can use the numeric keypad ( for convenience ) to scroll, zoom in and zoom out. The numbers 4 and 5 scroll the view left and right respectively. Now as you do the scrolling you can find two interesting things happening. One is that the other views ( excepting the global view ) also scroll. And two, a colored block moves in the global view.
+	You can use the numeric keypad (for convenience) to scroll, zoom in and zoom out. The numbers 4 and 6 scroll the view left and right respectively. Now as you do the scrolling you can find two interesting things happening. One is that the other views (excepting the global view) also scroll. And two, a colored block moves in the global view.
 
 \subsection{Links, Cursors...}
 
 
-	All the views ( excepting the global view ) were linked together on their X-axis. What this means is that the X axis ranges ( high and low ) are the same for all the views linked. Thus you can see the snapshot of all the companies for the same X value ( here it is date ) at the same time. In this way you can also link the views ( either all of them or some of them ) along the Y axis or on a color, shape etc.. Thus this linking essentially helps to you to view the required graphs in the same range on any attribute.
+	All the views (excepting the global view) were linked together on their X-axis. What this means is that the X axis ranges (high and low) are the same for all the views linked. Thus you can see the snapshot of all the companies for the same X value (here it is date) at the same time. In this way you can also link the views (either all of them or some of them) along the Y axis or on a color, shape etc.. Thus this linking essentially helps to you to view the required graphs in the same range on any attribute.
 
-	Next let us go to exploring the colored band in the global view. This is called the {\em cursor }. If you observe carefully, the colored band is actually the view that you see under IBM price. The global view displays all the records in the IBM file and the cursor marks the part that you are seeing as a separate view. The IBM price view and the global view are linked by this cursor. when you zoom in on the X axis ( using 7 ), the cursor becomes smaller since the view now, is only a smaller portion of the overall data. you can also move the cursor from the global view window, by clicking under the X axis ( on the global view window ) . As you can see the cursor is repositioned to that point and all the views also change. Thus intersting patterns on the global view can be analyzed by moving the cursor to that point and zooming in on the view. Similarly as you zoom out on the trade price or trade volume views the cursor is enlarged.
-
-
-\subsection{The Y axis tricks..}
+	Next let us go to exploring the colored band in the global view. This is called the {\em cursor }. If you observe carefully, the colored band is actually the view that you see under IBM price. The global view displays all the records in the IBM file and the cursor marks the part that you are seeing as a separate view. The IBM price view and the global view are linked by this cursor. When you zoom in on the X axis (using 7), the cursor becomes smaller since the view now, is only a smaller portion of the overall data. You can also move the cursor from the global view window, by clicking under the X axis (on the global view window) . As you can see the cursor is repositioned to that point and all the views also change. Thus intersting patterns on the global view can be analyzed by moving the cursor to that point and zooming in on the view. Similarly as you zoom out on the trade price or trade volume views the cursor is enlarged.
 
 
-	Now as you might have thought, keys 8 and 2 are for scrolling up and down on the Y axis. Again as you would have guessed keys 1 and 3 are for zooming in and zooming out on the Y axis, but just a moment. Zooming in on the Y axis would change the Y range from -ve value to a +value. The bar chart that we are displaying contains no information on the negative side. So to zoom in on the Y axis only on the positive side, use the combination of scrolling down/up and zooming up/down. i.e. to zoom in  use 1 {\em followed by } 8 and to zoom out use 3 {\em followed by } 2.   
+\subsection{ Y Axis Tricks..}
+
+
+	Now as you might have thought, keys 8 and 2 are for scrolling up and down on the Y axis. Again as you would have guessed keys 1 and 3 are for zooming in and zooming out on the Y axis, but just a moment. Zooming in on the Y axis would change the Y range from some negative value  value to some positive value. The bar chart that we are displaying contains no information on the negative side. So to zoom in on the Y axis only on the positive side, use the combination of scrolling down/up and zooming up/down. i.e. to zoom in  use 1 {\em followed by } 8 and to zoom out use 2 {\em followed by } 3.   
 
 
 	Now that you know how to play around with the views, let us go to some other interesting stuff, like hiding a unwanted view, reviving and also analyzing it.
 
-\subsection{The View controller}
+\subsection{Controlling views}
 
-	Now shift your attention to the control panel. We will concentrate on the {\em View } option. The rest will be dealt in detail in the next sections. Now click on View. ( Move the global view window, if it obscures it. ) Now you can see several options displayed. We will concentrate on some of them.
+	Now shift your attention to the control panel. We will concentrate on the {\em View } option. The rest will be dealt in detail in the next sections. Now click on View. (Move the global view window, if it obscures it.) Now you can see several options displayed. We will concentrate on some of them.
 
-\subsubsection{Moving around views}
+\subsubsection{Moving Around Views}
 
 
 	First let us look at the swap position. This helps to swap the position of the latest two views clicked. The two views to be swapped must be in the same window. Click on the views you need to swap in sequence. Now click on the View option followed by Swap Position option. The two views exchange places.
 
 
-	You can throw away any view that you do not like from a window, by using the Remove from window option. As an example click on IBM price view in the trade Price window. Now use the Remove from window weapon under the view option, to junk this view. The view disappears from the window but not from DEVise's internal world.( Actually in a netherworld! ) 
+	You can throw away any view that you do not like from a window, by using the Remove from window option. As an example click on IBM price view in the trade Price window. Now use the Remove from window weapon under the view option, to junk this view. The view disappears from the window but not from DEVise's internal world.
 
 
-	To bring back any view from the netherworld, use the revival mechanism, Bring back to window option. This one gives you a list of views that you need to bring back to the window. Click on the CLOSE Vs Date4 and click on OK.(or double click on Close vs Date4) now another box pops up to ask you where to put the view, i.e. in which window. Select Trade Price to restore the IBM price view back to its place. 
+	To bring back any view, use the revival mechanism- "Bring back to window" option. This one gives you a list of all views, including those that are displayed and those that have been removed. Click on the CLOSE Vs Date4 and click on OK.(or double click on Close vs Date4) now another box pops up to ask you where to put the view, i.e. in which window. Select Trade Price to restore the IBM price view back to its place. 
 
 	
-	Now you can also push the views in to various windows using the Move to window option. Before using it, select the view that you want to move ( by clicking on it ) and then select Move to window option. It displays a list of window names. Choose the name of the window to move the view into.
+	Now you can also push the views in to various windows using the Move to window option. Before using it, select the view that you want to move (by clicking on it) and then select Move to window option. It displays a list of window names. Choose the name of the window to move the view into.
 
 
-	Off to the toggle menus. Click on Toggle X axis, to switch on or switch off the X axis values. Currently the X axis values have been disabled , except in the global view {\em ( Why ? ) } The submenu All/current view lets you toggle the view selected or all the views. Similarly the Y axis values can be toggled. If you carefully observe, when the X axis is toggled off in the global view, there is no way of moving the cursor directly in that window, since to move the cursor we need to click under the X axis. 
+	Off to the toggle menus. Click on Toggle X axis, to switch on or switch off the X axis values. Currently the X axis values have been disabled, except in the global view {\em (Why?) } The submenu All views/Current view lets you toggle all the views or the view selected. Similarly the Y axis values can be toggled. If you carefully observe, when the X axis is toggled off in the global view, there is no way of moving the cursor directly in that window, since to move the cursor we need to click under the X axis. 
 
 \subsubsection{Colors and Titles}
 
 
-	The Title option allows you to change the title of the current view. You can also  delete the title of a view. If you do so then for that view the current view indicator ( The rectangle that was surrounding a view ) becomes a bar on the left.
+	The Title option allows you to change the title of the current view. You can also  delete the title of a view. If you do so then for that view the current view indicator (the rectangle that was surrounding a view) becomes a bar on the left.
 
 
-	The background option gives you the power to change the background color to your favourite one. {\em ( Not yet supported ) } Now lets move on to the statistics part.
+	The background option gives you the power to change the background color to your favourite one. {\em (Not yet supported) } Now lets move on to the statistics part.
 
 
-\subsubsection{And now the statistics..}
+\subsubsection{Statistics}
+
+
+	All along you might have wondered on the presence of a line across each view. This is the statistical mean line for the view and for that particular X range. This can be set or reset using the Statistics menu. This menu yields a {\em tear down } sub-menu. By clicking on the dashed lines on top of the sub-menu you can make it an independent window and use the options directly from that window.
+
+	So now click on the dashed line and move the window to a desired position on the screen. You will find that the Mean option has a red block before it meaning that it has been currently chosen. Click on the Mean, Max.. words to toggle them. Now press Apply to apply your changes. To remove the statistical lines, simply check the Mean, Max .. options off and press apply. You can also set the confidence intervals to be 85, 90, 95 percentages or none. The All views/Current view option makes the selections affect all the views or only the current view.
+
+
+\subsubsection{Kiviat Graph}
 
 \scaleepspic[0.4\textwidth]{screen5.eps}{Kiviat Graphs\label{screen5}}
-
-	All along you might have wondered on the presence of a line across each view. This is the statistical mean line for the view. ( and for that particular X range ) This can be set or reset using the Statistics menu. This menu yields a {\em tear down } sub-menu. By clicking on the dotted lines on top of the sub-menu you can make it an independent window and use the options directly from that window.
-
-	So now click on the dotted line and move the window to a desired position on the screen. You will find that the Mean option has a red block before it meaning that it has been currently chosen. Click on the Mean, Max.. words to toggle them. Now press Apply to apply your changes. To remove the statistical lines, simply check the Mean, Max .. options off and press apply. You can also set the conference intervals to be 85, 90, 95 percentages or none. The current/All views option makes the selections affect all the views or only the current view.
-
-
-\subsubsection{The Kiviat graph}
-
 	
-	You can also use the Kiviat graph tool to analyze the views. The KGraph sub-menu is also a tear down one. As in the case of the statistical sub-menu you can set the Mean, Max , Min or Count ( But only one of them for each graph) For each choice you can ask DEVise to give you a new Kiviat graph or resue the last one. This graph is also computed only for the particular X range. So scrolling the views would also change the graph displayed. Also you can use the middle button of the mouse to know the value of the record. The K Graph is for a particular window. Click on a view in a window to make the window {\em current.}  Then use the K Graph for all the views in that window. 
+	You can also use the Kiviat graph tool to analyze the views. The KGraph sub-menu is also a tear down one. As in the case of the statistical sub-menu you can set the Mean, Max, Min or Count (but only one of them for each graph). For each choice you can ask DEVise to give you a new Kiviat graph or reuse the last one. This graph is also computed only for the particular X range. So scrolling the views would also change the graph displayed. Also you can use the middle button of the mouse to know the value of the record. The KGraph is for a particular window. Click on a view in a window to make the window {\em current.}  Then use the K Graph for all the views in that window. 
 
 
-\subsection{Oops, I made a mistake..!}
+\subsection{Undo Mistakes}
 
 \scaleepspic[0.4\textwidth]{screen4.eps}{The history screen\label{screen4}}
 
 	
-	If you do accidently commit a mistake of zooming in or something else and want to recover back, there is a nice history system supported by DEVise. The back one option in the control panel sets the X and Y values to the previous value. Then pressing use would undo the last change. Also clicking on history gives you a box full of X and Y axis values, that were used. You can click on any one of them and then press use. You can also directly edit the axis values. The undo-edit then comes in handy to undo any wrong values entered. 
+	If you do accidently commit a mistake of zooming in or something else and want to recover back, there is a history system supported by DEVise. The back one option in the control panel sets the X and Y values to the previous value. Then pressing use would undo the last change. Also clicking on history gives you a box full of X and Y axis values, that were used. You can click on any one of them and then press use. You can also directly edit the axis values. The undo-edit then comes in handy to undo any wrong values entered. 
 
 
 
-\subsection{For the mouse lovers..}
+\subsection{Mouse control}
 
 	
-	A gratifying remark for the mouse lovers. If you like to use the mouse only, for the scrolling and zooming etc.. , you can do that too! DEVise's control panel has the arrow symbols in its left corner. The keys function like the numeric keys.
+	If you like to use the mouse only, for the scrolling and zooming etc.. , you can do that too! DEVise's control panel has the arrow symbols in its left corner. The keys function like the numeric keys.
 
 
 \subsection{One last trick..}
 
 	
-	You might be curious about the button labeled display mode in the control panel. This is useful when you are resizing windows. If a large set of data is being viewed, then while resizing the windows, you may not want DEVise to be recomputing every time until you finalize the window sizes, position etc.. So clicking on this toggles it to Layout mode in which none of the views are computed nor displayed. then go ahead resize the windows and toggle the button back to display mode.
+	You might be curious about the button labeled display mode in the control panel. This is useful when you are resizing windows. If a large set of data is being viewed, then while resizing the windows, you may not want DEVise to be recomputing every time until you finalize the window sizes, position etc.. So clicking on this toggles it to Layout mode in which none of the views are computed nor displayed. Then go ahead resize the windows and toggle the button back to display mode.
 
 
 
@@ -179,11 +179,11 @@
 
 \subsection{Data Stream}
 
-	The Data stream is the set of records that are to be visualized using a given schema. For example the daily stock prices for a company can be a data stream. Data streams may come from different sources. For example, it could either be a UNIX file, or could come from the output of a SEQ query. With regard to the business data, the data sources can be from COMPUSTAT, CRSP or ISSM tapes.
+	The Data stream is the set of records that are to be visualized using a given schema. For example, the daily stock prices for a company can be a data stream. Data streams may come from different sources. For example, it could either be a UNIX file, or could come from the output of a SEQ query. With regard to the business data, the data sources can be from COMPUSTAT, CRSP or ISSM tapes.
 
-	The data streams can be edited from the Data Stream window. Each Data  stream is associated with any one of the types mentioned above. Also associated with each stream is a key to uniquely identify the stream from the other streams. In the case of the SEQ streams a query can be given as the input and the results of the query are computed and cached as a data stream.
+	The definition of data streams can be edited from the Data Stream window. Each Data  stream is associated with any one of the types mentioned above. Also associated with each stream is a schema that describes the layout and the fields of the stream, and a key to uniquely identify the stream from the other streams. In the case of the SEQ streams a query can be given as the input and the results of the query are computed and cached as a data stream.
 
-Following is a description of the various data streams.
+Following is a description of the various types of data streams.
 
 \subsubsection{Unix File}
 
@@ -200,27 +200,25 @@ XXXXXXXXXx \= XXXXXXXXXX \= XXXXXXXXXX \kill
 ... 
 \end{tabbing}
 
-Any program can be made to generate this simple output and thus can use this UNIXFILE type of stream for the visualization. The schema defines the delimiter ( Here a blank space ), comment character ( Here \# )  as mentioned above and also assigns the meaning to the various columns. The key must be a valid full Unix pathname.
-
-The file may be either in  ASCII or binary format. 
+Any program can be made to generate this simple output and thus can use this UNIXFILE type of stream for the visualization. The schema defines the delimiter (here a blank space), comment character (here \#)  as mentioned above and also assigns the meaning to the various columns. The file is selected by pressing the select button next to the key field. 
 
 
 \subsubsection{WWW Data}
 
-This data stream may come from any WWW source. The URL ( Uniform Resource Locator ) could either be one using ftp, gopher or http. The data is cached from the Web. This method offers the advantage of directly using the WWW data without additional effort. As in the case of the UNIXFILE type the delimiter and comment characters can also be specified.  The key must be a unique name within this file type.
+This data stream may come from any WWW source. The URL (Universal Resource Locator) could either be one using ftp or http. The data is cached from the Web. This method offers the advantage of directly using the WWW data without additional effort. As in the case of the UNIXFILE type the stream delimiter and comment characters must be specified in the schema.  The key must be a unique name within this file type.
 
-e.g. http://www.best.com/~pierre/invest/data/SP500Index.txt would cache the data from the file SP500Index.txt present at the given URL location.
+E.g. http://www.best.com/~pierre/invest/data/SP500Index.txt would cache the data from the file SP500Index.txt present at the given URL location.
 
 \subsubsection{SEQ Query}
 
-The query can be specified when defining the data stream. The query is then sent to the SEQ query processor and the result of the query is cached on to the disk under the key name given. A sample query looks as shown below. The key name needs to be distince in this SEQ domain.
+The query can be specified when defining the data stream. The query is then sent to the SEQ query processor and the result of the query is cached on to the disk under the key name given. A sample query looks as shown below. The key name needs to be distinct in this SEQ domain.
 
 ....
 
 
 \subsubsection{CRSP Data}
 
-The CRSP ( Center for Research in Security Prices ) provides comprehensive price data via two primary stock files, the NYSE/AMEX file and the Nasdaq file. The CRSP data is available in a tape. The information stored consists of company name, distribution, share, delisting and Nasdaq information. The NYSE/AMEX Daily file contains data beginning July 2 1962 and tracks roughly 7,250 securities. The Nasdaq file contains information for over 12,500 common stocks stored on the Nasdaq stock market, since Dec 14, 1972.                       
+The CRSP (Center for Research in Security Prices) provides comprehensive price data via two primary stock files, the NYSE/AMEX file and the Nasdaq file. The CRSP data is available in a tape. The information stored consists of company name, distribution, share, delisting and Nasdaq information. The NYSE/AMEX Daily file contains data beginning July 2 1962 and tracks roughly 7,250 securities. The Nasdaq file contains information for over 12,500 common stocks stored on the Nasdaq stock market, since Dec 14, 1972.                       
 
 
 \subsubsection{COMPUSTAT Data}
@@ -230,7 +228,7 @@ COMPUSTAT is a database of financial, statistical, and market information. It pr
 
 \subsubsection{ISSM Data}
 
-The ISSM ( Institute for the study of security markets ) is another institute that provides transaction data for NYSE and AMEX listed securities and NASD securities. The data for NYSE and AMEX are available from 1983 to the present, whereas for  NASD it is available from 1990 to the present. The data record consists of trades and quotes timed to the second. Ancillary information such as CUSIP numbers, firm names, shares outstanding and dividend information are also provided. One of the heavily traded firm ( IBM ) for example has over 800,000 trades and quotes in 1991. This is also available in tape form. 
+The ISSM (Institute for the study of security markets) is another institute that provides transaction data for NYSE and AMEX listed securities and NASD securities. The data for NYSE and AMEX are available from 1983 to the present, whereas for  NASD it is available from 1990 to the present. The data record consists of trades and quotes timed to the second. Ancillary information such as CUSIP numbers, firm names, shares outstanding and dividend information are also provided. One of the heavily traded firm (IBM) for example has over 800,000 trades and quotes in 1991. This is also available in tape form. 
 
 \subsubsection{SQL Query}
 
@@ -259,7 +257,7 @@ This is similar to the SEQ query except that the SQL query is passed to a databa
 
  The attribute name gives the particular field of a record, a name to be associated with. DEVise would then treat this field with the name given. For example in the schema described above, sin is the name of the first attribute. This name is used when defining the attributes to be used for the X and Y axes in defining views.
 
- The attribute name can be changed by using the schema description window. ( By using the physical option under schema main option) 
+ The attribute name can be changed by using the schema description window. (By using the physical option under schema main option) 
 
 
 \subsubsection{Attribute Type}
@@ -272,7 +270,7 @@ This is similar to the SEQ query except that the SQL query is passed to a databa
 
 \subsubsection{Sorted vs.\ Unsorted}
 
-The records in the stream may be sorted on a field, say YEAR. This can also be specified in the physical schema. DEVise uses this information for creating a progressive display. i.e. instead of displaying the data in a continuos fashion. ( which may take quite some time for dense data ) it displays them in an interleaved fashion. This helps in seeing a faster outline of the data followed by progressive {\em filling} in of the remaining slots.
+The records in the stream may be sorted on a field, say YEAR. This can also be specified in the physical schema. DEVise uses this information for creating a progressive display. i.e. instead of displaying the data in a continuos fashion. (which may take quite some time for dense data) it displays them in an interleaved fashion. This helps in seeing a faster outline of the data followed by progressive {\em filling} in of the remaining slots.
 
 \subsection{Logical Schema}
 
@@ -280,11 +278,11 @@ The logical schema defines a logical view on the physical schema defined. It is 
 
 The group may be nested. The top-level groups are those that are on the top of the hierarchy of the group attributes. The groups may be nested to any arbitrary level and may consist of any number of attributes.
 
-For any physical schema, by default a logical schema with the same name as that of the physical schema is created with all the attributes in the physical schema.( Basically one group consisting of all the attributes ) 
+For any physical schema, by default a logical schema with the same name as that of the physical schema is created with all the attributes in the physical schema.(Basically one group consisting of all the attributes) 
 
 \subsubsection{Name of Physical Schema}
 
-Each logical schema is a view definition of one physical schema ( only one physical schema ) The physical schema name in the logical schema associates the logical schema with the particular physical schema. As said already a default logical schema is created for every physical schema that has the same name as the physical schema with all the attributes. Any creation or modification to a logical schema needs to proceed first by the selection of the appropriate physical schema, so the name of the physical schema is implicitly built in to the logical schema definition.
+Each logical schema is a view definition of one physical schema (only one physical schema) The physical schema name in the logical schema associates the logical schema with the particular physical schema. As said already a default logical schema is created for every physical schema that has the same name as the physical schema with all the attributes. Any creation or modification to a logical schema needs to proceed first by the selection of the appropriate physical schema, so the name of the physical schema is implicitly built in to the logical schema definition.
 
 \subsubsection{Group Name}
 
@@ -333,7 +331,7 @@ The orientation decides the tilt of the objects that would be displayed for the 
 
 \subsubsection{Shape}
 
-The points can be plotted as one of the following, Rectangle ( Rect ), Square ( RectX) , Bar , Polygon, Oval, Vector or Block. The shapes again may be defined as a constant or variable values. The default is the bar. The square ( RectX) gives a visual square shape, block represents a 3 dimensional block, and a polygon represents a dodecagon. The vector is a directional one, with an arrow at the end. The bar begins from the point (x,0) to the point (x,y). 
+The points can be plotted as one of the following, Rectangle (Rect), Square (RectX) , Bar , Polygon, Oval, Vector or Block. The shapes again may be defined as a constant or variable values. The default is the bar. The square (RectX) gives a visual square shape, block represents a 3 dimensional block, and a polygon represents a dodecagon. The vector is a directional one, with an arrow at the end. The bar begins from the point (x,0) to the point (x,y). 
 
 \subsubsection{Shape Attributes}
 
@@ -359,7 +357,7 @@ A view is used to display a range of the attributes selected for that view. Each
 
 \subsubsection{Title}
 
-The view title is independent of the graph displayed and may be modified by the user. As a default the view name is  "$<X attrib name > VS <Y attrib name >$" ( e.g. DATE VS SALES. The title may be edited using the Title choice under the View option.  The title may be deleted in which case the {\em current view indicator} which is normally a rectangular boundary surrounding the view becomes a rectangular bar on the left edge. DEVise attaches no significance of the title and the data displayed in that view. It is left to the discretion of the user.
+The view title is independent of the graph displayed and may be modified by the user. As a default the view name is  "$<X attrib name > VS <Y attrib name >$" (e.g. DATE VS SALES. The title may be edited using the Title choice under the View option.  The title may be deleted in which case the {\em current view indicator} which is normally a rectangular boundary surrounding the view becomes a rectangular bar on the left edge. DEVise attaches no significance of the title and the data displayed in that view. It is left to the discretion of the user.
 
 \subsubsection{Axes}
 
@@ -392,13 +390,13 @@ Windows can be duplicated, a very handy feature.
 
 In the arrangement of views within windows, the automatic mode selects the appropriate layout according to the dimensions of the window. e.g. if the window is long and thin, then a horizontal arrangement is chosen etc.. The views may also be arranged in a fixed way viz. Horizontal or Vertical and the number of views to be stacked either horizontally or vertically may also be defined.
 
-When changing the window sizes, sometimes ( particularly when the data set is large ) it may be desirable to stop DEVise from redrawing the graphs as the windows are altered and instead draw after all the changes have been done. Such a provision is provided by the Layout/ Display button in the control panel. Toggling it to the Layout mode stops DEVise from redrawing any views, while the window shapes may be altered. After the changes are done, toggling the switch back to Display mode starts the activity again.
+When changing the window sizes, sometimes (particularly when the data set is large) it may be desirable to stop DEVise from redrawing the graphs as the windows are altered and instead draw after all the changes have been done. Such a provision is provided by the Layout/ Display button in the control panel. Toggling it to the Layout mode stops DEVise from redrawing any views, while the window shapes may be altered. After the changes are done, toggling the switch back to Display mode starts the activity again.
 
 \subsection{Visual Assistants}
 
 \subsubsection{Visual Cursor}
 
-A cursor is a visual band that helps to map the boundary of a view within another view.  i.e. it displays the X/Y boundaries of one view within another. This is useful to picturize the range of one of the  view with respect to the other ( a possibly ) longer range view.( One could be the view of the entire range of values, whereas the other could be a part of that range ) 
+A cursor is a visual band that helps to map the boundary of a view within another view.  i.e. it displays the X/Y boundaries of one view within another. This is useful to picturize the range of one of the  view with respect to the other (a possibly) longer range view.(One could be the view of the entire range of values, whereas the other could be a part of that range) 
 
 A cursor contains both a source view and a destination view. The source view is where the cursor fetches information about the current view X/Y axes boundaries. The boundaries of the source view are drawn as line segments in the axes of the destination view. The cursor displayed in the destination view can be moved by clicking below/left of  the axis lines  (by changing its visual filter) at the location desired.
 
@@ -411,7 +409,7 @@ The visual links can be named for say reference in the case of adding a view to 
 
 \subsubsection{History}
 
-The history field ( as described in the tutorial section ) is used to record the previous  values of the visual filter. i.e. it records the max and min of the X and Y axes for all the views. The history buffer gives the history of the current buffer and using the history buffer one can go back to an interesting filter. The history values can be used by clicking on the appropriate value in the history window and then {\em using } it.
+The history field (as described in the tutorial section) is used to record the previous  values of the visual filter. i.e. it records the max and min of the X and Y axes for all the views. The history buffer gives the history of the current buffer and using the history buffer one can go back to an interesting filter. The history values can be used by clicking on the appropriate value in the history window and then {\em using } it.
 
 The history mechanism also provides for {\em marking } of filters, that forces DEVise to store them in the buffer, in the case  when the buffer becomes full and some older filter values need to be thrown away.
 
@@ -425,11 +423,11 @@ The mean, max and min are displayed as lines in the views for which they are app
 
 \subsubsection{Confidence Intervals}
 
-The confidence intervals are visually shown as transparent bands around the mean line. The confidence interval can either be 85, 90  or 95 \%.The default is no conference interval.
+The confidence intervals are visually shown as transparent bands around the mean line. The confidence interval can either be 85, 90  or 95 \%.The default is no confidence interval.
 
 \subsubsection{Kiviat Graphs}
 
-The Kiviat graphs provide a visual method of analysing the mean, max and min values over the set of views in a particular window. The graph can be used to analyze the balance in the values of the various views. The Kiviat graph can be drawn for either the min,max,mean or count of the data values. the Kiviat graph changes with changes in the visual filters of the corresponding views. Also by clicking on the edges of the graph, the values on the vertices ( i.e. the mean etc.. value for 2 of the views ) can be found out. 
+The Kiviat graphs provide a visual method of analysing the mean, max and min values over the set of views in a particular window. The graph can be used to analyze the balance in the values of the various views. The Kiviat graph can be drawn for either the min,max,mean or count of the data values. the Kiviat graph changes with changes in the visual filters of the corresponding views. Also by clicking on the edges of the graph, the values on the vertices (i.e. the mean etc.. value for 2 of the views) can be found out. 
 
 \subsection{Session and Template}
 
@@ -458,7 +456,7 @@ The catalog provides the following options.
 
 \subsection{Data Stream Definition}
 
-The edit data stream definition window is used to create or modify a data stream. The user needs to select the type of source ( e.g. COMPUSTAT ) , the logical schema file associated with that stream, a key to uniquely identify the stream from the rest, a command ( if needed ) and cache parameters. These are discussed below.
+The edit data stream definition window is used to create or modify a data stream. The user needs to select the type of source (e.g. COMPUSTAT) , the logical schema file associated with that stream, a key to uniquely identify the stream from the rest, a command (if needed) and cache parameters. These are discussed below.
 
 
 \subsubsection{Display Name}
@@ -500,7 +498,7 @@ The cache priority indicates the priority to be given to this stream in the disk
 
 \subsubsection{Info/Command}
 
-The command window is used to take in a command for the SQL, SEQ and other data sources. For the case of the WWW source the URI ( Uniform Resource Identifier ) nees to be specified. ( e.g. ftp://...) In the case of SEQ query the query is sent to the SEQ program which evaluates it and the tuples returned are cached. The command could be any UNIX command that can supply a stream of tuples.( e.g. awk...) 
+The command window is used to take in a command for the SQL, SEQ and other data sources. For the case of the WWW source the URI (Uniform Resource Identifier) nees to be specified. (e.g. ftp://...) In the case of SEQ query the query is sent to the SEQ program which evaluates it and the tuples returned are cached. The command could be any UNIX command that can supply a stream of tuples.(e.g. awk...) 
 
 \subsection{Manipulating the Catalog}
 
@@ -517,7 +515,7 @@ The data stream creation can be done by using the Visualize/Import/Define/New op
 \item[Schema file] The logical schema file needs to be specified.
 \item[Evaluation factor] This specifies the time at which the stream must be cached. A high value results in caching immediately after the data stream is defined and a lower one postpones it to the visualization time.
 \item[Cache priority] This specifies the priority of storage of the stream on the disk cache.
-\item[Info/Command] This is useful for the query type of sources. The query or command ( say http://...) etc.. is needed to be specified in this.
+\item[Info/Command] This is useful for the query type of sources. The query or command (say http://...) etc.. is needed to be specified in this.
 \end{description}
 
 %% Major problems here ... The edit did not check the actual schema even after 
@@ -529,7 +527,7 @@ The editing of a stream can be done by using the Stream/Edit option in the Data 
 
 \subsubsection{Copy}
 
-This is used to copy an existing  data stream definition on to a different data stream name. The same edit window is displayed, but with the parameters of the data stream to be copied. A unique name is all that is to be given to complete the copy phase.( Any other parameter can also be changed ) This is useful for defining a lot of streams having same characteristic, like schema etc.. This option is available under Stream/Copy in the data stream window.
+This is used to copy an existing  data stream definition on to a different data stream name. The same edit window is displayed, but with the parameters of the data stream to be copied. A unique name is all that is to be given to complete the copy phase.(Any other parameter can also be changed) This is useful for defining a lot of streams having same characteristic, like schema etc.. This option is available under Stream/Copy in the data stream window.
 
 \subsubsection{Delete}
 
@@ -678,7 +676,7 @@ Remember that the layout can be changed any time by using the Window/Layout opti
 
 \subsection{X Attribute}
 
-The X attribute specifies the filed in the schema that must be used as the X axis attribute for the views to be defined. The option automatically provides all the attributes available for selection. When importing a file with many logical groups the groups needs to be selected prior to using the Define visualization window ( This is automatically asked for by DEVise ). Hence only the attributes present  in the top level groups selected are displayed.
+The X attribute specifies the filed in the schema that must be used as the X axis attribute for the views to be defined. The option automatically provides all the attributes available for selection. When importing a file with many logical groups the groups needs to be selected prior to using the Define visualization window (This is automatically asked for by DEVise). Hence only the attributes present  in the top level groups selected are displayed.
 
 \subsection{Y Attributes}
 
@@ -729,11 +727,11 @@ As said above after importing the data or opening a session, click on the Edit m
 \begin{description}
 \item[X] The attribute mapped to the X axis can be changed using this option. Ac constant value gives the value of the Y axis for a particular X. 
 \item[Y] This helps in changing the attribute mapped on to the Y axis.
-\item[Color] The foreground color of the views can be changed using this option. A constant value paints the graph with the constant value selected, while a variable value maps the attribute value to one of the base colors ( using modulus  {\em No of colors } ) An expression works in a similar way.
+\item[Color] The foreground color of the views can be changed using this option. A constant value paints the graph with the constant value selected, while a variable value maps the attribute value to one of the base colors (using modulus  {\em No of colors }) An expression works in a similar way.
 \item[Orientation] The orientation option rotates the objects about its center. Thus giving a proper orientation for a square can  make it to appear as a  diamond.
 \item[Size] The size changes the size of the object. The default values specified using the ShapeAttr is size 1.
 \item[Pattern] The pattern is used to change the filling style for filled objects.
-\item[Shape] The shapes may be any one of Rect, RectX, Oval, Polygon, Bar, Block or Vector with the qualities as already explained. The variable and expression values if chosen map the value given to one of these ( again using modulus on the {\em Number of shapes } 
+\item[Shape] The shapes may be any one of Rect, RectX, Oval, Polygon, Bar, Block or Vector with the qualities as already explained. The variable and expression values if chosen map the value given to one of these (again using modulus on the {\em Number of shapes } 
 \item[ShapeAtrrs] These are used to change the dimensions of the objects displayed. This have been already discussed. 
 \end{description}
 
@@ -755,7 +753,7 @@ To remove a view, simply click on it and then use the Remove option under the Vi
 
 \subsection{Bring a View Back}
 
-To being back a view to the window, use the View/Bring back to Window option. This presents a list of view names to choose from and after the selection prompts for the window to put the view in. This option may also be used to copy a view to another window, since all the views ( not just the ones removed ) are displayed when in the view selection box.
+To being back a view to the window, use the View/Bring back to Window option. This presents a list of view names to choose from and after the selection prompts for the window to put the view in. This option may also be used to copy a view to another window, since all the views (not just the ones removed) are displayed when in the view selection box.
 
 \subsection{Destroy View}
 
@@ -763,7 +761,7 @@ To being back a view to the window, use the View/Bring back to Window option. Th
 
 \subsection{Switch TData}
 
-When visualizing a particular data stream, it may be often the case that the user wishes to see the data stream in the same format as that of the current session to compare. The switch TData helps in simplifying the task, by switching only the TData component ( i.e. the data streams ) without changing the filters, view and window layouts. The switched data stream must conform to the same logical schema as that of the current  view.
+When visualizing a particular data stream, it may be often the case that the user wishes to see the data stream in the same format as that of the current session to compare. The switch TData helps in simplifying the task, by switching only the TData component (i.e. the data streams) without changing the filters, view and window layouts. The switched data stream must conform to the same logical schema as that of the current  view.
 
 Before using this option the current view, whose TData is to be changed must be selected.  Now choosing the option, presents a table showing the data streams currently open. This is to facilitate the switching of TData to the data streams already open. Choosing other in the table brings up the entire data stream list, from which the desired data stream can be selected.
 
@@ -783,13 +781,13 @@ This section deals with the manipulation of windows.
 
 \subsection{Change View Layout}
 
-The view layout may be changed by using the Window/layout option. The user is presented with three options viz. Automatic/ Vertical/ Horizontal. The Horizontal mode forces DEVise to display the views side by side, whereas the Vertical mode makes it display the views one on top of each other. The automatic mode adjusts the layout depending on the dimensions of the window. If the window is long and lean,( longer on the horizontal direction than the vertical direction ) then DEVise goes in for horizontal layout mode, whereas if the window is short and wide ( i.e. longer on the vertical direction ) it goes in for vertical layout. 
+The view layout may be changed by using the Window/layout option. The user is presented with three options viz. Automatic/ Vertical/ Horizontal. The Horizontal mode forces DEVise to display the views side by side, whereas the Vertical mode makes it display the views one on top of each other. The automatic mode adjusts the layout depending on the dimensions of the window. If the window is long and lean,(longer on the horizontal direction than the vertical direction) then DEVise goes in for horizontal layout mode, whereas if the window is short and wide (i.e. longer on the vertical direction) it goes in for vertical layout. 
 
 The width and height parameters affect the number of views to be displayed horizontally or vertically. The Width option specifies the number of views to be displayed side by side in the vertical layout mode. For example a value of 2 in it would display the views in pairs of two vertically. The height determines the number of views to be displayed on top of one another in the horizontal layout mode.
 
 \subsection{Duplicate Window}
 
-DEVise provides a method of duplicating a window. This is available under Window/Duplicate option. This duplicates the while window including the layout, visual filters, colors etc.. This is useful in defining cursors and switching TData options. The new window is given a name as the old windows name with the appended ( Auto \# ) where \# represents the number of  same windows existing.
+DEVise provides a method of duplicating a window. This is available under Window/Duplicate option. This duplicates the while window including the layout, visual filters, colors etc.. This is useful in defining cursors and switching TData options. The new window is given a name as the old windows name with the appended (Auto \#) where \# represents the number of  same windows existing.
 
 %% Can we change the window name ??
 
@@ -805,11 +803,11 @@ The visual link helps to link two or more views through a common characteristic 
 
 \subsection{Create Link}
 
-To create a link, we can use the Link X toggle at the time of importing in the Define Visualization window. This creates a link between all the views defined using that data stream. ( through that definition ) 
+To create a link, we can use the Link X toggle at the time of importing in the Define Visualization window. This creates a link between all the views defined using that data stream. (through that definition) 
 
 After the views are visualized too, we can create new links. This can be done using the Link option under the View menu. Choosing this option brings up a GetLink window that lists all the current links available. Clicking on Info brings up the views linked together by the chosen link. 
 
-Use create to create a new link. The link may be on any of the combination of the following attributes viz. x, y, color, size, pattern, orientation, shape. The link name must be supplied for this to be added to the list of links existing. Then the views may be added to this link as explained in the next subsection.( After a new link is added the Link option automatically prompts for linking the current view to anyone of the existing links. Press Cancel if you do not wish to add the current view to any of the links  ) 
+Use create to create a new link. The link may be on any of the combination of the following attributes viz. x, y, color, size, pattern, orientation, shape. The link name must be supplied for this to be added to the list of links existing. Then the views may be added to this link as explained in the next subsection.(After a new link is added the Link option automatically prompts for linking the current view to anyone of the existing links. Press Cancel if you do not wish to add the current view to any of the links) 
 
 \subsection{Link}
 
@@ -849,7 +847,7 @@ As already explained, DEVise provides for two type of statistics measurement. On
 
 \subsection{Enable Statistics}
 
-TO enable statistics the View/Toggle Statistics menu is chosen. The Statistics submenu is a tear down window. i.e. by clicking on the dotted lines on the top of the submenu, a new window is created with the options, and it can be used from then on to control the statistics displayed, without the need of going back to the View option. ( Or the submenu may be directly used from the View/Toggle Statistics option, without creating this additional window ) The enable statistics submenu has 3 main options. One contains the choice of statistics to be displayed, i.e. whether Mean and or Max and or Min. The second is the choice of Conference intervals , which may either be 85, 90 or 95 percentage, or none at all. The third is the choice of applying the statistics option to all of the views or only the current one.
+TO enable statistics the View/Toggle Statistics menu is chosen. The Statistics submenu is a tear down window. i.e. by clicking on the dotted lines on the top of the submenu, a new window is created with the options, and it can be used from then on to control the statistics displayed, without the need of going back to the View option. (Or the submenu may be directly used from the View/Toggle Statistics option, without creating this additional window) The enable statistics submenu has 3 main options. One contains the choice of statistics to be displayed, i.e. whether Mean and or Max and or Min. The second is the choice of Confidence intervals , which may either be 85, 90 or 95 percentage, or none at all. The third is the choice of applying the statistics option to all of the views or only the current one.
 
 The choices may be chosen by clicking on them. This shows up as a black colored diamond/ square  before the choices. After the choices are selected, click on Apply statistics to apply the changes to the view.
 
@@ -859,7 +857,7 @@ The window may be closed at any time, as any other normal window, by double clic
 
 \subsection{Disable Statistics}
 
-To disable the statistics option, simply open the statistics window ( If you have the window already existing, use that instead ) Click off the Mean/Max/Min options and Apply the changes. The statistics option is now turned off. The stats may be turned off for the current view alone or for all the views.
+To disable the statistics option, simply open the statistics window (If you have the window already existing, use that instead) Click off the Mean/Max/Min options and Apply the changes. The statistics option is now turned off. The stats may be turned off for the current view alone or for all the views.
 
 \subsection{Enable Kiviat Graph}
 
@@ -867,7 +865,7 @@ The Kiviat graph enabling is  quite similar to that of the Statistics one. Use t
 
 The KGraph displayed changes with the change in the visual filter of the underlying views.
 
-The KGraph may be disabled by closing the KGraph windows. ( double clicking on the top left corner button ) 
+The KGraph may be disabled by closing the KGraph windows. (double clicking on the top left corner button) 
 
 
 \section{Using Sessions and Templates}
@@ -880,7 +878,7 @@ In order to save the session as such the save option can be used. Like any other
 
 \subsection{Save Session as Template}
 
-In the ordinary save option, the data stream associated with the session is also saved. The template as mentioned earlier, is just the mappings and other preferences without any associated data stream. Any data stream may be joined with a template, provided it has the same schema, to get a new visualization. The save as template choice  gives the option of saving the current session as a template. This could be opened any time later and associated with one or more data streams to get a new  visualization, with the same environment ( i.e. same window locations, sizes, mappings etc.. ) 
+In the ordinary save option, the data stream associated with the session is also saved. The template as mentioned earlier, is just the mappings and other preferences without any associated data stream. Any data stream may be joined with a template, provided it has the same schema, to get a new visualization. The save as template choice  gives the option of saving the current session as a template. This could be opened any time later and associated with one or more data streams to get a new  visualization, with the same environment (i.e. same window locations, sizes, mappings etc..) 
 
 \subsection{Restore Session or Template}
 
