@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/04/30 15:53:53  jussi
+  Added link between StateLatLon parser and schema MARKETING.
+
   Revision 1.17  1996/04/23 20:33:14  jussi
   Added LatLonComposite parser which translates integer
   latitude/longitude numbers (in millionths of degrees)
@@ -579,6 +582,14 @@ public:
       latAttr->hiVal.floatVal = *latPtr;
       latAttr->hasHiVal = true;
     }
+    if (!latAttr->hasLoVal || *latPtr < latAttr->loVal.floatVal) {
+      latAttr->loVal.floatVal = *latPtr;
+      latAttr->hasLoVal = true;
+    }
+    if (!lonAttr->hasHiVal || *lonPtr > lonAttr->hiVal.floatVal) {
+      lonAttr->hiVal.floatVal = *lonPtr;
+      lonAttr->hasHiVal = true;
+    }
     if (!lonAttr->hasLoVal || *lonPtr < lonAttr->loVal.floatVal) {
       lonAttr->loVal.floatVal = *lonPtr;
       lonAttr->hasLoVal = true;
@@ -653,6 +664,14 @@ public:
       latAttr->hiVal.floatVal = *latPtr;
       latAttr->hasHiVal = true;
     }
+    if (!latAttr->hasLoVal || *latPtr < latAttr->loVal.floatVal) {
+      latAttr->loVal.floatVal = *latPtr;
+      latAttr->hasLoVal = true;
+    }
+    if (!lonAttr->hasHiVal || *lonPtr > lonAttr->hiVal.floatVal) {
+      lonAttr->hiVal.floatVal = *lonPtr;
+      lonAttr->hasHiVal = true;
+    }
     if (!lonAttr->hasLoVal || *lonPtr < lonAttr->loVal.floatVal) {
       lonAttr->loVal.floatVal = *lonPtr;
       lonAttr->hasLoVal = true;
@@ -663,6 +682,109 @@ private:
   int       *attrOffset;          /* attribute offsets */
   AttrInfo  *latAttr;             /* latitude attribute info */
   AttrInfo  *lonAttr;             /* longitude attribute info */
+  Boolean   _init;                /* true when instance initialized */
+};
+
+/*
+   User composite function for address traces on some IBM architecture.
+   Each address reference has a 62-bit address part and a 2-bit type
+   tag (instruction reference, load reference, or store reference).
+   We convert the 6 highest bits of the address to Y, the next 6 bits
+   to X, and ignore the remaining bits. A randomizing is performed
+   to create a cloud of address references at X,Y. Type tag is mapped
+   to a color (red = instruction, green = load, blue = store).
+*/
+
+class IBMAddressTraceComposite : public UserComposite {
+public:
+
+  IBMAddressTraceComposite() {
+    _init = false;
+    attrOffset = 0;
+    XAttr = 0;
+    YAttr = 0;
+  }
+
+  virtual ~IBMAddressTraceComposite() {
+    delete attrOffset;
+  }
+
+  virtual void Decode(RecInterp *recInterp) {
+
+    if (!_init) {
+      /* initialize by caching offsets of all the attributes we need */
+
+      char *primAttrs[] = { "Address", "X", "Y", "Color" };
+      const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
+      attrOffset = new int [numPrimAttrs];
+      DOASSERT(attrOffset, "Out of memory");
+
+      for(int i = 0; i < numPrimAttrs; i++) {
+	AttrInfo *info;
+	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
+	  fprintf(stderr, "Cannot find attribute %s\n", primAttrs[i]);
+	  DOASSERT(0, "Cannot find attribute");
+	}
+	attrOffset[i] = info->offset;
+	if (!strcmp(primAttrs[i], "X"))
+	  XAttr = info;
+	else if (!strcmp(primAttrs[i], "Y"))
+	  YAttr = info;
+      }
+      _init = true;
+    }
+
+    char *buf = (char *)recInterp->GetBuf();
+    char *address = buf + attrOffset[0];
+    float *XPtr = (float *)(buf + attrOffset[1]);
+    float *YPtr = (float *)(buf + attrOffset[2]);
+    int *colorPtr = (int *)(buf + attrOffset[3]);
+
+    // The high 32 bits are first, followed by the low 32 bits.
+    // The lowest 2 bits are the tag.
+
+    *YPtr = (address[0] & 0xfc) >> 2;
+    *XPtr = ((address[0] & 0x03) << 4) | ((address[1] & 0xf0) >> 4);
+    int tag = address[7] & 0x03;
+    *colorPtr = 0;
+    if (tag == 3)                       // instruction reference?
+      *colorPtr = 2;                    // make it red
+    else if (tag == 1)                  // load reference?
+      *colorPtr = 6;                    // make it green
+    else if (tag == 2)                  // store reference?
+      *colorPtr = 3;                    // make it blue
+    else
+      fprintf(stderr, "Invalid tag in trace: %d\n", tag);
+
+    // randomize the picture a little by creating a cloud
+
+    float length = (rand() % 200) / 100.0;
+    float dir = (rand() % 360) / 360.0 * 2 * 3.14;
+    *YPtr += length * sin(dir);
+    *XPtr += length * cos(dir);
+
+    if (!XAttr->hasHiVal || *XPtr > XAttr->hiVal.floatVal) {
+      XAttr->hiVal.floatVal = *XPtr;
+      XAttr->hasHiVal = true;
+    }
+    if (!XAttr->hasLoVal || *XPtr < XAttr->loVal.floatVal) {
+      XAttr->loVal.floatVal = *XPtr;
+      XAttr->hasLoVal = true;
+    }
+    if (!YAttr->hasHiVal || *YPtr > YAttr->hiVal.floatVal) {
+      YAttr->hiVal.floatVal = *YPtr;
+      YAttr->hasHiVal = true;
+    }
+    if (!YAttr->hasLoVal || *YPtr < YAttr->loVal.floatVal) {
+      YAttr->loVal.floatVal = *YPtr;
+      YAttr->hasLoVal = true;
+    }
+  }
+
+private:
+  int       *attrOffset;          /* attribute offsets */
+  AttrInfo  *XAttr;               /* X attribute info */
+  AttrInfo  *YAttr;               /* Y attribute info */
   Boolean   _init;                /* true when instance initialized */
 };
 
@@ -686,11 +808,7 @@ main(int argc, char **argv)
   CompositeParser::Register("MARKETING", new StateLatLonComposite);
   CompositeParser::Register("CENSUS_PLACES", new LatLonComposite);
   CompositeParser::Register("CENSUS_ZIP", new LatLonComposite);
-
-#if 0
-  /* Register parser for tape */
-  RegisterGenClassInfo("tape", new ISSMGenClass());
-#endif
+  CompositeParser::Register("IBMTRACE", new IBMAddressTraceComposite);
 
   /* Register known query processors */
   QueryProc::Register("Tape", genQueryProcTape);
