@@ -23,6 +23,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.61  2000/07/14 21:13:07  wenger
+// Speeded up 3D GData processing by a factor of 2-3: improved the parser
+// used for GData; eliminated Z sorting for bonds-only 3D views; eliminated
+// DEViseAtomTypes for atoms used only to define bond ends; reduced string-
+// based processing; eliminated various unused variables, etc.
+//
 // Revision 1.60  2000/07/11 16:39:18  venkatan
 // *** empty log message ***
 //
@@ -842,7 +848,6 @@ public class DEViseCmdDispatcher implements Runnable
 
     private byte[] receiveData(int size) throws YException
     {
-        boolean isFinish = false;
         byte[] imgData = null;
 
         // turn on the receive light
@@ -853,26 +858,14 @@ public class DEViseCmdDispatcher implements Runnable
         DEViseDebugLog.log("Trying to receive data (" + size +
 	  ") from socket ...");
 	DEViseDebugLog.log("  Bytes available: " + commSocket.dataAvailable());
-        while (!isFinish) {
-            try {
-                imgData = commSocket.receiveData(size);
-                isFinish = true;
-                jsc.pn("Successfully received data (" + size + ") from socket ...");
-		jsc.pn("  Last byte = " + imgData[imgData.length - 1]);
-		jsc.pn("  Bytes available: " + commSocket.dataAvailable());
-                DEViseDebugLog.log("Successfully received data (" + size +
-		  ") from socket ...");
-            } catch (InterruptedIOException e) {
-                if (getAbortStatus()) {
-                    // since at this point, server already finish processing request
-                    // the only thing that blocks is network traffic, in order to
-                    // assure server and JavaScreen has the same 'view' of the current
-                    // state of the current session, we have to finish the receiving
-                    // of the data
-                    setAbortStatus(false);
-                }
-            }
-        }
+
+        imgData = commSocket.receiveData(size);
+
+        jsc.pn("Successfully received data (" + size + ") from socket ...");
+	jsc.pn("  Last byte = " + imgData[imgData.length - 1]);
+	jsc.pn("  Bytes available: " + commSocket.dataAvailable());
+        DEViseDebugLog.log("Successfully received data (" + size +
+	  ") from socket ...");
 
         // turn off the receive light
         jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, false);

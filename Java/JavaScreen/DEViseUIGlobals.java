@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2000/06/26 18:52:00  wenger
+// Added class explanation in header.
+//
 // Revision 1.7  2000/06/22 20:51:25  wenger
 // Changed colors and font in drill-down dialog to make text more
 // readable.
@@ -73,6 +76,7 @@ public final class DEViseUIGlobals
     public static Dimension rubberBandLimit = new Dimension(4, 4);
 
     public static Color bg = new Color(64, 96, 0);
+    public static Color bg_warn = new Color(255, 0, 0);
     public static Color fg = Color.white;
     public static Color screenBg = new Color(64, 192, 0);
     public static Font font = DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0);

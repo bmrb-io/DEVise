@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.58  2000/07/18 18:12:49  venkatan
+// The highlighting of the border for the active view is disabled.
+//
 // Revision 1.57  2000/07/18 18:10:56  venkatan
 // *** empty log message ***
 //
@@ -137,6 +140,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.58  2000/07/18 18:12:49  venkatan
+// The highlighting of the border for the active view is disabled.
+//
 // Revision 1.57  2000/07/18 18:10:56  venkatan
 // *** empty log message ***
 //
@@ -839,6 +845,9 @@ public class DEViseCanvas extends Container
         // event sequence: 1. keypressed 2.keytyped 3.keyreleased
         public void keyPressed(KeyEvent event)
         {
+            if (_debug >= 1) {
+                System.out.println("keyPressed(" + event.getKeyChar() + ")");
+	    }
             DEViseCanvas.lastKey = event.getKeyCode();
         }
 
@@ -846,6 +855,9 @@ public class DEViseCanvas extends Container
 	// to the devised.
         public void keyReleased(KeyEvent event)
         {
+            if (_debug >= 1) {
+                System.out.println("keyReleased(" + event.getKeyChar() + ")");
+	    }
             DEViseCanvas.lastKey = KeyEvent.VK_UNDEFINED;
 
             char keyChar = event.getKeyChar();

@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2000/06/26 16:46:59  wenger
+// Minor cleanups.
+//
 // Revision 1.16  2000/06/12 22:10:49  wenger
 // Added output of the number of bytes of data being sent to the client.
 //
@@ -332,6 +335,7 @@ public class DEViseClient
                     pop.pn("Sending data to client(" + hostname + ") (" +
 		      d.length + " bytes)");
                     socket.sendData(d);
+                    pop.pn("  Done sending data");
                 }
             }
         } else {

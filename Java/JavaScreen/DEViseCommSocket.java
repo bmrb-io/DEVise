@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2000/06/12 22:13:56  wenger
+// Cleaned up and commented DEViseServer, JssHandler, DEViseComponentPanel,
+// DEViseTrafficLight, YImageCanvas; added debug output of number of
+// bytes of data available to the JS.
+//
 // Revision 1.9  2000/04/21 19:45:45  wenger
 // Cleaned up DEViseCommSocket class -- removed duplicate code, better
 // variable names, more comments.
@@ -528,11 +533,10 @@ public class DEViseCommSocket
 	return bytes;
     }
 
-    // Receive data.  Note that this method may be interrupted by
-    // the socket timeout.  If so, it can be repeatedly called until
-    // the entire data set has been received.
+    // Receive data.  This method now does not return until all of the
+    // requested data has been read.
     public synchronized byte[] receiveData(int dataSize)
-      throws YException, InterruptedIOException
+      throws YException
     {
         if (imgis == null) {
             closeSocket();
@@ -551,16 +555,31 @@ public class DEViseCommSocket
                 numberRead = 0;
             }
 
-	    // TEMP -- try read(buf, offset, len) here -- check speed
-            imgis.readFully(dataRead);
+	    //TEMP -- make this into a method?
+            int offset = 0;
+	    int bytesRemaining = dataSize;
+	    while (bytesRemaining > 0) {
+		try {
+	            int bytesRead = imgis.read(dataRead, offset,
+		      bytesRemaining);
+		    offset += bytesRead;
+		    bytesRemaining -= bytesRead;
+		} catch(InterruptedIOException e) {
+		    // Note: this may happen if the data transfer is too slow.
+		    DEViseDebugLog.log("Error reading data: " +
+		      e.getMessage());
+		    try {
+		        Thread.sleep(100); // wait for some more data on socket
+		    } catch (InterruptedException ex) {
+		    }
+		}
+	    }
 
             byte[] data = dataRead;
 
             resetData();
 
             return data;
-        } catch (InterruptedIOException e) {
-            throw e;
         } catch (IOException e) {
             closeSocket();
             throw new YException(

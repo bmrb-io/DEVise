@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.41  2000/06/21 18:37:30  wenger
+// Removed a bunch of unused code (previously just commented out).
+//
 // Revision 1.40  2000/06/15 15:55:22  wenger
 // Fixed bug 597 (problem with devised restarts in jspop).
 //
@@ -867,16 +870,10 @@ public class DEViseServer implements Runnable
 
         pop.pn("Receiving data from devised(" + hostname + ") of size " + size);
         while (!isEnd) {
-            try {
-                data = socket.receiveData(size);
-                pop.pn("Successfully received data from devised(" + hostname + "at " + cmdPort + ") of size " + size);
-                isEnd = true;
-            } catch (InterruptedIOException e) {
-                time += socketTimeout;
-                if (time > devisedTimeout) {
-                    throw new YException("Can not receive response from devised within timeout");
-                }
-            }
+            data = socket.receiveData(size);
+            pop.pn("Successfully received data from devised(" + hostname +
+	      "at " + cmdPort + ") of size " + size);
+            isEnd = true;
         }
 
         return data;

@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.68  2000/07/11 16:39:19  venkatan
+// *** empty log message ***
+//
 // Revision 1.67  2000/07/10 12:26:03  venkatan
 // *** empty log message ***
 //
@@ -122,6 +125,9 @@ public class jsdevisec extends Panel
 
     public DEViseScreen jscreen = null;
 
+    private Panel topPanel = null;
+    private Panel mainPanel = null;
+
     private Button openButton = new Button("Open");
     private Button closeButton = new Button("Close");
     public  Button stopButton = new Button("Stop");
@@ -209,8 +215,8 @@ public class jsdevisec extends Panel
         setFont(DEViseUIGlobals.font);
         setLayout(new BorderLayout(2, 2));
 
-        Panel topPanel = new Panel(new BorderLayout(2, 2));
-        Panel mainPanel = new Panel(new FlowLayout(FlowLayout.LEFT, 2, 2));
+        topPanel = new Panel(new BorderLayout(2, 2));
+        mainPanel = new Panel(new FlowLayout(FlowLayout.LEFT, 2, 2));
 
         animPanel = new DEViseAnimPanel(this, images, 100);
 
@@ -479,6 +485,9 @@ public class jsdevisec extends Panel
     // show message in message box
     public String showMsg(String msg, String title, int style)
     {
+	DEViseDebugLog.log("Showing message box: " + msg); 
+	mainPanel.setBackground(DEViseUIGlobals.bg_warn);
+
 	// Note: we have two cases here to make things work in the case
 	// where we have more than one message box shown at once.  msgbox
 	// is a class member so we know whether we have at least one
@@ -488,6 +497,8 @@ public class jsdevisec extends Panel
             msgbox.open();
             String result = msgbox.getResult();
             msgbox = null;
+	    mainPanel.setBackground(DEViseUIGlobals.bg);
+	    DEViseDebugLog.log("Done with message box");
             return result;
         } else {
 	    // We only get here if we already have one message box showing,
@@ -496,6 +507,8 @@ public class jsdevisec extends Panel
             box.open();
             String result = box.getResult();
             box = null;
+	    mainPanel.setBackground(DEViseUIGlobals.bg);
+	    DEViseDebugLog.log("Done with message box");
             return result;
         }
     }
@@ -598,6 +611,8 @@ class RecordDlg extends Dialog
     public RecordDlg(Frame owner, boolean isCenterScreen, String[] data)
     {
         super(owner, true);
+
+        DEViseDebugLog.log("Creating RecordDlg");
 
         attrs = data;
 
@@ -728,6 +743,7 @@ class RecordDlg extends Dialog
     // dispatcher thread
     public void open()
     {
+        DEViseDebugLog.log("Opening RecordDlg");
         status = true;
         setVisible(true);
     }
@@ -739,6 +755,7 @@ class RecordDlg extends Dialog
 
             status = false;
         }
+        DEViseDebugLog.log("Closed RecordDlg");
     }
 
     // true means this dialog is showing
@@ -770,6 +787,8 @@ class SessionDlg extends Frame
 
     public SessionDlg(jsdevisec what, Frame owner, boolean isCenterScreen, String[] data)
     {
+	DEViseDebugLog.log("Creating SessionDlg");
+
         jsc = what;
 
         setBackground(DEViseUIGlobals.bg);
@@ -1006,6 +1025,7 @@ class SessionDlg extends Frame
     // dispatcher thread
     public void open()
     {
+	DEViseDebugLog.log("Opening SessionDlg");
         status = true;
         setVisible(true);
     }
@@ -1019,6 +1039,7 @@ class SessionDlg extends Frame
 
             jsc.sessiondlg = null;
         }
+	DEViseDebugLog.log("Closed SessionDlg");
     }
 
     // true means this dialog is showing
@@ -1043,6 +1064,8 @@ class SettingDlg extends Dialog
     public SettingDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
     {
         super(owner, true);
+
+	DEViseDebugLog.log("Creating SettingDlg");
 
         jsc = what;
 
@@ -1206,6 +1229,7 @@ class SettingDlg extends Dialog
     // dispatcher thread
     public void open()
     {
+	DEViseDebugLog.log("Opening SettingDlg");
         status = true;
         setVisible(true);
     }
@@ -1217,6 +1241,7 @@ class SettingDlg extends Dialog
 
             status = false;
         }
+	DEViseDebugLog.log("Closed SettingDlg");
     }
 
     // true means this dialog is showing
@@ -1242,6 +1267,8 @@ class ServerStateDlg extends Dialog
     public ServerStateDlg(Frame owner, boolean isCenterScreen, String data)
     {
         super(owner, true);
+
+	DEViseDebugLog.log("Creating ServerStateDlg");
 
         String[] list = DEViseGlobals.parseStr(data, " ");
         String[] list1 = null, list2 = null, list3 = null;
@@ -1401,6 +1428,7 @@ class ServerStateDlg extends Dialog
     // dispatcher thread
     public void open()
     {
+	DEViseDebugLog.log("Opening ServerStateDlg");
         status = true;
         setVisible(true);
     }
@@ -1412,6 +1440,7 @@ class ServerStateDlg extends Dialog
 
             status = false;
         }
+	DEViseDebugLog.log("Closed ServerStateDlg");
     }
 
     // true means this dialog is showing

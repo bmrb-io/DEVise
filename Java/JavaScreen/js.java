@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.37  2000/06/26 16:48:32  wenger
+// Added client-side JavaScreen debug logging.
+//
 // Revision 1.36  2000/04/24 20:22:01  hongyu
 // remove UI dependency of jspop and js
 //
@@ -73,7 +76,10 @@ public class js extends Frame
 	"  -fgcolor[number+number+number]: RGB for JavaScreen foreground\n" +
 	"  -rubberbandlimit[widthxheight]: minimum size for rubberband to have any effect\n" +
 	"  -screensize[widthxheight]: screen size in pixels\n" +
+	"  -log: turn on debug logging\n" +
+	"  -debug[number]: set debug level\n" +
 	"  -usage: print this message");
+
     // -host[hostname]:
     //      hostname: The IP address of the machine where jspop or DEVise Server
     //                is running, if bland, use the defaults
