@@ -272,16 +272,24 @@ Site* QueryTree::createSite(){
 	if(!siteGroup){
 		siteGroup = inner;
 	}
+
+	// Every site has taken what belongs to it.
+	// Create top site that takes everything left over (constants or nothing)
+
+	siteGroup = new LocalTable(
+		siteGroup->getName(), selectList, predicateList, siteGroup);
+	TRY(siteGroup->typify(option), NULL);
+
 	for(int k = count; k >= 0;k--){
-		aggregates[k]->typify(siteGroup);
+		TRY(aggregates[k]->typify(siteGroup), NULL);
 		siteGroup = aggregates[k];
 	}
 
-	LOG(logFile << "Plan: \n";)
+	LOG(logFile << "Global Plan: \n";)
 	LOG(siteGroup->display(logFile, DETAIL);)
 	LOG(logFile << endl;)
 	assert(predicateList->cardinality() == 0);
-	LOG(logFile << "Enumeration:\n";)
+	LOG(logFile << "Global Enumeration:\n";)
 	TRY(siteGroup->enumerate(), 0);
 	LOG(siteGroup->display(logFile, DETAIL);)
 	LOG(logFile << endl;)

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/02/25 22:14:55  donjerko
+  Enabled RTree to store data attributes in addition to key attributes.
+
   Revision 1.13  1997/02/18 18:06:07  donjerko
   Added skeleton files for sorting.
 
@@ -244,20 +247,8 @@ public:
 		assert(stats);
 		mySelect = createSelectList(nm, iterator);
 	}
+	virtual void typify(String option){}
 };
-
-/*
-class IndexForTable : public Site {
-public:
-	IndexForTable(String tableNm) : Site() {
-		
-		iterator = new StandardRead
-	}
-	virtual Tuple* getNext(){
-		return NULL;
-	}
-};
-*/
 
 class LocalTable : public Site {
 	void setStats();
@@ -270,6 +261,8 @@ public:
      LocalTable(String nm, Iterator* marsh, String fileToWrite = "") : 
 		Site(nm), directSite(NULL) {
 		iterator = marsh;
+		directSite = NULL;  // will be set up in typify because it
+						// needs the name
 		this->fileToWrite = fileToWrite;
 		fout = NULL;
 		writePtrs = NULL;
@@ -285,6 +278,21 @@ public:
 		this->iterator = iterator;
 		numFlds = mySelect->cardinality();
 		directSite = new DirectSite(name, iterator);
+		fout = NULL;
+		writePtrs = NULL;
+	}
+	LocalTable(String nm, List<BaseSelection*>* select, 
+		List<BaseSelection*>* where, Site* base) : Site(nm) {
+
+		// This site is used as a root, on top of all other sites.
+		// It does includes leftover constants, if any.
+
+		mySelect = new List<BaseSelection*>;
+		mySelect->addList(select);
+		myWhere->addList(where);
+		this->iterator = NULL;
+		numFlds = mySelect->cardinality();
+		directSite = base;
 		fout = NULL;
 		writePtrs = NULL;
 	}
@@ -306,16 +314,22 @@ public:
 		List<BaseSelection*>* baseSchema = directSite->getSelectList();
 		TRY(enumerateList(mySelect, name, baseSchema), );
 		TRY(enumerateList(myWhere, name, baseSchema), );
+		directSite->enumerate();
 	}
 	virtual void typify(String option);	// Throws exception
 	virtual void initialize(){
+		directSite->initialize();
 		Site::initialize();
 	}
 	virtual Tuple* getNext(){
 		bool cond = false;
 		Tuple* input = NULL;
 		while(!cond){
-			input = iterator->getNext();
+			// input = iterator->getNext();
+
+			input = directSite->getNext();	
+				// same thing as iterator->getNext()
+
 			if(!input){
 				return NULL;
 			}
@@ -346,6 +360,14 @@ public:
 			writePtrs[i](*fout, tuple[i]);
 		}
 		*fout << endl;
+	}
+	virtual String * getOrderingAttrib(){
+		if(directSite){
+			return directSite->getOrderingAttrib();
+		}
+		else{
+			return Site::getOrderingAttrib();
+		}
 	}
 };
 
@@ -502,6 +524,61 @@ public:
 		return mySelect->cardinality();
 	}
 	virtual void typify(String option);	// Throws exception
+	virtual String * getOrderingAttrib(){
+		return site1->getOrderingAttrib();
+	}
+};
+
+class UnionSite : public Site {
+	Site* iter1;
+	Site* iter2;
+	bool runningFirst;
+public:
+	UnionSite(Site* iter1, Site* iter2) : iter1(iter1), iter2(iter2) {
+		runningFirst = true;
+	}
+	virtual int getNumFlds(){
+		return iter1->getNumFlds();
+	}
+	virtual String* getAttributeNames(){
+		return iter1->getAttributeNames();
+	}
+	virtual String* getTypeIDs(){
+		return iter1->getTypeIDs();
+	}
+	virtual void initialize(){
+		iter1->initialize();
+	}
+	virtual Tuple* getNext(){
+		if(runningFirst){
+			Tuple* retVal;
+			if((retVal = iter1->getNext())){
+				return retVal;
+			}
+			else{
+				runningFirst = false;
+				iter2->initialize();
+				return iter2->getNext();
+			}
+		}
+		else{
+			return iter2->getNext();
+		}
+	}
+	~UnionSite(){
+		delete iter1;
+		delete iter2;
+	}
+	virtual String * getOrderingAttrib(){
+		String* order1 = iter1->getOrderingAttrib();
+		String* order2 = iter2->getOrderingAttrib();
+		if(order1 && order2 && *order1 == *order2){
+			return order1;
+		}
+		else{
+			return NULL;
+		}
+	}
 };
 
 #endif

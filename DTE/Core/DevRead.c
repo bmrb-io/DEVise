@@ -19,6 +19,10 @@
 /*
     $Id$
     $Log$
+    Revision 1.9  1997/03/19 21:33:46  wenger
+    Fixed bug 172 (DTE index filename conflict) -- DTE TData names are now
+    the data file name instead of the schema file name.
+
     Revision 1.8  1997/03/14 18:36:09  donjerko
     Making space for the SQL UNION operator.
 
@@ -109,6 +113,7 @@ DevRead::Open(char *schemaFile, char *dataFile)
     DataSeg::Set(dataFile, dataFile, 0, 0);
 
     char *schemaName = ApParseCat(schemaFile, dataFile, _tDataP);
+    cout << "Name of the tdata is: " << _tDataP->GetName() << endl;
     DOASSERT(schemaName != NULL, "Can't parse schema.");
 
     _recBufSize = _tDataP->RecSize();

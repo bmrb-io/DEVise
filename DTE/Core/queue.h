@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/02/03 04:11:35  donjerko
+  Catalog management moved to DTE
+
   Revision 1.6  1996/12/26 03:42:02  kmurli
   MOdified to make joinprev work right
 
@@ -211,6 +214,7 @@ public:
 		return false;
 	}
 
+	/*
 	bool setPos(int position){
 
 		rewind();
@@ -224,6 +228,8 @@ public:
 		// found
 		return true;
 	}
+	*/
+
 	int getPos(T item){
 		
 		Cell * curr = current;

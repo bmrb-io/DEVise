@@ -347,10 +347,9 @@ void AggWindow::fillWindow()
 		if (presentPos >=  0){
 			aggregate->groupIterator->nextGroup();
 			init();
-			//TupleList->removeAll();
 		}
 		while((nextStoredTuple = aggregate->groupIterator->getNext()))
-			TupleList->append(nextStoredTuple);
+			TupleList.add_high(nextStoredTuple);
 		presentPos = 0;
 		return;
 	}
@@ -363,14 +362,14 @@ void AggWindow::fillWindow()
 
 	if (nextStoredTuple != NULL){
 		
-		TupleList->append(nextStoredTuple);
+		TupleList.add_high(nextStoredTuple);
 		bool match = true;
 		
 		while(match == true){
 			
 			Tuple *nextTuple = aggregate->groupIterator->getNext();
 			if (nextTuple && equalAttr(nextTuple,nextStoredTuple))
-				TupleList->append(nextTuple);
+				TupleList.add_high(nextTuple);
 			else{
 				match = false;
 				nextStoredTuple = nextTuple;
@@ -388,7 +387,7 @@ void AggWindow::fillWindow()
 		// is satisfied....	
 		state = MIDDLE;
 		
-		if (TupleList->setPos(0) == false){
+		if (TupleList.empty()){
 			// Nothin much to do	
 			state = FINAL;
 			presentPos = -1;
@@ -403,7 +402,9 @@ void AggWindow::fillWindow()
 			
 			if (!nextStoredTuple)
 				return;
-			TupleList->append(nextStoredTuple);
+
+			TupleList.add_high(nextStoredTuple);
+
 			// Now get all the tuples that match next..
 			bool match = true;
 
@@ -411,7 +412,7 @@ void AggWindow::fillWindow()
 			
 				Tuple *nextTuple = aggregate->groupIterator->getNext();
 				if (nextTuple && equalAttr(nextTuple,nextStoredTuple)){
-					TupleList->append(nextTuple);
+					TupleList.add_high(nextTuple);
 				}
 				else{
 					match = false;
@@ -432,16 +433,16 @@ void AggWindow::fillWindow()
 		// go ahead and remove stuff..
 		
 		// Shift the present position
-		TupleList->rewind();
 		
-		if (TupleList->setPos(presentPos) == false){
+		if (!TupleList.valid(presentPos)){
 			presentPos = -1;
 			state = FINAL;
 			return ;
 		}
-		Tuple * presentTuple = TupleList->getVal(presentPos);
+		assert(TupleList.valid(presentPos));
+		Tuple * presentTuple = TupleList[presentPos];
 		
-		if (TupleList->setPos(presentPos+1) == false){
+		if (!TupleList.valid(presentPos+1)){
 			presentPos = -1;
 			state = FINAL;
 			return;
@@ -452,16 +453,16 @@ void AggWindow::fillWindow()
 		bool match = true;
 		while(match == true){
 			
-			if (equalAttr(presentTuple,TupleList->get()))
+			assert(TupleList.valid(presentPos));
+			if (equalAttr(presentTuple,TupleList[presentPos]))
 				;
 			else{
 				match = false;
 				break;
 			}
 
-			TupleList->step();
 			presentPos ++;
-			if (TupleList->atEnd()){
+			if (!TupleList.valid(presentPos)){
 				match = false;
 				presentPos = -1;
 				state = FINAL;
@@ -473,19 +474,29 @@ void AggWindow::fillWindow()
 			// Then remove one stuff
 			valuesBeforePresent --;
 			
-			TupleList->rewind();
-			Tuple * curr = TupleList->get();
+			Tuple* curr = NULL;
+			if(!TupleList.empty()){
+				curr = TupleList.low_element();
+			}
+			else{
+				return;
+			}
 			
 			bool match = true;
 			while(match == true){
 				
-				TupleList->remove();	// del_low
+				TupleList.del_low();
+				TupleList.reset_low(0);
+
 				presentPos -- ;	
 
-				Tuple * nextTuple = TupleList->get();
-				
-				if (nextTuple &&  equalAttr(nextTuple,curr))
-					;
+				Tuple* nextTuple;
+				if(!TupleList.empty()){
+					nextTuple = TupleList.low_element();
+					if(!equalAttr(nextTuple,curr)){
+						match = false;
+					}
+				}
 				else{
 					match = false;
 				}
@@ -496,18 +507,22 @@ void AggWindow::fillWindow()
 
 Tuple *AggWindow::getTupleAtCurrPos(){	
 	
-	//if (windowFull && presentPos > 0 )
-	//	return NULL;
-	Tuple * next = TupleList->getVal(presentPos);
+	Tuple* next = NULL;
+	if(TupleList.valid(presentPos)){
+		next = TupleList[presentPos];
+	}
+
 	if (!windowFull && !next){
 		// This tells the iterator to go to the next group..
 		aggregate->groupIterator->nextGroup();
-		/*state = INITIAL;
-		TupleList->removeAll();
-		presentPos = -1;*/
 		init();
 		fillWindow();
-		next = TupleList->getVal(presentPos);
+		if(!TupleList.valid(presentPos)){
+			next = NULL;
+		}
+		else {
+			next = TupleList[presentPos];
+		}
 	}
 	return next;
 }
@@ -520,7 +535,7 @@ int AggWindow::getLowPos(int windowPos,bool byPosition )
 	if (type != "int" && byPosition == true)
 		return -1;
 
-	TupleList->rewind();
+	int tupleCounter = TupleList.low();
 
 	if (!byPosition){	
 		
@@ -532,11 +547,11 @@ int AggWindow::getLowPos(int windowPos,bool byPosition )
 		// as u go along and when the diff between urs and 
 		// valuesBeforePresent  == required Window return;;
 		
-		Tuple *  curr = TupleList->get();
-		TupleList->step();
-
-		if (!curr)
+		if(!TupleList.valid(tupleCounter)){
 			return -1;
+		}
+		Tuple *  curr = TupleList[tupleCounter++];
+		assert(curr);
 
 		int numberUniqueVals = 1;
 		while(numberUniqueVals - valuesBeforePresent <= windowPos ) {
@@ -546,11 +561,12 @@ int AggWindow::getLowPos(int windowPos,bool byPosition )
 			// Get rid of duplicates..
 			while(match){
 			
-				Tuple * Next = TupleList->get();
-				TupleList->step();	
-				if(!Next)
-					return -1;
-				
+				if(!TupleList.valid(tupleCounter)){
+					return - 1;
+				}
+				Tuple * Next = TupleList[tupleCounter++];
+				assert(Next);
+
 				if(equalAttr(Next,curr)) 
 					;
 				else{
@@ -560,30 +576,56 @@ int AggWindow::getLowPos(int windowPos,bool byPosition )
 				}
 			}
 		}
-		if (numberUniqueVals - valuesBeforePresent > windowPos)
-			return TupleList->getPos(curr);
+		if (numberUniqueVals - valuesBeforePresent > windowPos){
+			int i = TupleList.low();
+			for(; i <= TupleList.high(); i++){
+				if(!TupleList.valid(i)){
+					cout << "i = " << i << " is invalid\n";
+					cout << "low = " << TupleList.low() 
+						<< " high = " << TupleList.high() << endl;
+				}
+				assert(TupleList.valid(i));
+				if(TupleList[i] == curr){
+					return i;
+				}
+			}
+			return -1;
+		}
 		else
 			return 0;
 	}
 	else{
 		
 		// It is by value...
-		Tuple * presentTup = TupleList->getVal(presentPos);
-		Tuple *  curr = TupleList->get();
-		TupleList->step();
 
-		if (!curr)
+		Tuple* presentTup = NULL;
+		if(TupleList.valid(presentPos)){
+			presentTup = TupleList[presentPos];
+		}
+
+		if(!TupleList.valid(tupleCounter)){
 			return -1;
-		
+		}
+		Tuple* curr = TupleList[tupleCounter++];
+
 		while(compareAttr(presentTup,curr) < windowPos ){
 			bool match = true;
+
 			// Get rid of duplicates..
-			Tuple * curr = TupleList->get();
-			if(!curr )
+
+			if(!TupleList.valid(tupleCounter)){
 				return -1;
-			TupleList->step();	
+			}
+			Tuple* curr = TupleList[tupleCounter++];
 		}
-		return TupleList->getPos(curr);
+		int i = TupleList.low();
+		for(; i <= TupleList.high(); i++){
+			assert(TupleList.valid(i));
+			if(TupleList[i] == curr){
+				return i;
+			}
+		}
+		return -1;
 	}
 }
 
@@ -591,12 +633,13 @@ int AggWindow::getLowPos(int windowPos,bool byPosition )
 int AggWindow::getHighPos(int windowPos,bool byPosition )
 {
 	
-	if (windowFull )
-		return TupleList->cardinality()-1;
+	if (windowFull ){
+		return TupleList.high();
+	}
 	if (type != "int" && byPosition == true)
 		return -1;
 
-	TupleList->rewind();
+	int currentTuple = 1;
 
 	if (!byPosition){	
 		
@@ -608,11 +651,11 @@ int AggWindow::getHighPos(int windowPos,bool byPosition )
 		// as u go along and when the diff between urs and 
 		// valuesBeforePresent  == required Window return;;
 		
-		Tuple *  curr = TupleList->get();
-		TupleList->step();
-
-		if (!curr)
+		if(TupleList.empty()){
 			return -1;
+		}
+		Tuple* curr = TupleList.low_element();
+		assert(curr);
 
 		int numberUniqueVals = 1;
 		while(numberUniqueVals - valuesBeforePresent <= windowPos ) {
@@ -621,11 +664,11 @@ int AggWindow::getHighPos(int windowPos,bool byPosition )
 			// Get rid of duplicates..
 			while(match){
 			
-				Tuple * Next = TupleList->get();
-				TupleList->step();	
-				if(!Next)
-					return TupleList->cardinality()-1;
-			
+				if(!TupleList.valid(currentTuple)){
+					return TupleList.high();
+				}
+				Tuple* Next = TupleList[currentTuple++];
+
 				if(equalAttr(Next,curr)) 
 					;
 				else{
@@ -638,69 +681,79 @@ int AggWindow::getHighPos(int windowPos,bool byPosition )
 		
 		if (numberUniqueVals - valuesBeforePresent > windowPos){
 			// Now get the highest tuple matching it..
-			Tuple * Next = TupleList->get();
-			TupleList->step();
-			
-			while(Next && equalAttr(Next,curr)){
-				curr = Next;	
-				Next = TupleList->get();
-				TupleList->step();
+
+			bool isValid = TupleList.valid(currentTuple);
+			Tuple* Next = NULL;
+			if(isValid){
+				Next = TupleList[currentTuple++];
 			}
-			return TupleList->getPos(curr);
+			
+			while(isValid && equalAttr(Next,curr)){
+				curr = Next;	
+				isValid = TupleList.valid(currentTuple);
+				if(isValid){
+					Next = TupleList[currentTuple++];
+				}
+			}
+			int i = TupleList.low();
+			for(; i <= TupleList.high(); i++){
+				assert(TupleList.valid(i));
+				if(TupleList[i] == curr){
+					return i;
+				}
+			}
+			return -1;
 		}
 		else
-			return TupleList->cardinality() -1;
+			return TupleList.high();
 	}
 	else{
 		
 		// It is by value...
-		Tuple * presentTup = TupleList->getVal(presentPos);
+		Tuple* presentTup = NULL;
+		if(TupleList.valid(presentPos)){
+			presentTup = TupleList[presentPos];
+		}
 
-		Tuple *  curr = TupleList->get();
-		
-		TupleList->step();
-
-		if (!curr)
+		if(!TupleList.valid(currentTuple)){
 			return -1;
+		}
+		Tuple *  curr = TupleList[currentTuple++];
 		
 		while(compareAttr(presentTup,curr) < windowPos){
 		
 			bool match = true;
 			// Get rid of duplicates..
-			Tuple * curr = TupleList->get();
-			if(!curr )
+			if(!TupleList.valid(currentTuple)){
 				return -1;
-			TupleList->step();	
+			}
+			Tuple *  curr = TupleList[currentTuple++];
 		}
 		
-		Tuple * Next = TupleList->get();
-		TupleList->step();
-		while(Next && equalAttr(Next,curr)){
-				curr = Next;	
-				Next = TupleList->get();
-				TupleList->step();
+		bool isValid = TupleList.valid(currentTuple);
+		Tuple* Next = NULL;
+		if(isValid){
+			Next = TupleList[currentTuple++];
 		}
-		return TupleList->getPos(curr);
-
+		
+		while(isValid && equalAttr(Next,curr)){
+			curr = Next;	
+			isValid = TupleList.valid(currentTuple);
+			if(isValid){
+				Next = TupleList[currentTuple++];
+			}
+		}
+		int i = TupleList.low();
+		for(; i <= TupleList.high(); i++){
+			assert(TupleList.valid(i));
+			if(TupleList[i] == curr){
+				return i;
+			}
+		}
+		return -1;
 	}
 }
 
-// These functions are for comparison.
-/*
-int AggWindow::intCompAttr(Tuple * first,Tuple *second)
-{
-	
-	return (((IInt *)first[position])->getValue() - 
-		((IInt *)second[position])->getValue());
-}
-
-int AggWindow::doubleCompAttr(Tuple * first,Tuple *second)
-{
-	
-	return (int)(((IDouble *)first[position])->getValue() - 
-		((IDouble *)second[position])->getValue());
-}
-*/
 // --- Now for the aggregate functions... ------
 
 Type * GenFunction::avg()
@@ -819,10 +872,10 @@ Tuple * GenFunction::scanNext()
 
 	while(!selected){
 		
-		curr = filler->TupleList->getVal(currPos);
-		
-		if (!curr)
+		if(!filler->TupleList.valid(currPos)){
 			return NULL;
+		}
+		curr = filler->TupleList[currPos];
 		
 		if (!filler->aggregate->withPredicate)
 			selected = true;
@@ -848,19 +901,20 @@ void Grouping::sort(){
 		TRY(lessPtrs[i] = getOperatorPtr("<",types[i],types[i],retVal),);
 		TRY(equalPtrs[i] = getOperatorPtr("=",types[i],types[i],retVal),);
 	}
-	for(i = 0; i < TupleList->cardinality(); i++){
+	i = TupleList.low();
+	for(; i <= TupleList.high(); i++){
 		
-		for(int j = i+1; j < TupleList->cardinality(); j++){
-			Tuple * left = TupleList->getVal(i);
-			Tuple * right = TupleList->getVal(j);
+		for(int j = i+1; j <= TupleList.high(); j++){
+			Tuple * left = TupleList[i];
+			Tuple * right = TupleList[j];
 			assert(left);
 			assert(right);
 			if (tupleCompare(positions,lessPtrs,equalPtrs,count,left,right)>0){
 				
-				assert(TupleList->setPos(i));
-				TupleList->replace(right);
-				assert(TupleList->setPos(j));
-				TupleList->replace(left);
+				assert(TupleList.valid(i));
+				TupleList[i] = right;
+				assert(TupleList.valid(j));
+				TupleList[j] = left;
 			}
 				
 		}
@@ -893,18 +947,16 @@ Tuple *Grouping::getNext(){
 	if (!count)
 		return iterator->getNext();
 
-	if (TupleList->isEmpty()){
+	if (TupleList.empty()){
 		
 		while((next = iterator->getNext()))
-			TupleList->append(next);
+			TupleList.add_high(next);
 		
-		if (TupleList->isEmpty()){
+		if (TupleList.empty()){
 			next = NULL;
 			state = NORMAL;
 			return NULL;
 		}
-		//int count = TupleList->cardinality();
-		//TupleArray = new Tuple[count];
 		sort();
 		if (seqAttrPos >= 0){
 			int i;
@@ -913,9 +965,9 @@ Tuple *Grouping::getNext(){
 					positions[i] = -1;
 		}
 
-		TupleList->rewind();
-		next = TupleList->get();
-		TupleList->remove();	// del_low
+		next = TupleList.low_element();
+		TupleList.del_low();
+		TupleList.reset_low(0);
 		state = NORMAL;
 		return next;
 	}
@@ -924,9 +976,13 @@ Tuple *Grouping::getNext(){
 		if (state == GROUPEND)
 			return NULL;
 		
-		Tuple * nextInList = TupleList->get();
+		Tuple* nextInList = NULL;
+		if(!TupleList.empty()){
+			nextInList = TupleList.low_element();
+		}
 		if (tupleCompare(positions,lessPtrs,equalPtrs,count,next,nextInList)== 0){
-			TupleList->remove();	// del_low
+			TupleList.del_low();
+			TupleList.reset_low(0);
 			return nextInList;
 		}
 		else{

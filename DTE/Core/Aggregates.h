@@ -5,6 +5,9 @@
 #include "myopt.h"
 #include "site.h"
 #include "catalog.h"
+
+#include "TuplePtr.XPlex.h"
+
 class GenFunction;
 class AggWindow;
 class Aggregates;
@@ -15,7 +18,8 @@ class Grouping{
 	public:
 		Grouping(Site * iterator,int *positions=NULL,int * taboo = NULL,TypeID*types=NULL,int seqAttrPos,int count=0):
 				iterator(iterator),positions(positions),taboo(taboo),types(types),seqAttrPos(seqAttrPos),count(count){
-			TupleList = new List<Tuple *>;
+			// TupleList = new List<Tuple *>;
+			TupleList.clear();
 			state = NORMAL;
 		}
 		Tuple * getNext();
@@ -29,7 +33,7 @@ class Grouping{
 		int seqAttrPos;
 		int count;
 		enum STATE {NORMAL,GROUPEND} state;
-		List<Tuple *>*TupleList;
+		TuplePtrXPlex TupleList;
 		Tuple * next;		
 
 		GeneralPtr ** lessPtrs;
@@ -58,7 +62,8 @@ class AggWindow
 			TRY(equalOpr = getOperatorPtr("=",type,type,retType),);
 			assert(equalOpr);
 		}
-		TupleList =  new List<Tuple *>();
+		// TupleList =  new List<Tuple *>();
+		TupleList.clear();
 		windowFull = false;
 		init();
 	}	
@@ -67,7 +72,8 @@ class AggWindow
 		
 		windowUpdated = false;
 		nextStoredTuple = NULL;
-		TupleList->removeAll();
+		// TupleList->removeAll();
+		TupleList.clear();
 		state = INITIAL;
 		valuesBeforePresent = 0;	
 		presentPos = -1;
@@ -90,6 +96,8 @@ class AggWindow
 			return true;
 		}
 		assert(equalOpr->opPtr);
+		assert(n);
+		assert(s);
 		IBool* val = (IBool *)(equalOpr->opPtr)(n[position],s[position]);
 		assert(val);
 		return val->getValue();
@@ -100,7 +108,8 @@ class AggWindow
 	}
 	~AggWindow(){
 		
-		delete TupleList;
+		// delete TupleList;
+		TupleList.clear();
 	}
 	// To fill the window..
 	void fillWindow();
@@ -151,7 +160,8 @@ class AggWindow
 		int valuesBeforePresent;	
 
 		// To maintain a list of tuples for the moving window computation
-		List<Tuple *> * TupleList;
+		// List<Tuple *> * TupleList;
+		TuplePtrXPlex TupleList;
 		
 		// I need to maintain the next tuple itself, since there is no
 		// way of pushing back unwanted results...

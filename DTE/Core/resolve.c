@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/02/25 22:14:54  donjerko
+  Enabled RTree to store data attributes in addition to key attributes.
+
   Revision 1.10  1997/02/18 18:06:05  donjerko
   Added skeleton files for sorting.
 
@@ -404,4 +407,20 @@ ConstantSelection* ConstantSelection::promote(TypeID typeToPromote) const {
 
 BaseSelection* ConstantSelection::duplicate() {
 	return new ConstantSelection(typeID, value);
+}
+
+bool PrimeSelection::match(BaseSelection* x, Path*& upTo){
+	assert(x);
+	if(!(selectID() == x->selectID())){
+		return false;
+	}
+	PrimeSelection* y = (PrimeSelection*) x;
+	assert(y->alias);
+	assert(alias);
+	if(*alias != *y->alias){
+		cerr << "Failing because name " << *alias << " does not match "
+			<< *y->alias << endl;
+		return false;
+	}
+	return BaseSelection::match(y, upTo);
 }

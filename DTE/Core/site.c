@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/02/25 22:14:54  donjerko
+  Enabled RTree to store data attributes in addition to key attributes.
+
   Revision 1.8  1997/02/18 18:06:06  donjerko
   Added skeleton files for sorting.
 
@@ -99,14 +102,19 @@ void LocalTable::typify(String option){	// Throws exception
 	
 	// option is ignored since the execution = profile + getNext
 
-	LOG(logFile << "Header: ");
-	LOG(iterator->display(logFile));
-	directSite = new DirectSite(name, iterator);
+//	LOG(logFile << "Header: ");
+//	LOG(iterator->display(logFile));	// iterator may be NULL
+
+	if(!directSite){
+		directSite = new DirectSite(name, iterator);
+	}
+
 	List<Site*>* tmpL = new List<Site*>;
 	tmpL->append(directSite);
 	TRY(typifyList(myWhere, tmpL), );
 	TRY(boolCheckList(myWhere), );
 	if(mySelect == NULL){
+		assert(iterator);
 		mySelect = createSelectList(name, iterator);
 	}
 	else{
@@ -120,6 +128,7 @@ void LocalTable::typify(String option){	// Throws exception
 		String* function = ta->getFunction();
 		int shiftVal = ta->getShiftVal();
 		iterator = new FunctionRead(iterator, function, shiftVal);
+		assert(iterator);
 		TRY(iterator->initialize(), );
 	}
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/03/14 18:36:10  donjerko
+  Making space for the SQL UNION operator.
+
   Revision 1.6  1997/02/03 04:11:27  donjerko
   Catalog management moved to DTE
 
@@ -70,6 +73,10 @@ public:
 			return topNode->getAttributeNames();
 		}
 	}
+     virtual String* getOrderingAttrib(){
+		assert(topNode);
+		return topNode->getOrderingAttrib();
+     }
 	void renameAttributes(String* newAttributeNames){
 		attributeNames =  newAttributeNames;
 	}

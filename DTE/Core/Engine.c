@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/02/03 04:11:26  donjerko
+  Catalog management moved to DTE
+
   Revision 1.12  1996/12/26 03:42:00  kmurli
   MOdified to make joinprev work right
 
@@ -92,6 +95,7 @@ int Engine::optimize(){
 	return 0;
 }
 
+/*
 void sp(String & str){
 	
 	if (str)
@@ -104,3 +108,4 @@ void bp(BaseSelection *sel){
 		sel->display(cout);
      cout << endl;
 }
+*/

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/03/14 18:36:12  donjerko
+  Making space for the SQL UNION operator.
+
   Revision 1.17  1997/03/06 02:35:31  donjerko
   Undefined DEBUG
 
@@ -115,8 +118,8 @@ static int my_yyaccept();
 %token DELETE
 %token SCHEMA
 %token ADD
-%token UNION
 %token <string> STRING_CONST
+%left UNION
 %left '.'
 %left OR
 %left AND
@@ -140,7 +143,6 @@ static int my_yyaccept();
 %type <sel> optWhereClause
 %type <sel> predicate
 %type <constantSel> constant
-/* %type <string> optString */
 %type <string> optSequenceByClause
 %type <string> index_name
 %type <listOfStrings> table_name
@@ -155,10 +157,6 @@ input : query {
 		return my_yyaccept();
 	}
 	| definition
-	| query UNION query {
-		parseTree = new UnionParse($1, $3);
-		return my_yyaccept();
-	}
 	;
 definition: CREATE optIndType INDEX index_name ON table_name 
 	'(' keyAttrs ')' optIndAdd {
@@ -231,6 +229,9 @@ query : SELECT listOfSelections
 	| SELECT '*' FROM listOfTables optWhereClause 
 			optSequenceByClause optGroupByClause  {
 		$$ = new QueryTree(NULL, $4, $5, $6, withPredicate,$7,namesToResolve);
+	}
+	| query UNION query {
+		$$ = new UnionParse($1, $3);
 	}
      ;
 listOfSelections : listOfSelections ',' predicate {
@@ -338,6 +339,9 @@ predicate : predicate OR predicate {
 	}
      | predicate '+' predicate {
           $$ = new Operator("+", $1, $3);
+	}
+     | predicate '-' predicate {
+          $$ = new Operator("-", $1, $3);
 	}
 	| predicate STRING predicate {
 		$$ = new Operator(*$2, $1, $3);

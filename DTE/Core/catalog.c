@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/03/14 18:36:11  donjerko
+  Making space for the SQL UNION operator.
+
   Revision 1.10  1997/02/25 22:14:52  donjerko
   Enabled RTree to store data attributes in addition to key attributes.
 
@@ -123,16 +126,10 @@ Schema* DeviseInterface::getSchema(TableName* table){
 
 Site* StandardInterface::getSite(){ // Throws a exception
 
-	LOG(logFile << "Contacting " << urlString << " @ ");
-	LOG(iTimer.display(logFile) << endl);
-
 	TRY(URL* url = new URL(urlString), NULL);
 	TRY(istream* in = url->getInputStream(), NULL);
 	Iterator* unmarshal = new StandardRead(in);
 	TRY(unmarshal->open(), NULL);
-
-	LOG(logFile << "Initialized @ ");
-	LOG(iTimer.display(logFile) << endl);
 
 	delete url;
      return new LocalTable("", unmarshal, urlString);	

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/03/14 18:36:13  donjerko
+  Making space for the SQL UNION operator.
+
   Revision 1.17  1997/02/25 22:14:53  donjerko
   Enabled RTree to store data attributes in addition to key attributes.
 
@@ -1058,19 +1061,7 @@ public:
      virtual SelectID selectID(){
           return SELECT_ID;
      }
-	virtual bool match(BaseSelection* x, Path*& upTo){
-		assert(x);
-          if(!(selectID() == x->selectID())){
-               return false;
-          }
-		PrimeSelection* y = (PrimeSelection*) x;
-		assert(y->alias);
-		assert(alias);
-		if(*alias != *y->alias){
-			return false;
-		}
-		return BaseSelection::match(y, upTo);
-	}
+	virtual bool match(BaseSelection* x, Path*& upTo);
 	virtual TypeID getTypeID(){
 		return typeID;
 	}
