@@ -15,6 +15,12 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.172  1998/11/11 14:31:12  wenger
+#	Implemented "highlight views" for record links and set links; improved
+#	ClassDir::DestroyAllInstances() by having it destroy all links before
+#	it destroys anything else -- this cuts down on propagation problems as
+#	views are destroyed; added test code for timing a view's query and draw.
+#
 #	Revision 1.171  1998/11/06 18:00:27  wenger
 #	Multiple string tables fully working -- allows separate tables for the
 #	axes in a given view.
@@ -1399,9 +1405,9 @@ menu .mbar.view.menu.linkMenu -tearoff 0
 .mbar.view.menu.linkMenu add command -label "Link" -command DoViewLink
 .mbar.view.menu.linkMenu add command -label "Unlink" -command DoViewUnlink
 .mbar.view.menu.linkMenu add separator
-.mbar.view.menu.linkMenu add command -label "Set Master" \
+.mbar.view.menu.linkMenu add command -label "Set Leader" \
 	-command { DoSetLinkMaster }
-.mbar.view.menu.linkMenu add command -label "Reset Master" \
+.mbar.view.menu.linkMenu add command -label "Reset Leader" \
 	-command { DoResetLinkMaster}
 .mbar.view.menu.linkMenu add command -label "Set Record Link Type" \
 	-command { DoSetLinkType }

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/04/10 18:29:36  wenger
+  TData attribute links (aka set links) mostly implemented through table
+  insertion; a crude GUI for creating them is implemented; fixed some
+  bugs in link GUI; changed order in session file for TData attribute links.
+
   Revision 1.3  1998/03/08 00:01:17  wenger
   Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
   update problems) -- major changes to visual links.
@@ -213,13 +218,13 @@ VisualLinkClassInfo::Dump(FILE *fp)
   if (_name != NULL) {
     char *name = _link->GetName();
     if (strcmp(_name, name)) {
-      reportErrNosys("warning: link name doens't match info name");
+      reportErrNosys("warning: link name doesn't match info name");
     }
     fprintf(fp, "Link `%s':\n", name);
 
     VisualFlag flag = _link->GetFlag();
     if (_flag != flag) {
-      reportErrNosys("warning: link flag doens't match info flag");
+      reportErrNosys("warning: link flag doesn't match info flag");
     }
     fprintf(fp, "  Type: ");
     if (flag & VISUAL_X) fprintf(fp, "X ");
@@ -229,12 +234,29 @@ VisualLinkClassInfo::Dump(FILE *fp)
     if (flag & VISUAL_COLOR) fprintf(fp, "color ");
     if (flag & VISUAL_ORIENTATION) fprintf(fp, "orientation ");
     if (flag & VISUAL_SHAPE) fprintf(fp, "shape ");
-    if (flag & VISUAL_RECORD) fprintf(fp, "record ");
+    if (flag & VISUAL_RECORD) {
+      RecordLinkType type = _link->GetLinkType();
+      if (type == Positive) {
+        fprintf(fp, "record+ ");
+      } else if (type == Negative) {
+        fprintf(fp, "record- ");
+      } else {
+        fprintf(fp, "record? ");
+      }
+    }
+    if (flag & VISUAL_TATTR) {
+      TAttrLink *setLink = (TAttrLink *)_link;
+      const char *leaderAttr = setLink->GetMasterAttrName();
+      if (!leaderAttr) leaderAttr= "";
+      const char *followerAttr = setLink->GetSlaveAttrName();
+      if (!followerAttr) followerAttr = "";
+      fprintf(fp, "set (%s/%s)", leaderAttr, followerAttr);
+    }
     fprintf(fp, "\n");
 
     ViewGraph *view = _link->GetMasterView();
     if (view != NULL) {
-      fprintf(fp, "  Master view:\n");
+      fprintf(fp, "  Leader view:\n");
       Boolean occupyTop;
       int extent;
       char *viewTitle;

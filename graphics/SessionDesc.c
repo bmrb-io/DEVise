@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/04/06 21:13:40  wenger
+  Made minor improvements to logical session description requested by
+  Chris.
+
   Revision 1.2  1998/03/27 15:08:42  wenger
   Added dumping of logical session description, added GUI for dumping
   logical or physical description; cleaned up some of the command code
@@ -43,6 +47,7 @@
 #include "ViewGraph.h"
 #include "VisualLinkClassInfo.h"
 #include "DeviseLink.h"
+#include "TAttrLink.h"
 #include "CursorClassInfo.h"
 
 //#define DEBUG
@@ -296,7 +301,7 @@ SessionDescPrv::LogWriteLinks(FILE *file)
   DevStatus status = StatusOk;
 
   fprintf(file, "\n# Links:\n");
-  fprintf(file, "# Item\tName\tType\tMaster\tSlave\n");
+  fprintf(file, "# Item\tName\tType\tLeader\tFollower\n");
 
   int count = 0;
 
@@ -334,6 +339,13 @@ SessionDescPrv::LogWriteLinks(FILE *file)
 	    reportErrNosys(errBuf);
 	    status += StatusWarn;
 	  }
+	} else if (flag & VISUAL_TATTR) {
+	  TAttrLink *setLink = (TAttrLink *)link;
+          const char *leaderAttr = setLink->GetMasterAttrName();
+	  if (!leaderAttr) leaderAttr= "";
+	  const char *followerAttr = setLink->GetSlaveAttrName();
+	  if (!followerAttr) followerAttr = "";
+	  sprintf(linkType, "set (%s/%s)", leaderAttr, followerAttr);
 	} else {
 	  //
 	  // Non-pile (user-created) links are not allowed to have a
@@ -365,18 +377,13 @@ SessionDescPrv::LogWriteLinks(FILE *file)
 	viewNames [0] = "null";
 	viewNames [1] = "null";
 	int viewCount;
-	if (flag & VISUAL_RECORD) {
-	  //
-	  // Record link is special -- master view is not in the view list.
-	  //
-	  ViewGraph *masterView = link->GetMasterView();
-	  if (masterView != NULL) {
-	    viewNames[0] = masterView->GetName();
-	    if (viewNames[0] == NULL) viewNames[0] = "null";
-	    viewCount = 1;
-	  } else {
-	    viewCount = 0;
-	  }
+
+	// Only record and set links have a master/leader view.
+	ViewGraph *masterView = link->GetMasterView();
+	if (masterView != NULL) {
+	  viewNames[0] = masterView->GetName();
+	  if (viewNames[0] == NULL) viewNames[0] = "null";
+	  viewCount = 1;
 	} else {
 	  viewCount = 0;
 	}

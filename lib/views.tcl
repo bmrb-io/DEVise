@@ -15,6 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.54  1998/10/20 19:46:35  wenger
+#  Mapping dialog now displays the view's TData name; "Next in Pile" button
+#  in mapping dialog allows user to edit the mappings of all views in a pile
+#  without actually flipping them; user has the option to show all view names;
+#  new GUI to display info about all links and cursors; added API and GUI for
+#  count mappings.
+#
 #  Revision 1.53  1998/08/03 15:35:25  wenger
 #  Added note about disabling menus.
 #
@@ -843,7 +850,7 @@ proc DoLinkCreate { isRec } {
 	#set but [dialogCkBut .createLink "Create Link" \
 	#	"Enter parameters for creating a new link" "" \
 	#	0 { OK Info Cancel } name \
-	#	{x y record {tdata attribute}} $flag]
+	#	{x y record {set (tdata attribute)}} $flag]
 	
 	if { $but == 2 } {
 	    return ""
@@ -941,7 +948,7 @@ proc DisplayLinkInfo { link } {
 	set type "Record"
 	set master [DEVise getLinkMaster $link]
 	set labels [list  [list Type 10 "$type Link" ] \
-		          [list Master 10 $master] ]
+		          [list Leader 10 $master] ]
     } elseif { $flag == 1024 } {
 	# Convert flag value from C++ enum to graphics bitmap.
 	set flag 8
@@ -949,7 +956,7 @@ proc DisplayLinkInfo { link } {
 	set type "TData Attribute"
 	set master [DEVise getLinkMaster $link]
 	set labels [list  [list Type 10 "$type Link" ] \
-		          [list Master 10 $master] ]
+		          [list Leader 10 $master] ]
     } else {
 	set type "Visual"
 	set labels [list [list Type 10 "$type Link" ] ]
@@ -1221,7 +1228,7 @@ proc CheckTData { link view isMaster } {
     set but 0
     if {!$check } {
 	set but [ dialog .tdataCheck "Linking different TData sources" \
-		"The tdata for the master and slave views does not match \n Do you wish to go ahead ? "\
+		"The tdata for the leader and follower views does not match \n Do you wish to go ahead ? "\
 		"" 0 OK Cancel ]
     }
     if { $but == 0 } {
@@ -1316,7 +1323,7 @@ proc SetLinkAttr {linkname} {
     set masterView [DEVise getLinkMaster $linkname]
     if { $masterView == ""} {
         dialog .setAttrError "Link Error" \
-	    "Link must have master view to set attribute." "" 0 OK
+	    "Link must have leader view to set attribute." "" 0 OK
 	return
     }
 
@@ -1377,7 +1384,7 @@ proc SetLinkAttr {linkname} {
     tkwait window .setLinkAttr
 
     if { $SetLinkAttr_cancel == 0 && $attrName != "" } {
-	# For now, we force the master and slave attributes to be the same.
+	# For now, we force the leader and follower attributes to be the same.
 	DEVise setLinkMasterAttr $linkname $attrName
 	DEVise setLinkSlaveAttr $linkname $attrName
 	UpdateLinkCursorInfo
@@ -2505,9 +2512,9 @@ proc LinkViewMsg {} {
     # Figure out the right message to show.
     if { $isMasterSlaveLink } {
 	if { $linkViewStatus == 1 } {
-	    set message "Click OK, then select master view."
+	    set message "Click OK, then select leader view."
 	} else {
-	    set message "Click OK, then select slave view."
+	    set message "Click OK, then select follower view."
 	}
     } else {
 	if { $linkViewStatus == 1 } {

@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.62  1998/11/11 14:31:15  wenger
+#  Implemented "highlight views" for record links and set links; improved
+#  ClassDir::DestroyAllInstances() by having it destroy all links before
+#  it destroys anything else -- this cuts down on propagation problems as
+#  views are destroyed; added test code for timing a view's query and draw.
+#
 #  Revision 1.61  1998/11/02 19:22:53  wenger
 #  Added "range/MQL" session description capability.
 #
@@ -1194,34 +1200,40 @@ proc ShowLinkCursorInfo {} {
   set listHeight 10
 
   set listWidth 12
-  label .lcInfo.lchead -text "Link/cursor" -width $listWidth
-  listbox .lcInfo.lclist -relief raised -width $listWidth -height $listHeight \
-    -yscrollcommand {.lcInfo.scroll set} -relief flat
+  listbox .lcInfo.lchead -relief flat -width $listWidth -height 1
+  .lcInfo.lchead insert end "Link/cursor"
+  listbox .lcInfo.lclist -relief flat -width $listWidth -height $listHeight \
+    -yscrollcommand {.lcInfo.scroll set}
 
   set listWidth 20
-  label .lcInfo.namehead -text "Name" -width $listWidth
-  listbox .lcInfo.namelist -relief raised -width $listWidth \
-    -height $listHeight -yscrollcommand {.lcInfo.scroll set} -relief flat
+  listbox .lcInfo.namehead -relief flat -width $listWidth -height 1
+  .lcInfo.namehead insert end "Name"
+  listbox .lcInfo.namelist -relief flat -width $listWidth \
+    -height $listHeight -yscrollcommand {.lcInfo.scroll set}
 
-  set listWidth 10
-  label .lcInfo.typehead -text "Type" -width $listWidth
-  listbox .lcInfo.typelist -relief raised -width $listWidth \
-    -height $listHeight -yscrollcommand {.lcInfo.scroll set} -relief flat
-
-  set listWidth 20
-  label .lcInfo.vnamehead -text "View name" -width $listWidth
-  listbox .lcInfo.vnamelist -relief raised -width $listWidth \
-    -height $listHeight -yscrollcommand {.lcInfo.scroll set} -relief flat
+  set listWidth 15
+  listbox .lcInfo.typehead -relief flat -width $listWidth -height 1
+  .lcInfo.typehead insert end "Type"
+  listbox .lcInfo.typelist -relief flat -width $listWidth \
+    -height $listHeight -yscrollcommand {.lcInfo.scroll set}
 
   set listWidth 20
-  label .lcInfo.vtitlehead -text "View title" -width $listWidth
-  listbox .lcInfo.vtitlelist -relief raised -width $listWidth \
-    -height $listHeight -yscrollcommand {.lcInfo.scroll set} -relief flat
+  listbox .lcInfo.vnamehead -relief flat -width $listWidth -height 1
+  .lcInfo.vnamehead insert end "View name"
+  listbox .lcInfo.vnamelist -relief flat -width $listWidth \
+    -height $listHeight -yscrollcommand {.lcInfo.scroll set}
 
-  set listWidth 12
-  label .lcInfo.mshead -text "Master/slave" -width $listWidth
-  listbox .lcInfo.mslist -relief raised -width $listWidth \
-    -height $listHeight -yscrollcommand {.lcInfo.scroll set} -relief flat
+  set listWidth 20
+  listbox .lcInfo.vtitlehead -relief flat -width $listWidth -height 1
+  .lcInfo.vtitlehead insert end "View title"
+  listbox .lcInfo.vtitlelist -relief flat -width $listWidth \
+    -height $listHeight -yscrollcommand {.lcInfo.scroll set}
+
+  set listWidth 15
+  listbox .lcInfo.mshead -relief flat -width $listWidth -height 1
+  .lcInfo.mshead insert end "Leader/follower"
+  listbox .lcInfo.mslist -relief flat -width $listWidth \
+    -height $listHeight -yscrollcommand {.lcInfo.scroll set}
 
   #TEMP Dragging one listbox doesn't move the others.  It looks like there's
   # a way to make that happen, but I don't want to go to the trouble right
@@ -1290,13 +1302,13 @@ proc UpdateLinkCursorInfo {} {
         set type "Record-"
       }
       set masterView [DEVise getLinkMaster $link]
-      set slaveStr "slave"
+      set slaveStr "follower"
     } elseif {$flag == 1024} {
       set masterAttr [DEVise getLinkMasterAttr $link]
       set slaveAttr [DEVise getLinkSlaveAttr $link]
       set type "Set ($masterAttr/$slaveAttr)"
       set masterView [DEVise getLinkMaster $link]
-      set slaveStr "slave"
+      set slaveStr "follower"
     } else {
       set type "unknown"
     } 
@@ -1320,7 +1332,7 @@ proc UpdateLinkCursorInfo {} {
         .lcInfo.typelist insert end $type
         .lcInfo.vnamelist insert end $masterView
         .lcInfo.vtitlelist insert end $viewTitle
-        .lcInfo.mslist insert end "master"
+        .lcInfo.mslist insert end "leader"
       }
 
       foreach view $views {
