@@ -5,4 +5,4 @@
 # DEVise date: Dec 16 1996
 # DEVise endHeader
 
-physical ../schema/schema/physical/BaaMap
+physical $DEVISE_SCHEMA/physical/BaaMap
