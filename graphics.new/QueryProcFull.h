@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/12/03 20:40:56  jussi
+  Updated to reflect new BufMgr Init/Get/Done interface. QueryProc
+  now issues all requests concurrently to the BufMgr, which will
+  attempt to perform concurrent I/O if supported by the TData (data
+  source actually). Completely changed the way record links are
+  processed. ProcessScan() no longer differentiates between regular
+  queries and queries with record links.
+
   Revision 1.14  1996/11/26 16:51:37  ssl
   Added support for piled viws
 
@@ -121,8 +129,6 @@ class QueryProcFull: public QueryProc, private QPRangeCallback,
                      public DispatcherCallback, public TimerCallback {
 public:
   QueryProcFull();
-
-  virtual ~QueryProcFull();
 
   /* batch a query. For now, we'll just queue it up.  */
   virtual void BatchQuery(TDataMap *map, VisualFilter &filter,
@@ -300,6 +306,7 @@ protected:
   /* from DispatcherCallback */
   char *DispatchedName() { return "QueryProcFull"; }
   void Run() { ProcessQuery(); }
+  void Cleanup();
   
   DispatcherID _dispatcherID;      /* dispatcher ID */
 };

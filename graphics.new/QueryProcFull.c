@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.43  1996/12/03 20:40:55  jussi
+  Updated to reflect new BufMgr Init/Get/Done interface. QueryProc
+  now issues all requests concurrently to the BufMgr, which will
+  attempt to perform concurrent I/O if supported by the TData (data
+  source actually). Completely changed the way record links are
+  processed. ProcessScan() no longer differentiates between regular
+  queries and queries with record links.
+
   Revision 1.42  1996/11/26 16:51:37  ssl
   Added support for piled viws
 
@@ -310,16 +318,27 @@ QueryProcFull::QueryProcFull()
   Timer::Queue(QP_TIMER_INTERVAL, this, 0);
 }
 
-QueryProcFull::~QueryProcFull()
+void QueryProcFull::Cleanup()
 {
   Timer::Cancel(this, 0);
 
   Dispatcher::Current()->CancelCallback(_dispatcherID);
   Dispatcher::Current()->Unregister(this);
 
+  ClearQueries();
+
+  PrintStat();
+
+  delete _tdataQuery;
+
   for(int i = 0; i < _numCoordinateTables; i++)
     delete _coordinateTables[i];
   delete [] _coordinateTables;
+
+  delete _mgr;
+
+  // This query processor has been deleted and cannot be referenced anymore.
+  _queryProc = 0;
 }
 
 void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
