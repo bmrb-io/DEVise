@@ -1467,29 +1467,39 @@ Num Date        Status  Description
 			to add duplicate instance name
 			'.MarsM16_dat#CENTER_LATITUDE_vs_CENTER_LONGITUDE'.
 			(rkw)
+			(Fixed by rkw.)
 
 387 09/09/98	FIXED	Can't open BAA.tk, MolBio.tk, NIMA.tk, or WordCount.tk
 			demo sessions with JavaScreen. (rkw)
 			(devised blocks while trying to write to image socket.)
+			(Fixed by rkw 9/14/98.)
 
 388 09/09/98	FIXED	The 'Mars airbrush images: 4 pixels/degree' window
 			is missing when the MarsDemo.ds session is opened
 			in the JavaScreen.  (rkw)
+			(Fixed by rkw.)
 
 389 09/09/98	OPEN	EmbeddedTk doesn't work with JavaScreen. (rkw)
 
 390 09/14/98	OPEN	JavaScreen draws XY cursor too high in the Y
 			direction. (rkw)
 
-391 09/15/98	OPEN	Opening the MarsMiron.tk demo session fails when
+391 09/15/98	WORK	Opening the MarsMiron.tk demo session fails when
 			the devised is run with Xvfb as the X server. (hy/rkw)
 			(devised gets stuck trying to dump GIFs.)
+			(This happens when Xvfb is run with 24 bit depth, but
+			not when it's run with 8 bit depth, and only when
+			creating pixmaps as opposed to windows.)
 
-392 09/15/98	OPEN	Opening the MolBio.tk session in the JavaScreen fails
+392 09/15/98	FIXED	Opening the MolBio.tk session in the JavaScreen fails
 			(devised crashes). (hy/rkw)
+			(Fixed by rkw, 09/15/98.)
 
 393 09/15/98	OPEN	Devised had 'Too many open files' error when serving
 			three JavaScreens. (hy/rkw)
+
+394 09/15/98	OPEN	Tasvir images don't work when running Xvfb with 24
+			bit depth as the X server. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

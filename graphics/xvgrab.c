@@ -9,6 +9,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/03/25 14:51:53  wenger
+  Added standard headers to all graphics sources.
+
   Revision 1.3  1996/11/21 19:13:49  wenger
   Fixed more compile warnings; updated devise.dali to match current
   command-line flags.
@@ -701,14 +704,47 @@ static int convertImage(image, colors, ncolors, xwap)
     bshift = lowbitnum((unsigned long) bmask);
 
     r8shift = 0;  tmp = rmask >> rshift;
+
+    if (tmp == 0) {
+	// We end up here (for reasons I don't know yet) when running with
+	// Xvfb with 24 bits as the X server.  Setting tmp to 1 at least
+	// prevents us from getting into an infinite loop below, but we
+	// still end up with a blank image. RKW 1998-09-15.
+	fprintf(stderr, "No bits of rmask set\n");
+        tmp = 1;
+	r8shift = 1;
+    }
+
     while (tmp >= 256) { tmp >>= 1;  r8shift -= 1; }
     while (tmp < 128)  { tmp <<= 1;  r8shift += 1; }
 
     g8shift = 0;  tmp = gmask >> gshift;
+
+    if (tmp == 0) {
+	// We end up here (for reasons I don't know yet) when running with
+	// Xvfb with 24 bits as the X server.  Setting tmp to 1 at least
+	// prevents us from getting into an infinite loop below, but we
+	// still end up with a blank image. RKW 1998-09-15.
+	fprintf(stderr, "No bits of gmask set\n");
+        tmp = 1;
+	g8shift = 1;
+    }
+
     while (tmp >= 256) { tmp >>= 1;  g8shift -= 1; }
     while (tmp < 128)  { tmp <<= 1;  g8shift += 1; }
 
     b8shift = 0;  tmp = bmask >> bshift;
+
+    if (tmp == 0) {
+	// We end up here (for reasons I don't know yet) when running with
+	// Xvfb with 24 bits as the X server.  Setting tmp to 1 at least
+	// prevents us from getting into an infinite loop below, but we
+	// still end up with a blank image. RKW 1998-09-15.
+	fprintf(stderr, "No bits of bmask set\n");
+        tmp = 1;
+	b8shift = 1;
+    }
+
     while (tmp >= 256) { tmp >>= 1;  b8shift -= 1; }
     while (tmp < 128)  { tmp <<= 1;  b8shift += 1; }
 

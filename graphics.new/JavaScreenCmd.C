@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.32  1998/09/15 17:34:06  wenger
+  Changed JavaScreen communication protocol so that image data is sent
+  after all associated commands (fixes bug 387); made opening a session
+  and updating a session more similar to each other; fixed some other
+  JavaScreen support bugs.
+
   Revision 1.31  1998/09/14 14:57:46  wenger
   Reorganized code somewhat for clarity (no change in functionality except
   for some better error checking).
@@ -320,7 +326,7 @@ CreateWinInfo(ViewWin *window)
 		window->NumChildren(), views);
 
 	for (int index = 0; index < window->NumChildren(); index++) {
-		// Deleting this causes deviset to crash; not deleting is a leak.
+		// TEMP: Deleting this causes devised to crash; not deleting is a leak.
 		// delete views[index];
 	}
 	delete [] views;
@@ -1680,11 +1686,17 @@ JavaScreenCmd::DrawAllCursors()
 			DeviseCursor *cursor = (DeviseCursor *)info->GetInstance();
 			if (cursor != NULL) {
 				View *view = cursor->GetDst();
-				DrawCursor(view, cursor);
+				if (view != NULL) {
+					DrawCursor(view, cursor);
+				}
 			}
 		}
 	}
 	DevCursor::DoneIterator(index);
+
+#if defined(DEBUG)
+    printf("Done with JavaScreenCmd::DrawAllCursors()\n");
+#endif
 }
 
 //====================================================================
