@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/12/16 11:13:09  kmurli
+  Changes to make the code work for separate TDataDQL etc..and also changes
+  done to make Aggregates more robust
+
   Revision 1.8  1996/12/15 06:41:09  donjerko
   Added support for RTree indexes
 
@@ -565,6 +569,14 @@ public:
 		}
 		BaseSelection::display(out, detail);
 	}
+	virtual void displayFlat(ostream& out, int detail = 0){
+		out << "(";
+		left->displayFlat(out); 
+		out << " " << name << " ";
+		right->displayFlat(out);
+		out << ")";
+		// BaseSelection::displayFlat(out, detail);
+	}
 	virtual bool isIndexable(
 		String& attrName, String& opName, BaseSelection*& value);
 	String getAttribute(){
@@ -697,7 +709,7 @@ public:
           }
 		opPtr = genPtr->opPtr;
 		avgSize = genPtr->sizePtr(left->getSize(), right->getSize());
-		if(typeID == "IBool"){
+		if(typeID == "bool"){
 			SelectyPtr selectyPtr = genPtr->selectyPtr;
 			if(!selectyPtr){
 				String msg = "Undefined selectiviy for operator " + name;
@@ -743,15 +755,23 @@ public:
 
 class ExecOperator : public Operator{
      OperatorPtr opPtr;
+	Operator* parent;
 public:
 	ExecOperator(String n, BaseSelection* l, BaseSelection* r, 
-		OperatorPtr opPtr) :
-		Operator(n, l, r), opPtr(opPtr) {}
+		OperatorPtr opPtr, Operator* parent) :
+		Operator(n, l, r), opPtr(opPtr), parent(parent) {}
 	virtual void display(ostream& out, int detail = 0){
-          Operator::display(out, 0);
+		assert(parent);
+		parent->display(out);
+		if(detail){
+			Operator::display(out, 0);
+		}
+	}
+	virtual void displayFlat(ostream& out, int detail = 0){
+		parent->displayFlat(out, detail);
 	}
      virtual TypeID getTypeID(){
-          return typeID;
+          return parent->getTypeID();
      }
 	virtual Type* evaluate(Tuple* leftT, Tuple* rightT){
 		Type* arg1 = left->evaluate(leftT, rightT);

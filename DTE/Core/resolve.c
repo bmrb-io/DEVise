@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/15 06:41:09  donjerko
+  Added support for RTree indexes
+
   Revision 1.5  1996/12/07 15:14:29  donjerko
   Introduced new files to support indexes.
 
@@ -237,7 +240,7 @@ BaseSelection* Operator::enumerate(
      TRY(l = left->enumerate(site1, list1, site2, list2), NULL);
 	BaseSelection* r;
      TRY(r = right->enumerate(site1, list1, site2, list2), NULL);
-	return new ExecOperator(name, l, r, opPtr);
+	return new ExecOperator(name, l, r, opPtr, this);
 }
 
 TypeID PrimeSelection::typify(List<Site*>* sites){
