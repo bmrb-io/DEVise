@@ -2,6 +2,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/18 01:55:29  ravim
+  Default group created automatically if no groups specified. Also,
+  parsing of schema bypassed if already loaded.
+
   Revision 1.3  1995/09/28 00:00:08  ravim
   Fixed some bugs. Added some new functions for handling groups.
 
@@ -22,6 +26,7 @@
 
 GroupDir *gdir = new GroupDir();
 
+#define LINESIZE 512
 const int INIT_CAT_FILES = 64;
 static char **_catFiles = (char **)NULL;
 static int _numCatFiles = 0;
@@ -159,14 +164,44 @@ Boolean ParseWhiteSpace(int numArgs, char **args){
 const int NumDefaultSeparator = 2;
 static char defaultSeparator[] = { ' ', '\t' };
 
-char *ParseCat(char *catFile){
+
+char *ParseCat(char *catFile) 
+{
+  char buf[100];
+  // Check the first line of catFile - if it is "physical abc",
+  // call ParseCatPhysical (abc) and then ParseCatLogical(catFile)
+  // Otherwise, simply call ParseCatPhysical(catFile).
+  FILE *fp = fopen(catFile, "r");
+  if (!fp) 
+  {
+    fprintf(stderr,"ParseCat: can't open file %s\n", catFile);
+    return NULL;
+  }
+
+  fscanf(fp, "%s", buf);
+  if (strcmp(buf, "physical"))
+  {
+    fclose(fp);
+    return ParseCatPhysical(catFile);
+  }
+
+  // Read in the file name 
+  fscanf(fp, "%s", buf);
+  fclose(fp);
+  char *sname;
+  if ((sname = ParseCatPhysical(buf)) == NULL)
+    return NULL;
+  return ParseCatLogical(catFile, sname);
+}
+
+
+char *ParseCatPhysical(char *catFile){
 	FILE *file= NULL;
 	AttrList *attrs=NULL ;
 	Boolean hasSource = false;
 	char *source; /* source of data. Which interpreter we use depends
 					on this */
 
-#define LINESIZE 512
 	char buf[LINESIZE];
 	Boolean hasFileType = false;
 	Boolean hasSeparator = false;
@@ -554,4 +589,113 @@ error:
 		delete attrs;
 	fprintf(stderr,"error at line %d\n", _line);
 	return NULL;
+}
+
+char *ParseCatLogical(char *catFile, char *sname)
+{
+  Group *currgrp = NULL;
+  FILE *file= NULL;
+  Boolean GLoad = true;
+  char buf[LINESIZE];
+  int numArgs;
+  char **args;
+
+
+  file = fopen(catFile, "r");
+  if (file == NULL){
+      fprintf(stderr,"ParseCat: can't open file %s\n", catFile);
+      goto error;
+    }
+  _line = 0;
+
+  
+  /* read the first line first */
+  fgets(buf, LINESIZE, file);
+  
+  /* Let's add the schema name to the directory now */
+  /* First check if the schema is already loaded, in
+     which case we do nothing more */
+  if (gdir->find_entry(sname))
+    GLoad = false;
+  else
+  {
+    printf("Adding schema %s to directory \n", sname);
+    gdir->add_entry(sname);
+    GLoad = true;
+  }
+ 
+
+
+
+
+
+  while (fgets(buf,LINESIZE, file) != NULL) {
+      int len = strlen(buf);
+      if (len > 0 && buf[len-1] == '\n')
+	buf[len-1] = '\0';
+      
+      _line++;
+      /*
+	 printf("getting line %s\n", buf);
+	 */
+      if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r')
+	continue;
+      Parse(buf,numArgs, args);
+      if (numArgs == 0)
+	continue;
+      int ind;
+      
+      /*
+	 printf("parse: ");
+	 for (ind=0; ind < numArgs; ind++){
+	 printf("'%s' ", args[ind]);
+	 }
+	 printf("\n");
+	 */
+
+      if (strcmp(args[0], "group") == 0)
+      {
+	if (GLoad) {
+	    if (!currgrp)		/* Top level */
+	    {
+	      currgrp = new Group(args[1], NULL, TOPGRP);
+	      gdir->add_topgrp(sname, currgrp);
+	    }
+	    else
+	      currgrp = currgrp->insert_group(args[1]);
+	  }
+      }
+      else if (strcmp(args[0], "item") == 0)
+      {
+	if (GLoad) {
+	    currgrp->insert_item(args[1]);
+	  }
+      }
+      else if (strcmp(args[0], "endgroup") == 0)
+      {
+	if (GLoad) {
+	    if (!currgrp)
+	    {
+	      fprintf(stderr, "Group begins and ends not matched\n");
+	      goto error;
+	    }
+	    currgrp = currgrp->parent_group();
+	  }
+      }
+      else {
+	  fprintf(stderr,"ParseCat: unknown command %s\n", args[0]);
+	  goto error;
+	}
+      
+
+    }
+  return sname;
+error:
+	if (file != NULL)
+		fclose(file);
+
+	fprintf(stderr,"error at line %d\n", _line);
+	return NULL;
+
+
 }
