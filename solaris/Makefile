@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.32  1998/01/30 02:17:25  wenger
+# Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
+#
 # Revision 1.31  1998/01/23 20:38:25  zhenhai
 # *** empty log message ***
 #
@@ -95,7 +98,8 @@ LIBMODULES = graphics graphics.new tape issm compustat crsp \
 #devread is obsolete
 #attrproj is broken
 
-MODULES = $(LIBMODULES) parser generic multi
+MODULES = $(LIBMODULES) parser generic
+#MODULES = $(LIBMODULES) parser generic multi
 
 .PHONY: clean mostlyclean date libs generic devise multi attrproj devread \
 	cslib

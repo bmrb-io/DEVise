@@ -21,6 +21,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1998/02/02 18:25:32  wenger
+#  Strings file can now be loaded manually; name of strings file is now
+#  stored in session file; added 'serverExit' command and kill_devised
+#  script to cleanly kill devised; fixed bug 249; more info is now
+#  printed for unrecognized commands.
+#
 #  Revision 1.2  1998/01/14 22:23:44  wenger
 #  Removed some obsolete files.
 #
@@ -34,7 +40,6 @@
 ############################################################
 
 set files = "solaris/generic/generic solsparc/generic/generic \
-        solaris/multi/disp solsparc/multi/disp \
 	lib/control.tk doc/userman.ps doc/sysman.ps \
 	doc/Agreement doc/Copyright doc/Disclaimer"
 set target = /p/devise/public
@@ -103,14 +108,12 @@ cp -p solsparc/generic/generic $target/sun4m_54/devise
 #cp -p aix/generic/generic $target/rs_aix32/devise
 
 
-echo ""
-echo Releasing new copy of PVM Devise executables...
-ls -l solaris/multi/disp $target/sunx86_54/multi
-cp -p solaris/multi/disp $target/sunx86_54/multi
-ls -l solsparc/multi/disp $target/sun4m_54/multi
-cp -p solsparc/multi/disp $target/sun4m_54/multi
-#ls -l aix/multi/disp $target/rs_aix32/multi
-#cp -p aix/multi/disp $target/rs_aix32/multi
+#echo ""
+#echo Releasing new copy of PVM Devise executables...
+#ls -l solaris/multi/disp $target/sunx86_54/multi
+#cp -p solaris/multi/disp $target/sunx86_54/multi
+#ls -l solsparc/multi/disp $target/sun4m_54/multi
+#cp -p solsparc/multi/disp $target/sun4m_54/multi
 
 
 echo ""
