@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/05 03:07:46  jussi
+  Removed array of pointers to attribute info for matching values.
+
   Revision 1.5  1996/03/26 21:33:01  jussi
   Added computation of max/min attribute values.
 
@@ -37,9 +40,7 @@
 #include "DeviseTypes.h"
 #include "ClassDir.h"
 #include "TDataAscii.h"
-
-class AttrList;
-class AttrInfo;
+#include "AttrList.h"
 
 class TDataAsciiInterpClassInfo: public ClassInfo {
 public:
@@ -90,23 +91,23 @@ class RecInterp;
 
 class TDataAsciiInterp: public TDataAscii {
 public:
-  TDataAsciiInterp(char *name, int recSize, AttrList *attrs,
+  TDataAsciiInterp(char *name, char *alias, int recSize, AttrList *attrs,
 		   char *separators, int numSeparators, 
 		   Boolean isSeparator, char *commentString);
   virtual ~TDataAsciiInterp();
 
-  AttrList *GetAttrList(){ return _attrList; };
+  AttrList *GetAttrList(){ return &_attrList; }
 
 protected:
   /* Decode a record and put data into buffer. Return false if
      this line is not valid. */
-  virtual Boolean Decode(void *recordBuf, char *line);
+  virtual Boolean Decode(void *recordBuf, int recPos, char *line);
   
   virtual Boolean WriteCache(int fd);
   virtual Boolean ReadCache(int fd);
 
 private:
-  AttrList *_attrList;      /* list of attributes */
+  AttrList _attrList;       /* list of attributes */
   Boolean hasComposite;
   char *_name;
   int _recSize;
@@ -115,7 +116,8 @@ private:
   int _numSeparators;
   char *_commentString;     /* string for comment, or NULL */
   int _commentStringLength; /* length of comment string */
-  int _numAttrs;
+  int _numAttrs;            /* number of attributes (including composite) */
+  int _numPhysAttrs;        /* number of physical attributes */
   RecInterp *_recInterp;
 };
 

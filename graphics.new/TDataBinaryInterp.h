@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/05/05 03:08:37  jussi
+  Added support for composite attributes. Also added tape drive
+  support.
+
   Revision 1.1  1996/01/23 20:54:51  jussi
   Initial revision.
 */
@@ -26,9 +30,7 @@
 #include "DeviseTypes.h"
 #include "ClassDir.h"
 #include "TDataBinary.h"
-
-class AttrList;
-class AttrInfo;
+#include "AttrList.h"
 
 class TDataBinaryInterpClassInfo: public ClassInfo {
 public:
@@ -74,25 +76,27 @@ class RecInterp;
 
 class TDataBinaryInterp: public TDataBinary {
 public:
-  TDataBinaryInterp(char *name, int recSize, int physRecSize, AttrList *attrs);
+  TDataBinaryInterp(char *name, char *alias, int recSize,
+		    int physRecSize, AttrList *attrs);
   virtual ~TDataBinaryInterp();
 
-  AttrList *GetAttrList() { return _attrList; };
+  AttrList *GetAttrList() { return &_attrList; }
 
 protected:
   /* Copy record to buffer. Return false if invalid record. */
-  virtual Boolean Decode(RecId id, void *recordBuf, char *line);
+  virtual Boolean Decode(void *recordBuf, int recPos, char *line);
   
   virtual Boolean WriteCache(int fd);
   virtual Boolean ReadCache(int fd);
 
 private:
-  AttrList *_attrList; /* list of attributes */
+  AttrList _attrList;  /* list of attributes */
   Boolean hasComposite;
   char *_name;
   int _recSize;
   int _physRecSize;
-  int _numAttrs;
+  int _numAttrs;       /* number of attributes (including composite) */
+  int _numPhysAttrs;   /* number of physical attributes */
   RecInterp *_recInterp;
 };
 

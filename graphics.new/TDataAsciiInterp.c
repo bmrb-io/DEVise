@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/05/05 03:07:33  jussi
+  Removed array of pointers to attribute info for matching values.
+
   Revision 1.13  1996/04/23 15:40:45  jussi
   Added debugging statements and allowed decoder to accept integer
   values with +/- prefixes.
@@ -136,8 +139,9 @@ ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc, char **argv)
 
   char *name = CopyString(argv[0]);
   char *alias = CopyString(argv[1]);
-  TDataAsciiInterp *tdata = new TDataAsciiInterp(name,_recSize, _attrList,
-						 _separators, _numSeparators,
+  TDataAsciiInterp *tdata = new TDataAsciiInterp(name, alias, _recSize,
+						 _attrList, _separators,
+						 _numSeparators,
 						 _isSeparator, _commentString);
   return new TDataAsciiInterpClassInfo(_className, name, alias, tdata);
 }
@@ -161,10 +165,11 @@ void TDataAsciiInterpClassInfo::CreateParams(int &argc, char **&argv)
   args[1] = _alias;
 }
 
-TDataAsciiInterp::TDataAsciiInterp(char *name, int recSize, AttrList *attrs,
-				   char *separators, int numSeparators,
-				   Boolean isSeparator, char *commentString) :
-	TDataAscii(name, recSize)
+TDataAsciiInterp::TDataAsciiInterp(char *name, char *alias, int recSize,
+				   AttrList *attrs, char *separators,
+				   int numSeparators, Boolean isSeparator,
+				   char *commentString) :
+     TDataAscii(name, alias, recSize), _attrList(*attrs)
 {
 #ifdef DEBUG
   printf("TDataAsciiInterp %s, recSize %d\n", name, recSize);
@@ -175,7 +180,6 @@ TDataAsciiInterp::TDataAsciiInterp(char *name, int recSize, AttrList *attrs,
   
   _name = name;
   _recSize = recSize;
-  _attrList = attrs;
   _separators = separators;
   _numSeparators = numSeparators;
   _isSeparator = isSeparator;
@@ -183,18 +187,20 @@ TDataAsciiInterp::TDataAsciiInterp(char *name, int recSize, AttrList *attrs,
   _commentString = commentString;
   if (_commentString)
     _commentStringLength = strlen(_commentString);
-  _numAttrs = _attrList->NumAttrs();
-  
+  _numAttrs = _numPhysAttrs = _attrList.NumAttrs();
+
   hasComposite = false;
 
-  for(int i = 0; i < _attrList->NumAttrs(); i++) {
-    AttrInfo *info = _attrList->Get(i);
+  _attrList.InitIterator();
+  while(_attrList.More()) {
+    AttrInfo *info = _attrList.Next();
     if (info->isComposite) {
       hasComposite = true;
-      _numAttrs--;
+      _numPhysAttrs--;
     }
   }
-  
+  _attrList.DoneIterator();
+
   Initialize();
 }
 
@@ -204,14 +210,14 @@ TDataAsciiInterp::~TDataAsciiInterp()
 
 Boolean TDataAsciiInterp::WriteCache(int fd)
 {
-  int numAttrs = _attrList->NumAttrs();
+  int numAttrs = _attrList.NumAttrs();
   if (write(fd, &numAttrs, sizeof numAttrs) != sizeof numAttrs) {
     perror("write");
     return false;
   }
 
-  for(int i = 0; i < _attrList->NumAttrs(); i++) {
-    AttrInfo *info = _attrList->Get(i);
+  for(int i = 0; i < _attrList.NumAttrs(); i++) {
+    AttrInfo *info = _attrList.Get(i);
     if (info->type == StringAttr)
       continue;
     if (write(fd, &info->hasHiVal, sizeof info->hasHiVal)
@@ -244,13 +250,13 @@ Boolean TDataAsciiInterp::ReadCache(int fd)
     perror("read");
     return false;
   }
-  if (numAttrs != _attrList->NumAttrs()) {
+  if (numAttrs != _attrList.NumAttrs()) {
     printf("Cache has inconsistent schema; rebuilding\n");
     return false;
   }
 
-  for(int i = 0; i < _attrList->NumAttrs(); i++) {
-    AttrInfo *info = _attrList->Get(i);
+  for(int i = 0; i < _attrList.NumAttrs(); i++) {
+    AttrInfo *info = _attrList.Get(i);
     if (info->type == StringAttr)
       continue;
     if (read(fd, &info->hasHiVal, sizeof info->hasHiVal)
@@ -276,29 +282,30 @@ Boolean TDataAsciiInterp::ReadCache(int fd)
   return true;
 }
 
-Boolean TDataAsciiInterp::Decode(void *recordBuf, char *line)
+Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
 {
   /* set buffer for interpreted record */
   _recInterp->SetBuf(recordBuf);
-  
+  _recInterp->SetRecPos(recPos);
+
   int numArgs;
   char **args;
 
   Parse(line, numArgs, args, _separators, _numSeparators, _isSeparator);
   
-  if (numArgs < _numAttrs || 
+  if (numArgs < _numPhysAttrs || 
       (_commentString != NULL &&
        strncmp(args[0], _commentString, _commentStringLength) == 0)) {
 #ifdef DEBUG
     printf("Too few arguments (%d < %d) or commented line\n",
-	   numArgs, _numAttrs);
+	   numArgs, _numPhysAttrs);
 #endif
     return false;
   }
 	
   int i;
-  for(i = 0; i < _numAttrs; i++) {
-    AttrInfo *info = _attrList->Get(i);
+  for(i = 0; i < _numPhysAttrs; i++) {
+    AttrInfo *info = _attrList.Get(i);
     if (info->type == IntAttr || info->type == DateAttr) {
       if (!isdigit(args[i][0]) && args[i][0] != '-' && args[i][0] != '+') {
 #ifdef DEBUG
@@ -317,11 +324,47 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, char *line)
     }
   }
 
-  DOASSERT(numArgs >= _numAttrs, "Invalid number of arguments");
+  DOASSERT(numArgs >= _numPhysAttrs, "Invalid number of arguments");
+
+  for(i = 0; i < _numPhysAttrs; i++) {
+
+    AttrInfo *info = _attrList.Get(i);
+    char *ptr = (char *)recordBuf + info->offset;
+
+    switch(info->type) {
+    case IntAttr:
+      *(int *)ptr = atoi(args[i]);
+      break;
+
+    case FloatAttr:
+      *(float *)ptr = UtilAtof(args[i]);
+      break;
+
+    case DoubleAttr:
+      *(double *)ptr = UtilAtof(args[i]);
+      break;
+
+    case StringAttr:
+      strncpy(ptr, args[i], info->length);
+      ptr[info->length - 1] = '\0';
+      break;
+
+    case DateAttr:
+      *(time_t *)ptr = atoi(args[i]);
+      break;
+
+    default:
+      DOASSERT(0, "Unknown attribute type");
+    }
+  }
+  
+  /* decode composite attributes */
+  if (hasComposite)
+    CompositeParser::Decode(_attrList.GetName(), _recInterp);
 
   for(i = 0; i < _numAttrs; i++) {
+    AttrInfo *info = _attrList.Get(i);
 
-    AttrInfo *info = _attrList->Get(i);
     char *ptr = (char *)recordBuf + info->offset;
     int intVal;
     float floatVal;
@@ -330,10 +373,9 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, char *line)
 
     switch(info->type) {
     case IntAttr:
-      intVal = atoi(args[i]);
+      intVal = *(int *)ptr;
       if (info->hasMatchVal && intVal != info->matchVal.intVal)
 	return false;
-      *(int *)ptr = intVal;
       if (!info->hasHiVal || intVal > info->hiVal.intVal) {
 	info->hiVal.intVal = intVal;
 	info->hasHiVal = true;
@@ -349,10 +391,9 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, char *line)
       break;
 
     case FloatAttr:
-      floatVal = UtilAtof(args[i]);
+      floatVal = *(float *)ptr;
       if (info->hasMatchVal && floatVal != info->matchVal.floatVal)
 	return false;
-      *(float *)ptr = floatVal;
       if (!info->hasHiVal || floatVal > info->hiVal.floatVal) {
 	info->hiVal.floatVal = floatVal;
 	info->hasHiVal = true;
@@ -368,10 +409,9 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, char *line)
       break;
 
     case DoubleAttr:
-      doubleVal = UtilAtof(args[i]);
+      doubleVal = *(double *)ptr;
       if (info->hasMatchVal && doubleVal != info->matchVal.doubleVal)
 	return false;
-      *(double *)ptr = doubleVal;
       if (!info->hasHiVal || doubleVal > info->hiVal.doubleVal) {
 	info->hiVal.doubleVal = doubleVal;
 	info->hasHiVal = true;
@@ -387,19 +427,14 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, char *line)
       break;
 
     case StringAttr:
-      if (info->hasMatchVal && strcmp(args[i], info->matchVal.strVal))
+      if (info->hasMatchVal && strcmp(ptr, info->matchVal.strVal))
 	return false;
-      strncpy(ptr, args[i], info->length);
-      ptr[info->length - 1] = '\0';
-#ifdef DEBUG
-      printf("string '%s'\n", ptr);
-#endif
       break;
 
     case DateAttr:
-      DOASSERT(!info->hasMatchVal, "Date attribute match not implemented");
-      dateVal = atoi(args[i]);
-      *(time_t *)ptr = dateVal;
+      dateVal = *(time_t *)ptr;
+      if (info->hasMatchVal && dateVal != info->matchVal.dateVal)
+	return false;
       if (!info->hasHiVal || dateVal > info->hiVal.dateVal) {
 	info->hiVal.dateVal = dateVal;
 	info->hasHiVal = true;
@@ -419,9 +454,5 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, char *line)
     }
   }
   
-  /* decode composite attributes */
-  if (hasComposite)
-    CompositeParser::Decode(_attrList->GetName(), _recInterp);
-
   return true;
 }

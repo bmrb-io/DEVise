@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/05 03:08:23  jussi
+  Added support for composite attributes. Also added tape drive
+  support.
+
   Revision 1.3  1996/04/16 20:38:52  jussi
   Replaced assert() calls with DOASSERT macro.
 
@@ -50,11 +54,13 @@ TDataBinaryInterpClassInfo::TDataBinaryInterpClassInfo(char *className,
   // compute size of physical record (excluding attributes)
 
   _physRecSize = 0;
-  for(int i = 0; i < _attrList->NumAttrs(); i++) {
-    AttrInfo *info = _attrList->Get(i);
+  _attrList->InitIterator();
+  while(_attrList->More()) {
+    AttrInfo *info = _attrList->Next();
     if (!info->isComposite)
       _physRecSize += info->length;
   }
+  _attrList->DoneIterator();
 
   DOASSERT(_physRecSize > 0 && _physRecSize <= _recSize,
 	   "Invalid physical record size");
@@ -102,7 +108,7 @@ ClassInfo *TDataBinaryInterpClassInfo::CreateWithParams(int argc, char **argv)
 
   char *name = CopyString(argv[0]);
   char *alias = CopyString(argv[1]);
-  TDataBinaryInterp *tdata = new TDataBinaryInterp(name, _recSize,
+  TDataBinaryInterp *tdata = new TDataBinaryInterp(name, alias, _recSize,
 						   _physRecSize, _attrList);
   return new TDataBinaryInterpClassInfo(_className, name, alias, tdata);
 }
@@ -125,9 +131,10 @@ void TDataBinaryInterpClassInfo::CreateParams(int &argc, char **&argv)
   args[1] = _alias;
 }
 
-TDataBinaryInterp::TDataBinaryInterp(char *name, int recSize, int physRecSize,
-				     AttrList *attrs) :
-     TDataBinary(name, recSize, physRecSize)
+TDataBinaryInterp::TDataBinaryInterp(char *name, char *alias, int recSize,
+				     int physRecSize, AttrList *attrs) :
+     TDataBinary(name, alias, recSize, physRecSize),
+     _attrList(*attrs)
 {
 #ifdef DEBUG
   printf("TDataBinaryInterp %s, recSize %d, physRecSize %d\n",
@@ -140,19 +147,20 @@ TDataBinaryInterp::TDataBinaryInterp(char *name, int recSize, int physRecSize,
   _name = name;
   _recSize = recSize;
   _physRecSize = physRecSize;
-  _attrList = attrs;
-  _numAttrs = _attrList->NumAttrs();
+  _numAttrs = _numPhysAttrs = _attrList.NumAttrs();
   
   hasComposite = false;
 
-  for(int i = 0; i < _attrList->NumAttrs(); i++) {
-    AttrInfo *info = _attrList->Get(i);
+  _attrList.InitIterator();
+  while(_attrList.More()) {
+    AttrInfo *info = _attrList.Next();
     if (info->isComposite) {
       hasComposite = true;
-      _numAttrs--;
+      _numPhysAttrs--;
     }
   }
-  
+  _attrList.DoneIterator();
+
   Initialize();
 }
 
@@ -162,14 +170,14 @@ TDataBinaryInterp::~TDataBinaryInterp()
 
 Boolean TDataBinaryInterp::WriteCache(int fd)
 {
-  int numAttrs = _attrList->NumAttrs();
+  int numAttrs = _attrList.NumAttrs();
   if (write(fd, &numAttrs, sizeof numAttrs) != sizeof numAttrs) {
     perror("write");
     return false;
   }
 
-  for(int i = 0; i < _attrList->NumAttrs(); i++) {
-    AttrInfo *info = _attrList->Get(i);
+  for(int i = 0; i < _attrList.NumAttrs(); i++) {
+    AttrInfo *info = _attrList.Get(i);
     if (info->type == StringAttr)
       continue;
     if (write(fd, &info->hasHiVal, sizeof info->hasHiVal)
@@ -202,13 +210,13 @@ Boolean TDataBinaryInterp::ReadCache(int fd)
     perror("read");
     return false;
   }
-  if (numAttrs != _attrList->NumAttrs()) {
+  if (numAttrs != _attrList.NumAttrs()) {
     printf("Cache has inconsistent schema; rebuilding\n");
     return false;
   }
 
-  for(int i = 0; i < _attrList->NumAttrs(); i++) {
-    AttrInfo *info = _attrList->Get(i);
+  for(int i = 0; i < _attrList.NumAttrs(); i++) {
+    AttrInfo *info = _attrList.Get(i);
     if (info->type == StringAttr)
       continue;
     if (read(fd, &info->hasHiVal, sizeof info->hasHiVal)
@@ -234,28 +242,110 @@ Boolean TDataBinaryInterp::ReadCache(int fd)
   return true;
 }
 
-Boolean TDataBinaryInterp::Decode(RecId id, void *recordBuf, char *line)
+Boolean TDataBinaryInterp::Decode(void *recordBuf, int recPos, char *line)
 {
   /* set buffer for interpreted record */
   _recInterp->SetBuf(recordBuf);
-  
+  _recInterp->SetRecPos(recPos);
+
   if (recordBuf != line)
     memcpy(recordBuf, line, _physRecSize);
 
-  for(int i = 0; i < _numAttrs; i++) {
-    AttrInfo *info = _attrList->Get(i);
-    if (!info->hasMatchVal)
-      continue;
-
-    char *ptr = (char *)recordBuf + info->offset;
-    int length = info->length;
-    if (memcmp(ptr, &info->matchVal, length))
-      return false;
-  }
-  
   /* decode composite attributes */
   if (hasComposite)
-    CompositeParser::Decode(_attrList->GetName(), _recInterp);
+    CompositeParser::Decode(_attrList.GetName(), _recInterp);
 
+  for(int i = 0; i < _numAttrs; i++) {
+    AttrInfo *info = _attrList.Get(i);
+
+    char *ptr = (char *)recordBuf + info->offset;
+    int intVal;
+    float floatVal;
+    double doubleVal;
+    time_t dateVal;
+
+    switch(info->type) {
+    case IntAttr:
+      intVal = *(int *)ptr;
+      if (info->hasMatchVal && intVal != info->matchVal.intVal)
+	return false;
+      if (!info->hasHiVal || intVal > info->hiVal.intVal) {
+	info->hiVal.intVal = intVal;
+	info->hasHiVal = true;
+      }
+      if (!info->hasLoVal || intVal < info->loVal.intVal) {
+	info->loVal.intVal = intVal;
+	info->hasLoVal = true;
+      }
+#ifdef DEBUG
+      printf("int %d, hi %d, lo %d\n", intVal, info->hiVal.intVal,
+	     info->loVal.intVal);
+#endif
+      break;
+
+    case FloatAttr:
+      floatVal = *(float *)ptr;
+      if (info->hasMatchVal && floatVal != info->matchVal.floatVal)
+	return false;
+      if (!info->hasHiVal || floatVal > info->hiVal.floatVal) {
+	info->hiVal.floatVal = floatVal;
+	info->hasHiVal = true;
+      }
+      if (!info->hasLoVal || floatVal < info->loVal.floatVal) {
+	info->loVal.floatVal = floatVal;
+	info->hasLoVal = true;
+      }
+#ifdef DEBUG
+      printf("float %.2f, hi %.2f, lo %.2f\n", floatVal,
+	     info->hiVal.floatVal, info->loVal.floatVal);
+#endif
+      break;
+
+    case DoubleAttr:
+      doubleVal = *(double *)ptr;
+      if (info->hasMatchVal && doubleVal != info->matchVal.doubleVal)
+	return false;
+      if (!info->hasHiVal || doubleVal > info->hiVal.doubleVal) {
+	info->hiVal.doubleVal = doubleVal;
+	info->hasHiVal = true;
+      }
+      if (!info->hasLoVal || doubleVal < info->loVal.doubleVal) {
+	info->loVal.doubleVal = doubleVal;
+	info->hasLoVal = true;
+      }
+#ifdef DEBUG
+      printf("double %.2f, hi %.2f, lo %.2f\n", doubleVal,
+	     info->hiVal.doubleVal, info->loVal.doubleVal);
+#endif
+      break;
+
+    case StringAttr:
+      if (info->hasMatchVal && strcmp(ptr, info->matchVal.strVal))
+	return false;
+      break;
+
+    case DateAttr:
+      dateVal = *(time_t *)ptr;
+      if (info->hasMatchVal && dateVal != info->matchVal.dateVal)
+	return false;
+      if (!info->hasHiVal || dateVal > info->hiVal.dateVal) {
+	info->hiVal.dateVal = dateVal;
+	info->hasHiVal = true;
+      }
+      if (!info->hasLoVal || dateVal < info->loVal.dateVal) {
+	info->loVal.dateVal = dateVal;
+	info->hasLoVal = true;
+      }
+#ifdef DEBUG
+      printf("date %ld, hi %ld, lo %ld\n", dateVal, info->hiVal.dateVal,
+	     info->loVal.dateVal);
+#endif
+      break;
+
+    default:
+      DOASSERT(0, "Unknown attribute type");
+    }
+  }
+  
   return true;
 }
