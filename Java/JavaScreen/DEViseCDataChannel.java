@@ -135,16 +135,32 @@ public class DEViseCDataChannel implements Runnable
             	DEViseImageView view = null;
                 try  {
                     Rectangle loc = new Rectangle((Integer.valueOf(cmd[2])).intValue(), (Integer.valueOf(cmd[3])).intValue(),
-                                                  (Integer.valueOf(cmd[4])).intValue(), (Integer.valueOf(cmd[5])).intValue());                    
-                    view = new DEViseImageView(jsc, cmd[1], loc, image);
+                                                  (Integer.valueOf(cmd[4])).intValue(), (Integer.valueOf(cmd[5])).intValue());
+                    int numOfV = (Integer.valueOf(cmd[7])).intValue();
+                    Vector vName = new Vector();
+                    Vector vRect = new Vector();
+                    if (cmd.length != numOfV * 5 + 8) {
+                        // something is wrong here, but leave it now
+                        DEViseDebugInfo.println("Received JAVAC_CreateWindow has incorrect format!");
+                    } else {
+                        for (int j = 0; j < numOfV; j++) {
+                            vName.addElement(cmd[8 + j * 5]);
+                            Rectangle rect = new Rectangle((Integer.valueOf(cmd[9 + j * 5])).intValue(), (Integer.valueOf(cmd[10 + j * 5])).intValue(),
+                                                          (Integer.valueOf(cmd[11 + j * 5])).intValue(), (Integer.valueOf(cmd[12 + j * 5])).intValue());
+                            vRect.addElement(rect);
+                        }
+                    }
+                                                  
+                    view = new DEViseImageView(jsc, cmd[1], loc, image, vName, vRect);
                 }  catch (DEViseException e) {
                     throw new DEViseNetException("Can not open view!" + e.getMessage());
                 }            
                  
                 jsc.addView(view);
-            } else if (cmd[0].equals("JAVAC_UpdateGdata")) {
+            } else if (cmd[0].equals("JAVAC_UpdateGData")) {
                 if ((cmd.length / 2) * 2 == cmd.length) {
-                    ; // something is wrong here, but leave it now
+                    // something is wrong here
+                    DEViseDebugInfo.println("Received JAVAC_UpdateGData has incorrect format!");
                 } else {
                     jsc.getCurrentView().updateGData(cmd);
                 }

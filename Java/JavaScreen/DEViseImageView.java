@@ -9,6 +9,8 @@ public class DEViseImageView extends Canvas
     private jsdevisec jsc = null;    
     private String viewName = null;
     private Rectangle viewLoc = null;
+    private Vector viewNames = null;
+    private Vector viewLocs = null;
     public Vector gdataName = new Vector();
     public Vector gdataValue = new Vector();
     
@@ -24,15 +26,17 @@ public class DEViseImageView extends Canvas
     int mouseAction = 0;
     int x0, y0, w, h;
         
-    public DEViseImageView(jsdevisec what, String name, Rectangle loc, Image img) throws DEViseException
+    public DEViseImageView(jsdevisec what, String name, Rectangle loc, Image img, Vector vname, Vector rect) throws DEViseException
     {
-        if (what == null || name == null || loc == null || img == null)
+        if (what == null || name == null || loc == null || img == null || vname == null || rect == null)
             throw new DEViseException("NULL argument in DEViseImageView constructor!");
             
         jsc = what;
         viewName = name;
         viewLoc = loc;
         image = img;
+        viewNames = vname;
+        viewLocs = rect;
         
         imageWidth = image.getWidth(this);
         imageHeight = image.getHeight(this);        

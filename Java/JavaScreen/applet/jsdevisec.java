@@ -10,7 +10,6 @@ public class jsdevisec extends Frame
     private DEViseCmdSocket cmdSocket = null;
     private DEViseImgSocket imgSocket = null;
     
-    private boolean isAnimated = false;
     private Vector allViews = new Vector();
     public Vector images = new Vector();
     private DEViseImageView currentView = null;
@@ -150,8 +149,21 @@ public class jsdevisec extends Frame
     {
         removeAll();
         
-        viewPanel = new Panel(new GridLayout(2, 2));
-        for (int i = 0; i < 4; i++)  {
+        int number = allViews.size();
+        if (number < 1) {
+            // do nothing now
+            return;
+        }        
+        int num = (int)Math.sqrt(number);
+        int row , column = num;
+        if (num * num < number) {
+            row = num + 1;
+        } else {
+            row = num;
+        }
+        
+        viewPanel = new Panel(new GridLayout(row, column));
+        for (int i = 0; i < number; i++)  {
             ScrollPane tmpPanel = new ScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);                             
             tmpPanel.add((DEViseImageView)allViews.elementAt(i));
             viewPanel.add(tmpPanel);
@@ -182,6 +194,11 @@ public class jsdevisec extends Frame
         show();
 
         isSessionOpened = false;
+        allViews.removeAllElements();
+        currentView = null;
+        currSession.removeAllElements();
+        isGrid = false;
+        setStatus(true);
     }
     
     public void addEventHandler(jsdevisec what)

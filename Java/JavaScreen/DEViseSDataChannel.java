@@ -113,8 +113,8 @@ public class DEViseSDataChannel implements Runnable
                 } else if (cmd.equals("JAVAC_Fail")) {
                     // Last operation is failed
                     System.out.println("Client send failing message!");
-                } else if (cmd.startsWith("JAVAC_OpenSession")) {
-                    if (!openSession())
+                } else if (cmd.startsWith("JAVAC_OpenSession")) {                    
+                    if (!openSession(cmd))
                         cmdSocket.sendCmd("JAVAC_Fail", DEViseGlobals.API_JAVA);
                 } else if (cmd.startsWith("JAVAC_GetSessionList")) {
                     cmdSocket.sendCmd("JAVAC_UpdateSessionList test.ds test1.ds " +
@@ -122,7 +122,6 @@ public class DEViseSDataChannel implements Runnable
                                       "test7.ds test8.ds test9.ds test10.ds", DEViseGlobals.API_JAVA);
                     cmdSocket.sendCmd("JAVAC_Done", DEViseGlobals.API_JAVA);
                 } else if (cmd.startsWith("JAVAC_CloseCurrentSession")) {
-                    //cmdSocket.sendCmd("CloseAll", DEViseGlobals.API_CTL);
                     cmdSocket.sendCmd("JAVAC_Done", DEViseGlobals.API_JAVA);
                 } else if (cmd.startsWith("JAVAC_MouseAction_RubberBand")) {
                     if (!MouseAction_RubberBand(cmd))
@@ -175,25 +174,38 @@ public class DEViseSDataChannel implements Runnable
             label = label + "http://" + argument[1] + ".homepage" + i + ".edu ";
         }
             
-        cmdSocket.sendCmd("JAVAC_UpdateGdata " + label, DEViseGlobals.API_CTL);
+        cmdSocket.sendCmd("JAVAC_UpdateGData " + label, DEViseGlobals.API_CTL);
         cmdSocket.sendCmd("JAVAC_Done", DEViseGlobals.API_JAVA);
         return true;
     }
     
-    private boolean openSession() throws DEViseNetException
+    private boolean openSession(String cmd) throws DEViseNetException
     {   
-        byte[] imageData = null;
-        for (int i = 0; i < 4; i++) {
-            imageData = getImage("images/view" + (i + 1) + "-sample0.jpg");
-            if (imageData == null) 
-                return false;
-            cmdSocket.sendCmd("JAVAC_CreateWindow view" + (i + 1) +" 0 0 400 300 " + imageData.length, DEViseGlobals.API_CTL);
+        String[] argument = parseStr(cmd);
+        int number = 0;
+        if (argument[1].equals("test1.ds")) {
+            number = 1;
+        } else if (argument[1].equals("test2.ds")) {
+            number = 2;
+        } else if (argument[1].equals("test3.ds")) {
+            number = 3;
+        } else {
+            number = 4;
         }
         
-        //cmdSocket.sendCmd("OpenAll", DEViseGlobals.API_CTL);
+        byte[] imageData = null;
+        for (int i = 0; i < number; i++) {
+            imageData = getImage("images/view" + (i + 1) + "-sample0.jpg");
+            if (imageData == null) 
+                return false; 
+            cmdSocket.sendCmd("JAVAC_CreateWindow view" + (i + 1) +" 0 0 400 300 " 
+                             + imageData.length + " 2 name1 0 0 200 300 name2 200 0 400 300"
+                             , DEViseGlobals.API_CTL);
+        }
+        
         cmdSocket.sendCmd("JAVAC_Done", DEViseGlobals.API_JAVA);
 
-	    for (int i = 0; i < 4; i++) {
+	    for (int i = 0; i < number; i++) {
             //System.out.println("Start sending imageData...");
             imgSocket.sendImg(imageData);
 	        //System.out.println("Finish sending imageData...");
