@@ -4,6 +4,9 @@ bool Aggregates::isApplicable(){
 	
 	// Is there any aggregates in the selectClause?
 
+	if(selList == NULL){
+		return false;
+	}
 	selList->rewind();
 	while(!selList->atEnd()){
 		BaseSelection* curr = selList->get();
