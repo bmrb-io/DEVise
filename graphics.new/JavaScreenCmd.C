@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.105  2000/06/21 15:20:06  wenger
+  Added arguments to commands to JS telling whether to display mouse
+  location, and format to use when doing so (currently conditionaled
+  out until the JS is modified to match).
+
   Revision 1.104  2000/06/16 19:45:24  wenger
   Fixed bug 596 (height of text in JavaScreen vs. "regular" DEVise).
 
@@ -480,7 +485,6 @@
 #define MONOLITHIC_TEST 0
 #define NO_BATCH 0 // Non-zero for test only.
 #define DO_CHECKSUM 1//TEMP
-//#define MOUSE_FORMAT //TEMP
 
 #define ROUND_TO_INT(value) ((int)(value + 0.5))
 
@@ -505,11 +509,7 @@ static DeviseCursorList _drawnCursors;
 static const float viewZInc = 0.001;
 
 static const int protocolMajorVersion = 4;
-#if defined(MOUSE_FORMAT) //TEMP
 static const int protocolMinorVersion = 2;
-#else //TEMP
-static const int protocolMinorVersion = 1;
-#endif //TEMP
 
 JavaScreenCache JavaScreenCmd::_cache;
 
@@ -2972,9 +2972,7 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 		  args.FillInt(italic);
 	  }
 
-#if defined(MOUSE_FORMAT) //TEMP
 	  args.FillInt(showMouseLocation);
-#endif
 
 	  if (args.ReturnVal(this) < 0) status = -1;
 	}
@@ -3031,9 +3029,7 @@ JavaScreenCmd::SendViewDataArea(View *view)
 		  args.FillString("X");
 		  args.FillDouble(filter.xLow);
 		  args.FillDouble(filter.xHigh);
-#if defined(MOUSE_FORMAT) //TEMP
 		  args.FillString(axisFormat);
-#endif
 
 		  args.ReturnVal(this);
 		}
@@ -3059,9 +3055,7 @@ JavaScreenCmd::SendViewDataArea(View *view)
 		  args.FillString("Y");
 		  args.FillDouble(filter.yLow);
 		  args.FillDouble(filter.yHigh);
-#if defined(MOUSE_FORMAT) //TEMP
 		  args.FillString(axisFormat);
-#endif
 
 		  args.ReturnVal(this);
 		}
