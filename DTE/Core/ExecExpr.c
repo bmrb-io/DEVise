@@ -1,4 +1,5 @@
 #include "ExecExpr.h"
+#include "MapAttr.h"
 #include <ctype.h>
 
 
@@ -13,7 +14,20 @@ ExecExpr* ExecExpr::createExpr(const string& fnname, ExprList* argp)
   }
   string fn(f);
 
-  if(args.size() == 1){
+  //ksb: this code should be changed to allow arbitrary functions...
+  if( fnname == "map" ) {
+    if( args.size() == 1 ) {
+      TypeID t = args[0]->getTypeID();
+      if( t == INT_TP ) {
+	return new MapAttrExec<int>(args[0]);
+      } else if( t == DOUBLE_TP ) {
+	return new MapAttrExec<double>(args[0]);
+      } else if( t == STRING_TP ) {
+	return new MapAttrExec<string>(args[0]);
+      }
+    }
+    return NULL;
+  } else if(args.size() == 1){
     return new ExecTypeCast(args[0], fn);
     args.clear();                 // to keep from deleting expr
     delete argp;
