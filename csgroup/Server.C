@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/03/04 05:54:27  taodb
+  Removed bugs that prevent multiple connection
+
   Revision 1.4  1998/02/26 20:35:10  taodb
   Removed ParaseAPI() interface, and added CommandObject interface
 
@@ -415,8 +418,11 @@ void Server::ReadCmd()
 	if (_listenSwtFd >0)
     	FD_SET(_listenSwtFd, &fdset);
 
+	/*
+		commented out for Miron's purpose
 	if (_listenFd >0)
     	FD_SET(_listenFd, &fdset);
+	*/
 
 	if ((_listenSwtFd >0)&&(_listenFd > _listenSwtFd))
     	maxFdCheck = _listenFd;
@@ -936,11 +942,14 @@ ControlChannel::ControlChannel()
 {
 	int	mode;
 	_hostname = new (char)[MAXNAMELEN];
+	char	buf[MAXNAMELEN];
 	_key = NULL;
+	pid_t	pid;
 
-
+	pid = getpid();
 	gethostname(_hostname, MAXNAMELEN);
-	_key = new CSgroupKey(_hostname, SERVERTAG);
+	sprintf(buf,"%s%ld",_hostname,pid);
+	_key = new CSgroupKey(buf, SERVERTAG);
 	_controlgkp = _key->toGroupKey();
 	
 	mode = (CRM_LEADER|CRM_CREATE);
