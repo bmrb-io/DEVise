@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2001/04/16 19:49:11  wenger
+// Added display of all chem shifts by amino acid.
+//
 // Revision 1.5  2001/03/13 14:50:10  wenger
 // Added cache invalidation: cache files are not used if peptide-cgi code
 // or NMR-Star file has changed since relevant cache files were generated.
@@ -243,6 +246,16 @@ public class S2DSummaryHtml {
 	  S2DNames.ALL_CHEM_SHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
 	  "\">All Chemical Shifts</a> (by amino acid) (" + count +
 	  " shifts)\n");
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the H vs. N chemical shifts link.
+    public void writeHvsNShifts(int frameIndex, int count)
+      throws IOException
+    {
+        _writer.write("<li><a href=\"" + _accNum +
+	  S2DNames.HVSN_CHEM_SHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+	  "\">H vs. N Chemical Shifts</a> (" + count + " shifts)\n");
     }
 
     //===================================================================

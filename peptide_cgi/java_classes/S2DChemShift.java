@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2001/04/16 19:49:11  wenger
+// Added display of all chem shifts by amino acid.
+//
 // Revision 1.4  2001/03/08 21:10:34  wenger
 // Merged changes from no_collab_br_2 thru no_collab_br_3 from the branch
 // to the trunk.
@@ -201,8 +204,6 @@ public class S2DChemShift {
 	      cbDeltashift + "\n");
 	    dsCount++;
 
-	    deltashiftWriter.close();
-
 	    //
 	    // Write the session file
 	    //
@@ -225,6 +226,12 @@ public class S2DChemShift {
 	      ex.getMessage());
 	    throw new S2DError("Unable to write deltashift data for " +
 	      frameIndex);
+	} finally {
+	    try {
+	        deltashiftWriter.close();
+	    } catch (IOException ex) {
+	        System.err.println("IOException: " + ex.getMessage());
+	    }
 	}
     }
 
@@ -361,8 +368,6 @@ public class S2DChemShift {
 	        csiCount++;
 	    }
 
-	    csiWriter.close();
-
 	    //
 	    // Write the session file.
 	    //
@@ -385,6 +390,12 @@ public class S2DChemShift {
 	      ex.getMessage());
 	    throw new S2DError("Unable to write CSI data for " +
 	      frameIndex);
+	} finally {
+	    try {
+	        csiWriter.close();
+	    } catch (IOException ex) {
+	        System.err.println("IOException: " + ex.getMessage());
+	    }
 	}
     }
 
@@ -461,8 +472,6 @@ public class S2DChemShift {
 		}
 	    }
 
-	    pctWriter.close();
-
 	    //
 	    // Write the session file.
 	    //
@@ -485,6 +494,12 @@ public class S2DChemShift {
 	      ex.getMessage());
 	    throw new S2DError("Unable to write percent assignment data for " +
 	      frameIndex);
+	} finally {
+	    try {
+	        pctWriter.close();
+	    } catch (IOException ex) {
+	        System.err.println("IOException: " + ex.getMessage());
+	    }
 	}
     }
 
@@ -518,9 +533,6 @@ public class S2DChemShift {
 		  _atomTypes[index] + " " +  _chemShiftVals[index] + "\n");
 	    }
 
-            asWriter.close();
-
-
 	    //
 	    // Write the session file.
 	    //
@@ -543,6 +555,125 @@ public class S2DChemShift {
 	      ex.getMessage());
 	    throw new S2DError("Unable to write all chem shifts for " +
 	      frameIndex);
+	} finally {
+	    try {
+	        asWriter.close();
+	    } catch (IOException ex) {
+	        System.err.println("IOException: " + ex.getMessage());
+	    }
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Write H vs. N chem shifts for this data.
+    public void writeHvsNShifts(int frameIndex) throws S2DException
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("S2DChemShift.writeHvsNShifts()");
+	}
+
+        FileWriter hnWriter = null;
+	try {
+            hnWriter = new FileWriter(_dataDir + "/" +
+	      _accessionNum + S2DNames.HVSN_CHEM_SHIFT_SUFFIX + frameIndex +
+	      S2DNames.DAT_SUFFIX);
+        } catch(IOException ex) {
+	    System.err.println(
+	      "IOException writing H vs. N chem shift values: " +
+	      ex.getMessage());
+	    throw new S2DError("Can't write H vs. N chem shift values");
+	}
+
+	//
+	// Find the H and N chem shift values and write them out.
+	//
+	try {
+	    int prevSeqCode = -1;
+	    String prevResLabel = null;
+	    boolean hasH = false;
+	    boolean hasN = false;
+	    double hShift = 0.0;
+	    double nShift = 0.0;
+
+	    int hnCount = 0;
+
+	    for (int index = 0; index < _resSeqCodes.length; index++) {
+	        int currSeqCode = _resSeqCodes[index];
+	        String currResLabel = _residueLabels[index];
+
+	        if (currSeqCode != prevSeqCode) {
+
+		    // We just finished the previous residue.
+
+		    if (prevSeqCode != -1 && hasH && hasN) {
+			// We're done with prevSeqCode, so write out its
+			// info.
+		        hnWriter.write(prevSeqCode + " " + prevResLabel +
+			  " " + hShift + " " + nShift + "\n");
+		        hnCount++;
+		    }
+
+		    prevSeqCode = currSeqCode;
+		    prevResLabel = currResLabel;
+		    hasH = false;
+		    hasN = false;
+                }
+
+	        String atomName = _atomNames[index];
+	        double chemShift = _chemShiftVals[index];
+
+		if (atomName.equalsIgnoreCase("H")) {
+		    if (hasH) {
+		        System.err.println("Multiple H entries in one " +
+			  "residue(" + currSeqCode + ")!");
+		    }
+		    hasH = true;
+		    hShift = chemShift;
+		} else if (atomName.equalsIgnoreCase("N")) {
+		    if (hasN) {
+		        System.err.println("Multiple N entries in one " +
+			  "residue(" + currSeqCode + ")!");
+		    }
+		    hasN = true;
+		    nShift = chemShift;
+		}
+            }
+
+	    // Write out the last residue.
+	    if (prevSeqCode != -1 && hasH && hasN) {
+	        hnWriter.write(prevSeqCode + " " + prevResLabel +
+		  " " + hShift + " " + nShift + "\n");
+	        hnCount++;
+	    }
+
+	    //
+	    // Write the session file.
+	    //
+	    S2DSession.write(_sessionDir, S2DUtils.TYPE_HVSN_CHEM_SHIFTS,
+	      _accessionNum, frameIndex);
+
+	    //
+	    // Write the session-specific html file.
+	    //
+	    S2DSpecificHtml.write(_dataDir, S2DUtils.TYPE_HVSN_CHEM_SHIFTS,
+	      _accessionNum, frameIndex);
+
+	    //
+	    // Write the link in the summary html file.
+	    //
+	    _summary.writeHvsNShifts(frameIndex, hnCount);
+
+	} catch (IOException ex) {
+	    System.err.println("IOException writing all chem shifts: " +
+	      ex.getMessage());
+	    throw new S2DError("Unable to write all chem shifts for " +
+	      frameIndex);
+	} finally {
+	    try {
+	        hnWriter.close();
+	    } catch (IOException ex) {
+	        System.err.println("IOException: " + ex.getMessage());
+	    }
 	}
     }
 }

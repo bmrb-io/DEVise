@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2001/04/16 19:49:11  wenger
+// Added display of all chem shifts by amino acid.
+//
 // Revision 1.6  2001/01/19 15:39:06  wenger
 // Added T1 and T2 relaxation; removed some unnecessary variables from
 // coupling constants; added schema files to installation, unified T1
@@ -125,6 +128,7 @@ public class S2DNames
     public static final String DELTASHIFT_SUFFIX = "d";
     public static final String COUPLING_SUFFIX = "g";
     public static final String HETERONUCLEAR_NOE_SUFFIX = "n";
+    public static final String HVSN_CHEM_SHIFT_SUFFIX = "hn";
     public static final String HX_PROT_FACTOR_SUFFIX = "f";
     public static final String HX_RATE_SUFFIX = "r";
     public static final String PERCENT_ASSIGN_SUFFIX = "p";

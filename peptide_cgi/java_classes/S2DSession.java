@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2001/04/16 19:49:11  wenger
+// Added display of all chem shifts by amino acid.
+//
 // Revision 1.3  2001/03/08 20:33:24  wenger
 // Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
 // to the trunk.
@@ -94,6 +97,12 @@ public class S2DSession {
 	    baseName = "allshift.base";
 	    dataSuffix = S2DNames.ALL_CHEM_SHIFT_SUFFIX;
 	    searchString = "4267as1";
+	    break;
+
+	case S2DUtils.TYPE_HVSN_CHEM_SHIFTS:
+	    baseName = "h_vs_n.base";
+	    dataSuffix = S2DNames.HVSN_CHEM_SHIFT_SUFFIX;
+	    searchString = "4267hn1";
 	    break;
 
         case S2DUtils.TYPE_COUPLING:

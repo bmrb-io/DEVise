@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2001/04/16 19:49:11  wenger
+// Added display of all chem shifts by amino acid.
+//
 // Revision 1.8  2001/03/13 14:50:10  wenger
 // Added cache invalidation: cache files are not used if peptide-cgi code
 // or NMR-Star file has changed since relevant cache files were generated.
@@ -77,7 +80,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.2";
+    public static final String PEP_CGI_VERSION = "2.3";
 
     private int _accessionNum;
     private String _dataDir;
@@ -570,6 +573,15 @@ public class S2DMain {
 
 	try {
 	    chemShift.writeAllShifts(frameIndex);
+	} catch (S2DException ex) {
+	    // Don't throw a new exception here because we want to write as
+	    // much as we can, even if there's an error somewhere along the
+	    // line.
+	    System.err.println(ex.getMessage());
+	}
+
+	try {
+	    chemShift.writeHvsNShifts(frameIndex);
 	} catch (S2DException ex) {
 	    // Don't throw a new exception here because we want to write as
 	    // much as we can, even if there's an error somewhere along the
