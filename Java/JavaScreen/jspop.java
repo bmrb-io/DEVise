@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.35  2001/01/27 00:11:15  wenger
+// Minor improvements to diagnostic output.
+//
 // Revision 1.34  2001/01/26 22:21:39  wenger
 // Fixed up the jspop because Kai's last commit undid my previous changes.
 //
@@ -500,36 +503,44 @@ public class jspop implements Runnable
                 pn("After reading command");
 
 	        int id = socket.cmdId;
-		pn("Received command from client(" + id + ") :  \"" + cmd +
-		  "\"");		
-		int reccgi = socket.cgiFlag;
-		boolean cgi;
-                if (reccgi == 1) {
-		    cgi = true;
-		    pn("A CGI client connection.");
-                } else {
-		    cgi = false;
-                    pn("A direct socket client connection.");
+		int flag = socket.cgiFlag;
+		if (flag == -1) { // collabration JS
+		    onCollab(socket, id);
+		    pn("Received collabration request for client: " + id + ".");	
 		}
-
-		activeSockets.addElement(socket);
-			
-	        if (id == DEViseGlobals.DEFAULTID) { // new JS
-                    pn("New client");
-	            DEViseClient client = createClient(hostname, socket, cgi);
-		    client.addNewCmd(cmd);
-	        } else { // old JS
-                    pn("Existing client");
-	            DEViseClient client = findClientById(id);
-		    if (client != null) {
-		        // set cgi flag; added for mode changing
-		        client.setCgi(cgi); 
-		        client.setSocket(socket);
-		        client.addNewCmd(cmd);
-      		    } else {
-			throw new YException("No client for ID: " + id);
+		else {
+		    boolean cgi;
+		    if (flag == 1) {
+			cgi = true;
+			pn("A CGI client connection.");
+		    } else {
+			cgi  = false;
+			pn("A direct socket client connection.");
 		    }
-	        }
+
+		    pn("Received command from client(" + id + ") :  \"" + cmd +
+		       "\"");		
+
+		    activeSockets.addElement(socket);
+			
+
+		    if (id == DEViseGlobals.DEFAULTID) { // new JS
+			pn("New client");
+			DEViseClient client = createClient(hostname, socket, cgi);
+			client.addNewCmd(cmd);
+		    } else { // old JS
+			pn("Existing client");
+			DEViseClient client = findClientById(id);
+			if (client != null) {
+			    // set cgi flag; added for mode changing
+			    client.setCgi(cgi); 
+			    client.setSocket(socket);
+			    client.addNewCmd(cmd);
+			} else {
+			    throw new YException("No client for ID: " + id);
+			}
+		    }
+		}
             } catch(IOException ex) {
 	        pn("Exception receiving command from client: " +
 		  ex.getMessage());
@@ -1234,4 +1245,18 @@ public class jspop implements Runnable
         } catch (IOException e) {
         }
     }
+
+    public synchronized void onCollab(DEViseCommSocket socket, int id)
+    {
+	// find the proper client;
+	DEViseClient client = findClientById(id);
+			
+	if (client != null) {
+	    client.setCollabSocket(socket);
+	    client.collabInit = 1;
+	} else {
+	    pn("No client for ID: " + id);
+	}
+    }
+
 }
