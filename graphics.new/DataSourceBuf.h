@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/06/27 15:50:57  jussi
+  Added IsOk() method which is used by TDataAscii and TDataBinary
+  to determine if a file is still accessible. Also moved GetModTime()
+  functionality from TDataAscii/TDataBinary to the DataSource
+  classes.
+
   Revision 1.1  1996/05/22 17:52:01  wenger
   Extended DataSource subclasses to handle tape data; changed TDataAscii
   and TDataBinary classes to use new DataSource subclasses to hide the
@@ -37,7 +43,7 @@
 class DataSourceBuf : public DataSource
 {
 public:
-	DataSourceBuf(char *buffer, char *label);
+	DataSourceBuf(char *buffer, char *label, char *param = 0);
 	virtual ~DataSourceBuf();
 
 	virtual char *objectType() {return "DataSourceBuf";};

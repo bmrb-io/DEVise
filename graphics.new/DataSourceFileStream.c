@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/06/27 15:50:58  jussi
+  Added IsOk() method which is used by TDataAscii and TDataBinary
+  to determine if a file is still accessible. Also moved GetModTime()
+  functionality from TDataAscii/TDataBinary to the DataSource
+  classes.
+
   Revision 1.3  1996/06/04 19:58:44  wenger
   Added the data segment option to TDataBinary; various minor cleanups.
 
@@ -63,7 +69,8 @@ static char *	srcFile = __FILE__;
  * function: DataSourceFileStream::DataSourceFileStream
  * DataSourceFileStream constructor.
  */
-DataSourceFileStream::DataSourceFileStream(char *filename, char *label) : DataSource(label)
+DataSourceFileStream::DataSourceFileStream(char *filename, char *label,
+                                           char *param) : DataSource(label)
 {
 	DO_DEBUG(printf("DataSourceFileStream::DataSourceFileStream(%s, %s)\n",
 		filename, (label != NULL) ? label : "null"));
@@ -168,18 +175,6 @@ DataSourceFileStream::Fgets(char *buffer, int bufSize)
 	DO_DEBUG(printf("DataSourceFileStream::Fgets()\n"));
 
 	return fgets(buffer, bufSize, _file);
-}
-
-/*------------------------------------------------------------------------------
- * function: DataSourceFileStream::Fileno
- * Returns the the file descriptor associated with this object.
- */
-int
-DataSourceFileStream::Fileno()
-{
-	DO_DEBUG(printf("DataSourceFileStream::Fileno()\n"));
-
-	return fileno(_file);
 }
 
 /*------------------------------------------------------------------------------
@@ -320,7 +315,7 @@ DataSourceFileStream::GetModTime()
     DO_DEBUG(printf("DataSourceFileStream::GetModTime()\n"));
 
     struct stat sbuf;
-    int status = fstat(Fileno(), &sbuf);
+    int status = fstat(fileno(_file), &sbuf);
     if (status < 0) {
         reportError("Cannot get modification time for file", devNoSyserr);
         return -1;

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/06/27 15:50:57  jussi
+  Added IsOk() method which is used by TDataAscii and TDataBinary
+  to determine if a file is still accessible. Also moved GetModTime()
+  functionality from TDataAscii/TDataBinary to the DataSource
+  classes.
+
   Revision 1.4  1996/05/22 17:51:59  wenger
   Extended DataSource subclasses to handle tape data; changed TDataAscii
   and TDataBinary classes to use new DataSource subclasses to hide the
@@ -65,7 +71,14 @@ public:
 	virtual DevStatus Open(char *mode) = 0;
 	virtual Boolean IsOk() = 0;
 	virtual DevStatus Close() = 0;
-	virtual int Fileno();
+
+        // These functions allow the dispacher to fetch data from a data
+        // source asynchronously. The data source provides a file descriptor
+        // which the dispatcher can use in a select() to determine when
+        // a (read) I/O can take place, at which time AsyncIO() is
+        // called.
+	virtual int AsyncFd() {return -1;};
+        virtual void AsyncIO() {}
 
 	virtual char *Fgets(char *buffer, int size);
 	virtual size_t Fread(char *buf, size_t size, size_t itemCount);

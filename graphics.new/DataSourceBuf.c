@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/05/22 17:52:00  wenger
+  Extended DataSource subclasses to handle tape data; changed TDataAscii
+  and TDataBinary classes to use new DataSource subclasses to hide the
+  differences between tape and disk files.
+
  */
 
 #define _DataSourceBuf_c_
@@ -48,7 +53,8 @@ static char *	srcFile = __FILE__;
  * function: DataSourceBuf::DataSourceBuf
  * DataSourceBuf constructor.
  */
-DataSourceBuf::DataSourceBuf(char *buffer, char *label) : DataSource(label)
+DataSourceBuf::DataSourceBuf(char *buffer, char *label, char *param) :
+     DataSource(label)
 {
 	DO_DEBUG(printf("DataSourceBuf::DataSourceBuf(%s)\n", label));
 

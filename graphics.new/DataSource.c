@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/22 17:51:55  wenger
+  Extended DataSource subclasses to handle tape data; changed TDataAscii
+  and TDataBinary classes to use new DataSource subclasses to hide the
+  differences between tape and disk files.
+
   Revision 1.3  1996/05/07 22:28:14  jussi
   Reverted the changes made in the previous check-in because I
   found a better way to fix the problem where only the tail
@@ -100,23 +105,6 @@ DataSource::getLabel()
 	DO_DEBUG(printf("DataSource::getLabel()\n"));
 
 	return _label;
-}
-
-/*------------------------------------------------------------------------------
- * function: DataSource::Fileno
- * This is a dummy function to catch calls to Fileno() for derived classes
- * that don't implement it.
- */
-int
-DataSource::Fileno()
-{
-	DO_DEBUG(printf("DataSource::Fileno()\n"));
-
-	fprintf(stderr, "Fileno method not implemented for class %s\n",
-		objectType());
-	DOASSERT(false, "");
-
-	return -1;
 }
 
 /*------------------------------------------------------------------------------

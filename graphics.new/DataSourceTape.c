@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/06/27 15:50:59  jussi
+  Added IsOk() method which is used by TDataAscii and TDataBinary
+  to determine if a file is still accessible. Also moved GetModTime()
+  functionality from TDataAscii/TDataBinary to the DataSource
+  classes.
+
   Revision 1.2  1996/06/04 19:58:46  wenger
   Added the data segment option to TDataBinary; various minor cleanups.
 
@@ -56,7 +62,8 @@ static char *	srcFile = __FILE__;
  * function: DataSourceTape::DataSourceTape
  * DataSourceTape constructor.
  */
-DataSourceTape::DataSourceTape(char *filename, char *label) : DataSource(label)
+DataSourceTape::DataSourceTape(char *filename, char *label, char *param) :
+     DataSource(label)
 {
 	DO_DEBUG(printf("DataSourceTape::DataSourceTape(%s, %s)\n", filename,
 		label));

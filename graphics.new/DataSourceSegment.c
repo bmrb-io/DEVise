@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/06/04 19:58:45  wenger
+  Added the data segment option to TDataBinary; various minor cleanups.
+
   Revision 1.1  1996/06/04 14:21:41  wenger
   Ascii data can now be read from session files (or other files
   where the data is only part of the file); added some assertions
@@ -44,6 +47,7 @@
 
 #include "DataSourceFileStream.h"
 #include "DataSourceTape.h"
+#include "DataSourceWeb.h"
 #include "DataSourceSegment.h"
 #include "Util.h"
 #include "DevError.h"
@@ -57,14 +61,17 @@ static char *	srcFile = __FILE__;
 
 template class DataSourceSegment<DataSourceFileStream>;
 template class DataSourceSegment<DataSourceTape>;
+template class DataSourceSegment<DataSourceWeb>;
 
 /*------------------------------------------------------------------------------
  * function: DataSourceSegment::DataSourceSegment
  * DataSourceSegment constructor.
  */
 template<class TYPE>
-DataSourceSegment<TYPE>::DataSourceSegment(char *filename, char *label,
-	long dataOffset, long dataLength) : TYPE(filename, label)
+DataSourceSegment<TYPE>::DataSourceSegment(char *name, char *label,
+                                           char *param, long dataOffset,
+                                           long dataLength) :
+     TYPE(name, label, param)
 {
 	DO_DEBUG(printf("DataSourceSegment::DataSourceSegment()\n"));
 
