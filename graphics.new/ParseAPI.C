@@ -22,6 +22,9 @@
   $Id$
 
   $Log$
+  Revision 1.99  1998/12/07 19:43:42  wenger
+  Removed "old" layout manager code.
+
   Revision 1.98  1998/11/16 18:58:45  wenger
   Added options to compile without DTE code (NO_DTE), and to warn whenever
   the DTE is called (DTE_WARN).
@@ -1003,6 +1006,39 @@ int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control)
 
 		sprintf(result, "%d", (int)pid);
 		control->ReturnVal(API_ACK, result);
+		return 1;
+	}
+
+	// Note: this could end up creating multiple identical palettes, but
+	// I don't want to deal with that right now, because there's no easy
+	// way to do so.  RKW 1998-12-08.
+	if (!strcmp(argv[1], "CreateAndSetPalette"))
+	{
+		Trace("    Command: color CreateAndSetPalette");
+
+		string		s(argv[2]);
+
+		PaletteID	pid = PM_NewPalette(s);
+
+		if (pid == nullPaletteID)
+		{
+			control->ReturnVal(API_ACK, "Couldn't create palette");
+			return -1;
+		}
+		else
+		{
+			PaletteID	oldPid = PM_GetCurrentPalette();
+
+			if (!PM_SetCurrentPalette(pid))
+			{
+				control->ReturnVal(API_ACK, "Couldn't set palette");
+				return -1;
+			}
+
+			if (pid != oldPid) View::RefreshAll();
+		}
+
+		control->ReturnVal(API_ACK, "done");
 		return 1;
 	}
 

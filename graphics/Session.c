@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.38  1998/12/01 20:04:01  wenger
+  More reductions of memory usage in DEVise -- basically eliminated the
+  histogram capability (this really saves a lot, since there are big
+  structures in every ViewGraph for this); made creation of TDatas more
+  efficient by bypassing command code.
+
   Revision 1.37  1998/11/19 21:13:26  wenger
   Implemented non-DTE version of DEVise (new code handles data source catalog
   functions; Tables, SQLViews, etc., are not implemented); changed version to
@@ -211,6 +217,7 @@
 #include "View.h"
 #include "DataCatalog.h"
 #include "DataSeg.h"
+#include "Color.h"
 
 
 //#define DEBUG
@@ -417,6 +424,20 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
     if (stringFile != NULL) {
       fprintf(saveData.fp, "\n# Load strings table\n");
       fprintf(saveData.fp, "DEVise loadStringSpace %s\n", stringFile);
+    }
+
+    fprintf(saveData.fp, "\n# Load color palette\n");
+    PaletteID pid = PM_GetCurrentPalette();
+    if (pid != nullPaletteID) {
+      Palette *palette = PM_GetPalette(pid);
+      if (palette == NULL) {
+	reportErrNosys("Can't get palette");
+        status += StatusFailed;
+      } else {
+        string colors = palette->ToString();
+	fprintf(saveData.fp, "DEVise color CreateAndSetPalette \"%s\"\n",
+	  colors.c_str());
+      }
     }
 
     fprintf(saveData.fp, "\n# Create views\n");
