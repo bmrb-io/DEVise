@@ -24,6 +24,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  2001/01/22 17:08:12  wenger
+// Added DEViseCheckPop to actually connect to the jspop when checking
+// with cron; added JAVAC_CheckPop command to make this possible; cleaned
+// up some of the jspop code dealing with heartbeats, etc.; DEViseCommSocket
+// constructor error messages now go to stderr.
+//
 // Revision 1.20  2001/01/08 20:31:50  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -239,6 +245,10 @@ public class DEViseClient
 
     public boolean useCgi() {
         return cgi;
+    }
+
+    public void setCgi(boolean c) {
+        cgi = c;
     }
 
     public int getPriority()
