@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/12/14 15:30:24  jussi
+  Small fixes.
+
   Revision 1.1  1995/12/06  21:25:13  jussi
   Initial revision.
 */
@@ -66,7 +69,7 @@ void TileLayout::MapChildren(ViewWin *single, Boolean resize,
   unsigned int _w, _h;
   Geometry(_x, _y, _w, _h);
 
-  const int numViews = NumChildren() + (x ? 1 : 0);
+  const unsigned int numViews = NumChildren() + (x ? 1 : 0);
   ComputeLayout(_w, _h, numViews);
 #ifdef DEBUG
   printf("TileLayout::MapChildren: using %dx%d layout for %d views\n",
@@ -75,12 +78,13 @@ void TileLayout::MapChildren(ViewWin *single, Boolean resize,
   assert(verViews * horViews >= numViews);
 
   // compute default, unweighted width and height of views
-  int height = (int)(1.0 * _h / verViews);
-  int width = (int)(1.0 * _w / horViews);
+  unsigned int height = (int)(1.0 * _h / verViews);
+  unsigned int width = (int)(1.0 * _w / horViews);
 
-  int xoff = 0, yoff = 0;
+  unsigned int xoff = 0, yoff = 0;
 
-  for(int index = InitIterator(); More(index);) {
+  int index;
+  for(index = InitIterator(); More(index);) {
     ViewWin *vw = Next(index);
 
     // if vertical stack of views, compute height based on weight
@@ -133,7 +137,8 @@ void TileLayout::MapChildren(ViewWin *single, Boolean resize,
   }
 }
 
-void TileLayout::ComputeLayout(unsigned int w, unsigned int h, int numViews)
+void TileLayout::ComputeLayout(unsigned int w, unsigned int h,
+			       unsigned int numViews)
 {
   if (numViews <= 1) {
     horViews = verViews = 1;
@@ -142,7 +147,8 @@ void TileLayout::ComputeLayout(unsigned int w, unsigned int h, int numViews)
 
   // if width of vertical layout is fixed, arrange accordingly
   if (horRequested >= 1) {
-    horViews = (horRequested < numViews ? horRequested : numViews);
+    unsigned int h = (unsigned int)horRequested;
+    horViews = (h < numViews ? h : numViews);
     verViews = numViews / horViews;
     if (numViews % horViews)
       verViews++;
@@ -151,7 +157,8 @@ void TileLayout::ComputeLayout(unsigned int w, unsigned int h, int numViews)
 
   // if height of horizontal layout is fixed, arrange accordingly
   if (verRequested >= 1) {
-    verViews = (verRequested < numViews ? verRequested : numViews);
+    unsigned int v = (unsigned int)verRequested;
+    verViews = (v < numViews ? v : numViews);
     horViews = numViews / verViews;
     if (numViews % verViews)
       horViews++;

@@ -16,6 +16,8 @@
   $Id$
 
   $Log$
+  Revision 1.1  1995/12/06  21:25:14  jussi
+  Initial revision.
 */
 
 #ifndef TileLayout_h
@@ -35,7 +37,8 @@ protected:
 			   int extraWeight = 0, int *x = 0, int *y = 0,
 			   unsigned int *w = 0, unsigned int *h = 0);
 
-  virtual void ComputeLayout(unsigned int w, unsigned int h, int n);
+  virtual void ComputeLayout(unsigned int w, unsigned int h,
+			     unsigned int n);
 
   unsigned int verViews;                // current height of view layout
   unsigned int horViews;                // current width of view layout
