@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/05/02 09:00:46  taodb
+  Added support for JAVA Screen and command logging
+
   Revision 1.5  1998/02/26 20:49:02  taodb
   Replaced ParseAPI() with Command Object Interface
 
@@ -46,12 +49,12 @@
 class ControlPanel;
 class MapInterpClassInfo;
 
-#define API_CMD 0
-#define API_ACK 1
-#define API_NAK 2
-#define API_CTL 3
-#define API_GRP 4
-#define API_JAVACMD 5
+#define API_CMD 0 // command from client
+#define API_ACK 1 // reply to a command from client, okay
+#define API_NAK 2 // reply to a command from client, error
+#define API_CTL 3 // "control" message originating from server
+#define API_GRP 4 // collaboration (group) related message
+#define API_JAVACMD 5 // command from JavaScreen client, or reply to JS cmd
 
 extern int	ParseAPIColorCommands(int argc, char** argv, ControlPanel* control);
 //******************************************************************************
