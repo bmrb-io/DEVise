@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.30  2001/02/21 17:48:49  xuk
+// Added the collaboration security features.
+// In getCmd(), process JAVAC_SetCollabPass command;
+// Added collabPass and checkPass() for collaboration password setting and checking.
+//
 // Revision 1.29  2001/02/20 20:02:20  wenger
 // Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
 // to the trunk.
@@ -487,6 +492,19 @@ public class DEViseClient
 		    } else if (command.startsWith(DEViseCommands.EXIT)) {
 			cmdBuffer.removeAllElements();
 			cmdBuffer.addElement(DEViseCommands.EXIT);
+			
+			try {
+			    for (int i = 0; i < collabSockets.size(); i++) {
+				DEViseCommSocket sock = (DEViseCommSocket)collabSockets.elementAt(i);
+				sock.sendCmd(DEViseCommands.COLLAB_EXIT);
+				sock.sendCmd(DEViseCommands.DONE);
+				sock.closeSocket();	
+				pop.pn("Closed collaboration JS " + i + ".");
+			    }
+			} catch (YException e) {
+			}
+			collabSockets.removeAllElements();
+	
 		    } else if (command.startsWith(DEViseCommands.GET_SERVER_STATE)) {
 			String state = DEViseCommands.UPDATE_SERVER_STATE + " " + pop.getServerState();
 			sendCmd(new String[] {state, DEViseCommands.DONE});
