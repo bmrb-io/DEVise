@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.36  1995/12/12 01:47:18  ravim
+#	Physical/logical schema support.
+#
 #	Revision 1.35  1995/12/08 23:47:46  ravim
 #	Window name is passed as parameter in creating KGraph.
 #
@@ -26,9 +29,9 @@
 #
 #	Revision 1.32  1995/12/04 18:04:45  jussi
 #	User can now specify a view title which appears at the top of the view.
-#	Changed statistics toggling to use getViewStatistics and setViewStatistics
-#	so that a single view or all views can be toggled, based on the
-#	status of the currently selected view.
+#	Changed statistics toggling to use getViewStatistics and
+#	setViewStatistics so that a single view or all views can be toggled,
+#	based on the status of the currently selected view.
 #
 #	Revision 1.31  1995/12/02 21:45:17  jussi
 #	Added support for TK_WINDOW i.e. Tcl/Tk controls surrounding each
@@ -468,6 +471,7 @@ menu .mbar.cursor.menu -tearoff 0
 .mbar.cursor.menu add command -label "Set Dst" -command DoSetCursorDst
 
 menu .mbar.window.menu -tearoff 0
+.mbar.window.menu add command -label "Layout" -command {SetWindowLayout ""}
 .mbar.window.menu add command -label "Remove" -command {RemoveWindow ""}
 .mbar.window.menu add separator
 .mbar.window.menu add command -label "Demo" -command DoDemo
@@ -1263,7 +1267,7 @@ proc DoViewRemove {} {
     global curView
     if {$curView == ""} {
 	dialog .removeView "Remove View" \
-		"Select a view by clicking in it first." "" 0 { OK }
+		"Select a view first by clicking in it." "" 0 { OK }
 	return
     }
 
@@ -1624,6 +1628,13 @@ proc DoActualSave { infile asTemplate } {
     SaveCategory $f "window" 
     puts $f ""
 
+    puts $f "# Setup window layouts"
+    foreach win [WinSet] {
+	set layout [DEVise getWindowLayout $win]
+	puts $f "DEVise setWindowLayout \{$win\} $layout"
+    }
+    puts $f ""
+    
     puts $f "# Create Links"
     puts $f "# format: DEVise create link Visual_Link name flag"
     SaveCategory $f "link" 
@@ -2195,7 +2206,7 @@ proc DoEditMapping {} {
     global dialogParamVar dialogListVar DEViseColors DEViseShapes curView
     if {$curView == ""} {
 	dialog .editMapping "Edit Mapping" \
-		"Select a view by clicking in it first." "" 0 { OK } 
+		"Select a view first by clicking in it." "" 0 { OK } 
 	return
     }
 
@@ -3160,6 +3171,108 @@ proc RemoveWindow {win} {
     DEVise destroy $win
 }
 
+# change layout of window
+proc SetWindowLayout {win} {
+    global curView layoutWin layoutOption verRequested horRequested
+
+    if {$win == ""} {
+	if {$curView == ""} {
+	    dialog .changeLayout "No Current Window" \
+		    "Select a window first by clicking any view in it." \
+		    "" 0 { OK }
+	    return
+	}
+	set win [DEVise getViewWin $curView]
+    }
+
+    set layoutWin $win
+
+    # see if .setLayout window already exists; if so, just return
+    set err [catch {set exists [wm state .setLayout]}]
+    if {!$err} { wm deiconify .setLayout; return }
+
+    toplevel .setLayout
+    wm title .setLayout "Set Window Layout"
+    wm geometry .setLayout +50+50
+
+    frame .setLayout.top
+    frame .setLayout.bot
+    pack .setLayout.top -side top -pady 3m -fill both -expand 1
+    pack .setLayout.bot -side top -pady 5m -fill x
+
+    frame .setLayout.row1
+    frame .setLayout.row2
+    frame .setLayout.row3
+    pack .setLayout.row1 .setLayout.row2 .setLayout.row3 -in .setLayout.top \
+	    -side top -fill x
+
+    frame .setLayout.bot.but
+    pack .setLayout.bot.but -side top
+
+    radiobutton .setLayout.row1.b -text Automatic -variable layoutOption \
+	    -value auto -width 12 -anchor w -command {
+	.setLayout.row2.e configure -state disabled
+	.setLayout.row3.e configure -state disabled
+    }
+    pack .setLayout.row1.b -side left
+
+    radiobutton .setLayout.row2.b -text Vertical \
+	    -variable layoutOption -value fixver -width 12 -anchor w \
+	    -command {
+	.setLayout.row2.e configure -state normal
+	.setLayout.row3.e configure -state disabled
+    }
+    label .setLayout.row2.l -text "Width:" -width 8
+    entry .setLayout.row2.e -relief sunken -textvariable horRequested \
+	    -width 5
+    pack .setLayout.row2.b .setLayout.row2.l .setLayout.row2.e -side left
+
+    radiobutton .setLayout.row3.b -text Horizontal \
+	    -variable layoutOption -value fixhor -width 12 -anchor w \
+	    -command {
+	.setLayout.row3.e configure -state disabled
+	.setLayout.row3.e configure -state normal
+    }
+    label .setLayout.row3.l -text "Height:" -width 8
+    entry .setLayout.row3.e -relief sunken -textvariable verRequested \
+	    -width 5
+    pack .setLayout.row3.b .setLayout.row3.l .setLayout.row3.e -side left
+
+    set verRequested 1
+    set horRequested 1
+    set layoutOption auto
+    .setLayout.row2.e configure -state disabled
+    .setLayout.row3.e configure -state disabled
+
+    set layout [DEVise getWindowLayout $layoutWin]
+    if {[lindex $layout 0] >= 1} {
+	set layoutOption fixhor
+	set verRequested [lindex $layout 0]
+	.setLayout.row3.e configure -state normal
+    } elseif {[lindex $layout 1] >= 1} {
+	set layoutOption fixver
+	set horRequested [lindex $layout 1]
+	.setLayout.row2.e configure -state normal
+    }
+	
+    button .setLayout.bot.but.ok -text OK -width 10 -command {
+	if {$layoutOption == "auto"} {
+	    DEVise setWindowLayout $layoutWin -1 -1
+	} elseif {$layoutOption == "fixver"} {
+	    if {$horRequested < 1} { set horRequested 1 }
+	    DEVise setWindowLayout $layoutWin -1 $horRequested
+	} else {
+	    if {$verRequested < 1} { set verRequested 1 }
+	    DEVise setWindowLayout $layoutWin $verRequested -1
+	}
+	destroy .setLayout
+    }
+    button .setLayout.bot.but.cancel -text Cancel -width 10 -command {
+	destroy .setLayout
+    }
+    pack .setLayout.bot.but.ok .setLayout.bot.but.cancel -side left -padx 3m
+}
+
 # duplicate window
 proc DupWindow {} {
     global curView
@@ -3296,19 +3409,17 @@ proc DoToggleAxisAllViews { axis } {
 
 proc DoToggleStatistics {} {
     global curView statmean statmax statmin statcurr
-    if {$curView == ""} {
-	set but [dialog .toggleWinError "No Current View" \
-		"Select a view first by clicking in it." "" 0 OK ]
-	return
-    }
 
-    #    set stat [DEVise getViewStatistics $curView]
-    #    set stat [expr !$stat]
     # The status is formed by as a binary string xxx where 1 means that the 
     # corr. stat is to be displayed.
     set stat $statmean$statmax$statmin
 
     if {$statcurr == 1} {
+	if {$curView == ""} {
+	    set but [dialog .toggleWinError "No Current View" \
+		    "Select a view first by clicking in it." "" 0 OK ]
+	return
+	}
 	DEVise setViewStatistics $curView $stat
 	return
     }
