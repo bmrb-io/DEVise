@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1995/12/28 19:36:59  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.13  1995/12/22 18:07:20  jussi
   Added Vector shape.
 
@@ -81,12 +84,12 @@
 #include "Exit.h"
 #include "Init.h"
 
-double *MappingInterp::_tclAttrs= NULL;
-char **MappingInterp::_tclStrAttrs= NULL;
-double MappingInterp::_interpResult;
-int MappingInterp::_tclRecId;
-Shape **MappingInterp::_shapes=NULL;
-Tcl_Interp *MappingInterp::_interp= NULL;
+double     *MappingInterp::_tclAttrs     = NULL;
+char      **MappingInterp::_tclStrAttrs  = NULL;
+double      MappingInterp::_interpResult = 0.0;
+int         MappingInterp::_tclRecId     = 0;
+Shape     **MappingInterp::_shapes       = NULL;
+Tcl_Interp *MappingInterp::_interp       = NULL;
 
 /* Return true if command is a constant, and return the constant value */
 Boolean MappingInterp::IsConstCmd(char *cmd, Coord &val)
@@ -310,8 +313,9 @@ void MappingInterp::DrawGDataArray(WindowRep *win, void **gdataArray, int num)
    buffer for data. tRecs are pointers to variable size records only.
 */
 
-void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
-				   void **tRecs,int numRecs,void *gdataPtr)
+void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
+				   void **tRecs, int numRecs,
+				   void *gdataPtr)
 {
   /*
      printf("ConvertToGdata id %d numRecs %d, buf 0x%p, gbuf 0x%p\n", 
@@ -355,7 +359,7 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
 	switch(attrInfo->type) {
 
 	case IntAttr:
-	  intPtr = (int *)(tPtr+attrInfo->offset);
+	  intPtr = (int *)(tPtr + attrInfo->offset);
 	  _tclAttrs[j] = (double)(*intPtr);
 	  /*
 	     printf("Setting int attr %d to %f\n",j, _tclAttrs[j]);
@@ -363,7 +367,7 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
 	  break;
 
 	case FloatAttr:
-	  fPtr = (float *)(tPtr+attrInfo->offset);
+	  fPtr = (float *)(tPtr + attrInfo->offset);
 	  _tclAttrs[j] = (double)(*fPtr);
 	  /*
 	     printf("Setting float attr %d to %f\n",j, _tclAttrs[j]);
@@ -371,7 +375,7 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
 	  break;
 
 	case DoubleAttr:
-	  dPtr = (double *)(tPtr+attrInfo->offset);
+	  dPtr = (double *)(tPtr + attrInfo->offset);
 	  _tclAttrs[j] = (*dPtr);
 	  /*
 	     printf("Setting float attr %d to %f\n",j, _tclAttrs[j]);
@@ -379,11 +383,11 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
 	  break;
 
 	case StringAttr:
-	  _tclStrAttrs[j] = tPtr+attrInfo->offset;
+	  _tclStrAttrs[j] = tPtr + attrInfo->offset;
 	  break;
 
 	case DateAttr:
-	  tptr = (time_t *)(tPtr+attrInfo->offset);
+	  tptr = (time_t *)(tPtr + attrInfo->offset);
 	  _tclAttrs[j] = (double)(*tptr);
 	  break;
 
@@ -396,22 +400,24 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
     
     /* evaluate commands */
     int code;
-    
+    static char cmdbuf[255];
+    const int maxcmd = sizeof cmdbuf - 7 - 1;
+
     /*
        printf("eval x\n");
     */
-
     if (_offsets->xOffset >= 0) {
       if (_tclCmd->xCmd == NULL) {
 	_interpResult = GetDefaultX();
       } else {
 	_interpResult = 0.0;
-	code = Tcl_VarEval(_interp, "set interpResult ", _tclCmd->xCmd, NULL);
+	sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->xCmd);
+	code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
       }
       /*
 	 printf("eval x\n");
       */
-      *((double *)(gPtr+_offsets->xOffset)) = _interpResult;
+      *((double *)(gPtr + _offsets->xOffset)) = _interpResult;
     }
     
     /*
@@ -422,12 +428,13 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
 	_interpResult = GetDefaultY();
       } else {
 	_interpResult = 0.0;
-	code = Tcl_VarEval(_interp, "set interpResult ", _tclCmd->yCmd, NULL);
+	sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->yCmd);
+	code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
       }
       /*
 	 printf("eval y\n");
       */
-      *((double *)(gPtr+_offsets->yOffset)) = _interpResult;
+      *((double *)(gPtr + _offsets->yOffset)) = _interpResult;
       /*
 	 printf("y is %f\n", _interpResult);
       */
@@ -438,14 +445,16 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
 	_interpResult = (Coord) GetDefaultColor();
       } else {
 	_interpResult = 0.0;
-	code = Tcl_VarEval(_interp, "set interpResult ",
-			   _tclCmd->colorCmd, NULL);
-	printf("Color cmd code is %d\n", code);
+	sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->colorCmd);
+	code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+	/*
+	   printf("Color cmd code is %d\n", code);
+	*/
       }
       /*
 	 printf("eval color\n");
       */
-      *((Color *)(gPtr+_offsets->colorOffset)) = (Color)_interpResult;
+      *((Color *)(gPtr + _offsets->colorOffset)) = (Color)_interpResult;
       /*
 	 printf("color is %f\n", _interpResult);
       */
@@ -456,13 +465,13 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
 	_interpResult = GetDefaultSize();
       } else {
 	_interpResult = 0.0;
-	code = Tcl_VarEval(_interp, "set interpResult ",
-			   _tclCmd->sizeCmd, NULL);
+	sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->sizeCmd);
+	code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
       }
       /*
 	 printf("eval size\n");
       */
-      *((double *)(gPtr+_offsets->sizeOffset)) = _interpResult;
+      *((double *)(gPtr + _offsets->sizeOffset)) = _interpResult;
     }
     
     if (_offsets->patternOffset >= 0) {
@@ -470,13 +479,13 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
 	_interpResult = (double) GetDefaultPattern();
       } else {
 	_interpResult = 0.0;
-	code = Tcl_VarEval(_interp, "set interpResult ",
-			   _tclCmd->patternCmd, NULL);
+	sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->patternCmd);
+	code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
       }
       /*
 	 printf("eval pattern\n");
       */
-      *((Pattern *)(gPtr+_offsets->patternOffset)) = 
+      *((Pattern *)(gPtr + _offsets->patternOffset)) = 
 	(Pattern)_interpResult;
     }
     
@@ -485,15 +494,15 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
 	_interpResult = GetDefaultShape();
       } else {
 	_interpResult = 0.0;
-	code = Tcl_VarEval(_interp, "set interpResult ",
-			   _tclCmd->shapeCmd, NULL);
+	sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->shapeCmd);
+	code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
 	if (_interpResult <0 || _interpResult >= MaxInterpShapes)
 	  _interpResult = 0;
       }
       /*
 	 printf("eval shape\n");
       */
-      *((ShapeID *)(gPtr+_offsets->shapeOffset))= (ShapeID )_interpResult;
+      *((ShapeID *)(gPtr + _offsets->shapeOffset))= (ShapeID )_interpResult;
     }
 
     if (_offsets->orientationOffset >= 0 ) {
@@ -501,13 +510,13 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
 	_interpResult = GetDefaultOrientation();
       } else {
 	_interpResult = 0.0;
-	code = Tcl_VarEval(_interp, "set interpResult ",
-			   _tclCmd->orientationCmd, NULL);
+	sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->orientationCmd);
+	code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
       }
       /*
 	 printf("eval orientation\n");
       */
-      *((double *)(gPtr+_offsets->orientationOffset))= _interpResult;
+      *((double *)(gPtr + _offsets->orientationOffset))= _interpResult;
     }
 
     ShapeAttr *shapeAttr = GetDefaultShapeAttrs();
@@ -517,8 +526,8 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
 	  _interpResult = shapeAttr[j];
 	} else {
 	  _interpResult = 0.0;
-	  code = Tcl_VarEval(_interp, "set interpResult ",
-			     _tclCmd->shapeAttrCmd[j], NULL);
+	  sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->shapeAttrCmd[j]);
+	  code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
 	}
 	/*
 	   printf("eval shapeAttr %d\n", j);
@@ -527,14 +536,9 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
       }
     }
 
-    /*
-       printf("ConvertGData gptr 0x%p, x: %f y: %f color %d\n",
-       gPtr, *((double *)gPtr), *((double *)(gPtr+sizeof(double))),
-       *((Color *)(gPtr+2*sizeof(double))));
-    */
-
     tPtr += tRecSize;
     gPtr += gRecSize;
+
     _tclRecId++;
   }
 }
@@ -567,19 +571,29 @@ AttrList *MappingInterp::InitCmd(char *name)
   if (_cmdFlag & MappingCmd_X) {
     if (!ConvertSimpleCmd(_cmd->xCmd, _simpleCmd->xCmd, attrType, isSorted))
       goto complexCmd;
-    _offsets->xOffset = offset = WordBoundary(offset, sizeof(double));
-    attrList->InsertAttr(0, "x",offset,sizeof(double), attrType,
-			 false, NULL, false, isSorted);
-    offset += sizeof(double);
+    if (_simpleCmd->xCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
+      /* constant */
+      SetDefaultX((Coord)_simpleCmd->xCmd.cmd.num);
+    } else {
+      _offsets->xOffset = offset = WordBoundary(offset, sizeof(double));
+      attrList->InsertAttr(0, "x",offset,sizeof(double), attrType,
+			   false, NULL, false, isSorted);
+      offset += sizeof(double);
+    }
   }
 
   if (_cmdFlag & MappingCmd_Y) {
     if (!ConvertSimpleCmd(_cmd->yCmd, _simpleCmd->yCmd, attrType, isSorted))
       goto complexCmd;
-    _offsets->yOffset = offset = WordBoundary(offset,sizeof(double));
-    attrList->InsertAttr(1, "y", offset, sizeof(double), attrType,
-			 false,  NULL, false, isSorted);
-    offset += sizeof(double);
+    if (_simpleCmd->yCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
+      /* constant */
+      SetDefaultY((Coord)_simpleCmd->yCmd.cmd.num);
+    } else {
+      _offsets->yOffset = offset = WordBoundary(offset,sizeof(double));
+      attrList->InsertAttr(1, "y", offset, sizeof(double), attrType,
+			   false,  NULL, false, isSorted);
+      offset += sizeof(double);
+    }
   }
 
   if (_cmdFlag & MappingCmd_Color) {
