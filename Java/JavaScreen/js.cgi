@@ -1,4 +1,5 @@
 #!/s/std/bin/perl
+#!/usr/freeware/bin/perl
 
 #  ========================================================================
 #  DEVise Data Visualization Software
@@ -20,6 +21,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  2001/01/10 17:33:02  wenger
+#  Parsing CGI arguments myself because the CGI package doesn't seem to work
+#  at BMRB (older version of Perl).
+#
 #  Revision 1.2  2001/01/08 20:31:55  wenger
 #  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 #  back onto the trunk.

@@ -21,7 +21,8 @@
 
 ############################################################
 
-if (-e devised) then
+# Note: -e test doesn't work on symlink.
+if (`ls devised` == devised) then
   rm devised
 endif
 
