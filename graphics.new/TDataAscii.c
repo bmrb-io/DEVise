@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/04/18 17:04:59  jussi
+  Fixed Checkpoint() which produced an unnecessary error message
+  when a very small file (less than FILE_CONTENT_COMPARE_BYTES)
+  was checkpointed.
+
   Revision 1.15  1996/04/16 20:38:50  jussi
   Replaced assert() calls with DOASSERT macro.
 
@@ -69,6 +74,7 @@
 #include <fcntl.h>
 #include <limits.h>
 #include <unistd.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -404,7 +410,7 @@ void TDataAscii::Checkpoint()
     }
     if (fread(fileContent, FILE_CONTENT_COMPARE_BYTES, 1, _file) != 1) {
       if (!errno)
-	fprintf("File not checkpointed due to its small size\n");
+	fprintf(stderr, "File not checkpointed due to its small size\n");
       else
 	perror("fread");
       goto error;
