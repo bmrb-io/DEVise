@@ -27,6 +27,12 @@
 <p><a target="new" href="collab.html">Help on collaboration</a>
 <p>
 
+<form name="input" action="jsb.html" method="get">
+Reload file: 
+<br>
+<input type="submit" value="Reload">
+</form> 
+
 <applet code=JavaScreen.DEViseJSLoader.class archive=jsb1.jar,jsb2.jar width=800 height=600>
 <param name="applet" value="JavaScreen.jsb">
 <param name="debug" value="0">
@@ -36,6 +42,8 @@
 <param name="rubberbandlimit" value="4x4">
 <param name="bgcolor" value="64+96+0">
 <param name="screensize" value="800x600">
+<param name="disablebuttons" value="false">
+<param name="reloadapplet" value="false">
 </applet>
 </body>
 </html>
