@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/06/10 18:04:02  wenger
+  Improved new cursor drawing (bug in Mesa implementation sometimes makes
+  it look ugly); cursor color now saved in sessions.
+
   Revision 1.16  1998/06/09 20:06:01  wenger
   2D OpenGL cursor now drawn as shaded outline plus every-other-point
   "mesh"; OpenGL CursorStore and GLWindowRep on SGI now use color indices
@@ -160,6 +164,8 @@ class DeviseCursor : private ViewCallback
 
   void SetCursorColor(PColorID color);
   PColorID GetCursorColor() { return _cursorColor; }
+
+  const char *GetName() { return _name; }
 
 private:
   virtual void FilterAboutToChange(View *view);

@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.165  1998/05/21 18:18:56  wenger
+#	Most code for keeping track of 'dirty' GIFs in place; added 'test'
+#	command to be used for generic test code that needs to be controlled
+#	by GUI; added debug code in NetworkSend().
+#
 #	Revision 1.164  1998/04/16 21:51:53  wenger
 #	Committed Sanjay's text code.
 #
@@ -1350,6 +1355,8 @@ menu .mbar.view.menu.linkMenu -tearoff 0
 	-command { DoResetLinkMaster}
 .mbar.view.menu.linkMenu add command -label "Set Record Link Type" \
 	-command { DoSetLinkType }
+.mbar.view.menu.linkMenu add command -label "Set TData Attr Link Attribute" \
+	-command { DoSetLinkAttr }
 # this line is probably a mistake??? DD
 #	-command { DoResetLinkMaster }
 .mbar.view.menu.linkMenu add separator

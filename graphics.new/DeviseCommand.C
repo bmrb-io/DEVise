@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/06/09 20:06:12  wenger
+  2D OpenGL cursor now drawn as shaded outline plus every-other-point
+  "mesh"; OpenGL CursorStore and GLWindowRep on SGI now use color indices
+  instead of RGB so that they work the same as the other architectures;
+  added user interface to allow changing cursor color (merged through
+  cursor_test_br_1).
+
   Revision 1.15  1998/05/29 19:34:38  wenger
   Added JAVAC_SetDisplaySize to allow the JavaScreen to set the display
   size.
@@ -103,6 +110,7 @@
 #include "CmdLog.h"
 #include "CmdContainer.h"
 #include "JavaScreenCmd.h"
+#include "TAttrLink.h"
 
 #include "Color.h"
 //#define INLINE_TRACE
@@ -4348,6 +4356,84 @@ IMPLEMENT_COMMAND_BEGIN(test)
 		DevWindow::DoneIterator(index);
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in test\n", argc);
+    	control->ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getLinkMasterAttr)
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        TAttrLink *link = (TAttrLink *)classDir->FindInstance(argv[1]);
+        if (!link) {
+            control->ReturnVal(API_NAK, "Cannot find link");
+            return -1;
+        }
+		const char *attrName = link->GetMasterAttrName();
+    	control->ReturnVal(API_ACK, (char *)attrName);
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in getLinkMasterAttr\n", argc);
+    	control->ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getLinkSlaveAttr)
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        TAttrLink *link = (TAttrLink *)classDir->FindInstance(argv[1]);
+        if (!link) {
+            control->ReturnVal(API_NAK, "Cannot find link");
+            return -1;
+        }
+		const char *attrName = link->GetSlaveAttrName();
+    	control->ReturnVal(API_ACK, (char *)attrName);
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in getLinkSlaveAttr\n", argc);
+    	control->ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setLinkMasterAttr)
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 3) {
+        TAttrLink *link = (TAttrLink *)classDir->FindInstance(argv[1]);
+        if (!link) {
+            control->ReturnVal(API_NAK, "Cannot find link");
+            return -1;
+        }
+		link->SetMasterAttr(argv[2]);
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in setLinkMasterAttr\n", argc);
+    	control->ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setLinkSlaveAttr)
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 3) {
+        TAttrLink *link = (TAttrLink *)classDir->FindInstance(argv[1]);
+        if (!link) {
+            control->ReturnVal(API_NAK, "Cannot find link");
+            return -1;
+        }
+		link->SetSlaveAttr(argv[2]);
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in setLinkSlaveAttr\n", argc);
     	control->ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}

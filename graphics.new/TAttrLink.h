@@ -24,6 +24,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/05/06 22:04:57  wenger
+  Single-attribute set links are now working except where the slave of
+  one is the master of another.
+
   Revision 1.5  1998/04/30 14:24:21  wenger
   DerivedTables are now owned by master views rather than links;
   views now unlink from master and slave links in destructor.
@@ -85,6 +89,8 @@ public:
 
   const char *GetMasterAttrName() { return _masterAttrName; }
   const char *GetSlaveAttrName() { return _slaveAttrName; }
+  void SetMasterAttr(char *masterAttrName);
+  void SetSlaveAttr(char *slaveAttrName);
 
 protected:
   friend class SlaveTable;
@@ -92,6 +98,8 @@ protected:
   DevStatus CreateMasterTable();
   DevStatus DestroyMasterTable();
   static TData *GetTData(ViewGraph *view, TDType tdType);
+
+  void ReCreateSlaveTDatas();
 
   char *_masterTableName;
 

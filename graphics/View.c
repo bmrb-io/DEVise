@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.137  1998/06/10 18:04:05  wenger
+  Improved new cursor drawing (bug in Mesa implementation sometimes makes
+  it look ugly); cursor color now saved in sessions.
+
   Revision 1.136  1998/05/21 18:18:30  wenger
   Most code for keeping track of 'dirty' GIFs in place; added 'test'
   command to be used for generic test code that needs to be controlled
@@ -2321,7 +2325,6 @@ void View::DeleteCursor(DeviseCursor *cursor)
 
 Boolean View::DrawCursors()
 {
-
 #if defined(DEBUG)
   printf("DrawCursors for %s\n", GetName());
 #endif
@@ -2439,7 +2442,8 @@ void View::DoDrawCursors()
 
     if ((filter->flag & VISUAL_X) && (filter->flag & VISUAL_Y)) {
 #if defined(DEBUG)
-      printf("DoDrawCursors: Drawing XY cursor in\n  %s\n", GetName());
+      printf("DoDrawCursors: Drawing XY cursor %s in\n  %s\n",
+	  cursor->GetName(), GetName());
 #endif
       if (!(filter->xHigh < _filter.xLow || filter->xLow > _filter.xHigh
 	    || filter->yHigh < _filter.yLow || filter->yLow > _filter.yHigh)) {
@@ -2447,7 +2451,8 @@ void View::DoDrawCursors()
       }
     } else if (filter->flag & VISUAL_X) {
 #if defined(DEBUG)
-      printf("DoDrawCursors: Drawing X cursor in\n  %s\n", GetName());
+      printf("DoDrawCursors: Drawing X cursor %s in\n  %s\n",
+	  cursor->GetName(), GetName());
 #endif
       if (!(filter->xHigh < _filter.xLow || filter->xLow > _filter.xHigh)) {
 	winRep->ClearBackground(xLow, _filter.yLow, xHigh - xLow,
@@ -2455,7 +2460,8 @@ void View::DoDrawCursors()
       }
     } else if (filter->flag & VISUAL_Y) {
 #if defined(DEBUG)
-      printf("DoDrawCursors: Drawing Y cursor in\n  %s\n", GetName());
+      printf("DoDrawCursors: Drawing Y cursor %s in\n  %s\n",
+	  cursor->GetName(), GetName());
 #endif
       if (!(filter->yHigh < _filter.yLow || filter->yLow > _filter.yHigh)) {
 	winRep->ClearBackground(_filter.xLow, yLow,

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.49  1998/04/27 17:30:34  wenger
+#  Improvements to TAttrLinks and related code.
+#
 #  Revision 1.48  1998/04/10 18:29:52  wenger
 #  TData attribute links (aka set links) mostly implemented through table
 #  insertion; a crude GUI for creating them is implemented; fixed some
@@ -824,7 +827,7 @@ proc DoLinkCreate { isRec } {
             }
             if {[ expr ($flag & 1024) ] }  {
 	      # TData attribute link -- needs attribute name.
-	      set attrName [GetTAttrName]
+	      set attrName ""
 	      set result [DEVise create link Visual_Link $name $flag \
 		$attrName $attrName]
 	    } else {
@@ -1023,7 +1026,7 @@ proc DoSetLinkType {} {
 
     set linkSet [RecordLinkSet]
     if { [llength $linkSet] == 0 } {
-	dialog .noLinks "No Links" "There are no links." "" 0 OK
+	dialog .noLinks "No Links" "There are no record links." "" 0 OK
 	return
     }
     set answer [ dialogList .getLink "Select Link" \
@@ -1039,6 +1042,24 @@ proc DoSetLinkType {} {
     }
     set linkMaster [DEVise getLinkMaster $linkname]
     DEVise refreshView $linkMaster
+}
+
+############################################################
+proc DoSetLinkAttr {} {
+    global dialogListVar
+
+    set linkSet [TAttrLinkSet]
+    if { [llength $linkSet] == 0 } {
+	dialog .noLinks "No Links" "There are no TData attr links." "" 0 OK
+	return
+    }
+    set answer [ dialogList .getLink "Select Link" \
+	    "Select a link" "" 0 \
+	    {OK Cancel} $linkSet ]		
+    if { $answer == 0} {
+    	set linkname $dialogListVar(selected)
+	SetLinkAttr $linkname
+    }
 }
 
 ############################################################
@@ -1118,6 +1139,9 @@ proc DoSetLinkMaster {} {
     }
     if { [CheckTData $link $curView 1] } {
 	DEVise setLinkMaster $link $curView 
+	if { [expr 1024 & [DEVise getLinkFlag $link]] } {
+	    SetLinkAttr $link
+	}
     }
 }
 
@@ -1202,6 +1226,89 @@ proc DoModifyLink {} {
     }
     set flag $dialogCkButVar(selected)
     DEVise setLinkFlag $link $flag
+}
+
+############################################################
+
+proc SetLinkAttr {linkname} {
+    global attrName
+    global SetLinkAttr_cancel
+
+    # For now, the master and slave attributes are always the same.
+    set attrName [DEVise getLinkMasterAttr $linkname]
+
+    #
+    # Find the schema name of the master view of this link, so we can
+    # create a menu of the available attributes.
+    #
+    set masterView [DEVise getLinkMaster $linkname]
+    if { $masterView == ""} {
+        dialog .setAttrError "Link Error" \
+	    "Link must have master view to set attribute." "" 0 OK
+	return
+    }
+
+    set map [lindex [DEVise getViewMappings $masterView] 0]
+
+    set params [DEVise getInstParam $map]
+    if {$params == ""} {
+        dialog .editError "No Mapping Parameters" \
+                "Mapping has no parameters." "" 0 OK
+        return
+    }
+
+    set tdata [lindex [lindex $params 0] 1]
+
+    set schemaname [GetSchema $tdata]
+    if { $schemaname == "" } {
+        return
+    }
+
+    #
+    # Create the window to allow the user to select an attribute.
+    #
+    toplevel .setLinkAttr
+    wm geometry .setLinkAttr +50+50
+    wm title .setLinkAttr "Set Link Attribute"
+
+    frame .setLinkAttr.row1
+    frame .setLinkAttr.row2
+
+    # Create the various widgets.
+    label .setLinkAttr.label -text "Attribute:"
+    menubutton .setLinkAttr.menubut -textvariable attrName \
+      -relief raised -menu .setLinkAttr.menubut.menu
+
+    set topgrp __default
+    setupAttrRadioMenu .setLinkAttr.menubut.menu attrName "" $schemaname \
+      $topgrp $topgrp
+
+    button .setLinkAttr.ok -text "OK" -width 10 \
+      -command {global SetLinkAttr_cancel; set SetLinkAttr_cancel 0;
+      destroy .setLinkAttr}
+    button .setLinkAttr.cancel -text "Cancel" -width 10 \
+      -command {global SetLinkAttr_cancel; set SetLinkAttr_cancel 1;
+      destroy .setLinkAttr}
+
+    # Pack the widgets into frames.
+    pack .setLinkAttr.row1 -side top -pady 4m
+    pack .setLinkAttr.row2 -side top -pady 4m
+
+    pack .setLinkAttr.label .setLinkAttr.menubut -in .setLinkAttr.row1 \
+      -side left -padx 3m
+    pack .setLinkAttr.ok .setLinkAttr.cancel -in .setLinkAttr.row2 \
+      -side left -padx 3m
+
+    # Wait for the user to make a selection from this window.
+    tkwait visibility .setLinkAttr
+    grab set .setLinkAttr
+    tkwait window .setLinkAttr
+
+    if { $SetLinkAttr_cancel == 0 && $attrName != "" } {
+	# For now, we force the master and slave attributes to be the same.
+	DEVise setLinkMasterAttr $linkname $attrName
+	DEVise setLinkSlaveAttr $linkname $attrName
+    }
 }
 
 ############################################################
@@ -2308,40 +2415,4 @@ proc CurrentView {} {
 	    "Select a view first by clicking in it." "" 0 OK
 
     return 0
-}
-
-# This is a temporary quick-and-dirty interface.  We need to change it
-# to give the use a menu of the available attributes.  RKW 4/7/1998.
-proc GetTAttrName {} {
-    toplevel .getAttr
-    wm title .getAttr "Set TData Attribute"
-
-    frame .getAttr.row1
-    frame .getAttr.row2
-
-    # Create the various widgets.
-    button .getAttr.ok -text "OK" -width 10 \
-      -command {destroy .getAttr}
-    button .getAttr.cancel -text "Cancel" -width 10 \
-      -command {set tAttrName ""; destroy .getAttr}
-
-    label .getAttr.attrLab -text "TData attribute:"
-    global tAttrName
-    set tAttrName ""
-    entry .getAttr.attrEnt -width 20 -relief sunken -textvariable tAttrName
-
-    # Pack widgets into frames.
-    pack .getAttr.row1 -side bottom -pady 4m
-    pack .getAttr.row2 -side top -pady 4m
-
-    pack .getAttr.ok .getAttr.cancel -in .getAttr.row1 \
-      -side left -padx 3m
-    pack .getAttr.attrLab .getAttr.attrEnt -in .getAttr.row2 \
-      -side left -padx 3m
-
-    tkwait visibility .getAttr
-    grab set .getAttr
-    tkwait window .getAttr
-
-    return $tAttrName
 }

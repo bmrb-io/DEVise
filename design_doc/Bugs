@@ -1374,6 +1374,10 @@ Num Date        Status  Description
 362 06/04/98	OPEN	You can't see the button for 'white' in the color
 			chooser GUI. (rkw)
 
+363 06/12/98	OPEN	TData attr links with no master don't work correctly --
+			the plot all data in the slave instead of no data.
+			(rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

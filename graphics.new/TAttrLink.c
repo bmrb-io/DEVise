@@ -29,6 +29,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/05/06 22:04:56  wenger
+  Single-attribute set links are now working except where the slave of
+  one is the master of another.
+
   Revision 1.8  1998/04/30 14:24:20  wenger
   DerivedTables are now owned by master views rather than links;
   views now unlink from master and slave links in destructor.
@@ -167,12 +171,7 @@ TAttrLink::SetMasterView(ViewGraph *view)
     //
     // Update all slave views.
     //
-    int index = _viewList->InitIterator();
-    while (_viewList->More(index)) {
-      ViewGraph *slaveView = _viewList->Next(index);
-      slaveView->TAttrLinkChanged();
-    }
-    _viewList->DoneIterator(index);
+    ReCreateSlaveTDatas();
   }
 }
 
@@ -246,7 +245,7 @@ TAttrLink::Initialize()
   } else {
     //
     // Make sure the master table has the same TData as the master view
-    // (in case the view's TData got changed).
+    // (in case the vie
     //
     DerivedTable *masterTable = _masterView->GetDerivedTable(_masterTableName);
     DOASSERT(masterTable != NULL, "No master table!");
@@ -410,6 +409,76 @@ TAttrLink::GetTData(ViewGraph *view, TDType tdType)
   }
 
   return tdata;
+}
+
+/*------------------------------------------------------------------------------
+ * function: TAttrLink::SetMasterAttr
+ * Set the master attribute for this link.
+ */
+void
+TAttrLink::SetMasterAttr(char *masterAttrName)
+{
+#if defined(DEBUG)
+  printf("TAttrLink(%s)::SetMasterAttr(%s)\n", _name, masterAttrName);
+#endif
+
+  if (strcmp(masterAttrName, _masterAttrName)) {
+    delete [] _masterAttrName;
+    _masterAttrName = CopyString(masterAttrName);
+
+    //
+    // Force the master attribute table to be re-created for the new
+    // master attribute.
+    //
+    (void) DestroyMasterTable();
+    (void) CreateMasterTable();
+
+    ReCreateSlaveTDatas();
+
+    _masterView->Refresh();
+  }
+}
+
+/*------------------------------------------------------------------------------
+ * function: TAttrLink::SetSlaveAttr
+ * Set the slave attribute for this link.
+ */
+void
+TAttrLink::SetSlaveAttr(char *slaveAttrName)
+{
+#if defined(DEBUG)
+  printf("TAttrLink(%s)::SetSlaveAttr(%s)\n", _name, slaveAttrName);
+#endif
+
+  if (strcmp(slaveAttrName, _slaveAttrName)) {
+    delete [] _slaveAttrName;
+    _slaveAttrName = CopyString(slaveAttrName);
+
+    //
+    // Force the physical TDatas of all slave views to be re-created with
+    // the new slave attribute.
+    //
+    ReCreateSlaveTDatas();
+  }
+}
+
+/*------------------------------------------------------------------------------
+ * function: TAttrLink::ReCreateSlaveTDatas
+ * Force all slave view TDatas to be re-created.
+ */
+void
+TAttrLink::ReCreateSlaveTDatas()
+{
+#if defined(DEBUG)
+  printf("TAttrLink(%s)::ReCreateSlaveTDatas(%s)\n", _name);
+#endif
+
+  int index = InitIterator();
+  while (More(index)) {
+    ViewGraph *view = Next(index);
+    view->TAttrLinkChanged();
+  }
+  DoneIterator(index);
 }
 
 /*============================================================================*/

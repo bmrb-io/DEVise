@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/05/29 19:34:36  wenger
+  Added JAVAC_SetDisplaySize to allow the JavaScreen to set the display
+  size.
+
   Revision 1.10  1998/05/21 18:18:46  wenger
   Most code for keeping track of 'dirty' GIFs in place; added 'test'
   command to be used for generic test code that needs to be controlled
@@ -318,6 +322,10 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(viewSetHome)
 	REGISTER_COMMAND(playLog)
 	REGISTER_COMMAND(test)
+	REGISTER_COMMAND(getLinkMasterAttr)
+	REGISTER_COMMAND(getLinkSlaveAttr)
+	REGISTER_COMMAND(setLinkMasterAttr)
+	REGISTER_COMMAND(setLinkSlaveAttr)
 }
 
 CmdContainer::~CmdContainer()

@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.57  1998/04/10 18:29:50  wenger
+#  TData attribute links (aka set links) mostly implemented through table
+#  insertion; a crude GUI for creating them is implemented; fixed some
+#  bugs in link GUI; changed order in session file for TData attribute links.
+#
 #  Revision 1.56  1998/03/27 15:09:18  wenger
 #  Added dumping of logical session description, added GUI for dumping
 #  logical or physical description; cleaned up some of the command code
@@ -543,6 +548,22 @@ proc RecordLinkSet {} {
     }
     return $recLinkSet
 }
+
+
+############################################################
+#list of all TData attribute links
+proc TAttrLinkSet {} {
+    set linkSet [ CategoryInstances "link"]
+    set tAttrLinkSet {}
+    foreach link $linkSet {
+        set flag [DEVise getLinkFlag $link]
+        if { [expr $flag & 1024] } {
+            lappend tAttrLinkSet $link
+        }
+    }
+    return $tAttrLinkSet
+}
+
 ############################################################
 
 #list of non pile links

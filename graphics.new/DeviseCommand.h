@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/05/29 19:34:39  wenger
+  Added JAVAC_SetDisplaySize to allow the JavaScreen to set the display
+  size.
+
   Revision 1.7  1998/05/21 18:18:48  wenger
   Most code for keeping track of 'dirty' GIFs in place; added 'test'
   command to be used for generic test code that needs to be controlled
@@ -1298,6 +1302,30 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(test) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getLinkMasterAttr) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getLinkSlaveAttr) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setLinkMasterAttr) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setLinkSlaveAttr) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

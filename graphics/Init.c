@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1998/06/11 20:45:45  wenger
+  Added -quit command line argument for devised to quit when client disconnects.
+
   Revision 1.44  1998/05/02 09:02:27  taodb
   Added support for command logging
   Added support for registering events with delay
@@ -372,6 +375,7 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-gl: use OpenGL to draw\n");
   fprintf(stderr, "\t-port <value>: port for server to listen on\n");
   fprintf(stderr, "\t-switchport <value>: port for server to listen on\n");
+  fprintf(stderr, "\t-imageport <value>: port for image socket\n");
   fprintf(stderr, "\t-switchname <value>: host for the server to listen for"
 					" the collaborator\n");
   fprintf(stderr, "\t-maxclients <value>: maximum number of clients\n");
