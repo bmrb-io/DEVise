@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.4  1995/11/14 23:16:41  jussi
+#	Changed default values of source type and schema file when
+#	defining a new data stream. Check for missing information
+#	earlier than before when defining new data stream.
+#
 #	Revision 1.3  1995/11/14 22:51:11  jussi
 #	Interfaced stream selection dialog into DefSource of macrodef.tk.
 #	Minor other changes.
@@ -262,7 +267,6 @@ proc defineStream {base edit} {
 	}
 	set "sourceList($dispname)" $sourcedef
 	saveSources
-	cacheData $dispname
 	updateSources
 	destroy .srcdef
     }
