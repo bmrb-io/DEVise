@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.52  1996/07/12 23:41:30  jussi
+  When View is destroyed, it is removed from the _viewList.
+  Got rid of Init() method, integrated it with the constructor.
+
   Revision 1.51  1996/07/10 19:29:03  jussi
   Fixed problem with 3D focus points.
 
@@ -1156,22 +1160,21 @@ void View::ReportQueryDone(int bytes)
 
   _bytes = bytes;
   _querySent = false;
+  _hasLastFilter = false;
 
   _cursorsOn = false;
+
   if (_numDimensions == 2)
     (void)DrawCursors();
   else
     Draw3DAxis();
-
   GetWindowRep()->PopClip();
+  GetWindowRep()->Flush();
 
-  _hasLastFilter = false;
-  
   ControlPanel::Instance()->SetIdle();
 
-  // flush all graphics to the screen
-  WindowRep *win = GetWindowRep();
-  win->Flush();
+  // report to interested parties that view has been recomputed
+  ReportViewRecomputed();
 }
 
 /***********************************************************************
@@ -1195,7 +1198,7 @@ void View::Run()
   
   if (mode == ControlPanel::LayoutMode && 
       (_hasExposure || _filterChanged || _refresh || _updateTransform)) { 
-    /* keep track that events occurred while in LayoutMode*/
+    /* keep track that events occurred while in LayoutMode */
     _modeRefresh = true;
   } else if (mode == ControlPanel::DisplayMode && _modeRefresh) {
     /* need to refresh in display mode because events occurred in
@@ -1203,12 +1206,9 @@ void View::Run()
     _refresh = true;
   }
   
-  Boolean notMapped = !Mapped();
-  Boolean iconified = Iconified();
-  
   if (_querySent) {
-    if (_hasExposure || _filterChanged || _refresh || _updateTransform ||
-	notMapped || iconified ) {
+    if (_hasExposure || _filterChanged || _refresh || _updateTransform
+        || !Mapped()) {
 #ifdef DEBUG
       printf("View:: aborting\n");
 #endif
@@ -1219,11 +1219,14 @@ void View::Run()
       return;
   }
   
-  if (notMapped || iconified) {
-#ifdef DEBUGxxx
-    printf("not mapped %d, iconified %d\n", notMapped, iconified);
-#endif
+  if (!Mapped())
     return;
+
+  if (Iconified()) {
+    /* force "redrawing" of whole view (mainly for statistics and
+       other derived data) when window iconified displayed */
+    _refresh = true;
+    _hasExposure = false;
   }
 
   if (!_hasExposure && !_filterChanged && !_refresh)
@@ -1236,9 +1239,10 @@ void View::Run()
 
   scrnWidth = sW;
   scrnHeight = sH;
+
   VisualFilter newFilter;
   
-  if (RestorePixmap(_filter, newFilter) == PixmapTotal) {
+  if (!Iconified() && RestorePixmap(_filter, newFilter) == PixmapTotal) {
 #ifdef DEBUG
     printf("View::Run: Restored complete pixmap for\n  %s\n", GetName());
 #endif
@@ -1274,16 +1278,12 @@ void View::Run()
     _filterChanged = false;
     _refresh = false;
     _hasLastFilter = false;
+
     return;
   }
   
   Dispatcher::InsertMarker(writeFd);
 
-#ifdef DEBUG
-  printf("Run: window 0x%p scrollable is %d\n", 
-	 winRep, (winRep->Scrollable() ? 1 : 0));
-#endif
-  
   if (!_updateTransform && !_hasExposure && !_refresh && _filterChanged) {
     /* Do scroll, if we can  */
     UpdateFilterStat stat;
@@ -1308,7 +1308,7 @@ void View::Run()
   
   /* Update the WindowRep's transformation matrix */
   if (_updateTransform) {
-    UpdateTransform(winRep);
+    UpdateTransform(GetWindowRep());
     _updateTransform = false;
   }
   
@@ -1322,14 +1322,12 @@ void View::Run()
     
     _exposureRect.xLow = MAX(_exposureRect.xLow, 0);
     _exposureRect.xLow = MIN(_exposureRect.xLow, scrnWidth - 1);
-    _exposureRect.xHigh = MAX(_exposureRect.xLow,
-				      _exposureRect.xHigh);
+    _exposureRect.xHigh = MAX(_exposureRect.xLow, _exposureRect.xHigh);
     _exposureRect.xHigh = MIN(_exposureRect.xHigh, scrnWidth - 1);
     
     _exposureRect.yLow = MAX(_exposureRect.yLow, 0);
     _exposureRect.yLow = MIN(_exposureRect.yLow, scrnHeight - 1);
-    _exposureRect.yHigh = MAX(_exposureRect.yLow,
-				      _exposureRect.yHigh);
+    _exposureRect.yHigh = MAX(_exposureRect.yLow, _exposureRect.yHigh);
     _exposureRect.yHigh = MIN(_exposureRect.yHigh, scrnHeight - 1);
     
 #ifdef DEBUG
@@ -1359,7 +1357,7 @@ void View::Run()
 #endif
   }
   
-  /* Send the new query */
+  /* Decorate view with axes etc. */
   
   /* Set up identity transformation */
   winRep->PushTop();
@@ -1402,7 +1400,7 @@ void View::Run()
     _bytes = 0;
     DerivedStartQuery(_queryFilter, _timeStamp);
   } else {
-    winRep->PopClip();
+      winRep->PopClip();
   }
 
 #ifdef DEBUG
@@ -1667,6 +1665,24 @@ void View::ReportViewCreated()
   _viewCallbackList->DoneIterator(index);
 }
 
+void View::ReportViewRecomputed()
+{
+  if (!_viewCallbackList)
+    return;
+  
+  int index;
+  for(index = _viewCallbackList->InitIterator(); 
+      _viewCallbackList->More(index);) {
+    ViewCallback *callBack = _viewCallbackList->Next(index);
+#ifdef DEBUG
+    printf("Calling ViewRecomputed callback 0x%p for view 0x%p\n",
+	   callBack, this);
+#endif
+    callBack->ViewRecomputed(this);
+  }
+  _viewCallbackList->DoneIterator(index);
+}
+
 void View::ReportViewDestroyed()
 {
   if (!_viewCallbackList)
@@ -1751,8 +1767,9 @@ void View::Iconify(Boolean iconified)
   if (_querySent && iconified) {
     DerivedAbortQuery();
     ReportQueryDone(0);
-    Refresh();
   }
+
+  Refresh();
 }
 
 void View::ModeChange(ControlPanel::Mode mode)
@@ -2475,7 +2492,7 @@ void View::Draw3DAxis()
 #endif
 
   WindowRep *win = GetWindowRep();
-  win->SetFgColor(BlackColor);
+  win->SetFgColor(GetFgColor());
   Map3D::DrawRefAxis(win, _camera);
 }
 
