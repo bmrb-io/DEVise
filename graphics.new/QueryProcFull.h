@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/12/12 22:04:07  jussi
+  Replaced destructor with Cleanup() which gets called by the Dispatcher.
+
   Revision 1.15  1996/12/03 20:40:56  jussi
   Updated to reflect new BufMgr Init/Get/Done interface. QueryProc
   now issues all requests concurrently to the BufMgr, which will
@@ -108,6 +111,7 @@ struct QPFullData {
   QueryCallback *callback;
   QPFullType qType;                     /* sortedX, scatter, or YX query */
   QPFullState state;                    /* Init, Scan, or End */
+  Boolean useCoordMap;                  /* use coordinate map */
 
   BufMgr::BMHandle handle;              /* buffer manager handle */
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  1996/12/12 22:04:07  jussi
+  Replaced destructor with Cleanup() which gets called by the Dispatcher.
+
   Revision 1.43  1996/12/03 20:40:55  jussi
   Updated to reflect new BufMgr Init/Get/Done interface. QueryProc
   now issues all requests concurrently to the BufMgr, which will
@@ -241,7 +244,8 @@ static const int QPFULL_RANDOM_RECS = 10240;
    Min number of bytes to skip by doing a seek on tape; if skip distance
    is less than this number, data is skipped by reading instead.
 */
-static const int QPFULL_TAPE_MIN_SEEK = 2 * 1048576;
+static const int MByte = 1024 * 1024;
+static const int QPFULL_TAPE_MIN_SEEK = 2 * MByte;
 
 /*
    Min number of records to keep as a separation between sorted table
@@ -263,7 +267,9 @@ static void GetX(BufMgr *mgr, TData *tdata, TDataMap *map, RecId id, Coord &x)
   char *buf;
   Boolean isTData;
 
-  BufMgr::BMHandle handle = mgr->InitGetRecs(tdata, map->GetGData(), id, id);
+  BufMgr::BMHandle handle = mgr->InitGetRecs(tdata, map->GetGData(),
+                                             id, id, false, false,
+                                             true, true);
   Boolean gotit = mgr->GetRecs(handle, isTData, startRid, numRecs, buf);
   DOASSERT(gotit, "Did not get data");
   DOASSERT(numRecs == 1, "Did not get one record");
@@ -364,16 +370,27 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
     query->isRecLinkSlave = true;
   recLinkList->DoneIterator(index);
 
-  /* If tape query, associate mapping with a coordinate mapping tables */
-  if (query->tdata->GetDataSource()->isTape()) {
-      AssociateMappingWithCoordinateTable(map);
-  }
-
   VisualFlag *dimensionInfo;
   int numDimensions = map->DimensionInfo(dimensionInfo);
   int numTDimensions, sizeTDimensions[10];
   numTDimensions = tdata->Dimensions(sizeTDimensions);
   
+  if (query->tdata->GetDataSource()->isTape()) {
+      query->useCoordMap = true;
+      RecId low, high;
+      if (query->tdata->HeadID(low) && query->tdata->LastID(high)
+          && (high - low + 1) * query->tdata->RecSize() < 200 * MByte) {
+          /* If tape file is small, force linear processing (no search). */
+          numTDimensions = 0;
+          query->useCoordMap = false;
+      }
+  }
+
+  /* If tape data, associate mapping with a coordinate mapping tables */
+  if (query->useCoordMap) {
+      AssociateMappingWithCoordinateTable(map);
+  }
+
   if (numDimensions == 0) {
     query->qType = QPFull_Scatter;
 #if DEBUGLVL >= 3
@@ -634,6 +651,7 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
                           true, query->low, lastId, false)) {
           query->high = lastId;
       }
+
       query->hintId = (query->high + query->low) / 2;
       _mgr->FocusHint(query->high, query->tdata, query->gdata);
       query->isRandom = false;
@@ -835,7 +853,7 @@ Boolean QueryProcFull::InitQueries()
         query->handle = _mgr->InitGetRecs(query->tdata, query->gdata,
                                           query->low, query->high,
                                           tdataOnly, false,
-                                          query->isRandom, false);
+                                          query->isRandom, true);
 #if DEBUGLVL >= 3
         printf("Buffer manager handle 0x%p for [0x%p,0x%p,%ld,%ld]\n",
                (void *)query->handle, query->tdata,
@@ -983,6 +1001,7 @@ void QueryProcFull::ProcessQuery()
 
   /* Find out which query is ready to deliver data */
   BufMgr::BMHandle handle = _mgr->SelectReady();
+  DOASSERT(handle, "Invalid ready handle");
   QPFullData *query = NULL;
   int index = _queries->InitIterator();
   while (_queries->More(index)) {
@@ -1559,75 +1578,76 @@ Boolean QueryProcFull::DoInMemGDataConvert(TData *tdata, GData *gdata,
   if (!tdata->HeadID(low) || !tdata->LastID(high))
       return false;
 
-  BufMgr::BMHandle handle = _mgr->InitGetRecs(tdata, gdata, low, high,
-                                              true, true);
-
-  QPRange *processed = _mgr->GetProcessedRange(handle);
-
   int gRecSize = gdata->RecSize();
   int tRecSize = tdata->RecSize();
   int maxRecs = GDATA_BUF_SIZE / gRecSize;
   int numConverted = 0;
 
-  while (numConverted < QPFULL_RECS_PER_BATCH) {
-      RecId startRecId;
-      int numRecs;
-      char *buf;
-      Boolean isTData;
+  RecId current = low;
 
-      Boolean gotit = _mgr->GetRecs(handle, isTData, startRecId, numRecs, buf);
-      if (!gotit)
-          break;
-      DOASSERT(isTData, "Did not get TData");
-
-      /*
-         For each in-memory range, find all subranges that
-         have not been converted and convert.
-      */
-
-      RecId inMemLow = startRecId;
-      RecId inMemHigh = startRecId + numRecs - 1;
-      processed->Insert(inMemLow, inMemHigh, NULL);
-
-      RecId current = inMemLow;
-
-      while (1) {
-          RecId low, high;
-          Boolean noHigh = gdata->NextUnConverted(current, low, high);
-          if (noHigh || high > inMemHigh)
-              high = inMemHigh;
+  while (1) {
+      RecId uLow, uHigh;
+      Boolean noHigh = gdata->NextUnConverted(current, uLow, uHigh);
+      if (noHigh || uHigh > high)
+          uHigh = high;
 #if DEBUGLVL >= 5
-          printf("Next unprocessed range is [%ld,%ld]\n", low, high);
-          gdata->PrintConverted();
+      printf("Next unprocessed range is [%ld,%ld]\n", uLow, uHigh);
+      gdata->PrintConverted();
 #endif
 
-          if (low > inMemHigh)
-              break;
+      if (uLow > high)
+          break;
 
-          /* Convert [low..high] in batches that fit in memory. */
-          while (low <= high) {
-              int numConvert = high - low + 1;
+      /*
+         For each unconverted range, find all in-memory ranges and
+         convert them.
+      */
+
+      BufMgr::BMHandle handle = _mgr->InitGetRecs(tdata, gdata, uLow, uHigh,
+                                                  true, true);
+
+      QPRange *processed = _mgr->GetProcessedRange(handle);
+
+      while (numConverted < QPFULL_RECS_PER_BATCH) {
+          RecId startRid;
+          int numRecs;
+          char *buf;
+          Boolean isTData;
+
+          Boolean gotit = _mgr->GetRecs(handle, isTData, startRid,
+                                        numRecs, buf);
+          if (!gotit)
+              break;
+          DOASSERT(isTData, "Did not get TData");
+
+          RecId inMemLow = startRid;
+          RecId inMemHigh = startRid + numRecs - 1;
+          processed->Insert(inMemLow, inMemHigh, NULL);
+
+          /* Convert range in batches that fit in memory. */
+          while (startRid <= inMemHigh) {
+              int numConvert = numRecs;
               if (numConvert > maxRecs)
                   numConvert = maxRecs;
-              char *startBuf = buf + tRecSize * (low - inMemLow);
+              char *startBuf = buf + tRecSize * (startRid - inMemLow);
               char *firstRec = _gdataBuf;
               char *lastRec = _gdataBuf + gRecSize * (numConvert - 1);
-              map->ConvertToGData(low, startBuf, numConvert, _gdataBuf);
-              gdata->UpdateConversionInfo(low, low + numConvert - 1, 
+              map->ConvertToGData(startRid, startBuf, numConvert, _gdataBuf);
+              gdata->UpdateConversionInfo(startRid, startRid + numConvert - 1, 
                                           firstRec, lastRec);
-              gdata->WriteRecs(low, numConvert, _gdataBuf);
+              gdata->WriteRecs(startRid, numConvert, _gdataBuf);
               numConverted += numConvert;
-              low += numConvert;
+              startRid += numConvert;
           }
 
-          current = high + 1;
+          _mgr->FreeRecs(buf);
       }
 
-      _mgr->FreeRecs(buf);
+      _mgr->DoneGetRecs(handle);
+
+      current = uHigh + 1;
   }
 
-  _mgr->DoneGetRecs(handle);
-  
 #if DEBUGLVL >= 5
   printf("Converted %d records of map %s\n", numConverted, map->GetName());
 #endif
