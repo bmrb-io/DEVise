@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.99  1996/11/26 17:25:21  ssl
+#	added support for stacked views
+#
 #	Revision 1.98  1996/11/26 09:36:37  beyer
 #	control-c and q now quit devise when typed on the control panel.
 #
@@ -417,7 +420,7 @@ set stackWinOpened 0
 set helpWindowCreated 0
 set UserMode 1
 set templateMode 0
-
+set mappingWinOpened 0
 # set statistics defaults
 set statmean 0 
 set statmax 1
@@ -938,13 +941,17 @@ proc FindDefaultXAttr { attrs } {
 
 # Do editing for mapping
 proc DoEditMapping {} {
-    global dialogParamVar dialogListVar DEViseColors DEViseShapes curView
-    global sourceList derivedSourceList
+    global curView mappingWinOpened
 
     if {![CurrentView]} {
 	return
     }
-
+    
+    if {$mappingWinOpened == 1}  {
+	return
+    }
+    
+    set mappingWinOpened 1
     # Get mapping for the view (first one)
     set map [lindex [DEVise getViewMappings $curView] 0]
     
@@ -962,29 +969,25 @@ proc DoEditMapping {} {
 	return
     }
     
+    EditMapping $map     
+    set mappingWinOpened 0
+}
+
+
+proc EditMapping { map } {
+    global sourceList derivedSourceList
+
     # Get parameters for the mapping
     set params [DEVise getInstParam $map]
+    
     if {$params == ""} {
 	dialog .editError "No Mapping Parameters" \
 		"Mapping has no parameters." "" 0 OK
 	return
     }
-
-    set xParm [lindex [lindex $params 3] 1]
-    set yParm [lindex [lindex $params 4] 1]
-    set zParm [lindex [lindex $params 5] 1]
-    set colorParm [findNameValue $DEViseColors [lindex [lindex $params 6] 1]]
-    set sizeParm [lindex [lindex $params 7] 1]
-    set patternParm [lindex [lindex $params 8] 1]
-    set orientParm [lindex [lindex $params 9] 1]
-    set shapeParm [findNameValue $DEViseShapes [lindex [lindex $params 10] 1]]
-    set shapeAttr0 [lindex [lindex $params 11] 1]
-    set shapeAttr1 [lindex [lindex $params 12] 1]
-    set shapeAttr2 [lindex [lindex $params 13] 1]
-    set shapeAttr3 [lindex [lindex $params 14] 1]
-
+    
     set tdata [lindex [lindex $params 0] 1]
-
+    
     set err [catch {set sfname [lindex $sourceList($tdata) 3]}]
     if {$err > 0} {
 	set sfname [lindex $derivedSourceList($tdata) 3]
@@ -992,70 +995,21 @@ proc DoEditMapping {} {
     set schemaname [file tail $sfname]
 
     # set attrs [DEVise getSchema $tdata]
-    set parm [dialogMapping .editMapping "Edit Mapping" \
+    
+    dialogMapping .editMapping "Edit Mapping" \
 	    "Edit Mapping" ""   \
 	    $schemaname \
-	    [list \
-	    [list X {0 1 2 3 4 5 6 7 8 9 10} $xParm] \
-	    [list Y {0 1 2 3 4 5 6 7 8 9 10} $yParm] \
-	    [list Z {0 1 2 3 4 5 6 7 8 9 10} $zParm] \
-	    [list Color $DEViseColors $colorParm] \
-	    [list Size {0 1 2 3 4} $sizeParm] \
-	    [list Pattern {0 1 2 3 4 5 6 7 8 9 10} $patternParm] \
-	    [list Orientation {1} $orientParm] \
-	    [list Shape $DEViseShapes $shapeParm] \
-	    [list "ShapeAttr0" {0 0.1 0.5 1 2} $shapeAttr0] \
-	    [list "ShapeAttr1" {0 0.1 0.5 1 2} $shapeAttr1] \
-	    [list "ShapeAttr2" {0 0.1 0.5 1 2} $shapeAttr2] \
-	    [list "ShapeAttr3" {0 0.1 0.5 1 2} $shapeAttr3] \
-	    ] 0 ]
-    
-    if {$parm == ""} {
-	return
-    }
-
-    # extract parameters
-    set params [list [lindex [lindex $params 0] 1] \
-	    [lindex [lindex $params 1] 1] \
-	    [lindex [lindex $params 2] 1] \
-	    [lindex $parm 0] \
-	    [lindex $parm 1] \
-	    [lindex $parm 2] \
-	    [findNumericValue $DEViseColors [lindex $parm 3]] \
-	    [lindex $parm 4] \
-	    [lindex $parm 5] \
-	    [lindex $parm 6] \
-	    [findNumericValue $DEViseShapes [lindex $parm 7]] \
-	    [lindex $parm 8] [lindex $parm 9] \
-	    [lindex $parm 10] [lindex $parm 11] \
-	]
-
-    # Change parameter
-    set cmd "DEVise changeParam \{$map\} $params"
-    set result [eval $cmd]
-    
-    # Refresh all views that use this mapping
-    set views [ViewSet]
-    foreach view $views {
-	set mappings [DEVise getViewMappings $view]
-	set contains 0
-	foreach m $mappings {
-	    if {$m == $map} {
-		set contains 1
-		break
-	    }
-	}
-	if {$contains > 0} {
-	    DEVise invalidatePixmap $view
-	    DEVise refreshView $view
-	}
-    }
+	    $params \
+	    $map \
+	    0
+    puts "Map edit done"
 }
+
 
 # Close current session
 proc DoClose {} {
     global sessionName templateMode datadir sourceList
-
+    
     if {$templateMode} {	
 	set but [dialog .open "Merge Data" \
 	   "If you Close without Merging, you will lose access to this data" \
@@ -1068,7 +1022,7 @@ proc DoClose {} {
 	    DoTemplateMerge
 	}
     }	
-
+    
     set but [dialog .open "Close Session" "Close Current Session?" \
 	    "" 1 Cancel Ok ]
     if { $but == 0 } {
@@ -1153,7 +1107,7 @@ proc GetView { tdata mapClass viewClass } {
 	    }
 	}
     }
-
+    
     # not found
     return ""
 }
@@ -1504,6 +1458,7 @@ proc UpdateTkControlMargins {name type w h} {
     }
 }
 
+
 ############################################################
 
 proc ShowKGraph {} {
@@ -1528,3 +1483,13 @@ proc ShowKGraph {} {
     set cmd "DEVise showkgraph $knew $kval {$win} $vlist"
     eval $cmd
 }
+
+
+
+
+
+
+
+
+
+

@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.10  1996/04/10 03:05:33  jussi
+#	Checking of whether a top-level window already exists is now
+#	made via WindowVisible (utils.tcl).
+#
 #	Revision 1.9  1996/02/02 21:26:39  jussi
 #	User is given a color palette to choose from rather than
 #	a list of names of colors.
@@ -40,14 +44,44 @@
 
 ############################################################
 
-proc dialogMapping {w title text bitmap schemaname mappings {getName 0}} { 
-    global button1
+
+proc dialogMapping {w title text bitmap schemaname params map {getName 0}} { 
+    global dialogParamVar dialogListVar DEViseColors DEViseShapes 
+    global button1 mappingWinOpened
+
+    set xParm [lindex [lindex $params 3] 1]
+    set yParm [lindex [lindex $params 4] 1]
+    set zParm [lindex [lindex $params 5] 1]
+    set colorParm [findNameValue $DEViseColors [lindex [lindex $params 6] 1]]
+    set sizeParm [lindex [lindex $params 7] 1]
+    set patternParm [lindex [lindex $params 8] 1]
+    set orientParm [lindex [lindex $params 9] 1]
+    set shapeParm [findNameValue $DEViseShapes [lindex [lindex $params 10] 1]]
+    set shapeAttr0 [lindex [lindex $params 11] 1]
+    set shapeAttr1 [lindex [lindex $params 12] 1]
+    set shapeAttr2 [lindex [lindex $params 13] 1]
+    set shapeAttr3 [lindex [lindex $params 14] 1]
+
+    set mappings [list \
+	    [list X {0 1 2 3 4 5 6 7 8 9 10} $xParm] \
+	    [list Y {0 1 2 3 4 5 6 7 8 9 10} $yParm] \
+	    [list Z {0 1 2 3 4 5 6 7 8 9 10} $zParm] \
+	    [list Color $DEViseColors $colorParm] \
+	    [list Size {0 1 2 3 4} $sizeParm] \
+	    [list Pattern {0 1 2 3 4 5 6 7 8 9 10} $patternParm] \
+	    [list Orientation {1} $orientParm] \
+	    [list Shape $DEViseShapes $shapeParm] \
+	    [list "ShapeAttr0" {0 0.1 0.5 1 2} $shapeAttr0] \
+	    [list "ShapeAttr1" {0 0.1 0.5 1 2} $shapeAttr1] \
+	    [list "ShapeAttr2" {0 0.1 0.5 1 2} $shapeAttr2] \
+	    [list "ShapeAttr3" {0 0.1 0.5 1 2} $shapeAttr3] \
+	    ]
 
     set topgrp [SelectTopGroup $schemaname]
 
     # destroy the old widget with the same name if there exists one
-    catch {destroy $w}
-
+    #catch {destroy $w}
+    
     toplevel $w
     wm geometry $w +50+50
     wm title $w $title
@@ -136,10 +170,19 @@ proc dialogMapping {w title text bitmap schemaname mappings {getName 0}} {
 	}
     }
 
-    frame $w.but
-    button $w.but.ok -text OK -width 10 -command { set button1 1 }
-    button $w.but.cancel -text Cancel -width 10 -command { set button1 0 }
-    pack $w.but.ok $w.but.cancel -side left -padx 3m
+    frame $w.but 
+
+    button $w.but.apply -text Apply -width 10 -command " \
+	    UpdateMappings {$map} {$params} {$mappings} "
+    button $w.but.ok -text OK -width 10 -command " \
+    	    set mappingWinOpened 0 
+            destroy $w 
+	    return "
+    button $w.but.cancel -text Cancel -width 10 -command " \
+	    set mappingWinOpened 0 
+            destroy $w 
+            return "
+    pack $w.but.apply $w.but.ok $w.but.cancel -side left -padx 3m
 
     foreach item $mappings {
 	set itemname [lindex $item 0]
@@ -157,23 +200,6 @@ proc dialogMapping {w title text bitmap schemaname mappings {getName 0}} {
 
     pack $w.message $w.mapping -side top -fill x -pady 2m
     pack $w.but -side top -pady 3m
-
-    tkwait variable button1
-
-    set newmap ""
-    if { $button1 == 1 } {
-	foreach item $mappings {
-	    set itemname [lindex $item 0]
-	    lappend newmap [deref mappingValue$itemname]
-	}
-	if {$getName } {
-	    set newmap [list [$nameEntryWidget get] $newmap]
-	}
-    }
- 
-    catch {destroy $w}
-
-    return $newmap
 }
 
 proc editExpression {varname} {
@@ -212,11 +238,11 @@ proc editExpression {varname} {
 	    "destroy $winname"
     pack $winname.bot.but.ok $winname.bot.but.clear \
 	    $winname.bot.but.cancel -side left -padx 5m
-
     tkwait visibility $winname
     grab set $winname
     tkwait window $winname
 }
+
 
 proc SetExpression {mapvar editvar winname} {
     global $mapvar $editvar
@@ -236,3 +262,68 @@ proc updateMapName {w xval yval} {
     $w delete 0 end
     $w insert 0 $name
 }
+
+proc ChangeParams { map oldparams newmap } {
+    global dialogParamVar dialogListVar DEViseColors DEViseShapes 
+
+    if { $newmap == ""} {
+	return
+    }
+
+    # extract parameters
+    set newparams [list [lindex [lindex $oldparams 0] 1] \
+	    [lindex [lindex $oldparams 1] 1] \
+	    [lindex [lindex $oldparams 2] 1] \
+	    [lindex $newmap 0] \
+	    [lindex $newmap 1] \
+	    [lindex $newmap 2] \
+	    [findNumericValue $DEViseColors [lindex $newmap 3]] \
+	    [lindex $newmap 4] \
+	    [lindex $newmap 5] \
+	    [lindex $newmap 6] \
+	    [findNumericValue $DEViseShapes [lindex $newmap 7]] \
+	    [lindex $newmap 8] [lindex $newmap 9] \
+	    [lindex $newmap 10] [lindex $newmap 11] \
+	    ]
+    
+    # Change parameter
+    set cmd "DEVise changeParam \{$map\} $newparams"
+    eval $cmd
+    return
+}
+
+
+proc ChangeViewMapping { map } {
+    # Refresh all views that use this mapping
+    set views [ViewSet]
+    foreach view $views {
+	set mappings [DEVise getViewMappings $view]
+	set contains 0
+	foreach m $mappings {
+	    if {$m == $map} {
+		set contains 1
+		break
+	    }
+	}
+	if {$contains > 0} {
+	    DEVise invalidatePixmap $view
+	    DEVise refreshView $view
+	}
+    }
+    return
+}
+
+
+proc UpdateMappings { map params mappings } {
+    set newmap ""
+    foreach item $mappings {
+	set itemname [lindex $item 0]
+	global mappingValue$itemname
+	lappend newmap [deref mappingValue$itemname]
+    }
+    puts $newmap
+    ChangeParams $map $params $newmap
+    ChangeViewMapping $map
+    return
+}
+
