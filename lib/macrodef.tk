@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.87  1997/04/25 16:54:17  wenger
+#	Text labels are now sized in the same way as Rects; fixed font bug in
+#	middle button query popup; removed the dialog that warns you about your
+#	table name getting changed when you open an old data source.
+#
 #	Revision 1.86  1997/04/22 15:25:52  wenger
 #	Conditionaled out lots of debug code; fixed data source visualization
 #	window so the window for the data again defaults to 'New' if there are
@@ -577,15 +582,14 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
                 Only the first stream will be visualized." "" 0 Continue
 	set snames [lindex $snames 0]
     }
+    set result ""
 
     foreach sname $snames {
 
        set sname [string trimleft $sname "{"]
        set sname [string trimright $sname "}"]
-#       puts "sname after trim = $sname"
        set sourcedef [OpenDataSource $sname]
 
-#	puts "OpenDataSource returns: $sourcedef"
         if {$sourcedef == ""} {
             return ""
         }
@@ -597,25 +601,21 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
 	   set schema [lindex $sourcedef 4]
       	
         # see if data stream already open
-#PROBLEMPROBLEMPROBLEMPROBLEM
-#	puts "TdataSet [TdataSet]"
 	set tdata_exist 0 
         if {[lsearch [TdataSet] $sname] >= 0} {
-	    set pos [string first : $sname ]
-	    if {$pos > 0} { 
-	    	set prefix [string range $sname 0 [expr $pos-1]]
-            } else { continue }
-	    if {$prefix == "Hist" || $prefix == "HistDate" || $prefix == "GstatX" 
-	        || $prefix == "GstatXDTE" || $prefix == "GstatXDate" 
-		|| $prefix == "GstatY" || $prefix == "GstatYDate" } { 
-		set tdata_exist 1 
-	    } else { continue }
+#	    set pos [string first : $sname ]
+#	    if {$pos > 0} { 
+#	    	set prefix [string range $sname 0 [expr $pos-1]]
+#	    	if {$prefix == "Hist" || $prefix == "HistDate" || $prefix == "GstatX" 
+#	        	|| $prefix == "GstatXDTE" || $prefix == "GstatXDate" 
+#			|| $prefix == "GstatY" || $prefix == "GstatYDate" } { 
+#			set tdata_exist 1 
+#	    	} 
+#	    }
+	    set tdata_exist 1
         }
 
 	if {$derivedOnly} {
-#	    foreach my_name [array names derivedSourceList] {
-#	    	puts "$my_name $derivedSourceList($my_name)"
-#	    }
 
 	    set schema [lindex $derivedSourceList($sname) 2]
 	    set schemafile [lindex $derivedSourceList($sname) 3]
@@ -632,16 +632,12 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
 
 	if { [isDTEType $stype] } {
 		set schema $sname
-#		puts "isDTEType sname=$sname stype=$stype"
  		set result [DEVise dteImportFileType $sname]
 		set topgrps [DEVise getTopGroups $sname]
-#		puts "result of dteImportFileType=$result, topgrps=$topgrps"
    	} else {
           	set topgrps [DEVise getTopGroups [file tail $schemafile]]
-#		puts "topgrps = $topgrps"
+		puts "topgrps = $topgrps"
         	if {[llength $topgrps] == 0} {
-
-#	   	    puts "list topgrps is empty"
 
             	    if {![file readable $schemafile]} {
                 	dialog .schemaError "Schema Not Found" \
@@ -655,8 +651,6 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
 			# this call appears to parse the schema ??? DD
 			#
             	    set result [DEVise importFileType $stype $schemafile $param]
-#		    puts "result after importFileType = $result"
-			#set result $schema
             
 		    if {$result == ""} {
                 	return ""
@@ -674,12 +668,9 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
 
 	if {$tdata_exist == 0} {
         	# ask DEVise to create tdata
-#		puts "creating UNIXFILE tdata $schema $sname $stype $param"
         	set result [DEVise create tdata $schema $sname $stype $param]
-#		puts "KKKKKKKKresult after create tdata = $result"
 	} else { 
 		set result [DEVise getTDataName $sname]
-#		puts "KKKKKKKKmy_type afetr DEVise get tdata is $result"
 	}
 
         catch {destroy .info}
@@ -695,7 +686,6 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
     if { [isDTEType $stype] } {
 	return [list [lindex $snames 0] $sname 1]
     } else {
-#	return [list [lindex $snames 0] [file tail $schemafile] 0]
 	return [list $result [file tail $schemafile] 0]
     }
 }
@@ -1257,7 +1247,7 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
                          titlesel xaxissel yaxissel x ylist
                          newgdata {ofAttr ""}} {
 
-#    puts "In MacroDefAutoActual tdata=$tdata $viewsel $linksel $window $bgcolor
+    puts "In MacroDefAutoActual tdata=$tdata $viewsel $linksel $window $bgcolor
 #		$titlesel $xaxissel $yaxissel $x $ylist $newgdata"
     global viewDefault DEViseShapes curView
 
@@ -1274,7 +1264,7 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
 	set vname  [string trim $vname]
     } 
 
-#    puts "Before getSchema $tdata"
+    puts "Before getSchema $tdata"
 
     set schema [DEVise getSchema $tdata]
 #    puts "In MacroDefAutoActual, schema = $schema"
