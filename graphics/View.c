@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.54  1996/07/14 16:51:36  jussi
+  Added handling of special case where view is unmapped but is
+  requested to unhighlight as if the highlighting was still on.
+
   Revision 1.53  1996/07/13 17:25:38  jussi
   When view is iconified, statistics are collected but data
   is not drawn. Added ViewRecomputed() callback interface.
@@ -801,6 +805,7 @@ void View::DrawLabel()
     /* draw label */
     int labelX, labelY, labelWidth, labelHeight;
     GetLabelArea(labelX, labelY, labelWidth, labelHeight);
+    win->SetPattern(Pattern0);
     win->SetFgColor(GetBgColor());
     win->FillRect(labelX, labelY, labelWidth - 1, labelHeight - 1);
     win->SetFgColor(GetFgColor());
@@ -810,15 +815,16 @@ void View::DrawLabel()
     /* draw square with cross mark in top-left corner of view */
     int x, y, w, h;
     GetLabelArea(x, y, w, h);
+    win->SetPattern(Pattern0);
     win->SetFgColor(GetFgColor());
     win->AbsoluteLine(x, y, x + _label.extent - 1, y, 1);
-    win->AbsoluteLine(x + _label.extent-1, y,
-		      x + _label.extent-1, y + _label.extent-1, 1);
-    win->AbsoluteLine(x + _label.extent-1, y + _label.extent-1,
-		      x, y + _label.extent-1, 1);
-    win->AbsoluteLine(x, y + _label.extent-1, x, y, 1);
-    win->AbsoluteLine(x, y, x + _label.extent-1, y + _label.extent-1, 1);
-    win->AbsoluteLine(x + _label.extent-1, y, x, y + _label.extent-1, 1);
+    win->AbsoluteLine(x + _label.extent - 1, y,
+		      x + _label.extent - 1, y + _label.extent - 1, 1);
+    win->AbsoluteLine(x + _label.extent - 1, y + _label.extent - 1,
+		      x, y + _label.extent - 1, 1);
+    win->AbsoluteLine(x, y + _label.extent - 1, x, y, 1);
+    win->AbsoluteLine(x, y, x + _label.extent - 1, y + _label.extent - 1, 1);
+    win->AbsoluteLine(x + _label.extent - 1, y, x, y + _label.extent - 1, 1);
   }
 }
 
