@@ -2271,6 +2271,12 @@ Num Date        Status  Description
 			correctly passed back up to Tcl on the client side.
 			(rkw)
 
+581 04/21/00	OPEN	Monolithic devise won't run without catalog.tcl and
+			Querycatalog.tcl even though the devised will. (rkw)
+			(Do we even really use these files anymore?)
+
+582 04/25/00	OPEN	View help in the JavaScreen doesn't wrap lines. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
