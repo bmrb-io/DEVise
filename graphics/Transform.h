@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/06/15 14:12:21  jussi
+  Added yuc's 3D functions.
+
   Revision 1.5  1996/03/05 23:34:00  jussi
   Added 3D transformation functions.
 
@@ -413,26 +416,11 @@ public:
       _cartesian = false;
   } // end of PreMultiply()
 
-  // Theory: from Mirocomputer Graphics for the IBM PC
-  // by: Roy E. Myers, 1984, pp 156-163
   void SetViewMatrix (Camera camera) {
      double st = sin(camera._theta),
           ct = cos(camera._theta),
           sp = sin(camera._phi),
           cp = cos(camera._phi);
-
-	// 1st row
-     // _a00 = -st; _a01 = -ct * cp; _a02 = -ct * sp;    _a03 = 0.0;
-	// 2nd row
-     // _a10 =  ct; _a11 = -st * cp; _a12 = -st * sp;    _a13 = 0.0;
-	// 3rd row
-     // _a20 = 0.0; _a21 = sp;       _a22 = -cp;         _a23 = 0.0;
-	// 4th row
-	// original, w/ the addition translation as (-a, -b, -c)
-	// _a30 = -(camera.fy * ct) + (camera.fx * st);
-	// _a31 = camera.fx * cp * ct - camera.fz * sp + camera.fy * cp * st;
-	// _a32 = camera._rho + camera.fz * cp + camera.fx * ct * sp +
-	//	       camera.fy * sp * st;
 
 	// 1st row
      _a00 = ct; _a01 = -cp * st; _a02 = -sp * st; _a03 = 0.0;
@@ -521,5 +509,4 @@ private:
 };  // end of Transform3D
 
 #endif
-
 
