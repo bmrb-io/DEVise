@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+ * Revision 1.3  1995/11/25  01:20:21  jussi
+ * This code now uses Transform matrix operations to convert user/world
+ * coordinates to screen pixel coordinates. This is to avoid any future
+ * inconsistencies in how the different code locations compute the
+ * conversion. xPerPixel and yPerPixel are now obsolete coefficients.
+ *
   Revision 1.2  1995/09/05 22:16:21  jussi
   Added CVS header.
 */
@@ -32,10 +38,9 @@ class ViewScatter: public ViewGraph, private QueryCallback {
 public:
 
   ViewScatter(char *name, VisualFilter &initFilter,
-	      QueryProc *qp, 
-	      Color fg= BlackColor, Color bg = WhiteColor,
-	      AxisLabel *xAxis=NULL, AxisLabel *yAxis = NULL,
-	      Action *action=NULL);
+	      QueryProc *qp, Color fg = ForegroundColor,
+	      Color bg = BackgroundColor, AxisLabel *xAxis = NULL,
+	      AxisLabel *yAxis = NULL, Action *action = NULL);
   
   virtual void InsertMapping(TDataMap *map);
 

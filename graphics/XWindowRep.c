@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/01/30 00:04:17  jussi
+  Made code refer to ForegroundColor and BackgroundColor instead
+  of black and white.
+
   Revision 1.17  1996/01/17 22:40:22  jussi
   One more refinement.
 
@@ -1451,7 +1455,7 @@ void XWindowRep::DoPopup(int x, int y, int button)
     textWidth = MinMax::max(textWidth,
 			    XTextWidth(fontStruct, msgs[i], strlen(msgs[i])));
   }
-  textHeight = charHeight*numMsgs;
+  textHeight = charHeight * numMsgs;
   
   long bgnd = GetLocalColor(BackgroundColor);
   long fgnd = GetLocalColor(ForegroundColor);

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/29 18:26:36  jussi
+  Added FilterAboutToChange() to facilitate new cursor mechanism.
+  Also added the copyright notice.
+
   Revision 1.2  1995/09/05 21:12:34  jussi
   Added/updated CVS header.
 */
@@ -34,7 +38,7 @@ DefinePtrDList(DeviseCursorList, DeviseCursor *)
 
 class DeviseCursor : private ViewCallback {
 public:
-  DeviseCursor(char *name, VisualFlag flag, Color color = LightGrayColor);
+  DeviseCursor(char *name, VisualFlag flag, Color color = HighlightColor);
   virtual ~DeviseCursor();
 
   /* Set source view. Changing this view's visual filter

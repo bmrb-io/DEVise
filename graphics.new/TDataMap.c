@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/01/20 00:47:13  jussi
+  Disabled debugging, which I forgot to do in last check-in.
+
   Revision 1.8  1996/01/20 00:44:23  jussi
   Fixed problem when record size of GData is less than that of
   TData and adding a dynamic field to GData causes the record
@@ -114,7 +117,7 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
   _x = 0.0;
   _y = 0.0;
   _z = 0.0;
-  _color = BlackColor;
+  _color = ForegroundColor;
   _size = 1.0;
   _pattern = Pattern0;
   _orientation = 0.0;

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/27 16:26:23  jussi
+  Replaced RectXShapeID with constant 1 for now.
+
   Revision 1.3  1995/11/21 16:06:14  jussi
   Added copyright notice and cleaned up code a bit.
 
@@ -45,7 +48,7 @@ public:
     double attrs[2];
     attrs[0] = attrs[1] = 1.0;
     Mapping::SetDefaultShape(1, 2, attrs);
-    Mapping::SetDefaultColor(BlackColor);
+    Mapping::SetDefaultColor(ForegroundColor);
   }
   
   void Map(Stream *, void *rec, Symbol *symbol) {

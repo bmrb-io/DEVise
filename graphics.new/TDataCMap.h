@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/29 22:40:13  jussi
+  Cleaned up the code a bit.
+
   Revision 1.3  1995/12/28 19:52:11  jussi
   Small fixes to remove compiler warnings. Added copyright notice.
 
@@ -39,7 +42,7 @@ class Connector;
 class TDataCMap {
 public:
   TDataCMap() {
-    defaultColor = BlackColor;
+    defaultColor = ForegroundColor;
     defaultPattern = Pattern0;
     _shapeId = ContLineConnectorID;
     _numShapeAttrs = 0;
