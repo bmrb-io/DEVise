@@ -23,6 +23,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2000/07/14 21:13:01  wenger
+// Speeded up 3D GData processing by a factor of 2-3: improved the parser
+// used for GData; eliminated Z sorting for bonds-only 3D views; eliminated
+// DEViseAtomTypes for atoms used only to define bond ends; reduced string-
+// based processing; eliminated various unused variables, etc.
+//
 // Revision 1.7  2000/05/24 14:07:09  wenger
 // Cleaned up and commented 3D-related classes (DEViseCrystal, DEViseAtomType,
 // DEViseAtomInCrystal, DEVise3DLCS).
@@ -126,4 +132,5 @@ public class DEViseAtomInCrystal
         bondNumber++;
     }
 }
+
 
