@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/28 18:18:39  jussi
+  Removed warnings due to for loop variable scope.
+
   Revision 1.5  1995/12/28 17:50:26  jussi
   Small fixes to remove new compiler warnings.
 
@@ -31,6 +34,7 @@
 
 #include <string.h>
 #include <assert.h>
+#include <ctype.h>
 
 #include "TDataTapeInterp.h"
 #include "AttrList.h"
@@ -181,6 +185,18 @@ Boolean TDataTapeInterp::IsValid(char *line)
     return false;
   }
 	
+  for(int i = 0; i < numArgs; i++) {
+    AttrInfo *info = _attrList->Get(i);
+    if (info->type == IntAttr || info->type == DateAttr) {
+      if (!isdigit(args[i][0]))
+	return false;
+    } else if (info->type == FloatAttr || info->type == DoubleAttr) {
+      if (!isdigit(args[i][0]) && args[i][0] != '.'
+	  && args[i][0] != '-' && args[i][0] != '+')
+	return false;
+    }
+  }
+
   return true;
 }
 

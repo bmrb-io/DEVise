@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/28 19:48:13  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.5  1995/11/22 17:51:01  jussi
   Added missing DoubleAttr case in Decode().
 
@@ -31,6 +34,7 @@
 
 #include <string.h>
 #include <assert.h>
+#include <ctype.h>
 
 #include "TDataAsciiInterp.h"
 #include "AttrList.h"
@@ -66,9 +70,6 @@ TDataAsciiInterpClassInfo::TDataAsciiInterpClassInfo(
 
 TDataAsciiInterpClassInfo::~TDataAsciiInterpClassInfo()
 {
-  /*
-     printf("TDataAsciiInterpClassInfo: destructor\n");
-  */
   if (_tdata)
     delete _tdata;
 }
@@ -157,8 +158,8 @@ TDataAsciiInterp::TDataAsciiInterp(char *name, int recSize, AttrList *attrs,
     AttrInfo *info = _attrList->Get(i);
     if (info->isComposite)
       hasComposite = true;
-    if (info->hasMatchVal){
-      if (_numMatchingAttrs >= MAX_MATCHING_ATTRS){
+    if (info->hasMatchVal) {
+      if (_numMatchingAttrs >= MAX_MATCHING_ATTRS) {
 	fprintf(stderr,"TDataASciiInterp: too many matching attrs\n");
 	Exit::DoExit(2);
       }
@@ -171,9 +172,6 @@ TDataAsciiInterp::TDataAsciiInterp(char *name, int recSize, AttrList *attrs,
 
 TDataAsciiInterp::~TDataAsciiInterp()
 {
-  /*
-     printf("TDataAsciiInterp: destructor\n");
-  */
 }
 
 Boolean TDataAsciiInterp::IsValid(char *line)
@@ -189,6 +187,18 @@ Boolean TDataAsciiInterp::IsValid(char *line)
     return false;
   }
 	
+  for(int i = 0; i < numArgs; i++) {
+    AttrInfo *info = _attrList->Get(i);
+    if (info->type == IntAttr || info->type == DateAttr) {
+      if (!isdigit(args[i][0]))
+	return false;
+    } else if (info->type == FloatAttr || info->type == DoubleAttr) {
+      if (!isdigit(args[i][0]) && args[i][0] != '.'
+	  && args[i][0] != '-' && args[i][0] != '+')
+	return false;
+    }
+  }
+
   return true;
 }
 
