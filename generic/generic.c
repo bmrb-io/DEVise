@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.60  1998/12/15 14:54:44  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.59  1998/11/04 20:33:34  wenger
   Multiple string tables partly working -- loading and saving works, one
   table per mapping works; need multiple tables per mapping, API and GUI,
@@ -308,7 +314,12 @@ static time_t GetTime(struct tm &now)
       now.tm_mon = 0;
     }
 
-    if (now.tm_year < 70) {
+    // Possible range of times is 00:00:00 UTC, January 1, 1970 to
+    // 03:14:07 UTC, January 19, 2038.
+    if (now.tm_year < 38) {
+      // Assume date is after 1999...
+      now.tm_year += 100;
+    } else if (now.tm_year < 70) {
 #if 0
       sprintf(errBuf, "Illegal year value %d; set to (19)70", now.tm_year);
       reportErrNosys(errBuf);
