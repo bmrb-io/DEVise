@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.91  1999/06/30 17:38:49  wenger
+  Data color of parent view's mapping (if specified) now controls the
+  background color of view symbols; defined constant strings for GData
+  attribute values to avoid potential problems.
+
   Revision 1.90  1999/06/29 20:24:03  wenger
   When sending GData to a file or socket, strings including the separator
   character are now surrounded by braces; DEVise color numbers are converted
@@ -492,10 +497,12 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
 	 "attrFlag 0x%lx\n", this, numDimensions, cmdFlag, attrFlag);
 #endif
 
+  _internalCmd = new MappingInterpCmd();
   _tclCmd = new MappingInterpCmd();
   _tdata = tdata; // saved so we can get it's attribute list
   _simpleCmd = new MappingSimpleCmd();
   _pNativeExpr = NULL;
+  _parentValue = CopyString("0.0");
 
   if (!_shapes) {
     /* Init shapes */
@@ -536,8 +543,10 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
 //--------------------------------------------------------------------------
 MappingInterp::~MappingInterp()
 {
+  delete _internalCmd;
   delete _tclCmd;
   delete _simpleCmd;
+  delete _parentValue;
 
   delete _offsets;
   SetGDataOffset(NULL);
@@ -634,35 +643,35 @@ AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)
     switch (which_attr)
     {
       case MappingCmd_X:
-	simpleCmd = ConvertSimpleCmd(_cmd->xCmd, _tdata->GetAttrList(), entry,
+	simpleCmd = ConvertSimpleCmd(_internalCmd->xCmd, _tdata->GetAttrList(), entry,
 		attrType, isSorted, GetStringTable(TableX));
 	break;
       case MappingCmd_Y:
-	simpleCmd = ConvertSimpleCmd(_cmd->yCmd, _tdata->GetAttrList(), entry,
+	simpleCmd = ConvertSimpleCmd(_internalCmd->yCmd, _tdata->GetAttrList(), entry,
 		attrType, isSorted, GetStringTable(TableY));
 	break;
       case MappingCmd_Z:
-	simpleCmd = ConvertSimpleCmd(_cmd->zCmd, _tdata->GetAttrList(), entry,
+	simpleCmd = ConvertSimpleCmd(_internalCmd->zCmd, _tdata->GetAttrList(), entry,
 		attrType, isSorted, GetStringTable(TableZ));
 	break;
       case MappingCmd_Color:
-	simpleCmd = ConvertSimpleCmd(_cmd->colorCmd, _tdata->GetAttrList(),
+	simpleCmd = ConvertSimpleCmd(_internalCmd->colorCmd, _tdata->GetAttrList(),
 		entry, attrType, isSorted, GetStringTable(TableGen));
 	break;
       case MappingCmd_Size:
-	simpleCmd = ConvertSimpleCmd(_cmd->sizeCmd, _tdata->GetAttrList(),
+	simpleCmd = ConvertSimpleCmd(_internalCmd->sizeCmd, _tdata->GetAttrList(),
 		entry, attrType, isSorted, GetStringTable(TableGen));
 	break;
       case MappingCmd_Pattern:
-	simpleCmd = ConvertSimpleCmd(_cmd->patternCmd, _tdata->GetAttrList(),
+	simpleCmd = ConvertSimpleCmd(_internalCmd->patternCmd, _tdata->GetAttrList(),
 		entry, attrType, isSorted, GetStringTable(TableGen));
 	break;
       case MappingCmd_Orientation:
-	simpleCmd = ConvertSimpleCmd(_cmd->orientationCmd, _tdata->GetAttrList(),
+	simpleCmd = ConvertSimpleCmd(_internalCmd->orientationCmd, _tdata->GetAttrList(),
 		entry, attrType, isSorted, GetStringTable(TableGen));
 	break;
       case MappingCmd_Shape:
-	simpleCmd = ConvertSimpleCmd(_cmd->shapeCmd, _tdata->GetAttrList(),
+	simpleCmd = ConvertSimpleCmd(_internalCmd->shapeCmd, _tdata->GetAttrList(),
 		entry, attrType, isSorted, GetStringTable(TableGen));
 	break;
       default:
@@ -747,7 +756,7 @@ AttrInfo *MappingInterp::MapShapeAttr2TAttr(int i)
 
     StringStorage *stringTable = GetStringTable(TableGen);
     
-    simpleCmd = ConvertSimpleCmd(_cmd->shapeAttrCmd[i], _tdata->GetAttrList(),
+    simpleCmd = ConvertSimpleCmd(_internalCmd->shapeAttrCmd[i], _tdata->GetAttrList(),
 		entry, attrType, isSorted, stringTable);
     
     if (simpleCmd && entry.cmdType == MappingSimpleCmdEntry::AttrCmd) {
@@ -847,6 +856,21 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
   FindBoundingBoxes(gdataPtr, numRecs);
 }
 
+void
+MappingInterp::SetParentValue(const char *value)
+{
+#if defined(DEBUG)
+  printf("MappingInterp(%s)::SetParentValue(%s)\n", GetName(), value);
+#endif
+
+  delete _parentValue;
+  if (!value) value = "0.0";
+  _parentValue = CopyString(value);
+
+  ChangeCmd(_cmd, _cmdFlag, _cmdAttrFlag, NULL, 0);
+}
+
+//--------------------------------------------------------------------------
 static int
 InsertAttr(AttrList *attrList, int &attrNum, const char *name, int &offset,
     int size, AttrType attrType, Boolean isSorted)
@@ -876,6 +900,8 @@ AttrList *MappingInterp::InitCmd(char *name, int &gRecSize)
   StringStorage *genStringTable = GetStringTable(TableGen);
 
   AttrList *attrList = new AttrList(name);
+
+  SubstituteParentValue();
 
   if (InitCmdSimple(xStringTable, yStringTable, zStringTable, genStringTable,
       attrList, gRecSize)) {
@@ -910,6 +936,18 @@ AttrList *MappingInterp::InitCmd(char *name, int &gRecSize)
 #endif
   
   return attrList;
+}
+
+//--------------------------------------------------------------------------
+void
+MappingInterp::SubstituteParentValue()
+{
+  *_internalCmd = *_cmd;
+
+  const char *parentValStr = "#parentVal";
+
+  if (!strcmp(_internalCmd->xCmd, parentValStr)) _internalCmd->xCmd = _parentValue;
+  if (!strcmp(_internalCmd->yCmd, parentValStr)) _internalCmd->yCmd = _parentValue;
 }
 
 //--------------------------------------------------------------------------
@@ -954,7 +992,7 @@ MappingInterp::InitCmdSimple(StringStorage *xStringTable,
   ShapeID shape = (ShapeID)9999; // invalid unless shape is constant
 
   if (_cmdFlag & MappingCmd_X) {
-    if (!ConvertSimpleCmd(_cmd->xCmd, _tdata->GetAttrList(), _simpleCmd->xCmd,
+    if (!ConvertSimpleCmd(_internalCmd->xCmd, _tdata->GetAttrList(), _simpleCmd->xCmd,
 	    attrType, isSorted, xStringTable)) {
       return false;
     } else if (_simpleCmd->xCmd.cmdType == MappingSimpleCmdEntry::ConstCmd &&
@@ -970,7 +1008,7 @@ MappingInterp::InitCmdSimple(StringStorage *xStringTable,
   }
 
   if (_cmdFlag & MappingCmd_Y) {
-    if (!ConvertSimpleCmd(_cmd->yCmd, _tdata->GetAttrList(),
+    if (!ConvertSimpleCmd(_internalCmd->yCmd, _tdata->GetAttrList(),
 		_simpleCmd->yCmd, attrType, isSorted, yStringTable)) {
       return false;
     } else if (_simpleCmd->yCmd.cmdType == MappingSimpleCmdEntry::ConstCmd &&
@@ -986,7 +1024,7 @@ MappingInterp::InitCmdSimple(StringStorage *xStringTable,
   }
 
   if (_cmdFlag & MappingCmd_Z) {
-    if (!ConvertSimpleCmd(_cmd->zCmd, _tdata->GetAttrList(),
+    if (!ConvertSimpleCmd(_internalCmd->zCmd, _tdata->GetAttrList(),
 		_simpleCmd->zCmd, attrType, isSorted, zStringTable)) {
       return false;
     } else if (_simpleCmd->zCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
@@ -1003,7 +1041,7 @@ MappingInterp::InitCmdSimple(StringStorage *xStringTable,
   // Color command
   if (_cmdFlag & MappingCmd_Color)
   {
-    if (!ConvertSimpleCmd(_cmd->colorCmd, _tdata->GetAttrList(),
+    if (!ConvertSimpleCmd(_internalCmd->colorCmd, _tdata->GetAttrList(),
 		_simpleCmd->colorCmd, attrType, isSorted, genStringTable)) {
       return false;
     } else if (_simpleCmd->colorCmd.cmdType ==
@@ -1021,7 +1059,7 @@ MappingInterp::InitCmdSimple(StringStorage *xStringTable,
   }
 
   if (_cmdFlag & MappingCmd_Size) {
-    if (!ConvertSimpleCmd(_cmd->sizeCmd, _tdata->GetAttrList(),
+    if (!ConvertSimpleCmd(_internalCmd->sizeCmd, _tdata->GetAttrList(),
 		_simpleCmd->sizeCmd, attrType, isSorted, genStringTable)) {
       return false;
     } else if (_simpleCmd->sizeCmd.cmdType ==
@@ -1037,7 +1075,7 @@ MappingInterp::InitCmdSimple(StringStorage *xStringTable,
   }
 
   if (_cmdFlag & MappingCmd_Pattern) {
-    if (!ConvertSimpleCmd(_cmd->patternCmd, _tdata->GetAttrList(),
+    if (!ConvertSimpleCmd(_internalCmd->patternCmd, _tdata->GetAttrList(),
 		_simpleCmd->patternCmd, attrType, isSorted, genStringTable)) {
       return false;
     } else if (_simpleCmd->patternCmd.cmdType ==
@@ -1053,7 +1091,7 @@ MappingInterp::InitCmdSimple(StringStorage *xStringTable,
   }
 
   if (_cmdFlag & MappingCmd_Shape) {
-    if (!ConvertSimpleCmd(_cmd->shapeCmd, _tdata->GetAttrList(),
+    if (!ConvertSimpleCmd(_internalCmd->shapeCmd, _tdata->GetAttrList(),
 		_simpleCmd->shapeCmd, attrType, isSorted, genStringTable)) {
       return false;
     } else if (_simpleCmd->shapeCmd.cmdType ==
@@ -1071,7 +1109,7 @@ MappingInterp::InitCmdSimple(StringStorage *xStringTable,
   }
 
   if (_cmdFlag & MappingCmd_Orientation) {
-    if (!ConvertSimpleCmd(_cmd->orientationCmd,
+    if (!ConvertSimpleCmd(_internalCmd->orientationCmd,
 			  _tdata->GetAttrList(), _simpleCmd->orientationCmd, attrType,
 			  isSorted, genStringTable)) {
       return false;
@@ -1091,7 +1129,7 @@ MappingInterp::InitCmdSimple(StringStorage *xStringTable,
   for(int shapeAttr = 0; shapeAttr < MAX_SHAPE_ATTRS; shapeAttr++) {
     if (_cmdAttrFlag & (1 << shapeAttr)) {
       _maxGDataShapeAttrNum = shapeAttr;
-      if (!ConvertSimpleCmd(_cmd->shapeAttrCmd[shapeAttr],
+      if (!ConvertSimpleCmd(_internalCmd->shapeAttrCmd[shapeAttr],
 	      _tdata->GetAttrList(), _simpleCmd->shapeAttrCmd[shapeAttr], attrType,
 		  isSorted, genStringTable)) {
         return false;
@@ -1149,41 +1187,41 @@ MappingInterp::InitCmdComplex(StringStorage *xStringTable,
   double constVal;
 
   if (_cmdFlag & MappingCmd_X) {
-    if (IsConstCmd(_cmd->xCmd, attrList, constVal, attrType) &&
+    if (IsConstCmd(_internalCmd->xCmd, attrList, constVal, attrType) &&
 		!FORCE_X_INTO_GDATA) {
       SetDefaultX((Coord)constVal);
       _tclCmd->xCmd = "";
       attrList->InsertAttr(attrNum++, gdataXName, -1, sizeof(double),
                            attrType, false, NULL, false, false);
     } else {
-      _tclCmd->xCmd = ConvertCmd(_cmd->xCmd, attrType, isSorted);
+      _tclCmd->xCmd = ConvertCmd(_internalCmd->xCmd, attrType, isSorted);
       _offsets->_xOffset = InsertAttr(attrList, attrNum, gdataXName,
               offset, sizeof(Coord), attrType, isSorted);
     }
   }
 
   if (_cmdFlag & MappingCmd_Y) {
-    if (IsConstCmd(_cmd->yCmd, attrList, constVal, attrType) &&
+    if (IsConstCmd(_internalCmd->yCmd, attrList, constVal, attrType) &&
 		!FORCE_Y_INTO_GDATA) {
       SetDefaultY((Coord)constVal);
       _tclCmd->yCmd = "";
       attrList->InsertAttr(attrNum++, gdataYName, -1, sizeof(double), attrType,
 			   false, NULL, false, false);
     } else {
-      _tclCmd->yCmd = ConvertCmd(_cmd->yCmd, attrType, isSorted);
+      _tclCmd->yCmd = ConvertCmd(_internalCmd->yCmd, attrType, isSorted);
       _offsets->_yOffset = InsertAttr(attrList, attrNum, gdataYName, offset,
 	      sizeof(Coord), attrType, isSorted);
     }
   }
 
   if (_cmdFlag & MappingCmd_Z) {
-    if (IsConstCmd(_cmd->zCmd, attrList, constVal, attrType)) {
+    if (IsConstCmd(_internalCmd->zCmd, attrList, constVal, attrType)) {
       SetDefaultZ((Coord)constVal);
       _tclCmd->zCmd = "";
       attrList->InsertAttr(attrNum++, gdataZName, -1, sizeof(double), attrType,
 			   false, NULL, false, false);
     } else {
-      _tclCmd->zCmd = ConvertCmd(_cmd->zCmd, attrType, isSorted);
+      _tclCmd->zCmd = ConvertCmd(_internalCmd->zCmd, attrType, isSorted);
       _offsets->_zOffset = InsertAttr(attrList, attrNum, gdataZName, offset,
 	      sizeof(Coord), attrType, isSorted);
     }
@@ -1191,7 +1229,7 @@ MappingInterp::InitCmdComplex(StringStorage *xStringTable,
 
 // Color command
   if (_cmdFlag & MappingCmd_Color) {
-    if (IsConstCmd(_cmd->colorCmd, attrList, constVal, attrType)) {
+    if (IsConstCmd(_internalCmd->colorCmd, attrList, constVal, attrType)) {
       PColorID	pcid = (PColorID)constVal;
 
       // Coloring in TDataMap is apparently used to store color if
@@ -1201,46 +1239,46 @@ MappingInterp::InitCmdComplex(StringStorage *xStringTable,
       attrList->InsertAttr(attrNum++, gdataColorName, -1, sizeof(double),
 	     attrType, false, NULL, false, false);
     } else {
-      _tclCmd->colorCmd = ConvertCmd(_cmd->colorCmd, attrType, isSorted);
+      _tclCmd->colorCmd = ConvertCmd(_internalCmd->colorCmd, attrType, isSorted);
       _offsets->_colorOffset = InsertAttr(attrList, attrNum, gdataColorName,
 	      offset, sizeof(PColorID), attrType, isSorted);
 	}
   }
 
   if (_cmdFlag & MappingCmd_Size) {
-    if (IsConstCmd(_cmd->sizeCmd, attrList, constVal, attrType)) {
+    if (IsConstCmd(_internalCmd->sizeCmd, attrList, constVal, attrType)) {
       SetDefaultSize(constVal);
       _tclCmd->sizeCmd = "";
       attrList->InsertAttr(attrNum++, gdataSizeName, -1,
 	           sizeof(double), attrType, false, NULL, false, false);
     } else {
-      _tclCmd->sizeCmd = ConvertCmd(_cmd->sizeCmd, attrType, isSorted);
+      _tclCmd->sizeCmd = ConvertCmd(_internalCmd->sizeCmd, attrType, isSorted);
       _offsets->_sizeOffset = InsertAttr(attrList, attrNum, gdataSizeName,
 	      offset, sizeof(Coord), attrType, isSorted);
     }
   }
 
   if (_cmdFlag & MappingCmd_Pattern) {
-    if (IsConstCmd(_cmd->patternCmd, attrList, constVal, attrType)) {
+    if (IsConstCmd(_internalCmd->patternCmd, attrList, constVal, attrType)) {
       SetDefaultPattern((Pattern)constVal);
       _tclCmd->patternCmd = "";
       attrList->InsertAttr(attrNum++, gdataPatternName, -1, sizeof(double),
 	           attrType, false, NULL, false, false);
     } else {
-      _tclCmd->patternCmd = ConvertCmd(_cmd->patternCmd, attrType, isSorted);
+      _tclCmd->patternCmd = ConvertCmd(_internalCmd->patternCmd, attrType, isSorted);
       _offsets->_patternOffset = InsertAttr(attrList, attrNum,
 	      gdataPatternName, offset, sizeof(Pattern), attrType, isSorted);
     }
   }
 
   if (_cmdFlag & MappingCmd_Orientation) {
-    if (IsConstCmd(_cmd->orientationCmd, attrList, constVal, attrType)) {
+    if (IsConstCmd(_internalCmd->orientationCmd, attrList, constVal, attrType)) {
       SetDefaultOrientation(constVal);
       _tclCmd->orientationCmd = "";
       attrList->InsertAttr(attrNum++, gdataOrientationName, -1, sizeof(double),
 	      attrType, false, NULL, false, false);
     } else {
-      _tclCmd->orientationCmd = ConvertCmd(_cmd->orientationCmd, attrType, 
+      _tclCmd->orientationCmd = ConvertCmd(_internalCmd->orientationCmd, attrType, 
 					   isSorted);
       _offsets->_orientationOffset = InsertAttr(attrList, attrNum,
 	      gdataOrientationName, offset, sizeof(Coord), attrType, isSorted);
@@ -1248,7 +1286,7 @@ MappingInterp::InitCmdComplex(StringStorage *xStringTable,
   }
 
   if (_cmdFlag & MappingCmd_Shape) {
-    if (IsConstCmd(_cmd->shapeCmd, attrList, constVal, attrType)) {
+    if (IsConstCmd(_internalCmd->shapeCmd, attrList, constVal, attrType)) {
       shape = (ShapeID)constVal;
       if (shape >= MaxInterpShapes) shape = 0;
       SetDefaultShape(shape);
@@ -1256,7 +1294,7 @@ MappingInterp::InitCmdComplex(StringStorage *xStringTable,
       attrList->InsertAttr(attrNum++, gdataShapeName, -1, sizeof(double),
 	           attrType, false, NULL, false, false);
     } else {
-      _tclCmd->shapeCmd = ConvertCmd(_cmd->shapeCmd, attrType, isSorted);
+      _tclCmd->shapeCmd = ConvertCmd(_internalCmd->shapeCmd, attrType, isSorted);
       _offsets->_shapeOffset = InsertAttr(attrList, attrNum, gdataShapeName,
 	      offset, sizeof(ShapeID), attrType, isSorted);
     }
@@ -1268,7 +1306,7 @@ MappingInterp::InitCmdComplex(StringStorage *xStringTable,
     sprintf(attrName, "%s%d", gdataShapeAttrName, shapeAttr);
     if (_cmdAttrFlag & (1 << shapeAttr)) {
       _maxGDataShapeAttrNum = shapeAttr;
-      if (IsConstCmd(_cmd->shapeAttrCmd[shapeAttr], attrList, constVal,
+      if (IsConstCmd(_internalCmd->shapeAttrCmd[shapeAttr], attrList, constVal,
 	      attrType)) {
 	    SetDefaultShapeAttr(shapeAttr,constVal);
 	    _tclCmd->shapeAttrCmd[shapeAttr] = "";
@@ -1276,7 +1314,7 @@ MappingInterp::InitCmdComplex(StringStorage *xStringTable,
 			     attrType, false, NULL, false, false);
       } else {
 	    _tclCmd->shapeAttrCmd[shapeAttr] = 
-	        ConvertCmd(_cmd->shapeAttrCmd[shapeAttr], attrType, isSorted);
+	        ConvertCmd(_internalCmd->shapeAttrCmd[shapeAttr], attrType, isSorted);
         _offsets->_shapeAttrOffset[shapeAttr] = InsertAttr(attrList, attrNum,
 		    attrName, offset, sizeof(ShapeAttr), attrType, isSorted);
       }
@@ -1578,56 +1616,56 @@ void MappingInterp::PrintCmd()
     /* simple command */
     printf("simple command\n");
     if (_cmdFlag & MappingCmd_X) {
-      printf("%s: %s --> ", gdataXName, _cmd->xCmd);
+      printf("%s: %s --> ", gdataXName, _internalCmd->xCmd);
       PrintSimpleCmdEntry(&_simpleCmd->xCmd);
       printf("\n");
     }
     
     if (_cmdFlag & MappingCmd_Y) {
-      printf("%s: %s --> ", gdataYName, _cmd->yCmd);
+      printf("%s: %s --> ", gdataYName, _internalCmd->yCmd);
       PrintSimpleCmdEntry(&_simpleCmd->yCmd);
       printf("\n");
     }
     
     if (_cmdFlag & MappingCmd_Z) {
-      printf("%s: %s --> ", gdataZName, _cmd->zCmd);
+      printf("%s: %s --> ", gdataZName, _internalCmd->zCmd);
       PrintSimpleCmdEntry(&_simpleCmd->zCmd);
       printf("\n");
     }
 
     if (_cmdFlag & MappingCmd_Color) {
-      printf("%s: %s --> ", gdataColorName, _cmd->colorCmd);
+      printf("%s: %s --> ", gdataColorName, _internalCmd->colorCmd);
       PrintSimpleCmdEntry(&_simpleCmd->colorCmd);
       printf("\n");
     }
     
     if (_cmdFlag & MappingCmd_Size) {
-      printf("%s: %s --> ", gdataSizeName, _cmd->sizeCmd);
+      printf("%s: %s --> ", gdataSizeName, _internalCmd->sizeCmd);
       PrintSimpleCmdEntry(&_simpleCmd->sizeCmd);
       printf("\n");
 		}
     
     if (_cmdFlag & MappingCmd_Pattern) {
-      printf("%s: %s --> ", gdataPatternName, _cmd->patternCmd);
+      printf("%s: %s --> ", gdataPatternName, _internalCmd->patternCmd);
       PrintSimpleCmdEntry(&_simpleCmd->patternCmd);
       printf("\n");
     }
     
     if (_cmdFlag & MappingCmd_Orientation) {
-      printf("%s: %s --> ", gdataOrientationName, _cmd->orientationCmd);
+      printf("%s: %s --> ", gdataOrientationName, _internalCmd->orientationCmd);
       PrintSimpleCmdEntry(&_simpleCmd->orientationCmd);
       printf("\n");
     }
 
     if (_cmdFlag & MappingCmd_Shape) {
-      printf("%s: %s --> ", gdataShapeName, _cmd->shapeCmd);
+      printf("%s: %s --> ", gdataShapeName, _internalCmd->shapeCmd);
       PrintSimpleCmdEntry(&_simpleCmd->shapeCmd);
       printf("\n");
     }
 
     for(int j = 0; j < MAX_SHAPE_ATTRS; j++) {
       if (_cmdAttrFlag & (1 << j)) {
-	printf("%s%d: %s --> ", gdataShapeAttrName, j, _cmd->shapeAttrCmd[j]);
+	printf("%s%d: %s --> ", gdataShapeAttrName, j, _internalCmd->shapeAttrCmd[j]);
 	PrintSimpleCmdEntry(&_simpleCmd->shapeAttrCmd[j]);
 	printf("\n");
       }
@@ -1637,37 +1675,37 @@ void MappingInterp::PrintCmd()
 
     printf("complex command\n");
     if (_cmdFlag & MappingCmd_X)
-      printf("%s: %s --> %s\n", gdataXName, _cmd->xCmd, _tclCmd->xCmd);
+      printf("%s: %s --> %s\n", gdataXName, _internalCmd->xCmd, _tclCmd->xCmd);
     
     if (_cmdFlag & MappingCmd_Y)
-      printf("%s: %s --> %s\n", gdataYName, _cmd->yCmd, _tclCmd->yCmd);
+      printf("%s: %s --> %s\n", gdataYName, _internalCmd->yCmd, _tclCmd->yCmd);
     
     if (_cmdFlag & MappingCmd_Z)
-      printf("%s: %s --> %s\n", gdataZName, _cmd->zCmd, _tclCmd->zCmd);
+      printf("%s: %s --> %s\n", gdataZName, _internalCmd->zCmd, _tclCmd->zCmd);
     
     if (_cmdFlag & MappingCmd_Color)
-      printf("%s: %s --> %s\n", gdataColorName, _cmd->colorCmd,
+      printf("%s: %s --> %s\n", gdataColorName, _internalCmd->colorCmd,
 	      _tclCmd->colorCmd);
     
     if (_cmdFlag & MappingCmd_Size)
-      printf("%s: %s --> %s\n", gdataSizeName, _cmd->sizeCmd,
+      printf("%s: %s --> %s\n", gdataSizeName, _internalCmd->sizeCmd,
 	      _tclCmd->sizeCmd);
 
     if (_cmdFlag & MappingCmd_Pattern)
-      printf("%s: %s --> %s\n", gdataPatternName, _cmd->patternCmd,
+      printf("%s: %s --> %s\n", gdataPatternName, _internalCmd->patternCmd,
 	      _tclCmd->patternCmd);
 
     if (_cmdFlag & MappingCmd_Orientation)
-      printf("%s: %s --> %s\n", gdataOrientationName, _cmd->orientationCmd,
+      printf("%s: %s --> %s\n", gdataOrientationName, _internalCmd->orientationCmd,
 	     _tclCmd->orientationCmd);
 
     if (_cmdFlag & MappingCmd_Shape)
-      printf("%s: %s --> %s\n", gdataShapeName, _cmd->shapeCmd,
+      printf("%s: %s --> %s\n", gdataShapeName, _internalCmd->shapeCmd,
 	      _tclCmd->shapeCmd);
 
     for(int j = 0; j < MAX_SHAPE_ATTRS; j++) {
       if (_cmdAttrFlag & (1 << j))
-	printf("%s%d: %s --> %s\n", gdataShapeAttrName, j, _cmd->shapeAttrCmd[j],
+	printf("%s%d: %s --> %s\n", gdataShapeAttrName, j, _internalCmd->shapeAttrCmd[j],
 	       _tclCmd->shapeAttrCmd[j]);
     }
   }

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1999/06/22 18:30:56  wenger
+  Visual filter values for view symbols can now be specified in the parent
+  view's mapping.
+
   Revision 1.8  1999/05/28 16:32:48  wenger
   Finished cleaning up bounding-box-related code except for PolyLineFile
   symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
@@ -83,6 +87,9 @@ private:
 
   static PileStack *GetPile(TDataMap *map, AttrList *attrList,
       StringStorage *stringTable, char *gdata);
+
+  static void SetChildValue(TDataMap *map, AttrList *attrList,
+      StringStorage *stringTable, char *gdata, ViewGraph *viewsym);
 
   static void SetFilter(TDataMap *map, AttrList *attrList,
       StringStorage *stringTable, char *gdata, ViewGraph *viewsym);

@@ -126,6 +126,7 @@ VIEW - a view displayed as a symbol within the parent view
         6) (optional) view sym filter y low
         7) (optional) view sym filter x high
         8) (optional) view sym filter y high
+        9) (optional) value for child view's mapping
 
 TEXT DATA LABEL - some variation of text
     Attrs:

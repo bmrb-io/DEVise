@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.20  1999/06/30 17:38:51  wenger
+  Data color of parent view's mapping (if specified) now controls the
+  background color of view symbols; defined constant strings for GData
+  attribute values to avoid potential problems.
+
   Revision 1.19  1999/06/22 18:33:28  wenger
   Visual filter values for view symbols can now be specified in the parent
   view's mapping.
@@ -284,6 +289,10 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     // Get the specified PileStack object, if any.
     PileStack *ps = GetPile(map, attrList, stringTable, gdata);
 
+    // If a child view value is specified, set this value in the child
+    // view's mapping.
+    SetChildValue(map, attrList, stringTable, gdata, viewsym);
+
     // Set the view symbol's visual filter if filter values are specified in
     // the parent view's mapping.
     SetFilter(map, attrList, stringTable, gdata, viewsym);
@@ -323,7 +332,7 @@ void
 FullMapping_ViewShape::SetTData(TDataMap *map, AttrList *attrList,
     StringStorage *stringTable, char *gdata, ViewGraph *viewsym)
 {
-  AttrInfo *info = attrList->Find("shapeAttr_3");
+  AttrInfo *info = attrList->Find(gdataShapeAttr3Name);
   if (info && info->type == StringAttr) {
     int key = (int)map->GetShapeAttr3(gdata);
 
@@ -343,7 +352,7 @@ FullMapping_ViewShape::GetPile(TDataMap *map, AttrList *attrList,
 {
   // Figure out whether anything is specified for shapeAttr_4.
   PileStack *ps = NULL;
-  AttrInfo *info = attrList->Find("shapeAttr_4");
+  AttrInfo *info = attrList->Find(gdataShapeAttr4Name);
   if (info && info->type == StringAttr) {
     int key = (int)map->GetShapeAttr4(gdata);
 
@@ -361,6 +370,39 @@ FullMapping_ViewShape::GetPile(TDataMap *map, AttrList *attrList,
   }
 
   return ps;
+}
+
+void
+FullMapping_ViewShape::SetChildValue(TDataMap *map, AttrList *attrList,
+    StringStorage *stringTable, char *gdata, ViewGraph *viewsym)
+{
+#if defined(DEBUG)
+  printf("FullMapping_ViewShape::SetChildValue(%s)\n", viewsym->GetName());
+#endif
+
+  AttrInfo *info = attrList->Find(gdataShapeAttr9Name);
+  if (info) {
+    char *mapStr = NULL;
+    char valBuf[256];
+    if (info->type == StringAttr) {
+      int key = (int)map->GetShapeAttr(gdata, 9);
+
+      int code = stringTable->Lookup(key, mapStr);
+      if (code < 0) {
+        reportErrNosys("Can't find mapStr in string table");
+#if defined(DEBUG)
+      } else {
+        printf("mapStr = <%s>\n", mapStr);
+#endif
+      }
+    } else {
+      sprintf(valBuf, "%g", map->GetShapeAttr(gdata, 9));
+      mapStr = valBuf;
+    }
+
+    TDataMap *map = viewsym->GetFirstMap();
+    map->SetParentValue(mapStr);
+  }
 }
 
 void
@@ -413,7 +455,7 @@ FullMapping_ViewShape::ShapeAttrToFilterVal(TDataMap *map, AttrList *attrList,
   Boolean gotValue = false;
 
   char attrName[128];
-  sprintf(attrName, "shapeAttr_%d", attrNum);
+  sprintf(attrName, "%s%d", gdataShapeAttrName, attrNum);
   AttrInfo *info = attrList->Find(attrName);
   if (info) {
     if (info->type == StringAttr) {

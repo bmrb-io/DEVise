@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.48  1999/05/28 16:32:45  wenger
+  Finished cleaning up bounding-box-related code except for PolyLineFile
+  symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
+  drawing of Polyline symbols.
+
   Revision 1.47  1999/05/27 17:45:26  wenger
   Lots of cleanup of MappingInterp code.
 
@@ -348,6 +353,8 @@ public:
   /* Get the AttrInfo for shape attribute i */
   virtual AttrInfo *MapShapeAttr2TAttr(int i);
 
+  virtual void SetParentValue(const char *value);
+
 
 protected:	
   /* convert from Tdata to Gdata. buf contains buffer for data. */
@@ -359,6 +366,8 @@ private:
   /* Initialize command by converting _cmd into _tclCmd,
      and initializing _tdataFlag */
   AttrList *InitCmd(char *name, int &gRecSize);
+
+  void SubstituteParentValue();
 
   void InitOffsets();
 
@@ -421,6 +430,7 @@ private:
 
   /* command for the mapping and the associated flags */
   MappingInterpCmd *_cmd;
+  MappingInterpCmd *_internalCmd; // after parent value substitution
   MappingInterpCmd *_tclCmd;     /* actual tcl command used */
   MappingSimpleCmd *_simpleCmd;  /* simple command */
   Boolean _isSimpleCmd;          /* true if _simpleCmd, otherwise _tclCmd */
@@ -444,6 +454,8 @@ private:
   CGraphicExpr *_pNativeExpr;  
 
   TData *_tdata;
+
+  char *_parentValue;
 };
 
 #endif

@@ -15,6 +15,10 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.51  1999/06/22 18:31:03  wenger
+#       Visual filter values for view symbols can now be specified in the parent
+#       view's mapping.
+#
 #       Revision 1.50  1999/06/16 18:28:40  wenger
 #       Fixed bug 499 (problem with 'Next in Pile' not working for piled view
 #       symbols).
@@ -350,6 +354,9 @@ proc BringUpMappingDialog { w curview } {
 				-command " editExpression $itemname
 			               UpdateShapeAttrs $w {} "
 			$w.mapping.value.p$itemname.menu add command \
+				-label "Parent Value" \
+				-command "set mappingValue$itemname {#parentVal}"
+			$w.mapping.value.p$itemname.menu add command \
 				-label "Clear" \
 				-command "set mappingValue$itemname {}"
 		} else {
@@ -358,6 +365,9 @@ proc BringUpMappingDialog { w curview } {
 			$w.mapping.value.p$itemname.menu add command \
 				-label "Expression..." \
 				-command " editExpression $itemname"
+			$w.mapping.value.p$itemname.menu add command \
+				-label "Parent Value" \
+				-command "set mappingValue$itemname {#parentVal}"
 			$w.mapping.value.p$itemname.menu add command \
 				-label "Clear" \
 				-command "set mappingValue$itemname {}"
@@ -797,7 +807,7 @@ proc UpdateShapeAttrs { w shape } {
 		pack $w.mapping.label.pShapeAttr8 -side top -fill x -pady 0.7m
 		pack $w.mapping.value.pShapeAttr8 -side top -fill x
 
-		$w.mapping.label.pShapeAttr9 config -text ""
+		$w.mapping.label.pShapeAttr9 config -text "Child Value"
 		pack $w.mapping.label.pShapeAttr9 -side top -fill x -pady 0.7m
 		pack $w.mapping.value.pShapeAttr9 -side top -fill x
 	} else {

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.25  1999/06/22 18:30:55  wenger
+  Visual filter values for view symbols can now be specified in the parent
+  view's mapping.
+
   Revision 1.24  1999/05/21 14:52:28  wenger
   Cleaned up GData-related code in preparation for including bounding box
   info.
@@ -123,7 +127,8 @@
 //#define DEBUG
 
 static char *rootClassName = "interpreted";
-static char buf[11 + MAX_SHAPE_ATTRS][64];
+static const unsigned int bufLen = 256;
+static char buf[11 + MAX_SHAPE_ATTRS][bufLen];
 static char *args[11 + MAX_SHAPE_ATTRS];
 
 MapInterpClassInfo::MapInterpClassInfo()
@@ -373,70 +378,92 @@ void MapInterpClassInfo::ParamNames(int &argc, char **&argv)
   argc = 11 + MAX_SHAPE_ATTRS;
   argv = args;
 
-  if (_fileAlias)
+  if (_fileAlias) {
     sprintf(buf[0], "File_Alias {%s}", _fileAlias);
-  else
+  } else {
     strcpy(buf[0], "File_Alias {foobar}");
-  if (_name)
+  }
+  DOASSERT(strlen(buf[0]) < bufLen, "param string too long");
+
+  if (_name) {
     sprintf(buf[1], "Map_Name {%s}", _name);
-  else
+  } else {
     strcpy(buf[1], "Map_Name {foobar}");
+  }
+  DOASSERT(strlen(buf[1]) < bufLen, "param string too long");
 
   args[0] = buf[0];
   args[1] = buf[1];
 
   if (_numDimensions == 1) {
     args[2] = "Sorted X";
-  } else
+  } else {
     args[2] = "Sorted";
+  }
   
   if (_cmd->xCmd) {
     sprintf(buf[3], "X {%s}", _cmd->xCmd);
+    DOASSERT(strlen(buf[3]) < bufLen, "param string too long");
     args[3] = buf[3];
-  } else
+  } else {
     args[3] = "X";
+  }
     
   if (_cmd->yCmd) {
     sprintf(buf[4], "Y {%s}", _cmd->yCmd);
+    DOASSERT(strlen(buf[4]) < bufLen, "param string too long");
     args[4] = buf[4];
-  } else
+  } else {
     args[4] = "Y";
+  }
     
   if (_cmd->zCmd) {
     sprintf(buf[5], "Z {%s}", _cmd->zCmd);
+    DOASSERT(strlen(buf[5]) < bufLen, "param string too long");
     args[5] = buf[5];
-  } else
+  } else {
     args[5] = "Z";
+  }
     
   if (_cmd->colorCmd) {
     sprintf(buf[6], "Color {%s}", _cmd->colorCmd);
+    DOASSERT(strlen(buf[6]) < bufLen, "param string too long");
     args[6] = buf[6];
-  } else
+  } else {
       args[6] = "Color";
+  }
     
   if ( _cmd->sizeCmd) {
     sprintf(buf[7], "Size {%s}", _cmd->sizeCmd);
+    DOASSERT(strlen(buf[7]) < bufLen, "param string too long");
     args[7] = buf[7];
-  } else
+  } else {
     args[7] = "Size";
+  }
     
   if ( _cmd->patternCmd) {
     sprintf(buf[8], "Pattern {%s}", _cmd->patternCmd);
+    DOASSERT(strlen(buf[8]) < bufLen, "param string too long");
     args[8] = buf[8];
-  } else
+  } else {
     args[8] = "Pattern";
+  }
   
   if ( _cmd->orientationCmd) {
     sprintf(buf[9], "Orientation {%s}", _cmd->orientationCmd);
+    DOASSERT(strlen(buf[9]) < bufLen, "param string too long");
     args[9] = buf[9];
-  } else
+  } else {
     args[9] = "Orientation";
+  }
     
   if ( _cmd->shapeCmd) {
     sprintf(buf[10], "Shape {%s}", _cmd->shapeCmd);
+    DOASSERT(strlen(buf[10]) < bufLen, "param string too long");
     args[10] = buf[10];
-  } else
+  } else {
     args[10] = "Shape";
+  }
     
   for(int i = 0; i < MAX_SHAPE_ATTRS; i++) {
     if ( _cmd->shapeAttrCmd[i]) {
@@ -444,6 +471,7 @@ void MapInterpClassInfo::ParamNames(int &argc, char **&argv)
     } else {
       sprintf(buf[11 + i], "ShapeAttr%d", i);
     }
+    DOASSERT(strlen(buf[11 + i]) < bufLen, "param string too long");
     args[11 + i] = buf[11 + i];
   }
 }

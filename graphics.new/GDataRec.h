@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1999/06/30 17:38:47  wenger
+  Data color of parent view's mapping (if specified) now controls the
+  background color of view symbols; defined constant strings for GData
+  attribute values to avoid potential problems.
+
   Revision 1.10  1999/05/26 19:50:49  wenger
   Added bounding box info to GData, so that the selection of records by the
   visual filter is more accurate.  (Note that at this time the bounding box
@@ -141,5 +146,8 @@ static const char *gdataShapeName = "shape";
 static const char *gdataShapeAttrName = "shapeAttr_"; // append number
 static const char *gdataShapeAttr0Name = "shapeAttr_0";
 static const char *gdataShapeAttr1Name = "shapeAttr_1";
+static const char *gdataShapeAttr3Name = "shapeAttr_3";
+static const char *gdataShapeAttr4Name = "shapeAttr_4";
+static const char *gdataShapeAttr9Name = "shapeAttr_9";
 
 #endif

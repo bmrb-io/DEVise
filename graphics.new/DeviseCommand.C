@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.71  1999/06/29 20:24:01  wenger
+  When sending GData to a file or socket, strings including the separator
+  character are now surrounded by braces; DEVise color numbers are converted
+  to RGB values by default (can be changed with the GUI).
+
   Revision 1.70  1999/06/25 15:58:21  wenger
   Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
   now uses DebugLog facility instead of printf; dispatcher logging is turned
@@ -463,9 +468,7 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 	fflush(stdout);
 #endif
 #if defined(DEBUG_LOG)
-    char logBuf[256];
-	sprintf(logBuf, "Starting command <%s>\n", argv[0]);
-	DebugLog::DefaultLog()->Message(logBuf);
+	DebugLog::DefaultLog()->Message("Starting command ", argc, argv);
 #endif
 
 	int	retval;
@@ -506,6 +509,7 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 #  endif
 #endif
 #if defined(DEBUG_LOG)
+    char logBuf[256];
     sprintf(logBuf, "  Done with command <%s>\n", argv[0]);
 	DebugLog::DefaultLog()->Message(logBuf);
 #endif
