@@ -1,0 +1,12 @@
+# set default visual filters
+
+set viewDefault(int)     "{xlow 0} {xhigh 100} {ylow 0} {yhigh 100}"
+set viewDefault(float)   "{xlow 0} {xhigh 100} {ylow 0} {yhigh 100}"
+set viewDefault(double)  "{xlow 0} {xhigh 100} {ylow 0} {yhigh 100}"
+set viewDefault(date)    "{xlow {Jan 1 1992 00:00:00}} \
+                          {xhigh {Dec 31 1992 23:59:59}} \
+                          {ylow {Jan 1 1992 00:00:00}} \
+			  {yhigh {Dec 31 1992 23:59:59}}"
+
+# set administrator mode
+set UserMode 0

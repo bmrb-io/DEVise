@@ -154,9 +154,6 @@ Make a script to easily do a release of Devise to the outside world.
 
 Handle images in data better (don't treat them as strings).  (rkw 8/29/96)
 
-Put the /p/devise/run files into CVS and install them with the release
-script.  (rkw 9/4/96)
-
 
 COMPLETED
 ---------
@@ -175,6 +172,9 @@ Allow user to control size of Dali images. (ml/rkw 9/3/96)
 
 Make a script that automatically starts up Dali along with Devise.
 (ml/rkw 9/3/96)
+
+Put the /p/devise/run files into CVS and install them with the release
+script.  (rkw 9/4/96)
 
 
 CANCELLED

@@ -1,0 +1,3 @@
+puts "Saving window images..."
+PrintActual 0 "lpr -P7a" image 1 GIF
+DEVise exit

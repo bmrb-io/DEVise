@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1996/08/14 21:22:33  wenger
+#  Minor dispatcher cleanups, etc.  Fixed release script to release
+#  statically-linked executables for HP and Sun.
+#
 #  Revision 1.6  1996/07/08 14:27:48  jussi
 #  Added multi/disp to the list of executables to be released.
 #
@@ -79,19 +83,45 @@ echo ""
 echo Executing release procedures...
 sleep 1
 
+
 echo ""
 echo Releasing new copy of generic Devise executables...
+if (! -d $target) then
+  mkdir $target
+endif
+
+if (! -d $target/sunx86_54) then
+  mkdir $target/sunx86_54
+endif
+if (! -f $target/sunx86_55) then
+  ln -s sunx86_54 $target/sunx86_55
+endif
 ls -l solaris/generic/generic $target/sunx86_54/devise
 cp -p solaris/generic/generic $target/sunx86_54/devise
 
+if (! -d $target/sun4m_54) then
+  mkdir $target/sun4m_54
+endif
+if (! -f $target/sun4m_55) then
+  ln -s sun4m_54 $target/sun4m_55
+endif
+if (! -f $target/sun4x_55) then
+  ln -s sun4m_55 $target/sun4x_55
+endif
 ls -l solsparc/generic/generic $target/sun4m_54/devise
 cp -p solsparc/generic/generic $target/sun4m_54/devise
 
+if (! -d $target/sun4m_412) then
+  mkdir $target/sun4m_412
+endif
 ls -l sun/generic/generic $target/sun4m_412/devise
 cp -p sun/generic/generic $target/sun4m_412/devise
 ls -l sun/generic/generic.static $target/sun4m_412/devise.static
 cp -p sun/generic/generic.static $target/sun4m_412/devise.static
 
+if (! -d $target/hp700_ux90) then
+  mkdir $target/hp700_ux90
+endif
 ls -l hp/generic/generic $target/hp700_ux90/devise
 cp -p hp/generic/generic $target/hp700_ux90/devise
 ls -l hp/generic/generic.static $target/hp700_ux90/devise.static
@@ -99,6 +129,7 @@ cp -p hp/generic/generic.static $target/hp700_ux90/devise.static
 
 #ls -l aix/generic/generic $target/rs_aix32/devise
 #cp -p aix/generic/generic $target/rs_aix32/devise
+
 
 echo ""
 echo Releasing new copy of PVM Devise executables...
@@ -113,16 +144,110 @@ cp -p hp/multi/disp $target/hp700_ux90/multi
 #ls -l aix/multi/disp $target/rs_aix32/multi
 #cp -p aix/multi/disp $target/rs_aix32/multi
 
+
 echo ""
 echo Releasing new Tcl/Tk code...
+if (! -d $target/lib) then
+  mkdir $target/lib
+endif
 cp -p lib/[a-z]* $target/lib
+
+
+echo ""
+echo Releasing run files...
+
+set run_target = $target/../run
+
+set rundirs = "$run_target/ $run_target/tmp $run_target/work"
+
+foreach dir ($rundirs)
+  if (! -d $dir) then
+    mkdir $dir
+  endif
+end
+
+set runfiles = "run_public/devise run_public/devise.dali \
+	run_public/deviseweb run_public/dumpgif.script \
+	run_public/multi"
+
+foreach file ($runfiles)
+  if ($file == "") then
+    continue
+  endif
+  if (! -f $file) then
+    echo File $file missing. Cannot proceed with release procedure.
+    exit 1
+  else
+    cp -p $file $run_target
+  endif
+end
+
+set file = compustat.idx
+if (-f $run_target/$file) then
+  rm $run_target/$file
+endif
+ln -s /p/devise/dat/$file $run_target/$file
+
+set file = crsp_dsm94.idx
+if (-f $run_target/$file) then
+  rm $run_target/$file
+endif
+ln -s /p/devise/dat/$file $run_target/$file
+
+set file = devise.rc
+if (-f $run_target/$file) then
+  rm $run_target/$file
+endif
+ln -s $target/$file $run_target/$file
+
+set file = dsi94.dat
+if (-f $run_target/$file) then
+  rm $run_target/$file
+endif
+ln -s /p/devise/dat/$file $run_target/$file
+
+set file = issm.idx
+if (-f $run_target/$file) then
+  rm $run_target/$file
+endif
+ln -s /p/devise/dat/$file $run_target/$file
+
 
 echo ""
 echo Releasing documentation...
+if (! -d $target/doc) then
+  mkdir $target/doc
+endif
 cp -p doc/*.ps doc/*.txt $target/doc
 cp -p doc/Agreement $target/doc
 cp -p doc/Copyright $target/doc
 cp -p doc/Disclaimer $target/doc
+
+
+echo ""
+echo Setting up other files and directories...
+if (! -f $target/bin) then
+  ln -s @sys $target/bin
+endif
+
+set miscfiles = "public/devise.rc \
+	public/pvm.script--copy.and.customize \
+	public/run.script---copy.and.customize public/sample_restore_session"
+
+foreach file ($miscfiles)
+  if ($file == "") then
+    continue
+  endif
+  if (! -f $file) then
+    echo File $file missing. Cannot proceed with release procedure.
+    exit 1
+  else
+    cp -p $file $target
+  endif
+end
+
+cp run_public/devise $target/devisepub
+
 
 echo ""
 echo Done!
