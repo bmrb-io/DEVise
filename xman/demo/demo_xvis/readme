@@ -1,0 +1,15 @@
+Sun May 14 20:08:57 CDT 2000
+----------------------------
+
+Description
+-----------
+
+This example opens up a simple GUI that allows the user to select a session. This
+just shows some general capabilities of XVis like piled views, etc.
+
+Steps
+-----
+
+1. start selector GUI
+	
+	> startExample
