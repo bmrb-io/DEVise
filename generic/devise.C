@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/14 19:06:28  jussi
+  Added checking of return value from DeviseOpen().
+
   Revision 1.5  1996/05/14 15:08:34  jussi
   Added support for idle scripts, that is, scripts which are
   executed when the server becomes idle. Typically this means
@@ -59,14 +62,13 @@ static int _portNum = DefaultDevisePort;
 static int _deviseFd = -1;
 
 static char *_idleScript = 0;
-static int   _isBusy = 0;
+static int   _syncDone = 0;
 
 static Tcl_Interp *_interp = 0;
 static Tk_Window _mainWindow = 0;
 static char *_restoreFile = 0;
-static char _buffer[10 * 1024];
 
-void DoAbort(char *reason)
+static void DoAbort(char *reason)
 {
   fprintf(stderr, "An internal error has occurred. Reason:\n  %s\n", reason);
   char cmd[256];
@@ -76,21 +78,23 @@ void DoAbort(char *reason)
   exit(1);
 }
 
-void ControlCmd(char *result)
+static void ControlCmd(int argc, char **argv)
 {
-  if (strncmp(result, "ChangeStatus", 12))
-    return;
-
-  char *space = strchr(result, ' ');
-  if (!space) {
-    printf("Ignoring invalid ChangeStatus command: \"%s\"\n", result);
+  if (argc == 1 && !strcmp(argv[0], "SyncDone")) {
+#ifdef DEBUG
+    printf("Server synchronized.\n");
+#endif
+    _syncDone = 1;
     return;
   }
 
-  _isBusy = atoi(space + 1);
+  char *cmd = DevisePaste(argc, argv);
+  DOASSERT(cmd, "Out of memory");
 #ifdef DEBUG
-  printf("Server is now in %s state.\n", (_isBusy ? "busy" : "idle"));
+  printf("Executing control command: \"%s\"\n", cmd);
 #endif
+  (void)Tcl_Eval(_interp, cmd);
+  delete cmd;
 }
 
 int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
@@ -101,27 +105,30 @@ int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
 #endif
 
   // do not send the DEVise command verb
-  if (DeviseSend(_deviseFd, &argv[1], argc - 1) < 0)
-    DOASSERT(0, "Server has terminated");
+  if (DeviseSend(_deviseFd, API_CMD, 0, argc - 1, &argv[1]) < 0) {
+    fprintf(stderr, "Server has terminated. Client exits.\n");
+    exit(1);
+  }
 
   u_short flag;
+  int rargc;
+  char **rargv;
   do {
-    if (DeviseReceive(_deviseFd, _buffer, flag, argv[1]) < 0)
-      DOASSERT(0, "Server has terminated");
-    if (flag == API_CTL) {
-#ifdef DEBUG
-      printf("Executing Tcl command: \"%s\"\n", _buffer);
-#endif
-      ControlCmd(_buffer);
-      (void)Tcl_Eval(_interp, _buffer);
+    if (DeviseReceive(_deviseFd, 1, flag, rargc, rargv) <= 0) {
+      fprintf(stderr, "Server has terminated. Client exits.\n");
+      exit(1);
     }
+    if (flag == API_CTL)
+      ControlCmd(rargc, rargv);
   } while (flag != API_ACK && flag != API_NAK);
 
+  char *result = DevisePaste(rargc, rargv);
+  DOASSERT(result, "Out of memory");
 #ifdef DEBUG
-  printf("Received reply: \"%s\"\n", _buffer);
+  printf("Received reply: \"%s\"\n", result);
 #endif
-
-  interp->result = _buffer;
+  Tcl_SetResult(_interp, result, TCL_VOLATILE);
+  delete result;
 
   if (flag == API_NAK)
     return TCL_ERROR;
@@ -136,20 +143,19 @@ void ReadServer(ClientData cd, int mask)
 #endif
 
   u_short flag;
-  if (DeviseReceive(_deviseFd, _buffer, flag, "Control command") < 0)
-    DOASSERT(0, "Server has terminated");
+  int argc;
+  char **argv;
+  if (DeviseReceive(_deviseFd, 1, flag, argc, argv) <= 0) {
+    fprintf(stderr, "Server has terminated. Client exits.\n");
+    exit(1);
+  }
 
   if (flag != API_CTL) {
-    fprintf(stderr, "Received unexpected type of message: %u\n", flag);
+    fprintf(stderr, "Ignoring unexpected message type: %u\n", flag);
     return;
   }
 
-#ifdef DEBUG
-  printf("Executing Tcl command: \"%s\"\n", _buffer);
-#endif
-
-  ControlCmd(_buffer);
-  (void)Tcl_Eval(_interp, _buffer);
+  ControlCmd(argc, argv);
 }
 
 void SetupConnection()
@@ -186,7 +192,7 @@ void SetupConnection()
 
   printf("Connecting to server %s:%d.\n", _hostName, _portNum);
 
-  _deviseFd = DeviseOpen(_hostName, _portNum, 1);
+  _deviseFd = DeviseOpen(_hostName, _portNum);
   if (_deviseFd < 0)
     exit(1);
 
@@ -219,6 +225,7 @@ void SetupConnection()
   }
 
   if (_restoreFile) {
+    printf("Restoring session file %s\n", _restoreFile);
     Tcl_SetVar(_interp, "restoring", "1", 0);
     int code = Tcl_EvalFile(_interp, _restoreFile);
     Tcl_SetVar(_interp, "restoring", "0", 0);
@@ -274,14 +281,18 @@ int main(int argc, char **argv)
 
   if (_idleScript) {
     printf("Waiting for server synchronization.\n");
-    while(_isBusy) {
+    _syncDone = 0;
+    (void)Tcl_Eval(_interp, "DEVise sync");
+    while(!_syncDone) {
       u_short flag;
-      if (DeviseReceive(_deviseFd, _buffer, flag, "Control command") < 0)
-	DOASSERT(0, "Server has terminated");
-      if (flag == API_CTL) {
-	ControlCmd(_buffer);
-	(void)Tcl_Eval(_interp, _buffer);
+      int argc;
+      char **argv;
+      if (DeviseReceive(_deviseFd, 1, flag, argc, argv) <= 0) {
+	fprintf(stderr, "Server has terminated. Client exits.\n");
+	exit(1);
       }
+      if (flag == API_CTL)
+	ControlCmd(argc, argv);
     }
     printf("Executing script file %s\n", _idleScript);
     int code = Tcl_EvalFile(_interp, _idleScript);

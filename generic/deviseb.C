@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/14 18:56:21  jussi
+  Added checking of return value from DeviseOpen().
+
   Revision 1.5  1996/05/13 21:56:57  jussi
   Removed idleScript variable. Return value of program is 1
   if script file execution succeeded, otherwise 2.
@@ -48,7 +51,7 @@ static int   _portNum = DefaultDevisePort;
 static int   _deviseFd = -1;
 
 static char *_scriptFile = 0;
-static int   _isBusy = 0;
+static int   _syncDone = 0;
 
 void DoAbort(char *reason)
 {
@@ -57,42 +60,42 @@ void DoAbort(char *reason)
   exit(1);
 }
 
-void ControlCmd(char *result)
+void ControlCmd(int argc, char **argv)
 {
-  if (strncmp(result, "ChangeStatus", 12)) {
+  if (argc == 1 && !strcmp(argv[0], "SyncDone")) {
 #ifdef DEBUG
-    printf("Ignoring control command: \"%s\"\n", result);
+    printf("Server synchronized.\n");
 #endif
+    _syncDone = 1;
     return;
   }
 
-  char *space = strchr(result, ' ');
-  if (!space) {
-    printf("Ignoring invalid ChangeStatus command: \"%s\"\n", result);
-    return;
-  }
-
-  _isBusy = atoi(space + 1);
 #ifdef DEBUG
-  printf("Server is now in %s state.\n", (_isBusy ? "busy" : "idle"));
+  printf("Ignoring control command: \"%s\"\n", argv[0]);
 #endif
 }
 
-int DEViseCmd(int argc, char **argv, char *result)
+int DEViseCmd(int argc, char **argv)
 {
 #ifdef DEBUG	
   printf("Function %s, %d args\n", argv[0], argc);
 #endif
 
-  if (DeviseSend(_deviseFd, argv, argc) < 0)
-    DOASSERT(0, "Server has terminated");
+  if (DeviseSend(_deviseFd, API_CMD, 0, argc, argv) < 0) {
+    fprintf(stderr, "Server has terminated. Client exits.\n");
+    exit(1);
+  }
 
   u_short flag;
   do {
-    if (DeviseReceive(_deviseFd, result, flag, argv[0]) < 0)
-      DOASSERT(0, "Server has terminated");
+    int rargc;
+    char **rargv;
+    if (DeviseReceive(_deviseFd, 1, flag, rargc, rargv) <= 0) {
+      fprintf(stderr, "Server has terminated. Client exits.\n");
+      exit(1);
+    }
     if (flag == API_CTL)
-      ControlCmd(result);
+      ControlCmd(rargc, rargv);
   } while (flag != API_ACK && flag != API_NAK);
 
   if (flag == API_NAK)
@@ -165,27 +168,33 @@ int ExecuteFile(char *script)
     }
 
     ++argc;
-    char result[10 * 1024];
 
-    if (argc == 1 && !strcmp(argv[0], "sync")) {
-      printf("Waiting for server synchronization.\n");
-      while(_isBusy) {
-	u_short flag;
-	if (DeviseReceive(_deviseFd, result, flag, "Control command") < 0)
-	  DOASSERT(0, "Server has terminated");
-	if (flag == API_CTL)
-	  ControlCmd(result);
-      }
-      printf("Continuing.\n");
-      continue;
-    }
+    if (argc == 1 && !strcmp(argv[0], "sync"))
+      _syncDone = 0;
 
 #ifdef DEBUG
     printf("Sending %d elements\n", argc);
 #endif
-    if (DEViseCmd(argc, argv, result) < 0) {
-      fprintf(stderr, "Error executing command: %s\n", result);
+    if (DEViseCmd(argc, argv) < 0) {
+      fprintf(stderr, "Error executing command %s\n", argv[0]);
       return -1;
+    }
+
+    if (argc == 1 && !strcmp(argv[0], "sync")) {
+      printf("Waiting for server synchronization.\n");
+      while(!_syncDone) {
+	u_short flag;
+	int rargc;
+	char **rargv;
+	if (DeviseReceive(_deviseFd, 1, flag, rargc, rargv) <= 0) {
+	  fprintf(stderr, "Server has terminated. Client exits.\n");
+	  exit(1);
+	}
+	if (flag == API_CTL)
+	  ControlCmd(rargc, rargv);
+      }
+      printf("Continuing.\n");
+      _syncDone = 0;
     }
   }
 
@@ -195,26 +204,6 @@ int ExecuteFile(char *script)
     delete argv[i];
 
   return 1;
-}
-
-void SetupConnection()
-{
-  printf("DEVise Data Visualization Software\n");
-  printf("(c) Copyright 1992-1996\n");
-  printf("By the DEVise Development Group\n");
-  printf("All Rights Reserved.\n");
-  printf("\n");
-
-  printf("Batch client running.\n");
-  printf("\n");
-
-  printf("Connecting to server %s:%d.\n", _hostName, _portNum);
-
-  _deviseFd = DeviseOpen(_hostName, _portNum, 0);
-  if (_deviseFd < 0)
-    exit(1);
-	
-  printf("Connection established.\n\n");
 }
 
 void Usage()
@@ -258,10 +247,27 @@ int main(int argc, char **argv)
     exit(1);
   }
 
-  SetupConnection();
+  printf("DEVise Data Visualization Software\n");
+  printf("(c) Copyright 1992-1996\n");
+  printf("By the DEVise Development Group\n");
+  printf("All Rights Reserved.\n");
+  printf("\n");
+
+  printf("Batch client running.\n");
+  printf("\n");
+
+  printf("Connecting to server %s:%d.\n", _hostName, _portNum);
+
+  _deviseFd = DeviseOpen(_hostName, _portNum);
+  if (_deviseFd < 0)
+    exit(1);
+	
+  printf("Connection established.\n\n");
 
   if (ExecuteFile(_scriptFile) < 0)
     return 2;
+
+  printf("Closing connection.\n");
 
   (void)DeviseClose(_deviseFd);
 
