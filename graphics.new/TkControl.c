@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1995/12/14 18:07:29  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.22  1995/12/14 15:37:20  jussi
   Minor fixes.
 
@@ -865,7 +868,8 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				interp->result = "can't find window";
 				goto error;
 			}
-			for(int index = win->InitIterator(); win->More(index); ){
+			int index;
+			for(index = win->InitIterator(); win->More(index); ){
 				ViewWin *view = (ViewWin *)win->Next(index);
 				Tcl_AppendElement(interp, view->GetName());
 			}
