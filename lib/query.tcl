@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1996/07/10 19:02:01  jussi
+#  3D query window now displays fix_focus and perspective flags.
+#
 #  Revision 1.5  1996/06/27 00:00:35  jussi
 #  Coordinates of 3D focal point are now saved and displayed.
 #
@@ -68,6 +71,12 @@ proc SetQuery {} {
 
     frame .query.xyRange.top.yEntry
     frame .query.xyRange.top.yDummy -width 280 -relief groove -bd 3
+    frame .query.xyRange.top.yDummy.high
+    frame .query.xyRange.top.yDummy.high.left
+    frame .query.xyRange.top.yDummy.high.right
+    frame .query.xyRange.top.yDummy.low
+    frame .query.xyRange.top.yDummy.low.left
+    frame .query.xyRange.top.yDummy.low.right
     frame .query.xyRange.top.yEntry.yhigh
     frame .query.xyRange.top.yEntry.ylow
 
@@ -76,11 +85,56 @@ proc SetQuery {} {
     frame .query.xyRange.bottom.xEntry.xlow
     frame .query.xyRange.bottom.xEntry.xhigh
 
+    #set up max mean min count labels and entries
+
+    label .query.xyRange.top.yDummy.high.left.max -text "Max" \
+	   -width 4 -font 8x13
+    entry .query.max -text "" -relief sunken -width 5 \
+	    -fg black -bg LightGray -font 8x13
+    pack .query.xyRange.top.yDummy.high.left.max .query.max \
+	    -in .query.xyRange.top.yDummy.high.left \
+	    -side left -expand $expand -fill $fill
+
+    label .query.xyRange.top.yDummy.high.right.min -text "Min" \
+           -width 4 -font 8x13
+    entry .query.min -text "" -relief sunken -width 5 \
+            -fg black -bg LightGray -font 8x13
+    pack .query.xyRange.top.yDummy.high.right.min .query.min \
+            -in .query.xyRange.top.yDummy.high.right \
+            -side left -expand $expand -fill $fill
+
+    label .query.xyRange.top.yDummy.low.left.mean -text "Mean" \
+           -width 4 -font 8x13
+    entry .query.mean -text "" -relief sunken -width 5 \
+            -fg black -bg LightGray -font 8x13
+    pack .query.xyRange.top.yDummy.low.left.mean .query.mean \
+            -in .query.xyRange.top.yDummy.low.left \
+            -side left -expand $expand -fill $fill
+
+    label .query.xyRange.top.yDummy.low.right.count -text "Count" \
+           -width 4 -font 8x13
+    entry .query.count -text "" -relief sunken -width 5 \
+            -fg black -bg LightGray -font 8x13
+    pack .query.xyRange.top.yDummy.low.right.count .query.count \
+            -in .query.xyRange.top.yDummy.low.right \
+            -side left -expand $expand -fill $fill
+
+    pack .query.xyRange.top.yDummy.high.left \
+           .query.xyRange.top.yDummy.high.right \
+           -side left -expand $expand -fill $fill
+
+    pack .query.xyRange.top.yDummy.low.left \
+           .query.xyRange.top.yDummy.low.right \
+           -side left -expand $expand -fill $fill
+
+    pack .query.xyRange.top.yDummy.high .query.xyRange.top.yDummy.low \
+            -side top -expand $expand -fill $fill
+         
     # set up Y labels and entries
 
     label .query.xyRange.top.yEntry.yhigh.yHighHeading -text "Y high" \
 	    -width 6 -font 8x13
-    entry .query.yhigh -text "" -relief sunken -width 20 \
+    entry .query.yhigh -text "" -relief sunken -width 10 \
 	    -fg black -bg LightGray -font 8x13
 
     pack .query.xyRange.top.yEntry.yhigh.yHighHeading .query.yhigh \
@@ -89,7 +143,7 @@ proc SetQuery {} {
 
     label .query.xyRange.top.yEntry.ylow.yLowHeading -text "Y low" \
 	    -width 6 -font 8x13
-    entry .query.ylow -text "" -relief sunken -width 20 \
+    entry .query.ylow -text "" -relief sunken -width 10 \
 	    -fg black -bg white -font 8x13
 
     pack .query.xyRange.top.yEntry.ylow.yLowHeading .query.ylow \
@@ -248,6 +302,16 @@ proc DoUndoEdit {} {
     .query.ylow insert 0 [lindex $filter 1]
     .query.xhigh insert 0 [lindex $filter 2]
     .query.yhigh insert 0 [lindex $filter 3]
+
+    set stat [DEVise getAllStats $curView]
+    
+    foreach i { max mean min count} {
+         .query.$i delete 0 end
+    }
+    .query.max insert 0 [lindex $stat 0]
+    .query.mean insert 0 [lindex $stat 1]
+    .query.min insert 0 [lindex $stat 2]
+    .query.count insert 0 [lindex $stat 3]
 }
 
 ############################################################
