@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1997
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/11 21:46:59  jussi
+  Replaced libc.h with stdlib.h. Added copyright notice.
+
   Revision 1.2  1995/09/05 21:13:04  jussi
   Added/update CVS header.
 */
@@ -23,6 +26,7 @@
 #ifndef StringArray_h
 #define StringArray_h
 
+#include <stdio.h>
 #include <stdlib.h>
 
 unsigned const int StringArrayIncrement = 20;
