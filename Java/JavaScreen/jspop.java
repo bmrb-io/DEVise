@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.33  2001/01/23 22:58:54  xuk
+// *** empty log message ***
+//
 // Revision 1.32  2001/01/22 17:08:13  wenger
 // Added DEViseCheckPop to actually connect to the jspop when checking
 // with cron; added JAVAC_CheckPop command to make this possible; cleaned
@@ -489,9 +492,9 @@ public class jspop implements Runnable
 
             try {
 
-                //pn("Before reading command");
+                pn("Before reading command");
       		String cmd = socket.receiveCmd();
-                //pn("After reading command");
+                pn("After reading command");
 
 	        int id = socket.cmdId;
 		pn("Received command from client(" + id + ") :  \"" + cmd +
@@ -516,23 +519,10 @@ public class jspop implements Runnable
                     pn("Existing client");
 	            DEViseClient client = findClientById(id);
 		    if (client != null) {
-			//TEMP -- this code should probably be in the client
-			if (cmd.startsWith(DEViseCommands.HEART_BEAT)) {
-			    client.updateHeartbeat();
-			    // close client socket for cgi version
-			    if (cgi) {
-				socket.closeSocket();
-				pn("Socket between client and cgi is closed.");
-			    }
-			}
-			else {
-			    if (client.getStatus() != DEViseClient.SERVE)
-				client.setStatus(DEViseClient.REQUEST);
-			    // set cgi flag; added for mode changing
-			    client.setCgi(cgi); 
-			    client.setSocket(socket);
-			    client.addNewCmd(cmd);
-			} 
+		        // set cgi flag; added for mode changing
+		        client.setCgi(cgi); 
+		        client.setSocket(socket);
+		        client.addNewCmd(cmd);
       		    } else {
 			throw new YException("No client for ID: " + id);
 		    }
@@ -691,32 +681,20 @@ public class jspop implements Runnable
 			id = socket.cmdId;
 	    		pn("Received command from client(" + id + ") :  \"" + cmd + "\"");		
 			cgi = socket.cgiFlag;
-			if (cgi == 1) {
+			if (cgi != 0) {
 			    cgiflag = true;
-			    pn("A cgi connection.");
+			    pn("A CGI client connection.");
 			} else {
 			    cgiflag = false;
-			    pn("Formal JS connection.");
+			    pn("A direct socket client connection.");
 			}
-			//TEMP -- what if cgi here != cgi in client?
 
 			DEViseClient client = findClientById(id);
 			if (client != null) {
-			    if (cmd.startsWith(DEViseCommands.HEART_BEAT)) { 
-				client.updateHeartbeat();
-				// close client socket for cgi version
-				if (cgi == 1) {
-				    socket.closeSocket();
-				    pn("Socket between client and cgi is closed.");
-				}
-			
-			    } else {
-				if (client.getStatus() != DEViseClient.SERVE)
-				    client.setStatus(DEViseClient.REQUEST);
-				client.setCgi(cgiflag);
-       				client.setSocket(socket);
-				client.addNewCmd(cmd);
-			    } 
+		            // set cgi flag; added for mode changing
+			    client.setCgi(cgiflag);
+       			    client.setSocket(socket);
+			    client.addNewCmd(cmd);
 			} else {
 			    throw new YException("No client for ID: " + id);
 			}
