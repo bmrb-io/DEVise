@@ -77,6 +77,10 @@ receiving a command? (rkw 11/14/00)
 The JavaScreen should probably quit after it gets a certain number of
 socket write errors. (rkw 11/14/00)
 
+The JavaScreen should have an option to display the Y value of the bar
+the mouse is on, rather than the actual Y location of the mouse, as
+the mouse location. (jm/rkw 12/19/01)
+
 
 
 (add stuff from old to-do list?)
