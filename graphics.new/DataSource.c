@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/12/20 16:30:00  jussi
+  Removed call to SemaphoreV::destroy().
+
   Revision 1.12  1996/12/18 19:33:28  jussi
   Re-enabled concurrent I/O.
 
@@ -344,6 +347,7 @@ int DataSource::InitializeProc()
 
     if (pipe(_reqFd) < 0) {
         perror("pipe");
+        delete _mutex;
         return -1;
     }
 #ifdef SOLARIS
@@ -353,6 +357,7 @@ int DataSource::InitializeProc()
 #else
     if (pipe(_replyFd) < 0) {
         perror("pipe");
+        delete _mutex;
         return -1;
     }
 #endif
@@ -367,6 +372,7 @@ int DataSource::InitializeProc()
     _dpipe = new DataPipe(10, status);
     if (!_dpipe || status < 0) {
         fprintf(stderr, "Cannot create data pipe\n");
+        delete _mutex;
         return -1;
     }
 
@@ -379,6 +385,8 @@ int DataSource::InitializeProc()
     _child = fork();
     if (_child < 0) {
         perror("fork");
+        delete _mutex;
+        delete _dpipe;
         return -1;
     }
 
@@ -397,6 +405,8 @@ int DataSource::InitializeProc()
 #ifdef DS_THREAD
     if (pthread_create(&_child, 0, ProcessReq, this)) {
         perror("pthread_create");
+        delete _mutex;
+        delete _dpipe;
         return -1;
     }
 #endif
