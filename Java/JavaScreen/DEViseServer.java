@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.58  2001/04/11 16:49:38  wenger
+// Added a new thread to the jspop that checks whether other threads may
+// be hung.
+//
 // Revision 1.57  2001/04/06 19:32:14  wenger
 // Various cleanups of collaboration code (working on strange hang
 // that Miron has seen); added more debug output; turned heartbeat
@@ -1309,6 +1313,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
         client.sendCmd(serverCmds);
 	client.sendData(serverDatas);
 	pop.pn("Done sending all data to " + "collaboration client");
+	pop.pn("  client.collabInit = " + client.collabInit);
 	serverDatas.removeAllElements();
 	serverCmds = null;
     }
