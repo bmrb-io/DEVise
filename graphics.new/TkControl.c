@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/09/19 15:30:22  jussi
+  Added creation of cstat_extract command for Compustat data.
+
   Revision 1.5  1995/09/13 14:43:39  jussi
   Found one more instance vhere name of view was used without protecting
   braces or quotes.
@@ -40,8 +43,8 @@
 
 extern int extractStocksCmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
-extern "C" int comp_extract(ClientData clientData, Tcl_Interp *interp,
-			    int argc, char *argv[]);
+extern int comp_extract(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
 
 ControlPanel::Mode TkControlPanel::_mode = ControlPanel::DisplayMode;
 MapInterpClassInfo *TkControlPanel::_interpProto = NULL;
