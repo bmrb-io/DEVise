@@ -2659,8 +2659,9 @@ Num Date        Status  Description
 667 04/27/01	OPEN	Link info dialog makes it look like you can change
 			the link type, but you really can't. (rkw)
 
-668 04/27/01	OPEN	External data doesn't seem to work in client/server
+668 04/27/01	FIXED	External data doesn't seem to work in client/server
 			DEVise. (rkw)
+			(Fixed by rkw, 4/27/01.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
