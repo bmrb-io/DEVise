@@ -1,0 +1,1441 @@
+%  ========================================================================
+%  DEVise Data Visualization Software
+%  (c) Copyright 1992-1996
+%  By the DEVise Development Group
+%  Madison, Wisconsin
+%  All Rights Reserved.
+%  ========================================================================
+%
+%  Under no circumstances is this software to be copied, distributed,
+%  or altered in any way without prior permission from the DEVise
+%  Development Group.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%  $Id$
+
+%  $Log$
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentstyle[fullpage,verbatim]{article}
+
+\renewcommand{\topfraction}{1.0}
+\renewcommand{\bottomfraction}{1.0}
+\renewcommand{\textfraction}{0.0}
+\advance\intextsep by 5pt
+
+\def\filename#1{{\tt #1}}
+\def\code#1{{\tt #1}}
+\def\menu#1{{\tt #1}}
+\def\term#1{#1}
+\def\variable#1{{\tt #1}}
+
+\def\scaleepspic[#1]#2#3{
+\begin{figure}[htb]
+\centering\leavevmode\epsfxsize=#1\epsfbox{#2}
+\caption{#3}
+\end{figure}
+}
+
+\def\fullepspic#1#2{
+\begin{figure}[htb]
+\centering\leavevmode\epsfxsize=\textwidth\epsfbox{#1}
+\caption{#2}
+\end{figure}
+}
+
+\begin{document}
+\title{DEVise Application Programming Interface}
+\author{The DEVise Development Group \\
+\code{devise@cs.wisc.edu}
+}
+\date{\today}
+
+\maketitle
+
+\section{Introduction}
+
+The DEVise application programming interface (API) allows a user
+interface, application program or other entity to request
+visualization services from the DEVise visualization engine. The
+requestor ({\em client program}) and the visualization engine ({\em
+server}) communicate using the DEVise command language which
+implements the API.
+
+This document is intended for client program developers who want to
+customize the appearance of DEVise visualization sessions. The API
+allows the programmer to specify such visualization characteristics as
+placement of visualization windows, layout of views within windows,
+and enabling and disabling of statistics displays. Also, the client
+program can request information about objects such as Source Data,
+Graph Data, and Schemas to build up dialogs for interacting with the
+user.
+
+\section{DEVise Command Language}
+
+The commands supported in the DEVise API are divided into eight
+categories: Generic, Source Data, Schema, Graph Data, View, Window,
+Link and Cursor, and Miscellaneous. Commands in the Generic category
+allow the client program to create and remove objects of the other
+categories, or to query the parameters used when the objects were
+created. See Section \ref{objcreate} for a more detailed description
+of the object creation command.
+
+The category-specific commands control the behavior of the
+objects. The Miscellaneous category includes commands for querying and
+altering the state of the query processor and buffer manager, among
+others. The Obsolete category lists some obsolete commands that are
+being phased out and should not be used.
+
+A DEVise command consist of a verb (command name) followed by zero or
+more input parameters. The parameters may be of type string, integer,
+float, or date, but their values are always represented as ASCII
+strings. The result of the command is returned as another
+string. Currently, error conditions are indicated by either returning
+a non-empty string (containing the error message) from a command which
+normally returns an empty string, or by printing the error message on
+the console. Exceptions to this rule exist and are marked by !! in the
+error description. In the future, all error conditions are indicated
+as a return string with the following format: "Error: $<$error
+message$>$".
+
+The commands are described in the following format.
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & Name of the command \\
+Description  & What the command does \\
+Input \#     & Number of input parameters \\
+Input Types  & Input parameters \\
+Output       & Output parameter \\
+Errors       & Possible error conditions that can result \\
+\hline
+\end{tabular}
+
+\section{Object Creation in DEVise\protect\label{objcreate}}
+
+DEVise stores information about all visualization objects in a common
+data structure that has a uniform interface. DEVise uses a three-level
+object hierarchy. At the top are {\em categories}: tdata, mapping,
+view, window, link, or cursor. Next are {\em classes}. At the bottom
+of the hierarchy are {\em instances} whose names share a global name
+space.
+
+The following table shows the meaning of a 'class' for each category.
+For tdata and mapping, the class names are assigned by the client
+program or the user. A view can either be sorted along the X axis
+(SortedX) or not (Scatter). Only one window class (TileLayout) is
+currently defined (older versions of DEVise defined WinVertical and
+WinHorizontal but these classes are subsumed by TileLayout). A link
+must belong to the Visual\_Link class and a cursor to the Cursor
+class.
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|l|p{4in}}
+Category & What class means           & Parameters\\
+\hline
+tdata    & Schema name                & File path, tdata name \\
+mapping  & Client-program assigned    & Tdata name, mapping name, empty,
+                                        X attribute, Y, Z, color, size,
+                                        pattern, orientation, shape,
+                                        shape attribute 0, 1, 2 \\
+view     & ``SortedX'' or ``Scatter'' & View name, X low, X high, Y low,
+                                        Y high, background color \\
+window   & ``TileLayout''             & Window name, X position, Y position,
+                                        width, height (all expressed as a
+                                        fraction of screen size) \\
+link     & ``Visual\_Link''           & Link name, link flag \\
+cursor   & ``Cursor''                 & Cursor name, cursor type \\
+\hline
+\end{tabular}
+
+\bigskip
+
+The command used to create an object of any aforementioned category
+and class is simply {\tt create}. The number of parameters varies
+according to object category. The types of the parameters are shown in
+the table.
+
+The link flag is a binary value with the following values OR'ed: X
+(1), Y (2), size (4), pattern (8), color (16), orientation (32), shape
+(64). The bits that are one specify the attributes that are used to
+link views.
+
+The cursor type is a binary value with X (1) and Y (2) OR'ed. The bits
+that are one specify whether the cursor operates in the X-direction,
+the Y-direction, or both.
+
+\section{Generic Commands}
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt create} \\
+Description  & Create a new instance of a class \\
+Input \#     & Variable \\
+Input Types  & Category name (string), class name (string), parameter values
+               (strings) \\
+Output       & Name of the class created or "" if failed (string) \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt destroy} \\
+Description  & Destroys the given instance \\
+Input \#     & 1 \\
+Input Types  & Instance name (string) \\
+Output       & None \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt setDefault} \\
+Description  & Sets the default parameter values for a class \\
+Input \#     & Variable \\
+Input Types  & List of parameter values (strings) \\
+Output       & None \\
+Errors       & None (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getCreateParam} \\
+Description  & Get the parameters of an instance \\
+Input \#     & 3 \\
+Input Types  & Category name (string), class name (string), instance
+               name (string) \\
+Output       & List of parameter values (strings) \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt changeparam} \\
+Description  & Change the parameters for the given instance \\
+Input \#     & Variable \\
+Input Types  & Instance name (string), list of parameter values (strings) \\
+Output       & None \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt changeableParam} \\
+Description  & Check whether parameters of instance are changeable \\
+Input \#     & 1 \\
+Input Types  & Instance name (string) \\
+Output       & 0/1 (integer) indicating whether instance parameters are
+               changeable \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getInstParam} \\
+Description  & Get the current parameters of the instance \\
+Input \#     & 1 \\
+Input Types  & Instance name (string) \\
+Output       & List of parameter values (strings) \\
+Errors       & Cannot find instance (empty return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt get} \\
+Description  & Get the classes corresponding to the given category \\
+Input \#     & 1 \\
+Input Types  & Category name (string) \\
+Output       & List of class names (strings) \\
+Errors       & Cannot find instance (empty return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt get} \\
+Description  & Get all the instances belonging to the class \\
+Input \#     & 2 \\
+Input Types  & Category name (string), class name (string) (optional) \\
+Output       & List of instance names (strings) \\
+Errors       & Cannot find class (empty string value) \\
+\hline
+\end{tabular}
+
+\section{Source Data Commands}
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt tdataFileName} \\
+Description  & Return the actual file name for the given tdata name \\
+Input \#     & 1 \\
+Input Types  & Tdata name (string) \\
+Output       & File name (string) \\
+Errors       & Cannot find tdata \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt tcheckpoint} \\
+Description  & Checkpoints all tdata \\
+Input \#     & 1 \\
+Input Types  & Tdata name (string) \\
+Output       & None \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getSchema} \\
+Description  & Gets the schema for the given tdata \\
+Input \#     & 1 \\
+Input Types  & Tdata name (string) \\
+Output       & \{\{attrname type sorted highval lowval\} \ldots \}
+               where type is float, double, string, int, or date \\
+Errors       & Cannot find tdata or error extracting schema information \\
+\hline
+\end{tabular}
+
+\section{Schema Commands}
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt importFileType} \\
+Description  & Import the schema from the specified file \\
+Input \#     & 1 \\
+Input Types  & File name (string) \\
+Output       & Schema name (string) \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt catFiles} \\
+Description  & Get all the schemas imported \\
+Input \#     & 0 \\
+Input Types  & None \\
+Output       & List of schema names (strings) \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getTopGroups} \\
+Description  & Returns the top level groups for the given schema \\
+Input \#     & 1 \\
+Input Types  & Schema name (string) \\
+Output       & List of top group names (strings) \\
+Errors       & Cannot find schema (console) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getItems} \\
+Description  & Return items in a given subgroup \\
+Input \#     & 3 \\
+Input Types  & Schema name (string), top group name (string), group name
+              (string) \\
+Output       & List of items (strings) \\
+Errors       & Cannot find schema, top group, or group (console) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt clearTopGroups} \\
+Description  & Remove all top level groups \\
+Input \#     & 0 \\
+Input Types  & None \\
+Output       & None \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\section{Graph Data Commands}
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt createInterp} \\
+Description  & Create interpreted mapping \\
+Input \#     & 13 \\
+Input Types  & TData name (string), interpreter name (string),
+               X axis (constant/variable name/expression),
+               Y axis, Z axis, color, size, pattern, orientation, shape,
+               shapeAttr0, shapeAttr1, shapeAttr2 \\
+Output       & None \\
+Errors       & Cannot create mapping (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt interpMapClassInfo} \\
+Description  & Return information that can be used to create
+               an interpreted mapping classes \\
+Input \#     & 0 \\
+Input Types  & None \\
+Output       & \{\{class arg\} \ldots \} where arg is of the form
+               \{tdata mappingName sorted x y color \ldots \} \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getMappingTData} \\
+Description  & Get name of tdata used in mapping \\
+Input \#     & 1 \\
+Input Types  & Mapping name (string) \\
+Output       & Tdata name (string) \\
+Errors       & Cannot find mapping (console) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt isInterpretedGData} \\
+Description  & Check if the given GData is interpreted or not \\
+Input \#     & 1 \\
+Input Types  & Mapping name (string) \\
+Output       & 0 if false, 1 if true (integer) \\
+Errors       & Cannot find mapping (console) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt insertMapping} \\
+Description  & Inserts the mapping to a view \\
+Input \#     & 2 \\
+Input Types  & View name (string), mapping name (string) \\
+Output       & None \\
+Errors       & Cannot find view or mapping (console) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt removeMapping} \\
+Description  & Removes a mapping from a view \\
+Input \#     & 2 \\
+Input Types  & View name (string), mapping name (string) \\
+Output       & None \\
+Errors       & Cannot find view or mapping (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getPixelWidth} \\
+Description  & Get the current pixel width for the given mapping \\
+Input \#     & 1 \\
+Input Types  & Mapping name (string) \\
+Output       & Pixel width (integer) \\
+Errors       & Cannot find mapping (console) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt setPixelWidth} \\
+Description  & Sets the pixel width for the given view \\
+Input \#     & 2 \\
+Input Types  & Mapping name (string), width (integer) \\
+Output       & None \\
+Errors       & Cannot find mapping (return value) \\
+\hline
+\end{tabular}
+
+\section{View Commands}
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt setLabel} \\
+Description  & Sets the label parameters for the given view \\
+Input \#     & 4 \\
+Input Types  & View name (string), occupyTop (integer 1/0),
+               extent (integer), label name (string) \\
+Output       & None \\
+Errors       & Cannot find view (console) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt setFilter} \\
+Description  & Sets the current filter for the view \\
+Input \#     & 5 \\
+Input Types  & View name (string), xLow (integer), yLow (integer),
+               xHigh (integer), yHigh (integer) \\
+Output       & None \\
+Errors       & Cannot find view (console), invalid date or float
+               (return value) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getViewOverrideColor} \\
+Description  & Returns the override color used by a view \\
+Input \#     & 1 \\
+Input Types  & View name (string) \\
+Output       & "x y" where x = 0 if override not active and 1 if active,
+               y = override color (if active) \\
+Errors       & Cannot find view (console) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt setViewOverrideColor} \\
+Description  & Sets the override color used by a view \\
+Input \#     & 3 \\
+Input Types  & View name (string), active (0 if false, 1 if true),
+               override color (string) \\
+Output       & None \\
+Errors       & Cannot find view (console) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt insertWindow} \\
+Description  & Insert the view in to the window \\
+Input \#     & 2 \\
+Input Types  & View name (string), window name (string) \\
+Output       & None \\
+Errors       & Cannot find view or window (console) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt swapView} \\
+Description  & Swaps the position of the two views within the window \\
+Input \#     & 3 \\
+Input Types  & Window name(string), view1 name (string), view2 name (string) \\
+Output       & None \\
+Errors       & Cannot find window or view1 or view2 (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt setAxisDisplay} \\
+Description  & Set the axis display on/off for the given view \\
+Input \#     & 3 \\
+Input Types  & View name (string), "X"/"Y" (string) indicating axis,
+               0/1 (integer) indicating off/on \\
+Output       & None \\
+Errors       & Cannot find view (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt insertviewHistory} \\
+Description  & Insert history in to the view without changing the filter \\
+Input \#     & 6 \\
+Input Types  & View name (string), xLow (float), yLow (float), xHigh (float),
+               yHigh (float), marked (integer) \\
+Output       & None \\
+Errors       & Cannot find view (console) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt markViewFilter} \\
+Description  & Mark the n'th view as marked or unmarked \\
+Input \#     & 3 \\
+Input Types  & View name (string), index (integer),
+               0/1 (integer) indicating unmark/mark \\
+Output       & None \\
+Errors       & Cannot find view (console) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt highlightView} \\
+Description  & Highlight/unhighlight the given view \\
+Input \#     & 2 \\
+Input Types  & View name (string), 0/1 (integer) indicating highlight
+               or unhighlight \\
+Output       & None \\
+Errors       & Cannot find view (console) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt setAxis} \\
+Description  & Sets the axis label for the specified axis and view \\
+Input \#     & 3 \\
+Input Types  & View name (string), axis label name (string),
+               axis type X/Y (string) \\
+Output       & None \\
+Errors       & Cannot find view or axis label name (console) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getAxis} \\
+Description  & Gets the axis label for the given axis and view \\
+Input \#     & 2 \\
+Input Types  & View name (string), axis X/Y (string) \\
+Output       & Label name (string) \\
+Errors       & Cannot find view (return value) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt setAction} \\
+Description  & Sets the action for a view \\
+Input \#     & 2 \\
+Input Types  & View name (string), action name (string) \\
+Output       & None \\
+Errors       & Cannot find view or action (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getAxisDisplay} \\
+Description  & Check if the given axis is turned on or off \\
+Input \#     & 2 \\
+Input Types  & View name (string), axis  X/Y (string) \\
+Output       & 1/0 (string) indicating axis is turned on/off \\
+Errors       & Cannot find view (return value) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt setViewStatistics} \\
+Description  & Set the statistical display status \\
+Input \#     & 2 \\
+Input Types  & View name (string), statistic status string (string
+               of 7 chars), each array element being '1' indicates
+               that the mean, max, min, count, confidence values 80\%,
+               85\% and 90\%, respectively \\
+Output       & None \\
+Errors       & Cannot find view (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getViewStatistics} \\
+Description  & Get the status of the statistic display for the given view \\
+Input \#     & 1 \\
+Input Types  & View name (string) \\
+Output       & A string of 7 chars where 0/1 represents whether the
+               statistic is to be displayed or not. The positions stand for
+               mean, max, min, count, confidence values 85\%, 90\%, and 95\%,
+               respectively \\
+Errors       & Cannot find view (return value) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getViewDimensions} \\
+Description  & Returns the number of dimensions of the given view \\
+Input \#     & 1 \\
+Input Types  & View name (string) \\
+Output       & Dimensions (integer) \\
+Errors       & Cannot find view (return value) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt setViewDimensions} \\
+Description  & Sets the dimensions for the view \\
+Input \#     & 2 \\
+Input Types  & View name (string), dimensions (integer) \\
+Output       & None \\
+Errors       & Cannot find view (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt savePixmap} \\
+Description  & Saves the view's pixmap to the given file \\
+Input \#     & 2 \\
+Input Types  & View name (string), file pointer (FILE *) (long) \\
+Output       & None \\
+Errors       & Cannot find view (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt loadPixmap} \\
+Description  & Load the view's pixmap \\
+Input \#     & 2 \\
+Input Types  & View name (string), pixelmap file pointer (FILE *) (long) \\
+Output       & None \\
+Errors       & Cannot find view (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt replaceView} \\
+Description  & Replaces the first view with the second \\
+Input \#     & 2 \\
+Input Types  & View name (string) (original), view name (string) (new one) \\
+Output       & None \\
+Errors       & Cannot find view1 or view2; view1 is not in a window;
+               view2 is already in a window (console) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getCurVisualFilter} \\
+Description  & Get the current visual filter for the given view \\
+Input \#     & 1 \\
+Input Types  & View name (string) \\
+Output       & 4 floats indicating the filter's xLow, xHigh, yLow and yHigh
+               with only 2 digits after the decimal point \\
+Errors       & Cannot find view (return value) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getVisualFilters} \\
+Description  & Get all the visual filters for a view in string format \\
+Input \#     & 1 \\
+Input Types  & View name (string) \\
+Output       & \{\{xLow yLow xHigh yHigh marked\} \ldots \};
+               marked is set to one if the user has marked the filter as
+               an interesting one. Note: date values are printed in the
+               Datestring format. \\
+Errors       & Cannot find view (return value) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt removeView} \\
+Description  & Remove a view from it's window \\
+Input \#     & 1 \\
+Input Types  & View name (string) \\
+Output       & None \\
+Errors       & Cannot find view, or view not in any window (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getViewMappings} \\
+Description  & Get all the mappings connected to the given view \\
+Input \#     & 1 \\
+Input Types  & View name (string) \\
+Output       & List of mapping names (strings) \\
+Errors       & Cannot find view (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt refreshView} \\
+Description  & Refreshes the given View \\
+Input \#     & 1 \\
+Input Types  & View name (string) \\
+Output       & None \\
+Errors       & Cannot find view (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getAction} \\
+Description  & Get the Action for the view \\
+Input \#     & 1 \\
+Input Types  & View name (string) \\
+Output       & Action name (string), or "" if no action specified \\
+Errors       & Cannot find view (return value) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt showkgraph} \\
+Description  & Create a new Kiviat graph or use an existing one to display
+               statistics of specified views \\
+Input \#     & variable (minimum 3) \\
+Input Types  & KGraph name (string), statistic (min/max/avg/count) (string),
+               name of KGraph window; remaining parameters list the names of
+               views to be included in the KGraph (strings) \\
+Output       & None \\
+Errors       & Cannot find view; could not add view to KGraph; could not
+               display KGraph (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt invalidatePixmap} \\
+Description  & Invalidate the cached pixelmap for the view \\
+Input \#     & 1 \\
+Input Types  & View name (string) \\
+Output       & None \\
+Errors       & Cannot find view (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt isMapped} \\
+Description  & Returns 1 if the view is mapped, 0 otherwise \\
+Input \#     & 1 \\
+Input Types  & View name (string) \\
+Output       & 1/0 (integer) indicating whether view is mapped or not \\
+Errors       & Cannot find view (return value) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getLabel} \\
+Description  & Get the label parameters for the given view \\
+Input \#     & 1 \\
+Input Types  & View name (string) \\
+Output       & "x y z" where x = occupyTop (1/0, integer),
+               y = extent (integer), z = title (string) \\
+Errors       & Cannot find view (return value) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getViewWin} \\
+Description  & Get the window name for this view \\
+Input \#     & 1 \\
+Input Types  & View name (string) \\
+Output       & Window name (string) if existing, else "" \\
+Errors       & Cannot find view (return value) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt clearViewHistory} \\
+Description  & Clear the visual filter history of the specified view \\
+Input \#     & 1 \\
+Input Types  & View name (string) \\
+Output       & None \\
+Errors       & Cannot find view (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt raiseView} \\
+Description  & Raises the view to top of window stacking order \\
+Input \#     & 1 \\
+Input Types  & View name (string) \\
+Output       & None \\
+Errors       & Cannot find view (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt lowerView} \\
+Description  & Lowers the view to bottom of window stacking order \\
+Input \#     & 1 \\
+Input Types  & View name (string) \\
+Output       & None \\
+Errors       & Cannot find view (return value) \\
+\hline
+\end{tabular}
+
+\section{Window Commands}
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getWinViews} \\
+Description  & Get all the views in the given window \\
+Input \#     & 1 \\
+Input Types  & Window name (string) \\
+Output       & List of view names (strings) \\
+Errors       & Cannot find window (return value) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt saveWindowImage} \\
+Description  & Saves the window image to a file \\
+Input \#     & 3 \\
+Input Types  & Window name (string), format (eps, gif, postscript) (string),
+               file name (string) \\
+Output       & None \\
+Errors       & Cannot find window (console) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getWindowLayout} \\
+Description  & Returns the window's height and width \\
+Input \#     & 1 \\
+Input Types  & Window name (string) \\
+Output       & "x y z" where x = height (integer), y = width (integer),
+               z = 1/0 (integer) indicating stacked mode on/off \\
+Errors       & Cannot find window (console) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt setWindowLayout} \\
+Description  & Sets the preferred window layout (height, width); optionally
+               set window to stacked mode or reset normal mode \\
+Input \#     & 3/4 \\
+Input Types  & Window name (string), height (integer), width (integer),
+               stacked (1/0) (integer, optional) \\
+Output       & None \\
+Errors       & Cannot find window (console) (!!) \\
+\hline
+\end{tabular}
+
+\section{Link and Cursor Commands}
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt insertLink} \\
+Description  & Connects a view to the link \\
+Input \#     & 2 \\
+Input Types  & Link name (string), view name (string) \\
+Output       & None \\
+Errors       & Cannot find link or view (console) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt setLinkFlag} \\
+Description  & Sets the type of the link (x/y/color/etc) \\
+Input \#     & 2 \\
+Input Types  & Link name (string), flag value (integer) \\
+Output       & None \\
+Errors       & Cannot find link (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getLinkFlag} \\
+Description  & Return the type of the link \\
+Input \#     & 1 \\
+Input Types  & Link name (string) \\
+Output       & Type of the link (integer) \\
+Errors       & Cannot find link (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt setCursorSrc} \\
+Description  & Sets the source view for the given cursor \\
+Input \#     & 2 \\
+Input Types  & Cursor name (string), view name (string) \\
+Output       & None \\
+Errors       & Cannot find cursor or view (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt setCursorDst} \\
+Description  & Sets the destination view for the given cursor \\
+Input \#     & 2 \\
+Input Types  & Cursor name (string), view name (string) \\
+Output       & None \\
+Errors       & Cannot find cursor or view (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getCursorViews} \\
+Description  & Gets the source and destination views of a cursor \\
+Input \#     & 1 \\
+Input Types  & Cursor name (string) \\
+Output       & \{source dest\} (strings) \\
+Errors       & Cannot find cursor (return value) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getLinkViews} \\
+Description  & Get all the views in the given link \\
+Input \#     & 1 \\
+Input Types  & Link name (string) \\
+Output       & List of view names (strings) \\
+Errors       & Cannot find link (return value) (!!) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt viewInLink} \\
+Description  & Check if the view is in the given link \\
+Input \#     & 2 \\
+Input Types  & Link name (string), view name (string) \\
+Output       & 0/1 (integer) indicating not present/present \\
+Errors       & Cannot find link or view (console) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt unlinkView} \\
+Description  & Unlinks the view from the given link \\
+Input \#     & 2 \\
+Input Types  & Link name (string), view name (string) \\
+Output       & None \\
+Errors       & Cannot find link or view (console) (!!) \\
+\hline
+\end{tabular}
+
+\section{Miscellaneous Commands}
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt date} \\
+Description  & Returns the current date \\
+Input \#     & 0 \\
+Input Types  & None \\
+Output       & mm/dd/yy (string) \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt clearQP} \\
+Description  & Removes all queries from the query processor \\
+Input \#     & 0 \\
+Input Types  & None \\
+Output       & None \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt clearInterp} \\
+Description  & Clear the list of interpreted classes \\
+Input \#     & 0 \\
+Input Types  & None \\
+Output       & None \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt parseDateFloat} \\
+Description  & Converts a date in string format to Unix time format \\
+Input \#     & 1 \\
+Input Types  & Date (string) \\
+Output       & Unix time (double, really an integer) \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt changeMode} \\
+Description  & Change modes to Layout or Display \\
+Input \#     & 1 \\
+Input Types  & 0/1 (integer) indicating display mode (0) or layout mode (1) \\
+Output       & None \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt exists} \\
+Description  & Check to see if the given instance exists \\
+Input \#     & 1 \\
+Input Types  & Instance name (string) \\
+Output       & 0/1 (integer) indicating whether instance exists or not \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\section{Obsolete Commands}
+
+Commands listed in this section are obsolete and not supported. Some
+of the functions they provide should be implemented in the client
+program internally and should not be visible to the visualization
+server.
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt openSession} \\
+Description  & Open and restore the session file; assumes no pre-existing
+               objects in memory \\
+Input \#     & 1 \\
+Input Types  & File name (string) \\
+Output       & None \\
+Errors       & Cannot restore session file (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt openTemplate} \\
+Description  & Open and restore the session file (opened in template mode);
+               assumes no pre-existing objects in memory \\
+Input \#     & 1 \\
+Input Types  & File name (string) \\
+Output       & None \\
+Errors       & Cannot restore template file (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt open} \\
+Description  & Opens a specified file with the given flag \\
+Input \#     & 2 \\
+Input Types  & File name (string), open mode (string) \\
+Output       & File pointer (FILE *) (long) \\
+Errors       & Cannot open file (console) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt writeLine} \\
+Description  & Writes a line in to the given file \\
+Input \#     & 2 \\
+Input Types  & File pointer (FILE *) (long), line (string) \\
+Output       & None \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt readLine} \\
+Description  & Reads a line from the specified file \\
+Input \#     & 1 \\
+Input Types  & File pointer (FILE *) (long) \\
+Output       & Line read from file (newline removed) \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt close} \\
+Description  & Closes the specified file \\
+Input \#     & 1 \\
+Input Types  & File pointer (FILE *) (long) \\
+Output       & None \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt printDispatcher} \\
+Description  & Print the contents of the Dispatcher \\
+Input \#     & 0 \\
+Input Types  & None \\
+Output       & Dispatched class name(string),DispatcherCallBack * (pointer) \\
+Errors       & None \\
+\hline
+\end{tabular}
+
+\newpage 
+\section*{Copyright}
+
+\verbatiminput{Copyright}
+
+\section*{Disclaimer}
+
+\verbatiminput{Disclaimer}
+
+\newpage
+\section*{Agreement}
+
+\verbatiminput{Agreement}
+
+\end{document}
