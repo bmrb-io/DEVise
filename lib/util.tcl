@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16  1996/04/23 20:36:24  jussi
+#  Corrected name of abort window.
+#
 #  Revision 1.15  1996/04/16 19:29:29  jussi
 #  Added AbortProgram function.
 #
@@ -591,20 +594,35 @@ proc ScaleLower {val} {
 }
 
 proc WindowVisible {w} {
+	
+	#DEBUG
+	puts "Inside WinfowVisible.."
 
     # see if $w already exists
     set err [catch {set state [wm state $w]}]
+	
+	#DEBUG
+	puts "The err value is " 
+	puts $err 
 
     if {$err} {
 	return 0
     }
 
     if {$state == "iconic"} {
+	#DEBUG
+	puts "State is iconic"
+
 	wm deiconify $w
     } else {
+
+	#DEBUG
+	puts "State is deiconic"
 	wm iconify $w
     }
-
+	
+	#DEBUG
+	puts "leaving Window visible.."
     return 1
 }
 

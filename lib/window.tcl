@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/05/07 16:48:12  jussi
+#  Rotation of mappings not done if there is just one mappings
+#  in a view.
+#
 #  Revision 1.4  1996/04/23 20:36:46  jussi
 #  Replaced Unknown view legend with X.
 #
@@ -265,10 +269,14 @@ proc DoCreateWindow { message } {
     global dialogListVar
 
     set winTypes [ DEVise get window ]
+	
 
     if { [llength $winTypes] == 1 } {
+
+
 	return [ DoActualCreateWindow [lindex $winTypes 0] ]
     }
+	
 
     set answer [ dialogList .createWin "Create Window"  \
 	    $message "" "" { Cancel Ok } $winTypes ]
@@ -285,6 +293,7 @@ proc DoActualCreateWindow { winType } {
     global dialogParamVar windowName
 
     set windowName [UniqueName DEViseWn0]
+	DEVise setWindowName 
     set paramNames [ DEVise getparam window $winType ]
 
     set button [ dialogParam .windowParam "Create Window" \

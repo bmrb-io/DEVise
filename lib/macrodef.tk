@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.42  1996/05/05 03:05:11  jussi
+#	Automatic adjustment of Y axis scale is done for bar charts only.
+#
 #	Revision 1.41  1996/04/23 20:39:10  jussi
 #	Corrected default value of view label.
 #
@@ -297,7 +300,7 @@ proc MacroDef {} {
     }
 
     CreateBitmapButton .map.bot.but.help help.gif Help MacroDefHelp
-#    button .map.bot.but.help -text Help -width 40 -command MacroDefHelp
+    button .map.bot.but.help -text Help -width 40 -command MacroDefHelp
     pack .map.bot.but.close .map.bot.but.create .map.bot.but.auto \
 	    .map.bot.but.help -side left -padx 5m
 
@@ -707,7 +710,7 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
     }
     
     set schema [ElimStringAttr [lindex $schemas($tdata) 1]]
-
+	
     set bgColor white
     set sortedx 0
     set xlo ""
@@ -868,6 +871,8 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
 		    "View $viewinstance exists already." "" 0 OK
 	    return
 	}
+
+
 	set result [DEVise create view $sorted $viewinstance \
 		$xlo $xhi $ylo $yhi $bgColor]
 	if {$result == ""} {
@@ -1253,6 +1258,7 @@ proc OpenDataSource {dispname} {
 
 proc OpenNewDataSource {} {
     global sourceList
+	
 
     # select data stream to display
     set sname [selectStream]
@@ -2144,6 +2150,7 @@ proc MacroImport {mode} {
     global dialogListVar
 
     set tdata ""
+	
 
     if {$mode > 0} {
 	set tdataSet [TdataSet]
@@ -2165,10 +2172,13 @@ proc MacroImport {mode} {
     if {$tdata == ""} {
 	set tdata [OpenNewDataSource]
     }
-
-    if {$tdata == ""} { return }
+	
+    if {$tdata == ""} { 
+		return 
+	}
 
     MacroDefAutoNew $tdata
+
 }
 
 ############################################################
@@ -2177,11 +2187,12 @@ proc MacroDefAutoNew {tdata} {
     global x yvar viewselname bgcolor linksel windowsel titlesel
     global xaxissel yaxissel cancel newgdata viewsel
     global sourceList macroSelectColor macroMenuSelectColor
-
+	
     if {[WindowVisible .auto]} {
+
 	return
     }
-
+	
     set schema [ElimStringAttr [DEVise getSchema $tdata]]
     set sfname [lindex $sourceList($tdata) 3]
     set schemaname [file tail $sfname]
@@ -2192,13 +2203,21 @@ proc MacroDefAutoNew {tdata} {
     wm title .auto "Define Visualization"
     wm geometry .auto +50+50
     selection clear .auto
+	
 
     label .auto.label -text "Define Visualization Parameters"
+
+	puts "calling frames.."
+
     frame .auto.top
     frame .auto.mid
     frame .auto.bot
     frame .auto.ysel -relief groove -borderwidth 2
+
+
     frame .auto.but
+
+
     pack .auto.label -side top -pady 3m -fill x -expand 1
     pack .auto.top -side top -pady 3m -fill x -expand 1
     pack .auto.mid -side top -pady 3m -fill x -expand 1
@@ -2223,6 +2242,7 @@ proc MacroDefAutoNew {tdata} {
     frame .auto.yaxissel -relief groove -borderwidth 2
     pack  .auto.titlesel .auto.linksel .auto.xaxissel .auto.yaxissel \
 	    -in .auto.bot -side left -ipady 3m -padx 1m -fill x -expand 1
+	
 
     label .auto.windowsel.label -text "Window:"
     menubutton .auto.windowsel.window -relief raised \
@@ -2233,15 +2253,20 @@ proc MacroDefAutoNew {tdata} {
     if {$windowsel == ""} {
 	set windowsel "None selected yet"
     }
-    
+   
+
     menu .auto.windowsel.window.menu -tearoff 0
     foreach w [WinSet] {
+
 	.auto.windowsel.window.menu add command -label $w \
 		-command "set windowsel {$w}"
     }
+
     .auto.windowsel.window.menu add separator
     .auto.windowsel.window.menu add command -label "New..." -command {
 	set newwin [DoCreateWindow "Select window type"]
+	
+
 	if {$newwin != ""} {
 	    set windowsel $newwin
 	    .auto.windowsel.window.menu add command -label $windowsel \
@@ -2302,8 +2327,9 @@ proc MacroDefAutoNew {tdata} {
     checkbutton .auto.yaxissel.yaxis -text "Y Axis" -variable yaxissel
     pack .auto.yaxissel.yaxis -side left -padx 3m
     set yaxissel 1
-
+	
     if {$topgrp == "__default"} {
+
 	set slabel "Select Y"
 	set swidth 15
     } else {
@@ -2331,13 +2357,15 @@ proc MacroDefAutoNew {tdata} {
 
     tk_menuBar .auto.xsel .auto.xsel.attr
     set cancel 0
+	
+	puts "Coming to the commenteed out part"
+	button .auto.but.ok -text OK -width 15 -command {
 
-    button .auto.but.ok -text OK -width 15 -command {
 	if {![DEVise exists $windowsel]} {
 	    dialog .winError "No Window Specified" \
 		    "Please select a window for visualization." \
-		    "" 0 OK
-	    return
+	    "" 0 OK
+	   return
 	}
 	foreach yname [array names yvar] {
 	    if {$yvar($yname) > 0} {
@@ -2355,6 +2383,7 @@ proc MacroDefAutoNew {tdata} {
 	set cancel 1
     }
     pack .auto.but.ok .auto.but.cancel -side left -expand 1 -padx 3m
+	
 
     tkwait variable cancel
     destroy .auto
