@@ -20,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1999/07/22 21:29:15  wenger
+#  Typo in previous commit.
+#
 #  Revision 1.4  1999/07/22 21:25:01  wenger
 #  Fixed problem with passing args to jspop.
 #
@@ -67,8 +70,12 @@ if (!$foundJspop) {
 
   # Make sure we kill off any stray deviseds.
   system("kill_devised2");
+
+  # This also kills Xvfb.
+  KillJspop();
+
   SaveLogs();
-  system("jspop &");
+  StartJspop();
 } elsif (!$foundDevised) {
   $curTime = localtime(time());
   print "No devised process found (at $curTime)\n";
@@ -79,10 +86,7 @@ if (!$foundJspop) {
   KillJspop();
   SaveLogs();
 
-  # Make sure the first Xvfb done getting killed before we start things up.
-  sleep 15;
-  @args = ("jspop", "-server2", "&");
-  system(@args);
+  StartJspop();
 }
 
 #-----------------------------------------------------------
@@ -116,4 +120,12 @@ sub KillJspop {
   }
 
   close PS;
+}
+
+#-----------------------------------------------------------
+
+sub StartJspop {
+  # Make sure the first Xvfb done getting killed before we start things up.
+  sleep 15;
+  system("jspop -server2 &");
 }
