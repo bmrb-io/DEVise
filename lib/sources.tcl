@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.34  1996/06/20 17:13:58  guangshu
+#	Added support for derived TData sets (statistics for now).
+#
 #	Revision 1.33  1996/06/04 14:22:08  wenger
 #	Ascii data can now be read from session files (or other files
 #	where the data is only part of the file); added some assertions
@@ -159,8 +162,6 @@ if {[file exists $sourceFile]} {
     puts "Using data stream catalog $sourceFile"
     source $sourceFile
 }
-
-scanDerivedSources
 
 source $libdir/mapdef.tcl
 source $libdir/autosrc.tcl
@@ -1282,3 +1283,5 @@ proc mapFollow {newtype} {
 	    clicking on Edit." "" 0 OK
 
 }
+
+scanDerivedSources
