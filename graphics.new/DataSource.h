@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/08/04 21:23:23  beyer
+  DataSource's are now reference counted.
+  Added Version() which TData now check to see if the DataSource has changed,
+    and if it has, it rebuilds its index and invalidates the cache.
+  DataSourceFixedBuf is a DataSourceBuf that allocates and destoyes its
+    own buffer.
+  DerivedDataSource functionality is now in the TData constructor.
+  Added some defaults for virtual methods.
+
   Revision 1.6  1996/07/01 19:31:31  jussi
   Added an asynchronous I/O interface to the data source classes.
   Added a third parameter (char *param) to data sources because
@@ -142,6 +151,9 @@ public:
 
 	// returns true if the caller should delete this object
 	bool DeleteRef();
+
+        // Return (estimated) data size
+        virtual unsigned long DataSize() { return 0; }
 
       protected:
 

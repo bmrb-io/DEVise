@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/10/07 22:53:57  wenger
+  Added more error checking and better error messages in response to
+  some of the problems uncovered by CS 737 students.
+
   Revision 1.6  1996/08/04 21:23:23  beyer
   DataSource's are now reference counted.
   Added Version() which TData now check to see if the DataSource has changed,
@@ -345,3 +349,20 @@ DataSourceFileStream::GetModTime()
 }
 
 /*============================================================================*/
+
+/*------------------------------------------------------------------------------
+ * function: DataSourceFileStream::DataSize
+ * Return file size.
+ */
+unsigned long
+DataSourceFileStream::DataSize()
+{
+    if (!_file)
+        return 0;
+
+    struct stat sbuf;
+    if (stat(_filename, &sbuf) < 0)
+        return 0;
+
+    return (unsigned long)sbuf.st_size;
+}
