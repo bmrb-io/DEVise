@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.44  1996/12/30 23:57:37  andyt
+  First version with support for Embedded Tcl/Tk windows. Added new
+  ETkWindow symbol shape. Improved the MappingInterp::MapGAttr2TAttr
+  function to handle all GData attributes (used to only handle a subset).
+
   Revision 1.43  1996/11/26 16:51:41  ssl
   Added support for piled viws
 
@@ -461,6 +466,10 @@ void ViewGraph::DrawLegend()
 
 void ViewGraph::UpdateAutoScale()
 {
+#if defined(DEBUG)
+    printf("ViewGraph::UpdateAutoScale()\n");
+#endif
+
     /* show all data records in view i.e. set filter to use the
        actual min/max X values and the actual min/max Y values;
        for 3D graphs, move camera to (0,0,Z) where Z is twice
@@ -500,8 +509,9 @@ void ViewGraph::UpdateAutoScale()
                 filter.yLow -= 1.0;
             }
         }
-        if (!IsScatterPlot())
-          filter.yLow = 0;
+        if (!IsScatterPlot()) {
+          filter.yLow = MIN(filter.yLow, 0.0);
+	}
         SetVisualFilter(filter);
     } else {
         Camera c = GetCamera();

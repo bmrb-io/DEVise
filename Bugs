@@ -107,7 +107,6 @@ Num Date        Status  Description
 			iconified. (rkw)
 
 031 08/15/96	FIXED	Rotation of stacked views doesn't seem to work. (rkw)
-			Assigned: Jussi
 
 032 08/15/96	FIXED	After removing a view from a window, the remaining
 			views aren't redrawn until you click in that window.
@@ -253,7 +252,6 @@ Num Date        Status  Description
 			if there is more than one data source (export
 			appears to work, but subsequent open fails).  (See
 			session test/miron_new_wdata.tk.) (rkw)
-			Assigned: Kent
 
 069 11/14/96	OPEN	Load session test/dbc2.tk; most views are initially
 			drawn with incorrect colors.  This somehow fixes
@@ -298,7 +296,6 @@ Num Date        Status  Description
 			a data stream -> some of the (internal) objects for
 			the session are not destroyed (opening the same
 			session again causes duplicate name error). (rkw)
-			Assigned: Kent
 
 079 11/21/96	OPEN	Data shouldn't be erased when switching from display
 			to layout mode. (ml/rkw)
@@ -402,7 +399,6 @@ Num Date        Status  Description
 
 103 12/20/96	FIXED	Bold, italic, and New Century Schoolbook fonts
 			don't work in PostScript. (rkw)
-			Assigned: Kent
 
 104 12/23/96	FIXED	AttrProj::LastRecId should report an error when
 			called on TData that doesn't have an index.  (rkw)
@@ -521,11 +517,9 @@ Num Date        Status  Description
 
 125 01/22/97	FIXED	When the help window is shown, the topics do not show
 			up. (rkw)
-			Assigned: Kent
 
 126 01/22/97	FIXED	When views are unstacked, they're not always redrawn
 			correctly. (rkw)
-			Assigned: Jussi
 
 127 01/22/97	WORK	'Attributes' and 'Colors' buttons in Query Tool do
 			nothing. (rkw)
@@ -546,7 +540,6 @@ Num Date        Status  Description
 			An internal error has occurred. The reason is:
   			Inconsistent state (../../graphics.new/RangeList.c:232)
 			(rkw)
-			Assigned: Jussi
 
 131 01/22/97	FIXED	Clicking on the Mapping button while a mapping
 			editor dialog is already open causes a Tcl error
@@ -563,15 +556,19 @@ Num Date        Status  Description
 			up the 'Edit Mapping' dialog -> you cannot get any
 			attributes to show up in the 'Variable' menu for
 			changing a GData attribute. (rkw)
+			(This happens because the schema filess opened by the
+			session are not the ones referred to in the data
+			streams.) (rkw)
+			Deferred
 
-135 01/23/97	OPEN	Saved pixmaps are not restore properly. The views
+135 01/23/97	OPEN	Saved pixmaps are not restored properly. The views
 			are cleared soon after pixmap is displayed on screen.
 			Problem is in View::DrawAxesLabel() which clears
 			view *after* pixmap is restored. Also see bug #069.
                         (jpm)
 			Deferred (storing of pixmaps disabled).
 
-136 01/23/97	OPEN	'5' key doesn't work for negative values. (rkw)
+136 01/23/97	FIXED	'5' key doesn't work for negative values. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
