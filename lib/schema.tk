@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.17  1996/03/24 19:09:41  jussi
+#  Added support for separator/whitespace and composite attributes.
+#
 #  Revision 1.16  1996/01/23 20:52:07  jussi
 #  Minor improvement.
 #
@@ -110,24 +113,24 @@ proc SchemaUser {} {
     # Show a list of currently defined physical schemas and buttons to either
     # create a Open one of these
 
-    toplevel .psch -bg red4
+    toplevel .psch
     wm title .psch "Current Schemas"
     wm geometry .psch +50+50
 
-    frame .psch.top -relief raised -bg honeydew2
-    frame .psch.mid -relief raised -bg honeydew2
-    frame .psch.bot -relief raised -bg honeydew2
+    frame .psch.top -relief raised
+    frame .psch.mid -relief raised
+    frame .psch.bot -relief raised
     pack .psch.top .psch.mid .psch.bot -side top -fill x -padx 1m -pady 1m
 
     # Label on top
-    label .psch.top.label -text "Schemas" -bg honeydew2 -fg red4
+    label .psch.top.label -text "Schemas"
     pack .psch.top.label
 
     # Listbox with scrollbar in the middle
     listbox .psch.mid.list -relief raised -bd 1 \
 	    -yscrollcommand ".psch.mid.scroll set" \
-	    -font 9x15 -selectmode single -bg honeydew2
-    scrollbar .psch.mid.scroll -command ".psch.mid.list yview" -bg honeydew2
+	    -font 9x15 -selectmode single
+    scrollbar .psch.mid.scroll -command ".psch.mid.list yview"
     pack .psch.mid.scroll -side right -fill y
     pack .psch.mid.list -fill x
 
@@ -138,7 +141,7 @@ proc SchemaUser {} {
     }    
 
     # Button to Open or Quit
-    button .psch.bot.attr -text "Attributes" -bg gray75 -fg IndianRed4 \
+    button .psch.bot.attr -text "Attributes" \
 	    -command {
 	set physchema [.psch.mid.list get active]
 	if {$physchema == ""} {
@@ -147,7 +150,7 @@ proc SchemaUser {} {
 	    displayattrs $physchema
 	}
     }
-    button .psch.bot.view -text "Views" -bg gray75 -fg IndianRed4 -command {
+    button .psch.bot.view -text "Views" -command {
 	set physchema [.psch.mid.list get active]
 	if {$physchema == ""} {
 	    showmesg "Please choose a schema by clicking on the entry."
@@ -156,7 +159,7 @@ proc SchemaUser {} {
 	    displogical $physchema
 	}
     }
-    button .psch.bot.quit -text Quit -bg gray75 -fg IndianRed4 -command {
+    button .psch.bot.quit -text Quit -command {
 	destroy .psch
     }
     pack .psch.bot.attr .psch.bot.view .psch.bot.quit \
@@ -172,24 +175,24 @@ proc SchemaSuperuser {} {
     # Show a list of currently defined schemas and buttons to either
     # create a New one or Open an existing one
 
-    toplevel .psch -bg red4
+    toplevel .psch
     wm title .psch "Physical Schemas"
     wm geometry .psch +50+50
 
-    frame .psch.top -relief raised -bg honeydew2
-    frame .psch.mid -relief raised -bg honeydew2
-    frame .psch.bot -relief raised -bg honeydew2
+    frame .psch.top -relief raised
+    frame .psch.mid -relief raised
+    frame .psch.bot -relief raised
     pack .psch.top .psch.mid .psch.bot -side top -fill x -padx 1m -pady 1m
 
     # Label on top
-    label .psch.top.label -text "Schemas" -bg honeydew2 -fg red4
+    label .psch.top.label -text "Schemas"
     pack .psch.top.label
 
     # Listbox with scrollbar in the middle
     listbox .psch.mid.list -relief raised -bd 1 \
 	    -yscrollcommand ".psch.mid.scroll set" \
-	    -font 9x15 -selectmode single -bg honeydew2
-    scrollbar .psch.mid.scroll -command ".psch.mid.list yview" -bg honeydew2
+	    -font 9x15 -selectmode single
+    scrollbar .psch.mid.scroll -command ".psch.mid.list yview"
     pack .psch.mid.scroll -side right -fill y
     pack .psch.mid.list -fill x
 
@@ -200,11 +203,11 @@ proc SchemaSuperuser {} {
     }
 
     # Buttons at bottom
-    button .psch.bot.new -text New -bg gray75 -fg IndianRed4 -command {
+    button .psch.bot.new -text New -command {
 	destroy .psch
 	newschema
     }
-    button .psch.bot.open -text Open -bg gray75 -fg IndianRed4 -command {
+    button .psch.bot.open -text Open -command {
 	set sel [.psch.mid.list get active]
 	if {$sel == ""} {
 	    showmesg "Select the schema to edit by clicking once on the entry."
@@ -213,7 +216,7 @@ proc SchemaSuperuser {} {
 	    openschema $sel
 	}
     }
-    button .psch.bot.del -text Remove -bg gray75 -fg IndianRed4 -command {
+    button .psch.bot.del -text Remove -command {
 	set sel [.psch.mid.list get active]
 	if {$sel == ""} {
 	    showmesg "Select the schema to remove by clicking once on the entry."
@@ -233,7 +236,7 @@ proc SchemaSuperuser {} {
 	}
     }
 
-    button .psch.bot.quit -text Quit -bg gray75 -fg IndianRed4 -command {
+    button .psch.bot.quit -text Quit -command {
 	destroy .psch
     }
     pack .psch.bot.new .psch.bot.open .psch.bot.del .psch.bot.quit -side left \
@@ -252,58 +255,57 @@ proc newschemawin {} {
     # Count number of attributes
     set attrnum 0
 
-    toplevel .newschema -bg red4
+    toplevel .newschema
     wm title .newschema "Schema Description"
     wm geometry .newschema +50+50
     
     # Top level rows in the window
-    frame .newschema.firstrow -relief raised -bg honeydew2
-    frame .newschema.commseprow -relief raised  -bg honeydew2
-    frame .newschema.opt -relief raised  -bg honeydew2
-    frame .newschema.attr -relief raised -bg honeydew2
+    frame .newschema.firstrow -relief raised
+    frame .newschema.commseprow -relief raised
+    frame .newschema.opt -relief raised
+    frame .newschema.attr -relief raised
     pack .newschema.firstrow  .newschema.commseprow .newschema.attr \
 	    .newschema.opt 	-side top -fill x -padx 1m -pady 1m
     
     #-----------------------------------------------------------
     # Within first row - name and type
-    frame .newschema.fname -relief raised -bd 1 -bg honeydew2
-    frame .newschema.ftype -relief raised -bd 1 -bg red4
+    frame .newschema.fname -relief raised -bd 1
+    frame .newschema.ftype -relief raised -bd 1
     pack .newschema.fname .newschema.ftype -in .newschema.firstrow \
 	    -side left -fill x -padx 3m -pady 1m
     
-    label .newschema.fname.label -text "Schema Name " -bg honeydew2 -fg red4
+    label .newschema.fname.label -text "Schema Name "
     entry .newschema.fname.entry -width 25 -relief sunken -bd 2 \
-	    -textvariable sname -bg bisque
+	    -textvariable sname
     pack .newschema.fname.label .newschema.fname.entry -side left -padx 1m \
 	    -pady 1m
     
-    label .newschema.ftype.label -text "File Type"  -bg honeydew2 -fg red4
+    label .newschema.ftype.label -text "File Type"
     radiobutton .newschema.ftype.ascii -text Ascii -variable ftype \
-	    -value ascii -anchor nw -bg honeydew2
+	    -value ascii -anchor nw
     radiobutton .newschema.ftype.binary -text Binary -variable ftype \
-	    -value binary -anchor nw -bg honeydew2
+	    -value binary -anchor nw
     pack .newschema.ftype.label .newschema.ftype.ascii .newschema.ftype.binary \
 	    -side top -fill x
     
     #-----------------------------------------------------------
     # Comment and separator characters
-    frame .newschema.comm -relief raised -bg honeydew2
-    frame .newschema.separ -relief raised -bg honeydew2
+    frame .newschema.comm -relief raised
+    frame .newschema.separ -relief raised
     pack .newschema.comm -side left  -in .newschema.commseprow \
 	    -padx 3m -pady 1m 
     pack .newschema.separ -side right  -in .newschema.commseprow \
 	    -padx 3m -pady 1m
     
-    label .newschema.comm.label -text "Comment characters" \
-	    -bg honeydew2 -fg red4
+    label .newschema.comm.label -text "Comment characters"
     entry .newschema.comm.entry -width 5 -relief sunken -bd 2 \
-	    -textvariable comm -bg bisque
+	    -textvariable comm
     pack .newschema.comm.label .newschema.comm.entry -side left \
 	    -padx 1m -pady 1m
     
     menubutton .newschema.separ.button -relief raised \
 	    -textvariable issepartext -menu .newschema.separ.button.menu \
-	    -width 12 -bg honeydew2 -fg red4
+	    -width 12
     menu .newschema.separ.button.menu -tearoff 0
     .newschema.separ.button.menu add radiobutton -label "Separator" \
 	    -variable issepar -value 1 -command {
@@ -318,34 +320,33 @@ proc newschemawin {} {
 	set issepartext "Whitespace"
     }
     entry .newschema.separ.entry -width 15 -relief sunken -bd 2 \
-	    -textvariable separ -bg bisque
+	    -textvariable separ
     pack .newschema.separ.button .newschema.separ.entry -side left \
 	    -padx 1m -pady 1m 
     
     #-----------------------------------------------------------
     # Attributes
-    frame .newschema.attrlist -relief raised  -bg honeydew2
-    frame .newschema.attradd -relief raised -bg honeydew2
+    frame .newschema.attrlist -relief raised
+    frame .newschema.attradd -relief raised
     pack .newschema.attrlist -in .newschema.attr \
 	    -side top -padx 3m -pady 1m -fill x
     pack .newschema.attradd -in .newschema.attr \
 	    -side bottom -padx 3m -pady 1m -fill x
     
-    label .newschema.attrlist.label -text "List of Attributes" \
-	    -bg honeydew2 -fg red4
+    label .newschema.attrlist.label -text "List of Attributes"
     label .newschema.attrlist.spec \
 	    -text "Comp Sort Type   Hi    Lo    Name" \
-	    -bg honeydew2 -fg red4 -font 9x15
+	    -font 9x15
     pack .newschema.attrlist.label -side top -fill x
     pack .newschema.attrlist.spec -side top -anchor nw
     listbox .newschema.attrlist.list -relief raised -bd 1 \
 	    -yscrollcommand ".newschema.attrlist.scroll set" \
 	    -xscrollcommand ".newschema.attrlist.xscroll set" \
-	    -font 9x15 -selectmode extended -bg honeydew2
+	    -font 9x15 -selectmode extended
     scrollbar .newschema.attrlist.scroll \
-	    -command ".newschema.attrlist.list yview" -bg honeydew2
+	    -command ".newschema.attrlist.list yview"
     scrollbar .newschema.attrlist.xscroll -orient horizontal \
-	    -command ".newschema.attrlist.list xview" -bg honeydew2
+	    -command ".newschema.attrlist.list xview"
     pack .newschema.attrlist.scroll -side right -fill y
     pack .newschema.attrlist.xscroll -side bottom -fill x
     pack .newschema.attrlist.list -fill x 
@@ -366,74 +367,70 @@ proc newschemawin {} {
 	set attrnum [expr $attrnum+1]
     }
     
-    frame .newschema.attrspec -relief raised -bg honeydew2
-    frame .newschema.attrop -relief raised -bg honeydew2
+    frame .newschema.attrspec -relief raised
+    frame .newschema.attrop -relief raised
     pack .newschema.attrspec .newschema.attrop \
 	    -in .newschema.attradd -side top -fill x -padx 3m -pady 1m
     
-    frame .newschema.attrname -relief raised -bd 1 -bg honeydew2
-    frame .newschema.atype -relief raised -bd 1 -bg honeydew2
-    frame .newschema.asort -relief raised -bd 1 -bg honeydew2
-    frame .newschema.ahival -relief raised -bd 1 -bg honeydew2
-    frame .newschema.aloval -relief raised -bd 1 -bg honeydew2
+    frame .newschema.attrname -relief raised -bd 1
+    frame .newschema.atype -relief raised -bd 1
+    frame .newschema.asort -relief raised -bd 1
+    frame .newschema.ahival -relief raised -bd 1
+    frame .newschema.aloval -relief raised -bd 1
     pack .newschema.attrname .newschema.atype .newschema.asort \
 	    .newschema.ahival .newschema.aloval \
 	    -in .newschema.attrspec -side top -fill x -padx 3m -pady 1m
     
-    label .newschema.attrname.label -text "Attribute Name " \
-	    -bg honeydew2 -fg red4
+    label .newschema.attrname.label -text "Attribute Name "
     entry .newschema.attrname.entry -width 25 -relief sunken -bd 2 \
-	    -textvariable aname -bg bisque
+	    -textvariable aname
     pack .newschema.attrname.label .newschema.attrname.entry -side left \
 	    -padx 3m -pady 1m
     
-    label .newschema.ahival.label -text "Attribute High Value " \
-	    -bg honeydew2 -fg red4
+    label .newschema.ahival.label -text "Attribute High Value "
     entry .newschema.ahival.entry -width 25 -relief sunken -bd 2 \
-	    -textvariable ahival -bg bisque
+	    -textvariable ahival
     pack .newschema.ahival.label .newschema.ahival.entry -side left \
 	    -padx 3m -pady 1m
     
-    label .newschema.aloval.label -text "Attribute Low Value  " \
-	    -bg honeydew2 -fg red4
+    label .newschema.aloval.label -text "Attribute Low Value  "
     entry .newschema.aloval.entry -width 25 -relief sunken -bd 2 \
-	    -textvariable aloval -bg bisque
+	    -textvariable aloval
     pack .newschema.aloval.label .newschema.aloval.entry -side left \
 	    -padx 3m -pady 1m
     
-    label .newschema.atype.label -text "Type   " -bg honeydew2 -fg red4
+    label .newschema.atype.label -text "Type   "
     radiobutton .newschema.atype.double -text double -variable atype \
-	    -value "double" -anchor nw -bg honeydew2
+	    -value "double" -anchor nw
     radiobutton .newschema.atype.int -text int -variable atype \
-	    -value "int" -anchor nw -bg honeydew2
+	    -value "int" -anchor nw
     radiobutton .newschema.atype.string -text string -variable atype \
-	    -value "string" -anchor nw -bg honeydew2
+	    -value "string" -anchor nw
     radiobutton .newschema.atype.float -text float -variable atype \
-	    -value "float" -anchor nw -bg honeydew2
+	    -value "float" -anchor nw
     radiobutton .newschema.atype.date -text date -variable atype \
-	    -value "date" -anchor nw -bg honeydew2
+	    -value "date" -anchor nw
     pack .newschema.atype.label .newschema.atype.double .newschema.atype.int \
 	    .newschema.atype.string .newschema.atype.float \
 	    .newschema.atype.date  -side left -fill x -padx 1m 
 
-    label .newschema.asort.label -text "Sorted "  -bg honeydew2 -fg red4
+    label .newschema.asort.label -text "Sorted "
     radiobutton .newschema.asort.yes -text Yes -variable asort \
-	    -value Yes -anchor nw -bg honeydew2
+	    -value Yes -anchor nw
     radiobutton .newschema.asort.no -text No -variable asort \
-	    -value No -anchor nw -bg honeydew2
+	    -value No -anchor nw
     pack .newschema.asort.label .newschema.asort.yes .newschema.asort.no \
 	 -side left -fill x -padx 1m
     
-    label .newschema.asort.label2 -text "Composite " -bg honeydew2 -fg red4
+    label .newschema.asort.label2 -text "Composite "
     radiobutton .newschema.asort.yes2 -text Yes -variable acomp \
-	    -value Yes -anchor nw -bg honeydew2
+	    -value Yes -anchor nw
     radiobutton .newschema.asort.no2 -text No -variable acomp \
-	    -value No -anchor nw -bg honeydew2
+	    -value No -anchor nw
     pack .newschema.asort.no2 .newschema.asort.yes2 .newschema.asort.label2 \
 	 -side right -fill x -padx 1m
 
-    button .newschema.attrop.add -text "Add item" -bg gray75 -fg IndianRed4 \
-	    -command {
+    button .newschema.attrop.add -text "Add item" -command {
 	if {$ahival == ""} {
 	    set ahival "none"
 	}
@@ -459,8 +456,7 @@ proc newschemawin {} {
 	set ahival ""
 	set aloval ""
     }
-    button .newschema.attrop.delete -text "Delete item" \
-	    -bg gray75 -fg IndianRed4 -command {
+    button .newschema.attrop.delete -text "Delete item" -command {
 	.newschema.attrlist.list delete active
 	# Decrement count
 	set attrnum [expr $attrnum-1]
@@ -476,8 +472,7 @@ proc newschemawin {} {
 	set aname [lindex $attrl 5]
     }
     
-    button .newschema.attrop.modify -text "Modify item" -bg gray75 -fg IndianRed4\
-	    -command {
+    button .newschema.attrop.modify -text "Modify item" -command {
 	set aname [lindex [string trim $aname] 0]
 	if {$aname == ""} {
 	    showmesg "Double-click on an item to select it."
@@ -506,7 +501,7 @@ proc newschemawin {} {
     
     #-----------------------------------------------------------
     # Bottom portion of window
-    button .newschema.opt.save -text Save -bg gray75 -fg IndianRed4 -command {
+    button .newschema.opt.save -text Save -command {
 	if {$sname == ""} {
 	    showmesg "No schema name specified."
 	} else {
@@ -535,8 +530,7 @@ proc newschemawin {} {
 	    destroy .newschema
 	}
     }
-    button .newschema.opt.quit -text Cancel -bg gray75 -fg IndianRed4 \
-	    -command { destroy .newschema }
+    button .newschema.opt.quit -text Cancel -command { destroy .newschema }
     pack .newschema.opt.save .newschema.opt.quit  -side left \
 	    -padx 3m -pady 1m -expand 1
     
@@ -599,19 +593,18 @@ proc openschema {filename} {
 #-----------------------------------------------------------
 # General function to display a message
 proc showmesg {str} {
-    toplevel .msg -bg red4
+    toplevel .msg
     wm title .msg Message
     wm geometry .msg +100+100
     
-    frame .msg.str -relief raised -bd 1 -bg red4
-    frame .msg.ok -relief raised -bg red4
+    frame .msg.str -relief raised -bd 1
+    frame .msg.ok -relief raised
     pack .msg.str .msg.ok -side top -fill x -padx 3m -pady 3m
 
-    message .msg.str.msg -width 3i -text $str -bg red4 -fg white
+    message .msg.str.msg -width 3i -text $str
     pack .msg.str.msg -side right -expand 1 -fill both -padx 3m -pady 3m
 
-    button .msg.ok.but -text OK -bg white -fg red4 \
-	    -command {destroy .msg}
+    button .msg.ok.but -text OK -command {destroy .msg}
     pack .msg.ok.but -side top -expand 1 -padx 3m -pady 1m
 
     tkwait visibility .msg
@@ -808,28 +801,27 @@ proc readphysical {filename} {
 proc gbrowse {} {
     global tgrps glist logschema physchema Logical attrlist iname
 
-    toplevel .gbrowse -bg red4
+    toplevel .gbrowse
     wm title .gbrowse "$physchema View : $logschema"
     wm geometry .gbrowse +50+50
     wm iconname .gbrowse "Groups"
 
     # Toplevel rows
-    frame .gbrowse.attrs -relief raised -bg honeydew2
-    frame .gbrowse.list -relief raised -bg honeydew2 
-    frame .gbrowse.ops -relief raised -bg honeydew2 
+    frame .gbrowse.attrs -relief raised
+    frame .gbrowse.list -relief raised
+    frame .gbrowse.ops -relief raised
     pack .gbrowse.attrs .gbrowse.list .gbrowse.ops \
 	    -side top -fill x -padx 3m -pady 1m
 
     #----------------------------------------------------------
     # Create a listbox with all the attrs in the physical schema
     readphysical $physchema
-    label .gbrowse.attrs.label -text "List of Attributes" -bg honeydew2 -fg red4
+    label .gbrowse.attrs.label -text "List of Attributes"
     pack .gbrowse.attrs.label -side top -fill x
     listbox .gbrowse.attrs.list -relief raised -bd 1 \
 	    -yscrollcommand ".gbrowse.attrs.scroll set" \
-	    -font 9x15 -selectmode single -bg honeydew2
-    scrollbar .gbrowse.attrs.scroll -command ".gbrowse.attrs.list yview" \
-	    -bg honeydew2
+	    -font 9x15 -selectmode single
+    scrollbar .gbrowse.attrs.scroll -command ".gbrowse.attrs.list yview"
     pack .gbrowse.attrs.scroll -side right -fill y
     pack .gbrowse.attrs.list -fill x
 
@@ -846,14 +838,14 @@ proc gbrowse {} {
     #-----------------------------------------------------------
     # Create a listbox displaying list of groups
     #    CreateTextBitmap .gbrowse.list.label group.gif Groups
-    label .gbrowse.list.label -text "List of Groups" -bg honeydew2 -fg red4
+    label .gbrowse.list.label -text "List of Groups"
     pack .gbrowse.list.label -side top -fill x
 
     listbox .gbrowse.list.list -relief raised -bd 1 \
 	    -yscrollcommand ".gbrowse.list.scroll set" \
-	    -font 9x15 -selectmode single  -bg honeydew2
+	    -font 9x15 -selectmode single
     scrollbar .gbrowse.list.scroll \
-	    -command ".gbrowse.list.list yview" -bg honeydew2
+	    -command ".gbrowse.list.list yview"
     pack .gbrowse.list.scroll  -side right -fill y
     pack .gbrowse.list.list  -fill x 
 
@@ -870,19 +862,18 @@ proc gbrowse {} {
 
 
     # Panel for group name and panels for create, delete and modify
-    frame .gbrowse.ops.name -relief raised -bg honeydew2 -bd 1
-    frame .gbrowse.ops.op -relief raised -bg honeydew2 
+    frame .gbrowse.ops.name -relief raised -bd 1
+    frame .gbrowse.ops.op -relief raised
     pack .gbrowse.ops.name .gbrowse.ops.op -side top -fill x \
 	    -padx 3m -pady 1m
 
-    label .gbrowse.ops.name.label -text "Group Name " -bg honeydew2 -fg red4
+    label .gbrowse.ops.name.label -text "Group Name "
     entry .gbrowse.ops.name.entry -width 15 -relief sunken -bd 2 \
-	    -textvariable gname -bg bisque
+	    -textvariable gname
     pack .gbrowse.ops.name.label .gbrowse.ops.name.entry -side left \
 	    -fill x -padx 1m -pady 1m -expand 1
 
-    button .gbrowse.ops.op.create -text "Create" \
-	    -bg gray75 -fg IndianRed4 	-command {
+    button .gbrowse.ops.op.create -text "Create" -command {
 	if {$gname == ""} {
 	    showmesg "Please specify the name of the group."
 	} elseif {[info exists glist($gname)] == 1} {
@@ -893,8 +884,7 @@ proc gbrowse {} {
 	    dispgrp $gname
 	}
     }
-    button .gbrowse.ops.op.delete -text "Delete" \
-	    -bg gray75 -fg IndianRed4	-command {
+    button .gbrowse.ops.op.delete -text "Delete" -command {
 	if {$gname == ""} {
 	    showmesg "Please specify the name of the group."
 	} else {
@@ -915,8 +905,7 @@ proc gbrowse {} {
 	    set gname ""
 	}
     }
-    button .gbrowse.ops.op.modify -text "Modify" \
-	    -bg gray75 -fg IndianRed4	-command {
+    button .gbrowse.ops.op.modify -text "Modify" -command {
 	if {$gname == ""} {
 	    showmesg "Please specify the name of the group."
 	} elseif {[lsearch $tgrps $gname] == -1} {
@@ -925,8 +914,7 @@ proc gbrowse {} {
 	    dispgrp $gname
 	}
     }
-    button .gbrowse.ops.op.quit -text "Quit" \
-	    -bg gray75 -fg IndianRed4	-command {
+    button .gbrowse.ops.op.quit -text "Quit" -command {
 #	printgrps 
 	writelogical $logschema
 	# Update catalog if needed
@@ -950,24 +938,23 @@ proc dispgrp {gname } {
 
     set currgrp $gname 
 
-    toplevel .grp -bg red4
+    toplevel .grp
     wm title .grp Group 
     wm geometry .grp +100+100
 
-    frame .grp.list -relief raised -bg honeydew2
-    frame .grp.ops -relief raised -bg honeydew2
-    frame .grp.bot -relief raised -bg honeydew2
+    frame .grp.list -relief raised
+    frame .grp.ops -relief raised
+    frame .grp.bot -relief raised
     pack .grp.list .grp.ops .grp.bot -side top -fill x -padx 3m -pady 1m
 
     # List showing current group structure
-    label .grp.list.label -text "Display for Group : $gname" -bg honeydew2 -fg Red4
+    label .grp.list.label -text "Display for Group : $gname"
     pack .grp.list.label -side top -fill x
 
     listbox .grp.list.list -relief raised -bd 1 \
 	    -yscrollcommand ".grp.list.scroll set" \
-	    -font 9x15 -selectmode extended  -bg honeydew2
-    scrollbar .grp.list.scroll \
-	    -command ".grp.list.list yview" -bg honeydew2
+	    -font 9x15 -selectmode extended
+    scrollbar .grp.list.scroll -command ".grp.list.list yview"
     pack .grp.list.scroll  -side right -fill y
     pack .grp.list.list  -fill x 
 
@@ -975,35 +962,34 @@ proc dispgrp {gname } {
     glinsert $gname 0
 
     # Frame containing item and nested grp info
-    frame .grp.curr -relief raised -bg honeydew2 
+    frame .grp.curr -relief raised
     pack .grp.curr -in .grp.ops -side top -fill x -padx 2m -pady 1m
-    label .grp.curr.label -text "Current group " -bg honeydew2 -fg Red4
+    label .grp.curr.label -text "Current group "
     entry .grp.curr.entry -width 25 -relief sunken -bd 2 \
-	    -textvariable currgrp -bg bisque
+	    -textvariable currgrp
     pack .grp.curr.label .grp.curr.entry -side left -padx 2m -expand 1
 
-    frame .grp.item -relief raised -bg honeydew2 -bd 1
-    frame .grp.ngrp -relief raised -bg honeydew2 -bd 1 
+    frame .grp.item -relief raised -bd 1
+    frame .grp.ngrp -relief raised -bd 1 
     pack .grp.item .grp.ngrp -in .grp.ops -side left -padx 2m -pady 1m \
 	    -expand 1
 
-    frame .grp.item.top -relief raised -bg honeydew2
-    frame .grp.item.mid -relief raised -bg honeydew2
-    frame .grp.item.bot -relief raised -bg honeydew2
+    frame .grp.item.top -relief raised
+    frame .grp.item.mid -relief raised
+    frame .grp.item.bot -relief raised
     pack .grp.item.top .grp.item.mid .grp.item.bot -side top -fill x \
 	    -padx 1m -pady 1m
 
-    label .grp.item.top.label -text "Item" -bg honeydew2 -fg Red4
+    label .grp.item.top.label -text "Item"
     pack .grp.item.top.label 
     
-    label .grp.item.mid.label -text "Name " -bg honeydew2 -fg Red4
+    label .grp.item.mid.label -text "Name "
     entry .grp.item.mid.entry -width 25 -relief sunken -bd 2 \
-	    -textvariable iname -bg bisque
+	    -textvariable iname
     pack .grp.item.mid.label .grp.item.mid.entry -side left -fill x \
 	    -padx 3m -pady 1m
 
-    button .grp.item.bot.add -text "Insert" \
-	    -bg gray75 -fg IndianRed4 -command {
+    button .grp.item.bot.add -text "Insert" -command {
 	set iname [lindex [string trim $iname] 0]
 	if {$iname == ""} {
 	    showmesg "Please specify the name of the item."
@@ -1034,8 +1020,7 @@ proc dispgrp {gname } {
 	set iname ""
     }
 
-    button .grp.item.bot.del -text "Delete" \
-	    -bg gray75 -fg IndianRed4 -command {
+    button .grp.item.bot.del -text "Delete" -command {
 	set iname [lindex [string trim $iname] 0]
 	if {$iname == ""} {
 	    showmesg "Please specify the name of the item."
@@ -1065,23 +1050,22 @@ proc dispgrp {gname } {
     pack .grp.item.bot.add  \
 	    .grp.item.bot.del -side left -expand 1 -padx 3m -pady 1m
 
-    frame .grp.ngrp.top -relief raised -bg honeydew2
-    frame .grp.ngrp.mid -relief raised -bg honeydew2
-    frame .grp.ngrp.bot -relief raised -bg honeydew2
+    frame .grp.ngrp.top -relief raised
+    frame .grp.ngrp.mid -relief raised
+    frame .grp.ngrp.bot -relief raised
     pack .grp.ngrp.top .grp.ngrp.mid .grp.ngrp.bot -side top -fill x \
 	    -padx 1m -pady 1m
 
-    label .grp.ngrp.top.label -text "Sub Group" -bg honeydew2 -fg Red4
+    label .grp.ngrp.top.label -text "Sub Group"
     pack .grp.ngrp.top.label 
     
-    label .grp.ngrp.mid.label -text "Name " -bg honeydew2 -fg Red4
+    label .grp.ngrp.mid.label -text "Name "
     entry .grp.ngrp.mid.entry -width 25 -relief sunken -bd 2 \
-	    -textvariable ngname -bg bisque
+	    -textvariable ngname
     pack .grp.ngrp.mid.label .grp.ngrp.mid.entry -side left -fill x \
 	    -padx 3m -pady 1m
 
-    button .grp.ngrp.bot.add -text "Create" \
-	    -bg gray75 -fg IndianRed4 -command {
+    button .grp.ngrp.bot.add -text "Create" -command {
 	set ngname [lindex [string trim $ngname] 0]
 	if {$ngname == ""} {
 	    showmesg "Please specify the name of the sub group."
@@ -1112,8 +1096,7 @@ proc dispgrp {gname } {
 	set currgrp $ngname
 	set ngname ""
     }
-    button .grp.ngrp.bot.del -text "Delete" \
-	    -bg gray75 -fg IndianRed4 -command {
+    button .grp.ngrp.bot.del -text "Delete" -command {
 	set ngname [lindex [string trim $ngname] 0]
 	if {$ngname == ""} {
 	    showmesg "Please specify the name of the sub group."
@@ -1165,8 +1148,7 @@ proc dispgrp {gname } {
     }
 	
     # Frame containing save and cancel buttons
-    button .grp.bot.save -text "Save" \
-	    -bg gray75 -fg IndianRed4 -command {
+    button .grp.bot.save -text "Save" -command {
 	destroy .grp
 	# Insert gname into main group list if not already present
 	set len [.gbrowse.list.list index end]
@@ -1184,8 +1166,7 @@ proc dispgrp {gname } {
 	set ngname ""
 	set iname ""
     }
-    button .grp.bot.cancel -text "Cancel" \
-	    -bg gray75 -fg IndianRed4 -command {
+    button .grp.bot.cancel -text "Cancel" -command {
 	destroy .grp
 	set ngname ""
 	set iname ""
@@ -1411,32 +1392,32 @@ proc displogical {pname} {
     set physchema $pname
     
     # Display the logical schema corr. to the passed physical schema
-    toplevel .lsch -bg red4
+    toplevel .lsch
     wm title .lsch "Current Views"
     wm geometry .lsch +50+50
 
-    frame .lsch.top -relief raised -bg honeydew2
-    frame .lsch.mid -relief raised -bg honeydew2
-    frame .lsch.bot -relief raised -bg honeydew2
-    frame .lsch.ent -relief raised -bg honeydew2
+    frame .lsch.top -relief raised
+    frame .lsch.mid -relief raised
+    frame .lsch.bot -relief raised
+    frame .lsch.ent -relief raised
     pack .lsch.top .lsch.mid .lsch.ent .lsch.bot \
 	    -side top -fill x -padx 1m -pady 1m
 
     # Entry for schema name
-    label .lsch.ent.label -text "Schema name : " -bg honeydew2 -fg red4
+    label .lsch.ent.label -text "Schema name : "
     entry .lsch.ent.entry -width 25 -relief sunken -bd 2 \
-	    -textvariable logschema -bg bisque
+	    -textvariable logschema
     pack .lsch.ent.label .lsch.ent.entry -side left -padx 1m 
 
     # Label on top
-    label .lsch.top.label -text "$pname   Schemas" -bg honeydew2 -fg red4
+    label .lsch.top.label -text "$pname   Schemas"
     pack .lsch.top.label
 
     # Listbox with scrollbar in the middle
     listbox .lsch.mid.list -relief raised -bd 1 \
 	    -yscrollcommand ".lsch.mid.scroll set" \
-	    -font 9x15 -selectmode single -bg honeydew2
-    scrollbar .lsch.mid.scroll -command ".lsch.mid.list yview" -bg honeydew2
+	    -font 9x15 -selectmode single
+    scrollbar .lsch.mid.scroll -command ".lsch.mid.list yview"
     pack .lsch.mid.scroll -side right -fill y
     pack .lsch.mid.list -fill x
 
@@ -1454,7 +1435,7 @@ proc displogical {pname} {
     }
 
     # Button to create a New one, Open or Quit
-    button .lsch.bot.new -text New -bg gray75 -fg IndianRed4 -command {
+    button .lsch.bot.new -text New -command {
 	if {$logschema == ""} {
 	    showmesg "Please type in the name of the schema to be created."
 	} else {
@@ -1463,7 +1444,7 @@ proc displogical {pname} {
 	    gbrowse
 	}
     }
-    button .lsch.bot.open -text Open -bg gray75 -fg IndianRed4 -command {
+    button .lsch.bot.open -text Open -command {
 	if {$logschema == ""} {
 	    showmesg "Please choose a schema by clicking on the entry."
 	} else {
@@ -1473,7 +1454,7 @@ proc displogical {pname} {
 	}
     }
 
-    button .lsch.bot.del -text Remove -bg gray75 -fg IndianRed4 -command {
+    button .lsch.bot.del -text Remove -command {
 	if {$logschema == ""} {
 	    showmesg "Please select the view to remove by clicking on \
 		    the entry."
@@ -1503,7 +1484,7 @@ proc displogical {pname} {
 	    }
 	}
     }
-    button .lsch.bot.quit -text Quit -bg gray75 -fg IndianRed4 -command {
+    button .lsch.bot.quit -text Quit -command {
 	destroy .lsch
     }
     pack .lsch.bot.new .lsch.bot.open .lsch.bot.del .lsch.bot.quit \
@@ -1524,23 +1505,22 @@ proc displayattrs {pname} {
     # Create a window with a listbox showing the names of all the attrs
     # in the physical schema pname
     
-    toplevel .slist -bg red4
+    toplevel .slist
     wm title .slist "Attributes in $pname"
     wm geometry .slist +100+100
     wm iconname .slist "$pname"
 
-    frame .slist.top -relief raised -bg honeydew2
-    frame .slist.bot -relief raised -bg honeydew2
+    frame .slist.top -relief raised
+    frame .slist.bot -relief raised
     pack .slist.top .slist.bot -fill x -padx 1m -pady 1m
 
     # label + listbox +scroll
-    label .slist.top.label -text "List of attributes" -bg honeydew2 -fg red4
+    label .slist.top.label -text "List of attributes"
     pack .slist.top.label -side top -fill x 
     listbox .slist.top.list -relief raised -bd 1 \
 	    -yscrollcommand ".slist.top.scroll set" \
-	    -font 9x15 -selectmode single -bg honeydew2
-    scrollbar .slist.top.scroll -command ".slist.top.list yview" \
-	    -bg honeydew2
+	    -font 9x15 -selectmode single
+    scrollbar .slist.top.scroll -command ".slist.top.list yview"
     pack .slist.top.scroll -side right -fill y
     pack .slist.top.list -fill x
 
@@ -1551,7 +1531,7 @@ proc displayattrs {pname} {
     }
 
     # OK button
-    button .slist.bot.ok -text OK -bg gray75 -fg IndianRed4 -command {
+    button .slist.bot.ok -text OK -command {
 	destroy .slist
     }
     pack .slist.bot.ok
