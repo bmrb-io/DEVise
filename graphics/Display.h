@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/09/10 20:07:08  wenger
+  High-level parts of new PostScript output code are in place (conditionaled
+  out for now so that the old code is used until the new code is fully
+  working); changed (c) (tm) in windows so images are not copyrighted
+  by DEVise; minor bug fixes; added more debug code in the course of working
+  on the PostScript stuff.
+
   Revision 1.15  1996/09/09 14:31:41  jussi
   Added #ifdef LIBCS statements to make code compile in the
   ClientServer library target.
@@ -131,6 +138,7 @@ public:
 
   /* Export display image to other graphics formats */
   virtual void ExportImage(DisplayExportFormat format, char *filename) = 0;
+  virtual void ExportImageAndMap(DisplayExportFormat format, char *gifFilename, char *mapFileame, char *url, char *defaultUrl) = 0;
   virtual void ExportGIF(FILE *fp) = 0;
 
   /* Iterator to go through all displays */
