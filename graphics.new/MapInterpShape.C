@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/06/21 19:27:00  jussi
+  Moved computation of block vertices and edges to Map3D.C.
+  Added support for drawing solid sides for blocks.
+
   Revision 1.4  1996/06/15 07:11:02  yuc
   Small changes and clean-up DrawGDataArray, also add view and
   dimensions.
@@ -32,22 +36,17 @@
 #include "MapInterpShape.h"
 #include "Map3D.h"
 
+//#define DEBUG
+
 // uncomment the following line if you want blocks drawn with wire
 // frames, otherwise you'll get solid shapes
 //#define WIRE_FRAME
 
-void FullMapping_BlockShape::DrawGDataArray(WindowRep *win, 
-					    void **gdataArray,
-					    int numSyms, TDataMap *map, 
-					    View *view, int pixelSize)
+void FullMapping_RectShape::Draw3DGDataArray(WindowRep *win,
+                                             void **gdataArray,
+                                             int numSyms, TDataMap *map,
+                                             View *view, int pixelSize)
 {
-  view->SetNumDimensions(3);
-  Map3D::CompViewingTransf(view->GetCamera());
-
-  int x, y, w, h;
-  view->GetDataArea(x, y, w, h);
-  view->SetViewDir(w / 2, h / 2);
-
   GDataAttrOffset *offset = map->GetGDataOffset();
 
   for(int i = 0; i < numSyms; i++) {
@@ -82,6 +81,10 @@ void FullMapping_BlockShape::DrawGDataArray(WindowRep *win,
 #endif
   }
 
+  // get width and height of 3D display area
+  int x, y, w, h;
+  view->GetDataArea(x, y, w, h);
+
   // map blocks to points, segments, and planes
   Map3D::MapBlockPoints(block_data, numSyms, view->GetCamera(), w, h);
 #ifdef WIRE_FRAME
@@ -97,8 +100,4 @@ void FullMapping_BlockShape::DrawGDataArray(WindowRep *win,
 #else
   Map3D::DrawPlanes(win);
 #endif
-
-  // now draw reference axes
-  win->SetFgColor(BlackColor);
-  Map3D::DrawRefAxis(win, view->GetCamera());
 }

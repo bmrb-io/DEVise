@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/06/16 01:54:32  jussi
+  Added PolylineShape, PolylineFileShape, and TextLabelShape.
+
   Revision 1.9  1996/05/22 21:05:11  jussi
   Added HighLowShape. Added tentative version of GifImageShape.
 
@@ -82,12 +85,6 @@ class OvalShape : public Shape {};
    arrow head also). */
 
 class VectorShape : public Shape {};
-
-/* BlockShape: a 3-dimensional block centered at (x,y,z) which has
-   dimensions specified by the 0th, 1st, and 2nd shape attribute
-   (width, height, depth). */
-
-class BlockShape : public Shape {};
 
 /* HorLine: a horizontal line drawn at Y coordinate. The X coordinate is
    ignored. */

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/06/16 01:53:35  jussi
+  Added PolylineShape, PolylineFileShape, and TextLabelShape.
+  Made cmdFlag and cmdAttrFlag unsigned long int's.
+
   Revision 1.29  1996/06/04 14:20:25  wenger
   Ascii data can now be read from session files (or other files
   where the data is only part of the file); added some assertions
@@ -247,15 +251,13 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
     _shapes[3]  = new FullMapping_RegularPolygonShape;
     _shapes[4]  = new FullMapping_OvalShape;
     _shapes[5]  = new FullMapping_VectorShape;
-    _shapes[6]  = new FullMapping_BlockShape;
-    _shapes[7]  = new FullMapping_3DVectorShape;
-    _shapes[8]  = new FullMapping_HorLineShape;
-    _shapes[9]  = new FullMapping_SegmentShape;
-    _shapes[10] = new FullMapping_HighLowShape;
-    _shapes[11] = new FullMapping_PolylineShape;
-    _shapes[12] = new FullMapping_GifImageShape;
-    _shapes[13] = new FullMapping_PolylineFileShape;
-    _shapes[14] = new FullMapping_TextLabelShape;
+    _shapes[6]  = new FullMapping_HorLineShape;
+    _shapes[7]  = new FullMapping_SegmentShape;
+    _shapes[8] = new FullMapping_HighLowShape;
+    _shapes[9] = new FullMapping_PolylineShape;
+    _shapes[10] = new FullMapping_GifImageShape;
+    _shapes[11] = new FullMapping_PolylineFileShape;
+    _shapes[12] = new FullMapping_TextLabelShape;
 
     _interp = Tcl_CreateInterp();
     if (!_interp || Tcl_Init(_interp) == TCL_ERROR) {

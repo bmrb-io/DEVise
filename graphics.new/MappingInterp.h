@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/06/16 01:53:56  jussi
+  Added PolylineShape, PolylineFileShape, and TextLabelShape.
+  Made cmdFlag and cmdAttrFlag unsigned long int's.
+  Added IsComplexShape() method.
+
   Revision 1.18  1996/05/31 21:35:34  wenger
   Fixed core dump in SPARC/Solaris version caused by GData buffer
   misalignment; cleaned up generic/Makefile.base, etc., to get HP
@@ -135,7 +140,7 @@ struct MappingSimpleCmd {
 
 class Shape;
 class AttrList;
-const int MaxInterpShapes = 15;
+const int MaxInterpShapes = 13;
 
 class MappingInterp: public TDataMapDispatch {
   friend inline double ConvertOne(char *from,

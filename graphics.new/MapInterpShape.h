@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/06/21 19:33:56  jussi
+  Moved BlockShape private functions to Map3D.
+
   Revision 1.19  1996/06/16 01:52:24  jussi
   Added PolylineShape, PolylineFileShape, and TextLabelShape.
   Improved handling of GifImageShape.
@@ -102,6 +105,11 @@ public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
 		 
+    if (view->GetNumDimensions() == 3) {
+      Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+      return;
+    }
+
     GDataAttrOffset *offset = map->GetGDataOffset();
 
     Coord x0, y0, x1, y1;
@@ -167,6 +175,10 @@ public:
       win->FillRectArray(_x, _y, _width, _height, count);
     }
   }
+
+protected:
+  virtual void Draw3DGDataArray(WindowRep *win, void **gdataArray, int numSyms,
+                                TDataMap *map, View *view, int pixelSize);
 };
  
 // -----------------------------------------------------------------
@@ -175,6 +187,11 @@ class FullMapping_RectXShape: public RectXShape {
 public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
+
+    if (view->GetNumDimensions() == 3) {
+      Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+      return;
+    }
 
     GDataAttrOffset *offset = map->GetGDataOffset();
 
@@ -250,6 +267,11 @@ public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
 
+    if (view->GetNumDimensions() == 3) {
+      Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+      return;
+    }
+
     GDataAttrOffset *offset = map->GetGDataOffset();
 
     Coord x0, y0, x1, y1;
@@ -289,6 +311,11 @@ public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
 		 
+    if (view->GetNumDimensions() == 3) {
+      Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+      return;
+    }
+
     GDataAttrOffset *offset = map->GetGDataOffset();
 
     Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
@@ -348,6 +375,11 @@ public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
 		 
+    if (view->GetNumDimensions() == 3) {
+      Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+      return;
+    }
+
     GDataAttrOffset *offset = map->GetGDataOffset();
 
     Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
@@ -394,6 +426,11 @@ public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
 		 
+    if (view->GetNumDimensions() == 3) {
+      Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+      return;
+    }
+
     GDataAttrOffset *offset = map->GetGDataOffset();
 
     Coord x0, y0, x1, y1;
@@ -465,93 +502,6 @@ public:
     }
   }
 };
-
-// -----------------------------------------------------------------
-
-class FullMapping_BlockShape: public BlockShape {
-public:
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize);
-};
-
-// -----------------------------------------------------------------
-
-class FullMapping_3DVectorShape: public VectorShape {
-public:
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
-		 
-    GDataAttrOffset *offset = map->GetGDataOffset();
-
-    Coord x0, y0, x1, y1;
-    win->Transform(0, 0, x0, y0);
-    win->Transform(1, 1, x1, y1);
-    Coord pixelWidth = 1 / fabs(x1 - x0);
-    Coord pixelHeight = 1 / fabs(y1 - y0);
-
-    Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
-			    offset->shapeAttrOffset[1] < 0 ? true : false);
-
-    if (fixedSymSize) {
-      Coord maxWidth, maxHeight;
-      map->MaxBoundingBox(maxWidth, maxHeight);
-
-#ifdef DEBUG
-      printf("VectorShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
-	     maxWidth, maxHeight, pixelWidth, pixelHeight);
-#endif
-
-      if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
-	DrawPixelArray(win, gdataArray, numSyms, map, view, pixelSize);
-	return;
-      }
-    }
-
-    for(int i = 0; i < numSyms; i++) {
-      char *gdata = (char *)gdataArray[i];
-      Color color = GetColor(view, gdata, map, offset);
-      Coord w = GetShapeAttr0(gdata, map, offset);
-      Coord h = GetShapeAttr1(gdata, map, offset);
-      Coord x = GetX(gdata, map, offset);
-      Coord y = GetY(gdata, map, offset);
-      win->SetFgColor(color);
-      win->SetPattern(GetPattern(gdata, map, offset));
-      win->Line(x, y, x + w, y + h, 1);
-
-      if (w == 0 && h == 0)
-	continue;
-
-      // compute pixel locations
-      Coord tx, ty, tw, th;
-      win->Transform(x + w, y + h, tx, ty);
-      win->Transform(w, h, tw, th);
-      tw -= x0;
-      th -= y0;
-
-      // draw arrow head
-      Coord arrowSize = 0.15 * sqrt(tw * tw + th * th);
-      if (arrowSize < 10)
-	arrowSize = 10;
-      const Coord angle = atan2(th, tw);
-      const Coord arrowSteepness = 0.1 * PI;
-      const Coord leftAngle = angle - arrowSteepness;
-      const Coord rightAngle = angle + arrowSteepness;
-      
-      Point points[3];
-      points[0].x = tx;
-      points[0].y = ty;
-      points[1].x = tx - arrowSize * cos(leftAngle);
-      points[1].y = ty - arrowSize * sin(leftAngle);
-      points[2].x = tx - arrowSize * cos(rightAngle);
-      points[2].y = ty - arrowSize * sin(rightAngle);
-
-      win->PushTop();
-      win->MakeIdentity();
-      win->FillPoly(points, 3);
-      win->PopTransform();
-    }
-  }
-}; // FullMapping_3DVectorShape
 
 // -----------------------------------------------------------------
 
@@ -565,6 +515,11 @@ public:
   
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
+
+    if (view->GetNumDimensions() == 3) {
+      Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+      return;
+    }
 
     GDataAttrOffset *offset = map->GetGDataOffset();
 
@@ -607,6 +562,11 @@ public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
 		 
+    if (view->GetNumDimensions() == 3) {
+      Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+      return;
+    }
+
     GDataAttrOffset *offset = map->GetGDataOffset();
 
     Coord x0, y0, x1, y1;
@@ -669,6 +629,11 @@ public:
   
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
+
+    if (view->GetNumDimensions() == 3) {
+      Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+      return;
+    }
 
     GDataAttrOffset *offset = map->GetGDataOffset();
 
@@ -753,6 +718,11 @@ public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
 		 
+    if (view->GetNumDimensions() == 3) {
+      Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+      return;
+    }
+
     GDataAttrOffset *offset = map->GetGDataOffset();
 
     Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
@@ -827,6 +797,11 @@ public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
 
+    if (view->GetNumDimensions() == 3) {
+      Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+      return;
+    }
+
     GDataAttrOffset *offset = map->GetGDataOffset();
 
     // first draw a cross mark at each GIF image location;
@@ -873,6 +848,11 @@ public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
 		 
+    if (view->GetNumDimensions() == 3) {
+      Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+      return;
+    }
+
     GDataAttrOffset *offset = map->GetGDataOffset();
 
     for(int i = 0; i < numSyms; i++) {
@@ -943,6 +923,11 @@ public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
 		 
+    if (view->GetNumDimensions() == 3) {
+      Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+      return;
+    }
+
     GDataAttrOffset *offset = map->GetGDataOffset();
 
     for(int i = 0; i < numSyms; i++) {

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/04/15 16:08:29  jussi
+  Added GetShape() method.
+
   Revision 1.11  1996/04/09 22:53:55  jussi
   Added View parameter to DrawGDataArray().
 
@@ -172,6 +175,11 @@ class Shape {
 			      TDataMap *map, View *view, int pixelSize) {}
 
  protected:
+
+  /* By default, the shapes cannot display themselves in 3D */
+  virtual void Draw3DGDataArray(WindowRep *win, void **gdataArray, int numSyms,
+                                TDataMap *map, View *view, int pixelSize) {}
+
   /* Draw each GData symbol as a single pixel. Used by derived classes
      as a common method in cases where symbols are smaller than one
      pixel. */
