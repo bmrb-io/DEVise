@@ -14,6 +14,8 @@
 #include "PerlFrag.h"
 #include "Attr.h"
 
+#include <iostream.h>
+
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 PerlFrag::PerlFrag(Attr *owner, FragType type)
 {
@@ -79,6 +81,17 @@ void PerlFrag::set_fmt(char *fmt)
 }
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+static void perl_eval(char *code)
+{
+    char *argv[2];
+
+    argv[0] = code;
+    argv[1] = NULL;
+
+    perl_call_argv("_eval_", 0, argv);
+}
+
+// o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 // Compile the code stored.
 void PerlFrag::compile(unsigned int& subrcnt, char *flat_name)
 {
@@ -117,10 +130,15 @@ void PerlFrag::compile(unsigned int& subrcnt, char *flat_name)
             
                 memcpy(_src, head, strlen(head));
             
-                  // Compile the subroutine.    
+                // Compile the subroutine.    
+#if 1
+                // Work-around for an apparent bug in the perl library
+                perl_eval(_src);
+#else
                 _code = newSVpv(_src,0);
                 perl_eval_sv(_code, G_DISCARD|G_NOARGS|G_EVAL);
                 SvREFCNT_dec(_code);
+#endif
             
                   // Save the subroutine's name, for later use.
                 _code = newSVpv(nme,0);
