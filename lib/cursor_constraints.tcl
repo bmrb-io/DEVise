@@ -20,6 +20,12 @@
 # $Id$
 
 # $Log$
+# Revision 1.1  2000/08/30 20:09:12  wenger
+# Added the option of forcing a cursor to be entirely within its destination
+# view; added control for whether a cursor must be at least partially within
+# its destination view; generally improved implementation of cursor
+# constraints.
+#
 
 ############################################################
 
@@ -72,11 +78,9 @@ proc EditCursorConstraints {} {
 
     # Get the current values from the view and set the GUI accordingly.
     set constraints [DEVise getCursorConstraints $eccName]
-puts "DIAG constraints = <$constraints>"
     set eccFixed [lindex $constraints 0]
     set eccPartInDest [lindex $constraints 1]
     set eccAllInDest [lindex $constraints 2]
-puts "DIAG eccFixed eccPartInDest eccAllInDest: $eccFixed $eccPartInDest $eccAllInDest"
 
     # Wait for the user to make a selection from this window.
     tkwait visibility .edirCursorConstraints
