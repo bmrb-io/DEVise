@@ -23,6 +23,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1999/04/28 18:30:18  wenger
+#  Split up data-splitting and session-creating parts of Condor session
+#  scripts; made a new script to make a session with thumbnails for each
+#  user; moved the scripts into scripts/condor.
+#
 #  Revision 1.8  1999/04/22 19:30:02  wenger
 #  Separated the configuration of explicit (user-requested) and implicit
 #  home actions (no GUI for configuring the implicit home); changed the
@@ -293,16 +298,16 @@ sub CreateMappings {
   # view symbol is drawn.
   $dataName = ".Condor_Total";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "User1sym#$mappingClass {} {\$time} {\$jobs_running} {} 31 1 0 0 8 1 ",
-      "{\$total_jobs} {0} {5} {3} {} {} {} {} {}\n";
+      "User1sym#$mappingClass {} {\$time} {\$total_jobs} {} 31 1 0 0 8 1 ",
+      "{\$jobs_running} {0} {5} {3} {} {} {} {} {}\n";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "User2sym#$mappingClass {} {\$time} {\$jobs_running} {} 31 1 0 0 8 1 ",
-      "{\$total_jobs} {0} {5} {3} {} {} {} {} {}\n";
+      "User2sym#$mappingClass {} {\$time} {\$total_jobs} {} 31 1 0 0 8 1 ",
+      "{\$jobs_running} {0} {5} {3} {} {} {} {} {}\n";
 
   $dataName = "Condor_Total";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "Total#$mappingClass {} {\$time} {\$jobs_running} {} 31 1 0 0 8 1 ",
-      "{\$total_jobs} {0} {5} {3} {} {} {} {} {}\n";
+      "Total#$mappingClass {} {\$time} {\$total_jobs} {} 31 1 0 0 8 1 ",
+      "{\$jobs_running} {0} {5} {3} {} {} {} {} {}\n";
 
   return $mappingClass;
 }

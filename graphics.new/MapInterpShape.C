@@ -17,6 +17,11 @@
   $Id$
 
   $Log$
+  Revision 1.60  1999/03/18 17:30:42  wenger
+  Implemented two-color option in HighLow symbols; compensated for
+  XFillRectangle() not working the way O'Reilly says it does (subtracted
+  one from width and height); test command for Condor User data visualization.
+
   Revision 1.59  1999/01/05 22:38:30  wenger
   Added new "constant font size" option for scaled text symbols.
 
@@ -1274,11 +1279,13 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	Coord width = fabs(GetSize(gdata, map, offset)
 			   * GetShapeAttr0(gdata, map, offset));
 	width *= pixelSize;
-	Coord high = GetShapeAttr1(gdata, map, offset);
+	Coord mid = GetShapeAttr1(gdata, map, offset);
 	Coord low = GetShapeAttr2(gdata, map, offset);
 	int colorInc = (int)(GetShapeAttr3(gdata, map, offset) + 0.5);
 	Coord tw = width / 20.0;
 	Coord hw = width / 2.0;
+
+    Coord high = y;
 
 	win->SetForeground(color);
 	win->SetPattern(GetPattern(gdata, map, offset));
@@ -1293,13 +1300,13 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (colorInc == 0) {
 		win->FillRect(x - tw, low, 2 * tw, high - low);
 	} else {
-		win->FillRect(x - tw, low, 2 * tw, y - low);
+		win->FillRect(x - tw, low, 2 * tw, mid - low);
 		win->SetForeground(color + colorInc);
-		win->FillRect(x - tw, y, 2 * tw, high - y);
+		win->FillRect(x - tw, mid, 2 * tw, high - mid);
 		win->SetForeground(color);
 	}
 	if (line_width >= 0) {
-	    win->Line(x - hw, y, x + hw, y, line_width);
+	    win->Line(x - hw, mid, x + hw, mid, line_width);
 	    win->Line(x - hw, low, x + hw, low, line_width);
 	    win->Line(x - hw, high, x + hw, high, line_width);
 	}

@@ -15,6 +15,11 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.47  1999/04/21 14:54:38  wenger
+#       Text scaling in text symbols can be bypassed with negative width and
+#       non-zero orientation (actually an unintentional affect of the previous
+#       change); changed GUI and Condor user session script accordingly.
+#
 #       Revision 1.46  1999/04/14 15:30:28  wenger
 #       Improved 'switch TData': moved the code from Tcl to C++, functionality
 #       is more flexible -- schemas don't have to match exactly as long as the
@@ -723,7 +728,7 @@ set DEViseShapeAttrNames { \
 	{Vector "X Length (Height)" "Y Length (Width)" "" "" "Line Width"} \
 	{HorLine "" "" "" "" "Line Width"} \
 	{Segment Width Height "" "" "Line Width"} \
-	{HighLow Width "High (Y max)" "Low (Y min)" "Color increment" \
+	{HighLow Width "Mid" "Low (Y min)" "Color increment" \
 	"Line Width"} \
 	{Polyline "" "" "" "" ""} \
 	{Image "Filename/Image" "Image Type" "Aspect" "" ""} \

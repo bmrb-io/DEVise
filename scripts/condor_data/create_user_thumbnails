@@ -23,6 +23,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1999/04/28 18:30:32  wenger
+#  Split up data-splitting and session-creating parts of Condor session
+#  scripts; made a new script to make a session with thumbnails for each
+#  user; moved the scripts into scripts/condor.
+#
 
 ############################################################
 
@@ -105,11 +110,6 @@ sub CreateSession {
   # Force the visual filters to get updated when this session is opened.
   print SES_OUT "DEVise updateFilters\n";
 
-  # Initialize views to show the full X range of data.
-  #TEMPTEMP? print SES_OUT "DEVise viewGoHome Total_viewsym\n";
-  #TEMPTEMP? print SES_OUT "DEVise waitForQueries\n";
-  #TEMPTEMP? print SES_OUT "DEVise viewGoHome User1_viewsym\n";
-
   close(SES_OUT);
 }
 
@@ -184,10 +184,6 @@ sub CreateViews {
     # Set this view for automatic filter updating.
     print SES_OUT "DEVise setViewAutoFilter ${user}_view 1\n";
 
-    # Turn on the X and Y axes.
-    #TEMPTEMP? print SES_OUT "DEVise setAxisDisplay ${user}_view {X} 1\n";
-    #TEMPTEMP? print SES_OUT "DEVise setAxisDisplay ${user}_view {Y} 1\n";
-
     print SES_OUT "DEVise setXAxisDateFormat ${user}_view {%b %d %H:%M}";
 
     print SES_OUT "\n";
@@ -224,38 +220,12 @@ sub CreateMappings {
       "Select2#$mappingClass {} {0} {\$X} {} 8 0.5 0 0 0 1 1 ",
       "{} {} {} {} {} {} {} {}\n";
 
-  #TEMPTEMP
   $dataName = ".Condor_Total";
   foreach $user (sort keys %userlist) {
       print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-          "${user}#$mappingClass {} {\$time} {\$jobs_running} {} 31 1 0 0 8 1 ",
-          "{\$total_jobs} {0} {5} {3} {} {} {} {} {}\n";
+          "${user}#$mappingClass {} {\$time} {\$total_jobs} {} 31 1 0 0 8 1 ",
+          "{\$jobs_running} {0} {5} {3} {} {} {} {} {}\n";
   }
-
-  #TEMPTEMP?
-  return $mappingClass;
-
-  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "User1#$mappingClass {} {0} {\$X} {} 8 0.98 0 0 17 {\"User1_viewsym\"} 1 ",
-      "1 {\$TDataName} {} {} {} {} {} {}\n";
-  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "User2#$mappingClass {} {0} {\$X} {} 8 0.98 0 0 17 {\"User2_viewsym\"} 1 ",
-      "1 {\$TDataName} {} {} {} {} {} {}\n";
-
-  # Note: this is really a "dummy" TData -- it will get switched when the
-  # view symbol is drawn.
-  $dataName = "Condor_Total";
-  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "User1sym#$mappingClass {} {\$time} {\$jobs_running} {} 31 1 0 0 8 1 ",
-      "{\$total_jobs} {0} {5} {3} {} {} {} {} {}\n";
-  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "User2sym#$mappingClass {} {\$time} {\$jobs_running} {} 31 1 0 0 8 1 ",
-      "{\$total_jobs} {0} {5} {3} {} {} {} {} {}\n";
-
-  $dataName = "Condor_Total";
-  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "Total#$mappingClass {} {\$time} {\$jobs_running} {} 31 1 0 0 8 1 ",
-      "{\$total_jobs} {0} {5} {3} {} {} {} {} {}\n";
 
   return $mappingClass;
 }
@@ -276,19 +246,6 @@ sub InsertMappings {
       print SES_OUT "DEVise insertMapping {${user}_view} ",
           "{${user}#$mappingClass}\n";
   }
-
-  #TEMPTEMP? print SES_OUT "DEVise insertMapping {User1_view} ",
-      #TEMPTEMP? "{User1#$mappingClass}\n";
-  #TEMPTEMP? print SES_OUT "DEVise insertMapping {User2_view} ",
-      #TEMPTEMP? "{User2#$mappingClass}\n";
-
-  #TEMPTEMP? print SES_OUT "DEVise insertMapping {User1_viewsym} ",
-      #TEMPTEMP? "{User1sym#$mappingClass}\n";
-  #TEMPTEMP? print SES_OUT "DEVise insertMapping {User2_viewsym} ",
-      #TEMPTEMP? "{User2sym#$mappingClass}\n";
-
-  #TEMPTEMP? print SES_OUT "DEVise insertMapping {Total_viewsym} ",
-      #TEMPTEMP? "{Total#$mappingClass}\n";
 }
 
 #-----------------------------------------------------------
@@ -306,30 +263,7 @@ sub CreateLinksCursors {
       print SES_OUT "DEVise insertLink {TimeLink} {${user}_view}\n";
   }
 
-  #TEMPTEMP
   return;
-
-  # Cursor to select first user to view.
-  print SES_OUT "DEVise create {cursor} {Cursor} UserCursor1 2 1 1.000000 ",
-      "1.000000\n";
-  print SES_OUT "DEVise setCursorSrc {UserCursor1} {User1_view}\n";
-  print SES_OUT "DEVise setCursorDst {UserCursor1} {Select1_view}\n";
-
-  # Cursor to select second user to view.
-  print SES_OUT "DEVise create {cursor} {Cursor} UserCursor2 2 1 1.000000 ",
-      "1.000000\n";
-  #TEMPTEMP? print SES_OUT "DEVise setCursorSrc {UserCursor2} {User2_view}\n";
-  print SES_OUT "DEVise setCursorDst {UserCursor2} {Select2_view}\n";
-
-  print SES_OUT "DEVise create {link} {Visual_Link} TimeLink 1\n";
-  print SES_OUT "DEVise insertLink {TimeLink} {User1_viewsym}\n";
-  #TEMPTEMP? print SES_OUT "DEVise insertLink {TimeLink} {User2_viewsym}\n";
-
-  # Cursor to select time range for user data.
-  print SES_OUT "DEVise create {cursor} {Cursor} TimeCursor 1 0 1.000000 ",
-      "1.000000\n";
-  print SES_OUT "DEVise setCursorSrc {TimeCursor} {User1_viewsym}\n";
-  print SES_OUT "DEVise setCursorDst {TimeCursor} {Total_viewsym}\n";
 }
 
 #-----------------------------------------------------------
