@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1996/08/01 18:17:44  jussi
+#  Added sunx86_55 platform.
+#
 #  Revision 1.6  1996/07/23 17:31:36  jussi
 #  Added Ultrix and Alpha/OSF platforms.
 #
@@ -94,3 +97,24 @@ cd ../pmax_ul43a
 ln -s ../solaris/Makefile . >& /dev/null
 
 cd ..
+
+cd aix/cslib
+ln -s ../../cslib/client.tcl . >& /dev/null
+cd ../../alpha_osf20/cslib
+ln -s ../../cslib/client.tcl . >& /dev/null
+cd ../../hp/cslib
+ln -s ../../cslib/client.tcl . >& /dev/null
+cd ../../linux/cslib
+ln -s ../../cslib/client.tcl . >& /dev/null
+cd ../../pmax_ul43a/cslib
+ln -s ../../cslib/client.tcl . >& /dev/null
+cd ../../sgi/cslib
+ln -s ../../cslib/client.tcl . >& /dev/null
+cd ../../solaris/cslib
+ln -s ../../cslib/client.tcl . >& /dev/null
+cd ../../solsparc/cslib
+ln -s ../../cslib/client.tcl . >& /dev/null
+cd ../../sun/cslib
+ln -s ../../cslib/client.tcl . >& /dev/null
+
+cd ../..

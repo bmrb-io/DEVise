@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1997/04/08 01:45:55  donjerko
+#  Defined DEV_DEBUG
+#
 #  Revision 1.9  1997/04/04 15:43:50  wenger
 #  Set up makefiles to allow making a 'profile' version of Devise.
 #
@@ -75,9 +78,6 @@ endif
 RANLIB = ranlib
 
 # Set up for optimize or debug compiling.
-
-DEV_DEBUG = 1
-
 ifeq ($(DEV_DEBUG),)
 	OPTFLAG = -O
 else

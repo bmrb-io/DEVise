@@ -19,6 +19,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.2  1996/12/20 16:50:36  wenger
+# Fonts for view label, x axis, and y axis can now be changed.
+#
 # Revision 1.1  1996/12/15 20:23:53  wenger
 # Added view name to mapping editor window; added first version of font
 # selection GUI (currently disabled).
@@ -129,6 +132,8 @@ proc GetFont { which } {
       -command { .getFont.size configure -text "14" }
     .getFont.size.menu add command -label "18" \
       -command { .getFont.size configure -text "18" }
+    .getFont.size.menu add command -label "24" \
+      -command { .getFont.size configure -text "24" }
 
 
     # Wait for the user to make a selection from this window.

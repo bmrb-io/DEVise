@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.41  1997/04/01 19:49:07  wenger
+#  Got the testWindowRep program working again.
+#
 #  Revision 1.40  1997/02/08 00:26:45  donjerko
 #  Included -I../../graphics
 #
@@ -86,7 +89,7 @@
 
 include ../../Makefile.common
 
-CFLAGS = -gstabs $(ARCH_FLAGS) -I../../graphics  -I../../graphics.new \
+CFLAGS = $(ARCH_FLAGS) -I../../graphics  -I../../graphics.new \
 	-I../../generic \
 	-I../../util -I../../tape -I../../DTE/RTree \
 	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX -DGRAPHICS \

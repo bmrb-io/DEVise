@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.27  1997/04/04 15:44:36  wenger
+#  Set up makefiles to allow making a 'profile' version of Devise.
+#
 #  Revision 1.26  1997/01/30 19:48:43  jussi
 #  Added StateMap.o to object list.
 #
@@ -47,7 +50,7 @@
 
 include ../../Makefile.common
 
-CFLAGS = -gstabs $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
+CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 	-I../../tape -fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX
 
 # ksb: I created an unfortunate dependency from graphics to graphics.new

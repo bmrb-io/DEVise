@@ -17,6 +17,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.56  1997/02/03 19:45:20  ssl
+#  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+#  2) ViewLens.[Ch] : new implementation of piled views
+#  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+#     manager
+#
 #  Revision 1.55  1997/01/28 18:14:12  jussi
 #  Removed references to removed files StringHash* and testStringHash.c.
 #
@@ -74,7 +80,7 @@
 
 include ../../Makefile.common
 
-CFLAGS =  -gstabs $(ARCH_FLAGS) -I../../graphics \
+CFLAGS =  $(ARCH_FLAGS) -I../../graphics \
         -I../../DTE/DeviseSpecific -I../../DTE/Core\
         -I../../graphics.new -I../../tape -I../../generic \
         -fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX \

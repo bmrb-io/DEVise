@@ -138,15 +138,15 @@ all: $(LIBNAME) dte FormatVolume convert_bulk gui
 lib: $(LIBNAME)
 
 dte: $(STAND_ALONE_OBJ)
-	$(CC) -gstabs -o dte $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
+	$(CC) -o dte $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
 	-L../devread -ldevread $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 pure: $(STAND_ALONE_OBJ)
-	purify $(CC) -gstabs -o dte.pure $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
+	purify $(CC) -o dte.pure $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
 	-L../devread -ldevread $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 quant: $(STAND_ALONE_OBJ)
-	quantify $(CC) -gstabs -o dte.quant $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
+	quantify $(CC) -o dte.quant $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
 	-L../devread -ldevread $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 script: $(SCRIPT_OBJ)
@@ -154,7 +154,7 @@ script: $(SCRIPT_OBJ)
 	-ldevread $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 gui: $(GUI_OBJ)
-	$(CC) -gstabs -o gui $(GUI_OBJ) $(ARCH_GUILDFLAGS) -L../devread \
+	$(CC) -o gui $(GUI_OBJ) $(ARCH_GUILDFLAGS) -L../devread \
 	-ldevread $(ARCH_GUISYSLIBS) $(ARCH_LDPOST)
 
 FormatVolume: FormatVolume.C
