@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.58  2000/01/13 23:06:51  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.57  1999/11/19 21:29:15  wenger
   Removed Journal class and related code (no longer works); removed various
   other unused or unnecessary code.
@@ -409,6 +412,7 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-debugLog 0|1: write debug log or not\n");
   fprintf(stderr, "\t-logLevel <value>: level of debug logging\n");
   fprintf(stderr, "\t-hangCheck 0|1: do hang check or not\n");
+  fprintf(stderr, "\t-id <string> string to identify devise in ps output\n");
 
   Exit::DoExit(1);
 }
@@ -862,6 +866,16 @@ void Init::DoInit(int &argc, char **argv)
 	  Usage(argv[0]);
 	}
 	_doHangCheck = !(atoi(argv[i+1]) == 0);
+	MoveArg(argc,argv,i,2);
+      }
+
+      else if (strcmp(&argv[i][1], "id") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	// Value is ignored -- this argument is provided just so we can
+	// tell deviseds for different jspops apart in ps output.
 	MoveArg(argc,argv,i,2);
       }
 

@@ -1,0 +1,22 @@
+#! /bin/csh -f
+
+############################################################
+
+# $Id$
+
+############################################################
+
+nohup /s/std/bin/Xvfb :1 -screen 0 1280x1024x8 &
+#nohup /s/std/bin/Xvfb :1 -screen 0 1024x768x8 &
+setenv DISPLAY unix:1.0
+
+# Make sure Xvfb gets going before starting the jss.
+sleep 10
+
+\rm devised.out
+\rm jss.out
+touch devised.out
+touch jss.out
+
+nohup java jss -debug $* >! jss.out
+setenv DISPLAY unix:0.0

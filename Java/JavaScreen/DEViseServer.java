@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999
+// (c) Copyright 1999-2000
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.30  2000/02/16 08:53:58  hongyu
+// *** empty log message ***
+//
 // Revision 1.28  2000/02/14 09:26:24  hongyu
 // *** empty log message ***
 //
@@ -47,8 +50,6 @@ import java.util.*;
 
 public class DEViseServer implements Runnable
 {
-    private static String DEViseExec = new String("DEVise.jspop");
-    private static String DEViseKill = new String("DEVise.kill");
     private static int Port = DEViseGlobals.cmdport + 1;
     public static int QUIT = 0, IDLE = 1, WORK = 2;
 
@@ -230,53 +231,11 @@ public class DEViseServer implements Runnable
     {
         isValid = false;
         pop.removeServer(this);
-
-        /*
-        if (isDEViseAlive()) {
-            proc.destroy();
-            proc = null;
-        }
-
-        Runtime currentRT = Runtime.getRuntime();
-        try {
-            proc = currentRT.exec(DEViseServer.DEViseKill + " " + cmdPort);
-        } catch (IOException e) {
-            pop.pn("IO Error while trying to kill an old devised!");
-        } catch (SecurityException e) {
-            pop.pn("Security Error while trying to kill an old devised!");
-        }
-        */
     }
 
     private boolean startDEVise()
     {
         return isValid;
-
-
-        /*
-        // stop previous devised first
-        stopDEVise();
-
-        // need more work to make it stable
-        cmdPort = getPort();
-        dataPort = getPort();
-        switchPort = getPort();
-
-        Runtime currentRT = Runtime.getRuntime();
-        try {
-            proc = currentRT.exec(DEViseServer.DEViseExec + " -port " + cmdPort + " -imageport " + dataPort + " -switchport " + switchPort);
-        } catch (IOException e) {
-            pop.pn("IO Error while trying to start a new devised");
-            return false;
-        } catch (SecurityException e) {
-            pop.pn("Security Error while trying to start a new devised");
-            return false;
-        }
-
-        pop.pn("Successfully start devised ...");
-
-        return true;
-        */
     }
 
     public synchronized boolean isAvailable()

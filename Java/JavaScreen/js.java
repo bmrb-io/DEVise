@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999
+// (c) Copyright 1999-2000
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -13,6 +13,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.32  1999/10/10 08:49:54  hongyu
+// Major changes to JAVAScreen have been commited in this update, including:
+// 1. restructure of JavaScreen internal structure to adapt to vast changes
+//    in DEVise and also prepare to future upgrade
+// 2. Fix a number of bugs in visualization and user interaction
+// 3. Add a number of new features in visualization and user interaction
+// 4. Add support for complicated 3D molecular view
+//
 // Revision 1.31  1999/06/23 20:59:20  wenger
 // Added standard DEVise header.
 //
@@ -29,11 +37,21 @@ import java.io.*;
 
 public class js extends Frame
 {
-    private static String usage = new String("usage: java js -host[hostname]"
-        + " -cmdport[port] -imgport[port] -user[username] -pass[password]"
+    private static String usage = new String("usage: java js -host[string]"
+        + " -cmdport[number] -imgport[number] -user[string] -pass[string]"
         + " -session[filename] -debug[number] -bgcolor[number+number+number]"
         + " -fgcolor[number+number+number] -rubberbandlimit[widthxheight]"
-        + " -screensize[widthxheight]");
+        + " -screensize[widthxheight] -usage\n" +
+	"  -host[string]: host the jspop is running on\n" +
+	"  -cmdport[number]: port for command socket from jspop\n" +
+	"  -imgport[number]: port for image/data socket from jspop\n" +
+	"  -user[string]: name of user\n" +
+	"  -pass[string]: password of user\n" +
+	"  -session[filename]: session to load at startup\n" +
+	"  -fgcolor[number+number+number]: RGB for JavaScreen foreground\n" +
+	"  -rubberbandlimit[widthxheight]: minimum size for rubberband to have any effect\n" +
+	"  -screensize[widthxheight]: screen size in pixels\n" +
+	"  -usage: print this message");
     // -host[hostname]:
     //      hostname: The IP address of the machine where jspop or DEVise Server
     //                is running, if bland, use the defaults
@@ -359,6 +377,9 @@ public class js extends Frame
                 } else {
                     debugLevel = 1;
                 }
+            } else if (args[i].startsWith("-usage")) {
+                System.out.println(usage);
+                System.exit(0);
             } else {
                 System.out.println("Invalid js option \"" + args[i]
                     + "\" is given!\n");

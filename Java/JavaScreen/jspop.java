@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999
+// (c) Copyright 1999-2000
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.22  2000/02/15 20:50:42  hongyu
+// *** empty log message ***
+//
 // Revision 1.21  2000/02/14 10:45:23  hongyu
 // *** empty log message ***
 //
@@ -39,16 +42,21 @@ import  java.util.*;
 
 public class jspop implements Runnable
 {
-    private String usage = new String("usage: java jspop -cmdport[port] -imgport[port] -server[number] -userfile[filename] -logfile[filename] -debug[number] -jspopport[number]");
+    private String usage = new String("usage: java jspop -id[string] -cmdport[number] -imgport[number] -userfile[filename] -logfile[filename] -debug[number] -jspopport[number] -usage\n" +
+      "  -id[string]: ID for ps\n" +
+      "  -cmdport[number]: port for command socket from devised\n" +
+      "  -imgport[number]: port for image/data socket from devised\n" +
+      "  -userfile[filename]: file containing user info\n" +
+      "  -logfile[filename]: client log info file\n" +
+      "  -debug[number]: debug output level\n" +
+      "  -jspopport[number]: port on which jspop listens for jss connections\n" +
+      "  -usage: print this message");
     // -CMDPORT[port]:
     //      port: The command port, if blank, use the defaults
     //      default: 6666
     // -IMGPORT[port]:
     //      port: The image port, if blank, use the defaults
     //      default: 6688
-    // -SERVER[number]:
-    //      number: The maximum number of active DEVise server, if blank, use defualts
-    //      default: 1
     // -LOGFILE[filename]:
     //      filename: The name of the file that contain client log information
     //      default: clients.log
@@ -72,7 +80,6 @@ public class jspop implements Runnable
 
     private String localHostname = null;
     private int IDCount = 1;
-    private int maxServerNumber = 1;
     private Thread popThread = null;
 
     private JssHandler jssHandler = null;
@@ -158,22 +165,6 @@ public class jspop implements Runnable
             System.out.println("Can not start jspop - unknown local host!");
             System.exit(1);
         }
-
-        /*
-        System.out.println("Starting DEViseServer ...\n");
-        try {
-            DEViseServer newserver = null;
-            for (int i = 0; i < maxServerNumber; i++) {
-                newserver = new DEViseServer(this, localHostname);
-                newserver.start();
-                servers.addElement(newserver);
-                System.out.println("Successfully start DEViseServer " + (i + 1) + " out of " + maxServerNumber + "\n");
-            }
-        } catch (YException e) {
-            System.out.println(e.getMsg());
-            quit(1);
-        }
-        */
 
         System.out.println("\nStarting command server socket on " + DEViseGlobals.cmdport + " ...\n");
         try {
@@ -627,17 +618,6 @@ public class jspop implements Runnable
                         System.exit(1);
                     }
                 }
-            } else if (args[i].startsWith("-server")) {
-                if (!args[i].substring(7).equals("")) {
-                    try {
-                        maxServerNumber = Integer.parseInt(args[i].substring(7));
-                        if (maxServerNumber < 1 || maxServerNumber > 10)
-                            throw new NumberFormatException();
-                    } catch (NumberFormatException e) {
-                        System.out.println("Please use a positive integer number between 1 and 10 as the maximum number of servers");
-                        System.exit(1);
-                    }
-                }
             } else if (args[i].startsWith("-debug")) {
                 if (!args[i].substring(6).equals("")) {
                     try {
@@ -657,6 +637,11 @@ public class jspop implements Runnable
                 if (!args[i].substring(9).equals("")) {
                      userFileName = args[i].substring(9);
                 }
+            } else if (args[i].startsWith("-id")) {
+	        // just ignore the argument for now
+            } else if (args[i].startsWith("-usage")) {
+                System.out.println(usage);
+                System.exit(0);
             } else {
                 System.out.println("Invalid jspop option \"" + args[i] + "\"is given");
                 System.out.println(usage);

@@ -6,16 +6,7 @@
 
 ############################################################
 
-nohup /s/std/bin/Xvfb :1 -screen 0 1280x1024x8 &
-#nohup /s/std/bin/Xvfb :1 -screen 0 1024x768x8 &
-setenv DISPLAY unix:1.0
-
-# Make sure Xvfb gets going before starting the jspop.
-sleep 10
-
-\rm devised.out
 \rm jspop.out
-touch devised.out
 touch jspop.out
 
 nohup java jspop -debug $* >! jspop.out

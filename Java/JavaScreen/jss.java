@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999
+// (c) Copyright 1999-2000
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2000/02/18 06:45:41  hongyu
+// *** empty log message ***
+//
 // Revision 1.5  2000/02/15 20:50:43  hongyu
 // *** empty log message ***
 //
@@ -38,7 +41,16 @@ import  java.util.*;
 
 public class jss implements Runnable
 {
-    private String usage = new String("usage: java jss -server[number] -debug[number] -jssport[number] -jspopport[number] -jspophost[string]");
+    private String usage = new String("usage: java jss -id[string] -server[number] -devisescript[filename] -debug[number] -jssport[number] -jspopport[number] -jspophost[string] -quit -usage\n" +
+	  "  -id[string]: ID for ps\n" + 
+	  "  -server[number]: number of servers to start\n" + 
+	  "  -devisescript[filename]: script to use to start servers\n" + 
+	  "  -debug[number]: debug output level\n" + 
+	  "  -jssport[number]: port jss listens on\n" + 
+	  "  -jspopport[number]: port to use to connect to jspop\n" + 
+	  "  -jspophost[string]: host jspop is running on\n" + 
+	  "  -quit: tell another jss to quit" +
+	  "  -usage: print this message");
 
     private jss jssServer = null;
     private String localHostname = null;
@@ -50,6 +62,9 @@ public class jss implements Runnable
     private Socket jspopSocket = null;
     private DataOutputStream jspopOS = null;
     private DataInputStream jspopIS = null;
+
+	private String idStr = null;
+	private String devisedScript = "DEVise.jspop";
 
     private int devisedNumber = 1;
     private int debugLevel = 0;
@@ -94,7 +109,7 @@ public class jss implements Runnable
         try {
             devised newserver = null;
             for (int i = 0; i < devisedNumber; i++) {
-                newserver = new devised();
+                newserver = new devised(idStr, devisedScript);
                 deviseds.addElement(newserver);
                 System.out.println("Successfully start devised no." + (i + 1) + " out of " + devisedNumber + "\n");
             }
@@ -312,7 +327,7 @@ public class jss implements Runnable
                         deviseds.removeElement(server);
 
                         try {
-                            server = new devised();
+                            server = new devised(idStr, devisedScript);
                         } catch (YException ex) {
                             System.out.println("Can not start new devised");
                             server = null;
@@ -413,6 +428,17 @@ public class jss implements Runnable
                 if (!args[i].substring(10).equals("")) {
                     jspopHost = args[i].substring(10);
                 }
+			} else if (args[i].startsWith("-id")) {
+                if (!args[i].substring(3).equals("")) {
+				    idStr = args[i].substring(3);
+				}
+			} else if (args[i].startsWith("-devisescript")) {
+                if (!args[i].substring(13).equals("")) {
+				    devisedScript = args[i].substring(13);
+				}
+			} else if (args[i].startsWith("-usage")) {
+                System.out.println(usage);
+                System.exit(0);
             } else {
                 System.out.println("Invalid jss option \"" + args[i] + "\"!");
                 System.out.println(usage);
@@ -426,17 +452,17 @@ public class jss implements Runnable
 
 class devised
 {
-    public static String devisedExec = "DEVise.jspop", devisedKill = "DEVise.kill";
+    public static String devisedKill = "DEVise.kill";
 
     private Process process = null;
     public int cmdPort, imgPort, switchPort;
 
-    public devised() throws YException
+    public devised(String idStr, String startScript) throws YException
     {
-        start();
+        start(idStr, startScript);
     }
 
-    private synchronized void start() throws YException
+    private synchronized void start(String idStr, String startScript) throws YException
     {
         // stop previous devised first if any
         stop();
@@ -479,7 +505,10 @@ class devised
         // start devised
         Runtime currentRT = Runtime.getRuntime();
         try {
-            process = currentRT.exec(devised.devisedExec + " -port " + cmdPort + " -imageport " + imgPort + " -switchport " + switchPort);
+			String execStr = startScript;
+			if (idStr != null) execStr += " -id " + idStr;
+			execStr += " -port " + cmdPort + " -imageport " + imgPort + " -switchport " + switchPort;
+            process = currentRT.exec(execStr);
         } catch (IOException e) {
             throw new YException("IO Error while trying to start a new devised at port " + cmdPort + "," + imgPort + "," + switchPort);
         } catch (SecurityException e) {
@@ -502,7 +531,7 @@ class devised
         Runtime currentRT = Runtime.getRuntime();
         Process kill = null;
         try {
-            kill = currentRT.exec(devised.devisedKill + " " + cmdPort);
+            kill = currentRT.exec(devised.devisedKill + " -port " + cmdPort);
 
             boolean stillWorking = true;
             while (stillWorking) {

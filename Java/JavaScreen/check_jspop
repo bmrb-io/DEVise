@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1999
+#  (c) Copyright 1999-2000
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -20,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1999/12/17 23:24:10  wenger
+#  Improved scripts to automatically re-start jspops if necessary.
+#
 #  Revision 1.7  1999/12/10 20:15:21  wenger
 #  Improved scripts now check separately for "regular" and "soil science"
 #  jspop and deviseds.
@@ -48,7 +51,20 @@
 
 ############################################################
 
+die "usage: check_jspop [idStr]\n" if ($#ARGV > 0);
+
+if ($#ARGV == 0) {
+  $idStr = shift(@ARGV);
+} else {
+  $idStr = "regular";
+}
+
+$debug = 0;
+
+print "idStr = $idStr\n" if ($debug);
+
 $foundJspop = 0;
+$foundJss = 0;
 $foundDevised = 0;
 
 # One of the hardest parts of getting this script to work has been running
@@ -57,50 +73,46 @@ $foundDevised = 0;
 # the line would be long enough, except that with the latest Intel/Solaris
 # ps, this makes the command totally hang!!  RKW 1999-12-17.
 
-# (We need to see the port arguments here so we can differentiate between
-# the "regular" jspop and deviseds, and the "soil science" jspop and
-# deviseds.)
-
 $ps_cmd = "/usr/ucb/ps -axw";
 
 open PS, "$ps_cmd >& 1 |" or die "can't fork: $!";
 
 while (<PS>) {
-  if ($_ =~ /java *jspop.*port66/) {
+  if ($_ =~ /java *jspop.*id$idStr/) {
     $foundJspop = 1;
   }
+  if ($_ =~ /java *jss.*id$idStr/) {
+    $foundJss = 1;
+  }
   # Wildcard here because -w option screws up ps output.
-  if ($_ =~ /devised.*port 6/) {
+  if ($_ =~ /devised.*id $idStr/) {
     $foundDevised = 1;
   }
 }
 
 close PS;
 
+print "foundJspop = $foundJspop, foundJss = $foundJss, foundDevised = $foundDevised\n" if ($debug);
 
+$curTime = localtime(time());
 if (!$foundJspop) {
-  $curTime = localtime(time());
   print "No jspop process found (at $curTime)\n";
+} elsif (!$foundJss) {
+  print "No jss process found (at $curTime)\n";
+} elsif (!$foundDevised) {
+  print "No devised process found (at $curTime)\n";
+}
+
+if (!$foundJspop || !$foundJss || !$foundDevised) {
   print "Restarting jspop\n";
 
   # Make sure we kill off any stray deviseds.
-  system("kill_devised2 6");
+  system("DEVise.kill -id $idStr");
 
-  KillJspop();
+  KillJspopJss();
   SaveLogs();
 
-  StartJspop();
-} elsif (!$foundDevised) {
-  $curTime = localtime(time());
-  print "No devised process found (at $curTime)\n";
-  print "Restarting jspop\n";
-
-  # If there are no deviseds running, that probably means there are problems
-  # with the jspop, so kill it and start over.
-  KillJspop();
-  SaveLogs();
-
-  StartJspop();
+  StartJspopJss();
 }
 
 #-----------------------------------------------------------
@@ -113,19 +125,21 @@ sub SaveLogs {
   @args = ("mv", "jspop.out", "jspop.out.$timestamp");
   0xffff & system(@args) == 0 or print "Can't rename jspop.out ($?)\n";
 
+  @args = ("mv", "jss.out", "jss.out.$timestamp");
+  0xffff & system(@args) == 0 or print "Can't rename jss.out ($?)\n";
+
   @args = ("mv", "devised.out", "devised.out.$timestamp");
   0xffff & system(@args) == 0 or print "Can't rename devised.out ($?)\n";
 }
 
 #-----------------------------------------------------------
 
-sub KillJspop {
+sub KillJspopJss {
   open PS, "$ps_cmd >& 1 |" or die "can't fork: $!";
 
   while (<PS>) {
-    if ($_ =~ /java *jspop.*port66/) {
+    if ($_ =~ /java *jspop.*id$idStr/ || $_ =~ /java *jss.*id$idStr/) {
       print "Killing $_";
-      $foundJspop = 1;
       @words = split /  */, $_;
       $pid = @words[1];
       system("kill $pid");
@@ -137,7 +151,18 @@ sub KillJspop {
 
 #-----------------------------------------------------------
 
-sub StartJspop {
-  sleep 15;
-  system("jspop -cmdport6666 -imgport6644 -server2 &");
+sub StartJspopJss {
+  if ($idStr eq "regular") {
+    sleep 15;
+    system("jspop -id$idStr -cmdport6666 -imgport6644 -jspopport8622 &");
+    sleep 5;
+    system("jss -id$idStr -jssport7611 -jspopport8622 -server2 &");
+  } elsif ($idStr eq "soil") {
+    sleep 15;
+    system("jspop -idsoil -cmdport5966 -imgport5944 -jspopport8922 &");
+    sleep 5;
+    system("jss -idsoil -jssport7911 -jspopport8922 -devisescriptDEVise.jspop_soil&");
+  } else {
+    die "Don't know how to start jspop and jss for id $idStr";
+  }
 }

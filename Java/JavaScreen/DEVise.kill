@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1998-1999
+#  (c) Copyright 1998-2000
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -21,6 +21,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1999/08/04 15:41:23  wenger
+#  Fixed goofed up commit by Hongyu.
+#
 #  Revision 1.2  1999/06/22 20:48:00  wenger
 #  Put a copy of kill_devised2 here for the JS.
 #
@@ -41,7 +44,7 @@
 ############################################################
 
 if ($#ARGV >= 0) {
-    $pattern = "devised -port $ARGV[0]";
+    $pattern = "devised .*@ARGV";
     # ww option forces extra-wide output
     #TEMP -ww option in ps goofs things up; but without it we may goof
     # up if path is too long
