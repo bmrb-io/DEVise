@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1998/09/01 21:48:27  wenger
+  Another minor fix to cursor coords.
+
   Revision 1.24  1998/09/01 20:13:18  wenger
   Fixed problems with sometimes sending incorrect cursor coordinates to
   JavaScreen and sending DrawCursor commands before windows are created;
@@ -223,6 +226,14 @@ JavaScreenCmd::OpenSession()
     printf(")\n");
 #endif
 
+#if 0
+    struct timeval startTime;
+	int timeResult = gettimeofday(&startTime, NULL);
+	if (timeResult < 0) {
+		perror("gettimeofday");
+	}
+#endif
+
 	if (_argc != 1)
 	{
 		errmsg = "Usage: OpenSession <session name>";
@@ -377,6 +388,17 @@ JavaScreenCmd::OpenSession()
 	_openingSession = false;
 
 	DrawAllCursors();
+
+#if 0
+    struct timeval stopTime;
+	timeResult = gettimeofday(&stopTime, NULL);
+	if (timeResult < 0) {
+		perror("gettimeofday");
+	}
+	double time1 = startTime.tv_sec + startTime.tv_usec * 1.0e-6;
+	double time2 = stopTime.tv_sec + stopTime.tv_usec * 1.0e-6;
+	printf("  OpenSession took %g sec.\n", time2 - time1);
+#endif
 
 #if defined(DEBUG)
     printf("End of OpenSession; _status = %d\n", _status);
@@ -1028,6 +1050,9 @@ JavaScreenCmd::SendWindowImage(const char* fileName, int& filesize)
 #endif
 
 	ControlCmdType	status = DONE;
+#if 0 // Enable this for JavaScreenCmd debugging in monolithic executable.
+	return status;
+#endif
 
 	// send the dumped image file to the JAVA_SCREEN client
 	int	fd = open(fileName, O_RDONLY);
