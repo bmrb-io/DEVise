@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.198  1999/10/08 22:04:31  wenger
+  Fixed bugs 512 and 514 (problems related to cursor moving).
+
   Revision 1.197  1999/10/08 19:57:44  wenger
   Fixed bugs 470 and 513 (crashes when closing a session while a query
   is running), 510 (disabling actions in piles), and 511 (problem in
@@ -1721,34 +1724,34 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
 
 void View::DrawLabel()
 {
-  if (!Session::GetIsJsSession()) {
-	WindowRep*	win = GetWindowRep();
-	win->SetGifDirty(true);
+  WindowRep*	win = GetWindowRep();
+  win->SetGifDirty(true);
 	
-    win->PushTop();
-    win->MakeIdentity();
+  win->PushTop();
+  win->MakeIdentity();
   
-    win->SetNormalFont();
-    _titleFont.SetWinFont(win);
+  win->SetNormalFont();
+  _titleFont.SetWinFont(win);
 
-    if (_label.occupyTop) {
-      /* draw label */
-      int labelX, labelY, labelWidth, labelHeight;
-      GetLabelArea(labelX, labelY, labelWidth, labelHeight);
-      win->SetPattern(Pattern0);
-      win->SetLineWidth(0);
+  if (_label.occupyTop) {
+    /* draw label */
+    int labelX, labelY, labelWidth, labelHeight;
+    GetLabelArea(labelX, labelY, labelWidth, labelHeight);
+    win->SetPattern(Pattern0);
+    win->SetLineWidth(0);
 
-      win->SetForeground(GetBackground());
-      win->ClearBackground(labelX, labelY, labelWidth - 1, labelHeight - 1);
+    win->SetForeground(GetBackground());
+    win->ClearBackground(labelX, labelY, labelWidth - 1, labelHeight - 1);
 
+    if (!Session::GetIsJsSession()) {
       win->SetForeground(GetForeground());
 
       win->AbsoluteText(_label.name, labelX, labelY, labelWidth - 1,
 		        labelHeight - 1, WindowRep::AlignCenter, true);
     }
-
-    win->PopTransform();
   }
+
+  win->PopTransform();
 }
 
 /* Find world coord given screen coord */
@@ -2542,7 +2545,6 @@ View::DrawCursors()
 
   if (!_cursorsOn) {
     WindowRep *winRep = GetWindowRep();
-    if (_drawCursors) winRep->SetGifDirty(true);
 
     int index;
     for(index = _cursors->InitIterator(); _cursors->More(index);) {
@@ -2603,7 +2605,6 @@ View::HideCursors()
 
   if (_cursorsOn) {
     WindowRep *winRep = GetWindowRep();
-    if (_drawCursors) winRep->SetGifDirty(true);
 
     int index;
     for(index = _cursors->InitIterator(); _cursors->More(index);) {
@@ -2633,6 +2634,8 @@ View::DoDrawCursor(WindowRep *winRep, DeviseCursor *cursor)
 #if defined(DEBUG)
   printf("View(%s)::DoDrawCursor(%s)\n", GetName(), cursor->GetName());
 #endif
+
+  winRep->SetGifDirty(true);
 
   Boolean pixelsValid;
   int pixX1, pixY1, pixX2, pixY2;
