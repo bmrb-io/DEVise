@@ -77,7 +77,7 @@ TESTSRC = testbuf.c testpage.c testpfile.c testpfileGap.c testQueryProc.c \
 	testBufMech.c testBufMgrFull.c testRangeList.c genStrData.c testStr.c\
 	StringHash.c testViewRanges.c testXY.c
 
-LIBNAME = libgraphics.new.a
+LIBNAME = libgraphicsnew.a
 
 all: $(LIBNAME) libclient.a libserver.a libmonolith.a
 
