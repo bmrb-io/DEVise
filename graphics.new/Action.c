@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/11/26 09:33:10  beyer
+  control-c in any window now exits devise.
+
   Revision 1.16  1996/11/20 20:35:18  wenger
   Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
   some Makefile improvements so compile works first time; fixed up files
@@ -527,7 +530,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
   }
 
   case DeviseKey::CONTROL|'C': {
-    Dispatcher::QuitNotify();
+    Dispatcher::Terminate(0);
     break;
   }
 
