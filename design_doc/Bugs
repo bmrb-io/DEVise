@@ -2054,6 +2054,15 @@ Num Date        Status  Description
 525 10/27/99	FIXED	Child views cannot send GData to the JavaScreen. (rkw)
 			(Fixed by rkw, 10/27/99.)
 
+526 10/28/99	OPEN	Set a window to custom layout, repeatedly make it
+			larger and smaller -> errors accumulate in the view
+			positioning. (oz/rkw)
+
+527 10/29/99	OPEN	Condor/UserWeek.ds session doesn't work right. (rkw)
+
+528 10/30/99	OPEN	Open Condor/UserWeek.ds session, try to save logical
+			session description -> devise crashes. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
