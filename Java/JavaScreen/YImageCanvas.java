@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  1999/06/23 20:59:19  wenger
+// Added standard DEVise header.
+//
 
 // ========================================================================
 
@@ -20,12 +23,16 @@
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 
 
 public class YImageCanvas extends Canvas
 {
-    Image image = null, offScrImg = null;
-    String string = null;
+    //Image image = null;
+    Vector image = new Vector();
+    Image offScrImg = null;
+    //String string = null;
+    Vector string = new Vector();
     Font font = new Font("Monospaced", Font.BOLD, 14);
     Color fgcolor = new Color(255, 0, 0);
     Color bgcolor = new Color(255, 255, 255);
@@ -39,11 +46,13 @@ public class YImageCanvas extends Canvas
         if (img == null)
             throw new YException("Null Image!");
 
-        image = img;
-        imageWidth = image.getWidth(this);
-        imageHeight = image.getHeight(this);
+        imageWidth = img.getWidth(this);
+        imageHeight = img.getHeight(this);
         if (imageWidth <= 0 || imageHeight <= 0)
             throw new YException("Invalid Image!");
+
+        //image = img;
+        image.addElement(img);
 
         size = new Dimension(imageWidth, imageHeight);
         isImage = true;
@@ -55,7 +64,9 @@ public class YImageCanvas extends Canvas
             throw new YException("Null String!");
         }
 
-        string = s;
+        //string = s;
+        string.addElement(s);
+
         imageWidth = maxLength * mx + 6;
         imageHeight = my + 6;
         size = new Dimension(imageWidth, imageHeight);
@@ -83,7 +94,9 @@ public class YImageCanvas extends Canvas
 
         xshift = shift;
 
-        string = s;
+        //string = s;
+        string.addElement(s);
+
         imageWidth = maxLength * mx + 6;
         imageHeight = my + 6;
         size = new Dimension(imageWidth, imageHeight);
@@ -109,9 +122,10 @@ public class YImageCanvas extends Canvas
             return false;
         }
 
-        string = s;
+        //string = s;
+        string.addElement(s);
 
-        offScrImg = null;
+        //offScrImg = null;
 
         repaint();
 
@@ -129,8 +143,10 @@ public class YImageCanvas extends Canvas
         if (img.getWidth(this) != imageWidth || img.getHeight(this) != imageHeight)
             return false;
 
-        image = img;
-        offScrImg = null;
+        //image = img;
+        image.addElement(img);
+
+        //offScrImg = null;
 
         repaint();
 
@@ -144,15 +160,15 @@ public class YImageCanvas extends Canvas
             return;
 
         if (offScrImg == null) {
-            offScrImg = createImage(imageWidth, imageHeight);            
-        }    
-        
+            offScrImg = createImage(imageWidth, imageHeight);
+        }
+
         if (offScrImg == null) {
             paint(g);
             return;
         } else {
             /*
-            int waittime = 0;            
+            int waittime = 0;
             while (offScrImg.getWidth(this) < 0 || offScrImg.getHeight(this) < 0) {
                 try {
                     Thread.sleep(50);
@@ -167,26 +183,41 @@ public class YImageCanvas extends Canvas
             Graphics og = offScrImg.getGraphics();
             paint(og);
             g.drawImage(offScrImg, 0, 0, this);
-            og.dispose();         
+            og.dispose();
         }
     }
-    
+
     public void paint(Graphics g)
     {
         if (isImage) {
-            if (image != null) {
-                g.drawImage(image, 0, 0, this);
+            //if (image != null) {
+            //    g.drawImage(image, 0, 0, this);
+            //}
+            while (image.size() > 0) {
+                g.drawImage((Image)image.firstElement(), 0, 0, this);
+                image.removeElementAt(0);
             }
         } else {
-            if (string != null) {
+            //if (string != null) {
+            //    g.setColor(bgcolor);
+            //    g.fillRect(0, 0, imageWidth, imageHeight);
+            //    g.setColor(fgcolor);
+            //    g.setFont(font);
+            //    int xstart = (imageWidth - string.length() * mx) / 2 + xshift;
+            //    g.drawString(string, xstart, imageHeight - 3);
+            //}
+
+            while (string.size() > 0) {
+                String s = (String)string.firstElement();
                 g.setColor(bgcolor);
                 g.fillRect(0, 0, imageWidth, imageHeight);
                 g.setColor(fgcolor);
                 g.setFont(font);
-                int xstart = (imageWidth - string.length() * mx) / 2 + xshift;
-                g.drawString(string, xstart, imageHeight - 3);
+                int xstart = (imageWidth - s.length() * mx) / 2 + xshift;
+                g.drawString(s, xstart, imageHeight - 3);
+                string.removeElementAt(0);
             }
         }
     }
 }
-        
+

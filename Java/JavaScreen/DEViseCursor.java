@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  1999/07/27 17:11:18  hongyu
+// *** empty log message ***
+//
 // Revision 1.9  1999/06/23 20:59:16  wenger
 // Added standard DEVise header.
 //
@@ -32,7 +35,7 @@ public class DEViseCursor
     public String name = null, viewname = null;
     public Image image = null;
     public DEViseView parentView = null;
-    
+
     public DEViseCursor(String cn, String vn, Rectangle rect, String move, String resize, double gx, double gy) throws YException
     {
         if (cn == null || vn == null)
@@ -40,10 +43,10 @@ public class DEViseCursor
 
         viewname = vn;
         name = cn;
-        
+
         gridxx = gx;
-        gridyy = gy;        
-        
+        gridyy = gy;
+
         if (rect == null)
             throw new YException("Invalid cursor location");
 
@@ -62,7 +65,7 @@ public class DEViseCursor
             } else if (move.equals("Y")) {
                 isXMovable = false;
                 isYMovable = true;
-            } else if (move.equals("XY")) {    
+            } else if (move.equals("XY")) {
                 isXMovable = true;
                 isYMovable = true;
             } else {
@@ -86,7 +89,7 @@ public class DEViseCursor
                 isYResizable = false;
             } else if (resize.equals("none")) {
                 isXResizable = true;
-                isYResizable = true;                    
+                isYResizable = true;
             } else {
                 isXResizable = false;
                 isYResizable = false;
@@ -95,8 +98,15 @@ public class DEViseCursor
     }
 
     // position p is relative to the parent of this cursor
-    public int checkPos(Point p)
+    public int checkPos(Point p0)
     {
+        Point p = null;
+        if (parentView.parentView != null) {
+            p = new Point(p0.x - parentView.viewLoc.x, p0.y - parentView.viewLoc.y);
+        } else {
+            p = p0;
+        }
+
         if (p.x < x || p.y < y || p.x > x + width - 1 || p.y > y + height - 1) {
             return -1;
         } else {
@@ -114,7 +124,7 @@ public class DEViseCursor
                         } else {
                             return -1;
                         }
-                    }        
+                    }
                 } else if (p.y < y + height && p.y >= y + height - edge) { // left-bottom corner
                     if (isXResizable && isYResizable) {
                         return 6;
@@ -126,13 +136,13 @@ public class DEViseCursor
                         } else {
                             return -1;
                         }
-                    }        
-                } else { // left side 
+                    }
+                } else { // left side
                     if (isXResizable) {
                         return 1;
                     } else {
                         return -1;
-                    }    
+                    }
                 }
             } else if (p.x < x + width && p.x >= x + width - edge) {
                 if (p.y >= y && p.y < y + edge) { // right-top corner
@@ -146,7 +156,7 @@ public class DEViseCursor
                         } else {
                             return -1;
                         }
-                    }        
+                    }
                 } else if (p.y < y + height && p.y >= y + height - edge) { // right-bottom corner
                     if (isXResizable && isYResizable) {
                         return 8;
@@ -158,13 +168,13 @@ public class DEViseCursor
                         } else {
                             return -1;
                         }
-                    }        
+                    }
                 } else { // right side
                     if (isXResizable) {
                         return 2;
                     } else {
                         return -1;
-                    }    
+                    }
                 }
             } else {
                 if (p.y >= y && p.y < y + edge) { // top side
@@ -172,19 +182,19 @@ public class DEViseCursor
                         return 3;
                     } else {
                         return -1;
-                    }    
+                    }
                 } else if (p.y < y + height && p.y >= y + height - edge) { // bottom side
                     if (isYResizable) {
                         return 4;
                     } else {
                         return -1;
-                    }    
+                    }
                 } else { // inside cursor
                     if (isXMovable || isYMovable) {
                         return 0;
                     } else {
                         return -1;
-                    }    
+                    }
                 }
             }
         }

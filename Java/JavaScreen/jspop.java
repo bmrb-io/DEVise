@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  1999/06/23 20:59:21  wenger
+// Added standard DEVise header.
+//
 
 // ========================================================================
 
@@ -54,7 +57,7 @@ public class jspop implements Runnable
     private YLogFile logFile = null;
     private int debugLevel = 0;
     private YLogConsole debugConsole = null;
-    
+
     private String localHostname = null;
     private int IDCount = 1;
     private int maxServerNumber = 1;
@@ -132,7 +135,7 @@ public class jspop implements Runnable
     {
         System.out.println("\nChecking command line arguments ...\n");
         checkArguments(args);
-        
+
         try {
             InetAddress address = InetAddress.getLocalHost();
             localHostname = address.getHostName();
@@ -140,7 +143,7 @@ public class jspop implements Runnable
             System.out.println("Can not start jspop - unknown local host!");
             System.exit(1);
         }
-                
+
         System.out.println("Starting DEViseServer ...\n");
         try {
             DEViseServer newserver = null;

@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.36  1999/07/27 17:11:18  hongyu
+// *** empty log message ***
+//
 // Revision 1.35  1999/06/23 20:59:15  wenger
 // Added standard DEVise header.
 //
@@ -96,7 +99,7 @@ public class DEViseCmdDispatcher implements Runnable
         }
 
         setStatus(1);
-        jsc.jscreen.setCursor(DEViseGlobals.waitCursor); 
+        jsc.jscreen.setCursor(DEViseGlobals.waitCursor);
         jsc.animPanel.start();
         jsc.stopButton.setBackground(Color.red);
         jsc.stopNumber = 0;
@@ -107,7 +110,7 @@ public class DEViseCmdDispatcher implements Runnable
                 if (!connect()) {
                     String result = jsc.confirmMsg(errMsg + "\n \nDo you wish to try again?");
                     if (result.equals(YMsgBox.YIDNO)) {
-                        jsc.jscreen.setCursor(jsc.lastCursor); 
+                        jsc.jscreen.setCursor(jsc.lastCursor);
                         jsc.animPanel.stop();
                         jsc.stopButton.setBackground(DEViseGlobals.bg);
                         setStatus(0);
@@ -128,15 +131,15 @@ public class DEViseCmdDispatcher implements Runnable
         commands = DEViseGlobals.parseStr(command);
         if (commands == null || commands.length == 0) {
             jsc.showMsg("Invalid command: \"" + cmd + "\"");
-            jsc.jscreen.setCursor(jsc.lastCursor); 
+            jsc.jscreen.setCursor(jsc.lastCursor);
             jsc.animPanel.stop();
             jsc.stopButton.setBackground(DEViseGlobals.bg);
             setStatus(0);
             return;
         }
-        
+
         jsc.jscreen.setLastAction();
-                        
+
         dispatcherThread = new Thread(this);
         dispatcherThread.start();
     }
@@ -167,7 +170,7 @@ public class DEViseCmdDispatcher implements Runnable
 
                     disconnect();
 
-                    jsc.animPanel.stop();                    
+                    jsc.animPanel.stop();
                     jsc.stopButton.setBackground(DEViseGlobals.bg);
                     jsc.jscreen.updateScreen(false);
 
@@ -358,32 +361,32 @@ public class DEViseCmdDispatcher implements Runnable
                     w = Integer.parseInt(cmd[11]);
                     h = Integer.parseInt(cmd[12]);
                     Rectangle dataloc = new Rectangle(x, y, w, h);
-                    
+
                     int bg, fg;
                     Color color = DEViseGlobals.convertColor(cmd[13]);
                     if (color != null) {
-                    	fg = color.getRGB();
+                        fg = color.getRGB();
                     } else {
-                    	throw new NumberFormatException();
-                    }	
+                        throw new NumberFormatException();
+                    }
                     color = DEViseGlobals.convertColor(cmd[14]);
                     if (color != null) {
-                    	bg = color.getRGB();
+                        bg = color.getRGB();
                     } else {
-                    	throw new NumberFormatException();
-                    }		
+                        throw new NumberFormatException();
+                    }
                     //int bg = (Color.white).getRGB();
                     //int fg = (Color.black).getRGB();
-                    
+
                     String xtype = cmd[15], ytype = cmd[16];
-                    String viewtitle = cmd[17];                    
+                    String viewtitle = cmd[17];
                     double gridx = (Double.valueOf(cmd[18])).doubleValue();
                     double gridy = (Double.valueOf(cmd[19])).doubleValue();
                     int rb = Integer.parseInt(cmd[20]);
                     int cm = Integer.parseInt(cmd[21]);
                     int dd = Integer.parseInt(cmd[22]);
-                    int ky = Integer.parseInt(cmd[23]); 
-                    
+                    int ky = Integer.parseInt(cmd[23]);
+
                     DEViseView view = new DEViseView(jsc, parentname, viewname, piledname, viewtitle, viewloc, z, bg, fg, dataloc, xtype, ytype, gridx, gridy, rb, cm, dd, ky);
                     jsc.jscreen.addView(view);
                 } catch (NumberFormatException e) {
@@ -469,7 +472,7 @@ public class DEViseCmdDispatcher implements Runnable
                             DEViseGData data = null;
                             jsc.pn("Received gdata is: \"" + results[k] + "\"");
                             try {
-                                data = new DEViseGData(viewname, results[k], xm, xo, ym, yo);
+                                data = new DEViseGData(jsc, viewname, results[k], xm, xo, ym, yo);
                             } catch (YException e1) {
                                 //throw new YException("Invalid GData received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                                 throw new YException(e1.getMsg(), 2);
@@ -497,7 +500,7 @@ public class DEViseCmdDispatcher implements Runnable
                 try {
                     String cursorName = cmd[1];
                     String viewname = cmd[2];
-                    
+
                     int x0 = Integer.parseInt(cmd[3]);
                     int y0 = Integer.parseInt(cmd[4]);
                     int w = Integer.parseInt(cmd[5]);
@@ -507,7 +510,7 @@ public class DEViseCmdDispatcher implements Runnable
                     Rectangle rect = new Rectangle(x0, y0, w, h);
                     double gridx = (Double.valueOf(cmd[9])).doubleValue();
                     double gridy = (Double.valueOf(cmd[10])).doubleValue();
-                    
+
                     DEViseCursor cursor = null;
                     try {
                         cursor = new DEViseCursor(cursorName, viewname, rect, move, resize, gridx, gridy);

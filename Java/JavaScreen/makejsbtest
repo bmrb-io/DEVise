@@ -1,3 +1,4 @@
+#! /bin/csh -f 
 rm *.class
 javac jsb.java
 jar cf jsbtest.jar *.class

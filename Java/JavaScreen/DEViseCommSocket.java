@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  1999/06/23 20:59:16  wenger
+// Added standard DEVise header.
+//
 
 // ========================================================================
 
@@ -34,7 +37,7 @@ public class DEViseCommSocket
     // timeout = 0 means no time out
     private int timeout = 0;
     private int checkingSocketTimeout = 100;
-    
+
     // the buffer size for BufferedOutputStream, JDK defaults is 512
     private int bufferSize = 512;
 
@@ -42,8 +45,8 @@ public class DEViseCommSocket
     private boolean isControl = true;
     private int controlFlag = 0, numberOfElement = 0, totalSize = 0;
     private byte[] dataRead = null;
-    private int numberRead = 0; 
-    
+    private int numberRead = 0;
+
 
     public DEViseCommSocket(Socket sk, Socket sk1, int to) throws YException
     {
@@ -182,25 +185,25 @@ public class DEViseCommSocket
         try {
             if (is == null && imgis == null)
                 return true;
-                
+
             if ((is != null && is.available() > 0) || (imgis != null && imgis.available() > 0)) {
                 return false;
-            } else { 
+            } else {
                 return true;
-                
+
                 /*
                 try {
                     Thread.sleep(checkingSocketTimeout);
                 } catch (InterruptedException e1) {
                 }
-                
+
                 // give it a second chance
                 if ((is != null && is.available() > 0) || (imgis != null && imgis.available() > 0)) {
                     return false;
                 } else {
                     return true;
                 }
-                */            
+                */
             }
         } catch (IOException e) {
             closeSocket();
@@ -225,11 +228,11 @@ public class DEViseCommSocket
                         } catch (InterruptedException e1) {
                         }
                         isEnd = true;
-                    } else {                    
+                    } else {
                         byte[] tmpdat = new byte[size];
                         is.readFully(tmpdat);
                     }
-                    
+
                     size = is.available();
                 }
 
@@ -248,11 +251,11 @@ public class DEViseCommSocket
                         } catch (InterruptedException e1) {
                         }
                         isEnd = true;
-                    } else {                        
+                    } else {
                         byte[] tmpdat = new byte[size];
                         imgis.readFully(tmpdat);
                     }
-                    
+
                     size = imgis.available();
                 }
 

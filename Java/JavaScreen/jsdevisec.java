@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.49  1999/07/27 17:11:19  hongyu
+// *** empty log message ***
+//
 // Revision 1.47  1999/06/23 20:59:21  wenger
 // Added standard DEVise header.
 //
@@ -67,7 +70,7 @@ public class jsdevisec extends Panel
     public String rootDir = "DEViseSession";
     public String currentDir = "DEViseSession";
     public String currentSession = null;
-    
+
     public Cursor lastCursor = DEViseGlobals.defaultCursor;
 
 
@@ -154,9 +157,9 @@ public class jsdevisec extends Panel
         mainPanel.add(buttonPanel);
 
         viewInfo = new DEViseViewInfo(this, images);
-        
+
         topPanel.add(mainPanel, BorderLayout.WEST);
-        
+
         topPanel.add(viewInfo, BorderLayout.EAST);
         //topPanel.add(viewInfo);
 
@@ -204,7 +207,7 @@ public class jsdevisec extends Panel
                         }
                     }
                 });
-        /*        
+        /*
         statButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -212,7 +215,7 @@ public class jsdevisec extends Panel
                         dispatcher.start("JAVAC_GetServerState");
                     }
                 });
-        */        
+        */
         restartButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -229,10 +232,10 @@ public class jsdevisec extends Panel
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-                        if (isSessionOpened) {
-                            showMsg("You already have a session opened!\nPlease close current session first!");
-                            return;
-                        }
+                        //if (isSessionOpened) {
+                        //    showMsg("You already have a session opened!\nPlease close current session first!");
+                        //    return;
+                        //}
 
                         showSetting();
                     }
@@ -247,18 +250,18 @@ public class jsdevisec extends Panel
 
 
         isSessionOpened = false;
-        
+
         dispatcher = new DEViseCmdDispatcher(this);
 
         if (sessionName != null) {
             int index = sessionName.lastIndexOf('/');
             if (index > 0) {
-                currentDir = currentDir + "/" + sessionName.substring(0, index);                                            
+                currentDir = currentDir + "/" + sessionName.substring(0, index);
                 currentSession = sessionName.substring(index + 1, sessionName.length());
             } else {
                 currentSession = sessionName;
             }
-            
+
             //sessionName = rootDir + "/" + sessionName;
             dispatcher.start("JAVAC_SetDisplaySize " + jscreen.getScreenDim().width + " " + jscreen.getScreenDim().height + "\n" + "JAVAC_OpenSession {" + currentDir + "/" + currentSession + "}");
         }
@@ -540,7 +543,7 @@ class SessionDlg extends Frame
 
     private String sessionName = null;
     private java.awt.List fileList = null;
-    private Label label = new Label("Current available sessions in directory    ");    
+    private Label label = new Label("Current available sessions in directory    ");
     private Label directory = new Label("");
     private Button okButton = new Button("OK");
     private Button cancelButton = new Button("Cancel");
@@ -559,7 +562,7 @@ class SessionDlg extends Frame
         setFont(DEViseGlobals.font);
 
         setTitle("JavaScreen Open Dialog");
-        
+
         label.setFont(new Font("Serif", Font.BOLD, 16));
         //label.setFont(DEViseGlobals.font);
         directory.setText("/" + jsc.currentDir);
@@ -592,7 +595,7 @@ class SessionDlg extends Frame
         c.anchor = GridBagConstraints.CENTER;
         c.weightx = 1.0;
         c.weighty = 1.0;
-        
+
         c.insets = new Insets(5, 10, 0, 10);
         gridbag.setConstraints(label, c);
         add(label);
@@ -645,30 +648,30 @@ class SessionDlg extends Frame
                                                 jsc.showMsg("You do not have access to this directory!");
                                                 return;
                                             }
-                                            
+
                                             int index = jsc.currentDir.lastIndexOf('/');
                                             if (index > 0) {
-                                                jsc.currentDir = jsc.currentDir.substring(0, index);                                                
+                                                jsc.currentDir = jsc.currentDir.substring(0, index);
                                             } else {
                                                 jsc.showMsg("Invalid current directory \"" + jsc.currentDir + "\"!");
                                                 jsc.currentDir = jsc.rootDir;
                                                 close();
-                                            }                                           
+                                            }
                                         } else {
                                             jsc.currentDir = jsc.currentDir + "/" + name[0];
                                         }
-                                
+
                                         directory.setText("/" + jsc.currentDir);
                                         validate();
-                                
+
                                         jsc.dispatcher.start("JAVAC_GetSessionList {" + jsc.currentDir + "}");
-                                    } else { 
+                                    } else {
                                         jsc.currentSession = sessionName;
                                         jsc.dispatcher.start("JAVAC_SetDisplaySize " + jsc.jscreen.getScreenDim().width + " " + jsc.jscreen.getScreenDim().height
                                                                  + "\nJAVAC_OpenSession {" + jsc.currentDir + "/" + sessionName + "}");
                                         close();
                                     }
-                                }    
+                                }
                             }
                         }
                     }
@@ -689,15 +692,15 @@ class SessionDlg extends Frame
                                             jsc.showMsg("You do not have access to this directory!");
                                             return;
                                         }
-                                        
+
                                         int index = jsc.currentDir.lastIndexOf('/');
                                         if (index > 0) {
-                                            jsc.currentDir = jsc.currentDir.substring(0, index);                                            
+                                            jsc.currentDir = jsc.currentDir.substring(0, index);
                                         } else {
                                             jsc.showMsg("Invalid current directory \"" + jsc.currentDir + "\"!");
                                             jsc.currentDir = jsc.rootDir;
                                             close();
-                                        }                                           
+                                        }
                                     } else {
                                         jsc.currentDir = jsc.currentDir + "/" + name[0];
                                     }
@@ -846,18 +849,18 @@ class SettingDlg extends Dialog
         statButton.setBackground(DEViseGlobals.bg);
         statButton.setForeground(DEViseGlobals.fg);
         statButton.setFont(DEViseGlobals.font);
-        
+
         if (DEViseGlobals.inBrowser) {
-        	screenX.setEditable(false);
-        	screenY.setEditable(false);
-        	setButton.setEnabled(false);
-      	}
-      	
+            screenX.setEditable(false);
+            screenY.setEditable(false);
+            setButton.setEnabled(false);
+        }
+
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
         GridBagConstraints  c = new GridBagConstraints();
         setLayout(gridbag);
-        
+
         //c.gridx = GridBagConstraints.RELATIVE;
         //c.gridy = GridBagConstraints.RELATIVE;
         c.gridwidth = GridBagConstraints.REMAINDER;
@@ -868,31 +871,31 @@ class SettingDlg extends Dialog
         c.anchor = GridBagConstraints.CENTER;
         c.weightx = 1.0;
         c.weighty = 1.0;
-        
+
         c.insets = new Insets(10, 10, 0, 0);
         c.gridwidth = 1;
         Label label1 = new Label("JavaScreen Size:");
         gridbag.setConstraints(label1, c);
         add(label1);
-        
+
         c.insets = new Insets(10, 0, 0, 5);
         gridbag.setConstraints(screenX, c);
         add(screenX);
-        
+
         gridbag.setConstraints(screenY, c);
         add(screenY);
-        
+
         c.insets = new Insets(10, 10, 0, 10);
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(setButton, c);
         add(setButton);
-        
+
         c.insets = new Insets(10, 10, 10, 0);
         c.gridwidth = 1;
         Label label2 = new Label("JSPOP Status:");
         gridbag.setConstraints(label2, c);
         add(label2);
-        
+
         c.insets = new Insets(10, 0, 10, 10);
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(statButton, c);
@@ -932,6 +935,11 @@ class SettingDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
+                        if (jsc.isSessionOpened) {
+                            jsc.showMsg("You already have a session opened!\nPlease close current session first!");
+                            return;
+                        }
+
                         int x = 0, y = 0;
                         int dimx = DEViseGlobals.screenSize.width - 2 * DEViseGlobals.screenEdge.width;
                         int dimy = DEViseGlobals.screenSize.height - 2 * DEViseGlobals.screenEdge.height;
@@ -946,7 +954,7 @@ class SettingDlg extends Dialog
                                 //DEViseGlobals.screenSize.height = y + 80;
                                 //jsc.jscreen.resetScreenDim();
                                 jsc.jscreen.setScreenDim(x, y);
-                                
+
                                 close();
                             }
                         } catch (NumberFormatException e) {
@@ -960,7 +968,7 @@ class SettingDlg extends Dialog
                     public void actionPerformed(ActionEvent event)
                     {
                         jsc.dispatcher.start("JAVAC_GetServerState");
-                        
+
                         close();
                     }
                 });

@@ -261,6 +261,53 @@ public final class DEViseGlobals
         }
     }
 
+    public static Font getFont(int size, int ff, int fw, int fs)
+    {
+        if (size < 4) {
+            return null;
+        }
+
+        if (ff < 0 || ff > 2) {
+            ff = 0;
+        }
+
+        int fontstyle = ((fw == 0)?Font.PLAIN:Font.BOLD) + ((fs == 0)?Font.PLAIN:Font.ITALIC);
+
+        return new Font(DEViseFont[ff], fontstyle, size);
+    }
+
+    public static Font getFont(String str, int height, int ff, int fw, int fs)
+    {
+        if (str == null || str.length() == 0 || height < 1) {
+            return null;
+        }
+
+        // as of right now, I only recognize courier(Monospaced), times(Serif) and Helvetica(SansSerif)
+        // default is courier
+        if (ff < 0 || ff > 2) {
+            ff = 0;
+        }
+
+        int minSize = 4, maxSize = 1000;
+        int fontstyle = ((fw == 0)?Font.PLAIN:Font.BOLD) + ((fs == 0)?Font.PLAIN:Font.ITALIC);
+
+        Toolkit tk = Toolkit.getDefaultToolkit();
+        for (int i = minSize; i < maxSize; i++) {
+            Font font = new Font(DEViseFont[ff], fontstyle, i);
+            FontMetrics fm = tk.getFontMetrics(font);
+            int h = fm.getHeight();
+            if (h > height) {
+                if (i == minSize) {
+                    return null;
+                } else {
+                    return new Font(DEViseFont[ff], fontstyle, i - 1);
+                }
+            }
+        }
+
+        return new Font(DEViseFont[ff], fontstyle, maxSize - 1);
+    }
+
     public static Font getFont(String str, int width, int height, int ff, int fw, int fs)
     {
         if (str == null || str.length() == 0 || width < 1 || height < 1) {

@@ -42,6 +42,7 @@ public class DEViseCanvas extends Container
 
     //public Vector allCursors = new Vector();
     //public Vector allGDatas = new Vector();
+    public int posZ = 0;
 
     private Image image = null;
 
@@ -653,13 +654,13 @@ public class DEViseCanvas extends Container
                         //int tx = cursor.x * 2 + cursor.width;
                         if (cursor.gridx > 0) {
                             //dx = ((tx + dx) / cursor.gridx) * cursor.gridx - tx;
-                            dx = (dx / cursor.gridx) * cursor.gridx;
+                            dx = (int)Math.round(Math.round((dx * activeView.dataXStep) / cursor.gridxx) * cursor.gridxx / activeView.dataXStep);
                         }
 
                         //int ty = cursor.y * 2 + cursor.height;
                         if (cursor.gridy > 0) {
                             //dy = ((ty + dy) / cursor.gridy) * cursor.gridy - ty;
-                            dy = (dy / cursor.gridy) *cursor.gridy;
+                            dy = (int)Math.round(Math.round((dy * activeView.dataYStep) / cursor.gridyy) * cursor.gridyy / activeView.dataYStep);
                         }
 
                         activeView.updateCursorLoc(activeView.whichCursor, 1, dx, dy, true);
@@ -806,13 +807,13 @@ public class DEViseCanvas extends Container
                     //int tx = cursor.x * 2 + cursor.width;
                     if (cursor.gridx > 0) {
                         //dx = ((tx + dx) / cursor.gridx) * cursor.gridx - tx;
-                        dx = (dx / cursor.gridx) * cursor.gridx;
+                        dx = (int)Math.round(Math.round((dx * activeView.dataXStep) / cursor.gridxx) * cursor.gridxx / activeView.dataXStep);
                     }
 
                     //int ty = cursor.y * 2 + cursor.height;
                     if (cursor.gridy > 0) {
                         //dy = ((ty + dy) / cursor.gridy) * cursor.gridy - ty;
-                        dy = (dy / cursor.gridy) *cursor.gridy;
+                        dy = (int)Math.round(Math.round((dy * activeView.dataYStep) / cursor.gridyy) * cursor.gridyy / activeView.dataYStep);
                     }
 
                     activeView.updateCursorLoc(activeView.whichCursor, 1, dx, dy, false);

@@ -1,0 +1,22 @@
+#! /bin/csh -f
+
+############################################################
+
+# $Id$
+
+############################################################
+
+nohup /s/std/bin/Xvfb :5 -screen 0 1280x1024x8 &
+#nohup /s/std/bin/Xvfb :1 -screen 0 1024x768x8 &
+setenv DISPLAY unix:5.0
+
+# Make sure Xvfb gets going before starting the jspop.
+sleep 10
+
+\rm devised.out
+\rm jspop.out
+touch devised.out
+touch jspop.out
+
+nohup java jspop -debug -cmdport5555 -imgport5533 $* >! jspop.out
+setenv DISPLAY unix:0.0

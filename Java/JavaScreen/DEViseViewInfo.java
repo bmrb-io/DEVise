@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.40  1999/07/27 17:11:19  hongyu
+// *** empty log message ***
+//
 // Revision 1.38  1999/06/23 20:59:18  wenger
 // Added standard DEVise header.
 //
@@ -46,11 +49,11 @@ public class DEViseViewInfo extends Panel
         viewName.setBackground(DEViseGlobals.textBg);
         viewName.setForeground(DEViseGlobals.textFg);
         viewName.setFont(DEViseGlobals.textFont);
-        
+
         mouseX.setBackground(DEViseGlobals.textBg);
         mouseX.setForeground(DEViseGlobals.textFg);
         mouseX.setFont(DEViseGlobals.textFont);
-        
+
         mouseY.setBackground(DEViseGlobals.textBg);
         mouseY.setForeground(DEViseGlobals.textFg);
         mouseY.setFont(DEViseGlobals.textFont);
@@ -69,7 +72,7 @@ public class DEViseViewInfo extends Panel
         //    add(light);
 
         //add(viewName);
-        
+
         add(mouseX);
         add(mouseY);
     }
@@ -79,13 +82,13 @@ public class DEViseViewInfo extends Panel
         if (name == null) {
             //viewName.setText("");
             if (jsc.parentFrame != null) {
-            	jsc.parentFrame.setTitle("DEVise JavaScreen");
-            }	
+                jsc.parentFrame.setTitle("DEVise JavaScreen");
+            }
         } else {
-        	//viewName.setText(name);
-        	if (jsc.parentFrame != null) {
-            	jsc.parentFrame.setTitle("DEVise JavaScreen     \"" + name + "\"");
-            }	
+            //viewName.setText(name);
+            if (jsc.parentFrame != null) {
+                jsc.parentFrame.setTitle("DEVise JavaScreen     \"" + name + "\"");
+            }
         }
 
         if (x == null) {
@@ -112,9 +115,9 @@ public class DEViseViewInfo extends Panel
     {
         //viewName.setText("");
         if (jsc.parentFrame != null) {
-        	jsc.parentFrame.setTitle("DEVise JavaScreen");
-        }	
-        
+            jsc.parentFrame.setTitle("DEVise JavaScreen");
+        }
+
         mouseX.setText("");
         mouseY.setText("");
 

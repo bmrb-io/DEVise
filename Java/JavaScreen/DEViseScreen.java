@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.33  1999/07/27 17:11:18  hongyu
+// *** empty log message ***
+//
 // Revision 1.31  1999/06/23 20:59:16  wenger
 // Added standard DEVise header.
 //
@@ -33,9 +36,15 @@ public class DEViseScreen extends Panel
     Dimension screenSize = null;
 
     Vector allCanvas = new Vector();
+    Vector newCanvas = new Vector();
+    Vector obsoleteCanvas = new Vector();
+
     Vector allViews = new Vector();
     Hashtable viewTable = new Hashtable();
+
     Vector javaGDatas = new Vector();
+    Vector newGData = new Vector();
+    Vector obsoleteGData = new Vector();
 
     DEViseView currentView = null;
     public DEViseView lastActionView = null;
@@ -45,10 +54,10 @@ public class DEViseScreen extends Panel
 
     public Image offScrImg = null;
 
-    private boolean isGDataAdded = false, isGDataDeleted = false, isCanvasAdded = false, isCanvasDeleted = false;
-    private DEViseCanvas whichCanvasAdded = null, whichCanvasDeleted = null;
-    private int whichCanvasAddedWhere = 0;
-    private Vector whichGDataAdded = null, whichGDataDeleted = null;
+    //private boolean isGDataAdded = false, isGDataDeleted = false, isCanvasAdded = false, isCanvasDeleted = false;
+    //private DEViseCanvas whichCanvasAdded = null, whichCanvasDeleted = null;
+    //private int whichCanvasAddedWhere = 0;
+    //private Vector whichGDataAdded = null, whichGDataDeleted = null;
 
     public DEViseScreen(jsdevisec what)
     {
@@ -118,7 +127,7 @@ public class DEViseScreen extends Panel
 
         screenDim.width = width;
         screenDim.height = height;
-        
+
         screenSize.width = screenDim.width + 2 * DEViseGlobals.screenEdge.width;
         screenSize.height = screenDim.height + 2 * DEViseGlobals.screenEdge.height;
 
@@ -139,11 +148,11 @@ public class DEViseScreen extends Panel
         if (view.parentView != null) {
             view.parentView.addChild(view);
         }
-        
+
         if (view.piledView != null) {
             view.piledView.addPile(view);
         }
-        
+
         allViews.addElement(view);
         viewTable.put(view.viewName, view);
     }
@@ -162,19 +171,27 @@ public class DEViseScreen extends Panel
             DEViseCanvas canvas = new DEViseCanvas(view, image);
             view.canvas = canvas;
 
-            whichCanvasAddedWhere = 0;
-            for (int i = 0; i < allCanvas.size(); i++) {
+            //whichCanvasAddedWhere = 0;
+            int i;
+            for (i = 0; i < allCanvas.size(); i++) {
                 DEViseCanvas c = (DEViseCanvas)allCanvas.elementAt(i);
                 if (c.view.viewZ < canvas.view.viewZ) {
-                    whichCanvasAddedWhere = i;
+                    //whichCanvasAddedWhere = i;
+                    canvas.posZ = i;
                     break;
                 }
             }
+            if (i > 0 && canvas.posZ == 0) {
+                canvas.posZ = allCanvas.size();
+            }
 
-            allCanvas.insertElementAt(canvas, whichCanvasAddedWhere);
+            //allCanvas.insertElementAt(canvas, whichCanvasAddedWhere);
+            allCanvas.insertElementAt(canvas, canvas.posZ);
 
-            isCanvasAdded = true;
-            whichCanvasAdded = canvas;
+            newCanvas.addElement(canvas);
+
+            //isCanvasAdded = true;
+            //whichCanvasAdded = canvas;
         } else {
             view.canvas.updateImage(image);
         }
@@ -233,35 +250,37 @@ public class DEViseScreen extends Panel
                     for (int i = 0; i < gdata.size(); i++) {
                         DEViseGData data = view.getGData(i);
                         if (data.isJavaSymbol) {
-                            javaGDatas.removeElement(view.getGData(i));
-                        }   
+                            javaGDatas.removeElement(data);
+                            obsoleteGData.addElement(data);
+                        }
                     }
 
                     view.removeAllGData();
-
-                    isGDataDeleted = true;
-                    whichGDataDeleted = gdata;
+                    //isGDataDeleted = true;
+                    //whichGDataDeleted = gdata;
+                    //obsoleteGData.addElement(gdata);
                 }
             } else {
                 view.parentView.removeChild(view);
             }
-            
+
             if (view.piledView != null) {
                 view.piledView.removePile(view);
             }
-            
+
             if (view.canvas != null) {
                 allCanvas.removeElement(view.canvas);
-                isCanvasDeleted = true;
-                whichCanvasDeleted = view.canvas;
+                //isCanvasDeleted = true;
+                //whichCanvasDeleted = view.canvas;
+                obsoleteCanvas.addElement(view.canvas);
             }
-            
+
             if (currentView == view) {
-            	setCurrentView(null);
+                setCurrentView(null);
             }
-            
+
             allViews.removeElement(view);
-            viewTable.remove(view.viewName);                        
+            viewTable.remove(view.viewName);
 
             repaint();
         }
@@ -286,7 +305,7 @@ public class DEViseScreen extends Panel
             if (currentView.getCanvas() != null) {
                 currentView.getCanvas().repaint();
                 if (currentView != view && currentView.getCanvas().activeView == currentView) {
-                	currentView.getCanvas().activeView = null;
+                    currentView.getCanvas().activeView = null;
                 }
             }
         }
@@ -312,20 +331,22 @@ public class DEViseScreen extends Panel
             // remove old GData if any
             // Only top level view will have gdata
             Vector gdata = view.viewGDatas;
-            whichGDataDeleted = new Vector();
+            //whichGDataDeleted = new Vector();
             if (gdata.size() > 0) {
                 for (int i = 0; i < gdata.size(); i++) {
                     //remove(gdata[i].symbol);
                     DEViseGData data = view.getGData(i);
                     if (data.isJavaSymbol) {
                         javaGDatas.removeElement(data);
-                        whichGDataDeleted.addElement(data);
-                    }    
+                        obsoleteGData.addElement(data);
+                        //whichGDataDeleted.addElement(data);
+                        //obsoleteGData.addElement(data);
+                    }
                 }
 
                 view.removeAllGData();
-
-                isGDataDeleted = true;
+                //obsoleteGData.addElement(gdata);
+                //isGDataDeleted = true;
                 //whichGDataDeleted = gdata;
             }
 
@@ -334,13 +355,15 @@ public class DEViseScreen extends Panel
                     DEViseGData g = (DEViseGData)vect.elementAt(i);
                     if (g.isJavaSymbol) {
                         javaGDatas.addElement(g);
+                        newGData.addElement(g);
                     }
-                                 
+
                     view.addGData(g);
                 }
 
-                isGDataAdded = true;
-                whichGDataAdded = vect;
+                //isGDataAdded = true;
+                //whichGDataAdded = vect;
+                //newGData.addElement(vect);
             }
 
             repaint();
@@ -354,7 +377,7 @@ public class DEViseScreen extends Panel
         DEViseView view = getView(name);
 
         if (view != null) {
-            if (cursor != null) {                
+            if (cursor != null) {
                 if (view.addCursor(cursor)) {
                     repaint();
                 }
@@ -383,7 +406,7 @@ public class DEViseScreen extends Panel
             view.updateDataRange(axis, min, max);
         }
     }
-    
+
     public void setLastAction()
     {
         if (guiAction) {
@@ -392,17 +415,17 @@ public class DEViseScreen extends Panel
                 if (lastActionView != currentView) {
                     if (lastActionView != null) {
                         lastActionView.isFirstTime = true;
-                    } 
-                    
+                    }
+
                     lastActionView = currentView;
                     if (currentView.isFirstTime) {
                         currentView.isFirstTime = false;
                     }
                 }
             }
-        }                
+        }
     }
-            
+
     public synchronized void updateScreen(boolean flag)
     {
         if (flag) {
@@ -413,6 +436,10 @@ public class DEViseScreen extends Panel
             allCanvas.removeAllElements();
             allViews.removeAllElements();
             javaGDatas.removeAllElements();
+
+            newCanvas.removeAllElements();
+            obsoleteCanvas.removeAllElements();
+
             viewTable = new Hashtable();
 
             currentView = null;
@@ -423,10 +450,10 @@ public class DEViseScreen extends Panel
             jsc.viewInfo.updateInfo();
             jsc.viewInfo.updateImage(0, 0);
             jsc.viewInfo.updateCount(0);
-            
+
             jsc.lastCursor = DEViseGlobals.defaultCursor;
             setCursor(jsc.lastCursor);
-            
+
             offScrImg = null;
 
             repaint();
@@ -494,43 +521,71 @@ public class DEViseScreen extends Panel
             jsc.repaint();
         }
 
-        if (isCanvasDeleted && whichCanvasDeleted != null) {
-            remove(whichCanvasDeleted);
-            isCanvasDeleted = false;
-            whichCanvasDeleted = null;
+        //if (isCanvasDeleted && whichCanvasDeleted != null) {
+        //    remove(whichCanvasDeleted);
+        //    isCanvasDeleted = false;
+        //    whichCanvasDeleted = null;
+        //}
+
+        while (obsoleteCanvas.size() > 0) {
+            remove((DEViseCanvas)obsoleteCanvas.firstElement());
+            obsoleteCanvas.removeElementAt(0);
         }
 
-        if (isCanvasAdded && whichCanvasAdded != null) {
-            add(whichCanvasAdded, whichCanvasAddedWhere);
-            whichCanvasAdded.setBounds(whichCanvasAdded.getBoundsInScreen());
-            isCanvasAdded = false;
-            whichCanvasAdded = null;
+        //if (isCanvasAdded && whichCanvasAdded != null) {
+        //    add(whichCanvasAdded, whichCanvasAddedWhere);
+        //    whichCanvasAdded.setBounds(whichCanvasAdded.getBoundsInScreen());
+        //    isCanvasAdded = false;
+        //    whichCanvasAdded = null;
+        //}
+
+        while (newCanvas.size() > 0) {
+            DEViseCanvas c = (DEViseCanvas)newCanvas.firstElement();
+            add(c, c.posZ);
+            c.setBounds(c.getBoundsInScreen());
+            newCanvas.removeElementAt(0);
         }
 
-        if (isGDataDeleted && whichGDataDeleted != null) {
-            for (int i = 0; i < whichGDataDeleted.size(); i++) {
-                DEViseGData gdata = (DEViseGData)whichGDataDeleted.elementAt(i);
-                if (gdata.isJavaSymbol) {
-                    remove(gdata.symbol);
-                }    
-            }
+        //if (isGDataDeleted && whichGDataDeleted != null) {
+        //    for (int i = 0; i < whichGDataDeleted.size(); i++) {
+        //        DEViseGData gdata = (DEViseGData)whichGDataDeleted.elementAt(i);
+        //        if (gdata.isJavaSymbol) {
+        //            remove(gdata.symbol);
+        //        }
+        //    }
+        //
+        //    isGDataDeleted = false;
+        //    whichGDataDeleted = null;
+        //}
 
-            isGDataDeleted = false;
-            whichGDataDeleted = null;
+        while (obsoleteGData.size() > 0) {
+            DEViseGData gdata = (DEViseGData)obsoleteGData.firstElement();
+            // the element in obsoleteGData will guranteed to be java type GData
+            remove(gdata.symbol);
+            obsoleteGData.removeElementAt(0);
         }
 
-        if (isGDataAdded && whichGDataAdded != null) {
-            for (int i = 0; i < whichGDataAdded.size(); i++) {
-                DEViseGData gdata = (DEViseGData)whichGDataAdded.elementAt(i);
-                if (gdata.isJavaSymbol) {
-                    Component gs = gdata.symbol;
-                    add(gs);
-                    gs.setBounds(gdata.getBoundsInScreen());
-                }    
-            }
+        //if (isGDataAdded && whichGDataAdded != null) {
+        //    for (int i = 0; i < whichGDataAdded.size(); i++) {
+        //        DEViseGData gdata = (DEViseGData)whichGDataAdded.elementAt(i);
+        //        if (gdata.isJavaSymbol) {
+        //            Component gs = gdata.symbol;
+        //            add(gs);
+        //            gs.setBounds(gdata.getBoundsInScreen());
+        //        }
+        //    }
+        //
+        //    isGDataAdded = false;
+        //    whichGDataAdded = null;
+        //}
 
-            isGDataAdded = false;
-            whichGDataAdded = null;
+        while (newGData.size() > 0) {
+            DEViseGData gdata = (DEViseGData)newGData.firstElement();
+            // the element in newGData will guranteed to be java type GData
+            Component gs = gdata.symbol;
+            add(gs);
+            gs.setBounds(gdata.getBoundsInScreen());
+            newGData.removeElementAt(0);
         }
 
         super.paint(g);

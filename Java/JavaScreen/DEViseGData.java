@@ -30,6 +30,7 @@ import java.net.*;
 
 public class DEViseGData
 {
+    public jsdevisec jsc = null;
     public DEViseView parentView = null;
     public String viewname = null;
     public int x = 0, y = 0, width = 0, height = 0;
@@ -44,11 +45,12 @@ public class DEViseGData
     public int outline = 0;
 
     // GData format: <x> <y> <z> <color> <size> <pattern> <orientation> <symbol type> <shape attr 0> ... <shape attr 9>
-    public DEViseGData(String name, String gdata, double xm, double xo, double ym, double yo) throws YException
+    public DEViseGData(jsdevisec j, String name, String gdata, double xm, double xo, double ym, double yo) throws YException
     {
         if (name == null)
             throw new YException("Invalid parent view for GData!");
 
+        jsc = j;
         viewname = name;
 
         data = DEViseGlobals.parseString(gdata);
@@ -76,6 +78,7 @@ public class DEViseGData
                 width = -width;
             if (height < 0)
                 height = -height;
+
             x = x - width / 2;
             y = y - height / 2;
             if (x < 0)
@@ -105,18 +108,20 @@ public class DEViseGData
                 });
 
             symbol = button;
-        } else if (symbolType == 12) {
+        } else if (symbolType == 12 || symbolType == 16) {
             isJavaSymbol = false;
 
             string = data[8];
 
-            double w, h;
+            double w = 0.0, h = 0.0;
             int align, ff, fw, fs;
 
             // default font is courier, regular, nonitalic
             try {
-                w = (Double.valueOf(data[10])).doubleValue();
-                h = (Double.valueOf(data[11])).doubleValue();
+                if (symbolType == 12) {
+                    w = (Double.valueOf(data[10])).doubleValue();
+                    h = (Double.valueOf(data[11])).doubleValue();
+                }
 
                 if (data[12].equals("")) {
                     outline = 0;
@@ -154,24 +159,37 @@ public class DEViseGData
                 throw new YException("Invalid Gdata!");
             }
 
-            width = (int)(w * size * xm);
-            height = (int)(h * size * ym);
+            if (symbolType == 12) {
+                width = (int)(w * size * xm);
+                height = (int)(h * size * ym);
+                if (width < 0)
+                    width = -width;
+                if (height < 0)
+                    height = -height;
 
-            if (width < 0)
-                width = -width;
-            if (height < 0)
-                height = -height;
-
-            x = x - width / 2;
-            y = y - height / 2;
-            
-            if (x < 0)
-                x = 0;
-            if (y < 0)
-                y = 0;
+                x = x - width / 2;
+                y = y - height / 2;
+                if (x < 0)
+                    x = 0;
+                if (y < 0)
+                    y = 0;
+            } else {
+                width = 0;
+                height = 0;
+            }
 
             color = DEViseGlobals.convertColor(data[3]);
-            font = DEViseGlobals.getFont(string, width, height, ff, fw, fs);
+
+            if (symbolType == 12) {
+                if (w < 0.0) {
+                    font = DEViseGlobals.getFont(string, height, ff, fw, fs);
+                } else {
+                    font = DEViseGlobals.getFont(string, width, height, ff, fw, fs);
+                }
+            } else {
+                int fsize = (int)size * jsc.jscreen.getScreenDim().height;
+                font = DEViseGlobals.getFont(fsize, ff, fw, fs);
+            }
 
             if (color == null || font == null) {
                 string = null;
@@ -186,7 +204,7 @@ public class DEViseGData
             dc = dc + ld / 2;
             int sh = fm.getHeight();
             int sw = fm.stringWidth(string);
-            
+
             switch (align) {
             case -4:
                 y = y + ac;
@@ -217,12 +235,11 @@ public class DEViseGData
                 y = y + height / 2 + ac - sh / 2;
                 x = x + width - sw;
                 break;
-            case 4: 
+            case 4:
                 y = y + height - dc;
                 x = x + width - sw;
                 break;
             }
-                
         } else {
             isJavaSymbol = false;
 
@@ -232,6 +249,7 @@ public class DEViseGData
                 width = -width;
             if (height < 0)
                 height = -height;
+
             x = x - width / 2;
             y = y - height / 2;
             if (x < 0)
