@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.7  1995/11/20 22:37:16  jussi
+#	Reworked caching interface to include record ranges. Schema files
+#	are now scanned (not imported) to find the schema type when a
+#	data stream is defined. Interface to some extraction routines changed.
+#
 #	Revision 1.6  1995/11/15 22:12:47  jussi
 #	Added link to auto-source-definition (autosrc.tcl).
 #
@@ -46,6 +51,7 @@ if {![file exists $sourceFile]} {
 }
 source $sourceFile
 
+source $libdir/mapdef.tcl
 source $libdir/autosrc.tcl
 source $libdir/issm.tk
 source $libdir/cstat.tk
@@ -116,7 +122,7 @@ proc defineStream {base edit} {
 	wm title .srcdef "Define Data Stream"
     }
     wm minsize .srcdef 630 320
-    wm maxsize .srcdef 630 320
+    wm maxsize .srcdef 630 520
     wm geometry .srcdef =630x320+150+150
     selection clear .srcdef
 
@@ -549,7 +555,7 @@ proc selectUnixFile {} {
 ############################################################
 
 proc selectStream {} {
-    global streamSelected sourceTypes
+    global streamSelected sourceTypes MapTable
 
     # see if .srcsel window already exists; if so, just return
     set err [catch {wm state .srcsel}]
@@ -575,9 +581,10 @@ proc selectStream {} {
     menubutton .srcsel.mbar.define -text Define -menu .srcsel.mbar.define.menu
     menubutton .srcsel.mbar.stream -text Stream -menu .srcsel.mbar.stream.menu
     menubutton .srcsel.mbar.display -text Display -menu .srcsel.mbar.display.menu
+    menubutton .srcsel.mbar.follow -text "Follow to" -menu .srcsel.mbar.follow.menu
     menubutton .srcsel.mbar.help -text Help -menu .srcsel.mbar.help.menu
     pack .srcsel.mbar.define .srcsel.mbar.stream .srcsel.mbar.display \
-	    .srcsel.mbar.help -side left
+	    .srcsel.mbar.follow .srcsel.mbar.help -side left
 
     menu .srcsel.mbar.define.menu -tearoff 0
     .srcsel.mbar.define.menu add command -label "New..." \
@@ -589,6 +596,12 @@ proc selectStream {} {
     foreach sourcetype [lsort [array names sourceTypes]] {
 	.srcsel.mbar.define.menu.auto add command -label $sourcetype \
 		-command "autoSourceAdd $sourcetype"
+    }
+
+    menu .srcsel.mbar.follow.menu -tearoff 0
+    foreach mtype [lsort [array names MapTable]] {
+	.srcsel.mbar.follow.menu add command -label $mtype \
+		-command "mapFollow $mtype"
     }
 
     menu .srcsel.mbar.stream.menu -tearoff 0
@@ -655,7 +668,7 @@ proc selectStream {} {
     }
 
     tk_menuBar .srcsel.mbar .srcsel.mbar.define .srcsel.mbar.stream \
-	    .srcsel.mbar.display .srcsel.mbar.help
+	    .srcsel.mbar.display .srcsel.mbar.follow .srcsel.mbar.help
 
     listbox .srcsel.top.list -relief raised -borderwidth 2 \
 	    -yscrollcommand ".srcsel.top.scroll set" -font 9x15 \
@@ -727,4 +740,96 @@ proc selectSelectedSource {} {
     if {$err > 0} { return }
     puts "Selected: $dispName"
     puts "  $sourceDef"
+}
+
+############################################################
+
+proc mapFollow {newtype} {
+    global button evaluation priority MapTable sourceList sourceTypes
+
+    set curr [getSelectedSource]
+    if {$curr == ""} {
+	dialog .note "Select Source" \
+		"Select data source first." "" 0 OK
+	return
+    } 
+    set oldtype [lindex $sourceList($curr) 0]
+    set oldkey [lindex $sourceList($curr) 1]
+    if {$oldtype == $newtype} {
+	dialog .note "Error" "$oldtype stream for the current selection \
+		already exists in the list."  "" 0 OK
+	return
+    }
+
+    # Check if a mapping table exists between oldtype and newtype
+    if {[info exists MapTable($oldtype)] == 0} {
+	dialog .note "Error" "The mapping table between $oldtype and \
+		$newtype does not exist." "" 0 OK
+	return
+    }
+
+    set num 0
+    set len [llength $MapTable($oldtype)]
+    while {$num < $len} {
+	set elem [lindex $MapTable($oldtype) $num]
+	set typ [lindex $elem 0]
+	if {$typ == $newtype} {
+	    break
+	}
+	incr num
+    }
+
+    if {$num == $len} {
+	dialog .note "Error" "The mapping table between $oldtype and \
+		$newtype does not exist." "" 0 OK
+	return
+    }
+
+    # Use the table to find the index for the new type
+    set mapfile [lindex $elem 1]
+    set oldidx [lindex $elem 2]
+    set newidx [lindex $elem 3]
+
+    set newkeylist ""
+    set f [open $mapfile r]
+    while {[gets $f line] != -1} {
+	set coldkey [lindex $line $oldidx]
+	if {$coldkey == $oldkey} {
+	    set cnewkey [lindex $line $newidx]
+	    set newkeylist [lappend newkeylist $cnewkey]
+	}
+    }
+    close $f
+
+    # How many matches were found?
+    set len [llength $newkeylist]
+    if {$len == 0} {
+	dialog .note "Result of Mapping" "The mapping table currently \
+		does not contain any match for the selected item." "" 0 OK
+	return
+    }
+
+    dialog .note "Result of Mapping" "The mapping table contains $len \
+	    entry(ies) corresponding to the selected item. Do you wish \
+	    to add them to the list now ?" "" 0 YES NO
+
+    if {$button == 1} {return}
+
+    set num 0
+    foreach itm $newkeylist {
+	set dname "$newtype$num $curr"
+	set sfile [lindex $sourceTypes($newtype) 1]
+	set stype [scanSchema $sfile]
+	set cname [getCacheName $newtype $itm]
+	set sdef [list $newtype $itm $stype $sfile $cname 100 50 {}]
+	set "sourceList($dname)" $sdef
+
+	incr num
+    }
+    saveSources
+    updateSources
+    dialog .note "Note" "The names on the list have been automatically \
+	    generated. You may change them to more meaningful names by \
+	    clicking on Edit." "" 0 OK
+
 }
