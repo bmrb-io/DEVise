@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/05/31 19:05:19  jussi
+  Removed alternate keyboard mapping for X zoom out.
+
   Revision 1.14  1996/05/07 16:36:32  jussi
   Changed type of view parameter from View * to ViewGraph *.
   Added handling of keypad number 5 (autoscale view).
@@ -92,6 +95,7 @@ void ActionDefault::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
   VisualFilter filter;
 
   Boolean isScatterPlot = view->IsScatterPlot();
+  isScatterPlot |= (view->GetNumDimensions() != 2);
 
   if (key == '+') {
     /* increase pixel size */
@@ -127,30 +131,55 @@ void ActionDefault::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
 
   else if (key == '5') {
     /* show all data records in view i.e. set filter to use the
-       actual min/max X values and the actual min/max Y values */
+       actual min/max X values and the actual min/max Y values;
+       for 3D graphs, move camera to (0,0,Z) where Z is twice
+       the min Z value */
     int index = view->InitMappingIterator();
     if (view->MoreMapping(index)) {
-      view->GetVisualFilter(filter);
       TDataMap *map = view->NextMapping(index)->map;
       AttrInfo *xAttr = map->MapGAttr2TAttr("x");
       AttrInfo *yAttr = map->MapGAttr2TAttr("y");
-      if (xAttr) {
-	if (xAttr->hasHiVal)
-	  filter.xHigh = AttrList::GetVal(&xAttr->hiVal, xAttr->type);
-	if (xAttr->hasLoVal)
-	  filter.xLow = AttrList::GetVal(&xAttr->loVal, xAttr->type);
+      AttrInfo *zAttr = map->MapGAttr2TAttr("z");
+      if (view->GetNumDimensions() == 2) {
+	view->GetVisualFilter(filter);
+	if (xAttr) {
+	  if (xAttr->hasHiVal)
+	    filter.xHigh = AttrList::GetVal(&xAttr->hiVal, xAttr->type);
+	  if (xAttr->hasLoVal)
+	    filter.xLow = AttrList::GetVal(&xAttr->loVal, xAttr->type);
+	}
+	if (yAttr) {
+	  if (yAttr->hasHiVal)
+	    filter.yHigh = AttrList::GetVal(&yAttr->hiVal, yAttr->type);
+	  if (yAttr->hasLoVal)
+	    filter.yLow = AttrList::GetVal(&yAttr->loVal, yAttr->type);
+	}
+	if (!isScatterPlot)
+	  filter.yLow = 0;
+	view->SetVisualFilter(filter);
+      } else {
+	Camera c = view->GetCamera();
+	c.fx = 0;
+	c.fy = 0;
+	c.fz = 0;
+	double minZ = -4.0;
+	if (zAttr && zAttr->hasLoVal)
+	  minZ = 2 * AttrList::GetVal(&zAttr->loVal, zAttr->type);
+	if (minZ > -4.0)
+	  minZ = -4.0;
+	if (!c.spherical_coord) {
+	  c.x_ = 0;
+	  c.y_ = 0;
+	  c.z_ = minZ;
+	} else {
+	  c._theta = M_PI;
+	  c._phi = -M_PI_2;
+	  c._rho = minZ;
+	}
+	view->SetCamera(c);
       }
-      if (yAttr) {
-	if (yAttr->hasHiVal)
-	  filter.yHigh = AttrList::GetVal(&yAttr->hiVal, yAttr->type);
-	if (yAttr->hasLoVal)
-	  filter.yLow = AttrList::GetVal(&yAttr->loVal, yAttr->type);
-      }
-      if (!isScatterPlot)
-	filter.yLow = 0;
-      view->SetVisualFilter(filter);
+      view->DoneMappingIterator(index);
     }
-    view->DoneMappingIterator(index);
   }
 
   else if (!isScatterPlot && (key == '<' || key == ',' || key == '4')) {
