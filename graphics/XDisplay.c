@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/02 21:30:11  jussi
+  Tried if letting Tcl/Tk handle all X events and pass a copy
+  of each event to us would solve the problem with TK_WINDOW_old.
+  This event handling mechanism didn't turn out to work right
+  so I renamed it TK_WINDOW_EV2.
+
   Revision 1.4  1995/11/29 15:30:09  jussi
   Disabled a debugging message.
 
@@ -63,7 +69,7 @@ XDisplay::XDisplay(char *name)
   }
   
   /* init stipples for patterns*/
-  Window win = XCreateSimpleWindow(_display, DefaultRootWindow(_display), 
+  Window win = XCreateSimpleWindow(_display, DefaultRootWindow(_display),
 				   (unsigned)0, (unsigned)0, (unsigned)10,
 				   (unsigned)10, /* border width */ 5,
 				   /* border */ 0, /* background */ 0);
@@ -94,6 +100,49 @@ XDisplay::~XDisplay()
 #endif
 
 /*******************************************************************
+Allocate closest matching color
+********************************************************************/
+
+Boolean XDisplay::ClosestColor(Colormap &map, XColor &color, Color &c)
+{
+  if (XAllocColor(_display, map, &color)) {
+    c = color.pixel;
+    return true;
+  }
+
+  // if exact color match is not found, try allocating a color that
+  // is close enough; maxDeviation specifies maximum distance in each
+  // of the RGB directions (X color values are between 0 and 65535);
+  // increment specifies the hop size between each attempt
+
+  const int maxDeviation = (int)(0.05 * 65535);   // 1% max deviation
+  const int increment = (int)(maxDeviation / 4);
+    
+  for(int dev = increment; dev < maxDeviation; dev += increment) {
+    for(int r = -1; r <= 1; r += 2) {
+      for(int g = -1; g <= 1; g += 2) {
+	for(int b = -1; b <= 1; b += 2) {
+	  XColor ctry;
+	  ctry.red   = color.red + r * dev;
+	  ctry.green = color.green + g * dev;
+	  ctry.blue  = color.blue + b * dev;
+#ifdef DEBUG
+	  printf("Trying to allocate color %d,%d,%d\n", ctry.red,
+		 ctry.green, ctry.blue);
+#endif
+	  if (XAllocColor(_display, map, &ctry)) {
+	    c = ctry.pixel;
+	    return true;
+	  }
+	}
+      }
+    }
+  }
+
+  return false;
+}
+
+/*******************************************************************
 Alloc color by name
 ********************************************************************/
 
@@ -101,19 +150,27 @@ void XDisplay::AllocColor(char *name, Color globalColor)
 {
   Colormap cmap = DefaultColormap(this->_display,
 				  DefaultScreen(this->_display));
+
   XColor color_def;
+
+  if (!XParseColor(this->_display, cmap, name, &color_def)) {
+    fprintf(stderr, "Cannot understand color %s.\n", name);
+    Exit::DoExit(1);
+  }
+
+#ifdef DEBUG
+  printf("XDisplay::AllocColor %s\n", name);
+#endif
+
   Color color;
+  if (ClosestColor(cmap, color_def, color)) {
+    DeviseDisplay::MapColor(color, globalColor);
+    return;
+  }
 
-  if (!XParseColor(this->_display, cmap, name, &color_def))
-    goto error;
-  if (!XAllocColor(this->_display, cmap, &color_def))
-    goto error;
-  color = color_def.pixel;
-  DeviseDisplay::MapColor(color, globalColor);
-  return;
-
- error:
-  fprintf(stderr, "XDisplay::AllocColor: can't allocate %s\n", name);
+  fprintf(stderr, "Cannot allocate color %s.\n", name);
+  fprintf(stderr, "Try starting DEVise before any other color-intensive\n");
+  fprintf(stderr, "applications (such as Netscape).\n");
   Exit::DoExit(1);
 }
 
@@ -130,7 +187,6 @@ void XDisplay::AllocColor(double r, double g, double b, Color globalColor)
   Colormap cmap = DefaultColormap(this->_display,
 				  DefaultScreen(this->_display));
   XColor color_def;
-  Color color;
   
   /* convert from (0.0,1.0) to (0,65535)*/
   color_def.red = (unsigned short)(r * 65535); 
@@ -138,20 +194,19 @@ void XDisplay::AllocColor(double r, double g, double b, Color globalColor)
   color_def.blue = (unsigned short)(b * 65535);
 
 #ifdef DEBUG
-  printf("Alloc red %d, green %d, blue %d\n",
+  printf("XDisplay::AllocColor red %d, green %d, blue %d\n",
 	 color_def.red, color_def.green, color_def.blue);
 #endif
 
-  if (!XAllocColor(this->_display, cmap, &color_def))
-    goto error;
-  color = color_def.pixel;
-  DeviseDisplay::MapColor(color, globalColor);
-  return;
+  Color color;
+  if (ClosestColor(cmap, color_def, color)) {
+    DeviseDisplay::MapColor(color, globalColor);
+    return;
+  }
 
-error:
-  fprintf(stderr, "XDisplay::AllocColor: can't allocate %f,%f,%f\n",
-	  r, g, b);
-  Exit::DoExit(1);
+  fprintf(stderr, "Cannot allocate color %.2f,%.2f,%.2f.\n", r, g, b);
+  fprintf(stderr, "Try starting DEVise before any other color-intensive\n");
+  fprintf(stderr, "applications (such as Netscape).\n");
 }
 
 /*
