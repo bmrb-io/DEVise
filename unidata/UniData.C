@@ -53,6 +53,7 @@ void UniData::init()
 
     _next_rid = 0;
     _last_rid = 0;
+    _cur_line = 0;
 
     _params     = new ParamStk();
     _sys_params = new ParamStk();
@@ -655,6 +656,7 @@ void UniData::useRid(int uR)
 
         Seek(_data_init);
         _next_rid = 0;
+	   _cur_line = 0 ;
 
     } else {
         delete _index;
@@ -748,6 +750,7 @@ int UniData::reset()
 {
     _status = UD_OK;
     _next_rid = 0;
+    _cur_line = 0;
 
     Seek(_data_init);
 
@@ -907,6 +910,7 @@ int UniData::getRec_recsze(char *buff, off_t *offset)
             else
                 _next_rid++;
         }
+	   _cur_line++;
     }
 
     return ok;
@@ -914,216 +918,230 @@ int UniData::getRec_recsze(char *buff, off_t *offset)
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 // Do a getRec using a delimitor (text-only).
-int UniData::getRec_delimit(char *buff, off_t *offset)
-{
-    int   ok = 0;
-    char *sent;
-    int   have_sent;
-    off_t soff;
-    char *delim = _schema->attr0()->delimiter();
+	int UniData::getRec_delimit(char *buff, off_t *offset)
+	{
+	    int   ok = 0;
+	    char *sent;
+	    int   have_sent;
+	    off_t soff;
+	    char *delim = _schema->attr0()->delimiter();
 
-    if (!delim)
-        delim = "\n";
+	    if (!delim)
+		   delim = "\n";
 
-    if (isOk()) {
+	    if (isOk()) {
 
-        while (!ok && isOk()) {
-    
-            _slbuf->SkipCmmts(_status, _schema->_cmmts,
-                              _schema->attr0()->_white);
-    
-            _slbuf->room(_status,UD_BUFSLACK);
+		   while (!ok && isOk()) {
+	    
+			  _slbuf->SkipCmmts(_status, _schema->_cmmts,
+							_schema->attr0()->_white);
+	    
+			  _slbuf->room(_status,UD_BUFSLACK);
 
-            if (!isOk())
-                continue;
-    
-           *offset = _slbuf->getoff();
-    
-            udParam *prm = _params->ith(0);
-            prm->buf_pos = *offset;
+			  if (!isOk())
+				 continue;
+	    
+			 *offset = _slbuf->getoff();
+	    
+			  udParam *prm = _params->ith(0);
+			  prm->buf_pos = *offset;
 
-// To get a single line, replacing delimeter with \0 in buffer . 
+	// To get a single line, replacing delimeter with \0 in buffer . 
 
-            if ((sent = strchr(_slbuf->getcur(), *delim) )) {
-                have_sent = 1;
-                soff = _slbuf->getoff(sent);    
-                *sent = '\0';
-            } else 
-                have_sent = 0;
+			  if ((sent = strchr(_slbuf->getcur(), *delim) )) {
+				 have_sent = 1;
+				 soff = _slbuf->getoff(sent);    
+				 *sent = '\0';
+			  } else 
+				 have_sent = 0;
 
-            ok = (prm->attrfunc)(buff,_slbuf->getcur(),prm);
+			  ok = (prm->attrfunc)(buff,_slbuf->getcur(),prm);
 
-            if (have_sent) {
-                // This may have changed when calling someone.
-                sent = _slbuf->getpos(soff);
-               *sent = *delim;
-            }
- 
-            if (ok)
-                ok &= run_SysParams(buff);
+			  if (have_sent) {
+				 // This may have changed when calling someone.
+				 sent = _slbuf->getpos(soff);
+				*sent = *delim;
+			  }
+	 
+			  if (ok)
+				 ok &= run_SysParams(buff);
 
-            if (ok) { 
+			  if (ok) { 
 
-                if (_next_rid >= _last_rid) {
-                    if (_index)
-                        _index->insert(_next_rid,*offset);
-                    _last_rid = ++_next_rid;
-                } else
-                    _next_rid++;
-            } 
+				 if (_next_rid >= _last_rid) {
+					if (_index)
+					    _index->insert(_next_rid,*offset);
+					_last_rid = ++_next_rid;
+				 } else
+					_next_rid++;
+			  } 
+			  _cur_line++;
 
-              // Now locate the start of the next record.
-            _slbuf->SkipDelimit(_status,_schema->attr0()->delimiter());
-        }
-    }
+			    // Now locate the start of the next record.
+			  _slbuf->SkipDelimit(_status,_schema->attr0()->delimiter());
+		   }
+	    }
 
-    return ok;
-}
+	    return ok;
+	}
 
-// o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
-int UniData::run_SysParams(char *rcrd)
-{
-    int ok = 1;
+	// o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+	int UniData::run_SysParams(char *rcrd)
+	{
+	    int ok = 1;
 
-    if (!_sys_params->is_empty()) {
-        set_vars(rcrd);
+	    if (!_sys_params->is_empty()) {
+		   set_vars(rcrd);
 
-        for (int j=0; j < _sys_params->count(); j++) {
-            udParam *prm = _sys_params->ith(j);
-            ok &= (prm->attrfunc)(rcrd,NULL,prm);
-        }
+		   for (int j=0; j < _sys_params->count(); j++) {
+			  udParam *prm = _sys_params->ith(j);
+			  ok &= (prm->attrfunc)(rcrd,NULL,prm);
+		   }
 
-        grab_vars(rcrd);
-    }
+		   grab_vars(rcrd);
+	    }
 
-    return ok;
-}
+	    return ok;
+	}
 
-// o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
-//  This one splits on whitespace if we have it, otherwise
-//  relying on the reading functions to take what they need.
-int UniData::Split_White(char *dst, char * /* src */, udParam *ud)
-{
-    int ok;
+	// o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+	//  This one splits on whitespace if we have it, otherwise
+	//  relying on the reading functions to take what they need.
+	int UniData::Split_White(char *dst, char * /* src */, udParam *ud)
+	{
+	    int ok;
 
-#ifdef   DEBUG_UNIDATA
-    cout << "In " << __FUNCTION__ << " for " << ud->attr->name() << endl;
-#endif
+	#ifdef   DEBUG_UNIDATA
+	    cout << "In " << __FUNCTION__ << " for " << ud->attr->name() << endl;
+	#endif
 
-    for (int j=0; j < ud->subparam->count(); j++) {
+	    for (int j=0; j < ud->subparam->count(); j++) {
 
-        udParam *param = ud->subparam->ith(j);
+		   udParam *param = ud->subparam->ith(j);
 
-        _slbuf->SkipWhite(_status,ud->attr->whitespace());
-        assert(param);
-        _slbuf->setzero(param->buf_pos);
-        _slbuf->room(_status,UD_BUFSLACK);
-        _slbuf->room(_status,param->sze()+1);
+		   _slbuf->SkipWhite(_status,ud->attr->whitespace());
+		   assert(param);
+		   _slbuf->setzero(param->buf_pos);
+		   _slbuf->room(_status,UD_BUFSLACK);
+		   _slbuf->room(_status,param->sze()+1);
 
-        if (!isOk())
-            return 0;
+		   if (!isOk())
+			  return 0;
 
-        char *buf = _slbuf->getpos(param->buf_pos);
+		   char *buf = _slbuf->getpos(param->buf_pos);
 
-        ok = (param->attrfunc)(dst,buf,param);
+		   ok = (param->attrfunc)(dst,buf,param);
 
-        if (!ok)
-            return 0;
-    }
+		   if (!ok)
+			  return 0;
+	    }
 
-    return 1;
-}
+	    return 1;
+	}
 
-// o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
-int UniData::Split_Seper(char *dst, char * /* src */, udParam *ud)
-{
-    int      ok, last;
-    char     sentinel;
-    AttrStk *subattr = ud->attr->subattr();
+	// o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+	int UniData::Split_Seper(char *dst, char * /* src */, udParam *ud)
+	{
+	    int      ok, last;
+	    char     sentinel;
+	    AttrStk *subattr = ud->attr->subattr();
 
-#ifdef   DEBUG_UNIDATA
-    cout << "In " << __FUNCTION__ << " for " << ud->attr->name() << endl;
-#endif
+	#ifdef   DEBUG_UNIDATA
+	    cout << "In " << __FUNCTION__ << " for " << ud->attr->name() << endl;
+	#endif
 
-    for (int j=0; j < ud->subparam->count(); j++) {
+	    for (int j=0; j < ud->subparam->count(); j++) {
 
-        last = (j == subattr->nAttrs()-1);
-        
-        udParam *param = ud->subparam->ith(j);
+		   last = (j == subattr->nAttrs()-1);
+		   
+		   udParam *param = ud->subparam->ith(j);
 
-        _slbuf->SkipWhite(_status,ud->attr->whitespace());
-        _slbuf->setzero(param->buf_pos);
-        _slbuf->room(_status,UD_BUFSLACK);
-        _slbuf->room(_status,param->sze()+1);
+		   _slbuf->SkipWhite(_status,ud->attr->whitespace());
+		   _slbuf->setzero(param->buf_pos);
+		   _slbuf->room(_status,UD_BUFSLACK);
+		   _slbuf->room(_status,param->sze()+1);
 
-        if (!isOk())
-            return 0;
+		   if (!isOk())
+			  return 0;
 
-        char *buf = _slbuf->getpos(param->buf_pos);
-        char *sent = NULL;
-        off_t soff;
+		   char *buf = _slbuf->getpos(param->buf_pos);
+		   char *sent = NULL;
+		   off_t soff;
 
-        if ( !last && !param->attr->seperator) {
+		   if ( !last && !param->attr->seperator) {
 
-            sent = strchr(buf, *(ud->attr->seperator()) );
+			  sent = strchr(buf, *(ud->attr->seperator()) );
 
-            if (sent) {
-                soff = _slbuf->getoff(sent);    
-                sentinel = *sent;
-               *sent = '\0';
-            }
-        }
+			  if (sent) {
+				 soff = _slbuf->getoff(sent);    
+				 sentinel = *sent;
+				*sent = '\0';
+			  }
+		   }
 
-        ok = (param->attrfunc)(dst,buf,param);
+		   ok = (param->attrfunc)(dst,buf,param);
 
-        // This may have changed when calling someone.
-        if (sent) {
-            sent = _slbuf->getpos(soff);
-           *sent = sentinel;
-            _slbuf->set_init(soff+1);
-        }
+		   // This may have changed when calling someone.
+		   if (sent) {
+			  sent = _slbuf->getpos(soff);
+			 *sent = sentinel;
+			  _slbuf->set_init(soff+1);
+		   }
 
-        if (!ok)
-            return 0;
-    }
+		   if (!ok)
+			  return 0;
+	    }
 
-    return 1;
-}
+	    return 1;
+	}
 
-// o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
-int UniData::Split_Position(char *dst, char * /* src */, udParam *ud)
-{
-    int      ok;
-    char     sentinel;
-    AttrStk *subattr = ud->attr->subattr();
+	// o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+	int UniData::Split_Position(char *dst, char * /* src */, udParam *ud)
+	{
+	    int      ok;
+	    size_t Field_Len; //Current Field's defined size
+	    size_t Left_Len;  //Length of Current line
+	    char     sentinel;
+	    AttrStk *subattr = ud->attr->subattr();
 
-#ifdef   DEBUG_UNIDATA
-    cout << "In " << __FUNCTION__ << " for " << ud->attr->name() << endl;
-#endif
+	#ifdef   DEBUG_UNIDATA
+	    cout << "In " << __FUNCTION__ << " for " << ud->attr->name() << endl;
+	#endif
 
-    for (int j=0; j < ud->subparam->count(); j++) {
+	    for (int j=0; j < ud->subparam->count(); j++) {
 
-        Attr *attr = subattr->ith(j);
-        udParam *param = ud->subparam->ith(j);
+		   Attr *attr = subattr->ith(j);
+		   udParam *param = ud->subparam->ith(j);
 
-        assert(attr->have_lpos());
+		   assert(attr->have_lpos());
 
-        _slbuf->setzero(param->buf_pos,ud->buf_pos,attr->lpos());
-        _slbuf->set_init(param->buf_pos);
+		   _slbuf->setzero(param->buf_pos,ud->buf_pos,attr->lpos());
+		   _slbuf->set_init(param->buf_pos);
 
-        _slbuf->room(_status,param->sze()+1);
-        _slbuf->room(_status,UD_BUFSLACK);
+		   _slbuf->room(_status,param->sze()+1);
+		   _slbuf->room(_status,UD_BUFSLACK);
 
-        if (!isOk())
-            return 0;
+		   if (!isOk())
+			  return 0;
 
-        if (attr->have_rpos()) {
-            _slbuf->room(_status, (attr->rpos() - attr->lpos() + 1));
+		   if (attr->have_rpos()) {
+			  _slbuf->room(_status, (attr->rpos() - attr->lpos() + 1));
 
-            if (!isOk())
-                return 0;
+// getcur reads the current line, so Left_Len is the length of current line
+			  Left_Len = strlen(_slbuf->getcur()) ;
+// Field_Len is the defined length of position for current record			  
+			  Field_Len = size_t(attr->rpos() - attr->lpos() + 1);
 
-            char *sent = _slbuf->getpos(ud->buf_pos,attr->rpos()+1);
+// If length of line is shorter than defined position, print error message
+			  if (Left_Len < Field_Len) {
+				cerr << "Defined Position is larger than length of line for "<< attr->flat_name()<<" in line : "<< (_cur_line+1) << endl;
+				return 0;
+			  }
+
+			  if (!isOk())
+				 return 0;
+
+			  char *sent = _slbuf->getpos(ud->buf_pos,attr->rpos()+1);
             // Should check that sent_pos is within the buffer, NYI.
             sentinel = *sent;
             *sent = '\0';
@@ -1252,6 +1270,9 @@ int UniData::TxtCopy_Int(char *dst, char *src, udParam *ud)
     src += tem_ws ;
     *i = strtol(src, &ptr, 10);
 
+    if (ptr == src) 
+    		cerr << "Defined Field is not an integer for "<< ud->attr->flat_name() <<" in line : " << (_cur_line+1) << endl;
+
     if (ud->use_slide)
         _slbuf->set_init(ptr);
 
@@ -1278,6 +1299,9 @@ int UniData::TxtCopy_Float(char *dst, char *src, udParam *ud)
     	src += tem_ws ;
 	
     *f = UtilStrtod(src, &ptr);
+
+    if (ptr == src)
+              cerr << "Defined Field is not a float for "<< ud->attr->flat_name() <<" in line : " << (_cur_line+1) << endl;
 
     if (ud->use_slide)
         _slbuf->set_init(ptr);
@@ -1308,6 +1332,9 @@ int UniData::TxtCopy_Double(char *dst, char *src, udParam *ud)
 
     *d = UtilStrtod(src, &ptr);
 
+    if (ptr == src)
+              cerr << "Defined Field is not a double for "<< ud->attr->flat_name() <<" in line : " << (_cur_line+1) << endl;
+
     if (ud->use_slide)
         _slbuf->set_init(ptr);
 
@@ -1325,31 +1352,39 @@ int UniData::TxtCopy_Double(char *dst, char *src, udParam *ud)
 
 int UniData::TxtCopy_String(char *dst, char *src, udParam *ud)
 {
-    int n, tmpn, has_qte, temp_ws;
+    int n, tmpn, has_qte, temp_ws, rpos, lpos;
     char *str = &(dst[ud->dst_off]);
 
     n = tmpn = ud->sze()-1;  // if whitespace is null, tmpn must have a value.
 
-    if (ud->attr->whitespace()) {
-    		temp_ws = strspn(src, ud->attr->whitespace());
-		if (temp_ws > 0 ) 
-			assert("Extra Whitespace removal shouldn't be deleted !..") ;
-    		src += temp_ws ;
-	}
+    if (ud->attr->have_rpos()) {
+         lpos = ud->attr->lpos();
+         rpos = ud->attr->rpos();
+    	    n = tmpn = (rpos - lpos) + 1 ;
+	    has_qte=0;
+    } else {
+	    if (ud->attr->whitespace()) {
+			temp_ws = strspn(src, ud->attr->whitespace());
+			if (temp_ws > 0 ) 
+				assert("Extra Whitespace removal shouldn't be deleted !..") ;
+			src += temp_ws ;
+		}
 
-    if ((has_qte = (*src == *(ud->attr->quote())) && (*src) )) {
-      src++;
-      tmpn = strcspn(src,ud->attr->quote());
-      n = (tmpn < n) ? tmpn : n;
-    } else if (ud->attr->whitespace()) {
-      tmpn = strcspn(src, ud->attr->whitespace());
-      if (tmpn > n) {
-          strncpy(str,src,tmpn) ;
-          str[tmpn]='\0';
-          cerr << "Length of attribute : "<< ud->attr->flat_name() << " is larger than maxlen for \"" << str << "\"" << endl ; 
-      } else
-          n = tmpn ;
+	    if ((has_qte = (*src == *(ud->attr->quote())) && (*src) )) {
+		 src++;
+		 tmpn = strcspn(src,ud->attr->quote());
+		 n = (tmpn < n) ? tmpn : n;
+	    } else if (ud->attr->whitespace()) {
+		 tmpn = strcspn(src, ud->attr->whitespace());
+		 if (tmpn > n) {
+			strncpy(str,src,tmpn) ;
+			str[tmpn]='\0';
+			cerr << "Length of attribute : "<< ud->attr->flat_name() << " is larger than maxlen for \"" << str << "\"" << endl ; 
+		 } else
+			n = tmpn ;
+	    } 
     } 
+    
     strncpy(str,src,n);
     str[n] = '\0';
 
