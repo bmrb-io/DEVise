@@ -3,9 +3,9 @@ depend:
 
 # DO NOT DELETE
 
-codegen.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h parse.h
+codegen.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+codegen.o: /usr/include/string.h /usr/include/stdlib.h parse.h codegen.h
 main.o: parse.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
-parse.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h parse.h
-parse.o: tokens.h /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-parse.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-parse.o: /usr/include/sys/time.h /usr/include/sys/time.h codegen.h
+parse.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+parse.o: /usr/include/stdlib.h parse.h tokens.h /usr/include/malloc.h
+parse.o: codegen.h

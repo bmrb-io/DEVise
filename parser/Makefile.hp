@@ -3,6 +3,9 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-codegen.o: /usr/include/stdio.h parse.h
-main.o: parse.h /usr/include/stdio.h
-parse.o: /usr/include/stdio.h parse.h tokens.h codegen.h
+codegen.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
+codegen.o: /usr/include/string.h /usr/include/stdlib.h parse.h codegen.h
+main.o: parse.h /usr/include/stdio.h /usr/include/sys/stdsyms.h
+parse.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
+parse.o: /usr/include/stdlib.h parse.h tokens.h /usr/include/malloc.h
+parse.o: /usr/include/sys/types.h codegen.h
