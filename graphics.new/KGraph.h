@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/16 00:48:20  ravim
+  Handles window events for popup and resize.
+
   Revision 1.3  1995/12/08 23:44:53  ravim
   Polygon filled.
 
@@ -56,10 +59,11 @@ private:
   Coord *_pts;
   Point *_xyarr;
 
-  // Coords of center of circle and radius
+  // Coords of center of circle and diameter
   Coord cx, cy;
-  int rad;
+  int diam;
 
+  void ClearGraph();
   void DrawCircle();
   void DrawAxes();
   void PlotPoints();
