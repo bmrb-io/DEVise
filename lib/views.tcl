@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.38  1997/06/10 19:32:20  wenger
+#  Copy/Edit GUI doesn't bring up window creation GUI until user clicks 'OK'.
+#
 #  Revision 1.37  1997/06/09 14:47:16  wenger
 #  Added cursor grid; fixed bug 187; a few minor cleanups.
 #
@@ -2306,7 +2309,7 @@ proc DoSwapView {} {
 
 proc DestroyView {view} {
     global curView
-    if {$curView == ""} { return 1 }
+    if {$view == ""} { return 1 }
     DEVise removeView $view
     DEVise destroy $view
     if { $view == $curView } { set curView "" }

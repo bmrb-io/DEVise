@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.31  1997/06/18 15:33:36  wenger
+#  Fixed bug 177; improved workaround of bug 137; incremented version
+#  number (because of Unidata being added).
+#
 #  Revision 1.30  1997/05/28 15:39:56  wenger
 #  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
 #
@@ -171,10 +175,15 @@ proc RemoveWindow {win} {
 
     set views [DEVise getWinViews $win]
     if {$views != ""} {
-	dialog .viewsInWindow "Views Still In Window" \
-		"Window contains views.  Remove or destroy all views first." \
-		"" 0 OK
-	return
+	set answer [dialog .viewsInWindow "Views Still In Window" \
+		"Window contains views.  Destroy window and all views, or cancel." \
+		"" 1 Destroy Cancel]
+	if {$answer == 1} {
+	    return
+	}
+	foreach view $views {
+	    DestroyView $view
+	}
     }
     
     DEVise destroy $win
