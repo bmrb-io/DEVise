@@ -1,4 +1,5 @@
 #! /s/std/bin/perl
+#! /usr/bin/perl
 
 #  ========================================================================
 #  DEVise Data Visualization Software
@@ -20,6 +21,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  2000/12/06 19:52:40  wenger
+#  Improved comment.
+#
 #  Revision 1.6  2000/04/17 20:01:05  wenger
 #  Modified DEVise.kill, check_jspop, and run_check so that they work
 #  on Linux as well as Solaris; changed pid-finding code in them to be

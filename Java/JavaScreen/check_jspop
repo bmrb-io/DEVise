@@ -1,4 +1,5 @@
 #! /s/std/bin/perl
+#! /usr/freeware/bin/perl
 
 #  ========================================================================
 #  DEVise Data Visualization Software
@@ -20,6 +21,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15  2000/12/08 20:54:59  wenger
+#  Major changes to cron job scripts to check and restart jspop, etc., so they
+#  work when jspop and jss are on different machines.
+#
 #  Revision 1.14  2000/12/06 21:42:58  wenger
 #  Added ID string to .out files to avoid conflicts.
 #

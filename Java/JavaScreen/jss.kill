@@ -1,4 +1,5 @@
 #! /s/std/bin/perl
+#! /usr/bin/perl
 
 #  ========================================================================
 #  DEVise Data Visualization Software
@@ -20,6 +21,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  2000/12/06 19:49:07  wenger
+#  New scripts to kill jspop and jss.
+#
 
 ############################################################
 
