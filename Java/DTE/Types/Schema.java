@@ -23,11 +23,11 @@ public class Schema {
 	for(int i=0; i<numFlds; i++){
           s = st.nextToken();
           if( s.equals("int"))
-	    typeIDs[i] = new IntDesc;
+	    typeIDs[i] = new IntDesc();
           else if(s.equals("double"))
-	    typeIDs[i] = new DoubleDesc;
+	    typeIDs[i] = new DoubleDesc();
           else if(s.equals("string"))
-	    typeIDs[i] = new StringDesc;
+	    typeIDs[i] = new StringDesc();
           else 
 	    typeIDs[i] = null;
 
@@ -53,11 +53,11 @@ public class Schema {
 	for(int i=0; i< numFlds; i++){
           s = st1.nextToken();
 	  if( s.equals("int"))
-	    typeIDs[i] = new IntDesc;
+	    typeIDs[i] = new IntDesc();
           else if(s.equals("double"))
-	    typeIDs[i] = new DoubleDesc;
+	    typeIDs[i] = new DoubleDesc();
           else if(s.equals("string"))
-	    typeIDs[i] = new StringDesc;
+	    typeIDs[i] = new StringDesc();
           else 
 	    typeIDs[i] = null;
 	  
@@ -91,11 +91,11 @@ public class Schema {
       for(count=0; count<st.nval; count++){
 	if(st.nextToken() == StreamTokenizer.TT_WORD){
           if( st.sval.equals("int"))
-	    typeIDs[count] = new IntDesc;
+	    typeIDs[count] = new IntDesc();
           else if(st.sval.equals("double"))
-	    typeIDs[count] = new DoubleDesc;
+	    typeIDs[count] = new DoubleDesc();
           else if(st.sval.equals("string"))
-	    typeIDs[count] = new StringDesc;
+	    typeIDs[count] = new StringDesc();
           else 
 	    typeIDs[count] = null;
 	} 
