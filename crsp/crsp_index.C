@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/11/20 16:12:23  jussi
+  Made tape file dependent offset part of data source definition,
+  and not part of the offset of the securities. The first security
+  starts at offset 0, and any extra offset (such as that for a
+  tar header) is defined elsewhere.
+
   Revision 1.4  1995/11/17 04:06:55  ravim
   Extracts only first 6 chars of cusip number.
 
@@ -65,7 +71,7 @@ main(int argc, char **argv)
   }
 
   int fileno = -1;
-  int offset = 0;
+  unsigned long int offset = 0;
   char *colon = strchr(argv[1], ':');
   if (colon) {
     char *colon2 = strchr(colon + 1, ':');
