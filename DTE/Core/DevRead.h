@@ -54,6 +54,8 @@ public:
 
 	virtual ~DevReadExec();
 
+	virtual void initialize();
+
 	virtual const Tuple* getNext();
 
 	virtual const Tuple* getThis(Offset offset);

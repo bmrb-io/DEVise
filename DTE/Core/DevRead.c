@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1998/07/09 19:31:01  wenger
+  Fixed bug 374 (Tables failing on SPARC/Solaris).
+
   Revision 1.32  1998/07/07 21:50:15  wenger
   Fixed part of the SPARC/Solaris and Intel/Linux crash problem.
 
@@ -178,6 +181,13 @@ DevReadExec::~DevReadExec(){
 Offset DevReadExec::getOffset()
 {
   return off;
+}
+
+
+void DevReadExec::initialize()
+{
+  recId = 0;
+  ud->reset();
 }
 
 
