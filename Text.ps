@@ -1,0 +1,162 @@
+%!
+% Copyright (c) K2 Research Limited - All Rights Reserved
+% 
+% $RCSfile$
+% $Revision$
+% $Date$
+% ---------------------------------------------------------------
+% Postscript print file to support the CenterLine Software, Inc.
+% Cross-Reference and Inheritence Browsers.
+% ---------------------------------------------------------------
+% This file may only used with the K2_CLP routines supplied by
+% K2 Research Limited, info@k2.co.uk
+% 
+%%Creator: K2_CLP version 1.0 (c) K2 Research Limited
+%%For: CenterLine Software Inc.
+%%Pages: (atend)
+%%DocumentFonts: (atend)
+%%EndComments
+1 setlinewidth
+/objectdict 4 dict def
+/printtiled
+{
+  /rows exch def
+  /columns exch def
+  /bigpictureproc exch def
+  1 -1 scale
+  newpath
+    leftmargin botmargin neg moveto
+    0 pageheight neg rlineto
+    pagewidth 0 rlineto
+    0 pageheight rlineto
+  closepath clip
+
+  leftmargin botmargin neg translate
+
+  1 1 rows
+  {
+    /rowcount exch def
+    0 1 columns 1 sub
+    {
+      /colcount exch def
+      gsave
+	pagewidth colcount mul neg
+	pageheight rowcount mul neg
+	translate
+	bigpictureproc
+	gsave showpage grestore
+      grestore
+    } for
+  } for
+} def
+/drawbox
+{
+  /height exch def
+  /posy exch def
+  /posx exch def
+  newpath
+    posx posy moveto
+    0 height  rlineto
+    rectwidth 0  rlineto
+    0 0 height sub rlineto
+  closepath
+  gsave
+   1 setgray fill
+  grestore
+  stroke
+} def
+/drawNode
+{
+  gsave
+  /height exch def
+  /width exch def
+  /posy exch def
+  /posx exch def
+  /oname exch def
+  /boxheight height 3 div def
+  newpath
+    posx posy moveto 0 height rlineto width 0 rlineto 0 0 height sub rlineto
+  closepath
+  gsave
+    .9 setgray fill
+  grestore
+  posx posy boxheight add boxheight drawbox
+  posx textxoffset add rectwidth add posy height add textyoffset sub moveto
+  gsave  1 -1 scale oname show grestore
+  posx width add rectwidth sub posy boxheight drawbox
+  grestore
+} def
+/drawLink
+{
+  /toheight exch def
+  /toy exch def
+  /tox exch def
+  /fromheight exch def
+  /fromy exch def
+  /fromx exch def
+  fromx rectwidth 2 div sub fromy fromheight 2 div add moveto
+  tox rectwidth 2 div add toy toheight 2 div add lineto
+  stroke
+} def
+%
+%
+/clbrowser
+{ gsave
+547 721 21 434 778 21 drawLink
+531 778 21 418 841 21 drawLink
+(XDisplay) 418 841 69 21 drawNode
+(DeviseDisplay) 434 778 97 21 drawNode
+547 721 21 372 647 21 drawLink
+(View) 372 647 48 21 drawNode
+(DispatcherCallback) 428 721 119 21 drawNode
+(DeviseWindowList) 121 561 119 21 drawNode
+(Geom) 169 375 51 21 drawNode
+(DeviseDisplayList) 117 685 117 21 drawNode
+(DispatcherTimerCallbackList) 77 437 169 21 drawNode
+(Dispatcher) 145 530 77 21 drawNode
+(XWindowRepList) 105 722 111 21 drawNode
+(WindowRepCallbackList) 101 127 145 21 drawNode
+(DispatcherList) 129 468 97 21 drawNode
+(ViewList) 153 251 68 21 drawNode
+(Transform2D) 141 344 88 21 drawNode
+(FilterQueue) 141 406 82 21 drawNode
+(ControlPanel) 137 592 87 21 drawNode
+228 644 21 272 647 21 drawLink
+340 647 21 372 647 21 drawLink
+(ViewWin) 272 647 68 21 drawNode
+(WindowRepCallback) 103 644 125 21 drawNode
+(ViewCallbackList) 121 282 110 21 drawNode
+(ViewWinList) 141 220 88 21 drawNode
+358 747 21 372 647 21 drawLink
+(ControlPanelCallback) 229 747 129 21 drawNode
+(DispatcherInfoList) 113 499 118 21 drawNode
+227 313 21 300 313 21 drawLink
+(DeviseCursor) 300 313 90 21 drawNode
+(ViewCallback) 137 313 90 21 drawNode
+232 189 21 300 189 21 drawLink
+(XWindowRep) 300 189 91 21 drawNode
+(WindowRep) 149 189 83 21 drawNode
+grestore
+} def
+
+gsave
+/leftmargin 13 def
+/botmargin 13 def
+/Helvetica findfont 7 scalefont setfont
+/rectwidth 3 def
+/textxoffset 3 def
+/textyoffset 2 def
+/xscale 0.89 def
+/yscale -0.89 def
+/pagewidth 580 def
+/pageheight 700 def
+0 700 translate
+xscale yscale scale
+-52 0 translate
+clbrowser showpage
+grestore
+%
+%%Pages: 1
+%%DocumentFonts: Helvetica
+% End of CenterLine Browser Print File
+% (c) K2 Research Limited
