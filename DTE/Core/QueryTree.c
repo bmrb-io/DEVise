@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1997/07/22 15:00:52  donjerko
+  *** empty log message ***
+
   Revision 1.25  1997/06/21 22:48:00  donjerko
   Separated type-checking and execution into different classes.
 
@@ -40,13 +43,6 @@
 
  */
 
-#include<iostream.h>
-#include<memory.h>
-#include<string.h>
-#include<assert.h>
-#include<math.h>
-#include<stdlib.h>
-
 // #define DEBUG
 
 #ifdef __GNUG__
@@ -66,9 +62,20 @@
 #include "ParseTree.h"
 #include "joins.h"
 #include "Sort.h"
+#include "TypeCheck.h"
+
+#include<iostream.h>
+#include<memory.h>
+#include<string.h>
+#include<assert.h>
+#include<math.h>
+#include<stdlib.h>
+
+class ExecExpr;
 
 List<ConstantSelection*>* dummy;	// Just needed for pragma implementation
 List<char*>* dummy2;	// Just needed for pragma implementation
+
 extern List<JoinTable*>*joinList;
 const int DETAIL = 1;
 LOG(ofstream logFile("log_file.txt");)
@@ -121,6 +128,23 @@ Site* QueryTree::createSite(){
 	LOG(logFile << endl << "Predicate list:\n   ";)
 	LOG(displayList(logFile, predicateList);)
 	LOG(logFile << endl;)
+
+	// typecheck the query
+
+	TypeCheck typeCheck;
+	typeCheck.load(tableList);
+	if(!selectList){
+
+		// select *
+
+		selectList = typeCheck.createSelList();
+	}
+	else {
+		typeCheck.load(selectList);
+	}
+	typeCheck.load(predicateList);
+	typeCheck.load(groupBy);
+	typeCheck.load(orderBy);
 
 	tableList->rewind();
 	int numSites = 0;

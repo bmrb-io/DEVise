@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/07/22 15:00:57  donjerko
+  *** empty log message ***
+
   Revision 1.17  1997/06/27 23:17:22  donjerko
   Changed date structure from time_t and tm to EncodedDTF
 
@@ -87,6 +90,7 @@
 #include "myopt.h"
 #include "site.h"
 #include "machdep.h"
+#include "ExecExpr.h"
 
 BaseSelection* PrimeSelection::filter(Site* site){
 	if(*alias != "" && !site->have(alias)){
@@ -145,11 +149,10 @@ bool GlobalSelect::exclusive(Site* s){
 	}
 }
 
-BaseSelection* GlobalSelect::enumerate(
+ExecExpr* GlobalSelect::createExec(
      String site1, List<BaseSelection*>* list1,
      String site2, List<BaseSelection*>* list2){
 
-	TRY(BaseSelection::enumerate(site1, list1, site2, list2), NULL);
      List<BaseSelection*>* selList;
      int leftRight = 0;
 	if(site->getName() == site1){
@@ -167,11 +170,9 @@ BaseSelection* GlobalSelect::enumerate(
 	}
 	selList->rewind();
 	int i = 0;
-	BaseSelection* retVal;
 	while(!selList->atEnd()){
 		if(selection->match(selList->get())){
-			retVal = new ExecSelect(this, leftRight, i);
-			return retVal;
+			return new ExecSelect(leftRight, i);
 		}
 		selList->step();
 		i++;
@@ -203,7 +204,7 @@ TypeID GlobalSelect::typify(List<Site*>* sites){
 		if(selection->match(selList->get())){
 			typeID = selList->get()->getTypeID();
 			avgSize = selList->get()->getSize();
-			// TRY(BaseSelection::typify(sites), "Unknown");
+//			assert(typeID == selection->getTypeID());
 			return typeID;
 		}
 		selList->step();
@@ -236,14 +237,17 @@ bool GlobalSelect::match(BaseSelection* x){
 	return true;
 }
 
-BaseSelection* Operator::enumerate(
+ExecExpr* Operator::createExec(
 	String site1, List<BaseSelection*>* list1,
      String site2, List<BaseSelection*>* list2){
-	BaseSelection* l;
-     TRY(l = left->enumerate(site1, list1, site2, list2), NULL);
-	BaseSelection* r;
-     TRY(r = right->enumerate(site1, list1, site2, list2), NULL);
-	return new ExecOperator(name, l, r, opPtr, this);
+	ExecExpr* l;
+     TRY(l = left->createExec(site1, list1, site2, list2), NULL);
+	ExecExpr* r;
+     TRY(r = right->createExec(site1, list1, site2, list2), NULL);
+	size_t objSz;
+	TRY(Type* value = allocateSpace(typeID, objSz), NULL);
+	TRY(DestroyPtr destroyPtr = getDestroyPtr(typeID), NULL);
+	return new ExecOperator(l, r, opPtr, value, objSz, destroyPtr);
 }
 
 TypeID PrimeSelection::typify(List<Site*>* sites){
@@ -265,7 +269,6 @@ TypeID PrimeSelection::typify(List<Site*>* sites){
 		if(match(selList->get())){
 			typeID = selList->get()->getTypeID();
 			avgSize = selList->get()->getSize();
-			position = i;
 			return typeID;
 		}
 		selList->step();
@@ -281,11 +284,10 @@ TypeID PrimeSelection::typify(List<Site*>* sites){
 	THROW(new Exception(msg), (char *) NULL);
 }
 
-BaseSelection* PrimeSelection::enumerate(
+ExecExpr* PrimeSelection::createExec(
 	String site1, List<BaseSelection*>* list1,
 	String site2, List<BaseSelection*>* list2){
 
-	TRY(BaseSelection::enumerate(site1, list1, site2, list2), NULL);
 	assert(site2 == "" && list2 == NULL);
 	int leftRight = 0;
 	List<BaseSelection*>* selList = list1;
@@ -294,10 +296,7 @@ BaseSelection* PrimeSelection::enumerate(
 	int i = 0;
 	while(!selList->atEnd()){
 		if(match(selList->get())){
-			BaseSelection* retVal;
-			// assert(i == position); failed for RTreeIndex
-			retVal = new ExecSelect(this, leftRight, i);
-			return retVal;
+			return new ExecSelect(leftRight, i);
 		}
 		selList->step();
 		i++;
@@ -353,10 +352,16 @@ ConstantSelection* ConstantSelection::promote(TypeID typeToPromote) const {
 
 BaseSelection* ConstantSelection::duplicate() {
 	size_t objSz;
-	Type* newvalue = allocateSpace(typeID, objSz);
-	ADTCopyPtr cp = getADTCopyPtr(typeID);
-	cp(value, newvalue, objSz);
+	TRY(Type* newvalue = duplicateObject(typeID, value), NULL);
 	return new ConstantSelection(typeID, newvalue);
+}
+
+ExecExpr* ConstantSelection::createExec(
+		String site1, List<BaseSelection*>* list1,
+		String site2, List<BaseSelection*>* list2){
+	TRY(DestroyPtr destroyPtr = getDestroyPtr(typeID), NULL);
+	TRY(Type* newvalue = duplicateObject(typeID, value), NULL);
+	return new ExecConst(newvalue, destroyPtr);
 }
 
 bool PrimeSelection::match(BaseSelection* x){
@@ -428,3 +433,27 @@ TypeID Operator::typify(List<Site*>* sites){
 	}
 	return typeID;
 }
+
+ExecExpr* TypeCast::createExec(
+	String site1, List<BaseSelection*>* list1,
+	String site2, List<BaseSelection*>* list2){
+	ExecExpr* execInp;
+	TRY(execInp = input->createExec(site1, list1, site2, list2), NULL);
+	size_t valueSize;
+	Type* value = allocateSpace(typeID, valueSize);
+	TRY(DestroyPtr destroyPtr = getDestroyPtr(typeID), NULL);
+	return new ExecTypeCast(execInp, promotePtr, value, valueSize, destroyPtr);
+}
+
+ExecExpr* Member::createExec(
+	String site1, List<BaseSelection*>* list1,
+	String site2, List<BaseSelection*>* list2){
+	ExecExpr* execInp;
+	TRY(execInp = input->createExec(site1, list1, site2, list2), NULL);
+	size_t valueSize;
+	Type* value = allocateSpace(typeID, valueSize);
+	TRY(DestroyPtr destroyPtr = getDestroyPtr(typeID), NULL);
+	return new ExecMember(
+		execInp, memberPtr, value, valueSize, destroyPtr);
+}
+

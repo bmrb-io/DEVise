@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/07/22 15:00:57  donjerko
+  *** empty log message ***
+
   Revision 1.17  1997/06/21 22:48:07  donjerko
   Separated type-checking and execution into different classes.
 
@@ -75,14 +78,14 @@ List<BaseSelection*>* createSelectList(String nm, PlanOp* iterator){
 	assert(iterator);
 	int numFlds = iterator->getNumFlds();
 	const String* attNms = iterator->getAttributeNames();
-	String* types = iterator->getTypeIDs();
+	const String* types = iterator->getTypeIDs();
 	Stats* stats = iterator->getStats();
 	assert(stats);
 	int* sizes = stats->fldSizes;
 	List<BaseSelection*>* retVal = new List<BaseSelection*>;
 	for(int i = 0; i < numFlds; i++){
 		retVal->append(new PrimeSelection(
-			new String(nm), new String(attNms[i]), types[i], sizes[i], i));
+			new String(nm), new String(attNms[i]), types[i], sizes[i]));
 	}
 	return retVal;
 }
@@ -102,8 +105,8 @@ List<BaseSelection*>* createSelectList(String table, List<String*>* attNms){
 List<BaseSelection*>* createSelectList(PlanOp* iterator){
 	assert(iterator);
 	int numFlds = iterator->getNumFlds();
-	String* attNms = iterator->getAttributeNames();
-	String* types = iterator->getTypeIDs();
+	const String* attNms = iterator->getAttributeNames();
+	const String* types = iterator->getTypeIDs();
 	Stats* stats = iterator->getStats();
 	assert(stats);
 	int* sizes = stats->fldSizes;
@@ -113,7 +116,7 @@ List<BaseSelection*>* createSelectList(PlanOp* iterator){
 		int numSplit = split(attNms[i], res, 3, String("."));
 		assert(numSplit == 2);
 		retVal->append(new 
-			PrimeSelection(new String(res[0]), new String(res[1]), types[i], sizes[i], i));
+			PrimeSelection(new String(res[0]), new String(res[1]), types[i], sizes[i]));
 	}
 	return retVal;
 }
@@ -269,7 +272,7 @@ void Site::typify(String option){	// Throws an exception
 		mySelect = createSelectList(iterator);
 		return;
 	}
-	TypeID* types = iterator->getTypeIDs();
+	const TypeID* types = iterator->getTypeIDs();
 	int* sizes = stats->fldSizes;
 	mySelect->rewind();
 	for(int i = 0; i < numFlds; i++){
@@ -366,7 +369,7 @@ void LocalTable::writeOpen(int mode = ios::app){
 	assert(fout);
 	int numFlds = getNumFlds();
 	writePtrs = new WritePtr[numFlds];
-	TypeID* types = getTypeIDs();
+	const TypeID* types = getTypeIDs();
 	for(int i = 0; i < numFlds; i++){
 		TRY(writePtrs[i] = getWritePtr(types[i]), );
 	}
@@ -560,31 +563,37 @@ void SiteGroup::typify(String option){	// Throws exception
 Iterator* LocalTable::createExec(){
 	assert(directSite);
 	List<BaseSelection*>* baseISchema = directSite->getSelectList();
-	TRY(enumerateList(mySelect, name, baseISchema), NULL);
-	TRY(enumerateList(myWhere, name, baseISchema), NULL);
+	Array<ExecExpr*>* select;
+	Array<ExecExpr*>* where;
+	TRY(select = enumerateList(mySelect, name, baseISchema), NULL);
+	TRY(where = enumerateList(myWhere, name, baseISchema), NULL);
 	Iterator* it = directSite->createExec();
-	return new SelProjExec(it, mySelect, myWhere);
+	return new SelProjExec(it, select, where);
 }
 
 Iterator* IndexScan::createExec(){
 	assert(directSite);
 	List<BaseSelection*>* baseISchema = directSite->getSelectList();
-	TRY(enumerateList(mySelect, name, baseISchema), NULL);
-	TRY(enumerateList(myWhere, name, baseISchema), NULL);
+	Array<ExecExpr*>* select;
+	Array<ExecExpr*>* where;
+	TRY(select = enumerateList(mySelect, name, baseISchema), NULL);
+	TRY(where = enumerateList(myWhere, name, baseISchema), NULL);
 	Iterator* it = directSite->createExec();
 	RTreeReadExec* indexIter = (RTreeReadExec*) index->createExec();
-	return new IndexScanExec(indexIter, it, mySelect, myWhere);
+	return new IndexScanExec(indexIter, it, select, where);
 }
 
 Iterator* SiteGroup::createExec(){
-	TRY(enumerateList(mySelect, site1->getName(), site1->mySelect, 
+	Array<ExecExpr*>* select;
+	Array<ExecExpr*>* where;
+	TRY(select = enumerateList(mySelect, site1->getName(), site1->mySelect, 
 		site2->getName(), site2->mySelect), NULL);
-	TRY(enumerateList(myWhere, site1->getName(), site1->mySelect, 
+	TRY(where = enumerateList(myWhere, site1->getName(), site1->mySelect, 
 		site2->getName(), site2->mySelect), NULL);
 	int innerNumFlds = site2->getNumFlds();
 	TRY(Iterator* it1 = site1->createExec(), NULL);
 	TRY(Iterator* it2 = site2->createExec(), NULL);
-	return new NLJoinExec(it1, it2, mySelect, myWhere, innerNumFlds);
+	return new NLJoinExec(it1, it2, select, where, innerNumFlds);
 }
 
 Iterator* UnionSite::createExec(){

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/07/22 15:00:52  donjerko
+  *** empty log message ***
+
   Revision 1.11  1997/06/21 22:47:58  donjerko
   Separated type-checking and execution into different classes.
 
@@ -140,7 +143,7 @@ Site* IndexParse::createSite(){
 	}
 
 	int numFlds = numKeyFlds + numAddFlds;
-	String* types = site->getTypeIDs();
+	const String* types = site->getTypeIDs();
 	MarshalPtr marshalPtrs[numFlds];
 	int sizes[numFlds];
 	int fixedSize = 0; 
@@ -181,11 +184,11 @@ Site* IndexParse::createSite(){
 	TRY(Iterator* inpIter = site->createExec(), 0);
 
 	inpIter->initialize();
+	const Tuple* tup = inpIter->getNext();
 	if(!standAlone){
 		TRY(offset = inpIter->getOffset(), NULL);
 		// cout << "offset = " << offset << endl;
 	}
-	const Tuple* tup = inpIter->getNext();
 
 	MinAggregate mins[numTFlds];
 	MaxAggregate maxs[numTFlds];
@@ -237,9 +240,9 @@ Site* IndexParse::createSite(){
 			marshal(indexTup, flatTup, marshalPtrs, sizes, numFlds);
 			ind.write(flatTup, fixedSize);
 			if(!standAlone){
-				ind.write((char*) &offset, sizeof(Offset));
 				offset = inpIter->getOffset();
 				// cout << "offset = " << offset << endl;
+				ind.write((char*) &offset, sizeof(Offset));
 			}
 		}
 	}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/07/22 15:00:54  donjerko
+  *** empty log message ***
+
   Revision 1.13  1997/06/30 23:05:04  donjerko
   CVS:
 
@@ -131,17 +134,13 @@ public:
 	virtual int getNumFlds(){
 		return numFlds;
 	}
-	virtual String *getTypeIDs(){
+	virtual const String *getTypeIDs(){
 		assert(typeIDs);
 		return typeIDs;
 	}
-	virtual String* getAttributeNames(){
+	virtual const String* getAttributeNames(){
 		assert(attributeNames);
-		String* retVal = new String[numFlds];
-		for(int i = 0; i < numFlds; i++){
-			retVal[i] = attributeNames[i];
-		}
-		return retVal;
+		return attributeNames;
 	}
 	virtual String * getOrderingAttrib(){
 		return order;

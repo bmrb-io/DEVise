@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/07/22 15:00:51  donjerko
+  *** empty log message ***
+
   Revision 1.12  1997/06/21 22:47:57  donjerko
   Separated type-checking and execution into different classes.
 
@@ -82,14 +85,14 @@ public:
      int getNumFlds(){
 		return topNode->getNumFlds();
      }
-     String* getTypeIDs(){
+     const String* getTypeIDs(){
           return topNode->getTypeIDs();
      }
 	const Tuple* getNext(){
 		assert(topNodeIt || !"Initialize engine before calling getNext");
 		return topNodeIt->getNext();
 	}
-	String* getAttributeNames(){
+	const String* getAttributeNames(){
 		if(attributeNames){
 			return attributeNames;
 		}

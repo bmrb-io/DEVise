@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/06/21 22:48:02  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.9  1997/06/16 16:04:45  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -274,8 +277,10 @@ SortExec::~SortExec(){
 
 Iterator* Sort::createExec(){
 	assert(input);
-	List<BaseSelection*>* baseISchema = input->getSelectList();
-	TRY(enumerateList(mySelect, name, baseISchema), NULL);
+
+//	List<BaseSelection*>* baseISchema = input->getSelectList();
+//	TRY(enumerateList(mySelect, name, baseISchema), NULL);		// why ??
+
 	TRY(Iterator* inpIter = input->createExec(), NULL);
 	TRY(int* sortFlds = findPositions(mySelect, orderBy), NULL);
 	int numSortFlds = orderBy->cardinality();

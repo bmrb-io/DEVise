@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/07/26 01:24:25  okan
+  *** empty log message ***
+
   Revision 1.24  1997/07/22 15:00:58  donjerko
   *** empty log message ***
 
@@ -103,6 +106,7 @@
 #include "DateTime.h"
 #include <String.h>
 #include <time.h>
+#include <string.h>		// for strdup
 
 void dateEq(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	EncodedDTF* val1 = ((EncodedDTF*)arg1);
@@ -1130,6 +1134,9 @@ DestroyPtr getDestroyPtr(TypeID root){ // throws
 	else if(root == "time_t"){
 		return time_tDestroy;
 	}
+	else if(root == "date"){
+		return dateDestroy;
+	}
 	else{
 		String msg = "Don't know how to destroy type: " + root;
 		cout << msg << endl;
@@ -1144,6 +1151,10 @@ void intDestroy(Type* adt){
 
 void time_tDestroy(Type* adt){
 	delete (ITime_t*) adt;
+}
+
+void dateDestroy(Type* adt){
+	delete (EncodedDTF*) adt;
 }
 
 void boolDestroy(Type* adt){
@@ -1339,6 +1350,47 @@ DestroyPtr* newDestroyPtrs(const TypeID* types, int numFlds){ // throws
 		TRY(retVal[i] = getDestroyPtr(types[i]), NULL);
 	}
 	return retVal;
+}
+
+Type* duplicateObject(TypeID type, Type* obj){
+	if(type == "int" || type == "bool"){
+		return obj;
+	}
+	else if(type == "string"){
+		return strdup((char*) obj);
+	}
+	else if(type == "double"){
+		double val = *((double*) obj);
+		return new double(val);
+	}
+	else if(type.through(5).contains("string")){
+		return strdup((char*) obj);
+	}
+	else if(type == "date"){
+		EncodedDTF val = *((EncodedDTF*) obj);
+		return new EncodedDTF(val);
+	}
+	else if(type == "time_t"){
+		time_t val = *((time_t*) obj);
+		return new time_t(val);
+	}
+	else if(type == "catentry"){
+		CatEntry val = *((CatEntry*) obj);
+		return  new CatEntry(val);
+	}
+	else if(type == "schema"){
+		ISchema val = *((ISchema*) obj);
+		return new ISchema(val);
+	}
+	else if(type == "indexdesc"){
+		IndexDesc val = *((IndexDesc*) obj);
+		return new IndexDesc(val);
+	}
+	else{
+		cout << "Don't know how to duplicate type " << type << endl; 
+		assert(0);
+		return NULL;
+	}
 }
 
 char* allocateSpace(TypeID type, size_t& size){

@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/07/26 01:24:26  okan
+  *** empty log message ***
+
   Revision 1.24  1997/07/22 15:00:58  donjerko
   *** empty log message ***
 
@@ -89,8 +92,8 @@
 
  */
 
-#ifndef TYPES_H
-#define TYPES_H
+#ifndef DTE_TYPES_H
+#define DTE_TYPES_H
 
 #include <iostream.h>
 #include <assert.h>
@@ -109,7 +112,7 @@ class BaseSelection;
 const int INITIAL_STRING_SIZE = 2000;
 // const char* ISO_TM = "%Y-%m-%d %H:%M:%S";
 
-static size_t ds;	// used only as a place holder
+static size_t dummySz;	// used only as a place holder
 const String UNKN_TYPE = "unknown";
 const String INT_TP = "int";
 const String DOUBLE_TP = "double";
@@ -171,9 +174,9 @@ inline ostream& operator<<(ostream& out, Offset off){
 typedef void Type;
 typedef String TypeID;
 typedef Type* Tuple;
-typedef void (*OperatorPtr)(const Type*, const Type*, Type*&, size_t& = ds);
-typedef void (*PromotePtr)(const Type*, Type*&, size_t& = ds);
-typedef void (*ADTCopyPtr)(const Type*, Type*&, size_t& = ds);
+typedef void (*OperatorPtr)(const Type*, const Type*, Type*&, size_t& = dummySz);
+typedef void (*PromotePtr)(const Type*, Type*&, size_t& = dummySz);
+typedef void (*ADTCopyPtr)(const Type*, Type*&, size_t& = dummySz);
 typedef void (*MemberPtr)(const Type*, Type*);
 typedef void (*ReadPtr)(istream&, Type*&);
 typedef void (*DestroyPtr)(Type*);
@@ -192,9 +195,9 @@ bool sameType(TypeID t1, TypeID t2);
 
 int typeCompare(TypeID arg1, TypeID arg2);	// throws
 
-void intCopy(const Type* arg, Type*& result, size_t& = ds);
-void doubleCopy(const Type* arg, Type*& result, size_t& = ds);
-void stringCopy(const Type* arg, Type*& result, size_t& = ds);
+void intCopy(const Type* arg, Type*& result, size_t& = dummySz);
+void doubleCopy(const Type* arg, Type*& result, size_t& = dummySz);
+void stringCopy(const Type* arg, Type*& result, size_t& = dummySz);
 void dateCopy(const Type* arg, Type*& result, size_t& sz);
 void intervalCopy(const Type* arg, Type*& result, size_t& sz);
 void time_tCopy(const Type* arg, Type*& result, size_t& sz);
@@ -221,6 +224,7 @@ int memberSameSize(int a);
 
 void intDestroy(Type* adt);
 void time_tDestroy(Type* adt);
+void dateDestroy(Type* adt);
 void stringDestroy(Type* adt);
 void boolDestroy(Type* adt);
 void doubleDestroy(Type* adt);
@@ -259,57 +263,57 @@ double oneOver100(BaseSelection* left, BaseSelection* right);
 void catEntryName(const Type* arg1, Type* result);
 void catEntryType(const Type* arg1, Type* result);
 
-void intAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void intSub(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void intEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void intLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void intLE(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void intGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void intGE(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void intComp(const Type *arg1,const Type *arg2, Type*& result, size_t& = ds);
-void intMin(const Type *arg1,const Type *arg2, Type*& result, size_t& = ds);
+void intAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void intSub(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void intEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void intLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void intLE(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void intGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void intGE(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void intComp(const Type *arg1,const Type *arg2, Type*& result, size_t& = dummySz);
+void intMin(const Type *arg1,const Type *arg2, Type*& result, size_t& = dummySz);
 
-void dateEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void dateLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void dateGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void dateComp(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void dateSubD(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void dateSubI(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void dateAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void dateEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void dateLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void dateGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void dateComp(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 
-void intervalEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void intervalLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void intervalGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void intervalSub(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void intervalAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void time_tEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void time_tLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void time_tGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 
-void time_tEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void time_tLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void time_tGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void intToDouble(const Type* arg, Type*& result, size_t& = dummySz);
+void doubleToDouble(const Type* arg, Type*& result, size_t& = dummySz);
+void intToInt(const Type* arg, Type*& result, size_t& = dummySz);
+void stringLToString(const Type* arg, Type*& result, size_t& = dummySz);
 
-void intToDouble(const Type* arg, Type*& result, size_t& = ds);
-void doubleToDouble(const Type* arg, Type*& result, size_t& = ds);
-void intToInt(const Type* arg, Type*& result, size_t& = ds);
-void stringLToString(const Type* arg, Type*& result, size_t& = ds);
+void doubleAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void doubleSub(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void doubleDiv(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void doubleEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void doubleLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void doubleGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void doubleComp(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 
-void doubleAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void doubleSub(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void doubleDiv(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void doubleEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void doubleLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void doubleGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void doubleComp(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void stringEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void stringLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void stringGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void stringComp(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 
-void stringEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void stringLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void stringGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void stringComp(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void boolOr(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void boolAnd(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void boolEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void boolLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void boolComp(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void dateSubD(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void dateSubI(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void dateAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 
-void boolOr(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void boolAnd(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void boolEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void boolLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
-void boolComp(const Type* arg1, const Type* arg2, Type*& result, size_t& = ds);
+void intervalEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void intervalLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void intervalGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void intervalSub(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
+void intervalAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 
 void intRead(istream&, Type*&);
 void stringRead(istream&, Type*&);
@@ -819,11 +823,9 @@ public:
 	int getNumFlds(){
 		return numFlds;
 	}
-	String* getAttributeNames(){
+	const String* getAttributeNames(){
 		assert(attributeNames);
-		String* retVal = attributeNames;
-		attributeNames = NULL;
-		return retVal;
+		return attributeNames;
 	}
 };
 
@@ -966,6 +968,8 @@ PromotePtr getPromotePtr(TypeID from, TypeID to); // throws
 
 ADTCopyPtr getADTCopyPtr(TypeID adt); // throws
 
+Type* duplicateObject(TypeID type, Type* obj);   // throws
+
 void updateHighLow(int _numFlds, const OperatorPtr* lessPtrs, 
 	const OperatorPtr* greaterPtrs, const Tuple* tup, 
 	Tuple* highTup, Tuple* lowTup);
@@ -973,6 +977,6 @@ void updateHighLow(int _numFlds, const OperatorPtr* lessPtrs,
 WritePtr* newWritePtrs(const TypeID* types, int numFlds);	// throws
 DestroyPtr* newDestroyPtrs(const TypeID* types, int numFlds);	// throws
 
-char* allocateSpace(TypeID type, size_t& size = ds);
+char* allocateSpace(TypeID type, size_t& size = dummySz);
 
 #endif

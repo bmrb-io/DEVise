@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/06/16 16:04:46  donjerko
+  New memory management in exec phase. Unidata included.
+
 
   Revision 1.3  1997/03/28 16:07:28  wenger
   Added headers to all source files that didn't have them; updated
@@ -173,3 +176,10 @@ void insert(String tableStr, Tuple* tuple){	// throws exception
 	delete inserter;
 }
 
+String* dupStrArr(const String* inp, int numFlds){
+	String* retVal = new String[numFlds];
+	for(int i = 0; i < numFlds; i++){
+		retVal[i] = inp[i];
+	}
+	return retVal;
+}

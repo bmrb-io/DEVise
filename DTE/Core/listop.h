@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/06/16 16:04:50  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.7  1997/04/08 01:47:35  donjerko
   Set up the basis for ORDER BY clause implementation.
 
@@ -42,6 +45,7 @@
 #include <fstream.h>
 #include <strstream.h>
 #include "queue.h"
+#include "Array.h"
 #include "types.h"
 #include "exception.h"
 
@@ -65,6 +69,7 @@
 class BaseSelection;
 class Site;
 class TableAlias;
+class ExecExpr;
 
 int* findPositions(List<BaseSelection*>* list, 
 	List<BaseSelection*>* elements);	// throws
@@ -79,15 +84,15 @@ void displayList(ostream& out, List<Site*>* list, String sep);
 void displayList(ostream& out, List<String*>* list, String sep);
 void collectFrom(
 	List<BaseSelection*>* from, Site* site, List<BaseSelection*>* to);
-void enumerateList(List<BaseSelection*>* list,
+Array<ExecExpr*>* enumerateList(List<BaseSelection*>* list,
      String site1, List<BaseSelection*>* list1,
      String site2 = "", List<BaseSelection*>* list2 = NULL);
 TypeID* typifyList(List<BaseSelection*>* list, List<Site*>* sites);
 bool boolCheckList(List<BaseSelection*>* list);
 bool evaluateList(
-	List<BaseSelection*>* list, const Tuple* left, const Tuple* right = NULL);
+	Array<ExecExpr*>* list, const Tuple* left, const Tuple* right = NULL);
 void tupleFromList(Tuple* next,
-	List<BaseSelection*>* list, const Tuple* left, const Tuple* right = NULL);
+	Array<ExecExpr*>* list, const Tuple* left, const Tuple* right = NULL);
 void typifyList(List<Site*>* sites, String option);
 TypeID* getTypesFromList(List<BaseSelection*>* list);
 double listSelectivity(List<BaseSelection*>* list);

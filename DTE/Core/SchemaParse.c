@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/07/22 15:00:54  donjerko
+  *** empty log message ***
+
   Revision 1.7  1997/06/30 23:04:56  donjerko
   CVS:
 
@@ -81,6 +84,8 @@ public:
 	}
 };
 
+const String SCHEMA_STR("schema");
+
 class ISchemaSite : public Site {
 	const ISchema* schema;	
 public:
@@ -91,11 +96,11 @@ public:
 	virtual int getNumFlds(){
 		return 1;
 	}
-     virtual String* getTypeIDs(){
-          return new String("schema");
+     virtual const String* getTypeIDs(){
+		return &SCHEMA_STR;
      }
-     virtual String *getAttributeNames(){
-          return new String("schema");
+     virtual const String *getAttributeNames(){
+		return &SCHEMA_STR;
      }
 	ISchemaExec* createExec(){
 		return new ISchemaExec(schema);

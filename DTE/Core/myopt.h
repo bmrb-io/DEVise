@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/07/22 15:00:56  donjerko
+  *** empty log message ***
+
   Revision 1.26  1997/06/27 23:17:21  donjerko
   Changed date structure from time_t and tm to EncodedDTF
 
@@ -105,9 +108,11 @@
 #include "url.h"
 #include "listop.h"
 
+class ExecExpr;
+
 typedef enum SelectID {
 	BASE_ID, SELECT_ID, GLOBAL_ID, OP_ID, CONST_ID, PATH_ID, METHOD_ID, 
-	EXEC_ID, CAST_ID, MEMBER_ID
+	CAST_ID, MEMBER_ID
 };
 
 class BaseSelection{
@@ -115,6 +120,7 @@ protected:
 public:
      BaseSelection() {}
 	virtual ~BaseSelection(){}
+	virtual void destroy(){}
 	String toString(){
 		ostrstream os;
 		display(os);
@@ -152,7 +158,7 @@ public:
 		return false;
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to) = 0;
-     virtual BaseSelection* enumerate(
+     virtual ExecExpr* createExec(
 		String site1, List<BaseSelection*>* list1,
 		String site2, List<BaseSelection*>* list2){
 
@@ -169,10 +175,6 @@ public:
 	virtual TypeID getTypeID(){
 		assert(0);
 		return ""; // avoid compiler warning
-	}
-	virtual const Type* evaluate(const Tuple* left, const Tuple* right){
-		assert(0);
-		return NULL; // avoid compiler warning
 	}
 	virtual void setSize(int size){
 		assert(0);
@@ -260,7 +262,7 @@ public:
 			to->append(selection);
 		}
 	}
-	virtual BaseSelection* enumerate(
+	virtual ExecExpr* createExec(
 		String site1, List<BaseSelection*>* list1,
 		String site2, List<BaseSelection*>* list2);
      virtual SelectID selectID(){
@@ -271,6 +273,7 @@ public:
 		return typeID;
 	}
      virtual void setTypeID(TypeID type){
+		assert(0);
 		typeID = type;
      }
      virtual bool match(BaseSelection* x);
@@ -294,64 +297,7 @@ public:
 		return NULL; // avoid compiler warning
 	}
 };
-		
-class ExecSelect : public BaseSelection {
-     int leftRight;
-	int fieldNo;
-	BaseSelection* parent;
-public:
-	ExecSelect(BaseSelection* parent, int lr, int field) :
-		leftRight(lr), fieldNo(field), parent(parent),
-		BaseSelection() {}
-	virtual void display(ostream& out, int detail = 0){
-		out << "(" << leftRight << ", " << fieldNo << ")";
-		BaseSelection::display(out);
-	}
-	virtual void displayFlat(ostream& out, int detail = 0){
-		assert(0);
-		parent->displayFlat(out, detail);
-	}
-	virtual BaseSelection* selectionF(){
-		assert(0);
-		return NULL; // avoid compiler warning
-	}
-	virtual BaseSelection* filter(Site* siteGroup){
-		assert(0);
-		return NULL; // avoid compiler warning
-	}
-	virtual bool exclusive(Site* s){
-		assert(0);
-		return NULL; // avoid compiler warning
-	}
-	virtual bool exclusive(String* attributeNames, int numFlds){
-		assert(0);
-		return NULL; // avoid compiler warning
-	}
-	virtual BaseSelection* duplicate(){
-		assert(0);
-		return NULL; // avoid compiler warning
-	}
-	virtual void collect(Site* s, List<BaseSelection*>* to){
-		assert(0);
-	}
-     virtual SelectID selectID(){
-		assert(0);
-		return BASE_ID; // avoid compiler warning
-     }
-	virtual TypeID getTypeID(){
-		assert(0);
-		return parent->getTypeID();
-	}
-	virtual const Type* evaluate(const Tuple* left, const Tuple* right){
-		const Type* base = (leftRight ? right[fieldNo] : left[fieldNo]);
-		return base;
-	}
-     virtual bool match(BaseSelection* x){
-		assert(0);
-		return false;
-	}
-};
-		
+
 class ConstantSelection : public BaseSelection {
 	TypeID typeID;
      Type* value;
@@ -423,21 +369,15 @@ public:
 		genPtr->opPtr(value, y->value, result);
 		return bool(result);
 	}
-     virtual BaseSelection* enumerate(
+     virtual ExecExpr* createExec(
           String site1, List<BaseSelection*>* list1,
-          String site2, List<BaseSelection*>* list2){
-          TRY(BaseSelection::enumerate(site1, list1, site2, list2), NULL);
-		return duplicate();
-     }
+          String site2, List<BaseSelection*>* list2);
      virtual TypeID typify(List<Site*>* sites){
 		return typeID;
 	}
      virtual TypeID getTypeID(){
           return typeID;
      }
-	virtual const Type* evaluate(const Tuple* left, const Tuple* right){
-		return value;
-	}
 	virtual int getSize(){
 		return packSize(value, typeID);
 	}
@@ -450,24 +390,23 @@ class TypeCast : public BaseSelection {
 	TypeID typeID;
 	BaseSelection* input;
 	PromotePtr promotePtr;
-	Type* value;
-	size_t valueSize;
 public:
 	TypeCast(TypeID& typeID, BaseSelection* input, 
 		PromotePtr promotePtr = NULL) : 
 		BaseSelection(), typeID(typeID), input(input), 
 		promotePtr(promotePtr){
 
-		value = allocateSpace(typeID, valueSize);
+		assert(input);
 	}
 	TypeCast(const TypeCast& x) {
 		typeID = x.typeID;
 		input = x.input->duplicate();
 		promotePtr = x.promotePtr;
-		value = allocateSpace(typeID, valueSize);
 	}
-	virtual ~TypeCast(){
-		delete value;
+	virtual ~TypeCast(){}
+	void destroy(){
+		input->destroy();
+		delete input;
 	}
 	virtual void display(ostream& out, int detail = 0){
 		out << typeID << "(";
@@ -512,14 +451,9 @@ public:
 		}
 		return true;
 	}
-     virtual BaseSelection* enumerate(
+     virtual ExecExpr* createExec(
           String site1, List<BaseSelection*>* list1,
-          String site2, List<BaseSelection*>* list2){
-		BaseSelection* execInp;
-		TRY(execInp = input->enumerate(site1, list1, site2, list2), NULL);
-          TRY(BaseSelection::enumerate(site1, list1, site2, list2), NULL);
-		return new TypeCast(typeID, execInp, promotePtr);
-     }
+          String site2, List<BaseSelection*>* list2);
      virtual TypeID typify(List<Site*>* sites){
 		if(promotePtr){
 
@@ -534,10 +468,6 @@ public:
      virtual TypeID getTypeID(){
           return typeID;
      }
-	virtual const Type* evaluate(const Tuple* left, const Tuple* right){
-		promotePtr(input->evaluate(left, right), value);
-		return value;
-	}
 	virtual int getSize(){
 		return packSize(typeID);
 	}
@@ -554,21 +484,15 @@ protected:
 	BaseSelection* input;
 	MemberPtr memberPtr;
 	int avgSize;	// to estimate result sizes
-	Type* value;
-	size_t valueSize;
 public:
 	Member(String* name, BaseSelection* input) : 
 		BaseSelection(), name(name), typeID(UNKN_TYPE), input(input), 
 		memberPtr(NULL) {
-
-		value = NULL;
 	}
 	Member(String* name, BaseSelection* input, MemberPtr memberPtr,
 			TypeID typeID) : 
 		BaseSelection(), name(name), typeID(typeID), input(input), 
 		memberPtr(memberPtr) {
-
-		value = allocateSpace(typeID, valueSize);
 	}
 	Member(const Member& x){
 		name = new String(*x.name);
@@ -576,11 +500,13 @@ public:
 		input = x.input->duplicate();
 		memberPtr = x.memberPtr;
 		avgSize = x.avgSize;
-		value = NULL;	// assuming that copy constructor is not called
-		// after typify
 	}
 	virtual ~Member(){
-		delete value;
+		delete name;
+	}
+	void destroy(){
+		input->destroy();
+		delete input;
 	}
 	virtual void display(ostream& out, int detail = 0){
 		input->display(out, detail);
@@ -634,14 +560,9 @@ public:
 		}
 		return input->matchNoMember(x);
 	}
-     virtual BaseSelection* enumerate(
+     virtual ExecExpr* createExec(
           String site1, List<BaseSelection*>* list1,
-          String site2, List<BaseSelection*>* list2){
-		BaseSelection* execInp;
-		TRY(execInp = input->enumerate(site1, list1, site2, list2), NULL);
-          TRY(BaseSelection::enumerate(site1, list1, site2, list2), NULL);
-		return new Member(new String(*name), execInp, memberPtr, typeID);
-     }
+          String site2, List<BaseSelection*>* list2);
      virtual TypeID typify(List<Site*>* sites){
 		TRY(TypeID parentType = input->typify(sites), "unknown");
 		GeneralMemberPtr* genPtr;
@@ -649,7 +570,6 @@ public:
 		assert(genPtr);
 		memberPtr = genPtr->memberPtr;
 		assert(memberPtr);
-		value = allocateSpace(typeID, valueSize);
 		return typeID;
 	}
      virtual TypeID getTypeID(){
@@ -657,10 +577,6 @@ public:
      }
 	virtual void setTypeID(TypeID type){
 		typeID = type;
-	}
-	virtual const Type* evaluate(const Tuple* left, const Tuple* right){
-		memberPtr(input->evaluate(left, right), value);
-		return value;
 	}
 	virtual int getSize(){
 		return avgSize;
@@ -749,14 +665,11 @@ public:
 		}
 		return input->matchNoMember(x);
 	}
-     virtual BaseSelection* enumerate(
+     virtual ExecExpr* createExec(
           String site1, List<BaseSelection*>* list1,
           String site2, List<BaseSelection*>* list2){
-		assert(0);
-		BaseSelection* execInp;
-		TRY(execInp = input->enumerate(site1, list1, site2, list2), NULL);
-          TRY(BaseSelection::enumerate(site1, list1, site2, list2), NULL);
-		return new Member(new String(*name), execInp, memberPtr, typeID);
+		assert(!"methods not implemented yet");
+		return NULL;
      }
      virtual TypeID typify(List<Site*>* sites){
 		assert(0);
@@ -771,10 +684,6 @@ public:
      virtual TypeID getTypeID(){
           return typeID;
      }
-	virtual const Type* evaluate(const Tuple* left, const Tuple* right){
-		assert(0);
-		return NULL;
-	}
 	virtual int getSize(){
 		assert(0);
 		return packSize(typeID);
@@ -790,21 +699,22 @@ class PrimeSelection : public BaseSelection{
 	String* fieldNm;
 	TypeID typeID;
 	int avgSize;	// to estimate result sizes
-	int position;  // position of this selection in a tuple
 public:
 	PrimeSelection(String a, String attr) : BaseSelection() {
 		alias = new String(a);
 		fieldNm = new String(attr);
 		typeID = "Unknown";
 		avgSize = 0;
-		position = 0;
 	}
 	PrimeSelection(
 		String* a, String* fieldNm = NULL, TypeID typeID = "Unknown",
-		int avgSize = 0, int position = 0): 
+		int avgSize = 0): 
           BaseSelection(), alias(a), fieldNm(fieldNm), typeID(typeID), 
-		avgSize(avgSize),
-		position(position) {}
+		avgSize(avgSize) {}
+	~PrimeSelection(){
+		delete alias;
+		delete fieldNm;
+	}
 	const String* getFieldNm(){
 		return fieldNm;
 	}
@@ -831,7 +741,7 @@ public:
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to){
 	}
-     virtual BaseSelection* enumerate(
+     virtual ExecExpr* createExec(
           String site1, List<BaseSelection*>* list1,
           String site2, List<BaseSelection*>* list2);
 	virtual TypeID typify(List<Site*>* sites);
@@ -862,10 +772,6 @@ public:
 	virtual String toStringAttOnly(){
 		return *fieldNm;
 	}
-	virtual const Type* evaluate(const Tuple* left, const Tuple* right){
-		assert(!"Evaluate called on PrimeSelection");
-		return NULL;
-	}
 };
 
 class Operator : public BaseSelection {
@@ -889,8 +795,12 @@ public:
 		selectivity = 0;
      }
 	virtual ~Operator(){
-//		delete left;
-//		delete right;
+	}
+	void destroy(){
+		left->destroy();
+		delete left;
+		right->destroy();
+		delete right;
 	}
 	virtual void display(ostream& out, int detail = 0){
 		out << "(";
@@ -987,7 +897,7 @@ public:
 		left->collect(s, to);
 		right->collect(s, to);
 	}
-	virtual BaseSelection* enumerate(
+	virtual ExecExpr* createExec(
 		String site1, List<BaseSelection*>* list1,
 		String site2, List<BaseSelection*>* list2);
      virtual SelectID selectID(){
@@ -1040,42 +950,6 @@ public:
 		return BaseSelection::makeNonComposite();
 	}
 	virtual BaseSelection* distributeWrapper(Site* site);
-};
-
-class ExecOperator : public Operator{
-     OperatorPtr opPtr;
-	Operator* parent;
-	Type* value;
-	size_t valueSize;
-public:
-	ExecOperator(String n, BaseSelection* l, BaseSelection* r, 
-		OperatorPtr opPtr, Operator* parent) :
-		Operator(n, l, r), opPtr(opPtr), parent(parent) {
-		
-		value = allocateSpace(getTypeID(), valueSize);
-	}
-	~ExecOperator(){
-		delete value;
-	}
-	virtual void display(ostream& out, int detail = 0){
-		assert(parent);
-		parent->display(out);
-		if(detail){
-			Operator::display(out, 0);
-		}
-	}
-	virtual void displayFlat(ostream& out, int detail = 0){
-		parent->displayFlat(out, detail);
-	}
-     virtual TypeID getTypeID(){
-          return parent->getTypeID();
-     }
-	virtual const Type* evaluate(const Tuple* leftT, const Tuple* rightT){
-		const Type* arg1 = left->evaluate(leftT, rightT);
-		const Type* arg2 = right->evaluate(leftT, rightT);
-		opPtr(arg1, arg2, value, valueSize);
-		return value;
-	}
 };
 
 class ArithmeticOp : public Operator {

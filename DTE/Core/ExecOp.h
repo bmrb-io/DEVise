@@ -2,6 +2,8 @@
 #define EXECOP_H
 
 #include "queue.h"
+#include "Array.h"
+#include "ExecExpr.h"
 #include "Iterator.h"	 // for Iterator
 
 class RTreeReadExec;
@@ -9,17 +11,24 @@ class RTreeReadExec;
 class SelProjExec : public Iterator {
 protected:
 	Iterator* inputIt;
-	List<BaseSelection*>* mySelect;
-	List<BaseSelection*>* myWhere;
+	Array<ExecExpr*>* mySelect;
+	Array<ExecExpr*>* myWhere;
 	Tuple* next;
 public:
 	SelProjExec(Iterator* inputIt, 
-		List<BaseSelection*>* mySelect, List<BaseSelection*>* myWhere) :
+		Array<ExecExpr*>* mySelect, Array<ExecExpr*>* myWhere) :
 		inputIt(inputIt), mySelect(mySelect), myWhere(myWhere) {
-		next = new Tuple[mySelect->cardinality()];
+		assert(mySelect);
+		assert(myWhere);
+		next = new Tuple[mySelect->length];
 	}
 	virtual ~SelProjExec(){
-		delete inputIt;	// and everythng else
+		delete inputIt;
+		destroyArray(*mySelect);
+		delete mySelect;
+		destroyArray(*myWhere);
+		delete myWhere;
+		delete [] next;
 	}
      virtual void initialize(){
           assert(inputIt);
@@ -36,17 +45,17 @@ public:
 
 class IndexScanExec : public Iterator {
 	RTreeReadExec* index;
-	List<BaseSelection*>* mySelect;
-	List<BaseSelection*>* myWhere;
+	Array<ExecExpr*>* mySelect;
+	Array<ExecExpr*>* myWhere;
 protected:
 	Iterator* inputIt;
 	Tuple* next;
 public:
 	IndexScanExec(RTreeReadExec* index, Iterator* inputIt, 
-		List<BaseSelection*>* mySelect, List<BaseSelection*>* myWhere) :
+		Array<ExecExpr*>* mySelect, Array<ExecExpr*>* myWhere) :
 		index(index),
 		mySelect(mySelect), myWhere(myWhere), inputIt(inputIt) {
-		next = new Tuple[mySelect->cardinality()];
+		next = new Tuple[mySelect->length];
 	}
 	virtual ~IndexScanExec();
      virtual void initialize();
@@ -60,8 +69,8 @@ public:
 class NLJoinExec : public Iterator {
 	Iterator* left;
 	Iterator* right;
-	List<BaseSelection*>* mySelect;
-	List<BaseSelection*>* myWhere;
+	Array<ExecExpr*>* mySelect;
+	Array<ExecExpr*>* myWhere;
 	Tuple* next;
      List<Tuple*> innerRel;
      bool firstEntry;
@@ -70,14 +79,26 @@ class NLJoinExec : public Iterator {
 	int innerNumFlds;
 public:
 	NLJoinExec(Iterator* left, Iterator* right, 
-		List<BaseSelection*>* mySelect, List<BaseSelection*>* myWhere,
+		Array<ExecExpr*>* mySelect, Array<ExecExpr*>* myWhere,
 		int innerNumFlds) :
 		left(left), right(right), mySelect(mySelect), myWhere(myWhere),
 		innerNumFlds(innerNumFlds) {
           firstEntry = true;
           firstPass = true;
           outerTup = NULL;
-		next = new Tuple[mySelect->cardinality()];
+		next = new Tuple[mySelect->length];
+	}
+	~NLJoinExec(){
+		delete left;
+		delete right;
+		destroyArray(*mySelect);
+		delete mySelect;
+		destroyArray(*myWhere);
+		delete myWhere;
+		delete [] next;
+
+		assert(!"incomplete impl");
+		// add more stuff here
 	}
      virtual void initialize(){
           if (left){
@@ -97,6 +118,10 @@ class UnionExec : public Iterator {
 public:
 	UnionExec(Iterator* iter1, Iterator* iter2) :
 		iter1(iter1), iter2(iter2), runningFirst(true) {}
+	~UnionExec(){
+		delete iter1;
+		delete iter2;
+	}
      virtual void initialize(){
           iter1->initialize();
      }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/07/22 15:00:54  donjerko
+  *** empty log message ***
+
   Revision 1.19  1997/06/30 23:05:04  donjerko
   CVS:
 
@@ -139,7 +142,7 @@ const ISchema* DeviseInterface::getISchema(TableName* table){
 		DevRead tmp;
 		TRY(tmp.Open(schema, data), NULL);
 		numFlds = tmp.getNumFlds();
-		attributeNames = tmp.getAttributeNames();
+		attributeNames = dupStrArr(tmp.getAttributeNames(), numFlds);
 	}
 	else {
 		String select;
@@ -182,7 +185,7 @@ const ISchema* StandardInterface::getISchema(TableName* table){
 	PlanOp* iterator = new StandardRead();
 	TRY(iterator->open(in), NULL);
 	numFlds = iterator->getNumFlds();
-	attributeNames = iterator->getAttributeNames();
+	attributeNames = dupStrArr(iterator->getAttributeNames(), numFlds);
 	delete iterator;
 	return new ISchema(attributeNames, numFlds);
 }
@@ -287,7 +290,7 @@ const ISchema* QueryInterface::getISchema(TableName* table){
 	TRY(sr->open(in), NULL);
 	int numFlds = sr->getNumFlds();
 	assert(numFlds == 1);
-	TypeID* types = sr->getTypeIDs();
+	const TypeID* types = sr->getTypeIDs();
 	assert(types[0] == "schema");
 	TRY(Iterator* iterator = sr->createExec(), NULL);
 	iterator->initialize();

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/06/16 16:04:48  donjerko
+  New memory management in exec phase. Unidata included.
+
 
   Revision 1.6  1997/03/28 16:07:28  wenger
   Added headers to all source files that didn't have them; updated
@@ -49,8 +52,8 @@ void Joins::typify(String  option){
 
 	String * leftorder = left->getOrderingAttrib();
 	String * rightorder = right->getOrderingAttrib();
-	TypeID * leftIDs = left->getTypeIDs();
-	TypeID * rightIDs = right->getTypeIDs();
+	const TypeID * leftIDs = left->getTypeIDs();
+	const TypeID * rightIDs = right->getTypeIDs();
 	
 	if (!leftorder || !rightorder){
 		THROW(new Exception("Cannot do composition on non sequences"),);

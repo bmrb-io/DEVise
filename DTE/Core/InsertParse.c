@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/03/28 16:07:24  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include<iostream.h>
@@ -58,7 +62,7 @@ Site* InsertParse::createSite(){
 	if(numFlds != fieldList->cardinality()){
 		THROW(new Exception("Number of fields do not match"), NULL);
 	}
-	String* types = site->getTypeIDs();
+	const String* types = site->getTypeIDs();
 
 // What follows is just a temporary kludge. 
 // One should construct a tuple and inset it

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/06/21 22:47:56  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.5  1997/06/16 16:04:38  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -43,6 +46,7 @@
 #include "catalog.h"
 #include "listop.h"
 #include "ParseTree.h"
+#include "ExecExpr.h"
 
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)
@@ -74,15 +78,16 @@ Site* DeleteParse::createSite(){
 	}
 	List<BaseSelection*>* siteISchema = site->getSelectList();
 	assert(siteISchema);
-	TRY(predicate = predicate->enumerate(*alias, siteISchema, "", NULL), NULL); 
-	assert(predicate);
-	predicate->display(cout);
+	ExecExpr* execPred;
+	TRY(execPred = 
+		predicate->createExec(*alias, siteISchema, "", NULL), NULL); 
+	assert(execPred);
 	int inputNumFlds = site->getNumFlds();
 	TRY(Iterator* iter = site->createExec(), NULL);
 	iter->initialize();
 	const Tuple* tmpTuple;
 	while((tmpTuple = iter->getNext())){
-		cond = predicate->evaluate(tmpTuple, NULL);
+		cond = execPred->evaluate(tmpTuple, NULL);
 		if(!cond){
 			Tuple* copy = new Tuple[inputNumFlds];
 			memcpy(copy, tmpTuple, inputNumFlds * sizeof(Type*));
@@ -98,5 +103,6 @@ Site* DeleteParse::createSite(){
 	}
 	site->writeClose();
 	delete site;
+	delete execPred;
 	return new Site();
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/06/21 22:48:05  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.3  1997/03/28 16:07:27  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -41,8 +44,8 @@ Site* UnionParse::createSite(){	// throws exception;
 			"Cannot do UNION because numbers of fields do not match";
 		THROW(new Exception(msg), NULL);
 	}
-	TypeID* types1 = iter1->getTypeIDs();
-	TypeID* types2 = iter2->getTypeIDs();
+	const TypeID* types1 = iter1->getTypeIDs();
+	const TypeID* types2 = iter2->getTypeIDs();
 	for(int i = 0; i < numFlds1; i++){
 		if(types1[i] != types2[i]){
 			String msg = "Cannot do UNION because types do not match";

@@ -24,6 +24,10 @@ class Iterator {
 public:
      virtual void initialize(){}
      virtual const Tuple* getNext() = 0;
+     virtual const Tuple* getThis(Offset offset, RecId recId){
+		assert(!"getThis not supported for this iterator");
+		return NULL;
+	}
      virtual Offset getNextOffset(){
           assert(!"getNextOffset not supported for this iterator");
           return Offset();
@@ -31,9 +35,6 @@ public:
      virtual Offset getOffset(){
           assert(!"getOffset not supported for this iterator");
           return Offset();
-     }
-     virtual void setOffset(Offset offset, RecId recId){
-          assert(!"setOffset not supported for this iterator");
      }
      virtual void reset(int lowRid, int highRid){
           String msg = "reset not implemented for this reader";
@@ -47,10 +48,11 @@ class PlanOp {
 public:
 	virtual ~PlanOp() {}
 	virtual int getNumFlds() = 0;
-	virtual String *getTypeIDs() = 0;
-	virtual String *getAttributeNames() = 0;
+	virtual const String *getTypeIDs() = 0;
+	virtual const String *getAttributeNames() = 0;
 	virtual String *getOrderingAttrib(){
 		assert(0);
+		return NULL;
 	}
 	virtual Stats* getStats(){
 

@@ -1,6 +1,12 @@
+#ifdef __GNUG__
+#pragma implementation "Array.h"
+#endif
+
 #include "ExecOp.h"
 #include "listop.h"
 #include "RTreeRead.h"
+
+Array<ExecExpr*>* dummy3; // Just needed for pragma implementation
 
 void IndexScanExec::initialize(){
 	assert(index);
@@ -19,8 +25,7 @@ const Tuple* IndexScanExec::getNext(){
 			return NULL;
 		}
 		RecId recId = index->getRecId();
-		inputIt->setOffset(offset, recId);
-		input = inputIt->getNext();
+		input = inputIt->getThis(offset, recId);
 		assert(input);
 		cond = evaluateList(myWhere, input);
 	}
@@ -107,5 +112,9 @@ const Tuple* UnionExec::getNext(){
 IndexScanExec::~IndexScanExec(){
 	delete index;
 	delete inputIt;
+	destroyArray(*mySelect);
+	delete mySelect;
+	destroyArray(*myWhere);
+	delete myWhere;
 	delete [] next;
 }

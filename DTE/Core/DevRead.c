@@ -1,10 +1,12 @@
 #include <strstream.h>
-#include "types.h"
-#include "DevRead.h"
 #include "UniData.h"
 
 #undef assert
 #include <assert.h>
+
+#include "types.h"
+#include "DevRead.h"
+
 
 TypeID translateUDType(Attr* at){
 
@@ -52,7 +54,6 @@ void DevRead::Open(char* schemaFile, char* dataFile){ // throws
 	}
 	numFlds = ud->schema()->NumFlatAttrs() + 1;	// for recId
 	typeIDs = new TypeID[numFlds];
-	offsets = new int[numFlds];
 	attributeNames = new String[numFlds];
 	AttrStk *stk = ud->schema()->GetFlatAttrs();
 	typeIDs[0] = INT_TP;
@@ -61,7 +62,6 @@ void DevRead::Open(char* schemaFile, char* dataFile){ // throws
 		Attr *at = stk->ith(i - 1);
 		typeIDs[i] = translateUDType(at);
 		attributeNames[i] = String(at->flat_name()); 
-		offsets[i] = at->offset();
 	}
 }
 
@@ -70,14 +70,22 @@ Iterator* DevRead::createExec(){
 	DestroyPtr* destroyPtrs = new DestroyPtr[numFlds];
 	size_t* currentSz = new size_t[numFlds];
 	Tuple* tuple = new Tuple[numFlds];
+	int* offsets = new int[numFlds];
+	AttrStk *stk = ud->schema()->GetFlatAttrs();
+	for(int i = 1; i < numFlds; i++){
+		Attr *at = stk->ith(i - 1);
+		offsets[i] = at->offset();
+	}
 	for(int i = 0; i < numFlds; i++){
 		unmarshalPtrs[i] = getUnmarshalPtr(typeIDs[i]);
 		destroyPtrs[i] = getDestroyPtr(typeIDs[i]);
 		assert(destroyPtrs[i]);
 		tuple[i] = allocateSpace(typeIDs[i], currentSz[i]);
 	}
-	return new DevReadExec(
+	DevReadExec* retVal = new DevReadExec(
 		ud, unmarshalPtrs, destroyPtrs, tuple, offsets, numFlds);
+	ud = NULL;	// not the owner any more
+	return retVal;
 }
 
 DevReadExec::~DevReadExec(){
@@ -107,10 +115,28 @@ const Tuple* DevReadExec::getNext(){
 	return tuple;
 }
 
+const Tuple* DevReadExec::getThis(Offset offset, RecId recId){
+	this->recId = recId;
+	UD_Status stat;
+	if(!ud->isOk()){	// should not happen
+		return NULL;
+	}
+	stat = ud->getRndRec(buff, offset.getOffset());
+	if(stat == UD_EOF){
+		return NULL;
+	}
+	assert(stat == UD_OK);
+	intCopy((Type*) recId, tuple[0]);
+	for(int i = 1; i < numFlds; i++){
+		unmarshalPtrs[i](&buff[offsets[i]], tuple[i]);
+	}
+	recId++;
+	return tuple;
+}
+
 void DevRead::Close(){
 
-	// do not delete ud and offsets, they are passed to the Exec
-
+	delete ud;
 	delete [] typeIDs;
 	typeIDs = NULL;
 	delete [] attributeNames;

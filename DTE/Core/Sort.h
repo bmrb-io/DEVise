@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/06/21 22:48:03  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.8  1997/06/16 16:04:45  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -114,10 +117,10 @@ public:
      virtual int getNumFlds(){
 		return numFlds;
      }
-     virtual String *getTypeIDs(){
+     virtual const String *getTypeIDs(){
                 return attrTypes;
      }  
-     virtual String *getAttributeNames(){
+     virtual const String *getAttributeNames(){
                 return input->getAttributeNames();
      }
      virtual String *getOrderingAttrib(){

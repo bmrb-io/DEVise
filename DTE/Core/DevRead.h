@@ -64,10 +64,7 @@ public:
 
 	virtual const Tuple* getNext();
 
-	virtual void setOffset(Offset offset, RecId recId){
-		off = offset.getOffset();
-		this->recId = recId;
-	}
+	virtual const Tuple* getThis(Offset offset, RecId recId);
 
      virtual Offset getOffset(){
 		return off;
@@ -81,12 +78,11 @@ protected:
 	String* typeIDs;
 	String* attributeNames;
 	String* order;
-	int* offsets;
 public:
      DevRead() : 
 		ud(NULL), numFlds(0), typeIDs(NULL), 
 		attributeNames(NULL),
-		order(NULL), offsets(NULL){
+		order(NULL){
 
 	}
 
@@ -103,17 +99,13 @@ public:
 	virtual int getNumFlds(){
 		return numFlds;
 	}
-	virtual String *getTypeIDs(){
+	virtual const String *getTypeIDs(){
 		assert(typeIDs);
 		return typeIDs;
 	}
-	virtual String* getAttributeNames(){
+	virtual const String* getAttributeNames(){
 		assert(attributeNames);
-		String* retVal = new String[numFlds];
-		for(int i = 0; i < numFlds; i++){
-			retVal[i] = attributeNames[i];
-		}
-		return retVal;
+		return attributeNames;
 	}
 	virtual String* getOrderingAttrib(){
 		return order;

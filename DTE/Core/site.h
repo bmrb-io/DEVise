@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/06/21 22:48:08  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.22  1997/06/16 16:04:54  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -93,6 +96,8 @@ protected:
 	friend ostream& operator<<(ostream& out, Site* site);
 	Stats* stats;
 	String fullNm;		// full table name used to retreive index;
+	String* attributeNames;
+	String* typeIDs;
 public:
 	Site(String nm = "") : name(nm), iterator(NULL) {
 		numFlds = 0;
@@ -101,13 +106,28 @@ public:
 		myFrom = new List<TableAlias*>;
 		myWhere = new List<BaseSelection*>;
 		stats = NULL;
+		attributeNames = NULL;
+		typeIDs = NULL;
 	}
 	virtual ~Site(){
+//		cerr << "deleting select where lists\n";
 		delete iterator;
+		if(mySelect){
+			for(mySelect->rewind(); !mySelect->atEnd(); mySelect->step()){
+				mySelect->get()->destroy();
+				delete mySelect->get();
+			}
+		}
 		delete mySelect;	// delete only list
 		delete myFrom;
+		for(myWhere->rewind(); !myWhere->atEnd(); myWhere->step()){
+//			myWhere->get()->destroy();
+			delete myWhere->get();
+		}
 		delete myWhere;	// delete everything
 	//	delete stats;	     // fix this
+		delete [] attributeNames;
+		delete [] typeIDs;
 	}
 	virtual void addTable(TableAlias* tabName){
 		String sep = "+";
@@ -181,11 +201,17 @@ public:
 			return 0;
 		}
 	}
-     virtual String* getTypeIDs(){
-          return getTypesFromList(mySelect);
+     virtual const String* getTypeIDs(){
+		if(!typeIDs){
+			typeIDs = getTypesFromList(mySelect);
+		}
+          return typeIDs;
      }
-	virtual String *getAttributeNames(){
-		return getStringsFrom(mySelect);
+	virtual const String *getAttributeNames(){
+		if(!attributeNames){
+			attributeNames = getStringsFrom(mySelect);
+		}
+		return attributeNames;
 	}
 	virtual String *getAttNamesOnly(){
 		return getAttStringsOnly(mySelect);
@@ -466,10 +492,10 @@ public:
 	virtual int getNumFlds(){
 		return iter1->getNumFlds();
 	}
-	virtual String* getAttributeNames(){
+	virtual const String* getAttributeNames(){
 		return iter1->getAttributeNames();
 	}
-	virtual String* getTypeIDs(){
+	virtual const String* getTypeIDs(){
 		return iter1->getTypeIDs();
 	}
 	virtual Iterator* createExec();

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/06/16 16:04:53  donjerko
+  New memory management in exec phase. Unidata included.
+
 
   Revision 1.8  1997/03/20 20:42:24  donjerko
   Removed the List usage from Aggregates and replaced it with Plex, a
@@ -51,6 +54,8 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <iostream.h>
+
 template <class T>
 class List{
 private:
@@ -242,38 +247,6 @@ public:
 		currPos = savePos;
 		return -1;
 	}
-
-/*
-	T getVal(int position)
-	{
-		
-		if (position < 0 )
-			return NULL;
-
-		Cell * curr = current;
-		Cell * prev = previous;
-		int savePos = currPos;
-		rewind();
-		int pos = 0;
-		while(!atEnd() && pos < position){
-			step();
-			pos++;
-		}
-		if (atEnd()){
-			current = curr;
-			previous = prev;
-			currPos = savePos;
-			return NULL;
-		}
-		else{
-			T tmp = current->element;
-			current = curr;
-			previous = prev;
-			currPos = savePos;
-			return tmp;
-		}
-	}
-*/
 
 	void display(){
 		

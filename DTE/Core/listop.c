@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/07/22 15:00:55  donjerko
+  *** empty log message ***
+
   Revision 1.10  1997/06/16 16:04:50  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -53,6 +56,7 @@
 #include "site.h"
 #include "exception.h"
 #include "catalog.h"
+#include "ExecExpr.h"
 
 int* findPositions(List<BaseSelection*>* list, 
 			List<BaseSelection*>* elements){ 		// throws
@@ -170,19 +174,20 @@ void filterList(List<BaseSelection*>* list, Site* site){
 	}
 }
 
-void enumerateList(List<BaseSelection*>* list,
+Array<ExecExpr*>* enumerateList(List<BaseSelection*>* list,
      String site1, List<BaseSelection*>* list1,
 	String site2, List<BaseSelection*>* list2){
 
+	Array<ExecExpr*>* retVal = new Array<ExecExpr*>(list->cardinality());
 	list->rewind();
-	while(!list->atEnd()){
-		BaseSelection* tmp;
-		TRY(tmp = list->get()->enumerate(site1, list1, site2, list2), );
+	for(int i = 0; !list->atEnd(); i++){
+		ExecExpr* tmp;
+		TRY(tmp = list->get()->createExec(site1, list1, site2, list2), NULL);
 		assert(tmp);
-		delete list->get();		// hope it will not core dump
-		list->replace(tmp);
+		(*retVal)[i] = tmp;
 		list->step();
 	}
+	return retVal;
 }
 
 TypeID* typifyList(List<BaseSelection*>* list, List<Site*>* sites){
@@ -239,27 +244,21 @@ bool boolCheckList(List<BaseSelection*>* list){
 }
 
 bool evaluateList(
-	List<BaseSelection*>* list, const Tuple* left, const Tuple* right){
+	Array<ExecExpr*>* list, const Tuple* left, const Tuple* right){
 
-	list->rewind();
-	while(!list->atEnd()){
-		bool value = list->get()->evaluate(left, right);
+	for(unsigned i = 0; i < list->length; i++){
+		bool value = (*list)[i]->evaluate(left, right);
 		if(value == false){
 			return false;
 		}
-		list->step();
 	}
 	return true;
 }
 
-void tupleFromList(Tuple* retVal, 
-		List<BaseSelection*>* list, const Tuple* left, const Tuple* right){
-	list->rewind();
-	int i = 0;
-	while(!list->atEnd()){
-		retVal[i] = (Type*) list->get()->evaluate(left, right);
-		list->step();
-		i++;
+void tupleFromList(Tuple* retVal,
+		Array<ExecExpr*>* list, const Tuple* left, const Tuple* right){
+	for(unsigned i = 0; i < list->length; i++){
+		retVal[i] = (Type*) (*list)[i]->evaluate(left, right);
 	}
 }
 
