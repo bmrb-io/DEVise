@@ -25,6 +25,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/05/06 22:04:55  wenger
+  Single-attribute set links are now working except where the slave of
+  one is the master of another.
+
  */
 
 #include <stdio.h>
@@ -251,23 +255,20 @@ SlaveTable::CreateRelation()
         //
         // Make sure the link has a table of the master attribute values.
         //
-        if (taLink->_masterTableName == NULL) {
+        DerivedTable *masterTable = taLink->GetMasterTable();
+        if (masterTable == NULL) {
           char errBuf[256];
           sprintf(errBuf, "No master table for link %s", taLink->GetName());
           reportErrNosys(errBuf);
           result = StatusFailed;
         } else {
-          DerivedTable *masterTable = taLink->
-	      _masterView->GetDerivedTable(taLink->_masterTableName);
-          DOASSERT(masterTable != NULL, "No master table!");
-
 	  ostFrom << ", " << *masterTable->GetRelationId() << " as t" <<
 	      masterCount + 1;
 
 	  // Multiple links give intersection...
 	  if (masterCount > 1) ostWhere << " and ";
-          ostWhere << "t1." << taLink->_slaveAttrName << " = t" <<
-	      masterCount + 1 << "." << taLink->_masterAttrName;
+          ostWhere << "t1." << taLink->GetSlaveAttrName() << " = t" <<
+	      masterCount + 1 << "." << taLink->GetPhysMasterAttrName();
 	}
       }
     }

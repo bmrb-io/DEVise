@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/05/06 22:04:52  wenger
+  Single-attribute set links are now working except where the slave of
+  one is the master of another.
+
   Revision 1.1  1998/04/29 17:53:50  wenger
   Created new DerivedTable class in preparation for moving the tables
   from the TAttrLinks to the ViewDatas; found bug 337 (potential big
@@ -56,15 +60,11 @@ DerivedTable::DerivedTable(char *name, TData *tdata, char *masterAttrName,
 
   result = StatusOk;
 
+  ClearAll();
+
   _name = CopyString(name);
   _tdataName = CopyString(tdata->GetName());
   _masterAttrName = CopyString(masterAttrName);
-
-  _tableFile = NULL;
-  _schema = NULL;
-  _stdInt = NULL;
-  _relId = NULL;
-  _inserter = NULL;
 
   //
   // Find (hopefully) the master attribute in this tdata.
@@ -130,17 +130,95 @@ DerivedTable::DerivedTable(char *name, TData *tdata, char *masterAttrName,
 
   _schema = new ISchema(1, types, attrs);
 
-  _tableFile = tempnam(Init::TmpDir(), "tdaln");
-  if (_tableFile == NULL) {
-    reportErrSys("Out of memory");
-    result += StatusFailed;
-    return;
-  }
+  //
+  // Create the (empty) table file right away, so that it can be referenced
+  // by other relations before values get filled in.
+  //
+  result += CreateTable();
+  if (!result.IsComplete()) return;
+
+  _objectValid.Set();
+}
+
+/*------------------------------------------------------------------------------
+ * function: DerivedTable::DerivedTable
+ * Constructor (creates dummy table).
+ */
+DerivedTable::DerivedTable(char *name, char *masterAttrName, DevStatus &result)
+{
+#if defined(DEBUG)
+  printf("DerivedTable(0x%p)::DerivedTable(%s)\n", this, name);
+#endif
+
+  result = StatusOk;
+
+  ClearAll();
+
+  _name = CopyString(name);
+  _masterAttrName = CopyString(masterAttrName);
+
+  //
+  // Create a dummy schema (integer type picked arbitrarily).
+  //
+  TypeID types[1];
+  string attrs[1];
+  types[0] = INT_TP;
+  attrs[0] = _masterAttrName;
+
+  _schema = new ISchema(1, types, attrs);
 
   //
   // Create the (empty) table file right away, so that it can be referenced
   // by other relations before values get filled in.
   //
+  result += CreateTable();
+  if (!result.IsComplete()) return;
+
+  _objectValid.Set();
+}
+
+/*------------------------------------------------------------------------------
+ * function: DerivedTable::ClearAll
+ * Utility for use by constructors and destructor.
+ */
+void
+DerivedTable::ClearAll()
+{
+#if defined(DEBUG)
+  printf("DerivedTable(0x%p)::ClearAll()\n", this);
+#endif
+
+  _name = NULL;
+  _tdataName = NULL;
+  _masterAttrName = NULL;
+  _tableFile = NULL;
+  _recordCount = 0;
+  _schema = NULL;
+  _stdInt = NULL;
+  _relId = NULL;
+  _inserter = NULL;
+}
+
+/*------------------------------------------------------------------------------
+ * function: DerivedTable::CreateTable
+ * Utility for use by constructors.
+ */
+DevStatus
+DerivedTable::CreateTable()
+{
+#if defined(DEBUG)
+  printf("DerivedTable(0x%p)::CreateTable()\n", this);
+#endif
+
+  DevStatus result = StatusOk;
+
+  _tableFile = tempnam(Init::TmpDir(), "tdaln");
+  if (_tableFile == NULL) {
+    reportErrSys("Out of memory");
+    result += StatusFailed;
+    return result;
+  }
+
   int fd = open(_tableFile, O_WRONLY | O_CREAT, 0644);
   if (fd == -1) {
     char errBuf[2*MAXPATHLEN];
@@ -161,13 +239,14 @@ DerivedTable::DerivedTable(char *name, TData *tdata, char *masterAttrName,
     cerr << currExcept->toString() << endl;
     currExcept = NULL;
     result += StatusFailed;
-    return;
+    return result;
   }
 #if defined(DEBUG)
   printf("  Created master table file %s\n", _tableFile);
+  cout << "    relation ID: " << *_relId << "\n";
 #endif
 
-  _objectValid.Set();
+  return result;
 }
 
 /*------------------------------------------------------------------------------
@@ -212,6 +291,8 @@ DerivedTable::~DerivedTable()
     delete [] _tableFile;
     _tableFile = NULL;
   }
+
+  ClearAll();
 }
 
 /*------------------------------------------------------------------------------

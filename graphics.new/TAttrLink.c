@@ -29,6 +29,11 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/06/12 19:55:30  wenger
+  Attribute of TAttr/set links can now be changed; GUI has menu of available
+  attributes; attribute is set when master view is set instead of at link
+  creation; misc. debug code added.
+
   Revision 1.9  1998/05/06 22:04:56  wenger
   Single-attribute set links are now working except where the slave of
   one is the master of another.
@@ -91,6 +96,10 @@
 
 //#define DEBUG
 
+int TAttrLink::_objectCount = 0;
+DerivedTable *TAttrLink::_dummyTable = NULL;
+char *TAttrLink::_dummyAttrName = "dummy_attribute";
+
 /*------------------------------------------------------------------------------
  * function: TAttrLink::TAttrLink
  * Constructor.
@@ -103,9 +112,21 @@ TAttrLink::TAttrLink(char *name, char *masterAttrName, char *slaveAttrName) :
       masterAttrName, slaveAttrName);
 #endif
 
+  if (_objectCount == 0) {
+    DevStatus tmpResult;
+    _dummyTable = new DerivedTable("taLinkDummy", _dummyAttrName, tmpResult);
+    if (!tmpResult.IsComplete()) {
+      reportErrNosys("Can't create TAttrLink dummy table");
+      delete _dummyTable;
+      _dummyTable = NULL;
+    }
+  }
+
   _masterTableName = NULL;
   _masterAttrName = CopyString(masterAttrName);
   _slaveAttrName = CopyString(slaveAttrName);
+
+  _objectCount++;
   _objectValid.Set();
 }
 
@@ -124,6 +145,13 @@ TAttrLink::~TAttrLink()
   _masterAttrName = NULL;
   delete [] _slaveAttrName;
   _slaveAttrName = NULL;
+
+  _objectCount--;
+
+  if (_objectCount == 0) {
+    delete _dummyTable;
+    _dummyTable = NULL;
+  }
 }
 
 /*------------------------------------------------------------------------------
@@ -167,12 +195,12 @@ TAttrLink::SetMasterView(ViewGraph *view)
     // Create the table to hold the master attribute values.
     //
     (void) CreateMasterTable();
-  } else {
-    //
-    // Update all slave views.
-    //
-    ReCreateSlaveTDatas();
   }
+
+  //
+  // Update all slave views.
+  //
+  ReCreateSlaveTDatas();
 }
 
 /*------------------------------------------------------------------------------
@@ -245,7 +273,7 @@ TAttrLink::Initialize()
   } else {
     //
     // Make sure the master table has the same TData as the master view
-    // (in case the vie
+    // (in case the view's TData got changed).
     //
     DerivedTable *masterTable = _masterView->GetDerivedTable(_masterTableName);
     DOASSERT(masterTable != NULL, "No master table!");
@@ -258,6 +286,7 @@ TAttrLink::Initialize()
 #endif
       (void) DestroyMasterTable();
       (void) CreateMasterTable();
+      ReCreateSlaveTDatas();
     }
   }
 }
@@ -378,7 +407,7 @@ TData *
 TAttrLink::GetTData(ViewGraph *view, TDType tdType)
 {
 #if defined(DEBUG)
-  printf("TAttrLink(%s)::GetTData(%s, %d)\n", _name, view->GetName(), tdType);
+  printf("TAttrLink()::GetTData(%s, %d)\n", view->GetName(), tdType);
 #endif
 
   TData *tdata;
@@ -418,6 +447,7 @@ TAttrLink::GetTData(ViewGraph *view, TDType tdType)
 void
 TAttrLink::SetMasterAttr(char *masterAttrName)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::SetMasterAttr(%s)\n", _name, masterAttrName);
 #endif
@@ -432,7 +462,6 @@ TAttrLink::SetMasterAttr(char *masterAttrName)
     //
     (void) DestroyMasterTable();
     (void) CreateMasterTable();
-
     ReCreateSlaveTDatas();
 
     _masterView->Refresh();
@@ -446,6 +475,7 @@ TAttrLink::SetMasterAttr(char *masterAttrName)
 void
 TAttrLink::SetSlaveAttr(char *slaveAttrName)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::SetSlaveAttr(%s)\n", _name, slaveAttrName);
 #endif
@@ -469,8 +499,9 @@ TAttrLink::SetSlaveAttr(char *slaveAttrName)
 void
 TAttrLink::ReCreateSlaveTDatas()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-  printf("TAttrLink(%s)::ReCreateSlaveTDatas(%s)\n", _name);
+  printf("TAttrLink(%s)::ReCreateSlaveTDatas()\n", _name);
 #endif
 
   int index = InitIterator();
@@ -479,6 +510,51 @@ TAttrLink::ReCreateSlaveTDatas()
     view->TAttrLinkChanged();
   }
   DoneIterator(index);
+}
+
+/*------------------------------------------------------------------------------
+ * function: TAttrLink::GetMasterTable
+ * Get the master table (if any) for this link.
+ */
+DerivedTable *
+TAttrLink::GetMasterTable()
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if defined(DEBUG)
+  printf("TAttrLink(%s)::GetMasterTable()\n", _name);
+#endif
+
+  DerivedTable *table = _dummyTable;
+
+  if (_masterTableName != NULL) {
+    DOASSERT(_masterView != NULL,
+	"Can't have master table without master view");
+    table = _masterView->GetDerivedTable(_masterTableName);
+  }
+
+  return table;
+}
+
+/*------------------------------------------------------------------------------
+ * function: TAttrLink::GetPhysMasterAttrName
+ * Get the master attribute name, returning dummy name if we're currently
+ * using the dummy table.
+ */
+const char *
+TAttrLink::GetPhysMasterAttrName()
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if defined(DEBUG)
+  printf("TAttrLink(%s)::GetPhysMasterAttrName()\n", _name);
+#endif
+
+  char *attrName = _masterAttrName;
+
+  if (_masterTableName == NULL) {
+    attrName = _dummyAttrName;
+  }
+
+  return attrName;
 }
 
 /*============================================================================*/

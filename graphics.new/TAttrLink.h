@@ -24,6 +24,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/06/12 19:55:31  wenger
+  Attribute of TAttr/set links can now be changed; GUI has menu of available
+  attributes; attribute is set when master view is set instead of at link
+  creation; misc. debug code added.
+
   Revision 1.6  1998/05/06 22:04:57  wenger
   Single-attribute set links are now working except where the slave of
   one is the master of another.
@@ -63,16 +68,20 @@
 #include "ObjectValid.h"
 
 class TData;
+class DerivedTable;
 
 enum TDType { TDataPhys, TDataLog };
 
 class TAttrLink : public MasterSlaveLink {
 public:
+  // Constructor/destructor.
   TAttrLink(char *name, char *masterAttrName, char *slaveAttrName);
   virtual ~TAttrLink();
 
+  // From DeviseLink.
   virtual void SetFlag(VisualFlag flag);
 
+  // From MasterSlaveLink.
   virtual void SetMasterView(ViewGraph *view);
 
   virtual void InsertView(ViewGraph *view);
@@ -87,19 +96,27 @@ public:
   virtual RecordLinkType GetLinkType () { return NotRecordLink; }
   virtual void SetLinkType(RecordLinkType type);
 
+  // Unique to TAttrLink.
   const char *GetMasterAttrName() { return _masterAttrName; }
   const char *GetSlaveAttrName() { return _slaveAttrName; }
   void SetMasterAttr(char *masterAttrName);
   void SetSlaveAttr(char *slaveAttrName);
 
-protected:
-  friend class SlaveTable;
+  const char *GetPhysMasterAttrName();
 
-  DevStatus CreateMasterTable();
-  DevStatus DestroyMasterTable();
+  DerivedTable *GetMasterTable();
+
   static TData *GetTData(ViewGraph *view, TDType tdType);
 
+protected:
+  DevStatus CreateMasterTable();
+  DevStatus DestroyMasterTable();
+
   void ReCreateSlaveTDatas();
+
+  static int _objectCount;
+  static DerivedTable *_dummyTable;
+  static char *_dummyAttrName;
 
   char *_masterTableName;
 

@@ -1286,7 +1286,7 @@ Num Date        Status  Description
 			have pointers to them, resulting in member functions
 			of destroyed objects being called. (rkw)
 
-338 05/07/98	OPEN	Set link bug: if you have three views linked as so:
+338 05/07/98	FIXED	Set link bug: if you have three views linked as so:
 			V1->V2->V3 with set links, and you unlink V2,
 			DEVise crashes. (rkw)
 
@@ -1374,9 +1374,15 @@ Num Date        Status  Description
 362 06/04/98	OPEN	You can't see the button for 'white' in the color
 			chooser GUI. (rkw)
 
-363 06/12/98	OPEN	TData attr links with no master don't work correctly --
+363 06/12/98	FIXED	TData attr links with no master don't work correctly --
 			the plot all data in the slave instead of no data.
 			(rkw)
+
+364 06/15/98	OPEN	RELATION_MNGR.deleteRelation doesn't actually delete
+			the relation. (rkw)
+
+365 06/15/98	OPEN	Duplicate elimination in UniqueInserter doesn't work
+			(at least for strings). (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.50  1998/06/12 19:55:44  wenger
+#  Attribute of TAttr/set links can now be changed; GUI has menu of available
+#  attributes; attribute is set when master view is set instead of at link
+#  creation; misc. debug code added.
+#
 #  Revision 1.49  1998/04/27 17:30:34  wenger
 #  Improvements to TAttrLinks and related code.
 #
@@ -1268,7 +1273,7 @@ proc SetLinkAttr {linkname} {
     # Create the window to allow the user to select an attribute.
     #
     toplevel .setLinkAttr
-    wm geometry .setLinkAttr +50+50
+    wm geometry .setLinkAttr +150+150
     wm title .setLinkAttr "Set Link Attribute"
 
     frame .setLinkAttr.row1

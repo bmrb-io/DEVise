@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/05/06 22:04:52  wenger
+  Single-attribute set links are now working except where the slave of
+  one is the master of another.
+
   Revision 1.2  1998/04/30 14:24:18  wenger
   DerivedTables are now owned by master views rather than links;
   views now unlink from master and slave links in destructor.
@@ -51,6 +55,7 @@ class DerivedTable {
 public:
   DerivedTable(char *name, TData *tdata, char *masterAttrName,
       DevStatus &result);
+  DerivedTable(char *name, char *masterAttrName, DevStatus &result);
   virtual ~DerivedTable();
 
   virtual char *GetName() { return _name; }
@@ -63,6 +68,9 @@ public:
   virtual RelationId *GetRelationId() { return _relId; }
 
 protected:
+  void ClearAll();
+  DevStatus CreateTable();
+
   char *_name;
 
   char *_tdataName; // name of TData from which this table is derived
