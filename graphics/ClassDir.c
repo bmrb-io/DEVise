@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/07/02 22:43:56  jussi
+  Replaced Exit() calls with DOASSERT().
+
   Revision 1.5  1996/05/11 01:54:35  jussi
   Added DestroyAllInstances() method.
 
@@ -240,6 +243,9 @@ void ClassDir::DestroyAllInstances()
       ClassRec *classRec = catRec->_classRecs[j];
       for(int k = 0; k < classRec->_numInstances; k++) {
 	ClassInfo *instRec = classRec->_instances[k];
+#ifdef DEBUG
+        printf("now destroying %s\n", instRec->InstanceName());
+#endif
 	delete instRec;
       }
       classRec->_numInstances = 0;
@@ -258,9 +264,9 @@ void ClassDir::DestroyInstance(char *name)
       for(int k = 0; k < classRec->_numInstances; k++) {
 	ClassInfo *instRec = classRec->_instances[k];
 	if (!strcmp(instRec->InstanceName(), name)) {
-	  /*
-	     printf("now destroying %s\n", name);
-	  */
+#ifdef DEBUG
+          printf("now destroying %s\n", name);
+#endif
 	  delete instRec;
 	  for(int l = k; l < classRec->_numInstances - 1; l++) {
 	    classRec->_instances[l] = classRec->_instances[l + 1];
