@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16  2000/03/15 20:35:47  wenger
+#  Fixed problems with email in cron jobs; safer 'or' in Perl scripts.
+#
 #  Revision 1.15  1999/11/03 16:24:04  wenger
 #  Put text alignment, etc., back the way it was -- now works because of
 #  fixes to JS.
@@ -206,7 +209,7 @@ sub CreateViews {
   print SES_OUT "\n# Create views\n";
 
   print SES_OUT "DEVise create {view} {Scatter} UserList_view -0.05 1.05 0 1 36 9\n";
-  print SES_OUT "DEVise viewSetImplicitHome {UserList_view} 0 1 1 1 0.55 0.55 0.0 0.0 ",
+  print SES_OUT "DEVise viewSetImplicitHome {UserList_view} 0 1 1 1 0.0 0.0 0.0 0.0 ",
       "100.0 100.0\n";
   print SES_OUT "DEVise setViewAutoFilter UserList_view 1\n";
   print SES_OUT "DEVise viewSetDisabledActions UserList_view 1 0 0 1\n";
@@ -214,8 +217,8 @@ sub CreateViews {
   print SES_OUT "\n";
 
   print SES_OUT "DEVise create {view} {Scatter} DataParent_view 0 1 -1 -2 36 9\n";
-  print SES_OUT "DEVise viewSetImplicitHome {DataParent_view} 1 1 1 1 0.50 ",
-      "0.50 0.0 0.0 100.0 100.0\n";
+  print SES_OUT "DEVise viewSetImplicitHome {DataParent_view} 1 1 1 1 0.00 ",
+      "0.00 0.0 0.0 100.0 100.0\n";
   print SES_OUT "DEVise setViewAutoFilter DataParent_view 1\n";
   print SES_OUT "DEVise viewSetDisabledActions DataParent_view 1 0 0 1\n";
   print SES_OUT "\n";
