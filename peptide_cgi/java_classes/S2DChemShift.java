@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2001/01/17 20:00:06  wenger
+// Restructured the peptide-cgi code to make it much more maintainable.
+//
 
 // ========================================================================
 
@@ -425,7 +428,13 @@ public class S2DChemShift {
 		      (100 * (float)starNumC / assignments.numC) + " " +
 		      (100 * (float)starNumN / assignments.numN) + " " + "\n");
 		    paCount++;
+		} catch (S2DWarning ex) {
+		    index++;
+		    if (DEBUG >= 1) {
+		        System.err.println(ex.getMessage());
+		    }
 		} catch (S2DException ex) {
+		    index++;
 		    System.err.println(ex.getMessage());
 		}
 	    }

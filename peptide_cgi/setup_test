@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000
+#  (c) Copyright 2000-2001
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -37,4 +37,5 @@ cd cgi-bin
 ln -s ../test_data data_dir
 ln -s ../test_session session_dir
 ln -s ../java_classes .
+ln -s ../html/star_file_list.html .
 cd ..

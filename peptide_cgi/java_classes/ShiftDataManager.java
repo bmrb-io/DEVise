@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2001/01/17 19:55:46  wenger
+// Restructured the peptide-cgi code to make it much more maintainable.
+//
 // Revision 1.4  2000/08/03 19:11:52  wenger
 // Added S2DException class; better tolerance for certain missing data.
 //
@@ -151,7 +154,7 @@ public class ShiftDataManager
 	    }
 	    
 	} else {
-	    throw new S2DError("Amino acid type " + in_aminoAcidType +
+	    throw new S2DWarning("Amino acid type " + in_aminoAcidType +
 	      "  not found..... \n");
 	}
 	    

@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2001/01/23 19:35:19  wenger
+// Made a few minor fixes to get things to work right at BMRB.
+//
 // Revision 1.2  2001/01/19 15:39:06  wenger
 // Added T1 and T2 relaxation; removed some unnecessary variables from
 // coupling constants; added schema files to installation, unified T1
@@ -42,6 +45,7 @@ public class S2DStarIfc {
     // VARIABLES
 
     private static final int DEBUG = 0;
+    private static final boolean LOCAL_FILE = false;
 
     private String _fileName = null;
 
@@ -49,14 +53,10 @@ public class S2DStarIfc {
 
     private int _residueCount;
 
-    private Class _frameClass = null;
-    private Class _loopClass = null;
-
     //===================================================================
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
-    //TEMP -- have a local file option??
     // Constructor.  Opens and parses the NMR-Star file associated with
     // the given accession number.
     public S2DStarIfc(int accessionNum) throws S2DException
@@ -71,15 +71,21 @@ public class S2DStarIfc {
 	  S2DNames.NMR_STAR_SUFFIX;
 
         try {
-            java.net.URL starfile =
-              new java.net.URL(S2DNames.BMRB_STAR_URL + _fileName);
-	    InputStream is = starfile.openStream();
+	    InputStream is = null;
+	    if (LOCAL_FILE) {
+		System.out.println("Note: using local copy of star file");
+	        is = new FileInputStream(_fileName);
+	    } else {
+                java.net.URL starfile =
+                  new java.net.URL(S2DNames.BMRB_STAR_URL + _fileName);
+	        is = starfile.openStream();
+	    }
             StarParser parser = new StarParser(is);
 	    parser.StarFileNodeParse(parser);
 	    _starTree = parser.endResult();
 	    is.close();
 
-	    _residueCount = getResidueCount();
+	    _residueCount = getProteinResidueCount();
 	    //TEMP -- should we find certain critical save frames
 	    // here and save them?  (e.g., SAVE_ENTRY_INFO)?
 
@@ -107,10 +113,17 @@ public class S2DStarIfc {
     // Returns the system name from the NMR-Star file.
     public String getSystemName()
     {
-        String systemName = ((DataItemNode)
-	  _starTree.searchByName(S2DNames.MOL_SYSTEM_NAME).
-	  firstElement()).getValue();
-	//TEMP -- do we need to make sure we only have one value?
+	String systemName = null;
+
+	VectorCheckType nodes = _starTree.searchByName(
+	  S2DNames.MOL_SYSTEM_NAME);
+        if (nodes.size() != 1) {
+	    System.err.println("System name is not available");
+	    systemName = "System name not available";
+	} else {
+	    systemName = ((DataItemNode)nodes.firstElement()).getValue();
+	}
+
         return systemName;
     }
 
@@ -149,7 +162,7 @@ public class S2DStarIfc {
     public int getHAChemShiftCount(SaveFrameNode frame)
     {
         if (DEBUG >= 2) {
-	    System.out.println("  Star2Devise.getHAChemShiftCount()");
+	    System.out.println("  S2DStarIfc.getHAChemShiftCount()");
 	}
 
 	int haCsCount = 0;
@@ -204,9 +217,11 @@ public class S2DStarIfc {
 	  tagName, dataValue);
 
 	if (frameList.size() != frameCount) {
+/*TEMP -- put this code back in when bmr4345.str is fixed
 	    throw new S2DError("Got " + frameList.size() +
 	      " save frames for category " + category +
 	      "; should have gotten " + frameCount);
+TEMP*/
 	}
 
 	return frameList.elements();
@@ -385,10 +400,10 @@ public class S2DStarIfc {
 
     // ----------------------------------------------------------------------
     // Return value: residue count, or -1 if we can't get the residue count.
-    private int getResidueCount() throws S2DException
+    private int getProteinResidueCount()
     {
         if (DEBUG >= 2) {
-	    System.out.println("  S2DStarIfc.getResidueCount()");
+	    System.out.println("  S2DStarIfc.getProteinResidueCount()");
 	}
 
 	int residueCount = -1;
@@ -396,13 +411,41 @@ public class S2DStarIfc {
         try {
 	    VectorCheckType list = _starTree.searchByName(
 	      S2DNames.RESIDUE_COUNT);
-	    if (list.size() != 1) {
-	        throw new S2DError("Expected one " +
-		  S2DNames.RESIDUE_COUNT + " node; got " + list.size());
+
+	    boolean found = false;
+	    for (int index = 0; index < list.size(); index++) {
+	        DataItemNode node = (DataItemNode)list.elementAt(index);
+	        SaveFrameNode frame = (SaveFrameNode)S2DStarUtil.
+		  getParentByClass(node, S2DStarUtil._frameClass);
+
+	        VectorCheckType list2 = frame.searchByName(
+		  S2DNames.MOL_POLYMER_CLASS);
+	        if (list2.size() != 1) {
+	            throw new S2DError("There should be exactly one " +
+		      S2DNames.MOL_POLYMER_CLASS + " node; got " +
+		      list2.size());
+	        }
+                DataItemNode node2 = (DataItemNode)list2.elementAt(0);
+	        String molPolymerClass = node2.getValue();
+                if (molPolymerClass.equals("protein")) {
+		    if (found) {
+	                throw new S2DError("Expected one " +
+			  S2DNames.RESIDUE_COUNT + " node for a protein; " +
+			  "got more than one");
+		    } else {
+		        found = true;
+                        residueCount = Integer.parseInt(node.getValue());
+		    }
+
+	            //TEMP -- remove this break statement when possible
+		    // starlibj error is resolved
+		    break;
+		}
 	    }
 
-	    DataItemNode node = (DataItemNode)list.elementAt(0);
-            residueCount = Integer.parseInt(node.getValue());
+	    if (!found) {
+		throw new S2DError("No protein residue count found");
+	    }
 	} catch(Exception ex) {
 	    System.err.println("Exception getting residue count: " +
 	      ex.getMessage());

@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2001/01/23 19:35:19  wenger
+// Made a few minor fixes to get things to work right at BMRB.
+//
 // Revision 1.2  2001/01/19 15:39:06  wenger
 // Added T1 and T2 relaxation; removed some unnecessary variables from
 // coupling constants; added schema files to installation, unified T1
@@ -61,6 +64,9 @@ public class S2DMain {
 	    s2d.process();
 	} catch (S2DWarning ex) {
 	    System.err.println(ex.getMessage());
+	} catch (Exception ex) {
+	    ex.printStackTrace();
+	    throw new S2DError("NMR-Star to DEVise conversion failed");
 	}
     }
 

@@ -4,6 +4,11 @@ set path = ($path /s/std/bin)
 # For yola.bmrb.wisc.edu
 set path = ($path /usr/java/bin)
 
+limit filesize 1000
+# We need a big cpu time limit for 4096.
+limit cputime 1000
+limit coredumpsize 0
+
 unsetenv LD_LIBRARY_PATH
 
 /bin/rm -f s2d.out
