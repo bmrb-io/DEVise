@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.87  1999/06/25 15:58:24  wenger
+  Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
+  now uses DebugLog facility instead of printf; dispatcher logging is turned
+  on by default, and commands and queries are logged; added -debugLog command
+  line flag to turn logging on and off.
+
   Revision 1.86  1998/11/04 20:34:02  wenger
   Multiple string tables partly working -- loading and saving works, one
   table per mapping works; need multiple tables per mapping, API and GUI,
@@ -449,6 +455,11 @@ TkControlPanel::TkControlPanel()
 #if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION > 0
   _mainWindow = Tk_MainWindow(_interp);
 #endif
+
+#if TK_MAJOR_VERSION != 4
+  _mainWindow = Tk_MainWindow(_interp);
+#endif
+
 
 #ifdef TK_WINDOW
   ControlPanelMainWindow = _mainWindow;

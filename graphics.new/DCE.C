@@ -7,6 +7,14 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/09/22 17:23:52  wenger
+  Devised now returns no image data if there are any problems (as per
+  request from Hongyu); added a bunch of debug and test code to try to
+  diagnose bug 396 (haven't figured it out yet); made some improvements
+  to the Dispatcher to make the main loop more reentrant; added some error
+  reporting to the xv window grabbing code; improved command-result
+  checking code.
+
   Revision 1.13  1997/12/11 04:25:41  beyer
   Shared memory and semaphores are now released properly when devise
   terminates normally.
@@ -93,10 +101,6 @@ static const key_t SharedMemoryBase = 2000;
 static struct ShmKeyTable *shmKeyTable = 0;
 #endif
 
-#ifdef __linux
-static const union semun NullSemUnion = { 0 };
-#endif
-
 Semaphore::Semaphore(key_t key, int &status, int nsem)
 {
   // assume creation of semaphore fails
@@ -133,11 +137,7 @@ Semaphore::Semaphore(key_t key, int &status, int nsem)
 
 int Semaphore::destroy()
 {
-#ifdef __linux
-  if (semctl(id, 0, IPC_RMID, NullSemUnion) < 0)
-#else
   if (semctl(id, 0, IPC_RMID) < 0)
-#endif
     perror("semctl");
   return 0;
 }
@@ -158,11 +158,7 @@ int Semaphore::destroyAll()
 #ifdef DEBUG
       cerr << "%%  Removing semaphore " << id << endl;
 #endif
-#ifdef __linux
-      if (semctl(id, 0, IPC_RMID, NullSemUnion) < 0)
-#else
       if (semctl(id, 0, IPC_RMID) < 0)
-#endif
 	perror("semctl");
     }
   }
@@ -183,7 +179,7 @@ int Semaphore::setValue(int num, int sem)
     ushort *array;
   };
 #endif
-#if defined(__linux) || defined(__sun) || defined(__solaris)
+#if defined(__sun) || defined(__solaris)
   union semun param;
   param.val = num;
   int result = semctl(id, sem, SETVAL, param);

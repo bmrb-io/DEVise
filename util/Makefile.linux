@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.7  1997/11/12 15:52:04  wenger
+# Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+# into the trunk.
+#
 # Revision 1.6.2.1  1997/10/30 20:19:07  wenger
 # Got DEVise to compile, link, and run on sun and linux; compiles but
 # doesn't link on hp (can't find memory mapping functions).  This includes
@@ -39,95 +43,93 @@ depend:
 # DO NOT DELETE
 
 atof.o: /usr/include/stdlib.h /usr/include/features.h
-atof.o: /usr/include/sys/cdefs.h
-atof.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-atof.o: /usr/include/errno.h /usr/include/linux/errno.h
-atof.o: /usr/include/asm/errno.h /usr/include/alloca.h /usr/include/assert.h
-atof.o: /usr/include/ctype.h /usr/include/endian.h /usr/include/bytesex.h
-atof.o: /usr/include/time.h /usr/include/sys/time.h
-atof.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-atof.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-atof.o: /usr/include/linux/time.h /usr/include/sys/types.h
-atof.o: /usr/include/sys/bitypes.h /usr/include/math.h
-atof.o: /usr/include/huge_val.h /usr/include/nan.h
-atof.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
-atof.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
-atof.o: ../graphics/Util.h /usr/include/stdio.h /usr/include/libio.h
-atof.o: /usr/include/_G_config.h /usr/include/string.h
-atof.o: ../graphics/DeviseTypes.h ../graphics/DevStatus.h ../graphics/Exit.h
-http_url.o: /usr/include/stdio.h /usr/include/libio.h
-http_url.o: /usr/include/_G_config.h /usr/include/stdlib.h
-http_url.o: /usr/include/features.h /usr/include/sys/cdefs.h
-http_url.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-http_url.o: /usr/include/errno.h /usr/include/linux/errno.h
-http_url.o: /usr/include/asm/errno.h /usr/include/alloca.h
-http_url.o: /usr/include/unistd.h /usr/include/posix_opt.h
-http_url.o: /usr/include/gnu/types.h /usr/include/confname.h
-http_url.o: /usr/include/sys/types.h /usr/include/linux/types.h
-http_url.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-http_url.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
-http_url.o: /usr/include/string.h ../graphics.new/machdep.h
-http_url.o: /usr/include/limits.h /usr/include/posix1_lim.h
-http_url.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-http_url.o: /usr/include/sys/param.h /usr/include/linux/param.h
-http_url.o: /usr/include/asm/param.h /usr/include/sys/time.h
-http_url.o: /usr/include/linux/time.h /usr/include/time.h
-http_url.o: /usr/include/sys/wait.h /usr/include/waitflags.h
-http_url.o: /usr/include/waitstatus.h /usr/include/endian.h
-http_url.o: /usr/include/bytesex.h /usr/include/sys/ipc.h
-http_url.o: /usr/include/linux/ipc.h /usr/include/sys/shm.h
-http_url.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-http_url.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-http_url.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
-http_url.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
-http_url.o: /usr/include/termios.h /usr/include/linux/termios.h
-http_url.o: /usr/include/asm/termios.h /usr/include/asm/termbits.h
-http_url.o: /usr/include/asm/ioctls.h /usr/include/sys/socketio.h
-http_url.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
-http_url.o: /usr/include/netdb.h /usr/include/paths.h
-http_url.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-http_url.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
-http_url.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-http_url.o: /usr/include/asm/byteorder.h
+atof.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+atof.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+atof.o: /usr/include/sys/types.h /usr/include/bits/types.h
+atof.o: /usr/include/time.h /usr/include/endian.h /usr/include/bits/endian.h
+atof.o: /usr/include/sys/select.h /usr/include/bits/select.h
+atof.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
+atof.o: /usr/include/alloca.h /usr/include/assert.h /usr/include/ctype.h
+atof.o: /usr/include/math.h /usr/include/bits/huge_val.h
+atof.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
+atof.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+atof.o: /usr/include/sys/time.h /usr/include/bits/time.h ../graphics/Util.h
+atof.o: /usr/include/stdio.h
+atof.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+atof.o: /usr/include/libio.h /usr/include/_G_config.h
+atof.o: /usr/include/bits/stdio_lim.h /usr/include/string.h
+atof.o: ../graphics/DeviseTypes.h /usr/include/values.h /usr/include/limits.h
+atof.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+atof.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+atof.o: ../graphics/DevStatus.h ../graphics/Exit.h
+http_url.o: /usr/include/stdio.h /usr/include/features.h
+http_url.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+http_url.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+http_url.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+http_url.o: /usr/include/bits/types.h /usr/include/libio.h
+http_url.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+http_url.o: /usr/include/stdlib.h /usr/include/sys/types.h
+http_url.o: /usr/include/time.h /usr/include/endian.h
+http_url.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+http_url.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+http_url.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h
+http_url.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
+http_url.o: /usr/include/bits/confname.h /usr/include/getopt.h
+http_url.o: /usr/include/string.h /usr/include/errno.h
+http_url.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
+http_url.o: /usr/include/asm/errno.h ../graphics.new/machdep.h
+http_url.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
+http_url.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
+http_url.o: /usr/include/bits/posix2_lim.h /usr/include/sys/param.h
+http_url.o: /usr/include/linux/param.h /usr/include/asm/param.h
+http_url.o: /usr/include/sys/time.h /usr/include/bits/time.h
+http_url.o: /usr/include/sys/wait.h /usr/include/bits/waitflags.h
+http_url.o: /usr/include/bits/waitstatus.h /usr/include/bits/siginfo.h
+http_url.o: /usr/include/sys/ipc.h /usr/include/bits/ipc.h
+http_url.o: /usr/include/sys/shm.h /usr/include/bits/shm.h
+http_url.o: /usr/include/sys/sem.h /usr/include/bits/sem.h
+http_url.o: /usr/include/sys/ioctl.h /usr/include/bits/ioctls.h
+http_url.o: /usr/include/asm/ioctls.h /usr/include/asm/ioctl.h
+http_url.o: /usr/include/bits/ioctl-types.h /usr/include/sys/ttydefaults.h
+http_url.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
+http_url.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
+http_url.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+http_url.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+http_url.o: /usr/include/stdint.h /usr/include/bits/in.h
+http_url.o: /usr/include/bits/byteswap.h
 mk3dstruct.o: /usr/include/math.h /usr/include/features.h
-mk3dstruct.o: /usr/include/sys/cdefs.h /usr/include/huge_val.h
-mk3dstruct.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
-mk3dstruct.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
-mk3dstruct.o: /usr/include/values.h /usr/include/ieee754.h
-mk3dstruct.o: /usr/include/ieee854.h /usr/include/time.h
-mk3dstruct.o: /usr/include/sys/time.h /usr/include/linux/types.h
-mk3dstruct.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-mk3dstruct.o: /usr/include/asm/types.h /usr/include/linux/time.h
-mk3dstruct.o: /usr/include/sys/types.h /usr/include/sys/bitypes.h
-mk3dstruct.o: /usr/include/stdlib.h
-mk3dstruct.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-mk3dstruct.o: /usr/include/errno.h /usr/include/linux/errno.h
-mk3dstruct.o: /usr/include/asm/errno.h /usr/include/alloca.h
+mk3dstruct.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+mk3dstruct.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
+mk3dstruct.o: /usr/include/bits/mathcalls.h
+mk3dstruct.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+mk3dstruct.o: /usr/include/time.h /usr/include/bits/types.h
+mk3dstruct.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+mk3dstruct.o: /usr/include/stdlib.h /usr/include/sys/types.h
+mk3dstruct.o: /usr/include/endian.h /usr/include/bits/endian.h
+mk3dstruct.o: /usr/include/sys/select.h /usr/include/bits/select.h
+mk3dstruct.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
+mk3dstruct.o: /usr/include/alloca.h
 mkbinfile.o: /usr/include/math.h /usr/include/features.h
-mkbinfile.o: /usr/include/sys/cdefs.h /usr/include/huge_val.h
-mkbinfile.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
-mkbinfile.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
-mkbinfile.o: /usr/include/values.h /usr/include/ieee754.h
-mkbinfile.o: /usr/include/ieee854.h /usr/include/time.h
-mkbinfile.o: /usr/include/sys/time.h /usr/include/linux/types.h
-mkbinfile.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-mkbinfile.o: /usr/include/asm/types.h /usr/include/linux/time.h
-mkbinfile.o: /usr/include/sys/types.h /usr/include/sys/bitypes.h
-mkbinfile.o: /usr/include/stdlib.h
-mkbinfile.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-mkbinfile.o: /usr/include/errno.h /usr/include/linux/errno.h
-mkbinfile.o: /usr/include/asm/errno.h /usr/include/alloca.h
+mkbinfile.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+mkbinfile.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
+mkbinfile.o: /usr/include/bits/mathcalls.h
+mkbinfile.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+mkbinfile.o: /usr/include/time.h /usr/include/bits/types.h
+mkbinfile.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+mkbinfile.o: /usr/include/stdlib.h /usr/include/sys/types.h
+mkbinfile.o: /usr/include/endian.h /usr/include/bits/endian.h
+mkbinfile.o: /usr/include/sys/select.h /usr/include/bits/select.h
+mkbinfile.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
+mkbinfile.o: /usr/include/alloca.h
 mkparfile.o: /usr/include/math.h /usr/include/features.h
-mkparfile.o: /usr/include/sys/cdefs.h /usr/include/huge_val.h
-mkparfile.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
-mkparfile.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
-mkparfile.o: /usr/include/values.h /usr/include/ieee754.h
-mkparfile.o: /usr/include/ieee854.h /usr/include/time.h
-mkparfile.o: /usr/include/sys/time.h /usr/include/linux/types.h
-mkparfile.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-mkparfile.o: /usr/include/asm/types.h /usr/include/linux/time.h
-mkparfile.o: /usr/include/sys/types.h /usr/include/sys/bitypes.h
-mkparfile.o: /usr/include/stdlib.h
-mkparfile.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-mkparfile.o: /usr/include/errno.h /usr/include/linux/errno.h
-mkparfile.o: /usr/include/asm/errno.h /usr/include/alloca.h
+mkparfile.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+mkparfile.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
+mkparfile.o: /usr/include/bits/mathcalls.h
+mkparfile.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+mkparfile.o: /usr/include/time.h /usr/include/bits/types.h
+mkparfile.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+mkparfile.o: /usr/include/stdlib.h /usr/include/sys/types.h
+mkparfile.o: /usr/include/endian.h /usr/include/bits/endian.h
+mkparfile.o: /usr/include/sys/select.h /usr/include/bits/select.h
+mkparfile.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
+mkparfile.o: /usr/include/alloca.h

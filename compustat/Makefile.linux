@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.7  1997/11/12 15:44:03  wenger
+# Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+# into the trunk.
+#
 # Revision 1.6.2.1  1997/10/30 20:14:38  wenger
 # Got DEVise to compile, link, and run on sun and linux; compiles but
 # doesn't link on hp (can't find memory mapping functions).  This includes
@@ -38,108 +42,104 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-compustat.o: /usr/include/stdio.h /usr/include/libio.h
-compustat.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
-compustat.o: /usr/include/stdlib.h /usr/include/features.h
-compustat.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-compustat.o: /usr/include/errno.h /usr/include/linux/errno.h
-compustat.o: /usr/include/asm/errno.h /usr/include/alloca.h
-compustat.o: /usr/include/string.h /usr/include/ctype.h /usr/include/endian.h
-compustat.o: /usr/include/bytesex.h /usr/include/unistd.h
-compustat.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
-compustat.o: /usr/include/confname.h /usr/include/sys/types.h
-compustat.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-compustat.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-compustat.o: /usr/include/sys/bitypes.h /usr/include/tcl/tcl.h
-compustat.o: /usr/include/tcl/tk.h /usr/include/X11/Xlib.h
-compustat.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
-compustat.o: /usr/include/X11/Xosdefs.h compustat.h index.h
-compustat.o: ../tape/tapedrive.h ../graphics.new/machdep.h
-compustat.o: /usr/include/limits.h /usr/include/posix1_lim.h
-compustat.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+compustat.o: /usr/include/stdio.h /usr/include/features.h
+compustat.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+compustat.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+compustat.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+compustat.o: /usr/include/bits/types.h /usr/include/libio.h
+compustat.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+compustat.o: /usr/include/stdlib.h /usr/include/sys/types.h
+compustat.o: /usr/include/time.h /usr/include/endian.h
+compustat.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+compustat.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+compustat.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h
+compustat.o: /usr/include/string.h /usr/include/ctype.h /usr/include/unistd.h
+compustat.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
+compustat.o: /usr/include/getopt.h /usr/include/tcl.h /usr/include/tk.h
+compustat.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+compustat.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+compustat.o: compustat.h index.h ../tape/tapedrive.h
+compustat.o: ../graphics.new/machdep.h /usr/include/limits.h
+compustat.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+compustat.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
 compustat.o: /usr/include/sys/param.h /usr/include/linux/param.h
 compustat.o: /usr/include/asm/param.h /usr/include/sys/time.h
-compustat.o: /usr/include/linux/time.h /usr/include/time.h
-compustat.o: /usr/include/sys/wait.h /usr/include/waitflags.h
-compustat.o: /usr/include/waitstatus.h /usr/include/sys/ipc.h
-compustat.o: /usr/include/linux/ipc.h /usr/include/sys/shm.h
-compustat.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-compustat.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-compustat.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
-compustat.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
-compustat.o: /usr/include/termios.h /usr/include/linux/termios.h
-compustat.o: /usr/include/asm/termios.h /usr/include/asm/termbits.h
-compustat.o: /usr/include/asm/ioctls.h /usr/include/sys/socketio.h
-compustat.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
-compustat.o: /usr/include/netdb.h /usr/include/paths.h
-compustat.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-compustat.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
-compustat.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-compustat.o: /usr/include/asm/byteorder.h
-index.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-index.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
-index.o: /usr/include/features.h
-index.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-index.o: /usr/include/errno.h /usr/include/linux/errno.h
-index.o: /usr/include/asm/errno.h /usr/include/alloca.h /usr/include/string.h
-index.o: /usr/include/ctype.h /usr/include/endian.h /usr/include/bytesex.h
-index.o: /usr/include/unistd.h /usr/include/posix_opt.h
-index.o: /usr/include/gnu/types.h /usr/include/confname.h
-index.o: /usr/include/sys/types.h /usr/include/linux/types.h
-index.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-index.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h index.h
+compustat.o: /usr/include/bits/time.h /usr/include/sys/wait.h
+compustat.o: /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h
+compustat.o: /usr/include/bits/siginfo.h /usr/include/sys/ipc.h
+compustat.o: /usr/include/bits/ipc.h /usr/include/sys/shm.h
+compustat.o: /usr/include/bits/shm.h /usr/include/sys/sem.h
+compustat.o: /usr/include/bits/sem.h /usr/include/sys/ioctl.h
+compustat.o: /usr/include/bits/ioctls.h /usr/include/asm/ioctls.h
+compustat.o: /usr/include/asm/ioctl.h /usr/include/bits/ioctl-types.h
+compustat.o: /usr/include/sys/ttydefaults.h /usr/include/netdb.h
+compustat.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
+compustat.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
+compustat.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+compustat.o: /usr/include/netinet/in.h /usr/include/stdint.h
+compustat.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+index.o: /usr/include/stdio.h /usr/include/features.h
+index.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+index.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+index.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+index.o: /usr/include/bits/types.h /usr/include/libio.h
+index.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+index.o: /usr/include/stdlib.h /usr/include/sys/types.h /usr/include/time.h
+index.o: /usr/include/endian.h /usr/include/bits/endian.h
+index.o: /usr/include/sys/select.h /usr/include/bits/select.h
+index.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
+index.o: /usr/include/alloca.h /usr/include/string.h /usr/include/ctype.h
+index.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
+index.o: /usr/include/bits/confname.h /usr/include/getopt.h index.h
 index.o: ../tape/tapedrive.h ../graphics.new/machdep.h /usr/include/limits.h
-index.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-index.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
-index.o: /usr/include/linux/param.h /usr/include/asm/param.h
-index.o: /usr/include/sys/time.h /usr/include/linux/time.h
-index.o: /usr/include/time.h /usr/include/sys/wait.h /usr/include/waitflags.h
-index.o: /usr/include/waitstatus.h /usr/include/sys/ipc.h
-index.o: /usr/include/linux/ipc.h /usr/include/sys/shm.h
-index.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-index.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-index.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
-index.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
-index.o: /usr/include/termios.h /usr/include/linux/termios.h
-index.o: /usr/include/asm/termios.h /usr/include/asm/termbits.h
-index.o: /usr/include/asm/ioctls.h /usr/include/sys/socketio.h
-index.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
-index.o: /usr/include/netdb.h /usr/include/paths.h /usr/include/sys/socket.h
-index.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-index.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-index.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
-project.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-project.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
-project.o: /usr/include/features.h
-project.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-project.o: /usr/include/errno.h /usr/include/linux/errno.h
-project.o: /usr/include/asm/errno.h /usr/include/alloca.h
-project.o: /usr/include/string.h /usr/include/ctype.h /usr/include/endian.h
-project.o: /usr/include/bytesex.h /usr/include/unistd.h
-project.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
-project.o: /usr/include/confname.h /usr/include/sys/types.h
-project.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-project.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-project.o: /usr/include/sys/bitypes.h /usr/include/assert.h compustat.h
-project.o: index.h ../tape/tapedrive.h ../graphics.new/machdep.h
-project.o: /usr/include/limits.h /usr/include/posix1_lim.h
-project.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+index.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+index.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+index.o: /usr/include/sys/param.h /usr/include/linux/param.h
+index.o: /usr/include/asm/param.h /usr/include/sys/time.h
+index.o: /usr/include/bits/time.h /usr/include/sys/wait.h
+index.o: /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h
+index.o: /usr/include/bits/siginfo.h /usr/include/sys/ipc.h
+index.o: /usr/include/bits/ipc.h /usr/include/sys/shm.h
+index.o: /usr/include/bits/shm.h /usr/include/sys/sem.h
+index.o: /usr/include/bits/sem.h /usr/include/sys/ioctl.h
+index.o: /usr/include/bits/ioctls.h /usr/include/asm/ioctls.h
+index.o: /usr/include/asm/ioctl.h /usr/include/bits/ioctl-types.h
+index.o: /usr/include/sys/ttydefaults.h /usr/include/netdb.h
+index.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
+index.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
+index.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+index.o: /usr/include/netinet/in.h /usr/include/stdint.h
+index.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+project.o: /usr/include/stdio.h /usr/include/features.h
+project.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+project.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+project.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+project.o: /usr/include/bits/types.h /usr/include/libio.h
+project.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+project.o: /usr/include/stdlib.h /usr/include/sys/types.h /usr/include/time.h
+project.o: /usr/include/endian.h /usr/include/bits/endian.h
+project.o: /usr/include/sys/select.h /usr/include/bits/select.h
+project.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
+project.o: /usr/include/alloca.h /usr/include/string.h /usr/include/ctype.h
+project.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
+project.o: /usr/include/bits/confname.h /usr/include/getopt.h
+project.o: /usr/include/assert.h compustat.h index.h ../tape/tapedrive.h
+project.o: ../graphics.new/machdep.h /usr/include/limits.h
+project.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+project.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
 project.o: /usr/include/sys/param.h /usr/include/linux/param.h
 project.o: /usr/include/asm/param.h /usr/include/sys/time.h
-project.o: /usr/include/linux/time.h /usr/include/time.h
-project.o: /usr/include/sys/wait.h /usr/include/waitflags.h
-project.o: /usr/include/waitstatus.h /usr/include/sys/ipc.h
-project.o: /usr/include/linux/ipc.h /usr/include/sys/shm.h
-project.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-project.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-project.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
-project.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
-project.o: /usr/include/termios.h /usr/include/linux/termios.h
-project.o: /usr/include/asm/termios.h /usr/include/asm/termbits.h
-project.o: /usr/include/asm/ioctls.h /usr/include/sys/socketio.h
-project.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
-project.o: /usr/include/netdb.h /usr/include/paths.h
-project.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-project.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
-project.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-project.o: /usr/include/asm/byteorder.h
+project.o: /usr/include/bits/time.h /usr/include/sys/wait.h
+project.o: /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h
+project.o: /usr/include/bits/siginfo.h /usr/include/sys/ipc.h
+project.o: /usr/include/bits/ipc.h /usr/include/sys/shm.h
+project.o: /usr/include/bits/shm.h /usr/include/sys/sem.h
+project.o: /usr/include/bits/sem.h /usr/include/sys/ioctl.h
+project.o: /usr/include/bits/ioctls.h /usr/include/asm/ioctls.h
+project.o: /usr/include/asm/ioctl.h /usr/include/bits/ioctl-types.h
+project.o: /usr/include/sys/ttydefaults.h /usr/include/netdb.h
+project.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
+project.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
+project.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+project.o: /usr/include/netinet/in.h /usr/include/stdint.h
+project.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h

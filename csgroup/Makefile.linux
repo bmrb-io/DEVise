@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.11  1998/06/30 19:12:19  wenger
+# Got DEVise to compile on linux again.
+#
 # Revision 1.10  1998/05/08 14:00:17  wenger
 # Updated Linux dependencies.
 #
@@ -66,538 +69,528 @@ depend:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 Csprotocols.o: /usr/include/string.h /usr/include/features.h
-Csprotocols.o: /usr/include/sys/cdefs.h
-Csprotocols.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-Csprotocols.o: /usr/include/stdlib.h /usr/include/errno.h
-Csprotocols.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+Csprotocols.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+Csprotocols.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+Csprotocols.o: /usr/include/stdlib.h /usr/include/sys/types.h
+Csprotocols.o: /usr/include/bits/types.h /usr/include/time.h
+Csprotocols.o: /usr/include/endian.h /usr/include/bits/endian.h
+Csprotocols.o: /usr/include/sys/select.h /usr/include/bits/select.h
+Csprotocols.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
 Csprotocols.o: /usr/include/alloca.h /usr/include/stdio.h
-Csprotocols.o: /usr/include/libio.h /usr/include/_G_config.h Csprotocols.h
-Csprotocols.o: /usr/include/sys/types.h /usr/include/linux/types.h
-Csprotocols.o: /usr/include/linux/posix_types.h
-Csprotocols.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-Csprotocols.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
-Csprotocols.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-Csprotocols.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
-Csprotocols.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-Csprotocols.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
-Csprotocols.o: /usr/include/arpa/inet.h /usr/include/sys/param.h
-Csprotocols.o: /usr/include/limits.h /usr/include/posix1_lim.h
-Csprotocols.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-Csprotocols.o: /usr/include/linux/param.h /usr/include/asm/param.h
-Csprotocols.o: /usr/include/netdb.h /usr/include/paths.h
-Csprotocols.o: /usr/include/sys/varargs.h
-Csprotocols.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
-callBks.o: callBks.h error.h /usr/include/sys/varargs.h
-callBks.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
-callBks.o: CollabTypes.h /usr/include/sys/types.h /usr/include/linux/types.h
-callBks.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-callBks.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
-callBks.o: /usr/include/sys/socket.h /usr/include/features.h
-callBks.o: /usr/include/sys/cdefs.h /usr/include/linux/socket.h
+Csprotocols.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+Csprotocols.o: /usr/include/libio.h /usr/include/_G_config.h
+Csprotocols.o: /usr/include/bits/stdio_lim.h Csprotocols.h
+Csprotocols.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
+Csprotocols.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+Csprotocols.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+Csprotocols.o: /usr/include/stdint.h /usr/include/bits/in.h
+Csprotocols.o: /usr/include/bits/byteswap.h /usr/include/arpa/inet.h
+Csprotocols.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
+callBks.o: callBks.h error.h CollabTypes.h /usr/include/sys/types.h
+callBks.o: /usr/include/features.h /usr/include/sys/cdefs.h
+callBks.o: /usr/include/gnu/stubs.h /usr/include/bits/types.h
+callBks.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+callBks.o: /usr/include/time.h /usr/include/endian.h
+callBks.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+callBks.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+callBks.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
+callBks.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
 callBks.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-callBks.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
-callBks.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-callBks.o: /usr/include/asm/byteorder.h ctrlMsg.h
-codec.o: /usr/include/sys/uio.h /usr/include/features.h
-codec.o: /usr/include/sys/cdefs.h
-codec.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-codec.o: /usr/include/unistd.h /usr/include/posix_opt.h
-codec.o: /usr/include/gnu/types.h /usr/include/confname.h
-codec.o: /usr/include/sys/types.h /usr/include/linux/types.h
-codec.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-codec.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
-codec.o: /usr/include/errno.h /usr/include/linux/errno.h
-codec.o: /usr/include/asm/errno.h codec.h /usr/include/sys/varargs.h
-codec.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
+callBks.o: /usr/include/netinet/in.h /usr/include/stdint.h
+callBks.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h ctrlMsg.h
+codec.o: /usr/include/sys/types.h /usr/include/features.h
+codec.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+codec.o: /usr/include/bits/types.h
+codec.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+codec.o: /usr/include/time.h /usr/include/endian.h /usr/include/bits/endian.h
+codec.o: /usr/include/sys/select.h /usr/include/bits/select.h
+codec.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
+codec.o: /usr/include/sys/uio.h /usr/include/bits/uio.h /usr/include/unistd.h
+codec.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
+codec.o: /usr/include/getopt.h /usr/include/errno.h /usr/include/bits/errno.h
+codec.o: /usr/include/linux/errno.h /usr/include/asm/errno.h codec.h
 codec.o: /usr/include/assert.h
-colbr.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-colbr.o: /usr/include/strings.h /usr/include/string.h /usr/include/features.h
-colbr.o: /usr/include/sys/cdefs.h
-colbr.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-colbr.o: /usr/include/stdlib.h /usr/include/errno.h
+colbr.o: /usr/include/stdio.h /usr/include/features.h
+colbr.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+colbr.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+colbr.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+colbr.o: /usr/include/bits/types.h /usr/include/libio.h
+colbr.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+colbr.o: /usr/include/strings.h /usr/include/stdlib.h
+colbr.o: /usr/include/sys/types.h /usr/include/time.h /usr/include/endian.h
+colbr.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+colbr.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+colbr.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h
+colbr.o: /usr/include/errno.h /usr/include/bits/errno.h
 colbr.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-colbr.o: /usr/include/alloca.h /usr/include/sys/time.h
-colbr.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-colbr.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-colbr.o: /usr/include/linux/time.h /usr/include/time.h
-colbr.o: /usr/include/sys/types.h /usr/include/sys/bitypes.h
-colbr.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-colbr.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-colbr.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
-colbr.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-colbr.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
+colbr.o: /usr/include/sys/time.h /usr/include/bits/time.h
+colbr.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
+colbr.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+colbr.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+colbr.o: /usr/include/stdint.h /usr/include/bits/in.h
+colbr.o: /usr/include/bits/byteswap.h /usr/include/arpa/inet.h
 colbr.o: /usr/include/sys/param.h /usr/include/limits.h
-colbr.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-colbr.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
-colbr.o: /usr/include/asm/param.h /usr/include/netdb.h /usr/include/paths.h
-colbr.o: error.h /usr/include/sys/varargs.h
-colbr.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h colbr.h
-colbr.o: dbase.h htable.h bucket.h entry.h datum.h queue.h queueElem.h
-colbr.o: CollabTypes.h logfns.h log.h colbrLog.h sndMsg.h timeOut.h netfns.h
-colbr.o: /usr/include/unistd.h /usr/include/posix_opt.h
-colbr.o: /usr/include/gnu/types.h /usr/include/confname.h serverInterface.h
-colbr.o: prnfns.h ctrlMsg.h Csprotocols.h
-error.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-error.o: error.h /usr/include/sys/varargs.h
-error.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
-logfns.o: /usr/include/sys/types.h /usr/include/linux/types.h
-logfns.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-logfns.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
-logfns.o: /usr/include/sys/stat.h /usr/include/features.h
-logfns.o: /usr/include/sys/cdefs.h /usr/include/linux/stat.h
-logfns.o: /usr/include/fcntl.h /usr/include/gnu/types.h
-logfns.o: /usr/include/linux/fcntl.h /usr/include/asm/fcntl.h
-logfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h
-logfns.o: /usr/include/unistd.h /usr/include/posix_opt.h
-logfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-logfns.o: /usr/include/confname.h colbrLog.h log.h /usr/include/stdio.h
-logfns.o: /usr/include/libio.h /usr/include/_G_config.h /usr/include/string.h
-logfns.o: colbr.h /usr/include/sys/socket.h /usr/include/linux/socket.h
-logfns.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-logfns.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
-logfns.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-logfns.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
-logfns.o: /usr/include/sys/param.h /usr/include/limits.h
-logfns.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-logfns.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
-logfns.o: /usr/include/asm/param.h dbase.h htable.h bucket.h entry.h datum.h
-logfns.o: queue.h queueElem.h CollabTypes.h logfns.h
-netfns.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-netfns.o: /usr/include/stdlib.h /usr/include/features.h
-netfns.o: /usr/include/sys/cdefs.h
-netfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-netfns.o: /usr/include/errno.h /usr/include/linux/errno.h
-netfns.o: /usr/include/asm/errno.h /usr/include/alloca.h
-netfns.o: /usr/include/string.h /usr/include/sys/time.h
-netfns.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-netfns.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-netfns.o: /usr/include/linux/time.h /usr/include/time.h
-netfns.o: /usr/include/sys/types.h /usr/include/sys/bitypes.h
-netfns.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
-netfns.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-netfns.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
-netfns.o: /usr/include/linux/uio.h /usr/include/linux/in.h
-netfns.o: /usr/include/asm/byteorder.h /usr/include/netdb.h
-netfns.o: /usr/include/paths.h netfns.h /usr/include/unistd.h
-netfns.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
-netfns.o: /usr/include/confname.h error.h /usr/include/sys/varargs.h
-netfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
+colbr.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+colbr.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+colbr.o: /usr/include/linux/param.h /usr/include/asm/param.h
+colbr.o: /usr/include/netdb.h /usr/include/rpc/netdb.h error.h colbr.h
+colbr.o: /usr/include/string.h dbase.h htable.h bucket.h entry.h datum.h
+colbr.o: queue.h queueElem.h CollabTypes.h logfns.h log.h colbrLog.h sndMsg.h
+colbr.o: timeOut.h netfns.h /usr/include/unistd.h
+colbr.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
+colbr.o: /usr/include/getopt.h serverInterface.h prnfns.h ctrlMsg.h
+colbr.o: Csprotocols.h
+error.o: /usr/include/stdio.h /usr/include/features.h
+error.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+error.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+error.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+error.o: /usr/include/bits/types.h /usr/include/libio.h
+error.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h error.h
+logfns.o: /usr/include/sys/types.h /usr/include/features.h
+logfns.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+logfns.o: /usr/include/bits/types.h
+logfns.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+logfns.o: /usr/include/time.h /usr/include/endian.h
+logfns.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+logfns.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+logfns.o: /usr/include/sys/sysmacros.h /usr/include/sys/stat.h
+logfns.o: /usr/include/bits/stat.h /usr/include/fcntl.h
+logfns.o: /usr/include/bits/fcntl.h
+logfns.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+logfns.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
+logfns.o: /usr/include/bits/confname.h /usr/include/getopt.h colbrLog.h log.h
+logfns.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+logfns.o: /usr/include/bits/stdio_lim.h /usr/include/string.h colbr.h
+logfns.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
+logfns.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+logfns.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+logfns.o: /usr/include/stdint.h /usr/include/bits/in.h
+logfns.o: /usr/include/bits/byteswap.h /usr/include/arpa/inet.h dbase.h
+logfns.o: htable.h bucket.h entry.h datum.h queue.h queueElem.h CollabTypes.h
+logfns.o: logfns.h
+netfns.o: /usr/include/sys/types.h /usr/include/features.h
+netfns.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+netfns.o: /usr/include/bits/types.h
+netfns.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+netfns.o: /usr/include/time.h /usr/include/endian.h
+netfns.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+netfns.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+netfns.o: /usr/include/sys/sysmacros.h /usr/include/stdio.h
+netfns.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+netfns.o: /usr/include/libio.h /usr/include/_G_config.h
+netfns.o: /usr/include/bits/stdio_lim.h /usr/include/stdlib.h
+netfns.o: /usr/include/alloca.h /usr/include/string.h /usr/include/errno.h
+netfns.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
+netfns.o: /usr/include/asm/errno.h /usr/include/sys/time.h
+netfns.o: /usr/include/bits/time.h /usr/include/netinet/in.h
+netfns.o: /usr/include/stdint.h /usr/include/bits/socket.h
+netfns.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+netfns.o: /usr/include/asm/sockios.h /usr/include/bits/in.h
+netfns.o: /usr/include/bits/byteswap.h /usr/include/netdb.h
+netfns.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h netfns.h
+netfns.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
+netfns.o: /usr/include/bits/confname.h /usr/include/getopt.h error.h
 prnfns.o: /usr/include/stdlib.h /usr/include/features.h
-prnfns.o: /usr/include/sys/cdefs.h
-prnfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-prnfns.o: /usr/include/errno.h /usr/include/linux/errno.h
-prnfns.o: /usr/include/asm/errno.h /usr/include/alloca.h prnfns.h
-prnfns.o: /usr/include/sys/varargs.h
-prnfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h CollabTypes.h
-prnfns.o: /usr/include/sys/types.h /usr/include/linux/types.h
-prnfns.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-prnfns.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
-prnfns.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-prnfns.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-prnfns.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
-prnfns.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-prnfns.o: /usr/include/asm/byteorder.h serverInterface.h colbr.h
-prnfns.o: /usr/include/string.h /usr/include/arpa/inet.h
-prnfns.o: /usr/include/sys/param.h /usr/include/limits.h
-prnfns.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-prnfns.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
-prnfns.o: /usr/include/asm/param.h dbase.h htable.h bucket.h entry.h datum.h
-prnfns.o: queue.h queueElem.h Csprotocols.h /usr/include/netdb.h
-prnfns.o: /usr/include/paths.h
-rcvMsg.o: /usr/include/sys/types.h /usr/include/linux/types.h
-rcvMsg.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-rcvMsg.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
-rcvMsg.o: /usr/include/sys/socket.h /usr/include/features.h
-rcvMsg.o: /usr/include/sys/cdefs.h /usr/include/linux/socket.h
+prnfns.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+prnfns.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+prnfns.o: /usr/include/sys/types.h /usr/include/bits/types.h
+prnfns.o: /usr/include/time.h /usr/include/endian.h
+prnfns.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+prnfns.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+prnfns.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h prnfns.h
+prnfns.o: CollabTypes.h /usr/include/sys/socket.h /usr/include/bits/socket.h
+prnfns.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+prnfns.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+prnfns.o: /usr/include/stdint.h /usr/include/bits/in.h
+prnfns.o: /usr/include/bits/byteswap.h serverInterface.h colbr.h
+prnfns.o: /usr/include/string.h /usr/include/arpa/inet.h dbase.h htable.h
+prnfns.o: bucket.h entry.h datum.h queue.h queueElem.h Csprotocols.h
+prnfns.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
+rcvMsg.o: /usr/include/sys/types.h /usr/include/features.h
+rcvMsg.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+rcvMsg.o: /usr/include/bits/types.h
+rcvMsg.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+rcvMsg.o: /usr/include/time.h /usr/include/endian.h
+rcvMsg.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+rcvMsg.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+rcvMsg.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
+rcvMsg.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
 rcvMsg.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-rcvMsg.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
-rcvMsg.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-rcvMsg.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
-rcvMsg.o: /usr/include/sys/param.h /usr/include/limits.h
-rcvMsg.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-rcvMsg.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
-rcvMsg.o: /usr/include/asm/param.h /usr/include/strings.h
-rcvMsg.o: /usr/include/string.h
-rcvMsg.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-rcvMsg.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/endian.h
-rcvMsg.o: /usr/include/bytesex.h /usr/include/nan.h
-rcvMsg.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
-rcvMsg.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
-rcvMsg.o: /usr/include/unistd.h /usr/include/posix_opt.h
-rcvMsg.o: /usr/include/gnu/types.h /usr/include/confname.h
-rcvMsg.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
-rcvMsg.o: /usr/include/fcntl.h /usr/include/linux/fcntl.h
-rcvMsg.o: /usr/include/asm/fcntl.h /usr/include/sys/time.h
-rcvMsg.o: /usr/include/linux/time.h /usr/include/time.h rcvMsg.h codec.h
-rcvMsg.o: /usr/include/sys/varargs.h
-rcvMsg.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
-rcvMsg.o: serverInterface.h colbr.h dbase.h htable.h bucket.h entry.h datum.h
-rcvMsg.o: queue.h queueElem.h CollabTypes.h callBks.h error.h ctrlMsg.h
-rcvMsg.o: netfns.h timeOut.h ckptfile.h /usr/include/stdio.h
+rcvMsg.o: /usr/include/netinet/in.h /usr/include/stdint.h
+rcvMsg.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+rcvMsg.o: /usr/include/arpa/inet.h /usr/include/strings.h /usr/include/math.h
+rcvMsg.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
+rcvMsg.o: /usr/include/bits/mathcalls.h
+rcvMsg.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+rcvMsg.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
+rcvMsg.o: /usr/include/bits/confname.h /usr/include/getopt.h
+rcvMsg.o: /usr/include/sys/stat.h /usr/include/bits/stat.h
+rcvMsg.o: /usr/include/fcntl.h /usr/include/bits/fcntl.h
+rcvMsg.o: /usr/include/sys/time.h /usr/include/bits/time.h rcvMsg.h codec.h
+rcvMsg.o: serverInterface.h colbr.h /usr/include/string.h dbase.h htable.h
+rcvMsg.o: bucket.h entry.h datum.h queue.h queueElem.h CollabTypes.h
+rcvMsg.o: callBks.h error.h ctrlMsg.h netfns.h timeOut.h ckptfile.h
+rcvMsg.o: /usr/include/stdio.h
+rcvMsg.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
 rcvMsg.o: /usr/include/libio.h /usr/include/_G_config.h
+rcvMsg.o: /usr/include/bits/stdio_lim.h
 server_clnt.o: server.h CollabTypes.h /usr/include/sys/types.h
-server_clnt.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-server_clnt.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-server_clnt.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
 server_clnt.o: /usr/include/features.h /usr/include/sys/cdefs.h
-server_clnt.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-server_clnt.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
-server_clnt.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-server_clnt.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h codec.h
-server_clnt.o: /usr/include/sys/varargs.h
-server_clnt.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
-server_locfns.o: /usr/include/stdio.h /usr/include/libio.h
-server_locfns.o: /usr/include/_G_config.h /usr/include/strings.h
-server_locfns.o: /usr/include/string.h /usr/include/features.h
-server_locfns.o: /usr/include/sys/cdefs.h
-server_locfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-server_locfns.o: /usr/include/sys/types.h /usr/include/linux/types.h
-server_locfns.o: /usr/include/linux/posix_types.h
-server_locfns.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-server_locfns.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
-server_locfns.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-server_locfns.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
-server_locfns.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-server_locfns.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
-server_locfns.o: /usr/include/arpa/inet.h /usr/include/sys/param.h
-server_locfns.o: /usr/include/limits.h /usr/include/posix1_lim.h
-server_locfns.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-server_locfns.o: /usr/include/linux/param.h /usr/include/asm/param.h
-server_locfns.o: /usr/include/netdb.h /usr/include/paths.h
-server_locfns.o: /usr/include/errno.h /usr/include/linux/errno.h
+server_clnt.o: /usr/include/gnu/stubs.h /usr/include/bits/types.h
+server_clnt.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+server_clnt.o: /usr/include/time.h /usr/include/endian.h
+server_clnt.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+server_clnt.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+server_clnt.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
+server_clnt.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
+server_clnt.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+server_clnt.o: /usr/include/netinet/in.h /usr/include/stdint.h
+server_clnt.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h codec.h
+server_locfns.o: /usr/include/stdio.h /usr/include/features.h
+server_locfns.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+server_locfns.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+server_locfns.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+server_locfns.o: /usr/include/bits/types.h /usr/include/libio.h
+server_locfns.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+server_locfns.o: /usr/include/strings.h /usr/include/sys/types.h
+server_locfns.o: /usr/include/time.h /usr/include/endian.h
+server_locfns.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+server_locfns.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+server_locfns.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
+server_locfns.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
+server_locfns.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+server_locfns.o: /usr/include/netinet/in.h /usr/include/stdint.h
+server_locfns.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+server_locfns.o: /usr/include/arpa/inet.h /usr/include/netdb.h
+server_locfns.o: /usr/include/rpc/netdb.h /usr/include/errno.h
+server_locfns.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
 server_locfns.o: /usr/include/asm/errno.h /usr/include/sys/wait.h
-server_locfns.o: /usr/include/gnu/types.h /usr/include/waitflags.h
-server_locfns.o: /usr/include/waitstatus.h /usr/include/endian.h
-server_locfns.o: /usr/include/bytesex.h /usr/include/signal.h
-server_locfns.o: /usr/include/linux/signal.h /usr/include/asm/signal.h
-server_locfns.o: /usr/include/sys/time.h /usr/include/linux/time.h
-server_locfns.o: /usr/include/time.h /usr/include/stdlib.h
-server_locfns.o: /usr/include/alloca.h /usr/include/unistd.h
-server_locfns.o: /usr/include/posix_opt.h /usr/include/confname.h error.h
-server_locfns.o: /usr/include/sys/varargs.h
-server_locfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
+server_locfns.o: /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h
+server_locfns.o: /usr/include/bits/siginfo.h /usr/include/signal.h
+server_locfns.o: /usr/include/bits/signum.h /usr/include/bits/sigaction.h
+server_locfns.o: /usr/include/bits/sigcontext.h /usr/include/asm/sigcontext.h
+server_locfns.o: /usr/include/bits/sigstack.h /usr/include/sys/time.h
+server_locfns.o: /usr/include/bits/time.h /usr/include/string.h
+server_locfns.o: /usr/include/stdlib.h /usr/include/alloca.h
+server_locfns.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
+server_locfns.o: /usr/include/bits/confname.h /usr/include/getopt.h error.h
 server_locfns.o: serverInterface.h colbr.h dbase.h htable.h bucket.h entry.h
 server_locfns.o: datum.h queue.h queueElem.h CollabTypes.h server.h sigfns.h
 server_locfns.o: servdb.h timeOut.h netfns.h ../graphics/Init.h
 server_locfns.o: ../graphics/DeviseTypes.h /usr/include/values.h
+server_locfns.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
+server_locfns.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
+server_locfns.o: /usr/include/bits/posix2_lim.h
+server_locfns.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 server_locfns.o: ../graphics/DevStatus.h ../graphics/BufPolicy.h Server.h
 server_locfns.o: ../graphics/Dispatcher.h ../graphics/DList.h
 server_locfns.o: ../graphics/Exit.h ../graphics/Journal.h
 server_locfns.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
 server_locfns.o: CmdDescriptor.h CmdSerialize.h ckptfile.h
-server_rmtfns.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
-server_rmtfns.o: /usr/include/asm/ioctl.h /usr/include/features.h
-server_rmtfns.o: /usr/include/sys/cdefs.h /usr/include/termios.h
-server_rmtfns.o: /usr/include/sys/types.h /usr/include/linux/types.h
-server_rmtfns.o: /usr/include/linux/posix_types.h
-server_rmtfns.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-server_rmtfns.o: /usr/include/sys/bitypes.h /usr/include/linux/termios.h
-server_rmtfns.o: /usr/include/asm/termios.h /usr/include/asm/termbits.h
-server_rmtfns.o: /usr/include/asm/ioctls.h /usr/include/sys/socketio.h
-server_rmtfns.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
-server_rmtfns.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-server_rmtfns.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
-server_rmtfns.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-server_rmtfns.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
-server_rmtfns.o: /usr/include/sys/param.h /usr/include/limits.h
-server_rmtfns.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-server_rmtfns.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
-server_rmtfns.o: /usr/include/asm/param.h /usr/include/errno.h
-server_rmtfns.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-server_rmtfns.o: /usr/include/sys/time.h /usr/include/linux/time.h
-server_rmtfns.o: /usr/include/time.h /usr/include/string.h
-server_rmtfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-server_rmtfns.o: /usr/include/unistd.h /usr/include/posix_opt.h
-server_rmtfns.o: /usr/include/gnu/types.h /usr/include/confname.h error.h
-server_rmtfns.o: /usr/include/sys/varargs.h
-server_rmtfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
+server_rmtfns.o: /usr/include/sys/ioctl.h /usr/include/features.h
+server_rmtfns.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+server_rmtfns.o: /usr/include/bits/ioctls.h /usr/include/asm/ioctls.h
+server_rmtfns.o: /usr/include/asm/ioctl.h /usr/include/bits/ioctl-types.h
+server_rmtfns.o: /usr/include/sys/ttydefaults.h /usr/include/sys/types.h
+server_rmtfns.o: /usr/include/bits/types.h
+server_rmtfns.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+server_rmtfns.o: /usr/include/time.h /usr/include/endian.h
+server_rmtfns.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+server_rmtfns.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+server_rmtfns.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
+server_rmtfns.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
+server_rmtfns.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+server_rmtfns.o: /usr/include/netinet/in.h /usr/include/stdint.h
+server_rmtfns.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+server_rmtfns.o: /usr/include/arpa/inet.h /usr/include/errno.h
+server_rmtfns.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
+server_rmtfns.o: /usr/include/asm/errno.h /usr/include/sys/time.h
+server_rmtfns.o: /usr/include/bits/time.h /usr/include/string.h
+server_rmtfns.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
+server_rmtfns.o: /usr/include/bits/confname.h /usr/include/getopt.h error.h
 server_rmtfns.o: queue.h queueElem.h datum.h server.h CollabTypes.h colbr.h
 server_rmtfns.o: dbase.h htable.h bucket.h entry.h colbrLog.h log.h
-server_rmtfns.o: /usr/include/stdio.h /usr/include/libio.h
-server_rmtfns.o: /usr/include/_G_config.h serverInterface.h sndMsg.h prnfns.h
-server_rmtfns.o: Csprotocols.h /usr/include/netdb.h /usr/include/paths.h
-server_rmtfns.o: ctrlMsg.h
+server_rmtfns.o: /usr/include/stdio.h
+server_rmtfns.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+server_rmtfns.o: /usr/include/libio.h /usr/include/_G_config.h
+server_rmtfns.o: /usr/include/bits/stdio_lim.h serverInterface.h sndMsg.h
+server_rmtfns.o: prnfns.h Csprotocols.h /usr/include/netdb.h
+server_rmtfns.o: /usr/include/rpc/netdb.h ctrlMsg.h
 server_serv.o: server.h CollabTypes.h /usr/include/sys/types.h
-server_serv.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-server_serv.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-server_serv.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
 server_serv.o: /usr/include/features.h /usr/include/sys/cdefs.h
-server_serv.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-server_serv.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
-server_serv.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-server_serv.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h codec.h
-server_serv.o: /usr/include/sys/varargs.h
-server_serv.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h sndMsg.h
-server_serv.o: ctrlMsg.h /usr/include/stdio.h /usr/include/libio.h
-server_serv.o: /usr/include/_G_config.h /usr/include/stdlib.h
-server_serv.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-server_serv.o: /usr/include/errno.h /usr/include/linux/errno.h
-server_serv.o: /usr/include/asm/errno.h /usr/include/alloca.h
-server_serv.o: /usr/include/string.h /usr/include/signal.h
-server_serv.o: /usr/include/linux/signal.h /usr/include/asm/signal.h
-server_serv.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
-server_serv.o: /usr/include/fcntl.h /usr/include/gnu/types.h
-server_serv.o: /usr/include/linux/fcntl.h /usr/include/asm/fcntl.h
-server_serv.o: /usr/include/unistd.h /usr/include/posix_opt.h
-server_serv.o: /usr/include/confname.h /usr/include/memory.h
-server_serv.o: /usr/include/sys/resource.h /usr/include/sys/time.h
-server_serv.o: /usr/include/linux/time.h /usr/include/time.h
-server_serv.o: /usr/include/limits.h /usr/include/posix1_lim.h
-server_serv.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-server_serv.o: /usr/include/linux/resource.h /usr/include/asm/resource.h
+server_serv.o: /usr/include/gnu/stubs.h /usr/include/bits/types.h
+server_serv.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+server_serv.o: /usr/include/time.h /usr/include/endian.h
+server_serv.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+server_serv.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+server_serv.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
+server_serv.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
+server_serv.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+server_serv.o: /usr/include/netinet/in.h /usr/include/stdint.h
+server_serv.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h codec.h
+server_serv.o: sndMsg.h ctrlMsg.h /usr/include/stdio.h
+server_serv.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+server_serv.o: /usr/include/libio.h /usr/include/_G_config.h
+server_serv.o: /usr/include/bits/stdio_lim.h /usr/include/stdlib.h
+server_serv.o: /usr/include/alloca.h /usr/include/string.h
+server_serv.o: /usr/include/signal.h /usr/include/bits/signum.h
+server_serv.o: /usr/include/bits/siginfo.h /usr/include/bits/sigaction.h
+server_serv.o: /usr/include/bits/sigcontext.h /usr/include/asm/sigcontext.h
+server_serv.o: /usr/include/bits/sigstack.h /usr/include/sys/stat.h
+server_serv.o: /usr/include/bits/stat.h /usr/include/fcntl.h
+server_serv.o: /usr/include/bits/fcntl.h /usr/include/unistd.h
+server_serv.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
+server_serv.o: /usr/include/getopt.h /usr/include/memory.h
+server_serv.o: /usr/include/sys/resource.h /usr/include/bits/resource.h
+server_serv.o: /usr/include/asm/resource.h /usr/include/bits/time.h
 server_serv.o: /usr/include/syslog.h /usr/include/sys/syslog.h
-server_serv.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h
 server_serv.o: /usr/include/strings.h colbr.h /usr/include/arpa/inet.h
-server_serv.o: /usr/include/sys/param.h /usr/include/linux/param.h
-server_serv.o: /usr/include/asm/param.h dbase.h htable.h bucket.h entry.h
-server_serv.o: datum.h queue.h queueElem.h
+server_serv.o: dbase.h htable.h bucket.h entry.h datum.h queue.h queueElem.h
 sigfns.o: sigfns.h /usr/include/signal.h /usr/include/features.h
-sigfns.o: /usr/include/sys/cdefs.h /usr/include/sys/types.h
-sigfns.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-sigfns.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-sigfns.o: /usr/include/sys/bitypes.h /usr/include/linux/signal.h
-sigfns.o: /usr/include/asm/signal.h error.h /usr/include/sys/varargs.h
-sigfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
-sndMsg.o: /usr/include/sys/types.h /usr/include/linux/types.h
-sndMsg.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-sndMsg.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
-sndMsg.o: /usr/include/sys/socket.h /usr/include/features.h
-sndMsg.o: /usr/include/sys/cdefs.h /usr/include/linux/socket.h
+sigfns.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+sigfns.o: /usr/include/bits/sigset.h /usr/include/bits/types.h
+sigfns.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+sigfns.o: /usr/include/bits/signum.h /usr/include/time.h
+sigfns.o: /usr/include/bits/siginfo.h /usr/include/bits/sigaction.h
+sigfns.o: /usr/include/bits/sigcontext.h /usr/include/asm/sigcontext.h
+sigfns.o: /usr/include/bits/sigstack.h error.h
+sndMsg.o: /usr/include/sys/types.h /usr/include/features.h
+sndMsg.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+sndMsg.o: /usr/include/bits/types.h
+sndMsg.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+sndMsg.o: /usr/include/time.h /usr/include/endian.h
+sndMsg.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+sndMsg.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+sndMsg.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
+sndMsg.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
 sndMsg.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-sndMsg.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
-sndMsg.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-sndMsg.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
-sndMsg.o: /usr/include/sys/param.h /usr/include/limits.h
-sndMsg.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-sndMsg.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
-sndMsg.o: /usr/include/asm/param.h /usr/include/sys/varargs.h
-sndMsg.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
-sndMsg.o: /usr/include/unistd.h /usr/include/posix_opt.h
-sndMsg.o: /usr/include/gnu/types.h
-sndMsg.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-sndMsg.o: /usr/include/confname.h sndMsg.h CollabTypes.h codec.h prnfns.h
+sndMsg.o: /usr/include/netinet/in.h /usr/include/stdint.h
+sndMsg.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+sndMsg.o: /usr/include/arpa/inet.h /usr/include/unistd.h
+sndMsg.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
+sndMsg.o: /usr/include/getopt.h sndMsg.h CollabTypes.h codec.h prnfns.h
 sndMsg.o: serverInterface.h colbr.h /usr/include/string.h dbase.h htable.h
 sndMsg.o: bucket.h entry.h datum.h queue.h queueElem.h Csprotocols.h
-sndMsg.o: /usr/include/netdb.h /usr/include/paths.h ctrlMsg.h error.h
-Client.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-Client.o: /usr/include/stdlib.h /usr/include/features.h
-Client.o: /usr/include/sys/cdefs.h
-Client.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-Client.o: /usr/include/errno.h /usr/include/linux/errno.h
-Client.o: /usr/include/asm/errno.h /usr/include/alloca.h
-Client.o: /usr/include/string.h /usr/include/unistd.h
-Client.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
-Client.o: /usr/include/confname.h /usr/include/sys/types.h
-Client.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-Client.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-Client.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
-Client.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-Client.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
-Client.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-Client.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
-Client.o: /usr/include/netdb.h /usr/include/paths.h
-Client.o: /usr/include/sys/varargs.h
-Client.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h Client.h
-Client.o: Csprotocols.h /usr/include/arpa/inet.h /usr/include/sys/param.h
-Client.o: /usr/include/limits.h /usr/include/posix1_lim.h
-Client.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-Client.o: /usr/include/linux/param.h /usr/include/asm/param.h keys.h
-Client.o: CollabTypes.h
-CmdDescriptor.o: CmdDescriptor.h CmdSerialize.h /usr/include/sys/varargs.h
-CmdDescriptor.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
-CmdLog.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-CmdLog.o: /usr/include/ctype.h /usr/include/features.h
-CmdLog.o: /usr/include/sys/cdefs.h /usr/include/endian.h
-CmdLog.o: /usr/include/bytesex.h /usr/include/sys/types.h
-CmdLog.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-CmdLog.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-CmdLog.o: /usr/include/sys/bitypes.h /usr/include/unistd.h
-CmdLog.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
-CmdLog.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-CmdLog.o: /usr/include/confname.h /usr/include/fcntl.h
-CmdLog.o: /usr/include/linux/fcntl.h /usr/include/asm/fcntl.h
-CmdLog.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
-CmdLog.o: /usr/include/sys/time.h /usr/include/linux/time.h
-CmdLog.o: /usr/include/time.h CmdLog.h CmdSerialize.h
-CmdLog.o: /usr/include/sys/varargs.h
-CmdLog.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
+sndMsg.o: /usr/include/netdb.h /usr/include/rpc/netdb.h ctrlMsg.h error.h
+Client.o: /usr/include/stdio.h /usr/include/features.h
+Client.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+Client.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+Client.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+Client.o: /usr/include/bits/types.h /usr/include/libio.h
+Client.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+Client.o: /usr/include/stdlib.h /usr/include/sys/types.h /usr/include/time.h
+Client.o: /usr/include/endian.h /usr/include/bits/endian.h
+Client.o: /usr/include/sys/select.h /usr/include/bits/select.h
+Client.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
+Client.o: /usr/include/alloca.h /usr/include/string.h /usr/include/unistd.h
+Client.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
+Client.o: /usr/include/getopt.h /usr/include/sys/socket.h
+Client.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
+Client.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+Client.o: /usr/include/netinet/in.h /usr/include/stdint.h
+Client.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+Client.o: /usr/include/netdb.h /usr/include/rpc/netdb.h Client.h
+Client.o: Csprotocols.h /usr/include/arpa/inet.h keys.h CollabTypes.h
+CmdDescriptor.o: CmdDescriptor.h CmdSerialize.h
+CmdLog.o: /usr/include/stdio.h /usr/include/features.h
+CmdLog.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+CmdLog.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+CmdLog.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+CmdLog.o: /usr/include/bits/types.h /usr/include/libio.h
+CmdLog.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+CmdLog.o: /usr/include/ctype.h /usr/include/endian.h
+CmdLog.o: /usr/include/bits/endian.h /usr/include/sys/types.h
+CmdLog.o: /usr/include/time.h /usr/include/sys/select.h
+CmdLog.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+CmdLog.o: /usr/include/sys/sysmacros.h /usr/include/unistd.h
+CmdLog.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
+CmdLog.o: /usr/include/getopt.h /usr/include/fcntl.h
+CmdLog.o: /usr/include/bits/fcntl.h /usr/include/sys/stat.h
+CmdLog.o: /usr/include/bits/stat.h /usr/include/sys/time.h
+CmdLog.o: /usr/include/bits/time.h CmdLog.h CmdSerialize.h
 CmdLog.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
-CmdLog.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/DList.h
-CmdLog.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
-CmdLog.o: ../graphics/ViewDir.h /usr/include/string.h ../graphics/Scheduler.h
+CmdLog.o: /usr/include/values.h /usr/include/limits.h
+CmdLog.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+CmdLog.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+CmdLog.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+CmdLog.o: ../graphics/DevStatus.h ../graphics/DList.h ../graphics/Exit.h
+CmdLog.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/ViewDir.h
+CmdLog.o: /usr/include/string.h ../graphics/Scheduler.h
 CmdSerialize.o: /usr/include/stdlib.h /usr/include/features.h
-CmdSerialize.o: /usr/include/sys/cdefs.h
-CmdSerialize.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-CmdSerialize.o: /usr/include/errno.h /usr/include/linux/errno.h
-CmdSerialize.o: /usr/include/asm/errno.h /usr/include/alloca.h
-CmdSerialize.o: /usr/include/stdio.h /usr/include/libio.h
-CmdSerialize.o: /usr/include/_G_config.h CmdSerialize.h
-CmdSerialize.o: /usr/include/sys/varargs.h
-CmdSerialize.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
-CommandObj.o: CommandObj.h /usr/include/sys/varargs.h
-CommandObj.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
-CommandObj.o: CmdDescriptor.h CmdSerialize.h Csprotocols.h
-CommandObj.o: /usr/include/sys/types.h /usr/include/linux/types.h
-CommandObj.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-CommandObj.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
-CommandObj.o: /usr/include/sys/socket.h /usr/include/features.h
-CommandObj.o: /usr/include/sys/cdefs.h /usr/include/linux/socket.h
+CmdSerialize.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+CmdSerialize.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+CmdSerialize.o: /usr/include/sys/types.h /usr/include/bits/types.h
+CmdSerialize.o: /usr/include/time.h /usr/include/endian.h
+CmdSerialize.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+CmdSerialize.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+CmdSerialize.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h
+CmdSerialize.o: /usr/include/stdio.h
+CmdSerialize.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+CmdSerialize.o: /usr/include/libio.h /usr/include/_G_config.h
+CmdSerialize.o: /usr/include/bits/stdio_lim.h CmdSerialize.h
+CommandObj.o: CommandObj.h CmdDescriptor.h CmdSerialize.h Csprotocols.h
+CommandObj.o: /usr/include/sys/types.h /usr/include/features.h
+CommandObj.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+CommandObj.o: /usr/include/bits/types.h
+CommandObj.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+CommandObj.o: /usr/include/time.h /usr/include/endian.h
+CommandObj.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+CommandObj.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+CommandObj.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
+CommandObj.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
 CommandObj.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-CommandObj.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
-CommandObj.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-CommandObj.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
-CommandObj.o: /usr/include/sys/param.h /usr/include/limits.h
-CommandObj.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-CommandObj.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
-CommandObj.o: /usr/include/asm/param.h /usr/include/netdb.h
-CommandObj.o: /usr/include/paths.h codec.h /usr/include/stdio.h
+CommandObj.o: /usr/include/netinet/in.h /usr/include/stdint.h
+CommandObj.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+CommandObj.o: /usr/include/arpa/inet.h /usr/include/netdb.h
+CommandObj.o: /usr/include/rpc/netdb.h codec.h /usr/include/stdio.h
+CommandObj.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
 CommandObj.o: /usr/include/libio.h /usr/include/_G_config.h
-CommandObj.o: ../graphics/View.h
-Keys.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-Keys.o: /usr/include/string.h /usr/include/features.h
-Keys.o: /usr/include/sys/cdefs.h
-Keys.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h keys.h
-Keys.o: CollabTypes.h /usr/include/sys/types.h /usr/include/linux/types.h
-Keys.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-Keys.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
-Keys.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-Keys.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-Keys.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
-Keys.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-Keys.o: /usr/include/asm/byteorder.h
-Server.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-Server.o: /usr/include/stdlib.h /usr/include/features.h
-Server.o: /usr/include/sys/cdefs.h
-Server.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-Server.o: /usr/include/errno.h /usr/include/linux/errno.h
-Server.o: /usr/include/asm/errno.h /usr/include/alloca.h
-Server.o: /usr/include/string.h /usr/include/unistd.h
-Server.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
-Server.o: /usr/include/confname.h /usr/include/sys/types.h
-Server.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-Server.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-Server.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
-Server.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-Server.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
-Server.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-Server.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
-Server.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/endian.h
-Server.o: /usr/include/bytesex.h /usr/include/nan.h
-Server.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
-Server.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
-Server.o: /usr/include/signal.h /usr/include/linux/signal.h
-Server.o: /usr/include/asm/signal.h Server.h CollabTypes.h
+CommandObj.o: /usr/include/bits/stdio_lim.h ../graphics/View.h
+Keys.o: /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h
+Keys.o: /usr/include/gnu/stubs.h
+Keys.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+Keys.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+Keys.o: /usr/include/bits/types.h /usr/include/libio.h
+Keys.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+Keys.o: /usr/include/string.h keys.h CollabTypes.h /usr/include/sys/types.h
+Keys.o: /usr/include/time.h /usr/include/endian.h /usr/include/bits/endian.h
+Keys.o: /usr/include/sys/select.h /usr/include/bits/select.h
+Keys.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
+Keys.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
+Keys.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+Keys.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+Keys.o: /usr/include/stdint.h /usr/include/bits/in.h
+Keys.o: /usr/include/bits/byteswap.h
+Server.o: /usr/include/stdio.h /usr/include/features.h
+Server.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+Server.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+Server.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+Server.o: /usr/include/bits/types.h /usr/include/libio.h
+Server.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+Server.o: /usr/include/stdlib.h /usr/include/sys/types.h /usr/include/time.h
+Server.o: /usr/include/endian.h /usr/include/bits/endian.h
+Server.o: /usr/include/sys/select.h /usr/include/bits/select.h
+Server.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
+Server.o: /usr/include/alloca.h /usr/include/string.h /usr/include/errno.h
+Server.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
+Server.o: /usr/include/asm/errno.h /usr/include/unistd.h
+Server.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
+Server.o: /usr/include/getopt.h /usr/include/sys/socket.h
+Server.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
+Server.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+Server.o: /usr/include/netinet/in.h /usr/include/stdint.h
+Server.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+Server.o: /usr/include/math.h /usr/include/bits/huge_val.h
+Server.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
+Server.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+Server.o: /usr/include/signal.h /usr/include/bits/signum.h
+Server.o: /usr/include/bits/siginfo.h /usr/include/bits/sigaction.h
+Server.o: /usr/include/bits/sigcontext.h /usr/include/asm/sigcontext.h
+Server.o: /usr/include/bits/sigstack.h Server.h CollabTypes.h
 Server.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
+Server.o: /usr/include/values.h /usr/include/limits.h
+Server.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+Server.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
 Server.o: ../graphics/DevStatus.h ../graphics/DList.h ../graphics/Exit.h
 Server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/ViewDir.h
-Server.o: CmdDescriptor.h CmdSerialize.h /usr/include/sys/varargs.h
-Server.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
-Server.o: ../graphics/Control.h ../graphics/ClassDir.h callBks.h error.h
-Server.o: ctrlMsg.h rcvMsg.h CommandObj.h serverInterface.h colbr.h
-Server.o: /usr/include/arpa/inet.h /usr/include/sys/param.h
-Server.o: /usr/include/limits.h /usr/include/posix1_lim.h
-Server.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-Server.o: /usr/include/linux/param.h /usr/include/asm/param.h dbase.h
-Server.o: htable.h bucket.h entry.h datum.h queue.h queueElem.h keys.h
-Server.o: Csprotocols.h /usr/include/netdb.h /usr/include/paths.h
-Server.o: ../graphics/Util.h /usr/include/time.h /usr/include/sys/time.h
-Server.o: /usr/include/linux/time.h /usr/include/ctype.h ../graphics/Init.h
+Server.o: CmdDescriptor.h CmdSerialize.h ../graphics/Control.h
+Server.o: ../graphics/ClassDir.h callBks.h error.h ctrlMsg.h rcvMsg.h
+Server.o: CommandObj.h serverInterface.h colbr.h /usr/include/arpa/inet.h
+Server.o: dbase.h htable.h bucket.h entry.h datum.h queue.h queueElem.h
+Server.o: keys.h Csprotocols.h /usr/include/netdb.h /usr/include/rpc/netdb.h
+Server.o: ../graphics/Util.h /usr/include/ctype.h ../graphics/Init.h
 Server.o: ../graphics/BufPolicy.h
-TclClient.o: /usr/include/stdio.h /usr/include/libio.h
-TclClient.o: /usr/include/_G_config.h /usr/include/stdlib.h
-TclClient.o: /usr/include/features.h /usr/include/sys/cdefs.h
-TclClient.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-TclClient.o: /usr/include/errno.h /usr/include/linux/errno.h
-TclClient.o: /usr/include/asm/errno.h /usr/include/alloca.h
-TclClient.o: /usr/include/sys/types.h /usr/include/linux/types.h
-TclClient.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-TclClient.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h TclClient.h
-TclClient.o: /usr/include/tcl/tcl.h Client.h
+TclClient.o: /usr/include/stdio.h /usr/include/features.h
+TclClient.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+TclClient.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+TclClient.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+TclClient.o: /usr/include/bits/types.h /usr/include/libio.h
+TclClient.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+TclClient.o: /usr/include/stdlib.h /usr/include/sys/types.h
+TclClient.o: /usr/include/time.h /usr/include/endian.h
+TclClient.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+TclClient.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+TclClient.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h TclClient.h
+TclClient.o: /usr/include/tcl.h Client.h
 bucket.o: bucket.h entry.h datum.h
 colbrLog.o: /usr/include/stdlib.h /usr/include/features.h
-colbrLog.o: /usr/include/sys/cdefs.h
-colbrLog.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-colbrLog.o: /usr/include/errno.h /usr/include/linux/errno.h
-colbrLog.o: /usr/include/asm/errno.h /usr/include/alloca.h
-colbrLog.o: /usr/include/sys/uio.h /usr/include/unistd.h
-colbrLog.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
-colbrLog.o: /usr/include/confname.h /usr/include/sys/types.h
-colbrLog.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-colbrLog.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-colbrLog.o: /usr/include/sys/bitypes.h colbr.h /usr/include/string.h
-colbrLog.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+colbrLog.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+colbrLog.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+colbrLog.o: /usr/include/sys/types.h /usr/include/bits/types.h
+colbrLog.o: /usr/include/time.h /usr/include/endian.h
+colbrLog.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+colbrLog.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+colbrLog.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h
+colbrLog.o: /usr/include/sys/uio.h /usr/include/bits/uio.h
+colbrLog.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
+colbrLog.o: /usr/include/bits/confname.h /usr/include/getopt.h colbr.h
+colbrLog.o: /usr/include/string.h /usr/include/sys/socket.h
+colbrLog.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
 colbrLog.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-colbrLog.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
-colbrLog.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-colbrLog.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
-colbrLog.o: /usr/include/sys/param.h /usr/include/limits.h
-colbrLog.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-colbrLog.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
-colbrLog.o: /usr/include/asm/param.h dbase.h htable.h bucket.h entry.h
+colbrLog.o: /usr/include/netinet/in.h /usr/include/stdint.h
+colbrLog.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+colbrLog.o: /usr/include/arpa/inet.h dbase.h htable.h bucket.h entry.h
 colbrLog.o: datum.h queue.h queueElem.h CollabTypes.h colbrLog.h log.h
-colbrLog.o: /usr/include/stdio.h /usr/include/libio.h
-colbrLog.o: /usr/include/_G_config.h prnfns.h /usr/include/sys/varargs.h
-colbrLog.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
-colbrLog.o: serverInterface.h
+colbrLog.o: /usr/include/stdio.h
+colbrLog.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+colbrLog.o: /usr/include/libio.h /usr/include/_G_config.h
+colbrLog.o: /usr/include/bits/stdio_lim.h prnfns.h serverInterface.h
 datum.o: /usr/include/stdlib.h /usr/include/features.h
-datum.o: /usr/include/sys/cdefs.h
-datum.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-datum.o: /usr/include/errno.h /usr/include/linux/errno.h
-datum.o: /usr/include/asm/errno.h /usr/include/alloca.h /usr/include/string.h
-datum.o: error.h /usr/include/sys/varargs.h
-datum.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h datum.h
+datum.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+datum.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+datum.o: /usr/include/sys/types.h /usr/include/bits/types.h
+datum.o: /usr/include/time.h /usr/include/endian.h /usr/include/bits/endian.h
+datum.o: /usr/include/sys/select.h /usr/include/bits/select.h
+datum.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
+datum.o: /usr/include/alloca.h /usr/include/string.h /usr/include/errno.h
+datum.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
+datum.o: /usr/include/asm/errno.h error.h datum.h
 dbase.o: colbr.h /usr/include/string.h /usr/include/features.h
-dbase.o: /usr/include/sys/cdefs.h
-dbase.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-dbase.o: /usr/include/sys/types.h /usr/include/linux/types.h
-dbase.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-dbase.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
-dbase.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-dbase.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-dbase.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
-dbase.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-dbase.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
-dbase.o: /usr/include/sys/param.h /usr/include/limits.h
-dbase.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-dbase.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
-dbase.o: /usr/include/asm/param.h dbase.h htable.h bucket.h entry.h datum.h
-dbase.o: queue.h queueElem.h CollabTypes.h error.h /usr/include/sys/varargs.h
-dbase.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h sndMsg.h
-dbase.o: /usr/include/assert.h
+dbase.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+dbase.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+dbase.o: /usr/include/sys/types.h /usr/include/bits/types.h
+dbase.o: /usr/include/time.h /usr/include/endian.h /usr/include/bits/endian.h
+dbase.o: /usr/include/sys/select.h /usr/include/bits/select.h
+dbase.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
+dbase.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
+dbase.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+dbase.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+dbase.o: /usr/include/stdint.h /usr/include/bits/in.h
+dbase.o: /usr/include/bits/byteswap.h /usr/include/arpa/inet.h dbase.h
+dbase.o: htable.h bucket.h entry.h datum.h queue.h queueElem.h CollabTypes.h
+dbase.o: error.h sndMsg.h /usr/include/assert.h
 entry.o: entry.h datum.h
 htable.o: htable.h bucket.h entry.h datum.h
-log.o: /usr/include/sys/uio.h /usr/include/features.h
-log.o: /usr/include/sys/cdefs.h
-log.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-log.o: /usr/include/unistd.h /usr/include/posix_opt.h
-log.o: /usr/include/gnu/types.h /usr/include/confname.h
-log.o: /usr/include/sys/types.h /usr/include/linux/types.h
-log.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-log.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h log.h
-log.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-log.o: /usr/include/string.h
+log.o: /usr/include/sys/types.h /usr/include/features.h
+log.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+log.o: /usr/include/bits/types.h
+log.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+log.o: /usr/include/time.h /usr/include/endian.h /usr/include/bits/endian.h
+log.o: /usr/include/sys/select.h /usr/include/bits/select.h
+log.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
+log.o: /usr/include/sys/uio.h /usr/include/bits/uio.h /usr/include/unistd.h
+log.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
+log.o: /usr/include/getopt.h log.h /usr/include/stdio.h
+log.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+log.o: /usr/include/libio.h /usr/include/_G_config.h
+log.o: /usr/include/bits/stdio_lim.h /usr/include/string.h
 parseConfig.o: /usr/include/string.h /usr/include/features.h
-parseConfig.o: /usr/include/sys/cdefs.h
-parseConfig.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+parseConfig.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+parseConfig.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
 parseConfig.o: parseConfig.h
-queue.o: error.h /usr/include/sys/varargs.h
-queue.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h queue.h
-queue.o: queueElem.h datum.h
+queue.o: error.h queue.h queueElem.h datum.h
 queueElem.o: queueElem.h datum.h
 servdb.o: servdb.h /usr/include/string.h /usr/include/features.h
-servdb.o: /usr/include/sys/cdefs.h
-servdb.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-servdb.o: /usr/include/sys/types.h /usr/include/linux/types.h
-servdb.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-servdb.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
-servdb.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+servdb.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+servdb.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+servdb.o: /usr/include/sys/types.h /usr/include/bits/types.h
+servdb.o: /usr/include/time.h /usr/include/endian.h
+servdb.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+servdb.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+servdb.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
+servdb.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
 servdb.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-servdb.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
-servdb.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-servdb.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
-servdb.o: /usr/include/sys/param.h /usr/include/limits.h
-servdb.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-servdb.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
-servdb.o: /usr/include/asm/param.h error.h /usr/include/sys/varargs.h
-servdb.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h htable.h
-servdb.o: bucket.h entry.h datum.h queue.h queueElem.h CollabTypes.h
+servdb.o: /usr/include/netinet/in.h /usr/include/stdint.h
+servdb.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+servdb.o: /usr/include/arpa/inet.h error.h htable.h bucket.h entry.h datum.h
+servdb.o: queue.h queueElem.h CollabTypes.h

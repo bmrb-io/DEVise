@@ -9,6 +9,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/03/25 14:51:51  wenger
+  Added standard headers to all graphics sources.
+
   Revision 1.2  1998/02/26 00:19:11  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -141,7 +144,11 @@
 #  include <errno.h>
    extern int   errno;             /* SHOULD be in errno.h, but often isn't */
 #  ifndef __NetBSD__
-     extern char *sys_errlist[];     /* this too... */
+#    ifndef LINUX
+       extern char *sys_errlist[];     /* this too... */
+#    else
+       extern const char *const sys_errlist[];     /* this too... */
+#    endif
 #  endif
 #endif
 

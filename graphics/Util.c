@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1999/03/01 23:08:58  wenger
+  Fixed a number of memory leaks and removed unused code.
+
   Revision 1.30  1998/12/22 19:39:09  wenger
   User can now change date format for axis labels; fixed bug 041 (axis
   type not being changed between float and date when attribute is changed);
@@ -270,7 +273,11 @@ char *DateString(time_t tm, const char *format)
 
   // Note: second arg. of cftime() should be declared const in system header
   // files.
+#if defined(LINUX)
+  strftime(dateBuf, 32, format, localtime(&tm));
+#else
   cftime(dateBuf, (char *)format, &tm);
+#endif
 
   return dateBuf;
 }

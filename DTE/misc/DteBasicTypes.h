@@ -114,6 +114,11 @@ const int MAX_ALIGN = 8;
 #endif
 #endif
 
+#if defined(LINUX)
+#undef BIG_ENDIAN
+#undef LITTLE_ENDIAN
+#endif
+
 const int BIG_ENDIAN = 1;
 const int LITTLE_ENDIAN = 2;
 

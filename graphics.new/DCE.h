@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1999/01/13 15:58:29  beyer
+  fixed static const
+
   Revision 1.12  1997/12/11 04:25:41  beyer
   Shared memory and semaphores are now released properly when devise
   terminates normally.
@@ -174,12 +177,7 @@ public:
   }
 
   int getValue(int sem = 0) {           // get value of semaphore
-#ifdef __linux
-    static const union semun NullSemUnion = { 0 };
-    int result = semctl(id, sem, GETVAL, NullSemUnion);
-#else
     int result = semctl(id, sem, GETVAL, 0);
-#endif
     if (result < 0)
       perror("semctl");
     assert(result >= 0);

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.25  1998/08/21 22:17:02  wenger
+  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
+  linked DEVise for distribution.
+
   Revision 1.24  1998/07/29 14:20:27  wenger
   Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
   allow static linking on Linux.
@@ -312,7 +316,8 @@ union semun {
    Definitions related to signals.
 */
 
-#if !defined(__hpux) && !defined(__solaris) && !defined(__sgi)
+#if !defined(__hpux) && !defined(__solaris) && !defined(__sgi) && \
+    !defined(__linux)
   EXTERNC int sigpause(int sigmask);
 #endif
 
@@ -474,7 +479,8 @@ union semun {
   EXTERNC void perror(const char *);
 #endif
 
-#if !defined(__hpux) && !defined(__solaris) && !defined(__sgi)
+#if !defined(__hpux) && !defined(__solaris) && !defined(__sgi) && \
+    !defined(__linux)
   EXTERNC key_t ftok(char *, char);
 #endif
   

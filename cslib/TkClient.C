@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/01/07 19:27:53  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.1.2.1  1997/12/09 19:03:26  wenger
   deviseb now uses client/server library.
 
@@ -76,12 +81,16 @@ TkClient::TkClient(char *name, char *hostname, int port, char *script) :
 
   Tcl_CreateCommand(_interp, "Server", _serverCmd, (ClientData)this, 0);
 
-#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 0
+#if TK_MAJOR_VERSION == 4
+#  if TK_MINOR_VERSION == 0
   Tk_CreateFileHandler(_serverFd, TK_READABLE | TK_EXCEPTION,
 		       _readServer, (ClientData)this);
-#else
+#  else
   Tcl_CreateFileHandler(Tcl_GetFile((void *)_serverFd, TCL_UNIX_FD),
                         TCL_READABLE, _readServer, 0);
+#  endif
+#else
+  Tcl_CreateFileHandler(_serverFd, TCL_READABLE, _readServer, 0);
 #endif
 	
   int code = Tcl_EvalFile(_interp, _script);
@@ -94,10 +103,14 @@ TkClient::TkClient(char *name, char *hostname, int port, char *script) :
 
 TkClient::~TkClient()
 {
-#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 0
+#if TK_MAJOR_VERSION == 4
+#  if TK_MINOR_VERSION == 0
   Tk_DeleteFileHandler(_serverFd);
-#else
+#  else
   Tcl_DeleteFileHandler(Tcl_GetFile((void *)_serverFd, TCL_UNIX_FD));
+#  endif
+#else
+  Tcl_DeleteFileHandler(_serverFd);
 #endif
 
   delete _script;

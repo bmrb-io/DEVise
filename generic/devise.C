@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/02/12 17:15:46  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.17  1998/01/30 02:16:32  wenger
   Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
 
@@ -332,11 +335,16 @@ void SetupConnection()
     if(!_quiet) printf("Connecting to server %s:%d.\n", _hostName, _portNum);
     
     if (!_idleScript) {
-#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 0
+#if TK_MAJOR_VERSION == 4
+#  if TK_MINOR_VERSION == 0
         Tk_CreateFileHandler(_client->ServerFd(), TK_READABLE, ReadServer, 0);
-#else
+#  else
         Tcl_CreateFileHandler(Tcl_GetFile((void *)_client->ServerFd(),
 	    TCL_UNIX_FD), TCL_READABLE, ReadServer, 0);
+#  endif
+#else
+        Tcl_CreateFileHandler(_client->ServerFd(), TCL_READABLE,
+	    ReadServer, 0);
 #endif
     }
     
@@ -448,11 +456,15 @@ int main(int argc, char **argv)
     }
     
     if (!_idleScript) {
-#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 0
+#if TK_MAJOR_VERSION == 4
+#  if TK_MINOR_VERSION == 0
         Tk_DeleteFileHandler(_client->ServerFd());
-#else
+#  else
         Tcl_DeleteFileHandler(Tcl_GetFile((void *)_client->ServerFd(),
 	    TCL_UNIX_FD));
+#  endif
+#else
+        Tcl_DeleteFileHandler(_client->ServerFd());
 #endif
     }
 

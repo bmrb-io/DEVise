@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.7  1997/11/12 15:47:37  wenger
+# Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+# into the trunk.
+#
 # Revision 1.6.2.1  1997/10/30 20:16:28  wenger
 # Got DEVise to compile, link, and run on sun and linux; compiles but
 # doesn't link on hp (can't find memory mapping functions).  This includes
@@ -39,78 +43,78 @@ depend:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 binconv.o: /usr/include/math.h /usr/include/features.h
-binconv.o: /usr/include/sys/cdefs.h /usr/include/huge_val.h
-binconv.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
-binconv.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
-binconv.o: /usr/include/values.h /usr/include/ieee754.h
-binconv.o: /usr/include/ieee854.h binconv.h /usr/include/string.h
-binconv.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-extract.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-extract.o: /usr/include/sys/cdefs.h /usr/include/features.h
-extract.o: /usr/include/string.h
-extract.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-extract.o: /usr/include/stdlib.h /usr/include/errno.h
-extract.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-extract.o: /usr/include/alloca.h /usr/include/tcl/tcl.h /usr/include/tcl/tk.h
-extract.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
-extract.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-extract.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-extract.o: /usr/include/sys/bitypes.h /usr/include/X11/X.h
-extract.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h rectape.h
-extract.o: ../tape/tapedrive.h ../graphics.new/machdep.h
-extract.o: /usr/include/limits.h /usr/include/posix1_lim.h
-extract.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+binconv.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+binconv.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
+binconv.o: /usr/include/bits/mathcalls.h
+binconv.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+binconv.o: binconv.h /usr/include/string.h
+binconv.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+extract.o: /usr/include/stdio.h /usr/include/features.h
+extract.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+extract.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+extract.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+extract.o: /usr/include/bits/types.h /usr/include/libio.h
+extract.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+extract.o: /usr/include/string.h /usr/include/stdlib.h
+extract.o: /usr/include/sys/types.h /usr/include/time.h /usr/include/endian.h
+extract.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+extract.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+extract.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h
+extract.o: /usr/include/tcl.h /usr/include/tk.h /usr/include/X11/Xlib.h
+extract.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
+extract.o: /usr/include/X11/Xosdefs.h rectape.h ../tape/tapedrive.h
+extract.o: ../graphics.new/machdep.h /usr/include/limits.h
+extract.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+extract.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
 extract.o: /usr/include/sys/param.h /usr/include/linux/param.h
 extract.o: /usr/include/asm/param.h /usr/include/sys/time.h
-extract.o: /usr/include/linux/time.h /usr/include/time.h
-extract.o: /usr/include/sys/wait.h /usr/include/gnu/types.h
-extract.o: /usr/include/waitflags.h /usr/include/waitstatus.h
-extract.o: /usr/include/endian.h /usr/include/bytesex.h
-extract.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
-extract.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
-extract.o: /usr/include/asm/shmparam.h /usr/include/sys/sem.h
-extract.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
-extract.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
-extract.o: /usr/include/asm/ioctl.h /usr/include/termios.h
-extract.o: /usr/include/linux/termios.h /usr/include/asm/termios.h
-extract.o: /usr/include/asm/termbits.h /usr/include/asm/ioctls.h
-extract.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
-extract.o: /usr/include/asm/sockios.h /usr/include/netdb.h
-extract.o: /usr/include/paths.h /usr/include/sys/socket.h
-extract.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-extract.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-extract.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h binconv.h
+extract.o: /usr/include/bits/time.h /usr/include/sys/wait.h
+extract.o: /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h
+extract.o: /usr/include/bits/siginfo.h /usr/include/sys/ipc.h
+extract.o: /usr/include/bits/ipc.h /usr/include/sys/shm.h
+extract.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
+extract.o: /usr/include/bits/confname.h /usr/include/getopt.h
+extract.o: /usr/include/bits/shm.h /usr/include/sys/sem.h
+extract.o: /usr/include/bits/sem.h /usr/include/sys/ioctl.h
+extract.o: /usr/include/bits/ioctls.h /usr/include/asm/ioctls.h
+extract.o: /usr/include/asm/ioctl.h /usr/include/bits/ioctl-types.h
+extract.o: /usr/include/sys/ttydefaults.h /usr/include/netdb.h
+extract.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
+extract.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
+extract.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+extract.o: /usr/include/netinet/in.h /usr/include/stdint.h
+extract.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h binconv.h
 extract.o: issmdata.h
 rectape.o: /usr/include/stdlib.h /usr/include/features.h
-rectape.o: /usr/include/sys/cdefs.h
-rectape.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-rectape.o: /usr/include/errno.h /usr/include/linux/errno.h
-rectape.o: /usr/include/asm/errno.h /usr/include/alloca.h rectape.h
-rectape.o: ../tape/tapedrive.h /usr/include/stdio.h /usr/include/libio.h
-rectape.o: /usr/include/_G_config.h ../graphics.new/machdep.h
-rectape.o: /usr/include/limits.h /usr/include/posix1_lim.h
-rectape.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-rectape.o: /usr/include/sys/types.h /usr/include/linux/types.h
-rectape.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-rectape.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
-rectape.o: /usr/include/sys/param.h /usr/include/linux/param.h
-rectape.o: /usr/include/asm/param.h /usr/include/sys/time.h
-rectape.o: /usr/include/linux/time.h /usr/include/time.h
-rectape.o: /usr/include/sys/wait.h /usr/include/gnu/types.h
-rectape.o: /usr/include/waitflags.h /usr/include/waitstatus.h
-rectape.o: /usr/include/endian.h /usr/include/bytesex.h
-rectape.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
-rectape.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
-rectape.o: /usr/include/asm/shmparam.h /usr/include/sys/sem.h
-rectape.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
-rectape.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
-rectape.o: /usr/include/asm/ioctl.h /usr/include/termios.h
-rectape.o: /usr/include/linux/termios.h /usr/include/asm/termios.h
-rectape.o: /usr/include/asm/termbits.h /usr/include/asm/ioctls.h
-rectape.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
-rectape.o: /usr/include/asm/sockios.h /usr/include/netdb.h
-rectape.o: /usr/include/paths.h /usr/include/sys/socket.h
-rectape.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-rectape.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-rectape.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h binconv.h
-rectape.o: /usr/include/string.h
+rectape.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+rectape.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+rectape.o: /usr/include/sys/types.h /usr/include/bits/types.h
+rectape.o: /usr/include/time.h /usr/include/endian.h
+rectape.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+rectape.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+rectape.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h rectape.h
+rectape.o: ../tape/tapedrive.h /usr/include/stdio.h
+rectape.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+rectape.o: /usr/include/libio.h /usr/include/_G_config.h
+rectape.o: /usr/include/bits/stdio_lim.h ../graphics.new/machdep.h
+rectape.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
+rectape.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
+rectape.o: /usr/include/bits/posix2_lim.h /usr/include/sys/param.h
+rectape.o: /usr/include/linux/param.h /usr/include/asm/param.h
+rectape.o: /usr/include/sys/time.h /usr/include/bits/time.h
+rectape.o: /usr/include/sys/wait.h /usr/include/bits/waitflags.h
+rectape.o: /usr/include/bits/waitstatus.h /usr/include/bits/siginfo.h
+rectape.o: /usr/include/sys/ipc.h /usr/include/bits/ipc.h
+rectape.o: /usr/include/sys/shm.h /usr/include/unistd.h
+rectape.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
+rectape.o: /usr/include/getopt.h /usr/include/bits/shm.h
+rectape.o: /usr/include/sys/sem.h /usr/include/bits/sem.h
+rectape.o: /usr/include/sys/ioctl.h /usr/include/bits/ioctls.h
+rectape.o: /usr/include/asm/ioctls.h /usr/include/asm/ioctl.h
+rectape.o: /usr/include/bits/ioctl-types.h /usr/include/sys/ttydefaults.h
+rectape.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
+rectape.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
+rectape.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+rectape.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+rectape.o: /usr/include/stdint.h /usr/include/bits/in.h
+rectape.o: /usr/include/bits/byteswap.h binconv.h /usr/include/string.h

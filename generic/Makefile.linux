@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.17  1998/06/30 19:12:33  wenger
+# Got DEVise to compile on linux again.
+#
 # Revision 1.16  1998/05/08 14:00:30  wenger
 # Updated Linux dependencies.
 #
@@ -69,129 +72,157 @@ depend:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 CompDate.o: CompDate.h
-DeviseBatchClient.o: /usr/include/stdio.h /usr/include/libio.h
-DeviseBatchClient.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
-DeviseBatchClient.o: /usr/include/stdlib.h /usr/include/features.h
-DeviseBatchClient.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-DeviseBatchClient.o: /usr/include/errno.h /usr/include/linux/errno.h
-DeviseBatchClient.o: /usr/include/asm/errno.h /usr/include/alloca.h
+DeviseBatchClient.o: /usr/include/stdio.h /usr/include/features.h
+DeviseBatchClient.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+DeviseBatchClient.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+DeviseBatchClient.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+DeviseBatchClient.o: /usr/include/bits/types.h /usr/include/libio.h
+DeviseBatchClient.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+DeviseBatchClient.o: /usr/include/stdlib.h /usr/include/sys/types.h
+DeviseBatchClient.o: /usr/include/time.h /usr/include/endian.h
+DeviseBatchClient.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+DeviseBatchClient.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+DeviseBatchClient.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h
 DeviseBatchClient.o: DeviseBatchClient.h ../graphics/DeviseTypes.h
-DeviseBatchClient.o: /usr/include/values.h ../graphics/DevStatus.h
-DeviseBatchClient.o: /usr/include/sys/types.h /usr/include/linux/types.h
-DeviseBatchClient.o: /usr/include/linux/posix_types.h
-DeviseBatchClient.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-DeviseBatchClient.o: /usr/include/sys/bitypes.h ../csgroup/Client.h
-DeviseClient.o: /usr/include/stdio.h /usr/include/libio.h
-DeviseClient.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
-DeviseClient.o: /usr/include/stdlib.h /usr/include/features.h
-DeviseClient.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-DeviseClient.o: /usr/include/errno.h /usr/include/linux/errno.h
-DeviseClient.o: /usr/include/asm/errno.h /usr/include/alloca.h DeviseClient.h
+DeviseBatchClient.o: /usr/include/values.h /usr/include/limits.h
+DeviseBatchClient.o: /usr/include/bits/posix1_lim.h
+DeviseBatchClient.o: /usr/include/bits/local_lim.h
+DeviseBatchClient.o: /usr/include/linux/limits.h
+DeviseBatchClient.o: /usr/include/bits/posix2_lim.h
+DeviseBatchClient.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+DeviseBatchClient.o: ../graphics/DevStatus.h ../csgroup/Client.h
+DeviseClient.o: /usr/include/stdio.h /usr/include/features.h
+DeviseClient.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+DeviseClient.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+DeviseClient.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+DeviseClient.o: /usr/include/bits/types.h /usr/include/libio.h
+DeviseClient.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+DeviseClient.o: /usr/include/stdlib.h /usr/include/sys/types.h
+DeviseClient.o: /usr/include/time.h /usr/include/endian.h
+DeviseClient.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+DeviseClient.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+DeviseClient.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h
+DeviseClient.o: DeviseClient.h /usr/include/tk.h /usr/include/tcl.h
+DeviseClient.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+DeviseClient.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 DeviseClient.o: ../graphics/DeviseTypes.h /usr/include/values.h
-DeviseClient.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-DeviseClient.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-DeviseClient.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-DeviseClient.o: /usr/include/sys/bitypes.h ../csgroup/TclClient.h
+DeviseClient.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
+DeviseClient.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
+DeviseClient.o: /usr/include/bits/posix2_lim.h
+DeviseClient.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+DeviseClient.o: ../graphics/DevStatus.h ../csgroup/TclClient.h
 DeviseClient.o: ../csgroup/Client.h
 collaborator.o: ../csgroup/server.h ../csgroup/CollabTypes.h
-collaborator.o: /usr/include/sys/types.h /usr/include/linux/types.h
-collaborator.o: /usr/include/linux/posix_types.h
-collaborator.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-collaborator.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
-collaborator.o: /usr/include/features.h /usr/include/sys/cdefs.h
-collaborator.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-collaborator.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
-collaborator.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-collaborator.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+collaborator.o: /usr/include/sys/types.h /usr/include/features.h
+collaborator.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+collaborator.o: /usr/include/bits/types.h
+collaborator.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+collaborator.o: /usr/include/time.h /usr/include/endian.h
+collaborator.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+collaborator.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+collaborator.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
+collaborator.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
+collaborator.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+collaborator.o: /usr/include/netinet/in.h /usr/include/stdint.h
+collaborator.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 collaborator.o: ../csgroup/colbr.h /usr/include/string.h
-collaborator.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-collaborator.o: /usr/include/arpa/inet.h /usr/include/sys/param.h
-collaborator.o: /usr/include/limits.h /usr/include/posix1_lim.h
-collaborator.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-collaborator.o: /usr/include/linux/param.h /usr/include/asm/param.h
-collaborator.o: ../csgroup/dbase.h ../csgroup/htable.h ../csgroup/bucket.h
-collaborator.o: ../csgroup/entry.h ../csgroup/datum.h ../csgroup/queue.h
-collaborator.o: ../csgroup/queueElem.h ../csgroup/colbrLog.h ../csgroup/log.h
-collaborator.o: /usr/include/stdio.h /usr/include/libio.h
-collaborator.o: /usr/include/_G_config.h ../csgroup/prnfns.h
-collaborator.o: /usr/include/sys/varargs.h
-collaborator.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
+collaborator.o: /usr/include/arpa/inet.h ../csgroup/dbase.h
+collaborator.o: ../csgroup/htable.h ../csgroup/bucket.h ../csgroup/entry.h
+collaborator.o: ../csgroup/datum.h ../csgroup/queue.h ../csgroup/queueElem.h
+collaborator.o: ../csgroup/colbrLog.h ../csgroup/log.h /usr/include/stdio.h
+collaborator.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+collaborator.o: /usr/include/libio.h /usr/include/_G_config.h
+collaborator.o: /usr/include/bits/stdio_lim.h ../csgroup/prnfns.h
 collaborator.o: ../csgroup/serverInterface.h /usr/include/stdlib.h
-collaborator.o: /usr/include/errno.h /usr/include/linux/errno.h
-collaborator.o: /usr/include/asm/errno.h /usr/include/alloca.h
-collaborator.o: /usr/include/signal.h /usr/include/linux/signal.h
-collaborator.o: /usr/include/asm/signal.h /usr/include/unistd.h
-collaborator.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
-collaborator.o: /usr/include/confname.h /usr/include/memory.h
-collaborator.o: /usr/include/sys/resource.h /usr/include/sys/time.h
-collaborator.o: /usr/include/linux/time.h /usr/include/time.h
-collaborator.o: /usr/include/linux/resource.h /usr/include/asm/resource.h
-collaborator.o: /usr/include/syslog.h /usr/include/sys/syslog.h
-collaborator.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h
-generic.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-generic.o: /usr/include/sys/cdefs.h /usr/include/errno.h
-generic.o: /usr/include/features.h /usr/include/linux/errno.h
-generic.o: /usr/include/asm/errno.h /usr/include/time.h
-generic.o: /usr/include/sys/time.h /usr/include/linux/types.h
-generic.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-generic.o: /usr/include/asm/types.h /usr/include/linux/time.h
-generic.o: /usr/include/sys/types.h /usr/include/sys/bitypes.h
-generic.o: /usr/include/string.h
-generic.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-generic.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/endian.h
-generic.o: /usr/include/bytesex.h /usr/include/nan.h
-generic.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
-generic.o: /usr/include/values.h /usr/include/ieee754.h
-generic.o: /usr/include/ieee854.h ../graphics/DeviseTypes.h
+collaborator.o: /usr/include/alloca.h /usr/include/signal.h
+collaborator.o: /usr/include/bits/signum.h /usr/include/bits/siginfo.h
+collaborator.o: /usr/include/bits/sigaction.h /usr/include/bits/sigcontext.h
+collaborator.o: /usr/include/asm/sigcontext.h /usr/include/bits/sigstack.h
+collaborator.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
+collaborator.o: /usr/include/bits/confname.h /usr/include/getopt.h
+collaborator.o: /usr/include/fcntl.h /usr/include/bits/fcntl.h
+collaborator.o: /usr/include/memory.h /usr/include/sys/resource.h
+collaborator.o: /usr/include/bits/resource.h /usr/include/asm/resource.h
+collaborator.o: /usr/include/bits/time.h /usr/include/syslog.h
+collaborator.o: /usr/include/sys/syslog.h
+generic.o: /usr/include/stdio.h /usr/include/features.h
+generic.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+generic.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+generic.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+generic.o: /usr/include/bits/types.h /usr/include/libio.h
+generic.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+generic.o: /usr/include/errno.h /usr/include/bits/errno.h
+generic.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+generic.o: /usr/include/time.h /usr/include/string.h /usr/include/math.h
+generic.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
+generic.o: /usr/include/bits/mathcalls.h
+generic.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+generic.o: /usr/include/sys/time.h /usr/include/sys/select.h
+generic.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+generic.o: /usr/include/bits/time.h /usr/include/sys/types.h
+generic.o: /usr/include/endian.h /usr/include/bits/endian.h
+generic.o: /usr/include/sys/sysmacros.h ../graphics/DeviseTypes.h
+generic.o: /usr/include/values.h /usr/include/limits.h
+generic.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+generic.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
 generic.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
 generic.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
 generic.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
 generic.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/ViewWin.h
 generic.o: ../graphics/WindowRep.h ../graphics/Transform.h
 generic.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
-generic.o: ../graphics/Compress.h ../graphics/DevError.h ../graphics/ETkIfc.h
-generic.o: ../graphics/ETk.h ../graphics/Xdef.h /usr/include/X11/Xlib.h
-generic.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
-generic.o: /usr/include/X11/Xosdefs.h /usr/include/X11/Xutil.h
-generic.o: ../graphics/GraphicsDebug.h ../graphics/Control.h
-generic.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
-generic.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
+generic.o: ../graphics/Compress.h ../graphics/DevError.h
+generic.o: /usr/include/sys/param.h /usr/include/linux/param.h
+generic.o: /usr/include/asm/param.h ../graphics/ETkIfc.h ../graphics/ETk.h
+generic.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
+generic.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+generic.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
+generic.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
+generic.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
+generic.o: ../graphics.new/MapInterpClassInfo.h
 generic.o: ../graphics.new/VisualLinkClassInfo.h
 generic.o: ../graphics.new/ViewClassInfo.h ../graphics.new/ViewGraph.h
 generic.o: ../graphics.new/Action.h ../graphics.new/RecId.h
 generic.o: ../graphics.new/PointStorage.h ../tape/HashTable.h
-generic.o: ../graphics.new/ViewData.h ../graphics.new/ViewLens.h
-generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
-generic.o: ../graphics/CursorClassInfo.h ../graphics.new/StringStorage.h
-generic.o: StateMap.h ../graphics/Util.h /usr/include/stdlib.h
-generic.o: /usr/include/alloca.h /usr/include/ctype.h
-testWindowSpeed.o: /usr/include/stdio.h /usr/include/libio.h
-testWindowSpeed.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
-testWindowSpeed.o: /usr/include/time.h /usr/include/features.h
-testWindowSpeed.o: /usr/include/sys/time.h /usr/include/linux/types.h
-testWindowSpeed.o: /usr/include/linux/posix_types.h
-testWindowSpeed.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-testWindowSpeed.o: /usr/include/linux/time.h /usr/include/sys/types.h
-testWindowSpeed.o: /usr/include/sys/bitypes.h ../graphics/TestControl.h
-testWindowSpeed.o: ../graphics/Control.h ../graphics/DeviseTypes.h
-testWindowSpeed.o: /usr/include/values.h ../graphics/DevStatus.h
-testWindowSpeed.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-testWindowSpeed.o: /usr/include/string.h
-testWindowSpeed.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+generic.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+generic.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h
+generic.o: ../graphics.new/ViewData.h ../graphics.new/CompositeParser.h
+generic.o: ../graphics.new/RecInterp.h ../graphics/CursorClassInfo.h
+generic.o: ../graphics.new/StringStorage.h StateMap.h ../graphics/Util.h
+generic.o: /usr/include/stdlib.h /usr/include/alloca.h /usr/include/ctype.h
+testWindowSpeed.o: /usr/include/stdio.h /usr/include/features.h
+testWindowSpeed.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+testWindowSpeed.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+testWindowSpeed.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+testWindowSpeed.o: /usr/include/bits/types.h /usr/include/libio.h
+testWindowSpeed.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+testWindowSpeed.o: /usr/include/time.h /usr/include/sys/time.h
+testWindowSpeed.o: /usr/include/sys/select.h /usr/include/bits/select.h
+testWindowSpeed.o: /usr/include/bits/sigset.h /usr/include/bits/time.h
+testWindowSpeed.o: ../graphics/TestControl.h ../graphics/Control.h
+testWindowSpeed.o: /usr/include/sys/types.h /usr/include/endian.h
+testWindowSpeed.o: /usr/include/bits/endian.h /usr/include/sys/sysmacros.h
+testWindowSpeed.o: ../graphics/DeviseTypes.h /usr/include/values.h
+testWindowSpeed.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
+testWindowSpeed.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
+testWindowSpeed.o: /usr/include/bits/posix2_lim.h
+testWindowSpeed.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+testWindowSpeed.o: ../graphics/DevStatus.h ../graphics/VisualArg.h
+testWindowSpeed.o: ../graphics/ViewDir.h /usr/include/string.h
 testWindowSpeed.o: ../graphics/DList.h ../graphics/Exit.h
 testWindowSpeed.o: ../graphics/ClassDir.h ../graphics/Display.h
 testWindowSpeed.o: ../graphics/Geom.h /usr/include/math.h
-testWindowSpeed.o: /usr/include/huge_val.h /usr/include/endian.h
-testWindowSpeed.o: /usr/include/bytesex.h /usr/include/nan.h
-testWindowSpeed.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
-testWindowSpeed.o: /usr/include/ieee754.h /usr/include/ieee854.h
-testWindowSpeed.o: ../graphics/Dispatcher.h ../graphics/Journal.h
-testWindowSpeed.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-testWindowSpeed.o: ../graphics/Transform.h ../graphics/Pattern.h
-testWindowSpeed.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-testWindowSpeed.o: ../graphics/DevError.h /usr/include/errno.h
+testWindowSpeed.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
+testWindowSpeed.o: /usr/include/bits/mathcalls.h ../graphics/Dispatcher.h
+testWindowSpeed.o: ../graphics/Journal.h ../graphics/ViewWin.h
+testWindowSpeed.o: ../graphics/WindowRep.h ../graphics/Transform.h
+testWindowSpeed.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+testWindowSpeed.o: ../graphics/Compress.h ../graphics/DevError.h
+testWindowSpeed.o: /usr/include/errno.h /usr/include/bits/errno.h
 testWindowSpeed.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-testWindowSpeed.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
+testWindowSpeed.o: /usr/include/sys/param.h /usr/include/linux/param.h
+testWindowSpeed.o: /usr/include/asm/param.h ../graphics/ETkIfc.h
+testWindowSpeed.o: ../graphics/ETk.h ../graphics/Xdef.h
 testWindowSpeed.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 testWindowSpeed.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 testWindowSpeed.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h

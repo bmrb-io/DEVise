@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1999/05/04 17:16:52  wenger
+  Merged js_viewsyms_br thru js_viewsyms_br_1 (code for new JavaScreen
+  protocol that deals better with view symbols).
+
   Revision 1.21.2.1  1999/03/15 22:13:13  wenger
   Fixed problems with view origin and data area origin for JavaScreen
   sessions.
@@ -134,7 +138,7 @@
 #if defined(SGI)
 #include <stdarg.h>
 #endif
-#if defined(SGI) || defined(OSF) || defined(SUN)
+#if defined(SGI) || defined(OSF) || defined(SUN) || defined(LINUX)
 #include <sys/param.h> // for MAXHOSTNAMELEN
 #endif
 #if defined(OSF)

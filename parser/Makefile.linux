@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.7  1997/11/12 15:49:12  wenger
+# Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+# into the trunk.
+#
 # Revision 1.6.2.1  1997/10/30 20:17:42  wenger
 # Got DEVise to compile, link, and run on sun and linux; compiles but
 # doesn't link on hp (can't find memory mapping functions).  This includes
@@ -37,19 +41,33 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-codegen.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-codegen.o: /usr/include/sys/cdefs.h /usr/include/string.h
-codegen.o: /usr/include/features.h
-codegen.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-codegen.o: /usr/include/stdlib.h /usr/include/errno.h
-codegen.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-codegen.o: /usr/include/alloca.h parse.h codegen.h
-main.o: parse.h /usr/include/stdio.h /usr/include/libio.h
-main.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
-parse.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-parse.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
-parse.o: /usr/include/features.h
-parse.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-parse.o: /usr/include/errno.h /usr/include/linux/errno.h
-parse.o: /usr/include/asm/errno.h /usr/include/alloca.h parse.h tokens.h
-parse.o: /usr/include/malloc.h codegen.h
+codegen.o: /usr/include/stdio.h /usr/include/features.h
+codegen.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+codegen.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+codegen.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+codegen.o: /usr/include/bits/types.h /usr/include/libio.h
+codegen.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+codegen.o: /usr/include/string.h /usr/include/stdlib.h
+codegen.o: /usr/include/sys/types.h /usr/include/time.h /usr/include/endian.h
+codegen.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+codegen.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+codegen.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h parse.h
+codegen.o: codegen.h
+main.o: parse.h /usr/include/stdio.h /usr/include/features.h
+main.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+main.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+main.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+main.o: /usr/include/bits/types.h /usr/include/libio.h
+main.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+parse.o: /usr/include/stdio.h /usr/include/features.h
+parse.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+parse.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+parse.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+parse.o: /usr/include/bits/types.h /usr/include/libio.h
+parse.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+parse.o: /usr/include/stdlib.h /usr/include/sys/types.h /usr/include/time.h
+parse.o: /usr/include/endian.h /usr/include/bits/endian.h
+parse.o: /usr/include/sys/select.h /usr/include/bits/select.h
+parse.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
+parse.o: /usr/include/alloca.h parse.h tokens.h /usr/include/malloc.h
+parse.o: codegen.h

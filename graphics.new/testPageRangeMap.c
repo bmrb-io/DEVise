@@ -16,11 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/28 16:10:32  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
   Revision 1.2  1995/09/05 22:16:46  jussi
   Added CVS header.
 */
 
-#include "PageRangeMap.h" 
+//#include "PageRangeMap.h" 
 
 const int MAX_PAGES = 100;
 

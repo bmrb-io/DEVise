@@ -4,15 +4,24 @@ depend:
 
 # DO NOT DELETE
 
-Buffer.o: Buffer.h DRSchema.h /usr/include/math.h /usr/include/features.h
-Buffer.o: /usr/include/sys/cdefs.h /usr/include/huge_val.h
-Buffer.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
-Buffer.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
-Buffer.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
-Buffer.o: DateTime.h
-DataReader.o: DataReader.h Buffer.h DRSchema.h DataReaderParser.h
+Buffer.o: /usr/include/math.h /usr/include/features.h
+Buffer.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+Buffer.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
+Buffer.o: /usr/include/bits/mathcalls.h
+Buffer.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
+Buffer.o: Buffer.h DRSchema.h DateTime.h
+DataReader.o: DataReader.h DRSchema.h Buffer.h DataReaderParser.h
 DataReader.o: /usr/include/assert.h /usr/include/features.h
-DataReader.o: /usr/include/sys/cdefs.h /usr/include/FlexLexer.h
+DataReader.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+DataReader.o: /usr/include/FlexLexer.h
 DateTime.o: DateTime.h
 Schema.o: DRSchema.h DateTime.h
-testParser.o: DataReader.h Buffer.h DRSchema.h
+datareader.tab.o: DataReaderParser.h /usr/include/assert.h
+datareader.tab.o: /usr/include/features.h /usr/include/sys/cdefs.h
+datareader.tab.o: /usr/include/gnu/stubs.h DRSchema.h
+datareader.tab.o: /usr/include/FlexLexer.h /usr/include/stdio.h
+datareader.tab.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+datareader.tab.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+datareader.tab.o: /usr/include/bits/types.h /usr/include/libio.h
+datareader.tab.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+testParser.o: DataReader.h DRSchema.h DateTime.h
