@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/12/03 20:28:48  jussi
+  Initial revision.
+*/
 
 #include <memory.h>
 
@@ -31,25 +34,20 @@ MemMgr::MemMgr(int numPages, int pageSize, int &status) :
 {
     _instance = this;
 
-    status = Initialize();
+    status = SetupSharedMemory();
+    if (status < 0)
+        status = SetupLocalMemory();
+    if (status >= 0)
+        status = Initialize();
 }
 
-int MemMgr::Initialize()
+int MemMgr::SetupSharedMemory()
 {
-    int status;
-    _sem = new SemaphoreV(Semaphore::newKey(), status, 1);
-    if (!_sem || status < 0) {
-      fprintf(stderr, "Cannot create semaphore\n");
-      return -1;
+    if (SemaphoreV::numAvailable() < 2) {
+        fprintf(stderr,
+                "Unable to use shared memory. Using local memory instead.\n");
+        return -1;
     }
-    _sem->setValue(1);
-
-    _free = new SemaphoreV(Semaphore::newKey(), status, 1);
-    if (!_free || status < 0) {
-      fprintf(stderr, "Cannot create semaphore\n");
-      return -1;
-    }
-    _free->setValue(0);
 
     // We need space for page and also address in _freePage
     int size = _numPages * _pageSize
@@ -59,7 +57,7 @@ int MemMgr::Initialize()
     key_t _shmKey = SharedMemory::newKey();
     int created = 0;
     _shm = new SharedMemory(_shmKey, size, _buf, created);
-    if (!_shm) {
+    if (!_shm || !_buf) {
       fprintf(stderr, "Cannot create shared memory\n");
       return -1;
     }
@@ -69,11 +67,52 @@ int MemMgr::Initialize()
     printf("Created a %d-byte shared memory segment at 0x%p\n", size, _buf);
 #endif
 
-    if (!_buf) {
-      fprintf(stderr, "Failed to get shared memory\n");
+    int status;
+    _sem = new SemaphoreV(Semaphore::newKey(), status, 1);
+    if (!_sem || status < 0) {
+      fprintf(stderr, "Cannot create semaphore\n");
+      delete _shm;
       return -1;
     }
+    _sem->setValue(1);
 
+    _free = new SemaphoreV(Semaphore::newKey(), status, 1);
+    if (!_free || status < 0) {
+      fprintf(stderr, "Cannot create semaphore\n");
+      delete _shm;
+      _sem->destroy();
+      delete _sem;
+      return -1;
+    }
+    _free->setValue(0);
+}
+
+int MemMgr::SetupLocalMemory()
+{
+    // Make sure we don't reference (deleted) shared memory structures
+    _shm = 0;
+    _sem = 0;
+    _free = 0;
+
+    // We need space for page and also address in _freePage
+    int size = _numPages * _pageSize
+               + _tableSize * (sizeof(char *) + sizeof(int))
+               + sizeof(CountStruct);
+
+    _buf = new char [size];
+    if (!_buf) {
+      fprintf(stderr, "Cannot allocate local memory\n");
+      return -1;
+    }
+#if DEBUGLVL >= 1
+    printf("Created a %d-byte local memory buffer at 0x%p\n", size, _buf);
+#endif
+
+    return 0;
+}
+
+int MemMgr::Initialize()
+{
 #if DEBUGLVL >= 1
     printf("Initializing memory manager\n");
 #endif
@@ -111,10 +150,12 @@ MemMgr::~MemMgr()
 {
     delete _shm;
 
-    _sem->destroy();
+    if (_sem)
+        _sem->destroy();
     delete _sem;
 
-    _free->destroy();
+    if (_free)
+        _free->destroy();
     delete _free;
 }
 

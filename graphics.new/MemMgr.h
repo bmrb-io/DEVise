@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/12/03 20:28:49  jussi
+  Initial revision.
+*/
 
 #ifndef MemMgr_h
 #define MemMgr_h
@@ -82,16 +85,18 @@ class MemMgr {
     static MemMgr *Instance() { return _instance; }
 
   protected:
-    // Initialization
+    // Allocation and initialization
+    int SetupSharedMemory();
+    int SetupLocalMemory();
     int Initialize();
 
     // Acquire and release mutex
-    void AcquireMutex() { _sem->acquire(1); }
-    void ReleaseMutex() { _sem->release(1); }
+    void AcquireMutex() { if (_sem) _sem->acquire(1); }
+    void ReleaseMutex() { if (_sem) _sem->release(1); }
 
     // Acquire and release free semaphore
-    void AcquireFree() { _free->acquire(1); }
-    void ReleaseFree() { _free->release(1); }
+    void AcquireFree() { if (_free) _free->acquire(1); }
+    void ReleaseFree() { if (_free) _free->release(1); }
 
     // Number of memory pages, free page table size, and page size
     const int _numPages;
