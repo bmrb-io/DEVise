@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.52  1997/01/24 21:19:03  wenger
+  Fixed memory leak in X font handling code; noted other minor leaks.
+
   Revision 1.51  1997/01/23 19:26:58  jussi
   Disabled debugging message in ReportQueryElapsedTime().
 
@@ -941,7 +944,7 @@ void QueryProcFull::ProcessScan(QPFullData *query)
                     x = ((GDataBinRec *)buf)->x;
                 }
                 if (x > query->filter.xHigh) {
-#if DEBUGLVL >= 0
+#if DEBUGLVL >= 3
                     printf("Query finished (%g > %g)\n",
                            x, query->filter.xHigh);
 #endif
