@@ -32,10 +32,10 @@ sleep 5
 
 rmmem
 
-generic/devised -port 6101 -switchport 6201 &
+generic/devised -port 6105 -switchport 6205 &
 sleep 5
-generic/devise -p 6101 &
+generic/devise -p 6105 &
 
-generic/devised -port 6102 &
+generic/devised -port 6106 -switchport 6206 &
 sleep 5
-generic/devise -p 6102 &
+generic/devise -p 6106 &

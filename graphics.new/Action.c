@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1998/03/18 08:20:10  zhenhai
+  Added visual links between 3D graphics.
+
   Revision 1.25  1998/03/05 08:10:51  zhenhai
   Added ability to view 3D graphs from six directions. Use -gl option to run,
   and click key x,y,z and X,Y,Z to select the direction you are viewing.
@@ -144,6 +147,11 @@
 void Action::AreaSelected(ViewGraph *view, Coord xlow, Coord ylow,
 			  Coord xhigh, Coord yhigh, int button)
 {
+#if defined(DEBUG)
+  printf("Action::AreaSelected(%s: (%f, %f); (%f, %f))\n", view->GetName(),
+      xlow, ylow, xhigh, yhigh);
+#endif
+
   if (xlow == xhigh || ylow == yhigh) {
     return;
   }

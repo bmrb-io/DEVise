@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.61  1998/03/26 15:21:33  zhenhai
+#  The cursor drawings now use CursorStore as backup instead of using
+#  XOR mode for drawing and erasing.
+#
 #  Revision 1.60  1998/03/11 18:25:38  wenger
 #  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
 #  reducing include dependencies between csgroup code and the rest of
@@ -184,6 +188,7 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics  -I../../graphics.new \
 	-I../../generic \
 	-I../../util -I../../tape -I../../DTE/StandAlone \
 	-I../../LM/C++ \
+	-I../../csgroup/export \
 	$(GLINCLUDE) \
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX -DGRAPHICS \
 	-DNEW_LAYOUT

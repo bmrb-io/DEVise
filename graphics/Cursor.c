@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/03/26 15:21:20  zhenhai
+  The cursor drawings now use CursorStore as backup instead of using
+  XOR mode for drawing and erasing.
+
   Revision 1.11  1997/11/24 23:14:11  weaver
   Changes for the new ColorManager.
 
@@ -69,6 +73,8 @@
 #include "Cursor.h"
 #include "View.h"
 #include "Color.h"
+#include "CmdContainer.h"
+#include "CommandObj.h"
 
 //******************************************************************************
 // Constructors and Destructors
@@ -234,7 +240,12 @@ void DeviseCursor::MoveSource(Coord x, Coord y)
       (void)_dst->HideCursors();
     }
 
-    _src->SetVisualFilter(filter);
+    if (cmdContainerp->getMake() == CmdContainer::CSGROUP) {
+      CommandObj *    cmdObj = GetCommandObj();
+      cmdObj->SetVisualFilter(_src, &filter);
+    } else if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC) {
+      _src->SetVisualFilter(filter);
+    }
   }
 }
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.74  1998/03/18 08:20:17  zhenhai
+  Added visual links between 3D graphics.
+
   Revision 1.73  1998/03/08 00:01:14  wenger
   Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
   update problems) -- major changes to visual links.
@@ -333,6 +336,8 @@
 #include "TData.h"
 #include "Util.h"
 #include "AssoArray.h"
+#include "CommandObj.h"
+#include "CmdContainer.h"
 
 #include "MappingInterp.h"
 #include "CountMapping.h"
@@ -853,7 +858,12 @@ void ViewGraph::GoHome()
 
 	}
 
-        SetVisualFilter(filter);
+        if (cmdContainerp->getMake() == CmdContainer::CSGROUP) {
+          CommandObj *    cmdObj = GetCommandObj();
+          cmdObj->SetVisualFilter(this, &filter);
+        } else if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC) {
+          SetVisualFilter(filter);
+        }
     } else {
         Camera c=GetCamera();
         c.fx = 0;
@@ -927,8 +937,15 @@ void ViewGraph::PanLeftOrRight(PanDirection direction)
 
       filter.xLow += panFactor * panDist;
       filter.xHigh = filter.xLow + width;
-      SetVisualFilter(filter);
+
+      if (cmdContainerp->getMake() == CmdContainer::CSGROUP) {
+        CommandObj *    cmdObj = GetCommandObj();
+        cmdObj->SetVisualFilter(this, &filter);
+      } else if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC) {
+        SetVisualFilter(filter);
+      }
     } else { 
+      // Note: this will fail for collaboration.  RKW 3/31/98.
       Camera camera = GetCamera();
       camera.pan_right+=0.10*panFactor;
       SetCamera(camera);
