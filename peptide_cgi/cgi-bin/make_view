@@ -19,7 +19,7 @@
 #   number - the number of the file, ie 4101
 
 #  can call using
-#  http://pumori/cgi-bin/bmrb/make_view?number=4101
+#  http://pumori.cs.wisc.edu/cgi-bin/bmrb/make_view?number=4101
 
 ############################################################
 
@@ -48,7 +48,7 @@ chdir ($data_dir)
   or dienice('Could not change to data directory ($data_dir)');
 
 # If the summary page for this accession number already exists, assume
-# that we don't have to do anything.
+# that we don't have to generate data and specific html pages.
 if (! -e $summary_page) {
   if (system ("./summarize $acc_no" ) ) {
     my ($tmpmsg);
@@ -226,7 +226,7 @@ sub gen_html {
     <script language="JavaScript">
       <!--
       function openhelp() {
-      newwin= window.open("http://pumori.cs.wisc.edu/bmrb/help.html",
+      newwin= window.open("help.html",
       "per",
       "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=300,height=300");
       // -->
@@ -240,6 +240,8 @@ sub gen_html {
       popupvar3 = 'Explanations for plots';
       popupvar4 = 'DEVise home page';
     </script>
+    <div id="popup" style="position:absolute; z-index:1;
+      visibility: hidden"></div>
 
     <center>
     <table border=0 width=500>
@@ -266,9 +268,6 @@ sub gen_html {
 	      onMouseOver="popupon(popupvar4, document.all 
 	      || document.layers?event:null)">
 	      <img border=0 src="devise_logo.jpg"></a></td>
-	  <div id="popup" style="position:absolute; z-index:1;
-	    visibility: hidden"></div>
-
 	</tr>
       </table>
     </center>

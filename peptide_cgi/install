@@ -68,7 +68,7 @@ if (! -e $targetdir) then
   # Needed so www-user can write here.
   fs setacl $targetdir system:anyuser write
 endif
-cp -p html/[a-z]* $targetdir
+cp -p html/* $targetdir
 chmod 755 $targetdir/summarize
 
 # Create and set up the java classes directory.
