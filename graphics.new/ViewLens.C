@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/02/14 16:47:49  wenger
+  Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+
   Revision 1.4  1997/02/03 19:45:38  ssl
   1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
   2) ViewLens.[Ch] : new implementation of piled views
@@ -46,7 +49,7 @@
 #include "Util.h"
 #include "RecordLink.h"
 
-#define DEBUG
+//#define DEBUG
 
 ViewLens::ViewLens(char *name, VisualFilter &initFilter, 
             	   QueryProc *qp,  
@@ -580,7 +583,7 @@ void ViewLens::ReturnGData(TDataMap *mapping, RecId recId,
   }
 }
 
-void ViewLens::QueryDone(int bytes, void *userData)
+void ViewLens::QueryDone(int bytes, void *userData, TDataMap *map=NULL)
 {
 #ifdef DEBUG
   printf("ViewLens::Query done, index = %d, bytes = %d\n", _index, bytes);

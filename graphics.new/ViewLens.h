@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/02/03 19:45:39  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
   Revision 1.2  1996/12/02 16:54:32  wenger
   Fixed compile warning; added standard headers to some files;
   conditionaled out debug code.
@@ -31,6 +37,7 @@
 
 #include "QueryProc.h"
 #include "ViewGraph.h"
+#include "TDataViewX.h"
 #include "GDataBin.h"
 #include "WindowRep.h"
 #include "DList.h"
@@ -157,7 +164,7 @@ protected:
   virtual void *GetObj() { return this; }
   
   /* Done with query */
-  virtual void QueryDone(int bytes, void *userData);
+  virtual void QueryDone(int bytes, void *userData, TDataMap *map=NULL);
   virtual RecordLinkList *GetRecordLinkList() { 
       if ( _curView ) {
         return _curView->SlaveLinkList();
