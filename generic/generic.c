@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1996/10/04 18:07:35  guangshu
+  Some improvement in openning composite.ini.
+
   Revision 1.35  1996/09/16 21:30:49  wenger
   Added YyDdd_HhMmComposite composite parser for dates of the form YYDDD, HHMM
   (needed for Soil Science).
@@ -499,15 +502,15 @@ private:
 /* User composite function for dates computed as the number of days
    from October 1, 1992 (that's when the Lands' End date begins) */
 
-class LandsendDateDiffComposite : public UserComposite {
+class MailorderDateDiffComposite : public UserComposite {
 public:
 
-  LandsendDateDiffComposite() {
+  MailorderDateDiffComposite() {
     _init = false;
     attrOffset = 0;
   }
 
-  virtual ~LandsendDateDiffComposite() {
+  virtual ~MailorderDateDiffComposite() {
     delete attrOffset;
   }
 
@@ -1225,8 +1228,8 @@ int main(int argc, char **argv)
   		CompositeParser::Register(schemaChar,new IBMAddressTraceComposite2);
   	else if (parserName.matches("IBMAddressTraceComposite"))
   		CompositeParser::Register(schemaChar,new IBMAddressTraceComposite);
-  	else if (parserName.matches("LandsendDateDiffComposite"))
-  		CompositeParser::Register(schemaChar,new LandsendDateDiffComposite);
+  	else if (parserName.matches("MailorderDateDiffComposite"))
+  		CompositeParser::Register(schemaChar,new MailorderDateDiffComposite);
    }
   /* Register known query processors */
   

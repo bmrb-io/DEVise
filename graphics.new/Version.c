@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/10/08 21:49:10  wenger
+  ClassDir now checks for duplicate instance names; fixed bug 047
+  (problem with FileIndex class); fixed various other bugs.
+
   Revision 1.12  1996/10/04 19:58:50  wenger
   Temporarily (?) removed threads from Devise (removed -lpthread from
   some Makefiles so Purify works); other minor cleanups.
@@ -90,7 +94,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.1.12";
+static const char *	version = "1.1.13";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";
