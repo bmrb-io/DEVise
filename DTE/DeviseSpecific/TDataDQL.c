@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/09/17 02:36:07  donjerko
+  *** empty log message ***
+
   Revision 1.22  1997/09/05 22:56:17  donjerko
   *** empty log message ***
 
@@ -312,20 +315,19 @@ Boolean TDataDQL::LastID(RecId &recId)
   return (_totalRecs > 0);
 }
 
-TData::TDHandle TDataDQL::InitGetRecs(double lowVal, double highVal,
+TData::TDHandle TDataDQL::InitGetRecs(Range *range,
                                  Boolean asyncAllowed,
-                                 ReleaseMemoryCallback *callback,
-                                 char *AttrName)
+                                 ReleaseMemoryCallback *callback)
 {
 	
 #if defined(DEBUG)
-  cerr << "TDataDQL::InitGetRecs(" << lowVal << ", " << highVal << ")\n";
+  cerr << "TDataDQL::InitGetRecs(" << range->Low << ", " << range->High << ")\n";
 #endif
 
-  if (!strcmp(AttrName,"recId")) { // recId stuff
+  if (!strcmp(range->AttrName,"recId")) { // recId stuff
 	//cout << "*********** double is functioning in TDataDQL. **********\n";
-  RecId lowId = (RecId)lowVal;
-  RecId highId = (RecId)highVal;
+  RecId lowId = (RecId)(range->Low);
+  RecId highId = (RecId)(range->High);
 
   DOASSERT((long)lowId < _totalRecs && (long)highId < _totalRecs
 	   && highId >= lowId, "Invalid record parameters");
@@ -336,7 +338,8 @@ TData::TDHandle TDataDQL::InitGetRecs(double lowVal, double highVal,
   req->nextVal = lowId;
   req->endVal = highId;
   req->relcb = callback;
-  req->AttrName = "recId";
+  req->AttrName = range->AttrName;
+  req->granularity = range->Granularity;
 
   _nextToFetch = lowId;
 //  Issue a query to the engine;
@@ -360,7 +363,7 @@ TData::TDHandle TDataDQL::InitGetRecs(double lowVal, double highVal,
 		cerr << cumRecs << " records retreived (" << percent << "%) ";
 		cerr << "dte called " << entryCount << " times" << endl;
 	}
-	cumRecs += highVal - lowVal + 1;
+	cumRecs += range->High - range->Low + 1;
 #endif
 
   if(!engine){
@@ -391,35 +394,35 @@ CATCH(
   
   else
   {
-                cout << "Only recId is implemented right now.";
+                cout << "TDataDQL: Only recId is implemented right now.\n";
                 exit (1);
    }
 }
 
 Boolean TDataDQL::GetRecs(TDHandle req, void *buf, int bufSize, 
-			  double &startVal, int &numRecs, int &dataSize)
+			  Range *range, int &dataSize)
 {
   DOASSERT(req, "Invalid request handle");
 
 	if (!strcmp(req->AttrName, "recId")) { // recId stuff
 
-  numRecs = bufSize / _recSize;
-  DOASSERT(numRecs, "Not enough record buffer space");
+  range->NumRecs = bufSize / _recSize;
+  DOASSERT(range->NumRecs, "Not enough record buffer space");
 
   if (req->nextVal > req->endVal)
     return false;
   
   int num = (int)(req->endVal) - (int)(req->nextVal) + 1;
-  if (num < numRecs)
-    numRecs = num;
+  if (num < range->NumRecs)
+    range->NumRecs = num;
   
   assert(_nextToFetch == (RecId)(req->nextVal));
 
-  ReadRec((RecId)(req->nextVal), numRecs, buf);
+  ReadRec((RecId)(req->nextVal), range->NumRecs, buf);
   
-  startVal = req->nextVal;
-  dataSize = numRecs * _recSize;
-  req->nextVal += numRecs;
+  range->Low = req->nextVal;
+  dataSize = range->NumRecs * _recSize;
+  req->nextVal += range->NumRecs;
   
   _bytesFetched += dataSize;
 
