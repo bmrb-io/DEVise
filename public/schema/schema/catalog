@@ -1,0 +1,17 @@
+a     QueryInterface     http://fontina.cs.wisc.edu/cgi-fontina/donko/script
+b     StandardTable      http://fontina.cs.wisc.edu/donko/standard2.dat
+c     DeviseTable  	 3d_test.schema     3d_test.dat
+d	 StandardTable      file:/p/coral/people/donjerko/Devise/solaris/test.txt
+ncdc  CGIInterface   http://www.ncdc.noaa.gov/cgi-bin/fsod_xmgr 6
+	stat3 "14837, WI MADISON DANE CNTY AP, 194801-199606, ABCDEFGHIJKLMNOP"
+	opt1 "(A) Daily Maximum Temperature"
+	year "1996"
+	mon1 "January"
+	mon2 "January"
+	format "GIF"
+test  CGIInterface   http://fontina.cs.wisc.edu/cgi-fontina/donko/test 0
+dbig    StandardTable 	http://fontina.cs.wisc.edu/donko/big.dat
+dbig2    StandardTable 	http://fontina.cs.wisc.edu/donko/big2.dat
+rbig   QueryInterface     http://fontina.cs.wisc.edu/cgi-fontina/donko/script 
+font     StandardTable          file:/local.fontina/www/public/donko/big.dat
+quarg StandardTable          file:/tmp/big.dat
