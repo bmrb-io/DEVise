@@ -1,0 +1,63 @@
+
+INCS = $(TCL_INCS) $(X_INCS) -I. -Iinclude
+CC = gcc
+CCC = g++
+LDFLAGS = -L. -lm $(TCL_LIBS) $(X_LIBS) $(SOCKET_LIBS)
+DEFINES = $(DEBUG_FLAG) $(ARCH_FLAGS)
+CFLAGS = -Wall -Wno-unused $(INCS) $(DEFINES)
+
+# The line below forces CompDate.c to always be compiled.
+FORCE_DATE = $(CCC) -c $(CFLAGS) CompDate.c
+
+ETK_OBJS = main.o EmbeddedTk.o TkWindowRep.o ETkCommands.o
+
+#
+# To compile the ETk server that support the Zoo object browser,
+# uncomment the following six lines, and set the locations of 
+# the Zoo shipping code and DEVise client-server library.
+#
+#SHIP_DIR = ../ShippingComm
+#CSLIB_DIR = ../devise-cslib
+#INCS += -I$(CSLIB_DIR) -I$(CSLIB_DIR)/include -I$(SHIP_DIR)/include
+#LDFLAGS += -L$(CSLIB_DIR) -lcs -L$(SHIP_DIR)/lib -lShippingComm
+#DEFINES += -DLIBCS -DRAWMOUSEEVENTS -DNEW_LIBCS -DZOOQUERY
+#ETK_OBJS += ETk_DeviseClient.o ZooCommands.o
+
+.c.o: 
+	$(CCC) -c $(CFLAGS) $<
+
+.C.o: 
+	$(CCC) -c $(CFLAGS) $<
+
+.o:
+	$(CCC) -o $@ $@.o $(LDFLAGS)
+
+default: EmbeddedTk
+all: EmbeddedTk SampleClient
+
+etk: EmbeddedTk
+client: SampleClient
+
+EmbeddedTk: $(ETK_OBJS)
+	$(FORCE_DATE)
+	$(CCC) -o EmbeddedTk $(ETK_OBJS) CompDate.o $(LDFLAGS)
+
+CLIENT_OBJS = SampleClient.o ETkPatron.o
+SampleClient: $(CLIENT_OBJS)
+	$(FORCE_DATE)
+	$(CCC) -o $@ $(CLIENT_OBJS) CompDate.o $(LDFLAGS)
+
+.PHONY: clean mostlyclean
+
+clean: mostlyclean
+	-rm core EmbeddedTk SampleClient
+
+mostlyclean:
+	-rm $(OBJ)
+	-rm *.o
+
+depend:
+	$(CCC) -M $(CFLAGS) *.[cC] > Makefile.depend
+
+include Makefile.depend
+

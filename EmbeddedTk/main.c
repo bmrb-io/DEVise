@@ -1,6 +1,7 @@
 
 #include "TkWindowRep.h"
 #include "EmbeddedTk.h"
+#include "CompDate.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -973,8 +974,6 @@ main(int argc, char *argv[])
 	fprintf(stderr, "listen() failed: %s\n", strerror(errno));
 	exit(1);
     }
-    fprintf(stderr, "EmbeddedTk server listening on port %u\n", 
-	    ntohs(servAddr.sin_port));
     ETk_ListenFD = listenFd;
 
     status = ETk_Init(display, g_LogFile);
@@ -993,6 +992,11 @@ main(int argc, char *argv[])
 			  TCL_READABLE,
 			  ServiceConnectionRequest, listenFd);
 #endif
+    
+    fprintf(stderr, "-----------------------------------------------------\n");
+    fprintf(stderr, " DEVise EmbeddedTk server\n");
+    fprintf(stderr, " Compile date: %s\n", CompDate::Get());
+    fprintf(stderr, "-----------------------------------------------------\n");
     
     //
     // Main loop

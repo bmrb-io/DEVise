@@ -2,14 +2,24 @@
 #include <iostream.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <string.h>
 #include "EmbeddedTk.h"
 #include "ETkPatron.h"
+#include "CompDate.h"
 
 void
 Help()
 {
     cout << "ETk commands:" << endl;
     cout << "  show file window x y width height anchor argc" << endl;
+    cout << "  free handle" << endl;
+    cout << "  eval handle argc" << endl;
+    cout << "  move handle x y" << endl;
+    cout << "  resize handle w h" << endl;
+    cout << "  moveresize handle x y w h" << endl;
+    cout << "  map handle" << endl;
+    cout << "  unmap handle" << endl;
+    cout << "  status" << endl;
 }
 
 /********************************************************
@@ -107,6 +117,11 @@ main()
     char c;
     char *server = "localhost";
     int port = ETK_PORT;
+    int argc;
+    int i;
+    
+    cout << "Sample client for the EmbeddedTk server" << endl;
+    cout << "Compile date: " << CompDate::Get() << endl;
     
     while (cin)
     {
@@ -131,7 +146,6 @@ main()
 	}
 	else if (strlen(cmd) > 0)
 	{
-	    cout << "Command: " << cmd << endl;
 	    if ((fd = ETkPatron(server, port, errbuf)) < 0)
 	    {
 		cout << "Could not connect to port " << port << " on "
@@ -142,8 +156,33 @@ main()
 		c = '\n';
 		MyWrite(fd, cmd, strlen(cmd));
 		MyWrite(fd, &c, 1);
+		argc = 0;
+		if (!strncmp(cmd, "show", 4))
+		{
+		    sscanf(cmd, "%*s %*s %*s %*s %*s %*s %*s %*s %d", &argc);
+		}
+		else if (!strncmp(cmd, "eval", 4))
+		{
+		    sscanf(cmd, "%*s %*s %d", &argc);
+		}
+		for (i = 0; i < argc; i++)
+		{
+		    cout << "(arg " << i << ") " << flush;
+		    eatwhite(cin);
+		    cin.get(cmd, ETK_MAX_STRLEN, '\n');
+		    if (cin.get(c) && c != '\n')
+		    {
+			cout << "Input string too long. max = "
+			    << ETK_MAX_STRLEN-1 << " characters." << endl;
+			while (cin.get(c) && c != '\n')
+			{
+			}
+		    }
+		    MyWrite(fd, cmd, strlen(cmd));
+		    MyWrite(fd, &c, 1);
+		}
 		newlinefd(reply, fd, ETK_MAX_STRLEN);
-		cout << "Reply: " << reply << endl;
+		cout << reply << endl;
 	    }
 	}
     }
