@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/07/23 19:34:08  beyer
+  Changed dispatcher so that pipes are not longer used for callback
+  requests from other parts of the code.
+
   Revision 1.28  1996/07/23 15:34:42  jussi
   Added mechanism for bypassing the Devise internal color map.
 
@@ -333,7 +337,12 @@ void XDisplay::ExportImage(DisplayExportFormat format,
   
   /* Convert pixmap to GIF and write to file */
 
-  ConvertAndWriteGIF(pixmap, xwa, filename);
+  FILE *fp = fopen(filename, "wb");
+  if (!fp) {
+  	fprintf(stderr, "Cannot open file %s for writing\n", filename);
+	return;
+  }
+  ConvertAndWriteGIF(pixmap, xwa, fp);
 
   /* Free gc and pixmap area */
 
@@ -345,7 +354,7 @@ void XDisplay::ExportImage(DisplayExportFormat format,
 
 void XDisplay::ConvertAndWriteGIF(Drawable drawable,
                                   XWindowAttributes xwa,
-                                  char *filename)
+                                  FILE *fp)
 {
   XImage *image = XGetImage(_display, drawable, 0, 0, xwa.width, xwa.height,
 			    AllPlanes, ZPixmap);
@@ -371,19 +380,13 @@ void XDisplay::ConvertAndWriteGIF(Drawable drawable,
   int colorstyle = -1;                  // use 1 for grayscale
   char *comment = "Visualization by DEVise (c) 1996";
 
-  FILE *fp = fopen(filename, "wb");
-  if (!fp) {
-    fprintf(stderr, "Cannot open file %s for writing\n", filename);
-    return;
-  }
-
   int status = WriteGIF(fp, grabPic, ptype, gWIDE, gHIGH,
 			grabmapR, grabmapG, grabmapB, ncolors,
 			colorstyle, comment);
   if (status)
     fprintf(stderr, "Cannot write GIF image\n");
 
-  fclose(fp);
+  if ( fp != stderr && fp != stdout ) fclose(fp);
 
   free(grabPic);
   grabPic = 0;
