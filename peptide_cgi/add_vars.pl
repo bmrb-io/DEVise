@@ -24,6 +24,8 @@
 
 ############################################################
 
+use strict;
+
 die "usage: add_vars.pl <variable file> <bond file> <bond+var file>\n"
   if ($#ARGV != 2);
 

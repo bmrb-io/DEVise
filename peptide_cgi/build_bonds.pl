@@ -20,6 +20,8 @@
 
 ############################################################
 
+use strict;
+
 die "usage: build_bonds.pl <connection file> <atom file> <bond file>\n"
   if ($#ARGV != 2);
 
