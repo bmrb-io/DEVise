@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/11/15 07:00:56  ravim
+  Outputs crsp data file.
+
   Revision 1.1  1995/11/10 18:49:48  jussi
   Initial revision.
 */
@@ -31,6 +34,8 @@
 
 #include "sec.h"
 #include "tapedrive.h"
+
+#define DEBUG
 
 static Tcl_Interp *globalInterp = 0;
 
@@ -72,7 +77,7 @@ int crsp_create(char *tapeDrive, char *tapeFile, char *tapeBsize,
   for (i = 0; i < num; i++) {
     spos_arr[i] = i * 2;
     // FIX: find offset matching CUSIP number from index file
-    offset_arr[i] = i * 400;
+    offset_arr[i] = 5492912; // i * 400;
   }
 
   // Now sort offset_arr - bubble sort for now
@@ -100,6 +105,9 @@ int crsp_create(char *tapeDrive, char *tapeFile, char *tapeBsize,
 
   // Extract every security in turn
   for (i = 0; i < num; i++) {
+#ifdef DEBUG
+    cout << "Seeking to offset " << offset_arr[spos_arr[i]] << endl;
+#endif
     if (tape.seek(offset_arr[spos_arr[i]]) != offset_arr[spos_arr[i]]) {
       cerr << "Error in seeking to tape position " << offset_arr[spos_arr[i]]
 	   << endl;
@@ -111,12 +119,14 @@ int crsp_create(char *tapeDrive, char *tapeFile, char *tapeBsize,
 	cerr << "Cannot create file " << argv[spos_arr[i] + 1] << endl;
 	perror("create");
       } else {
+#ifdef DEBUG
+	cout << "Extracting " << argv[spos_arr[i] + 1] << endl;
+#endif
 	s.print_security(outfile);
 	outfile.close();
       }
     }
   }
-
   free(offset_arr);
   free(spos_arr);
 
