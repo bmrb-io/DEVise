@@ -25,7 +25,7 @@ CursorClassInfo: CursorClassInfo.h ClassDir.h DeviseTypes.h VisualArg.h
 CursorClassInfo: Color.h Pattern.h Cursor.h DList.h Exit.h ViewCallback.h
 CursorClassInfo: Util.h
 DList: DList.h Exit.h
-DevError: DevError.h Init.h DeviseTypes.h BufPolicy.h
+DevError: DevError.h DeviseTypes.h Init.h BufPolicy.h
 DevisePixmap: Exit.h DevisePixmap.h VisualArg.h DeviseTypes.h Color.h
 DevisePixmap: Pattern.h Compress.h
 Dispatcher: Dispatcher.h DeviseTypes.h DList.h Exit.h Journal.h VisualArg.h

@@ -208,7 +208,14 @@ QueryProc: ../graphics/Color.h ../graphics/Pattern.h RecId.h DispQueryProc.h
 QueryProc: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
 QueryProc: ../graphics/Journal.h QueryProcSimple.h ../graphics/Config.h
 QueryProc: ../graphics/BufPolicy.h BufHint.h QueryProcFull.h QPRange.h
-QueryProc: ../graphics/Timer.h ../graphics/Init.h
+QueryProc: ../graphics/Timer.h ../graphics/Control.h ../graphics/ClassDir.h
+QueryProc: ViewGraph.h ../graphics/View.h ../graphics/ViewWin.h
+QueryProc: ../graphics/WindowRep.h ../graphics/Geom.h ../graphics/Transform.h
+QueryProc: ../graphics/DevisePixmap.h ../graphics/Compress.h
+QueryProc: ../graphics/ViewCallback.h ../graphics/AttrList.h
+QueryProc: ../graphics/Cursor.h BasicStats.h ViewStats.h Action.h TDataMap.h
+QueryProc: ShapeID.h Bitmap.h GDataRec.h TData.h RecOrder.h
+QueryProc: ../graphics/Init.h
 QueryProcFull: QueryProcFull.h QueryProc.h ../graphics/DeviseTypes.h
 QueryProcFull: ../graphics/VisualArg.h ../graphics/Color.h
 QueryProcFull: ../graphics/Pattern.h RecId.h QPRange.h ../graphics/DList.h
@@ -296,7 +303,7 @@ TDataAscii: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
 TDataAscii: ../graphics/Pattern.h TData.h RecId.h RecOrder.h
 TDataAscii: ../graphics/Util.h ../graphics/Init.h ../graphics/BufPolicy.h
 TDataAscii: DataSourceFileStream.h DataSource.h DataSourceSegment.h
-TDataAscii: DataSourceTape.h ../graphics/DevError.h DataSeg.h
+TDataAscii: DataSourceTape.h ../graphics/DevError.h DataSeg.h QueryProc.h
 TDataAsciiInterp: TDataAsciiInterp.h ../graphics/DeviseTypes.h
 TDataAsciiInterp: ../graphics/ClassDir.h TDataAscii.h
 TDataAsciiInterp: ../graphics/Dispatcher.h ../graphics/DList.h
@@ -313,7 +320,7 @@ TDataBinary: ../graphics/Color.h ../graphics/Pattern.h TData.h RecId.h
 TDataBinary: RecOrder.h ../graphics/Util.h ../graphics/Init.h
 TDataBinary: ../graphics/BufPolicy.h DataSourceFileStream.h DataSource.h
 TDataBinary: DataSourceSegment.h DataSourceTape.h ../graphics/DevError.h
-TDataBinary: DataSeg.h
+TDataBinary: DataSeg.h QueryProc.h
 TDataBinaryInterp: TDataBinaryInterp.h ../graphics/DeviseTypes.h
 TDataBinaryInterp: ../graphics/ClassDir.h TDataBinary.h
 TDataBinaryInterp: ../graphics/Dispatcher.h ../graphics/DList.h
