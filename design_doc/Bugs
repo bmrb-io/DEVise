@@ -1764,6 +1764,12 @@ Num Date        Status  Description
 			schemas. (rkw)
 			(Fixed by rkw, 2/8/99.)
 
+460 02/11/99	OPEN	Window layout GUI should be disabled if a window
+			is piled or stacked. (rkw)
+
+461 02/11/99	OPEN	Moving views in and out of a piled window sometimes
+			doesn't force a redraw when it should. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
