@@ -48,7 +48,7 @@ proc LayoutManager { w params} {
 	global opMode	
 	global moveStart
         
-        set name $defaultName
+	set name $defaultName
 	set rbdTag ""
 	set startIndex -1
 	set endIndex -1
@@ -86,6 +86,8 @@ proc LayoutManager { w params} {
 		    puts " rbdTag = $rbdTag"
                     puts " rbdtaglist = $taglist "
 		    set moveStart 1
+		} else {
+		    set moveStart 0
 		}
 	    }
 	}
@@ -150,7 +152,7 @@ proc LayoutManager { w params} {
 		}
 		$window delete $rbdTag
                 set nameTag [lindex $rbdObj 4]
-		set name [GetNameFromtag $window $nameTag]
+		set name [GetNameFromTag $window $nameTag]
 		$window delete $nameTag
 		if { [llength $nodeTagList([lindex $startNode 2])] == 2 } {
 		    $window delete [lindex $startNode 2]
@@ -302,8 +304,9 @@ proc LayoutManager { w params} {
     	    set opMode "create"
 	}
     }
-    button $w.quit -text  "Quit" -command { 
-	exit
+    button $w.quit -text  "Quit" -command {
+	global topwin
+	destroy $topwin
     }
 
     button $w.load -text  "Load" -command {
@@ -348,7 +351,7 @@ proc UpdateResizeRbd { w nodeIndex oldNode newNode rbdIndex name } {
     set color      [lindex $rbdObj 3]
     #puts "start $node1Index , end $node2Index "
 
-#    unset rbdTagList($oldTag)
+    unset rbdTagList($oldTag)
     if { $nodeIndex == $node1Index } {
 	#puts " changing start node "
     	set rbdTag [DrawRbd $w $newNode $nodeList($node2Index) $color]
@@ -364,7 +367,7 @@ proc UpdateResizeRbd { w nodeIndex oldNode newNode rbdIndex name } {
 	set rbdList($rbdIndex) [list $rbdTag $node1Index $nodeIndex \
                 $color $nameTag]
     }
-
+    set rbdTagList($rbdTag) $rbdIndex
     global DEViseLM
 
     if { $DEViseLM == 1 } {

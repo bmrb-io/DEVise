@@ -1,5 +1,5 @@
 ## layout manager interface
-source "$libdir/rbnd1.tk"
+source "$libdir/rbnd.tk"
 
 proc RootLayout {  } {
     global xscale yscale 
