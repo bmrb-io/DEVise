@@ -30,7 +30,7 @@ class cut_map_t
 class bulk_data_t
 {
   public:
-    bulk_data();
+    bulk_data_t();
 
     virtual ~bulk_data_t();
 
