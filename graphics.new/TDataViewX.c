@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/06/13 00:16:31  jussi
+  Added support for views that are slaves of more than one record
+  link. This allows one to express disjunctive queries.
+
   Revision 1.19  1996/05/31 15:41:25  jussi
   Added support for record links.
 
@@ -281,8 +285,10 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
       if (offset->colorOffset >= 0)
 	color = *(Color *)(tp + offset->colorOffset);
 
-      // eliminate records which don't match the filter's X range
-      if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh)
+      // compute statistics only for records that match the filter's
+      // X range and that exceed the Y low boundary
+      if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh
+	  && y >= _queryFilter.yLow)
 	_stats.Sample(x, y);
 
       // contiguous ranges which match the filter's X *and* Y range
