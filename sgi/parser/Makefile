@@ -15,13 +15,16 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1995/12/28 20:53:38  jussi
+#  Updated ARCH_FLAGS to reflect SGI platform.
+#
 #  Revision 1.1  1995/12/28 16:12:01  jussi
 #  Initial revision.
 #
 
 ############################################################
 
-ARCH_FLAGS = -DSGI -I../../parser -fno-for-scope
+ARCH_FLAGS = -DSGI -I../../parser
 
 VPATH = ../../parser
 include $(VPATH)/Makefile.base

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1995/12/28 21:53:43  jussi
+#  Added -I/usr/include compiler flag.
+#
 #  Revision 1.2  1995/12/28 20:53:36  jussi
 #  Updated ARCH_FLAGS to reflect SGI platform.
 #
@@ -25,7 +28,7 @@
 ############################################################
 
 ARCH_FLAGS = -DSGI -I/usr/include/X11 -I/usr/local/include \
-	-I/usr/include -fno-for-scope
+	-I/usr/include
 
 VPATH = ../../graphics
 include $(VPATH)/Makefile.base
