@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.55  2000/02/23 21:31:11  wenger
+  Re-implemented session description capability.
+
   Revision 1.54  2000/02/16 18:51:38  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -1922,6 +1925,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(getSessionDesc)
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(printInstances)
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

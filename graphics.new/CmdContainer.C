@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.61  2000/02/23 21:31:07  wenger
+  Re-implemented session description capability.
+
   Revision 1.60  2000/02/08 22:11:58  wenger
   Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
   edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
@@ -620,6 +623,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setViewHelp)
 	REGISTER_COMMAND(setSessionDesc)
 	REGISTER_COMMAND(getSessionDesc)
+	REGISTER_COMMAND(printInstances)
 }
 
 CmdContainer::~CmdContainer()

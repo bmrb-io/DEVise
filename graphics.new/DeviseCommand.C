@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.99  2000/02/23 21:31:07  wenger
+  Re-implemented session description capability.
+
   Revision 1.98  2000/02/16 18:51:37  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -2200,9 +2203,13 @@ DeviseCommand_destroy::Run(int argc, char** argv)
 {
     {
         {
-          _classDir->DestroyInstance(argv[1]);
-          ReturnVal(API_ACK, "done");
-          return 1;
+          if (_classDir->DestroyInstance(argv[1])) {
+              ReturnVal(API_ACK, "done");
+              return 1;
+		  } else {
+              ReturnVal(API_NAK, "Instance not found");
+              return -1;
+		  }
         }
     }
     return true;
@@ -6466,6 +6473,24 @@ IMPLEMENT_COMMAND_BEGIN(getSessionDesc)
         return 1;
 	} else {
 		fprintf(stderr, "Wrong # of arguments: %d in getSessionDesc\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(printInstances)
+    // Arguments: none
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 1) {
+		_classDir->Print();
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in printInstances\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  2000/03/14 17:05:04  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.27  2000/02/16 18:51:19  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -543,7 +547,7 @@ ClassDir::DestroyCategory(const char *categoryName)
 
 /* Destroy instance */
 
-void ClassDir::DestroyInstance(const char *name)
+Boolean ClassDir::DestroyInstance(const char *name)
 {
 #if defined(DEBUG)
   printf("ClassDir::DestroyInstance(%s)\n", name);
@@ -566,11 +570,16 @@ void ClassDir::DestroyInstance(const char *name)
 	  }
 	  classRec->_numInstances--;
 	  _instanceCount--;
-	  return;
+	  return true;
 	}
       }
     }
   }
+
+  char errBuf[256];
+  sprintf(errBuf, "Instance <%s> not found", name);
+  reportErrNosys(errBuf);
+  return false;
 }
 
 /* Destroy all transient classes */

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  2000/03/28 18:57:09  wenger
+  Increased max instances per class to 1000.
+
   Revision 1.13  2000/02/16 18:51:19  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -199,13 +202,13 @@ public:
 	/* Destroy all classes and instances in at category */
 	void DestroyCategory(const char *categoryName);
 
-	/* Destroy an instance */
-	void DestroyInstance(const char *instanceName);
+	/* Destroy an instance; returns true if okay */
+	Boolean DestroyInstance(const char *instanceName);
 
 	/* Destroy all transient classes */
 	void DestroyTransientClasses();
 
-	/* REturn true if instance is changeable */
+	/* Return true if instance is changeable */
 	Boolean Changeable(const char *name);
 
 	/* Change with params */
