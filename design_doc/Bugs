@@ -2984,6 +2984,10 @@ Num Date        Status  Description
 741 12/13/01	OPEN	Displaying a TData from the Edit dialog does not
 			work. (gk/rkw)
 
+742 12/18/01	OPEN	JavaScreen: change of mouse location causes
+			irritating flickering of the mouse location display
+			area even if display is disabled. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
