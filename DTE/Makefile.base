@@ -70,6 +70,8 @@ CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 #	TuplePtr.Plex.c TuplePtr.XPlex.c
 #	ApParseCat.c FunctionRead.c
 
+CORE_SRC_CPP = ODBCInterface.dummy.cpp
+
 STAND_ALONE_LIBS =
 
 ifdef NO_UNIDATA
@@ -90,41 +92,39 @@ DEVISE_SPECIFIC_SRC = \
 	
 GUI_SRC = CatalogComm.c DTEControl.c 
 
-GUI_OBJ = $(CORE_SRC:.c=.o) $(GUI_SRC:.c=.o) \
-	ParseAPIDTE_SA.o
+STAND_ALONE_SRC = Common.cpp
 
 ifdef NO_RTREE
 	CORE_SRC += RTreeRead.dummy.c IndexParse.dummy.c SBMInit.dummy.c
-	STAND_ALONE_SRC =
 else
 	CORE_SRC += RTreeRead.c IndexParse.c SBMInit.c
-	STAND_ALONE_SRC = 
 	STAND_ALONE_LIBS += -L../RTree -lrtree -lsbm
 endif
 
 SCRIPT_SRC = post-query.c util.c
 
-CORE_OBJ = $(CORE_SRC:.c=.o)
+CORE_OBJ = $(CORE_SRC:.c=.o) $(CORE_SRC_CPP:.cpp=.o)
 
-SCRIPT_OBJ = $(CORE_SRC:.c=.o) $(SCRIPT_SRC:.c=.o) \
+GUI_OBJ = $(CORE_OBJ) $(GUI_SRC:.c=.o) \
+	ParseAPIDTE_SA.o
+
+SCRIPT_OBJ = $(CORE_OBJ) $(SCRIPT_SRC:.c=.o) \
 	scriptServer.o
 
-SCRIPTSERVER_OBJ = $(CORE_SRC:.c=.o) $(SCRIPT_SRC:.c=.o) \
+SCRIPTSERVER_OBJ = $(CORE_OBJ) $(SCRIPT_SRC:.c=.o) \
 	scriptServer_CS.o
 
 SCRIPTCLIENT_SRC = scriptClient.c
 
 SCRIPTCLIENT_OBJ = $(SCRIPTCLIENT_SRC:.c=.o)
 
-LIBSRC = $(CORE_SRC) $(DEVISE_SPECIFIC_SRC)
+LIBOBJ = $(CORE_OBJ) $(DEVISE_SPECIFIC_SRC:.c=.o)
 
-LIBOBJ = $(LIBSRC:.c=.o)
-
-STAND_ALONE_OBJ = $(STAND_ALONE_SRC:.c=.o)
+STAND_ALONE_OBJ = $(STAND_ALONE_SRC:.cpp=.o)
 
 LIBNAME = libdte.a
 
-all: $(LIBNAME) unidata dte
+all: $(LIBNAME) unidata dte server
 lib: $(LIBNAME)
 
 .PHONY: unidata 
@@ -137,6 +137,10 @@ rtree:
 
 dte: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree
 	$(CC) -o dte $< $(STAND_ALONE_OBJ) $(CORE_OBJ) $(STAND_ALONE_LIBS) \
+	$(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+
+server: Server.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree
+	$(CC) -o $@ $< $(STAND_ALONE_OBJ) $(CORE_OBJ) $(STAND_ALONE_LIBS) \
 	$(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 pure: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/11/12 23:17:46  donjerko
+  Improved error checking.
+
   Revision 1.6  1997/11/05 00:20:25  donjerko
   Added some error checking calls to the DTE.
 
@@ -67,7 +70,7 @@ char* dteReadSQLFilter(const char* fileName);
 void dteCreateIndex(const char* tableName, const char* indexName, 
 	const char* keyAttrs, const char* dataAttrs, const char* isStandAlone);
 
-char* dteListAllIndexes();
+char* dteListAllIndexes(const char* tableName);
 
 char* dteShowIndexDesc(const char* tableName, const char* indexName);
 

@@ -22,6 +22,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/11/12 23:17:46  donjerko
+  Improved error checking.
+
   Revision 1.8  1997/11/05 00:20:27  donjerko
   Added some error checking calls to the DTE.
 
@@ -63,12 +66,6 @@ int ParseAPIDTE(int argc, char **argv, ControlPanel *control){
 
 	if (argc == 1) {
 
-		if(!strcmp(argv[0], "dteListAllIndexes")){
-			char* retVal = dteListAllIndexes();
-			control->ReturnVal(API_ACK, retVal);
-			return 1;
-		}
-		
 		// This is for DTE exit ONLY!
 		if(!strcmp(argv[0], "exit")){
 			char* retVal="";
@@ -78,6 +75,13 @@ int ParseAPIDTE(int argc, char **argv, ControlPanel *control){
 
 	}
 	if (argc == 2) {
+
+		if(!strcmp(argv[0], "dteListAllIndexes")){
+			char* retVal = dteListAllIndexes(argv[1]);
+			control->ReturnVal(API_ACK, retVal);
+			return 1;
+		}
+		
     if(!strcmp(argv[0], "dteDeleteCatalogEntry")){
       dteDeleteCatalogEntry(argv[1]);
       control->ReturnVal(API_ACK, "");

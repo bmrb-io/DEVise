@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/11/12 23:17:45  donjerko
+  Improved error checking.
+
   Revision 1.17  1997/11/05 00:20:24  donjerko
   Added some error checking calls to the DTE.
 
@@ -456,8 +459,9 @@ char* dteShowIndexDesc(const char* tableName, const char* indexName){
 	return strdup(retVal.c_str());
 }
 
-char* dteListAllIndexes(){
+char* dteListAllIndexes(const char* tableName){
 
+	return "This_Is_Not_Implemented_yet";
 	string query = "select t.table, t.name from .sysind as t";
 	char* retVal = executeQuery(query);
      CATCH(
