@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.40  1997/07/17 19:50:39  wenger
+#  Added menu selections to report number of strings and save string space.
+#
 #  Revision 1.39  1997/07/15 19:15:36  wenger
 #  All session files now saved as batch scripts instead of Tcl scripts.
 #
@@ -412,6 +415,13 @@ proc DoActualSave { infile asTemplate asExport withData asBatchScript } {
 	}
     }
 
+    #TEMPTEMP
+    #DEVise saveSession $infile $asTemplate $asExport $withData
+    #TEMPTEMP
+    #return
+
+#TEMPTEMP
+
     set f [open $infile w ]
 
     set header [DEVise getFileHeader session]
@@ -668,7 +678,8 @@ proc SaveOneSchema { fileId asExport schemaFile } {
 	puts $fileId "set logSchema($sname) \"$lschema\""
 	puts $fileId "DEVise parseSchema $sname \$physSchema($sname) \$logSchema($sname)"
     } elseif {[string index $schemaFile 0] == "." \
-    		&& [string index $schemaFile 1] != "/" } {
+    		&& [string index $schemaFile 1] != "/"
+		&& [string index $schemaFile 1] != "." } {
 
     # this is a hack to find out if dte has registered this schema
     # dte schemas are just the table names and therefore start with .
