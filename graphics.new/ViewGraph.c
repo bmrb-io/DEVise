@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.102  1999/04/14 15:30:19  wenger
+  Improved 'switch TData': moved the code from Tcl to C++, functionality
+  is more flexible -- schemas don't have to match exactly as long as the
+  appropriate TData attributes are present; TData can now be specified for
+  view symbols in parent view mapping; updated shape help.
+
   Revision 1.101  1999/04/05 21:09:47  wenger
   Fixed bug 476 ('home' on a visually-linked view now does home on the entire
   link as a unit) (removed the corresponding code from the PileStack class,
@@ -1873,8 +1879,8 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
 {
 #if defined(DEBUG)
   printf("ViewGraph(%s)::DerivedStartQuery()\n", GetName());
-  printf("Filter x: (%g, %g)\n", filter.xLow, filter.xHigh);
-  printf("Filter y: (%g, %g)\n", filter.yLow, filter.yHigh);
+  printf("  Filter x: (%g, %g)\n", filter.xLow, filter.xHigh);
+  printf("  Filter y: (%g, %g)\n", filter.yLow, filter.yHigh);
 #endif
 
   _queryFilter = filter;
@@ -1956,7 +1962,8 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
 void ViewGraph::DerivedAbortQuery()
 {
 #if defined(DEBUG)
-    printf("ViewGraph::DerivedAbortQuery(), index = %d\n", _index);
+    printf("ViewGraph(%s)::DerivedAbortQuery(), index = %d\n", GetName(),
+        _index);
 #endif
 
   if (_map) {
@@ -2077,6 +2084,9 @@ void	ViewGraph::QueryDone(int bytes, void* userData,
 
 	if (_homeAfterQueryDone) {
 	    GoHome();
+		// Make sure view redraws even if filter isn't changed.
+		// (Fixes bug 482.)
+		Refresh();
 	} else {
 	    PrepareStatsBuffer(map);
 	    DrawLegend();
