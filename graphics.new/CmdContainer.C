@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.48  1999/09/07 19:00:53  wenger
+  dteInsertCatalogEntry command changed to tolerate an attempt to insert
+  duplicate entries without causing a problem (to allow us to get rid of
+  Tcl in session files); changed Condor session scripts to take out Tcl
+  control statements in data source definitions; added viewGetImplicitHome
+  and related code in Session class so this gets saved in session files
+  (still no GUI for setting this, though); removed SEQ-related code.
+
   Revision 1.47  1999/08/19 20:46:34  wenger
   Added JAVAC_ProtocolVersion command.
 
@@ -250,8 +258,11 @@
 #include "CmdLog.h"
 #include "DeviseCommand.h"
 #include "Util.h"
+#include "DevError.h"
+#include "DebugLog.h"
 
 //#define DEBUG
+#define DEBUG_LOG
 
 static char* cmdLogBase ="/tmp/cmdLog.";
 
@@ -769,9 +780,12 @@ CmdContainer::RunOneCommand(int argc, char** argv, ControlPanel* control)
 	cmd = lookupCmd(argv[0]);
 	if (cmd == NULL)
 	{
-		fprintf(stderr, "Unrecognized command (%s)\n", argv[0]);
+        reportErrNosys("Unrecognized command");
 		fprintf(stderr, "Command is: ");
         PrintArgs(stderr, argc, argv, true);
+#if defined(DEBUG_LOG)
+		DebugLog::DefaultLog()->Message("Command: ", argc, argv);
+#endif
 		control->ReturnVal(API_NAK, "Unrecognized command");
 		retval = -1;
 	}
