@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.52  1998/07/30 15:31:24  wenger
+  Fixed bug 381 (problem with setting master and slave of a link to the same
+  view); generally cleaned up some of the master-slave link related code.
+
   Revision 1.51  1998/05/06 22:05:03  wenger
   Single-attribute set links are now working except where the slave of
   one is the master of another.
@@ -339,6 +343,7 @@ class ViewGraph : public View
 {
 		friend class ViewGraph_QueryCallback;
 		friend class SlaveTable;
+		friend class JavaScreenCmd; // for HandlePopUp
 
 	private:
 

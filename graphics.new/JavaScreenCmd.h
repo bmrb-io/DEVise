@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/08/13 18:14:46  wenger
+  More updates to JavaScreen support.
+
   Revision 1.9  1998/08/03 18:38:40  wenger
   Implemented JAVAC_ServerExit and JAVAC_SaveSession commands; partly
   implemented several other new commands for the JavaScreen.
@@ -183,7 +186,7 @@ class JavaScreenCmd
 		// Server->JavaScreen Control Commands
 		ControlCmdType RequestUpdateSessionList(int argc, char** argv);
 		ControlCmdType RequestCreateWindow(JavaWindowInfo& winInfo);
-		ControlCmdType RequestUpdateRecordValue(TDataVal tval);
+		ControlCmdType RequestUpdateRecordValue(int argc, char** argv);
 		ControlCmdType RequestUpdateGData(GDataVal gval);
 		ControlCmdType RequestUpdateWindow(char* winName, int imageSize);
 
