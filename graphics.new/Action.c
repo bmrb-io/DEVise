@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/06/20 21:39:30  jussi
+  Rewrote handling of camera movement in 3D views.
+
   Revision 1.6  1996/06/16 01:34:11  jussi
   Added handling of case where xlow == xhigh or ylow == yhigh
   in zooming functions.
@@ -350,6 +353,8 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
 	if (incr_ < 0.1)
 	  incr_ = 0.1;
 	camera._rho -= incr_;
+	if (camera._rho < 0.1)
+	  camera._rho = 0.1;
       }
       view->SetCamera(camera);
     }
