@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/09/27 15:53:20  wenger
+  Fixed a number of memory leaks.
+
   Revision 1.24  1996/07/19 02:53:41  jussi
   Increase number of shapes to 15 (LineShape and LineShadeShape
   were added). RecId is now the first GData attribute in all
@@ -205,12 +208,10 @@ public:
   virtual AttrInfo *MapGAttr2TAttr(char *attrName);
 
 protected:	
-  /* convert from Tdata to Gdata. buf contains
-     buffer for data. tRecs are pointers to variable size records only. */
+  /* convert from Tdata to Gdata. buf contains buffer for data. */
   /* WARNING: gdataPtr must be aligned on a double (8 byte) boundary. */
   virtual void ConvertToGData(RecId startRecId, void *buf,
-			      void **tRecs, int numRecs,
-			      void *gdataPtr);
+			      int numRecs, void *gdataPtr);
 
 private:
   /* Initialize command by converting _cmd into _tclCmd,
@@ -241,8 +242,8 @@ private:
   
   /* Do convert to GData for simple command */
   /* WARNING: gdataPtr must be aligned on a double (8 byte) boundary. */
-  void ConvertToGDataSimple(RecId startRecId,void *buf,
-			    void **tRecs,int numRecs,void *gdataPtr);
+  void ConvertToGDataSimple(RecId startRecId, void *buf,
+			    int numRecs, void *gdataPtr);
   
   /* Find size of GData given attribute flag information */
   FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,

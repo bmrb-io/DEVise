@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/11/22 20:41:09  flisakow
+  Made variants of the TDataAscii classes for sequential access,
+  which build no indexes.
+
+  ReadRec() method now returns a status instead of void for every
+  class that has the method.
+
   Revision 1.17  1996/10/04 17:24:16  wenger
   Moved handling of indices from TDataAscii and TDataBinary to new
   FileIndex class.
@@ -156,14 +163,9 @@ public:
 		recPtrs: pointer to records for variable size records.
 	**************************************************************/
 	virtual Boolean GetRecs(void *buf, int bufSize, RecId &startRid,
-		int &numRecs, int &dataSize, void **recPtrs);
+                                int &numRecs, int &dataSize);
 
 	virtual void DoneGetRecs() {}
-
-	/* Given buffer space and RecId, set the array "recPtrs" to
-	the address of individual records. For varialbe size records. */
-	virtual void GetRecPointers(RecId startId, int numRecs,
-				    void *buf, void **recPtrs);
 
 	/* get the time file is modified. We only require that
 	files modified later has time > files modified earlier. */

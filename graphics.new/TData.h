@@ -16,6 +16,13 @@
    $Id$
 
    $Log$
+   Revision 1.9  1996/11/22 20:41:06  flisakow
+   Made variants of the TDataAscii classes for sequential access,
+   which build no indexes.
+
+   ReadRec() method now returns a status instead of void for every
+   class that has the method.
+
    Revision 1.8  1996/11/12 17:21:24  jussi
    Put back the 'virtual' keyword from the int RecSize() declaration.
    It had somehow disappeared, with the result that GData was never
@@ -70,7 +77,6 @@ enum TD_Status {
 };
 
 class AttrList;
-const int MAX_TDATA_ATTRS = 256; /* max number of TData attributes allowed */
 
 class TData {
   public:
@@ -160,19 +166,12 @@ class TData {
       startRid : starting record ID of this batch 
       numRecs: number of records.
       dataSize: # of bytes taken up by data.
-      recPtrs: pointer to records for variable size records.
       **************************************************************/
     virtual Boolean GetRecs(void *buf, int bufSize, RecId &startRid,
-			    int &numRecs, int &dataSize, void **recPtrs)=0;
+			    int &numRecs, int &dataSize) = 0;
 
     virtual void DoneGetRecs() = 0;
 
-    /* Given buffer space and RecId, set the array "recPtrs" to
-       the address of individual records. For varialbe size records. */
-    virtual void GetRecPointers(RecId startId, int numRecs,
-				void *buf, void **recPtrs)=0;
-
-    
     /* For writing records. Default: not implemented. */
     virtual void WriteRecs(RecId startId, int numRecs, void *buf);
 

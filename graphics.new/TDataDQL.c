@@ -127,8 +127,7 @@ void TDataDQL::InitGetRecs(RecId lowId, RecId highId,RecordOrder order)
 }
 
 Boolean TDataDQL::GetRecs(void *buf, int bufSize, 
-			    RecId &startRid,int &numRecs, int &dataSize,
-			    void **recPtrs)
+			    RecId &startRid,int &numRecs, int &dataSize)
 {
   numRecs = bufSize / _recSize;
   DOASSERT(numRecs, "Not enough record buffer space");
@@ -160,12 +159,6 @@ Boolean TDataDQL::GetRecs(void *buf, int bufSize,
 
   
   return true;
-}
-
-void TDataDQL::GetRecPointers(RecId startId, int numRecs,
-				void *buf, void **recPtrs)
-{
-  DOASSERT(0, "Feature not implemented");
 }
 
 void TDataDQL::GetIndex(RecId id, int *&indices)

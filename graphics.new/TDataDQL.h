@@ -85,14 +85,9 @@ public:
 		recPtrs: pointer to records for variable size records.
 	**************************************************************/
 	virtual Boolean GetRecs(void *buf, int bufSize, RecId &startRid,
-		int &numRecs, int &dataSize, void **recPtrs);
+                                int &numRecs, int &dataSize);
 
 	virtual void DoneGetRecs() {}
-
-	/* Given buffer space and RecId, set the array "recPtrs" to
-	the address of individual records. For varialbe size records. */
-	virtual void GetRecPointers(RecId startId, int numRecs,
-				    void *buf, void **recPtrs);
 
 	/* get the time file is modified. We only require that
 	files modified later has time > files modified earlier. */

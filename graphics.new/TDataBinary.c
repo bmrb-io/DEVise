@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/11/22 20:41:10  flisakow
+  Made variants of the TDataAscii classes for sequential access,
+  which build no indexes.
+
+  ReadRec() method now returns a status instead of void for every
+  class that has the method.
+
   Revision 1.23  1996/11/18 22:50:32  jussi
   Added estimation of total number of records in data set.
 
@@ -297,8 +304,7 @@ void TDataBinary::InitGetRecs(RecId lowId, RecId highId, RecordOrder order)
 }
 
 Boolean TDataBinary::GetRecs(void *buf, int bufSize, 
-			     RecId &startRid, int &numRecs, int &dataSize,
-			     void **recPtrs)
+			     RecId &startRid, int &numRecs, int &dataSize)
 {
 #ifdef DEBUG
   printf("TDataBinary::GetRecs buf = 0x%p\n", buf);
@@ -323,12 +329,6 @@ Boolean TDataBinary::GetRecs(void *buf, int bufSize,
   _bytesFetched += dataSize;
   
   return true;
-}
-
-void TDataBinary::GetRecPointers(RecId startId, int numRecs,
-				 void *buf, void **recPtrs)
-{
-  DOASSERT(0, "Feature not implemented");
 }
 
 void TDataBinary::GetIndex(RecId id, int *&indices)

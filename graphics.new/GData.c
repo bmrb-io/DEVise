@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/11/12 17:19:47  jussi
+  Removed unnecessary methods which are already provided in the
+  base class (TData).
+
   Revision 1.11  1996/10/22 22:40:13  wenger
   Workaround for bug 053: GData constructor doesn't open GData file when
   '-convert 0' is specified on command line.
@@ -174,7 +178,7 @@ void GData::InitGetRecs(RecId lowId, RecId highId, RecordOrder order)
 }
 
 Boolean GData::GetRecs(void *buf, int bufSize, RecId &startRid,
-		       int &numFetched, int &dataFetched, void **recPtrs)
+		       int &numFetched, int &dataFetched)
 {
 #ifdef DEBUG
   printf("GData::GetRecs bufSize %d, %ld recs left, nex Id %ld\n", 
@@ -307,12 +311,6 @@ void GData::UpdateConversionInfo(RecId tLow, RecId tHigh,
   printf("GData: %s update %ld,%ld, %d left\n",GetName(), tLow, tHigh,
 	 _recsLeft);
 #endif
-}
-
-void GData::GetRecPointers(RecId startId, int numRecs, void *buf, 
-			   void **recPtrs)
-{
-  DOASSERT(0, "Invalid call");
 }
 
 void GData::InitConvertedIterator()

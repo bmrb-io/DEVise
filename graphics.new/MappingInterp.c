@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.43  1996/11/13 16:57:05  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.42  1996/11/07 22:40:29  wenger
   More functions now working for PostScript output (FillPoly, for example);
   PostScript output also working for piled views; PSWindowRep member
@@ -338,15 +348,15 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
 		TCL_LINK_DOUBLE);
     
     /* tcl variables used to store tdata variables */
-    _tclAttrs = new double [MAX_TDATA_ATTRS];
+    _tclAttrs = new double [DEVISE_MAX_TDATA_ATTRS];
     char buf[80];
-    for(int i = 0; i < MAX_TDATA_ATTRS; i++) {
+    for(int i = 0; i < DEVISE_MAX_TDATA_ATTRS; i++) {
       sprintf(buf, "interpAttr_%d", i);
       Tcl_LinkVar(_interp, buf, (char *)&_tclAttrs[i], TCL_LINK_DOUBLE);
     }
   }
 
-  _tdataFlag = new Bitmap(MAX_TDATA_ATTRS);
+  _tdataFlag = new Bitmap(DEVISE_MAX_TDATA_ATTRS);
   
   _offsets = new GDataAttrOffset;
   SetGDataOffset(_offsets);
@@ -521,17 +531,16 @@ void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
 */
 
 void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
-				   void **tRecs, int numRecs,
-				   void *gdataPtr)
+				   int numRecs, void *gdataPtr)
 {
-  /*
-     printf("ConvertToGdata id %d numRecs %d, buf 0x%p, gbuf 0x%p\n", 
-     startRecId, numRecs, buf, gdataPtr);
-  */
+#if defined(DEBUG)
+    printf("ConvertToGdata id %d numRecs %d, buf 0x%p, gbuf 0x%p\n", 
+           startRecId, numRecs, buf, gdataPtr);
+#endif
 
   if (_isSimpleCmd) {
     /* Do simple command conversion */
-    ConvertToGDataSimple(startRecId, buf, tRecs, numRecs, gdataPtr);
+    ConvertToGDataSimple(startRecId, buf, numRecs, gdataPtr);
     return;
   }
   
@@ -1490,8 +1499,7 @@ inline double ConvertOne(char *from, MappingSimpleCmdEntry *entry,
 }
 
 void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
-					 void **tRecs, int numRecs,
-					 void *gdataPtr)
+					 int numRecs, void *gdataPtr)
 {
 #ifdef DEBUG
   printf("ConvertToGdataSimple\n");

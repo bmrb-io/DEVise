@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/11/12 17:19:35  jussi
+  Removed unnecessary methods which are already provided in the
+  base class (TData).
+
   Revision 1.4  1996/06/24 19:41:54  jussi
   Cleaned up and removed unused code.
 
@@ -103,7 +107,7 @@ public:
 		recPtrs: pointer to records for variable size records.
 	**************************************************************/
 	virtual Boolean GetRecs(void *buf, int bufSize, RecId &startRid,
-		int &numRecs, int &dataSize, void **recPtrs);
+                                int &numRecs, int &dataSize);
 
 	virtual void DoneGetRecs();
 
@@ -111,12 +115,6 @@ public:
 
 	/* Do a checkpoint */
 	virtual void Checkpoint() {}
-
-
-	/* Get pointers to variable size records. Not implemented
-	for this one */
-	virtual void GetRecPointers(RecId startId, int numRecs,
-		void *buf, void **recPtrs);
 
 	/* For writing records. */
 	virtual void WriteRecs(RecId startId, int numRecs, void *buf);

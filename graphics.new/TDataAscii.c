@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.48  1996/11/22 20:41:08  flisakow
+  Made variants of the TDataAscii classes for sequential access,
+  which build no indexes.
+
+  ReadRec() method now returns a status instead of void for every
+  class that has the method.
+
   Revision 1.47  1996/11/19 15:23:46  wenger
   Conditionaled out some debug code.
 
@@ -398,8 +405,7 @@ void TDataAscii::InitGetRecs(RecId lowId, RecId highId,RecordOrder order)
 }
 
 Boolean TDataAscii::GetRecs(void *buf, int bufSize, 
-			    RecId &startRid,int &numRecs, int &dataSize,
-			    void **recPtrs)
+			    RecId &startRid,int &numRecs, int &dataSize)
 {
 #ifdef DEBUG
   printf("TDataAscii::GetRecs buf = 0x%p\n", buf);
@@ -424,12 +430,6 @@ Boolean TDataAscii::GetRecs(void *buf, int bufSize,
   _bytesFetched += dataSize;
   
   return true;
-}
-
-void TDataAscii::GetRecPointers(RecId startId, int numRecs,
-				void *buf, void **recPtrs)
-{
-  DOASSERT(0, "Feature not implemented");
 }
 
 void TDataAscii::GetIndex(RecId id, int *&indices)
