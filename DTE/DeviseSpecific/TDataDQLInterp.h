@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/02/18 18:06:38  donjerko
+  Added Drop Index command
+
   Revision 1.4  1997/02/03 04:09:03  donjerko
   Catalog management moved to DTE
 
@@ -49,7 +52,7 @@
 class TDataDQLInterpClassInfo: public ClassInfo {
 public:
   TDataDQLInterpClassInfo(char* tableName, const char* query);
-  TDataDQLInterpClassInfo(char *className,char * schemaFile,
+  TDataDQLInterpClassInfo(char *className,
   AttrList attrs,char * name,char * type,char *query,TData *tdata);
 
   virtual ~TDataDQLInterpClassInfo();
@@ -80,7 +83,6 @@ private:
   char *_query;
   char * _name;
   char * _className; 
-  char * _schemaFile; 
   char * _type;
   TData *_tdata;
   int _recSize;

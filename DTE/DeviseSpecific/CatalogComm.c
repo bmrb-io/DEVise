@@ -1,9 +1,6 @@
 #include <iostream.h>
 #include <strstream.h>
-#include "GroupDir.h"
-#include "Control.h"
 #include "CatalogComm.h"
-#include "TDataDQLInterp.h"
 #include "types.h"
 #include "exception.h"
 #include "Engine.h"
@@ -163,43 +160,6 @@ void dteInsertCatalogEntry(const char* catName, const char* values){
           cout << endl;
           exit(0);
      )
-}
-
-extern GroupDir* gdir;	// defined in graphics.new/ParseCat.c
-extern InsertCatFile(char* tableName);	// defined in graphics.new/ParseCat.c
-
-char* dteImportFileType(char* name){
-
-	cout << "in dteImportFileType(" << name << ")\n";
-	String query = "select * from " + String(name) + " as t";
-
-	gdir->add_entry(name);
-	TDataDQLInterpClassInfo* DQLclass;
-	DQLclass = new TDataDQLInterpClassInfo(name, query.chars());
-	
-	ControlPanel::RegisterClass(DQLclass,true);
-	InsertCatFile(strdup(name));
-	
-	if (Init::PrintTDataAttr()){
-		cout << "Should print attributes ?????????????????????" << endl;
-		//attrs->Print();
-	}
-
-	if (gdir->num_topgrp(name) == 0)
-	{
-	  Group *newgrp = new Group("__default", NULL, TOPGRP);
-	  gdir->add_topgrp(name,newgrp);
-
-	  AttrList attrs(*DQLclass->GetAttrList());
-	  int numAttrs = attrs.NumAttrs(); 
-
-	  for (int i=0; i < numAttrs; i++) {
-	    AttrInfo *iInfo = attrs.Get(i);
-            newgrp->insert_item(iInfo->name);
-	  }
-
-	}
-	return name;
 }
 
 char* dteShowAttrNames(const char* schemaFile, const char* dataFile){
