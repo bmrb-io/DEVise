@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.63  2002/03/12 19:49:58  wenger
+// Fixed bug 758 (caused by JAVAC_Set3DConfig not causing a client switch
+// but still sending a command to the DEVised); did some cleanup of the
+// DEViseClient class.
+//
 // Revision 1.62  2002/03/05 23:01:23  xuk
 // Resize JavaScreen after reloading jsb in browser.
 // Added DEViseJSTimer class in jsb.java to destroy applet after the applet
@@ -364,6 +369,7 @@ public class DEViseClient
 
     public boolean isAbleCollab = false;
     private String collabPass = null;
+    private String collabName = null;
     public boolean sessionSaved = false;
     public DEViseClient collabLeader = null;
 
@@ -562,6 +568,11 @@ public class DEViseClient
         return ID;
     }
 
+    public String getCollabName()
+    {
+        return collabName;
+    }
+
     public String getHostname()
     {
         return hostname;
@@ -751,6 +762,9 @@ public class DEViseClient
 			cmdBuffer.removeAllElements();
 			cmdBuffer.addElement(DEViseCommands.EXIT);
 			
+			// remove collab name for jspop
+			boolean f = pop.collabNames.removeElement(collabName);
+			pop.pn("Remove collab-name: " + f);
 			try {
 			    sendCmdToCollaborators(DEViseCommands.COLLAB_EXIT);
 			    sendCmdToCollaborators(DEViseCommands.DONE);
@@ -1149,13 +1163,20 @@ public class DEViseClient
                   " in DEViseClient.collaborate()");
             }
         } else {
-	    isAbleCollab = true;
-	
 	    String[] cmds = DEViseGlobals.parseString(command);
-	    collabPass = cmds[1];
-	    pop.pn("We get the collab passwd: " + collabPass);
+
 	    try {
-	        sendCmd(DEViseCommands.DONE);
+		if (pop.collabNames.contains(cmds[1])) {
+		    // can not have more than one collab leaders
+		    // with the same collab name
+		    sendCmd(DEViseCommands.RESET_COLLAB_NAME);
+		} else {
+		    isAbleCollab = true;
+		    collabName = cmds[1];
+		    collabPass = cmds[2];
+		    pop.collabNames.add(collabName);
+		}
+		sendCmd(DEViseCommands.DONE);
 	    } catch (YException e) {
 	        System.err.println("YException " + e.getMessage() +
 	          " in DEViseClient.setCollabPassword()");
