@@ -59,7 +59,7 @@
 //******************************************************************************
 
 #include "Color.h"
-#include "ColorManager.h"
+#include "../ColorManager.h"//TEMPTEMP -- this should be private to color
 
 #include <stl.h>
 #include <string>

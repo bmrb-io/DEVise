@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.51  1998/02/12 17:15:44  wenger
+# Merged through collab_br_2; updated version number to 1.5.1.
+#
 # Revision 1.50  1998/02/09 18:10:03  wenger
 # Removed ViewScatter class (totally replaced by ViewData, which is a
 # renamed version of TDataViewX); removed ViewRanges class (not used);
@@ -114,49 +117,24 @@ generic.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 generic.o: ../graphics/DeviseTypes.h /usr/include/values.h
 generic.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
 generic.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-generic.o: ../graphics/VisualArg.h ../graphics/Pattern.h ../src/color/Color.h
+generic.o: ../graphics/VisualArg.h ../graphics/Pattern.h
 generic.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/ViewWin.h
 generic.o: ../graphics/WindowRep.h ../graphics/Transform.h
 generic.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 generic.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
 generic.o: ../graphics/Xdef.h ../graphics/GraphicsDebug.h
-generic.o: ../src/color/Coloring.h ../graphics/Control.h
-generic.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
-generic.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
-generic.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
-generic.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
-generic.o: ../graphics.new/ViewGraph.h ../graphics.new/Action.h
-generic.o: ../graphics.new/RecId.h ../graphics.new/PointStorage.h
-generic.o: ../tape/HashTable.h ../graphics.new/ViewData.h
-generic.o: ../graphics.new/ViewLens.h ../graphics.new/CompositeParser.h
-generic.o: ../graphics.new/RecInterp.h ../graphics/AttrList.h
-generic.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
-generic.o: ../graphics.new/GDataRec.h ../graphics.new/TData.h
-generic.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
-generic.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-generic.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-generic.o: /usr/include/sys/unistd.h /usr/include/assert.h
-generic.o: /usr/include/limits.h /usr/include/sys/stat.h
-generic.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-generic.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-generic.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-generic.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-generic.o: /usr/include/netdb.h /usr/include/sys/socket.h
-generic.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-generic.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-generic.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-generic.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-generic.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-generic.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-generic.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-generic.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-generic.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-generic.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-generic.o: /usr/include/sys/byteorder.h ../graphics/CursorClassInfo.h
-generic.o: ../graphics.new/ParseCat.h ../graphics.new/DataSourceBuf.h
-generic.o: ../graphics.new/StringStorage.h StateMap.h ../graphics/Util.h
-generic.o: /usr/include/stdlib.h /usr/include/ctype.h ../graphics/XDisplay.h
-generic.o: ../graphics/XWindowRep.h ../graphics/XBitmap.h
+generic.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
+generic.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
+generic.o: ../graphics.new/MapInterpClassInfo.h
+generic.o: ../graphics.new/VisualLinkClassInfo.h
+generic.o: ../graphics.new/ViewClassInfo.h ../graphics.new/ViewGraph.h
+generic.o: ../graphics.new/Action.h ../graphics.new/RecId.h
+generic.o: ../graphics.new/PointStorage.h ../tape/HashTable.h
+generic.o: ../graphics.new/ViewData.h ../graphics.new/ViewLens.h
+generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
+generic.o: ../graphics/CursorClassInfo.h ../graphics.new/StringStorage.h
+generic.o: StateMap.h ../graphics/Util.h /usr/include/stdlib.h
+generic.o: /usr/include/ctype.h
 testWindowSpeed.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testWindowSpeed.o: /usr/include/sys/va_list.h /usr/include/time.h
 testWindowSpeed.o: /usr/include/sys/time.h /usr/include/sys/types.h
@@ -165,15 +143,15 @@ testWindowSpeed.o: /usr/include/sys/select.h ../graphics/TestControl.h
 testWindowSpeed.o: ../graphics/Control.h ../graphics/DeviseTypes.h
 testWindowSpeed.o: /usr/include/values.h ../graphics/DevStatus.h
 testWindowSpeed.o: ../graphics/VisualArg.h ../graphics/Pattern.h
-testWindowSpeed.o: ../src/color/Color.h ../graphics/DList.h
-testWindowSpeed.o: ../graphics/Exit.h ../graphics/ClassDir.h
-testWindowSpeed.o: ../graphics/Display.h ../graphics/Geom.h
-testWindowSpeed.o: /usr/include/math.h /usr/include/floatingpoint.h
-testWindowSpeed.o: /usr/include/sys/ieeefp.h ../graphics/Dispatcher.h
-testWindowSpeed.o: ../graphics/Journal.h ../graphics/ViewWin.h
-testWindowSpeed.o: ../graphics/WindowRep.h ../graphics/Transform.h
-testWindowSpeed.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-testWindowSpeed.o: ../graphics/DevError.h /usr/include/errno.h
-testWindowSpeed.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
-testWindowSpeed.o: /usr/include/string.h ../graphics/ETk.h ../graphics/Xdef.h
-testWindowSpeed.o: ../graphics/GraphicsDebug.h ../src/color/Coloring.h
+testWindowSpeed.o: ../graphics/DList.h ../graphics/Exit.h
+testWindowSpeed.o: ../graphics/ClassDir.h ../graphics/Display.h
+testWindowSpeed.o: ../graphics/Geom.h /usr/include/math.h
+testWindowSpeed.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+testWindowSpeed.o: ../graphics/Dispatcher.h ../graphics/Journal.h
+testWindowSpeed.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+testWindowSpeed.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+testWindowSpeed.o: ../graphics/Compress.h ../graphics/DevError.h
+testWindowSpeed.o: /usr/include/errno.h /usr/include/sys/errno.h
+testWindowSpeed.o: ../graphics/ETkIfc.h /usr/include/string.h
+testWindowSpeed.o: ../graphics/ETk.h ../graphics/Xdef.h
+testWindowSpeed.o: ../graphics/GraphicsDebug.h

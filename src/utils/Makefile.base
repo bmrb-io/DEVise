@@ -7,6 +7,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1998/02/19 23:26:22  wenger
+#  Improved color library and got client/server test code to work
+#  (except for setting colors by RGB): reduced compile interdependencies,
+#  especially in color library; color and utils libraries install headers
+#  as per code reorg plans; added standard DEVise headers to all color
+#  manager files; moved color initialization into Display constructors;
+#  fixed some compile warnings throughout the code.
+#
 #  Revision 1.6  1998/02/10 21:13:46  wenger
 #  Changed signatures of ReturnGData() in QueryCallback and its subclasses
 #  to pass back lists of records drawn (not implemented yet); moved
@@ -47,7 +55,7 @@
 
 include ../../Makefile.common
 
-UTILS_INCLUDES = -I../../src/color -I../../src/utils \
+UTILS_INCLUDES = -I../../src/color/export -I../../src/utils/export \
 	-I../../graphics -I../../graphics.new -I../../tape -I../../unidata
 
 TEMPLATE_FLAGS = -fno-implicit-templates
@@ -81,9 +89,6 @@ Makefile.depend: $(VPATH)/*.[cCh]
 $(LIBNAME)(templates.o):
 	$(CC) -c $(CFLAGS_T) $(VPATH)/templates.C $<
 	$(AR) cr $@ $%
-	cp -p $(VPATH)/manager.h ../../src/include
-	cp -p $(VPATH)/BooleanArray.h ../../src/include
-	cp -p $(VPATH)/debug.h ../../src/include
 
 #	$(RM) $%
 

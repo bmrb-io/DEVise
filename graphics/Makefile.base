@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.56  1998/02/20 06:16:40  beyer
+#  resurected histograms
+#
 #  Revision 1.55  1998/02/19 23:24:48  wenger
 #  Improved color library and got client/server test code to work
 #  (except for setting colors by RGB): reduced compile interdependencies,
@@ -158,7 +161,7 @@
 include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics  -I../../graphics.new \
-	-I../../src/include \
+	-I../../src/color/export \
 	-I../../generic \
 	-I../../util -I../../tape -I../../DTE/StandAlone \
 	-I../../LM/C++ \

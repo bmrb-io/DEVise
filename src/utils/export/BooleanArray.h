@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/13 15:52:02  wenger
+  Changed ViewData to be based on old ViewScatter class instead of
+  TDataViewX; ViewData now returns a list of the records drawn to
+  the query processor; removed unused GDataBinX class.
+
   Revision 1.1  1998/02/10 21:13:45  wenger
   Changed signatures of ReturnGData() in QueryCallback and its subclasses
   to pass back lists of records drawn (not implemented yet); moved

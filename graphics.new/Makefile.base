@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.71  1998/02/20 06:16:57  beyer
+#  resurected histograms
+#
 #  Revision 1.70  1998/02/19 23:25:12  wenger
 #  Improved color library and got client/server test code to work
 #  (except for setting colors by RGB): reduced compile interdependencies,
@@ -178,7 +181,7 @@ include ../../Makefile.common
 
 CFLAGS =  $(ARCH_FLAGS) \
 	-I../../graphics -I../../LM \
-	-I../../src/include \
+	-I../../src/color/export -I../../src/utils/export \
 	-I../../DTE/DeviseSpecific -I../../DTE/Core -I../../unidata \
 	-I../../csgroup\
 	-I../unidata\

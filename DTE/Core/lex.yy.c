@@ -470,6 +470,9 @@ char *yytext;
   $Id$
 
   $Log$
+  Revision 1.27  1998/02/17 23:09:13  donjerko
+  *** empty log message ***
+
   Revision 1.26  1998/02/09 21:12:19  donjerko
   Added Bin by clause and implementation.
 
@@ -542,7 +545,7 @@ char *yytext;
   changes to the my.yacc and my.lex to add sequenceby clause.
 
  */
-#line 92 "../../DTE/Core/my.lex"
+#line 95 "../../DTE/Core/my.lex"
 #include <string>
 #include <string>
 //#include <stdlib.h>   erased for sysdep.h
@@ -571,29 +574,7 @@ static int my_yyinput(char* buf, int max_size){
 #undef YY_INPUT
 #define YY_INPUT(buf, result, max_size) (result = my_yyinput(buf, max_size))
 
-string* stripSQLQuotes(const char* input){
-	string* retVal = new string;
-	char quote = input[0];
-	bool escape = false;
-	for(int i = 1; input[i] != '\0'; i++){
-		if(input[i] == quote){
-			if(!escape){
-				escape = true;
-			}
-			else{
-				*retVal += quote;
-				escape = false;
-			}
-		}
-		else{
-			assert(!escape);  // this should never fail
-			*retVal += input[i];
-		}
-	}
-	return retVal;
-}
-
-#line 597 "../../DTE/Core/lex.yy.c"
+#line 578 "../../DTE/Core/lex.yy.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -740,9 +721,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 150 "../../DTE/Core/my.lex"
+#line 131 "../../DTE/Core/my.lex"
 
-#line 746 "../../DTE/Core/lex.yy.c"
+#line 727 "../../DTE/Core/lex.yy.c"
 
 	if ( yy_init )
 		{
@@ -827,187 +808,187 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 151 "../../DTE/Core/my.lex"
+#line 132 "../../DTE/Core/my.lex"
 {}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 152 "../../DTE/Core/my.lex"
+#line 133 "../../DTE/Core/my.lex"
 {return SELECT;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 153 "../../DTE/Core/my.lex"
+#line 134 "../../DTE/Core/my.lex"
 {return FROM;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 154 "../../DTE/Core/my.lex"
+#line 135 "../../DTE/Core/my.lex"
 {return AS;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 155 "../../DTE/Core/my.lex"
+#line 136 "../../DTE/Core/my.lex"
 {return WHERE;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 156 "../../DTE/Core/my.lex"
+#line 137 "../../DTE/Core/my.lex"
 {return SEQUENCE;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 157 "../../DTE/Core/my.lex"
+#line 138 "../../DTE/Core/my.lex"
 {return GROUP;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 158 "../../DTE/Core/my.lex"
+#line 139 "../../DTE/Core/my.lex"
 {return BIN;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 159 "../../DTE/Core/my.lex"
+#line 140 "../../DTE/Core/my.lex"
 {return ORDER;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 160 "../../DTE/Core/my.lex"
+#line 141 "../../DTE/Core/my.lex"
 {return BY;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 161 "../../DTE/Core/my.lex"
+#line 142 "../../DTE/Core/my.lex"
 {return ASC;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 162 "../../DTE/Core/my.lex"
+#line 143 "../../DTE/Core/my.lex"
 {return DESC;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 163 "../../DTE/Core/my.lex"
+#line 144 "../../DTE/Core/my.lex"
 {return JOINPREV;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 164 "../../DTE/Core/my.lex"
+#line 145 "../../DTE/Core/my.lex"
 {return JOINNEXT;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 165 "../../DTE/Core/my.lex"
+#line 146 "../../DTE/Core/my.lex"
 {return OVER;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 166 "../../DTE/Core/my.lex"
+#line 147 "../../DTE/Core/my.lex"
 {return WITH;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 167 "../../DTE/Core/my.lex"
+#line 148 "../../DTE/Core/my.lex"
 {return HAVING;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 168 "../../DTE/Core/my.lex"
+#line 149 "../../DTE/Core/my.lex"
 {return AND;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 169 "../../DTE/Core/my.lex"
+#line 150 "../../DTE/Core/my.lex"
 {return OR;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 170 "../../DTE/Core/my.lex"
+#line 151 "../../DTE/Core/my.lex"
 {return CREATE;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 171 "../../DTE/Core/my.lex"
+#line 152 "../../DTE/Core/my.lex"
 {return DROP;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 172 "../../DTE/Core/my.lex"
+#line 153 "../../DTE/Core/my.lex"
 {return INDEX;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 173 "../../DTE/Core/my.lex"
+#line 154 "../../DTE/Core/my.lex"
 {return ON;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 174 "../../DTE/Core/my.lex"
+#line 155 "../../DTE/Core/my.lex"
 {return INSERT;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 175 "../../DTE/Core/my.lex"
+#line 156 "../../DTE/Core/my.lex"
 {return VALUES;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 176 "../../DTE/Core/my.lex"
+#line 157 "../../DTE/Core/my.lex"
 {return INTO;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 177 "../../DTE/Core/my.lex"
+#line 158 "../../DTE/Core/my.lex"
 {return DELETEY;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 178 "../../DTE/Core/my.lex"
+#line 159 "../../DTE/Core/my.lex"
 {return SCHEMA;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 179 "../../DTE/Core/my.lex"
+#line 160 "../../DTE/Core/my.lex"
 {return MATERIALIZE;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 180 "../../DTE/Core/my.lex"
+#line 161 "../../DTE/Core/my.lex"
 {return ADD;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 181 "../../DTE/Core/my.lex"
+#line 162 "../../DTE/Core/my.lex"
 {return UNION;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 183 "../../DTE/Core/my.lex"
+#line 164 "../../DTE/Core/my.lex"
 {yylval.stringLit = new string(yytext); return STRING;}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 184 "../../DTE/Core/my.lex"
+#line 165 "../../DTE/Core/my.lex"
 {yylval.integer = atoi(yytext); return INTY;}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 185 "../../DTE/Core/my.lex"
+#line 166 "../../DTE/Core/my.lex"
 {yylval.real = atof(yytext); return DOUBLEY;}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 186 "../../DTE/Core/my.lex"
+#line 167 "../../DTE/Core/my.lex"
 {yylval.integer = atoi(yytext); return INTY;}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 187 "../../DTE/Core/my.lex"
+#line 168 "../../DTE/Core/my.lex"
 {yylval.stringLit = new string(yytext); return LESSGREATER;}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 188 "../../DTE/Core/my.lex"
+#line 169 "../../DTE/Core/my.lex"
 {
 	yylval.stringLit = stripSQLQuotes(yytext);
 	return STRING_CONST;
@@ -1015,7 +996,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 192 "../../DTE/Core/my.lex"
+#line 173 "../../DTE/Core/my.lex"
 {
 	yylval.stringLit = stripSQLQuotes(yytext);
 	return STRING;
@@ -1023,15 +1004,15 @@ YY_RULE_SETUP
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 196 "../../DTE/Core/my.lex"
+#line 177 "../../DTE/Core/my.lex"
 {return yytext[0];}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 197 "../../DTE/Core/my.lex"
+#line 178 "../../DTE/Core/my.lex"
 ECHO;
 	YY_BREAK
-#line 1035 "../../DTE/Core/lex.yy.c"
+#line 1016 "../../DTE/Core/lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1891,7 +1872,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 197 "../../DTE/Core/my.lex"
+#line 178 "../../DTE/Core/my.lex"
 
 int yywrap(){
 	yy_flush_buffer(YY_CURRENT_BUFFER);

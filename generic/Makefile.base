@@ -17,6 +17,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.44  1998/02/19 23:24:35  wenger
+#  Improved color library and got client/server test code to work
+#  (except for setting colors by RGB): reduced compile interdependencies,
+#  especially in color library; color and utils libraries install headers
+#  as per code reorg plans; added standard DEVise headers to all color
+#  manager files; moved color initialization into Display constructors;
+#  fixed some compile warnings throughout the code.
+#
 #  Revision 1.43  1998/02/16 18:13:16  wenger
 #  Added collaborator to appropriate release scripts; got deviseb to compile
 #  and link.
@@ -140,7 +148,7 @@
 include ../../Makefile.common
 
 BASIC_CFLAGS = -D__tcltk $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
-	-I../../src/include -I../../tape \
+	-I../../src/color/export -I../../tape \
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX -DNEW_LAYOUT
 
 CFLAGS =$(BASIC_CFLAGS) -I../../csgroup

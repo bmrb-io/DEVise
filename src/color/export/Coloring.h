@@ -23,6 +23,14 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/02/19 23:26:04  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
  */
 
 //******************************************************************************
