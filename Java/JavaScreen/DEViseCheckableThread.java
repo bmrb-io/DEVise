@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2001/04/11 16:49:34  wenger
+// Added a new thread to the jspop that checks whether other threads may
+// be hung.
+//
 
 // ========================================================================
 
@@ -29,4 +33,5 @@ public interface DEViseCheckableThread
 {
     public long lastRunTime();
     public void intThread();
+    public String thread2Str();
 }

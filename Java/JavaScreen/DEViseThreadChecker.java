@@ -26,6 +26,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2001/04/11 16:49:39  wenger
+// Added a new thread to the jspop that checks whether other threads may
+// be hung.
+//
 
 // ========================================================================
 
@@ -64,13 +68,17 @@ public class DEViseThreadChecker implements Runnable
     {
         if (DEBUG >= 1) {
 	    System.out.println("DEViseThreadChecker.register(" +
-	      thread + ")");
+	      thread.thread2Str() + ")");
 	}
         _threadList.addElement(thread);
     }
 
     public void unregister(DEViseCheckableThread thread)
     {
+        if (DEBUG >= 1) {
+	    System.out.println("DEViseThreadChecker.unregister(" +
+	      thread.thread2Str() + ")");
+	}
         _threadList.removeElement(thread);
     }
 
@@ -94,7 +102,7 @@ public class DEViseThreadChecker implements Runnable
 		  _threadList.elementAt(index);
 	        long lastRun = thread.lastRunTime();
 		if (currentTime - lastRun > HUNG_INTERVAL) {
-		    System.err.println(thread + " may be hung");
+		    System.err.println(thread.thread2Str() + " may be hung");
 		    //TEMP -- force a stack track of the thread if possible
 		    thread.intThread();
 		}

@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.60  2001/04/11 21:16:29  xuk
+// A collaboration leader could find out the followers hostname.
+//
 // Revision 1.59  2001/04/11 21:09:15  wenger
 // Added diagnostic output of client.collabInit.
 //
@@ -273,6 +276,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
     private long _lastRunTime;
     public long lastRunTime() { return _lastRunTime; }
     public void intThread() { serverThread.interrupt(); }
+    public String thread2Str() { return serverThread.toString(); }
 
     // name is the name of the system that the jss and devised(s) are running
     // on; port is the jssport.
@@ -290,6 +294,13 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
         isValid = true;
 
 	_objectNum = _nextObjectNum++;
+    }
+
+    protected void finalize()
+    {
+        // In case this somehow didn't get unregistered before (e.g.,
+        // we got stop() call).
+        DEViseThreadChecker.getInstance().unregister(this);
     }
 
     // Returns STATUS_*.

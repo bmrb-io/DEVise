@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2001/04/11 16:49:38  wenger
+// Added a new thread to the jspop that checks whether other threads may
+// be hung.
+//
 // Revision 1.10  2001/04/06 19:32:14  wenger
 // Various cleanups of collaboration code (working on strange hang
 // that Miron has seen); added more debug output; turned heartbeat
@@ -74,10 +78,18 @@ public class DEViseClientDispatcher implements Runnable, DEViseCheckableThread
     private long _lastRunTime;
     public long lastRunTime() { return _lastRunTime; }
     public void intThread() { dispatcher.interrupt(); }
+    public String thread2Str() { return dispatcher.toString(); }
 
     public DEViseClientDispatcher(jspop j)
     {
         pop = j;
+    }
+
+    protected void finalize()
+    {
+	// In case this somehow didn't get unregistered before (e.g.,
+	// we got stop() call).
+        DEViseThreadChecker.getInstance().unregister(this);
     }
 
     private synchronized void setStatus(boolean s)
