@@ -15,6 +15,10 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.49  1999/05/10 20:03:06  wenger
+#       Added error indication option (as per request from Eldon) to bar shape;
+#       added "Pile" to the GUI for view symbols.
+#
 #       Revision 1.48  1999/04/29 15:50:19  wenger
 #       Changed HighLow symbols so that Y is the top rather than the middle (so
 #       visual filter and home work better); changed Condor session scripts
@@ -429,9 +433,12 @@ proc UpdateMappingDialog { w curView {goToTop 1} } {
 		# to find the top view in the pile, and edit the mapping
 		# of that view, so that we affect the symbols that are on
 		# top.
-		if {$goToTop} {
-			set curView [FindTopView $curView]
-		}
+
+		# Note: I've disabled the 'go to top' functionality because it
+		# disagrees with the rest of DEVise.  RKW 1999-06-16.
+		#if {$goToTop} {
+			#set curView [FindTopView $curView]
+		#}
 		$w.message.flip configure -state normal
 		$w.message2.next configure -state normal
 	} else {
@@ -853,21 +860,9 @@ proc DoShapeHelp {} {
 # flipping* the pile or stack.
 
 proc MappingNextInPile {} {
-	global curView
 	global curMappingView
 
-	# Find the view we're currently editing in the view list; then
-	# edit the *previous* view (work our way down thru the pile).
-	# When we get to the "bottom" (drawn first) view (first on the
-	# list), go back to the end.
-	set win [DEVise getViewWin $curView]
-	set views [DEVise getWinViews $win]
-	set index [lsearch -exact $views $curMappingView]
-	if {$index == 0} {
-		set view [lindex $views end]
-	} else {
-		set view [lindex $views [expr $index - 1]]
-	}
+	set view [DEVise nextViewInPile $curMappingView]
 	UpdateMappingDialog .editMapping $view 0
 }
 

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1999/06/16 17:08:47  wenger
+  Added raiseAllWindows command and corresponding GUI.
+
   Revision 1.37  1999/06/11 14:47:05  wenger
   Added the capability (mostly for the JavaScreen) to disable rubberband
   lines, cursor movement, drill down, and key actions in views (the code
@@ -1750,6 +1753,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(raiseAllWindows) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(nextViewInPile) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

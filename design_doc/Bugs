@@ -1932,8 +1932,9 @@ Num Date        Status  Description
 498 06/07/99	OPEN	jspop uses huge amounts of CPU while JS has a session
 			open. (rkw)
 
-499 06/07/99	OPEN	"Next in Pile" in mapping dialog doesn't work right in
+499 06/07/99	FIXED	"Next in Pile" in mapping dialog doesn't work right in
 			"unconventional" piles (e.g., piled view syms). (rkw)
+			(Fixed by rkw, 6/16/99.)
 
 500 06/15/99	FIXED	Flipping a piled view containing a piled view symbol
 			doesn't work right. (rkw)

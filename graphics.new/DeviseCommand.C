@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.67  1999/06/16 17:08:45  wenger
+  Added raiseAllWindows command and corresponding GUI.
+
   Revision 1.66  1999/06/15 18:09:52  wenger
   Added dumping of ViewWin objects to help with pile debugging.
 
@@ -5981,5 +5984,51 @@ IMPLEMENT_COMMAND_BEGIN(raiseAllWindows)
     	return -1;
 	}
 IMPLEMENT_COMMAND_END
+
+//TEMPTEMP -- option for reverse??
+IMPLEMENT_COMMAND_BEGIN(nextViewInPile)
+	// Given a view name, returns the name of the next view in the given
+	// view's pile.  If the given view is not piled, return the given view
+	// name.
+    // Arguments: <view name>
+	// Returns: <view name>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+
+		ViewWin *nextView = view;
+		PileStack *ps = view->GetParentPileStack();
+
+		if (ps && ps->IsPiled()) {
+		  int index = ps->InitIterator();
+		  while (ps->More(index) && nextView == view) {
+		    ViewWin *tmpView = ps->Next(index);
+			if (tmpView == view) {
+			  if (ps->More(index)) {
+			    nextView = ps->Next(index);
+			  } else {
+			    nextView = ps->GetFirstView();
+			  }
+			}
+		  }
+		  ps->DoneIterator(index);
+		}
+
+        ReturnVal(API_ACK, nextView->GetName());
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in nextViewInPile\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
 
 /*============================================================================*/

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.41  1999/06/16 17:08:48  wenger
+  Added raiseAllWindows command and corresponding GUI.
+
   Revision 1.40  1999/06/11 14:47:03  wenger
   Added the capability (mostly for the JavaScreen) to disable rubberband
   lines, cursor movement, drill down, and key actions in views (the code
@@ -524,6 +527,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(viewGetDisabledActions)
 	REGISTER_COMMAND(viewSetDisabledActions)
 	REGISTER_COMMAND(raiseAllWindows)
+	REGISTER_COMMAND(nextViewInPile)
 }
 
 CmdContainer::~CmdContainer()

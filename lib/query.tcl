@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15  1999/02/17 15:10:06  wenger
+#  Added "Next in Pile" button to query dialog; more pile fixes; fixed bug
+#  in mapping dialog updating when a view is selected.
+#
 #  Revision 1.14  1998/10/21 17:17:02  wenger
 #  Fixed bug 101 (problems with the '5' (home) key); added "Set X, Y to
 #  Show All" (go home) button to Query dialog; fixed bug 421 (crash when
@@ -623,19 +627,7 @@ proc Query_ViewSelected {} {
 proc QueryNextInPile {} {
     global curQueryView
 
-    # Find the view we're currently editing in the view list; then
-    # edit the *previous* view (work our way down thru the pile).
-    # When we get to the "bottom" (drawn first) view (first on the
-    # list), go back to the end.
-    set win [DEVise getViewWin $curQueryView]
-    set views [DEVise getWinViews $win]
-    set index [lsearch -exact $views $curQueryView]
-    if {$index == 0} {
-        set view [lindex $views end]
-    } else {
-        set view [lindex $views [expr $index - 1]]
-    }
-    set curQueryView $view
+    set curQueryView [DEVise nextViewInPile $curQueryView]
     Update2DQueryWindow
     Update3DLocation
 }
