@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1996/07/15 17:02:01  jussi
+  Added support for string attributes in GData.
+
   Revision 1.34  1996/07/10 00:03:37  jussi
   Replaced TDataMapDispatch with TDataMap.
 
@@ -634,8 +637,7 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
       /*
 	 printf("eval pattern\n");
       */
-      *((Pattern *)(gPtr + _offsets->patternOffset)) = 
-	(Pattern)_interpResult;
+      *((Pattern *)(gPtr + _offsets->patternOffset)) = (Pattern)_interpResult;
     }
     
     if (_offsets->shapeOffset >= 0) {
@@ -919,7 +921,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       _tclCmd->yCmd = ConvertCmd(_cmd->yCmd, attrType, isSorted);
       _offsets->yOffset = offset = WordBoundary(offset,sizeof(double));
       attrList->InsertAttr(1, "y", offset, sizeof(double), attrType,
-			   false,  NULL, false, isSorted);
+			   false, NULL, false, isSorted);
       offset += sizeof(double);
     }
   }
@@ -944,8 +946,8 @@ AttrList *MappingInterp::InitCmd(char *name)
     } else {
       _tclCmd->colorCmd = ConvertCmd(_cmd->colorCmd, attrType, isSorted);
       _offsets->colorOffset = offset = WordBoundary(offset,sizeof(Color));
-      attrList->InsertAttr(3, "color",offset,sizeof(double),attrType,
-			   false,  NULL, false, isSorted);
+      attrList->InsertAttr(3, "color", offset, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
       offset += sizeof(Color);
     }
   }
@@ -957,8 +959,8 @@ AttrList *MappingInterp::InitCmd(char *name)
     } else {
       _tclCmd->sizeCmd = ConvertCmd(_cmd->sizeCmd, attrType, isSorted);
       _offsets->sizeOffset = offset = WordBoundary(offset,sizeof(double));
-      attrList->InsertAttr(4, "size",offset,sizeof(double),attrType,
-			   false,  NULL, false, isSorted);
+      attrList->InsertAttr(4, "size", offset, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
       offset += sizeof(double);
     }
   }
@@ -968,11 +970,10 @@ AttrList *MappingInterp::InitCmd(char *name)
       SetDefaultPattern((Pattern)constVal);
       _tclCmd->patternCmd = "";
     } else {
-      _tclCmd->patternCmd = 
-	ConvertCmd(_cmd->patternCmd, attrType, isSorted);
+      _tclCmd->patternCmd = ConvertCmd(_cmd->patternCmd, attrType, isSorted);
       _offsets->patternOffset = offset = WordBoundary(offset,sizeof(Pattern));
-      attrList->InsertAttr(5, "pattern",offset,sizeof(double),attrType,
-			   false,  NULL, false, isSorted);
+      attrList->InsertAttr(5, "pattern", offset, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
       offset += sizeof(Pattern);
     }
   }
@@ -987,8 +988,8 @@ AttrList *MappingInterp::InitCmd(char *name)
     } else {
       _tclCmd->shapeCmd = ConvertCmd(_cmd->shapeCmd, attrType, isSorted);
       _offsets->shapeOffset = offset = WordBoundary(offset,sizeof(ShapeID));
-      attrList->InsertAttr(6, "shape",offset,sizeof(double),attrType,
-			   false,  NULL, false, isSorted);
+      attrList->InsertAttr(6, "shape", offset, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
       offset += sizeof(ShapeID);
     }
   }
@@ -1001,8 +1002,8 @@ AttrList *MappingInterp::InitCmd(char *name)
       _tclCmd->orientationCmd = ConvertCmd(_cmd->orientationCmd, attrType, 
 					   isSorted);
       _offsets->shapeOffset = offset = WordBoundary(offset,sizeof(double));
-      attrList->InsertAttr(7, "orientation",offset,sizeof(double),attrType,
-			   false,  NULL, false, isSorted);
+      attrList->InsertAttr(7, "orientation", offset, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
       offset += sizeof(double);
     }
   }
