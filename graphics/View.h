@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.114  2001/02/20 20:02:44  wenger
+  Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+  to the trunk.
+
   Revision 1.113.2.1  2001/02/16 21:37:50  wenger
   Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
   a web browser) on 'sets' of visual filters.
@@ -807,6 +811,12 @@ class View : public ViewWin
 	void SetCamera(Camera new_camera);
 	void SetViewDir(ViewDir dir);
 
+	Boolean JS3dConfigValid() { return _3dValid; }
+	Boolean GetJS3dConfig(float data[3][3], float origin[3], float &shiftedX,
+	    float &shiftedY); // returns true iff successful
+	void SetJS3dConfig(const float data[3][3], const float origin[3],
+	    float shiftedX, float shiftedY);
+
 	// Print this view (and any child views) to PostScript.
 	virtual DevStatus PrintPS();
 
@@ -1117,6 +1127,12 @@ protected:
 		static Boolean _globalShowMouseLocation;
 
 		Boolean _isChildView;
+
+		// 3D configuration for JavaScreen.
+		Boolean _3dValid;
+		float _3dData[3][3];
+		float _3dOrigin[3];
+		float _3dShiftedX, _3dShiftedY;
 
     private:
         ObjectValid _objectValid;

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.233  2001/02/20 20:02:43  wenger
+  Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+  to the trunk.
+
   Revision 1.232.2.1  2001/02/16 21:37:47  wenger
   Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
   a web browser) on 'sets' of visual filters.
@@ -1243,6 +1247,7 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	Scheduler::Current()->RequestCallback(_dispatcherID);
 
 	DeviseHistory::GetDefaultHistory()->ClearAll();
+	_3dValid = false;
 }
 
 View::~View(void)
@@ -4536,6 +4541,52 @@ void View::SetViewDir(ViewDir dir)
   c.pan_right=0.0;
   c.pan_up=0.0;
   SetCamera(c);
+}
+
+Boolean
+View::GetJS3dConfig(float data[3][3], float origin[3],
+    float &shiftedX, float &shiftedY)
+{
+#if defined(DEBUG)
+  printf("View(%s)::GetJS3dConfig()\n", GetName());
+#endif
+
+  Boolean result = false;
+
+  if (_3dValid) {
+    for (int i1 = 0; i1 < 3; i1++) {
+      for (int i2 = 0; i2 < 3; i2++) {
+	    data[i1][i2] = _3dData[i1][i2];
+	  }
+	   origin[i1] = _3dOrigin[i1];
+    }
+    shiftedX = _3dShiftedX;
+    shiftedY = _3dShiftedY;
+
+    result = true;
+  }
+
+  return result;
+}
+
+void
+View::SetJS3dConfig(const float data[3][3], const float origin[3],
+    float shiftedX, float shiftedY)
+{
+#if defined(DEBUG)
+  printf("View(%s)::SetJS3dConfig()\n", GetName());
+#endif
+
+  for (int i1 = 0; i1 < 3; i1++) {
+    for (int i2 = 0; i2 < 3; i2++) {
+	  _3dData[i1][i2] = data[i1][i2];
+	}
+	_3dOrigin[i1] = origin[i1];
+  }
+  _3dShiftedX = shiftedX;
+  _3dShiftedY = shiftedY;
+
+  _3dValid = true;
 }
 
 View *

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2000
+  (c) Copyright 1998-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.112  2001/01/08 20:32:54  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.107.2.5  2001/01/05 20:49:49  wenger
   Merged changes from zero_js_cache_check thru dup_gds_fix from the trunk
   onto the js_cgi_br branch.
@@ -548,7 +552,7 @@ static DeviseCursorList _drawnCursors;
 // Assume no more than 1000 views in a pile...
 static const float viewZInc = 0.001;
 
-static const int protocolMajorVersion = 5;
+static const int protocolMajorVersion = 6;
 static const int protocolMinorVersion = 0;
 
 JavaScreenCache JavaScreenCmd::_cache;
@@ -574,6 +578,7 @@ char *JavaScreenCmd::_serviceCmdName[] =
     "JAVAC_ProtocolVersion",
     "JAVAC_ResetFilters",
     "JAVAC_GetViewHelp",
+    "JAVAC_Set3DConfig",
     "null_svc_cmd"
 };
 
@@ -1114,6 +1119,9 @@ JavaScreenCmd::Run()
 			break;
 		case GET_VIEW_HELP:
 			GetViewHelp();
+			break;
+		case SET_3D_CONFIG:
+			RcvSet3DConfig();
 			break;
 		default:
 			fprintf(stderr, "Undefined JAVA Screen Command:%d\n", _ctype);
@@ -2237,6 +2245,12 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 	// point, but we'll leave this call in here just in case.  RKW 2000-05-01.
 	DrawChangedCursors();
 
+	// Note: doing this here sends 3DConfig more often than we really
+	// need to (we only need to send it when a session is opened).
+	// However, we need to send it before we send JAVAC_Done, so doing
+	// it here is the easiest way to do that.  RKW 2001-04-02.
+	SendAll3DConfig();
+
 	//
 	// Send DONE here so jspop and js start reading from the image socket.
 	//
@@ -3160,4 +3174,116 @@ JavaScreenCmd::UpdateViewImage(View *view, int imageSize)
 	args.FillInt(imageSize);
 
 	args.ReturnVal(this);
+}
+
+//====================================================================
+// Process a JAVAC_Set3DConfig that we received.
+void
+JavaScreenCmd::RcvSet3DConfig()
+{
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	  "JavaScreenCmd::RcvSet3DConfig(", _argc, _argv, ")\n");
+#endif
+
+	if (_argc != 15)
+	{
+		errmsg = "Usage: JAVAC_Set3DConfig <view name> <data[0][0]> <data[0][1]> <data[0][2]> <data[1][0]> <data[1][1]> <data[1][2]> <data[2][0]> <data[2][1]> <data[2][2]> <origin[0]> <origin[1]> <origin[2]> <shiftedX> <shiftedY>";
+		_status = ERROR;
+		return;
+	}
+
+    View *view = View::FindViewByName(_argv[0]);
+    if (!view) {
+	    errmsg = "Cannot find view";
+		_status = ERROR;
+		return;
+    }
+
+    float data[3][3];
+    float origin[3];
+    float shiftedX, shiftedY;
+
+    data[0][0] = atof(_argv[1]);
+    data[0][1] = atof(_argv[2]);
+    data[0][2] = atof(_argv[3]);
+    data[1][0] = atof(_argv[4]);
+    data[1][1] = atof(_argv[5]);
+    data[1][2] = atof(_argv[6]);
+    data[2][0] = atof(_argv[7]);
+    data[2][1] = atof(_argv[8]);
+    data[2][2] = atof(_argv[9]);
+
+    origin[0] = atof(_argv[10]);
+    origin[1] = atof(_argv[11]);
+    origin[2] = atof(_argv[12]);
+
+    shiftedX = atof(_argv[13]);
+    shiftedY = atof(_argv[14]);
+
+    view->SetJS3dConfig(data, origin, shiftedX, shiftedY);
+}
+
+//====================================================================
+// Send JAVAC_Set3DConfig for all 3D views.
+void
+JavaScreenCmd::SendAll3DConfig()
+{
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	  "JavaScreenCmd::SendAll3DConfig()\n");
+#endif
+
+    int index = View::InitViewIterator();
+	while (View::MoreView(index)) {
+	    View *view = View::NextView(index);
+		if (view->GetNumDimensions() == 3) {
+		    SendSet3DConfig(view);
+		}
+	}
+	View::DoneViewIterator(index);
+}
+
+//====================================================================
+// Send JAVAC_Set3DConfig command for the given view.
+void
+JavaScreenCmd::SendSet3DConfig(View *view)
+{
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	  "JavaScreenCmd::SendSet3DConfig(", view->GetName(), ")\n");
+#endif
+
+    float data[3][3];
+    float origin[3];
+    float shiftedX, shiftedY;
+
+	if (view->GetJS3dConfig(data, origin, shiftedX, shiftedY)) {
+	    //
+        // Generate the command to send.
+	    //
+	    JSArgs args(16);
+	    args.FillString(_serviceCmdName[SET_3D_CONFIG]);
+	    args.FillString(view->GetName());
+	    args.FillDouble(data[0][0]);
+	    args.FillDouble(data[0][1]);
+	    args.FillDouble(data[0][2]);
+	    args.FillDouble(data[1][0]);
+	    args.FillDouble(data[1][1]);
+	    args.FillDouble(data[1][2]);
+	    args.FillDouble(data[2][0]);
+	    args.FillDouble(data[2][1]);
+	    args.FillDouble(data[2][2]);
+	    args.FillDouble(origin[0]);
+	    args.FillDouble(origin[1]);
+	    args.FillDouble(origin[2]);
+	    args.FillDouble(shiftedX);
+	    args.FillDouble(shiftedY);
+
+	    //
+        // This JavaScreenCmd object is created only to send the command.
+	    //
+        JavaScreenCmd jsc(ControlPanel::Instance(), NULL_SVC_CMD, 0, NULL);
+	    args.ReturnVal(&jsc);
+	}
 }

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.92  2001/03/23 18:06:31  wenger
+  Color palettes are now associated with sessions; added borders to
+  color chooser buttons so they're visible even if they're the same
+  color as the background; fixed various color-related bugs.
+
   Revision 1.91  2001/02/20 20:02:43  wenger
   Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
   to the trunk.
@@ -1739,6 +1744,12 @@ Session::SaveView(char *category, char *devClass, char *instance,
 
   status += SaveParams(saveData, "getShowMouseLocation",
       "setShowMouseLocation", instance, NULL, NULL, true);
+
+  View *view = View::FindViewByName(instance);
+  if (view != NULL && view->JS3dConfigValid()) {
+    status += SaveParams(saveData, "getJS3dConfig",
+        "setJS3dConfig", instance, NULL, NULL, false);
+  }
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.70  2001/02/20 20:02:52  wenger
+  Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+  to the trunk.
+
   Revision 1.69.2.2  2001/02/16 21:37:58  wenger
   Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
   a web browser) on 'sets' of visual filters.
@@ -435,6 +439,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(JAVAC_ShowRecords3D)
 	REGISTER_COMMAND(JAVAC_ResetFilters)
 	REGISTER_COMMAND(JAVAC_GetViewHelp)
+	REGISTER_COMMAND(JAVAC_Set3DConfig)
 
 	REGISTER_COMMAND(dteImportFileType)
 	REGISTER_COMMAND(dteListAllIndexes)
@@ -696,6 +701,9 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(stop)
 	REGISTER_COMMAND(back)
 	REGISTER_COMMAND(forward)
+	REGISTER_COMMAND(getJS3dValid)
+	REGISTER_COMMAND(getJS3dConfig)
+	REGISTER_COMMAND(setJS3dConfig)
 }
 
 CmdContainer::~CmdContainer()

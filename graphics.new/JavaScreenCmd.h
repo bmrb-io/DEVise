@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2000
+  (c) Copyright 1998-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.41  2001/01/08 20:32:54  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.39.2.1  2000/12/27 19:39:20  wenger
   Merged changes from js_restart_improvements thru zero_js_cache_check from
   the trunk onto the js_cgi_br branch.
@@ -245,6 +249,7 @@ class JavaScreenCmd
 			PROTOCOLVERSION,
 			RESET_FILTERS,
 			GET_VIEW_HELP,
+			SET_3D_CONFIG,
 			NULL_SVC_CMD
 		}ServiceCmdType;
 
@@ -316,6 +321,7 @@ class JavaScreenCmd
 		void JSProtocolVersion();
 		void JSResetFilters();
 		void GetViewHelp();
+		void RcvSet3DConfig();
 
 		// Server->JavaScreen Control Commands
 		ControlCmdType RequestUpdateSessionList(int argc, char** argv);
@@ -340,6 +346,8 @@ class JavaScreenCmd
 		// void EraseChangedCursors();
 		void DrawChangedCursors();
 		void DrawViewCursors(View *view);
+		void SendAll3DConfig();
+		void SendSet3DConfig(View *view);
 
 	protected:
 		static void DrawCursor(View *view, DeviseCursor *cursor);

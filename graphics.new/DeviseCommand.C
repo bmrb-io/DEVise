@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.114  2001/03/23 18:06:39  wenger
+  Color palettes are now associated with sessions; added borders to
+  color chooser buttons so they're visible even if they're the same
+  color as the background; fixed various color-related bugs.
+
   Revision 1.113  2001/03/15 20:34:06  wenger
   Reading composite file /afs/cs.wisc.edu/p/devise/ext5/wenger/devise.dev2/solarisFixed bug 645 (problem with window duplication).
 
@@ -853,6 +858,12 @@ IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(JAVAC_GetViewHelp)
 	JavaScreenCmd jc(_control,JavaScreenCmd::GET_VIEW_HELP,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_Set3DConfig)
+	JavaScreenCmd jc(_control,JavaScreenCmd::SET_3D_CONFIG,
 		argc-1, &argv[1]);
 	return jc.Run();
 IMPLEMENT_COMMAND_END
@@ -6887,6 +6898,119 @@ IMPLEMENT_COMMAND_BEGIN(forward)
 	}
     } else {
         fprintf(stderr,"Wrong # of arguments: %d in forward\n", argc);
+        ReturnVal(API_NAK, "Wrong # of arguments");
+        return -1;
+    }
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getJS3dValid)
+    // Arguments: <view name>
+    // Returns: <valid (0|1)>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        View *view = View::FindViewByName(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+
+		char buf[256];
+		sprintf(buf, "%d", view->JS3dConfigValid());
+        ReturnVal(API_ACK, buf);
+        return 1;
+    } else {
+        fprintf(stderr,"Wrong # of arguments: %d in getJS3dValid\n", argc);
+        ReturnVal(API_NAK, "Wrong # of arguments");
+        return -1;
+    }
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getJS3dConfig)
+    // Arguments: <view name>
+    // Returns: <data[0][0]> <data[0][1]> <data[0][2]> <data[1][0]>
+    //          <data[1][1]> <data[1][2]> <data[2][0]> <data[2][1]>
+    //          <data[2][2]> <origin[0]> <origin[1]> <origin[2]>
+    //          <shiftedX> <shiftedY>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        View *view = View::FindViewByName(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+
+	    float data[3][3];
+	    float origin[3];
+	    float shiftedX, shiftedY;
+	    if (view->GetJS3dConfig(data, origin, shiftedX, shiftedY)) {
+            char buf[1024];
+            sprintf(buf, "%g %g %g %g %g %g %g %g %g %g %g %g %g %g", 
+	          data[0][0], data[0][1], data[0][2], data[1][0], data[1][1],
+	          data[1][2], data[2][0], data[2][1], data[2][2], origin[0],
+	          origin[1], origin[2], shiftedX, shiftedY);
+            ReturnVal(API_ACK, buf);
+            return 1;
+	    } else {
+    		ReturnVal(API_NAK, (char *)DevError::GetLatestError());
+            return -1;
+		}
+    } else {
+        fprintf(stderr,"Wrong # of arguments: %d in getJS3dConfig\n", argc);
+        ReturnVal(API_NAK, "Wrong # of arguments");
+        return -1;
+    }
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setJS3dConfig)
+    // Arguments: <view name> <data[0][0]> <data[0][1]> <data[0][2]>
+    //            <data[1][0]> <data[1][1]> <data[1][2]> <data[2][0]>
+    //            <data[2][1]> <data[2][2]> <origin[0]> <origin[1]>
+    //            <origin[2]> <shiftedX> <shiftedY>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 16) {
+        View *view = View::FindViewByName(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+
+	float data[3][3];
+	float origin[3];
+	float shiftedX, shiftedY;
+
+	data[0][0] = atof(argv[2]);
+	data[0][1] = atof(argv[3]);
+	data[0][2] = atof(argv[4]);
+	data[1][0] = atof(argv[5]);
+	data[1][1] = atof(argv[6]);
+	data[1][2] = atof(argv[7]);
+	data[2][0] = atof(argv[8]);
+	data[2][1] = atof(argv[9]);
+	data[2][2] = atof(argv[10]);
+
+	origin[0] = atof(argv[11]);
+	origin[1] = atof(argv[12]);
+	origin[2] = atof(argv[13]);
+
+	shiftedX = atof(argv[14]);
+	shiftedY = atof(argv[15]);
+
+	view->SetJS3dConfig(data, origin, shiftedX, shiftedY);
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+    } else {
+        fprintf(stderr,"Wrong # of arguments: %d in setJS3dConfig\n", argc);
         ReturnVal(API_NAK, "Wrong # of arguments");
         return -1;
     }

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.64  2001/02/20 20:02:53  wenger
+  Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+  to the trunk.
+
   Revision 1.63.2.2  2001/02/16 21:37:59  wenger
   Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
   a web browser) on 'sets' of visual filters.
@@ -491,6 +495,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(JAVAC_GetViewHelp)
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_Set3DConfig)
 DECLARE_CLASS_END
 
 //-------------------------------------------------------------------------
@@ -2054,6 +2064,24 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(forward) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getJS3dValid) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getJS3dConfig) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setJS3dConfig) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_
