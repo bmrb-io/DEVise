@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.51.4.1  1999/04/29 17:45:58  wenger
+  Minor improvements to debug output.
+
+  Revision 1.51  1998/11/24 19:31:18  wenger
+  Fixed problem with soil science sessions sometimes locking up the
+  JavaScreen by disallowing input from file descriptors while waiting for
+  queries to finish; JavaScreen support code now omits sending windows for
+  which the print exclusion flag is set (allows "control windows") to not
+  be displayed in the JavaScreen.
+
   Revision 1.50  1998/09/30 17:44:30  wenger
   Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
   bug 401 (improper saving of window positions).
@@ -960,7 +970,7 @@ Dispatcher::CallbacksPending()
 
 void Dispatcher::RequestCallback(DispatcherID info)
 {
-	RequestTimedCallback ( info, 0);
+	RequestTimedCallback (info, 0);
 }
 
 void Dispatcher::RequestTimedCallback(DispatcherID info, long time)
@@ -968,8 +978,8 @@ void Dispatcher::RequestTimedCallback(DispatcherID info, long time)
   Timer::StopTimer();
 
 #if defined(DEBUG_LOG)
-  sprintf(_logBuf, "Dispatcher::RequestCallback(0x%p %s)\n", info,
-    info->callBack->DispatchedName());
+  sprintf(_logBuf, "Dispatcher::RequestTimedCallback(0x%p %s %ld)\n", info,
+    info->callBack->DispatchedName(), time);
   DebugLog::DefaultLog()->Message(_logBuf);
 #endif
 

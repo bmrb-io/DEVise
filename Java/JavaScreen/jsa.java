@@ -1,38 +1,5 @@
-// ========================================================================
-// DEVise Data Visualization Software
-// (c) Copyright 1992-1998
-// By the DEVise Development Group
-// Madison, Wisconsin
-// All Rights Reserved.
-// ========================================================================
-//
-// Under no circumstances is this software to be copied, distributed,
-// or altered in any way without prior permission from the DEVise
-// Development Group.
-//
-
-//
-// Description of module.
-//
-
-//
-// $Id$
-//
-// $Log$
-// Revision 1.10  1998/08/14 17:48:10  hongyu
-// *** empty log message ***
-//
-// Revision 1.5  1998/07/09 17:38:40  hongyu
-// *** empty log message ***
-//
-// Revision 1.4  1998/06/23 17:53:25  wenger
-// Improved some error messages (see bug 368).
-//
-// Revision 1.3  1998/06/11 15:07:52  wenger
-// Added standard header to Java files.
-//
-//
-// ------------------------------------------------------------------------
+// jsa.java
+// last updated on 04/21/99
 
 import  java.applet.*;
 import  java.awt.event.*;
@@ -44,11 +11,9 @@ import  java.util.*;
 public class jsa extends Applet
 {
     URL baseURL = null;
-    String host = null;
-    String user = null;
-    String pass = null;
 
     String sessionName = null;
+    int debugLevel = 0;
 
     Vector images = null;
 
@@ -61,17 +26,12 @@ public class jsa extends Applet
 
     public void init()
     {
-        YGlobals.YISAPPLET = true;
-        YGlobals.YISGUI = true;
-        YGlobals.YINBROWSER = false;
+        DEViseGlobals.isApplet = true;
+        DEViseGlobals.inBrowser = false;
 
         isInit = true;
 
         DEViseGlobals.browser = getAppletContext();
-
-        //baseURL = getDocumentBase();
-        baseURL = getCodeBase();
-        host = baseURL.getHost();
 
         setLayout(new BorderLayout(0, 10));
 
@@ -84,13 +44,13 @@ public class jsa extends Applet
                     {
                         if (jsf == null) {
                             startInfo.append("Start Java Screen ...\n");
-                            jsf = new jscframe(host, user, pass, sessionName, images);
+                            jsf = new jscframe(images, debugLevel, sessionName);
                             //startButton.setEnabled(false);
                         } else {
                             if (jsf.isQuit()) {
                                 startInfo.append("Start Java Screen ...\n");
                                 jsf = null;
-                                jsf = new jscframe(host, user, pass, sessionName, images);
+                                jsf = new jscframe(images, debugLevel, sessionName);
                                 //startButton.setEnabled(false);
                             } else {
                                 startInfo.append("Java Screen already started!\n");
@@ -100,14 +60,20 @@ public class jsa extends Applet
                 });
 
         startInfo = new TextArea(8, 50);
-        startInfo.setBackground(DEViseGlobals.textbgcolor);
-        startInfo.setForeground(DEViseGlobals.textfgcolor);
-        startInfo.setFont(DEViseGlobals.textfont);
+        startInfo.setBackground(DEViseGlobals.textBg);
+        startInfo.setForeground(DEViseGlobals.textFg);
+        startInfo.setFont(DEViseGlobals.textFont);
         add(startInfo, BorderLayout.CENTER);
 
         setVisible(true);
 
         checkParameters();
+
+        //baseURL = getDocumentBase();
+        baseURL = getCodeBase();
+        DEViseGlobals.hostname = baseURL.getHost();
+        DEViseGlobals.username = DEViseGlobals.DEFAULTUSER;
+        DEViseGlobals.password = DEViseGlobals.DEFAULTPASS;
 
         String version = System.getProperty("java.version");
         String vendor = System.getProperty("java.vendor");
@@ -118,13 +84,6 @@ public class jsa extends Applet
             isInit = false;
             return;
         }
-
-        if (user == null)
-            user = DEViseGlobals.DEFAULTUSER;
-        if (pass == null)
-            pass = DEViseGlobals.DEFAULTPASS;
-
-        YGlobals.start();
     }
 
     public void start()
@@ -159,8 +118,6 @@ public class jsa extends Applet
 
         sessionName = null;
         images = null;
-        user = null;
-        pass = null;
     }
 
     public void startJS(boolean flag)
@@ -197,7 +154,7 @@ public class jsa extends Applet
         if (jsf == null) {
             if (flag) {
                 startInfo.append("Start Java Screen ...\n");
-                jsf = new jscframe(host, user, pass, sessionName, images);
+                jsf = new jscframe(images, debugLevel, sessionName);
                 //startButton.setEnabled(false);
             }
         } else {
@@ -205,7 +162,7 @@ public class jsa extends Applet
                 if (flag) {
                     startInfo.append("Start new Java Screen ...\n");
                     jsf = null;
-                    jsf = new jscframe(host, user, pass, sessionName, images);
+                    jsf = new jscframe(images, debugLevel, sessionName);
                     //startButton.setEnabled(false);
                 }
             } else {
@@ -226,9 +183,12 @@ public class jsa extends Applet
         String debug = getParameter("debug");
         if (debug != null) {
             try {
-                YGlobals.YDEBUG = Integer.parseInt(debug);
+                debugLevel = Integer.parseInt(debug);
             } catch (NumberFormatException e) {
+                debugLevel = 0;
             }
+        } else {
+            debugLevel = 0;
         }
 
         String cmdport = getParameter("cmdport");
@@ -237,10 +197,13 @@ public class jsa extends Applet
                 int port = Integer.parseInt(cmdport);
                 if (port < 1024 || port > 65535)
                     throw new NumberFormatException();
-                DEViseGlobals.CMDPORT = port;
+                DEViseGlobals.cmdport = port;
                 startInfo.append("Parameter cmdport " + port + " is used\n");
             } catch (NumberFormatException e) {
+                DEViseGlobals.cmdport = DEViseGlobals.DEFAULTCMDPORT;
             }
+        } else {
+            DEViseGlobals.cmdport = DEViseGlobals.DEFAULTCMDPORT;
         }
 
         String imgport = getParameter("imgport");
@@ -249,16 +212,19 @@ public class jsa extends Applet
                 int port = Integer.parseInt(imgport);
                 if (port < 1024 || port > 65535)
                     throw new NumberFormatException();
-                DEViseGlobals.IMGPORT = port;
+                DEViseGlobals.imgport = port;
                 startInfo.append("Parameter imgport " + port + " is used\n");
             } catch (NumberFormatException e) {
+                DEViseGlobals.imgport = DEViseGlobals.DEFAULTIMGPORT;
             }
+        } else {
+            DEViseGlobals.imgport = DEViseGlobals.DEFAULTIMGPORT;
         }
 
         String screen = getParameter("screensize");
         if (screen != null) {
             try {
-                String[] str = YGlobals.Yparsestr(screen, "x");
+                String[] str = DEViseGlobals.parseStr(screen, "x");
                 if (str == null || str.length != 2) {
                     throw new NumberFormatException();
                 }
@@ -274,8 +240,8 @@ public class jsa extends Applet
                     y = 200;
                 }
 
-                DEViseGlobals.SCREENSIZE.width = x;
-                DEViseGlobals.SCREENSIZE.height = y;
+                DEViseGlobals.screenSize.width = x;
+                DEViseGlobals.screenSize.height = y;
                 startInfo.append("Parameter screen size (" + x + ", " + y + ") is used\n");
             } catch (NumberFormatException e) {
             }
@@ -284,7 +250,7 @@ public class jsa extends Applet
         String rsize = getParameter("rubberbandlimit");
         if (rsize != null) {
             try {
-                String[] str = YGlobals.Yparsestr(rsize, "x");
+                String[] str = DEViseGlobals.parseStr(rsize, "x");
                 if (str == null || str.length != 2) {
                     throw new NumberFormatException();
                 }
@@ -300,8 +266,8 @@ public class jsa extends Applet
                     y = 0;
                 }
 
-                DEViseGlobals.RubberBandLimit.width = x;
-                DEViseGlobals.RubberBandLimit.height = y;
+                DEViseGlobals.rubberBandLimit.width = x;
+                DEViseGlobals.rubberBandLimit.height = y;
                 startInfo.append("Parameter rubber band limit (" + x + ", " + y + ") is used\n");
             } catch (NumberFormatException e) {
             }
@@ -310,7 +276,7 @@ public class jsa extends Applet
         String bg = getParameter("bgcolor");
         if (bg != null) {
             try {
-                String[] str = YGlobals.Yparsestr(bg, "+");
+                String[] str = DEViseGlobals.parseStr(bg, "+");
                 if (str == null || str.length != 3) {
                     throw new NumberFormatException();
                 }
@@ -323,10 +289,7 @@ public class jsa extends Applet
                 }
 
                 Color c = new Color(r, g, b);
-                DEViseGlobals.uibgcolor = c;
-                DEViseGlobals.buttonbgcolor = c;
-                DEViseGlobals.dialogbgcolor = c;
-                YGlobals.YMSGBGCOLOR = c;
+                DEViseGlobals.bg = c;
                 startInfo.append("Parameter bgcolor (" + r + ", " + g + ", " + b + ") is used\n");
             } catch (NumberFormatException e) {
             }
@@ -335,7 +298,7 @@ public class jsa extends Applet
         String fg = getParameter("fgcolor");
         if (fg != null) {
             try {
-                String[] str = YGlobals.Yparsestr(fg, "+");
+                String[] str = DEViseGlobals.parseStr(fg, "+");
                 if (str == null || str.length != 3) {
                     throw new NumberFormatException();
                 }
@@ -348,10 +311,7 @@ public class jsa extends Applet
                 }
 
                 Color c = new Color(r, g, b);
-                DEViseGlobals.uifgcolor = c;
-                DEViseGlobals.buttonfgcolor = c;
-                DEViseGlobals.dialogfgcolor = c;
-                YGlobals.YMSGFGCOLOR = c;
+                DEViseGlobals.fg = c;
                 startInfo.append("Parameter fgcolor (" + r + ", " + g + ", " + b + ") is used\n");
             } catch (NumberFormatException e) {
             }
@@ -385,31 +345,35 @@ class jscframe extends Frame
 {
     public jsdevisec jsc = null;
 
-    public jscframe(String host, String user, String pass, String sessionName, Vector images)
-    {
+    public jscframe(Vector images, int debugLevel, String sessionName)
+    {           
+        // determine the "screen size" for JavaScreen
         Toolkit kit = Toolkit.getDefaultToolkit();
-        Dimension screen = kit.getScreenSize();
+        Dimension dim = kit.getScreenSize();
+        int w = dim.width;
+        int h = dim.height;
 
-        if (DEViseGlobals.SCREENSIZE.width > screen.width) {
-            DEViseGlobals.SCREENSIZE.width = screen.width;
-        }
+        if (DEViseGlobals.screenSize.width < 360
+            || DEViseGlobals.screenSize.width > (w - 80)) {
+            DEViseGlobals.screenSize.width = w - 80;
+        }        
+        DEViseGlobals.actualScreenSize.width = DEViseGlobals.screenSize.width + 80;
 
-        if (DEViseGlobals.SCREENSIZE.height > screen.height) {
-            DEViseGlobals.SCREENSIZE.height = screen.height;
-        }
-
-        int width = DEViseGlobals.SCREENSIZE.width;
-        int height = DEViseGlobals.SCREENSIZE.height;
-
-        jsc = new jsdevisec(host, user, pass, sessionName, images, this);
+        if (DEViseGlobals.screenSize.height < 240
+            || DEViseGlobals.screenSize.height > (h - 120)) {
+            DEViseGlobals.screenSize.height = h - 120;
+        }        
+        DEViseGlobals.actualScreenSize.height = DEViseGlobals.screenSize.height + 120;       
+        
+        jsc = new jsdevisec(this, images, debugLevel, sessionName);
         add(jsc);
-        setTitle("DEVise Java Screen");
+        setTitle("DEVise JavaScreen");
         pack();
 
         Point loc = new Point(0, 0);
         Dimension size = getSize();
-        loc.y = loc.y + height / 2 - size.height / 2;
-        loc.x = loc.x + width / 2 - size.width / 2;
+        loc.y = loc.y + h / 2 - size.height / 2;
+        loc.x = loc.x + w / 2 - size.width / 2;
         if (loc.y < 0)
             loc.y = 0;
         if (loc.x < 0)

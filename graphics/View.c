@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.166  1999/04/23 21:08:07  wenger
+  Fixed the problem with piles/date formats that caused some of Tim Wilson's
+  sessions to crash.
+
   Revision 1.165  1999/04/21 20:35:17  wenger
   Improved interface for changing fonts, titles, etc.:
   * Fonts can now be set on a window-wide basis.
@@ -51,6 +55,14 @@
 
   Revision 1.159  1999/03/01 23:08:59  wenger
   Fixed a number of memory leaks and removed unused code.
+
+  Revision 1.158.2.2  1999/03/17 15:16:10  wenger
+  Added view Z coordinate to JAVAC_CreateView command, so the JavaScreen
+  knows which views are on top of piles, etc.
+
+  Revision 1.158.2.1  1999/03/15 22:13:20  wenger
+  Fixed problems with view origin and data area origin for JavaScreen
+  sessions.
 
   Revision 1.158  1999/02/23 15:34:59  wenger
   Fixed bugs 446 and 465 (problems with cursors in piles); fixed some
@@ -942,6 +954,8 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 
 	_autoUpdate = false;
 
+	_viewZ = -1.0; // invalid -- needs to be set later
+
 	_viewList->Insert(this);
 	ControlPanel::Instance()->InsertCallback(controlPanelCallback);
 	_dispatcherID = Dispatcher::Current()->Register(dispatcherCallback, 10,
@@ -1427,6 +1441,7 @@ void View::GetYAxisArea(int &x, int &y, int &width, int &height)
 #endif
 }
 
+// Note: Y here is up from the bottom, not down from the top!!  RKW 1999-03-15.
 void View::GetDataArea(int &x, int &y, int &width,int &height)
 {
   unsigned int winWidth, winHeight;

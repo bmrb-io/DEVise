@@ -1,32 +1,5 @@
-// ========================================================================
-// DEVise Data Visualization Software
-// (c) Copyright 1992-1998
-// By the DEVise Development Group
-// Madison, Wisconsin
-// All Rights Reserved.
-// ========================================================================
-//
-// Under no circumstances is this software to be copied, distributed,
-// or altered in any way without prior permission from the DEVise
-// Development Group.
-//
-
-//
-// Description of module.
-//
-
-//
-// $Id$
-//
-// $Log$
-// Revision 1.4  1998/07/09 17:38:40  hongyu
-// *** empty log message ***
-//
-// Revision 1.3  1998/06/11 15:07:51  wenger
-// Added standard header to Java files.
-//
-//
-// ------------------------------------------------------------------------
+// js.java
+// last updated on 04/11/99
 
 import java.awt.*;
 import java.awt.event.*;
@@ -37,11 +10,12 @@ import java.io.*;
 public class js extends Frame
 {
     private static String usage = new String("usage: java js -host[hostname]"
-        + " -cmdport[port] -imgport[port] -user[username] -pass[password] -session[filename]"
-        + " -debug[number] -bgcolor[number+number+number] -fgcolor[number+number+number]"
-        + " -rubberbandlimit[widthxheight] -screensize[widthxheight]");
+        + " -cmdport[port] -imgport[port] -user[username] -pass[password]"
+        + " -session[filename] -debug[number] -bgcolor[number+number+number]"
+        + " -fgcolor[number+number+number] -rubberbandlimit[widthxheight]"
+        + " -screensize[widthxheight]");
     // -host[hostname]:
-    //      hostname: The IP address of the machine where jspop or Devise Server
+    //      hostname: The IP address of the machine where jspop or DEVise Server
     //                is running, if bland, use the defaults
     //      default: "localhost"
     //      example: "hostbiron.cs.wisc.edu"
@@ -67,7 +41,8 @@ public class js extends Frame
     //      default: none
     //      example: "-sessionCOD1.ds"
     // -debug[number]:
-    //      number: The debug level, no debug information is written if less than or equals to 0
+    //      number: The debug level, no debug information is written if less
+    //              than or equals to 0
     //      default: No Debug information is written
     //      example: "-debug0"
     // -bgcolor[number+number+number]
@@ -80,47 +55,83 @@ public class js extends Frame
     //      example: "-bgcolor255+255+255
     // -rubberbandlimit[widthxheight]
     //      width, height: positive integer, rubber band dimension must larger
-    //                     than these values before it is actually be considered as
-    //                     a rubberband
+    //                     than these values before it is actually be considered
+    //                     as a rubberband
     //      default: 0x0
     //      example: "-rubberbandlimit0x0"
     // -screensize[widthxheight]
-    //      width, height: The assumed physical screen size, can not exceed the real
-    //                     physical screen size, mininum is 320x200
+    //      width, height: The assumed physical screen size, can not exceed the
+    //                     real physical screen size, mininum is 320x200
     //      default: real physical screen size
     //      example: "-screensize640x480
     //
-    private static String hostname = null;
     private static String sessionName = null;
-    private static String username = null;
-    private static String password = null;
+    private static int debugLevel = 0;
 
     public jsdevisec jsc = null;
 
     public js()
-    {
+    {   
+        // determine the "screen size" for JavaScreen
         Toolkit kit = Toolkit.getDefaultToolkit();
-        Dimension screen = kit.getScreenSize();
-        if (DEViseGlobals.SCREENSIZE.width < 320 || DEViseGlobals.SCREENSIZE.width > screen.width) {
-            DEViseGlobals.SCREENSIZE.width = screen.width;
+        Dimension dim = kit.getScreenSize();
+        int w = dim.width;
+        int h = dim.height;
+
+        if (DEViseGlobals.screenSize.width < 360
+            || DEViseGlobals.screenSize.width > (w - 80)) {
+            DEViseGlobals.screenSize.width = w - 80;
+        }        
+        DEViseGlobals.actualScreenSize.width = DEViseGlobals.screenSize.width + 80;
+
+        if (DEViseGlobals.screenSize.height < 240
+            || DEViseGlobals.screenSize.height > (h - 120)) {
+            DEViseGlobals.screenSize.height = h - 120;
+        }        
+        DEViseGlobals.actualScreenSize.height = DEViseGlobals.screenSize.height + 120;
+
+        // get the animation symbol images from server
+        MediaTracker tracker = new MediaTracker(this);
+        Toolkit toolkit = this.getToolkit();
+        Vector images = new Vector();
+        Image image = null;
+        for (int i = 0; i < 11; i++) {
+            image = toolkit.getImage("devise" + i + ".gif");
+            tracker.addImage(image, 0);
+            try  {
+                tracker.waitForID(0);
+            }  catch (InterruptedException e)  {
+            }
+
+            if (tracker.isErrorID(0)) {
+                YMsgBox box = new YMsgBox(this, true, true, "Can not get JavaScreen "
+                    + "animation symbols!\nDo you wish to continue without "
+                    + "animation effects?", "Confirm", YMsgBox.YMBXYESNO, null,
+                    null, null);
+                box.open();
+                String result = box.getResult();
+                if (result.equals(YMsgBox.YIDYES)) {
+                    images = null;
+                    break;
+                } else {
+                    System.exit(1);
+                }
+            }
+
+            images.addElement(image);
         }
 
-        if (DEViseGlobals.SCREENSIZE.height < 200 || DEViseGlobals.SCREENSIZE.height > screen.height) {
-            DEViseGlobals.SCREENSIZE.height = screen.height;
-        }
-
-        int width = DEViseGlobals.SCREENSIZE.width;
-        int height = DEViseGlobals.SCREENSIZE.height;
-
-        jsc = new jsdevisec(hostname, username, password, sessionName, null, this);
+        // start JavaScreen
+        jsc = new jsdevisec(this, images, debugLevel, sessionName);
         add(jsc);
-        setTitle("DEVise Java Screen");
+        setTitle("DEVise JavaScreen");
         pack();
 
+        // reposition JavaScreen so it is in the center of the screen
         Point loc = new Point(0, 0);
         Dimension size = getSize();
-        loc.y = loc.y + height / 2 - size.height / 2;
-        loc.x = loc.x + width / 2 - size.width / 2;
+        loc.y = loc.y + h / 2 - size.height / 2;
+        loc.x = loc.x + w / 2 - size.width / 2;
         if (loc.y < 0)
             loc.y = 0;
         if (loc.x < 0)
@@ -146,27 +157,26 @@ public class js extends Frame
     {
         String version = System.getProperty("java.version");
         if (version.compareTo("1.1") < 0)  {
-            System.out.println("Error: Java version 1.1 or greater is needed to run this program\n"
-                               + "The version you used is " + version);
+            System.out.println("Error: Java version 1.1 or greater is needed to run this program\nThe version you used is " + version);
             System.exit(1);
         }
 
-        // force java VM to run every object's finalizer on normal or abnormal exit
-        //System.runFinalizersOnExit(true);
-
         checkArguments(args);
 
-        YGlobals.YISAPPLET = false;
-        YGlobals.YISGUI = true;
+        DEViseGlobals.isApplet = false;
+        DEViseGlobals.inBrowser = false;
+        DEViseGlobals.connectionID = DEViseGlobals.DEFAULTID;
 
-        YGlobals.start();
-
-        if (hostname == null)
-            hostname = DEViseGlobals.DEFAULTHOST;
-        if (username == null)
-            username = DEViseGlobals.DEFAULTUSER;
-        if (password == null)
-            password = DEViseGlobals.DEFAULTPASS;
+        if (DEViseGlobals.hostname == null)
+            DEViseGlobals.hostname = DEViseGlobals.DEFAULTHOST;
+        if (DEViseGlobals.username == null)
+            DEViseGlobals.username = DEViseGlobals.DEFAULTUSER;
+        if (DEViseGlobals.password == null)
+            DEViseGlobals.password = DEViseGlobals.DEFAULTPASS;
+        if (DEViseGlobals.cmdport < 1024)
+            DEViseGlobals.cmdport = DEViseGlobals.DEFAULTCMDPORT;
+        if (DEViseGlobals.imgport < 1024)
+            DEViseGlobals.imgport = DEViseGlobals.DEFAULTIMGPORT;
 
         js frame = new js();
         frame.show();
@@ -177,7 +187,7 @@ public class js extends Frame
         for (int i = 0; i < args.length; i++) {
             if (args[i].startsWith("-host")) {
                 if (!args[i].substring(5).equals("")) {
-                    hostname = args[i].substring(5);
+                    DEViseGlobals.hostname = args[i].substring(5);
                 }
             } else if (args[i].startsWith("-cmdport")) {
                 if (!args[i].substring(8).equals("")) {
@@ -186,10 +196,12 @@ public class js extends Frame
                         if (port < 1024 || port > 65535) {
                             throw new NumberFormatException();
                         }
-                        DEViseGlobals.CMDPORT = port;
+                        DEViseGlobals.cmdport = port;
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid command port number " + args[i].substring(8) + " specified in arguments!\n");
-                        System.out.println(usage);
+                        System.out.println("Invalid command port number "
+                            + args[i].substring(8) + " in arguments!\n"
+                            + "Command port number must larger than 1023"
+                            + " and smaller than 65536!\n");
                         System.exit(1);
                     }
                 }
@@ -200,17 +212,19 @@ public class js extends Frame
                         if (port < 1024 || port > 65535) {
                             throw new NumberFormatException();
                         }
-                        DEViseGlobals.IMGPORT = port;
+                        DEViseGlobals.imgport = port;
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid image port number " + args[i].substring(8) + " specified in arguments!\n");
-                        System.out.println(usage);
+                        System.out.println("Invalid image port number "
+                            + args[i].substring(8) + " in arguments!\n"
+                            + "Image port number must larger than 1023"
+                            + " and smaller than 65536!\n");
                         System.exit(1);
                     }
                 }
             } else if (args[i].startsWith("-bgcolor")) {
                 if (!args[i].substring(8).equals("")) {
                     try {
-                        String[] str = YGlobals.Yparsestr(args[i].substring(8), "+");
+                        String[] str = DEViseGlobals.parseStr(args[i].substring(8), "+");
                         if (str == null || str.length != 3) {
                             throw new NumberFormatException();
                         }
@@ -224,20 +238,19 @@ public class js extends Frame
                         }
 
                         Color c = new Color(r, g, b);
-                        YGlobals.YMSGBGCOLOR = c;
-                        DEViseGlobals.uibgcolor = c;
-                        DEViseGlobals.buttonbgcolor = c;
-                        DEViseGlobals.dialogbgcolor = c;
+                        DEViseGlobals.bg = c;
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid RGB values specified for bgcolor: " + args[i].substring(8) + "!\n");
-                        System.out.println(usage);
+                        System.out.println("Invalid RGB values specified for"
+                            + " bgcolor \"" + args[i].substring(8) + "\"!\n"
+                            + " Please use format \"R+G+B\" where R,G,B must"
+                            + " be non-negative integer and smaller than 256!\n");
                         System.exit(1);
                     }
                 }
             } else if (args[i].startsWith("-fgcolor")) {
                 if (!args[i].substring(8).equals("")) {
                     try {
-                        String[] str = YGlobals.Yparsestr(args[i].substring(8), "+");
+                        String[] str = DEViseGlobals.parseStr(args[i].substring(8), "+");
                         if (str == null || str.length != 3) {
                             throw new NumberFormatException();
                         }
@@ -251,20 +264,19 @@ public class js extends Frame
                         }
 
                         Color c = new Color(r, g, b);
-                        YGlobals.YMSGFGCOLOR = c;
-                        DEViseGlobals.uifgcolor = c;
-                        DEViseGlobals.buttonfgcolor = c;
-                        DEViseGlobals.dialogfgcolor = c;
+                        DEViseGlobals.fg = c;
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid RGB values specified for fgcolor: " + args[i].substring(8) + "!\n");
-                        System.out.println(usage);
+                        System.out.println("Invalid RGB values specified for"
+                            + " fgcolor \"" + args[i].substring(8) + "\"!\n"
+                            + " Please use format \"R+G+B\" where R,G,B must"
+                            + " be non-negative integer and smaller than 256!\n");
                         System.exit(1);
                     }
                 }
             } else if (args[i].startsWith("-rubberbandlimit")) {
                 if (!args[i].substring(16).equals("")) {
                     try {
-                        String[] str = YGlobals.Yparsestr(args[i].substring(16), "x");
+                        String[] str = DEViseGlobals.parseStr(args[i].substring(16), "x");
                         if (str == null || str.length != 2) {
                             throw new NumberFormatException();
                         }
@@ -276,18 +288,21 @@ public class js extends Frame
                             throw new NumberFormatException();
                         }
 
-                        DEViseGlobals.RubberBandLimit.width = width;
-                        DEViseGlobals.RubberBandLimit.height = height;
+                        DEViseGlobals.rubberBandLimit.width = width;
+                        DEViseGlobals.rubberBandLimit.height = height;
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid width or height values specified for rubberbandlimit: " + args[i].substring(16) + "!\n");
-                        System.out.println(usage);
+                        System.out.println("Invalid width or height values"
+                            + " specified for rubberbandlimit: \""
+                            + args[i].substring(16) + "\"!\n"
+                            + "Please use format \"WxH\" where W, H must be"
+                            + " positive integer!\n");
                         System.exit(1);
                     }
                 }
             } else if (args[i].startsWith("-screensize")) {
                 if (!args[i].substring(11).equals("")) {
                     try {
-                        String[] str = YGlobals.Yparsestr(args[i].substring(11), "x");
+                        String[] str = DEViseGlobals.parseStr(args[i].substring(11), "x");
                         if (str == null || str.length != 2) {
                             throw new NumberFormatException();
                         }
@@ -299,21 +314,25 @@ public class js extends Frame
                             throw new NumberFormatException();
                         }
 
-                        DEViseGlobals.SCREENSIZE.width = width;
-                        DEViseGlobals.SCREENSIZE.height = height;
+                        DEViseGlobals.screenSize.width = width;
+                        DEViseGlobals.screenSize.height = height;
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid width or height values specified for screen size: " + args[i].substring(11) + "!\n");
+                        System.out.println("Invalid width or height values "
+                            + "specified for screen size: \""
+                            + args[i].substring(11) + "\"!\n"
+                            + "Please use format \"WxH\" where W, H must be"
+                            + " positive integer!\n");
                         System.out.println(usage);
                         System.exit(1);
                     }
                 }
             } else if (args[i].startsWith("-user")) {
                 if (!args[i].substring(5).equals("")) {
-                    username = args[i].substring(5);
+                    DEViseGlobals.username = args[i].substring(5);
                 }
             } else if (args[i].startsWith("-pass")) {
                 if (!args[i].substring(5).equals("")) {
-                    password = args[i].substring(5);
+                    DEViseGlobals.password = args[i].substring(5);
                 }
             } else if (args[i].startsWith("-session")) {
                 if (!args[i].substring(8).equals("")) {
@@ -322,17 +341,18 @@ public class js extends Frame
             } else if (args[i].startsWith("-debug")) {
                 if (!args[i].substring(6).equals("")) {
                     try {
-                        YGlobals.YDEBUG = Integer.parseInt(args[i].substring(6));
+                        debugLevel = Integer.parseInt(args[i].substring(6));
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid debug level " + args[i].substring(6) + " specified in arguments!\n");
-                        System.out.println(usage);
+                        System.out.println("Invalid debug level \""
+                            + args[i].substring(6) + "\" in arguments!\n");
                         System.exit(1);
                     }
                 } else {
-                    YGlobals.YDEBUG = 1;
+                    debugLevel = 1;
                 }
             } else {
-                System.out.println("Invalid js option " + args[i] + " is given!\n");
+                System.out.println("Invalid js option \"" + args[i]
+                    + "\" is given!\n");
                 System.out.println(usage);
                 System.exit(1);
             }

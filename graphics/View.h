@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.81  1999/04/21 20:35:20  wenger
+  Improved interface for changing fonts, titles, etc.:
+  * Fonts can now be set on a window-wide basis.
+  * Setting fonts, title, or axis date format in a piled view automatically
+  changes all views in the pile accordingly.
+
   Revision 1.80  1999/04/16 20:59:14  wenger
   Fixed various bugs related to view symbols, including memory problem
   with MappingInterp dimensionInfo; updated create_condor_session script
@@ -34,6 +40,10 @@
 
   Revision 1.77  1999/03/01 23:09:01  wenger
   Fixed a number of memory leaks and removed unused code.
+
+  Revision 1.76.2.1  1999/03/17 15:16:23  wenger
+  Added view Z coordinate to JAVAC_CreateView command, so the JavaScreen
+  knows which views are on top of piles, etc.
 
   Revision 1.76  1999/02/23 15:35:01  wenger
   Fixed bugs 446 and 465 (problems with cursors in piles); fixed some
@@ -700,6 +710,11 @@ class View : public ViewWin
 	const char *GetYAxisDateFormat() { return _yAxisDateFormat; }
 	void SetYAxisDateFormat(const char *format, Boolean notifyPile = true);
 
+	// Z coordinate of views.  Initially, at least, this is used only for
+	// drawing the views in the JavaScreen.  RKW 1999-03-17.
+	float GetZ() { return _viewZ; }
+	void SetZ(float viewZ) { _viewZ = viewZ; }
+
 	static void SetDrawCursors(Boolean draw) { _drawCursors = draw; }
 	static void SetJSCursors(Boolean js) { _jsCursors = js; }
 	static Boolean GetShowNames() { return _showNames; }
@@ -904,6 +919,8 @@ protected:
 
     private:
 		Boolean _inDestructor;
+
+		float _viewZ;
 };
 
 //******************************************************************************

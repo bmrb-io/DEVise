@@ -1,3 +1,6 @@
+// DEViseGlobals.java
+// last updated on 04/11/99
+
 import java.util.*;
 import java.awt.*;
 import java.applet.*;
@@ -5,94 +8,215 @@ import java.applet.*;
 public final class DEViseGlobals
 {
     // global constants
-    public static final short API_CMD = 0, API_ACK = 1, API_NAK = 2, API_CTL = 3, API_JAVA = 5;
+    public static final short API_CMD = 0, API_ACK = 1, API_NAK = 2,
+                              API_CTL = 3, API_JAVA = 5, API_IMAGE = 6,
+                              API_DATA = 7;
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6688;
-    public static final int DEFAULTID = -1; // default connection ID
+    public static final int DEFAULTID = -1;
     public static final String DEFAULTUSER = new String("guest");
-    public static final String DEFAULTPASS = new String("");
+    public static final String DEFAULTPASS = new String("guest");
     public static final String DEFAULTHOST = new String("localhost");
 
     // global variables
-    public static int DEBUGLEVEL = -1; // no debug information is written
-    public static int CMDPORT = DEFAULTCMDPORT, IMGPORT = DEFAULTIMGPORT;
+    public static boolean isApplet = false, inBrowser = false;
+
+    public static int cmdport = 0, imgport = 0;
+    public static int connectionID = -1;
+    public static String username = null, password = null, hostname = null;
+
     public static AppletContext browser = null;
-    // GUI parameter used by js and jsa
-    public static Dimension SCREENSIZE = new Dimension(0124, 768); // physical screen size
-    public static Dimension RubberBandLimit = new Dimension(4, 4);
-    public static Cursor waitcursor = new Cursor(Cursor.WAIT_CURSOR);
-    public static Cursor pointercursor = new Cursor(Cursor.DEFAULT_CURSOR);
-    public static Cursor handcursor = new Cursor(Cursor.HAND_CURSOR);
-    public static Cursor movecursor = new Cursor(Cursor.MOVE_CURSOR);
-    public static boolean isShowingProgramInfo = false;
-    public static Color uibgcolor = new Color(64, 96, 0);
-    public static Color uifgcolor = Color.white;
-    public static Color dialogbgcolor = new Color(64, 96, 0);
-    public static Color dialogfgcolor = Color.white;
-    public static Color textbgcolor = new Color(160, 160, 160);
-    public static Color textfgcolor = Color.black;
-    public static Color buttonbgcolor = new Color(64, 96, 0);
-    public static Color buttonfgcolor = Color.white;
-    public static Font uifont = new Font("Serif", Font.PLAIN, 14);
-    public static Font dialogfont = new Font("Serif", Font.PLAIN, 14);
-    public static Font textfont = new Font("Serif", Font.PLAIN, 14);
-    public static Font buttonfont = new Font("Serif", Font.PLAIN, 14);
+
+    public static Dimension actualScreenSize = new Dimension(0, 0);
+    public static Dimension screenSize = new Dimension(0, 0);
+    public static Dimension screenEdge = new Dimension(2, 2);
+    public static Dimension rubberBandLimit = new Dimension(4, 4);
+
+    public static Color bg = new Color(64, 96, 0);
+    public static Color fg = Color.white;
+    public static Font font = new Font("Serif", Font.PLAIN, 14);
+    public static Color textBg = new Color(160, 160, 160);
+    public static Color textFg = Color.black;
+    public static Font textFont = new Font("Serif", Font.PLAIN, 14);
+
+    public static Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
+    public static Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
+    public static Cursor rbCursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
+    public static Cursor moveCursor = new Cursor(Cursor.MOVE_CURSOR);
+    public static Cursor lrsCursor = new Cursor(Cursor.W_RESIZE_CURSOR);
+    public static Cursor rrsCursor = new Cursor(Cursor.E_RESIZE_CURSOR);
+    public static Cursor trsCursor = new Cursor(Cursor.N_RESIZE_CURSOR);
+    public static Cursor brsCursor = new Cursor(Cursor.S_RESIZE_CURSOR);
+    public static Cursor tlrsCursor = new Cursor(Cursor.NW_RESIZE_CURSOR);
+    public static Cursor blrsCursor = new Cursor(Cursor.SW_RESIZE_CURSOR);
+    public static Cursor trrsCursor = new Cursor(Cursor.NE_RESIZE_CURSOR);
+    public static Cursor brrsCursor = new Cursor(Cursor.SE_RESIZE_CURSOR);
 
     // global functions
+    public static String[] parseString(String inputStr, char startChar,
+                                       char endChar, boolean keep)
+    {
+        String[] outputStr = null;
+
+        // Check empty string
+        if (inputStr.equals(""))  {
+            outputStr = new String[1];
+            outputStr[0] = new String("");
+            return outputStr;
+        }
+
+        Vector strBuffer = new Vector();
+        // isInit: denote the starting state
+        // isSpace: denote the space character ' '
+        // isStartChar: denote the startChar
+        // isSpecialChar: denote any character between startChar and endChar
+        // isChar: denote any other character
+        byte isInit = 0, isSpace = 1, isStartChar = 2, isSpecialChar = 3,
+             isChar = 4;
+        byte state = isInit; // denote the state of previous character
+        char testChar;
+        StringBuffer buffer = new StringBuffer("");
+        int i;
+
+        for (i = 0; i < inputStr.length(); i++) {
+            testChar = inputStr.charAt(i);
+
+            if (testChar == startChar) {
+                if (state == isInit || state == isSpace) {
+                    if (keep) {
+                        buffer.append(testChar);
+                    }
+                } else if (state == isStartChar || state == isSpecialChar) {
+                    return null;
+                } else if (state == isChar) {
+                    strBuffer.addElement(buffer.toString());
+                    buffer = new StringBuffer("");
+                }
+
+                state = isStartChar;
+            } else if (testChar == endChar) {
+                if (state == isInit || state == isSpace || state == isChar) {
+                    return null;
+                } else if (state == isSpecialChar || state == isStartChar) {
+                    if (keep)
+                        buffer.append(testChar);
+                    strBuffer.addElement(buffer.toString());
+                    buffer = new StringBuffer("");
+                }
+
+                state = isSpace;
+            } else if (testChar == ' ') {
+                if (state == isSpecialChar || state == isStartChar)  {
+                    buffer.append(testChar);
+                    state = isSpecialChar;
+                }  else if (state == isInit || state == isSpace)  {
+                    state = isSpace;
+                }  else if (state == isChar)  {
+                    strBuffer.addElement(buffer.toString());
+                    buffer = new StringBuffer("");
+                    state = isSpace;
+                }
+            } else {
+                if (state == isInit || state == isSpace || state == isChar) {
+                    buffer.append(testChar);
+                    state = isChar;
+                } else if (state == isStartChar || state == isSpecialChar) {
+                    buffer.append(testChar);
+                    state = isSpecialChar;
+                }
+            }
+        }
+
+        if (state == isChar) {
+            strBuffer.addElement(buffer.toString());
+        } else if (state == isSpace) {
+            if (strBuffer.size() == 0) {
+                strBuffer.addElement(buffer.toString());
+            }
+        } else {
+            return null;
+        }
+
+        outputStr = new String[strBuffer.size()];
+        for (i = 0; i < strBuffer.size(); i++) {
+            outputStr[i] = (String)strBuffer.elementAt(i);
+        }
+
+        return outputStr;
+    }
+
+    public static String[] parseString(String inputStr, char startChar, char endChar)
+    {
+        return DEViseGlobals.parseString(inputStr, startChar, endChar, false);
+    }
+
     public static String[] parseString(String inputStr, boolean keep)
     {
-        return YGlobals.Yparsestring(inputStr, '{', '}', keep);
+        return DEViseGlobals.parseString(inputStr, '{', '}', keep);
     }
 
     public static String[] parseString(String inputStr)
     {
-        return YGlobals.Yparsestring(inputStr, '{', '}', false);
+        return DEViseGlobals.parseString(inputStr, '{', '}', false);
+    }
+
+    public static String[] parseStr(String str, String delim, boolean keep)
+    {
+        String[] outStr = null;
+
+        if (str == null)
+            return null;
+
+        StringTokenizer token = new StringTokenizer(str, delim, false);
+        Vector tokenList = new Vector();
+        while (token.hasMoreTokens()) {
+            try {
+                tokenList.addElement(token.nextToken());
+            } catch (NoSuchElementException e) {
+                // this should not be happening
+            }
+        }
+
+        outStr = new String[tokenList.size()];
+        for (int i = 0; i < outStr.length; i++) {
+            if (keep) {
+                outStr[i] = (String)tokenList.elementAt(i) + delim;
+            } else {
+                outStr[i] = (String)tokenList.elementAt(i);
+            }
+        }
+
+        return outStr;
+    }
+
+    public static String[] parseStr(String inputStr, String delim)
+    {
+        return DEViseGlobals.parseStr(inputStr, delim, false);
     }
 
     public static String[] parseStr(String inputStr)
     {
-        return YGlobals.Yparsestr(inputStr, "\n");
+        return DEViseGlobals.parseStr(inputStr, "\n", false);
     }
 
-    public static void Ydebugpn(String s, int level, int id)
+    public static int toUshort(byte[] data, int offset)
     {
-        if (level > DEBUGLEVEL)
-            return;
-        else
-            YGlobals.Ydebugpn(s, id);
+        if (data == null || data.length < 2 + offset)
+            return 0;
+
+        int v1 = (int)data[0 + offset] & 0x000000FF;
+        int v2 = (int)data[1 + offset] & 0x000000FF;
+
+        return ((v1 << 8) + (v2 << 0));
     }
 
-    public static void Ydebugpn(String s, int level)
+    public static int toUshort(byte[] data)
     {
-        if (level > DEBUGLEVEL)
-            return;
-        else
-            YGlobals.Ydebugpn(s);
+        return DEViseGlobals.toUshort(data, 0);
     }
 
-    public static void Ydebugpn(String s)
+    public static long getCurrentTime()
     {
-        Ydebugpn(s, 0);
-    }
-
-    public static void Ydebugp(String s, int level, int id)
-    {
-        if (level > DEBUGLEVEL)
-            return;
-        else
-            YGlobals.Ydebugp(s, id);
-    }
-
-    public static void Ydebugp(String s, int level)
-    {
-        if (level > DEBUGLEVEL)
-            return;
-        else
-            YGlobals.Ydebugp(s);
-    }
-
-    public static void Ydebugp(String s)
-    {
-        Ydebugp(s, 0);
+        return System.currentTimeMillis();
     }
 }
 

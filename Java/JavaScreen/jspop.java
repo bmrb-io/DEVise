@@ -1,10 +1,13 @@
+// jspop.java
+// last updated on 04/16/99
+
 import  java.io.*;
 import  java.net.*;
 import  java.util.*;
 
 public class jspop implements Runnable
 {
-    private String usage = new String("usage: java jspop -cmdport[port] -imgport[port] -server[number] -timeout[time] -userfile[filename] -logfile[filename] -debug[number]");
+    private String usage = new String("usage: java jspop -cmdport[port] -imgport[port] -server[number] -userfile[filename] -logfile[filename] -debug[number]");
     // -CMDPORT[port]:
     //      port: The command port, if blank, use the defaults
     //      default: 6666
@@ -14,9 +17,6 @@ public class jspop implements Runnable
     // -SERVER[number]:
     //      number: The maximum number of active DEVise server, if blank, use defualts
     //      default: 1
-    // -TIMEOUT[time]:
-    //      time: The timeout value(in seconds) for DEVise Server to start up before abort
-    //      default: 60
     // -LOGFILE[filename]:
     //      filename: The name of the file that contain client log information
     //      default: clients.log
@@ -27,30 +27,27 @@ public class jspop implements Runnable
     //      number: The debug level for writing debug information to console
     //      default: No Debug information is written
     //
-    private int cmdPort, imgPort;
+
     private ServerSocket cmdServerSocket = null;
-    private ServerSocket imgServerSocket = null;
+    private ServerSocket dataServerSocket = null;
 
-    public String userFile = new String("users.cfg");
-    public String logFile = new String("clients.log");
+    private String userFileName = new String("users.cfg");
+    private String logFileName = new String("clients.log");
+    private int logLevel = 0;
+    private YLogFile logFile = null;
+    private int debugLevel = 0;
+    private YLogConsole debugConsole = null;
 
-    public Hashtable users = new Hashtable();
-    public Hashtable clients = new Hashtable();
-    public Vector servers = new Vector();
-    public int maxServer = 1;
+    private int IDCount = 1;
+    private int maxServerNumber = 1;
+    private Thread popThread = null;
+    private DEViseClientDispatcher dispatcher = null;
 
-    public int serverStartTimeout = 60 * 1000; // wait for DEVise server to start up for 1 minutes before abort
-    public int serverWaitTimeout = 60 * 1000; // wait for DEVise server response for 1 minutes before abort
-    public int jspopWaitTimeout = 5 * 1000; // wait client connection for 5 seconds before disconnect
-    public int dispatcherTimestep = 1 * 1000; // do scheduling every 1 seconds
-    public int cmdSocketTimeout = 1 * 1000; // interrupt cmdSocket every 1 seconds
-    public int imgSocketTimeout = 1 * 1000; // interrupt imgSocket every 1 seconds
-    public int logThreadTimestep = 30 * 60 * 1000; // write logfile every 30 minutes
-
-    public DEViseClientDispatcher dispatcher = null;
-    public DEViseLogWriter logwriter = null;
-
-    private int IDCount = 0;
+    private Hashtable users = new Hashtable();
+    private Vector servers = new Vector();
+    private Vector clientIDs = new Vector();
+    private Vector suspendClients = new Vector();
+    private Vector activeClients = new Vector();
 
     public static void main(String[] args)
     {
@@ -61,77 +58,174 @@ public class jspop implements Runnable
             System.exit(0);
         }
 
-        YGlobals.YISAPPLET = false;
-        YGlobals.YISGUI = false;
-
-        // force java VM to run every object's finalizer on normal or abnormal exit
-        //System.runFinalizersOnExit(true);
-
         jspop popServer = new jspop(args);
-        Thread popThread = new Thread(popServer);
-        popThread.start();
+        popServer.start();
+    }
+
+    public void pn(String msg, int level)
+    {
+        if (debugLevel > 0) {
+            debugConsole.pn(msg, level);
+        }
+    }
+
+    public void pn(String msg)
+    {
+        pn(msg, 1);
+    }
+
+    public void p(String msg, int level)
+    {
+        if (debugLevel > 0) {
+            debugConsole.p(msg, level);
+        }
+    }
+
+    public void p(String msg)
+    {
+        p(msg, 1);
+    }
+
+    public void logpn(String msg, int level)
+    {
+        if (logLevel > 0) {
+            logFile.pn(msg, level, true);
+        }
+    }
+
+    public void logpn(String msg)
+    {
+        logpn(msg, 1);
+    }
+
+    public void logp(String msg, int level)
+    {
+        if (logLevel > 0) {
+            logFile.p(msg, level, true);
+        }
+    }
+
+    public void logp(String msg)
+    {
+        logp(msg, 1);
     }
 
     public jspop(String[] args)
     {
         System.out.println("\nChecking command line arguments ...\n");
         checkArguments(args);
-        imgPort = DEViseGlobals.IMGPORT;
-        cmdPort = DEViseGlobals.CMDPORT;
 
-        YGlobals.start();
+        System.out.println("Starting DEViseServer ...\n");
+        try {
+            DEViseServer newserver = null;
+            for (int i = 0; i < maxServerNumber; i++) {
+                newserver = new DEViseServer(this);
+                newserver.start();
+                servers.addElement(newserver);
+                System.out.println("Successfully start DEViseServer " + (i + 1) + " out of " + maxServerNumber + "\n");
+            }
+        } catch (YException e) {
+            System.out.println(e.getMsg());
+            quit(1);
+        }
 
-        System.out.println("Loading user configuration file and client log file ...\n");
-        checkFiles();
+        System.out.println("\nStarting command server socket on " + DEViseGlobals.cmdport + " ...\n");
+        try {
+            cmdServerSocket = new ServerSocket(DEViseGlobals.cmdport);
+        } catch (IOException e) {
+            System.out.println("Can not start command server sokcet at port " + DEViseGlobals.cmdport);
+            quit(1);
+        }
 
-        System.out.println("Starting log writer ...\n");
-        logwriter = new DEViseLogWriter(this);
-        logwriter.startWriter();
+        System.out.println("\nStarting data server socket on " + DEViseGlobals.imgport + " ...\n");
+        try {
+            dataServerSocket = new ServerSocket(DEViseGlobals.imgport);
+            dataServerSocket.setSoTimeout(5000); // wait for data socket connection for 5 seconds before disconnect
+        } catch (IOException e) {
+            System.out.println("Can not start data server socket at port " + DEViseGlobals.imgport);
+            quit(1);
+        }
 
         System.out.println("Starting client dispatcher ...\n");
         dispatcher = new DEViseClientDispatcher(this);
-        dispatcher.startDispatcher();
-
-        System.out.println("Starting DEVise servers ...\n");
-        startServers();
-
-        System.out.println("\nStarting jspop server sockets ...\n");
-        try {
-            cmdServerSocket = new ServerSocket(cmdPort);
-        } catch (IOException e) {
-            System.out.println("Can not start server sokcet at port " + cmdPort);
-            System.exit(1);
-        }
-
-        try {
-            imgServerSocket = new ServerSocket(imgPort);
-            imgServerSocket.setSoTimeout(jspopWaitTimeout);
-        } catch (IOException e) {
-            System.out.println("Can not start server socket at port " + imgPort);
-            try {
-                cmdServerSocket.close();
-            } catch (IOException e1) {
-            }
-
-            System.exit(1);
-        }
+        dispatcher.start();
     }
 
-    private void startServers()
+    public void start()
     {
-        DEViseServer newserver = null;
+        popThread = new Thread(this);
+        popThread.start();
+    }
 
-        for (int i = 0; i < maxServer; i++) {
+    // quit() will only be called in jspop server thread or in jspop() initialization
+    // and all the stop() or close() methods of other class are synchronized, so there
+    // is no need to synchronize quit()
+    private void quit(int id)
+    {
+        System.out.println("Stop jspop server thread...");
+        if (popThread != null && Thread.currentThread() != popThread) {
+            popThread.stop();
+            popThread = null;
+        }
+
+        System.out.println("Stop client dispatcher thread...");
+        if (dispatcher != null) {
+            dispatcher.stop();
+            dispatcher = null;
+        }
+
+        System.out.println("Stop command server socket...");
+        if (cmdServerSocket != null) {
             try {
-                newserver = new DEViseServer(this);
-                newserver.startServer();
-                servers.addElement(newserver);
-                System.out.println("Successfully start server " + (i + 1) + " out of " + maxServer + "\n");
-            } catch (YException e) {
-                System.out.println(e.getMessage());
-                System.exit(1);
+                cmdServerSocket.close();
+            } catch (IOException e) {
+            }
+
+            cmdServerSocket = null;
+        }
+
+        System.out.println("Stop data server socket...");
+        if (dataServerSocket != null) {
+            try {
+                dataServerSocket.close();
+            } catch (IOException e) {
+            }
+
+            dataServerSocket = null;
+        }
+
+        System.out.println("Stop DEViseServer thread...");
+        for (int i = 0; i < servers.size(); i++) {
+            DEViseServer server = (DEViseServer)servers.elementAt(i);
+            if (server != null) {
+                server.stop();
             }
         }
+        servers.removeAllElements();
+
+        System.out.println("Close clients...");
+        for (int i = 0; i < suspendClients.size(); i++) {
+            DEViseClient client = (DEViseClient)suspendClients.elementAt(i);
+            if (client != null) {
+                client.close();
+            }
+        }
+        suspendClients.removeAllElements();
+        for (int i = 0; i < activeClients.size(); i++) {
+            DEViseClient client = (DEViseClient)activeClients.elementAt(i);
+            if (client != null) {
+                client.close();
+            }
+        }
+        activeClients.removeAllElements();
+
+        System.out.println("Close log file...");
+        if (logFile != null) {
+            logFile.close();
+            logFile = null;
+        }
+
+        System.exit(id);
     }
 
     public void run()
@@ -140,184 +234,259 @@ public class jspop implements Runnable
 
         boolean isListen = true;
         boolean isTimeout = false;
+        int quitID = 0;
+
         Socket socket1 = null;
         Socket socket2 = null;
-        DEViseCmdSocket cmd = null;
-        DEViseImgSocket img = null;
+        DEViseCommSocket socket = null;
         String hostname = null;
 
         while (isListen) {
             try {
                 socket1 = cmdServerSocket.accept();
                 hostname = socket1.getInetAddress().getHostName();
-                System.out.println("Client connection request from " + hostname + " is received ...");
-
-                try {
-                    socket2 = imgServerSocket.accept();
-                    isTimeout = false;
-                } catch (IOException e) {
-                    isTimeout = true;
-                }
-
-                if (isTimeout) {
-                    System.out.println("Can not received image port connection request within timeout!\nClose socket connection to client " + hostname + "!");
-                    try {
-                        socket1.close();
-                    } catch (IOException e) {
-                    }
-                } else {
-                    try {
-                        cmd = new DEViseCmdSocket(socket1, 1000);
-                        img = new DEViseImgSocket(socket2, 1000);
-                        addClient(cmd, img, hostname);
-                    } catch (YException e) {
-                        YGlobals.Ydebugpn(e.getMessage());
-                        System.out.println("Can not create data channel to new socket connection from " + hostname + "!\nClose socket connection to client " + hostname + "!");
-
-                        if (cmd != null) {
-                            cmd.closeSocket();
-                            cmd = null;
-                        }
-
-                        if (img != null) {
-                            img.closeSocket();
-                            img = null;
-                        }
-                    }
-                }
+                pn("Client connection request from " + hostname + " is received ...");
             } catch (IOException e) {
-                System.out.println("JSPOP Server can not listen on port: " + cmdPort + "!\nJSPOP Server is aborted!");
-                isListen = false;
+                System.out.println("JSPOP server can not listen on command socket so it is aborting!");
+                quitID = 1;
+                break;
             }
-        }
 
-        quit();
-    }
-
-    private synchronized void quit()
-    {
-        System.out.println("\nDEVise POP Server stopped ...\n");
-        System.exit(0);
-    }
-
-    private synchronized void addClient(DEViseCmdSocket cmd, DEViseImgSocket img, String hostname)
-    {
-        if (cmd == null || img == null || hostname == null)
-            return;
-
-        boolean isEnd = false;
-        int time = 0;
-
-        while (!isEnd) {
+            // There may be some serious mismatch could happen here, i.e. the data socket
+            // and the command socket are not from the same clients, however, since I am
+            // prepare to move to single socket, so I just leave it here, otherwise, should
+            // figure out some protocol to prevent that
             try {
-                String command = cmd.receiveRsp();
-                if (command != null && command.startsWith("JAVAC_Connect")) {
-                    String[] commands = DEViseGlobals.parseString(command);
-                    if (commands != null && commands.length == 4) {
-                        try {
-                            int id = Integer.parseInt(commands[3]);
-                            if (users.containsKey(commands[1])) {
-                                DEViseUser u = (DEViseUser)users.get(commands[1]);
-                                if (u != null) {
-                                    if (commands[2].equals(u.getPassword())) {
-                                        if (id != DEViseGlobals.DEFAULTID) {
-                                            if (!clients.containsKey(new Integer(id))) {
-                                                throw new YException("Invalid connection ID: " + id + "!");
-                                            } else {
-                                                DEViseClient c = (DEViseClient)clients.get(new Integer(id));
-                                                if (!u.equals(c.getUser()) || !hostname.equals(c.getHost())) {
-                                                    throw new YException("Invalid connection ID: " + id + "!");
-                                                } else {
-                                                    c.setSockets(cmd, img);
-                                                    isEnd = true;
-                                                }
-                                            }
-                                        } else {
-                                            if (!u.checkLogin()) {
-                                                throw new YException("Maximum number of logins has been reached for user " + commands[1] + "!");
-                                            }
-
-                                            id = getNewID();
-                                            DEViseClient newClient = new DEViseClient(u, cmd, img, hostname, id);
-                                            clients.put(newClient.getID(), newClient);
-                                            u.addClient(newClient);
-                                            dispatcher.addClient(newClient);
-                                        }
-
-                                        cmd.sendCmd("JAVAC_User " + id);
-                                        cmd.sendCmd("JAVAC_Done");
-                                        isEnd = true;
-                                    } else {
-                                        throw new YException("Invalid password: " + commands[2] + "!");
-                                    }
-                                } else {
-                                    throw new YException("Invalid user: " + commands[1] + "!");
-                                }
-                            } else {
-                                throw new YException("Invalid user: " + commands[1] + "!");
-                            }
-                        } catch (NumberFormatException e) {
-                            throw new YException("Invalid connection request: " + command + "!");
-                        }
-                    } else {
-                        throw new YException("Invalid connection request: " + command + "!");
-                    }
-                } else {
-                    throw new YException("Invalid connection request!");
-                }
-            } catch (YException e) {
-                YGlobals.Ydebugpn(e.getMessage());
-
-                int id = e.getID();
-                if (id == 0) { // Invalid connection request or client check failed
-                    try {
-                        cmd.sendCmd("JAVAC_Exit {" + e.getMessage() + "}");
-                    } catch (YException e1) {
-                    }
-                } else if (id == 2) { // communication error
-                } else { // should not happen
-                }
-
-                System.out.println("Connection error: " + e.getMessage() + "!\nClose socket connection to client " + hostname + "!");
-                cmd.closeSocket();
-                img.closeSocket();
-                isEnd = true;
+                socket2 = dataServerSocket.accept();
+                isTimeout = false;
             } catch (InterruptedIOException e) {
-                time += cmdSocketTimeout;
-                if (time > jspopWaitTimeout) {
-                    System.out.println("Can not receive connection request from " + hostname + " within timeout!\nClose socket connection to client " + hostname + "!");
-                    cmd.closeSocket();
-                    img.closeSocket();
-                    isEnd = true;
+                isTimeout = true;
+            } catch (IOException e) {
+                System.out.println("JSPOP server can not listen on data socket so it is aborting!");
+                try {
+                    socket1.close();
+                } catch (IOException e1) {
+                }
+
+                quitID = 1;
+                break;
+            }
+
+            if (isTimeout) {
+                pn("Can not receive data socket connection request within timeout\nClose connection to client from \"" + hostname + "\"");
+                try {
+                    socket1.close();
+                } catch (IOException e) {
+                }
+            } else {
+                try {
+                    socket = new DEViseCommSocket(socket1, socket2, 1000);
+                    DEViseClient client = new DEViseClient(this, hostname, socket, getID());
+                    addClient(client);
+                } catch (YException e) {
+                    pn(e.getMsg() + "\nClose socket connection to client \"" + hostname + "\"");
                 }
             }
         }
+
+        quit(quitID);
     }
 
-    public synchronized void removeClient(DEViseClient client)
+    public DEViseUser getUser(String username, String password)
+    {
+        if (username == null || password == null) {
+            return null;
+        }
+
+        if (users.containsKey(username)) {
+            DEViseUser user = (DEViseUser)users.get(username);
+            if (user != null) {
+                if (password.equals(user.getPassword())) {
+                    return user;
+                }
+            }
+
+            return null;
+        }
+
+        return null;
+    }
+
+    public synchronized void addClient(DEViseClient client)
     {
         if (client != null) {
-            client.close();
-            clients.remove(client.getID());
+            pn("Client from " + client.getHostname() + " is added ...");
+            client.setSuspend();
+            suspendClients.addElement(client);
         }
     }
 
-    private int getNewID()
+    // this method will only be called in client dispatcher thread
+    // this method will also check which client need to be removed and remove it
+    public synchronized DEViseClient getNextRequestingClient()
+    {
+        double time = -1.0, clientTime = 0.0;
+        DEViseClient client = null;
+        Vector removedClient = new Vector();
+
+        for (int i = 0; i < suspendClients.size(); i++) {
+            DEViseClient newclient = (DEViseClient)suspendClients.elementAt(i);
+            if (newclient != null) {
+                int status = newclient.getStatus();
+                if (status == DEViseClient.CLOSE) { // this client need to be removed
+                    removedClient.addElement(newclient);
+                    continue;
+                } else if (status == DEViseClient.REQUEST) { // only client that are requesting service will be served
+                    clientTime = (double)(newclient.getPriority() * newclient.getSuspendTime());
+
+                    if (time < 0.0) {
+                        time = clientTime;
+                        client = newclient;
+                    } else {
+                        if (time < clientTime) {
+                            time = clientTime;
+                            client = newclient;
+                        }
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < removedClient.size(); i++) {
+            DEViseClient newclient = (DEViseClient)removedClient.elementAt(i);
+            if (newclient != null) {
+                Integer id = newclient.getConnectionID();
+                if (id != null) {
+                    clientIDs.removeElement(id);
+                }
+                newclient.close();
+                suspendClients.removeElement(newclient);
+            }
+        }
+        removedClient.removeAllElements();
+
+        return client;
+    }
+
+    public synchronized void activeClient(DEViseClient c)
+    {
+        if (c != null) {
+            suspendClients.removeElement(c);
+            activeClients.addElement(c);
+            c.setActive();
+        }
+    }
+
+    public synchronized void suspendClient(DEViseClient c)
+    {
+        if (c != null) {
+            activeClients.removeElement(c);
+            suspendClients.addElement(c);
+            c.setSuspend();
+        }
+    }
+
+    public DEViseServer getNextAvailableServer()
+    {
+        DEViseServer server = null;
+        DEViseClient client = null;
+        double time = -1.0, clientTime = 0.0;
+
+        for (int i = 0; i < servers.size(); i++) {
+            DEViseServer newserver = (DEViseServer)servers.elementAt(i);
+            if (newserver != null) {
+                if (newserver.getStatus() == 0) {
+                    try {
+                        newserver.start();
+                    } catch (YException e) {
+                        pn(e.getMsg());
+                        continue;
+                    }
+                } else {
+                    if (!newserver.isAvailable()) {
+                        continue;
+                    }
+
+                    client = (DEViseClient)newserver.getCurrentClient();
+                    if (client == null) { // this server is idle
+                        return newserver;
+                    }
+
+                    clientTime = (double)client.getActiveTime() / (double)client.getPriority();
+                    if (time < 0.0) {
+                        time = clientTime;
+                        server = newserver;
+                    } else {
+                        if (time < clientTime) {
+                            time = clientTime;
+                            server = newserver;
+                        }
+                    }
+                }
+            }
+        }
+
+        return server;
+    }
+
+    public synchronized String getServerState()
+    {
+        String state = "{";
+        DEViseServer server = null;
+        DEViseClient client = null;
+
+        state = state + servers.size() + " ";
+        for (int i = 0; i < servers.size(); i++) {
+            server = (DEViseServer)servers.elementAt(i);
+            if (server == null) {
+                state = state + "null ";
+            } else {
+                state = state + server.hostname + " ";
+            }
+        }
+
+        state = state + activeClients.size() + " ";
+        for (int i = 0; i < activeClients.size(); i++) {
+            client = (DEViseClient)activeClients.elementAt(i);
+            if (client == null) {
+                state = state + "null ";
+            } else {
+                state = state + client.getHostname() + " ";
+            }
+        }
+
+        state = state + suspendClients.size() + " ";
+        for (int i = 0; i < suspendClients.size(); i++) {
+            client = (DEViseClient)suspendClients.elementAt(i);
+            if (client == null) {
+                state = state + "null ";
+            } else {
+                state = state + client.getHostname() + " ";
+            }
+        }
+
+        state = state + "}";
+        return state;
+    }
+
+    private synchronized Integer getID()
     {
         if (IDCount == Integer.MAX_VALUE) {
-            IDCount = 0;
+            IDCount = 1;
         }
 
         Integer id = new Integer(IDCount);
-        while (clients.containsKey(id)) {
+        while (clientIDs.contains(id)) {
             IDCount++;
             if (IDCount == Integer.MAX_VALUE)
-                IDCount = 0;
+                IDCount = 1;
             id = new Integer(IDCount);
         }
 
-        return IDCount;
+        clientIDs.addElement(id);
+        return id;
     }
+
 
     private void checkArguments(String[] args)
     {
@@ -329,10 +498,9 @@ public class jspop implements Runnable
                         if (port < 1024 || port > 65535) {
                             throw new NumberFormatException();
                         }
-                        DEViseGlobals.CMDPORT = port;
+                        DEViseGlobals.cmdport = port;
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid command port number " + args[i].substring(8) + " specified in arguments!\n");
-                        System.out.println(usage);
+                        System.out.println("Please use a positive integer number between 1024 and 65535 as the port number");
                         System.exit(1);
                     }
                 }
@@ -343,100 +511,78 @@ public class jspop implements Runnable
                         if (port < 1024 || port > 65535) {
                             throw new NumberFormatException();
                         }
-                        DEViseGlobals.IMGPORT = port;
+                        DEViseGlobals.imgport = port;
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid command port number " + args[i].substring(8) + " specified in arguments!\n");
-                        System.out.println(usage);
+                        System.out.println("Please use a positive integer number between 1024 and 65535 as the port number");
                         System.exit(1);
                     }
                 }
             } else if (args[i].startsWith("-server")) {
                 if (!args[i].substring(7).equals("")) {
                     try {
-                        maxServer = Integer.parseInt(args[i].substring(7));
-                        if (maxServer < 1 || maxServer > 10)
+                        maxServerNumber = Integer.parseInt(args[i].substring(7));
+                        if (maxServerNumber < 1 || maxServerNumber > 10)
                             throw new NumberFormatException();
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid number of server " + args[i].substring(7) + " specified in arguments!\n");
-                        System.out.println(usage);
-                        System.exit(1);
-                    }
-                }
-            } else if (args[i].startsWith("-timeout")) {
-                if (!args[i].substring(8).equals("")) {
-                    try {
-                        serverStartTimeout = Integer.parseInt(args[i].substring(8));
-                        if (serverStartTimeout < 0)
-                            throw new NumberFormatException();
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid timeout value of server " + args[i].substring(8) + " specified in arguments!\n");
-                        System.out.println(usage);
+                        System.out.println("Please use a positive integer number between 1 and 10 as the maximum number of servers");
                         System.exit(1);
                     }
                 }
             } else if (args[i].startsWith("-debug")) {
                 if (!args[i].substring(6).equals("")) {
                     try {
-                        YGlobals.YDEBUG = Integer.parseInt(args[i].substring(6));
+                        debugLevel = Integer.parseInt(args[i].substring(6));
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid debug level " + args[i].substring(6) + " specified in arguments!\n");
-                        System.out.println(usage);
+                        System.out.println("Please use an integer number as the debug level");
                         System.exit(1);
                     }
                 } else {
-                    YGlobals.YDEBUG = 1;
+                    debugLevel = 1;
                 }
             } else if (args[i].startsWith("-logfile")) {
-                if (!args[i].substring(8).equals(""))
-                     logFile = args[i].substring(8);
+                if (!args[i].substring(8).equals("")) {
+                     logFileName = args[i].substring(8);
+                }
             } else if (args[i].startsWith("-userfile")) {
-                if (!args[i].substring(9).equals(""))
-                     userFile = args[i].substring(9);
+                if (!args[i].substring(9).equals("")) {
+                     userFileName = args[i].substring(9);
+                }
             } else {
-                System.out.println("Invalid jspop option " + args[i] + " is given!\n");
+                System.out.println("Invalid jspop option \"" + args[i] + "\"is given");
                 System.out.println(usage);
                 System.exit(1);
             }
         }
 
-        /*
-        File dir = new File(tmpDir);
-        if (!dir.exists()) {
-            System.out.println("Specified temporary directory " + tmpDir + " is not exist!");
-            System.exit(1);
-        }
-        if (!dir.isDirectory()) {
-            System.out.println("Specified temporary directory " + tmpDir + " is not a directory!");
-            System.exit(1);
-        }
-        if (!dir.canRead() || !dir.canWrite()) {
-            System.out.println("Specified temporary directory " + tmpDir + " is not readable or writable!");
-            System.exit(1);
-        }
-        */
+        logLevel = 1;
 
-        File file = new File(userFile);
-        if (!file.exists()) {
-            System.out.println("Specified user configuration file " + userFile + " is not exist!");
-            System.exit(1);
+        if (DEViseGlobals.cmdport < 1024) {
+            DEViseGlobals.cmdport = DEViseGlobals.DEFAULTCMDPORT;
         }
-        if (!file.isFile()) {
-            System.out.println("Specified user configuration file " + userFile + " is not a file!");
-            System.exit(1);
+
+        if (DEViseGlobals.imgport < 1024) {
+            DEViseGlobals.imgport = DEViseGlobals.DEFAULTIMGPORT;
         }
-        if (!file.canRead() || !file.canWrite()) {
-            System.out.println("Specified user configuration file " + userFile + " is not readable or writable!");
-            System.exit(1);
+
+        if (logLevel > 0) {
+            logFile = new YLogFile(logFileName, logLevel, true);
         }
+
+        if (debugLevel > 0) {
+            debugConsole = new YLogConsole(debugLevel);
+        }
+
+        System.out.println("Loading user configuration file ...");
+        readCFGFile(userFileName);
     }
 
-    private void checkFiles()
+    private void readCFGFile(String filename)
     {
         RandomAccessFile uf = null;
         try {
-            uf = new RandomAccessFile(userFile, "r");
+            uf = new RandomAccessFile(filename, "r");
         } catch (IOException e) {
-            System.out.println("Can not open user configuration file " + userFile);
+            System.out.println("Invalid user configuration file \"" + filename + "\"");
             System.exit(1);
         }
 
@@ -446,17 +592,9 @@ public class jspop implements Runnable
                 str = str.trim();
                 // skip comment line
                 if (!str.startsWith("#") && !str.equals("")) {
-                    String[] line = YGlobals.Yparsestr(str, ":");
-                    if (line.length != 5)
-                        throw new YException("Invalid line read from user configuration file: " + str);
-
-                    try {
-                        DEViseUser user = new DEViseUser(line[0], line[1], Integer.parseInt(line[2]),
-                                          Integer.parseInt(line[3]), Long.parseLong(line[4]));
-                        users.put(user.getName(), user);
-                    } catch (NumberFormatException e) {
-                        throw new YException("Invalid user information read from user configuration file: " + str);
-                    }
+                    String[] line = DEViseGlobals.parseStr(str, ":");
+                    DEViseUser user = new DEViseUser(line);
+                    users.put(user.getName(), user);
                 }
 
                 str = uf.readLine();
@@ -467,7 +605,7 @@ public class jspop implements Runnable
             } catch (IOException e1) {
             }
 
-            System.out.println("Can not read from user configuration file " + userFile);
+            System.out.println("Can not read from user configuration file \"" + filename + "\"");
             System.exit(1);
         } catch (YException e) {
             try {
@@ -475,28 +613,13 @@ public class jspop implements Runnable
             } catch (IOException e1) {
             }
 
-            System.out.println(e.getMessage());
+            System.out.println(e.getMsg());
             System.exit(1);
         }
 
         try {
             uf.close();
         } catch (IOException e) {
-        }
-
-        RandomAccessFile lf = null;
-        try {
-            lf = new RandomAccessFile(logFile, "rw");
-        } catch (IOException e) {
-            lf = null;
-        }
-
-        if (lf != null) {
-
-            try {
-                lf.close();
-            } catch (IOException e) {
-            }
         }
     }
 }

@@ -1,0 +1,7 @@
+rm *.class
+javac jsa.java
+jar cf jsatest.jar *.class
+rm /var/home/www/public/jsatest.jar
+mv jsatest.jar /var/home/www/public
+chmod 755 /var/home/www/public/jsatest.jar
+rm *.class

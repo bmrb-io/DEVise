@@ -1,59 +1,67 @@
+// DEViseServer.java
+// last updated on 04/16/99
+
 import java.net.*;
 import java.io.*;
 import java.util.*;
 
 public class DEViseServer implements Runnable
 {
-    private static int Port = 3000;
     private static String DEViseExec = new String("DEVise.jspop");
+    private static String DEViseKill = new String("DEVise.kill");
+    private static int Port = DEViseGlobals.cmdport + 1;
+    public static int QUIT = 0, IDLE = 1, WORK = 2;
 
     private jspop pop = null;
-    private int serverStartTimeout = 10 * 1000;
-    private int serverStartTimestep = 2 * 1000;
-    private int serverWaitTimeout = 30 * 1000;
-    private int cmdSocketTimeout = 500;
-    private int imgSocketTimeout = 500;
-    // when is current client been serviced
-    private long clientStartTime = 0;
 
     private Process proc = null;
-    private String hostname = "localhost";
-    private int imgPort = 0, cmdPort = 0, switchPort = 0;
-    private DEViseCmdSocket cmdSocket = null;
-    private DEViseImgSocket imgSocket = null;
-
     private Thread serverThread = null;
+
+    public String hostname = "localhost";
+    private int dataPort = 0, cmdPort = 0, switchPort = 0;
+    private DEViseCommSocket socket = null;
+    private int devisedTimeout = 180 * 1000;
+    private int socketTimeout = 1000;
 
     private DEViseClient newClient = null;
     private DEViseClient client = null;
-    // status = -1, serverThread is stopped
-    // status = 0, serverThread wait for new client and idle
-    // status = 1, serverThread is working with new client
-    private int status = -1;
-    // action = -1, stop server thread
-    // action = 0, no change of current status
-    // action = 1, change client
-    private int action = 0;
-    // number of times trying to start a new DEVise Server but failed consecutively
-    private int tryTime = 0;
-    // code = -1, no response received from DEVise server
-    // code = 0, only "JAVAC_Done" is received
-    // code = 1, "JAVAC_Done" is received, along with other commands
-    // code = 2, "JAVAC_Error" or "JAVAC_Fail" is received
-    private int deviseResponseCode = -1;
+    private String[] serverCmds = null;
+    
+    private Vector currentDir = new Vector();
+    private String rootDir = "DEViseSession";
 
-    public DEViseServer(jspop j) throws YException
+    private int status = 0;
+
+    private int action = DEViseServer.IDLE;
+
+    public DEViseServer(jspop j)
     {
-        pop = j;
+        pop = j;        
+    }
 
-        if (pop.serverStartTimeout > serverStartTimeout)
-            serverStartTimeout = pop.serverStartTimeout;
-        if (pop.serverWaitTimeout > serverWaitTimeout)
-            serverWaitTimeout = pop.serverWaitTimeout;
-        if (pop.cmdSocketTimeout > cmdSocketTimeout)
-            cmdSocketTimeout = pop.cmdSocketTimeout;
-        if (pop.imgSocketTimeout > imgSocketTimeout)
-            imgSocketTimeout = pop.imgSocketTimeout;
+    public synchronized static int getPort()
+    {
+        if (Port == DEViseGlobals.cmdport || Port == DEViseGlobals.imgport)
+            Port++;
+
+        if (Port > 60000)
+            Port = DEViseGlobals.cmdport + 1;
+
+        while (true) {
+            try {
+                ServerSocket s = new ServerSocket(Port);
+                s.close();
+                return Port++;
+            } catch (IOException e) {
+                Port++;
+
+                if (Port == DEViseGlobals.cmdport || Port == DEViseGlobals.imgport)
+                    Port++;
+
+                if (Port > 60000)
+                    Port = DEViseGlobals.cmdport + 1;
+            }
+        }
     }
 
     public synchronized int getStatus()
@@ -61,127 +69,96 @@ public class DEViseServer implements Runnable
         return status;
     }
 
-    private synchronized void setStatus(int set)
+    private synchronized void setStatus(int s)
     {
-        status = set;
+        status = s;
     }
 
-    public synchronized int getAction()
+    public void stop()
     {
-        return action;
-    }
-
-    private synchronized void setAction(int set)
-    {
-        action = set;
-    }
-
-    public synchronized DEViseClient getClient()
-    {
-        return client;
-    }
-
-    public synchronized boolean setClient(DEViseClient c)
-    {
-        if (action != 0) {
-            notifyAll();
-            return false;
-        } else {
-            action = 1;
-            newClient = c;
-            notifyAll();
-            return true;
-        }
-    }
-
-    private synchronized void waitForClient()
-    {
-        if (action != 0)
-            return;
-
-        while (client == null) {
-            status = 0;
-
-            try {
-                wait();
-            } catch (InterruptedException e) {
+        if (getStatus() != 0) {
+            if (serverThread != null) {
+                serverThread.stop();
+                serverThread = null;
             }
 
-            if (action != 0)
-                return;
+            setStatus(0);
+
+            closeSocket();
+
+            stopDEVise();
         }
     }
 
-    public synchronized boolean stopServer()
+    public void start() throws YException
     {
-        if (action != 0) {
-            notifyAll();
-            return false;
-        } else {
-            action = -1;
-            notifyAll();
-            return true;
-        }
-    }
+        pop.pn("Trying to start a DEViseServer ...");
 
-    public synchronized void startServer() throws YException
-    {
-        YGlobals.Ydebugpn("Trying to start server ...");
-
-        tryTime++;
-
-        // Reconnect sockets if they are dead
+        // start devised and connect to it
         if (!startSocket())
-            throw new YException("Can not connect to DEVise Server!", "DEViseServer:startServer");
+            throw new YException("Can not start DEViseServer");
 
         // start server Thread but first check if server thread is still active
-        if (status < 0) {
+        if (getStatus() == 0) {
+            setStatus(1);
+            setAction(DEViseServer.IDLE);
             serverThread = new Thread(this);
             serverThread.start();
         }
 
-        tryTime = 0;
-
-        YGlobals.Ydebugpn("Successfully start server ...");
+        pop.pn("Successfully started a DEViseServer ...");
     }
 
-    private void stopDEVise()
+    private synchronized void closeSocket()
     {
-        if (!isDEViseAlive()) {
-            return;
-        } else {
-            proc.destroy();
-            proc = null;
+        if (socket != null) {
+            socket.closeSocket();
+            socket = null;
         }
     }
 
-    private boolean startDEVise()
+    private synchronized boolean startSocket()
     {
-        if (isDEViseAlive())
-            return true;
-
+        // close previous connection first if any        
         closeSocket();
+        
+        currentDir = new Vector();
+        currentDir.addElement(new String(rootDir));
 
-        cmdPort = DEViseServer.getPort();
-        imgPort = DEViseServer.getPort();
-        switchPort = DEViseServer.getPort();
-
-        YGlobals.Ydebugpn("Successfully found three available port " + cmdPort + " " + imgPort + " " + switchPort + " ...");
-
-        Runtime currentRT = Runtime.getRuntime();
-        try {
-            proc = currentRT.exec(DEViseServer.DEViseExec + " -port " + cmdPort + " -imageport " + imgPort + " -switchport " + switchPort);
-        } catch (IOException e1) {
-            YGlobals.Ydebugpn("IO Error while trying to start a new DEVise Server!");
-            return false;
-        } catch (SecurityException e2) {
-            YGlobals.Ydebugpn("Security Error while trying to start a new DEVise Server!");
+        // restart devised
+        if (!startDEVise()) {
+            pop.pn("Can not start a new devised");
             return false;
         }
 
-        YGlobals.Ydebugpn("Successfully start DEVise server ...");
+        int time = 0, timestep = 5000;
 
-        return true;
+        while (time < devisedTimeout) {
+            try {
+                Thread.sleep(timestep);
+            } catch (InterruptedException e) {
+            }
+
+            time += timestep;
+
+            try {
+                socket = new DEViseCommSocket(hostname, cmdPort, dataPort, 1000);
+
+                pop.pn("Successfully connect to devised ...");
+
+                return true;
+            } catch (YException e) {
+                closeSocket();
+            }
+        }
+
+        // can not connect within timeout
+        closeSocket();
+        stopDEVise();
+
+        pop.pn("Can not connect to devised within timeout");
+
+        return false;
     }
 
     private boolean isDEViseAlive()
@@ -198,809 +175,638 @@ public class DEViseServer implements Runnable
         }
     }
 
-    private synchronized void closeSocket()
-    {
-        if (cmdSocket != null) {
-            cmdSocket.closeSocket();
-            cmdSocket = null;
-        }
-
-        if (imgSocket != null) {
-            imgSocket.closeSocket();
-            imgSocket = null;
-        }
-    }
-
-    private synchronized boolean startSocket()
-    {
-        if (isSocketAlive()) {
-            return true;
-        }
-
-        int time = 0;
-        while (time < serverStartTimeout) {
-            try {
-                Thread.sleep(serverStartTimestep);
-            } catch (InterruptedException e) {
-            }
-
-            if (!isDEViseAlive()) {
-                // start DEVise server if it is dead
-                if (!startDEVise()) {
-                    YGlobals.Ydebugpn("Can not start DEVise Server!");
-                    return false;
-                }
-            }
-
-            time += serverStartTimestep;
-
-            try {
-                cmdSocket = new DEViseCmdSocket(hostname, cmdPort, cmdSocketTimeout);
-                imgSocket = new DEViseImgSocket(hostname, imgPort, imgSocketTimeout);
-
-                YGlobals.Ydebugpn("Successfully connect to DEVise server ...");
-                return true;
-            } catch (YException e) {
-                YGlobals.Ydebugpn(e.getMessage());
-                closeSocket();
-            }
-        }
-
-        closeSocket();
-
-        YGlobals.Ydebugpn("Can not connect to DEVise server within " + (serverStartTimeout / 1000) + " seconds!");
-
-        return false;
-    }
-
-    public synchronized boolean isSocketAlive()
+    private void stopDEVise()
     {
         if (isDEViseAlive()) {
-            if (cmdSocket != null && imgSocket != null) {
-                return true;
-            } else {
-                closeSocket();
-                return false;
-            }
-        } else {
-            closeSocket();
+            proc.destroy();
+            proc = null;
+        }
+
+        //Runtime currentRT = Runtime.getRuntime();
+        //try {
+        //    proc = currentRT.exec(DEViseServer.DEViseKill);
+        //} catch (IOException e) {
+        //    pn("IO Error while trying to start a new DEVise Server!");
+        //} catch (SecurityException e) {
+        //    pn("Security Error while trying to start a new DEVise Server!");
+        //}
+    }
+
+    private boolean startDEVise()
+    {
+        // stop previous devised first
+        stopDEVise();
+
+        // need more work to make it stable
+        cmdPort = getPort();
+        dataPort = getPort();
+        switchPort = getPort();
+
+        Runtime currentRT = Runtime.getRuntime();
+        try {
+            proc = currentRT.exec(DEViseServer.DEViseExec + " -port " + cmdPort + " -imageport " + dataPort + " -switchport " + switchPort);
+        } catch (IOException e) {
+            pop.pn("IO Error while trying to start a new devised");
+            return false;
+        } catch (SecurityException e) {
+            pop.pn("Security Error while trying to start a new devised");
             return false;
         }
+
+        pop.pn("Successfully start devised ...");
+
+        return true;
     }
 
     public synchronized boolean isAvailable()
     {
-        if (client != null) {
-            return false;
-        } else {
-            startSocket();
+        if (newClient == null) {
             return true;
+        } else {
+            return false;
         }
     }
 
-    public long getActiveTime()
+    public synchronized DEViseClient getCurrentClient()
     {
-        long time = YGlobals.getTime();
-        return time - clientStartTime;
+        return client;
     }
 
+    public synchronized void setCurrentClient(DEViseClient c)
+    {
+        if (c == null)
+            return;
+
+        c.setStatus(DEViseClient.SERVE);
+        newClient = c;
+        notifyAll();
+    }
+
+    private synchronized int getAction()
+    {
+        while (action == DEViseServer.IDLE && newClient == null) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+            }
+        }
+
+        if (action == DEViseServer.QUIT) {
+            return action;
+        }
+
+        if (client == null && newClient == null) {
+            action = DEViseServer.IDLE;
+        } else {
+            if (newClient != null) { // need to switch client
+                pop.pn("Client switching happened in server running on (" + hostname + ")");
+                switchClient(true);
+                action = DEViseServer.WORK;
+            }
+        }
+
+        return action;
+    }
+
+    private synchronized void setAction(int a)
+    {
+        action = a;
+    }
+
+    public void run()
+    {
+        int todo;
+
+        while (true) {
+            todo = getAction();
+
+            if (todo == DEViseServer.QUIT) {
+                quit();
+
+                break;
+            } else if (todo == DEViseServer.WORK && client != null) {
+                // while DEViseServer thread reach here, there is no way to interrupt it until
+                // some error happened or it finish processing one client's request
+
+                serverCmds = null;
+
+                String clientCmd = null;
+                Vector serverDatas = new Vector();
+
+                boolean isEnd = false;
+                while (!isEnd) {
+                    try {
+                        // this method will not block, if no command it just return null
+                        clientCmd = client.getCmd();
+                        isEnd = true;
+                    } catch (InterruptedIOException e) {
+                        // since client.getCmd() will not block, so this is meaningless
+                    } catch (YException e) {
+                        pop.pn("Client communication error");
+                        pop.pn(e.getMsg());
+                        removeCurrentClient();
+
+                        isEnd = true;
+                        clientCmd = null;
+                    }
+                }
+
+                if (clientCmd == null) {
+                    continue;
+                } else {
+                    client.removeLastCmd();
+                }
+
+                // commands JAVAC_GetServerState, JAVAC_Abort and JAVAC_Connect
+                // already been handled in DEViseClient
+                try {
+                    if (clientCmd.startsWith("JAVAC_Exit")) {
+                        client.isClientSwitched = false;
+                        client.isSwitchSuccessful = false;
+                        if (client.isSessionOpened) {
+                            client.isSessionOpened = false;
+                            sendCmd("JAVAC_CloseCurrentSession");
+                            currentDir = new Vector();
+                            currentDir.addElement(rootDir);
+                        }
+
+                        removeCurrentClient(false);
+
+                        // no need to return any response to client
+                        continue;
+                    } else if (clientCmd.startsWith("JAVAC_CloseCurrentSession")) {
+                        client.isClientSwitched = false;
+                        client.isSwitchSuccessful = false;
+                        if (client.isSessionOpened) {
+                            client.isSessionOpened = false;
+                            sendCmd("JAVAC_CloseCurrentSession");
+                            currentDir = new Vector();
+                            currentDir.addElement(rootDir);
+                        }
+
+                        // no need to return any response to client
+                        continue;
+                    } else if (clientCmd.startsWith("JAVAC_GetSessionList")) {
+                        String[] cmds = DEViseGlobals.parseString(clientCmd);                        
+                        if (cmds != null && cmds.length == 2 && cmds[1].startsWith(rootDir)) {
+                            Vector path = findPath(cmds[1]);
+                            if (path != null) {
+                                if (path.size() > 0) {
+                                    for (int i = 0; i < path.size(); i++) {
+                                        String p = (String)path.elementAt(i);
+                                        sendCmd("JAVAC_GetSessionList {" + p + "}");
+                                        if (p.equals("..")) {
+                                            currentDir.removeElementAt(currentDir.size() - 1);
+                                        } else {
+                                            currentDir.addElement(p);                                   
+                                        }    
+                                    }
+                                } else {
+                                    sendCmd("JAVAC_GetSessionList");
+                                }
+                                        
+                            } else {
+                                serverCmds = new String[1];
+                                serverCmds[0] = "JAVAC_Error {Invalid command: \"" + clientCmd + "\"}"; 
+                            }        
+                        } else {
+                            serverCmds = new String[1];
+                            serverCmds[0] = "JAVAC_Error {Invalid command: \"" + clientCmd + "\"}"; 
+                        }
+                    } else if (clientCmd.startsWith("JAVAC_SetDisplaySize")) {
+                        boolean error = false;
+                        String[] cmds = DEViseGlobals.parseString(clientCmd);
+                        if (cmds != null && cmds.length == 3) {
+                            try {
+                                client.screenDimX = Integer.parseInt(cmds[1]);
+                                client.screenDimY = Integer.parseInt(cmds[2]);
+                                if (client.screenDimX < 1 || client.screenDimY < 1)
+                                    throw new NumberFormatException();
+                            } catch (NumberFormatException e) {
+                                error = true;
+                            }
+                        } else {
+                            error = true;
+                        }
+
+                        if (error) {
+                            serverCmds = new String[1];
+                            serverCmds[0] = "JAVAC_Error {Invalid command: \"" + clientCmd + "\"}";
+                            client.screenDimX = -1;
+                            client.screenDimY = -1;
+                        } else {
+                            sendCmd(clientCmd);
+                        }
+                    } else if (clientCmd.startsWith("JAVAC_OpenSession")) {
+                        if (client.isSessionOpened) {
+                            client.isSessionOpened = false;
+                            sendCmd("JAVAC_CloseCurrentSession");
+                            currentDir = new Vector();
+                            currentDir.addElement(rootDir);
+                        }
+                        
+                        String[] cmds = DEViseGlobals.parseString(clientCmd);
+                        if (cmds != null && cmds.length == 2 && cmds[1].startsWith(rootDir)) {
+                            Vector path = findPath(cmds[1]);
+                            if (path != null && path.size() > 0) {                                
+                                for (int i = 0; i < path.size() - 1; i++) {
+                                    String p = (String)path.elementAt(i);
+                                    sendCmd("JAVAC_GetSessionList {" + p + "}");
+                                    if (p.equals("..")) {
+                                        currentDir.removeElementAt(currentDir.size() - 1);
+                                    } else {
+                                        currentDir.addElement(p);                                   
+                                    }    
+                                }
+                                /*
+                                client.path = (String)currentDir.elementAt(0);
+                                for (int i = 1; i < currentDir.size(); i++) {
+                                    client.path = client.path + "/" + (String)currentDir.elementAt(i);
+                                }
+                                */                               
+                                client.sessionName = (String)path.lastElement();
+                                
+                                boolean error = false;
+                                if (client.screenDimX > 0 && client.screenDimY > 0) {
+                                    if (!sendCmd("JAVAC_SetDisplaySize " + client.screenDimX + " " + client.screenDimY)) {
+                                        error = true;
+                                    }
+                                }
+                                
+                                if (!error) {    
+                                    if (sendCmd("JAVAC_OpenSession {" + client.sessionName + "}")) {
+                                        client.isSessionOpened = true;
+                                    } else {
+                                        // need to clear socket because there might be some data on data socket
+                                        socket.clearSocket();
+                                    }
+                                }    
+                            }
+                        }
+                        
+                        if (!client.isSessionOpened) {
+                            serverCmds = new String[1];
+                            serverCmds[0] = "JAVAC_Error {Can not open session \"" + client.sessionName + "\"}";
+                        }
+                    } else {
+                        if (client.isClientSwitched) {
+                            client.isClientSwitched = false;
+                            
+                            if (client.isSwitchSuccessful) {
+                                client.isSwitchSuccessful = false;
+                                
+                                Vector path = findPath(client.path);
+                                if (path != null) {                                                                    
+                                    for (int i = 0; i < path.size(); i++) {
+                                        String p = (String)path.elementAt(i);
+                                        sendCmd("JAVAC_GetSessionList {" + p + "}");
+                                        if (p.equals("..")) {
+                                            currentDir.removeElementAt(currentDir.size() - 1);
+                                        } else {
+                                            currentDir.addElement(p);                                   
+                                        }    
+                                    }
+                                   
+                                    boolean error = false;
+                                    if (client.screenDimX > 0 && client.screenDimY > 0) {
+                                        if (!sendCmd("JAVAC_SetDisplaySize " + client.screenDimX + " " + client.screenDimY)) {
+                                            error = true;
+                                        }
+                                    }
+                                
+                                    if (!error) {    
+                                        if (sendCmd("JAVAC_OpenSession {" + client.savedSessionName + "}")) {
+                                            client.isSessionOpened = true;
+                                        }
+                                        
+                                        // need to clear socket because there might be some useless data on data socket
+                                        socket.clearSocket();                                        
+                                    }    
+                                }                                
+                            }
+                        }
+
+                        if (client.isSessionOpened) {
+                            if (!sendCmd(clientCmd)) {
+                                // need to clear data socket when error happened because there might be some data on data socket
+                                socket.clearSocket();
+                            }
+                        } else {
+                            serverCmds = new String[1];
+                            serverCmds[0] = "JAVAC_Fail {Do not have an opened session or Can not open last saved session}";
+                        }
+                    }
+
+                    // need to get whatever data is sending over by devised along with the commands
+                    // since serverCmds always ends with a JAVAC_Error or JAVAC_Fail or JAVAC_Done, so we do not need to check the last command
+                    if (!serverCmds[serverCmds.length - 1].startsWith("JAVAC_Done")) {
+                        String tmpcmd = serverCmds[serverCmds.length - 1];
+                        serverCmds = new String[1];
+                        serverCmds[0] = tmpcmd;
+                    }
+
+                    for (int i = 0; i < (serverCmds.length - 1); i++) {
+                        if (serverCmds[i].startsWith("JAVAC_UpdateViewImage")) {
+                            String[] cmds = DEViseGlobals.parseString(serverCmds[i]);
+                            if (cmds != null && cmds.length == 3) {
+                                try {
+                                    int imgSize = Integer.parseInt(cmds[2]);
+                                    if (imgSize < 1) {
+                                        throw new NumberFormatException();
+                                    }
+
+                                    byte[] image = receiveData(imgSize);
+
+                                    serverDatas.addElement(image);
+                                } catch (NumberFormatException e1) {
+                                    throw new YException("Invalid image size in command \"" + serverCmds[i] + "\"");
+                                }
+                            } else {
+                                throw new YException("Ill-formated command \"" + serverCmds[i] + "\"");
+                            }
+                        } else if (serverCmds[i].startsWith("JAVAC_UpdateGData")) {
+                            String[] cmds = DEViseGlobals.parseString(serverCmds[i]);
+                            if (cmds != null && cmds.length == 7) {
+                                try {
+                                    int dataSize = Integer.parseInt(cmds[6]);
+                                    if (dataSize < 1) {
+                                        throw new NumberFormatException();
+                                    }
+
+                                    byte[] data = receiveData(dataSize);
+
+                                    serverDatas.addElement(data);
+                                } catch (NumberFormatException e1) {
+                                    throw new YException("Invalid GData size in command \"" + serverCmds[i] + "\"");
+                                }
+                            } else {
+                                throw new YException("Ill-formated command \"" + serverCmds[i] + "\"");
+                            }
+                        }
+                    }
+                } catch (YException e) {
+                    pop.pn("DEViseServer failed");
+                    pop.pn(e.getMsg());
+
+                    if (clientCmd.startsWith("JAVAC_Exit")) {
+                        removeCurrentClient(false);
+                    } else if (clientCmd.startsWith("JAVAC_CloseCurrentSession")) {
+                        switchClient();
+                    } else {
+                        try {
+                            client.sendCmd("JAVAC_Error {Communication error occurs while talk to devised}");
+                            switchClient();
+                        } catch (YException e1) {
+                            pop.pn("Client communication error");
+                            pop.pn(e1.getMsg());
+                            removeCurrentClient(false);
+                        }
+                    }
+
+                    if (!startSocket()) {
+                        setAction(DEViseServer.QUIT);
+                    }
+
+                    continue;
+                }
+
+                try {
+                    client.sendCmd(serverCmds);
+                    client.sendData(serverDatas);
+                } catch (YException e) {
+                    pop.pn("Client communication error");
+                    pop.pn(e.getMsg());
+                    removeCurrentClient();
+                }
+            }
+        }
+    }
+    
+    private Vector findPath(String p) 
+    {
+        Vector ppp = new Vector();
+        if (p != null && p.length() > 0) {
+            String[] pp = DEViseGlobals.parseStr(p, "/");
+            if (pp != null && pp.length > 0) {
+                if (pp[0].equals((String)currentDir.elementAt(0))) {
+                    int i = 1;
+                    for (i = 1; i < pp.length; i++) {
+                        if (i < currentDir.size()) {
+                            if (!pp[i].equals((String)currentDir.elementAt(i))) {
+                                for (int j = i; j < currentDir.size(); j++) {
+                                    ppp.addElement("..");
+                                }
+                            
+                                break;
+                            }
+                        } else {
+                            break;
+                        }    
+                    }        
+                                        
+                    if (i < pp.length || i >= currentDir.size()) {
+                        for (int k = i; k < pp.length; k++) {
+                            ppp.addElement(pp[k]);
+                        }
+                    } else {
+                        if (i < currentDir.size()) {
+                            for (int k = i; k < currentDir.size(); k++) {
+                                ppp.addElement("..");
+                            }
+                        }
+                    }        
+                    
+                    return ppp;
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+    
     private synchronized void quit()
     {
         closeSocket();
+
         stopDEVise();
 
-        client = null;
-        newClient = null;
-        tryTime = 0;
-        status = -1;
-        action =  0;
-        deviseResponseCode = -1;
+        setStatus(0);
     }
 
-    private synchronized void restartServer()
+    private synchronized void removeCurrentClient()
     {
-        closeSocket();
-        stopDEVise();
-
-        deviseResponseCode = -1;
-        startSocket();
+        removeCurrentClient(true);
     }
 
-    private synchronized void removeClient()
+    private synchronized void removeCurrentClient(boolean isClose)
     {
         if (client != null) {
-            pop.dispatcher.removeClient(client);
-            client = null;
-        }
-    }
+            if (isClose && client.isSessionOpened) {
+                try {
+                    sendCmd("JAVAC_CloseCurrentSession");
+                    currentDir = new Vector();
+                    currentDir.addElement(rootDir);
+                } catch (YException e) {
+                    pop.pn("DEViseServer failed");
+                    pop.pn(e.getMsg());
 
-    private synchronized void suspendClient(boolean isClose)
-    {
-        if (client == null)
-            return;
-
-        client.isSwitched = true;
-
-        if (!isClose) {
-            pop.dispatcher.suspendClient(client);
-            client.isSessionOpened = false;
-            client = null;
-            return;
-        }
-
-        if (client.isSessionOpened) {
-            client.isSessionOpened = false;
-            client.isSwitchSuccessed = false;
-
-            String[] cmds = null;
-            try {
-                cmds = sendCmd("JAVAC_SaveSession {" + client.savedSessionName + "}");
-                if (deviseResponseCode == 0) {
-                    client.isSwitchSuccessed = true;
-                    client.isSessionSaved = true;
-                } else { // something wrong with the server
-                    YGlobals.Ydebugpn("Can not saving session while switch client!");
+                    if (!startSocket()) {
+                        setAction(DEViseServer.QUIT);
+                    }
                 }
-
-                cmds = sendCmd("JAVAC_CloseCurrentSession");
-                if (deviseResponseCode != 0) {
-                    YGlobals.Ydebugpn("Can not close session while switch client!");
-                }
-            } catch (YException e) {
-                YGlobals.Ydebugpn(e.getMessage());
-
-                restartServer();
             }
-        }
 
-        pop.dispatcher.suspendClient(client);
-        client = null;
+            client.close();
+            pop.suspendClient(client);
+            client = null;
+        }
     }
 
-    // I am going to use a simple error handling scheme here
-    //
-    // 1. client: if anything wrong with network(YException with id = 1,2,3,4,5,6),
-    //            id = 1, invalid argument in sendCmd
-    //            id = 2, cmd socket communication error
-    //            id = 3, invalid argument in receiveImg or sendImg
-    //            id = 4, img socket communication error
-    //            id = 5, invalid response from cmd socket
-    //            id = 6, invalid response from img socket
-    //
-    //            I am going to kill it and throw it away
-    //
-    // 2. server: if anything wrong with network(YException with id = 1,2,3,4,5,6),
-    //            id = 1, invalid argument in sendCmd
-    //            id = 2, cmd socket communication error
-    //            id = 3, invalid argument in receiveImg or sendImg
-    //            id = 4, img socket communication error
-    //            id = 5, invalid response from cmd socket
-    //            id = 6, invalid response from img socket
-    //
-    //            I am going to kill it and restart a new server
-    //
-    public void run()
+    private synchronized void switchClient()
     {
-        setStatus(0);
-        setAction(0);
+        switchClient(false);
+    }
 
-        boolean isRunning = true;
-        boolean isFirstTime = true; // used to gurantee that at least one command is executed
-        int todo;
-
-        YGlobals.Ydebugpn("Server thread is started ...");
-
-        while (isRunning) {
-            waitForClient();
-            todo = getAction();
-
-            if (todo < 0) {
-                quit();
-
-                isRunning = false;
-            } else if (todo == 1) {
-                // save current opened session and close it if any
-                suspendClient(true);
-
-                // when is current client been serviced
-                clientStartTime = YGlobals.getTime();
-                isFirstTime = true;
-                deviseResponseCode = -1;
-
-                client = newClient;
-                newClient = null;
-
-                setAction(0);
-            } else {
-                boolean isEnd = false;
+    private synchronized void switchClient(boolean flag)
+    {
+        if (client != null) {
+            if (client.isSessionOpened) {
+                client.isClientSwitched = true;
+                client.isSwitchSuccessful = false;
+                client.isSessionOpened = false;
 
                 try {
-                    // check whether or not client already send over commands, will not block
-                    while (!isEnd) {
-                        try {
-                            client.receiveCmd(false);
-                            isEnd = true;
-                        } catch (InterruptedIOException e) {
-                        }
-                    }
-
-                    // check whether client command buffer is empty, will block
-                    isEnd = false;
-                    if (client.getCmd() == null) { // this usually will not happen in the first time, because this client is
-                                                   // been serverd just because it has some command in its buffer, however,
-                                                   // if client send over "JAVAC_Abort", this situation might be happening
-                        // at this point, server is execute at least one client command, either "JAVAC_Abort"
-                        // or some other command
-                        isFirstTime = false;
-
-                        while (!isEnd) {
-                            try {
-                                client.receiveCmd(true);
-                                isEnd = true;
-                            } catch (InterruptedIOException e) {
-                                if (getAction() != 0)
-                                    isEnd = true;
-                            }
-                        }
-                    }
-
-                    if (getAction() != 0 && !isFirstTime) {
-                        continue;
-                    }
-                } catch (YException e) {
-                    // The only thing could happen here is id = 2
-                    YGlobals.Ydebugpn(e.getMessage());
-                    removeClient();
-                    continue;
-                }
-
-                // get client command if any
-                String clientCmd = client.getCmd();
-                isFirstTime = false;
-
-                // the only situation this clientCmd will be null is that client send
-                // "JAVAC_Abort" over
-                if (clientCmd == null)
-                    continue;
-
-                // erase the command from client command buffer, so if any error happens,
-                // this command will be losted
-                client.removeCmd();
-                
-                // convert client command to command that DEVise server can understand
-                if (clientCmd.startsWith("JAVAC_SaveCurrentState")) {
-                    clientCmd = new String("JAVAC_SaveSession {" + client.savedSessionName + "}");
-                }
-
-                String[] serverCmds = null;
-                Vector images = new Vector();
-                // processing client command
-                //if (clientCmd.startsWith("JAVAC_Exit")) {
-                //    // js or jsa will make sure that the session is closed before this
-                //    removeClient();
-                //    continue;
-                if (clientCmd.startsWith("JAVAC_GetStat")) {
-                    // not yet implemented
-                } else if (clientCmd.startsWith("JAVAC_Abort")) {
-                    continue;
-                } else {
-                    // send command to DEVise server and receive response commands
-                    try {
-                        if (clientCmd.startsWith("JAVAC_CloseCurrentSession") || clientCmd.startsWith("JAVAC_Exit")) {
-                            if (client.isSessionOpened) {
-                                client.isSessionOpened = false;
-                                client.isSwitched = false;
-                                client.isSwitchSuccessed = false;
-                                client.isSessionSaved = false;
-
-                                serverCmds = sendCmd("JAVAC_CloseCurrentSession");
-                            } else {
-                                client.isSwitched = false;
-                                client.isSwitchSuccessed = false;
-                                client.isSessionSaved = false;
-
-                                serverCmds = new String[1];
-                                serverCmds[0] = new String("JAVAC_Done");
-                                deviseResponseCode = 0;
-                            }
-
-                            if (clientCmd.startsWith("JAVAC_Exit")) {
-                                removeClient();
-                                continue;
-                            }
-                        } else if (clientCmd.startsWith("JAVAC_OpenLastSavedState")) {
-                            client.isSessionOpened = false;
-                            client.isSwitched = false;
-                            client.isSwitchSuccessed = false;
-
-                            if (client.isSessionSaved) {
-                                clientCmd = "JAVAC_SetDisplaySize " + client.dimx + " " + client.dimy;
-                                serverCmds = sendCmd(clientCmd);
-                                if (deviseResponseCode == 0) {
-                                    clientCmd = "JAVAC_OpenSession {" + client.savedSessionName + "}";
-                                    serverCmds = sendCmd(clientCmd);
-                                    if (deviseResponseCode != 2) {
-                                        client.isSessionOpened = true;
-                                    }
-                                }
-                            } else {
-                                serverCmds = new String[1];
-                                serverCmds[0] = new String("JAVAC_Error {Last saved session not found!}");
-                                deviseResponseCode = 2;
-                            }
-                        } else if (clientCmd.startsWith("JAVAC_GetSessionList")) {
-                            serverCmds = sendCmd(clientCmd);
-                        } else if (clientCmd.startsWith("JAVAC_OpenSession")) {
-                            client.isSessionOpened = false;
-                            client.isSessionSaved = false;
-                            client.isSwitched = false;
-                            client.isSwitchSuccessed = false;
-
-                            serverCmds = sendCmd(clientCmd);
-                            if (deviseResponseCode != 2) {
-                                client.isSessionOpened = true;
-                            }
-                        } else if (clientCmd.startsWith("JAVAC_SetDisplaySize")) {
-                            serverCmds = sendCmd(clientCmd);
-                            if (deviseResponseCode == 0) {
-                                String[] cmds = DEViseGlobals.parseString(clientCmd);
-                                if (cmds != null && cmds.length == 3) {
-                                    try {
-                                        client.dimx = Integer.parseInt(cmds[1]);
-                                        client.dimy = Integer.parseInt(cmds[2]);
-                                    } catch (NumberFormatException e) {
-                                        serverCmds = new String[1];
-                                        serverCmds[0] = "JAVAC_Error {Invalid screen sized specified!}";
-                                        deviseResponseCode = 2;
-                                    }
-                                } else {
-                                    serverCmds = new String[1];
-                                    serverCmds[0] = "JAVAC_Error {Incorrect command to set screen size!}";
-                                    deviseResponseCode = 2;
-                                }
-                            }
-                        } else {
-                            if (client.isSwitched && !client.isSessionOpened) {
-                                client.isSwitched = false;
-
-                                if (client.isSwitchSuccessed) {
-                                    client.isSwitchSuccessed = false;
-
-                                    serverCmds = sendCmd("JAVAC_SetDisplaySize " + client.dimx + " " + client.dimy);
-                                    if (deviseResponseCode == 0) {
-                                        serverCmds = sendCmd("JAVAC_OpenSession {" + client.savedSessionName + "}");
-                                        if (deviseResponseCode != 2) {
-                                            client.isSessionOpened = true;
-                                            // need to clear img socket because we do not want to return these data
-                                            try {
-                                                if (imgSocket == null)
-                                                    throw new YException("Null img Socket!", 4);
-
-                                                imgSocket.clearSocket();
-                                            } catch (YException e1) {
-                                                YGlobals.Ydebugpn(e1.getMessage());
-                                                try {
-                                                    client.sendCmd(new String[] {"JAVAC_LastSavedState 1"});
-                                                    suspendClient(true);
-                                                } catch (YException e2) {
-                                                    YGlobals.Ydebugpn(e2.getMessage());
-                                                    removeClient();
-                                                }
-
-                                                restartServer();
-
-                                                continue;
-                                            }
-
-                                            serverCmds = sendCmd(clientCmd);
-                                        } else {
-                                            serverCmds = new String[1];
-                                            serverCmds[0] = new String("JAVAC_LastSavedState 1");
-                                            deviseResponseCode = 0;
-                                        }
-                                    } else {
-                                        serverCmds = new String[1];
-                                        serverCmds[0] = new String("JAVAC_LastSavedState 1");
-                                        deviseResponseCode = 0;
-                                    }
-                                } else {
-                                    serverCmds = new String[1];
-                                    deviseResponseCode = 0;
-                                    if (client.isSessionSaved) {
-                                        serverCmds[0] = new String("JAVAC_LastSavedState 1");
-                                    } else {
-                                        serverCmds[0] = new String("JAVAC_LastSavedState 0");
-                                    }
-                                }
-                            } else if (client.isSessionOpened && !client.isSwitched) {
-                                serverCmds = sendCmd(clientCmd);
-                            } else {
-                                serverCmds = new String[1];
-                                serverCmds[0] = new String("JAVAC_Error {Incorrect client state detected!}");
-                                deviseResponseCode = 2;
-                            }
-                        }
-                    } catch (YException e) {
-                        YGlobals.Ydebugpn(e.getMessage());
-                        int id = e.getID();
-
-                        if (id == 7) { // DEVise server timeout
-                            try {
-                                client.sendCmd(new String[] {"JAVAC_Error {Can not receive response from DEVise server!}"});
-                                suspendClient(false);
-                            } catch (YException e1) {
-                                YGlobals.Ydebugpn(e1.getMessage());
-                                removeClient();
-                            }
-
-                            restartServer();
-                        } else { // DEVise server cmd socket problem or anything should not be happening
-                            try {
-                                client.sendCmd(new String[] {"JAVAC_Error {Communication error while receiving response from DEVise server!}"});
-                                suspendClient(false);
-                            } catch (YException e1) {
-                                YGlobals.Ydebugpn(e1.getMessage());
-                                removeClient();
-                            }
-
-                            restartServer();
-                        }
-
-                        continue;
-                    }
-
-                    // check the response from DEVise server
-                    if (deviseResponseCode == 0) {
-                        try {
-                            // check whether or not client send over "JAVAC_Abort"
-                            isEnd = false;
-                            while (!isEnd) {
-                                try {
-                                    client.receiveCmd(false);
-                                    isEnd = true;
-                                } catch (InterruptedIOException e) {
-                                }
-                            }
-
-                            if (client.getCmd() != null && client.getCmd().startsWith("JAVAC_Abort")) {
-                                client.removeCmd();
-                                suspendClient(true);
-                            } else {
-                                client.sendCmd(serverCmds);
-                            }
-                        } catch (YException e) {
-                            YGlobals.Ydebugpn(e.getMessage());
-                            removeClient();
-                        }
-
-                        continue; // do not need to do anything
-                    } else if (deviseResponseCode == 2) {
-                        try {
-                            // check whether or not client send over "JAVAC_Abort"
-                            isEnd = false;
-                            while (!isEnd) {
-                                try {
-                                    client.receiveCmd(false);
-                                    isEnd = true;
-                                } catch (InterruptedIOException e) {
-                                }
-                            }
-
-                            if (client.getCmd() != null && client.getCmd().startsWith("JAVAC_Abort")) {
-                                client.removeCmd();
-                            } else {
-                                client.sendCmd(serverCmds);
-                            }
-
-                            suspendClient(true);
-                        } catch (YException e) {
-                            YGlobals.Ydebugpn(e.getMessage());
-                            removeClient();
-                        }
-
-                        // need to clear up img socket, may not necessary
-                        try {
-                            if (imgSocket == null)
-                                throw new YException("Null img socket!", 4);
-
-                            imgSocket.clearSocket();
-                        } catch (YException e) {
-                            YGlobals.Ydebugpn(e.getMessage());
-
-                            restartServer();
-                        }
-
-                        continue;
+                    if (sendCmd("JAVAC_SaveSession {" + client.savedSessionName + "}")) {
+                        client.isSwitchSuccessful = true;
                     } else {
-                        try {
-                            // check whether or not client send over "JAVAC_Abort"
-                            isEnd = false;
-                            while (!isEnd) {
-                                try {
-                                    client.receiveCmd(false);
-                                    isEnd = true;
-                                } catch (InterruptedIOException e) {
-                                }
-                            }
-
-                            if (client.getCmd() != null && client.getCmd().startsWith("JAVAC_Abort")) {
-                                client.removeCmd();
-                                suspendClient(true);
-
-                                // need to clear up img socket
-                                try {
-                                    if (imgSocket == null)
-                                        throw new YException("Null img socket!", 4);
-
-                                    imgSocket.clearSocket();
-                                } catch (YException e1) {
-                                    YGlobals.Ydebugpn(e1.getMessage());
-
-                                    restartServer();
-                                }
-
-                                continue;
-                            }
-                        } catch (YException e) {
-                            YGlobals.Ydebugpn(e.getMessage());
-                            removeClient();
-
-                            // need to clear up img socket
-                            try {
-                                if (imgSocket == null)
-                                    throw new YException("Null img socket!", 4);
-
-                                imgSocket.clearSocket();
-                            } catch (YException e1) {
-                                YGlobals.Ydebugpn(e1.getMessage());
-
-                                restartServer();
-                            }
-
-                            continue;
-                        }
-
-                        // need to check whether or not there is image data in image socket
-                        try {
-                            for (int i = 0; i < (serverCmds.length - 1); i++) {
-                                if (serverCmds[i].startsWith("JAVAC_CreateWindow")) {
-                                    String[] cmds = DEViseGlobals.parseString(serverCmds[i]);
-                                    if (cmds != null && cmds.length >= 8) {
-                                        try {
-                                            int imgSize = Integer.parseInt(cmds[6]);
-                                            byte[] image = receiveImg(imgSize);
-                                            if (image == null) {
-                                                throw new YException("Can not read image data of size " + imgSize + "!", 6);
-                                            }
-
-                                            images.addElement(image);
-                                        } catch (NumberFormatException e) {
-                                            throw new YException("Invalid image size in create window command: " + cmds[6] + "!", 5);
-                                        }
-                                    } else {
-                                        throw new YException("Ill-formated create window command: " + serverCmds[i] + "!", 5);
-                                    }
-                                } else if (serverCmds[i].startsWith("JAVAC_UpdateWindow")) {
-                                    String[] cmds = DEViseGlobals.parseString(serverCmds[i]);
-                                    if (cmds != null && cmds.length == 3) {
-                                        try {
-                                            int imgSize = Integer.parseInt(cmds[2]);
-                                            byte[] image = receiveImg(imgSize);
-                                            if (image == null) {
-                                                throw new YException("Can not read image data of size " + imgSize + "!", 6);
-                                            }
-
-                                            images.addElement(image);
-                                        } catch (NumberFormatException e) {
-                                            throw new YException("Invalid image size in update window command: " + cmds[2] + "!", 5);
-                                        }
-                                    } else {
-                                        throw new YException("Ill-formated update window command: " + serverCmds[i] + "!", 5);
-                                    }
-                                } else if (serverCmds[i].startsWith("JAVAC_UpdateGData")) {
-                                    String[] cmds = DEViseGlobals.parseString(serverCmds[i]);
-                                    if (cmds != null && cmds.length == 7) {
-                                        try {
-                                            int imgSize = Integer.parseInt(cmds[6]);
-                                            byte[] image = receiveImg(imgSize);
-                                            if (image == null) {
-                                                throw new YException("Can not read image data of size " + imgSize + "!", 6);
-                                            }
-
-                                            images.addElement(image);
-                                        } catch (NumberFormatException e) {
-                                            throw new YException("Invalid GData size in update GData command: " + cmds[6] + "!", 5);
-                                        }
-                                    } else {
-                                        throw new YException("Ill-formated update GData command: " + serverCmds[i] + "!", 5);
-                                    }
-                                }
-                            }
-                        } catch (YException e) {
-                            YGlobals.Ydebugpn(e.getMessage());
-                            int id = e.getID();
-
-                            if (id == 8) {
-                                try {
-                                    client.sendCmd(new String[] {"JAVAC_Error {Can not receive image data from DEVise server!}"});
-                                    suspendClient(false);
-                                } catch (YException e1) {
-                                    YGlobals.Ydebugpn(e1.getMessage());
-                                    removeClient();
-                                }
-
-                                restartServer();
-                            } else {
-                                try {
-                                    client.sendCmd(new String[] {"JAVAC_Error {Communication error while receiving image data from DEVise server!}"});
-                                    suspendClient(false);
-                                } catch (YException e1) {
-                                    YGlobals.Ydebugpn(e1.getMessage());
-                                    removeClient();
-                                }
-
-                                restartServer();
-                            }
-
-                            continue;
-                        }
+                        pop.pn("Can not save session for old client while switching client!");
                     }
 
-                    try {
-                        // check whether or not client send over "JAVAC_Abort"
-                        isEnd = false;
-                        while (!isEnd) {
-                            try {
-                                client.receiveCmd(false);
-                                isEnd = true;
-                            } catch (InterruptedIOException e) {
-                            }
-                        }
+                    if (!sendCmd("JAVAC_CloseCurrentSession")) {
+                        pop.pn("Can not close current session for old client while switching client!");
+                    }
+                    currentDir = new Vector();
+                    currentDir.addElement(rootDir);
+                } catch (YException e) {
+                    pop.pn("DEViseServer failed");
+                    pop.pn(e.getMsg());
 
-                        if (client.getCmd() != null && client.getCmd().startsWith("JAVAC_Abort")) {
-                            client.removeCmd();
-                        } else {
-                            client.sendCmd(serverCmds);
-                            client.sendImg(images);
-                        }
-                    } catch (YException e) {
-                        YGlobals.Ydebugpn(e.getMessage());
-                        removeClient();
+                    if (!startSocket()) {
+                        setAction(DEViseServer.QUIT);
                     }
                 }
             }
+
+            pop.suspendClient(client);
+            client = null;
         }
 
-        YGlobals.Ydebugpn("Server thread is stopped ...");
+        if (flag) {
+            client = newClient;
+            newClient = null;
+            if (client != null) {
+                pop.activeClient(client);
+            }
+        }
     }
 
-    private byte[] receiveImg(int size) throws YException
+    private byte[] receiveData(int size) throws YException
     {
-        if (imgSocket == null)
-            throw new YException("Null IMG socket!", 4);
+        if (socket == null)
+            throw new YException("Invalid communication socket");
 
         boolean isEnd = false;
-        byte[] imgData = null;
-        int time = 0;
+        byte[] data = null;
+        long time = 0;
 
+        pop.pn("Receiving data from devised(" + hostname + ") of size " + size);
         while (!isEnd) {
             try {
-                imgData = imgSocket.receiveImg(size);
+                data = socket.receiveData(size);
+                pop.pn("Successfully received data from devised(" + hostname + ") of size " + size);
                 isEnd = true;
             } catch (InterruptedIOException e) {
-                time += imgSocketTimeout;
-                if (time > serverWaitTimeout) {
-                    throw new YException("Can not receive response from DEVise server", 8);
+                time += socketTimeout;
+                if (time > devisedTimeout) {
+                    throw new YException("Can not receive response from devised within timeout");
                 }
             }
         }
 
-        return imgData;
+        return data;
     }
 
-    private String[] sendCmd(String command) throws YException
+    private boolean sendCmd(String clientCmd) throws YException
     {
-        if (cmdSocket == null)
-            throw new YException("Null CMD socket!", 2);
+        if (clientCmd == null)
+            return true;
+
+        if (socket == null)
+            throw new YException("Invalid communication socket");
 
         String response = null;
-
-        // isEnd is used to detect that JAVAC_Done or JAVAC_Error or JAVAC_Fail is received
-        boolean isEnd = false;
-
-        // isFinish is used to detect InterruptedIOException
-        boolean isFinish = false;
+        boolean isEnd = false, isFinish = false, isError = false;
+        long time;
 
         Vector rspbuf = new Vector();
 
-        int time = 0;
+        pop.pn("Sending command to devised(" + hostname + ") :  \"" + clientCmd + "\"");
+        socket.sendCmd(clientCmd);
 
-        deviseResponseCode = -1;
-
-        cmdSocket.sendCmd(command);
-
+        isEnd = false;
         while (!isEnd) {
             isFinish = false;
+            time = 0;
 
             while (!isFinish) {
                 try {
-                    response = cmdSocket.receiveRsp();
+                    response = socket.receiveCmd();
+                    pop.pn("Receive response from devised(" + hostname + ") :  \"" + response + "\"");
                     isFinish = true;
                 } catch (InterruptedIOException e) {
-                    time += cmdSocketTimeout;
-                    if (time > serverWaitTimeout) {
-                        throw new YException("Can not receive response from DEVise server!", 7);
+                    time += socketTimeout;
+                    if (time > devisedTimeout) {
+                        throw new YException("Can not receive response from devised within timeout");
                     }
                 }
             }
 
             if (response == null || response.length() == 0) {
-                throw new YException("Null response received for client command " + command, 5);
+                throw new YException("Invalid response received from devised");
             } else {
                 String[] cmds = DEViseGlobals.parseString(response);
                 if (cmds == null || cmds.length == 0) {
-                    throw new YException("Ill-formated command " + response, 5);
+                    throw new YException("Ill-formated response \"" + response + "\" received from devised");
                 } else {
+                    pop.pn("Receive response \"" + response + "\" from devised");
+
                     String cmd = cmds[0];
                     // Rip off the { and } around the command but not the arguments
                     for (int j = 1; j < cmds.length; j++)
                         cmd = cmd + " {" + cmds[j] + "}";
 
-                    if (cmd.startsWith("JAVAC_")) {
-                        if (cmd.startsWith("JAVAC_Done")) {
-                            isEnd = true;
-                            deviseResponseCode = 0;
-                        } else if (cmd.startsWith("JAVAC_Error") || cmd.startsWith("JAVAC_Fail")) {
-                            isEnd = true;
-                            deviseResponseCode = 2;
-                            rspbuf.removeAllElements();
-                        }
-
-                        rspbuf.addElement(cmd);
-                    } else {
-                        throw new YException("Unrecognized command " + response, 5);
+                    if (cmd.startsWith("JAVAC_Done")) {
+                        isEnd = true;
+                        isError = false;
+                    } else if (cmd.startsWith("JAVAC_Error") || cmd.startsWith("JAVAC_Fail")) {
+                        isEnd = true;
+                        isError = true;
+                        rspbuf.removeAllElements();
                     }
+
+                    rspbuf.addElement(cmd);
                 }
             }
         }
 
-        if (rspbuf.size() > 0) {
-            if (rspbuf.size() > 1 && deviseResponseCode == 0) {
-                deviseResponseCode = 1;
-            }
+        serverCmds = new String[rspbuf.size()];
+        for (int i = 0; i < rspbuf.size(); i++)
+            serverCmds[i] = (String)rspbuf.elementAt(i);
 
-            String[] rspstr = new String[rspbuf.size()];
-            for (int i = 0; i < rspbuf.size(); i++)
-                rspstr[i] = (String)rspbuf.elementAt(i);
-
-            return rspstr;
-        } else {
-            throw new YException("Null response received for client command: " + command, 5);
-        }
-    }
-
-    public synchronized static int getPort()
-    {
-        if (Port == DEViseGlobals.CMDPORT || Port == DEViseGlobals.IMGPORT)
-            Port++;
-
-        if (Port > 60000)
-            Port = 3000;
-
-        while (true) {
-            try {
-                ServerSocket socket = new ServerSocket(Port);
-                socket.close();
-                return Port++;
-            } catch (IOException e) {
-                Port++;
-
-                if (Port == DEViseGlobals.CMDPORT || Port == DEViseGlobals.IMGPORT)
-                    Port++;
-
-                if (Port > 60000)
-                    Port = 3000;
-            }
-        }
+        return !isError;
     }
 }

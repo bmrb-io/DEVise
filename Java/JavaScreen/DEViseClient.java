@@ -1,279 +1,304 @@
+// DEViseClient.java
+// last updated on 04/16/99
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
 public class DEViseClient
 {
+    jspop pop = null;
+
+    public static int CLOSE = 0, REQUEST = 1, IDLE = 2, SERVE = 3;
+    private int status = 0;
+
     private DEViseUser user = null;
-    private Integer connectID = null;
+    private Integer ID = null;
     private String hostname = null;
-    private DEViseCmdSocket cmdSocket = null;
-    private DEViseImgSocket imgSocket = null;
+    private DEViseCommSocket socket = null;
 
-    public String savedSessionName = null;
-    public boolean isSessionSaved = false;
     public boolean isSessionOpened = false;
-    public boolean isSwitched = false;
-    public boolean isSwitchSuccessed = false;
+    public boolean isClientSwitched = false;
+    public boolean isSwitchSuccessful = false;
 
-    public int dimx = 640;
-    public int dimy = 480;
+    public String path = "DEViseSession";
+    public String sessionName = null;
+    public String savedSessionName = null;
+
+    public int screenDimX = -1;
+    public int screenDimY = -1;
+
+    public long lastActiveTime = -1;
+    public long lastSuspendTime = -1;
 
     private Vector cmdBuffer = new Vector();
 
-    private long tot = 0; // total online time
-    private long tst = 0; // total suspend time
-    private long lot = 0; // last active time
-    private long lst = 0; // last suspend time
-
-    // status = -1, not connected
-    // status = 0, not active
-    // status = 1, active
-    private int status = 0;
-
-    public DEViseClient(DEViseUser u, DEViseCmdSocket cmd, DEViseImgSocket img, String h, int id)
+    public DEViseClient(jspop p, String host, DEViseCommSocket s, Integer id)
     {
-        user = u;
-        cmdSocket = cmd;
-        imgSocket = img;
-        hostname = h;
-        connectID = new Integer(id);
+        pop = p;
+        hostname = host;
+        socket = s;
+        ID = id;
 
-        savedSessionName = "jstmp_" + id;
+        savedSessionName = "jstmp_" + ID.intValue();
 
-        lst = YGlobals.getTime();
-        lot = lst;
-        status = 0;
+        status = DEViseClient.IDLE;
     }
 
-    public synchronized int getStatus()
+    public int getPriority()
     {
-        return status;
+        if (user != null) {
+            return user.getPriority();
+        } else {
+            return 1;
+        }
     }
 
-    private synchronized void setStatus(int s)
+    public Integer getConnectionID()
     {
-        status = s;
+        return ID;
     }
 
-    public DEViseUser getUser()
-    {
-        return user;
-    }
-
-    public Integer getID()
-    {
-        return connectID;
-    }
-
-    public String getHost()
+    public String getHostname()
     {
         return hostname;
     }
 
-    public void setSockets(DEViseCmdSocket cmd, DEViseImgSocket img)
-    {
-        cmdSocket = cmd;
-        imgSocket = img;
-    }
-
-    public synchronized void insertCmd(String cmd, int pos) throws YException
-    {
-        if (cmd == null)
-            return;
-
-        if (pos < 0 || pos > cmdBuffer.size())
-            pos = cmdBuffer.size();
-
-        if (cmd.startsWith("JAVAC_Abort")) {
-            cmdBuffer.removeAllElements();
-            cmdBuffer.insertElementAt(cmd, 0);
-        } else {
-            cmdBuffer.insertElementAt(cmd, pos);
-            // tell client that command has been received
-            sendCmd(new String[] {"JAVAC_Ack"});
-        }
-    }
-
-    public synchronized void insertCmd(String cmd) throws YException
-    {
-        insertCmd(cmd, -1);
-    }
-
-    public synchronized String getCmd()
-    {
-        if (cmdBuffer.size() > 0)
-            return (String)cmdBuffer.firstElement();
-        else
-            return null;
-    }
-
-    public synchronized void removeCmd()
-    {
-        if (cmdBuffer.size() > 0)
-            cmdBuffer.removeElementAt(0);
-    }
-
-    public synchronized void removeAllCmds()
-    {
-        cmdBuffer.removeAllElements();
-    }
-
-    public void receiveCmd(boolean isWait) throws YException, InterruptedIOException
-    {
-        if (cmdSocket != null) {
-            if (isWait) {
-                String cmd = cmdSocket.receiveRsp();
-                insertCmd(cmd);                
-                while (!cmdSocket.isEmpty()) {
-                    cmd = cmdSocket.receiveRsp();
-                    insertCmd(cmd);
-                }
-            } else {
-                if (!cmdSocket.isEmpty()) {
-                    String cmd = cmdSocket.receiveRsp();
-                    insertCmd(cmd);
-                    while (!cmdSocket.isEmpty()) {
-                        cmd = cmdSocket.receiveRsp();
-                        insertCmd(cmd);
-                    }
-                }
-            }
-        } else {
-            throw new YException("Null cmd socket of client " + hostname + "!", 2);
-        }
-    }
-
-    public void sendCmd(String[] cmds) throws YException
-    {
-        if (cmds == null)
-            return;
-
-        if (cmdSocket == null)
-            throw new YException("Null cmd socket of client " + hostname + "!", 2);
-
-        for (int i = 0; i < cmds.length; i++) {
-            if (cmds[i] != null) {
-                cmdSocket.sendCmd(cmds[i]);
-            }
-        }
-    }
-
-    public void sendImg(Vector images) throws YException
-    {
-        if (images == null)
-            return;
-
-        if (imgSocket == null)
-            throw new YException("Null img socket of client " + hostname + "!", 4);
-
-        for (int i = 0; i < images.size(); i++) {
-            byte[] image = (byte[])images.elementAt(i);
-            if (image != null && image.length > 0) {
-                imgSocket.sendImg(image);
-            }
-        }
-    }
-
     public synchronized void setSuspend()
     {
-        if (status == 1) {
-            long time = YGlobals.getTime();
-            tot += time - lot;
-            lst = time;
-
-            status = 0;
+        if (status != DEViseClient.CLOSE) {
+            lastSuspendTime = DEViseGlobals.getCurrentTime();
+            lastActiveTime = -1;
+            status = DEViseClient.IDLE;
         }
     }
 
     public synchronized void setActive()
     {
-        if (status == 0) {
-            long time = YGlobals.getTime();
-            tst += time - lst;
-            lot = time;
-
-            status = 1;
+        if (status != DEViseClient.CLOSE) {
+            lastActiveTime = DEViseGlobals.getCurrentTime();
+            lastSuspendTime = -1;
+            status = DEViseClient.SERVE;
         }
     }
 
-    public synchronized void closeSocket()
+    public synchronized long getSuspendTime()
     {
-        if (status < 0)
-            return;
-
-        if (cmdSocket != null) {
-            cmdSocket.closeSocket();
-            cmdSocket = null;
-        }
-
-        if (imgSocket != null) {
-            imgSocket.closeSocket();
-            imgSocket = null;
-        }
-
-        long time = YGlobals.getTime();
-        if (status == 1) {
-            tot += time - lot;
+        if (lastSuspendTime < 0) {
+            return 0;
         } else {
-            tst += time - lst;
+            return DEViseGlobals.getCurrentTime() - lastSuspendTime;
+        }
+    }
+
+    public synchronized long getActiveTime()
+    {
+        if (lastActiveTime < 0) {
+            return 0;
+        } else {
+            return DEViseGlobals.getCurrentTime() - lastActiveTime;
+        }
+    }
+
+    public synchronized int getStatus()
+    {
+        if (status != DEViseClient.IDLE) {
+            return status;
         }
 
-        lst = time;
+        try {
+            boolean flag = isSocketEmpty();
+            if (flag) {
+                return status;
+            } else {
+                status = DEViseClient.REQUEST;
+                return status;
+            }
+        } catch (YException e) {
+            pop.pn(e.getMsg());
+            close();
+            return status;
+        }
+    }
 
-        status = -1;
-        isSessionOpened = false;
-        removeAllCmds();
+    public synchronized void setStatus(int s)
+    {
+        if (status != DEViseClient.CLOSE) {
+            status = s;
+        }
+    }
+
+    public void removeLastCmd()
+    {
+        if (cmdBuffer.size() > 0)
+            cmdBuffer.removeElementAt(0);
+    }
+
+    private synchronized boolean isSocketEmpty() throws YException
+    {
+        if (status != DEViseClient.CLOSE) {
+            return socket.isEmpty();
+        } else {
+            throw new YException("Invalid client");
+        }
+    }
+
+    public String getCmd() throws YException, InterruptedIOException
+    {
+        if (getStatus() != DEViseClient.CLOSE) {
+            try {
+                while (!isSocketEmpty()) {
+                    String command = receiveCmd();
+                    if (command != null) {
+                        if (!command.startsWith("JAVAC_Connect") && user == null) {
+                            sendCmd("JAVAC_Error {No user infomation given}");
+                            throw new YException("Can not get user information for this client");
+                        }
+
+                        if (command.startsWith("JAVAC_Abort")) {
+                            cmdBuffer.removeAllElements();
+                        } else if (command.startsWith("JAVAC_Connect")) {
+                            String[] cmds = DEViseGlobals.parseString(command);
+                            if (cmds != null && cmds.length == 3) {
+                                user = pop.getUser(cmds[1], cmds[2]);
+                                if (user != null) {
+                                    if (user.addClient(this)) {
+                                        sendCmd(new String[] {"JAVAC_User " + ID.intValue(), "JAVAC_Done"});
+                                    } else {
+                                        sendCmd("JAVAC_Error {Maximum logins for this user has been reached}");
+                                        user = null;
+                                        throw new YException("No more login is allowed for user \"" + user.getName() + "\"");
+                                    }
+                                } else {
+                                    sendCmd("JAVAC_Error {Can not find such user}");
+                                    throw new YException("Client send invalid login information");
+                                }
+                            } else {
+                                sendCmd("JAVAC_Error {Can not find such user}");
+                                throw new YException("Invalid connection request received from client");
+                            }
+                        } else if (command.startsWith("JAVAC_CloseCurrentSession")) {
+                            cmdBuffer.removeAllElements();
+                            cmdBuffer.addElement("JAVAC_CloseCurrentSession");
+                        } else if (command.startsWith("JAVAC_Exit")) {
+                            cmdBuffer.removeAllElements();
+                            cmdBuffer.addElement("JAVAC_Exit");
+                        } else if (command.startsWith("JAVAC_GetServerState")) {
+                            String state = "JAVAC_UpdateServerState " + pop.getServerState();
+                            sendCmd(new String[] {state, "JAVAC_Done"});
+                        } else {
+                            cmdBuffer.addElement(command);
+                            sendCmd("JAVAC_Ack");
+                        }
+                    }
+                }
+
+                if (cmdBuffer.size() > 0) {
+                    return (String)cmdBuffer.elementAt(0);
+                } else {
+                    return null;
+                }
+            } catch (YException e) {
+                //close();
+                throw e;
+            }
+        } else {
+            throw new YException("Invalid client");
+        }
+    }
+
+    private synchronized String receiveCmd() throws YException, InterruptedIOException
+    {
+        if (status != DEViseClient.CLOSE) {
+            String cmd = socket.receiveCmd();
+            pop.pn("Received command from client(" + hostname + ") :  \"" + cmd + "\"");
+            return cmd;
+        } else {
+            throw new YException("Invalid client");
+        }
+    }
+
+    public synchronized void sendCmd(String[] cmds) throws YException
+    {
+        if (status != DEViseClient.CLOSE) {
+            if (cmds == null)
+                return;
+
+            for (int i = 0; i < cmds.length; i++) {
+                if (cmds[i] != null) {
+                    pop.pn("Sending command to client(" + hostname + ") :  \"" + cmds[i] + "\"");
+                    socket.sendCmd(cmds[i]);
+                }
+            }
+
+            //socket.sendCmd("JAVAC_Done");
+        } else {
+            throw new YException("Invalid client");
+        }
+    }
+
+    public synchronized void sendCmd(String cmd) throws YException
+    {
+        if (status != DEViseClient.CLOSE) {
+            if (cmd == null) {
+                return;
+            }
+
+            pop.pn("Sending command to client(" + hostname + ") :  \"" + cmd + "\"");
+            socket.sendCmd(cmd);
+        } else {
+            throw new YException("Invalid client");
+        }
+    }
+
+    public synchronized void sendData(Vector data) throws YException
+    {
+        if (status != DEViseClient.CLOSE) {
+            if (data == null)
+                return;
+
+            for (int i = 0; i < data.size(); i++) {
+                byte[] d = (byte[])data.elementAt(i);
+                if (d != null && d.length > 0) {
+                    pop.pn("Sending data to client(" + hostname + ")");
+                    socket.sendData(d);
+                }
+            }
+        } else {
+            throw new YException("Invalid client");
+        }
     }
 
     public synchronized void close()
     {
-        if (cmdSocket != null) {
-            cmdSocket.closeSocket();
-            cmdSocket = null;
+        if (status == DEViseClient.CLOSE) {
+            return;
         }
 
-        if (imgSocket != null) {
-            imgSocket.closeSocket();
-            imgSocket = null;
-        }
+        status = DEViseClient.CLOSE;
 
-        if (status == 1) {
-            long time = YGlobals.getTime();
-            tot += time - lot;
-        }
+        pop.pn("Close connection to client(" + hostname + ")");
 
-        if (user != null && connectID != null) {
-            user.addTOT(tot);
-            user.removeClient(connectID);
-        }
-
-        isSessionSaved = false;
-        isSessionOpened = false;
+        lastActiveTime = -1;
+        lastSuspendTime = -1;
+        sessionName = null;
         savedSessionName = null;
-        removeAllCmds();
-        status = -1;
-    }
+        screenDimX = -1;
+        screenDimY = -1;
+        isSessionOpened = false;
+        isClientSwitched = false;
+        isSwitchSuccessful = false;
 
-    // 0: not request
-    // 1: request
-    // -1: socket is dead
-    public synchronized int isRequest()
-    {
-        if (cmdSocket == null)
-            return -1;
+        cmdBuffer = new Vector();
 
-        try {
-            if (!cmdSocket.isEmpty()) {
-                return 1;
-            } else {
-                if (cmdBuffer.size() > 0)
-                    return 1;
-                else
-                    return 0;
-            }
-        } catch (YException e) {
-            return -1;
+        if (user != null) {
+            user.removeClient(this);
+            user = null;
+        }
+
+        if (socket != null) {
+            socket.closeSocket();
+            socket = null;
         }
     }
 }

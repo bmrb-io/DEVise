@@ -1,7 +1,12 @@
+// YImageCanvas.java
+// last updated on 03/27/99
+
+
 import java.awt.*;
 import java.awt.event.*;
 
-public final class YImageCanvas extends Canvas
+
+public class YImageCanvas extends Canvas
 {
     Image image = null, offScrImg = null;
     String string = null;
@@ -79,7 +84,7 @@ public final class YImageCanvas extends Canvas
         return size;
     }
 
-    public boolean setString(String s)
+    public synchronized boolean setString(String s)
     {
         if (isImage || s == null)
             return false;
@@ -97,7 +102,7 @@ public final class YImageCanvas extends Canvas
         return true;
     }
 
-    public boolean setImage(Image img)
+    public synchronized boolean setImage(Image img)
     {
         if (!isImage)
             return false;
@@ -119,19 +124,17 @@ public final class YImageCanvas extends Canvas
     // Enable double-buffering
     public void update(Graphics g)
     {
-        if (offScrImg == null)
-            offScrImg = createImage(imageWidth, imageHeight);
+        if (g == null)
+            return;
 
         if (offScrImg == null) {
-            return;
+            offScrImg = createImage(imageWidth, imageHeight);
+            if (offScrImg == null) {
+                return;
+            }
         }
-        
+
         Graphics og = offScrImg.getGraphics();
-        if (og == null) {
-            offScrImg = null;
-            return;
-        }
-            
         paint(og);
         g.drawImage(offScrImg, 0, 0, this);
         og.dispose();
@@ -154,4 +157,5 @@ public final class YImageCanvas extends Canvas
             }
         }
     }
-}        
+}
+        

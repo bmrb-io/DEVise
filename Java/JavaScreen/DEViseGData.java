@@ -1,26 +1,36 @@
+// DEViseGData.java
+// last updated on 04/20/99
+
 import java.awt.*;
+import java.awt.event.*;
+import java.net.*;
 
 public class DEViseGData
 {
-    float x0 = 0, y0 = 0, size = 0;
+    public DEViseView parentView = null;
+    public String viewname = null;
     public int x = 0, y = 0, width = 0, height = 0;
-    String label = null;
+    public String[] data = null;
+    public Component symbol = null;
 
-    public DEViseGData(String data, float xm, float xo, float ym, float yo) throws YException
+    public DEViseGData(String name, String gdata, double xm, double xo, double ym, double yo) throws YException
     {
-        if (data == null)
-            throw new YException("Null GData!");
+        if (name == null)
+            throw new YException("Invalid parent view for GData!");
 
-        String[] value = YGlobals.Yparsestr(data);
-        if (value == null || value.length != 18)
-            throw new YException("Invalid GData = " + data + "!");
+        viewname = name;
 
+        data = DEViseGlobals.parseStr(gdata, " ");
+        if (data == null || data.length != 18)
+            throw new YException("Invalid GData + {" + gdata + "}");
+
+        double x0 = 0, y0 = 0, size = 0;
         try {
-            x0 = (Float.valueOf(value[0])).floatValue();
+            x0 = (Double.valueOf(data[0])).doubleValue();
             x = (int)(x0 * xm + xo);
-            y0 = (Float.valueOf(value[1])).floatValue();
+            y0 = (Double.valueOf(data[1])).doubleValue();
             y = (int)(y0 * ym + yo);
-            size = (Float.valueOf(value[4])).floatValue();
+            size = (Double.valueOf(data[4])).doubleValue();
             width = (int)(size * xm);
             height = (int)(size * ym);
             if (width < 0)
@@ -37,22 +47,29 @@ public class DEViseGData
             throw new YException("Invalid GData!");
         }
 
-        label = value[10];
-    }
+        if (data[7].length() > 0) { // check symbol type
+            Button button = new Button(data[10]);
+            button.setActionCommand(data[10]);
+            button.setFont(new Font("Monospaced", Font.PLAIN, 10));
+            button.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        if (DEViseGlobals.isApplet) {
+                            if (DEViseGlobals.browser != null) {
+                                try {
+                                    URL url = new URL(event.getActionCommand());
+                                    DEViseGlobals.browser.showDocument(url, "_parent");
+                                } catch (MalformedURLException e) {
+                                    //YGlobals.Ydebugpn("Invalid URL {" + event.getActionCommand() + "}");
+                                }
+                            }
+                        }
+                    }
+                });
 
-    public float getSize()
-    {
-        return size;
-    }
-
-    public float getX0()
-    {
-        return x0;
-    }
-
-    public float getY0()
-    {
-        return y0;
+            symbol = button;
+        }
     }
 
     public Rectangle getBounds()
@@ -60,37 +77,29 @@ public class DEViseGData
         return new Rectangle(x, y, width, height);
     }
 
-    public Rectangle getBounds(DEViseWindow win)
+    public Rectangle getBoundsInScreen()
     {
-        if (win != null) {
-            Rectangle r = new Rectangle(x + win.windowLoc.x, y + win.windowLoc.y, width, height);
-            if (r.x < win.windowLoc.x) {
-                r.width = r.width + r.x - win.windowLoc.x;
-                r.x = win.windowLoc.x;
-            } else if (r.x > win.windowLoc.x + win.windowLoc.width - r.width) {
-                r.width = r.width + r.x - win.windowLoc.x - win.windowLoc.width + r.width;
-                r.x = win.windowLoc.x + win.windowLoc.width - r.width;
+        if (parentView != null) {
+            Rectangle loc = parentView.getBoundsInScreen();
+            Rectangle r = new Rectangle(x + loc.x, y + loc.y, width, height);
+            if (r.x < loc.x) {
+                r.width = r.width + r.x - loc.x;
+                r.x = loc.x;
+            } else if (r.x > loc.x + loc.width - r.width) {
+                r.width = r.width + r.x - loc.x - loc.width + r.width;
+                r.x = loc.x + loc.width - r.width;
             }
-            if (r.y < win.windowLoc.y) {
-                r.height = r.height + r.y - win.windowLoc.y;
-                r.y = win.windowLoc.y;
-            } else if (r.y > win.windowLoc.y + win.windowLoc.height - r.height) {
-                r.height = r.height + r.y - win.windowLoc.y - win.windowLoc.height + r.height;
-                r.y = win.windowLoc.y + win.windowLoc.height - r.height;
+            if (r.y < loc.y) {
+                r.height = r.height + r.y - loc.y;
+                r.y = loc.y;
+            } else if (r.y > loc.y + loc.height - r.height) {
+                r.height = r.height + r.y - loc.y - loc.height + r.height;
+                r.y = loc.y + loc.height - r.height;
             }
 
             return r;
         } else {
-            return new Rectangle(x, y, width, height);
-        }
-    }
-
-    public String getLabel()
-    {
-        if (label == null) {
-            return new String("");
-        } else {
-            return label;
+            return getBounds();
         }
     }
 }

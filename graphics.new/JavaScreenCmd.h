@@ -21,6 +21,18 @@
   $Id$
 
   $Log$
+  Revision 1.19.4.2  1999/02/24 21:02:49  wenger
+  Cursor drawing for JavaScreen is now working again (testing without the
+  JavaScreen).
+
+  Revision 1.19.4.1  1999/02/24 17:48:39  wenger
+  Changes for view symbols in the JavaScreen are largely working (running
+  without the JavaScreen), except for cursor drawing (code is currently
+  configured to test JavaScreen support commands with monolithic executable).
+
+  Revision 1.19  1998/12/21 16:33:40  wenger
+  Added more support for cursors, and view axes and titles, for the JavaScreen.
+
   Revision 1.18  1998/12/10 21:53:27  wenger
   Devised now sends GIFs to JavaScreen on a per-view rather than per-window
   basis; GIF "dirty" flags are now also referenced by view rather than by
@@ -105,62 +117,12 @@ class DeviseServer;
 class ControlPanel;
 class ViewGraph;
 
-class JavaRectangle
-{
-	public:
-		JavaRectangle(){}
-		JavaRectangle(double x0, double y0, double width, double height):
-			_x0(x0),_y0(y0), _width(width),_height(height){};
-		JavaRectangle& operator =(const JavaRectangle& jr)
-		{
-			_x0 = jr._x0;
-			_y0 = jr._y0;
-			_width = jr._width;
-			_height = jr._height;
-			return *this;
-		}
-		double _x0;
-		double _y0;
-		double _width;
-		double _height;
-};
-
-class JavaViewInfo
-{
-	public:
-		JavaViewInfo(){}
-		JavaViewInfo(JavaRectangle& jr, string& viewName)
-		{
-			_jr = jr;
-			_viewName = viewName;
-		}
-		JavaViewInfo& operator = (const JavaViewInfo& info)
-		{
-			_jr = info._jr;
-			_viewName = info._viewName;
-			return *this;
-		}
-		JavaRectangle	_jr;
-		string			_viewName;
-};
-
-class JavaWindowInfo
-{
-	public:
-		JavaWindowInfo(JavaRectangle& winRec, string& winName,
-			string& imageName, int viewCount, JavaViewInfo **views);
-		~JavaWindowInfo();
-		string			_winName;
-		string			_imageName;
-		JavaRectangle	_winRec;
-		int				_viewCount;
-		JavaViewInfo*	_viewList;
-};
-
 class DeviseCursor;
 
 class JavaScreenCmd
 {
+	friend class View;
+
 	public:
 		typedef enum 
 		{
@@ -184,18 +146,20 @@ class JavaScreenCmd
 		typedef enum
 		{
 			UPDATESESSIONLIST = 0,
-			CREATEWINDOW,
 			UPDATERECORDVALUE,
 			UPDATEGDATA,
-			UPDATEWINDOW,
 			DRAWCURSOR,
 			ERASECURSOR,
-			VIEWINFO,
-			DRAWAXIS,
+			CREATEVIEW,
+			DELETEVIEW,
+			DELETECHILDVIEWS,
+			VIEWDATAAREA,
+			UPDATEVIEWIMAGE,
+
 			DONE,
 			ERROR,
 			FAIL,
-			UPDATEIMAGE,
+
 			CONTROLCMD_NUM,
 			NULL_COMMAND
 		}ControlCmdType;
@@ -237,16 +201,12 @@ class JavaScreenCmd
 
 		// Server->JavaScreen Control Commands
 		ControlCmdType RequestUpdateSessionList(int argc, char** argv);
-		ControlCmdType RequestCreateWindow(JavaWindowInfo& winInfo,
-		  int imageSize);
 		ControlCmdType RequestUpdateGData(ViewGraph *view);
 		ControlCmdType RequestUpdateRecordValue(int argc, char** argv);
-		ControlCmdType RequestUpdateWindow(char* winName, int imageSize);
 
 		// Convenience functions
 		void CloseJavaConnection();
 		ControlCmdType SendWindowData(const char* fileName);
-		ControlCmdType SendChangedWindows();
 		ControlCmdType SendViewGData(ViewGraph *view);
 		int  ControlCmd(ControlCmdType  status);
 		void ReturnVal(int argc, char** argv);
@@ -254,12 +214,15 @@ class JavaScreenCmd
 		void DrawAllCursors();
 		void DoCloseSession();
 		void DoOpenSession(char *fullpath);
-		void SendViewInfo();
-		void DrawAllAxes();
+		void CreateView(View *view, View *parent);
+		ControlCmdType SendChangedViews(Boolean update);
+		void DeleteChildViews(View *view);
+		void SendViewDataArea(View *view);
+		void UpdateViewImage(View *view, int imageSize);
+		void EraseChangedCursors();
+		void DrawChangedCursors();
 
 	protected:
-		friend class View;
-
 		static void DrawCursor(View *view, DeviseCursor *cursor);
 		static void EraseCursor(View *view, DeviseCursor *cursor);
 };

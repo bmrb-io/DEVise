@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.21.2.1  1999/03/15 22:13:13  wenger
+  Fixed problems with view origin and data area origin for JavaScreen
+  sessions.
+
+  Revision 1.21  1999/01/18 18:11:13  beyer
+  fixed compile errors and warnings for egcs version 1.1.1
+
   Revision 1.20  1998/08/21 22:16:05  wenger
   Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
   linked DEVise for distribution.
@@ -188,10 +195,14 @@ int ExecCheckpoint(char *fname, ConnectInfo *cinfo)
 char *NoError = "NONE";
 
 #define DO_ASSERT(c,r) {if (!(c)) DoAbort(r); }
-Server::Server(char *name,int image_port, 
+Server::Server(char *name, int image_port, 
 	int swt_port, int clnt_port, char* swtname,
 	int maxClients)
 {
+#if defined(DEBUG)
+    printf("Server::Server(%s)\n", name);
+#endif
+
     char hostname[MAXNAMELEN];
 	struct hostent *hst;
 
@@ -663,6 +674,7 @@ Server::WaitForImageportConnection()
 void Server::ProcessCmd(ClientID clientID, int argc, char **argv)
 {
 }
+
 void Server::CloseClient(ClientID clientID)
 {
     if (!_clients[clientID].valid)

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.107  1999/04/26 20:25:09  wenger
+  Fixed bug 486.
+
   Revision 1.106  1999/04/22 19:29:53  wenger
   Separated the configuration of explicit (user-requested) and implicit
   home actions (no GUI for configuring the implicit home); changed the
@@ -71,6 +74,9 @@
   Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
   and 467 (query errors with sorted attributes); minor improvements to
   view symbols.
+
+  Revision 1.94.4.1  1999/04/29 17:46:04  wenger
+  Minor improvements to debug output.
 
   Revision 1.94  1998/12/22 19:39:30  wenger
   User can now change date format for axis labels; fixed bug 041 (axis

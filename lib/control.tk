@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.186  1999/04/29 17:36:47  wenger
+#	Implemented 'fixed cursor size' option (for the sake of the JavaScreen).
+#	
 #	Revision 1.185  1999/04/21 20:35:48  wenger
 #	Improved interface for changing fonts, titles, etc.:
 #	* Fonts can now be set on a window-wide basis.
@@ -53,11 +56,31 @@
 #	Revision 1.178  1999/03/01 17:47:23  wenger
 #	Implemented grouping/ungrouping of views to allow custom view geometries.
 #	
+#	Revision 1.177.2.5  1999/05/03 13:53:32  wenger
+#	Commented out "Test" menu selection.
+#	
+#	Revision 1.177.2.4  1999/03/15 22:13:38  wenger
+#	Fixed problems with view origin and data area origin for JavaScreen
+#	sessions.
+#	
+#	Revision 1.177.2.3  1999/02/24 21:12:07  wenger
+#	Set things up again for normal JavaScreen support as opposed to monolithic
+#	JavaScreen testing.
+#	
+#	Revision 1.177.2.2  1999/02/24 21:03:05  wenger
+#	Cursor drawing for JavaScreen is now working again (testing without the
+#	JavaScreen).
+#	
+#	Revision 1.177.2.1  1999/02/24 17:48:46  wenger
+#	Changes for view symbols in the JavaScreen are largely working (running
+#	without the JavaScreen), except for cursor drawing (code is currently
+#	configured to test JavaScreen support commands with monolithic executable).
+#	
 #	Revision 1.177  1999/01/04 15:33:53  wenger
 #	Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
 #	compiles; added code (GUI is currently disabled) to manually set view
 #	geometry (not yet saved to sessions).
-#	
+#
 #	Revision 1.176  1998/12/22 19:39:41  wenger
 #	User can now change date format for axis labels; fixed bug 041 (axis
 #	type not being changed between float and date when attribute is changed);
@@ -1108,7 +1131,7 @@ menu .mbar.session.menu.descMenu -tearoff 0
 .mbar.session.menu add command -label "Quit" -command {DoExit $exitmode}
 
 #.mbar.session.menu add separator
-#.mbar.session.menu add command -label "Test" -command { DEVise setFont [DEVise getViewWin $curView] "x axis" 2 18 1 1 }
+#.mbar.session.menu add command -label "Test" -command { DEVise test $curView }
 #.mbar.session.menu add command -label "Memory leaks" -command { DEVise new_leaks }
 #.mbar.session.menu add command -label "Memory in use" -command { DEVise new_inuse }
 

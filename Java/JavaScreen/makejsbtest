@@ -1,0 +1,7 @@
+rm *.class
+javac jsb.java
+jar cf jsbtest.jar *.class
+rm /var/home/www/public/jsbtest.jar
+mv jsbtest.jar /var/home/www/public
+chmod 755 /var/home/www/public/jsbtest.jar
+rm *.class

@@ -1,9 +1,12 @@
+// YException.java
+// last updated on 03/27/99
 
-public final class YException extends Exception
+
+public class YException extends Exception
 {
-    // id indicate which level this exception is
+    // indicate which level this exception is
     private int id;
-    // where indicate where this exception happened
+    // indicate where this exception happened
     private String where = null;
 
     public YException()
@@ -42,9 +45,18 @@ public final class YException extends Exception
     public String getWhere()
     {
         if (where == null)
-            return new String("somewhere");
+            return new String("program");
         else
             return where;
+    }
+
+    public String getMsg()
+    {
+        if (where != null) {
+            return getMessage() + " in " + where;
+        } else {
+            return getMessage();
+        }
     }
 }
 

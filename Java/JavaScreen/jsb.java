@@ -1,38 +1,6 @@
-// ========================================================================
-// DEVise Data Visualization Software
-// (c) Copyright 1992-1998
-// By the DEVise Development Group
-// Madison, Wisconsin
-// All Rights Reserved.
-// ========================================================================
-//
-// Under no circumstances is this software to be copied, distributed,
-// or altered in any way without prior permission from the DEVise
-// Development Group.
-//
+// jsb.java
+// last updated on 04/22/99
 
-//
-// Description of module.
-//
-
-//
-// $Id$
-//
-// $Log$
-// Revision 1.10  1998/08/14 17:48:10  hongyu
-// *** empty log message ***
-//
-// Revision 1.5  1998/07/09 17:38:40  hongyu
-// *** empty log message ***
-//
-// Revision 1.4  1998/06/23 17:53:25  wenger
-// Improved some error messages (see bug 368).
-//
-// Revision 1.3  1998/06/11 15:07:52  wenger
-// Added standard header to Java files.
-//
-//
-// ------------------------------------------------------------------------
 
 import  java.applet.*;
 import  java.awt.event.*;
@@ -41,14 +9,13 @@ import  java.net.*;
 import  java.io.*;
 import  java.util.*;
 
+
 public class jsb extends Applet
 {
     URL baseURL = null;
-    String host = null;
-    String user = null;
-    String pass = null;
 
     String sessionName = null;
+    int debugLevel = 0;
 
     Vector images = null;
 
@@ -59,29 +26,30 @@ public class jsb extends Applet
 
     public void init()
     {
-        YGlobals.YISAPPLET = true;
-        YGlobals.YISGUI = true;
-        YGlobals.YINBROWSER = true;
+        DEViseGlobals.isApplet = true;
+        DEViseGlobals.inBrowser = true;
 
         isInit = true;
 
         DEViseGlobals.browser = getAppletContext();
 
-        //baseURL = getDocumentBase();
-        baseURL = getCodeBase();
-        host = baseURL.getHost();
-
         setLayout(new BorderLayout(0, 10));
 
         startInfo = new TextArea(8, 50);
-        startInfo.setBackground(DEViseGlobals.textbgcolor);
-        startInfo.setForeground(DEViseGlobals.textfgcolor);
-        startInfo.setFont(DEViseGlobals.textfont);
+        startInfo.setBackground(DEViseGlobals.textBg);
+        startInfo.setForeground(DEViseGlobals.textFg);
+        startInfo.setFont(DEViseGlobals.textFont);
         add(startInfo, BorderLayout.CENTER);
 
         setVisible(true);
 
         checkParameters();
+
+        //baseURL = getDocumentBase();
+        baseURL = getCodeBase();
+        DEViseGlobals.hostname = baseURL.getHost();
+        DEViseGlobals.username = DEViseGlobals.DEFAULTUSER;
+        DEViseGlobals.password = DEViseGlobals.DEFAULTPASS;
 
         String version = System.getProperty("java.version");
         String vendor = System.getProperty("java.vendor");
@@ -130,22 +98,15 @@ public class jsb extends Applet
             }
         }
 
-        if (user == null)
-            user = DEViseGlobals.DEFAULTUSER;
-        if (pass == null)
-            pass = DEViseGlobals.DEFAULTPASS;
-
-        YGlobals.start();
-
         if (isInit) {
             remove(startInfo);
             if (jsc == null) {
-                jsc = new jsdevisec(host, user, pass, sessionName, images);
+                jsc = new jsdevisec(null, images, debugLevel, sessionName);
                 add(jsc, BorderLayout.CENTER);
             } else {
                 if (jsc.getQuitStatus()) {
                     jsc = null;
-                    jsc = new jsdevisec(host, user, pass, sessionName, images);
+                    jsc = new jsdevisec(null, images, debugLevel, sessionName);
                     add(jsc, BorderLayout.CENTER);
                 } else {
                     //jsc.displayMe(true);
@@ -180,8 +141,6 @@ public class jsb extends Applet
 
         sessionName = null;
         images = null;
-        user = null;
-        pass = null;
 
         super.destroy();
     }
@@ -198,9 +157,12 @@ public class jsb extends Applet
         String debug = getParameter("debug");
         if (debug != null) {
             try {
-                YGlobals.YDEBUG = Integer.parseInt(debug);
+                debugLevel = Integer.parseInt(debug);
             } catch (NumberFormatException e) {
+                debugLevel = 0;
             }
+        } else {
+            debugLevel = 0;
         }
 
         String cmdport = getParameter("cmdport");
@@ -209,10 +171,13 @@ public class jsb extends Applet
                 int port = Integer.parseInt(cmdport);
                 if (port < 1024 || port > 65535)
                     throw new NumberFormatException();
-                DEViseGlobals.CMDPORT = port;
+                DEViseGlobals.cmdport = port;
                 startInfo.append("Parameter cmdport " + port + " is used\n");
             } catch (NumberFormatException e) {
+                DEViseGlobals.cmdport = DEViseGlobals.DEFAULTCMDPORT;
             }
+        } else {
+            DEViseGlobals.cmdport = DEViseGlobals.DEFAULTCMDPORT;
         }
 
         String imgport = getParameter("imgport");
@@ -221,16 +186,19 @@ public class jsb extends Applet
                 int port = Integer.parseInt(imgport);
                 if (port < 1024 || port > 65535)
                     throw new NumberFormatException();
-                DEViseGlobals.IMGPORT = port;
+                DEViseGlobals.imgport = port;
                 startInfo.append("Parameter imgport " + port + " is used\n");
             } catch (NumberFormatException e) {
+                DEViseGlobals.imgport = DEViseGlobals.DEFAULTIMGPORT;
             }
+        } else {
+            DEViseGlobals.imgport = DEViseGlobals.DEFAULTIMGPORT;
         }
 
         String screen = getParameter("screensize");
         if (screen != null) {
             try {
-                String[] str = YGlobals.Yparsestr(screen, "x");
+                String[] str = DEViseGlobals.parseStr(screen, "x");
                 if (str == null || str.length != 2) {
                     throw new NumberFormatException();
                 }
@@ -238,16 +206,18 @@ public class jsb extends Applet
                 int x = Integer.parseInt(str[0]);
                 int y = Integer.parseInt(str[1]);
 
-                if (x < 320) {
-                    x = 320;
+                if (x < 360) {
+                    x = 360;
                 }
 
-                if (y < 200) {
-                    y = 200;
+                if (y < 240) {
+                    y = 240;
                 }
 
-                DEViseGlobals.SCREENSIZE.width = x;
-                DEViseGlobals.SCREENSIZE.height = y;
+                DEViseGlobals.screenSize.width = x;
+                DEViseGlobals.screenSize.height = y;
+                DEViseGlobals.actualScreenSize.width = x + 80;
+                DEViseGlobals.actualScreenSize.height = y + 120;
                 startInfo.append("Parameter screen size (" + x + ", " + y + ") is used\n");
             } catch (NumberFormatException e) {
             }
@@ -256,7 +226,7 @@ public class jsb extends Applet
         String rsize = getParameter("rubberbandlimit");
         if (rsize != null) {
             try {
-                String[] str = YGlobals.Yparsestr(rsize, "x");
+                String[] str = DEViseGlobals.parseStr(rsize, "x");
                 if (str == null || str.length != 2) {
                     throw new NumberFormatException();
                 }
@@ -272,8 +242,8 @@ public class jsb extends Applet
                     y = 0;
                 }
 
-                DEViseGlobals.RubberBandLimit.width = x;
-                DEViseGlobals.RubberBandLimit.height = y;
+                DEViseGlobals.rubberBandLimit.width = x;
+                DEViseGlobals.rubberBandLimit.height = y;
                 startInfo.append("Parameter rubber band limit (" + x + ", " + y + ") is used\n");
             } catch (NumberFormatException e) {
             }
@@ -282,7 +252,7 @@ public class jsb extends Applet
         String bg = getParameter("bgcolor");
         if (bg != null) {
             try {
-                String[] str = YGlobals.Yparsestr(bg, "+");
+                String[] str = DEViseGlobals.parseStr(bg, "+");
                 if (str == null || str.length != 3) {
                     throw new NumberFormatException();
                 }
@@ -295,10 +265,7 @@ public class jsb extends Applet
                 }
 
                 Color c = new Color(r, g, b);
-                DEViseGlobals.uibgcolor = c;
-                DEViseGlobals.buttonbgcolor = c;
-                DEViseGlobals.dialogbgcolor = c;
-                YGlobals.YMSGBGCOLOR = c;
+                DEViseGlobals.bg = c;
                 startInfo.append("Parameter bgcolor (" + r + ", " + g + ", " + b + ") is used\n");
             } catch (NumberFormatException e) {
             }
@@ -307,7 +274,7 @@ public class jsb extends Applet
         String fg = getParameter("fgcolor");
         if (fg != null) {
             try {
-                String[] str = YGlobals.Yparsestr(fg, "+");
+                String[] str = DEViseGlobals.parseStr(fg, "+");
                 if (str == null || str.length != 3) {
                     throw new NumberFormatException();
                 }
@@ -320,10 +287,7 @@ public class jsb extends Applet
                 }
 
                 Color c = new Color(r, g, b);
-                DEViseGlobals.uifgcolor = c;
-                DEViseGlobals.buttonfgcolor = c;
-                DEViseGlobals.dialogfgcolor = c;
-                YGlobals.YMSGFGCOLOR = c;
+                DEViseGlobals.fg = c;
                 startInfo.append("Parameter fgcolor (" + r + ", " + g + ", " + b + ") is used\n");
             } catch (NumberFormatException e) {
             }

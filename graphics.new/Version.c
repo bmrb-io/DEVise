@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.50.2.1  1999/04/29 14:00:06  wenger
+  Changed version to 1.6.3 because of new JavaScreen protocol.
+
+  Revision 1.50  1999/02/19 16:05:40  wenger
+  Changed version to 1.6.2 because of eliminating UniData.
+
   Revision 1.49  1999/02/12 20:15:55  wenger
   Extended copyright to 1999.
 
@@ -282,7 +288,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.6.2";
+static const char *	version = "1.6.3";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1999";

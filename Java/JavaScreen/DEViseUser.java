@@ -1,3 +1,6 @@
+// DEViseUser.java
+// last updated on 04/16/99
+
 import java.util.*;
 
 public class DEViseUser
@@ -6,35 +9,29 @@ public class DEViseUser
     private String password = null;
     private int priority;
     private int maxLogin;
-    // In milliseconds, 50 years would be 1.5768 * 10^12 milliseconds
-    private long totalOnlineTime; // In milliseconds, user's total online time
 
     private Hashtable currentClients = new Hashtable();
 
-    public DEViseUser(String name, String pass, int pr, int max, long tot) throws YException
+    public DEViseUser(String[] data) throws YException
     {
-        if (name == null || pass == null)
-            throw new YException("Null User name or password!", "DEViseUser:constructor");
+        if (data == null) {
+            throw new YException("Invalid user data: \"NULL\"");
+        }
 
-        if (pr < 0 || max < 1 || tot < 0)
-            throw new YException("Invalid arguments: priority " + pr + " or maxlogin " + max + " or total online time " + tot + "!",
-                                 "DEViseUser:constructor");
+        if (data.length != 4) {
+            throw new YException("Incorrect number of items in user data");
+        }
 
-        StringTokenizer stk = new StringTokenizer(name);
-        if (stk.countTokens() == 0)
-            throw new YException("User name must contain at least one non-whitespace character!", "DEViseUser:constructor");
-        else
-            username = name;
-
-        stk = new StringTokenizer(pass);
-        if (stk.countTokens() == 0)
-            password = new String("");
-        else
-            password = pass;
-
-        priority = pr;
-        maxLogin = max;
-        totalOnlineTime = tot;
+        try {
+            username = data[0];
+            password = data[1];
+            priority = Integer.parseInt(data[2]);
+            maxLogin = Integer.parseInt(data[3]);
+            if (priority < 1 || maxLogin < 1 || username == null || password == null)
+                throw new NumberFormatException();
+        } catch (NumberFormatException e) {
+            throw new YException("Incorrect data format in user data");
+        }
     }
 
     public String getName()
@@ -57,41 +54,26 @@ public class DEViseUser
         return maxLogin;
     }
 
-    public synchronized int getLogin()
+    public synchronized int getCurrentLogin()
     {
         return currentClients.size();
     }
 
-    public synchronized boolean checkLogin()
+    public synchronized boolean addClient(DEViseClient client)
     {
+        if (client == null)
+            return true;
+
+        if (currentClients.contains(client)) {
+            return true;
+        }
+
         if (currentClients.size() < maxLogin) {
+            currentClients.put(client.getConnectionID(), client);
             return true;
         } else {
             return false;
         }
-    }
-
-    public synchronized long getTOT()
-    {
-        return totalOnlineTime;
-    }
-
-    public synchronized void setTOT(long tot)
-    {
-        totalOnlineTime = tot;
-    }
-
-    public synchronized void addTOT(long t)
-    {
-        totalOnlineTime += t;
-    }
-
-    public synchronized void addClient(DEViseClient client)
-    {
-        if (client == null)
-            return;
-
-        currentClients.put(client.getID(), client);
     }
 
     public synchronized void removeClient(DEViseClient client)
@@ -99,7 +81,7 @@ public class DEViseUser
         if (client == null)
             return;
 
-        currentClients.remove(client.getID());
+        currentClients.remove(client.getConnectionID());
     }
 
     public synchronized void removeClient(Integer id)

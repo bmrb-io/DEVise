@@ -1,3 +1,6 @@
+// DEViseTrafficLight.java
+// last updated on 04/11/99
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -25,7 +28,7 @@ public class DEViseTrafficLight extends Panel
             if (!canvas[i].setImage(offImage))
                 throw new YException("Invalid Image!");
             //label[i] = new Label(c[i]);
-            label[i] = new YImageCanvas(c[i], null, DEViseGlobals.uibgcolor, DEViseGlobals.uifgcolor, 12, 12, 1, 1);
+            label[i] = new YImageCanvas(c[i], null, DEViseGlobals.bg, DEViseGlobals.fg, 12, 12, 1, 1);
         }
         string = s;
         canvas[3] = new YImageCanvas(string);
@@ -34,14 +37,15 @@ public class DEViseTrafficLight extends Panel
         }
 
         setFont(new Font("Monospaced", Font.BOLD, 14));
-        setBackground(DEViseGlobals.uibgcolor);
-        setForeground(DEViseGlobals.uifgcolor);
+        setBackground(DEViseGlobals.bg);
+        setForeground(DEViseGlobals.fg);
 
         Panel panel = new Panel();
         panel.setLayout(new GridLayout(2, 4));
         panel.setFont(new Font("Monospaced", Font.BOLD, 14));
-        panel.setBackground(DEViseGlobals.uibgcolor);
-        panel.setForeground(DEViseGlobals.uifgcolor);
+        panel.setBackground(DEViseGlobals.bg);
+        panel.setForeground(DEViseGlobals.fg);
+
         for (int i = 0; i < 3; i++)
             panel.add(label[i]);
         for (int i = 0; i < 3; i++)

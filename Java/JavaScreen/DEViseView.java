@@ -1,218 +1,868 @@
-// ========================================================================
-// DEVise Data Visualization Software
-// (c) Copyright 1992-1998
-// By the DEVise Development Group
-// Madison, Wisconsin
-// All Rights Reserved.
-// ========================================================================
-//
-// Under no circumstances is this software to be copied, distributed,
-// or altered in any way without prior permission from the DEVise
-// Development Group.
-//
+// DEViseView.java
+// last updated on 04/20/99
 
-//
-// Description of module.
-//
+import  java.awt.*;
+import  java.util.*;
+import  java.text.*;
 
-//
-// $Id$
-//
-// $Log$
-// Revision 1.27  1999/02/15 09:55:24  hongyu
-// *** empty log message ***
-//
-// Revision 1.6  1998/08/14 17:48:07  hongyu
-// *** empty log message ***
-//
-// Revision 1.2  1998/06/11 15:07:47  wenger
-// Added standard header to Java files.
-//
-//
-// ------------------------------------------------------------------------
-
-import java.awt.*;
-import java.awt.event.*;
-import java.net.*;
-import java.util.*;
-
+// This class represent a image view in DEVise
 public class DEViseView
 {
-    jsdevisec jsc = null;
-    DEViseScreen jscreen = null;
-    DEViseWindow window = null;
-    String viewName = null;
-    String viewTitle = null;
-    Rectangle viewLoc = null;
-    Rectangle dataLoc = null;
-    float dataXMin = 0.0f, dataXMax = 0.0f, dataXStep = 0.0f;
-    float dataYMin = 0.0f, dataYMax = 0.0f, dataYStep = 0.0f;
-    String viewBackground = null;
-    String viewForeground = null;
-    String viewXType = "real", viewYType = "real";
-    DEViseGData[] viewGData = null;
-    DEViseCursor[] viewCursor = null;
-    Button[] GDataButton = null;
+    public jsdevisec jsc = null;
 
-    public DEViseView(jsdevisec what, String name, Rectangle loc)
+    public DEViseCanvas canvas = null;
+
+    public String viewName = null;
+    public String curlyName = null;
+    public String viewTitle = null;
+    // viewLoc is the location within parent, parent could be another view or the screen
+    public Rectangle viewLoc = null;
+    public double viewZ = 0.0;
+    public int viewBg, viewFg;
+
+    // viewDataLoc is the location relative to this view
+    public Rectangle viewDataLoc = null;
+    public double viewDataXMin = 0.0, viewDataXMax = 0.0;
+    public double viewDataYMin = 0.0, viewDataYMax = 0.0;
+    // data type could be "real" or "date" or "none"
+    public String viewDataXType = null, viewDataYType = null;
+
+    public DEViseView parentView = null;
+    public Vector viewChilds = new Vector();
+    public Vector viewGDatas = new Vector();
+    public Vector viewCursors = new Vector();
+    public Vector viewPiledViews = new Vector();
+
+    // whichSide = 0 indicate inside current cursor
+    // whichSide = 1 indicate at left side of current cursor
+    // whichSide = 2 indicate at right side of current cursor
+    // whichSide = 3 indicate at top side of current cursor
+    // whichSide = 4 indicate at bottom side of current cursor
+    // whichSide = 5 indicate at left-top corner of current cursor
+    // whichSide = 6 indicate at left-bottom corner of current cursor
+    // whichSide = 7 indicate at right-top corner of current cursor
+    // whichSide = 8 indicate at right-bottom corner of current cursor
+    public int whichChild, whichCursor, whichSide;
+    public boolean isFirstTime = true;
+
+    public DEViseView(jsdevisec panel, String pn, String name, String title, Rectangle loc, double Z, int bg, int fg, Rectangle dl, String xt, String yt)
     {
-        jsc = what;
-        jscreen = jsc.jscreen;
+        jsc = panel;
+
         viewName = name;
+        viewTitle = title;
         viewLoc = loc;
+        viewZ = Z;
+        viewBg = bg;
+        viewFg = fg;
+
+        viewDataLoc = dl;
+        viewDataXType = xt;
+        viewDataYType = yt;
+
+        parentView = jsc.jscreen.getView(pn);
+
+        curlyName = "{" + viewName + "}";
     }
 
-    public void updateViewInfo(String title, String fg, String bg, String xt, String yt)
+    public String getCurlyName()
     {
-        viewTitle = title;
-        viewXType = xt;
-        viewYType = yt;
-        viewBackground = bg;
-        viewForeground = fg;
+        return curlyName;
     }
-    
-    public void updateDataLoc(Rectangle rect)
+
+    public DEViseCanvas getCanvas()
     {
-        dataLoc = rect;
+        if (canvas == null) {
+            if (parentView == null) {
+                return null;
+            } else {
+                if (parentView.canvas == null) {
+                    return null;
+                } else {
+                    return parentView.canvas;
+                }
+            }
+        } else {
+            return canvas;
+        }
     }
-    
-    public void updateDataRange(String axis, float min, float max)
+
+    public DEViseView getChild(int idx)
+    {
+        if (idx < 0 || idx >= viewChilds.size())
+            return null;
+
+        return (DEViseView)viewChilds.elementAt(idx);
+    }
+
+    public DEViseCursor getCursor(int idx)
+    {
+        if (idx < 0 || idx >= viewCursors.size())
+            return null;
+
+        return (DEViseCursor)viewCursors.elementAt(idx);
+    }
+
+    public DEViseGData getGData(int idx)
+    {
+        if (idx < 0 || idx >= viewGDatas.size())
+            return null;
+
+        return (DEViseGData)viewGDatas.elementAt(idx);
+    }
+
+    public void addChild(DEViseView view)
+    {
+        if (view == null)
+            return;
+
+        viewChilds.addElement(view);
+    }
+
+    public boolean addCursor(DEViseCursor cursor)
+    {
+        if (cursor == null)
+            return false;
+
+        int i = 0;
+        for (i = 0; i < viewCursors.size(); i++) {
+            DEViseCursor c = (DEViseCursor)viewCursors.elementAt(i);
+            if (c.name.equals(cursor.name)) {
+                if (c.isSame(cursor)) {
+                    return false;
+                } else {
+                    viewCursors.removeElementAt(i);
+                    cursor.parentView = this;
+                    cursor.image = null;
+                    viewCursors.addElement(cursor);
+                    return true;
+                }
+            }
+        }
+
+        cursor.parentView = this;
+        viewCursors.addElement(cursor);
+        return true;
+    }
+
+    public void addGData(DEViseGData gdata)
+    {
+        if (gdata == null)
+            return;
+
+        viewGDatas.addElement(gdata);
+        gdata.parentView = this;
+    }
+
+    public void removeChild(DEViseView view)
+    {
+        if (view != null) {
+            if (canvas != null) {
+                if (canvas.activeView == view) {
+                    canvas.activeView = null;
+                }
+            }
+
+            viewChilds.removeElement(view);
+        }
+    }
+
+    public void removeCursor(DEViseCursor cursor)
+    {
+        if (cursor != null) {
+            viewCursors.removeElement(cursor);
+        }
+    }
+
+    public boolean removeCursor(String name)
+    {
+        if (name != null) {
+            for (int i = 0; i < viewCursors.size(); i++) {
+                DEViseCursor cursor = (DEViseCursor)viewCursors.elementAt(i);
+                if (cursor.name.equals(name)) {
+                    viewCursors.removeElement(cursor);
+                    return true;
+                }
+            }
+
+            return false;
+        } else {
+            return false;
+        }
+    }
+
+    public void removeGData(DEViseGData gdata)
+    {
+        if (gdata != null) {
+            viewGDatas.removeElement(gdata);
+        }
+    }
+
+    public void removeAllGData()
+    {
+        viewGDatas.removeAllElements();
+    }
+
+    public void removeAllCursor()
+    {
+        viewCursors.removeAllElements();
+    }
+
+    public void removeAllChild()
+    {
+        if (canvas != null) {
+            if (canvas.activeView != this) {
+                canvas.activeView = null;
+            }
+        }
+
+        viewChilds.removeAllElements();
+    }
+
+    public Rectangle getBoundsInScreen()
+    {
+        if (parentView != null) {
+            Rectangle lc = parentView.getBoundsInScreen();
+            return new Rectangle(viewLoc.x + lc.x, viewLoc.y + lc.y, viewLoc.width, viewLoc.height);
+        } else {
+            return new Rectangle(viewLoc.x + DEViseGlobals.screenEdge.width, viewLoc.y + DEViseGlobals.screenEdge.height, viewLoc.width, viewLoc.height);
+        }
+    }
+
+    // loc is relative to this view's parentView(if null, then loc is relative to screen)
+    public void updateLoc(Rectangle loc)
+    {
+        if (loc == null)
+            return;
+
+        viewLoc.x = loc.x;
+        viewLoc.y = loc.y;
+        viewLoc.width = loc.width;
+        viewLoc.height = loc.height;
+
+        for (int i = 0; i < viewPiledViews.size(); i++) {
+            DEViseView view = (DEViseView)viewPiledViews.elementAt(i);
+            if (view != null) {
+                view.viewLoc.x = viewLoc.x;
+                view.viewLoc.y = viewLoc.y;
+                view.viewLoc.width = viewLoc.width;
+                view.viewLoc.height = viewLoc.height;
+            }
+        }
+    }
+
+    public void updateDataRange(String axis, double min, double max)
     {
         if (axis.equals("X")) {
-            dataXMin = min;
-            dataXMax = max;
-            if (dataLoc.width > 0) {
-                dataXStep = (dataXMax - dataXMin) / dataLoc.width;
-            }
+            viewDataXMin = min;
+            viewDataXMax = max;
         } else if (axis.equals("Y")) {
-            dataYMin = min;
-            dataYMax = max;
-            if (dataLoc.height > 0) {
-                dataYStep = (dataYMax - dataYMin) / dataLoc.height;               
-            }
+            viewDataYMin = min;
+            viewDataYMax = max;
         }
     }
-    
-    public float getDataX(int x)
+
+    // x is relative to this view's parentView(if null, then x is relative to itself)
+    public String getX(int x)
     {
-        float x0 = (x - dataLoc.x) * dataXStep + dataXMin;
-        if (x0 > 0) {
-            return (int)(x0 * 100 + 0.5) / (float)100;
+        //if ((viewDataXType.toLowerCase()).equals("none"))
+        //    return "";
+
+        if (parentView != null) {
+            x = x - viewLoc.x;
+        }
+
+        if (x < viewDataLoc.x) {
+            return "";
+        }
+
+        if (x > (viewDataLoc.x + viewDataLoc.width)) {
+            return "";
+        }
+
+        double xstep = 0.0;
+        if (viewDataLoc.width > 0)
+            xstep = (viewDataXMax - viewDataXMin) / viewDataLoc.width;
+
+        // x0 represent the value at the left side of that pixel x
+        double x0 = (x - viewDataLoc.x) * xstep + viewDataXMin;
+
+        if ((viewDataXType.toLowerCase()).equals("date")) {
+            x0 = x0 * 1000.0;
+            Date date = new Date((long)x0);
+            DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            String time = " " + cal.get(Calendar.HOUR_OF_DAY) + ":"
+                             + cal.get(Calendar.MINUTE) + ":"
+                             + cal.get(Calendar.SECOND);
+            return (format.format(date) + time);
         } else {
-            return (int)(x0 * 100 - 0.5) / (float)100;
-        }
-    }
-
-    public float getDataY(int y)
-    {
-        float y0 = -(y - dataLoc.y) * dataYStep + dataYMax;
-        if (y0 > 0) {
-            return (int)(y0 * 100 + 0.5) / (float)100;
-        } else {
-            return (int)(y0 * 100 - 0.5) / (float)100;
-        }
-    }
-        
-    public void setWindow(DEViseWindow win)
-    {
-        window = win;
-    }
-
-    public String getName()
-    {
-        return viewName;
-    }
-
-    public Rectangle getLoc()
-    {
-        return viewLoc;
-    }
-
-    public boolean isCurrent(Point p)
-    {
-        if (p.x >= viewLoc.x && p.x < viewLoc.x + viewLoc.width && p.y >= viewLoc.y && p.y < viewLoc.y + viewLoc.height)
-            return true;
-        else
-            return false;
-    }
-
-    public void updateGData(Vector gdata)
-    {
-        if (GDataButton != null) {
-            for (int i = 0; i < GDataButton.length; i++) {
-                jscreen.removeGDataItem(GDataButton[i]);
+            if (x0 > 0) {
+                x0 = (int)(x0 * 1000.0 + 0.5) / 1000.0;
+            } else {
+                x0 = (int)(x0 * 1000.0 - 0.5) / 1000.0;
             }
 
-            GDataButton = null;
+            return ("" + x0);
+        }
+    }
+
+    // y is relative to this view's parentView(if null, then y is relative to itself)
+    public String getY(int y)
+    {
+        //if ((viewDataYType.toLowerCase()).equals("none"))
+        //    return "";
+
+        if (parentView != null) {
+            y = y - viewLoc.y;
         }
 
-        if (gdata == null || gdata.size() == 0) {
-            viewGData = null;
-
-            return;
+        if (y < viewDataLoc.y) {
+            return "";
         }
 
-        viewGData = new DEViseGData[gdata.size()];
-        for (int i = 0; i < viewGData.length; i++) {
-            viewGData[i] = (DEViseGData)gdata.elementAt(i);
+        if (y > (viewDataLoc.y + viewDataLoc.height)) {
+            return "";
         }
 
-        GDataButton = new Button[viewGData.length];
-        //YGlobals.Ydebugpn(viewName + " GDATA length " + GDataButton.length);
-        for (int i = 0; i < GDataButton.length; i++) {
-            GDataButton[i] = new Button(viewGData[i].getLabel());
-            GDataButton[i].setActionCommand(viewGData[i].getLabel());
-            GDataButton[i].setFont(new Font("Monospaced", Font.PLAIN, 10));
-            GDataButton[i].addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-                        if (YGlobals.YISAPPLET) {
-                            if (DEViseGlobals.browser != null) {
-                                try {
-                                    URL url = new URL(event.getActionCommand());
-                                    DEViseGlobals.browser.showDocument(url, "_parent");
-                                } catch (MalformedURLException e) {
-                                }
-                            }
-                        }
+        double ystep = 0.0;
+        if (viewDataLoc.height > 0)
+            ystep = (viewDataYMax - viewDataYMin) / viewDataLoc.height;
+
+        // y0 represent the value at the top side of that pixel
+        double y0 = viewDataYMax - (y - viewDataLoc.y) * ystep;
+
+        if ((viewDataYType.toLowerCase()).equals("date")) {
+            y0 = y0 * 1000.0;
+            Date date = new Date((long)y0);
+            DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            String time = " " + cal.get(Calendar.HOUR_OF_DAY) + ":"
+                             + cal.get(Calendar.MINUTE) + ":"
+                             + cal.get(Calendar.SECOND);
+            return (format.format(date) + time);
+        } else {
+            if (y0 > 0) {
+                y0 = (int)(y0 * 1000.0 + 0.5) / 1000.0;
+            } else {
+                y0 = (int)(y0 * 1000.0 - 0.5) / 1000.0;
+            }
+
+            return ("" + y0);
+        }
+    }
+
+    // find out where the point is located
+    // the position p is relative to this view's parentView(if null, then p is relative to itself)
+    // we assume the cursor of a view is complete within the data area of that view
+    // we assume the cursor of a view and the child view of a view is not overlap
+    // we assume only one layer of child view, ie, child view will not have child view
+    // 0: not within the data area but within the view
+    // 1: within the data area, but not within child view or cursor
+    // 2: inside the cursor
+    // 3: within the range of the edges of one cursor
+    // 4: inside a child view, but not within its data area
+    // 5: inside a child view and within its data area, but not within any cursor of it
+    // 6: inside a child view and inside one of its cursor
+    // 7: inside a child view and within the range of the edges of one of its cursor
+    public int checkPos(Point p)
+    {
+        // initialize data
+        whichChild = -1;
+        whichCursor = -1;
+        whichSide = -1;
+
+        if (!isWithinView(p))
+            return -1;
+
+        if (!isWithinDataArea(p)) {
+            return 0;
+        }
+
+        // the viewChilds of child view will always has 0 size
+        if (viewChilds.size() > 0) {
+            for (int i = 0; i < viewChilds.size(); i++) {
+                DEViseView child = getChild(i);
+                int status = child.checkPos(p);
+                if (status < 0) {
+                    continue;
+                } else {
+                    whichChild = i;
+                    whichCursor = child.whichCursor;
+                    whichSide = child.whichSide;
+                    return status + 4;
+                }
+            }
+        }
+
+        if (viewCursors.size() > 0) {
+            for (int i = 0; i < viewCursors.size(); i++) {
+                DEViseCursor cursor = getCursor(i);
+                int status = cursor.checkPos(p);
+                if (status < 0) {
+                    continue;
+                } else {
+                    whichCursor = i;
+                    whichSide = status;
+                    if (whichSide == 0) {
+                        return 2;
+                    } else {
+                        return 3;
                     }
-                });
+                }
+            }
+        }
 
-            jscreen.addGDataItem(GDataButton[i]);
-            GDataButton[i].setBounds(viewGData[i].getBounds(window));
-            //YGlobals.Ydebugpn(viewName + " counts=" + jscreen.getComponentCount());
+        return 1;
+    }
+
+    // check whether or not the point is within the view area
+    // the position p is relative to this view's parentView(if null, then p is relative to itself)
+    private boolean isWithinView(Point p)
+    {
+        int x0 = 0, y0 = 0;
+        if (parentView != null) {
+            x0 = viewLoc.x;
+            y0 = viewLoc.y;
+        }
+
+        if (p.x < x0 || p.y < y0 || p.x > x0 + viewLoc.width - 1 || p.y > y0 + viewLoc.height - 1) {
+            return false;
+        } else {
+            return true;
         }
     }
 
-    public void updateGData()
+    // check whether or not the point is within the data area,
+    // the position p is relative to this view's parentView(if null, then p is relative to itself)
+    private boolean isWithinDataArea(Point p)
     {
-        if (GDataButton == null)
+        int x0 = 0, y0 = 0;
+        if (parentView != null) {
+            x0 = viewLoc.x;
+            y0 = viewLoc.y;
+        }
+
+        if (p.x < x0 + viewDataLoc.x || p.y < y0 + viewDataLoc.y || p.x > x0 + viewDataLoc.width + viewDataLoc.x - 1 || p.y > y0 + viewDataLoc.y + viewDataLoc.height - 1)
+            return false;
+        else
+            return true;
+    }
+
+    // adjust position x so it is within the range of data area of this view
+    // x is relative to this view's parentView(if null, then x is relative to itself)
+    public int adjustPosX(int x)
+    {
+        return adjustPosX(x, 0);
+    }
+
+    // we assume width is less than the width of the data area
+    public int adjustPosX(int x, int width)
+    {
+        int x0 = 0;
+        if (parentView != null) {
+            x0 = viewLoc.x;
+        }
+
+        if (x < x0 + viewDataLoc.x)
+            x = x0 + viewDataLoc.x;
+
+        if ((x + width) > (x0 + viewDataLoc.x + viewDataLoc.width))
+            x = x0 + viewDataLoc.x + viewDataLoc.width - width;
+
+        return x;
+    }
+
+    // adjust position y so it is within the range of data area of this view
+    // y is relative to this view's parentView(if null, then y is relative to itself)
+    public int adjustPosY(int y)
+    {
+        return adjustPosY(y, 0);
+    }
+
+    // we assume height is less than the height of the data area
+    public int adjustPosY(int y, int height)
+    {
+        int y0 = 0;
+        if (parentView != null) {
+            y0 = viewLoc.y;
+        }
+
+        if (y < y0 + viewDataLoc.y)
+            y = y0 + viewDataLoc.y;
+
+        if ((y + height) > (y0 + viewDataLoc.y + viewDataLoc.height))
+            y = y0 + viewDataLoc.y + viewDataLoc.height - height;
+
+        return y;
+    }
+
+    // convert position relative to parentView to be relative to itself
+    // x, y is relative to parentView
+    public int xtome(int x)
+    {
+        if (parentView != null) {
+            return x - viewLoc.x;
+        } else {
+            return x;
+        }
+    }
+
+    public int ytome(int y)
+    {
+        if (parentView != null) {
+            return y - viewLoc.y;
+        } else {
+            return y;
+        }
+    }
+
+    // convert position relative to this view to be relative to its parentView
+    // x, y is relative to this view
+    public int xtoparent(int x)
+    {
+        if (parentView != null) {
+            return x + viewLoc.x;
+        } else {
+            return x;
+        }
+    }
+
+    public int ytoparent(int y)
+    {
+        if (parentView != null) {
+            return y + viewLoc.y;
+        } else {
+            return y;
+        }
+    }
+
+    // adjust the postion and size of the cursor that is being resizing or moving
+    public void updateCursorLoc(int which, int state, int dx, int dy)
+    {
+        if (which < 0 || which >= viewCursors.size())
             return;
 
-        for (int i = 0; i < GDataButton.length; i++) {
-            GDataButton[i].setBounds(viewGData[i].getBounds(window));
+        DEViseCursor cursor = (DEViseCursor)viewCursors.elementAt(which);
+        int x0 = 0, y0 = 0;
+        if (parentView != null) {
+            x0 = viewLoc.x;
+            y0 = viewLoc.y;
+        }
+
+        if (state == 1) { // move cursor
+            if (cursor.isXMovable) {
+                cursor.x = adjustPosX(x0 + dx + cursor.x, cursor.width) - x0;
+            }
+
+            if (cursor.isYMovable) {
+                cursor.y = adjustPosY(y0 + dy + cursor.y, cursor.height) - y0;
+            }
+        } else if (state == 2) { // resize cursor
+            int tmpx, tmpy, tx, ty, cx, cy;
+            boolean isXChange = false, isYChange = false;
+
+            switch (whichSide) {
+            case 1: // left side
+                if (!cursor.isXMovable)
+                    break;
+
+                tmpx = cursor.x + cursor.width;
+                cx = adjustPosX(x0 + dx + cursor.x, cursor.width) - x0;
+
+                if (cx >= tmpx) {
+                    cursor.x = tmpx;
+                    cursor.width = cx - tmpx;
+                    if (cursor.width == 0) {
+                        cursor.width = 1;
+                    }
+
+                    whichSide = 2;
+                } else {
+                    cursor.x = cx;
+                    cursor.width = tmpx - cx;
+                }
+
+                break;
+            case 2: // right side
+                if (!cursor.isXMovable)
+                    break;
+
+                tmpx = cursor.x + cursor.width;
+                cx = adjustPosX(x0 + dx + tmpx) - x0;
+
+                tx = cursor.x;
+                if (tx >= cx) {
+                    cursor.x = cx;
+                    cursor.width = tx - cx;
+                    if (cursor.width == 0) {
+                        cursor.width = 1;
+                    }
+
+                    whichSide = 1;
+                } else {
+                    cursor.width = cx - tx;
+                }
+
+                break;
+            case 3: // top side
+                if (!cursor.isYMovable)
+                    break;
+
+                tmpy = cursor.y + cursor.height;
+                cy = adjustPosY(y0 + dy + cursor.y, cursor.height) - y0;
+
+                if (cy >= tmpy) {
+                    cursor.y = tmpy;
+                    cursor.height = cy - tmpy;
+                    if (cursor.height == 0) {
+                        cursor.height = 1;
+                    }
+
+                    whichSide = 4;
+                } else {
+                    cursor.y = cy;
+                    cursor.height = tmpy - cy;
+                }
+
+                break;
+            case 4: // bottom side
+                if (!cursor.isYMovable)
+                    break;
+
+                tmpy = cursor.y + cursor.height;
+                cy = adjustPosY(y0 + dy + tmpy) - y0;
+
+                ty = cursor.y;
+                if (ty >= cy) {
+                    cursor.y = cy;
+                    cursor.height = ty - cy;
+                    if (cursor.height == 0) {
+                        cursor.height = 1;
+                    }
+
+                    whichSide = 3;
+                } else {
+                    cursor.height = cy - ty;
+                }
+
+                break;
+            case 5: // left top corner
+                isXChange = false;
+                isYChange = false;
+
+                if (cursor.isXMovable) {
+                    tmpx = cursor.x + cursor.width;
+                    cx = adjustPosX(x0 + dx + cursor.x, cursor.width) - x0;
+
+                    if (cx >= tmpx) {
+                        cursor.x = tmpx;
+                        cursor.width = cx - tmpx;
+                        if (cursor.width == 0) {
+                            cursor.width = 1;
+                        }
+
+                        isXChange = true;
+                    } else {
+                        cursor.x = cx;
+                        cursor.width = tmpx - cx;
+                    }
+                }
+
+                if (cursor.isYMovable) {
+                    tmpy = cursor.y + cursor.height;
+                    cy = adjustPosY(y0 + dy + cursor.y, cursor.height) - y0;
+
+                    if (cy >= tmpy) {
+                        cursor.y = tmpy;
+                        cursor.height = cy - tmpy;
+                        if (cursor.height == 0) {
+                            cursor.height = 1;
+                        }
+
+                        isYChange = true;
+                    } else {
+                        cursor.y = cy;
+                        cursor.height = tmpy - cy;
+                    }
+                }
+
+                if (isXChange || isYChange) {
+                    if (isXChange) {
+                        if (isYChange) {
+                            whichSide = 8;
+                        } else {
+                            whichSide = 7;
+                        }
+                    } else {
+                        whichSide = 6;
+                    }
+                }
+
+                break;
+            case 6: // left bottom corner
+                isXChange = false;
+                isYChange = false;
+
+                if (cursor.isXMovable) {
+                    tmpx = cursor.x + cursor.width;
+                    cx = adjustPosX(x0 + dx + cursor.x, cursor.width) - x0;
+
+                    if (cx >= tmpx) {
+                        cursor.x = tmpx;
+                        cursor.width = cx - tmpx;
+                        if (cursor.width == 0) {
+                            cursor.width = 1;
+                        }
+
+                        isXChange = true;
+                    } else {
+                        cursor.x = cx;
+                        cursor.width = tmpx - cx;
+                    }
+                }
+
+                if (cursor.isYMovable) {
+                    tmpy = cursor.y + cursor.height;
+                    cy = adjustPosY(y0 + dy + tmpy) - y0;
+
+                    ty = cursor.y;
+                    if (ty >= cy) {
+                        cursor.y = cy;
+                        cursor.height = ty - cy;
+                        if (cursor.height == 0) {
+                            cursor.height = 1;
+                        }
+
+                        isYChange = true;
+                    } else {
+                        cursor.height = cy - ty;
+                    }
+                }
+
+                if (isXChange || isYChange) {
+                    if (isXChange) {
+                        if (isYChange) {
+                            whichSide = 7;
+                        } else {
+                            whichSide = 8;
+                        }
+                    } else {
+                        whichSide = 5;
+                    }
+                }
+
+                break;
+            case 7: // right top corner
+                isXChange = false;
+                isYChange = false;
+
+                if (cursor.isXMovable) {
+                    tmpx = cursor.x + cursor.width;
+                    cx = adjustPosX(x0 + dx + tmpx) - x0;
+
+                    tx = cursor.x;
+                    if (tx >= cx) {
+                        cursor.x = cx;
+                        cursor.width = tx - cx;
+                        if (cursor.width == 0) {
+                            cursor.width = 1;
+                        }
+
+                        isXChange = true;
+                    } else {
+                        cursor.width = cx - tx;
+                    }
+                }
+
+                if (cursor.isYMovable) {
+                    tmpy = cursor.y + cursor.height;
+                    cy = adjustPosY(y0 + dy + cursor.y, cursor.height) - y0;
+
+                    if (cy >= tmpy) {
+                        cursor.y = tmpy;
+                        cursor.height = cy - tmpy;
+                        if (cursor.height == 0) {
+                            cursor.height = 1;
+                        }
+
+                        isYChange = true;
+                    } else {
+                        cursor.y = cy;
+                        cursor.height = tmpy - cy;
+                    }
+                }
+
+                if (isXChange || isYChange) {
+                    if (isXChange) {
+                        if (isYChange) {
+                            whichSide = 6;
+                        } else {
+                            whichSide = 5;
+                        }
+                    } else {
+                        whichSide = 8;
+                    }
+                }
+
+                break;
+            case 8: // right bottom corner
+                isXChange = false;
+                isYChange = false;
+
+                if (cursor.isXMovable) {
+                    tmpx = cursor.x + cursor.width;
+                    cx = adjustPosX(x0 + dx + tmpx) - x0;
+
+                    tx = cursor.x;
+                    if (tx >= cx) {
+                        cursor.x = cx;
+                        cursor.width = tx - cx;
+                        if (cursor.width == 0) {
+                            cursor.width = 1;
+                        }
+
+                        isXChange = true;
+                    } else {
+                        cursor.width = cx - tx;
+                    }
+                }
+
+                if (cursor.isYMovable) {
+                    tmpy = cursor.y + cursor.height;
+                    cy = adjustPosY(y0 + dy + tmpy) - y0;
+
+                    ty = cursor.y;
+                    if (ty >= cy) {
+                        cursor.y = cy;
+                        cursor.height = ty - cy;
+                        if (cursor.height == 0) {
+                            cursor.height = 1;
+                        }
+
+                        isYChange = true;
+                    } else {
+                        cursor.height = cy - ty;
+                    }
+                }
+
+                if (isXChange || isYChange) {
+                    if (isXChange) {
+                        if (isYChange) {
+                            whichSide = 5;
+                        } else {
+                            whichSide = 6;
+                        }
+                    } else {
+                        whichSide = 7;
+                    }
+                }
+
+                break;
+            }
         }
     }
 
-    public DEViseGData[] getGData()
-    {
-        return viewGData;
-    }
-
-    public void setCursor(DEViseCursor cursor)
-    {
-        if (cursor == null) {
-            viewCursor = null;
-            return;
-        }
-
-        viewCursor = new DEViseCursor[1];
-        viewCursor[0] = cursor;
-    }
-
-    public DEViseCursor[] getCursor()
-    {
-        return viewCursor;
-    }
 }
