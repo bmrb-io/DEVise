@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/07/23 20:37:37  jussi
+  Added code to handle slaves in piled views.
+
   Revision 1.2  1996/06/13 00:16:30  jussi
   Added support for views that are slaves of more than one record
   link. This allows one to express disjunctive queries.
@@ -215,7 +218,7 @@ void RecordLink::Done()
 #ifdef DEBUG
         printf("Refreshing piled view %s\n", slave->GetName());
 #endif
-        view->Refresh();
+        slave->Refresh();
       }
       parent->DoneIterator(sindex);
     } else {
