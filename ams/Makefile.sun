@@ -14,13 +14,15 @@ MapClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
 MapClassInfo.o: ../graphics/Exit.h ../graphics/VisualArg.h
 MapClassInfo.o: ../graphics/Color.h ../graphics/Journal.h
 MapClassInfo.o: ../graphics/ColorMgr.h ../graphics.new/RectShape.h
-MapClassInfo.o: ../graphics/Transform.h ../graphics/WindowRep.h
-MapClassInfo.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
-MapClassInfo.o: ../graphics/Compress.h ../graphics.new/Shape.h
+MapClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
+MapClassInfo.o: ../graphics/Pattern.h ../graphics.new/ShapeID.h
+MapClassInfo.o: ../graphics.new/Bitmap.h ../graphics.new/RecId.h
+MapClassInfo.o: ../graphics.new/GDataRec.h ../graphics/WindowRep.h
+MapClassInfo.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+MapClassInfo.o: ../graphics/Compress.h ../graphics.new/Temp.h
 MapClassInfo.o: ../graphics/Control.h ../graphics.new/TDataCMap.h
 MapClassInfo.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
-MapClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/GDataBin.h
-MapClassInfo.o: ../graphics.new/RecId.h ../graphics.new/ActionDefault.h
+MapClassInfo.o: ../graphics.new/GDataBin.h ../graphics.new/ActionDefault.h
 MapClassInfo.o: ../graphics/Action.h ../graphics/Util.h /usr/include/assert.h
 MapClassInfo.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 MapClassInfo.o: /usr/include/strings.h /usr/include/ctype.h
@@ -29,13 +31,12 @@ MapClassInfo.o: ../graphics/ViewWin.h ../graphics/ViewCallback.h
 MapClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
 MapClassInfo.o: ../graphics/Cursor.h ../graphics/Init.h
 MapClassInfo.o: ../graphics/BufPolicy.h ../graphics.new/TDataMapDispatch.h
-MapClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/Bitmap.h
-MapClassInfo.o: ../graphics.new/GDataRec.h ../graphics.new/DispQueryProc.h
+MapClassInfo.o: ../graphics.new/DispQueryProc.h
 MapClassInfo.o: ../graphics.new/QueryProcSimple.h ../graphics.new/QueryProc.h
 MapClassInfo.o: ../graphics.new/BufHint.h ../graphics.new/QueryProcFull.h
 MapClassInfo.o: ../graphics.new/QPRange.h ../graphics.new/BufMgr.h
 MapClassInfo.o: ../graphics.new/BufferPolicy.h ../graphics.new/RecOrder.h
-MapClassInfo.o: ../graphics.new/Temp.h ../graphics/ViewWinVer.h
+MapClassInfo.o: ../graphics/ViewWinVer.h ../graphics/ViewLayout.h
 MapClassInfo.o: ../graphics.new/Snapshot.h ../graphics.new/ViewScatter.h
 MapClassInfo.o: ../graphics.new/ViewGraph.h MapClassInfo.h
 MapClassInfo.o: ../graphics/ClassDir.h Soil.h AmsMap.h

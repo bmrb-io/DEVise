@@ -8,15 +8,44 @@ depend:
 cal.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h /usr/include/stdlib.h
 cal.o: cal.h /usr/include/sys/types.h /usr/include/sys/uio.h
 cal.o: /usr/include/unistd.h /usr/include/sys/unistd.h
-crsp_index.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
-crsp_index.o: /usr/include/sys/types.h /usr/include/sys/stat.h
-crsp_index.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h sec.h
+crsp_extract.o: /usr/include/assert.h /usr/include/sys/stdsyms.h
+crsp_extract.o: /usr/include/stdlib.h /usr/include/string.h
+crsp_extract.o: /s/tcl/include/tcl.h /usr/include/stdio.h /s/tcl/include/tk.h
+crsp_extract.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
+crsp_extract.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
+crsp_extract.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h sec.h
+crsp_extract.o: /usr/include/sys/uio.h /usr/include/unistd.h
+crsp_extract.o: /usr/include/sys/unistd.h ../tape/tapedrive.h
+crsp_extract.o: /usr/include/tar.h ../tape/machdep.h /usr/include/limits.h
+crsp_extract.o: /usr/include/sys/param.h /usr/include/machine/param.h
+crsp_extract.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
+crsp_extract.o: /usr/include/sys/ioctl.h /usr/include/sys/wait.h
+crsp_extract.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+crsp_extract.o: /usr/include/sys/sem.h
+crsp_index.o: /usr/include/string.h /usr/include/stdlib.h sec.h
+crsp_index.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
 crsp_index.o: /usr/include/sys/uio.h /usr/include/unistd.h
-crsp_index.o: /usr/include/sys/unistd.h
-main.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
-main.o: /usr/include/sys/stat.h /usr/include/fcntl.h /usr/include/sys/fcntl.h
-main.o: sec.h /usr/include/sys/uio.h /usr/include/unistd.h
-main.o: /usr/include/sys/unistd.h
+crsp_index.o: /usr/include/sys/unistd.h ../tape/tapedrive.h
+crsp_index.o: /usr/include/stdio.h /usr/include/tar.h ../tape/machdep.h
+crsp_index.o: /usr/include/limits.h /usr/include/sys/param.h
+crsp_index.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
+crsp_index.o: /usr/include/sys/time.h /usr/include/sys/ioctl.h
+crsp_index.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+crsp_index.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+main.o: sec.h /usr/include/sys/types.h /usr/include/sys/stdsyms.h
+main.o: /usr/include/sys/uio.h /usr/include/unistd.h
+main.o: /usr/include/sys/unistd.h ../tape/tapedrive.h /usr/include/stdio.h
+main.o: /usr/include/tar.h ../tape/machdep.h /usr/include/limits.h
+main.o: /usr/include/sys/param.h /usr/include/machine/param.h
+main.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
+main.o: /usr/include/sys/ioctl.h /usr/include/sys/wait.h
+main.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
 sec.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h /usr/include/stdlib.h
-sec.o: sec.h /usr/include/sys/types.h /usr/include/sys/uio.h
-sec.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+sec.o: /usr/include/assert.h /usr/include/ctype.h sec.h
+sec.o: /usr/include/sys/types.h /usr/include/sys/uio.h /usr/include/unistd.h
+sec.o: /usr/include/sys/unistd.h ../tape/tapedrive.h /usr/include/tar.h
+sec.o: ../tape/machdep.h /usr/include/limits.h /usr/include/sys/param.h
+sec.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
+sec.o: /usr/include/sys/time.h /usr/include/sys/ioctl.h
+sec.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
+sec.o: /usr/include/sys/sem.h

@@ -7,11 +7,12 @@ depend:
 compustat.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 compustat.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
 compustat.o: /usr/include/unistd.h /usr/include/sys/unistd.h
-compustat.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /usr/include/X11/Xlib.h
-compustat.o: /usr/include/sys/types.h /usr/include/X11/X.h
-compustat.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
-compustat.o: /usr/include/stddef.h compustat.h index.h ../tape/tapedrive.h
-compustat.o: ../tape/machdep.h /usr/include/limits.h /usr/include/sys/param.h
+compustat.o: /usr/include/assert.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
+compustat.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
+compustat.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
+compustat.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h compustat.h
+compustat.o: index.h ../tape/tapedrive.h /usr/include/tar.h ../tape/machdep.h
+compustat.o: /usr/include/limits.h /usr/include/sys/param.h
 compustat.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
 compustat.o: /usr/include/sys/time.h /usr/include/sys/ioctl.h
 compustat.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
@@ -20,9 +21,9 @@ extract.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 index.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 index.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
 index.o: /usr/include/unistd.h /usr/include/sys/unistd.h index.h
-index.o: ../tape/tapedrive.h ../tape/machdep.h /usr/include/limits.h
-index.o: /usr/include/sys/param.h /usr/include/sys/types.h
-index.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
-index.o: /usr/include/sys/time.h /usr/include/sys/ioctl.h
-index.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-index.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+index.o: ../tape/tapedrive.h /usr/include/tar.h ../tape/machdep.h
+index.o: /usr/include/limits.h /usr/include/sys/param.h
+index.o: /usr/include/sys/types.h /usr/include/machine/param.h
+index.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
+index.o: /usr/include/sys/ioctl.h /usr/include/sys/wait.h
+index.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h

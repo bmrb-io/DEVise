@@ -19,7 +19,8 @@ QueryProcTape.o: ../graphics.new/BufMgrFull.h ../graphics.new/RangeInfo.h
 QueryProcTape.o: ../graphics.new/BufMgrNull.h ../graphics.new/TDataMap.h
 QueryProcTape.o: ../graphics/Pattern.h ../graphics.new/ShapeID.h
 QueryProcTape.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
-QueryProcTape.o: ../graphics.new/GDataBin.h ../graphics.new/MappingInterp.h
+QueryProcTape.o: ../graphics.new/GDataBin.h ../graphics/Transform.h
+QueryProcTape.o: /usr/include/math.h ../graphics.new/MappingInterp.h
 QueryProcTape.o: ../graphics.new/TDataMapDispatch.h ../graphics/AttrList.h
 QueryProcTape.o: /usr/include/sys/time.h /usr/include/sys/types.h
 QueryProcTape.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
@@ -54,8 +55,8 @@ TDataTape.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
 TDataTape.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
 TDataTape.o: ../graphics/Color.h ../graphics/Journal.h
 TDataTape.o: ../graphics.new/TData.h ../graphics.new/RecId.h
-TDataTape.o: ../graphics.new/RecOrder.h tapedrive.h machdep.h
-TDataTape.o: /usr/include/sys/param.h /usr/include/sys/ioctl.h
+TDataTape.o: ../graphics.new/RecOrder.h tapedrive.h /usr/include/tar.h
+TDataTape.o: machdep.h /usr/include/sys/param.h /usr/include/sys/ioctl.h
 TDataTape.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
 TDataTape.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
 TDataTape.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
@@ -73,14 +74,15 @@ TDataTapeInterp.o: ../graphics/DList.h ../graphics/Exit.h
 TDataTapeInterp.o: ../graphics/VisualArg.h ../graphics/Color.h
 TDataTapeInterp.o: ../graphics/Journal.h ../graphics.new/TData.h
 TDataTapeInterp.o: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
-TDataTapeInterp.o: tapedrive.h machdep.h /usr/include/limits.h
-TDataTapeInterp.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-TDataTapeInterp.o: /usr/include/sys/ioctl.h /usr/include/sys/wait.h
-TDataTapeInterp.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-TDataTapeInterp.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-TDataTapeInterp.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-TDataTapeInterp.o: /usr/include/sys/sem.h ../graphics/AttrList.h
-TDataTapeInterp.o: ../graphics/Config.h ../graphics.new/RecInterp.h
+TDataTapeInterp.o: tapedrive.h /usr/include/tar.h machdep.h
+TDataTapeInterp.o: /usr/include/limits.h /usr/include/sys/param.h
+TDataTapeInterp.o: /usr/include/sys/unistd.h /usr/include/sys/ioctl.h
+TDataTapeInterp.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+TDataTapeInterp.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+TDataTapeInterp.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+TDataTapeInterp.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+TDataTapeInterp.o: ../graphics/AttrList.h ../graphics/Config.h
+TDataTapeInterp.o: ../graphics.new/RecInterp.h
 TDataTapeInterp.o: ../graphics.new/CompositeParser.h ../graphics/Parse.h
 TDataTapeInterp.o: ../graphics/Control.h ../graphics/Util.h
 TDataTapeInterp.o: /usr/include/stdlib.h /usr/include/ctype.h
@@ -105,7 +107,7 @@ extend.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 extend.o: /usr/include/stdio.h /usr/include/assert.h /usr/include/string.h
 exttape.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 exttape.o: /usr/include/stdio.h /usr/include/assert.h /usr/include/string.h
-exttape.o: tapedrive.h machdep.h /usr/include/limits.h
+exttape.o: tapedrive.h /usr/include/tar.h machdep.h /usr/include/limits.h
 exttape.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 exttape.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 exttape.o: /usr/include/sys/time.h /usr/include/sys/time.h
@@ -120,30 +122,32 @@ tapedrive.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 tapedrive.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 tapedrive.o: /usr/include/sys/time.h /usr/include/sys/time.h
 tapedrive.o: /usr/include/sys/unistd.h /usr/include/string.h
-tapedrive.o: /usr/include/assert.h tapedrive.h /usr/include/stdio.h machdep.h
-tapedrive.o: /usr/include/limits.h /usr/include/sys/param.h
-tapedrive.o: /usr/include/sys/ioctl.h /usr/include/sys/wait.h
-tapedrive.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-tapedrive.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-tapedrive.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-tapedrive.o: /usr/include/sys/sem.h
+tapedrive.o: /usr/include/assert.h /usr/include/tar.h tapedrive.h
+tapedrive.o: /usr/include/stdio.h machdep.h /usr/include/limits.h
+tapedrive.o: /usr/include/sys/param.h /usr/include/sys/ioctl.h
+tapedrive.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+tapedrive.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+tapedrive.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+tapedrive.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
 testtape.o: tapedrive.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
-testtape.o: machdep.h /usr/include/limits.h /usr/include/sys/types.h
-testtape.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-testtape.o: /usr/include/sys/select.h /usr/include/sys/time.h
-testtape.o: /usr/include/sys/time.h /usr/include/sys/param.h
-testtape.o: /usr/include/sys/unistd.h /usr/include/sys/ioctl.h
-testtape.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-testtape.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-testtape.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-testtape.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+testtape.o: /usr/include/tar.h machdep.h /usr/include/limits.h
+testtape.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+testtape.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+testtape.o: /usr/include/sys/time.h /usr/include/sys/time.h
+testtape.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+testtape.o: /usr/include/sys/ioctl.h /usr/include/sys/wait.h
+testtape.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+testtape.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+testtape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+testtape.o: /usr/include/sys/sem.h
 vertape.o: tapedrive.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
-vertape.o: machdep.h /usr/include/limits.h /usr/include/sys/types.h
-vertape.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-vertape.o: /usr/include/sys/select.h /usr/include/sys/time.h
-vertape.o: /usr/include/sys/time.h /usr/include/sys/param.h
-vertape.o: /usr/include/sys/unistd.h /usr/include/sys/ioctl.h
-vertape.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-vertape.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-vertape.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-vertape.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+vertape.o: /usr/include/tar.h machdep.h /usr/include/limits.h
+vertape.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+vertape.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+vertape.o: /usr/include/sys/time.h /usr/include/sys/time.h
+vertape.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+vertape.o: /usr/include/sys/ioctl.h /usr/include/sys/wait.h
+vertape.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+vertape.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+vertape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+vertape.o: /usr/include/sys/sem.h

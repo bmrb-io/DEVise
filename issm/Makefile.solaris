@@ -15,22 +15,22 @@ extract.o: /usr/include/sys/select.h /usr/include/sys/time.h
 extract.o: /usr/include/sys/time.h /usr/X11R6/include/X11/X.h
 extract.o: /usr/X11R6/include/X11/Xfuncproto.h
 extract.o: /usr/X11R6/include/X11/Xosdefs.h /usr/include/stddef.h rectape.h
-extract.o: ../tape/tapedrive.h ../tape/machdep.h /usr/include/limits.h
-extract.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-extract.o: /usr/include/sys/ioctl.h /usr/include/sys/wait.h
-extract.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-extract.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-extract.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-extract.o: /usr/include/sys/sem.h binconv.h issmdata.h
+extract.o: ../tape/tapedrive.h /usr/include/tar.h ../tape/machdep.h
+extract.o: /usr/include/limits.h /usr/include/sys/param.h
+extract.o: /usr/include/sys/unistd.h /usr/include/sys/ioctl.h
+extract.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+extract.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+extract.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+extract.o: /usr/include/sys/shm.h /usr/include/sys/sem.h binconv.h issmdata.h
 rectape.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h rectape.h
 rectape.o: /usr/include/assert.h ../tape/tapedrive.h /usr/include/stdio.h
-rectape.o: ../tape/machdep.h /usr/include/limits.h /usr/include/sys/types.h
-rectape.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-rectape.o: /usr/include/sys/select.h /usr/include/sys/time.h
-rectape.o: /usr/include/sys/time.h /usr/include/sys/param.h
-rectape.o: /usr/include/sys/unistd.h /usr/include/sys/ioctl.h
-rectape.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-rectape.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-rectape.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-rectape.o: /usr/include/sys/shm.h /usr/include/sys/sem.h binconv.h
-rectape.o: /usr/include/string.h
+rectape.o: /usr/include/tar.h ../tape/machdep.h /usr/include/limits.h
+rectape.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+rectape.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+rectape.o: /usr/include/sys/time.h /usr/include/sys/time.h
+rectape.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+rectape.o: /usr/include/sys/ioctl.h /usr/include/sys/wait.h
+rectape.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+rectape.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+rectape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+rectape.o: /usr/include/sys/sem.h binconv.h /usr/include/string.h

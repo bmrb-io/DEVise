@@ -1,13 +1,13 @@
 depend:
-	makedepend -fMakefile.hp *.c
+	makedepend -fMakefile.hp *.c *.C
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-Action.o: Action.h DeviseTypes.h Control.h VisualArg.h Color.h DList.h Exit.h
-Action.o: View.h Dispatcher.h /usr/include/stdio.h /usr/include/sys/stdsyms.h
-Action.o: Journal.h ViewWin.h WindowRep.h Geom.h /usr/include/math.h
-Action.o: Transform.h Pattern.h DevisePixmap.h Compress.h ViewCallback.h
-Action.o: AttrList.h /usr/include/sys/time.h Config.h Cursor.h
+Action.o: Action.h /usr/include/stdio.h /usr/include/sys/stdsyms.h
+Action.o: DeviseTypes.h Control.h VisualArg.h Color.h DList.h Exit.h View.h
+Action.o: Dispatcher.h Journal.h ViewWin.h WindowRep.h Geom.h
+Action.o: /usr/include/math.h Transform.h Pattern.h DevisePixmap.h Compress.h
+Action.o: ViewCallback.h AttrList.h /usr/include/sys/time.h Config.h Cursor.h
 ActionClassInfo.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 ActionClassInfo.o: ActionClassInfo.h DeviseTypes.h ClassDir.h Action.h View.h
 ActionClassInfo.o: Dispatcher.h DList.h Exit.h VisualArg.h Color.h Journal.h
@@ -78,7 +78,8 @@ CursorClassInfo.o: /usr/include/ctype.h
 DList.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h DList.h Exit.h
 DevisePixmap.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h Exit.h
 DevisePixmap.o: DevisePixmap.h VisualArg.h DeviseTypes.h Color.h Compress.h
-Dispatcher.o: Dispatcher.h /usr/include/stdio.h /usr/include/sys/stdsyms.h
+Dispatcher.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+Dispatcher.o: /usr/include/sys/stdsyms.h Dispatcher.h /usr/include/stdio.h
 Dispatcher.o: DeviseTypes.h DList.h Exit.h VisualArg.h Color.h Journal.h
 Dispatcher.o: Control.h Init.h BufPolicy.h Selection.h View.h ViewWin.h
 Dispatcher.o: WindowRep.h Geom.h /usr/include/math.h Transform.h Pattern.h
@@ -130,8 +131,9 @@ Selection.o: Color.h Journal.h ViewWin.h WindowRep.h Geom.h
 Selection.o: /usr/include/math.h Transform.h Pattern.h DevisePixmap.h
 Selection.o: Compress.h Control.h ViewCallback.h AttrList.h
 Selection.o: /usr/include/sys/time.h Config.h Cursor.h
-Time.o: Time.h /usr/include/sys/time.h /usr/include/sys/stdsyms.h Journal.h
-Time.o: DeviseTypes.h VisualArg.h Color.h
+Time.o: /usr/include/time.h /usr/include/sys/time.h
+Time.o: /usr/include/sys/stdsyms.h Time.h Journal.h DeviseTypes.h VisualArg.h
+Time.o: Color.h
 TimeStamp.o: TimeStamp.h
 Timer.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 Timer.o: /usr/include/sys/time.h /usr/include/signal.h
@@ -151,19 +153,21 @@ View.o: Dispatcher.h DList.h Exit.h VisualArg.h Color.h Journal.h ViewWin.h
 View.o: WindowRep.h Geom.h /usr/include/math.h Transform.h Pattern.h
 View.o: DevisePixmap.h Compress.h Control.h ViewCallback.h AttrList.h
 View.o: Config.h Cursor.h Action.h FilterQueue.h TimeStamp.h Parse.h
-ViewWin.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h ViewWin.h DList.h
-ViewWin.o: Exit.h DeviseTypes.h WindowRep.h Geom.h /usr/include/math.h
-ViewWin.o: Transform.h Color.h Pattern.h DevisePixmap.h VisualArg.h
-ViewWin.o: Compress.h Display.h Dispatcher.h Journal.h ColorMgr.h
-ViewWinHor.o: ViewWinHor.h ViewWin.h DList.h Exit.h DeviseTypes.h WindowRep.h
-ViewWinHor.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h Geom.h
-ViewWinHor.o: /usr/include/math.h Transform.h Color.h Pattern.h
-ViewWinHor.o: DevisePixmap.h VisualArg.h Compress.h
-ViewWinVer.o: ViewWinVer.h ViewWin.h DList.h Exit.h DeviseTypes.h WindowRep.h
-ViewWinVer.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h Geom.h
-ViewWinVer.o: /usr/include/math.h Transform.h Color.h Pattern.h
-ViewWinVer.o: DevisePixmap.h VisualArg.h Compress.h Display.h Dispatcher.h
-ViewWinVer.o: Journal.h ColorMgr.h
+ViewWin.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
+ViewWin.o: /usr/include/string.h ViewWin.h DList.h Exit.h DeviseTypes.h
+ViewWin.o: WindowRep.h Geom.h /usr/include/math.h Transform.h Color.h
+ViewWin.o: Pattern.h DevisePixmap.h VisualArg.h Compress.h Display.h
+ViewWin.o: Dispatcher.h Journal.h ColorMgr.h
+ViewWinHor.o: ViewWinHor.h ViewLayout.h ViewWin.h DList.h Exit.h
+ViewWinHor.o: DeviseTypes.h WindowRep.h /usr/include/stdio.h
+ViewWinHor.o: /usr/include/sys/stdsyms.h Geom.h /usr/include/math.h
+ViewWinHor.o: Transform.h Color.h Pattern.h DevisePixmap.h VisualArg.h
+ViewWinHor.o: Compress.h Display.h Dispatcher.h Journal.h ColorMgr.h
+ViewWinVer.o: ViewWinVer.h ViewLayout.h ViewWin.h DList.h Exit.h
+ViewWinVer.o: DeviseTypes.h WindowRep.h /usr/include/stdio.h
+ViewWinVer.o: /usr/include/sys/stdsyms.h Geom.h /usr/include/math.h
+ViewWinVer.o: Transform.h Color.h Pattern.h DevisePixmap.h VisualArg.h
+ViewWinVer.o: Compress.h Display.h Dispatcher.h Journal.h ColorMgr.h
 VisualLink.o: VisualLink.h DList.h Exit.h Dispatcher.h /usr/include/stdio.h
 VisualLink.o: /usr/include/sys/stdsyms.h DeviseTypes.h VisualArg.h Color.h
 VisualLink.o: Journal.h View.h ViewWin.h WindowRep.h Geom.h
@@ -183,12 +187,12 @@ VisualLinkClassInfo.o: /usr/include/string.h /usr/include/ctype.h
 WinClassInfo.o: Display.h DeviseTypes.h Geom.h /usr/include/math.h
 WinClassInfo.o: Dispatcher.h /usr/include/stdio.h /usr/include/sys/stdsyms.h
 WinClassInfo.o: DList.h Exit.h VisualArg.h Color.h Journal.h ColorMgr.h
-WinClassInfo.o: Control.h WinClassInfo.h ClassDir.h ViewWinVer.h ViewWin.h
-WinClassInfo.o: WindowRep.h Transform.h Pattern.h DevisePixmap.h Compress.h
-WinClassInfo.o: Util.h /usr/include/assert.h /usr/include/stdlib.h
-WinClassInfo.o: /usr/include/time.h /usr/include/sys/time.h
-WinClassInfo.o: /usr/include/strings.h /usr/include/string.h
-WinClassInfo.o: /usr/include/ctype.h
+WinClassInfo.o: Control.h WinClassInfo.h ClassDir.h ViewWinVer.h ViewLayout.h
+WinClassInfo.o: ViewWin.h WindowRep.h Transform.h Pattern.h DevisePixmap.h
+WinClassInfo.o: Compress.h ViewWinHor.h Util.h /usr/include/assert.h
+WinClassInfo.o: /usr/include/stdlib.h /usr/include/time.h
+WinClassInfo.o: /usr/include/sys/time.h /usr/include/strings.h
+WinClassInfo.o: /usr/include/string.h /usr/include/ctype.h
 WindowRep.o: WindowRep.h /usr/include/stdio.h /usr/include/sys/stdsyms.h
 WindowRep.o: Geom.h DeviseTypes.h /usr/include/math.h Transform.h DList.h
 WindowRep.o: Exit.h Color.h Pattern.h DevisePixmap.h VisualArg.h Compress.h
@@ -207,16 +211,16 @@ XDisplay.o: /usr/include/stdio.h DList.h Exit.h VisualArg.h Color.h Journal.h
 XDisplay.o: ColorMgr.h Xdef.h XBitmap.h Pattern.h XWindowRep.h WindowRep.h
 XDisplay.o: Transform.h DevisePixmap.h Compress.h /usr/include/strings.h
 XDisplay.o: Control.h Init.h BufPolicy.h
-XWindowRep.o: Init.h DeviseTypes.h BufPolicy.h XWindowRep.h WindowRep.h
-XWindowRep.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h Geom.h
-XWindowRep.o: /usr/include/math.h Transform.h DList.h Exit.h Color.h
-XWindowRep.o: Pattern.h DevisePixmap.h VisualArg.h Compress.h Xdef.h
-XWindowRep.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
-XWindowRep.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
-XWindowRep.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h
-XWindowRep.o: /usr/include/X11/Xutil.h /usr/include/strings.h
-XWindowRep.o: /usr/include/string.h XDisplay.h Display.h Dispatcher.h
-XWindowRep.o: Journal.h ColorMgr.h XBitmap.h
+XWindowRep.o: /usr/include/assert.h Init.h DeviseTypes.h BufPolicy.h
+XWindowRep.o: XWindowRep.h WindowRep.h /usr/include/stdio.h
+XWindowRep.o: /usr/include/sys/stdsyms.h Geom.h /usr/include/math.h
+XWindowRep.o: Transform.h DList.h Exit.h Color.h Pattern.h DevisePixmap.h
+XWindowRep.o: VisualArg.h Compress.h Xdef.h /usr/include/X11/Xlib.h
+XWindowRep.o: /usr/include/sys/types.h /usr/include/X11/X.h
+XWindowRep.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+XWindowRep.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
+XWindowRep.o: /usr/include/strings.h /usr/include/string.h XDisplay.h
+XWindowRep.o: Display.h Dispatcher.h Journal.h ColorMgr.h XBitmap.h
 XawControl.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h XawControl.h
 XawControl.o: Control.h DeviseTypes.h VisualArg.h Color.h DList.h Exit.h
 XawControl.o: Dispatcher.h Journal.h XawWidget.h /usr/include/X11/Intrinsic.h
@@ -266,16 +270,21 @@ testAtof.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 testAtof.o: /usr/include/time.h /usr/include/sys/time.h
 testAtof.o: /usr/include/strings.h /usr/include/string.h /usr/include/ctype.h
 testView.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h Init.h
-testView.o: DeviseTypes.h BufPolicy.h ViewWinVer.h ViewWin.h DList.h Exit.h
-testView.o: WindowRep.h Geom.h /usr/include/math.h Transform.h Color.h
-testView.o: Pattern.h DevisePixmap.h VisualArg.h Compress.h View.h
+testView.o: DeviseTypes.h BufPolicy.h ViewWinVer.h ViewLayout.h ViewWin.h
+testView.o: DList.h Exit.h WindowRep.h Geom.h /usr/include/math.h Transform.h
+testView.o: Color.h Pattern.h DevisePixmap.h VisualArg.h Compress.h View.h
 testView.o: Dispatcher.h Journal.h Control.h ViewCallback.h AttrList.h
 testView.o: /usr/include/sys/time.h Config.h Cursor.h Action.h
 testViewWin.o: Dispatcher.h /usr/include/stdio.h /usr/include/sys/stdsyms.h
 testViewWin.o: DeviseTypes.h DList.h Exit.h VisualArg.h Color.h Journal.h
-testViewWin.o: ViewWinVer.h ViewWin.h WindowRep.h Geom.h /usr/include/math.h
-testViewWin.o: Transform.h Pattern.h DevisePixmap.h Compress.h ViewWinHor.h
+testViewWin.o: ViewWinVer.h ViewLayout.h ViewWin.h WindowRep.h Geom.h
+testViewWin.o: /usr/include/math.h Transform.h Pattern.h DevisePixmap.h
+testViewWin.o: Compress.h ViewWinHor.h
 testWindowRep.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h Dispatcher.h
 testWindowRep.o: DeviseTypes.h DList.h Exit.h VisualArg.h Color.h Journal.h
 testWindowRep.o: Display.h Geom.h /usr/include/math.h ColorMgr.h WindowRep.h
 testWindowRep.o: Transform.h Pattern.h DevisePixmap.h Compress.h
+ViewLayout.o: ViewLayout.h ViewWin.h DList.h Exit.h DeviseTypes.h WindowRep.h
+ViewLayout.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h Geom.h
+ViewLayout.o: /usr/include/math.h Transform.h Color.h Pattern.h
+ViewLayout.o: DevisePixmap.h VisualArg.h Compress.h

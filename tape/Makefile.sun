@@ -20,6 +20,8 @@ QueryProcTape.o: ../graphics.new/RangeInfo.h ../graphics.new/BufMgrNull.h
 QueryProcTape.o: ../graphics.new/TDataMap.h ../graphics/Pattern.h
 QueryProcTape.o: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
 QueryProcTape.o: ../graphics.new/GDataRec.h ../graphics.new/GDataBin.h
+QueryProcTape.o: ../graphics/Transform.h /usr/include/math.h
+QueryProcTape.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 QueryProcTape.o: ../graphics.new/MappingInterp.h /s/tcl/include/tcl.h
 QueryProcTape.o: ../graphics.new/TDataMapDispatch.h ../graphics/AttrList.h
 QueryProcTape.o: /usr/include/sys/time.h /usr/include/sys/time.h
@@ -49,8 +51,8 @@ TDataTape.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
 TDataTape.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
 TDataTape.o: ../graphics/Color.h ../graphics/Journal.h
 TDataTape.o: ../graphics.new/TData.h ../graphics.new/RecId.h
-TDataTape.o: ../graphics.new/RecOrder.h tapedrive.h machdep.h
-TDataTape.o: /usr/include/sys/param.h /usr/include/machine/param.h
+TDataTape.o: ../graphics.new/RecOrder.h tapedrive.h /usr/include/tar.h
+TDataTape.o: machdep.h /usr/include/sys/param.h /usr/include/machine/param.h
 TDataTape.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
 TDataTape.o: /usr/include/vm/faultcode.h /usr/include/sys/ioctl.h
 TDataTape.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
@@ -71,8 +73,9 @@ TDataTapeInterp.o: ../graphics/DList.h ../graphics/Exit.h
 TDataTapeInterp.o: ../graphics/VisualArg.h ../graphics/Color.h
 TDataTapeInterp.o: ../graphics/Journal.h ../graphics.new/TData.h
 TDataTapeInterp.o: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
-TDataTapeInterp.o: tapedrive.h machdep.h /usr/include/limits.h
-TDataTapeInterp.o: /usr/include/sys/param.h /usr/include/machine/param.h
+TDataTapeInterp.o: tapedrive.h /usr/include/tar.h machdep.h
+TDataTapeInterp.o: /usr/include/limits.h /usr/include/sys/param.h
+TDataTapeInterp.o: /usr/include/machine/param.h
 TDataTapeInterp.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
 TDataTapeInterp.o: /usr/include/vm/faultcode.h /usr/include/sys/ioctl.h
 TDataTapeInterp.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
@@ -107,7 +110,7 @@ extend.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 extend.o: /usr/include/stdio.h /usr/include/assert.h /usr/include/string.h
 exttape.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 exttape.o: /usr/include/stdio.h /usr/include/assert.h /usr/include/string.h
-exttape.o: tapedrive.h machdep.h /usr/include/limits.h
+exttape.o: tapedrive.h /usr/include/tar.h machdep.h /usr/include/limits.h
 exttape.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 exttape.o: /usr/include/sys/param.h /usr/include/machine/param.h
 exttape.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
@@ -120,42 +123,43 @@ exttape.o: /usr/include/sys/time.h /usr/include/sys/wait.h
 exttape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
 exttape.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
 tapedrive.o: /usr/include/unistd.h /usr/include/string.h
-tapedrive.o: /usr/include/sys/stdtypes.h /usr/include/assert.h tapedrive.h
-tapedrive.o: /usr/include/stdio.h machdep.h /usr/include/limits.h
-tapedrive.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-tapedrive.o: /usr/include/sys/param.h /usr/include/machine/param.h
-tapedrive.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-tapedrive.o: /usr/include/vm/faultcode.h /usr/include/sys/ioctl.h
-tapedrive.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-tapedrive.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-tapedrive.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-tapedrive.o: /usr/include/sys/sockio.h /usr/include/sys/time.h
-tapedrive.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-tapedrive.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-tapedrive.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
-testtape.o: tapedrive.h /usr/include/stdio.h machdep.h /usr/include/limits.h
-testtape.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
-testtape.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
-testtape.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-testtape.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-testtape.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-testtape.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-testtape.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-testtape.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-testtape.o: /usr/include/sys/time.h /usr/include/sys/time.h
-testtape.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-testtape.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-testtape.o: /usr/include/sys/sem.h
-vertape.o: tapedrive.h /usr/include/stdio.h machdep.h /usr/include/limits.h
-vertape.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
-vertape.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
-vertape.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-vertape.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-vertape.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-vertape.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-vertape.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-vertape.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-vertape.o: /usr/include/sys/time.h /usr/include/sys/time.h
-vertape.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-vertape.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-vertape.o: /usr/include/sys/sem.h
+tapedrive.o: /usr/include/sys/stdtypes.h /usr/include/assert.h
+tapedrive.o: /usr/include/tar.h tapedrive.h /usr/include/stdio.h machdep.h
+tapedrive.o: /usr/include/limits.h /usr/include/sys/types.h
+tapedrive.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
+tapedrive.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+tapedrive.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+tapedrive.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+tapedrive.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+tapedrive.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+tapedrive.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+tapedrive.o: /usr/include/sys/time.h /usr/include/sys/time.h
+tapedrive.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+tapedrive.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+tapedrive.o: /usr/include/sys/sem.h
+testtape.o: tapedrive.h /usr/include/stdio.h /usr/include/tar.h machdep.h
+testtape.o: /usr/include/limits.h /usr/include/sys/types.h
+testtape.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+testtape.o: /usr/include/sys/param.h /usr/include/machine/param.h
+testtape.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+testtape.o: /usr/include/vm/faultcode.h /usr/include/sys/ioctl.h
+testtape.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+testtape.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+testtape.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+testtape.o: /usr/include/sys/sockio.h /usr/include/sys/time.h
+testtape.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+testtape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+testtape.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+vertape.o: tapedrive.h /usr/include/stdio.h /usr/include/tar.h machdep.h
+vertape.o: /usr/include/limits.h /usr/include/sys/types.h
+vertape.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+vertape.o: /usr/include/sys/param.h /usr/include/machine/param.h
+vertape.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+vertape.o: /usr/include/vm/faultcode.h /usr/include/sys/ioctl.h
+vertape.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+vertape.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+vertape.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+vertape.o: /usr/include/sys/sockio.h /usr/include/sys/time.h
+vertape.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+vertape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+vertape.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h

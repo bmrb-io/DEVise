@@ -11,22 +11,56 @@ cal.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 cal.o: /usr/include/sys/select.h /usr/include/sys/time.h
 cal.o: /usr/include/sys/time.h /usr/include/sys/uio.h /usr/include/unistd.h
 cal.o: /usr/include/sys/unistd.h
-crsp_index.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-crsp_index.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-crsp_index.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-crsp_index.o: /usr/include/sys/time.h /usr/include/sys/time.h
-crsp_index.o: /usr/include/sys/stat.h /usr/include/fcntl.h
-crsp_index.o: /usr/include/sys/fcntl.h sec.h /usr/include/sys/uio.h
+crsp_extract.o: /usr/include/assert.h /usr/include/stdlib.h
+crsp_extract.o: /usr/include/sys/feature_tests.h /usr/include/string.h
+crsp_extract.o: /s/tcl/include/tcl.h /usr/include/stdio.h /s/tcl/include/tk.h
+crsp_extract.o: /usr/X11R6/include/X11/Xlib.h /usr/include/sys/types.h
+crsp_extract.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+crsp_extract.o: /usr/include/sys/select.h /usr/include/sys/time.h
+crsp_extract.o: /usr/include/sys/time.h /usr/X11R6/include/X11/X.h
+crsp_extract.o: /usr/X11R6/include/X11/Xfuncproto.h
+crsp_extract.o: /usr/X11R6/include/X11/Xosdefs.h /usr/include/stddef.h sec.h
+crsp_extract.o: /usr/include/sys/uio.h /usr/include/unistd.h
+crsp_extract.o: /usr/include/sys/unistd.h ../tape/tapedrive.h
+crsp_extract.o: /usr/include/tar.h ../tape/machdep.h /usr/include/limits.h
+crsp_extract.o: /usr/include/sys/param.h /usr/include/sys/ioctl.h
+crsp_extract.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+crsp_extract.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+crsp_extract.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+crsp_extract.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+crsp_index.o: /usr/include/string.h /usr/include/sys/feature_tests.h
+crsp_index.o: /usr/include/stdlib.h sec.h /usr/include/sys/types.h
+crsp_index.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+crsp_index.o: /usr/include/sys/select.h /usr/include/sys/time.h
+crsp_index.o: /usr/include/sys/time.h /usr/include/sys/uio.h
 crsp_index.o: /usr/include/unistd.h /usr/include/sys/unistd.h
-main.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
+crsp_index.o: ../tape/tapedrive.h /usr/include/stdio.h /usr/include/tar.h
+crsp_index.o: ../tape/machdep.h /usr/include/limits.h
+crsp_index.o: /usr/include/sys/param.h /usr/include/sys/ioctl.h
+crsp_index.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+crsp_index.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+crsp_index.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+crsp_index.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+main.o: sec.h /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 main.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 main.o: /usr/include/sys/select.h /usr/include/sys/time.h
-main.o: /usr/include/sys/time.h /usr/include/sys/stat.h /usr/include/fcntl.h
-main.o: /usr/include/sys/fcntl.h sec.h /usr/include/sys/uio.h
-main.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+main.o: /usr/include/sys/time.h /usr/include/sys/uio.h /usr/include/unistd.h
+main.o: /usr/include/sys/unistd.h ../tape/tapedrive.h /usr/include/stdio.h
+main.o: /usr/include/tar.h ../tape/machdep.h /usr/include/limits.h
+main.o: /usr/include/sys/param.h /usr/include/sys/ioctl.h
+main.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+main.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+main.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+main.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
 sec.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-sec.o: /usr/include/stdlib.h sec.h /usr/include/sys/types.h
-sec.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-sec.o: /usr/include/sys/select.h /usr/include/sys/time.h
-sec.o: /usr/include/sys/time.h /usr/include/sys/uio.h /usr/include/unistd.h
-sec.o: /usr/include/sys/unistd.h
+sec.o: /usr/include/stdlib.h /usr/include/assert.h /usr/include/ctype.h sec.h
+sec.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+sec.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+sec.o: /usr/include/sys/time.h /usr/include/sys/time.h /usr/include/sys/uio.h
+sec.o: /usr/include/unistd.h /usr/include/sys/unistd.h ../tape/tapedrive.h
+sec.o: /usr/include/tar.h ../tape/machdep.h /usr/include/limits.h
+sec.o: /usr/include/sys/param.h /usr/include/sys/ioctl.h
+sec.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+sec.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+sec.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+sec.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
