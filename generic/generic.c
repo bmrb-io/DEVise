@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/05/07 16:48:59  jussi
+  Computation of attribute hi/lo values now done in the TData interpreter
+  *after* the composite attribute values are computed.
+
   Revision 1.20  1996/05/06 16:23:03  jussi
   IBMAddressTraceComposite now stores the reference tag in addition
   to storing the color of the tag. Added the association of this
@@ -692,6 +696,7 @@ main(int argc, char **argv)
   /* Register composite parsers */
   CompositeParser::Register("BEST_STOCK", new YyMmDdComposite);
   CompositeParser::Register("MIT_STOCK", new YyMmDdComposite);
+  CompositeParser::Register("CRSP-Schema", new YyMmDdComposite);
   CompositeParser::Register("ISSM-Trade", new ObsDateComposite);
   CompositeParser::Register("ISSM-Quote", new ObsDateComposite);
   CompositeParser::Register("DOL_DATA", new DOLDateComposite);
