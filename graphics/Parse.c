@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/04/23 15:35:34  jussi
+  The parser now handles double-quote-delimited strings as well
+  as single-quote-delimited strings.
+
   Revision 1.10  1996/01/25 17:44:29  jussi
   Added debugging output.
 
@@ -52,7 +56,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 
-#include "Config.h"
+#include "Init.h"
 #include "Exit.h"
 
 //#define DEBUG
@@ -61,7 +65,7 @@ static const char *monthNames[] = { "JAN", "FEB", "MAR", "APR",
 				    "MAY", "JUN", "JUL", "AUG",
 				    "SEP", "OCT", "NOV", "DEC" };
 
-static const int MAXARGS = DEVISE_MAX_ATTRS;
+static const int MAXARGS = DEVISE_MAX_TDATA_ATTRS;
 static char *args[MAXARGS];
 
 static inline int IsBlank(char c, char *blanks, int numBlanks)
