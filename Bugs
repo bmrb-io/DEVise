@@ -1084,6 +1084,9 @@ Num Date        Status  Description
 
 278 01/30/98	OPEN	Can't bring up schema editing GUI. (rkw)
 
+279 01/31/98	OPEN	Devised doesn't kill off EmbeddedTk server when it
+			gets <ctl-C><ctl-C> and quits. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
