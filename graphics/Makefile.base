@@ -20,8 +20,7 @@ LIBSRC = AttrList.c AxisLabelClassInfo.c \
 	DevisePixmap.c Dispatcher.c  Display.c DList.c\
 	Exit.c DevError.c FilterQueue.c Geom.c \
 	Init.c Journal.c Parse.c Selection.c  Time.c Timer.c TimeStamp.c \
-	Util.c View.c ViewWin.c ViewLayout.C VisualLink.c \
-	VisualLinkClassInfo.c XawControl.c XawWidget.c \
+	Util.c View.c ViewWin.c ViewLayout.C XawControl.c XawWidget.c \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
 	TileLayout.C xvgifwr.c xv24to8.c xvgrab.c xvgif.c
 
@@ -34,8 +33,7 @@ OTHERSRC = testWindowRep.c jstat.c
 
 OTHEROBJ = $(OTHERSRC:.c=.o)
 
-TESTOBJ = testWindowRep.o ../graphics.new/libobj.o ../tape/tapeobj.o \
-	../issm/issmobj.o ../compustat/cstatobj.o ../crsp/crspobj.o
+TESTOBJ = testWindowRep.o
 
 ALLSRC = $(LIBSRC) $(OTHERSRC)
 
@@ -60,12 +58,11 @@ xvgif.o:	xvgif.c
 	gcc -c $(CFLAGS) $<
 
 jstat: jstat.o $(LIBOBJ)
-	$(CC) -o jstat jstat.o $(LIBOBJ) -lXaw -lXmu -lXt -lXext -lX11 -lm
+	$(CC) -o jstat jstat.o $(LIBOBJ) -lXmu -lXt -lXext -lX11 -lm
 
-testWindowRep: $(TESTOBJ)
-	$(CC) -o testWindowRep $(TESTOBJ) \
-		-ltcl -ltk -lXaw -lXmu -lXt \
-		-lXext -lX11 -lm $(ARCH_LDPOST) $(ARCH_LDFLAGS)
+testWindowRep: $(TESTOBJ) $(LIBNAME)
+	$(CC) -o $@ $(TESTOBJ) $(ARCH_LDFLAGS) -L. -lgraphics \
+		-lXmu -lXt -lXext -lX11 -lm $(ARCH_LDPOST)
 
 .PHONY: clean mostlyclean
 
