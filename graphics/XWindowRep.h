@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/28 21:28:53  jussi
+  Got rid of strings.h and stuck with string.h.
+
   Revision 1.6  1995/12/28 20:45:13  jussi
   Changed the approach with which inverted lines and areas are
   drawn.
@@ -85,8 +88,8 @@ public:
 
 	virtual void PopClip();
 
-	/* convert window image to Postscript code */
-	virtual void WritePostscript(Boolean encapsulated, char *filename);
+	/* export window image */
+	virtual void ExportImage(DisplayExportFormat format, char *filename);
 
 	/* drawing primitives */
 	/* Return TRUE if window is scrollable */

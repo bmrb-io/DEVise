@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1995/12/28 18:59:23  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.12  1995/12/18 03:13:13  ravim
   Inverted forms of drawing lines and rectangles.
 
@@ -234,20 +237,62 @@ void XWindowRep::PopClip()
   }
 }
 
-/* convert window image to Postscript code */
+/* export window image */
 
-void XWindowRep::WritePostscript(Boolean encapsulated, char *filename)
+void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
 {
   char cmd[256];
-  sprintf(cmd, "xwd -frame -id %ld | xwdtopnm | pnmtops -rle > %s",
-	  _win, filename);
 
-#ifdef DEBUG
-  printf("WritePostscript: for window id 0x%lx:\n", _win);
-  printf("WritePostscript: executing %s\n", cmd);
+#ifndef SGI
+  if (format == POSTSCRIPT || format == EPS) {
+    sprintf(cmd, "xwd -frame -id %ld | xwdtopnm | pnmtops -rle > %s",
+	    _win, filename);
+  } else if (format == GIF) {
+    sprintf(cmd, "xwd -frame -id %ld | xwdtopnm | pnmtogif > %s",
+	    _win, filename);
+  } else {
+    printf("Requested export format not supported yet.\n");
+    return;
+  }
+
+#else
+
+  if (format == POSTSCRIPT) {
+    sprintf(cmd, "xwd -frame -id %ld > /tmp/devise.xwd; \
+fromxwd /tmp/devise.xwd /tmp/devise.rgb; \
+tops /tmp/devise.rgb > %s; \
+rm /tmp/devise.xwd /tmp/devise.rgb",
+	    _win, filename);
+  } else if (format == EPS) {
+    sprintf(cmd, "xwd -frame -id %ld > /tmp/devise.xwd; \
+fromxwd /tmp/devise.xwd /tmp/devise.rgb; \
+tops -eps /tmp/devise.rgb > %s; \
+rm /tmp/devise.xwd /tmp/devise.rgb",
+	    _win, filename);
+  } else if (format == GIF) {
+    sprintf(cmd, "xwd -frame -id %ld > /tmp/devise.xwd; \
+fromxwd /tmp/devise.xwd /tmp/devise.rgb; \
+togif /tmp/devise.rgb %s; \
+rm /tmp/devise.xwd /tmp/devise.rgb",
+	    _win, filename);
+  } else {
+    printf("Requested export format not supported yet.\n");
+    return;
+  }
 #endif
 
-  if (system(cmd) == 127) {
+#ifdef DEBUG
+  printf("ExportImage: for window id 0x%lx:\n", _win);
+  printf("ExportImage: executing %s\n", cmd);
+#endif
+
+#if defined(SUN) || defined(HPUX)
+  int errorcode = 127;
+#else
+  int errorcode = -1;
+#endif
+
+  if (system(cmd) == errorcode) {
     fprintf(stderr, "Can't execute command: %s\n", cmd);
     perror("system");
   }

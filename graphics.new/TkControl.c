@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/01/13 20:51:20  jussi
+  Added references to www_extract.
+
   Revision 1.28  1996/01/12 15:25:05  jussi
   Replaced libc.h with stdlib.h.
 
@@ -1252,16 +1255,6 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			view->DeleteFromParent();
 			view->AppendToParent(win);
 		}
-		else if (strcmp(argv[1], "saveWindowImage") == 0) {
-		  ViewWin *viewWin = (ViewWin *)classDir->FindInstance(argv[2]);
-		  if (!viewWin) {
-		    fprintf(stderr,
-			    "TkControl:cmd saveWindowImage can't find window %s\n",
-			    argv[2]);
-		    Exit::DoExit(2);
-		  }
-		  viewWin->GetWindowRep()->WritePostscript(true, argv[3]);
-		}
 		else {
 			interp->result = "wrong args";
 			goto error;
@@ -1402,6 +1395,21 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 	      Exit::DoExit(2);
 	    }
 	    layout->SetPreferredLayout(atoi(argv[3]), atoi(argv[4]));
+	  }
+	  else if (strcmp(argv[1], "saveWindowImage") == 0) {
+	    DisplayExportFormat format = POSTSCRIPT;
+	    if (!strcmp(argv[2], "eps"))
+	      format = EPS;
+	    else if (!strcmp(argv[2], "gif"))
+	      format = GIF;
+	    ViewWin *viewWin = (ViewWin *)classDir->FindInstance(argv[3]);
+	    if (!viewWin) {
+	      fprintf(stderr,
+		      "TkControl:cmd saveWindowImage can't find window %s\n",
+		      argv[2]);
+              Exit::DoExit(2);
+	    }
+	    viewWin->GetWindowRep()->ExportImage(format, argv[4]);
 	  }
 	  else {
 	    interp->result = "wrong args";

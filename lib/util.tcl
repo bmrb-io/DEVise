@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/01/17 19:47:53  jussi
+#  Minor bug fix.
+#
 #  Revision 1.4  1995/12/01 19:46:30  jussi
 #  Fixed case where a view that is not mapped to the screen caused
 #  an error.
@@ -34,7 +37,7 @@
 ############################################################
 
 proc PrintView {} {
-    global toprinter printcmd filename allviews
+    global toprinter printcmd filename allviews formatsel
 
     # see if .printdef window already exists; if so, just return
     set err [catch {wm state .printdef}]
@@ -47,7 +50,7 @@ proc PrintView {} {
     
     set toprinter 1
     set printcmd "lpr "
-    set filename "/tmp/devise_dump.ps"
+    set filename "/tmp/devise.dump"
     set allviews 0
 
     frame .printdef.top -relief groove -borderwidth 2
@@ -62,10 +65,7 @@ proc PrintView {} {
 	    -side top -pady 3m
 
     radiobutton .printdef.top.row1.r1 -text "To Printer" -width 12 \
-	    -variable toprinter -value 1 -command {
-	.printdef.top.row2.e1 configure -state disabled
-	.printdef.top.row1.e1 configure -state normal
-    } -anchor e
+	    -variable toprinter -value 1 -anchor e
     label .printdef.top.row1.l1 -text "Print Command:" -width 14
     entry .printdef.top.row1.e1 -relief sunken -textvariable printcmd \
 	    -width 30
@@ -73,15 +73,25 @@ proc PrintView {} {
 	    -side left -padx 2m -fill x -expand 1
 
     radiobutton .printdef.top.row2.r1 -text "To File" -width 12 \
-	    -variable toprinter -value 0 -command {
-	.printdef.top.row1.e1 configure -state disabled
-	.printdef.top.row2.e1 configure -state normal
-    } -anchor e
+	    -variable toprinter -value 0 -anchor e
+    menubutton .printdef.top.row2.m1 -relief raised \
+	    -textvariable formatsel -menu .printdef.top.row2.m1.menu \
+	    -width 10
     label .printdef.top.row2.l1 -text "File name:" -width 14
     entry .printdef.top.row2.e1 -relief sunken -textvariable filename \
-	    -width 30 -state disabled
-    pack .printdef.top.row2.r1 .printdef.top.row2.l1 .printdef.top.row2.e1 \
+	    -width 30
+    pack .printdef.top.row2.r1 .printdef.top.row2.m1 \
+	    .printdef.top.row2.l1 .printdef.top.row2.e1 \
 	    -side left -padx 2m -fill x -expand 1
+
+    menu .printdef.top.row2.m1.menu -tearoff 0
+    .printdef.top.row2.m1.menu add radiobutton -label Postscript \
+	    -variable formatsel -value Postscript
+    .printdef.top.row2.m1.menu add radiobutton -label EPS \
+	    -variable formatsel -value EPS
+    .printdef.top.row2.m1.menu add radiobutton -label GIF \
+	    -variable formatsel -value GIF
+    set formatsel Postscript
 
     label .printdef.top.row3.l1 -text "Print Views:"
     radiobutton .printdef.top.row3.r1 -text "All Views" \
@@ -95,8 +105,10 @@ proc PrintView {} {
     pack .printdef.bot.but -side top
 
     button .printdef.bot.but.ok -text OK -width 10 \
-	    -command {	PrintActual $toprinter $printcmd $filename $allviews; \
-	                destroy .printdef }
+	    -command {
+	PrintActual $toprinter $printcmd $filename $allviews $formatsel; \
+	destroy .printdef
+    }
     button .printdef.bot.but.cancel -text Cancel -width 10 \
 	    -command { destroy .printdef }
     pack .printdef.bot.but.ok .printdef.bot.but.cancel -side left -padx 7m
@@ -104,7 +116,7 @@ proc PrintView {} {
     tkwait visibility .printdef
 }
 
-proc PrintActual {toprinter printcmd filename allviews} {
+proc PrintActual {toprinter printcmd filename allviews format} {
     global curView
 
     set windowlist ""
@@ -131,17 +143,20 @@ proc PrintActual {toprinter printcmd filename allviews} {
 	}
     }
 
+    set format [string tolower $format]
+
     if {$toprinter} {
-	set template [format "/tmp/devise-%s-%%d.ps" [pid]]
+	set format postscript
+	set template [format "/tmp/devise.%s.%%d.ps" [pid]]
     } else {
-	set template [format "%s-%%d" $filename]
+	set template [format "%s.%%d" $filename]
     }
 
     set i 0
     foreach win $windowlist {
 	set file [format $template $i]
 	puts "Save window $win to file $file"
-	set err [ DEVise saveWindowImage $win $file ]
+	set err [ DEVise saveWindowImage $format $win $file ]
 	if {$err > 0} {
 	    dialog .printError "Window Image Save Error" \
 		    "An error occurred while saving window images to files." \
@@ -149,7 +164,7 @@ proc PrintActual {toprinter printcmd filename allviews} {
 	    return
 	}
 	if {$toprinter} {
-	    puts "File $file not actually printed:"
+	    puts "File $file not actually printed. To print file, do:"
 	    puts "  $printcmd $file"
 	    puts "  rm $file"
 	}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/01/11 21:57:00  jussi
+  Replaced libc.h with stdlib.h.
+
   Revision 1.7  1995/12/28 20:45:38  jussi
   Changed the approach with which inverted lines and areas are
   drawn.
@@ -64,6 +67,8 @@
 #include "Pattern.h"
 #include "Exit.h"
 #include "DevisePixmap.h"
+
+enum DisplayExportFormat { POSTSCRIPT, EPS, GIF };
 
 class DeviseDisplay;
 
@@ -155,7 +160,7 @@ public:
   }
 
   /* convert window image to Postscript code */
-  virtual void WritePostscript(Boolean encapsulated, char *filename) {}
+  virtual void ExportImage(DisplayExportFormat format, char *filename) {}
 
   /* drawing primitives */
 
