@@ -354,12 +354,12 @@ version 4.3.
         <axis>: "X" or "Y".
         <low value>: low (left or bottom of axis) data value.
         <high value>: high (right or top of axis) data value.
-	<axis/mouse format>: the format to be used in labeling axis ticks
-	                     and displaying the mouse location.  The format
-			     is either a printf-style string (e.g, "%.4f")
-			     or a cftime string (e.g., "%b %d %Y %T"),
-			     according to whether the axis data is a date
-			     or floating-point value.
+	<axis/mouse format>: optional.  The format to be used in labeling
+	                     axis ticks and displaying the mouse location.
+			     The format is either a printf-style string
+			     (e.g., "%.4f") or a cftime string (e.g.,
+			     "%b %d %Y %T"), according to whether the axis
+			     data is a date or floating-point value.
 
     5.9 JAVAC_UpdateViewImage
     Purpose: tells the JavaScreen that a new GIF is being sent for the
