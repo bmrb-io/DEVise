@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.82  2000/03/14 17:05:09  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.81  2000/02/23 21:30:57  wenger
   Re-implemented session description capability.
 
@@ -578,7 +582,9 @@ Session::Save(const char *filename, Boolean asTemplate, Boolean asExport,
     const char *stringFile = StringStorage::GetFile();
     if (stringFile != NULL) {
       fprintf(saveData.fp, "\n# Load strings table\n");
-      fprintf(saveData.fp, "DEVise loadStringSpace %s\n", stringFile);
+      char *stringWithEnv = AddEnvToPath("DEVISE_SESSION", stringFile);
+      fprintf(saveData.fp, "DEVise loadStringSpace %s\n", stringWithEnv);
+      FreeString(stringWithEnv);
     }
 
 #if 0 // Temporarily disabling because of bug 441.

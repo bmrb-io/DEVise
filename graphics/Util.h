@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.25  2000/03/14 17:05:10  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.24  2000/01/13 23:06:53  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -140,6 +144,15 @@ extern DevStatus ReadFile(char *filename, int &size, char *&buffer);
 
 extern char *CopyString(const char *str);
 extern void FreeString(char *str);
+
+// Take a path string with embedded environment variables, return a
+// string with the values of the environment variables substituted.
+// The result should be freed with FreeString().
+extern char *RemoveEnvFromPath(const char *path);
+
+// Take a string, substitute the given environment variable if possible.
+// The result should be freed with FreeString().
+extern char *AddEnvToPath(const char *envVar, const char *path);
 
 #ifdef ULTRIX
 #define strdup(s) CopyString(s)

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.35  2000/03/14 17:05:10  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.34  1999/11/30 22:28:05  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -281,6 +285,95 @@ void FreeString(char *str)
     memset(str, 0, length);
     free(str);
   }
+}
+
+char *
+RemoveEnvFromPath(const char *path)
+{
+  char *result;
+
+  const char *inP = path;
+  char tmpBuf[MAXPATHLEN * 2];
+  char *outP = tmpBuf;
+
+  while (*inP) {
+    if (*inP == '$') {
+      // Starting an environment variable name.
+      *inP++; // skip over '$'
+      char envVar[256];
+      char *envP = envVar;
+
+      // Get the name of the environment variable.
+      while (*inP && *inP != '/') { // assume var name will end at '/'
+        *envP++ = *inP++;
+      }
+      *envP = '\0'; // terminate the string
+
+      // Now get its value and copy it into the output buffer.
+      char *varValue = getenv(envVar);
+      if (varValue) {
+        envP = varValue;
+	while (*envP) {
+	  *outP++ = *envP++;
+	}
+      } else {
+	char errBuf[1024];
+	sprintf(errBuf, "Error getting value for environment variable %s",
+	    envVar);
+        reportErrSys(errBuf);
+      }
+    } else {
+      // 'Regular' character -- just copy it.
+      *outP++ = *inP++;
+    }
+  }
+  *outP = '\0'; // terminate the string
+
+  result = CopyString(tmpBuf);
+
+  return result;
+}
+
+char *
+AddEnvToPath(const char *envVar, const char *path)
+{
+  char *result;
+
+  const char *envVal = getenv(envVar);
+  if (!envVal) {
+    char errBuf[1024];
+    sprintf(errBuf, "Error getting value for environment variable %s",
+        envVar);
+  }
+
+  char *match = NULL;
+  if (envVal) match = strstr(path, envVal);
+
+  if (match) {
+    char tmpBuf[MAXPATHLEN * 2];
+    char *outP = tmpBuf;
+
+    // Copy the stuff before the match.
+    int beginLen = match - path;
+    strncpy(outP, path, beginLen);
+    outP += beginLen;
+
+    // Copy in the environment variable name.
+    *outP++ = '$';
+    int varLen = strlen(envVar);
+    strncpy(outP, envVar, varLen);
+    outP += varLen;
+
+    // Copy in the stuff after the match
+    int valLen = strlen(envVal);
+    strcpy(outP, path + beginLen + valLen);
+
+    result = CopyString(tmpBuf);
+  } else {
+    result = CopyString(path);
+  }
+
+  return result;
 }
 
 const char *DateString(time_t tm, const char *format)

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  2000/03/14 17:05:33  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.11  1998/11/06 17:59:52  wenger
   Multiple string tables fully working -- allows separate tables for the
   axes in a given view.
@@ -256,6 +260,10 @@ StringStorage::StringHash(char *&string, int numBuckets)
 int
 StringStorage::SaveAll(const char *filename)
 {
+#if defined(DEBUG_STRINGS)
+  printf("StringStorage::SaveAll(filename)\n");
+#endif
+
   int result = 0;
 
   FILE *fp = fopen(filename, "w");
@@ -292,7 +300,7 @@ StringStorage::SaveAll(const char *filename)
 
   if (result == 0) {
     FreeString(_stringFile);
-    _stringFile = CopyString(filename);
+    _stringFile = AddEnvToPath("DEVISE_SESSION", filename);
   }
 
   return result;
@@ -313,15 +321,19 @@ StringStorage::LoadAll(const char *filename)
     reportErrNosys(errBuf);
   }
 
-  FILE *fp = fopen(filename, "r");
+  char * path = RemoveEnvFromPath(filename);
+  FILE *fp = fopen(path, "r");
   if (!fp) {
-    if (strcmp(filename, _defaultFile)) {
+    if (strcmp(path, _defaultFile)) {
+      FreeString(path);
       reportErrSys("can't open strings file");
       return -1;
     } else {
+      FreeString(path);
       return 0;
     }
   }
+  FreeString(path);
 
   printf("Initializing string table from %s\n", filename);
 
