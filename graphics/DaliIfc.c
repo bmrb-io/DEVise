@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/03/25 17:58:49  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.8  1997/02/14 16:47:31  wenger
   Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
 
@@ -125,7 +128,8 @@ static char errBuf[DALI_MAX_STR_LENGTH+100];
 DevStatus
 DaliIfc::ShowImage(char *daliServer, Window win, int centerX,
   int centerY, int width, int height, char *filename, int imageLen,
-  char *image, int &handle, float timeoutFactor, int maxImageSize)
+  char *image, int &handle, float timeoutFactor, int maxImageSize,
+  Boolean maintainAspect)
 {
   DOASSERT(daliServer != NULL, "No Tasvir server specified");
 
@@ -160,6 +164,7 @@ DaliIfc::ShowImage(char *daliServer, Window win, int centerX,
   sprintf(commandBuf, "show %s 0x%lx %d %d %d %d -dither -xbacking -nosubwin"
     " -showafter 0 -sync 0",
     filename, (long) win, topLeftX, topLeftY, botRightX, botRightY);
+  if (!maintainAspect) strcat(commandBuf, " -noaspect");
   if (image != NULL)
   {
     char bytesBuf[DALI_MAX_STR_LENGTH];
@@ -202,7 +207,8 @@ DaliIfc::ShowImage(char *daliServer, Window win, int centerX,
  */
 DevStatus
 DaliIfc::PSShowImage(char *daliServer, int width, int height, char *filename,
-  int imageLen, char *image, FILE *printfile, float timeoutFactor)
+  int imageLen, char *image, FILE *printfile, float timeoutFactor,
+  Boolean maintainAspect)
 {
   DOASSERT(daliServer != NULL, "No Tasvir server specified");
 
@@ -217,6 +223,7 @@ DaliIfc::PSShowImage(char *daliServer, int width, int height, char *filename,
 
   sprintf(commandBuf, "psshow %s - -width %d -height %d", filename, width,
     height);
+  if (!maintainAspect) strcat(commandBuf, " -noaspect");
   if (image != NULL)
   {
     char bytesBuf[DALI_MAX_STR_LENGTH];

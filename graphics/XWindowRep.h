@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.41  1997/03/20 19:56:04  wenger
+  Minor mods to get latest version to compile on HP and SunOS; cleaned
+  up DTE makefiles (moved all targets from architecture-specific makefiles
+  to DTE/Makefile.base).
+
   Revision 1.40  1997/03/19 19:41:11  andyt
   Embedded Tcl/Tk windows are now sized in data units, not screen pixel
   units. The old list of ETk window handles (WindowRep class) has been
@@ -259,10 +264,6 @@ public:
 	virtual void PushClip(Coord x, Coord y, Coord w, Coord h);
 	virtual void PopClip();
 
-	/* import other graphics and display in window */
-	virtual void ImportImage(Coord x, Coord y,
-				 DisplayExportFormat format, char *filename);
-
 	/* export window image to other graphics formats */
 	virtual void ExportImage(DisplayExportFormat format, char *filename);
 
@@ -273,7 +274,8 @@ public:
   	virtual DevStatus DaliShowImage(Coord centerX, Coord centerY,
                                         Coord width, Coord height,
                                         char *filename, int imageLen,
-                                        char *image, float timeoutFactor = 1.0);
+                                        char *image, float timeoutFactor = 1.0,
+					Boolean maintainAspect = true);
 	virtual DevStatus DaliFreeImages();
 	virtual int DaliImageCount() { return _daliImages.Size(); };
 #endif
@@ -340,6 +342,9 @@ public:
 	virtual void SetPattern(Pattern p);
 
 	virtual void SetLineWidth(int w);
+#ifdef LIBCS
+	virtual void SetDashes(int dashCount, int dashes[], int startOffset);
+#endif
 
 	virtual void FillRect(Coord xlow, Coord ylow, Coord width,
 			      Coord height);
@@ -549,6 +554,8 @@ private:
 
 	/* True if display graphics */
 	Boolean _dispGraphics;
+
+	int _lineStyle;
 
 #ifndef LIBCS
 	DaliImageList _daliImages;

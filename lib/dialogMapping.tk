@@ -15,6 +15,9 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.22  1997/03/23 23:46:26  donjerko
+#       *** empty log message ***
+#
 #       Revision 1.21  1997/03/20 22:59:48  guangshu
 #       Reorganized the code in UpdateMappingDialog a little bit.
 #
@@ -562,7 +565,7 @@ set DEViseShapeAttrNames { \
 	{Segment Width Height "" "" "Line Width"} \
 	{HighLow Width "High (Y max)" "Low (Y min)" "" "Line Width"} \
 	{Polyline "" "" "" "" ""} \
-	{Image "Filename/Image" "Image Type" "" "" ""} \
+	{Image "Filename/Image" "Image Type" "Aspect" "" ""} \
 	{"Polyline File" Filename Format "" "" "Line Width"} \
 	{"Text Label" "Label Text" "" "" "" ""} \
 	{"Tcl/Tk Window" "Script File" "Arg Count" "Arg 0" "Arg 1" "Arg 2"} \

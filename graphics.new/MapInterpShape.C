@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1997/03/25 17:59:24  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.33  1997/03/19 19:41:47  andyt
   Embedded Tcl/Tk windows are now sized in data units, not screen pixel
   units. The old list of ETk window handles (WindowRep class) has been
@@ -1430,14 +1433,6 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	int imageType = int(GetShapeAttr1(gdata, map, offset) + 0.5);
 	switch (imageType)
 	{
-	  case IMAGE_TYPE_GIF_LOCAL:
-#if defined(DEBUG)
-	    printf("GIF image local\n");
-#endif
-	    dali = false;
-	    file = shapeAttr0 != NULL ? shapeAttr0 : defaultFile;
-	    break;
-	    
 	  case IMAGE_TYPE_DALI_FILE:
 #if defined(DEBUG)
 	    printf("Tasvir file, sending filename to Tasvir\n");
@@ -1513,12 +1508,17 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	    float timeoutFactor = 1.0;
 	    View *view2 = View::FindViewByName(view->GetName());
 	    if (view2->IsInPileMode()) timeoutFactor = 10.0;
+
+	    Boolean maintainAspect = (Boolean) GetShapeAttr2(gdata, map,
+	      offset);
+
 	    win->DaliShowImage(tx, ty, width, height, file,
-			       imageDataSize, image, timeoutFactor);
+			       imageDataSize, image, timeoutFactor,
+			       maintainAspect);
 	}
 	else
 	{
-	    win->ImportImage(tx, ty, GIF, file);
+	    reportError("Illegal image type", devNoSyserr);
 	}
     }
 }

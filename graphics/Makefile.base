@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.42  1997/04/09 18:24:36  wenger
+#  Fixed various makefiles (removed extra -gstabs flags, etc.);
+#  setup script now links client.tcl into all cslib directories;
+#  added 24 point font to available sizes in font selection GUI.
+#
 #  Revision 1.41  1997/04/01 19:49:07  wenger
 #  Got the testWindowRep program working again.
 #
@@ -104,7 +109,7 @@ LIBSRC = AttrList.c AxisLabelClassInfo.c \
 	Util.c View.c ViewWin.c ViewLayout.C \
 	Layout.C \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
-	TileLayout.C xvgifwr.c xv24to8.c xvgrab.c xvgif.c \
+	TileLayout.C xvgifwr.c xv24to8.c xvgrab.c \
 	Map3D.C Temp.c PSWindowRep.c PSDisplay.c DaliIfc.c DaliPatron.c \
 	DevStatus.c DualWindowRep.c DevFont.c \
 	ETkIfc.c ETkClient.c

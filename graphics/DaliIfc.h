@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/03/25 17:58:49  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.4.4.2  1997/03/07 20:03:55  wenger
   Tasvir images now work in PostScript output; Tasvir images now freed
   on a per-window basis; Tasvir timeout factor can be set on the command
@@ -64,10 +67,10 @@ public:
   static DevStatus ShowImage(char *daliServer, Window win, int centerX,
     int centerY, int width, int height, char *filename, int imageLen,
     char *image, int &handle, float timeoutFactor = 1.0,
-    int maxImageSize = 1000);
+    int maxImageSize = 1000, Boolean maintainAspect = true);
   static DevStatus PSShowImage(char *daliServer, int width, int height,
     char *filename, int imageLen, char *image, FILE *printfile,
-    float timeoutFactor = 1.0);
+    float timeoutFactor = 1.0, Boolean maintainAspect = true);
 
   static DevStatus FreeImage(char *daliServer, int handle);
   static DevStatus FreeWindowImages(char *daliServer, Window win);

@@ -1,0 +1,96 @@
+RECT - rectangle
+    Attrs:
+        0) width
+        1) height
+        2) cloud width (depth if 3D)
+        3) cloud height (not applicable if 3D)
+        4) line width
+
+RECTX - proportional rectangle
+    Attrs:
+        0) width (proportionalized to window width/height ratio)
+        1) height (proportionalized to window width/height ratio)
+        4) line width
+
+BAR - vertical bar (as in a bar graph)
+    Attrs:
+        0) width
+        4) line width
+
+LINE - line (straight, infinite length)
+    Attrs:
+        4) line width
+
+LINESHADE - line (as LINE, but shaded (filled to 0 Y value))
+    Attrs: none
+
+REG POLYGON - regular polygon
+    Attrs:
+        0) width
+        1) height
+        2) segments (number of sides, currently constant at 16)
+        4) line width
+
+OVAL - oval
+    Attrs:
+        0) width
+        1) height
+        4) line width
+
+VECTOR - vector (line segment terminated with an arrow)
+    Attrs:
+        0) x length (width)
+        1) y length (height)
+        4) line width
+
+HORLINE - horizontal line
+    Attrs:
+        4) line width
+
+SEGMENT - line segment (straight, finite length)
+    Attrs:
+        0) x length (width)
+        1) y length (height)
+        2) z length (depth) (3D only)
+        4) line width
+
+HIGHLOW - vertical bar (as in bar graph with the bottoms
+of the bars not at 0)
+    Attrs:
+        0) width
+        1) y maximum (high)
+        2) y minimum (low)
+        4) line width
+
+POLYLINE - arbitrary-shape polygon
+    Attrs: Successive attrs describe X and Y offsets to the next
+        point on the polygon, originating at the data point, i.e.
+        (X, Y) to (X+Attr0, Y+Attr1) to (X+Attr0+Attr2,
+        Y+Attr1+Attr3), etc.
+
+IMAGE - graphic image imported from a file
+    Attrs:
+        0) filename or image
+        1) image type (1=image file, send filename to
+           Tasvir; 2=image file, send image to Tasvir; 3= image,
+           send image to Tasvir)
+        2) aspect ratio (0=don't maintain aspect ratio of images;
+           1=maintain aspect ratio of images)
+
+POLYLINE FILE - arbitrary-shape polygon (vertex offsets in a
+file)
+    Attrs:
+        0) filename
+        1) format (currently an unmodifiable single format)
+        4) line width
+
+TEXT LABEL - a string (text characters)
+    Attrs:
+        0) string
+
+TCL/TK WINDOW - rectangular region containing a Tcl/Tk
+window
+    Attrs:
+        0) filename of Tcl/Tk script to run in the window
+        1) number of additional arguments
+        2-3) additional command line arguments to Tcl/Tk script

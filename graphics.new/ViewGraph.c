@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.51  1997/03/28 16:10:28  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
   Revision 1.50  1997/03/21 23:57:41  guangshu
   Write null records to statBuf when there is no record in the view to
   make the dataSourceBuf valid.
@@ -303,6 +307,9 @@ ViewGraph::~ViewGraph()
     }
 
     if (_deleteAction) delete _action;
+
+    //TEMPTEMP -- right now the subclasses clear out the _gstat and _glist
+    // stuff -- I think that should be moved to here.
 }
 
 void ViewGraph::AddAsMasterView(RecordLink *link)

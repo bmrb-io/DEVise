@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/03/25 17:58:53  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.13.4.2  1997/03/15 00:31:03  wenger
   PostScript printing of entire DEVise display now works; PostScript output
   is now centered on page; other cleanups of the PostScript printing along
@@ -325,7 +328,7 @@ void PSDisplay::PrintPSHeader(char *title, const Rectangle &screenPrintRegion,
 
 
   /* Print a procedure to draw a line. */
-  fprintf(_printFile, "/DevDrawLine  %% stack: x1, y1, x2, y2\n");
+  fprintf(_printFile, "/DevDrawLine  %% stack: x2, y2, x1, y1\n");
   fprintf(_printFile, "{ newpath\n");
   fprintf(_printFile, "moveto\n");
   fprintf(_printFile, "lineto\n");

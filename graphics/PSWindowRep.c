@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1997/03/25 17:58:55  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.25.4.3  1997/03/15 00:31:05  wenger
   PostScript printing of entire DEVise display now works; PostScript output
   is now centered on page; other cleanups of the PostScript printing along
@@ -203,6 +206,10 @@ PSWindowRep::PSWindowRep(DeviseDisplay *display,
   _height = height;
 
   _xorMode = false;
+
+#ifdef LIBCS
+  _dashedLine = false;
+#endif
 
 #ifndef LIBCS
   _daliServer = NULL;
@@ -413,7 +420,7 @@ void PSWindowRep::ExportImage(DisplayExportFormat format, char *filename)
 DevStatus
 PSWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
         Coord height, char *filename, int imageLen, char *image,
-        float timeoutFactor)
+        float timeoutFactor, Boolean maintainAspect)
 {
 #if defined(DEBUG)
   printf("PSWindowRep::DaliShowImage(%f, %f, %f, %f, %s)\n", centerX, centerY,
@@ -468,7 +475,7 @@ PSWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
 
   /* Get the image from Tasvir and put it into the output file. */
   result += DaliIfc::PSShowImage(_daliServer, (int) width, (int) height,
-    filename, imageLen, image, printFile, timeoutFactor);
+    filename, imageLen, image, printFile, timeoutFactor, maintainAspect);
 
   fprintf(printFile, "\n%%%%EndDocument\n\n");
 
@@ -594,7 +601,8 @@ PSWindowRep::SetLineWidth(int w)
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
-  // Scale width to points.
+  // Scale width to points.  Note: in most cases X and Y scaling should be
+  // the same, so we can just use X for the scaling.
   Coord tx3, ty3, tx4, ty4;
   TransPixToPoint(0.0, 0.0, tx3, ty3);
   TransPixToPoint((Coord) w, 0.0, tx4, ty4);
@@ -602,6 +610,56 @@ PSWindowRep::SetLineWidth(int w)
   fprintf(printFile, "%f setlinewidth\n", fabs(tx4 - tx3));
 #endif
 }
+
+#ifdef LIBCS
+/*---------------------------------------------------------------------------*/
+void PSWindowRep::SetDashes(int dashCount, int dashes[], int startOffset)
+{
+#if defined(DEBUG)
+  printf("PSWindowRep::SetDashes(%d, ...)\n", dashCount);
+#endif
+
+  char errBuf[256];
+
+  if (dashCount > 0) {
+    _dashedLine = true;
+
+    // Figure out the scaling factor to convert the dash lengths from pixels
+    // to points.  Note: in most cases X and Y scaling should be the same,
+    // so we can just use X for the scaling.
+    Coord tx1, ty1, tx2, ty2;
+    TransPixToPoint(0.0, 0.0, tx1, ty1);
+    TransPixToPoint(1.0, 0.0, tx2, ty2);
+    Coord scale = tx2 - tx1;
+
+    strcpy(_dashList, "[");
+    int dashNum;
+    char buffer[32];
+    for (dashNum = 0; dashNum < dashCount; dashNum++) {
+      Coord dash = dashes[dashNum] * scale;
+      if (dash < 0.0) {
+	sprintf(errBuf, "Illegal dash value (%f)", dash);
+	reportErrNosys(errBuf);
+	dash = 0.0;
+      }
+      sprintf(buffer, "%f ", dash);
+      strncat(_dashList, buffer, _dashListSize);
+    }
+
+    // Make sure there's room for start offset.
+    _dashList[_dashListSize - 32] = '\0';
+    strcat(_dashList, "] ");
+    sprintf(buffer, "%d", startOffset);
+    strncat(_dashList, buffer, _dashListSize);
+
+    // Make sure the string is terminated even if we ran out of space.
+    _dashList[_dashListSize - 1] = '\0';
+  } else {
+    _dashedLine = false;
+  }
+}
+#endif
+
 
 
 /* drawing primitives */
@@ -1164,7 +1222,7 @@ void PSWindowRep::Arc(Coord xCenter, Coord yCenter, Coord horizDiam,
 void PSWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2, 
 		      Coord width)
 {
-#if defined(DEBUG) || 0
+#if defined(DEBUG)
   printf("PSWindowRep::Line %.2f,%.2f,%.2f,%.2f\n", x1, y1, x2, y2);
 #endif
   
@@ -1185,7 +1243,13 @@ void PSWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
   TransPixToPoint(width, 0.0, tx4, ty4);
 
   fprintf(printFile, "%f setlinewidth\n", fabs(tx4 - tx3));
+#ifdef LIBCS
+  if (_dashedLine) fprintf(printFile, "%s setdash\n", _dashList);
+#endif
   DrawLine(printFile, tx1, ty1, tx2, ty2);
+#ifdef LIBCS
+  if (_dashedLine) fprintf(printFile, "[] 0 setdash\n");
+#endif
   fprintf(printFile, "0 setlinewidth\n");
 #endif
 }
@@ -1219,7 +1283,13 @@ void PSWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
   TransPixToPoint(width, 0.0, tx4, ty4);
 
   fprintf(printFile, "%f setlinewidth\n", fabs(tx4 - tx3));
+#ifdef LIBCS
+  if (_dashedLine) fprintf(printFile, "%s setdash\n", _dashList);
+#endif
   DrawLine(printFile, x1new, y1new, x2new, y2new);
+#ifdef LIBCS
+  if (_dashedLine) fprintf(printFile, "[] 0 setdash\n");
+#endif
   fprintf(printFile, "0 setlinewidth\n");
 #endif
 }
@@ -1528,7 +1598,7 @@ void PSWindowRep::DrawLine(FILE *printFile, Coord x1, Coord y1,
     Coord x2, Coord y2)
 {
 #if USE_PS_PROCEDURES
-  fprintf(printFile, "%f %f %f %f DevDrawLine\n", x1, y1, x2, y2);
+  fprintf(printFile, "%f %f %f %f DevDrawLine\n", x2, y2, x1, y1);
 #else
   fprintf(printFile, "newpath\n");
   fprintf(printFile, "%f %f moveto\n", x1, y1);

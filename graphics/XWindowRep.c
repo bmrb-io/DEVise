@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.89  1997/03/25 17:59:03  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.88  1997/03/19 19:41:10  andyt
   Embedded Tcl/Tk windows are now sized in data units, not screen pixel
   units. The old list of ETk window handles (WindowRep class) has been
@@ -575,6 +578,7 @@ XWindowRep::XWindowRep(Display *display, Window window, XDisplay *DVDisp,
   if (_parent)
     _parent->_children.Append(this);
   _backingStore = false;
+  _lineStyle = LineSolid;
 #ifndef LIBCS
   _daliServer = NULL;
 #endif
@@ -794,51 +798,6 @@ void XWindowRep::PopClip()
   return;
 }
 
-/* import window image */
-
-void XWindowRep::ImportImage(Coord x, Coord y,
-			     DisplayExportFormat format,
-			     char *filename)
-{
-  if (format != GIF) {
-    fprintf(stderr, "Import format not supported yet.\n");
-    return;
-  }
-
-#ifdef DEBUG
-  printf("Reading GIF image from file %s\n", filename);
-#endif
-
-  FILE *fp = fopen(filename, "rb");
-  if (!fp) {
-    fprintf(stderr, "Cannot open file %s\n", filename);
-    return;
-  }
-
-  PICINFO picinfo;
-  if (LoadGIF(filename, &picinfo) != 1) {
-    fprintf(stderr, "Error importing GIF image\n");
-    fclose(fp);
-    return;
-  }
-
-  fclose(fp);
-
-  if (picinfo.comment)
-    printf("GIF comment: %s\n", picinfo.comment);
-
-  int screen = DefaultScreen(_display);
-  int depth = DefaultDepth(_display,screen);
-  Visual *visual = DefaultVisual(_display, screen);
-  XImage *image = XCreateImage(_display, visual, depth, ZPixmap,
-			       0, (char *)picinfo.pic,
-			       picinfo.w, picinfo.h, 8, 0);
-  DOASSERT(image, "Cannot create image");
-  XPutImage(_display, DRAWABLE, _gc, image, 0, 0, (int)(x - picinfo.w / 2.0),
-	    (int)(y - picinfo.h / 2.0), picinfo.w, picinfo.h);
-  XDestroyImage(image);
-}
-
 /* export window image */
 
 void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
@@ -912,7 +871,7 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
 DevStatus
 XWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
 	Coord height, char *filename, int imageLen, char *image,
-	float timeoutFactor)
+	float timeoutFactor, Boolean maintainAspect)
 {
 #if defined(DEBUG)
   printf("XWindowRep::DaliShowImage(%f, %f, %f, %f, %s)\n", centerX, centerY,
@@ -933,7 +892,7 @@ XWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
     int handle;
     result += DaliIfc::ShowImage(_daliServer, _win, (int) centerX,
       (int) centerY, (int) width, (int) height, filename, imageLen, image,
-      handle, timeoutFactor);
+      handle, timeoutFactor, 1000, maintainAspect);
     if (result.IsComplete())
     {
 #if defined(DEBUG)
@@ -2318,7 +2277,7 @@ void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
   WindowRep::Transform(x2, y2, tx2, ty2);
 #if defined(GRAPHICS)
   if (_dispGraphics) {
-    XSetLineAttributes(_display, _gc, ROUND(int, width), LineSolid, CapButt,
+    XSetLineAttributes(_display, _gc, ROUND(int, width), _lineStyle, CapButt,
 		       JoinRound);
     XDrawLine(_display, DRAWABLE, _gc, ROUND(int, tx1), ROUND(int, ty1),
 	      ROUND(int, tx2), ROUND(int, ty2));
@@ -2335,7 +2294,7 @@ void XWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
   
 #ifdef GRAPHICS
   if (_dispGraphics) {
-    XSetLineAttributes(_display, _gc, ROUND(int, width), LineSolid, CapButt,
+    XSetLineAttributes(_display, _gc, ROUND(int, width), _lineStyle, CapButt,
 		       JoinRound);
     XDrawLine(_display, DRAWABLE, _gc, x1, y1, x2, y2);
     XSetLineAttributes(_display, _gc, 0, LineSolid, CapButt, JoinMiter);
@@ -3059,6 +3018,48 @@ void XWindowRep::SetLineWidth(int w)
 #endif
     }
 }
+
+#ifdef LIBCS
+/***************************************************************
+Set line dash pattern.
+****************************************************************/
+
+void XWindowRep::SetDashes(int dashCount, int dashes[], int startOffset)
+{
+#if defined(DEBUG)
+  printf("XWindowRep::SetDashes(%d, ...)\n", dashCount);
+#endif
+
+  char errBuf[256];
+
+  const int maxChar = (1 << 7) - 1;
+
+  if (dashCount > 0) {
+    _lineStyle = LineOnOffDash;
+    char *dashList = new char[dashCount];
+    int dashNum;
+    for (dashNum = 0; dashNum < dashCount; dashNum++) {
+      int dash = dashes[dashNum];
+      if (dash <= 0) {
+	sprintf(errBuf, "Illegal dash value (%d)", dash);
+	reportErrNosys(errBuf);
+        dashList[dashNum] = 1;
+      } else if (dash > maxChar) {
+	sprintf(errBuf, "Illegal dash value (%d)", dash);
+	sprintf(errBuf, "Illegal dash value (%d)", dash);
+	reportErrNosys(errBuf);
+        dashList[dashNum] = maxChar;
+      } else {
+        dashList[dashNum] = (char) dash;
+      }
+    }
+    XSetDashes(_display, _gc, startOffset, dashList, dashCount);
+    delete [] dashList;
+  } else {
+    _lineStyle = LineSolid;
+  }
+}
+#endif
 
 /***********************************************************************/
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1997/03/25 17:59:01  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.44  1997/03/19 19:41:09  andyt
   Embedded Tcl/Tk windows are now sized in data units, not screen pixel
   units. The old list of ETk window handles (WindowRep class) has been
@@ -359,7 +362,7 @@ public:
     "Can't do SetDaliServer() on this object"); }
   virtual DevStatus DaliShowImage(Coord centerX, Coord centerY, Coord width,
     Coord height, char *filename, int imageLen, char *image,
-    float timeoutFactor = 1.0)
+    float timeoutFactor = 1.0, Boolean maintainAspect = true)
     { reportErrNosys("This object does not support Tasvir operations");
       return StatusFailed; }
   virtual DevStatus DaliFreeImages()
@@ -485,6 +488,9 @@ public:
 
   virtual void SetLineWidth(int w) { _line_width = w; }
   int GetLineWidth(){ return _line_width; }
+#ifdef LIBCS
+  virtual void SetDashes(int dashCount, int dashes[], int startOffset) {}
+#endif
 
   virtual void FillRect(Coord xlow, Coord ylow,
 			Coord width, Coord height) = 0;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/03/25 17:58:10  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.10.4.1  1997/03/15 00:30:49  wenger
   PostScript printing of entire DEVise display now works; PostScript output
   is now centered on page; other cleanups of the PostScript printing along
@@ -140,6 +143,12 @@ class SampleWinServer : public WinServer {
     _winReps.GetWindowRep()->Line(x + w - 1, y, x + w - 1, y + h - 1, 1);
     _winReps.GetWindowRep()->Line(x + w - 1, y + h - 1, x, y + h - 1, 1);
     _winReps.GetWindowRep()->Line(x, y + h - 1, x, y, 1);
+
+    int dashes[] = {10, 10, 5, 5};
+    int dashCount = sizeof(dashes) / sizeof(dashes[0]);
+    _winReps.GetWindowRep()->SetDashes(dashCount, dashes, 0);
+    _winReps.GetWindowRep()->Line(x, y, x + w - 1, y + h - 1, 1);
+    _winReps.GetWindowRep()->SetDashes(0, NULL, 0);
 
     /* use color from local colormap (see Color.h) */
     _winReps.GetWindowRep()->SetFgColor(SeaGreenColor);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.52  1997/03/25 17:59:01  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.51.4.1  1997/03/15 00:31:10  wenger
   PostScript printing of entire DEVise display now works; PostScript output
   is now centered on page; other cleanups of the PostScript printing along
@@ -726,8 +729,8 @@ void XDisplay::ConvertAndWriteGIF(Drawable drawable,
   }
 
   XColor *colors = 0;
-  int ncolors = getxcolors(&xwa, &colors, _display);
-  int code = convertImage(image, colors, ncolors, &xwa);
+  int ncolors = getxcolors(&xwa, &colors, _display);//TEMPTEMP -- xv function
+  int code = convertImage(image, colors, ncolors, &xwa);//TEMPTEMP -- xv function
 
   XDestroyImage(image);
   if (colors)
