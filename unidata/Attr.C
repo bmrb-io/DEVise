@@ -449,12 +449,13 @@ void Attr::assign(Attr *src, AttrStk *owner, int usename)
     _subattr = src->_subattr->dup();
     
     // Need to duplicate all subattributes as well, to avoid ptr-sharing.
-    for (int j=0; j < _nattrs; j++) {
+    if (_subattr)
+      for (int j=0; j < _subattr->nAttrs(); j++) {
         Attr *tmp = new Attr();
         owner->push(tmp);
         tmp->assign(_subattr->ith(j),owner,1);
         _subattr->set_ith(j,tmp);
-    }
+      }
     
     _min_type = src->_min_type;
     _max_type = src->_max_type;
@@ -726,6 +727,9 @@ Attr *AttrStk::pop()
 // Make a duplicate (shallow-copy)
 AttrStk *AttrStk::dup()
 {
+    if (!this)
+        return NULL;
+
     AttrStk *that = new AttrStk(_sze);
 
     that->_num = _num;
