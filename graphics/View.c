@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.70  1996/08/28 00:19:37  wenger
+  Improved use of Dali to correctly free images (use of Dali is now fully
+  functional with filenames in data).
+
   Revision 1.69  1996/08/23 16:55:50  wenger
   First version that allows the use of Dali to display images (more work
   needs to be done on this); changed DevStatus to a class to make it work
@@ -1341,6 +1345,10 @@ XXX: need to crop exposure against _filter before sending query.
 
 void View::Run()
 {
+  // This must be done at the beginning in case we request a callback
+  // somewhere inside here.
+  Dispatcher::Current()->CancelCallback(_dispatcherID);
+
 #if defined(DEBUG)
   printf("\nView::Run for view %s (0x%p)\n", GetName(), _dispatcherID);
 #endif
@@ -1476,7 +1484,7 @@ void View::Run()
 
     return;
   }
-  
+
   if (!_updateTransform && !_hasExposure && !_refresh && _filterChanged) {
     /* Do scroll, if we can  */
     UpdateFilterStat stat;

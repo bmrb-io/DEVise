@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/08/28 00:19:51  wenger
+  Improved use of Dali to correctly free images (use of Dali is now fully
+  functional with filenames in data).
+
   Revision 1.5  1996/08/14 21:22:56  wenger
   Minor dispatcher cleanups, etc.  Fixed release script to release
   statically-linked executables for HP and Sun.
@@ -55,7 +59,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.1.6";
+static const char *	version = "1.1.7";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";

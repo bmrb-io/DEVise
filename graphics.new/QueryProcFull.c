@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1996/08/08 21:02:15  beyer
+  Disabled partial scans because they were not working properly.
+
   Revision 1.30  1996/08/07 19:24:51  jussi
   Added extra check so that client-server synchronization doesn't
   take place too early (must wait until first query started, at
@@ -854,8 +857,6 @@ void QueryProcFull::ProcessQuery()
 
   ControlPanel::Instance()->SetSyncAllowed();
 
-  Dispatcher::Current()->RequestCallback(_dispatcherID);
-
   if (InitQueries()) {
     /* Have initialized queries. Return now */
     return;
@@ -1427,7 +1428,7 @@ Boolean QueryProcFull::DoInMemGDataConvert(TData *tdata, GData *gdata,
 void QueryProcFull::DoGDataConvert()
 {
   if (!Init::ConvertGData() || !_numMappings) {
-    // Dispatcher::Current()->CancelCallback(_dispatcherID);
+    Dispatcher::Current()->CancelCallback(_dispatcherID);
     return;
   }
 
@@ -1522,7 +1523,7 @@ void QueryProcFull::DoGDataConvert()
 #ifdef DEBUG
     printf("Could not find any GData that needs disk conversion\n");
 #endif
-    // Dispatcher::Current()->CancelCallback(_dispatcherID);
+    Dispatcher::Current()->CancelCallback(_dispatcherID);
     return;
   }
 

@@ -64,7 +64,7 @@ Num Date        Status  Description
 
 021 08/05/96	FIXED	'5' key doesn't work. (rkw)
 
-022 08/06/96	OPEN	Records missing from view when many views or 
+022 08/06/96	FIXED?	Records missing from view when many views or 
 			datasources are open. (kb)
 
 023 08/04/96	OPEN	Doing an extreme zoom in causes extra records to 
@@ -94,11 +94,17 @@ Num Date        Status  Description
 			views aren't redrawn until you click in that window.
 			(rkw)
 
-033 08/23/96	OPEN	Run LandsEnd/test.tk -- one view doesn't draw
+033 08/23/96	FIXED	Run LandsEnd/test.tk -- one view doesn't draw
 			correctly (because of links). (ssl/rkw)
 
-034 98/28/96	FIXED	Run Dali1.tk without specifying Dali server ->
+034 08/28/96	FIXED	Run Dali1.tk without specifying Dali server ->
 			core dump. (kb/rkw)
+
+035 08/29/96	OPEN	Files in temp and work directories don't get
+			cleaned up. (ssl/rkw)
+
+036 08/30/96	OPEN	Run LandsEnd/a2.tk session with client/server
+			Devise -> crashes (assertion fails in View.c). (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
