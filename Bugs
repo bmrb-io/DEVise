@@ -1046,6 +1046,10 @@ Num Date        Status  Description
 267 12/19/97	OPEN	Tick marks and numbers on axes are drawn at the wrong
 			place (since OpenGL commit). (rkw)
 
+268 12/29/97	OPEN	Util.c:CheckDirSpace doesn't work with more than
+			2GB of free space.
+
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
