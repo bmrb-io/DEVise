@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.42  1998/04/13 22:24:45  zhenhai
+  Optimized 2D cursors to read and draw individual patches instead
+  of patches for the whole region. Added 3D cursors to show directions.
+  After adding a 3D cursor (same as adding 2D cursors by first
+  creating the cursor, then selecting the source and destination),
+  the direction of the cone (where its top is pointing to) in one graph shows the
+  location and direction of the camera in another graph.
+
   Revision 1.41  1998/03/24 20:48:15  wenger
   Temporarily changed Dispatcher to quit immediately rather than going
   thru the loop one more time upon receipt of second INT.
@@ -308,6 +316,7 @@ DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
   info->priority = priority;
   info->fd = fd;
   info->callback_requested = false;
+  info->delay = 0;
 
   if (fd >= 0) {
     if (fd > maxFdCheck) {
@@ -459,8 +468,14 @@ void Dispatcher::CheckUserInterrupt()
   Notify 
 *********************************************************************/
 
-void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
+long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 {
+  long waitfor_secs = -1;
+  struct timeval	tv;
+  struct timezone	tz;
+
+  gettimeofday(&tv, &tz);
+
 #if defined(DEBUG_LOG)
   sprintf(_logBuf, "Dispatcher::ProcessCallbacks(); _callback_requests = %d\n",
     _callback_requests);
@@ -494,6 +509,9 @@ void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 	  || (info->fd >= 0
 	      && (   FD_ISSET(info->fd, &fdread) 
 		  || FD_ISSET(info->fd, &fdexc))) ) {
+		if (!(info->callback_requested)||
+			(info->delay <= tv.tv_sec))
+		{
 #if defined(DEBUG)
 	sprintf(_logBuf,
                "Calling callback 0x%p (%s): called fd = %d  req = %d\n", 
@@ -501,8 +519,9 @@ void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 	       info->fd, info->callback_requested); 
         LogMessage(_logBuf);
 #endif
-	CancelCallback(info);
-	info->callBack->Run();
+			CancelCallback(info);
+			info->callBack->Run();
+		}
       }
     }
 #if defined(DEBUG_CALLBACK_LIST)
@@ -511,12 +530,38 @@ void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
   }
   _callbacks.DoneIterator(index);
 
+  // iterate through the queue and check of minimum select time
+  // iff there is any immediate pending requests,
+  // waitfor_secs will be set to zero, otherwise, it will be set
+  // to the smallest pending time.
+
+  for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
+    DispatcherInfo *info = _callbacks.Next(index);
+    if ((info->flag & _stateFlag) &&  (info->callback_requested))
+	{
+		if (info->delay == 0)
+		{
+			// if there is an immediate pending call...
+			waitfor_secs = 0;
+			break;
+		}
+		else
+		{
+			// for all non-mature calls, find the min among them
+			long	temp = info->delay - tv.tv_sec;
+			if ((waitfor_secs == -1)||(waitfor_secs > temp))
+				waitfor_secs = temp;
+		}
+	}
+  }
+  _callbacks.DoneIterator(index);
 #if defined(DEBUG_LOG)
   sprintf(_logBuf,
     "done with Dispatcher::ProcessCallbacks(); _callback_requests = %d\n",
     _callback_requests);
   DebugLog::DefaultLog()->Message(_logBuf);
 #endif
+	return waitfor_secs;
 }
 
 
@@ -526,6 +571,8 @@ void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 
 void Dispatcher::Run1()
 {
+  static waitfor_secs = 0;
+
 #if defined(DEBUG_LOG)
   sprintf(_logBuf, "Dispatcher::Run1()\n");
   DebugLog::DefaultLog()->Message(_logBuf);
@@ -558,7 +605,7 @@ void Dispatcher::Run1()
   memcpy(&fdexc, &fdset, sizeof fdread);
 
   struct timeval timeout;
-  timeout.tv_sec = 0;
+  timeout.tv_sec = waitfor_secs;
   timeout.tv_usec = 0;
   struct timeval* timeoutp = NULL;
   if( _callback_requests > 0 || _playback ) timeoutp = &timeout;
@@ -594,19 +641,19 @@ void Dispatcher::Run1()
     printf("Checked %d fds, %d have data, %d user-defined\n",
 	   maxFdCheck + 1, NumberFdsReady, _callback_requests);
 #endif
-    ProcessCallbacks(fdread, fdexc);
+    waitfor_secs = ProcessCallbacks(fdread, fdexc);
   } 
 
   /* end of call backs */
 
   if (!_playback) {
-    return;
+    return ;
   }
 
   long now = DeviseTime::Now();
   long playdiff = now - _playTime;
   if (playdiff < _playInterval) {
-    return;
+    return ;
   }
 
   switch(_nextEvent) {
@@ -659,6 +706,7 @@ void Dispatcher::Run1()
 				     _nextHint, d1, d2, d3, d4);
     _playTime = DeviseTime::Now();
   }
+  return ;
 }
 
 /****************************************************************
@@ -732,6 +780,10 @@ Boolean Dispatcher::CallbacksOk()
 
 void Dispatcher::RequestCallback(DispatcherID info)
 {
+	RequestTimedCallback ( info, 0);
+}
+void Dispatcher::RequestTimedCallback(DispatcherID info, long time)
+{
   Timer::StopTimer();
 
 #if defined(DEBUG_LOG)
@@ -744,6 +796,21 @@ void Dispatcher::RequestCallback(DispatcherID info)
   if( !(info->callback_requested) ) {
     _callback_requests++;
     info->callback_requested = true;
+
+	if (time == 0)
+	{
+		// no delay events
+		info->delay = 0;
+	}
+	else
+	{
+		// call back only after time(seconds)
+		struct timeval tv;
+		struct timezone tz;
+
+		gettimeofday(&tv, &tz);
+		info->delay = tv.tv_sec + time;
+	}
 
 #if defined(DEBUG_LOG)
     sprintf(_logBuf, "  After increment, _callback_requests = %d\n",
@@ -779,6 +846,7 @@ void Dispatcher::CancelCallback(DispatcherID info)
   if( info->callback_requested ) {
     info->callback_requested = false;
     _callback_requests--;
+	info->delay = 0;
 #if defined(DEBUG_LOG)
     sprintf(_logBuf, "  After decrement, _callback_requests = %d\n",
 	_callback_requests);

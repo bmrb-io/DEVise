@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1997/09/05 22:35:59  wenger
+  Dispatcher callback requests only generate one callback; added Scheduler;
+  added DepMgr (dependency manager); various minor code cleanups.
+
  */
 
 #ifndef _Scheduler_h_
@@ -40,6 +44,7 @@ public:
   static Scheduler *Current();
 
   void RequestCallback(DispatcherID info, void *preconditions = NULL);
+  void RequestTimedCallback(DispatcherID info, long time=0);
   void CancelCallback(DispatcherID info);
 
   virtual char *DispatchedName() { return "Scheduler"; }

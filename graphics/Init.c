@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.43  1998/02/12 17:15:56  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.42.2.1  1998/01/28 22:43:25  taodb
   Added support for group communicatoin
 
@@ -298,6 +301,7 @@ float Init::_drawTimeout = 10.0;
 
 int Init::_port = DefaultNetworkPort;
 int Init::_switchport = DefaultSwitchPort;
+int Init::_imageport = DefaultImagePort;
 char* Init::_switchname = DefaultSwitchName;
 int Init::_maxclients = DefaultMaxClients;
 
@@ -773,6 +777,14 @@ void Init::DoInit(int &argc, char **argv)
 	  Usage(argv[0]);
 	}
 	_switchport = atoi(argv[i+1]);
+	MoveArg(argc,argv,i,2);
+    }
+    else if (strcmp(&argv[i][1], "imageport") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_imageport = atoi(argv[i+1]);
 	MoveArg(argc,argv,i,2);
     }
 

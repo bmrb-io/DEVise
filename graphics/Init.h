@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1998/02/12 17:15:57  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.20.2.1  1998/01/28 22:43:26  taodb
   Added support for group communicatoin
 
@@ -189,6 +192,7 @@ class Init {
 
     static int Port() { return _port; }
 	static int SwitchPort() {return _switchport;}
+	static int ImagePort() {return _imageport;}
 	static int MaxClients() { return _maxclients;}
 	static char* SwitchName() { return _switchname;}
 
@@ -250,6 +254,7 @@ protected:
 
     static int _port;              /* port for server to listen on */
     static int _switchport;        /* port for server to listen on */
+    static int _imageport;         /* port for image server to listen on */
 	static int _maxclients;		   /* max number of clients */
 	static char* _switchname;      /* name of the switch(collaborator)*/
 };

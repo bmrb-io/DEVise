@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.30  1998/03/10 19:52:34  wenger
+  Merged cleanup_1_4_7_br_10 through cleanup_1_4_7_br_11 (fixes callback
+  list problems on SGIs).
+
   Revision 1.29  1998/02/26 00:18:54  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -171,6 +175,8 @@ protected:
   StateFlag flag;		// if flag is zero, this info will be deleted
   int priority;
   int fd;
+  long delay;			// delayed callback, using absolute EPOCH time
+						// set to 0, if no delay.
   bool callback_requested;
 };
 
@@ -203,6 +209,7 @@ protected:
      the callback reschedules itself.
    */
   void RequestCallback(DispatcherID info);
+  void RequestTimedCallback(DispatcherID info, long time);
 
   /* cancel a scheduled callback */
   void CancelCallback(DispatcherID info);
@@ -275,7 +282,7 @@ private:
 
   /* process any callbacks that have an fd set in fdread or fdexc,
      or any callbacks that have callback_requested set */
-  void ProcessCallbacks(fd_set& fdread, fd_set& fdexc);
+  long ProcessCallbacks(fd_set& fdread, fd_set& fdexc);
 
   void Unregister(DispatcherCallback *c, DispatcherID id);
 

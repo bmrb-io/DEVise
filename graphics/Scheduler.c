@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/03/08 01:10:43  wenger
+  Merged cleanup_1_4_7_br_9 through cleanup_1_4_7_br_10 (fix to idle
+  CPU usage bug (308)).
+
   Revision 1.1.4.1  1998/03/05 16:10:18  wenger
   Fixed bug 308 (excessive CPU use while idle).
 
@@ -98,6 +102,15 @@ Scheduler::RequestCallback(DispatcherID info, void *preconditions)
   Dispatcher::Current()->RequestCallback(info);
 }
 
+void
+Scheduler::RequestTimedCallback(DispatcherID info, long time)
+{
+#if defined(DEBUG)
+  printf("Scheduler::RequestTimedCallback() %ld\n", time);
+#endif
+
+  Dispatcher::Current()->RequestTimedCallback(info, time);
+}
 /*------------------------------------------------------------------------------
  * function: Scheduler::CancelCallback
  * Cancel all Dispatcher callbacks for the given object.

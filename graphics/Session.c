@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1998/04/19 22:30:12  wenger
+  Modified CreateTData() so that it works on "regular" and "internal"
+  data sources.
+
   Revision 1.21  1998/04/16 20:07:09  wenger
   Changed Session::CreateTData() back so UNIXFILEs work.
 
@@ -128,6 +132,8 @@
 #include "StringStorage.h"
 #include "CmdContainer.h"
 #include "DeviseCommand.h"
+#include "DeviseServer.h"
+#include "CmdLog.h"
 
 
 //#define DEBUG
@@ -213,6 +219,7 @@ static unsigned int classNameListLen;
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
+
 /*------------------------------------------------------------------------------
  * function: Session::Open
  * Open specified session file.
@@ -239,12 +246,18 @@ Session::Open(char *filename)
 
     Tcl_SetVar(control._interp, "template", "0", TCL_GLOBAL_ONLY);
 
+	// disable logging while evaluating the file
+	CmdLogRecord* cmdLog = cmdContainerp->getCmdLog();
+	int oldStatus = cmdLog->getLogStatus();
+	cmdLog->setLogStatus(false);
     if (Tcl_EvalFile(control._interp, filename) != TCL_OK) {
       char errBuf[256];
       sprintf(errBuf, "Tcl error: %s", control._interp->result);
       reportErrNosys(errBuf);
       status = StatusFailed;
     }
+	// resume original logging status
+	cmdLog->setLogStatus(oldStatus);
   }
 
 #if defined(DEBUG)
@@ -390,6 +403,9 @@ Session::CreateTData(char *name)
   printf("Session::CreateTData(%s)\n", name);
 #endif
 
+  CmdSource cmdSrc(CmdSource::INTERNAL, CLIENT_INVALID);
+  CmdDescriptor cmdDes(cmdSrc, CmdDescriptor::UNDEFINED);
+
   DevStatus status = StatusOk;
   ControlPanelSimple control(status);
 
@@ -409,7 +425,7 @@ Session::CreateTData(char *name)
     argvIn[2] = "";
     argvIn[3] = "0";
     argvIn[4] = "0";
-  	if (cmdContainerp->Run(5, argvIn, &control)< 0) {
+  	if (cmdContainerp->Run(5, argvIn, &control, cmdDes)< 0) {
       status = StatusFailed;
     }
 
@@ -419,7 +435,7 @@ Session::CreateTData(char *name)
     argvIn[3] = name;
     argvIn[4] = schemaName;
     argvIn[5] = "";
-  	if (cmdContainerp->Run(6, argvIn, &control)< 0) {
+  	if (cmdContainerp->Run(6, argvIn, &control, cmdDes)< 0) {
       status = StatusFailed;
     }
     return status;
@@ -536,7 +552,7 @@ Session::CreateTData(char *name)
     // changed when we re-implement exported templates with data.
     argvIn[3] = "0";
     argvIn[4] = "0";
-    if (cmdContainerp->Run(argcIn, argvIn, &control) < 0) {
+    if (cmdContainerp->Run(argcIn, argvIn, &control, cmdDes) < 0) {
       status = StatusFailed;
     }
   }
@@ -558,7 +574,7 @@ Session::CreateTData(char *name)
       argvIn[4] = sourceType;
       argvIn[5] = param;
     }
-    if (cmdContainerp->Run(argcIn, argvIn, &control) < 0) {
+    if (cmdContainerp->Run(argcIn, argvIn, &control, cmdDes) < 0) {
       status = StatusFailed;
     }
   }
@@ -582,6 +598,9 @@ Session::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
   PrintArgs(stdout, argc, argv);
 #endif
 
+  CmdSource cmdSrc(CmdSource::SESSION_PLAY, CLIENT_INVALID);
+  CmdDescriptor cmdDes(cmdSrc, CmdDescriptor::UNDEFINED);
+
   int status = TCL_OK;
 
   // Don't do anything for "DEVise create tdata...", "DEVise importFileType",
@@ -600,7 +619,7 @@ Session::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
     Tcl_SetResult(interp, "", TCL_VOLATILE);
   } else {
     // don't pass DEVise command verb (argv[0])
-    if (cmdContainerp->Run(argc-1, &argv[1],  (ControlPanel *) clientData) < 0) {
+    if (cmdContainerp->Run(argc-1, &argv[1],  (ControlPanel *) clientData, cmdDes) < 0) {
       status = TCL_ERROR;
       fprintf(stderr, "Error in command: ");
       PrintArgs(stderr, argc, argv);
@@ -1166,6 +1185,9 @@ Session::CallParseAPI(ControlPanelSimple *control, char *&result,
   printf("Session::CallParseAPI(%s)\n", arg0);
 #endif
 
+  CmdSource cmdSrc(CmdSource::SESSION_SAVE,CLIENT_INVALID);
+  CmdDescriptor cmdDes(cmdSrc, CmdDescriptor::UNDEFINED);
+
   DevStatus status = StatusOk;
 
   int argcIn;
@@ -1187,7 +1209,7 @@ Session::CallParseAPI(ControlPanelSimple *control, char *&result,
   argvIn[1] = arg1;
   argvIn[2] = arg2;
   argvIn[3] = arg3;
-  if (cmdContainerp->Run(argcIn, argvIn, control) <= 0) {
+  if (cmdContainerp->Run(argcIn, argvIn, control, cmdDes) <= 0) {
     reportErrNosys(control->_interp->result);
     status = StatusFailed;
   } else {
