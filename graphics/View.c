@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.69  1996/08/23 16:55:50  wenger
+  First version that allows the use of Dali to display images (more work
+  needs to be done on this); changed DevStatus to a class to make it work
+  better; various minor bug fixes.
+
   Revision 1.68  1996/08/09 22:39:00  wenger
   Fixed bug 027 (error in dispatcher code sometimes put callback into
   list twice); fixed error in View.c that caused compile failure.
@@ -1605,7 +1610,7 @@ void View::Run()
 #if defined(DEBUG)
     printf("Clearing data area in window 0x%p\n", winRep);
 #endif
-    if (Init::DaliServer() != NULL) DaliIfc::Reset(Init::DaliServer());
+    winRep->DaliFreeImages();
     winRep->SetFgColor(GetBgColor());
     winRep->FillRect(dataX, dataY, dataW - 1, dataH - 1);
   }

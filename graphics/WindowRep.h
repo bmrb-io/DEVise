@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/08/23 16:55:56  wenger
+  First version that allows the use of Dali to display images (more work
+  needs to be done on this); changed DevStatus to a class to make it work
+  better; various minor bug fixes.
+
   Revision 1.26  1996/08/04 21:05:35  beyer
   changed key handling
 
@@ -249,9 +254,10 @@ public:
   virtual void ExportImage(DisplayExportFormat format, char *filename) {}
 
   /* import graphics via Dali */
-  virtual DevStatus DaliImage(Coord centerX, Coord centerY, Coord width,
+  virtual DevStatus DaliShowImage(Coord centerX, Coord centerY, Coord width,
     Coord height, char *filename, int imageLen, char *image)
     { return StatusOk; }
+  virtual DevStatus DaliFreeImages() { return StatusOk; }
 
   /* drawing primitives */
 

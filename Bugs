@@ -94,6 +94,9 @@ Num Date        Status  Description
 			views aren't redrawn until you click in that window.
 			(rkw)
 
+033 08/23/96	OPEN	Run LandsEnd/test.tk -- one view doesn't draw
+			correctly (because of links). (ssl/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.

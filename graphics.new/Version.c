@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/08/14 21:22:56  wenger
+  Minor dispatcher cleanups, etc.  Fixed release script to release
+  statically-linked executables for HP and Sun.
+
   Revision 1.4  1996/08/05 19:48:59  wenger
   Fixed compile errors caused by some of Kevin's recent changes; changed
   the attrproj stuff to make a .a file instead of a .o; added some more
@@ -51,7 +55,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.1.5";
+static const char *	version = "1.1.6";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";

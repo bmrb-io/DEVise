@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/08/04 21:59:48  beyer
+  Added UpdateLinks that allow one view to be told to update by another view.
+  Changed TData so that all TData's have a DataSource (for UpdateLinks).
+  Changed all of the subclasses of TData to conform.
+  A RecFile is now a DataSource.
+  Changed the stats buffers in ViewGraph to be DataSources.
+
   Revision 1.8  1996/06/24 19:42:11  jussi
   Cleaned up and removed unused code.
 
@@ -250,17 +257,17 @@ void GData::WriteRecs(RecId startId, int numRecs, void *buf)
     if (!rec || nextId < rec->tLow || nextId > rec->tHigh) {
       if (rec)
 	fprintf(stderr,
-		"GData::Write Recs (%ld,%ld) into gap T(%ld,%ld),G(%ld,%ld)\n",
+		"GData::WriteRecs (%ld,%ld) into gap T(%ld,%ld),G(%ld,%ld)\n",
 		startId, startId+numRecs-1,
 		rec->tLow, rec->tHigh, rec->gLow, rec->gHigh);
       else
-	fprintf(stderr, "GData::Write Recs (%ld,%ld) into gap\n",
+	fprintf(stderr, "GData::WriteRecs (%ld,%ld) into gap\n",
 		startId, startId+numRecs-1);
       DOASSERT(0, "Invalid write request");
     }
     
 #ifdef DEBUG
-    printf("GDataWriteRecs: T:(%ld,%ld), G:(%ld,%ld)\n",
+    printf("GData::WriteRecs: T:(%ld,%ld), G:(%ld,%ld)\n",
 	   rec->tLow,rec->tHigh,rec->gLow,rec->gHigh);
 #endif
     

@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.89  1996/08/07 15:34:44  guangshu
+#	Add an menu item in SourceData to view the statistics in text form.
+#
 #	Revision 1.88  1996/07/23 20:13:34  wenger
 #	Preliminary version of code to save TData (schema(s) and data) to a file.
 #
@@ -346,7 +349,7 @@ set DEViseColors \
 set DEViseShapes \
 	{{0 Rect} {1 RectX} {2 Bar} {13 Line} {14 {Line Shade}} \
         {3 {Regular Polygon}} {4 Oval} {5 Vector} {6 HorLine} \
-        {7 Segment} {8 HighLow} {9 Polyline} {10 {GIF Image}} \
+        {7 Segment} {8 HighLow} {9 Polyline} {10 {Image}} \
 	{11 {Polyline File}} {12 {Text Label}}}
 
 # global variables:

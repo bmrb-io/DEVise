@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.60  1996/08/23 16:56:00  wenger
+  First version that allows the use of Dali to display images (more work
+  needs to be done on this); changed DevStatus to a class to make it work
+  better; various minor bug fixes.
+
   Revision 1.59  1996/08/08 20:59:55  beyer
   fixed some debugging problems
 
@@ -256,6 +261,9 @@ extern "C" {
 #define DRAWABLE           (_win ? _win : _pixmap)
 
 
+ImplementDList(DaliImageList, int);
+
+
 // key translations
 // Removed 'num lock' from AltMask (rkw 8/7/96).
 static const int AltMask = Mod1Mask | Mod2Mask | Mod3Mask | Mod5Mask;
@@ -484,6 +492,8 @@ XWindowRep::~XWindowRep()
   
   /* _win or _pixmap is destroyed by XDisplay */
 
+  DaliFreeImages();
+
   if (_parent) {
     if (!_parent->_children.Delete(this))
       fprintf(stderr, "Cannot remove child from parent window\n");
@@ -691,10 +701,18 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
   }
 }
 
+/*------------------------------------------------------------------------------
+ * function: XWindowRep::DaliShowImage
+ * Show a Dali image in this window.
+ */
 DevStatus
-XWindowRep::DaliImage(Coord centerX, Coord centerY, Coord width, Coord height,
-	char *filename, int imageLen, char *image)
+XWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
+	Coord height, char *filename, int imageLen, char *image)
 {
+#if defined(DEBUG)
+  printf("XWindowRep::DaliShowImage(%s)\n", filename);
+#endif
+
   DevStatus result = StatusOk;
 
   if (filename == NULL) filename = "-";
@@ -705,10 +723,37 @@ XWindowRep::DaliImage(Coord centerX, Coord centerY, Coord width, Coord height,
     handle);
   if (result.IsComplete())
   {
-#if DEBUG
+#if defined(DEBUG)
     printf("Displayed Dali image; handle = %d\n", handle);
 #endif
+
+    _daliImages.Insert(handle);
   }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: XWindowRep::DaliFreeImages
+ * Free the Dali images associated with this window.
+ */
+DevStatus
+XWindowRep::DaliFreeImages()
+{
+#if defined(DEBUG)
+  printf("XWindowRep::DaliFreeImages()\n");
+#endif
+
+  DevStatus result = StatusOk;
+
+  int index = _daliImages.InitIterator(false);
+  while (_daliImages.More(index))
+  {
+    int handle = _daliImages.Next(index);
+    _daliImages.DeleteCurrent(index);
+    result += DaliIfc::FreeImage(Init::DaliServer(), handle);
+  }
+  _daliImages.DoneIterator(index);
 
   return result;
 }

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/08/23 16:55:29  wenger
+  First version that allows the use of Dali to display images (more work
+  needs to be done on this); changed DevStatus to a class to make it work
+  better; various minor bug fixes.
+
  */
 
 #ifndef _DaliIfc_h_
@@ -36,6 +41,7 @@ public:
   static DevStatus ShowImage(char *daliServer, Window win, int centerX,
     int centerY, int width, int height, char *filename, int imageLen,
     char *image, int &handle);
+  static DevStatus FreeImage(char *daliServer, int handle);
   static DevStatus Reset(char *daliServer);
 };
 

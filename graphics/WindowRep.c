@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/08/04 21:05:34  beyer
+  changed key handling
+
   Revision 1.15  1996/07/14 16:17:03  jussi
   Added destroyPending flag.
 
@@ -91,6 +94,7 @@ WindowRep::WindowRep(DeviseDisplay *disp, Color fgndColor, Color bgndColor,
 WindowRep::~WindowRep()
 {
   delete _callbackList;
+  DaliFreeImages();
 }
 
 /* called by derived class to when window is resized or moved */

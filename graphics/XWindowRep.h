@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/08/23 16:56:04  wenger
+  First version that allows the use of Dali to display images (more work
+  needs to be done on this); changed DevStatus to a class to make it work
+  better; various minor bug fixes.
+
   Revision 1.23  1996/08/09 15:27:08  wenger
   Fixed a typo (name of Compression class misspelled).
 
@@ -102,6 +107,8 @@ class XWindowRep;
 
 DefinePtrDList(XWindowRepList, XWindowRep *);
 
+DefineDList(DaliImageList, int);
+
 /* Bitmap info */
 struct XBitmapInfo {
 	Boolean inUse;
@@ -156,8 +163,10 @@ public:
 	virtual void ExportImage(DisplayExportFormat format, char *filename);
 
 	/* import graphics via Dali */
-  	virtual DevStatus DaliImage(Coord centerX, Coord centerY, Coord width,
-	  Coord height, char *filename, int imageLen, char *image);
+  	virtual DevStatus DaliShowImage(Coord centerX, Coord centerY,
+	  Coord width, Coord height, char *filename, int imageLen,
+	  char *image);
+	virtual DevStatus DaliFreeImages();
 
 	/* drawing primitives */
 	/* Return TRUE if window is scrollable */
@@ -388,6 +397,8 @@ private:
 
 	/* True if display graphics */
 	Boolean _dispGraphics;
+
+	DaliImageList _daliImages;
 };
 
 #endif

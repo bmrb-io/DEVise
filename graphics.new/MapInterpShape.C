@@ -17,6 +17,11 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/08/23 16:56:18  wenger
+  First version that allows the use of Dali to display images (more work
+  needs to be done on this); changed DevStatus to a class to make it work
+  better; various minor bug fixes.
+
   Revision 1.12  1996/08/08 21:01:20  beyer
   Moved virtual functions from .h to .C file
 
@@ -1200,13 +1205,13 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 
 	    if (image != NULL)
 	    {
-	      win->DaliImage(tx, ty, 100.0, 100.0, "-", size, image);
+	      win->DaliShowImage(tx, ty, 100.0, 100.0, "-", size, image);
               delete [] image;
 	    }
 	  }
 	  else
 	  {
-	    win->DaliImage(tx, ty, 100.0, 100.0, file, 0, (char *) NULL);
+	    win->DaliShowImage(tx, ty, 100.0, 100.0, file, 0, (char *) NULL);
 	  }
 	}
 	else
