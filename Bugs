@@ -538,7 +538,7 @@ Num Date        Status  Description
 			with keypad zoom/pan keys. (jpm)
 			Deferred
 
-130 01/22/97	OPEN	Load the session test/ibmcache2.tk (with or without
+130 01/22/97	FIXED	Load the session test/ibmcache2.tk (with or without
 			shared memory) you get the following error:
 			An internal error has occurred. The reason is:
   			Inconsistent state (../../graphics.new/RangeList.c:232)
