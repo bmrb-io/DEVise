@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.40  1996/04/23 14:40:25  jussi
+#	Added mising variable name to global name list, fixed color
+#	assignment with new mappings.
+#
 #	Revision 1.39  1996/04/11 18:23:02  jussi
 #	Major changes in the organization of the user interface.
 #
@@ -2524,7 +2528,9 @@ proc MacroDefAutoActualNew {tdata viewsel linksel window bgcolor
 	
 	# ask DEVise to turn on/off label
 	if {$titlesel} {
-	    DEVise setLabel $viewinstance 1 16 $viewbasename
+	    DEVise setLabel $viewinstance 1 16 "$name vs. $x"
+	} else {
+	    DEVise setLabel $viewinstance 0 12 "$name vs. $x"
 	}
 
 	# ask DEVise to turn on/off X axis
