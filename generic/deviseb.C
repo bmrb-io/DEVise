@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/07/16 23:34:36  jussi
+  Improved parsing and added handling of comment lines, blank
+  lines, and lines prefixed with the DEVise keyword.
+
   Revision 1.9  1996/07/09 15:59:37  wenger
   Added master version number and compile date to C++ code (also displayed
   in the user interface); added -usage and -version command line arguments;
@@ -146,13 +150,16 @@ int ExecuteCommands()
     return -1;
   }
 
-  char line[256];
+  char line[1024];
+  int lineno = 1;
+
   while(fgets(line, sizeof line, fp)) {
     if (line[strlen(line) - 1] != '\n') {
-      fprintf(stderr, "Line too long in script\n");
+      fprintf(stderr, "Line %d too long in script\n", lineno);
       return -1;
     }
     line[strlen(line) - 1] = 0;
+    lineno++;
 
     char *ptr = line;
     while(isspace(*ptr)) ptr++;
