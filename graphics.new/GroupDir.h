@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/09/27 23:59:49  ravim
+  Fixed some bugs. Added some new functions for handling groups.
+
   Revision 1.1  1995/09/22 20:09:27  ravim
   Group structure for viewing schema
 */
@@ -28,16 +31,29 @@
 class GroupDir
 {
 public:
-  ItemList *dir;
+  struct SchemaList
+  {
+    char *sname;
+    ItemList *topgrps;
+    SchemaList *next;
+  } SchemaList;
+
+  SchemaList *list;
 
   GroupDir();
   ~GroupDir();
 
-  void add_entry(Group *grp);
-  void remove_entry(Group *grp);
+  void add_entry(char *schema);
 
-  Group *get_entry(char *name);
-  void top_level_groups(Tcl_Interp *interp);
+  void add_topgrp(char *schema, Group *gp);
+  void top_level_groups(Tcl_Interp *interp, char *schema);
+  
+  void get_items(Tcl_Interp *interp, char *schema, char *topgname, char *gname);
+  int find_entry(char *schema);
+  int num_topgrp(char *schema);
+
+private:
+  Group *find_grp(Group *gp, char *gname);
 };
 
 #endif
