@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.31  1997/08/04 23:37:11  donjerko
+#  Added Mirror button to the AS clause, that mirrors the SELECT clause
+#
 #  Revision 1.30  1997/07/28 17:36:50  donjerko
 #  Changed default record delimiter to "Whitespace"
 #
@@ -388,22 +391,33 @@ proc SchemaSuperuser {{isunidata 0}} {
 # Called whenever the type field is changed.
 proc ChgType {name element op} {
     upvar $name x
+    global is_unidata
 
-    if {$x == "string"} {
+    if {$is_unidata} {
+      if {$x == "string"} {
         .newschema.astrlen.label configure -fg white
         .newschema.astrlen.entry configure -state normal
 	.newschema.dateformat.label configure -fg gray
 	.newschema.dateformat.entry configure -state disabled
-    } elseif {$x == "date" || $x == "datetime" || $x == "unixtime" } {
+      } elseif {$x == "date" || $x == "datetime" || $x == "unixtime" } {
     	.newschema.dateformat.label configure -fg white
 	.newschema.dateformat.entry configure -state normal
 	.newschema.astrlen.label configure -fg gray
 	.newschema.astrlen.entry configure -state disabled
-    } else {
+      } else {
         .newschema.dateformat.label configure -fg gray
 	.newschema.dateformat.entry configure -state disabled
         .newschema.astrlen.label configure -fg gray
         .newschema.astrlen.entry configure -state disabled
+      }
+    } else {
+      if {$x == "string"} {
+        .newschema.astrlen.label configure -fg white
+        .newschema.astrlen.entry configure -state normal
+      } else {
+        .newschema.astrlen.label configure -fg gray
+        .newschema.astrlen.entry configure -state disabled
+      }
     }
 }
 

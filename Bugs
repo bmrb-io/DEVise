@@ -873,7 +873,7 @@ Num Date        Status  Description
 			if you stop force a view to redraw by resizing its
 			window (applying the mapping fixes it!) (rkw)
 
-216 09/04/97	OPEN	Trying to set attribute type in original schema
+216 09/04/97	FIXED	Trying to set attribute type in original schema
 			editor causes error. (rkw/dj)
 
 217 09/04/97	OPEN	UniData schema gets 'separator' specified even when
