@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/07/13 17:25:07  jussi
+  When view is iconified, statistics are collected but data
+  is not drawn.
+
   Revision 1.25  1996/07/12 19:40:14  jussi
   View statistics are now printed into a memory buffer.
 
@@ -193,6 +197,7 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
 #ifdef DEBUG
     printf("Submitting query 1 of %d: 0x%p\n", _mappings.Size(), _map);
 #endif
+    _pstorage.Clear();
     _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
   } else {
 #ifdef DEBUG
@@ -366,6 +371,8 @@ void TDataViewX::QueryDone(int bytes, void *userData)
 #ifdef DEBUG
     printf("TDataViewX::Query done, index = %d, bytes = %d\n", _index, bytes);
 #endif
+
+  _pstorage.Clear();
 
   DOASSERT(_index >= 0, "Invalid iterator index");
 

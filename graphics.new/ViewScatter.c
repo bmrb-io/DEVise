@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/07/13 17:25:11  jussi
+  When view is iconified, statistics are collected but data
+  is not drawn.
+
   Revision 1.19  1996/07/12 19:40:15  jussi
   View statistics are now printed into a memory buffer.
 
@@ -145,6 +149,7 @@ void ViewScatter::DerivedStartQuery(VisualFilter &filter, int timestamp)
 #ifdef DEBUG
     printf("Submitting first query\n");
 #endif
+    _pstorage.Clear();
     _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
   } else {
 #ifdef DEBUG
@@ -273,6 +278,8 @@ void ViewScatter::QueryDone(int bytes, void *userData)
 #ifdef DEBUG
     printf("ViewScatter::Query done, index = %d, bytes = %d\n", _index, bytes);
 #endif
+
+  _pstorage.Clear();
 
   DOASSERT(_index >= 0, "Invalid iterator index");
 
