@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1997/12/12 05:50:23  weaver
+  *** empty log message ***
+
   Revision 1.25  1997/11/24 23:14:36  weaver
   Changes for the new ColorManager.
 
@@ -379,7 +382,7 @@ private:
 
 		// Callback methods (WindowRepCallback)
 		virtual void	HandleExpose(WindowRep* w, int x, int y, 
-									 unsigned width, unsigned height) {}
+									 unsigned width, unsigned height);
 
 #ifdef RAWMOUSEEVENTS
 		virtual void	HandleButton(WindowRep* w, int x, int y,

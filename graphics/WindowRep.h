@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.61  1998/01/23 20:37:54  zhenhai
+  Fixed a bug on transformation which was caused by inconsistency between origins
+  or XWindows (Upper left) and OpenGL (Lower left). Also fixed a bug for
+  incorrect labelling of axis.
+
   Revision 1.60  1998/01/14 16:38:57  wenger
   Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
 
@@ -905,6 +910,8 @@ protected:
       reportErrNosys("WindowRep::PushClip: overflow");
       Exit::DoExit(1);
     };
+    cout << "Clip current " << _clipCurrent << " to "
+	 << _clipCurrent+1 << endl;
     ClipRect *rect = &_clippings[++_clipCurrent];
     rect->x = x; rect->y = y; rect->width = w; rect->height = h;
   }
@@ -915,6 +922,8 @@ protected:
       reportErrNosys("WindowRep::PopClip: underflow");
       Exit::DoExit(1);
     }
+    cout << "Clip current " << _clipCurrent << " to "
+	 << _clipCurrent-1 << endl;
     _clipCurrent--;
   }
 

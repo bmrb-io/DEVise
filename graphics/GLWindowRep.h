@@ -13,13 +13,7 @@
 */
 
 /*
-  Revision 1.2  1997/10/18 23:28:58  zhenhai
-  Implemented all 2D API. However the problem remains that the coordinate
-  system of OpenGL is different from XWindows because XWindows has an
-  up-side-down Y coordinate.
 
-  Revision 1.1  1997/09/25 15:13:33  zhenhai
-  Copy from XWindowRep to GLWindowRep
 */
 
 #ifndef GLWindowRep_h

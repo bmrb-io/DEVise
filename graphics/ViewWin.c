@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  1997/12/16 17:53:53  zhenhai
+  Added OpenGL features to graphics.
+
   Revision 1.39  1997/11/24 23:14:36  weaver
   Changes for the new ColorManager.
 
@@ -1037,6 +1040,14 @@ ViewWin::PrintPS()
 //******************************************************************************
 // Callback Methods (WindowRepCallback)
 //******************************************************************************
+void ViewWin::HandleExpose(WindowRep *w, int x, int y,
+			   unsigned width, unsigned height)
+{
+#ifdef MARGINS
+  if (Init::DisplayLogo())
+    DrawMargins();
+#endif
+}
 
 void	ViewWin::HandleResize(WindowRep* w, int xlow, int ylow,
 							  unsigned width, unsigned height)

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.121  1998/02/03 18:31:26  zhenhai
+  Fully implemented functionalities of XWindowRep with GLWindowRep. Fixed bugs in
+  postscript printing.
+
   Revision 1.120  1998/01/23 20:37:53  zhenhai
   Fixed a bug on transformation which was caused by inconsistency between origins
   or XWindows (Upper left) and OpenGL (Lower left). Also fixed a bug for
@@ -1357,10 +1361,10 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
   /* if custom labels requested, draw them and return */
   if (_xAxisLabel) {
     char *label = _xAxisLabel->GenerateLabel( _filter.xLow);
-    win->AbsoluteText(label, startX, axisY, drawWidth / 2 - 1,
+    win->AbsoluteText(label, startX, axisY - 2 - (axisHeight-1), drawWidth / 2 - 1,
 		      axisHeight - 1, WindowRep::AlignWest, true);
     label = _xAxisLabel->GenerateLabel(_filter.xHigh);
-    win->AbsoluteText(label, startX + drawWidth / 2, axisY, drawWidth / 2 - 1,
+    win->AbsoluteText(label, startX + drawWidth / 2, axisY - 2 - (axisHeight-1), drawWidth / 2 - 1,
 		      axisHeight - 1, WindowRep::AlignEast, true);
     return;
   }
@@ -1368,10 +1372,10 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
   /* if axis is date, draw values and return */
   if (_xAxisAttrType == DateAttr) {
     char *label = DateString((time_t)_filter.xLow);
-    win->AbsoluteText(label, startX, axisY, drawWidth / 2 - 1,
+    win->AbsoluteText(label, startX, axisY - 2 - (axisHeight-1), drawWidth / 2 - 1,
 		      axisHeight - 1, WindowRep::AlignWest, true);
     label = DateString((time_t)_filter.xHigh);
-    win->AbsoluteText(label, startX + drawWidth / 2, axisY, drawWidth / 2 - 1,
+    win->AbsoluteText(label, startX + drawWidth / 2, axisY- 2 - (axisHeight-1), drawWidth / 2 - 1,
 		      axisHeight - 1, WindowRep::AlignEast, true);
     return;
   }
