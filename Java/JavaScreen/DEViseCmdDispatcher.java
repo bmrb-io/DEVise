@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.73  2001/02/11 20:53:16  xuk
+// Made the JS can switch between collaboration and socket modes.
+//
 // Revision 1.72  2001/01/31 22:23:55  xuk
 // Modify processReceivedCommand(), for wrong collaboration JS ID. Stop current thread when receives JAVAC_ERROR command from jspop.
 //
@@ -438,9 +441,13 @@ public class DEViseCmdDispatcher implements Runnable
 	// command to whatever was passed in.
 
 	if (!_connectedAlready) {
-	    cmd = DEViseCommands.CONNECT + " {" + jsc.jsValues.connection.username +
+	    String temp_cmd = new String(DEViseCommands.CONNECT + " {" + jsc.jsValues.connection.username +
 		"} {" + jsc.jsValues.connection.password + "} {" +
-		DEViseGlobals.PROTOCOL_VERSION + "}\n" + cmd;
+		DEViseGlobals.PROTOCOL_VERSION + "}");
+	    if (jsc.isAbleCollab)
+		cmd = temp_cmd + " {" + DEViseGlobals.ENABLECOLLAB + "}\n" + cmd;
+	    else
+		cmd = temp_cmd + " {" + DEViseGlobals.DISABLECOLLAB + "}\n" + cmd;
 	    _connectedAlready = true;
 
 	    // Start the heartbeat thrad.
