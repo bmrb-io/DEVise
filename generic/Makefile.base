@@ -7,12 +7,15 @@ CC = g++
 
 OPTFLAG = -O
 #OPTFLAG = -g
+#OPTFLAG = -gstabs
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 	-I../../tape -fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX
 
+# ksb: I created an unfortunate dependency from graphics to graphics.new
+# which caused -lgraphicsnew to be listed twice below...
 LDFLAGS = -L../graphics.new -L../graphics -L../tape -L../issm \
-	-L../crsp -L../compustat -lgraphicsnew -lgraphics \
+	-L../crsp -L../compustat -lgraphicsnew -lgraphics -lgraphicsnew \
 	-lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS)
 
 SRC = generic.c devise.C deviseb.C
