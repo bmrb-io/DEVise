@@ -19,6 +19,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1998/06/03 21:12:34  wenger
+#  Moved various scripts into the new 'scripts' directory, and 'Bugs' and
+#  'ToDo' into 'design_doc' to clean up the top-level directory; changed
+#  various scripts accordingly; added new 'devise' module in CVS.
+#
 #  Revision 1.2  1998/02/20 19:23:07  wenger
 #  Updated client/server and window library distribution for version 1.5.
 #
@@ -29,7 +34,7 @@
 
 ############################################################
 
-tarcslib
+scripts/tarcslib
 
 set target = /p/devise/ClientServer
 

@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1998/06/03 21:12:37  wenger
+#  Moved various scripts into the new 'scripts' directory, and 'Bugs' and
+#  'ToDo' into 'design_doc' to clean up the top-level directory; changed
+#  various scripts accordingly; added new 'devise' module in CVS.
+#
 #  Revision 1.10  1998/02/26 22:58:46  wenger
 #  Added one omitted include file.
 #
@@ -94,6 +99,7 @@ ln -s	../../graphics/Compress.h \
 	../../graphics/Xdef.h \
 	../../graphics/Util.h \
 	../../graphics/GraphicsDebug.h \
+	../../graphics/ViewDir.h \
 	.
 ln -s	../../cslib/*.h \
 	.
@@ -101,15 +107,15 @@ ln -s ../../graphics.new/ClientAPI.h \
         ../../graphics.new/ParseAPI.h \
         ../../graphics.new/missing.h \
 	.
-ln -s	../../src/include/BooleanArray.h \
-	../../src/include/Color.h \
-	../../src/include/Coloring.h \
-	../../src/include/Palette.h \
-	../../src/include/PaletteColor.h \
-	../../src/include/RGB.h \
-	../../src/include/XColor.h \
-	../../src/include/debug.h \
-	../../src/include/manager.h \
+ln -s	../../src/utils/export/BooleanArray.h \
+	../../src/color/export/Color.h \
+	../../src/color/export/Coloring.h \
+	../../src/color/export/Palette.h \
+	../../src/color/export/PaletteColor.h \
+	../../src/color/export/RGB.h \
+	../../src/color/export/XColor.h \
+	../../src/utils/export/debug.h \
+	../../src/utils/export/manager.h \
 	.
 cd ..
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.74  1998/05/29 16:49:21  wenger
+  Fixed bug 358 (incorrect usage of colors).
+
   Revision 1.73  1998/05/21 18:18:33  wenger
   Most code for keeping track of 'dirty' GIFs in place; added 'test'
   command to be used for generic test code that needs to be controlled
@@ -368,11 +371,11 @@
 
 #include "Color.h" // Note: this includes X-specific stuff -- bad!!
 #include "Coloring.h"
-#include "CursorStore.h"
 
 enum DisplayExportFormat { POSTSCRIPT, EPS, GIF };
 
 class DeviseDisplay;
+class CursorStore;
 
 /* Callback from windowRep for processing window events. 
    Default: no event is handled. */

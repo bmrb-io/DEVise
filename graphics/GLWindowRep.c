@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/06/09 20:06:03  wenger
+  2D OpenGL cursor now drawn as shaded outline plus every-other-point
+  "mesh"; OpenGL CursorStore and GLWindowRep on SGI now use color indices
+  instead of RGB so that they work the same as the other architectures;
+  added user interface to allow changing cursor color (merged through
+  cursor_test_br_1).
+
   Revision 1.18.2.1  1998/06/04 21:08:44  wenger
   Experimental drawing of 2D cursor in OpenGL by manipulating pixmap values.
 
@@ -84,6 +91,7 @@
 #include "../xvertext/rotated.h"
 #include "XColor.h"
 #include "ThreeDVector.h"
+#include "CursorStore.h"
 
 
 #if !defined(LIBCS)
