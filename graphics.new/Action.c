@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/06/21 19:16:41  jussi
+  Added a check for negative rho when zooming in in radial coordinate
+  mode.
+
   Revision 1.7  1996/06/20 21:39:30  jussi
   Rewrote handling of camera movement in 3D views.
 
@@ -254,7 +258,7 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
       if (incr_ < 1)
 	incr_ = 1;
 #ifdef DEBUG
-      printf ("old dvs = %d\n", camera._dvs);
+      printf("old dvs = %d\n", camera._dvs);
 #endif
       if (camera._dvs < incr_)
 	/* make sure we don't go behind the screen */
@@ -262,7 +266,7 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
       else
 	camera._dvs -= (int)incr_;
 #ifdef DEBUG
-      printf ("old-new dvs = %d   incr = %f\n",camera._dvs,incr_);
+      printf("old-new dvs = %d   incr = %f\n",camera._dvs,incr_);
 #endif
       view->SetCamera(camera);
     }
@@ -389,12 +393,12 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
     /* set focus point fixed or unfixed */
     if (view->GetNumDimensions() == 3) {
       Camera camera = view->GetCamera();
-      if (camera.fix_focus == 1)
+      if (camera.fix_focus && !camera.spherical_coord)
 	camera.fix_focus = 0;
       else
 	camera.fix_focus = 1;
 #ifdef DEBUG
-      printf ("camera fix_focus = %d\n", camera.fix_focus);
+      printf("camera fix_focus = %d\n", camera.fix_focus);
 #endif
       view->SetCamera(camera);
     }
@@ -404,14 +408,33 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
     /* switch between rectangular and radial coordinates */
     if (view->GetNumDimensions() == 3) {
       Camera camera = view->GetCamera();
-      if (camera.spherical_coord == 1)
+      if (camera.spherical_coord)
 	camera.spherical_coord = 0;
-      else
+      else {
 	camera.spherical_coord = 1;
+        camera.fix_focus = 1;
+      } 
 #ifdef DEBUG
-      printf ("camera spherical_coord = %d\n", camera.spherical_coord);
+      printf("camera spherical_coord = %d\n", camera.spherical_coord);
 #endif
       view->SetCamera(camera);
     }
   }
+
+#if 0
+  if (key == 'p' || key == 'P') {
+    /* toggle perspective on or off */
+    if (view->GetNumDimensions() == 3) {
+      Camera camera = view->GetCamera();
+      if (camera._perspective)
+	camera._perspective = 0;
+      else
+	camera._perspective = 1;
+#ifdef DEBUG
+      printf("camera perspective = %d\n", camera._perspective);
+#endif
+      view->SetCamera(camera);
+    }
+  }
+#endif
 }
