@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/12/18 15:28:10  jussi
+  Made waitForChildProcess() public. Improved error handling.
+
   Revision 1.15  1996/12/03 20:24:58  jussi
   Renamed preprocessor flags.
 
@@ -578,6 +581,15 @@ int TapeDrive::command(short mt_op, daddr_t mt_count)
 {
   waitForChildProcess();
   DOASSERT(_child <= 0, "Invalid child process ID");
+
+  /*
+     This flush prevents the same output buffer from being
+     dumped on to the screen when output buffers of the child
+     and parent processes fill up. This is a problem only
+     when directing (debug) output to a file (block buffering
+     instead of line buffering).
+  */
+  fflush(stdout);
 
 #ifdef TAPE_THREAD
   _proc_mt_op = mt_op;
