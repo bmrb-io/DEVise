@@ -3045,6 +3045,10 @@ Num Date        Status  Description
 			existing session and re-saving it works okay. (rkw)
 			(Fixed by rkw, 2/9/02.)
 
+755 2/11/02	OPEN	Data source creation GUI should default to having
+			the schema selection dialog come up in the physical
+			schema directory. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
