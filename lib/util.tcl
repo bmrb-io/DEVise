@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.28  1996/09/06 14:23:30  jussi
+#  Added missing parameter to dialog procedure call.
+#
 #  Revision 1.27  1996/08/29 22:31:28  guangshu
 #  Added option for client to get the gif files from the server and changed
 #  puts to proc Puts.
@@ -463,8 +466,8 @@ proc getColor {varname} {
 
 ############################################################
 
-proc PrintView {} {
-    global toprinter printcmd filename printsrc formatsel
+proc PrintViewSetUp {} {
+    global toprinter printcmd filename printsrc formatsel 
 
     if {[WindowVisible .printdef]} {
 	return
@@ -477,8 +480,9 @@ proc PrintView {} {
     
     set toprinter 1
     set printcmd "lpr "
-    set filename "/tmp/devise"
-    set printsrc 0
+#    set filename "/tmp/devise"
+    set filename "/u/g/u/guangshu/public/html/pictures/map/"
+    set printsrc 0 
 
     frame .printdef.top -relief groove -borderwidth 2
     frame .printdef.bot
@@ -528,16 +532,24 @@ proc PrintView {} {
     radiobutton .printdef.top.row3.r3 -text "Selected Window" \
 	    -variable printsrc -value 0
     pack .printdef.top.row3.l1 .printdef.top.row3.r1 .printdef.top.row3.r2 \
-	    .printdef.top.row3.r3 -side left -padx 2m -fill x -expand 1
+	    .printdef.top.row3.r3 -side left -padx 2m \
+	    -fill x -expand 1
+}
+
+############################################################################
+proc PrintView {} {
+    global toprinter printcmd filename  printsrc formatsel 
+    PrintViewSetUp
+#    set map 0
 
     frame .printdef.bot.but
     pack .printdef.bot.but -side top
 
     button .printdef.bot.but.ok -text OK -width 10 \
 	    -command {
-	PrintActual $toprinter $printcmd $filename $printsrc $formatsel; \
+	PrintActual $toprinter $printcmd $filename $printsrc $formatsel 0 0 0 0; \
 	destroy .printdef
-    }
+        }
     button .printdef.bot.but.cancel -text Cancel -width 10 \
 	    -command { destroy .printdef }
     pack .printdef.bot.but.ok .printdef.bot.but.cancel -side left -padx 7m
@@ -545,9 +557,49 @@ proc PrintView {} {
     tkwait visibility .printdef
 }
 
-############################################################
+##########################################################################
 
-proc PrintActual {toprinter printcmd filename printsrc fmt} {
+proc PrintWithMap {} {
+     global toprinter printcmd filename printsrc formatsel
+     PrintViewSetUp
+#     set map 1
+     
+     frame .printdef.bot.ent
+     pack .printdef.bot.ent -side top
+
+     label .printdef.bot.ent.l1 -text "Map File" -width 10 
+     entry .printdef.bot.ent.t1 -relief sunken -textvariable mapfile \
+		-width 20
+     label .printdef.bot.ent.l2 -text "URL:" -width 10
+     entry .printdef.bot.ent.t2 -relief sunken -textvariable url \
+		-width 20
+     label .printdef.bot.ent.l3 -text " Default URL:" -width 10
+     entry .printdef.bot.ent.t3 -relief sunken -textvariable defaultUrl \
+		-width 20
+     pack .printdef.bot.ent.l1 .printdef.bot.ent.t1 \
+		.printdef.bot.ent.l2 .printdef.bot.ent.t2 \
+		.printdef.bot.ent.l3 .printdef.bot.ent.t3 \
+		-side left -fill x -expand 1
+
+     frame .printdef.bot.but
+     pack .printdef.bot.but -side top
+
+     button .printdef.bot.but.ok -text OK -width 10 \
+		-command {
+		PrintActual $toprinter $printcmd $filename $printsrc $formatsel 1 $mapfile $url $defaultUrl; \
+		destroy .printdef
+               }
+     button .printdef.bot.but.cancel -text Cancel -width 10 \
+		-command { destroy .printdef }
+     pack .printdef.bot.but.ok .printdef.bot.but.cancel -side left -padx 7m
+
+     tkwait visibility .printdef
+}
+
+##########################################################################
+
+proc PrintActual {toprinter printcmd filename printsrc fmt map mapfile \
+			url defaultUrl} {
     global curView
 
     set format [string tolower $fmt]
@@ -572,6 +624,18 @@ proc PrintActual {toprinter printcmd filename printsrc fmt} {
             return
         }
 	set file "$filename$suffix"
+	
+	if {$map == 1} {
+	   puts "Saving entire display to file $file"
+	   set err [ catch { DEVise saveDisplayImageAndMap $format $file $mapfile $url $defaultUrl } ]
+	   if {$err > 0} {
+		dialog .printError "Display Image Save Error" \
+			"An error occurred while saving display image to file." \
+			"" 0 OK
+	        return
+	   }
+	   return
+	}
 	puts "Saving entire display to file $file"
 	set err [ catch { DEVise saveDisplayImage $format $file } ]
 	if {$err > 0} {
@@ -580,7 +644,7 @@ proc PrintActual {toprinter printcmd filename printsrc fmt} {
 		    "" 0 OK
 	    return
 	}
-        return
+	return
     }
 
     set windowlist ""
@@ -611,7 +675,7 @@ proc PrintActual {toprinter printcmd filename printsrc fmt} {
     foreach win $windowlist {
 	set file [format $template $i]
 	if {$filename == "stderr" || $filename == "stdout"} {
-	     set err [ catch { DEVGetImage $format $win $filename } ]
+	     set err [ catch { SetGetImage $format $win $filename } ]
 	     if {$err > 0} {
 		 dialog .printError "Window Image transfer Error" \
 			 "An error occurred while saving window images to files." \
