@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.37  2000/04/27 20:15:25  wenger
+// Added DEViseCommands class which has string constants for all command
+// names; replaced all literal command names in code with the appropriate
+// DEViseCommand constants.
+//
 // Revision 1.36  2000/04/07 22:44:10  wenger
 // Improved shading of atoms (it now works on white atoms); added comments
 // based on meeting with Hongyu on 2000-04-06.
@@ -864,7 +869,7 @@ public class DEViseServer implements Runnable
             client = newClient;
             newClient = null;
             if (client != null) {
-                pop.activeClient(client);
+                pop.activateClient(client);
             }
         }
     }

@@ -12,13 +12,21 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// This class makes the connection between a client (JavaScreen) and
+// server (DEViseServer/devised).  It periodically checks for clients
+// that are requesting service and are not connected to a server; when
+// it finds such a client, it assigns it to a server.
+
+// There is one instance of this class for a jspop process.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.7  2000/03/23 16:26:13  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.6  1999/06/23 20:59:15  wenger
 // Added standard DEVise header.
 //
@@ -34,7 +42,10 @@ import java.util.*;
 public class DEViseClientDispatcher implements Runnable
 {
     private jspop pop = null;
-    private int timestep = 500;
+
+    // This value controls the minimum amount of time it takes for a
+    // requesting client to be "noticed".
+    private int timestep = 500; // milliseconds
 
     private Thread dispatcher = null;
 
@@ -84,6 +95,7 @@ public class DEViseClientDispatcher implements Runnable
         DEViseClient client = null;
         DEViseServer server = null;
 
+        // We just sit in this loop, checking for requesting clients.
         while (getStatus()) {
             try {
                 Thread.sleep(timestep);

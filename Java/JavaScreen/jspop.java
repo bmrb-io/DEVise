@@ -12,13 +12,23 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// This class contains the main() method for the jspop.  The main this
+// class does, besides various startup stuff, is to listen for new
+// connections from JavaScreens.  It also maintains lists of all of
+// the clients (JavaScreens) and servers (DEViseServers/deviseds).
+
+
+// There is one instance of this class for a given jspop process.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.28  2000/04/05 15:42:24  wenger
+// Changed JavaScreen version to 3.3 because of memory fixes; other minor
+// improvements in code; conditionaled out some debug code.
+//
 // Revision 1.27  2000/04/05 06:25:40  hongyu
 // fix excessive memory usage problem associated with gdata
 //
@@ -114,8 +124,14 @@ public class jspop implements Runnable
     private Hashtable users = new Hashtable();
     private Vector servers = new Vector();
     private Vector clientIDs = new Vector();
+
+    // Clients that are not connected to a devised.
     private Vector suspendClients = new Vector();
+
+    // Clients that are connected to a devised.
     private Vector activeClients = new Vector();
+
+    //----------------------------------------------------------------------
 
     public static void main(String[] args)
     {
@@ -129,6 +145,8 @@ public class jspop implements Runnable
         jspop popServer = new jspop(args);
         popServer.start();
     }
+
+    //----------------------------------------------------------------------
 
     public void pn(String msg, int level)
     {
@@ -178,6 +196,8 @@ public class jspop implements Runnable
         logp(msg, 1);
     }
 
+    //----------------------------------------------------------------------
+
     public jspop(String[] args)
     {
         System.out.println("\nChecking command line arguments ...\n");
@@ -225,17 +245,23 @@ public class jspop implements Runnable
         dispatcher.start();
     }
 
+    //----------------------------------------------------------------------
+
     public void start()
     {
         popThread = new Thread(this);
         popThread.start();
     }
 
-    // quit() will only be called in jspop server thread or in jspop() initialization
-    // and all the stop() or close() methods of other class are synchronized, so there
-    // is no need to synchronize quit()
+    // quit() will only be called in jspop server thread or in jspop()
+    // initialization and all the stop() or close() methods of other
+    // class are synchronized, so there is no need to synchronize quit()
     private void quit(int id)
     {
+	//
+	// Stop the various threads.
+	//
+
         System.out.println("Stop jspop server thread...");
         if (popThread != null && Thread.currentThread() != popThread) {
             popThread.stop();
@@ -253,6 +279,10 @@ public class jspop implements Runnable
             jssHandler.stop();
             jssHandler = null;
         }
+
+	//
+	// Close sockets.
+	//
 
         System.out.println("Stop command server socket...");
         if (cmdServerSocket != null) {
@@ -285,6 +315,10 @@ public class jspop implements Runnable
         servers.removeAllElements();
         */
 
+	//
+	// Close all clients.
+	//
+
         System.out.println("Close clients...");
         for (int i = 0; i < suspendClients.size(); i++) {
             DEViseClient client = (DEViseClient)suspendClients.elementAt(i);
@@ -292,6 +326,7 @@ public class jspop implements Runnable
                 client.close();
             }
         }
+
         suspendClients.removeAllElements();
         for (int i = 0; i < activeClients.size(); i++) {
             DEViseClient client = (DEViseClient)activeClients.elementAt(i);
@@ -301,6 +336,9 @@ public class jspop implements Runnable
         }
         activeClients.removeAllElements();
 
+	//
+	// Close the log file.
+	//
         System.out.println("Close log file...");
         if (logFile != null) {
             logFile.close();
@@ -310,6 +348,11 @@ public class jspop implements Runnable
         System.exit(id);
     }
 
+    //----------------------------------------------------------------------
+
+    // This basically listens for new connections from JavaScreens.
+    // When a new connection is made, it creates a new DEViseClient object
+    // corresponding to the JavaScreen that just connected.
     public void run()
     {
         System.out.println("\nJSPOP Server started ...\n");
@@ -334,10 +377,11 @@ public class jspop implements Runnable
                 break;
             }
 
-            // There may be some serious mismatch could happen here, i.e. the data socket
-            // and the command socket are not from the same clients, however, since I am
-            // prepare to move to single socket, so I just leave it here, otherwise, should
-            // figure out some protocol to prevent that
+            // There may be some serious mismatch could happen here, i.e.
+	    // the data socket and the command socket are not from the
+	    // same clients, however, since I am prepare to move to single
+	    // socket, so I just leave it here, otherwise, should figure
+	    // out some protocol to prevent that
             try {
                 socket2 = dataServerSocket.accept();
                 isTimeout = false;
@@ -362,8 +406,14 @@ public class jspop implements Runnable
                 }
             } else {
                 try {
+		    //
+		    // If we get to here, we've connected on both the
+		    // command socket and data socket, so create a new
+		    // DEVviseClient corresponding to the connection.
+		    //
                     socket = new DEViseCommSocket(socket1, socket2, 1000);
-                    DEViseClient client = new DEViseClient(this, hostname, socket, getID());
+                    DEViseClient client = new DEViseClient(this, hostname,
+		      socket, getID());
                     addClient(client);
                 } catch (YException e) {
                     pn(e.getMsg() + "\nClose socket connection to client \"" + hostname + "\"");
@@ -374,6 +424,9 @@ public class jspop implements Runnable
         quit(quitID);
     }
 
+    //----------------------------------------------------------------------
+
+    // Get the DEViseUser object corresponding to the given key and password.
     public DEViseUser getUser(String username, String password)
     {
         if (username == null || password == null) {
@@ -403,6 +456,12 @@ public class jspop implements Runnable
         }
     }
 
+    //----------------------------------------------------------------------
+
+    // Get the client, if any, that has been waiting longest for a command
+    // to be serviced (length of time multiplied by client priority).
+    // This also removes any closed clients.
+    //
     // this method will only be called in client dispatcher thread
     // this method will also check which client need to be removed and remove it
     public synchronized DEViseClient getNextRequestingClient()
@@ -415,12 +474,17 @@ public class jspop implements Runnable
             DEViseClient newclient = (DEViseClient)suspendClients.elementAt(i);
             if (newclient != null) {
                 int status = newclient.getStatus();
-                if (status == DEViseClient.CLOSE) { // this client need to be removed
+                if (status == DEViseClient.CLOSE) {
+		    // this client need to be removed
                     removedClient.addElement(newclient);
                     continue;
-                } else if (status == DEViseClient.REQUEST) { // only client that are requesting service will be served
-                    clientTime = (float)(newclient.getPriority() * newclient.getSuspendTime());
+                } else if (status == DEViseClient.REQUEST) {
+		    // only clients that are requesting service will be served
+                    clientTime = (float)(newclient.getPriority() *
+		      newclient.getSuspendTime());
 
+		    // Keep track of the client that's been waiting the
+		    // longest (accounting for priority).
                     if (time < 0.0) {
                         time = clientTime;
                         client = newclient;
@@ -434,6 +498,9 @@ public class jspop implements Runnable
             }
         }
 
+	//
+	// Remove any closed clients.
+	//
         for (int i = 0; i < removedClient.size(); i++) {
             DEViseClient newclient = (DEViseClient)removedClient.elementAt(i);
             if (newclient != null) {
@@ -450,7 +517,7 @@ public class jspop implements Runnable
         return client;
     }
 
-    public synchronized void activeClient(DEViseClient c)
+    public synchronized void activateClient(DEViseClient c)
     {
         if (c != null) {
             suspendClients.removeElement(c);
@@ -468,9 +535,13 @@ public class jspop implements Runnable
         }
     }
 
-    public synchronized void addServer(String name, int port, int cmdport, int imgport)
+    //----------------------------------------------------------------------
+
+    public synchronized void addServer(String name, int port, int cmdport,
+      int imgport)
     {
-        DEViseServer newserver = new DEViseServer(this, name, port, cmdport, imgport);
+        DEViseServer newserver = new DEViseServer(this, name, port,
+	  cmdport, imgport);
         servers.addElement(newserver);
 
         try {
@@ -491,24 +562,31 @@ public class jspop implements Runnable
 
         try {
             Socket socket = new Socket(server.hostname, server.jssport);
-            DataOutputStream os = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-            String msg = "JSS_Restart " + server.cmdPort + " " + server.dataPort;
-            System.out.println("Try to send restart request to " + server.hostname + " ...");
+            DataOutputStream os = new DataOutputStream(
+	      new BufferedOutputStream(socket.getOutputStream()));
+            String msg = "JSS_Restart " + server.cmdPort + " " +
+	      server.dataPort;
+            System.out.println("Try to send restart request to " +
+	      server.hostname + " ...");
             os.writeInt(msg.length());
             os.writeBytes(msg);
             os.flush();
             os.close();
             socket.close();
-            System.out.println("Message \"" + msg + "\" successfully send to JSS server at " + server.hostname);
+            System.out.println("Message \"" + msg +
+	      "\" successfully send to JSS server at " + server.hostname);
         } catch (UnknownHostException e) {
             pn("Can not find jss host " + server.hostname);
         } catch (NoRouteToHostException e) {
-            pn("Can not find route to jss host " + server.hostname + ", may caused by an internal firewall");
+            pn("Can not find route to jss host " + server.hostname +
+	      ", may caused by an internal firewall");
         } catch (IOException e) {
             pn("IO Error while connecting to jss host " + server.hostname);
         }
     }
 
+    // Get the server that has been inactive for the longest time (accounting
+    // for client priority).
     public synchronized DEViseServer getNextAvailableServer()
     {
         DEViseServer server = null;
@@ -518,6 +596,7 @@ public class jspop implements Runnable
         for (int i = 0; i < servers.size(); i++) {
             DEViseServer newserver = (DEViseServer)servers.elementAt(i);
             if (newserver != null) {
+		// ADD COMMENT -- what is the meaning of status?
                 if (newserver.getStatus() == 0) {
                     try {
                         newserver.start();
@@ -536,7 +615,10 @@ public class jspop implements Runnable
                         return newserver;
                     }
 
-                    clientTime = (float)client.getActiveTime() / (float)client.getPriority();
+		    // Keep track of the server that's been inactive the
+		    // longest (accounting for client priority).
+                    clientTime = (float)client.getActiveTime() /
+		      (float)client.getPriority();
                     if (time < 0.0) {
                         time = clientTime;
                         server = newserver;
@@ -553,6 +635,9 @@ public class jspop implements Runnable
         return server;
     }
 
+    //----------------------------------------------------------------------
+
+    // ADD COMMENT -- what's encoded in this string?
     public synchronized String getServerState()
     {
         String state = "{";
@@ -593,6 +678,9 @@ public class jspop implements Runnable
         return state;
     }
 
+    //----------------------------------------------------------------------
+
+    // Get a unique ID for a client.
     private synchronized Integer getID()
     {
         if (IDCount == Integer.MAX_VALUE) {
@@ -611,7 +699,9 @@ public class jspop implements Runnable
         return id;
     }
 
+    //----------------------------------------------------------------------
 
+    // Check command-line arguments and set variables accordingly.
     private void checkArguments(String[] args)
     {
         for (int i = 0; i < args.length; i++) {
@@ -706,13 +796,15 @@ public class jspop implements Runnable
         readCFGFile(userFileName);
     }
 
+    // Read user configuration file.
     private void readCFGFile(String filename)
     {
         RandomAccessFile uf = null;
         try {
             uf = new RandomAccessFile(filename, "r");
         } catch (IOException e) {
-            System.out.println("Invalid user configuration file \"" + filename + "\"");
+            System.out.println("Invalid user configuration file \"" +
+	      filename + "\"");
             System.exit(1);
         }
 
@@ -735,7 +827,8 @@ public class jspop implements Runnable
             } catch (IOException e1) {
             }
 
-            System.out.println("Can not read from user configuration file \"" + filename + "\"");
+            System.out.println("Can not read from user configuration file \""
+	      + filename + "\"");
             System.exit(1);
         } catch (YException e) {
             try {

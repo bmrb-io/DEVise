@@ -12,13 +12,20 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// This class is the jspop's interface to jss processes.  The main function
+// of this class is to listen for a connection request from a jss, and
+// add a new server or servers as a result.
+
+// There is one instance of this class for a jspop process.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.7  2000/03/30 19:14:36  wenger
+// Improved error messages for socket creation failures.
+//
 // Revision 1.6  2000/03/23 16:26:16  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -41,8 +48,8 @@ public class JssHandler implements Runnable
     private int jspopPort = 0;
     private ServerSocket jssServerSocket = null;
 
-    // status = 0, handler is not running
-    // status = 1, handler is running
+    // status = false, handler is not running
+    // status = true, handler is running
     private boolean status = false;
 
     public JssHandler(jspop j, int port) throws YException

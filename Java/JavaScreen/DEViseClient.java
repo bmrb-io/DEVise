@@ -12,13 +12,23 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// This class maintains the state for each client (JavaScreen).  It is
+// also used to read commands from the client, and send commands and
+// data to the client.
+
+// There is one instance of this class for each client (JavaScreen)
+// connected to a jspop.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.14  2000/04/27 20:15:24  wenger
+// Added DEViseCommands class which has string constants for all command
+// names; replaced all literal command names in code with the appropriate
+// DEViseCommand constants.
+//
 // Revision 1.13  2000/03/23 16:26:12  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -49,7 +59,8 @@ public class DEViseClient
 {
     jspop pop = null;
 
-    public static int CLOSE = 0, REQUEST = 1, IDLE = 2, SERVE = 3;
+    // Client states.
+    public static final int CLOSE = 0, REQUEST = 1, IDLE = 2, SERVE = 3;
     private int status = 0;
 
     public DEViseUser user = null;
@@ -82,7 +93,7 @@ public class DEViseClient
 
         savedSessionName = ".tmp/jstmp_" + ID.intValue();
 
-        status = DEViseClient.IDLE;
+        status = IDLE;
     }
 
     public int getPriority()
@@ -106,22 +117,24 @@ public class DEViseClient
 
     public synchronized void setSuspend()
     {
-        if (status != DEViseClient.CLOSE) {
+        if (status != CLOSE) {
             lastSuspendTime = DEViseGlobals.getCurrentTime();
             lastActiveTime = -1;
-            status = DEViseClient.IDLE;
+            status = IDLE;
         }
     }
 
     public synchronized void setActive()
     {
-        if (status != DEViseClient.CLOSE) {
+        if (status != CLOSE) {
             lastActiveTime = DEViseGlobals.getCurrentTime();
             lastSuspendTime = -1;
-            status = DEViseClient.SERVE;
+            status = SERVE;
         }
     }
 
+    // Get the amount of time this client has been suspended (0 if not
+    // suspended).
     public synchronized long getSuspendTime()
     {
         if (lastSuspendTime < 0) {
@@ -131,6 +144,8 @@ public class DEViseClient
         }
     }
 
+    // Get the amount of time this client has been active, since it was
+    // last suspended (0 if not active).
     public synchronized long getActiveTime()
     {
         if (lastActiveTime < 0) {
@@ -140,9 +155,13 @@ public class DEViseClient
         }
     }
 
+    // Get the status of the client (CLOSE, etc.).  Note that this function
+    // does not merely return the current state -- if the current state
+    // is IDLE, it checks the command socket, and if there is a pending
+    // command the state becomes REQUEST).
     public synchronized int getStatus()
     {
-        if (status != DEViseClient.IDLE) {
+        if (status != IDLE) {
             return status;
         }
 
@@ -151,7 +170,7 @@ public class DEViseClient
             if (flag) {
                 return status;
             } else {
-                status = DEViseClient.REQUEST;
+                status = REQUEST;
                 return status;
             }
         } catch (YException e) {
@@ -163,7 +182,7 @@ public class DEViseClient
 
     public synchronized void setStatus(int s)
     {
-        if (status != DEViseClient.CLOSE) {
+        if (status != CLOSE) {
             status = s;
         }
     }
@@ -176,7 +195,7 @@ public class DEViseClient
 
     private synchronized boolean isSocketEmpty() throws YException
     {
-        if (status != DEViseClient.CLOSE) {
+        if (status != CLOSE) {
             return socket.isEmpty();
         } else {
             throw new YException("Invalid client");
@@ -185,11 +204,15 @@ public class DEViseClient
 
     public String getCmd() throws YException, InterruptedIOException
     {
-        if (getStatus() != DEViseClient.CLOSE) {
+        if (getStatus() != CLOSE) {
             try {
                 while (!isSocketEmpty()) {
                     String command = receiveCmd();
                     if (command != null) {
+			//
+			// Commands specifically checked for in this 'if'
+			// require special processing.  All other commands
+			// are "normal".
                         if (!command.startsWith(DEViseCommands.CONNECT) && user == null) {
                             sendCmd(DEViseCommands.ERROR + " {No user infomation given}");
                             throw new YException("Can not get user information for this client");
@@ -222,6 +245,10 @@ public class DEViseClient
                             String state = DEViseCommands.UPDATE_SERVER_STATE + " " + pop.getServerState();
                             sendCmd(new String[] {state, DEViseCommands.DONE});
                         } else {
+			    //
+			    // Send an ACK immediately so that the client
+			    // knows that we received the command.
+			    //
                             cmdBuffer.addElement(command);
                             sendCmd(DEViseCommands.ACK);
                         }
@@ -244,7 +271,7 @@ public class DEViseClient
 
     private synchronized String receiveCmd() throws YException, InterruptedIOException
     {
-        if (status != DEViseClient.CLOSE) {
+        if (status != CLOSE) {
             String cmd = socket.receiveCmd();
             pop.pn("Received command from client(" + hostname + ") :  \"" + cmd + "\"");
             return cmd;
@@ -255,7 +282,7 @@ public class DEViseClient
 
     public synchronized void sendCmd(String[] cmds) throws YException
     {
-        if (status != DEViseClient.CLOSE) {
+        if (status != CLOSE) {
             if (cmds == null)
                 return;
 
@@ -274,7 +301,7 @@ public class DEViseClient
 
     public synchronized void sendCmd(String cmd) throws YException
     {
-        if (status != DEViseClient.CLOSE) {
+        if (status != CLOSE) {
             if (cmd == null) {
                 return;
             }
@@ -288,7 +315,7 @@ public class DEViseClient
 
     public synchronized void sendData(Vector data) throws YException
     {
-        if (status != DEViseClient.CLOSE) {
+        if (status != CLOSE) {
             if (data == null)
                 return;
 
@@ -306,11 +333,11 @@ public class DEViseClient
 
     public synchronized void close()
     {
-        if (status == DEViseClient.CLOSE) {
+        if (status == CLOSE) {
             return;
         }
 
-        status = DEViseClient.CLOSE;
+        status = CLOSE;
 
         pop.pn("Close connection to client(" + hostname + ")");
 
