@@ -1305,14 +1305,19 @@ int UniData::TxtCopy_String(char *dst, char *src, udParam *ud)
     } else if (ud->attr->whitespace()) {
       tmpn = strcspn(src, ud->attr->whitespace());
       n = (tmpn < n) ? tmpn : n;
+    } else if ((delim = ud->attr->delimiter())) {
+      tmpn = strcspn(src,delim);
+	 n = (tmpn < n) ? tmpn : n;
     }
 
+/*
     delim = ud->attr->delimiter();
     if (!delim)
         delim = "\n";
 
     tmpn = strcspn(src,delim);
     n = (tmpn < n) ? tmpn : n;
+*/
 
     strncpy(str,src,n);
     str[n] = '\0';
