@@ -20,6 +20,9 @@
    $Id$
 
    $Log$
+   Revision 1.12  1996/12/03 20:36:27  jussi
+   Removed unnecessary AsyncFd() ans AsyncIO().
+
    Revision 1.11  1996/08/06 19:23:02  beyer
    Made functional again after the last changes
 
@@ -128,7 +131,7 @@ DataSourceSegment::DataSourceSegment(DataSource* dataSource,
 DataSourceSegment::~DataSourceSegment()
 {
     DO_DEBUG(printf("DataSourceSegment::~DataSourceSegment()\n"));
-    // right now the segment is in control of the origina data source.
+    // right now the segment is in control of the original data source.
     // when the data source is registered in a catalog, it will no
     // longer delete it.
     delete _dataSource;
@@ -171,7 +174,6 @@ char DataSourceSegment::IsOk()
     return _dataSource && _dataSource->IsOk();
 }
 
-
 //-----------------------------------------------------------------------------
 
 DevStatus DataSourceSegment::Close()
@@ -184,7 +186,22 @@ DevStatus DataSourceSegment::Close()
 
 char* DataSourceSegment::Fgets(char *buffer, int size)
 {
+#if defined(DEBUG)
+    printf("DataSourceSegment::Fgets(%d)\n", size);
+#endif
+
     DOASSERT(_dataSource != NULL, "no dataSource");
+
+    if (_dataLength != DATA_LENGTH_UNDEFINED) {
+      long offset = Tell();
+      if (offset >= _dataLength) {
+        return NULL;
+      /* Note: + 1 here for the byte to hold the \0. */
+      } else if (offset + size > _dataLength + 1) {
+        size = _dataLength - offset + 1;
+      }
+    }
+
     return _dataSource->Fgets(buffer, size);
 }
 
@@ -192,7 +209,21 @@ char* DataSourceSegment::Fgets(char *buffer, int size)
 
 size_t DataSourceSegment::Fread(char *buf, size_t size, size_t itemCount)
 {
+#if defined(DEBUG)
+    printf("DataSourceSegment::Fread(%d, %d)\n", size, itemCount);
+#endif
+
     DOASSERT(_dataSource != NULL, "no dataSource");
+
+    if (_dataLength != DATA_LENGTH_UNDEFINED) {
+      long offset = Tell();
+      if (offset >= _dataLength) {
+        return 0;
+      } else if (offset + size * itemCount > (unsigned long) _dataLength) {
+	itemCount = (_dataLength - offset) / size;
+      }
+    }
+
     return _dataSource->Fread(buf, size, itemCount);
 }
 
@@ -200,7 +231,21 @@ size_t DataSourceSegment::Fread(char *buf, size_t size, size_t itemCount)
 
 size_t DataSourceSegment::Read(char *buf, int byteCount)
 {
+#if defined(DEBUG)
+    printf("DataSourceSegment::Read(%d)\n", byteCount);
+#endif
+
     DOASSERT(_dataSource != NULL, "no dataSource");
+
+    if (_dataLength != DATA_LENGTH_UNDEFINED) {
+      long offset = Tell();
+      if (offset >= _dataLength) {
+        return 0;
+      } else if (offset + byteCount > _dataLength) {
+	byteCount = _dataLength - offset;
+      }
+    }
+
     return _dataSource->Read(buf, byteCount);
 }
 
@@ -208,7 +253,21 @@ size_t DataSourceSegment::Read(char *buf, int byteCount)
 
 size_t DataSourceSegment::Fwrite(const char *buf, size_t size, size_t itemCount)
 {
+#if defined(DEBUG)
+    printf("DataSourceSegment::Fwrite(%d, %d)\n", size, itemCount);
+#endif
+
     DOASSERT(_dataSource != NULL, "no dataSource");
+
+    if (_dataLength != DATA_LENGTH_UNDEFINED) {
+      long offset = Tell();
+      if (offset >= _dataLength) {
+        return 0;
+      } else if (offset + size * itemCount > (unsigned long) _dataLength) {
+	itemCount = (_dataLength - offset) / size;
+      }
+    }
+
     return _dataSource->Fwrite(buf, size, itemCount);
 }
 
@@ -216,11 +275,23 @@ size_t DataSourceSegment::Fwrite(const char *buf, size_t size, size_t itemCount)
 
 size_t DataSourceSegment::Write(const char *buf, size_t byteCount)
 {
+#if defined(DEBUG)
+    printf("DataSourceSegment::Write(%d)\n", byteCount);
+#endif
+
     DOASSERT(_dataSource != NULL, "no dataSource");
+
+    if (_dataLength != DATA_LENGTH_UNDEFINED) {
+      long offset = Tell();
+      if (offset >= _dataLength) {
+        return 0;
+      } else if (offset + byteCount > (unsigned long) _dataLength) {
+	byteCount = _dataLength - offset;
+      }
+    }
+
     return _dataSource->Write(buf, byteCount);
 }
-
-
 
 /*-----------------------------------------------------------------------------
  * function: DataSourceSegment::Seek
@@ -228,7 +299,7 @@ size_t DataSourceSegment::Write(const char *buf, size_t byteCount)
  */
 int DataSourceSegment::Seek(long offset, int from)
 {
-    DO_DEBUG(printf("DataSourceSegment::Seek()\n"));
+    DO_DEBUG(printf("DataSourceSegment::Seek(%ld)\n", offset));
     DOASSERT(_dataSource != NULL, "no dataSource");
 
     /*
@@ -236,8 +307,15 @@ int DataSourceSegment::Seek(long offset, int from)
      * _dataOffset from it because Seek() returns zero (not file offset)
      * on successful return, -1 otherwise.
      */
+    int result = _dataSource->Seek(offset + _dataOffset, from);
 
-    return _dataSource->Seek(offset + _dataOffset, from);
+    if (_dataLength != DATA_LENGTH_UNDEFINED) {
+      if (Tell() > _dataLength) {
+	result = gotoEnd();
+      }
+    }
+
+    return result;
 }
 
 /*------------------------------------------------------------------------------
@@ -282,14 +360,17 @@ int DataSourceSegment::gotoEnd()
     return result;
 }
 
-
 //---------------------------------------------------------------------------
 
 int DataSourceSegment::append(void *buf, int recSize)
 {
     DOASSERT(_dataSource != NULL, "no dataSource");
-    return _dataSource->append(buf, recSize);
-    
+    if (_dataLength != DATA_LENGTH_UNDEFINED) {
+      reportErrNosys("Cannot append to a fixed-length data segment");
+      return -1;
+    } else {
+      return _dataSource->append(buf, recSize);
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -324,7 +405,4 @@ Boolean DataSourceSegment::isTape()
     return _dataSource->isTape();
 }
 
-
-
 /*============================================================================*/
-

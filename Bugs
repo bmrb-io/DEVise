@@ -249,7 +249,7 @@ Num Date        Status  Description
 			in with a kind of maroon color. Problem does
                         not seem to exist any longer. (rkw/jpm)
 
-068 11/14/96	OPEN	Exporting a session with data doesn't seem to work
+068 11/14/96	FIXED	Exporting a session with data doesn't seem to work
 			if there is more than one data source (export
 			appears to work, but subsequent open fails).  (See
 			session test/miron_new_wdata.tk.) (rkw)

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/12/18 21:13:28  jussi
+  Added code that instantiates the query processor/buffer manager
+  so that forked DataSource processes can inherit shared memory
+  and semaphore from the parent process.
+
   Revision 1.14  1996/12/03 20:32:09  jussi
   Improved Init/Get/Done interface.
 
@@ -217,7 +222,6 @@ TData::TData(char* name, char* type, char* param, int recSize)
 	DOASSERT(0, "Invalid TData type");
     }
 
-    //TEMPTEMP -- make sure this works right!!
     if ((segOffset != 0) || (segLength != 0)) {
 	  _data = new DataSourceSegment(_data, segOffset, segLength);
     }
