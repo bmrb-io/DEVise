@@ -1,13 +1,34 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/02 21:30:38  jussi
+  Tried if letting Tcl/Tk handle all X events and pass a copy
+  of each event to us would solve the problem with TK_WINDOW_old.
+  This event handling mechanism didn't turn out to work right
+  so I renamed it TK_WINDOW_EV2.
+
   Revision 1.2  1995/09/05 21:13:39  jussi
-  Added/update CVS header.
+  Added/updated CVS header.
 */
 
 #ifndef XDisplay_h
 #define XDisplay_h
+
 #include "Display.h"
 #include "Xdef.h"
 #include "DList.h"
@@ -58,6 +79,7 @@ public:
 
 protected:
 	/* from DeviseDisplay */
+        Boolean ClosestColor(Colormap &map, XColor &color, Color &c);
 	virtual void AllocColor(char *name, Color globalColor);
 	virtual void AllocColor(double r, double g, double b, Color globalColor);
 
