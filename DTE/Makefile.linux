@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.12  1998/03/04 20:35:51  wenger
+# Updated dependencies.
+#
 # Revision 1.11  1998/01/07 19:25:37  wenger
 # Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
 # server library into Devise); updated solaris, sun, linux, and hp
@@ -341,19 +344,6 @@ joins.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
 joins.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 joins.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
 joins.o: myopt.h url.h SockStream.h listop.h Iterator.h
-lex.yy.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-lex.yy.o: /usr/include/assert.h /usr/include/features.h
-lex.yy.o: /usr/include/sys/cdefs.h myopt.h queue.h types.h exception.h
-lex.yy.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
-lex.yy.o: /usr/include/huge_val.h /usr/include/endian.h
-lex.yy.o: /usr/include/bytesex.h /usr/include/nan.h
-lex.yy.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
-lex.yy.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
-lex.yy.o: url.h SockStream.h listop.h ParseTree.h TypeCheck.h StringLess.h
-lex.yy.o: /usr/include/stdlib.h
-lex.yy.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-lex.yy.o: /usr/include/errno.h /usr/include/linux/errno.h
-lex.yy.o: /usr/include/asm/errno.h /usr/include/alloca.h
 listop.o: /usr/include/assert.h /usr/include/features.h
 listop.o: /usr/include/sys/cdefs.h /usr/include/math.h
 listop.o: /usr/include/huge_val.h /usr/include/endian.h

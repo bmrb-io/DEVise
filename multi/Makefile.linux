@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.9  1998/03/04 20:36:04  wenger
+# Updated dependencies.
+#
 # Revision 1.8  1998/01/07 19:30:57  wenger
 # Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
 # server library into Devise); updated solaris, sun, linux, and hp
@@ -896,11 +899,11 @@ disp.o: /usr/include/linux/time.h /usr/include/sys/types.h
 disp.o: /usr/include/sys/bitypes.h ../graphics.new/TDataMap.h
 disp.o: ../graphics/DeviseTypes.h ../graphics/DevStatus.h
 disp.o: ../graphics/Pattern.h ../graphics.new/ShapeID.h
-disp.o: ../graphics/VisualArg.h ../graphics.new/RecId.h
+disp.o: ../graphics/VisualArg.h /usr/include/stdio.h /usr/include/libio.h
+disp.o: /usr/include/_G_config.h ../graphics.new/RecId.h
 disp.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h ../graphics/DList.h
 disp.o: ../graphics/Exit.h ../graphics/Init.h ../graphics/BufPolicy.h
 disp.o: ../graphics.new/ActionDefault.h ../graphics.new/Action.h
-disp.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
 disp.o: ../graphics/Util.h /usr/include/stdlib.h
 disp.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
 disp.o: /usr/include/errno.h /usr/include/linux/errno.h

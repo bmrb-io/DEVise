@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.12  1998/03/04 20:36:08  wenger
+# Updated dependencies.
+#
 # Revision 1.11  1998/01/07 19:32:20  wenger
 # Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
 # server library into Devise); updated solaris, sun, linux, and hp
@@ -56,42 +59,42 @@ Templates.o: /usr/include/asm/types.h /usr/include/linux/time.h
 Templates.o: /usr/include/sys/types.h /usr/include/sys/bitypes.h
 Templates.o: ../graphics.new/QueryProc.h ../graphics/DeviseTypes.h
 Templates.o: /usr/include/values.h ../graphics/DevStatus.h
-Templates.o: ../graphics/VisualArg.h ../graphics.new/RecId.h
-Templates.o: ../graphics.new/QPRange.h ../graphics/DList.h ../graphics/Exit.h
-Templates.o: ../graphics/Dispatcher.h ../graphics/Journal.h SortedTable.h
-Templates.o: ../graphics/Timer.h ../graphics.new/BufMgr.h
-Templates.o: ../graphics/BufPolicy.h ../graphics.new/BufferPolicy.h
-Templates.o: ../graphics.new/RangeInfoArray.h ../graphics.new/TData.h
-Templates.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
-Templates.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-Templates.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
-Templates.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
-Templates.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
-Templates.o: /usr/include/asm/shmparam.h /usr/include/errno.h
-Templates.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-Templates.o: /usr/include/assert.h /usr/include/stdio.h /usr/include/libio.h
-Templates.o: /usr/include/_G_config.h /usr/include/limits.h
-Templates.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-Templates.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
-Templates.o: /usr/include/linux/stat.h ../graphics.new/machdep.h
-Templates.o: /usr/include/sys/param.h /usr/include/linux/param.h
-Templates.o: /usr/include/asm/param.h /usr/include/sys/wait.h
-Templates.o: /usr/include/gnu/types.h /usr/include/waitflags.h
-Templates.o: /usr/include/waitstatus.h /usr/include/endian.h
-Templates.o: /usr/include/bytesex.h /usr/include/sys/ioctl.h
-Templates.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
-Templates.o: /usr/include/termios.h /usr/include/linux/termios.h
-Templates.o: /usr/include/asm/termios.h /usr/include/asm/termbits.h
-Templates.o: /usr/include/asm/ioctls.h /usr/include/sys/socketio.h
-Templates.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
-Templates.o: /usr/include/netdb.h /usr/include/paths.h
-Templates.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-Templates.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
-Templates.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-Templates.o: /usr/include/asm/byteorder.h ../graphics.new/GData.h
-Templates.o: ../graphics.new/RangeList.h ../graphics.new/RangeInfo.h
-Templates.o: ../graphics/AttrList.h ../graphics/Init.h
-Templates.o: ../graphics/Scheduler.h
+Templates.o: ../graphics/VisualArg.h /usr/include/stdio.h
+Templates.o: /usr/include/libio.h /usr/include/_G_config.h
+Templates.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
+Templates.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
+Templates.o: ../graphics/Journal.h SortedTable.h ../graphics/Timer.h
+Templates.o: ../graphics.new/BufMgr.h ../graphics/BufPolicy.h
+Templates.o: ../graphics.new/BufferPolicy.h ../graphics.new/RangeInfoArray.h
+Templates.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
+Templates.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
+Templates.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+Templates.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+Templates.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
+Templates.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+Templates.o: /usr/include/errno.h /usr/include/linux/errno.h
+Templates.o: /usr/include/asm/errno.h /usr/include/assert.h
+Templates.o: /usr/include/limits.h /usr/include/posix1_lim.h
+Templates.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+Templates.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
+Templates.o: ../graphics.new/machdep.h /usr/include/sys/param.h
+Templates.o: /usr/include/linux/param.h /usr/include/asm/param.h
+Templates.o: /usr/include/sys/wait.h /usr/include/gnu/types.h
+Templates.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+Templates.o: /usr/include/endian.h /usr/include/bytesex.h
+Templates.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+Templates.o: /usr/include/asm/ioctl.h /usr/include/termios.h
+Templates.o: /usr/include/linux/termios.h /usr/include/asm/termios.h
+Templates.o: /usr/include/asm/termbits.h /usr/include/asm/ioctls.h
+Templates.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
+Templates.o: /usr/include/asm/sockios.h /usr/include/netdb.h
+Templates.o: /usr/include/paths.h /usr/include/sys/socket.h
+Templates.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+Templates.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+Templates.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+Templates.o: ../graphics.new/GData.h ../graphics.new/RangeList.h
+Templates.o: ../graphics.new/RangeInfo.h ../graphics/AttrList.h
+Templates.o: ../graphics/Init.h ../graphics/Scheduler.h
 devtype.o: /usr/include/stdlib.h /usr/include/features.h
 devtype.o: /usr/include/sys/cdefs.h
 devtype.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h

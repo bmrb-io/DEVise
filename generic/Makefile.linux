@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.14  1998/03/04 20:36:01  wenger
+# Updated dependencies.
+#
 # Revision 1.13  1998/02/12 17:15:41  wenger
 # Merged through collab_br_2; updated version number to 1.5.1.
 #
@@ -72,19 +75,6 @@ DeviseBatchClient.o: /usr/include/sys/types.h /usr/include/linux/types.h
 DeviseBatchClient.o: /usr/include/linux/posix_types.h
 DeviseBatchClient.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
 DeviseBatchClient.o: /usr/include/sys/bitypes.h ../csgroup/Client.h
-DeviseBatchClient.o: ../csgroup/Csprotocols.h /usr/include/sys/socket.h
-DeviseBatchClient.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-DeviseBatchClient.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
-DeviseBatchClient.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-DeviseBatchClient.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
-DeviseBatchClient.o: /usr/include/arpa/inet.h /usr/include/sys/param.h
-DeviseBatchClient.o: /usr/include/limits.h /usr/include/posix1_lim.h
-DeviseBatchClient.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-DeviseBatchClient.o: /usr/include/linux/param.h /usr/include/asm/param.h
-DeviseBatchClient.o: /usr/include/netdb.h /usr/include/paths.h
-DeviseBatchClient.o: /usr/include/sys/varargs.h
-DeviseBatchClient.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
-DeviseBatchClient.o: ../csgroup/keys.h ../csgroup/types.h
 DeviseClient.o: /usr/include/stdio.h /usr/include/libio.h
 DeviseClient.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
 DeviseClient.o: /usr/include/stdlib.h /usr/include/features.h
@@ -96,19 +86,7 @@ DeviseClient.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 DeviseClient.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
 DeviseClient.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
 DeviseClient.o: /usr/include/sys/bitypes.h ../csgroup/TclClient.h
-DeviseClient.o: ../csgroup/Client.h ../csgroup/Csprotocols.h
-DeviseClient.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-DeviseClient.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-DeviseClient.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
-DeviseClient.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-DeviseClient.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
-DeviseClient.o: /usr/include/sys/param.h /usr/include/limits.h
-DeviseClient.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-DeviseClient.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
-DeviseClient.o: /usr/include/asm/param.h /usr/include/netdb.h
-DeviseClient.o: /usr/include/paths.h /usr/include/sys/varargs.h
-DeviseClient.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
-DeviseClient.o: ../csgroup/keys.h ../csgroup/types.h
+DeviseClient.o: ../csgroup/Client.h
 collaborator.o: ../csgroup/server.h ../csgroup/types.h
 collaborator.o: /usr/include/sys/types.h /usr/include/linux/types.h
 collaborator.o: /usr/include/linux/posix_types.h
@@ -119,32 +97,30 @@ collaborator.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
 collaborator.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
 collaborator.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
 collaborator.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+collaborator.o: ../csgroup/colbr.h /usr/include/string.h
+collaborator.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
 collaborator.o: /usr/include/arpa/inet.h /usr/include/sys/param.h
 collaborator.o: /usr/include/limits.h /usr/include/posix1_lim.h
 collaborator.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
 collaborator.o: /usr/include/linux/param.h /usr/include/asm/param.h
-collaborator.o: ../csgroup/colbr.h /usr/include/string.h
-collaborator.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-collaborator.o: ../csgroup/dbase.h ../csgroup/error.h
+collaborator.o: ../csgroup/dbase.h ../csgroup/htable.h ../csgroup/bucket.h
+collaborator.o: ../csgroup/entry.h ../csgroup/datum.h ../csgroup/queue.h
+collaborator.o: ../csgroup/queueElem.h ../csgroup/colbrLog.h ../csgroup/log.h
+collaborator.o: /usr/include/stdio.h /usr/include/libio.h
+collaborator.o: /usr/include/_G_config.h ../csgroup/prnfns.h
 collaborator.o: /usr/include/sys/varargs.h
 collaborator.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
-collaborator.o: ../csgroup/htable.h ../csgroup/bucket.h ../csgroup/entry.h
-collaborator.o: ../csgroup/datum.h ../csgroup/queue.h ../csgroup/queueElem.h
-collaborator.o: ../csgroup/colbrLog.h ../csgroup/log.h /usr/include/stdio.h
-collaborator.o: /usr/include/libio.h /usr/include/_G_config.h
-collaborator.o: /usr/include/stdlib.h /usr/include/errno.h
-collaborator.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-collaborator.o: /usr/include/alloca.h /usr/include/sys/uio.h
-collaborator.o: /usr/include/unistd.h /usr/include/posix_opt.h
-collaborator.o: /usr/include/gnu/types.h /usr/include/confname.h
-collaborator.o: ../csgroup/prnfns.h /usr/include/strings.h
-collaborator.o: ../csgroup/serverInterface.h /usr/include/signal.h
-collaborator.o: /usr/include/linux/signal.h /usr/include/asm/signal.h
-collaborator.o: /usr/include/memory.h /usr/include/sys/resource.h
-collaborator.o: /usr/include/sys/time.h /usr/include/linux/time.h
-collaborator.o: /usr/include/time.h /usr/include/linux/resource.h
-collaborator.o: /usr/include/asm/resource.h /usr/include/syslog.h
-collaborator.o: /usr/include/sys/syslog.h
+collaborator.o: ../csgroup/serverInterface.h /usr/include/stdlib.h
+collaborator.o: /usr/include/errno.h /usr/include/linux/errno.h
+collaborator.o: /usr/include/asm/errno.h /usr/include/alloca.h
+collaborator.o: /usr/include/signal.h /usr/include/linux/signal.h
+collaborator.o: /usr/include/asm/signal.h /usr/include/unistd.h
+collaborator.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+collaborator.o: /usr/include/confname.h /usr/include/memory.h
+collaborator.o: /usr/include/sys/resource.h /usr/include/sys/time.h
+collaborator.o: /usr/include/linux/time.h /usr/include/time.h
+collaborator.o: /usr/include/linux/resource.h /usr/include/asm/resource.h
+collaborator.o: /usr/include/syslog.h /usr/include/sys/syslog.h
 collaborator.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h
 generic.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
 generic.o: /usr/include/sys/cdefs.h /usr/include/errno.h

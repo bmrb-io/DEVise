@@ -51,3 +51,378 @@ depend:
 
 # DO NOT DELETE
 
+setup.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+setup.o: /usr/include/sys/cdefs.h
+setup.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h
+setup.o: /usr/include/unistd.h /usr/include/features.h
+setup.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+setup.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+setup.o: /usr/include/confname.h /usr/include/sys/types.h
+setup.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+setup.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+setup.o: /usr/include/sys/bitypes.h /usr/include/errno.h
+setup.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+
+correct_math.o: /usr/include/stdio.h /usr/include/libio.h
+correct_math.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
+correct_math.o: /usr/include/math.h /usr/include/features.h
+correct_math.o: /usr/include/huge_val.h /usr/include/endian.h
+correct_math.o: /usr/include/bytesex.h /usr/include/nan.h
+correct_math.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+correct_math.o: /usr/include/values.h /usr/include/ieee754.h
+correct_math.o: /usr/include/ieee854.h heap.h
+heap.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+heap.o: /usr/include/sys/cdefs.h heap.h
+int_key.o: int_key.h .././setup.h /usr/include/assert.h
+int_key.o: /usr/include/features.h /usr/include/sys/cdefs.h
+int_key.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+int_key.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/endian.h
+int_key.o: /usr/include/bytesex.h /usr/include/nan.h
+int_key.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+int_key.o: /usr/include/values.h /usr/include/ieee754.h
+int_key.o: /usr/include/ieee854.h bit_vec.h /usr/include/stdlib.h
+int_key.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+int_key.o: /usr/include/errno.h /usr/include/linux/errno.h
+int_key.o: /usr/include/asm/errno.h /usr/include/alloca.h
+int_key.o: /usr/include/strings.h /usr/include/string.h
+
+dbJussi.o: /usr/include/sys/types.h /usr/include/linux/types.h
+dbJussi.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+dbJussi.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+dbJussi.o: /usr/include/unistd.h /usr/include/features.h
+dbJussi.o: /usr/include/sys/cdefs.h /usr/include/posix_opt.h
+dbJussi.o: /usr/include/gnu/types.h
+dbJussi.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+dbJussi.o: /usr/include/confname.h /usr/include/stdlib.h /usr/include/errno.h
+dbJussi.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+dbJussi.o: /usr/include/alloca.h /usr/include/sys/stat.h
+dbJussi.o: /usr/include/linux/stat.h /usr/include/fcntl.h
+dbJussi.o: /usr/include/linux/fcntl.h /usr/include/asm/fcntl.h dbJussi.h
+dbJussi.o: ../../src/setup.h /usr/include/assert.h ../../src/dbinterface.h
+dbJussi.o: ../../../graphics.new/SBufMgr.h /usr/include/sys/uio.h
+dbJussi.o: ../../../graphics/DeviseTypes.h /usr/include/values.h
+dbJussi.o: ../../../graphics/DevStatus.h ../../../graphics.new/MemMgr.h
+dbJussi.o: ../../../graphics.new/DCE.h /usr/include/sys/ipc.h
+dbJussi.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
+dbJussi.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+dbJussi.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+dbJussi.o: /usr/include/asm/shmparam.h /usr/include/stdio.h
+dbJussi.o: /usr/include/libio.h /usr/include/_G_config.h
+dbJussi.o: /usr/include/limits.h /usr/include/posix1_lim.h
+dbJussi.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+dbJussi.o: ../../../graphics.new/machdep.h /usr/include/sys/param.h
+dbJussi.o: /usr/include/linux/param.h /usr/include/asm/param.h
+dbJussi.o: /usr/include/sys/time.h /usr/include/linux/time.h
+dbJussi.o: /usr/include/time.h /usr/include/sys/wait.h
+dbJussi.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+dbJussi.o: /usr/include/endian.h /usr/include/bytesex.h
+dbJussi.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+dbJussi.o: /usr/include/asm/ioctl.h /usr/include/termios.h
+dbJussi.o: /usr/include/linux/termios.h /usr/include/asm/termios.h
+dbJussi.o: /usr/include/asm/termbits.h /usr/include/asm/ioctls.h
+dbJussi.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
+dbJussi.o: /usr/include/asm/sockios.h /usr/include/netdb.h
+dbJussi.o: /usr/include/paths.h /usr/include/sys/socket.h
+dbJussi.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+dbJussi.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+dbJussi.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+dbJussi.o: ../../../tape/tapedrive.h ../../../tape/HashTable.h
+
+alignedsortedpage.o: /usr/include/stdio.h /usr/include/libio.h
+alignedsortedpage.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
+alignedsortedpage.o: /usr/include/string.h /usr/include/features.h
+alignedsortedpage.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+alignedsortedpage.o: ../../src/setup.h /usr/include/assert.h
+alignedsortedpage.o: ../../src/dbinterface.h alignedsortedpage.h
+fixed_entrysz_p.o: /usr/include/stdlib.h /usr/include/features.h
+fixed_entrysz_p.o: /usr/include/sys/cdefs.h
+fixed_entrysz_p.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+fixed_entrysz_p.o: /usr/include/errno.h /usr/include/linux/errno.h
+fixed_entrysz_p.o: /usr/include/asm/errno.h /usr/include/alloca.h
+fixed_entrysz_p.o: fixed_entrysz_p.h stackpage.h ../../src/dbinterface.h
+fixed_entrysz_p.o: ../../src/setup.h /usr/include/assert.h
+fixed_entrysz_p.o: ../../src/Common/bit_vec.h /usr/include/stdio.h
+fixed_entrysz_p.o: /usr/include/libio.h /usr/include/_G_config.h
+int_keyed_p.o: /usr/include/stdlib.h /usr/include/features.h
+int_keyed_p.o: /usr/include/sys/cdefs.h
+int_keyed_p.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+int_keyed_p.o: /usr/include/errno.h /usr/include/linux/errno.h
+int_keyed_p.o: /usr/include/asm/errno.h /usr/include/alloca.h int_keyed_p.h
+int_keyed_p.o: fixed_entrysz_p.h stackpage.h ../../src/dbinterface.h
+int_keyed_p.o: ../../src/setup.h /usr/include/assert.h
+int_keyed_p.o: ../../src/Common/bit_vec.h /usr/include/stdio.h
+int_keyed_p.o: /usr/include/libio.h /usr/include/_G_config.h
+int_keyed_p.o: ../../src/Common/int_key.h /usr/include/math.h
+int_keyed_p.o: /usr/include/huge_val.h /usr/include/endian.h
+int_keyed_p.o: /usr/include/bytesex.h /usr/include/nan.h
+int_keyed_p.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+int_keyed_p.o: /usr/include/values.h /usr/include/ieee754.h
+int_keyed_p.o: /usr/include/ieee854.h
+stackpage.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+stackpage.o: /usr/include/stdio.h /usr/include/libio.h
+stackpage.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
+stackpage.o: /usr/include/assert.h /usr/include/features.h
+stackpage.o: ../../src/dbinterface.h ../../src/setup.h stackpage.h
+
+make_test_bulk_file.o: /usr/include/stdlib.h /usr/include/features.h
+make_test_bulk_file.o: /usr/include/sys/cdefs.h
+make_test_bulk_file.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+make_test_bulk_file.o: /usr/include/errno.h /usr/include/linux/errno.h
+make_test_bulk_file.o: /usr/include/asm/errno.h /usr/include/alloca.h
+make_test_bulk_file.o: /usr/include/stdio.h /usr/include/libio.h
+make_test_bulk_file.o: /usr/include/_G_config.h /usr/include/strings.h
+make_test_bulk_file.o: /usr/include/string.h ../setup.h /usr/include/assert.h
+test_aspage.o: /usr/include/stdio.h /usr/include/libio.h
+test_aspage.o: /usr/include/_G_config.h /usr/include/stdlib.h
+test_aspage.o: /usr/include/features.h /usr/include/sys/cdefs.h
+test_aspage.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+test_aspage.o: /usr/include/errno.h /usr/include/linux/errno.h
+test_aspage.o: /usr/include/asm/errno.h /usr/include/alloca.h
+test_aspage.o: ../../src/setup.h /usr/include/assert.h
+test_aspage.o: ../../src/dbinterface.h
+test_aspage.o: ../../src/PageClasses/alignedsortedpage.h
+test_bit_vec.o: /usr/include/stdlib.h /usr/include/features.h
+test_bit_vec.o: /usr/include/sys/cdefs.h
+test_bit_vec.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+test_bit_vec.o: /usr/include/errno.h /usr/include/linux/errno.h
+test_bit_vec.o: /usr/include/asm/errno.h /usr/include/alloca.h
+test_bit_vec.o: /usr/include/stdio.h /usr/include/libio.h
+test_bit_vec.o: /usr/include/_G_config.h ../../src/Common/bit_vec.h
+test_bit_vec.o: ../../src/setup.h /usr/include/assert.h
+test_btree.o: /usr/include/stdio.h /usr/include/libio.h
+test_btree.o: /usr/include/_G_config.h /usr/include/stdlib.h
+test_btree.o: /usr/include/features.h /usr/include/sys/cdefs.h
+test_btree.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+test_btree.o: /usr/include/errno.h /usr/include/linux/errno.h
+test_btree.o: /usr/include/asm/errno.h /usr/include/alloca.h
+test_btree.o: ../../src/setup.h /usr/include/assert.h ../../src/dbinterface.h
+test_btree.o: ../../src/PageClasses/alignedsortedpage.h
+test_ikp.o: ../../src/PageClasses/int_keyed_p.h
+test_ikp.o: ../../src/PageClasses/fixed_entrysz_p.h
+test_ikp.o: ../../src/PageClasses/stackpage.h ../../src/dbinterface.h
+test_ikp.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+test_ikp.o: ../../src/setup.h /usr/include/assert.h /usr/include/features.h
+test_ikp.o: /usr/include/sys/cdefs.h ../../src/Common/bit_vec.h
+test_ikp.o: /usr/include/stdio.h /usr/include/libio.h
+test_ikp.o: /usr/include/_G_config.h ../../src/Common/int_key.h
+test_ikp.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/endian.h
+test_ikp.o: /usr/include/bytesex.h /usr/include/nan.h
+test_ikp.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+test_ikp.o: /usr/include/values.h /usr/include/ieee754.h
+test_ikp.o: /usr/include/ieee854.h
+test_rtree1.o: /usr/include/sys/types.h /usr/include/linux/types.h
+test_rtree1.o: /usr/include/linux/posix_types.h
+test_rtree1.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+test_rtree1.o: /usr/include/sys/bitypes.h /usr/include/sys/stat.h
+test_rtree1.o: /usr/include/features.h /usr/include/sys/cdefs.h
+test_rtree1.o: /usr/include/linux/stat.h /usr/include/fcntl.h
+test_rtree1.o: /usr/include/gnu/types.h /usr/include/linux/fcntl.h
+test_rtree1.o: /usr/include/asm/fcntl.h ../../src/RTree/rtree.h
+test_rtree1.o: ../../src/index.h ../../src/dbinterface.h
+test_rtree1.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+test_rtree1.o: ../../src/setup.h /usr/include/assert.h
+test_rtree1.o: ../../src/Common/int_key.h /usr/include/stdio.h
+test_rtree1.o: /usr/include/libio.h /usr/include/_G_config.h
+test_rtree1.o: /usr/include/math.h /usr/include/huge_val.h
+test_rtree1.o: /usr/include/endian.h /usr/include/bytesex.h
+test_rtree1.o: /usr/include/nan.h
+test_rtree1.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+test_rtree1.o: /usr/include/values.h /usr/include/ieee754.h
+test_rtree1.o: /usr/include/ieee854.h ../../src/Common/bit_vec.h
+test_rtree1.o: ../../src/PageClasses/int_keyed_p.h
+test_rtree1.o: ../../src/PageClasses/fixed_entrysz_p.h
+test_rtree1.o: ../../src/PageClasses/stackpage.h ../../src/Common/stack_t.h
+test_rtree1.o: ../../src/RTree/bulk_data.h /usr/include/stdlib.h
+test_rtree1.o: /usr/include/errno.h /usr/include/linux/errno.h
+test_rtree1.o: /usr/include/asm/errno.h /usr/include/alloca.h
+test_rtree1.o: /usr/include/unistd.h /usr/include/posix_opt.h
+test_rtree1.o: /usr/include/confname.h
+test_rtree_jussi.o: ../../src/DBJussi/dbJussi.h ../../src/setup.h
+test_rtree_jussi.o: /usr/include/assert.h /usr/include/features.h
+test_rtree_jussi.o: /usr/include/sys/cdefs.h ../../src/dbinterface.h
+test_rtree_jussi.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+test_rtree_jussi.o: ../../../graphics.new/SBufMgr.h /usr/include/sys/types.h
+test_rtree_jussi.o: /usr/include/linux/types.h
+test_rtree_jussi.o: /usr/include/linux/posix_types.h
+test_rtree_jussi.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+test_rtree_jussi.o: /usr/include/sys/bitypes.h /usr/include/sys/uio.h
+test_rtree_jussi.o: /usr/include/unistd.h /usr/include/posix_opt.h
+test_rtree_jussi.o: /usr/include/gnu/types.h /usr/include/confname.h
+test_rtree_jussi.o: ../../../graphics/DeviseTypes.h /usr/include/values.h
+test_rtree_jussi.o: ../../../graphics/DevStatus.h
+test_rtree_jussi.o: ../../../graphics.new/MemMgr.h
+test_rtree_jussi.o: ../../../graphics.new/DCE.h /usr/include/sys/ipc.h
+test_rtree_jussi.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
+test_rtree_jussi.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+test_rtree_jussi.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+test_rtree_jussi.o: /usr/include/asm/shmparam.h /usr/include/errno.h
+test_rtree_jussi.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+test_rtree_jussi.o: /usr/include/stdio.h /usr/include/libio.h
+test_rtree_jussi.o: /usr/include/_G_config.h /usr/include/limits.h
+test_rtree_jussi.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+test_rtree_jussi.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+test_rtree_jussi.o: /usr/include/linux/stat.h ../../../graphics.new/machdep.h
+test_rtree_jussi.o: /usr/include/sys/param.h /usr/include/linux/param.h
+test_rtree_jussi.o: /usr/include/asm/param.h /usr/include/sys/time.h
+test_rtree_jussi.o: /usr/include/linux/time.h /usr/include/time.h
+test_rtree_jussi.o: /usr/include/sys/wait.h /usr/include/waitflags.h
+test_rtree_jussi.o: /usr/include/waitstatus.h /usr/include/endian.h
+test_rtree_jussi.o: /usr/include/bytesex.h /usr/include/sys/ioctl.h
+test_rtree_jussi.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+test_rtree_jussi.o: /usr/include/termios.h /usr/include/linux/termios.h
+test_rtree_jussi.o: /usr/include/asm/termios.h /usr/include/asm/termbits.h
+test_rtree_jussi.o: /usr/include/asm/ioctls.h /usr/include/sys/socketio.h
+test_rtree_jussi.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
+test_rtree_jussi.o: /usr/include/netdb.h /usr/include/paths.h
+test_rtree_jussi.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+test_rtree_jussi.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
+test_rtree_jussi.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+test_rtree_jussi.o: /usr/include/asm/byteorder.h ../../../tape/tapedrive.h
+test_rtree_jussi.o: ../../../tape/HashTable.h /usr/include/fcntl.h
+test_rtree_jussi.o: /usr/include/linux/fcntl.h /usr/include/asm/fcntl.h
+test_rtree_jussi.o: ../../src/RTree/rtree.h ../../src/index.h
+test_rtree_jussi.o: ../../src/Common/int_key.h /usr/include/math.h
+test_rtree_jussi.o: /usr/include/huge_val.h /usr/include/nan.h
+test_rtree_jussi.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+test_rtree_jussi.o: /usr/include/ieee754.h /usr/include/ieee854.h
+test_rtree_jussi.o: ../../src/Common/bit_vec.h
+test_rtree_jussi.o: ../../src/PageClasses/int_keyed_p.h
+test_rtree_jussi.o: ../../src/PageClasses/fixed_entrysz_p.h
+test_rtree_jussi.o: ../../src/PageClasses/stackpage.h
+test_rtree_jussi.o: ../../src/Common/stack_t.h ../../src/RTree/bulk_data.h
+test_rtree_jussi.o: /usr/include/stdlib.h /usr/include/alloca.h
+test_types.o: /usr/include/stdlib.h /usr/include/features.h
+test_types.o: /usr/include/sys/cdefs.h
+test_types.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+test_types.o: /usr/include/errno.h /usr/include/linux/errno.h
+test_types.o: /usr/include/asm/errno.h /usr/include/alloca.h
+test_types.o: /usr/include/stdio.h /usr/include/libio.h
+test_types.o: /usr/include/_G_config.h /usr/include/sys/types.h
+test_types.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+test_types.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+test_types.o: /usr/include/sys/bitypes.h /usr/include/sys/stat.h
+test_types.o: /usr/include/linux/stat.h /usr/include/fcntl.h
+test_types.o: /usr/include/gnu/types.h /usr/include/linux/fcntl.h
+test_types.o: /usr/include/asm/fcntl.h /usr/include/unistd.h
+test_types.o: /usr/include/posix_opt.h /usr/include/confname.h
+test_types.o: ../../src/TypeSupport/typed_key.h /usr/include/strings.h
+test_types.o: /usr/include/string.h ../../src/Common/int_key.h
+test_types.o: ../../src/setup.h /usr/include/assert.h /usr/include/math.h
+test_types.o: /usr/include/huge_val.h /usr/include/endian.h
+test_types.o: /usr/include/bytesex.h /usr/include/nan.h
+test_types.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+test_types.o: /usr/include/values.h /usr/include/ieee754.h
+test_types.o: /usr/include/ieee854.h ../../src/Common/bit_vec.h
+test_types.o: ../../src/TypeSupport/typed_rtree.h ../../src/RTree/rtree.h
+test_types.o: ../../src/index.h ../../src/dbinterface.h
+test_types.o: ../../src/PageClasses/int_keyed_p.h
+test_types.o: ../../src/PageClasses/fixed_entrysz_p.h
+test_types.o: ../../src/PageClasses/stackpage.h ../../src/Common/stack_t.h
+test_types.o: ../../src/RTree/bulk_data.h
+
+bulk_data.o: /usr/include/stdlib.h /usr/include/features.h
+bulk_data.o: /usr/include/sys/cdefs.h
+bulk_data.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+bulk_data.o: /usr/include/errno.h /usr/include/linux/errno.h
+bulk_data.o: /usr/include/asm/errno.h /usr/include/alloca.h
+bulk_data.o: /usr/include/sys/types.h /usr/include/linux/types.h
+bulk_data.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+bulk_data.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+bulk_data.o: /usr/include/sys/mman.h /usr/include/linux/mman.h
+bulk_data.o: /usr/include/asm/mman.h /usr/include/stdio.h
+bulk_data.o: /usr/include/libio.h /usr/include/_G_config.h
+bulk_data.o: /usr/include/unistd.h /usr/include/posix_opt.h
+bulk_data.o: /usr/include/gnu/types.h /usr/include/confname.h
+bulk_data.o: ../../src/setup.h /usr/include/assert.h bulk_data.h
+bulk_data.o: ../../src/Common/int_key.h /usr/include/math.h
+bulk_data.o: /usr/include/huge_val.h /usr/include/endian.h
+bulk_data.o: /usr/include/bytesex.h /usr/include/nan.h
+bulk_data.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+bulk_data.o: /usr/include/values.h /usr/include/ieee754.h
+bulk_data.o: /usr/include/ieee854.h ../../src/Common/bit_vec.h
+rtree.o: /usr/include/stdlib.h /usr/include/features.h
+rtree.o: /usr/include/sys/cdefs.h
+rtree.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+rtree.o: /usr/include/errno.h /usr/include/linux/errno.h
+rtree.o: /usr/include/asm/errno.h /usr/include/alloca.h
+rtree.o: /usr/include/sys/types.h /usr/include/linux/types.h
+rtree.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+rtree.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+rtree.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
+rtree.o: /usr/include/fcntl.h /usr/include/gnu/types.h
+rtree.o: /usr/include/linux/fcntl.h /usr/include/asm/fcntl.h
+rtree.o: /usr/include/unistd.h /usr/include/posix_opt.h
+rtree.o: /usr/include/confname.h /usr/include/string.h rtree.h
+rtree.o: ../../src/index.h ../../src/dbinterface.h ../../src/setup.h
+rtree.o: /usr/include/assert.h ../../src/Common/int_key.h
+rtree.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+rtree.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/endian.h
+rtree.o: /usr/include/bytesex.h /usr/include/nan.h
+rtree.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+rtree.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
+rtree.o: ../../src/Common/bit_vec.h ../../src/PageClasses/int_keyed_p.h
+rtree.o: ../../src/PageClasses/fixed_entrysz_p.h
+rtree.o: ../../src/PageClasses/stackpage.h ../../src/Common/stack_t.h
+rtree.o: bulk_data.h
+
+convert_bulk.o: /usr/include/stdlib.h /usr/include/features.h
+convert_bulk.o: /usr/include/sys/cdefs.h
+convert_bulk.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+convert_bulk.o: /usr/include/errno.h /usr/include/linux/errno.h
+convert_bulk.o: /usr/include/asm/errno.h /usr/include/alloca.h
+convert_bulk.o: /usr/include/stdio.h /usr/include/libio.h
+convert_bulk.o: /usr/include/_G_config.h /usr/include/strings.h
+convert_bulk.o: /usr/include/string.h ../../src/Common/correct_math.h
+generate_testfile.o: /usr/include/stdlib.h /usr/include/features.h
+generate_testfile.o: /usr/include/sys/cdefs.h
+generate_testfile.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+generate_testfile.o: /usr/include/errno.h /usr/include/linux/errno.h
+generate_testfile.o: /usr/include/asm/errno.h /usr/include/alloca.h
+generate_testfile.o: /usr/include/stdio.h /usr/include/libio.h
+generate_testfile.o: /usr/include/_G_config.h
+interp_file.o: /usr/include/stdlib.h /usr/include/features.h
+interp_file.o: /usr/include/sys/cdefs.h
+interp_file.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+interp_file.o: /usr/include/errno.h /usr/include/linux/errno.h
+interp_file.o: /usr/include/asm/errno.h /usr/include/alloca.h
+interp_file.o: /usr/include/stdio.h /usr/include/libio.h
+interp_file.o: /usr/include/_G_config.h typed_key.h /usr/include/strings.h
+interp_file.o: /usr/include/string.h ../../src/Common/int_key.h
+interp_file.o: ../../src/setup.h /usr/include/assert.h /usr/include/math.h
+interp_file.o: /usr/include/huge_val.h /usr/include/endian.h
+interp_file.o: /usr/include/bytesex.h /usr/include/nan.h
+interp_file.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+interp_file.o: /usr/include/values.h /usr/include/ieee754.h
+interp_file.o: /usr/include/ieee854.h ../../src/Common/bit_vec.h
+typed_key.o: typed_key.h /usr/include/strings.h /usr/include/string.h
+typed_key.o: /usr/include/features.h /usr/include/sys/cdefs.h
+typed_key.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+typed_key.o: ../../src/Common/int_key.h ../../src/setup.h
+typed_key.o: /usr/include/assert.h /usr/include/stdio.h /usr/include/libio.h
+typed_key.o: /usr/include/_G_config.h /usr/include/math.h
+typed_key.o: /usr/include/huge_val.h /usr/include/endian.h
+typed_key.o: /usr/include/bytesex.h /usr/include/nan.h
+typed_key.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+typed_key.o: /usr/include/values.h /usr/include/ieee754.h
+typed_key.o: /usr/include/ieee854.h ../../src/Common/bit_vec.h
+typed_key.o: ../../src/Common/correct_math.h
+typed_rtree.o: typed_rtree.h ../../src/RTree/rtree.h ../../src/index.h
+typed_rtree.o: ../../src/dbinterface.h
+typed_rtree.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+typed_rtree.o: ../../src/setup.h /usr/include/assert.h
+typed_rtree.o: /usr/include/features.h /usr/include/sys/cdefs.h
+typed_rtree.o: ../../src/Common/int_key.h /usr/include/stdio.h
+typed_rtree.o: /usr/include/libio.h /usr/include/_G_config.h
+typed_rtree.o: /usr/include/math.h /usr/include/huge_val.h
+typed_rtree.o: /usr/include/endian.h /usr/include/bytesex.h
+typed_rtree.o: /usr/include/nan.h
+typed_rtree.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+typed_rtree.o: /usr/include/values.h /usr/include/ieee754.h
+typed_rtree.o: /usr/include/ieee854.h ../../src/Common/bit_vec.h
+typed_rtree.o: ../../src/PageClasses/int_keyed_p.h
+typed_rtree.o: ../../src/PageClasses/fixed_entrysz_p.h
+typed_rtree.o: ../../src/PageClasses/stackpage.h ../../src/Common/stack_t.h
+typed_rtree.o: ../../src/RTree/bulk_data.h /usr/include/stdlib.h
+typed_rtree.o: /usr/include/errno.h /usr/include/linux/errno.h
+typed_rtree.o: /usr/include/asm/errno.h /usr/include/alloca.h typed_key.h
+typed_rtree.o: /usr/include/strings.h /usr/include/string.h
