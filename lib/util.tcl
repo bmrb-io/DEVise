@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15  1996/04/16 19:29:29  jussi
+#  Added AbortProgram function.
+#
 #  Revision 1.14  1996/04/10 02:58:31  jussi
 #  Added WindowVisible and made getColor and PrintView use it.
 #
@@ -613,7 +616,7 @@ proc AbortProgram {reason} {
     }
 
     toplevel .abort
-    wm title .abort "Help"
+    wm title .abort "Internal Error"
     wm geometry .abort +100+100
     message .abort.msg -justify center -width 10c \
 	    -text "An internal error has occurred. The error message is\
