@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/11/19 21:13:07  wenger
+  Implemented non-DTE version of DEVise (new code handles data source catalog
+  functions; Tables, SQLViews, etc., are not implemented); changed version to
+  1.6.0.
+
  */
 
 #include <stdio.h>
@@ -186,6 +191,63 @@ ParseCatEntry(char *catEntry, char *nameBuf, int nameBufSize, char *typeBuf,
 }
 
 /*------------------------------------------------------------------------------
+ * function: ReadEntry
+ * Read a data source catalog entry (entries may span more than one line;
+ * however, there cannot be more than one entry on a given line).
+ */
+static fgets_result
+ReadEntry(char *buf, int bufSize, FILE *fp)
+{
+#if (DEBUG >= 3)
+  printf("ReadEntry()\n");
+#endif
+
+  fgets_result result = fgets_ok;
+
+  char *currChar = buf;
+  int spaceLeft = bufSize;
+
+  //
+  // Keep reading lines into the buffer until we've read a line with a ';'
+  // (the entry terminating character).
+  //
+  Boolean done = false;
+  while (!done) {
+    fgets_result tmpResult = nice_fgets(currChar, spaceLeft, fp);
+    if (tmpResult != fgets_ok) {
+      done = true;
+      result = tmpResult;
+    } else {
+      if (strchr(currChar, ';')) {
+        done = true;
+      } else {
+        int length = strlen(currChar);
+	currChar += length;
+	spaceLeft -= length;
+
+	// Put a space at the end to make sure there's whitespace before the
+	// chars from the next line.
+	if (spaceLeft > 1) {
+	  *currChar = ' ';
+	  currChar++;
+	  spaceLeft--;
+	} else {
+	  done = true;
+	  reportErrNosys("Buffer overflow");
+	  result = fgets_bufoverflow;
+	}
+      }
+    }
+  }
+
+#if (DEBUG >= 3)
+  printf("Read entry: {%s}\n", buf);
+#endif
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
  * function: DataCatalog::Instance
  * Get an instance of the class (create if necessary).
  */
@@ -317,7 +379,7 @@ DataCatalog::ListCatalog(char *catName)
         const int bufSize = maxEntryLen;
         char buf[bufSize];
 
-	fgets_result tmpResult = nice_fgets(buf, bufSize, fp);
+	fgets_result tmpResult = ReadEntry(buf, bufSize, fp);
 
 	if (tmpResult == fgets_eof) {
           done = true;
@@ -533,7 +595,7 @@ DataCatalog::DeleteEntry(char *entryName)
         const int bufSize = maxEntryLen;
         char buf[bufSize];
 
-	fgets_result tmpResult = nice_fgets(buf, bufSize, catfp);
+	fgets_result tmpResult = ReadEntry(buf, bufSize, catfp);
 
 	if (tmpResult == fgets_eof) {
           done = true;
@@ -658,7 +720,7 @@ DataCatalog::FindEntry(char *entryName, char *catFile)
       const int bufSize = maxEntryLen;
       char buf[bufSize];
 
-      fgets_result tmpResult = nice_fgets(buf, bufSize, fp);
+      fgets_result tmpResult = ReadEntry(buf, bufSize, fp);
 
       if (tmpResult == fgets_eof) {
         done = true;
