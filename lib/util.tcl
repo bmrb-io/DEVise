@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.21  1996/05/14 15:08:59  jussi
+#  Removed extract puts statement.
+#
 #  Revision 1.20  1996/05/14 15:06:09  jussi
 #  Added catch statement to DEVise saveWindowImage call.
 #
@@ -78,13 +81,6 @@
 #  Revision 1.1  1995/11/28  00:02:52  jussi
 #  Initial revision.
 #
-
-############################################################
-
-proc ExecuteScript {script} {
-    puts "Executing script $script..."
-    source $script
-}
 
 ############################################################
 
