@@ -158,7 +158,7 @@ Num Date        Status  Description
 			correctly (if it's already set it's okay, but
 			setting it doesn't work). (rkw)
 
-051 10/15/96	OPEN	Showing statistics as text produces many errors. (rkw)
+051 10/15/96    FIXED	Showing statistics as text produces many errors. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
