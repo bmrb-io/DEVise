@@ -1,0 +1,294 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1995
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+source $libdir/compcreate.tcl
+source $libdir/crspcreate.tcl
+source $libdir/resolve.tk
+
+#---------------------------------------------------
+#   ROUTINES TO MANAGE THE MAPPING BETWEEN STREAMS FROM DIFFERENT SOURCES
+#-----------------------------------------------------
+
+proc DefineMapping {} {
+    global datadir button iftype
+
+    # Create a window
+    toplevel .map -bg DarkRed
+    wm title .map "Generate Input Relations"
+    wm iconname .map "Relations"
+
+    frame .map.first -relief raised -bg honeydew2
+    frame .map.second -relief raised -bg honeydew2
+    frame .map.third -relief raised -bg honeydew2
+    pack .map.first .map.second .map.third -fill x -padx 1m -pady 1m
+    
+    # Set defaults
+    set ifname ""
+    set iftype "COMPUSTAT"
+
+    # Entry for index file name and type
+    label .map.iname -text " Index File " -bg honeydew2 -fg red
+    entry .map.ientry -width 25 -relief sunken -bd 1 \
+	    -textvariable ifname -bg bisque
+    label .map.itype -text " File Type " -bg honeydew2 -fg red
+    menubutton .map.tbut -relief raised -textvariable iftype \
+	    -width 14 -menu .map.tbut.menu 
+    pack .map.iname .map.ientry .map.itype .map.tbut -in .map.first \
+	    -side left -fill x -expand 1 -padx 2m -pady 1m
+
+    # Create menu of types for which relation loading is possible
+    menu .map.tbut.menu -tearoff 0
+    .map.tbut.menu add radiobutton -label "COMPUSTAT" -variable iftype \
+	    -value COMPUSTAT
+    .map.tbut.menu add radiobutton -label "CRSP" -variable iftype \
+	    -value CRSP
+
+    # Entry for output relation name and output file name
+    label .map.rname -text "Output Relation Name" -bg honeydew2 -fg red
+    entry .map.rentry -width 10 -relief sunken -bd 1 \
+	    -textvariable rname -bg bisque
+    label .map.rfname -text "Output File" -bg honeydew2 -fg red
+    entry .map.rfentry -width 15 -relief sunken -bd 1 \
+	    -textvariable rfname -bg bisque
+    pack .map.rname .map.rentry .map.rfname .map.rfentry -in .map.second \
+	    -side left -fill x -expand 1 -padx 2m -pady 1m
+
+
+    # Buttons to Create and Done 
+    button .map.create -text Create -command {
+	if {($rname == "") || ($rfname == "")} {
+	    showmesg "Please specify the relation name and the output file in which to store the relation"
+	} else {
+	    if {$iftype == "COMPUSTAT"} {
+		statusWindow .info "Status" \
+			"The relation is being created. This will take a few \
+			seconds ..."
+		compcreate $ifname $rname $rfname
+		destroy .info
+	    } elseif {$iftype == "CRSP"} {
+		statusWindow .info "Status" \
+			"The relation is being created. This will take a few \
+			seconds ..."
+		crspcreate $ifname $rname $rfname
+		destroy .info
+	    } else {
+		puts "Error : Unknown type of index file. Cannot create realtion"
+	    }
+	    showmesg "File $rfname contains the CORAL program to \
+		    load the relation $rname. If there are no more \
+		    index files to be converted into CORAL relations,\
+		    click on DONE in the main menu."
+	}
+	set ifname ""
+	set iftype COMPUSTAT
+	set rname ""
+	set rfname ""
+    }
+
+    button .map.done -text "Proceed to Map" -command {
+	destroy .map
+	# Ask the user if he/she wants to run the mapping program
+	dialog .ask "Running the mapping program" "If you have the CORAL \
+		program to map the two relations ready, click YES. \
+		Otherwise, click NO and you may define the mapping at some \
+		later time." {} -1 YES NO
+
+	if {$button == 0} {
+	    # Next step is to run the mapping program itself
+	    RunCoralMap
+	}
+    }
+    button .map.cancel -text Cancel -command {destroy .map}
+
+    pack .map.create .map.done .map.cancel -in .map.third -side left \
+	    -expand 1 -padx 3m -pady 2m
+
+    # Finally grab focus
+    tkwait visibility .map
+    grab set .map
+    tkwait window .map
+}
+
+########################################################################
+
+proc ResolveMapping {} {
+
+    # Get the names of the files containing the mapping table and also
+    # the those containing the unresolved entries
+
+    global datadir button
+
+    toplevel .coral -bg DarkRed
+    wm title .coral "Coral Mapping Program"
+    wm iconname .coral "Coral"
+
+    frame .coral.first -relief raised -bg honeydew2
+    frame .coral.second -relief raised -bg honeydew2
+    frame .coral.third -relief raised -bg honeydew2
+    pack .coral.first .coral.second .coral.third -fill x -padx 1m -pady 1m
+
+    label .coral.oname -text " Mapping Table File: " -bg honeydew2 -fg red
+    entry .coral.oentry -width 10 -relief sunken -bd 1 \
+	    -textvariable oname -bg bisque
+    pack .coral.oname .coral.oentry \
+	    -in .coral.first -side left -fill x -expand 1 -padx 3m -pady 1m
+
+    # Also ask for the names of files that contain any unresolved entries
+    label .coral.uname -text " Files containing unresolved entries: " \
+	    -bg honeydew2 -fg red
+    entry .coral.urel1 -width 10 -relief sunken -bd 1 \
+	    -textvariable urel1 -bg bisque
+    label .coral.and -text " and " -bg honeydew2 -fg red
+    entry .coral.urel2 -width 10 -relief sunken -bd 1 \
+	    -textvariable urel2 -bg bisque
+    pack .coral.uname .coral.urel1 .coral.and .coral.urel2 -in .coral.second \
+	    -side left -fill x -expand 1 -padx 2m -pady 1m
+
+    # Buttons to Resolve or Cancel
+    button .coral.resolve -text Resolve -command {
+	# Check if all the required entries are there
+	if {($oname == "") || ($urel1 == "") || ($urel2 == "")} {
+	    showmesg "Please specify the names of the files containg the \
+		    mapping table and the unresolved entries of the two \
+		    relations."
+	} else {
+	    destroy .coral
+	    resolve $oname $urel1 $urel2 
+	}
+    }
+    
+    button .coral.cancel -text Cancel -command {destroy .coral}
+
+    pack .coral.resolve .coral.cancel -side left -in .coral.third \
+	    -expand 1 -padx 3m -pady 1m
+
+    # Finally grab focus
+    tkwait visibility .coral
+    grab set .coral
+    tkwait window .coral
+}
+
+########################################################################
+
+proc RunCoralMap {} {
+    global datadir button
+
+    toplevel .coral -bg DarkRed
+    wm title .coral "Coral Mapping Program"
+    wm iconname .coral "Coral"
+
+    frame .coral.first -relief raised -bg honeydew2
+    frame .coral.second -relief raised -bg honeydew2
+    frame .coral.third -relief raised -bg honeydew2
+    pack .coral.first .coral.second .coral.third -fill x -padx 1m -pady 1m
+
+    # Ask the user for the name of the coral mapping program
+    label .coral.pname -text " Coral File: " -bg honeydew2 -fg red
+    entry .coral.pentry -width 10 -relief sunken -bd 1 \
+	    -textvariable pname -bg bisque
+    label .coral.oname -text " Mapping Table File: " -bg honeydew2 -fg red
+    entry .coral.oentry -width 10 -relief sunken -bd 1 \
+	    -textvariable oname -bg bisque
+    pack .coral.pname .coral.pentry .coral.oname .coral.oentry \
+	    -in .coral.first -side left -fill x -expand 1 -padx 3m -pady 1m
+
+    # Also ask for the names of files that contain any unresolved entries
+    label .coral.uname -text " Files containing unresolved entries: " \
+	    -bg honeydew2 -fg red
+    entry .coral.urel1 -width 10 -relief sunken -bd 1 \
+	    -textvariable urel1 -bg bisque
+    label .coral.and -text " and " -bg honeydew2 -fg red
+    entry .coral.urel2 -width 10 -relief sunken -bd 1 \
+	    -textvariable urel2 -bg bisque
+    pack .coral.uname .coral.urel1 .coral.and .coral.urel2 -in .coral.second \
+	    -side left -fill x -expand 1 -padx 2m -pady 1m
+
+    # Buttons to Run or Cancel
+    button .coral.run -text Run -command {
+	# CHeck if all required entries are present
+	if {($pname == "") || ($oname == "") || ($urel1 == "") || ($urel2 == "")} {
+	    showmesg "Please enter the names of the mapping program and \
+		    the files containing the unresolved entries."
+	} else {
+	    destroy .coral
+	    statusWindow .info "Status" \
+		    "The mapping program is being executed. Please wait ..."
+
+	    # Run the mapping program
+	    exec coral -e -q -V -I -a empty -P -C -f $datadir/$pname <$datadir/quit
+	    destroy .info
+
+	    # Check if any unresolved entries
+	    set lnum1 [exec wc -l $urel1]
+	    set lnum2 [exec wc -l $urel2]
+	    if {([lindex $lnum1 0] < 2) || ([lindex $lnum2 0] < 2)} {
+		showmesg "The mapping program has successfully mapped \
+			all the entries of the two data sources."
+	    } else {
+		# Expand and trim the files
+		trim $datadir/$oname
+		trim $datadir/$urel1
+		trim $datadir/$urel2
+
+		dialog .unres "Unresolved Entries" "There are unresolved \
+			entries in both the input files which have not \
+			been mapped. If you would like to define some \
+			mappings manually, click on YES. Otherwise, click \
+			on NO." {} -1 YES NO
+
+		if {$button == 0} {
+		    resolve $oname $urel1 $urel2
+		}
+	    }
+	}
+    }
+    
+    button .coral.cancel -text Cancel -command {destroy .coral}
+
+    pack .coral.run .coral.cancel -side left -in .coral.third \
+	    -expand 1 -padx 3m -pady 1m
+
+    # Finally grab focus
+    tkwait visibility .coral
+    grab set .coral
+    tkwait window .coral
+}
+
+########################################################################
+
+proc trim {fname} {
+    set infile [open $fname r]
+    set outfile [open "/tmp/zzz1" w]
+
+    while {[gets $infile line] >= 0} {
+	foreach elem $line {
+	    puts -nonewline $outfile "$elem "
+	}
+	puts $outfile ""
+    }
+
+    close $infile
+    close $outfile
+
+    # Replace the input file with the output file
+    exec rm -f $fname
+    exec mv /tmp/zzz1 $fname
+}
+
