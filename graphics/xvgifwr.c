@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/08/29 22:14:49  guangshu
+  Minor change.
+
   Revision 1.2  1996/05/22 21:03:11  jussi
   Minor fix in debugging statements.
 
@@ -56,6 +59,8 @@
  
 
 #include "xv.h"
+#undef MAXPATHLEN
+#include "machdep.h"
 
 #ifdef DEBUGGING
 #define DEBUG 1

@@ -7,6 +7,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/10/02 19:47:16  jussi
+  Added support for opening an HTTP connection for writing (posting)
+  Web data.
+
   Revision 1.11  1996/09/26 18:58:11  jussi
   Removed unused variables. Fixed problem with parsing HTTP header.
 
@@ -441,7 +445,7 @@ int open_http( char *name, int isInput, size_t *bytes_in_body )
 #endif
 
   if (!isInput) {
-      sprintf(buffer, HTTP_PUT_FORMAT, end_of_addr, *bytes_in_body);
+      sprintf(buffer, HTTP_PUT_FORMAT, end_of_addr, (int) *bytes_in_body);
       status = write(sock_fd, buffer, strlen(buffer));
       if (status != (int)strlen(buffer))
           return status;

@@ -262,6 +262,9 @@ Num Date        Status  Description
 			message (don't know exactly how to reproduce this).
 			(rr/rkw)
 
+077 11/21/96	OPEN	Importing data into a window with piled views
+			doesn't work. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

@@ -13,6 +13,7 @@
 */
 
 #include <string.h>
+#include "machdep.h"
 #include <ctype.h>
 #include <unistd.h>
 #include "DataSeg.h"

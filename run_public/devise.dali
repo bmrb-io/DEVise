@@ -14,18 +14,18 @@ setenv DEVISE_TMP     /tmp/`whoami`-devise-tmp
 setenv DEVISE_WORK    /tmp/`whoami`-devise-work
 setenv DEVISE_EXEC    $DEVISE_ROOT/public/bin/devise
 
-setenv DALI_EXEC      /p/qclic/Code/Qclic/bin.common/DaliWithPaths
+setenv TASVIR_EXEC    /p/qclic/Code/Qclic/bin.common/TasvirWithPaths
 
 if (! -f $DEVISE_EXEC) then
   echo "Cannot find Devise executable. Perhaps this platform is not supported?"
   exit 1
 endif
 
-if (! -f $DALI_EXEC) then
-  echo "Cannot find Dali executable. Perhaps this platform is not supported?"
+if (! -f $TASVIR_EXEC) then
+  echo "Cannot find Tasvir executable. Perhaps this platform is not supported?"
   exit 1
 endif
 
-$DALI_EXEC &
+$TASVIR_EXEC &
 
-$DEVISE_EXEC -dali $HOSTNAME -daliquit $*
+$DEVISE_EXEC -tasvir $HOSTNAME -tasvirquit $*

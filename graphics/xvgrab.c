@@ -7,6 +7,13 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/04/20 19:52:33  kmurli
+  Changed Viex.c to use a pipe mechanism to call itself if it needs to be
+  done again. The view now is not called contiously by the Dispatcher,instead
+  only of there is some data in the pipe.
+  The pipe mechanism is implemented transparently through static functions
+  in the Dispatcher.c (InsertMarker,CreateMarker,CloseMarker,FlushMarker)
+
   Revision 1.1  1996/04/17 20:32:38  jussi
   Initial revision.
 */
@@ -30,6 +37,8 @@
 
 #define NEEDSTIME
 #include "xv.h"
+#undef MAXPATHLEN
+#include "machdep.h"
 
 #ifdef MODIFIED
 byte *grabPic = (byte *) NULL;

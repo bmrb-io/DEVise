@@ -20,6 +20,16 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/11/13 16:56:03  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.7  1996/06/20 16:49:04  jussi
   Replaced green1 with DarkSeaGreen.
 
@@ -41,6 +51,7 @@
   Added/updated CVS header.
 */
 
+#include "machdep.h"
 #include "ColorMgr.h"
 #include "Display.h"
 #include "Color.h"

@@ -6,7 +6,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/04/17 20:32:36  jussi
+  Initial revision.
+*/
 
 #define MODIFIED
 
@@ -56,6 +59,8 @@
  */
 
 #include "xv.h"
+#undef MAXPATHLEN
+#include "machdep.h"
 
 static int    quick_check PARM((byte*, int,int, byte*, byte*,byte*,byte*,int));
 static int    quick_quant PARM((byte*, int,int, byte*, byte*,byte*,byte*,int));

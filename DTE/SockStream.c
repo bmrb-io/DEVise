@@ -10,12 +10,12 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "machdep.h"
 #include <sys/types.h>
 #include <sys/errno.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <netdb.h>
 #include <unistd.h>
 
 #include <stdarg.h>
@@ -102,8 +102,12 @@ int Cor_sockbuf::connect(char* _host, unsigned short _port)
     memset(&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(port);
+
+    /* Return type of inet_addr is unsigned long, but man page says it
+     * returns -1 for error.  Hmm...  RKW 11/21/96. */
     serv_addr.sin_addr.s_addr = inet_addr(_host); // try dotted decimal
-    if( serv_addr.sin_addr.s_addr == -1 ) { // not dotted decimal
+    if( serv_addr.sin_addr.s_addr == (unsigned long) -1 ) {
+	// not dotted decimal
         hostent *hp = gethostbyname(_host);
         if( hp == NULL ) {	// error!
 	        return -1;

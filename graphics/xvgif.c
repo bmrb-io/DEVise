@@ -6,7 +6,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/05/22 21:02:12  jussi
+  Initial revision.
+*/
 
 #define MODIFIED
 /*#define DEBUGGING*/
@@ -37,6 +40,8 @@
 
 
 #include "xv.h"
+#undef MAXPATHLEN
+#include "machdep.h"
 
 typedef int boolean;
 

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1996/11/21 16:22:44  wenger
+  Updated dependencies; fixed some compile errors and warnings.
+
   Revision 1.37  1996/11/20 20:35:21  wenger
   Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
   some Makefile improvements so compile works first time; fixed up files
@@ -175,6 +178,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "machdep.h"
 #include "TDataAsciiInterp.h"
 #include "TDataDQLInterp.h"
 #include "TDataDQL.h"

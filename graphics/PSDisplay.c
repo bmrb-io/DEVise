@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/11/19 15:23:25  wenger
+  Minor changes to fix compiles on HP, etc.
+
   Revision 1.6  1996/11/18 23:11:17  wenger
   Added procedures to generated PostScript to reduce the size of the
   output and speed up PostScript processing; added 'small font' capability
@@ -57,11 +60,11 @@
 
 #include <errno.h>
 
+#include "machdep.h"
 #include "PSDisplay.h"
 #include "PSWindowRep.h"
 #include "Util.h"
 #include "DevError.h"
-#include "machdep.h"
 #ifndef LIBCS
 #include "Control.h"
 #include "Journal.h"

@@ -19,6 +19,9 @@
 /*
     $Id$
     $Log$
+    Revision 1.1  1996/11/18 18:08:46  donjerko
+    Initial DTE release.
+
     Revision 1.3  1996/08/15 19:55:01  wenger
     Added 'pure' targets for attrproj and devread; fixed some dynamic
     memory problems.  Found some bugs while demo'ing for soils science
@@ -40,6 +43,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "machdep.h"
 #include "DevRead.h"
 #include "ApParseCat.h"
 #include "Util.h"

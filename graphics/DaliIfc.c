@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/09/04 21:24:47  wenger
+  'Size' in mapping now controls the size of Dali images; improved Dali
+  interface (prevents Dali from getting 'bad window' errors, allows Devise
+  to kill off the Dali server); added devise.dali script to automatically
+  start Dali server along with Devise; fixed bug 037 (core dump if X is
+  mapped to a constant); improved diagnostics for bad command-line arguments.
+
   Revision 1.3  1996/08/29 18:24:31  wenger
   A number of Dali-related improvements: ShapeAttr1 now specifies image
   type when shape is 'image'; added new '-bytes' flag to Dali commands
@@ -50,6 +57,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
+#include "machdep.h"
 #include "DaliIfc.h"
 #include "Dali.h"
 #include "Util.h"

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/09/26 18:58:31  jussi
+  Removed extraneous definition on Alpha/OSF.
+
   Revision 1.12  1996/09/25 18:36:52  wenger
   Updated again for Linux compile (Linux 2.0.6, Tcl 7.4, Tk 4.0).
 
@@ -373,7 +376,15 @@ union semun {
   #ifndef __cplusplus
     EXTERNC int printf(char *, ...);
     EXTERNC int fprintf(FILE *, char *, ...);
+    EXTERNC int fwrite(const void *, int, int, FILE *);
+    EXTERNC int fputc(int, FILE *);
+    EXTERNC int fflush(FILE *);
+    EXTERNC int puts(const char *);
+    EXTERNC int fseek(FILE *, long, int);
+    EXTERNC int fread(void *, int, int, FILE *);
+    EXTERNC int fclose(FILE *);
   #endif
+  EXTERNC int strcasecmp(const char *, const char *);
 #endif
 
 /*
