@@ -15,11 +15,15 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/12/06 05:44:38  ravim
+  Initial version.
+*/
 
 #ifndef KGraph_h
 #define KGraph_h
 
+#include "Geom.h"
 #include "Display.h"
 
 class KGraph 
@@ -29,7 +33,7 @@ public:
   ~KGraph();
 
   // Initialize the settings
-  void Init();
+  void Init(char *winname, char *statname);
 
   // Set the number of axes to display
   void setAxes(int num);
@@ -43,8 +47,11 @@ public:
 private:
   DeviseDisplay *_dis;
   WindowRep *_win;
+  char *_winame;
+  char *_statname;
   int _naxes;
   Coord *_pts;
+  Point *_xyarr;
 
   // Coords of center of circle and radius
   Coord cx, cy;
