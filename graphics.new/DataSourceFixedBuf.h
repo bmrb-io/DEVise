@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/08/04 21:23:24  beyer
+  DataSource's are now reference counted.
+  Added Version() which TData now check to see if the DataSource has changed,
+    and if it has, it rebuilds its index and invalidates the cache.
+  DataSourceFixedBuf is a DataSourceBuf that allocates and destoyes its
+    own buffer.
+  DerivedDataSource functionality is now in the TData constructor.
+  Added some defaults for virtual methods.
+
 */
 
 #ifndef _DATASOURCEFIXEDBUF_H_
@@ -32,6 +41,8 @@ class DataSourceFixedBuf
     DataSourceFixedBuf(int buffer_size, char* label);
 
     ~DataSourceFixedBuf();
+
+    void Resize(int buffer_size); // will clear data!!
 
   protected:
 
@@ -55,6 +66,17 @@ inline
 DataSourceFixedBuf::~DataSourceFixedBuf()
 {
     delete [] _sourceBuf;
+}
+
+
+inline
+void DataSourceFixedBuf::Resize(int buffer_size)
+{
+    char* newbuf = new char[buffer_size];
+    delete [] _sourceBuf;
+    _sourceBuf = newbuf;
+    Clear();
+    _end_buffer = newbuf + buffer_size -1;
 }
 
 
