@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.35  1996/07/23 19:34:06  beyer
+  Changed dispatcher so that pipes are not longer used for callback
+  requests from other parts of the code.
+
   Revision 1.34  1996/07/23 17:16:30  jussi
   Added support for piled views.
 
@@ -379,7 +383,7 @@ protected:
 	virtual void DerivedAbortQuery() = 0;
 
 	/* When a query is done, derived class must inform the base class */
-	void ReportQueryDone(int bytes);
+	void ReportQueryDone(int bytes, Boolean aborted = false);
 
 	/* Report size of data display area. */
 	/* void GetDataArea(int &x, int &y, int &width,int &height); */

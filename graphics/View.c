@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.60  1996/07/23 21:18:02  jussi
+  Added a couple of debugging statements, removed extra callback
+  request to the dispatcher.
+
   Revision 1.59  1996/07/23 19:34:01  beyer
   Changed dispatcher so that pipes are not longer used for callback
   requests from other parts of the code.
@@ -463,7 +467,7 @@ void View::SubClassUnmapped()
   // this will call a pure virtual function.
   if (_querySent) {
     DerivedAbortQuery();
-    ReportQueryDone(0);
+    ReportQueryDone(0, true);
   }
 }
 
@@ -1227,7 +1231,7 @@ void View::CalcTransform(Transform3D &transform)
 
 /* For query processing */
 
-void View::ReportQueryDone(int bytes)
+void View::ReportQueryDone(int bytes, Boolean aborted)
 {
 #ifdef DEBUG
   printf("View::ReportQueryDone\n");
@@ -1243,7 +1247,7 @@ void View::ReportQueryDone(int bytes)
      them to redraw; also, first view erases window and draws
      axes and other decorations, so it has to go first */
 
-  if (_pileMode) {
+  if (!aborted && _pileMode) {
     ViewWin *parent = GetParent();
     DOASSERT(parent, "View has no parent");
     int index = parent->InitIterator();
@@ -1308,6 +1312,10 @@ void View::Run()
 #ifdef DEBUG
         printf("View %s cannot continue\n", GetName());
 #endif
+        if (_querySent) {
+          DerivedAbortQuery();
+          ReportQueryDone(0, true);
+        }
         return;
       }
 #ifdef DEBUG
@@ -1350,7 +1358,7 @@ void View::Run()
       printf("View:: aborting\n");
 #endif
       DerivedAbortQuery();
-      ReportQueryDone(0);
+      ReportQueryDone(0, true);
       _refresh = true;
     } else
       return;
@@ -1813,7 +1821,7 @@ void View::AbortAndReexecuteQuery()
 {
   if (_querySent) {
     DerivedAbortQuery();
-    ReportQueryDone(0);
+    ReportQueryDone(0, true);
   }
   Refresh();
 }
@@ -1943,7 +1951,7 @@ void View::Iconify(Boolean iconified)
 {
   if (_querySent && iconified) {
     DerivedAbortQuery();
-    ReportQueryDone(0);
+    ReportQueryDone(0, true);
   }
 
   Refresh();
@@ -1961,7 +1969,7 @@ void View::ModeChange(ControlPanel::Mode mode)
     printf("abort query from mode change\n");
 #endif
     DerivedAbortQuery();
-    ReportQueryDone(0);
+    ReportQueryDone(0, true);
     _modeRefresh = true;
   }
 
