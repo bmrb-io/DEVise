@@ -1868,6 +1868,9 @@ Num Date        Status  Description
 485 04/21/99	OPEN	Home ('5') won't function properly if one of the
 			axes has a sorted attribute. (rkw)
 
+486 04/26/99	FIXED	kent5.ds session in Tim Wilson's area works with non-
+			DTE Devise but not with DTE Devise (crashes). (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

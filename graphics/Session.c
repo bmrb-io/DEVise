@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.48  1999/04/22 19:29:09  wenger
+  Separated the configuration of explicit (user-requested) and implicit
+  home actions (no GUI for configuring the implicit home); changed the
+  Condor user script accordingly; modified JavaScreen support so that this
+  all works for the JS.
+
   Revision 1.47  1999/03/24 17:26:04  wenger
   Non-DTE data source code prevents adding duplicate data source names;
   added "nice axis" feature (sets axis limits to multiples of powers of
@@ -685,11 +691,17 @@ Session::CreateTData(char *name)
 
   char *catEntry;
   int dum1, dum2;
+  char namebuf[1024];
   if (sscanf(name, "%d.%d", &dum1, &dum2) == 2) {
     // Data source is (hopefully) an internal DTE table, probably generated
     // for a TAttrLink.
     catEntry = CopyString("");
   } else {
+    if (name[0] != '.') {
+      // DTE goes nuts if first char of TData name isn't '.'.
+      sprintf(namebuf, ".%s", name);
+      name = namebuf;
+    }
     // Get the DTE catalog entry for this data source.
 	// TEMP -- memory may be leaked in here
 #if defined(DTE_WARN)

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.106  1999/04/22 19:29:53  wenger
+  Separated the configuration of explicit (user-requested) and implicit
+  home actions (no GUI for configuring the implicit home); changed the
+  Condor user script accordingly; modified JavaScreen support so that this
+  all works for the JS.
+
   Revision 1.105  1999/04/20 14:13:38  wenger
   Improved debug output.
 
@@ -2590,6 +2596,13 @@ ViewGraph::SwitchTData(char *tdName)
   if (!tdName || !strcmp("", tdName)) {
     reportErrNosys("Invalid (null or blank) TData name");
 	result = StatusFailed;
+  }
+
+  char namebuf[1024];
+  if (tdName[0] != '.') {
+    // DTE goes nuts if first char of TData name isn't '.'.
+    sprintf(namebuf, ".%s", tdName);
+	tdName = namebuf;
   }
 
   //

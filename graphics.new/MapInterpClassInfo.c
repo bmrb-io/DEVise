@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.22  1999/04/16 21:03:55  wenger
+  Fixed various bugs related to view symbols, including memory problem
+  with MappingInterp dimensionInfo; updated create_condor_session script
+  to take advantage of view symbol TData switching capability.
+
   Revision 1.21  1999/04/14 15:30:19  wenger
   Improved 'switch TData': moved the code from Tcl to C++, functionality
   is more flexible -- schemas don't have to match exactly as long as the
@@ -228,7 +233,14 @@ MapInterpClassInfo::ExtractCommand(int argc, char **argv,
   for(int i = 0; i < MAX_GDATA_ATTRS; i++)
     cmd->shapeAttrCmd[i] = 0;
   
-  tdataAlias = CopyString(argv[0]);
+  if (argv[0][0] == '.') {
+    tdataAlias = CopyString(argv[0]);
+  } else {
+    // DTE goes nuts if first char of TData name isn't '.'.
+    char namebuf[1024];
+    sprintf(namebuf, ".%s", argv[0]);
+    tdataAlias = CopyString(namebuf);
+  }
 
   ClassInfo *info = ControlPanel::GetClassDir()->FindClassInfo(tdataAlias);
   if (info) {
