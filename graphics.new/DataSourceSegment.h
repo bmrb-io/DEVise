@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/08/06 19:23:03  beyer
+  Made functional again after the last changes
+
   Revision 1.5  1996/08/04 21:23:25  beyer
   DataSource's are now reference counted.
   Added Version() which TData now check to see if the DataSource has changed,
@@ -82,9 +85,6 @@ public:
     virtual char IsOk();
     virtual DevStatus Close();
 
-    virtual int AsyncFd();
-    virtual void AsyncIO();
-    
     virtual char *Fgets(char *buffer, int size);
     virtual size_t Fread(char *buf, size_t size, size_t itemCount);
     virtual size_t Read(char *buf, int byteCount);

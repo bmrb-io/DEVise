@@ -20,6 +20,9 @@
    $Id$
 
    $Log$
+   Revision 1.11  1996/08/06 19:23:02  beyer
+   Made functional again after the last changes
+
    Revision 1.10  1996/08/04 21:23:24  beyer
    DataSource's are now reference counted.
    Added Version() which TData now check to see if the DataSource has changed,
@@ -176,23 +179,6 @@ DevStatus DataSourceSegment::Close()
     DOASSERT(_dataSource != NULL, "no dataSource");
     return _dataSource->Close();
 }
-
-//---------------------------------------------------------------------------
-
-int DataSourceSegment::AsyncFd()
-{
-    DOASSERT(_dataSource != NULL, "no dataSource");
-    return _dataSource->AsyncFd();
-}
-
-//---------------------------------------------------------------------------
-
-void DataSourceSegment::AsyncIO()
-{
-    DOASSERT(_dataSource != NULL, "no dataSource");
-    _dataSource->AsyncIO();
-}
-
 
 //---------------------------------------------------------------------------
 
