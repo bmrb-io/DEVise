@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.3  2001/04/12 20:15:29  wenger
+  First phase of external process dynamic data generation is in place
+  for RectX symbols (needs GUI and some cleanup); added the ability to
+  specify format for dates and ints in GData; various improvements to
+  diagnostic output.
+
   Revision 1.2  1999/10/18 15:40:29  wenger
   Window destroy events are handled better (DEVise doesn't crash); messages
   such as window destroy notifications are now passed to the client in
@@ -60,7 +66,6 @@ public:
     
 private:
   DevStatus Enlarge();
-  Boolean ContainsWhitespace(const char *str);
 
   int _argc;
   char **_argv;
