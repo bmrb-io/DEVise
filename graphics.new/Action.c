@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/06/10 19:22:01  wenger
+  Removed (some) debug output.
+
   Revision 1.20  1997/05/30 15:41:16  wenger
   Most of the way to user-configurable '4', '5', and '6' keys -- committing
   this stuff now so it doesn't get mixed up with special stuff for printing
@@ -501,6 +504,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
     printf("Unhandled key '%c' 0x%x\n", 
 	   (key < 0x00ff && isgraph(key)) ? char(key) : ' ', key);
 #endif
+    break;
   } // end switch
   
   if (zoomInX) {
