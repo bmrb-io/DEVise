@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/01/23 20:55:48  jussi
+  Added isAscii parameter to Gen().
+
   Revision 1.7  1996/01/10 18:46:29  jussi
   Removed unnecessary function prototypes.
 
@@ -43,10 +46,13 @@
 #include "ClassDir.h"
 #include "AttrList.h"
 
+#define NO_GEN_CLASS_INFO
+
 /* Parse a catalog file and register new file type with the system.
    Return name of new file type if successful, else return NULL */
 extern char *ParseCat(char *catFile);
 
+#ifndef NO_GEN_CLASS_INFO
 /* Register a new constructor for class. The
    constructor is called depending on the "source" statment stored
    in the catalog file. For example, "source tape" will call
@@ -63,6 +69,7 @@ public:
 };
 
 extern void RegisterGenClassInfo(char *source, GenClassInfo *gen);
+#endif
 
 /* Return a list of catalog files */
 extern void CatFiles(int &numFiles, char **&fileNames);

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/04/15 19:33:48  wenger
+  Consolidated the two (nearly identical) functions for
+  reading/parsing physical schema, and cleaned up the
+  ParseCat.c module quite a bit.  As part of this, I added
+  a new enum DevStatus (StatusOk, StatusFailed, etc.).
+
   Revision 1.16  1996/03/26 21:14:28  jussi
   String attributes are not inserted into the group directory.
 
@@ -178,6 +184,8 @@ void ClearCats()
   _numCatFiles = 0;
 }
 
+#ifndef NO_GEN_CLASS_INFO
+
 const int MAX_GENCLASSINFO = 20;
 static int _numGenClass = 0;
 
@@ -219,6 +227,7 @@ FindGenClass(char *source)
   // keep compiler happy
   return 0;
 }
+#endif
 
 /*------------------------------------------------------------------------------
  * function: ParseChar
@@ -779,7 +788,9 @@ ParseCatPhysical(char *catFile, Boolean physicalOnly)
 	if (!hasComment)
 	  commentString = "#";
 	  
-	if (hasSource){
+	if (hasSource)
+	{
+#ifndef NO_GEN_CLASS_INFO
 		if (physicalOnly)
 		{
 			printf("source: %s\n",source);
@@ -793,7 +804,13 @@ ParseCatPhysical(char *catFile, Boolean physicalOnly)
 			genInfo->Gen(source, isAscii, fileType,
 			attrs,recSize,sep, numSep, hasSeparator, commentString),
 			true);
-	} else {
+#else
+		fprintf(stderr, "Illegal token source in schema\n");
+		Exit::DoExit(1);
+#endif
+	}
+	else
+	{
 		if (isAscii) {
 		  printf("default source, recSize %d\n",recSize);
 		  ControlPanel::RegisterClass(
