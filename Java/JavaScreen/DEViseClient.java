@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.45  2001/09/10 21:08:11  xuk
+// Solve the client disconnection problem.
+//
 // Revision 1.44  2001/08/21 18:37:15  wenger
 // JSPoP now responds to JAVAC_CheckPop with JAVAC_Error if no deviseds
 // are connected to it; fixed up redirection of stderr in sh scripts.
@@ -361,7 +364,7 @@ public class DEViseClient
 	    }
 
 	    // Close here because the client exits after getting the reply.
-	    // close();
+	    close();
 
 	} else {
             cmdBuffer.addElement(cmd);
