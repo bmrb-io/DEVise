@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.69  2002/03/26 16:35:51  wenger
+// Implemented kludge fix for bug 760; found bug 761.
+//
 // Revision 1.68  2002/02/20 18:08:35  xuk
 // Improvement on axis label drawing.
 //
@@ -921,8 +924,18 @@ public class DEViseView
 	    float abs = Math.abs(x);
 	    String labelX = new Float(x).toString();
 
-	    if (abs >= 1) {
-		length = (int)(Math.log(abs) / Math.log(10) + 0.001) + 1;
+	    if (abs > 99999) {
+		int x0 = (int)(x);
+		labelX = DEViseViewInfo.viewParser(x0, viewInfoFormatX);
+		int e = labelX.indexOf('E');
+		while (labelX.charAt(e-1) == '0' 
+		       || labelX.charAt(e-1) == '.') {
+		    labelX = labelX.substring(0, e-1).concat(labelX.substring(e, labelX.length()));
+		    e = e-1;
+		}
+		length = labelX.length();
+	    } else if (abs >= 10) { // |x| >= 10
+		length = (int)(Math.log(abs) / Math.log(10) + 0.0001) + 1;
 		if (x < 0) { // "-"
 		    length ++;
 	        }
@@ -941,8 +954,7 @@ public class DEViseView
 		(labelX.indexOf('.') != -1 && labelX.charAt(length-1) == '0') ){
 		    labelX = labelX.substring(0, length-1);
 		    length--;
-	    }	    
-
+	    }
 	    return labelX;
 	}
     }
@@ -968,8 +980,7 @@ public class DEViseView
 	else if (temp >= 1.5)
 	    f = (float)((2 + 0.0001) * factor);
 	else 
-	    f = (float)((1 + 0.0001) * factor);
-
+	    f = (float)(1 * factor);
 	return f;
     }
 
@@ -984,7 +995,6 @@ public class DEViseView
 
 	if (f < min)
 	    f += step;
-
 	return f;
     }
 
