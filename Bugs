@@ -1053,6 +1053,9 @@ Num Date        Status  Description
 			if you try to pile the views in the Zones 2 window
 			of the COD1.ds session. (rkw)
 
+270 01/14/98	OPEN	dev/mul script doesn't work for starting multi on
+			Linux. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
