@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2001/01/25 16:37:46  wenger
+// Fixed a bug that could cause an infinite loop in the perecent assignment
+// calculations; put filesize, cpu, and coredump limits in s2d script;
+// updated star file list; got rid of some unnecessary warnings.
+//
 // Revision 1.3  2001/01/23 19:35:19  wenger
 // Made a few minor fixes to get things to work right at BMRB.
 //
@@ -140,7 +145,7 @@ public class S2DMain {
 	//
 	try {
 	    Runtime currentRT = Runtime.getRuntime();
-	    Process ps = currentRT.exec("set_modes " + _accessionNum);
+	    Process ps = currentRT.exec("./set_modes " + _accessionNum);
 	    ps.waitFor();
 	    int result = ps.exitValue();
 	    if (result != 0) {
