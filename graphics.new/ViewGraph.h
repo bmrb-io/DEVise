@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/04/05 20:13:32  wenger
+  Fixed error causing pure virtual function to be called
+  if a session was closed during a query; fixed an error
+  in one of the Linux Makefiles; updated other Makefiles
+  to allow testWindowRep to be built on all architectures.
+
   Revision 1.7  1995/12/18 03:16:13  ravim
   Function to compute XOR of statistic strings.
 
@@ -55,10 +61,13 @@ public:
 	    Action *action = NULL);
   virtual void InsertMapping(TDataMap *map);
 
-  void InitMappingIterator();
+  void InitMappingIterator(Boolean backwards = false);
   Boolean MoreMapping();
   TDataMap *NextMapping();
   void DoneMappingIterator();
+
+  /* Switch the order of map1 and map2 */
+  void SwapMappings(TDataMap *map1, TDataMap *map2);
 
   /* Toggle the value of DisplayStats */
   char *GetDisplayStats() { return _DisplayStats; }
@@ -76,6 +85,6 @@ protected:
  private:
   Boolean ToRemoveStats(char *oldset, char *newset);
   void StatsXOR(char *oldstat, char *newstat, char *result);
-
 };
+
 #endif
