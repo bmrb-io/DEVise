@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.97  2001/04/05 16:14:15  xuk
+// Fixed bugs for JSPoP status query.
+// Modified serverStateDlg() to display JSPoP status correctly.
+//
 // Revision 1.96  2001/03/25 20:34:44  xuk
 // Fixed bug for Collaboration Dlag.
 //
@@ -299,6 +303,7 @@ public class jsdevisec extends Panel
     public CollabDlg collabdlg = null;
     public CollabPassDlg collabpassdlg = null;
     public EnterCollabPassDlg entercollabpassdlg = null;
+    public CollabStateDlg collabstatedlg = null;
 
     public boolean isSessionOpened = false;
 
@@ -761,7 +766,9 @@ System.out.println("Creating new debug window");
 
     public void showCollabState(String msg)
     {
-        showMsg("There are " + msg + " JavaScreens collaborating with this user.");
+        collabstatedlg = new CollabStateDlg(this, parentFrame, isCenterScreen, msg);
+        collabstatedlg.open();
+	collabstatedlg = null;        
     }
 
     public void showRecord(String[] msg)
@@ -861,7 +868,7 @@ System.out.println("Creating new debug window");
         }
 
         isQuit = true;
-
+	
 	// Note: this must be done before destroying the dispatcher;
 	// otherwise we get null pointer errors because we get window
 	// events after the dispatcher has been destroyed.
@@ -882,7 +889,7 @@ System.out.println("Creating new debug window");
         }
 
         if (!jsValues.uiglobals.isApplet) {
-            System.exit(0);
+	    System.exit(0);
 	}
     }
     
@@ -2778,3 +2785,139 @@ class EnterCollabPassDlg extends Dialog
     }
 }
 
+// ------------------------------------------------------------------------
+// Dialog for displaying collaborating state.
+class CollabStateDlg extends Frame
+{
+    private jsdevisec jsc = null;
+
+    private java.awt.List collabList = null;
+    private Label label = new Label("Current collaborating followers: ");
+    private Button closeButton = new Button("Close");
+    private String[] followers = null;
+
+    private boolean status = false; // true means this dialog is showing
+
+    public CollabStateDlg(jsdevisec what, Frame owner, boolean isCenterScreen, String data)
+    {
+	what.jsValues.debug.log("Creating CollabStateDlg");
+
+        jsc = what;
+
+        setBackground(jsc.jsValues.uiglobals.bg);
+        setForeground(jsc.jsValues.uiglobals.fg);
+        setFont(jsc.jsValues.uiglobals.font);
+
+        setTitle("Collaboration State Dialog");
+
+        label.setFont(DEViseFonts.getFont(16, DEViseFonts.SERIF, 1, 0));
+
+        collabList = new java.awt.List(8, false);
+        collabList.setBackground(jsc.jsValues.uiglobals.textBg);
+        collabList.setForeground(jsc.jsValues.uiglobals.textFg);
+        collabList.setFont(jsc.jsValues.uiglobals.textFont);
+
+        Button [] button = new Button[1];
+        button[0] = closeButton;
+        DEViseComponentPanel panel = new DEViseComponentPanel(button,
+	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+
+        // set layout manager
+        GridBagLayout  gridbag = new GridBagLayout();
+        GridBagConstraints  c = new GridBagConstraints();
+        setLayout(gridbag);
+
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.fill = GridBagConstraints.BOTH;
+        c.anchor = GridBagConstraints.CENTER;
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+
+        c.insets = new Insets(5, 10, 0, 10);
+        gridbag.setConstraints(label, c);
+        add(label);
+        c.insets = new Insets(5, 10, 5, 10);
+        gridbag.setConstraints(collabList, c);
+        add(collabList);
+        gridbag.setConstraints(panel, c);
+        add(panel);
+
+        pack();
+
+        setCollabList(data);
+
+        // reposition the window
+        Point parentLoc = null;
+        Dimension parentSize = null;
+
+        if (isCenterScreen) {
+            Toolkit kit = Toolkit.getDefaultToolkit();
+            parentSize = kit.getScreenSize();
+            parentLoc = new Point(0, 0);
+        } else {
+            parentLoc = owner.getLocation();
+            parentSize = owner.getSize();
+        }
+
+        Dimension mysize = getSize();
+        parentLoc.y += parentSize.height / 2;
+        parentLoc.x += parentSize.width / 2;
+        parentLoc.y -= mysize.height / 2;
+        parentLoc.x -= mysize.width / 2;
+        setLocation(parentLoc);
+
+        this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+
+        closeButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+		    {
+			close(); 
+		    }
+                });
+    }
+
+    public void setCollabList(String data)
+    {
+      	followers = DEViseGlobals.parseString(data);	
+
+        for (int i = 1; i < followers.length; i++) {
+	    collabList.add(" " + i + ":" + " " + followers[i]);
+	}
+
+        validate();
+    }
+
+    protected void processEvent(AWTEvent event)
+    {
+        if (event.getID() == WindowEvent.WINDOW_CLOSING) {
+            close();
+            return;
+        }
+
+        super.processEvent(event);
+    }
+
+    public void open()
+    {
+	jsc.jsValues.debug.log("Opening CollabStateDlg");
+        status = true;
+        setVisible(true);
+    }
+
+    public synchronized void close()
+    {
+        if (status) {
+            dispose();
+            status = false;
+            jsc.collabdlg = null;
+        }
+	jsc.jsValues.debug.log("Closed CollabStateDlg");
+    }
+
+    // true means this dialog is showing
+    public synchronized boolean getStatus()
+    {
+        return status;
+    }
+}

@@ -23,6 +23,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.90  2001/04/06 19:32:14  wenger
+// Various cleanups of collaboration code (working on strange hang
+// that Miron has seen); added more debug output; turned heartbeat
+// back on (it somehow got turned off by accident).
+//
 // Revision 1.89  2001/04/05 16:12:35  xuk
 // Fixed bugs for JSPoP status query.
 // Only process JAVAC_UpdataSeverState command for normal JS.
@@ -564,7 +569,8 @@ public class DEViseCmdDispatcher implements Runnable
 	    _connectedAlready = true;
 
 	    // Start the heartbeat thread.
-	    _heartbeat = new DEViseHeartbeat(this);
+	    if (jsc.specialID == -1)
+		_heartbeat = new DEViseHeartbeat(this);
         }
 
 	commands = DEViseGlobals.parseStr(cmd);
@@ -665,6 +671,7 @@ public class DEViseCmdDispatcher implements Runnable
             }
         }
 
+	
 	if (jsc.specialID != -1) {
 	    try {
                 jsc.pn("Sending: \"" + DEViseCommands.EXIT +"\"");
@@ -673,7 +680,7 @@ public class DEViseCmdDispatcher implements Runnable
                 jsc.showMsg(e.getMsg());
             }
 	}
-
+	
 	//
 	// Kill the dispatcher thread and disconnect.
 	//
@@ -945,8 +952,8 @@ public class DEViseCmdDispatcher implements Runnable
             jsc.checkQuit();
 
         } else if (args[0].equals(DEViseCommands.COLLAB_STATE)) {
-	    jsc.pn("we are here in collab_state" + args[1]);
-            jsc.showCollabState(args[1]);
+            if (jsc.specialID == -1) // only for normal JS	    
+		jsc.showCollabState(response);
 
         } else if (args[0].equals(DEViseCommands.UPDATE_SERVER_STATE)) {
             if (args.length != 2) {

@@ -103,9 +103,7 @@ see comments in DEViseCommSocket.java.
         
     3.5 JAVAC_CollabState
     Purpose: send the collaboration status back to JavaScreen
-    Arguments: 1
-        <status>: a string containing a number indicating how many 
-		JavaScreens are collaborating with this user.
+    Arguments: variable nember of hostnames of collaborating followers.
 
     3.6 JAVAC_CollabExit
     Purpose: Close the collaboration JavaScreens, when the "leader" exits

@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.49  2001/04/11 16:49:39  wenger
+// Added a new thread to the jspop that checks whether other threads may
+// be hung.
+//
 // Revision 1.48  2001/04/06 19:32:15  wenger
 // Various cleanups of collaboration code (working on strange hang
 // that Miron has seen); added more debug output; turned heartbeat
@@ -581,7 +585,7 @@ public class jspop implements Runnable
 		int flag = socket.flag;
 		if (flag == -1) { // collaboration JS
 		    pn("Received collaboration request for client: " + id + ".");
-		    onCollab(socket, id, cmd);
+		    onCollab(socket, id, cmd, hostname);
 		} else {
 		    boolean cgi;
 		    if (flag == 1) {
@@ -1327,7 +1331,7 @@ public class jspop implements Runnable
         }
     }
 
-    private synchronized void onCollab(DEViseCommSocket socket, int id, String cmd)
+    private synchronized void onCollab(DEViseCommSocket socket, int id, String cmd, String hostname)
     {   
 	try {	
 	    // first connection for collaboration
@@ -1367,7 +1371,7 @@ public class jspop implements Runnable
 		    String requestPass = new String(cmds[4]);
 		    pn("We got request passwd: " + requestPass);
 		    if (client.checkPass(requestPass)) {
-			client.addCollabSocket(socket);
+			client.addCollabSocket(socket, hostname);
 			DEViseServer server = getNextAvailableServer();
 			if (server != null && 
 			    (server.getCurrentClient()) != client) {

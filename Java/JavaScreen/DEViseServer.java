@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.59  2001/04/11 21:09:15  wenger
+// Added diagnostic output of client.collabInit.
+//
 // Revision 1.58  2001/04/11 16:49:38  wenger
 // Added a new thread to the jspop that checks whether other threads may
 // be hung.
@@ -783,11 +786,8 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 		    try {
 			String clientCmd = sock.receiveCmd();
 			
-			if (clientCmd.startsWith(DEViseCommands.EXIT)) {
-			    client.collabSockets.removeElement(sock);
-			    sock.closeSocket();
-			    sock = null;
-			}
+			if (clientCmd.startsWith(DEViseCommands.EXIT))
+			    client.removeCollabSocket(sock);
 		    } catch (InterruptedIOException e) {}
 		} else {
 		    pop.pn("Sending command " + DEViseCommands.CLOSE_SESSION
@@ -906,11 +906,9 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 		if (!sock.isEmpty()) {
 		    String cmd = sock.receiveCmd();
 		    
-		    if (cmd.startsWith(DEViseCommands.EXIT)) {
-			client.collabSockets.removeElement(sock);
-			sock.closeSocket();
-			sock = null;
-		    } else {
+		    if (cmd.startsWith(DEViseCommands.EXIT))
+			client.removeCollabSocket(sock);
+		    else {
 			pop.pn("Sending command to collabration client " + i + ": " + clientCmd);
 			sock.sendCmd(clientCmd);
 			sock.sendCmd(DEViseCommands.DONE);
