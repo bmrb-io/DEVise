@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.24  1996/07/05 14:41:33  jussi
+#  Added error message to GetClass procedure.
+#
 #  Revision 1.23  1996/06/27 22:54:09  jussi
 #  Added support for XOR color value.
 #
@@ -660,4 +663,15 @@ proc AbortProgram {reason} {
     tkwait visibility .abort
     grab set .abort
     tkwait window .abort
+}
+
+############################################################
+
+proc statusWindow {w title msg} {
+    toplevel $w
+    wm title $w $title
+    wm geometry $w +200+200
+    message $w.msg -justify center -width 8c -text $msg
+    pack $w.msg -side top -padx 8m -pady 4m
+    update
 }
