@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1996/01/17 20:53:45  jussi
+#  Added support for additional image export formats.
+#
 #  Revision 1.5  1996/01/17 19:47:53  jussi
 #  Minor bug fix.
 #
@@ -50,7 +53,7 @@ proc PrintView {} {
     
     set toprinter 1
     set printcmd "lpr "
-    set filename "/tmp/devise.dump"
+    set filename "/tmp/devise"
     set allviews 0
 
     frame .printdef.top -relief groove -borderwidth 2
@@ -77,7 +80,7 @@ proc PrintView {} {
     menubutton .printdef.top.row2.m1 -relief raised \
 	    -textvariable formatsel -menu .printdef.top.row2.m1.menu \
 	    -width 10
-    label .printdef.top.row2.l1 -text "File name:" -width 14
+    label .printdef.top.row2.l1 -text "File Name:" -width 14
     entry .printdef.top.row2.e1 -relief sunken -textvariable filename \
 	    -width 30
     pack .printdef.top.row2.r1 .printdef.top.row2.m1 \
@@ -145,11 +148,16 @@ proc PrintActual {toprinter printcmd filename allviews format} {
 
     set format [string tolower $format]
 
+    set suffix ".ps"
+    if {$format != "postscript"} {
+	set suffix ".$format"
+    }
+
     if {$toprinter} {
 	set format postscript
-	set template [format "/tmp/devise.%s.%%d.ps" [pid]]
+	set template [format "/tmp/devise.%s.%%d$suffix" [pid]]
     } else {
-	set template [format "%s.%%d" $filename]
+	set template [format "%s.%%d$suffix" $filename]
     }
 
     set i 0
