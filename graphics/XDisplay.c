@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.64  1998/01/30 02:16:43  wenger
+  Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
+
   Revision 1.63  1997/12/28 16:40:13  beyer
   Can select scalable fonts now.
 
@@ -772,6 +775,9 @@ void XDisplay::MakeAndWriteGif(FILE *fp, int x, int y, int w, int h)
       XPutImage(_display, pixmap, gc, image, 0, 0, dx, dy, ww, wh);
       image->data = NULL;
       XDestroyImage(image);
+    } else {
+      if(windowP != NULL) printf(
+	  "Excluding window %s from printing\n", windowP->GetName());
     }
   }
   DevWindow::DoneIterator(index);

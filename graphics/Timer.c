@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/10/01 14:00:28  wenger
+  Removed extra path info from includes.
+
   Revision 1.12  1996/08/02 00:38:08  jussi
   Added variable _nexthop where the length of the next hop
   is stored.
@@ -192,6 +195,10 @@ Handler of timer interrupt
 
 void Timer::TimerHandler(int arg)
 {
+#if defined(DEBUG)
+    printf("Timer::TimerHandler()\n");
+#endif
+
     StopTimer();
 
     _inHandler = true;
