@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.66  2000/08/07 20:21:23  wenger
+// Fixed problems with DEViseView.getFirstCursor() method; cleanup of
+// DEViseCanvas CVS log, and other minor cleanup.
+//
 // Revision 1.65  2000/08/07 17:15:39  wenger
 // Removed the 'control-drag' to move a cursor without talking to the devised
 // feature because it could end up causing an incorrect state; added
@@ -267,6 +271,10 @@ public class DEViseCanvas extends Container
     // See DEViseCursor.side* for values.
     private int whichCursorSide = DEViseCursor.sideNone;
 
+    // Keep track of whether the mouse is actually in this canvas (part of
+    // the fix for the "missing keystrokes" bugs.
+    private boolean _mouseIsInCanvas = false;
+
     public String helpMsg = null;
     public int helpMsgX = -1, helpMsgY = -1;
 
@@ -288,7 +296,7 @@ public class DEViseCanvas extends Container
     //
     private boolean buttonIsDown = false;
 
-    private static final int _debug = 0; // 0 - 3
+    private static final int DEBUG = 0; // 0 - 3
 
     // v is base view if there is a pile in this canvas.
     public DEViseCanvas(DEViseView v, Image img)
@@ -314,6 +322,7 @@ public class DEViseCanvas extends Container
         addMouseListener(new ViewMouseListener());
         addMouseMotionListener(new ViewMouseMotionListener());
         addKeyListener(new ViewKeyListener());
+        addFocusListener(new ViewFocusListener());
     }
 
     public Dimension getPreferredSize()
@@ -329,6 +338,11 @@ public class DEViseCanvas extends Container
     public Rectangle getLocInScreen()
     {
         return view.viewLoc;
+    }
+
+    public boolean mouseIsWithin()
+    {
+        return _mouseIsInCanvas;
     }
 
     // This function is used to draw cursors because direct XOR drawing
@@ -839,8 +853,9 @@ public class DEViseCanvas extends Container
     {
         int id = event.getID();
 
-        if (_debug >= 1) {
-            System.out.println("DEViseCanvas.processMouseEvent()");
+        if (DEBUG >= 1) {
+            System.out.println("DEViseCanvas(" + view.viewName +
+	      ").processMouseEvent()");
             if (id == MouseEvent.MOUSE_PRESSED) System.out.println(
 	      "  Mouse pressed");
             if (id == MouseEvent.MOUSE_CLICKED) System.out.println(
@@ -868,8 +883,9 @@ public class DEViseCanvas extends Container
 
     protected void processMouseMotionEvent(MouseEvent event)
     {
-        if (_debug >= 2) {
-            System.out.println("DEViseCanvas.processMouseMotionEvent()");
+        if (DEBUG >= 2) {
+            System.out.println("DEViseCanvas(" + view.viewName +
+	      ").processMouseMotionEvent()");
         }
 
         int id = event.getID();
@@ -907,8 +923,9 @@ public class DEViseCanvas extends Container
         // event sequence: 1. keypressed 2.keytyped 3.keyreleased
         public void keyPressed(KeyEvent event)
         {
-            if (_debug >= 1) {
-                System.out.println("keyPressed(" + event.getKeyChar() + ")");
+            if (DEBUG >= 1) {
+                System.out.println("DEViseCanvas(" + view.viewName +
+		  ").keyPressed(" + event.getKeyChar() + ")");
 	    }
             DEViseCanvas.lastKey = event.getKeyCode();
         }
@@ -917,8 +934,9 @@ public class DEViseCanvas extends Container
 	// to the devised.
         public void keyReleased(KeyEvent event)
         {
-            if (_debug >= 1) {
-                System.out.println("keyReleased(" + event.getKeyChar() + ")");
+            if (DEBUG >= 1) {
+                System.out.println("DEViseCanvas(" + view.viewName +
+		  ").keyReleased(" + event.getKeyChar() + ")");
 	    }
             DEViseCanvas.lastKey = KeyEvent.VK_UNDEFINED;
 
@@ -1074,7 +1092,7 @@ public class DEViseCanvas extends Container
         // event sequence: 1. mousePressed 2. mouseReleased 3. mouseClicked
         public void mousePressed(MouseEvent event)
         {
-            if (_debug >= 1) {
+            if (DEBUG >= 1) {
                 System.out.println(
 		  "DEViseCanvas(" + view.viewName +
 		    ").ViewMouseListener.mousePressed()");
@@ -1116,7 +1134,7 @@ public class DEViseCanvas extends Container
 
         public void mouseReleased(MouseEvent event)
         {
-	    if (_debug >= 1) {
+	    if (DEBUG >= 1) {
 	        System.out.println(
 		  "DEViseCanvas(" + view.viewName +
 		    ").ViewMouseListener.mouseReleased()");
@@ -1220,7 +1238,7 @@ public class DEViseCanvas extends Container
 
         public void mouseClicked(MouseEvent event)
         {
-            if (_debug >= 1) {
+            if (DEBUG >= 1) {
                 System.out.println(
 		  "DEViseCanvas(" + view.viewName +
 		    ").ViewMouseListener.mouseClicked()");
@@ -1275,6 +1293,22 @@ public class DEViseCanvas extends Container
                 repaint();
             }
         }
+
+        public void mouseEntered(MouseEvent event)
+	{
+	    if (DEBUG >= 1) {
+	        System.out.println("Mouse entered view " + view.curlyName);
+	    }
+	    _mouseIsInCanvas = true;
+	}
+
+        public void mouseExited(MouseEvent event)
+	{
+	    if (DEBUG >= 1) {
+	        System.out.println("Mouse exited view " + view.curlyName);
+	    }
+	    _mouseIsInCanvas = false;
+	}
     }
     // end of class ViewMouseListener
 
@@ -1289,9 +1323,9 @@ public class DEViseCanvas extends Container
         public void mouseDragged(MouseEvent event)
         {
 
-            if (_debug >= 2) {
-                System.out.println(
-		  "DEViseCanvas.ViewMouseMotionListener.mouseDragged()");
+            if (DEBUG >= 2) {
+                System.out.println("DEViseCanvas(" + view.viewName +
+		  ").ViewMouseMotionListener.mouseDragged()");
             }
 
             Point p = event.getPoint();
@@ -1343,9 +1377,9 @@ public class DEViseCanvas extends Container
 
         public void mouseMoved(MouseEvent event)
         {
-            if (_debug >= 2) {
-                System.out.println(
-		  "DEViseCanvas.ViewMouseMotionListener.mouseMoved()");
+            if (DEBUG >= 2) {
+                System.out.println("DEViseCanvas(" + view.viewName +
+		  ").ViewMouseMotionListener.mouseMoved()");
             }
 
 	    // Bug fix -- see notes at variable declaration.
@@ -1382,14 +1416,44 @@ public class DEViseCanvas extends Container
     }
     // end of class ViewMouseMotionListener
 
+    //
+    // Note: we don't absolutely need this class; it's here just to help
+    // debug the problem with input focus sometimes improperly getting
+    // taken away from a DEViseCanvas.
+    //
+    class ViewFocusListener extends FocusAdapter
+    {
+        public void focusGained(FocusEvent event)
+	{
+	    if (DEBUG >= 2) {
+	        System.out.println("View " + view.curlyName + " gained focus");
+	    }
+	}
+
+	public void focusLost(FocusEvent event)
+	{
+	    if (DEBUG >= 2) {
+	        System.out.println("View " + view.curlyName + " lost focus");
+	        System.out.println("_mouseIsInCanvas = " + _mouseIsInCanvas);
+	    }
+
+	    if (_mouseIsInCanvas) {
+	        if (DEBUG >= 1) {
+	            System.err.println("WARNING: view " + view.viewName +
+		      " lost focus while mouse is in it!");
+                }
+	    }
+	}
+    } // end of class ViewFocusListener
+
     // Update the shape of the mouse cursor based on whether the mouse
     // is on a DEVise cursor, etc.
     public synchronized void checkMousePos(Point p, boolean checkDispatcher)
       throws YError
     {
-        if (_debug >= 3) {
-            System.out.println("DEViseCanvas.checkMousePos(" + p.x + ", " +
-	      p.y + ")");
+        if (DEBUG >= 3) {
+            System.out.println("DEViseCanvas(" + view.viewName +
+	      ").checkMousePos(" + p.x + ", " + p.y + ")");
         }
 
         // initialize value
@@ -1417,35 +1481,35 @@ public class DEViseCanvas extends Container
 
                 case DEViseCursor.sideMiddle:
 		    // Inside a cursor, you can move this cursor.
-                    if (_debug >= 3) System.out.println(
+                    if (DEBUG >= 3) System.out.println(
 		      "whichCursorSide = DEViseCursor.sideMiddle");
                     tmpCursor = DEViseUIGlobals.moveCursor;
                     break;
 
                 case DEViseCursor.sideLeft:
 		    // On left side of a cursor, you can resize this cursor.
-                    if (_debug >= 3) System.out.println(
+                    if (DEBUG >= 3) System.out.println(
 		      "whichCursorSide = DEViseCursor.sideLeft");
                     tmpCursor = DEViseUIGlobals.lrsCursor;
                     break;
 
                 case DEViseCursor.sideRight:
 		    // On right side of a cursor, you can resize this cursor.
-                    if (_debug >= 3) System.out.println(
+                    if (DEBUG >= 3) System.out.println(
 		      "whichCursorSide = DEViseCursor.sideRight");
                     tmpCursor = DEViseUIGlobals.rrsCursor;
                     break;
 
                 case DEViseCursor.sideTop:
 		    // On top side of a cursor, you can resize this cursor.
-                    if (_debug >= 3) System.out.println(
+                    if (DEBUG >= 3) System.out.println(
 		      "whichCursorSide = DEViseCursor.sideTop");
                     tmpCursor = DEViseUIGlobals.trsCursor;
                     break;
 
                 case DEViseCursor.sideBottom:
 		    // On bottom side of a cursor, you can resize this cursor.
-                    if (_debug >= 3) System.out.println(
+                    if (DEBUG >= 3) System.out.println(
 		      "whichCursorSide = DEViseCursor.sideBottom");
                     tmpCursor = DEViseUIGlobals.brsCursor;
                     break;
@@ -1453,7 +1517,7 @@ public class DEViseCanvas extends Container
                 case DEViseCursor.sideTopLeft:
 		    // On left-top corner of a cursor, you can resize
 		    // this cursor.
-                    if (_debug >= 3) System.out.println(
+                    if (DEBUG >= 3) System.out.println(
 		      "whichCursorSide = DEViseCursor.sideTopLeft");
                     tmpCursor = DEViseUIGlobals.tlrsCursor;
                     break;
@@ -1461,7 +1525,7 @@ public class DEViseCanvas extends Container
                 case DEViseCursor.sideBottomLeft:
 		    // On left-bottom corner of a cursor, you can resize
 		    // this cursor.
-                    if (_debug >= 3) System.out.println(
+                    if (DEBUG >= 3) System.out.println(
 		      "whichCursorSide = DEViseCursor.sideBottomLeft");
                     tmpCursor = DEViseUIGlobals.blrsCursor;
                     break;
@@ -1469,7 +1533,7 @@ public class DEViseCanvas extends Container
                 case DEViseCursor.sideTopRight:
 		    // On right-top corner of a cursor, you can resize
 		    // this cursor.
-                    if (_debug >= 3) System.out.println(
+                    if (DEBUG >= 3) System.out.println(
 		      "whichCursorSide = DEViseCursor.sideTopRight");
                     tmpCursor = DEViseUIGlobals.trrsCursor;
                     break;
@@ -1477,7 +1541,7 @@ public class DEViseCanvas extends Container
                 case DEViseCursor.sideBottomRight:
 		    // 0n right-bottom corner of a cursor, you can resize
 		    // this cursor.
-                    if (_debug >= 3) System.out.println(
+                    if (DEBUG >= 3) System.out.println(
 		      "whichCursorSide = DEViseCursor.sideBottomRight");
                     tmpCursor = DEViseUIGlobals.brrsCursor;
                     break;
@@ -1564,7 +1628,7 @@ public class DEViseCanvas extends Container
 	    if (cursorSide != DEViseCursor.sideNone) {
                 activeView = v;
                 whichCursorSide = cursorSide;
-                if (_debug >= 3) System.out.println(
+                if (DEBUG >= 3) System.out.println(
 		  "Setting selected cursor to " + cursor.name);
                 selectedCursor = cursor;
                 isInViewDataArea = true;

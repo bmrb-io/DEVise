@@ -2329,16 +2329,18 @@ Num Date        Status  Description
 591 05/22/00	OPEN	JavaScreen: shouldn't do repaints so often (just
 			moving the mouse, etc.). (rkw)
 
-592 05/22/00	OPEN	JavaScreen: sometimes doesn't catch keystrokes in
+592 05/22/00	FIXED	JavaScreen: sometimes doesn't catch keystrokes in
 			views. (rkw)
 			(See also bug 594.)
+			(Fixed by rkw, 10/3/00.)
 
 593 05/23/00	OPEN	JavaScreen: no longer asks for confirmation when
 			you click Exit with a session open. (rkw)
 
-594 06/05/00	OPEN	JavaScreen: JS inside Netscape doesn't seem to
+594 06/05/00	FIXED	JavaScreen: JS inside Netscape doesn't seem to
 			pick up keystrokes in 3D views. (rkw)
 			(See also bug 592.)
+			(Fixed by rkw, 10/3/00.)
 
 595 06/06/00	FIXED	JavaScreen: java.lang.ArrayIndexOutOfBoundsException
 			when opening AWON session. (rkw)

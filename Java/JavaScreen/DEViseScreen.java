@@ -32,6 +32,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.63  2000/07/20 16:26:07  venkatan
+// Mouse Location Display format - is now controlled by printf type
+// format strings specified by the VIEW_DATA_AREA command
+//
 // Revision 1.62  2000/06/21 18:37:30  wenger
 // Removed a bunch of unused code (previously just commented out).
 //
@@ -183,6 +187,8 @@ public class DEViseScreen extends Panel
     public boolean guiAction = false;
     private String lastCommand = null;
 
+    private static final int DEBUG = 0; // 0 - 3
+
     boolean isDimChanged = false;
     boolean helpclicked = false;
 
@@ -223,6 +229,8 @@ public class DEViseScreen extends Panel
                     }
                 }
             });
+        addFocusListener(new DSFocusListener());
+	addKeyListener(new DSKeyListener());
     }
 
     protected void processMouseEvent(MouseEvent event)
@@ -822,5 +830,77 @@ public class DEViseScreen extends Panel
         //newGData = new Vector();
 
         super.paint(g);
+    }
+
+    // Find the DEViseCanvas (if any) that the mouse pointer is currently
+    // within.
+    private DEViseCanvas findMouseCanvas()
+    {
+        for (int index = 0; index < allCanvas.size(); index++) {
+	    DEViseCanvas canvas = (DEViseCanvas)allCanvas.elementAt(index);
+	    if (canvas.mouseIsWithin()) {
+	        return canvas;
+	    }
+	}
+
+        return null;
+    }
+
+    //
+    // Note: we don't absolutely need this class; it's here just to help
+    // debug the problem with input focus sometimes improperly getting
+    // taken away from a DEViseCanvas.
+    //
+    class DSFocusListener extends FocusAdapter
+    {
+        public void focusGained(FocusEvent event)
+	{
+	    if (DEBUG >= 1) {
+	        System.out.println("DEViseScreen gained focus");
+	    }
+	}
+
+	public void focusLost(FocusEvent event)
+	{
+	    if (DEBUG >= 1) {
+	        System.out.println("DEViseScreen lost focus");
+	    }
+	}
+    }
+
+    //
+    // Note: the methods here should not generally get called; however,
+    // the JVM sometimes gets confused, and transfers input focus
+    // to the DEViseScreen when the mouse is in a view (DEViseCanvas).
+    // In that case, the event comes here and we have to pass it
+    // along to the appropriate canvas.
+    //
+    class DSKeyListener extends KeyAdapter
+    {
+        public void keyPressed(KeyEvent event)
+	{
+	    if (DEBUG >= 2) {
+	        System.out.println("DEViseScreen.keyPressed(" +
+	          event.getKeyChar() + ")");
+	    }
+
+	    DEViseCanvas canvas = findMouseCanvas();
+	    if (canvas != null) {
+	        canvas.dispatchEvent(event);
+	    }
+	}
+
+        public void keyReleased(KeyEvent event)
+	{
+	    if (DEBUG >= 2) {
+	        System.out.println("DEViseScreen.keyReleased(" +
+	          event.getKeyChar() + ")");
+	    }
+
+	    DEViseCanvas canvas = findMouseCanvas();
+	    if (canvas != null) {
+	        canvas.dispatchEvent(event);
+	    }
+	}
     }
 }
