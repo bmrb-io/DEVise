@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.48  1997/03/19 19:41:52  andyt
+  Embedded Tcl/Tk windows are now sized in data units, not screen pixel
+  units. The old list of ETk window handles (WindowRep class) has been
+  replaced by a list of ETkInfo structs, each with fields for the window
+  handle, x-y coordinates, name of the Tcl script, and an "in_use"
+  flag. Added an ETk_Cleanup() procedure that gets called inside
+  View::ReportQueryDone and destroys all ETk windows that are not marked
+  as in_use.
+
   Revision 1.47  1997/02/26 16:31:49  wenger
   Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
 
@@ -206,9 +215,12 @@
 #include "Init.h"
 #include "RecordLink.h"
 #include "TData.h"
+#include "Util.h"
+#include "AssoArray.h"
+
 #include "MappingInterp.h"
 
-ImplementDList(GStatList, int)
+ImplementDList(GStatList, double)
 
 ViewGraph::ViewGraph(char *name, VisualFilter &initFilter, 
 		     AxisLabel *xAxis, AxisLabel *yAxis,
@@ -237,17 +249,22 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
 
     _updateLink.SetMasterView(this);
 
-    _statBuffer = new DataSourceFixedBuf(3072, "statBuffer");
+    _statBuffer = new DataSourceFixedBuf(DERIVED_BUF_SIZE, "statBuffer");
     _statBuffer->AddRef();
     _statBuffer->SetControllingView(this);
 
-    _histBuffer = new DataSourceFixedBuf(3072, "histBuffer");
+    _histBuffer = new DataSourceFixedBuf(HIST_BUF_SIZE, "histBuffer");
     _histBuffer->AddRef();
     _histBuffer->SetControllingView(this);
 
-    _gdataStatBuffer = new DataSourceFixedBuf(3072, "gdataStatBuffer");
-    _gdataStatBuffer->AddRef();
-    _gdataStatBuffer->SetControllingView(this);
+    _gdataStatBufferX = new DataSourceFixedBuf(DERIVED_BUF_SIZE, "gdataStatBufferX");
+    _gdataStatBufferY = new DataSourceFixedBuf(DERIVED_BUF_SIZE, "gdataStatBufferY");
+    _gdataStatBufferX->AddRef();
+    _gdataStatBufferY->AddRef();
+    _gdataStatBufferX->SetControllingView(this);
+    _gdataStatBufferY->SetControllingView(this);
+
+    _gstatInMem = true;
 }
 
 ViewGraph::~ViewGraph()
@@ -268,9 +285,13 @@ ViewGraph::~ViewGraph()
     if( _histBuffer->DeleteRef() ) {
 	delete _histBuffer;
     }
-    _gdataStatBuffer->RemoveControllingView(this);
-    if( _gdataStatBuffer->DeleteRef() ) {
-	delete _gdataStatBuffer;
+    _gdataStatBufferX->RemoveControllingView(this);
+    _gdataStatBufferY->RemoveControllingView(this);
+    if( _gdataStatBufferX->DeleteRef() ) {
+	delete _gdataStatBufferX;
+    }
+    if( _gdataStatBufferY->DeleteRef() ) {
+	delete _gdataStatBufferY;
     }
 
     if (_deleteAction) delete _action;
@@ -346,18 +367,27 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
     if (!MoreMapping(index)) {
       // this is the first mapping
       // update the histogram bucket sizes
-      AttrInfo *yAttr = map->MapGAttr2TAttr(MappingCmd_Y);
-      if( yAttr && yAttr->hasLoVal && yAttr->hasHiVal ) {
+//      AttrInfo *yAttr = map->MapGAttr2TAttr(MappingCmd_Y);
+//      if( yAttr && yAttr->hasLoVal && yAttr->hasHiVal ) {
 	// y min & max known for the file, so use those to define buckets
-	double lo = AttrList::GetVal(&yAttr->loVal, yAttr->type);
-	double hi = AttrList::GetVal(&yAttr->hiVal, yAttr->type);
-	_allStats.SetHistWidth(lo, hi);
-      } else {
+//	double lo = AttrList::GetVal(&yAttr->loVal, yAttr->type);
+//	double hi = AttrList::GetVal(&yAttr->hiVal, yAttr->type);
+//	_allStats.SetHistWidth(lo, hi);
+//       } else {
 	// global min & max are not known, so use filter hi & lo
         VisualFilter filter;
         GetVisualFilter(filter);
-	_allStats.SetHistWidth(filter.yLow, filter.yHigh);
-      }
+	double yMax = _allStats.GetStatVal(STAT_MAX);
+	double yMin = _allStats.GetStatVal(STAT_MIN);
+	double hi = (yMax > filter.yHigh) ? yMax:filter.yHigh; 
+	double lo = (yMin < filter.yLow) ? yMin:filter.yLow;
+	_allStats.SetHistWidth(lo, hi);
+#if defined(DEBUG) 
+	printf("yMax=%g, yMin=%g, filter.yHigh=%g, filter.yLow=%g\n", 
+		yMax, yMin, filter.yHigh, filter.yLow);
+#endif
+//	_allStats.SetHistWidth(filter.yLow, filter.yHigh);
+//      }
     }
     DoneMappingIterator(index);
 
@@ -386,6 +416,7 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
         if (info && info->type == DateAttr)
           SetYAxisAttrType(DateAttr);
     }
+//    UpdateAutoScale();
 
     Refresh();
 }
@@ -626,7 +657,6 @@ void ViewGraph::MasterRecomputed(ViewGraph* master)
     Refresh();
 }
 
-
 Boolean ViewGraph::ToRemoveStats(char *oldset, char *newset)
 {
     DOASSERT(strlen(oldset) == STAT_NUM && strlen(newset) == STAT_NUM,
@@ -646,23 +676,81 @@ void ViewGraph::StatsXOR(char *oldstat, char *newstat, char *result)
       result[i] = ((oldstat[i] - '0')^(newstat[i] - '0')) + '0';
 }
 
-void ViewGraph::PrepareStatsBuffer()
+/*
+AssoArray<int> month(12);
+
+month["Jan"] = 1;
+month["Feb"] = 2;
+month["Mar"] = 3;
+month["Apr"] = 4;
+month["May"] = 5;
+month["Jun"] = 6;
+month["Jul"] = 7;
+month["Aug"] = 8;
+month["Sep"] = 9;
+month["Oct"] = 10;
+month["Nov"] = 11;
+month["Dec"] = 12;
+*/
+
+/* The following two methods areonly temporary solutions, a good solution
+   is an associative array which I am working on. */
+
+int findMonth(const char *mon){
+	if(!strcmp(mon, "Jan")) return 1;
+	if(!strcmp(mon, "Feb")) return 2;
+	if(!strcmp(mon, "Mar")) return 3;
+	if(!strcmp(mon, "Apr")) return 4;
+	if(!strcmp(mon, "May")) return 5;
+	if(!strcmp(mon, "Jun")) return 6;
+	if(!strcmp(mon, "Jul")) return 7;
+	if(!strcmp(mon, "Aug")) return 8;
+	if(!strcmp(mon, "Sep")) return 9;
+	if(!strcmp(mon, "Oct")) return 10;
+	if(!strcmp(mon, "Nov")) return 11;
+	if(!strcmp(mon, "Dec")) return 12;
+	else printf("***********No such month**********\n");
+	return 0;
+}
+
+char **ExtractDate(char *string) {
+	char **date = new char*[3];
+	date[0] = new char[4];
+	date[1] = new char[3];
+	date[2] = new char[5];
+
+	char *p = string;
+	strncpy(date[0], p, 4);
+	date[0][3] = '\0';
+	strncpy(date[1], p+4, 3);
+	if(date[1][0]==' ') { date[1]++; date[1][1]='\0'; }
+	else date[1][2] = '\0';
+	strncpy(date[2], p+7, 5);
+	date[2][4] = '\0';
+
+	return date;
+}
+
+
+void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 {
     /* initialize statistics buffer */
     _statBuffer->Clear();
     _histBuffer->Clear();
-    _gdataStatBuffer->Clear();
+    _gdataStatBufferX->Clear();
+    _gdataStatBufferY->Clear();
 
     /* put the statistics in the stat buffer */
     char line[1024];
     int i;
     for(i = 0; i < MAXCOLOR; i++) {
 	if( _stats[i].GetStatVal(STAT_COUNT) > 0 ) {
-	    sprintf(line, "%d %d %g %g %g %g %g %g %g %g %g\n",
+	    sprintf(line, "%d %d %g %g %g %g %g %g %g %g %g %g\n",
 		      i, (int)_stats[i].GetStatVal(STAT_COUNT),	
+		      _stats[i].GetStatVal(STAT_YSUM),
+		      _stats[i].GetStatVal(STAT_MIN),
 		      _stats[i].GetStatVal(STAT_MEAN),
 		      _stats[i].GetStatVal(STAT_MAX),
-		      _stats[i].GetStatVal(STAT_MIN),
 		      _stats[i].GetStatVal(STAT_ZVAL85L),
 		      _stats[i].GetStatVal(STAT_ZVAL85H),
 		      _stats[i].GetStatVal(STAT_ZVAL90L),
@@ -681,40 +769,103 @@ void ViewGraph::PrepareStatsBuffer()
       }
 
     double width = _allStats.GetHistWidth();
-#if defined(DEBUG)
+#if defined(DEBUG) || 0
     printf("histogram width: %g\n", width);
 #endif
     if( width > 0 ) {
+	int size = 32 * _allStats.GetnumBuckets(); // 24 is the max size for each line
+	_histBuffer->Resize(size);
 	double pos = _allStats.GetHistMin() + width / 2.0;
-	for(i = 0; i < HIST_NUM; i++) {
-	    sprintf(line, "%g %d\n", pos, _allStats.GetHistVal(i));
+#if defined(DEBUG) || 0
+	printf("Histogram min is %g\n", _allStats.GetHistMin());
+#endif
+	for(i = 0; i < _allStats.GetnumBuckets(); i++) {
+	    sprintf(line, "%.4e %d\n", pos, _allStats.GetHistVal(i));
 	    int len = strlen(line);
 	    DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
 	    if( (int) _histBuffer->Write(line, len) != len ) {
-#ifdef DEBUG
-	        fprintf(stderr, "Out of histogram buffer space\n");
-#endif
+	        fprintf(stderr, "*****Warning: Out of histogram buffer space\n");
 	        break;
 	    }
+#if defined(DEBUG) || 0
+	    printf("Hist buf line is %s\n", line);
+#endif
 	    pos += width;
 	}
+#if defined(DEBUG) || 0
+	printf("Buf has %d lines\n", i);
+#endif
     }
 
     BasicStats *bs;
-    int index = _glist.InitIterator();
-    while(_glist.More(index)) {
-	int i = _glist.Next(index); 
-	if (_gstat.Lookup(i, bs)) {
+    Boolean x_is_date = false;
+    AttrList *gAttrList = map->GDataAttrList();
+    gAttrList->InitIterator();
+    while(gAttrList->More()) {
+	AttrInfo *info = gAttrList->Next();
+	if(!strcmp(info->name, "x") && info->type==DateAttr) {
+		x_is_date = true;
+	}
+    }
+    gAttrList->DoneIterator();
+
+    int index = _glistX.InitIterator();
+    while(_glistX.More(index)) {
+//	int i = _glistX.Next(index); 
+	double i = _glistX.Next(index); 
+	char *date_string;
+	char **date;
+	if(x_is_date) {
+		date_string = DateString(i);
+		date = ExtractDate(date_string);
+	}
+	if (_gstatX.Lookup(i, bs)) {
 	   DOASSERT(bs,"HashTable lookup error\n");
-	   sprintf(line, "%d %d %g %g %g %g\n",
+	   if (x_is_date) sprintf(line, "%d %s %s %d %g %g %g %g\n",
+			     findMonth(date[0]), date[1], date[2], (int)bs->GetStatVal(STAT_COUNT),
+			     bs->GetStatVal(STAT_YSUM),
+			     bs->GetStatVal(STAT_MIN),
+			     bs->GetStatVal(STAT_MEAN),
+			     bs->GetStatVal(STAT_MAX));
+	   else sprintf(line, "%g %d %g %g %g %g\n",
 			     i, (int)bs->GetStatVal(STAT_COUNT),
 			     bs->GetStatVal(STAT_YSUM),
-			     bs->GetStatVal(STAT_MAX),
+			     bs->GetStatVal(STAT_MIN),
 			     bs->GetStatVal(STAT_MEAN),
-			     bs->GetStatVal(STAT_MIN));
+			     bs->GetStatVal(STAT_MAX));
 	   int len = strlen(line);
 	   DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
-	   if( (int) _gdataStatBuffer->Write(line, len) != len ) {
+#if defined(DEBUG) || 0
+	    printf("_gstatX buf line is %s\n", line);
+#endif
+	   if( (int) _gdataStatBufferX->Write(line, len) != len ) {
+#ifdef DEBUG
+	       fprintf(stderr, "******Out of GData Stat Buffer space\n");
+#endif
+	       break;
+	   }
+       }
+    }	
+    _glistX.DoneIterator(index);
+
+    index = _glistY.InitIterator();
+    while(_glistY.More(index)) {
+//	int i = _glistY.Next(index); 
+	double i = _glistY.Next(index); 
+	if (_gstatY.Lookup(i, bs)) {
+	   DOASSERT(bs,"HashTable lookup error\n");
+	   sprintf(line, "%g %d %g %g %g %g\n",
+			     i, (int)bs->GetStatVal(STAT_COUNT),
+			     bs->GetStatVal(STAT_YSUM),
+			     bs->GetStatVal(STAT_MIN),
+			     bs->GetStatVal(STAT_MEAN),
+			     bs->GetStatVal(STAT_MAX));
+	   int len = strlen(line);
+	   DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
+#if defined(DEBUG) || 0
+	    printf("_gstatY buf line is %s\n", line);
+#endif
+	   if( (int) _gdataStatBufferY->Write(line, len) != len ) {
 #ifdef DEBUG
 	       fprintf(stderr, "Out of GData Stat Buffer space\n");
 #endif
@@ -722,7 +873,20 @@ void ViewGraph::PrepareStatsBuffer()
 	   }
        }
     }	
-    _glist.DoneIterator(index);
+    _glistY.DoneIterator(index);
+
+}
+
+/* Check if the X attr of GData is DateAttr */
+Boolean ViewGraph::IsXDateType(){
+	AttrList *gAttrList = GetFirstMap()->GDataAttrList();
+	gAttrList->InitIterator();
+	while(gAttrList->More()) {
+		AttrInfo *info = gAttrList->Next();
+		if(!strcmp(info->name, "x") && info->type==DateAttr) 
+			return true;
+	}
+	return false;
 }
 
 /* Handle button press event */
@@ -826,6 +990,7 @@ void ViewGraph::SetHistogramWidthToFilter()
     printf("Histogram for view %s set to (%g, %g) from %s range\n",
 	   GetName(), lo, hi, is_filter ? "filter" : "file");
     _allStats.SetHistWidth(lo, hi);
+    ResetGStatInMem();
     AbortQuery();
     Refresh();
 }
@@ -852,20 +1017,4 @@ void ViewGraph::PrintLinkInfo()
   printf("\nUpdate Link");
   _updateLink.Print();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
