@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.50  1996/05/11 20:51:49  jussi
+  Removed some unnecessary code.
+
   Revision 1.49  1996/05/11 17:28:07  jussi
   Moved all API command parsing to ParseAPI.C so that TkControl.c
   and ServerAPI.c would not have to duplicate the effort.
@@ -424,22 +427,6 @@ void TkControlPanel::FilterChanged(View *view, VisualFilter &filter,
 	  view->GetName(), flushed, xLowBuf, yLowBuf, xHighBuf, yHighBuf);
   (void)Tcl_Eval(_interp, cmd);
 }
-
-void TkControlPanel::ViewCreated(View *view)
-{
-  char cmd[256];
-  sprintf(cmd, "ProcessViewCreated {%s}", view->GetName());
-  (void)Tcl_Eval(_interp, cmd);
-}
-
-void TkControlPanel::ViewDestroyed(View *view)
-{
-  char cmd[256];
-  sprintf(cmd, "ProcessViewDestroyed {%s}", view->GetName());
-  (void)Tcl_Eval(_interp, cmd);
-}
-
-/* Make view the current view int he control panel */
 
 void TkControlPanel::SelectView(View *view)
 {

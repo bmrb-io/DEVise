@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/05/11 20:52:33  jussi
+  Replaced strcpy() in ReturnVal() with Tcl_SetResult() in order
+  to avoid buffer overruns. Added DoQuit() and PrintStat()
+  to RestartSession().
+
   Revision 1.9  1996/05/11 19:10:14  jussi
   Added null support for replica management.
 
@@ -121,8 +126,8 @@ protected:
 private:
   virtual void FilterAboutToChange(View *view) {}
   virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
-  virtual void ViewCreated(View *view);
-  virtual void ViewDestroyed(View *view);
+  virtual void ViewCreated(View *view) {}
+  virtual void ViewDestroyed(View *view) {}
 
   char *DispatchedName() { return "TkControlPanel"; }
   void Run();
@@ -137,15 +142,15 @@ private:
   Tk_Window _mainWindow;
   char *_argv0;
 
-  virtual int ReturnVal(int flag, char *result) {
+  virtual int ReturnVal(u_short flag, char *result) {
     Tcl_SetResult(_interp, result, TCL_VOLATILE);
-    return flag;
+    return 1;
   }
   virtual int ReturnVal(int argc, char **argv) {
     Tcl_ResetResult(_interp);
     for(int i = 0; i < argc; i++) 
       Tcl_AppendElement(_interp, argv[i]);
-    return API_OK;
+    return 1;
   }
 };
 
