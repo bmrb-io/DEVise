@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/06/13 18:02:39  wenger
+  Got client/server library to compile with latest changes.
+
   Revision 1.14  1997/06/04 15:50:27  wenger
   Printing windows to PostScript as pixmaps is now implemented, including
   doing so when printing the entire display.
@@ -136,6 +139,7 @@ public:
     /* Flush buffered window operations to screen */
     virtual void Flush() {}
 
+#ifndef LIBCS
     /* Export display image to other graphics formats */
     virtual void ExportImage(DisplayExportFormat format, char *filename) {}
     virtual void ExportImageAndMap(DisplayExportFormat format,
@@ -143,7 +147,7 @@ public:
     virtual void ExportGIF(FILE *fp, int isView = 0) {}
     virtual void ExportView(DisplayExportFormat format, char *f) {}
     virtual void ExportToPS(DisplayExportFormat format, char *filename) {}
-
+#endif
 
     virtual DevStatus OpenPrintFile(char *filename);
     virtual DevStatus ClosePrintFile();

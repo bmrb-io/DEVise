@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/06/04 15:50:24  wenger
+  Printing windows to PostScript as pixmaps is now implemented, including
+  doing so when printing the entire display.
+
   Revision 1.24  1997/05/21 22:09:50  andyt
   Added EmbeddedTk and Tasvir functionality to client-server library.
   Changed protocol between devise and ETk server: 1) devise can specify
@@ -185,13 +189,13 @@ public:
   /* Flush buffered window operations to screen */
   virtual void Flush() = 0;
 
+#ifndef LIBCS
   /* Export display image to other graphics formats */
   virtual void ExportImage(DisplayExportFormat format, char *filename) = 0;
   virtual void ExportImageAndMap(DisplayExportFormat format, char *gifFilename, 
 			char *mapFileame, char *url, char *defaultUrl) = 0;
   virtual void ExportGIF(FILE *fp, int isView) = 0;
   virtual void ExportView(DisplayExportFormat format, char *filename) = 0;
-#ifndef LIBCS
   virtual void ExportToPS(DisplayExportFormat format, char *filename);
 #endif
 

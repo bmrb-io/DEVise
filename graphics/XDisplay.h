@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.29  1997/05/21 22:10:02  andyt
+  Added EmbeddedTk and Tasvir functionality to client-server library.
+  Changed protocol between devise and ETk server: 1) devise can specify
+  that a window be "anchored" at an x-y location, with the anchor being
+  either the center of the window, or the upper-left corner. 2) devise can
+  let Tk determine the appropriate size for the new window, by sending
+  width and height values of 0 to ETk. 3) devise can send Tcl commands to
+  the Tcl interpreters running inside the ETk process.
+
   Revision 1.28  1997/05/05 16:53:49  wenger
   Devise now automatically launches Tasvir and/or EmbeddedTk servers if
   necessary.
@@ -180,6 +189,7 @@ public:
     /* Flush buffered window operations to screen */
     virtual void Flush() { XSync(_display, false); }
 
+#ifndef LIBCS
     /* Export display image to other graphics formats */
     virtual void ExportImage(DisplayExportFormat format, char *filename);
     virtual void ExportImageAndMap(DisplayExportFormat format, 
@@ -187,6 +197,7 @@ public:
 				   char *url, char *defaultUrl);
     void ExportView(DisplayExportFormat format, char *filename);
     virtual void ExportGIF(FILE *fp, int isView = 0);
+#endif
 
 #if defined(LIBCS)
     /* Translate RGB colors to pixel values and back */

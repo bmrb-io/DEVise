@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.58  1997/07/17 21:10:59  wenger
+  Fixed bugs 204 and 205 (GIF printing problems).
+
   Revision 1.57  1997/06/10 19:21:41  wenger
   Removed (some) debug output.
 
@@ -285,7 +288,9 @@ extern "C" {
 //#define DEBUG
 
 #include "Util.h"
+#ifndef LIBCS
 #include "WinClassInfo.h"
+#endif
 
 /* The maximum intensity of red, green, and blue. */
 const int MaxColorIntensity = 65535;
@@ -433,6 +438,7 @@ void XDisplay::SetFont(char *family, char *weight, char *slant,
     _fontStruct = _normalFontStruct;
 }
 
+#ifndef LIBCS
 /* Export display image to other graphics formats */
 
 void XDisplay::ExportImage(DisplayExportFormat format, char *filename)
@@ -762,6 +768,7 @@ void XDisplay::MakeAndWriteGif(FILE *fp, int x, int y, int w, int h)
   XFreeGC(_display, gc);
   XFreePixmap(_display, pixmap);
 }
+#endif
 
 /* Convert drawable to GIF and write to file */
 
