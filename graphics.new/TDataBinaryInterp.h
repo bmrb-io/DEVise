@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/01/23 20:54:51  jussi
+  Initial revision.
+*/
 
 #ifndef TDataBinaryInterp_h
 #define TDataBinaryInterp_h
@@ -63,29 +66,34 @@ private:
   char *_alias;
   TData *_tdata;
   int _recSize;
+  int _physRecSize;
   AttrList *_attrList;
 };
 
+class RecInterp;
+
 class TDataBinaryInterp: public TDataBinary {
 public:
-  TDataBinaryInterp(char *name, int recSize, AttrList *attrs);
+  TDataBinaryInterp(char *name, int recSize, int physRecSize, AttrList *attrs);
   virtual ~TDataBinaryInterp();
 
-  AttrList *GetAttrList(){ return _attrList; };
+  AttrList *GetAttrList() { return _attrList; };
 
 protected:
   /* Copy record to buffer. Return false if invalid record. */
   virtual Boolean Decode(RecId id, void *recordBuf, char *line);
   
-  virtual Boolean WriteCache(int fd){ return true; }
-  virtual Boolean ReadCache(int fd){ return true; }
+  virtual Boolean WriteCache(int fd);
+  virtual Boolean ReadCache(int fd);
 
 private:
   AttrList *_attrList; /* list of attributes */
   Boolean hasComposite;
   char *_name;
   int _recSize;
+  int _physRecSize;
   int _numAttrs;
+  RecInterp *_recInterp;
 };
 
 #endif

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/01/25 20:22:52  jussi
+  Improved support for data files that grow while visualization
+  is being performed.
+
   Revision 1.1  1996/01/23 20:54:50  jussi
   Initial revision.
 */
@@ -32,10 +36,18 @@
 #include "TData.h"
 #include "RecId.h"
 #include "RecOrder.h"
+#include "tapedrive.h"
+
+/* We cache the first BIN_CONTENT_COMPARE_BYTES from the
+   file in the cache. The next time we start up, this cache is
+   compared with what's in the file to determine if they are
+   the same file. */
+
+const int BIN_CONTENT_COMPARE_BYTES = 4096;
 
 class TDataBinary: public TData, private DispatcherCallback {
 public:
-  TDataBinary(char *name, int recSize);
+  TDataBinary(char *name, int recSize, int physRecSize);
 
   virtual ~TDataBinary();
 
@@ -47,7 +59,7 @@ public:
   virtual int Dimensions(int *sizeDimension);
 
   // Return record size, or -1 if variable record size
-    virtual int RecSize() { return _recSize; }
+  virtual int RecSize() { return _recSize; }
 
   // Return page size of TDataBinary, or -1 if no paging structure
     virtual int PageSize() { return -1; }
@@ -135,6 +147,8 @@ protected:
   virtual Boolean WriteCache(int fd){ return false; }
   virtual Boolean ReadCache(int fd){ return false; }
 
+  static char *MakeCacheName(char *file);
+
 private:
   /* From DispatcherCallback */
   char *DispatchedName() { return "TDataBinary"; }
@@ -145,8 +159,12 @@ private:
 
   long _totalRecs;                // total number of records
   char *_name;                    // name of file/dataset
+  char *_cacheFileName;           // name of cache file
   int _recSize;                   // size of record
+  int _physRecSize;               // physical record size
   FILE *_file;                    // file pointer
+  TapeDrive *_tape;               // pointer to tape drive
+  Boolean _fileGrown;             // true if file has grown
 
   RecId _lowId, _highId;          // current range to read data
   RecId _nextId, _endId;          // range of next retrieval
@@ -155,6 +173,9 @@ private:
   long _currPos;                  // current file position
 
   char *_recBuf;                  // record buffer
+
+  long _initTotalRecs;            // initial # of records in cache
+  int _initLastPos;               // initial last position in file
 
   /* total # of bytes fetched */
   int _bytesFetched;
