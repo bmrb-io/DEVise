@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1996/06/21 19:56:10  jussi
+  Default 3D navigation is now radial instead of rectangular.
+
   Revision 1.44  1996/06/21 19:31:54  jussi
   Replaced MinMax calls with calls to MIN() and MAX().
 
@@ -321,12 +324,12 @@ void View::Init(char *name, VisualFilter &filter,
 
   Dispatcher::CreateMarker(readFd, writeFd);
   Dispatcher::Current()->Register(this, 10, GoState, false, readFd);
-  //Dispatcher::Current()->Register(this, 10, GoState, false, -1);
   Dispatcher::InsertMarker(writeFd);
 }
 
 View::~View()
 {
+  Dispatcher::FlushMarkers(readFd);
   Dispatcher::CloseMarker(readFd, writeFd);
 
   DOASSERT(!_querySent, "Query still active");
@@ -1162,6 +1165,10 @@ void View::ReportQueryDone(int bytes)
   _hasLastFilter = false;
   
   ControlPanel::Instance()->SetIdle();
+
+  // flush all graphics to the screen
+  WindowRep *win = GetWindowRep();
+  win->Flush();
 }
 
 /***********************************************************************
@@ -1171,7 +1178,7 @@ XXX: need to crop exposure against _filter before sending query.
 
 void View::Run()
 {
-  Dispatcher::FlushMarker(readFd);
+  Dispatcher::FlushMarkers(readFd);
 
   ControlPanel::Mode mode = ControlPanel::Instance()->GetMode();
 #ifdef DEBUGxxx
@@ -1734,8 +1741,8 @@ void View::Iconify(Boolean iconified)
 void View::ModeChange(ControlPanel::Mode mode)
 {
 #ifdef DEBUG
-  printf("Change mode %d,%d,%d,%d\n",
-	 _hasExposure,_filterChanged,_refresh,_updateTransform);
+  printf("Change mode %d,%d,%d,%d\n", _hasExposure,
+	 _filterChanged, _refresh, _updateTransform);
 #endif
 
   if (mode == ControlPanel::LayoutMode && _querySent) {
@@ -1766,7 +1773,6 @@ void View::Highlight(Boolean flag)
   winRep->SetXorMode();
   DrawHighlight();
   winRep->SetCopyMode();
-  winRep->Flush();
 }
 
 void View::DrawHighlight()
@@ -2169,7 +2175,7 @@ void View::SavePixmaps(FILE *file)
   (void)DisplayConnectors(dispConnector);
 }
 
-/* Restore pixmaps from an open file into pixmap buffer*/
+/* Restore pixmaps from an open file into pixmap buffer */
 
 void View::LoadPixmaps(FILE *file)
 {
