@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.59  2001/12/03 19:43:40  xuk
+// Fixed bug: inproper client state during client switching.
+//
 // Revision 1.58  2001/11/19 17:17:02  wenger
 // Merged changes through collab_cleanup_br_2 to trunk.
 //
@@ -332,7 +335,7 @@ public class DEViseClient
 
     // Pending commands (will be sent to the devised, unless dealt with
     // otherwise).
-    private Vector cmdBuffer = new Vector();
+    public Vector cmdBuffer = new Vector();
 
     private boolean cgi; // whether to use cgi instead of socket
 
@@ -546,7 +549,6 @@ public class DEViseClient
 	// happens during switching
 	if (status == REQUEST || ! cmdBuffer.isEmpty()) {
 	    status = REQUEST;
-	    pop.pn("We set request here.");
 	    return;
 	}
 
@@ -601,7 +603,7 @@ public class DEViseClient
 
         if (status == IDLE) {
 	    try {
-	        if (!isSocketEmpty()) {
+	        if (!isSocketEmpty() || !cmdBuffer.isEmpty()) {
 	            status = REQUEST;
 	        }
 	    } catch(YException ex) {
@@ -868,15 +870,19 @@ public class DEViseClient
 		// since we may change the JAVAC_CollabState command.
 		if (!collabClients.isEmpty()) { // also send to collab JS
 		    if (collabInit) {
-			//
-			// Send command only to the most-recently-connected
-			// collaboration client.
-			//
-			DEViseClient client =
-			  (DEViseClient)collabClients.lastElement();
-
-			pop.pn("Sending command to collabration client: " + cmd);
-			client.sendCmd(cmd);
+			// if command = DEViseCommands.ERROR here,
+			// means leader has no session opened.
+			if (! cmd.startsWith(DEViseCommands.ERROR)) {
+			    //
+			    // Send command only to the most-recently-connected
+			    // collaboration client.
+			    //
+			    DEViseClient client =
+				(DEViseClient)collabClients.lastElement();
+			    
+			    pop.pn("Sending command to collabration client: " + cmd);
+			    client.sendCmd(cmd);
+			}
 		    } else {
 			//
 			// Send commands to all collaboration clients.
