@@ -100,8 +100,8 @@ int open_http(const char *name, long * bytes_in_body)
     return sock_fd;
   }
 
-  if (strncmp(name,"http://",7)) {
-    return -1;
+  if (!strncmp(name,"http://",7)) {
+    name += 7; 
   }
 
   /* Skip over http:// */
@@ -109,10 +109,9 @@ int open_http(const char *name, long * bytes_in_body)
 
   port_sep = strchr(name, ':');
   end_of_addr = strchr(name, '/');
-  if (end_of_addr == 0) {
-    return -1;
+  if (end_of_addr) {
+    *end_of_addr = '\0'; 
   }
-  *end_of_addr = '\0';
 
   if (port_sep) {
     *port_sep = '\0';
@@ -129,15 +128,17 @@ int open_http(const char *name, long * bytes_in_body)
     return -1;
   }
 
-  *end_of_addr = '/';
 
   status = connect(sock_fd, (struct sockaddr *) &sin, sizeof(sin));
   if (status < 0) {
     return status;
   }
 
-  name = end_of_addr;
-  sprintf(http_cmd, HTTP_GET_FORMAT, name);
+  if (end_of_addr) {
+    *end_of_addr = '/'; 
+  }
+  sprintf(http_cmd, HTTP_GET_FORMAT, 
+    end_of_addr ? end_of_addr : "/");
   l = strlen(http_cmd);
   http_cmd[l++] = INT_CR;
   http_cmd[l++] = INT_LF;
