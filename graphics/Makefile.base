@@ -17,10 +17,23 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.36  1997/01/18 18:35:00  jussi
+#  Removed XawControl.c and XawWidget.c from object list.
+#
 #  Revision 1.35  1996/12/30 23:51:08  andyt
 #  First version with support for Embedded Tcl/Tk windows. WindowRep classes
 #  now have member functions for creating and destroying Tk windows.
 #  Interface to the EmbeddedTk server is in ETkIfc.h
+
+#  Revision 1.34  1996/12/20 16:50:11  wenger
+#  Fonts for view label, x axis, and y axis can now be changed.
+#
+#  Revision 1.33  1996/12/15 06:52:32  donjerko
+#  Added the initialization and shutdown for RTree code.
+#
+#  Revision 1.32  1996/12/11 20:36:06  wenger
+#  Added 'cslib' target to top-level makefiles; added 'lib' targets
+#  to library makefiles.
 #
 #  Revision 1.31  1996/11/26 16:47:43  ssl
 #  Added support for Stacked Opaque and Transparent views
@@ -86,6 +99,7 @@ ALLSRC = $(LIBSRC) $(OTHERSRC)
 LIBNAME = libgraphics.a
 
 all: $(LIBNAME)
+lib: $(LIBNAME)
 
 $(LIBNAME): $(LIBOBJ) 
 	$(AR) cr $@ $(LIBOBJ)
