@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/01/15 16:54:49  jussi
+  Moved some constants to .c from the .h file.
+
   Revision 1.6  1995/12/28 19:44:18  jussi
   Small fixes to remove compiler warnings.
 
@@ -41,6 +44,7 @@
 #include "GDataBin.h"
 #include "TData.h"
 #include "GData.h"
+#include "Control.h"
 
 //#define DEBUG
 
@@ -565,19 +569,33 @@ void QueryProcFull::ProcessQPFullScatter(QPFullData *qData) {
 /*******************************************
 Process query
 ********************************************/
-void QueryProcFull::ProcessQuery() {
-	if (NoQueries()) {
-		/* Do conversion, then return */
-		DoGDataConvert();
-		return;
-	}
 
-	if (InitQueries())
-		/* Have initialized queries. Return now */
-		return;
+void QueryProcFull::ProcessQuery()
+{
+  if (NoQueries()) {
+    /*
+       If all queries have been executed (system is idle) and
+       a postscript has been defined, execute postscript and
+       then exit.
+    */
+    char *postscript = Init::PostScript();
+    if (postscript) {
+      ControlPanel::Instance()->ExecuteScript(postscript);
+      Exit::DoExit(1);
+    }
 
-	/* Process the first query */
-	QPFullData *first = FirstQuery();
+    /* Do conversion, then return */
+    DoGDataConvert();
+    return;
+  }
+
+  if (InitQueries())
+    /* Have initialized queries. Return now */
+    return;
+  
+  /* Process the first query */
+  QPFullData *first = FirstQuery();
+
 /*
 printf("Processquery for %s %s\n", first->tdata->GetName(),
 						first->map->GetName());
