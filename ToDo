@@ -296,6 +296,8 @@ Possibly allow the aspect ratio of a RectX to be fixed. (jpm/ml 12/16/96)
 Be able to remove data streams from the 'Define Data Stream' window. (ml/
 rkw 12/16/96)
 
+Remove merged views (from API and View classes) (kb 12/18/96)
+
 
 COMPLETED
 ---------
