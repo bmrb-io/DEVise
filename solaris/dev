@@ -1,5 +1,7 @@
 #! /bin/csh -f
 
+rmmem
+
 # For Tasvir and EmbeddedTk.
 set path = ( $path /p/qclic/Code/Qclic/bin.common )
 set path = ( $path /p/devise/public/bin )
