@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1995
+#  (c) Copyright 1992-1996
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,12 +15,15 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1995/09/28 15:12:04  jussi
+#  Added copyright and CVS log messages.
+#
 
 ############################################################
 
 ARCH_FLAGS   = -DPENTIUM -I/usr/X11R6/include -I/s/tcl/include
 ARCH_LDFLAGS = -L /usr/X11R6/lib -L /s/tcl/lib -R /usr/X11R6/lib 
-ARCH_LDPOST  = -lsocket
+ARCH_LDPOST  = -lsocket -lnsl
 
 VPATH = ../../multi
 include $(VPATH)/Makefile.base
