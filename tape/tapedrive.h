@@ -1,26 +1,37 @@
 /*
-  ========================================================================
-  DEVise Software
-  (c) Copyright 1992-1995
-  By the DEVise Development Group
-  University of Wisconsin at Madison
-  All Rights Reserved.
-  ========================================================================
-
-  Under no circumstances is this software to be copied, distributed,
-  or altered in any way without prior permission from the DEVise
-  Development Group.
+  This file contributed by the Tape Join project and modified locally.
+  See attached copyright notice.
 */
 
 /*
   $Id$
 
   $Log$
+  Revision 1.4  1995/10/31 17:12:59  jussi
+  Added tar archive handling routines and data structures.
+
   Revision 1.3  1995/09/22 15:43:33  jussi
   Added copyright message.
 
   Revision 1.2  1995/09/05 20:31:57  jussi
   Added CVS header.
+*/
+
+/*
+  Copyright 1993-1996 by Jussi Myllymaki
+  
+  Permission to use, copy, modify, and distribute this software and its
+  documentation for any purpose and without fee is hereby granted,
+  provided that the above copyright notice appear in all copies and that
+  both that copyright notice and this permission notice appear in
+  supporting documentation, and that the name(s) of the copyright holder(s)
+  not be used in advertising or publicity pertaining to distribution of
+  the software without specific, written prior permission. The copyright
+  holder(s) make no representations about the suitability of this
+  software for any purpose.  It is provided "as is" without express
+  or implied warranty.
+  
+  Author: Jussi Myllymaki
 */
 
 #ifndef TAPEDRIVE_H

@@ -1,21 +1,15 @@
 /*
-  ========================================================================
-  DEVise Data Visualization Software
-  (c) Copyright 1992-1996
-  By the DEVise Development Group
-  Madison, Wisconsin
-  All Rights Reserved.
-  ========================================================================
-
-  Under no circumstances is this software to be copied, distributed,
-  or altered in any way without prior permission from the DEVise
-  Development Group.
+  This file contributed by the Tape Join project and modified locally.
+  See attached copyright notice.
 */
 
 /*
   $Id$
 
   $Log$
+  Revision 1.9  1996/06/27 16:04:25  jussi
+  Added a cast in memchr() so that the code compiles cleanly in Linux.
+
   Revision 1.8  1996/04/16 20:56:25  jussi
   Replaced assert() calls with DOASSERT macro.
 
@@ -36,6 +30,23 @@
 
   Revision 1.2  1995/09/05 20:31:56  jussi
   Added CVS header.
+*/
+
+/*
+  Copyright 1993-1996 by Jussi Myllymaki
+  
+  Permission to use, copy, modify, and distribute this software and its
+  documentation for any purpose and without fee is hereby granted,
+  provided that the above copyright notice appear in all copies and that
+  both that copyright notice and this permission notice appear in
+  supporting documentation, and that the name(s) of the copyright holder(s)
+  not be used in advertising or publicity pertaining to distribution of
+  the software without specific, written prior permission. The copyright
+  holder(s) make no representations about the suitability of this
+  software for any purpose.  It is provided "as is" without express
+  or implied warranty.
+  
+  Author: Jussi Myllymaki
 */
 
 //#define TAPE_DEBUG
