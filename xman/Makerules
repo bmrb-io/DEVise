@@ -74,7 +74,7 @@ JAR     = jar
 JAVADOC = javadoc
 RM      = rm -f
 
-JAVAC_OPTIONS    = -g -d $(CLASS_DIR) -sourcepath $(SOURCE_DIR) -classpath $(CLASS_DIR)
+JAVAC_OPTIONS    = -d $(CLASS_DIR) -sourcepath $(SOURCE_DIR) -classpath $(CLASS_DIR)
 RMIC_OPTIONS     = -d $(CLASS_DIR)
 JAVADOC_OPTIONS = \
         -d $(DOC_DIR) \
