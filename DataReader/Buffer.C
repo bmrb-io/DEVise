@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/06/29 17:18:23  wenger
+  Fixed bug 372 (crashed in DataReader caused by a pointer alignment problem).
+
   Revision 1.9  1998/06/28 21:39:20  beyer
   corrected c++ calling convention for methods
 
@@ -100,9 +103,7 @@ Buffer::Buffer(char* fileName, DRSchema* myDRSchema) {
 	extFunc = new eFunc[myDRSchema->qAttr];
 	valFunc = new vFunc[myDRSchema->qAttr];
 
-	if (myDRSchema->getComment() != NULL) {
-		_comment = myDRSchema->getComment();
-	}
+        _comment = myDRSchema->getComment();
 	
 	repeatings = new bool[myDRSchema->qAttr];
 	maxLens = new int[myDRSchema->qAttr];
