@@ -22,7 +22,7 @@ setenv DEVISE_SESSION		$DEVISE_ROOT/session
 setenv DEVISE_PALETTE		$DEVISE_ROOT/palette
 
 if ($#argv > 0) then
-  if ($1 == "p") then
+  if ("$1" == "p") then
     # Use personal data, sessions, etc.
     set personal_file = ~/.dev.personal
     if (-f $personal_file) then
@@ -32,7 +32,7 @@ if ($#argv > 0) then
       exit 1
     endif
     shift
-  else if ($1 == "d") then
+  else if ("$1" == "d") then
     # Use demo data, sessions, etc.
     setenv DEVISE_DAT		$DEVISE_ROOT/demo/dat
     setenv DEVISE_HOME_TABLE	$DEVISE_ROOT/demo/schema/schema/catalog.dte
@@ -45,7 +45,7 @@ if ($#argv > 0) then
     setenv DEVISE_SESSION 	$DEVISE_ROOT/demo/session
     setenv DEVISE_PALETTE	$DEVISE_ROOT/demo/palette
     shift
-  else if ($1 == "u") then
+  else if ("$1" == "u") then
     echo "Usage: dev|mul [p|d|u] [DEVise args]"
     exit 1
   endif
@@ -58,7 +58,7 @@ setenv LM_TMP			/tmp/LM/dat
 
 setenv DEVISE_LIB		$cwd/../lib
 setenv LM_LIB			$DEVISE_LIB/LM
-if ($0 == "mul") then
+if ("$0" == "mul") then
   setenv DEVISE_EXEC		$cwd/multi/disp
 else
   setenv DEVISE_EXEC		$cwd/generic/generic

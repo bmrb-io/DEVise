@@ -56,9 +56,9 @@ setup.o: /usr/include/stdarg.h /usr/include/unistd.h /usr/include/errno.h
 setup.o: /usr/include/sys/errno.h
 
 correct_math.o: /usr/include/stdio.h /usr/include/standards.h
-correct_math.o: /usr/include/sgidefs.h /usr/include/math.h heap.h
+correct_math.o: /usr/include/sgidefs.h /usr/include/math.h Heap.h
 heap.o: /usr/include/stdio.h /usr/include/standards.h /usr/include/sgidefs.h
-heap.o: heap.h
+heap.o: Heap.h
 int_key.o: int_key.h .././setup.h /usr/include/assert.h /usr/include/stdio.h
 int_key.o: /usr/include/standards.h /usr/include/sgidefs.h
 int_key.o: /usr/include/math.h bit_vec.h /usr/include/stdlib.h
