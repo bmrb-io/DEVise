@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/01/25 20:22:41  jussi
+  Improved support for data files that grow while visualization
+  is being performed.
+
   Revision 1.7  1996/01/12 16:13:11  jussi
   Replaced bcmp() with more portable memcmp().
 
@@ -354,7 +358,9 @@ void TDataTape::BuildIndex()
 	  ExtendIndex();                // extend it
 	_index[_totalRecs++] = pos;
       } else {
+#if 0
 	printf("Ignoring invalid record: \"%s\"\n", buf);
+#endif
       }
     } else {
       printf("Ignoring incomplete record: \"%s\"\n", buf);

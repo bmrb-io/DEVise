@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/01/25 20:22:34  jussi
+  Improved support for data files that grow while visualization
+  is being performed.
+
   Revision 1.9  1996/01/12 15:24:45  jussi
   Replaced libc.h with stdlib.h.
 
@@ -421,7 +425,9 @@ void TDataAscii::BuildIndex()
 	  ExtendIndex();                  // extend it
 	_index[_totalRecs++] = _currPos;
       } else {
+#if 0
 	printf("Ignoring invalid record: \"%s\"\n", buf);
+#endif
       }
     } else {
       printf("Ignoring incomplete record: \"%s\"\n", buf);
