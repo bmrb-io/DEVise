@@ -19,6 +19,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/07/15 16:59:42  jussi
+  Added support for user-provided comparison functions.
+
   Revision 1.4  1996/07/15 14:58:06  jussi
   Updated copyright information to reflect original source.
 
@@ -135,12 +138,12 @@ int HashTable<Index,Value>::lookup(Index &index, Value &value)
 
   HashBucket<Index, Value> *bucket = ht[idx];
   while(bucket) {
-#ifdef DEBUGHASH
+#ifdef DEBUGHASH_XXX
     cerr << "%%  Comparing " << *(long *)&bucket->index
          << " vs. " << *(long *)index << endl;
 #endif
     if ((!compfcn && bucket->index == index)
-        || !compfcn(bucket->index, index)) {
+        || (compfcn &&!compfcn(bucket->index, index))) {
       value = bucket->value;
       return 0;
     }
@@ -176,7 +179,7 @@ int HashTable<Index,Value>::getNext(Index &index, void *current,
 
   while(bucket) {
     if ((!compfcn && bucket->index == index)
-        || !compfcn(bucket->index, index)) {
+        || (compfcn && !compfcn(bucket->index, index))) {
       value = bucket->value;
       next = bucket;
       return 0;
@@ -204,7 +207,7 @@ int HashTable<Index,Value>::remove(Index &index)
 
   while(bucket) {
     if ((!compfcn && bucket->index == index)
-        || !compfcn(bucket->index, index)) {
+        || (compfcn && !compfcn(bucket->index, index))) {
       if (bucket == ht[idx]) 
 	ht[idx] = bucket->next;
       else
@@ -257,15 +260,14 @@ void HashTable<Index,Value>::dump()
 {
   for(int i = 0; i < tableSize; i++) {
     HashBucket<Index, Value> *tmpBuf = ht[i];
-    int hasStuff = (tmpBuf != NULL);
-    if (hasStuff)
+    if (tmpBuf) {
       cerr << "%%  Hash value " << i << ": ";
-    while(tmpBuf) {
-      cerr << tmpBuf->value << " ";
-      tmpBuf = ht[i]->next;
-    }
-    if (hasStuff)
+      while(tmpBuf) {
+        cerr << tmpBuf->value << " ";
+        tmpBuf = ht[i]->next;
+      }
       cerr << endl;
+    }
   }
 }
 #endif
