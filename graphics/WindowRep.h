@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.49  1997/05/21 22:10:00  andyt
+  Added EmbeddedTk and Tasvir functionality to client-server library.
+  Changed protocol between devise and ETk server: 1) devise can specify
+  that a window be "anchored" at an x-y location, with the anchor being
+  either the center of the window, or the upper-left corner. 2) devise can
+  let Tk determine the appropriate size for the new window, by sending
+  width and height values of 0 to ETk. 3) devise can send Tcl commands to
+  the Tcl interpreters running inside the ETk process.
+
   Revision 1.48  1997/05/05 16:53:47  wenger
   Devise now automatically launches Tasvir and/or EmbeddedTk servers if
   necessary.
@@ -244,6 +253,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "machdep.h"	// Needed for FILENAME_MAX on sun.
 #include "Geom.h"
 #include "Transform.h"
 #include "DList.h"

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.37  1997/05/05 17:43:31  wenger
+# Updates solaris, sun, and hp dependecies.
+#
 # Revision 1.36  1997/03/28 16:09:04  wenger
 # Added headers to all source files that didn't have them; updated
 # solaris, solsparc, and hp dependencies.
@@ -41,8 +44,23 @@ generic.o: /usr/include/unistd.h ../graphics/DList.h ../graphics/Exit.h
 generic.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
 generic.o: ../graphics/Pattern.h ../graphics/Display.h ../graphics/Geom.h
 generic.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
-generic.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-generic.o: ../graphics/Compress.h ../graphics/DevError.h
+generic.o: ../graphics.new/machdep.h /usr/include/limits.h
+generic.o: /usr/include/sys/param.h /usr/include/machine/param.h
+generic.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+generic.o: /usr/include/vm/faultcode.h /usr/include/sys/wait.h
+generic.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+generic.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+generic.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+generic.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+generic.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+generic.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+generic.o: /usr/include/netdb.h /usr/include/sys/socket.h
+generic.o: /usr/include/netinet/in.h ../graphics/Transform.h
+generic.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+generic.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
+generic.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
+generic.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+generic.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
 generic.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
 generic.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
 generic.o: ../graphics.new/MapInterpClassInfo.h
@@ -56,31 +74,20 @@ generic.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
 generic.o: ../tape/HashTable.h ../graphics.new/DataSourceFixedBuf.h
 generic.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
 generic.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-generic.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-generic.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-generic.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-generic.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-generic.o: /usr/include/machine/mmu.h /usr/include/assert.h
-generic.o: /usr/include/limits.h /usr/include/sys/stat.h
-generic.o: ../graphics.new/machdep.h /usr/include/sys/wait.h
-generic.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-generic.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-generic.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-generic.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-generic.o: /usr/include/netdb.h /usr/include/sys/socket.h
-generic.o: /usr/include/netinet/in.h ../graphics.new/UpdateLink.h
-generic.o: ../graphics.new/VisualLink.h ../graphics/AssoArray.h
-generic.o: ../graphics.new/Action.h ../graphics.new/RecId.h
-generic.o: ../graphics.new/PointStorage.h ../graphics.new/TDataViewX.h
-generic.o: ../graphics.new/QueryProc.h ../graphics.new/GDataBin.h
-generic.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
-generic.o: ../graphics.new/Connector.h ../graphics.new/ShapeID.h
-generic.o: ../graphics.new/ViewScatter.h ../graphics.new/ViewLens.h
-generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
-generic.o: ../graphics.new/TDataMap.h ../graphics.new/GDataRec.h
-generic.o: ../graphics.new/TData.h ../graphics/CursorClassInfo.h
-generic.o: ../graphics.new/ParseCat.h ../graphics.new/StringStorage.h
-generic.o: StateMap.h ../graphics/Util.h /usr/include/ctype.h
+generic.o: /usr/include/assert.h /usr/include/sys/stat.h
+generic.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
+generic.o: ../graphics/AssoArray.h ../graphics.new/Action.h
+generic.o: ../graphics.new/RecId.h ../graphics.new/PointStorage.h
+generic.o: ../graphics.new/TDataViewX.h ../graphics.new/QueryProc.h
+generic.o: ../graphics.new/GDataBin.h ../graphics.new/TDataCMap.h
+generic.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
+generic.o: ../graphics.new/ShapeID.h ../graphics.new/ViewScatter.h
+generic.o: ../graphics.new/ViewLens.h ../graphics.new/CompositeParser.h
+generic.o: ../graphics.new/RecInterp.h ../graphics.new/TDataMap.h
+generic.o: ../graphics.new/GDataRec.h ../graphics.new/TData.h
+generic.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
+generic.o: ../graphics.new/StringStorage.h StateMap.h ../graphics/Util.h
+generic.o: /usr/include/ctype.h
 testWindowSpeed.o: /usr/include/stdio.h /usr/include/time.h
 testWindowSpeed.o: /usr/include/sys/stdtypes.h /usr/include/sys/time.h
 testWindowSpeed.o: ../graphics/TestControl.h ../graphics/Control.h
@@ -95,7 +102,23 @@ testWindowSpeed.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 testWindowSpeed.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
 testWindowSpeed.o: /usr/include/unistd.h /usr/include/string.h
 testWindowSpeed.o: ../graphics/Journal.h ../graphics/ColorMgr.h
-testWindowSpeed.o: ../graphics/WindowRep.h ../graphics/Transform.h
+testWindowSpeed.o: ../graphics/WindowRep.h ../graphics.new/machdep.h
+testWindowSpeed.o: /usr/include/limits.h /usr/include/sys/param.h
+testWindowSpeed.o: /usr/include/machine/param.h
+testWindowSpeed.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+testWindowSpeed.o: /usr/include/vm/faultcode.h /usr/include/sys/wait.h
+testWindowSpeed.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+testWindowSpeed.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+testWindowSpeed.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+testWindowSpeed.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+testWindowSpeed.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+testWindowSpeed.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+testWindowSpeed.o: /usr/include/netdb.h /usr/include/sys/socket.h
+testWindowSpeed.o: /usr/include/netinet/in.h ../graphics/Transform.h
 testWindowSpeed.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 testWindowSpeed.o: ../graphics/DevError.h /usr/include/errno.h
-testWindowSpeed.o: /usr/include/sys/errno.h
+testWindowSpeed.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
+testWindowSpeed.o: ../graphics/ETk.h ../graphics/Xdef.h
+testWindowSpeed.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+testWindowSpeed.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+testWindowSpeed.o: /usr/include/stddef.h /usr/include/X11/Xutil.h

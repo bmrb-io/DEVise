@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.37  1997/05/21 22:04:21  andyt
+# *** empty log message ***
+#
 # Revision 1.36  1997/04/30 21:56:10  wenger
 # Updated solaris, sun, and hp dependencies.
 #
@@ -1630,3 +1633,205 @@ scriptServer.o: ../Core/Iterator.h ../Core/StandardRead.h
 scriptServer.o: ../Core/FunctionRead.h ncsa.h
 util.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 util.o: /usr/include/stdio.h /usr/include/sys/va_list.h /usr/include/memory.h
+
+TkControl.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+TkControl.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+TkControl.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+TkControl.o: ../DeviseSpecific/DTEControl.h ../DeviseSpecific/ParseAPIDTE.h
+
+FormatVolume.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+FormatVolume.o: /usr/include/sys/va_list.h RTreeCommon.h
+RTree.o: RTree.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
+RTree.o: /usr/include/sys/va_list.h /s/gcc-2.7.2/lib/g++-include/iostream.h
+RTree.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+RTree.o: /s/gcc-2.7.2/lib/g++-include/libio.h genrtree.h port_genrtree.h
+RTree.o: type_compat.h tools/stack_t2.h tools/ptr_stack.h tools/pqueue.h
+RTree.o: tools/pqueue.C /s/gcc-2.7.2/lib/g++-include/stream.h
+RTree.o: /usr/include/assert.h tools/pqueue.h tools/key.h
+RTree.o: /usr/include/stdlib.h tools/box.h tools/bit_vec.h
+RTree.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+RTree.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+RTree.o: /usr/include/sys/time.h /usr/include/time.h
+RTree.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+RTree.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+RTree.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+RTree.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+RTree.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
+RTree.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
+RTree.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+RTree.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+RTree.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+RTree.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+RTree.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h bulk_data.h
+RTree.o: hfpage.h /usr/include/math.h /usr/include/floatingpoint.h
+RTree.o: /usr/include/sys/ieeefp.h /usr/include/sys/mman.h
+RTree.o: /usr/include/unistd.h /usr/include/sys/stat.h /usr/include/fcntl.h
+RTree.o: /usr/include/sys/fcntl.h RTreeCommon.h
+bulk_data.o: bulk_data.h /usr/include/stdlib.h
+bulk_data.o: /usr/include/sys/feature_tests.h hfpage.h
+bulk_data.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+bulk_data.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+bulk_data.o: /usr/include/sys/time.h /usr/include/time.h
+bulk_data.o: /usr/include/sys/mman.h type_compat.h /usr/include/errno.h
+bulk_data.o: /usr/include/sys/errno.h /usr/include/stdio.h
+bulk_data.o: /usr/include/sys/va_list.h globals.h
+convert_bulk.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+convert_bulk.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+convert_bulk.o: /usr/include/strings.h /usr/include/string.h
+convert_bulk.o: tools/correct_math.C /usr/include/math.h
+convert_bulk.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+convert_bulk.o: tools/heap.h
+genrtree.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
+genrtree.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+genrtree.o: /usr/include/sys/select.h /usr/include/sys/time.h
+genrtree.o: /usr/include/time.h /usr/include/unistd.h
+genrtree.o: /usr/include/sys/unistd.h genrtree.h port_genrtree.h
+genrtree.o: /usr/include/stdio.h /usr/include/sys/va_list.h type_compat.h
+genrtree.o: tools/stack_t2.h tools/ptr_stack.h tools/pqueue.h tools/pqueue.C
+genrtree.o: /s/gcc-2.7.2/lib/g++-include/stream.h
+genrtree.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+genrtree.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+genrtree.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/assert.h
+genrtree.o: tools/pqueue.h tools/key.h /usr/include/stdlib.h tools/box.h
+genrtree.o: tools/bit_vec.h /usr/include/netinet/in.h
+genrtree.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+genrtree.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+genrtree.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+genrtree.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+genrtree.o: /usr/include/sys/param.h /usr/include/sys/pirec.h
+genrtree.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+genrtree.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+genrtree.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+genrtree.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+genrtree.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+genrtree.o: bulk_data.h hfpage.h globals.h
+hfpage.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+hfpage.o: /usr/include/sys/va_list.h /usr/include/memory.h hfpage.h
+port_genrtree.o: port_genrtree.h /usr/include/stdio.h
+port_genrtree.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
+port_genrtree.o: type_compat.h tools/stack_t2.h tools/ptr_stack.h
+port_genrtree.o: tools/pqueue.h tools/pqueue.C
+port_genrtree.o: /s/gcc-2.7.2/lib/g++-include/stream.h
+port_genrtree.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+port_genrtree.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+port_genrtree.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/assert.h
+port_genrtree.o: tools/pqueue.h tools/key.h /usr/include/stdlib.h tools/box.h
+port_genrtree.o: tools/bit_vec.h /usr/include/sys/types.h
+port_genrtree.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+port_genrtree.o: /usr/include/sys/select.h /usr/include/sys/time.h
+port_genrtree.o: /usr/include/time.h /usr/include/netinet/in.h
+port_genrtree.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+port_genrtree.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+port_genrtree.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+port_genrtree.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+port_genrtree.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+port_genrtree.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+port_genrtree.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+port_genrtree.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+port_genrtree.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+port_genrtree.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+port_genrtree.o: /usr/include/sys/byteorder.h bulk_data.h /usr/include/math.h
+port_genrtree.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+port_genrtree.o: tools/bitmap.h tools/bit_vec.h /usr/include/sys/mman.h
+port_genrtree.o: /usr/include/unistd.h /usr/include/sys/stat.h
+port_genrtree.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+port_genrtree.o: /usr/include/string.h globals.h
+solaris_stats.o: /usr/include/stddef.h /usr/include/stdlib.h
+solaris_stats.o: /usr/include/sys/feature_tests.h
+solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/osfcn.h
+solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/std.h
+solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/stddef
+solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
+solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/cstdlib
+solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/std/cstdlib.h
+solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/cstring
+solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/std/cstring.h
+solaris_stats.o: /usr/include/string.h /usr/include/unistd.h
+solaris_stats.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+solaris_stats.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+solaris_stats.o: /usr/include/sys/time.h /usr/include/time.h
+solaris_stats.o: /usr/include/sys/unistd.h
+solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/cstdio
+solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/std/cstdio.h
+solaris_stats.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/cerrno
+solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/std/cerrno.h
+solaris_stats.o: /usr/include/errno.h /usr/include/sys/errno.h
+solaris_stats.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+solaris_stats.o: /usr/include/sys/ioctl.h
+solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/stream.h
+solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
+solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/strfile.h solaris_stats.h
+solaris_stats.o: /usr/include/sys/procfs.h /usr/include/sys/signal.h
+solaris_stats.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+solaris_stats.o: /usr/include/vm/faultcode.h /usr/include/sys/fault.h
+solaris_stats.o: /usr/include/sys/syscall.h /usr/include/sys/regset.h
+solaris_stats.o: /usr/include/sys/reg.h
+type_compat.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
+type_compat.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+type_compat.o: /usr/include/sys/select.h /usr/include/sys/time.h
+type_compat.o: /usr/include/time.h /usr/include/unistd.h
+type_compat.o: /usr/include/sys/unistd.h /usr/include/stdlib.h type_compat.h
+type_compat.o: hfpage.h globals.h
+
+bitmap.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+bitmap.o: /s/gcc-2.7.2/lib/g++-include/stream.h
+bitmap.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+bitmap.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+bitmap.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/sys/types.h
+bitmap.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+bitmap.o: /usr/include/sys/select.h /usr/include/sys/time.h
+bitmap.o: /usr/include/time.h bitmap.h /usr/include/assert.h
+box.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+box.o: /usr/include/sys/va_list.h box.h key.h /usr/include/stdlib.h bit_vec.h
+box.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+box.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+box.o: /usr/include/sys/time.h /usr/include/time.h /usr/include/netinet/in.h
+box.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+box.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+box.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+box.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+box.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+box.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+box.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+box.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+box.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+box.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+box.o: /usr/include/sys/byteorder.h /usr/include/assert.h correct_math.h
+correct_math.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+correct_math.o: /usr/include/sys/va_list.h /usr/include/math.h
+correct_math.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h heap.h
+heap.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+heap.o: /usr/include/sys/va_list.h heap.h
+key.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+key.o: /usr/include/sys/va_list.h /usr/include/stdlib.h key.h box.h bit_vec.h
+key.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+key.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+key.o: /usr/include/sys/time.h /usr/include/time.h /usr/include/netinet/in.h
+key.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+key.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+key.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+key.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+key.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+key.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+key.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+key.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+key.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+key.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+key.o: /usr/include/sys/byteorder.h /usr/include/assert.h /usr/include/math.h
+key.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+key.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
+key.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+key.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+key.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+key.o: /s/gcc-2.7.2/lib/g++-include/strfile.h
+key.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h correct_math.C heap.h
+key.o: /usr/include/string.h
+pqueue.o: /s/gcc-2.7.2/lib/g++-include/stream.h
+pqueue.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+pqueue.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+pqueue.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/assert.h pqueue.h

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1997/05/28 20:48:03  wenger
+#  Added directories and makefiles for layout mananger to compile for hp,
+#  linux, solsparc, and sun.
+#
 
 ############################################################
 
@@ -50,8 +54,9 @@ LMControl.o: /usr/include/values.h ../graphics/DevStatus.h
 LMControl.o: ../graphics/Journal.h ../graphics/VisualArg.h
 LMControl.o: ../graphics/Color.h ../graphics/Pattern.h LMAPI.h
 LMHashTable.o: /usr/include/string.h LMHashTable.h
-LMLayout.o: LMLayout.h /usr/include/math.h /usr/include/sys/stdsyms.h
-LMLayout.o: LMWindow.h LMHashTable.h ../graphics/DList.h ../graphics/Exit.h
+LMLayout.o: LMLayout.h /usr/include/stdio.h /usr/include/sys/stdsyms.h
+LMLayout.o: /usr/include/math.h LMWindow.h LMHashTable.h ../graphics/DList.h
+LMLayout.o: ../graphics/Exit.h
 LMMain.o: LMControl.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
 LMMain.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
 LMMain.o: /usr/include/sys/stdsyms.h /s/X11/include/X11/X.h

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.5  1997/04/30 21:56:23  wenger
+# Updated solaris, sun, and hp dependencies.
+#
 # Revision 1.4  1997/03/28 16:08:44  wenger
 # Added headers to all source files that didn't have them; updated
 # solaris, solsparc, and hp dependencies.
@@ -47,6 +50,8 @@ ClientServer.o: ../graphics/VisualArg.h ../graphics/Pattern.h
 ClientServer.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 ClientServer.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 ClientServer.o: ../graphics/Compress.h ../graphics/DevError.h
+ClientServer.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
+ClientServer.o: /s/X11/include/X11/Xutil.h
 client.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 client.o: /usr/include/stdlib.h /usr/include/string.h ClientServer.h
 client.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
@@ -61,7 +66,8 @@ client.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Pattern.h
 client.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 client.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 client.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
-client.o: /usr/include/sys/errno.h
+client.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
+client.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h
 server.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 server.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/assert.h
 server.o: ClientServer.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
@@ -77,4 +83,6 @@ server.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
 server.o: ../graphics/WindowRep.h ../graphics/Transform.h
 server.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 server.o: ../graphics/DevError.h /usr/include/errno.h
-server.o: /usr/include/sys/errno.h ../graphics/DualWindowRep.h
+server.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
+server.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h
+server.o: ../graphics/DualWindowRep.h
