@@ -3070,12 +3070,14 @@ Num Date        Status  Description
 			set in the print configuration, the JavaScreen can't
 			open the session at all. (rkw)
 
-760 3/26/02	KLUDGED	JavaScreen: client has index out of range errors when
+760 3/26/02	FIXED	JavaScreen: client has index out of range errors when
 			trying to draw axis labels for the session
 			test/axis_label_error.ds. (rkw)
+			(Fixed by xuk, 3/27/02.)
 
-761 3/26/02	OPEN	JavaScreen: X axis labels are not "clean" values
+761 3/26/02	FIXED	JavaScreen: X axis labels are not "clean" values
 			for the session test/axis_label_error.ds. (rkw)
+			(Fixed by xuk, 3/27/02.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
