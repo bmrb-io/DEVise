@@ -477,6 +477,19 @@ Num Date        Status  Description
 124 01/17/97	OPEN	Drawing of the selection box gets goofed up if the
 			actual data overdraws it. (rkw)
 
+125 01/22/97	OPEN	When the help window is shown, the topics do not show
+			up. (rkw)
+
+126 01/22/97	OPEN	When views are unstacked, they're not always redrawn
+			correctly. (rkw)
+
+127 01/22/97	OPEN	'Attributes' and 'Colors' buttons in Query Tool do
+			nothing. (rkw)
+
+128 01/22/97	OPEN	If you change both the X and Y values in the Query
+			Tool on a view with X and Y links, only the X change
+			takes effect. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
