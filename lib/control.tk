@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.15  1995/09/28 17:45:16  jussi
+#	Added 'Save as Template' command. Minor other improvements.
+#
 #	Revision 1.14  1995/09/22 17:33:35  jussi
 #	Added copyright message.
 #
@@ -118,6 +121,7 @@ source $libdir/seq.tk
 source $libdir/sql.tk
 source $libdir/cstat.tk
 source $libdir/import.tk
+source $libdir/schema.tk
 
 # abstract data type for dictionary
 # Insert name and val into dictionary. Return new dictionary.
@@ -251,6 +255,8 @@ menubutton .mbar.cursor -text Cursor -underline 0 \
 	-menu .mbar.cursor.menu -bg LightBlue
 menubutton .mbar.window -text Window -underline 0 \
 	-menu .mbar.window.menu -bg LightBlue
+menubutton .mbar.schema -text Schema -underline 0 \
+	-menu .mbar.schema.menu -bg LightBlue
 
 menu .mbar.session.menu -tearoff 0
 .mbar.session.menu add command -label "Open" -command {DoOpen 0}
@@ -314,8 +320,12 @@ menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "History" -command OpenHistory
 .mbar.window.menu add command -label "Duplicate" -command DupWindow
 
+menu .mbar.schema.menu -tearoff 0
+.mbar.schema.menu add command -label "New" -command newschema
+.mbar.schema.menu add command -label "Open" -command openschema
+
 pack .mbar.session .mbar.import .mbar.file .mbar.view .mbar.cursor \
-	.mbar.window -side left -fill x
+	.mbar.window .mbar.schema -side left -fill x
 
 # status widgets
 frame .status  -background LightBlue 
