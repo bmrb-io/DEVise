@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.39  1997/11/18 23:27:06  wenger
+  First version of GData to socket capability; removed some extra include
+  dependencies; committed test version of TkControl::OpenDataChannel().
+
   Revision 1.38  1997/08/28 18:21:14  wenger
   Moved duplicate code from ViewScatter, TDataViewX, and ViewLens classes
   up into ViewGraph (parent class).
@@ -399,12 +403,9 @@ public:
   Boolean GetSendToSocket() { return _sendToSocket; }
   void GetSendParams(GDataSock::Params &params) { params = _gdsParams; }
 
-  void SetDrawToScreen(Boolean drawToScreen) { _drawToScreen = drawToScreen; }
-  void SetSendToSocket(Boolean sendToSocket) { _sendToSocket = sendToSocket; }
-  void SetSendParams(const GDataSock::Params &params) {
-    _gdsParams = params;
-    _gdsParams.file = CopyString(_gdsParams.file);
-  }
+  void SetDrawToScreen(Boolean drawToScreen);
+  void SetSendToSocket(Boolean sendToSocket);
+  void SetSendParams(const GDataSock::Params &params);
 
   DevStatus Send(void **gdataArray, TDataMap *map, int recCount) {
     if (_gds != NULL) {

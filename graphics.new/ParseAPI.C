@@ -22,6 +22,10 @@
   $Id$
 
   $Log$
+  Revision 1.79  1997/11/18 23:26:57  wenger
+  First version of GData to socket capability; removed some extra include
+  dependencies; committed test version of TkControl::OpenDataChannel().
+
   Revision 1.78  1997/11/12 15:46:38  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
   into the trunk.
@@ -863,6 +867,11 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     if (!strcmp(argv[0], "waitForQueries")) {
       // Arguments: none
       // Returns: "done"
+
+      // Always go once thru the dispatcher, in case there's a view that
+      // has requested a callback but hasn't started a query yet.
+      Dispatcher::SingleStepCurrent();
+
       QueryProc *qp = QueryProc::Instance();
       while (!qp->Idle()) {
 	Dispatcher::SingleStepCurrent();
@@ -1845,9 +1854,9 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 
       GDataSock::Params params;
       view->GetSendParams(params);
-      if (params.file == NULL) params.file = "{}";
+      if (params.file == NULL) params.file = "";
       char buf[1024];
-      sprintf(buf, "%d %d %d %s %d %c", drawToScreen, sendToSocket,
+      sprintf(buf, "%d %d %d \"%s\" %d \"%c\"", drawToScreen, sendToSocket,
 	params.portNum, params.file, params.sendText, params.separator);
       control->ReturnVal(API_ACK, buf);
       return 1;

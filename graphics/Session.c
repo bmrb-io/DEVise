@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/10/28 15:46:19  wenger
+  Fixed bug 236.
+
   Revision 1.9  1997/10/16 16:12:00  donjerko
   Fixed the problem of not recognizing DTE sources correctly.
 
@@ -651,6 +654,8 @@ Session::SaveView(char *category, char *devClass, char *instance,
   status += SaveParams(saveData, "viewGetHome", "viewSetHome", instance);
 
   status += SaveParams(saveData, "viewGetHorPan", "viewSetHorPan", instance);
+
+  status += SaveParams(saveData, "getViewGDS", "setViewGDS", instance);
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;

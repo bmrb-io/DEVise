@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.61  1997/11/18 23:27:05  wenger
+  First version of GData to socket capability; removed some extra include
+  dependencies; committed test version of TkControl::OpenDataChannel().
+
   Revision 1.60  1997/08/28 18:21:13  wenger
   Moved duplicate code from ViewScatter, TDataViewX, and ViewLens classes
   up into ViewGraph (parent class).
@@ -1514,4 +1518,48 @@ void ViewGraph::QueryDone(int bytes, void *userData, TDataMap *map)
 
     ReportQueryDone(bytes);
   }
+}
+
+void
+ViewGraph::SetDrawToScreen(Boolean drawToScreen)
+{
+#if defined(DEBUG)
+  printf("ViewGraph(0x%p)::SetDrawToScreen(%d)\n", this, drawToScreen);
+#endif
+
+  if (drawToScreen && !_drawToScreen) {
+    // We should make this a non-propagating redraw when that's possible.
+    Refresh();
+  }
+
+  _drawToScreen = drawToScreen;
+}
+
+void
+ViewGraph::SetSendToSocket(Boolean sendToSocket)
+{
+#if defined(DEBUG)
+  printf("ViewGraph(0x%p)::SetSendToSocket(%d)\n", this, sendToSocket);
+#endif
+
+  if (sendToSocket && !_sendToSocket) {
+    // We should make this a non-propagating redraw when that's possible.
+    Refresh();
+  }
+
+  _sendToSocket = sendToSocket;
+}
+
+
+void
+ViewGraph::SetSendParams(const GDataSock::Params &params)
+{
+#if defined(DEBUG)
+  printf("ViewGraph(0x%p)::SetSendParams(%d, %s, %d, '%c')\n", this,
+    params.portNum, params.file ? params.file : "NULL", params.sendText,
+    params.separator);
+#endif
+
+  _gdsParams = params;
+  _gdsParams.file = CopyString(_gdsParams.file);
 }
