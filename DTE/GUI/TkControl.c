@@ -33,7 +33,7 @@ main()
       "the directory with the Tcl init files? " << endl;
     exit(1);
   }
-  Tk_Window _mainWindow = Tk_CreateMainWindow(ControlPanelTclInterp,"krusty:0","test","test");
+  Tk_Window _mainWindow = Tk_CreateMainWindow(ControlPanelTclInterp,"quarg:0","test","test");
   if (!_mainWindow) {
      printf("Sorry");
     exit(1);
