@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1999/06/11 20:46:46  wenger
+  Fixed bug that caused DEVise to crash when closing the
+  SoilSci/TwoStations.ds demo session.
+
   Revision 1.21  1999/05/07 14:13:31  wenger
   Piled view symbols now working: pile name is specified in parent view's
   mapping, views are piled by Z specified in parent's mapping; changes
@@ -113,6 +117,7 @@ ClassDir::ClassDir()
 {
   _numCategories = 0;
   _destroyingAll = false;
+  _instanceCount = 0;
 }
 
 void ClassDir::InsertCategory(char *name)
@@ -311,11 +316,10 @@ char *ClassDir::CreateWithParams(char *category, char *className,
 				 int numParams, char **paramNames)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
-#if defined(DEBUG) || 0
-  for(int i = 0; i<numParams; i++) {
-  	printf("In ClassDir: category=%s, className=%s, argv[%d]=%s\n", 
-		 category, className, i, paramNames[i]);
-  }
+#if defined(DEBUG)
+  printf("ClassDir::CreateWithParams(%s, %s, ", category, className);
+  PrintArgs(stdout, numParams, paramNames, false);
+  printf(")\n");
 #endif
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
@@ -339,6 +343,7 @@ char *ClassDir::CreateWithParams(char *category, char *className,
 	      Exit::DoAbort(errBuf, __FILE__, __LINE__);
 	    }
 	    classRec->_instances[classRec->_numInstances++] = iInfo;
+	    _instanceCount++;
 	    return iInfo->InstanceName();
 	  }
 	  fprintf(stderr,
@@ -449,12 +454,21 @@ void ClassDir::DestroyAllInstances()
         printf("now destroying %s\n", instRec->InstanceName());
 #endif
 	delete instRec;
+	_instanceCount--;
       }
       classRec->_numInstances = 0;
     }
   }
 
   PileStack::DeleteAll();
+
+  if (_instanceCount != 0) {
+    char errBuf[128];
+    sprintf(errBuf, "Warning: end of ClassDir::DestroyAllInstances(), "
+      "but instance count is %d!", _instanceCount);
+    reportErrNosys(errBuf);
+    _instanceCount = 0;
+  }
 
   _destroyingAll = false;
 }
@@ -480,6 +494,7 @@ ClassDir::DestroyCategory(char *categoryName)
           printf("now destroying %s\n", instRec->InstanceName());
 #endif
 	  delete instRec;
+	  _instanceCount--;
         }
         classRec->_numInstances = 0;
       }
@@ -491,6 +506,10 @@ ClassDir::DestroyCategory(char *categoryName)
 
 void ClassDir::DestroyInstance(char *name)
 {
+#if defined(DEBUG)
+  printf("ClassDir::DestroyInstance(%s)\n", name);
+#endif
+
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
@@ -507,6 +526,7 @@ void ClassDir::DestroyInstance(char *name)
 	    classRec->_instances[l] = classRec->_instances[l + 1];
 	  }
 	  classRec->_numInstances--;
+	  _instanceCount--;
 	  return;
 	}
       }
@@ -543,6 +563,7 @@ void ClassDir::DestroyTransientClasses()
 	printf("  Destroying instance %s\n", instRec->InstanceName());
 #endif
 	delete instRec;
+	_instanceCount--;
       }
 #ifdef DEBUG
       printf("  Destroying class %s\n", classRec->classInfo->ClassName());

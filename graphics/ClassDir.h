@@ -17,6 +17,12 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/11/11 14:30:41  wenger
+  Implemented "highlight views" for record links and set links; improved
+  ClassDir::DestroyAllInstances() by having it destroy all links before
+  it destroys anything else -- this cuts down on propagation problems as
+  views are destroyed; added test code for timing a view's query and draw.
+
   Revision 1.9  1998/05/14 18:20:58  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -200,10 +206,13 @@ public:
 
 	void Print();
 
+	int InstanceCount() { return _instanceCount; }
+
 private:
 	CategoryRec *_categories[MaxCategories];
 	int _numCategories;
 	Boolean _destroyingAll;
+	int _instanceCount;
 };
 
 #endif

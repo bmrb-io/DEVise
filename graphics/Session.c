@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.62  1999/09/23 15:46:23  wenger
+  Added per-session data source capability:  data sources defined in a
+  session file are added to a separate catalog which is delete when the
+  session is closed; the "regular" and the per-session catalog are treated
+  as a single catalog while the session is open.
+
   Revision 1.61  1999/09/20 21:33:38  wenger
   Trailing semicolons are now removed from session file lines.
 
@@ -461,11 +467,20 @@ Session::Open(char *filename)
 
   DevStatus status = StatusOk;
 
-  _openingSession = true;
-
-  ControlPanelSimple control(status);
+  //
+  // Make sure we don't already have a session open.
+  //
+  ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
+  if (classDir->InstanceCount() != 0) {
+	reportErrNosys("Can't open a session with a session already open");
+    status += StatusFailed;
+  }
 
   if (status.IsComplete()) {
+    _openingSession = true;
+
+    ControlPanelSimple control(status);
+
 	// disable logging while evaluating the file
 	CmdLogRecord* cmdLog = cmdContainerp->getCmdLog();
 	int oldStatus = cmdLog->getLogStatus();
@@ -475,9 +490,10 @@ Session::Open(char *filename)
 
 	// resume original logging status
 	cmdLog->setLogStatus(oldStatus);
+
+    _openingSession = false;
   }
 
-  _openingSession = false;
 
 #if defined(DEBUG)
   printf("  finished Session::Open(%s)\n", filename);
