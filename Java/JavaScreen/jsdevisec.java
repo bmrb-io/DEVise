@@ -22,9 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.76  2001/01/30 03:08:34  xuk
+// Fix bugs for collaboration.
+//
 // Revision 1.75  2001/01/30 03:00:09  xuk
-// Add "Collaboration" button for collabration JavaScreen.
-// Add specialID for collabrated JS ID.
+// Add "Collaboration" button for collaboration JavaScreen.
+// Add specialID for collaborated JS ID.
 //
 // Revision 1.74  2001/01/25 19:40:34  wenger
 // Added mode switching capability to the jsb (embedded) form of the client.
@@ -680,6 +683,7 @@ public class jsdevisec extends Panel
     {
         collabdlg = new CollabDlg(this, parentFrame, isCenterScreen);
         collabdlg.open();
+	collabMode();
         collabdlg = null;
 	dispatcher.start(null);
     }
@@ -766,6 +770,11 @@ public class jsdevisec extends Panel
     public void socketMode()
     {
         commMode.setText("Socket");
+    }
+
+    public void collabMode()
+    {
+        commMode.setText("Collaboration");
     }
 
     public void cgiMode()
