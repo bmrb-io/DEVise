@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.71  1999/08/25 14:56:16  wenger
+  More improvements to JavaScreen argument handling; assertion failures are
+  written to debug log.
+
   Revision 1.70  1999/08/24 22:01:18  wenger
   JavaScreen support code deals with argument lists better (partly in
   preparation for JS-side axis drawing).
@@ -402,8 +406,13 @@ static DeviseCursorList _drawnCursors;
 // Assume no more than 1000 views in a pile...
 static const float viewZInc = 0.001;
 
+#if 0 //TEMP
+static const int protocolMajorVersion = 3;
+static const int protocolMinorVersion = 0;
+#else //TEMP
 static const int protocolMajorVersion = 2;
 static const int protocolMinorVersion = 1;
+#endif //TEMP
 
 // be very careful that this order agree with the ControlCmdType definition
 char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
@@ -2535,6 +2544,58 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 	Boolean keysEnabled = !keysDisabled;
 
 	{ // limit variable scopes
+#if 0 //TEMP
+	  JSArgs args(31);
+	  args.FillString(_controlCmdName[CREATEVIEW]);
+	  args.FillString(view->GetName());
+	  args.FillString(parent ? parent->GetName() : "");
+	  args.FillString(view->IsInPileMode() ?
+	    view->GetParentPileStack()->GetFirstView()->GetName() : "");
+	  args.FillInt(viewX);
+	  args.FillInt(viewY);
+	  args.FillInt(viewWidth);
+	  args.FillInt(viewHeight);
+	  args.FillDouble(viewZ);
+	  args.FillInt(view->GetNumDimensions());
+	  args.FillInt(dataX);
+	  args.FillInt(dataY);
+	  args.FillInt(dataWidth);
+	  args.FillInt(dataHeight);
+	  args.FillString(fgColorStr.c_str());
+	  args.FillString(bgColorStr.c_str());
+	  args.FillString(xAxisType);
+	  args.FillString(yAxisType);
+	  args.FillDouble(gridX);
+	  args.FillDouble(gridY);
+	  args.FillInt(rubberbandEnabled);
+	  args.FillInt(cursorMoveEnabled);
+	  args.FillInt(drillDownEnabled);
+	  args.FillInt(keysEnabled);
+
+	  args.FillString(viewTitle);
+	  if (strcmp(viewTitle, "")) {
+		  int titleX, titleY, titleWidth, titleHeight;
+		  // Note: this gives title Y relative to the *bottom* of the view.
+		  view->GetLabelArea(titleX, titleY, titleWidth, titleHeight);
+
+	      int viewX, viewY;
+	      unsigned viewWidth, viewHeight;
+	      view->RealGeometry(viewX, viewY, viewWidth, viewHeight);
+
+		  args.FillInt(titleX + (titleWidth / 2));
+		  titleY = viewHeight - titleY - 1;
+		  args.FillInt(titleY - (titleHeight / 2));
+
+		  int family;
+		  float pointSize;
+		  Boolean bold, italic;
+		  view->GetFont("title", family, pointSize, bold, italic);
+		  args.FillInt(family);
+		  args.FillDouble(pointSize);
+		  args.FillInt(bold);
+		  args.FillInt(italic);
+	  }
+#else //TEMP
 	  JSArgs args(24);
 	  args.FillString(_controlCmdName[CREATEVIEW]);
 	  args.FillString(view->GetName());
@@ -2561,6 +2622,7 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 	  args.FillInt(cursorMoveEnabled);
 	  args.FillInt(drillDownEnabled);
 	  args.FillInt(keysEnabled);
+#endif //TEMP
 
 	  args.ReturnVal(this);
 	}
