@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/04/16 19:45:35  jussi
+  Added DoAbort() method and DOASSERT macro.
+
   Revision 1.2  1995/09/05 21:12:45  jussi
   Added/updated CVS header.
 */
@@ -28,7 +31,7 @@
 class Exit {
 public:
   static void DoExit(int code = 0);
-  static void DoAbort(char *reason, char *line, int line);
+  static void DoAbort(char *reason, char *file, int line);
 };
 
 #endif

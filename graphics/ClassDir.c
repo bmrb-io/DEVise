@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/09/27 21:08:59  wenger
+  GDataBin class doesn't allocate space for connectors (no longer used
+  anyhow); fixed some more memory leaks and made notes in the code about
+  some others that I haven't fixed yet; fixed a few other minor problems
+  in the code.
+
   Revision 1.7  1996/07/05 15:08:46  jussi
   Added debugging statement.
 
@@ -195,7 +201,7 @@ void ClassDir::SetDefault(char *category, char *className,
   }
 }
 
-/* Create a new instances given the parameters */
+/* Create a new instance given the parameters */
 
 char *ClassDir::CreateWithParams(char *category, char *className,
 				 int numParams, char **paramNames)
@@ -211,6 +217,12 @@ char *ClassDir::CreateWithParams(char *category, char *className,
 	  ClassInfo *iInfo = classRec->classInfo->CreateWithParams(numParams,
 								   paramNames);
 	  if (iInfo) {
+	    if (FindInstance(iInfo->InstanceName()) != NULL) {
+	      char errBuf[1024];
+	      sprintf(errBuf, "Attempt to add duplicate instance name '%s'\n",
+		iInfo->InstanceName());
+	      Exit::DoAbort(errBuf, __FILE__, __LINE__);
+	    }
 	    classRec->_instances[classRec->_numInstances++] = iInfo;
 	    return iInfo->InstanceName();
 	  }

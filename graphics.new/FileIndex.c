@@ -29,6 +29,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/10/05 16:24:43  wenger
+  Fixed up includes (didn't work on HP).
+
   Revision 1.1  1996/10/04 17:44:13  wenger
   Moved handling of indices from TDataAscii and TDataBinary to new
   FileIndex class.
@@ -82,6 +85,7 @@ FileIndex::~FileIndex()
   DO_DEBUG(printf("FileIndex::~FileIndex()\n"));
 
   delete [] _indexArray;
+  _indexArray = NULL;
 }
 
 /*------------------------------------------------------------------------------
@@ -127,6 +131,7 @@ FileIndex::Clear()
   DO_DEBUG(printf("FileIndex::Clear()\n"));
 
   delete [] _indexArray;
+  _indexArray = NULL;
   _indexSize = 0;
 }
 
@@ -485,7 +490,7 @@ FileIndex::Write(int fd, long recordCount)
 void
 FileIndex::ExpandArray(RecId recId)
 {
-  DO_DEBUG(printf("FileIndex::ExpandArray()\n"));
+  DO_DEBUG(printf("FileIndex::ExpandArray(%d)\n", (int) recId));
 
   int newIndexSize = _indexSize + _allocIncrement;
   if (recId + 1 > (unsigned) newIndexSize) newIndexSize = recId + 1;

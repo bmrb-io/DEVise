@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/10/04 19:58:50  wenger
+  Temporarily (?) removed threads from Devise (removed -lpthread from
+  some Makefiles so Purify works); other minor cleanups.
+
   Revision 1.11  1996/09/27 21:09:38  wenger
   GDataBin class doesn't allocate space for connectors (no longer used
   anyhow); fixed some more memory leaks and made notes in the code about
@@ -86,7 +90,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.1.11";
+static const char *	version = "1.1.12";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";

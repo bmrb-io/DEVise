@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/10/07 22:54:01  wenger
+  Added more error checking and better error messages in response to
+  some of the problems uncovered by CS 737 students.
+
   Revision 1.20  1996/10/04 17:24:17  wenger
   Moved handling of indices from TDataAscii and TDataBinary to new
   FileIndex class.
@@ -463,7 +467,7 @@ void TDataBinary::BuildIndex()
     char errBuf[1024];
     sprintf(errBuf, "No valid records for data stream %s\n"
       "    (check schema/data correspondence)\n", _name);
-    Exit::DoAbort(errBuf, __FILE__, __LINE__);
+    //Exit::DoAbort(errBuf, __FILE__, __LINE__);
   }
 }
 

@@ -144,6 +144,9 @@ Num Date        Status  Description
 046 10/07/96	OPEN	Create a window with the same name as a data stream
 			-> crash. (rkw)
 
+047 10/08/96	FIXED	Load /p/devise/wenger/session/hourstats.tk, iconify
+			the window -> crash. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.

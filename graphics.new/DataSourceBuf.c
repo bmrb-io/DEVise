@@ -20,6 +20,10 @@
    $Id$
 
    $Log$
+   Revision 1.6  1996/10/07 22:53:57  wenger
+   Added more error checking and better error messages in response to
+   some of the problems uncovered by CS 737 students.
+
    Revision 1.5  1996/08/05 19:48:56  wenger
    Fixed compile errors caused by some of Kevin's recent changes; changed
    the attrproj stuff to make a .a file instead of a .o; added some more
@@ -161,8 +165,11 @@ DataSourceBuf::Fgets(char *buffer, int bufSize)
     if (_currentLoc == NULL ) {
 	reportError("DataSourceBuf: not open", devNoSyserr);
     } else if( _currentLoc > _end_data || *_currentLoc == '\0' ) {
-	if (_currentLoc > _end_data) reportErrNosys(
-	  "Reading past end of data");
+#if 0 // This happens normally when building an index.
+	if (_currentLoc > _end_data) {
+	  reportErrNosys( "Reading past end of data");
+	}
+#endif
 	return NULL;		// Signal "EOF" - don't modify buffer
     } else {
 	while ((outputP < endOfBuf) && !endOfLine) {
