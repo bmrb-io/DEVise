@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/01/12 16:24:42  jussi
+  Fixed comparison between signed and unsigned integer.
+
   Revision 1.3  1996/01/11 21:00:02  jussi
   Added parsing of range information and reduced data buffer
   size to 16 kB.
@@ -76,6 +79,10 @@ extern "C" {
 
 #define COMPUTE_MIN_MAX
 #define USE_RANGE_INFO
+
+static Tcl_Interp *globalInterp = 0;
+
+#define UPDATE_TCL { (void)Tcl_Eval(globalInterp, "update"); }
 
 static const char *resultHeader = "Result of Execution\n";
 static const char *schemaFmt =
@@ -409,7 +416,10 @@ int ParseSEQData(char *buf, int size, int len, int sock, char *cachefile)
   printf("\n");
 #endif
 
-  while(1) {
+  for(unsigned long num = 0;; num++) {
+    if (num % 500 == 0)
+      UPDATE_TCL;
+
     char *line = buf + pos;
     if (!memcmp(line, resultTrailer, strlen(resultTrailer)))
       break;
@@ -471,6 +481,10 @@ int ParseSEQData(char *buf, int size, int len, int sock, char *cachefile)
 
 int seq_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 {
+  // Allow other functions to UPDATE_TCL
+
+  globalInterp = interp;
+
   assert(argc == 7);
 
   char *hostname = argv[1];
