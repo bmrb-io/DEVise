@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/11/15 20:33:24  jussi
+  Removed MemMgr::Release() method. IOTask::Write() no longer deallocates
+  the page it gets from the caller. CacheMgr dellocates pages only
+  when UnPin() is called.
+
   Revision 1.10  1996/11/12 17:23:40  jussi
   Renamed SBufMgr class to CacheMgr and MemPool to MemMgr. This is
   to reflect the new terms (cache manager, memory manager) used in
@@ -971,7 +976,8 @@ void TapeIOTask::DeviceIO(Request &req, Request &reply)
 MemMgr *MemMgr::_instance = 0;
 
 MemMgr::MemMgr(int numPages, int pageSize, int &status) :
-	_numPages(numPages), _pageSize(pageSize), _maxBuff(0.3)
+	_numPages(numPages), _tableSize(numPages),
+        _pageSize(pageSize), _maxBuff(0.3)
 {
     _instance = this;
 
@@ -992,7 +998,9 @@ int MemMgr::Initialize()
     _free->setValue(0);
 
     // We need space for page and also address in _freePage
-    int size = _numPages * (_pageSize + sizeof(char *)) + 3 * sizeof(int);
+    int size = _numPages * _pageSize
+               + _tableSize * (sizeof(char *) + sizeof(int))
+               + sizeof(CountStruct);
 
 #ifdef SHARED_MEMORY
     key_t _shmKey = SharedMemory::newKey();
@@ -1024,16 +1032,22 @@ int MemMgr::Initialize()
 #endif
 
     _freePage = (char **)(_buf + _numPages * _pageSize);
-    _numFree = (int *)(_freePage + _numPages);
-    _numCache = (int *)(_numFree + 1);
-    _numBuffer = (int *)(_numCache + 1);
+    _freePageCount = (int *)(_freePage + _tableSize);
+    _count = (CountStruct *)(_freePageCount + _tableSize);
 
-    for(int i = 0; i < _numPages; i++)
-        _freePage[i] = _buf + i * _pageSize;
+    // Initially, there is one contiguous free memory area
+    _freePage[0] = _buf;
+    _freePageCount[0] = _numPages;
 
-    *_numFree = _numPages;
-    *_numCache = 0;
-    *_numBuffer = 0;
+    for(int i = 1; i < _tableSize; i++) {
+        _freePage[i] = 0;
+        _freePageCount[i] = 0;
+    }
+
+    _count->entries = 1;
+    _count->free = _numPages;
+    _count->cache = 0;
+    _count->buffer = 0;
 
     return 0;
 }
@@ -1053,36 +1067,99 @@ MemMgr::~MemMgr()
     delete _free;
 }
 
-int MemMgr::Allocate(PageType type, char *&page)
+int MemMgr::Allocate(PageType type, char *&buf, int &pages, Boolean block)
 {
+    // Return immediately if no pages requested
+    if (pages <= 0)
+        return -1;
+
     AcquireMutex();
 
-    while (!(*_numFree)) {
+    // Return immediately if no free pages available in non-blocking mode
+    if (!block && !_count->free) {
+        ReleaseMutex();
+        return -1;
+    }
+
+    while (!_count->free) {
 #if DEBUGLVL >= 5
         printf("Out of free pages: %d cache, %d buffer\n",
-               *_numCache, *_numBuffer);
+               _count->cache, _count->buffer);
 #endif
         ReleaseMutex();
         AcquireFree();
         AcquireMutex();
 #if DEBUGLVL >= 5
-        printf("Woke up from sleep, free pages: %d cache, %d buffer\n",
-               *_numCache, *_numBuffer);
+        printf("Woke up from sleep, %d free pages, %d cache, %d buffer\n",
+               _count->free, _count->cache, _count->buffer);
 #endif
     }
            
-    --(*_numFree);
-    page = _freePage[*_numFree];
-    DOASSERT(page, "Invalid page");
-    _freePage[*_numFree] = 0;
+    // Find first contiguous area that is at least the size requested.
+    // Make note of largest contiguous area smaller than requested size.
+
+    int pick = -1;
+    int i = 0;
+    for(; i < _count->entries; i++) {
+        if (_freePageCount[i] >= pages) {
+#if DEBUGLVL >= 3
+            printf("Found %d-page contiguous block at index %d\n",
+                   _freePageCount[i], i);
+#endif
+            pick = i;
+            break;
+        }
+        if (pick < 0 || _freePageCount[i] > _freePageCount[pick])
+            pick = i;
+    }
+
+    DOASSERT(pick >= 0 && pick < _count->entries, "Invalid index");
+
+    if (_freePageCount[pick] < pages) {
+#if DEBUGLVL >= 3
+        printf("Reducing %d-page request to largest available %d\n",
+               pages, _freePageCount[pick]);
+#endif
+        pages = _freePageCount[pick];
+        DOASSERT(pages > 0, "Invalid page count");
+    }
+
+    DOASSERT(_count->free >= pages, "Invalid free count");
+    _count->free -= pages;
+    buf = _freePage[pick];
+    DOASSERT(buf, "Invalid page");
+    _freePageCount[pick] -= pages;
+
+    // If nothing left of memory chunk, move another chunk into this
+    // table position. Otherwise, adjust memory chunk location.
+
+    if (!_freePageCount[pick]) {
+        _count->entries--;
+        if (pick < _count->entries) {
+            _freePage[pick] = _freePage[_count->entries];
+            _freePageCount[pick] = _freePageCount[_count->entries];
+            _freePage[_count->entries] = 0;
+            _freePageCount[_count->entries] = 0;
+        } else {
+            _freePage[pick] = 0;
+        }
+    } else {
+        _freePage[i] = buf + pages * _pageSize;
+    }
+
     if (type == Buffer)
-        (*_numBuffer)++;
+        _count->buffer += pages;
     else
-        (*_numCache)++;
+        _count->cache += pages;
 
 #if DEBUGLVL >= 3
-    printf("Allocated %s page 0x%p\n",
-           (type == Cache ? "cache" : "buffer"), page);
+    printf("Allocated %d %s page(s) at 0x%p\n",
+           pages, (type == Cache ? "cache" : "buffer"), buf);
+#endif
+
+#if DEBUGLVL >= 5
+    printf("Memory allocation table now:\n");
+    Dump();
 #endif
 
     ReleaseMutex();
@@ -1090,28 +1167,85 @@ int MemMgr::Allocate(PageType type, char *&page)
     return 0;
 }
 
-int MemMgr::Deallocate(PageType type, char *page)
+int MemMgr::Deallocate(PageType type, char *buf, int pages)
 {
     AcquireMutex();
 
-    DOASSERT(*_numFree < _numPages, "Invalid page 2");
-    DOASSERT(!_freePage[*_numFree], "Invalid page 3");
+    DOASSERT(_count->free + pages <= _numPages, "Invalid page 2");
 
-    _freePage[(*_numFree)++] = page;
-    if (type == Buffer) {
-        (*_numBuffer)--;
+    // Find free page area that merges perfectly with deallocated range.
+
+    char *endBuf = buf + pages * _pageSize;
+    int mergeLeft = -1;
+    int mergeRight = -1;
+    for(int i = 0; i < _count->entries; i++) {
+        DOASSERT(_freePageCount[i] > 0, "Invalid free page count");
+        DOASSERT(_freePage[i], "Invalid free memory area");
+        char *endFreeBuf = _freePage[i] + _freePageCount[i] * _pageSize;
+        if (_freePage[i] == endBuf)
+            mergeLeft = i;
+        if (buf == endFreeBuf)
+            mergeRight = i;
+    }
+
+    if (mergeLeft >= 0 && mergeRight >= 0) {
+        // Freed area sits perfectly between two previously freed areas
+        DOASSERT(mergeLeft != mergeRight, "Impossible merge");
+        _freePageCount[mergeRight] += pages + _freePageCount[mergeLeft];
+        _count->entries--;
+        if (mergeLeft < _count->entries) {
+            _freePage[mergeLeft] = _freePage[_count->entries];
+            _freePageCount[mergeLeft] = _freePageCount[_count->entries];
+            _freePage[_count->entries] = 0;
+            _freePageCount[_count->entries] = 0;
+        } else {
+            _freePageCount[mergeLeft] = 0;
+            _freePage[mergeLeft] = 0;
+        }
+    } else if (mergeLeft >= 0) {
+        // Freed area is just to the left of a previously freed area
+        _freePage[mergeLeft] -= pages * _pageSize;
+        _freePageCount[mergeLeft] += pages;
+    } else if (mergeRight >= 0) {
+        // Freed area is just to the right of a previously freed area
+        _freePageCount[mergeRight] += pages;
+    } else {
+        // Freed area is not adjacent to any previously freed area
+        int freeEntry = _count->entries;
+        DOASSERT(freeEntry <= _tableSize, "Inconsistent state");
+        DOASSERT(!_freePage[freeEntry] && !_freePageCount[freeEntry],
+                 "Entry not free");
+        _freePage[freeEntry] = buf;
+        _freePageCount[freeEntry] = pages;
+        _count->entries++;
+    }
+
+    _count->free += pages;
+
 #if DEBUGLVL >= 3
-        printf("Now %d buffer pages remain in use\n", *_numBuffer);
+    printf("Deallocated %d %s page(s) at 0x%p\n",
+           pages, (type == Cache ? "cache" : "buffer"), buf);
+#endif
+
+    if (type == Buffer) {
+        _count->buffer -= pages;
+#if DEBUGLVL >= 3
+        printf("Now %d buffer pages remain in use\n", _count->buffer);
 #endif
     } else {
-        (*_numCache)--;
+        _count->cache -= pages;
 #if DEBUGLVL >= 3
-        printf("Now %d cache pages remain in use\n", *_numCache);
+        printf("Now %d cache pages remain in use\n", _count->cache);
 #endif
     }
 
+#if DEBUGLVL >= 5
+    printf("Memory allocation table now:\n");
+    Dump();
+#endif
+
     // If someone is waiting for a free page, signal it
-    if (*_numFree == 1)
+    if (_count->free == pages)
         ReleaseFree();
 
     ReleaseMutex();
@@ -1127,22 +1261,32 @@ int MemMgr::Convert(char *page, PageType oldType, PageType &newType)
 
     if (oldType != newType) {
         if (oldType == Cache) {
-            (*_numCache)--;
-            (*_numBuffer)++;
+            _count->cache--;
+            _count->buffer++;
         } else {
-            (*_numCache)++;
-            (*_numBuffer)--;
+            _count->cache++;
+            _count->buffer--;
         }
 
 #if DEBUGLVL >= 3
         printf("Memory manager now has %d cache pages, %d buffer pages\n",
-               *_numCache, *_numBuffer);
+               _count->cache, _count->buffer);
 #endif
     }
 
     ReleaseMutex();
 
     return 0;
+}
+
+void MemMgr::Dump()
+{
+    printf("Free pages %d, buffer %d, cache %d, entries %d\n",
+           _count->free, _count->buffer, _count->cache, _count->entries);
+    for(int i = 0; i < (_tableSize > 10 ? 10 : _tableSize); i++) {
+        printf("memory[%d] = 0x%p, %d pages\n", i, _freePage[i],
+               _freePageCount[i]);
+    }
 }
 
 CacheMgr *CacheMgr::_instance = 0;
@@ -1498,7 +1642,7 @@ CacheMgrLRU::CacheMgrLRU(MemMgr &mgr, int frames) :
 
 int CacheMgrLRU::PickVictim()
 {
-    int freeMgr = _mgr.FreeLeft();
+    int freeMgr = _mgr.NumFree();
 
     while(1) {
 

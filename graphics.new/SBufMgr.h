@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/11/15 20:34:02  jussi
+  Removed MemMgr::Release() method. IOTask::Write() no longer
+  deallocates the page it gets from the caller.
+
   Revision 1.9  1996/11/12 17:23:41  jussi
   Renamed SBufMgr class to CacheMgr and MemPool to MemMgr. This is
   to reflect the new terms (cache manager, memory manager) used in
@@ -134,13 +138,39 @@ class MemMgr {
     // Page types
     enum PageType { Cache, Buffer };
 
-    int Allocate(PageType type, char *&page);
-    int Deallocate(PageType type, char *page);
-    int Convert(char *page, PageType oldType, PageType &newType);
+    // Allocate a memory buffer of one page; block until memory available
+    int Allocate(PageType type, char *&buf) {
+        int pages = 1;
+        return Allocate(type, buf, pages);
+    }
 
-    int FreeLeft() {
+    // Allocate a memory buffer of given size; block until at least one
+    // page available
+    int Allocate(PageType type, char *&buf, int &pages, Boolean block = true);
+
+    // Try to allocate a memory buffer of one page; return -1 if no
+    // memory available
+    int Try(PageType type, char *&buf) {
+        int pages = 1;
+        return Try(type, buf, pages);
+    }        
+
+    // Try to allocate a memory buffer of given size; return -1 if no
+    // memory available
+    int Try(PageType type, char *&buf, int &pages) {
+        return Allocate(type, buf, pages, false);
+    }
+
+    // Deallocate a memory buffer of given size
+    int Deallocate(PageType type, char *buf, int pages = 1);
+
+    // Convert buffer memory to cache memory, or vice versa
+    int Convert(char *buf, PageType oldType, PageType &newType);
+
+    // Return number of free memory size in pages
+    int NumFree() {
         AcquireMutex();
-        int num = *_numFree;
+        int num = _count->free;
         ReleaseMutex();
         return num;
     }
@@ -162,18 +192,25 @@ class MemMgr {
     void AcquireFree() { _free->acquire(1); }
     void ReleaseFree() { _free->release(1); }
 
-    // Number of memory pages and their size
+    // Dump contents of free page table
+    void Dump();
+
+    // Number of memory pages, free page table size, and page size
     const int _numPages;
+    const int _tableSize;
     const int _pageSize;
 
     // Base address of memory
     char *_buf;
 
-    // Pointers and counters of free/used pages
-    char **_freePage;
-    int *_numFree;
-    int *_numCache;
-    int *_numBuffer;
+    char **_freePage;                   // table of free memory chunks
+    int *_freePageCount;                // # of pages in each chunk
+    struct CountStruct {
+        int entries;                    // valid entries in free table
+        int free;                       // # of free pages left
+        int cache;                      // # of cache pages in use
+        int buffer;                     // # of buffer pages in use
+    } *_count;
 
     // Maximum ratio of buffer pages to total pages
     const float _maxBuff;
