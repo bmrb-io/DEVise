@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/09/27 21:09:37  wenger
+  GDataBin class doesn't allocate space for connectors (no longer used
+  anyhow); fixed some more memory leaks and made notes in the code about
+  some others that I haven't fixed yet; fixed a few other minor problems
+  in the code.
+
   Revision 1.11  1996/06/15 14:25:01  jussi
   Rewrote so that a variable number of shape attributes is
   allowed when mapping is created.
@@ -182,7 +188,8 @@ void MapInterpClassInfo::ExtractCommand(int argc, char **argv,
   tdata = (TData *)ControlPanel::FindInstance(tdataAlias);
   if (!tdata) {
     fprintf(stderr, 
-	    "MapInterpClassInfo::CreateWithParams: can't find tdata\n");
+	    "MapInterpClassInfo::CreateWithParams: can't find tdata %s\n",
+	    tdataAlias);
     Exit::DoExit(2);
   }
   

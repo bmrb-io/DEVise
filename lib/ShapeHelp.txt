@@ -87,6 +87,7 @@ file)
 TEXT LABEL - a string (text characters)
     Attrs:
         0) string
+        1) format string (for numerical attributes only) (not required)
 
 TCL/TK WINDOW - rectangular region containing a Tcl/Tk
 window

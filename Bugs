@@ -725,6 +725,10 @@ Num Date        Status  Description
 174 04/16/97	OPEN	Each composite parser seems to get instantiated
 			twice. (rkw)
 
+175 04/16/97	OPEN	Saving a session file may reduce the number of file
+			descriptors in use by Devise (this might mean that
+			we're not closing some we should) (bb/rkw)
+
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

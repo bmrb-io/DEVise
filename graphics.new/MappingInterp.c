@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  1997/04/14 17:25:25  beyer
+  Added debugging.
+
   Revision 1.50  1997/04/09 23:31:23  beyer
   String constants in the mapping now work.
 
@@ -890,6 +893,8 @@ AttrList *MappingInterp::InitCmd(char *name)
     if (_simpleCmd->xCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
       /* constant */
       SetDefaultX((Coord)_simpleCmd->xCmd.cmd.num);
+      attrList->InsertAttr(0, "x", -1, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
     } else {
       _offsets->xOffset = offset = WordBoundary(offset, sizeof(double));
       attrList->InsertAttr(0, "x", offset, sizeof(double),
@@ -904,6 +909,8 @@ AttrList *MappingInterp::InitCmd(char *name)
     if (_simpleCmd->yCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
       /* constant */
       SetDefaultY((Coord)_simpleCmd->yCmd.cmd.num);
+      attrList->InsertAttr(1, "y", -1, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
     } else {
       _offsets->yOffset = offset = WordBoundary(offset, sizeof(double));
       attrList->InsertAttr(1, "y", offset, sizeof(double),
@@ -918,6 +925,8 @@ AttrList *MappingInterp::InitCmd(char *name)
     if (_simpleCmd->zCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
       /* constant */
       SetDefaultZ((Coord)_simpleCmd->zCmd.cmd.num);
+      attrList->InsertAttr(2, "z", -1, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
     } else {
       _offsets->zOffset = offset = WordBoundary(offset, sizeof(double));
       attrList->InsertAttr(2, "z", offset, sizeof(double),
@@ -933,6 +942,8 @@ AttrList *MappingInterp::InitCmd(char *name)
     if (_simpleCmd->colorCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
       /* constant */
       SetDefaultColor((GlobalColor)_simpleCmd->colorCmd.cmd.num);
+      attrList->InsertAttr(3, "color", -1, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
     } else {
       _offsets->colorOffset = offset = WordBoundary(offset,
 	sizeof(GlobalColor));
@@ -949,6 +960,8 @@ AttrList *MappingInterp::InitCmd(char *name)
     if (_simpleCmd->sizeCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
       /* constant */
       SetDefaultSize((Coord)_simpleCmd->sizeCmd.cmd.num);
+      attrList->InsertAttr(4, "size", -1, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
     } else {
       _offsets->sizeOffset = offset = WordBoundary(offset, sizeof(double));
       attrList->InsertAttr(4, "size", offset, sizeof(double),
@@ -964,6 +977,8 @@ AttrList *MappingInterp::InitCmd(char *name)
     if (_simpleCmd->patternCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
       /* constant */
       SetDefaultPattern((Pattern)_simpleCmd->patternCmd.cmd.num);
+      attrList->InsertAttr(5, "pattern", -1, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
     } else {
       _offsets->patternOffset = offset = WordBoundary(offset, sizeof(Pattern));
       attrList->InsertAttr(5, "pattern", offset, sizeof(double),
@@ -982,6 +997,8 @@ AttrList *MappingInterp::InitCmd(char *name)
       if (shape >= MaxInterpShapes)
 	shape = 0;
       SetDefaultShape(shape);
+      attrList->InsertAttr(6, "shape", -1, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
     } else {
       _offsets->shapeOffset = offset = WordBoundary(offset, sizeof(ShapeID));
       attrList->InsertAttr(6, "shape", offset, sizeof(double),
@@ -999,6 +1016,8 @@ AttrList *MappingInterp::InitCmd(char *name)
 	MappingSimpleCmdEntry::ConstCmd) {
       /* constant */
       SetDefaultOrientation((Coord)_simpleCmd->orientationCmd.cmd.num);
+      attrList->InsertAttr(7, "orientation", -1, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
     } else {
       _offsets->orientationOffset = offset = WordBoundary(offset,
 							  sizeof(double));
@@ -1020,6 +1039,10 @@ AttrList *MappingInterp::InitCmd(char *name)
 	  MappingSimpleCmdEntry::ConstCmd) {
 	/* constant */
 	SetDefaultShapeAttr(j, (Coord)_simpleCmd->shapeAttrCmd[j].cmd.num);
+	char attrName [80];
+	sprintf(attrName, "shapeAttr_%d", j);
+	attrList->InsertAttr(8 + j, attrName, -1, sizeof(double),
+			     attrType, false, NULL, false, isSorted);
       } else {
 	char attrName [80];
 	sprintf(attrName, "shapeAttr_%d", j);
@@ -1079,6 +1102,8 @@ AttrList *MappingInterp::InitCmd(char *name)
     if (IsConstCmd(_cmd->xCmd, constVal)) {
       SetDefaultX((Coord)constVal);
       _tclCmd->xCmd = "";
+      attrList->InsertAttr(0, "x", -1, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
     } else {
       _tclCmd->xCmd = ConvertCmd(_cmd->xCmd, attrType, isSorted);
       _offsets->xOffset = offset = WordBoundary(offset,sizeof(double));
@@ -1092,6 +1117,8 @@ AttrList *MappingInterp::InitCmd(char *name)
     if (IsConstCmd(_cmd->yCmd, constVal)) {
       SetDefaultY((Coord)constVal);
       _tclCmd->yCmd = "";
+      attrList->InsertAttr(1, "y", -1, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
     } else {
       _tclCmd->yCmd = ConvertCmd(_cmd->yCmd, attrType, isSorted);
       _offsets->yOffset = offset = WordBoundary(offset,sizeof(double));
@@ -1105,6 +1132,8 @@ AttrList *MappingInterp::InitCmd(char *name)
     if (IsConstCmd(_cmd->zCmd, constVal)) {
       SetDefaultZ((Coord)constVal);
       _tclCmd->zCmd = "";
+      attrList->InsertAttr(2, "z", -1, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
     } else {
       _tclCmd->zCmd = ConvertCmd(_cmd->zCmd, attrType, isSorted);
       _offsets->zOffset = offset = WordBoundary(offset,sizeof(double));
@@ -1118,6 +1147,8 @@ AttrList *MappingInterp::InitCmd(char *name)
     if (IsConstCmd(_cmd->colorCmd, constVal)) {
       SetDefaultColor((GlobalColor)constVal);
       _tclCmd->colorCmd = "";
+      attrList->InsertAttr(3, "color", -1, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
     } else {
       _tclCmd->colorCmd = ConvertCmd(_cmd->colorCmd, attrType, isSorted);
       _offsets->colorOffset = offset = WordBoundary(offset,sizeof(GlobalColor));
@@ -1131,6 +1162,8 @@ AttrList *MappingInterp::InitCmd(char *name)
     if (IsConstCmd(_cmd->sizeCmd, constVal)) {
       SetDefaultSize(constVal);
       _tclCmd->sizeCmd = "";
+      attrList->InsertAttr(4, "size", -1, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
     } else {
       _tclCmd->sizeCmd = ConvertCmd(_cmd->sizeCmd, attrType, isSorted);
       _offsets->sizeOffset = offset = WordBoundary(offset,sizeof(double));
@@ -1144,6 +1177,8 @@ AttrList *MappingInterp::InitCmd(char *name)
     if (IsConstCmd(_cmd->patternCmd, constVal)) {
       SetDefaultPattern((Pattern)constVal);
       _tclCmd->patternCmd = "";
+      attrList->InsertAttr(5, "pattern", -1, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
     } else {
       _tclCmd->patternCmd = ConvertCmd(_cmd->patternCmd, attrType, isSorted);
       _offsets->patternOffset = offset = WordBoundary(offset,sizeof(Pattern));
@@ -1160,6 +1195,8 @@ AttrList *MappingInterp::InitCmd(char *name)
 	shape = 0;
       SetDefaultShape(shape);
       _tclCmd->shapeCmd = "";
+      attrList->InsertAttr(6, "shape", -1, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
     } else {
       _tclCmd->shapeCmd = ConvertCmd(_cmd->shapeCmd, attrType, isSorted);
       _offsets->shapeOffset = offset = WordBoundary(offset,sizeof(ShapeID));
@@ -1173,6 +1210,8 @@ AttrList *MappingInterp::InitCmd(char *name)
     if (IsConstCmd(_cmd->orientationCmd, constVal)) {
       SetDefaultOrientation(constVal);
       _tclCmd->orientationCmd = "";
+      attrList->InsertAttr(7, "orientation", -1, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
     } else {
       _tclCmd->orientationCmd = ConvertCmd(_cmd->orientationCmd, attrType, 
 					   isSorted);
@@ -1192,6 +1231,8 @@ AttrList *MappingInterp::InitCmd(char *name)
       if (IsConstCmd(_cmd->shapeAttrCmd[j],constVal)) {
 	SetDefaultShapeAttr(j,constVal);
 	_tclCmd->shapeAttrCmd[j] = "";
+	attrList->InsertAttr(8 + j, attrName, -1, sizeof(double),
+			     attrType, false, NULL, false, isSorted);
       } else {
 	_tclCmd->shapeAttrCmd[j] = 
 	  ConvertCmd(_cmd->shapeAttrCmd[j],attrType, isSorted);
@@ -1326,6 +1367,7 @@ Boolean MappingInterp::ConvertSimpleCmd(char *cmd,
     len -= 2; 
     char* str = new char[len+1];
     strncpy(str, cmd+1, len);
+    str[len] = '\0'; // Terminate the string!
     int strid;
     if( StringStorage::Lookup(str, strid) < 0 ) {
       // string not found, so insert it
@@ -1333,13 +1375,14 @@ Boolean MappingInterp::ConvertSimpleCmd(char *cmd,
     } else {
       // string already in table, so delete this copy
       delete str;
+      str = NULL;
     }
 #if defined(DEBUG)
-    printf("string constant at %d: %s\n", strid, str);
+    printf("string constant at %d: %s\n", strid, str != NULL ? str : "NULL");
 #endif
     entry.cmdType = MappingSimpleCmdEntry::ConstCmd;
     entry.cmd.num = strid;
-    type = IntAttr;
+    type = StringAttr;
     isSorted = false;
     return true;
   }
