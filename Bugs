@@ -445,6 +445,10 @@ Num Date        Status  Description
 			size and therefore should be defined in a single
 			place. (rkw)
 
+118 01/14/97	OPEN    Makefile couldn't find my.yacc.tab.h when making
+			DEVise in dir like /p/devise/guangshu/test/solsparc
+			(gc)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
