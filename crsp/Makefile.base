@@ -21,8 +21,8 @@ crspobj.o: $(LIBOBJ)
 main:	main.o $(LIBOBJS)
 	$(CC) $(CPPFLAGS) -o $@ $@.o $(LIBOBJS)
 
-crsp_index: crsp_index.o $(LIBOBJS)
-	$(CC) $(CPPFLAGS) -o $@ $@.o $(LIBOBJS)
+crsp_index: crsp_index.o ../graphics/ExitClean.o $(LIBOBJS)
+	$(CC) $(CPPFLAGS) -o $@ $@.o ../graphics/ExitClean.o $(LIBOBJS)
 
 .PHONY: clean mostlyclean
 
