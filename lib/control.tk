@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.212  2000/02/23 21:31:18  wenger
+#	Re-implemented session description capability.
+#	
 #	Revision 1.211  2000/02/08 22:31:32  wenger
 #	Oops!  Committed with Test menu selection enabled.
 #	
@@ -1831,6 +1834,8 @@ menu .mbar.window.menu.fontsmenu -tearoff false
 # HELP MENU.
 menu .mbar.help.menu -tearoff 0
 .mbar.help.menu add command -label "About..." -command { AboutDevise }
+.mbar.help.menu add command -label "Key/Mouse Actions..." \
+    -command { ShowKeyMouseHelp }
 .mbar.help.menu add separator
 #.mbar.help.menu add command -label "Demo" -command DoDemo
 #.mbar.help.menu add command -label "Help" -command DoHelp
@@ -2542,4 +2547,44 @@ proc PlayBackLog {} {
     }
 
     DEVise playLog $file
+}
+
+# Displays a simple text window with the contents of file KeyMouseHelp.txt
+# (Needs error checking for the file operation...)
+proc ShowKeyMouseHelp {} {
+    global libdir
+
+    if {[WindowVisible .keyMouseHelp]}  {
+	return
+    }
+
+    set w .keyMouseHelp
+
+    toplevel $w
+    wm geometry $w +50+50
+    wm title $w "Key/Mouse Help"
+
+    frame $w.body
+    frame $w.cntl
+
+    # Read message text from help file
+    set filename "$libdir/KeyMouseHelp.txt"
+    set stream [open $filename]
+    set text [read $stream]
+    close $stream
+
+    set t [text $w.body.text -width 60 -height 24 -relief groove \
+	-wrap none -yscrollcommand "$w.body.scroll set"]
+
+    $t insert 1.0 $text
+    $t configure -state disabled
+
+    scrollbar $w.body.scroll -command "$w.body.text yview"
+
+    button $w.cntl.ok -text "OK" -width 8 -command "destroy $w"
+
+    pack $w.body $w.cntl -side top -fill both
+    pack $w.body.scroll -side right -fill y
+    pack $w.body.text -side left -fill both -expand true
+    pack $w.cntl.ok -side right -fill x -expand 1
 }

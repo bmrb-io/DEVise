@@ -1,0 +1,63 @@
+MOUSE ACTIONS
+<Left click>: select view; if view is already selected, move
+  cursor, if any, to the click location.
+
+<Middle click>: select view; pop up a window showing the
+  mouse location in data units, and the TData records,
+  if any, corresponding to that location.
+
+<Left drag>: select view; zoom in, X only.
+
+<Right drag>: select view; zoom in, X and Y.
+
+<Alt/left drag>: select view; zoom out, X only.
+
+<Alt/right drag>: select view; zoom out, X and Y.
+
+<Left drag> (on cursor): select view; move cursor.
+
+<Right drag> (on cursor): select view; move cursor.
+
+
+KEY ACTIONS, VISUAL FILTER
+<1> or <End>: zoom in in Y.
+
+<2> or <down arrow>: move the visual filter down.
+
+<3> or <Page Down>: zoom out in Y.
+
+<4> or <left arrow>: move the visual filter left.
+
+<5>: set the visual filter to the "home" location (the
+  default is to show all data).
+
+<6> or <right arrow>: move the visual filter right.
+
+<7> or <Home>: zoom in in X.
+
+<8> or <up arrow>: move the visual filter up.
+
+<9> or <Page Up>: zoom out in X.
+
+<Backspace>: toggle between the last two visual filter
+  settings.
+
+
+KEY ACTIONS, SYMBOL DISPLAY
+<+>: increase symbol size.
+
+<->: decrease symbol size.
+
+<v> or <V>: toggle display of data values as text
+ superimposed on symbols.
+
+
+KEY ACTIONS, MISCELLANEOUS
+<h> or <H>: set histogram width to filter.
+
+<Escape> or <menu>: (raise control panel).
+
+<Ctl C>: terminate DEVise.
+
+
+Last updated 2000-03-20.
