@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/28 17:50:26  jussi
+  Small fixes to remove new compiler warnings.
+
   Revision 1.4  1995/11/22 17:37:07  jussi
   Added FloatAttr to list of supported attribute types in Decode().
 
@@ -195,7 +198,8 @@ Boolean TDataTapeInterp::Decode(RecId id, void *recordBuf, char *line)
 
   int maxArgs = MinMax::min(numArgs, _numAttrs);
 
-  for(int i = 0; i < _numMatchingAttrs; i++)
+  int i;
+  for(i = 0; i < _numMatchingAttrs; i++)
     if (_matchingAttrs[i]->attrNum >= maxArgs)
       return false;
 
