@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/02/03 04:11:35  donjerko
+  Catalog management moved to DTE
+
   Revision 1.13  1996/12/26 03:42:01  kmurli
   MOdified to make joinprev work right
 
@@ -985,6 +988,13 @@ class PrimeSelection : public BaseSelection{
 	int avgSize;	// to estimate result sizes
 	int position;  // position of this selection in a tuple
 public:
+	PrimeSelection(String a, String attr) : 
+		BaseSelection(new Path(new String(attr), NULL)) {
+		alias = new String(a);
+		typeID = "Unknown";
+		avgSize = 0;
+		position = 0;
+	}
 	PrimeSelection(String* a, Path* n = NULL, TypeID typeID = "Unknown",
 		int avgSize = 0, int position = 0): 
           BaseSelection(n), alias(a), typeID(typeID), avgSize(avgSize),
@@ -1076,7 +1086,7 @@ public:
 		tableName = new List<String*>;
 	}
 	TableName(List<String*>* tableName) : tableName(tableName) {}
-	TableName(String* str){	// delete str when done
+	TableName(String* str){	// deletes str when done
 		tableName = new List<String*>;
 		tableName->append(str);
 	}
@@ -1116,6 +1126,16 @@ public:
 		out << ".";
 		displayList(out, tableName, ".");
 	}
+	String toString(){
+		ostrstream tmp;
+		tmp << ".";
+		displayList(tmp, tableName, ".");
+		tmp << ends;
+		char* tmps = tmp.str();
+		String retVal(tmps);
+		delete tmps;
+		return retVal;
+	}
 	int cardinality(){
 		assert(tableName);
 		return tableName->cardinality();
@@ -1132,6 +1152,12 @@ public:
 	TableAlias(TableName *t, String* a = NULL,String *func = NULL,
 			int optShiftVal = 0) : table(t), alias(a),function(func),
 		shiftVal(optShiftVal) {}
+	TableAlias(String tableNm, String aliasNm){
+		table = new TableName(tableNm.chars());
+		alias = new String(aliasNm);
+		function = NULL;
+		shiftVal = 0;
+	}
 	virtual ~TableAlias(){}
 	virtual TableName* getTable(){
 		return table;
@@ -1180,7 +1206,11 @@ public:
 		}
 	}
 	virtual TableName* getTable(){
-		assert(0);
+
+		// There is no table name for quoted tables, but 
+		// the optimizer needs to know table name to find indexes
+
+		return new TableName();
 	}
 	const String* getQuote(){
 		return quote;

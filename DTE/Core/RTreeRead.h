@@ -137,28 +137,41 @@ class RTreeIndex : public StandardRead {
 	// Private data members like numFlds, attributeNames and typeIDs
 	// refer to this index not the original file
 
+	IndexDesc* indexDesc;
 	RTreePred* rTreeQuery;
 	gen_rt_cursor_t* cursor;
 	genrtree_m rtree_m;
 	int RTreeFile;
 	gen_key_t* queryBox;
 	int queryBoxSize();
-	int pageId;
 	bool initialized;
 public:
 	RTreeIndex() : StandardRead(NULL), rTreeQuery(NULL), cursor(NULL) {
 		queryBox = NULL;
-		pageId = 0;
 		initialized = false;
 	}
 	RTreeIndex(int numFlds, TypeID* types, String* attNms, int pageId) :
 		StandardRead(NULL) {
+		stats = new Stats(numFlds);
 		this->numFlds = numFlds;
 		this->typeIDs = types;
 		attributeNames = attNms;
-		this->pageId = pageId;
 		rTreeQuery = new RTreePred[numFlds];
 		for(int i = 0; i < numFlds; i++){
+			rTreeQuery[i].setTypeID(typeIDs[i]);
+		}
+		cursor = NULL;
+		queryBox = NULL;
+		initialized = false;
+	}
+	RTreeIndex(IndexDesc* indexDesc) : 
+		StandardRead(NULL), indexDesc(indexDesc) {
+		numFlds = indexDesc->getTotNumFlds();
+		stats = new Stats(numFlds);
+		typeIDs = indexDesc->getAllTypeIDs();
+		attributeNames = indexDesc->getAllAttrNms();
+		rTreeQuery = new RTreePred[indexDesc->numKeyFlds];
+		for(int i = 0; i < indexDesc->numKeyFlds; i++){
 			rTreeQuery[i].setTypeID(typeIDs[i]);
 		}
 		cursor = NULL;
@@ -176,7 +189,6 @@ public:
 		for(int i = 0; i < numFlds; i++){
 			out << typeIDs[i] << " " << attributeNames[i] << " ";
 		}
-		out << pageId;
 	}
      virtual ostream& display(ostream& out){
           String tmp;

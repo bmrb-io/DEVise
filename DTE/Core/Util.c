@@ -2,6 +2,9 @@
 #include <iostream.h>
 #include <strstream.h>
 #include "exception.h"
+#include "ParseTree.h"	// for getRootCatalog
+#include "catalog.h"
+#include "Inserter.h"
 
 #include "Utility.h"
 
@@ -80,3 +83,16 @@ String addQuotes(String in){	// can throw excetion
 	value += '"';
 	return value;
 }
+
+void insert(String tableStr, Tuple* tuple){	// throws exception
+	Catalog* catalog = getRootCatalog();
+	assert(catalog);
+	TableName tableName(tableStr.chars());
+	TRY(Interface* interf = catalog->findInterface(&tableName), );
+	delete catalog;
+	TRY(Inserter* inserter = interf->getInserter(&tableName), );
+	delete interf;
+	inserter->insert(tuple);
+	delete inserter;
+}
+

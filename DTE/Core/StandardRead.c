@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/02/03 04:11:32  donjerko
+  Catalog management moved to DTE
+
   Revision 1.5  1996/12/24 21:00:52  kmurli
   Included FunctionRead to support joinprev and joinnext
 
@@ -75,6 +78,10 @@ void StandardRead::open(){	// Throws exception
 			THROW(new Exception(msg), );
 		}
 		(*in) >> inputStr;
+	}
+	if(!in->good()){
+		String msg = "Incorrect header format";
+		THROW(new Exception(msg), );
 	}
 }
 

@@ -82,6 +82,7 @@ Site* QueryTree::createSite(){
      List<Site*>* sites = new List<Site*>;
 	while(!tableList->atEnd()){
 		TableAlias* ta = tableList->get();
+		String fullPathNm = ta->getTable()->toString();
 		Site* site = NULL;
 		if(ta->isQuote()){
 			QuoteAlias* qa = (QuoteAlias*) ta;
@@ -101,6 +102,7 @@ Site* QueryTree::createSite(){
 		}
 		assert(site);
 		site->addTable(ta);
+		site->setFullNm(fullPathNm);	// used to retreive indexes
 		if(!sites->exists(site)){
 			sites->append(site);
 			numSites++;

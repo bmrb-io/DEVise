@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/02/03 04:11:38  donjerko
+  Catalog management moved to DTE
+
   Revision 1.2  1996/12/05 16:06:06  wenger
   Added standard Devise file headers.
 
@@ -119,9 +122,9 @@ public:
 		reqStream << content.rdbuf();
           sendRequest(reqStream);
      }
-	ostream* getOutputStream(){
+	ostream* getOutputStream(int mode = ios::out){
 		if(protocol == "file"){
-			ostream* retVal =  new ofstream(file);
+			ostream* retVal =  new ofstream(file, mode);
 			if(!retVal->good()){
 				String msg = "Cannot open file: " + String(file);
 				THROW(new Exception(msg), NULL);

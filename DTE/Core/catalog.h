@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/02/03 04:11:34  donjerko
+  Catalog management moved to DTE
+
   Revision 1.8  1996/12/24 21:00:52  kmurli
   Included FunctionRead to support joinprev and joinnext
 
@@ -42,6 +45,7 @@
 #include "exception.h"
 #include "site.h"
 #include "Utility.h"
+#include "Inserter.h"
 #ifdef NO_RTREE
      #include "RTreeRead.dummy"
 #else
@@ -62,18 +66,6 @@ public:
 		ofstream out(fileNm);
 		assert(!"not implemented");
 	}
-	/*
-	Site* toSite(String directEntry){	// throws exception
-		THROW(new Exception("Not supported any more"), NULL);
-		strstream entryStream;
-		entryStream << directEntry << " ;";
-		CatEntry* entry = new CatEntry(new TableName());
-		TRY(entry->read(entryStream), NULL); 
-		Site* retVal = entry->getSite();
-		delete entry;
-		return retVal;
-	}
-	*/
 };
 
 class Interface{
@@ -112,7 +104,10 @@ public:
 	virtual Type getType(){
 		return UNKNOWN;
 	}
-	virtual Schema* getSchema(TableName* table) = 0;
+	virtual Schema* getSchema(TableName* table) = 0;	// throws
+	virtual Inserter* getInserter(TableName* table){ // throws
+		THROW(new Exception("Insertion not supported"), NULL);
+	}
 };
 
 class DummyInterface : public Interface {
@@ -214,6 +209,7 @@ public:
 		Interface::write(out);
 	}
 	virtual Schema* getSchema(TableName* table);	// throws exception
+	virtual Inserter* getInserter(TableName* table); // throws
 };
 
 class QueryInterface : public Interface{

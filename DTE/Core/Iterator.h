@@ -26,6 +26,10 @@ public:
 	virtual int getNumFlds() = 0;
 	virtual String *getTypeIDs() = 0;
 	virtual String *getAttributeNames() = 0;
+	virtual WritePtr* getWritePtrs(){
+		assert(!"getWritePtrs not implemented");
+		return NULL;
+	}
 	virtual String *getOrderingAttrib(){
 		assert(0);
 	}

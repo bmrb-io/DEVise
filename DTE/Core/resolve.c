@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/02/03 04:11:36  donjerko
+  Catalog management moved to DTE
+
   Revision 1.8  1996/12/21 22:21:50  donjerko
   Added hierarchical namespace.
 
@@ -254,17 +257,18 @@ BaseSelection* Operator::enumerate(
 }
 
 TypeID PrimeSelection::typify(List<Site*>* sites){
-     assert(sites->cardinality() == 1);
-     sites->rewind();
-     Site* current = sites->get();
-	List<BaseSelection*>* selList = current->getSelectList();
-	selList->rewind();
-	int i = 0;
 	assert(alias);
 	if(*alias == ""){
 		TRY(TypeID retVal = nextPath->typify("global", sites), "unknown");
 		return retVal;
 	}
+     assert(sites->cardinality() == 1);
+     sites->rewind();
+     Site* current = sites->get();
+	List<BaseSelection*>* selList = current->getSelectList();
+	String siteNm = current->getName();
+	selList->rewind();
+	int i = 0;
 	while(!selList->atEnd()){
 		Path* upTo = NULL;
 		if(match(selList->get(), upTo)){
@@ -284,9 +288,9 @@ TypeID PrimeSelection::typify(List<Site*>* sites){
 	displayList(tmp, selList);
 	tmp << ends;
 	char* tmpc = tmp.str();
-	String msg = "Table " + *alias + "(" + String(tmpc) + ")" +
-		" does not have attribute " +
-		*nextPath->path;
+	String msg = "Table " + siteNm + "(" + String(tmpc) + ")" +
+		" does not have attribute \"" +
+		*nextPath->path + "\"";
 	delete tmpc;
 	THROW(new Exception(msg), (char *) NULL);
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/02/03 04:11:34  donjerko
+  Catalog management moved to DTE
+
   Revision 1.13  1996/12/27 16:51:50  kmurli
   Changed my.yacc to not put non-join tables in the joinLIst
 
@@ -76,7 +79,7 @@ extern char* queryString;
 	List<ConstantSelection*>* constList;
 	List<TableAlias*>* tableList;
 	TableAlias* tabAlias;
-	List<String*>* tableName;
+	List<String*>* listOfStrings;
 }
 %token <integer> INT
 %token <real> DOUBLE
@@ -85,10 +88,12 @@ extern char* queryString;
 %token AS
 %token WHERE
 %token SEQUENCEBY 
-%token GROUPBY 
+%token GROUP 
+%token BY 
 %token JOINNEXT 
 %token JOINPREV 
 %token CREATE
+%token DROP
 %token INDEX
 %token ON
 %token OVER 
@@ -98,6 +103,7 @@ extern char* queryString;
 %token VALUES
 %token DELETE
 %token SCHEMA
+%token ADD
 %token <string> STRING_CONST
 %left '.'
 %left OR
@@ -125,13 +131,22 @@ extern char* queryString;
 /* %type <string> optString */
 %type <string> optSequenceByClause
 %type <string> index_name
-%type <tableName> table_name
+%type <listOfStrings> table_name
+%type <string> optIndType
+%type <listOfStrings> keyAttrs
+%type <listOfStrings> optIndAdd 
+%type <listOfStrings> listOfStrings 
 %%
 input : query
 	| definition
 	;
-definition: CREATE INDEX index_name ON table_name '(' listOfSelections ')' {
-		parseTree = new IndexParse($3, $5, $7, namesToResolve);
+definition: CREATE optIndType INDEX index_name ON table_name 
+	'(' keyAttrs ')' optIndAdd {
+		parseTree = new IndexParse($2, $4, $6, $8, $10);
+		YYACCEPT;
+	}
+	| DROP INDEX table_name index_name {
+		parseTree = new DropIndexParse($3, $4);
 		YYACCEPT;
 	}
 	| INSERT INTO table_name VALUES '(' listOfConstants ')' {
@@ -145,6 +160,22 @@ definition: CREATE INDEX index_name ON table_name '(' listOfSelections ')' {
 	| SCHEMA table_name {
 		parseTree = new SchemaParse($2);
 		YYACCEPT;
+	}
+	;
+keyAttrs : listOfStrings
+	;
+optIndType: STRING {
+		$$ = $1;
+	}
+	| {
+		$$ = NULL;
+	}
+	;
+optIndAdd: ADD '(' listOfStrings ')' {
+		$$ = $3;
+	}
+	| {
+		$$ = new List<String*>;
 	}
 	;
 constant :
@@ -207,6 +238,18 @@ listOfConstants : listOfConstants ',' constant {
 		$$->append($1);
 	}
      ;
+listOfStrings : listOfStrings ',' STRING {
+		$1->append($3);
+		$$ = $1;
+	}
+	| STRING {
+		$$ = new List<String*>;
+		$$->append($1);
+	}
+	| {
+		$$ = new List<String*>;
+	}
+     ;
 listOfTables : 
 		listOfTables ',' JoinList{
 		$1->addList($3);
@@ -247,8 +290,8 @@ optSequenceByClause :SEQUENCEBY STRING optWithClause{
 	}
 	;
 
-optGroupByClause: GROUPBY listOfSelections{
-		$$ = $2;
+optGroupByClause: GROUP BY listOfSelections{
+		$$ = $3;
 	}
 	|{
 		$$ = new List<BaseSelection*>;
@@ -287,11 +330,13 @@ selection :
 	STRING '.' expression {
 		$$ = new PrimeSelection($1, $3);
 	}
+	/*
 	| STRING {
 		String* dummy = new String("");
 		namesToResolve->append(dummy); 
 		$$ = new PrimeSelection(dummy, new Path($1, NULL));
 	}
+	*/
 	/*
 	| STRING '(' selection ')' optOverClause {
 		String* dummy = new String;

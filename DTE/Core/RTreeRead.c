@@ -15,7 +15,7 @@ void RTreeIndex::initialize(){
 		}
 	}
 	page_id_t* Root = new page_id_t;
-	Root->pid = pageId;
+	Root->pid = indexDesc->rootPg;
 	String typeEncS;
 	for(int i = 0; i < numFlds; i++){
 		typeEncS += rTreeEncode(typeIDs[i]);
@@ -161,7 +161,7 @@ istream& RTreeIndex::read(istream& catalogStr){	// throws exception
 			THROW(new Exception(msg), catalogStr);
 		}
 	}
-	catalogStr >> pageId;
+//	catalogStr >> pageId;
 	if(!catalogStr){
 		String msg = "PageId expected in RTree index";
 		THROW(new Exception(msg), catalogStr);

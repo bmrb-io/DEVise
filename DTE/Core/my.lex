@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/02/03 04:11:34  donjerko
+  Catalog management moved to DTE
+
   Revision 1.9  1996/12/27 04:38:00  kmurli
   Nodified joins.h to remove erros in joinprev in case of more than one table
 
@@ -79,7 +82,8 @@ LessGreat    ">="|">"|"<="|"<"
 [Aa][Ss]				{return AS;}
 [Ww][Hh][Ee][Rr][Ee]        {return WHERE;}
 [Ss][eE][qQ][uU][Ee][Nn][cC][eE][bB][yY]  {return SEQUENCEBY;}
-[Gg][Rr][Oo][uU][Pp][bB][yY]  {return GROUPBY;}
+[Gg][Rr][Oo][uU][Pp]  {return GROUP;}
+[Bb][Yy]			  {return BY;}
 [Jj][Oo][Ii][Nn][Pp][Rr][Ee][Vv]  {return JOINPREV;}
 [Jj][Oo][Ii][Nn][Nn][Ee][Xx][Tt]  {return JOINNEXT;}
 [Oo][Vv][Ee][rR]         {return OVER;}
@@ -87,6 +91,7 @@ LessGreat    ">="|">"|"<="|"<"
 [Aa][Nn][Dd]          {return AND;}
 [Oo][Rr]           {return OR;}
 [Cc][Rr][Ee][Aa][Tt][Ee]		{return CREATE;}
+[Dd][Rr][Oo][Pp]			{return DROP;}
 [Ii][Nn][Dd][Ee][Xx]		{return INDEX;}
 [Oo][Nn]				{return ON;}
 [Ii][Nn][Ss][Ee][Rr][Tt]		{return INSERT;}
@@ -94,6 +99,7 @@ LessGreat    ">="|">"|"<="|"<"
 [Ii][Nn][Tt][Oo]			{return INTO;}
 [Dd][Ee][Ll][Ee][Tt][Ee]		{return DELETE;}
 [Ss][Cc][Hh][Ee][Mm][Aa]		{return SCHEMA;}
+[Aa][Dd][Dd]				{return ADD;}
 
 {String}     {yylval.string = new String(yytext); return STRING;}
 {IntLit}     {yylval.integer = atoi(yytext); return INT;}

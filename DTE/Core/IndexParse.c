@@ -15,6 +15,8 @@
 #include "catalog.h"
 #include "listop.h"
 #include "ParseTree.h"
+#include "Utility.h"
+
 #ifdef NO_RTREE
 	#include "RTreeRead.dummy"
 	#include "RTreeCommon.h"
@@ -26,39 +28,44 @@
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)
 
-void IndexParse::resolveNames(){	// throws exception
-	namesToResolve->rewind();
-	String* replacement = indexName;
-	while(!namesToResolve->atEnd()){
-		String* current = namesToResolve->get();
-		*current = *replacement;
-		namesToResolve->step();
-	}
-}
-
 Site* IndexParse::createSite(){
+
 #ifndef NO_RTREE
-	if(!namesToResolve->isEmpty()){
-		TRY(resolveNames(), 0);
+	LOG(logFile << "Creating ");
+	if(standAlone){
+		LOG(logFile << "StandAlone ");
 	}
-	LOG(logFile << "Creating Index " << *indexName;)
+	LOG(logFile << "index " << *indexName;)
 	LOG(logFile << " on ");
 	LOG(tableName->display(logFile));
 	LOG(logFile << " (";)
-	LOG(displayList(logFile, attributeList, ", ");)
-	LOG(logFile << ")" << endl;)
+	LOG(displayList(logFile, keyAttrs, ", ");)
+	LOG(logFile << ")");
+	if(additionalAttrs){
+		LOG(displayList(logFile, additionalAttrs, ", "));
+	}
+	LOG(logFile << endl;)
 
+	String tablename = tableName->toString();
      Catalog* catalog = getRootCatalog();
      assert(catalog);
      TRY(Site* site = catalog->find(tableName), 0);
 
 	assert(site);
-	site->addTable(new TableAlias(tableName, indexName));
+	site->addTable(new TableAlias(tableName, new String(*indexName)));
 
-	List<BaseSelection*>* emptyList = new List<BaseSelection*>;
-	site->filter(attributeList, emptyList);
-	delete emptyList;
-	TRY(checkOrphanInList(attributeList), 0);
+	List<BaseSelection*>* keyList = 
+		createSelectList(*indexName, keyAttrs);
+	List<BaseSelection*>* addList = 
+		createSelectList(*indexName, additionalAttrs);
+	List<BaseSelection*>* attributeList = new List<BaseSelection*>;
+	attributeList->addList(keyList);
+	attributeList->addList(addList);
+	site->filter(attributeList);
+	TRY(checkOrphanInList(attributeList), NULL);
+
+	int numKeyFlds = keyAttrs->cardinality();
+	int numAddFlds = additionalAttrs->cardinality();
 
 	String option = "execute";
 	TRY(site->typify(option), 0);
@@ -67,23 +74,26 @@ Site* IndexParse::createSite(){
 	LOG(site->display(logFile));
 	LOG(logFile << endl);
 
-	String* attrNames = site->getAttNamesOnly();
 	LOG(logFile << "Enumeration:\n";)
 	TRY(site->enumerate(), 0);
 	LOG(site->display(logFile, DETAIL);)
 	LOG(logFile << endl;)
 
 	int numFlds = site->getNumFlds();
+	assert(numFlds == numKeyFlds + numAddFlds);
 	String* types = site->getTypeIDs();
 	String rtreeSchema;
-	for(int i = 0; i < numFlds; i++){
+	for(int i = 0; i < numKeyFlds; i++){
 		rtreeSchema += rTreeEncode(types[i]);
 	}
 
-	ostrstream line1;
-	int recIDSize = sizeof(Offset);	// for now
+	TRY(int recIDSize = packSize(&(types[numKeyFlds]), numAddFlds), NULL);
+	if(!standAlone) {
+		recIDSize += sizeof(Offset);
+	}
 	int points = 1; // set to 0 for rectangles
-	line1 << numFlds << " " << recIDSize << " " << points << " ";
+	ostrstream line1;
+	line1 << numKeyFlds << " " << recIDSize << " " << points << " ";
 	line1 << rtreeSchema;
 	int fillSize  = (line1.pcount() + 1) % 8;	// allign on 8 byte boundary
 	for(int i = 0; i < fillSize; i++){
@@ -97,28 +107,37 @@ Site* IndexParse::createSite(){
 	Tuple* tup;
 	int fixedSize; 
 	int tupSize;
-	Offset offset = site->getOffset();
-	cout << "offset = " << offset << endl;
+	Offset offset;
+	if(!standAlone){
+		TRY(offset = site->getOffset(), NULL);
+		cout << "offset = " << offset << endl;
+	}
      tup = site->getNext();
-	assert(tup); // make sure this is not empty
-	fixedSize = packSize(tup, types, numFlds);
-	char* flatTup = new char[fixedSize];
-	marshal(tup, flatTup, types, numFlds);
-	ind.write(flatTup, fixedSize);
-	ind.write((char*) &offset, sizeof(Offset));
-	offset = site->getOffset();
-	cout << "offset = " << offset << endl;
-     while((tup = site->getNext())){
-		tupSize = packSize(tup, types, numFlds);
-		if(tupSize != fixedSize){
-			assert(0);
-		}
+	char* flatTup = NULL;
+	if(tup){ // make sure this is not empty
+		TRY(fixedSize = packSize(types, numFlds), NULL);
+		flatTup = new char[fixedSize];
 		marshal(tup, flatTup, types, numFlds);
 		ind.write(flatTup, fixedSize);
-		ind.write((char*) &offset, sizeof(Offset));
-		offset = site->getOffset();
-		cout << "offset = " << offset << endl;
-     }
+		if(!standAlone){
+			ind.write((char*) &offset, sizeof(Offset));
+			offset = site->getOffset();
+			cout << "offset = " << offset << endl;
+		}
+		while((tup = site->getNext())){
+			tupSize = packSize(tup, types, numFlds);
+			if(tupSize != fixedSize){
+				assert(0);
+			}
+			marshal(tup, flatTup, types, numFlds);
+			ind.write(flatTup, fixedSize);
+			if(!standAlone){
+				ind.write((char*) &offset, sizeof(Offset));
+				offset = site->getOffset();
+				cout << "offset = " << offset << endl;
+			}
+		}
+	}
 	delete flatTup;
 	ind.close();
 	String convBulk = bulkfile + ".conv";
@@ -140,12 +159,36 @@ Site* IndexParse::createSite(){
 	printf("Created index with root page: %d\n", root1.pid);
 	// note, you MUST keep root page
 
-	RTreeIndex* index = new RTreeIndex(numFlds, types, attrNames, root1.pid);
+	String* keyFlds = new String[numKeyFlds];
+	String* addFlds = new String[numAddFlds];
+	keyAttrs->rewind();
+	for(int i = 0; !keyAttrs->atEnd(); i++, keyAttrs->step()){
+		assert(i < numKeyFlds);
+		keyFlds[i] = *keyAttrs->get();
+	}
+	additionalAttrs->rewind();
+	for(int i = 0; !additionalAttrs->atEnd(); i++, additionalAttrs->step()){
+		assert(i < numAddFlds);
+		addFlds[i] = *additionalAttrs->get();
+	}
+	TypeID* keyTypes = new TypeID[numKeyFlds];
+	TypeID* addTypes = new TypeID[numAddFlds];
+	for(int i = 0; i < numKeyFlds; i++){
+		keyTypes[i] = types[i];
+	}
+	for(int i = 0; i < numAddFlds; i++){
+		addTypes[i] = types[numKeyFlds + i];
+	}
 
-	// to do:
-	// interf->addIndex(index);		// add this index to the catalog
-	catalog->write(catalogName);
+	Tuple* tuple = new Tuple[3];
+	tuple[0] = new IString(tablename.chars());
+	tuple[1] = new IString(indexName);
+	tuple[2] = new IndexDesc(numKeyFlds, keyFlds, numAddFlds, addFlds,
+			!standAlone, root1.pid, keyTypes, addTypes);	
+	TRY(insert(".sysind", tuple), NULL);
+	delete tuple;
 	delete catalog;
+
 #endif
 	return new Site();
 }

@@ -7,6 +7,7 @@
 #include "catalog.h"
 
 Catalog* getRootCatalog();
+// String getIndexCatName();
 
 class ParseTree {
 public:
@@ -49,23 +50,29 @@ public:
 class IndexParse : public ParseTree {
 	String* indexName;
 	TableName* tableName;
-	List<BaseSelection*>* attributeList;
-	List<String*>* namesToResolve;
-	void resolveNames();	// throws exception
+	List<String*>* keyAttrs;
+	List<String*>* additionalAttrs;
+	bool standAlone;
 public:	
 	IndexParse(
+		String* indexType,
 		String* indexName,
 		List<String*>* tableName,
-		List<BaseSelection*>* attributeList,
-		List<String*>* namesToResolve) :
+		List<String*>* keyAttrs,
+		List<String*>* additionalAttrs) :
 		indexName(indexName), tableName(new TableName(tableName)),
-		attributeList(attributeList), namesToResolve(namesToResolve) {}
+		keyAttrs(keyAttrs), additionalAttrs(additionalAttrs) {
+		standAlone = false;
+		if(indexType){
+			standAlone = true;
+		}
+	}
 	virtual Site* createSite();	// throws exception
 	virtual ~IndexParse(){
 		delete indexName;
 		delete tableName;	// destroy too
-		delete attributeList;	// destroy too
-		delete namesToResolve;	// destroy too
+		delete keyAttrs;	// destroy too
+		delete additionalAttrs;	// destroy too
 	}
 };
 
@@ -99,6 +106,19 @@ public:
 	virtual ~DeleteParse(){
 		delete tableName;	// destroy too
 		delete predicate;	// destroy too
+	}
+};
+
+class DropIndexParse : public ParseTree {
+	TableName* tableName;
+	String* indexName;
+public:
+	DropIndexParse(List<String*>* tableName, String* indexName) :
+		tableName(new TableName(tableName)), indexName(indexName) {}
+	virtual Site* createSite();	// throws exception
+	virtual ~DropIndexParse(){
+		delete tableName;	// destroy too
+		delete indexName;
 	}
 };
 

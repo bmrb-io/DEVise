@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/02/03 04:11:36  donjerko
+  Catalog management moved to DTE
+
   Revision 1.6  1996/12/21 22:21:51  donjerko
   Added hierarchical namespace.
 
@@ -31,6 +34,8 @@
 #include <ctype.h>
 #include "site.h"
 #include "Iterator.h"
+#include "catalog.h"
+#include "ParseTree.h" 	// for getRootCatalog
 #ifdef NO_RTREE
      #include "RTreeRead.dummy"
 #else
@@ -50,6 +55,19 @@ List<BaseSelection*>* createSelectList(String nm, Iterator* iterator){
 		Path* path = new Path(&attNms[i], NULL);
 		retVal->append(new 
 			PrimeSelection(new String(nm), path, types[i], sizes[i], i));
+	}
+	return retVal;
+}
+
+List<BaseSelection*>* createSelectList(String table, List<String*>* attNms){
+	List<BaseSelection*>* retVal = new List<BaseSelection*>;
+	if(!attNms){
+		return retVal;
+	}
+	for(attNms->rewind(); !attNms->atEnd(); attNms->step()){
+		Path* path = new Path(new String(*attNms->get()), NULL);
+		retVal->append(new 
+			PrimeSelection(new String(table), path));
 	}
 	return retVal;
 }
@@ -104,24 +122,27 @@ void LocalTable::typify(String option){	// Throws exception
 }
 
 void Site::filter(List<BaseSelection*>* select, List<BaseSelection*>* where){
-	assert(where);
 	filterList(select, this);
-	filterList(where, this);
-	where->rewind();
-	while(!where->atEnd()){
-		BaseSelection* currPred = where->get();
-		if(currPred->exclusive(this)){
-			where->remove();
-			myWhere->append(currPred->selectionF());
-		}
-		else{
-			where->step();
+	if(where){
+		filterList(where, this);
+		where->rewind();
+		while(!where->atEnd()){
+			BaseSelection* currPred = where->get();
+			if(currPred->exclusive(this)){
+				where->remove();
+				myWhere->append(currPred->selectionF());
+			}
+			else{
+				where->step();
+			}
 		}
 	}
 	if(select != NULL){
 		mySelect = new List<BaseSelection*>;
 		collectFrom(select, this, mySelect);
-		collectFrom(where, this, mySelect);
+		if(where){
+			collectFrom(where, this, mySelect);
+		}
 	}
 }
 
@@ -371,17 +392,44 @@ void LocalTable::setStats(){
 	stats = new Stats(numFlds, sizes, cardinality);
 }
 
+Site* findIndexFor(String tableStr){	// throws
+	Catalog* catalog = getRootCatalog();
+	assert(catalog);
+	TableName* tableName = new TableName(".sysind");
+	TRY(Interface* interf = catalog->findInterface(tableName), NULL);
+	delete catalog;
+	TRY(Site* site = interf->getSite(), NULL);
+	delete interf;
+	BaseSelection* name = new PrimeSelection("t", "table");
+	BaseSelection* value = new ConstantSelection(
+		"string", new IString(tableStr.chars()));
+	BaseSelection* predicate = new Operator("=", name, value);
+	site->addPredicate(predicate);
+	site->addTable(new TableAlias(".sysind", "t"));
+	TRY(site->typify("execute"), NULL);
+	TRY(site->enumerate(), NULL);
+	site->initialize();
+	return site;
+}
+
 List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 	List<Site*>* retVal = new List<Site*>;
-	indexes.rewind();
 	int totalNumPreds = myWhere->cardinality();
-	while(!indexes.atEnd()){
-		RTreeIndex* currInd = indexes.get();
-		int numIndFlds = currInd->getNumFlds();
-		String* indAttrNms = currInd->getAttributeNames();
+	assert(myFrom);
+	assert(myFrom->cardinality() == 1);
+	String tableNm = getFullNm();
+	TRY(Site* indexForTable = findIndexFor(tableNm), NULL);
+	indexForTable->initialize();
+	Tuple* tup;
+	while((tup = indexForTable->getNext())){
+		IndexDesc* indexDesc = (IndexDesc*) tup[2];
+		cout << "Index Desc for " << tableNm << ": ";
+		indexDesc->display(cout);
+		cout << endl;
 
-		// This is the point where to get real aternatives
-
+		int totNumIndFlds = indexDesc->getTotNumFlds();
+		String* allAttrNms = indexDesc->getAllAttrNms();
+		RTreeIndex* currInd = new RTreeIndex(indexDesc);
 		myWhere->rewind();
 		int usablePredCnt = 0;
 		List<BaseSelection*> indexOnlyPreds;
@@ -390,7 +438,7 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 			if(currInd->canUse(currPred)){
 				usablePredCnt++;
 			}
-			if(currPred->exclusive(indAttrNms, numIndFlds)){
+			if(currPred->exclusive(allAttrNms, totNumIndFlds)){
 				indexOnlyPreds.append(currPred);
 			}
 			myWhere->step();
@@ -398,7 +446,7 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 
 		int indexOnlyPredCnt = indexOnlyPreds.cardinality();
 		Site* newAlt = NULL;
-		bool selectInc = exclusiveList(mySelect, indAttrNms, numIndFlds);
+		bool selectInc = exclusiveList(mySelect, allAttrNms, totNumIndFlds);
 		cout << "indexOnlyPredCnt = " << indexOnlyPredCnt << endl;
 		cout << "selectInc = " << selectInc << endl;
 		if(indexOnlyPredCnt == totalNumPreds && selectInc){
@@ -409,15 +457,13 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 			cout << "Chose Index only scan" << endl;
 
 		}
-		/*
-		else if(indexOnlyPredCnt > 0){
-
-			// Can use index, insert Filter above index
-
-			Site* filter = new LocalTable(
-
-		}
-		*/
+//		else if(indexOnlyPredCnt > 0){
+//
+//			// Can use index, insert Filter above index
+//
+//			Site* filter = new LocalTable(
+//
+//		}
 		else if(usablePredCnt > 0){
 
 			// Can use index, hook it directly to the indexscan
@@ -434,7 +480,6 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 		if(newAlt){
 			retVal->append(newAlt);
 		}
-		indexes.step();
 	}
 	return retVal;
 }
@@ -479,4 +524,26 @@ Tuple* SiteGroup::getNext(){
 	}
 	assert(outerTup);
 	return tupleFromList(mySelect, outerTup, innerTup);
+}
+
+void SiteGroup::typify(String option){	// Throws exception
+	
+	List<Site*>* tmpL = new List<Site*>;
+	tmpL->append(site1);
+	tmpL->append(site2);
+	if(mySelect == NULL){
+		mySelect = createSelectList(name, iterator);
+	}
+	else{
+		TRY(typifyList(mySelect, tmpL), );
+	}
+	numFlds = mySelect->cardinality();
+	TRY(typifyList(myWhere, tmpL), );
+	double selectivity = listSelectivity(myWhere);
+	int card1 = site1->getStats()->cardinality;
+	int card2 = site2->getStats()->cardinality;
+	int cardinality = int(selectivity * card1 * card2);
+	int* sizes = sizesFromList(mySelect);
+	stats = new Stats(numFlds, sizes, cardinality);
+	TRY(boolCheckList(myWhere), );
 }

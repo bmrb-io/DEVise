@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/02/03 04:11:32  donjerko
+  Catalog management moved to DTE
+
   Revision 1.5  1996/12/21 22:21:46  donjerko
   Added hierarchical namespace.
 
@@ -55,7 +58,6 @@ public:
 		attributeNames(NULL),
 		readPtrs(NULL), order(NULL), stats(NULL) {}
 	virtual ~StandardRead(){
-		assert(in);
 		delete in;
 		delete out;
 		delete [] typeIDs;
@@ -78,6 +80,13 @@ public:
 		}
 		return retVal;
 	}
+	virtual WritePtr* getWritePtrs(){	// throws
+          WritePtr* writePtrs = new WritePtr[numFlds];
+          for(int i = 0; i < numFlds; i++){
+               TRY(writePtrs[i] = getWritePtr(typeIDs[i]), NULL);
+          }
+          return writePtrs;
+	}
 	virtual String * getOrderingAttrib(){
 		return order;
 	}
@@ -92,7 +101,7 @@ public:
           for(int i = 0; i < numFlds; i++){
 			TRY(tuple[i] = (readPtrs[i])(*in), NULL);
 		}
-		if(*in){
+		if(in->good()){
 			return tuple;
 		}
 		else{

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/02/03 04:11:37  donjerko
+  Catalog management moved to DTE
+
   Revision 1.11  1996/12/26 03:42:02  kmurli
   MOdified to make joinprev work right
 
@@ -50,6 +53,8 @@
 
 List<BaseSelection*>* createSelectList(String nm, Iterator* iterator);
 List<BaseSelection*>* createSelectList(Iterator* iterator);
+List<BaseSelection*>* createSelectList(String table, List<String*>* attNms);
+// copies over the attNms
 
 istream* contactURL(String url,
      const String* options, const String* values, int count);
@@ -62,16 +67,17 @@ protected:
 	String name;
 	Iterator* iterator;
 	int numFlds;
-	List<String*>* tables;
+	String tables;
 	List<BaseSelection*>* mySelect;
 	List<TableAlias*>* myFrom;
 	List<BaseSelection*>* myWhere;
 	friend ostream& operator<<(ostream& out, Site* site);
 	Stats* stats;
+	String fullNm;		// full table name used to retreive index;
 public:
 	Site(String nm = "") : name(nm), iterator(NULL) {
 		numFlds = 0;
-		tables = new List<String*>;
+		tables = "";
 		mySelect = NULL;
 		myFrom = new List<TableAlias*>;
 		myWhere = new List<BaseSelection*>;
@@ -79,21 +85,40 @@ public:
 	}
 	virtual ~Site(){
 		delete iterator;
-		delete tables;
 		delete mySelect;	// delete only list
 		delete myFrom;
 		delete myWhere;	// delete everything
 	//	delete stats;	     // fix this
 	}
 	virtual void addTable(TableAlias* tabName){
+		String sep = "+";
 		myFrom->append(tabName);
 		String* alias = tabName->getAlias();
-		if(alias){
-			tables->append(alias);
+		assert(alias);
+		if(tables.empty()){
+			tables = *alias;
+			return;
 		}
-		else{
-			assert(0);
-			// tables->append(tabName->table);
+		int numSeps = tables.freq(sep);
+		String res[numSeps + 1];
+		int numSplit = split(tables, res, numSeps + 1, sep);
+		assert(numSplit == numSeps + 1);
+		tables = "";
+		bool inserted = false;
+		for(int i = 0; i < numSplit;){
+			if(res[i] < *alias || inserted){
+				tables += res[i++];
+			}
+			else{
+				inserted = true;
+				tables += *alias;
+			}
+			if(i < numSplit){
+				tables += sep;
+			}
+		}
+		if(!inserted){
+			tables += sep + *alias;
 		}
 	}
 	// Returns the name of the ordering attribute using the
@@ -105,19 +130,13 @@ public:
 			return NULL;
 	}
 	bool have(String* tabName){
-		tables->rewind();
-		while(!tables->atEnd()){
-			if(*tables->get() == *tabName){
-				return true;
-			}
-			tables->step();
-		}
-		return false;
+		return (tables.contains(*tabName) > 0);
 	}
 	virtual bool have(Site* siteGroup){
 		return this == siteGroup;
 	}
-	void filter(List<BaseSelection*>* select, List<BaseSelection*>* where);
+	void filter(List<BaseSelection*>* select, 
+		List<BaseSelection*>* where = NULL);
 	virtual void display(ostream& out, int detail = 0);
 	String getName(){
 		return name;
@@ -195,6 +214,15 @@ public:
 	}
 	virtual void insert(Tuple* tuple){
 	}
+	virtual void addPredicate(BaseSelection* predicate){
+		myWhere->append(predicate);
+	}
+	void setFullNm(String nm){
+		fullNm = nm;
+	}
+	String getFullNm(){
+		return fullNm;
+	}
 };
 
 class DirectSite : public Site {
@@ -211,6 +239,19 @@ public:
 		mySelect = createSelectList(nm, iterator);
 	}
 };
+
+/*
+class IndexForTable : public Site {
+public:
+	IndexForTable(String tableNm) : Site() {
+		
+		iterator = new StandardRead
+	}
+	virtual Tuple* getNext(){
+		return NULL;
+	}
+};
+*/
 
 class LocalTable : public Site {
 	List<RTreeIndex*> indexes;
@@ -253,13 +294,9 @@ public:
 		assert(myFrom->isEmpty());
 		myFrom->append(tabName);
 		String* alias = tabName->getAlias();
-		if(alias){
-			tables->append(alias);
-			name = *alias;
-		}
-		else{
-			assert(0);
-		}
+		assert(alias);
+		assert(tables.empty());
+		tables = name = *alias;
 	}
 	virtual void enumerate(){
 		assert(directSite);
@@ -461,27 +498,7 @@ public:
 	virtual int getNumFlds(){
 		return mySelect->cardinality();
 	}
-	virtual void typify(String option){	// Throws exception
-		
-		List<Site*>* tmpL = new List<Site*>;
-		tmpL->append(site1);
-		tmpL->append(site2);
-		if(mySelect == NULL){
-			mySelect = createSelectList(name, iterator);
-		}
-		else{
-			TRY(typifyList(mySelect, tmpL), );
-		}
-		numFlds = mySelect->cardinality();
-          TRY(typifyList(myWhere, tmpL), );
-		double selectivity = listSelectivity(myWhere);
-		int card1 = site1->getStats()->cardinality;
-		int card2 = site2->getStats()->cardinality;
-		int cardinality = int(selectivity * card1 * card2);
-		int* sizes = sizesFromList(mySelect);
-		stats = new Stats(numFlds, sizes, cardinality);
-		TRY(boolCheckList(myWhere), );
-     }
+	virtual void typify(String option);	// Throws exception
 };
 
 #endif

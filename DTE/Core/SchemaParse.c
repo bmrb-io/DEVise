@@ -13,6 +13,20 @@ Catalog* getRootCatalog(){
 	return new Catalog(catalogName);
 }
 
+/*
+String getIndexCatName(){
+	String catalogName;
+	char* dev_schema = getenv("DEVISE_SCHEMA");
+	if(dev_schema){
+		catalogName = String(dev_schema) + "/index.dte";
+	}
+	else {
+		catalogName = "./index.dte";
+	}
+	return catalogName;	
+}
+*/
+
 class SchemaSite : public Site {
 	Schema* schema;	
 	bool done;

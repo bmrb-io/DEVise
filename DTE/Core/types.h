@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/02/03 04:11:38  donjerko
+  Catalog management moved to DTE
+
   Revision 1.8  1996/12/24 21:00:54  kmurli
   Included FunctionRead to support joinprev and joinnext
 
@@ -115,6 +118,8 @@ typedef void (*WritePtr)(ostream&, Type*);
 typedef int (*SizePtr)(int, int);
 typedef int (*MemberSizePtr)(int);
 typedef double (*SelectyPtr)(BaseSelection* left, BaseSelection* right);
+ 
+void insert(String tableStr, Tuple* tuple);	// throws exception
 
 int boolSize(int a, int b);
 int sameSize(int a, int b);
@@ -189,6 +194,7 @@ Type* stringEq(Type* arg1, Type* arg2);
 Type* stringLT(Type* arg1, Type* arg2);
 Type* stringGT(Type* arg1, Type* arg2);
 Type* boolOr(Type* arg1, Type* arg2);
+Type* boolAnd(Type* arg1, Type* arg2);
 Type* boolEq(Type* arg1, Type* arg2);
 Type* boolLT(Type* arg1, Type* arg2);
 
@@ -198,6 +204,7 @@ Type* doubleRead(istream&);
 Type* boolRead(istream&);
 Type* catEntryRead(istream&);
 Type* schemaRead(istream&);
+Type* indexDescRead(istream&);
 
 void intWrite(ostream&, Type*);
 void stringWrite(ostream&, Type*);
@@ -205,6 +212,7 @@ void doubleWrite(ostream&, Type*);
 void boolWrite(ostream&, Type*);
 void catEntryWrite(ostream&, Type*);
 void schemaWrite(ostream&, Type*);
+void indexDescWrite(ostream&, Type*);
 
 class IInt {
      int value;
@@ -326,6 +334,9 @@ public:
 		else if(name == "or"){
 			return new GeneralPtr(boolOr, boolSize, oneOver2);
 		}
+		else if(name == "and"){
+			return new GeneralPtr(boolAnd, boolSize, oneOver2);
+		}
 		else if(name == "="){
 			return new GeneralPtr(boolEq, boolSize, oneOver2);
 		}
@@ -427,6 +438,7 @@ public:
      }
 };
 
+/*
 class IString {
      int length;
 	char* string;
@@ -509,6 +521,76 @@ public:
 		}
 	}
 };
+*/
+
+class IString {
+	char* string;
+public:
+     IString() : string(NULL){}
+	IString(const char* s) {
+		string = strdup(s);
+	}
+     IString(const String* s){
+          string = strdup(s->chars());
+     }
+	~IString(){
+		delete string;
+	}
+	void setValue(char *s){
+		if (s)
+			string = strdup(s);
+		else
+			string = NULL;
+	}
+	char* getValue(){
+		return string;
+	}
+	IString(IString& str){
+		string = strdup(str.string);
+	}
+	void display(ostream& out){
+		assert(string);
+		out << addQuotes(string);
+	}
+	IString& operator=(IString& str){
+		string = strdup(str.string);
+		return *this;
+	}
+	int packSize(){
+		return strlen(string) + 1;
+	}
+	void marshal(char* to){
+		strcpy(to, string);
+	}
+	void marshal(char* to, int len){
+		strncpy(to, string, len);
+		to[len - 1] = '\0';
+	}
+	void unmarshal(char* from){
+		strcpy(string, from);
+	}
+	static GeneralPtr* getOperatorPtr(
+		String name, TypeID arg, TypeID& retType){
+		if(arg != "string"){
+			return NULL;
+		}
+		else if(name == "="){
+			retType = "bool";
+			return new GeneralPtr(stringEq, boolSize, oneOver100);
+		}
+		else if(name == "<"){
+			retType = "bool";
+			return new GeneralPtr(stringLT, boolSize, oneOver3);
+		}
+		else if(name == ">"){
+			retType = "bool";
+			return new GeneralPtr(stringGT, boolSize, oneOver3);
+		}
+		else{
+			return NULL;
+		}
+	}
+};
 
 class Site;
 class Interface;
@@ -532,6 +614,83 @@ public:
 	}
 	String getType(){
 		return typeNm;
+	}
+};
+
+class IndexDesc {
+friend class RTreeIndex;
+	int numKeyFlds;
+	String* keyFlds;
+	int numAddFlds;
+	String* addFlds;
+	bool pointer;
+	int rootPg;
+	TypeID* keyTypes;
+	TypeID* addTypes;
+public:
+	IndexDesc(){
+		numKeyFlds = 0;
+		numAddFlds = 0;
+		keyFlds = NULL;
+		addFlds = NULL;
+		keyTypes = NULL;
+		addTypes = NULL;
+	}
+	IndexDesc(int numKeyFlds, String* keyFlds, 
+		int numAddFlds, String* addFlds, 
+		bool pointer, int rootPg,
+		TypeID* keyTypes, TypeID* addTypes) :
+		numKeyFlds(numKeyFlds), keyFlds(keyFlds),
+		numAddFlds(numAddFlds), addFlds(addFlds),
+		pointer(pointer), rootPg(rootPg),
+		keyTypes(keyTypes), addTypes(addTypes){}
+	~IndexDesc(){
+		delete [] keyFlds;
+		delete [] addFlds;
+		delete [] keyTypes;
+		delete [] addTypes;
+	}
+	istream& read(istream& in); // Throws Exception
+	void display(ostream& out);
+	int getNumKeyFlds(){
+		return numKeyFlds;
+	}
+	const String* getKeyFlds(){
+		return keyFlds;
+	}
+	int getNumAddFlds(){
+		return numAddFlds;
+	}
+	const String* getAddFlds(){
+		return addFlds;
+	}
+	int getTotNumFlds(){
+		return numKeyFlds + numAddFlds;
+	}
+	bool isStandAlone(){
+		return !pointer;
+	}
+	String* getAllAttrNms(){
+		int totFlds = getTotNumFlds();
+		String* retVal = new String[totFlds];
+		for(int i = 0; i < numKeyFlds; i++){
+			retVal[i] = keyFlds[i];
+		}
+		for(int i = 0; i < numAddFlds; i++){
+			retVal[i + numKeyFlds] = addFlds[i];
+		}
+		return retVal;
+	}
+	TypeID* getAllTypeIDs(){
+		int totFlds = getTotNumFlds();
+		String* retVal = new TypeID[totFlds];
+		for(int i = 0; i < numKeyFlds; i++){
+			retVal[i] = keyTypes[i];
+		}
+		for(int i = 0; i < numAddFlds; i++){
+			retVal[i + numKeyFlds] = addTypes[i];
+		}
+		return retVal;
 	}
 };
 
@@ -559,6 +718,10 @@ public:
 };
 
 void displayAs(ostream& out, void* adt, String type);
+
+int packSize(String type);    // throws exception
+
+int packSize(const TypeID* types, int numFlds);    // throws exception
 
 int packSize(void* adt, String type);
 

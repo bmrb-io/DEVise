@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/02/03 04:11:33  donjerko
+  Catalog management moved to DTE
+
   Revision 1.7  1996/12/24 21:00:52  kmurli
   Included FunctionRead to support joinprev and joinnext
 
@@ -127,6 +130,18 @@ Site* StandardInterface::getSite(){ // Throws a exception
 
 	delete url;
      return new LocalTable("", unmarshal, &indexes, urlString);	
+}
+
+Inserter* StandardInterface::getInserter(TableName* table){ // Throws 
+	assert(table);
+	assert(table->isEmpty());
+
+	LOG(logFile << "Inserting into " << urlString << endl);
+
+	Inserter* inserter = new Inserter(urlString);
+	TRY(inserter->open(), NULL);
+
+     return inserter;
 }
 
 Schema* StandardInterface::getSchema(TableName* table){

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/02/03 04:11:37  donjerko
+  Catalog management moved to DTE
+
   Revision 1.7  1996/12/24 21:00:54  kmurli
   Included FunctionRead to support joinprev and joinnext
 
@@ -199,6 +202,12 @@ Type* boolOr(Type* arg1, Type* arg2){
      return new IBool(val1 || val2);
 }
 
+Type* boolAnd(Type* arg1, Type* arg2){
+	bool val1 = ((IBool*)arg1)->getValue();
+	bool val2 = ((IBool*)arg2)->getValue();
+     return new IBool(val1 && val2);
+}
+
 Type* boolLT(Type* arg1, Type* arg2){
 	bool val1 = ((IBool*)arg1)->getValue();
 	bool val2 = ((IBool*)arg2)->getValue();
@@ -270,6 +279,12 @@ Type* schemaRead(istream& in){
 	return retVal;
 }
 
+Type* indexDescRead(istream& in){
+	IndexDesc* retVal = new IndexDesc();
+	TRY(retVal->read(in), NULL);
+	return retVal;
+}
+
 void intWrite(ostream& out, Type* adt){
 	assert(adt);
 	((IInt*) adt)->display(out);
@@ -298,6 +313,11 @@ void catEntryWrite(ostream& out, Type* adt){
 void schemaWrite(ostream& out, Type* adt){
 	assert(adt);
 	((Schema*) adt)->display(out);
+}
+
+void indexDescWrite(ostream& out, Type* adt){
+	assert(adt);
+	((IndexDesc*) adt)->display(out);
 }
 
 int boolSize(int a, int b){
@@ -359,9 +379,33 @@ int packSize(void* adt, String type){
 	else if(type == "double"){
 		return ((IDouble*) adt)->packSize();
 	}
+	else if(type.matches("string")){
+		int len = atoi(type.from(6).chars());
+		return len;
+	}
 	else{
 		cout << "Don't know how to pack type: " << type << endl;
 		assert(0);
+	}
+}
+
+int packSize(String type){	// throws exception
+	if(type == "int"){
+		return sizeof(IInt);
+	}
+	else if(type == "string"){
+		THROW(new Exception("Type \"string\" is of variable size"), 0);
+	}
+	else if(type == "double"){
+		return sizeof(IDouble);
+	}
+	else if(type.matches("string")){
+		int len = atoi(type.from(6).chars());
+		return len;
+	}
+	else{
+		String msg = "Don't know size of " + type; 
+		THROW(new Exception(msg), 0);
 	}
 }
 
@@ -374,6 +418,10 @@ void marshal(Type* adt, char* to, String type){
 	}
 	else if(type == "double"){
 		((IDouble*) adt)->marshal(to);
+	}
+	else if(type.matches("string")){
+		int len = atoi(type.from(6).chars());
+		((IString*) adt)->marshal(to, len);
 	}
 	else{
 		cout << "Don't know how to marshal type: " << type << endl;
@@ -460,6 +508,9 @@ ReadPtr getReadPtr(TypeID root){
 	else if(root == "schema"){
 		return schemaRead;
 	}
+	else if(root == "indexdesc"){
+		return indexDescRead;
+	}
 	else{
 		cout << "No such type: " << root << endl;
 		assert(0);
@@ -484,6 +535,9 @@ WritePtr getWritePtr(TypeID root){
 	}
 	else if(root == "schema"){
 		return schemaWrite;
+	}
+	else if(root == "indexdesc"){
+		return indexDescWrite;
 	}
 	else{
 		String msg = "No such type: " + root;
@@ -556,6 +610,14 @@ int packSize(Tuple* tup, TypeID* types, int numFlds){
 	int retVal = 0;
 	for(int i = 0; i < numFlds; i++){
 		retVal += packSize(tup[i], types[i]);
+	}
+	return retVal;
+}
+
+int packSize(const TypeID* types, int numFlds){	// throws exception
+	int retVal = 0;
+	for(int i = 0; i < numFlds; i++){
+		TRY(retVal += packSize(types[i]), 0);
 	}
 	return retVal;
 }
@@ -695,6 +757,59 @@ istream& CatEntry::read(istream& in){ // Throws Exception
 		THROW(new Exception(msg), in);
 	}
 	return in;
+}
+
+istream& IndexDesc::read(istream& in){
+	if(!in){
+		return in;
+	}
+	in >> numKeyFlds;
+	if(!in){
+		return in;
+	}
+	keyTypes = new TypeID[numKeyFlds];
+	keyFlds = new String[numKeyFlds];
+	for(int i = 0; i < numKeyFlds; i++){
+		in >> keyTypes[i];
+	}
+	for(int i = 0; i < numKeyFlds; i++){
+		in >> keyFlds[i];
+	}
+	in >> numAddFlds;
+	if(!in){
+		return in;
+	}
+	addFlds = new String[numAddFlds];
+	addTypes = new TypeID[numAddFlds];
+	for(int i = 0; i < numAddFlds; i++){
+		in >> addTypes[i];
+	}
+	for(int i = 0; i < numAddFlds; i++){
+		in >> addFlds[i];
+	}
+	in >> pointer;
+	in >> rootPg;
+	return in;
+}
+
+void IndexDesc::display(ostream& out){
+	assert(out);
+	out << numKeyFlds << " ";
+	for(int i = 0; i < numKeyFlds; i++){
+		out << keyTypes[i] << " ";
+	}
+	for(int i = 0; i < numKeyFlds; i++){
+		out << keyFlds[i] << " ";
+	}
+	out << numAddFlds << " ";
+	for(int i = 0; i < numAddFlds; i++){
+		out << addTypes[i] << " ";
+	}
+	for(int i = 0; i < numAddFlds; i++){
+		out << addFlds[i] << " ";
+	}
+	out << pointer << " ";
+	out << rootPg;
 }
 
 istream& Schema::read(istream& in){ // Throws Exception
