@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.68  2001/04/27 17:09:56  wenger
+#  Made various cleanups to external process dynamic data generation and
+#  added most GUI (still need special GUI for creating the data source);
+#  cleanups included finding and fixing bug 668.
+#
 #  Revision 1.67  2000/07/12 20:49:35  wenger
 #  Added first version of metavisualization session description; changed
 #  DEVise version to 1.7.1.
@@ -704,6 +709,7 @@ proc DoGroupExit {} {
 }
 
 ############################################################
+# Create most of the GUI used to select print options.
 
 proc PrintViewSetUp {} {
     global toprinter printcmd filename printsrc formatsel 
@@ -785,10 +791,9 @@ proc PrintView {} {
     pack .printdef.bot.but -side top
 
     button .printdef.bot.but.ok -text OK -width 10 \
-	    -command {
-	PrintActual $toprinter $printcmd $filename $printsrc $formatsel 0 0 0 0; \
-	destroy .printdef
-        }
+      -command {
+	PrintActual $toprinter $printcmd $filename $printsrc $formatsel 0 0 0 0
+      }
     button .printdef.bot.but.cancel -text Cancel -width 10 \
 	    -command { destroy .printdef }
     pack .printdef.bot.but.ok .printdef.bot.but.cancel -side left -padx 7m
@@ -800,6 +805,8 @@ proc PrintView {} {
 }
 
 ##########################################################################
+# Similar to PrintView, but adds extra stuff to the GUI for specifying
+# map file-related things.
 
 proc PrintWithMap {} {
      global toprinter printcmd filename printsrc formatsel mapfile url defaultUrl
@@ -833,11 +840,10 @@ proc PrintWithMap {} {
      pack .printdef.bot.but -side top
 
      button .printdef.bot.but.ok -text OK -width 10 \
-		-command {
-		PrintActual $toprinter $printcmd $filename $printsrc \
-			      $formatsel 1 $mapfile $url $defaultUrl; \
-		destroy .printdef
-               }
+       -command {
+         PrintActual $toprinter $printcmd $filename $printsrc \
+	   $formatsel 1 $mapfile $url $defaultUrl; \
+       }
      button .printdef.bot.but.cancel -text Cancel -width 10 \
 		-command { destroy .printdef }
      pack .printdef.bot.but.ok .printdef.bot.but.cancel -side left -padx 7m
@@ -846,11 +852,33 @@ proc PrintWithMap {} {
 }
 
 ##########################################################################
+# Do the actual work of printing.
 
 proc PrintActual {toprinter printcmd filename printsrc fmt map mapfile \
 			url defaultUrl} {
     global curView
 
+    #
+    # Make sure we have a window selected if necessary.
+    #
+    if {$printsrc == 0 && $curView == ""} {
+        dialog .printView "Print Selected Window" \
+	  "Please select a window by clicking in it first." "" 0 OK
+	return
+    }
+
+    #
+    # If we've gotten to here, we don't need the Print View dialog
+    # any more.
+    # Note: update here allows DEVise window to get repainted if the
+    # print dialog was on top of it (necessary for printing to GIFs).
+    #
+    destroy .printdef
+    update
+
+    #
+    # Set up the format and template.
+    #
     set format [string tolower $fmt]
 
     set suffix ".ps"
@@ -865,103 +893,104 @@ proc PrintActual {toprinter printcmd filename printsrc fmt map mapfile \
 	set template "$filename.%d$suffix"
     }
 
+    #
+    # Now do the actual printing work.
+    #
     if {$printsrc == 2} {
+	#
 	# Printing entire display...
+	#
 	set file "$filename$suffix"
 	
+	puts "Saving entire display to file $file"
 	if {$map == 1} {
-	   puts "Saving entire display to file $file"
 	   set err [ catch { DEVise saveDisplayImageAndMap $format $file \
 				 $mapfile $url $defaultUrl } ]
-	   if {$err > 0} {
-		dialog .printError "Display Image Save Error" \
-			"An error occurred while saving display image to file." \
-			"" 0 OK
-	        return
-	   }
-	   return
+	} else {
+	    set err [ catch { DEVise saveDisplayImage $format $file } ]
 	}
-	puts "Saving entire display to file $file"
-	set err [ catch { DEVise saveDisplayImage $format $file } ]
-	if {$err > 0} {
+        if {$err > 0} {
 	    dialog .printError "Display Image Save Error" \
-		    "An error occurred while saving display image to file." \
-		    "" 0 OK
-	    return
-	}
-	return
+	      "An error occurred while saving display image to file." \
+	      "" 0 OK
+        }
+
     } elseif {$printsrc == 3} {
+	#
 	# Printing all views...
+	#
 	set err [catch {DEVise saveDisplayView $format $filename} ]
 	if {$err > 0} {
 	     dialog .printError "View Image Save Error" \
 		     "An error occurred while saving display image to file." \
 		     "" 0 OK
-	     return
 	}
-	return
-    }
 
+    } elseif {$printsrc == 0 || $printsrc == 1} {
+        #
+	# Printing a window or windows.
+	#
+        set windowlist ""
 
-    set windowlist ""
+        if {!$printsrc} {
+	    #
+	    # Printing selected window...
+	    #
+	    set windowlist [list [DEVise getViewWin $curView]]
 
-    if {!$printsrc} {
-	# Printing selected window...
-	if {$curView == ""} {
-	    dialog .printView "Print Selected Window" \
-		    "Please select a window by clicking in it first." "" 0 OK
-	    return
-	}
-	set windowlist [list [DEVise getViewWin $curView]]
-
-    } else {
-	# Printing all windows...
-	set viewClasses [ DEVise get view ]
-	foreach viewClass $viewClasses {
-	    set views [ DEVise get view $viewClass ]
-	    foreach v $views {
-		set win [DEVise getViewWin $v]
-		if {$win != "" && [lsearch $windowlist $win] < 0} {
-		    # Check whether this window should be excluded from
-		    # printing.
-		    set printConfig [DEVise winGetPrint $win]
-		    if {![lindex $printConfig 0]} {
-		        lappend windowlist $win
+        } else {
+	    #
+	    # Printing all windows...
+	    #
+	    set viewClasses [ DEVise get view ]
+	    foreach viewClass $viewClasses {
+	        set views [ DEVise get view $viewClass ]
+	        foreach v $views {
+		    set win [DEVise getViewWin $v]
+		    if {$win != "" && [lsearch $windowlist $win] < 0} {
+		        # Check whether this window should be excluded from
+		        # printing.
+		        set printConfig [DEVise winGetPrint $win]
+		        if {![lindex $printConfig 0]} {
+		            lappend windowlist $win
+		        }
 		    }
-		}
+	        }
 	    }
-	}
-    }
-
-    set i 0
-    foreach win $windowlist {
-	set file [format $template $i]
-	if {$filename == "stderr" || $filename == "stdout"} {
-	     set err [ catch { SetGetImage $format $win $filename } ]
-	     if {$err > 0} {
-		 dialog .printError "Window Image transfer Error" \
-			 "An error occurred while saving window images to files." \
-			 "" 0 OK
-		return
-	     }
-	} else {
-	     Puts "Saving window $win to file $file"
-	     set err [ catch { DEVise saveWindowImage $format $win $file } ]
-	     if {$err > 0} {
-	         dialog .printError "Window Image Save Error" \
-		         "An error occurred while saving window images to files." \
-		         "" 0 OK
-	         return
-	     }
-	     if {$toprinter} {
-	         Puts "Printing file $file to printer"
-                 set pcmd [ lindex $printcmd 0 ]
-                 set parg [ lrange $printcmd 1 end ]
-	         exec $pcmd $parg $file
-		 exec rm $file
-	     }
         }
-	incr i
+
+        set i 0
+        foreach win $windowlist {
+	    set file [format $template $i]
+	    if {$filename == "stderr" || $filename == "stdout"} {
+	         set err [ catch { SetGetImage $format $win $filename } ]
+	         if {$err > 0} {
+		     dialog .printError "Window Image transfer Error" \
+		       "An error occurred while saving window images to files." \
+		       "" 0 OK
+		    return
+	         }
+	    } else {
+	         Puts "Saving window $win to file $file"
+	         set err [ catch { DEVise saveWindowImage $format $win $file } ]
+	         if {$err > 0} {
+	             dialog .printError "Window Image Save Error" \
+		       "An error occurred while saving window images to files." \
+		       "" 0 OK
+	             return
+	         }
+	         if {$toprinter} {
+	             Puts "Printing file $file to printer"
+                     set pcmd [ lindex $printcmd 0 ]
+                     set parg [ lrange $printcmd 1 end ]
+	             exec $pcmd $parg $file
+		     exec rm $file
+	         }
+            }
+	    incr i
+        }
+    } else {
+        puts "Illegal printsrc value: $printsrc"
     }
 }
 
