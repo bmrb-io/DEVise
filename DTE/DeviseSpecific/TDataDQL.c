@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1999/01/21 18:05:01  donjerko
+  Strange alignment problem
+
   Revision 1.36  1999/01/21 17:40:37  donjerko
   Fix some compile trouble
 
@@ -208,6 +211,7 @@ TDataDQL::TDataDQL(const string& tableName)
     cout << endl;
     assert(0);
     );
+  _nextToFetch = _totalRecs;    // must run new query at next InitRecs
 }
 
 
@@ -219,8 +223,6 @@ void TDataDQL::runMinMaxQuery(){
 #endif
 
   Timer::StopTimer();
-
-  _nextToFetch = _totalRecs;
 
   delete engine;
   tuple = 0;
@@ -432,6 +434,7 @@ TData::TDHandle TDataDQL::InitGetRecs(Interval *interval, int &bytesleft,
           );
 
     tuple = engine->getFirst();
+    //cerr << "started query: query\ntuple: " << (void*)tuple << endl;
     CATCH(
           cout << "DTE error caused by query: \n";
           cout << "   " << query << endl;
@@ -608,6 +611,9 @@ TD_Status TDataDQL::ReadRec(RecId firstId, int numRecs, void *buf)
   char *ptr = (char *)buf;
   const DteTupleAdt& tupAdt = engine->getAdt();
   for(int i = 0 ; i < numRecs ; i++) {
+    //      if( !tuple ) {
+    //        cerr << "premature end of query! " << rid << ' ' << firstId << ' ' << numRecs << ' ' << _totalRecs << endl;
+    //      }
     assert(tuple && "premature end of query!");
     for(int j = 0; j < _numFlds; j++) {
       const DteAdt& adt = tupAdt.getAdt(j);
