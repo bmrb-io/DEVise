@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.64  2000/07/20 16:26:06  venkatan
+// Mouse Location Display format - is now controlled by printf type
+// format strings specified by the VIEW_DATA_AREA command
+//
 // Revision 1.63  2000/07/20 15:42:59  wenger
 // Fixed bug 603 (GData errors caused by problems in new parser); eliminated
 // old parser.
@@ -821,9 +825,11 @@ public class DEViseCmdDispatcher implements Runnable
 
 		    String format = null;
 
+
 		    if(cmd.length == 6){
 		       format = cmd[5];
 		    } 
+
 
                     jsc.jscreen.updateViewDataRange(viewname, viewaxis, min, max, format);
                 } catch (NumberFormatException e) {

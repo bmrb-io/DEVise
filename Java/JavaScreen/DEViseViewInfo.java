@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.47  2000/07/20 16:26:07  venkatan
+// Mouse Location Display format - is now controlled by printf type
+// format strings specified by the VIEW_DATA_AREA command
+//
 // Revision 1.46  2000/06/12 22:13:57  wenger
 // Cleaned up and commented DEViseServer, JssHandler, DEViseComponentPanel,
 // DEViseTrafficLight, YImageCanvas; added debug output of number of
@@ -323,8 +327,6 @@ class PrintfFormatter {
 	    
 	    width = precision;
 	}
-	
-	
 	
 	// determination of post fix.
 	
@@ -799,13 +801,19 @@ class GFormat{
 	    
 	}
 	else{ 
+	    int ifZeroExtra = 0;
 	    bd1 = bd.setScale(1, BigDecimal.ROUND_HALF_EVEN);
 	    StringTokenizer st = new StringTokenizer(bd1.toString(), ".");
 	    if(st.countTokens() != 2){
 		System.out.println(bd.toString()); 
 		throw new NumberFormatException();
 	    }
-	    int digits =  width - st.nextToken().length();
+	    String temp  = st.nextToken(); 
+	    if( temp.equals("0")){
+	        ifZeroExtra = 1;
+            }
+
+	    int digits =  width - temp.length() + ifZeroExtra;
 	    if( digits < 0 ){ digits = 0;}
 	    bd1 =  bd.setScale(digits, BigDecimal.ROUND_HALF_EVEN); 
 	    result =  bd1.toString(); 

@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.50  2000/07/20 16:53:54  wenger
+// Fixed bug 602 (problem dragging cursors in non-base piled views).
+//
 // Revision 1.49  2000/07/20 16:26:07  venkatan
 // Mouse Location Display format - is now controlled by printf type
 // format strings specified by the VIEW_DATA_AREA command
@@ -126,7 +129,8 @@ public class DEViseView
     public String viewDataXType = null, viewDataYType = null;
 
     //ven
-    public String viewInfoFormat = null;
+    public String viewInfoFormatX = null;
+    public String viewInfoFormatY = null;
     public boolean isViewInfo = true;
 
     public String viewTitle = null;
@@ -446,13 +450,15 @@ public class DEViseView
     }
 
     // Update the data range of the given axis.
-    public void updateDataRange(String axis, float min, float max, String viFormat)
+     void updateDataRange(String axis, float min, float max, String format)
       throws YError
     {
-       viewInfoFormat = viFormat;
+      
         if (axis.equals("X")) {
             viewDataXMin = min;
             viewDataXMax = max;
+            viewInfoFormatX = format;
+	    //  viewInfoFormatX = "-";
 
             dataXStep = 0.0f;
             if (viewDataLoc.width > 0)
@@ -461,6 +467,8 @@ public class DEViseView
         } else if (axis.equals("Y")) {
             viewDataYMin = min;
             viewDataYMax = max;
+            viewInfoFormatY = format;
+            //  viewInfoFormatY = "-";
 
             dataYStep = 0.0f;
             if (viewDataLoc.height > 0)
@@ -477,7 +485,7 @@ public class DEViseView
     // x is relative to this view's canvas
     public String getX(int x)
     {
-	if(!isViewInfo || viewDimension == 3){
+	if(!isViewInfo || viewDimension == 3 || viewInfoFormatX == "-"){
 	   return "";
         }
         Rectangle loc = viewLocInCanvas;
@@ -511,7 +519,7 @@ public class DEViseView
 
             //  return ("" + x0);
 	    // Ven - modified for mouse display format
-	    return DEViseViewInfo.viewParser(x0, viewInfoFormat);
+	    return DEViseViewInfo.viewParser(x0, viewInfoFormatX);
 
         }
     }
@@ -520,7 +528,7 @@ public class DEViseView
     // y is relative to this view's canvas
     public String getY(int y)
     {
-	if(!isViewInfo || viewDimension == 3){
+	if(!isViewInfo || viewDimension == 3 || viewInfoFormatX == "-"){
 	   return "";
         }
         Rectangle loc = viewLocInCanvas;
@@ -553,7 +561,7 @@ public class DEViseView
             }
 
             // return ("" + y0);
-	    return DEViseViewInfo.viewParser(y0, viewInfoFormat);
+	    return DEViseViewInfo.viewParser(y0, viewInfoFormatY);
         }
     }
 
