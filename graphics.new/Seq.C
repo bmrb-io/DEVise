@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/01/12 17:59:03  jussi
+  The extraction routine now periodically updates the Tcl display.
+
   Revision 1.4  1996/01/12 16:24:42  jussi
   Fixed comparison between signed and unsigned integer.
 
@@ -60,7 +63,7 @@ extern "C" char *inet_ntoa(struct in_addr);
 extern "C" struct hostent *gethostbyname(char *);
 #endif
 
-#if !defined(HPUX) && !defined(ALPHA)
+#if !defined(HPUX) && !defined(ALPHA) && !defined(SGI)
 extern "C" {
   extern int socket(int, int, int);
   extern int bind(int, struct sockaddr *, int);
