@@ -1,3 +1,4 @@
+CC = gcc
 CPPFLAGS = $(ARCH_FLAGS) -O -I../../tape -Wall -fexternal-templates
 
 LIBSRC = compustat.c
