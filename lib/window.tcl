@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/04/23 20:36:46  jussi
+#  Replaced Unknown view legend with X.
+#
 #  Revision 1.3  1996/04/15 15:05:39  jussi
 #  Rewrote WindowMerge and WindowSplit code.
 #
@@ -581,13 +584,14 @@ proc RotateMergedView {} {
 	return
     }
 
-    # get the first mapping in the view
-    set map [lindex [DEVise getViewMappings $curView] 0]
-    if {$map == ""} {
+    # no change needed if only one mapping in view
+    set mappings [DEVise getViewMappings $curView]
+    if {[llength $mappings] < 2} {
 	return
     }
 
-    # move mapping to end of mapping list in view
+    # move first mapping to end of mapping list in view
+    set map [lindex $mappings 0]
     set legend [DEVise getMappingLegend $curView $map]
     if {$legend == ""} {
 	set legend "X"
