@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1996/10/08 23:34:38  guangshu
+  Fixed bug found by cs737 class.
+
   Revision 1.34  1996/10/04 17:24:15  wenger
   Moved handling of indices from TDataAscii and TDataBinary to new
   FileIndex class.
@@ -181,7 +184,7 @@ extern "C" int purify_new_inuse();
 #endif
 
 
-//#define DEBUG
+#define DEBUG
 #define LINESIZE 1024
 
 static char result[10 * 1024];
@@ -235,6 +238,10 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       argv[2] = "TileLayout";
     char *name = classDir->CreateWithParams(argv[1], argv[2],
 					    argc - 3, &argv[3]);
+#ifdef DEBUG
+	printf(" Create - return value = %s \n",name);
+#endif
+
     control->SetIdle();
     if (!name)
       control->ReturnVal(API_ACK, "");
@@ -1069,6 +1076,17 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 3) {
+
+	if(!strcmp(argv[0],"importFileDQLType")){
+	  char * name = ParseDQL(argv[1],argv[2]); 
+	  if (!name){
+		strcpy(result,"");
+		control->ReturnVal(API_NAK, result);
+		return -1;
+	  }
+      control->ReturnVal(API_ACK, name);
+      return 1;
+    }
     if (!strcmp(argv[0], "setLinkMaster")) {
       VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
       if (!link) {

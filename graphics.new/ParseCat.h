@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/04/19 17:20:49  wenger
+  Put the GenClassInfo code back in -- this is needed for tape data;
+  started adding the tape-related code back in (it was previously
+  deleted for some reason; I'm not yet done adding it back); added
+  the 'DEVise parseSchema' command and the first parts of the code
+  related to it.
+
   Revision 1.9  1996/04/17 16:34:41  wenger
   Conditionaled out the GenClassInfo class and all related code,
   since the program exits if that code is ever executed.
@@ -55,6 +62,7 @@
 /* Parse a catalog file and register new file type with the system.
    Return name of new file type if successful, else return NULL */
 extern char *ParseCat(char *catFile);
+extern char *ParseDQL(char * schema,char * query);
 
 /* Parse schema(s) from buffer(s) and register new "file type" with
    the system.  Return the name of the new "file type" if successful,

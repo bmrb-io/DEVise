@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.31  1996/10/07 22:53:58  wenger
+  Added more error checking and better error messages in response to
+  some of the problems uncovered by CS 737 students.
+
   Revision 1.30  1996/08/07 20:11:46  wenger
   Fixed various key event-related bugs (see Bugs file); changed
   direction of camera movement for 3D to be more in agreement
@@ -146,6 +150,8 @@
 
 #include "ParseCat.h"
 #include "TDataAsciiInterp.h"
+#include "TDataDQLInterp.h"
+#include "TDataDQL.h"
 #include "TDataBinaryInterp.h"
 #include "Parse.h"
 #include "Control.h"
@@ -912,6 +918,33 @@ error:
 	fprintf(stderr,"error at line %d\n", _line);
 	return NULL;
 }
+/*------------------------------------------------------------------------------
+ * function: ParseCatPhysical
+ * Read and parse a physical schema from a catalog file.
+ * physicalOnly should be true if only a physical schema (not a physical
+ * schema and a logical schema) is being read.
+ */
+char *
+ParseDQL(char * schema,char * query)
+{
+
+    gdir->add_entry(schema);
+	ControlPanel::RegisterClass(new TDataDQLInterpClassInfo(schema,query),true);
+	if (Init::PrintTDataAttr())
+		attrs->Print();
+
+	if (gdir->num_topgrp(schema) == 0)
+	{
+	  Group *newgrp = new Group("__default", NULL, TOPGRP);
+	  gdir->add_topgrp(schema,newgrp);
+      newgrp->insert_item("ID1");
+      newgrp->insert_item("ID2");
+	}
+
+	
+	return "OK";
+
+}
 
 /*------------------------------------------------------------------------------
  * function: ParseCatLogical
@@ -1051,7 +1084,10 @@ ParseCat(char *catFile)
   // Otherwise, simply call ParseCatPhysical(DataSourceFile(catFile), true).
 
   char *	result = NULL;
-
+  
+  // Need to check if the type is DQL - then we dont have to open a file
+  // simply get the data from a DataStreamBuf instead of from the file..
+  
   FILE *fp = fopen(catFile, "r");
   if (!fp)
   {

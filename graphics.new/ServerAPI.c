@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/08/29 22:19:01  guangshu
+  Added function OpendataChannel.
+
   Revision 1.20  1996/08/04 22:58:39  jussi
   Server unregisters a socket connection only when an existing
   connection is broken.
@@ -326,9 +329,13 @@ int ServerAPI::ReadCommand()
   int argc;
   char **argv;
   int result = NetworkReceive(_socketFd, 1, flag, argc, argv);
+  //printf("ServerAPI::ReadCommand: result %d, errno %d, argc %d command %s \n",
+  //      result, errno, argc,argv[0]);
+  printf("Command: command %s \n", argv[0]);
 #ifdef DEBUG
-  printf("ServerAPI::ReadCommand: result %d, errno %d, argc %d\n",
-         result, errno, argc);
+  for(int i = 0;i<argc;i++)
+		printf("Arg %d - %s \n",i,argv[i]);
+	printf("--- \n");
 #endif
 
   if (result < 0) {

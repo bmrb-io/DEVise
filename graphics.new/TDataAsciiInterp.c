@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/10/07 22:54:00  wenger
+  Added more error checking and better error messages in response to
+  some of the problems uncovered by CS 737 students.
+
   Revision 1.22  1996/10/02 15:23:51  wenger
   Improved error handling (modified a number of places in the code to use
   the DevError class).
@@ -137,9 +141,7 @@ TDataAsciiInterpClassInfo::TDataAsciiInterpClassInfo(char *className,
 }
 
 TDataAsciiInterpClassInfo::TDataAsciiInterpClassInfo(char *className,
-						     char *name,
-                                                     char *type,
-                                                     char *param,
+						     char *name, char *type, char *param,
 						     TData *tdata)
 {
   _className = className;

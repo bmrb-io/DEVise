@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/08/02 00:13:49  jussi
+  Improved performance of network code by preparing data to be
+  sent in a buffer and then issuing a single send() call.
+
   Revision 1.10  1996/06/27 16:40:19  jussi
   The networking code now handles interrupted (EINTR) recv() calls
   properly.
@@ -197,10 +201,12 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
 
   NetworkHeader hdr;
   while(1) {
-    int res = recv(fd, (char *)&hdr, sizeof hdr, 0);
-    if (!res)
-      return 0;
-    if (res == (int)sizeof hdr)
+   
+	int res = recv(fd, (char *)&hdr, sizeof hdr, 0);
+	
+	//printf(" Received %d no of bytes \n",res);
+    
+	if (res == (int)sizeof hdr)
       break;
     if (res < 0 && errno == EINTR) {
 #ifdef DBEUG
@@ -309,6 +315,7 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
 
     if (ptr[size - 1]) {
       // argument must be terminated with NULL
+	  printf(" proper vales = %c %c %c \n",ptr[size -2],ptr[size-1],ptr[size ]);
       fprintf(stderr, "Invalid procotol argument.\n");
       return -1;
     }
@@ -410,10 +417,10 @@ int NetworkSend(int fd, u_short flag, u_short bracket, int argc, char **argv)
 
   assert(buff - recBuff == msgsize);
 
-#ifdef DEBUG
+//#ifdef DEBUG
   printf("Sending message: flag %u, nelem %u, size %u\n", flag, argc, tsize);
-#endif
-
+//#endif
+	
   int result = send(fd, recBuff, msgsize, 0);
   if (result < (int)sizeof hdr) {
     perror("send");

@@ -1,4 +1,4 @@
-#  ========================================================================
+
 #  DEVise Data Visualization Software
 #  (c) Copyright 1992-1996
 #  By the DEVise Development Group
@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.45  1996/10/04 17:24:14  wenger
+#  Moved handling of indices from TDataAscii and TDataBinary to new
+#  FileIndex class.
+#
 #  Revision 1.44  1996/09/26 19:10:38  jussi
 #  Renamed ExtBufMgr -> SBufMgr.
 #
@@ -35,7 +39,7 @@
 
 include ../../Makefile.common
 
-CFLAGS =  $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
+CFLAGS =  -gstabs $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
 	-I../../generic -fexternal-templates -Wall -Wno-unused $(OPTFLAG) \
 	-DUNIX
 
@@ -55,14 +59,14 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	Bitmap.c ParseCat.c ItemList.C Group.C GroupDir.C\
 	DispQueryProc.c QueryProc.c QueryProcSimple.c QueryProcFull.c \
 	RecInterp.c TDataAsciiInterp.c TDataBinaryInterp.c TDataMap.c \
-	FileIndex.c \
+	FileIndex.c TDataDQLInterp.c TDataDQL.c TDataMap.c \
 	GDataBin.c TDataAscii.c TDataBinary.c GdataStat.C\
 	TDataRec.c TData2DRec.c PageRange.c  RecFile.c UnixRecFile.c \
 	GDataRangeMap.c GData.c TData.c TDataViewX.c ViewScatter.c \
 	ViewRanges.c ViewGraph.c QPRange.c ParseAPI.C \
 	ViewClassInfo.c MapInterpShape.C DataSource.c DataSourceBuf.c \
 	DataSourceFileStream.c DataSourceTape.c DataSourceFileDesc.c \
-	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C \
+	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C DataSourceDQL.c  \
         StringStorage.C PointStorage.C SBufMgr.C MapIntToInt.C
 	
 QPSrcc = $(filter %.c,$(QPSrc))

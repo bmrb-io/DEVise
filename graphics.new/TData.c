@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/10/07 22:53:59  wenger
+  Added more error checking and better error messages in response to
+  some of the problems uncovered by CS 737 students.
+
   Revision 1.9  1996/08/23 16:56:20  wenger
   First version that allows the use of Dali to display images (more work
   needs to be done on this); changed DevStatus to a class to make it work
@@ -72,6 +76,7 @@
 #include "DataSourceSegment.h"
 #include "DataSourceTape.h"
 #include "DataSourceBuf.h"
+#include "DataSourceDQL.h"
 #include "DataSeg.h"
 #ifndef ATTRPROJ
 #include "ViewGraph.h"
@@ -137,6 +142,11 @@ TData::TData(char* name, char* type, char* param, int recSize)
 	    _data = new DataSourceFileStream(file, NULL);
 	}
     }
+	else if (!strcmp(_type,"DQL")){
+	  // nothin here..
+	  // Instantiate to a data stream..
+	    _data = new DataSourceDQL(param, _name);
+	}
 
 #if 0
     // buffer stuff not working or used
@@ -183,9 +193,9 @@ TData::TData(char* name, char* type, char* param, int recSize)
 
     //TEMPTEMP -- make sure this works right!!
     if ((segOffset != 0) || (segLength != 0)) {
-	_data = new DataSourceSegment(_data, segOffset, segLength);
+	  _data = new DataSourceSegment(_data, segOffset, segLength);
     }
-
+	
     DOASSERT(_data, "Couldn't find/create data source");
     _data->AddRef();
 }
