@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/28 18:52:30  jussi
+  Small fix to remove compiler warning.
+
   Revision 1.6  1995/12/14 21:11:27  jussi
   Replaced 0x%x with 0x%p.
 
@@ -125,7 +128,7 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
     printf("ViewWin 0x%p mapping to root\n", this);
 #endif
     _windowRep = DeviseDisplay::DefaultDisplay()->CreateWindowRep(_name,
-		    x, y, w, h, BlackColor, WhiteColor, NULL,
+		    x, y, w, h, ForegroundColor, BackgroundColor, NULL,
 		    min_width, min_height, relativeMinSize, _winBoundary);
     _windowRep->RegisterCallback(this);
 #ifdef TK_WINDOW_old

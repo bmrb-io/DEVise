@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/01/16 17:06:47  jussi
+  Minor updates.
+
   Revision 1.11  1995/12/29 22:42:12  jussi
   Added support for line connectors.
 
@@ -122,7 +125,8 @@ class View: public ViewWin, private DispatcherCallback,
 	private ControlPanelCallback {
 public:
 	View(char *name, Action *action, VisualFilter &initFilter,
-		Color foreground = BlackColor, Color background = WhiteColor,
+		Color foreground = ForegroundColor,
+	        Color background = BackgroundColor,
 		AxisLabel *xAxis = NULL, AxisLabel *yAxis = NULL,
 		int weight = 1, Boolean boundary = false);
 	~View();

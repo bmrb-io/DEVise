@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/29 22:41:54  jussi
+  Corrected type of GetFgColor() method.
+
   Revision 1.4  1995/12/02 21:25:50  jussi
   Added support for TK_WINDOW i.e. Tk controls surrounding each
   view and window.
@@ -61,9 +64,9 @@ class WindowRep;
 
 class ViewWin: protected WindowRepCallback {
 public:
-	ViewWin(char *name, 
-		Color foreground= BlackColor, Color background= WhiteColor,
-			int weight=1, Boolean boundary = true);
+	ViewWin(char *name, Color foreground = ForegroundColor,
+		Color background = BackgroundColor, int weight = 1,
+		Boolean boundary = true);
 
 	/* iconify window, if top level. Not guaranteed to succeed */
 	void Iconify();

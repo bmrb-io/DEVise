@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/01/17 20:54:11  jussi
+  Added support for additional image export formats.
+
   Revision 1.8  1996/01/11 21:57:00  jussi
   Replaced libc.h with stdlib.h.
 
@@ -197,12 +200,12 @@ public:
   virtual void FillPixelRect(Coord x, Coord y, Coord width, Coord height,
 			     Coord minWidth = 1.0, Coord minHeight = 1.0)= 0;
   virtual void FillPoly(Point *, int n) = 0;
-  virtual void FillPixelPoly(Point *, int n)=0;
+  virtual void FillPixelPoly(Point *, int n) = 0;
   virtual void Arc(Coord x, Coord y, Coord w, Coord h,
-		   Coord startAngle, Coord endAngle)=0;
+		   Coord startAngle, Coord endAngle) = 0;
   /* draw line. end points are in world coord, but the width is in pixels */
-  virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width)=0;
-  virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width)=0;
+  virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width) = 0;
+  virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width) = 0;
 
   /* draw and scaled text to fit inside box, according to alignment.
      If skipLeadingSpaces == TRUE, then the leading spaces are used to
@@ -215,13 +218,13 @@ public:
 			 AlignSouth, AlignSouthEast};
   virtual void Text(char *text, Coord x, Coord y, Coord width, Coord height,
 		    TextAlignment alignment = AlignCenter, 
-		    Boolean skipLeadingSpaces = false)=0;
+		    Boolean skipLeadingSpaces = false) = 0;
   
   /* draw absolute text: one that does not scale the text */
   virtual void AbsoluteText(char *text, Coord x, Coord y, Coord width, 
 			    Coord height,
 			    TextAlignment alignment = AlignCenter, 
-			    Boolean skipLeadingSpaces = false)=0;
+			    Boolean skipLeadingSpaces = false) = 0;
 
   /* Set XOR or normal drawing mode on */
   virtual void SetXorMode() = 0;
@@ -231,11 +234,11 @@ public:
   virtual void Dimensions(unsigned int &width, unsigned int &height ) =0;
   
   /* get window rep origin from parent */
-  virtual void Origin(int &x, int &y)=0;
+  virtual void Origin(int &x, int &y) = 0;
   
   /* Get absolute window rep origin from upper left corner
      of the screen */
-  virtual void AbsoluteOrigin(int &x,int &y)=0;
+  virtual void AbsoluteOrigin(int &x,int &y) = 0;
   
   /* get display of this Window Rep */
   DeviseDisplay *GetDisplay(){ return _display; };
@@ -263,9 +266,9 @@ public:
 
   /* push clipping onto stack. The coords are defined with respect to the
      current trnasformation matrix. */
-  virtual void PushClip(Coord x,Coord y,Coord w,Coord h)=0;
+  virtual void PushClip(Coord x,Coord y,Coord w,Coord h) = 0;
   /* pop the clip region. */
-  virtual void PopClip()=0;
+  virtual void PopClip() = 0;
   
   /* operations on current transformation matrix */
   void Scale(Coord sx, Coord sy){
@@ -318,13 +321,13 @@ public:
   /******* Pixmap ***************/
   /* Generate pixmap for current window. Return NULL
      if insufficient memory. */
-  virtual DevisePixmap *GetPixmap()=0;
+  virtual DevisePixmap *GetPixmap() = 0;
   
   /* Display pixmap in window */
-  virtual void DisplayPixmap(DevisePixmap *pixmap)=0;
+  virtual void DisplayPixmap(DevisePixmap *pixmap) = 0;
   
   /* Free pixmap from memory */
-  virtual void FreePixmap(DevisePixmap *pixmap)=0;
+  virtual void FreePixmap(DevisePixmap *pixmap) = 0;
 
 protected:
 
@@ -382,9 +385,8 @@ protected:
   Color GetLocalColor(Color globalColor);
   
   /* constructor */
-  WindowRep(DeviseDisplay *disp, 
-	    Color fgndColor=WhiteColor, Color bgndColor=BlackColor,
-		Pattern p = Pattern0);
+  WindowRep(DeviseDisplay *disp, Color fgndColor=ForegroundColor,
+	    Color bgndColor=BackgroundColor, Pattern p = Pattern0);
   
 private:
   /* DList<WindowRepCallback *> *_callbackList;*/

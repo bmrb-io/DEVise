@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/28 20:07:34  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.5  1995/12/16 00:47:58  ravim
   Handle window events for popup and resize.
 
@@ -30,6 +33,7 @@
 */
 
 #include <stdio.h>
+
 #include "Transform.h"
 #include "WindowRep.h"
 #include "KGraph.h"
@@ -41,8 +45,7 @@ KGraph::KGraph(DeviseDisplay *dis)
   _dis = dis;
 
   // Create a new window
-  _win = _dis->CreateWindowRep("Kiviat Graph", 0, 0, 0.25, 0.25,
-			       BlackColor, WhiteColor);
+  _win = _dis->CreateWindowRep("Kiviat Graph", 0, 0, 0.25, 0.25);
   _win->RegisterCallback(this);
 
   _naxes = 0;
@@ -67,18 +70,19 @@ void KGraph::Init(char *winname, char *statname)
   _naxes = 0;
   delete [] _pts;
   delete [] _xyarr;
-  if (msgBuf)
-    for(int i = 0; i < _naxes+3; i++)
+  if (msgBuf) {
+    for(int i = 0; i < _naxes + 3; i++)
       delete msgBuf[i];
+  }
   delete [] msgBuf;
 
-  // Clear up any existing display on the windowrep - is this the right way??
+  // Clear up any existing display on the windowrep.
   // We want to reuse the window for displaying a different graph.
   int x0, y0;
   unsigned int w,h;
   _win->Origin(x0, y0);
   _win->Dimensions(w, h);
-  _win->SetFgColor(WhiteColor);
+  _win->SetFgColor(BackgroundColor);
   _win->FillRect(x0, y0, w, h);
 
   // Copy window name
@@ -94,8 +98,8 @@ void KGraph::setAxes(int num)
   int i;
   for(i = 0; i < num; i++)
     _pts[i] = 0.0;
-  msgBuf = new (char *)[_naxes+3];
-  for(i = 0; i < _naxes+3; i++)
+  msgBuf = new (char *)[_naxes + 3];
+  for(i = 0; i < _naxes + 3; i++)
     msgBuf[i] = new char[MAX_POPUP_LEN];
 }
 
@@ -113,8 +117,6 @@ void KGraph::Display()
   DrawCircle();
   // Plot points
   PlotPoints();
-  // Show values - show only on button press now
-//  ShowVal();
   // Draw Axes
   DrawAxes();
 }
@@ -145,7 +147,7 @@ void KGraph::DrawAxes()
   _win->SetFgColor(RedColor);
 
   Coord x, y;
-  int theta = 360/_naxes;
+  int theta = 360 / _naxes;
 
   // Draw axes
   for(int i = 0; i < _naxes; i++)
@@ -173,7 +175,7 @@ void KGraph::PlotPoints()
 
   // Plot all points by drawing lines between them in order
   Coord x1, y1, x2, y2;
-  Rotate(Scale(_pts[_naxes-1], max), (_naxes-1)*theta, x1, y1);
+  Rotate(Scale(_pts[_naxes - 1], max), (_naxes-1) * theta, x1, y1);
 
   for(i = 0; i < _naxes ; i++)
   {
@@ -230,7 +232,7 @@ void KGraph::ShowVal()
 
 Coord KGraph::Scale(Coord xval, Coord max)
 {
-  return (xval*rad)/(2*max);
+  return (xval * rad) / (2 * max);
 }
 
 void KGraph::Rotate(Coord xval, int degree, Coord &retx, Coord &rety)
@@ -243,8 +245,6 @@ void KGraph::HandlePress(WindowRep *w, int xlow, int ylow, int xhigh,
 			 int yhigh, int button)
 {
   printf("HandlePress : button %d\n",button);
-  
-
 }
 
 Boolean KGraph::HandlePopUp(WindowRep *w, int x, int y, int button, 
@@ -268,5 +268,4 @@ void KGraph::HandleResize(WindowRep *w, int xlow, int ylow, unsigned width,
 			  unsigned height)
 {
   Display();
-
 }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/29 22:40:34  jussi
+  Changed default foreground color to black instead of white.
+
   Revision 1.3  1995/12/28 20:07:48  jussi
   Small fixes to remove compiler warnings.
 
@@ -53,7 +56,7 @@ ViewXInfo::ViewXInfo()
 {
   _name = NULL;
   _view = NULL;
-  _bgColorName = "white";
+  _bgColorName = NULL;
 }
 
 ViewXInfo::ViewXInfo(char *name, char *bgColorName, TDataViewX *view)
@@ -119,15 +122,8 @@ ClassInfo *ViewXInfo::CreateWithParams(int argc, char **argv)
   filter.flag = VISUAL_LOC;
   
   char *name = CopyString(argv[0]);
-  Color bgColor;
-  char *bgName;
-  if (!strcmp(argv[5], "white")) {
-    bgColor = WhiteColor;
-    bgName = "white";
-  } else {
-    bgName = CopyString(argv[5]);
-    bgColor = ColorMgr::AllocColor(bgName);
-  }
+  char *bgName = CopyString(argv[5]);
+  Color bgColor = ColorMgr::AllocColor(bgName);
 
   TDataViewX *view = new TDataViewX(name, filter, GetQueryProc(), 
 				    BlackColor, bgColor,
@@ -158,7 +154,7 @@ void ViewXInfo::CreateParams(int &argc, char **&argv)
 
   VisualFilter *filter = _view->GetVisualFilter();
   
-  if (_view->GetXAxisAttrType() == DateAttr){
+  if (_view->GetXAxisAttrType() == DateAttr) {
     sprintf(buf2, "%s", DateString(filter->xLow));
     sprintf(buf3, "%s", DateString(filter->xHigh));
   } else {
@@ -181,7 +177,7 @@ ViewScatterInfo::ViewScatterInfo()
 {
   _name = NULL;
   _view = NULL;
-  _bgName = "white";
+  _bgName = NULL;
 }
 
 ViewScatterInfo::ViewScatterInfo(char *name, char *bgName,
@@ -243,20 +239,10 @@ ClassInfo *ViewScatterInfo::CreateWithParams(int argc, char **argv)
   (void)ParseFloatDate(argv[4], filter.yHigh);
   filter.flag = VISUAL_LOC;
   
-  char buf[80];
-  static sel_id = 0;
-  
-  sprintf(buf, "sel_%d", sel_id++);
   char *name = CopyString(argv[0]);
-  Color bgColor;
-  char *bgName;
-  if (!strcmp(argv[1], "white")) {
-    bgName = "white";
-    bgColor = WhiteColor;
-  } else {
-    bgName = CopyString(argv[5]);
-    bgColor = ColorMgr::AllocColor(bgName);
-  }
+  char *bgName = CopyString(argv[5]);
+  Color bgColor = ColorMgr::AllocColor(bgName);
+
   ViewScatter *view = new ViewScatter(name, filter, GetQueryProc(), 
 				      BlackColor, bgColor, NULL, NULL, NULL);
   return new ViewScatterInfo(name, bgName, view);
@@ -278,20 +264,17 @@ void ViewScatterInfo::CreateParams(int &argc, char **&argv)
 {
   argc = 6;
   argv = arg;
+
   arg[0] = _name;
   VisualFilter *filter = _view->GetVisualFilter();
-  
   arg[1] = buf2;
   sprintf(buf2, "%f", filter->xLow);
-  
   arg[2] = buf3;
   sprintf(buf3, "%f", filter->xHigh);
-  
   arg[3] = buf4;
   sprintf(buf4, "%f", filter->yLow);
-  
   arg[4] = buf5;
   sprintf(buf5, "%f", filter->yHigh);
-  
+
   arg[5] = _bgName;
 }

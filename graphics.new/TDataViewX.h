@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/29 22:42:32  jussi
+  Added support for line connectors.
+
   Revision 1.5  1995/12/05 17:07:58  jussi
   Statistics are now part of ViewGraph, the subclass of TDataviewX.
 
@@ -46,7 +49,7 @@ class TDataViewX: public ViewGraph, private QueryCallback,
 public:
 
   TDataViewX(char *name, VisualFilter &initFilter, QueryProc *qp, 
-	     Color fg = BlackColor, Color bg = WhiteColor,
+	     Color fg = ForegroundColor, Color bg = BackgroundColor,
 	     AxisLabel *xAxis = NULL, AxisLabel *yAxis = NULL,
 	     Action *action = NULL);
 	

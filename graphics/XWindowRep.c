@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/01/17 22:40:22  jussi
+  One more refinement.
+
   Revision 1.16  1996/01/17 22:18:32  jussi
   Refined image export support.
 
@@ -101,10 +104,10 @@ XWindowRep:: XWindowRep(Display *display, Window window, XDisplay *DVDisp,
   _gc = XCreateGC(_display, window, 0, NULL);
   _rectGc = XCreateGC(_display, window, 0, NULL); /* for rubberbanding*/
   
-  XSetState(_display,_gc, DVDisp->GetLocalColor(fgndColor),
-	    DVDisp->GetLocalColor(bgndColor),GXcopy,AllPlanes);
+  XSetState(_display, _gc, DVDisp->GetLocalColor(fgndColor),
+	    DVDisp->GetLocalColor(bgndColor), GXcopy, AllPlanes);
   
-  XSetState(_display,_rectGc,AllPlanes, AllPlanes, GXxor,AllPlanes);
+  XSetState(_display, _rectGc, AllPlanes, AllPlanes, GXxor, AllPlanes);
   
   /* init temp storage for storing points */
   _xpoints= new XPoint[20];
@@ -112,7 +115,7 @@ XWindowRep:: XWindowRep(Display *display, Window window, XDisplay *DVDisp,
   
   /* set default pattern to pattern 0: no stipple */
   WindowRep::SetPattern(Pattern0);
-  XSetFillStyle(_display,_gc,FillSolid);
+  XSetFillStyle(_display, _gc, FillSolid);
   
   /* load font */
   XFontStruct *fontStruct = ((XDisplay *)GetDisplay())->GetFontStruct();
@@ -1450,8 +1453,8 @@ void XWindowRep::DoPopup(int x, int y, int button)
   }
   textHeight = charHeight*numMsgs;
   
-  long bgnd = GetLocalColor(WhiteColor);
-  long fgnd = GetLocalColor(BlackColor);
+  long bgnd = GetLocalColor(BackgroundColor);
+  long fgnd = GetLocalColor(ForegroundColor);
 
   /* Create window */
   XSetWindowAttributes attr;
