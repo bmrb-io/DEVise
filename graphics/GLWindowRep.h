@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.17  1999/09/02 17:25:49  wenger
+  Took out the ifdefs around the MARGINS code, since DEVise won't compile
+  without them; removed all of the TK_WINDOW code, and removed various
+  unnecessary includes of tcl.h, etc.
+
   Revision 1.16  1999/07/16 21:35:50  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -507,6 +512,8 @@ private:
 				SymbolAlignment alignment,
 				Coord orientation,
 				GLfloat point_x[4], GLfloat point_y[4]);
+
+  static void SetDaliInfo(const char *serverName, Boolean killServer);
 
   /* current dimensions of window */
 

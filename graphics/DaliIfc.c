@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.15  1999/07/16 21:35:48  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.14  1998/09/10 23:22:25  wenger
   DEVise now launches Tasvir directly, rather than TasvirWithPaths.
 
@@ -127,11 +135,15 @@ static DevStatus ConnectAndSend(const char *daliServer, const char *commandBuf,
   int imageLen, const char *image, char *replyBuf, double timeout);
 static int MyWrite(int fd, unsigned char *buff, int num);
 static int newlinefd(char *s, int fd, int maxc);
-static DevStatus OpenConnection(const char *daliServer, int &fd);
+static DevStatus OpenConnection(const char *daliServer, int &fd,
+  Boolean tryLaunch = true);
 static DevStatus ReadImage(int fd, int numBytes, FILE *printfile);
 static DevStatus SendCommand(int fd, const char *commandBuf, int imageLen,
   const char *image, char *replyBuf, double timeout);
 static DevStatus WaitForReply(char *buf, int fd, int bufSize, double timeout);
+
+DaliIfc::InfoFcn DaliIfc::_infoFcn = NULL;
+static const char *_serverLaunchName = "localhost";
 
 
 /*
@@ -401,7 +413,10 @@ DaliIfc::Reset(const char *daliServer)
 DevStatus
 DaliIfc::Quit(const char *daliServer)
 {
-  DO_DEBUG(printf("DaliIfc::Quit(%s)\n", daliServer));
+#if defined(DEBUG)
+  printf("DaliIfc::Quit(%s)\n", daliServer);
+#endif
+
   DevStatus result = StatusOk;
 
   char replyBuf[DALI_MAX_STR_LENGTH];
@@ -415,10 +430,27 @@ DaliIfc::Quit(const char *daliServer)
  * Attempt to launch a Tasvir server.
  */
 DevStatus
-DaliIfc::LaunchServer(char *&serverName)
+DaliIfc::LaunchServer()
 {
+#if defined(DEBUG)
+  printf("DaliIfc::LaunchServer()\n");
+#endif
+
   DevStatus result = StatusOk;
   const int maxLaunchTries = 2;
+  const char *serverName = _serverLaunchName;
+
+  // See if there's already a Tasvir that we can talk to.
+  int fd;
+  DevStatus tmpResult = OpenConnection(_serverLaunchName, fd, false);
+  if (tmpResult.IsComplete()) {
+#if defined(DEBUG)
+    printf("  Tasvir already running.\n");
+#endif
+    tmpResult += CloseConnection(fd);
+    _infoFcn(serverName, false);
+    return tmpResult;
+  }
 
   if (_launchCount >= maxLaunchTries) {
     printf("Lauching Tasvir server failed %d times; not trying again",
@@ -429,6 +461,9 @@ DaliIfc::LaunchServer(char *&serverName)
     _launchCount++;
 
     printf("Launching Tasvir server\n");
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("Launching Tasvir server");
+#endif
 
     pid_t pid = fork();
 
@@ -451,7 +486,7 @@ DaliIfc::LaunchServer(char *&serverName)
       _exit(1);
     } else {
       /* Parent. */
-      serverName = "localhost";
+      serverName = _serverLaunchName;
       char replyBuf[DALI_MAX_STR_LENGTH];
       int count = 0;
       Boolean done = false;
@@ -474,6 +509,14 @@ DaliIfc::LaunchServer(char *&serverName)
       }
     }
   }
+
+  if (result.IsComplete() && _infoFcn) {
+    _infoFcn(serverName, true);
+  }
+
+#if defined(DEBUG)
+  printf("  serverName = <%s>\n", serverName);
+#endif
 
   return result;
 }
@@ -599,8 +642,12 @@ SendCommand(int fd, const char *commandBuf, int imageLen, const char *image,
  * Open a connection to the Tasvir server.
  */
 static DevStatus
-OpenConnection(const char *daliServer, int &fd)
+OpenConnection(const char *daliServer, int &fd, Boolean tryLaunch)
 {
+#if defined(DEBUG)
+  printf("OpenConnection(%s)\n", daliServer);
+#endif
+
   DevStatus result = StatusOk;
 
 #if defined(DEBUG_LOG)
@@ -621,9 +668,16 @@ OpenConnection(const char *daliServer, int &fd)
     fd = DaliPatron((char *)daliServer, _errBuf);
     if (fd < 0)
     {
-      _connectFailCount++;
-      reportError(_errBuf, errno);
-      result = StatusFailed;
+      if (tryLaunch) {
+        result = DaliIfc::LaunchServer();
+        if (result.IsComplete()) {
+          result += OpenConnection(_serverLaunchName, fd, false);
+        }
+      } else {
+        _connectFailCount++;
+        reportError(_errBuf, errno);
+        result = StatusFailed;
+      }
     }
   }
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.23  1999/09/02 17:25:48  wenger
+  Took out the ifdefs around the MARGINS code, since DEVise won't compile
+  without them; removed all of the TK_WINDOW code, and removed various
+  unnecessary includes of tcl.h, etc.
+
   Revision 1.22  1999/07/16 21:35:50  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -508,22 +513,13 @@ DevStatus GLWindowRep::DaliShowImage(Coord centerX, Coord centerY,
   
   DevStatus result = StatusOk;
   
+  DaliIfc::SetInfoFcn(SetDaliInfo);
   if (_daliServer == NULL) {
-    char *serverName;
-    DevStatus tmpResult =DaliIfc::LaunchServer(serverName);
-    result += tmpResult;
-    if (tmpResult.IsComplete()) {
-      GetDisplay()->SetTasvirServer(serverName);
-      DeviseDisplay::GetPSDisplay()->SetTasvirServer(serverName);
-#if !defined(LIBCS)
-      Init::SetDaliServer(serverName);
-      Init::SetDaliQuit(true);
-#endif
-    }
+    result += DaliIfc::LaunchServer();
   }
   
   if (_daliServer == NULL) {
-    reportError("No Tasvir server specified", devNoSyserr);
+    reportError("No Tasvir server specified or launched", devNoSyserr);
     result = StatusFailed;
   }
   else {
@@ -3666,4 +3662,16 @@ void GLWindowRep::SetCamCursorTransform(const Camera & c)
   }
   glTranslatef(-c.pan_right, 0.0, 0.0);
   glTranslatef(0.0, -c.pan_up, 0.0);
+}
+
+void
+GLWindowRep::SetDaliInfo(const char *serverName, Boolean killServer)
+{
+  DeviseDisplay::DefaultDisplay()->SetTasvirServer(serverName);
+  DeviseDisplay::GetPSDisplay()->SetTasvirServer(serverName);
+
+#if !defined(LIBCS)
+  Init::SetDaliServer(serverName);
+  Init::SetDaliQuit(killServer);
+#endif
 }

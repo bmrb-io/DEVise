@@ -24,6 +24,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/05/08 14:02:38  wenger
+  Got DEVise to compile on Linux again (with dummy OpenGL).
+
   Revision 1.1  1998/03/11 18:25:39  wenger
   Got DEVise 1.5.2 to compile and link on Linux; includes drastically
   reducing include dependencies between csgroup code and the rest of
@@ -35,6 +38,7 @@
 
  */
 
+#include <stdio.h>
 #include <X11/Xlib.h>
 #include "GL/gl.h"
 #include "GL/glx.h"
@@ -249,6 +253,8 @@ XVisualInfo*
 glXChooseVisual(Display *dpy, int screen,
 		int *attribList)
 {
+  fprintf(stderr, "\nDEVise is linked with a dummy OpenGL library.\n");
+  fprintf(stderr, "Do not use the '-gl' command line option.\n\n");
   return NULL;
 }
 

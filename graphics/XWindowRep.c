@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.132  1999/09/02 17:25:54  wenger
+  Took out the ifdefs around the MARGINS code, since DEVise won't compile
+  without them; removed all of the TK_WINDOW code, and removed various
+  unnecessary includes of tcl.h, etc.
+
   Revision 1.131  1999/08/12 16:02:49  wenger
   Implemented "inverse" zoom -- alt-drag zooms out instead of in.
 
@@ -1132,24 +1137,15 @@ XWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
 
   DevStatus result = StatusOk;
 
+  DaliIfc::SetInfoFcn(SetDaliInfo);
   if (_daliServer == NULL)
   {
-    char *serverName;
-    DevStatus tmpResult = DaliIfc::LaunchServer(serverName);
-    result += tmpResult;
-    if (tmpResult.IsComplete()) {
-      GetDisplay()->SetTasvirServer(serverName);
-      DeviseDisplay::GetPSDisplay()->SetTasvirServer(serverName);
-#if !defined(LIBCS)
-      Init::SetDaliServer(serverName);
-      Init::SetDaliQuit(true);
-#endif
-  }
+    result += DaliIfc::LaunchServer();
   }
 
   if (_daliServer == NULL)
   {
-    reportError("No Tasvir server specified", devNoSyserr);
+    reportError("No Tasvir server specified or launched", devNoSyserr);
     result = StatusFailed;
   }
   else
@@ -4321,6 +4317,18 @@ XWindowRep::SetMouseCursor(CursorHit::HitType cursorHit)
   Cursor cursor = XCreateFontCursor(_display, cursorShape);
   XDefineCursor(_display, _win, cursor);
   XFreeCursor(_display, cursor);
+}
+
+void
+XWindowRep::SetDaliInfo(const char *serverName, Boolean killServer)
+{
+  DeviseDisplay::DefaultDisplay()->SetTasvirServer(serverName);
+  DeviseDisplay::GetPSDisplay()->SetTasvirServer(serverName);
+
+#if !defined(LIBCS)
+  Init::SetDaliServer(serverName);
+  Init::SetDaliQuit(killServer);
+#endif
 }
 
 //******************************************************************************

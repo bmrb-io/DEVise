@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.9  1999/07/16 21:35:49  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.8  1998/09/04 17:26:12  wenger
   Got Tasvir images to work in pixmaps (when running the JavaScreen, for
   example) -- fixes bug 385.
@@ -91,7 +99,15 @@ public:
   static DevStatus Reset(const char *daliServer);
   static DevStatus Quit(const char *daliServer);
 
-  static DevStatus LaunchServer(char *&serverName);
+  static DevStatus LaunchServer();
+
+  // Note: a function pointer is used here to avoid introducing more
+  // compilation dependencies with the rest of DEVise.  RKW 1999-09-21.
+  typedef void (*InfoFcn)(const char *serverName, Boolean killServer);
+  static void SetInfoFcn(InfoFcn infoFcn) { _infoFcn = infoFcn; }
+
+private:
+  static InfoFcn _infoFcn;
 };
 
 

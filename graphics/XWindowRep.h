@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.64  1999/09/02 17:25:55  wenger
+  Took out the ifdefs around the MARGINS code, since DEVise won't compile
+  without them; removed all of the TK_WINDOW code, and removed various
+  unnecessary includes of tcl.h, etc.
+
   Revision 1.63  1999/08/05 21:42:42  wenger
   Cursor improvements: cursors can now be dragged in "regular" DEVise;
   cursors are now drawn with a contrasting border for better visibility;
@@ -687,6 +692,7 @@ private:
 				      XPoint *points = NULL);
 
     void SetMouseCursor(CursorHit::HitType cursorHit);
+    static void SetDaliInfo(const char *serverName, Boolean killServer);
 
 	/* current dimensions of window */
 	int _x, _y;
