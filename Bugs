@@ -1135,6 +1135,8 @@ Num Date        Status  Description
 295 02/16/98	OPEN	Connecting multiple clients to a single server no
 			longer works. (rkw)
 
+296 02/16/98	OPEN	Blanks in schema names cause problems. (ag/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

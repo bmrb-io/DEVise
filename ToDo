@@ -482,6 +482,10 @@ Possibly add view name to GData sent to socket or file. (rkw 2/10/98)
 
 Replace EmbeddedTk symbols with Java symbols. (ml/rkw 2/11/98)
 
+Have GUI to rename schemas. (ag/rkw 2/16/98)
+
+Allow log-scale axes. (ag/rkw 2/16/98)
+
 
 COMPLETED
 ---------
@@ -582,6 +586,7 @@ When drilling down, allow showing of longer strings in the output. (ak/rkw
 2/3/97) (Not needed -- was really a schema problem.  rkw 2/14/97)
 
 
+ag = glew@cs.wisc.edu = Andy Glew
 ak = alain@cs.wisc.edu = Alain Kagi
 at = andyt@cs.wisc.edu = Andrew Therber
 bb = wlbland@facstaff.wisc.edu = Bill Bland
