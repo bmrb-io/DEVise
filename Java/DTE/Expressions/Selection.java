@@ -30,7 +30,8 @@ public class Selection implements Expression {
 			return expr;
 		}
 		else{
-			// throw "table " + alias + " does not have attr " + attribute;
+			return null;
+	// throw "table " + alias + " does not have attr " + attribute;
 		}
 	}
 
@@ -46,6 +47,8 @@ public class Selection implements Expression {
 				}
 			}
 		}
+
+		return null;
 		// throw exception, internal error
 	}
 };

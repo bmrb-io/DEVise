@@ -24,3 +24,4 @@ public class Constant implements Expression {
 		return new ExecConst(value);
 	}
 };
+
