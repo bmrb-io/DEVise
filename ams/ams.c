@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1995/12/28 20:20:12  jussi
+  Small fix to remove compiler warning.
+
   Revision 1.8  1995/12/14 19:11:05  jussi
   Further small fixes.
 
@@ -382,21 +385,26 @@ private:
 #ifndef NOTAPE
 class AmsGenClass: public GenClassInfo  {
 public:
-	virtual ClassInfo *Gen(char *source, char *className, AttrList *attrList,
-		int recSize, char *separators, int numSeparators,
-		Boolean isSeparator, char *commentString){
-		if (strcmp(source,"tape") == 0){
-			return new TDataTapeInterpClassInfo(className,attrList,
-				recSize, separators, numSeparators,
-				isSeparator, commentString);
-		}
-
-		fprintf(stderr,"schema source %s not found\n", source);
-	        Exit::DoExit(1);
-
-		// keep compiler happy
-		return 0;
-	}
+  virtual ClassInfo *Gen(char *source, Boolean isAscii, char *className,
+			 AttrList *attrList, int recSize, char *separators,
+			 int numSeparators, Boolean isSeparator,
+			 char *commentString) {
+    if (!strcmp(source,"tape")) {
+      if (isAscii) {
+	return new TDataTapeInterpClassInfo(className, attrList,
+					    recSize, separators, numSeparators,
+					    isSeparator, commentString);
+      } else {
+	fprintf(stderr,"Binary tape source not implemented yet.\n");
+      }
+    }
+    
+    fprintf(stderr,"schema source %s not found\n", source);
+    Exit::DoExit(1);
+    
+    // keep compiler happy
+    return 0;
+  }
 };
 
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/28 22:02:16  jussi
+  Small fix to remove compiler warning.
+
   Revision 1.5  1995/12/14 18:43:17  jussi
   Small fixes to get rid of g++ -Wall warnings.
 
@@ -146,16 +149,21 @@ private:
 
 class ISSMGenClass: public GenClassInfo  {
 public:
-  virtual ClassInfo *Gen(char *source, char *className, AttrList *attrList,
-			 int recSize, char *separators, int numSeparators,
-			 Boolean isSeparator, char *commentString){
-    if (strcmp(source,"tape") == 0){
-      return new TDataTapeInterpClassInfo(className,attrList,
-					  recSize, separators, numSeparators,
-					  isSeparator, commentString);
+  virtual ClassInfo *Gen(char *source, Boolean isAscii, char *className,
+			 AttrList *attrList, int recSize, char *separators,
+			 int numSeparators, Boolean isSeparator,
+			 char *commentString) {
+    if (!strcmp(source, "tape")) {
+      if (isAscii) {
+	return new TDataTapeInterpClassInfo(className, attrList,
+					    recSize, separators, numSeparators,
+					    isSeparator, commentString);
+      } else {
+	fprintf(stderr,"Binary tape source not implemented yet.\n");
+      }
     }
 
-    fprintf(stderr,"schema source %s not found\n", source);
+    fprintf(stderr, "Schema source %s not found.\n", source);
     Exit::DoExit(1);
 
     // keep compiler happy

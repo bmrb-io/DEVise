@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/01/10 18:46:29  jussi
+  Removed unnecessary function prototypes.
+
   Revision 1.6  1995/12/20 07:04:45  ravim
   High and low values of attrs can be specified.
 
@@ -53,10 +56,10 @@ class AttrList;
 class GenClassInfo {
 public:
   /* Generate a new TData interpreter */
-  virtual ClassInfo *Gen(char *source, char *className, AttrList *attrList,
-			 int recSize, char *separators, int numSeparators,
-			 Boolean isSeparator, char *commentString) = 0;
-
+  virtual ClassInfo *Gen(char *source, Boolean isAscii, char *className,
+			 AttrList *attrList, int recSize, char *separators,
+			 int numSeparators, Boolean isSeparator,
+			 char *commentString) = 0;
 };
 
 extern void RegisterGenClassInfo(char *source, GenClassInfo *gen);
