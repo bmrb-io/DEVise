@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.81  1998/04/29 17:53:54  wenger
+  Created new DerivedTable class in preparation for moving the tables
+  from the TAttrLinks to the ViewDatas; found bug 337 (potential big
+  problems) while working on this.
+
   Revision 1.80  1998/04/28 18:03:07  wenger
   Added provision for "logical" and "physical" TDatas to mappings,
   instead of creating new mappings for slave views; other TAttrLink-
@@ -640,7 +645,7 @@ void QueryProcFull::AssociateMappingWithCoordinateTable(TDataMap *map)
         DOASSERT(_coordinateTables[i]->xCmd, "Invalid X command");
         if (strcmp(_coordinateTables[i]->xCmd, imap->GetMappingCmd()->xCmd))
             continue;
-    } else if (!map->IsInterpreted && !smap->IsInterpreted) {
+    } else if (!map->IsInterpreted() && !smap->IsInterpreted()) {
         /*
            Two compiled mappings can use the same coordinate table if
            they are the same mapping.
