@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/11/26 15:44:05  wenger
+  Added features and fixed bugs in PostScript-related parts of the
+  client/server library and the PSWindowRep class; page size can now be
+  set in PSDisplay; did some cleanup of the DeviseDisplay and WindowRep
+  methods (allowed elimination of many typecasts).
+
   Revision 1.9  1996/11/23 00:24:11  wenger
   Incorporated all of the PostScript-related stuff into the client/server
   library; added printing to PostScript to the example client and server;
@@ -292,31 +298,10 @@ Set the geometry of the output page.
 void PSDisplay::SetUserPageGeom(Coord width, Coord height, Coord xMargin,
   Coord yMargin)
 {
-  const double maxOutputWidth = 8.5;
-  const double maxOutputHeight = 11.0;
-
-  if ((width > maxOutputWidth) || (height > maxOutputHeight)) {
-    /* If the page size is requested larger than 8.5 x 11.0, we draw it
-     * that size and then enlarge it with poster. */
-    _userWidth = width;
-    _userHeight = height;
-    _userXMargin = xMargin;
-    _userYMargin = yMargin;
-
-    double xScale = width / maxOutputWidth;
-    double yScale = height / maxOutputHeight;
-    double scale = MAX(xScale, yScale);
-
-    _outputWidth = width / scale;
-    _outputHeight = height / scale;
-    _outputXMargin = xMargin / scale;
-    _outputYMargin = yMargin / scale;
-  } else {
-    _outputWidth = _userWidth = width;
-    _outputHeight = _userHeight = height;
-    _outputXMargin = _userXMargin = xMargin;
-    _outputYMargin = _userYMargin = yMargin;
-  }
+  _outputWidth = _userWidth = width;
+  _outputHeight = _userHeight = height;
+  _outputXMargin = _userXMargin = xMargin;
+  _outputYMargin = _userYMargin = yMargin;
 }
 
 /**************************************************************
