@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/12/11 04:25:42  beyer
+  Shared memory and semaphores are now released properly when devise
+  terminates normally.
+
   Revision 1.6  1996/12/31 18:45:54  jussi
   Improve error handling in case shared memory is not available.
 
@@ -38,14 +42,13 @@
 #include <memory.h>
 
 #include "MemMgr.h"
-#include "Init.h"
 #include "Exit.h"
 
 #define DEBUGLVL 0
 
 MemMgr *MemMgr::_instance = 0;
 
-MemMgr::MemMgr(int numPages, int pageSize, int &status) :
+MemMgr::MemMgr(int numPages, int pageSize, bool sharedMem, int &status) :
 	_numPages(numPages), _tableSize(numPages), _pageSize(pageSize)
 {
     _instance = this;
@@ -53,7 +56,9 @@ MemMgr::MemMgr(int numPages, int pageSize, int &status) :
     _shm = NULL;
     _sem = _free = NULL;
 
-    status = SetupSharedMemory();
+    status = -1;
+    if( sharedMem )
+        status = SetupSharedMemory();
     if (status < 0)
         status = SetupLocalMemory();
     if (status >= 0)
@@ -62,9 +67,6 @@ MemMgr::MemMgr(int numPages, int pageSize, int &status) :
 
 int MemMgr::SetupSharedMemory()
 {
-    if (!Init::UseSharedMem()) {
-      return -1;
-    }
     if (SemaphoreV::numAvailable() < 2) {
         fprintf(stderr,
                 "Unable to use shared memory. Using local memory instead.\n");

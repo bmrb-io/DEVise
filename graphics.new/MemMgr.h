@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/02/07 22:01:13  liping
+  Fixed complile problem
+
   Revision 1.3  1997/02/03 19:45:29  ssl
   1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
   2) ViewLens.[Ch] : new implementation of piled views
@@ -39,7 +42,7 @@
 
 class MemMgr {
   public:
-    MemMgr(int numPages, int pageSize, int &status);
+    MemMgr(int numPages, int pageSize, bool sharedMem, int &status);
     ~MemMgr();
 
     // Page types

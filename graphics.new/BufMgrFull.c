@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/10/10 21:13:39  liping
+  The interface between TData and BufMgr and the interface between BufMgr and
+  QueryProc were changed
+  The new interface carries the information of 1. LowId 2. HighId 3. AttrName
+          4. Granularity in the structure "Range"
+
   Revision 1.24  1997/10/07 17:05:57  liping
   RecId to Coord(double) changes of the BufMgr/QureyProc interface
 
@@ -174,7 +180,7 @@ BufMgrFull::BufMgrFull(int bufSize)
            bufSize / 1048576.0, policy);
 
     int status;
-    _memMgr = new MemMgr(bufPages, _pageSize, status);
+    _memMgr = new MemMgr(bufPages, _pageSize, Init::UseSharedMem(), status);
     DOASSERT(_memMgr && status >= 0, "Cannot create memory manager");
 
     status = _memMgr->SetMaxUsage(MemMgr::Cache, (int)(0.8 * bufPages));
