@@ -12,14 +12,13 @@ x- Build released software:
 x- Test set_up_user
 x- Untar dist.tar into /p/devise/dist (or tar /p/devise/dist and see
   whether it has changed)
-a- Build and release to /p/devise/public deviseb, devisec, devised.
+x- Build and release to /p/devise/public deviseb, devisec, devised.
 a- Generate distribution files
 a- Test distribution files (re-run at least some of the user interface
   tests on each architecure, running Devise untarred from the distribution
   files)
 x- Tag sources (but not html and doc directories) and "thaw" sources
-- Change the Devise version number in the sources
-- Generate "official" sources1.3.0.tar.gz file
+x- Change the Devise version number in the sources
 - Build on SGI
     - Maybe commit SGI-related changes as a CVS branch
 !- Update online help
