@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.77  1996/06/27 22:53:48  jussi
+#	Added XOR color support. Reduced number of shape attributes
+#	in EditMapping from 10 to 4. The additional attributes should
+#	be made editable via a pop-up menu at some later point.
+#
 #	Revision 1.76  1996/06/27 19:11:44  jussi
 #	Removed Block and 3DVector shapes from DEViseShapes list.
 #
@@ -581,10 +586,13 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 .mbar.view.menu.cursorMenu add command -label "Create" -command DoCursorCreate
 .mbar.view.menu.cursorMenu add command -label "Delete" -command DoCursorDelete
 .mbar.view.menu.cursorMenu add separator
-.mbar.view.menu.cursorMenu add command -label "Set source" \
+.mbar.view.menu.cursorMenu add command -label "Set Source" \
 	-command DoSetCursorSrc
-.mbar.view.menu.cursorMenu add command -label "Set destination" \
+.mbar.view.menu.cursorMenu add command -label "Set Destination" \
 	-command DoSetCursorDst
+.mbar.view.menu.cursorMenu add separator
+.mbar.view.menu.cursorMenu add command -label "Set Record Cursor" \
+	-command DoSetRecordCursor
 
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Statistics" -command { DoStat }
@@ -978,6 +986,7 @@ proc DoOpen { asTemplate } {
 	set sessionName $file
     } else {
 	puts "Could not restore session"
+        puts $errorInfo
     }
 }
 
@@ -1188,12 +1197,13 @@ proc GetTDataTemplate {type total num} {
     }
 
     set sname [lindex $sourcedef 0]
-    set source [lindex $sourcedef 1]
+    set param [lindex $sourcedef 1]
+    set stype [lindex $sourcedef 2]
 
     statusWindow .info "Status" \
 	    "Creating an index on $sname.\n\n\
 	    This may take a while."
-    DEVise create tdata $type $source $sname
+    DEVise create tdata $type $stype $sname $param
     catch {destroy .info}
 
     return $sname
