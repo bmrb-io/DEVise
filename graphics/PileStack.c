@@ -26,6 +26,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1999/02/23 15:34:59  wenger
+  Fixed bugs 446 and 465 (problems with cursors in piles); fixed some
+  other pile-related problems.
+
   Revision 1.4  1999/02/22 19:07:33  wenger
   Piling of views with view symbols is not allowed; fixed bug 461 (redrawing
   of piles); fixed bug 464 (toggling axes in a pile); fixed dynamic memory
@@ -400,6 +404,10 @@ PileStack::CanPileOrStack(State state)
         printf("Views containing view symbols cannot be piled.\n");
         result = false;
       }
+      if (((View *)view)->GetNumDimensions() != 2) {
+        printf("Only two-dimensional views can be piled.\n");
+        result = false;
+      }
     }
     GetViewList()->DoneIterator(index);
   }
@@ -530,6 +538,66 @@ PileStack::EnableYAxis(Boolean enable)
     view->YAxisDisplayOnOff(_yAxisOn, false);
   }
   GetViewList()->DoneIterator(index);
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::GoHome
+ * Do home on a pile or stack.
+ */
+void
+PileStack::GoHome(ViewGraph *view)
+{
+#if (DEBUG >= 3)
+  printf("PileStack(%s)::GoHome()\n", _name);
+#endif
+
+  switch (_state) {
+  case PSNormal: // shouldn't really get called in this case
+  case PSStacked:
+  case PSPiledNoLink:
+    view->GoHome(true);
+    break;
+
+  case PSPiledLinked:
+  {
+    // Get home of each view in the pile, save the extremes.
+    double xMin = DBL_MAX;
+    double yMin = DBL_MAX;
+    double xMax = DBL_MIN;
+    double yMax = DBL_MIN;
+
+    int index = GetViewList()->InitIterator();
+    while (GetViewList()->More(index)) {
+      ViewGraph *tmpView = (ViewGraph *)GetViewList()->Next(index);
+      VisualFilter filter;
+      tmpView->GetHome2D(filter);
+      xMin = MIN(xMin, filter.xLow);
+      yMin = MIN(yMin, filter.yLow);
+      xMax = MAX(xMax, filter.xHigh);
+      yMax = MAX(yMax, filter.yHigh);
+    }
+    GetViewList()->DoneIterator(index);
+#if (DEBUG >= 4)
+    printf("Pile filter: (%g, %g), (%g, %g)\n", xMin, yMin, xMax, yMax);
+#endif
+
+    // Set the visual filter of the view that called us (it doesn't really
+    // matter which view in the pile we set the filter for, because of the
+    // pile link).
+    VisualFilter filter;
+    view->GetVisualFilter(filter);
+    filter.xLow = xMin;
+    filter.yLow = yMin;
+    filter.xHigh = xMax;
+    filter.yHigh = yMax;
+    view->SetVisualFilter(filter);
+    break;
+  }
+
+  default:
+    reportErrNosys("Illegal State value");
+    break;
+  }
 }
 
 /*============================================================================*/

@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1999/02/22 19:07:34  wenger
+  Piling of views with view symbols is not allowed; fixed bug 461 (redrawing
+  of piles); fixed bug 464 (toggling axes in a pile); fixed dynamic memory
+  problems in PileStack and ViewClassInfo classes.
+
   Revision 1.3  1999/02/16 20:20:28  wenger
   Fixed bug 463 (data sometimes overdraws axes in piles).
 
@@ -52,6 +57,7 @@
 
 class ViewLayout;
 class VisualLink;
+class ViewGraph;
 
 class PileStack {
 public:
@@ -73,6 +79,8 @@ public:
 
   void EnableXAxis(Boolean enable);
   void EnableYAxis(Boolean enable);
+
+  void GoHome(ViewGraph *view);
 
 protected:
   ViewWinList *GetViewList();

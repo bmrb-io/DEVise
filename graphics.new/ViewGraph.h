@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.62  1999/03/16 17:10:18  wenger
+  Improved 'view home' configuration: user can select whether home changes
+  X, Y, or both parts of visual filter; added explicit option to force Y
+  min to 0 in automatic mode; fixed bug 469 (problems with 'home' in
+  record link follower views).
+
   Revision 1.61  1999/03/12 18:46:06  wenger
   Implemented duplicate symbol elimination.
 
@@ -513,7 +519,8 @@ public:
   virtual Boolean IsYDateType();
 
   /* Update visual filter in various ways. */
-  virtual void GoHome();
+  virtual void GetHome2D(VisualFilter &filter);
+  virtual void GoHome(Boolean calledFromPile = false);
   virtual void PanLeftOrRight(PanDirection direction);
   virtual void PanUpOrDown(PanDirection direction);
 
