@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.37  1998/09/30 17:44:45  wenger
+  Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
+  bug 401 (improper saving of window positions).
+
   Revision 1.36  1998/09/25 20:53:04  wenger
   Fixed bug 390 (cursor drawn in slightly wrong location) (partly caused
   by problems in JavaScreenCmd code and partly by problems in XWindowRep).
@@ -1752,7 +1756,7 @@ JavaScreenCmd::DoCloseSession()
     int width = DeviseDisplay::DefaultDisplay()->DesiredScreenWidth();
     int height = DeviseDisplay::DefaultDisplay()->DesiredScreenHeight();
 
-    ControlPanel::Instance()->DestroySessionData();
+    Session::Close();
 	Dispatcher::Current()->WaitForQueries();
 
     DeviseDisplay::DefaultDisplay()->DesiredScreenWidth() = width;
