@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.58  1998/06/12 19:55:43  wenger
+#  Attribute of TAttr/set links can now be changed; GUI has menu of available
+#  attributes; attribute is set when master view is set instead of at link
+#  creation; misc. debug code added.
+#
 #  Revision 1.57  1998/04/10 18:29:50  wenger
 #  TData attribute links (aka set links) mostly implemented through table
 #  insertion; a crude GUI for creating them is implemented; fixed some
@@ -640,6 +645,7 @@ proc PrintCategory { category } {
 proc DoExit { mode } {
 	if { $mode == "csgroup" } {
 		DoGroupExit
+		return
 	}
     if {[SessionIsOpen]} {
       set answer [ dialog .quit "Quit" \

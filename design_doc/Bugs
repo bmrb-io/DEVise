@@ -1455,6 +1455,9 @@ Num Date        Status  Description
 			any data, it for some reason creates the buffer
 			pool during the process of quitting. (rkw)
 
+384 08/18/98	FIXED	Devisec doesn't actually quit when you select 'Quit'
+			from the Session menu. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

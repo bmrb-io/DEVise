@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/12 17:15:38  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.2.2.1  1998/01/28 22:43:16  taodb
   Added support for group communicatoin
 
@@ -110,7 +113,7 @@ void
 DeviseClient::ControlCmd(int argc, char **argv)
 {
 #if defined(DEBUG)
-  printf("DeviseClient(0x%p)::ControlCmd()\n", this);
+  printf("DeviseClient(0x%p)::ControlCmd(%s)\n", this, argv[0]);
 #endif
 
   if (argc == 1 && !strcmp(argv[0], "SyncDone")) {

@@ -31,6 +31,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/03/24 20:42:27  wenger
+  Minor cleanups and additional error messages.
+
  */
 
 #include "server.h"
@@ -42,10 +45,8 @@
 #include <stdlib.h> /* getenv, exit */
 #include <string.h> /* strcmp */
 #include <signal.h>
-#ifdef __cplusplus
-#include <sysent.h> /* getdtablesize, open */
-#endif /* __cplusplus */
 #include <unistd.h> /* setsid */
+#include <fcntl.h>
 #include <sys/types.h>
 #include <memory.h>
 #include <sys/resource.h> /* rlimit */
