@@ -1856,6 +1856,15 @@ Num Date        Status  Description
 			properly when session is opened (see jsdemo
 			test/date_format_problem.ds). (rkw)
 
+483 04/19/99	OPEN	Load JS demo session test/bug483.ds in JS and try
+			to drag the cursor in the bottom window -> JS reports
+			cursor movement in the wrong view. (rkw)
+
+484 04/19/99	OPEN	Load JS demo session test/bug484.ds in JS and drag
+			cursor (clicking to move it doesn't have the same
+			effect) -> view images don't get properly updated.
+			(rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
