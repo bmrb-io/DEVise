@@ -16,66 +16,187 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/09/27 23:59:47  ravim
+  Fixed some bugs. Added some new functions for handling groups.
+
   Revision 1.1  1995/09/22 20:09:27  ravim
   Group structure for viewing schema
 */
 
 #include <stdio.h>
+#include <string.h>
 #include <iostream.h>
 #include "GroupDir.h"
 
 GroupDir::GroupDir()
 {
-  dir = new(ItemList);
+  list = NULL;
 }
 
 GroupDir::~GroupDir()
 {
-  delete dir;
-}
-
-void GroupDir::add_entry(Group *grp)
-{
-  dir->add_entry(grp);
-}
-
-void GroupDir::remove_entry(Group *grp)
-{
-  dir->remove_entry(grp);
-}
-  
-Group *GroupDir::get_entry(char *name)
-{
-  Group *curr = dir->first_item();
-  
-  while (curr && (strcmp(curr->name, name)))
-    curr = dir->next_item();
-
-  return curr;
-}
-
-void GroupDir::top_level_groups(Tcl_Interp *interp)
-{
-  Group *curr;
-  cout << "Generating list of top level group names" <<endl;
-  
-  curr = dir->first_item();
-  printf("after first item \n");
-  while (curr)
+  SchemaList *next;
+  while (list)
   {
-    if (curr->type == ITEM)
-    {
-      printf("Error: item found in group directory\n");
-      exit(0);
-    }
-
-    if (curr->type == TOPGRP)
-    {
-      printf("Top level group : %s\n", curr->name);
-      Tcl_AppendElement(interp, curr->name);
-    }
-    else
-      printf("Not top level group : %s\n", curr->name);
-    curr = dir->next_item();
+    next = list->next;
+    delete list->sname;
+    delete list->topgrps;
+    delete list;
+    list = next;
   }
+}
+
+void GroupDir::add_entry(char *schema)
+{
+  SchemaList *elem = new SchemaList;
+  elem->sname = new char[strlen(schema) + 1];
+  strcpy(elem->sname, schema);
+  elem->topgrps = new ItemList;
+  elem->next = list;
+  list = elem;
+}
+
+// Searches for the given schema in the directory.
+// If found, returns 1, else returns 0.
+int GroupDir::find_entry(char *schema)
+{
+  SchemaList *curr = list;
+
+  while (curr && (strcmp(curr->sname, schema)))
+    curr = curr->next;
+
+  if (!curr)
+    return 0;
+
+  return 1;
+}
+
+void GroupDir::add_topgrp(char *schema, Group *gp)
+{
+  SchemaList *curr = list;
+  
+  while (curr && (strcmp(curr->sname, schema)))
+    curr = curr->next;
+
+  if (!curr)
+  {
+    cout << "Could not find schema " << schema 
+      << " in the directory...group not added" <<endl;
+    return;
+  }
+
+  curr->topgrps->add_entry(gp);
+  return;
+}
+
+// Find all top level groups in the given schema.
+void GroupDir::top_level_groups(Tcl_Interp *interp, char *schema)
+{
+  Group *currgrp = NULL;
+  SchemaList *curr = list;
+  
+  while ((curr) && (strcmp(curr->sname, schema)))
+    curr = curr->next;
+
+  if (!curr)
+  {
+    cout << "Could not find schema "<< schema 
+      << " in the schema directory "<<endl;
+    return;
+  }
+
+  currgrp = curr->topgrps->first_item();
+  while (currgrp)
+  {
+    Tcl_AppendElement(interp, currgrp->name);
+
+    currgrp = curr->topgrps->next_item();
+  }
+  return;
+}
+
+
+// Searches through the schema directory to find the appropriate entry.
+// Then search through the topgrps list for that schema.
+// Finally, perform a recursive search till we find the group with the
+// given name.
+// Then, call subitems method on that group.
+void GroupDir::get_items(Tcl_Interp *interp, char *schema, char *topgname, char *gname)
+{
+  SchemaList *curr = list;
+  Group *currgrp, *retgrp;
+
+  while ((curr) && (strcmp(curr->sname, schema)))
+    curr = curr->next;
+
+  if (!curr)
+  {
+    cout << "Could not find schema "<<schema << endl;
+    return;
+  }
+
+  currgrp = curr->topgrps->first_item();
+  while ((currgrp) && (strcmp(currgrp->name, topgname)))
+    currgrp = curr->topgrps->next_item();
+
+  if (!currgrp)
+  {
+    cout << "Could not find top group "<<topgname << " within schema "<<schema<<endl;
+    return;
+  }
+
+  retgrp = find_grp(currgrp, gname);
+  if (!retgrp)
+  {
+    cout << "Could not find group with name "<<gname<<endl;
+    return;
+  }
+
+  retgrp->subitems(interp);
+  return;
+}
+    
+
+Group *GroupDir::find_grp(Group *gp, char *gname)
+{
+  Group *ret;
+  Group *curr;
+  if (!(strcmp(gp->name, gname)))
+    return gp;
+
+  ret = NULL;
+  curr = gp->subgrps->first_item();
+  while (curr && (!ret))
+  {
+    if (curr->type != ITEM)
+      ret = find_grp(curr, gname);
+    curr = gp->subgrps->next_item();
+  }
+
+  return ret;
+}
+
+int GroupDir::num_topgrp(char *schema)
+{
+  SchemaList *curr = list;
+  Group *currgrp;
+  int num = 0;
+
+  while (curr && (strcmp(curr->sname, schema)))
+    curr = curr->next;
+
+  if (!curr) 
+  {
+    cout << "Could not find schema "<<schema<<endl;
+    return 0;
+  }
+  
+  currgrp = curr->topgrps->first_item();
+  while (currgrp)
+  {
+    num++;
+    currgrp = curr->topgrps->next_item();
+  }
+
+  return num;
 }
