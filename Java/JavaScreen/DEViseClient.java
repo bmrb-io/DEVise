@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.53  2001/10/24 17:46:06  wenger
+// Fixed bug 720 (one client can block others in the JSPoP).  The fix is that
+// the JSPoP now has a separate thread to read from each client.
+//
 // Revision 1.52  2001/10/18 15:15:25  xuk
 // Fixed bug 714: can't switch out of collabration mode in Netscape.
 //
@@ -263,7 +267,7 @@ public class DEViseClient
     public DEViseUser user = null;
     public long ID = 0;
     public String hostname = null;
-    private DEViseClientSocket _clientSock = null;
+    public DEViseClientSocket clientSock = null;
 
     public boolean isSessionOpened = false;
     public boolean isClientSwitched = false;
@@ -292,13 +296,14 @@ public class DEViseClient
 
     private static int _objectCount = 0;
 
-    public Vector collabSockets = new Vector();
+    public Vector collabClients = new Vector();
     public Vector collabHostName = new Vector();
     public boolean collabInit = false;
 
     public boolean isAbleCollab = false;
     private String collabPass = null;
     public boolean sessionSaved = false;
+    public DEViseClient collabLeader = null;
 
     public YLogFile logFile = null;
 
@@ -312,7 +317,7 @@ public class DEViseClient
 
         pop = p;
         hostname = host;
-        _clientSock = cs;
+        clientSock = cs;
         ID = id;
 
         savedSessionName = ".tmp/jstmp_" + ID;
@@ -341,29 +346,31 @@ public class DEViseClient
     }
 
     public void setSocket(DEViseClientSocket cs) {
-        _clientSock = cs;
+        clientSock = cs;
     }
 
     public void closeSocket()
     {
-        if (_clientSock != null) {
-	    _clientSock.closeSocket();
-	    _clientSock = null;
+        if (clientSock != null) {
+	    clientSock.closeSocket();
+	    clientSock = null;
 	}
     }
 
-    public void addCollabSocket(DEViseClientSocket clientSock,
-      String hostname) {
-	collabSockets.addElement(clientSock);
+    public void addCollabClients(DEViseClient client, String hostname) {
+	collabClients.addElement(client);
 	collabHostName.addElement(hostname);
         collabInit = true;
     }
     
-    public void removeCollabSocket(DEViseClientSocket clientSock) {
-	int i = collabSockets.indexOf(clientSock);
-	collabSockets.removeElement(clientSock);
+    public void removeCollabClient(DEViseClient client) {
+	int i = collabClients.indexOf(client);
+
+	collabClients.removeElement(client);
 	collabHostName.removeElementAt(i);
-	clientSock.closeSocket();
+
+	pop.pn("Collaborating JS: " + i + " is removed.");
+	// client.closeSocket();
     }
 
 
@@ -379,7 +386,7 @@ public class DEViseClient
 	    if (cgi) {
 		// Close socket here because there is no reply to heartbeat
 		// command.
-	        _clientSock.closeSocket();
+	        clientSock.closeSocket();
 	        pop.pn("Socket between client and cgi is closed.");
 	    }
 	} else if (cmd.startsWith(DEViseCommands.CHECK_POP)) {
@@ -400,7 +407,6 @@ public class DEViseClient
 
 	} else {
             cmdBuffer.addElement(cmd);
-	    
 	    if (pop.clientLog && logFile == null) {
 		String time = new Long(ID).toString();
 		String logName = "logs/client.log." + time;
@@ -564,8 +570,8 @@ public class DEViseClient
     private synchronized boolean isSocketEmpty() throws YException
     {
         if (status != CLOSE) {
-	    if (_clientSock != null) {
-		return !_clientSock.hasCommand();
+	    if (clientSock != null) {
+		return !clientSock.hasCommand();
 	    } else {
       		return true;
 	    }
@@ -620,7 +626,7 @@ public class DEViseClient
 			cmdBuffer.removeAllElements();
 		    } else if (command.startsWith(DEViseCommands.CONNECT)) {
 			String[] cmds = DEViseGlobals.parseString(command);
-			if (cmds != null && cmds.length == 5) {
+			if (cmds != null && cmds.length == 4) {
 			    user = pop.getUser(cmds[1], cmds[2]);
 			    if (user != null) { 
 				cmdBuffer.removeAllElements();
@@ -637,27 +643,26 @@ public class DEViseClient
 			cmdBuffer.removeAllElements();
 			cmdBuffer.addElement(DEViseCommands.CLOSE_SESSION);
 		    } else if (command.startsWith(DEViseCommands.SAVE_CUR_SESSION)) {
-			cmdBuffer.removeAllElements();
+			cmdBuffer.removeElement(command);
 			cmdBuffer.addElement(DEViseCommands.SAVE_CUR_SESSION);
+			sendCmd(DEViseCommands.DONE);
 		    } else if (command.startsWith(DEViseCommands.EXIT)) {
 			cmdBuffer.removeAllElements();
 			cmdBuffer.addElement(DEViseCommands.EXIT);
 			
 			try {
-			    for (int i = 0; i < collabSockets.size(); i++) {
-				DEViseClientSocket clientSock =
-				  (DEViseClientSocket)collabSockets.elementAt(i);
-				clientSock.sendCommand(
-				  DEViseCommands.COLLAB_EXIT);
-				clientSock.sendCommand(DEViseCommands.DONE);
-				clientSock.closeSocket();	
+			    for (int i = 0; i < collabClients.size(); i++) {
+				DEViseClient client =
+				  (DEViseClient)collabClients.elementAt(i);
+				client.sendCmd(DEViseCommands.COLLAB_EXIT);
+				client.sendCmd(DEViseCommands.DONE);
 				pop.pn("Closed collaboration JS " + i + ".");
 			    }
 			} catch (YException e) {
 			    System.err.println("YException " + e.getMessage() +
 			      " in DEViseClient.getCmd()");
 			}
-			collabSockets.removeAllElements();
+			collabClients.removeAllElements();
 			collabHostName.removeAllElements();
 	
 		    } else if (command.startsWith(DEViseCommands.GET_SERVER_STATE)) {
@@ -685,24 +690,41 @@ public class DEViseClient
 			isAbleCollab = false;
 
 			try {
-			    for (int i = 0; i < collabSockets.size(); i++) {
-				DEViseClientSocket clientSock =
-				  (DEViseClientSocket)collabSockets.elementAt(i);
-				clientSock.sendCommand(
-				  DEViseCommands.COLLAB_EXIT);
-				clientSock.sendCommand(DEViseCommands.DONE);
-				clientSock.closeSocket();	
+			    for (int i = 0; i < collabClients.size(); i++) {
+				DEViseClient client =
+				  (DEViseClient)collabClients.elementAt(i);
+				client.sendCmd(DEViseCommands.COLLAB_EXIT);
+				client.sendCmd(DEViseCommands.DONE);
+				client.closeSocket();	
 				pop.pn("Closed collaboration JS " + i + ".");
 			    }
 			} catch (YException e) {
 			    System.err.println("YException " + e.getMessage() +
 			      " in DEViseClient.getCmd()");
 			}
-			collabSockets.removeAllElements();
+			collabClients.removeAllElements();
 			collabHostName.removeAllElements();			
 			sendCmd(DEViseCommands.DONE);
 			cmdBuffer.removeAllElements();
 
+		    } else if (command.startsWith(DEViseCommands.ASK_COLLAB_LEADER)) {
+			String cmd = pop.getCollabLeaders();
+			pop.pn("Sending client list to collaboration JS: " + cmd);
+			try {
+			    sendCmd(cmd);
+			    sendCmd(DEViseCommands.DONE);
+			} catch (YException e) {
+			    System.err.println("YException " + e.getMessage() +
+			      " in DEViseClient.getCmd()");
+			}
+			cmdBuffer.removeAllElements();
+
+		    } else if (command.startsWith(DEViseCommands.COLLABORATE)) {
+			pop.setUpCollab(this, command, hostname);
+			cmdBuffer.removeAllElements();			
+		    } else if (command.startsWith(DEViseCommands.COLLAB_EXIT)) {
+			collabLeader.removeCollabClient(this);
+			cmdBuffer.removeElement(command);
 		    } else {
 			//
 			// Send an ACK immediately so that the client
@@ -747,61 +769,27 @@ public class DEViseClient
 
 		// Here we send commands to followers firstly (if any)
 		// since we may change the JAVAC_CollabState command.
-		if (!collabSockets.isEmpty()) { // also send to collab JS
+		if (!collabClients.isEmpty()) { // also send to collab JS
 		    if (collabInit) {
 			//
 			// Send command only to the most-recently-connected
 			// collaboration client.
 			//
-			DEViseClientSocket clientSock =
-			  (DEViseClientSocket)collabSockets.lastElement();
-			if (clientSock.hasCommand()) {
-			    String clientCmd = clientSock.getCommand();
-			    clientSock.clearCommand();
+			DEViseClient client =
+			  (DEViseClient)collabClients.lastElement();
 
-			    if (clientCmd.startsWith(DEViseCommands.EXIT)) {
-			        removeCollabSocket(clientSock);
-			    } else {
-			        pop.pn("Sending command to collabration client: " + cmd);
-			        clientSock.sendCommand(cmd);
-			    }
-			} else {
-			    pop.pn("Sending command to collabration client: " + cmd);
-			    clientSock.sendCommand(cmd);
-			}
+			pop.pn("Sending command to collabration client: " + cmd);
+			client.sendCmd(cmd);
 		    } else {
 			//
 			// Send commands to all collaboration clients.
 			//
-			for (int i = 0; i < collabSockets.size(); i++) {
-			    DEViseClientSocket clientSock =
-			      (DEViseClientSocket)collabSockets.elementAt(i);			
-			    if (clientSock.hasCommand()) {
-			        String clientCmd = clientSock.getCommand();
-			        clientSock.clearCommand();
+			for (int i = 0; i < collabClients.size(); i++) {
+			    DEViseClient client =
+			      (DEViseClient)collabClients.elementAt(i);		
 
-			        if (clientCmd.startsWith(DEViseCommands.EXIT) ||
-				    clientCmd.startsWith(DEViseCommands.ABORT) ) {
-				    removeCollabSocket(clientSock);
-				    // change the cmd, if this sock exits
-				    if (cmd.startsWith(
-				      DEViseCommands.COLLAB_STATE)) {	
-				        cmd = null;
-				        cmd = DEViseCommands.COLLAB_STATE;
-				        for (int j=0; j<collabHostName.size(); j++) {
-					    String host = (String)collabHostName.elementAt(j);
-					    cmd = cmd + " {" + host + "}";
-				        }
-				        cmd = cmd.trim();
-				    }
-			        } else {
-				    pop.pn("Sending command to collabration client: " + cmd);
-				    clientSock.sendCommand(cmd);
-			        }
-			    } else {
-				pop.pn("Sending command to collabration client" + " " + i);
-				clientSock.sendCommand(cmd);
-			    }
+			    pop.pn("Sending command to collabration client" + " " + i);
+			    client.sendCmd(cmd);
 			}
 		    }
                 }
@@ -812,7 +800,7 @@ public class DEViseClient
 		    //
 		    pop.pn("Sending command to client(" + ID + " " + hostname +
 		       ") :  \"" + cmd + "\"");
-		    _clientSock.sendCommand(cmd);
+		    clientSock.sendCommand(cmd);
 		}
 	    }
         } else {
@@ -840,36 +828,36 @@ public class DEViseClient
 			      hostname + ") (" + d.length + " bytes)");
 			    pop.pn("  First: " + d[0] + "; middle: " +
 			      d[d.length/2] + "; last: " + d[d.length-1]);
-			    _clientSock.sendData(d);
+			    clientSock.sendData(d);
 			    pop.pn("  Done sending data");
 		        }
 
-		        if (! collabSockets.isEmpty()) { // also send to collab JS
+		        if (! collabClients.isEmpty()) { // also send to collab JS
 			    if (collabInit) {
 			        //
 			        // Send command only to the most-recently-
 				// connected collaboration client.
 			        //
-			        DEViseClientSocket clientSock =
-				  (DEViseClientSocket)collabSockets.lastElement();
+			        DEViseClient client =
+				  (DEViseClient)collabClients.lastElement();
 			        pop.pn("Sending data to collabration client ("
 				  + d.length + " bytes)");
 			        pop.pn("  First: " + d[0] + "; middle: " +
 			          d[d.length/2] + "; last: " + d[d.length-1]);
-			        clientSock.sendData(d);
+			        client.clientSock.sendData(d);
 			        pop.pn("Done sending data");
 			    } else {
 			        //
 			        // Send data to all collaboration clients.
 			        //
-			        for (int j = 0; j < collabSockets.size(); j++) {
-				    DEViseClientSocket clientSock =
-				      (DEViseClientSocket)collabSockets.elementAt(j);
+			        for (int j = 0; j < collabClients.size(); j++) {
+				    DEViseClient client =
+				      (DEViseClient)collabClients.elementAt(j);
 				    pop.pn("Sending data to collabration client"
 				      + " " + j + " (" + d.length + " bytes)");
 			            pop.pn("  First: " + d[0] + "; middle: " +
 			              d[d.length/2] + "; last: " + d[d.length-1]);
-				    clientSock.sendData(d);
+				    client.clientSock.sendData(d);
 				    pop.pn("Done sending data");	
 			        }
 			    }
@@ -919,9 +907,9 @@ public class DEViseClient
             user = null;
         }
 
-        if (_clientSock != null) {
-            _clientSock.closeSocket();
-            _clientSock = null;
+        if (clientSock != null) {
+            clientSock.closeSocket();
+            clientSock = null;
         }
 
 	if (logFile != null) { 
