@@ -16,13 +16,13 @@ public class DEViseCursor
         height = rect.height;
 
         if (move == null) {
-            isXMovable = true;
+            isXMovable = false;
             isYMovable = false;
         } else {
-            if (move == "X") {
+            if (move.equals("X")) {
                 isXMovable = true;
                 isYMovable = false;
-            } else if (move == "Y") {
+            } else if (move.equals("Y")) {
                 isXMovable = false;
                 isYMovable = true;
             } else {

@@ -187,7 +187,7 @@ public class jsdevisec extends Panel
         if (!inBrowser) {
             jscreen = new DEViseScreen(this, new Dimension(DEViseGlobals.SCREENSIZE.width - 120, DEViseGlobals.SCREENSIZE.height - 140));
         } else {
-            jscreen = new DEViseScreen(this, new Dimension(DEViseGlobals.SCREENSIZE.width - 10, DEViseGlobals.SCREENSIZE.height - 80));
+            jscreen = new DEViseScreen(this, new Dimension(DEViseGlobals.SCREENSIZE.width - 10, DEViseGlobals.SCREENSIZE.height - 60));
         }
 
         viewControl = new DEViseViewControl(this, images);
