@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/05/13 18:11:01  jussi
+  Emptied ViewCreated and ViewDestroyed and moved them to
+  the header file.
+
   Revision 1.10  1996/05/11 20:52:33  jussi
   Replaced strcpy() in ReturnVal() with Tcl_SetResult() in order
   to avoid buffer overruns. Added DoQuit() and PrintStat()
@@ -93,8 +97,8 @@ public:
     DoQuit();
   }
 
-  /* Execute script */
-  virtual void ExecuteScript(char *script);
+  /* Perform sync operation  */
+  virtual void SyncNotify();
 
   /* Abort program */
   virtual void DoAbort(char *reason);
