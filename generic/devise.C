@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/05/11 21:30:01  jussi
+  Fixed problem with interp->result overrun.
+
   Revision 1.2  1996/05/11 17:23:14  jussi
   Added command line options for setting host name and port number.
 
@@ -41,11 +44,12 @@
 static char *_progName = 0;
 static char *_hostName = "localhost";
 static int _portNum = DefaultDevisePort;
+static int _deviseFd = -1;
 
 static Tcl_Interp *_interp = 0;
 static Tk_Window _mainWindow = 0;
-static int _deviseFd = -1;
 static char *_restoreFile = 0;
+static char _buffer[10 * 1024];
 
 void DoAbort(char *reason)
 {
@@ -53,29 +57,40 @@ void DoAbort(char *reason)
   char cmd[256];
   sprintf(cmd, "AbortProgram {%s}", reason);
   (void)Tcl_Eval(_interp, cmd);
+  (void)DeviseClose(_deviseFd);
   exit(1);
 }
 
 int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
 	      int argc, char *argv[])
 {
-  static char result[10 * 1024];
-
 #ifdef DEBUG	
   printf("Function %s, %d args\n", argv[1], argc - 1);
 #endif
 
   // do not send the DEVise command verb
-  if (DeviseSend(&argv[1], argc - 1) < 0)
+  if (DeviseSend(_deviseFd, &argv[1], argc - 1) < 0)
     DOASSERT(0, "Server has terminated");
 
-  int errorFlag;
-  if (DeviseReceive(result, errorFlag, argv[1]) < 0)
-    DOASSERT(0, "Server has terminated");
+  u_short flag;
+  do {
+    if (DeviseReceive(_deviseFd, _buffer, flag, argv[1]) < 0)
+      DOASSERT(0, "Server has terminated");
+    if (flag == API_CTL) {
+#ifdef DEBUG
+      printf("Executing Tcl command: \"%s\"\n", _buffer);
+#endif
+      (void)Tcl_Eval(_interp, _buffer);
+    }
+  } while (flag != API_ACK && flag != API_NAK);
 
-  interp->result = result;
+#ifdef DEBUG
+  printf("Received reply: \"%s\"\n", _buffer);
+#endif
 
-  if (errorFlag)
+  interp->result = _buffer;
+
+  if (flag == API_NAK)
     return TCL_ERROR;
 
   return TCL_OK;
@@ -87,38 +102,20 @@ void ReadServer(ClientData cd, int mask)
   printf("Receiving command from server\n");
 #endif
 
-  static char buff[256];
+  u_short flag;
+  if (DeviseReceive(_deviseFd, _buffer, flag, "Control command") < 0)
+    DOASSERT(0, "Server has terminated");
 
-  u_short errorFlag;
-  int result = recv(_deviseFd, (char *)&errorFlag, sizeof errorFlag, 0);
-  if (result < (int)sizeof errorFlag) {
-    if (errno == EWOULDBLOCK)
-      return;
-    perror("recv");
+  if (flag != API_CTL) {
+    fprintf(stderr, "Received unexpected type of message: %u\n", flag);
+    return;
   }
-  DOASSERT(result == (int)sizeof errorFlag, "Cannot receive data from server");
 
-  errorFlag = ntohs(errorFlag);
+#ifdef DEBUG
+  printf("Executing Tcl command: \"%s\"\n", _buffer);
+#endif
 
-  u_short size;
-  do {
-    result = recv(_deviseFd, (char *)&size, sizeof size, 0);
-    if (result >= 0)
-      break;
-  } while (errno == EWOULDBLOCK);
-  DOASSERT(result == (int)sizeof size, "Cannot receive data from server");
-
-  size = ntohs(size);
-  DOASSERT(size <= sizeof buff, "Data chunk too large");
-
-  do {
-    result = recv(_deviseFd, buff, size, 0);
-    if (result >= 0)
-      break;
-  } while (errno == EWOULDBLOCK);
-  DOASSERT(result == size, "Cannot receive data from server");
-	
-  (void)Tcl_Eval(_interp, buff);
+  (void)Tcl_Eval(_interp, _buffer);
 }
 
 void SetupConnection()
@@ -234,7 +231,7 @@ int main(int argc, char **argv)
   printf("Returned from Tk loop\n");
 #endif
   Tk_DeleteFileHandler(_deviseFd);
-  (void)DeviseClose();
+  (void)DeviseClose(_deviseFd);
 
   return 1;
 }
