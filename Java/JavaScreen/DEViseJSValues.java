@@ -27,6 +27,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2001/11/07 22:31:29  wenger
+// Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
+// js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
+// accidentally merged onto the bmrb_dist_br branch previously).
+// (These changes include JS heartbeat improvements and the fix to get
+// CGI mode working again.)
+//
 // Revision 1.8.2.1  2001/11/07 17:22:36  wenger
 // Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
 // handle it; got CGI mode working again (bug 723).  (Changed JS version
@@ -150,6 +157,7 @@ public final class DEViseJSValues
 	public boolean autoPlayback = false;
 	public boolean playbackOriginal = false;
 	public boolean playbackDisplay = true;
+	public boolean disableButtons = false;
     }
 
     public Canvas canvas = new Canvas();

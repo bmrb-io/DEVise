@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2001/10/10 19:28:24  xuk
+// Added display control command line argument/parameter for auto playback.
+// For JS application: command-line argument: -playbackdisplayoff to turn off display, default is turning on display;
+// For JS applet: parameter playbackdisplay = true|false to turn on|off display.
+//
 // Revision 1.6  2001/10/02 21:59:44  xuk
 // Added new parameters for client log playback.
 // Modified checkParameter() to check clientlog, autoplayback, playbackoriginal parameters.
@@ -315,6 +320,17 @@ public class DEViseJSApplet extends Applet
 	    }
         } else {
             jsValues.session.playbackDisplay = true;
+        }
+
+        String disableButtons = getParameter("disablebuttons");
+        if (disableButtons != null) {
+	    if (disableButtons.equals("true")) {
+		jsValues.session.disableButtons = true;
+	    } else {
+		jsValues.session.disableButtons = false;
+	    }
+        } else {
+            jsValues.session.disableButtons = false;
         }
     }
 
