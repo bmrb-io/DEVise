@@ -2626,6 +2626,20 @@ Num Date        Status  Description
 			whether they've enabled collaboration if no follower
 			is connected to them. (rkw)
 
+661 04/20/01	OPEN	JavaScreen: if the user enables collaboration and
+			then becomes a collaboration follower with that
+			JS, the JS is still listed as a possible collaboration
+			leader. (In other words, becoming a collaboration
+			follower should disable being a collaboration
+			leader.) (rkw)
+
+662 04/20/01	OPEN	JavaScreen: there is no GUI to *disable* collaboration.
+			(rkw)
+
+663 04/20/01	OPEN	JavaScreen: collaboration seems generally less
+			reliable if the follower had a pre-collaboration
+			session open. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
