@@ -3,4 +3,5 @@ CVSROOT
 Old
 *.o
 *.a
+*.ps
 core

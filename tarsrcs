@@ -1,5 +1,6 @@
 #! /bin/csh -f
-tar cvfXz sources.tar.gz src_exclude Makefile.common ams attrproj compustat \
-    crsp devread generic graphics graphics.new hp issm lib linux makedep \
+tar cvfXz sources.tar.gz src_exclude DTE Makefile.common ams attrproj \
+    bmlib compustat \
+    crsp devread doc generic graphics graphics.new hp issm lib linux makedep \
     multi parser public release release.sgi run run_public setup sgi \
-    solaris solsparc src_exclude sun tape tarsrcs util
+    solaris solsparc src_exclude sun tape tarcslib tarsrcs util
