@@ -24,7 +24,7 @@ CC = g++
 #		file: testAms1.c
 #	-DTRACE_GDATA: trace GDATa query, file: QueryProc.c
 
-CFLAGS = $(ARCH_FLAGS) -O -DUNIX -I../../graphics -I../../graphics.new \
+CFLAGS = $(ARCH_FLAGS) -Wall -O -DUNIX -I../../graphics -I../../graphics.new \
 	-fexternal-templates
 .c.o: 
 	$(CC) -c  $(CFLAGS) $<
