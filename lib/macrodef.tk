@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.43  1996/05/09 18:15:16  kmurli
+#	No changes, just inserted some debugging print statements and
+#	removed them
+#
 #	Revision 1.42  1996/05/05 03:05:11  jussi
 #	Automatic adjustment of Y axis scale is done for bar charts only.
 #
@@ -872,7 +876,6 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
 	    return
 	}
 
-
 	set result [DEVise create view $sorted $viewinstance \
 		$xlo $xhi $ylo $yhi $bgColor]
 	if {$result == ""} {
@@ -1228,9 +1231,20 @@ proc OpenDataSource {dispname} {
 	set but [dialog .sourceNotExists "Undefined Data Stream" \
 		"Data stream \"$dispname\" does not exist." \
 		"" 0 OK "Select Another"]
-	if {!$but} { return "" }
-	set dispname [selectStream]
-	if {$dispname == ""} { return "" }
+	if {$but == 0} { return "" }
+	while {1} {
+	    set dispname [selectStream]
+	    if {$dispname == ""} { return "" }
+	    # must choose a single data stream
+	    if {[llength $dispname] > 1} {
+		dialog .singleStream "Select Single Stream" \
+			"You have selected more than one data stream.\
+			Please select a single data stream." "" 0 Continue
+		continue
+	    }
+	    break
+	}
+	set dispname [lindex $dispname 0]
     }
 
     # cache data to disk right now
@@ -1256,25 +1270,70 @@ proc OpenDataSource {dispname} {
 
 ############################################################
 
+proc CacheMultipleDataSources {dispnames} {
+    global sourceList
+
+    set numnotcached 0
+    foreach dispname $dispnames {
+	# see if data stream is on disk already
+	if {[isCached $dispname -1 -1] == ""} {
+	    incr numnotcached
+	}
+    }
+
+    if {$numnotcached > 0} {
+	set but [dialog .cacheData "Caching Data" \
+		"Will need to cache $numnotcached streams to disk now." \
+		"" 0 Okay Cancel]
+	if {$but == 1} {
+	    dialog .notCached "Cancel Visualization" \
+		    "Cannot visualize data without caching it to disk first." \
+		    "" 0 OK
+	    return ""
+	}
+    }
+
+    set sources [cacheMultipleData $dispnames -1 -1]
+    return $sources
+}
+
+############################################################
+
 proc OpenNewDataSource {} {
     global sourceList
 	
 
     # select data stream to display
-    set sname [selectStream]
-    if {$sname == ""} { return "" }
+    set snames [selectStream]
+    if {$snames == ""} { return "" }
     
-    # see if data stream already open
-    if {[lsearch [TdataSet] $sname] >= 0} {
-	return $sname
+    set newsnames ""
+
+    foreach sname $snames {
+	# see if data stream already open
+	if {[lsearch [TdataSet] $sname] < 0} {
+	    # make sure data is cached on disk
+	    set sourcedef [OpenDataSource $sname]
+	    if {$sourcedef == ""} {
+		return ""
+	    }
+	}
+
+	lappend newsnames $sname
     }
 
-    # make sure data is cached on disk
+    set snames $newsnames
+
+    # must choose a single data stream
+    if {[llength $snames] > 1} {
+	dialog .singleStream "Select Single Stream" \
+		"You have selected more than one data stream.\
+		Only the first stream will be visualized." "" 0 Continue
+    }
+    
+    set sname [lindex $snames 0]
+
     set sourcedef [OpenDataSource $sname]
-    if {$sourcedef == ""} {
-	return ""
-    }
-
     set sname [lindex $sourcedef 0]
     set source [lindex $sourcedef 1]
     set schema [lindex $sourceList($sname) 2]
@@ -2187,7 +2246,8 @@ proc MacroDefAutoNew {tdata} {
     global x yvar viewselname bgcolor linksel windowsel titlesel
     global xaxissel yaxissel cancel newgdata viewsel
     global sourceList macroSelectColor macroMenuSelectColor
-	
+    global curView
+
     if {[WindowVisible .auto]} {
 
 	return
@@ -2204,19 +2264,13 @@ proc MacroDefAutoNew {tdata} {
     wm geometry .auto +50+50
     selection clear .auto
 	
-
     label .auto.label -text "Define Visualization Parameters"
-
-	puts "calling frames.."
 
     frame .auto.top
     frame .auto.mid
     frame .auto.bot
     frame .auto.ysel -relief groove -borderwidth 2
-
-
     frame .auto.but
-
 
     pack .auto.label -side top -pady 3m -fill x -expand 1
     pack .auto.top -side top -pady 3m -fill x -expand 1
@@ -2249,7 +2303,10 @@ proc MacroDefAutoNew {tdata} {
 	    -textvariable windowsel -menu .auto.windowsel.window.menu \
 	    -width 30
     pack .auto.windowsel.label .auto.windowsel.window -side left -padx 1m
-    set windowsel [lindex [WinSet] 0]
+    set windowsel ""
+    if {$curView != ""} {
+	set windowsel [DEVise getViewWin $curView]
+    }
     if {$windowsel == ""} {
 	set windowsel "None selected yet"
     }
@@ -2358,9 +2415,7 @@ proc MacroDefAutoNew {tdata} {
     tk_menuBar .auto.xsel .auto.xsel.attr
     set cancel 0
 	
-	puts "Coming to the commenteed out part"
-	button .auto.but.ok -text OK -width 15 -command {
-
+    button .auto.but.ok -text OK -width 15 -command {
 	if {![DEVise exists $windowsel]} {
 	    dialog .winError "No Window Specified" \
 		    "Please select a window for visualization." \
@@ -2397,13 +2452,6 @@ proc MacroDefAutoNew {tdata} {
 	if {$yvar($yname) > 0} {
 	    lappend ylist $yname
 	}
-    }
-    if {$ylist == ""} {
-	dialog .autoError "Note" \
-		"Please select one or more\n\
-		Y attributes for automatic\n\
-		mapping." "" 0 OK
-	return
     }
     
     # puts "The value of x is $x"
@@ -2571,10 +2619,14 @@ proc MacroDefAutoActualNew {tdata viewsel linksel window bgcolor
 	}
 	
 	# ask DEVise to turn on/off label
+	set titletext "$name vs. $x"
+	if {[llength $ylist] == 1} {
+	    set titletext $tdata
+	}
 	if {$titlesel} {
-	    DEVise setLabel $viewinstance 1 16 "$name vs. $x"
+	    DEVise setLabel $viewinstance 1 16 $titletext
 	} else {
-	    DEVise setLabel $viewinstance 0 12 "$name vs. $x"
+	    DEVise setLabel $viewinstance 0 12 $titletext
 	}
 
 	# ask DEVise to turn on/off X axis
