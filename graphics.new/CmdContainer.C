@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.50  1999/10/05 17:55:46  wenger
+  Added debug log level.
+
   Revision 1.49  1999/09/27 20:41:18  wenger
   Unrecognized commands are now logged.
 
@@ -569,6 +572,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(nextViewInPile)
 	REGISTER_COMMAND(setAxisTicks)
 	REGISTER_COMMAND(getAxisTicks)
+	REGISTER_COMMAND(dispatcherRun1)
 }
 
 CmdContainer::~CmdContainer()
@@ -777,6 +781,12 @@ CmdContainer::Run(int argc, char** argv, ControlPanel* control,
 int
 CmdContainer::RunOneCommand(int argc, char** argv, ControlPanel* control) 
 {
+#if defined(DEBUG)
+    printf("CmdContainer::RunOneCommand(");
+	PrintArgs(stdout, argc, argv, false);
+    printf(")\n");
+#endif
+
 	int	retval;
 	DeviseCommand* cmd;
 

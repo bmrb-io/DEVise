@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.83  1999/11/16 17:02:05  wenger
+  Removed all DTE-related conditional compiles; changed version number to
+  1.7.0 because of removing DTE; removed DTE-related schema editing and
+  data source creation GUI.
+
   Revision 1.82  1999/10/05 17:55:47  wenger
   Added debug log level.
 
@@ -6191,6 +6196,24 @@ IMPLEMENT_COMMAND_BEGIN(getAxisTicks)
         return 1;
     } else {
 		fprintf(stderr, "Wrong # of arguments: %d in getAxisTicks\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(dispatcherRun1)
+    // Arguments: none
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 1) {
+        Dispatcher::Current()->Run1();
+        ReturnVal(API_ACK, "done");
+        return true;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in dispatcherRun1\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
