@@ -421,6 +421,12 @@ pixels rather than user coordinates. (dk/rkw 9/30/97)
 Allow port number server listens on to be specified on command line of
 devised, devisec, and deviseb. (ma/rkw 11/24/97)
 
+Query dialog should have 'Forward', 'Back' buttons like web browsers
+instead of 'Back One' that just does 'do, undo'. (rkw 11/25/97)
+
+Data source definition dialog should have a button that brings up the
+schema definition dialog. (ml 11/25/97)
+
 
 
 COMPLETED
