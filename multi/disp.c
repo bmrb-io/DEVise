@@ -15,7 +15,6 @@
 #include "TDataHost.h"
 #include "TDataCycle.h"
 #include "TDataViewX.h"
-#include "ViewWinVer.h"
 #include "Snapshot.h"
 #include "ViewScatter.h"
 #include "MappingClassInfo.h"
@@ -111,6 +110,7 @@ main(int argc, char **argv){
 		   new GenDateAxisLabel()));
 
 	ControlPanel::RegisterClass(new WinVerInfo);
+	ControlPanel::RegisterClass(new WinHorInfo);
 	ControlPanel::RegisterClass(new ActionClassInfo("multiAction",
 		new GenMultiAction()));
 	ControlPanel::RegisterClass(new MultiClassInfo);
