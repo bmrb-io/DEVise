@@ -20,6 +20,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.32  2001/11/07 22:31:29  wenger
+// Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
+// js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
+// accidentally merged onto the bmrb_dist_br branch previously).
+// (These changes include JS heartbeat improvements and the fix to get
+// CGI mode working again.)
+//
 // Revision 1.31  2001/10/30 17:23:51  xuk
 // Created DEViseClient object for collaborating clients in jspop.
 // In doReceiveCmd(), no difference for collaboration mode clients.
@@ -519,6 +526,32 @@ public class DEViseCommSocket
     }
 
     //-------------------------------------------------------------------
+    public void sendCmd(String[] cmd, short msgType, int ID)
+      throws YException
+    {
+        if (DEBUG >= 1) {
+            System.out.println("DEViseCommSocket.sendCmd(" + cmd + ", " +
+	      msgType + ", " + ID + ")");
+        }
+
+	synchronized (writeSync) {
+	    doSendCmd(cmd, msgType, ID);
+	}
+    }
+
+    //-------------------------------------------------------------------
+    public void sendCmd(String[] cmd, short msgType) throws YException
+    {
+        sendCmd(cmd, msgType, DEViseGlobals.DEFAULTID);
+    }
+
+    //-------------------------------------------------------------------
+    public void sendCmd(String[] cmd) throws YException
+    {
+        sendCmd(cmd, DEViseGlobals.API_JAVA, DEViseGlobals.DEFAULTID);
+    }
+
+    //-------------------------------------------------------------------
     // Receive a command.  Note that this method may be interrupted by
     // the socket timeout.  If so, it can be repeatedly called until
     // an entire command has been received.
@@ -720,6 +753,76 @@ public class DEViseCommSocket
 
                 os.writeShort(cmdBuffer[i].length());
                 os.writeBytes(cmdBuffer[i]);
+            }
+
+            os.flush();
+        } catch (IOException e) {
+            closeSocket();
+	    socket = null;
+            System.err.println("Error occurs while writing command " + cmd + " to output stream: " + e.getMessage() + " in DEViseCommSocket:sendCmd()");
+            //throw new YException("Error occurs while writing to output " +
+	    // "stream: " + e.getMessage(), "DEViseCommSocket:sendCmd()");
+        }
+    }
+
+
+    //-------------------------------------------------------------------
+    private void doSendCmd(String[] cmd, short msgType, int ID)
+      throws YException
+    {
+        if (os == null) {
+            closeSocket();
+            throw new YException("Invalid output stream",
+	      "DEViseCommSocket:sendCmd()");
+        }
+
+        // for invalid cmd, simply discard it
+        if (cmd == null || cmd.length == 0) {
+	    System.err.println("Zero-length command");
+            return;
+        }
+
+	int nelem = 0, size = 0;
+        int flushedSize = 0;
+
+        try {
+            nelem = cmd.length;
+            for (int i = 0; i < nelem; i++)  {
+		// adding { } to each element if necessary
+		if ((i != 0) && ! cmd[i].startsWith("{")) 
+		    cmd[i] = "{" + cmd[i] + "}";
+
+		// null-terminate the string for C/C++ on the other end
+		// one byte
+                cmd[i] = cmd[i] + "\u0000";
+
+                // since DataOutputStream is a Byte oriented Stream, so it will write
+                // each unicode character(16bits) as ISO-Latin-1 8bits character, which
+                // means only the low 8bits of each unicode character is write out, and
+                // the high 8bits has been throwed out.
+                size = size + 2 + cmd[i].length();
+            }
+
+	    os.writeShort(msgType);
+	    os.writeInt(ID);
+ 	    os.writeShort(0); // not cgi
+
+            // if nelem is greater than MAX_VALUE of short, if you use readUnsignedShort
+            // on the other size, you can still get correct value
+            os.writeShort(nelem);
+            os.writeShort(size);
+
+            for (int i = 0; i < nelem; i++) {
+                // Since we are using a BufferedOutputStream as the underlying stream of
+                // our DataOutputStream, so we must make sure that while the buffer is full,
+                // we must flush our stream.
+                if ((os.size() - flushedSize) >= (bufferSize - 2)) {
+                    flushedSize = os.size();
+                    os.flush();
+                }
+
+                os.writeShort(cmd[i].length());
+                os.writeBytes(cmd[i]);
             }
 
             os.flush();
