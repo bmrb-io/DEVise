@@ -1,0 +1,125 @@
+#!/s/std/bin/perl
+
+############################################################
+
+# Run the JavaScreen, launching a devised for it to connect
+# to, and, optionally, Xvfb (X virtual frame buffer).
+
+# Xfvb is to be used mainly when we want to run the
+# JavaScreen from the web.  It allows us to have a "pseudo
+# X server" to draw into pixmaps without having to actually
+# have permission to connect to a "real" X server.
+
+# $Id$
+
+############################################################
+
+require 5.002;
+use strict;
+use Socket;
+
+my $useXvfb = 0;
+my $debug = 0;
+
+#
+# Check command line args.
+#
+if ($ARGV[0] eq "-usage") {
+    ShowUsage();
+} elsif ($ARGV[0] eq "-noX") {
+    $useXvfb = 1;
+} elsif ($ARGV[0]) {
+    print "Bad command line argument: $ARGV[0]\n";
+    ShowUsage();
+}
+
+#
+# Launch Xvfb if necessary.
+#
+if ($useXvfb) {
+    my $authFile = '/local.doc/wenger/devise_auth';
+    -e $authFile or die "X authorization file $authFile doesn't exist.\n";
+
+    # Note: if we already have an Xvfb running with the same server number
+    # this one should just exit...
+    Spawn("/s/std/bin/Xvfb :1 -screen 0 1024x768x8 -auth $authFile");
+    sleep(5); # Make sure Xvfb gets going before devised tries to connect.
+
+    $ENV{DISPLAY} = 'localhost:1';
+    $ENV{XAUTHORITY} = $authFile;
+}
+
+#
+# Find unused ports.
+#
+my $cmdPort = FindPort(6100);
+my $dataPort = FindPort($cmdPort+1);
+my $imgPort = FindPort($dataPort+1);
+
+print "DEBUG: ports are $cmdPort, $dataPort, $imgPort.\n" if $debug;
+
+#
+# Launch devised.
+#
+$ENV{PATH} = $ENV{PATH} . ':/p/devise/public/bin';
+Spawn("/p/devise/demo/run/devised -quit 1 -port $cmdPort -switchport $dataPort -imageport $imgPort");
+sleep(5); # Make sure devised gets going before JavaScreen tries to connect.
+
+#
+# Launch JavaScreen.
+#
+$ENV{CLASSPATH} = '/p/devise/public/Java/JavaScreen';
+Spawn("java js -CP$cmdPort -IP$imgPort -DP$dataPort");
+
+############################################################
+
+sub ShowUsage {
+    print "Usage: runjs [-noX|-usage]\n";
+    print "Launch Xvfb (optionally), devised, and JavaScreen.\n";
+}
+
+############################################################
+
+sub FindPort {
+    my $proto = getprotobyname('tcp');
+    my $done = 0;
+    my $port = @_[0];
+
+    socket(mySock, PF_INET, SOCK_STREAM, $proto) or die "socket: $!";
+    setsockopt(mySock, SOL_SOCKET, SO_REUSEADDR, pack("l", 1))
+        or die "setsockopt: $!";
+    while (not $done) {
+        if (bind(mySock, sockaddr_in($port, INADDR_ANY))) {
+	    $done = 1;
+        } else {
+	    print "DEBUG: port $port in use\n" if $debug;
+            $port++;
+        }
+    }
+    close(mySock) or die "close $!";
+
+    return $port;
+}
+
+############################################################
+
+sub Spawn {
+    print "DEBUG: Spawn @_\n" if $debug;
+
+    my $pid;
+    if (!defined($pid = fork)) {
+	# Error.
+	print "cannot fork: $!";
+	return;
+    } elsif ($pid) {
+	# Parent.
+	print "DEBUG: forked $pid\n" if $debug;
+	return;
+    } else {
+	# Child.
+    }
+
+    exec(@_);
+}
+
+############################################################
