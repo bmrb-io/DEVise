@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/24 16:10:40  jussi
+  Added copyright notice and cleaned up the code.
+
   Revision 1.2  1995/09/05 22:16:04  jussi
   Added CVS header.
 */
@@ -79,10 +82,10 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
   GetVisualFilter(filter);
 
   int scrnX, scrnY;
-  unsigned int scrnWidth, scrnHeight;
-  Geometry(scrnX, scrnY, scrnWidth, scrnHeight);
-  _xPerPixel = (filter.xHigh - filter.xLow + 1) / scrnWidth;
-  _yPerPixel= (filter.yHigh - filter.yLow + 1) / scrnHeight;
+  int scrnWidth, scrnHeight;
+  GetDataArea(scrnX, scrnY, scrnWidth, scrnHeight);
+  _xPerPixel = (filter.xHigh - filter.xLow) / scrnWidth;
+  _yPerPixel= (filter.yHigh - filter.yLow) / scrnHeight;
   
   _queryProc->BatchQuery(_map, _queryFilter, this, NULL, timestamp);
 }
@@ -99,7 +102,8 @@ void TDataViewX::QueryInit(void *userData)
 {
   _dataBin->Init(_map, _queryFilter.yLow, _queryFilter.yHigh, 
 		 _queryFilter.xLow, _queryFilter.xHigh,
-		 _yPerPixel, _xPerPixel, (_cMap != NULL? true: false),
+		 _yPerPixel, _xPerPixel,
+		 (_cMap != NULL? true : false),
 		 _cMap, this);
 }
 
