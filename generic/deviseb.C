@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/05/11 01:51:42  jussi
+  Initial revision.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,6 +30,9 @@
 //#define DEBUG
 
 static char *_progName = 0;
+static char *_hostName = "localhost";
+static int _portNum = DefaultDevisePort;
+
 static char *_idleScript = 0;
 static char *_scriptFile = 0;
 
@@ -145,18 +151,12 @@ void SetupConnection()
   printf("All Rights Reserved.\n");
   printf("\n");
 
-  char servName[256];
-  int portNum;
-
-  if (DeviseHost(servName, portNum) < 0)
-    exit(1);
-
   printf("Batch client running.\n");
   printf("\n");
 
-  printf("Connecting to server %s:%d.\n", servName, portNum);
+  printf("Connecting to server %s:%d.\n", _hostName, _portNum);
 
-  (void)DeviseOpen(servName, portNum, 0);
+  (void)DeviseOpen(_hostName, _portNum, 0);
 	
   printf("Connection established.\n\n");
 
@@ -167,17 +167,48 @@ void SetupConnection()
 #endif
 }
 
+void Usage()
+{
+  fprintf(stderr, "Usage: %s [-h host] [-p port] script idle\n", _progName);
+}
+
 int main(int argc, char **argv)
 {
   _progName = argv[0];
 
   if (argc < 3) {
-    fprintf(stderr, "Usage: %s session idle-script\n", _progName);
+    Usage();
     exit(1);
   }
 
-  _scriptFile = argv[1];
-  _idleScript = argv[2];
+  for(int i = 1; i < argc; i++) {
+    if (!strcmp(argv[i], "-h")) {
+      if (i + 1 >= argc) {
+	fprintf(stderr, "No host name specified with -h option.\n");
+	Usage();
+	exit(1);
+      }
+      _hostName = argv[i + 1];
+      i++;
+    } else if (!strcmp(argv[i], "-p")) {
+      if (i + 1 >= argc) {
+	fprintf(stderr, "No port number specified with -p option.\n");
+	Usage();
+	exit(1);
+      }
+      _portNum = atoi(argv[i + 1]);
+      i++;
+    } else {
+      if (!_scriptFile)
+	_scriptFile = argv[i];
+      else if (!_idleScript)
+	_idleScript = argv[i];
+      else {
+	Usage();
+	exit(1);
+      }
+    }
+  }
 
   SetupConnection();
   (void)DeviseClose();

@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/05/11 01:52:02  jussi
+  Initial revision.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,6 +36,9 @@
 //#define DEBUG
 
 static char *_progName = 0;
+static char *_hostName = "localhost";
+static int _portNum = DefaultDevisePort;
+
 static Tcl_Interp *_interp = 0;
 static Tk_Window _mainWindow = 0;
 static int _deviseFd = -1;
@@ -137,18 +143,12 @@ void SetupConnection()
   Tcl_LinkVar(_interp, "argv0", (char *)&_progName, TCL_LINK_STRING);
   Tcl_CreateCommand(_interp, "DEVise", DEViseCmd, 0, 0);
 
-  char servName[256];
-  int portNum;
-
-  if (DeviseHost(servName, portNum) < 0)
-    exit(1);
-
   printf("Client running.\n");
   printf("\n");
 
-  printf("Connecting to server %s:%d.\n", servName, portNum);
+  printf("Connecting to server %s:%d.\n", _hostName, _portNum);
 
-  _deviseFd = DeviseOpen(servName, portNum, 1);
+  _deviseFd = DeviseOpen(_hostName, _portNum, 1);
   Tk_CreateFileHandler(_deviseFd, TK_READABLE, ReadServer, 0);
 	
   printf("Connection established.\n\n");
@@ -186,12 +186,39 @@ void SetupConnection()
   }
 }
 
+void Usage()
+{
+  fprintf(stderr, "Usage: %s [-h host] [-p port] [session]\n", _progName);
+}
+
 int main(int argc, char **argv)
 {
   _progName = argv[0];
 
-  if (argc > 1) {
-    _restoreFile = argv[1];
+  for(int i = 1; i < argc; i++) {
+    if (!strcmp(argv[i], "-h")) {
+      if (i + 1 >= argc) {
+	fprintf(stderr, "No host name specified with -h option.\n");
+	Usage();
+	exit(1);
+      }
+      _hostName = argv[i + 1];
+      i++;
+    } else if (!strcmp(argv[i], "-p")) {
+      if (i + 1 >= argc) {
+	fprintf(stderr, "No port number specified with -p option.\n");
+	Usage();
+	exit(1);
+      }
+      _portNum = atoi(argv[i + 1]);
+      i++;
+    } else {
+      if (_restoreFile) {
+	Usage();
+	exit(1);
+      }
+      _restoreFile = argv[i];
+    }
   }
 
   SetupConnection();
