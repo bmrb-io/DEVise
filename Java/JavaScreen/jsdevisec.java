@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.74  2001/01/25 19:40:34  wenger
+// Added mode switching capability to the jsb (embedded) form of the client.
+//
 // Revision 1.73  2001/01/23 22:57:27  xuk
 // add SetModeDlg for mode switch.
 //
@@ -191,6 +194,7 @@ public class jsdevisec extends Panel
     private Button helpButton = new Button("Help");
     private Label commMode = new Label("");
     private Button modeButton = new Button("Mode");
+    private Button collabButton = new Button("Collabrate");
 
     public DEViseAnimPanel animPanel = null;
     public DEViseViewInfo viewInfo = null;
@@ -206,6 +210,7 @@ public class jsdevisec extends Panel
     private SettingDlg settingdlg = null;
     private SetCgiUrlDlg setcgiurldlg = null;
     private SetModeDlg setmodedlg = null;
+    private CollabDlg collabdlg = null;
 
     public boolean isSessionOpened = false;
 
@@ -221,6 +226,10 @@ public class jsdevisec extends Panel
     public String currentSession = null;
 
     public DEViseJSValues jsValues = null;
+
+    // collabrated JS ID
+    public int specialID = 0;
+
 
 	// images[0-9] are the gears; 10 and 11 are "traffic lights"
 	//   (devise[0-10].gif).
@@ -315,7 +324,7 @@ public class jsdevisec extends Panel
             button[2] = modeButton;
             button[3] = helpButton;
         } else {
-            button = new Component[9];
+            button = new Component[10];
             button[0] = openButton;
             button[1] = closeButton;
             button[2] = stopButton;
@@ -323,8 +332,9 @@ public class jsdevisec extends Panel
             button[4] = setButton;
             button[5] = filterButton;
             button[6] = modeButton;
-            button[7] = helpButton;
-            button[8] = exitButton;
+	    button[7] = collabButton;
+            button[8] = helpButton;
+            button[9] = exitButton;
         }
 
         DEViseComponentPanel buttonPanel = new DEViseComponentPanel(button,
@@ -481,19 +491,20 @@ public class jsdevisec extends Panel
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			/*
-                        if (jsValues.connection.cgi == true) {
-			    // change to socket mode
-			    jsValues.connection.cgi = false;
-			    socketMode();
-			} else {
-			    // change to cgi mode
-			    jsValues.connection.cgi = true;
-			    cgiMode();
-			    setCgiUrl();
-			}
-			*/
 			setMode();
+                    }
+                });
+
+        collabButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        if (isSessionOpened) {
+                            showMsg("You already have a session opened!\nPlease close current session first!");
+                            return;
+                        }
+
+                        showCollab();
                     }
                 });
 
@@ -661,6 +672,14 @@ public class jsdevisec extends Panel
         settingdlg = null;
     }
 
+    public void showCollab()
+    {
+        collabdlg = new CollabDlg(this, parentFrame, isCenterScreen);
+        collabdlg.open();
+        collabdlg = null;
+	dispatcher.start(null);
+    }
+
     public void setCgiUrl()
     {
         setcgiurldlg = new SetCgiUrlDlg(this, parentFrame, isCenterScreen);
@@ -689,11 +708,13 @@ public class jsdevisec extends Panel
     {
         boolean reallyQuit = true;
 
-        if (dispatcher.getStatus() != 0) {
-	    String result = confirmMsg("JavaScreen still busy talking " +
-	      "to server!\nDo you wish to exit anyway?");
-	    if (result.equals(YMsgBox.YIDNO)) {
-	        reallyQuit = false;
+	if (specialID == 0) { 
+	    if (dispatcher.getStatus() != 0) {
+		String result = confirmMsg("JavaScreen still busy talking " +
+					   "to server!\nDo you wish to exit anyway?");
+		if (result.equals(YMsgBox.YIDNO)) {
+		    reallyQuit = false;
+		}
 	    }
 	}
 	//TEMP -- do we want to check for an open session here?
@@ -723,6 +744,12 @@ public class jsdevisec extends Panel
         isQuit = true;
 
         if (dispatcher != null) {
+
+	    if (specialID != 0 && dispatcher.dispatcherThread != null) {
+		dispatcher.dispatcherThread.stop();
+		dispatcher.dispatcherThread = null;
+	    }
+
             dispatcher.destroy();
             dispatcher = null;
         }
@@ -1884,6 +1911,133 @@ class SetModeDlg extends Dialog
             status = false;
         }
 	jsc.jsValues.debug.log("Closed SetModeDlg");
+    }
+
+    // true means this dialog is showing
+    public synchronized boolean getStatus()
+    {
+        return status;
+    }
+}
+
+
+// ------------------------------------------------------------------------
+// Dialog for setting collabrated JavaScreen ID.
+class CollabDlg extends Dialog
+{
+    jsdevisec jsc = null;
+    public TextField screenX = new TextField(4);
+    public Button setButton = new Button("   Set   ");
+    private boolean status = false; // true means this dialog is showing
+
+    public CollabDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
+    {
+        super(owner, true);
+
+	what.jsValues.debug.log("Creating CollabDlg");
+
+        jsc = what;
+
+        setBackground(jsc.jsValues.uiglobals.bg);
+        setForeground(jsc.jsValues.uiglobals.fg);
+        setFont(jsc.jsValues.uiglobals.font);
+
+        setTitle("Collabration JavaScreen");
+
+        setButton.setBackground(jsc.jsValues.uiglobals.bg);
+        setButton.setForeground(jsc.jsValues.uiglobals.fg);
+        setButton.setFont(jsc.jsValues.uiglobals.font);
+
+        screenX.setBackground(jsc.jsValues.uiglobals.textBg);
+        screenX.setForeground(jsc.jsValues.uiglobals.textFg);
+        screenX.setFont(jsc.jsValues.uiglobals.textFont);
+        screenX.setText("1");
+
+        if (jsc.jsValues.uiglobals.inBrowser) {
+            screenX.setEditable(false);
+            setButton.setEnabled(false);
+        }
+
+        // set layout manager
+        GridBagLayout  gridbag = new GridBagLayout();
+        GridBagConstraints  c = new GridBagConstraints();
+        setLayout(gridbag);
+
+
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.fill = GridBagConstraints.BOTH;
+        c.anchor = GridBagConstraints.CENTER;
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+
+        c.insets = new Insets(10, 10, 0, 0);
+        c.gridwidth = 1;
+        Label label1 = new Label("JavaScreen ID:");
+        gridbag.setConstraints(label1, c);
+        add(label1);
+
+        c.insets = new Insets(10, 0, 0, 5);
+        gridbag.setConstraints(screenX, c);
+        add(screenX);
+
+        c.insets = new Insets(10, 10, 0, 10);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(setButton, c);
+        add(setButton);
+
+        pack();
+
+        this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+
+        setButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        if (jsc.isSessionOpened) {
+                            jsc.showMsg("You already have a session opened!\nPlease close current session first!");
+                            return;
+                        }
+
+                        try {
+                            jsc.specialID = Integer.parseInt(screenX.getText());
+			    close();
+                        } catch (NumberFormatException e) {
+                            jsc.showMsg("Invalid JavaScreen ID specified!");
+                        }
+                    }
+                });
+    }
+    protected void processEvent(AWTEvent event)
+    {
+        if (event.getID() == WindowEvent.WINDOW_CLOSING) {
+            close();
+            return;
+        }
+
+        super.processEvent(event);
+    }
+
+    // If this dialog is a modal dialog, the show() or setVisible(true) method
+    // will block current thread(i.e. the thread that access this method, may
+    // be the event dispatcher thread) until setVisible(false) or dispose() is
+    // called
+    // In JDK1.1, any thread that access AWT method is acting as a event
+    // dispatcher thread
+    public void open()
+    {
+	jsc.jsValues.debug.log("Opening CollabDlg");
+        status = true;
+        setVisible(true);
+    }
+
+    public synchronized void close()
+    {
+        if (status) {
+            dispose();
+
+            status = false;
+        }
+	jsc.jsValues.debug.log("Closed CollabDlg");
     }
 
     // true means this dialog is showing
