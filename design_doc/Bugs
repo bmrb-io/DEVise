@@ -3070,6 +3070,10 @@ Num Date        Status  Description
 			set in the print configuration, the JavaScreen can't
 			open the session at all. (rkw)
 
+760 3/26/02	OPEN	JavaScreen: client has index out of range errors when
+			trying to draw axis labels for the session
+			test/axis_label_error.ds. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
