@@ -155,7 +155,7 @@ chmod 644 $servdir/JavaScreen/*.class
 # Install misc. scripts.
 set files = (check_jss restart_jss jss DEVise.kill jss.kill ports+files \
     DEVise.jspop DEVise.jspop_soil get_timestamp jss_savepid \
-    DEVise_savepid)
+    DEVise_savepid kill_jsall)
 foreach file ($files)
   cp -p $file $servdir
   chmod 755 $servdir/$file
@@ -187,14 +187,16 @@ endif
 cp -p bin/Tasvir $servdir/bin
 chmod 755 $servdir/bin/Tasvir
 
-# Install bin2 directory (java, perl, Xvfb *links*).
-chmod 755 bin2
+# Install bin2 directory (java, perl, Xvfb *links*) into server and cgi
+# directories.
 tar cf bin2.tar bin2
 set curdir = `pwd`
 cd $servdir
 tar xf $curdir/bin2.tar
+chmod 755 bin2
 cd $cgidir
 tar xf $curdir/bin2.tar
+chmod 755 bin2
 cd $curdir
 rm bin2.tar
 
@@ -228,11 +230,12 @@ chmod 644 $popdir/JavaScreen/*.class
 cp -p *.gif $popdir
 chmod 644 $popdir/*.gif
 
-# Install bin2 directory (java, perl, Xvfb *links*).
+# Install bin2 directory (java, perl, Xvfb *links*) pop directory.
 tar cf bin2.tar bin2
 set curdir = `pwd`
 cd $popdir
 tar xf $curdir/bin2.tar
+chmod 755 bin2
 cd $curdir
 rm bin2.tar
 
