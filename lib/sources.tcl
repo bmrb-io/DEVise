@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.24  1996/01/18 17:22:28  jussi
+#	Minor fix.
+#
 #	Revision 1.23  1996/01/17 18:04:41  jussi
 #	In administrator mode (UserMode == 0), physical schemas are
 #	displayed by default.
@@ -781,7 +784,7 @@ proc selectUnixFile {} {
 
 ############################################################
 
-proc selectStream {} {
+proc selectStream {{title ""}} {
     global streamSelected sourceTypes MapTable
 
     # see if .srcsel window already exists; if so, just return
@@ -797,6 +800,10 @@ proc selectStream {} {
     frame .srcsel.top
     frame .srcsel.bot
     pack .srcsel.mbar -side top -fill x
+    if {$title != ""} {
+	label .srcsel.title -text $title
+	pack .srcsel.title -side top -fill x -expand 1 -pady 3m
+    }
     pack .srcsel.top -side top -fill both -expand 1
     pack .srcsel.bot -side top -fill x -pady 5m
 
