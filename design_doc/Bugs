@@ -1832,7 +1832,7 @@ Num Date        Status  Description
 475 03/24/99	FIXED	RectX symbols aren't filled properly (see a2.tk
 			session). (rkw)
 
-476 03/24/99	OPEN	'5'/'home' on any visually-linked view should work
+476 03/24/99	FIXED	'5'/'home' on any visually-linked view should work
 			the way it does on piles. (rkw)
 
 477 03/31/99	OPEN	After viewing a "large" number of Tasvir images in the 

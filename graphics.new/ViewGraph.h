@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.65  1999/04/05 16:16:03  wenger
+  Record- and set-link follower views with auto filter update enabled have
+  'home' done on them after they are updated by a record link or set link.
+
   Revision 1.64  1999/03/24 17:26:13  wenger
   Non-DTE data source code prevents adding duplicate data source names;
   added "nice axis" feature (sets axis limits to multiples of powers of
@@ -369,6 +373,7 @@ class MasterSlaveLink;
 class CountMapping;
 class DerivedTable;
 class SlaveTable;
+class VisualLink;
 
 struct MappingInfo {
   TDataMap *map;
@@ -423,6 +428,7 @@ struct ViewPanInfo {
 
 DefinePtrDList(MappingInfoList, MappingInfo *);
 DefinePtrDList(MSLinkList, MasterSlaveLink *);
+DefinePtrDList(VisLinkList, VisualLink *);
 
 class GDataBin;
 class DupElim;
@@ -468,6 +474,13 @@ protected:
 
   /* Unlink all MasterSlaveLinks connected to this view. */
   virtual void UnlinkMasterSlave();
+
+
+  friend class VisualLink;
+
+  virtual void AddVisualLink(VisualLink *link);
+  virtual void DeleteVisualLink(VisualLink *link);
+
 
 public:
   // Stats update link access
@@ -530,7 +543,7 @@ public:
 
   /* Update visual filter in various ways. */
   virtual void GetHome2D(VisualFilter &filter);
-  virtual void GoHome(Boolean calledFromPile = false);
+  virtual void GoHome();
   virtual void PanLeftOrRight(PanDirection direction);
   virtual void PanUpOrDown(PanDirection direction);
 
@@ -677,6 +690,8 @@ public:
 
   UpdateLink _updateLink;	// link to view that want to know when
 				// this view has changed
+
+  VisLinkList _visualLinks;
 
   Boolean _autoScale;              /* true if auto scaling in effect */
 

@@ -30,6 +30,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1999/01/06 21:25:10  wenger
+  Fixed Condor2.ds redraw problem (a problem with the VisualLink class);
+  also added some debug code and code to make sure view filter histories
+  are consistent.
+
   Revision 1.11  1998/03/18 08:20:18  zhenhai
   Added visual links between 3D graphics.
 
@@ -108,6 +113,13 @@ VisualLink::~VisualLink()
   printf("VisualLink(%s)::~VisualLink()\n", GetName());
 #endif
 
+  int index = _viewList->InitIterator();
+  while (_viewList->More(index)) {
+    ViewGraph *view = _viewList->Next(index);
+	view->DeleteVisualLink(this);
+  }
+  _viewList->DoneIterator(index);
+
   Dispatcher::Current()->Unregister(this);
 }
 
@@ -123,6 +135,7 @@ void VisualLink::InsertView(ViewGraph *view)
   }
 
   DeviseLink::InsertView(view);
+  view->AddVisualLink(this);
 
   if (_viewList->Size() > 1) {
     DOASSERT(_filterValid, "Visual link's filter is invalid");
@@ -138,6 +151,21 @@ void VisualLink::InsertView(ViewGraph *view)
 #endif
     _filterValid = true;
   }
+}
+
+bool VisualLink::DeleteView(ViewGraph *view)
+{
+#if defined(DEBUG)
+  printf("VisualLink(%s)::DeleteView(%s)\n", GetName(), view->GetName());
+#endif
+
+  bool result = DeviseLink::DeleteView(view);
+
+  if (result) {
+    view->DeleteVisualLink(this);
+  }
+
+  return result;
 }
 
 void VisualLink::SetFlag(VisualFlag flag)
@@ -157,6 +185,9 @@ void VisualLink::SetFlag(VisualFlag flag)
 
 /* Called by View when its visual filter has changed.
    flushed == index if 1st element in the history that has been flushed.*/
+// Note: the list of ViewCallbacks is global to all views, so this method
+// gets called any time *any* view's visual filter gets changed, even if
+// that view isn't even linked!  RKW 1999-04-05.
 
 void VisualLink::FilterChanged(View *view, VisualFilter &newFilter,
 			       int flushed)
@@ -241,6 +272,56 @@ void VisualLink::Run()
   DoneIterator(index);
 
   _filterLocked = false;
+}
+
+
+void
+VisualLink::GoHome(ViewGraph *view)
+{
+#if defined(DEBUG)
+  printf("VisualLink(%s)::GoHome(%s)\n", GetName(), view->GetName());
+#endif
+
+  DOASSERT(view->GetNumDimensions() == 2,
+      "VisualLink::GoHome() only works on 2D views");
+
+  // Get home of each view in the link, save the extremes.
+  double xMin = DBL_MAX;
+  double yMin = DBL_MAX;
+  double xMax = DBL_MIN;
+  double yMax = DBL_MIN;
+
+  int index = _viewList->InitIterator();
+  while (_viewList->More(index)) {
+    ViewGraph *tmpView = (ViewGraph *)_viewList->Next(index);
+    if (view->GetNumDimensions() == 2) {
+      VisualFilter filter;
+      tmpView->GetHome2D(filter);
+      if (_linkAttrs & VISUAL_X || tmpView == view) {
+        xMin = MIN(xMin, filter.xLow);
+        xMax = MAX(xMax, filter.xHigh);
+      }
+      if (_linkAttrs & VISUAL_Y || tmpView == view) {
+        yMin = MIN(yMin, filter.yLow);
+        yMax = MAX(yMax, filter.yHigh);
+      }
+    }
+  }
+  _viewList->DoneIterator(index);
+#if (DEBUG >= 4)
+    printf("Link filter: (%g, %g), (%g, %g)\n", xMin, yMin, xMax, yMax);
+#endif
+
+  // Set the visual filter of the view that called us (it doesn't really
+  // matter which view in the link we set the filter for, because of the
+  // link).
+  VisualFilter filter;
+  view->GetVisualFilter(filter);
+  filter.xLow = xMin;
+  filter.yLow = yMin;
+  filter.xHigh = xMax;
+  filter.yHigh = yMax;
+  view->SetVisualFilter(filter);
 }
 
 

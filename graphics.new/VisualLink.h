@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/01/06 21:25:10  wenger
+  Fixed Condor2.ds redraw problem (a problem with the VisualLink class);
+  also added some debug code and code to make sure view filter histories
+  are consistent.
+
   Revision 1.6  1998/03/08 00:01:16  wenger
   Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
   update problems) -- major changes to visual links.
@@ -63,6 +68,7 @@ public:
   virtual ~VisualLink();
 
   virtual void InsertView(ViewGraph *view);
+  virtual bool DeleteView(ViewGraph *view);
 
   /* Set/get visual flag */
   virtual void SetFlag(VisualFlag flag);
@@ -74,6 +80,9 @@ public:
   // From DispatcherCallback:
   virtual char *DispatchedName() { return "VisualLink"; }
   virtual void Run();
+
+  // Make home global to the link.
+  virtual void GoHome(ViewGraph *view);
   
 protected:
   void SetVisualFilter(View *view);

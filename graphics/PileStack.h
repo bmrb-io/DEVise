@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1999/03/16 21:47:52  wenger
+  '5' (home) key now works properly on linked piles -- does home on the
+  entire pile as a unit.
+
   Revision 1.4  1999/02/22 19:07:34  wenger
   Piling of views with view symbols is not allowed; fixed bug 461 (redrawing
   of piles); fixed bug 464 (toggling axes in a pile); fixed dynamic memory
@@ -79,8 +83,6 @@ public:
 
   void EnableXAxis(Boolean enable);
   void EnableYAxis(Boolean enable);
-
-  void GoHome(ViewGraph *view);
 
 protected:
   ViewWinList *GetViewList();

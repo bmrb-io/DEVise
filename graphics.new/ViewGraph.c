@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.100  1999/04/05 16:16:02  wenger
+  Record- and set-link follower views with auto filter update enabled have
+  'home' done on them after they are updated by a record link or set link.
+
   Revision 1.99  1999/03/24 17:26:12  wenger
   Non-DTE data source code prevents adding duplicate data source names;
   added "nice axis" feature (sets axis limits to multiples of powers of
@@ -454,6 +458,7 @@
 #include "Init.h"
 #include "MasterSlaveLink.h"
 #include "RecordLink.h"
+#include "VisualLink.h"
 #include "TData.h"
 #include "Util.h"
 #include "AssoArray.h"
@@ -810,6 +815,29 @@ void ViewGraph::DropAsSlaveView(MasterSlaveLink *link)
     Refresh();
 }
 
+void
+ViewGraph::AddVisualLink(VisualLink *link)
+{
+#if defined(DEBUG)
+    printf("ViewGraph(%s)::AddVisualLink(%s)\n", GetName(), link->GetName());
+#endif
+
+  if (!_visualLinks.Find(link)) {
+    _visualLinks.Append(link);
+  }
+}
+
+void
+ViewGraph::DeleteVisualLink(VisualLink *link)
+{
+#if defined(DEBUG)
+    printf("ViewGraph(%s)::DeleteVisualLink(%s)\n", GetName(), link->GetName());
+#endif
+
+  int result = _visualLinks.Delete(link);
+  DOASSERT(result, "Deleted a link not in list");
+}
+
 void ViewGraph::InsertMapping(TDataMap *map, char *label)
 {
 #if defined(DEBUG)
@@ -1140,16 +1168,30 @@ ViewGraph::GetHome2D(VisualFilter &filter)
     }
 }
 
-void ViewGraph::GoHome(Boolean calledFromPile)
+void ViewGraph::GoHome()
 {
 #if defined(DEBUG)
-    printf("ViewGraph(%s)::GoHome(%d)\n", GetName(), calledFromPile);
+    printf("ViewGraph(%s)::GoHome()\n", GetName());
 #endif
 
-    if (IsInPileMode() && !calledFromPile) {
-	GetParent()->GetPileStack()->GoHome(this);
-        return;
+    if (GetNumDimensions() == 2) {
+	// If this view is in a visual link, we want to do "home" on the
+	// entire link as a unit.  Right now, this only works for 2D.
+	// RKW 1999-04-05.
+        Boolean hasVisLink = false;
+        int index = _visualLinks.InitIterator();
+        while (_visualLinks.More(index)) {
+          VisualLink *link = _visualLinks.Next(index);
+          link->GoHome(this);
+          hasVisLink = true;
+        }
+        _visualLinks.DoneIterator(index);
+
+        if (hasVisLink) {
+          return;
+        }
     }
+
 
     /* show all data records in view i.e. set filter to use the
        actual min/max X values and the actual min/max Y values;
