@@ -88,7 +88,7 @@ public class Schema {
     else throw IOException("Numbers of Types and ATTRNMs expected to equal");
   }
 
-  public String toString(){
+  public String getString(){
     String str = new String( );
     str += typeIDs.length;
   
