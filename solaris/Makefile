@@ -15,6 +15,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.42  1998/06/03 21:12:44  wenger
+# Moved various scripts into the new 'scripts' directory, and 'Bugs' and
+# 'ToDo' into 'design_doc' to clean up the top-level directory; changed
+# various scripts accordingly; added new 'devise' module in CVS.
+#
 # Revision 1.41  1998/03/12 02:09:31  wenger
 # Fixed dynamic memory errors in collaboration code that caused core dump
 # on Linux; collaboration code now tolerates interruption of accept() and
@@ -138,7 +143,7 @@
 #
 
 LIBMODULES = utils color graphics graphics.new tape issm compustat crsp \
-	unidata RTree DTE xvertext csgroup 
+	unidata DataReader RTree DTE xvertext csgroup 
 
 #devread is obsolete
 #attrproj is broken
