@@ -1990,6 +1990,16 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 		result = NULL_COMMAND;
 	}
 
+	// Clear the GIF dirty flag on all top-level views (this is really just
+	// needed for piled parent views with child GData views, where the
+	// parent view is not the first view in the pile).  RKW 1999-10-28.
+	viewIndex = _topLevelViews.InitIterator();
+	while (_topLevelViews.More(viewIndex)) {
+		View *view = (View *)_topLevelViews.Next(viewIndex);
+		view->GetWindowRep()->SetGifDirty(false);
+    }
+	_topLevelViews.DoneIterator(viewIndex);
+
 #if defined(DEBUG_LOG)
     sprintf(logBuf, "End of SendChangedViews; result = %d\n", result);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
@@ -2576,6 +2586,8 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 	// it's relative to the *window* origin.
 	//
 	if (parent) {
+#if 0 // Either AbsoluteOrigin() got changed, or I just goofed this up
+      // in the first place.  RKW.
 		// Make subview's location relative to parent.
 		int tmpX, tmpY;
 		view->GetParent()->AbsoluteOrigin(tmpX, tmpY);
@@ -2585,6 +2597,7 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 #endif
 		viewX -= tmpX;
 		viewY -= tmpY;
+#endif
     } else if (ControlPanel::Instance()->GetBatchMode()) {
 		// Include window's location.
 		int tmpX, tmpY;

@@ -13,6 +13,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  1999/10/10 08:49:52  hongyu
+// Major changes to JAVAScreen have been commited in this update, including:
+// 1. restructure of JavaScreen internal structure to adapt to vast changes
+//    in DEVise and also prepare to future upgrade
+// 2. Fix a number of bugs in visualization and user interaction
+// 3. Add a number of new features in visualization and user interaction
+// 4. Add support for complicated 3D molecular view
+//
 // Revision 1.19  1999/09/24 17:11:47  hongyu
 // adding support for 3-d molecule view
 //
@@ -95,6 +103,8 @@ public class DEViseGData
         }
 
         if (symbolType == 15) { // check symbol type
+	    // 15 is Embedded Tk window
+
             isJavaSymbol = true;
 
             width = (int)(size * xm);
@@ -106,10 +116,13 @@ public class DEViseGData
 
             x = x - width / 2;
             y = y - height / 2;
+	    /* Don't force the entire rectangle to be within the view.
+	     * RKW 1999-10-28.
             if (x < 0)
                 x = 0;
             if (y < 0)
                 y = 0;
+	    */
 
             Button button = new Button(data[11]);
             button.setActionCommand(data[10]);
@@ -134,6 +147,9 @@ public class DEViseGData
 
             symbol = button;
         } else if (symbolType == 12 || symbolType == 16) {
+	    // 12 is Text Label
+	    // 16 is Fixed Text Label
+
             isJavaSymbol = false;
 
             string = data[8];
@@ -194,10 +210,13 @@ public class DEViseGData
 
                 x = x - width / 2;
                 y = y - height / 2;
+		/* Don't force the entire rectangle to be within the view.
+		 * RKW 1999-10-28.
                 if (x < 0)
                     x = 0;
                 if (y < 0)
                     y = 0;
+	        */
             } else {
                 width = 0;
                 height = 0;
