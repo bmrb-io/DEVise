@@ -14,13 +14,13 @@ generic.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
 generic.o: /usr/include/stdlib.h /usr/include/unistd.h ../graphics/DList.h
 generic.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
 generic.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Display.h
-generic.o: ../graphics/Geom.h ../graphics/ColorMgr.h ../graphics/Control.h
+generic.o: ../graphics/Geom.h ../graphics/ColorMgr.h ../graphics/WindowRep.h
+generic.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+generic.o: ../graphics/Compress.h ../graphics/Control.h
 generic.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
 generic.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
 generic.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
-generic.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-generic.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-generic.o: ../graphics/Compress.h ../graphics/ViewCallback.h
+generic.o: ../graphics/ViewWin.h ../graphics/ViewCallback.h
 generic.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
 generic.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
 generic.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h

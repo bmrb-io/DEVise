@@ -13,7 +13,7 @@ extract.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
 extract.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 extract.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
 extract.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h rectape.h
-extract.o: ../tape/tapedrive.h /usr/include/tar.h ../graphics.new/machdep.h
+extract.o: ../tape/tapedrive.h ../graphics.new/machdep.h
 extract.o: /usr/include/limits.h /usr/include/sys/param.h
 extract.o: /usr/include/machine/param.h /usr/include/sys/signal.h
 extract.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
@@ -27,23 +27,21 @@ extract.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
 extract.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
 extract.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
 extract.o: /usr/include/netdb.h /usr/include/sys/socket.h
-extract.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h binconv.h
-extract.o: issmdata.h
+extract.o: /usr/include/netinet/in.h binconv.h issmdata.h
 rectape.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h rectape.h
-rectape.o: ../tape/tapedrive.h /usr/include/stdio.h /usr/include/tar.h
-rectape.o: ../graphics.new/machdep.h /usr/include/limits.h
-rectape.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-rectape.o: /usr/include/sys/param.h /usr/include/machine/param.h
-rectape.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-rectape.o: /usr/include/sys/time.h /usr/include/sys/time.h
-rectape.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-rectape.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-rectape.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
-rectape.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
-rectape.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-rectape.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-rectape.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-rectape.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-rectape.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-rectape.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-rectape.o: /usr/include/arpa/inet.h binconv.h /usr/include/string.h
+rectape.o: ../tape/tapedrive.h /usr/include/stdio.h ../graphics.new/machdep.h
+rectape.o: /usr/include/limits.h /usr/include/sys/types.h
+rectape.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
+rectape.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+rectape.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+rectape.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+rectape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+rectape.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+rectape.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+rectape.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
+rectape.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+rectape.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+rectape.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+rectape.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+rectape.o: /usr/include/netdb.h /usr/include/sys/socket.h
+rectape.o: /usr/include/netinet/in.h binconv.h /usr/include/string.h

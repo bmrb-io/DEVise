@@ -28,7 +28,7 @@ http_url.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
 http_url.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
 http_url.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
 http_url.o: /usr/include/netdb.h /usr/include/sys/socket.h
-http_url.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
+http_url.o: /usr/include/netinet/in.h
 mkbinfile.o: /usr/include/math.h /usr/include/floatingpoint.h
 mkbinfile.o: /usr/include/sys/ieeefp.h /usr/include/time.h
 mkbinfile.o: /usr/include/sys/stdtypes.h /usr/include/stdlib.h
