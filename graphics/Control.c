@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/04/16 19:45:10  jussi
+  Added DoAbort() method.
+
   Revision 1.5  1995/12/28 18:40:21  jussi
   Minor fixes to remove compiler warnings.
 
@@ -37,17 +40,14 @@
 #include "StringArray.h"
 #include "Dispatcher.h"
 #include "Journal.h"
-#include "ClassDir.h"
 #include "Util.h"
 
-/* one and only instance of control panel */
-
 ControlPanel *ControlPanel::_controlPanel; 
-ClassDir *ControlPanel::_classDir = (ClassDir *)NULL;
+ClassDir *ControlPanel::_classDir = 0;
 
 ClassDir *ControlPanel::GetClassDir()
 {
-  if (_classDir == NULL) {
+  if (!_classDir) {
     _classDir = new ClassDir;
     _classDir->InsertCategory("tdata");
     _classDir->InsertCategory("mapping");
@@ -71,18 +71,11 @@ void ControlPanel::RegisterClass(ClassInfo *cInfo, Boolean transient)
   GetClassDir()->InsertClass(cInfo);
 }
 
-/* Find instrance */
-
-void *ControlPanel::FindInstance(char *name)
-{
-  return GetClassDir()->FindInstance(name);
-}
-
 /**************************************************************/
 
 ControlPanel::ControlPanel()
 {
-  _callbacks= new ControlPanelCallbackList();
+  _callbacks = new ControlPanelCallbackList();
 }
 
 extern ControlPanel *GetTkControl();
@@ -91,113 +84,13 @@ extern ControlPanel *GetTkControl();
 
 ControlPanel *ControlPanel::Instance()
 {
-  if (_controlPanel == NULL)
+  if (!_controlPanel)
 #if 0
     _controlPanel = new XawControlPanel();
 #endif
     _controlPanel = GetTkControl();
   
   return _controlPanel;
-}
-
-void ControlPanel::DoDisplayConnectors(Boolean stat)
-{
-}
-	
-/*******************************************************************
-Set axes labeling for current view
-********************************************************************/
-
-void ControlPanel::DoDisplayAxes(Boolean stat)
-{
-}
-	
-/*************************************************************
-Update current view to reflect new dispatcher
-***************************************************************/
-
-void ControlPanel::UpdateNewDispatcher()
-{
-}
-
-/************************************************************
-Change to next dispatcher and update current view.
-***************************************************************/
-
-void ControlPanel::DoContext()
-{
-}
-
-/*********************************************************************/
-
-Boolean ControlPanel::DoInit()
-{
-  return false;
-}
-
-/********************************************************************
-change one of the visual filters.
-on == TRUE means turn on the filte , otherwise, turn off the filter.
-flag is one of: VISUAL_COLOR or VISUAL_PATTERN 
-**************************************************************************/
-
-void ControlPanel::ChangeIntVisualFilter(Boolean on, VisualFlag flag,
-					 int minVal, int maxVal)
-{
-}
-
-/********************************************************************
-change one of the double visual filters. 
-on == TRUE means turn on the filter , otherwise, turn off the filter.
-flag is one of: VISUAL_SIZE or VISUAL_ORIENTATION
-Note: for orientation, the input value is in degrees.
-**************************************************************************/
-
-void ControlPanel::ChangeFloatVisualFilter(Boolean on, VisualFlag flag,
-					   double minVal, double maxVal)
-{
-}
-
-/********************************************************************/
-
-void ControlPanel::DoScrollX(double amount)
-{
-}
-
-/********************************************************************/
-
-void ControlPanel::DoScrollY(double amount)
-{
-}
-
-/********************************************************************/
-
-void ControlPanel::DoZoomXY(double amount)
-{
-}
-
-/*******************************************************************/
-
-void ControlPanel::DoZoomX(double amount)
-{
-}
-
-/******************************************************************/
-
-void ControlPanel::DoZoomY(double amount)
-{
-}
-
-/* make current view display/not display symbols according to state */
-
-void ControlPanel::DoDisplaySymbols(Boolean state)
-{
-}
-
-/* display/not display axes for current view. */
-
-void ControlPanel::DoDisplayCurrentAxes(Boolean stat)
-{
 }
 
 /* quit */
@@ -214,12 +107,6 @@ void ControlPanel::DoQuit()
   Dispatcher::Cleanup();
   
   Exit::DoExit(2);
-}
-
-/* abort */
-
-void ControlPanel::DoAbort(char *reason)
-{
 }
 
 /* return */
