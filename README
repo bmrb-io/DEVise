@@ -30,7 +30,7 @@ You may need to update the dependency files to get the sources to compile
 correctly.  To do this, go to the top level source directory (where you
 did the 'cvs checkout') and enter the command:
 
-	makedep <arch>
+	scripts/makedep <arch>
 
 where <arch> is replaced by the Makefile suffix for your architecture
 (hp, sun, etc.).  Don't commit the updated makefiles to the source
