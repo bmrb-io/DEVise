@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.52  1998/03/31 16:39:08  wenger
+# Added an 'export' directory to csgroup and re-made solaris dependencies
+# accordingly.
+#
 # Revision 1.51  1998/03/12 18:24:36  donjerko
 # *** empty log message ***
 #
@@ -84,12 +88,12 @@ MapClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 MapClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
 MapClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
 MapClassInfo.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-MapClassInfo.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-MapClassInfo.o: ../graphics/Transform.h ../graphics/Pattern.h
-MapClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-MapClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
-MapClassInfo.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
-MapClassInfo.o: /usr/include/string.h ../graphics/ETk.h ../graphics/Xdef.h
+MapClassInfo.o: /usr/include/string.h ../graphics/ViewWin.h
+MapClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
+MapClassInfo.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+MapClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
+MapClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
+MapClassInfo.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
 MapClassInfo.o: ../graphics/GraphicsDebug.h ../graphics/CursorStore.h
 MapClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
 MapClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
@@ -112,13 +116,13 @@ ams.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 ams.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
 ams.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Dispatcher.h
 ams.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-ams.o: ../graphics/VisualArg.h ../graphics/ViewDir.h ../graphics/Display.h
-ams.o: ../graphics/Geom.h /usr/include/math.h /usr/include/floatingpoint.h
-ams.o: /usr/include/sys/ieeefp.h ../graphics/ViewWin.h
-ams.o: ../graphics/WindowRep.h ../graphics/Transform.h ../graphics/Pattern.h
-ams.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-ams.o: ../graphics/DevError.h /usr/include/errno.h /usr/include/sys/errno.h
-ams.o: ../graphics/ETkIfc.h /usr/include/string.h ../graphics/ETk.h
+ams.o: ../graphics/VisualArg.h ../graphics/ViewDir.h /usr/include/string.h
+ams.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
+ams.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+ams.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Transform.h
+ams.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+ams.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
+ams.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
 ams.o: ../graphics/Xdef.h ../graphics/GraphicsDebug.h
 ams.o: ../graphics/CursorStore.h ../graphics/Control.h ../graphics/ClassDir.h
 ams.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/WinClassInfo.h

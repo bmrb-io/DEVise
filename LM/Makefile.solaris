@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1998/03/31 16:38:43  wenger
+#  Added an 'export' directory to csgroup and re-made solaris dependencies
+#  accordingly.
+#
 #  Revision 1.8  1998/03/12 18:24:11  donjerko
 #  *** empty log message ***
 #
@@ -94,6 +98,7 @@ LMMain.o: ../graphics/DeviseTypes.h /usr/include/values.h
 LMMain.o: ../graphics/DevStatus.h ../graphics/Journal.h
 LMMain.o: ../graphics/VisualArg.h /usr/include/stdio.h
 LMMain.o: /usr/include/sys/va_list.h ../graphics/ViewDir.h
+LMMain.o: /usr/include/string.h
 LMWindow.o: LMWindow.h LMHashTable.h LMLayout.h ../graphics/DList.h
 LMWindow.o: ../graphics/Exit.h LMControl.h /s/tcl/include/tcl.h
 LMWindow.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
@@ -107,5 +112,6 @@ LMWindow.o: ../graphics/DeviseTypes.h /usr/include/values.h
 LMWindow.o: ../graphics/DevStatus.h ../graphics/Journal.h
 LMWindow.o: ../graphics/VisualArg.h /usr/include/stdio.h
 LMWindow.o: /usr/include/sys/va_list.h ../graphics/ViewDir.h
+LMWindow.o: /usr/include/string.h
 main.o: ../tape/HashTable.h
 main1.o: ../tape/HashTable.h

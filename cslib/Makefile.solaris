@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.19  1998/03/31 16:40:17  wenger
+# Added an 'export' directory to csgroup and re-made solaris dependencies
+# accordingly.
+#
 # Revision 1.18  1998/03/17 17:19:30  donjerko
 # Added new namespace management through relation ids.
 #
@@ -182,12 +186,12 @@ WinServer.o: /usr/include/math.h /usr/include/floatingpoint.h
 WinServer.o: /usr/include/sys/ieeefp.h ../graphics/Dispatcher.h
 WinServer.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
 WinServer.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-WinServer.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-WinServer.o: ../graphics/Transform.h ../graphics/Pattern.h
-WinServer.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-WinServer.o: ../graphics/DevError.h /usr/include/errno.h
-WinServer.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
-WinServer.o: /usr/include/string.h ../graphics/ETk.h ../graphics/Xdef.h
+WinServer.o: /usr/include/string.h ../graphics/ViewWin.h
+WinServer.o: ../graphics/WindowRep.h ../graphics/Transform.h
+WinServer.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+WinServer.o: ../graphics/Compress.h ../graphics/DevError.h
+WinServer.o: /usr/include/errno.h /usr/include/sys/errno.h
+WinServer.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
 WinServer.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 WinServer.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 WinServer.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
