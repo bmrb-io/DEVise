@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/11 20:52:57  jussi
+  Removed tcl.h and tk.h header file inclusion.
+
   Revision 1.4  1996/05/11 19:09:44  jussi
   Added replica management.
 
@@ -106,8 +109,8 @@ protected:
 private:
   virtual void FilterAboutToChange(View *view) {}
   virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
-  virtual void ViewCreated(View *view);
-  virtual void ViewDestroyed(View *view);
+  virtual void ViewCreated(View *view) {}
+  virtual void ViewDestroyed(View *view) {}
 
   char *DispatchedName() { return "ServerAPI"; }
   virtual void Run();
@@ -117,11 +120,27 @@ private:
 
   int GotoConnectedMode();
   int ReadSocket();
+  int NonBlockingMode(int fd);
+  int BlockingMode(int fd);
+
+  virtual int Send(int fd, u_short flag, int bracket,
+		   int argc, char **argv);
+  virtual int ReturnVal(u_short flag, char *result) {
+    return Send(_socketFd, flag, 0, 1, &result);
+  }
+  virtual int ReturnVal(int argc, char **argv) {
+    return Send(_socketFd, API_ACK, 1, argc, argv);
+  }
+  virtual int SendControl(u_short flag, char *result) {
+    return Send(_socketFd, flag, 0, 1, &result);
+  }
+  virtual int SendControl(int argc, char **argv) {
+    return Send(_socketFd, API_ACK, 1, argc, argv);
+  }
 
   int _listenFd;                        // socket for listening for clients
 
-  int _socketFd;                        // socket for receiving commands
-  int _controlFd;                       // socket for back channel
+  int _socketFd;                        // socket for client connection
   struct sockaddr_in _client_addr;      // address of client
 
   int _replicate;                       // number of servers to replicate to
@@ -131,25 +150,6 @@ private:
     int port;
     int fd;
   } _replicas[_maxReplicas];
-
-  virtual int Send(int fd, int flag, int bracket,
-		   int argc, char **argv);
-  virtual int ReturnVal(int flag, char *result) {
-    return Send(_socketFd, flag, 0, 1, &result);
-  }
-  virtual int ReturnVal(int argc, char **argv) {
-    return Send(_socketFd, API_OK, 1, argc, argv);
-  }
-  virtual int SendControl(int flag, char *result) {
-    if (_controlFd < 0)
-      return 1;
-    return Send(_controlFd, flag, 0, 1, &result);
-  }
-  virtual int SendControl(int argc, char **argv) {
-    if (_controlFd < 0)
-      return 1;
-    return Send(_controlFd, API_OK, 1, argc, argv);
-  }
 };
 
 const int DefaultDevisePort = 6100;
