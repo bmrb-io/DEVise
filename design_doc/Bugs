@@ -2222,7 +2222,7 @@ Num Date        Status  Description
 			(hy/rkw)
 			(Fixed by rkw, 2/23/00.)
 
-568 03/06/00	OPEN	Load Misc/COD1.ds in the JavaScreen -- the devised
+568 03/06/00	CD	Load Misc/COD1.ds in the JavaScreen -- the devised
 			crashes. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
