@@ -4,7 +4,7 @@
 
 ACTIVE
 ------
-Make a tested and stabilized release of Devise. (rr/rkw 1/9/97)
+Include Tasvir images in PostScript output. (ml/rkw 2/27/97)
 
 Improve control of fonts. (ml/rkw 11/19/96)
 
@@ -30,11 +30,6 @@ Fix speed problem for some sessions in Linux (try the LL.tk sesssion).
 (rr/ml/rkw 2/19/97)
 
 Major source code reorganization. (rkw 1/9/97)
-
-Make mapping dialog work like the query dialog in that you can select
-different views and the mapping dialog switches to the current
-mapping, and then there should be an 'apply' button to accept changes
-without closing the dialog.  (kb 8/2/96)
 
 Be able to use the mapping dialog to change some values for all views in
 a window (for example, change the symbol for all views from bars to lines).
@@ -376,6 +371,8 @@ currently displayed in a window. (rkw 2/17/97)
 
 COMPLETED
 ---------
+Make a tested and stabilized release of Devise. (rr/rkw 1/9/97)
+
 Add attrproj member function to read entire record. (tz/rkw 7/31/96)
 
 Set up makefiles to easily be able to compile with debugging or Purify.
