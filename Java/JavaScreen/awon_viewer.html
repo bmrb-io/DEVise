@@ -1,73 +1,41 @@
 <HTML>
-
 <HEAD>
-
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="Microsoft Word 98">
 <TITLE>WI-MN AWS Data Viewer</TITLE>
-
+<META NAME="Template" CONTENT="Chloe:System Folder:Apple Menu Items:Applications:Microsoft Office 98:Templates:Web Pages:Blank Web Page">
 </HEAD>
+<BODY LINK="#008080" VLINK="#808000" BGCOLOR="#ffffff">
 
-<BODY BGCOLOR="FFFFFF" LINK="00684E"  VLINK="B8860B">
-
-<CENTER>
-<H1>AWON Data Viewer</H1>
-WI-MN Cooperative Extension
-Agricultural Weather Page<BR>
-<IMG SRC="http://www.soils.wisc.edu/wimnext/rule.jpg"><BR>
-<TABLE CELLSPACING=0 CELLPADDING=0 BORDER=0 WIDTH=580>
-        <TR>
-        <IMG SRC="http://www.soils.wisc.edu/wimnext/navbar_wx.gif" BORDER=0 ALT="Menu" USEMAP="#MENU"><MAP NAME="MENU">
-        <AREA COORDS="0,0,70,25" HREF="http://www.soils.wisc.edu/wimnext/index.html">
-        <AREA COORDS="90,0,180,25" HREF="http://www.soils.wisc.edu/wimnext/weather.html">
-        <AREA COORDS="200,0,230,25" HREF="http://www.soils.wisc.edu/wimnext/sun.html">
-        <AREA COORDS="250,0,310,25" HREF="http://www.soils.wisc.edu/wimnext/water.html">
-        <AREA COORDS="330,0,380,25" HREF="http://www.soils.wisc.edu/wimnext/crops.html">
-        <AREA COORDS="400,0,490,25" HREF="http://www.soils.wisc.edu/wimnext/nitrogen.html">
-        
-        <AREA COORDS="120,35,185,55" HREF="http://www.soils.wisc.edu/wimnext/awon/awon.html">
-        <AREA COORDS="205,35,335,55" HREF="http://www.soils.wisc.edu/wimnext/asos/asos.html">
-        <AREA COORDS="360,35,400,55" HREF="http://www.soils.wisc.edu/wimnext/opu/opu.html">        
-        </MAP></TD>
-        </TR>
+<H1 ALIGN="CENTER">AWON Data Viewer</H1>
+<P ALIGN="CENTER">WI-MN Cooperative Extension Agricultural Weather Page<BR>
+<IMG SRC="http://www.soils.wisc.edu/wimnext/rule.jpg" WIDTH=432 HEIGHT=9></P>
+<P ALIGN="CENTER"><CENTER><TABLE CELLSPACING=0 BORDER=0 WIDTH=580>
+<TR><TD VALIGN="MIDDLE">
+<P ALIGN="CENTER"><IMG SRC="http://www.soils.wisc.edu/wimnext/navbar_wx.gif" USEMAP="#MENU" WIDTH=431 HEIGHT=47 ALT="Menu"><MAP NAME="MENU"><AREA COORDS="0,0,70,25" HREF="http://www.soils.wisc.edu/wimnext/index.html"><AREA COORDS="90,0,180,25" HREF="http://www.soils.wisc.edu/wimnext/weather.html"><AREA COORDS="200,0,230,25" HREF="http://www.soils.wisc.edu/wimnext/sun.html"><AREA COORDS="250,0,310,25" HREF="http://www.soils.wisc.edu/wimnext/water.html"><AREA COORDS="330,0,380,25" HREF="http://www.soils.wisc.edu/wimnext/crops.html"><AREA COORDS="400,0,490,25" HREF="http://www.soils.wisc.edu/wimnext/nitrogen.html"><AREA COORDS="120,35,185,55" HREF="http://www.soils.wisc.edu/wimnext/awon/awon.html"><AREA COORDS="205,35,335,55" HREF="http://www.soils.wisc.edu/wimnext/asos/asos.html"><AREA COORDS="360,35,400,55" HREF="http://www.soils.wisc.edu/wimnext/opu/opu.html"></MAP></TD>
+</TR>
 </TABLE>
-</CENTER>
+</CENTER></P>
 
-<H4>Introduction</H4> 
-Coming soon to this page!  An interactive graphical interface to
-weather observations contained in the AWON data archive.  This
-tool will allow you to visually browse through time series of daily
-temperature, wind, humidity, precipitation and solar radiation
-measurements collected with the AWON since 1985.    
-
-<P>A map of past and present AWON stations can be viewed 
-<A HREF="http://www.soils.wisc.edu/wimnext/awon/awon_map.html">here</A>.
-<P>An annotated tour of the data viewer will be provided 
-<A HREF="http://www.soils.wisc.edu/wimnext/awon/viewer_help.html">here</A>.
-
+<P ALIGN="CENTER">&nbsp;</P>
+<H1 ALIGN="CENTER">Interactive Weather Data Browser</H1>
+<P>This page is used for graphically browsing surface weather data collected by the Department of Soil Science, Unversity of Wisconsin-Madison. The graphs are generated using <A HREF="http://www.cs.wisc.edu/~devise/#DEVise">DEVise</A>. Here you can view several years of weather observations collected at weather stations around Wisconsin by clicking your mouse button or using just single keys on your keyboard.</P>
+<P>The development of this interactive data browser is a team effort between environmental researchers in the Soil Science Department and the DEVise Development Group in the Computer Science Department at the University of Wisconsin-Madions.</P>
+<P>To use this interactive web site, you must have Netscape 4.08 or greater installed on your computer.</P>
+<P>To view map of weather station locations click <A HREF="http://www.soils.wisc.edu/wimnext/awon/awon_map.html">here</A>. For help to use this site click <A HREF="http://bob.soils.wisc.edu/~wilson/help_page.html#here">here</A>.</P>
 <H4>Data Viewer</H4>
-<P>
-<CENTER>
-<applet code=jsb.class archive=jsb.jar width=800 height=700>
+
+<applet code=jsb.class archive=soil_sci/jsb_soil.jar width=800 height=600>
 <param name="debug" value="0">
-<param name="session" value="SoilSci/TwoStationVar.ds">
-<param name="cmdport" value="6666">
-<param name="imgport" value="6644">
+<param name="session" value="TwoStationVar.ds">
+<param name="cmdport" value="5966">
+<param name="imgport" value="5944">
 <param name="rubberbandlimit" value="4x4">
 <param name="bgcolor" value="64+96+0">
 <param name="screensize" value="800x600">
 </applet>
-</CENTER>
 
-<P>
-<CENTER>
-<IMG SRC="http://www.soils.wisc.edu/wimnext/rule.jpg"><P>
-<EM><FONT SIZE=-1>For further information on this page,<BR> 
-contact Bill Bland at the Dept. of Soil 
-Science, Univ. of Wisconsin-Madison<BR> 
-<A HREF="mailto:wlbland@facstaff.wisc.edu">
-Bill Bland, wlbland@facstaff.wisc.edu</A></FONT></EM>
-</CENTER>
-
-
-</BODY>
-
+<P ALIGN="CENTER"><IMG SRC="http://www.soils.wisc.edu/wimnext/rule.jpg" WIDTH=432 HEIGHT=9></P>
+<FONT SIZE=2><EM><P ALIGN="CENTER">For further information on this page,<BR>
+contact </FONT></EM><A HREF="mailto:wilson@calshp.cals.wisc.edu#Tim Wilson"><I>Tim Wilson</I></A><FONT SIZE=2><EM>, </FONT></EM><A HREF="mailto:anderson@bob.soils.wisc.edu#Martha Anderson"><I>Martha Anderson</I></A><FONT SIZE=2><EM>, </FONT></EM><A HREF="mailto:norman@calshp.cals.wisc.edu#John Norman"><I>John Norman</I></A><FONT SIZE=2><EM> or </FONT></EM><A HREF="mailto:wlbland@facstaff.wisc.edu#Bill Bland"><I>Bill Bland</I></A><FONT SIZE=2><EM> at the Dept. of Soil Science, or </FONT></EM><A HREF="mailto:wenger@cs.wisc.edu#Kent Wenger"><I>Kent Wenger</I></A><FONT SIZE=2><EM> or </FONT></EM><A HREF="mailto:miron@cs.wisc.edu#Miron Livny"><I>Miron Livny</I></A><FONT SIZE=2><EM> at the Deparment of Computer Science, Univ. ofWiscons-Madison</P></FONT></EM></BODY>
 </HTML>
