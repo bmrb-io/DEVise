@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/07/21 02:19:54  jussi
+  Added testing of xyZoom flag to determine zoom mode (XY or X/Y).
+
   Revision 1.10  1996/07/20 18:48:50  jussi
   Added w command for toggling wireframe/solid 3D.
 
@@ -129,6 +132,11 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
   if (key == 'w' || key == 'W') {
     Boolean solid = view->GetSolid3D();
     view->SetSolid3D(!solid);
+  }
+
+  if (key == 'v' || key == 'V') {
+    Boolean disp = view->GetDisplayDataValues();
+    view->SetDisplayDataValues(!disp);
   }
 
   if (key == 'z' || key == 'Z') {
