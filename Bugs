@@ -904,6 +904,13 @@ Num Date        Status  Description
 			slave of AccountLink the histogram in the 'Weekly
 			Histo' view gets goofed up for some reason. (ml/rkw)
 
+225 09/15/97	OPEN	When copying a view, after the operation is finished
+			the new view, not the old view, should automatically
+			become the current view. (ml/rkw)
+
+226 09/15/97	OPEN	The user should be able to set the title font from
+			the 'Set View Title' dialog. (ml/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
