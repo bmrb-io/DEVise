@@ -164,7 +164,7 @@ public class jsa extends Applet
             startInfo.append("Trying to load DEVise animation symbol ...\n");
             MediaTracker tracker = new MediaTracker(this);
             Image image = null;
-            for (int i = 0; i < 11; i++)  {
+            for (int i = 0; i < 7; i++)  {
                 image = getImage(baseURL, "devise" + i + ".gif");
                 tracker.addImage(image, 0);
                 try  {
