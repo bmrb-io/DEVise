@@ -1376,9 +1376,28 @@ int UniData::TxtCopy_String(char *dst, char *src, udParam *ud)
 		 n = (tmpn < n) ? tmpn : n;
 	    } else if (ud->attr->whitespace()) {
 		 tmpn = strcspn(src, ud->attr->whitespace());
+
+// Check if there is an \whitespace in data file, if so, clean '\' and show whitespace
+
+		 if (src[tmpn-1] == '\\') {    // there is an escape char. before whitespace, so ignore this whitespace
+		 	char* tmpstr;
+			char *tmpsrc = src;
+			int cur_ws = tmpn;
+			do {	
+				tmpstr = new char[tmpn-1];  // shift src 1 char left till \whitespace
+				strncpy(tmpstr,src,tmpn-1);
+				src++;  //adjust src to reflect shift
+				strncpy(src,tmpstr,tmpn-1); 
+				tmpsrc += cur_ws+1 ;   //to get the next whitespace move pointer to the end of \whitespace
+				tmpn--;
+				cur_ws = strcspn(tmpsrc, ud->attr->whitespace());  //find new whitespace
+				tmpn += cur_ws + 1;  //adjust tmpn to reflect current place of whitespace
+				delete tmpstr;
+			} while (tmpsrc[cur_ws - 1] == '\\');  //loop until finding the actual whitespace without escape
+
+		}
+		 	
 		 if (tmpn > n) {
-			strncpy(str,src,tmpn) ;
-			str[tmpn]='\0';
 			cerr << "Length of attribute : "<< ud->attr->flat_name() << " is larger than maxlen for \"" << str << "\"" << endl ; 
 		 } else
 			n = tmpn ;
