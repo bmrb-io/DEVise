@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/08/01 22:44:54  jussi
+  Record ranges in record link files can now be arbitrarily large.
+
   Revision 1.27  1996/07/24 18:13:55  jussi
   QueryProcFull::GetTData() now uses the gdataBuf in global scope
   as opposed to having its own gdataBuf.
@@ -1303,7 +1306,7 @@ void QueryProcFull::PrintStat()
 
 void QueryProcFull::InsertMapping(TDataMap *map)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("InsertMapping 0x%p, %s %s\n", map,
 	 map->GetTData()->GetName(), map->GetName());
 #endif
@@ -1320,6 +1323,9 @@ void QueryProcFull::InsertMapping(TDataMap *map)
 
 void QueryProcFull::ClearMapping()
 {
+#if defined(DEBUG) 
+  printf("ClearMapping %d\n", _numMappings);
+#endif
   _numMappings = 0;
 }
 
@@ -1395,6 +1401,10 @@ void QueryProcFull::DoGDataConvert()
     // Dispatcher::Current()->CancelCallback(_dispatcherID);
     return;
   }
+
+  if( _convertIndex >= _numMappings ) {
+      _convertIndex = 0;
+  }
 	
   /* Do in-memory conversion, if we can */
   int index = _convertIndex;
@@ -1405,6 +1415,10 @@ void QueryProcFull::DoGDataConvert()
     TDataMap *map = _mappings[index];
     GData *gdata = map->GetGData();
     TData *tdata = map->GetTData();
+#if defined(DEBUG) 
+	printf("DoGDataConvert in memory map[%d] 0x%p gdata 0x%p tdata 0x%p\n", index, map, gdata, tdata);
+#endif
+
     if (gdata && DoInMemGDataConvert(tdata, gdata, map)) {
       /* done converting one segment for in mem conversion */
 #ifdef DEBUG
@@ -1431,15 +1445,15 @@ void QueryProcFull::DoGDataConvert()
 
   for(mapidx = 0; mapidx < _numMappings; mapidx++) {
     map = _mappings[_convertIndex];
-#ifdef DEBUG
+#if defined(DEBUG) 
     printf("DoGDataConvert map 0x%p\n", map);
 #endif
 
     gdata = map->GetGData();
     tdata = map->GetTData();
 
-#ifdef DEBUG
-    printf("Map[%d] has GData 0x%p\n", _convertIndex, gdata);
+#if defined(DEBUG) 
+    printf("Map[%d] has GData 0x%p tdata 0x%p\n", _convertIndex, gdata, tdata);
 #endif
 
     _convertIndex = (_convertIndex + 1) % _numMappings;
@@ -1448,7 +1462,7 @@ void QueryProcFull::DoGDataConvert()
       continue;
 
     recsLeft = gdata->RecsLeftToConvert();
-#ifdef DEBUG
+#if defined(DEBUG) 
     printf("GData %s has %d recs left\n", gdata->GetName(), recsLeft);
 #endif
     if (!recsLeft)
