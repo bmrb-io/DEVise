@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.192  1999/08/31 21:46:16  wenger
+  Found and fixed bug 506 (problem with cursor drawing when source and
+  destination views are in the same window).
+
   Revision 1.191  1999/08/30 19:34:24  wenger
   Unified X and Y axis drawing code; found and fixed bug 505 (changing axis
   date format didn't force redraw).
@@ -1694,7 +1698,11 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
 
 void View::DrawLabel()
 {
+#if 1 //TEMP
+  if (true) {
+#else //TEMP
   if (!Session::GetIsJsSession()) {
+#endif //TEMP
 	WindowRep*	win = GetWindowRep();
 	win->SetGifDirty(true);
 	
