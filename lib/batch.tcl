@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/07/11 18:17:04  jussi
+#  Removed all non-essential code. The Tcl batch client no longer
+#  uses any Tk (X11) features.
+#
 #  Revision 1.2  1996/05/14 15:09:21  jussi
 #  Added a few global variables.
 #
@@ -28,6 +32,8 @@ set template 0
 set sessionName "session.tk"
 set curView ""
 set mode 0
+set libdir $env(DEVISE_LIB)
+source $libdir/tool.tcl
 
 set libdir "."
 if { [info exists env(DEVISE_LIB)] } {
@@ -48,15 +54,15 @@ if { [info exists env(DEVISE_TMP)] } {
 
 set hostCfg $libdir/config.tcl
 if {![file exists $hostCfg]} {
-    puts "Cannot read configuration file $hostCfg"
+    Puts "Cannot read configuration file $hostCfg"
 } else {
-    puts "Reading configuration file $hostCfg"
+    Puts "Reading configuration file $hostCfg"
     source $hostCfg
 }
 
 if {![catch {set hostCfg $libdir/config.$env(HOSTNAME)}]} {
     if {[file exists $hostCfg]} {
-	puts "Reading configuration file $hostCfg"
+	Puts "Reading configuration file $hostCfg"
 	source $hostCfg
     }
 }
@@ -84,6 +90,6 @@ if { [ info exists env($envName)] && [file exists $env($envName) ] } {
 }
 
 if {$rcFile != ""} {
-    puts "Reading initialization file $rcFile"
+    Puts "Reading initialization file $rcFile"
     source $rcFile
 }
