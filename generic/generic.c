@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.41  1996/12/04 17:53:02  wenger
+  Date composite parsers call mktime() for every record to fix nasty
+  and subtle DST bugs; also check to make sure they're stuffing the
+  date into an attribute that _is_ a date type.
+
   Revision 1.40  1996/12/02 18:44:21  wenger
   Fixed problems dealing with DST in dates (including all date composite
   parsers); added more error checking to date composite parsers.
@@ -169,10 +174,6 @@
 #include <sys/types.h>
 #include <String.h>
 #include <fstream.h>
-#ifdef __GNUG__
-#pragma implementation "HashTable.h"
-#endif
-
 
 #include "DeviseTypes.h"
 #include "Dispatcher.h"
@@ -195,8 +196,9 @@
 #include "TData.h"
 #include "CursorClassInfo.h"
 #include "ParseCat.h"
-#include "HashTable.h"
+#include "StringStorage.h"
 #include "DevError.h"
+#include "StateMap.h"
 #include "Util.h"
 
 static time_t GetTime(struct tm &now)
@@ -233,8 +235,10 @@ static time_t GetTime(struct tm &now)
     }
 
     if (now.tm_year < 70) {
+#if 0
       sprintf(errBuf, "Illegal year value %d; set to (19)70", now.tm_year);
       reportErrNosys(errBuf);
+#endif
       now.tm_sec = 0;
       now.tm_min = 0;
       now.tm_hour = 0;
@@ -736,27 +740,6 @@ private:
    a state abbreviation to latitude/longitude attributes
 */
 
-struct stateMapRec {
-  char *state;
-  float latitude;
-  float longitude;
-};
-
-static int StringHash(char *&string, int numBuckets)
-{
-  int sum = 0;
-  for(int i = 0; i < (int)strlen(string); i++)
-    sum += string[i];
-  return sum % numBuckets;
-}
-
-static int StringComp(char *&string1, char *&string2)
-{
-  return strcmp(string1, string2);
-}
-
-HashTable<char *, stateMapRec *> stateMap(50, StringHash, StringComp);
-
 static void InitStateMap()
 {
   /*
@@ -823,7 +806,7 @@ static void InitStateMap()
   int i = 0;
   while(StateLatLon[i].state) {
     stateMapRec *rec = &StateLatLon[i];
-    int code = stateMap.insert(StateLatLon[i].state, rec);
+    int code = genStateMap.insert(StateLatLon[i].state, rec);
     DOASSERT(code >= 0, "Invalid hash table code");
     i++;
   }
@@ -834,7 +817,7 @@ static void MapStateToLatLon(char *state, float &lat, float &lon)
   static int warning = 1;
 
   stateMapRec *rec;
-  int code = stateMap.lookup(state, rec);
+  int code = genStateMap.lookup(state, rec);
   if (code < 0) {
     if (warning)
       fprintf(stderr,
@@ -1274,7 +1257,6 @@ private:
   Boolean   _init;                /* true when instance initialized */
 };
 
-
 int main(int argc, char **argv)
 {
   Init::DoInit(argc,argv);
@@ -1342,7 +1324,7 @@ int main(int argc, char **argv)
   ControlPanel::RegisterClass(new VisualLinkClassInfo());
   ControlPanel::RegisterClass(new CursorClassInfo());
 
-  /* hack to start control panel so that it'll read the RC files */
+  /* Hack to start control panel so that it'll read the RC files */
   ControlPanel::_controlPanel = GetNewControl();
   ControlPanel *ctrl = ControlPanel::Instance();
 
@@ -1351,8 +1333,14 @@ int main(int argc, char **argv)
 
   DeviseDisplay *disp = DeviseDisplay::DefaultDisplay();
 
-  /* keep compiler happy */
+  /* Keep compiler happy */
   disp = disp;
+
+  /* Disable buffering of stdout (makes debugging easier) */
+  (void)setbuf(stdout, NULL);
+
+  /* Populate string storage space from init file */
+  StringStorage::PopulateFromInitFile();
 
   /* Start session (possibly restoring an old one */
   ctrl->StartSession();
