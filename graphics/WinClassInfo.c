@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/03/25 23:32:42  jussi
+  Size of window now correctly computed for windows that have
+  a margin.
+
   Revision 1.5  1995/12/28 18:56:02  jussi
   Small fix to remove compiler warning.
 
@@ -122,13 +126,12 @@ void TileLayoutInfo::CreateParams(int &argc, char **&argv)
 
   int x, y;
   unsigned int w, h;
-  _win->AbsoluteOrigin(x, y); /* need to use offset from top-left of screen*/
-
 #if defined(MARGINS) || defined(TK_WINDOW)
   _win->RealGeometry(x, y, w, h);
 #else
   _win->Geometry(x, y, w, h);
 #endif
+  _win->AbsoluteOrigin(x, y); /* need to use offset from top-left of screen*/
 
   // need to allow for window manager's borders; the height of the title
   // bar above the window is around 20 pixels (in fvwm, at least), and
