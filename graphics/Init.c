@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.66  2001/07/31 15:53:21  wenger
+  Added -fontkludge argument to allow bypassing of font families that
+  don't work with Xvfb on SPARC/Solaris.
+
   Revision 1.65  2001/04/27 17:09:34  wenger
   Made various cleanups to external process dynamic data generation and
   added most GUI (still need special GUI for creating the data source);
@@ -378,7 +382,7 @@ Boolean Init::_doDebugLog = true;
 int Init::_logLevel = (int)DebugLog::LevelInfo2;
 Boolean Init::_doHangCheck = true;
 Boolean Init::_useJSCache = true;
-Boolean Init::_fontKludge = true;
+Boolean Init::_fontKludge = false;
 
 Boolean Init::_quitOnDisconnect = false;
 int Init::_clientTimeout = 0;
