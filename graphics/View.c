@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.62  1996/08/03 15:37:05  jussi
+  Flag _solid3D now has three values.
+
   Revision 1.61  1996/07/25 14:22:58  jussi
   Added aborted parameter to ReportQueryDone().
 
@@ -1390,7 +1393,7 @@ void View::Run()
 
   VisualFilter newFilter;
   
-  if (!Iconified() && !_pileMode &&
+  if (!Iconified() && !_pileMode && _numDimensions == 2 &&
       RestorePixmap(_filter, newFilter) == PixmapTotal) {
 #ifdef DEBUG
     printf("View::Run: Restored complete pixmap for\n  %s\n", GetName());
