@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.48  1996/11/03 02:41:53  kmurli
+#	Modified to include the query schema level. Also modified to include DQL
+#	processing
+#
 #	Revision 1.47  1996/11/01 19:29:02  kmurli
 #	Changed to include the DQL type. Also calls importFileDQL command in
 #	ParseAPI.c to facilitate the creation of the DQL classes.
@@ -289,7 +293,9 @@ proc updateStreamDef {} {
 		[string trim $key]]
     }
 	if {$source == "DQL"} {
-      set schemafile [format "%s.%s" [string trim $source] [string trim $key]]
+	  set key [format "%s.%s" [string trim $source] [string trim $dispname]]
+	  set schemafile $key
+      #set schemafile [format "%s.%s" [string trim $source] [string trim $key]]
       set schematype $schemafile 
     }
     if {$dispname == "" || $key == "" || $schemafile == ""} {

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/11/03 02:41:38  kmurli
+  Modified to include the query schema level. Also modified to include DQL
+  processing
+
   Revision 1.11  1996/11/01 19:28:21  kmurli
   Added DQL sources to include access to TDataDQL. This is equivalent to
   TDataAscii/TDataBinary. The DQL type in the Tcl/Tk corresponds to this
@@ -61,13 +65,19 @@
 #include "DeviseTypes.h"
 #include "ClassDir.h"
 #include "AttrList.h"
-
+#include <String.h>
+#include "DataSourceBuf.h"
 //#define NO_GEN_CLASS_INFO
 
 /* Parse a catalog file and register new file type with the system.
    Return name of new file type if successful, else return NULL */
-extern char *ParseCat(char *catFile);
-extern char *ParseDQL(char *name,char *schema,char * schemaFile,char * query);
+extern char *ParseCat(char *fileType,char *catFile,char *dataFile);
+extern char *ParseDQL(char *name,char *schema,char * schemaFile,\
+					  char *fileType,char *dataFile,char * query);
+
+extern int ParseCatDQL(char *,String &);
+extern int ParseDQLCatPhysical(DataSource *,String &);
+extern int ParseDQLCatLogical (DataSource *,String &);
 
 /* Parse schema(s) from buffer(s) and register new "file type" with
    the system.  Return the name of the new "file type" if successful,

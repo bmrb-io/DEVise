@@ -25,7 +25,7 @@
 #ifndef ATTRPROJ
 class TDataDQLInterpClassInfo: public ClassInfo {
 public:
-  TDataDQLInterpClassInfo(char*className,char * schemaFile,char *query);
+  TDataDQLInterpClassInfo(char*className,char * schemaFile,char *fileType,char *dataFile,char *query);
   TDataDQLInterpClassInfo(char *className,char * schemaFile,
   AttrList attrs,char * name,char * type,char *query,TData *tdata);
 

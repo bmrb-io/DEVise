@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.65  1996/11/03 18:20:55  kmurli
+#	Changes for incorporating DQL type..
+#
 #	Revision 1.64  1996/11/01 19:29:01  kmurli
 #	Changed to include the DQL type. Also calls importFileDQL command in
 #	ParseAPI.c to facilitate the creation of the DQL classes.
@@ -301,6 +304,7 @@ proc OpenDataSource {sname} {
 	}
 	set stype [lindex $derivedSourceList($sname) 0]
 	DEVise dataSegment $sname $fname 0 0
+
 	return [list $sname $fname $stype]
     }
 
@@ -355,7 +359,7 @@ proc OpenDataSource {sname} {
         set stype "UNIXFILE"
     }
 
-    return [list $sname $fname $stype]
+	return [list $sname $fname $stype]
 }
 ############################################################
 
@@ -428,8 +432,7 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
         set sname [lindex $sourcedef 0]
         set param [lindex $sourcedef 1]
         set stype [lindex $sourcedef 2]
-       
-		
+      	
 	if {$derivedOnly} {
 	    set schema [lindex $derivedSourceList($sname) 2]
 	    set schemafile [lindex $derivedSourceList($sname) 3]
@@ -456,9 +459,15 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
                         "Cannot open schema file $schemafile" "" 0 OK
                 return ""
             }
-			# Probably call something else..
-            	set result [DEVise importFileType $schemafile]
-            if {$result == ""} {
+			# Send the file type UNIXFILE etc.. 
+			# followed by schemaFile Name
+			# followed by the dataFile name (param)
+			# This was specially done for the unique case for query interfaces
+			# since a full query was needed to call DQL
+			
+            	set result [DEVise importFileType $stype $schemafile $param]
+            
+			if {$result == ""} {
                 return ""
             }
             if {$result != $schema} {

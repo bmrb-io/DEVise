@@ -15,7 +15,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
-
+#include <String.h>
 #include "TDataDQLInterp.h"
 #include "AttrList.h"
 #include "RecInterp.h"
@@ -24,6 +24,7 @@
 #include "Control.h"
 #include "Util.h"
 #include "DevError.h"
+#include "ParseCat.h"
 #ifndef ATTRPROJ
 #  include "StringStorage.h"
 #endif
@@ -31,31 +32,38 @@
 //#define DEBUG
 
 #ifndef ATTRPROJ
-TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(char * className,char *schemaFile,char *query): _attrs(className)
+
+TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(
+	char * className, char *schemaFile, char *fileType,char *dataFile,
+	char *query): _attrs(className)
 {
+
 /* Note that this only saves a pointer to the attrList; it doesn't copy it. */
-  printf(" DQLINTERP CLASS -- className = %s schemaFile = %s query = %s \n\n",
-	className,schemaFile,query);
 
   _className = strdup(className); 
   _schemaFile = strdup(schemaFile);
 
-  if (!(className[0] == 'D' && className[1] == 'Q' && className[2] == 'L')){
+  if (strcmp(fileType,"DQL")){
 	
-	char * tmp1 = "select * from \" Devise ";
-	_query = (char *)malloc (strlen(tmp1)+strlen(schemaFile)+strlen(query)+15);
-	strcpy(_query,tmp1);
-	strcat(_query,schemaFile);
-	strcat(_query," \" where ");
-	strcat(_query,query);
+	// Extract the attributes from the schema..
+	String list = "";
+
+	if (ParseCatDQL(schemaFile,list) == false)
+		return;
+
+	String tmp1 = "select "+ list + " from \"DeviseTable ";
+	tmp1 = tmp1 + schemaFile + " " + dataFile + "\" where ";
+	tmp1 = tmp1 + query + ";";
+
+	_query = strdup(tmp1.chars());
 
   }
   else
 	_query = strdup(query);
  
-  printf(" Query = %s \n",_query);
+  printf(" DQL::Query = %s \n",_query);
 
-  _tdata = NULL;
+  _tdata = NULL ;
   _type = NULL;
   _name = NULL;
  _attrs.InsertAttr(0,"ID1",0,sizeof(int),IntAttr,false,0,false,true,

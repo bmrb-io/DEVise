@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.33  1996/11/03 02:41:38  kmurli
+  Modified to include the query schema level. Also modified to include DQL
+  processing
+
   Revision 1.32  1996/11/01 19:28:20  kmurli
   Added DQL sources to include access to TDataDQL. This is equivalent to
   TDataAscii/TDataBinary. The DQL type in the Tcl/Tk corresponds to this
@@ -153,7 +157,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "ParseCat.h"
 #include "TDataAsciiInterp.h"
 #include "TDataDQLInterp.h"
 #include "TDataDQL.h"
@@ -167,6 +170,7 @@
 #include "DeviseTypes.h"
 #include "DataSourceBuf.h"
 #include "DataSourceFileStream.h"
+#include "ParseCat.h"
 #include "DevError.h"
 
 //#define DEBUG
@@ -937,12 +941,12 @@ error:
  * schema and a logical schema) is being read.
  */
 char *
-ParseDQL(char * name,char * schema,char *schemaFile,char * query)
+ParseDQL(char * name,char * schema,char *schemaFile,char * fileType,char *dataFile,char * query)
 {
 
     gdir->add_entry(name);
 	TDataDQLInterpClassInfo * DQLclass = 
-		new TDataDQLInterpClassInfo(schema,schemaFile,query);
+		new TDataDQLInterpClassInfo(schema,schemaFile,fileType,dataFile,query);
 	
 	ControlPanel::RegisterClass(DQLclass,true);
 	
@@ -1096,7 +1100,7 @@ ParseCatLogical(DataSource *schemaSource, char *sname)
  * Read and parse a schema file.
  */
 char *
-ParseCat(char *catFile) 
+ParseCat(char *fileType,char *catFile,char *dataFile) 
 {
   // Check the first line of catFile - if it is "physical abc",
   // call ParseCatPhysical(DataSourceFile(abc), false) and then
@@ -1126,8 +1130,9 @@ ParseCat(char *catFile)
 
 	// Look for the keyword 'physical' to determine whether this is a
 	// logical schema file.
-        // Note: we could parse the header here to look for logical schema file
-        // type, too.
+    // Note: we could parse the header here to look for logical schema file
+    // type, too.
+
 	char token1[LINESIZE];
 	char token2[LINESIZE];
 	sscanf(buf, "%s %s", token1, token2);
@@ -1171,14 +1176,16 @@ ParseCat(char *catFile)
 			char token1[LINESIZE];
 			char token2[LINESIZE];
 			sscanf(buf, "%s %s", token1, token2);
-    
-			printf(" DQL:: Schema = %s Query = %s \n",token2,query);
+			
+			// formulate the query ..
+			//printf(" DQL:: Schema = %s Query = %s \n",token2,query);
+
      	 	DataSourceFileStream schemaSource(token2, StripPath(token2));
 			//char * temp = ParseDQL((&schemaSource)->getLabel(),
 		    // ParseCatPhysical(&schemaSource,false,true),schema,query);
 			
 			char * temp = ParseDQL(StripPath(catFile),
-				ParseCatPhysical(&schemaSource,false,true),schema,query);
+				ParseCatPhysical(&schemaSource,false,true),schema,fileType,dataFile,query);
 			
 			free(query);
 			free(schema);
@@ -1237,4 +1244,201 @@ ParseSchema(char *schemaName, char *physSchema, char *logSchema)
     }
 
     return result;
+}
+
+
+/*------------------------------------------------------------------------------
+ * function: ParseCat
+ * Read and parse a schema file.
+ */
+int
+ParseCatDQL(char *catFile,String &list) 
+{
+  // Check the first line of catFile - if it is "physical abc",
+  // call ParseCatPhysical(DataSourceFile(abc), false) and then
+  // ParseCatLogical(DataSourceFile(catFile)).
+  // Otherwise, simply call ParseCatPhysical(DataSourceFile(catFile), true).
+
+  int result = false;
+  
+  FILE *fp = fopen(catFile, "r");
+  if (!fp)
+  {
+    fprintf(stderr,"ParseCat: can't open file %s\n", catFile);
+  }
+  else
+  {
+    char buf[LINESIZE];
+	// Find the first nonblank, non-comment line.
+    buf[0] = '\0';
+	while (IsBlank(buf) || (buf[0] == '#'))
+	{
+		fgets(buf, LINESIZE, fp);
+		StripTrailingNewline(buf);
+	}
+
+	// Look for the keyword 'physical' to determine whether this is a
+	// logical schema file.
+	
+	char token1[LINESIZE];
+	char token2[LINESIZE];
+	sscanf(buf, "%s %s", token1, token2);
+    
+	fclose(fp);
+	if (strcmp(token1, "physical"))
+	{
+      DataSourceFileStream	schemaSource(catFile, StripPath(catFile));
+      result = ParseDQLCatPhysical(&schemaSource, list);
+    }
+    else
+    {
+      DataSourceFileStream	logSchemaSource(catFile, StripPath(catFile));
+      result = ParseDQLCatLogical(&logSchemaSource, list);
+    }
+  }
+
+  return result;
+}
+
+int
+ParseDQLCatLogical(DataSource *schemaSource,String &list)
+{
+  char buf[LINESIZE];
+  int numArgs;
+  char **args;
+  list = "";
+  String phySchema;
+
+  if (schemaSource->Open("r") != StatusOk)
+  {
+    goto error;
+  }
+  _line = 0;
+  
+  /* Skip past any leading comment or blank lines, and past the line
+   * specifying the physical schema.  Note that the line specifying the
+   * physical schema MUST be the first nonblank, non-comment line. */
+  buf[0] = '\0';
+  while (IsBlank(buf) || (buf[0] == '#'))
+  {
+    schemaSource->Fgets(buf, LINESIZE);
+  }
+  
+  StripTrailingNewline(buf);
+  Parse(buf,numArgs, args);
+  
+  if (strcmp(args[0],"physical") == 0)
+	phySchema = args[1];
+  
+  while (schemaSource->Fgets(buf,LINESIZE) != NULL)
+  {
+	  StripTrailingNewline(buf);
+      _line++;
+      if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r')
+	continue;
+      
+	  Parse(buf,numArgs, args);
+      
+	  if (numArgs == 0)
+	continue;
+     
+      if (strcmp(args[0], "item") == 0)
+      {
+		if (list.length() != 0)
+			list += " , ";
+		list += args[1];
+      }
+		
+  }
+  schemaSource->Close();
+
+  if (list.length() == 0 ){
+	// Call physical schema Parse
+	cout << " Physchema .chars () = *" << phySchema << "*" << endl;
+    DataSourceFileStream  phySchemaSource((char *)phySchema.chars(),
+							StripPath((char *)phySchema.chars()));
+    return ParseDQLCatPhysical(&phySchemaSource, list);
+  }	
+  return true;
+
+ error:
+  schemaSource->Close();
+  
+  fprintf(stderr,"error at line %d\n", _line);
+  return false;
+}
+
+int
+ParseDQLCatPhysical(DataSource *schemaSource, String &list)
+{
+	Boolean hasSource = false;
+	char *source = 0; /* source of data. Which interpreter we use depends
+			     on this */
+	
+	list = "";
+	char buf[LINESIZE];
+	Boolean hasFileType = false;
+	Boolean hasSeparator = false;
+	Boolean hasWhitespace = false;
+	Boolean hasComment = false;
+
+	Boolean isAscii = false;
+	Boolean GLoad = true;
+	char *fileType = 0;
+	int numArgs;
+	char **args;
+	int recSize = 0;
+	char *sep = 0;
+	int numSep = 0;
+	char *commentString = 0;
+	Group *currgrp = NULL;
+
+	attrs = NULL;
+	numAttrs = 0;
+
+	if (schemaSource->Open("r") != StatusOk)
+	{
+		reportError("schemaSource->Open() failed", devNoSyserr);
+		goto error;
+	}
+	_line = 0;
+	while (schemaSource->Fgets(buf, LINESIZE) != NULL)
+	{
+		StripTrailingNewline(buf);
+		_line++;
+		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r')
+			continue;
+		
+		Parse(buf,numArgs, args);
+		if (numArgs == 0)
+			continue;
+		
+		if (strcmp(args[0],"end")== 0)
+		{
+			break;
+		}
+		else if (strcmp(args[0],"attr") == 0 ||
+			   strcmp(args[0],"compattr") == 0 )
+		{
+			if (list.length() != 0 )
+				list += ", ";
+			list += args[1];
+		}
+		else if (strcmp(args[0],"sorted") == 0){
+			if (list.length() != 0 )
+				list += ", ";
+			list += args[2];
+		}
+	}
+
+	/* round record size */
+
+	schemaSource->Close();
+	return true;
+error:
+	schemaSource->Close();
+
+	if (attrs != NULL) delete attrs;
+	fprintf(stderr,"error at line %d\n", _line);
+	return false;
 }
