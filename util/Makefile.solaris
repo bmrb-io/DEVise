@@ -43,3 +43,6 @@ mk3dstruct.o: /usr/include/sys/feature_tests.h /usr/include/stdlib.h
 mkbinfile.o: /usr/include/math.h /usr/include/floatingpoint.h
 mkbinfile.o: /usr/include/sys/ieeefp.h /usr/include/time.h
 mkbinfile.o: /usr/include/sys/feature_tests.h /usr/include/stdlib.h
+mkparfile.o: /usr/include/math.h /usr/include/floatingpoint.h
+mkparfile.o: /usr/include/sys/ieeefp.h /usr/include/time.h
+mkparfile.o: /usr/include/sys/feature_tests.h /usr/include/stdlib.h

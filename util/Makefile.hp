@@ -27,3 +27,5 @@ mk3dstruct.o: /usr/include/math.h /usr/include/time.h /usr/include/sys/time.h
 mk3dstruct.o: /usr/include/sys/stdsyms.h /usr/include/stdlib.h
 mkbinfile.o: /usr/include/math.h /usr/include/time.h /usr/include/sys/time.h
 mkbinfile.o: /usr/include/sys/stdsyms.h /usr/include/stdlib.h
+mkparfile.o: /usr/include/math.h /usr/include/time.h /usr/include/sys/time.h
+mkparfile.o: /usr/include/sys/stdsyms.h /usr/include/stdlib.h

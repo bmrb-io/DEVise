@@ -26,10 +26,12 @@ Action.o: ViewStats.h GdataStat.h ../tape/HashTable.h DataSourceFixedBuf.h
 Action.o: DataSourceBuf.h DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 Action.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 Action.o: /usr/include/sys/param.h /usr/include/machine/param.h
-Action.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-Action.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-Action.o: /usr/include/assert.h /usr/include/limits.h /usr/include/sys/stat.h
-Action.o: machdep.h /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+Action.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+Action.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+Action.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+Action.o: /usr/include/mon/obpdefs.h /usr/include/assert.h
+Action.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+Action.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
 Action.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
 Action.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
 Action.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
@@ -84,19 +86,20 @@ ActionDefault.o: ViewStats.h GdataStat.h ../tape/HashTable.h
 ActionDefault.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h
 ActionDefault.o: DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 ActionDefault.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-ActionDefault.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-ActionDefault.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-ActionDefault.o: /usr/include/machine/mmu.h /usr/include/assert.h
-ActionDefault.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-ActionDefault.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-ActionDefault.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-ActionDefault.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-ActionDefault.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-ActionDefault.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-ActionDefault.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-ActionDefault.o: UpdateLink.h VisualLink.h PointStorage.h
-ActionDefault.o: ../graphics/Selection.h RecInterp.h QueryProc.h TData.h
-ActionDefault.o: DeviseKey.h
+ActionDefault.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+ActionDefault.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+ActionDefault.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+ActionDefault.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+ActionDefault.o: /usr/include/assert.h /usr/include/limits.h
+ActionDefault.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/wait.h
+ActionDefault.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+ActionDefault.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+ActionDefault.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+ActionDefault.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+ActionDefault.o: /usr/include/netdb.h /usr/include/sys/socket.h
+ActionDefault.o: /usr/include/netinet/in.h UpdateLink.h VisualLink.h
+ActionDefault.o: PointStorage.h ../graphics/Selection.h RecInterp.h
+ActionDefault.o: QueryProc.h TData.h DeviseKey.h
 AmsDiskFile.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 AmsDiskFile.o: AmsDiskFile.h DiskFile.h ../graphics/DeviseTypes.h
 AmsDiskFile.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -104,20 +107,22 @@ AmsDiskFile.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 AmsDiskFile.o: TDataAppend.h TData.h RecId.h DataSource.h ../graphics/Exit.h
 AmsDiskFile.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 AmsDiskFile.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-AmsDiskFile.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-AmsDiskFile.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-AmsDiskFile.o: /usr/include/machine/mmu.h /usr/include/errno.h
-AmsDiskFile.o: /usr/include/sys/errno.h /usr/include/assert.h
-AmsDiskFile.o: /usr/include/stdio.h /usr/include/limits.h
-AmsDiskFile.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
-AmsDiskFile.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-AmsDiskFile.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-AmsDiskFile.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-AmsDiskFile.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-AmsDiskFile.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-AmsDiskFile.o: /usr/include/netdb.h /usr/include/sys/socket.h
-AmsDiskFile.o: /usr/include/netinet/in.h ams.h /usr/include/math.h
-AmsDiskFile.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+AmsDiskFile.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+AmsDiskFile.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+AmsDiskFile.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+AmsDiskFile.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+AmsDiskFile.o: /usr/include/errno.h /usr/include/sys/errno.h
+AmsDiskFile.o: /usr/include/assert.h /usr/include/stdio.h
+AmsDiskFile.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+AmsDiskFile.o: /usr/include/sys/time.h /usr/include/sys/time.h
+AmsDiskFile.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+AmsDiskFile.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+AmsDiskFile.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+AmsDiskFile.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+AmsDiskFile.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+AmsDiskFile.o: /usr/include/sys/socket.h /usr/include/netinet/in.h ams.h
+AmsDiskFile.o: /usr/include/math.h /usr/include/floatingpoint.h
+AmsDiskFile.o: /usr/include/sys/ieeefp.h
 Bitmap.o: /usr/include/stdio.h /usr/include/stdlib.h
 Bitmap.o: /usr/include/sys/stdtypes.h ../graphics/Exit.h Bitmap.h
 Bitmap.o: ../graphics/DeviseTypes.h /usr/include/values.h
@@ -132,19 +137,20 @@ BufHash.o: RecId.h BufferPolicy.h RangeInfoArray.h ../graphics/DList.h
 BufHash.o: TData.h DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 BufHash.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 BufHash.o: /usr/include/sys/param.h /usr/include/machine/param.h
-BufHash.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-BufHash.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-BufHash.o: /usr/include/errno.h /usr/include/sys/errno.h
-BufHash.o: /usr/include/assert.h /usr/include/limits.h
-BufHash.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
-BufHash.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-BufHash.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-BufHash.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-BufHash.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-BufHash.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-BufHash.o: /usr/include/netdb.h /usr/include/sys/socket.h
-BufHash.o: /usr/include/netinet/in.h GData.h RangeList.h RangeInfo.h
-BufHash.o: QPRange.h
+BufHash.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+BufHash.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+BufHash.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+BufHash.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
+BufHash.o: /usr/include/sys/errno.h /usr/include/assert.h
+BufHash.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+BufHash.o: /usr/include/sys/time.h /usr/include/sys/time.h
+BufHash.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+BufHash.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+BufHash.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+BufHash.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+BufHash.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+BufHash.o: /usr/include/sys/socket.h /usr/include/netinet/in.h GData.h
+BufHash.o: RangeList.h RangeInfo.h QPRange.h
 BufMech.o: BufMech.h ../graphics/DeviseTypes.h /usr/include/values.h
 BufMech.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 BufMech.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h RecId.h
@@ -152,18 +158,20 @@ BufMech.o: RangeInfo.h /usr/include/stdio.h ../graphics/Exit.h
 BufMech.o: RangeInfoArray.h RangeHash.h BufferPolicy.h TData.h DataSource.h
 BufMech.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 BufMech.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-BufMech.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-BufMech.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-BufMech.o: /usr/include/machine/mmu.h /usr/include/errno.h
-BufMech.o: /usr/include/sys/errno.h /usr/include/assert.h
-BufMech.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-BufMech.o: /usr/include/sys/time.h /usr/include/sys/time.h
-BufMech.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-BufMech.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-BufMech.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-BufMech.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-BufMech.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-BufMech.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+BufMech.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+BufMech.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+BufMech.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+BufMech.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+BufMech.o: /usr/include/errno.h /usr/include/sys/errno.h
+BufMech.o: /usr/include/assert.h /usr/include/limits.h
+BufMech.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
+BufMech.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+BufMech.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+BufMech.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+BufMech.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+BufMech.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+BufMech.o: /usr/include/netdb.h /usr/include/sys/socket.h
+BufMech.o: /usr/include/netinet/in.h
 BufMgr.o: BufMgr.h ../graphics/DeviseTypes.h /usr/include/values.h
 BufMgr.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 BufMgr.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
@@ -171,12 +179,13 @@ BufMgr.o: ../graphics/BufPolicy.h RecId.h BufferPolicy.h RangeInfoArray.h
 BufMgr.o: ../graphics/DList.h ../graphics/Exit.h TData.h DataSource.h
 BufMgr.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 BufMgr.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-BufMgr.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-BufMgr.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-BufMgr.o: /usr/include/machine/mmu.h /usr/include/errno.h
-BufMgr.o: /usr/include/sys/errno.h /usr/include/assert.h /usr/include/stdio.h
-BufMgr.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-BufMgr.o: /usr/include/sys/time.h /usr/include/sys/time.h
+BufMgr.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+BufMgr.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+BufMgr.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+BufMgr.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+BufMgr.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/assert.h
+BufMgr.o: /usr/include/stdio.h /usr/include/limits.h /usr/include/sys/stat.h
+BufMgr.o: machdep.h /usr/include/sys/time.h /usr/include/sys/time.h
 BufMgr.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
 BufMgr.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
 BufMgr.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
@@ -193,21 +202,23 @@ BufMgrFull.o: BufMgr.h RecId.h BufferPolicy.h RangeInfoArray.h
 BufMgrFull.o: ../graphics/DList.h TData.h DataSource.h MemMgr.h DCE.h
 BufMgrFull.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 BufMgrFull.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-BufMgrFull.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-BufMgrFull.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-BufMgrFull.o: /usr/include/machine/mmu.h /usr/include/errno.h
-BufMgrFull.o: /usr/include/sys/errno.h /usr/include/assert.h
-BufMgrFull.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-BufMgrFull.o: /usr/include/sys/time.h /usr/include/sys/time.h
-BufMgrFull.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-BufMgrFull.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-BufMgrFull.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-BufMgrFull.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-BufMgrFull.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-BufMgrFull.o: /usr/include/sys/socket.h /usr/include/netinet/in.h GData.h
-BufMgrFull.o: RangeList.h RangeInfo.h QPRange.h TDataRangeList.h TDataAttr.h
-BufMgrFull.o: BufferFifo.h BufferFocal.h BufferLifo.h BufferRnd.h
-BufMgrFull.o: /usr/include/stdlib.h BufferLru.h
+BufMgrFull.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+BufMgrFull.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+BufMgrFull.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+BufMgrFull.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+BufMgrFull.o: /usr/include/errno.h /usr/include/sys/errno.h
+BufMgrFull.o: /usr/include/assert.h /usr/include/limits.h
+BufMgrFull.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
+BufMgrFull.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+BufMgrFull.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+BufMgrFull.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+BufMgrFull.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+BufMgrFull.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+BufMgrFull.o: /usr/include/netdb.h /usr/include/sys/socket.h
+BufMgrFull.o: /usr/include/netinet/in.h GData.h RangeList.h RangeInfo.h
+BufMgrFull.o: QPRange.h TDataRangeList.h TDataAttr.h BufferFifo.h
+BufMgrFull.o: BufferFocal.h BufferLifo.h BufferRnd.h /usr/include/stdlib.h
+BufMgrFull.o: BufferLru.h
 BufPage.o: /usr/include/stdio.h /usr/include/stdlib.h
 BufPage.o: /usr/include/sys/stdtypes.h BufPage.h ../graphics/DeviseTypes.h
 BufPage.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -222,19 +233,21 @@ BufPageList.o: RecId.h BufferPolicy.h RangeInfoArray.h ../graphics/DList.h
 BufPageList.o: ../graphics/Exit.h TData.h DataSource.h MemMgr.h DCE.h
 BufPageList.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 BufPageList.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-BufPageList.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-BufPageList.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-BufPageList.o: /usr/include/machine/mmu.h /usr/include/errno.h
-BufPageList.o: /usr/include/sys/errno.h /usr/include/assert.h
-BufPageList.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-BufPageList.o: /usr/include/sys/time.h /usr/include/sys/time.h
-BufPageList.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-BufPageList.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-BufPageList.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-BufPageList.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-BufPageList.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-BufPageList.o: /usr/include/sys/socket.h /usr/include/netinet/in.h GData.h
-BufPageList.o: RangeList.h RangeInfo.h QPRange.h
+BufPageList.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+BufPageList.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+BufPageList.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+BufPageList.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+BufPageList.o: /usr/include/errno.h /usr/include/sys/errno.h
+BufPageList.o: /usr/include/assert.h /usr/include/limits.h
+BufPageList.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
+BufPageList.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+BufPageList.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+BufPageList.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+BufPageList.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+BufPageList.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+BufPageList.o: /usr/include/netdb.h /usr/include/sys/socket.h
+BufPageList.o: /usr/include/netinet/in.h GData.h RangeList.h RangeInfo.h
+BufPageList.o: QPRange.h
 ClientAPI.o: /usr/include/stdio.h /usr/include/stdlib.h
 ClientAPI.o: /usr/include/sys/stdtypes.h /usr/include/string.h
 ClientAPI.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
@@ -249,21 +262,22 @@ Command.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 Command.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
 Command.o: /usr/include/sys/time.h /usr/include/stdio.h /usr/include/string.h
 Command.o: machdep.h /usr/include/limits.h /usr/include/sys/param.h
-Command.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-Command.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-Command.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-Command.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-Command.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-Command.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-Command.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-Command.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-Command.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-Command.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-Command.o: ../graphics/Exit.h ../graphics/Time.h ../graphics/Journal.h
-Command.o: ../graphics/DeviseTypes.h /usr/include/values.h
-Command.o: ../graphics/DevStatus.h ../graphics/VisualArg.h
-Command.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/View.h
-Command.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
+Command.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+Command.o: /usr/include/vm/faultcode.h /usr/include/sys/wait.h
+Command.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+Command.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+Command.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+Command.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
+Command.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+Command.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+Command.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+Command.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+Command.o: /usr/include/netdb.h /usr/include/sys/socket.h
+Command.o: /usr/include/netinet/in.h ../graphics/Exit.h ../graphics/Time.h
+Command.o: ../graphics/Journal.h ../graphics/DeviseTypes.h
+Command.o: /usr/include/values.h ../graphics/DevStatus.h
+Command.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+Command.o: ../graphics/View.h ../graphics/Dispatcher.h /usr/include/stdlib.h
 Command.o: /usr/include/unistd.h ../graphics/DList.h ../graphics/ViewWin.h
 Command.o: ../graphics/WindowRep.h ../graphics/Geom.h /usr/include/math.h
 Command.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
@@ -306,63 +320,66 @@ DataSeg.o: /usr/include/sys/sysmacros.h ../graphics/Exit.h
 DataSource.o: /usr/include/stdio.h /usr/include/string.h
 DataSource.o: /usr/include/sys/stdtypes.h /usr/include/errno.h
 DataSource.o: /usr/include/sys/errno.h /usr/include/sys/param.h
-DataSource.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-DataSource.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-DataSource.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-DataSource.o: /usr/include/unistd.h DataSource.h ../graphics/DeviseTypes.h
-DataSource.o: /usr/include/values.h ../graphics/DevStatus.h
-DataSource.o: ../graphics/Exit.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-DataSource.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-DataSource.o: /usr/include/machine/mmu.h /usr/include/assert.h
-DataSource.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-DataSource.o: /usr/include/sys/time.h /usr/include/sys/time.h
-DataSource.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-DataSource.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-DataSource.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-DataSource.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-DataSource.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-DataSource.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-DataSource.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/ctype.h
-DataSource.o: /usr/include/math.h /usr/include/floatingpoint.h
-DataSource.o: /usr/include/sys/ieeefp.h ../graphics/DevError.h
-DataSource.o: ../tape/tapedrive.h
+DataSource.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+DataSource.o: /usr/include/vm/faultcode.h /usr/include/sys/types.h
+DataSource.o: /usr/include/sys/sysmacros.h /usr/include/unistd.h DataSource.h
+DataSource.o: ../graphics/DeviseTypes.h /usr/include/values.h
+DataSource.o: ../graphics/DevStatus.h ../graphics/Exit.h MemMgr.h DCE.h
+DataSource.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+DataSource.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+DataSource.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+DataSource.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+DataSource.o: /usr/include/assert.h /usr/include/limits.h
+DataSource.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
+DataSource.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+DataSource.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+DataSource.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+DataSource.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+DataSource.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+DataSource.o: /usr/include/netdb.h /usr/include/sys/socket.h
+DataSource.o: /usr/include/netinet/in.h ../graphics/Util.h
+DataSource.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
+DataSource.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+DataSource.o: ../graphics/DevError.h ../tape/tapedrive.h
 DataSourceBuf.o: /usr/include/stdio.h /usr/include/string.h
 DataSourceBuf.o: /usr/include/sys/stdtypes.h /usr/include/errno.h
 DataSourceBuf.o: /usr/include/sys/errno.h /usr/include/sys/param.h
-DataSourceBuf.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-DataSourceBuf.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-DataSourceBuf.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-DataSourceBuf.o: /usr/include/unistd.h DataSourceBuf.h DataSource.h
-DataSourceBuf.o: ../graphics/DeviseTypes.h /usr/include/values.h
-DataSourceBuf.o: ../graphics/DevStatus.h ../graphics/Exit.h MemMgr.h DCE.h
-DataSourceBuf.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-DataSourceBuf.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-DataSourceBuf.o: /usr/include/assert.h /usr/include/limits.h
-DataSourceBuf.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
-DataSourceBuf.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-DataSourceBuf.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-DataSourceBuf.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-DataSourceBuf.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-DataSourceBuf.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-DataSourceBuf.o: /usr/include/netdb.h /usr/include/sys/socket.h
-DataSourceBuf.o: /usr/include/netinet/in.h ../graphics/Util.h
-DataSourceBuf.o: /usr/include/stdlib.h /usr/include/ctype.h
-DataSourceBuf.o: /usr/include/math.h /usr/include/floatingpoint.h
-DataSourceBuf.o: /usr/include/sys/ieeefp.h ../graphics/DevError.h
-DataSourceBuf.o: ../tape/tapedrive.h
+DataSourceBuf.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+DataSourceBuf.o: /usr/include/vm/faultcode.h /usr/include/sys/types.h
+DataSourceBuf.o: /usr/include/sys/sysmacros.h /usr/include/unistd.h
+DataSourceBuf.o: DataSourceBuf.h DataSource.h ../graphics/DeviseTypes.h
+DataSourceBuf.o: /usr/include/values.h ../graphics/DevStatus.h
+DataSourceBuf.o: ../graphics/Exit.h MemMgr.h DCE.h /usr/include/sys/ipc.h
+DataSourceBuf.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+DataSourceBuf.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+DataSourceBuf.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+DataSourceBuf.o: /usr/include/mon/obpdefs.h /usr/include/assert.h
+DataSourceBuf.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+DataSourceBuf.o: /usr/include/sys/time.h /usr/include/sys/time.h
+DataSourceBuf.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+DataSourceBuf.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+DataSourceBuf.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+DataSourceBuf.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+DataSourceBuf.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+DataSourceBuf.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+DataSourceBuf.o: ../graphics/Util.h /usr/include/stdlib.h
+DataSourceBuf.o: /usr/include/ctype.h /usr/include/math.h
+DataSourceBuf.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+DataSourceBuf.o: ../graphics/DevError.h ../tape/tapedrive.h
 DataSourceDQL.o: /usr/include/stdio.h /usr/include/string.h
 DataSourceDQL.o: /usr/include/sys/stdtypes.h /usr/include/errno.h
 DataSourceDQL.o: /usr/include/sys/errno.h /usr/include/signal.h
 DataSourceDQL.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
 DataSourceDQL.o: /usr/include/unistd.h /usr/include/sys/types.h
 DataSourceDQL.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
-DataSourceDQL.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-DataSourceDQL.o: /usr/include/sys/stat.h DataSourceDQL.h
-DataSourceDQL.o: DataSourceFileStream.h DataSource.h
+DataSourceDQL.o: /usr/include/machine/param.h /usr/include/sys/stat.h
+DataSourceDQL.o: DataSourceDQL.h DataSourceFileStream.h DataSource.h
 DataSourceDQL.o: ../graphics/DeviseTypes.h /usr/include/values.h
 DataSourceDQL.o: ../graphics/DevStatus.h ../graphics/Exit.h MemMgr.h DCE.h
 DataSourceDQL.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 DataSourceDQL.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+DataSourceDQL.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+DataSourceDQL.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
 DataSourceDQL.o: /usr/include/assert.h /usr/include/limits.h machdep.h
 DataSourceDQL.o: /usr/include/sys/time.h /usr/include/sys/time.h
 DataSourceDQL.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
@@ -380,7 +397,6 @@ DataSourceFileDesc.o: /usr/include/sys/stdtypes.h /usr/include/errno.h
 DataSourceFileDesc.o: /usr/include/sys/errno.h /usr/include/unistd.h
 DataSourceFileDesc.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 DataSourceFileDesc.o: /usr/include/sys/param.h /usr/include/machine/param.h
-DataSourceFileDesc.o: /usr/include/machine/devaddr.h
 DataSourceFileDesc.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
 DataSourceFileDesc.o: /usr/include/sys/stat.h DataSourceFileDesc.h
 DataSourceFileDesc.o: DataSourceFileStream.h DataSource.h
@@ -388,6 +404,8 @@ DataSourceFileDesc.o: ../graphics/DeviseTypes.h /usr/include/values.h
 DataSourceFileDesc.o: ../graphics/DevStatus.h ../graphics/Exit.h MemMgr.h
 DataSourceFileDesc.o: DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 DataSourceFileDesc.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+DataSourceFileDesc.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+DataSourceFileDesc.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
 DataSourceFileDesc.o: /usr/include/assert.h /usr/include/limits.h machdep.h
 DataSourceFileDesc.o: /usr/include/sys/time.h /usr/include/sys/time.h
 DataSourceFileDesc.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
@@ -405,7 +423,6 @@ DataSourceFileStream.o: /usr/include/sys/stdtypes.h /usr/include/errno.h
 DataSourceFileStream.o: /usr/include/sys/errno.h /usr/include/unistd.h
 DataSourceFileStream.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 DataSourceFileStream.o: /usr/include/sys/param.h /usr/include/machine/param.h
-DataSourceFileStream.o: /usr/include/machine/devaddr.h
 DataSourceFileStream.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
 DataSourceFileStream.o: /usr/include/sys/stat.h DataSourceFileStream.h
 DataSourceFileStream.o: DataSource.h ../graphics/DeviseTypes.h
@@ -413,7 +430,11 @@ DataSourceFileStream.o: /usr/include/values.h ../graphics/DevStatus.h
 DataSourceFileStream.o: ../graphics/Exit.h MemMgr.h DCE.h
 DataSourceFileStream.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 DataSourceFileStream.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-DataSourceFileStream.o: /usr/include/assert.h /usr/include/limits.h machdep.h
+DataSourceFileStream.o: /usr/include/debug/debug.h
+DataSourceFileStream.o: /usr/include/mon/sunromvec.h
+DataSourceFileStream.o: /usr/include/mon/openprom.h
+DataSourceFileStream.o: /usr/include/mon/obpdefs.h /usr/include/assert.h
+DataSourceFileStream.o: /usr/include/limits.h machdep.h
 DataSourceFileStream.o: /usr/include/sys/time.h /usr/include/sys/time.h
 DataSourceFileStream.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
 DataSourceFileStream.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
@@ -428,8 +449,7 @@ DataSourceFileStream.o: /usr/include/sys/ieeefp.h ../graphics/DevError.h
 DataSourceSegment.o: /usr/include/stdio.h /usr/include/string.h
 DataSourceSegment.o: /usr/include/sys/stdtypes.h /usr/include/errno.h
 DataSourceSegment.o: /usr/include/sys/errno.h /usr/include/sys/param.h
-DataSourceSegment.o: /usr/include/machine/param.h
-DataSourceSegment.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+DataSourceSegment.o: /usr/include/machine/param.h /usr/include/sys/signal.h
 DataSourceSegment.o: /usr/include/vm/faultcode.h /usr/include/sys/types.h
 DataSourceSegment.o: /usr/include/sys/sysmacros.h /usr/include/unistd.h
 DataSourceSegment.o: DataSourceFileStream.h DataSource.h
@@ -437,6 +457,8 @@ DataSourceSegment.o: ../graphics/DeviseTypes.h /usr/include/values.h
 DataSourceSegment.o: ../graphics/DevStatus.h ../graphics/Exit.h MemMgr.h
 DataSourceSegment.o: DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 DataSourceSegment.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+DataSourceSegment.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+DataSourceSegment.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
 DataSourceSegment.o: /usr/include/assert.h /usr/include/limits.h
 DataSourceSegment.o: /usr/include/sys/stat.h machdep.h
 DataSourceSegment.o: /usr/include/sys/time.h /usr/include/sys/time.h
@@ -446,48 +468,51 @@ DataSourceSegment.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
 DataSourceSegment.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
 DataSourceSegment.o: /usr/include/sys/sockio.h /usr/include/netdb.h
 DataSourceSegment.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-DataSourceSegment.o: DataSourceTape.h DataSourceBuf.h DataSourceSegment.h
-DataSourceSegment.o: ../graphics/Util.h /usr/include/stdlib.h
-DataSourceSegment.o: /usr/include/ctype.h /usr/include/math.h
-DataSourceSegment.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-DataSourceSegment.o: ../graphics/DevError.h DataSourceWeb.h
+DataSourceSegment.o: DataSourceTape.h ../tape/tapedrive.h DataSourceBuf.h
+DataSourceSegment.o: DataSourceSegment.h ../graphics/Util.h
+DataSourceSegment.o: /usr/include/stdlib.h /usr/include/ctype.h
+DataSourceSegment.o: /usr/include/math.h /usr/include/floatingpoint.h
+DataSourceSegment.o: /usr/include/sys/ieeefp.h ../graphics/DevError.h
+DataSourceSegment.o: DataSourceWeb.h
 DataSourceTape.o: /usr/include/stdio.h /usr/include/string.h
 DataSourceTape.o: /usr/include/sys/stdtypes.h /usr/include/errno.h
 DataSourceTape.o: /usr/include/sys/errno.h /usr/include/sys/param.h
-DataSourceTape.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-DataSourceTape.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-DataSourceTape.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-DataSourceTape.o: /usr/include/unistd.h DataSourceTape.h DataSource.h
-DataSourceTape.o: ../graphics/DeviseTypes.h /usr/include/values.h
-DataSourceTape.o: ../graphics/DevStatus.h ../graphics/Exit.h MemMgr.h DCE.h
-DataSourceTape.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-DataSourceTape.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-DataSourceTape.o: /usr/include/assert.h /usr/include/limits.h
-DataSourceTape.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
-DataSourceTape.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-DataSourceTape.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-DataSourceTape.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-DataSourceTape.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-DataSourceTape.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-DataSourceTape.o: /usr/include/netdb.h /usr/include/sys/socket.h
-DataSourceTape.o: /usr/include/netinet/in.h ../graphics/Util.h
+DataSourceTape.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+DataSourceTape.o: /usr/include/vm/faultcode.h /usr/include/sys/types.h
+DataSourceTape.o: /usr/include/sys/sysmacros.h /usr/include/unistd.h
+DataSourceTape.o: DataSourceTape.h DataSource.h ../graphics/DeviseTypes.h
+DataSourceTape.o: /usr/include/values.h ../graphics/DevStatus.h
+DataSourceTape.o: ../graphics/Exit.h MemMgr.h DCE.h /usr/include/sys/ipc.h
+DataSourceTape.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+DataSourceTape.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+DataSourceTape.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+DataSourceTape.o: /usr/include/mon/obpdefs.h /usr/include/assert.h
+DataSourceTape.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+DataSourceTape.o: /usr/include/sys/time.h /usr/include/sys/time.h
+DataSourceTape.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+DataSourceTape.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+DataSourceTape.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+DataSourceTape.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+DataSourceTape.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+DataSourceTape.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+DataSourceTape.o: ../tape/tapedrive.h ../graphics/Util.h
 DataSourceTape.o: /usr/include/stdlib.h /usr/include/ctype.h
 DataSourceTape.o: /usr/include/math.h /usr/include/floatingpoint.h
 DataSourceTape.o: /usr/include/sys/ieeefp.h ../graphics/DevError.h
-DataSourceTape.o: ../tape/tapedrive.h
 DataSourceWeb.o: /usr/include/stdio.h /usr/include/string.h
 DataSourceWeb.o: /usr/include/sys/stdtypes.h /usr/include/errno.h
 DataSourceWeb.o: /usr/include/sys/errno.h /usr/include/signal.h
 DataSourceWeb.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
 DataSourceWeb.o: /usr/include/unistd.h /usr/include/sys/types.h
 DataSourceWeb.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
-DataSourceWeb.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-DataSourceWeb.o: /usr/include/sys/stat.h DataSourceWeb.h
-DataSourceWeb.o: DataSourceFileStream.h DataSource.h
+DataSourceWeb.o: /usr/include/machine/param.h /usr/include/sys/stat.h
+DataSourceWeb.o: DataSourceWeb.h DataSourceFileStream.h DataSource.h
 DataSourceWeb.o: ../graphics/DeviseTypes.h /usr/include/values.h
 DataSourceWeb.o: ../graphics/DevStatus.h ../graphics/Exit.h MemMgr.h DCE.h
 DataSourceWeb.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 DataSourceWeb.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+DataSourceWeb.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+DataSourceWeb.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
 DataSourceWeb.o: /usr/include/assert.h /usr/include/limits.h machdep.h
 DataSourceWeb.o: /usr/include/sys/time.h /usr/include/sys/time.h
 DataSourceWeb.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
@@ -523,32 +548,36 @@ FileIndex.o: ../graphics/DeviseTypes.h /usr/include/values.h
 FileIndex.o: ../graphics/DevStatus.h ../graphics/Exit.h MemMgr.h DCE.h
 FileIndex.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 FileIndex.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-FileIndex.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-FileIndex.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-FileIndex.o: /usr/include/machine/mmu.h /usr/include/errno.h
-FileIndex.o: /usr/include/sys/errno.h /usr/include/assert.h
-FileIndex.o: /usr/include/limits.h machdep.h /usr/include/sys/time.h
-FileIndex.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-FileIndex.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-FileIndex.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-FileIndex.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-FileIndex.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-FileIndex.o: /usr/include/netdb.h /usr/include/sys/socket.h
-FileIndex.o: /usr/include/netinet/in.h TData.h ../graphics/Util.h
-FileIndex.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
-FileIndex.o: /usr/include/math.h /usr/include/floatingpoint.h
-FileIndex.o: /usr/include/sys/ieeefp.h ../graphics/DevError.h
+FileIndex.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+FileIndex.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+FileIndex.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+FileIndex.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+FileIndex.o: /usr/include/errno.h /usr/include/sys/errno.h
+FileIndex.o: /usr/include/assert.h /usr/include/limits.h machdep.h
+FileIndex.o: /usr/include/sys/time.h /usr/include/sys/time.h
+FileIndex.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+FileIndex.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+FileIndex.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+FileIndex.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+FileIndex.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+FileIndex.o: /usr/include/sys/socket.h /usr/include/netinet/in.h TData.h
+FileIndex.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/string.h
+FileIndex.o: /usr/include/ctype.h /usr/include/math.h
+FileIndex.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+FileIndex.o: ../graphics/DevError.h
 GData.o: ../graphics/Exit.h TDataAttr.h TData.h ../graphics/DeviseTypes.h
 GData.o: /usr/include/values.h ../graphics/DevStatus.h
 GData.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 GData.o: /usr/include/sys/sysmacros.h RecId.h DataSource.h MemMgr.h DCE.h
 GData.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h /usr/include/sys/shm.h
 GData.o: /usr/include/sys/param.h /usr/include/machine/param.h
-GData.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-GData.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-GData.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/assert.h
-GData.o: /usr/include/stdio.h /usr/include/limits.h /usr/include/sys/stat.h
-GData.o: machdep.h /usr/include/sys/time.h /usr/include/sys/time.h
+GData.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+GData.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+GData.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+GData.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
+GData.o: /usr/include/sys/errno.h /usr/include/assert.h /usr/include/stdio.h
+GData.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+GData.o: /usr/include/sys/time.h /usr/include/sys/time.h
 GData.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
 GData.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
 GData.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
@@ -581,53 +610,19 @@ GDataBin.o: BasicStats.h ViewStats.h GdataStat.h ../tape/HashTable.h
 GDataBin.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h DCE.h
 GDataBin.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 GDataBin.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-GDataBin.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-GDataBin.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-GDataBin.o: /usr/include/machine/mmu.h /usr/include/assert.h
-GDataBin.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-GDataBin.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-GDataBin.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-GDataBin.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-GDataBin.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-GDataBin.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-GDataBin.o: /usr/include/sys/socket.h /usr/include/netinet/in.h UpdateLink.h
-GDataBin.o: VisualLink.h Action.h PointStorage.h TDataCMap.h
-GDataBinX.o: /usr/include/stdio.h /usr/include/math.h
-GDataBinX.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-GDataBinX.o: ../graphics/Exit.h QueryProc.h ../graphics/DeviseTypes.h
-GDataBinX.o: /usr/include/values.h ../graphics/DevStatus.h
-GDataBinX.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
-GDataBinX.o: /usr/include/sys/sysmacros.h ../graphics/VisualArg.h
-GDataBinX.o: ../graphics/Color.h ../graphics/Pattern.h RecId.h GDataBinX.h
-GDataBinX.o: SymbolBin.h Connector.h ShapeID.h ConnectorShape.h TDataMap.h
-GDataBinX.o: ../graphics/DList.h GDataRec.h ViewGraph.h ../graphics/View.h
-GDataBinX.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
-GDataBinX.o: /usr/include/unistd.h /usr/include/string.h
-GDataBinX.o: ../graphics/Journal.h ../graphics/ViewWin.h
-GDataBinX.o: ../graphics/WindowRep.h ../graphics/Geom.h
-GDataBinX.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-GDataBinX.o: ../graphics/Compress.h ../graphics/DevError.h
-GDataBinX.o: /usr/include/errno.h /usr/include/sys/errno.h
-GDataBinX.o: ../graphics/DualWindowRep.h ../graphics/Control.h
-GDataBinX.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-GDataBinX.o: ../graphics/AttrList.h /usr/include/sys/time.h
-GDataBinX.o: /usr/include/sys/time.h ../graphics/Init.h
-GDataBinX.o: ../graphics/BufPolicy.h ../graphics/Cursor.h BasicStats.h
-GDataBinX.o: ViewStats.h GdataStat.h ../tape/HashTable.h DataSourceFixedBuf.h
-GDataBinX.o: DataSourceBuf.h DataSource.h MemMgr.h DCE.h
-GDataBinX.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-GDataBinX.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-GDataBinX.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-GDataBinX.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-GDataBinX.o: /usr/include/machine/mmu.h /usr/include/assert.h
-GDataBinX.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-GDataBinX.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-GDataBinX.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-GDataBinX.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-GDataBinX.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-GDataBinX.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-GDataBinX.o: /usr/include/sys/socket.h /usr/include/netinet/in.h UpdateLink.h
-GDataBinX.o: VisualLink.h Action.h PointStorage.h TDataCMap.h GDataBin.h
+GDataBin.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+GDataBin.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+GDataBin.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+GDataBin.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+GDataBin.o: /usr/include/assert.h /usr/include/limits.h
+GDataBin.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/wait.h
+GDataBin.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+GDataBin.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+GDataBin.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+GDataBin.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+GDataBin.o: /usr/include/netdb.h /usr/include/sys/socket.h
+GDataBin.o: /usr/include/netinet/in.h UpdateLink.h VisualLink.h Action.h
+GDataBin.o: PointStorage.h TDataCMap.h
 GDataRangeMap.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 GDataRangeMap.o: /usr/include/sys/sysmacros.h /usr/include/sys/stat.h
 GDataRangeMap.o: /usr/include/fcntl.h /usr/include/sys/fcntlcom.h
@@ -640,16 +635,18 @@ GDataRangeMap.o: ../graphics/Color.h ShapeID.h ../graphics/Pattern.h
 GDataRangeMap.o: FileMacro.h TData.h DataSource.h MemMgr.h DCE.h
 GDataRangeMap.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 GDataRangeMap.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-GDataRangeMap.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-GDataRangeMap.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-GDataRangeMap.o: /usr/include/machine/mmu.h /usr/include/assert.h machdep.h
-GDataRangeMap.o: /usr/include/sys/time.h /usr/include/sys/time.h
-GDataRangeMap.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-GDataRangeMap.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-GDataRangeMap.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-GDataRangeMap.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-GDataRangeMap.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-GDataRangeMap.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+GDataRangeMap.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+GDataRangeMap.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+GDataRangeMap.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+GDataRangeMap.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+GDataRangeMap.o: /usr/include/assert.h machdep.h /usr/include/sys/time.h
+GDataRangeMap.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+GDataRangeMap.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+GDataRangeMap.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+GDataRangeMap.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+GDataRangeMap.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+GDataRangeMap.o: /usr/include/netdb.h /usr/include/sys/socket.h
+GDataRangeMap.o: /usr/include/netinet/in.h
 GDataSnap.o: ../graphics/DeviseTypes.h /usr/include/values.h
 GDataSnap.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 GDataSnap.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
@@ -674,19 +671,21 @@ GDataSnap.o: ViewStats.h GdataStat.h ../tape/HashTable.h DataSourceFixedBuf.h
 GDataSnap.o: DataSourceBuf.h DataSource.h MemMgr.h DCE.h
 GDataSnap.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 GDataSnap.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-GDataSnap.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-GDataSnap.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-GDataSnap.o: /usr/include/machine/mmu.h /usr/include/assert.h
-GDataSnap.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-GDataSnap.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-GDataSnap.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-GDataSnap.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-GDataSnap.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-GDataSnap.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-GDataSnap.o: /usr/include/sys/socket.h /usr/include/netinet/in.h UpdateLink.h
-GDataSnap.o: VisualLink.h Action.h PointStorage.h ../graphics/Temp.h
-GDataSnap.o: ../graphics/Map3D.h ../graphics/ColorMgr.h
-GDataSnap.o: ../graphics/Selection.h GDataSnap.h GDataVar.h
+GDataSnap.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+GDataSnap.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+GDataSnap.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+GDataSnap.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+GDataSnap.o: /usr/include/assert.h /usr/include/limits.h
+GDataSnap.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/wait.h
+GDataSnap.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+GDataSnap.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+GDataSnap.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+GDataSnap.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+GDataSnap.o: /usr/include/netdb.h /usr/include/sys/socket.h
+GDataSnap.o: /usr/include/netinet/in.h UpdateLink.h VisualLink.h Action.h
+GDataSnap.o: PointStorage.h ../graphics/Temp.h ../graphics/Map3D.h
+GDataSnap.o: ../graphics/ColorMgr.h ../graphics/Selection.h GDataSnap.h
+GDataSnap.o: GDataVar.h
 MapInterpClassInfo.o: /usr/include/ctype.h ../graphics/DeviseTypes.h
 MapInterpClassInfo.o: /usr/include/values.h ../graphics/DevStatus.h
 MapInterpClassInfo.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
@@ -714,11 +713,12 @@ MapInterpClassInfo.o: GdataStat.h ../tape/HashTable.h DataSourceFixedBuf.h
 MapInterpClassInfo.o: DataSourceBuf.h DataSource.h MemMgr.h DCE.h
 MapInterpClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 MapInterpClassInfo.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-MapInterpClassInfo.o: /usr/include/machine/param.h
-MapInterpClassInfo.o: /usr/include/machine/devaddr.h
-MapInterpClassInfo.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-MapInterpClassInfo.o: /usr/include/machine/mmu.h /usr/include/assert.h
-MapInterpClassInfo.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+MapInterpClassInfo.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+MapInterpClassInfo.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+MapInterpClassInfo.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+MapInterpClassInfo.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+MapInterpClassInfo.o: /usr/include/assert.h /usr/include/limits.h
+MapInterpClassInfo.o: /usr/include/sys/stat.h machdep.h
 MapInterpClassInfo.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
 MapInterpClassInfo.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
 MapInterpClassInfo.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
@@ -738,20 +738,21 @@ MappingInterp.o: ../graphics/Exit.h ../graphics/Init.h
 MappingInterp.o: ../graphics/BufPolicy.h TData.h RecId.h DataSource.h
 MappingInterp.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 MappingInterp.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-MappingInterp.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-MappingInterp.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-MappingInterp.o: /usr/include/machine/mmu.h /usr/include/errno.h
-MappingInterp.o: /usr/include/sys/errno.h /usr/include/assert.h
-MappingInterp.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-MappingInterp.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-MappingInterp.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-MappingInterp.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-MappingInterp.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-MappingInterp.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-MappingInterp.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-MappingInterp.o: ../graphics/Pattern.h ../graphics/Color.h
-MappingInterp.o: ../graphics/WindowRep.h /usr/include/stdlib.h
-MappingInterp.o: ../graphics/Geom.h /usr/include/math.h
+MappingInterp.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+MappingInterp.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+MappingInterp.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+MappingInterp.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+MappingInterp.o: /usr/include/errno.h /usr/include/sys/errno.h
+MappingInterp.o: /usr/include/assert.h /usr/include/limits.h
+MappingInterp.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/wait.h
+MappingInterp.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+MappingInterp.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+MappingInterp.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+MappingInterp.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+MappingInterp.o: /usr/include/netdb.h /usr/include/sys/socket.h
+MappingInterp.o: /usr/include/netinet/in.h ../graphics/Pattern.h
+MappingInterp.o: ../graphics/Color.h ../graphics/WindowRep.h
+MappingInterp.o: /usr/include/stdlib.h ../graphics/Geom.h /usr/include/math.h
 MappingInterp.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 MappingInterp.o: ../graphics/Transform.h ../graphics/VisualArg.h
 MappingInterp.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
@@ -781,19 +782,21 @@ PageFile.o: BufferPolicy.h RangeInfoArray.h ../graphics/DList.h TData.h
 PageFile.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 PageFile.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 PageFile.o: /usr/include/sys/param.h /usr/include/machine/param.h
-PageFile.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-PageFile.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-PageFile.o: /usr/include/errno.h /usr/include/sys/errno.h
-PageFile.o: /usr/include/assert.h /usr/include/limits.h
-PageFile.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
-PageFile.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-PageFile.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-PageFile.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-PageFile.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-PageFile.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-PageFile.o: /usr/include/netdb.h /usr/include/sys/socket.h
-PageFile.o: /usr/include/netinet/in.h GData.h RangeList.h RangeInfo.h
-PageFile.o: QPRange.h DiskFile.h PageFile.h BufHint.h PageRange.h
+PageFile.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+PageFile.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+PageFile.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+PageFile.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
+PageFile.o: /usr/include/sys/errno.h /usr/include/assert.h
+PageFile.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+PageFile.o: /usr/include/sys/time.h /usr/include/sys/time.h
+PageFile.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+PageFile.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+PageFile.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+PageFile.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+PageFile.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+PageFile.o: /usr/include/sys/socket.h /usr/include/netinet/in.h GData.h
+PageFile.o: RangeList.h RangeInfo.h QPRange.h DiskFile.h PageFile.h BufHint.h
+PageFile.o: PageRange.h
 PageRange.o: /usr/include/stdio.h /usr/include/stdlib.h
 PageRange.o: /usr/include/sys/stdtypes.h /usr/include/sys/types.h
 PageRange.o: /usr/include/sys/sysmacros.h /usr/include/sys/stat.h
@@ -807,32 +810,33 @@ ParseCat.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stdtypes.h
 ParseCat.o: /usr/include/sys/stat.h /usr/include/sys/types.h
 ParseCat.o: /usr/include/sys/sysmacros.h /usr/include/unistd.h machdep.h
 ParseCat.o: /usr/include/limits.h /usr/include/sys/param.h
-ParseCat.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-ParseCat.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-ParseCat.o: /usr/include/sys/time.h /usr/include/sys/time.h
-ParseCat.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-ParseCat.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-ParseCat.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-ParseCat.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-ParseCat.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-ParseCat.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-ParseCat.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-ParseCat.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-ParseCat.o: TDataAsciiInterp.h ../graphics/DeviseTypes.h
-ParseCat.o: /usr/include/values.h ../graphics/DevStatus.h
-ParseCat.o: ../graphics/ClassDir.h TDataAscii.h ../graphics/Dispatcher.h
-ParseCat.o: /usr/include/stdlib.h /usr/include/string.h ../graphics/DList.h
-ParseCat.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
-ParseCat.o: ../graphics/Color.h ../graphics/Pattern.h TData.h RecId.h
-ParseCat.o: DataSource.h MemMgr.h DCE.h /usr/include/errno.h
-ParseCat.o: /usr/include/sys/errno.h /usr/include/assert.h FileIndex.h
-ParseCat.o: ../graphics/AttrList.h ../graphics/Init.h ../graphics/BufPolicy.h
-ParseCat.o: TDataBinaryInterp.h TDataBinary.h ../graphics/Parse.h
-ParseCat.o: ../graphics/Control.h ../graphics/Util.h /usr/include/ctype.h
-ParseCat.o: /usr/include/math.h /usr/include/floatingpoint.h
-ParseCat.o: /usr/include/sys/ieeefp.h Group.h MapInterpClassInfo.h GroupDir.h
-ParseCat.o: ItemList.h DataSourceBuf.h DataSourceFileStream.h ParseCat.h
-ParseCat.o: ../graphics/DevError.h
+ParseCat.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+ParseCat.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+ParseCat.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+ParseCat.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+ParseCat.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+ParseCat.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+ParseCat.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
+ParseCat.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+ParseCat.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+ParseCat.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+ParseCat.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+ParseCat.o: /usr/include/netdb.h /usr/include/sys/socket.h
+ParseCat.o: /usr/include/netinet/in.h TDataAsciiInterp.h
+ParseCat.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ParseCat.o: ../graphics/DevStatus.h ../graphics/ClassDir.h TDataAscii.h
+ParseCat.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
+ParseCat.o: /usr/include/string.h ../graphics/DList.h ../graphics/Exit.h
+ParseCat.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+ParseCat.o: ../graphics/Pattern.h TData.h RecId.h DataSource.h MemMgr.h DCE.h
+ParseCat.o: /usr/include/errno.h /usr/include/sys/errno.h
+ParseCat.o: /usr/include/assert.h FileIndex.h ../graphics/AttrList.h
+ParseCat.o: ../graphics/Init.h ../graphics/BufPolicy.h TDataBinaryInterp.h
+ParseCat.o: TDataBinary.h ../graphics/Parse.h ../graphics/Control.h
+ParseCat.o: ../graphics/Util.h /usr/include/ctype.h /usr/include/math.h
+ParseCat.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Group.h
+ParseCat.o: MapInterpClassInfo.h GroupDir.h ItemList.h DataSourceBuf.h
+ParseCat.o: DataSourceFileStream.h ParseCat.h ../graphics/DevError.h
 QPRange.o: /usr/include/stdio.h ../graphics/Exit.h QPRange.h
 QPRange.o: ../graphics/DeviseTypes.h /usr/include/values.h
 QPRange.o: ../graphics/DevStatus.h /usr/include/sys/types.h
@@ -850,29 +854,31 @@ QueryProc.o: ../graphics/BufPolicy.h BufferPolicy.h RangeInfoArray.h TData.h
 QueryProc.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 QueryProc.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 QueryProc.o: /usr/include/sys/param.h /usr/include/machine/param.h
-QueryProc.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-QueryProc.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-QueryProc.o: /usr/include/errno.h /usr/include/sys/errno.h
-QueryProc.o: /usr/include/assert.h /usr/include/limits.h
-QueryProc.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
-QueryProc.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-QueryProc.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-QueryProc.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-QueryProc.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-QueryProc.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-QueryProc.o: /usr/include/netdb.h /usr/include/sys/socket.h
-QueryProc.o: /usr/include/netinet/in.h GData.h RangeList.h RangeInfo.h
-QueryProc.o: ../graphics/Control.h ../graphics/ClassDir.h ViewGraph.h
-QueryProc.o: ../graphics/View.h ../graphics/ViewWin.h ../graphics/WindowRep.h
-QueryProc.o: ../graphics/Geom.h /usr/include/math.h
-QueryProc.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-QueryProc.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-QueryProc.o: ../graphics/Compress.h ../graphics/DevError.h
-QueryProc.o: ../graphics/DualWindowRep.h ../graphics/ViewCallback.h
-QueryProc.o: ../graphics/AttrList.h ../graphics/Init.h ../graphics/Cursor.h
-QueryProc.o: BasicStats.h ViewStats.h GdataStat.h ../tape/HashTable.h
-QueryProc.o: DataSourceFixedBuf.h DataSourceBuf.h UpdateLink.h VisualLink.h
-QueryProc.o: Action.h PointStorage.h TDataMap.h ShapeID.h GDataRec.h
+QueryProc.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+QueryProc.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+QueryProc.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+QueryProc.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
+QueryProc.o: /usr/include/sys/errno.h /usr/include/assert.h
+QueryProc.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+QueryProc.o: /usr/include/sys/time.h /usr/include/sys/time.h
+QueryProc.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+QueryProc.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+QueryProc.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+QueryProc.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+QueryProc.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+QueryProc.o: /usr/include/sys/socket.h /usr/include/netinet/in.h GData.h
+QueryProc.o: RangeList.h RangeInfo.h ../graphics/Control.h
+QueryProc.o: ../graphics/ClassDir.h ViewGraph.h ../graphics/View.h
+QueryProc.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Geom.h
+QueryProc.o: /usr/include/math.h /usr/include/floatingpoint.h
+QueryProc.o: /usr/include/sys/ieeefp.h ../graphics/Transform.h
+QueryProc.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+QueryProc.o: ../graphics/DevError.h ../graphics/DualWindowRep.h
+QueryProc.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+QueryProc.o: ../graphics/Init.h ../graphics/Cursor.h BasicStats.h ViewStats.h
+QueryProc.o: GdataStat.h ../tape/HashTable.h DataSourceFixedBuf.h
+QueryProc.o: DataSourceBuf.h UpdateLink.h VisualLink.h Action.h
+QueryProc.o: PointStorage.h TDataMap.h ShapeID.h GDataRec.h
 QueryProcFull.o: QueryProcFull.h QueryProc.h ../graphics/DeviseTypes.h
 QueryProcFull.o: /usr/include/values.h ../graphics/DevStatus.h
 QueryProcFull.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
@@ -887,19 +893,21 @@ QueryProcFull.o: ../graphics/BufPolicy.h BufferPolicy.h RangeInfoArray.h
 QueryProcFull.o: TData.h DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 QueryProcFull.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 QueryProcFull.o: /usr/include/sys/param.h /usr/include/machine/param.h
-QueryProcFull.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-QueryProcFull.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-QueryProcFull.o: /usr/include/errno.h /usr/include/sys/errno.h
-QueryProcFull.o: /usr/include/assert.h /usr/include/limits.h
-QueryProcFull.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
-QueryProcFull.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-QueryProcFull.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-QueryProcFull.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-QueryProcFull.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-QueryProcFull.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-QueryProcFull.o: /usr/include/netdb.h /usr/include/sys/socket.h
-QueryProcFull.o: /usr/include/netinet/in.h GData.h RangeList.h RangeInfo.h
-QueryProcFull.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
+QueryProcFull.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+QueryProcFull.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+QueryProcFull.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+QueryProcFull.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
+QueryProcFull.o: /usr/include/sys/errno.h /usr/include/assert.h
+QueryProcFull.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+QueryProcFull.o: /usr/include/sys/time.h /usr/include/sys/time.h
+QueryProcFull.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+QueryProcFull.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+QueryProcFull.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+QueryProcFull.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+QueryProcFull.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+QueryProcFull.o: /usr/include/sys/socket.h /usr/include/netinet/in.h GData.h
+QueryProcFull.o: RangeList.h RangeInfo.h ../graphics/Display.h
+QueryProcFull.o: ../graphics/Geom.h /usr/include/math.h
 QueryProcFull.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 QueryProcFull.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 QueryProcFull.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
@@ -943,17 +951,19 @@ RecFile.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
 RecFile.o: DataSource.h ../graphics/Exit.h MemMgr.h DCE.h
 RecFile.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 RecFile.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-RecFile.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-RecFile.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-RecFile.o: /usr/include/machine/mmu.h /usr/include/assert.h
-RecFile.o: /usr/include/stdio.h /usr/include/limits.h /usr/include/sys/stat.h
-RecFile.o: machdep.h /usr/include/sys/time.h /usr/include/sys/time.h
-RecFile.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-RecFile.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-RecFile.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-RecFile.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-RecFile.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-RecFile.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+RecFile.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+RecFile.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+RecFile.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+RecFile.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+RecFile.o: /usr/include/assert.h /usr/include/stdio.h /usr/include/limits.h
+RecFile.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
+RecFile.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+RecFile.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+RecFile.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+RecFile.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+RecFile.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+RecFile.o: /usr/include/netdb.h /usr/include/sys/socket.h
+RecFile.o: /usr/include/netinet/in.h
 RecInterp.o: /usr/include/stdio.h /usr/include/sys/time.h
 RecInterp.o: ../graphics/AttrList.h /usr/include/sys/time.h
 RecInterp.o: ../graphics/DeviseTypes.h /usr/include/values.h
@@ -983,16 +993,18 @@ ServerAPI.o: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceBuf.h
 ServerAPI.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 ServerAPI.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 ServerAPI.o: /usr/include/sys/param.h /usr/include/machine/param.h
-ServerAPI.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-ServerAPI.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-ServerAPI.o: /usr/include/assert.h /usr/include/limits.h
-ServerAPI.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/wait.h
-ServerAPI.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-ServerAPI.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-ServerAPI.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-ServerAPI.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-ServerAPI.o: /usr/include/netdb.h ../graphics/View.h ../graphics/ViewWin.h
-ServerAPI.o: ../graphics/WindowRep.h ../graphics/Geom.h /usr/include/math.h
+ServerAPI.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+ServerAPI.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+ServerAPI.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+ServerAPI.o: /usr/include/mon/obpdefs.h /usr/include/assert.h
+ServerAPI.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+ServerAPI.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+ServerAPI.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+ServerAPI.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+ServerAPI.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+ServerAPI.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+ServerAPI.o: ../graphics/View.h ../graphics/ViewWin.h ../graphics/WindowRep.h
+ServerAPI.o: ../graphics/Geom.h /usr/include/math.h
 ServerAPI.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 ServerAPI.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 ServerAPI.o: ../graphics/Compress.h ../graphics/DevError.h
@@ -1000,41 +1012,6 @@ ServerAPI.o: ../graphics/DualWindowRep.h ../graphics/Cursor.h
 ServerAPI.o: ../graphics/Util.h /usr/include/ctype.h Version.h
 ServerAPI.o: StringStorage.h ../tape/HashTable.h
 StringHash.o: /usr/include/stdio.h StringHash.h
-SymbolBin.o: /usr/include/stdio.h /usr/include/math.h
-SymbolBin.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-SymbolBin.o: ../graphics/Exit.h QueryProc.h ../graphics/DeviseTypes.h
-SymbolBin.o: /usr/include/values.h ../graphics/DevStatus.h
-SymbolBin.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
-SymbolBin.o: /usr/include/sys/sysmacros.h ../graphics/VisualArg.h
-SymbolBin.o: ../graphics/Color.h ../graphics/Pattern.h RecId.h SymbolBin.h
-SymbolBin.o: ams.h TDataMap.h ../graphics/DList.h ShapeID.h GDataRec.h
-SymbolBin.o: ViewGraph.h ../graphics/View.h ../graphics/Dispatcher.h
-SymbolBin.o: /usr/include/stdlib.h /usr/include/unistd.h
-SymbolBin.o: /usr/include/string.h ../graphics/Journal.h
-SymbolBin.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Geom.h
-SymbolBin.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-SymbolBin.o: ../graphics/Compress.h ../graphics/DevError.h
-SymbolBin.o: /usr/include/errno.h /usr/include/sys/errno.h
-SymbolBin.o: ../graphics/DualWindowRep.h ../graphics/Control.h
-SymbolBin.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-SymbolBin.o: ../graphics/AttrList.h /usr/include/sys/time.h
-SymbolBin.o: /usr/include/sys/time.h ../graphics/Init.h
-SymbolBin.o: ../graphics/BufPolicy.h ../graphics/Cursor.h BasicStats.h
-SymbolBin.o: ViewStats.h GdataStat.h ../tape/HashTable.h DataSourceFixedBuf.h
-SymbolBin.o: DataSourceBuf.h DataSource.h MemMgr.h DCE.h
-SymbolBin.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-SymbolBin.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-SymbolBin.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-SymbolBin.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-SymbolBin.o: /usr/include/machine/mmu.h /usr/include/assert.h
-SymbolBin.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-SymbolBin.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-SymbolBin.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-SymbolBin.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-SymbolBin.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-SymbolBin.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-SymbolBin.o: /usr/include/sys/socket.h /usr/include/netinet/in.h UpdateLink.h
-SymbolBin.o: VisualLink.h Action.h PointStorage.h
 TData.o: /usr/include/stdio.h /usr/include/fcntl.h
 TData.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stdtypes.h
 TData.o: /usr/include/sys/stat.h /usr/include/sys/types.h
@@ -1044,33 +1021,35 @@ TData.o: ../graphics/DeviseTypes.h /usr/include/values.h
 TData.o: ../graphics/DevStatus.h RecId.h DataSource.h ../graphics/Exit.h
 TData.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 TData.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-TData.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-TData.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-TData.o: /usr/include/machine/mmu.h /usr/include/assert.h
-TData.o: /usr/include/limits.h machdep.h /usr/include/sys/time.h
-TData.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-TData.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-TData.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-TData.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-TData.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-TData.o: /usr/include/netdb.h /usr/include/sys/socket.h
-TData.o: /usr/include/netinet/in.h ../graphics/Util.h /usr/include/stdlib.h
-TData.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
+TData.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+TData.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+TData.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+TData.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+TData.o: /usr/include/assert.h /usr/include/limits.h machdep.h
+TData.o: /usr/include/sys/time.h /usr/include/sys/time.h
+TData.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+TData.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+TData.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+TData.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+TData.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+TData.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+TData.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/string.h
+TData.o: /usr/include/ctype.h /usr/include/math.h
 TData.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 TData.o: DevFileHeader.h ../graphics/DevError.h ../graphics/AttrList.h
 TData.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
 TData.o: DataSourceFileStream.h DataSourceSegment.h DataSourceTape.h
-TData.o: DataSourceBuf.h DataSourceDQL.h DataSeg.h ViewGraph.h
-TData.o: ../graphics/View.h ../graphics/Dispatcher.h ../graphics/Journal.h
-TData.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-TData.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Geom.h
-TData.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-TData.o: ../graphics/Compress.h ../graphics/DualWindowRep.h
-TData.o: ../graphics/Control.h ../graphics/ClassDir.h
-TData.o: ../graphics/ViewCallback.h ../graphics/Cursor.h BasicStats.h
-TData.o: ViewStats.h GdataStat.h ../tape/HashTable.h DataSourceFixedBuf.h
-TData.o: UpdateLink.h VisualLink.h Action.h PointStorage.h QueryProc.h
-TData.o: DataSourceWeb.h
+TData.o: ../tape/tapedrive.h DataSourceBuf.h DataSourceDQL.h DataSeg.h
+TData.o: ViewGraph.h ../graphics/View.h ../graphics/Dispatcher.h
+TData.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+TData.o: ../graphics/Pattern.h ../graphics/ViewWin.h ../graphics/WindowRep.h
+TData.o: ../graphics/Geom.h ../graphics/Transform.h
+TData.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+TData.o: ../graphics/DualWindowRep.h ../graphics/Control.h
+TData.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
+TData.o: ../graphics/Cursor.h BasicStats.h ViewStats.h GdataStat.h
+TData.o: ../tape/HashTable.h DataSourceFixedBuf.h UpdateLink.h VisualLink.h
+TData.o: Action.h PointStorage.h QueryProc.h DataSourceWeb.h
 TDataAppend.o: /usr/include/stdio.h /usr/include/stdlib.h
 TDataAppend.o: /usr/include/sys/stdtypes.h ../graphics/Exit.h TDataAppend.h
 TDataAppend.o: TData.h ../graphics/DeviseTypes.h /usr/include/values.h
@@ -1078,21 +1057,23 @@ TDataAppend.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 TDataAppend.o: /usr/include/sys/sysmacros.h RecId.h DataSource.h MemMgr.h
 TDataAppend.o: DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 TDataAppend.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-TDataAppend.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-TDataAppend.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-TDataAppend.o: /usr/include/machine/mmu.h /usr/include/errno.h
-TDataAppend.o: /usr/include/sys/errno.h /usr/include/assert.h
-TDataAppend.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-TDataAppend.o: /usr/include/sys/time.h /usr/include/sys/time.h
-TDataAppend.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-TDataAppend.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-TDataAppend.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-TDataAppend.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-TDataAppend.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-TDataAppend.o: /usr/include/sys/socket.h /usr/include/netinet/in.h DiskFile.h
-TDataAppend.o: BufMgr.h ../graphics/BufPolicy.h BufferPolicy.h
-TDataAppend.o: RangeInfoArray.h ../graphics/DList.h GData.h RangeList.h
-TDataAppend.o: RangeInfo.h QPRange.h PageFile.h BufHint.h
+TDataAppend.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+TDataAppend.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+TDataAppend.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+TDataAppend.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+TDataAppend.o: /usr/include/errno.h /usr/include/sys/errno.h
+TDataAppend.o: /usr/include/assert.h /usr/include/limits.h
+TDataAppend.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
+TDataAppend.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+TDataAppend.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+TDataAppend.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+TDataAppend.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+TDataAppend.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+TDataAppend.o: /usr/include/netdb.h /usr/include/sys/socket.h
+TDataAppend.o: /usr/include/netinet/in.h DiskFile.h BufMgr.h
+TDataAppend.o: ../graphics/BufPolicy.h BufferPolicy.h RangeInfoArray.h
+TDataAppend.o: ../graphics/DList.h GData.h RangeList.h RangeInfo.h QPRange.h
+TDataAppend.o: PageFile.h BufHint.h
 TDataAscii.o: /usr/include/stdio.h /usr/include/stdlib.h
 TDataAscii.o: /usr/include/sys/stdtypes.h /usr/include/fcntl.h
 TDataAscii.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h
@@ -1108,20 +1089,23 @@ TDataAscii.o: ../graphics/Color.h ../graphics/Pattern.h TData.h RecId.h
 TDataAscii.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 TDataAscii.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 TDataAscii.o: /usr/include/sys/param.h /usr/include/machine/param.h
-TDataAscii.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-TDataAscii.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-TDataAscii.o: /usr/include/assert.h machdep.h /usr/include/sys/time.h
-TDataAscii.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-TDataAscii.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-TDataAscii.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-TDataAscii.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-TDataAscii.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-TDataAscii.o: /usr/include/sys/socket.h /usr/include/netinet/in.h FileIndex.h
-TDataAscii.o: ../graphics/Util.h /usr/include/ctype.h /usr/include/math.h
+TDataAscii.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+TDataAscii.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+TDataAscii.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+TDataAscii.o: /usr/include/mon/obpdefs.h /usr/include/assert.h machdep.h
+TDataAscii.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+TDataAscii.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+TDataAscii.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+TDataAscii.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+TDataAscii.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+TDataAscii.o: /usr/include/netdb.h /usr/include/sys/socket.h
+TDataAscii.o: /usr/include/netinet/in.h FileIndex.h ../graphics/Util.h
+TDataAscii.o: /usr/include/ctype.h /usr/include/math.h
 TDataAscii.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 TDataAscii.o: DataSourceFileStream.h DataSourceSegment.h DataSourceTape.h
-TDataAscii.o: DataSourceBuf.h ../graphics/DevError.h DataSeg.h QueryProc.h
-TDataAscii.o: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceWeb.h
+TDataAscii.o: ../tape/tapedrive.h DataSourceBuf.h ../graphics/DevError.h
+TDataAscii.o: DataSeg.h QueryProc.h ../graphics/Init.h
+TDataAscii.o: ../graphics/BufPolicy.h DataSourceWeb.h
 TDataAsciiInterp.o: /usr/include/string.h /usr/include/sys/stdtypes.h
 TDataAsciiInterp.o: /usr/include/ctype.h /usr/include/unistd.h
 TDataAsciiInterp.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
@@ -1135,19 +1119,20 @@ TDataAsciiInterp.o: ../graphics/Color.h ../graphics/Pattern.h TData.h RecId.h
 TDataAsciiInterp.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 TDataAsciiInterp.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 TDataAsciiInterp.o: /usr/include/sys/param.h /usr/include/machine/param.h
-TDataAsciiInterp.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-TDataAsciiInterp.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-TDataAsciiInterp.o: /usr/include/errno.h /usr/include/sys/errno.h
-TDataAsciiInterp.o: /usr/include/assert.h /usr/include/limits.h
-TDataAsciiInterp.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
-TDataAsciiInterp.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-TDataAsciiInterp.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-TDataAsciiInterp.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-TDataAsciiInterp.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-TDataAsciiInterp.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-TDataAsciiInterp.o: /usr/include/netdb.h /usr/include/sys/socket.h
-TDataAsciiInterp.o: /usr/include/netinet/in.h FileIndex.h
-TDataAsciiInterp.o: ../graphics/AttrList.h ../graphics/Init.h
+TDataAsciiInterp.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+TDataAsciiInterp.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+TDataAsciiInterp.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+TDataAsciiInterp.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
+TDataAsciiInterp.o: /usr/include/sys/errno.h /usr/include/assert.h
+TDataAsciiInterp.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+TDataAsciiInterp.o: /usr/include/sys/time.h /usr/include/sys/time.h
+TDataAsciiInterp.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+TDataAsciiInterp.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+TDataAsciiInterp.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+TDataAsciiInterp.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+TDataAsciiInterp.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+TDataAsciiInterp.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+TDataAsciiInterp.o: FileIndex.h ../graphics/AttrList.h ../graphics/Init.h
 TDataAsciiInterp.o: ../graphics/BufPolicy.h RecInterp.h CompositeParser.h
 TDataAsciiInterp.o: ../graphics/Parse.h ../graphics/Control.h
 TDataAsciiInterp.o: ../graphics/Util.h /usr/include/math.h
@@ -1169,21 +1154,23 @@ TDataBinary.o: ../graphics/Color.h ../graphics/Pattern.h TData.h RecId.h
 TDataBinary.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 TDataBinary.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 TDataBinary.o: /usr/include/sys/param.h /usr/include/machine/param.h
-TDataBinary.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-TDataBinary.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-TDataBinary.o: /usr/include/assert.h machdep.h /usr/include/sys/time.h
-TDataBinary.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-TDataBinary.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-TDataBinary.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-TDataBinary.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-TDataBinary.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-TDataBinary.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-TDataBinary.o: FileIndex.h ../graphics/Util.h /usr/include/ctype.h
-TDataBinary.o: /usr/include/math.h /usr/include/floatingpoint.h
-TDataBinary.o: /usr/include/sys/ieeefp.h DataSourceFileStream.h
-TDataBinary.o: DataSourceSegment.h DataSourceTape.h ../graphics/DevError.h
-TDataBinary.o: DataSeg.h QueryProc.h ../graphics/Init.h
-TDataBinary.o: ../graphics/BufPolicy.h DataSourceWeb.h
+TDataBinary.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+TDataBinary.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+TDataBinary.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+TDataBinary.o: /usr/include/mon/obpdefs.h /usr/include/assert.h machdep.h
+TDataBinary.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+TDataBinary.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+TDataBinary.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+TDataBinary.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+TDataBinary.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+TDataBinary.o: /usr/include/netdb.h /usr/include/sys/socket.h
+TDataBinary.o: /usr/include/netinet/in.h FileIndex.h ../graphics/Util.h
+TDataBinary.o: /usr/include/ctype.h /usr/include/math.h
+TDataBinary.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+TDataBinary.o: DataSourceFileStream.h DataSourceSegment.h DataSourceTape.h
+TDataBinary.o: ../tape/tapedrive.h ../graphics/DevError.h DataSeg.h
+TDataBinary.o: QueryProc.h ../graphics/Init.h ../graphics/BufPolicy.h
+TDataBinary.o: DataSourceWeb.h
 TDataBinaryInterp.o: /usr/include/string.h /usr/include/sys/stdtypes.h
 TDataBinaryInterp.o: /usr/include/unistd.h /usr/include/sys/types.h
 TDataBinaryInterp.o: /usr/include/sys/sysmacros.h TDataBinaryInterp.h
@@ -1197,9 +1184,10 @@ TDataBinaryInterp.o: ../graphics/Color.h ../graphics/Pattern.h TData.h
 TDataBinaryInterp.o: RecId.h DataSource.h MemMgr.h DCE.h
 TDataBinaryInterp.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 TDataBinaryInterp.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-TDataBinaryInterp.o: /usr/include/machine/param.h
-TDataBinaryInterp.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+TDataBinaryInterp.o: /usr/include/machine/param.h /usr/include/sys/signal.h
 TDataBinaryInterp.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+TDataBinaryInterp.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+TDataBinaryInterp.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
 TDataBinaryInterp.o: /usr/include/errno.h /usr/include/sys/errno.h
 TDataBinaryInterp.o: /usr/include/assert.h /usr/include/limits.h
 TDataBinaryInterp.o: /usr/include/sys/stat.h machdep.h
@@ -1240,18 +1228,20 @@ TDataMap.o: ViewStats.h GdataStat.h ../tape/HashTable.h DataSourceFixedBuf.h
 TDataMap.o: DataSourceBuf.h DataSource.h MemMgr.h DCE.h
 TDataMap.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 TDataMap.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-TDataMap.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-TDataMap.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-TDataMap.o: /usr/include/machine/mmu.h /usr/include/assert.h
-TDataMap.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-TDataMap.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-TDataMap.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-TDataMap.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-TDataMap.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-TDataMap.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-TDataMap.o: /usr/include/sys/socket.h /usr/include/netinet/in.h UpdateLink.h
-TDataMap.o: VisualLink.h Action.h PointStorage.h GData.h TData.h GDataBin.h
-TDataMap.o: QueryProc.h ../graphics/Util.h /usr/include/ctype.h
+TDataMap.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+TDataMap.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+TDataMap.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+TDataMap.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+TDataMap.o: /usr/include/assert.h /usr/include/limits.h
+TDataMap.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/wait.h
+TDataMap.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+TDataMap.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+TDataMap.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+TDataMap.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+TDataMap.o: /usr/include/netdb.h /usr/include/sys/socket.h
+TDataMap.o: /usr/include/netinet/in.h UpdateLink.h VisualLink.h Action.h
+TDataMap.o: PointStorage.h GData.h TData.h GDataBin.h QueryProc.h
+TDataMap.o: ../graphics/Util.h /usr/include/ctype.h
 TDataMmap.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 TDataMmap.o: /usr/include/sys/sysmacros.h /usr/include/sys/stat.h
 TDataMmap.o: /usr/include/fcntl.h /usr/include/sys/fcntlcom.h
@@ -1260,18 +1250,19 @@ TDataMmap.o: ../graphics/DeviseTypes.h /usr/include/values.h
 TDataMmap.o: ../graphics/DevStatus.h RecId.h DataSource.h ../graphics/Exit.h
 TDataMmap.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 TDataMmap.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-TDataMmap.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-TDataMmap.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-TDataMmap.o: /usr/include/machine/mmu.h /usr/include/errno.h
-TDataMmap.o: /usr/include/sys/errno.h /usr/include/assert.h
-TDataMmap.o: /usr/include/stdio.h machdep.h /usr/include/sys/time.h
-TDataMmap.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-TDataMmap.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-TDataMmap.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-TDataMmap.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-TDataMmap.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-TDataMmap.o: /usr/include/netdb.h /usr/include/sys/socket.h
-TDataMmap.o: /usr/include/netinet/in.h DiskFile.h
+TDataMmap.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+TDataMmap.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+TDataMmap.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+TDataMmap.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+TDataMmap.o: /usr/include/errno.h /usr/include/sys/errno.h
+TDataMmap.o: /usr/include/assert.h /usr/include/stdio.h machdep.h
+TDataMmap.o: /usr/include/sys/time.h /usr/include/sys/time.h
+TDataMmap.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+TDataMmap.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+TDataMmap.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+TDataMmap.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+TDataMmap.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+TDataMmap.o: /usr/include/sys/socket.h /usr/include/netinet/in.h DiskFile.h
 TDataRangeList.o: TDataRangeList.h RangeList.h ../graphics/DeviseTypes.h
 TDataRangeList.o: /usr/include/values.h ../graphics/DevStatus.h
 TDataRangeList.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
@@ -1292,21 +1283,23 @@ TDataSeqAscii.o: ../graphics/Color.h ../graphics/Pattern.h TData.h RecId.h
 TDataSeqAscii.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 TDataSeqAscii.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 TDataSeqAscii.o: /usr/include/sys/param.h /usr/include/machine/param.h
-TDataSeqAscii.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-TDataSeqAscii.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-TDataSeqAscii.o: /usr/include/assert.h machdep.h /usr/include/sys/time.h
-TDataSeqAscii.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-TDataSeqAscii.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-TDataSeqAscii.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-TDataSeqAscii.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-TDataSeqAscii.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-TDataSeqAscii.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-TDataSeqAscii.o: FileIndex.h ../graphics/Util.h /usr/include/ctype.h
-TDataSeqAscii.o: /usr/include/math.h /usr/include/floatingpoint.h
-TDataSeqAscii.o: /usr/include/sys/ieeefp.h DataSourceFileStream.h
-TDataSeqAscii.o: DataSourceSegment.h DataSourceTape.h DataSourceBuf.h
-TDataSeqAscii.o: ../graphics/DevError.h DataSeg.h QueryProc.h
-TDataSeqAscii.o: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceWeb.h
+TDataSeqAscii.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+TDataSeqAscii.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+TDataSeqAscii.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+TDataSeqAscii.o: /usr/include/mon/obpdefs.h /usr/include/assert.h machdep.h
+TDataSeqAscii.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+TDataSeqAscii.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+TDataSeqAscii.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+TDataSeqAscii.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+TDataSeqAscii.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+TDataSeqAscii.o: /usr/include/netdb.h /usr/include/sys/socket.h
+TDataSeqAscii.o: /usr/include/netinet/in.h FileIndex.h ../graphics/Util.h
+TDataSeqAscii.o: /usr/include/ctype.h /usr/include/math.h
+TDataSeqAscii.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+TDataSeqAscii.o: DataSourceFileStream.h DataSourceSegment.h DataSourceTape.h
+TDataSeqAscii.o: ../tape/tapedrive.h DataSourceBuf.h ../graphics/DevError.h
+TDataSeqAscii.o: DataSeg.h QueryProc.h ../graphics/Init.h
+TDataSeqAscii.o: ../graphics/BufPolicy.h DataSourceWeb.h
 TDataSeqAsciiInterp.o: /usr/include/string.h /usr/include/sys/stdtypes.h
 TDataSeqAsciiInterp.o: /usr/include/ctype.h /usr/include/unistd.h
 TDataSeqAsciiInterp.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
@@ -1321,20 +1314,21 @@ TDataSeqAsciiInterp.o: ../graphics/Pattern.h TData.h RecId.h DataSource.h
 TDataSeqAsciiInterp.o: MemMgr.h DCE.h /usr/include/sys/ipc.h
 TDataSeqAsciiInterp.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 TDataSeqAsciiInterp.o: /usr/include/sys/param.h /usr/include/machine/param.h
-TDataSeqAsciiInterp.o: /usr/include/machine/devaddr.h
 TDataSeqAsciiInterp.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-TDataSeqAsciiInterp.o: /usr/include/machine/mmu.h /usr/include/errno.h
-TDataSeqAsciiInterp.o: /usr/include/sys/errno.h /usr/include/assert.h
-TDataSeqAsciiInterp.o: /usr/include/limits.h /usr/include/sys/stat.h
-TDataSeqAsciiInterp.o: machdep.h /usr/include/sys/time.h
-TDataSeqAsciiInterp.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-TDataSeqAsciiInterp.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-TDataSeqAsciiInterp.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-TDataSeqAsciiInterp.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-TDataSeqAsciiInterp.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-TDataSeqAsciiInterp.o: /usr/include/netdb.h /usr/include/sys/socket.h
-TDataSeqAsciiInterp.o: /usr/include/netinet/in.h FileIndex.h
-TDataSeqAsciiInterp.o: ../graphics/AttrList.h ../graphics/Init.h
+TDataSeqAsciiInterp.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+TDataSeqAsciiInterp.o: /usr/include/mon/sunromvec.h
+TDataSeqAsciiInterp.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+TDataSeqAsciiInterp.o: /usr/include/errno.h /usr/include/sys/errno.h
+TDataSeqAsciiInterp.o: /usr/include/assert.h /usr/include/limits.h
+TDataSeqAsciiInterp.o: /usr/include/sys/stat.h machdep.h
+TDataSeqAsciiInterp.o: /usr/include/sys/time.h /usr/include/sys/time.h
+TDataSeqAsciiInterp.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+TDataSeqAsciiInterp.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+TDataSeqAsciiInterp.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+TDataSeqAsciiInterp.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+TDataSeqAsciiInterp.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+TDataSeqAsciiInterp.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+TDataSeqAsciiInterp.o: FileIndex.h ../graphics/AttrList.h ../graphics/Init.h
 TDataSeqAsciiInterp.o: ../graphics/BufPolicy.h RecInterp.h CompositeParser.h
 TDataSeqAsciiInterp.o: ../graphics/Parse.h ../graphics/Control.h
 TDataSeqAsciiInterp.o: ../graphics/Util.h /usr/include/math.h
@@ -1364,20 +1358,21 @@ TDataViewX.o: ViewStats.h GdataStat.h ../tape/HashTable.h
 TDataViewX.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h
 TDataViewX.o: DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 TDataViewX.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-TDataViewX.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-TDataViewX.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-TDataViewX.o: /usr/include/machine/mmu.h /usr/include/limits.h
-TDataViewX.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/wait.h
-TDataViewX.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-TDataViewX.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-TDataViewX.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-TDataViewX.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-TDataViewX.o: /usr/include/netdb.h /usr/include/sys/socket.h
-TDataViewX.o: /usr/include/netinet/in.h UpdateLink.h VisualLink.h Action.h
-TDataViewX.o: PointStorage.h GDataBin.h TDataCMap.h ConnectorShape.h
-TDataViewX.o: Connector.h ShapeID.h TDataMap.h GDataRec.h Shape.h
-TDataViewX.o: ../graphics/Temp.h ../graphics/Map3D.h ../graphics/Util.h
-TDataViewX.o: /usr/include/ctype.h RecordLink.h RecFile.h
+TDataViewX.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+TDataViewX.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+TDataViewX.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+TDataViewX.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+TDataViewX.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+TDataViewX.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+TDataViewX.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+TDataViewX.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+TDataViewX.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+TDataViewX.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+TDataViewX.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+TDataViewX.o: UpdateLink.h VisualLink.h Action.h PointStorage.h GDataBin.h
+TDataViewX.o: TDataCMap.h ConnectorShape.h Connector.h ShapeID.h TDataMap.h
+TDataViewX.o: GDataRec.h Shape.h ../graphics/Temp.h ../graphics/Map3D.h
+TDataViewX.o: ../graphics/Util.h /usr/include/ctype.h RecordLink.h RecFile.h
 TkControl.o: /usr/include/stdio.h /usr/include/stdlib.h
 TkControl.o: /usr/include/sys/stdtypes.h TkControl.h /s/tcl/include/tcl.h
 TkControl.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
@@ -1398,24 +1393,26 @@ TkControl.o: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceBuf.h
 TkControl.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 TkControl.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 TkControl.o: /usr/include/sys/param.h /usr/include/machine/param.h
-TkControl.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-TkControl.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-TkControl.o: /usr/include/errno.h /usr/include/sys/errno.h
-TkControl.o: /usr/include/assert.h /usr/include/limits.h
-TkControl.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/wait.h
-TkControl.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-TkControl.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-TkControl.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-TkControl.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-TkControl.o: /usr/include/netdb.h /usr/include/sys/socket.h
-TkControl.o: /usr/include/netinet/in.h ../graphics/View.h
-TkControl.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Geom.h
-TkControl.o: /usr/include/math.h /usr/include/floatingpoint.h
-TkControl.o: /usr/include/sys/ieeefp.h ../graphics/Transform.h
-TkControl.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-TkControl.o: ../graphics/DevError.h ../graphics/DualWindowRep.h
-TkControl.o: ../graphics/Cursor.h ../graphics/Util.h /usr/include/ctype.h
-TkControl.o: Version.h StringStorage.h ../tape/HashTable.h
+TkControl.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+TkControl.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+TkControl.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+TkControl.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
+TkControl.o: /usr/include/sys/errno.h /usr/include/assert.h
+TkControl.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+TkControl.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+TkControl.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+TkControl.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+TkControl.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+TkControl.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+TkControl.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+TkControl.o: ../graphics/View.h ../graphics/ViewWin.h ../graphics/WindowRep.h
+TkControl.o: ../graphics/Geom.h /usr/include/math.h
+TkControl.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+TkControl.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+TkControl.o: ../graphics/Compress.h ../graphics/DevError.h
+TkControl.o: ../graphics/DualWindowRep.h ../graphics/Cursor.h
+TkControl.o: ../graphics/Util.h /usr/include/ctype.h Version.h
+TkControl.o: StringStorage.h ../tape/HashTable.h
 UnixDiskFile.o: /usr/include/stdio.h /usr/include/stdlib.h
 UnixDiskFile.o: /usr/include/sys/stdtypes.h /usr/include/fcntl.h
 UnixDiskFile.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h
@@ -1435,33 +1432,37 @@ UnixRecFile.o: ../graphics/DeviseTypes.h /usr/include/values.h
 UnixRecFile.o: ../graphics/DevStatus.h DataSource.h ../graphics/Exit.h
 UnixRecFile.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 UnixRecFile.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-UnixRecFile.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-UnixRecFile.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-UnixRecFile.o: /usr/include/machine/mmu.h /usr/include/assert.h machdep.h
-UnixRecFile.o: /usr/include/sys/time.h /usr/include/sys/time.h
-UnixRecFile.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-UnixRecFile.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-UnixRecFile.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-UnixRecFile.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-UnixRecFile.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-UnixRecFile.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-UnixRecFile.o: ../graphics/Util.h /usr/include/string.h /usr/include/ctype.h
-UnixRecFile.o: /usr/include/math.h /usr/include/floatingpoint.h
-UnixRecFile.o: /usr/include/sys/ieeefp.h ../graphics/DevError.h
+UnixRecFile.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+UnixRecFile.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+UnixRecFile.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+UnixRecFile.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+UnixRecFile.o: /usr/include/assert.h machdep.h /usr/include/sys/time.h
+UnixRecFile.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+UnixRecFile.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+UnixRecFile.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+UnixRecFile.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+UnixRecFile.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+UnixRecFile.o: /usr/include/netdb.h /usr/include/sys/socket.h
+UnixRecFile.o: /usr/include/netinet/in.h ../graphics/Util.h
+UnixRecFile.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
+UnixRecFile.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+UnixRecFile.o: ../graphics/DevError.h
 Version.o: /usr/include/stdio.h Version.h machdep.h /usr/include/limits.h
 Version.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 Version.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
-Version.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-Version.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-Version.o: /usr/include/sys/time.h /usr/include/sys/time.h
-Version.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-Version.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-Version.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-Version.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-Version.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-Version.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-Version.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-Version.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+Version.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+Version.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+Version.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+Version.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+Version.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+Version.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+Version.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
+Version.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+Version.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+Version.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+Version.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+Version.o: /usr/include/netdb.h /usr/include/sys/socket.h
+Version.o: /usr/include/netinet/in.h
 ViewClassInfo.o: /usr/include/stdio.h /usr/include/sys/time.h
 ViewClassInfo.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 ViewClassInfo.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
@@ -1486,20 +1487,21 @@ ViewClassInfo.o: ViewStats.h GdataStat.h ../tape/HashTable.h
 ViewClassInfo.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h
 ViewClassInfo.o: DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 ViewClassInfo.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-ViewClassInfo.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-ViewClassInfo.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-ViewClassInfo.o: /usr/include/machine/mmu.h /usr/include/assert.h
-ViewClassInfo.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-ViewClassInfo.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-ViewClassInfo.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-ViewClassInfo.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-ViewClassInfo.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-ViewClassInfo.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-ViewClassInfo.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-ViewClassInfo.o: UpdateLink.h VisualLink.h Action.h PointStorage.h GDataBin.h
-ViewClassInfo.o: TDataCMap.h ConnectorShape.h Connector.h ShapeID.h
-ViewClassInfo.o: ViewScatter.h ViewClassInfo.h ViewLens.h
-ViewClassInfo.o: ../graphics/Selection.h ../graphics/Util.h
+ViewClassInfo.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+ViewClassInfo.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+ViewClassInfo.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+ViewClassInfo.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+ViewClassInfo.o: /usr/include/assert.h /usr/include/limits.h
+ViewClassInfo.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/wait.h
+ViewClassInfo.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+ViewClassInfo.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+ViewClassInfo.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+ViewClassInfo.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+ViewClassInfo.o: /usr/include/netdb.h /usr/include/sys/socket.h
+ViewClassInfo.o: /usr/include/netinet/in.h UpdateLink.h VisualLink.h Action.h
+ViewClassInfo.o: PointStorage.h GDataBin.h TDataCMap.h ConnectorShape.h
+ViewClassInfo.o: Connector.h ShapeID.h ViewScatter.h ViewClassInfo.h
+ViewClassInfo.o: ViewLens.h ../graphics/Selection.h ../graphics/Util.h
 ViewClassInfo.o: /usr/include/ctype.h ActionDefault.h ../graphics/ColorMgr.h
 ViewClassInfo.o: ../graphics/Parse.h
 ViewGraph.o: /usr/include/assert.h ViewGraph.h ../graphics/View.h
@@ -1525,19 +1527,20 @@ ViewGraph.o: ViewStats.h GdataStat.h ../tape/HashTable.h DataSourceFixedBuf.h
 ViewGraph.o: DataSourceBuf.h DataSource.h MemMgr.h DCE.h
 ViewGraph.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 ViewGraph.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-ViewGraph.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-ViewGraph.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-ViewGraph.o: /usr/include/machine/mmu.h /usr/include/limits.h
-ViewGraph.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/wait.h
-ViewGraph.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-ViewGraph.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-ViewGraph.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-ViewGraph.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-ViewGraph.o: /usr/include/netdb.h /usr/include/sys/socket.h
-ViewGraph.o: /usr/include/netinet/in.h UpdateLink.h VisualLink.h Action.h
-ViewGraph.o: RecId.h PointStorage.h TDataMap.h ShapeID.h GDataRec.h
-ViewGraph.o: ActionDefault.h ../graphics/Util.h /usr/include/ctype.h
-ViewGraph.o: RecordLink.h RecFile.h TData.h
+ViewGraph.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+ViewGraph.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+ViewGraph.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+ViewGraph.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+ViewGraph.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+ViewGraph.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+ViewGraph.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+ViewGraph.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+ViewGraph.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+ViewGraph.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+ViewGraph.o: /usr/include/sys/socket.h /usr/include/netinet/in.h UpdateLink.h
+ViewGraph.o: VisualLink.h Action.h RecId.h PointStorage.h TDataMap.h
+ViewGraph.o: ShapeID.h GDataRec.h ActionDefault.h ../graphics/Util.h
+ViewGraph.o: /usr/include/ctype.h RecordLink.h RecFile.h TData.h
 ViewRanges.o: ViewRanges.h ../graphics/View.h ../graphics/DeviseTypes.h
 ViewRanges.o: /usr/include/values.h ../graphics/DevStatus.h
 ViewRanges.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
@@ -1581,20 +1584,21 @@ ViewScatter.o: ViewStats.h GdataStat.h ../tape/HashTable.h
 ViewScatter.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h
 ViewScatter.o: DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 ViewScatter.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-ViewScatter.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-ViewScatter.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-ViewScatter.o: /usr/include/machine/mmu.h /usr/include/assert.h
-ViewScatter.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-ViewScatter.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-ViewScatter.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-ViewScatter.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-ViewScatter.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-ViewScatter.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-ViewScatter.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-ViewScatter.o: UpdateLink.h VisualLink.h Action.h PointStorage.h GDataBin.h
-ViewScatter.o: TDataMap.h ShapeID.h GDataRec.h Shape.h ../graphics/Temp.h
-ViewScatter.o: ../graphics/Map3D.h ../graphics/Util.h /usr/include/ctype.h
-ViewScatter.o: RecordLink.h RecFile.h
+ViewScatter.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+ViewScatter.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+ViewScatter.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+ViewScatter.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+ViewScatter.o: /usr/include/assert.h /usr/include/limits.h
+ViewScatter.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/wait.h
+ViewScatter.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+ViewScatter.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+ViewScatter.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+ViewScatter.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+ViewScatter.o: /usr/include/netdb.h /usr/include/sys/socket.h
+ViewScatter.o: /usr/include/netinet/in.h UpdateLink.h VisualLink.h Action.h
+ViewScatter.o: PointStorage.h GDataBin.h TDataMap.h ShapeID.h GDataRec.h
+ViewScatter.o: Shape.h ../graphics/Temp.h ../graphics/Map3D.h
+ViewScatter.o: ../graphics/Util.h /usr/include/ctype.h RecordLink.h RecFile.h
 VisualLink.o: VisualLink.h ../graphics/DList.h ../graphics/Exit.h
 VisualLink.o: ../graphics/ViewCallback.h ../graphics/VisualArg.h
 VisualLink.o: ../graphics/DeviseTypes.h /usr/include/values.h
@@ -1618,17 +1622,19 @@ VisualLink.o: BasicStats.h ViewStats.h GdataStat.h ../tape/HashTable.h
 VisualLink.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h
 VisualLink.o: DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 VisualLink.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-VisualLink.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-VisualLink.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-VisualLink.o: /usr/include/machine/mmu.h /usr/include/assert.h
-VisualLink.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-VisualLink.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-VisualLink.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-VisualLink.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-VisualLink.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-VisualLink.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-VisualLink.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-VisualLink.o: UpdateLink.h Action.h RecId.h PointStorage.h
+VisualLink.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+VisualLink.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+VisualLink.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+VisualLink.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+VisualLink.o: /usr/include/assert.h /usr/include/limits.h
+VisualLink.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/wait.h
+VisualLink.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+VisualLink.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+VisualLink.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+VisualLink.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+VisualLink.o: /usr/include/netdb.h /usr/include/sys/socket.h
+VisualLink.o: /usr/include/netinet/in.h UpdateLink.h Action.h RecId.h
+VisualLink.o: PointStorage.h
 VisualLinkClassInfo.o: /usr/include/stdio.h VisualLinkClassInfo.h
 VisualLinkClassInfo.o: ../graphics/ClassDir.h ../graphics/DeviseTypes.h
 VisualLinkClassInfo.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -1640,23 +1646,25 @@ VisualLinkClassInfo.o: ../graphics/ViewCallback.h RecordLink.h RecId.h
 VisualLinkClassInfo.o: RecFile.h DataSource.h MemMgr.h DCE.h
 VisualLinkClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 VisualLinkClassInfo.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-VisualLinkClassInfo.o: /usr/include/machine/param.h
-VisualLinkClassInfo.o: /usr/include/machine/devaddr.h
-VisualLinkClassInfo.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-VisualLinkClassInfo.o: /usr/include/machine/mmu.h /usr/include/errno.h
-VisualLinkClassInfo.o: /usr/include/sys/errno.h /usr/include/assert.h
-VisualLinkClassInfo.o: /usr/include/limits.h /usr/include/sys/stat.h
-VisualLinkClassInfo.o: machdep.h /usr/include/sys/time.h
-VisualLinkClassInfo.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-VisualLinkClassInfo.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-VisualLinkClassInfo.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-VisualLinkClassInfo.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-VisualLinkClassInfo.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-VisualLinkClassInfo.o: /usr/include/netdb.h /usr/include/sys/socket.h
-VisualLinkClassInfo.o: /usr/include/netinet/in.h ../graphics/Util.h
-VisualLinkClassInfo.o: /usr/include/stdlib.h /usr/include/string.h
-VisualLinkClassInfo.o: /usr/include/ctype.h /usr/include/math.h
-VisualLinkClassInfo.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+VisualLinkClassInfo.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+VisualLinkClassInfo.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+VisualLinkClassInfo.o: /usr/include/debug/debug.h
+VisualLinkClassInfo.o: /usr/include/mon/sunromvec.h
+VisualLinkClassInfo.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+VisualLinkClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
+VisualLinkClassInfo.o: /usr/include/assert.h /usr/include/limits.h
+VisualLinkClassInfo.o: /usr/include/sys/stat.h machdep.h
+VisualLinkClassInfo.o: /usr/include/sys/time.h /usr/include/sys/time.h
+VisualLinkClassInfo.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+VisualLinkClassInfo.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+VisualLinkClassInfo.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+VisualLinkClassInfo.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+VisualLinkClassInfo.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+VisualLinkClassInfo.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+VisualLinkClassInfo.o: ../graphics/Util.h /usr/include/stdlib.h
+VisualLinkClassInfo.o: /usr/include/string.h /usr/include/ctype.h
+VisualLinkClassInfo.o: /usr/include/math.h /usr/include/floatingpoint.h
+VisualLinkClassInfo.o: /usr/include/sys/ieeefp.h
 VoidArray.o: /usr/include/stdio.h VoidArray.h ../graphics/DeviseTypes.h
 VoidArray.o: /usr/include/values.h ../graphics/DevStatus.h
 VoidArray.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
@@ -1695,109 +1703,27 @@ makeGData.o: ../graphics/BufPolicy.h RecId.h BufferPolicy.h RangeInfoArray.h
 makeGData.o: ../graphics/DList.h ../graphics/Exit.h TData.h DataSource.h
 makeGData.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 makeGData.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-makeGData.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-makeGData.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-makeGData.o: /usr/include/machine/mmu.h /usr/include/errno.h
-makeGData.o: /usr/include/sys/errno.h /usr/include/assert.h machdep.h
-makeGData.o: /usr/include/sys/time.h /usr/include/sys/time.h
-makeGData.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-makeGData.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-makeGData.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-makeGData.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-makeGData.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-makeGData.o: /usr/include/sys/socket.h /usr/include/netinet/in.h GData.h
-makeGData.o: RangeList.h RangeInfo.h QPRange.h TDataAppend.h DiskFile.h ams.h
-makeGData.o: /usr/include/math.h /usr/include/floatingpoint.h
-makeGData.o: /usr/include/sys/ieeefp.h
+makeGData.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+makeGData.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+makeGData.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+makeGData.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+makeGData.o: /usr/include/errno.h /usr/include/sys/errno.h
+makeGData.o: /usr/include/assert.h machdep.h /usr/include/sys/time.h
+makeGData.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+makeGData.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+makeGData.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+makeGData.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+makeGData.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+makeGData.o: /usr/include/netdb.h /usr/include/sys/socket.h
+makeGData.o: /usr/include/netinet/in.h GData.h RangeList.h RangeInfo.h
+makeGData.o: QPRange.h TDataAppend.h DiskFile.h ams.h /usr/include/math.h
+makeGData.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 makeTest.o: /usr/include/stdio.h /usr/include/stdlib.h
 makeTest.o: /usr/include/sys/stdtypes.h
 rstat.o: /usr/include/stdio.h /usr/include/stdlib.h
 rstat.o: /usr/include/sys/stdtypes.h /usr/include/math.h
 rstat.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 rstat.o: ../graphics/Parse.h /usr/include/sys/time.h
-test2d.o: /usr/include/sys/time.h /usr/include/sys/time.h
-test2d.o: ../graphics/DeviseTypes.h /usr/include/values.h
-test2d.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-test2d.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
-test2d.o: ../graphics/XDisplay.h ../graphics/Display.h ../graphics/Geom.h
-test2d.o: /usr/include/stdio.h /usr/include/math.h
-test2d.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-test2d.o: ../graphics/Color.h ../graphics/Dispatcher.h /usr/include/stdlib.h
-test2d.o: /usr/include/unistd.h /usr/include/string.h ../graphics/DList.h
-test2d.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
-test2d.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
-test2d.o: ../graphics/WindowRep.h ../graphics/Transform.h
-test2d.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-test2d.o: ../graphics/DevError.h /usr/include/errno.h
-test2d.o: /usr/include/sys/errno.h ../graphics/Xdef.h
-test2d.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
-test2d.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-test2d.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
-test2d.o: ../graphics/XWindowRep.h ../graphics/Util.h /usr/include/ctype.h
-test2d.o: ../graphics/XBitmap.h RectShape.h Shape.h TDataMap.h ShapeID.h
-test2d.o: RecId.h GDataRec.h ViewGraph.h ../graphics/View.h
-test2d.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
-test2d.o: ../graphics/Control.h ../graphics/ClassDir.h
-test2d.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-test2d.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Cursor.h
-test2d.o: BasicStats.h ViewStats.h GdataStat.h ../tape/HashTable.h
-test2d.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h DCE.h
-test2d.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-test2d.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-test2d.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-test2d.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-test2d.o: /usr/include/machine/mmu.h /usr/include/assert.h
-test2d.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-test2d.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-test2d.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-test2d.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-test2d.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-test2d.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-test2d.o: /usr/include/sys/socket.h /usr/include/netinet/in.h UpdateLink.h
-test2d.o: VisualLink.h Action.h PointStorage.h ../graphics/Temp.h
-test2d.o: ../graphics/Map3D.h Connector.h ConnectorShape.h
-test2d.o: ../graphics/Selection.h Command.h ../graphics/Timer.h map2dfile.h
-testAms1.o: /usr/include/sys/time.h /usr/include/sys/time.h
-testAms1.o: ../graphics/DeviseTypes.h /usr/include/values.h
-testAms1.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-testAms1.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
-testAms1.o: ../graphics/Dispatcher.h /usr/include/stdio.h
-testAms1.o: /usr/include/stdlib.h /usr/include/unistd.h /usr/include/string.h
-testAms1.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-testAms1.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-testAms1.o: RectShape.h Shape.h TDataMap.h ShapeID.h RecId.h GDataRec.h
-testAms1.o: ViewGraph.h ../graphics/View.h ../graphics/ViewWin.h
-testAms1.o: ../graphics/WindowRep.h ../graphics/Geom.h /usr/include/math.h
-testAms1.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-testAms1.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-testAms1.o: ../graphics/Compress.h ../graphics/DevError.h
-testAms1.o: /usr/include/errno.h /usr/include/sys/errno.h
-testAms1.o: ../graphics/DualWindowRep.h ../graphics/Control.h
-testAms1.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-testAms1.o: ../graphics/AttrList.h ../graphics/Init.h ../graphics/BufPolicy.h
-testAms1.o: ../graphics/Cursor.h BasicStats.h ViewStats.h GdataStat.h
-testAms1.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
-testAms1.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-testAms1.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-testAms1.o: /usr/include/sys/param.h /usr/include/machine/param.h
-testAms1.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-testAms1.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-testAms1.o: /usr/include/assert.h /usr/include/limits.h
-testAms1.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/wait.h
-testAms1.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-testAms1.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-testAms1.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-testAms1.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-testAms1.o: /usr/include/netdb.h /usr/include/sys/socket.h
-testAms1.o: /usr/include/netinet/in.h UpdateLink.h VisualLink.h Action.h
-testAms1.o: PointStorage.h ../graphics/Temp.h ../graphics/Map3D.h
-testAms1.o: ../graphics/ColorMgr.h TDataCMap.h ConnectorShape.h Connector.h
-testAms1.o: GDataBin.h ActionDefault.h ../graphics/Util.h
-testAms1.o: /usr/include/ctype.h ../graphics/Selection.h BufMgr.h
-testAms1.o: BufferPolicy.h RangeInfoArray.h TData.h GData.h RangeList.h
-testAms1.o: RangeInfo.h QPRange.h TDataViewX.h QueryProc.h Command.h
-testAms1.o: ../graphics/Timer.h ams.h ../graphics/ViewWinVer.h
-testAms1.o: ../graphics/ViewLayout.h ../graphics/ViewWinHor.h mapfile.h
 testBufMgrFull.o: /usr/include/stdio.h ../graphics/DeviseTypes.h
 testBufMgrFull.o: /usr/include/values.h ../graphics/DevStatus.h
 testBufMgrFull.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
@@ -1806,21 +1732,22 @@ testBufMgrFull.o: ../graphics/Parse.h /usr/include/sys/time.h TData.h RecId.h
 testBufMgrFull.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 testBufMgrFull.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 testBufMgrFull.o: /usr/include/sys/param.h /usr/include/machine/param.h
-testBufMgrFull.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-testBufMgrFull.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-testBufMgrFull.o: /usr/include/errno.h /usr/include/sys/errno.h
-testBufMgrFull.o: /usr/include/assert.h /usr/include/limits.h
-testBufMgrFull.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
-testBufMgrFull.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-testBufMgrFull.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-testBufMgrFull.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-testBufMgrFull.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-testBufMgrFull.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-testBufMgrFull.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-testBufMgrFull.o: RangeInfo.h RangeInfoArray.h BufferPolicy.h BufMgrFull.h
-testBufMgrFull.o: BufMgr.h ../graphics/BufPolicy.h ../graphics/DList.h
-testBufMgrFull.o: GData.h RangeList.h QPRange.h ../graphics/Init.h
-testBufMgrFull.o: TDataRangeList.h
+testBufMgrFull.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+testBufMgrFull.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+testBufMgrFull.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+testBufMgrFull.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
+testBufMgrFull.o: /usr/include/sys/errno.h /usr/include/assert.h
+testBufMgrFull.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+testBufMgrFull.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+testBufMgrFull.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+testBufMgrFull.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+testBufMgrFull.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+testBufMgrFull.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+testBufMgrFull.o: /usr/include/netdb.h /usr/include/sys/socket.h
+testBufMgrFull.o: /usr/include/netinet/in.h RangeInfo.h RangeInfoArray.h
+testBufMgrFull.o: BufferPolicy.h BufMgrFull.h BufMgr.h
+testBufMgrFull.o: ../graphics/BufPolicy.h ../graphics/DList.h GData.h
+testBufMgrFull.o: RangeList.h QPRange.h ../graphics/Init.h TDataRangeList.h
 testBufPage.o: BufPage.h /usr/include/stdio.h ../graphics/DeviseTypes.h
 testBufPage.o: /usr/include/values.h ../graphics/DevStatus.h
 testBufPage.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
@@ -1858,21 +1785,23 @@ testQueryProc.o: RangeInfoArray.h ../graphics/DList.h ../graphics/Exit.h
 testQueryProc.o: TData.h DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 testQueryProc.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 testQueryProc.o: /usr/include/sys/param.h /usr/include/machine/param.h
-testQueryProc.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-testQueryProc.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-testQueryProc.o: /usr/include/errno.h /usr/include/sys/errno.h
-testQueryProc.o: /usr/include/assert.h /usr/include/stdio.h
-testQueryProc.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-testQueryProc.o: /usr/include/sys/time.h /usr/include/sys/time.h
-testQueryProc.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-testQueryProc.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-testQueryProc.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-testQueryProc.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-testQueryProc.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-testQueryProc.o: /usr/include/sys/socket.h /usr/include/netinet/in.h GData.h
-testQueryProc.o: RangeList.h RangeInfo.h QPRange.h TDataAppend.h DiskFile.h
-testQueryProc.o: TDataMap.h ../graphics/Color.h ../graphics/Pattern.h
-testQueryProc.o: ShapeID.h ../graphics/VisualArg.h GDataRec.h ViewGraph.h
+testQueryProc.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+testQueryProc.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+testQueryProc.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+testQueryProc.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
+testQueryProc.o: /usr/include/sys/errno.h /usr/include/assert.h
+testQueryProc.o: /usr/include/stdio.h /usr/include/limits.h
+testQueryProc.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
+testQueryProc.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+testQueryProc.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+testQueryProc.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+testQueryProc.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+testQueryProc.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+testQueryProc.o: /usr/include/netdb.h /usr/include/sys/socket.h
+testQueryProc.o: /usr/include/netinet/in.h GData.h RangeList.h RangeInfo.h
+testQueryProc.o: QPRange.h TDataAppend.h DiskFile.h TDataMap.h
+testQueryProc.o: ../graphics/Color.h ../graphics/Pattern.h ShapeID.h
+testQueryProc.o: ../graphics/VisualArg.h GDataRec.h ViewGraph.h
 testQueryProc.o: ../graphics/View.h ../graphics/Dispatcher.h
 testQueryProc.o: /usr/include/stdlib.h /usr/include/unistd.h
 testQueryProc.o: /usr/include/string.h ../graphics/Journal.h
@@ -1901,59 +1830,20 @@ testRecFile.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
 testRecFile.o: DataSource.h ../graphics/Exit.h MemMgr.h DCE.h
 testRecFile.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 testRecFile.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-testRecFile.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-testRecFile.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-testRecFile.o: /usr/include/machine/mmu.h /usr/include/errno.h
-testRecFile.o: /usr/include/sys/errno.h /usr/include/assert.h
-testRecFile.o: /usr/include/stdio.h /usr/include/limits.h
-testRecFile.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
-testRecFile.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-testRecFile.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-testRecFile.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-testRecFile.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-testRecFile.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-testRecFile.o: /usr/include/netdb.h /usr/include/sys/socket.h
-testRecFile.o: /usr/include/netinet/in.h TestData.h
-testStr.o: /usr/include/sys/time.h /usr/include/sys/time.h
-testStr.o: ../graphics/DeviseTypes.h /usr/include/values.h
-testStr.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-testStr.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
-testStr.o: ../graphics/Dispatcher.h /usr/include/stdio.h
-testStr.o: /usr/include/stdlib.h /usr/include/unistd.h /usr/include/string.h
-testStr.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-testStr.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-testStr.o: RectShape.h Shape.h TDataMap.h ShapeID.h RecId.h GDataRec.h
-testStr.o: ViewGraph.h ../graphics/View.h ../graphics/ViewWin.h
-testStr.o: ../graphics/WindowRep.h ../graphics/Geom.h /usr/include/math.h
-testStr.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-testStr.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-testStr.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
-testStr.o: /usr/include/sys/errno.h ../graphics/DualWindowRep.h
-testStr.o: ../graphics/Control.h ../graphics/ClassDir.h
-testStr.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-testStr.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Cursor.h
-testStr.o: BasicStats.h ViewStats.h GdataStat.h ../tape/HashTable.h
-testStr.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h DCE.h
-testStr.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-testStr.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-testStr.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-testStr.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-testStr.o: /usr/include/machine/mmu.h /usr/include/assert.h
-testStr.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-testStr.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-testStr.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-testStr.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-testStr.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-testStr.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-testStr.o: /usr/include/sys/socket.h /usr/include/netinet/in.h UpdateLink.h
-testStr.o: VisualLink.h Action.h PointStorage.h ../graphics/Temp.h
-testStr.o: ../graphics/Map3D.h ../graphics/ColorMgr.h TDataCMap.h
-testStr.o: ConnectorShape.h Connector.h GDataBin.h ActionDefault.h
-testStr.o: ../graphics/Util.h /usr/include/ctype.h ../graphics/Selection.h
-testStr.o: BufMgr.h BufferPolicy.h RangeInfoArray.h TData.h GData.h
-testStr.o: RangeList.h RangeInfo.h QPRange.h ViewScatter.h QueryProc.h
-testStr.o: Command.h ../graphics/Timer.h StrData.h ../graphics/ViewWinVer.h
-testStr.o: ../graphics/ViewLayout.h StringHash.h StrMapFile.h
+testRecFile.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+testRecFile.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+testRecFile.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+testRecFile.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+testRecFile.o: /usr/include/errno.h /usr/include/sys/errno.h
+testRecFile.o: /usr/include/assert.h /usr/include/stdio.h
+testRecFile.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+testRecFile.o: /usr/include/sys/time.h /usr/include/sys/time.h
+testRecFile.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+testRecFile.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+testRecFile.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+testRecFile.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+testRecFile.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+testRecFile.o: /usr/include/sys/socket.h /usr/include/netinet/in.h TestData.h
 testStringHash.o: /usr/include/stdio.h StringHash.h
 testTcl.o: /usr/include/stdio.h /usr/include/stdlib.h
 testTcl.o: /usr/include/sys/stdtypes.h /s/tcl/include/tcl.h
@@ -1965,19 +1855,21 @@ testTdata.o: ../graphics/BufPolicy.h RecId.h BufferPolicy.h RangeInfoArray.h
 testTdata.o: ../graphics/DList.h ../graphics/Exit.h TData.h DataSource.h
 testTdata.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 testTdata.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-testTdata.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-testTdata.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-testTdata.o: /usr/include/machine/mmu.h /usr/include/errno.h
-testTdata.o: /usr/include/sys/errno.h /usr/include/assert.h
-testTdata.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-testTdata.o: /usr/include/sys/time.h /usr/include/sys/time.h
-testTdata.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-testTdata.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-testTdata.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-testTdata.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-testTdata.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-testTdata.o: /usr/include/sys/socket.h /usr/include/netinet/in.h GData.h
-testTdata.o: RangeList.h RangeInfo.h QPRange.h TDataAppend.h DiskFile.h
+testTdata.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+testTdata.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+testTdata.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+testTdata.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+testTdata.o: /usr/include/errno.h /usr/include/sys/errno.h
+testTdata.o: /usr/include/assert.h /usr/include/limits.h
+testTdata.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
+testTdata.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+testTdata.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+testTdata.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+testTdata.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+testTdata.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+testTdata.o: /usr/include/netdb.h /usr/include/sys/socket.h
+testTdata.o: /usr/include/netinet/in.h GData.h RangeList.h RangeInfo.h
+testTdata.o: QPRange.h TDataAppend.h DiskFile.h
 testViewRanges.o: ../graphics/TileLayout.h ../graphics/ViewLayout.h
 testViewRanges.o: ../graphics/ViewWin.h ../graphics/DList.h
 testViewRanges.o: ../graphics/Exit.h ../graphics/DeviseTypes.h
@@ -2006,46 +1898,6 @@ testVoidArray.o: ../graphics/DeviseTypes.h /usr/include/values.h
 testVoidArray.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 testVoidArray.o: /usr/include/sys/sysmacros.h ../graphics/Parse.h
 testVoidArray.o: /usr/include/sys/time.h
-testXY.o: /usr/include/sys/time.h /usr/include/sys/time.h
-testXY.o: ../graphics/DeviseTypes.h /usr/include/values.h
-testXY.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-testXY.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
-testXY.o: ../graphics/Dispatcher.h /usr/include/stdio.h /usr/include/stdlib.h
-testXY.o: /usr/include/unistd.h /usr/include/string.h ../graphics/DList.h
-testXY.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
-testXY.o: ../graphics/Color.h ../graphics/Pattern.h RectShape.h Shape.h
-testXY.o: TDataMap.h ShapeID.h RecId.h GDataRec.h ViewGraph.h
-testXY.o: ../graphics/View.h ../graphics/ViewWin.h ../graphics/WindowRep.h
-testXY.o: ../graphics/Geom.h /usr/include/math.h /usr/include/floatingpoint.h
-testXY.o: /usr/include/sys/ieeefp.h ../graphics/Transform.h
-testXY.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-testXY.o: ../graphics/DevError.h /usr/include/errno.h
-testXY.o: /usr/include/sys/errno.h ../graphics/DualWindowRep.h
-testXY.o: ../graphics/Control.h ../graphics/ClassDir.h
-testXY.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-testXY.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Cursor.h
-testXY.o: BasicStats.h ViewStats.h GdataStat.h ../tape/HashTable.h
-testXY.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h DCE.h
-testXY.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-testXY.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-testXY.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-testXY.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-testXY.o: /usr/include/machine/mmu.h /usr/include/assert.h
-testXY.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-testXY.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-testXY.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-testXY.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-testXY.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-testXY.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-testXY.o: /usr/include/sys/socket.h /usr/include/netinet/in.h UpdateLink.h
-testXY.o: VisualLink.h Action.h PointStorage.h ../graphics/Temp.h
-testXY.o: ../graphics/Map3D.h ../graphics/ColorMgr.h TDataCMap.h
-testXY.o: ConnectorShape.h Connector.h GDataBin.h ActionDefault.h
-testXY.o: ../graphics/Util.h /usr/include/ctype.h ../graphics/Selection.h
-testXY.o: BufMgr.h BufferPolicy.h RangeInfoArray.h TData.h GData.h
-testXY.o: RangeList.h RangeInfo.h QPRange.h TDataViewX.h QueryProc.h
-testXY.o: Command.h ../graphics/Timer.h ../graphics/ViewWinVer.h
-testXY.o: ../graphics/ViewLayout.h ../graphics/ViewWinHor.h XYmapfile.h
 testbit.o: /usr/include/stdio.h /usr/include/stdlib.h
 testbit.o: /usr/include/sys/stdtypes.h Bitmap.h ../graphics/DeviseTypes.h
 testbit.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -2059,19 +1911,20 @@ testbuf.o: RangeInfoArray.h ../graphics/DList.h ../graphics/Exit.h TData.h
 testbuf.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 testbuf.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 testbuf.o: /usr/include/sys/param.h /usr/include/machine/param.h
-testbuf.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-testbuf.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-testbuf.o: /usr/include/errno.h /usr/include/sys/errno.h
-testbuf.o: /usr/include/assert.h /usr/include/limits.h
-testbuf.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
-testbuf.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-testbuf.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-testbuf.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-testbuf.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-testbuf.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-testbuf.o: /usr/include/netdb.h /usr/include/sys/socket.h
-testbuf.o: /usr/include/netinet/in.h GData.h RangeList.h RangeInfo.h
-testbuf.o: QPRange.h UnixDiskFile.h DiskFile.h
+testbuf.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+testbuf.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+testbuf.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+testbuf.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
+testbuf.o: /usr/include/sys/errno.h /usr/include/assert.h
+testbuf.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+testbuf.o: /usr/include/sys/time.h /usr/include/sys/time.h
+testbuf.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+testbuf.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+testbuf.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+testbuf.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+testbuf.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+testbuf.o: /usr/include/sys/socket.h /usr/include/netinet/in.h GData.h
+testbuf.o: RangeList.h RangeInfo.h QPRange.h UnixDiskFile.h DiskFile.h
 testhole.o: UnixDiskFile.h /usr/include/errno.h /usr/include/sys/errno.h
 testhole.o: DiskFile.h ../graphics/DeviseTypes.h /usr/include/values.h
 testhole.o: ../graphics/DevStatus.h /usr/include/sys/types.h
@@ -2090,19 +1943,21 @@ testpfile.o: BufferPolicy.h RangeInfoArray.h ../graphics/DList.h
 testpfile.o: ../graphics/Exit.h TData.h DataSource.h MemMgr.h DCE.h
 testpfile.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 testpfile.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-testpfile.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-testpfile.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-testpfile.o: /usr/include/machine/mmu.h /usr/include/errno.h
-testpfile.o: /usr/include/sys/errno.h /usr/include/assert.h
-testpfile.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-testpfile.o: /usr/include/sys/time.h /usr/include/sys/time.h
-testpfile.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-testpfile.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-testpfile.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-testpfile.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-testpfile.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-testpfile.o: /usr/include/sys/socket.h /usr/include/netinet/in.h GData.h
-testpfile.o: RangeList.h RangeInfo.h QPRange.h
+testpfile.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+testpfile.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+testpfile.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+testpfile.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+testpfile.o: /usr/include/errno.h /usr/include/sys/errno.h
+testpfile.o: /usr/include/assert.h /usr/include/limits.h
+testpfile.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
+testpfile.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+testpfile.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+testpfile.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+testpfile.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+testpfile.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+testpfile.o: /usr/include/netdb.h /usr/include/sys/socket.h
+testpfile.o: /usr/include/netinet/in.h GData.h RangeList.h RangeInfo.h
+testpfile.o: QPRange.h
 testpfileGap.o: /usr/include/stdio.h /usr/include/stdlib.h
 testpfileGap.o: /usr/include/sys/stdtypes.h ../graphics/DeviseTypes.h
 testpfileGap.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -2112,61 +1967,21 @@ testpfileGap.o: BufferPolicy.h RangeInfoArray.h ../graphics/DList.h
 testpfileGap.o: ../graphics/Exit.h TData.h DataSource.h MemMgr.h DCE.h
 testpfileGap.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 testpfileGap.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-testpfileGap.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-testpfileGap.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-testpfileGap.o: /usr/include/machine/mmu.h /usr/include/errno.h
-testpfileGap.o: /usr/include/sys/errno.h /usr/include/assert.h
-testpfileGap.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-testpfileGap.o: /usr/include/sys/time.h /usr/include/sys/time.h
-testpfileGap.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-testpfileGap.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-testpfileGap.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-testpfileGap.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-testpfileGap.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-testpfileGap.o: /usr/include/sys/socket.h /usr/include/netinet/in.h GData.h
-testpfileGap.o: RangeList.h RangeInfo.h QPRange.h PageRange.h
-testraw.o: /usr/include/sys/time.h /usr/include/sys/time.h
-testraw.o: ../graphics/DeviseTypes.h /usr/include/values.h
-testraw.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-testraw.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
-testraw.o: ../graphics/XDisplay.h ../graphics/Display.h ../graphics/Geom.h
-testraw.o: /usr/include/stdio.h /usr/include/math.h
-testraw.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-testraw.o: ../graphics/Color.h ../graphics/Dispatcher.h /usr/include/stdlib.h
-testraw.o: /usr/include/unistd.h /usr/include/string.h ../graphics/DList.h
-testraw.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
-testraw.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
-testraw.o: ../graphics/WindowRep.h ../graphics/Transform.h
-testraw.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-testraw.o: ../graphics/DevError.h /usr/include/errno.h
-testraw.o: /usr/include/sys/errno.h ../graphics/Xdef.h
-testraw.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
-testraw.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-testraw.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
-testraw.o: ../graphics/XWindowRep.h ../graphics/Util.h /usr/include/ctype.h
-testraw.o: ../graphics/XBitmap.h RectShape.h Shape.h TDataMap.h ShapeID.h
-testraw.o: RecId.h GDataRec.h ViewGraph.h ../graphics/View.h
-testraw.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
-testraw.o: ../graphics/Control.h ../graphics/ClassDir.h
-testraw.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-testraw.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Cursor.h
-testraw.o: BasicStats.h ViewStats.h GdataStat.h ../tape/HashTable.h
-testraw.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h DCE.h
-testraw.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-testraw.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-testraw.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-testraw.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-testraw.o: /usr/include/machine/mmu.h /usr/include/assert.h
-testraw.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-testraw.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-testraw.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-testraw.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-testraw.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-testraw.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-testraw.o: /usr/include/sys/socket.h /usr/include/netinet/in.h UpdateLink.h
-testraw.o: VisualLink.h Action.h PointStorage.h ../graphics/Temp.h
-testraw.o: ../graphics/Map3D.h Connector.h ConnectorShape.h
-testraw.o: ../graphics/Selection.h Command.h ../graphics/Timer.h maprawfile.h
+testpfileGap.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+testpfileGap.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+testpfileGap.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+testpfileGap.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+testpfileGap.o: /usr/include/errno.h /usr/include/sys/errno.h
+testpfileGap.o: /usr/include/assert.h /usr/include/limits.h
+testpfileGap.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
+testpfileGap.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+testpfileGap.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+testpfileGap.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+testpfileGap.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+testpfileGap.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+testpfileGap.o: /usr/include/netdb.h /usr/include/sys/socket.h
+testpfileGap.o: /usr/include/netinet/in.h GData.h RangeList.h RangeInfo.h
+testpfileGap.o: QPRange.h PageRange.h
 BasicStats.o: /usr/include/stdio.h BasicStats.h ../graphics/DList.h
 BasicStats.o: ../graphics/Exit.h ../graphics/DeviseTypes.h
 BasicStats.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -2191,32 +2006,35 @@ BasicStats.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
 BasicStats.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 BasicStats.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 BasicStats.o: /usr/include/sys/param.h /usr/include/machine/param.h
-BasicStats.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-BasicStats.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-BasicStats.o: /usr/include/assert.h /usr/include/limits.h
-BasicStats.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/wait.h
-BasicStats.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-BasicStats.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-BasicStats.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-BasicStats.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-BasicStats.o: /usr/include/netdb.h /usr/include/sys/socket.h
-BasicStats.o: /usr/include/netinet/in.h UpdateLink.h VisualLink.h Action.h
-BasicStats.o: RecId.h PointStorage.h
+BasicStats.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+BasicStats.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+BasicStats.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+BasicStats.o: /usr/include/mon/obpdefs.h /usr/include/assert.h
+BasicStats.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+BasicStats.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+BasicStats.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+BasicStats.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+BasicStats.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+BasicStats.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+BasicStats.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+BasicStats.o: UpdateLink.h VisualLink.h Action.h RecId.h PointStorage.h
 DCE.o: /usr/include/stdio.h /usr/include/assert.h DCE.h
 DCE.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 DCE.o: /usr/include/sys/sysmacros.h /usr/include/sys/ipc.h
 DCE.o: /usr/include/sys/sem.h /usr/include/sys/shm.h /usr/include/sys/param.h
-DCE.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-DCE.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-DCE.o: /usr/include/machine/mmu.h /usr/include/errno.h
-DCE.o: /usr/include/sys/errno.h /usr/include/limits.h /usr/include/sys/stat.h
-DCE.o: machdep.h /usr/include/sys/time.h /usr/include/sys/time.h
-DCE.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-DCE.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-DCE.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-DCE.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-DCE.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-DCE.o: /usr/include/sys/socket.h /usr/include/netinet/in.h ../graphics/Exit.h
+DCE.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+DCE.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+DCE.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+DCE.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+DCE.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/limits.h
+DCE.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
+DCE.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+DCE.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+DCE.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+DCE.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+DCE.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+DCE.o: /usr/include/netdb.h /usr/include/sys/socket.h
+DCE.o: /usr/include/netinet/in.h ../graphics/Exit.h
 DeviseKeyBinding.o: DeviseKeyBinding.h
 GdataStat.o: GdataStat.h /usr/include/stdio.h /usr/include/stdlib.h
 GdataStat.o: /usr/include/sys/stdtypes.h ../tape/HashTable.h BasicStats.h
@@ -2260,18 +2078,17 @@ KGraph.o: ../graphics/Dispatcher.h /usr/include/unistd.h
 KGraph.o: /usr/include/string.h ../graphics/Journal.h ../graphics/ColorMgr.h
 MapIntToInt.o: MapIntToInt.h ../tape/HashTable.h
 MapInterpShape.o: /usr/include/sys/param.h /usr/include/machine/param.h
-MapInterpShape.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-MapInterpShape.o: /usr/include/vm/faultcode.h /usr/include/sys/stdtypes.h
-MapInterpShape.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-MapInterpShape.o: MapInterpShape.h ../graphics/Transform.h
-MapInterpShape.o: /usr/include/stdio.h /usr/include/math.h
-MapInterpShape.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-MapInterpShape.o: ../graphics/DeviseTypes.h /usr/include/values.h
-MapInterpShape.o: ../graphics/DevStatus.h ../graphics/VisualArg.h
-MapInterpShape.o: ../graphics/Color.h ../graphics/Pattern.h
-MapInterpShape.o: ../graphics/Geom.h RectShape.h Shape.h TDataMap.h
-MapInterpShape.o: ../graphics/Exit.h ../graphics/DList.h ShapeID.h RecId.h
-MapInterpShape.o: GDataRec.h ViewGraph.h ../graphics/View.h
+MapInterpShape.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+MapInterpShape.o: /usr/include/sys/stdtypes.h /usr/include/sys/types.h
+MapInterpShape.o: /usr/include/sys/sysmacros.h MapInterpShape.h
+MapInterpShape.o: ../graphics/Transform.h /usr/include/stdio.h
+MapInterpShape.o: /usr/include/math.h /usr/include/floatingpoint.h
+MapInterpShape.o: /usr/include/sys/ieeefp.h ../graphics/DeviseTypes.h
+MapInterpShape.o: /usr/include/values.h ../graphics/DevStatus.h
+MapInterpShape.o: ../graphics/VisualArg.h ../graphics/Color.h
+MapInterpShape.o: ../graphics/Pattern.h ../graphics/Geom.h RectShape.h
+MapInterpShape.o: Shape.h TDataMap.h ../graphics/Exit.h ../graphics/DList.h
+MapInterpShape.o: ShapeID.h RecId.h GDataRec.h ViewGraph.h ../graphics/View.h
 MapInterpShape.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
 MapInterpShape.o: /usr/include/unistd.h /usr/include/string.h
 MapInterpShape.o: ../graphics/Journal.h ../graphics/ViewWin.h
@@ -2287,6 +2104,8 @@ MapInterpShape.o: ViewStats.h GdataStat.h ../tape/HashTable.h
 MapInterpShape.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h
 MapInterpShape.o: DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 MapInterpShape.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+MapInterpShape.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+MapInterpShape.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
 MapInterpShape.o: /usr/include/assert.h /usr/include/limits.h
 MapInterpShape.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/wait.h
 MapInterpShape.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
@@ -2304,11 +2123,13 @@ MemMgr.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 MemMgr.o: /usr/include/sys/sysmacros.h DCE.h /usr/include/sys/ipc.h
 MemMgr.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 MemMgr.o: /usr/include/sys/param.h /usr/include/machine/param.h
-MemMgr.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-MemMgr.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-MemMgr.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/assert.h
-MemMgr.o: /usr/include/stdio.h /usr/include/limits.h /usr/include/sys/stat.h
-MemMgr.o: machdep.h /usr/include/sys/time.h /usr/include/sys/time.h
+MemMgr.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+MemMgr.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+MemMgr.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+MemMgr.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
+MemMgr.o: /usr/include/sys/errno.h /usr/include/assert.h /usr/include/stdio.h
+MemMgr.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+MemMgr.o: /usr/include/sys/time.h /usr/include/sys/time.h
 MemMgr.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
 MemMgr.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
 MemMgr.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
@@ -2338,23 +2159,24 @@ ParseAPI.o: BasicStats.h ViewStats.h GdataStat.h ../tape/HashTable.h
 ParseAPI.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h DCE.h
 ParseAPI.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 ParseAPI.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-ParseAPI.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-ParseAPI.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-ParseAPI.o: /usr/include/machine/mmu.h /usr/include/limits.h
-ParseAPI.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/wait.h
-ParseAPI.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-ParseAPI.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-ParseAPI.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-ParseAPI.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-ParseAPI.o: /usr/include/netdb.h /usr/include/sys/socket.h
-ParseAPI.o: /usr/include/netinet/in.h UpdateLink.h VisualLink.h Action.h
-ParseAPI.o: RecId.h PointStorage.h KGraph.h ../graphics/Util.h ParseCat.h
-ParseAPI.o: TData.h TDataMap.h ShapeID.h GDataRec.h ../graphics/Parse.h
-ParseAPI.o: GroupDir.h ItemList.h Group.h MapInterpClassInfo.h
-ParseAPI.o: ../graphics/ViewLayout.h ../graphics/FilterQueue.h DataSeg.h
-ParseAPI.o: Version.h DevFileHeader.h ../graphics/Display.h
-ParseAPI.o: ../graphics/ColorMgr.h TDataAscii.h FileIndex.h ViewLens.h
-ParseAPI.o: ../graphics/WinClassInfo.h
+ParseAPI.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+ParseAPI.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+ParseAPI.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+ParseAPI.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+ParseAPI.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+ParseAPI.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+ParseAPI.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+ParseAPI.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+ParseAPI.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+ParseAPI.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+ParseAPI.o: /usr/include/sys/socket.h /usr/include/netinet/in.h UpdateLink.h
+ParseAPI.o: VisualLink.h Action.h RecId.h PointStorage.h KGraph.h
+ParseAPI.o: ../graphics/Util.h ParseCat.h TData.h TDataMap.h ShapeID.h
+ParseAPI.o: GDataRec.h ../graphics/Parse.h GroupDir.h ItemList.h Group.h
+ParseAPI.o: MapInterpClassInfo.h ../graphics/ViewLayout.h
+ParseAPI.o: ../graphics/FilterQueue.h DataSeg.h Version.h DevFileHeader.h
+ParseAPI.o: ../graphics/Display.h ../graphics/ColorMgr.h TDataAscii.h
+ParseAPI.o: FileIndex.h ViewLens.h ../graphics/WinClassInfo.h
 PointStorage.o: PointStorage.h /usr/include/stdio.h ../graphics/DeviseTypes.h
 PointStorage.o: /usr/include/values.h ../graphics/DevStatus.h
 PointStorage.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
@@ -2367,21 +2189,22 @@ RecordLink.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 RecordLink.o: /usr/include/sys/sysmacros.h DataSource.h ../graphics/Exit.h
 RecordLink.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 RecordLink.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-RecordLink.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-RecordLink.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-RecordLink.o: /usr/include/machine/mmu.h /usr/include/errno.h
-RecordLink.o: /usr/include/sys/errno.h /usr/include/assert.h
-RecordLink.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-RecordLink.o: /usr/include/sys/time.h /usr/include/sys/time.h
-RecordLink.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-RecordLink.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-RecordLink.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-RecordLink.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-RecordLink.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-RecordLink.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-RecordLink.o: VisualLink.h ../graphics/DList.h ../graphics/ViewCallback.h
-RecordLink.o: ../graphics/VisualArg.h ../graphics/Color.h
-RecordLink.o: ../graphics/Pattern.h ../graphics/Init.h
+RecordLink.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+RecordLink.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+RecordLink.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+RecordLink.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+RecordLink.o: /usr/include/errno.h /usr/include/sys/errno.h
+RecordLink.o: /usr/include/assert.h /usr/include/limits.h
+RecordLink.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
+RecordLink.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+RecordLink.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+RecordLink.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+RecordLink.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+RecordLink.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+RecordLink.o: /usr/include/netdb.h /usr/include/sys/socket.h
+RecordLink.o: /usr/include/netinet/in.h VisualLink.h ../graphics/DList.h
+RecordLink.o: ../graphics/ViewCallback.h ../graphics/VisualArg.h
+RecordLink.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Init.h
 RecordLink.o: ../graphics/BufPolicy.h ../graphics/Util.h
 RecordLink.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
 RecordLink.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
@@ -2406,11 +2229,12 @@ SBufMgr.o: /usr/include/unistd.h ../graphics/DeviseTypes.h
 SBufMgr.o: /usr/include/values.h ../graphics/DevStatus.h MemMgr.h DCE.h
 SBufMgr.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 SBufMgr.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-SBufMgr.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-SBufMgr.o: /usr/include/machine/mmu.h /usr/include/errno.h
-SBufMgr.o: /usr/include/sys/errno.h /usr/include/assert.h
-SBufMgr.o: /usr/include/stdio.h /usr/include/limits.h machdep.h
-SBufMgr.o: /usr/include/sys/time.h /usr/include/sys/time.h
+SBufMgr.o: /usr/include/machine/param.h /usr/include/machine/mmu.h
+SBufMgr.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+SBufMgr.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+SBufMgr.o: /usr/include/errno.h /usr/include/sys/errno.h
+SBufMgr.o: /usr/include/assert.h /usr/include/stdio.h /usr/include/limits.h
+SBufMgr.o: machdep.h /usr/include/sys/time.h /usr/include/sys/time.h
 SBufMgr.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
 SBufMgr.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
 SBufMgr.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
@@ -2428,21 +2252,22 @@ Seq.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 Seq.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 Seq.o: /usr/include/stddef.h machdep.h /usr/include/limits.h
 Seq.o: /usr/include/sys/param.h /usr/include/machine/param.h
-Seq.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-Seq.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
-Seq.o: /usr/include/sys/time.h /usr/include/sys/wait.h /usr/include/sys/ipc.h
-Seq.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-Seq.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-Seq.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-Seq.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-Seq.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-Seq.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-Seq.o: /usr/include/sys/socket.h /usr/include/netinet/in.h ../graphics/Util.h
-Seq.o: /usr/include/math.h /usr/include/floatingpoint.h
-Seq.o: /usr/include/sys/ieeefp.h ../graphics/DeviseTypes.h
-Seq.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Exit.h
-Seq.o: ../graphics/Parse.h ../graphics/DevError.h /usr/include/errno.h
-Seq.o: /usr/include/sys/errno.h
+Seq.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+Seq.o: /usr/include/sys/time.h /usr/include/sys/time.h
+Seq.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
+Seq.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+Seq.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+Seq.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
+Seq.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+Seq.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+Seq.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+Seq.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+Seq.o: /usr/include/netdb.h /usr/include/sys/socket.h
+Seq.o: /usr/include/netinet/in.h ../graphics/Util.h /usr/include/math.h
+Seq.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+Seq.o: ../graphics/DeviseTypes.h /usr/include/values.h
+Seq.o: ../graphics/DevStatus.h ../graphics/Exit.h ../graphics/Parse.h
+Seq.o: ../graphics/DevError.h /usr/include/errno.h /usr/include/sys/errno.h
 StringStorage.o: /usr/include/string.h /usr/include/sys/stdtypes.h
 StringStorage.o: StringStorage.h ../tape/HashTable.h
 UpdateLink.o: /usr/include/unistd.h /usr/include/sys/types.h
@@ -2469,17 +2294,18 @@ UpdateLink.o: BasicStats.h ViewStats.h GdataStat.h ../tape/HashTable.h
 UpdateLink.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h
 UpdateLink.o: DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 UpdateLink.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-UpdateLink.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-UpdateLink.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-UpdateLink.o: /usr/include/machine/mmu.h /usr/include/assert.h
-UpdateLink.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-UpdateLink.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-UpdateLink.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-UpdateLink.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-UpdateLink.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-UpdateLink.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-UpdateLink.o: /usr/include/sys/socket.h /usr/include/netinet/in.h Action.h
-UpdateLink.o: RecId.h PointStorage.h
+UpdateLink.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+UpdateLink.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+UpdateLink.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+UpdateLink.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+UpdateLink.o: /usr/include/assert.h /usr/include/limits.h
+UpdateLink.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/wait.h
+UpdateLink.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+UpdateLink.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+UpdateLink.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+UpdateLink.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+UpdateLink.o: /usr/include/netdb.h /usr/include/sys/socket.h
+UpdateLink.o: /usr/include/netinet/in.h Action.h RecId.h PointStorage.h
 ViewKGraph.o: ViewKGraph.h ../graphics/DeviseTypes.h /usr/include/values.h
 ViewKGraph.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 ViewKGraph.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
@@ -2503,18 +2329,20 @@ ViewKGraph.o: ViewStats.h GdataStat.h ../tape/HashTable.h
 ViewKGraph.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h
 ViewKGraph.o: DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 ViewKGraph.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-ViewKGraph.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-ViewKGraph.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-ViewKGraph.o: /usr/include/machine/mmu.h /usr/include/assert.h
-ViewKGraph.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-ViewKGraph.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-ViewKGraph.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-ViewKGraph.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-ViewKGraph.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-ViewKGraph.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-ViewKGraph.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-ViewKGraph.o: UpdateLink.h VisualLink.h Action.h RecId.h PointStorage.h
-ViewKGraph.o: KGraph.h ../graphics/Util.h /usr/include/ctype.h
+ViewKGraph.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+ViewKGraph.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+ViewKGraph.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+ViewKGraph.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+ViewKGraph.o: /usr/include/assert.h /usr/include/limits.h
+ViewKGraph.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/wait.h
+ViewKGraph.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+ViewKGraph.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+ViewKGraph.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+ViewKGraph.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+ViewKGraph.o: /usr/include/netdb.h /usr/include/sys/socket.h
+ViewKGraph.o: /usr/include/netinet/in.h UpdateLink.h VisualLink.h Action.h
+ViewKGraph.o: RecId.h PointStorage.h KGraph.h ../graphics/Util.h
+ViewKGraph.o: /usr/include/ctype.h
 ViewLens.o: /usr/include/sys/time.h ../graphics/Util.h /usr/include/stdlib.h
 ViewLens.o: /usr/include/sys/stdtypes.h /usr/include/stdio.h
 ViewLens.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
@@ -2538,39 +2366,42 @@ ViewLens.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
 ViewLens.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 ViewLens.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 ViewLens.o: /usr/include/sys/param.h /usr/include/machine/param.h
-ViewLens.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-ViewLens.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-ViewLens.o: /usr/include/assert.h /usr/include/limits.h
-ViewLens.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/wait.h
-ViewLens.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-ViewLens.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-ViewLens.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-ViewLens.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-ViewLens.o: /usr/include/netdb.h /usr/include/sys/socket.h
-ViewLens.o: /usr/include/netinet/in.h UpdateLink.h VisualLink.h Action.h
-ViewLens.o: RecId.h PointStorage.h ../graphics/XWindowRep.h
-ViewLens.o: ../graphics/Xdef.h /s/X11/include/X11/Xlib.h
-ViewLens.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
-ViewLens.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
-ViewLens.o: /s/X11/include/X11/Xutil.h ../graphics/FilterQueue.h
-ViewLens.o: ../graphics/TimeStamp.h ../graphics/Parse.h ../graphics/Map3D.h
-ViewLens.o: ../graphics/Display.h ../graphics/ColorMgr.h
+ViewLens.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+ViewLens.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+ViewLens.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+ViewLens.o: /usr/include/mon/obpdefs.h /usr/include/assert.h
+ViewLens.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+ViewLens.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+ViewLens.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+ViewLens.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+ViewLens.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+ViewLens.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+ViewLens.o: /usr/include/sys/socket.h /usr/include/netinet/in.h UpdateLink.h
+ViewLens.o: VisualLink.h Action.h RecId.h PointStorage.h
+ViewLens.o: ../graphics/XWindowRep.h ../graphics/Xdef.h
+ViewLens.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
+ViewLens.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+ViewLens.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
+ViewLens.o: ../graphics/FilterQueue.h ../graphics/TimeStamp.h
+ViewLens.o: ../graphics/Parse.h ../graphics/Map3D.h ../graphics/Display.h
+ViewLens.o: ../graphics/ColorMgr.h
 Web.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 Web.o: /usr/include/unistd.h /usr/include/sys/types.h
 Web.o: /usr/include/sys/sysmacros.h /usr/include/string.h
 Web.o: /usr/include/errno.h /usr/include/sys/errno.h ../graphics/Exit.h Web.h
 Web.o: machdep.h /usr/include/limits.h /usr/include/sys/param.h
-Web.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-Web.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-Web.o: /usr/include/sys/time.h /usr/include/sys/time.h
-Web.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
-Web.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
-Web.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-Web.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-Web.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-Web.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-Web.o: /usr/include/netdb.h /usr/include/sys/socket.h
-Web.o: /usr/include/netinet/in.h
+Web.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+Web.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+Web.o: /usr/include/sys/time.h /usr/include/sys/wait.h /usr/include/sys/ipc.h
+Web.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+Web.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+Web.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+Web.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+Web.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+Web.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+Web.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+Web.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+Web.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 testSBM2.o: /usr/include/stdio.h /usr/include/stdlib.h
 testSBM2.o: /usr/include/sys/stdtypes.h /usr/include/assert.h
 testSBM2.o: /usr/include/string.h /usr/include/ctype.h SBufMgr.h
@@ -2580,18 +2411,19 @@ testSBM2.o: ../graphics/DeviseTypes.h /usr/include/values.h
 testSBM2.o: ../graphics/DevStatus.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 testSBM2.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 testSBM2.o: /usr/include/sys/param.h /usr/include/machine/param.h
-testSBM2.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-testSBM2.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-testSBM2.o: /usr/include/errno.h /usr/include/sys/errno.h
-testSBM2.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-testSBM2.o: /usr/include/sys/time.h /usr/include/sys/time.h
-testSBM2.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-testSBM2.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-testSBM2.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-testSBM2.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-testSBM2.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-testSBM2.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-testSBM2.o: ../tape/tapedrive.h ../tape/HashTable.h
+testSBM2.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+testSBM2.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+testSBM2.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+testSBM2.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
+testSBM2.o: /usr/include/sys/errno.h /usr/include/limits.h
+testSBM2.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
+testSBM2.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+testSBM2.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+testSBM2.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+testSBM2.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+testSBM2.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+testSBM2.o: /usr/include/netdb.h /usr/include/sys/socket.h
+testSBM2.o: /usr/include/netinet/in.h ../tape/tapedrive.h ../tape/HashTable.h
 testSBM3.o: /usr/include/stdio.h /usr/include/stdlib.h
 testSBM3.o: /usr/include/sys/stdtypes.h /usr/include/assert.h
 testSBM3.o: /usr/include/string.h /usr/include/ctype.h SBufMgr.h
@@ -2601,18 +2433,19 @@ testSBM3.o: ../graphics/DeviseTypes.h /usr/include/values.h
 testSBM3.o: ../graphics/DevStatus.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 testSBM3.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 testSBM3.o: /usr/include/sys/param.h /usr/include/machine/param.h
-testSBM3.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-testSBM3.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-testSBM3.o: /usr/include/errno.h /usr/include/sys/errno.h
-testSBM3.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-testSBM3.o: /usr/include/sys/time.h /usr/include/sys/time.h
-testSBM3.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-testSBM3.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-testSBM3.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-testSBM3.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-testSBM3.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-testSBM3.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-testSBM3.o: ../tape/tapedrive.h ../tape/HashTable.h
+testSBM3.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+testSBM3.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+testSBM3.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+testSBM3.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
+testSBM3.o: /usr/include/sys/errno.h /usr/include/limits.h
+testSBM3.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
+testSBM3.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+testSBM3.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+testSBM3.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+testSBM3.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+testSBM3.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+testSBM3.o: /usr/include/netdb.h /usr/include/sys/socket.h
+testSBM3.o: /usr/include/netinet/in.h ../tape/tapedrive.h ../tape/HashTable.h
 testSBufMgr.o: /usr/include/stdio.h /usr/include/stdlib.h
 testSBufMgr.o: /usr/include/sys/stdtypes.h /usr/include/assert.h
 testSBufMgr.o: /usr/include/string.h /usr/include/ctype.h SBufMgr.h
@@ -2622,15 +2455,17 @@ testSBufMgr.o: ../graphics/DeviseTypes.h /usr/include/values.h
 testSBufMgr.o: ../graphics/DevStatus.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 testSBufMgr.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 testSBufMgr.o: /usr/include/sys/param.h /usr/include/machine/param.h
-testSBufMgr.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-testSBufMgr.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-testSBufMgr.o: /usr/include/errno.h /usr/include/sys/errno.h
-testSBufMgr.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
-testSBufMgr.o: /usr/include/sys/time.h /usr/include/sys/time.h
-testSBufMgr.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-testSBufMgr.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-testSBufMgr.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-testSBufMgr.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-testSBufMgr.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-testSBufMgr.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-testSBufMgr.o: ../tape/tapedrive.h ../tape/HashTable.h
+testSBufMgr.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+testSBufMgr.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+testSBufMgr.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+testSBufMgr.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
+testSBufMgr.o: /usr/include/sys/errno.h /usr/include/limits.h
+testSBufMgr.o: /usr/include/sys/stat.h machdep.h /usr/include/sys/time.h
+testSBufMgr.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+testSBufMgr.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+testSBufMgr.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+testSBufMgr.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+testSBufMgr.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+testSBufMgr.o: /usr/include/netdb.h /usr/include/sys/socket.h
+testSBufMgr.o: /usr/include/netinet/in.h ../tape/tapedrive.h
+testSBufMgr.o: ../tape/HashTable.h
