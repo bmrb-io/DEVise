@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/12/14 18:50:19  jussi
+  Removed unused variables.
+
   Revision 1.1  1995/11/27 15:38:57  jussi
   Initial revision.
 */
@@ -81,7 +84,7 @@ public:
   }
 
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, int pixelSize) {
+			      TDataMap *map, View *view, int pixelSize) {
 		
     Coord x0, y0, x1, y1;
     win->Transform(0, 0, x0, y0);

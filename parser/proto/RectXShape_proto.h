@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/28 20:19:55  jussi
+  Small fix to remove compiler warning.
+
   Revision 1.2  1995/12/14 18:50:28  jussi
   Removed unused variables.
 
@@ -86,7 +89,7 @@ public:
   }
 
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, int pixelSize) {
+			      TDataMap *map, View *view, int pixelSize) {
 		
     Coord maxWidth, maxHeight;
     map->MaxBoundingBox(maxWidth, maxHeight);
