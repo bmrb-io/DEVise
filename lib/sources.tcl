@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.68  1997/05/28 16:57:35  wenger
+#	Changed back to the query processor version that sometimes returns
+#	too many records to hopefully avoid returning too few; other minor
+#	cleanups, etc.
+#
 #	Revision 1.67  1997/05/28 15:39:55  wenger
 #	Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
 #
@@ -882,16 +887,16 @@ proc defineANY {sourcetype} {
 	global displayImmediately
 	global _cwd
 
-	set directory [selectStream "Change directory to insert into"]
-	if {$directory == ""} {
-		return
-	}
-	set currentDir [CWD]
-
 	set retVal [define$sourcetype ""]
 #	puts "retVal = $retVal"
 	set table [lindex $retVal 0]
 	if {$retVal != ""} {
+		set directory [selectStream "CD to parent directory"]
+		if {$directory == ""} {
+			return
+		}
+		set currentDir [CWD]
+
 		DEVise dteInsertCatalogEntry $currentDir $retVal
           if {$displayImmediately} {
                displayTable [fullPathName $table $currentDir]
@@ -1820,10 +1825,10 @@ proc selectStream {{title "Select Table"}} {
     frame .srcsel.top
     frame .srcsel.bot
     pack .srcsel.mbar -side top -fill x
-#   if {$title != ""} {
-#	label .srcsel.title -text $title
-#	pack .srcsel.title -side top -fill x -expand 1 -pady 3m
-#   }
+    if {$title != ""} {
+ 	label .srcsel.title -text $title
+ 	pack .srcsel.title -side top -fill x -expand 1 -pady 3m
+    }
     pack .srcsel.top -side top -fill both -expand 1
     pack .srcsel.bot -side top -fill x -pady 5m
 
@@ -2027,6 +2032,7 @@ proc selectStream {{title "Select Table"}} {
 
     set streamsSelected ""
 
+    tkwait visibility .srcsel
     grab set .srcsel
     tkwait variable streamsSelected
     catch {destroy .srcsel}
