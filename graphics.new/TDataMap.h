@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.43  2001/04/12 20:15:14  wenger
+  First phase of external process dynamic data generation is in place
+  for RectX symbols (needs GUI and some cleanup); added the ability to
+  specify format for dates and ints in GData; various improvements to
+  diagnostic output.
+
   Revision 1.42  2001/04/03 19:57:40  wenger
   Cleaned up code dealing with GData attributes in preparation for
   "external process" implementation.
@@ -368,8 +374,14 @@ class TDataMap
   /* convert from Tdata to Gdata. buf contains
      buffer for data. tRecs are pointers to variable size
      records only. */
+  /* WARNING: gdataBuf must be aligned on a double (8 byte) boundary. */
+  /* WARNING: this method relies on the caller to specify a numRecs value
+   * such that the GData records will all fit in to the GData buffer
+   * (see TDataMap::GDataRecordSize().)  Buffer overflow will cause
+   * an assertion. */
   virtual void ConvertToGData(RecId startRecId, void *buf,
-			      int numRecs, void *gdataPtr) = 0;
+			      int numRecs, void *gdataBuf,
+				  int gdBufSize) = 0;
 
   /* Get the GData file for the mapping */
   GData *GetGData() { return _gdata; }

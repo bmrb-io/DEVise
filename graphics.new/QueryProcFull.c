@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.101  2001/04/03 19:57:40  wenger
+  Cleaned up code dealing with GData attributes in preparation for
+  "external process" implementation.
+
   Revision 1.100  2001/02/20 20:02:54  wenger
   Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
   to the trunk.
@@ -1379,7 +1383,8 @@ void QueryProcFull::ProcessScan(QPFullData *query)
                 Coord x = 0;
                 if (isTData) {
                     /* Coordinate values are assigned dynamically */
-                    query->map->ConvertToGData(startRid, buf, 1, _gdataBuf);
+                    query->map->ConvertToGData(startRid, buf, 1, _gdataBuf,
+		      GDATA_BUF_SIZE);
                     x = ((GDataBinRec *)_gdataBuf)->x;
                 } else {
                     x = ((GDataBinRec *)buf)->x;
@@ -1978,7 +1983,8 @@ void QueryProcFull::QPRangeInserted(Coord low, Coord high,
     recordsProcessed = 0;
     while (recsLeft > 0) {
 	int numToConvert = MIN(numRecsPerBatch, recsLeft);
-        _rangeQuery->map->ConvertToGData(recId, dbuf, numToConvert, _gdataBuf);
+        _rangeQuery->map->ConvertToGData(recId, dbuf, numToConvert, _gdataBuf,
+	  GDATA_BUF_SIZE);
 #if DEBUGLVL >= 5
         printf("Returning converted GData [%ld,%ld], map 0x%p, buf 0x%p\n",
                recId, recId + numToConvert - 1, _rangeQuery->map, _gdataBuf);
@@ -2189,7 +2195,8 @@ Boolean QueryProcFull::DoInMemGDataConvert(TData *tdata, GData *gdata,
               char *startBuf = buf + tRecSize * (startRid - inMemLow);
               char *firstRec = _gdataBuf;
               char *lastRec = _gdataBuf + gRecSize * (numConvert - 1);
-              map->ConvertToGData(startRid, startBuf, numConvert, _gdataBuf);
+              map->ConvertToGData(startRid, startBuf, numConvert, _gdataBuf,
+	        GDATA_BUF_SIZE);
               gdata->UpdateConversionInfo(startRid, startRid + numConvert - 1, 
                                           firstRec, lastRec);
               gdata->WriteRecs(startRid, numConvert, _gdataBuf);
@@ -2337,7 +2344,8 @@ void QueryProcFull::DoGDataConvert()
   tdata->DoneGetRecs(handle);
   
   /* Convert [startRid, startRid + numRetrieved - 1] */
-  map->ConvertToGData(startRid, _tdataBuf, numRetrieved, _gdataBuf);
+  map->ConvertToGData(startRid, _tdataBuf, numRetrieved, _gdataBuf,
+    GDATA_BUF_SIZE);
   char *firstRec = _gdataBuf;
   char *lastRec = _gdataBuf + gRecSize * (numRetrieved - 1);
   gdata->UpdateConversionInfo(startRid, startRid + numRetrieved - 1,
@@ -2540,7 +2548,7 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
         if (!_tqueryApprox) {
             /* Find exact match */
             for (; beginIndex < _tqueryNumRecs; beginIndex++) {
-                map->ConvertToGData(recId,tptr,1,_gdataBuf);
+                map->ConvertToGData(recId,tptr,1,_gdataBuf, GDATA_BUF_SIZE);
 		Coord bbULx, bbULy, bbLRx, bbLRy;
 		map->GetBoundingBox(_gdataBuf, bbULx, bbULy, bbLRx, bbLRy);
                 Boolean match = true;
@@ -2584,7 +2592,8 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
                 /* find exact match */
                 for(endIndex = beginIndex + 1; endIndex < _tqueryNumRecs;
                     endIndex++) {
-                    map->ConvertToGData(recId, tptr, 1, _gdataBuf);
+                    map->ConvertToGData(recId, tptr, 1, _gdataBuf,
+		      GDATA_BUF_SIZE);
                     Boolean match = true;
                     if ( _tdataQuery->filter.flag & VISUAL_X) {
 		        x = map->GetX(_gdataBuf);
@@ -2685,7 +2694,7 @@ void QueryProcFull::GetX(QPFullData *query, RecId id, Coord &x)
 
   if (isTData) {
       /* Coordinate values are assigned dynamically */
-      query->map->ConvertToGData(id, buf, 1, _gdataBuf);
+      query->map->ConvertToGData(id, buf, 1, _gdataBuf, GDATA_BUF_SIZE);
       x = ((GDataBinRec *)_gdataBuf)->x;
   } else {
       x = ((GDataBinRec *)buf)->x;

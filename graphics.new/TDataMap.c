@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.41  2001/05/09 18:08:55  wenger
+  Needed slight changes to get this to work on aden (typecast seemed to
+  goof up compiler).
+
   Revision 1.40  2001/04/12 20:15:13  wenger
   First phase of external process dynamic data generation is in place
   for RectX symbols (needs GUI and some cleanup); added the ability to
@@ -426,66 +430,9 @@ Hint calculation
 Boolean TDataMap::PageHint(TData *tdata, Coord x, Boolean isPrefetch,
 			   RecId &hintId)
 {
-  return false;
+  // Note: there used to be other code here.
 
-#ifdef OLD_CODE
-  if (!_hintInitialized || tdata != _hintTdata ||
-      _numPages != tdata->NumPages() ) {
-    /* initialize/reinit hint */
-    
-    _hintInitialized = false;	/* set to true later */
-    _hintTdata = tdata;
-    
-    _numPages = tdata->NumPages();
-    if (_numPages == 0)
-      return false;
-    
-    /* get 1st page and last page and test */
-    int numRecs; 
-    RecId startRid;
-    void **recs;
-    tdata->GetPage(tdata->FirstPage(), numRecs, startRid,recs,isPrefetch);
-    if (numRecs == 0) {
-      tdata->FreePage(tdata->FirstPage(), Stay);
-      return false;
-    }
-    ConvertToGData(recs, 1, _tmpPtr);
-    tdata->FreePage(tdata->FirstPage(), Stay);
-    
-    if (GetDynamicArgs() & VISUAL_X)
-      _minX = ((GDataBinRec *)_tmpPtr[0])->x;
-    else
-      _minX = GetDefaultX();
-    
-    tdata->GetPage(tdata->LastPage(), numRecs, startRid, recs,isPrefetch);
-    if (numRecs == 0) {
-      tdata->FreePage(tdata->LastPage(), Stay);
-      return false;
-    }
-    
-    ConvertToGData(&recs[numRecs - 1], 1, _tmpPtr);
-    tdata->FreePage(tdata->LastPage(), Stay);
-    
-    if (GetDynamicArgs() & VISUAL_X)
-      _maxX = ((GDataBinRec *)_tmpPtr[0])->x;
-    else
-      _minX = GetDefaultX();
-    
-    _hintInitialized = true;
-  }
-  
-  if ( x < _minX)
-    pageNum = tdata->FirstPage();
-  else if (x > _maxX)
-    pageNum = tdata->LastPage();
-  else {
-    pageNum= ((int)((x-_minX)/(_maxX-_minX)*_numPages))+tdata->FirstPage();
-    if (pageNum > tdata->LastPage())
-      pageNum = tdata->LastPage();
-  }
-  
-  return true;
-#endif
+  return false;
 }
 
 /***********************************************************

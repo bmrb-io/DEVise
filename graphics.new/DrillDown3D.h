@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  2001/05/18 19:25:36  wenger
+  Implemented the DEVise end of 3D drill-down; changed DEVise version to
+  1.7.3.
+
  */
 
 #ifndef _DrillDown3D_h_
@@ -55,6 +59,8 @@ private:
     void ExecuteQuery();
     void ProcessRecord(char *tData, char *gData);
     void PrintTData(Coord gdX, Coord gdY, Coord gdZ, char *tData);
+
+    static const int GDATA_BUF_SIZE = 4 * 1024 * sizeof(double);
 
     DevStatus _status;
 

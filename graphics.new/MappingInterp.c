@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.99  2001/04/10 17:13:31  wenger
+  Minor cleanups and additions of debug code to string table-related stuff.
+
   Revision 1.98  2001/04/03 19:57:39  wenger
   Cleaned up code dealing with GData attributes in preparation for
   "external process" implementation.
@@ -879,22 +882,24 @@ void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
 // modified by whh for native expression support
 
 void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
-				   int numRecs, void *gdataPtr)
+				   int numRecs, void *gdataBuf,
+				   int gdBufSize)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-    printf("MappingInterp::ConvertToGData id %d numRecs %d, buf 0x%p,"
-	   " gbuf 0x%p\n", (int) startRecId, numRecs, buf, gdataPtr);
+    printf("MappingInterp::ConvertToGData id %d, numRecs %d, buf 0x%p,"
+	   " gbuf 0x%p, size %d\n", (int) startRecId, numRecs, buf, gdataBuf,
+	   gdBufSize);
 #endif
 
   if (_isSimpleCmd) {
     /* Do simple command conversion */
-    ConvertToGDataSimple(startRecId, buf, numRecs, gdataPtr);
+    ConvertToGDataSimple(startRecId, buf, numRecs, gdataBuf, gdBufSize);
   } else {
-    ConvertToGDataComplex(startRecId, buf, numRecs, gdataPtr);
+    ConvertToGDataComplex(startRecId, buf, numRecs, gdataBuf, gdBufSize);
   }
 
-  FindBoundingBoxes(gdataPtr, numRecs);
+  FindBoundingBoxes(gdataBuf, numRecs);
 }
 
 void
@@ -1864,6 +1869,10 @@ double MappingInterp::ConvertOneAttr(char *from, MappingSimpleCmdEntry *entry,
 	return (double) tmp;
         break;
       }
+
+      case InvalidAttr:
+	DOASSERT(false, "InvalidAttr");
+        break;
     }
     DOASSERT(0, "Unknown attr cmd type");
     break;
@@ -1891,7 +1900,8 @@ double MappingInterp::ConvertOneAttr(char *from, MappingSimpleCmdEntry *entry,
 
 //--------------------------------------------------------------------------
 void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
-					 int numRecs, void *gdataPtr)
+					 int numRecs, void *gdataBuf,
+					 int gdBufSize)
 {
 #if defined(DEBUG)
   printf("MappingInterp(%s)::ConvertToGDataSimple(%ld, %d)\n", GetName(),
@@ -1901,7 +1911,7 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
   int tRecSize = TDataRecordSize();
   int gRecSize = GDataRecordSize();
   char *tPtr = (char *)buf;
-  char *gPtr = (char *)gdataPtr;
+  char *gPtr = (char *)gdataBuf;
   _recId = startRecId;
 
   StringStorage *xStringTable = GetStringTable(TableX);
@@ -1980,12 +1990,16 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
     gPtr += gRecSize;
 
     _recId++;
+
+    DOASSERT(((char *)gPtr - (char *)gdataBuf) <= gdBufSize,
+      "GData buffer overflow");
   }
 }
 
 //--------------------------------------------------------------------------
 void MappingInterp::ConvertToGDataComplex(RecId startRecId, void *buf,
-					  int numRecs, void *gdataPtr)
+					  int numRecs, void *gdataBuf,
+					  int gdBufSize)
 {
 #if defined(DEBUG)
   printf("ConvertToGDataComplex\n");
@@ -2000,7 +2014,7 @@ void MappingInterp::ConvertToGDataComplex(RecId startRecId, void *buf,
 #endif
 
   char *tPtr = (char *)buf;
-  char *gPtr = (char *)gdataPtr;
+  char *gPtr = (char *)gdataBuf;
   _recId = startRecId;
 
   StringStorage *xStringTable = GetStringTable(TableX);
@@ -2163,9 +2177,10 @@ void MappingInterp::ConvertToGDataComplex(RecId startRecId, void *buf,
     gPtr += gRecSize;
 
     _recId++;
+
+    DOASSERT(((char *)gPtr - (char *)gdataBuf) <= gdBufSize,
+      "GData buffer overflow");
   }
-
-
 }
 
 //--------------------------------------------------------------------------

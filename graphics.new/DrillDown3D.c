@@ -24,6 +24,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  2001/05/18 19:25:35  wenger
+  Implemented the DEVise end of 3D drill-down; changed DEVise version to
+  1.7.3.
+
  */
 
 
@@ -50,9 +54,6 @@ DrillDown3D::DrillDown3D()
     _status = StatusOk;
 
     _recordCount = 0;
-
-    // Copied from QueryProcFull.h.
-    const int GDATA_BUF_SIZE = 6400 * sizeof(double);
 
     _gdataBuf = new char[GDATA_BUF_SIZE]; // must be aligned for double
     _recInterp = new RecInterp;
@@ -209,7 +210,11 @@ DrillDown3D::ExecuteQuery()
 #if (DEBUG >= 3)
 	    printf("Got %d TData records\n", numRecs);
 #endif
-	    _tdMap->ConvertToGData(startRid, tdBuf, numRecs, (void *)_gdataBuf);
+	    //TEMP -- we should probably deal here with having to call
+	    // ConvertToGData() several times because of the buffer being
+	    // too small.
+	    _tdMap->ConvertToGData(startRid, tdBuf, numRecs,
+	      (void *)_gdataBuf, GDATA_BUF_SIZE);
 	    RecId rid = startRid;
 	    char *tdPtr = tdBuf;
 	    char *gdPtr = _gdataBuf;

@@ -2670,7 +2670,8 @@ Num Date        Status  Description
 			work. (np/rkw)
 			(Fixed by rkw, 5/07/01.)
 
-671 05/18/01	OPEN	RecInterp::PrintAttr() could overflow the buffer. (rkw)
+671 05/18/01	FIXED	RecInterp::PrintAttr() could overflow the buffer. (rkw)
+			(Fixed by rkw, 5/18/01.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

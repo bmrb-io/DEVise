@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.54  2001/04/03 19:57:40  wenger
+  Cleaned up code dealing with GData attributes in preparation for
+  "external process" implementation.
+
   Revision 1.53  2000/03/14 21:51:48  wenger
   Added more invalid object checking; had to take some memory checking
   out of client-side stuff for linking reasons.
@@ -379,9 +383,14 @@ public:
 
 protected:	
   /* convert from Tdata to Gdata. buf contains buffer for data. */
-  /* WARNING: gdataPtr must be aligned on a double (8 byte) boundary. */
+  /* WARNING: gdataBuf must be aligned on a double (8 byte) boundary. */
+  /* WARNING: this method relies on the caller to specify a numRecs value
+   * such that the GData records will all fit in to the GData buffer
+   * (see TDataMap::GDataRecordSize().)  Buffer overflow will cause
+   * an assertion. */
   virtual void ConvertToGData(RecId startRecId, void *buf,
-			      int numRecs, void *gdataPtr);
+			      int numRecs, void *gdataBuf,
+			      int gdBufSize);
 
 private:
   /* Initialize command by converting _cmd into _tclCmd,
@@ -428,14 +437,14 @@ private:
   void PrintCmd();
   
   /* Do convert to GData for simple command */
-  /* WARNING: gdataPtr must be aligned on a double (8 byte) boundary. */
+  /* WARNING: gdataBuf must be aligned on a double (8 byte) boundary. */
   void ConvertToGDataSimple(RecId startRecId, void *buf,
-			    int numRecs, void *gdataPtr);
+			    int numRecs, void *gdataBuf, int gdBufSize);
 
   /* Do convert to GData for complex command */
-  /* WARNING: gdataPtr must be aligned on a double (8 byte) boundary. */
+  /* WARNING: gdataBuf must be aligned on a double (8 byte) boundary. */
   void ConvertToGDataComplex(RecId startRecId, void *buf,
-			     int numRecs, void *gdataPtr);
+			     int numRecs, void *gdataBuf, int gdBufSize);
   
   void InsertExprAttrs(RecId recId, char *tDataRec,
     StringStorage *stringTable);
