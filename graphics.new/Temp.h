@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/09 22:14:12  jussi
+  Added support for 3D data.
+
   Revision 1.2  1995/09/05 22:16:07  jussi
   Added CVS header.
 */
@@ -26,11 +29,11 @@
 #include "DeviseTypes.h"
 #include "WindowRep.h"
 
-extern Coord _x[WINDOWREP_BATCH_SIZE];
-extern Coord _y[WINDOWREP_BATCH_SIZE];
-extern Coord _z[WINDOWREP_BATCH_SIZE];
-extern Coord _width[WINDOWREP_BATCH_SIZE];
-extern Coord _height[WINDOWREP_BATCH_SIZE];
-extern Coord _depth[WINDOWREP_BATCH_SIZE];
+extern Coord _x[];
+extern Coord _y[];
+extern Coord _z[];
+extern Coord _width[];
+extern Coord _height[];
+extern Coord _depth[];
 
 #endif
