@@ -1,60 +1,31 @@
 ETkCommands.o: ETkCommands.c TkWindowRep.h EmbeddedTk.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stdio.h \
- /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h \
- /s/tcl/include/tcl.h /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/types.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/isa_defs.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdio.h \
+ /usr/include/sys/feature_tests.h /s/tcl/include/tcl.h \
+ /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/types.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/isa_defs.h \
  /usr/include/sys/machtypes.h /usr/include/sys/select.h \
  /usr/include/sys/time.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/time.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/time.h \
  /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
  /usr/include/vm/faultcode.h /s/X11/include/X11/Xfuncproto.h \
  /s/X11/include/X11/Xosdefs.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stddef.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stddef.h \
  /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
- /s/X11/include/X11/keysymdef.h \
- /u/a/n/andyt/zoo/devise-cslib/include/ETk.h /s/tcl/include/tk.h \
- /s/gcc-2.7.2.1-2/sunx86_55/i386-unknown-solaris2.5.1/include/assert.h \
- ETkCommands.h ETk_DeviseClient.h \
- /u/a/n/andyt/zoo/devise-cslib/ClientServer.h \
- /u/a/n/andyt/zoo/devise-cslib/include/ClientAPI.h \
- /u/a/n/andyt/zoo/devise-cslib/include/ParseAPI.h \
- /u/a/n/andyt/zoo/devise-cslib/include/Display.h \
- /u/a/n/andyt/zoo/devise-cslib/include/DeviseTypes.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/values.h \
- /u/a/n/andyt/zoo/devise-cslib/include/DevStatus.h \
- /u/a/n/andyt/zoo/devise-cslib/include/Geom.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/math.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/floatingpoint.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/ieeefp.h \
- /u/a/n/andyt/zoo/devise-cslib/include/Color.h \
- /u/a/n/andyt/zoo/devise-cslib/include/DList.h \
- /u/a/n/andyt/zoo/devise-cslib/include/Exit.h \
- /u/a/n/andyt/zoo/devise-cslib/include/ColorMgr.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/string.h \
- /u/a/n/andyt/zoo/devise-cslib/include/WindowRep.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stdlib.h \
- /u/a/n/andyt/zoo/devise-cslib/include/Transform.h \
- /u/a/n/andyt/zoo/devise-cslib/include/VisualArg.h \
- /u/a/n/andyt/zoo/devise-cslib/include/Pattern.h \
- /u/a/n/andyt/zoo/devise-cslib/include/DevisePixmap.h \
- /u/a/n/andyt/zoo/devise-cslib/include/Compress.h \
- /u/a/n/andyt/zoo/devise-cslib/include/DevError.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/errno.h \
- /usr/include/sys/errno.h \
- /u/a/n/andyt/zoo/devise-cslib/include/ETkIfc.h \
- /u/a/n/andyt/zoo/devise-cslib/include/Xdef.h
+ /s/X11/include/X11/keysymdef.h /s/tcl/include/tk.h \
+ /s/gcc-2.7.2/sunx86_55/i386-unknown-solaris2.5/include/assert.h \
+ ETkCommands.h
 ETkCompDate.o: ETkCompDate.c ETkCompDate.h
 ETkPatron.o: ETkPatron.c \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stdio.h \
- /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stdlib.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/string.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/types.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/isa_defs.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdio.h \
+ /usr/include/sys/feature_tests.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdlib.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/string.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/types.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/isa_defs.h \
  /usr/include/sys/machtypes.h /usr/include/sys/select.h \
  /usr/include/sys/time.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/time.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/time.h \
  /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
  /usr/include/vm/faultcode.h /usr/include/sys/socket.h \
  /usr/include/sys/netconfig.h /usr/include/netinet/in.h \
@@ -62,183 +33,128 @@ ETkPatron.o: ETkPatron.c \
  /usr/include/sys/t_lock.h /usr/include/sys/machlock.h \
  /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h \
  /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/param.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/param.h \
  /usr/include/sys/unistd.h /usr/include/sys/pirec.h \
  /usr/include/sys/mutex.h /usr/include/sys/rwlock.h \
  /usr/include/sys/semaphore.h /usr/include/sys/condvar.h \
  /usr/include/sys/cred.h /usr/include/sys/uio.h \
  /usr/include/vm/seg_enum.h /usr/include/sys/poll.h \
  /usr/include/sys/strmdep.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/byteorder.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/byteorder.h \
  /usr/include/arpa/inet.h /usr/include/netdb.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/unistd.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/errno.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/unistd.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/errno.h \
  /usr/include/sys/errno.h ETkPatron.h
 ETk_DeviseClient.o: ETk_DeviseClient.c ETk_DeviseClient.h EmbeddedTk.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stdio.h \
- /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h \
- /s/tcl/include/tcl.h /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/types.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/isa_defs.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdio.h \
+ /usr/include/sys/feature_tests.h /s/tcl/include/tcl.h \
+ /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/types.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/isa_defs.h \
  /usr/include/sys/machtypes.h /usr/include/sys/select.h \
  /usr/include/sys/time.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/time.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/time.h \
  /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
  /usr/include/vm/faultcode.h /s/X11/include/X11/Xfuncproto.h \
  /s/X11/include/X11/Xosdefs.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stddef.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stddef.h \
  /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
- /s/X11/include/X11/keysymdef.h \
- /u/a/n/andyt/zoo/devise-cslib/include/ETk.h \
- /u/a/n/andyt/zoo/devise-cslib/ClientServer.h /s/tcl/include/tk.h \
- /u/a/n/andyt/zoo/devise-cslib/include/ClientAPI.h \
- /u/a/n/andyt/zoo/devise-cslib/include/ParseAPI.h \
- /u/a/n/andyt/zoo/devise-cslib/include/Display.h \
- /u/a/n/andyt/zoo/devise-cslib/include/DeviseTypes.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/values.h \
- /u/a/n/andyt/zoo/devise-cslib/include/DevStatus.h \
- /u/a/n/andyt/zoo/devise-cslib/include/Geom.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/math.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/floatingpoint.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/ieeefp.h \
- /u/a/n/andyt/zoo/devise-cslib/include/Color.h \
- /u/a/n/andyt/zoo/devise-cslib/include/DList.h \
- /u/a/n/andyt/zoo/devise-cslib/include/Exit.h \
- /u/a/n/andyt/zoo/devise-cslib/include/ColorMgr.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/string.h \
- /u/a/n/andyt/zoo/devise-cslib/include/WindowRep.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stdlib.h \
- /u/a/n/andyt/zoo/devise-cslib/include/Transform.h \
- /u/a/n/andyt/zoo/devise-cslib/include/VisualArg.h \
- /u/a/n/andyt/zoo/devise-cslib/include/Pattern.h \
- /u/a/n/andyt/zoo/devise-cslib/include/DevisePixmap.h \
- /u/a/n/andyt/zoo/devise-cslib/include/Compress.h \
- /u/a/n/andyt/zoo/devise-cslib/include/DevError.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/errno.h \
- /usr/include/sys/errno.h \
- /u/a/n/andyt/zoo/devise-cslib/include/ETkIfc.h \
- /u/a/n/andyt/zoo/devise-cslib/include/Xdef.h
+ /s/X11/include/X11/keysymdef.h
 EmbeddedTk.o: EmbeddedTk.c EmbeddedTk.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stdio.h \
- /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h \
- /s/tcl/include/tcl.h /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/types.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/isa_defs.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdio.h \
+ /usr/include/sys/feature_tests.h /s/tcl/include/tcl.h \
+ /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/types.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/isa_defs.h \
  /usr/include/sys/machtypes.h /usr/include/sys/select.h \
  /usr/include/sys/time.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/time.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/time.h \
  /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
  /usr/include/vm/faultcode.h /s/X11/include/X11/Xfuncproto.h \
  /s/X11/include/X11/Xosdefs.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stddef.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stddef.h \
  /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
- /s/X11/include/X11/keysymdef.h \
- /u/a/n/andyt/zoo/devise-cslib/include/ETk.h TkWindowRep.h \
- /s/tcl/include/tk.h \
- /s/gcc-2.7.2.1-2/sunx86_55/i386-unknown-solaris2.5.1/include/assert.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/errno.h \
+ /s/X11/include/X11/keysymdef.h TkWindowRep.h /s/tcl/include/tk.h \
+ /s/gcc-2.7.2/sunx86_55/i386-unknown-solaris2.5/include/assert.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/errno.h \
  /usr/include/sys/errno.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/string.h
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/string.h
 SampleClient.o: SampleClient.c \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/g++-include/iostream.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/g++-include/streambuf.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/g++-include/libio.h \
- /s/gcc-2.7.2.1-2/sunx86_55/i386-unknown-solaris2.5.1/include/_G_config.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/ctype.h \
+ /s/gcc-2.7.2/sunx86_55/lib/g++-include/iostream.h \
+ /s/gcc-2.7.2/sunx86_55/lib/g++-include/streambuf.h \
+ /s/gcc-2.7.2/sunx86_55/lib/g++-include/libio.h \
+ /s/gcc-2.7.2/sunx86_55/i386-unknown-solaris2.5/include/_G_config.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/ctype.h \
  /usr/include/sys/feature_tests.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/unistd.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/types.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/isa_defs.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/unistd.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/types.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/isa_defs.h \
  /usr/include/sys/machtypes.h /usr/include/sys/select.h \
  /usr/include/sys/time.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/time.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/time.h \
  /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
  /usr/include/vm/faultcode.h /usr/include/sys/unistd.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/string.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/string.h \
  EmbeddedTk.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stdio.h \
- /usr/include/sys/va_list.h /s/tcl/include/tcl.h \
- /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdio.h \
+ /s/tcl/include/tcl.h /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
  /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stddef.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stddef.h \
  /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
- /s/X11/include/X11/keysymdef.h \
- /u/a/n/andyt/zoo/devise-cslib/include/ETk.h ETkPatron.h ETkCompDate.h
+ /s/X11/include/X11/keysymdef.h ETkPatron.h ETkCompDate.h
 TkWindowRep.o: TkWindowRep.c TkWindowRep.h EmbeddedTk.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stdio.h \
- /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h \
- /s/tcl/include/tcl.h /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/types.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/isa_defs.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdio.h \
+ /usr/include/sys/feature_tests.h /s/tcl/include/tcl.h \
+ /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/types.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/isa_defs.h \
  /usr/include/sys/machtypes.h /usr/include/sys/select.h \
  /usr/include/sys/time.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/time.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/time.h \
  /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
  /usr/include/vm/faultcode.h /s/X11/include/X11/Xfuncproto.h \
  /s/X11/include/X11/Xosdefs.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stddef.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stddef.h \
  /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
- /s/X11/include/X11/keysymdef.h \
- /u/a/n/andyt/zoo/devise-cslib/include/ETk.h /s/tcl/include/tk.h \
- /s/gcc-2.7.2.1-2/sunx86_55/i386-unknown-solaris2.5.1/include/assert.h \
- ETkCommands.h ZooCommands.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/g++-include/iostream.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/g++-include/streambuf.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/g++-include/libio.h \
- /s/gcc-2.7.2.1-2/sunx86_55/i386-unknown-solaris2.5.1/include/_G_config.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/g++-include/strstream.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/g++-include/strfile.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stdlib.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/unistd.h \
+ /s/X11/include/X11/keysymdef.h /s/tcl/include/tk.h \
+ /s/gcc-2.7.2/sunx86_55/i386-unknown-solaris2.5/include/assert.h \
+ ETkCommands.h /s/gcc-2.7.2/sunx86_55/lib/g++-include/iostream.h \
+ /s/gcc-2.7.2/sunx86_55/lib/g++-include/streambuf.h \
+ /s/gcc-2.7.2/sunx86_55/lib/g++-include/libio.h \
+ /s/gcc-2.7.2/sunx86_55/i386-unknown-solaris2.5/include/_G_config.h \
+ /s/gcc-2.7.2/sunx86_55/lib/g++-include/strstream.h \
+ /s/gcc-2.7.2/sunx86_55/lib/g++-include/strfile.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdlib.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/unistd.h \
  /usr/include/sys/unistd.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/string.h
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/string.h
 ZooCommands.o: ZooCommands.c ZooCommands.h /s/tcl/include/tcl.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stdio.h \
- /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h \
- /u/a/n/andyt/zoo/ShippingComm/include/client.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stdlib.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/g++-include/ostream.h \
- /u/a/n/andyt/zoo/ShippingComm/include/stream.h \
- /s/gcc-2.7.2.1-2/sunx86_55/i386-unknown-solaris2.5.1/include/assert.h \
- /u/a/n/andyt/zoo/ShippingComm/include/shipobject.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/g++-include/strstream.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/g++-include/iostream.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/g++-include/streambuf.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/g++-include/libio.h \
- /s/gcc-2.7.2.1-2/sunx86_55/i386-unknown-solaris2.5.1/include/_G_config.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/g++-include/strfile.h \
- /u/a/n/andyt/zoo/ShippingComm/include/shipobj_private.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/memory.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/g++-include/fstream.h \
- /u/a/n/andyt/zoo/ShippingComm/include/String.h \
- /u/a/n/andyt/zoo/ShippingComm/include/stringspace.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/string.h \
- /u/a/n/andyt/zoo/ShippingComm/include/ctrlmsg.h \
- /u/a/n/andyt/zoo/ShippingComm/include/errors.h
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdio.h \
+ /usr/include/sys/feature_tests.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/string.h
 main.o: main.c TkWindowRep.h EmbeddedTk.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stdio.h \
- /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h \
- /s/tcl/include/tcl.h /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/types.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/isa_defs.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdio.h \
+ /usr/include/sys/feature_tests.h /s/tcl/include/tcl.h \
+ /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/types.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/isa_defs.h \
  /usr/include/sys/machtypes.h /usr/include/sys/select.h \
  /usr/include/sys/time.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/time.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/time.h \
  /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
  /usr/include/vm/faultcode.h /s/X11/include/X11/Xfuncproto.h \
  /s/X11/include/X11/Xosdefs.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stddef.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stddef.h \
  /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
- /s/X11/include/X11/keysymdef.h \
- /u/a/n/andyt/zoo/devise-cslib/include/ETk.h /s/tcl/include/tk.h \
- /s/gcc-2.7.2.1-2/sunx86_55/i386-unknown-solaris2.5.1/include/assert.h \
+ /s/X11/include/X11/keysymdef.h /s/tcl/include/tk.h \
+ /s/gcc-2.7.2/sunx86_55/i386-unknown-solaris2.5/include/assert.h \
  ETkCompDate.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/stdlib.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdlib.h \
  /usr/include/fcntl.h /usr/include/sys/fcntl.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/unistd.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/unistd.h \
  /usr/include/sys/unistd.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/string.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/errno.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/string.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/errno.h \
  /usr/include/sys/errno.h /usr/include/sys/socket.h \
  /usr/include/sys/netconfig.h /usr/include/netdb.h \
  /usr/include/netinet/in.h /usr/include/sys/stream.h \
@@ -246,11 +162,11 @@ main.o: main.c TkWindowRep.h EmbeddedTk.h \
  /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h \
  /usr/include/sys/dl.h /usr/include/sys/sleepq.h \
  /usr/include/sys/turnstile.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/param.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/param.h \
  /usr/include/sys/pirec.h /usr/include/sys/mutex.h \
  /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h \
  /usr/include/sys/condvar.h /usr/include/sys/cred.h \
  /usr/include/sys/uio.h /usr/include/vm/seg_enum.h \
  /usr/include/sys/poll.h /usr/include/sys/strmdep.h \
- /s/gcc-2.7.2.1-2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5.1/2.7.2.1/include/sys/byteorder.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/byteorder.h \
  /usr/include/arpa/inet.h
