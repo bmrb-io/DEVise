@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/02/02 21:52:41  jussi
+  Removed SetFgColor() right after SetXorMode() which changed the
+  effect of the xor function.
+
   Revision 1.13  1996/01/30 18:15:54  jussi
   Minor improvements in visual appearance.
 
@@ -94,13 +98,11 @@ void BasicStats::Init(ViewGraph *vw)
 
 void BasicStats::Sample(double x, double y)
 {
-  if (!nsamples || y > ymax) 
-  {
+  if (!nsamples || y > ymax) {
     ymax = y;
     xatymax = x;
   }
-  if (!nsamples || y < ymin) 
-  {
+  if (!nsamples || y < ymin) {
     ymin = y;
     xatymin = x;
   }
@@ -141,16 +143,27 @@ void BasicStats::Done()
 
   vkg_list.DoneIterator(idx);
 
-  if (nsamples)
-  {
-    avg = ysum / (float)nsamples;
-    var = ysum_sqr - nsamples*avg*avg;
+  if (nsamples > 0) {
+    avg = ((float)ysum) / nsamples;
+
+    // this doesn't appear to be the right formula for var and std
+    // but it seems to be correct for the usage in computing clow
+    // and chigh below
+    var = ((float)ysum_sqr)  - nsamples * avg * avg;
     std = sqrt(var);
     // Compute confidence interval - for now use z85, z90 and z95
-    for (int i = 0; i < NUM_Z_VALS; i++)
-    {
-      clow[i] = avg - (float)(zval[i]*std)/(float)(sqrt(nsamples));
-      chigh[i] = avg + (float)(zval[i]*std)/(float)(sqrt(nsamples)); 
+    for(int i = 0; i < NUM_Z_VALS; i++) {
+      clow[i] = avg - (float)(zval[i] * std) / (float)(sqrt(nsamples));
+      chigh[i] = avg + (float)(zval[i] * std) / (float)(sqrt(nsamples)); 
+    }
+
+    // recompute var and std with correct formulas
+    if (nsamples > 1) {
+      var = ((float)ysum_sqr) / (nsamples - 1) - avg * avg;
+      std = sqrt(var);
+    } else {
+      var = 0;
+      std = 0;
     }
   }
 }
@@ -174,7 +187,7 @@ void BasicStats::Report()
   // Get the visual filter
   VisualFilter *filter =  _vw->GetVisualFilter();
   
-  // Draw line
+  // Draw line by XORing existing image
   win->SetXorMode();
 
   // Draw stats depending on the binary string representing the stats to 
@@ -191,7 +204,7 @@ void BasicStats::Report()
   if (statstr[STAT_MEAN] == '1')
     win->Line(filter->xLow, avg, filter->xHigh, avg, StatLineWidth);
 
-  // Display conf. interval
+  // Display confidence interval
   if (statstr[ZVAL85] == '1')
     win->FillRect(filter->xLow, clow[0], filter->xHigh - filter->xLow, 
 		  chigh[0] - clow[0]);
@@ -202,7 +215,6 @@ void BasicStats::Report()
     win->FillRect(filter->xLow, clow[2], filter->xHigh - filter->xLow, 
 		  chigh[2] - clow[2]);
 
-  win->SetFgColor(ForegroundColor);
   win->SetCopyMode();
 }
 
@@ -210,7 +222,7 @@ Coord BasicStats::GetStatVal(int statnum)
 {
   switch (statnum) {
     case STAT_NONE:  return 0;
-    case STAT_MEAN:  return ysum / (nsamples ? nsamples : 1);
+    case STAT_MEAN:  return (nsamples ? (ysum / nsamples) : 0);
     case STAT_MAX:   return ymax;
     case STAT_MIN:   return ymin;
     case STAT_COUNT: return nsamples;
