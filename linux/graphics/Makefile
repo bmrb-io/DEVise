@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1997/04/03 21:31:27  wenger
+#  Eliminated unnecessary tcl dependencies in graphics directory.
+#
 #  Revision 1.2  1997/03/19 18:44:50  wenger
 #  Disabled RTree indices in DTE, got that to compile; fixed some compile
 #  warnings; undid accidental(?) changes to devise run script; devise.etk
@@ -37,7 +40,7 @@
 
 ############################################################
 
-ARCH_FLAGS = -DLINUX
+ARCH_FLAGS = -DLINUX -I/usr/include/tcl
 
 VPATH = ../../graphics
 include $(VPATH)/Makefile.base

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/05/28 15:38:55  wenger
+  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+
   Revision 1.14.4.1  1997/05/20 16:10:49  ssl
   Added layout manager to DEVise
 
@@ -299,6 +302,9 @@ inline double UtilAtof(char *str)
   double value = sign * (wholePart + fractPart) * scale;
   return value;
 }
+
+void CopyArgs(int argc, const char * const * argvOld, char **&argvNew);
+void FreeArgs(int argc, char **argv);
 
 
 #ifdef DEBUG

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1997/04/03 21:31:42  wenger
+#  Eliminated unnecessary tcl dependencies in graphics directory.
+#
 #  Revision 1.10  1996/05/20 18:37:58  jussi
 #  Replaced PENTIUM flag with SOLARIS.
 #
@@ -39,7 +42,7 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include
+ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include
 ARCH_LDFLAGS = 
 ARCH_LDPOST  = -lsocket -lnsl
 

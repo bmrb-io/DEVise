@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/09/19 21:29:54  wenger
+  Did various cleanups that didn't affect functionality.
+
   Revision 1.3  1997/09/19 20:04:10  wenger
   Now saving complete session info; works for tables as well as unixfiles;
   derived data not yet tested.
@@ -35,6 +38,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/param.h>
 
 #include <tcl.h>
 
@@ -44,56 +48,17 @@
 #include "ParseAPI.h"
 #include "DevFileHeader.h"
 #include "Util.h"
+#include "../../DTE/DeviseSpecific/CatalogComm.h"
+#include "ParseCat.h"
 
 //#define DEBUG
 
-// Note: we're defining this class just so we have a ControlPanel * to pass
+// Note: we're defining this class so we have a ControlPanel * to pass
 // to ParseAPI so it can return its results.
-class ControlPanelDummy : public ControlPanel {
-public:
-  // Member functions we need.
-  ControlPanelDummy() {}
-  virtual ~ControlPanelDummy() {}
-
-  virtual int ReturnVal(u_short flag, char *result) {
-    //TEMPTEMP -- make this better
-    strncpy(_result, result, _resultSize-1);
-    _result[_resultSize - 1] = '\0';
-    return 1;
-  }
-  virtual int ReturnVal(int argc, char **argv) {
-    //TEMPTEMP -- make this better
-    int index;
-    char *ptr = _result;
-    for (index = 0; index < argc; index++) {
-      sprintf(ptr, "{%s} ", argv[index]);
-      ptr += strlen(ptr);
-    }
-    return 1;
-  }
-
-  // Member functions declared just so they're not pure virtual.
-  virtual void SelectView(View *view) {}
-  virtual void SetBusy() {}
-  virtual void SetIdle() {}
-  virtual Boolean IsBusy() { return false; }
-  virtual GroupDir *GetGroupDir() { return NULL; }
-  virtual MapInterpClassInfo *GetInterpProto() { return NULL; }
-  virtual int AddReplica(char *hostName, int port) { return 0; }
-  virtual int RemoveReplica(char *hostName, int port) { return 0; }
-  virtual void OpenDataChannel(int port) {}
-  virtual int getFd() { return 0; }
-  virtual void SubclassInsertDisplay(DeviseDisplay *disp, Coord x, Coord y,
-      Coord w, Coord h) {}
-  virtual void SubclassDoInit() {}
-
-  const int _resultSize = 2048;
-  char _result[_resultSize];
-};
-
-// Note: we're defining this class just so we have a ControlPanel * to pass
-// to ParseAPI so it can return its results.
-class ControlPanelSimple : public ControlPanelDummy {
+// What we really need here is an _object_ that inherits all of the methods
+// except ReturnVal() from the ControlPanel::Instance() object and also has
+// its own interpreter...
+class ControlPanelSimple : public ControlPanel {
 public:
   // Member functions we need.
   ControlPanelSimple(DevStatus &status) {
@@ -118,6 +83,34 @@ public:
     return 1;
   }
 
+  virtual void SelectView(View *view) {
+    ControlPanel::Instance()->SelectView(view);
+  }
+  virtual Mode GetMode() { return ControlPanel::Instance()->GetMode(); }
+  virtual void SetMode(Mode mode) { ControlPanel::Instance()->SetMode(mode); }
+  virtual void SetBusy() { ControlPanel::Instance()->SetBusy(); }
+  virtual void SetIdle() { ControlPanel::Instance()->SetIdle(); }
+  virtual Boolean IsBusy() { return ControlPanel::Instance()->IsBusy(); }
+  virtual void StartSession() { ControlPanel::Instance()->StartSession(); }
+  virtual void DestroySessionData() { ControlPanel::Instance()->DestroySessionData(); }
+  virtual void RestartSession() { ControlPanel::Instance()->RestartSession(); }
+  virtual Boolean GetBatchMode() { return ControlPanel::Instance()->GetBatchMode(); }
+  virtual void SetBatchMode(Boolean mode) { ControlPanel::Instance()->SetBatchMode(mode); }
+  virtual void SetSyncNotify() { ControlPanel::Instance()->SetSyncNotify(); }
+  virtual void ClearSyncNotify() { ControlPanel::Instance()->ClearSyncNotify(); }
+  virtual Boolean GetSyncNotify() { return ControlPanel::Instance()->GetSyncNotify(); }
+  virtual void SyncNotify() { ControlPanel::Instance()->SyncNotify(); }
+//TEMPTEMP -- need more here
+  virtual GroupDir *GetGroupDir() { return ControlPanel::Instance()->GetGroupDir(); }
+  virtual MapInterpClassInfo *GetInterpProto() { return ControlPanel::Instance()->GetInterpProto(); }
+  virtual int AddReplica(char *hostName, int port) { return ControlPanel::Instance()->AddReplica(hostName, port); }
+  virtual int RemoveReplica(char *hostName, int port) { return ControlPanel::Instance()->RemoveReplica(hostName, port); }
+  virtual void OpenDataChannel(int port) { ControlPanel::Instance()->OpenDataChannel(port); }
+  virtual int getFd() { return ControlPanel::Instance()->getFd(); }
+  virtual void SubclassInsertDisplay(DeviseDisplay *disp, Coord x, Coord y,
+      Coord w, Coord h) { ControlPanel::Instance()->SubclassInsertDisplay(disp, x, y, w, h); }
+  virtual void SubclassDoInit() { ControlPanel::Instance()->SubclassDoInit(); }
+
   Tcl_Interp *_interp;
 };
 
@@ -141,19 +134,11 @@ Session::Open(char *filename)
   ControlPanelSimple control(status);
 
   if (status.IsComplete()) {
-    //TEMPTEMPTcl_CreateCommand(control._interp, "DEVise", DEViseCmd, &control, 0);
+#if 1 //TEMPTEMP
+    Tcl_CreateCommand(control._interp, "DEVise", DEViseCmd, &control, 0);
+#else
     //TEMPTEMP -- this is incorrect for devised
-    Tcl_CreateCommand(control._interp, "DEVise", DEViseCmd, ControlPanel::Instance(), 0);//TEMPTEMP
-
-#if 0 //TEMPTEMP
-    if (Tcl_EvalFile(control._interp, "/p/devise/wenger/devise.dev1/lib/macrodef.tk"/*TEMPTEMP*/) != TCL_OK) {
-      char errBuf[256];
-      sprintf(errBuf, "Tcl error: %s", control._interp->result);
-      reportErrNosys(errBuf);
-      status = StatusFailed;
-    }
-
-    (void)/*TEMPTEMP?*/Tcl_SetVar(control._interp, "template", "0", 0);
+    Tcl_CreateCommand(control._interp, "DEVise", DEViseCmd, ControlPanel::Instance(), 0);
 #endif
 
     if (Tcl_EvalFile(control._interp, filename) != TCL_OK) {
@@ -217,13 +202,18 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
     fprintf(saveData.fp, "%s", header);
     fprintf(saveData.fp, "# Saved by C++ code\n");//TEMPTEMP
 
+#if 0 // No longer needed because of new createTData command.
     status += SaveSchemas(&saveData);
+#endif
 
     fprintf(saveData.fp, "\n# Create views\n");
     status += ForEachInstance("view", SaveView, &saveData);
 
+#if 0 // No longer needed because create mapping automatically creates
+      // the TData.
     fprintf(saveData.fp, "\n# Create TDatas\n");
     status += ForEachInstance("tdata", SaveTData, &saveData);
+#endif
 
     fprintf(saveData.fp, "\n# Create interpreted mapping classes\n");
     status += ForEachInstance("mapping", SaveInterpMapping, &saveData);
@@ -283,6 +273,159 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
       status = StatusWarn;
     }
   }
+
+  if (status.IsError()) reportErrNosys("Error or warning");
+  return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::CreateTData
+ * Create the given TData.  The purpose of this function is to create the
+ * TData given only its name, so extra (redundant) information doesn't have
+ * to be stored in session files.
+ */
+DevStatus
+Session::CreateTData(char *name, ControlPanel *control)
+{
+#if defined(DEBUG)
+  printf("Session::CreateTData(%s)", name);
+#endif
+
+  DevStatus status = StatusOk;
+
+  // Get the DTE catalog entry for this data source.
+  char *catEntry = dteShowCatalogEntry(name);
+  if ((catEntry == NULL) || (strlen(catEntry) == 0)) {
+    char errBuf[256];
+    sprintf(errBuf, "No catalog entry for data source {%s}", name);
+    reportErrNosys(errBuf);
+    status = StatusFailed;
+  }
+
+  // Get rid of braces surrounding the whole catalog entry and semicolon at
+  // the end so it can get parsed.
+  if (status.IsComplete()) {
+    if (catEntry[0] == '{') catEntry[0] = ' ';
+    int length = strlen(catEntry);
+    if (catEntry[length - 1] == '}') {
+      catEntry[length - 1] = '\0';
+    } else if (catEntry[length - 1] == ' ' && catEntry[length - 2] == '}') {
+      catEntry[length - 2] = '\0';
+    }
+    char *semicolon = strrchr(catEntry, ';');
+    if (semicolon != NULL) *semicolon = ' ';
+  }
+
+  // Parse the catalog entry and assemble the proper arguments for creating
+  // the TData object.
+  char schema[MAXPATHLEN];
+  char schemaFile[MAXPATHLEN];
+  char sourceType[MAXPATHLEN];
+  char param[MAXPATHLEN];
+  Boolean isDteSource;
+  if (status.IsComplete()) {
+    Tcl_Interp* interp = Tcl_CreateInterp();
+    if (interp == NULL) {
+      reportErrNosys("Unable to create Tcl interpreter");
+      status = StatusFailed;
+    } else {
+      int argcOut;
+      char **argvOut;
+
+      if (Tcl_SplitList(interp, catEntry, &argcOut, &argvOut) != TCL_OK) {
+        reportErrNosys(interp->result);
+        status = StatusFailed;
+      } else {
+	if (argcOut <= 5) {
+	  // This should be a DTE-type data source.
+	  if (!isDteType(argvOut[1])) {
+	    reportErrNosys(
+		"Conflict between data source type and catalog entries");
+	    status = StatusFailed;
+	  } else {
+	    isDteSource = true;
+	    // All we really need for a DTE source is the name.
+	  }
+	} else {
+	  // This should be a non-DTE-type data source.
+	  if (isDteType(argvOut[1])) {
+	    reportErrNosys(
+		"Conflict between data source type and catalog entries");
+	    status = StatusFailed;
+	  } else {
+	    isDteSource = false;
+            strcpy(schema, argvOut[3]);
+            strcpy(schemaFile, argvOut[4]);
+            strcpy(sourceType, argvOut[1]);
+            sprintf(param, "%s/%s", argvOut[8], argvOut[2]);
+	  }
+	}
+        free((char *) argvOut);
+      }
+      Tcl_DeleteInterp(interp);
+    }
+  }
+
+  // Parse the schema file for the given data source, and re-set the
+  // schema type if the type in the file is different from the type
+  // given in the catalog.
+  if (status.IsComplete()) {
+    char *result ;
+    if (isDteSource) {
+      result = dteImportFileType(name);
+    } else {
+      result = ParseCat(schemaFile);
+      if (strcmp(schema, result)) {
+        printf("File %s appears to contain schema %s, not %s\n", schemaFile,
+	    result, schema);
+        strcpy(schema, result);
+      }
+    }
+  }
+
+  // Execute dataSegment command.
+  if (status.IsComplete()) {
+    int argcIn = 5;
+    char *argvIn[5];
+    argvIn[0] = "dataSegment";
+    argvIn[1] = name;
+    if (isDteSource) {
+      argvIn[2] = "";
+    } else {
+      argvIn[2] = param;
+    }
+    // Assume data is always full file for now.  This will have to get
+    // changed when we re-implement exported templates with data.
+    argvIn[3] = "0";
+    argvIn[4] = "0";
+    if (ParseAPI(argcIn, argvIn, control) < 0) {
+      status = StatusFailed;
+    }
+  }
+
+  // Create the TData object.
+  if (status.IsComplete()) {
+    int argcIn = 6;
+    char *argvIn[6];
+    argvIn[0] = "create";
+    argvIn[1] = "tdata";
+    if (isDteSource) {
+      argvIn[2] = name;
+      argvIn[3] = name;
+      argvIn[4] = "";
+      argvIn[5] = "";
+    } else {
+      argvIn[2] = schema;
+      argvIn[3] = name;
+      argvIn[4] = sourceType;
+      argvIn[5] = param;
+    }
+    if (ParseAPI(argcIn, argvIn, control) < 0) {
+      status = StatusFailed;
+    }
+  }
+
+  if (catEntry != NULL) free(catEntry);
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;
@@ -427,20 +570,33 @@ Session::SaveTData(char *category, char *devClass, char *instance,
 
   DevStatus status = StatusOk;
 
+#if 1 //TEMPTEMP
+  fprintf(saveData->fp, "DEVise createTData {%s}\n", instance);
+#else
   char *result;
   int argcOut;
   char **argvOut;
   status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
       "getCreateParam", category, devClass, instance);
   if (status.IsComplete()) {
+#if 1 //TEMPTEMP
+    fprintf(saveData->fp, "DEVise createTData {%s}", instance);
+    if (argcOut == 2) {
+      // This is a DTE (non-UNIXFILE) data source.
+      fprintf(saveData->fp, " {%s}", argvOut[1]);
+    }
+    fprintf(saveData->fp, "\n");
+#else
     char *argv1 = (argcOut > 1) ? argvOut[1] : "";
     char *argv2 = (argcOut > 2) ? argvOut[2] : "";
     fprintf(saveData->fp, "DEVise dataSegment {%s} {%s} 0 0\n", argvOut[0],
         argv2);
     fprintf(saveData->fp, "DEVise create tdata {%s} {%s} {%s} {%s}\n",
         devClass, argvOut[0], argv1, argv2);
+#endif
     free((char *) argvOut);
   }
+#endif
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;

@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/02/03 19:39:54  ssl
+  1) Added a new Layout interface which handles user defined layouts
+  2) Added functions to set geometry and remap views as changes in the
+     layout editor
+  3) Added a function to notify the front end of some change so that it
+     can execute a Tcl command
+  4) The old TileLayout.[Ch] files still exist but are commented out
+     conditionally using #ifdef NEW_LAYOUT
+
   Revision 1.18  1996/11/20 20:34:51  wenger
   Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
   some Makefile improvements so compile works first time; fixed up files
@@ -218,6 +227,7 @@ public:
 
 protected:
   friend class Dispatcher;
+  friend class ControlPanelSimple;
 
   virtual void SubclassInsertDisplay(DeviseDisplay *disp,
 				     Coord x, Coord y, 

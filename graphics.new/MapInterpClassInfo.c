@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/04/16 18:53:34  wenger
+  Text labels can now show non-string attributes; fixed a bug in constant
+  strings in mapping (non-terminated string); added constant attributes to
+  GData attribute list; commented out some debug code in mapping dialog.
+
   Revision 1.12  1996/09/27 21:09:37  wenger
   GDataBin class doesn't allocate space for connectors (no longer used
   anyhow); fixed some more memory leaks and made notes in the code about
@@ -69,6 +74,7 @@
 #include "MappingInterp.h"
 #include "MapInterpClassInfo.h"
 #include "Util.h"
+#include "Session.h"
 
 //#define DEBUG
 
@@ -186,6 +192,11 @@ void MapInterpClassInfo::ExtractCommand(int argc, char **argv,
   
   tdataAlias = CopyString(argv[0]);
   tdata = (TData *)ControlPanel::FindInstance(tdataAlias);
+  // If we don't already have this TData, try to create it.
+  if (!tdata) {
+    Session::CreateTData(tdataAlias, ControlPanel::Instance());
+    tdata = (TData *)ControlPanel::FindInstance(tdataAlias);
+  }
   if (!tdata) {
     fprintf(stderr, 
 	    "MapInterpClassInfo::CreateWithParams: can't find tdata %s\n",

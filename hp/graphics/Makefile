@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1997/04/03 21:31:21  wenger
+#  Eliminated unnecessary tcl dependencies in graphics directory.
+#
 #  Revision 1.5  1997/03/20 19:56:55  wenger
 #  Minor mods to get latest version to compile on HP and SunOS; cleaned
 #  up DTE makefiles (moved all targets from architecture-specific makefiles
@@ -39,7 +42,7 @@
 
 ############################################################
 
-ARCH_FLAGS = -DHPUX
+ARCH_FLAGS = -DHPUX -I/s/tcl/include
 ARCH_LDFLAGS =
 
 VPATH = ../../graphics

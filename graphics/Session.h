@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/09/19 21:29:54  wenger
+  Did various cleanups that didn't affect functionality.
+
   Revision 1.3  1997/09/19 20:04:11  wenger
   Now saving complete session info; works for tables as well as unixfiles;
   derived data not yet tested.
@@ -41,6 +44,7 @@
 
 #include "DevStatus.h"
 
+class ControlPanel;
 class ControlPanelSimple;
 
 class Session {
@@ -48,6 +52,7 @@ public:
   static DevStatus Open(char *filename);
   static DevStatus Save(char *filename, Boolean asTemplate, Boolean asExport,
       Boolean withData);
+  static DevStatus CreateTData(char *name, ControlPanel *control);
 
 private:
   static int DEViseCmd(ClientData clientData, Tcl_Interp *interp,

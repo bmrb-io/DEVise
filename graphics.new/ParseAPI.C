@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.74  1997/09/05 22:36:21  wenger
+  Dispatcher callback requests only generate one callback; added Scheduler;
+  added DepMgr (dependency manager); various minor code cleanups.
+
   Revision 1.73  1997/08/27 14:44:17  wenger
   Made improvements to getDisplayImageAndSize command (not yet fully tested).
 
@@ -352,6 +356,8 @@
 #include "SessionDesc.h"
 #include "StringStorage.h"
 #include "DepMgr.h"
+#include "Session.h"
+
 #define PURIFY 0
 
 #ifdef PURIFY
@@ -383,7 +389,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   
   result[0] = '\0';
 
-#if defined(DEBUG)
+#if defined(DEBUG) || 0 //TEMPTEMP
   printf("ParseAPI[%ld]: ", (long) getpid());
   for (int i = 0; i < argc; i++)
   {
@@ -438,7 +444,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	!strcmp(argv[2], "WinHorizontal")){
       argv[2] = "TileLayout";
 	}
-#if defined(DEBUG)
+#if defined(DEBUG) || 0 //TEMPTEMP
     for(int i=0; i<argc; i++) {
     	printf("ParseAPI: argv[%d]=%s \n", i, argv[i]);
     }
@@ -1750,6 +1756,33 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
+
+    if (!strcmp(argv[0], "openSession")) {
+      // Argument: <file name>
+#if defined(DEBUG) || 0 //TEMPTEMP
+      printf("openSession <%s>\n", argv[1]);
+#endif
+      if (!Session::Open(argv[1]).IsComplete()) {
+	control->ReturnVal(API_NAK, "Unable to open session file");
+	return -1;
+      }
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+
+    if (!strcmp(argv[0], "createTData")) {
+      // Argument: <data source name>
+#if defined(DEBUG) || 1 //TEMPTEMP
+      printf("createTData <%s>\n", argv[1]);
+#endif
+      if (!Session::CreateTData(argv[1], control).IsComplete()) {
+        control->ReturnVal(API_NAK, "Unable to create tdata");
+        return -1;
+      }
+      //TEMPTEMP -- may need to return something different here
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
   }
 
   if (argc == 3) {
@@ -2522,6 +2555,21 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       Coord gridX = atof(argv[3]);
       Coord gridY = atof(argv[4]);
       cursor->SetGrid(useGrid, gridX, gridY);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+
+    if (!strcmp(argv[0], "saveSession")) {
+      // Arguments: <file name> <as template> <as export> <with data>
+#if defined(DEBUG) || 0 //TEMPTEMP
+      printf("saveSession <%s> <%s> <%s> <%s>\n", argv[1], argv[2], argv[3],
+	argv[4]);
+#endif
+      if (!Session::Save(argv[1], atoi(argv[2]), atoi(argv[3]),
+	  atoi(argv[4])).IsComplete()) {
+	control->ReturnVal(API_NAK, "Unable to save session file");
+	return -1;
+      }
       control->ReturnVal(API_ACK, "done");
       return 1;
     }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/08/21 21:04:50  donjerko
+  Implemented view materialization
+
   Revision 1.3  1997/03/28 16:07:35  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -24,6 +27,8 @@
 
 #ifndef CATALOG_COMM_H
 #define CATALOG_COMM_H
+
+#include "DeviseTypes.h"
 
 char* executeQuery(const char* query); // throws exception
 
@@ -57,5 +62,7 @@ char* dteListAllIndexes();
 char* dteShowIndexDesc(const char* tableName, const char* indexName);
 
 void dteDeleteIndex(const char* tableName, const char* indexName);
+
+Boolean isDteType(const char *type);
 
 #endif

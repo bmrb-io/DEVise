@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/08/21 21:04:50  donjerko
+  Implemented view materialization
+
   Revision 1.13  1997/08/12 19:58:54  donjerko
   Moved StandardTable headers to catalog.
 
@@ -415,4 +418,14 @@ void dteDeleteIndex(const char* tableName, const char* indexName){
           cout << endl;
           exit(0);
      )
+}
+
+Boolean isDteType(const char* type){
+     if (!strcmp(type, "SQLView") || !strcmp(type, "Table") ||
+       !strcmp(type, "DEVise") || !strcmp(type, "MaterView") ||
+       !strcmp(type, "Directory") || !strcmp(type, "StandardTable")) {
+	  return true;
+     } else {
+	  return false;
+     }
 }

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1997/04/03 21:31:55  wenger
+#  Eliminated unnecessary tcl dependencies in graphics directory.
+#
 #  Revision 1.8  1996/03/29 18:14:43  wenger
 #  Got testWindowRep to compile and run, added drawing in
 #  windows; fixed a few more compile warnings, etc.
@@ -28,7 +31,7 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSUN
+ARCH_FLAGS = -DSUN -I/s/tcl/include
 ARCH_LDFLAGS =
 
 VPATH = ../../graphics

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/05/05 16:53:46  wenger
+  Devise now automatically launches Tasvir and/or EmbeddedTk servers if
+  necessary.
+
   Revision 1.21  1997/04/29 17:35:02  wenger
   Minor fixes to new text labels; added fixed text label shape;
   CheckDirSpace() no longer prints an error message if it can't get disk
@@ -378,4 +382,29 @@ int writen(int fd, char *buf, int nbytes)
     }
 
     return nbytes - nleft;
+}
+
+void
+CopyArgs(int argc, const char * const * argvOld, char **&argvNew)
+{
+  argvNew = new char *[argc];
+  if (argvNew == NULL) {
+    reportErrNosys("Insufficient memory");
+    Exit::DoExit(2);
+  }
+
+  int index;
+  for (index = 0; index < argc; index++) {
+    argvNew[index] = CopyString(argvOld[index]);
+  }
+}
+
+void FreeArgs(int argc, char **argv)
+{
+  int index;
+  for (index = 0; index < argc; index++) {
+    delete [] argv[index];
+  }
+
+  delete [] argv;
 }

@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.47  1997/09/05 22:35:58  wenger
+#  Dispatcher callback requests only generate one callback; added Scheduler;
+#  added DepMgr (dependency manager); various minor code cleanups.
+#
 #  Revision 1.46  1997/06/25 21:25:20  wenger
 #  Added writeDesc (write session description) command needed by Hongyu's
 #  Java client.
@@ -131,7 +135,7 @@ LIBSRC = AttrList.c AxisLabelClassInfo.c \
 	TileLayout.C xvgifwr.c xv24to8.c xvgrab.c \
 	Map3D.C Temp.c PSWindowRep.c PSDisplay.c DaliIfc.c DaliPatron.c \
 	DevStatus.c DualWindowRep.c DevFont.c \
-	ETkIfc.c ETkClient.c SessionDesc.c Scheduler.c DepMgr.c
+	ETkIfc.c ETkClient.c SessionDesc.c Scheduler.c DepMgr.c Session.c
 
 SRCc = $(filter %.c,$(LIBSRC))
 SRCC = $(filter %.C,$(LIBSRC))
