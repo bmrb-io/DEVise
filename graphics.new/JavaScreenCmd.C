@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.128  2002/02/18 21:13:49  wenger
+  Fixed a problem with the <label axis> in the JAVAC_ViewDataArea command.
+
   Revision 1.127  2002/01/28 23:52:18  wenger
   Updated the DEVised to support drawing axis labels on the JS side:
   changed JAVAC_ViewDataArea command; leaves blank areas for axis
@@ -637,7 +640,7 @@ static DeviseCursorList _drawnCursors;
 // Assume no more than 1000 views in a pile...
 static const float viewZInc = 0.001;
 
-static const int protocolMajorVersion = 10;
+static const int protocolMajorVersion = 11;
 static const int protocolMinorVersion = 0;
 
 JavaScreenCache JavaScreenCmd::_cache;
