@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/09/19 19:32:52  wenger
+  Devise now complains about illegal command-line flags (fixes bug 042).
+
   Revision 1.9  1996/09/10 20:07:24  wenger
   High-level parts of new PostScript output code are in place (conditionaled
   out for now so that the old code is used until the new code is fully
@@ -77,7 +80,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.1.9";
+static const char *	version = "1.1.10";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/06/15 14:25:01  jussi
+  Rewrote so that a variable number of shape attributes is
+  allowed when mapping is created.
+
   Revision 1.10  1996/05/11 21:29:20  jussi
   Fixed problem with null valus being returned as CreateParams().
 
@@ -385,7 +389,7 @@ ClassInfo *MapInterpClassInfo::CreateWithParams(int argc, char **argv)
   printf("Creating new instance of interpreted mapping class\n");
 #endif
     
-  MappingInterpCmd *cmd = new MappingInterpCmd;
+  MappingInterpCmd *cmd = new MappingInterpCmd;//TEMPTEMP -- leaked
   TData *tdata;
   unsigned long int cmdFlag;
   unsigned long int attrFlag;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/09/27 15:53:18  wenger
+  Fixed a number of memory leaks.
+
   Revision 1.11  1996/07/19 17:25:20  jussi
   Added canElimOverlap parameter to InsertSymbol().
 
@@ -64,6 +67,7 @@
 #include "Init.h"
 
 //#define DEBUG
+#define USE_CONNECTORS 0
 
 #define ROUND(type, value) ((type)(value + 0.5))
 
@@ -85,9 +89,11 @@ GDataBin::GDataBin()
   
   _elimOverlap = Init::ElimOverlap();
 
+#if USE_CONNECTORS
   /* Init space for connectors */
   for(i = 0; i < GDATA_BIN_MAX_PIXELS; i++)
     _connectors[i] = new Connector;
+#endif
 }
 
 /********************************************************************
@@ -99,10 +105,12 @@ GDataBin::~GDataBin()
 #if defined(DEBUG)
   printf("GDataBin::~GDataBin()\n");
 #endif
+#if USE_CONNECTORS
   int i;
   for(i = 0; i < GDATA_BIN_MAX_PIXELS; i++) {
     delete _connectors[i];
   }
+#endif
 }
 
 /**********************************************************************
@@ -270,6 +278,9 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
 #endif
       
       /* draw a connection */
+#if !USE_CONNECTORS
+      DOASSERT(0, "Trying to use _connectors\n");
+#endif
       if (_cMap->MapToConnection(lastSym, sym, _connectors[index])) {
 #ifdef DEBUG
 	printf("accepted\n");
@@ -292,8 +303,12 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
     ptr += ptrIncr;
   }
   
-  if (index > 0)
+  if (index > 0) {
+#if !USE_CONNECTORS
+      DOASSERT(0, "Trying to use _connectors\n");
+#endif
     _callBack->ReturnGDataBinConnectors(_cMap, _connectors, index);
+  }
 }
 
 /***********************************************************************

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/08/05 02:13:22  beyer
+  HP's stdio.h has _flag #define'd so I #undef'd it in here.
+
   Revision 1.2  1996/08/04 21:59:58  beyer
   Added UpdateLinks that allow one view to be told to update by another view.
   Changed TData so that all TData's have a DataSource (for UpdateLinks).
@@ -47,7 +50,7 @@ VisualLink::VisualLink(char *name, VisualFlag linkFlag)
 {
   _name = name;
   _flag = linkFlag;
-  _viewList = new LinkViewList;
+  _viewList = new LinkViewList;//TEMPTEMP -- leaked
   _updating = false; 
 
   View::InsertViewCallback(this);

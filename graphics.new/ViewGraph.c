@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.39  1996/08/29 19:07:29  ssl
+  Same bug fix for reclinks slightly modified.
+
   Revision 1.37  1996/08/07 19:27:11  jussi
   Moved legends in merged view up a bit.
 
@@ -174,8 +177,12 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
     DO_DEBUG(printf("ViewGraph::ViewGraph(0x%p, %s)\n",
 		    this, (name != NULL) ? name : "<null>"));
     _action = action;
+    _deleteAction = false;
     if (!_action)
+    {
       _action = new ActionDefault("default");
+      _deleteAction = true;
+    }
 
     memset(_DisplayStats, '0', STAT_NUM);
 
@@ -223,6 +230,7 @@ ViewGraph::~ViewGraph()
 	delete _gdataStatBuffer;
     }
 
+    if (_deleteAction) delete _action;
 }
 
 void ViewGraph::AddAsMasterView(RecordLink *link)

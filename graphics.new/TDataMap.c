@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/07/10 00:02:41  jussi
+  Added memory allocation checks. Got rid of TDataMapDispatch class.
+
   Revision 1.15  1996/07/02 22:47:07  jussi
   Rewrote interface for setting and querying maximum symbol
   size (bounding box).
@@ -85,6 +88,8 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
 		   VisualFlag *dimensionInfo, int numDimensions,
 		   Boolean createGData)
 {
+  _gOffset = NULL;
+
   _incarnation++;
 
   _userData = NULL;
@@ -288,7 +293,7 @@ Make a path for storing gdata
 char *TDataMap::CreateGDataPath(char *gdataName)
 {
   char *tmpDir = Init::TmpDir();
-  char *name = new char [strlen(gdataName) + 1 + strlen(tmpDir) + 1];
+  char *name = new char [strlen(gdataName) + 1 + strlen(tmpDir) + 1];//TEMPTEMP --  leaked
   sprintf(name, "%s/%s", tmpDir, gdataName);
   return name;
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/07/05 15:08:46  jussi
+  Added debugging statement.
+
   Revision 1.6  1996/07/02 22:43:56  jussi
   Replaced Exit() calls with DOASSERT().
 
@@ -41,6 +44,7 @@
 #include "Util.h"
 
 //#define DEBUG
+#define CHECK_CLASS_RECS 0
 
 ClassDir::ClassDir()
 {
@@ -55,6 +59,11 @@ void ClassDir::InsertCategory(char *name)
   rec->name = name;
   rec->_numClasses = 0;
   _categories[_numCategories++] = rec;
+#if CHECK_CLASS_RECS
+  for (int classIndex = 0; classIndex < MaxClasses; classIndex++) {
+    rec->_classRecs[classIndex] = NULL;
+  }
+#endif
 }
 
 void ClassDir::InsertClass(ClassInfo *cInfo)
@@ -66,6 +75,10 @@ void ClassDir::InsertClass(ClassInfo *cInfo)
       ClassRec *classRec = new ClassRec;
       classRec->classInfo = cInfo;
       classRec->_numInstances = 0;
+#if CHECK_CLASS_RECS
+      DOASSERT(catRec->_classRecs[catRec->_numClasses] == NULL,
+	"Leaked a ClassRec!");
+#endif
       catRec->_classRecs[catRec->_numClasses++] = classRec;
       return;
     }
@@ -74,7 +87,8 @@ void ClassDir::InsertClass(ClassInfo *cInfo)
   DOASSERT(0, "Could not find category");
 }
 
-char *argArray[512];
+#define ARG_ARRAY_SIZE 512
+char *argArray[ARG_ARRAY_SIZE];
 
 void ClassDir::ClassNames(char *category, int &num, char **&names)
 {
@@ -85,6 +99,7 @@ void ClassDir::ClassNames(char *category, int &num, char **&names)
     CategoryRec *catRec = _categories[i];
     if (!strcmp(catRec->name, category)) {
       for(int j = 0; j < catRec->_numClasses; j++) {
+	DOASSERT(num < ARG_ARRAY_SIZE, "ClassDir: argArray overflowed");
 	argArray[num++] = catRec->_classRecs[j]->classInfo->ClassName();
       }
       return;
@@ -312,12 +327,20 @@ void ClassDir::DestroyTransientClasses()
       printf("  Destroying class %s\n", classRec->classInfo->ClassName());
 #endif
       delete classRec->classInfo;
+      delete classRec;
       for(int l = j; l < catRec->_numClasses - 1; l++) {
 	catRec->_classRecs[l] = catRec->_classRecs[l + 1];
       }
+#if CHECK_CLASS_RECS
+      catRec->_classRecs[catRec->_numClasses - 1] = NULL;
+#endif
       catRec->_numClasses--;
     }
   }
+#ifdef DEBUG
+  printf("After DestroyTransientClasses, ClassDir shows:\n");
+  Print();
+#endif
 }
 
 /* Get creation parameter for instance */

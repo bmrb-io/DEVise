@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/08/04 21:59:57  beyer
+  Added UpdateLinks that allow one view to be told to update by another view.
+  Changed TData so that all TData's have a DataSource (for UpdateLinks).
+  Changed all of the subclasses of TData to conform.
+  A RecFile is now a DataSource.
+  Changed the stats buffers in ViewGraph to be DataSources.
+
   Revision 1.26  1996/07/26 16:19:19  guangshu
   Remove unnecessary comment.
 
@@ -245,6 +252,7 @@ public:
 
   
   Action *_action;                 /* action in this view */
+  Boolean _deleteAction;           /* delete _action when this is destroyed? */
   RecordLinkList _masterLink;      /* links whose master this view is */
   RecordLinkList _slaveLink;       /* slave record link list */
 
