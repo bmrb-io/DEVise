@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.55  2000/08/07 17:46:14  wenger
+// Fixed bug 608 (NullPointerExceptions in family medicine sessions).
+//
 // Revision 1.54  2000/08/07 04:45:25  venkatan
 // YError that occurs when mouse-clicked in misc/FamMed_visits.tk is fixed.
 //
@@ -699,31 +702,54 @@ public class DEViseView
 
     // Get this first cursor in this view or this view's pile.  Note that
     // this method should only be called on a base view.
-
-    public DEViseView getBaseView(){
-	return pileBaseView;
-    }
-
     public DEViseCursor getFirstCursor() throws YError
     {
-        if (pileBaseView != null) {
-	      return null;
-            // error not thrown because in some sessions pileBaseView is called 
-	    // not really clear?? Ven
-            /*  throw new YError("Calling getFirstCursor() on non-base view (" +
-	      viewName + ")"); */
-	      
+        if (_debug) {
+	    System.out.println("DEViseView(" + viewName +
+	      ").getFirstCursor()");
 	}
-	
 
-        for (int i = 0; i < viewCursors.size(); i++) {
-            DEViseCursor cursor = (DEViseCursor)viewCursors.elementAt(i);
+        if (pileBaseView != null) {
+            throw new YError("Calling getFirstCursor() on non-base view (" +
+	      viewName + ")");
+	}
+
+	DEViseCursor cursor = doGetFirstCursor();
+
+	if (_debug) {
+	    String cursorName = (cursor != null) ? cursor.name : "null";
+	    System.out.println("  getFirstCursor() returns: " + cursorName);
+        }
+
+	return cursor;
+    }
+
+    private DEViseCursor doGetFirstCursor()
+    {
+        if (_debug) {
+	    System.out.println("DEViseView(" + viewName +
+	      ").doGetFirstCursor()");
+
+	}
+
+	// Get any cursor in this view.
+	if (viewCursors.size() > 0) {
+            DEViseCursor cursor = (DEViseCursor)viewCursors.elementAt(0);
             return cursor;
         }
 
+	// Return if this is a non-base view.
+	// Note: we shouldn't really need to do this, because if this is a
+	// non-base view viewPiledViews.size(); however, doing this seems to
+	// avoid some lockups (maybe thread problems).  RKW 2000-08-07.
+        if (pileBaseView != null) {
+	    return null;
+	}
+
+	// Check cursors in child views of this view.
         for (int i = 0; i < viewPiledViews.size(); i++) {
             DEViseView v = (DEViseView)viewPiledViews.elementAt(i);
-            DEViseCursor cursor = v.getFirstCursor();
+            DEViseCursor cursor = v.doGetFirstCursor();
             if (cursor != null) {
                 return cursor;
             }

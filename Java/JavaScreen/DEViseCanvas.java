@@ -27,6 +27,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.65  2000/08/07 17:15:39  wenger
+// Removed the 'control-drag' to move a cursor without talking to the devised
+// feature because it could end up causing an incorrect state; added
+// workaround for bug 607 (problems with control-drag); documented X-only zoom
+// in keyboard help; improved JavaScreen makefile; fixed up makejsa.
+//
 // Revision 1.64  2000/08/07 04:45:23  venkatan
 // YError that occurs when mouse-clicked in misc/FamMed_visits.tk is fixed.
 //
@@ -158,135 +164,6 @@
 // Revision 1.28  1999/12/10 15:30:12  wenger
 // Molecule dragging greatly speeded up by drawing plain (unshaeded) circles
 // during drag; split off protocol version from "main" version.
-//
-// $Log$
-// Revision 1.64  2000/08/07 04:45:23  venkatan
-// YError that occurs when mouse-clicked in misc/FamMed_visits.tk is fixed.
-//
-// Revision 1.63  2000/08/07 03:28:51  venkatan
-// Zoom for X - only direction is now available - done with CTRL + Rubberband
-//
-// Revision 1.62  2000/07/26 15:53:41  venkatan
-// Hand - Mouse Cursor is used in the 3D view
-//
-// Revision 1.61  2000/07/21 03:23:42  venkatan
-// Help Display - Multiple lines are now in a single "panel"
-//
-// Revision 1.60  2000/07/20 15:51:12  wenger
-// Fixed bug 586 (can't move cursors with spaces in the names).
-//
-// Revision 1.59  2000/07/19 20:11:35  wenger
-// Code to read data from sockets is more robust (hopefully fixes BMRB/Linux
-// problem); background color of upper left part of JS changed to red when a
-// dialog is shown; more debug output added.
-//
-// Revision 1.58  2000/07/18 18:12:49  venkatan
-// The highlighting of the border for the active view is disabled.
-//
-// Revision 1.57  2000/07/18 18:10:56  venkatan
-// *** empty log message ***
-//
-// Revision 1.56  2000/07/14 21:13:07  wenger
-// Speeded up 3D GData processing by a factor of 2-3: improved the parser
-// used for GData; eliminated Z sorting for bonds-only 3D views; eliminated
-// DEViseAtomTypes for atoms used only to define bond ends; reduced string-
-// based processing; eliminated various unused variables, etc.
-//
-// Revision 1.55  2000/07/12 16:52:42  wenger
-// F1 key now shows help without clicking mouse button.
-//
-// Revision 1.54  2000/07/11 16:39:18  venkatan
-// *** empty log message ***
-//
-// Revision 1.53  2000/07/10 12:26:02  venkatan
-// *** empty log message ***
-//
-// Revision 1.52  2000/06/27 16:44:34  wenger
-// Considerably cleaned up and simplified the cursor-related code; moved
-// cursor grid implementation from the DEViseCanvas class to the DEViseCursor
-// class.
-//
-// Revision 1.51  2000/06/21 18:37:29  wenger
-// Removed a bunch of unused code (previously just commented out).
-//
-// Revision 1.50  2000/06/21 18:10:14  wenger
-// Changes to 3D requested by BMRB: removed axes; up/down mouse movement
-// does zooming; molecule doesn't move when changing atoms; 'r' resets
-// location and zoom as well as rotation.
-//
-// Revision 1.49  2000/05/25 15:37:15  wenger
-// Fixed bug 590 (JavaScreen "forgets" that you have control or alt pressed
-// after you release the mouse button).
-//
-// Revision 1.48  2000/05/25 14:47:27  wenger
-// 3D coordinate system remains unchanged when new GData arrives; 'r' or 'R'
-// in view resets to default coordinates.
-//
-// Revision 1.47  2000/05/24 18:52:28  wenger
-// Fixed problem with grabbing of cursor edges not working well.
-//
-// Revision 1.46  2000/05/22 17:52:48  wenger
-// JavaScreen handles fonts much more efficiently to avoid the problems with
-// GData text being drawn very slowly on Intel platforms.
-//
-// Revision 1.45  2000/05/12 20:43:45  wenger
-// Added more comments to the DEViseScreen, DEViseCanvas, and jsdevisec
-// classes and cleaned up the code; commented out unused code; added
-// named constants for location of mouse pointer on a DEVise cursor.
-//
-// Revision 1.44  2000/05/11 20:19:32  wenger
-// Cleaned up jsdevisec.java and added comments; eliminated
-// jsdevisec.lastCursor (not really needed).
-//
-// Revision 1.43  2000/05/08 16:40:39  wenger
-// JavaScreen cursors are now drawn as frames rather than filled
-// rectangles (so symbols, especially text, show up better within cursors).
-//
-// Revision 1.42  2000/05/04 15:53:22  wenger
-// Added consistency checking, added comments, commented out unused code
-// in DEViseScreen.java, DEViseCanvas.java, DEViseView.java,
-// DEViseCmdDispatcher.java.
-//
-// Revision 1.41  2000/04/27 20:15:23  wenger
-// Added DEViseCommands class which has string constants for all command
-// names; replaced all literal command names in code with the appropriate
-// DEViseCommand constants.
-//
-// Revision 1.40  2000/04/24 20:21:58  hongyu
-// remove UI dependency of jspop and js
-//
-// Revision 1.39  2000/04/07 22:43:13  wenger
-// Improved shading of atoms (it now works on white atoms); added comments
-// based on meeting with Hongyu on 2000-04-06.
-//
-// Revision 1.38  2000/04/05 06:25:36  hongyu
-// fix excessive memory usage problem associated with gdata
-//
-// Revision 1.37  2000/04/03 22:24:52  wenger
-// Added named constants for GData symbol types; 3D GData symbols are now
-// differentiated by symbol type instead of string; removed some commented-
-// out code.
-//
-// Revision 1.36  2000/03/23 16:26:12  wenger
-// Cleaned up headers and added requests for comments.
-//
-// Revision 1.35  2000/02/23 21:12:11  hongyu
-// *** empty log message ***
-//
-// Revision 1.34  2000/02/23 10:44:01  hongyu
-// *** empty log message ***
-//
-// Revision 1.33  2000/02/22 15:26:39  wenger
-// Commented out debug output.
-//
-// Revision 1.32  2000/02/22 10:00:38  hongyu
-// *** empty log message ***
-//
-// Revision 1.31  2000/02/16 08:53:48  hongyu
-// *** empty log message ***
-//
-// Revision 1.29  2000/01/12 14:37:48  hongyu
-// *** empty log message ***
 //
 // Revision 1.27  1999/12/07 23:18:20  hongyu
 // *** empty log message ***
@@ -1365,9 +1242,7 @@ public class DEViseCanvas extends Container
 			  activeView.translateY(p.y, 2);
 		    }
                 } else {
-		    DEViseCursor cursor = null;
-
-                    cursor = activeView.getFirstCursor();
+                    DEViseCursor cursor = activeView.getFirstCursor();
 
                     if (cursor != null && (cursor.isXMovable ||
 		      cursor.isYMovable)) {
