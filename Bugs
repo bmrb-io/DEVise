@@ -777,6 +777,9 @@ Num Date        Status  Description
 			of the cursor grid, for example), the cursor is
 			erased and not redrawn. (rkw)
 
+188 06/10/97	OPEN	You can't select old visual filters from the history
+			window. (rkw/lz)
+
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
