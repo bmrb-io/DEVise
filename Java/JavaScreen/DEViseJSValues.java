@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000
+// (c) Copyright 2000-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2001/01/08 20:31:52  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.1.2.3  2000/11/29 22:40:56  wenger
 // Abstracted common code from jsa and jsb into new DEViseJSApplet
 // superclass; other minor cleanups.
@@ -103,10 +107,15 @@ public final class DEViseJSValues
 	public Font textFont = DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0);
     }
 
+    public final class Session {
+        public String defaultName = null;
+    }
+
     public Canvas canvas = new Canvas();
     public Debug  debug = new Debug();
     public GData  gdata = new GData();
     //Fonts  fonts;
     public Connection connection = new Connection(); 
     public UIGlobals uiglobals = new UIGlobals();
+    public Session session = new Session();
 }

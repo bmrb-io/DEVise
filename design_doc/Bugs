@@ -2663,6 +2663,13 @@ Num Date        Status  Description
 			DEVise. (rkw)
 			(Fixed by rkw, 4/27/01.)
 
+669 05/01/01	OPEN	Copying a view doesn't copy string table assignments.
+			(rkw)
+
+670 05/07/01	FIXED	JavaScreen: -session command line argument doesn't
+			work. (np/rkw)
+			(Fixed by rkw, 5/07/01.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

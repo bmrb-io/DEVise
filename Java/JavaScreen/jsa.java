@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.43  2001/02/20 20:02:25  wenger
+// Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+// to the trunk.
+//
 // Revision 1.42.2.1  2001/02/05 22:02:10  wenger
 // Fixed bugs 639 and 640 and other problems associated with destroying
 // and re-starting the JavaScreen applets.
@@ -154,7 +158,7 @@ public class jsa extends DEViseJSApplet
 
             startButton.setEnabled(true);
 
-            if (sessionName != null) {
+            if (jsValues.session.defaultName != null) {
 	        startJS();
             }
 
@@ -197,8 +201,7 @@ public class jsa extends DEViseJSApplet
 	
 	if (jsf == null) {
 	    startInfo.append("Start Java Screen ...\n");
-	    jsf = new jscframe(this, images, sessionName,
-	    jsValues);
+	    jsf = new jscframe(this, images, jsValues);
 	    //startButton.setEnabled(false);
         } else {
 	    // Note: we get here if the user clicks the start
@@ -206,7 +209,7 @@ public class jsa extends DEViseJSApplet
 	    if (jsf.isQuit()) {
 	        startInfo.append("Start new Java Screen ...\n");
 		jsf = null;
-		jsf = new jscframe(this, images, sessionName, jsValues);
+		jsf = new jscframe(this, images, jsValues);
 		//startButton.setEnabled(false);
 	    } else {
 	        startInfo.append("Java Screen already started!\n");
@@ -245,7 +248,7 @@ class jscframe extends Frame
 
     public jsdevisec jsc = null;
 
-    public jscframe(Applet parentApplet, Vector images, String sessionName,
+    public jscframe(Applet parentApplet, Vector images,
       DEViseJSValues jsValues)
     {
         if (DEBUG >= 1) {
@@ -259,7 +262,7 @@ class jscframe extends Frame
         jsValues.uiglobals.minScreenSize.width = 300;
         jsValues.uiglobals.minScreenSize.height = 240;
 
-        jsc = new jsdevisec(parentApplet, this, images, sessionName, jsValues);
+        jsc = new jsdevisec(parentApplet, this, images, jsValues);
         add(jsc);
         setTitle(DEViseUIGlobals.javaScreenTitle);
         pack();

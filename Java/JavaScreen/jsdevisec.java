@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.108  2001/04/25 19:41:49  xuk
+// Fixed bug 661: when a JS goes into Collaboration mode from Socket mode,
+// It will not become an available collaboration leader.
+//
 // Revision 1.107  2001/04/24 01:46:17  xuk
 // Fixed bug 658: restoring pre-collaboration session, when leader exits.
 //
@@ -378,12 +382,13 @@ public class jsdevisec extends Panel
 
     // images[0-9] are the gears; 10 and 11 are "traffic lights"
     //   (devise[0-10].gif).
-    // sessionName is non-null only in jsb.
     public jsdevisec(Applet parentApplet, Frame frame, Vector images,
-	  String sessionName, DEViseJSValues jv)
+      DEViseJSValues jv)
     {
 	// create the DEViseJSValues object
 	jsValues = jv;
+
+	String sessionName = jv.session.defaultName;
 
 	if (jsValues.debug._logEnabled) {
 	    jsValues.debug._logger = new DEViseDebugLog(jsValues);

@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2001/02/20 20:02:25  wenger
+// Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+// to the trunk.
+//
 // Revision 1.12.2.1  2001/02/05 22:02:11  wenger
 // Fixed bugs 639 and 640 and other problems associated with destroying
 // and re-starting the JavaScreen applets.
@@ -113,7 +117,7 @@ public class jsb extends DEViseJSApplet
 
         jsValues.uiglobals.inBrowser = true;
 
-        if (sessionName == null) {
+        if (jsValues.session.defaultName == null) {
             startInfo.append("Error: No session specified!");
             isInit = false;
             return;
@@ -124,13 +128,12 @@ public class jsb extends DEViseJSApplet
         if (isInit) {
             remove(startInfo);
             if (jsc == null) {
-                jsc = new jsdevisec(this, null, images, sessionName, jsValues);
+                jsc = new jsdevisec(this, null, images, jsValues);
                 add(jsc, BorderLayout.CENTER);
             } else {
                 if (jsc.getQuitStatus()) {
                     jsc = null;
-                    jsc = new jsdevisec(this, null, images, sessionName,
-		      jsValues);
+                    jsc = new jsdevisec(this, null, images, jsValues);
                     add(jsc, BorderLayout.CENTER);
                 } else {
                     //jsc.displayMe(true);

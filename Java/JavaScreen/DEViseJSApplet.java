@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2001/02/20 20:02:23  wenger
+// Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+// to the trunk.
+//
 // Revision 1.2.2.1  2001/02/05 22:02:10  wenger
 // Fixed bugs 639 and 640 and other problems associated with destroying
 // and re-starting the JavaScreen applets.
@@ -60,11 +64,6 @@ public class DEViseJSApplet extends Applet
 
     // URL from which this applet was loaded.
     URL baseURL = null;
-
-    // Note: sessionName here kind of duplicates jsdevisec.currentSession.
-    // I think that sessionName is ignored once the jsdevisec object is
-    // constructed.  RKW 2001-01-05.
-    String sessionName = null;
 
     Vector images = null;
 
@@ -125,7 +124,6 @@ public class DEViseJSApplet extends Applet
 	    System.out.println("DEViseJSApplet.destroy()");
 	}
 
-	sessionName = null;
         images = null;
     }
 
@@ -220,11 +218,12 @@ public class DEViseJSApplet extends Applet
             }
         }
 
-        sessionName = getParameter("session");
-        if (sessionName == null) {
+        jsValues.session.defaultName = getParameter("session");
+        if (jsValues.session.defaultName == null) {
             startInfo.append("Parameter session is not specified!\n");
         } else {
-            startInfo.append("Parameter session: " + sessionName + " is used\n");
+            startInfo.append("Parameter session: " +
+	      jsValues.session.defaultName + " is used\n");
         }
 
         String debug = getParameter("debug");

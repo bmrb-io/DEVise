@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.39  2001/01/08 20:31:55  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.38.4.9  2000/12/29 22:41:39  wenger
 // Fixed problems with the JavaScreen client not getting destroyed
 // properly, except that it still doesn't work right if you go to a
@@ -169,15 +173,12 @@ public class js extends Frame
     //      default: real physical screen size
     //      example: "-screensize640x480
     //
-    private String sessionName = null;
-
     public DEViseJSValues jsValues = null;
     public jsdevisec jsc = null;
 
-    public js(DEViseJSValues jv, String sname)
+    public js(DEViseJSValues jv)
     {
 	jsValues = jv;
-	sessionName = sname;
 
        	Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension dim = kit.getScreenSize();
@@ -218,7 +219,7 @@ public class js extends Frame
         }
 
         // start JavaScreen
-        jsc = new jsdevisec(null, this, images, sessionName, jsValues);
+        jsc = new jsdevisec(null, this, images, jsValues);
         add(jsc);
         setTitle(DEViseUIGlobals.javaScreenTitle);
         pack();
@@ -263,9 +264,8 @@ public class js extends Frame
         }
 
 	DEViseJSValues jv = new DEViseJSValues();
-	String sname = null;
 
-        checkArguments(args, jv, sname);
+        checkArguments(args, jv);
 
         jv.uiglobals.isApplet = false;
 	jv.uiglobals.inBrowser = false;
@@ -280,11 +280,11 @@ public class js extends Frame
         if (jv.connection.cmdport < 1024)
 	  jv.connection.cmdport = DEViseGlobals.DEFAULTCMDPORT;
 
-        js frame = new js(jv, sname);
+        js frame = new js(jv);
         frame.show();
     }
 
-    private static void checkArguments(String[] args, DEViseJSValues jsValues, String sessionName)
+    private static void checkArguments(String[] args, DEViseJSValues jsValues)
     {
         for (int i = 0; i < args.length; i++) {
             if (args[i].startsWith("-host")) {
@@ -422,7 +422,7 @@ public class js extends Frame
                 }
             } else if (args[i].startsWith("-session")) {
                 if (!args[i].substring(8).equals("")) {
-                    sessionName = args[i].substring(8);
+		    jsValues.session.defaultName = args[i].substring(8);
                 }
             } else if (args[i].startsWith("-debug")) {
                 if (!args[i].substring(6).equals("")) {

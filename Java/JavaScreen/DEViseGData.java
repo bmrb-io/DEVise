@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.37  2001/01/08 20:31:51  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.36.4.2  2000/11/22 17:43:57  wenger
 // Finished cleanup of static variables fix; re-changed CGI command code to
 // match the current version of the CGI script.
@@ -172,7 +176,8 @@ public class DEViseGData
 
 	jsc.jsValues.gdata._gdCount++;
 	if (_debug) {
-            System.out.println("DEViseGData constructor " + jsc.jsValues.gdata._gdCount);
+            System.out.println("DEViseGData constructor " +
+	      jsc.jsValues.gdata._gdCount + "(" + gdata + ")");
             System.out.println("Free memory: " +
 	      Runtime.getRuntime().freeMemory() + "/" +
 	      Runtime.getRuntime().totalMemory());
