@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-1996
+# (c) Copyright 1992-1999
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -19,6 +19,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.5  1999/05/14 14:00:57  wenger
+# User can now control data font family, weight, and slant, on a per-view
+# basis.
+#
 # Revision 1.4  1999/04/21 20:35:50  wenger
 # Improved interface for changing fonts, titles, etc.:
 # * Fonts can now be set on a window-wide basis.
@@ -172,6 +176,5 @@ proc SetFont { which isWindow } {
         DEVise setFont $curView $which $family $size $isBold $isItalic
     }
 }
-
 
 #============================================================================
