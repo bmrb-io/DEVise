@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.106  2000/08/15 19:21:19  wenger
+  Got rid of a bunch of conditionaled-out code.
+
   Revision 1.105  2000/08/15 19:16:57  wenger
   Fixed typecasts that caused problems when compiled on denali.
 
@@ -1647,8 +1650,10 @@ DeviseCommand_catFiles::Run(int argc, char** argv)
 {
     {
         {
-          CatFiles(_numArgs, _args);
-          ReturnVal(_numArgs, _args);
+		  int tmpArgc;
+		  char **tmpArgv;
+          CatFiles(tmpArgc, tmpArgv);
+          ReturnVal(tmpArgc, tmpArgv);
           return 1;
         }
     }
@@ -2303,13 +2308,7 @@ DeviseCommand_getSchema::Run(int argc, char** argv)
           attrList->Print();
     #endif
           int numAttrs = attrList->NumAttrs();
-    //    _args = new (char *) [numAttrs + 1];
-          _args = new (char *) [numAttrs];
-    	 /*
-          _args[0] = new char[25];
-          assert(_args && _args[0]);
-          strcpy(_args[0], "recId int 1 0 0 0 0");
-         */ 
+		  char **tmpArgv = new (char *) [numAttrs];
           int i;
           for(i = 0; i < numAttrs; i++) {
     	char attrBuf[160];
@@ -2359,20 +2358,18 @@ DeviseCommand_getSchema::Run(int argc, char** argv)
           reportErrNosys("Fatal error");//TEMP -- replace with better message
     	  Exit::DoExit(1);
     	}
-    //	_args[i + 1] = new char [strlen(attrBuf) + 1];
-      	_args[i] = new char [strlen(attrBuf) + 1];
-    	assert(_args[i]);
-    //	strcpy(_args[i + 1], attrBuf);
-    	strcpy(_args[i], attrBuf);
+      	tmpArgv[i] = new char [strlen(attrBuf) + 1];//TEMPTEMP -- leaked??
+    	assert(tmpArgv[i]);
+    	strcpy(tmpArgv[i], attrBuf);
           }
-    //    ReturnVal(numAttrs + 1, _args) ;
-          ReturnVal(numAttrs, _args) ;
-    	 delete [] _args;
+          ReturnVal(numAttrs, tmpArgv) ;
+    	 delete [] tmpArgv;
           return 1;
         }
     }
     return true;
 }
+
 int
 DeviseCommand_getAction::Run(int argc, char** argv)
 {
@@ -2848,28 +2845,29 @@ DeviseCommand_getStatBuffer::Run(int argc, char** argv)
           
              if (!(buffObj ->Open("r") == StatusOk))
              {
-    	     reportError("Cannot open statBuffer object for read", devNoSyserr);
-    	     ReturnVal(API_NAK, "statBuffer object");
-    	     return -1;
-              }
+    	       reportError("Cannot open statBuffer object for read", devNoSyserr);
+    	       ReturnVal(API_NAK, "statBuffer object");
+    	       return -1;
+             }
               int k;
-              _args = new (char *) [MAX_GSTAT+1];
+			  char **tmpArgv = new (char *) [MAX_GSTAT+1];
               for(k=0; k < MAX_GSTAT+1; k++) {
-    	      _args[k]=0;
+    	        tmpArgv[k]=0;
               }
               char statBuff[LINESIZE];
               k = 0;
               while(buffObj->Fgets(statBuff, LINESIZE) != NULL) {
-    	      DOASSERT(k < MAX_GSTAT, "too many stats lines");
-    	      int len = strlen(statBuff);
-    	      _args[k] = new char[len + 1];
-    	      strcpy(_args[k], statBuff);
-    	      k++;
-               }
-               ReturnVal(k, _args);
-               for(int j = 0; j < k; j++)
-    	       delete _args[j];
-               delete [] _args;
+    	        DOASSERT(k < MAX_GSTAT, "too many stats lines");
+    	        int len = strlen(statBuff);
+    	        tmpArgv[k] = new char[len + 1];
+    	        strcpy(tmpArgv[k], statBuff);
+    	        k++;
+              }
+               ReturnVal(k, tmpArgv);
+               for(int j = 0; j < k; j++) {
+    	         delete tmpArgv[j];
+			   }
+               delete [] tmpArgv;
                return 1;
         }
     }

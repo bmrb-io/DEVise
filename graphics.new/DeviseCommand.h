@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.59  2000/07/12 20:49:27  wenger
+  Added first version of metavisualization session description; changed
+  DEVise version to 1.7.1.
+
   Revision 1.58  2000/06/20 22:17:05  wenger
   Added floating-point format for axes and mouse location display.
 
@@ -344,11 +348,6 @@ class DeviseCommand
         char		*_result;
 		ClassDir	*_classDir;
 
-		// Note: _numArgs and _args seem to be used as local variables within
-		// methods, and don't seem to maintain any state over the life of
-		// the DeviseCommand object.  RKW 1999-04-15.
-		int			_numArgs;
-		char**		_args;
 	public:
 		virtual int Run(int argc, char** argv, ControlPanel* cntl);
 };
