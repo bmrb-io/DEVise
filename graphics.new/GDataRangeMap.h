@@ -1,18 +1,38 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1996
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:14:53  jussi
+  Added CVS header.
+*/
 
 /* keeps track of TData to GData mappings that have been done */
 
 #ifndef GDataRangeMap_h
 #define GDataRangeMap_h
+
 #include <stdio.h>
+
 #include "DeviseTypes.h"
 #include "RecId.h"
 #include "GDataRec.h"
 
-const int MAX_RANGE_REC_SIZE = sizeof(GDataRec);
+const int MAX_RANGE_REC_SIZE = MAX_GDATA_REC_SIZE;
+
 class GDataRangeMapRec {
 public:
 	RecId tLow, tHigh;	/* TData RecId ranges */
@@ -120,13 +140,13 @@ private:
 	/* Free a record */
 	void FreeRec(GDataRangeMapRec *rec);
 
-GDataRangeMapRec *_hint;
-GDataRangeMapRec _head;
-GDataRangeMapRec *_iteratorCurrent; /* for iterator */
-static GDataRangeMapRec *_freeList;
-static int _numInUse;	/* # of records in use */
-char *_fname;
-int _recSize;	/* size of records */
+	GDataRangeMapRec *_hint;
+	GDataRangeMapRec _head;
+	GDataRangeMapRec *_iteratorCurrent; /* for iterator */
+	static GDataRangeMapRec *_freeList;
+	static int _numInUse;	/* # of records in use */
+	char *_fname;
+	int _recSize;	/* size of records */
 };
 
 #endif
