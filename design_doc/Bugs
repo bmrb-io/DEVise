@@ -2734,8 +2734,27 @@ Num Date        Status  Description
 			string file paths when saving a session. (rkw)
 			(Was already fixed.)
 
-687 8/31/01	OPEN	EmbeddedTk doesn't seem to work on Linx/Intel
+687 08/31/01	OPEN	EmbeddedTk doesn't seem to work on Linx/Intel
 			architecture. (rkw)
+
+688 09/10/01	OPEN	JavaScreen: when opening a session file, you cannot
+			successfully follow symbolic links in the session
+			directory. (rkw)
+
+689 09/12/01	OPEN	JavaScreen: shouldn't draw zoom boxes in views in
+			which zooming is disabled. (rkw)
+
+690 09/12/01	OPEN	JavaScreen: sometimes when you try to move a cursor,
+			this gets interpreted as a zoom (it's like the JS
+			doesn't realized that the mouse is on top of a
+			cursor). (ml/rkw)
+
+691 09/19/01	OPEN	Session files that are links don't show up in the
+			Open File dialog unless you change the pattern. (rkw)
+
+692 09/20/01	OPEN	If you open a session and save it without changing
+			anything, the session file shouldn't be different
+			(except for the date in the header). (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
