@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/06/24 19:37:19  jussi
+  Cleaned up a little.
+
   Revision 1.13  1996/05/20 18:45:02  jussi
   Merged with ClientServer library code.
 
@@ -118,13 +121,21 @@ public:
     virtual void InternalProcessing();
 
     /* Flush buffered window operations to screen */
-    virtual void Flush();
+    virtual void Flush() { XSync(_display, false); }
+
+    /* Export display image to other graphics formats */
+    virtual void ExportImage(DisplayExportFormat format, char *filename);
 
 protected:
 #ifndef LIBCS
-    /* Register with the dispatcher */
+    /* Register display with the dispatcher */
     virtual void Register();
 #endif
+
+    /* Convert drawable to GIF and write to file */
+    void ConvertAndWriteGIF(Drawable drawable, 
+                            XWindowAttributes xwa,
+                            char *filename);
 
     Boolean ClosestColor(Colormap &map, XColor &color, Color &c,
 			 float &error);
