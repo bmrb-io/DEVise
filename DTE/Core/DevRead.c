@@ -14,7 +14,7 @@
 
 /*
   Implementation of DevRead and related classes (used by the DTE to read
-  data via DataReader classes).
+  data via Shaun's UniData classes).
  */
 
 /*
@@ -39,9 +39,9 @@
 
  */
 
-#include "sysdep.h"
+#include <strstream.h>
 #include "types.h"
-#include "DataReader.h"
+#include "UniData.h"
 
 #if !defined(SGI)
 #undef assert
@@ -51,77 +51,76 @@
 #include "DevRead.h"
 
 
-void DevRead::translateUDInfo() {
-	numFlds = ud->mySchema->tAttr + 1; //for RECID
-	int temNum = ud->mySchema->qAttr + 1;
-	int i = 0;
-	int fType;
-	ostringstream tmp;
-	typeIDs = new TypeID[numFlds];
-	attributeNames = new string[numFlds];
+TypeID translateUDType(Attr* at){
 
-	typeIDs[0] = INT_TP;
-	attributeNames[0] = string("recId");
+   switch (at->type()) {
 
-	for (int count = 1; count < temNum; count ++) {
+	case Int_Attr:
+       return "int";	
 
-		if ((ud->mySchema->tableAttr[count-1])->getFieldName() == NULL) { //skipping SKIP attributes
-			continue;
-		}
-		i++;
-			
-		fType = ud->mySchema->tableAttr[count-1]->getType();
-		switch (fType) {
-			case TYPE_INT:
-				typeIDs[i] = string("int");
-				break;
-			case TYPE_STRING:
-				tmp << "string" << (ud->mySchema->tableAttr[count-1]->getMaxLen() > 0 ? ud->mySchema->tableAttr[count-1]->getMaxLen() : ud->mySchema->tableAttr[count-1]->getFieldLen()) << ends;
-				typeIDs[i] = string(tmp.str());
-				tmp.seekp(0);
-				break;
-			case TYPE_DOUBLE:
-				typeIDs[i] = string("double");
-				break;
-			case TYPE_DATE:
-				typeIDs[i] = string("date");
-				break;
-			default:
-				cout <<"This type isn't handled yet: " << ud->mySchema->tableAttr[count-1]->getType() << endl;
-				typeIDs[i] = string("unknown");
-		}
-		attributeNames[i] = string(ud->mySchema->tableAttr[count-1]->getFieldName());
-	}
+	case Float_Attr:
+       return "float";
+
+	case Double_Attr:
+       return "double";
+
+	case String_Attr:{
+       int size = at->size_of();
+       ostrstream tmp;
+       tmp << "string" << size << ends;
+       char* tmp2 = tmp.str();
+       string retVal(tmp2);
+       delete [] tmp2;
+       return retVal;
+     } 
+
+	case UnixTime_Attr:
+       return "time_t";
+
+	case DateTime_Attr:
+       return "date";
+
+	case Invalid_Attr:
+	case UserDefined_Attr:
+	  cout << "This type isn't handled yet: " << at->type() << endl;
+	  break;
+   }
+   return "unknown";
 }
 
 void DevRead::Open(char* schemaFile, char* dataFile){ // throws
-	ud = new DataReader(dataFile, schemaFile);
+	ud = new UniData(dataFile, schemaFile);
 	if(!ud || !ud->isOk()){
 		string msg = string("Cannot create table(") +
 			dataFile + ", " + schemaFile + ")";
 		THROW(new Exception(msg), );
 		// throw Exception(msg);
 	}
-	translateUDInfo();
+	numFlds = ud->schema()->NumFlatAttrs() + 1;	// for recId
+	typeIDs = new TypeID[numFlds];
+	attributeNames = new string[numFlds];
+	AttrStk *stk = ud->schema()->GetFlatAttrs();
+	typeIDs[0] = INT_TP;
+	attributeNames[0] = string("recId"); 
+	for(int i = 1; i < numFlds; i++){
+		Attr *at = stk->ith(i - 1);
+		typeIDs[i] = translateUDType(at);
+		attributeNames[i] = string(at->flat_name()); 
+	}
 }
 
 Iterator* DevRead::createExec(){
-	int i;
-	int count = 0;
 	UnmarshalPtr* unmarshalPtrs = new UnmarshalPtr[numFlds];
 	DestroyPtr* destroyPtrs = new DestroyPtr[numFlds];
 	size_t* currentSz = new size_t[numFlds];
 	Type** tuple = new Type*[numFlds];
 	int* offsets = new int[numFlds];
-
-	for (i = 1; i < (ud->mySchema->qAttr + 1) ; i++) {
-		if (ud->mySchema->tableAttr[i-1]->getFieldName() != NULL) {
-			count++;
-			offsets[count] = ud->mySchema->tableAttr[i-1]->offset;
-		}
+	AttrStk *stk = ud->schema()->GetFlatAttrs();
+	for(int i = 1; i < numFlds; i++){
+		Attr *at = stk->ith(i - 1);
+		offsets[i] = at->offset();
 	}
-
-	for(i = 0; i < numFlds; i++){
+	for(int i = 0; i < numFlds; i++){
 		unmarshalPtrs[i] = getUnmarshalPtr(typeIDs[i]);
 		destroyPtrs[i] = getDestroyPtr(typeIDs[i]);
 		assert(destroyPtrs[i]);
@@ -133,14 +132,14 @@ Iterator* DevRead::createExec(){
 	return retVal;
 }
 
-DevReadExec::DevReadExec(DataReader* ud, UnmarshalPtr* unmarshalPtrs,
+DevReadExec::DevReadExec(UniData* ud, UnmarshalPtr* unmarshalPtrs,
 	DestroyPtr* destroyPtrs,
 	Type** tuple, int* offsets, int numFlds) :
 	ud(ud), unmarshalPtrs(unmarshalPtrs),
 	destroyPtrs(destroyPtrs), tuple(tuple),
 	offsets(offsets), numFlds(numFlds) {
 
-	buffSize = ud->mySchema->getRecSize();
+	buffSize = ud->recSze();
 	buff = (char*) new double[(buffSize / sizeof(double)) + 1];
 	buff[buffSize - 1] = '\0';
 	recId = 0;
@@ -156,16 +155,15 @@ DevReadExec::~DevReadExec(){
 }
 
 const Tuple* DevReadExec::getNext(){
-	Status stat;
+	UD_Status stat;
 	if(!ud->isOk()){	// should not happen
 		return NULL;
 	}
-	buff[offsets[1]] = '\0';
-	stat = ud->getRecord(buff);
-	if ((stat == FOUNDEOF) && (buff[offsets[1]] == '\0')) {
+	stat = ud->getRec(buff,&off);
+	if(stat == UD_EOF){
 		return NULL;
 	}
-	assert((stat == OK) || (stat == FOUNDEOL) || (stat == FOUNDEOF));
+	assert(stat == UD_OK);
 	intCopy((Type*) recId, tuple[0]);
 	for(int i = 1; i < numFlds; i++){
 		unmarshalPtrs[i](&buff[offsets[i]], tuple[i]);
@@ -176,15 +174,15 @@ const Tuple* DevReadExec::getNext(){
 
 const Tuple* DevReadExec::getThis(Offset offset, RecId recId){
 	this->recId = recId;
-	Status stat;
+	UD_Status stat;
 	if(!ud->isOk()){	// should not happen
 		return NULL;
 	}
 	stat = ud->getRndRec(buff, offset.getOffset());
-	if(stat == FOUNDEOF){
+	if(stat == UD_EOF){
 		return NULL;
 	}
-	assert(stat == OK);
+	assert(stat == UD_OK);
 	intCopy((Type*) recId, tuple[0]);
 	for(int i = 1; i < numFlds; i++){
 		unmarshalPtrs[i](&buff[offsets[i]], tuple[i]);
