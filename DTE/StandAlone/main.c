@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/09/05 22:20:39  donjerko
+  Made changes for port to NT.
+
   Revision 1.15  1997/08/23 19:41:40  okan
   Changed #include <string.h> 's to #include <string>
 
@@ -48,7 +51,7 @@
 #include "types.h"
 #include "exception.h"
 #include "Engine.h"
-#include "RTreeCommon.h"
+#include "InitShut.h"
 #include <string>
 #include "sysdep.h"
 
@@ -77,7 +80,7 @@ int main(int argc, char** argv){
 	iTimer.reset();
 	cout << "Query in main is: " << query << endl; 
 
-     initialize_system(VolumeName, RTreeFile, VolumeSize);
+     initialize_system();
 
 	Engine engine(query);
 	TRY(engine.optimize(), 0);
@@ -106,7 +109,7 @@ int main(int argc, char** argv){
 	}
 
      // shutdown
-     shutdown_system(VolumeName, RTreeFile, VolumeSize);
+     shutdown_system();
 
 	LOG(logFile << "Query completed at ");
 	LOG(iTimer.display(logFile));
