@@ -1,0 +1,11 @@
+# Data source configuration
+
+set "sourceConfig(WWW)" {www_fetch}
+set "sourceConfig(NETWORK)" {network_client blondie 1400}
+set "sourceConfig(UNIXFILE)" {}
+set "sourceConfig(COMMAND)" {}
+set "sourceConfig(COMPUSTAT)" {/dev/nrst11 0 32768}
+set "sourceConfig(CRSP)" {/dev/nrst11 20 32768}
+set "sourceConfig(ISSM)" {/dev/nrst11 4 32768}
+set "sourceConfig(SEQ)" {seq_client quarg 1115}
+set "sourceConfig(SQL)" {sql_client paradise 130}

@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.5  1995/09/22 22:36:54  jussi
+#	Added tape block size parameter.
+#
 #	Revision 1.4  1995/09/22 17:33:46  jussi
 #	Added copyright message.
 #
@@ -30,153 +33,121 @@
 
 ############################################################
 
-set issm_tapeDrive /dev/nrst4
-set issm_tapeFile  3
-set issm_tapeBsize 32768
-set issm_tradePath /tmp
-set issm_quotePath /tmp
-
-if {[info exists env(ISSM_TAPEDRIVE)]} {
-    set issm_tapeDrive $env(ISSM_TAPEDRIVE)
-}
-if {[info exists env(ISSM_TAPEFILE)]} {
-    set issm_tapeFile $env(ISSM_TAPEFILE)
-}
-if {[info exists env(ISSM_TAPEBSIZE)]} {
-    set issm_tapeBsize $env(ISSM_TAPEBSIZE)
-}
-if {[info exists env(ISSM_DISKPATH)]} {
-    set issm_tradePath $env(ISSM_DISKPATH)
-    set issm_quotePath $env(ISSM_DISKPATH)
-}
-
-set issm_firmsel ""
 set issm_firmlst ""
 set issm_numfirms 0
-
-set tcl_interactive 1
+set issm_selection ""
 
 ############################################################
 
-proc issm_onDisk {symbol} {
-    global issm_tradePath issm_quotePath
-    set tradeFile [format "%s/%s-t.dat" $issm_tradePath $symbol]
-    if {![file exists $tradeFile]} {
-	return 0
+proc issm_unique_name {symbol} {
+    return [string trim $symbol]
+}
+
+############################################################
+
+proc issm_extract_data {tapedrive filenum blocksize key file} {
+    global sourceTypes issm_status
+
+    set indexFile [lindex $sourceTypes(ISSM) 2]
+    set err [catch { set firms [open $indexFile] }]
+    if {$err > 0} {
+	dialog .noFile "No Index File" \
+		"Cannot find index file $indexFile." \
+		"" 0 OK
+	return -1
     }
-    set quoteFile [format "%s/%s-q.dat" $issm_quotePath $symbol]
-    if {![file exists $quoteFile]} {
-	return 0
+
+    set offset -1
+
+    while {[gets $firms line] >= 0} {
+	set line [split $line ,]
+	set symbol [lindex $line 0]
+	if {$symbol == $key} {
+	    set offset [lindex $line 1]
+	    break
+	}
     }
-    return 1
+
+    close $firms
+
+    if {$offset >= 0} {
+	set issm_status "Extracting ISSM data..."
+	issm_setupStatus .issmstatus
+	issm_extractStocks $tapedrive $filenum $blocksize $key $offset $file
+	catch {destroy .issmstatus}
+    } else {
+	dialog .notFound "Symbol Not Found" \
+		"Cound not find ISSM symbol $key." \
+		"" 0 OK
+    }
 }
 
 ############################################################
 
-proc issm_setupMain {main} {
-    toplevel $main
-    wm minsize $main 500 400
-    wm maxsize $main 500 1000
-    wm title $main "ISSM"
-    wm geometry $main =500x650+50+50
-    selection clear $main
+proc issm_setupButtons {buttons} {
+    global issm_selection
 
-    label $main.title -relief raised -text "ISSM Stock Database" \
-	    -font -adobe-helvetica-medium-r-normal--*-140-*
-    pack $main.title -side top -fill x -ipady 5m
-}
-
-############################################################
-
-proc issm_setSelectButton {} {
-    set selbut .issm.buttons.row1.select
-    set unselbut .issm.buttons.row1.unselect
-    $selbut configure -state disabled
-    $unselbut configure -state normal
-}
-
-############################################################
-
-proc issm_setUnselectButton {} {
-    set selbut .issm.buttons.row1.select
-    set unselbut .issm.buttons.row1.unselect
-    $selbut configure -state normal
-    $unselbut configure -state disabled
-}
-
-############################################################
-
-proc issm_setupButtons {buttons fsel flist} {
     frame $buttons
     frame $buttons.row1
-    frame $buttons.row2
-    pack $buttons.row1 $buttons.row2 -side top -pady 3m
+    pack $buttons.row1 -side top -pady 3m
 
-    button $buttons.row1.select -text Select -width 10 \
-	    -command "issm_addSelection $fsel.list" -state normal
-    button $buttons.row1.unselect -text Unselect -width 10 \
-	    -command "issm_removeSelection $fsel.list" -state normal
-    pack $buttons.row1.select $buttons.row1.unselect -side left -padx 3m
-    
-    button $buttons.row2.ok -text OK -width 10 \
-	    -command "issm_extractFiles"
-    button $buttons.row2.close -text Close -width 10 \
-	    -command "destroy .issm"
-    button $buttons.row2.help -text Help -width 10 \
-	    -command "issm_helpWindow"
-    pack $buttons.row2.ok $buttons.row2.close $buttons.row2.help \
-	    -side left -padx 3m
-
-#    bind $fsel.list <Any-Button-1> +issm_setSelectButton
-#    bind $flist.list <Any-Button-1> +issm_setUnselectButton
+    button $buttons.row1.select -text Select -width 10 -command {
+	set issm_selection [get_issm_selection]
+    }
+    button $buttons.row1.cancel -text Cancel -width 10 -command {
+	set issm_selection ""
+    }
+    pack $buttons.row1.select $buttons.row1.cancel -side left -padx 3m
 }
 
 ############################################################
 
-proc issm_setupFirmSel {fsel} {
-    frame $fsel -relief groove -borderwidth 2 -width 3c
-    listbox $fsel.list -relief raised -borderwidth 2 \
-	    -yscrollcommand "$fsel.scroll set" -font 9x15 \
-	    -selectmode extended
-    scrollbar $fsel.scroll -command "$fsel.list yview"
-    label $fsel.msg -text "Stocks selected:"
-    pack $fsel.msg -side top -pady 3m
-    pack $fsel.list -expand 1 -side left -fill y
-    pack $fsel.scroll -side right -fill y
-
-    bind $fsel.list <Double-Button-1> \
-	    "issm_removeSelection $fsel.list"
+proc get_issm_selection {} {
+    set err [catch { set owner [selection own] }]
+    if {$err > 0} { return "" }
+    if {$owner != ".issm.firmlst.list"} { return "" }
+    set err [catch { set select [selection get] }]
+    if {$err > 0} { return "" }
+    set sel [list [string trim [string range $select 0 12]] \
+	          [string trim [string range $select 13 42]]]
+    return $sel
 }
 
 ############################################################
 
-proc issm_setupFirmList {flist fsel} {
+proc issm_setupFirmList {flist} {
+    global issm_selection
+
     frame $flist -relief groove -borderwidth 2
     listbox $flist.list -relief raised -borderwidth 2 \
 	    -yscrollcommand "$flist.scroll set" -font 9x15 \
-	    -selectmode extended
+	    -selectmode single
     scrollbar $flist.scroll -command "$flist.list yview"
     label $flist.msg -text "Database has 0 stocks."
     pack $flist.msg -side top -pady 3m
     pack $flist.list -expand 1 -side left -fill both
     pack $flist.scroll -side right -fill y
     
-    bind $flist.list <Double-Button-1> \
-	"issm_addSelection $fsel.list"
+    bind $flist.list <Double-Button-1> {
+	set issm_selection [get_issm_selection]
+    }
 }
 
 ############################################################
 
 proc issm_scanFirmList {listb msg} {
+    global sourceTypes
     global issm_firmlst issm_numfirms issm_status
 
     $listb delete 0 end
     set issm_firmlst ""
     set issm_numfirms 0
-    set indexFile issm.idx
+    set indexFile [lindex $sourceTypes(ISSM) 2]
     set err [catch { set firms [open $indexFile] }]
     if {$err > 0} {
-	issm_putMessage "Cannot find index file $indexFile."
+	dialog .noFile "No Index File" \
+		"Cannot find index file $indexFile." \
+		"" 0 OK
 	return -1
     }
 
@@ -184,11 +155,7 @@ proc issm_scanFirmList {listb msg} {
     issm_setupStatus .issmstatus
 
     while {[gets $firms line] >= 0} {
-	set line [lrange [split $line ,] 0 4]
-	set symbol  [lrange $line 0 0]
-	set ondisk ""
-	if {[issm_onDisk $symbol]} { set ondisk "On Disk" }
-	lappend issm_firmlst [concat $line $ondisk]
+	lappend issm_firmlst [split $line ,]
 	incr issm_numfirms
 	if {$issm_numfirms % 500 == 0} {
 	    $msg configure -text "Database has $issm_numfirms stocks."
@@ -206,14 +173,6 @@ proc issm_scanFirmList {listb msg} {
 
 ############################################################
 
-proc issm_clearSelection {listb} {
-    global issm_firmsel
-    $listb delete 0 end
-    set issm_firmsel ""
-}
-
-############################################################
-
 proc issm_updateFirmListBox {listb} {
     global issm_firmlst issm_status
 
@@ -223,214 +182,14 @@ proc issm_updateFirmListBox {listb} {
     $listb delete 0 end
     set n 0
     foreach sel $issm_firmlst {
-	set symbol [lrange $sel 0 0]
-	set numrecs [lrange $sel 2 2]
-	set ondisk [lrange $sel 5 6]
-	set listitem [format "%-12.12s %6d %s" $symbol $numrecs $ondisk]
+	set symbol [lindex $sel 0]
+	set numrecs [lindex $sel 2]
+	set name [string trim [lindex $sel 5] "\""]
+	set listitem [format "%-12.12s %-30.30s  %6d" $symbol $name $numrecs]
 	$listb insert end $listitem
-#	if {$n % 500 == 0} { update }
+	if {$n % 500 == 0} { update }
 	incr n
     }
-    catch {destroy .issmstatus}
-}
-
-############################################################
-
-proc issm_updateFirmSelBox {listb} {
-    global issm_firmsel
-    $listb delete 0 end
-    foreach sel $issm_firmsel {
-	set symbol [lrange $sel 0 0]
-	set ondisk [lrange $sel 1 2]
-	set listitem [format "%-11.11s %s" $symbol $ondisk]
-	$listb insert end $listitem
-    }
-}
-
-############################################################
-
-proc issm_lstIndex {list symbol} {
-    set n 0
-    foreach item $list {
-	if {[lrange $item 0 0] == $symbol} {
-	    return $n
-	}
-	incr n
-    }
-    return -1
-}
-
-############################################################
-
-proc issm_addSelection {listb} {
-    global issm_firmsel
-    set err [catch { set owner [selection own] }]
-    if {$err > 0} { return }
-    if {$owner != ".issm.firmlst.list"} { return }
-    set err [catch { set flist [selection get] }]
-    if {$err > 0} { return }
-    set flist [split $flist \n]
-    foreach sel $flist {
-	set symbol [lrange $sel 0 0]
-	if {[issm_lstIndex $issm_firmsel $symbol] < 0} {
-	    set ondisk [lrange $sel 2 3]
-	    lappend issm_firmsel [concat $symbol $ondisk]
-	    set issm_firmsel [lsort $issm_firmsel]
-	}
-    }
-    issm_updateFirmSelBox $listb
-}
-
-############################################################
-
-proc issm_removeSelection {listb} {
-    global issm_firmsel
-    set err [catch { set owner [selection own] }]
-    if {$err > 0} { return }
-    if {$owner != $listb} { return }
-    set err [catch { set flist [selection get] }]
-    if {$err > 0} { return }
-    set flist [split $flist \n]
-    foreach sel $flist {
-	set symbol [lrange $sel 0 0]
-	set loc [issm_lstIndex $issm_firmsel $symbol]
-	set issm_firmsel [lreplace $issm_firmsel $loc $loc]
-    }
-    issm_updateFirmSelBox $listb
-}
-
-############################################################
-
-proc issm_putMessage {msg} {
-    toplevel .note
-    wm title .note "Note"
-    wm geometry .note +100+400
-    message .note.msg -justify center -width 8c -text $msg
-    button .note.ok -text OK -width 10 -command "destroy .note"
-    pack .note.msg .note.ok -side top -padx 5m -pady 3m
-
-    tkwait visibility .note
-    grab set .note
-    tkwait window .note
-}
-
-############################################################
-
-proc issm_okOrCancel {msg} {
-    global issm_button
-    toplevel .note
-    wm title .note "Confirm"
-    wm geometry .note +100+400
-    message .note.msg -justify center -width 8c -text $msg
-    frame .note.buttons
-    button .note.buttons.ok -text OK -width 10 \
-	    -command "set issm_button 1"
-    button .note.buttons.cancel -text Cancel -width 10 \
-	    -command "set issm_button 0"
-    pack .note.msg .note.buttons -side top -padx 5m -pady 4m
-    pack .note.buttons.ok .note.buttons.cancel -side left -padx 3m
-
-    tkwait visibility .note
-    grab set .note
-    tkwait variable issm_button
-    catch {destroy .note}
-    return $issm_button
-}
-
-############################################################
-
-proc issm_helpWindow {} {
-    # see if .help window already exists; if so, just return
-    set err [catch {set exists [wm state .help]}]
-    if {!$err} { wm deiconify .help; return }
-
-    toplevel .help
-    wm title .help "Help"
-    wm geometry .help +100+300
-    message .help.msg -justify center -width 10c \
-	    -text "The list on the left shows companies whose stock data\
-	           exists in the database. The list on the right shows\
-                   the currently selected stocks.\n\n\
-                   Select a stock by double-clicking on it in the left box,\
-                   or select several stocks by highlighting a range\
-                   and then press Select.\n\n\
-                   Remove a selection by double-clicking on a stock\
-                   in the right box, or select several stocks by\
-		   highlighting a range and then press Unselect."
-    button .help.ok -text OK -width 10 -command "destroy .help"
-    pack .help.msg .help.ok -side top -padx 5m -pady 3m
-
-    tkwait visibility .help
-}
-
-############################################################
-
-proc issm_tapeToDisk {symbol} {
-    global issm_firmlst issm_firmsel
-    set lstIdx [issm_lstIndex $issm_firmlst $symbol]
-    set entry [join [lrange $issm_firmlst $lstIdx $lstIdx]]
-    set entry [concat $entry "On Disk"]
-    set issm_firmlst [lreplace $issm_firmlst $lstIdx $lstIdx $entry]
-
-    set lstIdx [issm_lstIndex $issm_firmsel $symbol]
-    set entry [join [lrange $issm_firmsel $lstIdx $lstIdx]]
-    set entry [concat $entry "On Disk"]
-    set issm_firmsel [lreplace $issm_firmsel $lstIdx $lstIdx $entry]
-    issm_updateFirmSelBox .issm.firmsel.list
-}
-
-############################################################
-
-proc issm_extractFiles {} {
-    global issm_firmlst issm_firmsel issm_status
-
-    set tapelst ""
-    set tapenum 0
-    set symnum 0
-    set maxprice 0
-    set maxvolume 0
-
-    foreach sel $issm_firmsel {
-	set symbol($symnum) [lrange $sel 0 0]
-	set prefix "-t.dat"
-	set tdata($symnum) $symbol($symnum)-t.dat
-	set wname($symnum) "$symbol($symnum) Trading"
-
-	set lstIdx [issm_lstIndex $issm_firmlst $symbol($symnum)]
-	set entry [lrange $issm_firmlst $lstIdx $lstIdx]
-	set price [lrange [join $entry] 3 3]
-	set volume [lrange [join $entry] 4 4]
-	if {$price > $maxprice} { set maxprice $price }
-	if {$volume > $maxvolume} { set maxvolume $volume }
-	    
-	set ondisk [lrange $sel 1 2]
-	if {$ondisk == ""} {
-	    set offset [lrange [join $entry] 1 1]
-	    lappend tapelst $symbol($symnum) $offset
-	    incr tapenum
-	}
-
-	incr symnum
-    }
-
-    if {$tapenum} {
-	if {![issm_okOrCancel "Data needs to be extracted from tape.\
-		Press OK to continue."]} {
-	    return
-	}
-	set issm_status "Extracting data from tape..."
-	issm_setupStatus .issmstatus
-	set err [catch { eval issm_extractStocks $tapelst }]
-	if {$err > 0} {
-	    issm_putMessage "See error message in text window."
-	    catch {destroy .issmstatus}
-	    return
-	}
-	selection clear .issm
-	issm_updateFirmSelBox .issm.firmsel.list
-	issm_updateFirmListBox .issm.firmlst.list
-    }
-
     catch {destroy .issmstatus}
 }
 
@@ -453,36 +212,43 @@ proc issm_setupStatus {stat} {
 ############################################################
 
 proc issmMain {} {
-    global issm_firmlst issm_numfirms issm_firmsel
+    global issm_firmlst issm_numfirms issm_selection
 
     # see if .issm window already exists; if so, just return
     set err [catch {set exists [wm state .issm]}]
     if {!$err} { wm deiconify .issm; return }
 
-    issm_setupMain .issm
+    set issm_selection ""
+
+    toplevel .issm
+    wm minsize .issm 505 400
+    wm maxsize .issm 505 1000
+    wm title .issm "Select Stock Symbol from ISSM Database"
+    wm geometry .issm =505x650+50+50
+    selection clear .issm
 
     frame .issm.firms -relief groove -borderwidth 2
-    issm_setupFirmSel .issm.firmsel
-    issm_setupFirmList .issm.firmlst .issm.firmsel
+    issm_setupFirmList .issm.firmlst
     pack .issm.firmlst -in .issm.firms -side left -expand 1 -fill both
-    pack .issm.firmsel -in .issm.firms -side right -fill y
     pack .issm.firms -side top -expand 1 -fill both -pady 1m
 
-    issm_setupButtons .issm.buttons .issm.firmsel .issm.firmlst
+    issm_setupButtons .issm.buttons
     pack .issm.buttons -side top -pady 3m
     update
 
     # scan firm index only if the firm list doesn't exist yet
     if {!$issm_numfirms} {
 	if {[issm_scanFirmList .issm.firmlst.list .issm.firmlst.msg] < 0} {
-	    return
+	    return "Error"
 	}
     } else {
 	.issm.firmlst.msg configure -text "Database has $issm_numfirms stocks."
 	update
 	issm_updateFirmListBox .issm.firmlst.list
     }
-    set issm_firmsel ""
 
-    tkwait visibility .issm
+    tkwait variable issm_selection
+    catch {destroy .issm}
+
+    return $issm_selection
 }

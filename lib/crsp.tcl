@@ -1,0 +1,215 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1995
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#	$Id$
+
+#	$Log$
+
+############################################################
+
+set crsp_seclst ""
+set crsp_numsec 0
+set crsp_selection ""
+
+############################################################
+
+proc crsp_unique_name {symbol} {
+    return [string trim $symbol]
+}
+
+############################################################
+
+proc crsp_extract_data {tapedrive filenum blocksize key file} {
+    global sourceTypes crsp_status
+
+    set indexFile [lindex $sourceTypes(CRSP) 2]
+    set cstat_status "Extracting CRSP data..."
+    crsp_setupStatus .cstatstatus
+    crsp_extract $tapedrive $filenum $blocksize $indexFile $key $file
+    catch {destroy .cstatstatus}
+}
+
+############################################################
+
+proc crsp_setupButtons {buttons} {
+    global crsp_selection
+
+    frame $buttons
+    frame $buttons.row1
+    pack $buttons.row1 -side top -pady 3m
+
+    button $buttons.row1.select -text Select -width 10 -command {
+	set crsp_selection [get_crsp_selection]
+    }
+    button $buttons.row1.cancel -text Cancel -width 10 -command {
+	set crsp_selection ""
+    }
+    pack $buttons.row1.select $buttons.row1.cancel -side left -padx 3m
+}
+
+############################################################
+
+proc get_crsp_selection {} {
+    set err [catch { set owner [selection own] }]
+    if {$err > 0} { return "" }
+    if {$owner != ".crsp.seclst.list"} { return "" }
+    set err [catch { set select [selection get] }]
+    if {$err > 0} { return "" }
+    set sel [list [string trim [string range $select 34 39]] \
+	          [string trim [string range $select 0 32]]]
+    return $sel
+}
+
+############################################################
+
+proc crsp_setupFirmList {flist} {
+    global crsp_selection
+
+    frame $flist -relief groove -borderwidth 2
+    listbox $flist.list -relief raised -borderwidth 2 \
+	    -yscrollcommand "$flist.scroll set" -font 9x15 \
+	    -selectmode single
+    scrollbar $flist.scroll -command "$flist.list yview"
+    label $flist.msg -text "Database has 0 securities."
+    pack $flist.msg -side top -pady 3m
+    pack $flist.list -expand 1 -side left -fill both
+    pack $flist.scroll -side right -fill y
+    
+    bind $flist.list <Double-Button-1> {
+	set crsp_selection [get_crsp_selection]
+    }
+}
+
+############################################################
+
+proc crsp_scanFirmList {listb msg} {
+    global sourceTypes
+    global crsp_seclst crsp_numsec crsp_status
+
+    $listb delete 0 end
+    set crsp_seclst ""
+    set crsp_numsec 0
+    set indexFile [lindex $sourceTypes(CRSP) 2]
+    set err [catch { set firms [open $indexFile] }]
+    if {$err > 0} {
+	dialog .noFile "No Index File" \
+		"Cannot find index file $indexFile." \
+		"" 0 OK
+	return -1
+    }
+
+    set crsp_status "Reading tape index..."
+    crsp_setupStatus .crspstatus
+
+    while {[gets $firms line] >= 0} {
+	lappend crsp_seclst [split $line ,]
+	incr crsp_numsec
+	if {$crsp_numsec % 500 == 0} {
+	    $msg configure -text "Database has $crsp_numsec securities."
+	    update
+	}
+    }
+    close $firms
+
+    $msg configure -text "Database has $crsp_numsec securities."
+    update
+    crsp_updateFirmListBox $listb
+
+    return 1
+}
+
+############################################################
+
+proc crsp_updateFirmListBox {listb} {
+    global crsp_seclst crsp_status
+
+    set crsp_status "Building securities list..."
+    update
+
+    $listb delete 0 end
+    set n 0
+    foreach sel $crsp_seclst {
+	set name [string trim [lindex $sel 6] "\""]
+	set cusip [lindex $sel 2]
+	set begindate [lindex $sel 7]
+	set enddate [lindex $sel 8]
+	set listitem [format "%-32.32s  %-6d  %-4.4s  %-4.4s" \
+		$name $cusip $begindate $enddate]
+	$listb insert end $listitem
+	if {$n % 500 == 0} { update }
+	incr n
+    }
+    catch {destroy .crspstatus}
+}
+
+############################################################
+
+proc crsp_setupStatus {stat} {
+    global crsp_status
+    toplevel $stat
+    wm title $stat "Status"
+    wm geometry $stat +150+400
+    label $stat.msg -textvariable crsp_status
+    pack $stat.msg -side top -padx 8m -pady 4m
+    grab set $stat
+    update
+    # for some reason raising the window takes a long time,
+    # on the order of one half or even one second
+    # raise $stat
+}
+
+############################################################
+
+proc crspMain {} {
+    global crsp_seclst crsp_numsec crsp_selection
+
+    # see if .crsp window already exists; if so, just return
+    set err [catch {set exists [wm state .crsp]}]
+    if {!$err} { wm deiconify .crsp; return }
+
+    set crsp_selection ""
+
+    toplevel .crsp
+    wm minsize .crsp 515 400
+    wm maxsize .crsp 515 1000
+    wm title .crsp "Select Security from CRSP Database"
+    wm geometry .crsp =515x650+50+50
+    selection clear .crsp
+
+    frame .crsp.firms -relief groove -borderwidth 2
+    crsp_setupFirmList .crsp.seclst
+    pack .crsp.seclst -in .crsp.firms -side left -expand 1 -fill both
+    pack .crsp.firms -side top -expand 1 -fill both -pady 1m
+
+    crsp_setupButtons .crsp.buttons
+    pack .crsp.buttons -side top -pady 3m
+    update
+
+    # scan firm index only if the firm list doesn't exist yet
+    if {!$crsp_numsec} {
+	if {[crsp_scanFirmList .crsp.seclst.list .crsp.seclst.msg] < 0} {
+	    return "Error"
+	}
+    } else {
+	.crsp.seclst.msg configure \
+		-text "Database has $crsp_numsec securities."
+	update
+	crsp_updateFirmListBox .crsp.seclst.list
+    }
+
+    tkwait variable crsp_selection
+    catch {destroy .crsp}
+
+    return $crsp_selection
+}
