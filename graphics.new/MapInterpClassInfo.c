@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/01/13 23:09:33  jussi
+  Added support for Z attribute and shape attribute 2.
+
   Revision 1.5  1995/12/28 19:37:35  jussi
   Small fix to remove compiler warning.
 
@@ -39,41 +42,39 @@
 #include "MapInterpClassInfo.h"
 #include "Util.h"
 
-int MapInterpClassInfo::_numMapClasses = 0;
-MapInterpClassInfo *
-	MapInterpClassInfo::_mapClasses[MAX_INTERPRETED_MAPPING_CLASS];
+//#define DEBUG
+
+static char *rootClassName = "interpreted";
+static char buf[14][256];
+static char *args[14];
 
 MapInterpClassInfo::MapInterpClassInfo()
 {
+#ifdef DEBUG
+  printf("Creating root/prototype mapping class\n");
+#endif
+
   _isInterp = true;
   _cmd = NULL;
   _fileAlias = NULL;
-  _className = "Interpreted";
+  _className = rootClassName;
   _name = NULL;
   _map = NULL;
 }
 
-MapInterpClassInfo::MapInterpClassInfo(char *className, char *fileAlias,
-				       VisualFlag *dimensionInfo,
-				       int numDimensions, 
-				       MappingInterpCmd *cmd, int cmdFlag,
-				       int attrFlag)
+MapInterpClassInfo::MapInterpClassInfo(char *className)
 {
-  /*
-     printf("Creating new mapping class %s file %s\n",className, fileAlias);
-  */
+#ifdef DEBUG
+  printf("Creating new mapping class %s\n", className);
+#endif
+
   _isInterp = true;
-  _className = className;
-  _dimensionInfo = dimensionInfo;
-  _numDimensions = numDimensions;
-  _cmd = cmd;
-  _cmdFlag = cmdFlag;
-  _attrFlag = attrFlag;
-  _fileAlias = fileAlias;
+  _cmd = NULL;
+  _fileAlias = NULL;
+  _className = CopyString(className);
   _name = NULL;
   _map = NULL;
 }
-
 
 MapInterpClassInfo::MapInterpClassInfo(char *className,
 				       char *fileAlias, char *name, 
@@ -82,11 +83,12 @@ MapInterpClassInfo::MapInterpClassInfo(char *className,
 				       TData *tdata, MappingInterpCmd *cmd,
 				       int cmdFlag, int attrFlag)
 {
-  /*
-     printf("MapInterpClassINfo alias %s, name %s\n", fileAlias, name);
-  */
+#ifdef DEBUG
+  printf("Creating new mapping instance, alias %s, name %s\n",
+	 fileAlias, name);
+#endif
+
   _isInterp = true;
-  
   _className = className;
   _fileAlias = fileAlias;
   _name = name;
@@ -101,9 +103,8 @@ MapInterpClassInfo::MapInterpClassInfo(char *className,
 
 MapInterpClassInfo::~MapInterpClassInfo()
 {
-  /* we'll waste memory for now by not deleting stuff */
-  if (_map != NULL)
-    delete _map;
+  delete _map;
+  delete _dimensionInfo;
 }
 
 /* Return true if string is not empty. A string is not empty
@@ -119,7 +120,6 @@ static Boolean NotEmpty(char *str)
   return false;
 }
 
-/* Extract command from parameters */
 void MapInterpClassInfo::ExtractCommand(int argc, char **argv, 
 					MappingInterpCmd *cmd,
 					int &cmdFlag, int &attrFlag, 
@@ -218,128 +218,112 @@ void MapInterpClassInfo::ExtractCommand(int argc, char **argv,
   }
 }
 
-static char buf[14][256];
-static char *args[14];
-
 void MapInterpClassInfo::ParamNames(int &argc, char **&argv)
 {
+  if (!_cmd) {
+    /* no params needed for creating a new mapping class*/
+    argc = 0;
+    argv = args;
+    return;
+  }
+
+  /* params for an existing interpreted mapping */
+
   argc = 14;
   argv = args;
 
-  if (_cmd == NULL) {
-    /* params for creating a new mapping */
+  if (_fileAlias == NULL) {
     sprintf(buf[0], "File_Alias {%s}", ControlPanel::Instance()->FileAlias());
-    sprintf(buf[1], "Map_Name mapname");
-    args[0] = buf[0];
-    args[1] = buf[1];
-    args[2] = "Sorted X";
-    args[3] = "X";
-    args[4] = "Y";
-    args[5] = "Z";
-    args[6] = "Color";
-    args[7] = "Size";
-    args[8] = "Pattern";
-    args[9] = "Orientation";
-    args[10] = "Shape";
-    args[11] = "ShapeAttr0";
-    args[12] = "ShapeAttr1";
-    args[13] = "ShapeAttr2";
-
   } else {
+    sprintf(buf[0], "File_Alias {%s}", _fileAlias);
+  }
+    
+  if (_name == NULL) {
+    sprintf(buf[1], "Map_Name {%s}", ControlPanel::Instance()->GDataName());
+  } else {
+    sprintf(buf[1], "GData_Name {%s}", _name);
+  }
 
-    /* params for an existing interpreted mapping */
-    if (_fileAlias == NULL) {
-      sprintf(buf[0], "File_Alias {%s}", 
-	      ControlPanel::Instance()->FileAlias());
-    } else {
-      sprintf(buf[0], "File_Alias {%s}", _fileAlias);
-    }
-    
-    if (_name == NULL) {
-      sprintf(buf[1], "Map_Name {%s}",
-	      ControlPanel::Instance()->GDataName());
-    } else {
-      sprintf(buf[1], "GData_Name {%s}", _name);
-    }
+  args[0] = buf[0];
+  args[1] = buf[1];
 
-    args[0] = buf[0];
-    args[1] = buf[1];
-
-    if (_numDimensions == 1) {
-      args[2] = "Sorted X";
-    } else
-      args[2] = "Sorted";
+  if (_numDimensions == 1) {
+    args[2] = "Sorted X";
+  } else
+    args[2] = "Sorted";
+  
+  if (_cmd->xCmd != NULL) {
+    sprintf(buf[3], "X {%s}", _cmd->xCmd);
+    args[3] = buf[3];
+  } else
+    args[3] = "X";
     
-    if (_cmd->xCmd != NULL) {
-      sprintf(buf[3], "X {%s}", _cmd->xCmd);
-      args[3] = buf[3];
-    } else
-      args[3] = "X";
+  if (_cmd->yCmd != NULL) {
+    sprintf(buf[4], "Y {%s}", _cmd->yCmd);
+    args[4] = buf[4];
+  } else
+    args[4] = "Y";
     
-    if (_cmd->yCmd != NULL) {
-      sprintf(buf[4], "Y {%s}", _cmd->yCmd);
-      args[4] = buf[4];
-    } else
-      args[4] = "Y";
+  if (_cmd->zCmd != NULL) {
+    sprintf(buf[5], "Z {%s}", _cmd->zCmd);
+    args[5] = buf[5];
+  } else
+    args[5] = "Z";
     
-    if (_cmd->zCmd != NULL) {
-      sprintf(buf[5], "Z {%s}", _cmd->zCmd);
-      args[5] = buf[5];
-    } else
-      args[5] = "Z";
-    
-    if ( _cmd->colorCmd != NULL) {
-      sprintf(buf[6], "Color {%s}", _cmd->colorCmd);
-      args[6] = buf[6];
-    } else
+  if (_cmd->colorCmd != NULL) {
+    sprintf(buf[6], "Color {%s}", _cmd->colorCmd);
+    args[6] = buf[6];
+  } else
       args[6] = "Color";
     
-    if ( _cmd->sizeCmd != NULL) {
-      sprintf(buf[7], "Size {%s}", _cmd->sizeCmd);
-      args[7] = buf[7];
-    } else
-      args[7] = "Size";
+  if ( _cmd->sizeCmd != NULL) {
+    sprintf(buf[7], "Size {%s}", _cmd->sizeCmd);
+    args[7] = buf[7];
+  } else
+    args[7] = "Size";
     
-    if ( _cmd->patternCmd != NULL) {
-      sprintf(buf[8], "Pattern {%s}", _cmd->patternCmd);
-      args[8] = buf[8];
-    } else
-      args[8] = "Pattern";
+  if ( _cmd->patternCmd != NULL) {
+    sprintf(buf[8], "Pattern {%s}", _cmd->patternCmd);
+    args[8] = buf[8];
+  } else
+    args[8] = "Pattern";
+  
+  if ( _cmd->orientationCmd != NULL) {
+    sprintf(buf[9], "Orientation {%s}", _cmd->orientationCmd);
+    args[9] = buf[9];
+  } else
+    args[9] = "Orientation";
     
-    if ( _cmd->orientationCmd != NULL) {
-      sprintf(buf[9], "Orientation {%s}", _cmd->orientationCmd);
-      args[9] = buf[9];
-    } else
-      args[9] = "Orientation";
+  if ( _cmd->shapeCmd!= NULL) {
+    sprintf(buf[10], "Shape {%s}", _cmd->shapeCmd);
+    args[10] = buf[10];
+  } else
+    args[10] = "Shape";
     
-    if ( _cmd->shapeCmd!= NULL) {
-      sprintf(buf[10], "Shape {%s}", _cmd->shapeCmd);
-      args[10] = buf[10];
-    } else
-      args[10] = "Shape";
+  if ( _cmd->shapeAttrCmd[0] != NULL) {
+    sprintf(buf[11], "ShapeAttr0 {%s}", _cmd->shapeAttrCmd[0]);
+    args[11] = buf[11];
+  } else
+    args[11] = "ShapeAttr0";
     
-    if ( _cmd->shapeAttrCmd[0] != NULL) {
-      sprintf(buf[11], "ShapeAttr0 {%s}", _cmd->shapeAttrCmd[0]);
-      args[11] = buf[11];
-    } else
-      args[11] = "ShapeAttr0";
+  if (_cmd->shapeAttrCmd[1] != NULL) {
+    sprintf(buf[12], "ShapeAttr1 {%s}", _cmd->shapeAttrCmd[1]);
+    args[12] = buf[12];
+  } else
+    args[12] = "ShapeAttr1";
     
-    if (_cmd->shapeAttrCmd[1] != NULL) {
-      sprintf(buf[12], "ShapeAttr1 {%s}", _cmd->shapeAttrCmd[1]);
-      args[12] = buf[12];
-    } else
-      args[12] = "ShapeAttr1";
-    
-    if (_cmd->shapeAttrCmd[2] != NULL) {
-      sprintf(buf[13], "ShapeAttr2 {%s}", _cmd->shapeAttrCmd[2]);
-      args[13] = buf[13];
-    } else
-      args[13] = "ShapeAttr2";
-  }
+  if (_cmd->shapeAttrCmd[2] != NULL) {
+    sprintf(buf[13], "ShapeAttr2 {%s}", _cmd->shapeAttrCmd[2]);
+    args[13] = buf[13];
+  } else
+    args[13] = "ShapeAttr2";
 }
 
 void MapInterpClassInfo::ChangeParams(int argc, char**argv)
 {
+  if (!_cmd)
+    return;
+
   char *tdataAlias;
   char *name;
   TData *tdata;
@@ -351,9 +335,33 @@ void MapInterpClassInfo::ChangeParams(int argc, char**argv)
 
 ClassInfo *MapInterpClassInfo::CreateWithParams(int argc, char **argv)
 {
-  /*
-     printf("MapInterpclassInfo: CreateWithParams\n");
-  */
+  // the new form uses just the class name parameter when a new class
+  // is to be created, or a full list of parameters when an instance
+  // is to be created
+
+  if (argc == 1) {
+#ifdef DEBUG
+    printf("Creating new interpreted mapping class\n");
+#endif
+    return new MapInterpClassInfo(argv[0]);
+  }
+
+  // the old form has all the parameters even when creating a new class,
+  // so we need to do the string comparison to figure out if a new
+  // class or instance is requested; support for the old form may be
+  // removed at some later date
+
+  if (argc >= 1 && !strcmp(_className, rootClassName)) {
+#ifdef DEBUG
+    printf("Creating new (old-style) interpreted mapping class\n");
+#endif
+    return new MapInterpClassInfo(argv[1]);
+  }
+
+#ifdef DEBUG
+  printf("Creating new instance of interpreted mapping class\n");
+#endif
+    
   MappingInterpCmd *cmd = new MappingInterpCmd;
   TData *tdata;
   int cmdFlag, attrFlag;
@@ -364,27 +372,6 @@ ClassInfo *MapInterpClassInfo::CreateWithParams(int argc, char **argv)
   ExtractCommand(argc, argv, cmd, cmdFlag, attrFlag,
 		 dimensionInfo, numDimensions, tdataAlias, tdata, name);
   
-  if (_cmd == NULL) {
-    /*
-       printf("MapInterpclassInfo: CreateWithParams: create new class\n");
-    */
-    /* create a new interpreted mapping class */
-    if (_numMapClasses >= MAX_INTERPRETED_MAPPING_CLASS) {
-      fprintf(stderr, "MapInterpClassInfo: too many mapping classes\n");
-      Exit::DoExit(2);
-    }
-    MapInterpClassInfo *cInfo =
-      new MapInterpClassInfo(name, tdataAlias, dimensionInfo,
-			     numDimensions, cmd, cmdFlag, attrFlag);
-    _mapClasses[_numMapClasses++] = cInfo;
-    return cInfo;
-  }
-
-  /* We are an interpreted mapping class. Create a new interpreted mapping */
-  /*
-     printf("MapInterpclassInfo: CreateWithParams: create new instance\n");
-  */
-    
   MappingInterp *map = new MappingInterp(name, tdata, cmd,
 					 cmdFlag, attrFlag, dimensionInfo,
 					 numDimensions);
@@ -405,9 +392,6 @@ void MapInterpClassInfo::GetDefaultParams(int &argc, char **&argv)
   argc = 0;
 }
 
-/**************************************************
-  Instance Info.
-***************************************************/
 char *MapInterpClassInfo::InstanceName()
 {
   return _name;
@@ -418,7 +402,6 @@ void *MapInterpClassInfo::GetInstance()
   return _map;
 }
 
-/* Get parameters that can be used to re-create this instance */
 void MapInterpClassInfo::CreateParams(int &argc, char **&argv)
 {
   /* parameters are: fileAlias mapName  x, y, color, size, 
