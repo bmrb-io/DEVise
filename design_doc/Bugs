@@ -2206,10 +2206,11 @@ Num Date        Status  Description
 			the other one doesn't do any work. (rkw)
 			(Fixed by Hongyu, 2/22/00.)
 
-565 02/21/00	OPEN	JavaScreen has "Invalid image data for view" errors
+565 02/21/00	FIXED	JavaScreen has "Invalid image data for view" errors
 			with bmrb/4096_backbone_var.ds session when jspop
 			and jss are on different machines, and the devised
 			gets switched to a different JavaScreen and back. (rkw)
+			(Fixed by Hongyu, 3/6/00.)
 
 566 02/21/00	FIXED	Jss can't restart a devised if the jspop and jss
 			are on different machines. (rkw)
@@ -2220,6 +2221,9 @@ Num Date        Status  Description
 			doesn't properly execute/respond to further commands.
 			(hy/rkw)
 			(Fixed by rkw, 2/23/00.)
+
+568 03/06/00	OPEN	Load Misc/COD1.ds in the JavaScreen -- the devised
+			crashes. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
