@@ -1,0 +1,68 @@
+# DEVise startHeader
+# file type: session
+# file date: Oct 30 1997 12:54:22
+# DEVise version: 1.4.7
+# DEVise date: Oct 28 1997
+# DEVise endHeader
+
+# Create views
+DEVise create {view} {Scatter} {Data View} -179.870000 179.450000 -85.400000 100.000000 Black AntiqueWhite
+DEVise setLabel {Data View} 0 12 {}
+DEVise setViewStatistics {Data View} 0000000
+DEVise setViewDimensions {Data View} 2
+DEVise setViewSolid3D {Data View} 2
+DEVise setViewXYZoom {Data View} 1
+DEVise setViewDisplayDataValues {Data View} 0
+DEVise setViewPileMode {Data View} 0
+DEVise setViewOverrideColor {Data View} 0 0
+DEVise setFont {Data View} {title} 0 12 0 0
+DEVise setFont {Data View} {x axis} 0 12 0 0
+DEVise setFont {Data View} {y axis} 0 12 0 0
+DEVise viewSetHome {Data View} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHorPan {Data View} 1 0.500000 1.000000
+
+# Create interpreted mapping classes
+DEVise createMappingClass {Y_vs_X}
+
+# Create mapping instances (GData)
+DEVise create {mapping} {Y_vs_X} .World_Outline .World_Outline#Y_vs_X {} {$X} {$Y} {} 3 1 0 0 7 {$DX} {$DY} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.World_Outline#Y_vs_X} 1
+
+# Create windows
+DEVise create {window} {TileLayout} {Map of the World} 0.119141 0.194010 0.500000 0.500000 0 0
+
+# Set up window layouts
+DEVise setWindowLayout {Map of the World} -1 -1 0
+
+# Create links
+
+# Create cursors
+
+# Create axislabel
+
+# Create actions
+
+# Put labels into views
+DEVise setAxisDisplay {Data View} {X} 1
+DEVise setAxisDisplay {Data View} {Y} 1
+
+# Put action into view
+
+# Link views
+
+# Put views in cursors
+
+# Put axis label into views
+
+# Insert mappings into views
+DEVise insertMapping {Data View} {.World_Outline#Y_vs_X}
+
+# Insert views into windows
+DEVise insertWindow {Data View} {Map of the World}
+
+# Init history of view
+DEVise clearViewHistory {Data View}
+DEVise insertViewHistory {Data View} {-179.87} {-85.40} {179.45} {100.00} 0
+
+# Set camera location for each view
+DEVise set3DLocation {Data View} {4.6} {4} {-4} {0} {0} {0}

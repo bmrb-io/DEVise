@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.21.6.1  1997/10/30 20:15:38  wenger
+  Got DEVise to compile, link, and run on sun and linux; compiles but
+  doesn't link on hp (can't find memory mapping functions).  This includes
+  moving the unidata config.h files to separate copies in the unidata
+  directory for each architecture, since the config.h's are architecture-
+  dependent.
+
+  Revision 1.21  1997/07/18 20:25:03  wenger
+  Orientation now works on Rect and RectX symbols; code also includes
+  some provisions for locating symbols other than at their centers.
+
   Revision 1.20  1997/06/13 18:02:39  wenger
   Got client/server library to compile with latest changes.
 
@@ -130,6 +141,7 @@
 
 //#define DEBUG
 
+#include <unistd.h>
 #include <errno.h>
 
 #include "machdep.h"

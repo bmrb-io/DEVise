@@ -1,0 +1,90 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1997
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  This document gives information about how to generate GIF or
+#  PostScript files in batch mode.  This is mainly useful for
+#  using DEVise to generate images to be sent to a web browser,
+#  based on requests to a CGI script.
+
+############################################################
+
+#       $Id$
+
+############################################################
+
+There are two basic ways to generate print files using DEVise:
+
+- Start the full DEVise executable each time there is a request for a print.
+
+- Have the DEVise server running all the time, and only start the DEVise
+  client for each print request.
+
+In general, the second way is preferable because it will give faster
+response times, but either way will work.
+
+
+You should start devise with the following command line:
+
+    devise -session <session file> -batch <batch file>
+
+or 
+    devisec [-h <server machine>] [-q] <session file> <batch file>
+
+    (Assuming devised is already running.  If devised is running on a
+    different machine than devisec, you must use the -h argument to tell
+    devisec which machine to connect to.)
+
+    -q is for quiet mode (less output).
+
+Example batch file:
+
+    DEVise setFilter {Y vs. X} 11.13 6.68 17.30 9.74
+    PrintActual 0 "" /tmp/example 1 GIF 0 0 0 0
+    DEVise exit
+
+This batch file shows an example of setting the visual filter for a view
+before printing.  If you want to allow web users to set the range of data
+to be shown, you can have your CGI script generate the setFilter command
+based on input from the user.  Note that you can have any valid DEVise
+command in a batch file.
+
+PrintActual arguments:
+    to printer: whether to print a physical page -- set this to 0 (no).
+    print cmd: the command to use if you want to print to a printer -- set
+	this to "" for printing to a file.
+    file name: the name of the file to generate -- if you print a GIF,
+        .gif (if you print all windows) or .0.gif (if you print a single
+	window) will be appended to this name.
+    print src: what to print:
+	0: print the selected window (not very useful for batch mode because
+	    you have to select a view before you print).
+	1: print all windows (prints windows to separate files).  This is
+	    probably what you want; you should probably set up your session
+	    to have only one window.
+	2: print the display (all windows in one image) (this doesn't
+	    seem to work in batch mode).
+	3: print all views.
+    format: what output format you want -- set this to GIF or PostScript.
+    map: 0 for now, more info on this to come.
+    mapfile: 0 for now, more info on this to come.
+    url: 0 for now, more info on this to come.
+    default url: 0 for now, more info on this to come.
+
+DEVise setFilter arguments:
+    view name: the name of the view for which you want to set the visual
+	filter (see the session file to find out the name).
+    x low: x low of new filter
+    y low: y low of new filter
+    x high: x high of new filter
+    y high: y high of new filter

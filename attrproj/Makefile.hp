@@ -15,6 +15,17 @@
 # $Id$
 
 # $Log$
+# Revision 1.17.12.1  1997/10/30 20:14:29  wenger
+# Got DEVise to compile, link, and run on sun and linux; compiles but
+# doesn't link on hp (can't find memory mapping functions).  This includes
+# moving the unidata config.h files to separate copies in the unidata
+# directory for each architecture, since the config.h's are architecture-
+# dependent.
+#
+# Revision 1.17  1997/03/28 16:08:20  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -60,11 +71,10 @@ ApParseCat.o: ../graphics/VisualArg.h ../graphics/Color.h
 ApParseCat.o: ../graphics/Pattern.h ../graphics/Parse.h /usr/include/time.h
 ApParseCat.o: ApInit.h ../graphics.new/TDataAsciiInterp.h
 ApParseCat.o: ../graphics.new/TDataAscii.h ../graphics/Dispatcher.h
-ApParseCat.o: /usr/include/unistd.h /usr/include/sys/unistd.h
-ApParseCat.o: /usr/include/string.h ../graphics/Journal.h
-ApParseCat.o: ../graphics.new/FileIndex.h ../graphics.new/TDataBinaryInterp.h
+ApParseCat.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
+ApParseCat.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
-ApParseCat.o: /usr/include/ctype.h /usr/include/math.h
+ApParseCat.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
 ApParseCat2.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h ApParseCat.h
 ApParseCat2.o: ../graphics/DeviseTypes.h /usr/include/values.h
 ApParseCat2.o: ../graphics/DevStatus.h /usr/include/sys/types.h
@@ -90,12 +100,10 @@ ApParseCat2.o: ../graphics/VisualArg.h ../graphics/Color.h
 ApParseCat2.o: ../graphics/Pattern.h ../graphics/Parse.h /usr/include/time.h
 ApParseCat2.o: ApInit.h ../graphics.new/TDataSeqAsciiInterp.h
 ApParseCat2.o: ../graphics.new/TDataSeqAscii.h ../graphics/Dispatcher.h
-ApParseCat2.o: /usr/include/unistd.h /usr/include/sys/unistd.h
-ApParseCat2.o: /usr/include/string.h ../graphics/Journal.h
-ApParseCat2.o: ../graphics.new/FileIndex.h
+ApParseCat2.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
 ApParseCat2.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat2.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
-ApParseCat2.o: /usr/include/ctype.h /usr/include/math.h
+ApParseCat2.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
 AttrProj.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 AttrProj.o: /usr/include/string.h AttrProj.h ../graphics/DeviseTypes.h
 AttrProj.o: /usr/include/values.h ../graphics/DevStatus.h

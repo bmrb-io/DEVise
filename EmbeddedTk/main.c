@@ -18,6 +18,16 @@
 #include <errno.h>
 #include <assert.h>
 
+#if defined(SunOS)
+  extern "C" int socket(int, int, int);
+  extern "C" int bind(int, struct sockaddr *, int);
+  extern "C" int listen(int, int);
+  extern "C" int accept(int, struct sockaddr *, int *);
+  extern "C" int connect(int, struct sockaddr *, int);
+  extern "C" int shutdown(int, int);
+  extern "C" int setsockopt(int, int, int, char *, int);
+#endif
+
 extern "C"
 {
     char *strdup(const char *s1);

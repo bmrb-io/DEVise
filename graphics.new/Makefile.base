@@ -18,6 +18,16 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.60.4.1  1997/10/30 20:15:51  wenger
+#  Got DEVise to compile, link, and run on sun and linux; compiles but
+#  doesn't link on hp (can't find memory mapping functions).  This includes
+#  moving the unidata config.h files to separate copies in the unidata
+#  directory for each architecture, since the config.h's are architecture-
+#  dependent.
+#
+#  Revision 1.60  1997/09/05 22:21:01  donjerko
+#  Made changes for port to NT.
+#
 #  Revision 1.59  1997/08/20 22:10:57  wenger
 #  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
 #  (all mods for interrupted draw and user-friendly stop).
@@ -102,7 +112,8 @@ include ../../Makefile.common
 
 CFLAGS =  $(ARCH_FLAGS) \
 	-I../../graphics -I../../LM \
-        -I../../DTE/DeviseSpecific -I../../DTE/Core -I../../unidata\
+        -I../../DTE/DeviseSpecific -I../../DTE/Core -I../../unidata \
+	-I../unidata\
         -I../../graphics.new -I../../tape -I../../generic \
         -fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX \
 	  -DNEW_LAYOUT -DVIEW_SHAPE -DHAVE_CONFIG_H

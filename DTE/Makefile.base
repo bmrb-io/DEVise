@@ -42,6 +42,7 @@ DTE_INCLUDES = \
 	-I../../graphics \
 	-I../../graphics.new \
 	-I../../unidata \
+	-I../unidata \
 	$(PERL_INCL)
 #	-I$(DTE_DIR)/RTree -I$(DTE_DIR)/RTree/tools \
 

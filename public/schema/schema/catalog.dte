@@ -1,18 +1,21 @@
-a     QueryInterface     http://fontina.cs.wisc.edu/cgi-fontina/donko/script ;
-b     StandardTable      http://fontina.cs.wisc.edu/donko/standard2.dat ;
-c     DeviseTable  	 3d_test.schema     3d_test.dat ;
-d	 StandardTable    file:/p/coral/people/donjerko/Devise/solaris/test.txt ;
-ncdc  CGIInterface   http://www.ncdc.noaa.gov/cgi-bin/fsod_xmgr 6
-	stat3 "14837, WI MADISON DANE CNTY AP, 194801-199606, ABCDEFGHIJKLMNOP"
-	opt1 "(A) Daily Maximum Temperature"
-	year "1996"
-	mon1 "January"
-	mon2 "January"
-	format "GIF"
-;
-test  CGIInterface   http://fontina.cs.wisc.edu/cgi-fontina/donko/test 0 ;
-dbig    StandardTable 	http://fontina.cs.wisc.edu/donko/big.dat ;
-dbig2    StandardTable 	http://fontina.cs.wisc.edu/donko/big2.dat ;
-rbig   QueryInterface     http://fontina.cs.wisc.edu/cgi-fontina/donko/script ;
-font     StandardTable          file:/local.fontina/www/public/donko/big.dat ;
-quarg StandardTable          file:/tmp/big.dat ;
+"World_Outline" UNIXFILE World.dat WORLD ../schema/WORLD "" 100 50 "../dat" "" ;
+"IBM_Stock" UNIXFILE ibm.dat MIT_STOCK ../schema/schema/physical/STOCK "" 100 50 "../dat" "" ;
+"DEC_Stock" UNIXFILE dec.dat MIT_STOCK ../schema/schema/physical/STOCK "" 100 50 "../dat" "" ;
+"3d_test_dat" UNIXFILE 3d_test.dat Generic-Schema ../schema/3d_test.schema "" 100 50 "../dat" "" ;
+"SUN_Stock" UNIXFILE sun.dat MIT_STOCK ../schema/schema/physical/STOCK "" 100 50 "../dat" "" ;
+"HWP_Stock" UNIXFILE hp.dat MIT_STOCK ../schema/schema/physical/STOCK "" 100 50 "../dat" "" ;
+"BankOneChecks" Table ../schema/schema/physical/BankOneSchema  ../dat/BankOneChecks "" ;
+"BankOneTrans" Table ../schema/schema/physical/BankOneTrans  ../dat/BankOneTrans "" ;
+"BankOneTransLarge" SQLView 4 FromAccount  ToAccount  Amount  Date  "select t1.FromAccount, t1.ToAccount, t1.Amount, t1.Date from .BankOneTrans as t1 where t1.Amount  > 5000" ;
+"WordCount" UNIXFILE WordCount.dat WordCount  ../schema/schema/physical/WordCount.schema "" 100 50  "../dat" "" ;
+"BAA_map"UNIXFILE BAA.map BaaMap ../schema/schema/logical/BaaMap "" 100 50 "../dat" "" ;
+"BAA_visit1"UNIXFILE BAA.visit1 BaaVist ../schema/schema/logical/BaaVist "" 100 50 "../dat" "" ;
+"BAA_visit2"UNIXFILE BAA.visit2 BaaVist ../schema/schema/logical/BaaVist "" 100 50 "../dat" "" ;
+"BAA_visit3"UNIXFILE BAA.visit3 BaaVist ../schema/schema/logical/BaaVist "" 100 50 "../dat" "" ;
+"BAA_plan"UNIXFILE BAA.plan BaaPlan ../schema/schema/logical/BaaPlan "" 100 50 "../dat" "" ;
+"BAA_amm"UNIXFILE BAA.amm BaaAmm ../schema/schema/logical/BaaAmm "" 100 50 "../dat" "" ;
+
+
+
+
+

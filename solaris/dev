@@ -1,5 +1,9 @@
 #! /bin/csh -f
 
+# For Tasvir and EmbeddedTk.
+set path = ( $path /p/qclic/Code/Qclic/bin.common )
+set path = ( $path /p/devise/public/bin )
+
 setenv DEVISE_ROOT		/p/devise
 
 if ($#argv > 0) then

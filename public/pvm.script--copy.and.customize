@@ -5,6 +5,16 @@
 
 ############################################################
 
+# Edit and uncomment the following line to be able to run multi from
+# any directory.
+#cd .../devise/run
+
+limit coredumpsize 0
+limit descriptors 256
+
+set path = ( $path /p/qclic/Code/Qclic/bin.common )
+set path = ( $path /p/devise/public/bin )
+
 setenv DEVISE_ROOT    /p/devise
 
 setenv DEVISE_DAT     ./dat

@@ -15,6 +15,16 @@
 # $Id$
 
 # $Log$
+# Revision 1.4.2.1  1997/10/30 20:18:57  wenger
+# Got DEVise to compile, link, and run on sun and linux; compiles but
+# doesn't link on hp (can't find memory mapping functions).  This includes
+# moving the unidata config.h files to separate copies in the unidata
+# directory for each architecture, since the config.h's are architecture-
+# dependent.
+#
+# Revision 1.4  1997/10/25 03:18:29  yadong
+# Updated dependencies.
+#
 # Revision 1.3  1997/07/16 16:15:05  wenger
 # Updated solaris, sun, and hp dependencies; removed .bak files that
 # somehow got committed.
@@ -34,108 +44,83 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-Attr.o: Attr.h /usr/include/stdlib.h /usr/include/sys/feature_tests.h
-Attr.o: IntStack.h Traits.h /usr/include/string.h bitmap.h
-Attr.o: /usr/include/limits.h /usr/include/sys/isa_defs.h PerlFrag.h
-Attr.o: /usr/include/stdio.h /usr/include/sys/va_list.h /usr/include/math.h
+Attr.o: Attr.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h IntStack.h
+Attr.o: Traits.h /usr/include/string.h bitmap.h /usr/include/limits.h
+Attr.o: PerlFrag.h /usr/include/stdio.h /usr/include/math.h
 Attr.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Lexer.h
 Attr.o: udParam.h RecId.h Schema.h /usr/include/unistd.h
-Attr.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
-Attr.o: /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h
-Attr.o: /usr/include/sys/unistd.h Enum.h Comment.h Config.h UniData.h
-Attr.o: SlideBuf.h getftime.h DateTime.h sysdep.h /usr/include/varargs.h
+Attr.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h Enum.h
+Attr.o: Comment.h Config.h /usr/include/time.h UniData.h SlideBuf.h
+Attr.o: getftime.h DateTime.h sysdep.h /usr/include/varargs.h
 Attr.o: /usr/include/assert.h
 Comment.o: Comment.h
-DateTime.o: sysdep.h /usr/include/varargs.h /usr/include/sys/va_list.h
-DateTime.o: DateTime.h
-Enum.o: Enum.h /usr/include/string.h /usr/include/sys/feature_tests.h Attr.h
+DateTime.o: sysdep.h /usr/include/varargs.h DateTime.h
+Enum.o: Enum.h /usr/include/string.h /usr/include/sys/stdtypes.h Attr.h
 Enum.o: /usr/include/stdlib.h IntStack.h Traits.h bitmap.h
-Enum.o: /usr/include/limits.h /usr/include/sys/isa_defs.h PerlFrag.h
-Enum.o: /usr/include/stdio.h /usr/include/sys/va_list.h /usr/include/math.h
-Enum.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Lexer.h
-IntStack.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h IntStack.h
-PerlFrag.o: PerlFrag.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
-PerlFrag.o: /usr/include/sys/va_list.h /usr/include/string.h
-PerlFrag.o: /usr/include/math.h /usr/include/floatingpoint.h
-PerlFrag.o: /usr/include/sys/ieeefp.h Lexer.h Attr.h /usr/include/stdlib.h
-PerlFrag.o: IntStack.h Traits.h bitmap.h /usr/include/limits.h
-PerlFrag.o: /usr/include/sys/isa_defs.h /usr/include/assert.h
-Schema.o: /usr/include/string.h /usr/include/sys/feature_tests.h Schema.h
-Schema.o: /usr/include/stdio.h /usr/include/sys/va_list.h /usr/include/math.h
+Enum.o: /usr/include/limits.h PerlFrag.h /usr/include/stdio.h
+Enum.o: /usr/include/math.h /usr/include/floatingpoint.h
+Enum.o: /usr/include/sys/ieeefp.h Lexer.h
+IntStack.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h IntStack.h
+PerlFrag.o: PerlFrag.h /usr/include/stdio.h /usr/include/string.h
+PerlFrag.o: /usr/include/sys/stdtypes.h /usr/include/math.h
+PerlFrag.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Lexer.h
+PerlFrag.o: Attr.h /usr/include/stdlib.h IntStack.h Traits.h bitmap.h
+PerlFrag.o: /usr/include/limits.h /usr/include/assert.h
+Schema.o: /usr/include/string.h /usr/include/sys/stdtypes.h Schema.h
+Schema.o: /usr/include/stdio.h /usr/include/math.h
 Schema.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 Schema.o: /usr/include/unistd.h /usr/include/sys/types.h
-Schema.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-Schema.o: /usr/include/sys/select.h /usr/include/sys/time.h
-Schema.o: /usr/include/time.h /usr/include/sys/unistd.h Attr.h
-Schema.o: /usr/include/stdlib.h IntStack.h Traits.h bitmap.h
-Schema.o: /usr/include/limits.h PerlFrag.h Lexer.h Enum.h Comment.h Config.h
-Schema.o: Token.h getftime.h DateTime.h sysdep.h /usr/include/varargs.h
+Schema.o: /usr/include/sys/sysmacros.h Attr.h /usr/include/stdlib.h
+Schema.o: IntStack.h Traits.h bitmap.h /usr/include/limits.h PerlFrag.h
+Schema.o: Lexer.h Enum.h Comment.h Config.h /usr/include/time.h Token.h
+Schema.o: getftime.h DateTime.h sysdep.h /usr/include/varargs.h
 Schema.o: /usr/include/assert.h
-SlideBuf.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+SlideBuf.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 SlideBuf.o: /usr/include/string.h /usr/include/errno.h
 SlideBuf.o: /usr/include/sys/errno.h /usr/include/fcntl.h
-SlideBuf.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-SlideBuf.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-SlideBuf.o: /usr/include/sys/time.h /usr/include/time.h
-SlideBuf.o: /usr/include/sys/fcntl.h /usr/include/sys/stat.h Config.h
-SlideBuf.o: SlideBuf.h /usr/include/unistd.h /usr/include/sys/unistd.h
-SlideBuf.o: Comment.h
-SlideRead.o: SlideRead.h /usr/include/unistd.h
-SlideRead.o: /usr/include/sys/feature_tests.h /usr/include/sys/types.h
-SlideRead.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-SlideRead.o: /usr/include/sys/select.h /usr/include/sys/time.h
-SlideRead.o: /usr/include/time.h /usr/include/sys/unistd.h SlideBuf.h
-Token.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-Token.o: /usr/include/sys/va_list.h Lexer.h Token.h
-Traits.o: Traits.h /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+SlideBuf.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h
+SlideBuf.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h Config.h
+SlideBuf.o: /usr/include/time.h SlideBuf.h /usr/include/unistd.h Comment.h
+SlideRead.o: SlideRead.h /usr/include/unistd.h /usr/include/sys/types.h
+SlideRead.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+SlideRead.o: SlideBuf.h
+Token.o: /usr/include/stdio.h Lexer.h Token.h
+Traits.o: Traits.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 Traits.o: /usr/include/string.h bitmap.h /usr/include/limits.h
-Traits.o: /usr/include/sys/isa_defs.h
-UniData.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+UniData.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 UniData.o: /usr/include/string.h /usr/include/errno.h
 UniData.o: /usr/include/sys/errno.h /usr/include/fcntl.h
-UniData.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-UniData.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-UniData.o: /usr/include/sys/time.h /usr/include/time.h
-UniData.o: /usr/include/sys/fcntl.h /usr/include/sys/stat.h Config.h
-UniData.o: UniData.h /usr/include/unistd.h /usr/include/sys/unistd.h RecId.h
-UniData.o: SlideBuf.h Schema.h /usr/include/stdio.h
-UniData.o: /usr/include/sys/va_list.h /usr/include/math.h
+UniData.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h
+UniData.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h Config.h
+UniData.o: /usr/include/time.h UniData.h /usr/include/unistd.h RecId.h
+UniData.o: SlideBuf.h Schema.h /usr/include/stdio.h /usr/include/math.h
 UniData.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Attr.h
 UniData.o: IntStack.h Traits.h bitmap.h /usr/include/limits.h PerlFrag.h
 UniData.o: Lexer.h Enum.h Comment.h udParam.h udIndex.h fast_atof.h
 UniData.o: getftime.h DateTime.h sysdep.h /usr/include/varargs.h
 UniData.o: /usr/include/assert.h
-fast_atof.o: /usr/include/ctype.h /usr/include/sys/feature_tests.h
-getftime.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+fast_atof.o: /usr/include/ctype.h
+getftime.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 getftime.o: /usr/include/string.h /usr/include/ctype.h getftime.h
 getftime.o: /usr/include/time.h DateTime.h sysdep.h /usr/include/varargs.h
-getftime.o: /usr/include/sys/va_list.h
-pmain.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-pmain.o: /usr/include/sys/va_list.h /usr/include/math.h
+pmain.o: /usr/include/stdio.h /usr/include/math.h
 pmain.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h PerlFrag.h
-pmain.o: /usr/include/string.h Lexer.h
-udIndex.o: udIndex.h /usr/include/unistd.h /usr/include/sys/feature_tests.h
-udIndex.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-udIndex.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-udIndex.o: /usr/include/sys/time.h /usr/include/time.h
-udIndex.o: /usr/include/sys/unistd.h RecId.h
-udParam.o: udParam.h /usr/include/stdlib.h /usr/include/sys/feature_tests.h
-udParam.o: RecId.h Schema.h /usr/include/stdio.h /usr/include/sys/va_list.h
-udParam.o: /usr/include/math.h /usr/include/floatingpoint.h
-udParam.o: /usr/include/sys/ieeefp.h /usr/include/unistd.h
-udParam.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-udParam.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-udParam.o: /usr/include/sys/time.h /usr/include/time.h
-udParam.o: /usr/include/sys/unistd.h Attr.h IntStack.h Traits.h
+pmain.o: /usr/include/string.h /usr/include/sys/stdtypes.h Lexer.h
+udIndex.o: udIndex.h /usr/include/unistd.h /usr/include/sys/types.h
+udIndex.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h RecId.h
+udParam.o: udParam.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+udParam.o: RecId.h Schema.h /usr/include/stdio.h /usr/include/math.h
+udParam.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+udParam.o: /usr/include/unistd.h /usr/include/sys/types.h
+udParam.o: /usr/include/sys/sysmacros.h Attr.h IntStack.h Traits.h
 udParam.o: /usr/include/string.h bitmap.h /usr/include/limits.h PerlFrag.h
-udParam.o: Lexer.h Enum.h Comment.h Config.h
-umain.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+udParam.o: Lexer.h Enum.h Comment.h Config.h /usr/include/time.h
+umain.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 umain.o: /usr/include/unistd.h /usr/include/sys/types.h
-umain.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-umain.o: /usr/include/sys/select.h /usr/include/sys/time.h
-umain.o: /usr/include/time.h /usr/include/sys/unistd.h /usr/include/fcntl.h
-umain.o: /usr/include/sys/fcntl.h UniData.h RecId.h SlideBuf.h Schema.h
-umain.o: /usr/include/stdio.h /usr/include/sys/va_list.h /usr/include/math.h
+umain.o: /usr/include/sys/sysmacros.h /usr/include/fcntl.h
+umain.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h
+umain.o: /usr/include/time.h UniData.h RecId.h SlideBuf.h Schema.h
+umain.o: /usr/include/stdio.h /usr/include/math.h
 umain.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Attr.h
 umain.o: IntStack.h Traits.h /usr/include/string.h bitmap.h
 umain.o: /usr/include/limits.h PerlFrag.h Lexer.h Enum.h Comment.h Config.h

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.55.4.1  1997/11/11 19:13:46  wenger
+  Added getWindowImageAndSize and waitForQueries commands; fixed bug in
+  WindowRep::ExportGIF() inheritance.
+
+  Revision 1.55  1997/08/12 15:32:13  wenger
+  Removed unnecessary include dependencies.
+
   Revision 1.54  1997/07/18 20:25:06  wenger
   Orientation now works on Rect and RectX symbols; code also includes
   some provisions for locating symbols other than at their centers.
@@ -414,7 +421,7 @@ public:
 
   /* export window image to other graphics formats */
   virtual void ExportImage(DisplayExportFormat format, char *filename) {}
-  virtual void ExportGIF(FILE *fp) {}
+  virtual void ExportGIF(FILE *fp, int isView = 0) {}
 
 
   /* import graphics via Dali */

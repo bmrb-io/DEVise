@@ -20,6 +20,17 @@
   $Id$
 
   $Log$
+  Revision 1.2.4.1  1997/10/30 20:15:48  wenger
+  Got DEVise to compile, link, and run on sun and linux; compiles but
+  doesn't link on hp (can't find memory mapping functions).  This includes
+  moving the unidata config.h files to separate copies in the unidata
+  directory for each architecture, since the config.h's are architecture-
+  dependent.
+
+  Revision 1.2  1997/08/20 22:10:54  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.1.2.3  1997/08/20 19:32:58  wenger
   Removed/disabled debug output for interruptible drawing.
 
@@ -35,9 +46,11 @@
 
 
 #include <stdio.h>
+#include <sys/time.h>
 
 #include "DrawTimer.h"
 #include "Init.h"
+#include "machdep.h"
 
 //#define DEBUG
 

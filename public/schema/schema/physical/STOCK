@@ -1,6 +1,6 @@
 type MIT_STOCK ascii
 comment //
-whitespace '	 '
+whitespace '	'' '
 attr YYMMDD int
 attr High double
 attr Low double

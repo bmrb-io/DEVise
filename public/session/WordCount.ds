@@ -1,0 +1,255 @@
+# DEVise startHeader
+# file type: session
+# file date: Oct 31 1997 09:05:40
+# DEVise version: 1.4.7
+# DEVise date: Oct 28 1997
+# DEVise endHeader
+
+# Create views
+DEVise create {view} {Scatter} {View 2} 13.845763 14.245763 9.653191 10.453191 Black AntiqueWhite
+DEVise setLabel {View 2} 1 16 {WordCount}
+DEVise setViewStatistics {View 2} 00000000
+DEVise setViewDimensions {View 2} 2
+DEVise setViewSolid3D {View 2} 2
+DEVise setViewXYZoom {View 2} 1
+DEVise setViewDisplayDataValues {View 2} 0
+DEVise setViewPileMode {View 2} 0
+DEVise setViewOverrideColor {View 2} 0 0
+DEVise setFont {View 2} {title} 0 12 0 0
+DEVise setFont {View 2} {x axis} 0 12 0 0
+DEVise setFont {View 2} {y axis} 0 12 0 0
+DEVise viewSetHome {View 2} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHorPan {View 2} 1 0.500000 1.000000
+DEVise create {view} {Scatter} {View 3} 3.859536 4.109536 0.000000 50.000000 Black AntiqueWhite
+DEVise setLabel {View 3} 1 16 {WordCount}
+DEVise setViewStatistics {View 3} 00000000
+DEVise setViewDimensions {View 3} 2
+DEVise setViewSolid3D {View 3} 2
+DEVise setViewXYZoom {View 3} 1
+DEVise setViewDisplayDataValues {View 3} 0
+DEVise setViewPileMode {View 3} 0
+DEVise setViewOverrideColor {View 3} 0 0
+DEVise setFont {View 3} {title} 0 12 0 0
+DEVise setFont {View 3} {x axis} 0 12 0 0
+DEVise setFont {View 3} {y axis} 0 12 0 0
+DEVise viewSetHome {View 3} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHorPan {View 3} 1 0.500000 1.000000
+DEVise create {view} {Scatter} {View 4} 634.651899 659.651899 13.194915 15.194915 Black AntiqueWhite
+DEVise setLabel {View 4} 1 16 {}
+DEVise setViewStatistics {View 4} 00000000
+DEVise setViewDimensions {View 4} 2
+DEVise setViewSolid3D {View 4} 2
+DEVise setViewXYZoom {View 4} 1
+DEVise setViewDisplayDataValues {View 4} 0
+DEVise setViewPileMode {View 4} 0
+DEVise setViewOverrideColor {View 4} 0 0
+DEVise setFont {View 4} {title} 0 12 0 0
+DEVise setFont {View 4} {x axis} 0 12 0 0
+DEVise setFont {View 4} {y axis} 0 12 0 0
+DEVise viewSetHome {View 4} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHorPan {View 4} 1 0.500000 1.000000
+DEVise create {view} {Scatter} {View 5} 2.000000 48.000000 0.000000 50.000000 Black AntiqueWhite
+DEVise setLabel {View 5} 1 16 {WordCount}
+DEVise setViewStatistics {View 5} 00000000
+DEVise setViewDimensions {View 5} 2
+DEVise setViewSolid3D {View 5} 2
+DEVise setViewXYZoom {View 5} 1
+DEVise setViewDisplayDataValues {View 5} 0
+DEVise setViewPileMode {View 5} 0
+DEVise setViewOverrideColor {View 5} 0 0
+DEVise setFont {View 5} {title} 0 12 0 0
+DEVise setFont {View 5} {x axis} 0 12 0 0
+DEVise setFont {View 5} {y axis} 0 12 0 0
+DEVise viewSetHome {View 5} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHorPan {View 5} 1 0.500000 1.000000
+DEVise create {view} {Scatter} {View 6} 0.000000 100.000000 0.000000 100.000000 Black NavyBlue
+DEVise setLabel {View 6} 0 12 {}
+DEVise setViewStatistics {View 6} 00000000
+DEVise setViewDimensions {View 6} 2
+DEVise setViewSolid3D {View 6} 2
+DEVise setViewXYZoom {View 6} 1
+DEVise setViewDisplayDataValues {View 6} 0
+DEVise setViewPileMode {View 6} 0
+DEVise setViewOverrideColor {View 6} 0 0
+DEVise setFont {View 6} {title} 0 12 0 0
+DEVise setFont {View 6} {x axis} 0 12 0 0
+DEVise setFont {View 6} {y axis} 0 12 0 0
+DEVise viewSetHome {View 6} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHorPan {View 6} 1 0.500000 1.000000
+DEVise create {view} {Scatter} {View 7} 0.000000 1500.000000 0.000000 150.000000 white NavyBlue
+DEVise setLabel {View 7} 1 16 {Number of Occurences for Each Word}
+DEVise setViewStatistics {View 7} 00000000
+DEVise setViewDimensions {View 7} 2
+DEVise setViewSolid3D {View 7} 2
+DEVise setViewXYZoom {View 7} 1
+DEVise setViewDisplayDataValues {View 7} 0
+DEVise setViewPileMode {View 7} 0
+DEVise setViewOverrideColor {View 7} 0 0
+DEVise setFont {View 7} {title} 4 12 1 0
+DEVise setFont {View 7} {x axis} 0 12 0 0
+DEVise setFont {View 7} {y axis} 0 12 0 0
+DEVise viewSetHome {View 7} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHorPan {View 7} 1 0.500000 1.000000
+DEVise create {view} {Scatter} {View 8} 2.000000 632.000000 0.000000 150.000000 white NavyBlue
+DEVise setLabel {View 8} 1 16 {First Line by Number of Occurences}
+DEVise setViewStatistics {View 8} 00000000
+DEVise setViewDimensions {View 8} 2
+DEVise setViewSolid3D {View 8} 2
+DEVise setViewXYZoom {View 8} 1
+DEVise setViewDisplayDataValues {View 8} 0
+DEVise setViewPileMode {View 8} 0
+DEVise setViewOverrideColor {View 8} 0 1
+DEVise setFont {View 8} {title} 4 12 1 0
+DEVise setFont {View 8} {x axis} 0 12 0 0
+DEVise setFont {View 8} {y axis} 0 12 0 0
+DEVise viewSetHome {View 8} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHorPan {View 8} 1 0.500000 1.000000
+
+# Create interpreted mapping classes
+DEVise createMappingClass {NumCalls_vs_LineNumber}
+
+# Create mapping instances (GData)
+DEVise create {mapping} {NumCalls_vs_LineNumber} .WordCount .WordCount#NumCalls_vs_LineNumber {} {$recId+1} {$Count} {} 40 1 0 0 1 {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.WordCount#NumCalls_vs_LineNumber} 23
+DEVise create {mapping} {NumCalls_vs_LineNumber} .WordCount {.WordCount#NumCalls_vs_LineNumber 2} {} {$recId} {$Count} {} 2 1 0 0 0 {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.WordCount#NumCalls_vs_LineNumber 2} 1
+DEVise create {mapping} {NumCalls_vs_LineNumber} .WordCount {.WordCount#NumCalls_vs_LineNumber 3} {} 50 50 {} 22 98 0 0 15 {$TclScript} 2 {$TextFile} {$Word} {} {} {} {} {} {}
+DEVise setPixelWidth {.WordCount#NumCalls_vs_LineNumber 3} 1
+DEVise create {mapping} {NumCalls_vs_LineNumber} .WordCount {.WordCount#NumCalls_vs_LineNumber 4} {} {$recId} {$Count} {} 19 4 0 0 1 3 3 {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.WordCount#NumCalls_vs_LineNumber 4} 1
+DEVise create {mapping} {NumCalls_vs_LineNumber} .WordCount {.WordCount#NumCalls_vs_LineNumber 5} {} {$FirstLine} {$Count} {} 19 2 0 0 1 3 3 {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.WordCount#NumCalls_vs_LineNumber 5} 1
+
+# Create windows
+DEVise create {window} {TileLayout} {Embedded Tcl/Tk Demo - 3} 0.522461 0.332031 0.129883 0.093750 0 0
+DEVise create {window} {TileLayout} {Embedded Tcl/Tk Demo - 1} 0.055664 0.066406 0.410156 0.763021 0 0
+DEVise create {window} {TileLayout} {Embedded Tcl/Tk Demo - 2} 0.476562 0.066406 0.519531 0.763021 0 0
+
+# Set up window layouts
+DEVise setWindowLayout {Embedded Tcl/Tk Demo - 3} -1 -1 0
+DEVise setWindowLayout {Embedded Tcl/Tk Demo - 1} -1 1 0
+DEVise setWindowLayout {Embedded Tcl/Tk Demo - 2} -1 -1 0
+
+# Create links
+DEVise create {link} {Visual_Link} record_link 128
+DEVise create {link} {Visual_Link} {Pile: Link} 3
+DEVise create {link} {Visual_Link} {Pile: Link 2} 3
+DEVise create {link} {Visual_Link} {Pile: Link 3} 3
+DEVise create {link} {Visual_Link} {Pile: Link 4} 3
+
+# Create cursors
+DEVise create {cursor} {Cursor} C1 3 0 1.000000 1.000000
+
+# Create axislabel
+
+# Create actions
+
+# Put labels into views
+DEVise setAxisDisplay {View 2} {X} 1
+DEVise setAxisDisplay {View 2} {Y} 1
+DEVise setAxisDisplay {View 3} {X} 1
+DEVise setAxisDisplay {View 3} {Y} 1
+DEVise setAxisDisplay {View 4} {X} 1
+DEVise setAxisDisplay {View 4} {Y} 1
+DEVise setAxisDisplay {View 5} {X} 1
+DEVise setAxisDisplay {View 5} {Y} 1
+DEVise setAxisDisplay {View 6} {X} 0
+DEVise setAxisDisplay {View 6} {Y} 0
+DEVise setAxisDisplay {View 7} {X} 1
+DEVise setAxisDisplay {View 7} {Y} 1
+DEVise setAxisDisplay {View 8} {X} 1
+DEVise setAxisDisplay {View 8} {Y} 1
+
+# Put action into view
+
+# Link views
+DEVise insertLink {record_link} {View 6}
+DEVise setLinkMaster {record_link} {View 4}
+
+# Put views in cursors
+DEVise setCursorSrc {C1} {View 4}
+DEVise setCursorDst {C1} {View 7}
+
+# Put axis label into views
+
+# Insert mappings into views
+DEVise insertMapping {View 2} {.WordCount#NumCalls_vs_LineNumber 2}
+DEVise insertMapping {View 3} {.WordCount#NumCalls_vs_LineNumber}
+DEVise insertMapping {View 4} {.WordCount#NumCalls_vs_LineNumber 2}
+DEVise insertMapping {View 5} {.WordCount#NumCalls_vs_LineNumber}
+DEVise insertMapping {View 6} {.WordCount#NumCalls_vs_LineNumber 3}
+DEVise insertMapping {View 7} {.WordCount#NumCalls_vs_LineNumber 4}
+DEVise insertMapping {View 8} {.WordCount#NumCalls_vs_LineNumber 5}
+
+# Insert views into windows
+DEVise insertWindow {View 4} {Embedded Tcl/Tk Demo - 3}
+DEVise insertWindow {View 7} {Embedded Tcl/Tk Demo - 1}
+DEVise insertWindow {View 8} {Embedded Tcl/Tk Demo - 1}
+DEVise insertWindow {View 6} {Embedded Tcl/Tk Demo - 2}
+
+# Init history of view
+DEVise clearViewHistory {View 2}
+DEVise insertViewHistory {View 2} {13.85} {9.65} {14.25} {10.45} 0
+DEVise clearViewHistory {View 3}
+DEVise insertViewHistory {View 3} {3.86} {0.00} {4.11} {50.00} 0
+DEVise clearViewHistory {View 4}
+DEVise insertViewHistory {View 4} {1282.22} {136.99} {1307.22} {138.99} 0
+DEVise insertViewHistory {View 4} {1278.15} {137.78} {1303.15} {139.78} 0
+DEVise insertViewHistory {View 4} {1274.09} {136.60} {1299.09} {138.60} 0
+DEVise insertViewHistory {View 4} {1274.09} {137.39} {1299.09} {139.39} 0
+DEVise insertViewHistory {View 4} {765.96} {121.64} {790.96} {123.64} 0
+DEVise insertViewHistory {View 4} {623.68} {126.44} {648.68} {128.44} 0
+DEVise insertViewHistory {View 4} {672.46} {86.01} {697.46} {88.01} 0
+DEVise insertViewHistory {View 4} {635.87} {13.36} {660.87} {15.36} 0
+DEVise insertViewHistory {View 4} {675.79} {28.87} {700.79} {30.87} 0
+DEVise insertViewHistory {View 4} {808.70} {39.04} {833.70} {41.04} 0
+DEVise insertViewHistory {View 4} {985.92} {53.87} {1010.92} {55.87} 0
+DEVise insertViewHistory {View 4} {1356.17} {36.92} {1381.17} {38.92} 0
+DEVise insertViewHistory {View 4} {625.16} {125.91} {650.16} {127.91} 0
+DEVise insertViewHistory {View 4} {659.97} {100.06} {684.97} {102.06} 0
+DEVise insertViewHistory {View 4} {675.79} {85.65} {700.79} {87.65} 0
+DEVise insertViewHistory {View 4} {397.31} {23.36} {422.31} {25.36} 0
+DEVise insertViewHistory {View 4} {637.82} {12.77} {662.82} {14.77} 0
+DEVise insertViewHistory {View 4} {185.28} {51.75} {210.28} {53.75} 0
+DEVise insertViewHistory {View 4} {533.39} {15.31} {558.39} {17.31} 0
+DEVise insertViewHistory {View 4} {634.65} {13.19} {659.65} {15.19} 0
+DEVise clearViewHistory {View 5}
+DEVise insertViewHistory {View 5} {2.00} {0.00} {48.00} {50.00} 0
+DEVise clearViewHistory {View 6}
+DEVise insertViewHistory {View 6} {0.00} {0.00} {7.00} {50.00} 0
+DEVise insertViewHistory {View 6} {0.00} {0.00} {100.00} {100.00} 0
+DEVise clearViewHistory {View 7}
+DEVise insertViewHistory {View 7} {0.00} {0.00} {1500.00} {60.00} 0
+DEVise insertViewHistory {View 7} {-750.00} {0.00} {750.00} {60.00} 0
+DEVise insertViewHistory {View 7} {0.00} {0.00} {1500.00} {60.00} 0
+DEVise insertViewHistory {View 7} {750.00} {0.00} {2250.00} {60.00} 0
+DEVise insertViewHistory {View 7} {1500.00} {0.00} {3000.00} {60.00} 0
+DEVise insertViewHistory {View 7} {2250.00} {0.00} {3750.00} {60.00} 0
+DEVise insertViewHistory {View 7} {3000.00} {0.00} {4500.00} {60.00} 0
+DEVise insertViewHistory {View 7} {3750.00} {0.00} {5250.00} {60.00} 0
+DEVise insertViewHistory {View 7} {4500.00} {0.00} {6000.00} {60.00} 0
+DEVise insertViewHistory {View 7} {3750.00} {0.00} {5250.00} {60.00} 0
+DEVise insertViewHistory {View 7} {3000.00} {0.00} {4500.00} {60.00} 0
+DEVise insertViewHistory {View 7} {2250.00} {0.00} {3750.00} {60.00} 0
+DEVise insertViewHistory {View 7} {1500.00} {0.00} {3000.00} {60.00} 0
+DEVise insertViewHistory {View 7} {750.00} {0.00} {2250.00} {60.00} 0
+DEVise insertViewHistory {View 7} {0.00} {0.00} {1500.00} {60.00} 0
+DEVise insertViewHistory {View 7} {-750.00} {0.00} {750.00} {60.00} 0
+DEVise insertViewHistory {View 7} {0.00} {0.00} {1500.00} {60.00} 0
+DEVise insertViewHistory {View 7} {0.00} {0.00} {1500.00} {150.00} 0
+DEVise insertViewHistory {View 7} {0.00} {0.00} {100.00} {100.00} 0
+DEVise insertViewHistory {View 7} {0.00} {0.00} {1500.00} {150.00} 0
+DEVise clearViewHistory {View 8}
+DEVise insertViewHistory {View 8} {0.00} {0.00} {1500.00} {150.00} 0
+DEVise insertViewHistory {View 8} {784.55} {0.00} {861.79} {150.00} 0
+DEVise insertViewHistory {View 8} {2.00} {0.00} {632.00} {500.00} 0
+DEVise insertViewHistory {View 8} {2.00} {0.00} {632.00} {150.00} 0
+
+# Set camera location for each view
+DEVise set3DLocation {View 2} {4.6} {4} {-4} {0} {0} {0}
+DEVise set3DLocation {View 3} {4.6} {4} {-4} {0} {0} {0}
+DEVise set3DLocation {View 4} {4.6} {4} {-4} {0} {0} {0}
+DEVise set3DLocation {View 5} {4.6} {4} {-4} {0} {0} {0}
+DEVise set3DLocation {View 6} {4.6} {4} {-4} {0} {0} {0}
+DEVise set3DLocation {View 7} {4.6} {4} {-4} {0} {0} {0}
+DEVise set3DLocation {View 8} {4.6} {4} {-4} {0} {0} {0}

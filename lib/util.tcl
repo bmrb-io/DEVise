@@ -15,6 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.50.6.1  1997/11/10 23:37:14  wenger
+#  Fixed bug 239.
+#
+#  Revision 1.50  1997/07/22 15:36:48  wenger
+#  Added capability to dump human-readable information about all links
+#  and cursors.
+#
 #  Revision 1.49  1997/07/17 18:44:17  wenger
 #  Added menu selections to report number of strings and save string space.
 #
@@ -887,7 +894,12 @@ proc PrintActual {toprinter printcmd filename printsrc fmt map mapfile \
 	    foreach v $views {
 		set win [DEVise getViewWin $v]
 		if {$win != "" && [lsearch $windowlist $win] < 0} {
-		    lappend windowlist $win
+		    # Check whether this window should be excluded from
+		    # printing.
+		    set printConfig [DEVise winGetPrint $win]
+		    if {![lindex $printConfig 0]} {
+		        lappend windowlist $win
+		    }
 		}
 	    }
 	}

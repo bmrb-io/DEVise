@@ -1,0 +1,28 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Sep 14 1997 16:12:40
+# DEVise version: 1.4.6
+# DEVise date: Sep  9 1997
+# DEVise endHeader
+
+schema BankOneSchema {
+	type = text ;
+	comment = '//' ;
+	whitespace = ' 	' ;
+
+
+	attr Date {
+		type = datetime ;
+		date_format = '%Y-%m-%d' ;
+	}
+
+	attr Account {
+		type = string ;
+		maxlen = 10 ;
+	}
+
+	attr Amount {
+		type = double ;
+	}
+
+}

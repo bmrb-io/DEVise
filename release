@@ -17,6 +17,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16.2.1  1997/11/06 17:59:54  wenger
+#  Added scripts for starting up devisec and devised.
+#
+#  Revision 1.16  1997/10/02 18:46:06  wenger
+#  Opening and saving batch-style sessions in back end now fully working;
+#  added tk2ds.tcl script for conversion.
+#
 #  Revision 1.15  1997/07/25 15:37:51  wenger
 #  Added demo startup scripts to repository and release script.
 #
@@ -211,7 +218,7 @@ set runfiles = "run_public/devise run_public/devise.tasvir \
 	run_public/deviseweb run_public/dumpgif.script \
 	run_public/multi run_public/devise.etk run_public/devise.demo \
 	run_public/devise1.3.demo run_public/multi.demo \
-	run_public/multi1.3.demo run_public/tk2ds.tcl"
+	run_public/multi1.3.demo run_public/tk2ds.tcl devisec devised"
 
 foreach file ($runfiles)
   if ($file == "") then

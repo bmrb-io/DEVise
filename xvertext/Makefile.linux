@@ -22,11 +22,35 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-example.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-example.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
-example.o: /usr/include/math.h /usr/include/floatingpoint.h
-example.o: /usr/include/sys/ieeefp.h rotated.h
-rotated.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-rotated.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
-rotated.o: /usr/include/string.h /usr/include/math.h
-rotated.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h rotated.h
+example.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
+example.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+example.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+example.o: /usr/include/sys/bitypes.h /usr/include/X11/X.h
+example.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+example.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+example.o: /usr/include/X11/Xutil.h /usr/include/stdio.h /usr/include/libio.h
+example.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
+example.o: /usr/include/stdlib.h /usr/include/features.h /usr/include/errno.h
+example.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+example.o: /usr/include/alloca.h /usr/include/math.h /usr/include/huge_val.h
+example.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
+example.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+example.o: /usr/include/values.h /usr/include/ieee754.h
+example.o: /usr/include/ieee854.h rotated.h
+rotated.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
+rotated.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+rotated.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+rotated.o: /usr/include/sys/bitypes.h /usr/include/X11/X.h
+rotated.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+rotated.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+rotated.o: /usr/include/X11/Xutil.h /usr/include/X11/Xatom.h
+rotated.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+rotated.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
+rotated.o: /usr/include/features.h /usr/include/errno.h
+rotated.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+rotated.o: /usr/include/alloca.h /usr/include/string.h /usr/include/math.h
+rotated.o: /usr/include/huge_val.h /usr/include/endian.h
+rotated.o: /usr/include/bytesex.h /usr/include/nan.h
+rotated.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+rotated.o: /usr/include/values.h /usr/include/ieee754.h
+rotated.o: /usr/include/ieee854.h rotated.h

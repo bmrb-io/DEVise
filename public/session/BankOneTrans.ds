@@ -1,0 +1,127 @@
+# DEVise startHeader
+# file type: session
+# file date: Oct 30 1997 12:53:17
+# DEVise version: 1.4.7
+# DEVise date: Oct 28 1997
+# DEVise endHeader
+
+# Create views
+DEVise create {view} {Scatter} {View 1} {Mar 15 1980 14:05:13} {May 11 1980 18:13:02} 0.000000 15.000000 Black AntiqueWhite
+DEVise setLabel {View 1} 1 16 {FromAccount() vs. Date}
+DEVise setViewStatistics {View 1} 00000000
+DEVise setViewDimensions {View 1} 2
+DEVise setViewSolid3D {View 1} 2
+DEVise setViewXYZoom {View 1} 1
+DEVise setViewDisplayDataValues {View 1} 0
+DEVise setViewPileMode {View 1} 0
+DEVise setViewOverrideColor {View 1} 0 0
+DEVise setFont {View 1} {title} 0 12 0 0
+DEVise setFont {View 1} {x axis} 0 12 0 0
+DEVise setFont {View 1} {y axis} 0 12 0 0
+DEVise viewSetHome {View 1} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHorPan {View 1} 1 0.500000 1.000000
+DEVise create {view} {Scatter} {View 2} {Mar 15 1980 14:05:13} {May 11 1980 18:13:02} 0.000000 15.000000 Black AntiqueWhite
+DEVise setLabel {View 2} 1 16 {ToAccount() vs. Date}
+DEVise setViewStatistics {View 2} 00000000
+DEVise setViewDimensions {View 2} 2
+DEVise setViewSolid3D {View 2} 2
+DEVise setViewXYZoom {View 2} 1
+DEVise setViewDisplayDataValues {View 2} 0
+DEVise setViewPileMode {View 2} 0
+DEVise setViewOverrideColor {View 2} 0 0
+DEVise setFont {View 2} {title} 0 12 0 0
+DEVise setFont {View 2} {x axis} 0 12 0 0
+DEVise setFont {View 2} {y axis} 0 12 0 0
+DEVise viewSetHome {View 2} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHorPan {View 2} 1 0.500000 1.000000
+DEVise create {view} {Scatter} {View 3} {Mar 15 1980 14:05:13} {May 11 1980 18:13:02} 0.000000 11000.000000 Black AntiqueWhite
+DEVise setLabel {View 3} 1 16 {Amount() vs. Date}
+DEVise setViewStatistics {View 3} 00000000
+DEVise setViewDimensions {View 3} 2
+DEVise setViewSolid3D {View 3} 2
+DEVise setViewXYZoom {View 3} 1
+DEVise setViewDisplayDataValues {View 3} 0
+DEVise setViewPileMode {View 3} 0
+DEVise setViewOverrideColor {View 3} 0 0
+DEVise setFont {View 3} {title} 0 12 0 0
+DEVise setFont {View 3} {x axis} 0 12 0 0
+DEVise setFont {View 3} {y axis} 0 12 0 0
+DEVise viewSetHome {View 3} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHorPan {View 3} 1 0.500000 1.000000
+
+# Create interpreted mapping classes
+DEVise createMappingClass {FromAccount_vs_Date}
+DEVise createMappingClass {ToAccount_vs_Date}
+DEVise createMappingClass {Amount_vs_Date}
+
+# Create mapping instances (GData)
+DEVise create {mapping} {FromAccount_vs_Date} .BankOneTrans .BankOneTrans#FromAccount_vs_Date {} {$Date} {$FromAccount} {} 2 1 0 0 2 {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.BankOneTrans#FromAccount_vs_Date} 1
+DEVise create {mapping} {ToAccount_vs_Date} .BankOneTrans .BankOneTrans#ToAccount_vs_Date {} {$Date} {$ToAccount} {} 3 1 0 0 2 {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.BankOneTrans#ToAccount_vs_Date} 1
+DEVise create {mapping} {Amount_vs_Date} .BankOneTrans .BankOneTrans#Amount_vs_Date {} {$Date} {$Amount} {} 4 1 0 0 2 {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.BankOneTrans#Amount_vs_Date} 1
+
+# Create windows
+DEVise create {window} {TileLayout} DEViseWn0 0.230469 0.225260 0.500000 0.500000 0 0
+
+# Set up window layouts
+DEVise setWindowLayout {DEViseWn0} -1 -1 0
+
+# Create links
+DEVise create {link} {Visual_Link} {Date Link} 1
+
+# Create cursors
+
+# Create axislabel
+
+# Create actions
+
+# Put labels into views
+DEVise setAxisDisplay {View 1} {X} 1
+DEVise setAxisDisplay {View 1} {Y} 1
+DEVise setAxisDisplay {View 2} {X} 1
+DEVise setAxisDisplay {View 2} {Y} 1
+DEVise setAxisDisplay {View 3} {X} 1
+DEVise setAxisDisplay {View 3} {Y} 1
+
+# Put action into view
+
+# Link views
+DEVise insertLink {Date Link} {View 1}
+DEVise insertLink {Date Link} {View 2}
+DEVise insertLink {Date Link} {View 3}
+
+# Put views in cursors
+
+# Put axis label into views
+
+# Insert mappings into views
+DEVise insertMapping {View 1} {.BankOneTrans#FromAccount_vs_Date}
+DEVise insertMapping {View 2} {.BankOneTrans#ToAccount_vs_Date}
+DEVise insertMapping {View 3} {.BankOneTrans#Amount_vs_Date}
+
+# Insert views into windows
+DEVise insertWindow {View 1} {DEViseWn0}
+DEVise insertWindow {View 2} {DEViseWn0}
+DEVise insertWindow {View 3} {DEViseWn0}
+
+# Init history of view
+DEVise clearViewHistory {View 1}
+DEVise insertViewHistory {View 1} {Jan  1 1980 00:00:00} {0.00} {Dec 31 1980 00:00:00} {100.00} 0
+DEVise insertViewHistory {View 1} {Jan  1 1980 00:00:00} {0.00} {Dec 31 1980 00:00:00} {25.00} 0
+DEVise insertViewHistory {View 1} {Jan  1 1980 00:00:00} {0.00} {Dec 31 1980 00:00:00} {15.00} 0
+DEVise insertViewHistory {View 1} {Mar 15 1980 14:05:13} {0.00} {May 11 1980 18:13:02} {15.00} 0
+DEVise clearViewHistory {View 2}
+DEVise insertViewHistory {View 2} {Jan  1 1980 00:00:00} {0.00} {Dec 31 1980 00:00:00} {100.00} 0
+DEVise insertViewHistory {View 2} {Jan  1 1980 00:00:00} {0.00} {Dec 31 1980 00:00:00} {15.00} 0
+DEVise insertViewHistory {View 2} {Mar 15 1980 14:05:13} {0.00} {May 11 1980 18:13:02} {15.00} 0
+DEVise clearViewHistory {View 3}
+DEVise insertViewHistory {View 3} {Jan  1 1980 00:00:00} {10.00} {Dec 31 1980 00:00:00} {50000.00} 0
+DEVise insertViewHistory {View 3} {Jan  1 1980 00:00:00} {0.00} {Dec 31 1980 00:00:00} {11000.00} 0
+DEVise insertViewHistory {View 3} {Mar 15 1980 14:05:13} {0.00} {May 11 1980 18:13:02} {11000.00} 0
+
+# Set camera location for each view
+DEVise set3DLocation {View 1} {4.6} {4} {-4} {0} {0} {0}
+DEVise set3DLocation {View 2} {4.6} {4} {-4} {0} {0} {0}
+DEVise set3DLocation {View 3} {4.6} {4} {-4} {0} {0} {0}

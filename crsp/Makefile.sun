@@ -15,6 +15,16 @@
 # $Id$
 
 # $Log$
+# Revision 1.21.2.1  1997/10/30 20:14:49  wenger
+# Got DEVise to compile, link, and run on sun and linux; compiles but
+# doesn't link on hp (can't find memory mapping functions).  This includes
+# moving the unidata config.h files to separate copies in the unidata
+# directory for each architecture, since the config.h's are architecture-
+# dependent.
+#
+# Revision 1.21  1997/10/25 03:18:08  yadong
+# Updated dependencies.
+#
 # Revision 1.20  1997/05/29 15:20:59  wenger
 # Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
 # compile on linux.
@@ -35,100 +45,78 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-cal.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-cal.o: /usr/include/sys/va_list.h /usr/include/stdlib.h cal.h
-crsp_extract.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+cal.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+cal.o: cal.h
+crsp_extract.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 crsp_extract.o: /usr/include/string.h /s/tcl/include/tcl.h
-crsp_extract.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-crsp_extract.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
-crsp_extract.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-crsp_extract.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-crsp_extract.o: /usr/include/sys/time.h /usr/include/time.h
-crsp_extract.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
-crsp_extract.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h sec.h
-crsp_extract.o: ../tape/tapedrive.h ../graphics.new/machdep.h
-crsp_extract.o: /usr/include/limits.h /usr/include/sys/param.h
-crsp_extract.o: /usr/include/sys/unistd.h /usr/include/sys/wait.h
-crsp_extract.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-crsp_extract.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-crsp_extract.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-crsp_extract.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-crsp_extract.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-crsp_extract.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-crsp_extract.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-crsp_extract.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-crsp_extract.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-crsp_extract.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-crsp_extract.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-crsp_extract.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-crsp_extract.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-crsp_extract.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-crsp_extract.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-crsp_index.o: /usr/include/string.h /usr/include/sys/feature_tests.h
+crsp_extract.o: /usr/include/stdio.h /s/tcl/include/tk.h
+crsp_extract.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
+crsp_extract.o: /usr/include/sys/sysmacros.h /s/X11/include/X11/X.h
+crsp_extract.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+crsp_extract.o: /usr/include/stddef.h sec.h ../tape/tapedrive.h
+crsp_extract.o: ../graphics.new/machdep.h /usr/include/limits.h
+crsp_extract.o: /usr/include/sys/param.h /usr/include/machine/param.h
+crsp_extract.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+crsp_extract.o: /usr/include/sys/time.h /usr/include/sys/time.h
+crsp_extract.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+crsp_extract.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+crsp_extract.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+crsp_extract.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+crsp_extract.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+crsp_extract.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+crsp_extract.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+crsp_extract.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+crsp_extract.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+crsp_extract.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+crsp_index.o: /usr/include/string.h /usr/include/sys/stdtypes.h
 crsp_index.o: /usr/include/stdlib.h sec.h ../tape/tapedrive.h
-crsp_index.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-crsp_index.o: ../graphics.new/machdep.h /usr/include/limits.h
-crsp_index.o: /usr/include/sys/isa_defs.h /usr/include/sys/types.h
-crsp_index.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-crsp_index.o: /usr/include/sys/time.h /usr/include/time.h
-crsp_index.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-crsp_index.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-crsp_index.o: /usr/include/sys/machsig.h /usr/include/sys/procset.h
+crsp_index.o: /usr/include/stdio.h ../graphics.new/machdep.h
+crsp_index.o: /usr/include/limits.h /usr/include/sys/types.h
+crsp_index.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
+crsp_index.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+crsp_index.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+crsp_index.o: /usr/include/sys/time.h /usr/include/sys/wait.h
 crsp_index.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-crsp_index.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+crsp_index.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+crsp_index.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+crsp_index.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
+crsp_index.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+crsp_index.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+crsp_index.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+crsp_index.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
 crsp_index.o: /usr/include/netdb.h /usr/include/sys/socket.h
-crsp_index.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-crsp_index.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-crsp_index.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-crsp_index.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-crsp_index.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-crsp_index.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-crsp_index.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-crsp_index.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-crsp_index.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-crsp_index.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-crsp_index.o: /usr/include/sys/byteorder.h
+crsp_index.o: /usr/include/netinet/in.h
 main.o: sec.h ../tape/tapedrive.h /usr/include/stdio.h
-main.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
 main.o: ../graphics.new/machdep.h /usr/include/limits.h
-main.o: /usr/include/sys/isa_defs.h /usr/include/sys/types.h
-main.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-main.o: /usr/include/sys/time.h /usr/include/time.h /usr/include/sys/param.h
-main.o: /usr/include/sys/unistd.h /usr/include/sys/wait.h
-main.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-main.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-main.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-main.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-main.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-main.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-main.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-main.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-main.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-main.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-main.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-main.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-main.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-main.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-main.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-sec.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-sec.o: /usr/include/sys/va_list.h /usr/include/stdlib.h /usr/include/ctype.h
-sec.o: sec.h ../tape/tapedrive.h ../graphics.new/machdep.h
-sec.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
-sec.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
-sec.o: /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h
-sec.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-sec.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-sec.o: /usr/include/sys/machsig.h /usr/include/sys/procset.h
-sec.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
-sec.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-sec.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-sec.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-sec.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-sec.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-sec.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-sec.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-sec.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-sec.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-sec.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-sec.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-sec.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h cal.h
+main.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
+main.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
+main.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+main.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+main.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+main.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+main.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+main.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+main.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
+main.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+main.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+main.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+main.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+main.o: /usr/include/netdb.h /usr/include/sys/socket.h
+main.o: /usr/include/netinet/in.h
+sec.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+sec.o: /usr/include/ctype.h sec.h ../tape/tapedrive.h
+sec.o: ../graphics.new/machdep.h /usr/include/limits.h
+sec.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+sec.o: /usr/include/sys/param.h /usr/include/machine/param.h
+sec.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+sec.o: /usr/include/sys/time.h /usr/include/sys/time.h
+sec.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
+sec.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+sec.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+sec.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
+sec.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+sec.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+sec.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+sec.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+sec.o: /usr/include/netdb.h /usr/include/sys/socket.h
+sec.o: /usr/include/netinet/in.h cal.h

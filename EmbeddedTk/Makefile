@@ -3,7 +3,7 @@
 # Solaris
 #
 ARCH_FLAGS = -DSolaris
-DEBUG_FLAG = -g
+DEBUG_FLAG = -gstabs
 TCL_INCS = -I/s/tcl/include
 TCL_LIBS = -L/s/tcl/lib -ltk -ltcl
 X_INCS = -I/s/X11/include

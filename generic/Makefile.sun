@@ -15,6 +15,16 @@
 # $Id$
 
 # $Log$
+# Revision 1.42.2.1  1997/10/30 20:15:22  wenger
+# Got DEVise to compile, link, and run on sun and linux; compiles but
+# doesn't link on hp (can't find memory mapping functions).  This includes
+# moving the unidata config.h files to separate copies in the unidata
+# directory for each architecture, since the config.h's are architecture-
+# dependent.
+#
+# Revision 1.42  1997/10/25 03:18:11  yadong
+# Updated dependencies.
+#
 # Revision 1.41  1997/07/16 16:14:16  wenger
 # Updated solaris, sun, and hp dependencies; removed .bak files that
 # somehow got committed.
@@ -46,22 +56,23 @@ depend:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 CompDate.o: CompDate.h
-generic.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-generic.o: /usr/include/sys/va_list.h /usr/include/errno.h
-generic.o: /usr/include/sys/errno.h /usr/include/time.h /usr/include/string.h
-generic.o: /usr/include/math.h /usr/include/floatingpoint.h
-generic.o: /usr/include/sys/ieeefp.h /usr/include/sys/time.h
-generic.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-generic.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-generic.o: ../graphics/DeviseTypes.h /usr/include/values.h
-generic.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
-generic.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-generic.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-generic.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/ViewWin.h
-generic.o: ../graphics/WindowRep.h ../graphics/Transform.h
-generic.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-generic.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
-generic.o: ../graphics/Xdef.h ../graphics/DualWindowRep.h
+generic.o: /usr/include/stdio.h /usr/include/errno.h /usr/include/sys/errno.h
+generic.o: /usr/include/time.h /usr/include/sys/stdtypes.h
+generic.o: /usr/include/string.h /usr/include/math.h
+generic.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+generic.o: /usr/include/sys/time.h /usr/include/sys/types.h
+generic.o: /usr/include/sys/sysmacros.h ../graphics/DeviseTypes.h
+generic.o: /usr/include/values.h ../graphics/DevStatus.h
+generic.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
+generic.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+generic.o: ../graphics/Pattern.h ../graphics/Display.h ../graphics/Geom.h
+generic.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+generic.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+generic.o: ../graphics/Compress.h ../graphics/DevError.h ../graphics/ETkIfc.h
+generic.o: ../graphics/ETk.h ../graphics/Xdef.h /usr/include/X11/Xlib.h
+generic.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
+generic.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h
+generic.o: /usr/include/X11/Xutil.h ../graphics/DualWindowRep.h
 generic.o: ../graphics/ColorMgr.h ../graphics/Control.h
 generic.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
 generic.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
@@ -76,53 +87,51 @@ generic.o: ../graphics.new/DataSourceFixedBuf.h
 generic.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
 generic.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 generic.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-generic.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
+generic.o: /usr/include/sys/shm.h /usr/include/sys/param.h
+generic.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+generic.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+generic.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+generic.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
 generic.o: /usr/include/assert.h /usr/include/limits.h
 generic.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-generic.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-generic.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-generic.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-generic.o: /usr/include/netdb.h /usr/include/sys/socket.h
-generic.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-generic.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-generic.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-generic.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-generic.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-generic.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-generic.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-generic.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-generic.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-generic.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-generic.o: /usr/include/sys/byteorder.h ../graphics.new/UpdateLink.h
-generic.o: ../graphics.new/VisualLink.h ../graphics/AssoArray.h
-generic.o: ../graphics.new/QueryProc.h ../graphics.new/RecId.h
-generic.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
-generic.o: ../graphics.new/TDataViewX.h ../graphics.new/TDataCMap.h
-generic.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
-generic.o: ../graphics.new/ShapeID.h ../graphics.new/GDataBin.h
-generic.o: ../graphics.new/ViewScatter.h ../graphics.new/ViewLens.h
-generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
-generic.o: ../graphics.new/TDataMap.h ../graphics.new/GDataRec.h
-generic.o: ../graphics.new/TData.h ../graphics/CursorClassInfo.h
-generic.o: ../graphics.new/ParseCat.h ../graphics.new/StringStorage.h
-generic.o: StateMap.h ../graphics/Util.h /usr/include/ctype.h
-testWindowSpeed.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-testWindowSpeed.o: /usr/include/sys/va_list.h /usr/include/time.h
-testWindowSpeed.o: /usr/include/sys/time.h /usr/include/sys/types.h
-testWindowSpeed.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-testWindowSpeed.o: /usr/include/sys/select.h ../graphics/TestControl.h
-testWindowSpeed.o: ../graphics/Control.h ../graphics/DeviseTypes.h
-testWindowSpeed.o: /usr/include/values.h ../graphics/DevStatus.h
-testWindowSpeed.o: ../graphics/VisualArg.h ../graphics/Color.h
-testWindowSpeed.o: ../graphics/Pattern.h ../graphics/DList.h
-testWindowSpeed.o: ../graphics/Exit.h ../graphics/ClassDir.h
-testWindowSpeed.o: ../graphics/Display.h ../graphics/Geom.h
-testWindowSpeed.o: /usr/include/math.h /usr/include/floatingpoint.h
-testWindowSpeed.o: /usr/include/sys/ieeefp.h ../graphics/Dispatcher.h
-testWindowSpeed.o: ../graphics/Journal.h ../graphics/ViewWin.h
-testWindowSpeed.o: ../graphics/WindowRep.h ../graphics/Transform.h
-testWindowSpeed.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-testWindowSpeed.o: ../graphics/DevError.h /usr/include/errno.h
-testWindowSpeed.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
-testWindowSpeed.o: /usr/include/string.h ../graphics/ETk.h ../graphics/Xdef.h
+generic.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+generic.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+generic.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+generic.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+generic.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+generic.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+generic.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
+generic.o: ../graphics/AssoArray.h ../graphics.new/QueryProc.h
+generic.o: ../graphics.new/RecId.h ../graphics.new/Action.h
+generic.o: ../graphics.new/PointStorage.h ../graphics.new/TDataViewX.h
+generic.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
+generic.o: ../graphics.new/Connector.h ../graphics.new/ShapeID.h
+generic.o: ../graphics.new/GDataBin.h ../graphics.new/ViewScatter.h
+generic.o: ../graphics.new/ViewLens.h ../graphics.new/CompositeParser.h
+generic.o: ../graphics.new/RecInterp.h ../graphics.new/TDataMap.h
+generic.o: ../graphics.new/GDataRec.h ../graphics.new/TData.h
+generic.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
+generic.o: ../graphics.new/StringStorage.h StateMap.h ../graphics/Util.h
+generic.o: /usr/include/ctype.h
+testWindowSpeed.o: /usr/include/stdio.h /usr/include/time.h
+testWindowSpeed.o: /usr/include/sys/stdtypes.h /usr/include/sys/time.h
+testWindowSpeed.o: ../graphics/TestControl.h ../graphics/Control.h
+testWindowSpeed.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+testWindowSpeed.o: ../graphics/DeviseTypes.h /usr/include/values.h
+testWindowSpeed.o: ../graphics/DevStatus.h ../graphics/VisualArg.h
+testWindowSpeed.o: ../graphics/Color.h ../graphics/Pattern.h
+testWindowSpeed.o: ../graphics/DList.h ../graphics/Exit.h
+testWindowSpeed.o: ../graphics/ClassDir.h ../graphics/Display.h
+testWindowSpeed.o: ../graphics/Geom.h /usr/include/math.h
+testWindowSpeed.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+testWindowSpeed.o: ../graphics/Dispatcher.h ../graphics/Journal.h
+testWindowSpeed.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+testWindowSpeed.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+testWindowSpeed.o: ../graphics/Compress.h ../graphics/DevError.h
+testWindowSpeed.o: /usr/include/errno.h /usr/include/sys/errno.h
+testWindowSpeed.o: ../graphics/ETkIfc.h /usr/include/string.h
+testWindowSpeed.o: ../graphics/ETk.h ../graphics/Xdef.h
+testWindowSpeed.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+testWindowSpeed.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+testWindowSpeed.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
 testWindowSpeed.o: ../graphics/DualWindowRep.h ../graphics/ColorMgr.h

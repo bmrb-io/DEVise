@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.27.4.1  1997/11/11 19:13:43  wenger
+  Added getWindowImageAndSize and waitForQueries commands; fixed bug in
+  WindowRep::ExportGIF() inheritance.
+
+  Revision 1.27  1997/08/08 14:00:57  wenger
+  Removed unnecessary dependency on ViewWin.h in cslib version.
+
   Revision 1.26  1997/07/22 19:44:28  wenger
   Removed extra dependencies that broke cslib link.
 
@@ -197,7 +204,7 @@ public:
   virtual void ExportImage(DisplayExportFormat format, char *filename) = 0;
   virtual void ExportImageAndMap(DisplayExportFormat format, char *gifFilename, 
 			char *mapFileame, char *url, char *defaultUrl) = 0;
-  virtual void ExportGIF(FILE *fp, int isView) = 0;
+  virtual void ExportGIF(FILE *fp, int isView = 0) = 0;
   virtual void ExportView(DisplayExportFormat format, char *filename) = 0;
   virtual void ExportToPS(DisplayExportFormat format, char *filename);
 #endif

@@ -17,6 +17,16 @@
   $Id$
 
   $Log$
+  Revision 1.37.2.1  1997/10/30 20:13:40  wenger
+  Got DEVise to compile, link, and run on sun and linux; compiles but
+  doesn't link on hp (can't find memory mapping functions).  This includes
+  moving the unidata config.h files to separate copies in the unidata
+  directory for each architecture, since the config.h's are architecture-
+  dependent.
+
+  Revision 1.37  1997/10/06 22:10:11  donjerko
+  *** empty log message ***
+
   Revision 1.36  1997/10/02 02:27:34  donjerko
   Implementing moving aggregates.
 
@@ -110,6 +120,11 @@
 #include "DateTime.h"
 #include "catalog.h" 	// for root catalog
 #include <string>
+
+#if defined(SUN) || defined(LINUX)
+#  include <values.h>
+#  define DBL_MAX MAXDOUBLE
+#endif
 
 const DteEnvVars DTE_ENV_VARS;
 

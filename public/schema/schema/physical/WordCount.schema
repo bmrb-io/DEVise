@@ -1,0 +1,15 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Feb 25 1997 08:45:37
+# DEVise version: 1.4.0
+# DEVise date: Feb 25 1997
+# DEVise endHeader
+
+type WordCount ascii
+comment #
+whitespace ' '
+sorted attr Word string 100
+attr Count int
+attr FirstLine int
+attr TextFile string 100
+attr TclScript string 100

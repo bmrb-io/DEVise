@@ -1,0 +1,248 @@
+# ========================================================================
+# DEVise Data Visualization Software
+# (c) Copyright 1992-1997
+# By the DEVise Development Group
+# Madison, Wisconsin
+# All Rights Reserved.
+# ========================================================================
+#
+# Under no circumstances is this software to be copied, distributed,
+# or altered in any way without prior permission from the DEVise
+# Development Group.
+
+############################################################
+
+# $Id$
+
+# $Log$
+# Revision 1.1.2.1  1997/10/30 20:18:56  wenger
+# Got DEVise to compile, link, and run on sun and linux; compiles but
+# doesn't link on hp (can't find memory mapping functions).  This includes
+# moving the unidata config.h files to separate copies in the unidata
+# directory for each architecture, since the config.h's are architecture-
+# dependent.
+#
+
+############################################################
+
+depend:
+	makedepend -fMakefile.linux *.c *.C
+
+# DO NOT DELETE
+
+Attr.o: Attr.h /usr/include/stdlib.h /usr/include/features.h
+Attr.o: /usr/include/sys/cdefs.h
+Attr.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+Attr.o: /usr/include/errno.h /usr/include/linux/errno.h
+Attr.o: /usr/include/asm/errno.h /usr/include/alloca.h IntStack.h Traits.h
+Attr.o: /usr/include/string.h bitmap.h /usr/include/limits.h
+Attr.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+Attr.o: /usr/include/posix2_lim.h PerlFrag.h /usr/include/stdio.h
+Attr.o: /usr/include/libio.h /usr/include/_G_config.h /usr/include/math.h
+Attr.o: /usr/include/huge_val.h /usr/include/endian.h /usr/include/bytesex.h
+Attr.o: /usr/include/nan.h
+Attr.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+Attr.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
+Attr.o: Lexer.h udParam.h RecId.h Schema.h /usr/include/unistd.h
+Attr.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+Attr.o: /usr/include/confname.h /usr/include/sys/types.h
+Attr.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+Attr.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+Attr.o: /usr/include/sys/bitypes.h Enum.h Comment.h Config.h
+Attr.o: /usr/include/time.h /usr/include/sys/time.h /usr/include/linux/time.h
+Attr.o: UniData.h SlideBuf.h getftime.h DateTime.h sysdep.h
+Attr.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h
+Attr.o: /usr/include/assert.h
+Comment.o: Comment.h
+DateTime.o: sysdep.h /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h
+DateTime.o: DateTime.h
+Enum.o: Enum.h /usr/include/string.h /usr/include/features.h
+Enum.o: /usr/include/sys/cdefs.h
+Enum.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h Attr.h
+Enum.o: /usr/include/stdlib.h /usr/include/errno.h /usr/include/linux/errno.h
+Enum.o: /usr/include/asm/errno.h /usr/include/alloca.h IntStack.h Traits.h
+Enum.o: bitmap.h /usr/include/limits.h /usr/include/posix1_lim.h
+Enum.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h PerlFrag.h
+Enum.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+Enum.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/endian.h
+Enum.o: /usr/include/bytesex.h /usr/include/nan.h
+Enum.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+Enum.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
+Enum.o: Lexer.h
+IntStack.o: /usr/include/stdlib.h /usr/include/features.h
+IntStack.o: /usr/include/sys/cdefs.h
+IntStack.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+IntStack.o: /usr/include/errno.h /usr/include/linux/errno.h
+IntStack.o: /usr/include/asm/errno.h /usr/include/alloca.h IntStack.h
+PerlFrag.o: PerlFrag.h /usr/include/stdio.h /usr/include/libio.h
+PerlFrag.o: /usr/include/_G_config.h /usr/include/string.h
+PerlFrag.o: /usr/include/features.h /usr/include/sys/cdefs.h
+PerlFrag.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+PerlFrag.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/endian.h
+PerlFrag.o: /usr/include/bytesex.h /usr/include/nan.h
+PerlFrag.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+PerlFrag.o: /usr/include/values.h /usr/include/ieee754.h
+PerlFrag.o: /usr/include/ieee854.h Lexer.h Attr.h /usr/include/stdlib.h
+PerlFrag.o: /usr/include/errno.h /usr/include/linux/errno.h
+PerlFrag.o: /usr/include/asm/errno.h /usr/include/alloca.h IntStack.h
+PerlFrag.o: Traits.h bitmap.h /usr/include/limits.h /usr/include/posix1_lim.h
+PerlFrag.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+PerlFrag.o: /usr/include/assert.h
+Schema.o: /usr/include/string.h /usr/include/features.h
+Schema.o: /usr/include/sys/cdefs.h
+Schema.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h Schema.h
+Schema.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+Schema.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/endian.h
+Schema.o: /usr/include/bytesex.h /usr/include/nan.h
+Schema.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+Schema.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
+Schema.o: /usr/include/unistd.h /usr/include/posix_opt.h
+Schema.o: /usr/include/gnu/types.h /usr/include/confname.h
+Schema.o: /usr/include/sys/types.h /usr/include/linux/types.h
+Schema.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+Schema.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h Attr.h
+Schema.o: /usr/include/stdlib.h /usr/include/errno.h
+Schema.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+Schema.o: /usr/include/alloca.h IntStack.h Traits.h bitmap.h
+Schema.o: /usr/include/limits.h /usr/include/posix1_lim.h
+Schema.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h PerlFrag.h
+Schema.o: Lexer.h Enum.h Comment.h Config.h /usr/include/time.h
+Schema.o: /usr/include/sys/time.h /usr/include/linux/time.h Token.h
+Schema.o: getftime.h DateTime.h sysdep.h
+Schema.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h
+Schema.o: /usr/include/assert.h
+SlideBuf.o: /usr/include/stdlib.h /usr/include/features.h
+SlideBuf.o: /usr/include/sys/cdefs.h
+SlideBuf.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+SlideBuf.o: /usr/include/errno.h /usr/include/linux/errno.h
+SlideBuf.o: /usr/include/asm/errno.h /usr/include/alloca.h
+SlideBuf.o: /usr/include/string.h /usr/include/fcntl.h
+SlideBuf.o: /usr/include/sys/types.h /usr/include/linux/types.h
+SlideBuf.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+SlideBuf.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+SlideBuf.o: /usr/include/gnu/types.h /usr/include/linux/fcntl.h
+SlideBuf.o: /usr/include/asm/fcntl.h /usr/include/sys/stat.h
+SlideBuf.o: /usr/include/linux/stat.h Config.h /usr/include/time.h
+SlideBuf.o: /usr/include/sys/time.h /usr/include/linux/time.h SlideBuf.h
+SlideBuf.o: /usr/include/unistd.h /usr/include/posix_opt.h
+SlideBuf.o: /usr/include/confname.h Comment.h
+SlideRead.o: SlideRead.h /usr/include/unistd.h /usr/include/features.h
+SlideRead.o: /usr/include/sys/cdefs.h /usr/include/posix_opt.h
+SlideRead.o: /usr/include/gnu/types.h
+SlideRead.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+SlideRead.o: /usr/include/confname.h /usr/include/sys/types.h
+SlideRead.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+SlideRead.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+SlideRead.o: /usr/include/sys/bitypes.h SlideBuf.h
+Token.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+Token.o: Lexer.h Token.h
+Traits.o: Traits.h /usr/include/stdlib.h /usr/include/features.h
+Traits.o: /usr/include/sys/cdefs.h
+Traits.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+Traits.o: /usr/include/errno.h /usr/include/linux/errno.h
+Traits.o: /usr/include/asm/errno.h /usr/include/alloca.h
+Traits.o: /usr/include/string.h bitmap.h /usr/include/limits.h
+Traits.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+Traits.o: /usr/include/posix2_lim.h
+UniData.o: /usr/include/stdlib.h /usr/include/features.h
+UniData.o: /usr/include/sys/cdefs.h
+UniData.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+UniData.o: /usr/include/errno.h /usr/include/linux/errno.h
+UniData.o: /usr/include/asm/errno.h /usr/include/alloca.h
+UniData.o: /usr/include/string.h /usr/include/fcntl.h
+UniData.o: /usr/include/sys/types.h /usr/include/linux/types.h
+UniData.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+UniData.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+UniData.o: /usr/include/gnu/types.h /usr/include/linux/fcntl.h
+UniData.o: /usr/include/asm/fcntl.h /usr/include/sys/stat.h
+UniData.o: /usr/include/linux/stat.h Config.h /usr/include/time.h
+UniData.o: /usr/include/sys/time.h /usr/include/linux/time.h UniData.h
+UniData.o: /usr/include/unistd.h /usr/include/posix_opt.h
+UniData.o: /usr/include/confname.h RecId.h SlideBuf.h Schema.h
+UniData.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+UniData.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/endian.h
+UniData.o: /usr/include/bytesex.h /usr/include/nan.h
+UniData.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+UniData.o: /usr/include/values.h /usr/include/ieee754.h
+UniData.o: /usr/include/ieee854.h Attr.h IntStack.h Traits.h bitmap.h
+UniData.o: /usr/include/limits.h /usr/include/posix1_lim.h
+UniData.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h PerlFrag.h
+UniData.o: Lexer.h Enum.h Comment.h udParam.h udIndex.h fast_atof.h
+UniData.o: getftime.h DateTime.h sysdep.h
+UniData.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h
+UniData.o: /usr/include/assert.h
+fast_atof.o: /usr/include/ctype.h /usr/include/features.h
+fast_atof.o: /usr/include/sys/cdefs.h /usr/include/endian.h
+fast_atof.o: /usr/include/bytesex.h
+getftime.o: /usr/include/stdlib.h /usr/include/features.h
+getftime.o: /usr/include/sys/cdefs.h
+getftime.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+getftime.o: /usr/include/errno.h /usr/include/linux/errno.h
+getftime.o: /usr/include/asm/errno.h /usr/include/alloca.h
+getftime.o: /usr/include/string.h /usr/include/ctype.h /usr/include/endian.h
+getftime.o: /usr/include/bytesex.h getftime.h /usr/include/time.h
+getftime.o: /usr/include/sys/time.h /usr/include/linux/types.h
+getftime.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+getftime.o: /usr/include/asm/types.h /usr/include/linux/time.h
+getftime.o: /usr/include/sys/types.h /usr/include/sys/bitypes.h DateTime.h
+getftime.o: sysdep.h /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h
+pmain.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+pmain.o: /usr/include/math.h /usr/include/features.h /usr/include/sys/cdefs.h
+pmain.o: /usr/include/huge_val.h /usr/include/endian.h /usr/include/bytesex.h
+pmain.o: /usr/include/nan.h
+pmain.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+pmain.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
+pmain.o: PerlFrag.h /usr/include/string.h
+pmain.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h Lexer.h
+udIndex.o: udIndex.h /usr/include/unistd.h /usr/include/features.h
+udIndex.o: /usr/include/sys/cdefs.h /usr/include/posix_opt.h
+udIndex.o: /usr/include/gnu/types.h
+udIndex.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+udIndex.o: /usr/include/confname.h /usr/include/sys/types.h
+udIndex.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+udIndex.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+udIndex.o: /usr/include/sys/bitypes.h RecId.h
+udParam.o: udParam.h /usr/include/stdlib.h /usr/include/features.h
+udParam.o: /usr/include/sys/cdefs.h
+udParam.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+udParam.o: /usr/include/errno.h /usr/include/linux/errno.h
+udParam.o: /usr/include/asm/errno.h /usr/include/alloca.h RecId.h Schema.h
+udParam.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+udParam.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/endian.h
+udParam.o: /usr/include/bytesex.h /usr/include/nan.h
+udParam.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+udParam.o: /usr/include/values.h /usr/include/ieee754.h
+udParam.o: /usr/include/ieee854.h /usr/include/unistd.h
+udParam.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+udParam.o: /usr/include/confname.h /usr/include/sys/types.h
+udParam.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+udParam.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+udParam.o: /usr/include/sys/bitypes.h Attr.h IntStack.h Traits.h
+udParam.o: /usr/include/string.h bitmap.h /usr/include/limits.h
+udParam.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+udParam.o: /usr/include/posix2_lim.h PerlFrag.h Lexer.h Enum.h Comment.h
+udParam.o: Config.h /usr/include/time.h /usr/include/sys/time.h
+udParam.o: /usr/include/linux/time.h
+umain.o: /usr/include/stdlib.h /usr/include/features.h
+umain.o: /usr/include/sys/cdefs.h
+umain.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+umain.o: /usr/include/errno.h /usr/include/linux/errno.h
+umain.o: /usr/include/asm/errno.h /usr/include/alloca.h /usr/include/unistd.h
+umain.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+umain.o: /usr/include/confname.h /usr/include/sys/types.h
+umain.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+umain.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+umain.o: /usr/include/sys/bitypes.h /usr/include/fcntl.h
+umain.o: /usr/include/linux/fcntl.h /usr/include/asm/fcntl.h
+umain.o: /usr/include/time.h /usr/include/sys/time.h
+umain.o: /usr/include/linux/time.h UniData.h RecId.h SlideBuf.h Schema.h
+umain.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+umain.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/endian.h
+umain.o: /usr/include/bytesex.h /usr/include/nan.h
+umain.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+umain.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
+umain.o: Attr.h IntStack.h Traits.h /usr/include/string.h bitmap.h
+umain.o: /usr/include/limits.h /usr/include/posix1_lim.h
+umain.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h PerlFrag.h
+umain.o: Lexer.h Enum.h Comment.h Config.h udParam.h getftime.h DateTime.h
+umain.o: sysdep.h /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h

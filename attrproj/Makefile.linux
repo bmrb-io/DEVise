@@ -15,6 +15,16 @@
 # $Id$
 
 # $Log$
+# Revision 1.8.2.1  1997/10/30 20:14:30  wenger
+# Got DEVise to compile, link, and run on sun and linux; compiles but
+# doesn't link on hp (can't find memory mapping functions).  This includes
+# moving the unidata config.h files to separate copies in the unidata
+# directory for each architecture, since the config.h's are architecture-
+# dependent.
+#
+# Revision 1.8  1997/10/27 23:33:41  yadong
+# Updated dependencies.
+#
 # Revision 1.7  1997/03/28 16:08:20  wenger
 # Added headers to all source files that didn't have them; updated
 # solaris, solsparc, and hp dependencies.
@@ -28,55 +38,71 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-ApInit.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-ApInit.o: /usr/include/sys/va_list.h /usr/include/unistd.h
-ApInit.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-ApInit.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-ApInit.o: /usr/include/sys/time.h /usr/include/time.h
-ApInit.o: /usr/include/sys/unistd.h /usr/include/fcntl.h
-ApInit.o: /usr/include/sys/fcntl.h /usr/include/stdlib.h
-ApInit.o: /usr/include/string.h /usr/include/signal.h
-ApInit.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
-ApInit.o: /usr/include/sys/machsig.h ../graphics/Exit.h ApInit.h
-ApInit.o: ../graphics/DeviseTypes.h /usr/include/values.h
-ApInit.o: ../graphics/DevStatus.h ../graphics/BufPolicy.h ../graphics/Time.h
-ApInit.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
-ApInit.o: ../graphics/Pattern.h ../graphics/Timer.h ../graphics/Util.h
-ApInit.o: /usr/include/ctype.h /usr/include/math.h
-ApInit.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-ApParseCat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-ApParseCat.o: /usr/include/sys/va_list.h ApParseCat.h
+ApInit.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+ApInit.o: /usr/include/sys/cdefs.h /usr/include/unistd.h
+ApInit.o: /usr/include/features.h /usr/include/posix_opt.h
+ApInit.o: /usr/include/gnu/types.h
+ApInit.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+ApInit.o: /usr/include/confname.h /usr/include/sys/types.h
+ApInit.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+ApInit.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+ApInit.o: /usr/include/sys/bitypes.h /usr/include/fcntl.h
+ApInit.o: /usr/include/linux/fcntl.h /usr/include/asm/fcntl.h
+ApInit.o: /usr/include/stdlib.h /usr/include/errno.h
+ApInit.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+ApInit.o: /usr/include/alloca.h /usr/include/string.h /usr/include/signal.h
+ApInit.o: /usr/include/linux/signal.h /usr/include/asm/signal.h
+ApInit.o: ../graphics/Exit.h ApInit.h ../graphics/DeviseTypes.h
+ApInit.o: /usr/include/values.h ../graphics/DevStatus.h
+ApInit.o: ../graphics/BufPolicy.h ../graphics/Time.h /usr/include/sys/time.h
+ApInit.o: /usr/include/linux/time.h /usr/include/time.h ../graphics/Journal.h
+ApInit.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+ApInit.o: ../graphics/Timer.h ../graphics/Util.h /usr/include/ctype.h
+ApInit.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/math.h
+ApInit.o: /usr/include/huge_val.h /usr/include/nan.h
+ApInit.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+ApInit.o: /usr/include/ieee754.h /usr/include/ieee854.h
+ApParseCat.o: /usr/include/stdio.h /usr/include/libio.h
+ApParseCat.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h ApParseCat.h
 ApParseCat.o: ../graphics/DeviseTypes.h /usr/include/values.h
 ApParseCat.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-ApParseCat.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-ApParseCat.o: /usr/include/sys/select.h /usr/include/sys/time.h
-ApParseCat.o: /usr/include/time.h ../graphics.new/TData.h
+ApParseCat.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+ApParseCat.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+ApParseCat.o: /usr/include/sys/bitypes.h ../graphics.new/TData.h
 ApParseCat.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
 ApParseCat.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
 ApParseCat.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-ApParseCat.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-ApParseCat.o: /usr/include/sys/unistd.h /usr/include/errno.h
-ApParseCat.o: /usr/include/sys/errno.h /usr/include/assert.h
-ApParseCat.o: /usr/include/limits.h /usr/include/sys/stat.h
+ApParseCat.o: /usr/include/features.h /usr/include/linux/ipc.h
+ApParseCat.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+ApParseCat.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
+ApParseCat.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+ApParseCat.o: /usr/include/errno.h /usr/include/linux/errno.h
+ApParseCat.o: /usr/include/asm/errno.h /usr/include/assert.h
+ApParseCat.o: /usr/include/limits.h /usr/include/posix1_lim.h
+ApParseCat.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+ApParseCat.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
 ApParseCat.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-ApParseCat.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-ApParseCat.o: /usr/include/sys/machsig.h /usr/include/sys/procset.h
-ApParseCat.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-ApParseCat.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-ApParseCat.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-ApParseCat.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-ApParseCat.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-ApParseCat.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-ApParseCat.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-ApParseCat.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-ApParseCat.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-ApParseCat.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-ApParseCat.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-ApParseCat.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-ApParseCat.o: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Init.h
-ApParseCat.o: ../graphics/BufPolicy.h ../graphics.new/GroupDir.h
-ApParseCat.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
-ApParseCat.o: /usr/include/stdlib.h ../graphics.new/MapInterpClassInfo.h
+ApParseCat.o: /usr/include/linux/param.h /usr/include/asm/param.h
+ApParseCat.o: /usr/include/sys/time.h /usr/include/linux/time.h
+ApParseCat.o: /usr/include/time.h /usr/include/sys/wait.h
+ApParseCat.o: /usr/include/gnu/types.h /usr/include/waitflags.h
+ApParseCat.o: /usr/include/waitstatus.h /usr/include/endian.h
+ApParseCat.o: /usr/include/bytesex.h /usr/include/sys/ioctl.h
+ApParseCat.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+ApParseCat.o: /usr/include/termios.h /usr/include/linux/termios.h
+ApParseCat.o: /usr/include/asm/termios.h /usr/include/asm/termbits.h
+ApParseCat.o: /usr/include/asm/ioctls.h /usr/include/sys/socketio.h
+ApParseCat.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
+ApParseCat.o: /usr/include/netdb.h /usr/include/paths.h
+ApParseCat.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+ApParseCat.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
+ApParseCat.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+ApParseCat.o: /usr/include/asm/byteorder.h ../graphics/AttrList.h
+ApParseCat.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
+ApParseCat.o: ../graphics.new/GroupDir.h ../graphics.new/ItemList.h
+ApParseCat.o: ../graphics.new/Group.h /usr/include/stdlib.h
+ApParseCat.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+ApParseCat.o: /usr/include/alloca.h ../graphics.new/MapInterpClassInfo.h
 ApParseCat.o: ../graphics/ClassDir.h ../graphics/VisualArg.h
 ApParseCat.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Parse.h
 ApParseCat.o: ApInit.h ../graphics.new/TDataAsciiInterp.h
@@ -85,40 +111,50 @@ ApParseCat.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
 ApParseCat.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
 ApParseCat.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
-ApParseCat.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-ApParseCat2.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-ApParseCat2.o: /usr/include/sys/va_list.h ApParseCat.h
+ApParseCat.o: /usr/include/huge_val.h /usr/include/nan.h
+ApParseCat.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+ApParseCat.o: /usr/include/ieee754.h /usr/include/ieee854.h
+ApParseCat2.o: /usr/include/stdio.h /usr/include/libio.h
+ApParseCat2.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h ApParseCat.h
 ApParseCat2.o: ../graphics/DeviseTypes.h /usr/include/values.h
 ApParseCat2.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-ApParseCat2.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-ApParseCat2.o: /usr/include/sys/select.h /usr/include/sys/time.h
-ApParseCat2.o: /usr/include/time.h ../graphics.new/TData.h
+ApParseCat2.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+ApParseCat2.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+ApParseCat2.o: /usr/include/sys/bitypes.h ../graphics.new/TData.h
 ApParseCat2.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
 ApParseCat2.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
 ApParseCat2.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-ApParseCat2.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-ApParseCat2.o: /usr/include/sys/unistd.h /usr/include/errno.h
-ApParseCat2.o: /usr/include/sys/errno.h /usr/include/assert.h
-ApParseCat2.o: /usr/include/limits.h /usr/include/sys/stat.h
+ApParseCat2.o: /usr/include/features.h /usr/include/linux/ipc.h
+ApParseCat2.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+ApParseCat2.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
+ApParseCat2.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+ApParseCat2.o: /usr/include/errno.h /usr/include/linux/errno.h
+ApParseCat2.o: /usr/include/asm/errno.h /usr/include/assert.h
+ApParseCat2.o: /usr/include/limits.h /usr/include/posix1_lim.h
+ApParseCat2.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+ApParseCat2.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
 ApParseCat2.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-ApParseCat2.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-ApParseCat2.o: /usr/include/sys/machsig.h /usr/include/sys/procset.h
-ApParseCat2.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-ApParseCat2.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-ApParseCat2.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-ApParseCat2.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-ApParseCat2.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-ApParseCat2.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-ApParseCat2.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-ApParseCat2.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-ApParseCat2.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-ApParseCat2.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-ApParseCat2.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-ApParseCat2.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-ApParseCat2.o: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Init.h
-ApParseCat2.o: ../graphics/BufPolicy.h ../graphics.new/GroupDir.h
-ApParseCat2.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
-ApParseCat2.o: /usr/include/stdlib.h ../graphics.new/MapInterpClassInfo.h
+ApParseCat2.o: /usr/include/linux/param.h /usr/include/asm/param.h
+ApParseCat2.o: /usr/include/sys/time.h /usr/include/linux/time.h
+ApParseCat2.o: /usr/include/time.h /usr/include/sys/wait.h
+ApParseCat2.o: /usr/include/gnu/types.h /usr/include/waitflags.h
+ApParseCat2.o: /usr/include/waitstatus.h /usr/include/endian.h
+ApParseCat2.o: /usr/include/bytesex.h /usr/include/sys/ioctl.h
+ApParseCat2.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+ApParseCat2.o: /usr/include/termios.h /usr/include/linux/termios.h
+ApParseCat2.o: /usr/include/asm/termios.h /usr/include/asm/termbits.h
+ApParseCat2.o: /usr/include/asm/ioctls.h /usr/include/sys/socketio.h
+ApParseCat2.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
+ApParseCat2.o: /usr/include/netdb.h /usr/include/paths.h
+ApParseCat2.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+ApParseCat2.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
+ApParseCat2.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+ApParseCat2.o: /usr/include/asm/byteorder.h ../graphics/AttrList.h
+ApParseCat2.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
+ApParseCat2.o: ../graphics.new/GroupDir.h ../graphics.new/ItemList.h
+ApParseCat2.o: ../graphics.new/Group.h /usr/include/stdlib.h
+ApParseCat2.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+ApParseCat2.o: /usr/include/alloca.h ../graphics.new/MapInterpClassInfo.h
 ApParseCat2.o: ../graphics/ClassDir.h ../graphics/VisualArg.h
 ApParseCat2.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Parse.h
 ApParseCat2.o: ApInit.h ../graphics.new/TDataSeqAsciiInterp.h
@@ -127,123 +163,167 @@ ApParseCat2.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
 ApParseCat2.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat2.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
 ApParseCat2.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
-ApParseCat2.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-AttrProj.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-AttrProj.o: /usr/include/sys/va_list.h /usr/include/string.h AttrProj.h
+ApParseCat2.o: /usr/include/huge_val.h /usr/include/nan.h
+ApParseCat2.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+ApParseCat2.o: /usr/include/ieee754.h /usr/include/ieee854.h
+AttrProj.o: /usr/include/stdio.h /usr/include/libio.h
+AttrProj.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
+AttrProj.o: /usr/include/string.h /usr/include/features.h
+AttrProj.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h AttrProj.h
 AttrProj.o: ../graphics/DeviseTypes.h /usr/include/values.h
 AttrProj.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-AttrProj.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-AttrProj.o: /usr/include/sys/select.h /usr/include/sys/time.h
-AttrProj.o: /usr/include/time.h ../graphics.new/RecId.h VectorArray.h
+AttrProj.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+AttrProj.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+AttrProj.o: /usr/include/sys/bitypes.h ../graphics.new/RecId.h VectorArray.h
 AttrProj.o: vector.h ProjectionList.h ApParseCat.h ../graphics.new/TData.h
 AttrProj.o: ../graphics.new/DataSource.h ../graphics/Exit.h
 AttrProj.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-AttrProj.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-AttrProj.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-AttrProj.o: /usr/include/errno.h /usr/include/sys/errno.h
-AttrProj.o: /usr/include/assert.h /usr/include/limits.h
-AttrProj.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-AttrProj.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-AttrProj.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-AttrProj.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-AttrProj.o: /usr/include/netdb.h /usr/include/sys/socket.h
-AttrProj.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-AttrProj.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-AttrProj.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-AttrProj.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-AttrProj.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-AttrProj.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-AttrProj.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-AttrProj.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-AttrProj.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-AttrProj.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-AttrProj.o: /usr/include/sys/byteorder.h ../graphics/Util.h
-AttrProj.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
-AttrProj.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+AttrProj.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+AttrProj.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+AttrProj.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
+AttrProj.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+AttrProj.o: /usr/include/errno.h /usr/include/linux/errno.h
+AttrProj.o: /usr/include/asm/errno.h /usr/include/assert.h
+AttrProj.o: /usr/include/limits.h /usr/include/posix1_lim.h
+AttrProj.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+AttrProj.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
+AttrProj.o: ../graphics.new/machdep.h /usr/include/sys/param.h
+AttrProj.o: /usr/include/linux/param.h /usr/include/asm/param.h
+AttrProj.o: /usr/include/sys/time.h /usr/include/linux/time.h
+AttrProj.o: /usr/include/time.h /usr/include/sys/wait.h
+AttrProj.o: /usr/include/gnu/types.h /usr/include/waitflags.h
+AttrProj.o: /usr/include/waitstatus.h /usr/include/endian.h
+AttrProj.o: /usr/include/bytesex.h /usr/include/sys/ioctl.h
+AttrProj.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+AttrProj.o: /usr/include/termios.h /usr/include/linux/termios.h
+AttrProj.o: /usr/include/asm/termios.h /usr/include/asm/termbits.h
+AttrProj.o: /usr/include/asm/ioctls.h /usr/include/sys/socketio.h
+AttrProj.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
+AttrProj.o: /usr/include/netdb.h /usr/include/paths.h
+AttrProj.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+AttrProj.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
+AttrProj.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+AttrProj.o: /usr/include/asm/byteorder.h ../graphics/Util.h
+AttrProj.o: /usr/include/stdlib.h /usr/include/alloca.h /usr/include/ctype.h
+AttrProj.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/nan.h
+AttrProj.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+AttrProj.o: /usr/include/ieee754.h /usr/include/ieee854.h
 AttrProj.o: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Init.h
 AttrProj.o: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
-AttrProj2.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-AttrProj2.o: /usr/include/sys/va_list.h /usr/include/string.h AttrProj.h
+AttrProj2.o: /usr/include/stdio.h /usr/include/libio.h
+AttrProj2.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
+AttrProj2.o: /usr/include/string.h /usr/include/features.h
+AttrProj2.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h AttrProj.h
 AttrProj2.o: ../graphics/DeviseTypes.h /usr/include/values.h
 AttrProj2.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-AttrProj2.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-AttrProj2.o: /usr/include/sys/select.h /usr/include/sys/time.h
-AttrProj2.o: /usr/include/time.h ../graphics.new/RecId.h VectorArray.h
+AttrProj2.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+AttrProj2.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+AttrProj2.o: /usr/include/sys/bitypes.h ../graphics.new/RecId.h VectorArray.h
 AttrProj2.o: vector.h ProjectionList.h ApParseCat.h ../graphics.new/TData.h
 AttrProj2.o: ../graphics.new/DataSource.h ../graphics/Exit.h
 AttrProj2.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-AttrProj2.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-AttrProj2.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-AttrProj2.o: /usr/include/errno.h /usr/include/sys/errno.h
-AttrProj2.o: /usr/include/assert.h /usr/include/limits.h
-AttrProj2.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-AttrProj2.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-AttrProj2.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-AttrProj2.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-AttrProj2.o: /usr/include/netdb.h /usr/include/sys/socket.h
-AttrProj2.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-AttrProj2.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-AttrProj2.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-AttrProj2.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-AttrProj2.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-AttrProj2.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-AttrProj2.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-AttrProj2.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-AttrProj2.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-AttrProj2.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-AttrProj2.o: /usr/include/sys/byteorder.h ../graphics/Util.h
-AttrProj2.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
-AttrProj2.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+AttrProj2.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+AttrProj2.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+AttrProj2.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
+AttrProj2.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+AttrProj2.o: /usr/include/errno.h /usr/include/linux/errno.h
+AttrProj2.o: /usr/include/asm/errno.h /usr/include/assert.h
+AttrProj2.o: /usr/include/limits.h /usr/include/posix1_lim.h
+AttrProj2.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+AttrProj2.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
+AttrProj2.o: ../graphics.new/machdep.h /usr/include/sys/param.h
+AttrProj2.o: /usr/include/linux/param.h /usr/include/asm/param.h
+AttrProj2.o: /usr/include/sys/time.h /usr/include/linux/time.h
+AttrProj2.o: /usr/include/time.h /usr/include/sys/wait.h
+AttrProj2.o: /usr/include/gnu/types.h /usr/include/waitflags.h
+AttrProj2.o: /usr/include/waitstatus.h /usr/include/endian.h
+AttrProj2.o: /usr/include/bytesex.h /usr/include/sys/ioctl.h
+AttrProj2.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+AttrProj2.o: /usr/include/termios.h /usr/include/linux/termios.h
+AttrProj2.o: /usr/include/asm/termios.h /usr/include/asm/termbits.h
+AttrProj2.o: /usr/include/asm/ioctls.h /usr/include/sys/socketio.h
+AttrProj2.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
+AttrProj2.o: /usr/include/netdb.h /usr/include/paths.h
+AttrProj2.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+AttrProj2.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
+AttrProj2.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+AttrProj2.o: /usr/include/asm/byteorder.h ../graphics/Util.h
+AttrProj2.o: /usr/include/stdlib.h /usr/include/alloca.h /usr/include/ctype.h
+AttrProj2.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/nan.h
+AttrProj2.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+AttrProj2.o: /usr/include/ieee754.h /usr/include/ieee854.h
 AttrProj2.o: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Init.h
 AttrProj2.o: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
-ProjectionList.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-ProjectionList.o: /usr/include/sys/va_list.h ProjectionList.h
-ProjectionList.o: ../graphics/DeviseTypes.h /usr/include/values.h
-ProjectionList.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-ProjectionList.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-ProjectionList.o: /usr/include/sys/select.h /usr/include/sys/time.h
-ProjectionList.o: /usr/include/time.h
-VectorArray.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-VectorArray.o: /usr/include/sys/va_list.h VectorArray.h
-VectorArray.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ProjectionList.o: /usr/include/stdio.h /usr/include/libio.h
+ProjectionList.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
+ProjectionList.o: ProjectionList.h ../graphics/DeviseTypes.h
+ProjectionList.o: /usr/include/values.h ../graphics/DevStatus.h
+ProjectionList.o: /usr/include/sys/types.h /usr/include/linux/types.h
+ProjectionList.o: /usr/include/linux/posix_types.h
+ProjectionList.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+ProjectionList.o: /usr/include/sys/bitypes.h
+VectorArray.o: /usr/include/stdio.h /usr/include/libio.h
+VectorArray.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
+VectorArray.o: VectorArray.h ../graphics/DeviseTypes.h /usr/include/values.h
 VectorArray.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-VectorArray.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-VectorArray.o: /usr/include/sys/select.h /usr/include/sys/time.h
-VectorArray.o: /usr/include/time.h vector.h ../graphics/Util.h
-VectorArray.o: /usr/include/stdlib.h /usr/include/string.h
-VectorArray.o: /usr/include/ctype.h /usr/include/math.h
-VectorArray.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+VectorArray.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+VectorArray.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+VectorArray.o: /usr/include/sys/bitypes.h vector.h ../graphics/Util.h
+VectorArray.o: /usr/include/stdlib.h /usr/include/features.h
+VectorArray.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+VectorArray.o: /usr/include/errno.h /usr/include/linux/errno.h
+VectorArray.o: /usr/include/asm/errno.h /usr/include/alloca.h
+VectorArray.o: /usr/include/time.h /usr/include/sys/time.h
+VectorArray.o: /usr/include/linux/time.h /usr/include/string.h
+VectorArray.o: /usr/include/ctype.h /usr/include/endian.h
+VectorArray.o: /usr/include/bytesex.h /usr/include/math.h
+VectorArray.o: /usr/include/huge_val.h /usr/include/nan.h
+VectorArray.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+VectorArray.o: /usr/include/ieee754.h /usr/include/ieee854.h
 VectorArray.o: ../graphics/Exit.h
-aptest.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-aptest.o: /usr/include/sys/va_list.h /usr/include/sys/types.h
-aptest.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-aptest.o: /usr/include/sys/select.h /usr/include/sys/time.h
-aptest.o: /usr/include/time.h AttrProj.h ../graphics/DeviseTypes.h
+aptest.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+aptest.o: /usr/include/sys/cdefs.h /usr/include/sys/types.h
+aptest.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+aptest.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+aptest.o: /usr/include/sys/bitypes.h AttrProj.h ../graphics/DeviseTypes.h
 aptest.o: /usr/include/values.h ../graphics/DevStatus.h
 aptest.o: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
 aptest.o: ApInit.h ../graphics/BufPolicy.h
-aptest2.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-aptest2.o: /usr/include/sys/va_list.h /usr/include/sys/types.h
-aptest2.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-aptest2.o: /usr/include/sys/select.h /usr/include/sys/time.h
-aptest2.o: /usr/include/time.h AttrProj.h ../graphics/DeviseTypes.h
+aptest2.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+aptest2.o: /usr/include/sys/cdefs.h /usr/include/sys/types.h
+aptest2.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+aptest2.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+aptest2.o: /usr/include/sys/bitypes.h AttrProj.h ../graphics/DeviseTypes.h
 aptest2.o: /usr/include/values.h ../graphics/DevStatus.h
 aptest2.o: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
 aptest2.o: ApInit.h ../graphics/BufPolicy.h
-show.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-show.o: /usr/include/sys/va_list.h /usr/include/sys/types.h
-show.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-show.o: /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h
-show.o: /usr/include/unistd.h /usr/include/sys/unistd.h AttrProj.h
-show.o: ../graphics/DeviseTypes.h /usr/include/values.h
-show.o: ../graphics/DevStatus.h ../graphics.new/RecId.h VectorArray.h
-show.o: vector.h ProjectionList.h ApInit.h ../graphics/BufPolicy.h
-vector.o: global.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
-vector.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
-vector.o: /usr/include/string.h /usr/include/math.h
-vector.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-vector.o: /usr/include/ctype.h /usr/include/unistd.h /usr/include/sys/types.h
-vector.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-vector.o: /usr/include/sys/select.h /usr/include/sys/time.h
-vector.o: /usr/include/time.h /usr/include/sys/unistd.h
-vector.o: /usr/include/sys/times.h vector.h
+show.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+show.o: /usr/include/sys/cdefs.h /usr/include/sys/types.h
+show.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+show.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+show.o: /usr/include/sys/bitypes.h /usr/include/unistd.h
+show.o: /usr/include/features.h /usr/include/posix_opt.h
+show.o: /usr/include/gnu/types.h
+show.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+show.o: /usr/include/confname.h AttrProj.h ../graphics/DeviseTypes.h
+show.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics.new/RecId.h
+show.o: VectorArray.h vector.h ProjectionList.h ApInit.h
+show.o: ../graphics/BufPolicy.h
+vector.o: global.h /usr/include/stdio.h /usr/include/libio.h
+vector.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
+vector.o: /usr/include/stdlib.h /usr/include/features.h
+vector.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+vector.o: /usr/include/errno.h /usr/include/linux/errno.h
+vector.o: /usr/include/asm/errno.h /usr/include/alloca.h
+vector.o: /usr/include/string.h /usr/include/math.h /usr/include/huge_val.h
+vector.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
+vector.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+vector.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
+vector.o: /usr/include/ctype.h /usr/include/unistd.h /usr/include/posix_opt.h
+vector.o: /usr/include/gnu/types.h /usr/include/confname.h
+vector.o: /usr/include/sys/types.h /usr/include/linux/types.h
+vector.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+vector.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+vector.o: /usr/include/time.h /usr/include/sys/time.h
+vector.o: /usr/include/linux/time.h /usr/include/sys/times.h
+vector.o: /usr/include/linux/times.h vector.h

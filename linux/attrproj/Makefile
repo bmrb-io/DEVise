@@ -15,6 +15,16 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4.6.1  1997/10/30 20:16:52  wenger
+#  Got DEVise to compile, link, and run on sun and linux; compiles but
+#  doesn't link on hp (can't find memory mapping functions).  This includes
+#  moving the unidata config.h files to separate copies in the unidata
+#  directory for each architecture, since the config.h's are architecture-
+#  dependent.
+#
+#  Revision 1.4  1997/05/08 18:11:24  wenger
+#  Minor changes to fix Linux compile problems.
+#
 #  Revision 1.3  1996/09/25 18:37:08  wenger
 #  Updated again for Linux compile (Linux 2.0.6, Tcl 7.4, Tk 4.0).
 #
@@ -29,8 +39,9 @@
 
 ARCH_FLAGS   = -DLINUX -I/usr/include/tcl
 ARCH_LDFLAGS = -L/usr/lib
-ARCH_SYSLIBS = -ltcl7.4 -lm
+#ARCH_SYSLIBS = -ltcl7.4 -lm
 #ARCH_SYSLIBS = -ltcl7.5 -ldl -lm
+ARCH_SYSLIBS = -ltcl7.6 -ldl -lm
 ARCH_LDPOST  = -static
 
 VPATH = ../../attrproj:../../graphics:../../graphics.new

@@ -15,6 +15,16 @@
 # $Id$
 
 # $Log$
+# Revision 1.6.2.1  1997/10/30 20:17:42  wenger
+# Got DEVise to compile, link, and run on sun and linux; compiles but
+# doesn't link on hp (can't find memory mapping functions).  This includes
+# moving the unidata config.h files to separate copies in the unidata
+# directory for each architecture, since the config.h's are architecture-
+# dependent.
+#
+# Revision 1.6  1997/10/27 23:34:08  yadong
+# Updated dependencies.
+#
 # Revision 1.5  1997/03/28 16:11:59  wenger
 # Added headers to all source files that didn't have them; updated
 # solaris, solsparc, and hp dependencies.
@@ -27,11 +37,19 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-codegen.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-codegen.o: /usr/include/sys/va_list.h /usr/include/string.h
-codegen.o: /usr/include/stdlib.h parse.h codegen.h
-main.o: parse.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
-main.o: /usr/include/sys/va_list.h
-parse.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-parse.o: /usr/include/sys/va_list.h /usr/include/stdlib.h parse.h tokens.h
+codegen.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+codegen.o: /usr/include/sys/cdefs.h /usr/include/string.h
+codegen.o: /usr/include/features.h
+codegen.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+codegen.o: /usr/include/stdlib.h /usr/include/errno.h
+codegen.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+codegen.o: /usr/include/alloca.h parse.h codegen.h
+main.o: parse.h /usr/include/stdio.h /usr/include/libio.h
+main.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
+parse.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+parse.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
+parse.o: /usr/include/features.h
+parse.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+parse.o: /usr/include/errno.h /usr/include/linux/errno.h
+parse.o: /usr/include/asm/errno.h /usr/include/alloca.h parse.h tokens.h
 parse.o: /usr/include/malloc.h codegen.h

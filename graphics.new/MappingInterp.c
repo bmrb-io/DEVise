@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.63.4.1  1997/11/04 18:48:30  wenger
+  Fixed bug 238 (core dump in search engine demo).
+
+  Revision 1.63  1997/08/27 14:47:40  wenger
+  Removed some unnecessary include dependencies.
+
   Revision 1.62  1997/08/20 22:11:01  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -818,7 +824,9 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 
 	case IntAttr:
 	  intPtr = (int *)(tPtr + attrInfo->offset);
-	  _tclAttrs[j] = (double)(*intPtr);
+	  int tmpInt;
+	  memcpy((void *) &tmpInt, (void *) intPtr, sizeof(tmpInt));
+	  _tclAttrs[j] = tmpInt;
 	  /*
 	     printf("Setting int attr %d to %f\n", j, _tclAttrs[j]);
 	  */
@@ -826,7 +834,9 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 
 	case FloatAttr:
 	  fPtr = (float *)(tPtr + attrInfo->offset);
-	  _tclAttrs[j] = (double)(*fPtr);
+	  float tmpFloat;
+	  memcpy((void *) &tmpFloat, (void *) fPtr, sizeof(tmpFloat));
+	  _tclAttrs[j] = tmpFloat;
 	  /*
 	     printf("Setting float attr %d to %f\n", j, _tclAttrs[j]);
 	  */
@@ -834,8 +844,10 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 
 	case DoubleAttr:
 	  dPtr = (double *)(tPtr + attrInfo->offset);
-	  _tclAttrs[j] = (*dPtr);
-	  //printf("Setting float attr %d to %f\n", j, _tclAttrs[j]);
+	  double tmpDbl;
+	  memcpy((void *) &tmpDbl, (void *) dPtr, sizeof(tmpDbl));
+	  _tclAttrs[j] = tmpDbl;
+	  //printf("Setting double attr %d to %f\n", j, _tclAttrs[j]);
 	  break;
 
 	case StringAttr:
@@ -850,7 +862,9 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 
 	case DateAttr:
 	  tptr = (time_t *)(tPtr + attrInfo->offset);
-	  _tclAttrs[j] = (double)(*tptr);
+	  time_t tmpTimeT;
+	  memcpy((void *) &tmpTimeT, (void *) tptr, sizeof(tmpTimeT));
+	  _tclAttrs[j] = (double)tmpTimeT;
 #if defined(DEBUG) || 0
 	  printf("Setting date attr %d to %f\n", j, _tclAttrs[j]);
 #endif

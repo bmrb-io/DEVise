@@ -15,6 +15,16 @@
 # $Id$
 
 # $Log$
+# Revision 1.35.2.1  1997/10/30 20:18:42  wenger
+# Got DEVise to compile, link, and run on sun and linux; compiles but
+# doesn't link on hp (can't find memory mapping functions).  This includes
+# moving the unidata config.h files to separate copies in the unidata
+# directory for each architecture, since the config.h's are architecture-
+# dependent.
+#
+# Revision 1.35  1997/10/25 03:18:28  yadong
+# Updated dependencies.
+#
 # Revision 1.34  1997/05/29 15:22:30  wenger
 # Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
 # compile on linux.
@@ -37,11 +47,10 @@ depend:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 Templates.o: ../graphics.new/QueryProcFull.h /usr/include/time.h
-Templates.o: /usr/include/sys/feature_tests.h /usr/include/sys/time.h
-Templates.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-Templates.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+Templates.o: /usr/include/sys/stdtypes.h /usr/include/sys/time.h
 Templates.o: ../graphics.new/QueryProc.h ../graphics/DeviseTypes.h
 Templates.o: /usr/include/values.h ../graphics/DevStatus.h
+Templates.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 Templates.o: ../graphics/VisualArg.h ../graphics/Color.h
 Templates.o: ../graphics/Pattern.h ../graphics.new/RecId.h
 Templates.o: ../graphics.new/QPRange.h ../graphics/DList.h ../graphics/Exit.h
@@ -52,101 +61,76 @@ Templates.o: ../graphics.new/RangeInfoArray.h ../graphics.new/TData.h
 Templates.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
 Templates.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
 Templates.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-Templates.o: /usr/include/sys/unistd.h /usr/include/errno.h
+Templates.o: /usr/include/sys/param.h /usr/include/machine/param.h
+Templates.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+Templates.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+Templates.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+Templates.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
 Templates.o: /usr/include/sys/errno.h /usr/include/assert.h
-Templates.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-Templates.o: /usr/include/limits.h /usr/include/sys/stat.h
-Templates.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-Templates.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-Templates.o: /usr/include/sys/machsig.h /usr/include/sys/procset.h
-Templates.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-Templates.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-Templates.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-Templates.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-Templates.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-Templates.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-Templates.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-Templates.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-Templates.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-Templates.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-Templates.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-Templates.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+Templates.o: /usr/include/stdio.h /usr/include/limits.h
+Templates.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
+Templates.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+Templates.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+Templates.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+Templates.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+Templates.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+Templates.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 Templates.o: ../graphics.new/GData.h ../graphics.new/RangeList.h
 Templates.o: ../graphics.new/RangeInfo.h ../graphics/Scheduler.h
-devtype.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
-devtype.o: /usr/include/sys/stat.h /usr/include/sys/time.h
-devtype.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-devtype.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-devtype.o: /usr/include/time.h
-tapedrive.o: /usr/include/unistd.h /usr/include/sys/feature_tests.h
-tapedrive.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-tapedrive.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-tapedrive.o: /usr/include/sys/time.h /usr/include/time.h
-tapedrive.o: /usr/include/sys/unistd.h /usr/include/string.h tapedrive.h
-tapedrive.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+devtype.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+devtype.o: /usr/include/sys/stat.h /usr/include/sys/types.h
+devtype.o: /usr/include/sys/sysmacros.h
+tapedrive.o: /usr/include/unistd.h /usr/include/sys/types.h
+tapedrive.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+tapedrive.o: /usr/include/string.h tapedrive.h /usr/include/stdio.h
 tapedrive.o: ../graphics.new/machdep.h /usr/include/limits.h
-tapedrive.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-tapedrive.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-tapedrive.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-tapedrive.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-tapedrive.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-tapedrive.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-tapedrive.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-tapedrive.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-tapedrive.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-tapedrive.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-tapedrive.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-tapedrive.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-tapedrive.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-tapedrive.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-tapedrive.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-tapedrive.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+tapedrive.o: /usr/include/sys/param.h /usr/include/machine/param.h
+tapedrive.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+tapedrive.o: /usr/include/sys/time.h /usr/include/time.h
+tapedrive.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+tapedrive.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+tapedrive.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+tapedrive.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+tapedrive.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+tapedrive.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+tapedrive.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+tapedrive.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+tapedrive.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+tapedrive.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 tapedrive.o: ../graphics.new/DCE.h /usr/include/errno.h
 tapedrive.o: /usr/include/sys/errno.h /usr/include/assert.h
 tapedrive.o: /usr/include/sys/stat.h ../graphics/Exit.h
 tapedrive.o: ../graphics/DevError.h ../graphics/DeviseTypes.h
 tapedrive.o: /usr/include/values.h ../graphics/DevStatus.h
-testtape.o: tapedrive.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
-testtape.o: /usr/include/sys/va_list.h ../graphics.new/machdep.h
-testtape.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
-testtape.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
-testtape.o: /usr/include/sys/select.h /usr/include/sys/time.h
-testtape.o: /usr/include/time.h /usr/include/sys/param.h
-testtape.o: /usr/include/sys/unistd.h /usr/include/sys/wait.h
-testtape.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-testtape.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-testtape.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-testtape.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-testtape.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-testtape.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-testtape.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-testtape.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-testtape.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-testtape.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-testtape.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-testtape.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-testtape.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-testtape.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-testtape.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-vertape.o: tapedrive.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
-vertape.o: /usr/include/sys/va_list.h ../graphics.new/machdep.h
-vertape.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
-vertape.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
-vertape.o: /usr/include/sys/select.h /usr/include/sys/time.h
-vertape.o: /usr/include/time.h /usr/include/sys/param.h
-vertape.o: /usr/include/sys/unistd.h /usr/include/sys/wait.h
-vertape.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-vertape.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-vertape.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-vertape.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-vertape.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-vertape.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-vertape.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-vertape.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-vertape.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-vertape.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-vertape.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-vertape.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-vertape.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-vertape.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-vertape.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+testtape.o: tapedrive.h /usr/include/stdio.h ../graphics.new/machdep.h
+testtape.o: /usr/include/limits.h /usr/include/sys/types.h
+testtape.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+testtape.o: /usr/include/sys/param.h /usr/include/machine/param.h
+testtape.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+testtape.o: /usr/include/sys/time.h /usr/include/time.h
+testtape.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+testtape.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+testtape.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+testtape.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+testtape.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+testtape.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+testtape.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+testtape.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+testtape.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+testtape.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+vertape.o: tapedrive.h /usr/include/stdio.h ../graphics.new/machdep.h
+vertape.o: /usr/include/limits.h /usr/include/sys/types.h
+vertape.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+vertape.o: /usr/include/sys/param.h /usr/include/machine/param.h
+vertape.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+vertape.o: /usr/include/sys/time.h /usr/include/time.h
+vertape.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+vertape.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+vertape.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+vertape.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+vertape.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+vertape.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+vertape.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+vertape.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+vertape.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+vertape.o: /usr/include/sys/socket.h /usr/include/netinet/in.h

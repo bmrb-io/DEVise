@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.8.4.1  1997/10/30 20:13:38  wenger
+  Got DEVise to compile, link, and run on sun and linux; compiles but
+  doesn't link on hp (can't find memory mapping functions).  This includes
+  moving the unidata config.h files to separate copies in the unidata
+  directory for each architecture, since the config.h's are architecture-
+  dependent.
+
+  Revision 1.8  1997/09/05 22:20:10  donjerko
+  Made changes for port to NT.
+
   Revision 1.7  1997/08/22 23:13:03  okan
   Changed #include <string.h> 's to #include <string>
 
@@ -60,6 +70,29 @@
 
 #ifdef ASYN_SOCK_REL
 //#include <sys/time.h>   erased for sysdep.h
+#endif
+
+// Ugly special case to get this to work for SunOS because the system
+// include files are so screwed up.  RKW 29 Oct., 1997.
+// We can't include netdb.h because it defines gethostbyname() with no
+// arguments.
+#if defined(SUN)
+struct  hostent {
+        char    *h_name;        /* official name of host */
+        char    **h_aliases;    /* alias list */
+        int     h_addrtype;     /* host address type */
+        int     h_length;       /* length of address */
+        char    **h_addr_list;  /* list of addresses from name server */
+#define h_addr  h_addr_list[0]  /* address, for backward compatiblity */
+};
+
+extern "C" struct hostent  *gethostbyname(const char *);
+extern "C" int socket(int, int, int);
+extern "C" int bind(int, struct sockaddr *, int);
+extern "C" int listen(int, int);
+extern "C" int accept(int, struct sockaddr *, int *);
+extern "C" int connect(int, struct sockaddr *, int);
+extern "C" int shutdown(int, int);
 #endif
 
 extern int errno;

@@ -40,6 +40,8 @@
 #include <X11/Xatom.h>
 #include <X11/Xmu/WinUtil.h>	/* for XmuClientWindow() */
 
+extern "C" gethostname(char *, int);
+
 
 /* vroot.h is a header file which lets a client get along with `virtual root'
    window managers like swm, tvtwm, olvwm, etc.  If you don't have this header
@@ -162,7 +164,7 @@ mozilla_remote_find_window (Display *dpy)
     {
       fprintf (stderr, "%s: cannot find Netscape window on display %s\n",
 	       progname, DisplayString (dpy));
-      return NULL;
+      return (Window) NULL;
     }
 }
 
@@ -207,7 +209,7 @@ mozilla_remote_obtain_lock (Display *dpy, Window window)
   if (! lock_data)
     {
       lock_data = (char *) malloc (255);
-      sprintf (lock_data, "pid%ld@", getpid ());
+      sprintf (lock_data, "pid%ld@", (long) getpid());
       if (gethostname (lock_data + strlen (lock_data), 100))
 	{
 	  perror ("gethostname");

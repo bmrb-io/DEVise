@@ -15,6 +15,16 @@
 # $Id$
 
 # $Log$
+# Revision 1.13.2.1  1997/10/30 20:15:13  wenger
+# Got DEVise to compile, link, and run on sun and linux; compiles but
+# doesn't link on hp (can't find memory mapping functions).  This includes
+# moving the unidata config.h files to separate copies in the unidata
+# directory for each architecture, since the config.h's are architecture-
+# dependent.
+#
+# Revision 1.13  1997/10/25 03:18:10  yadong
+# Updated dependencies.
+#
 # Revision 1.12  1997/05/29 15:21:05  wenger
 # Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
 # compile on linux.
@@ -35,69 +45,39 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-DevRead.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-DevRead.o: /usr/include/sys/va_list.h /usr/include/string.h DevRead.h
-DevRead.o: ../graphics/DeviseTypes.h /usr/include/values.h
-DevRead.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-DevRead.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-DevRead.o: /usr/include/sys/select.h /usr/include/sys/time.h
-DevRead.o: /usr/include/time.h ../graphics.new/RecId.h types.h
-DevRead.o: /usr/include/assert.h /usr/include/netinet/in.h
-DevRead.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-DevRead.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-DevRead.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-DevRead.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-DevRead.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-DevRead.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-DevRead.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-DevRead.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-DevRead.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-DevRead.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-DevRead.o: /usr/include/sys/byteorder.h marshal.h ../graphics/Util.h
-DevRead.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
-DevRead.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-DevRead.o: ../graphics/Exit.h ../graphics.new/TData.h
-DevRead.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
-DevRead.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-DevRead.o: /usr/include/sys/sem.h /usr/include/sys/shm.h /usr/include/errno.h
-DevRead.o: /usr/include/sys/errno.h /usr/include/limits.h
-DevRead.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-DevRead.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-DevRead.o: /usr/include/sys/machsig.h /usr/include/sys/procset.h
-DevRead.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-DevRead.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-DevRead.o: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Init.h
-DevRead.o: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
-drtest.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-drtest.o: /usr/include/sys/va_list.h /usr/include/sys/types.h
-drtest.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-drtest.o: /usr/include/sys/select.h /usr/include/sys/time.h
-drtest.o: /usr/include/time.h DevRead.h ../graphics/DeviseTypes.h
-drtest.o: /usr/include/values.h ../graphics/DevStatus.h
-drtest.o: ../graphics.new/RecId.h types.h /usr/include/assert.h
-drtest.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-drtest.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-drtest.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-drtest.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-drtest.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-drtest.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
-drtest.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-drtest.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-drtest.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-drtest.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-drtest.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h marshal.h
+DevRead.o: /usr/include/stdio.h /usr/include/string.h
+DevRead.o: /usr/include/sys/stdtypes.h DevRead.h ../graphics/DeviseTypes.h
+DevRead.o: /usr/include/values.h ../graphics/DevStatus.h
+DevRead.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+DevRead.o: ../graphics.new/RecId.h types.h /usr/include/assert.h
+DevRead.o: /usr/include/netinet/in.h marshal.h ../graphics/Util.h
+DevRead.o: /usr/include/stdlib.h /usr/include/time.h /usr/include/ctype.h
+DevRead.o: /usr/include/math.h /usr/include/floatingpoint.h
+DevRead.o: /usr/include/sys/ieeefp.h ../graphics/Exit.h
+DevRead.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
+DevRead.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
+DevRead.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+DevRead.o: /usr/include/sys/shm.h /usr/include/sys/param.h
+DevRead.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+DevRead.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+DevRead.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+DevRead.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+DevRead.o: /usr/include/errno.h /usr/include/sys/errno.h
+DevRead.o: /usr/include/limits.h /usr/include/sys/stat.h
+DevRead.o: ../graphics.new/machdep.h /usr/include/sys/time.h
+DevRead.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+DevRead.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+DevRead.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+DevRead.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+DevRead.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+DevRead.o: /usr/include/sys/socket.h ../graphics/AttrList.h
+DevRead.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
+DevRead.o: ../graphics.new/DataSeg.h
+drtest.o: /usr/include/stdio.h /usr/include/sys/types.h
+drtest.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h DevRead.h
+drtest.o: ../graphics/DeviseTypes.h /usr/include/values.h
+drtest.o: ../graphics/DevStatus.h ../graphics.new/RecId.h types.h
+drtest.o: /usr/include/assert.h /usr/include/netinet/in.h marshal.h
 types.o: types.h /usr/include/assert.h /usr/include/sys/types.h
-types.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
-types.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-types.o: /usr/include/sys/time.h /usr/include/time.h
-types.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-types.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-types.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-types.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-types.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-types.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
-types.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-types.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-types.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-types.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-types.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+types.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+types.o: /usr/include/netinet/in.h

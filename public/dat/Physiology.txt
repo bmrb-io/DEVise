@@ -1,0 +1,632 @@
+
+		     The Physiology of Perception
+			 By Walter J. Freeman
+
+
+The brain transforms sensory messages into conscious perceptions
+almost instantly Chaotic, collective activity involving millions of
+neurons seems essential for such rapid recognition.
+
+From: February 1991 Scientific American, Vol 264, (2) Pgs. 78-85.
+
+WALTER J. FREEMAN is professor of Neurobiology at the University of
+California, Berkeley. He received an M.D. from Yale University in 1954
+and completed postdoctoral training in neurophysiology at the
+University of California, Los Angeles, in l959, the year he joined the
+Berkeley faculty.
+
+When a person glimpses the face of a famous actor, sniffs a favorite
+food or hears the voice of a friend, recognition is instant.  Within a
+fraction of a second after the eyes, nose, ears, tongue or skin is
+stimulated, one knows the object is familiar and whether it is
+desirable or dangerous. How does such recognition, which psychologists
+call preattentive perception, happen so accurately and quickly, even
+when the stimuli are complex and the context in which they arise
+varies?
+
+Much is known about the way the cerebral cortex, the outer rind of the
+brain, initially analyzes sensory messages. Yet investigations are
+only now beginning to suggest how the brain moves beyond the mere
+extraction of features-how it combines sensory messages with past
+experience and with expectation to identify both the stimulus and its
+particular meaning to the individual.
+
+My own group's studies, carried out over more than 30 years at the
+University of California at Berkeley, suggest that perception cannot
+be understood solely by examining properties of individual neurons, a
+microscopic approach that currently dominates neuroscience
+research. We have found that perception depends on the simultaneous,
+cooperative activity of millions of neurons spread throughout expanses
+of the cortex.  Such global activity can be identified, measured and
+explained only if one adopts a macroscopic view alongside the
+microscopic one.
+
+There is an analogy to this approach in music. To grasp the beauty in
+a choral piece, it is not enough to listen to the individual singers
+sequentially. One must hear the performers together, as they modulate
+their voices and timing in response to one another.
+
+Our studies have led us as well to the discovery in the brain of
+chaos-complex behavior that seems random but actually has some hidden
+order.  The chaos is evident in the tendency of vast collections of
+neurons to shift abruptly and simultaneously from one complex activity
+pattern to another in response to the smallest of inputs.
+
+This changeability is a prime characteristic of many chaotic
+systems. It is not harmful in the brain. In fact, we propose it is the
+very property that makes perception possible. We also speculate that
+chaos underlies the ability of the brain to respond flexibly to the
+outside world and to generate novel activity patterns, including those
+that are experienced as fresh ideas.
+
+An understanding of perception must be based on knowledge of the
+properties of the neurons that enact it. My colleagues and I have
+concentrated in many of our studies on neurons of the olfactory
+system.
+
+For years it has been known that when an animal or a person sniffs an
+odorant, molecules carrying the scent are captured by a few of the
+immense number of receptor neurons in the nasal passages; the
+receptors are somewhat specialized in the kinds of odorants to which
+they respond.  Cells that become excited fire action potentials, or
+pulses, which propagate through projections called axons to a part of
+the cortex known as the olfactory bulb. The number of activated
+receptors indicates the intensity of the stimulus, and their location
+in the nose conveys the nature of the scent.  That is, each scent is
+expressed by a spatial pattern of receptor activity, which in turn is
+transmitted to the bulb.
+
+The bulb analyzes each input pattern and then synthesizes its own
+message, which it transmits via axons to another part of the olfactory
+system, the olfactory cortex. From there, new signals are sent to many
+parts of the brain-not the least of which is an area called the
+entorhinal cortex, where the signals are combined with those from
+other sensory systems. The result is a meaning-laden perception, a
+gestalt, that is unique to each individual. For a dog, the recognition
+of the scent of a fox may carry the memory of food and expectation of
+a meal. For a rabbit, the same scent may arouse memories of chase and
+fear of attack.
+
+Such knowledge has provided a valuable starting point for more
+detailed study of olfaction. But it leaves two important issues
+unresolved. The first is the classic problem of separating foreground
+from background: How does the brain distinguish one scent from all
+others that accompany it?
+
+"PHASE PORTRAITS" made from electroencephalograms (EEGs) generated by
+a computer model of the brain reflect the overall activity of the
+olfactory system at rest (above) and during perception of a familiar
+scent (right). Resemblance of the portraits to irregularly shaped, but
+still structured, coils of wire reveals that brain activity in both
+conditions is chaotic: complex but having some underlying order. The
+more circular shape of the right-hand image, together with its greater
+segregation of color, indicates that olfactory EEGs are more
+ordered-more nearly periodic-during perception than during rest.
+
+Also, how does the brain achieve what is called generalization-over-
+equivalent receptors? Because of turbulence in nasal air flow, only a
+few of the many receptors that are sensitive to an odorant are excited
+during a sniff, and the selection varies unpredictably from one sniff
+to the next.  How does the brain recognize that signals from different
+collections of receptors all refer to the same stimulus? Our
+investigations begin to suggest answers to both problems.
+
+Many of our insights were derived from intensive studies of the
+olfactory bulb. Those experiments show clearly that every neuron in
+the bulb participates in generating each olfactory perception. In
+other words, the salient information about the stimulus is carried in
+some distinctive pattern of bulbwide activity, not in a small subset
+of feature-detecting neurons that are excited only by, say, foxlike
+scents.
+
+Moreover, although this collective neural activity reflects the
+odorant, the activity itself is not determined solely by the
+stimulus. Bulbar functioning is self-organized, very much controlled
+by internal factors, including the sensitivity of the neurons to
+input.
+
+The experiments uncovering the collective activity were conceptually
+simple. By applying standard reinforcement techniques, we trained
+animals, often rabbits, to recognize several different odorants and to
+behave in particular ways when they did-for instance, to lick or chew
+in expectation of food or water. Before training was started, we
+attached 60 to 64 electrodes 0.5 millimeter apart in a gridlike array
+to a large part of the bulbar surface.
+
+During training and thereafter, the array enabled us to collect sets
+of 60 to 64 simultaneously recorded electroencephalogram (EEG)
+tracings as the animals breathed in and out, sometimes sniffing
+familiar scents and sometimes not. Each tracing reflects the mean
+excitatory state of local pools of neurons lying in a well-defined
+layer immediately beneath the electrodes. Rises in the wavelike
+tracings indicate increasing excitement; dips represent diminished
+excitement caused by inhibition.
+
+The EEGs should not be confused with recordings of impulses fired by
+individual axons or by pools of neurons, although each EEG is related
+to the firing pattern of neurons in a neighborhood of the cerebral
+cortex. The tracings detect essentially the same information that
+neurons assess when they "decide" whether or not to fire impulses, but
+an EEG records that information for thousands of cells at once.
+
+To better understand exactly what the EEG shows, it helps to know some
+of the details of how cortical neurons operate. Such cells
+continuously receive pulses-usually at projections known as
+dendrites-from thousands of other neurons. The pulses are conveyed at
+specialized junctions called synapses.  Certain incoming pulses
+generate excitatory waves of electric current in the recipients;
+others generate inhibitory waves [see top illustration on page
+82]. These currents-"dendritic currents"-are fed through the cell body
+(which contains the nucleus) to a region called the trigger zone, at
+the start of the axon.
+
+There the currents cross the cell membrane into the extracellular
+space. As they do, the cell calculates the overall strength of the
+currents (reflected in changes in voltage across the membrane),
+essentially by adding excitatory currents and subtracting inhibitory
+ones. If the sum is above a threshold level of excitation, the neuron
+fires.
+
+The mechanism producing each EEG tracing similarly sums the currents
+initiated at the dendrites, but it taps the currents after they leave
+the cell.  The tracings reflect the excitatory state of groups of
+neurons rather than of individual ones, because the extracellular
+space is traversed by currents from thousands of cells.
+
+BASIC FLOW OF OLFACTORY INFORMATION IN THE BRAIN
+
+In our experiments the EEG tracings from the electrodes in an array
+are as unpredictable and irregular as freehand scrawls. Yet they
+manifest perceptual information.
+
+In living individuals, EEGs always oscillate, or rise and fall, to
+some extent, but the oscillations are usually quite irregular. When an
+animal inhales a familiar scent, what we call a burst can be seen in
+each EEG tracing. All the waves from the array of electrodes suddenly
+become more regular, or ordered, for a few cycles-until the animal
+exhales. The waves often have a higher amplitude (height) and
+frequency than they do at other times.
+
+The burst waves are often called 40 hertz waves, meaning that they
+oscillate at about 40 cycles per second. Because the frequency can
+actually range from 20 to 90 hertz, I prefer to call them gamma waves,
+in analogy with a range of high-frequency X rays.
+
+The fact that the bursts represent cooperative, interactive activity
+is not immediately clear in the EEG plots, because the burst segments
+differ in shape from tracing to tracing in a simultaneously recorded
+set.  Nevertheless, by taxing our computers, we find we are able to
+tease out evidence of collective behavior from the complex background.
+In each set of burst recordings, we can identify a common waveform, or
+carrier wave: a shared pattern of rises and falls that is embedded in
+each tracing. The average amplitude is not identical across the
+set-some versions of the carrier wave are shallow, and others are
+deep. But all of them curve up and down nearly in synchrony. The
+common behavior makes up between one quarter and three quarters of the
+total activity of the neurons giving rise to each trace.
+
+Curiously, it is not the shape of the carrier wave that reveals the
+identity of an odor. Indeed, the wave changes every time an animal
+inhales, even when the same odorant is repeatedly sniffed. The
+identity of an odorant is reliably discernible only in the bulbwide
+spatial pattern of the carrier- wave amplitude [see top illustration
+on page 84].
+
+Amplitude patterns become especially clear when we plot the average
+amplitude of the individual versions of the carrier wave on a grid
+representing the surface of the bulb. The resulting "maps" resemble
+contour diagrams that indicate the elevations of mountains and
+valleys. As long as we do not alter the animals' training, the same
+map emerges every time an animal sniffs a particular odorant, even
+though the carrier wave differs with each sniff.
+
+These maps have helped demonstrate not only that perception requires
+global bulbwide activity but also that the bulb participates in
+assigning meaning to stimuli. The amplitude map representing a given
+odorant changes strikingly when we alter the reinforcement associated
+with that scent. If the bulb did not bring experience to bear on
+perception, the map would remain constant even after the conditioned
+association had been changed.
+
+NEURONS OF THE OLFACTORY SYSTEM share information through a rich web
+of synapses, junctions where signals flow from neuron to neuron.
+Usually signals pass from projections called axons to projections
+called dendrites, but sometimes they pass from dendrite to dendrite or
+axon to axon. The widespread sharing leads to collective activity. In
+this highly schematic diagram, red shading signifies that a neuron is
+exciting another cell, black shading that a neuron is inhibiting
+another.
+
+We believe that something we call the nerve cell assembly is both a
+crucial repository of past associations and an essential participant
+in the formation of the collective bulbar burst. The hypothetical
+assembly consists of neurons that have simultaneously been excited by
+other neurons during learning.
+
+More than 20 years ago my colleagues and I discovered that when
+animals are trained by reinforcement techniques to discriminate
+olfactory stimuli, certain synapses that connect neurons within the
+bulb and within the olfactory cortex become selectively strengthened
+during the training. That is, the sensitivity of the postsynaptic
+cells to excitatory input-a property known as gain-is increased at the
+synapse, so that an input generates a greater dendritic current than
+it would have generated in the absence of special
+training. Technically, gain is the ratio of output to input-here, the
+net strength of the dendritic currents to the number of incoming
+pulses.  The strengthening occurs not in the synapse between an input
+axon (such as a receptor from the nose) and the neuron it excites
+(such as a bulbar neuron) but in the synapse between connected neurons
+that are simultaneously excited by input neurons during
+learning. Neurons in the bulb and in the olfactory cortex are
+connected to many others in those regions.
+
+EEG WAVES reflect the mean excitation of pools of neurons. Excitatory
+inputs at synapses generate electric currents that flow in closed
+loops within the recipient neuron toward its axon, across the cell
+membrane into the extracellular space and, in that space, back to the
+synapse (red arrows).  Inhibitory inputs generate loops moving in the
+opposite direction ( black arrows). In cells the trigger zone adds
+current strengths (reflected in changes in voltage across the
+membrane), and it fires impulses if the sum is sufficiently
+positive. Electrodes on the brain tap those same currents after they
+leave the cell. The resulting EEGs indicate the excitation of whole
+groups of cells, not individuals, because the extracellular avenues
+from which the EEGs arise carry currents contributed by thousands of
+cells.
+
+Such strengthening is predicted by the widely accepted Hebb rule,
+which holds that synapses between neurons that fire together become
+stronger, as long as the synchronous firing is accompanied by a
+reward. (The strengthening is now known to involve "modulator"
+chemicals that the brain stem releases into the bulb and cortex during
+reinforcement.)  We infer from our data that a nerve cell assembly,
+consisting of neurons joined by Hebbian synapses, forms for a
+particular scent as an individual is reinforced for learning to
+identify that odorant. Thereafter, when any subset of neurons in the
+assembly receives the familiar input, the entire assembly can rapidly
+become stimulated, as excitatory signals speed across the favored
+Hebbian synapses. The assembly, in turn, directs the rest of the bulb
+into a distinct pattern of activity.
+
+If we are correct, the existence of a nerve cell assembly would help
+explain both the foreground-background problem and
+generalization-over- equivalent receptors. In the first instance, the
+assembly would confer "frontrunner" status on stimuli that experience,
+stored in the Hebbian synapses has made important to the
+individual. In the second instance, the assembly would ensure that
+information from any subset of receptors, regardless of where in the
+nose they were located, would spread immediately over the entire
+assembly and from there to the rest of the bulb.
+
+SIMULTANEOUS RECORDINGS from the olfactory bulb (a) and front (b) and
+rear (c) parts of a cat's olfactory cortex show low-frequency waves
+interrupted by "bursts"-high-amplitude, high-frequency oscillations
+that are generated when odors are perceived. The average amplitude of
+a burst is some 100 microvolts. Each lasts a fraction of a second, for
+the interval between inhalation and exhalation.
+
+As important as the nerve cell assembly is to perception, it does not
+by itself generate bulbwide bursts of collective activity. For a burst
+to occur in response to some odorant, the neurons of the assembly and
+the bulb as a whole must first be "primed" to respond strongly to
+input.
+
+Two important processes complement the priming accomplished by the
+development of Hebbian synapses. Both processes affect the gain, doing
+so by altering the sensitivity of the trigger zones, not the
+synapses. Here the gain is the ratio of the number of pulses fired
+(output) to the net dendritic current (input). The total gain is the
+product of the gain at the synapses and trigger zones.
+
+One primer is general arousal. Our experiments show that the gain in
+neuronal collectives increases in the bulb and olfactory cortex when
+an animal is hungry, thirsty, sexually aroused or threatened [see
+illustration on page 85]. Such priming seems to be accomplished by
+axons from elsewhere in the brain that release modulatory chemicals
+(other than those involved in forming Hebbian synapses).
+
+The other primer is input itself. When cortical neurons are excited,
+their output increases. Each new input they receive while they are
+still excited raises their output markedly, indicating that their gain
+has been increased by the input. This increase occurs over a
+particular range of input. If the net input is strongly inhibitory, no
+pulses are fired. Above some very high level of excitatory input,
+neurons fire at their maximal rate and cannot do more, even if the
+input is increased. In the wide range between, however, pulse output
+increases along a sigmoid (S-shaped) curve. The steepness, or slope,
+of the curve reflects the gain.
+
+The discovery of an increase in gain with excitation is particularly
+noteworthy because most neural network models assume neurons are at
+maximum gain when they are at rest. Both excitation and inhibition are
+generally assumed to decrease gain, so that the networks constantly
+maintain stability. Such assumptions are inappropriate for the brain
+because they do not allow networks to generate explosive changes.
+Hence, it seems that information from odorants is fed by a small
+number of receptors to a still smaller number of cells in the bulb. If
+the odorant is familiar and the bulb has been primed by arousal, the
+information spreads like a flash fire through the nerve cell
+assembly. First, excitatory input to one part of the assembly during a
+sniff excites the other parts, via the Hebbian synapses. Then those
+parts reexcite the first, increasing the gain, and so forth, so that
+the input rapidly ignites an explosion of collective activity
+throughout the assembly. The activity of the assembly, in turn,
+spreads to the entire bulb, igniting a full-blown burst.
+
+The bulb then sends a "consensus statement" simultaneously along
+parallel axons to the olfactory cortex. What must next be made clear
+is how that cortical area distinguishes the consensus statement from
+the background of other stimuli impinging on it from the bulb and
+elsewhere.
+
+WHY EEG WAVES OSCILLATE
+
+Alternating rises and falls in amplitude stem from negative-feedback
+circuits that are established by the interaction of pools of
+excitatory and inhibitory neurons. When the pools have been sensitized
+to input, even a small input can trigger. A burst of high-amplitude
+oscillation. The diagrams represent neuronal activity at the end of
+each quarter cycle. Dark shading signifies great excitement; lighter
+shading signifies less excitement.
+
+The answer undoubtedly has to do with the wiring joining the bulb to
+the cortex. The bulb generates trains of impulses that run
+simultaneously along the parallel axons leading from the bulb to the
+cortex. Each axon branches extensively and transmits pulses to many
+thousands of neurons across the olfactory cortex, and each cortical
+target cell receives input from thousands of bulbar cells.
+
+The carrier activity of the incoming lines, which is synchronized by
+cooperation, probably stands out for the simple reason that such
+signals add together- nonsynchronous inputs, which are not at the
+carrier frequency and phase, effectively cancel one another. Thus,
+every recipient neuron in the olfactory cortex picks up a share of the
+cooperative bulbar signal and transmits the summed signals to
+thousands of its neighbors simultaneously.
+
+In response, the massively connected neurons of the cortex, which have
+formed their own nerve cell assemblies, promptly generate their own
+collective burst, albeit one having a carrier wave and a spatial
+amplitude pattern that differ from those in the bulb. In essence, the
+transmission pathway for the global pattern in the bulb launders the
+bulbar message; it removes "noise," so that only the collective signal
+affects the olfactory cortex significantly. Just as a burst in the
+bulb guarantees the delivery of a coherent message to the cortex, so
+presumably does the global burst in the cortex enable outgoing
+messages from that region to stand above the din when they reach other
+regions of the brain.
+
+There are many reasons why we believe the activity of the brain both
+during and between bursts is chaotic, not merely random. But before I
+delve into those reasons, let me clarify further what is meant by
+chaos.  At the risk of oversimplification, I sometimes like to suggest
+the difference between chaos and randomness by comparing the behavior
+of commuters dashing through a train station at rush hour with the
+behavior of a large, terrified crowd. The activity of the commuters
+resembles chaos in that although an observer unfamiliar with train
+stations might think people were running every which way without
+reason, order does underlie the surface complexity: everyone is
+hurrying to catch a specific train. The traffic flow could rapidly be
+changed simply by announcing a track change.  In contrast, mass
+hysteria is random. No simple announcement would make a large mob
+become cooperative.
+
+One of the most convincing early clues to the presence of chaos was an
+aperiodic (nonrepeating) common carrier wave everywhere in the bulb
+not only during bursts but also between bursts-even when there was no
+extrabulbar stimulus driving that collective activity. The lack of
+external driving meant the activity was self-generated by the
+bulb. Such self- organization is a characteristic of chaotic systems
+[see "Chaos," by James B.  Crutchfield, J. Doyne Farmer, Norman
+H. Packard and Robert S. Shawl SCENTIFIC AMERICAN, December 1986].
+
+Another clue was the apparent ability of neural collectives in the
+bulb and cortex to jump globally and almost instantly from a nonburst
+to a burst state and then back again. Rapid state changes are called
+phase transitions by physicists and bifurcations by
+mathematicians. Whatever they are called, dramatic changes in response
+to weak input are, it will be recalled, another feature of chaotic
+systems. Bifurcation is significantly harder to control in random
+systems.
+
+We gained more evidence for chaos by developing computer models of the
+olfactory system as a whole: the bulb, the cortex, the connections
+between them and the input to both areas from outside the system. We
+simulated the activity of the system by solving sets of ordinary
+differential equations that describe the dynamics of local pools of
+neurons.
+
+First we demonstrated that the model did in fact represent the
+olfactory system accurately. With no more than a single pulse
+(equivalent to excitation of a few receptors) to start the system, the
+model sustained activity that closely resembled aperiodic olfactory
+EEGs.
+
+After we " trained" the model to recognize specific odorants, the
+bulbar segment generated bursts in response to the selected inputs,
+and the embedded common carrier waves yielded distinct and consistent
+amplitude maps. Moreover, whenever we added a new "odorant" to the
+perceptual repertoire of our hypothetical subject, an identifying
+global amplitude map was created. At the same time, the other maps
+changed-as they should, of course, in a true associative memory
+system. We had earlier found such changes in test animals after they
+were trained to recognize stimuli beyond the ones they had learned
+initially.
+
+COMMON CARRIER WAVE emerged from 60 EEGs recorded information is
+contained in the spatial pattern of amplitude simultaneously from the
+olfactory cortex of a rabbit as it recognized a scent. The wave is
+nearly the same in each recording, except that the amplitude
+varies. The shape of the carrier wave does not indicate the identity
+of the scent. That information is contained in the spatial pattern of
+amplitude across the cortex, which can be displayed as a contour plot,
+much like the plots of elevations in topographic maps.  The colored
+contours represent the highest amplitude; successive contours
+represent the lower amplitudes.
+
+Our model yielded additional evidence for chaos when we coaxed it to
+produce mock EEGs of extended bursts and of "interburst" activity in
+the intervals between bursts. Because the artificial EEGs persisted
+longer than EEGs normally do, we were able to plot what are called
+phase portraits of the predicted behavior of the olfactory system,
+both during and between bursts. The portraits can show at a glance
+whether the dynamics may be chaotic.
+
+The details of how such portraits are made and why they are a valid
+reflection of global activity in the olfactory system are too complex
+to discuss at length. Nevertheless, for those readers familiar with
+phase portraits, I should note that we plotted the portraits in a
+three- dimensional grid and added color to display a fourth
+dimension. Each axis represented EEG amplitude from some part of the
+olfactory system, such as the bulb or a subsection of the olfactory
+cortex. A range of colors from red to blue represented high to low
+amplitude from a fourth part of the system.
+
+We plotted as a point one set of three amplitudes, measured at a given
+moment. Next we plotted another point from the set, representing a
+thousandth of a second later, and connected the two points with a
+colored line. Then we plotted a third point, and so on. We rotated the
+final image in space to find the most informative point of view.
+
+CONTOUR PLOT at the left emerged consistently from bulbar EEG's of a
+rabbit that had been conditioned to associated the scent of sawdust
+with a particular reinforcement. After the animal learned to recognize
+the smell of banana (middle), however, reexposure to sawdust led to
+the emergence of a new sawdust plot (right). The change shows that
+bulbar activity is dominated more by experience than by stimuli;
+otherwise, sawdust would always give rise to the same plot.
+
+The pictures supported the possibility of chaos, because the images
+resembled loose coils of wire having different shapes and color
+distributions. If the model olfactory system had behaved randomly,
+there would be no coherent shapes, just dots spread everywhere, like
+"snow" on a television set. If, on the other hand, the system was
+predictable in detail, the shapes would be simpler; they might
+resemble a spiral, a folded circle or a torus (a doughnut).
+
+The shapes we found represent chaotic attractors. Each attractor is
+the behavior the system settles into when it is held under the
+influence of a particular input, such as a familiar odorant. The
+images suggest that an act of perception consists of an explosive leap
+of the dynamic system from the "basin" of one chaotic attractor to
+another; the basin of an attractor is the set of initial conditions
+from which the system goes into a particular behavior. The bottom of a
+bowl would be a basin of attraction for a ball placed anywhere along
+the sides of the bowl. In our experiments, the basin for each
+attractor would be defined by the receptor neurons that were activated
+during training to form the nerve cell assembly.
+
+We think the olfactory bulb and cortex maintain many chaotic
+attractors, one for each odorant an animal or human being can
+discriminate.  Whenever an odorant becomes meaningful in some way,
+another attractor is added, and all the others undergo slight
+modification.
+
+SIGMOID CURVES show the relation between input (wave density) and
+output (pulse density) at trigger zones in populations of
+neurons. (The plots are not valid for individual neurons.) The rising
+steepness associated with increased arousal indicates that sensitivity
+to input-or gain (the ratio of output to input, or the slope)-rises
+with arousal. In each case, gain also increases as neurons that are
+already excited (those at and to the right of the circles) receive
+more stimulation. This input-dependent increase in gain is essential
+to the formation of bursts
+
+Identification of chaos does not automatically reveal its source. We
+suspect chaos in the brain arises when two or more areas of the brain,
+such as the bulb and the olfactory cortex, meet at least two
+conditions: they excite one another strongly enough to prevent any
+single part from settling down, and, at the same time, they are unable
+to agree on a common frequency of oscillation. Competition between the
+parts would increase the sensitivity and instability of the system
+contributing to chaos. Part of the evidence for the importance of
+interaction between the bulb and the cortex is that disconnection of
+the two regions makes chaos disappear; both parts become abnormally
+stable and quiet.
+
+Modulatory chemicals released into the system from elsewhere in the
+brain also increase sensitivity to input, both by participating in the
+formation of the Hebbian synapses in nerve cell assemblies and by
+enhancing arousal. Because various factors maintain great sensitivity,
+a very small signal-a whiff, a whisper, a glimpse-can trigger a
+massive, collective state change.
+
+Conceivably, the chaos we have observed is simply an inevitable by-
+product of the brain's complexity, including its myriad
+connections. Yet our evidence suggests that the controlled chaos of
+the brain is more than an accidental by-product. Indeed, it may be the
+chief property that makes the brain different from an
+artificial-intelligence machine.
+
+One profound advantage chaos may confer on the brain is that chaotic
+systems continually produce novel activity patterns. We propose that
+such patterns are crucial to the development of nerve cell assemblies
+that differ from established assemblies. More generally, the ability
+to create activity patterns I may underlie the brain's ability to
+generate insight and the "trials" of trial and-error problem solving.
+
+We have found widespread, apparently chaotic behavior in other parts
+of the brain. That finding does not necessarily imply that other
+sensory systems operate as the olfactory system does. But we think
+they do.  Indeed, we and other investigators have documented gamma
+bursts across large cortical regions involved in recognizing visual
+images. As in the olfactory system, familiar visual stimuli are
+associated with specific amplitude maps of common carrier waves. I
+predict that when people examine drawings in which foreground and
+background are ambiguous, so that perception alternates between two
+images, the amplitude maps will be found to alternate as well.
+
+I begin to envision the general dynamics of perception. The brain
+seeks information, mainly by directing an individual to look, listen
+and sniff. The search results from self-organizing activity in the
+limbic system (a part of the brain that includes the entorhinal cortex
+and is thought to be involved in emotion and memory), which funnels a
+search command to the motor systems. As the motor command is
+transmitted, the limbic system issues what is called a reafference
+message, alerting all the sensory systems to prepare to respond to new
+information.
+
+And respond they do, with every neuron in a given region participating
+in a collective activity-a burst. Synchronous activity in each system
+is then transmitted back to the limbic system, where it combines with
+similarly generated output from other sensory systems to form a
+gestalt. Then, within a fraction of a second, another search for
+information is demanded, and the sensory systems are prepared again by
+reafference.
+
+Consciousness may well be the subjective experience of this recursive
+process of motor command, reafference and perception. If so, it
+enables the brain to plan and prepare for each subsequent action on
+the basis of past action, sensory input and perceptual synthesis. In
+short, an act of perception is not the copying of an incoming
+stimulus. It is a step in a trajectory by which brains grow,
+reorganize themselves and reach into their environment to change it to
+their own advantage.
+
+The poet William Blake wrote: "If the doors of perception were
+cleansed every thing would appear to man as it is, infinite." Such
+cleansing would not be desirable. Without the protection of the doors
+of perception-that is, without the self-controlled chaotic activity of
+the cortex, from which perceptions spring-people and animals would be
+overwhelmed by eternity.
+
+
+FURTHER READING
+
+MASS ACTION IN THE NERVOUS SYSTEM: EXAMINATION OF THE
+NEUROPHYSIOLOGICAL BASIS OF ADAPTIVE BEHAVIOR THROUGH THE EEG. Walter
+J. Freeman. Academic Press, 1975.
+
+How BRAINS MAKE CHAOS IN ORDER TO MAKE SENSE OF THE WORLD. Christine
+A. Skarda and Walter J. Freeman in behavioral and Brain Sciences,
+Vol. 10 No. 2, pages 161-195; June 1987.
+
+THE SYNAPTIC ORGANIZATION OF THE BRAIN. Third edition. Gordon M.
+Shepherd. Oxford University Press, 1990.
+
+SYNERGETICS OF COGNITION: PROCEEDINGS OF THE INTERNATIONAL SYMPOSIUM
+AT SCHLOSS ELMAU, BAVARIA, JUNE 4-8, 1989. Edited by H.  Haken and
+M. Stadler. Springer-Verlag, 1990.
+
+Copyright 1991: Walter J. Freeman
+

@@ -943,6 +943,16 @@ Num Date        Status  Description
 236 10/27/97	FIXED	Sessions saved by C++ code sometimes don't work because
 			of creating duplicate mapping classes. (ssl/rkw)
 
+237 11/04/97	OPEN	You can't use the GUI to create a new schema (at
+			least a UniData schema) if the physical schema
+			directory is empty. (ad/rkw)
+
+238 11/04/97	FIXED	SPARC versions of DEVise core dump on SearchEngine
+			demo. (am/rkw)
+
+239 11/10/97	FIXED	Print exclusion of windows doesn't work in 'print
+			all windows' mode. (ad/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

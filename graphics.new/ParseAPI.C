@@ -22,6 +22,15 @@
   $Id$
 
   $Log$
+  Revision 1.77.2.1  1997/11/11 19:13:58  wenger
+  Added getWindowImageAndSize and waitForQueries commands; fixed bug in
+  WindowRep::ExportGIF() inheritance.
+
+  Revision 1.77  1997/10/03 14:37:13  wenger
+  Various fixes to get session opening/saving to work with client/server
+  version; reading old-style (Tcl) session files now works in back end;
+  got back-end session file stuff working for multi.
+
   Revision 1.76  1997/10/02 18:46:22  wenger
   Opening and saving batch-style sessions in back end now fully working;
   added tk2ds.tcl script for conversion.
@@ -363,6 +372,7 @@
 #include "VisualLinkClassInfo.h"
 #include "CursorClassInfo.h"
 #include "MappingInterp.h"
+#include "QueryProc.h"
 
 #include "LMControl.h"		// LayoutManager
 
@@ -381,6 +391,9 @@ extern "C" int purify_new_inuse();
 #endif
 
 int GetDisplayImageAndSize(ControlPanel *control, int port, char *imageType);
+int GetWindowImageAndSize(ControlPanel *control, int port, char *imageType,
+    char *windowName);
+int WriteFileToDataSock(ControlPanel *control, int port, char *tmpFile);
 
 //#define DEBUG
 #define LINESIZE 1024
@@ -839,6 +852,17 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       char buf[100];
       sprintf(buf, "%d", StringStorage::GetCount());
       control->ReturnVal(API_ACK, buf);
+      return 1;
+    }
+
+    if (!strcmp(argv[0], "waitForQueries")) {
+      // Arguments: none
+      // Returns: "done"
+      QueryProc *qp = QueryProc::Instance();
+      while (!qp->Idle()) {
+	Dispatcher::SingleStepCurrent();
+      }
+      control->ReturnVal(API_ACK, "done");
       return 1;
     }
   }
@@ -2259,6 +2283,8 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       }
     }
     if (!strcmp(argv[0], "getDisplayImage")) {
+      // Arguments: <port number> <image type>
+      // Returns: "done"
       int port = atoi(argv[1]);
       if (strcmp(argv[2], "gif")) {
          control->ReturnVal(API_NAK, "Can only support GIF now.");
@@ -2277,6 +2303,8 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       return 1;
     }
     if (!strcmp(argv[0], "getDisplayImageAndSize")) {
+      // Arguments: <port number> <image type>
+      // Returns: "done"
       return GetDisplayImageAndSize(control, atoi(argv[1]), argv[2]);
     }
     if (!strcmp(argv[0], "getFont")) {
@@ -2371,6 +2399,8 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       return 1;
     }
     if (!strcmp(argv[0], "getWindowImage")) {
+      // Arguments: <port number> <image type> <window name>
+      // Returns: "done"
       int port = atoi(argv[1]);
       if (strcmp(argv[2], "gif")) {
          control->ReturnVal(API_NAK, "Can only support GIF now.");
@@ -2393,6 +2423,11 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       close(control->getFd());
       control->ReturnVal(API_ACK, "done");
       return 1;
+    }
+    if (!strcmp(argv[0], "getWindowImageAndSize")) {
+      // Arguments: <port number> <image type> <window name>
+      // Returns: "done"
+      return GetWindowImageAndSize(control, atoi(argv[1]), argv[2], argv[3]);
     }
     if (!strcmp(argv[0], "swapView")) {
       ViewWin *viewWin = (ViewWin *)classDir->FindInstance(argv[1]);
@@ -2745,10 +2780,53 @@ GetDisplayImageAndSize(ControlPanel *control, int port, char *imageType)
     return -1;
   }
 
-  control->OpenDataChannel(port);
-  int fd = control->getFd();
-  if (fd < 0) {
-    control->ReturnVal(API_NAK, "Invalid socket to write");
+  // Write the GIF to a temporary file.
+  char tmpFile[L_tmpnam];
+  (void) tmpnam(tmpFile);
+  FILE *tmpfp = fopen(tmpFile, "w");
+  if (tmpfp == NULL) {
+    reportErrSys("Can't open temp file");
+    control->ReturnVal(API_NAK, "Can't open temp file");
+    return -1;
+  }
+  DeviseDisplay::DefaultDisplay()->ExportGIF(tmpfp, false);
+  if (fclose(tmpfp) != 0) {
+    reportErrSys("fclose error");
+  }
+
+  // Write the temporary file to the data socket (prefixing it with its
+  // size).
+  if (WriteFileToDataSock(control, port, tmpFile) != 1) {
+    (void) unlink(tmpFile);
+    return -1;
+  }
+
+  if (unlink(tmpFile) != 0) {
+    reportErrSys("unlink error");
+  }
+
+  control->ReturnVal(API_ACK, "done");
+  return 1;
+}
+
+int
+GetWindowImageAndSize(ControlPanel *control, int port, char *imageType,
+    char *windowName)
+{
+#if defined(DEBUG)
+  printf("GetWindowImageAndSize(%p, %d, %s, %s)\n", control, port, imageType,
+      windowName);
+#endif
+
+  if (strcmp(imageType, "gif")) {
+    control->ReturnVal(API_NAK, "Can only support GIF now.");
+    return -1;
+  }
+
+  ClassDir *classDir = control->GetClassDir();
+  ViewWin *viewWin = (ViewWin *)classDir->FindInstance(windowName);
+  if (!viewWin) {
+    control->ReturnVal(API_NAK, "Cannot find window");
     return -1;
   }
 
@@ -2759,14 +2837,32 @@ GetDisplayImageAndSize(ControlPanel *control, int port, char *imageType)
   if (tmpfp == NULL) {
     reportErrSys("Can't open temp file");
     control->ReturnVal(API_NAK, "Can't open temp file");
-    close(control->getFd());
     return -1;
   }
-  DeviseDisplay::DefaultDisplay()->ExportGIF(tmpfp, false);
+  viewWin->GetWindowRep()->ExportGIF(tmpfp);
   if (fclose(tmpfp) != 0) {
     reportErrSys("fclose error");
   }
 
+  // Write the temporary file to the data socket (prefixing it with its
+  // size).
+  if (WriteFileToDataSock(control, port, tmpFile) != 1) {
+    (void) unlink(tmpFile);
+    return -1;
+  }
+
+  if (unlink(tmpFile) != 0) {
+    reportErrSys("unlink error");
+  }
+
+  control->ReturnVal(API_ACK, "done");
+
+  return 1;
+}
+
+int
+WriteFileToDataSock(ControlPanel *control, int port, char *tmpFile)
+{
   int tmpfd = open(tmpFile, O_RDONLY, 0644);
 
   // Find out out big the temp file is.
@@ -2776,6 +2872,12 @@ GetDisplayImageAndSize(ControlPanel *control, int port, char *imageType)
     control->ReturnVal(API_NAK, "Can't get temp file size");
     (void) close(control->getFd());
     (void) close(tmpfd);
+    return -1;
+  }
+
+  control->OpenDataChannel(port);
+  if (control->getFd() < 0) {
+    control->ReturnVal(API_NAK, "Invalid socket to write");
     return -1;
   }
 
@@ -2812,13 +2914,12 @@ GetDisplayImageAndSize(ControlPanel *control, int port, char *imageType)
     }
     bytesLeft -= bytesRead;
   }
-  if (close(tmpfd) != 0) {
-    reportErrSys("close error");
-  }
-  unlink(tmpFile);
   if (close(control->getFd()) != 0) {
     reportErrSys("close error");
   }
-  control->ReturnVal(API_ACK, "done");
+  if (close(tmpfd) != 0) {
+    reportErrSys("close error");
+  }
+
   return 1;
 }

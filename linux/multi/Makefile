@@ -15,6 +15,17 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7.4.1  1997/10/30 20:17:12  wenger
+#  Got DEVise to compile, link, and run on sun and linux; compiles but
+#  doesn't link on hp (can't find memory mapping functions).  This includes
+#  moving the unidata config.h files to separate copies in the unidata
+#  directory for each architecture, since the config.h's are architecture-
+#  dependent.
+#
+#  Revision 1.7  1997/08/12 18:47:32  wenger
+#  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
+#  makefiles; various other makefile cleanups.
+#
 #  Revision 1.6  1997/05/08 18:11:29  wenger
 #  Minor changes to fix Linux compile problems.
 #
@@ -39,12 +50,14 @@
 
 ############################################################
 
-PERL_CORE = /usr/lib/perl5/i486-linux/5.003/CORE
+PERL_CORE = /usr/lib/perl5/i386-linux/5.00307/CORE
+#PERL_CORE = /usr/lib/perl5/i486-linux/5.003/CORE
 
 ARCH_FLAGS   = -DLINUX -I/usr/include/tcl
 ARCH_LDFLAGS = -L/usr/lib -L/usr/X11R6/lib
-ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
+#ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
 #ARCH_SYSLIBS = -ltk4.1 -ltcl7.5 -ldl -lX11 -lm
+ARCH_SYSLIBS = -ltk4.2 -ltcl7.6 -ldl -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../multi

@@ -15,6 +15,17 @@
 # $Id$
 
 # $Log$
+# Revision 1.3.6.1  1997/10/30 20:18:56  wenger
+# Got DEVise to compile, link, and run on sun and linux; compiles but
+# doesn't link on hp (can't find memory mapping functions).  This includes
+# moving the unidata config.h files to separate copies in the unidata
+# directory for each architecture, since the config.h's are architecture-
+# dependent.
+#
+# Revision 1.3  1997/07/16 16:15:05  wenger
+# Updated solaris, sun, and hp dependencies; removed .bak files that
+# somehow got committed.
+#
 # Revision 1.2  1997/04/30 21:57:07  wenger
 # Updated solaris, sun, and hp dependencies.
 #
@@ -34,10 +45,10 @@ Attr.o: Traits.h /usr/include/string.h bitmap.h /usr/include/limits.h
 Attr.o: PerlFrag.h /usr/include/stdio.h /usr/include/math.h Lexer.h udParam.h
 Attr.o: RecId.h Schema.h /usr/include/unistd.h /usr/include/sys/unistd.h
 Attr.o: Enum.h Comment.h Config.h /usr/include/time.h /usr/include/sys/time.h
-Attr.o: UniData.h SlideBuf.h getftime.h DateTime.h /usr/include/assert.h
+Attr.o: UniData.h SlideBuf.h getftime.h DateTime.h sysdep.h
+Attr.o: /usr/include/stdarg.h /usr/include/varargs.h /usr/include/assert.h
 Comment.o: Comment.h
-DateTime.o: DateTime.h /usr/include/time.h /usr/include/sys/time.h
-DateTime.o: /usr/include/sys/stdsyms.h
+DateTime.o: sysdep.h /usr/include/stdarg.h /usr/include/varargs.h DateTime.h
 Enum.o: Enum.h /usr/include/string.h Attr.h /usr/include/stdlib.h
 Enum.o: /usr/include/sys/stdsyms.h IntStack.h Traits.h bitmap.h
 Enum.o: /usr/include/limits.h PerlFrag.h /usr/include/stdio.h
@@ -52,7 +63,8 @@ Schema.o: /usr/include/math.h /usr/include/unistd.h /usr/include/sys/unistd.h
 Schema.o: Attr.h /usr/include/stdlib.h /usr/include/sys/stdsyms.h IntStack.h
 Schema.o: Traits.h bitmap.h /usr/include/limits.h PerlFrag.h Lexer.h Enum.h
 Schema.o: Comment.h Config.h /usr/include/time.h /usr/include/sys/time.h
-Schema.o: Token.h getftime.h DateTime.h /usr/include/assert.h
+Schema.o: Token.h getftime.h DateTime.h sysdep.h /usr/include/stdarg.h
+Schema.o: /usr/include/varargs.h /usr/include/assert.h
 SlideBuf.o: /usr/include/stdlib.h /usr/include/sys/stdsyms.h
 SlideBuf.o: /usr/include/string.h /usr/include/errno.h
 SlideBuf.o: /usr/include/sys/errno.h /usr/include/fcntl.h
@@ -73,11 +85,13 @@ UniData.o: /usr/include/unistd.h /usr/include/sys/unistd.h RecId.h SlideBuf.h
 UniData.o: Schema.h /usr/include/stdio.h /usr/include/math.h Attr.h
 UniData.o: IntStack.h Traits.h bitmap.h /usr/include/limits.h PerlFrag.h
 UniData.o: Lexer.h Enum.h Comment.h udParam.h udIndex.h fast_atof.h
-UniData.o: getftime.h DateTime.h /usr/include/assert.h
+UniData.o: getftime.h DateTime.h sysdep.h /usr/include/stdarg.h
+UniData.o: /usr/include/varargs.h /usr/include/assert.h
 fast_atof.o: /usr/include/ctype.h /usr/include/sys/stdsyms.h
 getftime.o: /usr/include/stdlib.h /usr/include/sys/stdsyms.h
 getftime.o: /usr/include/string.h /usr/include/ctype.h getftime.h
-getftime.o: /usr/include/time.h /usr/include/sys/time.h DateTime.h
+getftime.o: /usr/include/time.h /usr/include/sys/time.h DateTime.h sysdep.h
+getftime.o: /usr/include/stdarg.h /usr/include/varargs.h
 pmain.o: /usr/include/stdio.h /usr/include/math.h PerlFrag.h
 pmain.o: /usr/include/string.h Lexer.h
 udIndex.o: udIndex.h /usr/include/unistd.h /usr/include/sys/unistd.h RecId.h
@@ -93,4 +107,5 @@ umain.o: /usr/include/sys/fcntl.h /usr/include/time.h /usr/include/sys/time.h
 umain.o: UniData.h RecId.h SlideBuf.h Schema.h /usr/include/stdio.h
 umain.o: /usr/include/math.h Attr.h IntStack.h Traits.h /usr/include/string.h
 umain.o: bitmap.h /usr/include/limits.h PerlFrag.h Lexer.h Enum.h Comment.h
-umain.o: Config.h udParam.h getftime.h DateTime.h
+umain.o: Config.h udParam.h getftime.h DateTime.h sysdep.h
+umain.o: /usr/include/stdarg.h /usr/include/varargs.h

@@ -15,6 +15,17 @@
 # $Id$
 
 # $Log$
+# Revision 1.28.12.1  1997/10/30 20:18:41  wenger
+# Got DEVise to compile, link, and run on sun and linux; compiles but
+# doesn't link on hp (can't find memory mapping functions).  This includes
+# moving the unidata config.h files to separate copies in the unidata
+# directory for each architecture, since the config.h's are architecture-
+# dependent.
+#
+# Revision 1.28  1997/03/28 16:12:51  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -33,8 +44,6 @@ Templates.o: /usr/include/sys/types.h ../graphics/VisualArg.h
 Templates.o: ../graphics/Color.h ../graphics/Pattern.h
 Templates.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
 Templates.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
-Templates.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/unistd.h
-Templates.o: /usr/include/sys/unistd.h /usr/include/string.h
 Templates.o: ../graphics/Journal.h SortedTable.h ../graphics/Timer.h
 Templates.o: ../graphics.new/BufMgr.h ../graphics/BufPolicy.h
 Templates.o: ../graphics.new/BufferPolicy.h ../graphics.new/RangeInfoArray.h
@@ -43,21 +52,22 @@ Templates.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 Templates.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 Templates.o: /usr/include/sys/shm.h /usr/include/errno.h
 Templates.o: /usr/include/sys/errno.h /usr/include/assert.h
-Templates.o: /usr/include/limits.h /usr/include/sys/stat.h
-Templates.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-Templates.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
-Templates.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
-Templates.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-Templates.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
-Templates.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-Templates.o: ../graphics.new/GData.h ../graphics.new/RangeList.h
-Templates.o: ../graphics.new/RangeInfo.h
-devtype.o: /usr/include/stdlib.h /usr/include/sys/stat.h
-devtype.o: /usr/include/sys/stdsyms.h
+Templates.o: /usr/include/stdio.h /usr/include/limits.h
+Templates.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
+Templates.o: /usr/include/sys/param.h /usr/include/machine/param.h
+Templates.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
+Templates.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+Templates.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
+Templates.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
+Templates.o: /usr/include/netinet/in.h ../graphics.new/GData.h
+Templates.o: ../graphics.new/RangeList.h ../graphics.new/RangeInfo.h
+Templates.o: ../graphics/Scheduler.h
+devtype.o: /usr/include/stdlib.h /usr/include/sys/stdsyms.h
+devtype.o: /usr/include/sys/stat.h
 tapedrive.o: /usr/include/unistd.h /usr/include/sys/unistd.h
-tapedrive.o: /usr/include/string.h tapedrive.h /usr/include/stdio.h
-tapedrive.o: ../graphics.new/machdep.h /usr/include/limits.h
-tapedrive.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
+tapedrive.o: /usr/include/sys/stdsyms.h /usr/include/string.h tapedrive.h
+tapedrive.o: /usr/include/stdio.h ../graphics.new/machdep.h
+tapedrive.o: /usr/include/limits.h /usr/include/sys/types.h
 tapedrive.o: /usr/include/sys/param.h /usr/include/machine/param.h
 tapedrive.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
 tapedrive.o: /usr/include/machine/spl.h /usr/include/sys/wait.h

@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.18.12.1  1997/11/11 19:14:01  wenger
+  Added getWindowImageAndSize and waitForQueries commands; fixed bug in
+  WindowRep::ExportGIF() inheritance.
+
+  Revision 1.18  1997/02/03 19:45:37  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
   Revision 1.17  1996/12/12 22:03:17  jussi
   Cleaned up termination code in RestartSession().
 
@@ -74,8 +84,13 @@
 #ifndef TkControl_h
 #define TkControl_h
 
+#define OPEN_TEST_FILE 0
+
 #include <tcl.h>
 #include <tk.h>
+#if OPEN_TEST_FILE
+#include <fcntl.h>
+#endif
 
 #include "Dispatcher.h"
 #include "Control.h"
@@ -136,8 +151,15 @@ public:
   /* Remove replica server */
   virtual int RemoveReplica(char *hostName, int port) { return 1; }
 
+#if OPEN_TEST_FILE
+  int fd;
+  virtual void OpenDataChannel(int port) { fd = open("/tmp/devise_tst",
+      O_RDWR | O_CREAT, 0644); }
+  virtual int getFd(){ return fd;} 
+#else
   virtual void OpenDataChannel(int port) { }
   virtual int getFd(){ return -1;} 
+#endif
 
 protected:
 

@@ -15,6 +15,16 @@
 # $Id$
 
 # $Log$
+# Revision 1.26.2.1  1997/10/30 20:19:09  wenger
+# Got DEVise to compile, link, and run on sun and linux; compiles but
+# doesn't link on hp (can't find memory mapping functions).  This includes
+# moving the unidata config.h files to separate copies in the unidata
+# directory for each architecture, since the config.h's are architecture-
+# dependent.
+#
+# Revision 1.26  1997/10/25 03:18:30  yadong
+# Updated dependencies.
+#
 # Revision 1.25  1997/05/29 15:22:39  wenger
 # Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
 # compile on linux.
@@ -35,46 +45,39 @@ depend:
 
 # DO NOT DELETE
 
-atof.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+atof.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 atof.o: /usr/include/assert.h /usr/include/ctype.h /usr/include/time.h
 atof.o: /usr/include/math.h /usr/include/floatingpoint.h
-atof.o: /usr/include/sys/ieeefp.h /usr/include/sys/time.h
-atof.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-atof.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-atof.o: ../graphics/Util.h /usr/include/stdio.h /usr/include/sys/va_list.h
-atof.o: /usr/include/string.h ../graphics/DeviseTypes.h /usr/include/values.h
-atof.o: ../graphics/DevStatus.h ../graphics/Exit.h
-http_url.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-http_url.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
-http_url.o: /usr/include/unistd.h /usr/include/sys/types.h
-http_url.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-http_url.o: /usr/include/sys/select.h /usr/include/sys/time.h
-http_url.o: /usr/include/time.h /usr/include/sys/unistd.h
+atof.o: /usr/include/sys/ieeefp.h /usr/include/sys/time.h ../graphics/Util.h
+atof.o: /usr/include/stdio.h /usr/include/string.h ../graphics/DeviseTypes.h
+atof.o: /usr/include/values.h ../graphics/DevStatus.h
+atof.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+atof.o: ../graphics/Exit.h
+http_url.o: /usr/include/stdio.h /usr/include/stdlib.h
+http_url.o: /usr/include/sys/stdtypes.h /usr/include/unistd.h
+http_url.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 http_url.o: /usr/include/string.h /usr/include/errno.h
 http_url.o: /usr/include/sys/errno.h ../graphics.new/machdep.h
 http_url.o: /usr/include/limits.h /usr/include/sys/param.h
-http_url.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-http_url.o: /usr/include/sys/machsig.h /usr/include/sys/procset.h
+http_url.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+http_url.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+http_url.o: /usr/include/time.h /usr/include/sys/wait.h
 http_url.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-http_url.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+http_url.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+http_url.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+http_url.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
+http_url.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+http_url.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+http_url.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+http_url.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
 http_url.o: /usr/include/netdb.h /usr/include/sys/socket.h
-http_url.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-http_url.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-http_url.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-http_url.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-http_url.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-http_url.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-http_url.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-http_url.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-http_url.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-http_url.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-http_url.o: /usr/include/sys/byteorder.h
+http_url.o: /usr/include/netinet/in.h
 mk3dstruct.o: /usr/include/math.h /usr/include/floatingpoint.h
 mk3dstruct.o: /usr/include/sys/ieeefp.h /usr/include/time.h
-mk3dstruct.o: /usr/include/sys/feature_tests.h /usr/include/stdlib.h
+mk3dstruct.o: /usr/include/sys/stdtypes.h /usr/include/stdlib.h
 mkbinfile.o: /usr/include/math.h /usr/include/floatingpoint.h
 mkbinfile.o: /usr/include/sys/ieeefp.h /usr/include/time.h
-mkbinfile.o: /usr/include/sys/feature_tests.h /usr/include/stdlib.h
+mkbinfile.o: /usr/include/sys/stdtypes.h /usr/include/stdlib.h
 mkparfile.o: /usr/include/math.h /usr/include/floatingpoint.h
 mkparfile.o: /usr/include/sys/ieeefp.h /usr/include/time.h
-mkparfile.o: /usr/include/sys/feature_tests.h /usr/include/stdlib.h
+mkparfile.o: /usr/include/sys/stdtypes.h /usr/include/stdlib.h
