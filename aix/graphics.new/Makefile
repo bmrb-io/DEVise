@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/05/16 19:34:48  jussi
+#  Initial revision.
+#
 
 ############################################################
 
@@ -22,5 +25,5 @@ ARCH_FLAGS   = -DAIX -I/u2/ratnakar/tcl/include -I/u2/ratnakar/tk/include
 ARCH_LDFLAGS = -L/u2/ratnakar/tcl/lib -L/u2/ratnakar/tk/lib
 
 VPATH = ../../graphics.new
-include $(VPATH)/Makefile.base.aix
+include $(VPATH)/Makefile.base
 include $(VPATH)/Makefile.aix
