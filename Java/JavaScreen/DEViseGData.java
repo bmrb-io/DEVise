@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  1999/07/27 17:11:18  hongyu
+// *** empty log message ***
+//
 // Revision 1.12  1999/06/23 20:59:16  wenger
 // Added standard DEVise header.
 //
@@ -32,13 +35,14 @@ public class DEViseGData
     public int x = 0, y = 0, width = 0, height = 0;
     public String[] data = null;
     public Component symbol = null;
-    public boolean isJavaSymbol = false; 
+    public boolean isJavaSymbol = false;
     public int symbolType = 0;
-    
+
     public String string = null;
     public Color color = null;
-    public Font font = null;    
-    
+    public Font font = null;
+    public int outline = 0;
+
     // GData format: <x> <y> <z> <color> <size> <pattern> <orientation> <symbol type> <shape attr 0> ... <shape attr 9>
     public DEViseGData(String name, String gdata, double xm, double xo, double ym, double yo) throws YException
     {
@@ -47,7 +51,7 @@ public class DEViseGData
 
         viewname = name;
 
-        data = DEViseGlobals.parseStr(gdata, " ");
+        data = DEViseGlobals.parseString(gdata);
         if (data == null || data.length != 18)
             throw new YException("Invalid GData + {" + gdata + "}");
 
@@ -58,7 +62,7 @@ public class DEViseGData
             y0 = (Double.valueOf(data[1])).doubleValue();
             y = (int)(y0 * ym + yo);
             size = (Double.valueOf(data[4])).doubleValue();
-            symbolType = Integer.parseInt(data[7]);            
+            symbolType = Integer.parseInt(data[7]);
         } catch (NumberFormatException e) {
             throw new YException("Invalid GData!");
         }
@@ -77,8 +81,8 @@ public class DEViseGData
             if (x < 0)
                 x = 0;
             if (y < 0)
-                y = 0;            
-            
+                y = 0;
+
             Button button = new Button(data[11]);
             button.setActionCommand(data[10]);
             button.setFont(new Font("Monospaced", Font.PLAIN, 10));
@@ -101,47 +105,124 @@ public class DEViseGData
                 });
 
             symbol = button;
-        } else if (symbolType == 12) { 
+        } else if (symbolType == 12) {
             isJavaSymbol = false;
-            
+
             string = data[8];
-            
+
             double w, h;
+            int align, ff, fw, fs;
+
+            // default font is courier, regular, nonitalic
             try {
                 w = (Double.valueOf(data[10])).doubleValue();
                 h = (Double.valueOf(data[11])).doubleValue();
+
+                if (data[12].equals("")) {
+                    outline = 0;
+                } else {
+                    outline = Integer.parseInt(data[12]);
+                }
+
+                if (data[13].equals("")) {
+                    align = 0;
+                } else {
+                    align = Integer.parseInt(data[13]);
+                    if (align < -4 || align > 4) {
+                        align = 0;
+                    }
+                }
+
+                if (data[14].equals("")) {
+                    ff = 0;
+                } else {
+                    ff = Integer.parseInt(data[14]);
+                }
+
+                if (data[15].equals("")) {
+                    fw = 0;
+                } else {
+                    fw = Integer.parseInt(data[15]);
+                }
+
+                if (data[16].equals("")) {
+                    fs = 0;
+                } else {
+                    fs = Integer.parseInt(data[16]);
+                }
             } catch (NumberFormatException e) {
                 throw new YException("Invalid Gdata!");
-            }    
-            
+            }
+
             width = (int)(w * size * xm);
             height = (int)(h * size * ym);
-            
-            if (width < 0) 
-            	width = -width;
-            if (height < 0) 
-            	height = -height;
-            
+
+            if (width < 0)
+                width = -width;
+            if (height < 0)
+                height = -height;
+
             x = x - width / 2;
             y = y - height / 2;
-            if (x < 0) 
-            	x = 0;
-            if (y < 0) 
-            	y = 0;
             
+            if (x < 0)
+                x = 0;
+            if (y < 0)
+                y = 0;
+
             color = DEViseGlobals.convertColor(data[3]);
-            font = DEViseGlobals.getFont(string, width, height);
-            
+            font = DEViseGlobals.getFont(string, width, height, ff, fw, fs);
+
             if (color == null || font == null) {
-            	string = null;
+                string = null;
+                return;
             }
-            
+
             // because java draw string from its baseline, so we have to make corrections
-	    	Toolkit tk = Toolkit.getDefaultToolkit();
+            Toolkit tk = Toolkit.getDefaultToolkit();
             FontMetrics fm = tk.getFontMetrics(font);
-            int fh = fm.getHeight();
-            y = y + fh;
-            	
+            int ac = fm.getAscent(), dc = fm.getDescent(), ld = fm.getLeading();
+            ac = ac + ld / 2;
+            dc = dc + ld / 2;
+            int sh = fm.getHeight();
+            int sw = fm.stringWidth(string);
+            
+            switch (align) {
+            case -4:
+                y = y + ac;
+                break;
+            case -3:
+                y = y + height / 2 + ac - sh / 2;
+                break;
+            case -2:
+                y = y + height - dc;
+                break;
+            case -1:
+                y = y + ac;
+                x = x + width / 2 - sw / 2;
+                break;
+            case 0:
+                y = y + height / 2 + ac - sh / 2;
+                x = x + width / 2 - sw / 2;
+                break;
+            case 1:
+                y = y + height - dc;
+                x = x + width / 2 - sw / 2;
+                break;
+            case 2:
+                y = y + ac;
+                x = x + width - sw;
+                break;
+            case 3:
+                y = y + height / 2 + ac - sh / 2;
+                x = x + width - sw;
+                break;
+            case 4: 
+                y = y + height - dc;
+                x = x + width - sw;
+                break;
+            }
+                
         } else {
             isJavaSymbol = false;
 
@@ -156,7 +237,7 @@ public class DEViseGData
             if (x < 0)
                 x = 0;
             if (y < 0)
-                y = 0;            
+                y = 0;
         }
     }
 

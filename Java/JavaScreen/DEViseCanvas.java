@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  1999/07/27 17:11:17  hongyu
+// *** empty log message ***
+//
 // Revision 1.7  1999/06/23 20:59:14  wenger
 // Added standard DEVise header.
 //
@@ -36,17 +39,17 @@ public class DEViseCanvas extends Container
 
     public DEViseView view = null;
     public DEViseView activeView = null;
-    
+
     //public Vector allCursors = new Vector();
     //public Vector allGDatas = new Vector();
-    
+
     private Image image = null;
 
     private Dimension canvasDim = null;
     private Rectangle canvasLoc = null;
 
     private Image offScrImg = null;
-        
+
     // indicate whether or not mouse is dragged
     boolean isMouseDragged = false;
 
@@ -108,18 +111,18 @@ public class DEViseCanvas extends Container
         Image img = createImage(source);
         if (img == null) {
             return null;
-        }        
+        }
 
         source = new FilteredImageSource(img.getSource(), new XORFilter());
         img = createImage(source);
         if (img == null) {
             return null;
         } else {
-            /*            
+            /*
             int waittime = 0;
             while (img.getWidth(this) < 0 || img.getHeight(this) < 0) {
                 try {
-                    Thread.sleep(50);                    
+                    Thread.sleep(50);
                 } catch (InterruptedException e) {
                     waittime += 50;
                     if (waittime > 1000) {
@@ -128,9 +131,9 @@ public class DEViseCanvas extends Container
                     }
                 }
             }
-            */            
+            */
         }
-            
+
         return img;
     }
 
@@ -160,7 +163,7 @@ public class DEViseCanvas extends Container
                 cursor.image = getCroppedXORImage(loc);
             }
         }
-        
+
         if (view.viewChilds.size() != 0) {
             for (int i = 0; i < view.viewChilds.size(); i++) {
                 DEViseView v = view.getChild(i);
@@ -173,7 +176,7 @@ public class DEViseCanvas extends Container
                     cursor.image = getCroppedXORImage(loc);
                 }
             }
-        }        
+        }
     }
 
     // Enable double-buffering
@@ -208,19 +211,19 @@ public class DEViseCanvas extends Container
         }
 
         Rectangle loc = null;
-        
+
         // draw all the GDatas, assuming piled view and child view will not have GData
         if (view.viewGDatas.size() != 0) {
-        	for (int i = 0; i < view.viewGDatas.size(); i++) {
-        		DEViseGData gdata = view.getGData(i);
-        		if ((gdata.symbolType == 12 || gdata.symbolType == 16) && gdata.string != null) {
-        			g.setColor(gdata.color);
-        			g.setFont(gdata.font);
-        			g.drawString(gdata.string, gdata.x, gdata.y);
-        		}
-        	}
+            for (int i = 0; i < view.viewGDatas.size(); i++) {
+                DEViseGData gdata = view.getGData(i);
+                if ((gdata.symbolType == 12 || gdata.symbolType == 16) && gdata.string != null) {
+                    g.setColor(gdata.color);
+                    g.setFont(gdata.font);
+                    g.drawString(gdata.string, gdata.x, gdata.y);
+                }
+            }
         }
-        		
+
         // draw all the cursors, include the cursors for child view and piled view
         if (view.viewCursors.size() != 0) {
             for (int i = 0; i < view.viewCursors.size(); i++) {
@@ -242,7 +245,7 @@ public class DEViseCanvas extends Container
                 }
             }
         }
-        
+
         if (view.viewChilds.size() != 0) {
             for (int i = 0; i < view.viewChilds.size(); i++) {
                 DEViseView v = view.getChild(i);
@@ -258,20 +261,20 @@ public class DEViseCanvas extends Container
                     // convert loc to be relative to this view
                     loc.x = loc.x + v.viewLoc.x;
                     loc.y = loc.y + v.viewLoc.y;
-                    
-                    if (cursor.image == null) {                        
+
+                    if (cursor.image == null) {
                         cursor.image = getCroppedXORImage(loc);
                     }
-                    
+
                     if (cursor.image == null) { // Can not create the image for cursor, so skip this cursor
                         jsc.pn("Can not create image for cursor in child view " + v.getCurlyName() + " of view " + view.getCurlyName());
                     } else {
                         g.drawImage(cursor.image, loc.x, loc.y, this);
-                    }                                        
+                    }
                 }
             }
-        }        
-        
+        }
+
         if (activeView != null && activeView == jscreen.getCurrentView()) {
             if (isMouseDragged) {
                 if (mousePosition == 2 || mousePosition == 3 || mousePosition == 6 || mousePosition == 7) { // draw cursor movement box
@@ -643,25 +646,25 @@ public class DEViseCanvas extends Container
                     //activeView.updateCursorLoc(activeView.whichCursor, 1, ep.x - op.x, ep.y - op.y);
                     //int dx = ep.x - op.x, dy = ep.y - op.y;
                     int dx = ep.x - sp.x, dy = ep.y - sp.y;
-                    
+
                     if (activeView.whichCursor >= 0 && activeView.whichCursor < activeView.viewCursors.size()) {
                         DEViseCursor cursor = (DEViseCursor)activeView.viewCursors.elementAt(activeView.whichCursor);
-                        
+
                         //int tx = cursor.x * 2 + cursor.width;
                         if (cursor.gridx > 0) {
                             //dx = ((tx + dx) / cursor.gridx) * cursor.gridx - tx;
                             dx = (dx / cursor.gridx) * cursor.gridx;
                         }
-                        
+
                         //int ty = cursor.y * 2 + cursor.height;
                         if (cursor.gridy > 0) {
                             //dy = ((ty + dy) / cursor.gridy) * cursor.gridy - ty;
                             dy = (dy / cursor.gridy) *cursor.gridy;
                         }
-                    
+
                         activeView.updateCursorLoc(activeView.whichCursor, 1, dx, dy, true);
                     }
-                
+
                     //op.x = ep.x;
                     //op.x = op.x + dx;
                     //op.y = ep.y;
@@ -706,7 +709,7 @@ public class DEViseCanvas extends Container
                           + cursor.height;
 
                     cursor.image = null;
-                    
+
                     jscreen.guiAction = true;
                     dispatcher.start(cmd);
                 } else {
@@ -737,7 +740,7 @@ public class DEViseCanvas extends Container
                     }
 
                     cmd = cmd + "JAVAC_MouseAction_DoubleClick " + activeView.getCurlyName() + " " + activeView.xtome(sp.x) + " " + activeView.ytome(sp.y);
-                    
+
                     jscreen.guiAction = true;
                     dispatcher.start(cmd);
                 } else {
@@ -793,28 +796,28 @@ public class DEViseCanvas extends Container
 
                 String xpos = activeView.getX(ep.x), ypos = activeView.getY(ep.y);
                 jsc.viewInfo.updateInfo(xpos, ypos);
-                                    
+
                 //int dx = ep.x - op.x, dy = ep.y - op.y;
                 int dx = ep.x - sp.x, dy = ep.y - sp.y;
-                
+
                 if (activeView.whichCursor >= 0 && activeView.whichCursor < activeView.viewCursors.size()) {
                     DEViseCursor cursor = (DEViseCursor)activeView.viewCursors.elementAt(activeView.whichCursor);
-                    
+
                     //int tx = cursor.x * 2 + cursor.width;
                     if (cursor.gridx > 0) {
                         //dx = ((tx + dx) / cursor.gridx) * cursor.gridx - tx;
                         dx = (dx / cursor.gridx) * cursor.gridx;
                     }
-                    
+
                     //int ty = cursor.y * 2 + cursor.height;
                     if (cursor.gridy > 0) {
                         //dy = ((ty + dy) / cursor.gridy) * cursor.gridy - ty;
                         dy = (dy / cursor.gridy) *cursor.gridy;
                     }
-                    
+
                     activeView.updateCursorLoc(activeView.whichCursor, 1, dx, dy, false);
                 }
-                
+
                 //op.x = ep.x;
                 //op.x = op.x + dx;
                 //op.y = ep.y;
@@ -947,7 +950,7 @@ class WaitThread implements Runnable
     private int viewx, viewy;
 
     public WaitThread(jsdevisec j)
-    {   
+    {
         jsc = j;
         dispatcher = jsc.dispatcher;
     }
@@ -986,7 +989,7 @@ class WaitThread implements Runnable
             }
 
             cmd = cmd + "JAVAC_MouseAction_Click " + view.getCurlyName() + " " + viewx + " " + viewy;
-            
+
             jsc.jscreen.guiAction = true;
             dispatcher.start(cmd);
         }
