@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1999/09/23 15:36:17  wenger
+#  Removed extra '.' from in front of references to Condor_Total data source.
+#
 #  Revision 1.11  1999/09/07 19:01:06  wenger
 #  dteInsertCatalogEntry command changed to tolerate an attempt to insert
 #  duplicate entries without causing a problem (to allow us to get rid of
@@ -190,7 +193,8 @@ sub DefineData {
 sub CreateViews {
   print SES_OUT "\n# Create views\n";
 
-  print SES_OUT "DEVise create {view} {Scatter} UserList_view -0.05 1.05 0 1 36 9\n";
+  #TEMP
+  print SES_OUT "DEVise create {view} {Scatter} UserList_view -1.05 1.05 0 1 36 9\n";
   print SES_OUT "DEVise viewSetImplicitHome {UserList_view} 0 1 1 1 0.55 0.55 0.0 0.0 ",
       "100.0 100.0\n";
   print SES_OUT "DEVise setViewAutoFilter UserList_view 1\n";
@@ -247,8 +251,9 @@ sub CreateMappings {
       "AllUser#$mappingClass {} {0} {\$X} {} {} 0.9 0 0 17 {\$ViewName} ",
       "1 1 {\$TDataName} {} {} {} {} {} {}\n";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "UserList#$mappingClass {} {0} {\$X} {} 37 0.9 0 360 12 {\$UserName} ",
-      "{} {-2} {0.6} {} {-3} {4} {} {} {}\n";
+      "UserList#$mappingClass {} {0} {\$X} {} 37 1.5 0 360 12 {\$UserName} ",
+      "{} {-2} {0.6} {} {0} {2} {} {} {}\n";
+  #TEMP
 
   $dataName = "Condor_Total";
   foreach $user (sort keys %userlist) {
