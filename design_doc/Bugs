@@ -2689,10 +2689,27 @@ Num Date        Status  Description
 			in drill-down. (rkw)
 			(Fixed by rkw, 5/23/01.)
 
-676 05/25/01	Fixed	Axis label may be a very small non-zero value when
+676 05/25/01	FIXED	Axis label may be a very small non-zero value when
 			it should be zero (see demo session
 			test/bad_y_axis.ds). (rkw)
 			(Fixed by rkw, 5/27/01.)
+
+677 07/11/01	OPEN	Format of colors saved to session files seems to
+			change slightly every time, even if the palette hasn't
+			actually been changed. (rkw)
+
+678 07/11/01	OPEN	viewSetHome command should be propagated to all
+			views in a pile. (rkw)
+
+679 07/13/01	OPEN	Destroying a window and then saving a session sometimes
+			creates a session that crashes DEVise when you
+			reload it. (rkw)  (See Test/visual_example.ds.)
+
+680 07/13/01	OPEN	Get rid of "Warning: histograms not implemented"
+			message. (rkw)
+
+681 07/13/01	OPEN	JavaScreen: titles in child views don't seem to
+			work. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
