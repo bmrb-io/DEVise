@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/20 18:43:20  wenger
+  Unfilled arcs and variable line widths now work in PostScript output.
+
   Revision 1.5  1996/12/11 18:05:46  wenger
   Arc() method now works in PSWindowRep class; put SetSmallFont() method
   back into WindowRep classes for backwards compatibility for Opossum;
@@ -117,14 +120,27 @@ class SampleWinServer : public WinServer {
       0.5 * h);
 
     _winReps.GetWindowRep()->SetFgColor(BlackColor);
+    _winReps.GetWindowRep()->SetBgColor(SlateBlueColor);
     _winReps.GetWindowRep()->GetFgRGB(red, green, blue);
     printf("BlackColor RGB: %f %f %f\n", red, green, blue);
     _winReps.GetWindowRep()->SetNormalFont();
     _winReps.GetWindowRep()->AbsoluteText("Server Display", x, y, w, h,
 		       WindowRep::AlignCenter, false);
     _winReps.GetWindowRep()->SetSmallFont();
-    _winReps.GetWindowRep()->AbsoluteText("Server Display", x, y, w, h,
+    _winReps.GetWindowRep()->AbsoluteText("AlignWest", x, y, w, h,
 		       WindowRep::AlignWest, false);
+
+    _winReps.GetWindowRep()->SetFgColor(GoldenRodColor);
+      _winReps.GetWindowRep()->FillRect(x, y + h/4, w/3, h/8);
+    _winReps.GetWindowRep()->SetFgColor(BlackColor);
+    _winReps.GetWindowRep()->ScaledText("Scaled Text", x, y + h/4, w/3, h/8,
+		       WindowRep::AlignCenter, false);
+
+    _winReps.GetWindowRep()->SetFgColor(GoldenRodColor);
+      _winReps.GetWindowRep()->FillRect(x + w/2, y + h/4, w/2, h/8);
+    _winReps.GetWindowRep()->SetFgColor(RedColor);
+    _winReps.GetWindowRep()->ScaledText("abcdefg", x + w/2, y + h/4, w/2,
+		       h/8, WindowRep::AlignNorthEast, false);
 
     /* bypass local colormap */
     for(float i = 0; i < 1.0; i += 0.1) {
@@ -180,7 +196,7 @@ class SampleWinServer : public WinServer {
 
 /* Note: we should add code to test the following functions:
  * FillPoly FillPixelPoly DrawPixel DrawPixelArray FillPixelRect Line
- * AbsoluteLine ScaledText SetXorMode SetCopyMode SetOrMode SetFont
+ * AbsoluteLine SetXorMode SetCopyMode SetOrMode SetFont
  * SetNormalFont SetDaliServer DaliShowImage DaliFreeImages. */
 
     /* make sure everything gets drawn to the screen */

@@ -188,7 +188,7 @@ Num Date        Status  Description
 057 10/24/96	OPEN	When you switch the layout of a window (e.g., vertical
 			to horizontal) the window often is not redrawn. (rkw)
 
-058 10/29/96	OPEN	Changing line width doesn't work in direct PostScript.
+058 10/29/96	FIXED	Changing line width doesn't work in direct PostScript.
 			(rkw)
 
 059 11/05/96	OPEN	Keyboard callback function for SGI version of client/
@@ -358,12 +358,17 @@ Num Date        Status  Description
 103 12/20/96	OPEN	Bold, italic, and New Century Schoolbook fonts
 			don't work in PostScript. (rkw)
 
-104 12/23/96	CLOSED	AttrProj::LastRecId should report an error when
+104 12/23/96	FIXED	AttrProj::LastRecId should report an error when
 			called on TData that doesn't have an index.  (rkw)
+
+105 12/26/96	OPEN	Print a view with a non-white background to
+			PostScript -> there are "stripes" where white shows
+			through because the various background areas don't
+			quite touch each other. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
 NB = not (really) a bug.
 CD = can't duplicate (reproduce).
-DUP = duplicate
+DUP = duplicate of another bug

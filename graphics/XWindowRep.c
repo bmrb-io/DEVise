@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.80  1996/12/15 20:22:31  wenger
+  Changed pointSize in SetFont() from tenths of points to points.
+
   Revision 1.79  1996/12/03 17:00:21  jussi
   Added SetFont() for generic font support. Removed SetSmallFont().
 
@@ -2119,8 +2122,8 @@ void XWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
 		      Coord height, TextAlignment alignment,
 		      Boolean skipLeadingSpace)
 {
-#ifdef DEBUG
-  printf("XWindowRep::Text: %s at %.2f,%.2f,%.2f,%.2f\n",
+#if defined (DEBUG)
+  printf("XWindowRep::ScaledText: '%s' at %.2f, %.2f, %.2f, %.2f\n",
 	 text, x, y, width, height);
 #endif
 
@@ -2144,9 +2147,22 @@ void XWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
   if (textLength == 0) return;
 
   XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
+#if 1
+  int direction, ascent, descent;
+  XCharStruct overall;
+  XTextExtents(fontStruct, text, textLength, &direction, &ascent, &descent,
+    &overall);
+  int textWidth = overall.width;
+  int textHeight = overall.ascent + overall.descent;
+  ascent = overall.ascent;
+#else
+  /* We need to clear top row of pixels in the source pixmap if
+   * we do this. */
   int textWidth = XTextWidth(fontStruct, text, textLength);
   int textHeight = fontStruct->max_bounds.ascent
                    + fontStruct->max_bounds.descent;
+  int ascent = fontStruct->max_bounds.ascent;
+#endif
   
   if (textWidth > _srcBitmap.width || textHeight > _srcBitmap.height)
     /* allocate a bigger source pixmap */
@@ -2154,26 +2170,27 @@ void XWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
   
   /* use original text to calculate scale factor 
      to scale text to fit in rectangle of 
-     dimensions (winWidth, winHeight)*/
+     dimensions (winWidth, winHeight) */
   double xscale = (double)winWidth / (double)textWidth;
   double yscale = (double)winHeight / (double)textHeight;
   double scale = MIN(xscale, yscale);
   
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("transformed to x=%d,y=%d,w=%d,h=%d\n", winX, winY,
 	 winWidth, winHeight);
   printf("textwidth = %d, textHeight = %d\n", textWidth, textHeight);
 #endif
 
   /* draw text in source bitmap */
+  XSetFont(_display, _srcBitmap.gc, fontStruct->fid);
   XDrawImageString(_display, _srcBitmap.pixmap, _srcBitmap.gc, 
-		   0, fontStruct->max_bounds.ascent, text, textLength);
+		   0, ascent, text, textLength);
   
   /* scale into dest bitmap */
   int dstWidth = ROUND(int, textWidth * scale);
   int dstHeight = ROUND(int, textHeight * scale);
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("scale= %.2f, textWidth = %d, textHeight = %d, dstw=%d, dstH = %d\n",
 	 scale, textWidth, textHeight, dstWidth, dstHeight);
   printf("dstwidth = %d, dstHeight = %d\n", dstWidth, dstHeight);
@@ -2225,7 +2242,7 @@ void XWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
     startX = winX + widthDiff; startY = winY+heightDiff;
     break;
   }
-  
+
   XCopyPlane(_display, _dstBitmap.pixmap, DRAWABLE, _gc, 
 	     0, 0, dstWidth, dstHeight, startX, startY, 1);
 }
@@ -2296,7 +2313,7 @@ into _dstBitmap (0,0,dstWidth, dstHeight). X windows coords are used.
 
 void XWindowRep::CopyBitmap(int width,int height,int dstWidth,int dstHeight)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("XWindowRep::CopyBitmap: %d,%d,%d,%d\n", width, height,
          dstWidth, dstHeight);
 #endif
@@ -2305,18 +2322,6 @@ void XWindowRep::CopyBitmap(int width,int height,int dstWidth,int dstHeight)
     /* allocate a bigger pixmap */
     AllocBitmap(_dstBitmap, dstWidth, dstHeight);
 
-  /* copy dst from src */
-  int widthMinus1 = width - 1;
-  int heightMinus1 = height - 1;
-
-  int dstWidthMinus1 = dstWidth;
-  if (dstWidth > 1)
-    dstWidthMinus1 = dstWidth - 1;
-
-  int dstHeightMinus1 = dstHeight;
-  if (dstHeight > 1)
-    dstHeightMinus1 = dstHeight - 1;
-  
   XImage *srcImage = XGetImage(_display, _srcBitmap.pixmap, 
 			       0, 0, width, height, 1, XYPixmap);
   
@@ -2324,8 +2329,8 @@ void XWindowRep::CopyBitmap(int width,int height,int dstWidth,int dstHeight)
     for (int x = 0; x < dstWidth; x++) {
       XPutPixel(_dstBitmap.image, x, y,
 		XGetPixel(srcImage,
-			  x * widthMinus1 / dstWidthMinus1,
-			  y * heightMinus1 / dstHeightMinus1));
+			  x * width / dstWidth,
+			  y * height / dstHeight));
     }
   }
   XPutImage(_display, _dstBitmap.pixmap, _dstBitmap.gc, 
