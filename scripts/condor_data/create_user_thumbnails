@@ -23,6 +23,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1999/09/07 19:01:06  wenger
+#  dteInsertCatalogEntry command changed to tolerate an attempt to insert
+#  duplicate entries without causing a problem (to allow us to get rid of
+#  Tcl in session files); changed Condor session scripts to take out Tcl
+#  control statements in data source definitions; added viewGetImplicitHome
+#  and related code in Session class so this gets saved in session files
+#  (still no GUI for setting this, though); removed SEQ-related code.
+#
 #  Revision 1.10  1999/09/03 16:59:59  wenger
 #  Fixed problems in defining top-level user list data source.
 #
@@ -242,7 +250,7 @@ sub CreateMappings {
       "UserList#$mappingClass {} {0} {\$X} {} 37 0.9 0 360 12 {\$UserName} ",
       "{} {-2} {0.6} {} {-3} {4} {} {} {}\n";
 
-  $dataName = ".Condor_Total";
+  $dataName = "Condor_Total";
   foreach $user (sort keys %userlist) {
       print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
           "${user}#$mappingClass {} {\$time} {\$total_jobs} {} 31 1 0 0 8 1 ",
