@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/12/03 23:29:10  wenger
+  Fixed PostScript bounding box to closely surround the image (fixed
+  bug 089).
+
   Revision 1.27  1996/12/03 17:02:11  jussi
   Replaced SetSmallFont() with SetFont().
 
@@ -674,7 +678,7 @@ void ViewWin::DrawMargins()
   win->SetFgColor(GetBgColor());
   win->FillRect(x + 1, y + 1, w - 1 - 2, _topMargin - 1 - 2);
   win->SetFgColor(GetFgColor());
-  win->SetFont("Courier", "Medium", "r", "Normal", 80);
+  win->SetFont("Courier", "Medium", "r", "Normal", 8.0);
   win->AbsoluteText((char *) logo, x + 1, y + 1, w - 2, _topMargin - 2,
 		    WindowRep::AlignNorth, true);
   win->SetNormalFont();

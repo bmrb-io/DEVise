@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/12/11 18:05:37  wenger
+  Arc() method now works in PSWindowRep class; put SetSmallFont() method
+  back into WindowRep classes for backwards compatibility for Opossum;
+  server example program tests more of the WindowRep methods than before;
+  removed 'not yet implemented' warnings from some PSWindowRep methods.
+
   Revision 1.14  1996/12/04 18:12:40  wenger
   Unimplemented methods in PSWindowRep now report an error but do not
   abort when called; fixed code in cslib server example that caused problems
@@ -1265,14 +1271,14 @@ void PSWindowRep::SetCopyMode()
 
 /*---------------------------------------------------------------------------*/
 void PSWindowRep::SetFont(char *family, char *weight, char *slant,
-                          char *width, int pointSize)
+                          char *width, float pointSize)
 {
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
   _fontSize = pointSize;
   fprintf(printFile, "/%s findfont\n", family);
-  fprintf(printFile, "%d scalefont\n", _fontSize / 10);
+  fprintf(printFile, "%f scalefont\n", _fontSize);
   fprintf(printFile, "setfont\n");
 #endif
 }

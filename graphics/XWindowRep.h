@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.35  1996/12/11 18:05:39  wenger
+  Arc() method now works in PSWindowRep class; put SetSmallFont() method
+  back into WindowRep classes for backwards compatibility for Opossum;
+  server example program tests more of the WindowRep methods than before;
+  removed 'not yet implemented' warnings from some PSWindowRep methods.
+
   Revision 1.34  1996/12/03 17:00:24  jussi
   Added SetFont() for generic font support. Removed SetSmallFont().
 
@@ -300,7 +306,7 @@ public:
 
 	/* Set font or return to normal */
         virtual void SetFont(char *family, char *weight, char *slant,
-                             char *width, int pointSize);
+                             char *width, float pointSize);
 	virtual void SetNormalFont();
 
 	/* Draw rubberbanding rectangle */

@@ -17,6 +17,12 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/12/04 18:12:47  wenger
+  Unimplemented methods in PSWindowRep now report an error but do not
+  abort when called; fixed code in cslib server example that caused problems
+  for Anand; corrected the values returned by some of the NumShapeAttrs()
+  methods in MapInterpShape.
+
   Revision 1.26  1996/12/03 17:03:04  jussi
   Added support for setting font size.
 
@@ -1603,8 +1609,8 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 	Coord x = GetX(gdata, map, offset);
 	Coord y = GetY(gdata, map, offset);
         Coord pointSize = GetSize(gdata, map, offset);
-        if (pointSize <= 1)
-            pointSize = 12;
+        if (pointSize <= 1.0)
+            pointSize = 12.0;
 	GlobalColor color = GetColor(view, gdata, map, offset);
 
 	char *label = "X";
@@ -1627,7 +1633,7 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 	  win->SetFgColor(color);
 	win->SetPattern(GetPattern(gdata, map, offset));
         win->SetFont("Helvetica", "Bold", "r", "Normal",
-                     (int)(10 * pointSize));
+                     pointSize);
 
 	// Pretend that there's a large box in which the text has to
 	// be drawn; this is done because we don't know the size of the

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/03 16:02:04  jussi
+  Removed SetSmallFont(). Added more generic SetFont().
+
   Revision 1.3  1996/11/20 20:34:52  wenger
   Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
   some Makefile improvements so compile works first time; fixed up files
@@ -721,14 +724,14 @@ void NullWindowRep::SetCopyMode()
 }
 
 void NullWindowRep::SetFont(char *family, char *weight, char *slant,
-                            char *width, int pointSize)
+                            char *width, float pointSize)
 {
     /* do something */
 }
 
 void NullWindowRep::SetNormalFont()
 {
-    SetFont("Times", "Medium", "r", "normal", 120);
+    SetFont("Times", "Medium", "r", "normal", 12.0);
 }
 
 void NullWindowRep::UpdateWinDimensions()

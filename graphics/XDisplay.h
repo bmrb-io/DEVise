@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/12/03 17:00:26  jussi
+  Added SetFont() for generic font support. Removed SetSmallFont().
+
   Revision 1.24  1996/11/18 23:11:21  wenger
   Added procedures to generated PostScript to reduce the size of the
   output and speed up PostScript processing; added 'small font' capability
@@ -212,7 +215,7 @@ protected:
     XFontStruct *GetFontStruct()       { return _fontStruct; };
     XFontStruct *GetNormalFontStruct() { return _normalFontStruct; };
     void SetFont(char *family, char *weight, char *slant,
-                 char *width, int pointSize);
+                 char *width, float pointSize);
     void SetNormalFont() { _fontStruct = _normalFontStruct; }
 
     /* Get width and height of X window */

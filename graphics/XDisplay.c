@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1996/12/03 17:00:25  jussi
+  Added SetFont() for generic font support. Removed SetSmallFont().
+
   Revision 1.44  1996/11/26 09:30:38  beyer
   Mucked with debugging some statements
 
@@ -266,7 +269,7 @@ XDisplay::XDisplay(char *name)
   
   /* set normal font to be the current font */
   _fontStruct = NULL;
-  SetFont("Courier", "Medium", "r", "Normal", 120);
+  SetFont("Courier", "Medium", "r", "Normal", 12.0);
   _normalFontStruct = _fontStruct;
   if (!_normalFontStruct) {
       fprintf(stderr, "Cannot load 12-point Courier font\n");
@@ -308,20 +311,20 @@ void XDisplay::Register()
 /* Set font and point size */
 
 void XDisplay::SetFont(char *family, char *weight, char *slant,
-                       char *width, int pointSize)
+                       char *width, float pointSize)
 {
     XFontStruct *oldFont = _fontStruct;
     /*
        Attempt to load font as specified. If font cannot be loaded,
        increase point size by one unit and try again.
     */
-    for(int p = pointSize; p <= pointSize + 50; p += 10) {
+    for(float p = pointSize; p <= pointSize + 5.0; p += 1.0) {
         char fname[128];
         sprintf(fname, "*-%s-%s-%s-%s--*-%d-*-*-*-*-*-*",
-                family, weight, slant, width, p);
+                family, weight, slant, width, (int) (p * 10.0));
         _fontStruct = XLoadQueryFont(_display, fname);
         if (_fontStruct) {
-#ifdef DEBUG
+#if defined(DEBUG)
             printf("Loaded font %s\n", fname);
 #endif
             if (oldFont && oldFont != _normalFontStruct) {
@@ -333,7 +336,7 @@ void XDisplay::SetFont(char *family, char *weight, char *slant,
             return;
         }
     }
-    fprintf(stderr, "Warning: could not find font %s %d\n", family, pointSize);
+    fprintf(stderr, "Warning: could not find font %s %f\n", family, pointSize);
     _fontStruct = _normalFontStruct;
 }
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.79  1996/12/03 17:00:21  jussi
+  Added SetFont() for generic font support. Removed SetSmallFont().
+
   Revision 1.78  1996/11/26 16:47:49  ssl
   Added support for Stacked Opaque and Transparent views
 
@@ -845,7 +848,7 @@ XWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
 
   if (_daliServer == NULL)
   {
-    reportError("No Dali server specified", devNoSyserr);
+    reportError("No Tasvir server specified", devNoSyserr);
     result = StatusFailed;
   }
   else
@@ -859,7 +862,7 @@ XWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
     if (result.IsComplete())
     {
 #if defined(DEBUG)
-      printf("Displayed Dali image; handle = %d\n", handle);
+      printf("Displayed Tasvir image; handle = %d\n", handle);
 #endif
 
       _daliImages.Insert(handle);
@@ -2266,10 +2269,10 @@ void XWindowRep::SetCopyMode()
 }
 
 void XWindowRep::SetFont(char *family, char *weight, char *slant,
-                         char *width, int pointSize)
+                         char *width, float pointSize)
 {
 #if defined(DEBUG)
-  printf("XWindowRep(0x%p)::SetFont(%s,%d)\n", this, family, pointSize);
+  printf("XWindowRep(0x%p)::SetFont(%s,%f)\n", this, family, pointSize);
 #endif
   GetDisplay()->SetFont(family, weight, slant, width, pointSize);
   XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
