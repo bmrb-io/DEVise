@@ -21,10 +21,10 @@
 
 ############################################################
 
-ln -s ../../dist_sw/public/$ARCH_DIR/EmbeddedTk .
-ln -s ../../dist_sw/public/$ARCH_DIR/Tasvir .
-ln -s ../../dist_sw/public/$ARCH_DIR/TasvirWithPaths .
-ln -s ../../dist_sw/public/$ARCH_DIR/devise .
-ln -s ../../dist_sw/public/$ARCH_DIR/deviseb .
-ln -s ../../dist_sw/public/$ARCH_DIR/devisec .
-ln -s ../../dist_sw/public/$ARCH_DIR/devised .
+ln -s ../../dist_sw/bin_arch/$ARCH_DIR/EmbeddedTk .
+ln -s ../../dist_sw/bin_arch/$ARCH_DIR/Tasvir .
+ln -s ../../dist_sw/bin_arch/$ARCH_DIR/TasvirWithPaths .
+ln -s ../../dist_sw/bin_arch/$ARCH_DIR/devise .
+ln -s ../../dist_sw/bin_arch/$ARCH_DIR/deviseb .
+ln -s ../../dist_sw/bin_arch/$ARCH_DIR/devisec .
+ln -s ../../dist_sw/bin_arch/$ARCH_DIR/devised .

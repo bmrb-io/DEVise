@@ -20,13 +20,23 @@
 
 ############################################################
 
+if ($#argv != 2) then
+  echo "Usage: setup <base_dir> <html_dir>"
+  exit 1
+endif
+
+set base_dir = $1
+set html_dir = $2
+
+set dist_home = `pwd`
+
 if (`hostname` != trigger) then
   echo "Setup must be done on trigger"
   exit 1
 endif
 
-ln -s /p/devise dist_sw
-ln -s ~devise/public/html .
+ln -s $base_dir dist_sw
+ln -s $html_dir .
 
 cd common
 ./setup
@@ -62,4 +72,16 @@ echo "Creating linux-intel directory"
 setenv ARCH_DIR i386_linux
 cd linux-intel
 ./setup
+cd ..
+
+echo "Creating JavaScreen directory"
+set logfile = $dist_home/JavaScreen_create.log
+if (-f $logfile) then
+  rm $logfile
+endif
+mkdir JavaScreen
+set js_src = $base_dir/JavaScreen
+cd JavaScreen
+tar cX $dist_home/scripts/tar_js_exclude --directory=$js_src . | tar xv \
+    > $logfile
 cd ..

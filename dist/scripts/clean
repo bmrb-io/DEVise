@@ -43,3 +43,7 @@ cd ..
 cd linux-intel
 clean
 cd ..
+
+\rm -r JavaScreen
+
+rm *.log

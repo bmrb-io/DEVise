@@ -17,9 +17,11 @@
 
 ############################################################
 
+include Makefile.config
+
 .PHONY : setup
 setup:
-	scripts/setup
+	scripts/setup $(BASE_DIR) $(HTML_DIR)
 
 .PHONY : clean
 clean:
@@ -27,4 +29,4 @@ clean:
 
 .PHONY : dist
 dist:
-	scripts/gen_dist
+	scripts/gen_dist $(FTP_DIR)

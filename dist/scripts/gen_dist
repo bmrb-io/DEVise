@@ -20,16 +20,23 @@
 
 ############################################################
 
-if ($#argv > 0) then
-  set version = $1
+if ($#argv < 1 || $#argv > 2) then
+  echo "Usage: setup <ftp_dir> [DEVise version]"
+  exit 1
+endif
+
+set ftp_dir = $1
+
+if ($#argv == 2) then
+  set version = $2
 else
   echo -n "Please enter DEVise version: "
   set version = $<
 endif
 
-set home = `pwd`
+set dist_home = `pwd`
 
-set target = /p/devise/ftp/Devise-$version
+set target = $ftp_dir/Devise-$version
 
 if ( -d $target) then
   echo "Distribution for DEVise version $version already exists."
@@ -42,39 +49,67 @@ endif
 # set src = hpux-hppa
 # set dest = $target/hpux-hppa.tar.gz
 # cd $src
-# tar cvfzhX $dest $home/scripts/tar_exclude .
-# cd $home
+# tar cvfzhX $dest $dist_home/scripts/tar_exclude .
+# cd $dist_home
 
+echo "Generating solaris-intel distribution"
+set logfile = $dist_home/solaris-intel.log
+if (-f $logfile) then
+  rm $logfile
+endif
 set src = solaris-intel
 set dest = $target/solaris-intel.tar.gz
 cd $src
-tar cvfzhX $dest $home/scripts/tar_exclude .
-cd $home
+tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
+cd $dist_home
 
+echo "Generating solaris-sparc distribution"
+set logfile = $dist_home/solaris-sparc.log
+if (-f $logfile) then
+  rm $logfile
+endif
 set src = solaris-sparc
 set dest = $target/solaris-sparc.tar.gz
 cd $src
-tar cvfzhX $dest $home/scripts/tar_exclude .
-cd $home
+tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
+cd $dist_home
 
 # set src = sunos-sparc
 # set dest = $target/sunos-sparc.tar.gz
 # cd $src
-# tar cvfzhX $dest $home/scripts/tar_exclude .
-# cd $home
+# tar cvfzhX $dest $dist_home/scripts/tar_exclude .
+# cd $dist_home
 
+echo "Generating linux-intel distribution"
+set logfile = $dist_home/linux-intel.log
+if (-f $logfile) then
+  rm $logfile
+endif
 set src = linux-intel
 set dest = $target/linux-intel.tar.gz
 cd $src
-tar cvfzhX $dest $home/scripts/tar_exclude .
-cd $home
+tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
+cd $dist_home
 
+echo "Generating quick intro distribution"
+set logfile = $dist_home/quick_intro.log
+if (-f $logfile) then
+  rm $logfile
+endif
 set src = html/devise
 set dest = $target/quick_intro.tar.gz
 cd $src
-tar cvfzhX $dest $home/scripts/tar_exclude quick_intro
-cd $home
+tar cvfzhX $dest $dist_home/scripts/tar_exclude quick_intro > $logfile
+cd $dist_home
 
+echo "Generating JavaScreen distribution"
+set logfile = $dist_home/JavaScreen.log
+if (-f $logfile) then
+  rm $logfile
+endif
+set src = JavaScreen
+set dest = $target/JavaScreen.tar.gz
+tar cvfz $dest $src > $logfile
 
 echo ""
 echo Done!
