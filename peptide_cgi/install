@@ -37,7 +37,6 @@
 if ($#argv == 1) then
   set location = $1
   if ($location == cs) then
-    echo "DIAG cs"
     set demohome = /p/devise/demo
     set wwwhome = /var/home/www
     set pephome = $wwwhome/public/bmrb
@@ -45,7 +44,6 @@ if ($#argv == 1) then
     set sessionhome = /local.pumori/devise/bmrb/dynamic_sessions
     set datahome = /local.pumori/devise/bmrb/dynamic_data
   else if ($location == bmrb) then
-    echo "DIAG bmrb"
     set demohome = /p/devise/demo
     set wwwhome = /bmrb/htdocs
     set pephome = $wwwhome/devise/peptide-cgi
@@ -54,7 +52,7 @@ if ($#argv == 1) then
     set datahome = $pephome/data_dir
 
     echo "Have you modified cgi-bin/make_view and bmrb_select.html"
-    echo "for installation at bmrb? [n]"
+    echo -n "for installation at bmrb? [n]"
     set answer = $<
     if ($answer != y && $answer != Y) then
       echo Aborted.
