@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.58  1997/05/06 17:20:39  wenger
+  Now gives warning if your mapping has a TData attribute that doesn't
+  exist!
+
   Revision 1.57  1997/04/30 21:45:38  wenger
   Fixed non-constant strings in complex mappings bug; TDataAsciiInterp
   no longer gives warning message on blank data lines; added makefile
@@ -1531,10 +1535,12 @@ char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
 	AttrInfo *info = _attrList->Find(buf);
 	if (!info) {
 	  /* can't find variable name */
-	  char errBuf[256];
-	  sprintf(errBuf, "Can't find attribute '%s' requested by mapping",
-	    buf);
-          reportErrNosys(errBuf);
+	  if (strcmp(buf, "recId")) {
+	    char errBuf[256];
+	    sprintf(errBuf, "Can't find attribute '%s' requested by mapping",
+	      buf);
+            reportErrNosys(errBuf);
+	  }
 	} else {
 	  /* found the attribute */
 	  if (info->isSorted)
