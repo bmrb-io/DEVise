@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.64  2002/03/20 22:10:46  xuk
+// Added automatic collaboration functionality.
+// Added collabName variable and getCollabName() method;
+// Modified setCollabPassword() method.
+//
 // Revision 1.63  2002/03/12 19:49:58  wenger
 // Fixed bug 758 (caused by JAVAC_Set3DConfig not causing a client switch
 // but still sending a command to the DEVised); did some cleanup of the
@@ -1174,7 +1179,7 @@ public class DEViseClient
 		    isAbleCollab = true;
 		    collabName = cmds[1];
 		    collabPass = cmds[2];
-		    pop.collabNames.add(collabName);
+		    pop.collabNames.addElement(collabName);
 		}
 		sendCmd(DEViseCommands.DONE);
 	    } catch (YException e) {
