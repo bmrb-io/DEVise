@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/08/10 19:08:06  wenger
+  Moved command result buffer from DeviseCommand class to ControlPanel
+  class -- saves 7 MB of memory!
+
   Revision 1.11  1998/08/03 18:38:39  wenger
   Implemented JAVAC_ServerExit and JAVAC_SaveSession commands; partly
   implemented several other new commands for the JavaScreen.
@@ -1369,6 +1373,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(setLinkSlaveAttr) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(selectView) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

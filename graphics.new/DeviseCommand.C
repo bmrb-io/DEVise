@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.22  1998/08/28 22:01:16  wenger
+  Made Dispatcher::WaitForQueries() function -- improved over earlier
+  versions because it also checks the callback list (this fixes bug 367);
+  fixed other piled-related JavaScreen support problems; JAVAC_OpenSession
+  closes any existing session before opening the new one.
+
   Revision 1.21  1998/08/10 19:08:04  wenger
   Moved command result buffer from DeviseCommand class to ControlPanel
   class -- saves 7 MB of memory!
@@ -4401,6 +4407,8 @@ IMPLEMENT_COMMAND_BEGIN(test)
 			}
 		}
 		DevWindow::DoneIterator(index);
+        control->ReturnVal(API_ACK, "done");
+		return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in test\n", argc);
     	control->ReturnVal(API_NAK, "Wrong # of arguments");
@@ -4460,6 +4468,8 @@ IMPLEMENT_COMMAND_BEGIN(setLinkMasterAttr)
             return -1;
         }
 		link->SetMasterAttr(argv[2]);
+        control->ReturnVal(API_ACK, "done");
+		return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in setLinkMasterAttr\n", argc);
     	control->ReturnVal(API_NAK, "Wrong # of arguments");
@@ -4479,8 +4489,32 @@ IMPLEMENT_COMMAND_BEGIN(setLinkSlaveAttr)
             return -1;
         }
 		link->SetSlaveAttr(argv[2]);
+        control->ReturnVal(API_ACK, "done");
+		return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in setLinkSlaveAttr\n", argc);
+    	control->ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(selectView)
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        View *view = (View *)classDir->FindInstance(argv[1]);
+		if (view != NULL) {
+		    view->SelectView();
+            control->ReturnVal(API_ACK, "done");
+		    return 1;
+		} else {
+    	    control->ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+		}
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in selectView\n", argc);
     	control->ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}

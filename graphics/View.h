@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.66  1998/08/25 20:56:25  wenger
+  Implemented support for JavaScreen cursors (not yet fully tested).
+
   Revision 1.65  1998/05/29 15:19:06  wenger
   Rubberband lines now work in JavaScreen, at least for single-window
   sessions.
@@ -448,6 +451,9 @@ class View : public ViewWin
 	static Boolean MoreView(int index) { return _viewList->More(index); }
 	static View *NextView(int index){ return _viewList->Next(index); }
 	static void DoneViewIterator(int index) { _viewList->DoneIterator(index); }
+
+	static View *FindSelectedView();
+	void SelectView();
 
 	/* Set axes callback */
 	void SetXAxisAttrType(AttrType type);

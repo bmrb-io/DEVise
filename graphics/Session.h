@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/05/14 18:21:09  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.8  1998/04/28 18:02:40  wenger
   Added provision for "logical" and "physical" TDatas to mappings,
   instead of creating new mappings for slave views; other TAttrLink-
@@ -71,7 +75,7 @@ class Session {
 public:
   static DevStatus Open(char *filename);
   static DevStatus Save(char *filename, Boolean asTemplate, Boolean asExport,
-      Boolean withData);
+      Boolean withData, Boolean selectedView = false);
   static DevStatus CreateTData(char *name);
 
 private:

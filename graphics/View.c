@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.142  1998/08/25 20:56:23  wenger
+  Implemented support for JavaScreen cursors (not yet fully tested).
+
   Revision 1.141  1998/07/06 21:06:35  wenger
   More memory leak hunting -- partly tracked down some in the DTE.
 
@@ -4089,6 +4092,37 @@ void View::SetViewDir(ViewDir dir)
   c.pan_right=0.0;
   c.pan_up=0.0;
   SetCamera(c);
+}
+
+View *
+View::FindSelectedView()
+{
+  View *selectedView = NULL;
+  int index = InitViewIterator();
+  while (MoreView(index) && selectedView == NULL) {
+    View *tmpView = NextView(index);
+    if (tmpView->IsHighlighted()) selectedView = tmpView;
+  }
+  DoneViewIterator(index);
+
+  return selectedView;
+}
+
+void
+View::SelectView()
+{
+#if defined(DEBUG)
+  printf("View(%s)::SelectView()\n", GetName());
+#endif
+
+  // Unhighlight previously-selected view, if any, and highlight the
+  // newly-selected view (do nothing if they are the same view).
+  View *prevSelView = FindSelectedView();
+  if (prevSelView != this) {
+    if (prevSelView != NULL) prevSelView->Highlight(false);
+    Highlight(true);
+    ControlPanel::Instance()->SelectView(this);
+  }
 }
 
 //******************************************************************************

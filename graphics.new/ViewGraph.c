@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.82  1998/07/30 15:31:23  wenger
+  Fixed bug 381 (problem with setting master and slave of a link to the same
+  view); generally cleaned up some of the master-slave link related code.
+
   Revision 1.81  1998/05/06 22:05:02  wenger
   Single-attribute set links are now working except where the slave of
   one is the master of another.
@@ -1822,28 +1826,13 @@ void	ViewGraph::HandlePress(WindowRep* w, int xlow, int ylow,
 #endif
 
 	if ((xlow == xhigh) && (ylow == yhigh) &&
-		CheckCursorOp(w, xlow, ylow, button))	// Was a cursor event?
+		CheckCursorOp(w, xlow, ylow, button)) {	// Was a cursor event?
           return;
+    }
 
 	// Note: doing the unhighlight and highlight here breaks the dependency
 	// we had on the client doing this for us.  RKW Jan 27, 1998.
-
-	// Unhighlight previously-selected view, if any, and highlight the
-	// newly-selected view (do nothing if they are the same view).
-	View *prevSelView = NULL;
-	int index = InitViewIterator();
-	while (MoreView(index) && prevSelView == NULL) {
-	  View *tmpView = NextView(index);
-	  if (tmpView->IsHighlighted()) prevSelView = tmpView;
-	}
-	DoneViewIterator(index);
-
-	if (prevSelView != this) {
-	  if (prevSelView != NULL) prevSelView->Highlight(false);
-	  Highlight(true);
-	}
-
-	ControlPanel::Instance()->SelectView(this);
+    SelectView();
 
 	if (_action)				// Convert from screen to world coordinates
 	{

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.27  1998/09/08 16:55:13  wenger
+  Improved how JavaScreenCmd handles closing sessions -- fixes some problems
+  with client switching.
+
   Revision 1.26  1998/09/04 17:26:49  wenger
   Added code for timing JavaScreenCmd::OpenSession() and other debug code.
 
@@ -683,8 +687,12 @@ JavaScreenCmd::SaveSession()
     printf(")\n");
 #endif
 
-	if (_argc != 1)
-	{
+	Boolean saveSelView;
+	if (_argc == 1) {
+		saveSelView = false;
+	} else if (_argc == 2) {
+		saveSelView = atoi(_argv[1]);
+	} else {
 		errmsg = "Usage: SaveSession <file name>";
 		_status = ERROR;
 		return;
@@ -697,7 +705,8 @@ JavaScreenCmd::SaveSession()
 	char fullpath[MAXPATHLEN];
 	sprintf(fullpath, "%s/%s", _sessionDir, _argv[0]);
 
-	if (!Session::Save(fullpath, false, false, false).IsComplete()) {
+	if (!Session::Save(fullpath, false, false, false,
+	  saveSelView).IsComplete()) {
 		errmsg = "Error saving session";
 		_status = ERROR;
 	} else {

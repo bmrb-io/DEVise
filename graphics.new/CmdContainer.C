@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/08/17 17:12:01  wenger
+  Devised now responds to KeyAction commands from JavaScreen.
+
   Revision 1.15  1998/08/03 18:38:36  wenger
   Implemented JAVAC_ServerExit and JAVAC_SaveSession commands; partly
   implemented several other new commands for the JavaScreen.
@@ -356,6 +359,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(getLinkSlaveAttr)
 	REGISTER_COMMAND(setLinkMasterAttr)
 	REGISTER_COMMAND(setLinkSlaveAttr)
+	REGISTER_COMMAND(selectView)
 }
 
 CmdContainer::~CmdContainer()

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  1998/08/10 19:08:22  wenger
+  Moved command result buffer from DeviseCommand class to ControlPanel
+  class -- saves 7 MB of memory!
+
   Revision 1.27  1998/06/10 18:04:03  wenger
   Improved new cursor drawing (bug in Mesa implementation sometimes makes
   it look ugly); cursor color now saved in sessions.
@@ -154,6 +158,7 @@
 #include "DeviseCommand.h"
 #include "DeviseServer.h"
 #include "CmdLog.h"
+#include "View.h"
 
 
 //#define DEBUG
@@ -295,11 +300,11 @@ Session::Open(char *filename)
  */
 DevStatus
 Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
-    Boolean withData)
+    Boolean withData, Boolean selectedView)
 {
 #if defined(DEBUG)
-  printf("Session::Save(%s, %d, %d, %d)\n", filename, asTemplate, asExport,
-      withData);
+  printf("Session::Save(%s, %d, %d, %d, %d)\n", filename, asTemplate, asExport,
+      withData, selectedView);
 #endif
 
   DevStatus status = StatusOk;
@@ -397,6 +402,14 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
 
     fprintf(saveData.fp, "\n# Set camera location for each view\n");
     status += ForEachInstance("view", SaveCamera, &saveData);
+
+    if (selectedView) {
+      fprintf(saveData.fp, "\n# Select view\n");
+      View *view = View::FindSelectedView();
+      if (view != NULL) {
+	fprintf(saveData.fp, "DEVise selectView {%s}\n", view->GetName());
+      }
+    }
   }
 
   if (saveData.fp != NULL) {
