@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/03/05 23:20:36  jussi
+  Added destructor which deletes dynamically allocated objects.
+
   Revision 1.5  1996/01/13 23:10:07  jussi
   Added support for Z attribute and shape attribute 2.
 
@@ -39,6 +42,7 @@
 #define TDataMap_h
 
 #include <stdio.h>
+#include <assert.h>
 
 #include "DeviseTypes.h"
 #include "Exit.h"
@@ -50,6 +54,7 @@
 #include "Bitmap.h"
 #include "RecId.h"
 #include "GDataRec.h"
+#include "ViewGraph.h"
 
 class AttrList;
 
@@ -140,6 +145,16 @@ public:
   /* return the max bounding box found so far */
   void MaxBoundingBox(Coord &width, Coord &height);
   
+  void AssociateView(ViewGraph *view) {
+    assert(!_view);
+    _view = view;
+  }
+  void DissociateView() {
+    assert(_view);
+    _view = NULL;
+  }
+  ViewGraph *GetView() { return _view; }
+
   /*************************************************************
     User Defined Map function.
   **************************************************************/
@@ -292,6 +307,8 @@ private:
   void *_userData;
   
   Coord _boundWidth, _boundHeight; /* bounding box width/height */
+
+  ViewGraph *_view;                /* view */
 };
 
 #endif

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.32  1996/01/27 00:21:22  jussi
+  Added support for postscript execution; scripts which are
+  executed after query processor has evaluated all queries
+  and system is idle.
+
   Revision 1.31  1996/01/19 18:59:02  jussi
   Added ClearTopGroups.
 
@@ -891,6 +896,11 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				interp->result = "view not in any window";
 				goto error;
 			}
+			for (view->InitMappingIterator(); view->MoreMapping(); ){
+				TDataMap *map = view->NextMapping();
+				map->DissociateView();
+			}
+			view->DoneMappingIterator();
 			view->DeleteFromParent();
 		}
 		else if (strcmp(argv[1],"getViewMappings") == 0) {
@@ -1009,6 +1019,15 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		    /* Return status of statistics display */
 		    strcpy(interp->result, vg->GetDisplayStats());
 		}
+		else if (strcmp(argv[1], "getViewDimensions") == 0) {
+		    View *vg = (View *)classDir->FindInstance(argv[2]);
+		    if (vg == NULL) {
+			interp->result = "Can't find view in GetViewDimensions";
+			goto error;
+		    }
+		    /* Return status of statistics display */
+		    sprintf(interp->result, "%d", vg->GetNumDimensions());
+		}
 		else {
 			interp->result = "wrong args";
 			goto error;
@@ -1042,6 +1061,15 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		    }
 		    /* Turn on/off display of statistics */
 		    vg->SetDisplayStats(argv[3]);
+		}
+		else if (strcmp(argv[1], "setViewDimensions") == 0) {
+		    View *vg = (View *)classDir->FindInstance(argv[2]);
+		    if (vg == NULL) {
+			interp->result = "Can't find view in SetViewDimensions";
+			goto error;
+		    }
+		    /* Turn on/off display of statistics */
+		    vg->SetNumDimensions(atoi(argv[3]));
 		}
 		else if (strcmp(argv[1],"savePixmap") == 0){
 			/*
@@ -1206,6 +1234,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				Exit::DoExit(2);
 			}
 			view->InsertMapping(map);
+			map->AssociateView(view);
 		}
 		else if (strcmp(argv[1],"insertLink") == 0){
 			VisualLink *link = (VisualLink *)classDir->FindInstance(argv[2]);
@@ -1263,6 +1292,11 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				fprintf(stderr,"TkControl:Cmd insertWindow can't find window %s\n", argv[3]);
 				Exit::DoExit(2);
 			}
+			for (view->InitMappingIterator(); view->MoreMapping(); ){
+				TDataMap *map = view->NextMapping();
+				map->DissociateView();
+			}
+			view->DoneMappingIterator();
 			view->DeleteFromParent();
 			view->AppendToParent(win);
 		}

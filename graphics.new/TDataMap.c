@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/03/05 23:26:49  jussi
+  Added destructor which deletes dynamically allocated objects.
+
   Revision 1.10  1996/01/30 21:16:06  jussi
   Removed references to specific colors.
 
@@ -134,6 +137,8 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
   _boundWidth = 9.0; _boundHeight = 9.0;
   
   _hintInitialized = false;
+
+  _view = NULL;
 }
 
 TDataMap::~TDataMap()
