@@ -1,8 +1,0 @@
-datareader 2.0;
-
-comment = "//";
-field_separator = [ 	]+;
-
-date Date  date_format = "%Y-%m-%d";
-string Account  maxlen = 10;
-double Amount;

@@ -4,9 +4,6 @@
 "3d_test_dat" UNIXFILE 3d_test.dat Generic-Schema ../schema/3d_test.schema "" 100 50 "../dat" "" ;
 "SUN_Stock" UNIXFILE sun.dat MIT_STOCK ../schema/schema/physical/STOCK "" 100 50 "../dat" "" ;
 "HWP_Stock" UNIXFILE hp.dat MIT_STOCK ../schema/schema/physical/STOCK "" 100 50 "../dat" "" ;
-"BankOneChecks" Table ../schema/schema/physical/BankOneSchema  ../dat/BankOneChecks "" ;
-"BankOneTrans" Table ../schema/schema/physical/BankOneTrans  ../dat/BankOneTrans "" ;
-"BankOneTransLarge" SQLView 4 FromAccount  ToAccount  Amount  Date  "select t1.FromAccount, t1.ToAccount, t1.Amount, t1.Date from .BankOneTrans as t1 where t1.Amount  > 5000" ;
 "WordCount" UNIXFILE WordCount.dat WordCount  ../schema/schema/physical/WordCount.schema "" 100 50  "../dat" "" ;
 "BAA_map"UNIXFILE BAA.map BaaMap ../schema/schema/logical/BaaMap "" 100 50 "../dat" "" ;
 "BAA_visit1"UNIXFILE BAA.visit1 BaaVist ../schema/schema/logical/BaaVist "" 100 50 "../dat" "" ;

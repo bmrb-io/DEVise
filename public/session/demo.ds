@@ -1,166 +1,336 @@
 # DEVise startHeader
 # file type: session
-# file date: Oct 30 1997 12:54:09
-# DEVise version: 1.4.7
-# DEVise date: Oct 28 1997
+# file date: May 02 2001 16:59:20
+# DEVise version: 1.7.2
+# DEVise date: Apr  2 2001
 # DEVise endHeader
 
+# Session description
+DEVise setSessionDesc {}
+
+# Load color palette
+DEVise color SessionPalette {#000000000000  black
+#000000008b00  DarkBlue
+#00000000cd00  MediumBlue
+#00000000ff00  blue
+#000064000000  DarkGreen
+#00008b000000  green4
+#0000bf00ff00  DeepSkyBlue1
+#0000ff000000  green
+#0000ff00ff00  cyan
+#190019007000  MidnightBlue
+#1e009000ff00  DodgerBlue
+#1f001f001f00  gray12
+#22008b002200  ForestGreen
+#400040004000  gray25
+#610061006100  gray38
+#7f007f007f00  gray50
+#8b0000000000  DarkRed
+#8b0045001300  SaddleBrown
+#99003200cc00  DarkOrchid
+#a100a100a100  gray63
+#b20022002200  firebrick
+#b4005200cd00  MediumOrchid3
+#bf00bf00bf00  gray75
+#c000ff003e00  OliveDrab
+#e000e000e000  gray88
+#ee00ad000e00  Goldenrod2
+#ee00e800aa00  PaleGoldenrod
+#f000e6008c00  khaki
+#f500de00b300  wheat
+#fa00fa00d200  LightGoldenrodYellow
+#fd00f500e600  OldLace
+#ff0000000000  red
+#ff000000ff00  magenta
+#ff007f000000  DarkOrange1
+#ff00a5000000  orange
+#ff00d7000000  gold
+#ff00ff000000  yellow
+#ffffffffffff  white
+}
+
 # Create views
-DEVise create {view} {SortedX} {Close vs. DATE} {Jul 25 1994 22:02:27} {Mar  3 1995 12:01:07} 0.000000 100.000000 Black AntiqueWhite
+DEVise create {view} {SortedX} {Close vs. DATE} {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 100.000000 4 37
 DEVise setLabel {Close vs. DATE} 1 16 {Sun Microsystems Price}
 DEVise setViewStatistics {Close vs. DATE} 1000000
 DEVise setViewDimensions {Close vs. DATE} 2
 DEVise setViewSolid3D {Close vs. DATE} 1
 DEVise setViewXYZoom {Close vs. DATE} 1
 DEVise setViewDisplayDataValues {Close vs. DATE} 0
-DEVise setViewPileMode {Close vs. DATE} 0
-DEVise setViewOverrideColor {Close vs. DATE} 0 0
 DEVise setFont {Close vs. DATE} {title} 0 12 0 0
 DEVise setFont {Close vs. DATE} {x axis} 0 12 0 0
 DEVise setFont {Close vs. DATE} {y axis} 0 12 0 0
-DEVise viewSetHome {Close vs. DATE} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHome {Close vs. DATE} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {Close vs. DATE} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {Close vs. DATE} 1 0.500000 1.000000
-DEVise create {view} {SortedX} {Volume vs. DATE} {Jul 25 1994 22:02:27} {Mar  3 1995 12:01:07} 0.000000 6400.000000 Black AntiqueWhite
+DEVise viewSetVerPan {Close vs. DATE} 1 0.500000 1.000000
+DEVise setViewGDS {Close vs. DATE} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {Close vs. DATE} 1 0 0 "" 1 " " 1
+DEVise setHistogram {Close vs. DATE} 9.188 49.875 10
+DEVise setCountMapping {Close vs. DATE} 0 {} {}
+DEVise viewSetIsHighlight {Close vs. DATE} 0
+DEVise setXAxisDateFormat {Close vs. DATE} {%b %d %Y %T}
+DEVise setYAxisDateFormat {Close vs. DATE} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {Close vs. DATE} {%.4g}
+DEVise setYAxisFloatFormat {Close vs. DATE} {%.4g}
+DEVise setViewAutoFilter {Close vs. DATE} {0}
+DEVise setDupElim {Close vs. DATE} {0}
+DEVise setNiceAxes {Close vs. DATE} 0 0
+DEVise viewSetDisabledActions {Close vs. DATE} 0 0 0 0
+DEVise setShowMouseLocation {Close vs. DATE} {1}
+DEVise create {view} {SortedX} {Volume vs. DATE} {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 6400.000000 4 37
 DEVise setLabel {Volume vs. DATE} 1 16 {Sun Microsystems Volume}
 DEVise setViewStatistics {Volume vs. DATE} 1000000
 DEVise setViewDimensions {Volume vs. DATE} 2
 DEVise setViewSolid3D {Volume vs. DATE} 1
 DEVise setViewXYZoom {Volume vs. DATE} 1
 DEVise setViewDisplayDataValues {Volume vs. DATE} 0
-DEVise setViewPileMode {Volume vs. DATE} 0
-DEVise setViewOverrideColor {Volume vs. DATE} 0 0
 DEVise setFont {Volume vs. DATE} {title} 0 12 0 0
 DEVise setFont {Volume vs. DATE} {x axis} 0 12 0 0
 DEVise setFont {Volume vs. DATE} {y axis} 0 12 0 0
-DEVise viewSetHome {Volume vs. DATE} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHome {Volume vs. DATE} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {Volume vs. DATE} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {Volume vs. DATE} 1 0.500000 1.000000
-DEVise create {view} {SortedX} {Close vs. DATE 2} {Jul 25 1994 22:02:27} {Mar  3 1995 12:01:07} 0.000000 100.000000 Black AntiqueWhite
+DEVise viewSetVerPan {Volume vs. DATE} 1 0.500000 1.000000
+DEVise setViewGDS {Volume vs. DATE} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {Volume vs. DATE} 1 0 0 "" 1 " " 1
+DEVise setHistogram {Volume vs. DATE} 274.8 19994.2 10
+DEVise setCountMapping {Volume vs. DATE} 0 {} {}
+DEVise viewSetIsHighlight {Volume vs. DATE} 0
+DEVise setXAxisDateFormat {Volume vs. DATE} {%b %d %Y %T}
+DEVise setYAxisDateFormat {Volume vs. DATE} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {Volume vs. DATE} {%.4g}
+DEVise setYAxisFloatFormat {Volume vs. DATE} {%.4g}
+DEVise setViewAutoFilter {Volume vs. DATE} {0}
+DEVise setDupElim {Volume vs. DATE} {0}
+DEVise setNiceAxes {Volume vs. DATE} 0 0
+DEVise viewSetDisabledActions {Volume vs. DATE} 0 0 0 0
+DEVise setShowMouseLocation {Volume vs. DATE} {1}
+DEVise create {view} {SortedX} {Close vs. DATE 2} {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 100.000000 4 37
 DEVise setLabel {Close vs. DATE 2} 1 16 {Digital Equipment Price}
 DEVise setViewStatistics {Close vs. DATE 2} 1000000
 DEVise setViewDimensions {Close vs. DATE 2} 2
 DEVise setViewSolid3D {Close vs. DATE 2} 1
 DEVise setViewXYZoom {Close vs. DATE 2} 1
 DEVise setViewDisplayDataValues {Close vs. DATE 2} 0
-DEVise setViewPileMode {Close vs. DATE 2} 0
-DEVise setViewOverrideColor {Close vs. DATE 2} 0 0
 DEVise setFont {Close vs. DATE 2} {title} 0 12 0 0
 DEVise setFont {Close vs. DATE 2} {x axis} 0 12 0 0
 DEVise setFont {Close vs. DATE 2} {y axis} 0 12 0 0
-DEVise viewSetHome {Close vs. DATE 2} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHome {Close vs. DATE 2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {Close vs. DATE 2} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {Close vs. DATE 2} 1 0.500000 1.000000
-DEVise create {view} {SortedX} {Volume vs. DATE 2} {Jul 25 1994 22:02:27} {Mar  3 1995 12:01:07} 0.000000 6400.000000 Black AntiqueWhite
+DEVise viewSetVerPan {Close vs. DATE 2} 1 0.500000 1.000000
+DEVise setViewGDS {Close vs. DATE 2} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {Close vs. DATE 2} 1 0 0 "" 1 " " 1
+DEVise setHistogram {Close vs. DATE 2} 18.75 71.25 10
+DEVise setCountMapping {Close vs. DATE 2} 0 {} {}
+DEVise viewSetIsHighlight {Close vs. DATE 2} 0
+DEVise setXAxisDateFormat {Close vs. DATE 2} {%b %d %Y %T}
+DEVise setYAxisDateFormat {Close vs. DATE 2} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {Close vs. DATE 2} {%.4g}
+DEVise setYAxisFloatFormat {Close vs. DATE 2} {%.4g}
+DEVise setViewAutoFilter {Close vs. DATE 2} {0}
+DEVise setDupElim {Close vs. DATE 2} {0}
+DEVise setNiceAxes {Close vs. DATE 2} 0 0
+DEVise viewSetDisabledActions {Close vs. DATE 2} 0 0 0 0
+DEVise setShowMouseLocation {Close vs. DATE 2} {1}
+DEVise create {view} {SortedX} {Volume vs. DATE 2} {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 6400.000000 4 37
 DEVise setLabel {Volume vs. DATE 2} 1 16 {Digital Equipment Volume}
 DEVise setViewStatistics {Volume vs. DATE 2} 1000000
 DEVise setViewDimensions {Volume vs. DATE 2} 2
 DEVise setViewSolid3D {Volume vs. DATE 2} 1
 DEVise setViewXYZoom {Volume vs. DATE 2} 1
 DEVise setViewDisplayDataValues {Volume vs. DATE 2} 0
-DEVise setViewPileMode {Volume vs. DATE 2} 0
-DEVise setViewOverrideColor {Volume vs. DATE 2} 0 0
 DEVise setFont {Volume vs. DATE 2} {title} 0 12 0 0
 DEVise setFont {Volume vs. DATE 2} {x axis} 0 12 0 0
 DEVise setFont {Volume vs. DATE 2} {y axis} 0 12 0 0
-DEVise viewSetHome {Volume vs. DATE 2} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHome {Volume vs. DATE 2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {Volume vs. DATE 2} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {Volume vs. DATE 2} 1 0.500000 1.000000
-DEVise create {view} {SortedX} {Close vs. DATE 3} {Jul 25 1994 22:02:27} {Mar  3 1995 12:01:07} 0.000000 100.000000 Black AntiqueWhite
+DEVise viewSetVerPan {Volume vs. DATE 2} 1 0.500000 1.000000
+DEVise setViewGDS {Volume vs. DATE 2} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {Volume vs. DATE 2} 1 0 0 "" 1 " " 1
+DEVise setHistogram {Volume vs. DATE 2} 134.6 5881.7 10
+DEVise setCountMapping {Volume vs. DATE 2} 0 {} {}
+DEVise viewSetIsHighlight {Volume vs. DATE 2} 0
+DEVise setXAxisDateFormat {Volume vs. DATE 2} {%b %d %Y %T}
+DEVise setYAxisDateFormat {Volume vs. DATE 2} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {Volume vs. DATE 2} {%.4g}
+DEVise setYAxisFloatFormat {Volume vs. DATE 2} {%.4g}
+DEVise setViewAutoFilter {Volume vs. DATE 2} {0}
+DEVise setDupElim {Volume vs. DATE 2} {0}
+DEVise setNiceAxes {Volume vs. DATE 2} 0 0
+DEVise viewSetDisabledActions {Volume vs. DATE 2} 0 0 0 0
+DEVise setShowMouseLocation {Volume vs. DATE 2} {1}
+DEVise create {view} {SortedX} {Close vs. DATE 3} {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 100.000000 4 37
 DEVise setLabel {Close vs. DATE 3} 1 16 {Hewlett-Packard Price}
 DEVise setViewStatistics {Close vs. DATE 3} 1000000
 DEVise setViewDimensions {Close vs. DATE 3} 2
 DEVise setViewSolid3D {Close vs. DATE 3} 1
 DEVise setViewXYZoom {Close vs. DATE 3} 1
 DEVise setViewDisplayDataValues {Close vs. DATE 3} 0
-DEVise setViewPileMode {Close vs. DATE 3} 0
-DEVise setViewOverrideColor {Close vs. DATE 3} 0 0
 DEVise setFont {Close vs. DATE 3} {title} 0 12 0 0
 DEVise setFont {Close vs. DATE 3} {x axis} 0 12 0 0
 DEVise setFont {Close vs. DATE 3} {y axis} 0 12 0 0
-DEVise viewSetHome {Close vs. DATE 3} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHome {Close vs. DATE 3} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {Close vs. DATE 3} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {Close vs. DATE 3} 1 0.500000 1.000000
-DEVise create {view} {SortedX} {Volume vs. DATE 3} {Jul 25 1994 22:02:27} {Mar  3 1995 12:01:07} 0.000000 6400.000000 Black AntiqueWhite
+DEVise viewSetVerPan {Close vs. DATE 3} 1 0.500000 1.000000
+DEVise setViewGDS {Close vs. DATE 3} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {Close vs. DATE 3} 1 0 0 "" 1 " " 1
+DEVise setHistogram {Close vs. DATE 3} 32.5 96 10
+DEVise setCountMapping {Close vs. DATE 3} 0 {} {}
+DEVise viewSetIsHighlight {Close vs. DATE 3} 0
+DEVise setXAxisDateFormat {Close vs. DATE 3} {%b %d %Y %T}
+DEVise setYAxisDateFormat {Close vs. DATE 3} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {Close vs. DATE 3} {%.4g}
+DEVise setYAxisFloatFormat {Close vs. DATE 3} {%.4g}
+DEVise setViewAutoFilter {Close vs. DATE 3} {0}
+DEVise setDupElim {Close vs. DATE 3} {0}
+DEVise setNiceAxes {Close vs. DATE 3} 0 0
+DEVise viewSetDisabledActions {Close vs. DATE 3} 0 0 0 0
+DEVise setShowMouseLocation {Close vs. DATE 3} {1}
+DEVise create {view} {SortedX} {Volume vs. DATE 3} {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 6400.000000 4 37
 DEVise setLabel {Volume vs. DATE 3} 1 16 {Hewlett-Packard Volume}
 DEVise setViewStatistics {Volume vs. DATE 3} 1000000
 DEVise setViewDimensions {Volume vs. DATE 3} 2
 DEVise setViewSolid3D {Volume vs. DATE 3} 1
 DEVise setViewXYZoom {Volume vs. DATE 3} 1
 DEVise setViewDisplayDataValues {Volume vs. DATE 3} 0
-DEVise setViewPileMode {Volume vs. DATE 3} 0
-DEVise setViewOverrideColor {Volume vs. DATE 3} 0 0
 DEVise setFont {Volume vs. DATE 3} {title} 0 12 0 0
 DEVise setFont {Volume vs. DATE 3} {x axis} 0 12 0 0
 DEVise setFont {Volume vs. DATE 3} {y axis} 0 12 0 0
-DEVise viewSetHome {Volume vs. DATE 3} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHome {Volume vs. DATE 3} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {Volume vs. DATE 3} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {Volume vs. DATE 3} 1 0.500000 1.000000
-DEVise create {view} {SortedX} {Close vs. DATE 4} {Jul 25 1994 22:02:27} {Mar  3 1995 12:01:07} 0.000000 100.000000 Black AntiqueWhite
+DEVise viewSetVerPan {Volume vs. DATE 3} 1 0.500000 1.000000
+DEVise setViewGDS {Volume vs. DATE 3} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {Volume vs. DATE 3} 1 0 0 "" 1 " " 1
+DEVise setHistogram {Volume vs. DATE 3} 468.8 7664 10
+DEVise setCountMapping {Volume vs. DATE 3} 0 {} {}
+DEVise viewSetIsHighlight {Volume vs. DATE 3} 0
+DEVise setXAxisDateFormat {Volume vs. DATE 3} {%b %d %Y %T}
+DEVise setYAxisDateFormat {Volume vs. DATE 3} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {Volume vs. DATE 3} {%.4g}
+DEVise setYAxisFloatFormat {Volume vs. DATE 3} {%.4g}
+DEVise setViewAutoFilter {Volume vs. DATE 3} {0}
+DEVise setDupElim {Volume vs. DATE 3} {0}
+DEVise setNiceAxes {Volume vs. DATE 3} 0 0
+DEVise viewSetDisabledActions {Volume vs. DATE 3} 0 0 0 0
+DEVise setShowMouseLocation {Volume vs. DATE 3} {1}
+DEVise create {view} {SortedX} {Close vs. DATE 4} {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 100.000000 4 37
 DEVise setLabel {Close vs. DATE 4} 1 16 {IBM Price}
 DEVise setViewStatistics {Close vs. DATE 4} 1000000
 DEVise setViewDimensions {Close vs. DATE 4} 2
 DEVise setViewSolid3D {Close vs. DATE 4} 1
 DEVise setViewXYZoom {Close vs. DATE 4} 1
 DEVise setViewDisplayDataValues {Close vs. DATE 4} 0
-DEVise setViewPileMode {Close vs. DATE 4} 0
-DEVise setViewOverrideColor {Close vs. DATE 4} 0 0
 DEVise setFont {Close vs. DATE 4} {title} 0 12 0 0
 DEVise setFont {Close vs. DATE 4} {x axis} 0 12 0 0
 DEVise setFont {Close vs. DATE 4} {y axis} 0 12 0 0
-DEVise viewSetHome {Close vs. DATE 4} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHome {Close vs. DATE 4} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {Close vs. DATE 4} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {Close vs. DATE 4} 1 0.500000 1.000000
-DEVise create {view} {SortedX} {Volume vs. DATE 4} {Jul 25 1994 22:02:27} {Mar  3 1995 12:01:07} 0.000000 6400.000000 Black AntiqueWhite
+DEVise viewSetVerPan {Close vs. DATE 4} 1 0.500000 1.000000
+DEVise setViewGDS {Close vs. DATE 4} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {Close vs. DATE 4} 1 0 0 "" 1 " " 1
+DEVise setHistogram {Close vs. DATE 4} 41.75 113.5 10
+DEVise setCountMapping {Close vs. DATE 4} 0 {} {}
+DEVise viewSetIsHighlight {Close vs. DATE 4} 0
+DEVise setXAxisDateFormat {Close vs. DATE 4} {%b %d %Y %T}
+DEVise setYAxisDateFormat {Close vs. DATE 4} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {Close vs. DATE 4} {%.4g}
+DEVise setYAxisFloatFormat {Close vs. DATE 4} {%.4g}
+DEVise setViewAutoFilter {Close vs. DATE 4} {0}
+DEVise setDupElim {Close vs. DATE 4} {0}
+DEVise setNiceAxes {Close vs. DATE 4} 0 0
+DEVise viewSetDisabledActions {Close vs. DATE 4} 0 0 0 0
+DEVise setShowMouseLocation {Close vs. DATE 4} {1}
+DEVise create {view} {SortedX} {Volume vs. DATE 4} {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 6400.000000 4 37
 DEVise setLabel {Volume vs. DATE 4} 1 16 {IBM Volume}
 DEVise setViewStatistics {Volume vs. DATE 4} 1000000
 DEVise setViewDimensions {Volume vs. DATE 4} 2
 DEVise setViewSolid3D {Volume vs. DATE 4} 1
 DEVise setViewXYZoom {Volume vs. DATE 4} 1
 DEVise setViewDisplayDataValues {Volume vs. DATE 4} 0
-DEVise setViewPileMode {Volume vs. DATE 4} 0
-DEVise setViewOverrideColor {Volume vs. DATE 4} 0 0
 DEVise setFont {Volume vs. DATE 4} {title} 0 12 0 0
 DEVise setFont {Volume vs. DATE 4} {x axis} 0 12 0 0
 DEVise setFont {Volume vs. DATE 4} {y axis} 0 12 0 0
-DEVise viewSetHome {Volume vs. DATE 4} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHome {Volume vs. DATE 4} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {Volume vs. DATE 4} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {Volume vs. DATE 4} 1 0.500000 1.000000
-DEVise create {view} {SortedX} {Close vs. DATE 5} {Aug 30 1993 00:00:00} {Feb  4 1996 00:00:00} 0.000000 120.000000 Black AntiqueWhite
+DEVise viewSetVerPan {Volume vs. DATE 4} 1 0.500000 1.000000
+DEVise setViewGDS {Volume vs. DATE 4} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {Volume vs. DATE 4} 1 0 0 "" 1 " " 1
+DEVise setHistogram {Volume vs. DATE 4} 534.9 13819.9 10
+DEVise setCountMapping {Volume vs. DATE 4} 0 {} {}
+DEVise viewSetIsHighlight {Volume vs. DATE 4} 0
+DEVise setXAxisDateFormat {Volume vs. DATE 4} {%b %d %Y %T}
+DEVise setYAxisDateFormat {Volume vs. DATE 4} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {Volume vs. DATE 4} {%.4g}
+DEVise setYAxisFloatFormat {Volume vs. DATE 4} {%.4g}
+DEVise setViewAutoFilter {Volume vs. DATE 4} {0}
+DEVise setDupElim {Volume vs. DATE 4} {0}
+DEVise setNiceAxes {Volume vs. DATE 4} 0 0
+DEVise viewSetDisabledActions {Volume vs. DATE 4} 0 0 0 0
+DEVise setShowMouseLocation {Volume vs. DATE 4} {1}
+DEVise create {view} {SortedX} {Close vs. DATE 5} {Aug 30 1993 00:00:00} {Feb 04 1996 00:00:00} 0.000000 120.000000 4 37
 DEVise setLabel {Close vs. DATE 5} 1 16 {}
 DEVise setViewStatistics {Close vs. DATE 5} 0000000
 DEVise setViewDimensions {Close vs. DATE 5} 2
 DEVise setViewSolid3D {Close vs. DATE 5} 1
 DEVise setViewXYZoom {Close vs. DATE 5} 1
 DEVise setViewDisplayDataValues {Close vs. DATE 5} 0
-DEVise setViewPileMode {Close vs. DATE 5} 0
-DEVise setViewOverrideColor {Close vs. DATE 5} 0 0
 DEVise setFont {Close vs. DATE 5} {title} 0 12 0 0
 DEVise setFont {Close vs. DATE 5} {x axis} 0 12 0 0
 DEVise setFont {Close vs. DATE 5} {y axis} 0 12 0 0
-DEVise viewSetHome {Close vs. DATE 5} 1 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHome {Close vs. DATE 5} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {Close vs. DATE 5} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {Close vs. DATE 5} 1 0.500000 1.000000
+DEVise viewSetVerPan {Close vs. DATE 5} 1 0.500000 1.000000
+DEVise setViewGDS {Close vs. DATE 5} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {Close vs. DATE 5} 1 0 0 "" 1 " " 1
+DEVise setHistogram {Close vs. DATE 5} 41.75 113.5 10
+DEVise setCountMapping {Close vs. DATE 5} 0 {} {}
+DEVise viewSetIsHighlight {Close vs. DATE 5} 0
+DEVise setXAxisDateFormat {Close vs. DATE 5} {%b %d %Y %T}
+DEVise setYAxisDateFormat {Close vs. DATE 5} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {Close vs. DATE 5} {%.4g}
+DEVise setYAxisFloatFormat {Close vs. DATE 5} {%.4g}
+DEVise setViewAutoFilter {Close vs. DATE 5} {0}
+DEVise setDupElim {Close vs. DATE 5} {0}
+DEVise setNiceAxes {Close vs. DATE 5} 0 0
+DEVise viewSetDisabledActions {Close vs. DATE 5} 0 0 0 0
+DEVise setShowMouseLocation {Close vs. DATE 5} {1}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {Close_vs_DATE}
 DEVise createMappingClass {Volume_vs_DATE}
 
 # Create mapping instances (GData)
-DEVise create {mapping} {Close_vs_DATE} .SUN_Stock .SUN_Stock#Close_vs_DATE {} {$DATE} {$Close} {} 2 1 0 0 2 {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Close_vs_DATE} .SUN_Stock .SUN_Stock#Close_vs_DATE {} {$DATE} {$Close} {} 2 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.SUN_Stock#Close_vs_DATE} 1
-DEVise create {mapping} {Close_vs_DATE} .DEC_Stock .DEC_Stock#Close_vs_DATE {} {$DATE} {$Close} {} 3 1 0 0 2 {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Close_vs_DATE} .DEC_Stock .DEC_Stock#Close_vs_DATE {} {$DATE} {$Close} {} 3 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.DEC_Stock#Close_vs_DATE} 1
-DEVise create {mapping} {Close_vs_DATE} .HWP_Stock .HWP_Stock#Close_vs_DATE {} {$DATE} {$Close} {} 6 1 0 0 2 {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Close_vs_DATE} .HWP_Stock .HWP_Stock#Close_vs_DATE {} {$DATE} {$Close} {} 6 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.HWP_Stock#Close_vs_DATE} 1
-DEVise create {mapping} {Close_vs_DATE} .IBM_Stock .IBM_Stock#Close_vs_DATE {} {$DATE} {$Close} {} 4 1 0 0 2 {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Close_vs_DATE} .IBM_Stock .IBM_Stock#Close_vs_DATE {} {$DATE} {$Close} {} 4 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.IBM_Stock#Close_vs_DATE} 1
-DEVise create {mapping} {Close_vs_DATE} .IBM_Stock {.IBM_Stock#Close_vs_DATE 2} {} {$DATE} {$Close} {} 2 1 0 0 2 {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Close_vs_DATE} .IBM_Stock {.IBM_Stock#Close_vs_DATE 2} {} {$DATE} {$Close} {} 2 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.IBM_Stock#Close_vs_DATE 2} 1
-DEVise create {mapping} {Volume_vs_DATE} .SUN_Stock .SUN_Stock#Volume_vs_DATE {} {$DATE} {$Volume} {} 2 1 0 0 2 {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Volume_vs_DATE} .SUN_Stock .SUN_Stock#Volume_vs_DATE {} {$DATE} {$Volume} {} 2 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.SUN_Stock#Volume_vs_DATE} 1
-DEVise create {mapping} {Volume_vs_DATE} .DEC_Stock .DEC_Stock#Volume_vs_DATE {} {$DATE} {$Volume} {} 3 1 0 0 2 {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Volume_vs_DATE} .DEC_Stock .DEC_Stock#Volume_vs_DATE {} {$DATE} {$Volume} {} 3 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.DEC_Stock#Volume_vs_DATE} 1
-DEVise create {mapping} {Volume_vs_DATE} .HWP_Stock .HWP_Stock#Volume_vs_DATE {} {$DATE} {$Volume} {} 36 1 0 0 2 {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Volume_vs_DATE} .HWP_Stock .HWP_Stock#Volume_vs_DATE {} {$DATE} {$Volume} {} 36 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.HWP_Stock#Volume_vs_DATE} 1
-DEVise create {mapping} {Volume_vs_DATE} .IBM_Stock .IBM_Stock#Volume_vs_DATE {} {$DATE} {$Volume} {} 4 1 0 0 2 {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Volume_vs_DATE} .IBM_Stock .IBM_Stock#Volume_vs_DATE {} {$DATE} {$Volume} {} 4 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.IBM_Stock#Volume_vs_DATE} 1
 
 # Create windows
-DEVise create {window} {TileLayout} {Trade Price} 0.089844 0.230469 0.398438 0.638021 0 0
-DEVise create {window} {TileLayout} {Trade Volume} 0.496094 0.230469 0.398438 0.638021 0 0
-DEVise create {window} {TileLayout} {Global View} 0.089844 0.066406 0.804688 0.125000 0 0
+DEVise create {window} {TileLayout} {Trade Price} 0.089844 0.230469 0.398438 0.637695 0 0
+DEVise create {window} {TileLayout} {Trade Volume} 0.496094 0.230469 0.398438 0.637695 0 0
+DEVise create {window} {TileLayout} {Global View} 0.089844 0.065430 0.804688 0.125000 0 0
 
 # Set up window layouts
 DEVise setWindowLayout {Trade Price} -1 1 0
@@ -171,7 +341,7 @@ DEVise setWindowLayout {Global View} -1 1 0
 DEVise create {link} {Visual_Link} {DATE Link} 1
 
 # Create cursors
-DEVise create {cursor} {Cursor} {Date Cursor} 1 0 1.000000 1.000000
+DEVise create {cursor} {Cursor} {Date Cursor} 1 0 1.000000 1.000000 0
 
 # Create axislabel
 
@@ -180,38 +350,48 @@ DEVise create {cursor} {Cursor} {Date Cursor} 1 0 1.000000 1.000000
 # Put labels into views
 DEVise setAxisDisplay {Close vs. DATE} {X} 0
 DEVise setAxisDisplay {Close vs. DATE} {Y} 1
+DEVise setAxisTicks {Close vs. DATE} {X} 1
+DEVise setAxisTicks {Close vs. DATE} {Y} 1
 DEVise setAxisDisplay {Volume vs. DATE} {X} 0
 DEVise setAxisDisplay {Volume vs. DATE} {Y} 1
+DEVise setAxisTicks {Volume vs. DATE} {X} 1
+DEVise setAxisTicks {Volume vs. DATE} {Y} 1
 DEVise setAxisDisplay {Close vs. DATE 2} {X} 0
 DEVise setAxisDisplay {Close vs. DATE 2} {Y} 1
+DEVise setAxisTicks {Close vs. DATE 2} {X} 1
+DEVise setAxisTicks {Close vs. DATE 2} {Y} 1
 DEVise setAxisDisplay {Volume vs. DATE 2} {X} 0
 DEVise setAxisDisplay {Volume vs. DATE 2} {Y} 1
+DEVise setAxisTicks {Volume vs. DATE 2} {X} 1
+DEVise setAxisTicks {Volume vs. DATE 2} {Y} 1
 DEVise setAxisDisplay {Close vs. DATE 3} {X} 0
 DEVise setAxisDisplay {Close vs. DATE 3} {Y} 1
+DEVise setAxisTicks {Close vs. DATE 3} {X} 1
+DEVise setAxisTicks {Close vs. DATE 3} {Y} 1
 DEVise setAxisDisplay {Volume vs. DATE 3} {X} 0
 DEVise setAxisDisplay {Volume vs. DATE 3} {Y} 1
+DEVise setAxisTicks {Volume vs. DATE 3} {X} 1
+DEVise setAxisTicks {Volume vs. DATE 3} {Y} 1
 DEVise setAxisDisplay {Close vs. DATE 4} {X} 0
 DEVise setAxisDisplay {Close vs. DATE 4} {Y} 1
+DEVise setAxisTicks {Close vs. DATE 4} {X} 1
+DEVise setAxisTicks {Close vs. DATE 4} {Y} 1
 DEVise setAxisDisplay {Volume vs. DATE 4} {X} 0
 DEVise setAxisDisplay {Volume vs. DATE 4} {Y} 1
+DEVise setAxisTicks {Volume vs. DATE 4} {X} 1
+DEVise setAxisTicks {Volume vs. DATE 4} {Y} 1
 DEVise setAxisDisplay {Close vs. DATE 5} {X} 1
 DEVise setAxisDisplay {Close vs. DATE 5} {Y} 0
+DEVise setAxisTicks {Close vs. DATE 5} {X} 1
+DEVise setAxisTicks {Close vs. DATE 5} {Y} 1
 
 # Put action into view
-
-# Link views
-DEVise insertLink {DATE Link} {Close vs. DATE}
-DEVise insertLink {DATE Link} {Volume vs. DATE}
-DEVise insertLink {DATE Link} {Close vs. DATE 2}
-DEVise insertLink {DATE Link} {Volume vs. DATE 2}
-DEVise insertLink {DATE Link} {Close vs. DATE 3}
-DEVise insertLink {DATE Link} {Volume vs. DATE 3}
-DEVise insertLink {DATE Link} {Close vs. DATE 4}
-DEVise insertLink {DATE Link} {Volume vs. DATE 4}
 
 # Put views in cursors
 DEVise setCursorSrc {Date Cursor} {Close vs. DATE 4}
 DEVise setCursorDst {Date Cursor} {Close vs. DATE 5}
+DEVise color SetCursorColor {Date Cursor} #ffffffffffff
+DEVise setCursorConstraints {Date Cursor} 0 1 0
 
 # Put axis label into views
 
@@ -226,6 +406,16 @@ DEVise insertMapping {Close vs. DATE 4} {.IBM_Stock#Close_vs_DATE}
 DEVise insertMapping {Volume vs. DATE 4} {.IBM_Stock#Volume_vs_DATE}
 DEVise insertMapping {Close vs. DATE 5} {.IBM_Stock#Close_vs_DATE 2}
 
+# Link views
+DEVise insertLink {DATE Link} {Close vs. DATE}
+DEVise insertLink {DATE Link} {Volume vs. DATE}
+DEVise insertLink {DATE Link} {Close vs. DATE 2}
+DEVise insertLink {DATE Link} {Volume vs. DATE 2}
+DEVise insertLink {DATE Link} {Close vs. DATE 3}
+DEVise insertLink {DATE Link} {Volume vs. DATE 3}
+DEVise insertLink {DATE Link} {Close vs. DATE 4}
+DEVise insertLink {DATE Link} {Volume vs. DATE 4}
+
 # Insert views into windows
 DEVise insertWindow {Close vs. DATE} {Trade Price}
 DEVise insertWindow {Close vs. DATE 2} {Trade Price}
@@ -237,33 +427,40 @@ DEVise insertWindow {Volume vs. DATE 3} {Trade Volume}
 DEVise insertWindow {Volume vs. DATE 4} {Trade Volume}
 DEVise insertWindow {Close vs. DATE 5} {Global View}
 
+# Set window pile/stack state
+DEVise setPileStackState {Trade Price} 1
+DEVise setPileStackState {Trade Volume} 1
+DEVise setPileStackState {Global View} 1
+
 # Init history of view
 DEVise clearViewHistory {Close vs. DATE}
-DEVise insertViewHistory {Close vs. DATE} {Jul 25 1994 22:02:27} {0.00} {Mar  3 1995 12:01:07} {100.00} 0
+DEVise insertViewHistory {Close vs. DATE} {Jul 25 1994 22:02:27} {0.00} {Mar 03 1995 12:01:07} {100.00} 0
 DEVise clearViewHistory {Volume vs. DATE}
-DEVise insertViewHistory {Volume vs. DATE} {Jul 25 1994 22:02:27} {0.00} {Mar  3 1995 12:01:07} {6400.00} 0
+DEVise insertViewHistory {Volume vs. DATE} {Jul 25 1994 22:02:27} {0.00} {Mar 03 1995 12:01:07} {6400.00} 0
 DEVise clearViewHistory {Close vs. DATE 2}
-DEVise insertViewHistory {Close vs. DATE 2} {Jul 25 1994 22:02:27} {0.00} {Mar  3 1995 12:01:07} {100.00} 0
+DEVise insertViewHistory {Close vs. DATE 2} {Jul 25 1994 22:02:27} {0.00} {Mar 03 1995 12:01:07} {100.00} 0
 DEVise clearViewHistory {Volume vs. DATE 2}
-DEVise insertViewHistory {Volume vs. DATE 2} {Jul 25 1994 22:02:27} {0.00} {Mar  3 1995 12:01:07} {6400.00} 0
+DEVise insertViewHistory {Volume vs. DATE 2} {Jul 25 1994 22:02:27} {0.00} {Mar 03 1995 12:01:07} {6400.00} 0
 DEVise clearViewHistory {Close vs. DATE 3}
-DEVise insertViewHistory {Close vs. DATE 3} {Jul 25 1994 22:02:27} {0.00} {Mar  3 1995 12:01:07} {100.00} 0
+DEVise insertViewHistory {Close vs. DATE 3} {Jul 25 1994 22:02:27} {0.00} {Mar 03 1995 12:01:07} {100.00} 0
 DEVise clearViewHistory {Volume vs. DATE 3}
-DEVise insertViewHistory {Volume vs. DATE 3} {Jul 25 1994 22:02:27} {0.00} {Mar  3 1995 12:01:07} {6400.00} 0
+DEVise insertViewHistory {Volume vs. DATE 3} {Jul 25 1994 22:02:27} {0.00} {Mar 03 1995 12:01:07} {6400.00} 0
 DEVise clearViewHistory {Close vs. DATE 4}
-DEVise insertViewHistory {Close vs. DATE 4} {Jul 25 1994 22:02:27} {0.00} {Mar  3 1995 12:01:07} {100.00} 0
+DEVise insertViewHistory {Close vs. DATE 4} {Jul 25 1994 22:02:27} {0.00} {Mar 03 1995 12:01:07} {100.00} 0
 DEVise clearViewHistory {Volume vs. DATE 4}
-DEVise insertViewHistory {Volume vs. DATE 4} {Jul 25 1994 22:02:27} {0.00} {Mar  3 1995 12:01:07} {6400.00} 0
+DEVise insertViewHistory {Volume vs. DATE 4} {Jul 25 1994 22:02:27} {0.00} {Mar 03 1995 12:01:07} {6400.00} 0
 DEVise clearViewHistory {Close vs. DATE 5}
-DEVise insertViewHistory {Close vs. DATE 5} {Aug 30 1993 00:00:00} {0.00} {Feb  4 1996 00:00:00} {120.00} 0
+DEVise insertViewHistory {Close vs. DATE 5} {Aug 30 1993 00:00:00} {0.00} {Feb 04 1996 00:00:00} {120.00} 0
 
 # Set camera location for each view
-DEVise set3DLocation {Close vs. DATE} {4.6} {4} {-4} {0} {0} {0}
-DEVise set3DLocation {Volume vs. DATE} {4.6} {4} {-4} {0} {0} {0}
-DEVise set3DLocation {Close vs. DATE 2} {4.6} {4} {-4} {0} {0} {0}
-DEVise set3DLocation {Volume vs. DATE 2} {4.6} {4} {-4} {0} {0} {0}
-DEVise set3DLocation {Close vs. DATE 3} {4.6} {4} {-4} {0} {0} {0}
-DEVise set3DLocation {Volume vs. DATE 3} {4.6} {4} {-4} {0} {0} {0}
-DEVise set3DLocation {Close vs. DATE 4} {4.6} {4} {-4} {0} {0} {0}
-DEVise set3DLocation {Volume vs. DATE 4} {4.6} {4} {-4} {0} {0} {0}
-DEVise set3DLocation {Close vs. DATE 5} {4.6} {4} {-4} {0} {0} {0}
+DEVise set3DLocation {Close vs. DATE} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {Volume vs. DATE} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {Close vs. DATE 2} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {Volume vs. DATE 2} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {Close vs. DATE 3} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {Volume vs. DATE 3} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {Close vs. DATE 4} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {Volume vs. DATE 4} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {Close vs. DATE 5} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+
+# Set string tables for each view
