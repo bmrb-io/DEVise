@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/06/23 20:31:36  jussi
+  Cleaned up marker and pipe mechanism. Moved a couple #defines to
+  the .c file so that not all of Devise needs to be recompiled when
+  one of them is changed.
+
   Revision 1.14  1996/05/09 18:12:04  kmurli
   No change to this makefile.
 
@@ -71,7 +76,6 @@
   Added/updated CVS header.
 */
 
-#include <unistd.h>
 #include <memory.h>
 #include <sys/time.h>
 #include<fcntl.h>

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/06/23 20:31:21  jussi
+  Cleaned up marker and pipe mechanism. Moved a couple #defines to
+  the .c file so that not all of Devise needs to be recompiled when
+  one of them is changed.
+
   Revision 1.13  1996/06/12 14:55:34  wenger
   Added GUI and some code for saving data to templates; added preliminary
   graphical display of TDatas; you now have the option of closing a session
@@ -77,6 +82,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <sys/types.h>
 
 #include "DeviseTypes.h"
