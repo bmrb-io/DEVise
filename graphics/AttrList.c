@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/09/27 15:52:33  wenger
+  Fixed a number of memory leaks.
+
   Revision 1.9  1996/07/23 20:12:39  wenger
   Preliminary version of code to save TData (schema(s) and data) to a file.
 
@@ -57,6 +60,12 @@ AttrList::AttrList(char *name)
     _attrs[i] = NULL;
   _size = 0;
   _name = name;
+}
+
+void AttrList::Clear(){
+  for(int i = 0; i < MAX_ATTRLIST_SIZE; i++)
+    _attrs[i] = NULL;
+  _size = 0;
 }
 
 AttrList::~AttrList()

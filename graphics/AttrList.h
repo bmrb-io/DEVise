@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/11/23 21:22:46  jussi
+  Removed Config.h. Includes Init.h or ApInit.h instead.
+
   Revision 1.7  1996/07/23 20:12:41  wenger
   Preliminary version of code to save TData (schema(s) and data) to a file.
 
@@ -120,6 +123,8 @@ public:
   void Write(int fd);
 
   static double GetVal(AttrVal *aval, AttrType atype);
+
+  void AttrList::Clear();
 
 private:
   AttrInfo *_attrs[MAX_ATTRLIST_SIZE];
