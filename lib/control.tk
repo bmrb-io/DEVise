@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.196  1999/06/11 17:50:19  wenger
+#	Oops!  Wasn't supposed to commit with 'Test' enabled.
+#	
 #	Revision 1.195  1999/06/11 14:47:14  wenger
 #	Added the capability (mostly for the JavaScreen) to disable rubberband
 #	lines, cursor movement, drill down, and key actions in views (the code
@@ -1726,6 +1729,8 @@ menu .mbar.window.menu -tearoff 0
 
 .mbar.window.menu add command -label "Stack Control..." \
 	-command { DoWindowStackControl }
+.mbar.window.menu add command -label "Raise All" \
+        -command { DEVise raiseAllWindows }
 ######################MODIFIED SSL 2/6########################################
 # Disabled this because it doesn't work -- RKW Mar. 12, 1998
 #.mbar.window.menu add command -label "Lens Control" \

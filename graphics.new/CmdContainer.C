@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.40  1999/06/11 14:47:03  wenger
+  Added the capability (mostly for the JavaScreen) to disable rubberband
+  lines, cursor movement, drill down, and key actions in views (the code
+  to send this info to the JS is still conditionaled out until the JS is
+  ready for it).
+
   Revision 1.39  1999/05/17 18:37:57  wenger
   Views now have GData sending configuration that is only employed when
   connecting to the JavaScreen (eliminates the need for the current kludgey
@@ -517,6 +523,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(viewSetJSSendP)
 	REGISTER_COMMAND(viewGetDisabledActions)
 	REGISTER_COMMAND(viewSetDisabledActions)
+	REGISTER_COMMAND(raiseAllWindows)
 }
 
 CmdContainer::~CmdContainer()

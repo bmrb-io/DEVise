@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.66  1999/06/15 18:09:52  wenger
+  Added dumping of ViewWin objects to help with pile debugging.
+
   Revision 1.65  1999/06/11 14:47:03  wenger
   Added the capability (mostly for the JavaScreen) to disable rubberband
   lines, cursor movement, drill down, and key actions in views (the code
@@ -5947,6 +5950,32 @@ IMPLEMENT_COMMAND_BEGIN(viewSetDisabledActions)
         return 1;
 	} else {
 		fprintf(stderr, "Wrong # of arguments: %d in viewSetDisabledActions\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(raiseAllWindows)
+    // Arguments: none
+	// Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 1) {
+		int index = DevWindow::InitIterator();
+		while (DevWindow::More(index)) {
+		  ClassInfo *info = DevWindow::Next(index);
+		  ViewWin *window = (ViewWin *)info->GetInstance();
+		  if (window) {
+		    window->Raise();
+		  }
+		}
+		DevWindow::DoneIterator(index);
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in raiseAllWindows\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

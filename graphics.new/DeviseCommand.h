@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.37  1999/06/11 14:47:05  wenger
+  Added the capability (mostly for the JavaScreen) to disable rubberband
+  lines, cursor movement, drill down, and key actions in views (the code
+  to send this info to the JS is still conditionaled out until the JS is
+  ready for it).
+
   Revision 1.36  1999/05/17 18:37:58  wenger
   Views now have GData sending configuration that is only employed when
   connecting to the JavaScreen (eliminates the need for the current kludgey
@@ -1738,6 +1744,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(viewSetDisabledActions) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(raiseAllWindows) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_
