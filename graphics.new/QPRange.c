@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/11/25 17:38:13  jussi
+  Fixed Clear() method which failed to reinitialize some member
+  variables.
+
   Revision 1.7  1996/11/23 21:17:40  jussi
   Simplified code.
 
@@ -196,7 +200,8 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
         rec->low = low;
         rec->high = high;
         InsertRec(&_rangeList, rec);
-        callback->QPRangeInserted(low, high);
+        if (callback)
+            callback->QPRangeInserted(low, high);
         return;
     }
     
@@ -264,7 +269,8 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
                 InsertRec(&_rangeList,rec);
             else InsertRec(current,rec);
             
-            callback->QPRangeInserted(low,high);
+            if (callback)
+                callback->QPRangeInserted(low,high);
             
             low = high + 1;
             break;
@@ -272,7 +278,8 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
           case MERGE_RIGHT :
             /* merge range with the next one. Truncate
                [low,high] to the gap between current and next */
-            callback->QPRangeInserted(low,next->low - 1);
+            if (callback)
+                callback->QPRangeInserted(low,next->low - 1);
             next->low = low;
             if (high > next->high)
                 low = next->high + 1;
@@ -283,7 +290,8 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
             
     case MERGE_BOTH :
             /* merge [low,high] with current and next */
-            callback->QPRangeInserted(current->high + 1, next->low - 1);
+            if (callback)
+                callback->QPRangeInserted(current->high + 1, next->low - 1);
             if (high > next->high)
                 low = next->high + 1;
             else
@@ -295,7 +303,8 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
     case MERGE_CURRENT:
             /* merge [low,high] with current, assuming
                high > current->high + 1*/
-            callback->QPRangeInserted(current->high + 1, high);
+            if (callback)
+                callback->QPRangeInserted(current->high + 1, high);
             current->high = high;
             low = high + 1;
             break;
