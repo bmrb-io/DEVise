@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.49  1999/04/26 15:26:49  wenger
+# Makefiles are smarter about not building DTE-related stuff if it's not
+# necessary.
+#
 # Revision 1.48.4.1  1999/04/09 20:25:30  wenger
 # Phase 1 of the changes for view symbol improvements is in place: the ViewInfo
 # and ViewInstance classes are working, and views are no longer accesses via
@@ -228,6 +232,9 @@ pure: libs
 
 generic.pure: libs
 	cd generic; make generic.pure; cd ..
+
+devised.pure: libs
+	cd generic; make devised.pure; cd ..
 
 multi.pure: libs
 	cd multi; make pure; cd ..
