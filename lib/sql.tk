@@ -1,0 +1,74 @@
+#	$Id$
+
+#	$Log$
+############################################################
+
+set sql_host  quarg.cs.wisc.edu
+set sql_port  1515
+set sql_path  /tmp
+set sql_query ""
+
+if {[info exists env(SQL_DISKPATH)]} {
+    set sql_path $env(SQL_DISKPATH)
+}
+
+############################################################
+
+proc sqlMain {} {
+    global sql_host sql_port sql_path sql_query
+
+    # see if .sql window already exists; if so, just return
+    set err [catch {set exists [wm state .sql]}]
+    if {!$err} { return }
+
+    toplevel .sql
+    wm maxsize .sql 1000 1000
+    wm title .sql "SQL Query"
+    wm geometry .sql +50+50
+    selection clear .sql
+
+    label .sql.title -text "Enter SQL Query"
+    frame .sql.query -relief groove -borderwidth 2
+    frame .sql.but
+    pack .sql.title -side top -pady 3m
+    pack .sql.query -side top -pady 3m -fill both -expand 1
+    pack .sql.but -side top -pady 3m -fill x
+
+    frame .sql.query.left
+    frame .sql.query.right
+    pack .sql.query.left .sql.query.right -side left -padx 3m -fill both \
+	    -expand 1
+
+    label .sql.query.left.name -text "Hostname:" -width 15
+    label .sql.query.left.port -text "Port Number:" -width 15
+    label .sql.query.left.path -text "Path Name:" -width 15
+    label .sql.query.left.query -text "Query:" -width 15
+    pack .sql.query.left.name .sql.query.left.port \
+	    .sql.query.left.path .sql.query.left.query \
+	    -side top -pady 0.7m
+
+    entry .sql.query.right.name -relief sunken -width 30 \
+	    -textvariable sql_host
+    entry .sql.query.right.port -relief sunken -width 30 \
+	    -textvariable sql_port
+    entry .sql.query.right.path -relief sunken -width 30 \
+	    -textvariable sql_path
+    text .sql.query.right.query -relief sunken -borderwidth 2 \
+	    -width 30 -height 10
+    .sql.query.right.query insert end $sql_query
+    pack .sql.query.right.name .sql.query.right.port \
+	    .sql.query.right.path .sql.query.right.query \
+	    -side top
+
+    button .sql.but.ok -text OK -width 10 \
+	    -command {
+	set sql_query [.sql.query.right.query get 1.0 end]
+	puts "Query: $sql_query"
+	destroy .sql
+    }
+    button .sql.but.cancel -text Cancel -width 10 \
+	    -command { destroy .sql }
+    pack .sql.but.ok .sql.but.cancel -padx 3m -side left -expand 1
+
+    tkwait visibility .sql
+}
