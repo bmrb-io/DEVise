@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/10/18 15:19:52  jussi
+#  Initial revision.
+#
 
 ############################################################
 
@@ -34,19 +37,18 @@ RANLIB = ranlib
 CFLAGS = $(ARCH_FLAGS) -Iinclude -Wall -Wno-unused -O \
         -DGRAPHICS -DLIBCS -DUNIX -DRAWMOUSEEVENTS
 
-LIB = libcs.a
-
 TESTSRC = client.C server.C
 TESTOBJ = $(TESTSRC:.C=.o)
 
 all: client server
 
-client: client.o $(LIB)
-	$(CC) -o $@ $(ARCH_LDFLAGS) $@.o -L. -lcs \
+client: client.o libdevcs.a
+	$(CC) -o $@ $(ARCH_LDFLAGS) $@.o -L. -ldevcs \
         $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
-server: server.o $(LIB)
-	$(CC) -o $@ $(ARCH_LDFLAGS) $@.o -L. -lcs \
+server: server.o libdevwin.a libdevcs.a libutils.a libcolor.a
+	$(CC) -o $@ $(ARCH_LDFLAGS) $@.o -L. -ldevwin \
+	-ldevcs -lutils -lcolor \
         $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 .PHONY: clean mostlyclean

@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1997/05/21 22:03:58  andyt
+#  Added EmbeddedTk and Tasvir functionality to cslib. Modified tarcslib
+#  script to include necessary files.
+#
 #  Revision 1.7  1997/04/21 15:01:34  wenger
 #  Added DrawRubberband() virtual function to WindowRep class, so that it
 #  doesn't have to be called directly through the XWindowRep class;
@@ -57,10 +61,11 @@ echo Creating Client-Server Library tar files...
 
 mkdir cslibtar
 cd cslibtar
+
+# Grab all of the include files we need.
 mkdir include
-ln -s ../../graphics/Color.h \
-	../../graphics/ColorMgr.h \
-        ../../graphics/Compress.h \
+cd include
+ln -s	../../graphics/Compress.h \
 	../../graphics/DList.h \
         ../../graphics/DevError.h \
 	../../graphics/DevStatus.h \
@@ -82,12 +87,27 @@ ln -s ../../graphics/Color.h \
 	../../graphics/DaliIfc.h \
 	../../graphics/Xdef.h \
 	../../graphics/Util.h \
-	include
+	../../graphics/GraphicsDebug.h \
+	.
+ln -s	../../cslib/*.h \
+	.
 ln -s ../../graphics.new/ClientAPI.h \
         ../../graphics.new/ParseAPI.h \
-	include
+	.
+ln -s	../../src/include/BooleanArray.h \
+	../../src/include/Color.h \
+	../../src/include/Coloring.h \
+	../../src/include/Palette.h \
+	../../src/include/PaletteColor.h \
+	../../src/include/RGB.h \
+	../../src/include/XColor.h \
+	../../src/include/debug.h \
+	../../src/include/manager.h \
+	.
+cd ..
+
+# Grab some cslib source files, etc.
 ln -s ../cslib/Makefile.com \
-	../cslib/ClientServer.* \
         ../cslib/server.* \
 	../cslib/client.* \
         ../cslib/opossum.* \
@@ -95,11 +115,15 @@ ln -s ../cslib/Makefile.com \
         ../cslib/ETkSample.tcl \
 	../cslib/Readme.tex .
 
+# Grab the libraries we need (for various architectures).
 foreach platform (solaris solsparc sun hp)
   ln -s ../$platform/cslib/Makefile.dist Makefile
-  ln -s ../$platform/cslib/libcs.a .
+  ln -s ../$platform/cslib/libdevcs.a .
+  ln -s ../$platform/cslib/libdevwin.a .
+  ln -s ../$platform/color/libcolor.a .
+  ln -s ../$platform/utils/libutils.a .
   tar cfvh ../cslib.$platform.tar .
-  rm Makefile libcs.a
+  rm Makefile libdevcs.a libdevwin.a libcolor.a libutils.a
 end
 
 cd ..
