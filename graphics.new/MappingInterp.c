@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.50  1997/04/09 23:31:23  beyer
+  String constants in the mapping now work.
+
   Revision 1.49  1997/03/23 23:46:14  donjerko
   *** empty log message ***
 
@@ -1331,6 +1334,9 @@ Boolean MappingInterp::ConvertSimpleCmd(char *cmd,
       // string already in table, so delete this copy
       delete str;
     }
+#if defined(DEBUG)
+    printf("string constant at %d: %s\n", strid, str);
+#endif
     entry.cmdType = MappingSimpleCmdEntry::ConstCmd;
     entry.cmd.num = strid;
     type = IntAttr;
