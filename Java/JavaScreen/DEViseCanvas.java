@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.78  2001/05/11 20:36:04  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.77  2001/05/03 19:34:39  xuk
 // Added two factors for displaying mouse position.
 //
@@ -887,7 +890,8 @@ public class DEViseCanvas extends Container
 
     private synchronized void paintRubberBand(Graphics gc)
     {
-        if (isInViewDataArea && isMouseDragged && selectedCursor == null) {
+        if (isInViewDataArea && isMouseDragged && selectedCursor == null &&
+	  activeView.isRubberBand) {
             int x0, y0, w, h;
 
             if (sp.x > ep.x)  {
@@ -1316,7 +1320,7 @@ public class DEViseCanvas extends Container
 
                     jscreen.guiAction = true;
                     dispatcher.start(cmd);
-                } else { // rubber band
+                } else if (activeView.isRubberBand) { // rubber band
                     ep.x = activeView.translateX(p.x, 1);
                     ep.y = activeView.translateY(p.y, 1);
 

@@ -1,0 +1,78 @@
+			DEVise/JavaScreen To-Do List
+				$Revision$
+
+TEMPTEMP -- should I break this up into categories? (e.g., JavaScreen,
+links, etc.?  what should categories be?) (how would numbering work then?
+maybe x.y?)
+
+Possible categories:
+JavaScreen, GUI
+JavaScreen, communication
+JavaScreen, misc.
+DEVise, GUI
+DEVise, links
+DEVise, cursors
+DEVise, piles and stacks
+DEVise, data sources
+DEVise, misc.
+Release/distribution
+
+Num Date	Status  Pri	Description
+--- --------	------	---	-----------------------------------------------
+001 09/10/01	ACTIVE	1	JavaScreen: recovery from network
+disconnection. (ml)
+
+002 09/10/01	OPEN	?	JavaScreen: X-only zoom. (various)
+
+003 09/10/01	OPEN	?	JavaScreen: toolbars. (ar/rkw)
+
+004 09/10/01	OPEN	?	JavaScreen: integrated keyboard help. (rkw)
+
+005 09/10/01	OPEN	?	JavaScreen: visual filter dialog. (rkw)
+
+006 09/10/01	OPEN	?	JavaScreen: session-programmable buttons. (rkw)
+
+007 09/10/01	OPEN	?	Allow 2 X axes per view (top and bottom).
+(wavelet)
+
+008 09/10/01	OPEN	?	Grids on zoom boxes. (wavelet)
+
+009 09/10/01	OPEN	?	JavaScreen: more advanced session selection.
+(ml)
+
+010 09/10/01	OPEN	?	JavaScreen: change some buttons to menus. (rkw)
+
+Allow multiplicative factor (and offset?) for visual links
+          (specify for each view).
+
+Have an option to force the session's aspect ratio to be
+          preserved in the JavaScreen.
+
+warn when closing session if there are changes other than cursor moves
+
+JavaScreen:Time out and exit on the client side if the user has gone out
+          of the appropriate web page for a given amount of time (so we
+	            don't have loads of extra JS clients in the browser).
+
+JavaScreen: Allow multiple levels of child views.
+
+?combine bin_arch and dyn_lib_arch in release/distribution??
+
+(add stuff from old to-do list?)
+(add stuff from my to-do list)
+
+* Status:
+OPEN = item has not yet been addressed
+ACTIVE = item is being addressed
+DONE = item has been fully addressed
+WORK = workaround for bug in place
+DUP = duplicate of another item
+NLR = no longer relevant
+
+* Priority:
+? = not yet prioritized
+1 = must be done soon
+2 = must be done
+3 = should be done
+4 = maybe should be done
+5 = should not be done

@@ -2741,8 +2741,10 @@ Num Date        Status  Description
 			successfully follow symbolic links in the session
 			directory. (rkw)
 
-689 09/12/01	OPEN	JavaScreen: shouldn't draw zoom boxes in views in
+689 09/12/01	FIXED	JavaScreen: shouldn't draw zoom boxes in views in
 			which zooming is disabled. (rkw)
+			(Also shouldn't send command to devised.)
+			(Fixed by rkw, 09/25/01.)
 
 690 09/12/01	OPEN	JavaScreen: sometimes when you try to move a cursor,
 			this gets interpreted as a zoom (it's like the JS
@@ -2755,6 +2757,18 @@ Num Date        Status  Description
 692 09/20/01	OPEN	If you open a session and save it without changing
 			anything, the session file shouldn't be different
 			(except for the date in the header). (rkw)
+
+693 09/25/01	OPEN	If you are doing an X-only zoom, the rubberband
+			line that is drawn should reflect this. (rkw)
+
+694 09/25/01	OPEN	JavaScreen: if you are doing an X-only zoom, the
+			rubberband line that is drawn should reflect this.
+			(rkw)
+
+695 09/25/01	OPEN	JavaScreen: if cursor movement is disallowed in
+			a view, the user shouldn't be able to drag the
+			drawn cursor, and no command should be sent to
+			the devised. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
