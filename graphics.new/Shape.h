@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/07/02 22:46:00  jussi
+  The bounding box of symbols is now correctly computed. Scatter
+  plots sometimes did not have all necessary data displayed in
+  them, as bounding box used to be incorrectly computed.
+
   Revision 1.13  1996/06/27 19:06:58  jussi
   Merged 3D block shape into 2D rect shape, the appropriate shape
   is chosen based on current view setting. Removed Block and 3DVector
@@ -201,21 +206,21 @@ class Shape {
       int count = 1;
       _x[0] = GetX(gdata, map, offset);
       _y[0] = GetY(gdata, map, offset);
-      Color lastColor = GetColor(view, gdata, map, offset);
+      Color firstColor = GetColor(view, gdata, map, offset);
       
       int colorIndex;
       for(colorIndex = i + 1; colorIndex < numSyms; colorIndex++) {
 	char *colorGData = (char *)gdataArray[colorIndex];
-	if (GetColor(view, colorGData, map, offset) != lastColor)
+	if (GetColor(view, colorGData, map, offset) != firstColor)
 	  break;
 	_x[count] = GetX(colorGData, map, offset);
-	_y[count++] = GetY(colorGData, map, offset);
+	_y[count] = GetY(colorGData, map, offset);
+        count++
       }
       
-      win->SetFgColor(lastColor);
+      win->SetFgColor(firstColor);
       win->DrawPixelArray(_x, _y, count, pixelSize);
       
-      lastColor = GetColor(view, (char *)gdataArray[colorIndex], map, offset);
       i = colorIndex;
     }
   }
