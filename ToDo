@@ -408,6 +408,9 @@ Allow multiple clients to connect to a single Devise server simultaneously.
 Have some kind of concurrency control on the data source catalog. (lz/rkw
 9/8/97)
 
+Drill down query should query all views in a pile, not just one (kb 9/15/97)
+
+
 
 COMPLETED
 ---------
