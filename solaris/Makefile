@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.34  1998/02/12 17:18:07  wenger
+# Merged through collab_br_2; updated version number to 1.5.1.
+#
 # Revision 1.33  1998/02/09 17:26:06  wenger
 # Removed multi from default compile and Solaris release script.
 #
@@ -154,5 +157,6 @@ strip:
 	- strip generic/generic generic/generic.static
 	- strip generic/devise generic/deviseb generic/devised
 	- strip multi/disp
+	- strip generic/collaborator
 
 # DO NOT DELETE

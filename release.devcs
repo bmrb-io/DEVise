@@ -19,6 +19,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1997/11/25 19:33:38  wenger
+#  New release script for client/server for solaris, solsparc; minor
+#  improvements to release.devcs.
+#
 #  Revision 1.1  1996/12/06 16:15:35  wenger
 #  First version of this -- needed to release c/s version of devise.
 #
@@ -28,7 +32,9 @@
 set files = "hp/generic/devise hp/generic/deviseb hp/generic/devised \
 solaris/generic/devise solaris/generic/deviseb solaris/generic/devised \
 solsparc/generic/devise solsparc/generic/deviseb solsparc/generic/devised \
-sun/generic/devise sun/generic/deviseb sun/generic/devised"
+sun/generic/devise sun/generic/deviseb sun/generic/devised \
+solaris/generic/collaborator solsparc/generic/collaborator \
+sun/generic/collaborator hp/generic/collaborator"
 
 set target = /p/devise/public
 
@@ -78,6 +84,7 @@ endif
 cp -p solaris/generic/devise $target/sunx86_54/devisec
 cp -p solaris/generic/deviseb $target/sunx86_54/deviseb
 cp -p solaris/generic/devised $target/sunx86_54/devised
+cp -p solaris/generic/collaborator $target/sunx86_54/collaborator
 
 if (! -d $target/sun4m_54) then
   mkdir $target/sun4m_54
@@ -91,6 +98,7 @@ endif
 cp -p solsparc/generic/devise $target/sun4m_54/devisec
 cp -p solsparc/generic/deviseb $target/sun4m_54/deviseb
 cp -p solsparc/generic/devised $target/sun4m_54/devised
+cp -p solsparc/generic/collaborator $target/sun4m_54/collaborator
 
 if (! -d $target/sun4m_412) then
   mkdir $target/sun4m_412
@@ -98,6 +106,7 @@ endif
 cp -p sun/generic/devise $target/sun4m_412/devisec
 cp -p sun/generic/deviseb $target/sun4m_412/deviseb
 cp -p sun/generic/devised $target/sun4m_412/devised
+cp -p sun/generic/collaborator $target/sun4m_412/collaborator
 
 if (! -d $target/hp700_ux90) then
   mkdir $target/hp700_ux90
@@ -105,6 +114,7 @@ endif
 cp -p hp/generic/devise $target/hp700_ux90/devisec
 cp -p hp/generic/deviseb $target/hp700_ux90/deviseb
 cp -p hp/generic/devised $target/hp700_ux90/devised
+cp -p hp/generic/collaborator $target/hp700_ux90/collaborator
 
 
 echo ""

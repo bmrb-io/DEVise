@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/01/07 19:28:12  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.1.2.1  1997/12/09 19:03:35  wenger
   deviseb now uses client/server library.
 
@@ -37,7 +42,7 @@
  * Constructor
  */
 DeviseBatchClient::DeviseBatchClient(char *name, char *hostname, int port) :
-  Client(name, hostname, port)
+  Client(name, hostname, port, "NULL")
 {
 #if defined(DEBUG)
   printf("DeviseBatchClient(0x%p)::DeviseBatchClient(%s, %s, %d)\n", this,

@@ -1132,6 +1132,9 @@ Num Date        Status  Description
 294 02/12/98	OPEN	Sometimes symbols are not drawn that should be
 			(see test/missing_bars.ds). (rkw)
 
+295 02/16/98	OPEN	Connecting multiple clients to a single server no
+			longer works. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.42  1998/02/12 17:15:40  wenger
+#  Merged through collab_br_2; updated version number to 1.5.1.
+#
 #  Revision 1.41  1998/01/14 16:38:42  wenger
 #  Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
 #
@@ -239,13 +242,13 @@ collaborator.pure: ../csgroup/main.o $(SERVERLIB)
 	$(PURIFY) $(PURE_OPT) $(COLLABORATOR)
 
 DEVISEB = $(CC) -o $@ deviseb.o DeviseBatchClient.o ../graphics.new/Version.o \
-	$(ARCH_LDFLAGS) -L../cslib -L../graphics.new -ldevcs $(ARCH_LDPOST)
+	$(ARCH_LDFLAGS) -L../csgroup -L../graphics.new -lcsgroup $(ARCH_LDPOST)
 
 deviseb.o:../../generic/deviseb.C 
-	$(CC) -c $(BATCH_CFLAGS) $<
+	$(CC) -c $(CFLAGS) $<
 	
 DeviseBatchClient.o:../../generic/DeviseBatchClient.c
-	$(CC) -c $(BATCH_CFLAGS) $<
+	$(CC) -c $(CFLAGS) $<
 
 deviseb: deviseb.o DeviseBatchClient.o $(CLIENTLIB)
 	$(FORCE_DATE)

@@ -20,12 +20,17 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1997/11/25 19:33:39  wenger
+#  New release script for client/server for solaris, solsparc; minor
+#  improvements to release.devcs.
+#
 
 ############################################################
 
 set files = "solaris/generic/devise solaris/generic/deviseb \
 solaris/generic/devised solsparc/generic/devise solsparc/generic/deviseb \
-solsparc/generic/devised"
+solsparc/generic/devised \
+solaris/generic/collaborator solsparc/generic/collaborator"
 
 set target = /p/devise/public
 
@@ -75,6 +80,7 @@ endif
 cp -p solaris/generic/devise $target/sunx86_54/devisec
 cp -p solaris/generic/deviseb $target/sunx86_54/deviseb
 cp -p solaris/generic/devised $target/sunx86_54/devised
+cp -p solaris/generic/collaborator $target/sunx86_54/collaborator
 
 if (! -d $target/sun4m_54) then
   mkdir $target/sun4m_54
@@ -88,6 +94,7 @@ endif
 cp -p solsparc/generic/devise $target/sun4m_54/devisec
 cp -p solsparc/generic/deviseb $target/sun4m_54/deviseb
 cp -p solsparc/generic/devised $target/sun4m_54/devised
+cp -p solsparc/generic/collaborator $target/sun4m_54/collaborator
 
 echo ""
 echo Done!
