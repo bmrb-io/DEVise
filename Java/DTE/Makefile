@@ -23,7 +23,7 @@ Parser/SQLParser.java: Parser/SQLParser.jj
 	cd Parser; javacc SQLParser.jj; cd ..
 
 all:
-	javac FileScanIteator.java -d $(CLASSES)
+	javac DataSources/RelationManager.java -d $(CLASSES)
 
 hj:
 	javac TestExpr.java -d $(CLASSES)
