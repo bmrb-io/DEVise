@@ -16,8 +16,8 @@
 
  */
 
-#ifndef UNIDATA_READ_H
-#define UNIDATA_READ_H
+#ifndef DATAREADER_READ_H
+#define DATAREADER_READ_H
 
 //#include <iostream.h>   erased for sysdep.h
 #include <string>
@@ -32,15 +32,13 @@ using namespace std;
 const int BUFSZE = 2048;
 
 class Attr;
-class UniData;
+class DataReader;
 typedef long off_t;
-
-TypeID translateUDType(Attr* at);
 
 class DevReadExec : public Iterator {
 	char* buff;	// this has to be aligned!
 	int buffSize;
-	UniData* ud;
+	DataReader* ud;
 	UnmarshalPtr* unmarshalPtrs;
 	DestroyPtr* destroyPtrs;
 	Type** tuple;
@@ -49,7 +47,7 @@ class DevReadExec : public Iterator {
 	int numFlds;
 	int recId;
 public:
-	DevReadExec(UniData* ud, UnmarshalPtr* unmarshalPtrs,
+	DevReadExec(DataReader* ud, UnmarshalPtr* unmarshalPtrs,
 		DestroyPtr* destroyPtrs,
 		Type** tuple, int* offsets, int numFlds);
 
@@ -70,10 +68,10 @@ public:
 };
 
 class DevRead : public PlanOp {
-	UniData* ud;
+	DataReader* ud;
 	int numFlds;
 protected:
-	string* typeIDs;
+	TypeID* typeIDs;
 	string* attributeNames;
 	string* order;
 public:
@@ -90,6 +88,7 @@ public:
 		assert(0);
 	}
 
+	void translateUDInfo();
 	void Open(char* schemaFile, char* dataFile); // throws
 
 	void Close();
