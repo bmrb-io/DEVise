@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/12/18 15:35:11  jussi
+  Merged GetGDataInMem() and GetTDataInMem().
+
   Revision 1.14  1996/12/12 22:02:16  jussi
   Added destructor.
 
@@ -695,8 +698,7 @@ BufMgr::BMHandle BufMgrFull::SelectReady()
         }
 
         if (req->haveIO) {
-            if (!req->tdhandle->IsActiveIO() ||
-                req->tdhandle->IsDirectIO()) {
+            if (req->tdhandle->IsDirectIO()) {
 #if DEBUGLVL >= 3
                 printf("Request 0x%p can perform direct I/O\n", req);
 #endif
@@ -719,8 +721,7 @@ BufMgr::BMHandle BufMgrFull::SelectReady()
     printf("Did not find any active request\n");
 #endif
 
-    /* Don't know what to do yet -- block on first request */
-    return _reqhead.next;
+    return _lastReadyReq;
 }
 
 /*
