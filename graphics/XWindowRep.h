@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/08/28 00:19:40  wenger
+  Improved use of Dali to correctly free images (use of Dali is now fully
+  functional with filenames in data).
+
   Revision 1.24  1996/08/23 16:56:04  wenger
   First version that allows the use of Dali to display images (more work
   needs to be done on this); changed DevStatus to a class to make it work
@@ -323,7 +327,7 @@ protected:
         Window FindTopWindow(Window win);
 
 	/* export window image as GIF */
-	void ExportGIF(char *filename);
+	void ExportGIF(FILE *fp);
 
 	/* recursively copy the contents of subpixmaps onto parent pixmap */
 	static void CoalescePixmaps(XWindowRep *root);
