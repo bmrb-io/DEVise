@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/29 18:26:53  jussi
+  Added FilterAboutToChange() to facilitate new cursor mechanism.
+
   Revision 1.3  1995/12/14 16:55:42  jussi
   Small fix in GetVisualFilter.
 
@@ -37,10 +40,18 @@ DeviseCursor::DeviseCursor(char *name, VisualFlag flag, Color color)
 
 DeviseCursor::~DeviseCursor()
 {
-  if (_src != NULL)
+  Boolean redrawCursors = false;
+
+  if (_dst)
+    redrawCursors = _dst->HideCursors();
+
+  if (_src)
     View::DeleteViewCallback(this);
-  if (_dst != NULL)
+  if (_dst)
     _dst->DeleteCursor(this);
+
+  if (_dst && redrawCursors)
+    (void)_dst->DrawCursors();
 }
 
 /* Set source view. Changing this view's visual filter
@@ -48,19 +59,21 @@ DeviseCursor::~DeviseCursor()
 
 void DeviseCursor::SetSource(View *view)
 {
-  if (_src != NULL)
+  Boolean redrawCursors = false;
+
+  if (_dst)
+    redrawCursors = _dst->HideCursors();
+
+  if (_src)
     View::DeleteViewCallback(this);
   
   _src = view;
 
-  if (_src != NULL) {
+  if (_src)
     View::InsertViewCallback(this);
-    if (_dst != NULL)
-      (void)_dst->DrawCursors();
-  } else {
-    if (_dst != NULL)
-      (void)_dst->HideCursors();
-  }
+
+  if (_dst && redrawCursors)
+    (void)_dst->DrawCursors();
 }
 
 /* Set destination: this is where the cursor will be drawn.
@@ -68,21 +81,28 @@ void DeviseCursor::SetSource(View *view)
 
 void DeviseCursor::SetDst(View *view)
 {
-  if (_dst != NULL)
-    _dst->DeleteCursor(this);
-  
-  if (view == NULL) {
-    if (_src != NULL)
-      (void)_dst->HideCursors();
-  }
+  Boolean redrawCursors = false;
 
+  if (_dst)
+    redrawCursors = _dst->HideCursors();
+
+  if (_dst) {
+    _dst->DeleteCursor(this);
+    if (redrawCursors)
+      (void)_dst->DrawCursors();        // redraw cursors at old destination
+  }
+  
   _dst = view;
 
-  if (_dst != NULL) {
+  redrawCursors = false;
+  if (_dst)
+    redrawCursors = _dst->HideCursors();
+
+  if (_dst)
     _dst->AppendCursor(this);
-    if (_src != NULL)
-      (void)_dst->DrawCursors();
-  }
+
+  if (_dst && redrawCursors)
+    (void)_dst->DrawCursors();          // redraw cursors at new destination
 }
 
 /* Get current visual filter. return TRUE if it exists. */
