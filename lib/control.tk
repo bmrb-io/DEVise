@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.122  1997/03/12 16:55:36  wenger
+#	Removed redundant mapping procedures (caused show of mapping dialog to fail).
+#
 #	Revision 1.121  1997/03/06 23:52:52  ssl
 #	Added function and option to GraphData menu to flush tdata
 #
@@ -518,16 +521,29 @@
 set libdir $env(DEVISE_LIB)
 source $libdir/tool.tcl
 
-set DEViseColors \
-	{{1000 XOR} {0 black} {1 white} {2 red} {3 blue} {4 orange} \
-	{5 tan} {6 green} {7 purple} {8 aquamarine} {9 peru} {10 chocolate} \
-	{11 tomato} {12 pink} {13 plum} {14 azure1} {15 cyan1} {16 SeaGreen1} \
-	{17 khaki1} {18 goldenrod1} {19 yellow} {20 sienna1} \
-	{21 LightCoral} {22 AntiqueWhite} {23 LemonChiffon} {24 LightGray}\
-	{25 Lavender} {26 LavenderBlush} {27 MistyRose} {28 NavyBlue} \
-	{29 SlateBlue} {30 MediumBlue} {31 DeepSkyBlue} {32 SkyBlue} \
-	{33 red1} {34 red2} {35 DarkSeaGreen} {36 green2} {37 blue1} \
-	{38 blue2} {39 blue3} {40 blue4} {41 gold1} {42 gold2}}
+set DEViseColors { \
+	{1000 XOR} {0 white} \
+	{1 gray88} {2 gray75} {3 gray63} {4 gray50} \
+	{5 gray38} {6 gray25} {7 gray12} {8 black} \
+	{9 red} {10 firebrick} {11 DarkRed} {12 SaddleBrown} \
+	{13 DarkOrange1} {14 orange} {15 Goldenrod2} {16 gold} {17 yellow} \
+	{18 green} {19 OliveDrab} {20 green4} {21 ForestGreen} {22 DarkGreen} \
+	{23 MidnightBlue} {24 DarkBlue} {25 MediumBlue} {26 blue} \
+	{27 DodgerBlue} {28 DeepSkyBlue1} {29 cyan} \
+	{30 magenta} {31 DarkOrchid} {32 MediumOrchid3} \
+	{33 OldLace} {34 LightGoldenrodYellow} {35 PaleGoldenrod} \
+	{36 wheat} {37 khaki}}
+
+#set DEViseColors \
+#	{{1000 XOR} {0 black} {1 white} {2 red} {3 blue} {4 orange} \
+#	{5 tan} {6 green} {7 purple} {8 aquamarine} {9 peru} {10 chocolate} \
+#	{11 tomato} {12 pink} {13 plum} {14 azure1} {15 cyan1} {16 SeaGreen1} \
+#	{17 khaki1} {18 goldenrod1} {19 yellow} {20 sienna1} \
+#	{21 LightCoral} {22 AntiqueWhite} {23 LemonChiffon} {24 LightGray}\
+#	{25 Lavender} {26 LavenderBlush} {27 MistyRose} {28 NavyBlue} \
+#	{29 SlateBlue} {30 MediumBlue} {31 DeepSkyBlue} {32 SkyBlue} \
+#	{33 red1} {34 red2} {35 DarkSeaGreen} {36 green2} {37 blue1} \
+#	{38 blue2} {39 blue3} {40 blue4} {41 gold1} {42 gold2}}
 
 set DEViseShapes \
 	{{0 Rect} {1 RectX} {2 Bar} {13 Line} {14 {Line Shade}} \
