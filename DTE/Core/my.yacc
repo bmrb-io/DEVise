@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/07/22 15:00:56  donjerko
+  *** empty log message ***
+
   Revision 1.24  1997/06/16 17:42:51  donjerko
   Bug fix
 
@@ -364,7 +367,7 @@ predicate : predicate OR predicate {
 	| predicate AND predicate {
 		$$ = new AndOperator($1, $3);
 	}
-    | predicate '=' predicate {
+	| predicate '=' predicate {
         $$ = new Operator("=", $1, $3);
 	}
 	| predicate LESSGREATER predicate {
@@ -375,6 +378,12 @@ predicate : predicate OR predicate {
 	}
      | predicate '-' predicate {
           $$ = new Operator("-", $1, $3);
+	}
+     | predicate '*' predicate {
+          $$ = new Operator("*", $1, $3);
+	}
+     | predicate '/' predicate {
+          $$ = new Operator("/", $1, $3);
 	}
 	| predicate STRING predicate {
 		$$ = new Operator(*$2, $1, $3);

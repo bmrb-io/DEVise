@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1997/08/14 02:08:57  donjerko
+  Index catalog is now an independent file.
+
   Revision 1.28  1997/08/12 19:58:46  donjerko
   Moved StandardTable headers to catalog.
 
@@ -292,6 +295,12 @@ void intMin(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	int val1 = int(arg1);
 	int val2 = int(arg2);
      result = (Type*)(val1 > val2);
+}
+
+void intDiv(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	int val1 = int(arg1);
+	int val2 = int(arg2);
+     result = (Type*)(val1 / val2);
 }
 
 void doubleAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){

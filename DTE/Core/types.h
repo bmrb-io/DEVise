@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1997/08/15 00:17:37  donjerko
+  Completed the Iterator destructor code.
+
   Revision 1.29  1997/08/14 02:08:58  donjerko
   Index catalog is now an independent file.
 
@@ -286,6 +289,7 @@ void intGT(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz)
 void intGE(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 void intComp(const Type *arg1,const Type *arg2, Type*& result, size_t& = dummySz);
 void intMin(const Type *arg1,const Type *arg2, Type*& result, size_t& = dummySz);
+void intDiv(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 
 void dateEq(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 void dateLT(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
@@ -420,9 +424,9 @@ public:
 			return new GeneralPtr(intGT, boolSize, oneOver3);
 		}
 		else if(name == ">="){
-                        retType = "bool";
-                        return new GeneralPtr(intGE, boolSize, oneOver3);
-                }
+			retType = "bool";
+			return new GeneralPtr(intGE, boolSize, oneOver3);
+		}
 		else if(name == "comp"){
 			retType = "int";
 			return new GeneralPtr(intComp, sameSize);
@@ -430,6 +434,10 @@ public:
 		else if(name == "min"){
 			retType = "int";
 			return new GeneralPtr(intMin, sameSize);
+		}
+		else if(name == "/"){
+			retType = "int";
+			return new GeneralPtr(intDiv, sameSize);
 		}
 		else{
 			return NULL;
@@ -523,10 +531,10 @@ public:
 				retType = "double";
 				return new GeneralPtr(doubleDiv, sameSize);
 			}
-   		        else if(name == "comp"){
-			        retType = "int";
-			        return new GeneralPtr(doubleComp, sameSize);
-		        }
+			else if(name == "comp"){
+				retType = "int";
+				return new GeneralPtr(doubleComp, sameSize);
+			}
 			else{
 				return NULL;
 			}
