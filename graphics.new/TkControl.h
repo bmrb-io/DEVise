@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/08/29 22:23:25  guangshu
+  Added functions OpenDataChannel and getFd.
+
   Revision 1.15  1996/08/04 21:29:53  beyer
   Added Raise() to raise the control panel to the top of the stacking order.
 
@@ -105,11 +108,7 @@ public:
   /* Start/restart session */
   virtual void StartSession();
   virtual void DestroySessionData();
-  virtual void RestartSession() {
-    DestroySessionData();
-    QueryProc::Instance()->PrintStat();
-    DoQuit();
-  }
+  virtual void RestartSession() { DoQuit(); }
 
   /* Perform sync operation  */
   virtual void SyncNotify();
