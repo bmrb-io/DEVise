@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.78  1997/03/20 22:32:55  guangshu
+#	Changed statistics layout.
+#
 #	Revision 1.77  1997/03/20 20:46:06  donjerko
 #	DTE Tdata generates unique names by appending sequential numbers to the
 #	end of the table name. This way, same table can be opened multiple times.
@@ -561,8 +564,10 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
 
 	if { [isDTEType $stype] } {
 		set schema $sname
+		puts "isDTEType sname=$sname stype=$stype"
  		set result [DEVise dteImportFileType $sname]
 		set topgrps [DEVise getTopGroups $sname]
+		puts "result of dteImportFileType=$result, topgrps=$topgrps"
    	} else {
           	set topgrps [DEVise getTopGroups [file tail $schemafile]]
         	if {[llength $topgrps] == 0} {
@@ -592,7 +597,6 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
                 	set schema $result
             	    }
                 }
-	}
 
         statusWindow .info "Status" \
                 "Creating an index on \"$sname\".\n\n\This may take a while."
@@ -609,12 +613,13 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
                     "Cannot open data stream $sname" "" 0 OK
             return ""
         }
+	}
     }
 
     if { [isDTEType $stype] } {
-	return [list [lindex $snames 0] $sname]
+	return [list [lindex $snames 0] $sname 1]
     } else {
-	return [list [lindex $snames 0] [file tail $schemafile]]
+	return [list [lindex $snames 0] [file tail $schemafile] 0]
     }
 }
 
@@ -811,8 +816,8 @@ proc MacroImport {mode derivedOnly} {
     if {$mode && $derivedOnly} {
 	StatText $tdata $schemafile
     } else {
-        set schemaname [file tail $schemafile]
-	MacroDefAuto $tdata $schemaname
+#        set schemaname [file tail $schemafile]
+	MacroDefAuto $tdata $schemaname $is_dte_type
     }
 }
 
@@ -911,8 +916,10 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
     if {[WindowVisible .auto]} {
 	return
     }
+
+    puts "In MacroDefAuto($tdata, $schemaname)"
 	
-    set schema [DEVise getSchema $tdata]
+#    set schema [DEVise getSchema $tdata]
 #   set schemaname [file tail $schemafile]
 	
     set topgrp [SelectTopGroup $schemaname]
@@ -1123,8 +1130,7 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
 #    puts "The ylist is $ylist"
     
     if {$is_dte_type} {
-	    set result [DEVise create tdata $tdata $tdata "$x $ylist"]
-	    set tdata $result
+	    DEVise create tdata $tdata $tdata "$x $ylist"
 	}
     MacroDefAutoActual $tdata $viewsel $linksel $windowsel $bgcolor \
 	    $titlesel $xaxissel $yaxissel $x $ylist $newgdata
@@ -1136,8 +1142,8 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
                          titlesel xaxissel yaxissel x ylist
                          newgdata} {
 
-#    puts "In MacroDefAutoActual $tdata $viewsel $linksel $window $bgcolor
-#		$titlesel $xaxissel $yaxissel $x $ylist $newgdata"
+    puts "In MacroDefAutoActual tdata=$tdata $viewsel $linksel $window $bgcolor
+		$titlesel $xaxissel $yaxissel $x $ylist $newgdata"
     global viewDefault DEViseShapes
 
     set pos ""
@@ -1152,6 +1158,8 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
 	set subder [string trim $subder]
 	set vname  [string trim $vname]
     } 
+
+    puts "Before getSchema $tdata"
 
     set schema [DEVise getSchema $tdata]
     puts "In MacroDefAutoActual, schema = $schema"
@@ -1320,6 +1328,12 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
         }
 
         #puts "Mapping will have ylo $ylo and yhi $yhi"
+	if {$clean_name=="Count"} { set color 2 }
+	if {$clean_name=="Sum"} { set color 3 }
+	if {$clean_name=="Max"} { set color 0 }
+	if {$clean_name=="Avg"} { set color 2 }
+	if {$clean_name=="Min"} { set color 3 }
+
 	
         if {$subder == "Stat" || $subder == "GstatX" || $subder == "GstatY"} {
             if {$clean_name=="Max"} {
