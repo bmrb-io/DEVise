@@ -1,7 +1,24 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 21:12:54  jussi
+  Added/updated CVS header.
+*/
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -61,7 +78,7 @@ char buf[80];
 #endif
 	Boolean newFile = false;
 
-	_time = Time::Now();
+	_time = DeviseTime::Now();
 
 	/* create a file name for the journal */
 	if ((_fd=open(journalName, O_WRONLY,0666))>=0){
@@ -131,7 +148,7 @@ void Journal::RecordEvent(EventType type, Selection *selection,
 
 		_lastEvent = type;
 
-		long now = Time::Now();
+		long now = DeviseTime::Now();
 		long diff = now - _time;
 		_time = now;
 
