@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.58  1996/08/07 20:11:26  wenger
+  Fixed various key event-related bugs (see Bugs file); changed
+  direction of camera movement for 3D to be more in agreement
+  with how panning works for 2D views.
+
   Revision 1.57  1996/08/05 19:51:41  wenger
   Fixed compile errors caused by some of Kevin's recent changes; changed
   the attrproj stuff to make a .a file instead of a .o; added some more
@@ -215,8 +220,6 @@
   Added/updated CVS header.
 */
 
-//#define DEBUG
-
 #include <unistd.h>
 #include <errno.h>
 #include <ctype.h>
@@ -237,6 +240,11 @@ extern "C" {
 #undef DELETE
 #include "MapIntToInt.h"
 #include "DeviseKey.h"
+
+// xv.h has a conflict DEBUG - it has a variable called int DEBUG
+// so this define must come after xv.h.
+//#define DEBUG
+
 
 #define MAXPIXELDUMP 0
 
@@ -1477,7 +1485,7 @@ void XWindowRep::HandleEvent(XEvent &event)
 
 #if defined(DEBUG)
     printf("KeyPress: KeySym:0x%x, state: 0x%x, d_key: %c 0x%x, d_mod: 0x%x\n",
-	   keysym, event.xkey.state,
+	   int(keysym), event.xkey.state,
 	   isgraph(char(d_key)) ? d_key : '~', d_key, d_modifier);
 #endif
 
