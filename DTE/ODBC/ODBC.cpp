@@ -1,6 +1,6 @@
 #include <string>
 #include <windows.h>
-#include "SQL.H"
+#include <SQL.H>
 #include <sqlext.h>
 #include "ODBC.h"
 #include "exception.h"
