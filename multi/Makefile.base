@@ -48,7 +48,7 @@ map_cycle_susp.h: map_cycle_susp
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm allobj.o
+	-rm disp
 
 mostlyclean:
-	-rm $(LIBOBJ)
+	-rm $(ALLOBJ)
