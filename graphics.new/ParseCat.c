@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/03/05 23:25:03  jussi
+  Open file now properly closed in ParseCatLogical().
+
   Revision 1.14  1996/01/23 20:50:17  jussi
   Added support for binary data files specified in the schema.
 
@@ -571,7 +574,7 @@ char *ParseCatOriginal(char *catFile){
 		{
 		  if (GLoad) {
 		      currgrp->insert_item(args[1]);
-		    }
+		  }
 		}
 		else if (strcmp(args[0], "endgroup") == 0)
 		{
@@ -613,10 +616,10 @@ char *ParseCatOriginal(char *catFile){
 	{
 	  Group *newgrp = new Group("__default", NULL, TOPGRP);
 	  gdir->add_topgrp(getTail(catFile), newgrp);
-	  for (i=0; i < numAttrs; i++)
-	  {
+	  for (i=0; i < numAttrs; i++) {
 	    AttrInfo *iInfo = attrs->Get(i);
-	    newgrp->insert_item(iInfo->name);
+	    if (iInfo->type != StringAttr)
+	      newgrp->insert_item(iInfo->name);
 	  }
 	}
 
@@ -1157,7 +1160,7 @@ char *ParseCatLogical(char *catFile, char *sname)
       {
 	if (GLoad) {
 	    currgrp->insert_item(args[1]);
-	  }
+	}
       }
       else if (strcmp(args[0], "endgroup") == 0)
       {
@@ -1181,10 +1184,10 @@ char *ParseCatLogical(char *catFile, char *sname)
   {
     Group *newgrp = new Group("__default", NULL, TOPGRP);
     gdir->add_topgrp(getTail(catFile), newgrp);
-    for(int i = 0; i < numAttrs; i++)
-    {
+    for(int i = 0; i < numAttrs; i++) {
       AttrInfo *iInfo = attrs->Get(i);
-      newgrp->insert_item(iInfo->name);
+      if (iInfo->type != StringAttr)
+	newgrp->insert_item(iInfo->name);
     }
   }
 
