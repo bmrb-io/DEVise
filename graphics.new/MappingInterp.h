@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.42  1999/01/04 15:33:33  wenger
+  Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
+  compiles; added code (GUI is currently disabled) to manually set view
+  geometry (not yet saved to sessions).
+
   Revision 1.41  1998/11/11 14:31:00  wenger
   Implemented "highlight views" for record links and set links; improved
   ClassDir::DestroyAllInstances() by having it destroy all links before
@@ -376,8 +381,9 @@ private:
 
   /* Find size of GData given attribute flag information */
   // Note: MUST be static so it can be called before the constructor.
-  static FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
-		       unsigned long int cmdFlag, unsigned long int attrFlag);
+  static int FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
+                           unsigned long int cmdFlag,
+                           unsigned long int attrFlag);
   
   static Boolean IsConstCmd(char *cmd, AttrList *attrList, Coord &val,
 			    AttrType &attrType);
