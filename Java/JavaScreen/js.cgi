@@ -3,7 +3,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000
+#  (c) Copyright 2000-2001
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -13,14 +13,18 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  This is a script to check whether the jspop, jss, and devised are running,
-#  and restart them if they're not.
+#  This is the CGI script used by the JS client to send a command to
+#  the JSPoP when running in CGI mode (rather than socket mode).
 
 ############################################################
 
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  2001/01/25 18:41:03  wenger
+#  Minor fixes to a couple of scripts; fixed port numbers in 'test' html
+#  files.
+#
 #  Revision 1.3  2001/01/10 17:33:02  wenger
 #  Parsing CGI arguments myself because the CGI package doesn't seem to work
 #  at BMRB (older version of Perl).
