@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/05/28 20:01:41  andyt
+  Shape attributes for 'Tcl/Tk Window' shape can now be variables, numeric
+  constants, or string constants. Used to assume that all attributes except
+  argc were strings.
+
   Revision 1.15  1997/05/03 19:53:42  wenger
   Fixed bug in AttrList class that caused Devise to crash on mappings
   that use recId; commented out debug code in UnixRecFile.c..
@@ -112,6 +117,26 @@ AttrList::AttrList(AttrList &attrs)
 	       &info->loVal);
   }
   attrs.DoneIterator();
+}
+
+Boolean
+AttrList::SetAttrs(const AttrList &newAttrs)
+{
+  Clear();
+
+  // Bypass interator to preserve 'const' on newAttrs.
+  int index = 0;
+  while(index < newAttrs._size) {
+    AttrInfo *info = newAttrs._attrs[index];
+    InsertAttr(info->attrNum, info->name, info->offset,
+	       info->length, info->type, info->hasMatchVal,
+	       &info->matchVal, info->isComposite, info->isSorted,
+	       info->hasHiVal, &info->hiVal, info->hasLoVal,
+	       &info->loVal);
+    index++;
+  }
+
+  return true;
 }
 
 /* Insert attribute into list of attributes */

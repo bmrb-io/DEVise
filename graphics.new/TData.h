@@ -16,6 +16,10 @@
    $Id$
 
    $Log$
+   Revision 1.20  1998/05/06 22:04:58  wenger
+   Single-attribute set links are now working except where the slave of
+   one is the master of another.
+
    Revision 1.19  1998/04/14 21:03:18  wenger
    TData attribute links (aka set links) are working except for actually
    creating the join table, and some cleanup when unlinking, etc.
@@ -165,6 +169,11 @@ class TData {
     /**** MetaData about TData ****/
     /* Return attribute info */
     virtual AttrList *GetAttrList() = 0;
+
+    /* Change the list of attributes in the TData -- to enable Liping's
+     * new Query Processor code to push projections down into the DTE. 
+     * Returns true if things went okay. */
+    virtual Boolean SetAttrs(const AttrList &attrs) = 0;
 
     /* Return # of dimensions and the size of each dimension,
        or -1 if unknown */

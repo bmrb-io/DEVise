@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/12/23 23:35:40  liping
+  Changed internal structure of BufMgrFull and classes it called
+  The buffer manager is now able to accept queries on any attribute from the
+          Query Processor
+  The buffer manager is also able to issue queries on various attributes to DTE
+  Instead of keeping an in memory list for each T/GData, the buffer manager keeps
+          a list for each (T/GData, AttrName, Granularity) combination
+  The class Range was replaced by Interval
+
   Revision 1.21  1997/10/10 21:13:48  liping
   The interface between TData and BufMgr and the interface between BufMgr and
   QueryProc were changed
@@ -138,6 +147,8 @@ public:
 
   /**** MetaData about TDataBinary ****/
   virtual AttrList *GetAttrList(){ return NULL;}
+
+  virtual Boolean SetAttrs(const AttrList &attrs) { return false; }
 
   /* Return # of dimensions and the size of each dimension,
      or -1 if unknown */

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/07/01 19:28:11  jussi
+  Added support for typed data sources (WWW and UNIXFILE). Renamed
+  'cache' references to 'index' (cache file is really an index).
+  Added support for asynchronous interface to data sources.
+
   Revision 1.5  1996/06/27 18:12:44  wenger
   Re-integrated most of the attribute projection code (most importantly,
   all of the TData code) into the main code base (reduced the number of
@@ -99,6 +104,9 @@ public:
   virtual ~TDataBinaryInterp();
 
   AttrList *GetAttrList() { return &_attrList; }
+
+  virtual Boolean SetAttrs(const AttrList &attrs) {
+    return _attrList.SetAttrs(attrs); }
 
 protected:
   /* Copy record to buffer. Return false if invalid record. */

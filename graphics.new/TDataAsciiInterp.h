@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/01/07 19:29:57  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.13.12.1  1997/12/29 21:23:23  wenger
   A given TDataAscii no longer reports more than 10 decode errors.
 
@@ -141,6 +146,8 @@ public:
   virtual ~TDataAsciiInterp();
 
   AttrList *GetAttrList(){ return &_attrList; }
+  virtual Boolean SetAttrs(const AttrList &attrs) {
+    return _attrList.SetAttrs(attrs); }
 
 protected:
   /* Decode a record and put data into buffer. Return false if

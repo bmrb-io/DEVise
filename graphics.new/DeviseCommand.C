@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  1998/09/30 17:44:42  wenger
+  Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
+  bug 401 (improper saving of window positions).
+
   Revision 1.25  1998/09/22 17:23:54  wenger
   Devised now returns no image data if there are any problems (as per
   request from Hongyu); added a bunch of debug and test code to try to
@@ -4450,19 +4454,35 @@ IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(test)
 // Note: modify this code to do whatever you need to test.
-    if (argc == 1) {
-		int index = DevWindow::InitIterator();
-		while (DevWindow::More(index)) {
-			ClassInfo *info = DevWindow::Next(index);
-			ViewWin *win = (ViewWin *)info->GetInstance();
-			if (win != NULL) {
-			    printf("Window: %s; gif dirty: %d\n", win->GetName(),
-			      win->GetGifDirty());
-			}
+    if (argc == 2) {
+        TData *tdata = (TData *)classDir->FindInstance(argv[1]);
+        if (!tdata) {
+            ReturnVal(API_NAK, "Cannot find TData");
+            return -1;
+        } else {
+			printf("Before changing attributes:\n");
+			tdata->GetAttrList()->Print();
+
+			AttrList attrs("test");
+			int offset = 0;
+			attrs.InsertAttr(0, "alpha", offset, sizeof(int), IntAttr);
+			offset += sizeof(int);
+			attrs.InsertAttr(1, "beta", offset, sizeof(float), FloatAttr);
+			offset += sizeof(float);
+			attrs.InsertAttr(2, "gamma", offset, sizeof(double), DoubleAttr);
+			offset += sizeof(double);
+			attrs.InsertAttr(3, "sigma", offset, 32, StringAttr);
+			offset += 32;
+			attrs.InsertAttr(4, "epsilon", offset, sizeof(time_t), DateAttr);
+			offset += sizeof(time_t);
+
+			tdata->SetAttrs(attrs);
+			printf("After changing attributes:\n");
+			tdata->GetAttrList()->Print();
+
+        	ReturnVal(API_ACK, "done");
+			return 1;
 		}
-		DevWindow::DoneIterator(index);
-        ReturnVal(API_ACK, "done");
-		return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in test\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");

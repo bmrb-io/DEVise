@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/11/22 20:41:16  flisakow
+  Made variants of the TDataAscii classes for sequential access,
+  which build no indexes.
+
+  ReadRec() method now returns a status instead of void for every
+  class that has the method.
+
 */
 
 /* interpreted sequential TData (no index) using parsed information */
@@ -40,6 +47,9 @@ class TDataSeqAsciiInterp: public TDataSeqAscii {
    ~TDataSeqAsciiInterp();
 
     AttrList *GetAttrList(){ return &_attrList; }
+
+    virtual Boolean SetAttrs(const AttrList &attrs) {
+      return _attrList.SetAttrs(attrs); }
 
   protected:
     /* Decode a record and put data into buffer. Return false if

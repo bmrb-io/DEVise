@@ -59,6 +59,9 @@ public:
 	// Get list of attributes
 	virtual AttrList *GetAttrList();
 
+	virtual Boolean SetAttrs(const AttrList &attrs) {
+	  return _attrs.SetAttrs(attrs); }
+
 	// Return # of dimensions and the size of each dimension,
 	// or -1 if unknown
 	virtual int Dimensions(int *sizeDimension);

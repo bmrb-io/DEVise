@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/07/29 14:20:18  wenger
+  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+  allow static linking on Linux.
+
   Revision 1.11  1997/05/28 20:01:42  andyt
   Shape attributes for 'Tcl/Tk Window' shape can now be variables, numeric
   constants, or string constants. Used to assume that all attributes except
@@ -103,6 +107,9 @@ public:
 
   /* Copy constructor */
   AttrList(AttrList &attrs);
+
+  /* Copy attributes from another AttrList. */
+  Boolean SetAttrs(const AttrList &newAttrs);
 
   /* Insert attribute into list of attributes */
   void InsertAttr(int attrNum,

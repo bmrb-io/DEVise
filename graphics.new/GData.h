@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/12/23 23:35:17  liping
+  Changed internal structure of BufMgrFull and classes it called
+  The buffer manager is now able to accept queries on any attribute from the
+          Query Processor
+  The buffer manager is also able to issue queries on various attributes to DTE
+  Instead of keeping an in memory list for each T/GData, the buffer manager keeps
+          a list for each (T/GData, AttrName, Granularity) combination
+  The class Range was replaced by Interval
+
   Revision 1.9  1997/10/10 21:13:41  liping
   The interface between TData and BufMgr and the interface between BufMgr and
   QueryProc were changed
@@ -75,6 +84,7 @@ class GDataRequest: public TDataRequest {
 class GData: public TData {
 public:
 	virtual AttrList *GetAttrList();
+	virtual Boolean SetAttrs(const AttrList &attrs);
 
 	/* callback registration */
 	void RegisterCallback(GDataCallback *c);
