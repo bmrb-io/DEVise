@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.142  2000/04/06 19:43:54  wenger
+  Fixed bug 577 'c' bypasses cursor grid, etc.
+
   Revision 1.141  2000/03/28 17:55:57  wenger
   Oops!  Used 'f' and 'F' for flip, so 'c' or 'C' now makes cursor fill
   destination view (slightly different than before -- it previously did
@@ -1412,6 +1415,10 @@ ViewGraph::GetHome2D(Boolean explicitRequest, VisualFilter &filter)
         return;
         break;
     }
+#if defined(DEBUG)
+    printf("  Returning filter: (%g, %g), (%g, %g)\n", filter.xLow,
+	  filter.yLow, filter.xHigh, filter.yHigh);
+#endif
 }
 
 void ViewGraph::GoHome(Boolean explicitRequest)
