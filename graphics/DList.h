@@ -1,14 +1,30 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 21:12:37  jussi
+  Added/updated CVS header.
+*/
 
 /* doubly linked list */
 
 #ifndef DList_h
 #define DList_h
 #include "Exit.h"
-
 
 /* data for iterator */
 const unsigned MaxIterators = 5;	/* max # of concurrent iterators */
@@ -101,7 +117,7 @@ listName::~listName() { DeleteAll(); delete _head; }\
 int listName::Size() { return _size; }\
 \
 void listName::Insert(valType v){\
-	if (_numIterators> 0){\
+	if (_numIterators > 0){\
 		fprintf(stderr,"DList::Insert: can't insert with iterator\n");\
 		Exit::DoExit(1);\
 	}\
@@ -111,7 +127,7 @@ void listName::Insert(valType v){\
 }\
 \
 void listName::Append(valType v){\
-	if (_numIterators> 0){\
+	if (_numIterators > 0){\
 		fprintf(stderr,"DList::Append: can't append with iterator\n");\
 		Exit::DoExit(1);\
 	}\
@@ -145,7 +161,7 @@ void listName::Swap(valType val1, valType val2) {\
 	ListElement *node1=NULL;\
 	ListElement *node2=NULL;\
 	for (node = this->_head->next; node != this->_head; node = node->next){\
-		if (node->val == val1){\
+		if (node->val == val1) {\
 			node1 = node;\
 		} else if (node->val == val2) {\
 			node2 = node;\
@@ -163,15 +179,16 @@ void listName::Swap(valType val1, valType val2) {\
 /* Init and return index of iterator */\
 int listName::InitIterator(int backwards) {\
 	/* find an empty slot in the array of active iterators */\
-	for (int i=0; i < MaxIterators; i++){\
+	for(unsigned int i = 0; i < MaxIterators; i++) {\
 		if (_iterators[i].current == NULL){\
 			/* found one */\
 			_iterators[i].backwards = backwards;\
 			if (backwards)\
 				_iterators[i].current = _head->prev;\
-			else _iterators[i].current = _head->next; \
+			else\
+				_iterators[i].current = _head->next; \
 			_numIterators++;\
-			return i;\
+			return (int)i;\
 		}\
 	}\
 	fprintf(stderr,"DList::InitIterator: no more space\n");\
@@ -187,7 +204,7 @@ int listName::InitIteratorLastN(int n){\
 	}\
 \
 	/* find an empty slot in the array of active iterators */\
-	for (int i=0; i < MaxIterators; i++){\
+	for(unsigned int i = 0; i < MaxIterators; i++) {\
 		if (_iterators[i].current == NULL){\
 			/* found one */\
 			_iterators[i].backwards = 0;\
@@ -197,9 +214,10 @@ int listName::InitIteratorLastN(int n){\
 				for (int j=1; j < n; j++)\
 					_iterators[i].current = _iterators[i].current->prev;\
 			}\
-			else _iterators[i].current = _head->next; \
+			else\
+				_iterators[i].current = _head->next; \
 			_numIterators++;\
-			return i;\
+			return (int)i;\
 		}\
 	}\
 	fprintf(stderr,"DList::InitIterator: no more space\n");\
@@ -271,7 +289,7 @@ void listName::_DListDelete(ListElement *node){\
 }\
 \
 void listName::ClearIterators(){\
-	for (int i=0; i < MaxIterators; i++)\
+	for(unsigned int i = 0; i < MaxIterators; i++)\
 		_iterators[i].current = NULL;\
 	_numIterators = 0;\
 }\
