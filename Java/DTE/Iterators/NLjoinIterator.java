@@ -65,22 +65,6 @@ public class NLjoinIterator implements Iterator
       try
 	  {
 	      temp_file = (String)stack.pop();
-	      System.out.println("Now: "+ temp_file);
-	      System.out.println("The return type is: ");
-	      for(int i = 0; i<typeStrings.length;i++)
-		System.out.print(" "+typeStrings[i].getString());
-	    	 
-	      System.out.println();
-	      System.out.println("The outer type is: ");
-	      for(int i = 0; i<typeStrings1.length;i++)
-		System.out.print(" "+typeStrings1[i].getString());
-	    	  
-	       System.out.println();
-	      System.out.println("The inner type is: ");
-	      for(int i = 0; i<typeStrings2.length;i++)
-		System.out.print(" " +typeStrings2[i].getString());
-	      
-
 	  }
       
       catch(EmptyStackException ex)

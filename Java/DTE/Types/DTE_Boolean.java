@@ -47,13 +47,32 @@ public class DTE_Boolean extends DTE_Type
   /** Unimplemented. */
   public boolean read(StreamTokenizer st) throws IOException 
   {
-    throw new IOException( "it can't be read ...\n" );
+    int status = st.nextToken( );
+    if(status == StreamTokenizer.TT_EOF)
+      return false;
+    
+    if(status == StreamTokenizer.TT_NUMBER)
+      {
+	int lineno = st.lineno( );
+	System.err.println("The data on line " + lineno + " is not a String!");
+	return false;
+      }
+    
+    // Need to check that this is really an boolean.
+    // return 0 if this is not an int and print the msg to stderr.
+    // use st.lineno()
+    
+    val = Boolean.getBoolean(st.sval);
+    return true;
+
+    //    throw new IOException( "it can't be read ...\n" );
   }
   
 /** Print to a PrintWriter object "ps".*/
   public void print(PrintWriter ps)
   {
     ps.print(val);
+    ps.print(" "); 
   }
 
 /** Print to a PrintStream object "ps".*/
