@@ -1,10 +1,18 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.1  1995/09/13 14:24:07  jussi
+#	Extracted macro definition code from control.tk.
 
 ############################################################
 
 proc MacroDefInit {} {
+    global macroSelectedColor macroUnselectedColor macroLinkColor
+
+    set macroSelectedColor PaleGreen
+    set macroUnselectedColor LightPink
+    set macroLinkColor PowderBlue
+
     MacroDefClear
 }
 
@@ -15,7 +23,7 @@ proc MacroDefStart {} {
 
     # see if .map window already exists; if so, just return
     set err [catch {set exists [wm state .map]}]
-    if {!$err} { return }
+    if {!$err} { wm deiconify .map; return }
 
     # clear tdatas, schemas, windows, and links because they can be
     # reconstructed from DEVise data structures; maps, mappings,
@@ -121,13 +129,15 @@ proc MacroDef {} {
 
     # see if .map window already exists; if so, just return
     set err [catch {set exists [wm state .map]}]
-    if {!$err} { return }
+    if {!$err} { wm deiconify .map; return }
 
     set none "-- None --"
 
     toplevel .map
     wm title .map "Define Visualization"
-    wm geometry .map =600x250+50+50
+    wm minsize .map 600 250
+    wm maxsize .map 800 400
+    wm geometry .map =600x320+50+50
     selection clear .map
 
     frame .map.top
@@ -135,7 +145,7 @@ proc MacroDef {} {
     pack .map.top -side top -pady 3m -fill both -expand 1
     pack .map.but -side top -pady 5m -fill x
 
-    button .map.but.done -text Done -width 10 -command {
+    button .map.but.close -text Close -width 10 -command {
 	destroy .map
     }
     button .map.but.create -text Create -width 10 -command {
@@ -144,8 +154,10 @@ proc MacroDef {} {
     button .map.but.auto -text "Auto..." -width 10 -command {
 	MacroDefAuto $tdata
     }
-    button .map.but.help -text Help -width 10 -command MacroDefHelp
-    pack .map.but.done .map.but.create .map.but.auto .map.but.help \
+
+    CreateBitmapButton .map.but.help help.gif Help MacroDefHelp
+#    button .map.but.help -text Help -width 40 -command MacroDefHelp
+    pack .map.but.close .map.but.create .map.but.auto .map.but.help \
 	    -side left -padx 7m
 
     frame .map.left -relief groove -borderwidth 2
@@ -170,8 +182,6 @@ proc MacroDef {} {
     MacroDefLinks .map.link "$none"
 
     tkwait visibility .map
-#    grab set .map
-#    tkwait window .map
 }
 
 ############################################################
@@ -180,8 +190,14 @@ proc MacroDefNewMapping {} {
     global tdatas schemas maps mappings views links windows
     global tdata window gdata view link none
 
-    if {$tdata == $none || $window == $none} { return }
-    if {$gdata == $none || $view == $none} { return }
+    if {$tdata == $none || $window == $none \
+	|| $gdata == $none || $view == $none} {
+	dialog .createError "Note" \
+		"Please select a data source, a window,\n\
+		a mapping and a view and then press Create." \
+		"" 0 OK
+	return
+    }
 
     set x [lindex $mappings($gdata) 0]
     set y [lindex $mappings($gdata) 1]
@@ -253,22 +269,6 @@ proc MacroDefClear {} {
     catch {unset views}
     catch {unset links}
     catch {unset windows}
-
-    # the following are required for the old Tcl to work properly;
-    # these define arrays with zero elements
-
-    set schemas(a) a
-    unset schemas(a)
-    set maps(a) a
-    unset maps(a)
-    set mappings(a) a
-    unset mappings(a)
-    set views(a) a
-    unset views(a)
-    set links(a) a
-    unset links(a)
-    set windows(a) a
-    unset windows(a)
 }
 
 ############################################################
@@ -276,29 +276,45 @@ proc MacroDefClear {} {
 proc MacroDefHelp {} {
     # see if .help window already exists; if so, just return
     set err [catch {set exists [wm state .help]}]
-    if {!$err} { return }
+    if {!$err} { wm deiconify .help; return }
 
     toplevel .help
     wm title .help "Help"
-    wm geometry .help +100+300
+    wm geometry .help +100+100
     message .help.msg -justify center -width 10c \
-	    -text "This is the help window."
+	    -text "You can create a new visualization by selecting\
+	           a data source, window, mapping, and view, and then\
+		   pressing Create. To select any of these items, pull\
+		   down the corresponding menu and select an existing\
+		   item from the menu, or select New to create a new\
+		   item.\n\n\
+		   From the Link menu you can choose an existing link\
+		   to link the new visualization to existing\
+		   visualizations,\
+		   or you can create a new link by choosing the New\
+		   item from the Link menu, or you can leave the new\
+		   visualization unlinked by choosing None.\n\n\
+		   To create automatic views, select a data source and\
+		   then press Auto. Select the attribute you want on the\
+		   X axis and the set of attributes you want on the Y\
+		   axis. Click OK, and you will see a new window with\
+		   the views you selected. All views are linked on the\
+		   X axis.\n\n\
+		   Click on Close when you're done."
     button .help.ok -text OK -width 10 -command "destroy .help"
     pack .help.msg .help.ok -side top -padx 5m -pady 3m
 
     tkwait visibility .help
-    grab set .help
-    tkwait window .help
 }
 
 ############################################################
 
 proc MacroDefAuto {tdata} {
-    global schemas modified x xtype sortedx yvar completed
+    global schemas modified x xtype sortedx yvar
 
     # see if .auto window already exists; if so, just return
     set err [catch {set exists [wm state .auto]}]
-    if {!$err} { return }
+    if {!$err} { wm deiconify .auto; return }
 
     toplevel .auto
     wm title .auto "Automatic Views"
@@ -311,7 +327,7 @@ proc MacroDefAuto {tdata} {
     frame .auto.but
     pack .auto.label -side top -pady 3m -fill x -expand 1
     pack .auto.xsel -side top -pady 3m -ipady 5m -ipadx 5m
-    pack .auto.ysel -side top -pady 3m
+    pack .auto.ysel -side top -pady 3m -fill x -expand 1
     pack .auto.but -side top -pady 3m -fill x -expand 1
 
     label .auto.xsel.label -text "Select X" -width 15
@@ -356,12 +372,21 @@ proc MacroDefAuto {tdata} {
 		-variable yvar($name) -width 15 -anchor w \
 		-relief raised -borderwidth 2
 	set yvar($name) 0
-	pack .auto.ysel.row$row.col$col -side left
+	pack .auto.ysel.row$row.col$col -side left -fill x -expand 1
 	incr col
 	if {$col >= $maxcol} {
 	    set col -1
 	}
     }
+
+    # add empty frame to end of last row so that existing buttons
+    # on that row won't get expanded more than buttons on other
+    # (full) rows
+    for {} {$row >= 0 && $col >= 0 && $col < $maxcol} {incr col} {
+	label .auto.ysel.row$row.col$col -text "" -width 18
+	pack .auto.ysel.row$row.col$col -side left -fill x -expand 1
+    }
+
     if {$x == ""} {
 	set x [lindex [lindex $schema 0] 0]
 	set xtype [lindex [lindex $schema 0] 1]
@@ -384,21 +409,15 @@ proc MacroDefAuto {tdata} {
 		    mapping." "" 0 OK
 	} else {
 	    MacroDefAutoActual $tdata $x $xtype $sortedx $ylist
-	    set completed 1
 	    destroy .auto
 	}
     }
     button .auto.but.cancel -text Cancel -width 20 -command {
-	set completed 0
 	destroy .auto
     }
     pack .auto.but.ok .auto.but.cancel -side left -expand 1
 
     tkwait visibility .auto
-    grab set .auto
-    tkwait window .auto
-
-    return $completed
 }
 
 ############################################################
@@ -575,6 +594,7 @@ proc MacroDefAutoActual {tdata x xtype sortedx ylist} {
 
 proc MacroDefTdata {m default} {
     global tdatas tdata modified none
+    global macroSelectedColor macroUnselectedColor
 
     catch {destroy $m.mbar}
     catch {destroy $m.label}
@@ -583,8 +603,9 @@ proc MacroDefTdata {m default} {
     set defExists 0
 
     menubutton $m.mbar -relief raised -textvariable tdata \
-	    -menu $m.mbar.menu -width 20
-    label $m.label -text "Source:" -width 8
+	    -menu $m.mbar.menu -width 20 -background $macroUnselectedColor
+    CreateTextBitmap $m.label file.gif Source
+#    label $m.label -text "Source:" -width 8
     pack $m.label $m.mbar -side left -padx 2m
     menu $m.mbar.menu -tearoff 0
     foreach t $tdatas {
@@ -607,6 +628,7 @@ proc MacroDefTdata {m default} {
     if {$tdata != $none} {
 	# fix: .map.but.auto s.b. a parameter
 	.map.but.auto configure -state normal
+	$m.mbar configure -background $macroSelectedColor
     } else {
 	.map.but.auto configure -state disabled
     }
@@ -628,6 +650,8 @@ proc MacroDefTdata {m default} {
 
 proc MacroDefWindows {m default} {
     global windows window modified none
+    global macroSelectedColor macroUnselectedColor
+    global libdir
 
     catch {destroy $m.mbar}
     catch {destroy $m.label}
@@ -635,13 +659,15 @@ proc MacroDefWindows {m default} {
     set window $none
     set defExists 0
 
-    menubutton .map.window.mbar -relief raised -textvariable window \
-	    -menu .map.window.mbar.menu -width 20
-    label .map.window.label -text "Window:" -width 8
-    pack .map.window.label .map.window.mbar -side left -padx 2m
-    menu .map.window.mbar.menu -tearoff 0
+    menubutton $m.mbar -relief raised -textvariable window \
+	    -menu $m.mbar.menu -width 20 \
+	    -background $macroUnselectedColor
+    CreateTextBitmap $m.label window.gif Window
+#    label $m.label -text "Window:" -width 8
+    pack $m.label $m.mbar -side left -padx 2m
+    menu $m.mbar.menu -tearoff 0
     foreach win [lsort [array names windows]] {
-	.map.window.mbar.menu add command -label $win \
+	$m.mbar.menu add command -label $win \
 		-command "set window \"$win\""
 	if {$window == $none} {
 	    set window $win
@@ -655,7 +681,11 @@ proc MacroDefWindows {m default} {
 	set window $default
     }
 
-    .map.window.mbar.menu add command -label "New..." \
+    if {$window != $none} {
+	$m.mbar configure -background $macroSelectedColor
+    }
+
+    $m.mbar.menu add command -label "New..." \
 	    -command {
 	set winname [DefWindow]
 	if {$winname != ""} {
@@ -664,13 +694,14 @@ proc MacroDefWindows {m default} {
 	    set modified 1
 	}
     }
-    tk_menuBar .map.window .map.window.mbar
+    tk_menuBar $m $m.mbar
 }
 
 ############################################################
 
 proc MacroDefMaps {m default} {
-    global schemas maps tdata gdata modified none
+    global schemas maps mappings tdata gdata modified none DEViseColors
+    global macroSelectedColor macroUnselectedColor
 
     catch {destroy $m.mbar}
     catch {destroy $m.label}
@@ -678,19 +709,27 @@ proc MacroDefMaps {m default} {
     set gdata $none
     set defExists 0
 
+    foreach color $DEViseColors {
+	set idx [lindex $color 0]
+	set name [lindex $color 1]
+	set devcolors($idx) $name
+    }
+
     menubutton $m.mbar -relief raised -textvariable gdata \
-	    -menu $m.mbar.menu -width 20
+	    -menu $m.mbar.menu -width 20 -background $macroUnselectedColor
     if {$tdata != $none} {
 	$m.mbar configure -state normal
     } else {
 	$m.mbar configure -state disabled
     }
-    label $m.label -text "Mapping:" -width 8
+    CreateTextBitmap $m.label chart.gif Mapping
+#    label $m.label -text "Mapping:" -width 8
     pack $m.label $m.mbar -side left -padx 2m
     menu $m.mbar.menu -tearoff 0
     if {$tdata != $none} {
 	set schema [lindex $schemas($tdata) 0]
 	foreach map [lsort $maps($schema)] {
+	    set color $devcolors([lindex $mappings($map) 2])
 	    $m.mbar.menu add command -label $map \
 		    -command "set gdata \"$map\""
 	    if {$gdata == $none} {
@@ -704,6 +743,10 @@ proc MacroDefMaps {m default} {
 
     if {$default != $none && $defExists > 0} {
 	set gdata $default
+    }
+
+    if {$gdata != $none} {
+	$m.mbar configure -background $macroSelectedColor
     }
 
     if {$tdata != $none} {
@@ -727,6 +770,7 @@ proc MacroDefMaps {m default} {
 
 proc MacroDefViews {m default} {
     global views view modified none
+    global macroSelectedColor macroUnselectedColor
 
     catch {destroy $m.mbar}
     catch {destroy $m.label}
@@ -735,8 +779,9 @@ proc MacroDefViews {m default} {
     set defExists 0
 
     menubutton $m.mbar -relief raised -textvariable view \
-	    -menu $m.mbar.menu -width 20
-    label $m.label -text "View:" -width 8
+	    -menu $m.mbar.menu -width 20 -background $macroUnselectedColor
+    CreateTextBitmap $m.label view.gif View
+#    label $m.label -text "View:" -width 8
     pack $m.label $m.mbar -side left -padx 2m
     menu $m.mbar.menu -tearoff 0
     foreach v [lsort [array names views]] {
@@ -752,6 +797,10 @@ proc MacroDefViews {m default} {
 
     if {$default != $none && $defExists > 0} {
 	set view $default
+    }
+
+    if {$view != $none} {
+	$m.mbar configure -background $macroSelectedColor
     }
 
     $m.mbar.menu add command -label "New..." \
@@ -770,6 +819,7 @@ proc MacroDefViews {m default} {
 
 proc MacroDefLinks {m default} {
     global links link modified none
+    global macroSelectedColor macroUnselectedColor macroLinkColor
 
     catch {destroy $m.mbar}
     catch {destroy $m.label}
@@ -778,13 +828,16 @@ proc MacroDefLinks {m default} {
     set defExists 0
 
     menubutton $m.mbar -relief raised -textvariable link \
-	    -menu $m.mbar.menu -width 20
-    label $m.label -text "Link:" -width 8
+	    -menu $m.mbar.menu -width 20 -background $macroLinkColor
+    CreateTextBitmap $m.label link.gif Link
+#    label $m.label -text "Link:" -width 8
     pack $m.label $m.mbar -side left -padx 2m
     menu $m.mbar.menu -tearoff 0
     foreach l [lsort [array names links]] {
 	$m.mbar.menu add command -label $l \
-		    -command "set link \"$l\""
+		    -command "set link \"$l\"; \
+		    # .map.link should be $m
+		    .map.link.mbar configure -background $macroSelectedColor"
 	if {$link == $none} {
 	    set link $l
 	}
@@ -797,8 +850,15 @@ proc MacroDefLinks {m default} {
 	set link $default
     }
 
+    if {$link != $none} {
+	$m.mbar configure -background $macroSelectedColor
+    }
+
     $m.mbar.menu add command -label $none \
-	    -command "set link \"$none\""
+	    -command "set link \"$none\"; \
+	    # .map.link should be $m
+	    .map.link.mbar configure -background $macroLinkColor"
+
     $m.mbar.menu add command -label "New..." \
 	    -command {
 	set linkname [DefLink]
@@ -818,7 +878,7 @@ proc DefSource {} {
 
     # see if .source window already exists; if so, just return
     set err [catch {set exists [wm state .source]}]
-    if {!$err} { return }
+    if {!$err} { wm deiconify .source; return }
 
     set fsBox(path) $datadir
     set fsBox(pattern) *
@@ -867,7 +927,7 @@ proc DefSource {} {
     wm geometry .source +100+100
     selection clear .source
 
-    label .source.label -text "Enter name of data source"
+    CreateTitleBitmap .source.label file.gif "Enter Data Source Name"
     frame .source.mid -relief groove -borderwidth 2
     frame .source.but
     pack .source.label .source.mid .source.but -side top -pady 3m \
@@ -961,7 +1021,7 @@ proc DefWindow {} {
 
     # see if .def window already exists; if so, just return
     set err [catch {set exists [wm state .def]}]
-    if {!$err} { return }
+    if {!$err} { wm deiconify .def; return }
 
     toplevel .def
     wm title .def "Define Window"
@@ -992,7 +1052,7 @@ proc DefWindow {} {
     label .def.win.left.h -text Height -width 8
     label .def.win.left.name -text Name -width 8
     pack .def.win.left.x .def.win.left.y \
-	    .def.win.left.w .def.win.left.h -side top
+	    .def.win.left.w .def.win.left.h -side top -pady 0.7m
     pack .def.win.left.name -side top -pady 3m
 
     entry .def.win.right.x -relief sunken -width 15 -textvariable x
@@ -1001,7 +1061,7 @@ proc DefWindow {} {
     entry .def.win.right.h -relief sunken -width 15 -textvariable h
     entry .def.win.right.name -relief sunken -width 15 -textvariable winname
     pack .def.win.right.x .def.win.right.y \
-	    .def.win.right.w .def.win.right.h -side top -pady 0.5m
+	    .def.win.right.w .def.win.right.h -side top
     pack .def.win.right.name -side top -pady 3m
 
     button .def.but.ok -text OK -width 10 \
@@ -1057,7 +1117,7 @@ proc DefMapping {tdata schema} {
 
     # see if .def window already exists; if so, just return
     set err [catch {set exists [wm state .def]}]
-    if {!$err} { return }
+    if {!$err} { wm deiconify .def; return }
 
     toplevel .def
     wm title .def "Define Mapping"
@@ -1089,7 +1149,7 @@ proc DefMapping {tdata schema} {
     pack .def.map.left.x .def.map.left.y \
 	    .def.map.left.color .def.map.left.shape \
 	    .def.map.left.size .def.map.left.pattern \
-	    .def.map.left.orient -side top
+	    .def.map.left.orient -side top -pady 0.7m
     pack .def.map.left.name -side top -pady 3m
 
     menubutton .def.map.right.x -relief raised \
@@ -1224,7 +1284,7 @@ proc DefView {} {
 
     # see if .def window already exists; if so, just return
     set err [catch {set exists [wm state .def]}]
-    if {!$err} { return }
+    if {!$err} { wm deiconify .def; return }
 
     toplevel .def
     wm title .def "Define View"
@@ -1272,7 +1332,7 @@ proc DefView {} {
     label .def.view.left.yhi -text "Y high" -width 8
     label .def.view.left.name -text Name -width 8
     pack .def.view.left.xlo .def.view.left.xhi \
-	    .def.view.left.ylo .def.view.left.yhi -side top
+	    .def.view.left.ylo .def.view.left.yhi -side top -pady 0.7m
     pack .def.view.left.name -side top -pady 3m
 
     entry .def.view.right.xlo -relief sunken -width 25 -textvariable xlo
@@ -1281,7 +1341,7 @@ proc DefView {} {
     entry .def.view.right.yhi -relief sunken -width 25 -textvariable yhi
     entry .def.view.right.name -relief sunken -width 25 -textvariable viewname
     pack .def.view.right.xlo .def.view.right.xhi \
-	    .def.view.right.ylo .def.view.right.yhi -side top -pady 0.5m
+	    .def.view.right.ylo .def.view.right.yhi -side top
     pack .def.view.right.name -side top -pady 3m
 
     button .def.but.ok -text OK -width 10 \
@@ -1327,7 +1387,7 @@ proc DefLink {} {
 
     # see if .def window already exists; if so, just return
     set err [catch {set exists [wm state .def]}]
-    if {!$err} { return }
+    if {!$err} { wm deiconify .def; return }
 
     toplevel .def
     wm title .def "Define Link"
@@ -1352,22 +1412,29 @@ proc DefLink {} {
     pack .def.name -side top -padx 3m -fill x -expand 1
     pack .def.but -side top -pady 3m -padx 3m -fill x -expand 1
 
-    checkbutton .def.link.x -text X -variable x -anchor w
-    checkbutton .def.link.y -text Y -variable y -anchor w
-    checkbutton .def.link.color -text Color -variable color -anchor w
-    checkbutton .def.link.shape -text Shape -variable shape -anchor w
-    checkbutton .def.link.size -text Size -variable size -anchor w
-    checkbutton .def.link.pattern -text Pattern -variable pattern -anchor w
+    checkbutton .def.link.x -text X -variable x -anchor w \
+	    -relief raised -borderwidth 2
+    checkbutton .def.link.y -text Y -variable y -anchor w \
+	    -relief raised -borderwidth 2
+    checkbutton .def.link.color -text Color -variable color -anchor w \
+	    -relief raised -borderwidth 2
+    checkbutton .def.link.shape -text Shape -variable shape -anchor w \
+	    -relief raised -borderwidth 2
+    checkbutton .def.link.size -text Size -variable size -anchor w \
+	    -relief raised -borderwidth 2
+    checkbutton .def.link.pattern -text Pattern -variable pattern -anchor w \
+	    -relief raised -borderwidth 2
     checkbutton .def.link.orient -text Orientation \
-	    -variable orient -anchor w
+	    -variable orient -anchor w \
+	    -relief raised -borderwidth 2
     pack .def.link.x .def.link.y .def.link.color .def.link.shape \
 	    .def.link.size .def.link.pattern .def.link.orient \
 	    -side top -fill x -expand 1
 
     label .def.name.label -text "Name"
-    entry .def.name.name -relief sunken -width 18 -textvariable linkname
-    pack .def.name.label -side left -pady 3m
-    pack .def.name.name -side right -pady 3m
+    entry .def.name.name -relief sunken -textvariable linkname
+    pack .def.name.label -side left -pady 3m -padx 3m
+    pack .def.name.name -side right -pady 3m -fill x -expand 1
 
     button .def.but.ok -text OK -width 10 \
 	    -command {
@@ -1411,6 +1478,120 @@ proc DefLink {} {
     }
 
     return $linkname
+}
+
+############################################################
+
+proc CreateBitmapButton2 {w file title command} {
+    global libdir
+
+    button $w -command $command
+
+    frame $w.stack -relief raised -bd 2
+
+    pack $w.stack
+
+    # create a button for the image
+    label $w.stack.img -image [image create photo -file $libdir/$file] \
+	    -bd 0 -relief flat -padx 1 -pady 1
+
+    pack $w.stack.img
+
+    # create a button for the title
+    label $w.stack.title -text $title \
+	-bd 0 -relief flat -font 6x10 \
+	-padx 1 -pady 1
+    
+    pack $w.stack.title
+
+    return $w
+}
+
+############################################################
+
+proc CreateBitmapButton {w file title command {width 20m} {height 21m}} {
+    global libdir
+
+    frame $w -relief raised -bd 2 -width $width -height $height
+    bind $w <Button-1> $command
+
+    # create a button for the image
+    button $w.img -image [image create photo -file $libdir/$file] \
+	-bd 0 -relief flat -command $command
+
+    # create a button for the title
+    button $w.title -text $title -bd 0 -relief flat -command $command
+    
+    pack propagate $w 0
+    pack $w.img $w.title -side top -padx 1 -pady 1
+
+    return $w
+}
+
+############################################################
+
+proc CreateTextBitmap {w file title {width 20m} {height 17m}} {
+    global libdir
+
+    frame $w -width $width -height $height
+
+    # create a button for the image
+    label $w.img -image [image create photo -file $libdir/$file] \
+	-bd 0 -relief flat
+
+    # create a button for the title
+    label $w.title -text $title -bd 0 -relief flat
+    
+    pack propagate $w 0
+    pack $w.img $w.title -side top -padx 1 -pady 1
+
+    return $w
+}
+
+############################################################
+
+proc CreateTitleBitmap {w file title {height 16m}} {
+    global libdir
+
+    frame $w -height $height
+    frame $w.top
+    pack $w.top -side top
+
+    # create a button for the image
+    label $w.img -image [image create photo -file $libdir/$file] \
+	-bd 0 -relief flat -padx 1 -pady 1
+
+    # create a button for the title
+    label $w.title -text $title -bd 0 -relief flat -padx 1 -pady 1
+    
+    pack $w.img $w.title -in $w.top -side left -padx 8
+
+    return $w
+}
+
+############################################################
+
+proc CreateBitmapMenuButton { w file varname } {
+    upvar varname var
+    global libdir
+
+    frame $w -relief raised -bd 2
+
+    # create a button for the image
+    button $w.img -image [image create photo -file $libdir/$file] \
+	-bd 0 -relief flat -command $command
+
+    pack $w.img
+
+    # create a button for the title
+    button $w.title -text $title \
+	-bd 0 -relief flat -font 6x10 \
+	-padx 1 -pady 1 \
+	-command $command
+    
+    pack $w.title
+
+    return $w
 }
 
 ############################################################
