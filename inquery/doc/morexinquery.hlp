@@ -1,0 +1,137 @@
+				 CREATING AN XINQUERY SYSTEM
+
+  The XINQUERY system requires that an inverted file (database) be built for
+each collection prior to running an XINQUERY session.
+
+Building the XINQUERY Database (CACM)
+
+  Creation of the inverted file is a three step process.  It requires a parse
+of the collection file producing a transaction file (with file extension ixt),
+dictionary file (extension hdc), and information file (extension inf).  This
+transaction file is then sorted by term number and document id (the second and
+third fields of the transaction file) to produce a file with the extension
+"ixs".  Finally, the sorted transaction file, dictionary, and info file are
+used by a program called "bldbtl" (build belief table) which produces the
+actual inverted file.  One may build, run, and test the CACM XINQUERY database
+by invoking the "verify-cacm-dots" script.  A step by step description of how
+to build the inverted file follows.
+
+
+1.  Run the cparse_dots program to build the unsorted transaction file.  This
+    program has the following format:
+
+        cparse_dots <cacm_file_name> <output_directory> <optional arguments>
+
+        where:
+               <cacm_file_name>   is the name of the cacm collection file to be
+                                  used, e.g. cacm_dots.dat.
+               <output_directory> is the directory where the output will go.
+               <optional arguments> in any order
+                  -stoplist <stopword_file>
+                                  is the name of the stopword list file to be
+                                  used.  The default is default.stp.
+                  -stop/nostop
+                                  set stopping on or off.  Default: "-stop"
+                  -stem/nostem    set stemming on or off.  Default: "-stem"
+
+               NOTE: See documentation on parsing for more information.
+
+        output:
+               cacm_file_name.ixt       The transaction file.
+               cacm_file_name.hdc       The keyed dictionary file.
+               cacm_file_name.inf       The information file.
+
+
+
+2.  Sort the transaction file on the term number and document id fields.
+
+        sort -n +1 -2 +2 -3 cacm_file_name.ixt > cacm_file_name.ixs
+
+
+3.  Run the "bldbtl" program using the name of the sorted transaction file
+    (the ixs file).
+
+        bldbtl cacm_file_name.ixs (the 'ixs' extension is not required).
+
+        output:
+               cacm_file_name.btl The belief, or inverted file for
+                                  cacm_file_name.
+
+4.  If one wishes to enter queries from a command line and browse retrieved
+    documents, one must run the "inquery" program.  This requires a viewing
+    database containing author, title, and abstract entries for each document
+    ID.  This database is built by running the "dbparse" program.
+
+        dbparse <cacm_file_name> <output_directory>
+          <cacm_file_name>     collection file (e.g. cacm_dots.dat)
+          <ouotput_directory>  name of directory for output to be placed
+  
+        output:
+                cacm_file_name.db      The collection viewing database.
+
+
+Query Formulation
+
+  The XINQUERY system offers two means of processing queries.  Queries may also
+be of two types, natural language or structured.
+
+  The two types of queries allowed are natural language and structured.  The
+natural language queries allow the user to simply type in the information
+request as an English sentence.  As currently implemented, a natural language
+query is actually as structured query using the #sum operator (explained
+below).  The structured query allows the user to provide additional structural
+information.  This can improve performance, but requires a knowledgeable user
+to properly formulate the query using the special operators provided.  The
+available operators are as follows:
+
+
+    #and     AND the terms in the scope of the operator.
+    #or      OR the terms in the scope of the operator.
+    #not     NEGATE the term in the scope of the operator.
+    #sum     Expected value is the mean of the beliefs of the parent nodes.
+    #wsum    Weighted sum value is the sum of weighted beliefs of the
+               children scaled by the ratio of the weights of the parent node
+               and sum of the children nodes.
+    #n       Terms in the scope of the operator occur within n words of each
+               other in the text.  The order of the terms does not matter for
+               the first two terms.
+    #phrase  The set of terms (or subsets of terms) occur within three words
+               of each other in the text.  In effect, a "#3" operator is
+               applied to the entire phrase and to each contiguous sub-phrase.
+               The maximum over all these values is kept as the final belief.
+    #syn     Synonym operator.
+    #max     The belief is the maximum belief of all the parent nodes.
+
+Debugging operators are also available:
+
+    #bel     Return a list of the beliefs in each document for this particular
+               term.  (a belief list)
+    #prox    Return a list of the occurrences of this term in every document.
+               (a proximity list)
+
+    NOTE:  These operators should be used for debugging purposes only.
+
+  These operators allow combinations of terms.  They produce a belief in a
+document depending on the beliefs in their parents.  The parents are the terms
+(or nested operators) specified in the scope of the operator.  For example,
+"#sum(programming, language)" has two parents "programming" and "language".
+See Turtle, 1990 (Umass Tech Report 90-92) for details.
+
+
+ CUSTOMIZATION
+
+  Applying INQUERY to a new document collection only requires code tailored to
+recognize and produce terms from the document text.  The current INQUERY
+system uses lex and yacc to parse documents, producing the required databases.
+However, one may use hand coded scanners and parsers tailored to a new
+document collection, and mate them with the current transaction generating
+routines to produce the transaction files.  The inverted files may then be
+produced by the same program in current use.  Only the transaction building
+program need be modified for a specific collection.  All other programs are
+independent of the collection.  See the file parse.doc for details on the lex
+and yacc programs and the parsing grammars used.
+
+
+~
+~
+

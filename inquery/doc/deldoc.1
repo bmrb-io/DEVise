@@ -1,0 +1,91 @@
+'\" t
+.TH deldoc 1 "6 August 1996" "CIIR, UMass" "INQUERY Document Retrieval"
+.SH NAME
+.PP
+deldoc - Creates a list of document IDs that are to be deleted from an
+.SB INQUERY
+database.
+.SH SYNOPSIS
+.PP
+.B deldoc
+.I 
+database 
+.RB [[ \-X
+.I external-id ]
+|
+.RI [ internal-id 
+]...
+.SH DESCRIPTION 
+.PP
+.B deldoc
+is used 
+to produce a list of documents that are considered to be deleted from
+an
+.B INQUERY
+database.  This list is later used by
+.B purgedb-key
+program to actually delete documents from the
+database files.  
+.PP
+Once a document is deleted using 
+.B deldoc
+it will no longer be retrieved in response to a query, but the space 
+it occupies in the index files will not be reclaimed until
+.B purgedb-key
+is run on the database.
+.PP
+.SH OPTIONS
+.PP
+.BR deldoc's
+first argument must be the name of the database to be from which to 
+delete the documents (without any extension).  
+A list of document IDs follows.
+These are assumed to be internal IDs (numeric ordering of the documents
+as they were indexed) unless the 
+.B \-X
+switch is used.  Internal IDs can span a ranges by using a hyphen 
+(see EXAMPLES below).
+.TP
+.BI \-X " external-id"
+Specify the ID as an external ID.  This is the identifier as 
+specified within the document itself.
+.TP
+.SH EXAMPLES
+.PP
+This example uses 
+.B deldoc
+to produce an deletion list containing two IDs from the 
+"mydb" database.  The IDs are an internal ID "5501" and 
+external ID "wsj87-0001-0323".  Then call
+.B purgedb-key
+to actually remove the listed documents from the "mydb" database.
+.PP
+    %
+.B deldoc mydb 5501 -X wsj87-0001-0323 
+.PP
+    %
+.B purgedb-key mydb
+.PP
+In order to delete the first 100 documents a user can invoke
+.B deldoc
+as follows:
+.PP
+    %
+.B deldoc mydb 1-100
+.PP
+    %
+.B purgedb-key mydb
+.SH DIAGNOSTICS
+.PP
+Exit status is normally 0.
+.SH "BUGS"
+Send bug reports to 
+.B inquery-bugs@cs.umass.edu.
+.SH SEE ALSO
+.PP
+.BR purgedb-key (1)
+and
+.B sysadmin.doc
+in the documentation directory of the
+.SB INQUERY 
+release.

@@ -1,0 +1,75 @@
+
+
+CONTROLS:
+
+Parsed  -- Displays the parsed query, in the parsed query window.
+
+Run     -- Runs the query.
+
+Fields  -- If Field based retrieval is available for this collection,
+           then this is a pulldown menu, with the field name as choices.
+           The corresponding browser is displayed, for selecting values 
+           for the field along with valid operators. If Field based 
+           retrieval is not available for the open collection, then this 
+           button is disabled.
+
+Help    -- Displays this help.
+
+Dismiss -- Dismisses the query form window. Next time this window 
+           is invoked, it comes up with the prior contents rather than 
+           empty.
+
+Clear   -- Clears the content of the query forms and also, resets each
+           of the associated weights to "Low".
+
+Weights -- A button on the left of each form, assigns weights to the
+           term(s) contained in the form.  The weights are "Low",
+           "Med", "high", "Req" and "Not".  Each click on this button
+           displays a new weight.
+
+
+  *  Empty query forms do not contribute to the resultant query
+
+  *  If there are query forms, only with the "Not" weights, it is
+     an error
+
+  *  Hitting <CR> focusses the next form
+
+  *  Hitting <CR> on the last form creates one more New (empty) form
+
+  *  If there is more than one form, with the same weight, they are
+     grouped together with the common weight
+
+  *  If there is more than one term inside a form, they are all
+     grouped with a prox 3 (#3) operator.
+     NOTE:  A prox 3 is chosen, instead of the PHRASE operator, since 
+     PHRASE does not guarantee that the all the terms occur (or does 
+     NOT occur) in the document retrieved.
+
+  *  Weights of "Low", "Med" and "High" give term weights of 1, 2 and 3 
+     to the associated term(s).  Weight of "Req" wraps the term(s) with
+     a "BAND" operator signifying they are required, and "Not" wraps the
+     query terms with a "BANDNOT" operator to rule out documents 
+     containing these terms.
+
+
+EXAMPLE:
+
+        Weight:         Word or Phrase per line/form
+
+         Med            operating systems
+         Req            information retrieval
+         Not            database
+         Low            microsoft
+
+The query formulated as a result of the above forms is:
+
+ #bandnot(#band (  database #wsum( 1  2 #3 (operating systems) 1 microsoft) )
+        #sum(  #3 (information retrieval) ) )
+
+The "bandnot" operator takes two arguements, the first one is the
+"Required part", which in this case are forms with weights of "low", 
+"Med" and "Req" and the other part which contains terms, which should 
+not occur in the documents retrieved, which in this case are forms with 
+weight of "Not".
+

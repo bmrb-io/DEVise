@@ -1,0 +1,312 @@
+########################################################################### 
+#                         Copyright (c) 1996                              #
+# by Sovereign Hill Software, Inc., Amherst, Massachusetts, U.S.A.        #
+#        (413-256-6916;   http://www.sovereign-hill.com)                  #
+#                          All Rights Reserved.                           #
+#                                                                         #
+# The SOFTWARE was developed in part at the Center for Intelligent        #
+# Information Retrieval (CIIR) at the University of Massachusetts at      #
+# Amherst (For more information, contact 413-545-0463 or                  #
+# http://ciir.cs.umass.edu).  The SOFTWARE was acquired by Sovereign      #
+# Hill Software Inc. and is the property of Sovereign Hill Software.      #
+# ACSIOM is authorized, under an agreement with Sovereign Hill Software,  #
+# to license the SOFTWARE for non-commercial, non-revenue-producing       #
+# prototyping and internal evaluation purposes only.                      #
+#                                                                         #
+# This SOFTWARE was developed in significant part with private funding.   #
+# The INQUERY SOFTWARE is proprietary to Sovereign Hill Software and may  #
+# not be distributed in whole or in part or used in any way without       #
+# authorized permission in writing from Sovereign Hill Software.          #
+# Possession, use, duplication or dissemination of the INQUERY SOFTWARE   #
+# and media is authorized only pursuant to a valid written license from   #
+# ACSIOM or Sovereign Hill Software, Inc.                                 #
+#                                                                         #
+# RESTRICTED RIGHTS LEGEND:  Use, duplication, or disclosure by the U.S.  #
+# Government is subject to restrictions as set forth in subparagraph      #
+# (c)(l)(ii) of the Rights in Technical Data and Computer Software clause #
+# at DFARS 252.227-7013, or in FAR 52.227-19, as applicable.              #
+########################################################################### 
+
+                  INQUERY Installation Instructions
+                        Release Version 3.1 patch 1
+
+			   August 6th, 1996
+
+
+Version 3.1 of Inquery for Sun Solaris Systems, Object Release
+
+
+
+CONTENTS
+
+   This version of the INQUERY system is distributed via ftp as a
+compressed tar file.  There are different packages for each
+architecture that we support.  Be sure that you have the right one for
+your system.  Your package will contain (once unpacked) the following
+subdirectories:
+
+  binary   -- Orignal versions of the INQUERY executables
+  data     -- Example data and various initialization files
+  doc      -- INQUERY documentation
+  examples -- Two sample ui programs
+  h        -- Header files necessary to recompile
+  inq_work -- Work area for building customized versions of INQUERY
+               [may be renamed and/or relocated during unpacking.]
+  lib      -- INQUERY object libraries
+  make     -- Common make files
+  obj      -- Object files that are not customizable
+  src      -- Customizable source files. (these should be copied to the
+              inq_work directory before customizing)
+  tests    -- Test scripts and results
+
+   62 Mbytes of disk space are required to uncompress and de-tar
+the distributed tar file.  (approx. 19 for the tar.Z file, and 43 
+for the unpacked system) We encourage you to check that you have
+enough disk space before you begin the installation process.
+
+LIMITs
+
+   The only limits (that we know of) in INQUERY are the following:
+        Maximum Documents:           2^28-1
+        Maximum Terms:               2^29-1
+        Maximum File Size:           2^31-1
+
+The limit on source data file sizes for input to INQUERY database
+programs has been raised in this release from 268 MB to 2 GB (2,147,483,648
+bytes). This represents the size limit for an individual source file that 
+can be handled. Files larger than this must be broken up into two or more 
+files, each of which is less than the above limit.
+
+
+Notes: 
+      1)  As of this release, we are using GNU's version of "make" 
+      for our makefiles.  It has a more flexible implementation of
+      the VPATH (viewpath) macro that allows us to specify which
+      directories get searched for a file depending on its suffix.
+      If your site does not have this, you will need to install it
+      before installing inquery.  A copy of this is available at our 
+      top-level ftp site, "ciir-ftp.cs.umass.edu".  
+
+      2)  There are two things you may need to change about the 
+      make/make.rules file.  Firstly, if you have installed GNU make
+      as mentioned above, you may want to add the line:
+		MAKE=/usr/local/bin/gmake	
+      (or wherever your copy of GNU make resides).  This will force
+      the use of GNU make without your having to explicitly invoke
+      it.   Secondly, you may need to change the macro TCLLIB to reflect
+      where the tcl/tk libraries reside on your system;  since this 
+      package is not always included as a standard utility, it is 
+      sometimes put in a non-standard place.
+
+      3)  Our new inquery directory tree structure is quite different
+      from that of our earlier releases.  We have designed this so that
+      any customizations will be done in your work directory (default:
+      inquery/inq_work).  For example, if you wish to customize the 
+      sgml translator, please copy the src/sgml_trans.l file to your
+      work directory.  This should allow you to customize any source
+      file you have but still be able to recover the standard release
+      if you so desire.
+      
+      4)  The installation process has changed slightly.  If you have
+      not modified any files in the working directory, the installation
+      will be a simple file copy from the binary and lib directories to
+      your preferred installation directories.  If there are C or lex files
+      in your work directory, a full build will be done and the results
+      will be installed.
+
+      5)  In order to insure that the libraries are up to date with
+      any customizations, the make rules for INQUERY executables
+      will check to make sure the libraries are up to date before
+      linking any executables.  A side effect of this is that
+      make will rebuild the libraries in the work directory even if 
+      nothing has changed.
+
+      6)  By popular demand, we included the code for generic fields in
+      the copy of sgml_trans.l that is in the "inquery/src/" directory;
+      it has not, however, been incorporated into the existing libdocman.a
+      or any executables that depend on it.  If you'd like this bit of
+      functionality, you will need to rebuild the executables.
+
+SYSTEM REQUIREMENTS
+
+  INQUERY currently runs on UNIX workstations built by Digital Equipment
+Corporation (DEC-mips and DEC-alpha), SUN Microsystems (SUNOS-4.X and
+Solaris), Silicon Graphics (IRIX 5.3), and IBM RS6000 (AIX 3.X), 
+ as well as PC machines running DOS or MS-Windows and Macintosh.
+The amount of memory and disk space required to build a database depend on
+the size of the document collection.  For a collection of N bytes, INQUERY
+requires up to 2 * N bytes of disk space to build its document database.
+Once the database is built, INQUERY requires about 1.5 * N bytes of disk
+space to store the database.  Memory requirements are more difficult to
+predict, because they depend upon the characteristics of the document
+collection and the complexity of the queries.  A very rough estimate is
+that INQUERY requires about N/15 bytes of virtual memory.  A reasonable
+amount of physical memory would be N/60.  Therefore a 2 gigabyte
+collection would need about 145 MB of virtual memory and about 32 MB of
+physical memory.
+
+  An ANSI C compiler is required for compilation of all INQUERY source
+files.  The programs of this INQUERY release have all been compiled on
+Sun and DEC mips machines with the gnu C compiler, gcc.  On the DEC
+Alpha machines we have compiled with the OSF/1 native ANSI C compiler
+(using the -std flag).  Furthermore, the system is requires a few
+basic tools such as standard UNIX yacc, lex and flex version 2.4.7.
+Flex v2.4.7 is available at our ftp site if needed, in the top-level
+ftp directory.  Code not dependent on flex or yacc should be easily 
+ported to other environments.
+
+
+INSTALLATION
+
+Decide where you want to perform installation.  Make that
+directory your current directory. Be sure that you have the requisite
+free space for your platform's package in this directory.
+
+This release comes with an installation script called inquery_unpack.
+To run it, you should be in the same directory as the distribution package.
+It will prompt you for a directory to unpack the release into, a work
+directory for building customized executables, and directories to
+install the executables and libraries in.  These values you enter will
+be written into the "inquery/make/make.rules" file, under the names
+"INQROOT", "WORKDIR", "INSTALL_DIR", and "LIB_DIR", respectively.  **If
+you wish to move the location of the inquery directory structure, you 
+will need to edit these values.**
+
+Here's a sample run of the unpacking script:
+
+  "% inquery_unpack
+Where do you want the INQUERY archive unpacked?
+[/usr/local] /usr/can/tmp4/3.1-test
+Directory /usr/can/tmp4/3.1-test  Not found.  Creating...
+
+Creating the inquery directory
+____________________________________
+
+INQUERY requires a work directory.  Where would you like it to be?
+[/usr/can/tmp4/3.1-test/inquery/inq_work] 
+Directory /usr/can/tmp4/3.1-test/inquery/inq_work  Not found.  Creating
+...
+____________________________________
+
+Where do you want the INQUERY executables installed?
+[/usr/local/bin] /usr/can/tmp4/lamar/package-test/bin
+Directory /usr/can/tmp4/bin  Not found.  Creating...
+____________________________________
+
+Where do you want the INQUERY libraries installed?
+[/usr/local/lib] /usr/can/tmp4/lamar/package-test/lib
+Directory /usr/can/tmp4/lib  Not found.  Creating...
+____________________________________
+
+Comparing checksum of archive.
+Checksum matches
+Uncompressing archive...
+x inquery/doc/help/browser.hlp, 3698 bytes, 8 tape blocks
+x inquery/doc/help/inquery.hlp, 712 bytes, 2 tape blocks
+x inquery/doc/help/morexinquery.hlp, 6328 bytes, 13 tape blocks
+
+.....{many files}...
+
+x inquery/README, 7635 bytes, 15 tape blocks
+x inquery/Release-Notes, 11676 bytes, 23 tape blocks
+INQUERY archive unpacked.
+Workdir string is: $\(INQROOT\)/inq_work
+
+NOTE:
+If you wish to move the inquery directory tree at a later date,
+you will need to modify the INQROOT variable in the make.rules
+file in the inquery/make directory to reflect the new location.
+
+Do you wish to run some tests to verify installation? [y/n] y
+Testing unpacked archive.
+Test passed
+
+When you are ready to install the INQUERY binaries,
+go to your work directory [/usr/can/tmp4/3.1-test/inquery/inq_work]
+and type "make install".
+Inquery unpacked successfully."
+
+
+
+TESTING THE RELEASE
+
+A simple script to test INQUERY has been included in the release.
+To run the test, type "make test" from the top level directory.
+It will build the time_sgml database, run inqueryb and compare
+the results obtained by your system and the supplied results.
+
+RE-BUILDING EXECUTABLES
+
+To rebuild the INQUERY executables, you can just type "make"
+(or whatever your site administrator named GNU's make) in the work 
+directory [default: inquery/inq_work].  It will rebuild all the exectables
+and incorporate any changes that you have made to the source files
+(sgml_trans.l, inerror.c, etc).  You can also type "make install",
+and the newly made executables will be copied up to the bin
+directory.  To rebuild  specific executables, type "make [prog-name]".
+
+DOCUMENTATION
+
+   INQUERY 3.1 contains 3 new comprehensive documents, an INQUERY System
+   Administration Guide an INQUERY Application Programmer's Interface
+   Guide, and a INQUERY Technical Summary (advertising blurb).
+
+   This new documentation is distributed in MS-WORD 6.0 document form
+   and Postscript;  an ascii version of these will be forthcoming.
+
+   There is a file at our ftp site named "transition.doc" which contains
+   some answers to common questions we have got from users of this release.
+   We also have on-line documentation:
+
+  inengine.doc  - Programmer's interface to the retrieval subsystem
+  inquery.doc   - The INQUERY system in more detail
+  tclinq.doc    - The tcl interface to inquery
+  xinquery.doc  - The Xinquery system explained
+
+Xinquery help pages:
+  browser.hlp                morexinquery.hlp
+  query_formulate.hlp        xinquery.hlp
+  inquery.hlp                xinquery_command.hlp
+  morexinquery.hlp           xinquery_preferences.hlp
+  tclinq.hlp                 xinqueryusage.hlp
+
+Xinquery preference references:
+  sample.tkinqrc
+  sample.xdefaults
+
+Unix Man Pages:
+  build_infinder.1
+  conn_server_ip.1
+  deldoc.1
+  inbuild.1
+  incsparse.1
+  inparse.1
+  inquery-ip.1
+  inquery-server.1
+  inquery.1
+  inrecover.1
+  merge_btl.1
+  purgedb-key.1
+  list_cols.1
+  set_col.1
+
+   If you have problems or questions that are not answered in the
+documentation, or if you have comments or suggestions, feel free to
+contact us.  We prefer electronic mail, but will also respond to postal
+mail and telephone calls.
+
+   Good luck!
+
+
+   E-Mail: inquery-bugs@ciir.cs.umass.edu      (for bug reports)
+	   inquery-dist@ciir.cs.umass.edu      (for distribution-related questions)
+	   inquery-comments@ciir.cs.umass.edu  (for other questions)
+
+   Mail  : Information Retrieval Laboratory
+           c/o Daniel Prosser
+           Lederle Graduate Research Center
+           University of Massachusetts
+           Amherst, MA.  01003
+           USA
+
+   Tel   : Daniel Prosser at (413) 545-4852

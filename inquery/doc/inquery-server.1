@@ -1,0 +1,118 @@
+'\" t
+.TH inquery-server 1 "24 May 1996" "CIIR, UMass" "INQUERY Document Retrieval"
+.SH NAME
+inquery-server - TCP/IP 
+.SB INQUERY
+database Server.
+.SH SYNOPSIS
+.B inquery-server
+.I database
+.RB [ \-stoplist
+.I stop-file ]
+.RB [ \-cc_on ]
+.RB [ \-cc_off ]
+.RB [ \-conn_id
+.IR socket-file ]
+.RB [ \-logfile
+.IR filename ]
+.RB [ \-top_docs_only ]
+.RB [ \-num_top_dos
+.IR int ]
+.RB [ \-cs_host ]
+.RB [ \-cs_portnum
+.IR port-num ]
+.RB [ \-tlog ]
+.RB [ \-notlog ]
+.RB [ \-h ]
+.SH DESCRIPTION 
+.B inquery-server
+is the 
+.B INQUERY
+Server process that is either started by the user AFTER a Connection
+Server is running, or will be started by the Connection Server to
+service a database request by a client application.
+.SH OPTIONS
+.BR inquery-server's required argument is the name of the 
+.I database
+to be serviced.  This argument and other optional commandline switches
+may appear in any order on the commandline.
+.TP
+.BI \-stoplist " stop-file"
+Define a 
+.I stop-file
+containing a list of stopwords to be excluded from queries.
+The default stoplist is $DOCSTOPS/default.stp.
+.TP
+.B \-cc_on
+Use concurrency control during processing.
+.TP
+.B \-cc_off
+Do not use concurrency control during processing.  This is
+the default.
+.TP
+.BI \-conn_id " socket-file"
+Define the socket file through which IPC communications proceeds.
+.I
+Socket-file
+is the same as defined for the 
+.I -server-upath
+argument when invoking the Connection Server.  The default socket
+file name is /tmp/INQUERY.server.
+.TP
+.BI \-logfile " filename"
+Specify
+.I filename
+as the output log file.  This is the file to which stderr will
+be directed.
+.TP
+.B \-top_docs_only
+Use top-docs query processing optimization.  This is off by default.
+.TP
+.BI \-num_top_docs " int"
+Specify the number of top-docs entries to use during query processing.
+An
+.I int
+value of 0 deactivates top-docs processing.  The default value is 1000.
+.TP
+.BI \-cs_host " hostname"
+Specify the name of the host running the Connection Server that will be
+managing the connection.  The default is the local host.
+.TP
+.BI \-cs_portnum " port-num"
+The port number to use for communications with the Connection Server.
+This is the same port number as defined in the
+.I -server-portnum
+commandline option when invoking the Connection Server.
+.TP
+.B -tlog
+Log Server output between two log files.  The log files are "logfile".1
+and "logfile".2 where "logfile" is defined in the
+.I -logfile
+option described above.
+.TP
+.B -notlog
+Log all output to only one log file.  This is the default.
+.TP
+.B \-h
+Display usage description but do not start the process.
+.SH EXAMPLES
+.PP
+The following command will start an 
+.B INQUERY
+Server start database service to a "/usr/disk1/inquery/data/cacm_dots"
+database.  It will communicate to the Connection Server running on a 
+machine called "machine4" with an IPC socket named "/tmp/INQUERY.sally".
+.PP
+    %
+.B inquery-server /usr/disk1/inquery/data/cacm_dots
+.B \-cs_host machine4 -conn_id /tmp/INQUERY.sally &"
+.SH "BUGS"
+Send bug reports to 
+.B inquery-bugs@cs.umass.edu.
+.SH SEE ALSO
+.BR conn_server_ip (1)
+and
+.B sysadmin.doc
+in the documentation directory of the
+.SB INQUERY 
+release.

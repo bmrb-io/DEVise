@@ -1,0 +1,99 @@
+'\" t
+.TH inquery-ip 1 "24 May 1996" "CIIR, UMass" "INQUERY Document Retrieval"
+.SH NAME
+inquery-ip - TCP/IP 
+.SB INQUERY
+TTY client interface application.
+.SH SYNOPSIS
+.B inquery-ip
+.I database
+.RB [ \-nostem ]
+.RB [ \-recog ]
+.RB [ \-norecog ]
+.RB [ \-use_recog
+.IR recog-name ]
+.RB [ \-skip_recog
+.IR recog-name ]
+.RB [ \-w
+.IR filename ]
+.RB [ \-o
+.IR dirname ]
+.RB [ \-h ]
+.SH DESCRIPTION 
+.B inquery-ip
+is a simply networked client interface application for accessing
+.B INQUERY
+databases service by an already existing 
+.I Connection Server
+process.  This interface is identical to the sample stand-alone
+TTY program called
+.B inquery.
+Only this application accesses databases being serviced across a
+network.
+.SH OPTIONS
+.BR inquery-ip's first argument is the 
+.I database
+name in the form of 
+.I host:port:dbname.
+The
+.I host
+is the name of the machine where a Connection Server is running
+that is to communicated with.  The
+.I port
+is the same port number as specified in the
+.I -client-portnum
+arugment to
+.B conn_server_ip
+or, if not specified, the default value of 1234 will be used.  Finally the
+.I dbname
+argument is the full path and base name of the database to which service
+is desired.  Commandline options may follow in any order.
+.TP
+.B \-nostem
+Do not perform stemming of any of the queries.  Stopping is disabled as well.
+.TP
+.B \-recog
+Turn ON all query transformers and recognizers
+.TP
+.B \-norecog
+Turn OFF query recognizers.  This is the default.
+.TP
+.BI \-use_recog " recog-name"
+Turn ON the specified recognizer.
+.I recog-name
+must be the same name as defined in the query transformer table, qscan_table.c.
+.TP
+.BI \-skip_recog " recog-name"
+Turn OFF the specified recognizer or transformer.
+.TP
+.BI \-w " filename"
+Write retrieved documents and scores to the specified output file.  The
+default is "docs.out".
+.TP
+.BI \-o " dirname"
+Specify the directory name in which output files are to be placed.
+The default is the current directory, "./".
+.TP
+.B \-h
+Display usage description but do not start the process.
+.SH EXAMPLES
+.PP
+The following command will start an 
+.B INQUERY
+client interface that will connect with a "/usr/disk1/inquery/data/cacm_dots"
+database on a machine called "machine2".  The Connection Server on that
+machine was started using a non-default client communication port number
+of 1507, so that is what must be specified.
+.PP
+    %
+.B inquery-ip machine2:1507:/usr/disk1/inquery/data/cacm_dots
+.SH "BUGS"
+Send bug reports to 
+.B inquery-bugs@cs.umass.edu.
+.SH SEE ALSO
+.BR inquery-server (1), " conn_server_ip" (1), " inquery" (1)
+and
+.B sysadmin.doc
+in the documentation directory of the
+.SB INQUERY 
+release.

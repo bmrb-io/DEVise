@@ -1,0 +1,212 @@
+'\" t
+.TH inquery 1 "31 July 1996" "CIIR, UMass" "INQUERY Document Retrieval System"
+.SH NAME
+.B inquery
+\- sample tty interface for the 
+.B
+INQUERY
+Document Retrieval System
+.SH SYNOPSIS
+.B inquery
+.I [db name]
+.RB [ \-h ]
+.RB [ \-w
+.IR filename ]
+.RB [ \-o 
+.IR dirname ]
+.RB [ \-dups ]
+.RB [ \-nodups ]
+.RB [ \-nostem ]
+.RB [ \-spelling ]
+.RB [ \-top_docs_only ]
+.RB [ \-num_top_docs
+.IR int ]
+.RB [ \-recog ]
+.RB [ \-norecog ]
+.RB [ \-use_recog
+.IR recog-name ]
+.RB [ \-skip_recog
+.IR recog-name ]
+.LP
+.SH DESCRIPTION
+The
+.B INQUERY Document Retrieval System
+is a probabilistic information retrieval system developed at the University
+of Massachusetts.  
+.PP
+.B inquery
+is a sample tty interface to this system.  It allows users to type in queries and 
+browse through retrieved documents.  A file containing session results may also be 
+produced.  The query given by the user can either be in natural language or in a
+more exact structured query language.  The documents returned are listed
+in a ranked order based on 
+.B INQUERY's
+belief that the document satisfies the information need expressed by
+the query.
+.PP
+Batches of queries can be run against databases using the 
+batch-mode program 
+.B inqueryb.
+For more information on this program, see the file
+.B inquery.doc
+.PP
+.B inquery, 
+the interactive program, can take a command line argument specifying a 
+particular 
+.B INQUERY
+database to search.  This argument is given as the 
+.I basename 
+of the database files.  A leading path, giving the location of these files,
+is optional.  
+.B inquery 
+will look for the database files in the current working directory if no
+pathname is provided.  Note that 
+.B INQUERY 
+databases are created with the building tool
+.B inbuild,
+or with 
+.B inparse 
+and
+.B merge_btl.
+.PP
+.B inquery
+can also be run without arguments, in which case the user is given a
+menu listing all the databases in the 
+.I $INQDATA 
+directory.
+.PP 
+.SH GENERAL OPTIONS
+.LP
+.TP
+.BI \-w " file"
+Write the results of the session to 
+.IR file .
+.TP
+.BI \-o " directory"
+Specify the directory into which output files will be 
+written.  The default is the current directory.
+.TP
+.B \-dups
+Allow duplicate documents to be retrieved (this is the
+default).
+.TP
+.B \-nodups
+Prevent duplicate documents from being retrieved.
+.TP
+.B \-h
+Print a usage description and exit.
+.TP
+.SH QUERY PROCESSING OPTIONS
+.TP
+.B \-nostem
+Turn off stemming of words in the query.  This option is especially
+helpful if you are running a query that has already been processed
+by 
+.BR INQUERY .
+.TP
+.B \-spelling
+Use "spell checking".  
+.B inquery
+will inform the user of query terms which occur 
+.I nowhere
+in the database, and thus may be misspelled.
+.TP
+.B \-top_docs_only
+Use only top-docs optimization for processing user queries.
+.TP
+.BI \-num_top_docs " int"
+Maximum number of top-docs to use for query processing.
+.I int
+may be set to 0 to turn off top-docs processing.  The default
+value is 1000.
+.SH RECOGNIZER OPTIONS
+.TP
+.B \-recog
+Turns on all query text recognizers.
+.TP
+.B \-norecog
+Turns off all query text recognizers.
+.TP
+.BI \-use_recog " name"
+Turn on a specific recognizer by 
+.I name.
+.TP
+.BI \-skip_recog " name"
+Turn off a specific query recognizer by 
+.I name.
+.LP
+These options can be used in combination to select exactly
+which query processors to turn on and off.  For example:
+.RS
+.IP
+inquery -norecog -use_recog stop_phrase
+.RE
+.LP
+would make sure that only stop_phrase processing is done on
+the query.
+.LP
+.SH ENVIRONMENT VARIABLES
+.PP
+.B inquery
+makes use of the following environment variables:
+.TP
+.B INQDATA
+This directory is searched for 
+.B INQUERY 
+databases.
+.TP
+.B DOCSTOPS
+This directory is searched for the default stopword list (default.stp)
+when a stopword list is not provided or included in the database.
+.LP
+.SH FILES
+.TP
+docs.out
+Contains retrieved documents which the user saved using interface commands.
+.TP
+$DOCSTOPS/default.stp
+The default stopword list.
+.TP
+.IR database .inf
+The information file for the database.
+.TP
+.IR database .btl 
+ The main database index file.
+.TP
+.IR database .ndx
+The field database index file.
+.TP
+.IR database .db
+The database document directory.
+.TP
+.IR database .shd
+The stopword list with which the database was built.
+.TP
+.IR database .mft
+The table of most frequent terms in the database -- used for caching.
+.SH DIAGNOSTICS
+.PP
+Exit status is normally 0.
+.SH "BUGS"
+.PP
+Send bug reports to inquery-bugs@cs.umass.edu.
+.SH SEE ALSO
+.PP
+.B inbuild (1),
+and
+.B inquery.doc,
+in the release documentation directory.  
+.PP
+For information about using 
+.B inquery 
+in a client-server environment, see 
+.B inquery-ip(1) 
+and
+.B inquery-server(1).
+.PP
+For information about
+.B inqueryb, 
+see the file
+.B inquery.doc
+in the release documentation directory.  
+

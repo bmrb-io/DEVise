@@ -1,0 +1,209 @@
+
+			XINQUERY BUTTONS AND MENU COMMANDS
+
+This document describes the operation and use of each of XInquery's buttons
+and menu commands, plus two non-obvious areas of the screen that act like
+buttons in that double-clicking them does something. We'll cover menu commands
+first, then buttons, then double-clickable areas. Menu commands are organized
+by menu, from left to right; within each menu, we'll describe commands in the
+order in which they appear in the menu.
+
+MENU COMMANDS
+
+File:		This menu contains the following commands.
+
+		Load Query:  
+			Load a file containing queries into XInquery. In other
+			words, the contents of the file specified will be used
+			as the query and displayed in the query window.
+
+		Save:
+			This button produces a submenu consisting of the
+			following choices:
+			
+			Save Query:
+				Save the query displayed in the query window
+				to a file. Note that every time a query 
+				is saved, this file gets appended and not 
+				overwritten. This button simply saves the
+				contents of the query window: if the query 
+				window is blank, it does not save anything.
+
+			Save Parsed Query:
+				Save the parsed query displayed in the parsed
+				query window to a file. Note that every time a
+				query is saved, this file gets appended and not 
+				overwritten.
+				
+			Save Document:
+				Specify a file to save the document displayed in
+				the document text window. Note that every time a 
+				document is saved, this file gets appended and
+				not overwritten.
+
+		Quit:
+			Quit XInquery.
+  	
+Collection:	This menu lists the collections in the directory specified
+		by the INQDATA environment variable. The list is built in this
+		way: first, XInquery finds all collections in subdirectories,
+		subsubdirectories, etc., of the specified directory. Next, the
+		list is alphabetized. Finally, all but the last piece or two of
+		each item is discarded, depending on whether the the last two
+		pieces (filename and directory) are the same. For example,
+			/usr/xyz/data/tip2/fr
+		becomes "tip2/fr";
+			/usrs/xyz/data/wsj87/wsj87
+		becomes just "wsj87". In any case, the chosen collection will be
+		opened for querying. Alternatively, one can select any collection
+		on any file by choosing the Other... command.
+		Note that if the collections directory is empty, i.e., does not
+		contain any collections, or if the INQDATA environment variable
+		is not set to the collections directory, there's only one choice:
+		Other.
+		
+Query:		This menu contains the following commands.
+		
+		Show Parsed Query:
+			Displays a window showing parsed queries.
+
+		Run Query:
+			Runs the query shown in the query window.	
+
+		Mode:
+			Gives a submenu that lets you select the desired mode
+			for retrieval: Document, Passage, or Both.
+
+		Number of Top Docs:
+			Gives a submenu that lets you select the maximum number
+			of top-rated documents to list in the summary.
+
+		Words per Passage:
+			Gives a submenu that lets you select the number of words
+			in a passage.
+
+		Spell Checking:
+			Turns spell checking on or off. If the query contains a
+			word that's not in the collection's index and spell
+			checking is on, XInquery shows a dialog that lets you
+			change the word. If it's off, it ignores the word (and
+			without warning you).
+
+		Query Processing:
+			Turns query processing on or off.
+
+		Transformers:
+			Turns the various transformers (stop_phrases, location,
+			hyphens_caps, etc.) on or off individually.
+
+		Query Form:
+			Brings up a dialog that lets you enter several terms
+			querying specific fields of the collection, set the
+			relative weights of terms, etc.
+
+
+Document:	This menu contains the following commands.	
+
+		Show Next Keyword:
+			Scrolls the document window to make the next query term
+			visible.
+
+		Show Next Document:
+			Shows the next document in the document text window.
+
+		Show Previous Document:
+			Shows the previous document in the document text window.
+
+		Show Best Passage:
+			Scrolls the document window to make the "best passage"
+			--the passage that best matches the query--visible.
+
+		Show Next Best Passage:
+			Scrolls the document window to make the next best passage
+			visible. For example, if the second best passage is
+			currently in view, this shows the third best passage.
+
+		Show Previous Best Passage:
+			Scrolls the document window to make the previous best
+			passage visible. For example, if the third best passage
+			is currently in view, this shows the second best passage.
+
+		Highlighting Mode:
+			(Currently disabled.)
+
+		Clear Relevant Documents:
+			Clear the relevance feedback checkmarks on all documents.
+
+		Find:
+			Search for a character string. (Currently, only the first
+			word of the string is used.)
+
+Windows:	This menu contains the following window-related commands:
+
+		nn Warnings:
+			Shows a window containing any error messages from the
+			retrieval engine error. "nn" is the number of errors shown.
+
+		Tcl:
+			Shows a window into which you can type Tcl commands,
+			including commands to change settings of some of the global
+			variables.
+
+		Query History:
+			Shows a window containing a list of the queries you've
+			issued thus far.
+
+		Clear All Windows:
+			Erases the bargraph, the query, the summary area, and the
+			document text area.
+
+		Clear/Restore Query:
+			If there's a query in the query area, erase it; if not,
+			restore the most recent query.
+
+Server:		This menu lists known machines: the retrieval engine will execute
+		on the chosen machine.  Note that the user should have permission
+		to execute rsh on that machine. A sample list is compiled into
+		XInquery; to change it, use an initialization script to set the
+		<hosts> variable.
+		
+Help:		This menu initially starts with Show Context Help: choosing that
+		makes a line appear that describes whatever "widget" the mouse
+		is pointing to, and changes the command to Hide Context Help.
+		Each of the other commands in this menu shows a window containing
+		help on the given topic.
+
+
+BUTTONS
+
+Clear Rel Docs:		Does the same thing as the Clear Relevant Documents menu
+			command, above.
+
+Clear/Restore Query:	Same thing as the menu command with the same name, above.
+
+Run Query:		Runs the query that currently appears in the query window.
+		
+Show Next Keyword:	Makes the next query term visible in the window.
+
+Show Best Passage:	Same thing as the Show Best Passage command, above.
+
+Next Best:		Same thing as the Show Next Best Passage command, above.
+
+Prev Best:		Same thing as the Show Prev Best Passage command, above.
+
+Next Doc:		Same thing as the Show Next Document command, above.
+
+Prev Doc:		Same thing as the Show Previous Document command, above.
+
+In the document title area, clicking on the unlabelled button to the left of a
+title selects the corresponding document for relevance feedback.
+
+
+DOUBLE-CLICKING FEATURES
+
+In the bargraph window, double-clicking on any bar displays the corresponding
+numbered document in the document text area.
+
+Similarly, in the document title area, double-clicking on any title displays the
+corresponding document in the document text area.
+

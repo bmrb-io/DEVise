@@ -1,0 +1,889 @@
+**************************************************************************
+*                                                                        *
+*                   Copyright (c) 1990 - 1996 by the                     *
+*  Applied Computing Systems Institute of Massachusetts, Inc. (ACSIOM).  *
+*            Do not distribute without written permission.               *
+*                          All Rights Reserved.                          *
+*                                                                        *
+*                 INQUERY Software was provided by the                   *
+*           Center for Intelligent Information Retrieval (CIIR)          *
+*         University of Massachusetts Computer Science Department        *
+*                     Amherst, Massachusetts  01003                      *
+*                                                                        *
+*           Contact ACSIOM at (413)545-6311 for more information         *
+*                                                                        *
+**************************************************************************
+
+                   INQUERY  DOCUMENT  RETRIEVAL  SYSTEM
+
+
+                       UPDATE:   5/29/96  -- MML
+
+
+TABLE OF CONTENTS
+
+  1.0  OVERVIEW
+
+  2.0  CREATING INQUERY DATABASES
+     2.1  Document Format
+     2.2  Building INQUERY Databases
+
+  3.0  NETWORKED INQUERY
+
+  4.0  QUERY FORMULATION
+     4.1  Structured Query Language
+     4.2  Query Operator Types
+     4.3  Field Retrieval Operator
+        4.3.1  Field Operator Syntax      
+        4.3.2  Field Operator Examples
+        4.3.3  Memory Considerations for Field Operations
+     4.4  Filtering Operations
+
+  5.0  INQUERY EXAMPLE INTERFACE
+     5.1  Invocation
+     5.2  Display Commands
+
+  6.0  EVALUATION OF PERFORMANCE
+     6.1  Running Queries in Batches
+     6.2  Deval Evaluation Program
+
+  7.0  ADDITIONAL INFORMATION
+
+
+
+1.0 OVERVIEW
+
+INQUERY is a probabilistic Information Retrieval (IR) system developed at the
+University of Massachusetts, Amherst.  Given a database of textual documents
+Inquery can retrieve documents relevant to a user's query.  The documents do
+not need to be pre-classified by hand, though they do need to be indexed by
+INQUERY's parsing system.  The queries can be formulated either in natural
+language (i.e. a regular English sentence) or in a more exact structured query
+language.
+
+
+System Requirements
+
+INQUERY currently runs on UNIX workstations built by Digital Equipment
+Corporation (DEC-mips and DEC-alpha), SUN Microsystems (SUNOS-4.X and
+Solaris), IBM (RS6000 - AIX), and SGI (IRIX), as well as PC machines
+running DOS or MS-Windows and Macintosh.  The amount of memory and
+disk space required to build a database depend on the size of the
+document collection.  For a collection of N bytes, INQUERY requires up
+to 2 * N bytes of disk space to build its document database.  Once the
+database is built, INQUERY requires about 1.5 * N bytes of disk space
+to store the database.  Memory requirements are more difficult to
+predict, because they depend upon the characteristics of the document
+collection and the complexity of the queries.  A very rough estimate
+is that INQUERY requires about N/15 bytes of virtual memory.  A
+reasonable amount of physical memory would be N/60.  Therefore a 2
+gigabyte collection would need about 145 MB of virtual memory and
+about 32 MB of physical memory.
+
+
+
+2.0 CREATING INQUERY DATABASES
+
+The INQUERY system requires that a collection of documents be indexed to form
+an INQUERY database before the collection can be queried and specific
+documents retrieved.  Two forms of the query processor are available.  A batch
+version for running INQUERY from files containing queries and relevance
+judgements, is invoked from the "inqueryb" program.  This version prints
+results in a form that allows statistical tests and performance changes to be
+evaluated.  An interactive "inquery" program is provided to allow users to
+type queries from a command line and browse through the retrieved documents.
+
+
+2.1  Document Format
+
+The INQUERY parsing-indexing programs recognize four document formats.  These
+formats include SGML, HTML, email and cacm_dots.  All four document formats
+use the same text tokenization definitions.  These definitions determine what
+sort of "concepts" will be recognized in the text.  Concepts are usually
+individual words but may also be numbers words as well.
+
+SGML document format is becoming a more common type document.  It recognizes
+many different field tag types, however it is more a subset of the "true" SGML
+document format, and makes no attempt to meet any official SGML standards.
+
+HTML format is actually a subset of SGML common in network browser documents.
+HTML documents are standard among WWW Mosaic or Netscape type applications.
+
+The email document format recognizes mail message text as it appears in a
+system mailbox.  This form may be slightly different than what is displayed by
+some mail interfaces, so if mail is to be made into INQUERY databases, its
+sources should be in the correct form.
+
+Finally, cacm_dots format is used by some standard evaluation collections used
+in information retrieval research.  These collections include CACM
+(Communications of the Association for Computing Machinery) and NPL (National
+Physics Laboratory).  The format has very few recognized fields and all field
+tags consist of a single dot '.' followed by a single capital letter at the
+beginning of a line.
+
+See INQUERY System Administrator's Guide for information on how to customize
+INQUERY's parsing-indexing programs, or how to reformat a document collection
+into one currently recognized by the database building programs.
+
+
+2.2  Building INQUERY Databases
+
+The INQUERY distribution contains executables to index documents presented in
+four possible document formats.  The indexing process will produce several
+INQUERY database files that must be present before an INQUERY retrieval
+session is possible.  These databases may be produced in one step using
+"inbuild" document parsing and indexing program.  If space restrictions
+require building the databases in incremental steps, that may be accomplished
+using "inparse" in conjunction with "merge_btl" programs.
+
+Field-based term databases may be created to allow the user the ability to
+restrict the search of information to specified fields, or document sections.
+The field term databases are created using special command line switches in the
+same programs as the usual term database.
+
+Keyfile database concurrency is supported beginning with release 3.1.
+This allows the user to query a document database as it is being
+modified.  Modifications to a database consist of adding new documents
+and deleting old ones.  Crash recovery is also supported in 3.1, allowing
+users to recover and continue their build after a system error was
+encountered (such as disk space filling up, or a machine crash).
+Note that Crash Recovery must be turned on via the '-cr_on' flag to
+inbuild, inparse, or merge_bt when the build is begun in order to
+make recovery from a crash possible.
+
+In version 3.0 Concurrency was provided with special MNEME databases
+and executables.  The use of MNEME has been phased out due to difficulties
+experienced by clients attempting to use it.  All of the features
+provided by the MNEME databases are now provided by our standard keyfile
+database.
+
+
+3.0  NETWORKED INQUERY
+
+INQUERY supports networked versions of its retrieval engine.  The
+architecture consists of a Connection Server, and INQUERY Server and Client
+applications.  A Connection Server manages service requests from any number
+of Clients to one or more INQUERY Servers.  The Servers are the retrieval
+engines for one or more INQUERY databases.  Administration Clients are also
+available to start or shutdown Connection and INQUERY Servers.
+
+INQUERY also supports multi-database retrieval.  This allows an INQUERY
+Client to create a "virtual" database that consists of more than a single
+database.  A query is submitted to INQUERY Servers servicing the databases
+comprising the mult-database for the retrieval session.  The results are then
+combined, re-ranked and presented to the user.  The process appears as a
+single database query to the user, but in fact, has been applied, perhaps
+across a network, over more than one database.
+
+
+4.0  QUERY FORMULATION
+
+The INQUERY system offers two means of processing queries.  The "inqueryb"
+program allows batch processing of queries from files.  The user must supply
+the names of the required files (database name, query and relevance files) to
+be used for the session.  The "inquery" program is a user interactive version
+which allows queries to be typed from a command line in either natural
+language, or structured form.  Retrieved documents may be more closely
+examined via a simple browser.  The benefits of the batch program are that
+queries may be run repeatedly so that changes to the system may be evaluated.
+The output produced from the batch program is in a form readable by the
+evaluation program "deval".  This is useful only if there is a set of
+relevance judgements allowing assessment of performance.
+
+
+4.1  Structured Query Language
+
+Queries may be of two types, natural language or structured.  The natural
+language queries allow the user to simply type the information request as an
+English sentence.  The Inquery query-processor transforms these queries into a
+structured form which can then be processed by the query engine.  By putting
+the query in structured form directly, the user is able to provide a precise
+definition of the term relationships in the query, possibly resulting in
+improved performance.  However it requires a knowledgeable user to properly
+formulate a query using the special operators provided.  The available
+INQUERY operators are described in the following sections.
+
+   Sum Operator:   #sum (T1 ...Tn )
+
+     The terms or nodes contained in the sum operator are treated as
+     having equal influence on the final result.  The belief values
+     provided by the arguments of the sum are averaged to produce the
+     belief value of the #sum node.
+
+
+   Weighted Sum Operator:  #wsum (Ws W1 T1 ... Wn Tn)
+
+     The terms or nodes contained in the wsum operator contribute
+     unequally to the final result according to the weight associated
+     with each (Wx).  The final belief value is scaled by Ws, the
+     weight associated with the #wsum itself.
+
+
+   Ordered Distance Operator:  #N (T1 ... Tn)  or #odN (T1 ... Tn)
+
+     The terms within an ODN operator must be found within N words of
+     each other in the text in order to contribute to the document's
+     belief value.  The "#N" version is an abbreviation of #ODN, thus
+     #3(health care) is equivalent to #od3(health care).
+
+
+   And Operator:  #and(T1 ... Tn)
+
+     The more terms contained in the AND operator which are found in a
+     document, the higher the belief value of that document.
+
+   Boolean And Operator:  #band(T1 ... Tn)
+
+     All of the terms within a BAND operator must be found in a document in
+     order for this operator to contribute to the belief value of that
+     document.
+
+
+   Boolean And Not Operator:  #bandnot (T N)
+
+     Search for document matching the first argument but not the second.
+
+     
+   Or Operator:  #or(T1 ... Tn)
+
+     One of terms within the OR operator must be found in a document for that
+     document to get credit for this operator.
+
+
+   Negation Operator:  #not(T1 ... Tn)
+
+     The terms or nodes contained in this operator are negated so that
+     documents which do not contain them are rewarded.
+
+
+   Un-ordered Window Operator:  #uwN(T1 ... Tn)
+
+     The terms contained in a UWN operator must be found in any order within a
+     window of N words in order for this operator to contribute to the belief
+     value of the document.
+
+
+   Phrase Operator:  #phrase(T1 ... Tn)
+
+     Terms within this operator are evaluated to determine if they occur
+     together frequently in the collection.  If they do, the operator is
+     treated as an ordered distance operator of 3 (#od3).  If the arguments
+     are not found to co-occur in the database, the phrase operator is turned
+     into a SUM operator.  In ambiguous cases the phrase becomes the MAX of
+     the SUM and the OD3 operators.
+
+
+   Passage Operator:  #passageN(T1 ... Tn)
+
+     The passage operator looks for the terms or nodes within the operator to
+     be found in a passage window of N words.  The document is rated based
+     upon the score of it's best passage.
+
+
+   Synonym Operator:  #syn(T1 ... Tn)
+
+     The terms of the operator are treated as instances of the same term.
+
+
+   Maximum Operator:  #max(T1 ... Tn)
+
+     The maximum belief value of all the terms or nodes contained in the MAX
+     operator is taken to be the belief value of this operator.
+
+
+   Weight Plus Operator: #+ T1
+
+     The effect of the following term or node is increased relative to the
+     rest of the query.
+
+
+   Weight Minus Operator: #- T1
+
+     The effect of the following term or node is decreased relative to the
+     rest of the query.
+
+
+   Literal Operator: #lit(T1 ... Tn)
+
+     This operator preserves the original forms of the terms contained within
+     it.  No stemming or stopping is performed and capitalization is
+     preserved.
+
+
+   Filter Require Operator: $filreq(arg1 arg2)
+
+     Use the documents returned (belief list) of the first argument if and 
+     only if the second argument would return documents.  The value of the
+     second argument does not effect the belief values of the first argument;
+     only whether they will be returned or not.
+
+
+   Filter Reject Operator: #filrej(arg1 arg2)
+
+     Use the documents returned by the first argument if and only if there
+     were no documents returned by the second argument.  The value of the
+     second argument does not effect the belief values of the first argument;
+     only whether they will be returned or not.
+
+
+   Field Operator: #field( FIELD-NAME #REL-OP T1 ... Tn)
+
+     The terms contained in a FIELD operator are searched only within the
+     FIELD-NAME specified.  The relational operator (REL-OP) allows fields to
+     be searched for ranges of values.  If the REL-OP is missing, equality is
+     used by default.  This operator is discussed in a section below.
+
+
+The most simple of the structured operators is the #sum.  In its most basic
+form the simple natural language query that a user submits is converted to a
+#sum operation.
+
+   White House drive by shootings
+
+will be converted to 
+
+   #sum (White House drive by shootings)
+
+in the most simple of query transformations.
+
+In a weighted sum, #wsum, the user may control the importance of certain
+terms or term groups.  Proximity operations may be used to further group
+terms, which in turn can have higher or lower weights placed on them.  In the
+next example, the user has placed emphasis on a "white house" concept and less
+on the concept of "drive by shootings".
+
+   #wsum (20 15 #1 (White House)  5 #phrase (drive by shootings))
+
+It is not easy for a naive user to determine the weights to be used.  It is
+more a trial and error process, and has best use in a research or routing
+environment where significant resources may be used to develop the best
+possible queries.
+
+Retrieval on some term (or terms) may be made conditional on the presence or
+absence of other terms in a document.  The #filter-require and #filter-reject
+operators are two argument operators that can perform conditional retrieval.
+
+  Retrieve documents containing "President" only if the White House is
+  mentioned.
+
+    #filreq (president #1(white house))
+
+  Perhaps we wish to know about company presidents rather than political ones.
+  Part of a query to gain access to the correct type of president might
+  include the following:
+
+    #filrej(president #1(white house))
+
+The #bandnot operator is similar to the #filrej operator except the belief of
+the second argument affects the belief of the first argument.  This is
+equivalent to conditionally applying a #not to those documents containing the
+second argument.
+
+Note that the "boolean and" (#band) and "boolean and not" (#bandnot) operators
+can be similar in effect as #filreq and #filrej operators.  The primary
+difference between these two sets of operators is that #filreq/#filrej do NOT
+alter the beliefs of the documents that match the filtering requirement.
+These operators are true FILTERING operations.  The #band/#bandnot operators
+WILL alter the beliefs of the documents during processing.
+
+Proximity operators come in several forms that can be sensitive or insensitive
+to argument ordering.  The "Ordered Distance n" operator (#odN or #N) requires
+that ALL of its arguments occur, in the specified order, with LESS THAN n
+words separating any adjacent arguments.  The LESS THAN part can be a bit
+tricky to understand if you don't know how distance is calculated.
+
+         Text:         This is some sample text
+         Locations:    1    2  3    4      5
+
+The distance between "some" and "text" is 5 - 3 = 2, so "#2(some text)" will
+match, but "#1(some text)" will not.  Note that stopwords, such as "is", are
+counted even if they do not appear in the database index.
+
+An interesting consequence is that it is perfectly fine to have a #0 operator,
+which can be handy when matching "meta-terms" to specific text.  (An INQUERY
+"meta-term" is generated by a special recognizer or other special procedure
+during indexing and can serve as a "marker" for a special type of concept.
+INQUERY meta-terms include #company, #foreigncountry, #usa and some others).
+
+         Text:         Apple    Computer announced today
+         Meta-Terms:   #company
+         Locations:    1        2        3         4
+
+The operator "#0(apple #company)" will match only those occurrences of apple
+that were identified as a company name.
+
+The "Unordered Window n" (#uwN) operator requires that ALL of its arguments
+occur, in any order, within a window of n words.  The window size is based on
+the number of words, including stopwords, that it contains.  So, for example,
+"#uw2(apple computer)" is equivalent to, but much faster than, "#SYN(#1(apple
+computer) #1(computer apple))".
+
+Note however that "#uw0", a window of 0 words, does not make sense, and is not
+permitted.
+
+
+4.2  Query Operator Types
+
+A primary rule in formulating structured queries is that "belief operators"
+MAY NOT OCCUR INSIDE of "proximity operators".  This is because proximity
+lists (the basic unit of INQUERY knowledge) can be converted to a belief list
+(a score or weight), but belief lists may not be converted to proximity lists.
+
+Below is a list of INQUERY structured language operators by their type.
+
+        Belief List Operators           Proximity List Operators 
+        ---------------------           ------------------------
+              #SUM            		    TERM                   
+              #OR             		    #SYN                   
+              #AND            		    #OD (#n)               
+              #NOT            		    #UW (#uwn)                   
+              #MAX            		    #PHRASE   
+              #WSUM                         #PASSAGEn
+              #BAND                           
+              #PARSUM         
+              #FIELD          
+              #BANDNOT        
+              #FILTER-REQUIRE
+              #FILTER-REJECT
+
+As long as a query avoids asking a proximity operator to try to do something
+with an operator that returns a belief list, a legal query will result.
+
+For example, the first query below is legal, because the proximity operator
+(#1) is nested inside a belief operator (#field).  The second query, is
+basically the same query but has a proximity type operator (#1) trying to do
+something with an operator that returns a belief list value (#field).  The
+second query will fail as it is illegal.
+
+  Find instances of "white" and "house" occurring next to each other in a
+  title field of a document.
+
+    #field (TITLE #1 (white house))
+
+  Find the occurrences of "white" and "house" in a title field that are next
+  to each other.
+
+    #1 (#field (TITLE white)  #field (TITLE house))
+
+INQUERY's #and and #or operators are NOT BOOLEAN OPERATORS.  INQUERY is a
+probabilistic retrieval system, not a boolean one.  Thus a query such as
+
+    #and (white house)
+
+may return documents that have only "white" or "house" but not both along with
+those documents containing both.  The beliefs (scores) of such documents will
+be lower than those with both.  Research has shown that overall performance of
+retrieval systems is improved with the probabilistic approach.  But it is
+still a bit hard for persons used to strictly boolean systems to get used to.
+
+If one really must have a boolean and, perhaps for filtering operations, then
+use the #band operator.  The same holds for the #not and #bandnot operators.
+
+Proximity operators, #n #uwn and #phrase are very useful.  They allow the
+searches constrained to certain textual components such as passages or
+paragraphs.  For example, a paragraph search can be simulated by an unordered
+window of about 20 words (#uw20) or 20 word proximity (#20).
+
+Phrases are a bit complex.  A phrase behaves much the same as a #3 proximity
+operation.  However, if all the components of the operation are not met, it
+may return sub-components or even individual components in a ranked order.
+
+  E.g. #phrase (a b c d)  returns
+
+  -- documents containing a b c and d within 3 words in the highest ranks
+
+  -- documents containing a b c or a c d, etc. within 3 words with next
+     highest rankings
+
+  -- documents containing a b or a d, etc. within 3 words with next
+     highest rankings
+
+  -- documents containing a or b or c or d within the lowest rankings
+
+Although the actual value of the ranking score will not really be meaningful
+to you, pay attention to the ranking scores with respect to one another.
+Often there will be a group of some number of highest ranked documents,
+followed by an observable drop in ranking scores of the documents that follow
+(see the histograms produced by "xinquery" if you have access to it).  These
+are the ones to really pay attention to, although "good" documents can often
+be found in the lower batch as well.
+
+
+4.3  Field Retrieval Operator
+
+Field retrieval is performed with the use of the field operator.  It has two
+primary forms which depend on the type of field operation to be performed.
+Each of the four document formats that are known to INQUERY's parsing-indexing
+programs may contain different recognized fields.  For the field retrieval
+examples below we use three fields recognized in an SGML document format type.
+These include document date (DDATE), content date (CDATE), and title (TITLE).
+
+
+4.3.1  Field Operator Syntax
+
+
+  #field (NAME ndx_operator arguments)
+   
+  #field (NAME ndx_min_max_op)
+
+  #field (NAME ndx_range_op bound1 bound2)
+
+  where 
+      NAME is the name given to a specific field index, e.g. TITLE.
+
+      ndx_operator are the following:
+           #gt   #>
+           #gte  #>=
+           #lt   #<
+           #lte  #<=
+           #ne   #neq   #!=
+           #eq   #==            This is the default operator and may be 
+                                omitted from the expression if desired.
+
+      arguments are other INQUERY structure operators or terms.
+
+      ndx_min_max_op are the following:
+
+           #fmin                Minimum entry for a field index.
+           #fmax                Maximum entry for a field index.
+
+          NOTE: The term argument is implied in the type of operation for a
+                #fmin or #fmax operator.
+
+      ndx_range_op takes two forms:
+
+           #range or #<>
+
+      A range operation requires two boundary keys.  The bounds may be
+      written in either low-high or high-low order.  The range evaluation
+      function will determine the upper and lower bounds.
+
+
+4.3.2  Field Operator Examples
+
+The examples below illustrate the varied usage of the field operator.
+
+      Retrieve documents with date greater than March 2, 1987
+      #field (DDATE #gt 19870302)
+   or #field (DDATE #> 19870302)
+
+      Retrieve documents mentioning the date March 2, 1987 in the text
+      #field (CDATE #eq 19870302)
+   or #field (CDATE 19870302)
+
+      Retrieve documents with titles concerning the White House
+      #field (TITLE #1 (white house))
+
+      Retrieve the earliest dated documents
+      #field (DDATE #fmin)
+
+      Retrieve all documents containing references to the years between 1940
+      and 1945
+      #field (CDATE #range 19400000 19450000)
+   or #field (CDATE #<> 19450000 19400000)
+
+The scope of the field operation extends to all nodes in the subtree below it.
+A field operation is best created at the higher level of the query net to
+avoid problems between belief and proximity value type operators.
+
+For example, the query
+
+   #field (TITLE #wsum (1.0 2.0 company 3.0 president 3.0 #1(insider trading)))
+
+will search on TITLE field terms for the #wsum and #1 operations.  However,
+the query
+
+   #and (#field (TITLE #1 (insider trading)) company president)
+   
+will retrieve documents with insider trading in the title and the terms
+company and president anywhere in the document.
+
+
+4.3.3  Memory Considerations for Field Operations
+
+With version 3.1 field terms are no longer instantiated as special
+terms in memory.  Therefore users should no longer run into memory
+problems while evaluating field ranges.
+
+
+4.4  Filtering Operations
+
+Field filtering operations can be done with the #band, or #filreq
+operators.  Construct the query such that the primary concepts are
+retrieved, then the retrieved document list can be pruned or filtered
+with a field condition in conjunction with the filter-require operation.
+
+   #filreq (#1 (white house) #field (DDATE #gt 19870325))
+ 
+The query above retrieves documents containing the terms "white" and "house"
+in one word proximity, which are later than March 2, 1987.
+
+The not equal (#neq) operation is only effective on single value, filtering
+types of document fields.  Such an operation on a document date field, for
+example, would result in documents with dates not equivalent to the date
+argument, being returned.  However a similar query on the content date of a
+document would most likely fail to retrieve only those texts not containing
+the desired date.  Any multi-value field, that contains more than a single
+term, will likely not give the desired results using the not equal operation.
+
+
+5.0 INQUERY EXAMPLE INTERFACE
+
+The user interactive program "inquery" allows queries in natural language or
+structured form.  The results will be displayed on the screen and the user may
+browse through the retrieved documents to determine relevance of documents to
+the information need.  A file containing the session results may also be
+produced.
+
+
+5.1  Invocation
+
+  inquery <switches> <database> <stopword_file>
+
+      <switches>     Set of optional switches defining session file and 
+                     calculation defaults.  They may appear in any order:
+
+        -h                Help - The usage message
+
+        -nostem           Queries are already stemmed.  Do not 
+                          stem (or stop) further.
+
+        -recog            Turn ON all query recognizers.
+        -norecog          Turn OFF all query recognizers (DEFAULT).
+
+        -use_recog  name  Turn ON query recognizers named <name>.
+        -skip_recog name  Turn OFF query recognizers named <name>.
+
+        -cc_on            Use concurrency control when accessing databases.
+        -cc_off           Do not use concurrency control (DEFAULT).
+
+        -w file           write retrieved docs and scores to file
+
+        -o dir            specify directory for output files; Default: ./
+
+        -dups             allow duplicate documents to be retrieved (default)
+        -nodups           prevent duplicate documents from being retrieved
+
+        -spelling         Use spell checking information 
+
+        -top_docs_only    Use the top-docs only optimization (default is off)
+        -num_top_docs <int> Max number of top-docs to use (0 = off, 
+                            default = 1000
+
+      <database>         Name of the database to search.
+
+      <stopword_file>    Optional name of stopword file.  
+                         Default: $DOCSTOPS/default.stp
+
+    NOTE:  Include the full path name to the database name if the databases
+           reside in a directory different from where inquery is being run.
+
+
+5.2  Display Commands
+
+The inquery program will ask the user for the number of documents to display
+and then prompt for a query.  Once a set of documents have been retrieved, the
+bottom of the screen will display the following options:
+
+     page Forward/Back   Move forward/back one display page
+
+     Top/End             Move to top/end of display
+
+     Line Up/Down        Move up/down one line of display
+
+     Write               Write the retrieved summary list to the file
+                         specified on the commandline or docs.out by default.
+
+     #                   Enter a document rank number to view the contents of
+                         a document.  To view the first ranked document, type
+                         '1'.
+
+     Query               Submit a new query.
+
+     ?                   Display a help screen.  Some additional options not
+                         shown on bottom of display are available.
+
+     Refresh             Refresh the display in event of outside screen 
+                         interruption.
+
+     eXit                Exit the inquery program
+
+Except for the "#" option, the user should type the character displayed in
+upper case to select the option.  The typed letter itself need not be in upper
+case.  Use the <RETURN> key after every command.
+
+The display of retrieved documents will include the first 80 characters of the
+current query at the top of the page, followed by the document rank, score,
+ID, and the 4 lines of the title and author, for each of the returned
+documents.  Further examination of the document text may be done by typing the
+number of the document rank to be examined.  This produces pages of text with
+the same user options described above.  Additional options include Write and
+Next/Prev commands.  These allow the user to write the document text to a file
+(fixed as docs.out by default).  A range of document texts may be printed to
+the file using the "x-y" form, with x representing the first document id to
+print, and y the last and x < y.  Next/Prev allows moving to following or
+preceding documents in the ranked list.  The file will be appended to if it
+already exists.
+
+The document display contains the rank, score, internal ID, external ID and
+first 80 characters of the title, followed by the text of the document.
+
+Once a document is selected for viewing, the bottom of the screen will display
+the same options listed above.  However these options are now in effect for
+the text display.  Thus the commands move about in the text, not the summary.
+Type 's' to return to the summary display.  Again, don't forget that all
+commands require a carriage return.
+
+As the user reviews the retrieved documents she can give INQUERY feedback on
+which documents were truly relevant to her information need by using the '+'
+command to mark documents.  From the summary screen type "+i" where 'i' is the
+rank of the relevant document; from the document viewing screen simply type a
+"+".  Once one or more documents are marked as relevant the user can ask
+INQUERY to reformulate and rerun the query based on the added evidence of the
+marked documents.  This is accomplished by using the Modify command 'm'.  The
+user can also view the modified query by typing 'y.'
+
+Other useful commands are 'z' to display the parsed query.  This shows the
+users query as it was submitted to the engine for retrieval.  The 'i' command
+will display the contents of the field index table in effect for the
+database being queried.  This shows all the legal field names that may be
+used as well as minimum and maximum terms that were found in each field index.
+Finally, for help, type '?'.
+
+
+6.0 EVALUATION OF PERFORMANCE
+
+Retrieval performance may be monitored using a combination of batch retrieval
+query submissions, document relevance judgments for each query and evaluation
+of the retrieval run(s).  Evaluation of retrieval performance is traditionally
+accomplished via a measure of precision-recall.  It is recommended that a
+performance oriented user of INQUERY develop sets of test queries and their
+relevance judgements to allow evaluation of INQUERY tuning changes.  However
+developing sets of queries and relevance judgements is not easy and may demand
+considerable resources.
+
+Evaluation of retrieval performance is a two step process.
+
+  -- Run the batch inquery "inqueryb" program on a set of evaluation
+     queries and their corresponding relevance judgements.  This will
+     result in a retrieval evaluation (evl) file for the run.
+
+  -- Run the retrieval evaluation program, "deval" using the evl file produced
+     in the preceding step as input.  The "deval" program will produce a
+     recall-precision table that measures retrieval performance at increasing
+     levels of recall.  The program will allow the evl files produced by
+     several runs of inqueryb to be compared.
+
+One may then compare the results of retrieval effectiveness in response to
+changes in query formulation.  It is also an effective method for detecting
+errors in the query parsing method if one tends to modify or change this
+system.
+
+
+6.1  Running Queries in Batches
+
+The query processor may be run in batch or interactive mode from the
+programs "inqueryb" and "inquery" respectively.  The "inqueryb"
+program takes command line arguments in the form of input file names
+and switches.  The output of is a ranked list of documents and their
+"beliefs" (calculated probability of relevance) in a file format
+readable by the evaluation program named deval.
+
+   inqueryb <database_name> <query_file> <rel_file> <switches> 
+
+   WHERE
+
+     <database_name>    Base name of the document collection to be searched.
+                        Include the full path name to the database files if
+                        they are in a directory different from the working
+                        directory. 
+
+     <query_file>       Name (including directory path if necessary) of the
+                        query file for the batch run.  
+
+     <rel_file>         The name (including directory path if necessary) of
+                        the file containing the relevant judgements for each
+                        of the queries in the query file.
+                
+     <switches>         Switches defining the query and relevance files, and
+                        calculation defaults.  These may go in any order on 
+                        the command line.
+
+        -evalfile <file> The name of the evaluation file produced by the
+                         program.  The default is <database_name>.evl.
+
+        -tf <num>       User defined default tf values to use.  The value
+                        must be between 0 and 1.  The first tf value is the 
+                        number given, the second is 1 - num, e.g. -tf 0.3 
+                        defines default tfs as 0.3, 0.7. Default value is 0.4.
+                             
+        -bel <num>      User defined default belief values to use for the
+                        run.  The first belief value is the number given,
+                        the second is 1 - num.  The default value is 0.4.
+
+        -o <dir>        Write output files, to directory <dir>.  The default
+                        is the current working directory.
+
+        -use_recog <name> 
+                        Turn on a query recognizer by name.
+
+        -skip_recog <name> 
+                        Turns off a query recognizer by name.
+
+        -nodups <num>   Scan the top num docs in the belief list and remove
+                        duplicates.
+
+        -norankall      Don't rank all documents in the collection; ON by 
+                        default.
+
+        -stop           The name of a file containing stopwords (words to be
+                        discarded).  The default is $DOCSTOPS/default.stp.
+
+        -wf <name>      File name to write out 'wn' relevant documents.
+
+        -wn <num>       Number of docs to write out to the above specified file..
+
+        -stats          Print out statistics about the query net for each query.
+ 
+        -old_xids       Lowercase the external ids found in the relvance file.
+                        This is for back compatibility with databases built
+                        before version 3.1. 
+
+
+7.0  ADDITIONAL INFORMATION
+
+Additional information is available in the release doc directory.  This
+includes:
+
+  New Comprehensive Formatted Documentation:
+
+    The INQUERY Application Programmer's Interface Guide --
+      This is a complete guide to all INQUERY API calls.
+
+	postscript/api.ps  -- postscript version, ready for printing.
+        msword/api.doc     -- MS Word version.
+
+    The INQUERY System Administrator's Guide --
+      This covers building and maintaining databases, customizing the
+      parsing system and basic use of INQUERY executables.
+
+	postscript/sysadmin.ps -- postscript version, ready for printing.
+    	msword/sysadmin.doc    -- MS Word version.
+
+
+  UNIX man pages:
+
+    build_infinder.1   incsparse.1        inquery.1          purgedb-key.1
+    conn_server_ip.1   inparse.1          inrecover.1        set_col.1
+    deldoc.1           inquery-ip.1       list_cols.1
+    inbuild.1          inquery-server.1   merge_btl.1
+
+
+
+  postscript/sysadmin.ps -- Use of INQUERY programs including both stand alone
+                            and networked environments.
+
+  postscript/api.ps
+  inengine.doc           -- INQUERY API function descriptions and example use.
+
+

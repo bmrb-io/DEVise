@@ -1,0 +1,117 @@
+				QUERY FORMULATION
+
+XInquery allows queries to be entered in as text in either "natural language"
+or structured form. Queries can also be submitted thru a query form: see the
+description of the Query Form command elsewhere in the Help menu.
+
+So-called "natural language" queries allow the user to simply type the
+information request as what looks like an English sentence. However, as in
+every existing program that claims to accept "natural language", there are
+pitfalls. For example, XInquery ignores words that might be expected to act as
+Boolean operators. So the query "bees and not honey" is treated the same as
+just "bees honey", and it is MORE likely than the query "bees"--not less--to
+retrieve documents about honey. In any case, a query processor transforms
+"natural language" queries into a structured form that can be handled by the
+Inquery query engine.
+
+By entering the query in structured form directly, the user can provide more
+exact information about the relationship of terms in the query.  This can
+improve performance substantially, but it requires a knowledgeable user to
+properly formulate the query using the operators provided. The available
+operators are as follows:
+
+   Sum Operator:  #sum (T1 ...Tn )
+       The terms or nodes contained in the sum operator are treated as
+       having equal influence on the final result.  The belief values
+       provided by the arguments of the sum are averaged to produce the
+       belief value of the #sum node.
+
+   Weighted Sum Operator:  #wsum (Ws W1 T1 ... Wn Tn)
+       The terms or nodes contained in the wsum operator contribute
+       unequally to the final result according to the weight associated
+       with each (Wx).  The final belief value is scaled by Ws, the
+       weight associated with the #wsum itself.
+
+   Ordered Distance Operator:  #N (T1 ... Tn)  or #odN (T1 ... Tn)
+       The terms within an ODN operator must be found within N words of
+       each other in the text in order to contribute to the document's
+       belief value.  The "#N" version is an abbreviation of #ODN, thus
+       #3(health care) is equivalent to #od3(health care).
+
+   And Operator:  #and(T1 ... Tn)
+       The more terms contained in the AND operator which are found in
+       a document, the higher the belief value of that document.
+       
+   Boolean And Operator:  #band(T1 ... Tn)
+       All of the terms within a BAND operator must be found in a 
+       document in order for this operator to contribute to the belief value 
+       of that document.
+
+   Or Operator:  #or(T1 ... Tn)
+       One of terms within the OR operator must be found in a document
+       for that document to get credit for this operator.
+
+   Negation Operator:  #not(T1 ... Tn)
+       The terms or nodes contained in this operator are negated so that
+       documents which do not contain them are rewarded.
+
+   Un-ordered Window Operator:  #uwN(T1 ... Tn)
+       The terms contained in a UWN operator must be found in any order 
+       within a window of N words in order for this operator to contribute to 
+       the belief value of the document.
+
+   Phrase Operator:  #phrase(T1 ... Tn)
+      Terms within this operator are evaluated to determine if they occur
+      together frequently in the collection.  If they do, the operator
+      is treated as an ordered distance operator of 3 (#od3).  If the
+      arguments are not found to co-occur in the database, the phrase
+      operator is turned into a SUM operator.  In ambiguous cases the
+      phrase becomes the MAX of the SUM and the OD3 operators.
+
+   Passage Operator:  #passageN(T1 ... Tn)
+      The passage operator looks for the terms or nodes within the operator
+      to be found in a passage window of N words.  The document is rated
+      based upon the score of its best passage.
+
+   Synonym Operator:  #syn(T1 ... Tn)
+      The terms of the operator are treated as instances of the same term.
+
+   Maximum Operator:  #max(T1 ... Tn)
+      The maximum belief value of all the terms or nodes contained in 
+      the MAX operator is taken to be the belief value of this operator.
+
+   Weight Plus Operator: #+ T1
+      The effect of the following term or node is increased relative to
+      the rest of the query.
+
+   Weight Minus Operator: #- T1
+      The effect of the following term or node is decreased relative to
+      the rest of the query.
+
+   Literal Operator: #lit(T1 ... Tn)
+      This operator preserves the original forms of the terms contained
+      within it.  No stemming or stopping is performed and capitalization
+      is preserved.
+
+   Field Operator: #field( FIELD-NAME #REL-OP T1 ... Tn)
+      The terms contained in a FIELD operator are searched only
+      within the FIELD-NAME specified.  The relational operator (REL-OP)
+      allows fields to be searched for ranges of values.  If the REL-OP
+      is missing, equality is used by default.  (See "field.doc" for a
+      more detailed discussion of the field operator.)
+
+These operators can be combined and nested to produce the desired result.
+For example, a simple structured query might be a sum of a term and an ordered
+distance operator:
+
+   #sum( reform #2(health care) )
+
+This query would find documents which contained the term "reform" and
+the two terms "health" and "care" occurring at most 2 words apart.
+
+Some operators, however, are restricted in which type of operators they
+are allowed to contain.  Specifically, operators which require positional
+information are can not contain operators which return more general results.
+Thus the #ODn, #PHRASE, #UWn, and #SYN operators cannot contain #SUM, #WSUM,
+#AND, #BAND, #OR, #NOT, #PASSAGE, or #FIELD operators.
+

@@ -1,0 +1,131 @@
+'\" t
+.TH conn_server_ip 1 "24 May 1996" "CIIR, UMass" "INQUERY Document Retrieval"
+.SH NAME
+conn_server_ip - TCP/IP Connection Server that manages 
+.SB INQUERY
+network connections.
+.SH SYNOPSIS
+.B conn_server_ip
+.RB [ \-config
+.IR config-file ]
+.RB [ \-logfile
+.IR log-file ]
+.RB [ \-tipster ]
+.RB [ \-noAutoStart ]
+.RB [ \-noLRU ]
+.RB [ \-LRU-timout
+.IR secs ]
+.RB [ \-server-upath
+.IR path ]
+.RB [ \-nolocal-server ]
+.RB [ \-server-portnum
+.IR port-num ]
+.RB [ \-client-portnum
+.IR port-num ]
+.RB [ \-notcpip-server ]
+.RB [ \-notcpip-client ]
+.RB [ \-h ]
+.SH DESCRIPTION 
+.B conn_server_ip
+is the managing process controlling
+.B INQUERY
+networked processes.  It is the first server to be activated and 
+will manage network communications with one or more 
+.I INQUERY Servers
+servicing database access to clients.  The 
+.I Connection Server
+may also start INQUERY Servers on its own in response to client
+requests.  The number of INQUERY Servers per Connection Server will
+vary by the number of databases to be served and resources available
+to the host.
+.PP
+If a request is received from a client application for service to a
+database that is not currently served, the Connection Server will
+start service to this database automatically unless it is instructed
+not to do so by command line options.
+.SH OPTIONS
+.BR conn_server_ip's
+takes no arguments.  It does however recognize several commandline
+switches that determine its behavior.
+.TP
+.BI \-config " config-file"
+Configure behavior from a file rather than command line options.
+The file itself will contain command line option definitions.
+.TP
+.BI \-logfile " log-file"
+Log warnings and errors to
+.I log-file.
+.TP
+.B \-tipster
+Automatically start TIPSTER INQUERY Servers
+.TP
+.B \-noAutoStart
+Do not automatically start INQUERY servers when service requests
+for a non-available database is received.
+.TP
+.B \-noLRU
+Do not use the "Least Recently Used" method of changing INQUERY database
+service.  Normally, the Connection Server will shut down INQUERY servers
+that are not frequently used, in favor of existing or new database
+service.  The default is to use LRU database servicing.
+.TP
+.BI \-LRU-timeout " secs"
+The time, in
+.I seconds,
+after which the Connection Server will consider and INQUERY Server to
+be idle, and a candidate for shutdown in favor of more active database
+service.  Note that "-noLRU" and "-LRU-timeout" are mutually exclusive.
+.TP
+.BI \-server-upath " path"
+Set the IPC socket 
+.I path
+and file name for INQUERY Servers controlled by
+this Connection Server.  The default path is /tmp/INQUERY.server.
+.TP
+.B \-nolocal-server
+Disable local INQUERY server connections
+.TP
+.BI \-server-portnum " port-num"
+Set the communication port number between Connection Server and INQUERY
+Server to
+.I port-num.
+.TP
+.BI \-client-portnum " port-num"
+Set the communication port number between Connection Server and INQUERY
+client application to
+.I port-num.
+The default value is port number 1234.
+.TP
+.B \-notcpip-server
+Disable TCP/IP INQUERY server connections.
+.TP
+.B \-notcpip-client
+Disable TCP/IP INQUERY client connections.
+.B \-h
+produce a usage description but to not start the Connection Server
+.SH EXAMPLES
+.PP
+The following command will start a Connection Server using default settings.
+.PP
+    %
+.B conn_server_ip &
+.PP
+The next command will start a Connection Server that will communicate to
+clients through port number 1200 and to INQUERY Servers via port number
+1201.  The socket file name will be /tmp/INQUERY.joe.
+.PP
+    %
+.B conn_server_ip -client-portnum 1200 -server-portnum 1201 
+.B                -server-upath /tmp/INQUERY.joe &
+.SH "BUGS"
+A Connection Server should be terminated with a SIGTERM signal to
+eliminate occassional shutdown instability when sending the process
+a SIGKILL.  Send bug reports to 
+.B inquery-bugs@cs.umass.edu.
+.SH SEE ALSO
+.BR inquery-server (1)
+and
+.B sysadmin.doc
+in the documentation directory of the
+.SB INQUERY 
+release.

@@ -1,0 +1,192 @@
+/**************************************************************************/
+/*                                                                        */
+/*                 Copyright (c) 1993, 1994, 1995 by the                  */
+/*  Applied Computing Systems Institute of Massachusetts, Inc. (ACSIOM).  */
+/*            Do not distribute without written permission.               */
+/*                          All Rights Reserved.                          */
+/*                                                                        */
+/*                 INQUERY Software was provided by the                   */
+/*           Center for Intelligent Information Retrieval (CIIR)          */
+/*         University of Massachusetts Computer Science Department        */
+/*                     Amherst, Massachusetts  01003                      */
+/*                                                                        */
+/*           Contact ACSIOM at (413)545-6311 for more information         */
+/*                                                                        */
+/**************************************************************************/
+
+
+
+				TCLINQ
+
+TCLINQ provides a Tcl language interface for the Inquery system.
+The implementation is "object oriented" as that term is defined
+in Chapter 28 of "Tcl and the TK Toolkit" by John K. Ousterhout.
+
+inq_dbnames
+	A wrapper for the command "glob $env(INQDATA)/*/*.inf
+	The wrapper is useful for the case when the tclinq library is
+	implemented as a separate process from the front-end code.
+
+
+inq_opendb ?database_name?
+	Opens the named database and returns the name of a new tcl
+	procedure for future access to the database.
+
+
+inq_eval_query query ?top_n? ?list_of_relevant_docs? ?rf_iterations?
+           eval_query query ?top_n? ?list_of_relevant_docs? ?rf_iterations?
+
+	Evaluate the argument named "query" and return the number of
+	documents retrieved.  As a side effect, progress messages
+	will be produced as each term in the query is evaluated.
+
+	If top_n is present, only the specified number of documents will be
+		retrieved, otherwise all possibly appropriate documents
+		will be retrieved.
+
+	If list_of_relevant_docs is present, it will be interpreted as a
+	list of tuples where each element in the list specifies
+	a single relevant document for the purposes of evaluating
+	the query with relevance feedback.  The first element in
+	each tuple must be an internal document id. The second
+	element in each tuple must be present, but its value is
+	ignored (i.e. all listed documents are considered relevant.)
+
+	If rf_iterations is present, it is ignored.
+		
+
+inq_get_blist start count
+           get_blist start count
+
+	Returns a portion of the "belief list" for the most recent query
+	evaluated by eval_query above.  The list is a list of
+	tuples where the first element of each tuple is the
+	Inquery interal document id of the document and the
+	second element is the belief value of the document for
+	the most recent query.  Start and count range from 0 to
+	the_number_of_documents_returned_by_eval_query - 1
+
+inq_get_doc_field field_name ?doc_id?
+           get_doc_field field_name ?doc_id?
+
+	Returns the contents of the named field in the named document with
+	highlighting information.
+
+	Field can be one of:
+			id  source  title  text
+			optionally prefixed with "inq_doc_field_". 
+		The doc_id must be an Inquery internal document id.
+		If doc_id is missing, the doc_id given on the most recent
+		call to get_doc_field will be used.  The first call to
+		get_doc_field must include a doc_id. 
+
+		The returned value is a list of three elements, the first
+		element is the contents of the field.  The contents are
+		modified in two ways:
+			1) special characters {, }, and \ are escaped with \.
+			2) newlines are mapped to formfeeds.
+
+		This second step is necessary to make the interprocess
+		communications work using newline as the record terminator.
+		This will change in later versions and be hidden in a higher
+		layer of the protocol.
+
+		The second element of the list is a list of highlighting
+		information to indicate which segments of the field matched
+		the query.  Each element in the highlight list contains four
+		values suitable for passing directly to the Tk text widget
+		"add tag" command.
+
+		The third element of the list has the same syntax as the 
+		second one, but this time, it is not query term highlighting
+		information, but rather the passage information.  Each
+		element in the list contains five values, the first
+		one being the passage score and the other 4 are the line
+		number and offset information, similar to the query
+		term highlighting information.
+
+get_parsed_query query ?list_of_relevant_docs? ?rf_iterations?
+
+	Converts a natural language into a structured query.  The
+	arguments list_of_relevant_docs and rf_iterations have
+	the same meanings as found in eval_query.
+
+get_browse_list
+	
+	Gets a list of browse dictionaries availabe for the opened
+	collection.  eg: term, concepts, acronyms, etc.
+
+open_browse browser_name/topic maxline maxwin 
+
+	Opens the dictionary, specified in the arguement browser name.
+	The browser name can be any of the browser names, returned by
+	the get_browse_list call.
+	The second arguement maxline, is used to determine
+	the number of items the browser should return.  Note, some
+	browsers don't respond to this arguement and returns all the
+	matches.  eg: pattern matching.
+	The third arguement, is used to determine the maximum size in
+	charecters, of the returned strings/lines.
+	This API returns the the options available to browse on. 
+	eg: pattern, alpha, titles, etc
+
+new_read_browse action [ string [topic]]
+
+	Submits the string and the option to the browser.  This API returns
+	the list of matches.
+
+close_browse [browser_name]
+
+	Closes the named browser, if specified, or closes the browser
+	that is open.	
+
+find_phrase phrase
+
+	Returns a list of offsets in the opened document, corresponding
+	to the location of the given phrase.
+
+set_passage_size size
+
+	Sets the passage size to size (arguement passed) words.
+
+get_indexcount
+
+	Returns the number of field indicies avaliable in the opened
+	collection.
+
+get_indexname count
+
+	Returns an index name, whose, index in the list of field names
+	available is given by count.
+
+get_num_docs
+	
+	Gets the number of document in the opened collection.
+
+get_transformer_list
+
+	Gets the number of query recognisers in the opened collection.
+
+get_transformer_state
+
+	Gets the state ( 0 | 1 ) of the specified recogiser.
+
+set_transformer_state
+
+	Alters the state of the specified recogniser.
+
+get_raw_doc
+
+	Gets the raw document (with the markup tags).
+
+set_query_stemming
+
+	Sets the query stemming ( ON / OFF ).  If ON the query terms
+	are stemmed, before evaluation and if OFF are not stemmed.
+
+set_spell_checking
+
+	Sets the spell checking flag ( ON / OFF ), if OFF all the 
+	query terms, which are not there in the collection are ignored.
+	If set to ON, the list of terms not found in the collection 
+	are reported.

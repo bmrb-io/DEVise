@@ -1,0 +1,76 @@
+
+
+			XINQUERY BROWSE WINDOW
+
+This document explains the operation and use of each of the buttons, in the 
+browser window.
+The name of the browse dictionary is displayed at the top.  Then there 
+is the selection widget, which displays the matches/selections.
+The user enters the text to browse on at the bottom, specifically in the
+text widget at the bottom.
+At this point it is worth mentioning that, xinquery uses the same
+browse window, with slightly different buttons, both during spell
+checking and also, when the user explicitly wants to browse the 
+various browse dictionaries.
+The following is a list of the various buttons, along with their
+functionality.  It should be noted that some of these buttons may 
+not be found in all browser windows.
+
+prev            : Gets the previous page.
+
+next            : Gets the next page.
+
+substring 	: When this button is clicked, the browser takes the string 
+	          entered in the text widget and does a pattern match of this
+	          string ( similar to grep ) on the browser dictionary, that
+	          is open and gets all the matches and displays each of the
+	          matches as a selection in the selection widget.
+
+prefix    	: When this button is clicked, the browser takes the string
+	          entered in the text widget and does a alphabetic search,
+	          that is, dictionary look-up of this string against the 
+	          browser dictionary that is open and gets all the matches
+	          and displays each of these matches as a selection in the
+	          selection widget.
+
+freq-sort       : When this button is clicked, the browser, gets a list of 
+	          most frequently occuring terms in the collection and
+	          displays each of these as a selection in the selection
+	          widget.
+
+titles          : When this button is clicked, the browser takes the string 
+	          entered in the text widget, and queries the collection that
+	          is open and gets the titles of the documents returned and
+	          displays each of the titles as a selection in the selection
+	          widget.
+
+query           : This button is present, only when browsing the concepts 
+	          dictionary.  Wnen this button is clicked, the browser 
+	          takes the text entered in the text widget and uses it as
+	          a query against the concepts database and gets the
+	          titles returned and displays each of them as a selection in
+	          the selection widget.
+
+Append          : This button is present, only during a browse session, 
+	          initiated by the user ( not during a spell check ).  
+	          When this button is clicked, the browser appends the 
+	          text in the text widget to the query, in the query 
+	          window of xinquery.
+
+Accept          : This button is present only during spell check.  When this
+	          button is clicked, the browser, replaces the wrong query term
+	          under consideration, with the text in the text widget.
+	          It should be noted that, if there is no text entered in the
+	          text widget, then the wrong query term under consideration
+	          is removed from the query string and the query window.
+
+Dismiss         : The operation of this buttons depends on whether the browse
+	          window is a spell check window or one created for the user
+	          to browse some browse dictionary.
+	          If used, with a spell check window, the wrong query term is
+	          removed from the query string and the query window as part
+	          of dismissing the browse window.
+	          If used, with a regular browse window, just dismisses 
+	          the browse window.
+
+Help            : Gets this help screen.

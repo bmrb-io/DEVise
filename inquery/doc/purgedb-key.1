@@ -1,0 +1,91 @@
+'\" t
+.TH purgedb-key 1 "6 August 1996" "CIIR, UMass" "INQUERY Document Retrieval"
+.SH NAME
+.PP
+purgedb-key - Remove a list of documents from an
+.B INQUERY
+database.
+.SH SYNOPSIS
+.PP
+.B purgedb-key
+.I database
+.RB [ \-cc_on ]
+.RB [ \-cc_off ]
+.RB [ \-batch_n
+.IR int ]
+.RB [ \-cr_on ]
+.RB [ \-cr_off ]
+
+.SH DESCRIPTION 
+.PP
+.B purgedb-key
+removes document entries from an
+.B INQUERY
+database.  The documents to be removed are in a list created with
+the
+.B deldoc
+program.
+.PP
+.SH OPTIONS
+.PP
+.BR purgedb-key
+requires a database name as its first argument.
+.TP
+.B database
+An existing
+.B INQUERY
+database base name.  This may include the path to the database
+file.  A list of document IDs to be deleted must have already been
+produced using
+.B deldoc.
+.PP
+The optional switches refer to concurrency control, which will allow
+users to query the database while deletion is in progress, or crash
+recovery, which allow users to restart a purge that crashed before
+completing.
+.TP
+.B \-cc_on
+Provide concurrency control during document deletion.
+.TP
+.B \-cc_off
+Disable concurrency control during document deletion.
+This is the default.
+.TP
+.BI \-cc_batch_n " int"
+Pause after processing every
+.I int
+terms to let other users query the database.  (Concurrency
+control must be on.)  Default value is 2000 terms.
+.TP
+.B \-cr_on
+Turn crash recovery on.
+.TP
+.B \-cr_off
+Turn crash recover off.  This is the default.
+.SH EXAMPLES
+.PP
+This example uses 
+.B deldoc
+to produce an deletion list containing two IDs from the 
+"mydb" database.  The IDs are an internal ID "5501" and 
+external ID "wsj87-0001-0323".  Then call
+.B purgedb-key
+to actually remove the listed documents from the "mydb" database.
+.PP
+    %
+.B deldoc mydb 5501 -X wsj87-0001-0323 
+.PP
+    %
+.B purgedb-key mydb
+.SH "BUGS"
+.PP
+Send bug reports to 
+.B inquery-bugs@cs.umass.edu.
+.SH SEE ALSO
+.PP
+.BR deldoc (1)
+and
+.B sysadmin.doc.
+in the documentation directory of the
+.B INQUERY 
+release.

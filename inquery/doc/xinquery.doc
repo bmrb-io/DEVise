@@ -1,0 +1,768 @@
+/**************************************************************************/
+/*                                                                        */
+/*                   Copyright (c) 1993-1996 by the                       */
+/*  Applied Computing Systems Institute of Massachusetts, Inc. (ACSIOM).  */
+/*            Do not distribute without written permission.               */
+/*                          All Rights Reserved.                          */
+/*                                                                        */
+/*                 INQUERY Software was provided by the                   */
+/*           Center for Intelligent Information Retrieval (CIIR)          */
+/*         University of Massachusetts Computer Science Department        */
+/*                     Amherst, Massachusetts  01003                      */
+/*                                                                        */
+/*           Contact ACSIOM at (413)545-6311 for more information         */
+/*                                                                        */
+/**************************************************************************/
+
+
+                        The Inquery X User Interface
+
+
+Revision Date: May 24, 1996
+
+
+Table of Contents
+
+  1.0  OVERVIEW
+
+  2.0  XINQUERY COMMAND LINE OPTIONS
+
+  3.0  ENVIRONMENT VARIABLES
+
+  4.0  XINQUERY INTERFACE DESCRIPTION
+    4.1  Interface Regions
+    4.2  Xinquery Menu Options
+    4.3  Xinquery Buttons
+    4.4  Double Clicking
+
+
+
+1.0  OVERVIEW
+
+Xinquery is an X interface to the INQUERY retrieval engine using Tcl/tk X
+application prototyping tools.  The actual retrieval engine application is
+contained within the "tclinq" program.  Xinquery is merely the front end to
+this program.  
+
+  NOTE: "tclinq" must be on your path when you run xinquery.  You may specify
+        a specific tclinq with a ".tkinqrc" file.
+
+The tclinq program will accept database retrieval commands and allows for
+customized startup files.  Some details to this aspect of xinquery is
+available in the Help menu within xinquery itself, but it will not be covered
+in this document.
+
+The xinquery interface provides access to most all of the functionality
+available from the INQUERY retrieval engine.  Pull-down menus allow for
+definitions of collections, formulation of queries and browsing of terms, as
+well as buttons defining how searches are to proceed and selection of
+documents for display. 
+
+This document will describe the command line options available for invoking
+xinquery, defined environment variables, the layout of the interface, a sample
+use of the interface and a description of menu items and navigation buttons.
+
+
+2.0  XINQUERY COMMAND LINE OPTIONS
+
+The xinquery command line options allow database definition, initialization
+scripts for defining xinquery behavior and some tclinq settings.
+
+  xinquery [-mono | -monochrome | -color] [Database] [Initscript] [-defaults]
+           [-default_colors] [-usage]  
+   
+    Database              The name of the database to use. Unlike other INQUERY
+                          programs, the database definition is via the inf file
+                          and MUST include the ".inf" extension.
+
+    -mono|-monochrome     Define a monochrome display. 
+
+    -color                Define a color display.  This is the default.
+
+    Initscript            The name of an initialization script that is 
+                          to be run prior to running xinquery. 
+
+    -defaults             Display values for global variables that may be set
+                          from an initialization file (e.g. .tkinqrc).  This
+                          selection will also offer to create a start-up
+                          .tkinqrc file.
+
+    -default_colors       To find out about the default color settings.
+                          Useful for defining color values in a users
+                          .Xdefaults file.
+
+    -usage                Print a usage description but do not invoke
+                          xinquery.  We use "-usage" in this program because
+                          "-help" is defined for Tcl options.
+
+
+3.0  ENVIRONMENT VARIABLES
+
+There are a series of environment variables known by INQUERY applications.
+These variables primarily define the location of files that might be needed
+for application startup or use during a session such as stopword list files
+and database storage locations.  The xinquery interface knows about about many
+of these variables and if they are defined by the user, they need not be
+specified on a command line, or the application may be run outside of database
+locations. 
+
+
+DOCSTOPS
+
+This environment variable defines location of the default stopword file.  The
+default is called "default.stp".  If a stopword list is not explicitly defined,
+the xinquery (and other INQUERY) applications will look for
+$DOCSTOPS/default.stp and use this as the list if stopping is active.
+Define DOCSTOPS as a sh variable using (csh) setenv or (sh) set command.  One
+may also place the definition in the appropriate shell startup file.
+
+   setenv DOCSTOPS /usr/data/inquery/mydata
+
+If this environment variable is not defined and one is not explicitly entered,
+then xinquery will proceed without using stopwords, with possibly inconsistent
+results. 
+
+
+INQDATA
+
+INQDATA defines a root database directory.  Residing in this directory may be
+many subdirectories containing INQUERY databases.  The databases need not
+actually reside within these sub-directories on Unix systems.  One may use
+symbolic links to point to outside locations where other databases reside.
+INQDATA is merely the starting location in which to look for INQUERY data.
+This is the location xinquery will go to provide the user with a list of
+available databases for selection.
+
+
+INQ_HELP
+
+Set this environment variable to the directory where xinquery help files are
+located.  Originally they are located as a sub-directory in the inquery/doc
+directory of a release.  If this variable is not defined, then no help can be
+viewed when clicking xinquery's help button.
+
+
+4.0  XINQUERY INTERFACE DESCRIPTION
+
+In this section we will describe the xinquery format and then provide a simple
+example of its use.  Finally, details of xinquery menu options and button
+functions will be provided.
+
+
+4.1  Interface Regions
+
+The xinquery interface is laid out into several regions from top to bottom.
+Each region provides certain functionality to the user such as menu
+selections, retrieval summary, document text display and document navigation.
+
+The upper region is the menu selection area.  It contains menu options across
+the top of the interface that define user interaction with the INQUERY
+retrieval engine.  
+
+The next area is a results summary bargraph, displaying a histogram of a
+number of retrieved documents, with the current active document (the first
+document or the current user selected document) highlighted.  The histogram
+shows the relative range of "relevance" or score of documents to one another.
+This can be useful in deciding how many of the top documents are worth looking
+at.  Usually, the first two or three documents will be significantly higher
+ranked than those that follow.  The actual minimum and maximum document score
+is also shown in this display.  Although the scoring is not absolute, keep in
+mind that a default score is 0.4 (range 0.4 through 1.0).  A document with
+this value is a "so-so" document.  The higher the score, the more likely its
+relevance to the query.
+
+Immediately to the right of the retrieval summary histogram is the query
+region.  This is where the user should type the query to be put to the system.
+A line immediately below displays the current collection and INQUERY server
+name in use and provides buttons to clear the displays or run the query.  You
+must push the "Run Query" button to submit the query for retrieval.
+
+The next area down the interface page is the document summary region.  This
+region provides listings (five at a time) of retrieved documents.  Each
+document line provides information as to the documents retrieval rank, its
+actual retrieval score, external ID and its title if present.  To the extreme
+left of each entry is a check box marked "RF".  The user may click the box to
+indicate a "relevant" document if relevance feedback is to be performed.
+Relevance feedback uses these relevant marked documents as sources of
+information for finding other similar documents for the user.  Scroll bars to
+the right side of this area allow scrolling through the retrieved list of
+documents.  The current active document will be highlighted or underlined.
+This will correspond with the marked histogram in the bargraph display.  If
+the user selects another document, its title line will become highlighted and
+the bargraph highlighting will change accordingly.
+
+The text area below the retrieval summary area will contain text corresponding
+to the currently selected document.  Words within this text that match query
+terms will be highlighted, allowing the user to more easily locate relevant
+sections of text.  A scroll bar to the right provides navigation ability over
+long documents.
+
+Finally, at the bottom of the interface window, a set of navigation buttons
+allow the user to jump to "relevant" sections of text, either by matching
+query terms or overall best document passage, and for moving between retrieved
+documents.   The "Next Keyword" button allows moving among matching query and
+document text terms while the "Show Best Passage" button highlights an entire,
+user defined length, of text where the best text match with the query
+occurred.  This is especially useful for long documents of many, many pages,
+allowing the user to proceed immediately to the locations matching the query.
+
+A simple picture of the xinquery interface window and its regions is provided
+below.  In this particular example, the interface is as it would appear using
+the 1963 Time Magazine collection, provided in the INQUERY release, after
+submitting the query, "John F. Kennedy".  The interface bargraph shows that
+the first, highest ranked document scored 0.537 and the lowest 0.41 (pretty
+close to the default 0.4 and thus probably not very good).  The query region
+contains "John . Kennedy".  This is because the term "F" wasn't found in the
+database and was dropped from the parsed query.  The retrieval summary region
+contains five titles with the first one highlighted as active.  The text
+window contains the text of this first document with matching query terms
+hight-lighted.  In this particular case, the "John" query term matches both
+Pope "John" XXIII as well as "John" F. Kennedy.  One could use the Query menu
+selection to refine the query to filter out "unwanted John's" from the
+retrieval. 
+
+
+
+==============================================================================
+File   Collection   Query   Document   Windows   Browse   Server          Help
+
+Bargraph                Query
+----------------------+------------------------------------------------------+
+0.537|X|              | John . Kennedy                                     |^|
+     |X|_             |                                                    | |
+     |X| |_           |                                                    | |
+     |X| | |_ _ _ _ _ |                                                    | |
+0.410|X| | | | | | | ||                                                    | |
+----------------------+                                                    | |
+<                    >|                                                    | |
+----------------------+                                                    |v|
+                      +------------------------------------------------------+
+                                 +--------------+-------------------+--------+
+Collection: time  Server: hobart |Clear Rel Docs|Clear/Restore Query|Run Query
+                                 +--------------+-------------------+--------+
+
+ RF  No.  Score                        Title 
+---+-------------------------------------------------------------------------+
+ X |*1.   0.537   TIME-173   Italy Fanfani's Test*                         |^|
+---+-----------------------------------------------------------------------| |
+ X | 2.   0.524   TIME-421   Cambodia The Slumbering Prince                | |
+---+-----------------------------------------------------------------------| |
+ X | 3.   0.518   TIME-023   France Monsieur No President                  | |
+---+-----------------------------------------------------------------------| |
+ X | 4.   0.512   TIME-382   The Nations " How Sorrowful Bad "             | |
+---+-----------------------------------------------------------------------| |
+ X | 5.   0.499   TIME-022   Italy Adjusting the Apertura                   |v|
+---+--------------------------------------------------------------------------
+ Document #1 of 50
+------------------------------------------------------------------------------
+                                                                           |^|
+Italy Fanfani's Test                                                       | |
+                                                                           | |
+ TIME-173                                                                  | |
+   04/26/63                                                                | |
+                                                                           | |
+Along the grand canal in Venice, a huge,                                   | |
+brightly lit Red-and-white shield of the Christian democratic...           | |
+... 				                                           | |
+ 				                                           | |
+                                Pope John... 				   | |
+                                     ^^^^                                  | |
+...                                                                        | |
+                                                                           | |
+John who casts his shadow over the campaign is John F. Kennedy.            | |
+^^^^                                           ^^^^    ^^^^^               | |
+...                                                                        | |
+                                                                           |v|
+------------------------------------------------------------------------------
+  +-----------------+-----------------+---------+---------+--------+--------+
+  |Show Next Keyword|Show Best Passage|Prev Best|Next Best|Prev Doc|Next Doc|
+  +-----------------+-----------------+---------+---------+--------+--------+
+==============================================================================
+
+
+4.2  Xinquery Menu Options
+
+This section describes the operation and use of each of xinquery's menu
+commands, buttons and double clicking actions.  Menu commands are organized
+from left to right across the top of the window.  A description of each
+command within the menu item will be covered in the order in which they
+appear. 
+
+
+File Menu Item
+
+  The File menu item provides control over file actions.  These actions
+  include loading queries from a specified file, saving queries developed
+  during a session to a file, saving the contents of a retrieved document and
+  quitting the program.
+
+  Load Query
+
+    Load a file containing queries into xinquery.  The contents of the file
+    specified will be used as the query and displayed in the query window,
+    just as if the user had typed it there.  This is extremely useful for long
+    and complex test queries or for queries containing character sets that can
+    not be typed.  Obviously, any query containing such characters (e.g.
+    diacritics) would have had to been built with them recognized and
+    processed in specified ways.
+
+  Save
+
+    Save the object of interest to file.  The object of interest may be a raw
+    query, a parsed query (one which has been parsed by the query processor
+    resulting in possible stopping, stemming or query transformation), or
+    saving the text of a retrieved document.  When saving to file, the text is
+    appended to the file rather than overwriting it.
+			
+    Save Query		Save the query displayed in the query window to a
+                        file.
+
+    Save Parsed Query   Save the parsed query displayed in the parsed query
+                        window to a file.  
+				
+    Save Document       Specify a file to save the document displayed in the
+                        document text window.
+
+  Quit 
+
+    Quit the xinquery session.
+
+
+Collection Menu
+
+  This menu lists the collections in the directory specified by the INQDATA
+  environment variable.  The list is built by finding all collections in
+  directories and subdirectories within the $INQDATA starting point.  This
+  list of databases is alphabetized and then the collection subdirectory and
+  collection (database) base name is saved and presented in a list for user
+  selection.  The user clicks the selection box for the collection that is to
+  be opened and queried.
+
+  One may access INQUERY databases that are not contained within the $INQDATA
+  directory subtree by choosing "Other...".  This will allow the user to
+  navigate to a location where the database resides.  If the collection
+  directory is empty, i.e., does not contain any collections, or if the
+  INQDATA environment variable is not set to the collections directory,
+  one must use the "Other" selection to access a database.
+
+  The Collection menu may also be used to define a multi-database (MDB)
+  xinquery session.  In this mode, the user will be presented with a list of
+  databases to be marked as "active".  Then, queries will be submitted
+  separately to each of the database and the results merged before being
+  presented to the user.  There must be an INQUERY Connection Server active
+  for MDB sessions to be possible.  
+
+  The Collection indicator below the query box will indicate the name of the
+  currently active collection, or if in MDB mode, will say "Multi DB".  In MDB
+  mode, the Collection menu will offer "Multi DB" or "Single DB" options to
+  allow passing back and forth between the two types of retrieval during one
+  xinquery session.  Select "Multi DB" to display the current active
+  databases.  A "Collection" definition of "?????" means a collection has not
+  been defined, an must be, before retrieval may proceed.
+
+
+Query Menu
+
+  A series of query manipulation and definition selections are available with
+  this menu topic.  The user may view the parsed query, define the number of
+  documents the query is to retrieve, the size of the text passage to be used
+  if passage viewing is enabled or a spell checking, or more aptly, "term
+  checking" toggle may be set.  Furthermore, query transformers may be
+  selected as active or not and finally, a query form may be invoked to aid
+  the user in formulating a more precise query before submitting it to the system.
+
+  Show Parsed Query     Displays a window containing the current query as it
+                        appears after processing by the query parser.  In this
+                        form, the query may possibly have terms removed or
+                        operators added.
+
+  Run Query             Runs the query shown in the query window.  One may
+                        accomplish the same result by selecting the "Run
+                        Query" button below the query window, or by typing a
+                        "quick" double RETURN when typing the end of the
+                        query. 
+
+  Mode                  Gives a sub-menu that lets you select the desired mode
+                        for retrieval.  Retrieval modes are by Document,
+                        Passage, or Both.  Retrieval by passage returns
+                        documents ranked by best passage rather than the
+                        entire document contents.
+
+  Number of Top Docs    Produces a sub-menu that allows definition of the
+                        maximum number of top documents to be returned for
+                        viewing.  The default value is 50 documents.
+
+  Words per Passage     Select the number of words that will define a passage.
+                        The default value is 200 words.
+
+  Spell Checking        Turns spell checking on or off. If the query contains
+                        a word that is not in the collection index and spell
+                        checking is on, xinquery produces a dialog that lets
+                        the user change the word.  If it is off, it ignores
+                        the word (without warning you).  Note that spell
+                        checking is not a true check for spelling errors.  It
+                        simply refers to a query term not being found in the
+                        database, possibly because it is mis-spelled.  The
+                        default action is ON.
+
+  Query Processing      Turns query processing on or off.  It is ON by
+                        default.  Query processing means activate the selected
+                        query transformers.
+
+  Transformers          Activate or deactivate the various transformers
+
+                        (stop_phrases, location, hyphens_caps, etc.) on or off
+                        individually.  If any transformers are active, the
+                        query may be automatically re-written by the addition
+                        or deletion of terms or query operators.  One may see
+                        the result of the transformations by looking at the
+                        parsed query result.
+
+  Query Form            Brings up a dialog window that allows the construction
+                        of a query.  The query may be defined in terms of word
+                        or phrase weights or field index definitions.  One may
+                        examine and reformulate the query before actually
+                        submitting it for processing.
+
+
+
+  The "Query Form selection will offer up a form as shown below, in which the
+  user may use natural language, or enter text a term or phrase at a time to
+  be formed into a more powerful structured query.
+
+
+                     Enter natural language query here
+
+              +--------------------------------------------+-+
+              |                                            |^|
+              |                                            | |
+              |                                            | |
+              |                                            | |
+              |                                            |v|
+              +--------------------------------------------+-+
+
+  Query Weight:        Term Or Phrase per line
+
+  +-----------------------------------------------------------------------+-+
+  |  Med | operating systems                                              |^|
+  +-----------------------------------------------------------------------+ |
+  |  Req | information retrieval                                          | |
+  +-----------------------------------------------------------------------+ |
+  |  Not | database                                                       | |
+  +-----------------------------------------------------------------------+ |
+  |  LOW | microsoft                                                      |v|
+  +-----------------------------------------------------------------------+-+
+
+        +-----------------+    +---------+    +-----------+     +----+
+        |Show Parsed Query|    |Run Query|    |Field Names|     |Help|
+        +-----------------+    +---------+    +-----------+     +----+
+                             +------+   +-----+
+                             |Cancel|   |Clear|
+                             +------+   +-----+
+
+
+  The query formulated as a result of the above form elements, using the CACM
+  database included in the INQUERY release is:
+
+       #BANDNOT(
+          #BAND (
+             #OD3( inform retriev )
+             #OD3( oper system)
+          )
+          databas
+       )
+
+  This query has been automatically wrapped in a "boolean and" operator,
+  "ordered distance of 3" operators, all within a "boolean and not" operation.
+  The query terms have also been stemmed.  This is the query as it would be
+  submitted to the retrieval engine.  Note also that the "microsoft" term has
+  been dropped from the query.  In fact, if this query were submitted, with a
+  "microsoft" term, a browser window would pop up allowing refinement of the
+  term entry.  This CACM database is from the "pre-Microsoft Era".  There is
+  no such term in this database.
+
+  The Query Form controls are described below.
+
+    Show Parsed Query    Display the parsed query, in a sub-window.
+
+    Run Query            Run the query.
+
+    Field Names          If field based retrieval is available for this
+                         collection, then this is a pull-down menu with
+                         possible field names as choices.  The corresponding
+                         browser is displayed for selecting values for the
+                         field along with valid operators.  If field based
+                         retrieval is not available for the open collection,
+                         this button is disabled.
+
+    Help                 Display help screens.
+
+    Cancel               Cancel the query form window.  The next time this
+                         window is invoked, it will come up with the prior
+                         contents rather than as empty.
+
+    Clear                Clear the content of the query form and resets each
+                         of the associated weights to "Low".
+
+    Weight Buttons       A button to the left of each term or phrase entry
+
+                         assigns weights to the term(s) contained in the
+                         entry.  The weights are "Low", "Med", "high", "Req"
+                         and "Not".  Each click on this button cycles through
+                         these weight values.  The values give term weights of
+                         1, 2 and 3 to the associated term(s).  A weight of
+                         "Req" wraps the term(s) with a boolean "and" (#BAND)
+                         operator signifying they are required.  A "Not" value
+                         wraps the query terms with a boolean "and not"
+                         (#BANDNOT) operator to eliminate documents containing
+                         these terms.  It is an error to have all term or
+                         phrase weights of "Not".
+
+  Empty query forms do not contribute to the resultant query.  Hitting RETURN
+  focuses the next form element, or if the default four elements are full,
+  will create another new, empty, element.
+
+  If there is more than one form element with the same weight, they will be
+  grouped together with a common weight.  Terms inside a single form element
+  are grouped with a prox 3 (#3) operator.  A prox 3 is chosen instead of the
+  "phrase" (#PHRASE) operator because it will guarantee that all the terms
+  occur (or does NOT occur if surrounded by a "Not" weight value) in the
+  retrieved document.
+
+
+Document Menu
+
+  This menu contains commands for navigating within and between retrieved
+  documents and their text.  This primarily involves moving to text terms or
+  passages that match query terms.
+
+  Show Next Keyword     Scroll the document text window to make the next
+                        matching query term visible.
+
+  Show Next Document    Display the next document in the document text window.
+
+  Show Previous Document
+                        Show the previous document in the document text
+                        window. 
+
+  Show Best Passage	Scrolls the document text window to make the "best
+                        passage" (the passage best matching the query)
+                        visible. 
+
+  Show Next Best Passage
+                        Scroll the document text window to make the next best
+                        passage visible.  If the second best passage is
+                        in view, then this selection will show document text
+                        containing the third best passage if it exists.
+
+  Show Previous Best Passage
+                        Scroll the document text window to the previous best
+                        passage.
+
+  Highlighting Mode
+			(Currently disabled.)
+
+  Clear Relevant Documents
+                        Clear the relevance feedback check marks (RF check
+                        boxes) for all the documents. 
+
+  Find                  Search for a character string.  Currently, only the
+                        first word of the string is used.
+
+
+Windows Menu
+
+  Select this menu item to view the current list of warnings that have been
+  generated during the session.  One may also view the query history, or clear
+  all windows or queries.  A Tcl selection allows direct access to the Tcl
+  interpreter via Tcl commands.  These commands are currently not discussed in
+  this document although the xinquery Help Menu does provide some information
+  about this feature.
+
+  nn Warnings           Show a window containing any warning messages
+                        generated during the xinquery session.  "nn" is the
+                        number of errors accumulated so far, e.g. "2
+                        Warnings". 
+
+  Tcl                   Display a window for directly typing Tcl commands,
+                        including commands to change settings of some of the
+                        xinquery global variables.
+
+  Query History         Display a list of the queries issued thus far during
+                        the xinquery session.
+
+  Clear All Windows     Clears the bargraph, the query text, retrieval
+                        summary and document text areas of the interface.
+
+  Clear/Restore Query   If there is a query in the query text area, clear it.
+                        If not, restore the most recent query.
+
+Browse Menu
+
+  The browser menu offers access to the known field and global database terms
+  for the current collection database.  A browser allows a user to enhance the
+  query with terms from specified areas of the text, or by allowing query
+  terms to be more correctly defined.  The selections in this menu item will
+  correspond to the field indexes created when building the database, and
+  always the global term database.  There may also be browser entries for
+  InFinder databases or concept files.  For the Time Magazine database
+  included with the INQUERY release, the following browser selections are
+  possible. 
+
+  stem (stem)
+
+    A list of the terms (actually stems since the collection was built using
+    stemming).  This browser file is available with every database and allows
+    a user to know what sort of terms are available (or unavailable) for use.
+    In our "John F. Kennedy" example, the "F" was dropped from the query
+    because it does not exist in the database.  If one browses the stem
+    selections, on will not find an "F" term entry (or any single letter
+    entry).
+
+  Document Title (TITLE)
+
+    Terms contained in the TITLE field of documents.  Note that this is not
+    the same as a listing of document titles in the collection, although one
+    could build such a browser file for use.  Retrieval of documents by title
+    terms would be via a TITLE field query.
+
+  External Doc Id (DOCID)
+
+    A listing of the external IDs of documents in the collection.  Retrieval
+    of documents of external ID would be via a DOCID field query.
+
+  Document Date (DDATE)
+
+    A listing of the document dates, in canonical form (as well as
+    sub-components which are generally not useful), appearing in the
+    collection.  Retrieving documents by date would involve a query of the
+    DDATE field.
+
+  Content Date (CDATE)
+
+    A listing of the content dates, in canonical form, that appear in the
+    collection.  A content date is a date that appears in document text as
+    opposed to a special, document date field as with DDATE above.  Retrieving
+    documents by date would involve a query of the CDATE field.
+
+  Selecting one of the browser files offered will result in a Browse
+  Dictionary sub-window appearing.  This window contains the name of the
+  dictionary, e.g. DDATE with a listing of the terms and their frequency in
+  the collection.  A text entry box is available for searching particular
+  strings as prefixes, substrings or other forms.  Buttons are available for
+  navigating through the term lists and for appending them to the current
+  query.
+
+  The browser window shown below resulted from a prefix search of the Time
+  Magazine collection for the term "si".  One would like to find information
+  about Prince Sihanouk of Cambodia, but was uncertain how to spell the word,
+  or even if such an entry was in the database.  Because the list of terms
+  does not always appear precisely centered on the search term or where the
+  search term would have been if it existed, one may have to scroll through
+  the display several screens to get to the desired location in the list.
+
+  
+
+                       Stemmed term Dictionary
+
+    Freq   Terms in the dictionary
+   +-------------------------------------------------------+-+
+   | 1      signoret                                       |^|
+   | 30     sihanouk                                       | |
+   | 1      sikh                                           | |
+   | 16     sikkim                                         | |
+   | 4      sikkimes                                       | |
+   | 22     silenc                                         | |
+   | 18     silent                                         | |
+   | 2      silesia                                        | |
+   | 2      silesian                                       | |
+   | 6      silk                                           |v|
+   +-------------------------------------------------------+-+
+      +------+    +----+                             +----+
+      | prev |    |next|                             |Help|
+      +------+    +----+                             +----+
+
+               +------------------------+
+   Enter text: |si                      |
+               +------------------------+
+ 
+   +----+   +------+     +---------+     +------+    +------+
+   |Done|   |prefix|     |substring|     |titles|    |Append|
+   +----+   +------+     +---------+     +------+    +------+
+
+  The bottom button may vary somewhat from that displayed above because of the
+  type of browser file available.  The "titles" button may or may not present
+  document titles in which the term resides.  It may be replaced by a "query"
+  button that will actually query the browser file producing possibly related
+  terms.
+
+
+Server Menu
+
+  This menu lists known machines that may be serving INQUERY databases.  The
+  retrieval engine will execute on the chosen machine if possible.  Note that
+  the user should have permission to execute rsh on the selected machine.
+  (Currently, a list of selected machines at CIIR is compiled into XInquery,
+  and there's no way for a user to change it.)  ?????
+
+
+Help Menu
+
+  This menu initially starts with the "Show Context Help" selection.  Choosing
+  this item produces a description of whatever "widget" the mouse is pointing
+  to.  It will also change the selection item to "Hide Context Help" allowing
+  the user to toggle context help as needed.  Each of the other commands in
+  this menu produces a window containing help text on the selected topic.
+  These items include "About Xinquery", "Using Xinquery", "About Inquery",
+  "Query Formulation", "Xinquery Preferences" and "Xinquery's TCLINQ".  Some
+  of these selection offer still further selection items.
+
+
+4.3  Xinquery Buttons
+
+A series of buttons appears on the xinquery interface window.  These allow the
+user to navigate about documents and document text, as well as manage the
+query and retrieval regions of the window.
+
+  Clear Rel Docs        Clear the relevant document ("RF") box selections.
+                        This is the same as the "Clear Relevant Documents"
+                        selection from the Document menu.
+
+  Clear/Restore Query   Toggle between clearing the the query text region or
+                        restoring the last defined query text to the region.
+
+  Run Query             Run the query that currently appears in the query text
+                        area.  Same as Query menu selection with the same name.
+		
+  Show Next Keyword     Scroll to the next matching query term in the document
+                        text area.  Same as Document menu selection with the
+                        same name.
+
+  Show Best Passage     Go to the best passage in the current document text.
+                        Same as the Document menu selection with this name.
+
+  Next Best             Go to the next best passage in the current document
+                        text.  This is the same the Document menu "Show Next
+                        Best Passage" selection.
+
+  Prev Best             Go to the previous best passage in the current document
+                        text.  This is the same the Document menu "Show Previous
+                        Best Passage" selection.
+
+  Next Doc              Go to the next document in the retrieval list.  This
+                        is the same as the Document menu "Show Next Document"
+                        selection. 
+
+  Prev Doc              Go to the previous document in the retrieval list.
+                        This is the same as the Document menu "Show Previous
+                        Document" selection. 
+
+
+4.4  Double Clicking
+
+In the bargraph window, double clicking on any bar displays the corresponding
+numbered document in the document text area.
+
+Similarly, in the document title area, double clicking on any title displays the
+corresponding document in the document text area.
+

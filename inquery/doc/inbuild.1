@@ -1,0 +1,479 @@
+'\" t
+.TH inbuild 1 "31 July 1996" "CIIR, UMass" "INQUERY Document Retrieval System"
+.SH NAME
+.B inbuild 
+- Create an
+.B INQUERY
+database from collection data files in one step.
+.SH SYNOPSIS
+.B inbuild 
+.I 
+database_name
+.RB [[ \-type 
+.IR data-format] 
+collection-file]...
+.RB [ \-stop ]
+.RB [ \-nostop ]
+.RB [ \-stoplist
+.IR stopfile ]
+.RB [ \-stemmer 
+.IR stemmer-function ]
+.RB [ \-nostem ]
+.RB [ \-case ]
+.RB [ \-recog ]
+.RB [ \-norecog ]
+.RB [ \-use_recog
+.IR recog-name ]
+.RB [ \-skip_recog
+.IR recog-name ]
+.RB [ \-fields ]
+.RB [ \-nofields ]
+.RB [ \-comp ]
+.RB [ \-nocomp ]
+.RB [ \-terms ]
+.RB [ \-termfile
+.IR term-file ]
+.RB [ \-notermfile ]
+.RB [ \-save_imd ]
+.RB [ \-bufsize
+.IR float ]
+.RB [ \-ib ]
+.RB [ \-top_docs
+.IR int ]
+.RB [ \-qbs ]
+.RB [ \-cc_on ]
+.RB [ \-cc_off ]
+.RB [ \-cc_batch_n
+.IR int ]
+.RB [ \-cr_on ]
+.RB [ \-cr_off ]
+.RB [ \-cr_min
+.IR mins ]
+.RB [ \-continue
+.IR int ]
+.RB [ \-f_continue 
+.IR int ]
+.RB [ \-merge ]
+.RB [ \-f_merge ]
+
+.SH DESCRIPTION 
+.B inbuild
+is part of the 
+.B INQUERY Document Retrieval System. INQUERY
+includes programs to build databases, or indexes, from 
+document collection files. It also includes programs which run 
+user queries against these databases and retrieve relevant 
+documents.
+.PP
+.B inbuild
+builds an 
+.B INQUERY
+database in one step, from one or more collection files.  An
+.B INQUERY
+database is comprised of several associated files.  These files share 
+common basename (the name of the database) and must all be kept in the
+same directory.
+.PP
+.B inbuild
+first parses the collection file(s) to produce an
+.I .imd 
+("intermediate") file, and then merges blocks within that file 
+to produce a 
+.I .btl 
+("b-tree", or "inverted") file.  The 
+.I .imd 
+file is then deleted, unless the "\-save_imd" option is given.  The
+.I .btl 
+file is the main index file of the database.  
+.PP
+If the "\-fields" switch is given, 
+.B inbuild
+also creates an 
+.I .imf
+("intermediate fields") file and then merges its blocks into an
+.I .ndx
+("index") files.  Again, the intermediate file is ordinarily deleted.
+.PP
+Note that 
+.B inbuild
+produces the 
+.I same result 
+as running 
+.B inparse
+and 
+.B merge_btl
+separately.  Using
+.B inbuild 
+is a faster and simpler operation, but 
+.B inparse
+and 
+.B merge_btl
+may be used if there is not enough disk space to store the 
+intermediate and
+.I .btl
+and/or
+.I .ndx
+files simultaneously.
+.PP
+.BR inbuild 
+takes document collection files as input.  The structure or format of 
+these files is defined with the "\-type" switch.  Collections with 
+differing document formats can be indexed on the same command line
+to produce a single
+.SM INQUERY
+database.  The default document type is a simple SGML format.  Other types 
+available are "cacm_dots", "html", "file", and "email."  These types are 
+defined in the document manager's translator table in the file "dm_trans_tab.c".
+by modifying this file and rebuilding 
+.B inbuild
+, you can change the built in types and/or add new ones.
+.PP
+The minimal form of an SGML document acceptable to 
+.B inbuild
+contains the following SGML tags:
+.PP
+.RS 1i
+<DOC>
+.br
+<DOCNO> 
+.I document id string
+</DOCNO>
+.br
+<TEXT>
+.br
+.RS 1i
+.I
+document text
+.RE
+.br
+</TEXT>
+.br
+</DOC>
+.RE
+.PP
+Many other SGML tags (those delimiting titles, authors, dates, etc.) 
+are recognized by
+.B inbuild
+if they are present.
+.SH OPTIONS
+.BR inbuild 's
+first argument is the name of the database you wish to create (given 
+without any extension).  The database name may include a leading path;
+this will point the output files to another directory.  Database files and
+intermediate files will be built in the directory specified by the
+first argument, or in the current working directory if no path is given.
+Following the database argument, the collection files are listed.  The 
+"type" option, specifying the document format for a given file or list of 
+files must proceed the collection files of that type.  Other options can 
+follow in any order.  
+See
+.B EXAMPLES
+below.
+.PP
+.I General Options
+.TP
+.BI \-type " data-format"
+The data type format for the collection file(s) following.
+The default is "sgml".
+.TP
+.B \-stop 
+Discard words on the stopword list.  This is the default.
+.TP
+.B \-nostop
+Do not test for stopwords.  This will speed processing
+but result in a larger index files (.btl and .ndx).
+.TP
+.BI \-stoplist " stopfile"
+Use the file 
+.I stopfile
+for defining words to be excluded from the inverted file.  A default
+list will be used if one is not defined.  The default list is defined
+as 
+.BR $DOCSTOPS/default.stp.
+.TP
+.BI \-stemmmer " stemmer-function"
+Stem the words of the document using the stemmer specified.  Available
+stemmer functions are
+.I kstem
+(default),
+.I porter
+and
+.I spanish.
+The user may define private stemmers in the stemmer table file and specify 
+them in this option.
+.TP
+.B \-nostem
+Don't stem the words in the document.
+.TP
+.B \-case
+Preserve case.  This means words are not lower cased and stopping 
+and stemming will be disabled.
+For example, "LaTex" will be saved as "LaTex" instead of 
+"latex", or whatever the stem of that might be if stemming were on.
+.TP
+.BI \-recog
+Run all defined special recognizers on the collection.
+Special recognizers are defined by the user for detecting
+concepts of special interest such as locations, names,
+etc.
+.TP
+.B \-norecog
+Disable all special recognizers.  This is the default.
+.TP
+.BI \-use_recog " recog-name"
+Turn the recognizer named
+.I recog-name
+on during processing, irrespective of its default setting
+in the special scanner table, spec_scan_tab.c.
+.TP
+.BI \-skip_recog " recog-name"
+Disable recognizer named
+.I recog-name,
+irrespective of its default setting in the
+special scanner table, spec_scan_tab.c.
+.TP
+.B \-fields
+Produce a database file named \fIdatabase\fB.ndx\fR.  This file
+contains only words in special fields of a document allowing field
+based retrieval.
+.TP
+.B \-nofields
+Do not produce field based term transactions.  This is the
+default.
+.TP
+.B \-comp
+All collection files will be compressed using Huffman compression and
+stored in their compressed form.  Any subsequent access of the documents
+for retrieval will access only the compressed file.
+This allows the original collection files to be removed 
+from disk after the database is built, saving space.  NOTE: This flag does
+not remove the original data.
+.TP
+.B \-nocomp
+Do not use Huffman compression on the collection files.
+This is the default.  The collection files must remain in their 
+original location.  If they are moved, the program 
+.B set_col
+must be run on the database.
+.TP
+.B \-terms
+Write a list of all terms encountered and their position numbers to 
+standard out.
+The list will be in alphabetic order for each document.  Useful for
+debugging purposes.
+.TP
+.BI \-termfile " term-file"
+Write a file containing each term that is indexed in the order that
+it was encountered.  If
+.I term-file
+is not specified the file name
+.I termfile
+will be used.  This is useful for debugging purposes.
+.TP
+.B \-notermfile
+Do not create a file of terms.  This is the default.
+.TP
+.B \-save_imd
+Do not delete the intermediate files created during the build.
+.TP
+.BI \-bufsize " number"
+Define the memory limit to use where
+.I number
+is the number of megabytes to allocate.  Possible values are
+dependent on the amount of available memory.  The default value is
+10.
+.I Number
+may be specified as a floating point number, e.g.,
+.BR "\-bufsize 1.4 " ,
+to specify 1.4MB of memory.
+.TP
+.B \-ib
+"Incremental Build".  Give this switch when you are using
+.B inbuild
+to add new documents to an existing database.  If you call 
+.B inbuild
+on an existing database without the 
+.B \-ib
+switch,
+.B inbuild
+will exit with an error message without touching the database. 
+.TP
+.B \-qbs
+Do 
+.I query based stemming
+processing.  This will produce an unstemmed database with a 
+table of term variants for each term encountered.
+.TP
+.BI \-top_docs " int"
+Activate 
+top-docs processing.  This will create a table of
+.I int
+documents for more rapid query processing of the database.  A
+value of 0 disables top-docs processing.
+.PP
+.I Concurrency Control Options
+.TP
+.B \-cc_on
+Provide concurrency control during building of the database.
+.TP
+.B \-cc_off
+Disable concurrency control during building of the database.
+This is the default.
+.TP
+.BI \-cc_batch_n " int"
+Pause during processing each
+.I int
+terms to let other users query the database.  (Concurrency
+control must be on.)  Default value is 2000 terms.
+.PP
+.I Crash Recovery Options
+.TP
+.B \-cr_on
+Turn crash recovery on.
+.TP
+.B \-cr_off
+Turn crash recover off.  This is the default.
+.TP
+.BI \-cr_min " min"
+Stop every
+.I min
+minutes to do checkpointing of the build when crash
+recovery is active.  Default value is 5 minutes.
+.TP
+.BI \-continue " int"
+Continue building the database after a crash has occurred
+with crash recovery active.  The
+.I int
+value will be provided by the 
+.I inrecover
+program, which must be run immediately after the crash of an inbuild process.
+It is possible that no value will be required.
+.TP
+.BI \-f_continue " int"
+Continue building a fields database after a build crash with
+crash recovery active.  The proper
+.I int
+value will be provided by the
+.I inrecover
+program, which must be run immediately after the crash of an inbuild process.
+ It is possible that no value will be required.
+.TP
+.B \-merge
+Start running inbuild at the merge.  Useful if the merge phase
+failed for some reason leaving temporary .imd files.
+.TP
+.B \-f_merge
+Start inbuild running at the field merge phase.  Use if the 
+fields merge phase failed to complete, leaving temporary .imf files.
+.SH FILES
+.PP
+The output files of
+.B inbuild
+are:
+.PP
+.RS
+.TS
+tab(/);
+lB lB
+cw(2i) s
+lI  l.
+File Extension/Description
+_
+Database Files
+_
+btl/inverted File
+db/data base file used for document retrieval
+shd/stopword hashed dictionary
+mft/most frequent terms
+inf/collection info
+ndx/the inverted file for field terms
+_
+.T&
+c s
+lI  l.
+Intermediate Files
+_
+imd/intermediate inverted file
+map/directory pointers into the imd file
+imf/intermediate data for fields
+fmp/directory pointers into the imf file
+.TE
+.RE
+.PP
+.SH EXAMPLES
+.PP
+1.  The following command will process the SGML collection,
+.BR mycollection.dat ,
+creating the database
+.IR mydb :
+.PP
+    %
+.B inbuild \ mydb \ sgml.dat
+.PP
+The database output files will be:
+.BR mydb.btl , " mydb.db" , " mydb.shd" ,
+.BR mydb.mft " and" " mydb.inf" .
+The intermediate files will be deleted after successful
+completion.
+All output files will be in the current directory since
+.B mydb
+is specified without a leading path.
+.PP
+2. The following command builds a database out of two files, one in
+the cacm_dots format, the other in email format (the UNIX system
+mail format):
+.PP
+    %
+.B inbuild mydb \-type cacm_dots cacm.dat 
+.B \-type email mymail.dat
+.PP
+The output files will be the same as in example 1.
+.PP
+3.  The following command uses the 
+.B \-fields
+and 
+.B \-stemmer
+options and places the output in another directory:
+.PP
+    %
+.B inbuild ../work/db/abc datadir/[xy].dat \-stemmer porter \-fields 
+.PP
+The database
+output files will be:
+.BR abc.btl , " abc.db" , " abc.shd" ,
+.BR abc.mft , " abc.inf" " and" " abc.ndx" .
+All files will be found in
+relative directory
+.BR ../work/db .
+It does not matter that the collections or the final database are not
+in the current working directory.
+.SH ENVIRONMENT
+The following environment variables affect the usage of
+.BR inbuild :
+.TP
+.B INQDATA
+Directory holding the file,
+.BR us-city ,
+which contains a list of cities in the United States.  Used by the
+city special scanner.
+.TP
+.B DOCSTOPS
+Directory holding the default stop word file,
+.BR default.stp .
+.TP
+.B STEMDIR
+Directory holding the kstem data files.  Necessary when using the 
+"\-stemmer kstem" option.
+.SH DIAGNOSTICS
+Exit status is normally 0.
+.SH "BUGS"
+Send bug reports to 
+.B inquery-bugs@cs.umass.edu
+..
+.SH SEE ALSO
+.BR "inrecover" (1), " inparse" (1), " merge_btl" (1), " inquery" (1)
+and
+.B sysadmin.doc
+in the documentation directory of the
+.B INQUERY 
+release.

@@ -1,0 +1,62 @@
+'\" t
+.TH set_col 1 "24 May 1996" "CIIR, UMass" "INQUERY Document Retrieval"
+.SH NAME
+set_col - Set the location of a text file included in the specified
+.B INQUERY
+database.
+.SH SYNOPSIS
+.B set_col
+.RB database
+.SH DESCRIPTION 
+.B set_col
+defines the full path name [and name] of a text file used in an
+.B INQUERY
+database.  One may use
+.B list_cols
+to determine the current value of the text file location.  This
+function is required when moving an
+.B INQUERY
+collection from the location where it resided when the database
+was built.  If the location and name of the collection file is
+not redefined, the documents from the files will not be viewable
+after retrieval.
+.PP
+.SH OPTIONS
+.BR set_col
+takes only an existing
+.B database
+name argument.
+.TP
+.B database
+An existing
+.B INQUERY
+database base name.  This may include the path to the database
+file.
+.SH EXAMPLES
+.PP
+The following command will set the new location of the CACM
+database source collection file.  The location has moved from
+/usr/disk5/collections/cacm_dots.dat to /usr/disk1/new_collections/
+cacm_dots.dat.  First list the current location and then move it
+and print out the changed location.
+.PP
+	%
+.B list_cols /usr/inquery/data/cacm/cacm_dots
+.BI	/usr/disk5/collections/cacm_dots.dat
+.PP
+	%
+.B set_col /usr/disk1/new_collections/cacm_dots.dat
+.PP
+	%
+.B list_cols /usr/inquery/data/cacm/cacm_dots
+.BI	/usr/disk1/new_collections/cacm_dots.dat
+.SH "BUGS"
+Send bug reports to 
+.B inquery-bugs@cs.umass.edu.
+.SH SEE ALSO
+.BR list_cols (1)
+and
+.B sysadmin.doc.
+in the documentation directory of the
+.B INQUERY 
+release.

@@ -1,0 +1,220 @@
+'\" t
+.TH merge_btl 1 "24 May 1996" "CIIR, UMass" "INQUERY Document Retrieval"
+.SH NAME
+merge_btl - merge intermediate
+.SB INQUERY
+inverted files to create a
+.I .btl
+file
+.SH SYNOPSIS
+.B merge_btl 
+.I 
+database [.imd-file \|.\|.\|. .imd-file]
+.RB [ \-fields ]
+.RB [ \-bufsize
+.IR float ]
+.RB [ \-ib ]
+.RB [ \-save_imd ]
+
+.RB [ \-top_docs 
+.IR int ]
+.RB [ \-cc_on ]
+.RB [ \-cc_off ]
+.RB [ \-cc_batch_n
+.IR int ]
+.RB [ \-cr_on ]
+.RB [ \-cr_off ]
+.RB [ \-cr_min
+.IR mins ]
+.RB [ \-continue ]
+.RB [ \-f_continue
+.IR int ]
+.RB [ \-qbs ]
+.SH DESCRIPTION 
+.B merge_btl
+is part of the 
+.SB INQUERY Document Retrieval
+system which includes programs to build
+.SB INQUERY
+databases and retrieve documents relevant to a user's query.
+.PP
+The
+.B merge_btl
+program creates a 
+.I .btl
+file from 1 to
+.I n
+intermediate inverted files
+.RI ( .imd ,
+the output from
+.BR inparse (1))
+.PP
+The program is also capable of producing field index transaction files
+.RI ( .nxd ) 
+for the specified fields of the collection data format.
+Note: to process field indexes,
+.B merge_btl
+must be run twice, once with the
+.B \-fields
+option and once without.  See
+.B EXAMPLES
+below.  Support for building concurrent databases, crash recovery, top-docs 
+and query based stemming is also present via commandline options.
+.PP
+On successful completion, 
+.B merge_btl
+deletes the intermediate data files (unless the
+.B \-save_imd
+option is specified, see below).
+.SH OPTIONS
+.BR merge_btl 's
+first argument must be the database name (without any extension).  The
+database name may include a leading path pointing to the location of
+the partially build database.
+By default the intermediate data file 
+.RI ( .imd)
+is named after the database and thus does not need to be specified.  If,
+however,
+.B inparse
+was run with the
+.B \-tmpfile
+option, specifying the intermediate datafile name, the names
+of the 
+.I .imd
+file[s] may be given as arguments after the database name.
+The remaining options on the command line can be given in any order.
+.TP
+.B \-fields
+Produce a database file named \fIdatabase\fB.ndx\fR.  This file
+contains only words in special fields of a document allowing field
+based retrieval.
+.TP
+.BI \-bufsize " number"
+Define the memory limit to use where
+.I number
+is the number of bytes to allocate in megabytes.  Possible values are
+dependent on the amount of available memory.  The default value is
+10MB.
+.I Number
+may be specified as a floating point number, e.g.,
+.BR "\-bufsize 1.4 " ,
+to specify 1.4MB of memory.
+.TP
+.B \-ib
+Use this switch for updating already built databases with
+additional collections.
+.TP
+.B \-save_imd
+Do not delete the intermediate data files upon completion.
+.TP
+.BI \-top_docs " number"
+The maximum number of top-docs to save during processing.  A value 
+of 0 disables top-docs processing.  Default value is 2000.
+
+.TP
+.B \-cc_on
+Provide concurrency when appending to a database.
+.TP
+.B \-cc_off
+Disable concurrency control.  This is the default.
+.TP
+.BI \-cc_batch_n " int"
+Pause to allow database access every 
+.I int
+terms.  Default value is 2000.
+.TP
+.B \-cr_on
+Activate crash recovery checkpointing during the build
+.TP
+.B \-cr_off
+Do not provide for crash recovery during database processing.
+This is the default.
+.TP
+.BI \-cr_min " mins"
+Define the checkpointing time interval.  A small value provides
+more complete protection but slows processing.  The default
+value is 5 minutes.
+.TP
+.BI \-continue " int"
+Continue building the database after a crash has interrupted
+processing.  The
+.I int
+value is provided by the
+.B inrecover
+program which must be run immediately following the crash to
+recover the database.  It is possible that the
+.I int value is not required.
+.TP
+.BI \-f_continue " int"
+Continue building a fields database after a crash has interrupted
+processing.  The
+.I int
+value is provided by the
+.B inrecover
+program which must be run immediately following the crash to
+recover the database.  It is possible that the
+.I int value is not required.
+.TP
+.B \-qbs
+Enable 
+.I query based stemming
+processing.
+.SH FILES
+.PP
+Files created or used by
+.BR merge_btl :
+.PP
+.RS
+.TS
+tab(/);
+lB lB
+cw(2i) s
+lI  l.
+File Extension/Description
+=
+Database Files
+_
+btl/inverted file
+mft/most frequent terms
+inf/collection info
+ndx/the inverted file for field terms
+_
+.T&
+c s
+lI  l.
+Intermediate Files
+_
+imd/intermediate inverted file
+map/directory pointers into the imd file
+imf/intermediate data for fields
+fmp/directory pointers into the imf file
+.TE
+.RE
+.PP
+All intermediate files may be deleted after successful completion of
+1.BR merge_btl .
+.SH NOTE
+A database can be created in one step using
+.BR inbuild (1)
+and is the preferred method.  Use
+.B inparse(1)
+and
+.B merge_btl
+only if you have memory or disk limitations.  This program must
+be used in conjunction with
+.B incsparse
+for building
+.B Collection Selection
+databases.
+.SH DIAGNOSTICS
+Exit status is normally 0.
+.SH "BUGS"
+Send bug reports to 
+.B inquery-bugs@cs.umass.edu.
+.SH SEE ALSO
+.BR inbuild (1), " inparse" (1), " inquery" (1), " incsparse" (1)
+and
+.B sysadmin.doc
+in the documentation directory of the
+.SB INQUERY 
+release.

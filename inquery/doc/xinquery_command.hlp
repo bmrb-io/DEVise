@@ -1,0 +1,51 @@
+
+			XINQUERY COMMAND LINE OPTIONS
+
+XInquery can take the following command line parameters:
+   
+   Database	         The path to and name of the database to start with.
+			 NB: the name must end with ".inf": this is unlike
+			 most, if not all, other user interfaces for the
+			 INQUERY retrieval engine.
+   Initscript		 The filename of an initialization script that is 
+   		         to be run when XInquery starts up. The name 
+   		         must not end with ".inf". 
+   Wishoption		 Any of the standard wish command-line options: 
+   		             -file    -geometry    -display 
+   		             -name    -sync        -help 
+   		         For more information, type "wish -help". 
+   -defaults	         Description of the user-definable global variables
+   			 and their defaults. Can also create an
+			 initialization script setting the defaults: see
+			 below.
+   -default_colors	 Description of the default color settings.
+   -mono | -monochrome	 Treat the display as monochrome.
+   -color		 Treat the display as color. 
+   -usage		 This message.
+ 
+If no database is specified, then at startup XInquery looks in the
+directory specified by the INQDATA environment variable, and it opens
+the first database in that directory.  If no valid .inf file exists in
+that directory, then XInquery proceeds without any database file at
+startup.
+
+If no initialization script is specified, then the default initialization
+script filename .tkinqrc is assumed.  This default file needs to be
+either in the directory where the XInquery session is run or in the
+user's home directory.
+
+Besides displaying a description of and the default for each global
+variable, the -defaults option also asks if you want it to save an
+initialization script that explicitly sets each global to its default;
+of course, you can edit and use that script as you wish.
+
+Also note that if any filename is specified in the command line that 
+does not have a .inf extension, then that file will be considered as
+an initialization script.
+
+There are rarely-used options for monochrome/color display: -mono or
+-monochrome for monochrome displays, -color for color displays.  These
+are useful in cases where the display is monochrome but XInquery
+cannot tell that. In such cases specifying -mono will force XInquery
+to map all the colors to monochrome.
+

@@ -1,0 +1,13 @@
+			     XINQUERY 3.1
+
+	     Copyright (C) 1993, 1994, 1995, 1996 by the
+                  Information Retrieval Laboratory,
+                    Department of Computer Science
+                     University of Massachusetts,
+                        Amherst MA. 01003, USA
+                         All Rights Reserved.
+
+XInquery is an X Windows front end for the Center for Intelligent
+Information Retrieval's Inquery text retrieval engine. This software
+is based on the Tcl/Tk package from UC Berkeley and Sun Microsystems.
+

@@ -1,0 +1,181 @@
+
+      XInquery Preferences and The Inquery Tk User Interface
+
+
+        Usage:  xinquery -displayoption [filename . . .]
+
+Displayoption can be either -mono or -monochrome, or -color.
+
+A file name ending in .inf will be treated as the name of an
+Inquery database to be opened at startup. File names not ending in
+.inf will be treated as initialization scripts.  In general, later
+arguments on the command line will supersede previous ones.
+
+NOTE: The program DOES NOT accept the usual X command line
+        arguments.
+
+At startup, the program reads a set of initialization scripts, in
+the following order:
+
+        1) ./.tkinqrc
+        2) ~/.tkinqrc
+            Note: For more details on .tkinqrc file, see .tkinqrc file!
+        3) files named on the command line not ending in .inf
+
+Scripts read later supersede scripts read earlier. They provide
+the user with a means of controlling the operation of the program
+without directly modifying the code.  However, the program will
+operate properly even if none of the initialization files exists.
+
+The initialization scripts are interpreted as Tcl code.
+Therefore, one can have nearly complete control over the operation
+of the program.  However, typically one merely sets the values of
+several pre-defined global variables. To do this, use the Tcl set
+command.  Its syntax is
+
+        set variable_name value
+
+It is simplest to merely put one "set" command per line. So, for
+example, to set the number of lines in the document summary, add the
+following line to one of the above-named files:
+
+        set sumcnt 10
+
+There are a few facets of the Tcl language worth noting when working
+on initialization scripts:
+
+        Comments are designated by putting a # as the first
+                character on a line.
+        Values containing whitespace should be enclosed in "".
+        Several characters have special meanings, including
+
+                        {} [] "" $ \
+
+                There should be little or no need to use them.
+
+The user can create a .tkinqrc file either in the directory where
+an XInquery session will be run or in the home directory and set
+the global variables desribed in this document.  It should be
+noted, however, that these variables are already given default
+values inside the XInquery script, and any values specified in the
+.tkinqrc file by the user will overwrite the default values.
+
+The variables of interest at startup include:
+
+VARIABLE	DEFAULT VALUE		NOTES
+
+default_db	Determined by           The name of the database to open
+		retrieval engine	at startup.
+
+default_docfile	docs.out		Name of the file containing saved docs.
+
+default_qryfile	queries.out		"  "   "   "      "        " queries.
+default_qry_parsed_file	rel_queries.out	"  "   "   "      "        " queries.
+
+hosts		The CIIR machines	The names of the local machines. To
+					use one, you must be able to execute
+					rsh on it.
+
+tclmachine	local hostname		The name of the machine on which to run
+					the retrieval engine process. By
+					default, the engine is run on the
+					local machine.
+
+default_font    -b&h-lucida-medium-r-normal-sans-*-140-*
+					Default for all widgets
+high_font       -b&h-lucidatypewriter-bold-r-normal-sans-*-140-*
+					For highlighted text
+mono_font       -b&h-lucidatypewriter-medium-r-normal-sans-*-140-*
+					For tables (mono-spaced)
+
+high_underline	0			If set, underline highlighted text.
+					Useful for black and white screens.
+
+default_background	grey45		These should map to black and
+default_foreground	white		white
+
+color_1			blue		various backgrounds;
+color_2			RoyalBlue4	all should map to black
+color_3			MidnightBlue	on black and white screens.
+color_4			blue4
+color_5			DodgerBlue4
+color_6			DodgerBlue3
+
+color_7			white		
+color_8			Yellow
+color_9			Red
+
+sumcnt			5		number of entries in the summary table
+
+default_docwin_height	12		size of document window, in characters
+default_docwin_width	40
+
+doc_top_win		0		if set, will put up separate top-level
+sum_top_win		0		document, summary and bargraph
+bar_top_win		0		windows.
+
+showing_doc		0		if set, display document, summary,
+showing_sum		0		bargraph, and parsed-query
+showing_bar		0		windows by default.
+showing_par		0
+
+startup_qrywin_geometry		""	if non-null strings, then they will be
+startup_sumwin_geometry		""	taken as a Tk geometry spec
+startup_docwin_geometry		""	for the appropriate windows.
+startup_parwin_geometry		""
+startup_barwin_geometry		""
+
+
+barcnt			100		number of documents in the bar graph
+
+quiet			1		if cleared, give high level trace
+					information.
+verbose			0		if set, give low level trace information.
+
+default_query	"operating systems"	
+
+use_rf			1		if set, show relevance feedback controls.
+
+tclcmd		"tclinq -q"		command to use for the retrieval
+					engine process
+
+tk_strictMotif		1		if set, makes the widgets look as close
+					as possible to standard Motif widgets.
+					In particular, this turns off flashing
+					buttons when mouse passes over them.
+
+
+ENVIRONMENT VARIABLES
+
+The following environment variables may be set for ease of use.
+
+DOCSTOPS
+
+The effect of setting up this environment variable is that the
+stopword file, default.stp, now can be located anywhere.  Just set
+the environment variable DOCSTOPS to the appropriate directory before
+running XInquery.  For example:
+  setenv DOCSTOPS /usr/gun/users1/mydir
+Alternatively, set the environment variable DOCSTOPS at login time by
+including the above line in your .cshrc file.
+
+Note that the name of the file should always be default.stp.  Note
+also that all the databases that we use have to be built again using
+the new stopword file.
+
+If DOCSTOPS is not set, XInquery will proceed without any stopwords.
+
+
+INQDATA
+
+All databases located in INQDATA or subdirectories of INQDATA will be
+listed in XInquery's Collections menu. (The Collections menu also
+contains an "Other" command, so you can still open databases located
+elsewhere.)
+
+
+INQ_HELP
+
+INQ_HELP must be set to the directory where the XInquery help files
+are located. Initially they are in a subdirectory in the inquery/doc
+directory. If it's not set, no help will be available.

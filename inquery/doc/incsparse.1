@@ -1,0 +1,162 @@
+'\" t
+.TH incsparse 1 "24 May 1996" "CIIR, UMass" "INQUERY Document Retrieval"
+.SH NAME
+incsparse - Create an
+.SB INQUERY
+.B Collection Selection Database
+from 
+.B INQUERY collection databases.
+.SH SYNOPSIS
+.B incsparse
+.I 
+.RB cs_database 
+.I [ dbname ...]
+.RB [ \-host 
+.I hostname ]
+.RB [ \-portnum 
+.I port-number ]
+.RB [ \-batch_term
+.IR int ]
+.RB [ \-check_dbs ]
+.RB [ \-help ]
+
+.B incsparse
+.I 
+.RB cs_database
+.RB [ -db_list
+.I list-file ]
+.RB [ \-host 
+.I hostname ]
+.RB [ \-portnum 
+.I port-number ]
+.RB [ \-batch_term
+.IR int ]
+.RB [ \-check_dbs ]
+.RB [ \-help ]
+
+.SH DESCRIPTION 
+.B incsparse
+is part of the 
+.SB INQUERY Document Retrieval
+system which includes programs to build
+.SB INQUERY
+databases and retrieve documents relevant to a user's query.
+.PP
+The
+.B incsparse
+program builds a 
+.B Collection Selection
+inverted database file
+.RI ( .btl )
+producing an intermediate file
+.RI ( .imd )
+for each
+.B INQUERY
+collection database listed on the command line.  Its behavior
+is analagous to the
+.B inparse
+program.  The difference is that
+.B incsparse
+uses terms from 
+.I existing
+INQUERY databases.  The "documents" returned from a query to a 
+.B Collection Selection database
+are
+.I databases
+that are most likely to contain documents relevant to the users query.
+.PP
+.BR incsparse's
+inputs are the output basename of the built database, a list of 
+.B INQUERY
+database names or a file containing such a list.
+.SH OPTIONS
+.BR incsparse 's
+first argument must be the name of the database to be created (without
+any extension).  The database name may include a leading path pointing
+the output files to another directory.  Database files and
+intermediate files will be built in the directory specified by the
+first argument.  Other arguments on the command line can be
+database names and options interspersed in any order.  See
+.B EXAMPLES
+below.
+.TP
+.BI \-db_list " list-file"
+Define a file name containing a list of 
+.B INQUERY
+database names.  Use this option in place of a commandline list of database
+names to shorten the command line length.  Otherwise, use an absolute list
+of database names in place of this option.
+.TP
+.BI \-host " hostname"
+Use
+.I hostname
+as the machine on which to search for the listed databases.  If this option
+is not specified, the local host is assumed.
+.TP
+.BI \-portnum " port-number"
+Use 
+.I port-number
+on the specified host.  Use a default port number of 1234 if this option
+is not specified.
+.TP
+.BI \-batch_term " int"
+This option determines the number of terms that will be packaged up by the
+server servicing the current database in the database list for processing by
+by the 
+.B incsparse
+program.  This is in effect a "packaging size" that can influence the speed
+of processing.  The default term count it 2000.
+.TP
+.B \-check_dbs
+Check that the databases in the provided list actually exist before beginning
+processing.  If this option is not used, and a database on the list does not
+exist or is simply not available, e.g. the server died, than the database
+will be dropped from processing and the next database will be processed.
+Read the processing log at termination to determine which databases were 
+dropped from processing.
+.TP
+.B NOTE WELL:
+If the server servicing the database being processed dies after the
+start of
+.B incsparse
+processing, its terms will have to be removed using 
+.B purgedb-key
+after the process completes.
+.TP
+.BI \-help
+Print out a usage statement.  No processing is done.
+.SH EXAMPLES
+.PP
+The following command will produce a collection selection database 
+named "news_dbs" from a series of existing databases that will include
+"wsj87", "wsj88", "wsj89", "ap" and "ap2".  The listed databases will
+be sought on a machine named "machine2" on port number 1200.  We will
+process 5000 terms at a time to speed processing along.
+After 
+.B incsparse
+ completes, we will use
+.B merge_btl
+to convert the intermediate
+.I .imd file
+into an
+.B INQUERY
+inverted database 
+.I ( .btl)
+file.
+.PP
+  %
+.B incsparse news_dbs wsj87 wsj88 wsj89 ap ap 
+.B   -host machine2 -portnum 1200 -batch_term 5000
+.PP
+  %
+.B merge_btl news_dbs news_dbs.imd
+.SH DIAGNOSTICS
+Exit status is normally 0.
+.SH "BUGS"
+Send bug reports to 
+.B inquery-bugs@cs.umass.edu.
+.SH SEE ALSO
+.B sysadmin.doc
+in the documentation directory of the
+.SB INQUERY 
+release.

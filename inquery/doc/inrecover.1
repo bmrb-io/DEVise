@@ -1,0 +1,56 @@
+'\" t
+.TH inrecover 1 "24 May 1996" "CIIR, UMass" "INQUERY Document Retrieval"
+.SH NAME
+inrecover - Recover from an
+.SB INQUERY
+database build after a crash when 
+.I crash recovery
+is active.
+.SH SYNOPSIS
+.B inrecover
+.I 
+database
+.SH DESCRIPTION 
+.B inrecover
+is part of the 
+.SB INQUERY Document Retrieval
+system which includes programs to build
+.SB INQUERY
+databases and retrieve documents relevant to a user's query.
+.PP
+.BR inrecover's
+only argument is the base name of the 
+.B INQUERY
+database who's processing was interrupted by a "crash".
+.SH EXAMPLES
+.PP
+The 
+.B inrecover
+command line below recovers from a crash while building the 
+.IR mydb
+database.
+.PP
+    %
+.B inrecover mydb 
+.PP
+The program will prompt the user what to do.  The primary item of
+interest will be a recommended integer value that should be used
+when restarting the build of the database with the
+.I \-continue
+or
+.I \-f_continue
+switches to 
+.B inparse, inbuild or merge_btl
+programs.
+.SH DIAGNOSTICS
+Exit status is normally 0.
+.SH "BUGS"
+Send bug reports to 
+.B inquery-bugs@cs.umass.edu.
+.SH SEE ALSO
+.BR inparse (1), " inbuild" (1), " merge_btl" (1), " inquery" (1)
+and
+.B sysadmin.doc
+in the documentation directory of the
+.SB INQUERY 
+release.

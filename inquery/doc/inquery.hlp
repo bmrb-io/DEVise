@@ -1,0 +1,12 @@
+             About Inquery:  INQUERY Document Retrieval System
+
+  INQUERY is a full-text Information Retrieval (IR) system using Bayesian
+inference nets (Turtle, 1990; Turtle and Croft, 1990).  The use of inference
+nets can produce significant retrieval performance improvements resulting
+especially from the combination of multiple representations of information
+and the information need.  Refer to Turtle 1990 and Turtle and Croft, 1990 for
+details on inference nets and their use.
+
+With various user interfaces, INQUERY currently runs on UNIX workstations
+built by Digital Equipment Corporation (DEC) and Sun Microsystems, on DEC
+VMS systems, on PCs under DOS and Microsoft Windows, and on Apple Macintoshes.

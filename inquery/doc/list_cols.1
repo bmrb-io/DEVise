@@ -1,0 +1,50 @@
+'\" t
+.TH list_cols 1 "24 May 1996" "CIIR, UMass" "INQUERY Document Retrieval"
+.SH NAME
+list_cols - List the text files included in the specified
+.B INQUERY
+database.
+.SH SYNOPSIS
+.B list_cols
+.RB database
+.SH DESCRIPTION 
+.B list_cols
+returns a listing of text file names that were used to produce
+the specified
+.B INQUERY
+database.  The listing will be a single line of full path and 
+text file name for each file in included in the database.  The
+listing will be in the same order as used to produce the database.
+.PP
+.SH OPTIONS
+.BR list_cols
+takes only an existing
+.B database
+name argument.
+.TP
+.B database
+An existing
+.B INQUERY
+database base name.  This may include the path to the database
+file.
+.SH EXAMPLES
+.PP
+The following command will list the files in a CACM
+.B INQUERY
+collection
+.PP
+    %
+.B list_cols /usr/inquery/data/cacm/cacm_dots
+.PP
+The output will look as follows:
+.BR /usr/disk5/collections/cacm_dots.dat
+.SH "BUGS"
+Send bug reports to 
+.B inquery-bugs@cs.umass.edu.
+.SH SEE ALSO
+.BR set_col (1)
+and
+.B sysadmin.doc.
+in the documentation directory of the
+.B INQUERY 
+release.

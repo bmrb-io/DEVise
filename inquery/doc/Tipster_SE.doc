@@ -1,0 +1,1301 @@
+TABLE   OF  CONTENTS 
+ 
+1.0  	INTRODUCTION 
+ 
+2.0	TIPSTER  OBJECTS 
+ 
+3.0	ERRORS 
+ 
+4.0	USER   OPTIONS 
+ 
+5.0	READ  SGML 
+
+5.1     DTD INDEXING TOOL
+ 
+6.0 	QUERY  OBJECTS 
+ 
+7.0  	DOCUMENT  COLLECTION  INDEX  (the Inquery Database) 
+ 
+8.0	QUERY  COLLECTION  INDEX  (the Inroute Database) 
+ 
+9.0     INDEX SEQUENCES
+
+10.0	TIPSTER   EXTENSIONS 
+ 
+11.0	TIPSTER   UTILITIES 
+ 
+ 
+1.0	INTRODUCTION 
+ 
+   The Tipster Architecture provides a vehicle for efficiently
+   delivering information retrieval technologies to government
+   agencies.  The architecture consists of a set of subsystems each of
+   which is described by a set of object classes.  The 2 subsystems
+   which make full-text retrieval possible are the Document Manager
+   and the Search Engine (or Detection) subsystems.  A discussion of
+   the Tipster objects and their operations is available in Tipster
+   Phase II Architecture Design Document (vsn. 1.52).
+ 
+   The Tipster Architecture Design document defines an API standard
+   for Information Retrieval systems.  The 3.1 INQUERY release
+   provides a Tipster Detection subsystem built using the INQUERY and
+   InRoute engines.   This document is provided as an additional guide
+   on the functionality  of the Tipster Detection objects and
+   operations as provided in this release.  
+ 
+ 
+2.0	TIPSTER  OBJECTS 
+	 
+ 
+   In a Tipster IR system, the Collection, a set of documents, is the
+   basic unit of persistent information.  Without a Document Manager
+   module, a Tipster system cannot exist.  In the table below, the
+   Document Manager objects are outlined and briefly defined. 
+ 
+ 
+	==============	Document Manager Objects ================
+ 
+	Collection	A set of Documents.  Collections are persistent. 
+	Document	A document is not persistent.  It contains the raw
+			text and any additional markup notations.
+	DocumentReference           
+			A reference to a particular document 
+			(similar to  a pointer in C)  
+	ByteSequence    The raw text of a Document. 
+	String          A character string. 
+         ----------------------------------------------------
+            Attributes and Annotation are used to markup 
+			a Document or Collection 
+	----------------------------------------------------
+		        Attribute attaches a note to a
+	Attribute	Document or Collection. 
+	Annotation	Annotations are used to markup specific spans
+			within a Document.  
+ 
+    ================================================================ 
+ 
+ 
+   The Search Engine subsystem is responsible for retrieving Documents
+   and Queries which match a specific information need. Though this
+   system depends on the Document Manager, it defines its own set of
+   objects.  The Search Engine objects are defined briefly in the
+   table below:
+ 
+ 
+	================== Search Engine Objects  ===================
+ 
+	DocumentCollectionIndex		A persistent text retrieval
+					database 
+					[aka INQUERY Database]
+
+	QueryCollectionIndex            A persistent routing database 
+					[aka InRoute Database]
+	 
+	DetectionNeed	                A typeof Document representing an 
+					information need 
+ 
+	DetectionQuery			A type of Document representing a 
+					Search Engine specific form of 
+					an information need. 
+ 
+	RetrievalQuery 
+	RoutingQuery			Compiled forms of a DetectionQuery 
+			      
+	ViewableQuery		       	A type of  Document which
+					permits viewing a compiled query 
+					[RetrievalQuery, RoutingQuery] 
+ 
+	================================================================ 
+ 
+ 
+ 
+3.0	ERRORS 
+ 
+   With regard to reporting errors, the Tipster Architecture is
+   somewhat vague.  It states only that all objects should raise an
+   exception on encountering an error.  This works very well within a
+   single Tipster subsystem, but when tying systems together, the
+   subsystems must co-operate in defining a single exception handling
+   mechanism. 
+ 
+   The CIIR Tipster Search Engine is written in C, and therefore, uses
+   the standard C/Unix mechanism for reporting errors; the status
+   return. The operations on Search Engine objects indicate via a
+   Tipster status code and the operation's returned value whether the
+   operation was successful or not.
+ 
+   If an operation is defined by the Tipster Architecture to return an
+   object, on encountering an error a nil object will be returned, and
+   a status value set.  The user may retrieve the latest status value
+   by using:
+ 
+		int tip_get_error_status(); 
+		 
+   If an operation is define by the Tipster Architecture to return
+   void, the operation will return an integer value.  This integer
+   value will be the same as that retrieved by tip_get_error_status(). 
+ 
+   The Tipster Search Engine status values are defined in
+   tipster_status.h provided with this release. 
+ 
+
+	#define TIP_SUCCESS        0 
+	#define TIP_INVALID_PARAM  1 
+	#define TIP_EXISTS         2 
+	#define TIP_PERMISSION     3 
+	#define TIP_NOENTRY        4 
+	#define TIP_EMPTY          5 
+	#define TIP_FILE           6 
+	#define TIP_NOTFOUND       7 
+	#define TIP_CONN_REFUSED   8 
+	#define TIP_NOMEM          9 
+	#define TIP_ERROR         99 
+ 
+ 
+   This Search Engine library also provides a mechanism for retrieving
+   an error string.  This string is intended to provide additional
+   information as to why the error occurred.  The error string
+   associated with a particular error status can be obtained using the
+   following API:
+ 
+		char *tip_get_error_string(); 
+ 
+   The string returned by this function should not be free'd.  The
+   error string and error status are overwritten by the latest object
+   encountering an error. 
+ 
+ 
+4.0  	USER  OPTIONS 
+ 
+   In order to support varied implementations of the Tipster
+   subsystems, the Tipster Architecture defines an optional argument
+   to each object operation.  This optional argument allows vendors to
+   provide system-specific functionality.  If the parameter is not
+   defined, the system will use reasonable defaults.
+ 
+   The CIIR Tipster Search Engine defines a user configuration object,
+   the InqOpt_t, as an optional argument to a subset of the Search
+   Engine operations.  If the object is not provided, reasonable
+   defaults are assumed by the system.
+ 
+   The supported options include: 
+ 
+	= reporting system utilization statistics.     
+	= removing stopwords 
+	= reducing terms to their stems 
+	= preserving the case of terms 
+	= indexing using "fields" 
+	= using special recognizers during indexing 
+	= initializing the routing engine (QCI) with DCI statistics 
+	= hostname & port number  of a Tipster Search Engine Connection Server 
+ 
+   The operations and defaults for the InqOpt_t object are defined in
+   "tipster_se.h" provided with the release.  A brief description of
+   each of the operations is provided in this section.
+  
+	=========================================================== 
+	q_create_user_opt		Create an InqOpt_t object 
+	q_update_user_opt		Toggle the value of a
+					particular option  
+	=========================================================== 
+ 
+ 
+Q_CREATE_USER_OPT 
+ 
+	int q_create_user_opt(InqOpt_t *q_user_opts); 
+ 
+	   Return Status:  SUCCESS,      returns TIP_SUCCESS 
+ 		              FAILURE,      returns other appropriate error 
+ 
+	   This operation will create a InqOpt_t object and return it 
+	   as "q_user_opts". 
+ 
+Q_UPDATE_USER_OPT 
+ 
+	int q_update_user_opt(InqOpt_t q_user_opts, int option, 
+			      char *str_option); 
+ 
+	   Return Status:  SUCCESS,      returns TIP_SUCCESS 
+		           FAILURE,      returns Tipster error status. 
+ 
+	   This operation toggles options in a InqOpt_t object.  The
+           options are defined in "tipster_se.h".  These values can be
+           combined using "|" ("or" operator) to set many options at
+	   once.
+ 
+	   When setting stopword removal an optional second argument
+	   can be used to specify the stopword file to be used by the
+	   engine.
+ 
+	   Setting the DCI_STATS option requires a second argument,
+	   the name of the DocumentCollectionIndex (DCI) from which to
+	   retrieve term statistics.  This option is used by the QCI
+	   object.
+ 
+ 	   When using the Tipster client to query a DCI (an INQUERY
+ 	   database), the Q_HOSTNAME and Q_PORTNUM values must be set.
+ 
+ 
+The following is an example usage of InqOpt_t object: 
+ 
+	+------------------------------------------------------------+ 
+ 	/* 
+	**    QCI options 
+	*/ 
+	#define Q_DEFAULT_STOP "/tmp/default.stp" 
+ 
+	InqOpt_t my_options; 
+ 
+	q_create_user_opt(&my_options); 
+	if(!my_options) 
+	{ 
+	   fprintf(stderr, "Create User Options Failed\n"); 
+	   exit(EXIT_FAILURE); 
+	}  
+ 
+	/* ===================================== *
+	 *  sets reporting of usage statistics 
+	 * ===================================== */ 
+	q_update_user_opt(my_options, Q_USAGE_STATS, NULL);    
+
+	/* =========================================== *
+	 * Load DCI statistics to QCI during creation 
+	 * =========================================== */ 
+	q_update_user_opt(my_options, Q_DCI_STATS, dci_name); 
+ 
+        /* ====================================================== *
+	 * select stopword removal using the named stopword file 
+	 * ====================================================== */ 
+	q_update_user_opt(my_options, Q_STOPPING, Q_DEFAULT_STOP); 
+ 
+ 
+	+------------------------------------------------------------+ 
+ 
+ 
+5.0 READ SGML
+
+   ReadSGML is the Tipster operation which parses the incoming
+   Document text, attaches Annotations defining the Document structure
+   and creates a Document (and its parent Collection if required).
+   
+   With the Tipster-compliant INQUERY/InRoute release, ReadSGML() is
+   provided as a stand-alone utility library (libsgmls.a) which will
+   parse a collection of documents and attach SGML structure
+   Annotations to the Documents.
+ 
+     Attributes resulting from ReadSGML(): 
+     ------------------------------------- 
+     A single Document Attribute contains the dtd DocumentReference. 
+     The Attribute is named "DTD". 
+      
+     The document annotation type is set as "STRUCTURE".  All 
+     Annotations added to define the SGML structure of the Document 
+     are typed "STRUCTURE". 
+      
+     A single Annotation Attribute ("FNAME") contains the name of the 
+     Document Spans' SGML tag as assigned in the raw text. 
+ 
+     The external document id is defined as the DTD collection name  
+     (e.g. WSJ) followed by document sequence number starting at 1 
+     (WSJ_1, WSJ_2, etc.).  
+ 
+     Building
+     --------
+     To create your version of sgmls, link libsgmls.a with a
+     Tipster-compliant Document Manager library.
+
+
+     Invocation		 
+     ---------- 
+       sgmls -a dtd:dtd_id sgmls_data 
+ 
+       This assumes that the DTDs exist as Documents somewhere in the 
+       Tipster system. 
+ 
+	   "dtd:dtd_id"    dtd  ... The name of the Collection which 
+			   is the parent of the DTD Documents. 
+ 
+			   dtd_id ... The InternalId component of the 
+			   DTD Document to be used to process this set 
+			   of data. 
+ 
+	   sgmls_data      The data (ASCII) file containing the raw 
+			   text of the Documents to be created. 
+ 
+ 
+       Note: sgmls opens two files at a time for processing.  Thus, it is 
+             possible to process multiple dtd/file sets on one line. 
+ 
+             e.g. sgmls -a dtd1 data1 dtd2 data2 ... 
+ 
+     Sgmls Limitations 
+     ----------------- 
+       Tag stack defined as 24 (tag nesting limit). 
+ 
+5.1      DTD INDEXING TOOL
+
+   In order to index the Collections updated by sgmls (see previous
+   section), the DTD Document must contain indexing guidelines.  These
+   guidelines are attached to the DTD Document as Attributes and
+   Annotations.  
+
+   There is a tip_dtd_tool provided with the Tipster-compliant INQUERY
+   release to add these guidelines to the DTD Document.
+
+   Usage of the tip_dtd_tool
+   -------------------------
+	The tip_dtd_tool will add indexing markup to a DTD document.
+	It works in as a 2-pass process.
+
+	#1...
+
+		% tip_dtd_tool
+
+	It will prompt you to enter the name of a DTDS Collection.  By
+	default the tool chooses to add indexing information to the
+	first Document in the Collection.   
+
+	The tool will then prompt you for an output file to place its
+	default indexing information.  
+
+	At the end of the first pass, no Annotation or Attribute
+	information has been added to the DTD Document.
+
+	The file output by step #1 should look similar to the INQUERY
+	source file dm_trans_tab.c.  The output file should be updated
+	to reflect the indexing options which should be exercised for
+	each SGML tag indicated  in the first column.  Use
+	dm_trans_tab.c as a guide to editing this file.
+
+
+	#2 ...
+
+		% tip_dtd_tool -annotate
+
+	The "-annotate" flag indicates that the indexing information
+	you provide in an input file should be added to the DTD
+	Document as Attributes and Annotations.
+
+	The tool will prompt you to enter the name of a file
+	containing the indexing options.  Presumably this file was
+	generated in (#1) and edited to meet your requirements for
+	indexing. 
+
+	The tool will then prompt you to enter the name of the DTDS
+	Collection again.  Again, it will choose the first Document in
+	the Collection as the target of the markup.
+
+	After the second pass, the DTD contains the indexing
+	information required to build a DCI using the latest release
+	of the Tipster API.
+
+   An example indexing options file is provided as "index.example"
+   with the release.  In addition, the source to tip_dtd_tool is
+   provided along with the libtipdtd.a library so that customized
+   interfaces to this Annotation process may be built.
+
+
+
+6.0  	QUERY  OBJECTS 
+ 
+ 
+   The Tipster Architecture defines a 3-stage query evaluation process.  
+   Each form of the query starts out as a DetectionNeed.  This is a 
+   well-defined format used to define information needs for a Tipster 
+   system.  The DetectionNeed is Search Engine independent and is a 
+   type of Document supported by a Tipster Document Manager. 
+ 
+   Stage I.
+   These DetectionNeeds are transformed into DetectionQuery objects. 
+   The DetectionQuery is still a type of Document, but the contents of 
+   the Document are Search Engine specific.  The QueryGenerator() 
+   operation translates a DetectionNeed into a DetectionQuery. 
+ 
+   Stage II.
+   The DetectionQuery cannot be evaluated directly by the Search
+   Engine.  The DetectionQuery object must first be compiled with DCI
+   (INQUERY Database)-specific query processors.  The CompileQuery()
+   operation will take a DetectionQuery and transform it into a
+   RetrievalQuery (for use with a set of DCI) or a RoutingQuery (for
+   use with a QCI).  
+
+   Stage III.  
+   The resulting RetrievalQuery can be evaluated by a set of DCI to
+   retrieve a Collection of Documents matching the original
+   DetectionNeed.  Compiled RoutingQueries can be added to a
+   QueryCollectionIndex (QCI) as profiles to be compared to Documents
+   being filtered by the system.
+ 
+   CIIR has found that specifying relevant documents is an effective
+   means of modifying an information need.  The Tipster Architecture
+   also provides the ability to modify RetrievalQuery and RoutingQuery
+   objects based on relevance judgements.  The user can select a
+   Collection (a set of Documents) as relevant to their information
+   need and using the UpdateUsingRelevanceFeedback() operation, the
+   Query object will be modified to incorporate term statistics from
+   these relevant Documents.  In addition, a Collection of relevant
+   Documents can be used to create a RetrievalQuery or Routing Query.
+ 
+ 
+	Summary of Query operations 
+	================================================================== 
+	QueryGenerator		Translate a DetectionNeed Document into a
+				DetectionQuery.  The DetectionQuery
+				raw text will be in INQUERY query
+				syntax.
+				[Stage I.]
+	 
+	CompileQuery		Translate a DetectionNeed into a
+				RetrievalQuery or RoutingQuery.  The
+				fully compiled query has been stemmed
+				and stopped. 
+				[Stage II.]
+ 
+	UpdateUsingRelevanceFeedback	Modify the input
+					RetrievalQuery or RoutingQuery object  
+					with relevance judgements from
+					a Collection of Documents.  
+ 
+	RetrievalQueryFromRelevanceJudgements 
+	RoutingQueryFromRelevanceJudgements 
+	================================================================== 
+ 
+ 
+QUERY GENERATOR 
+ 
+   Translate a DetectionNeed Document into a DetectionQuery.  The
+   DetectionNeed Document specifies a user's information need in a
+   generic SGML markup language.  The QueryGenerator operation
+   transforms this SGML markup into INQUERY query syntax and creates a
+   CIIR-specific DetectionQuery.  The DetectionQuery cannot be
+   evaluated directly a RetrieveDocuments operation, nor can it be
+   added as a profile to a QCI.  The resultant DetectionQuery is the
+   sole member of a Volatile Collection. Both the returned
+   DetectionQuery and its parent Collection must be freed by the
+   application.
+ 
+   On encountering an error, a nil DetectionQuery will be returned and
+   the Tipster error status will be set to indicate the error.
+ 
+ 
+	Syntax: 
+		DetectionQuery QueryGenerator(DetectionNeed dn) 
+
+	Libraries:  libtipse.a (DCI Library)
+		    libqcibuild.a (QCI Library)
+ 
+	Returns: DetectionQuery or nil
+
+	Errors:  TIP_INVALID_PARAM
+
+	Example:
+
+	DetectionNeed dn;
+	DetectionQuery dq;
+	Collection     dn_coll;
+	char *dn_name;
+
+	dn_coll = OpenCollection(dn_name);
+	if(!dn_coll){
+	   /* print a warning */
+	   return;
+	}
+	dn = FirstDocument(dn_coll);
+	if(!dn){
+	   /* print a warning */
+	   return;
+	}
+
+	dq = QueryGenerator(dn);
+	if(!dq){
+	   fprintf(stderr,"Error [%s]\n", tip_get_error_string());
+	   return;
+	}
+              
+	
+
+
+COMPILE QUERY 
+ 
+   The CompileQuery operation is an overloaded operation.  It will
+   generate either a RetrievalQuery object or a RoutingQuery object
+   depending on the type of the first argument.  The resulting
+   RetrievalQuery or RoutingQuery object is a fully compiled query
+   (parsed query for seasoned INQUERY users) , not a type of Document.
+ 
+   The RetrievalQuery and RoutingQuery objects must be transformed
+   into ViewableQuery objects in order to be kept persistently in a
+   Tipster IR system, or to be viewed by users.
+ 
+   On encountering an error, a nil object is returned, and the Tipster
+   error status is set to indicate the nature of the error.
+ 
+ 
+	Syntax: 
+		RetrievalQuery  
+		CompileQuery(DocumentCollectionIndexSet dci_set, 
+			     DetectionQuery dq); 
+ 
+		RoutingQuery 
+		CompileQuery(QueryCollectionIndexSet qci_set, 
+			     DetectionQuery dq); 
+
+	Libraries:  libtipse.a (RetrievalQuery)
+		    libqcibuild.a (RoutingQuery)
+  
+	Returns:  RetrievalQuery or RoutingQuery or nil
+	
+	Errors:   TIP_INVALID_PARAM
+		  TIP_SE_SYSERR
+		  TIP_ERROR 
+ 
+
+	Example:
+
+	DetectionQuery dq;
+	RetrievalQuery rq;
+	DocumentCollectionIndexSet dci_set;
+
+	/* assume the dci_set has been properly initialized */
+	rq = CompileQuery(dci_set, dq);
+	if(!rq){
+	   fprintf(stderr,"Error [%s]\n", tip_get_error_string());
+	   return;
+	}
+
+
+
+UPDATE USING RELEVANCE FEEDBACK 
+ 
+   The UpdateUsingRelevanceFeedback is another overloaded operation,
+   and will return either a modified RoutingQuery or RetrievalQuery
+   depending on the type of the first parameter.  Updating the
+   compiled query involves adding terms from a Collection of relevant
+   and non-relevant Documents to the query.  Each Document in the
+   Collection is tagged as being relevant or non-relevant.
+   RoutingQuery objects will be modified based on both relevance
+   judgements, RetrievalQuery objects will be modified based only on
+   the relevance judgements.
+ 
+ 
+   On encountering an error, a nil object will be returned, and the
+   Tipster error status will be set to indicate the nature of the
+   error.
+ 
+	Syntax: 
+		RetrievalQuery  
+		UpdateUsingRelevanceFeedback(RetrievalQuery rq, 
+	                               	     Collection rel_docs, 
+					     Sequence dci_set); 
+ 
+		RoutingQuery  
+		UpdateUsingRelevanceFeedback(RoutingQuery rq, 
+			                     Collection rel_docs, 
+					     Sequence dci_set); 
+
+	Libraries:  libtipse.a (RetrievalQuery)
+		    libqcibuild.a (RoutingQuery)
+ 
+	Returns: RetrievalQuery or RoutingQuery or nil
+
+	Errors:  TIP_INVALID_PARAM
+		 TIP_INQ_DMDOC
+		 TIP_SE_SYSERR 
+		 TIP_ERROR
+
+
+	Example:  (see tip_dci_example.c or tip_qci_example.c)
+
+ 
+RETRIEVAL QUERY FROM RELEVANCE JUDGEMENTS 
+ROUTING  QUERY FROM RELEVANCE JUDGEMENTS 
+ 
+   The R*QueryFromRelevanceJudgements operations are similar to
+   the UpdateUsingRelevanceFeedback() operations described previously,
+   however, it requires no initial query object.  A new query object
+   is created based using the Collection "rel_docs" and the
+   DetectionNeed to define the information need.	  
+  
+   On encountering an error, a nil object will be returned and the
+   Tipster error status will be set to indicate the nature of the
+   error. 
+
+	+-----------------------------------------------------------+
+	Syntax:
+		RetrievalQuery  
+		RetrievalQueryFromRelevanceJudgements(Collection rel_docs, 
+			                              Sequence dci_set, 
+				                      DetectionNeed dn); 
+ 
+	Library:  libtipse.a
+
+	Returns:  RetrievalQuery or nil
+	
+	+-----------------------------------------------------------+
+	Syntax:
+		RoutingQuery  
+		RoutingQueryFromRelevanceJudgements(Collection rel_docs, 
+			                            Sequence dci_set, 
+				                    DetectionNeed dn); 
+	Library: libqcibuild.a
+
+	Returns: RoutingQuery or nil
+	
+	+-----------------------------------------------------------+
+
+	Errors:   (see UpdateUsingRelevanceFeedback operation)
+ 
+ 
+   For these operations, the DetectionNeed is not processed as part of
+   the query, it is retained as a description of the original
+   information need represented by the input Collection.  
+ 
+ 
+ 
+7.0	DOCUMENT  COLLECTION  INDEX  (the Inquery Database) 
+ 
+   The DocumentCollectionIndex is a Tipster-compatible INQUERY
+   database.  A complete DCI consists of the same files as an INQUERY
+   database.  The basic files are:
+ 
+			dci_name.btl 
+			dci_name.db 
+			dci_name.inf 
+			dci_name.lck 
+			dci_name.mft 
+			dci_name.shd 
+			dci_name.dlt
+ 
+   In addition, the following file will be present if the user has 
+   chosen to create the index using "fields": 
+ 
+			dci_name.ndx 
+ 
+	 
+   A DCI is a persistent Tipster object.  In other words it has some
+   persistent storage (the database files) and must be explicitly
+   created and destroyed.
+
+   There are Tipster operations to create, open, and destroy a 
+   DocumentCollectionIndex.  Using Tipster-compliant INQUERY, creating
+   a DCI is a stand-alone process.  The Augment operation is used to
+   populate a DCI with Collections (of Documents). 
+ 
+
+CREATE DOCUMENT COLLECTION INDEX
+
+   This operation creates an empty INQUERY database and returns the
+   DCI object representing the database to the user.  Upon
+   encountering an error, a NULL DCI object will be returned, and the
+   tipster status value will be set to indicate the error.
+	
+	Syntax:
+		DocumentCollectionIndex  
+		CreateDocumentCollectionIndex(String dci_name, 
+					      InqOpt_t q_user_flags); 
+ 
+	Libraries:  libdcibuild.a
+	
+	Returns:   DocumentCollectionIndex or nil
+
+	Errors:
+		TIP_INVALID_PARAM //Null or invalid parameter 
+		TIP_EXISTS        //The DCI already exists, cannot create 
+		TIP_INQ_ERROR     //Cannot create the dynamic object 
+		TIP_PERMISSION    //Insufficient permission to create 
+ 
+		TIP_ERROR         //Operation Not Available 
+	 
+
+OPEN DOCUMENT COLLECTION INDEX
+
+   This operation opens an already existing DCI and returns the DCI
+   object representing the named database(dci_name) to the user.  Upon
+   encountering an error, a NULL DCI object will be returned, and the
+   tipster error status value set to indicate the error.
+ 
+	Syntax:
+		DocumentCollectionIndex  
+		OpenDocumentCollectionIndex(String dci_name, 
+					    InqOpt_t q_user_flags); 
+ 
+ 
+	Libraries: libdcibuild.a //Standalone DCI library 
+		   libtipse.a    //Client Search Engine library 
+ 
+	Returns:  DocumentCollectionIndex or nil
+
+	Error Status: 
+		TIP_INVALID_PARAM //Null or invalid parameter 
+		TIP_NOMEM         //Cannot create the dynamic object 
+		TIP_NOENTRY       //DCI does not exist, cannot open 
+ 
+ 
+
+DESTROY DOCUMENT COLLECTION INDEX
+
+   This opertion destroys the persistent copy of the
+   DocumentCollectionIndex.  All files comprising the
+   Tipster-compliant INQUERY database will be removed.
+
+
+	Syntax:
+		int DestroyDocumentCollectionIndex(String dci_name); 
+ 
+	Libraries:    libdcibuild.a 
+ 
+	Return/
+	Errors: 
+		TIP_INVALID_PARAM  //Null or Invalid parameter 
+		TIP_FILE           //Error removing persistent DCI files 
+ 
+ 
+
+GET NAME
+
+   Every persistent Tipster object has a name.  This operation will
+   return the name of a DocumentCollectionIndex object or a
+   QueryCollectionIndex object.  
+ 
+   The String returned by GetName should *not* be freed.   
+  
+	Syntax:
+		String GetName(Object obj);  
+ 
+	Libraries:    libdcibuild.a 
+		      libtipse.a 
+		      libqcibuild.a
+ 
+	Returns:  String or nil
+
+	Error Status: 
+		TIP_INVALID_PARAM //Invalid object parameter 
+		TIP_NOENTRY       //Object has no name 
+ 
+ 
+
+CLOSE
+
+   This will close a DCI or QCI object and free any dynamic memory
+   associated with the object.  
+
+	Syntax:
+		void Close(Object obj); 
+ 
+	Libraries:  libdcibuild.a
+		    libtipse.a
+		    libqcibuild.a
+ 
+
+
+AUGMENT
+
+   Once a DCI has been created, use the Augment() operation to add
+   Documents from a single Collection to the index.  Augmenting
+   options are set by the user using InqOpt_t in
+   OpenDocumentCollectionIndex or CreateDocumentCollectionIndex. 
+ 
+   During indexing [Augment()] if a Document contains a "BaseDocument"
+   Attribute, this Attribute will be used to refer to the Document in
+   lieu of it's current Collection.  The information contained in the
+   BaseDocument Attribute will be what is presented to the user as a
+   result of the RetrieveDocuments() operation.
+
+	Syntax:
+		int Augment(DocumentCollectionIndex dci_obj, 
+			    Collection coll); 
+ 
+	Libraries:    libdcibuild.a 
+ 
+	Return/
+	Error Status: 
+		TIP_ERROR          //Operation not available 
+		TIP_INVALID_PARAM  //NULL or invalid parameter 
+		TIP_INQ_PARSE      //Search Engine parser error 
+		TIP_INQ_ERROR      //Search Engine error 
+		TIP_INQ_BTL        //Error merging Term Lists 
+		TIP_NOTFOUND       //Collection Name Not Found 
+ 
+ 
+	Example  (building a DCI  -- tip_dci_build.c) 
+	+------------------------------------------------------------+ 
+	   DocumentCollectionIndex dci;  
+	   Collection coll;  
+	   InqOpt_t my_options; 
+	   char *coll_name; 
+	   char *dci_name; 
+ 
+ 
+	   dci_name = argv[1]; 
+	   coll_name = argv[2]; 
+ 
+	   /* set indexing using FIELDS & Special Recognizers */  
+	   q_create_user_opt(&my_options); 
+	   q_update_user_opt(my_options, Q_INDX_FIELDS, NULL); 
+	   q_update_user_opt(my_options, Q_SPEC_RECOG, NULL); 
+ 
+	   dci = CreateDocumentCollectionIndex(dci_name, my_options); 
+	   if(!dci){ 
+	     /* DCI already exists, append Collection */ 
+	     dci = OpenDocumentCollectionIndex(dci_name, my_options); 
+	     if(!dci){ 
+	       fprintf(stderr, tip_get_error_string()); 
+	       exit(EXIT_FAILURE); 
+	     } 
+ 
+	   } 
+	   /* else Created the DCI */ 
+ 
+	   coll = OpenCollection(coll_name); 
+	   if(!coll){ 
+	     fprintf(stderr, tip_get_error_string()); 
+	     exit(EXIT_FAILURE); 
+	   } 
+ 
+	  if(Augment(dci, coll)){ 
+	     fprintf(stderr, tip_get_error_string()); 
+	     exit(EXIT_FAILURE); 
+	   } 
+	  fprintf(stderr,"Augmented DCI\n"); 
+ 
+	  tip_Close(coll); 
+ 
+	  Free(dci); 
+	  fprintf(stderr,"Closed DCI\n"); 
+    
+       +------------------------------------------------------------+ 
+ 
+ 
+ RETRIEVE DOCUMENTS
+
+   The RetrieveDocuments() operation is used to query a set of DCIs. 
+   RetrieveDocuments queries a DCI.  
+
+	Syntax:
+		VolatileCollection  
+		RetrieveDocuments(DocumentCollectionIndexSet dci_set,  
+				  RetrievalQuery rq, int docs_to_retrieve,  
+				  float threshold, Feedback f_obj); 
+ 
+
+	Libraries:    libtipse.a 
+ 
+	Returns:  VolatileCollection or nil
+
+	ErrorStatus: 
+		TIP_ERROR         //Operation not available 
+		TIP_INVALID_PARAM //NULL or invalid parameter 
+		TIP_SE_SYSERR     //Network/Communication error 
+ 
+	Discussion:
+
+	   The Feedback Object is defined by the user.  This parameter 
+	   may be NULL if the user does not require a search progress 
+	   indicator. 
+ 
+	   The "threshold" is used to define the user's minimum ranking 
+	   of a document.  The threshold specified must be in the 
+	   range [0.0, 1.0].   A lower threshold causes the query to 
+	   match more Documents.  A threshold of "1.0" would return no 
+	   Documents.  
+ 
+	   "docs_to_retrieve" indicates the maximum number of documents, 
+	   above "threshold" to be returned. 
+ 
+	   The "rq" is a compiled form of a DetectionNeed.   
+	   (see the section on Queries for more information on the 
+	    RetrievalQuery). 
+ 
+	   Each Document in the returned Collection will be tagged 
+	   with the following Attributes: 
+ 
+		Score :  The belief value used to rank the Documents 
+		         according to how well they match the query. 
+ 
+		DCI   :  The name of the DCI from which the Document 
+			  was retrieved. 
+ 
+		BaseDocument: The DocumentReference which points to 
+			      the Document containing the raw_data 
+			      component to be used for the returned 
+			      Document.  
+ 
+ 
+	   In addition, the following resource utilization Attributes 
+	   will be attached to the Collection.  These values indicate 
+	   the resources used by the system to process the query. 
+ 
+		CpuTime  :  Total CPU time used by the INQUERY Engine 
+		WallTime :  Wall clock time elapsed during query evaluation. 
+ 
+ 
+	   Upon encountering an error, the Tipster error status will 
+	   be set, and a NULL VolatileCollection will be returned. 
+ 
+
+HIGHLIGHT 
+ 
+   Documents returned by RetrieveDocuments may have query terms and
+   best passages highlighted using the Highlight() operation.  The
+   Highlight operation adds Annotations to the input Document.  These
+   Annotations are of type "RelevantTerm" and "RelevantPassage" and
+   carry no Attributes.
+ 
+   These Annotations can be retrieved from the Document using the
+   Document Manger SelectAnnotations() operation.
+ 
+	Syntax:
+		int  
+		Highlight(DocumentCollectionIndexSet dci_set, Document doc,  
+			  RetrievalQuery rq); 
+ 
+	Libraries:   libtipse.a 
+ 
+	Return/
+	Error Status: 
+		TIP_INVALID_PARAM  //NULL or invalid parameter 
+		TIP_SE_SYSERR      //Search Engine error 
+ 
+ 
+   An example source file provided in this release, tip_dci_build.c, 
+   shows how the DCI Create, Augment and Close operations may be used 
+   to build a DCI. 
+ 
+   An example source file provided in this release, tip_dci_example.c, 
+   shows how the DCI Retrieval & Highlight operations may be used in an 
+   application.  
+ 
+ 
+ 
+8.0 	QUERY  COLLECTION  INDEX  (the InRoute Database) 
+ 
+   The QueryCollectionIndex (QCI) is the Tipster InRoute Database. 
+   An InRoute database consists of the following persistent files: 
+ 
+	tst_qci/info 
+		terms 
+		stopwords 
+ 
+   These files are stored in a directory bearing the QCI name.  The 
+   "stopwords" file is provided only if removal of stopwords is 
+   requested during the creation of the QCI.  There are 2 ways one can 
+   request stopword removal: 
+ 
+	1.  Load DCI statistics from a DCI which has had stopwords 
+	    removed during indexing.  This option is set using the 
+	    InqOpt_t user options. 
+ 
+	2.  Set the Q_STOPPING option using InqOpt_t and pass this 
+	    option to the CreateQueryCollectionIndex operation. 
+ 
+	(see the CreateQueryCollectionIndex operation for details) 
+ 
+ 
+   Because the QCI is a persistent Tipster object, the GetName(),
+   Close() and Sync() operations are available for the QCI.  In
+   addition, the following operations are provided for QCI objects.
+
+ 
+CREATE QUERY COLLECTION INDEX
+
+   This operation will create a new QueryCollectionIndex using the
+   options specified by the user.  It is recommended that the user
+   load term statistics from an existing DocumentCollectionIndex to
+   initialize the QCI.   If the QCI already exists, the create
+   operation will fail.
+
+	Syntax:
+		QueryCollectionIndex  
+		CreateQueryCollectionIndex(String qci_name, 
+					   InqOpt_t user_opts); 
+ 
+	Libraries: libqcibuild.a
+ 
+	Returns:  QueryCollectionIndex or nil
+ 
+	Error Status: 
+		TIP_INVALID_PARAM 
+		TIP_EXISTS 
+		TIP_NOMEM 
+		TIP_ERROR		 
+ 
+
+OPEN QUERY COLLECTION INDEX
+
+   This operation opens an already existing QCI and returns the object
+   to the user.  Upon encountering an error, a NULL QCI object will be
+   returned and the Tipster error status value set to indicate the
+   error.
+ 
+	Syntax:
+		QueryCollectionIndex  
+		OpenQueryCollectionIndex(String qci_name, InqOpt_t user_opts); 
+ 
+	Libraries:    libqcibuild.a //Standalone QCI library 
+ 
+	Error Status: 
+		TIP_INVALID_PARAM //Null or invalid parameter 
+		TIP_NOMEM         //Cannot create the dynamic object 
+		TIP_NOEXIST       //QCI does not exist, cannot open 
+ 
+ 
+DESTROY QUERY COLLECTION INDEX
+
+   This operation will destroy the persistent version of the QCI.  
+
+	Syntax:
+		int DestroyQueryCollectionIndex(String qci_name); 
+ 
+	Libraries:    libqcibuild.a 
+ 
+	Return/
+	Error Status: 
+		TIP_INVALID_PARAM  //Null or Invalid parameter 
+ 
+ 
+ 
+ADD QUERY
+ 
+   To populate a QCI with users' information needs, use the AddQuery()
+   operation.  This operation adds a RoutingQuery object to
+   the QCI.  If the query already exists in the QCI, the version of
+   the query in the QCI is replaced with the input RoutingQuery.
+ 
+
+	Syntax:
+		int  
+		AddQuery(QueryCollectionIndex qci, RoutingQuery rq, 
+			 float Threshold); 
+ 
+ 
+	   The "threshold" is a float value in the range [0.0,1.0] and 
+	   is used to control the Documents which match the 
+	   RoutingQuery.  A value of 0.0 will return *all* Documents 
+	   which match the RoutingQuery, a value of 1.0 will ensure 
+	   that *no* Documents will match the RoutingQuery. 
+ 
+	Libraries:     libqcibuild.a 
+
+	Return/
+	Error Status: 
+		TIP_INVALID_PARAM 
+		TIP_SE_ERROR		 
+ 
+ 
+GET QUERY
+
+   To view the current version of an information need (DetectionNeed),
+   use the GetQuery() operation.  The returned RoutingQuery is the
+   latest RoutingQuery added to the QCI for the DetectionNeed.  The
+   current version of an information need may not resemble the
+   original information need if relevance feedback has been used.
+
+ 
+	Syntax:
+		RoutingQuery  
+		GetQuery(QueryCollectionIndex qci, DetectionNeed dn); 
+ 
+	Libraries: libtipqcibuild.a 
+ 
+	Error Status: 
+		TIP_INVALID_PARAM 
+		TIP_NOEXIST 
+		TIP_ERROR 
+ 
+ 
+REMOVE QUERY
+
+   RoutingQuery objects may be removed from the QCI using the 
+   RemoveQuery() operation. 
+ 
+	Syntax:
+		int  
+		RemoveQuery(QueryCollectionIndex qci, RoutingQuery rq); 
+ 
+	Libraries:    libqcibuild.a 
+ 
+	Return/
+	Error Status: 
+		TIP_INVALID_PARAM 
+		TIP_NOEXIST 
+		TIP_ERROR 
+ 
+ 
+RETRIEVE QUERIES
+
+   To compare a Document to the set of Queries in a QCI, use the
+   RetrieveQueries() operation.  The RetrieveQueries operation
+   compares the input Document to the RoutingQueries currently
+   contained in the QCI.  A VolatileCollection of DetectionNeeds is
+   returned.  
+
+	Syntax:
+		VolatileCollection  
+		RetrieveQueries(Sequence qci_set, Document doc, 
+				int num_to_retrieve);  
+
+	Libraries:   libqcibuild.a 
+ 
+	Returns:  VolatileCollection or nil
+
+	Error Status: 
+		TIP_INVALID_PARAM 
+		TIP_NOMEM 
+		TIP_SE_PARSE 
+		TIP_ERROR 
+ 
+	Discussion:
+	   The "num_to_retrieve" parameter is ignored.  The number of
+	   DetectionNeeds returned in the collection is dependent only
+	   on the thresholds set by AddQuery().
+	   
+	   Each DetectionNeed returned will be tagged with the
+	   following Attributes:  
+ 
+		Score:  The ranking indicating how closely the 
+		        DetectionNeed matched the Document. 
+ 
+		QCI  : The name of the QCI from which the 
+		         DetectionNeed was retrieved. 
+ 
+		BaseDocument:  A DocumentReference object which points 
+			       to the raw_data component of the 
+			       DetectionNeed.  
+ 
+ 
+	   In addition, the following resource utilization Attributes 
+	   will be attached to the Collection.  These values indicate 
+	   the resources used by the system to process the query. 
+ 
+		CpuTime  :  Total CPU time used by the InRoute Engine 
+		WallTime :  Wall clock time elapsed to compare Document 
+ 
+ 
+		 
+9.0  INDEX SEQUENCES   [provided by Document Manager]
+ 
+   Some of the Tipster Search Engine operations require a Sequence 
+   (Set) of QCI or DCI.   The following operations, provided in the 
+   Document Manager library create, populate and destroy Index
+   Sequences.  
+ 
+	QueryCollectionIndexSet  
+	CreateQueryCollectionIndexSet(void); 
+ 
+        DocumentCollectionIndexSet 
+	CreateDocumentCollectionIndexSet(void); 
+ 
+	Push(QueryCollectionIndexSet qci_set, QueryCollectionIndex qci); 
+	Push(DocumentCollectionIndexSet dci_set,DocumentCollectionIndex dci); 
+ 
+	tip_Free(QueryCollectionIndexSet qci_set); 
+	tip_Free(DocumentCollectionIndexSet dci_set); 
+ 
+   It is important to note that these Sequence operations support the 
+   semantics of all Document Manager sets.  A user should only free 
+   the Set itself.  The elements Push'd onto a Set are then owned by 
+   the Set and should *not* be free'd until the Set is free'd. 
+ 
+   If an element is Pop'd off a Set, then that element may be 
+   tip_Free'd independently of the Set. 
+ 
+ 
+ 
+10.0  TIPSTER EXTENSIONS
+
+   ViewableQuery Objects 
+   ---------------------
+ 
+   Because RetrievalQuery and RoutingQuery objects are queries in
+   compiled formats, the user cannot see the query that is actually
+   being evaluated by the Search Engine Index (QCI or DCI).  In order
+   to provide users of a Tipster IR system the ability to view the
+   compiled form of their queries, the ViewableQuery object is
+   introduced to Tipster-compliant INQUERY.  
+
+   The ViewableQuery is a type of Document.  It's contents represent
+   the form of the query which is actually evaluated by
+   RetrieveDocuments().  It is a member of a VolatileCollection,
+   therefore in order to become persistent, it must be copied into a
+   persistent Collection.
+ 
+   To obtain a ViewableQuery use the View() operation.  To translate a
+   ViewableQuery into a usable RetrievalQuery or RoutingQuery, use the
+   FormQuery() operation.
+
+
+VIEW
+
+	Syntax:
+		ViewableQuery View(RetrievalQuery rq); 
+		ViewableQuery View(RoutingQuery rq); 
+ 
+	     Both the Document and its parent VolatileCollection must 
+	     be freed when done with the Document. 
+    
+	Libraries:  libtipse.a     [RetrievalQuery]
+		    libqcibuild.a  [RoutingQuery]
+		 
+	Returns:  ViewableQuery or nil
+
+
+FORM QUERY
+ 
+   Transforms a ViewableQuery to its previous compiled form.
+ 
+	Syntax:
+		RetrievalQuery  
+		FormQuery(Sequence dci_set, ViewableQuery vq); 
+ 
+		RoutingQuery  
+		FormQuery(Sequence dci_set, DetectionQuery dq); 
+     
+	Libraries:  libtipse.a     [RetrievalQuery]
+		    libqcibuild.a  [RoutingQuery]
+		 
+	Returns:  RetrievalQuery or RoutingQuery or nil
+
+ 
+ 
+11.0  TIPSTER UTILITIES
+
+    Version 3.1 INQUERY supports crash recovery.  Crash recovery is
+    also available for the Tipster DCI object via the Augment()
+    operation.   Users wishing to take advantage of crash recovery
+    should set the Q_DO_RECOVER option in the InqOpt_t used as an
+    argument during the OpenDocumentCollectionIndex or
+    CreateDocumentCollectionIndex operations.
+ 
+    A crash recovery utility "tip_recover" has been provided to enable 
+    recovery of a partially built DocumentCollectionIndex [DCI].  In the 
+    event a system fails, or a tip_dci_build must be aborted, the DCI 
+    need not be re-built from the beginning.   Do the following to 
+    recover from a crash during indexing: 
+ 
+		1.  run tip_recover 
+ 
+			% tip_recover <DCI_name> 
+ 
+		2.  Follow the instructions issued by the tip_recover 
+		    program.  The recover program was written to 
+		    correlate with the standard INQUERY release 
+		    binaries, so the following translations apply to 
+		    the Tipster INQUERY release. 
+ 
+ 
+		    "run merge_btl with the -continue # switch" 
+		    (where # may be 1 or 2) 
+ 
+		    ---> set the Q_RCVR_CRASH user option in 
+			 OpenDocumentCollectionIndex, then call 
+			 Augment. 
+			 [see -recover flag in tip_dci_build.c] 
+ 
+ 
+		    "remove the .btl file if not doing an update" 
+ 
+		    ---> if this is the first Collection being added 
+		         to the DCI, remove the <DCI_name>.btl file, 
+		         OpenDocumentCollectionIndex(), Augment().  No 
+		         special user options need be set. 
+         
