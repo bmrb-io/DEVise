@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/07/15 17:20:51  jussi
+  Added code to extract string data from StringStorage.
+
   Revision 1.23  1996/07/02 22:45:57  jussi
   The bounding box of symbols is now correctly computed. Scatter
   plots sometimes did not have all necessary data displayed in
@@ -906,6 +909,7 @@ public:
       char *gdata = (char *)gdataArray[i];
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
+      Color color = GetColor(view, gdata, map, offset);
       if (color == XorColor)
         win->SetXorMode();
       else
