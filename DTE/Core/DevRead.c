@@ -19,6 +19,9 @@
 /*
     $Id$
     $Log$
+    Revision 1.2  1996/11/23 22:10:19  jussi
+    Minor change to reflect new TData::GetRecs() parameter list.
+
     Revision 1.1  1996/11/23 02:00:35  donjerko
     Restructered DTE directory
 
@@ -96,7 +99,7 @@ DevRead::Open(char *schemaFile, char *dataFile)
     _tDataP->HeadID(_nxtRecId);
     _tDataP->LastID(_lastRecId);
 
-    _tDataP->InitGetRecs(_nxtRecId, _lastRecId, RecIdOrder);
+    _tDataP->InitGetRecs(_nxtRecId, _lastRecId);
 
     return(result);
 }
@@ -107,7 +110,7 @@ void DevRead::reset(int lowRid, int highRid){
     _tDataP->LastID(last);
     assert(lowRid >= (int) first);
     assert(highRid <= (int) last);
-    _tDataP->InitGetRecs(lowRid, highRid, RecIdOrder);
+    _tDataP->InitGetRecs(lowRid, highRid);
     _nxtRecId = lowRid;
     _lastRecId = highRid;
 }
@@ -257,13 +260,13 @@ Tuple *DevRead::getNext()
     DO_DEBUG(printf("DevRead::getNext()\n"));
 
     if (_tDataP && (_nxtRecId <= _lastRecId)) {
-     //   _tDataP->InitGetRecs(_nxtRecId, _nxtRecId, RecIdOrder);
+        TData::TDHandle handle = _tDataP->InitGetRecs(_nxtRecId, _nxtRecId);
 
         int            dataSize;
         int            numRecs;
 
-        if (_tDataP->GetRecs(_recBuf, _recBufSize, _nxtRecId,
-                numRecs, dataSize))
+        if (_tDataP->GetRecs(handle, _recBuf, _recBufSize, _nxtRecId,
+                             numRecs, dataSize))
         {
             result = new Tuple[_numAttr];
 
@@ -326,6 +329,8 @@ Tuple *DevRead::getNext()
 
             _nxtRecId++;    // Prepare to read the next record
         }
+
+        _tDataP->DoneGetRecs(handle);
     }
 
     return(result);

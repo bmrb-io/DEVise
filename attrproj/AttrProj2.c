@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/11/25 18:15:04  wenger
+  Changes to non-indexed attrproj to match other changes to TData;
+  changes to compile non-index attrproj and to get the rest of Devise
+  to compile with that.
+
   Revision 1.1  1996/11/22 21:15:57  flisakow
   An example of how to use the new Sequential (no index) TData class.
   You need to set USE_SEQ to "yes" in the Makefile to build to the
@@ -291,9 +296,10 @@ AttrProj::ReadRec(RecId recId, VectorArray &vecArray)
 	int			numRecs;
 	DevStatus	result = StatusOk;
 
-	_tDataP->InitGetRecs(recId, recId, RecIdOrder);
+	TData::TDHandle handle = _tDataP->InitGetRecs(recId, recId);
 
-	if (!_tDataP->GetRecs(_recBuf, _recBufSize, recId, numRecs, dataSize))
+	if (!_tDataP->GetRecs(handle, _recBuf, _recBufSize,
+                              recId, numRecs, dataSize))
 	{
 		result = StatusFailed;
 	}
@@ -321,6 +327,8 @@ AttrProj::ReadRec(RecId recId, VectorArray &vecArray)
 		}
 	}
 
+        _tDataP->DoneGetRecs(handle);
+
 	return result;
 }
 
@@ -335,12 +343,13 @@ AttrProj::ReadWholeRec(RecId recId, Vector &vector)
 
 	DevStatus	result = StatusOk;
 
-	_tDataP->InitGetRecs(recId, recId, RecIdOrder);
+	TData::TDHandle handle = _tDataP->InitGetRecs(recId, recId);
 
 	int			dataSize;
 	int			numRecs;
 
-	if (!_tDataP->GetRecs(_recBuf, _recBufSize, recId, numRecs, dataSize))
+	if (!_tDataP->GetRecs(handle, _recBuf, _recBufSize,
+                              recId, numRecs, dataSize))
 	{
 		result = StatusFailed;
 	}
@@ -361,6 +370,7 @@ AttrProj::ReadWholeRec(RecId recId, Vector &vector)
 		attrListP->DoneIterator();
 	}
 
+	_tDataP->DoneGetRecs(handle);
 	return result;
 }
 

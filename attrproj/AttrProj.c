@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/11/23 21:35:33  jussi
+  Minor change to reflect change in TData::GetRecs().
+
   Revision 1.14  1996/11/05 19:46:48  wenger
   Fixed some bugs in the attribute projection code (handles blanks lines
   and much longer lines in projection files); removed unneeded -lpthread
@@ -286,7 +289,7 @@ AttrProj::ReadRec(RecId recId, VectorArray &vecArray)
 	int			numRecs;
 	DevStatus	result = StatusOk;
 
-	_tDataP->InitGetRecs(recId, recId, RecIdOrder);
+	_tDataP->InitGetRecs(recId, recId);
 
 	if (!_tDataP->GetRecs(_recBuf, _recBufSize, recId, numRecs, dataSize))
 	{
@@ -330,7 +333,7 @@ AttrProj::ReadWholeRec(RecId recId, Vector &vector)
 
 	DevStatus	result = StatusOk;
 
-	_tDataP->InitGetRecs(recId, recId, RecIdOrder);
+	_tDataP->InitGetRecs(recId, recId);
 
 	int			dataSize;
 	int			numRecs;
