@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/09/06 06:59:46  beyer
+  - Improved support for patterns, modified the pattern bitmaps.
+  - possitive pattern numbers are used for opaque fills, while
+    negative patterns are used for transparent fills.
+  - Added a border around filled shapes.
+  - ShapeAttr3 is (temporarily) interpreted as the width of the border line.
+
   Revision 1.19  1996/09/05 21:30:15  jussi
   Moved user-specified screen size to Display.
 
@@ -94,6 +101,8 @@
 #include <tk.h>
 #endif
 
+const int LINE_SIZE = 512;
+
 class XDisplay: public DeviseDisplay {
 public:
     XDisplay(char *name = 0);
@@ -137,6 +146,7 @@ public:
 
     /* Export display image to other graphics formats */
     virtual void ExportImage(DisplayExportFormat format, char *filename);
+    virtual void ExportImageAndMap(DisplayExportFormat format, char *gifFilename, char *mapFilename, char *url, char *defaultUrl);
     virtual void ExportGIF(FILE *fp);
 
 #ifdef LIBCS
@@ -151,6 +161,7 @@ protected:
     virtual void Register();
 #endif
 
+    void MakeAndWriteGif(FILE *fp, int x, int y, int w, int h);
     /* Convert drawable to GIF and write to file */
     void ConvertAndWriteGIF(Drawable drawable, 
                             XWindowAttributes xwa,
