@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.137  1999/10/12 17:59:28  wenger
+  Fixed bug in code for checking if the mouse is on a cursor that caused
+  devised to crash with JavaScreen; fixed Dispatcher problem that sometimes
+  caused core dump when DEVise is killed with INT signals; WindowRep
+  remembers last cursor hit type to avoid changing the mouse cursor unless
+  really necessary.
+
   Revision 1.136  1999/10/08 22:04:34  wenger
   Fixed bugs 512 and 514 (problems related to cursor moving).
 
@@ -2606,6 +2613,8 @@ void XWindowRep::DoButtonPress(int x, int y, int &pixX1, int &pixY1,
         cb->MouseDrag(x1, y1, x2, y2);
 	x2 = event.xbutton.x;
 	y2 = event.xbutton.y;
+        _mouseX = event.xmotion.x;
+        _mouseY = event.xmotion.y;
         cb->ShowMouseLocation(&x2, &y2);
 	done = true;
       }

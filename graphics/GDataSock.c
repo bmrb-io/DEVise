@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.13  1999/08/19 13:54:15  wenger
+  Changes for JavaScreen support: all 15 shape attributes now sent in
+  GData; added zoom in/out argument to JAVAC_MouseAction_RubberBand;
+  JAVAC_MouseAction_DoubleClick changed to JAVAC_ShowRecords.
+
   Revision 1.12  1999/08/13 17:22:18  wenger
   Custom view layouts are now saved to session files; removed now unused
   TileLayout code.
@@ -127,6 +132,8 @@ struct RecordVals {
 static char             rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
+static const char _controlD = '\x04';
+
 /*------------------------------------------------------------------------------
  * function: GDataSock::GDataSock
  * Constructor.
@@ -216,8 +223,7 @@ GDataSock::~GDataSock()
   }
 
   if (_fd >= 0) {
-    char controlD = '\x04';
-    if (write(_fd, &controlD, 1) != 1) {
+    if (write(_fd, &_controlD, 1) != 1) {
       reportErrSys("Error writing to data channel");
     }
 
@@ -501,6 +507,16 @@ GDataSock::PrintShapeAttr(const AttrVals &attrVal, char buf[], int &offset,
     } else {
       IncAndCheckOffset(buf, offset, bufSize, result);
     }
+  }
+
+  //
+  // This is a kludge to get rid of any stray control-D's
+  char *tmpC = buf;
+  while (*tmpC) {
+    if (*tmpC == _controlD) {
+      *tmpC = '%';
+    }
+    tmpC++;
   }
 
   return result;
