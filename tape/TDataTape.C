@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/28 17:50:33  jussi
+  Small fixes to remove new compiler warnings.
+
   Revision 1.4  1995/10/15 18:45:01  jussi
   Added HPUX-specific code.
 
@@ -29,7 +32,7 @@
 #include <iostream.h>
 #include <assert.h>
 #include <stdio.h>
-#include <libc.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include <limits.h>
 #include <unistd.h>
