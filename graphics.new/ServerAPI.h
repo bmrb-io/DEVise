@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/02/12 17:17:08  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.13  1998/02/02 18:26:16  wenger
   Strings file can now be loaded manually; name of strings file is now
   stored in session file; added 'serverExit' command and kill_devised
@@ -174,6 +177,7 @@ private:
 
   int _dataFd;				// socket for transfering large data, eg.gif
 
+  public:
   DeviseServer *_server;
 };
 

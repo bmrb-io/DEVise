@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.22  1998/01/07 19:29:59  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.21  1997/11/19 17:02:12  wenger
   Fixed error in OpenDataChannel().
 
@@ -117,6 +122,7 @@
 #include "GroupDir.h"
 #include "QueryProc.h"
 #include "ParseAPI.h"
+#include "DeviseCommand.h"
 
 class View;
 class MapInterpClassInfo;

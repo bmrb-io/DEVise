@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.81  1998/02/12 17:17:09  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.80  1998/01/30 02:17:07  wenger
   Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
 
@@ -341,6 +344,7 @@
 #include "Version.h"
 #include "StringStorage.h"
 #include "DCE.h"
+#include "CmdContainer.h"
 
 //#define DEBUG
 
@@ -373,7 +377,9 @@ ControlPanel *GetNewControl()
 
 TkControlPanel::TkControlPanel()
 {
+	
   _interpProto = new MapInterpClassInfo();
+  cmdContainerp = new CmdContainer(this,CmdContainer::MONOLITHIC);
   
   View::InsertViewCallback(this);
 
@@ -554,7 +560,7 @@ int TkControlPanel::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
 #endif
 
   // don't pass DEVise command verb (argv[0])
-  if (ParseAPI(argc - 1, &argv[1], (ControlPanel *)clientData) < 0)
+  if (cmdContainerp->Run(argc - 1, &argv[1]) < 0)
     return TCL_ERROR;
 
   return TCL_OK;

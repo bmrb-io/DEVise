@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1998/01/27 23:04:29  wenger
+  Broke the server's view selection dependency on the client (except when
+  running in collaboration mode).
+
   Revision 1.22  1997/06/10 19:49:14  wenger
   Need break with debug code turned off...
 
@@ -121,6 +125,9 @@
 #include "ViewGraph.h"
 #include "DeviseKey.h"
 #include "GDataBin.h"  // for USE_CONNECTORS
+#include "CommandObj.h"
+#include "CmdContainer.h"
+
 
 //#define DEBUG
 
@@ -138,18 +145,37 @@ void Action::AreaSelected(ViewGraph *view, Coord xlow, Coord ylow,
   if (button == 1) {
     filter.xLow = xlow;
     filter.xHigh = xhigh;
-    view->SetVisualFilter(filter);
+
+	if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
+	{
+  		CommandObj *	cmdObj = GetCommandObj();
+		cmdObj->SetVisualFilter(view, &filter);
+	}
+	else
+	if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
+	{
+		view->SetVisualFilter(filter);
+	}
   } else if (button == 3) {
     filter.xLow = xlow;
     filter.xHigh = xhigh;
     filter.yLow = ylow;
     filter.yHigh = yhigh;
-    view->SetVisualFilter(filter);
+	if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
+	{
+  		CommandObj *	cmdObj = GetCommandObj();
+		cmdObj->SetVisualFilter(view, &filter);
+	}
+	if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
+	{
+		view->SetVisualFilter(filter);
+	}
   }
 }
 
 void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 {
+
 #if defined(DEBUG)
   if (view->GetName() == NULL)
   {
@@ -206,7 +232,15 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
       Coord halfHeight = height / 2.0;
       filter.yLow -= halfHeight;
       filter.yHigh = filter.yLow + height;
-      view->SetVisualFilter(filter);
+	if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
+	{
+  		CommandObj *	cmdObj = GetCommandObj();
+		cmdObj->SetVisualFilter(view, &filter);
+	}
+	if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
+	{
+		view->SetVisualFilter(filter);
+	}
     } else {
       Camera camera = view->GetCamera();
       double incr_ = 0.0;
@@ -236,7 +270,15 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
       Coord halfHeight = height / 2.0;
       filter.yLow += halfHeight;
       filter.yHigh = filter.yLow + height;
-      view->SetVisualFilter(filter);
+	if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
+	{
+  		CommandObj *	cmdObj = GetCommandObj();
+		cmdObj->SetVisualFilter(view, &filter);
+	}
+	if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
+	{
+		view->SetVisualFilter(filter);
+	}
     } else {
       Camera camera = view->GetCamera();
       double incr_ = 0.0;
@@ -527,7 +569,15 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	  filter.xLow += delta;
 	  filter.xHigh -= delta;
       }
-      view->SetVisualFilter(filter);
+	if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
+	{
+  		CommandObj *	cmdObj = GetCommandObj();
+		cmdObj->SetVisualFilter(view, &filter);
+	}
+	if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
+	{
+		view->SetVisualFilter(filter);
+	}
     } else {
       Camera camera = view->GetCamera();
       double incr_ = camera._dvs / STEP_SIZE;
@@ -565,7 +615,15 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	  filter.xLow -= delta;
 	  filter.xHigh += delta;
       }
-      view->SetVisualFilter(filter);
+	if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
+	{
+  		CommandObj *	cmdObj = GetCommandObj();
+		cmdObj->SetVisualFilter(view, &filter);
+	}
+	if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
+	{
+		view->SetVisualFilter(filter);
+	}
     } else {
       Camera camera = view->GetCamera();
       double incr_ = camera._dvs / STEP_SIZE;
@@ -594,7 +652,15 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	  filter.yLow += delta;
 	  filter.yHigh -= delta;
       }
-      view->SetVisualFilter(filter);
+	if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
+	{
+  		CommandObj *	cmdObj = GetCommandObj();
+		cmdObj->SetVisualFilter(view, &filter);
+	}
+	if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
+	{
+		view->SetVisualFilter(filter);
+	}
     } else {
       Camera camera = view->GetCamera();
       double incr_ = camera._dvs / STEP_SIZE;
@@ -626,7 +692,15 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	  filter.yLow -= delta;
 	  filter.yHigh += delta;
       }
-      view->SetVisualFilter(filter);
+	if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
+	{
+  		CommandObj *	cmdObj = GetCommandObj();
+		cmdObj->SetVisualFilter(view, &filter);
+	}
+	if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
+	{
+		view->SetVisualFilter(filter);
+	}
     } else {
       Camera camera = view->GetCamera();
       double incr_ = camera._dvs / STEP_SIZE;

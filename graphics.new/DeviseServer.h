@@ -25,6 +25,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/02/12 17:16:29  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.5  1998/02/03 23:46:33  wenger
   Fixed a problem Hongyu had with getting GData on socket; fixed bugs
   283 and 285 (resulted from problems in color manager merge);
@@ -71,6 +74,7 @@
 
 
 class DeviseServer : public Server {
+friend class CommandObj;
 public:
   DeviseServer(char *name, int swt_port, int clnt_port,
 	char* switchname, int maxclients, ControlPanel *control);

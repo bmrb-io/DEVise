@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/02/12 17:17:05  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.3.2.1  1998/01/28 22:43:59  taodb
   Added support for group communicatoin
 
@@ -46,8 +49,6 @@ class MapInterpClassInfo;
 #define API_CTL 3
 #define API_GRP 4
 
-extern int	ParseAPI(int argc, char** argv, ControlPanel* control);
 extern int	ParseAPIColorCommands(int argc, char** argv, ControlPanel* control);
-
 //******************************************************************************
 #endif

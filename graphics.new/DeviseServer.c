@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/02/12 17:16:12  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.4  1998/02/03 23:46:32  wenger
   Fixed a problem Hongyu had with getting GData on socket; fixed bugs
   283 and 285 (resulted from problems in color manager merge);
@@ -57,6 +60,7 @@
 #include "DeviseServer.h"
 #include "DevError.h"
 #include "Scheduler.h"
+#include "CmdContainer.h"
 
 //#define DEBUG
 
@@ -73,6 +77,7 @@ DeviseServer::DeviseServer(char *name, int swt_port, int clnt_port,
 	swt_port, clnt_port);
 #endif
 
+  cmdContainerp = new CmdContainer(control,CmdContainer::CSGROUP);
   _currentClient = CLIENT_INVALID;
   _previousClient = CLIENT_INVALID;
   _control = control;
@@ -263,10 +268,10 @@ DeviseServer::ProcessCmd(ClientID clientID, int argc, char **argv)
     // Not currently processing a command.
     _currentClient = clientID;
 #if defined(DEBUG)
-  printf("  Before ParseAPI(): _currentClient = %d\n", _currentClient);
+  printf("  Before cmdContainer call: _currentClient = %d\n", _currentClient);
 #endif
 
-    if (ParseAPI(argc, argv, _control) < 0) {
+    if (cmdContainerp->Run(argc, argv) < 0) {
       	char errBuf[1024];
       	sprintf(errBuf, "Devise API command error (command %s).", argv[0]);
       	reportErrNosys(errBuf);
@@ -279,7 +284,7 @@ DeviseServer::ProcessCmd(ClientID clientID, int argc, char **argv)
   }
 
 #if defined(DEBUG)
-  printf("  After ParseAPI(): _currentClient = %d\n", _currentClient);
+  printf("  After cmdContainer call: _currentClient = %d\n", _currentClient);
 #endif
 }
 
