@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/03/19 19:41:52  andyt
+  Embedded Tcl/Tk windows are now sized in data units, not screen pixel
+  units. The old list of ETk window handles (WindowRep class) has been
+  replaced by a list of ETkInfo structs, each with fields for the window
+  handle, x-y coordinates, name of the Tcl script, and an "in_use"
+  flag. Added an ETk_Cleanup() procedure that gets called inside
+  View::ReportQueryDone and destroys all ETk windows that are not marked
+  as in_use.
+
   Revision 1.19  1996/12/30 23:57:37  andyt
   First version with support for Embedded Tcl/Tk windows. Added new
   ETkWindow symbol shape. Improved the MappingInterp::MapGAttr2TAttr
@@ -258,6 +267,7 @@ public:
   /* Get the AttrInfo for a GData attribute. The argument should be
      one of the MappingCmd_??? constants defined in MappingInterp.h */
   virtual AttrInfo *MapGAttr2TAttr(int which_attr) { return 0; }
+  virtual char *MapTAttr2GAttr(char *tname) { return 0; }
   
   /* Get the AttrInfo for shape attribute i */
   virtual AttrInfo *MapShapeAttr2TAttr(int i) { return 0; }

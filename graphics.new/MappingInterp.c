@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.52  1997/04/16 18:53:37  wenger
+  Text labels can now show non-string attributes; fixed a bug in constant
+  strings in mapping (non-terminated string); added constant attributes to
+  GData attribute list; commented out some debug code in mapping dialog.
+
   Revision 1.51  1997/04/14 17:25:25  beyer
   Added debugging.
 
@@ -469,7 +474,6 @@ AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)
 
     if (!(_cmdFlag & which_attr))
 	return 0;
-    
     switch (which_attr)
     {
       case MappingCmd_X:
@@ -511,6 +515,38 @@ AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)
     
     return 0;
     
+}
+
+char *MappingInterp::MapTAttr2GAttr(char *tname)
+{
+    int i;
+    AttrInfo *info;
+    char *gname = new char[64];
+    for (i = 1; i <= 8; ) {
+    	info = MapGAttr2TAttr(i);
+	if ( info && !strcmp(info->name, tname)) break;
+	i = i*2;
+    }
+    if (i > 8) return NULL;
+    switch (i) {
+        case 1: 
+	   strcpy(gname, "X");
+	   break;
+        case 2: 
+	   strcpy(gname, "Y");
+	   break;
+        case 4: 
+	   strcpy(gname, "Z");
+	   break;
+        case 8: 
+	   strcpy(gname, "Color");
+	   break;
+	default: 
+	   fprintf(stderr, "Invalid attribute type\n");
+	   return NULL;
+
+    }
+    return gname;
 }
 
 /* Get the AttrInfo for shape attribute i */
@@ -696,9 +732,7 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 	case DoubleAttr:
 	  dPtr = (double *)(tPtr + attrInfo->offset);
 	  _tclAttrs[j] = (*dPtr);
-	  /*
-	     printf("Setting float attr %d to %f\n", j, _tclAttrs[j]);
-	  */
+	  //printf("Setting float attr %d to %f\n", j, _tclAttrs[j]);
 	  break;
 
 	case StringAttr:
@@ -714,9 +748,9 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 	case DateAttr:
 	  tptr = (time_t *)(tPtr + attrInfo->offset);
 	  _tclAttrs[j] = (double)(*tptr);
-	  /*
-	     printf("Setting date attr %d to %f\n", j, _tclAttrs[j]);
-	  */
+#if defined(DEBUG) || 0
+	  printf("Setting date attr %d to %f\n", j, _tclAttrs[j]);
+#endif
 	  break;
 
 	default:
