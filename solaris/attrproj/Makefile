@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1996/11/23 20:53:13  jussi
+#  Removed -lpthread.
+#
 #  Revision 1.7  1996/11/05 19:46:55  wenger
 #  Fixed some bugs in the attribute projection code (handles blanks lines
 #  and much longer lines in projection files); removed unneeded -lpthread
@@ -48,6 +51,6 @@ ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
 ARCH_LDPOST  = 
 
-VPATH = ../../attrproj:../../graphics:../../graphics.new
+VPATH = ../../attrproj:../../graphics:../../graphics.new:../../DTE/RTree
 include ../../attrproj/Makefile.base
 include ../../attrproj/Makefile.solaris
