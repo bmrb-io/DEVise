@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/05/31 15:41:23  jussi
+  Added support for record links.
+
   Revision 1.12  1996/04/22 21:38:10  jussi
   Fixed problem with simultaneous view refresh and record query
   activities. Previously, there was a single iterator over the
@@ -177,16 +180,18 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
     Coord x = GetX(ptr, mapping, offset);
     Coord y = GetY(ptr, mapping, offset);
     ShapeID shape = GetShape(ptr, mapping, offset);
+    Boolean complexShape = mapping->IsComplexShape(shape);
     Color color = mapping->GetDefaultColor();
     if (offset->colorOffset >= 0)
       color = *(Color *)(ptr + offset->colorOffset);
 
     // eliminate records which won't appear on the screen
 
-    if (x + maxWidth / 2 < filter->xLow || 
-	x - maxWidth / 2 > filter->xHigh || 
-	y + maxHeight / 2 < filter->yLow || 
-	y - maxHeight / 2 > filter->yHigh) {
+    if (!complexShape &&
+	(x + maxWidth / 2 < filter->xLow || 
+	 x - maxWidth / 2 > filter->xHigh || 
+	 y + maxHeight / 2 < filter->yLow || 
+	 y - maxHeight / 2 > filter->yHigh)) {
 
       // Only last mapping is used for record linking
       if (!MoreMapping(_index) && i > firstRec)
