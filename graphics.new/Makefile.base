@@ -89,8 +89,8 @@ monolith.o: TkControl.o
 clientobj.o: ClientAPI.o
 	$(LD) -r -o $@ ClientAPI.o 
 
-servobj.o: ServerAPI.o
-	$(LD) -r -o $@ ServerAPI.o 
+servobj.o: ServerAPI.o ClientAPI.o
+	$(LD) -r -o $@ ServerAPI.o ClientAPI.o
 
 libobj.o: $(LIBOBJS) ../graphics/allobj.o
 	$(LD) -r -o $@ ../graphics/allobj.o $(LIBOBJS)
