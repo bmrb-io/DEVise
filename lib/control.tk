@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.66  1996/05/11 19:08:37  jussi
+#	Added replica management.
+#
 #	Revision 1.65  1996/05/11 03:03:49  jussi
 #	Added restoring, template, and sessionName as global variables.
 #	These used to be in TkControl.c. Changed DoClose and made it
@@ -290,6 +293,7 @@ set queryWinOpened 0
 set stackWinOpened 0
 set helpWindowCreated 0
 set UserMode 1
+set templateMode 0
 
 set libdir "."
 if { [info exists env(DEVISE_LIB)] } {
@@ -432,11 +436,17 @@ pack .mbar.session .mbar.tdata .mbar.gdata .mbar.view \
 menu .mbar.session.menu -tearoff 0
 .mbar.session.menu add command -label "Open" -command {DoOpen 0}
 .mbar.session.menu add command -label "Save" -command DoSave
-.mbar.session.menu add command -label "Save as" -command {DoSaveAs 0}
+.mbar.session.menu add command -label "Save as" -command {DoSaveAs 0 0}
 .mbar.session.menu add command -label "Close" -command DoClose
 .mbar.session.menu add separator
 .mbar.session.menu add command -label "Open as Template" -command {DoOpen 1}
-.mbar.session.menu add command -label "Save as Template" -command {DoSaveAs 1}
+.mbar.session.menu add command -label "Save as Template" \
+	-command {DoSaveAs 1 0}
+.mbar.session.menu add separator
+.mbar.session.menu add command -label "Export Template" \
+	-command {DoSaveAs 0 1}
+.mbar.session.menu add command -label "Merge Template" \
+	-command {DoTemplateMerge}
 .mbar.session.menu add separator
 .mbar.session.menu add command -label "Toggle mode" -command { ChangeMode }
 .mbar.session.menu add separator
@@ -864,7 +874,13 @@ proc DoEditMapping {} {
 
 # Close current session
 proc DoClose {} {
-    global sessionName
+    global sessionName templateMode datadir sourceList
+
+    if {$templateMode} {	
+	set but [dialog .open "Merge Data" \
+	   "You must Merge Template before you can close" "" 1 Ok]
+	return 0
+   }	
 
     set but [dialog .open "Close Session" "Close Current Session?" \
 	    "" 1 Cancel Ok ]
@@ -874,9 +890,18 @@ proc DoClose {} {
     
     ProcessViewSelected ""
 	
-    DEVise clearAll
+	DEVise clearAll
 
     set sessionName "session.tk"
+
+    if {$templateMode} {
+	unset sourceList
+	set sourceFile $datadir/sourcedef.tcl
+	if {[file exists $sourceFile]} {
+	    puts "Using data stream catalog $sourceFile"
+	    source $sourceFile	
+	}
+    }
 
     return 1
 }
@@ -1314,3 +1339,9 @@ proc ShowKGraph {} {
 
     eval $cmd
 }
+
+
+
+
+
+

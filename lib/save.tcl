@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/04/14 00:27:00  jussi
+#  Changed format of session file to reflect the new mapping class
+#  interface (namely, createInterp has been replaced with
+#  createMappingClass).
+#
 #  Revision 1.2  1996/03/07 17:00:23  jussi
 #  Added support for number of dimensions.
 #
@@ -175,17 +180,25 @@ proc SaveCursorViews { file dict} {
 ############################################################
 
 # Save session
-proc DoActualSave { infile asTemplate } {
-    global mode curView
+proc DoActualSave { infile asTemplate asExport } {
+    global mode curView sourceFile sourceList sourceTypes templateMode schemadir datadir
+
+#you can't save an imported file until it has been merged
+    if {$templateMode} { 
+	set but [dialog .open "Merge Data" \
+	    "You must Merge an imported template before you can save it" \
+	    "" 1 Ok] 
+	return
+    }
 
     ChangeStatus 1
-    # copy existing file to a backup file
+     # copy existing file to a backup file
     if { [ file exists $infile ] } {
 	set src [open $infile]
 	set dst [open $infile.bak w]
 	while { [gets $src line] >= 0 } {
 	    puts $dst $line
-	}
+ 	}
 	close $src
 	close $dst
 
@@ -196,6 +209,7 @@ proc DoActualSave { infile asTemplate } {
 	    return
 	}
     }
+
 
     # checkpoint tdata
     set classes [ DEVise get "tdata" ]
@@ -208,11 +222,49 @@ proc DoActualSave { infile asTemplate } {
 
     set f [open $infile w ]
 
-    puts $f "# Import file types"
-    set catFiles [DEVise catFiles]
-    foreach file $catFiles {
-	puts $f "DEVise importFileType $file"
+
+    puts $f "global templateMode sourceList datadir schemadir physSchema logSchema"
+
+    if {$asExport} {
+	puts $f "set templateMode 1"
+	puts $f ""
     }
+
+
+#The sourceList will have to be reset in the imported file
+    if {$asExport} {
+ 	   puts $f "\tunset sourceList"
+    }
+
+    puts $f "# Import schemas"
+    set catFile [DEVise catFiles]
+    foreach file $catFile {
+	if {$asExport} {
+	    # write contents of schema
+	    set fileP [open $file r]
+	    gets $fileP schemaTest
+	    if {[lindex $schemaTest 0] == "physical"} {
+		set lschema $schemaTest
+		set lschema [concat $lschema [read $fileP]]
+		close $fileP
+		set fileP [open [lindex $schemaTest end] "r"]
+	    } else {
+		close $fileP	
+		set fileP [open $file "r"]
+		set lschema ""
+	    }
+	    set pschema [read $fileP]
+	    close $fileP
+	    set sname [file tail $file]
+	    puts $f "set physSchema($sname) \"$pschema\""
+	    puts $f "set logSchema($sname) \"$lschema\""
+	    puts $f "DEVise parseSchema $sname \$physSchema($sname) \$logSchema($sname)"
+	} else {
+	    puts $f "DEVise importFileType $file"
+	}
+    }
+
+
     puts $f ""
 
     puts $f "# Layout mode"
@@ -221,17 +273,36 @@ proc DoActualSave { infile asTemplate } {
 
     puts $f "# Import file (Create TData)"
     puts $f ""
-    if {!$asTemplate} {
+    if {!$asExport && !$asTemplate} {
 	puts $f "set loadPixmap 1"
 	puts $f ""
     } 
+
 
     set fileDict ""
     set fileNum 1
     set classes [DEVise get tdata]
     set totalTData [llength [TdataSet]]
+
+    if {$asExport} {
+	foreach class $classes {
+	    foreach inst $instances {
+		set params [DEVise getCreateParam tdata $class $inst]
+		set fileAlias [lindex $params 1]
+		# in definition of source, replace path name of entry #3 with \$schemadir
+		# if entry #0 == UNIXFILE, replace entry #7 with \$datadir
+		set sourceList($fileAlias) [lreplace $sourceList($fileAlias) 3 3 [file tail [lindex $sourceList($fileAlias) 3]]]
+
+		if {[lindex $sourceList($fileAlias) 0] == "UNIXFILE" } {
+		    set sourceList($fileAlias) [lreplace $sourceList($fileAlias) 7 7 $datadir]
+		}
+		puts $f "\tset \"sourceList($fileAlias)\" \{$sourceList($fileAlias)\}"
+		set instances [DEVise get tdata $class]
+	    }
+	}
+    }
+
     foreach class $classes {
-	set instances [DEVise get tdata $class]
 	foreach inst $instances {
 	    set params [DEVise getCreateParam tdata $class $inst]
 	    set filePath [lindex $params 0]
@@ -247,12 +318,13 @@ proc DoActualSave { infile asTemplate } {
 		puts $f "if \{ \$template \} \{"
 		puts $f "\tset loadPixmap 0"
 		puts $f "\tset $tdataVar \[ GetTDataTemplate $class $totalTData $fileNum \]"
+
 		puts $f "\tif \{\$$tdataVar == \"\"\} \{"
 		puts $f "\t\treturn 0"
 		puts $f "\t\}"
 		puts $f "\} else \{"
 		puts $f "\tset $tdataVar \{$fileAlias\}"
-		puts $f "\tset source \[OpenDataSource \$$tdataVar]"
+		puts $f "\tset source \[OpenDataSource $$tdataVar]"
 		puts $f "\tif \{\$source == \"\"\} \{"
 		puts $f "\t\treturn 0"
 		puts $f "\t\}"
@@ -269,6 +341,9 @@ proc DoActualSave { infile asTemplate } {
 	}
     }
     puts $f  ""
+
+
+
 
     puts $f "# Create interpreted mapping classes "
     set mapClasses [ DEVise get mapping ]
@@ -397,7 +472,7 @@ proc DoActualSave { infile asTemplate } {
     foreach view $viewSet {
 	set viewVar [DictLookup $viewDict $view]
 	puts $f "DEVise clearViewHistory \$$viewVar"
-	if ($asTemplate) {
+	if {$asTemplate || $asExport} {
 	    continue
 	}
 	set historyList [DEVise getVisualFilters $view]
@@ -412,7 +487,7 @@ proc DoActualSave { infile asTemplate } {
 	puts $f "DEVise changeMode 1"
     }
 
-    if {$asTemplate} {
+    if {$asTemplate || $asExport} {
         puts $f ""
 	puts $f "return 1"
 	ChangeStatus 0
@@ -467,20 +542,20 @@ proc DoActualSave { infile asTemplate } {
 ############################################################
 
 proc DoSave {} {
-    global sessionName
+    global sessionName templateMode
 
     if {$sessionName == "session.tk"} {
-	DoSaveAs 0
+	DoSaveAs 0 0
 	return
     }
 
-    DoActualSave $sessionName 0
+    DoActualSave $sessionName 0 0
 }
 
 ############################################################
 
-proc DoSaveAs { asTemplate } {
-    global sessionName fsBox sessiondir
+proc DoSaveAs { asTemplate asExport } {
+    global sessionName fsBox sessiondir templateMode
 
     # Get file name
     set fsBox(path) $sessiondir
@@ -493,8 +568,83 @@ proc DoSaveAs { asTemplate } {
 	    "Save session to file\n$file?"  "" 1  {Cancel} OK ]
     if {$button != 1} { return }
 
-    DoActualSave $file $asTemplate
+    DoActualSave $file $asTemplate $asExport
     if {!$asTemplate} {
 	set sessionName $file
     }
 }
+
+
+####################################################################
+#This procedure merges the schema and sourceList from an imprted file,
+#with the local schemas and souceList.
+proc DoTemplateMerge {} {
+    
+    global sourceFile sourceList sourceTypes templateMode schemadir physSchema logSchema
+
+    if {!$templateMode} { 
+	set but [dialog .open "Merge Data" \
+	    "You must be in Template Mode inorder to Merge" "" 1 Ok] 
+	return
+    }
+
+    # write schemas to schema files in $schemadir
+    # make sure schema files don't exist before overwriting them
+
+#save logical schemas
+    foreach scheme [array names logSchema] {
+	if {[file exists [concat $schemadir/logical/$scheme]]} {
+	    puts "Conflict -- could not add logical schema $scheme"
+	} else {
+	    set fileP [open [concat $schemadir/logical/$scheme] "w"]
+	    puts $fileP $logSchema($scheme)
+	    close $fileP
+	}
+	#DEVise importFileType [concat $schemadir/logical/$scheme]
+    }
+
+#save physical schemas
+    foreach scheme [array names physSchema] {
+	if {[file exists [concat $schemadir/physical/$scheme]]} {
+	    puts "Conflict -- could not add physical schema $scheme"
+	} else {
+	    set fileP [open [concat $schemadir/physical/$scheme] "w"]
+	    puts $fileP $physSchema($scheme)
+	    close $fileP
+	}
+	DEVise importFileType [concat $schemadir/physical/$scheme]
+    }
+	        
+    unset physSchema
+    unset logSchema
+
+   # set tempSourceList ""
+    foreach entry [array names sourceList] {
+	set tempSourceList($entry) $sourceList($entry)
+    }
+
+    unset sourceList 
+    source /p/devise/mthomas/lib/sourcedef.tcl
+
+#add entries to sourceList
+    foreach entry [array names tempSourceList] {
+	set defn $tempSourceList($entry)
+	set err [catch {set exists $sourceList($entry)}]
+	if {$err > 0} {
+	    puts "Adding entry $entry to global catalog"
+	    set sourceList($entry) $defn
+	} else {
+	    puts "Conflict -- could not add entry $entry"
+	}
+    }
+    
+    saveSources
+
+    set templateMode 0
+
+    puts "Done with merging template catalog with global catalog"
+}
+
+
+
+

@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.31  1996/05/11 03:02:06  jussi
+#	Added CRSP_NSDQ data source. Changes made towards making
+#	caching of multiple data streams in one step possible.
+#	Improved help screen.
+#
 #	Revision 1.30  1996/04/10 03:06:59  jussi
 #	Checking of whether a top-level window already exists is now
 #	made via WindowVisible (util.tcl).
@@ -141,6 +146,7 @@ set sourceTypes(UNIXFILE) "{Unix File} $schemadir/logical/UNIXFILE"
 set sourceTypes(WWW) "{World Wide Web} $schemadir/logical/WWW"
 
 set sourceFile $datadir/sourcedef.tcl
+#set sourceFile /p/devise/mthomas/lib/sourcedef.tcl
 if {[file exists $sourceFile]} {
     puts "Using data stream catalog $sourceFile"
     source $sourceFile
@@ -275,7 +281,7 @@ proc updateStreamDef {} {
 ############################################################
 
 proc defineStream {base edit} {
-    global sourceList sourceTypes editonly oldDispName
+    global sourceList sourceTypes editonly oldDispName 
     global dispname source key schemafile evaluation priority command
 
     if {[WindowVisible .srcdef]} {
@@ -1133,3 +1139,12 @@ proc mapFollow {newtype} {
 	    clicking on Edit." "" 0 OK
 
 }
+
+
+
+
+
+
+
+
+
