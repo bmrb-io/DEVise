@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1995/12/04 18:06:36  jussi
+  Added GetLabelParams and replaced ToggleStatDisplay with SetStatDisplay.
+
   Revision 1.7  1995/12/02 21:24:45  jussi
   Changed "boundary" default to false. Views no longer have a
   boundary because Tk or other type of margin controls will
@@ -123,10 +126,6 @@ public:
 
 	/* Highlight a view of depending on flag.*/
 	void Highlight(Boolean flag);
-
-	/* Toggle the value of DisplayStats */
-	Boolean GetDisplayStats() {return _DisplayStats; }
-	void SetDisplayStats(Boolean stat);
 
 	int GetId() { return _id; }
 
@@ -333,8 +332,6 @@ AxisInfo xAxis, yAxis;   /* X and y axis info */
 Boolean _axisDisplay;   /* TRUE if axes should be displayed */
 
 Action *_action;
-/* TRUE if Statistics need to be displayed along with data */
-Boolean _DisplayStats;
 
 AxisLabel *_xAxisLabel;
 AxisLabel *_yAxisLabel;

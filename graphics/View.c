@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1995/12/04 18:06:05  jussi
+  Added GetLabelParams and replaced ToggleStatDisplay with SetStatDisplay.
+
   Revision 1.8  1995/12/02 21:23:26  jussi
   Corrected code which was based on the assumption that a view
   always has origin 0,0 which is no longer true with margins
@@ -95,7 +98,6 @@ View::View(char *name, Action *action,
 
   _pixmapIO = new PixmapIO();
   _compress = new SimpleCompress();
-  _DisplayStats = false;
 }
 
 /* Init */
@@ -1214,16 +1216,6 @@ void View::YAxisDisplayOnOff(Boolean stat)
   if (stat != yAxis.inUse) {
     yAxis.inUse = stat;
     _updateTransform  = true;
-    _refresh = true;
-  }
-}
-
-/* Turn On/Off DisplayStats */
-void View::SetDisplayStats(Boolean stat)
-{
-  if (stat != _DisplayStats) {
-    _DisplayStats = stat;
-    _updateTransform = true;
     _refresh = true;
   }
 }
