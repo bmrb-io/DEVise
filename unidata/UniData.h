@@ -73,6 +73,7 @@ class UniData {
 
     RecId     _next_rid;    // The next rid to use.
     RecId     _last_rid;    // The highest rid used so far.
+    RecId     _cur_line;    // Current line number
 
     ParamStk *_params;      // An array of parameters, one per attr
                             // or possibley multiple ones for each
