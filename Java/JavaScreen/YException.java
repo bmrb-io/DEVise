@@ -1,6 +1,7 @@
 // YException.java
 // last updated on 07/27/99
 
+
 public class YException extends Exception
 {
     // indicate which level this exception is

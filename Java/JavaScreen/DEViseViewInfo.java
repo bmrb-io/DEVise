@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.41  1999/08/03 05:56:50  hongyu
+// bug fixes    by Hongyu Yao
+//
 // Revision 1.40  1999/07/27 17:11:19  hongyu
 // *** empty log message ***
 //
@@ -82,12 +85,12 @@ public class DEViseViewInfo extends Panel
         if (name == null) {
             //viewName.setText("");
             if (jsc.parentFrame != null) {
-                jsc.parentFrame.setTitle("DEVise JavaScreen");
+                jsc.parentFrame.setTitle(DEViseGlobals.javaScreenTitle);
             }
         } else {
             //viewName.setText(name);
             if (jsc.parentFrame != null) {
-                jsc.parentFrame.setTitle("DEVise JavaScreen     \"" + name + "\"");
+                jsc.parentFrame.setTitle(DEViseGlobals.javaScreenTitle + "     \"" + name + "\"");
             }
         }
 
@@ -115,7 +118,7 @@ public class DEViseViewInfo extends Panel
     {
         //viewName.setText("");
         if (jsc.parentFrame != null) {
-            jsc.parentFrame.setTitle("DEVise JavaScreen");
+            jsc.parentFrame.setTitle(DEViseGlobals.javaScreenTitle);
         }
 
         mouseX.setText("");

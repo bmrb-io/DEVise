@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  1999/08/24 08:45:52  hongyu
+// *** empty log message ***
+//
 // Revision 1.10  1999/06/23 20:59:15  wenger
 // Added standard DEVise header.
 //
@@ -41,7 +44,7 @@ public class DEViseClient
     public boolean isClientSwitched = false;
     public boolean isSwitchSuccessful = false;
 
-    public String path = "DEViseSession";
+    //public String path = "DEViseSession";
     public String sessionName = null;
     public String savedSessionName = null;
 
@@ -60,7 +63,7 @@ public class DEViseClient
         socket = s;
         ID = id;
 
-        savedSessionName = "jstmp_" + ID.intValue();
+        savedSessionName = ".tmp/jstmp_" + ID.intValue();
 
         status = DEViseClient.IDLE;
     }

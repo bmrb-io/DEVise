@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.36  1999/08/24 08:45:53  hongyu
+// *** empty log message ***
+//
 // Revision 1.35  1999/08/04 06:05:54  hongyu
 // *** empty log message ***
 //
@@ -39,7 +42,6 @@ public class DEViseScreen extends Panel
     jsdevisec jsc = null;
 
     Dimension screenDim = new Dimension(600, 400);
-    Dimension screenSize = null;
 
     Vector allCanvas = new Vector();
     Vector newCanvas = new Vector();
@@ -60,29 +62,28 @@ public class DEViseScreen extends Panel
 
     public Image offScrImg = null;
 
-    public Point finalMousePosition = new Point(0, 0);
-    //private boolean isGDataAdded = false, isGDataDeleted = false, isCanvasAdded = false, isCanvasDeleted = false;
-    //private DEViseCanvas whichCanvasAdded = null, whichCanvasDeleted = null;
-    //private int whichCanvasAddedWhere = 0;
-    //private Vector whichGDataAdded = null, whichGDataDeleted = null;
+    public Point finalMousePosition = new Point(-1, -1);
 
     public DEViseScreen(jsdevisec what)
     {
         jsc = what;
 
-        screenSize = new Dimension(DEViseGlobals.screenSize.width, DEViseGlobals.screenSize.height);
-        screenDim = new Dimension(DEViseGlobals.screenSize.width - 2 * DEViseGlobals.screenEdge.width, DEViseGlobals.screenSize.height - 2 * DEViseGlobals.screenEdge.height);
+        screenDim = new Dimension(DEViseGlobals.screenSize.width, DEViseGlobals.screenSize.height);
 
         setLayout(null);
         setBackground(DEViseGlobals.bg);
         setForeground(DEViseGlobals.fg);
         setFont(DEViseGlobals.font);
 
+        this.enableEvents(AWTEvent.MOUSE_EVENT_MASK);
+        this.enableEvents(AWTEvent.MOUSE_MOTION_EVENT_MASK);
+
         addMouseMotionListener(new MouseMotionAdapter()
             {
                 public void mouseMoved(MouseEvent event)
                 {
                     Point p = event.getPoint();
+
                     if (jsc.dispatcher.getStatus() != 0) {
                         setCursor(DEViseGlobals.waitCursor);
                     } else {
@@ -98,17 +99,70 @@ public class DEViseScreen extends Panel
             });
     }
 
+    protected void processMouseEvent(MouseEvent event)
+    {
+        if (event.getID() == MouseEvent.MOUSE_EXITED) {
+            finalMousePosition.x = -1;
+            finalMousePosition.y = -1;
+        } else {
+            finalMousePosition.x = event.getX();
+            finalMousePosition.y = event.getY();
+        }
+
+        super.processMouseEvent(event);
+    }
+
+    protected void processMouseMotionEvent(MouseEvent event)
+    {
+        finalMousePosition.x = event.getX();
+        finalMousePosition.y = event.getY();
+
+        super.processMouseMotionEvent(event);
+    }
+
+    public void reEvaluateMousePosition()
+    {
+        if (finalMousePosition.x < 0) {
+            if (currentView != null) {
+                jsc.viewInfo.updateInfo();
+                setCurrentView(null);
+            }
+
+            return;
+        }
+
+        //if (!DEViseGlobals.isApplet) {
+        //    MouseEvent finishEvent = new MouseEvent(this, MouseEvent.MOUSE_MOVED, DEViseGlobals.getCurrentTime(), 0, finalMousePosition.x, finalMousePosition.y, 0, false);
+        //    Toolkit tk = getToolkit();
+        //    //EventQueue queue = new EventQueue();
+        //    EventQueue queue = tk.getSystemEventQueue();
+        //    queue.postEvent(finishEvent);
+        //} else {
+            for (int i = 0; i < allCanvas.size(); i++) {
+                DEViseCanvas canvas = (DEViseCanvas)allCanvas.elementAt(i);
+                Rectangle loc = canvas.getLocInScreen();
+                Point p = new Point(finalMousePosition.x - loc.x, finalMousePosition.y - loc.y);
+                if (p.x >= 0 && p.x < loc.width && p.y >= 0 && p.y < loc.height) {
+                    canvas.checkMousePos(p, false, false);
+                    return;
+                }
+            }
+
+            if (currentView != null) {
+                jsc.viewInfo.updateInfo();
+                setCurrentView(null);
+            }
+
+            setCursor(DEViseGlobals.defaultCursor);
+        //}
+    }
+
     public Dimension getPreferredSize()
     {
-        return screenSize;
+        return screenDim;
     }
 
     public Dimension getMinimumSize()
-    {
-        return screenSize;
-    }
-
-    public Dimension getScreenDim()
     {
         return screenDim;
     }
@@ -117,16 +171,6 @@ public class DEViseScreen extends Panel
     // is opened. If you really want to change the screen size, you will need
     // to close the session, re-set the size of the screen and reopen the
     // session
-    public void resetScreenDim()
-    {
-        screenSize = new Dimension(DEViseGlobals.screenSize.width, DEViseGlobals.screenSize.height);
-        screenDim = new Dimension(DEViseGlobals.screenSize.width - 2 * DEViseGlobals.screenEdge.width, DEViseGlobals.screenSize.height - 2 * DEViseGlobals.screenEdge.height);
-
-        isDimChanged = true;
-
-        repaint();
-    }
-
     public void setScreenDim(int width, int height)
     {
         if (width < 1 || height < 1)
@@ -135,8 +179,8 @@ public class DEViseScreen extends Panel
         screenDim.width = width;
         screenDim.height = height;
 
-        screenSize.width = screenDim.width + 2 * DEViseGlobals.screenEdge.width;
-        screenSize.height = screenDim.height + 2 * DEViseGlobals.screenEdge.height;
+        DEViseGlobals.screenSize.width = screenDim.width;
+        DEViseGlobals.screenSize.height = screenDim.height;
 
         isDimChanged = true;
 
@@ -152,18 +196,24 @@ public class DEViseScreen extends Panel
         if (viewTable.get(view.viewName) != null)
             return;
 
+        // parent view always created before view symbol
         if (view.parentView != null) {
             view.parentView.addChild(view);
         }
 
+        // top view always created before bottom view
         if (view.piledView != null) {
             view.piledView.addPile(view);
         }
 
         allViews.addElement(view);
+
         viewTable.put(view.viewName, view);
     }
 
+    // Only top view (not view symbol, not bottom view in piled views) will have an image
+    // and only top view will associated with a canvas, a canvas will only be assiciated
+    // one view and one view only
     public void updateViewImage(String name, Image image)
     {
         if (name == null || image == null)
@@ -178,12 +228,10 @@ public class DEViseScreen extends Panel
             DEViseCanvas canvas = new DEViseCanvas(view, image);
             view.canvas = canvas;
 
-            //whichCanvasAddedWhere = 0;
             int i;
             for (i = 0; i < allCanvas.size(); i++) {
                 DEViseCanvas c = (DEViseCanvas)allCanvas.elementAt(i);
                 if (c.view.viewZ < canvas.view.viewZ) {
-                    //whichCanvasAddedWhere = i;
                     canvas.posZ = i;
                     break;
                 }
@@ -192,13 +240,9 @@ public class DEViseScreen extends Panel
                 canvas.posZ = allCanvas.size();
             }
 
-            //allCanvas.insertElementAt(canvas, whichCanvasAddedWhere);
             allCanvas.insertElementAt(canvas, canvas.posZ);
 
             newCanvas.addElement(canvas);
-
-            //isCanvasAdded = true;
-            //whichCanvasAdded = canvas;
         } else {
             view.canvas.updateImage(image);
         }
@@ -206,6 +250,81 @@ public class DEViseScreen extends Panel
         repaint();
     }
 
+    // while remove a view, everything assiciate with this view is gone, such as view symbol,
+    // cursors, gdatas, even canvas and piled views (if the view to be remove is a top view)
+    public void removeView(String name)
+    {
+        if (name == null)
+            return;
+
+        removeView(getView(name));
+    }
+
+    public synchronized void removeView(DEViseView view)
+    {
+        if (view == null) {
+            return;
+        }
+
+        Vector vector = null;
+
+        // remove itself from its parent or piled view, if any
+        if (view.piledView != null) {
+            view.piledView.removePile(view);
+        }
+
+        if (view.parentView != null) {
+            view.parentView.removeChild(view);
+        }
+
+        // remove GDatas associated with it
+        vector = view.viewGDatas;
+        if (vector.size() > 0) {
+            for (int i = 0; i < vector.size(); i++) {
+                DEViseGData data = (DEViseGData)vector.elementAt(i);
+                if (data.isJavaSymbol) {
+                    javaGDatas.removeElement(data);
+                    obsoleteGData.addElement(data);
+                }
+            }
+
+            view.removeAllGData();
+        }
+
+        // remove cursors associated with this view
+        view.removeAllCursor();
+
+        // remove any piled view might associated with this view
+        vector = view.viewPiledViews;
+        while (vector.size() > 0) {
+            removeView((DEViseView)vector.elementAt(0)); // recursive call to removeView
+        }
+
+        // remove any child view might associated with this view
+        vector = view.viewChilds;
+        while (vector.size() > 0) {
+            removeView((DEViseView)vector.elementAt(0)); // recursive call to removeView
+        }
+
+        // if this view is current view, set current view to be null
+        if (currentView == view) {
+            currentView = null;
+        }
+
+        // remove canvas associated with this view, if any
+        if (view.canvas != null) {
+            allCanvas.removeElement(view.canvas);
+            obsoleteCanvas.addElement(view.canvas);
+        }
+
+        // remove this view from view table
+        allViews.removeElement(view);
+        viewTable.remove(view.viewName);
+
+        repaint();
+    }
+
+    // remove the child views only
     public void removeChildViews(String name)
     {
         if (name == null)
@@ -219,9 +338,9 @@ public class DEViseScreen extends Panel
         if (view == null)
             return;
 
-        Vector child = view.viewChilds;
-        while (child.size() > 0) {
-            removeView(view.getChild(0));
+        Vector vector = view.viewChilds;
+        while (vector.size() > 0) {
+            removeView((DEViseView)vector.elementAt(0));
         }
         // Can not use the for iteration, because removeView also remove that view
         // from its parents, the the size of the viewChilds of the parentView is
@@ -231,66 +350,6 @@ public class DEViseScreen extends Panel
         //}
 
         repaint();
-    }
-
-    public void removeView(String name)
-    {
-        if (name == null)
-            return;
-
-        removeView(getView(name));
-    }
-
-    public synchronized void removeView(DEViseView view)
-    {
-        if (view != null) {
-            removeChildViews(view);
-
-            if (currentView == view) {
-                currentView = null;
-            }
-
-            if (view.parentView == null) {
-                // Only top level view will have gdata
-                Vector gdata = view.viewGDatas;
-                if (gdata.size() > 0) {
-                    for (int i = 0; i < gdata.size(); i++) {
-                        DEViseGData data = view.getGData(i);
-                        if (data.isJavaSymbol) {
-                            javaGDatas.removeElement(data);
-                            obsoleteGData.addElement(data);
-                        }
-                    }
-
-                    view.removeAllGData();
-                    //isGDataDeleted = true;
-                    //whichGDataDeleted = gdata;
-                    //obsoleteGData.addElement(gdata);
-                }
-            } else {
-                view.parentView.removeChild(view);
-            }
-
-            if (view.piledView != null) {
-                view.piledView.removePile(view);
-            }
-
-            if (view.canvas != null) {
-                allCanvas.removeElement(view.canvas);
-                //isCanvasDeleted = true;
-                //whichCanvasDeleted = view.canvas;
-                obsoleteCanvas.addElement(view.canvas);
-            }
-
-            if (currentView == view) {
-                setCurrentView(null);
-            }
-
-            allViews.removeElement(view);
-            viewTable.remove(view.viewName);
-
-            repaint();
-        }
     }
 
     public DEViseView getView(String name)
@@ -319,10 +378,6 @@ public class DEViseScreen extends Panel
 
         currentView = view;
 
-        //if (currentView != null) {
-        //    currentView.isFirstTime = true;
-        //}
-
         if (!jsc.isShowingMsg() && currentView != null) {
             requestFocus();
             if (currentView.getCanvas() != null)
@@ -334,63 +389,54 @@ public class DEViseScreen extends Panel
     {
         DEViseView view = getView(name);
 
-        if (view != null) {
-            // remove old GData if any
-            // Only top level view will have gdata
-            Vector gdata = view.viewGDatas;
-            //whichGDataDeleted = new Vector();
-            if (gdata.size() > 0) {
-                for (int i = 0; i < gdata.size(); i++) {
-                    //remove(gdata[i].symbol);
-                    DEViseGData data = view.getGData(i);
-                    if (data.isJavaSymbol) {
-                        javaGDatas.removeElement(data);
-                        obsoleteGData.addElement(data);
-                        //whichGDataDeleted.addElement(data);
-                        //obsoleteGData.addElement(data);
-                    }
-                }
-
-                view.removeAllGData();
-                //obsoleteGData.addElement(gdata);
-                //isGDataDeleted = true;
-                //whichGDataDeleted = gdata;
-            }
-
-            if (vect != null && vect.size() > 0) {
-                for (int i = 0; i < vect.size(); i++) {
-                    DEViseGData g = (DEViseGData)vect.elementAt(i);
-                    if (g.isJavaSymbol) {
-                        javaGDatas.addElement(g);
-                        newGData.addElement(g);
-                    }
-
-                    view.addGData(g);
-                }
-
-                //isGDataAdded = true;
-                //whichGDataAdded = vect;
-                //newGData.addElement(vect);
-            }
-
-            repaint();
-        } else {
-            jsc.pn("Invalid view name in DEViseScreen::updateGData");
+        if (view == null) {
+            return;
         }
+
+        Vector vector = view.viewGDatas;
+        if (vector.size() > 0) {
+            for (int i = 0; i < vector.size(); i++) {
+                DEViseGData data = (DEViseGData)vector.elementAt(i);
+                if (data.isJavaSymbol) {
+                    javaGDatas.removeElement(data);
+                    obsoleteGData.addElement(data);
+                }
+            }
+
+            view.removeAllGData();
+        }
+
+        if (vect != null && vect.size() > 0) {
+            for (int i = 0; i < vect.size(); i++) {
+                DEViseGData g = (DEViseGData)vect.elementAt(i);
+                if (g.isJavaSymbol) {
+                    javaGDatas.addElement(g);
+                    newGData.addElement(g);
+                }
+
+                view.addGData(g);
+            }
+        }
+
+        if (view.viewDimension == 3 && view.canvas != null) {
+            view.canvas.crystal = null;
+        }
+
+        repaint();
     }
 
     public void updateCursor(String name, DEViseCursor cursor)
     {
         DEViseView view = getView(name);
 
-        if (view != null) {
-            if (cursor != null) {
-                if (view.addCursor(cursor)) {
-                    repaint();
-                }
+        if (view == null) {
+            return;
+        }
+
+        if (cursor != null) {
+            if (view.addCursor(cursor)) {
+                repaint();
             }
-        } else {
-            jsc.pn("Invalid view name in DEViseScreen::updateCursor");
         }
     }
 
@@ -467,162 +513,69 @@ public class DEViseScreen extends Panel
         }
     }
 
-    /*
-    public void moveView(DEViseView view, int x, int y, boolean isFinal)
-    {
-        if (view == null)
-            return;
-
-        if (view.parentView != null)
-            return;
-
-        if (!isFinal) {
-            Rectangle loc = view.viewLoc;
-            newViewLoc.x = loc.x + x;
-            newViewLoc.y = loc.y + y;
-            newViewLoc.width = loc.width;
-            newViewLoc.height = loc.height;
-            isDrawPos = true;
-            offScrImg = null;
-            repaint();
-        } else {
-            view.setLoc(new Rectangle(newViewLoc.x, newViewLoc.y, newViewLoc.width, newViewLoc.height));
-            view.setBounds(view.getLocInScreen());
-            offScrImg = null;
-        }
-    }
-    */
-
     // Enable double-buffering
-    public void update(Graphics g)
+    public void update(Graphics gc)
     {
-        if (g == null) {
-            jsc.pn("Null graphics received in screen update");
+        if (gc == null) {
             return;
         }
 
         if (offScrImg == null) {
-            offScrImg = createImage(screenSize.width, screenSize.height);
-            if (offScrImg == null) {
-                jsc.pn("Can not create empty offScrImg in screen update!");
-                return;
-            }
+            offScrImg = createImage(screenDim.width, screenDim.height);
         }
 
-        Graphics og = offScrImg.getGraphics();
-        paint(og);
-        g.drawImage(offScrImg, 0, 0, this);
-        og.dispose();
+        if (offScrImg == null) {
+            paint(gc);
+        } else {
+            Graphics og = offScrImg.getGraphics();
+            paint(og);
+            gc.drawImage(offScrImg, 0, 0, this);
+            og.dispose();
+        }
     }
 
     public void paint(Graphics g)
     {
         if (isDimChanged) {
             isDimChanged = false;
-            setSize(screenSize);
+            setSize(screenDim);
+
             if (DEViseGlobals.inBrowser) {
                 jsc.validate();
             } else {
                 jsc.parentFrame.pack();
             }
+
             jsc.repaint();
         }
-
-        //if (isCanvasDeleted && whichCanvasDeleted != null) {
-        //    remove(whichCanvasDeleted);
-        //    isCanvasDeleted = false;
-        //    whichCanvasDeleted = null;
-        //}
 
         while (obsoleteCanvas.size() > 0) {
             DEViseCanvas c = (DEViseCanvas)newCanvas.firstElement();
             remove(c);
-            //obsoleteCanvas.removeElementAt(0);
-            obsoleteCanvas.removeElement(c);            
+            obsoleteCanvas.removeElement(c);
         }
-
-        //if (isCanvasAdded && whichCanvasAdded != null) {
-        //    add(whichCanvasAdded, whichCanvasAddedWhere);
-        //    whichCanvasAdded.setBounds(whichCanvasAdded.getBoundsInScreen());
-        //    isCanvasAdded = false;
-        //    whichCanvasAdded = null;
-        //}
 
         while (newCanvas.size() > 0) {
             DEViseCanvas c = (DEViseCanvas)newCanvas.firstElement();
             add(c, c.posZ);
-            c.setBounds(c.getBoundsInScreen());
-            c.canvasPos = c.getLocation();
-            //newCanvas.removeElementAt(0);
+            c.setBounds(c.getLocInScreen());
             newCanvas.removeElement(c);
         }
 
-        //if (isGDataDeleted && whichGDataDeleted != null) {
-        //    for (int i = 0; i < whichGDataDeleted.size(); i++) {
-        //        DEViseGData gdata = (DEViseGData)whichGDataDeleted.elementAt(i);
-        //        if (gdata.isJavaSymbol) {
-        //            remove(gdata.symbol);
-        //        }
-        //    }
-        //
-        //    isGDataDeleted = false;
-        //    whichGDataDeleted = null;
-        //}
-
         while (obsoleteGData.size() > 0) {
             DEViseGData gdata = (DEViseGData)obsoleteGData.firstElement();
-            // the element in obsoleteGData will guranteed to be java type GData
             remove(gdata.symbol);
-            //obsoleteGData.removeElementAt(0);
             obsoleteGData.removeElement(gdata);
         }
 
-        //if (isGDataAdded && whichGDataAdded != null) {
-        //    for (int i = 0; i < whichGDataAdded.size(); i++) {
-        //        DEViseGData gdata = (DEViseGData)whichGDataAdded.elementAt(i);
-        //        if (gdata.isJavaSymbol) {
-        //            Component gs = gdata.symbol;
-        //            add(gs);
-        //            gs.setBounds(gdata.getBoundsInScreen());
-        //        }
-        //    }
-        //
-        //    isGDataAdded = false;
-        //    whichGDataAdded = null;
-        //}
-
         while (newGData.size() > 0) {
             DEViseGData gdata = (DEViseGData)newGData.firstElement();
-            // the element in newGData will guranteed to be java type GData
             Component gs = gdata.symbol;
             add(gs);
-            gs.setBounds(gdata.getBoundsInScreen());
-            //newGData.removeElementAt(0);
+            gs.setBounds(gdata.GDataLocInScreen);
             newGData.removeElement(gdata);
         }
 
         super.paint(g);
-
-        /*
-        if (isDrawPos) {
-            Color oldColor = g.getColor();
-            g.setColor(Color.white);
-            g.drawRect(newViewLoc.x, newViewLoc.y, newViewLoc.width, newViewLoc.height);
-            g.setColor(oldColor);
-            isDrawPos = false;
-        }
-        */
-
-        Color oldColor = g.getColor();
-        g.setColor(Color.white);
-        for (int i = 0; i < DEViseGlobals.screenEdge.width; i++) {
-            g.drawLine(i, 0, i, screenSize.height - 1);
-            g.drawLine(screenSize.width - i - 1, 0, screenSize.width - i - 1, screenSize.height - 1);
-        }
-        for (int i = 0; i < DEViseGlobals.screenEdge.height; i++) {
-            g.drawLine(0, i, screenSize.width - 1, i);
-            g.drawLine(0, screenSize.height - i - 1, screenSize.width - 1, screenSize.height - i - 1);
-        }
-        g.setColor(oldColor);
     }
 }

@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.40  1999/09/24 17:11:46  hongyu
+// adding support for 3-d molecule view
+//
 // Revision 1.39  1999/08/24 08:45:53  hongyu
 // *** empty log message ***
 //
@@ -77,13 +80,7 @@ public class DEViseCmdDispatcher implements Runnable
     {
         status = arg;
 
-        if (!DEViseGlobals.isApplet) {
-            MouseEvent finishEvent = new MouseEvent(jsc.jscreen, MouseEvent.MOUSE_MOVED, DEViseGlobals.getCurrentTime(), 0, jsc.jscreen.finalMousePosition.x, jsc.jscreen.finalMousePosition.y, 0, false);
-            Toolkit tk = jsc.jscreen.getToolkit();
-            EventQueue queue = tk.getSystemEventQueue();
-            //EventQueue queue = new EventQueue();
-            queue.postEvent(finishEvent);
-        }
+        jsc.jscreen.reEvaluateMousePosition();
     }
 
     public synchronized boolean getOnlineStatus()
@@ -117,7 +114,6 @@ public class DEViseCmdDispatcher implements Runnable
         }
 
         setStatus(1);
-        //jsc.jscreen.setCursor(DEViseGlobals.waitCursor);
         jsc.animPanel.start();
         jsc.stopButton.setBackground(Color.red);
         jsc.stopNumber = 0;
@@ -149,7 +145,6 @@ public class DEViseCmdDispatcher implements Runnable
         commands = DEViseGlobals.parseStr(command);
         if (commands == null || commands.length == 0) {
             jsc.showMsg("Invalid command: \"" + cmd + "\"");
-            //jsc.jscreen.setCursor(jsc.lastCursor);
             jsc.animPanel.stop();
             jsc.stopButton.setBackground(DEViseGlobals.bg);
             setStatus(0);
@@ -277,23 +272,11 @@ public class DEViseCmdDispatcher implements Runnable
 
             jsc.animPanel.stop();
             jsc.stopButton.setBackground(DEViseGlobals.bg);
-            //jsc.jscreen.setCursor(jsc.lastCursor);
 
-            if (!DEViseGlobals.isApplet) {
-                MouseEvent finishEvent = new MouseEvent(jsc.jscreen, MouseEvent.MOUSE_MOVED, DEViseGlobals.getCurrentTime(), 0, jsc.jscreen.finalMousePosition.x, jsc.jscreen.finalMousePosition.y, 0, false);
-                Toolkit tk = jsc.jscreen.getToolkit();
-                //EventQueue queue = new EventQueue();
-                EventQueue queue = tk.getSystemEventQueue();
-                queue.postEvent(finishEvent);
-            }
-
-            // turn off the counter and the traffic light
-            //jsc.viewInfo.updateImage(0, 0);
-            //jsc.viewInfo.updateCount(0);
+            //jsc.jscreen.reEvaluateMousePosition();
         } catch (YException e) {
             jsc.animPanel.stop();
             jsc.stopButton.setBackground(DEViseGlobals.bg);
-            //jsc.jscreen.setCursor(jsc.lastCursor);
 
             // turn off the counter and the traffic light
             jsc.viewInfo.updateImage(0, 0);
@@ -466,8 +449,8 @@ public class DEViseCmdDispatcher implements Runnable
                     DEViseView view = new DEViseView(jsc, parentname, viewname, piledname, viewtitle, viewloc, z, dim, bg, fg, dataloc, xtype, ytype, gridx, gridy, rb, cm, dd, ky);
                     if (view != null) {
                         view.viewDTFont = dtf;
-                        view.viewDTX = dtx;
-                        view.viewDTY = dty;
+                        view.viewDTX = dtx + view.viewLocInCanvas.x;
+                        view.viewDTY = dty + view.viewLocInCanvas.y;
                     }
 
                     jsc.jscreen.addView(view);
@@ -597,7 +580,7 @@ public class DEViseCmdDispatcher implements Runnable
 
                     DEViseCursor cursor = null;
                     try {
-                        cursor = new DEViseCursor(cursorName, viewname, rect, move, resize, gridx, gridy);
+                        cursor = new DEViseCursor(jsc, cursorName, viewname, rect, move, resize, gridx, gridy);
                     } catch (YException e1) {
                         throw new YException("Invalid cursor data received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                     }

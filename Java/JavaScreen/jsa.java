@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.35  1999/08/03 07:37:46  hongyu
+// add support for read animation symbol from JAR file           by Hongyu Yao
+//
 // Revision 1.34  1999/06/23 20:59:20  wenger
 // Added standard DEVise header.
 //
@@ -274,16 +277,9 @@ public class jsa extends Applet
                 int x = Integer.parseInt(str[0]);
                 int y = Integer.parseInt(str[1]);
 
-                if (x < 320) {
-                    x = 320;
-                }
-
-                if (y < 200) {
-                    y = 200;
-                }
-
                 DEViseGlobals.screenSize.width = x;
                 DEViseGlobals.screenSize.height = y;
+                
                 startInfo.append("Parameter screen size (" + x + ", " + y + ") is used\n");
             } catch (NumberFormatException e) {
             }
@@ -389,33 +385,22 @@ class jscframe extends Frame
 
     public jscframe(Vector images, int debugLevel, String sessionName)
     {
-        // determine the "screen size" for JavaScreen
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension dim = kit.getScreenSize();
-        int w = dim.width;
-        int h = dim.height;
-
-        if (DEViseGlobals.screenSize.width < 360
-            || DEViseGlobals.screenSize.width > (w - 80)) {
-            DEViseGlobals.screenSize.width = w - 80;
-        }
-        DEViseGlobals.actualScreenSize.width = DEViseGlobals.screenSize.width + 80;
-
-        if (DEViseGlobals.screenSize.height < 240
-            || DEViseGlobals.screenSize.height > (h - 120)) {
-            DEViseGlobals.screenSize.height = h - 120;
-        }
-        DEViseGlobals.actualScreenSize.height = DEViseGlobals.screenSize.height + 120;
+        DEViseGlobals.maxScreenSize.width = dim.width - 80;
+        DEViseGlobals.maxScreenSize.height = dim.height - 120;
+        DEViseGlobals.minScreenSize.width = 300;
+        DEViseGlobals.minScreenSize.height = 240;
 
         jsc = new jsdevisec(this, images, debugLevel, sessionName);
         add(jsc);
-        setTitle("DEVise JavaScreen");
+        setTitle(DEViseGlobals.javaScreenTitle);
         pack();
 
         Point loc = new Point(0, 0);
         Dimension size = getSize();
-        loc.y = loc.y + h / 2 - size.height / 2;
-        loc.x = loc.x + w / 2 - size.width / 2;
+        loc.y = loc.y + dim.height / 2 - size.height / 2;
+        loc.x = loc.x + dim.width / 2 - size.width / 2;
         if (loc.y < 0)
             loc.y = 0;
         if (loc.x < 0)

@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  1999/08/03 07:37:46  hongyu
+// add support for read animation symbol from JAR file           by Hongyu Yao
+//
 // Revision 1.4  1999/06/23 20:59:20  wenger
 // Added standard DEVise header.
 //
@@ -236,6 +239,20 @@ public class jsb extends Applet
             DEViseGlobals.imgport = DEViseGlobals.DEFAULTIMGPORT;
         }
 
+        //Toolkit kit = Toolkit.getDefaultToolkit();
+        //Dimension dim = kit.getScreenSize();
+        Dimension dim = getMaximumSize();
+        DEViseGlobals.maxScreenSize.width = dim.width - 20;
+        DEViseGlobals.maxScreenSize.height = dim.height - 60;
+        DEViseGlobals.minScreenSize.width = 300;
+        DEViseGlobals.minScreenSize.height = 240;
+        if (DEViseGlobals.maxScreenSize.width < DEViseGlobals.minScreenSize.width) {
+            DEViseGlobals.maxScreenSize.width = DEViseGlobals.minScreenSize.width;
+        }
+        if (DEViseGlobals.maxScreenSize.height < DEViseGlobals.minScreenSize.height) {
+            DEViseGlobals.maxScreenSize.height = DEViseGlobals.minScreenSize.height;
+        }
+
         String screen = getParameter("screensize");
         if (screen != null) {
             try {
@@ -247,28 +264,15 @@ public class jsb extends Applet
                 int x = Integer.parseInt(str[0]);
                 int y = Integer.parseInt(str[1]);
 
-                if (x < 360) {
-                    x = 360;
-                }
-
-                if (y < 240) {
-                    y = 240;
-                }
-
                 DEViseGlobals.screenSize.width = x;
-                DEViseGlobals.screenSize.height = y - 60;
-                DEViseGlobals.actualScreenSize.width = x + 80;
-                DEViseGlobals.actualScreenSize.height = y + 120;
+                DEViseGlobals.screenSize.height = y;
+
                 startInfo.append("Parameter screen size (" + x + ", " + y + ") is used\n");
             } catch (NumberFormatException e) {
+
             }
-        } else {
-            DEViseGlobals.screenSize.width = 800;
-            DEViseGlobals.screenSize.height = 600;
-            DEViseGlobals.actualScreenSize.width = 880;
-            DEViseGlobals.actualScreenSize.height = 720;
-            startInfo.append("Default screen size (" + 800 + ", " + 600 + ") is used\n");
         }
+
 
         String rsize = getParameter("rubberbandlimit");
         if (rsize != null) {

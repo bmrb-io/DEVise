@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.25  1999/09/24 17:11:47  hongyu
+// adding support for 3-d molecule view
+//
 // Revision 1.24  1999/08/24 08:45:53  hongyu
 // *** empty log message ***
 //
@@ -52,6 +55,7 @@ public final class DEViseGlobals
 
     // global variables
     public static boolean isApplet = false, inBrowser = false;
+    public static final String javaScreenTitle = "DEVise JavaScreen -- Version " + DEViseGlobals.VERSION;
 
     public static int cmdport = 0, imgport = 0;
     public static int connectionID = -1;
@@ -59,9 +63,9 @@ public final class DEViseGlobals
 
     public static AppletContext browser = null;
 
-    public static Dimension actualScreenSize = new Dimension(0, 0);
+    public static Dimension maxScreenSize = new Dimension(640, 480);
+    public static Dimension minScreenSize = new Dimension(320, 240);
     public static Dimension screenSize = new Dimension(0, 0);
-    public static Dimension screenEdge = new Dimension(2, 2);
     public static Dimension rubberBandLimit = new Dimension(4, 4);
 
     public static Color bg = new Color(64, 96, 0);
@@ -285,23 +289,23 @@ public final class DEViseGlobals
 
         return new Font(DEViseFont[ff], fontstyle, size);
     }
-    
-    public static Font getFont(String str, int height, int ff, int fw, int fs) 
+
+    public static Font getFont(String str, int height, int ff, int fw, int fs)
     {
         return getFont(str, -1, height, ff, fw, fs);
     }
-    
+
     public static Font getFont(String str, int width, int height, int ff, int fw, int fs)
     {
         if (str == null || str.length() == 0 || height < 1) {
             return null;
         }
-        
+
         boolean checkWidth = true;
         if (width < 0) {
             checkWidth = false;
         }
-        
+
         // as of right now, I only recognize courier(Monospaced), times(Serif) and Helvetica(SansSerif)
         // default is courier
         if (ff < 0 || ff > 2) {
@@ -311,14 +315,14 @@ public final class DEViseGlobals
         int minSize = 1, maxSize = 100, fontSize = 12, okSize = -1;
         int fontstyle = ((fw == 0)?Font.PLAIN:Font.BOLD) + ((fs == 0)?Font.PLAIN:Font.ITALIC);
 
-        Toolkit tk = Toolkit.getDefaultToolkit();        
+        Toolkit tk = Toolkit.getDefaultToolkit();
         Font font = new Font(DEViseFont[ff], fontstyle, fontSize);
         FontMetrics fm = tk.getFontMetrics(font);
         int h = fm.getHeight(), w = fm.stringWidth(str);
-        
+
         if (h > height || (checkWidth && w > width)) {
             okSize = -1;
-            
+
             while (fontSize > minSize) {
                 fontSize--;
                 font = new Font(DEViseFont[ff], fontstyle, fontSize);
@@ -326,7 +330,7 @@ public final class DEViseGlobals
                     continue;
                 }
                 fm = tk.getFontMetrics(font);
-                h = fm.getHeight();                
+                h = fm.getHeight();
                 if (h < height) {
                     if (checkWidth) {
                         w = fm.stringWidth(str);
@@ -334,21 +338,21 @@ public final class DEViseGlobals
                             okSize = fontSize;
                             break;
                         }
-                    } else {                                
+                    } else {
                         okSize = fontSize;
                         break;
-                    }    
+                    }
                 }
             }
-            
+
             if (okSize > 0) {
                 return new Font(DEViseFont[ff], fontstyle, okSize);
             } else {
                 return null;
-            }    
+            }
         } else {
             okSize = fontSize;
-            
+
             while (fontSize < maxSize) {
                 fontSize++;
                 font = new Font(DEViseFont[ff], fontstyle, fontSize);
@@ -357,7 +361,7 @@ public final class DEViseGlobals
                 }
                 fm = tk.getFontMetrics(font);
                 h = fm.getHeight();
-                
+
                 if (h > height) {
                     break;
                 } else {
@@ -366,14 +370,14 @@ public final class DEViseGlobals
                         if (w > width) {
                             break;
                         }
-                    } 
-                    
+                    }
+
                     okSize = fontSize;
-                }    
+                }
             }
-            
+
             return new Font(DEViseFont[ff], fontstyle, okSize);
-        }                 
+        }
     }
 
 }

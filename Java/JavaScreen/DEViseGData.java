@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.19  1999/09/24 17:11:47  hongyu
+// adding support for 3-d molecule view
+//
 // Revision 1.18  1999/08/19 07:21:06  hongyu
 // *** empty log message ***
 //
@@ -38,14 +41,19 @@ import java.awt.event.*;
 import java.net.*;
 
 public class DEViseGData
-{   
+{
     public static Font defaultFont = null;
-    
+
     public jsdevisec jsc = null;
     public DEViseView parentView = null;
     public String viewname = null;
+
+    public Rectangle GDataLoc = null;
+    public Rectangle GDataLocInScreen = null;
+
     public int x = 0, y = 0, z = 0, width = 0, height = 0;
     public double x0, y0, z0;
+
     public String[] data = null;
     public Component symbol = null;
     public boolean isJavaSymbol = false;
@@ -57,13 +65,15 @@ public class DEViseGData
     public int outline = 0;
 
     // GData format: <x> <y> <z> <color> <size> <pattern> <orientation> <symbol type> <shape attr 0> ... <shape attr 9>
-    public DEViseGData(jsdevisec j, String name, String gdata, double xm, double xo, double ym, double yo) throws YException
+    public DEViseGData(jsdevisec panel, String name, String gdata, double xm, double xo, double ym, double yo) throws YException
     {
-        if (name == null)
-            throw new YException("Invalid parent view for GData!");
-
-        jsc = j;
+        jsc = panel;
         viewname = name;
+
+        parentView = jsc.jscreen.getView(viewname);
+        if (parentView == null) {
+            throw new YException("Invalid parent view for GData!");
+        }
 
         data = DEViseGlobals.parseString(gdata);
         if (data == null || data.length != 23)
@@ -194,7 +204,7 @@ public class DEViseGData
             }
 
             color = DEViseGlobals.convertColor(data[3]);
-            
+
             if (DEViseGData.defaultFont == null) {
                 if (symbolType == 12) {
                     if (w < 0.0) {
@@ -204,21 +214,21 @@ public class DEViseGData
                     }
                 } else {
                     int fsize;
-                    
+
                     if (size > 1.0) {
                         fsize = (int)(size + 0.25);
                     } else {
-                        fsize = (int)(size * jsc.jscreen.getScreenDim().height + 0.25);
+                        fsize = (int)(size * DEViseGlobals.screenSize.height + 0.25);
                     }
-                    
+
                     font = DEViseGlobals.getFont(fsize, ff, fw, fs);
                 }
-            
+
                 DEViseGData.defaultFont = font;
             } else {
                 font = DEViseGData.defaultFont;
-            }    
-            
+            }
+
             if (color == null || font == null) {
                 string = null;
                 return;
@@ -268,8 +278,11 @@ public class DEViseGData
                 x = x + width - sw;
                 break;
             }
+            
+            x = parentView.viewLocInCanvas.x + x;
+            y = parentView.viewLocInCanvas.y + y;
         } else if (symbolType == 4) {
-            isJavaSymbol = false;    
+            isJavaSymbol = false;
 
             width = (int)(size * xm);
             height = (int)(size * ym);
@@ -277,7 +290,7 @@ public class DEViseGData
                 width = -width;
             if (height < 0)
                 height = -height;
-                        
+
             color = DEViseGlobals.convertColor(data[3]);
             if (color.getRed() == 0) {
                 string = "Zn";
@@ -301,36 +314,31 @@ public class DEViseGData
             if (y < 0)
                 y = 0;
         }
+
+        GDataLoc = new Rectangle(x, y, width, height);
+        GDataLocInScreen = getLocInScreen();
     }
 
-    public Rectangle getBounds()
+    public Rectangle getLocInScreen()
     {
-        return new Rectangle(x, y, width, height);
-    }
+        Rectangle loc = parentView.getLocInScreen();
 
-    public Rectangle getBoundsInScreen()
-    {
-        if (parentView != null) {
-            Rectangle loc = parentView.getBoundsInScreen();
-            Rectangle r = new Rectangle(x + loc.x, y + loc.y, width, height);
-            if (r.x < loc.x) {
-                r.width = r.width + r.x - loc.x;
-                r.x = loc.x;
-            } else if (r.x > loc.x + loc.width - r.width) {
-                r.width = r.width + r.x - loc.x - loc.width + r.width;
-                r.x = loc.x + loc.width - r.width;
-            }
-            if (r.y < loc.y) {
-                r.height = r.height + r.y - loc.y;
-                r.y = loc.y;
-            } else if (r.y > loc.y + loc.height - r.height) {
-                r.height = r.height + r.y - loc.y - loc.height + r.height;
-                r.y = loc.y + loc.height - r.height;
-            }
-
-            return r;
-        } else {
-            return getBounds();
+        Rectangle r = new Rectangle(x + loc.x, y + loc.y, width, height);
+        if (r.x < loc.x) {
+            r.width = r.width + r.x - loc.x;
+            r.x = loc.x;
+        } else if (r.x > loc.x + loc.width - r.width) {
+            r.width = r.width + r.x - loc.x - loc.width + r.width;
+            r.x = loc.x + loc.width - r.width;
         }
+        if (r.y < loc.y) {
+            r.height = r.height + r.y - loc.y;
+            r.y = loc.y;
+        } else if (r.y > loc.y + loc.height - r.height) {
+            r.height = r.height + r.y - loc.y - loc.height + r.height;
+            r.y = loc.y + loc.height - r.height;
+        }
+
+        return r;
     }
 }

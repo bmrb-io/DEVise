@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.50  1999/08/03 05:56:50  hongyu
+// bug fixes    by Hongyu Yao
+//
 // Revision 1.49  1999/07/27 17:11:19  hongyu
 // *** empty log message ***
 //
@@ -89,16 +92,16 @@ public class jsdevisec extends Panel
         }
 
         // determine the font size according to JavaScreen size
-        int width = DEViseGlobals.actualScreenSize.width;
-        int height = DEViseGlobals.actualScreenSize.height;
+        int width = DEViseGlobals.maxScreenSize.width;
+        int height = DEViseGlobals.maxScreenSize.height;
 
-        if (width > 801 ) {
+        if (width > 800 ) {
             DEViseGlobals.font = new Font("Serif", Font.PLAIN, 12);
             DEViseGlobals.textFont = new Font("Serif", Font.PLAIN, 12);
-        } else if (width <= 801 && width > 641) {
+        } else if (width <= 800 && width > 640) {
             DEViseGlobals.font = new Font("Serif", Font.PLAIN, 10);
             DEViseGlobals.textFont = new Font("Serif", Font.PLAIN, 10);
-        } else if (width <= 641) {
+        } else if (width <= 640) {
             DEViseGlobals.font = new Font("Serif", Font.PLAIN, 8);
             DEViseGlobals.textFont = new Font("Serif", Font.PLAIN, 8);
         }
@@ -108,15 +111,11 @@ public class jsdevisec extends Panel
         setFont(DEViseGlobals.font);
         setLayout(new BorderLayout(2, 2));
 
-        // building the components of JavaScreen
-        //Panel topPanel = new Panel(new FlowLayout(FlowLayout.LEFT, 2, 2));
         Panel topPanel = new Panel(new BorderLayout(2, 2));
         Panel mainPanel = new Panel(new FlowLayout(FlowLayout.LEFT, 2, 2));
 
         animPanel = new DEViseAnimPanel(this, images, 100);
 
-        //topPanel.add(animPanel, BorderLayout.WEST);
-        //topPanel.add(animPanel);
         mainPanel.add(animPanel);
 
         if (images != null && images.size() == 11) {
@@ -128,8 +127,6 @@ public class jsdevisec extends Panel
         }
 
         if (light != null) {
-            //topPanel.add(light);
-            //topPanel.add(light, BorderLayout.CENTER);
             mainPanel.add(light);
         }
 
@@ -138,13 +135,11 @@ public class jsdevisec extends Panel
             button = new Component[2];
             button[0] = restartButton;
             button[1] = stopButton;
-            //button[2] = stopButton;
         } else {
             button = new Component[6];
             button[0] = openButton;
             button[1] = closeButton;
             button[2] = stopButton;
-            //button[3] = statButton;
             button[3] = restartButton;
             button[4] = setButton;
             button[5] = exitButton;
@@ -152,21 +147,46 @@ public class jsdevisec extends Panel
 
         DEViseComponentPanel buttonPanel = new DEViseComponentPanel(button, "Horizontal", 5, 1);
 
-        //topPanel.add(buttonPanel, BorderLayout.CENTER);
-        //topPanel.add(buttonPanel);
         mainPanel.add(buttonPanel);
 
         viewInfo = new DEViseViewInfo(this, images);
 
         topPanel.add(mainPanel, BorderLayout.WEST);
 
+        if (DEViseGlobals.inBrowser) {
+            topPanel.add(new Label("DEVise Screen -- Version " + DEViseGlobals.VERSION), BorderLayout.CENTER);
+        }
+
         topPanel.add(viewInfo, BorderLayout.EAST);
-        //topPanel.add(viewInfo);
+
+        if (DEViseGlobals.screenSize.width <= 0) {
+            DEViseGlobals.screenSize.width = DEViseGlobals.maxScreenSize.width;
+        } else if (DEViseGlobals.screenSize.width < DEViseGlobals.minScreenSize.width && DEViseGlobals.screenSize.width > 0) {
+            DEViseGlobals.screenSize.width = DEViseGlobals.minScreenSize.width;
+        } else if (DEViseGlobals.screenSize.width > DEViseGlobals.maxScreenSize.width) {
+            DEViseGlobals.screenSize.width = DEViseGlobals.maxScreenSize.width;
+        }
+
+        if (DEViseGlobals.screenSize.height <= 0) {
+            DEViseGlobals.screenSize.height = DEViseGlobals.maxScreenSize.height;
+        } else if (DEViseGlobals.screenSize.height < DEViseGlobals.minScreenSize.height && DEViseGlobals.screenSize.height > 0) {
+            DEViseGlobals.screenSize.height = DEViseGlobals.minScreenSize.height;
+        } else if (DEViseGlobals.screenSize.height > DEViseGlobals.maxScreenSize.height) {
+            DEViseGlobals.screenSize.height = DEViseGlobals.maxScreenSize.height;
+        }
 
         jscreen = new DEViseScreen(this);
+        Panel screenPanel = new Panel(new FlowLayout(FlowLayout.CENTER, 3, 3));
+        //int r = DEViseGlobals.bg.getRed() + 32, g = DEViseGlobals.bg.getGreen() + 32, b = DEViseGlobals.bg.getBlue() + 32;
+        //if (r > 255) r = 255;
+        //if (g > 255) g = 255;
+        //if (b > 255) b = 255;
+        //screenPanel.setBackground(new Color(r, g, b));
+        screenPanel.setBackground(Color.white);
+        screenPanel.add(jscreen);
 
         add(topPanel, BorderLayout.NORTH);
-        add(jscreen, BorderLayout.CENTER);
+        add(screenPanel, BorderLayout.CENTER);
 
         // define event handler for buttons
         openButton.addActionListener(new ActionListener()
@@ -207,15 +227,6 @@ public class jsdevisec extends Panel
                         }
                     }
                 });
-        /*
-        statButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-                        dispatcher.start("JAVAC_GetServerState");
-                    }
-                });
-        */
         restartButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -232,11 +243,6 @@ public class jsdevisec extends Panel
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-                        //if (isSessionOpened) {
-                        //    showMsg("You already have a session opened!\nPlease close current session first!");
-                        //    return;
-                        //}
-
                         showSetting();
                     }
                 });
@@ -262,8 +268,7 @@ public class jsdevisec extends Panel
                 currentSession = sessionName;
             }
 
-            //sessionName = rootDir + "/" + sessionName;
-            dispatcher.start("JAVAC_SetDisplaySize " + jscreen.getScreenDim().width + " " + jscreen.getScreenDim().height + "\n" + "JAVAC_OpenSession {" + currentDir + "/" + currentSession + "}");
+            dispatcher.start("JAVAC_SetDisplaySize " + DEViseGlobals.screenSize.width + " " + DEViseGlobals.screenSize.height + "\n" + "JAVAC_OpenSession {" + currentDir + "/" + currentSession + "}");
         }
     }
 
@@ -295,11 +300,19 @@ public class jsdevisec extends Panel
     // show message in message box
     public String showMsg(String msg, String title, int style)
     {
-        msgbox = new YMsgBox(parentFrame, isCenterScreen, true, msg, title, style, DEViseGlobals.font, DEViseGlobals.bg, DEViseGlobals.fg);
-        msgbox.open();
-        String result = msgbox.getResult();
-        msgbox = null;
-        return result;
+        if (msgbox == null) {
+            msgbox = new YMsgBox(parentFrame, isCenterScreen, true, msg, title, style, DEViseGlobals.font, DEViseGlobals.bg, DEViseGlobals.fg);
+            msgbox.open();
+            String result = msgbox.getResult();
+            msgbox = null;
+            return result;
+        } else {
+            YMsgBox box = new YMsgBox(parentFrame, isCenterScreen, true, msg, title, style, DEViseGlobals.font, DEViseGlobals.bg, DEViseGlobals.fg);
+            box.open();
+            String result = box.getResult();
+            box = null;
+            return result;
+        }
     }
 
     public String showMsg(String msg)
@@ -445,13 +458,13 @@ class RecordDlg extends Dialog
         pack();
 
         Dimension panesize = panel.getPreferredSize();
-        if (panesize.width > (DEViseGlobals.screenSize.width - 100) || panesize.height > (DEViseGlobals.screenSize.height - 100)) {
-            if (panesize.width > (DEViseGlobals.screenSize.width - 100)) {
-                panesize.width = DEViseGlobals.screenSize.width - 100;
+        if (panesize.width > (DEViseGlobals.maxScreenSize.width - 120) || panesize.height > (DEViseGlobals.maxScreenSize.height - 80)) {
+            if (panesize.width > (DEViseGlobals.maxScreenSize.width - 120)) {
+                panesize.width = DEViseGlobals.maxScreenSize.width - 120;
             }
 
-            if (panesize.height > (DEViseGlobals.screenSize.height - 100)) {
-                panesize.height = DEViseGlobals.screenSize.height - 100;
+            if (panesize.height > (DEViseGlobals.maxScreenSize.height - 80)) {
+                panesize.height = DEViseGlobals.maxScreenSize.height - 80;
             }
 
             ScrollPane pane = new ScrollPane();
@@ -664,10 +677,12 @@ class SessionDlg extends Frame
                                         directory.setText("/" + jsc.currentDir);
                                         validate();
 
+                                        //String dir = (jsc.currentDir).substring(14);
+
                                         jsc.dispatcher.start("JAVAC_GetSessionList {" + jsc.currentDir + "}");
                                     } else {
                                         jsc.currentSession = sessionName;
-                                        jsc.dispatcher.start("JAVAC_SetDisplaySize " + jsc.jscreen.getScreenDim().width + " " + jsc.jscreen.getScreenDim().height
+                                        jsc.dispatcher.start("JAVAC_SetDisplaySize " + DEViseGlobals.screenSize.width + " " + DEViseGlobals.screenSize.height
                                                                  + "\nJAVAC_OpenSession {" + jsc.currentDir + "/" + sessionName + "}");
                                         close();
                                     }
@@ -711,7 +726,7 @@ class SessionDlg extends Frame
                                     jsc.dispatcher.start("JAVAC_GetSessionList {" + jsc.currentDir + "}");
                                 } else {
                                     jsc.currentSession = sessionName;
-                                    jsc.dispatcher.start("JAVAC_SetDisplaySize " + jsc.jscreen.getScreenDim().width + " " + jsc.jscreen.getScreenDim().height
+                                    jsc.dispatcher.start("JAVAC_SetDisplaySize " + DEViseGlobals.screenSize.width + " " + DEViseGlobals.screenSize.height
                                                              + "\nJAVAC_OpenSession {" + jsc.currentDir + "/" + sessionName + "}");
                                     close();
                                 }
@@ -843,8 +858,8 @@ class SettingDlg extends Dialog
         screenY.setForeground(DEViseGlobals.textFg);
         screenY.setFont(DEViseGlobals.textFont);
 
-        screenX.setText("" + jsc.jscreen.getScreenDim().width);
-        screenY.setText("" + jsc.jscreen.getScreenDim().height);
+        screenX.setText("" + DEViseGlobals.screenSize.width);
+        screenY.setText("" + DEViseGlobals.screenSize.height);
 
         statButton.setBackground(DEViseGlobals.bg);
         statButton.setForeground(DEViseGlobals.fg);
@@ -903,12 +918,6 @@ class SettingDlg extends Dialog
 
         pack();
 
-        //setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        //add(screenX);
-        //add(screenY);
-        //add(setButton);
-        //pack();
-
         // reposition the window
         Point parentLoc = null;
         Dimension parentSize = null;
@@ -941,24 +950,23 @@ class SettingDlg extends Dialog
                         }
 
                         int x = 0, y = 0;
-                        int dimx = DEViseGlobals.screenSize.width - 2 * DEViseGlobals.screenEdge.width;
-                        int dimy = DEViseGlobals.screenSize.height - 2 * DEViseGlobals.screenEdge.height;
 
                         try {
                             x = Integer.parseInt(screenX.getText());
                             y = Integer.parseInt(screenY.getText());
-                            if (x < 100 || y < 100 || x > dimx || y > dimy) {
+
+                            if (x < DEViseGlobals.minScreenSize.width || x > DEViseGlobals.maxScreenSize.width
+                                || y < DEViseGlobals.minScreenSize.height || y > DEViseGlobals.maxScreenSize.height) {
                                 throw new NumberFormatException();
                             } else {
-                                //DEViseGlobals.screenSize.width = x + 20;
-                                //DEViseGlobals.screenSize.height = y + 80;
-                                //jsc.jscreen.resetScreenDim();
                                 jsc.jscreen.setScreenDim(x, y);
-
                                 close();
                             }
                         } catch (NumberFormatException e) {
-                            jsc.showMsg("Invalid screen size specified!\nJavaScreen size must be larger than (100,100) and smaller than (" + dimx + "," + dimy + ")");
+                            jsc.showMsg("Invalid screen size specified!\nJavaScreen size must be larger than ("
+                                         + DEViseGlobals.minScreenSize.width + ", " + DEViseGlobals.minScreenSize.height
+                                         + ") and smaller than ("
+                                         + DEViseGlobals.maxScreenSize.width + ", " + DEViseGlobals.maxScreenSize.height + ")");
                         }
                     }
                 });

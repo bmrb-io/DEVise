@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  1999/08/19 07:21:06  hongyu
+// *** empty log message ***
+//
 // Revision 1.11  1999/08/03 05:56:49  hongyu
 // bug fixes    by Hongyu Yao
 //
@@ -31,32 +34,63 @@ import java.awt.*;
 
 public class DEViseCursor
 {
+    private jsdevisec jsc = null;
+
     public int x, y, width, height;
+    public Rectangle cursorLoc = null;
+    public Rectangle cursorLocInCanvas = null;
+
     public boolean isXMovable, isYMovable, isXResizable, isYResizable;
     public double gridxx, gridyy;
     public int gridx, gridy;
+
     public String name = null, viewname = null;
-    public Image image = null;
     public DEViseView parentView = null;
 
-    public DEViseCursor(String cn, String vn, Rectangle rect, String move, String resize, double gx, double gy) throws YException
-    {
-        if (cn == null || vn == null)
-            throw new YException("Invalid view name or cursor name");
+    public Image image = null;
 
-        viewname = vn;
+    public DEViseCursor(jsdevisec panel, String cn, String vn, Rectangle rect, String move, String resize, double gx, double gy) throws YException
+    {
+        if (cn == null) {
+            throw new YException("Invalid cursor name");
+        }
+
         name = cn;
+        viewname = vn;
+        jsc = panel;
+
+        parentView = jsc.jscreen.getView(viewname);
+
+        if (parentView == null) {
+            throw new YException("Invalid parent view for cursor");
+        }
 
         gridxx = gx;
         gridyy = gy;
 
-        if (rect == null)
+        if (rect == null) {
             throw new YException("Invalid cursor location");
+        }
 
         x = rect.x;
         y = rect.y;
         width = rect.width;
         height = rect.height;
+        cursorLoc = new Rectangle(x, y, width, height);
+
+        cursorLocInCanvas = getLocInCanvas();
+
+        if (parentView.dataXStep != 0.0) {
+            gridx = (int)(gridxx / parentView.dataXStep);
+        } else {
+            gridx = 0;
+        }
+
+        if (parentView.dataYStep != 0.0) {
+            gridy = (int)(gridyy / parentView.dataYStep);
+        } else {
+            gridy = 0;
+        }
 
         if (move == null) {
             isXMovable = false;
@@ -100,117 +134,95 @@ public class DEViseCursor
         }
     }
 
-    // position p is relative to the parent of this cursor
-    public int checkPos(Point p0)
+    public synchronized Rectangle getLocInCanvas()
     {
-        Point p = null;
-        if (parentView.parentView != null) {
-            p = new Point(p0.x - parentView.viewLoc.x, p0.y - parentView.viewLoc.y);
-        } else {
-            p = p0;
-        }
+        return new Rectangle (parentView.viewLocInCanvas.x + x, parentView.viewLocInCanvas.y + y, width, height);
+    }
 
-        if (p.x < x || p.y < y || p.x > x + width - 1 || p.y > y + height - 1) {
+    // position p is relative to the canvas of this cursor
+    // -1: not within cursor or can not be moved or resized
+    //  0: inside cursor
+    //  1: left side
+    //  2: right side
+    //  3: top side
+    //  4: bottom side
+    //  5: left-top corner
+    //  6: left-bottom corner
+    //  7: right-top corner
+    //  8: right-bottom corner
+    public int inCursor(Point p)
+    {
+        Rectangle loc = cursorLocInCanvas;
+
+        if (p.x < loc.x || p.y < loc.y || p.x > loc.x + loc.width - 1 || p.y > loc.y + loc.height - 1) {
             return -1;
         } else {
             int edge = 3;
-            
-            if (p.x >= x && p.x < x + edge) {
-                if (p.y >= y && p.y < y + edge) { // left-top corner
+
+            if (p.x >= loc.x && p.x < loc.x + edge) {
+                if (p.y >= loc.y && p.y < loc.y + edge) { // left-top corner
                     if (isXResizable && isYResizable) {
                         return 5;
                     } else {
-                        if (isXResizable) {
+                        if (isXResizable) { // left side
                             return 1;
-                        } else if (isYResizable) {
+                        } else if (isYResizable) { // top side
                             return 3;
                         }
-                         
-                        //else {
-                        //    return -1;
-                        //}
                     }
-                } else if (p.y < y + height && p.y >= y + height - edge) { // left-bottom corner
+                } else if (p.y < loc.y + loc.height && p.y >= loc.y + loc.height - edge) { // left-bottom corner
                     if (isXResizable && isYResizable) {
                         return 6;
                     } else {
-                        if (isXResizable) {
+                        if (isXResizable) { // left side
                             return 1;
-                        } else if (isYResizable) {
+                        } else if (isYResizable) { // bottom side
                             return 4;
-                        } 
-                        
-                        //else {
-                        //    return -1;
-                        //}
+                        }
                     }
                 } else { // left side
                     if (isXResizable) {
                         return 1;
-                    } 
-                    
-                    //else {
-                    //    return -1;
-                    //}
+                    }
                 }
-            } else if (p.x < x + width && p.x >= x + width - edge) {
-                if (p.y >= y && p.y < y + edge) { // right-top corner
+            } else if (p.x < loc.x + loc.width && p.x >= loc.x + loc.width - edge) {
+                if (p.y >= loc.y && p.y < loc.y + edge) { // right-top corner
                     if (isXResizable && isYResizable) {
                         return 7;
                     } else {
-                        if (isXResizable) {
+                        if (isXResizable) { // right side
                             return 2;
-                        } else if (isYResizable) {
+                        } else if (isYResizable) { // top side
                             return 3;
-                        } 
-                        
-                        //else {
-                        //    return -1;
-                        //}
+                        }
                     }
-                } else if (p.y < y + height && p.y >= y + height - edge) { // right-bottom corner
+                } else if (p.y < loc.y + loc.height && p.y >= loc.y + loc.height - edge) { // right-bottom corner
                     if (isXResizable && isYResizable) {
                         return 8;
                     } else {
-                        if (isXResizable) {
+                        if (isXResizable) { // right side
                             return 2;
-                        } else if (isYResizable) {
+                        } else if (isYResizable) { // bottom side
                             return 4;
-                        } 
-                        
-                        //else {
-                        //    return -1;
-                        //}
+                        }
                     }
                 } else { // right side
                     if (isXResizable) {
                         return 2;
-                    } 
-                    
-                    //else {
-                    //    return -1;
-                    //}
+                    }
                 }
             } else {
-                if (p.y >= y && p.y < y + edge) { // top side
+                if (p.y >= loc.y && p.y < loc.y + edge) { // top side
                     if (isYResizable) {
                         return 3;
-                    } 
-                    
-                    //else {
-                    //    return -1;
-                    //}
-                } else if (p.y < y + height && p.y >= y + height - edge) { // bottom side
+                    }
+                } else if (p.y < loc.y + loc.height && p.y >= loc.y + loc.height - edge) { // bottom side
                     if (isYResizable) {
                         return 4;
-                    } 
-                    
-                    //else {
-                    //    return -1;
-                    //}
-                }    
+                    }
+                }
             }
-            
+
             if (isXMovable || isYMovable) {
                 return 0;
             } else {
@@ -219,10 +231,389 @@ public class DEViseCursor
         }
     }
 
-    // get the location of this cursor in its parentView
-    public Rectangle getLoc()
+
+    // adjust the postion and size of the cursor that is being resizing or moving
+    public synchronized int updateCursorLoc(int dx, int dy, int state, int whichSide, boolean isLast)
     {
-        return new Rectangle(x, y, width, height);
+        x = cursorLoc.x;
+        y = cursorLoc.y;
+        width = cursorLoc.width;
+        height = cursorLoc.height;
+
+        if (state == 1) { // move cursor
+            if (isXMovable) {
+                x = adjustToParentDataAreaX(x + dx, width);
+            }
+
+            if (isYMovable) {
+                y = adjustToParentDataAreaY(y + dy, height);
+            }
+        } else if (state == 2) { // resize cursor
+            int tmpx, tmpy, tx, ty, cx, cy;
+            boolean isXChange = false, isYChange = false;
+
+            switch (whichSide) {
+            case 1: // left side
+                tmpx = x + width;
+                cx = adjustToParentDataAreaX(x + dx);
+                if (cx >= tmpx) {
+                    x = tmpx;
+                    width = cx - tmpx;
+
+                    if (width == 0) {
+                        width = 1;
+                    }
+
+                    if (isLast) {
+                        whichSide = 2;
+                    }
+                } else {
+                    x = cx;
+                    width = tmpx - cx;
+                }
+
+                break;
+            case 2: // right side
+                tmpx = x + width;
+                cx = adjustToParentDataAreaX(dx + tmpx);
+
+                tx = x;
+                if (tx >= cx) {
+                    x = cx;
+                    width = tx - cx;
+                    if (width == 0) {
+                        width = 1;
+                    }
+
+                    if (isLast) {
+                        whichSide = 1;
+                    }
+                } else {
+                    width = cx - tx;
+                }
+
+                break;
+            case 3: // top side
+                tmpy = y + height;
+                cy = adjustToParentDataAreaY(dy + y);
+
+                if (cy >= tmpy) {
+                    y = tmpy;
+                    height = cy - tmpy;
+                    if (height == 0) {
+                        height = 1;
+                    }
+
+                    if (isLast) {
+                        whichSide = 4;
+                    }
+                } else {
+                    y = cy;
+                    height = tmpy - cy;
+                }
+
+                break;
+            case 4: // bottom side
+                tmpy = y + height;
+                cy = adjustToParentDataAreaY(dy + tmpy);
+
+                ty = y;
+                if (ty >= cy) {
+                    y = cy;
+                    height = ty - cy;
+                    if (height == 0) {
+                        height = 1;
+                    }
+
+                    if (isLast) {
+                        whichSide = 3;
+                    }
+                } else {
+                    height = cy - ty;
+                }
+
+                break;
+            case 5: // left top corner
+                isXChange = false;
+                isYChange = false;
+
+                if (isXResizable) {
+                    tmpx = x + width;
+                    cx = adjustToParentDataAreaX(dx + x);
+
+                    if (cx >= tmpx) {
+                        x = tmpx;
+                        width = cx - tmpx;
+                        if (width == 0) {
+                            width = 1;
+                        }
+
+                        isXChange = true;
+                    } else {
+                        x = cx;
+                        width = tmpx - cx;
+                    }
+                }
+
+                if (isYResizable) {
+                    tmpy = y + height;
+                    cy = adjustToParentDataAreaY(dy + y);
+
+                    if (cy >= tmpy) {
+                        y = tmpy;
+                        height = cy - tmpy;
+                        if (height == 0) {
+                            height = 1;
+                        }
+
+                        isYChange = true;
+                    } else {
+                        y = cy;
+                        height = tmpy - cy;
+                    }
+                }
+
+                if (isXChange || isYChange) {
+                    if (isXChange) {
+                        if (isYChange) {
+                            if (isLast) {
+                                whichSide = 8;
+                            }
+                        } else {
+                            if (isLast) {
+                                whichSide = 7;
+                            }
+                        }
+                    } else {
+                        if (isLast) {
+                            whichSide = 6;
+                        }
+                    }
+                }
+
+                break;
+            case 6: // left bottom corner
+                isXChange = false;
+                isYChange = false;
+
+                if (isXResizable) {
+                    tmpx = x + width;
+                    cx = adjustToParentDataAreaX(dx + x);
+
+                    if (cx >= tmpx) {
+                        x = tmpx;
+                        width = cx - tmpx;
+                        if (width == 0) {
+                            width = 1;
+                        }
+
+                        isXChange = true;
+                    } else {
+                        x = cx;
+                        width = tmpx - cx;
+                    }
+                }
+
+                if (isYResizable) {
+                    tmpy = y + height;
+                    cy = adjustToParentDataAreaY(dy + tmpy);
+
+                    ty = y;
+                    if (ty >= cy) {
+                        y = cy;
+                        height = ty - cy;
+                        if (height == 0) {
+                            height = 1;
+                        }
+
+                        isYChange = true;
+                    } else {
+                        height = cy - ty;
+                    }
+                }
+
+                if (isXChange || isYChange) {
+                    if (isXChange) {
+                        if (isYChange) {
+                            if (isLast) {
+                                whichSide = 7;
+                            }
+                        } else {
+                            if (isLast) {
+                                whichSide = 8;
+                            }
+                        }
+                    } else {
+                        if (isLast) {
+                            whichSide = 5;
+                        }
+                    }
+                }
+
+                break;
+            case 7: // right top corner
+                isXChange = false;
+                isYChange = false;
+
+                if (isXResizable) {
+                    tmpx = x + width;
+                    cx = adjustToParentDataAreaX(dx + tmpx);
+
+                    tx = x;
+                    if (tx >= cx) {
+                        x = cx;
+                        width = tx - cx;
+                        if (width == 0) {
+                            width = 1;
+                        }
+
+                        isXChange = true;
+                    } else {
+                        width = cx - tx;
+                    }
+                }
+
+                if (isYResizable) {
+                    tmpy = y + height;
+                    cy = adjustToParentDataAreaY(dy + y);
+
+                    if (cy >= tmpy) {
+                        y = tmpy;
+                        height = cy - tmpy;
+                        if (height == 0) {
+                            height = 1;
+                        }
+
+                        isYChange = true;
+                    } else {
+                        y = cy;
+                        height = tmpy - cy;
+                    }
+                }
+
+                if (isXChange || isYChange) {
+                    if (isXChange) {
+                        if (isYChange) {
+                            if (isLast) {
+                                whichSide = 6;
+                            }
+                        } else {
+                            if (isLast) {
+                                whichSide = 5;
+                            }
+                        }
+                    } else {
+                        if (isLast) {
+                            whichSide = 8;
+                        }
+                    }
+                }
+
+                break;
+            case 8: // right bottom corner
+                isXChange = false;
+                isYChange = false;
+
+                if (isXResizable) {
+                    tmpx = x + width;
+                    cx = adjustToParentDataAreaX(dx + tmpx);
+
+                    tx = x;
+                    if (tx >= cx) {
+                        x = cx;
+                        width = tx - cx;
+                        if (width == 0) {
+                            width = 1;
+                        }
+
+                        isXChange = true;
+                    } else {
+                        width = cx - tx;
+                    }
+                }
+
+                if (isYResizable) {
+                    tmpy = y + height;
+                    cy = adjustToParentDataAreaY(dy + tmpy);
+
+                    ty = y;
+                    if (ty >= cy) {
+                        y = cy;
+                        height = ty - cy;
+                        if (height == 0) {
+                            height = 1;
+                        }
+
+                        isYChange = true;
+                    } else {
+                        height = cy - ty;
+                    }
+                }
+
+                if (isXChange || isYChange) {
+                    if (isXChange) {
+                        if (isYChange) {
+                            if (isLast) {
+                                whichSide = 5;
+                            }
+                        } else {
+                            if (isLast) {
+                                whichSide = 6;
+                            }
+                        }
+                    } else {
+                        if (isLast) {
+                            whichSide = 7;
+                        }
+                    }
+                }
+
+                break;
+            }
+        }
+
+        if (isLast) {
+            cursorLoc = new Rectangle(x, y, width, height);
+            cursorLocInCanvas = getLocInCanvas();
+        }
+
+        return whichSide;
+    }
+
+    public int adjustToParentDataAreaX(int x)
+    {
+        return adjustToParentDataAreaX(x, 0);
+    }
+
+    public int adjustToParentDataAreaX(int x, int w)
+    {
+        Rectangle loc = parentView.viewDataLoc;
+
+        if (x < loc.x) {
+            x = loc.x;
+        } else if (x + w > loc.x + loc.width) {
+            x = loc.x + loc.width - w;
+        }
+
+        return x;
+    }
+
+    public int adjustToParentDataAreaY(int y)
+    {
+        return adjustToParentDataAreaY(y, 0);
+    }
+
+    public int adjustToParentDataAreaY(int y, int h)
+    {
+        Rectangle loc = parentView.viewDataLoc;
+
+        if (y < loc.y) {
+            y = loc.y;            
+        } else if (y + h > loc.y + loc.height) {
+            y = loc.y + loc.height - h;
+        }
+
+        return y;
     }
 
     public boolean isSame(DEViseCursor cursor)

@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.25  1999/08/24 08:45:53  hongyu
+// *** empty log message ***
+//
 // Revision 1.24  1999/08/03 05:56:49  hongyu
 // bug fixes    by Hongyu Yao
 //
@@ -364,10 +367,10 @@ public class DEViseServer implements Runnable
                                 serverCmds[0] = "JAVAC_Error {Maximum logins for this user has been reached}";
                                 //throw new YException("No more login is allowed for user \"" + client.user.getName() + "\"");
                                 isRemoveClient = true;
-                            }                            
+                            }
                         } else {
                             isRemoveClient = true;
-                        }                       
+                        }
                     } else if (clientCmd.startsWith("JAVAC_Exit")) {
                         client.isClientSwitched = false;
                         client.isSwitchSuccessful = false;
@@ -397,26 +400,32 @@ public class DEViseServer implements Runnable
                     } else if (clientCmd.startsWith("JAVAC_GetSessionList")) {
                         String[] cmds = DEViseGlobals.parseString(clientCmd);
                         if (cmds != null && cmds.length == 2 && cmds[1].startsWith(rootDir)) {
-                            Vector path = findPath(cmds[1]);
-                            if (path != null) {
-                                if (path.size() > 0) {
-                                    for (int i = 0; i < path.size(); i++) {
-                                        String p = (String)path.elementAt(i);
-                                        sendCmd("JAVAC_GetSessionList {" + p + "}");
-                                        if (p.equals("..")) {
-                                            currentDir.removeElementAt(currentDir.size() - 1);
-                                        } else {
-                                            currentDir.addElement(p);
-                                        }
-                                    }
-                                } else {
-                                    sendCmd("JAVAC_GetSessionList");
-                                }
-
+                            if (cmds[1].equals(rootDir)) {
+                                sendCmd("JAVAC_GetSessionList");
                             } else {
-                                serverCmds = new String[1];
-                                serverCmds[0] = "JAVAC_Error {Invalid command: \"" + clientCmd + "\"}";
+                                String p = cmds[1].substring(14);
+                                sendCmd("JAVAC_GetSessionList {" + p + "}");
                             }
+                            //Vector path = findPath(cmds[1]);
+                            //if (path != null) {
+                            //    if (path.size() > 0) {
+                            //        for (int i = 0; i < path.size(); i++) {
+                            //            String p = (String)path.elementAt(i);
+                            //            sendCmd("JAVAC_GetSessionList {" + p + "}");
+                            //            if (p.equals("..")) {
+                            //                currentDir.removeElementAt(currentDir.size() - 1);
+                            //            } else {
+                            //                currentDir.addElement(p);
+                            //            }
+                            //        }
+                            //    } else {
+                            //        sendCmd("JAVAC_GetSessionList");
+                            //    }
+                            //
+                            //} else {
+                            //    serverCmds = new String[1];
+                            //    serverCmds[0] = "JAVAC_Error {Invalid command: \"" + clientCmd + "\"}";
+                            //}
                         } else {
                             serverCmds = new String[1];
                             serverCmds[0] = "JAVAC_Error {Invalid command: \"" + clientCmd + "\"}";
@@ -454,42 +463,62 @@ public class DEViseServer implements Runnable
                         }
 
                         String[] cmds = DEViseGlobals.parseString(clientCmd);
-                        if (cmds != null && cmds.length == 2 && cmds[1].startsWith(rootDir)) {
-                            Vector path = findPath(cmds[1]);
-                            if (path != null && path.size() > 0) {
-                                for (int i = 0; i < path.size() - 1; i++) {
-                                    String p = (String)path.elementAt(i);
-                                    sendCmd("JAVAC_GetSessionList {" + p + "}");
-                                    if (p.equals("..")) {
-                                        currentDir.removeElementAt(currentDir.size() - 1);
-                                    } else {
-                                        currentDir.addElement(p);
-                                    }
-                                }
-                                /*
-                                client.path = (String)currentDir.elementAt(0);
-                                for (int i = 1; i < currentDir.size(); i++) {
-                                    client.path = client.path + "/" + (String)currentDir.elementAt(i);
-                                }
-                                */
-                                client.sessionName = (String)path.lastElement();
+                        if (cmds != null && cmds.length == 2 && cmds[1].startsWith(rootDir + "/")) {
+                            String p = cmds[1].substring(14);
 
-                                boolean error = false;
-                                if (client.screenDimX > 0 && client.screenDimY > 0) {
-                                    if (!sendCmd("JAVAC_SetDisplaySize " + client.screenDimX + " " + client.screenDimY)) {
-                                        error = true;
-                                    }
-                                }
+                            client.sessionName = p;
 
-                                if (!error) {
-                                    if (sendCmd("JAVAC_OpenSession {" + client.sessionName + "}")) {
-                                        client.isSessionOpened = true;
-                                    } else {
-                                        // need to clear socket because there might be some data on data socket
-                                        socket.clearSocket();
-                                    }
+                            boolean error = false;
+                            if (client.screenDimX > 0 && client.screenDimY > 0) {
+                                if (!sendCmd("JAVAC_SetDisplaySize " + client.screenDimX + " " + client.screenDimY)) {
+                                    error = true;
                                 }
                             }
+
+                            if (!error) {
+                                if (sendCmd("JAVAC_OpenSession {" + client.sessionName + "}")) {
+                                    client.isSessionOpened = true;
+                                } else {
+                                    // need to clear socket because there might be some data on data socket
+                                    socket.clearSocket();
+                                }
+                            }
+
+                            //Vector path = findPath(cmds[1]);
+                            //if (path != null && path.size() > 0) {
+                            //    for (int i = 0; i < path.size() - 1; i++) {
+                            //        String p = (String)path.elementAt(i);
+                            //        sendCmd("JAVAC_GetSessionList {" + p + "}");
+                            //        if (p.equals("..")) {
+                            //            currentDir.removeElementAt(currentDir.size() - 1);
+                            //        } else {
+                            //            currentDir.addElement(p);
+                            //        }
+                            //    }
+                            //
+                            //    //client.path = (String)currentDir.elementAt(0);
+                            //    //for (int i = 1; i < currentDir.size(); i++) {
+                            //    //    client.path = client.path + "/" + (String)currentDir.elementAt(i);
+                            //    //}
+                            //
+                            //    client.sessionName = (String)path.lastElement();
+                            //
+                            //    boolean error = false;
+                            //    if (client.screenDimX > 0 && client.screenDimY > 0) {
+                            //        if (!sendCmd("JAVAC_SetDisplaySize " + client.screenDimX + " " + client.screenDimY)) {
+                            //            error = true;
+                            //        }
+                            //    }
+                            //
+                            //    if (!error) {
+                            //        if (sendCmd("JAVAC_OpenSession {" + client.sessionName + "}")) {
+                            //            client.isSessionOpened = true;
+                            //        } else {
+                            //            // need to clear socket because there might be some data on data socket
+                            //            socket.clearSocket();
+                            //        }
+                            //    }
+                            //}
                         }
 
                         if (!client.isSessionOpened) {
@@ -503,40 +532,60 @@ public class DEViseServer implements Runnable
                             if (client.isSwitchSuccessful) {
                                 client.isSwitchSuccessful = false;
 
-                                Vector path = findPath(client.path);
-                                if (path != null) {
-                                    for (int i = 0; i < path.size(); i++) {
-                                        String p = (String)path.elementAt(i);
-                                        sendCmd("JAVAC_GetSessionList {" + p + "}");
-                                        if (p.equals("..")) {
-                                            currentDir.removeElementAt(currentDir.size() - 1);
-                                        } else {
-                                            currentDir.addElement(p);
-                                        }
+                                boolean error = false;
+                                if (client.screenDimX > 0 && client.screenDimY > 0) {
+                                    if (!sendCmd("JAVAC_SetDisplaySize " + client.screenDimX + " " + client.screenDimY)) {
+                                        error = true;
+                                    } else {
+                                        pop.pn("Switch error: can not send JAVAC_SetDisplaySize");
                                     }
-
-                                    boolean error = false;
-                                    if (client.screenDimX > 0 && client.screenDimY > 0) {
-                                        if (!sendCmd("JAVAC_SetDisplaySize " + client.screenDimX + " " + client.screenDimY)) {
-                                            error = true;
-                                        } else {
-                                            pop.pn("Switch error: can not send JAVAC_SetDisplaySize");
-                                        }
-                                    }
-
-                                    if (!error) {
-                                        if (sendCmd("JAVAC_OpenSession {" + client.savedSessionName + "}")) {
-                                            client.isSessionOpened = true;
-                                        } else {
-                                            pop.pn("Switch error: Can not send JAVAC_OpenSession " + client.savedSessionName);
-                                        }
-
-                                        // need to clear socket because there might be some useless data on data socket
-                                        socket.clearSocket();
-                                    }
-                                } else {
-                                    pop.pn("Switch error: path is null");
                                 }
+
+                                if (!error) {
+                                    if (sendCmd("JAVAC_OpenSession {" + client.savedSessionName + "}")) {
+                                        client.isSessionOpened = true;
+                                    } else {
+                                        pop.pn("Switch error: Can not send JAVAC_OpenSession " + client.savedSessionName);
+                                    }
+
+                                    // need to clear socket because there might be some useless data on data socket
+                                    socket.clearSocket();
+                                }
+
+                                //Vector path = findPath(client.path);
+                                //if (path != null) {
+                                //    for (int i = 0; i < path.size(); i++) {
+                                //        String p = (String)path.elementAt(i);
+                                //        sendCmd("JAVAC_GetSessionList {" + p + "}");
+                                //        if (p.equals("..")) {
+                                //            currentDir.removeElementAt(currentDir.size() - 1);
+                                //        } else {
+                                //            currentDir.addElement(p);
+                                //        }
+                                //    }
+                                //
+                                //    boolean error = false;
+                                //    if (client.screenDimX > 0 && client.screenDimY > 0) {
+                                //        if (!sendCmd("JAVAC_SetDisplaySize " + client.screenDimX + " " + client.screenDimY)) {
+                                //            error = true;
+                                //        } else {
+                                //            pop.pn("Switch error: can not send JAVAC_SetDisplaySize");
+                                //        }
+                                //    }
+                                //
+                                //    if (!error) {
+                                //        if (sendCmd("JAVAC_OpenSession {" + client.savedSessionName + "}")) {
+                                //            client.isSessionOpened = true;
+                                //        } else {
+                                //            pop.pn("Switch error: Can not send JAVAC_OpenSession " + client.savedSessionName);
+                                //        }
+                                //
+                                //        // need to clear socket because there might be some useless data on data socket
+                                //        socket.clearSocket();
+                                //    }
+                                //} else {
+                                //    pop.pn("Switch error: path is null");
+                                //}
                             } else {
                                 pop.pn("Switch error: client switch not successful");
                             }

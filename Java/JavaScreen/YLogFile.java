@@ -1,22 +1,6 @@
-// ========================================================================
-// DEVise Data Visualization Software
-// (c) Copyright 1999
-// By the DEVise Development Group
-// Madison, Wisconsin
-// All Rights Reserved.
-// ========================================================================
-
-// Under no circumstances is this software to be copied, distributed,
-// or altered in any way without prior permission from the DEVise
-// Development Group.
-
-// $Id$
-
-// $Log$
-
-// ========================================================================
-
 // YLogFile.java
+// last updated on 09/27/99
+
 
 import java.io.*;
 
@@ -25,9 +9,9 @@ public class YLogFile
     protected BufferedWriter logfile = null;
     protected String filename = null;
 
-    // loglevel <= 0 means no log information is written to file
-    // otherwise, log information will be written to file if loglevel is larger
-    // than or equal to the specified level in various 'print' function
+    // loglevel <= 0 means no log information is written to file, otherwise,
+    // log information will be written to file if loglevel is larger than or
+    // equal to the specified level in various 'print' function
     protected int loglevel;
 
     // status > 0 means everything is fine
@@ -72,7 +56,7 @@ public class YLogFile
         this("defaults.log", 1, false);
     }
 
-    private synchronized void open(boolean isAppend)
+    private void open(boolean isAppend)
     {
         try {
             logfile = new BufferedWriter(new FileWriter(filename, isAppend));

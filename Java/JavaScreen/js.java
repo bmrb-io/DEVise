@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.31  1999/06/23 20:59:20  wenger
+// Added standard DEVise header.
+//
 
 // ========================================================================
 
@@ -88,24 +91,13 @@ public class js extends Frame
     public jsdevisec jsc = null;
 
     public js()
-    {   
-        // determine the "screen size" for JavaScreen
+    {
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension dim = kit.getScreenSize();
-        int w = dim.width;
-        int h = dim.height;
-
-        if (DEViseGlobals.screenSize.width < 360
-            || DEViseGlobals.screenSize.width > (w - 80)) {
-            DEViseGlobals.screenSize.width = w - 80;
-        }        
-        DEViseGlobals.actualScreenSize.width = DEViseGlobals.screenSize.width + 80;
-
-        if (DEViseGlobals.screenSize.height < 240
-            || DEViseGlobals.screenSize.height > (h - 120)) {
-            DEViseGlobals.screenSize.height = h - 120;
-        }        
-        DEViseGlobals.actualScreenSize.height = DEViseGlobals.screenSize.height + 120;
+        DEViseGlobals.maxScreenSize.width = dim.width - 80;
+        DEViseGlobals.maxScreenSize.height = dim.height - 120;
+        DEViseGlobals.minScreenSize.width = 300;
+        DEViseGlobals.minScreenSize.height = 240;
 
         // get the animation symbol images from server
         MediaTracker tracker = new MediaTracker(this);
@@ -141,14 +133,14 @@ public class js extends Frame
         // start JavaScreen
         jsc = new jsdevisec(this, images, debugLevel, sessionName);
         add(jsc);
-        setTitle("DEVise JavaScreen");
+        setTitle(DEViseGlobals.javaScreenTitle);
         pack();
 
         // reposition JavaScreen so it is in the center of the screen
         Point loc = new Point(0, 0);
         Dimension size = getSize();
-        loc.y = loc.y + h / 2 - size.height / 2;
-        loc.x = loc.x + w / 2 - size.width / 2;
+        loc.y = loc.y + dim.height / 2 - size.height / 2;
+        loc.x = loc.x + dim.width / 2 - size.width / 2;
         if (loc.y < 0)
             loc.y = 0;
         if (loc.x < 0)
