@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/07 02:21:22  ravim
+  New function ToRemoveStats to detect if data needs to be refreshed.
+
   Revision 1.4  1995/12/06 05:43:55  ravim
   Added function which returns the stat object.
 
@@ -53,7 +56,7 @@ public:
   void DoneMappingIterator();
 
   /* Toggle the value of DisplayStats */
-  char *GetDisplayStats() {return _DisplayStats; }
+  char *GetDisplayStats() { return _DisplayStats; }
   void SetDisplayStats(char *stat);
   BasicStats *GetStatObj() { return &_stats; }
 
@@ -62,7 +65,7 @@ protected:
   int _index;
 
   /* TRUE if Statistics need to be displayed along with data */
-  char _DisplayStats[STAT_NUM];
+  char _DisplayStats[STAT_NUM + 1];
   BasicStats _stats;
 
  private:
