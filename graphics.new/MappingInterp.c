@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/11/25  01:20:12  jussi
+  This code now uses Transform matrix operations to convert user/world
+  coordinates to screen pixel coordinates. This is to avoid any future
+  inconsistencies in how the different code locations compute the
+  conversion. xPerPixel and yPerPixel are now obsolete coefficients.
+
   Revision 1.5  1995/11/21 23:30:58  jussi
   Added copyright notice and cleaned up the code. Fixed bug in
   ChangeCmd where attrList gets passed to FindGDataSize which
@@ -41,11 +47,9 @@
 #include "Bitmap.h"
 #include "AttrList.h"
 #include "TData.h"
-#include "Shape.h"
 #include "Pattern.h"
 #include "Color.h"
 #include "WindowRep.h"
-#include "RectShape.h"
 #include "Temp.h"
 #include "MappingInterp.h"
 #include "MapInterpShape.h"
@@ -163,6 +167,8 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
     _shapes[0] = new FullMapping_RectShape;
     _shapes[1] = new FullMapping_RectXShape;
     _shapes[2] = new FullMapping_BarShape;
+    _shapes[3] = new FullMapping_PolygonShape;
+    _shapes[4] = new FullMapping_OvalShape;
 
     /* Init tcl */
     _interp = Tcl_CreateInterp();
@@ -250,6 +256,9 @@ void MappingInterp::DrawGDataArray(WindowRep *win, void **gdataArray, int num)
   if (_offsets->shapeOffset < 0) {
     /* constant shape */
     ShapeID shape = GetDefaultShape();
+#ifdef DEBUG
+    printf("Drawing shape %d\n", shape);
+#endif
     _shapes[shape]->DrawGDataArray(win, gdataArray, num, this,
 				   GetPixelWidth());
   } else {
@@ -264,9 +273,9 @@ void MappingInterp::DrawGDataArray(WindowRep *win, void **gdataArray, int num)
 	  break;
       }
       /* gdataArray[i..j-1] have the same shape */
-      /*
-	 printf("draw shape %d\n", shape);
-      */
+#ifdef DEBUG
+      printf("Drawing shape %d\n", shape);
+#endif
       _shapes[shape]->DrawGDataArray(win, &gdataArray[i], j - i, this,
 				     GetPixelWidth());
       i = j;
@@ -1186,9 +1195,9 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
 					 void **tRecs, int numRecs,
 					 void *gdataPtr)
 {
-  /*
-     printf("ConvertToGdataSimple\n");
-  */
+#ifdef DEBUG
+  printf("ConvertToGdataSimple\n");
+#endif
 
   int tRecSize = TDataRecordSize();
   int gRecSize = GDataRecordSize();
@@ -1237,11 +1246,11 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
       }
     }
 
-    /*
-       printf("ConvertGData x:%f y:%f color %d size %f pattern %d orient %f shape %d attr0 %f attr1 %f\n", gPtr->x, gPtr->y, gPtr->color, gPtr->size,
-       gPtr->pattern, gPtr->orientation, gPtr->shape, gPtr->shapeAttrs[0],
-       gPtr->shapeAttrs[1]);
-    */
+#ifdef DEBUG
+    printf("ConvertGData x:%f y:%f color %d size %f pattern %d orient %f shape %d attr0 %f attr1 %f\n", gPtr->x, gPtr->y, gPtr->color, gPtr->size,
+	   gPtr->pattern, gPtr->orientation, gPtr->shape, gPtr->shapeAttrs[0],
+	   gPtr->shapeAttrs[1]);
+#endif
 
     tPtr += tRecSize;
     gPtr += gRecSize;
