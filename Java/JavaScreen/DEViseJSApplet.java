@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2001/05/11 20:36:07  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.4  2001/05/07 21:53:25  wenger
 // Found and fixed bug 670; jss checks for /tmp.X1-lock before starting
 // Xvfb.
@@ -267,6 +270,35 @@ public class DEViseJSApplet extends Applet
             jsValues.connection.cgiURL = cgiUrl;
         } else {
             jsValues.connection.cgiURL = null;
+        }
+
+        String clientLogName = getParameter("clientlog");
+        if (clientLogName != null) {
+            jsValues.session.clientLogName = clientLogName;
+        } else {
+            jsValues.session.clientLogName = null;
+        }
+
+        String autoPlayback = getParameter("autoplayback");
+        if (autoPlayback != null) {
+	    if (autoPlayback.equals("true")) {
+		jsValues.session.autoPlayback = true;
+	    } else {
+		jsValues.session.autoPlayback = false;
+	    }
+        } else {
+            jsValues.session.autoPlayback = false;
+        }
+
+        String playbackOriginal = getParameter("playbackoriginal");
+        if (playbackOriginal != null) {
+	    if (playbackOriginal.equals("true")) {
+		jsValues.session.playbackOriginal = true;
+	    } else {
+		jsValues.session.playbackOriginal = false;
+	    }
+        } else {
+            jsValues.session.playbackOriginal = false;
         }
     }
 
