@@ -43,8 +43,8 @@ rcsinfo		-i /s/cvs/bin/mkmodules CVSROOT rcsinfo
 # directories; if you don't do this, your checkout will appear to work
 # correctly, but in fact will not.  RKW Aug 25, 1998.
 dte		-a Makefile.common \
-			DTE DataReader unidata graphics graphics.new \
-			setup solaris solsparc
+			DTE DataReader graphics graphics.new \
+			scripts solaris solsparc src/include RTree tape
 devise		-a Makefile.common README \
 			DTE DataReader LM RTree \
 			aix alpha_osf20 compustat crsp csgroup cslib \
