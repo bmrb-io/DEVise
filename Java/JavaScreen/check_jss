@@ -20,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  2001/06/08 15:52:19  wenger
+#  Implemented non-ps-based JSPoP/JSS/DEVised checking.
+#
 #  Revision 1.7  2001/05/11 20:36:11  wenger
 #  Set up a package for the JavaScreen code.
 #
@@ -79,13 +82,11 @@ fi
 pids=`ls $pidfile 2> /dev/null | cut -d'.' -f3`
 
 foundJss=0
-if [ xxx = xxx$pids ]
-then
-  #echo "No JSS process found" 1>&2
-  echo "needed for stupid sh if/else" > /dev/null
-else
+for pid in $pids
+do
   foundJss=1
-fi
+done
+
 
 #
 # Check for DEVised(s).
@@ -100,13 +101,11 @@ fi
 pids=`ls $pidfile 2> /dev/null | cut -d'.' -f3`
 
 foundDevised=0
-if [ xxx = xxx$pids ]
-then
-  #echo "No DEVised process found" 1>&2
-  echo "needed for stupid sh if/else" > /dev/null
-else
+for pid in $pids
+do
   foundDevised=1
-fi
+done
+
 
 #
 # Output the final check value.

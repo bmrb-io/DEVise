@@ -20,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.23  2001/06/08 15:52:19  wenger
+#  Implemented non-ps-based JSPoP/JSS/DEVised checking.
+#
 #  Revision 1.22  2001/05/11 20:36:11  wenger
 #  Set up a package for the JavaScreen code.
 #
@@ -148,13 +151,10 @@ fi
 pids=`ls $pidfile 2> /dev/null | cut -d'.' -f3`
 
 foundPop=0
-if [ xxx$pids = xxx ]
-then
-  #echo "No JSPoP process found" 1>&2
-  echo "needed for stupid sh if/else" > /dev/null
-else
+for pid in $pids
+do
   foundPop=1
-fi
+done
 
 
 # Make sure we can connect to the jspop.
