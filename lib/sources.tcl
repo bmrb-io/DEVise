@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.30  1996/04/10 03:06:59  jussi
+#	Checking of whether a top-level window already exists is now
+#	made via WindowVisible (util.tcl).
+#
 #	Revision 1.29  1996/02/25 23:03:21  jussi
 #	When data stream is uncache, index files and gdata files are
 #	removed as well.
@@ -128,6 +132,7 @@
 set sourceTypes(COMMAND) "{Unix Command Output} $schemadir/logical/COMMAND"
 set sourceTypes(COMPUSTAT) "{Annual and Quarterly Company Financial Data} $schemadir/logical/COMPUSTAT compustat.idx"
 set sourceTypes(CRSP) "{Security Data} $schemadir/logical/CRSP crsp_dsm94.idx"
+set sourceTypes(CRSP_NSDQ) "{Nasdaq Security Data} $schemadir/logical/CRSP crsp_ndsm94.idx"
 set sourceTypes(ISSM) "{Historical Stock Data (Trades and Quotes} $schemadir/logical/ISSM-T issm.idx"
 set sourceTypes(NETWORK) "{Network Server Output} $schemadir/logical/NETWORK"
 set sourceTypes(SEQ) "{SEQ Query Output} $schemadir/logical/SEQ"
@@ -179,6 +184,8 @@ set cacheSize [expr 100 * 1024 * 1024]
 
 proc saveSources {} {
     global sourceFile sourceList sourceTypes
+
+    catch { exec mv $sourceFile $sourceFile.bak }
 
     set f [open $sourceFile w]
     puts $f "# Data source types"
@@ -568,21 +575,21 @@ proc cacheData {dispname startrec endrec} {
 	set filenum [lindex $sourceConfig($source) 1]
 	set offset [lindex $sourceConfig($source) 2]
 	set blocksize [lindex $sourceConfig($source) 3]
-	set cmd "issm_extract_data $tapedrive $filenum \
+	set cmd "issm_extract_data $source $tapedrive $filenum \
 		$offset $blocksize $key $cachefile"
     } elseif {$source == "COMPUSTAT"} {
 	set tapedrive [lindex $sourceConfig($source) 0]
 	set filenum [lindex $sourceConfig($source) 1]
 	set offset [lindex $sourceConfig($source) 2]
 	set blocksize [lindex $sourceConfig($source) 3]
-	set cmd "cstat_extract_data $tapedrive $filenum \
+	set cmd "cstat_extract_data $source $tapedrive $filenum \
 		$offset $blocksize $key $cachefile"
-    } elseif {$source == "CRSP"} {
+    } elseif {$source == "CRSP" || $source == "CRSP_NSDQ"} {
 	set tapedrive [lindex $sourceConfig($source) 0]
 	set filenum [lindex $sourceConfig($source) 1]
 	set offset [lindex $sourceConfig($source) 2]
 	set blocksize [lindex $sourceConfig($source) 3]
-	set cmd "crsp_extract_data $tapedrive $filenum \
+	set cmd "crsp_extract_data $source $tapedrive $filenum \
 		$offset $blocksize $key $cachefile"
     }
 
@@ -594,7 +601,7 @@ proc cacheData {dispname startrec endrec} {
     }
 
     statusWindow .info "Status" \
-	    "Extracting \"$dispname\".\n\n\This may take a while."
+	    "Extracting \"$dispname\".\n\nThis may take a while."
     update
 
     if {[catch { eval $cmd }] > 0} {
@@ -781,13 +788,13 @@ proc selectSourceKey {source} {
 	return [list "default" "$source Default"]
     }
     if {$source == "COMPUSTAT"} {
-	return [cstatMain]
+	return [cstatMain $source]
     }
     if {$source == "ISSM"} {
-	return [issmMain]
+	return [issmMain $source]
     }
-    if {$source == "CRSP"} {
-	return [crspMain]
+    if {$source == "CRSP" || $source == "CRSP_NSDQ"} {
+	return [crspMain $source]
     }
 
     dialog .error "Incorrect Data Source" \
@@ -835,7 +842,7 @@ proc selectUnixFile {} {
 ############################################################
 
 proc selectStream {{title ""}} {
-    global streamSelected sourceTypes MapTable
+    global streamsSelected sourceTypes MapTable
 
     if {[WindowVisible .srcsel]} {
 	return
@@ -889,35 +896,40 @@ proc selectStream {{title ""}} {
     menu .srcsel.mbar.stream.menu -tearoff 0
     .srcsel.mbar.stream.menu add command -label "Edit..." -command {
 	set dispname [getSelectedSource]
-	if {$dispname == ""} {
-	    dialog .note "Note" "Select stream to be edited first." "" 0 OK
+	if {[llength $dispname] != 1} {
+	    dialog .note "Note" "Select one stream to edit." "" 0 OK
 	    return
 	}
-	defineStream $dispname 1
+	defineStream [lindex $dispname 0] 1
     }
     .srcsel.mbar.stream.menu add command -label "Copy..." -command {
 	set dispname [getSelectedSource]
-	if {$dispname == ""} {
-	    dialog .note "Note" "Select stream to copy first." "" 0 OK
+	if {[llength $dispname] != 1} {
+	    dialog .note "Note" "Select one stream to copy." "" 0 OK
 	    return
 	}
-	defineStream $dispname 0
+	defineStream [lindex $dispname 0] 0
     }
     .srcsel.mbar.stream.menu add command -label Delete -command {
-	set dispname [getSelectedSource]
-	if {$dispname == ""} {
-	    dialog .note "Note" "Select stream to delete first." "" 0 OK
+	set dispnames [getSelectedSource]
+	if {$dispnames == ""} {
+	    dialog .note "Note" "Select streams to delete first." "" 0 OK
 	    return
 	}
-	set but [dialog .confirm "Confirm Stream Deletion" \
-		"Delete stream \"$dispname\"?" "" 1 Yes No]
-	if {$but > 0} {
-	    return
-	}
-	uncacheData $dispname ""
-	if {[catch {unset "sourceList($dispname)"}] == 0} {
-	    saveSources
-	    updateSources
+	foreach d $dispnames {
+	    set but [dialog .confirm "Confirm Stream Deletion" \
+		    "Delete stream \"$d\"?" "" 1 Yes No Cancel]
+	    if {$but == 2} {
+		return
+	    }
+	    if {$but == 1} {
+		continue
+	    }
+	    uncacheData $d ""
+	    if {[catch {unset "sourceList($d)"}] == 0} {
+		saveSources
+		updateSources
+	    }
 	}
     }
 
@@ -932,11 +944,12 @@ proc selectStream {{title ""}} {
     menu .srcsel.mbar.help.menu -tearoff 0
     .srcsel.mbar.help.menu add command -label Help -command {
 	dialog .help "Help" \
-		"This dialog lets you choose one of the defined data streams\
-		for visualization. A stream is selected by either\
-		double-clicking on it, or by clicking on it once and\
+		"This dialog lets you choose one or more data streams\
+		for visualization. You can select a single data stream\
+		by double-clicking on it, or you can select multiple\
+		data streams with control-click and then\
 		pressing the Select button. Press the Cancel button\
-		to return without selecting a data stream.\n\n\
+		to return without selecting anything.\n\n\
 		Choose Stream/New to define a new data stream using a blank\
 		template.\n\n\
 		Stream/Edit lets you edit an existing data stream. Select\
@@ -944,9 +957,9 @@ proc selectStream {{title ""}} {
 		You can copy an existing data stream and use its definition\
 		as a template for a new data stream with Stream/Copy. Select\
 		template with the mouse first.\n\n\
-		Stream/Delete lets you delete the definition of a selected\
-		data stream. The program asks for confirmation before\
-		actually removing the definition." \
+		Stream/Delete lets you delete the definition of the selected\
+		data streams. The program asks for confirmation before\
+		actually removing the entries." \
 		"" 0 OK
     }
 
@@ -955,36 +968,37 @@ proc selectStream {{title ""}} {
 
     listbox .srcsel.top.list -relief raised -borderwidth 2 \
 	    -yscrollcommand ".srcsel.top.scroll set" -font 9x15 \
-	    -selectmode single -width 61 -height 22
+	    -selectmode extended -width 61 -height 22
     scrollbar .srcsel.top.scroll -command ".srcsel.top.list yview"
     pack .srcsel.top.list -side left -fill both -expand 1
     pack .srcsel.top.scroll -side right -fill y
     bind .srcsel.top.list <Double-Button-1> {
-	set streamSelected [getSelectedSource]
+	set streamsSelected [getSelectedSource]
     }
 
     updateSources
 
     button .srcsel.bot.but.select -text Select -width 10 -command {
-	set streamSelected [getSelectedSource]
+	set streamsSelected [getSelectedSource]
     }
     button .srcsel.bot.but.uncache -text Uncache -width 10 -command {
-	set uncacheDisp [getSelectedSource]
-	if {$uncacheDisp == ""} { return }
-	uncacheData $uncacheDisp "Uncache requested."
-	updateSources
+	set dispnames [getSelectedSource]
+	foreach d $dispnames {
+	    uncacheData $d "Uncache requested."
+	    updateSources
+	}
     }
     button .srcsel.bot.but.cancel -text Cancel -width 10 -command {
-	set streamSelected ""
+	set streamsSelected ""
     }
     pack .srcsel.bot.but.select .srcsel.bot.but.uncache \
 	    .srcsel.bot.but.cancel -side left -padx 3m
 
-    set streamSelected ""
-    tkwait variable streamSelected
+    set streamsSelected ""
+    tkwait variable streamsSelected
     catch {destroy .srcsel}
 
-    return $streamSelected
+    return $streamsSelected
 }
 
 ############################################################
@@ -1018,20 +1032,15 @@ proc getSelectedSource {} {
     if {$owner != ".srcsel.top.list"} { return "" }
     set err [catch { set select [selection get] }]
     if {$err > 0} { return "" }
-    set dispName [string range $select 0 40]
-    set dispName [string trimright $dispName]
-    return $dispName
-}
 
-############################################################
-
-proc selectSelectedSource {} {
-    global sourceList
-    set dispName [getSelectedSource]
-    set err [catch {set sourceDef $sourceList($dispName)}]
-    if {$err > 0} { return }
-    puts "Selected: $dispName"
-    puts "  $sourceDef"
+    set select [split $select \n]
+    set retval ""
+    foreach s $select {
+	set dispName [string range $s 0 40]
+	set dispName [string trimright $dispName]
+	lappend retval $dispName
+    }
+    return $retval
 }
 
 ############################################################
@@ -1040,9 +1049,8 @@ proc mapFollow {newtype} {
     global button evaluation priority MapTable sourceList sourceTypes
 
     set curr [getSelectedSource]
-    if {$curr == ""} {
-	dialog .note "Select Source" \
-		"Select data source first." "" 0 OK
+    if {[llength $curr] != 1} {
+	dialog .note "Note" "Select one data source." "" 0 OK
 	return
     } 
     set oldtype [lindex $sourceList($curr) 0]
