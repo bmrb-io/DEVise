@@ -1,0 +1,2 @@
+java -classpath ../classes xman.xvis.XVisServer 12345 &
+java -classpath ../classes xman.XManMain.XManMain &
