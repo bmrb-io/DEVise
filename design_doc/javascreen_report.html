@@ -1,0 +1,384 @@
+<!--
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1998
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+-->
+
+<!--
+  $Id$
+-->
+
+<HTML>
+<HEAD>
+<TITLE>DEVise JavaScreen</TITLE>
+</HEAD>
+<BODY bgcolor="#ffffcf">
+
+<h1 align=center>The DEVise JavaScreen</h1>
+
+<h3 align=center>Kent Wenger</h3>
+
+<h3 align=center>December 04, 1998</h3>
+
+<h1>Table of Contents</h1>
+<ul>
+<li><a href="#Overview">Overview</a></li>
+<li><a href="#Capabilities">Capabilities</a></li>
+<li><a href="#Other Software">Relationship to Other DEVise Software</a></li>
+<li><a href="#Startup">Startup</a></li>
+<li><a href="#Communication">Communication</a></li>
+<li><a href="#Switching">Client Switching</a></li>
+<li><a href="#Server Support">Server Support</a></li>
+<li><a href="#Other Changes">Other Server Changes</a></li>
+<li><a href="#Future">Future Work</a></li>
+</ul>
+
+
+<a name="Overview"><h1>Overview</h1></a>
+The JavaScreen is a simplified DEVise client, implemented in Java, that can
+be downloaded and run through a web browser.
+
+<p>The main purpose of the JavaScreen is to allow people to easily try out
+DEVise and get an idea how it works, without having to download and install
+the full DEVise software.  The JavaScreen is also a first step towards
+replacing the existing Tcl/Tk DEVise GUI.
+
+
+<a name="Capabilities"><h1>Capabilities</h1></a>
+
+<p>At the present time, the JavaScreen has only "session exploration"
+capabilities as opposed to "session creation" or "session editing"
+capabilities.  The JavaScreen can zoom, pan, move cursors, and so on,
+but cannot edit mappings, create or destroy windows or views, edit the
+data source catalog, or change the appearance of a session.
+
+<p>It would not be hard to add server support for full range of DEVise
+capabilities, since these capabilities are already supported for the
+"regular" client (the devisec).  The main issues would be whether we
+want to spend the effort to implement these capabilities in the Java
+code, and how doing so would affect the size of the class files, and,
+therefore, the time to download the JavaScreen.
+
+<p>It is important to note that the JavaScreen does not really "understand"
+DEVise sessions; for example, the JavaScreen code doesn't have any knowledge
+of DEVise links built into it.  Basically, when the user performs some
+action, the JavaScreen sends a command describing that action to the
+DEVise server; the server determines what needs to be done as the result
+of that action and sends appropriate commands and image data to the
+JavaScreen.
+
+
+<a name="Other Software"><h1>Relationship to Other DEVise Software</h1></a>
+
+<p>Prior to the implementation of the JavaScreen, two DEVise clients already
+existed -- the devisec and deviseb.  Both of these clients send commands
+to the DEVise server, and receive replies, over a command socket (as the
+JavaScreen does).  There are two major conceptual differences between the
+JavaScreen and the other DEVise clients:
+<ul>
+<li>The JavaScreen may not have access to the same files that the server
+does; the devisec and deviseb are written with the assumption that the
+client and the server <i>do</i> have access to the same files.</li>
+<li>The JavaScreen must display images within its window; the devisec and
+deviseb are not involved at all in the display of data -- the server
+creates its own window(s) and displays the data in them.</li>
+</ul>
+
+
+<a name="Startup"><h1>Startup</h1></a>
+
+<p> A JavaScreen is started by the user viewing the appropriate web page.
+When the JavaScreen starts up, it attempts to connect to the "jspop"
+(JavaScreen Point Of Presence) on the web server machine.  The jspop
+listens on a specified port for connections from JavaScreens.
+
+<p>The jspop (which is always running on the web server) starts up one
+or more DEVise servers when it is started.  When a JavaScreen connects
+to the jspop, the jspop makes a corresponding connection to a DEVise
+server.
+
+<p>The jspop can kill and restart DEVise servers if necessary.
+
+
+<a name="Communication"><h1>Communication</h1></a>
+
+<p>Communication between the JavaScreen and the DEVise server takes place
+on two sockets, the command socket and the image socket.  The JavaScreen
+sends commands on the command socket.  The DEVise server sends command
+results, and commands of its own, on the command socket.  The server sends
+image data on the image socket.
+
+<p>All communication between the JavaScreen and the DEVise server goes
+through the jspop.  There are several reasons for this:
+<ul>
+<li>It allows for the possibility of running several DEVise servers on several
+different machines.  If the JavaScreen and the DEVise server communicated
+directly, the DEVise server would have to run on the web server machine
+because of Java's security restrictions.</li>
+<li>It makes it easier for the jspop to perform <a href="#Switching">client switching</a>.</li>
+<li>It allows the jspop to check for problems such as the DEVise server
+not responding to a command.</li>
+</ul>
+
+
+<a name="Switching"><h1>Client Switching</h1></a>
+
+<p>One of the major limitations of the DEVise server is that it can only
+handle one client at a time (there can actually be multiple clients, but
+all of the clients act on the same session, which is not what we want in
+this case).  The main reason for this restriction is that many of the
+data structures in the server are built on the assumption that the server
+will only have one session open at a time; it is not really a limitation
+of the communications parts of the software.
+
+<p>Because of this limitation, the jspop supports multiple clients by
+the process of "client switching".  This means that when a new JavaScreen
+starts up and no server is available, the jspop will instruct a server to
+save its state, close the session, disconnect from its current client,
+and connect to the new client.  When the user of the first client performs
+some action, the jspop will instruct the server to save the state for the
+new client, and restore the state saved for the first client.  Client
+switching involves a significant degree of overhead (the exact amount
+depends largely on the complexity and data size of the session being
+restored).
+
+
+<a name="Server Support"><h1>Server Support</h1></a>
+
+<p>The DEVise server was extended to provide support for the following
+JavaScreen functions:
+<ul>
+<li>Sending lists of session files to the JavaScreen.</li>
+<li>Extension of session files to fully save the DEVise state.</li>
+<li>Sending GIFs to the JavaScreen.</li>
+<li>Keeping track of which windows have become "dirty" since the last
+time their GIF was sent.</li>
+<li>Improvements to the "wait for queries" function.</li>
+<li>Rubberband lines in the JavaScreen.</li>
+<li>Drill-down (point queries) in the JavaScreen.</li>
+<li>Key actions in the JavaScreen.</li>
+<li>Allowing the JavaScreen to set the virtual display size.</li>
+<li>Having cursors drawn by the JavaScreen, rather than by the server.</li>
+<li>Allowing Tasvir to draw into pixmaps.</li>
+<li>Sending a view's GData on the image socket.</li>
+<li>Decreasing DEVise server memory usage.</li>
+</ul>
+
+<h3>Session File Lists</h3>
+<p>Because it is assumed to have access to the same files as the server,
+the devisec client presents a list of available session files by directly
+examining the appropriate directory.  Because this is obviously not possible
+for the JavaScreen, a new command to send a list of available session files
+was added to the DEVise server.
+
+<p>Since the session file directories can include subdirectories, provision
+for this was added to the JavaScreen support.  When the user selects a
+file or directory in the JavaScreen, this information is sent to the
+DEVise server.  The server determines whether the name it is sent is a file
+or a directory.  If it is a file, the server attempts to open the file as
+a DEVise session.  If the name is a directory, it reads the contents of
+the directory and sends a new list of files to the JavaScreen.
+
+<h3>Saving State</h3>
+<p>In the course of testing <a href="#Switching">client switching</a>, it
+was found that DEVise session files did not totally save the server state,
+in that they did not save which view was selected.  Therefore, an option
+was added to allow saving this information, and it is saved whenever the
+server saves a session file as the result of a client switch.
+
+<h3>Sending GIFs</h3>
+<p>Because the JavaScreen must display all images in its own window, the
+images must somehow be sent to the JavaScreen, rather than simply being
+painted in an X window as is done with the "regular" client.  Since the
+DEVise server already had the capability to dump windows to GIF files,
+this capability was simply extended to send the GIF file over the image
+socket to the JavaScreen (deleting the file after sending it).
+
+<p>At the present time, GIFs are sent on a per-window basis, but this
+is being changed to a per-view basis.
+
+
+<h3>"Dirty" Windows</h3>
+<p>In the earliest version of support for the JavaScreen, any change to a
+window simply resulted in the GIFs for all windows being generated and sent,
+even if some of the windows had not changed.  To avoid sending GIFs for
+windows that had not changed, a "dirty window" flag was implemented.  This
+is simply a flag in each window that is set when anything is painted in the
+window, and cleared when the window is dumped as a GIF.
+
+<p>To go along with the change of sending separate GIFs for each view, the
+"dirty" flags are being changed to a per-view basis, as well.  This will,
+in some cases, further reduce the amount of image data that needs to be
+sent as the result of a user action.
+
+
+<h3>Waiting for Queries</h3>
+<p>Because the Dispatcher in DEVise essentially simulates threads, a
+command that causes views to change generally returns control to the client
+before the appropriate windows have been repainted.  For the devisec client,
+this doesn't really matter in most cases, because the server continues to
+paint the windows even after the command has returned to the client (there
+are a few special cases where this caused problems).  Because of the
+special cases, a 'wait for queries' command was implemented that does not
+return control until all pending queries are finished.
+
+<p>For the JavaScreen, however, the 'wait for queries' command is employed
+every time any views may be changed, since the server must not generate
+GIFs until the appropriate windows have been fully painted (the GIFs are
+generated by dumping the pixels from the appropriate window or pixmap).
+This heavy use of 'wait for queries' exposed some problems with the original
+implementation, necessitating improvements to that command.
+
+<h3>Rubberband Lines</h3>
+<p>The user can draw a rubberband line in a DEVise view by dragging the
+mouse with the left button held down.  This results in that view zooming
+to display only the area within the rubberband line.
+
+<p>The "regular" (devisec) client is not involved at all in the process of
+drawing rubberband lines and zooming as a result (since the mouse events
+are happening in windows "owned" by the server).  On the other hand, when
+the user drags to create a rubberband line in the JavaScreen, the events
+are occurring in the JavaScreen's window.  The rubberband line is actually
+drawn by the JavaScreen itself, and there is no communication with the
+server until the user releases the mouse button at the end of the operation.
+Then the JavaScreen sends the coordinates of the mouse movement (in pixels,
+relative to the origin of the GIF) to the server.  The server then
+calculates the zoom that is necessary, and sends the updated GIFs to the
+JavaScreen.  A new command was added to the DEVise server to handle
+rubberband lines originating from the JavaScreen.
+
+<h3>Drill-Down</h3>
+<p>Users can "drill down" (issue a point query) by holding down the middle
+mouse button in "regular" DEVise.  They can do the same thing in the
+JavaScreen by double-clicking the left mouse button.  This causes the
+TData records (if any) at the mouse location to be displayed.
+
+<p>Again, the "regular" devisec is not involved in the drill-down process.
+In the JavaScreen, when the user double-clicks, the JavaScreen sends a
+message with the location of the double-click to the server, and the server
+sends back the relevant TData records (if any).  The JavaScreen then creates
+a popup window in which to display these records.  A new command was added
+to the DEVise server to handle point queries originating from the
+JavaScreen.
+
+<h3>Key Actions</h3>
+<p>Users can perform a number of actions such as panning, zooming, and so
+on, by clicking a key while the mouse pointer is in a DEVise view.
+
+<p>Once again, the "regular" devisec is not involved in these actions, but
+the JavaScreen is.  A new command was added to the DEVise server to
+handle key actions originating from the JavaScreen.
+
+<h3>Virtual Display Size</h3>
+<p>The size and location of DEVise windows are defined as a fraction of the
+display size, so that a given session will look essentially the same on
+displays with different resolutions.  Because the JavaScreen cannot use
+the full display, and it is likely to be running on a different display
+than the server is, the JavaScreen sets the display size to the size of
+the window in which it will display all of the DEVise data.  This allows
+the server to create GIFs of the proper size to fit into the JavaScreen's
+window the same way they would into the entire display if the session were
+run with the "regular" DEVise.  A new command was added to the DEVise
+server to allow the JavaScreen to set the virtual display size.
+
+<h3>Cursor Drawing</h3>
+<p>In order to reduce the amount of image data that must be sent, cursors
+are drawn by the JavaScreen, rather than by the server (in all cases except
+the JavaScreen, cursors are drawn by the server).
+
+<p>Several changes to the server were needed to implement this:
+<ul>
+<li>First, actual drawing of the cursors is disabled in the server when
+the JavaScreen opens a session.</li>
+<li>Second, commands were implemented that tell the JavaScreen to draw and
+erase cursors.  The 'draw cursor' command basically tells the JavaScreen to
+draw a rectangle at a certain size and location, since the JavaScreen does
+not really "understand" cursors.</li>
+<li>Third, provision was needed to make sure that the 'draw cursor' commands
+are sent only <i>after</i> the appropriate GIFs have been sent to the
+JavaScreen.  This is done by keeping a list of all cursors that would be
+drawn as the window(s) are painted; then, after the GIFs have been sent, the
+list of cursors to draw is sent.</li>
+</ul>
+
+<h3>Tasvir</h3>
+<p>When the JavaScreen connects to a DEVise server, the server runs in
+"batch" mode.  This means that it creates pixmaps rather than actual X
+windows.  DEVise uses a separate program called Tasvir to display images
+such as JPEGs within DEVise views.  Originally, Tasvir did not work on
+pixmaps, meaning that views containing JPEGs were not displayed correctly
+in the JavaScreen.  To fix this problem, Tasvir was modified so that it
+can display images in pixmaps.
+
+<h3>Sending GData</h3>
+<p>The capability to save a view's GData to a file was already in place
+before the JavaScreen was implemented.  In order to support applications
+such as the search engine demo session, this capability was extended to
+allow sending GData over the image socket to the JavaScreen.  In the case
+of the search engine demo, the JavaScreen uses the GData to create buttons
+that replicate the functionality of buttons created with Tk in the "regular"
+version of DEVise.
+
+<p>The session file must specify views for which GData is to be sent to
+the JavaScreen.  (So far this has been done by hand-editing a "wrapper"
+around the actual session file.  The "wrapper" file just opens the session
+and sets the appropriate views to send GData.)  The DEVise server still
+sends the "blank" GIF for GData views, so that the background color,
+axes (if drawn), etc., are correct.
+
+<h3>Memory Usage</h3>
+<p>Because of the one-client-per-server limitation, it is desirable to run
+as many DEVise servers as possible, so that multiple clients can be served
+without incurring the overhead of frequent client switching.  At this time,
+the biggest limitation on running multiple servers is the amount of resources,
+particularly memory, consumed by the DEVise servers.  To improve this
+situation, the amount of memory used by the DEVise server has been
+significantly reduced, hopefully with more improvements still to come.
+
+
+<a name="Other Changes"><h1>Other Server Changes</h1></a>
+<p>There are two other important changes to the DEVise server that were not
+made solely because of the JavaScreen, but are necessary for its support:
+<ul>
+<li>Opening and saving session files on the server side.</li>
+<li>Extension of Command Usage</li>
+</ul>
+
+<h3>Opening and Saving Session Files</h3>
+<p>DEVise session files consist of a list of commands, executed sequentially.
+Earlier versions contained Tcl control structures, such as 'ifs', and
+therefore need a Tcl interpreter to be opened.  Originally, session files
+were opened by using the Tcl interpreter that already existed in the client.
+Session files were also saved by Tcl code in the client.  This was changed
+in version 1.4 -- both the opening and saving of session files was moved
+to the server.
+
+<h3>Extension of Command Usage</h3>
+<p>In order for DEVise collaboration to work properly, a number of actions
+that previously did not involve the actual issuing of a DEVise command
+were changed to issue a command (key actions and rubberband lines, for
+example).  This made the implementation of the corresponding JavaScreen
+support easier (and also helps in debugging).
+
+<a name="Future"><h1>Future Work</h1></a>
+
+Possible future work on the JavaScreen and JavaScreen support includes:
+<ul>
+<li>Improving the robustness of the software, particularly in terms of
+the installation on the web server machine.</li>
+<li>Consolidating the command and image sockets into a single socket
+to simplify the jspop.</li>
+<li>Further decreases in the memory usage of the DEVise server.</li>
+<li>Adding more capabilities to the JavaScreen user interface.</li>
+</ul>
+
+</BODY>
+</HTML>
