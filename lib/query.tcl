@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/06/20 17:22:11  guangshu
+#  Added statistics button but commented it out.
+#
 #  Revision 1.2  1996/06/15 14:43:16  jussi
 #  Added yuc's 3D procedures.
 #
@@ -300,8 +303,8 @@ proc Do3DQuery {} {
     }
 
     toplevel    .query3d
-    wm title    .query3d "Query Tool"
-    wm geometry .query3d +200+200
+    wm title    .query3d "3D Query Tool"
+    wm geometry .query3d +100+100
 
     # build view name widget
 
@@ -311,36 +314,103 @@ proc Do3DQuery {} {
     label .query3d.title.text -text "No View Selected"
     pack .query3d.title.text -side top -pady 1m
 
-    # build xyzLoc widgets
+    # build xyzLoc widgets (rectangular and radial coordinates of
+    # camera, plus rectangular coordinates of focal point)
 
-    frame .query3d.xyzLoc
-    pack .query3d.xyzLoc -side top -pady 1m -padx 3m -expand 1 -fill both
+    frame .query3d.info
+    pack .query3d.info -side top -pady 1m -expand 1 -fill both
 
-    frame .query3d.xyzLoc.xEntry
-    frame .query3d.xyzLoc.yEntry
-    frame .query3d.xyzLoc.zEntry
-    pack .query3d.xyzLoc.xEntry .query3d.xyzLoc.yEntry .query3d.xyzLoc.zEntry \
-	    -side top -pady 2m -padx 2m
+    frame .query3d.recLoc -relief groove -bd 2
+    frame .query3d.radLoc -relief groove -bd 2
+    frame .query3d.focLoc -relief groove -bd 2
+    pack .query3d.recLoc .query3d.radLoc .query3d.focLoc \
+	    -in .query3d.info -side left -padx 2m -expand 1 -fill both
+
+    label .query3d.recLoc.heading -text "Camera (Rectangular)"
+    frame .query3d.recLoc.x
+    frame .query3d.recLoc.y
+    frame .query3d.recLoc.z
+    pack .query3d.recLoc.heading .query3d.recLoc.x \
+	    .query3d.recLoc.y .query3d.recLoc.z \
+	    -side top -pady 1m -padx 2m
 
     # set up X label and entry
 
-    label .query3d.xyzLoc.xEntry.heading -text "X Coordinate"
-    entry .query3d.xyzLoc.xEntry.x -text "" -relief sunken -width 20
-    pack .query3d.xyzLoc.xEntry.heading .query3d.xyzLoc.xEntry.x \
+    label .query3d.recLoc.x.heading -text "X"
+    entry .query3d.recLoc.x.e -text "" -relief sunken -width 20
+    pack .query3d.recLoc.x.heading .query3d.recLoc.x.e \
 	    -side left -expand 1 -fill both
 
     # set up Y label and entry
 
-    label .query3d.xyzLoc.yEntry.heading -text "Y Coordinate"
-    entry .query3d.xyzLoc.yEntry.y -text "" -relief sunken -width 20
-    pack .query3d.xyzLoc.yEntry.heading .query3d.xyzLoc.yEntry.y \
+    label .query3d.recLoc.y.heading -text "Y"
+    entry .query3d.recLoc.y.e -text "" -relief sunken -width 20
+    pack .query3d.recLoc.y.heading .query3d.recLoc.y.e \
 	    -side left -expand 1 -fill both
 
     # set up Z label and entry
 
-    label .query3d.xyzLoc.zEntry.heading -text "Z Coordinate"
-    entry .query3d.xyzLoc.zEntry.z -text "" -relief sunken -width 20
-    pack .query3d.xyzLoc.zEntry.heading .query3d.xyzLoc.zEntry.z \
+    label .query3d.recLoc.z.heading -text "Z"
+    entry .query3d.recLoc.z.e -text "" -relief sunken -width 20
+    pack .query3d.recLoc.z.heading .query3d.recLoc.z.e \
+	    -side left -expand 1 -fill both
+
+    label .query3d.radLoc.heading -text "Camera (Radial)"
+    frame .query3d.radLoc.theta
+    frame .query3d.radLoc.phi
+    frame .query3d.radLoc.rho
+    pack .query3d.radLoc.heading .query3d.radLoc.theta \
+	    .query3d.radLoc.phi .query3d.radLoc.rho \
+	    -side top -pady 1m -padx 2m
+
+    # set up theta label and entry
+
+    label .query3d.radLoc.theta.heading -text "Theta" -width 5 -anchor e
+    label .query3d.radLoc.theta.e -text "" -relief sunken -width 15 -anchor w
+    pack .query3d.radLoc.theta.heading .query3d.radLoc.theta.e \
+	    -side left -expand 1 -fill both
+
+    # set up phi label and entry
+
+    label .query3d.radLoc.phi.heading -text "Phi" -width 5 -anchor e
+    label .query3d.radLoc.phi.e -text "" -relief sunken -width 15 -anchor w
+    pack .query3d.radLoc.phi.heading .query3d.radLoc.phi.e \
+	    -side left -expand 1 -fill both
+
+    # set up rho label and entry
+
+    label .query3d.radLoc.rho.heading -text "Rho" -width 5 -anchor e
+    label .query3d.radLoc.rho.e -text "" -relief sunken -width 15 -anchor w
+    pack .query3d.radLoc.rho.heading .query3d.radLoc.rho.e \
+	    -side left -expand 1 -fill both
+
+    label .query3d.focLoc.heading -text "Focal Point"
+    frame .query3d.focLoc.x
+    frame .query3d.focLoc.y
+    frame .query3d.focLoc.z
+    pack .query3d.focLoc.heading .query3d.focLoc.x \
+	    .query3d.focLoc.y .query3d.focLoc.z \
+	    -side top -pady 1m -padx 2m
+
+    # set up X label and entry
+
+    label .query3d.focLoc.x.heading -text "X"
+    label .query3d.focLoc.x.e -text "" -relief sunken -width 15 -anchor w
+    pack .query3d.focLoc.x.heading .query3d.focLoc.x.e \
+	    -side left -expand 1 -fill both
+
+    # set up Y label and entry
+
+    label .query3d.focLoc.y.heading -text "Y"
+    label .query3d.focLoc.y.e -text "" -relief sunken -width 15 -anchor w
+    pack .query3d.focLoc.y.heading .query3d.focLoc.y.e \
+	    -side left -expand 1 -fill both
+
+    # set up Z label and entry
+
+    label .query3d.focLoc.z.heading -text "Z"
+    label .query3d.focLoc.z.e -text "" -relief sunken -width 15 -anchor w
+    pack .query3d.focLoc.z.heading .query3d.focLoc.z.e \
 	    -side left -expand 1 -fill both
 
     # set up buttons
@@ -353,11 +423,11 @@ proc Do3DQuery {} {
 	if {$curView == ""} {
 	    return
 	}
-	set x [.query3d.xyzLoc.xEntry.x get]
-	set y [.query3d.xyzLoc.yEntry.y get]
-	set z [.query3d.xyzLoc.zEntry.z get]
-	puts "DEVise set3DLocation $curView $x $y $z"
+	set x [.query3d.recLoc.x.e get]
+	set y [.query3d.recLoc.y.e get]
+	set z [.query3d.recLoc.z.e get]
 	DEVise set3DLocation $curView $x $y $z
+	Update3DLocation
     }
     button .query3d.bot.but.close -text Close -width 10 \
 	    -command "global query3DWinOpened; \
@@ -384,18 +454,30 @@ proc Update3DLocation {} {
 	return
     }
 
-    .query3d.xyzLoc.xEntry.x delete 0 end
-    .query3d.xyzLoc.yEntry.y delete 0 end
-    .query3d.xyzLoc.zEntry.z delete 0 end
+    .query3d.recLoc.x.e delete 0 end
+    .query3d.recLoc.y.e delete 0 end
+    .query3d.recLoc.z.e delete 0 end
+    .query3d.radLoc.theta.e configure -text ""
+    .query3d.radLoc.phi.e configure -text ""
+    .query3d.radLoc.rho.e configure -text ""
+    .query3d.focLoc.x.e configure -text ""
+    .query3d.focLoc.y.e configure -text ""
+    .query3d.focLoc.z.e configure -text ""
     .query3d.title.text configure -text "No View Selected"
 
     if {$curView == ""} {
 	return
     }
 
-    set xyzloc [DEVise get3DLocation $curView]
-    .query3d.xyzLoc.xEntry.x insert 0 [lindex $xyzloc 0]
-    .query3d.xyzLoc.yEntry.y insert 0 [lindex $xyzloc 1]
-    .query3d.xyzLoc.zEntry.z insert 0 [lindex $xyzloc 2]
+    set loc [DEVise get3DLocation $curView]
+    .query3d.recLoc.x.e insert 0 [lindex $loc 1]
+    .query3d.recLoc.y.e insert 0 [lindex $loc 2]
+    .query3d.recLoc.z.e insert 0 [lindex $loc 3]
+    .query3d.radLoc.theta.e configure -text [lindex $loc 7]
+    .query3d.radLoc.phi.e configure -text [lindex $loc 8]
+    .query3d.radLoc.rho.e configure -text [lindex $loc 9]
+    .query3d.focLoc.x.e configure -text [lindex $loc 4]
+    .query3d.focLoc.y.e configure -text [lindex $loc 5]
+    .query3d.focLoc.z.e configure -text [lindex $loc 6]
     .query3d.title.text configure -text "View: $curView"
 }
