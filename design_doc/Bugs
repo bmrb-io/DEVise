@@ -2579,9 +2579,8 @@ Num Date        Status  Description
 			waveletidr/1d_example1b.ds open -- "follower" hangs
 			on command 38 when it attempts to collaborate. (ml/rkw)
 
-651 03/19/01	FIXED	JavaScreen: attempting to start collaboration with no
+651 03/19/01	OPEN	JavaScreen: attempting to start collaboration with no
 			session open in the "leader" causes problems. (rkw)
-			(Fixed by xuk, 3/20/01.)
 
 652 03/19/01	FIXED	JavaScreen: if collaborating JS exits while still
 			in collaboration mode, the "leader" JS and the jspop
