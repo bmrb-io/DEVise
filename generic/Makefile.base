@@ -1,45 +1,41 @@
 .c.o:
 	$(CC) -c $(CFLAGS) $<
+.C.o: 
+	$(CC) -c  $(CFLAGS) $<
 
 CC = g++
 
-LDFLAGS = $(ARCH_LDFLAGS) $(ALLOBJ)\
-	 -ltcl -ltk -lXaw -lXmu -lXt -lXext -lX11 -lm \
-	$(ARCH_LDPOST)
-CFLAGS = $(ARCH_FLAGS)-Wall  -I../../graphics -I../../graphics.new -I../../tape \
-	-fexternal-templates -Wall -Wno-unused -O -DUNIX
+LDFLAGS = $(ARCH_LDFLAGS) \
+	  -ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm \
+	  $(ARCH_LDPOST)
+CFLAGS = $(ARCH_FLAGS) -Wall -I../../graphics -I../../graphics.new \
+	-I../../tape -fexternal-templates -Wall -Wno-unused -O -DUNIX
 
-#PURIFY      = /s/purify/bin/purify
-#PURIFY_ARGS = \
-#	 -collector=/s/gcc-2.7.2/sun4m_412/lib/gcc-lib/sparc-sun-sunos4.1.3/2.7.2/ld \
-#	 -cache-dir=/common/tmp/kmurli/cache -always-use-cache-dir
-
-
-SRC = generic.c
+SRC = generic.c devise.C deviseb.C
 
 OBJ = $(SRC:.c=.o)
+OBJ += $(SRC:.C=.o)
 
-ALLOBJ = $(OBJ) ../graphics.new/libobj.o ../tape/tapeobj.o \
+ALLOBJ = ../graphics.new/libobj.o ../tape/tapeobj.o \
 	../issm/issmobj.o ../compustat/cstatobj.o ../crsp/crspobj.o
 
-CLIENTOBJ = ../graphics.new/clientobj.o 
+CLIENTOBJ = ../graphics.new/clientobj.o
 SERVEROBJ = ../graphics.new/servobj.o
 MONOLITHOBJ = ../graphics.new/monolith.o
 
-all: generic  devise devised
+all: generic devise devised deviseb
 
-devised: $(ALLOBJ) $(SERVEROBJ)
-	$(CC) -Wall -g -o $@ $(SERVEROBJ) $(LDFLAGS) 
-#	$(PURIFY) $(PURIFY_ARGS) $(CC) -o $@ $(LDFLAGS)
+devised: generic.o $(ALLOBJ) $(SERVEROBJ)
+	$(CC) -o $@ generic.o $(SERVEROBJ) $(ALLOBJ) $(LDFLAGS)
 
-devise: $(CLIENTOBJ)
-	$(CC) $(CFLAGS) -Wall -g -o $@ $(CLIENTOBJ) \
-	$(ARCH_LDFLAGS) -ltcl -ltk -lXaw -lXmu -lXt -lXext -lX11 -lm \
-			$(ARCH_LDPOST)
+devise: devise.o $(CLIENTOBJ)
+	$(CC) -o $@ $@.o $(CLIENTOBJ) $(LDFLAGS)
 
+deviseb: deviseb.o $(CLIENTOBJ)
+	$(CC) -o $@ $@.o $(CLIENTOBJ) $(ARCH_LDPOST)
 
-generic: $(ALLOBJ) $(MONOLITHOBJ)
-	$(CC) -o $@ $(MONOLITHOBJ) $(LDFLAGS) 
+generic: generic.o $(ALLOBJ) $(MONOLITHOBJ)
+	$(CC) -o $@ $@.o $(MONOLITHOBJ) $(ALLOBJ) $(LDFLAGS)
 
 .PHONY: clean mostlyclean
 
