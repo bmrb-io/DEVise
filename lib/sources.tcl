@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.6  1995/11/15 22:12:47  jussi
+#	Added link to auto-source-definition (autosrc.tcl).
+#
 #	Revision 1.5  1995/11/15 19:41:33  ravim
 #	Removed call to cacheData; data is now cached when stream is
 #	selected for visualization.
@@ -98,8 +101,7 @@ proc saveSources {} {
 
 proc defineStream {base edit} {
     global sourceList sourceTypes editonly oldDispName oldCachefile
-    global dispname source key schematype schemafile
-    global evaluation priority command
+    global dispname source key schemafile evaluation priority command
 
     # see if .srcdef window already exists; if so, just return
     set err [catch {wm state .srcdef}]
@@ -132,7 +134,6 @@ proc defineStream {base edit} {
     set dispname ""
     set source "UNIXFILE"
     set key ""
-    set schematype "n/a"
     set schemafile [lindex $sourceTypes($source) 1]
     set cachefile ""
     set evaluation 100
@@ -144,7 +145,6 @@ proc defineStream {base edit} {
 	set dispname $base
 	set source [lindex $sourcedef 0]
 	set key [lindex $sourcedef 1]
-	set schematype [lindex $sourcedef 2]
 	set schemafile [lindex $sourcedef 3]
 	set cachefile [lindex $sourcedef 4]
 	set evaluation [lindex $sourcedef 5]
@@ -195,19 +195,24 @@ proc defineStream {base edit} {
     menu .srcdef.top.row2.e1.menu -tearoff 0
     foreach sourcetype [lsort [array names sourceTypes]] {
 	.srcdef.top.row2.e1.menu add radiobutton -label $sourcetype \
-		-variable source -value $sourcetype \
-		-command updateSchemaSelection
+		-variable source -value $sourcetype -command {
+	    set schemafile [lindex $sourceTypes($source) 1]
+	}
     }
     tk_menuBar .srcdef .srcdef.sourcemenu
 
     label .srcdef.top.row3.l1 -text "Schema File:"
     entry .srcdef.top.row3.e1 -relief sunken -textvariable schemafile \
 	    -width 32
-    label .srcdef.top.row3.l2 -text "Schema:"
-    label .srcdef.top.row3.e2 -textvariable schematype -width 20
-    pack .srcdef.top.row3.l1 .srcdef.top.row3.e1 \
-	    .srcdef.top.row3.l2 .srcdef.top.row3.e2 -side left -padx 2m \
-	    -fill x -expand 1
+    button .srcdef.top.row3.b1 -text "Select..." -width 10 -command {
+	global schemadir fsBox
+	set fsBox(path) $schemadir
+	set fsBox(pattern) *.schema*
+	set file [FSBox "Select schema file"]
+	if {$file != ""} { set schemafile $file }
+    }
+    pack .srcdef.top.row3.l1 .srcdef.top.row3.e1 .srcdef.top.row3.b1 \
+	    -side left -padx 2m -fill x -expand 1
 
     scale .srcdef.top.row4.s1 -label "Evaluation Factor" -from 0 -to 100 \
 	    -length 10c -orient horizontal -variable evaluation \
@@ -234,11 +239,10 @@ proc defineStream {base edit} {
 	}
 	set cachefile [getCacheName $source $key]
 	set command [string trim [.srcdef.top.row5.e1 get 1.0 end]]
-	#set newschematype [readSchema $schemafile]
-	set newschematype ""
-	if {$newschematype != ""} {
-	    set schematype $newschematype
-	}
+	set newschematype [scanSchema $schemafile]
+	if {$newschematype == ""} { return }
+	set schematype $newschematype
+
 	set sourcedef [list $source $key $schematype $schemafile \
 		$cachefile $evaluation $priority $command]
 	
@@ -285,34 +289,28 @@ proc defineStream {base edit} {
 
 ############################################################
 
-proc updateSchemaSelection {} {
-    global sourceTypes source schemafile schematype
-    set schemafile [lindex $sourceTypes($source) 1]
-    #set newschematype [readSchema $schemafile]
-    set newschematype ""
-    if {$newschematype != ""} {
-	set schematype $newschematype
-    }
-}
-
-############################################################
-
-proc readSchema {schemafile} {
-    if {![file exists $schemafile]} {
+proc scanSchema {schemafile} {
+    if {[catch { set f [open $schemafile "r"] }] > 0} {
 	dialog .noFile "No Schema File" \
-		"Schema file $schemafile does not exist." \
+		"Cannot open schema file $schemafile." \
 		"" 0 OK
 	return ""
     }
 
-    set result [DEVise importFileType $schemafile]
-    if {$result == ""} {
-	dialog .schemaFileError "Schema File Error" \
-		"Error reading schema file $schemafile."
-	return ""
+    set type ""
+
+    while {[gets $f line] >= 0} {
+	if {[lindex $line 0] == "type"} {
+	    set type [lindex $line 1]
+	    break
+	}
     }
 
-    return $result
+    close $f
+
+    puts "Schema file $schemafile has type $type"
+
+    return $type
 }
 
 ############################################################
@@ -330,47 +328,61 @@ proc getSourceByCache {cachefile} {
 
 ############################################################
 
-proc cacheData {dispname} {
-    global sourceList sourceConfig errorInfo
+proc isCached {dispname startrec endrec} {
+    global sourceList
 
-    set err [catch {set sourcedef $sourceList($dispname)}]
-    if {$err > 0} {
-	puts "Error -- source being cached nonexistent."
-	return ""
-    }
+    set sourcedef $sourceList($dispname)
 
     set source [lindex $sourcedef 0]
     set key [lindex $sourcedef 1]
-    set schematype [lindex $sourcedef 2]
-    set schemafile [lindex $sourcedef 3]
     set cachefile [lindex $sourcedef 4]
-    set evaluation [lindex $sourcedef 5]
-    set priority [lindex $sourcedef 6]
     set command [lindex $sourcedef 7]
     
-    if {[file exists $cachefile]} {
-	puts "Data stream \"$dispname\" already cached."
-	if {$source == "UNIXFILE"} {
-	    # first line of command specifies directory
-	    set dir [lindex [split $command \n] 0]
-	    if {$dir == ""} {
-		set dir "."
-	    }
-	    return $dir/$key
+    if {$source == "UNIXFILE"} {
+	# first line of command specifies directory
+	set dir [lindex [split $command \n] 0]
+	if {$dir == ""} {
+	    set dir "."
 	}
+	return $dir/$key
+    }
+
+    # see if whole data stream is cached
+    if {[file exists $cachefile]} {
 	return $cachefile
     }
 
-    set but [dialog .cacheData "Caching Data" \
-	    "Cache \"$dispname\" to disk now?" \
-	    "" 1 Yes No]
-    if {$but == 1} {
-	puts "Caching not performed."
-	return ""
+    # see if record range is cached
+    set pattern [format "%s*" $cachefile]
+    foreach cachefile [glob -nocomplain $pattern] {
+	if {[scan $cachefile "*.dat.%d.%d" start end] == 2} {
+	    if {$start <= $startrec && $end >= $endrec} {
+		return $cachefile
+	    }
+	}
     }
 
-    update
+    return ""
+}
 
+############################################################
+
+proc cacheData {dispname startrec endrec} {
+    global sourceList sourceConfig errorInfo
+
+    set cached [isCached $dispname $startrec $endrec]
+    if {$cached != ""} {
+	return $cached
+    }
+
+    set sourcedef $sourceList($dispname)
+
+    set source [lindex $sourcedef 0]
+    set key [lindex $sourcedef 1]
+    set cachefile [lindex $sourcedef 4]
+    set priority [lindex $sourcedef 6]
+    set command [lindex $sourcedef 7]
+    
     set cmd ""
 
     if {$source == "COMMAND"} {
@@ -393,21 +405,24 @@ proc cacheData {dispname} {
     } elseif {$source == "ISSM"} {
 	set tapedrive [lindex $sourceConfig($source) 0]
 	set filenum [lindex $sourceConfig($source) 1]
-	set blocksize [lindex $sourceConfig($source) 2]
+	set offset [lindex $sourceConfig($source) 2]
+	set blocksize [lindex $sourceConfig($source) 3]
 	set cmd "issm_extract_data $tapedrive $filenum \
-		$blocksize $key $cachefile"
+		$offset $blocksize $key $cachefile"
     } elseif {$source == "COMPUSTAT"} {
 	set tapedrive [lindex $sourceConfig($source) 0]
 	set filenum [lindex $sourceConfig($source) 1]
-	set blocksize [lindex $sourceConfig($source) 2]
+	set offset [lindex $sourceConfig($source) 2]
+	set blocksize [lindex $sourceConfig($source) 3]
 	set cmd "cstat_extract_data $tapedrive $filenum \
-		$blocksize $key $cachefile"
+		$offset $blocksize $key $cachefile"
     } elseif {$source == "CRSP"} {
 	set tapedrive [lindex $sourceConfig($source) 0]
 	set filenum [lindex $sourceConfig($source) 1]
-	set blocksize [lindex $sourceConfig($source) 2]
+	set offset [lindex $sourceConfig($source) 2]
+	set blocksize [lindex $sourceConfig($source) 3]
 	set cmd "crsp_extract_data $tapedrive $filenum \
-		$blocksize $key $cachefile"
+		$offset $blocksize $key $cachefile"
     }
 
     if {$cmd == ""} {
@@ -416,6 +431,7 @@ proc cacheData {dispname} {
 		"" 0 OK
 	return ""
     } else {
+	update
 	if {[catch { eval $cmd }] > 0} {
 	    puts "Cannot execute command:"
 	    puts "  $cmd"
@@ -437,40 +453,35 @@ proc cacheData {dispname} {
 proc uncacheData {dispname} {
     global sourceList sourceConfig
 
-    set err [catch {set sourcedef $sourceList($dispname)}]
-    if {$err > 0} {
-	puts "Error -- source being uncached nonexistent."
-	return
-    }
+    set sourcedef $sourceList($dispname)
 
     set cachefile [lindex $sourcedef 4]
-    
-    if {![file exists $cachefile]} {
-	return
-    }
 
-    exec rm $cachefile
+    set pattern [format "%s*" $cachefile]
+    foreach cachefile [glob -nocomplain $pattern] {
+	exec rm $cachefile
+    }
 }
 
 ############################################################
 
 proc getCacheName {source key} {
-    global datadir
+    global cachedir
 
     if {$source == "UNIXFILE"} {
 	return /dev/null
     }
     if {$source == "COMMAND" || $source == "SEQ" || $source == "SQL" \
 	|| $source == "CRSP" || $source == "WWW"} {
-	return [format "%s/%s.%s.dat" $datadir [string trim $source] \
+	return [format "%s/%s.%s.dat" $cachedir [string trim $source] \
 		[string trim $key]]
     }
     if {$source == "COMPUSTAT"} {
-	return [format "%s/%s.%s.dat" $datadir [string trim $source] \
+	return [format "%s/%s.%s.dat" $cachedir [string trim $source] \
 		[cstat_unique_name $key]]
     }
     if {$source == "ISSM"} {
-	return [format "%s/%s.%s.dat" $datadir [string trim $source] \
+	return [format "%s/%s.%s.dat" $cachedir [string trim $source] \
 		[issm_unique_name $key]]
     }
 
@@ -483,7 +494,7 @@ proc getCacheName {source key} {
 
 proc selectSourceKey {source} {
     if {$source == "UNIXFILE"} {
-	return "default.dat Default"
+	return [selectUnixFile]
     }
     if {$source == "COMMAND" || $source == "SEQ" || $source == "SQL" \
 	|| $source == "WWW"} {
@@ -503,6 +514,36 @@ proc selectSourceKey {source} {
 	    "An invalid data source has been selected." \
 	    "" 0 OK
     return ""
+}
+
+############################################################
+
+proc selectUnixFile {} {
+    global schemafile command fsBox datadir schemadir
+
+    # Get file name
+    set fsBox(path) $datadir
+    set fsBox(pattern) *
+    set file [FSBox "Select data file"]
+
+    # No file selected?
+    if {$file == ""} {
+	return ""
+    }
+
+    set fsBox(path) $schemadir
+    set fsBox(pattern) *.schema*
+    set file2 [FSBox "Select schema file"]
+    
+    if {$file2 == ""} {
+	return ""
+    }
+
+    set schemafile $file2
+    set command [file dirname $file]
+    set file [file tail $file]
+
+    return "$file $file"
 }
 
 ############################################################
@@ -531,14 +572,26 @@ proc selectStream {} {
     frame .srcsel.bot.but
     pack .srcsel.bot.but -side top
 
+    menubutton .srcsel.mbar.define -text Define -menu .srcsel.mbar.define.menu
     menubutton .srcsel.mbar.stream -text Stream -menu .srcsel.mbar.stream.menu
     menubutton .srcsel.mbar.display -text Display -menu .srcsel.mbar.display.menu
     menubutton .srcsel.mbar.help -text Help -menu .srcsel.mbar.help.menu
-    pack .srcsel.mbar.stream .srcsel.mbar.display .srcsel.mbar.help -side left
+    pack .srcsel.mbar.define .srcsel.mbar.stream .srcsel.mbar.display \
+	    .srcsel.mbar.help -side left
+
+    menu .srcsel.mbar.define.menu -tearoff 0
+    .srcsel.mbar.define.menu add command -label "New..." \
+	    -command { defineStream "" 0 }
+    .srcsel.mbar.define.menu add cascade -label "Auto Add" \
+	    -menu .srcsel.mbar.define.menu.auto
+
+    menu .srcsel.mbar.define.menu.auto -tearoff 0
+    foreach sourcetype [lsort [array names sourceTypes]] {
+	.srcsel.mbar.define.menu.auto add command -label $sourcetype \
+		-command "autoSourceAdd $sourcetype"
+    }
 
     menu .srcsel.mbar.stream.menu -tearoff 0
-    .srcsel.mbar.stream.menu add command -label "New..." \
-	    -command { defineStream "" 0 }
     .srcsel.mbar.stream.menu add command -label "Edit..." -command {
 	set dispname [getSelectedSource]
 	if {$dispname == ""} {
@@ -572,16 +625,6 @@ proc selectStream {} {
 	}
     }
 
-    .srcsel.mbar.stream.menu add separator
-    .srcsel.mbar.stream.menu add cascade -label "Auto Add" \
-	    -menu .srcsel.mbar.stream.menu.auto
-    menu .srcsel.mbar.stream.menu.auto -tearoff 0
-    foreach sourcetype [lsort [array names sourceTypes]] {
-	.srcsel.mbar.stream.menu.auto add command -label $sourcetype \
-		-command "autoSourceAdd $sourcetype"
-    }
-    
-
     menu .srcsel.mbar.display.menu -tearoff 0
     .srcsel.mbar.display.menu add command -label "Show All" -command {}
     .srcsel.mbar.display.menu add command -label "Limit" -command {}
@@ -611,7 +654,7 @@ proc selectStream {} {
 		"" 0 OK
     }
 
-    tk_menuBar .srcsel.mbar .srcsel.mbar.stream \
+    tk_menuBar .srcsel.mbar .srcsel.mbar.define .srcsel.mbar.stream \
 	    .srcsel.mbar.display .srcsel.mbar.help
 
     listbox .srcsel.top.list -relief raised -borderwidth 2 \
