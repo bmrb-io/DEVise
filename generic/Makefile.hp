@@ -1,19 +1,19 @@
 depend:
-	makedepend -fMakefile.hp \
-		-I../graphics -I../graphics.new -I../tape -I/s/tcl/include \
-		*.c
+	makedepend -fMakefile.hp -I../graphics -I../graphics.new \
+		-I../tape *.c
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-generic.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
-generic.o: /usr/include/sys/time.h /usr/include/time.h /usr/include/stdio.h
-generic.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
-generic.o: /usr/include/stdlib.h ../graphics/DList.h ../graphics/Exit.h
-generic.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Journal.h
-generic.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
-generic.o: ../graphics/ColorMgr.h ../graphics/Control.h ../graphics/Init.h
-generic.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
-generic.o: ../graphics/ClassDir.h ../graphics.new/MapInterpClassInfo.h
+generic.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
+generic.o: /usr/include/time.h /usr/include/sys/time.h
+generic.o: /usr/include/sys/types.h ../graphics/DeviseTypes.h
+generic.o: ../graphics/Dispatcher.h /usr/include/stdlib.h ../graphics/DList.h
+generic.o: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
+generic.o: ../graphics/Journal.h ../graphics/Display.h ../graphics/Geom.h
+generic.o: /usr/include/math.h ../graphics/ColorMgr.h ../graphics/Control.h
+generic.o: ../graphics/Init.h ../graphics/BufPolicy.h
+generic.o: ../graphics/WinClassInfo.h ../graphics/ClassDir.h
+generic.o: ../graphics.new/MapInterpClassInfo.h
 generic.o: ../graphics/VisualLinkClassInfo.h ../graphics/View.h
 generic.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
 generic.o: ../graphics/Transform.h ../graphics/Pattern.h

@@ -1,5 +1,6 @@
 depend:
-	makedepend -fMakefile.sun *.C
+	makedepend -fMakefile.sun -I../graphics.new -I/s/X11/include \
+		-I/s/tcl/include *.C
 
 # DO NOT DELETE
 

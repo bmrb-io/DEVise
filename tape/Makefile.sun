@@ -1,6 +1,6 @@
 depend:
 	makedepend -fMakefile.sun \
-		-I../graphics -I../graphics.new -I../tape -I/s/tcl/include \
+		-I../graphics -I../graphics.new -I../tape \
 		*.C
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

@@ -1,14 +1,13 @@
 depend:
-	makedepend -fMakefile.solaris \
-		-I../graphics -I../graphics.new \
-		-I../tape -I/usr/X11R6/include -I/s/tcl/include \
-		*.c
+	makedepend -fMakefile.solaris -I../graphics -I../graphics.new \
+		-I../tape -I/s/tcl/include *.c
 # DO NOT DELETE
 
 MapClassInfo.o: /usr/include/sys/time.h /usr/include/sys/feature_tests.h
 MapClassInfo.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 MapClassInfo.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 MapClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
+MapClassInfo.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 MapClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
 MapClassInfo.o: ../graphics/DeviseTypes.h ../graphics/Display.h
 MapClassInfo.o: ../graphics/Geom.h ../graphics/Dispatcher.h
@@ -48,7 +47,8 @@ ams.o: /usr/include/sys/time.h /usr/include/stdio.h ../graphics/DeviseTypes.h
 ams.o: ../graphics/Dispatcher.h /usr/include/stdlib.h ../graphics/DList.h
 ams.o: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
 ams.o: ../graphics/Journal.h ../graphics/Display.h ../graphics/Geom.h
-ams.o: /usr/include/math.h ../graphics/ColorMgr.h ../graphics/Control.h
+ams.o: /usr/include/math.h /usr/include/floatingpoint.h
+ams.o: /usr/include/sys/ieeefp.h ../graphics/ColorMgr.h ../graphics/Control.h
 ams.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
 ams.o: ../graphics/ClassDir.h ../graphics.new/MapInterpClassInfo.h
 ams.o: ../graphics/VisualLinkClassInfo.h ../graphics/View.h
@@ -102,7 +102,8 @@ amsStat.o: ../graphics/DeviseTypes.h ../graphics.new/RecId.h
 amsStat.o: ../graphics.new/RecOrder.h ../graphics/VisualArg.h
 amsStat.o: ../graphics/Color.h ../graphics/DList.h ../graphics/Exit.h
 amsStat.o: ../graphics.new/DiskFile.h ../graphics.new/ams.h
-amsStat.o: /usr/include/math.h
+amsStat.o: /usr/include/math.h /usr/include/floatingpoint.h
+amsStat.o: /usr/include/sys/ieeefp.h
 extendAms.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 extendAms.o: /usr/include/stdlib.h /usr/include/fcntl.h
 extendAms.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -112,6 +113,7 @@ extendAms.o: /usr/include/sys/fcntl.h /usr/include/limits.h
 extendAms.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 extendAms.o: /usr/include/sys/uio.h /usr/include/sys/stat.h
 extendAms.o: ../graphics.new/ams.h /usr/include/math.h
+extendAms.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 testdir.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testdir.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 testdir.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h

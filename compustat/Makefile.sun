@@ -1,7 +1,6 @@
 depend:
-	makedepend -fMakefile.sun \
-		-I../compustat -I../tape -I/s/tcl/include \
-		*.c
+	makedepend -fMakefile.sun -I../compustat -I../graphics.new \
+		-I../tape -I/s/X11/include -I/s/tcl/include *.c
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 compustat.o: /usr/include/stdio.h /usr/include/stdlib.h
@@ -9,13 +8,38 @@ compustat.o: /usr/include/sys/stdtypes.h /usr/include/string.h
 compustat.o: /usr/include/ctype.h /usr/include/unistd.h
 compustat.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 compustat.o: /usr/include/assert.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
-compustat.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
-compustat.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+compustat.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
+compustat.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 compustat.o: /usr/include/stddef.h compustat.h index.h ../tape/tapedrive.h
-compustat.o: /usr/include/tar.h
+compustat.o: /usr/include/tar.h ../graphics.new/machdep.h
+compustat.o: /usr/include/limits.h /usr/include/sys/param.h
+compustat.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+compustat.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+compustat.o: /usr/include/sys/time.h /usr/include/sys/time.h
+compustat.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+compustat.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+compustat.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+compustat.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+compustat.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+compustat.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+compustat.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+compustat.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+compustat.o: /usr/include/arpa/inet.h
 extract.o: /usr/include/stdio.h
 index.o: /usr/include/stdio.h /usr/include/stdlib.h
 index.o: /usr/include/sys/stdtypes.h /usr/include/string.h
 index.o: /usr/include/ctype.h /usr/include/unistd.h /usr/include/sys/types.h
 index.o: /usr/include/sys/sysmacros.h index.h ../tape/tapedrive.h
-index.o: /usr/include/tar.h
+index.o: /usr/include/tar.h ../graphics.new/machdep.h /usr/include/limits.h
+index.o: /usr/include/sys/param.h /usr/include/machine/param.h
+index.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+index.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+index.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+index.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+index.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+index.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+index.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+index.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+index.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+index.o: /usr/include/netdb.h /usr/include/sys/socket.h
+index.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h

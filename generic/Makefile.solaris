@@ -1,17 +1,17 @@
 depend:
-	makedepend -fMakefile.solaris \
-		-I../graphics -I../graphics.new -I../tape \
-		*.c
+	makedepend -fMakefile.solaris -I../graphics -I../graphics.new \
+		-I../tape *.c
 # DO NOT DELETE
 
-generic.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
-generic.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-generic.o: /usr/include/sys/select.h /usr/include/sys/time.h
-generic.o: /usr/include/sys/time.h /usr/include/stdio.h
+generic.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+generic.o: /usr/include/time.h /usr/include/sys/time.h
+generic.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+generic.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 generic.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
 generic.o: /usr/include/stdlib.h ../graphics/DList.h ../graphics/Exit.h
 generic.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Journal.h
 generic.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
+generic.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 generic.o: ../graphics/ColorMgr.h ../graphics/Control.h ../graphics/Init.h
 generic.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
 generic.o: ../graphics/ClassDir.h ../graphics.new/MapInterpClassInfo.h
@@ -32,15 +32,16 @@ generic.o: ../graphics.new/RecOrder.h ../graphics/CursorClassInfo.h
 generic.o: ../graphics.new/ParseCat.h
 issm.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 issm.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-issm.o: /usr/include/sys/select.h /usr/include/sys/time.h
-issm.o: /usr/include/sys/time.h /usr/include/stdio.h
-issm.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
-issm.o: /usr/include/stdlib.h ../graphics/DList.h ../graphics/Exit.h
-issm.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Journal.h
-issm.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
-issm.o: ../graphics/ColorMgr.h ../graphics/Control.h ../graphics/Init.h
-issm.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
-issm.o: ../graphics/ClassDir.h ../graphics.new/MapInterpClassInfo.h
+issm.o: /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h
+issm.o: /usr/include/stdio.h ../graphics/DeviseTypes.h
+issm.o: ../graphics/Dispatcher.h /usr/include/stdlib.h ../graphics/DList.h
+issm.o: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
+issm.o: ../graphics/Journal.h ../graphics/Display.h ../graphics/Geom.h
+issm.o: /usr/include/math.h /usr/include/floatingpoint.h
+issm.o: /usr/include/sys/ieeefp.h ../graphics/ColorMgr.h
+issm.o: ../graphics/Control.h ../graphics/Init.h ../graphics/BufPolicy.h
+issm.o: ../graphics/WinClassInfo.h ../graphics/ClassDir.h
+issm.o: ../graphics.new/MapInterpClassInfo.h
 issm.o: ../graphics/VisualLinkClassInfo.h ../graphics/View.h
 issm.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Transform.h
 issm.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h

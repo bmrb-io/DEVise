@@ -1,19 +1,36 @@
 depend:
-	makedepend -fMakefile.hp \
-		-I../compustat -I../tape -I/s/tcl/include \
-		*.c
+	makedepend -fMakefile.hp -I../compustat -I../graphics.new \
+		-I../tape -I/s/X11/include -I/s/tcl/include *.c
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 compustat.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 compustat.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
 compustat.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 compustat.o: /usr/include/assert.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
-compustat.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
-compustat.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
-compustat.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h compustat.h
+compustat.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
+compustat.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+compustat.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h compustat.h
 compustat.o: index.h ../tape/tapedrive.h /usr/include/tar.h
+compustat.o: ../graphics.new/machdep.h /usr/include/limits.h
+compustat.o: /usr/include/sys/param.h /usr/include/machine/param.h
+compustat.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
+compustat.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
+compustat.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+compustat.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+compustat.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
+compustat.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
+compustat.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
 extract.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 index.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 index.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
 index.o: /usr/include/unistd.h /usr/include/sys/unistd.h index.h
-index.o: ../tape/tapedrive.h /usr/include/tar.h
+index.o: ../tape/tapedrive.h /usr/include/tar.h ../graphics.new/machdep.h
+index.o: /usr/include/limits.h /usr/include/sys/param.h
+index.o: /usr/include/sys/types.h /usr/include/machine/param.h
+index.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
+index.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
+index.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
+index.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+index.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
+index.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+index.o: /usr/include/arpa/inet.h

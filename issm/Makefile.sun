@@ -1,7 +1,6 @@
 depend:
-	makedepend -fMakefile.sun \
-		-I../issm -I../tape -I/s/tcl/include \
-		*.C
+	makedepend -fMakefile.sun -I../issm -I../graphics.new -I../tape \
+		-I/s/X11/include -I/s/tcl/include *.C
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
@@ -10,11 +9,38 @@ binconv.o: /usr/include/sys/ieeefp.h /usr/include/assert.h binconv.h
 binconv.o: /usr/include/string.h /usr/include/sys/stdtypes.h
 extract.o: /usr/include/stdio.h /usr/include/assert.h /usr/include/string.h
 extract.o: /usr/include/sys/stdtypes.h /usr/include/stdlib.h
-extract.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /usr/include/X11/Xlib.h
+extract.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
 extract.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-extract.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
-extract.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h rectape.h
-extract.o: ../tape/tapedrive.h /usr/include/tar.h binconv.h issmdata.h
+extract.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+extract.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h rectape.h
+extract.o: ../tape/tapedrive.h /usr/include/tar.h ../graphics.new/machdep.h
+extract.o: /usr/include/limits.h /usr/include/sys/param.h
+extract.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+extract.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+extract.o: /usr/include/sys/time.h /usr/include/sys/time.h
+extract.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+extract.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+extract.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+extract.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+extract.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+extract.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+extract.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+extract.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+extract.o: /usr/include/arpa/inet.h binconv.h issmdata.h
 rectape.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h rectape.h
 rectape.o: /usr/include/assert.h ../tape/tapedrive.h /usr/include/stdio.h
-rectape.o: /usr/include/tar.h binconv.h /usr/include/string.h
+rectape.o: /usr/include/tar.h ../graphics.new/machdep.h /usr/include/limits.h
+rectape.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+rectape.o: /usr/include/sys/param.h /usr/include/machine/param.h
+rectape.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+rectape.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+rectape.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+rectape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+rectape.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+rectape.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+rectape.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+rectape.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+rectape.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+rectape.o: /usr/include/netdb.h /usr/include/sys/socket.h
+rectape.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h binconv.h
+rectape.o: /usr/include/string.h

@@ -1,7 +1,6 @@
 depend:
-	makedepend -fMakefile.sgi \
-		-I../graphics -I../graphics.new -I../tape -I/s/tcl/include \
-		*.c
+	makedepend -fMakefile.sgi -I../graphics -I../graphics.new \
+		-I../tape *.c
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
@@ -58,12 +57,14 @@ issm.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 issm.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
 issm.o: ../graphics/CursorClassInfo.h ../tape/TDataTapeInterp.h
 issm.o: ../tape/TDataTape.h ../tape/tapedrive.h /usr/include/tar.h
-issm.o: ../tape/machdep.h /usr/include/limits.h /usr/include/sys/param.h
-issm.o: /usr/include/sys/signal.h /usr/include/sys/ioctl.h
-issm.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
-issm.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
-issm.o: /usr/include/sys/ttydev.h /usr/include/sys/wait.h
-issm.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
-issm.o: /usr/include/sys/resource.h /usr/include/sys/ipc.h
-issm.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-issm.o: ../graphics.new/ParseCat.h
+issm.o: ../graphics.new/machdep.h /usr/include/limits.h
+issm.o: /usr/include/sys/param.h /usr/include/sys/signal.h
+issm.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
+issm.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
+issm.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
+issm.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
+issm.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
+issm.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
+issm.o: /usr/include/netdb.h /usr/include/sys/socket.h
+issm.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
+issm.o: /usr/include/arpa/inet.h ../graphics.new/ParseCat.h

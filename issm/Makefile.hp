@@ -1,7 +1,6 @@
 depend:
-	makedepend -fMakefile.hp \
-		-I../issm -I../tape -I/s/tcl/include \
-		*.C
+	makedepend -fMakefile.hp -I../issm -I../graphics.new -I../tape \
+		-I/s/X11/include -I/s/tcl/include *.C
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
@@ -9,12 +8,30 @@ binconv.o: /usr/include/math.h /usr/include/sys/stdsyms.h
 binconv.o: /usr/include/assert.h binconv.h /usr/include/string.h
 extract.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 extract.o: /usr/include/assert.h /usr/include/string.h /usr/include/stdlib.h
-extract.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /usr/include/X11/Xlib.h
-extract.o: /usr/include/sys/types.h /usr/include/X11/X.h
-extract.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+extract.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
+extract.o: /usr/include/sys/types.h /s/X11/include/X11/X.h
+extract.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 extract.o: /usr/include/stddef.h rectape.h ../tape/tapedrive.h
-extract.o: /usr/include/tar.h binconv.h issmdata.h
+extract.o: /usr/include/tar.h ../graphics.new/machdep.h /usr/include/limits.h
+extract.o: /usr/include/sys/param.h /usr/include/machine/param.h
+extract.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
+extract.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
+extract.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+extract.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+extract.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
+extract.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
+extract.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h binconv.h
+extract.o: issmdata.h
 rectape.o: /usr/include/stdlib.h rectape.h /usr/include/assert.h
 rectape.o: ../tape/tapedrive.h /usr/include/stdio.h
-rectape.o: /usr/include/sys/stdsyms.h /usr/include/tar.h binconv.h
-rectape.o: /usr/include/string.h
+rectape.o: /usr/include/sys/stdsyms.h /usr/include/tar.h
+rectape.o: ../graphics.new/machdep.h /usr/include/limits.h
+rectape.o: /usr/include/sys/param.h /usr/include/sys/types.h
+rectape.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
+rectape.o: /usr/include/sys/time.h /usr/include/machine/spl.h
+rectape.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+rectape.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+rectape.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+rectape.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
+rectape.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+rectape.o: /usr/include/arpa/inet.h binconv.h /usr/include/string.h

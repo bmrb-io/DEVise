@@ -1,34 +1,43 @@
 depend:
-	makedepend -fMakefile.sgi \
-		-I../compustat -I../tape -I/s/tcl/include \
-		*.c
+	makedepend -fMakefile.sgi -I../compustat -I../graphics.new \
+		-I../tape -I/usr/include/X11 -I/usr/local/include *.c
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 compustat.o: /usr/include/stdio.h /usr/include/stdlib.h
 compustat.o: /usr/include/sgidefs.h /usr/include/string.h
-compustat.o: /usr/include/ctype.h /usr/include/unistd.h /usr/include/assert.h
-compustat.o: compustat.h index.h ../tape/tapedrive.h /usr/include/tar.h
-compustat.o: ../tape/machdep.h /usr/include/limits.h /usr/include/sys/types.h
-compustat.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
-compustat.o: /usr/include/sys/param.h /usr/include/sys/signal.h
-compustat.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
-compustat.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
-compustat.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
-compustat.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-compustat.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
-compustat.o: /usr/include/sys/resource.h /usr/include/sys/ipc.h
-compustat.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+compustat.o: /usr/include/ctype.h /usr/include/unistd.h
+compustat.o: /usr/local/include/assert.h /usr/local/include/tcl.h
+compustat.o: /usr/local/include/tk.h /usr/include/X11/Xlib.h
+compustat.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
+compustat.o: /usr/include/sys/select.h /usr/include/X11/X.h
+compustat.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+compustat.o: /usr/include/stddef.h compustat.h index.h ../tape/tapedrive.h
+compustat.o: /usr/include/tar.h ../graphics.new/machdep.h
+compustat.o: /usr/include/limits.h /usr/include/sys/param.h
+compustat.o: /usr/include/sys/signal.h /usr/include/sys/time.h
+compustat.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
+compustat.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
+compustat.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+compustat.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+compustat.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
+compustat.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
+compustat.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
+compustat.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+compustat.o: /usr/include/sys/endian.h /usr/include/arpa/inet.h
 extract.o: /usr/include/stdio.h
 index.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sgidefs.h
 index.o: /usr/include/string.h /usr/include/ctype.h /usr/include/unistd.h
-index.o: index.h ../tape/tapedrive.h /usr/include/tar.h ../tape/machdep.h
-index.o: /usr/include/limits.h /usr/include/sys/types.h
-index.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
-index.o: /usr/include/sys/param.h /usr/include/sys/signal.h
+index.o: index.h ../tape/tapedrive.h /usr/include/tar.h
+index.o: ../graphics.new/machdep.h /usr/include/limits.h
+index.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
+index.o: /usr/include/sys/select.h /usr/include/sys/param.h
+index.o: /usr/include/sys/signal.h /usr/include/sys/time.h
+index.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
+index.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
+index.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
 index.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
 index.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
 index.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
-index.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-index.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
-index.o: /usr/include/sys/resource.h /usr/include/sys/ipc.h
-index.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+index.o: /usr/include/netdb.h /usr/include/sys/socket.h
+index.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
+index.o: /usr/include/arpa/inet.h

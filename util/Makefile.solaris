@@ -1,5 +1,5 @@
 depend:
-	makedepend -fMakefile.solaris -I/usr/X11R6/include \
+	makedepend -fMakefile.solaris -I../graphics.new -I/usr/X11/include \
 		-I/s/tcl/include *.C
 # DO NOT DELETE
 

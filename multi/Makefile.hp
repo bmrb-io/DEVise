@@ -1,7 +1,7 @@
 depend:
 	makedepend -fMakefile.hp \
-		-I../multi -I../graphics -I../graphics.new -I/s/tcl/include \
-		*.c
+		-I../multi -I../graphics -I../graphics.new \
+		-I/s/tcl/include *.c
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

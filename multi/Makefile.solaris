@@ -1,7 +1,7 @@
 depend:
 	makedepend -fMakefile.solaris \
 		-I../multi -I../graphics -I../graphics.new \
-		-I/usr/X11R6/include -I/s/tcl/include *.c
+		-I/s/tcl/include *.c
 # DO NOT DELETE
 
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/time.h

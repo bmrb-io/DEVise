@@ -1,7 +1,6 @@
 depend:
-	makedepend -fMakefile.solaris \
-		-I../compustat -I../tape -I/usr/X11R6/include \
-		-I/s/tcl/include *.c
+	makedepend -fMakefile.solaris -I../compustat -I../graphics.new \
+		-I../tape -I/usr/X11/include -I/s/tcl/include *.c
 # DO NOT DELETE
 
 compustat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
@@ -11,10 +10,25 @@ compustat.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 compustat.o: /usr/include/sys/select.h /usr/include/sys/time.h
 compustat.o: /usr/include/sys/time.h /usr/include/sys/unistd.h
 compustat.o: /usr/include/assert.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
-compustat.o: /usr/X11R6/include/X11/Xlib.h /usr/X11R6/include/X11/X.h
-compustat.o: /usr/X11R6/include/X11/Xfuncproto.h
-compustat.o: /usr/X11R6/include/X11/Xosdefs.h /usr/include/stddef.h
 compustat.o: compustat.h index.h ../tape/tapedrive.h /usr/include/tar.h
+compustat.o: ../graphics.new/machdep.h /usr/include/limits.h
+compustat.o: /usr/include/sys/param.h /usr/include/sys/wait.h
+compustat.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+compustat.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+compustat.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+compustat.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+compustat.o: /usr/include/netdb.h /usr/include/sys/socket.h
+compustat.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+compustat.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+compustat.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+compustat.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+compustat.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+compustat.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+compustat.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+compustat.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+compustat.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+compustat.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+compustat.o: /usr/include/sys/byteorder.h /usr/include/arpa/inet.h
 extract.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 index.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 index.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
@@ -22,4 +36,22 @@ index.o: /usr/include/unistd.h /usr/include/sys/types.h
 index.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 index.o: /usr/include/sys/select.h /usr/include/sys/time.h
 index.o: /usr/include/sys/time.h /usr/include/sys/unistd.h index.h
-index.o: ../tape/tapedrive.h /usr/include/tar.h
+index.o: ../tape/tapedrive.h /usr/include/tar.h ../graphics.new/machdep.h
+index.o: /usr/include/limits.h /usr/include/sys/param.h
+index.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+index.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+index.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+index.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+index.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+index.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+index.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+index.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+index.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+index.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+index.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+index.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+index.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+index.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+index.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+index.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+index.o: /usr/include/arpa/inet.h
