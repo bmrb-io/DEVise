@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/04/17 16:34:38  wenger
+  Conditionaled out the GenClassInfo class and all related code,
+  since the program exits if that code is ever executed.
+
   Revision 1.17  1996/04/15 19:33:48  wenger
   Consolidated the two (nearly identical) functions for
   reading/parsing physical schema, and cleaned up the
@@ -179,6 +183,10 @@ CatFiles(int &numFiles, char **&fileNames)
   fileNames = _catFiles;
 }
 
+/*------------------------------------------------------------------------------
+ * function: ClearCats
+ * Clear the catalog files.
+ */
 void ClearCats()
 {
   _numCatFiles = 0;
@@ -805,7 +813,7 @@ ParseCatPhysical(char *catFile, Boolean physicalOnly)
 			attrs,recSize,sep, numSep, hasSeparator, commentString),
 			true);
 #else
-		fprintf(stderr, "Illegal token source in schema\n");
+		fprintf(stderr, "Illegal token 'source' in schema\n");
 		Exit::DoExit(1);
 #endif
 	}
@@ -965,8 +973,7 @@ ParseCatLogical(char *catFile, char *sname)
 
 /*------------------------------------------------------------------------------
  * function: ParseCat
- * Read and parse a catalog file (reads in any schemas referenced by
- * the catalog file).
+ * Read and parse a schema file.
  */
 char *
 ParseCat(char *catFile) 
@@ -1006,4 +1013,18 @@ ParseCat(char *catFile)
   }
 
   return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: ParseSchema
+ * Parse a schema from buffer(s).
+ */
+char *
+ParseSchema(char *schemaName, char *physSchema, char *logSchema)
+{
+	char *		result = NULL;
+
+/*TEMPTEMP*/fprintf(stderr, ">> Into ParseSchema(");
+/*TEMPTEMP*/fprintf(stderr, "  %s, %s, %s)\n", schemaName, physSchema, logSchema);
+	return result;
 }

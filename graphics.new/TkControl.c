@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  1996/04/18 18:14:20  jussi
+  The Tcl/Tk file interpreted in batch mode is now batch.tcl.
+
   Revision 1.43  1996/04/16 19:46:23  jussi
   Added DoAbort() method.
 
@@ -1441,6 +1444,15 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 	      goto error;
 	    }
 	    view->InsertMapping(map, argv[4]);
+	  }
+	  else if (!strcmp(argv[1], "parseSchema"))
+	  {
+		  name = ParseSchema(argv[2], argv[3], argv[4]);
+		  if (name == NULL)
+		  {
+			  interp->result= "";
+		  }
+		  else interp->result = name;
 	  }
 	  else {
 	    interp->result = "wrong args";

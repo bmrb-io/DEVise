@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/04/16 20:38:51  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.10  1996/03/29 18:14:20  wenger
   Got testWindowRep to compile and run, added drawing in
   windows; fixed a few more compile warnings, etc.
@@ -68,6 +71,7 @@ TDataAsciiInterpClassInfo::TDataAsciiInterpClassInfo(char *className,
 						     Boolean isSeparator,
 						     char *commentString)
 {
+/* Note that this only saves a pointer to the attrList; it doesn't copy it. */
   _className = className;
   _attrList = attrList;
   _separators = separators;

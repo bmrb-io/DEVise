@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/04/17 16:34:41  wenger
+  Conditionaled out the GenClassInfo class and all related code,
+  since the program exits if that code is ever executed.
+
   Revision 1.8  1996/01/23 20:55:48  jussi
   Added isAscii parameter to Gen().
 
@@ -46,11 +50,16 @@
 #include "ClassDir.h"
 #include "AttrList.h"
 
-#define NO_GEN_CLASS_INFO
+//#define NO_GEN_CLASS_INFO
 
 /* Parse a catalog file and register new file type with the system.
    Return name of new file type if successful, else return NULL */
 extern char *ParseCat(char *catFile);
+
+/* Parse schema(s) from buffer(s) and register new "file type" with
+   the system.  Return the name of the new "file type" if successful,
+   otherwise return NULL. */
+extern char *ParseSchema(char *schemaName, char *physSchema, char *logSchema);
 
 #ifndef NO_GEN_CLASS_INFO
 /* Register a new constructor for class. The

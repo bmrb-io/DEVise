@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/04/16 21:00:14  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.12  1996/04/04 05:16:19  kmurli
   No apparent modification done to generic.c. Only added printf commands to test and later removed them.
 
@@ -405,6 +408,11 @@ main(int argc, char **argv)
   CompositeParser::Register("ISSM-Quote", new ObsDateComposite);
   CompositeParser::Register("DOL_DATA", new DOLDateComposite);
   CompositeParser::Register("DOWJONES", new MmDdYyComposite);
+
+#if 0
+  /* Register parser for tape */
+  RegisterGenClassInfo("tape", new ISSMGenClass());
+#endif
 
   /* Register known query processors */
   QueryProc::Register("Tape", genQueryProcTape);
