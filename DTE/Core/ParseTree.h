@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/09/05 22:20:08  donjerko
+  Made changes for port to NT.
+
   Revision 1.15  1997/08/21 21:04:24  donjerko
   Implemented view materialization
 
@@ -59,7 +62,7 @@ class QueryTree : public ParseTree {
 	List<BaseSelection*>* selectList;
 	List<TableAlias*>* tableList;
 	BaseSelection* predicates;
-	string* sequencebyTable;
+	BaseSelection* sequencebyTable;
 	BaseSelection* withPredicate;
 	List<BaseSelection*>* groupBy;
 	List<BaseSelection*>* orderBy;
@@ -70,7 +73,7 @@ public:
 		List<BaseSelection*>* selectList,
 		List<TableAlias*>* tableList,
 		BaseSelection* predicates,
-		string *sequencebyTable,
+		BaseSelection* sequencebyTable,
 		BaseSelection* withPredicate,
 		List<BaseSelection *>*groupBy,
 		List<BaseSelection*>* orderBy,
