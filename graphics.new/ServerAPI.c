@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/05/15 19:00:15  jussi
+  Return value of recv() on a socket in non-blocking mode is
+  EWOULDBLOCK when there is no data, although on Intel/Solaris
+  testing the return value against EAGAIN worked just fine.
+  Anyway, I fixed this so that the server works on other platforms
+  as well.
+
   Revision 1.11  1996/05/15 16:41:08  jussi
   Moved all networking code from ServerAPI.c to ClientAPI.c.
   Improved support for bracketed or non-bracketed arguments
@@ -155,7 +162,7 @@ int ServerAPI::AddReplica(char *hostName, int port)
     return -1;
   }
 
-  int fd = DeviseOpen(hostName, port);
+  int fd = NetworkOpen(hostName, port);
   if (fd < 0) {
     fprintf(stderr, "Cannot connect to replica server %s:%d.\n",
 	    hostName, port);
@@ -187,7 +194,7 @@ int ServerAPI::RemoveReplica(char *hostName, int port)
     return -1;
   }
 
-  DeviseClose(_replicas[i].fd);
+  NetworkClose(_replicas[i].fd);
 
   for(int j = i + 1; j < _replicate; j++) {
     _replicas[j - 1].host = _replicas[j].host;
@@ -217,7 +224,7 @@ void ServerAPI::Replicate(int argc, char **argv)
 #endif
 
   for(int i = 0; i < _replicate; i++) {
-    if (DeviseSend(_replicas[i].fd, API_CMD, 0, argc, argv) < 0) {
+    if (NetworkSend(_replicas[i].fd, API_CMD, 0, argc, argv) < 0) {
       fprintf(stderr,
 	      "Failed to replicate command to %s:%d. Disconnecting.\n",
 	      _replicas[i].host, _replicas[i].port);
@@ -316,9 +323,9 @@ int ServerAPI::ReadCommand()
   int argc;
   char **argv;
 #ifdef USE_SELECT
-  int result = DeviseReceive(_socketFd, 1, flag, argc, argv);
+  int result = NetworkReceive(_socketFd, 1, flag, argc, argv);
 #else
-  int result = DeviseReceive(_socketFd, 0, flag, argc, argv);
+  int result = NetworkReceive(_socketFd, 0, flag, argc, argv);
 #endif
   if (result < 0) {
 #ifndef USE_SELECT
@@ -365,7 +372,7 @@ int ServerAPI::ReadCommand()
 
 #ifndef USE_SELECT
   // go back to non-blocking mode
-  (void)DeviseNonBlockMode(_socketFd);
+  (void)NetworkNonBlockMode(_socketFd);
 #endif
 
   return 1;
@@ -373,7 +380,7 @@ int ServerAPI::ReadCommand()
  error:
 #ifndef USE_SELECT
   // go back to non-blocking mode
-  (void)DeviseNonBlockMode(_socketFd);
+  (void)NetworkNonBlockMode(_socketFd);
 #endif
 
   return -1;
@@ -400,14 +407,14 @@ void ServerAPI::RestartSession()
 
   if (_socketFd >= 0) {
     printf("Closing client connection.\n");
-    DeviseClose(_socketFd);
+    NetworkClose(_socketFd);
     _socketFd = -1;
   }
 
   for(int i = 0; i < _replicate; i++) {
     printf("Closing replica connection to %s:%d\n", _replicas[i].host,
 	   _replicas[i].port);
-    DeviseClose(_replicas[i].fd);
+    NetworkClose(_replicas[i].fd);
   }
   _replicate = 0;
 
@@ -433,9 +440,9 @@ void ServerAPI::RestartSession()
 #ifdef SERV_ANYPORT
   servAddr.sin_port = htons(0);
 #else
-  servAddr.sin_port = htons(DefaultDevisePort);
+  servAddr.sin_port = htons(DefaultNetworkPort);
 #ifdef DEBUG
-  printf("Server listening at port %u.\n", DefaultDevisePort);
+  printf("Server listening at port %u.\n", DefaultNetworkPort);
 #endif
 #endif
   servAddr.sin_addr.s_addr = htonl(INADDR_ANY);

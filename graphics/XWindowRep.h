@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/04/18 18:17:04  jussi
+  Added support for drawing into pixmaps instead of windows.
+
   Revision 1.13  1996/04/17 20:33:26  jussi
   Added ExportGIF() method.
 
@@ -281,6 +284,7 @@ private:
 	/* Update window dimensions; globals: _x, _y, _width, _height */
 	void UpdateWinDimensions();
 
+#ifndef RAWMOUSEEVENTS
 	/* draw rubberbanding rectangle */
 	void DrawRubberband(int x1,int y1, int x2, int y2);
 
@@ -288,6 +292,7 @@ private:
 	   the selection in window coordinates */
 	void DoButtonPress(int x, int y, int &xlow, int &ylow, int &xhigh,
 			   int &yhigh, int button);
+#endif
 
 	/* allocate a bitmap of the given width and height into the
 	   given info. Free old bitmap data if necessary */
@@ -330,10 +335,12 @@ private:
 	/* bitmaps for drawing/scaling text*/
 	XBitmapInfo _srcBitmap, _dstBitmap;
 
+#ifndef RAWMOUSEEVENTS
 	/* Pop-up window Manipulation:
 	1) display messages
 	2) wait till button is released. */
 	void DoPopup(int x, int y, int button);
+#endif
 
 	Boolean _backingStore;  /* TRUE if window has backingstore */
 	Boolean _unobscured; 	/* TRUE if window is totally unobscured */

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/15 16:40:01  jussi
+  Improved support for idle scripts; the client now uses the
+  new server synchronization mechanism.
+
   Revision 1.6  1996/05/14 19:06:28  jussi
   Added checking of return value from DeviseOpen().
 
@@ -58,7 +62,7 @@
 
 static char *_progName = 0;
 static char *_hostName = "localhost";
-static int _portNum = DefaultDevisePort;
+static int _portNum = DefaultNetworkPort;
 static int _deviseFd = -1;
 
 static char *_idleScript = 0;
@@ -74,7 +78,7 @@ static void DoAbort(char *reason)
   char cmd[256];
   sprintf(cmd, "AbortProgram {%s}", reason);
   (void)Tcl_Eval(_interp, cmd);
-  (void)DeviseClose(_deviseFd);
+  (void)NetworkClose(_deviseFd);
   exit(1);
 }
 
@@ -88,7 +92,7 @@ static void ControlCmd(int argc, char **argv)
     return;
   }
 
-  char *cmd = DevisePaste(argc, argv);
+  char *cmd = NetworkPaste(argc, argv);
   DOASSERT(cmd, "Out of memory");
 #ifdef DEBUG
   printf("Executing control command: \"%s\"\n", cmd);
@@ -105,7 +109,7 @@ int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
 #endif
 
   // do not send the DEVise command verb
-  if (DeviseSend(_deviseFd, API_CMD, 0, argc - 1, &argv[1]) < 0) {
+  if (NetworkSend(_deviseFd, API_CMD, 0, argc - 1, &argv[1]) < 0) {
     fprintf(stderr, "Server has terminated. Client exits.\n");
     exit(1);
   }
@@ -114,7 +118,7 @@ int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
   int rargc;
   char **rargv;
   do {
-    if (DeviseReceive(_deviseFd, 1, flag, rargc, rargv) <= 0) {
+    if (NetworkReceive(_deviseFd, 1, flag, rargc, rargv) <= 0) {
       fprintf(stderr, "Server has terminated. Client exits.\n");
       exit(1);
     }
@@ -122,7 +126,7 @@ int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
       ControlCmd(rargc, rargv);
   } while (flag != API_ACK && flag != API_NAK);
 
-  char *result = DevisePaste(rargc, rargv);
+  char *result = NetworkPaste(rargc, rargv);
   DOASSERT(result, "Out of memory");
 #ifdef DEBUG
   printf("Received reply: \"%s\"\n", result);
@@ -145,7 +149,7 @@ void ReadServer(ClientData cd, int mask)
   u_short flag;
   int argc;
   char **argv;
-  if (DeviseReceive(_deviseFd, 1, flag, argc, argv) <= 0) {
+  if (NetworkReceive(_deviseFd, 1, flag, argc, argv) <= 0) {
     fprintf(stderr, "Server has terminated. Client exits.\n");
     exit(1);
   }
@@ -192,7 +196,7 @@ void SetupConnection()
 
   printf("Connecting to server %s:%d.\n", _hostName, _portNum);
 
-  _deviseFd = DeviseOpen(_hostName, _portNum);
+  _deviseFd = NetworkOpen(_hostName, _portNum);
   if (_deviseFd < 0)
     exit(1);
 
@@ -287,7 +291,7 @@ int main(int argc, char **argv)
       u_short flag;
       int argc;
       char **argv;
-      if (DeviseReceive(_deviseFd, 1, flag, argc, argv) <= 0) {
+      if (NetworkReceive(_deviseFd, 1, flag, argc, argv) <= 0) {
 	fprintf(stderr, "Server has terminated. Client exits.\n");
 	exit(1);
       }
@@ -299,7 +303,7 @@ int main(int argc, char **argv)
     if (code != TCL_OK) {
       fprintf(stderr, "Cannot execute script file %s\n", _idleScript);
       fprintf(stderr, "%s\n", _interp->result);
-      (void)DeviseClose(_deviseFd);
+      (void)NetworkClose(_deviseFd);
       return 2;
     }
   } else {
@@ -310,7 +314,7 @@ int main(int argc, char **argv)
   }
 
   Tk_DeleteFileHandler(_deviseFd);
-  (void)DeviseClose(_deviseFd);
+  (void)NetworkClose(_deviseFd);
 
   return 1;
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/04/11 17:56:35  jussi
+  Added Raise() and Lower().
+
   Revision 1.13  1996/02/28 17:46:21  yuc
   Added a bunch of public functions for 3D: MakeIdentity3,
   TopTransform3, PostMultiply, Transform, PrintTransform3,
@@ -104,21 +107,30 @@ public:
   virtual void HandleExpose(WindowRep * /*w*/, int /*x*/, int /*y*/, 
 			    unsigned /*width*/, unsigned /*height*/) {}
 
+#ifdef RAWMOUSEEVENTS
+  /* Handle button event */
+  virtual void HandleButton(WindowRep *w, int x, int y,
+			    int button, int type) {}
+#else
   /* Handle button press event */
   virtual void HandlePress(WindowRep * /*w*/, int /*xlow*/, 
 			   int /*ylow*/, int /*xhigh*/, int  /*yhigh*/,
 			   int /*button*/) {}
+#endif
 
   /* Handle resize */
   virtual void HandleResize(WindowRep * /*w*/, int /*xlow*/, 
 			    int /*ylow*/, unsigned /*width*/,
 			    unsigned /* height*/) {}
   
+  /* Handle key press */
   virtual void HandleKey(WindowRep * ,char /*key*/, int /*x*/, int /*y*/) {}
   
+#ifndef RAWMOUSEEVENTS
   /* handle pop-up */
   virtual Boolean HandlePopUp(WindowRep *, int x, int y, int button,
 			      char **&msgs, int &numMsgs) { return 0; }
+#endif
 	
   /* Handle map/unmap info.
      mapped : means window has been mapped.
@@ -441,18 +453,25 @@ protected:
      Update the current size and inform all callbacks. */
   virtual void HandleResize(int x, int y, unsigned width, unsigned height);
   
+#ifdef RAWMOUSEEVENTS
+  /* called by derived class with button even */
+  virtual void HandleButton(int x, int y, int button, int type);
+#else
   /* called by derived class when button presssed: Report event to all
      callbacks */
   virtual void HandleButtonPress(int xlow, int ylow, 
 				 int xhigh, int yhigh, int button);
+#endif
   
   /* called by derived class when key pressed. report event to all
      callbacks */
   virtual void HandleKey(char key, int x, int y);
   
+#ifndef RAWMOUSEEVENTS
   /* Called by derived class on pop-up event. Report to all callbacks */
   virtual Boolean HandlePopUp(int x, int y, int button, char **&msgs,
 			      int &numMsgs);
+#endif
 
   /* called by dervied class on window mapped info change event.
      Report to all callbacks */

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/04/18 18:14:55  jussi
+  Moved definition of XWindowRepList to XWindowRep.h.
+
   Revision 1.11  1996/04/09 18:06:00  jussi
   Added Flush() method.
 
@@ -78,6 +81,11 @@ public:
     virtual int HandleXEvent(XEvent &event);
 #endif
 
+    /* get file descriptor for connection */
+    virtual int fd() {
+      return ConnectionNumber(_display);
+    }
+
     virtual int NumPlanes() {
       return DisplayPlanes(_display,DefaultScreen(_display));
     }
@@ -109,8 +117,10 @@ public:
     /* Flush buffered window operations to screen */
     virtual void Flush();
 
+#ifndef LIBCS
     // Register with the dispatcher..
     virtual void  Register();
+#endif
 
 protected:
     /* from DeviseDisplay */

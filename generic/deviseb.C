@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/15 16:40:09  jussi
+  Improved support for idle scripts; the client now uses the
+  new server synchronization mechanism.
+
   Revision 1.6  1996/05/14 18:56:21  jussi
   Added checking of return value from DeviseOpen().
 
@@ -47,7 +51,7 @@
 
 static char *_progName = 0;
 static char *_hostName = "localhost";
-static int   _portNum = DefaultDevisePort;
+static int   _portNum = DefaultNetworkPort;
 static int   _deviseFd = -1;
 
 static char *_scriptFile = 0;
@@ -56,7 +60,7 @@ static int   _syncDone = 0;
 void DoAbort(char *reason)
 {
   fprintf(stderr, "An internal error has occurred. Reason:\n  %s\n", reason);
-  (void)DeviseClose(_deviseFd);
+  (void)NetworkClose(_deviseFd);
   exit(1);
 }
 
@@ -81,7 +85,7 @@ int DEViseCmd(int argc, char **argv)
   printf("Function %s, %d args\n", argv[0], argc);
 #endif
 
-  if (DeviseSend(_deviseFd, API_CMD, 0, argc, argv) < 0) {
+  if (NetworkSend(_deviseFd, API_CMD, 0, argc, argv) < 0) {
     fprintf(stderr, "Server has terminated. Client exits.\n");
     exit(1);
   }
@@ -90,7 +94,7 @@ int DEViseCmd(int argc, char **argv)
   do {
     int rargc;
     char **rargv;
-    if (DeviseReceive(_deviseFd, 1, flag, rargc, rargv) <= 0) {
+    if (NetworkReceive(_deviseFd, 1, flag, rargc, rargv) <= 0) {
       fprintf(stderr, "Server has terminated. Client exits.\n");
       exit(1);
     }
@@ -186,7 +190,7 @@ int ExecuteFile(char *script)
 	u_short flag;
 	int rargc;
 	char **rargv;
-	if (DeviseReceive(_deviseFd, 1, flag, rargc, rargv) <= 0) {
+	if (NetworkReceive(_deviseFd, 1, flag, rargc, rargv) <= 0) {
 	  fprintf(stderr, "Server has terminated. Client exits.\n");
 	  exit(1);
 	}
@@ -258,7 +262,7 @@ int main(int argc, char **argv)
 
   printf("Connecting to server %s:%d.\n", _hostName, _portNum);
 
-  _deviseFd = DeviseOpen(_hostName, _portNum);
+  _deviseFd = NetworkOpen(_hostName, _portNum);
   if (_deviseFd < 0)
     exit(1);
 	
@@ -269,7 +273,7 @@ int main(int argc, char **argv)
 
   printf("Closing connection.\n");
 
-  (void)DeviseClose(_deviseFd);
+  (void)NetworkClose(_deviseFd);
 
   return 1;
 }

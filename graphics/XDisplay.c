@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/05/13 21:57:30  jussi
+  XDisplay goes into batch mode (pixmaps used instead of screen)
+  if control panel is in batch mode.
+
   Revision 1.20  1996/05/11 02:29:26  jussi
   Ifdef'd out some startup options (whether windows should appear
   iconic or not when a session is restored).
@@ -97,9 +101,11 @@
 
 #include "XDisplay.h"
 #include "XWindowRep.h"
+#ifndef LIBCS
 #include "Control.h"
 #include "Journal.h"
 #include "Init.h"
+#endif
 
 //#define DEBUG
 
@@ -175,9 +181,12 @@ XDisplay::XDisplay(char *name)
   Tk_CreateGenericHandler(HandleTkEvent, (ClientData)this);
 #endif
 
+#ifndef LIBCS
   Register();
+#endif
 }
 
+#ifndef LIBCS
 void XDisplay::Register()
 {
   int fd = ConnectionNumber(_display);
@@ -189,6 +198,7 @@ void XDisplay::Register()
   (DeviseDisplay::ReturnDispatcher())->Register((DeviseDisplay *)this,
 						10, AllState, true, fd);
 }
+#endif
 
 void XDisplay::Flush()
 {
@@ -371,6 +381,7 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
     real_min_height = min_height;
   }
 
+#ifndef LIBCS
   if (ControlPanel::Instance()->GetBatchMode()) {
     // we're in batch mode -- create a pixmap instead of a window
 
@@ -394,6 +405,7 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   
     return xwin;
   }
+#endif
 
   if (parentRep) {
     XWindowRep *xParentRep = (XWindowRep *)parentRep;
@@ -459,8 +471,11 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 
   XSelectInput(_display, w, ExposureMask | ButtonPressMask 
 	       | ButtonReleaseMask | Button1MotionMask | Button2MotionMask
-	       | Button3MotionMask | StructureNotifyMask | KeyPressMask |
-	       VisibilityChangeMask);
+	       | Button3MotionMask | StructureNotifyMask | KeyPressMask
+#ifdef RAWMOUSEEVENTS
+               | PointerMotionMask
+#endif
+	       | VisibilityChangeMask);
   
   /*
    * Set the standard properties for the window managers. See Section

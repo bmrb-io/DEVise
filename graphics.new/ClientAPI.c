@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/15 16:40:59  jussi
+  Moved all networking code from ServerAPI.c to ClientAPI.c.
+  Improved support for bracketed or non-bracketed arguments
+  passed in commands.
+
   Revision 1.6  1996/05/13 18:10:16  jussi
   All client-server communication is now through a single socket pair.
   Control channel sockets were removed. ClientAPI no longer stores
@@ -55,9 +60,9 @@ typedef struct {
   u_short flag;                         // type of message
   u_short nelem;                        // number of elements in message
   u_short size;                         // total size of message
-} DeviseHeader;
+} NetworkHeader;
 
-int DeviseNonBlockMode(int fd)
+int NetworkNonBlockMode(int fd)
 {
 #ifdef SUN
   int result = fcntl(fd, F_SETFL, FNDELAY);
@@ -70,7 +75,7 @@ int DeviseNonBlockMode(int fd)
   return 1;
 }
 
-int DeviseBlockMode(int fd)
+int NetworkBlockMode(int fd)
 {
   int result = fcntl(fd, F_SETFL, 0);
   if (result < 0)
@@ -79,7 +84,7 @@ int DeviseBlockMode(int fd)
   return 1;
 }
 
-char *DevisePaste(int argc, char **argv)
+char *NetworkPaste(int argc, char **argv)
 {
   if (argc < 1)
     return strdup("");
@@ -119,7 +124,7 @@ char *DevisePaste(int argc, char **argv)
   return cmd;
 }
 
-int DeviseOpen(char *servName, int portNum)
+int NetworkOpen(char *servName, int portNum)
 {
   int fd = socket(AF_INET, SOCK_STREAM, 0);
   if (fd < 0){
@@ -159,7 +164,7 @@ int DeviseOpen(char *servName, int portNum)
   return fd;
 }
 
-int DeviseReceive(int fd, int block, u_short &flag, int &ac, char **&av)
+int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
 {
   static int recBuffSize = 0;
   static char *recBuff = 0;
@@ -167,7 +172,7 @@ int DeviseReceive(int fd, int block, u_short &flag, int &ac, char **&av)
   static char **argv = 0;
 
   if (!block) {
-    if (DeviseNonBlockMode(fd) < 0)
+    if (NetworkNonBlockMode(fd) < 0)
       return -1;
   }
 
@@ -176,7 +181,7 @@ int DeviseReceive(int fd, int block, u_short &flag, int &ac, char **&av)
     printf("Getting header\n");
 #endif
 
-  DeviseHeader hdr;
+  NetworkHeader hdr;
   int res = recv(fd, (char *)&hdr, sizeof hdr, 0);
   if (!res)
     return 0;
@@ -224,7 +229,7 @@ int DeviseReceive(int fd, int block, u_short &flag, int &ac, char **&av)
   }
 
   if (!block) {
-    if (DeviseBlockMode(fd) < 0)
+    if (NetworkBlockMode(fd) < 0)
       return -1;
   }
 
@@ -300,9 +305,9 @@ int DeviseReceive(int fd, int block, u_short &flag, int &ac, char **&av)
   return 1;
 }
 
-int DeviseSend(int fd, u_short flag, u_short bracket, int argc, char **argv)
+int NetworkSend(int fd, u_short flag, u_short bracket, int argc, char **argv)
 {
-  DeviseHeader hdr;
+  NetworkHeader hdr;
   hdr.flag = htons(flag);
   hdr.nelem = htons(argc);
 
@@ -389,7 +394,7 @@ int DeviseSend(int fd, u_short flag, u_short bracket, int argc, char **argv)
   return 1;
 }
 
-int DeviseClose(int fd)
+int NetworkClose(int fd)
 { 
   close(fd);
 

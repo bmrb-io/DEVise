@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/02/28 17:48:12  yuc
+  Update the WindowRep's constructor with the new protected variables
+  for 3D.  Included the member functions: CompRhoPhiTheta and
+  CompViewingTransf.
+
   Revision 1.6  1995/12/28 18:55:35  jussi
   Small fixes to remove compiler warnings.
 
@@ -98,23 +103,25 @@ void WindowRep::HandleResize(int x, int y, unsigned width, unsigned height)
   DoneIterator(index);
 }
 
-/* Called by derived class on pop-up event. Report to all callbacks */
+#ifdef RAWMOUSEEVENTS
+/***************************************************************
+called by derived class with button event: Report event to all callbacks 
+******************************************************************/
 
-Boolean WindowRep::HandlePopUp(int x, int y, int button, char **&msgs,
-			       int &numMsgs)
+void WindowRep::HandleButton(int x, int y, int button, int type)
 {
-  int index = InitIterator(); 
-  if (More(index)) {
-    /* do only first callback */
-    WindowRepCallback *callBack = Next(index);
-    DoneIterator(index);
-    return callBack->HandlePopUp(this, x, y, button, msgs, numMsgs);
+#ifdef DEBUG
+  printf("WindowRep::HandleButton(%d,%d,%d,%d)\n", x, y, button, type);
+#endif
+
+  int index;
+  for(index = InitIterator(); More(index); ){
+    WindowRepCallback *c = Next(index);
+    c->HandleButton(this, x, y, button, type);
   }
   DoneIterator(index);
-
-  return false;
 }
-
+#else
 /***************************************************************
 called by derived class when button presssed: Report event to all callbacks 
 ******************************************************************/
@@ -134,6 +141,7 @@ void WindowRep::HandleButtonPress(int xlow, int ylow,
   }
   DoneIterator(index);
 }
+#endif
 
 /*called by derived class when key presssed: Report event to all callbacks */
 
@@ -158,6 +166,25 @@ void WindowRep::HandleExpose(int x, int y, unsigned w, unsigned h)
   }
   DoneIterator(index);
 }
+
+#ifndef RAWMOUSEEVENTS
+/* Called by derived class on pop-up event. Report to all callbacks */
+
+Boolean WindowRep::HandlePopUp(int x, int y, int button, char **&msgs,
+			       int &numMsgs)
+{
+  int index = InitIterator(); 
+  if (More(index)) {
+    /* do only first callback */
+    WindowRepCallback *callBack = Next(index);
+    DoneIterator(index);
+    return callBack->HandlePopUp(this, x, y, button, msgs, numMsgs);
+  }
+  DoneIterator(index);
+
+  return false;
+}
+#endif
 
 /* called by dervied class on window mapped info change event.
 Report to all callbacks */

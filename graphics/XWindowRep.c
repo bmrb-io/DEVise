@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1996/05/20 17:27:36  jussi
+  Removed platform dependency in ExportImage().
+
   Revision 1.33  1996/04/20 19:52:29  kmurli
   Changed Viex.c to use a pipe mechanism to call itself if it needs to be
   done again. The view now is not called contiously by the Dispatcher,instead
@@ -132,10 +135,12 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include "Init.h"
 #include "XWindowRep.h"
 #include "XDisplay.h"
 #include "Compress.h"
+#ifndef LIBCS
+#include "Init.h"
+#endif
 
 extern "C" {
 #include "xv.h"
@@ -190,7 +195,11 @@ XWindowRep:: XWindowRep(Display *display, Pixmap pixmap, XDisplay *DVDisp,
 
 void XWindowRep::Init()
 {
+#ifdef LIBCS
+  _dispGraphics = true;
+#else
   _dispGraphics = Init::DispGraphics();
+#endif
   _compress = new SimpleCompress();
 
   UpdateWinDimensions();
@@ -365,10 +374,10 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
   char cmd[256];
   if (format == POSTSCRIPT || format == EPS) {
     sprintf(cmd,
-	"xwd -frame -id %ld | xpr -device ps -portrait -compact -scale 4 > %s",
+       "xwd -frame -id %ld | xpr -device ps -portrait -compact -scale 4 > %s",
 	    _win, filename);
   } else {
-    printf("Requested export format not supported yet on this platform.\n");
+    printf("Requested export format not supported yet.\n");
     return;
   }
 
@@ -377,7 +386,7 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
   printf("ExportImage: executing %s\n", cmd);
 #endif
 
-#if defined(SUN) || defined(HPUX)
+#if defined(SUN) || defined(HPUX) || defined(ULTRIX)
   int errorcode = 127;
 #else
   int errorcode = -1;
@@ -998,6 +1007,7 @@ static int check_expose(Display *, XEvent *e, char *arg)
   return 0;
 }
 
+#ifndef RAWMOUSEEVENTS
 /**************************************************************
 Draw rubberband
 ****************************************************************/
@@ -1084,6 +1094,7 @@ void XWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow,
   XUngrabServer(_display);
   XSync(_display,false);
 }
+#endif
 
 /***********************************************************************
 Handle the next X event
@@ -1108,6 +1119,13 @@ void XWindowRep::HandleEvent(XEvent &event)
     }
     break;
 
+#ifdef RAWMOUSEEVENTS
+  case ButtonPress:
+  case ButtonRelease:
+  case MotionNotify:
+    WindowRep::HandleButton(event.xbutton.x, event.xbutton.y,
+			    event.xbutton.button, event.xbutton.type);
+#else
   case ButtonPress:
     int buttonXlow, buttonYlow, buttonXhigh, buttonYhigh;
     if (event.xbutton.button == 2) {
@@ -1125,6 +1143,7 @@ void XWindowRep::HandleEvent(XEvent &event)
 				   buttonXhigh, buttonYhigh,
 				   event.xbutton.button);
     }
+#endif
     break;
 
   case Expose:
@@ -1674,6 +1693,7 @@ void XWindowRep::Iconify()
   XIconifyWindow(_display, _win, 0);
 }
 
+#ifndef RAWMOUSEEVENTS
 void XWindowRep::DoPopup(int x, int y, int button)
 {
   DOASSERT(_win, "Cannot display pop-up window in pixmap");
@@ -1767,7 +1787,11 @@ void XWindowRep::DoPopup(int x, int y, int button)
      XSetState(_display, popUpGc, fgnd, bgnd, GXcopy,AllPlanes);
   */
   
+#ifdef LIBCS
+  Boolean savePopup = false;
+#else
   Boolean savePopup = Init::SavePopup();
+#endif
   if (!savePopup)
     XGrabServer(_display);
 
@@ -1806,6 +1830,7 @@ void XWindowRep::DoPopup(int x, int y, int button)
     XUngrabServer(_display);
   XSync(_display,false);
 }
+#endif
 
 Boolean XWindowRep::Scrollable()
 {

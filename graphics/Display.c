@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/09 18:12:08  kmurli
+  No change to this makefile.
+
   Revision 1.6  1996/04/08 16:57:02  jussi
   Minor fixes.
 
@@ -39,7 +42,7 @@
 #include "XDisplay.h"
 
 DeviseDisplayList DeviseDisplay::_displays;
-DeviseDisplay *DeviseDisplay::_defaultDisplay= NULL;
+DeviseDisplay *DeviseDisplay::_defaultDisplay = 0;
 
 /********************************************************************
 Get the default display
@@ -47,7 +50,7 @@ Get the default display
 
 DeviseDisplay *DeviseDisplay::DefaultDisplay()
 {
-  if (_defaultDisplay == NULL)
+  if (!_defaultDisplay)
     _defaultDisplay = new XDisplay();
   return _defaultDisplay;
 }
@@ -56,13 +59,9 @@ DeviseDisplay *DeviseDisplay::DefaultDisplay()
 
 DeviseDisplay::DeviseDisplay()
 {
+#ifndef LIBCS
   _dispatcher = Dispatcher::Current();
-
- 
-  // A derived class must register with the Dispatcher in order
-  // to get a chance to inspect event queues; use a call similar
-  // to this one:
-  // _dispatcher->Register(this, AllState, true, -1);
+#endif
 
   _numColors = 0;
   _colorMapSize = InitColorMapSize;
@@ -74,7 +73,10 @@ DeviseDisplay::DeviseDisplay()
 
 DeviseDisplay::~DeviseDisplay()
 {
+#ifndef LIBCS
   _dispatcher->Unregister(this);
+#endif
+
   delete _colorMap;
   _displays.Delete(this);
 }

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/15 16:41:17  jussi
+  Moved all networking code from ServerAPI.c to ClientAPI.c.
+  Improved support for bracketed or non-bracketed arguments
+  passed in commands.
+
   Revision 1.6  1996/05/13 18:13:39  jussi
   Changed type of "flag" argument to ReturnVal(). Merged control
   channel with regular socket pair. Emptied ViewCreated and
@@ -121,16 +126,16 @@ private:
   int ReadCommand();
 
   virtual int ReturnVal(u_short flag, char *result) {
-    return DeviseSend(_socketFd, flag, 0, 1, &result);
+    return NetworkSend(_socketFd, flag, 0, 1, &result);
   }
   virtual int ReturnVal(int argc, char **argv) {
-    return DeviseSend(_socketFd, API_ACK, 1, argc, argv);
+    return NetworkSend(_socketFd, API_ACK, 1, argc, argv);
   }
   virtual int SendControl(u_short flag, char *result) {
-    return DeviseSend(_socketFd, flag, 0, 1, &result);
+    return NetworkSend(_socketFd, flag, 0, 1, &result);
   }
   virtual int SendControl(int argc, char **argv) {
-    return DeviseSend(_socketFd, API_CTL, 1, argc, argv);
+    return NetworkSend(_socketFd, API_CTL, 1, argc, argv);
   }
 
   int _listenFd;                        // socket for listening for clients

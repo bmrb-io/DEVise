@@ -17,22 +17,30 @@
 
 #include <sys/types.h>
 
-#if defined(SUN) || defined(AIX)
+#if defined(SUN) || defined(AIX) || defined(ULTRIX)
 #include "missing.h"
+#endif
+
+#ifndef FD_SET
+#define fd_set int
+#define FD_ZERO(fdset) memset(fdset, 0, sizeof fdset)
+#define FD_SET(fd,fdset) (*fdset |= 1 << fd);
+#define FD_CLR(fd,fdset) (*fdset &= ~(1 << fd));
+#define FD_ISSET(fd,fdset) (*fdset & (1 << fd))
 #endif
 
 #include "ParseAPI.h"
 
-extern char *DevisePaste(int argc, char **argv);
-extern int DeviseNonBlockMode(int fd);
-extern int DeviseBlockMode(int fd);
-extern int DeviseOpen(char *hostName, int port);
-extern int DeviseReceive(int fd, int block, u_short &flag,
-			 int &argc, char **&argv);
-extern int DeviseSend(int fd, u_short flag, u_short bracket,
-		      int argc, char **argv);
-extern int DeviseClose(int fd);
+extern char *NetworkPaste(int argc, char **argv);
+extern int NetworkNonBlockMode(int fd);
+extern int NetworkBlockMode(int fd);
+extern int NetworkOpen(char *hostName, int port);
+extern int NetworkReceive(int fd, int block, u_short &flag,
+			  int &argc, char **&argv);
+extern int NetworkSend(int fd, u_short flag, u_short bracket,
+		       int argc, char **argv);
+extern int NetworkClose(int fd);
 
-const int DefaultDevisePort = 6100;
+const int DefaultNetworkPort = 6100;
 
 #endif

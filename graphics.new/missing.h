@@ -15,23 +15,23 @@
 /*
   $Id$
 
-  $Log$*/
-
-/*
-   Some of the missing function prototypes.
+  $Log$
+  Revision 1.2  1996/05/11 01:57:28  jussi
+  Added copyright notice and changed the prototypes of
+  the functions defined here.
 */
 
 #ifndef MISSING_H
 #define MISSING_H
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/time.h>
-
 #ifdef __cplusplus
 extern "C" 
 {
 #endif  
+
+#ifdef ULTRIX
+extern char *strdup(const char *str);
+#endif
 
 extern int accept(int, struct sockaddr *, int *);
 extern int bind(int, struct sockaddr *, int);

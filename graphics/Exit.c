@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/20 17:47:37  jussi
+  Had to undo some previous changes.
+
   Revision 1.6  1996/05/09 18:12:11  kmurli
   No change to this makefile.
 
@@ -37,16 +40,20 @@
 #include <stdlib.h>
 
 #include "Exit.h"
+#ifndef LIBCS
 #include "Init.h"
 #include "Control.h"
+#endif
 
 void Exit::DoExit(int code)
 {
+#ifndef LIBCS
   if (Init::DoAbort()) {
     fflush(stdout);
     fflush(stderr);
     abort();
   }
+#endif
   exit(code);
 }
 
@@ -58,7 +65,9 @@ void Exit::DoAbort(char *reason, char *file, int line)
   fprintf(stderr, "An internal error has occurred. The reason is:\n");
   fprintf(stderr, "  %s\n", fulltext);
 
+#ifndef LIBCS
   ControlPanel::Instance()->DoAbort(fulltext);
+#endif
   
   DoExit(2);
 }

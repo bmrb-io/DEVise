@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/05/09 18:12:09  kmurli
+  No change to this makefile.
+
   Revision 1.7  1996/04/09 18:05:49  jussi
   Added Flush() method.
 
@@ -46,7 +49,9 @@
 
 #include "DeviseTypes.h"
 #include "Geom.h"
+#ifndef LIBCS
 #include "Dispatcher.h"
+#endif
 #include "DList.h"
 #include "ColorMgr.h"
 
@@ -58,8 +63,11 @@ class DeviseDisplay;
 
 DefinePtrDList(DeviseDisplayList, DeviseDisplay *);
 
-// changed to a public derivation to avoid problems in registeration
+#ifdef LIBCS
+class DeviseDisplay {
+#else
 class DeviseDisplay: public DispatcherCallback {
+#endif
 public:
   DeviseDisplay();
 
@@ -67,6 +75,9 @@ public:
 
   /* get the default display */
   static DeviseDisplay *DefaultDisplay();
+
+  /* get file descriptor for connection */
+  virtual int fd() = 0;
 
   virtual int NumPlanes() = 0;
   virtual void Dimensions(Coord &width, Coord &height) =0;
@@ -98,10 +109,12 @@ public:
   static DeviseDisplay *Next(int index) { return _displays.Next(index); }
   static void DoneIterator(int index) { _displays.DoneIterator(index); }
 
+#ifndef LIBCS
   /* This is to force the derived classes to register themselves with the
      dispatcher */
 
   virtual void Register() = 0;
+#endif
 
 protected:
   /* must be called from within the initializer of derived class
@@ -132,13 +145,14 @@ protected:
   /* get local color given global color. */
   Color GetLocalColor(Color globalColor);
 
+#ifndef LIBCS
  // Returns a pointer to the current dispatcher. This is necessary for 
  // registeration in XDisplay and other derived classes.
   
-  Dispatcher * ReturnDispatcher(){
-	return _dispatcher;
+  Dispatcher * ReturnDispatcher() {
+    return _dispatcher;
   }
-
+#endif
 
 private:
   virtual char *DispatchedName();
@@ -152,7 +166,10 @@ private:
   unsigned long _colorMapSize;
   Color *_colorMap;
   static DeviseDisplay *_defaultDisplay;
+
+#ifndef LIBCS
   Dispatcher *_dispatcher;
+#endif
 };
 
 #endif
