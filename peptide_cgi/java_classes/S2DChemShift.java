@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2001/04/17 17:09:09  wenger
+// Added display of H vs. N chem shifts.
+//
 // Revision 1.5  2001/04/16 19:49:11  wenger
 // Added display of all chem shifts by amino acid.
 //
@@ -646,22 +649,24 @@ public class S2DChemShift {
 	        hnCount++;
 	    }
 
-	    //
-	    // Write the session file.
-	    //
-	    S2DSession.write(_sessionDir, S2DUtils.TYPE_HVSN_CHEM_SHIFTS,
-	      _accessionNum, frameIndex);
+	    if (hnCount > 0) {
+	        //
+	        // Write the session file.
+	        //
+	        S2DSession.write(_sessionDir, S2DUtils.TYPE_HVSN_CHEM_SHIFTS,
+	          _accessionNum, frameIndex);
 
-	    //
-	    // Write the session-specific html file.
-	    //
-	    S2DSpecificHtml.write(_dataDir, S2DUtils.TYPE_HVSN_CHEM_SHIFTS,
-	      _accessionNum, frameIndex);
+	        //
+	        // Write the session-specific html file.
+	        //
+	        S2DSpecificHtml.write(_dataDir, S2DUtils.TYPE_HVSN_CHEM_SHIFTS,
+	          _accessionNum, frameIndex);
 
-	    //
-	    // Write the link in the summary html file.
-	    //
-	    _summary.writeHvsNShifts(frameIndex, hnCount);
+	        //
+	        // Write the link in the summary html file.
+	        //
+	        _summary.writeHvsNShifts(frameIndex, hnCount);
+	    }
 
 	} catch (IOException ex) {
 	    System.err.println("IOException writing all chem shifts: " +

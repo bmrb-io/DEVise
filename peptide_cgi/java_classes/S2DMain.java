@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2001/04/24 15:26:11  wenger
+// Reversed axes in "all chem shifts" and "H vs. N chem shift"
+// visualizations, and added atom type selection to "all chem shifts";
+// updated star file list.
+//
 // Revision 1.11  2001/04/18 15:14:50  wenger
 // Various improvements to "H vs. N" and "all chem shift" visualizations
 // as requested yesterday at BMRB meeting; added string files to CVS and
@@ -88,7 +93,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.5";
+    public static final String PEP_CGI_VERSION = "2.6";
 
     private int _accessionNum;
     private String _dataDir;

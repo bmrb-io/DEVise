@@ -2644,6 +2644,17 @@ Num Date        Status  Description
 			reliable if the follower had a pre-collaboration
 			session open. (rkw)
 
+664 04/24/01	OPEN	Changing a cursor type (X to Y, for example) does
+			not seem to get properly saved and restored when
+			the session is saved and refreshed. (rkw)
+
+665 04/24/01	OPEN	JavaScreen: jsb fills the entire background with
+			black; jsa doesn't. (rkw)
+
+666 04/24/01	FIXED	peptide-cgi: we shouldn't generate an H vs. N
+			chem shift plot for 4868. (rkw)
+			(Fixed by rkw, 04/24/01.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
