@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/07/31 19:34:30  wenger
+  Added AttrProj member functions for reading entire records (no projection).
+
   Revision 1.6  1996/07/13 04:59:31  jussi
   Added conditional for Linux.
 
@@ -81,5 +84,10 @@ inline Boolean StatIsCancel(DevStatus status)
 {
   return (status == StatusCancel) || (status == StatusWarnCancel);
 }
+
+
+#ifndef NULL
+#define NULL 0
+#endif
 
 #endif
