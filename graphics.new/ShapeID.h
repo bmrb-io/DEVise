@@ -16,28 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/27 15:48:19  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 22:15:36  jussi
   Added CVS header.
 */
-
-/* definition of shape ID and shape attributes */
 
 #ifndef ShapeID_H
 #define ShapeID_H
 
 typedef unsigned int ShapeID;
-
-/* ID of predefined shapes */
-
-const ShapeID RectShapeID      = 0;
-const ShapeID SquareShapeID    = 1;
-const ShapeID RectXShapeID     = 2;
-const ShapeID BarShapeID       = 3;
-const ShapeID PixelRectShapeID = 4;
-const ShapeID TriangleShapeID  = 5;
-
-/* Each attribute of the shape is a double, for now */
-
 typedef double ShapeAttr;
 
 #endif
