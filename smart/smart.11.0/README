@@ -1,0 +1,12 @@
+Directory /smart
+        Top level SMART directory
+
+Doc/            Documentation
+Sample/         Samples of SMART scripts and collection.  Scripts here
+                are only examples
+Install/        Files need for installation.  To install smart,
+                edit Install/makefile and type "make"
+lib/            Auxiliary files needed by SMART.  These include the
+                standard stopword list, and the standard specification
+                defaults
+src/            Source hierarchy

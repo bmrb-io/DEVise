@@ -1,0 +1,56 @@
+## INFORMATION LOCATIONS
+database                /afs/cs.wisc.edu/p/devise/ext17/sanj/smart/smart.11.0/indexed_colls/sgml
+include_file            /afs/cs.wisc.edu/p/devise/ext17/sanj/smart/smart.11.0/lib/spec.default
+doc_loc                 -
+query_skel              query_skel
+
+## MAN DOCDESC
+#### GENERIC PREPARSER
+num_pp_sections                 9
+pp_section.0.string             "<DOC>"
+pp_section.0.newdoc_flag        true    
+pp_section.1.string             "<DOCNO>"
+pp_section.1.section_name       n
+pp_section.2.string             "<TITLE>"
+pp_section.2.section_name       t
+pp_section.3.string             "</TITLE>"
+pp_section.3.section_name       u
+pp_section.4.string             "<DATE>"
+pp_section.4.section_name       d
+pp_section.5.string             "</DATE>"
+pp_section.5.section_name       s
+pp_section.6.string             "<TEXT>"
+pp_section.6.section_name       x
+pp_section.7.string             "</TEXT>"
+pp_section.7.section_name       y
+pp_section.8.string             "</DOC>"
+pp_section.8.section_name       z
+
+#### DESCRIPTION OF PARSE INPUT
+index.num_sections              4
+index.section.0.name            n
+index.section.1.name            t
+  index.section.1.method        index.parse_sect.full
+  index.section.1.word.ctype    0
+  index.section.1.proper.ctype  0
+index.section.2.name            d
+index.section.3.name            x
+  index.section.3.method        index.parse_sect.full
+  index.section.3.word.ctype    0
+  index.section.3.proper.ctype  0
+title_section 1
+
+#### DESCRIPTION OF FINAL VECTORS
+num_ctypes                      1
+ctype.0.name                    words
+
+## ALTERATIONS OF STANDARD PARAMETERS
+rmode                           SRDONLY|SMMAP
+rwmode                          SRDWR|SINCORE
+rwcmode                         SRDWR|SCREATE|SINCORE
+
+doc_weight                      nnc
+query_weight                    ntc
+
+## ALTERATIONS OF STANDARD PROCEDURES
+doc.store                       index.store.store_aux
