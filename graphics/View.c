@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.56  1996/07/20 18:47:17  jussi
+  Added solid3D flag.
+
   Revision 1.55  1996/07/15 21:33:47  jussi
   Added SetPattern(Pattern0) just before label is drawn.
 
@@ -235,6 +238,7 @@
 #ifdef JPEG
 #include "Jpeg.h"
 #endif
+#include "Display.h"
 
 //#define DEBUG
 
@@ -321,6 +325,8 @@ View::View(char *name, VisualFilter &initFilter,
   _cursorsOn = false;
   _numDimensions = 2;
   _solid3D = true;
+
+  _xyZoom = true;
 
   _hasOverrideColor = false;
   _overrideColor = fg;
@@ -434,7 +440,9 @@ int View::FindViewId(View *view)
 void View::SubClassMapped()
 {
   _updateTransform = true;
-  Refresh();
+
+  // cause pending Expose events to be retrieved from the X server
+  DeviseDisplay::DefaultDisplay()->Run();
 }
 	
 void View::SubClassUnmapped()
@@ -1338,6 +1346,14 @@ void View::Run()
     _updateTransform = false;
   }
   
+  if (_filterChanged || _refresh) {
+    /* Need to redraw the whole screen */
+    _queryFilter = _filter;
+    _hasLastFilter = true;
+    _lastFilter = _queryFilter;
+    _hasExposure = false;
+  }
+
   if (_hasExposure) {
     /* limit exposure to the size of the window */
 #ifdef DEBUG
@@ -1361,15 +1377,7 @@ void View::Run()
 	   _exposureRect.xLow, _exposureRect.yLow,
 	   _exposureRect.xHigh, _exposureRect.yHigh);
 #endif
-  }
   
-  if (_filterChanged || _refresh) {
-    /* Need to redraw the whole screen */
-    _queryFilter = _filter;
-    _hasLastFilter = true;
-    _lastFilter = _queryFilter;
-  } else {
-    /* _hasExposure only */
     _queryFilter.flag = VISUAL_LOC; 
     FindWorld(_exposureRect.xLow, _exposureRect.yLow,
 	      _exposureRect.xHigh, _exposureRect.yHigh,
@@ -1400,9 +1408,19 @@ void View::Run()
   /* push clip region using this transform */
   int dataX, dataY, dataW, dataH;
   GetDataArea(dataX, dataY, dataW, dataH);
+
+  /* use exposure rectangle if needed */
+  if (_hasExposure) {
+    int dataX2 = MIN(_exposureRect.xHigh, dataX + dataW - 1);
+    int dataY2 = MIN(_exposureRect.yHigh, dataY + dataH - 1);
+    dataX = MAX(_exposureRect.xLow, dataX);
+    dataY = MAX(_exposureRect.yLow, dataY);
+    dataW = dataX2 - dataX + 1;
+    dataH = dataY2 - dataY + 1;
+  }
+
+  /* clip and blank out area to be drawn */
   winRep->PushClip(dataX, dataY, dataW - 1, dataH - 1);
-  
-  /* blank out area to be drawn */
   winRep->SetFgColor(GetBgColor());
   winRep->FillRect(dataX, dataY, dataW - 1, dataH - 1);
   
