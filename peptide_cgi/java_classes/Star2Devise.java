@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2000/10/11 23:04:25  wenger
+// Added coupling constants (for arbitrary entries, not just 4096) to the
+// peptide-cgi code.
+//
 // Revision 1.15  2000/10/10 21:44:01  wenger
 // HA2 counts as an HA for '80% test'.
 //
@@ -625,7 +629,8 @@ public class Star2Devise {
 	// least 80% of the residues.)
         //
 	int haCount = getHAChemShiftCount();
-	if ((float)haCount / (float)_residueCount >= 0.8) {
+	if ((_residueCount < 0) ||
+	  ((float)haCount / (float)_residueCount >= 0.8)) {
             writeCsi(index, summary_writer, display_link_base);
 	}
 
@@ -2110,20 +2115,29 @@ TEMP*/
     }
 
     // ----------------------------------------------------------------------
+    // Return value: residue count, or -1 if we can't get the residue count.
     private int getResidueCount() throws S2DException
     {
         if (DEBUG >= 2) {
 	    System.out.println("Star2Devise.getResidueCount()");
 	}
 
-	VectorCheckType list = aStarTree.searchByName(S2DNames.RESIDUE_COUNT);
-	if (list.size() != 1) {
-	    throw new S2DException("Expected one " + S2DNames.RESIDUE_COUNT +
-	      "node; got " + list.size());
-	}
+	int residueCount = -1;
 
-	DataItemNode node = (DataItemNode)list.elementAt(0);
-        int residueCount = Integer.parseInt(node.getValue());
+        try {
+	    VectorCheckType list = aStarTree.searchByName(
+	      S2DNames.RESIDUE_COUNT);
+	    if (list.size() != 1) {
+	        throw new S2DException("Expected one " +
+		  S2DNames.RESIDUE_COUNT + "node; got " + list.size());
+	    }
+
+	    DataItemNode node = (DataItemNode)list.elementAt(0);
+            residueCount = Integer.parseInt(node.getValue());
+	} catch(Exception ex) {
+	    System.err.println("Exception getting residue count: " +
+	      ex.getMessage());
+	}
 
         if (DEBUG >= 2) {
             System.out.println("  residueCount = " + residueCount);
