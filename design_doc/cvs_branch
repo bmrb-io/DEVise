@@ -103,7 +103,7 @@ COMMITTING AND MERGING
   etc., on the branch, and mgd_thru_<name>_br_1, etc., on the trunk (merging
   from branch to trunk).
 
-* Merging from trunk to branch.  Here's what you need to do to do this:
+* Merging from branch to trunk.  Here's what you need to do to do this:
 
     * Tag the branch; for example:
 
@@ -143,7 +143,7 @@ COMMITTING AND MERGING
 
 	% cvs tag mgd_thru_<name>_br_1
 
-* Merging from branch to trunk.  I haven't actually done this yet, and the
+* Merging from trunk to branch.  I haven't actually done this yet, and the
   cvs info isn't totally clear on it, but I suspect that you first need to
   tag the trunk, and then update the branch, something like:
 
