@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.73  1999/05/26 19:50:55  wenger
+  Added bounding box info to GData, so that the selection of records by the
+  visual filter is more accurate.  (Note that at this time the bounding box
+  info does not take into account symbol orientation; symbol alignment is
+  taken into account somewhat crudely.) This includes considerable
+  reorganization of the mapping-related classes.  Fixed problem with
+  pixelSize getting used twice in Rect shape (resulted in size being the
+  square of pixel size).
+
   Revision 1.72  1999/05/17 18:38:00  wenger
   Views now have GData sending configuration that is only employed when
   connecting to the JavaScreen (eliminates the need for the current kludgey
@@ -476,6 +485,7 @@ class ViewGraph : public View
 		friend class ViewGraph_QueryCallback;
 		friend class SlaveTable;
 		friend class JavaScreenCmd; // for HandlePopUp
+		friend class PileStack;
 
 	private:
 
@@ -831,9 +841,12 @@ public:
 		{ DOASSERT(false, "Call in derived class only"); }
 
 		// Callback methods (WindowRepCallback)
-		virtual void	HandlePress(WindowRep* w, int xlow, int ylow,
+		virtual void	HandlePress(WindowRep *, int xlow, int ylow,
 									int xhigh, int yhigh, int button);
-		virtual void	HandleKey(WindowRep* w ,int key, int x, int y);
+		virtual void	DoHandlePress(WindowRep *, int xlow, int ylow,
+									  int xhigh, int yhigh, int button);
+		virtual void	HandleKey(WindowRep*, int key, int x, int y);
+		virtual void	DoHandleKey(WindowRep*, int key, int x, int y);
 		virtual Boolean HandlePopUp(WindowRep*, int x, int y, int button,
 									char**& msgs, int& numMsgs);
         static void NiceAxisRange(Coord &low, Coord &high);

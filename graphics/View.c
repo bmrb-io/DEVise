@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.173  1999/06/01 17:37:26  wenger
+  Fixed various compiler warnings.
+
   Revision 1.172  1999/05/17 20:55:12  wenger
   Partially-kludged fix for bug 488 (problems with cursors in piled views
   in the JavaScreen).
@@ -1200,7 +1203,7 @@ void View::Mark(int index, Boolean marked)
   _filterQueue->Mark(index, marked);
 }
 
-Boolean View::CheckCursorOp(WindowRep *win, int x, int y, int button)
+Boolean View::CheckCursorOp(int x, int y)
 {
 #if defined(DEBUG)
   printf("View(%s)::CheckCursorOp()\n", GetName());
@@ -1226,17 +1229,9 @@ Boolean View::CheckCursorOp(WindowRep *win, int x, int y, int button)
   // mouse click is intended for selecting the view as current;
   // the next mouse click in this view will move the cursor
   if (IsInPileMode()) {
-	Boolean pileHighlighted = false;
-    int index = GetParentPileStack()->InitIterator();
-	while (GetParentPileStack()->More(index)) {
-	  View *tmpView = (View *)GetParentPileStack()->Next(index);
-	  if (tmpView->IsSelected()) pileHighlighted = true;
-	}
-	GetParentPileStack()->DoneIterator(index);
-
-    if (!pileHighlighted) {
+    if (!GetParentPileStack()->ViewIsSelected()) {
 #if defined(DEBUG)
-      printf("  pile is not highlighted\n");
+      printf("  pile is not selected\n");
 #endif
       return false;
     }
@@ -4131,11 +4126,16 @@ View::FindSelectedView()
 }
 
 void
-View::SelectView()
+View::SelectView(Boolean calledFromPile)
 {
 #if defined(DEBUG)
   printf("View(%s)::SelectView()\n", GetName());
 #endif
+
+  if (IsInPileMode() && !calledFromPile) {
+    GetParentPileStack()->SelectView();
+    return;
+  }
 
   // Unhighlight previously-selected view, if any, and highlight the
   // newly-selected view (do nothing if they are the same view).

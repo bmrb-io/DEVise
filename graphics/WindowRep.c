@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1998/08/24 14:57:31  wenger
+  Added misc. debug output.
+
   Revision 1.32  1998/05/28 15:04:58  wenger
   OpenGL cursors now drawn in view foreground color;
   fixes to OpenGL crashes with some sessions (bugs 342, 356?).
@@ -271,6 +274,10 @@ void WindowRep::HandleButtonPress(int xlow, int ylow,
 
 void WindowRep::HandleKey(int key, int x, int y)
 {
+#ifdef DEBUG
+  printf("WindowRep::HandleKey()\n");
+#endif
+
   int index;
   for(index = InitIterator(); More(index); ){
     WindowRepCallback *c = Next(index);

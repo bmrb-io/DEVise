@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.126  1999/05/20 15:18:40  wenger
+  Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
+  with duplicate elimination and count mappings) exposed by Tim Wilson's
+  two-station session.
+
   Revision 1.125  1999/04/20 21:25:15  wenger
   Combined DrawText() and DrawDataText() into NewDrawText() without changing
   functionality.
@@ -2637,6 +2642,7 @@ void XWindowRep::HandleEvent(XEvent &event)
 	d_key |= d_modifier;
 	WindowRep::HandleKey(d_key, event.xkey.x, event.xkey.y);
 
+#if 0 // This is now handled in the PileStack class.
         // Propagate the key event to any other WindowReps outputting
         // via this one.
         int index = _inputWins.InitIterator();
@@ -2645,6 +2651,7 @@ void XWindowRep::HandleEvent(XEvent &event)
 	      wr->WindowRep::HandleKey(d_key, event.xkey.x, event.xkey.y);
         }
         _inputWins.DoneIterator(index);
+#endif
     }
 
     break;
@@ -2679,6 +2686,7 @@ void XWindowRep::HandleEvent(XEvent &event)
 				   buttonXhigh, buttonYhigh,
 				   event.xbutton.button);
 
+#if 0 // This is now handled in the PileStack class.
       // Propagate the button press to any other WindowReps outputting
       // via this one.
       int index = _inputWins.InitIterator();
@@ -2689,6 +2697,7 @@ void XWindowRep::HandleEvent(XEvent &event)
 				       event.xbutton.button);
       }
       _inputWins.DoneIterator(index);
+#endif
       /*
 	 }
       */
@@ -2747,6 +2756,9 @@ void XWindowRep::HandleEvent(XEvent &event)
       /* There is a real change in size */
       WindowRep::HandleResize(_x, _y, _width, _height);
 
+#if 0 // This is handled in the Layout class (the DEVise window's WindowRep
+      // gets the resize event.
+
       // Propagate the resize event to any other WindowReps outputting
       // via this one.
       // Note: the way piles are currently done, all of the views get
@@ -2758,6 +2770,7 @@ void XWindowRep::HandleEvent(XEvent &event)
         wr->WindowRep::HandleResize(_x, _y, _width, _height);
       }
       _inputWins.DoneIterator(index);
+#endif
     }
     break;
 

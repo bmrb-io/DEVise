@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.86  1999/05/14 13:59:54  wenger
+  User can now control data font family, weight, and slant, on a per-view
+  basis.
+
   Revision 1.85  1999/05/13 18:58:55  wenger
   Removed _queryFilter member from View class to avoid confusion with
   _queryFilter in ViewGraph.
@@ -547,7 +551,7 @@ class View : public ViewWin
 	static void DoneViewIterator(int index) { _viewList->DoneIterator(index); }
 
 	static View *FindSelectedView();
-	void SelectView();
+	void SelectView(Boolean calledFromPile = false);
 
 	/* Set axes callback */
 	void SetXAxisAttrType(AttrType type);
@@ -763,7 +767,7 @@ protected:
 
 
 	/* check Cursor Op. Return cursor operated on */
-	Boolean CheckCursorOp(WindowRep *win, int x, int y, int button);
+	Boolean CheckCursorOp(int x, int y);
 
 	/* Get area for displaying label */
 	void GetLabelArea(int &x, int &y, int &w, int &h);

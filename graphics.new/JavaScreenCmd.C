@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.58  1999/05/17 20:55:20  wenger
+  Partially-kludged fix for bug 488 (problems with cursors in piled views
+  in the JavaScreen).
+
   Revision 1.57  1999/05/17 18:37:59  wenger
   Views now have GData sending configuration that is only employed when
   connecting to the JavaScreen (eliminates the need for the current kludgey
@@ -788,6 +792,10 @@ JavaScreenCmd::Run()
 {
 #if defined(DEBUG)
     printf("\nJavaScreenCmd(0x%p)::Run(%d)\n", this, _ctype);
+    struct timeval cmdTime;
+    if (gettimeofday(&cmdTime, NULL) >= 0) {
+		printf("  %s\n", DateString(cmdTime.tv_sec));
+    }
 #endif
 
 	_status = DONE;
@@ -1063,19 +1071,7 @@ JavaScreenCmd::MouseAction_Click()
 
 	_postponeCursorCmds = true;
 
-	if (view->IsInPileMode()) {
-	  // Send the click to all views in the pile (this is done by the
-	  // XWindowRep in the "regular" DEVise).  (Part of the fix for bug 488.)
-	  PileStack *ps = view->GetParentPileStack();
-	  int index = ps->InitIterator();
-	  while (ps->More(index)) {
-	    ViewGraph *tmpView = (ViewGraph *)ps->Next(index);
-        tmpView->HandlePress(tmpView->GetWindowRep(), xLoc, yLoc, xLoc,
-		    yLoc, 1);
-	  }
-	} else {
-      view->HandlePress(view->GetWindowRep(), xLoc, yLoc, xLoc, yLoc, 1);
-	}
+    view->HandlePress(view->GetWindowRep(), xLoc, yLoc, xLoc, yLoc, 1);
 
 	// Make sure everything has actually been re-drawn before we
 	// continue.
@@ -1165,27 +1161,12 @@ JavaScreenCmd::MouseAction_RubberBand()
 
 	// Update the visual filter of the view that the
 	// rubberband line started in.
-	PileStack *ps = view->GetParentPileStack();
-	if (ps && ps->GetState() == PileStack::PSPiledNoLink) {
-	  // Unlinked pile -- need to update all views in the pile individually.
-	  int index = ps->InitIterator();
-	  while (ps->More(index)) {
-	    View *tmpView = (View *)ps->Next(index);
-	    VisualFilter filter;
-	    tmpView->GetVisualFilter(filter);
-	    tmpView->FindWorld(startX, startY, endX,
-	      endY, filter.xLow, filter.yLow, filter.xHigh, filter.yHigh);
-	    tmpView->SetVisualFilter(filter);
-	  }
-	  ps->DoneIterator(index);
-	  
-	} else {
-	  VisualFilter filter;
-	  view->GetVisualFilter(filter);
-	  view->FindWorld(startX, startY, endX,
-	    endY, filter.xLow, filter.yLow, filter.xHigh, filter.yHigh);
-	  view->SetVisualFilter(filter);
-	}
+	int xLow = MIN(startX, endX);
+	int yLow = MIN(startY, endY);
+	int xHigh = MAX(startX, endX);
+	int yHigh = MAX(startY, endY);
+	// button = 3 for XY zoom
+    view->HandlePress(NULL, xLow, yLow, xHigh, yHigh, 3);
 
 	// Make sure everything has actually been re-drawn before we
 	// continue.
@@ -1272,7 +1253,7 @@ JavaScreenCmd::KeyAction()
 
 		_postponeCursorCmds = true;
 
-	    view->GetAction()->KeySelected(view, key, xLoc, yLoc);
+        view->HandleKey(NULL, key, xLoc, yLoc);
 
 		// Make sure everything has actually been re-drawn before we
 		// continue.
@@ -2063,6 +2044,11 @@ JavaScreenCmd::ReturnVal(int argc, char** argv)
     printf("JavaScreenCmd(0x%p)::ReturnVal(", this);
 	PrintArgs(stdout, argc, argv, false);
 	printf(")\n");
+
+    struct timeval cmdTime;
+    if (gettimeofday(&cmdTime, NULL) >= 0) {
+		printf("  %s\n", DateString(cmdTime.tv_sec));
+    }
 #endif
 
 #if 0 // I don't understand what the heck all of this junk is for, and taking

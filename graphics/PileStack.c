@@ -26,6 +26,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1999/05/17 20:55:11  wenger
+  Partially-kludged fix for bug 488 (problems with cursors in piled views
+  in the JavaScreen).
+
   Revision 1.11  1999/05/12 21:00:46  wenger
   Views containing view symbols can now be piled.
 
@@ -250,6 +254,15 @@ PileStack::Flip()
   printf("PileStack(%s)::Flip()\n", _name);
 #endif
 
+  //
+  // If a view is selected, deselect it, then reselect the first view at
+  // the end, so that we maintain the state of the first view being selected.
+  //
+  Boolean isSelected = ViewIsSelected();
+  if (isSelected) {
+    ((View *)GetFirstView())->DoSelect(false);
+  }
+
   if (_state != PSNormal) {
     //
     // Move the first child view to the end of the list.
@@ -280,6 +293,10 @@ PileStack::Flip()
     if (_state == PSStacked) {
       GetViewList()->GetFirst()->Raise();
     }
+  }
+
+  if (isSelected) {
+    SelectView();
   }
 }
 
@@ -381,6 +398,12 @@ PileStack::InsertView(ViewWin *view)
     _views.Append(view);
   }
 
+  //
+  // If any view in the pile is selected, make sure we select the first
+  // view.
+  //
+  if (ViewIsSelected()) SelectView();
+
   (void) PileOk();
 }
 
@@ -415,6 +438,21 @@ PileStack::DeleteView(ViewWin *view)
 
   if (_currentQueryView == view) {
     _currentQueryView = NULL;
+  }
+
+  if (IsPiled()) {
+    //
+    // By deleting a view, we may have destroyed the WindowRep that the
+    // other views in the pile are outputting to.  Re-pile them so that
+    // they output to the *current* first view's WindowRep.
+    //
+    int index = InitIterator();
+    while (More(index)) {
+      View *view = (View *)Next(index);
+      view->SetPileMode(false);
+      view->SetPileMode(true);
+    }
+    DoneIterator(index);
   }
 }
 
@@ -486,6 +524,12 @@ PileStack::SetStacked()
     if (GetViewList()->Size() > 0) GetViewList()->GetFirst()->Raise();
 
     _state = PSStacked;
+
+    //
+    // If any view in the pile is selected, make sure we select the first
+    // view.
+    //
+    if (ViewIsSelected()) SelectView();
   }
 }
 
@@ -559,6 +603,12 @@ PileStack::SetPiled(Boolean doLink)
     } else {
       _state = PSPiledNoLink;
     }
+
+    //
+    // If any view in the pile is selected, make sure we select the first
+    // view.
+    //
+    if (ViewIsSelected()) SelectView();
   }
 }
 
@@ -861,6 +911,118 @@ PileStack::SetYAxisDateFormat(const char *format)
 }
 
 /*------------------------------------------------------------------------------
+ * function: PileStack::SelectView()
+ * Select the first view in the pile.
+ */
+void
+PileStack::SelectView()
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 1)
+  printf("PileStack(%s)::SelectView()\n", _name);
+#endif
+
+  ((View *)GetFirstView())->SelectView(true);
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::ViewIsSelected()
+ * Returns true if a view in the pile is selected.
+ */
+Boolean
+PileStack::ViewIsSelected()
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 1)
+  printf("PileStack(%s)::ViewIsSelected()\n", _name);
+#endif
+
+  Boolean viewIsSelected = false;
+
+  int index = InitIterator();
+  while (!viewIsSelected && More(index)) {
+    View *view = (View *)Next(index);
+    if (view->IsSelected()) viewIsSelected = true;
+  }
+  DoneIterator(index);
+
+  return viewIsSelected;
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::HandlePress
+ * Handle a button press on a pile (see also ViewGraph::HandlePress()).
+ */
+void
+PileStack::HandlePress(WindowRep *, int xlow, int ylow, int xhigh,
+    int yhigh, int button)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 1)
+  printf("PileStack(%s)::HandlePress()\n", _name);
+#endif
+
+  Boolean didCursorOp = false;
+
+  //
+  // Do cursor operations for *all* views before selecting a view (fixes
+  // bug 495).  RKW 1999-06-03.
+  //
+  if ((xlow == xhigh) && (ylow == yhigh)) {
+    int index = InitIterator();
+    while (More(index)) {
+      View *view = (View *)Next(index);
+      if (view->CheckCursorOp(xlow, ylow)) {
+        didCursorOp = true;
+      }
+    }
+    DoneIterator(index);
+  }
+
+  if (!didCursorOp) {
+    //
+    // Always select the top view in the pile.
+    //
+    SelectView();
+
+    //
+    // Now make sure that all views in the pile get the button press (for
+    // things like rubberband lines).
+    //
+    int index = InitIterator();
+    while (More(index)) {
+      ViewGraph *view = (ViewGraph *)Next(index);
+      view->DoHandlePress(NULL, xlow, ylow, xhigh, yhigh, button);
+    }
+    DoneIterator(index);
+  }
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::HandleKey
+ * Handle a button press on a pile (see also ViewGraph::HandleKey()).
+ */
+void
+PileStack::HandleKey(WindowRep *, int key, int xVal, int yVal)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 1)
+  printf("PileStack(%s)::HandleKey()\n", _name);
+#endif
+
+  SelectView();
+
+  int index = InitIterator();
+  while (More(index)) {
+    ViewGraph *view = (ViewGraph *)Next(index);
+    view->DoHandleKey(NULL, key, xVal, yVal);
+  }
+  DoneIterator(index);
+
+
+}
+
+/*------------------------------------------------------------------------------
  * function: PileStack::Refresh
  * Refresh the pile (analogous to View::Refresh() on a single view).
  */
@@ -903,7 +1065,7 @@ PileStack::QueryStarted(View *view)
           "pile (%s) is already running a query", view->GetName(),
 	  _currentQueryView->GetName(), GetName());
       reportErrNosys(errBuf);
-      DOASSERT(0, "bad query");
+      // DOASSERT(0, "bad query");
     }
   }
 }
@@ -960,6 +1122,8 @@ PileStack::Dump(FILE *fp)
     if (view->GetPileZ()) {
       fprintf(fp, " z = %g", *(view->GetPileZ()));
     }
+    fprintf(fp, " winRep = 0x%p", view->GetWindowRep());
+    fprintf(fp, " IsInPileMode() = %d", ((View *)view)->IsInPileMode());
     fprintf(fp, "\n");
   }
   _views.DoneIterator(index);
@@ -1026,6 +1190,15 @@ PileStack::PileOk()
     }
   }
   GetViewList()->DoneIterator(index);
+
+  if (ViewIsSelected()) {
+    View *view = (View *)GetFirstView();
+    if (!view->IsSelected()) {
+      sprintf(errBuf, "A view other than the first view of PileStack <%s> "
+          "is selected", GetName());
+      reportErrNosys(errBuf);
+    }
+  }
 
   return result;
 }

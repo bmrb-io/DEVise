@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.40  1999/05/28 16:32:42  wenger
+  Finished cleaning up bounding-box-related code except for PolyLineFile
+  symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
+  drawing of Polyline symbols.
+
   Revision 1.39  1999/05/26 19:50:48  wenger
   Added bounding box info to GData, so that the selection of records by the
   visual filter is more accurate.  (Note that at this time the bounding box
@@ -216,7 +221,7 @@ void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
     const int minPixelWidth = 1;
     const int maxPixelWidth = 30;
 
-    ControlPanel::Instance()->SelectView(view);
+    view->SelectView();
     VisualFilter filter;
 
     switch(key) {
@@ -363,7 +368,7 @@ Boolean ActionDefault::PopUp(ViewGraph *view, Coord x, Coord y, Coord xHigh,
       xHigh, yHigh, button);
 #endif
 
-    ControlPanel::Instance()->SelectView(view);
+    view->SelectView();
     
     AttrType xAttr = view->GetXAxisAttrType();
     AttrType yAttr = view->GetYAxisAttrType();

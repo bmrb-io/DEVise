@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.114  1999/05/28 16:32:47  wenger
+  Finished cleaning up bounding-box-related code except for PolyLineFile
+  symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
+  drawing of Polyline symbols.
+
   Revision 1.113  1999/05/21 14:52:52  wenger
   Cleaned up GData-related code in preparation for including bounding box
   info.
@@ -2252,7 +2257,9 @@ void	ViewGraph::PrintLinkInfo(void)
 // Callback Methods (WindowCallback)
 //******************************************************************************
 
-void	ViewGraph::HandlePress(WindowRep* w, int xlow, int ylow,
+// See PileStack::HandlePress().
+
+void	ViewGraph::HandlePress(WindowRep *, int xlow, int ylow,
 							   int xhigh, int yhigh, int button)
 {
 #if defined(DEBUG)
@@ -2260,14 +2267,31 @@ void	ViewGraph::HandlePress(WindowRep* w, int xlow, int ylow,
 	  GetName(), xlow, ylow, xhigh, yhigh, button);
 #endif
 
-	if ((xlow == xhigh) && (ylow == yhigh) &&
-		CheckCursorOp(w, xlow, ylow, button)) {	// Was a cursor event?
-          return;
-    }
+  if (IsInPileMode()) {
+    GetParentPileStack()->HandlePress(NULL, xlow, ylow, xhigh, yhigh, button);
+  } else {
+    DoHandlePress(NULL, xlow, ylow, xhigh, yhigh, button);
+  }
+}
 
-	// Note: doing the unhighlight and highlight here breaks the dependency
-	// we had on the client doing this for us.  RKW Jan 27, 1998.
-    SelectView();
+void	ViewGraph::DoHandlePress(WindowRep *, int xlow, int ylow,
+							     int xhigh, int yhigh, int button)
+{
+#if defined(DEBUG)
+    printf("ViewGraph(0x%p, <%s>)::DoHandlePress(%d, %d, %d, %d, %d)\n", this,
+	  GetName(), xlow, ylow, xhigh, yhigh, button);
+#endif
+
+	if (!IsInPileMode()) {
+	  if ((xlow == xhigh) && (ylow == yhigh) &&
+	      CheckCursorOp(xlow, ylow)) {	// Was a cursor event?
+        return;
+      }
+
+	  // Note: doing the unhighlight and highlight here breaks the dependency
+	  // we had on the client doing this for us.  RKW Jan 27, 1998.
+      SelectView();
+	}
 
 	if (_action)				// Convert from screen to world coordinates
 	{
@@ -2281,9 +2305,28 @@ void	ViewGraph::HandlePress(WindowRep* w, int xlow, int ylow,
 	}
 }
 
-void	ViewGraph::HandleKey(WindowRep* w, int key, int x, int y)
+void	ViewGraph::HandleKey(WindowRep *, int key, int x, int y)
 {
-	ControlPanel::Instance()->SelectView(this);
+#if defined(DEBUG)
+    printf("ViewGraph(%s)::HandleKey(%d, %d, %d)\n", GetName(), key, x, y);
+#endif
+
+  if (IsInPileMode()) {
+    GetParentPileStack()->HandleKey(NULL, key, x, y);
+  } else {
+    DoHandleKey(NULL, key, x, y);
+  }
+}
+
+void	ViewGraph::DoHandleKey(WindowRep *, int key, int x, int y)
+{
+#if defined(DEBUG)
+    printf("ViewGraph(%s)::DoHandleKey(%d, %d, %d)\n", GetName(), key, x, y);
+#endif
+
+	if (!IsInPileMode()) {
+	    SelectView();
+	}
 
 	if (_action)				// Convert from screen to world coordinates
 	{
@@ -2304,7 +2347,7 @@ Boolean		ViewGraph::HandlePopUp(WindowRep* win, int x, int y, int button,
 	int 			labelX, labelY, labelW, labelH;
 	static char*	buf[10];
 
-	ControlPanel::Instance()->SelectView(this);
+	SelectView();
 	GetLabelArea(labelX, labelY, labelW, labelH);
 
 	if ((x >= labelX) && (x <= labelX + labelW - 1) &&

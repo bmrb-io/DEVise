@@ -1917,6 +1917,15 @@ Num Date        Status  Description
 			not match up with the line). (rkw)
 			(Fixed by rkw, 5/28/99.)
 
+495 06/02/99	FIXED	Clicking in a piled view with a cursor moves the
+			cursor on the first click, not the second. (rkw)
+			(Fixed by rkw, 6/4/99.)
+
+496 06/03/99	FIXED	In the JavaScreen, if the user presses a key with
+			the mouse in a piled view, the key press is not
+			propagated to all views in the pile. (rkw)
+			(Fixed by rkw, 6/4/99.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1999/05/17 20:55:12  wenger
+  Partially-kludged fix for bug 488 (problems with cursors in piled views
+  in the JavaScreen).
+
   Revision 1.9  1999/05/12 21:01:00  wenger
   Views containing view symbols can now be piled.
 
@@ -128,6 +132,13 @@ public:
 
   void SetXAxisDateFormat(const char *format);
   void SetYAxisDateFormat(const char *format);
+
+  void SelectView();
+  Boolean ViewIsSelected();
+
+  void HandlePress(WindowRep *, int xlow, int ylow, int xhigh,
+      int yhigh, int button);
+  void HandleKey(WindowRep *, int key, int xVal, int yVal);
 
   void Refresh();
   void QueryStarted(View *view);
