@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/11/01 19:28:17  kmurli
+  Added DQL sources to include access to TDataDQL. This is equivalent to
+  TDataAscii/TDataBinary. The DQL type in the Tcl/Tk corresponds to this
+  class.
+
   Revision 1.11  1996/08/02 00:13:49  jussi
   Improved performance of network code by preparing data to be
   sent in a buffer and then issuing a single send() call.
@@ -417,9 +422,9 @@ int NetworkSend(int fd, u_short flag, u_short bracket, int argc, char **argv)
 
   assert(buff - recBuff == msgsize);
 
-//#ifdef DEBUG
+#ifdef DEBUG
   printf("Sending message: flag %u, nelem %u, size %u\n", flag, argc, tsize);
-//#endif
+#endif
 	
   int result = send(fd, recBuff, msgsize, 0);
   if (result < (int)sizeof hdr) {
