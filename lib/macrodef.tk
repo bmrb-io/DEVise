@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.52  1996/07/13 00:21:13  jussi
+#	Broke OpenNewDataSource into two parts so the DoColorStat can
+#	reuse the latter part of it.
+#
 #	Revision 1.51  1996/07/12 21:54:44  jussi
 #	Fixed minor typo.
 #
@@ -1406,9 +1410,14 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
     
         set topgrps [DEVise getTopGroups [file tail $schemafile]]
         if {[llength $topgrps] == 0} {
+            if {![file readable $schemafile]} {
+                dialog .schemaError "Schema File Not Found" \
+                        "Cannot open schema file $schemafile" "" 0 OK
+                return ""
+            }
             set result [DEVise importFileType $schemafile]
             if {$result == ""} {
-                return
+                return ""
             }
             if {$result != $schema} {
                 puts "File $schemafile appears to contain schema $result,\
@@ -1428,7 +1437,7 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
         if {$result == ""} {
             dialog .tdataError "Data Stream Error" \
                     "Cannot open data stream $sname" "" 0 OK
-            continue
+            return ""
         }
     }
 
