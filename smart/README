@@ -1,0 +1,22 @@
+sm_pe.arch.1.Z  Archives of smart-people mailing list. 1991 - Sept 1993
+sm_pe.arch.2.Z  Archives of smart-people mailing list. Sept 1993 - Sept 1994
+smart.11.0.tar.Z  SMART version 11.0 (un-encrypted).
+tar.cluster	Random clustering routines that do not work with the
+		current SMART versions, but may be useful as a base
+		for writing others.
+trec1_eval.shar  Evaluation code which takes TREC results and TREC
+                relevance judgements to produce SMART top-ranked
+                evaluation output.  This code should be used for
+                for comparing against TREC 1 results.
+trec2_eval.shar  Evaluation code which takes TREC results and TREC
+                relevance judgements to produce SMART top-ranked
+                evaluation output.  This code should be used for
+                for comparing against TREC 2 results.
+
+
+The rest of the directories are the standard ir test collections, normally
+containing document text, query text, and relevance judgements.
+Warning: the "make_coll" routines included in these directories are
+for old versions of SMART.  The newer versions of SMART include sample
+collection indexing routines for all the collections.
+

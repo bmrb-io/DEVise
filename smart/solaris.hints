@@ -1,0 +1,112 @@
+Following is a list of changes that I and others have used for
+Solaris SMART.  Not all of these are needed depending on your
+version of compiler, SMART, and operating system version.  These
+changes and sysfunc.h should work for both SunOS and Solaris, and
+with cc, gcc, and SunPRO compilers (though with some warning
+messages from some combinations).  Hopefully this works under
+Solaris both with and without the BSD libraries, but I've only
+tried it without the libraries.
+
+                                        ChrisB
+
+1. Replaced sysfunc.h (see below)
+2. Turned off accounting in param.h
+3. changed flags to cc (in Install/make{bin,lib}.templ and 
+   Install/makefile.top) to get rid of -Bstatic, change optimization 
+   to -fast (if using SunPro compiler).
+4. Changed definition of RANLIB to be /bin/true in makelib.templ
+        # RANLIB = ranlib
+        RANLIB = /bin/true
+
+5. Compiled only make_trie in src/utility (changed makefile there)
+6. Removed ifdef MMAP construct from liblocal/libconvert/lvec_inv_tmp.c
+7. Changed "union wait" to "pid_t" in libgeneral/unix_comm.c.
+8. Removed ioctl declaration in libgeneral/unix_comm.c
+
+The following changes are due to various misfeatures of compilers and
+make, and may not affect you in your environment.
+9.  changed variable "gamma" in 3 libfeedback routines to "gammavar"
+10. changed variable "select" in liblocal/libretrieve/mixed.c to "selectarg"
+11. changed procedure names exp[1234] to exp_[1234] in libexp and
+    in libproc/proc_exp.c (to avoid conflicts with math library).
+12. Used gnu version of make instead of SunPRO version (if you have problems)
+
+
+#ifndef SYSFUNCH
+#define SYSFUNCH
+/*        $Header$ */
+/* Declarations of major functions within standard C libraries */
+#include <unistd.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <math.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <sys/time.h>
+#include <sys/mman.h>
+
+/* For time being, define Berkeley constructs in terms of SVR4 constructs*/
+#define bzero(dest,len)      memset(dest,'\0',len)
+#define bcopy(source,dest,len)   memcpy(dest,source,len)
+#define srandom(seed)        srand(seed)
+#define random()             rand()
+
+/* Hack for right now */
+#ifdef _SC_PAGESIZE
+#define getpagesize()        sysconf(_SC_PAGESIZE)
+#endif
+
+#endif /* SYSFUNCH */
+
+--------------------------------------------------------------- 
+The following message is from someone who used the ucb libraries in
+compiling SMART under Solaris.  I do not recommend doing this except
+if you need accounting information (which I just turned off in the
+above list (item 2)).
+---------------------------------------------------------------
+
+From smart-people-request Thu Dec 29 19:24:52 1994
+From: T.J. Leone <leone@ohsu.edu>
+To: smart-people@cs.cornell.edu
+Subject:  Compiling SMART under Solaris 2.3
+Status: R
+
+I had to modify makefile.top to get SMART 11.0 to compile under Solaris 2.3.
+
+====================================
+diff makefile.top makefile.top.original
+41c41
+< #cc CFLAGS = $(STATIC) -L$$(LIB) -L/usr/ucblib -lucb -lsocket -lelf -Bdynamic $H 
+---
+< #cc CFLAGS = -L$$(LIB) $H $(STATIC)
+====================================
+I probably should have put those libraries into LIBLIST, but anyway...
+
+Below is the Sun Bug Report that describes the bug in the Sun libraries.
+
+--TJ
+====================================
+Bug Report for BugID library/libc/1136393
+
+    ------------------------------------------------------------------------
+
+
+ Bug Id:     1136393
+ Category:  library
+ Subcategory:  libc
+ Release summary: 5.2
+ Synopsis:  multiply defined symbols in /usr/ucblib/libucb.a and /usr/lib/libc.a
+        Integrated in releases:
+ Patch id:
+
+Description:
+
+There are multiply defined symbols in usr/ucblib/libucb.a and /usr/lib/libc.a
+thereby preventing a static link. The following test case reproduces the problem.
+
+cc main.c timer.o -Bstatic -L/usr/ucblib -lucb -lsocket -lelf
+ld: fatal: symbol `_mkarglst' is multiply defined:
+        (file /usr/ucblib/libucb.a(doprnt.o) and file /usr/lib/libc.a(doprnt.o));
+...
