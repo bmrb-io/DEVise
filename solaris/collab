@@ -1,0 +1,13 @@
+#! /bin/csh -f
+# Run the collaborator.
+
+# $Id$
+
+setenv DEVISE_LIB               $cwd/../lib
+
+
+\rm -f /tmp/Group.log
+\rm -f /tmp/*master*
+\rm -f /tmp/*server*
+
+generic/collaborator &
