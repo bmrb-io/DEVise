@@ -1397,6 +1397,8 @@ TDataAsciiInterp.o: ../graphics/Exit.h ../graphics/Journal.h
 TDataAsciiInterp.o: ../graphics/VisualArg.h ../graphics/Color.h
 TDataAsciiInterp.o: ../graphics/Pattern.h TData.h RecId.h DataSource.h
 TDataAsciiInterp.o: MemMgr.h DCE.h /usr/include/sys/ipc.h
+TDataAsciiInterp.o: ViewGraph.h ../DTE/DeviseSpecific/TDataDQLInterp.h 
+TDataAsciiInterp.o: ../DTE/Core/types.h
 TDataAsciiInterp.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 TDataAsciiInterp.o: /usr/include/errno.h /usr/include/sys/errno.h
 TDataAsciiInterp.o: /usr/include/assert.h /usr/include/limits.h
@@ -1869,6 +1871,7 @@ ViewClassInfo.o: ../graphics/Util.h /usr/include/ctype.h ActionDefault.h
 ViewClassInfo.o: ../graphics/ColorMgr.h ../graphics/Parse.h
 ViewGraph.o: /usr/include/assert.h ViewGraph.h ../graphics/View.h
 ViewGraph.o: ../graphics/Dispatcher.h /usr/include/stdio.h
+ViewGraph.o: ../graphics/AssoArray.h
 ViewGraph.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
 ViewGraph.o: /usr/include/stdlib.h /usr/include/unistd.h
 ViewGraph.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
