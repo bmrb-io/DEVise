@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/04/16 20:56:38  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.3  1995/11/02 16:52:45  jussi
   Updated copyright message.
 
@@ -43,10 +46,10 @@ public:
   operator int() { return TapeDrive::initialized; }
 
   // return current byte offset on device file
-  long tell() { return TapeDrive::tell(); }
+  long long tell() { return TapeDrive::tell(); }
 
   // move to given byte offset on device file
-  long seek(long pos) { return TapeDrive::seek(pos); }
+  long long seek(long long pos) { return TapeDrive::seek(pos); }
 
   // get record of characters
   int getrecc(char *var) {
