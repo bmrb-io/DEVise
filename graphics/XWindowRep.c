@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.98  1997/12/16 17:53:57  zhenhai
+  Added OpenGL features to graphics.
+
   Revision 1.97  1997/11/24 23:14:42  weaver
   Changes for the new ColorManager.
 
@@ -2739,6 +2742,7 @@ void XWindowRep::SetNormalFont()
   XSetFont(_display, _gc, fontStruct->fid);
 }
 
+
 /* Draw scaled or absolute text */
 
 void XWindowRep::DrawText(Boolean scaled, char *text, Coord x,
@@ -2875,12 +2879,22 @@ void XWindowRep::DrawText(Boolean scaled, char *text, Coord x,
   
 #if defined(DEBUG)
   printf("Drawing <%s> starting at %d,%d\n", text, startX, startY);
-
-  XCopyPlane(_display, _dstBitmap.pixmap, DRAWABLE, _gc, 
-	     0, 0, dstWidth, dstHeight, startX, startY, 1);
 #endif
+
+#if defined(X_DEBUG)
+  XDrawLine(_display, DRAWABLE, _gc, (int) startX - 10, (int) startY - 10,
+    (int) startX + 10, (int) startY + 10);
+  XDrawLine(_display, DRAWABLE, _gc, (int) startX + 10, (int) startY - 10,
+    (int) startX - 10, (int) startY + 10);
+#endif
+
+  if (scale != 1.0) XRotSetMagnification(scale);
+  XRotDrawAlignedString(_display, fontStruct, orientation,
+    DRAWABLE, _gc, startX, startY, text, xvtAlign);
+  if (scale != 1.0) XRotSetMagnification(1.0);
 #endif
 }
+
 
 /**********************************************************************
 Scale and copy the rectangle (0,0,width,height) in _srcBitmap

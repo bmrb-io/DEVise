@@ -1028,16 +1028,23 @@ Num Date        Status  Description
 261 12/17/97	OPEN	3d_test.ds session doesn't work (error in expression
 			analysis, possibly other problems). (rkw)
 
-262 12/18/97	OPEN	All text seems to be drawn in background color.
+262 12/18/97	FIXED	All text seems to be drawn in background color.
 			(kb/rkw)
 
 263 12/19/97	OPEN	Different parts of lines are sometimes not connected
 			correctly. (rkw)
 
 264 12/19/97	OPEN	Direct PostScript output doesn't work (it comes out
-			totally blank). (rkw)
+			totally blank since OpenGL commit, other problems
+			before that). (rkw)
 
 265 12/19/97	OPEN	Devise now takes an awfully long time to quit. (rkw)
+
+266 12/19/97	OPEN	Expression evaluation fails on mappings with string
+			variables. (rkw)
+
+267 12/19/97	OPEN	Tick marks and numbers on axes are drawn at the wrong
+			place (since OpenGL commit). (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
