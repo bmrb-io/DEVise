@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Dec 10 1999 17:36:22
+# file date: Feb 27 2000 22:45:36
 # DEVise version: 1.7.0
-# DEVise date: Dec  7 1999
+# DEVise date: Jan 12 2000
 # DEVise endHeader
 
 # Per-session data source definitions
@@ -172,7 +172,7 @@ DEVise setPixelWidth {.label#Label_text_vs_recId} 1
 
 # Create windows
 DEVise create {window} {TileLayout} DEViseWn0 0.000000 0.000000 0.500000 0.500000 0 0
-DEVise create {window} {TileLayout} DEViseWn1 0.000000 0.511719 0.500000 0.028646 0 0
+DEVise create {window} {TileLayout} DEViseWn1 0.000000 0.509115 0.500000 0.028646 0 0
 
 # Set up window layouts
 DEVise setWindowLayout {DEViseWn0} -1 -1 0
