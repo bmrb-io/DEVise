@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1995/12/07 02:18:29  ravim
+  The set of stats to be displayed is specified as a parameter to setViewStatistics.
+
   Revision 1.18  1995/12/06 05:42:57  ravim
   Added function to display KGraph.
 
@@ -461,15 +464,18 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 	else if (strcmp(argv[1], "showkgraph") == 0) {
 	    if ((atoi(argv[2]) == 1) || (!vkg))  {
 		/* Create a new ViewKGraph object */
-		delete vkg;
+		/* Dont delete the previous vkg since we still want it to
+		   continuously display the previously defined KGraph */
+		/* Who eventually deletes it ?? */
+		/* delete vkg; */
 		vkg = new ViewKGraph();
 	      }
 	    int i = 0;
 	    /* Number of views */
-	    int nview = argc - 4;
+	    int nview = argc - 5;
 	    ViewGraph **vlist = (ViewGraph **)malloc(nview*sizeof(ViewGraph *));
 	    for (i = 0; i < nview; i++) {
-	      vlist[i] = (ViewGraph *)classDir->FindInstance(argv[4+i]);
+	      vlist[i] = (ViewGraph *)classDir->FindInstance(argv[5+i]);
 	      if (vlist[i] == NULL) {
 		  interp->result = "Cannot find view";
 		  goto error;
@@ -477,7 +483,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	    vkg->Init();
 	    /* Add these to the ViewKGraph class and display */
-	    if (vkg->AddViews(vlist, nview) == false) {
+	    if (vkg->AddViews(vlist, nview, argv[4]) == false) {
 		interp->result = "Could not add views to ViewKGraph";
 		goto error;
 	      }
