@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/03/06 19:35:26  jussi
+  Added GetNumDimensions() and SetNumDimensions().
+
   Revision 1.15  1996/02/06 19:32:28  jussi
   Moved logo drawing to ViewWin.c.
 
@@ -176,7 +179,6 @@ public:
 	static View *NextView(int index){ return _viewList->Next(index); }
 	static void DoneViewIterator(int index) { _viewList->DoneIterator(index); }
 
-
 	/* Set axes callback */
 	void SetXAxisAttrType(AttrType type);
 	AttrType GetXAxisAttrType() { return _xAxisAttrType;}
@@ -188,7 +190,7 @@ public:
 	AxisLabel *GetYAxisLabel() { return _yAxisLabel; }
 
 	/* set/clear min info about a view */
-	void SetXMin(Boolean hasXMin, Coord xMin=0.0) {
+	void SetXMin(Boolean hasXMin, Coord xMin = 0.0) {
 	  _hasXMin = hasXMin;
 	  _xMin = xMin;
 	}
@@ -232,6 +234,13 @@ public:
 	/* get/set dimensionality */
 	int GetNumDimensions() { return _numDimensions; }
 	void SetNumDimensions(int d);
+
+	/* get/set override color */
+	Color GetOverrideColor(Boolean &active) {
+	  active = _hasOverrideColor;
+	  return _overrideColor;
+	}
+	void SetOverrideColor(Color color, Boolean active);
 
 	/******** Pixmap manipulations *********/
 
@@ -373,9 +382,10 @@ private:
 	VisualFilter _filter; /* new state of visual filter */
 	
 	Boolean _hasExposure; /* TRUE if _exporsureRect has valid data */
-	ViewRect _exposureRect; /* Rect that has been exposed and needs to be redrawn*/
+	ViewRect _exposureRect; /* Rect that has been exposed
+				   and needs to be redrawn */
 	
-	Boolean _querySent;	 /* TRUE if query has been snet */
+	Boolean _querySent;	 /* TRUE if query has been sent */
 	VisualFilter _queryFilter; /* filter used for query */
 	ViewRect _queryRect; /* screen coordinates used for query */
 
@@ -384,13 +394,12 @@ private:
 	static ViewList *_viewList; /* list of all views */
 
 	LabelInfo _label;	/* info about label */
-	Boolean _updateTransform; /* TRUE if we need to update transform for the 
-				     window */
+	Boolean _updateTransform; /* TRUE if we need to update transform
+				     for the window */
 
 	void UpdateTransform(WindowRep *winRep); /* update transformation */
 
-
-	Boolean _hasLastFilter; /* TRUE if we have last filter used for query */
+	Boolean _hasLastFilter; /* TRUE if last filter was used for query */
 	VisualFilter _lastFilter;
 
 	Boolean _refresh;	/* TRUE if we are refreshing */
@@ -415,10 +424,11 @@ private:
 	Coord _xMin;
 	DeviseCursorList *_cursors;
 	DevisePixmap *_pixmap;
-	int _bytes; /* # of data bytes used to draw the current view */
-	static int _nextPos; /* next position in file to read from input file */
+	int _bytes;          /* # data bytes used to draw the current view */
+	static int _nextPos; /* next position in file to read from
+				input file */
 	
-	PixmapIO *_pixmapIO; /* IO for read/write pixmap */
+	PixmapIO *_pixmapIO;    /* IO for read/write pixmap */
 	Compression *_compress; /* compression class */
 
 	Boolean _cursorsOn;             /* true if cursors displayed */
@@ -427,6 +437,10 @@ private:
 
 	/* count # of times something happens */
 	int _jump, _zoomIn, _zoomOut, _scrollLeft, _scrollRight, _unknown;
+
+	Boolean _hasOverrideColor;      /* override color defined */
+	Color _overrideColor;           /* color that overrides color
+					   defined in mapping */
 };
 
 #endif

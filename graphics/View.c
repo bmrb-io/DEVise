@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/04/09 20:35:11  jussi
+  Minor fixes.
+
   Revision 1.28  1996/04/09 18:05:28  jussi
   Minor improvements.
 
@@ -177,6 +180,9 @@ View::View(char *name, Action *action, VisualFilter &initFilter,
 
   _cursorsOn = false;
   _numDimensions = 2;
+
+  _hasOverrideColor = false;
+  _overrideColor = fg;
 }
 
 void View::Init(char *name,Action *action, VisualFilter &filter,
@@ -557,6 +563,18 @@ void View::SetNumDimensions(int d)
   _numDimensions = d;
   _filterChanged = true;
   _updateTransform = true;
+}
+
+/* set override color */
+
+void View::SetOverrideColor(Color color, Boolean active)
+{
+  if (_hasOverrideColor == active && color == _overrideColor)
+    return;
+
+  _hasOverrideColor = active;
+  _overrideColor = color;
+  _filterChanged = true;
 }
 
 /* get area for displaying label */
