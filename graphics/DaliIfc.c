@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/09/04 17:26:11  wenger
+  Got Tasvir images to work in pixmaps (when running the JavaScreen, for
+  example) -- fixes bug 385.
+
   Revision 1.12  1998/02/26 00:18:51  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -429,7 +433,11 @@ DaliIfc::LaunchServer(char *&serverName)
     } else if (pid == 0) {
       /* Child. */
       char *args[2];
+#if 0
       args[0] = "TasvirWithPaths";
+#else
+      args[0] = "Tasvir";
+#endif
       args[1] = NULL;
       execvp(args[0], args);
       /* execvp doesn't return if it works. */
