@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1998/02/23 23:22:30  wenger
+  Merged cleanup_1_4_7_br_8 thru cleanup_1_4_7_br_9.
+
   Revision 1.23.2.1  1998/02/23 19:51:21  wenger
   Got DEVise 1.4.7 to compile and link on haha; fixed bug 268.
 
@@ -329,14 +332,14 @@ void CheckDirSpace(char *dirname, char *envVar, int warnSize, int exitSize)
   {
     int minBlocksFree = exitSize / stats.STAT_FRSIZE;
     int warnBlocksFree = warnSize / stats.STAT_FRSIZE;
-    if (stats.STAT_BAVAIL < minBlocksFree)
+    if (((int)stats.STAT_BAVAIL) < minBlocksFree)
     {
       char errBuf[1024];
       sprintf(errBuf, "%s directory (%s) has less than %d bytes free\n",
 	envVar, dirname, exitSize);
       Exit::DoAbort(errBuf, __FILE__, __LINE__);
     }
-    else if (stats.STAT_BAVAIL < warnBlocksFree)
+    else if (((int)stats.STAT_BAVAIL) < warnBlocksFree)
     {
       fprintf(stderr,
 	"Warning: %s directory (%s) has less than %d bytes free\n",
