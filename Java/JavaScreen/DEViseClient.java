@@ -24,6 +24,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.54  2001/10/30 17:09:52  xuk
+// Created DEViseClient object for collaborating clients in jspop.
+// 1. In getCmd(), process JAVAC_AskCollabLeader command;
+// 				process JAVAC_Collaborate command, call setUpCollab() in jspop;
+// 				process JAVAC_CollabExit command;
+// 				JAVAC_Connect command has only 4 arguments now (no collab_passwd);
+// 2. Changed collabSockets vector to collabClients vector, every item in the vector is a DEViseClient object;
+// 3. Changed addCollabSockets() to addCollabClients();
+// 		   removeCollabSocket() to removeCollabClient();
+// 4. Added collabLeader, the leader client for collaboration;
+// 5. Changed private _clientSocket to public clientSocket, in order to send data to collaborating followers in sendData().
+//
 // Revision 1.53  2001/10/24 17:46:06  wenger
 // Fixed bug 720 (one client can block others in the JSPoP).  The fix is that
 // the JSPoP now has a separate thread to read from each client.
@@ -320,7 +332,8 @@ public class DEViseClient
         clientSock = cs;
         ID = id;
 
-        savedSessionName = ".tmp/jstmp_" + ID;
+        //savedSessionName = ".tmp/jstmp_" + ID;
+	savedSessionName = pop.sessionDir + "/jstmp_" + ID;
 
         status = IDLE;
 
@@ -890,6 +903,16 @@ public class DEViseClient
         status = CLOSE;
 
         pop.pn("Close connection to client(" + hostname + ")");
+
+	// delete the temporary session file
+	String file = "/p/devise/demo/session.js/" + savedSessionName;
+	File td = new File(file);
+	if (!td.exists()) {
+	    pop.pn("Session file " + file + " does not exists.\n");
+	} else {
+	    td.delete(); 
+	    pop.pn("Session file " + file + " is deleted.\n");
+	}
 
         lastActiveTime = -1;
         lastSuspendTime = -1;
