@@ -38,6 +38,7 @@ CycleCpuTimeMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/ViewCallback.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/DevFont.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/BasicStats.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/ViewStats.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/GdataStat.h
@@ -106,7 +107,8 @@ CycleEffMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 CycleEffMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 CycleEffMappingClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 CycleEffMappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-CycleEffMappingClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
+CycleEffMappingClassInfo.o: ../graphics/Cursor.h ../graphics/DevFont.h
+CycleEffMappingClassInfo.o: ../graphics.new/BasicStats.h
 CycleEffMappingClassInfo.o: ../graphics.new/ViewStats.h
 CycleEffMappingClassInfo.o: ../graphics.new/GdataStat.h
 CycleEffMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
@@ -171,7 +173,8 @@ CycleOccMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 CycleOccMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 CycleOccMappingClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 CycleOccMappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-CycleOccMappingClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
+CycleOccMappingClassInfo.o: ../graphics/Cursor.h ../graphics/DevFont.h
+CycleOccMappingClassInfo.o: ../graphics.new/BasicStats.h
 CycleOccMappingClassInfo.o: ../graphics.new/ViewStats.h
 CycleOccMappingClassInfo.o: ../graphics.new/GdataStat.h
 CycleOccMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
@@ -247,7 +250,7 @@ CycleSuspendedMappingClassInfo.o: ../graphics/ClassDir.h
 CycleSuspendedMappingClassInfo.o: ../graphics/ViewCallback.h
 CycleSuspendedMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
 CycleSuspendedMappingClassInfo.o: ../graphics/BufPolicy.h
-CycleSuspendedMappingClassInfo.o: ../graphics/Cursor.h
+CycleSuspendedMappingClassInfo.o: ../graphics/Cursor.h ../graphics/DevFont.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/BasicStats.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/ViewStats.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/GdataStat.h
@@ -325,6 +328,7 @@ CycleWorkingMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 CycleWorkingMappingClassInfo.o: ../graphics/ViewCallback.h
 CycleWorkingMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
 CycleWorkingMappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
+CycleWorkingMappingClassInfo.o: ../graphics/DevFont.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/BasicStats.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/ViewStats.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/GdataStat.h
@@ -390,7 +394,8 @@ HostMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 HostMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 HostMappingClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 HostMappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-HostMappingClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
+HostMappingClassInfo.o: ../graphics/Cursor.h ../graphics/DevFont.h
+HostMappingClassInfo.o: ../graphics.new/BasicStats.h
 HostMappingClassInfo.o: ../graphics.new/ViewStats.h
 HostMappingClassInfo.o: ../graphics.new/GdataStat.h
 HostMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
@@ -444,8 +449,8 @@ MappingClassInfo.o: ../graphics/DualWindowRep.h ../graphics/Control.h
 MappingClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 MappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
 MappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
-MappingClassInfo.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
-MappingClassInfo.o: ../graphics.new/GdataStat.h
+MappingClassInfo.o: ../graphics/DevFont.h ../graphics.new/BasicStats.h
+MappingClassInfo.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
 MappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
 MappingClassInfo.o: ../graphics.new/DataSourceBuf.h
 MappingClassInfo.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
@@ -583,7 +588,7 @@ disp.o: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
 disp.o: ../graphics/View.h ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 disp.o: ../graphics/Control.h ../graphics/ClassDir.h
 disp.o: ../graphics/ViewCallback.h ../graphics/AttrList.h ../graphics/Init.h
-disp.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
+disp.o: ../graphics/BufPolicy.h ../graphics/Cursor.h ../graphics/DevFont.h
 disp.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
 disp.o: ../graphics.new/GdataStat.h ../graphics.new/DataSourceFixedBuf.h
 disp.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h

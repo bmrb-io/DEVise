@@ -27,9 +27,9 @@ MapClassInfo.o: ../graphics/DualWindowRep.h ../graphics/Control.h
 MapClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 MapClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
 MapClassInfo.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
-MapClassInfo.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
-MapClassInfo.o: ../graphics.new/GdataStat.h ../tape/HashTable.h
-MapClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
+MapClassInfo.o: ../graphics/DevFont.h ../graphics.new/BasicStats.h
+MapClassInfo.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
+MapClassInfo.o: ../tape/HashTable.h ../graphics.new/DataSourceFixedBuf.h
 MapClassInfo.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
 MapClassInfo.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 MapClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
@@ -67,18 +67,18 @@ ams.o: ../graphics.new/MapInterpClassInfo.h
 ams.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
 ams.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 ams.o: ../graphics/ViewCallback.h ../graphics/AttrList.h ../graphics/Cursor.h
-ams.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
-ams.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
-ams.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
-ams.o: ../tape/HashTable.h ../graphics.new/DataSourceFixedBuf.h
-ams.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
-ams.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h /usr/include/sys/ipc.h
-ams.o: /usr/include/sys/sem.h /usr/include/sys/shm.h /usr/include/assert.h
-ams.o: /usr/include/limits.h /usr/include/sys/stat.h
-ams.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-ams.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
-ams.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
-ams.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+ams.o: ../graphics/DevFont.h ../graphics/AxisLabelClassInfo.h
+ams.o: ../graphics.new/ViewClassInfo.h ../graphics.new/ViewGraph.h
+ams.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+ams.o: ../graphics.new/GdataStat.h ../tape/HashTable.h
+ams.o: ../graphics.new/DataSourceFixedBuf.h ../graphics.new/DataSourceBuf.h
+ams.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
+ams.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
+ams.o: /usr/include/sys/shm.h /usr/include/assert.h /usr/include/limits.h
+ams.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
+ams.o: /usr/include/sys/param.h /usr/include/machine/param.h
+ams.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
+ams.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h /usr/include/netdb.h
 ams.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
 ams.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 ams.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h

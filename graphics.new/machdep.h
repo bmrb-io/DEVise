@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/12/15 20:23:08  wenger
+  Incremented revision; prints current architecture at startup.
+
   Revision 1.15  1996/12/03 20:29:57  jussi
   Fixed some AIX problems.
 
@@ -461,6 +464,14 @@ EXTERNC unsigned sleep(unsigned);
   #define ARCH_NAME "Windows NT"
 #else
   #define ARCH_NAME "unknown"
+#endif
+
+
+#if defined(__sun)
+#define DBL_MAX         1.7976931348623157E+308 /* max decimal value of a */
+                                                /* "double" */
+#define DBL_MIN         2.2250738585072014E-308 /* min decimal value of a */
+                                                /* "double" */
 #endif
 
 

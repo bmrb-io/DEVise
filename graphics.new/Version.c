@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/12/15 20:23:08  wenger
+  Incremented revision; prints current architecture at startup.
+
   Revision 1.19  1996/12/13 18:20:58  wenger
   Added release.linux; incremented DEVise revision.
 
@@ -125,7 +128,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.2.4";
+static const char *	version = "1.2.5";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";

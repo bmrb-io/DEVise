@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.32  1996/12/16 07:21:33  donjerko
+#  Fixed some compile problems
+#
 #  Revision 1.31  1996/12/15 07:00:27  donjerko
 #  Added the RTree.C source because it is needed in DoExit.
 #
@@ -81,7 +84,7 @@ include ../../Makefile.common
 USE_SEQ = yes
 
 CFLAGS = $(ARCH_FLAGS) -I../../attrproj -I../../graphics \
-	-I../../graphics.new -I../../tape -I../../DTE/RTree -I../../DTE/RTree/tools \
+	-I../../graphics.new -I../../tape \
 	-I../../DTE -I../../DTE/Core \
 	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX \
 	-DATTRPROJ -DLIBCS
@@ -108,12 +111,10 @@ endif
 ifeq (yes, $(USE_SEQ))
 LOCALSRC += Exit.c TData.c TDataSeqAscii.c TDataSeqAsciiInterp.c \
         TDataBinary.c DataSourceDQL.c \
-	   RTree.c \
         TDataBinaryInterp.c DataSourceSegment.c DCE.C MemMgr.C
 else
 LOCALSRC += Exit.c TData.c TDataAscii.c TDataAsciiInterp.c \
         TDataBinary.c  DataSourceDQL.c \
-	   RTree.c \
         TDataBinaryInterp.c DataSourceSegment.c DCE.C MemMgr.C
 endif
 

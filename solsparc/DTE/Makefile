@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/11/26 21:42:47  wenger
+#  Fixed various makefile problems; updated dependencies.
+#
 #  Revision 1.2  1996/11/23 01:54:37  donjerko
 #  added standalone option
 #
@@ -27,10 +30,14 @@ ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include
 #ARCH_LDFLAGS = -lpthread
 
 DTE_DIR = ../../DTE
-VPATH = $(DTE_DIR)/Core $(DTE_DIR) $(DTE_DIR)/StandAlone
+VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
+	$(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools ../../attrproj/
 include $(DTE_DIR)/Makefile.base
 include $(DTE_DIR)/Makefile.solaris
 
 dte: $(STAND_ALONE_OBJ)
-	cd ../devread; make libdevread.a; cd ../DTE;
-	$(CC) -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread -lm -lsocket -lnsl
+	$(CC) -gstabs -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread \
+		-lm -lsocket -lnsl
+
+FormatVolume: FormatVolume.c
+	$(CC) $< -o $@

@@ -22,7 +22,8 @@ AxisLabelClassInfo.o: Transform.h DevisePixmap.h Compress.h DevError.h
 AxisLabelClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
 AxisLabelClassInfo.o: DualWindowRep.h Control.h ViewCallback.h AttrList.h
 AxisLabelClassInfo.o: /usr/include/sys/time.h Init.h BufPolicy.h Cursor.h
-AxisLabelClassInfo.o: Util.h /usr/include/time.h /usr/include/ctype.h
+AxisLabelClassInfo.o: DevFont.h Util.h /usr/include/time.h
+AxisLabelClassInfo.o: /usr/include/ctype.h
 ClassDir.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h ClassDir.h
 ClassDir.o: DeviseTypes.h /usr/include/values.h DevStatus.h
 ClassDir.o: /usr/include/sys/types.h Exit.h Util.h /usr/include/stdlib.h
@@ -83,7 +84,7 @@ Cursor.o: /usr/include/string.h Journal.h ViewWin.h WindowRep.h Geom.h
 Cursor.o: /usr/include/math.h Transform.h DevisePixmap.h Compress.h
 Cursor.o: DevError.h /usr/include/errno.h /usr/include/sys/errno.h
 Cursor.o: DualWindowRep.h Control.h ClassDir.h AttrList.h
-Cursor.o: /usr/include/sys/time.h Init.h BufPolicy.h
+Cursor.o: /usr/include/sys/time.h Init.h BufPolicy.h DevFont.h
 CursorClassInfo.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 CursorClassInfo.o: CursorClassInfo.h ClassDir.h DeviseTypes.h
 CursorClassInfo.o: /usr/include/values.h DevStatus.h /usr/include/sys/types.h
@@ -128,6 +129,12 @@ DevError.o: DevError.h /usr/include/stdio.h /usr/include/sys/stdsyms.h
 DevError.o: /usr/include/errno.h /usr/include/sys/errno.h DeviseTypes.h
 DevError.o: /usr/include/values.h DevStatus.h /usr/include/sys/types.h Init.h
 DevError.o: BufPolicy.h
+DevFont.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h DevFont.h
+DevFont.o: /usr/include/sys/types.h DeviseTypes.h /usr/include/values.h
+DevFont.o: DevStatus.h WindowRep.h /usr/include/stdlib.h Geom.h
+DevFont.o: /usr/include/math.h Color.h Transform.h VisualArg.h Pattern.h
+DevFont.o: DList.h Exit.h DevisePixmap.h Compress.h DevError.h
+DevFont.o: /usr/include/errno.h /usr/include/sys/errno.h
 DevStatus.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h DevStatus.h
 DevStatus.o: /usr/include/sys/types.h DeviseTypes.h /usr/include/values.h
 DevisePixmap.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
@@ -155,8 +162,8 @@ Dispatcher.o: DevStatus.h DList.h Exit.h Journal.h VisualArg.h Color.h
 Dispatcher.o: Pattern.h Control.h ClassDir.h Init.h BufPolicy.h Selection.h
 Dispatcher.o: View.h ViewWin.h WindowRep.h Geom.h /usr/include/math.h
 Dispatcher.o: Transform.h DevisePixmap.h Compress.h DevError.h
-Dispatcher.o: DualWindowRep.h ViewCallback.h AttrList.h Cursor.h Time.h
-Dispatcher.o: Display.h ColorMgr.h
+Dispatcher.o: DualWindowRep.h ViewCallback.h AttrList.h Cursor.h DevFont.h
+Dispatcher.o: Time.h Display.h ColorMgr.h
 Display.o: XDisplay.h Display.h DeviseTypes.h /usr/include/values.h
 Display.o: DevStatus.h /usr/include/sys/types.h /usr/include/sys/stdsyms.h
 Display.o: Geom.h /usr/include/stdio.h /usr/include/math.h Color.h
@@ -220,7 +227,7 @@ Journal.o: /usr/include/stdlib.h DList.h Exit.h ViewWin.h WindowRep.h Geom.h
 Journal.o: /usr/include/math.h Transform.h DevisePixmap.h Compress.h
 Journal.o: DevError.h /usr/include/errno.h /usr/include/sys/errno.h
 Journal.o: DualWindowRep.h Control.h ClassDir.h ViewCallback.h AttrList.h
-Journal.o: Cursor.h Time.h
+Journal.o: Cursor.h DevFont.h Time.h
 NullDisplay.o: NullDisplay.h Display.h DeviseTypes.h /usr/include/values.h
 NullDisplay.o: DevStatus.h /usr/include/sys/types.h
 NullDisplay.o: /usr/include/sys/stdsyms.h Geom.h /usr/include/stdio.h
@@ -282,7 +289,7 @@ Selection.o: Color.h Pattern.h ViewWin.h WindowRep.h Geom.h
 Selection.o: /usr/include/math.h Transform.h DevisePixmap.h Compress.h
 Selection.o: DevError.h /usr/include/errno.h /usr/include/sys/errno.h
 Selection.o: DualWindowRep.h Control.h ClassDir.h ViewCallback.h AttrList.h
-Selection.o: /usr/include/sys/time.h Init.h BufPolicy.h Cursor.h
+Selection.o: /usr/include/sys/time.h Init.h BufPolicy.h Cursor.h DevFont.h
 Temp.o: Temp.h DeviseTypes.h /usr/include/values.h DevStatus.h
 Temp.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h WindowRep.h
 Temp.o: /usr/include/stdio.h /usr/include/stdlib.h Geom.h /usr/include/math.h
@@ -332,11 +339,12 @@ View.o: /usr/include/unistd.h /usr/include/sys/unistd.h DList.h Journal.h
 View.o: VisualArg.h Color.h Pattern.h ViewWin.h WindowRep.h Geom.h
 View.o: Transform.h DevisePixmap.h Compress.h DevError.h /usr/include/errno.h
 View.o: /usr/include/sys/errno.h DualWindowRep.h Control.h ClassDir.h
-View.o: ViewCallback.h AttrList.h Init.h BufPolicy.h Cursor.h FilterQueue.h
-View.o: TimeStamp.h Parse.h Map3D.h Display.h ColorMgr.h PSDisplay.h
-View.o: DaliIfc.h Xdef.h /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
-View.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-View.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
+View.o: ViewCallback.h AttrList.h Init.h BufPolicy.h Cursor.h DevFont.h
+View.o: FilterQueue.h TimeStamp.h Parse.h Map3D.h Display.h ColorMgr.h
+View.o: PSDisplay.h DaliIfc.h Xdef.h /s/X11/include/X11/Xlib.h
+View.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+View.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
+View.o: /s/X11/include/X11/Xutil.h
 ViewWin.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 ViewWin.o: /usr/include/string.h /usr/include/errno.h
 ViewWin.o: /usr/include/sys/errno.h ViewWin.h DList.h Exit.h DeviseTypes.h

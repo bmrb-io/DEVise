@@ -26,30 +26,29 @@ ApParseCat.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
 ApParseCat.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
 ApParseCat.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 ApParseCat.o: /usr/include/sys/param.h /usr/include/machine/param.h
-ApParseCat.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-ApParseCat.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-ApParseCat.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-ApParseCat.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
-ApParseCat.o: /usr/include/sys/errno.h /usr/include/assert.h
-ApParseCat.o: /usr/include/limits.h /usr/include/sys/stat.h
-ApParseCat.o: ../graphics.new/machdep.h /usr/include/sys/time.h
-ApParseCat.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-ApParseCat.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-ApParseCat.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-ApParseCat.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-ApParseCat.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-ApParseCat.o: /usr/include/netdb.h /usr/include/sys/socket.h
-ApParseCat.o: /usr/include/netinet/in.h ../graphics/AttrList.h
-ApParseCat.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
-ApParseCat.o: ../graphics.new/GroupDir.h ../graphics.new/ItemList.h
-ApParseCat.o: ../graphics.new/Group.h /usr/include/stdlib.h
-ApParseCat.o: ../graphics.new/MapInterpClassInfo.h ../graphics/ClassDir.h
-ApParseCat.o: ../graphics/VisualArg.h ../graphics/Color.h
-ApParseCat.o: ../graphics/Pattern.h ../graphics/Parse.h ApInit.h
-ApParseCat.o: ../graphics.new/TDataAsciiInterp.h ../graphics.new/TDataAscii.h
-ApParseCat.o: ../graphics/Dispatcher.h /usr/include/unistd.h
-ApParseCat.o: /usr/include/string.h ../graphics/Journal.h
-ApParseCat.o: ../graphics.new/FileIndex.h ../graphics.new/TDataBinaryInterp.h
+ApParseCat.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+ApParseCat.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+ApParseCat.o: /usr/include/errno.h /usr/include/sys/errno.h
+ApParseCat.o: /usr/include/assert.h /usr/include/limits.h
+ApParseCat.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
+ApParseCat.o: /usr/include/sys/time.h /usr/include/sys/time.h
+ApParseCat.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+ApParseCat.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+ApParseCat.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+ApParseCat.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+ApParseCat.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+ApParseCat.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+ApParseCat.o: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Init.h
+ApParseCat.o: ../graphics/BufPolicy.h ../graphics.new/GroupDir.h
+ApParseCat.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
+ApParseCat.o: /usr/include/stdlib.h ../graphics.new/MapInterpClassInfo.h
+ApParseCat.o: ../graphics/ClassDir.h ../graphics/VisualArg.h
+ApParseCat.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Parse.h
+ApParseCat.o: ApInit.h ../graphics.new/TDataAsciiInterp.h
+ApParseCat.o: ../graphics.new/TDataAscii.h ../graphics/Dispatcher.h
+ApParseCat.o: /usr/include/unistd.h /usr/include/string.h
+ApParseCat.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
+ApParseCat.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
 ApParseCat.o: /usr/include/ctype.h /usr/include/math.h
 ApParseCat.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
@@ -62,27 +61,25 @@ ApParseCat2.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
 ApParseCat2.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
 ApParseCat2.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 ApParseCat2.o: /usr/include/sys/param.h /usr/include/machine/param.h
-ApParseCat2.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-ApParseCat2.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-ApParseCat2.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-ApParseCat2.o: /usr/include/mon/obpdefs.h /usr/include/errno.h
-ApParseCat2.o: /usr/include/sys/errno.h /usr/include/assert.h
-ApParseCat2.o: /usr/include/limits.h /usr/include/sys/stat.h
-ApParseCat2.o: ../graphics.new/machdep.h /usr/include/sys/time.h
-ApParseCat2.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-ApParseCat2.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-ApParseCat2.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-ApParseCat2.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-ApParseCat2.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-ApParseCat2.o: /usr/include/netdb.h /usr/include/sys/socket.h
-ApParseCat2.o: /usr/include/netinet/in.h ../graphics/AttrList.h
-ApParseCat2.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
-ApParseCat2.o: ../graphics.new/GroupDir.h ../graphics.new/ItemList.h
-ApParseCat2.o: ../graphics.new/Group.h /usr/include/stdlib.h
-ApParseCat2.o: ../graphics.new/MapInterpClassInfo.h ../graphics/ClassDir.h
-ApParseCat2.o: ../graphics/VisualArg.h ../graphics/Color.h
-ApParseCat2.o: ../graphics/Pattern.h ../graphics/Parse.h ApInit.h
-ApParseCat2.o: ../graphics.new/TDataSeqAsciiInterp.h
+ApParseCat2.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+ApParseCat2.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+ApParseCat2.o: /usr/include/errno.h /usr/include/sys/errno.h
+ApParseCat2.o: /usr/include/assert.h /usr/include/limits.h
+ApParseCat2.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
+ApParseCat2.o: /usr/include/sys/time.h /usr/include/sys/time.h
+ApParseCat2.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+ApParseCat2.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+ApParseCat2.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+ApParseCat2.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+ApParseCat2.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+ApParseCat2.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+ApParseCat2.o: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Init.h
+ApParseCat2.o: ../graphics/BufPolicy.h ../graphics.new/GroupDir.h
+ApParseCat2.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
+ApParseCat2.o: /usr/include/stdlib.h ../graphics.new/MapInterpClassInfo.h
+ApParseCat2.o: ../graphics/ClassDir.h ../graphics/VisualArg.h
+ApParseCat2.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Parse.h
+ApParseCat2.o: ApInit.h ../graphics.new/TDataSeqAsciiInterp.h
 ApParseCat2.o: ../graphics.new/TDataSeqAscii.h ../graphics/Dispatcher.h
 ApParseCat2.o: /usr/include/unistd.h /usr/include/string.h
 ApParseCat2.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
@@ -99,25 +96,23 @@ AttrProj.o: ApParseCat.h ../graphics.new/TData.h ../graphics.new/DataSource.h
 AttrProj.o: ../graphics/Exit.h ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 AttrProj.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 AttrProj.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-AttrProj.o: /usr/include/machine/param.h /usr/include/sys/signal.h
-AttrProj.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-AttrProj.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
-AttrProj.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
-AttrProj.o: /usr/include/errno.h /usr/include/sys/errno.h
-AttrProj.o: /usr/include/assert.h /usr/include/limits.h
-AttrProj.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-AttrProj.o: /usr/include/sys/time.h /usr/include/sys/time.h
-AttrProj.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-AttrProj.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-AttrProj.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-AttrProj.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-AttrProj.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-AttrProj.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-AttrProj.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/ctype.h
-AttrProj.o: /usr/include/math.h /usr/include/floatingpoint.h
-AttrProj.o: /usr/include/sys/ieeefp.h ../graphics/AttrList.h
-AttrProj.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
-AttrProj.o: ../graphics.new/DataSeg.h
+AttrProj.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+AttrProj.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+AttrProj.o: /usr/include/machine/mmu.h /usr/include/errno.h
+AttrProj.o: /usr/include/sys/errno.h /usr/include/assert.h
+AttrProj.o: /usr/include/limits.h /usr/include/sys/stat.h
+AttrProj.o: ../graphics.new/machdep.h /usr/include/sys/time.h
+AttrProj.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+AttrProj.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+AttrProj.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+AttrProj.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+AttrProj.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+AttrProj.o: /usr/include/netdb.h /usr/include/sys/socket.h
+AttrProj.o: /usr/include/netinet/in.h ../graphics/Util.h
+AttrProj.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
+AttrProj.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+AttrProj.o: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Init.h
+AttrProj.o: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
 AttrProj2.o: /usr/include/stdio.h /usr/include/string.h
 AttrProj2.o: /usr/include/sys/stdtypes.h AttrProj.h ../graphics/DeviseTypes.h
 AttrProj2.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -128,25 +123,23 @@ AttrProj2.o: ../graphics.new/DataSource.h ../graphics/Exit.h
 AttrProj2.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 AttrProj2.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 AttrProj2.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-AttrProj2.o: /usr/include/machine/param.h /usr/include/sys/signal.h
-AttrProj2.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-AttrProj2.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
-AttrProj2.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
-AttrProj2.o: /usr/include/errno.h /usr/include/sys/errno.h
-AttrProj2.o: /usr/include/assert.h /usr/include/limits.h
-AttrProj2.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-AttrProj2.o: /usr/include/sys/time.h /usr/include/sys/time.h
-AttrProj2.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-AttrProj2.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-AttrProj2.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-AttrProj2.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-AttrProj2.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-AttrProj2.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-AttrProj2.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/ctype.h
-AttrProj2.o: /usr/include/math.h /usr/include/floatingpoint.h
-AttrProj2.o: /usr/include/sys/ieeefp.h ../graphics/AttrList.h
-AttrProj2.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
-AttrProj2.o: ../graphics.new/DataSeg.h
+AttrProj2.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+AttrProj2.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+AttrProj2.o: /usr/include/machine/mmu.h /usr/include/errno.h
+AttrProj2.o: /usr/include/sys/errno.h /usr/include/assert.h
+AttrProj2.o: /usr/include/limits.h /usr/include/sys/stat.h
+AttrProj2.o: ../graphics.new/machdep.h /usr/include/sys/time.h
+AttrProj2.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+AttrProj2.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+AttrProj2.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+AttrProj2.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+AttrProj2.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+AttrProj2.o: /usr/include/netdb.h /usr/include/sys/socket.h
+AttrProj2.o: /usr/include/netinet/in.h ../graphics/Util.h
+AttrProj2.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
+AttrProj2.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+AttrProj2.o: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Init.h
+AttrProj2.o: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
 ProjectionList.o: /usr/include/stdio.h ProjectionList.h
 ProjectionList.o: ../graphics/DeviseTypes.h /usr/include/values.h
 ProjectionList.o: ../graphics/DevStatus.h /usr/include/sys/types.h

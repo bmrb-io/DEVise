@@ -23,11 +23,11 @@ generic.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
 generic.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
 generic.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 generic.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-generic.o: ../graphics/Cursor.h ../graphics/AxisLabelClassInfo.h
-generic.o: ../graphics.new/ViewClassInfo.h ../graphics.new/ViewGraph.h
-generic.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
-generic.o: ../graphics.new/GdataStat.h ../tape/HashTable.h
-generic.o: ../graphics.new/DataSourceFixedBuf.h
+generic.o: ../graphics/Cursor.h ../graphics/DevFont.h
+generic.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
+generic.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
+generic.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
+generic.o: ../tape/HashTable.h ../graphics.new/DataSourceFixedBuf.h
 generic.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
 generic.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 generic.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h

@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.105  1996/12/27 14:59:44  donjerko
+#	Import button is used only for importing new streams.
+#	Added a button "Display" in the import window that immediately goes to
+#	visualization.
+#
 #	Revision 1.104  1996/12/26 17:32:49  wenger
 #	Fixed a mistake in Donko and Shaun's GUI changes.
 #
@@ -652,7 +657,7 @@ menu .mbar.session.menu.printMenu -tearoff 0
 #.mbar.session.menu add command -label "Memory in use" -command { DEVise new_inuse }
 
 menu .mbar.tdata.menu -tearoff 0
-.mbar.tdata.menu add command -label "Import" -command { defineStream "" 0 }
+.mbar.tdata.menu add command -label "New Table" -command { defineStream "" 0 }
 .mbar.tdata.menu add command -label "Edit" -command { MacroImport 0 0 }
 
 .mbar.tdata.menu add cascade -label "Schema" \
