@@ -1,0 +1,9 @@
+#! /bin/csh -f
+
+limit filesize 30000
+# We need a big cpu time limit for 4096.
+limit cputime 1000
+limit coredumpsize 0
+
+setenv CLASSPATH ../..:./starlibj.jar
+java bmrb.star2ad.Star2AdMain $*

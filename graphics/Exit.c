@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.29.14.1  2002/09/02 21:29:24  wenger
+  Did a bunch of Purifying -- the biggest change is storing the command
+  objects in a HashTable instead of an Htable -- the Htable does a bunch
+  of ugly memory copying.
+
+  Revision 1.29  1999/11/30 22:28:02  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.28  1999/11/16 17:01:44  wenger
   Removed all DTE-related conditional compiles; changed version number to
   1.7.0 because of removing DTE; removed DTE-related schema editing and
@@ -189,6 +201,8 @@ void Exit::DoExit(int code)
     HangCheck::DestroyDefault();
     CompositeParser::DestroyAll();
 #endif
+
+    delete ControlPanel::_controlPanel;
 
     exit(code);
 }

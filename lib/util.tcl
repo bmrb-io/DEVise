@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-2001
+#  (c) Copyright 1992-2002
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,17 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.70.10.2  2002/09/17 18:50:55  wenger
+#  Added GUI for GAttr links.
+#
+#  Revision 1.70.10.1  2002/09/05 19:14:10  wenger
+#  Implemented GData attribute value links (but not GUI for creating
+#  them).
+#
+#  Revision 1.70  2001/09/24 15:29:18  wenger
+#  Added warning if you close or quit with unsaved session changes (note
+#  that visual filter changes are not considered "changes").
+#
 #  Revision 1.69  2001/08/28 17:10:32  wenger
 #  Various improvements to printing GUI and Tcl code.
 #
@@ -574,24 +585,41 @@ proc LinkSet {} {
 }
 
 ############################################################
-#list of all record and TData attribute links
-#Note: this is really leader/follower links, not just record links.
+
+#list of all record links
+
 proc RecordLinkSet {} {
     set linkSet [ CategoryInstances "link"]
     set recLinkSet {}
     foreach link $linkSet {
         set flag [DEVise getLinkFlag $link]
-        if { [expr $flag & 128] || [expr $flag & 1024] || \
-	  [expr $flag & 2048]} {
+        if { [expr $flag & 128] } {
             lappend recLinkSet $link
         }
     }
     return $recLinkSet
 }
 
+############################################################
+
+#list of all leader/follower links (e.g., record, external data,
+# and GAttr)
+
+proc LeaderFollowerLinkSet {} {
+    set linkSet [ CategoryInstances "link"]
+    set recLinkSet {}
+    foreach link $linkSet {
+	if {[IsMasterSlaveLink $link]} {
+            lappend recLinkSet $link
+	}
+    }
+    return $recLinkSet
+}
 
 ############################################################
+
 #list of all TData attribute links
+
 proc TAttrLinkSet {} {
     set linkSet [ CategoryInstances "link"]
     set tAttrLinkSet {}
@@ -606,7 +634,27 @@ proc TAttrLinkSet {} {
 
 ############################################################
 
-#list of non pile links
+#list of all GData attribute links
+
+proc GAttrLinkSet {} {
+    set gAttrLinkSet {}
+
+    set linkSet [ CategoryInstances "link"]
+    foreach link $linkSet {
+        set flag [DEVise getLinkFlag $link]
+        if { [expr $flag & 4096] } {
+            lappend gAttrLinkSet $link
+        }
+    }
+
+    return $gAttrLinkSet
+}
+
+
+############################################################
+
+# list of non pile links
+
 proc NonPileLinkSet {} {
     set nonPileLinks {}
     foreach link [LinkSet] {
@@ -615,6 +663,19 @@ proc NonPileLinkSet {} {
 	}
     }
     return $nonPileLinks
+}
+
+############################################################
+
+# returns true iff the given link is a master/slave link
+# (e.g., a record link or GAttr link)
+
+proc IsMasterSlaveLink {linkName} {
+    set linkFlag [DEVise getLinkFlag $linkName]
+    set isMS [expr $linkFlag == 128 || $linkFlag == 1024 || \
+      $linkFlag == 2048 || $linkFlag == 4096]
+
+    return $isMS
 }
 
 ############################################################
@@ -1358,11 +1419,17 @@ proc UpdateLinkCursorInfo {} {
     } elseif {$flag == 1024} {
       set masterAttr [DEVise getLinkMasterAttr $link]
       set slaveAttr [DEVise getLinkSlaveAttr $link]
-      set type "Set ($masterAttr/$slaveAttr)"
+      set type "TAttr ($masterAttr/$slaveAttr)"
       set masterView [DEVise getLinkMaster $link]
       set slaveStr "follower"
     } elseif {$flag == 2048} {
       set type "External Data"
+      set masterView [DEVise getLinkMaster $link]
+      set slaveStr "follower"
+    } elseif {$flag == 4096} {
+      set masterAttr [DEVise getLinkMasterAttr $link]
+      set slaveAttr [DEVise getLinkSlaveAttr $link]
+      set type "GAttr ($masterAttr/$slaveAttr)"
       set masterView [DEVise getLinkMaster $link]
       set slaveStr "follower"
     } else {

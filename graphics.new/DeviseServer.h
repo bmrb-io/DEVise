@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -25,6 +25,14 @@
   $Id$
 
   $Log$
+  Revision 1.10.14.1  2002/09/02 21:29:33  wenger
+  Did a bunch of Purifying -- the biggest change is storing the command
+  objects in a HashTable instead of an Htable -- the Htable does a bunch
+  of ugly memory copying.
+
+  Revision 1.10  2000/01/13 23:07:07  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.9  1999/11/24 15:44:23  wenger
   Removed (unnecessary) CommandObj class; commands are now logged for the
   monolithic form, not just the client/server form; other command-related
@@ -133,6 +141,7 @@ private:
   ClientID _previousClient;
   ControlPanel *_control;
   DispatcherID *_clientDispIDs;
+  CmdContainer *_cmdCont;
 };
 
 #endif /* _DeviseServer_h_ */

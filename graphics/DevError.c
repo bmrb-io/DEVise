@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.11.10.1  2002/09/17 23:34:12  wenger
+  Fixed a bunch of memory leaks -- especially in DevError::ReportError()!
+
+  Revision 1.11  2001/10/03 19:09:49  wenger
+  Various improvements to error logging; fixed problem with return value
+  from JavaScreenCmd::Run().
+
   Revision 1.10  2001/05/27 18:51:07  wenger
   Improved buffer checking with snprintfs.
 
@@ -117,7 +124,11 @@ DevError::ReportError(const char *message, int argc, const char * const *argv,
         return;
     }
 
-    ostrstream errStr;
+    // Note: if we don't supply our own buffer here, strstream leaks
+    // its buffer.  RKW 2002-09-17.
+    const int bufSize = MAXPATHLEN * 2;
+    char buf[bufSize];
+    ostrstream errStr(buf, bufSize);
 
     errStr << endl << progName << " error: " << message;
     for (int count = 0; count < argc; count++) {

@@ -1,0 +1,114 @@
+		How to do a DEVise/JavaScreen Release
+		$Id$
+
+This is a quick-and-dirty documentation of what needs to be done for
+a DEVise/JavaScreen release (by a release, I mean making a new version
+of DEVise accessible to users running from /p/devise in the CS AFS tree,
+and putting a new version of the JavaScreen on the "standard" installation
+on pumori).
+
+This document should probably be improved eventually -- right now it's
+mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
+
+
+- Update sources.
+    - Check out/update sources (make sure they're on the right branch,
+      if that's necessary).
+
+- Build/test DEVise.
+    - Build DEVise on all release architectures (linux/solsparc as of
+      2002-09-24).  (Build solsparc on cardinal.)
+
+    - Make strip after building.
+
+    - Test run the monolithic and client-server DEVise (dev, devcs) on all
+      relevant architectures.
+
+- Build/test JavaScreen:
+    - Build the JavaScreen (including jar files).
+
+    - Run "autotest all" in the JS directory.
+
+- Make sure things are ready to go:
+    - Test run the DEVise release script (scripts/release_std) (ANSWER NO
+      WHEN ASKED IF YOU REALLY WANT TO DO IT).
+
+    - Test run the JavaScreen release script (scripts/release.js_std) (ANSWER
+      NO WHEN ASKED IF YOU REALLY WANT TO DO IT).
+
+- Actual release:
+    - Send email warning of the release.
+
+    - After a suitable time, actually run the DEVise and JavaScreen release
+      scripts (scripts/release_std and scripts/release.js_std).
+    
+    - Make sure the released versions actually run on the relevant
+      architectures.
+
+    - Send an email with the details of what changed since the last release.
+
+- JavaScreen install on pumori:
+    - Go to /p/devise/release/JavaScreen *on pumori*.
+
+    - Make sure Makefile.config points to the appropriate configuration file
+      for the setup you want to install.
+
+    - Run the jspop, etc., as test or tst2 and make sure things work.
+
+    - Also log onto pumori as devise, and to go
+      /local.pumori.1/devise/js.regular (assuming you want install the
+      "regular" setup).  (Go to /local.pumori.1/devise/js.wave for a
+      Wavelet-IDR installation or /local.pumori.1/devise/js.soil for
+      a soil science installation.)
+
+    - Test run "make -f Makefile.setup install" in
+      /p/devise/release/JavaScreen (ANSWER NO WHEN ASKED IF YOU REALLY WANT
+      TO DO IT).
+
+    - Send email warning of the release.
+
+    - After a suitable time, do the following:
+        - As devise, edit the crontab file so that the check script doesn't
+	  run.
+
+	- Also as devise, kill the appropriate JavaScreen processes
+	  (kill_jsall).
+
+	- Possibly move the installed JavaScreen directory
+	  (/local.pumori.1/devise/js.regular or whatever) to a backup
+	  directory (so you can easily back out the installation if
+	  necessary).
+
+	- As devise, change the mode in the js.regular directory (or other
+	  appropriate directory) to 777.
+
+        - In /p/devise/release/JavaScreen, run "make -f Makefile.setup install"
+	  for real.
+
+	- As devise, change the mode of js.regular (or other appropriate
+	  directory) back to 755.
+
+	- If doing a Wavelet-IDR install, edit the html files in
+	  /var/home/www/public/waveletidr on pumori, and change the cmdport
+	  to 6866.
+
+	- If doing a soil science install, edit the html files in
+	  /var/home/www/public/soil_sci on pumori, and change the cmdport
+	  to 5966.
+
+        - As devise, edit the crontab file so that the check scripts are
+	  run again.
+
+        - Wait for the JSPoP to get restarted, and run the JS in a web
+	  browser to make sure it works.
+
+        - Send an email with the details of what changed since the last
+	  release.
+
+- Tag/archive sources:
+    - Cvs tag the source tree (the tag should be of the form
+      Mmm_dd_yyyy_release, where Mmm is the three-letter abbreviation for
+      the month, dd is the day of the month, and yyyy is the year).
+
+    - Make a tar file of the sources and archive it (run scripts/tarsrcs
+      and copy the file to /p/devise/wenger/src_archive).

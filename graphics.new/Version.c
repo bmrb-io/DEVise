@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,11 +20,37 @@
   $Id$
 
   $Log$
+  Revision 1.67  2002/07/19 17:07:26  wenger
+  Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+
   Revision 1.66  2002/06/17 19:41:08  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 
   Revision 1.65  2002/05/01 21:30:13  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.64.2.10  2003/01/09 22:21:59  wenger
+  Added "link multiplication factor" feature; changed version to 1.7.14.
+
+  Revision 1.64.2.9  2002/11/15 22:44:35  wenger
+  Views with no TData records don't contribute to filter values on 'home'
+  (this helps to fix some problems with the Condor user visualizations);
+  added cursorHome command; changed version to 1.7.13.
+
+  Revision 1.64.2.8  2002/11/05 20:02:14  wenger
+  Fixed bug 831 (JSPoP can't respond if stuck sending data); incremented
+  DEVise and JavaScreen versions.
+
+  Revision 1.64.2.7  2002/09/17 18:58:19  wenger
+  Limited warning about horizontal and vertical points per pixel
+  mismatch to one time; DEVise version is now 1.7.11.
+
+  Revision 1.64.2.6  2002/09/05 19:14:03  wenger
+  Implemented GData attribute value links (but not GUI for creating
+  them).
+
+  Revision 1.64.2.5  2002/07/25 19:08:02  wenger
+  Incremented version to 1.7.9x.
 
   Revision 1.64.2.4  2002/06/26 18:25:37  wenger
   This should be the "official" 1.7.8 version.
@@ -379,7 +405,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.7.8";
+static const char *	version = "1.7.14";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2002";

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.18.10.1  2002/09/17 23:34:11  wenger
+  Fixed a bunch of memory leaks -- especially in DevError::ReportError()!
+
+  Revision 1.18  2001/04/03 19:57:32  wenger
+  Cleaned up code dealing with GData attributes in preparation for
+  "external process" implementation.
+
   Revision 1.17  2000/01/13 23:06:50  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -177,7 +184,9 @@ public:
 
   static double GetVal(const AttrVal *aval, AttrType atype);
 
-  void AttrList::Clear();
+  void Clear();
+
+  static void DestroyAllInstances();
 
 private:
   AttrInfo **_attrs;

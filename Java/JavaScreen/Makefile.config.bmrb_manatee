@@ -40,4 +40,8 @@ SERV_DIR = /p/devise/js.installed
 JAR_DIR = /website/htdocs/devise
 CGI_DIR = /website/htdocs/cgi-bin
 IDSTR = regular
+
+# This is who gets email about any errors.
+ERROR_EMAIL = wenger@cs.wisc.edu
+
 INSTALL_HOST = manatee

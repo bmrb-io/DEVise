@@ -15,6 +15,16 @@
 # $Id$
 
 # $Log$
+# Revision 1.29.10.2  2003/01/10 19:49:16  wenger
+# Argh.  Changed all of the Solaris stuff back so that DEVise compiles
+# on Solaris 2.7 (cardinal).
+#
+# Revision 1.29.10.1  2003/01/09 16:51:14  wenger
+# Updated linux and solaris dependencies; solsparc now uses Tcl/Tk 8.0.
+#
+# Revision 1.29  2001/06/12 15:35:44  wenger
+# Updated dependencies for solaris and linux.
+#
 # Revision 1.28  2000/03/23 19:51:30  wenger
 # Updated dependencies for Solaris 2.7.
 #

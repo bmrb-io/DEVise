@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.13.10.1  2002/09/02 21:29:33  wenger
+  Did a bunch of Purifying -- the biggest change is storing the command
+  objects in a HashTable instead of an Htable -- the Htable does a bunch
+  of ugly memory copying.
+
+  Revision 1.13  2001/10/08 19:21:02  wenger
+  Fixed bug 702 (JavaScreen locks up on unrecognized command in DEVised).
+
   Revision 1.12  2001/01/08 20:32:52  wenger
   Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
   back onto the trunk.
@@ -68,6 +76,7 @@
 #include "Control.h"
 #include "DeviseCommand.h"
 #include "DeviseServer.h"
+#include "HashTable.h"
 
 class ControlPanel;
 class DeviseCommand;
@@ -112,9 +121,14 @@ class CmdContainer
 		long	logCommand(int argc, char** argv, CmdDescriptor& cmdDes);
 		//bool	playCommand(long logId1, long logId2);
 
+		static int CmdHash(char *&index, int numBuckets);
+		static int CmdComp(char *&index1, char *&index2);
+
 		Make	make;
 		DeviseServer*	_server;
 		Boolean _collabEnabled;
+
+		HashTable<char *, DeviseCommand *> *_commands;
 };
 ostream& operator <<(ostream& os, const CmdContainer& cc);
 

@@ -15,6 +15,13 @@
 # $Id$
 
 # $Log$
+# Revision 1.11.4.1  2003/01/09 16:51:02  wenger
+# Updated linux and solaris dependencies; solsparc now uses Tcl/Tk 8.0.
+#
+# Revision 1.11  2002/02/04 16:37:02  wenger
+# Compiler is explicitly set to gcc 2.95.3, updated dependencies, using
+# Tcl and Tk 8.3 so DEVise will compile and link on RedHat 7.2.
+#
 # Revision 1.10  2000/03/23 19:58:26  wenger
 # Updated dependencies, got everything to compile on pumori (Linux 2.2.12,
 # g++ 2.95.2).
@@ -65,7 +72,7 @@ cal.o: /usr/include/sys/types.h /usr/include/time.h /usr/include/endian.h
 cal.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 cal.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 cal.o: /usr/include/bits/time.h /usr/include/sys/sysmacros.h
-cal.o: /usr/include/alloca.h cal.h
+cal.o: /usr/include/alloca.h /usr/include/string.h cal.h
 crsp_extract.o: /usr/include/stdlib.h /usr/include/features.h
 crsp_extract.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 crsp_extract.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/stddef.h
@@ -199,8 +206,8 @@ sec.o: /usr/include/sys/types.h /usr/include/time.h /usr/include/endian.h
 sec.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 sec.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 sec.o: /usr/include/bits/time.h /usr/include/sys/sysmacros.h
-sec.o: /usr/include/alloca.h /usr/include/ctype.h sec.h ../tape/tapedrive.h
-sec.o: ../graphics.new/machdep.h /usr/include/limits.h
+sec.o: /usr/include/alloca.h /usr/include/ctype.h /usr/include/string.h sec.h
+sec.o: ../tape/tapedrive.h ../graphics.new/machdep.h /usr/include/limits.h
 sec.o: /usr/include/bits/wordsize.h /usr/include/bits/posix1_lim.h
 sec.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
 sec.o: /usr/include/bits/posix2_lim.h /usr/include/sys/param.h

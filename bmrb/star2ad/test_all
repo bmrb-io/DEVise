@@ -1,0 +1,62 @@
+#! /s/std/bin/perl -w
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2002
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  This script tests the star2ad program on all available star files
+#  from BMRB.
+
+############################################################
+
+# $Id$
+
+############################################################
+
+use strict;
+
+my($input_file);
+$input_file = "star_file_list.html";
+open(INPUT, $input_file) or die "Can't open $input_file: $!\n";
+
+my($line);
+while ($line = <INPUT>) {
+  if ($line =~ m/".*(bmr.*\.str)"/) {
+    my($star_file);
+    $star_file = "http://www.bmrb.wisc.edu/data_library/files/" . $1;
+    test_star($star_file);
+  }
+}
+
+close(INPUT);
+
+#-----------------------------------------------------------
+# Test a specific star file.
+
+# Parameters:
+#   0: star file name
+
+sub test_star {
+  my($star_name) = $_[0];
+
+  my ($time1) = time();
+  my ($result) = system("./star2ad -f $star_name > /dev/null");
+  my ($elapsed) = time() - $time1;
+
+  if ($result) {
+    print STDERR "ERROR processing star file $star_name ($elapsed sec)\n";
+  } else {
+    print "Successfully processed star file $star_name ($elapsed sec)\n";
+  }
+  system("rm star.ads");
+}
+
+############################################################

@@ -27,8 +27,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.79  2002/06/17 19:40:15  wenger
+// Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+//
 // Revision 1.78  2002/05/01 21:28:59  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.77.2.6  2002/12/05 21:12:00  wenger
+// Added diagnostic output for the number of commands run at each client
+// switch.
+//
+// Revision 1.77.2.5  2002/12/05 20:38:20  wenger
+// Removed a bunch of unused (mostly already-commented-out) code to
+// make things easier to deal with.
 //
 // Revision 1.77.2.4  2002/05/22 21:31:50  xuk
 // Improve autotest.
@@ -406,6 +417,10 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
     
     private static boolean _createdTmpSessionDir = false;
 
+    // The number of client commands we've run since the last client switch
+    // (this is for diagnostics only).
+    private int _cmdsSinceSwitch = 0;
+
 
     public long lastRunTime() { return _lastRunTime; }
     public void intThread() { serverThread.interrupt(); }
@@ -754,6 +769,10 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 		      Thread.currentThread());
 		}
 
+		if (clientCmd != null) {
+		    _cmdsSinceSwitch++;
+		}
+
                 if (clientCmd == null) {
                     continue;
                 } else {
@@ -816,12 +835,6 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                 try {
                     client.sendCmd(serverCmds);
 		    
-		    // TEMP: send commands one by one. For String[] formats.
-		    /*
-		      for (int i=0; i<serverCmds.length; i++)
-		        client.sendCmd(serverCmds[i]);
-		    */
-
 		    client.sendData(serverDatas);
 		    pop.pn("Done sending all data to client(s)");
 		    
@@ -1011,20 +1024,9 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 	    for (int i = 0; i < client.collabClients.size(); i++) {
 		DEViseClient collabClient = 
 		    (DEViseClient)client.collabClients.elementAt(i);			
-		/*
-		if (clientSock.hasCommand()) {
-		    String clientCmd = clientSock.getCommand();
-		    clientSock.clearCommand();
-		
-		    if (clientCmd.startsWith(DEViseCommands.EXIT)) {
-		        client.removeCollabSocket(clientSock);
-	            }
-		} else {
-		*/
 		pop.pn("Sending command " + DEViseCommands.CLOSE_SESSION
 		       + " to collabration client" + " " + i);
 		collabClient.sendCmd(DEViseCommands.CLOSE_SESSION);
-		//}			    
 	    }
 	} // if (!client.collabInit)
     }
@@ -1387,6 +1389,14 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 	    }
 
             pop.suspendClient(client);
+
+	    if (DEBUG >= 1) {
+	        System.out.println("Server on " + hostname + " ran " +
+		  _cmdsSinceSwitch + " commands for client " +
+		  client.getConnectionID() + " since the last client switch");
+	    }
+	    _cmdsSinceSwitch = 0;
+
             client = null;
         } else {
             if (DEBUG >= 1) {

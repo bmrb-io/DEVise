@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.46.2.2  2002/10/03 17:59:18  wenger
+// JS applet instance re-use now reloads the session -- that's what
+// Wavelet-IDR needs for their web page to work right.
+//
+// Revision 1.46.2.1  2002/08/16 21:56:56  wenger
+// Fixed bug 807 (reload twice in Netscape goofs up JS applets); fixed
+// various other problems with destroying hidden applets.
+//
+// Revision 1.46  2002/03/07 17:18:31  xuk
+// Destroy jsa applet when it's invisible longer than one hour.
+//
 // Revision 1.45  2001/05/11 20:36:13  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -131,8 +142,6 @@ public class jsa extends DEViseJSApplet
     jscframe jsf = null;
     boolean started = false;
 
-    private DEViseJSTimer timer = null;
-
     public void init()
     {
 	super.init();
@@ -179,9 +188,7 @@ public class jsa extends DEViseJSApplet
 	    started = true;
 	}
 
-	if (timer != null) {
-	    timer.stopped = true;
-	}
+	super.start();
     }
 
     public void stop()
@@ -194,10 +201,7 @@ public class jsa extends DEViseJSApplet
             jsf.displayMe(false);
         }
 
-	if (timer == null) 
-	    timer = new DEViseJSTimer(this);
-	timer.stopped = false;
-	timer.start();
+	super.stop();
     }
 
     public void destroy()
@@ -210,6 +214,7 @@ public class jsa extends DEViseJSApplet
             jsf.destroy();
             jsf = null;
         }
+	startButton.setEnabled(false);
 
         super.destroy();
     }
@@ -260,6 +265,15 @@ public class jsa extends DEViseJSApplet
             } catch (NumberFormatException e) {
             }
         }
+    }
+
+    public void restartSession()
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("jsa.restartSession()");
+	}
+
+	jsf.jsc.restartSession();
     }
 }
 

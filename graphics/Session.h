@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.30.2.1  2002/12/03 23:58:18  wenger
+  *** empty log message ***
+
+  Revision 1.30  2002/03/11 23:06:10  wenger
+  DEVised logs current session file on JavaScreen support errors.
+
   Revision 1.29  2002/01/15 21:49:41  wenger
   Added session postscript capability needed for the latest peptide-cgi
   improvements.
@@ -187,7 +193,8 @@ public:
   static DevStatus Open(const char *filename);
   static DevStatus Close();
   static DevStatus Save(const char *filename, Boolean asTemplate,
-      Boolean asExport, Boolean withData, Boolean selectedView = false);
+      Boolean asExport, Boolean withData, Boolean selectedView = false,
+      Boolean savePostscript = true);
   static DevStatus Update(const char *filename);
   static DevStatus ResetFilters();
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.2.26.1  2002/09/02 21:29:18  wenger
+  Did a bunch of Purifying -- the biggest change is storing the command
+  objects in a HashTable instead of an Htable -- the Htable does a bunch
+  of ugly memory copying.
+
+  Revision 1.2  1998/02/12 17:15:04  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:24:07  liping
   Added CVS header
 
@@ -56,7 +64,7 @@
 #include "servdb.h"
 #include "error.h"
 
-int f(const Datum& key, int size) {
+int DatumHashFcn(const Datum& key, int size) {
 	int x;
 
 	x = key.fold();
@@ -74,7 +82,7 @@ serverPwdCheck(char *Pwd, char *inputPwd) {
 	}
 }
 
-ServerDbase::ServerDbase() : GroupDB(HASH_SIZE, &f) {
+ServerDbase::ServerDbase() : GroupDB(HASH_SIZE, &DatumHashFcn) {
 	currbckt = NULL;
 	currentr = NULL;
 }

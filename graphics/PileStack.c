@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2001
+  (c) Copyright 1998-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -26,6 +26,16 @@
   $Id$
 
   $Log$
+  Revision 1.29.10.1  2002/08/27 21:14:23  wenger
+  Fixed bug 817 (view not draw because of single-view pile); improved
+  debug code in View and Dispatcher classes.
+
+  Revision 1.29  2001/05/03 19:39:02  wenger
+  Changed negative axis flag to multiplicative factor to be more flexible;
+  pass multiplicative factor to JS to correct mouse location display (mods
+  to JAVAC_ViewDataArea command); corrected mouse location display in DEVise
+  Tcl GUI.
+
   Revision 1.28  2001/04/23 18:58:25  wenger
   Added negative axis label option (no GUI yet) to allow us to display
   chemical shifts the way the BMRB people want.
@@ -832,9 +842,7 @@ PileStack::SetPiled(Boolean doLink)
     if (ViewIsSelected()) SelectView();
 
     CancelAllRefreshes();
-    if (GetViewCount() > 1) {
-      if (GetFirstView()) GetFirstView()->Refresh(false);
-    }
+    if (GetFirstView()) GetFirstView()->Refresh(false);
 
     _disablePileRefresh = false;
   }

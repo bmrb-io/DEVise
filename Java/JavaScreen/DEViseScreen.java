@@ -32,8 +32,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.74  2002/07/19 17:06:48  wenger
+// Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+//
 // Revision 1.73  2002/05/01 21:28:59  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.72.2.4  2002/08/20 14:43:18  sjlong
+// Fixed "help" bugs 609 and 621.
 //
 // Revision 1.72.2.3  2002/07/19 16:05:21  wenger
 // Changed command dispatcher so that an incoming command during a pending
@@ -413,6 +419,12 @@ public class DEViseScreen extends Panel
                 DEViseCanvas c = (DEViseCanvas)allCanvas.elementAt(i);
                 cmd = cmd + DEViseCommands.GET_VIEW_HELP + " " +
 		  c.view.getCurlyName() + " " + 0 + " " + 0 + "\n";
+		// If this view has children, send a command to show their help as well.
+		for(int j = 0; j < c.view.viewChilds.size(); j++) {
+		    DEViseView v = (DEViseView)c.view.viewChilds.elementAt(j);
+		    cmd = cmd + DEViseCommands.GET_VIEW_HELP + " " +
+			v.getCurlyName() + " " + 0 + " " + 0 + "\n";
+		}
             }
 
             jsc.dispatcher.start(cmd);
@@ -420,6 +432,10 @@ public class DEViseScreen extends Panel
             for (int i = 0; i < allCanvas.size(); i++) {
                 DEViseCanvas c = (DEViseCanvas)allCanvas.elementAt(i);
                 c.helpMsg = null;
+
+		for(int j = 0; j < c.childViewHelpMsgs.size(); j++) {
+		    c.childViewHelpMsgs.setElementAt(null, j);
+		}
             }
             repaint();
 
@@ -600,6 +616,14 @@ public class DEViseScreen extends Panel
         while (vector.size() > 0) {
             removeView((DEViseView)vector.elementAt(0));
         }
+
+	// In this case, also remove any help messages that might currently be displayed by the
+	// children by setting them to null
+	if(view.canvas != null) {
+	    for(int i = 0; i < view.canvas.childViewHelpMsgs.size(); i++) {
+		view.canvas.childViewHelpMsgs.setElementAt(null, i);
+	    }
+	}
         // Can not use the for iteration, because removeView also remove that view
         // from its parents, the the size of the viewChilds of the parentView is
         // actually changing on the fly
@@ -817,6 +841,8 @@ public class DEViseScreen extends Panel
             currentView = null;
             lastActionView = null;
 
+	    helpclicked = false;
+
             jsc.isSessionOpened = false;
 
             jsc.viewInfo.updateInfo();
@@ -851,10 +877,23 @@ public class DEViseScreen extends Panel
             return;
         }
 
-        if (view.canvas != null) {
-            view.canvas.helpMsg = msg;
-            view.canvas.repaint();
-        }
+        if (view.canvas != null && view.parentView == null) {
+	    view.canvas.helpMsg = msg;
+	    view.canvas.repaint();
+	}
+
+	// We are a child view, figure out where to add childViewHelpMsgs vector
+	else if (view.parentView != null) {
+	    int element = view.parentView.viewChilds.indexOf(view);
+	    if(view.parentView.canvas.childViewHelpMsgs.size() <= element) {
+		view.parentView.canvas.childViewHelpMsgs.addElement(msg);
+	    }
+	    else {
+		view.parentView.canvas.childViewHelpMsgs.setElementAt(msg, element);
+	    }
+
+	    view.parentView.canvas.repaint();
+	}
     }
 
     // Enable double-buffering

@@ -121,7 +121,7 @@ Then copy the appropriate Makefile.config.* file to Makefile.config,
 and edit Makefile.config appropriately.  After doing this, run the
 command 'make -f Makefile.setup clean setup'.
 
-If you are running on a SPARC/Solaris system, edit DEVise_savepid,
+If you are running on a SPARC/Solaris system, edit scripts/start_devised,
 and replace '-fontkludge 0' with '-fontkludge 1'.  (This is a workaround
 for a limitation in Xvfb on SPARC/Solaris).
 
@@ -155,6 +155,9 @@ To do the actual installation, perform the following steps:
 
     kill_jsall
 
+  Make sure you've killed everything off -- run 'ps' and make sure there are
+  no jspop, jss, or devised processes running.
+
 - Run the command:
 
     make -f Makefile.setup install
@@ -166,6 +169,18 @@ To do the actual installation, perform the following steps:
   installing the cron job, you should get an email stating that no jspop
   process was found; after that, the JavaScreen-related processes should be
   running (see the list of processes above).
+
+- Once you've installed the JavaScreen, make sure that the servers have
+  restarted correctly.  You MUST have a jspop process, a jss process, and
+  at least one devised process.
+
+  You should also run the 'check_connect' command.  If all of the necessary
+  processes are running, this will output 'OK'.  Any other output means
+  that soemthing is not working correctly.
+
+  The final check is to actually run the JavaScreen applet on your web
+  site.  You can do this via the NMR Data Browser or the jsa.html web
+  page.
 
 
 * PEPTIDE-CGI INSTALLATION

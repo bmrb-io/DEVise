@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,18 @@
   $Id$
 
   $Log$
+  Revision 1.104  2002/06/17 19:41:00  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
+  Revision 1.103.4.4  2003/01/09 22:21:51  wenger
+  Added "link multiplication factor" feature; changed version to 1.7.14.
+
+  Revision 1.103.4.3  2002/12/03 23:58:17  wenger
+  *** empty log message ***
+
+  Revision 1.103.4.2  2002/11/19 19:39:32  wenger
+  Better debug info if command buffer is too short.
+
   Revision 1.103.4.1  2002/06/11 17:27:31  wenger
   Added an option for a view to not "contribute" to home on its visual
   links; this allows a simplification of the NRG sessions, which fixes
@@ -703,7 +715,7 @@ Session::Close()
  */
 DevStatus
 Session::Save(const char *filename, Boolean asTemplate, Boolean asExport,
-    Boolean withData, Boolean selectedView)
+    Boolean withData, Boolean selectedView, Boolean savePostscript)
 {
 #if defined(DEBUG)
   printf("Session::Save(%s, %d, %d, %d, %d)\n", filename, asTemplate, asExport,
@@ -855,9 +867,11 @@ Session::Save(const char *filename, Boolean asTemplate, Boolean asExport,
       }
     }
 
-    fprintf(saveData.fp, "\n# Session postscript\n");
-	if (_postscript != NULL) {
-	  _postscript->Print(saveData.fp);
+	if (savePostscript) {
+      fprintf(saveData.fp, "\n# Session postscript\n");
+	  if (_postscript != NULL) {
+	    _postscript->Print(saveData.fp);
+	  }
 	}
   }
 
@@ -1586,6 +1600,8 @@ Session::ReadCommand(FILE *fp, char buf[], int bufSize, DevStatus &status)
 	  if (ptr >= last) {
 	    done = true;
 		reportErrNosys("Command buffer too short");
+		buf[bufSize-1] = '\0';
+		fprintf(stderr, "Command so far is: <%s>\n", buf);
 		status += StatusFailed;
 		result = false;
 	  }
@@ -1976,6 +1992,11 @@ Session::SaveView(char *category, char *devClass, char *instance,
 
   status += SaveParams(saveData, "getShowMouseLocation",
       "setShowMouseLocation", instance, NULL, NULL, true);
+
+  status += SaveParams(saveData, "getLinkMultFact", "setLinkMultFact",
+      instance, "X");
+  status += SaveParams(saveData, "getLinkMultFact", "setLinkMultFact",
+      instance, "Y");
 
   View *view = View::FindViewByName(instance);
   if (view != NULL && view->JS3dConfigValid()) {

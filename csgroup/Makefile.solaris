@@ -15,6 +15,17 @@
 # $Id$
 
 # $Log$
+# Revision 1.25.2.2  2003/01/10 19:49:11  wenger
+# Argh.  Changed all of the Solaris stuff back so that DEVise compiles
+# on Solaris 2.7 (cardinal).
+#
+# Revision 1.25.2.1  2003/01/09 16:51:08  wenger
+# Updated linux and solaris dependencies; solsparc now uses Tcl/Tk 8.0.
+#
+# Revision 1.25  2002/02/21 17:05:12  wenger
+# Updated Linux (trigger, RH 7.2) and Solaris (cardinal, Solaris 2.7)
+# dependencies.
+#
 # Revision 1.24  2001/10/17 17:52:26  wenger
 # Updated Linux and Solaris dependencies.
 #
@@ -181,7 +192,8 @@ colbr.o: /usr/include/unistd.h serverInterface.h prnfns.h ctrlMsg.h
 colbr.o: Csprotocols.h
 error.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 error.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
-error.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h error.h
+error.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
+error.o: /usr/include/stdlib.h error.h
 logfns.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 logfns.o: /usr/include/sys/feature_tests.h /usr/include/sys/machtypes.h
 logfns.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
@@ -260,14 +272,15 @@ rcvMsg.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
 rcvMsg.o: /usr/include/arpa/inet.h /usr/include/strings.h
 rcvMsg.o: /usr/include/string.h /usr/include/math.h /usr/include/unistd.h
 rcvMsg.o: /usr/include/sys/stat.h /usr/include/fcntl.h
-rcvMsg.o: /usr/include/sys/fcntl.h rcvMsg.h codec.h serverInterface.h colbr.h
-rcvMsg.o: dbase.h htable.h bucket.h entry.h datum.h queue.h queueElem.h
-rcvMsg.o: CollabTypes.h callBks.h error.h ctrlMsg.h netfns.h timeOut.h
-rcvMsg.o: ckptfile.h /usr/include/stdio.h /usr/include/sys/va_list.h
-rcvMsg.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
-rcvMsg.o: ../graphics/DevError.h /usr/include/errno.h
-rcvMsg.o: /usr/include/sys/errno.h ../graphics/DeviseTypes.h
-rcvMsg.o: /usr/include/values.h ../graphics/DevStatus.h
+rcvMsg.o: /usr/include/sys/fcntl.h /usr/include/stdlib.h rcvMsg.h codec.h
+rcvMsg.o: serverInterface.h colbr.h dbase.h htable.h bucket.h entry.h datum.h
+rcvMsg.o: queue.h queueElem.h CollabTypes.h callBks.h error.h ctrlMsg.h
+rcvMsg.o: netfns.h timeOut.h ckptfile.h /usr/include/stdio.h
+rcvMsg.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
+rcvMsg.o: /usr/include/stdio_impl.h ../graphics/DevError.h
+rcvMsg.o: /usr/include/errno.h /usr/include/sys/errno.h
+rcvMsg.o: ../graphics/DeviseTypes.h /usr/include/values.h
+rcvMsg.o: ../graphics/DevStatus.h
 server_clnt.o: server.h CollabTypes.h /usr/include/sys/types.h
 server_clnt.o: /usr/include/sys/isa_defs.h /usr/include/sys/feature_tests.h
 server_clnt.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h

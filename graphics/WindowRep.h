@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.88.4.1  2002/07/25 19:29:21  wenger
+  Fixed bug 800 (symbols disappear at extreme zoom) and other drawing-
+  related problems; removed unused WindowRep method (FillRectArray with
+  constant width/height).
+
+  Revision 1.88  2001/12/28 18:34:20  wenger
+  Fixed bugs 727 and 730 (problems with line graphs in DEVise).
+
   Revision 1.87  2001/09/26 16:31:30  wenger
   Fixed bug 693 (DEVise rubberband line now reflects X-only zoom).
 
@@ -779,21 +787,16 @@ public:
 
   virtual void FillRect(Coord xlow, Coord ylow,
 			Coord width, Coord height, CursorStore *cstore=0) = 0;
-  virtual void FillRectAlign(Coord xlow, Coord ylow, Coord width,
+  virtual void FillRectAlign(Coord dataX, Coord dataY, Coord width,
 			     Coord height,
 			     SymbolAlignment alignment = AlignSouthWest,
 			     Coord orientation = 0.0) = 0;
 
   /* Fill rectangles, variable width/height */
-  virtual void FillRectArray(Coord *xlow, Coord *ylow, Coord *width, 
+  virtual void FillRectArray(Coord *symbolX, Coord *symbolY, Coord *width, 
 			     Coord *height, int num,
 			     SymbolAlignment alignment = AlignSouthWest,
 			     Coord orientation = 0.0) = 0;
-  /* Fill rectangles, same width/height */
-  virtual void FillRectArray(Coord *xlow, Coord *ylow, Coord width, 
-			     Coord height, int num,
-			     SymbolAlignment alignment = AlignSouthWest,
-                             Coord orientation = 0.0) = 0;
 
   virtual void DrawPixel(Coord x, Coord y) = 0;
   virtual void DrawPixelArray(Coord *x, Coord *y, int num, int width) = 0;

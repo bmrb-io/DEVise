@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1999
+#  (c) Copyright 1992-2002
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,14 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.104.14.1  2002/08/27 14:21:17  wenger
+#	Workaround for bug 819 (recId on Y axis in "Define Visualization
+#	Parameters" dialog causes no view creation).
+#	
+#	Revision 1.104  1999/07/01 16:05:24  wenger
+#	Fixed bug 316 (default mapping for scatter plot now has width and height
+#	specified.)
+#	
 #	Revision 1.103  1999/04/14 15:30:29  wenger
 #	Improved 'switch TData': moved the code from Tcl to C++, functionality
 #	is more flexible -- schemas don't have to match exactly as long as the
@@ -582,16 +590,20 @@ proc setupAttrCheckButtons {win var schemaname grpname topgrp} {
 #    puts "after getItems grplist = $grplist"
 	
     # Find the max width of the attrs and the number of attrs
-    set numattrs 0
     set maxwidth 0
     foreach itm $grplist {
 	set subname [lindex $itm 0]
+
+	# Exclude recId because the code further down doesn't handle it
+	# correctly (workaround for bug 819).
+	if {$subname == "recId"} {
+	    continue
+	}
 
 	set width [llength [split $subname {}]]
 	if {$width > $maxwidth} {
 	    set maxwidth $width
 	}
-	incr numattrs
     }
 
     if {$maxwidth < 13} {
@@ -608,6 +620,12 @@ proc setupAttrCheckButtons {win var schemaname grpname topgrp} {
 	set subname [lindex $itm 0]
 	set type [lindex $itm 1]
 	set checkvar [format "%s(%s)" $var $subname]
+
+	# Exclude recId because the code further down doesn't handle it
+	# correctly (workaround for bug 819).
+	if {$subname == "recId"} {
+	    continue
+	}
 
 	if {$col < 0} {
 	    incr row
@@ -1301,6 +1319,8 @@ proc MacroDefAutoActual {tdata viewsel linksel window \
     }
 
     #    puts "schema=$schema"
+    # The "real" fix for bug 819 would be to include recId in this loop,
+    # but ProcessAttrInfo can't handle it.  RKW 2002-08-27.
     foreach attr $schema {
         set name [lindex $attr 0]
 	

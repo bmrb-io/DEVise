@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,21 @@
 // $Id$
 
 // $Log$
+// Revision 1.19  2002/06/17 19:40:16  wenger
+// Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+//
+// Revision 1.18.2.4  2002/10/03 17:59:18  wenger
+// JS applet instance re-use now reloads the session -- that's what
+// Wavelet-IDR needs for their web page to work right.
+//
+// Revision 1.18.2.3  2002/08/19 16:51:37  wenger
+// Applet instances are now re-used according to URL if the "reloadapplet"
+// flag is false.
+//
+// Revision 1.18.2.2  2002/08/16 21:56:56  wenger
+// Fixed bug 807 (reload twice in Netscape goofs up JS applets); fixed
+// various other problems with destroying hidden applets.
+//
 // Revision 1.18.2.1  2002/05/08 16:39:45  wenger
 // JSB applet allows startup without loading a session (for collaboration
 // follower); collabf.html web page doesn't load a session.
@@ -131,8 +146,6 @@ public class jsb extends DEViseJSApplet
 
     jsdevisec jsc = null;
 
-    public static jsb app = null;
-
     private DEViseJSTimer timer = null;
 
     public void init()
@@ -149,33 +162,14 @@ public class jsb extends DEViseJSApplet
 
         if (isInit) {
             remove(startInfo);
-            if (jsc == null) {
+            if (jsc == null || jsc.getQuitStatus()) {
                 jsc = new jsdevisec(this, null, images, jsValues);
                 add(jsc, BorderLayout.CENTER);
-            } else {
-                if (jsc.getQuitStatus()) {
-                    jsc = null;
-                    jsc = new jsdevisec(this, null, images, jsValues);
-                    add(jsc, BorderLayout.CENTER);
-                } else {
-                    //jsc.displayMe(true);
-                    setVisible(true);
-                }
-            }
+	    } else {
+                //jsc.displayMe(true);
+                setVisible(true);
+	    }
         }
-
-	// reloading applet instance
-	if (app == null) {
-	    app = this;
-	} else if (jsc != null && !jsValues.session.reloadApplet) {
-	    jsc.jsValues.uiglobals.maxScreenSize.width = jsValues.uiglobals.maxScreenSize.width;
-	    jsc.jsValues.uiglobals.maxScreenSize.height = jsValues.uiglobals.maxScreenSize.height;
-	    jsc.jsValues.uiglobals.screenSize.width = jsValues.uiglobals.maxScreenSize.width;
-	    jsc.jsValues.uiglobals.screenSize.height = jsValues.uiglobals.maxScreenSize.height;
-	    jsc.jscreen.setScreenDim(jsValues.uiglobals.maxScreenSize.width,
-				     jsValues.uiglobals.maxScreenSize.height);
-	    jsc.restartSession();
-	}
     }
 
     public void start()
@@ -191,9 +185,7 @@ public class jsb extends DEViseJSApplet
 	    jsc.showDebug();
 	}
 
-	if (timer != null) {
-	    timer.stopped = true;
-	}
+	super.start();
     }
 
     public void stop()
@@ -209,10 +201,7 @@ public class jsb extends DEViseJSApplet
 	    jsc.hideDebug();
 	}
 
-	if (timer == null) 
-	    timer = new DEViseJSTimer(this);
-	timer.stopped = false;
-	timer.start();
+	super.stop();
     }
 
     public void destroy()
@@ -270,6 +259,15 @@ public class jsb extends DEViseJSApplet
         if (jsValues.uiglobals.maxScreenSize.height < jsValues.uiglobals.minScreenSize.height) {
             jsValues.uiglobals.maxScreenSize.height = jsValues.uiglobals.minScreenSize.height;
         }
+    }
+
+    public void restartSession()
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("jsb.restartSession()");
+	}
+
+	jsc.restartSession();
     }
 }
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2001
+  (c) Copyright 1998-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.30.10.1  2002/11/19 19:40:58  wenger
+  Better "debug drawing".
+
+  Revision 1.30  2001/08/21 16:59:19  wenger
+  Added option for unlinked child view piles; added shape values to
+  shape help file.
+
   Revision 1.29  2001/04/03 19:57:41  wenger
   Cleaned up code dealing with GData attributes in preparation for
   "external process" implementation.
@@ -286,13 +293,12 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
       PColorID	pcid = view->GetForeground();
       win->SetForeground(pcid);
       win->SetPattern(map->GetPattern(gdata));
-      win->SetLineWidth(map->GetLineWidth(gdata));
-      // 2.1, 0.9 are a kludge so rect is no larger than the view symbol.
-      win->FillRect(dataX - dataWd / 2.0, dataY - dataHt / 2.1, dataWd * 0.9,
-        dataHt * 0.9);
+      win->SetPattern((Pattern)-24); // crosshatch
+      win->SetLineWidth(1);
+      win->FillRect(dataX - dataWd / 2.0, dataY - dataHt / 2.0, dataWd,
+        dataHt);
+      win->SetPattern((Pattern)0);
 
-      pcid = view->GetBackground();
-      win->SetForeground(pcid);
       win->ScaledText(viewname, dataX - dataWd / 2.0, dataY - dataHt / 2.0,
         dataWd, dataHt);
     }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,23 @@
   $Id$
 
   $Log$
+  Revision 1.39.14.3  2002/09/20 20:49:03  wenger
+  More Purifying -- there are now NO leaks when you open and close
+  a session!!
+
+  Revision 1.39.14.2  2002/09/04 13:58:01  wenger
+  More Purifying -- fixed some leaks and mismatched frees.
+
+  Revision 1.39.14.1  2002/08/15 18:25:56  wenger
+  Fixed bug 808 (binary data works only if values are "naturally"
+  aligned as they are defined by the schema).
+
+  Revision 1.39  2000/01/11 22:28:34  wenger
+  TData indices are now saved when they are built, rather than only when a
+  session is saved; other improvements to indexing; indexing info added
+  to debug logs; moved duplicate TDataAscii and TDataBinary code up into
+  TData class.
+
   Revision 1.38  1999/11/30 22:28:29  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -214,6 +231,7 @@
 #define CONCURRENT_IO
 
 #define DEBUGLVL 0
+#define PRINT_REC 0
 
 static char *   srcFile = __FILE__;
 
@@ -227,7 +245,11 @@ TDataBinary::TDataBinary(char *name, char *type, char *param,
     _file = CopyString(_param);
 #ifndef ATTRPROJ
   } else if (!strcmp(_type, "WWW")) {
-    _file = MakeCacheFileName(_name, _type);
+    // Extra complications here so that _file is always allocated by
+    // CopyString(), so we can always free it with FreeString().
+    char *tmpName = MakeCacheFileName(_name, _type);
+    _file = CopyString(tmpName);
+    delete [] tmpName;
 #endif
   } else {
     fprintf(stderr, "Invalid TData type: %s\n", _type);
@@ -278,7 +300,8 @@ TDataBinary::~TDataBinary()
   Dispatcher::Current()->Unregister(this);
 
   delete _indexP;
-  delete _indexFileName;
+  delete [] _indexFileName;
+  FreeString(_file);
 }
 
 /* Build index for the file. This code should work when file size
@@ -376,7 +399,7 @@ TD_Status TDataBinary::ReadRec(RecId id, int numRecs, void *buf)
   char *ptr = (char *)buf;
   long currPos = -1;
 
-  for(int i = 0; i < numRecs; i++) {
+  for (int i = 0; i < numRecs; i++) {
 
     long recloc = _indexP->Get(id + i);
 
@@ -387,12 +410,25 @@ TD_Status TDataBinary::ReadRec(RecId id, int numRecs, void *buf)
       }
       currPos = recloc;
     }
-    if (_data->Fread(ptr, _physRecSize, 1) != 1) {
+
+    char physRec[_physRecSize];
+    if (_data->Fread(physRec, _physRecSize, 1) != 1) {
       reportErrSys("fread");
       DOASSERT(0, "Cannot read from file");
     }
 
-    Boolean valid = Decode(ptr, currPos / _physRecSize, ptr);
+#if (PRINT_REC)
+    printf("Record (phys size %d, rec size %d): ", _physRecSize, _recSize);
+    for (int index = 0; index < _physRecSize; index++) {
+      printf("%.2hhx", *(physRec + index));
+      if ((index + 1) % 4 == 0) {
+        printf(" ");
+      }
+    }
+    printf("\n");
+#endif
+
+    Boolean valid = Decode(ptr, currPos / _physRecSize, physRec);
     DOASSERT(valid, "Inconsistent validity flag");
 
     ptr += _recSize;

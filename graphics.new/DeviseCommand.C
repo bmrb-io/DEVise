@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2002
+  (c) Copyright 1998-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,11 +20,33 @@
   $Id$
 
   $Log$
+  Revision 1.128  2002/07/19 17:07:26  wenger
+  Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+
   Revision 1.127  2002/06/17 19:41:06  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 
   Revision 1.126  2002/05/01 21:30:12  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.125.4.10  2003/01/09 22:21:58  wenger
+  Added "link multiplication factor" feature; changed version to 1.7.14.
+
+  Revision 1.125.4.9  2002/11/15 22:44:35  wenger
+  Views with no TData records don't contribute to filter values on 'home'
+  (this helps to fix some problems with the Condor user visualizations);
+  added cursorHome command; changed version to 1.7.13.
+
+  Revision 1.125.4.8  2002/09/05 19:14:02  wenger
+  Implemented GData attribute value links (but not GUI for creating
+  them).
+
+  Revision 1.125.4.7  2002/09/04 14:01:04  wenger
+  Purify #ifs didn't work right.
+
+  Revision 1.125.4.6  2002/08/27 16:02:24  wenger
+  Added 3D view warning because of bug 815; fixed bug 680 ('histograms
+  not implemented' warning).
 
   Revision 1.125.4.5  2002/06/27 18:15:07  wenger
   Fixed problem with the setDoHomeOnVisLink command, more link home
@@ -671,6 +693,7 @@
 #include "CmdContainer.h"
 #include "JavaScreenCmd.h"
 #include "TAttrLink.h"
+#include "GAttrLink.h"
 #include "RangeDesc.h"
 #include "DataCatalog.h"
 #include "Layout.h"
@@ -709,7 +732,7 @@ void ResetVkg()
 
 
 
-#if PURIFY
+#if (PURIFY >= 1)
 extern "C" int purify_is_running();
 extern "C" int purify_new_leaks();
 extern "C" int purify_new_inuse();
@@ -1517,7 +1540,7 @@ int
 DeviseCommand_setHistogram::Run(int argc, char** argv)
 {
 #if VIEW_MIN_STATS
-		printf("Warning: histograms not implemented\n");
+		//printf("Warning: histograms not implemented\n");
         ReturnVal(API_ACK, "done");
         return 1;
 #endif
@@ -1938,7 +1961,7 @@ DeviseCommand_compDate::Run(int argc, char** argv)
 int
 DeviseCommand_new_leaks::Run(int argc, char** argv)
 {
-#if PURIFY
+#if (PURIFY >= 1)
     {
         {
           if (purify_is_running()) {
@@ -1955,7 +1978,7 @@ DeviseCommand_new_leaks::Run(int argc, char** argv)
 int
 DeviseCommand_new_inuse::Run(int argc, char** argv)
 {
-#if PURIFY
+#if (PURIFY >= 1)
     {
         {
           if (purify_is_running()) {
@@ -5249,13 +5272,22 @@ IMPLEMENT_COMMAND_BEGIN(getLinkMasterAttr)
 #endif
 
     if (argc == 2) {
-        TAttrLink *link = (TAttrLink *)_classDir->FindInstance(argv[1]);
+        DeviseLink *link = (DeviseLink *)_classDir->FindInstance(argv[1]);
         if (!link) {
             ReturnVal(API_NAK, "Cannot find link");
             return -1;
         }
-		const char *attrName = link->GetMasterAttrName();
-    	ReturnVal(API_ACK, (char *)attrName);
+		if (link->GetFlag() == VISUAL_TATTR) {
+		    const char *attrName = ((TAttrLink *)link)->GetMasterAttrName();
+    	    ReturnVal(API_ACK, (char *)attrName);
+		} else if (link->GetFlag() == VISUAL_GATTR) {
+		    const char *attrName = ((GAttrLink *)link)->GetLeaderAttrName();
+    	    ReturnVal(API_ACK, (char *)attrName);
+		} else {
+    	    ReturnVal(API_NAK, "Inappropriate link type");
+    	    return -1;
+		}
+		return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in getLinkMasterAttr\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
@@ -5271,13 +5303,23 @@ IMPLEMENT_COMMAND_BEGIN(getLinkSlaveAttr)
 #endif
 
     if (argc == 2) {
-        TAttrLink *link = (TAttrLink *)_classDir->FindInstance(argv[1]);
+
+        DeviseLink *link = (DeviseLink *)_classDir->FindInstance(argv[1]);
         if (!link) {
             ReturnVal(API_NAK, "Cannot find link");
             return -1;
         }
-		const char *attrName = link->GetSlaveAttrName();
-    	ReturnVal(API_ACK, (char *)attrName);
+		if (link->GetFlag() == VISUAL_TATTR) {
+		    const char *attrName = ((TAttrLink *)link)->GetSlaveAttrName();
+    	    ReturnVal(API_ACK, (char *)attrName);
+		} else if (link->GetFlag() == VISUAL_GATTR) {
+		    const char *attrName = ((GAttrLink *)link)->GetFollowerAttrName();
+    	    ReturnVal(API_ACK, (char *)attrName);
+		} else {
+    	    ReturnVal(API_NAK, "Inappropriate link type");
+    	    return -1;
+		}
+		return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in getLinkSlaveAttr\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
@@ -5293,16 +5335,23 @@ IMPLEMENT_COMMAND_BEGIN(setLinkMasterAttr)
 #endif
 
     if (argc == 3) {
-        TAttrLink *link = (TAttrLink *)_classDir->FindInstance(argv[1]);
+        DeviseLink *link = (DeviseLink *)_classDir->FindInstance(argv[1]);
         if (!link) {
             ReturnVal(API_NAK, "Cannot find link");
             return -1;
         }
-
-        Session::SetDirty();
-
-		link->SetMasterAttr(argv[2]);
-        ReturnVal(API_ACK, "done");
+		if (link->GetFlag() == VISUAL_TATTR) {
+            Session::SetDirty();
+		    ((TAttrLink *)link)->SetMasterAttr(argv[2]);
+            ReturnVal(API_ACK, "done");
+		} else if (link->GetFlag() == VISUAL_GATTR) {
+            Session::SetDirty();
+		    ((GAttrLink *)link)->SetLeaderAttr(argv[2]);
+            ReturnVal(API_ACK, "done");
+		} else {
+    	    ReturnVal(API_NAK, "Inappropriate link type");
+    	    return -1;
+		}
 		return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in setLinkMasterAttr\n", argc);
@@ -5319,16 +5368,23 @@ IMPLEMENT_COMMAND_BEGIN(setLinkSlaveAttr)
 #endif
 
     if (argc == 3) {
-        TAttrLink *link = (TAttrLink *)_classDir->FindInstance(argv[1]);
+        DeviseLink *link = (DeviseLink *)_classDir->FindInstance(argv[1]);
         if (!link) {
             ReturnVal(API_NAK, "Cannot find link");
             return -1;
         }
-
-        Session::SetDirty();
-
-		link->SetSlaveAttr(argv[2]);
-        ReturnVal(API_ACK, "done");
+		if (link->GetFlag() == VISUAL_TATTR) {
+            Session::SetDirty();
+		    ((TAttrLink *)link)->SetSlaveAttr(argv[2]);
+            ReturnVal(API_ACK, "done");
+		} else if (link->GetFlag() == VISUAL_GATTR) {
+            Session::SetDirty();
+		    ((GAttrLink *)link)->SetFollowerAttr(argv[2]);
+            ReturnVal(API_ACK, "done");
+		} else {
+    	    ReturnVal(API_NAK, "Inappropriate link type");
+    	    return -1;
+		}
 		return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in setLinkSlaveAttr\n", argc);
@@ -7599,7 +7655,7 @@ IMPLEMENT_COMMAND_BEGIN(sessionIsDirty)
 IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(setDoHomeOnVisLink)
-    // Arguments: [view name] [do home on visual link (0 = no; 1 = yes)]
+    // Arguments: <view name> <do home on visual link (0 = no; 1 = yes)>
     // Returns: "done"
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
@@ -7626,8 +7682,8 @@ IMPLEMENT_COMMAND_BEGIN(setDoHomeOnVisLink)
 IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(getDoHomeOnVisLink)
-    // Arguments: [view name]
-    // Returns: [do home on visual link (0 = no; 1 = yes)]
+    // Arguments: <view name>
+    // Returns: <do home on visual link (0 = no; 1 = yes)>
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
 #endif
@@ -7647,6 +7703,101 @@ IMPLEMENT_COMMAND_BEGIN(getDoHomeOnVisLink)
         return 1;
 	} else {
 		fprintf(stderr, "Wrong # of arguments: %d in getDoHomeOnVisLink\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(cursorHome)
+    // Arguments: <view name>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)View::FindViewByName(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+		view->CursorHome();
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in cursorHome\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setLinkMultFact)
+    // Arguments: <viewName> <dimension (X|Y)> <factor>
+    // Returns: done
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 4) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+
+        Session::SetDirty();
+
+		double factor = atof(argv[3]);
+        if (!strcmp(argv[2], "X")) {
+    	  view->SetXLinkMultFact(factor);
+        } else if (!strcmp(argv[2], "Y")) {
+          view->SetYLinkMultFact(factor);
+        } else {
+          ReturnVal(API_NAK, "Bad dimension selection");
+          return -1;
+	    }
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+    } else {
+		fprintf(stderr, "Wrong # of arguments: %d in setLinkMultFact\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getLinkMultFact)
+    // Arguments: <viewName> <dimension (X|Y)>
+    // Returns: <factor>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 3) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+
+		double factor;
+        if (!strcmp(argv[2], "X")) {
+		  factor = view->GetXLinkMultFact();
+        } else if (!strcmp(argv[2], "Y")) {
+		  factor = view->GetYLinkMultFact();
+        } else {
+          ReturnVal(API_NAK, "Bad dimension selection");
+          return -1;
+	    }
+		const int bufSize = 32;
+		char buf[bufSize];
+		int formatted = snprintf(buf, bufSize, "%g", factor);
+		checkAndTermBuf(buf, bufSize, formatted);
+        ReturnVal(API_ACK, buf);
+        return 1;
+    } else {
+		fprintf(stderr, "Wrong # of arguments: %d in getLinkMultFact\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

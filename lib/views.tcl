@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-2001
+#  (c) Copyright 1992-2002
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.64.10.1  2002/09/17 18:50:55  wenger
+#  Added GUI for GAttr links.
+#
+#  Revision 1.64  2001/04/27 17:09:56  wenger
+#  Made various cleanups to external process dynamic data generation and
+#  added most GUI (still need special GUI for creating the data source);
+#  cleanups included finding and fixing bug 668.
+#
 #  Revision 1.63  2001/03/15 20:34:26  wenger
 #  Reading composite file /afs/cs.wisc.edu/p/devise/ext5/wenger/devise.dev2/solarisFixed bug 645 (problem with window duplication).
 #
@@ -974,6 +982,9 @@ proc DoLinkCreate { isRec } {
 	    } elseif { $flag == 16 } {
 		# External data link.
 		set flag 2048
+	    } elseif { $flag == 32 } {
+		# GData attribute link.
+		set flag 4096
 	    }
 
 	    # Make sure the user specified a link name.
@@ -1000,7 +1011,13 @@ proc DoLinkCreate { isRec } {
 	    }
 	    
 	    # Create the link.
-	    set result [DEVise create link Visual_Link $name $flag]
+	    if {$flag != 4096} {
+	        set result [DEVise create link Visual_Link $name $flag]
+	    } else {
+		# Note: x's are temporary place holders; we will give the
+		# user a chance to set the attributes below.
+	        set result [DEVise create link Visual_Link $name $flag x x]
+	    }
 	    if {$negative_record} {
 	      DEVise setLinkType $name -1
 	    }
@@ -1010,6 +1027,11 @@ proc DoLinkCreate { isRec } {
 			"Cannot create link $name" "" 0 OK]
 		continue
 	    }
+
+	    if {$flag == 4096} {
+	        SetGAttrLinkAttrs $name
+	    }
+
 	    break
 	}
     }
@@ -1048,30 +1070,37 @@ proc DoDisplayLinkInfo {} {
 
 # Display the views in a link 
 proc DisplayLinkInfo { link } {
+
     set views [DEVise getLinkViews $link]
     set flag [DEVise getLinkFlag $link]
-    if { $flag == 128 } {
-	# Convert flag value from C++ enum to graphics bitmap.
-	set flag 4
+    set buttons {}
 
-	set type "Record"
+    if { $flag == 128 } {
+	set type [DEVise getLinkType $link]
+	
+	if { $type == 1} {
+	    set type "Record (positive)"
+	} else {
+	    set type "Record (negative)"
+	}
+
 	set master [DEVise getLinkMaster $link]
 	set labels [list  [list Type 10 "$type Link" ] \
 		          [list Leader 10 $master] ]
     #} elseif { $flag == 1024 } {
-	## Convert flag value from C++ enum to graphics bitmap.
-	#set flag 8
-
 	#set type "TData Attribute"
 	#set master [DEVise getLinkMaster $link]
 	#set labels [list  [list Type 10 "$type Link" ] \
 		          #[list Leader 10 $master] ]
 
     } elseif { $flag == 2048 } {
-	# Convert flag value from C++ enum to graphics bitmap.
-	set flag 8
-
 	set type "External Data"
+	set master [DEVise getLinkMaster $link]
+	set labels [list  [list Type 10 "$type Link" ] \
+		          [list Leader 10 $master] ]
+
+    } elseif { $flag == 4096 } {
+	set type "GData Attr"
 	set master [DEVise getLinkMaster $link]
 	set labels [list  [list Type 10 "$type Link" ] \
 		          [list Leader 10 $master] ]
@@ -1079,11 +1108,11 @@ proc DisplayLinkInfo { link } {
     } else {
 	set type "Visual"
 	set labels [list [list Type 10 "$type Link" ] ]
+	set buttons [list $flag 40 2 1 col x y ]
     }
     dialogInfo .linkInfo "Link Info" "Views linked by $link" "" \
-    	    0 OK $views  $labels  \
-	    [list $flag 40 2 2 col x y record {ext data} ]
-	    #[list $flag 40 2 2 col x y record {tdata attr} ]
+    	    0 OK $views  $labels $buttons
+
     # quick hash - actually should write general purpose widgets to do  
     # selections with multiple kinds of widgets in one window
 }
@@ -1308,7 +1337,7 @@ proc DoSetLinkMaster {} {
 	return
     }
 
-    set linkSet [RecordLinkSet]
+    set linkSet [LeaderFollowerLinkSet]
     if { [llength $linkSet] == 0 } {
 	set link [DoLinkCreate 1]
 	if {$link == ""} {
@@ -1318,7 +1347,7 @@ proc DoSetLinkMaster {} {
     }
     
     while { 1 } {
-	set linkSet [RecordLinkSet]
+	set linkSet [LeaderFollowerLinkSet]
 	set answer [ dialogList .getLink "Select Link" \
 		"Select a link for view\n$curView" "" 0 \
 		{ OK Info New Cancel } $linkSet ]
@@ -1365,7 +1394,7 @@ proc CheckTData { link view isMaster } {
 proc DoResetLinkMaster {} {
     global dialogListVar
 
-    set linkSet [RecordLinkSet]
+    set linkSet [LeaderFollowerLinkSet]
     if { [llength $linkSet] == 0 } {
 	dialog .noLinks "No Links" "There are no record links." "" 0 OK
 	return
@@ -2642,9 +2671,7 @@ proc LinkViewMsg {} {
     global linkViewStatus currentLink
 
     # Figure out whether the link is a master/slave link.
-    set linkFlag [DEVise getLinkFlag $currentLink]
-    set isMasterSlaveLink [expr $linkFlag == 128 || $linkFlag == 1024 || \
-      $linkFlag == 2048]
+    set isMasterSlaveLink [IsMasterSlaveLink $currentLink]
 
     # Figure out the right message to show.
     if { $isMasterSlaveLink } {
@@ -2685,8 +2712,7 @@ proc LinkSelectedView {} {
     # Figure out whether the link is a master/slave link.
     #
     set linkFlag [DEVise getLinkFlag $currentLink]
-    set isMasterSlaveLink [expr $linkFlag == 128 || $linkFlag == 1024 || \
-      $linkFlag == 2048]
+    set isMasterSlaveLink [IsMasterSlaveLink $currentLink]
 
     if { $linkViewStatus == 1 } {
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,22 @@
   $Id$
 
   $Log$
+  Revision 1.119.4.3  2003/01/09 22:21:52  wenger
+  Added "link multiplication factor" feature; changed version to 1.7.14.
+
+  Revision 1.119.4.2  2003/01/04 21:38:27  wenger
+  Fixed bugs 852, 855, and 856 (all related to view geometry and transforms
+  and axis drawing).
+
+  Revision 1.119.4.1  2002/08/23 17:45:08  wenger
+  Fixed bug 812 (problem with drawing piles when a piled view has
+  auto filter update turned on).
+
+  Revision 1.119  2001/12/13 21:35:48  wenger
+  Added flexibility to enable/disable mouse location display individually
+  for X and Y axes (needed for peptide-cgi session improvements requested
+  by John Markley).
+
   Revision 1.118  2001/09/26 16:31:30  wenger
   Fixed bug 693 (DEVise rubberband line now reflects X-only zoom).
 
@@ -719,6 +735,11 @@ class View : public ViewWin
 	double GetXAxisMultFact() { return _xAxis.GetMultFactor(); }
 	double GetYAxisMultFact() { return _yAxis.GetMultFactor(); }
 
+    void SetXLinkMultFact(double factor) { _xAxisLinkMultFact = factor; }
+    void SetYLinkMultFact(double factor) { _yAxisLinkMultFact = factor; }
+	double GetXLinkMultFact() { return _xAxisLinkMultFact; }
+	double GetYLinkMultFact() { return _yAxisLinkMultFact; }
+
 	void TicksEnabled(Boolean &xTicks, Boolean &yTicks) {
 	  xTicks = _xAxis.Width() > _noTicksXAxisWidth;
 	  yTicks = _yAxis.Width() > _noTicksYAxisWidth;
@@ -980,6 +1001,19 @@ private:
     void CleanUpViewSyms();
 	void InvalidateCursors();
 
+	// Get the geometry of the view, with the space for the highlight outline
+	// removed.
+	void GeometryWithHighlight(int &x, int &y, unsigned &w, unsigned &h);
+
+	// Get the height of the label (title) area.
+	unsigned int GetLabelHeight();
+
+	// Get the height of the X axis area.
+	unsigned int GetXAxisHeight();
+
+	// Get the width of the Y axis area.
+	unsigned int GetYAxisWidth();
+
 protected:
 	void DrawHighlight();
 
@@ -1158,6 +1192,12 @@ protected:
 		float _3dData[3][3];
 		float _3dOrigin[3];
 		float _3dShiftedX, _3dShiftedY;
+
+		// Number of non-aborted queries run by this view.
+		int _queryCount;
+
+		double _xAxisLinkMultFact;
+		double _yAxisLinkMultFact;
 
     private:
         ObjectValid _objectValid;

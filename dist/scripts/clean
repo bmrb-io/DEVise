@@ -30,9 +30,9 @@ cd ..
 
 # \rm -r hpux-hppa
 
-cd solaris-intel
-clean
-cd ..
+# cd solaris-intel
+# clean
+# cd ..
 
 cd solaris-sparc
 clean

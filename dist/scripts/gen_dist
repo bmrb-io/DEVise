@@ -52,16 +52,16 @@ endif
 # tar cvfzhX $dest $dist_home/scripts/tar_exclude .
 # cd $dist_home
 
-echo "Generating solaris-intel distribution"
-set logfile = $dist_home/solaris-intel.log
-if (-f $logfile) then
-  rm $logfile
-endif
-set src = solaris-intel
-set dest = $target/solaris-intel.tar.gz
-cd $src
-tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
-cd $dist_home
+# echo "Generating solaris-intel distribution"
+# set logfile = $dist_home/solaris-intel.log
+# if (-f $logfile) then
+#   rm $logfile
+# endif
+# set src = solaris-intel
+# set dest = $target/solaris-intel.tar.gz
+# cd $src
+# tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
+# cd $dist_home
 
 echo "Generating solaris-sparc distribution"
 set logfile = $dist_home/solaris-sparc.log

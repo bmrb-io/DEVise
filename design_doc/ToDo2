@@ -81,6 +81,12 @@ The JavaScreen should have an option to display the Y value of the bar
 the mouse is on, rather than the actual Y location of the mouse, as
 the mouse location. (jm/rkw 12/19/01)
 
+The print dialog should remember previous values. (gk/rkw 10/1/02)
+
+When printing to GIFs, we should either deal correctly with parts
+of windows being obscured, or at least warn the user that they should
+raise all of the windows before printing. (rkw 10/1/02)
+
 
 
 (add stuff from old to-do list?)

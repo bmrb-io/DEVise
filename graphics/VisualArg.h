@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.13.10.1  2002/09/05 19:13:54  wenger
+  Implemented GData attribute value links (but not GUI for creating
+  them).
+
+  Revision 1.13  2001/04/12 20:14:59  wenger
+  First phase of external process dynamic data generation is in place
+  for RectX symbols (needs GUI and some cleanup); added the ability to
+  specify format for dates and ints in GData; various improvements to
+  diagnostic output.
+
   Revision 1.12  1998/05/05 15:14:53  zhenhai
   Implemented 3D Cursor as a rectangular block in the destination view
   showing left, right, top, bottom, front and back cutting planes of the
@@ -95,6 +105,7 @@ const unsigned VISUAL_RECORD_INDEX = 7;
 // const unsigned VISUAL_ANTICAMERA_INDEX = 9;
 const unsigned VISUAL_TATTR_INDEX = 10;
 const unsigned VISUAL_EXTDATA_INDEX = 11;
+const unsigned VISUAL_GATTR_INDEX = 12;
 
 /*
    A VisualFlag is the union of visual attributes.
@@ -116,6 +127,7 @@ const unsigned VISUAL_SHAPE       = (1 << VISUAL_SHAPE_INDEX);
 const unsigned VISUAL_RECORD      = (1 << VISUAL_RECORD_INDEX);
 const unsigned VISUAL_TATTR       = (1 << VISUAL_TATTR_INDEX);
 const unsigned VISUAL_EXTDATA     = (1 << VISUAL_EXTDATA_INDEX);
+const unsigned VISUAL_GATTR       = (1 << VISUAL_GATTR_INDEX);
 
 // Note that this doesn't include RECORD or TATTR bits.
 const unsigned VISUAL_ALLBITS     = (VISUAL_X | VISUAL_Y | VISUAL_LOC |

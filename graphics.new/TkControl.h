@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.30.14.1  2002/09/02 21:29:34  wenger
+  Did a bunch of Purifying -- the biggest change is storing the command
+  objects in a HashTable instead of an Htable -- the Htable does a bunch
+  of ugly memory copying.
+
+  Revision 1.30  2000/02/16 18:51:46  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.29  2000/01/13 23:07:13  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -235,6 +243,8 @@ private:
   Tcl_Interp *_interp;
   Tk_Window _mainWindow;
   char *_argv0;
+
+  CmdContainer *_cmdCont;
 
   virtual int ReturnVal(u_short flag, const char *result) {
 	_valueReturned = true;

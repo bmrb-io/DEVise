@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.32.14.1  2002/07/25 19:29:21  wenger
+  Fixed bug 800 (symbols disappear at extreme zoom) and other drawing-
+  related problems; removed unused WindowRep method (FillRectArray with
+  constant width/height).
+
+  Revision 1.32  1999/07/16 21:35:51  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.31  1999/02/11 19:54:32  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -293,19 +306,14 @@ class PSWindowRep : public WindowRep
 
     virtual void FillRect
       (Coord xlow, Coord ylow, Coord width, Coord height,CursorStore *cstore=0);
-    virtual void FillRectAlign(Coord xlow, Coord ylow, Coord width,
+    virtual void FillRectAlign(Coord dataX, Coord dataY, Coord width,
 			       Coord height,
 			       SymbolAlignment alignment = AlignSouthWest,
 			       Coord orientation = 0.0);
 
     /* Fill rectangles, variable width/height */
-    virtual void FillRectArray(Coord *xlow, Coord *ylow, Coord *width, 
+    virtual void FillRectArray(Coord *symbolX, Coord *symbolY, Coord *width, 
                                Coord *height, int num,
-			       SymbolAlignment alignment = AlignSouthWest,
-			       Coord orientation = 0.0);
-    /* Fill rectangles, same width/height */
-    virtual void FillRectArray(Coord *xlow, Coord *ylow, Coord width,
-                               Coord height, int num,
 			       SymbolAlignment alignment = AlignSouthWest,
 			       Coord orientation = 0.0);
 

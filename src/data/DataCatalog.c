@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.10.10.1  2002/09/02 21:29:40  wenger
+  Did a bunch of Purifying -- the biggest change is storing the command
+  objects in a HashTable instead of an Htable -- the Htable does a bunch
+  of ugly memory copying.
+
+  Revision 1.10  2001/03/13 20:52:39  wenger
+  Fixed bug 644 (problem with environment variables in data source
+  definitions).
+
   Revision 1.9  2000/04/18 16:13:46  wenger
   Environment variables can now be used in data source definitions;
   $DEVISE_DAT and $DEVISE_SCHEMA are added to new definitions as appropriate.
@@ -902,7 +911,7 @@ DataCatalog::FindEntry(const char *entryName, const char *catFile)
     }
   }
 
-  delete [] partName;
+  FreeString(partName);
 
 #if (DEBUG >= 2)
   printf("  found entry {%s}\n", entry ? entry : "NULL");

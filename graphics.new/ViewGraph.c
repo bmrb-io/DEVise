@@ -16,11 +16,30 @@
   $Id$
 
   $Log$
+  Revision 1.155  2002/07/19 17:07:26  wenger
+  Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+
   Revision 1.154  2002/06/17 19:41:08  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 
   Revision 1.153  2002/05/01 21:30:13  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.152.4.9  2002/11/15 22:44:36  wenger
+  Views with no TData records don't contribute to filter values on 'home'
+  (this helps to fix some problems with the Condor user visualizations);
+  added cursorHome command; changed version to 1.7.13.
+
+  Revision 1.152.4.8  2002/09/05 19:14:04  wenger
+  Implemented GData attribute value links (but not GUI for creating
+  them).
+
+  Revision 1.152.4.7  2002/09/04 13:58:01  wenger
+  More Purifying -- fixed some leaks and mismatched frees.
+
+  Revision 1.152.4.6  2002/08/23 17:45:14  wenger
+  Fixed bug 812 (problem with drawing piles when a piled view has
+  auto filter update turned on).
 
   Revision 1.152.4.5  2002/06/27 18:15:08  wenger
   Fixed problem with the setDoHomeOnVisLink command, more link home
@@ -947,6 +966,23 @@ ViewGraph::~ViewGraph(void)
     // ~ViewGraph() and once during ~View()
     ReportViewDestroyed();
 
+    //
+    // Avoid leaking MappingInfo objects.
+    //
+    // If there's a query running on this view, we will crash when we
+    // actually remove the mapping.
+    AbortQuery();
+
+    int mapIndex = InitMappingIterator();
+    while(MoreMapping(mapIndex)) {
+        MappingInfo *info = NextMapping(mapIndex);
+        _mappings.DeleteCurrent(mapIndex);
+        FreeString(info->label);
+        delete info;
+    }
+    DoneMappingIterator(mapIndex);
+
+
     // disconnect from the stats buffers
     _statBuffer->RemoveControllingView(this);
     if( _statBuffer->DeleteRef() ) {
@@ -1050,7 +1086,7 @@ void ViewGraph::AddAsMasterView(MasterSlaveLink *link)
     // add the link as one of the links whose master this view is
     if (!_masterLink.Find(link)) {
 #if defined(DEBUG)
-        printf("View %s becomes master of record link %s\n", GetName(),
+        printf("View %s becomes master of master/slave link %s\n", GetName(),
                link->GetName());
 #endif
         _masterLink.Append(link);
@@ -1068,7 +1104,7 @@ void ViewGraph::DropAsMasterView(MasterSlaveLink *link)
 		link->RefreshAll();
 
 #if defined(DEBUG)
-        printf("View %s no longer master of record link %s\n", GetName(),
+        printf("View %s no longer master of master/slave link %s\n", GetName(),
                link->GetName());
 #endif
     }
@@ -1110,7 +1146,7 @@ void ViewGraph::AddAsSlaveView(MasterSlaveLink *link)
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
     if (!_slaveLink.Find(link)) {
 #if defined(DEBUG)
-        printf("View %s becomes slave of record link %s\n", GetName(),
+        printf("View %s becomes slave of master/slave link %s\n", GetName(),
                link->GetName());
 #endif
         _slaveLink.Append(link);
@@ -1126,7 +1162,7 @@ void ViewGraph::DropAsSlaveView(MasterSlaveLink *link)
     if (_slaveLink.Find(link)) {
         _slaveLink.Delete(link);
 #if defined(DEBUG)
-        printf("View %s no longer slave of record link %s\n", GetName(),
+        printf("View %s no longer slave of master/slave link %s\n", GetName(),
                link->GetName());
 #endif
     }
@@ -1339,6 +1375,8 @@ ViewGraph::GetHome2D(Boolean explicitRequest, VisualFilter &filter)
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
     printf("ViewGraph(%s)::GetHome2D(%d)\n", GetName(), explicitRequest);
+    printf("  Filter is: (%g, %g), (%g, %g)\n", filter.xLow, filter.yLow,
+	    filter.xHigh, filter.yHigh);
 #endif
 
     ViewHomeInfo *homeInfo;
@@ -1367,17 +1405,27 @@ ViewGraph::GetHome2D(Boolean explicitRequest, VisualFilter &filter)
 
     DOASSERT(GetNumDimensions() == 2, "GetHome2D called on non 2D view");
 
-    TDataMap *map = GetFirstMap();
-	if (map == NULL) return;
+	//
+	// Return without doing anything to the filter if we have no TData
+	// or the TData has no records.
+	//
+	if (!HasTDataRecords()) {
+#if defined(DEBUG)
+      printf("ViewGraph %s has no TData records; GetHome2D() returns\n",
+	      GetName());
+#endif
+	  return;
+	}
 
-    const AttrInfo *xAttr = map->MapGAttr2TAttr(MappingCmd_X);
-    const AttrInfo *yAttr = map->MapGAttr2TAttr(MappingCmd_Y);
+    TDataMap *tdMap = GetFirstMap();
+    const AttrInfo *xAttr = tdMap->MapGAttr2TAttr(MappingCmd_X);
+    const AttrInfo *yAttr = tdMap->MapGAttr2TAttr(MappingCmd_Y);
 
     Boolean hasFirstRec, hasLastRec;
     RecId firstRec, lastRec;
     if ((xAttr && !strcmp(xAttr->name, REC_ID_NAME)) ||
       (yAttr && !strcmp(yAttr->name, REC_ID_NAME))) {
-        TData *tdata = map->GetPhysTData();
+        TData *tdata = tdMap->GetPhysTData();
         hasFirstRec = tdata->HeadID(firstRec);
         hasLastRec = tdata->LastID(lastRec);
     }
@@ -1582,6 +1630,12 @@ void ViewGraph::GoHome(Boolean explicitRequest)
 
     if (GetNumDimensions() == 2) {
         VisualFilter filter;
+	GetVisualFilter(filter);
+	// Intentionally put in invalid X and Y values.
+	filter.xLow = MAXFLOAT;
+	filter.xHigh = -MAXFLOAT;
+	filter.yLow = MAXFLOAT;
+	filter.yHigh = -MAXFLOAT;
 
 	//
 	// Get home for this view.
@@ -1597,6 +1651,20 @@ void ViewGraph::GoHome(Boolean explicitRequest)
           link->GetHome2D(this, filter, explicitRequest);
         }
         _visualLinks.DoneIterator(index);
+
+	// If the filter still has invalid X or Y values left (in other
+	// words, we didn't fill them in anywhere along the way), plug
+	// in the current values.
+        VisualFilter currFilter;
+	GetVisualFilter(currFilter);
+	if (filter.xLow > filter.xHigh) {
+	    filter.xLow = currFilter.xLow;
+	    filter.xHigh = currFilter.xHigh;
+	}
+	if (filter.yLow > filter.yHigh) {
+	    filter.yLow = currFilter.yLow;
+	    filter.yHigh = currFilter.yHigh;
+	}
 
 	SetVisualFilter(filter);
     } else {
@@ -2363,7 +2431,7 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
   _glistX.DeleteAll(); /* Clear the gdata list */
   _glistY.DeleteAll(); /* Clear the gdata list */
 
-  // Initialize record links whose master this view is
+  // Initialize master/slave links whose master this view is
   index = _masterLink.InitIterator();
   while(_masterLink.More(index)) {
     MasterSlaveLink *link = _masterLink.Next(index);
@@ -2458,7 +2526,7 @@ void ViewGraph::DerivedAbortQuery()
   }
   if (GetParentPileStack()) GetParentPileStack()->QueryDone(this);
 
-  // Abort record links whose master this view is
+  // Abort master/slave links whose master this view is
   int index = _masterLink.InitIterator();
   while(_masterLink.More(index)) {
     MasterSlaveLink *link = _masterLink.Next(index);
@@ -2612,27 +2680,29 @@ void	ViewGraph::QueryDone(int bytes, void* userData,
 #if defined(DEBUG)
     printf("_homeAfterQueryDone = %d\n", _homeAfterQueryDone);
 #endif
+
 	if (_homeAfterQueryDone) {
 		_homeAfterQueryDone = false;
 	    GoHome(false);
 		// Make sure view redraws even if filter isn't changed.
 		// (Fixes bug 482.)
 
-		// Part of kludgey fix for bug 527.  RKW 1999-10-30.
-		//TEMP -- will this really work right for piles?  what we really
-		// want to do in a pile is go thru all views in the pile once, then
-		// set the visual filters and go thru the pile again
-		_pileViewHold = false;//TEMP?
-		Refresh(false/*TEMP?*/);
+		// Changed to refreshing entire pile here to fix bug 812.
+		// Note: the automatic visual filter update logic should probably
+		// largely get moved into the PileStack class, but I don't want
+		// to deal with that right now.
+		// RKW 2002-08-23.
+		Refresh(true);
 	} else {
 	    PrepareStatsBuffer(map);
 	    DrawLegend();
 
-	    // Finish record links whose master is this view
+	    // Finish master/slave links whose master is this view
 	    int		index = _masterLink.InitIterator();
 
-	    while(_masterLink.More(index))
+	    while(_masterLink.More(index)) {
 		    _masterLink.Next(index)->Done();
+        }
 
 	    _masterLink.DoneIterator(index);
 
@@ -3537,6 +3607,53 @@ ViewGraph::SetJSSendP(Boolean drawToScreen, Boolean sendToSocket,
     SetSendParams(_jsGdsParams);
     Refresh();
   }
+}
+
+//---------------------------------------------------------------------------
+// Determine whether to contribute this view's home parameters when doing
+// home on a visual link that it's linked to.  Originally, we just returned
+// the _doHomeOnVisLink value, but now we also check if the view's TData
+// has any records.  If not, we always return false.
+Boolean
+ViewGraph::GetDoHomeOnVisLink()
+{
+#if defined(DEBUG)
+  printf("ViewGraph(%s)::GetDoHomeOnVisLink()\n", GetName());
+#endif
+
+  Boolean result = _doHomeOnVisLink;
+
+  if (result) {
+    if (!HasTDataRecords()) {
+	  result = false;
+	}
+  }
+
+  return result;
+}
+
+//---------------------------------------------------------------------------
+Boolean
+ViewGraph::HasTDataRecords()
+{
+#if defined(DEBUG)
+  printf("ViewGraph(%s)::HasTDataRecords()\n", GetName());
+#endif
+
+  Boolean result = false;
+
+  TDataMap *tdMap = GetFirstMap();
+  if (tdMap != NULL) {
+    TData *tdata = tdMap->GetLogTData();
+	if (tdata != NULL) {
+      RecId recId;
+      if (tdata->HeadID(recId) && tdata->LastID(recId) && recId >= 0) {
+	    result = true;
+	  }
+	}
+  }
+
+  return result;
 }
 
 //******************************************************************************

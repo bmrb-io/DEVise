@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.21.14.1  2002/09/17 23:34:11  wenger
+  Fixed a bunch of memory leaks -- especially in DevError::ReportError()!
+
+  Revision 1.21  1999/11/30 22:28:01  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.20  1999/11/19 21:29:13  wenger
   Removed Journal class and related code (no longer works); removed various
   other unused or unnecessary code.
@@ -155,6 +165,8 @@ void ControlPanel::DestroySessionData()
   _syncNotify = false;
   _syncAllowed = false;
 
+  AttrList::DestroyAllInstances();
+
 #ifndef LIBCS
   // reset screen size to original size
   DeviseDisplay::DefaultDisplay()->DesiredScreenWidth() = Init::ScreenWidth();
@@ -195,6 +207,14 @@ ControlPanel::ControlPanel()
   _batchMode = false;
   _syncNotify = false;
   _syncAllowed = false;
+}
+
+/***************************************************************/
+
+ControlPanel::~ControlPanel()
+{
+  delete _callbacks;
+  _callbacks = NULL;
 }
 
 /***************************************************************/

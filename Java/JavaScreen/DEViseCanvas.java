@@ -27,11 +27,32 @@
 // $Id$
 
 // $Log$
+// Revision 1.94  2002/07/19 17:06:46  wenger
+// Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+//
 // Revision 1.93  2002/06/17 19:40:13  wenger
 // Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 //
 // Revision 1.92  2002/05/01 21:28:58  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.91.2.14  2002/12/17 18:08:22  wenger
+// Fixed bug 844 (slow rubberband line drawing in child views).
+// Note: this fix involves some pretty signficant changes to how the
+// canvas is painted and rubberband lines are drawn, so it needs some
+// testing.
+//
+// Revision 1.91.2.13  2002/09/27 18:44:41  wenger
+// Fixed bug 810 (child view titles in JS can go outside view bounds).
+//
+// Revision 1.91.2.12  2002/08/29 17:27:21  sjlong
+// Fixed Bug 798 - Mouse location is only displayed now when in data area
+//
+// Revision 1.91.2.11  2002/08/20 18:56:58  sjlong
+// Bug 673 fixed (bug: 3D drill-down often doesn't work on the first click)
+//
+// Revision 1.91.2.10  2002/08/20 14:46:39  sjlong
+// Fixed "help" bugs 609 and 621.
 //
 // Revision 1.91.2.9  2002/07/19 16:05:19  wenger
 // Changed command dispatcher so that an incoming command during a pending
@@ -444,8 +465,10 @@ public class DEViseCanvas extends Container
     // the fix for the "missing keystrokes" bugs.
     private boolean _mouseIsInCanvas = false;
 
+    // These variables will hold the help messages to diplay when the 'Help' button is pressed
+    // for both the main view and any child views.
     public String helpMsg = null;
-    public int helpMsgX = -1, helpMsgY = -1;
+    public Vector childViewHelpMsgs = new Vector();
 
     //TEMP -- what are these? op is old point???
     Point sp = new Point(), ep = new Point(), op = new Point();
@@ -471,6 +494,15 @@ public class DEViseCanvas extends Container
     private static final int ZOOM_MODE_Y = 2;
     private static final int ZOOM_MODE_XY = 3;
     private static int _zoomMode = ZOOM_MODE_NONE;
+
+    // This is used to paint only rubberband lines (in XOR mode) while
+    // we are dragging the rubberband line.  (In other words, we don't
+    // actually repaint all of the other stuff on the canvas.)
+    private boolean _paintRubberbandOnly = false;
+
+    // Set this to true to draw rubberband lines in XOR mode (so we can
+    // just redraw the rubberband line itself on each mouse drag).
+    private static final boolean DRAW_XOR_RUBBER_BAND = true;
 
     // v is base view if there is a pile in this canvas.
     public DEViseCanvas(DEViseView v, Image img)
@@ -612,35 +644,41 @@ public class DEViseCanvas extends Container
             }
         }
 
-        // draw 3D molecular view
-        if (paintCrystal(gc)) {
-            paintBorder(gc);
-            paintHelpMsg(gc);
-            return;
-        }
+        if (!_paintRubberbandOnly) {
+            // draw 3D molecular view
+            if (paintCrystal(gc)) {
+                paintBorder(gc);
+                paintHelpMsg(gc);
+                return;
+            }
 
-        // draw the background image
-        paintBackground(gc);
+            // draw the background image
+            paintBackground(gc);
 	
-        // draw titles for all views, including view symbols but not piled views
-        paintTitle(gc);
+            // draw titles for all views, including view symbols but not
+	    // piled views
+            paintTitle(gc);
 
-        // draw all the cursors
-        paintCursor(gc);
+            // draw all the cursors
+            paintCursor(gc);
 
-        // draw all the GDatas
-        paintGData(gc, view);
+            // draw all the GDatas
+            paintGData(gc, view);
+        }
 
         // draw rubber band
         paintRubberBand(gc);
 
-        // draw highlight border
-        paintBorder(gc);
+        if (!_paintRubberbandOnly) {
+            // draw highlight border
+            paintBorder(gc);
 
-        paintHelpMsg(gc);
+            paintHelpMsg(gc);
 
-	// draw sxis lables
-	paintAxisLabel(gc);
+	    
+	    // draw sxis lables
+	    paintAxisLabel(gc);
+        }
     }
 
     private synchronized void paintBackground(Graphics gc)
@@ -655,115 +693,131 @@ public class DEViseCanvas extends Container
 
     private void paintHelpMsg(Graphics gc)
     {
-	boolean testPrint = false;
         if (helpMsg == null) {
             return;
         }
 
-        if (helpMsgX < 0) {
-            helpMsgX = 0;
-        }
-        if (helpMsgY < 0) {
-            helpMsgY = 0;
-        }
-	helpMsgX = 0; helpMsgY = 0;
- 
-        Toolkit tk = Toolkit.getDefaultToolkit();
-        FontMetrics fm = tk.getFontMetrics(jsc.jsValues.uiglobals.textFont);
-        int ac = fm.getAscent(), dc = fm.getDescent(), height = ac + dc + 12;
-        int width = fm.stringWidth(helpMsg) + 12;
-	int minHeight = height + height/3; int minWidth = fm.stringWidth("THIS IS THE MINIMUM");
+	int helpMsgX = 0, helpMsgY = 0;
+	String tempHelpMsg = "";
+	int minX = 0, minY = 0;
 
-	if(canvasDim.width < minWidth || canvasDim.height < minHeight){
-	   return;
-        }
+	for(int j = 0; ; j++) {
+	    if(j == 0) {
+		tempHelpMsg = helpMsg;
+	    }
+	    else {
+		if(childViewHelpMsgs.size() >= j) {
+		    tempHelpMsg = (String) childViewHelpMsgs.elementAt(j - 1);
+		    if(tempHelpMsg == null) continue;
+		    if(view.viewChilds.size() >= j) {
+			helpMsgX = ((DEViseView) view.viewChilds.elementAt(j - 1)).viewLoc.x;
+			helpMsgY = ((DEViseView) view.viewChilds.elementAt(j - 1)).viewLoc.y;
+			// This if will keep help msgs from overlapping
+			if(helpMsgY < minY && helpMsgX < minX) {
+			    helpMsgY = minY;
+			}
+		    }
+		    else {
+			break;
+		    }
+		}
+		else {
+		    break;
+		}
+	    }
+
+	    Toolkit tk = Toolkit.getDefaultToolkit();
+	    FontMetrics fm = tk.getFontMetrics(jsc.jsValues.uiglobals.textFont);
+	    int ac = fm.getAscent(), dc = fm.getDescent(), height = ac + dc + 12;
+	    int width = fm.stringWidth(tempHelpMsg) + 12;
+	    int minHeight = height + height/3; int minWidth = fm.stringWidth("THIS IS THE MINIMUM");
+
+	    if(canvasDim.width < minWidth || canvasDim.height < minHeight){
+		return;
+	    }
      
-        StringTokenizer st = new StringTokenizer(helpMsg, "\n");
-	Vector sv = new Vector();
-	String back = "";
+	    StringTokenizer st = new StringTokenizer(tempHelpMsg, "\n");
+	    Vector sv = new Vector();
+	    String back = "";
 
-        while(st.hasMoreTokens()|| !back.equals("")){
-	      String tmp = back + " ";
-	   if(st.hasMoreTokens()){
-	       tmp  +=  st.nextToken(); 
-           }
+	    while(st.hasMoreTokens()|| !back.equals("")){
+		String tmp = back + " ";
+		if(st.hasMoreTokens()){
+		    tmp  +=  st.nextToken(); 
+		}
 	   
-	   int tokenWidth = fm.stringWidth(tmp) + 12;
-	   if(tokenWidth > canvasDim.width){
-	     // testPrint = true;
-             String[] a = stringSplit(tmp, fm);
-	     tmp = a[0];
-	     back = a[1];
-	     // System.out.println(tmp);
-	     // System.out.println(back);
-	     sv.addElement(tmp);
+		int tokenWidth = fm.stringWidth(tmp) + 12;
+		if(tokenWidth > canvasDim.width){
+		    String[] a = stringSplit(tmp, fm);
+		    tmp = a[0];
+		    back = a[1];
+		    sv.addElement(tmp);
 
-           }
-	   else{
-	      sv.addElement(tmp);
-	      back = "";
-	   }    
-        }
-
-	if(testPrint){
-	   // System.out.println(helpMsg);
-	}
-
-	if( back.equals("")); 
-	else{
-	   sv.addElement(back);
-        }
+		}
+		else{
+		    sv.addElement(tmp);
+		    back = "";
+		}    
+	    }
+	    
+	    if( back.equals("")); 
+	    else{
+		sv.addElement(back);
+	    }
 	   
-        int totHeight = height * sv.size() ;
-        if( sv.size () > 3 ){ 
-	   totHeight += sv.size() * (-5);
-        }
+	    int totHeight = height * sv.size() ;
+	    if( sv.size () > 3 ){ 
+		totHeight += sv.size() * (-5);
+	    }
 
-	int allowedHeight = 4* canvasDim.height/5;
-        if(totHeight> allowedHeight ){
-	   // may want to put some message;
-	   return;
-         }
+	    int allowedHeight = 4* canvasDim.height/5;
+	    if(totHeight> allowedHeight ){
+		// may want to put some message;
+		return;
+	    }
 
 
-//      int dispLength = canvasDim.width;	
-//      computing display length
+	    //      int dispLength = canvasDim.width;	
+	    //      computing display length
 
-        int dispLength = 0;
-        for(int i = 0; i < sv.size(); i++){
-	  String s = (String) sv.elementAt(i);
-	  int w = fm.stringWidth(s);
-	  if(dispLength < w ){
-	     dispLength = w;
-          } 
-        }   
-        dispLength += 12;
-        if( dispLength < canvasDim.width){
-	 int j = canvasDim.width - dispLength;
-	 if( j  > 6){
-	     dispLength +=6;
-         }
-	 else{
-	     dispLength += j;
-         }
-        } 
+	    int dispLength = 0;
+	    for(int i = 0; i < sv.size(); i++){
+		String s = (String) sv.elementAt(i);
+		int w = fm.stringWidth(s);
+		if(dispLength < w ){
+		    dispLength = w;
+		} 
+	    }   
+	    dispLength += 12;
+	    if( dispLength < canvasDim.width){
+		int k = canvasDim.width - dispLength;
+		if( k  > 6){
+		    dispLength +=6;
+		}
+		else{
+		    dispLength += k;
+		}
+	    } 
 
-        // setting up the color background and text color.
-
-        gc.setColor(Color.black);
-        gc.drawRect(helpMsgX, helpMsgY, dispLength -1, totHeight);
-        gc.setColor(new Color(255, 255, 192));
-        gc.fillRect(helpMsgX + 1, helpMsgY + 1,dispLength - 2, totHeight- 1);
-        gc.setColor(Color.black);
-        gc.setFont(jsc.jsValues.uiglobals.textFont);
-
-        // printing each of the line from the Vector of lines.
-        for( int i = 0 ; i < sv.size(); i++){	
-           gc.drawString(((String) sv.elementAt(i)), helpMsgX + 6, helpMsgY + height - dc - 6);
-	   helpMsgY += (height - dc -6);
+	    // setting up the color background and text color.
+	    gc.setColor(Color.black);
+	    gc.drawRect(helpMsgX, helpMsgY, dispLength -1, totHeight);
+	    // If this is the main help msg, make sure no other msg is displayed over this one
+	    if(j == 0) {
+		minX = dispLength - 1 + 1;
+		minY = totHeight + 1;
+	    }
+	    gc.setColor(new Color(255, 255, 192));
+	    gc.fillRect(helpMsgX + 1, helpMsgY + 1,dispLength - 2, totHeight- 1);
+	    gc.setColor(Color.black);
+	    gc.setFont(jsc.jsValues.uiglobals.textFont);
+	    
+	    // printing each of the line from the Vector of lines.
+	    for( int i = 0 ; i < sv.size(); i++){	
+		gc.drawString(((String) sv.elementAt(i)), helpMsgX + 6, helpMsgY + height - dc - 6);
+		helpMsgY += (height - dc -6);
+	    }
 	}
-	  
-
     }	
 
    private String[]  stringSplit(String a, FontMetrics fm){
@@ -859,7 +913,16 @@ public class DEViseCanvas extends Container
             if (v.viewDTFont != null && v.viewTitle != null) {
                 gc.setColor(new Color(v.viewFg));
                 gc.setFont(v.viewDTFont);
-                gc.drawString(v.viewTitle, v.viewDTX, v.viewDTY);
+
+		// Fit title into available width of view.
+                String title = fitStringToWidth(v.viewTitle,
+	          v.viewLoc.width, gc.getFontMetrics());
+
+		// Re-center (possibly shortened) title.
+		int titleX = (v.viewLoc.width -
+		  gc.getFontMetrics().stringWidth(title)) / 2 +
+		  v.viewLocInCanvas.x;
+                gc.drawString(title, titleX, v.viewDTY);
             }
         }
 	
@@ -867,7 +930,16 @@ public class DEViseCanvas extends Container
         if (view.viewDTFont != null && view.viewTitle != null) {
             gc.setColor(new Color(view.viewFg));
             gc.setFont(view.viewDTFont);
-            gc.drawString(view.viewTitle, view.viewDTX, view.viewDTY);
+
+	    // Fit title into available width of view.
+            String title = fitStringToWidth(view.viewTitle,
+	      view.viewLoc.width, gc.getFontMetrics());
+
+	    // Re-center (possibly shortened) title.
+	    int titleX = (view.viewLoc.width -
+	      gc.getFontMetrics().stringWidth(title)) / 2 +
+	      view.viewLocInCanvas.x;
+            gc.drawString(title, titleX, view.viewDTY);
         }
     }
 
@@ -965,12 +1037,14 @@ public class DEViseCanvas extends Container
 
         // handling piled views
         for (int i = 0; i < v.viewPiledViews.size(); i++) {
-        //for (int i = v.viewPiledViews.size() - 1; i >= 0; i--) {
             DEViseView vv = (DEViseView)v.viewPiledViews.elementAt(i);
 
             paintGData(gc, vv);
         }
     }
+
+    static boolean _lastRBValid = false;
+    static Rectangle _lastRB = new Rectangle();
 
     private synchronized void paintRubberBand(Graphics gc)
     {
@@ -1015,10 +1089,37 @@ public class DEViseCanvas extends Container
                 h = 4;
 	    }
 
-            gc.setColor(Color.yellow);
+	    if (DRAW_XOR_RUBBER_BAND) {
+	        gc.setXORMode(Color.black);
+	        if (_lastRBValid) {
+                    gc.drawRect(_lastRB.x, _lastRB.y, _lastRB.width - 1,
+		      _lastRB.height - 1);
+	        }
+	    } else {
+                gc.setColor(Color.yellow);
+	    }
             gc.drawRect(x0, y0, w - 1, h - 1);
-            gc.setColor(Color.red);
+
+	    if (DRAW_XOR_RUBBER_BAND) {
+	        gc.setXORMode(Color.red);
+	        if (_lastRBValid) {
+                    gc.drawRect(_lastRB.x + 1, _lastRB.y + 1,
+		      _lastRB.width - 3, _lastRB.height - 3);
+	        }
+	    } else {
+                gc.setColor(Color.red);
+	    }
             gc.drawRect(x0 + 1, y0 + 1, w - 3, h - 3);
+
+	    if (DRAW_XOR_RUBBER_BAND) {
+	        gc.setPaintMode();
+
+	        _lastRB.x = x0;
+	        _lastRB.y = y0;
+	        _lastRB.width = w;
+	        _lastRB.height = h;
+	        _lastRBValid = true;
+	    }
         }
     }
 
@@ -1159,16 +1260,29 @@ public class DEViseCanvas extends Container
             }
         }
 
+	// This function will do one of two things.  If the help button has been pushed, and a tan
+	// box is showing the help in this view, this function will hide that help box.  If there is not
+	// currently a help box displayed, this function will show the view's help in a dialog box.
 	private void showHideHelp()
 	{
-	    helpMsg = null;
+	    // Check to see if a help box is being displayed.
+	    if(helpMsg != null) {
+		// Hide the help for this view and any of its children
+		helpMsg = null;
+		
+		for(int i = 0; i < childViewHelpMsgs.size(); i++) {
+		    childViewHelpMsgs.setElementAt(null, i);
+		}
+		repaint();
+		return;
+	    }
 	    
 	    //
 	    // Show this view's help within a dialog box.
 	    //
 	    jsc.jsValues.connection.helpBox = true;
 	    String cmd = DEViseCommands.GET_VIEW_HELP + " " +
-	      activeView.getCurlyName() + " " + helpMsgX + " " + helpMsgY;
+	      activeView.getCurlyName() + " " + 0 + " " + 0;
 	    // jscreen.guiAction = true;
      	    dispatcher.start(cmd);
 	}
@@ -1418,6 +1532,13 @@ public class DEViseCanvas extends Container
 	    } else {
 	        _zoomMode = ZOOM_MODE_XY;
 	    }
+
+            if (isInViewDataArea && selectedCursor == null &&
+	      activeView.isRubberBand) {
+                // We can only draw just the rubberband line if we're
+		// drawing it in XOR mode.
+                _paintRubberbandOnly = DRAW_XOR_RUBBER_BAND;
+            }
         }
 
         public void mouseReleased(MouseEvent event)
@@ -1431,18 +1552,19 @@ public class DEViseCanvas extends Container
 	    // Bug fix -- see notes at variable declaration.
 	    buttonIsDown = false;
 
+	    _lastRBValid = false;
+
+            _paintRubberbandOnly = false;
+
             // Each mouse click will be here once, so double click actually
 	    // will enter this twice. Also, this event will always reported
 	    // with each mouse click and before the mouseClick event is
 	    // reported.
 
             jsc.jsValues.canvas.isInteractive = false;
-
             if (view.viewDimension == 3) {
-
 		// send command to collaborations if necessary
 		if (jsc.specialID == -1) {
-
 		    // for 3D drill-down
 		    if ((jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT) 
 			&& (activeView.isDrillDown) && (!isMouseDragged) 
@@ -1725,6 +1847,8 @@ public class DEViseCanvas extends Container
 		return;
 	    }
 
+	    isMouseDragged = false;
+
             // the position of this event will be relative to this view
 	    // and will not exceed the range of this view, ie, p.x >= 0 &&
 	    // p.x < view.width, p.y >= 0 && p.y < view.height
@@ -1892,9 +2016,11 @@ public class DEViseCanvas extends Container
                 tmpCursor = DEViseUIGlobals.defaultCursor;
             }
 
+	    //TEMP -- should we only do this if the current cursor is
+	    // different than the one required???
             setCursor(tmpCursor);
 
-            if (activeView.pileBaseView != null) {
+            if (activeView != null && activeView.pileBaseView != null) {
                 activeView = activeView.pileBaseView;
             }
 
@@ -1904,8 +2030,12 @@ public class DEViseCanvas extends Container
 
             // show the data at current mouse position
 	    if (activeView != null && jsc.viewInfo != null) {
-                jsc.viewInfo.updateInfo(activeView.viewName,
-		  activeView.getX(p.x), activeView.getY(p.y));
+		if(isInViewDataArea) {
+		    jsc.viewInfo.updateInfo(activeView.viewName,
+		      activeView.getX(p.x), activeView.getY(p.y));
+		} else {
+		    jsc.viewInfo.updateInfo();
+		}
 	    }
 
         } else { // activeView is null and all other values will be initialized value before
@@ -1922,6 +2052,8 @@ public class DEViseCanvas extends Container
                 tmpCursor = DEViseUIGlobals.defaultCursor;
             }
 
+	    //TEMP -- should we only do this if the current cursor is
+	    // different than the one required???
             setCursor(tmpCursor);
 
             if (jscreen.getCurrentView() != activeView) {
@@ -1938,6 +2070,7 @@ public class DEViseCanvas extends Container
     // It also has side effects of setting activeView, selectedCursor,
     // whichCursorSide, and isInViewDataArea.
     // RKW 2000-05-12.
+    //TEMP -- rename this??
     public synchronized boolean checkMousePos(Point p, DEViseView v)
     {
         if (!v.inView(p)) {
@@ -2151,6 +2284,26 @@ public class DEViseCanvas extends Container
 	repaint();
     }
 
+    private static String fitStringToWidth(String str, int width,
+      FontMetrics fm)
+    {
+
+	final String suffix = "...";
+	final int suffixLen = suffix.length();
+	int strWidth;
+	while ((strWidth = fm.stringWidth(str)) > width &&
+	  str.length() > suffixLen) {
+	    float factor = (float)width / (float)strWidth;
+
+	    int newLen = (int)(factor * str.length());
+	    newLen = Math.min(newLen, str.length() - suffixLen - 1);
+	    newLen = Math.max(newLen, 0);
+
+	    str = str.substring(0, newLen) + suffix;
+	}
+
+	return str;
+    }
 }
 
 // this class is used to create XOR of part of image

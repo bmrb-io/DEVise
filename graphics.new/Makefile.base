@@ -17,6 +17,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.103.4.1  2002/09/05 19:14:03  wenger
+#  Implemented GData attribute value links (but not GUI for creating
+#  them).
+#
+#  Revision 1.103  2001/12/28 18:34:28  wenger
+#  Fixed bugs 727 and 730 (problems with line graphs in DEVise).
+#
 #  Revision 1.102  2001/08/03 18:13:12  wenger
 #  Removed all OpenGL-related code.
 #
@@ -367,7 +374,7 @@ VIEWSRC = ActionDefault.c ConnectorShape.h BasicStats.c \
 	KGraph.c ViewKGraph.c Web.C Action.c ActionClassInfo.c \
 	VisualLinkClassInfo.c VisualLink.c RecordLink.C UpdateLink.C \
 	MapIntToInt.C MasterSlaveLink.c TAttrLink.c DerivedTable.c \
-	SlaveTable.c ExtProc.c ExtDataLink.c
+	SlaveTable.c ExtProc.c ExtDataLink.c GAttrLink.c
 
 VIEWSRCc = $(filter %.c,$(VIEWSRC))
 VIEWSRCC = $(filter %.C,$(VIEWSRC))

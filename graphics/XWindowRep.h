@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.66.14.2  2003/01/07 22:47:24  wenger
+  Fixed bugs 851, 853, and 854 (more view transform/axis drawing bugs).
+
+  Revision 1.66.14.1  2002/07/25 19:29:22  wenger
+  Fixed bug 800 (symbols disappear at extreme zoom) and other drawing-
+  related problems; removed unused WindowRep method (FillRectArray with
+  constant width/height).
+
+  Revision 1.66  1999/10/08 22:04:35  wenger
+  Fixed bugs 512 and 514 (problems related to cursor moving).
+
   Revision 1.65  1999/09/21 18:58:31  wenger
   Devise looks for an already-running Tasvir before launching one; Devise
   can also launch a new Tasvir at any time if Tasvir has crashed; added
@@ -374,7 +385,7 @@ class XWindowRep : public WindowRep
 
 		// Utility Functions
 		virtual void	SetWindowBackground(PColorID bgid);
-		void	ClearPixmap(void);
+		// void	ClearPixmap(void);
 
 	/* Reparent this window to 'other' or vice versa. */
 	virtual void Reparent(Boolean child, void *other, int x, int y);
@@ -514,13 +525,8 @@ class XWindowRep : public WindowRep
 				   Coord orientation = 0.0);
 
 	/* Fill rectangles, variable width/height */
-	virtual void FillRectArray(Coord *xlow, Coord *ylow, Coord *width, 
+	virtual void FillRectArray(Coord *symbolX, Coord *symbolY, Coord *width, 
 				   Coord *height, int num,
-				   SymbolAlignment alignment = AlignSouthWest,
-				   Coord orientation = 0.0);
-	/* Fill rectangles, same width/height */
-	virtual void FillRectArray(Coord *xlow, Coord *ylow, Coord width,
-				   Coord height, int num,
 				   SymbolAlignment alignment = AlignSouthWest,
 				   Coord orientation = 0.0);
 
@@ -676,6 +682,11 @@ private:
 
 	/* copy bitmap from source to destination. Used to scale text. */
 	void CopyBitmap(int width, int height, int dstWidth, int dstHeight);
+
+    inline void TransformRect(SymbolAlignment alignmentIn, Coord dataX,
+        Coord dataY, Coord dataWidth, Coord dataHeight,
+	SymbolAlignment alignmentOut, short &pixX, short &pixY,
+	unsigned short &pixWidth, unsigned short &pixHeight);
 
 	void DrawRectangle(int symbolX, int symbolY, int width, int height,
 			   Boolean filled = true,

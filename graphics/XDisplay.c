@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.89.4.1  2002/09/17 18:58:27  wenger
+  Limited warning about horizontal and vertical points per pixel
+  mismatch to one time; DEVise version is now 1.7.11.
+
+  Revision 1.89  2002/02/05 19:32:33  wenger
+  Fixed bug 750 (problem with child view/pile combinations with an X
+  server with no backing store); added TEST_NO_BACKING_STORE code to
+  test this case even if we really do have backing store on the server.
+
   Revision 1.88  2001/11/30 21:20:30  wenger
   Fixed bug 737 (zero-size visual filter crashes DEVise) and related
   bugs.
@@ -1411,10 +1420,13 @@ Coord XDisplay::PointsPerPixel()
   Coord pointsPerPixelHor = (float)pointsPerInch / (float)_desiredScreenXRes;
   Coord pointsPerPixelVert = (float)pointsPerInch / (float)_desiredScreenYRes;
 
-  if (fabs(pointsPerPixelHor - pointsPerPixelVert) > 0.01) {
+  static Boolean gavePixelWarning = false;
+  if (fabs(pointsPerPixelHor - pointsPerPixelVert) > 0.01 &&
+      !gavePixelWarning) {
     fprintf(stderr,
       "Warning: horizontal (%f) and vertical (%f) points per pixel differ!\n",
         pointsPerPixelHor, pointsPerPixelVert);
+    gavePixelWarning = true;
   }
 
 #if defined (DEBUG)

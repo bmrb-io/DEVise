@@ -16,6 +16,20 @@
   $Id$
 
   $Log$
+  Revision 1.30  2002/05/01 21:30:13  wenger
+  Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.29.4.3  2002/09/10 17:13:21  wenger
+  Fixed bug 821 (GAttr links fail when follower has "complex" symbols)
+  (this involved splitting up ViewData::ReturnGData() into smaller
+  methods to make it easier to deal with); fixed bug 214 (record links
+  fail if leader view has "complex" symbols); added debug output of
+  total records processed and drawn to view data.
+
+  Revision 1.29.4.2  2002/09/05 19:14:03  wenger
+  Implemented GData attribute value links (but not GUI for creating
+  them).
+
   Revision 1.29.4.1  2002/04/30 17:48:11  wenger
   More improvements to 'home' functionality, especially on QPFull_X
   queries.
@@ -158,24 +172,34 @@
 #include "DerivedTable.h"
 #include "DupElim.h"
 #include "MappingInterp.h"
+#include "GAttrLink.h"
 
 //#define DEBUG 0
 //#define TEST_FILTER_LINK // TEMP -- remove later. RKW 1998-10-29.
 
-struct SymbolInfo {
+class SymbolInfo {
+public:
+  SymbolInfo() {
+    inGAttrLink = true; // until proven otherwise...
+  }
+
+  Boolean Passes() { return inFilter && inGAttrLink; }
+  Boolean ShouldDraw() { return (inFilter || isComplex) && inGAttrLink; }
+
   Coord x;
   Coord y;
   ShapeID shape;
   Boolean inFilter;
   Boolean isComplex;
+  Boolean inGAttrLink;
 };
 
 #if defined(TEST_FILTER_LINK) // TEMP -- remove later. RKW 1998-10-29.
 inline Coord GetShapeAttr(int shapeAttrNum, char *ptr, TDataMap *map,
-  GDataAttrOffset *offset)
+  const GDataAttrOffset *offset)
 {
   if (offset->_shapeAttrOffset[shapeAttrNum] < 0) {
-    ShapeAttr *attrs = map->GetDefaultShapeAttrs();
+    const ShapeAttr *attrs = map->GetDefaultShapeAttrs();
     return attrs[shapeAttrNum];
   }
   return GetAttr(ptr, _shapeAttrOffset[shapeAttrNum], Coord, offset);
@@ -248,9 +272,13 @@ ViewData::QueryInit(void* userData)
   _dataRangeFirst = true;
   _twoPass = false;
 
+  _totalRecordsProcessed = 0;
+  _totalRecordsDrawn = 0;
+
   ViewGraph::QueryInit(userData);
 }
 
+//******************************************************************************
 void
 ViewData::QueryDone(int bytes, void* userData, Boolean allDataReturned,
   TDataMap* map)
@@ -259,6 +287,8 @@ ViewData::QueryDone(int bytes, void* userData, Boolean allDataReturned,
 #if (DEBUG >= 1)
   printf("ViewData(%s)::QueryDone(%d, %d)\n", GetName(), bytes,
       allDataReturned);
+  printf("%d records processed\n", _totalRecordsProcessed);
+  printf("%d records drawn\n", _totalRecordsDrawn);
 #endif
 
   int index = _derivedTables.InitIterator();
@@ -267,7 +297,7 @@ ViewData::QueryDone(int bytes, void* userData, Boolean allDataReturned,
     if (!table->Done().IsComplete()) {
 	  char errBuf[1024];
          sprintf(errBuf, "Error terminating table %s", table->GetName());
-	  reportErrNosys(errBuf);
+
     }
   }
   _derivedTables.DoneIterator(index);
@@ -287,6 +317,7 @@ ViewData::QueryDone(int bytes, void* userData, Boolean allDataReturned,
   ViewGraph::QueryDone(bytes, userData, allDataReturned, map);
 }
 
+//******************************************************************************
 void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 								 void* gdata, int numGData,
 								 int& recordsProcessed,
@@ -323,6 +354,7 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 
 	// Check whether we have a mapping iterator open.
 	if(_index < 0) {
+		_totalRecordsProcessed += recordsProcessed;
 		return;
 	}
   
@@ -330,111 +362,52 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	printf("ViewData %d recs buf start 0x%p\n", numGData, gdata);
 #endif
 
-	void*		recs[WINDOWREP_BATCH_SIZE];
-	int			reverseIndex[WINDOWREP_BATCH_SIZE + 1];
-	WindowRep*	win = GetWindowRep();
-
-	reverseIndex[0] = 0;
-
-	const GDataAttrOffset*	offset = mapping->GetGDataOffset();
 	int					gRecSize = mapping->GDataRecordSize();
-	int					recIndex = 0;
-	int					firstRec = 0;
 
-#if defined(TEST_FILTER_LINK) // TEMP -- remove later. RKW 1998-10-29.
-    VisualFilter linkFilter;
-	if (!strcmp(GetName(), "FilterSlaveView")) {
-	  View *masterView = FindViewByName("FilterMasterView");
-	  if (masterView == NULL) {
-	    fprintf(stderr, "Can't find master view\n");
-	    return;
-      }
-	  masterView->GetVisualFilter(linkFilter);
-	}
-#endif
-
-    // Get info from GData records, figure out whether symbols are within
-	// visual filter.
-	char *dataP = (char *) gdata;
+	//
+	// This array stores info about the GData records, so we can keep
+	// track of various things we calculate, and don't have to repeatedly
+	// pull values out of the actual GData.
+	//
 	SymbolInfo symArray[WINDOWREP_BATCH_SIZE];
-	for (int recNum = 0; recNum < numGData; recNum++) {
-      if (_countMapping) {
-	    DevStatus result = _countMapping->ProcessRecord(dataP);
-	  }
 
-	  Coord x = symArray[recNum].x = mapping->GetX(dataP);
-	  Coord y = symArray[recNum].y = mapping->GetY(dataP);
-
-	  //
-	  // Get the bounding box for this symbol.
-	  //
-	  Coord ULx, ULy, LRx, LRy; // bounding box
-	  mapping->GetBoundingBox(dataP, ULx, ULy, LRx, LRy);
-
-	  // Adjust the bounding box for "pixel size" (+/- key).
-      ULx *= mapping->GetPixelWidth();
-      ULy *= mapping->GetPixelWidth();
-      LRx *= mapping->GetPixelWidth();
-      LRy *= mapping->GetPixelWidth();
-
-	  // Make the bounding box absolute instead of relative to symbol
-	  // position.
-      ULx += x;
-      ULy += y;
-	  LRx += x;
-	  LRy += y;
-
-#if (DEBUG >= 3)
-      printf("  Record %ld bounding box: UL: %g, %g; LR: %g, %g\n",
-	    recId + recNum, ULx, ULy, LRx, LRy);
-#endif
-
-
-      if (_dataRangeFirst) {
-	    _dataXMin = ULx;
-		_dataXMax = LRx;
-		_dataYMin = LRy;
-		_dataYMax = ULy;
-	    _dataRangeFirst = false;
-	  } else {
-	    _dataXMin = MIN(_dataXMin, ULx);
-		_dataXMax = MAX(_dataXMax, LRx);
-		_dataYMin = MIN(_dataYMin, LRy);
-		_dataYMax = MAX(_dataYMax, ULy);
-	  }
-
-	  ShapeID shape = symArray[recNum].shape = mapping->GetShape(dataP);
-      symArray[recNum].isComplex = mapping->IsComplexShape(shape) ||
-		  (GetNumDimensions() == 3);
-
-	  // Note: here we're trying to find out whether _any part_ of the symbol
-	  // is within the visual filter.  This sometimes fails, both by including
-	  // symbols it shouldn't and by excluding symbols it shouldn't.
-	  // RKW Feb. 12, 1998.
-      // Use of maxWidth and maxHeight here is probably goofed up if symbols
-	  // are rotated.  RKW Aug. 8, 1997.
-	  symArray[recNum].inFilter = InVisualFilter2(ULx, ULy, LRx, LRy);
-#if defined(TEST_FILTER_LINK) // TEMP -- remove later. RKW 1998-10-29.
-	  if (!strcmp(GetName(), "FilterSlaveView")) {
-	    Coord linkX = GetShapeAttr(5, dataP, mapping, offset);
-	    Coord linkY = GetShapeAttr(6, dataP, mapping, offset);
-        symArray[recNum].inFilter &= InVisualFilter(linkFilter, linkX, linkY,
-		  0.0, 0.0);
-      }
-#endif
-
-	  dataP += gRecSize;
+	//
+    // Get info from GData records, figure out whether symbols are within
+	// visual filter, etc.
+	//
+	Boolean abort;
+	GetGDataValues(mapping, gdata, numGData, gRecSize, symArray, abort);
+	if (abort) {
+	    return;
 	}
 
+	//
+	// Test records against GAttr links we're a follower of.
+	//
+	GAttrLinkFollower(mapping, gdata, numGData, gRecSize, symArray);
+
+	//
+	// Insert records into GAttr links we're a leader of.
+	//
+	GAttrLinkLeader(mapping, gdata, numGData, gRecSize, symArray);
+
+	//
+	// Insert records into record links we're a leader of.
+	//
+	RecordLinkLeader(recId, numGData, symArray);
+
+	//
 	// If _homeAfterQueryDone is true, all we're trying to do is get all
 	// of the data values to correctly update the visual filter; therefore
 	// we don't want to waste time actually drawing or doing statistics
 	// on the data.
+	//
 	if (_homeAfterQueryDone) {
 #if (DEBUG >= 1)
         printf("View %s returning without drawing because _homeAfterQueryDone "
 		  "is set\n", GetName());
 #endif
+		_totalRecordsProcessed += recordsProcessed;
 	    return;
     }
 
@@ -443,214 +416,22 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	    _dataXMax, _dataYMin, _dataYMax);
 #endif
 
-	// Draw symbols
-	char*		ptr = (char*)gdata;
-	Boolean		timedOut = false;
-	Boolean		recsFiltered = false;
-	Boolean		timeoutAllowed = (!_dupElim) && (!_countMapping);
+	//
+	// Actually draw the symbols corresponding to the GData records that
+	// have made it through the visual filter at GAttr link filters (or
+	// send GData to the JS, or whatever).
+	//
+	DrawGData(mapping, recId, gdata, numGData, gRecSize, symArray,
+	  recordsProcessed, needDrawnList, recordsDrawn, drawnList);
 
-	for (int i=0; i<numGData && !timedOut; i++)
-	{
-		// I don't know why the heck we draw a "complex" symbol here even if
-		// it falls outside the visual filter; this also goofs up record links
-		// if master view has complex symbols. RKW Aug. 8, 1997.
-		if (symArray[i].isComplex || symArray[i].inFilter)
-		{
-			// reverseIndex is set up this way because if you have some records
-			// outside the visual filter, you want to count all such records as
-			// processed if they're before the last record actually drawn.
-			reverseIndex[recIndex + 1] = i + 1;
-
-			// Draw data only if window is not iconified
-			if (!Iconified())
-			{
-				if (!_dupElim || _dupElim->DrawSymbol(ptr)) {
-				    recs[recIndex++] = ptr;
-				}
-
-				if (recIndex == WINDOWREP_BATCH_SIZE)
-				{
-					int		tmpRecs;
-
-					mapping->DrawGDataArray(this, win, recs, recIndex,
-					  tmpRecs, timeoutAllowed, _twoPass);
-                    if (_twoPass) {
-					  _passTwoGData->AddRecords(recIndex, recs);
-					}
-
-					// Note: if first records are outside filter, might
-					// have _processed_ some records even if didn't draw any.
-					recordsProcessed = reverseIndex[tmpRecs];
-
-#if (DEBUG >= 2)
-					printf("  tmpRecs = %d, recordsProcessed = %d\n", tmpRecs,
-						   recordsProcessed);
-#endif
-					if (tmpRecs < recIndex)
-						timedOut = true; // Draw timed out.
-
-					recIndex = 0;
-				}
-			}
-		}
-		else
-		{
-			recsFiltered = true;
-			reverseIndex[recIndex] = i + 1;
-
-			// Here we have a record outside the visual filter.  If the
-			// previous record was _inside_ the visual filter, write
-			// the previous contiguous batch of "inside the filter"
-			// records to the link.
-			if (!MoreMapping(_index))
-			{
-				if (i > firstRec) {
-					WriteMasterLink(recId + firstRec, i - firstRec);
-				}
-
-				// Next contiguous batch of record ids starts at i+1
-				firstRec = i + 1;
-			}
-		}
-
-		ptr += gRecSize;
-	}
-
-	if (!MoreMapping(_index) && (numGData > firstRec))
-		WriteMasterLink(recId + firstRec, numGData - firstRec);
-
-	if (!Iconified() && recIndex > 0 && !timedOut)
-	{
-		int		tmpRecs;
-
-		mapping->DrawGDataArray(this, win, recs, recIndex, tmpRecs,
-		  timeoutAllowed, _twoPass);
-        if (_twoPass) {
-		  _passTwoGData->AddRecords(recIndex, recs);
-		}
-		recordsProcessed = reverseIndex[tmpRecs];
-
-#if (DEBUG >= 2)
-		printf("  tmpRecs = %d, recordsProcessed = %d\n", tmpRecs,
-			   recordsProcessed);
-#endif
-	}
-
-
-	// Update the list of records drawn.
-	if (needDrawnList) {
-	  if (!recsFiltered && recordsProcessed == numGData) {
-		recordsDrawn = numGData;
-	  } else {
-        drawnList = new BooleanArray(numGData);
-        drawnList->Clear();
-
-	    int tmpRecsDrawn = 0;
-	    for (int recNum = 0; recNum < recordsProcessed; recNum++)
-	    {
-	      if (symArray[recNum].isComplex || symArray[recNum].inFilter) {
-		    tmpRecsDrawn++;
-		    drawnList->Set(recNum, true);
-	      }
-	    }
-	    recordsDrawn = tmpRecsDrawn;
-	  }
-	}
-
+	//
 	// Do statistics only on the data corresponding to the symbols that
 	// actually got drawn (note: if the window is iconified, we do the
 	// statistics on all records).
+	//
+	CalculateStats(mapping, gdata, gRecSize, symArray, recordsProcessed);
 
-	ptr = (char*)gdata;
-
-	for (int recNum=0; recNum<recordsProcessed; recNum++)
-	{
-		// Extract X, Y, shape, and color information from gdata record
-		Coord		x = symArray[recNum].x;
-		Coord		y = symArray[recNum].y;
-		ShapeID		shape = symArray[recNum].shape;
-
-		// Note size of 0.0, 0.0 here, so it's not the same as the
-		// previous call to InVisualFilter().
-		// Do we really want the set of records we do stats on to not be
-		// the same as the set we draw?
-#if 0 // Do stats if bounding box is in the visual filter, not just if X, Y
-      // is in the visual filter, so stats agree with what is drawn.
-	  // RKW 1999-05-28.
-		if (symArray[recNum].inFilter &&
-			InVisualFilter(_queryFilter, x, y, (Coord)0.0, (Coord)0.0))
-#else
-		if (symArray[recNum].inFilter)
-#endif
-		{
-			PColorID	pcid = mapping->GetPColorID(ptr);
-
-#if !VIEW_MIN_STATS
-			// Palette size variability warning...
-			if ((pcid != nullPColorID) && (pcid < gMaxNumColors))
-				_stats[pcid].Sample(x, y);
-#endif
-
-			_allStats.Sample(x, y);
-			_allStats.Histogram(y);
-
-			if(_glistX.Size() <= MAX_GSTAT)
-			{
-				double			X = x;
-				BasicStats*		bsx;
-
-				if(_gstatX.Lookup(x, bsx))
-				{
-					DOASSERT(bsx, "GData Stat look error");
-					bsx->Sample(x,y);
-				}
-				else
-				{
-					bsx = new BasicStats();
-					DOASSERT(bsx, "Out of memory");
-					bsx->Init(0);
-					_glistX.InsertOrderly(x, 1);
-					bsx->Sample(x, y);
-					_gstatX.Insert(X, bsx);
-					_blist.Insert(bsx);
-				}
-			}
-			else
-			{
-				_gstatInMem = false;	// Submit the query to DTE
-			}
-
-			if(_glistY.Size() <= MAX_GSTAT)
-			{
-				double			Y =  y;
-				BasicStats*		bsy = NULL;
-
-				if(_gstatY.Lookup(y, bsy))
-				{
-					DOASSERT(bsy, "GData Stat look error");
-					bsy->Sample(y,x);
-				}
-				else
-				{
-					bsy = new BasicStats();
-					DOASSERT(bsy, "Out of memory");
-					bsy->Init(0);
-					_glistY.InsertOrderly(y, 1);
-					bsy->Sample(y,x);
-					_gstatY.Insert(y, bsy);
-					_blist.Insert(bsy);
-				}
-			}
-			else
-			{
-				// mark gstatBuf false cleanup the gstat list, the group
-				// by query will be submitted to DTE when requested
-				_gstatInMem = false;
-			}
-		}
-
-		ptr += gRecSize;
-	}
+	_totalRecordsProcessed += recordsProcessed;
 }
 
 //******************************************************************************
@@ -774,6 +555,408 @@ ViewData::GetDerivedTable(char *tableName)
   return table;
 }
 
+//******************************************************************************
+void
+ViewData::GetGDataValues(TDataMap *mapping, void *gdata, int numGData,
+  int gRecSize, SymbolInfo symArray[], Boolean &abort)
+{
+    abort = false;
+
+#if defined(TEST_FILTER_LINK) // TEMP -- remove later. RKW 1998-10-29.
+    VisualFilter linkFilter;
+	if (!strcmp(GetName(), "FilterSlaveView")) {
+	  View *masterView = FindViewByName("FilterMasterView");
+	  if (masterView == NULL) {
+	    fprintf(stderr, "Can't find master view\n");
+		abort = true;
+	    return;
+      }
+	  masterView->GetVisualFilter(linkFilter);
+	}
+
+	const GDataAttrOffset*	offset = mapping->GetGDataOffset();
+#endif
+
+    // Get info from GData records, figure out whether symbols are within
+	// visual filter.
+	char *dataP = (char *) gdata;
+	for (int recNum = 0; recNum < numGData; recNum++) {
+      if (_countMapping) {
+	    DevStatus result = _countMapping->ProcessRecord(dataP);
+	  }
+
+	  Coord x = symArray[recNum].x = mapping->GetX(dataP);
+	  Coord y = symArray[recNum].y = mapping->GetY(dataP);
+
+	  //
+	  // Get the bounding box for this symbol.
+	  //
+	  Coord ULx, ULy, LRx, LRy; // bounding box
+	  mapping->GetBoundingBox(dataP, ULx, ULy, LRx, LRy);
+
+	  // Adjust the bounding box for "pixel size" (+/- key).
+      ULx *= mapping->GetPixelWidth();
+      ULy *= mapping->GetPixelWidth();
+      LRx *= mapping->GetPixelWidth();
+      LRy *= mapping->GetPixelWidth();
+
+	  // Make the bounding box absolute instead of relative to symbol
+	  // position.
+      ULx += x;
+      ULy += y;
+	  LRx += x;
+	  LRy += y;
+
+#if (DEBUG >= 3)
+      printf("  Record bounding box: UL: %g, %g; LR: %g, %g\n",
+	    ULx, ULy, LRx, LRy);
+#endif
+
+
+      if (_dataRangeFirst) {
+	    _dataXMin = ULx;
+		_dataXMax = LRx;
+		_dataYMin = LRy;
+		_dataYMax = ULy;
+	    _dataRangeFirst = false;
+	  } else {
+	    _dataXMin = MIN(_dataXMin, ULx);
+		_dataXMax = MAX(_dataXMax, LRx);
+		_dataYMin = MIN(_dataYMin, LRy);
+		_dataYMax = MAX(_dataYMax, ULy);
+	  }
+
+	  ShapeID shape = symArray[recNum].shape = mapping->GetShape(dataP);
+      symArray[recNum].isComplex = mapping->IsComplexShape(shape) ||
+		  (GetNumDimensions() == 3);
+
+	  //
+	  // Note: here we're trying to find out whether _any part_ of the symbol
+	  // is within the visual filter.  This sometimes fails, both by including
+	  // symbols it shouldn't and by excluding symbols it shouldn't.
+	  // RKW Feb. 12, 1998.
+      // Use of maxWidth and maxHeight here is probably goofed up if symbols
+	  // are rotated.  RKW Aug. 8, 1997.
+	  //
+	  symArray[recNum].inFilter = InVisualFilter2(ULx, ULy, LRx, LRy);
+
+#if defined(TEST_FILTER_LINK) // TEMP -- remove later. RKW 1998-10-29.
+	  if (!strcmp(GetName(), "FilterSlaveView")) {
+	    Coord linkX = GetShapeAttr(5, dataP, mapping, offset);
+	    Coord linkY = GetShapeAttr(6, dataP, mapping, offset);
+        symArray[recNum].inFilter &= InVisualFilter(linkFilter, linkX, linkY,
+		  0.0, 0.0);
+      }
+#endif
+
+	  dataP += gRecSize;
+	}
+}
+
+//******************************************************************************
+void
+ViewData::GAttrLinkFollower(TDataMap *mapping, void *gdata, int numGData,
+  int gRecSize, SymbolInfo symArray[])
+{
+	int index = _slaveLink.InitIterator();
+	while (_slaveLink.More(index)) {
+	  MasterSlaveLink *msLink = _slaveLink.Next(index);
+	  if (msLink->GetFlag() == VISUAL_GATTR) {
+#if (DEBUG >= 2)
+	    printf("View %s testing records against link %s\n", GetName(),
+		    msLink->GetName());
+#endif 
+
+		GAttrLink *gaLink = (GAttrLink *)msLink;
+	    char *gDataRec = (char *) gdata;
+
+	    for (int recNum = 0; recNum < numGData; recNum++) {
+		  // Don't bother to test this record if we already know we're
+		  // not going to draw it.
+		  if (symArray[recNum].ShouldDraw()) {
+		    symArray[recNum].inGAttrLink =
+		        gaLink->TestRecord(mapping, (char *)gDataRec);
+		  }
+	      gDataRec += gRecSize;
+		}
+	  }
+	}
+	_slaveLink.DoneIterator(index);
+}
+
+//******************************************************************************
+void
+ViewData::GAttrLinkLeader(TDataMap *mapping, void *gdata, int numGData,
+  int gRecSize, SymbolInfo symArray[])
+{
+	int index = _masterLink.InitIterator(index);
+	while (_masterLink.More(index)) {
+	  MasterSlaveLink *msLink = _masterLink.Next(index);
+	  if (msLink->GetFlag() == VISUAL_GATTR) {
+#if (DEBUG >= 2)
+	    printf("View %s inserting records into link %s\n", GetName(),
+		    msLink->GetName());
+#endif
+
+		GAttrLink *gaLink = (GAttrLink *)msLink;
+	    char *gDataRec = (char *) gdata;
+
+	    for (int recNum = 0; recNum < numGData; recNum++) {
+		  if (symArray[recNum].Passes()) {
+		    gaLink->InsertRecord(mapping, (char *)gDataRec);
+		  }
+	      gDataRec += gRecSize;
+		}
+	  }
+	}
+	_masterLink.DoneIterator(index);
+}
+
+//******************************************************************************
+void
+ViewData::RecordLinkLeader(RecId recId, int numGData, SymbolInfo symArray[])
+{
+	int			firstRec = 0;
+
+	//
+	// Go thru the GData records, and insert the ones that *don't* pass
+	// the visual filter and GAttr links into records links we're a master
+	// of.
+	//
+	for (int i = 0; i < numGData; i++)
+	{
+		if (!symArray[i].Passes()) {
+
+			// Here we have a record outside the visual filter.  If the
+			// previous record was _inside_ the visual filter, write
+			// the previous contiguous batch of "inside the filter"
+			// records to the link.
+			if (!MoreMapping(_index))
+			{
+				if (i > firstRec) {
+					WriteMasterLink(recId + firstRec, i - firstRec);
+				}
+
+				// Next contiguous batch of record ids starts at i+1
+				firstRec = i + 1;
+			}
+		}
+	}
+
+	if (!MoreMapping(_index) && (numGData > firstRec)) {
+		WriteMasterLink(recId + firstRec, numGData - firstRec);
+    }
+}
+
+//******************************************************************************
+void
+ViewData::DrawGData(TDataMap *mapping, RecId recId, void *gdata, int numGData,
+  int gRecSize, SymbolInfo symArray[], int &recordsProcessed,
+  Boolean needDrawnList, int& recordsDrawn, BooleanArray*& drawnList)
+{
+	char*		ptr = (char*)gdata;
+	Boolean		timedOut = false;
+	Boolean		recsFiltered = false;
+	Boolean		timeoutAllowed = (!_dupElim) && (!_countMapping);
+	int			recIndex = 0;
+	int			reverseIndex[WINDOWREP_BATCH_SIZE + 1];
+	WindowRep*	win = GetWindowRep();
+	void*		recs[WINDOWREP_BATCH_SIZE];
+
+	reverseIndex[0] = 0;
+
+	//
+	// Draw symbols
+	//
+	for (int i=0; i<numGData && !timedOut; i++)
+	{
+		// I don't know why the heck we draw a "complex" symbol here even if
+		// it falls outside the visual filter; this also goofs up record links
+		// if master view has complex symbols. RKW Aug. 8, 1997.
+		if (symArray[i].ShouldDraw()) 
+		{
+			// reverseIndex is set up this way because if you have some records
+			// outside the visual filter, you want to count all such records as
+			// processed if they're before the last record actually drawn.
+			reverseIndex[recIndex + 1] = i + 1;
+
+			// Draw data only if window is not iconified
+			if (!Iconified())
+			{
+				if (!_dupElim || _dupElim->DrawSymbol(ptr)) {
+				    recs[recIndex++] = ptr;
+				}
+
+				if (recIndex == WINDOWREP_BATCH_SIZE)
+				{
+					int		tmpRecs;
+
+					mapping->DrawGDataArray(this, win, recs, recIndex,
+					  tmpRecs, timeoutAllowed, _twoPass);
+					_totalRecordsDrawn += tmpRecs;
+                    if (_twoPass) {
+					  _passTwoGData->AddRecords(recIndex, recs);
+					}
+
+					// Note: if first records are outside filter, might
+					// have _processed_ some records even if didn't draw any.
+					recordsProcessed = reverseIndex[tmpRecs];
+
+#if (DEBUG >= 2)
+					printf("  tmpRecs = %d, recordsProcessed = %d\n", tmpRecs,
+						   recordsProcessed);
+#endif
+					if (tmpRecs < recIndex)
+						timedOut = true; // Draw timed out.
+
+					recIndex = 0;
+				}
+			}
+		}
+
+		ptr += gRecSize;
+	}
+
+	if (!Iconified() && recIndex > 0 && !timedOut)
+	{
+		int		tmpRecs;
+
+		mapping->DrawGDataArray(this, win, recs, recIndex, tmpRecs,
+		  timeoutAllowed, _twoPass);
+		_totalRecordsDrawn += tmpRecs;
+        if (_twoPass) {
+		  _passTwoGData->AddRecords(recIndex, recs);
+		}
+		recordsProcessed = reverseIndex[tmpRecs];
+
+#if (DEBUG >= 2)
+		printf("  tmpRecs = %d, recordsProcessed = %d\n", tmpRecs,
+			   recordsProcessed);
+#endif
+	}
+
+
+	//
+	// Update the list of records drawn.
+	//
+	if (needDrawnList) {
+	  if (!recsFiltered && recordsProcessed == numGData) {
+		recordsDrawn = numGData;
+	  } else {
+        drawnList = new BooleanArray(numGData);
+        drawnList->Clear();
+
+	    int tmpRecsDrawn = 0;
+	    for (int recNum = 0; recNum < recordsProcessed; recNum++)
+	    {
+	      if (symArray[recNum].ShouldDraw()) {
+		    tmpRecsDrawn++;
+		    drawnList->Set(recNum, true);
+	      }
+	    }
+	    recordsDrawn = tmpRecsDrawn;
+	  }
+	}
+}
+
+//******************************************************************************
+void
+ViewData::CalculateStats(TDataMap *mapping, void *gdata, int gRecSize,
+  SymbolInfo symArray[], int recordsProcessed)
+{
+	char *ptr = (char*)gdata;
+
+	for (int recNum=0; recNum<recordsProcessed; recNum++)
+	{
+		// Extract X, Y, shape, and color information from gdata record
+		Coord		x = symArray[recNum].x;
+		Coord		y = symArray[recNum].y;
+		ShapeID		shape = symArray[recNum].shape;
+
+		// Note size of 0.0, 0.0 here, so it's not the same as the
+		// previous call to InVisualFilter().
+		// Do we really want the set of records we do stats on to not be
+		// the same as the set we draw?
+#if 0 // Do stats if bounding box is in the visual filter, not just if X, Y
+      // is in the visual filter, so stats agree with what is drawn.
+	  // RKW 1999-05-28.
+		if (symArray[recNum].Passes() &&
+			InVisualFilter(_queryFilter, x, y, (Coord)0.0, (Coord)0.0))
+#else
+		if (symArray[recNum].Passes())
+#endif
+		{
+			PColorID	pcid = mapping->GetPColorID(ptr);
+
+#if !VIEW_MIN_STATS
+			// Palette size variability warning...
+			if ((pcid != nullPColorID) && (pcid < gMaxNumColors))
+				_stats[pcid].Sample(x, y);
+#endif
+
+			_allStats.Sample(x, y);
+			_allStats.Histogram(y);
+
+			if(_glistX.Size() <= MAX_GSTAT)
+			{
+				double			X = x;
+				BasicStats*		bsx;
+
+				if(_gstatX.Lookup(x, bsx))
+				{
+					DOASSERT(bsx, "GData Stat look error");
+					bsx->Sample(x,y);
+				}
+				else
+				{
+					bsx = new BasicStats();
+					DOASSERT(bsx, "Out of memory");
+					bsx->Init(0);
+					_glistX.InsertOrderly(x, 1);
+					bsx->Sample(x, y);
+					_gstatX.Insert(X, bsx);
+					_blist.Insert(bsx);
+				}
+			}
+			else
+			{
+				_gstatInMem = false;	// Submit the query to DTE
+			}
+
+			if(_glistY.Size() <= MAX_GSTAT)
+			{
+				double			Y =  y;
+				BasicStats*		bsy = NULL;
+
+				if(_gstatY.Lookup(y, bsy))
+				{
+					DOASSERT(bsy, "GData Stat look error");
+					bsy->Sample(y,x);
+				}
+				else
+				{
+					bsy = new BasicStats();
+					DOASSERT(bsy, "Out of memory");
+					bsy->Init(0);
+					_glistY.InsertOrderly(y, 1);
+					bsy->Sample(y,x);
+					_gstatY.Insert(y, bsy);
+					_blist.Insert(bsy);
+				}
+			}
+			else
+			{
+				// mark gstatBuf false cleanup the gstat list, the group
+				// by query will be submitted to DTE when requested
+				_gstatInMem = false;
+			}
+		}
+
+		ptr += gRecSize;
+	}
+}
+
+//******************************************************************************
 void
 ViewData::InitPassTwo(TDataMap *map)
 {
@@ -784,6 +967,7 @@ ViewData::InitPassTwo(TDataMap *map)
   _passTwoGData = new GDataStore(map);
 }
 
+//******************************************************************************
 void
 ViewData::DrawPassTwo(TDataMap *map)
 {
@@ -806,6 +990,7 @@ ViewData::DrawPassTwo(TDataMap *map)
   _passTwoGData = NULL;
 }
 
+//******************************************************************************
 GDataStore::GDataStore(TDataMap *map)
 {
 #if (DEBUG >= 2)
@@ -823,6 +1008,7 @@ GDataStore::GDataStore(TDataMap *map)
   _gdata = NULL;
 }
 
+//******************************************************************************
 GDataStore::~GDataStore()
 {
 #if (DEBUG >= 2)
@@ -842,6 +1028,7 @@ GDataStore::~GDataStore()
   ReleaseGData();
 }
 
+//******************************************************************************
 void
 GDataStore::AddRecords(int recordCount, void **gdata)
 {
@@ -861,6 +1048,7 @@ GDataStore::AddRecords(int recordCount, void **gdata)
   _lastNode = node;
 }
 
+//******************************************************************************
 void **
 GDataStore::GetGData()
 {
@@ -907,6 +1095,7 @@ GDataStore::GetGData()
   return _gdata;
 }
 
+//******************************************************************************
 void
 GDataStore::ReleaseGData()
 {
@@ -918,6 +1107,7 @@ GDataStore::ReleaseGData()
   _gdata = NULL;
 }
 
+//******************************************************************************
 int
 GDataStore::Compare(const void *rec1, const void *rec2)
 {

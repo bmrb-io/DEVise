@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -30,11 +30,22 @@
   $Id$
 
   $Log$
+  Revision 1.26  2002/07/19 17:07:27  wenger
+  Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+
   Revision 1.25  2002/06/17 19:41:08  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 
   Revision 1.24  2002/05/01 21:30:13  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.23.4.5  2003/01/09 22:21:59  wenger
+  Added "link multiplication factor" feature; changed version to 1.7.14.
+
+  Revision 1.23.4.4  2002/11/15 22:44:36  wenger
+  Views with no TData records don't contribute to filter values on 'home'
+  (this helps to fix some problems with the Condor user visualizations);
+  added cursorHome command; changed version to 1.7.13.
 
   Revision 1.23.4.3  2002/06/27 18:15:08  wenger
   Fixed problem with the setDoHomeOnVisLink command, more link home
@@ -160,6 +171,7 @@
 
 //#define DEBUG 0
 
+// ---------------------------------------------------------------------
 VisualLink::VisualLink(char *name, VisualFlag linkFlag) :
   DeviseLink(name, linkFlag)
 {
@@ -174,6 +186,7 @@ VisualLink::VisualLink(char *name, VisualFlag linkFlag) :
   _dispID = Dispatcher::Current()->Register(this);
 }
 
+// ---------------------------------------------------------------------
 VisualLink::~VisualLink()
 {
 #if defined(DEBUG)
@@ -190,6 +203,7 @@ VisualLink::~VisualLink()
   Dispatcher::Current()->Unregister(this);
 }
 
+// ---------------------------------------------------------------------
 void VisualLink::InsertView(ViewGraph *view)
 {
 #if defined(DEBUG)
@@ -211,6 +225,16 @@ void VisualLink::InsertView(ViewGraph *view)
     _filterLocked = false;
   } else {
     view->GetVisualFilter(_filter);
+
+    // Adjust things for the view's link multiplication factors.
+    double xFactor = view->GetXLinkMultFact();
+    _filter.xLow *= xFactor;
+    _filter.xHigh *= xFactor;
+
+    double yFactor = view->GetYLinkMultFact();
+    _filter.yLow *= yFactor;
+    _filter.yHigh *= yFactor;
+
 #if defined(DEBUG)
     printf("  visual filter of link <%s> initialized\n", GetName());
     printf("    filter: %d, (%g, %g), (%g, %g)\n", _filter.flag,
@@ -220,6 +244,7 @@ void VisualLink::InsertView(ViewGraph *view)
   }
 }
 
+// ---------------------------------------------------------------------
 bool VisualLink::DeleteView(ViewGraph *view)
 {
 #if defined(DEBUG)
@@ -235,6 +260,7 @@ bool VisualLink::DeleteView(ViewGraph *view)
   return result;
 }
 
+// ---------------------------------------------------------------------
 void VisualLink::SetFlag(VisualFlag flag)
 {
 #if defined(DEBUG)
@@ -250,6 +276,7 @@ void VisualLink::SetFlag(VisualFlag flag)
 }
 
 
+// ---------------------------------------------------------------------
 /* Called by View when its visual filter has changed.
    flushed == index if 1st element in the history that has been flushed.*/
 // Note: the list of ViewCallbacks is global to all views, so this method
@@ -275,35 +302,51 @@ void VisualLink::FilterChanged(View *view, const VisualFilter &newFilter,
     Boolean found = ViewInLink((ViewGraph *)view);
   
     if (found) {
+
+      // Adjust things for the view's link multiplication factors.
+      VisualFilter adjustedFilter = newFilter;
+      double xFactor = view->GetXLinkMultFact();
+      adjustedFilter.xLow *= xFactor;
+      adjustedFilter.xHigh *= xFactor;
+
+      double yFactor = view->GetYLinkMultFact();
+      adjustedFilter.yLow *= yFactor;
+      adjustedFilter.yHigh *= yFactor;
+
       // Now find out if the new filter is different from the current filter.
       Boolean filterDifferent = !_filterValid;
 
-      // Note: we'll have to add stuff here if we implement filter attributes other than
-      // X and Y.
+      // Note: we'll have to add stuff here if we implement filter attributes
+      // other than X and Y.
       if (!filterDifferent) {
 	if ((_linkAttrs & VISUAL_X) &&
-	    (newFilter.xLow != _filter.xLow || newFilter.xHigh != _filter.xHigh)) {
+	    (adjustedFilter.xLow != _filter.xLow ||
+	    adjustedFilter.xHigh != _filter.xHigh)) {
 	  filterDifferent = true;
 	}
       }
+
       if (!filterDifferent) {
 	if ((_linkAttrs & VISUAL_Y) &&
-	    (newFilter.yLow != _filter.yLow || newFilter.yHigh != _filter.yHigh)) {
+	    (adjustedFilter.yLow != _filter.yLow ||
+	    adjustedFilter.yHigh != _filter.yHigh)) {
 	  filterDifferent = true;
 	}
       }
+
       if (!filterDifferent) {
         if ((_linkAttrs & VISUAL_ORIENTATION) &&
-             !(newFilter.camera == _filter.camera))
-         filterDifferent = true;
-        }
+             !(adjustedFilter.camera == _filter.camera))
+        filterDifferent = true;
+      }
 
 
       if (filterDifferent) {
 #if defined(DEBUG)
         printf("  changing filter for visual link %s\n", GetName());
 #endif
-	_filter = newFilter;
+	_filter = adjustedFilter;
+
 	_filterValid = true;
 	_filterLocked = true;
 	_originatingView = view;
@@ -319,9 +362,15 @@ void VisualLink::FilterChanged(View *view, const VisualFilter &newFilter,
 #endif
     }
   }
+
+#if defined(DEBUG)
+  printf("  Done with VisualLink(%s)::FilterChanged(%s)\n", GetName(),
+    view->GetName());
+#endif
 }
 
 
+// ---------------------------------------------------------------------
 void VisualLink::Run()
 {
 #if defined(DEBUG)
@@ -341,6 +390,7 @@ void VisualLink::Run()
   _filterLocked = false;
 }
 
+// ---------------------------------------------------------------------
 /* Update the given visual filter based on the home values of views in
  * this link. */
 
@@ -358,6 +408,16 @@ VisualLink::GetHome2D(ViewGraph *view, VisualFilter &filter,
       filter.xLow, filter.yLow, filter.xHigh, filter.yHigh, GetName());
 #endif
 
+  // Adjust for the link multiplication factors of the view that's
+  // getting the home info.
+  double xFactor = view->GetXLinkMultFact();
+  filter.xLow *= xFactor;
+  filter.xHigh *= xFactor;
+
+  double yFactor = view->GetYLinkMultFact();
+  filter.yLow *= yFactor;
+  filter.yHigh *= yFactor;
+
   int index = _viewList->InitIterator();
   while (_viewList->More(index)) {
     ViewGraph *tmpView = (ViewGraph *)_viewList->Next(index);
@@ -374,6 +434,17 @@ VisualLink::GetHome2D(ViewGraph *view, VisualFilter &filter,
 
       VisualFilter tmpFilter;
       tmpView->GetHome2D(explicitRequest, tmpFilter);
+
+      // Adjust things for the link multiplication factors of the view
+      // we're getting home info from.
+      double xTmpFactor = tmpView->GetXLinkMultFact();
+      tmpFilter.xLow *= xTmpFactor;
+      tmpFilter.xHigh *= xTmpFactor;
+
+      double yTmpFactor = tmpView->GetYLinkMultFact();
+      tmpFilter.yLow *= yTmpFactor;
+      tmpFilter.yHigh *= yTmpFactor;
+
       if (_linkAttrs & VISUAL_X) {
         filter.xLow = MIN(filter.xLow, tmpFilter.xLow);
         filter.xHigh = MAX(filter.xHigh, tmpFilter.xHigh);
@@ -386,6 +457,14 @@ VisualLink::GetHome2D(ViewGraph *view, VisualFilter &filter,
   }
   _viewList->DoneIterator(index);
 
+  // Now re-adjust for the link multiplication factors of the view that's
+  // getting the home info.
+  filter.xLow /= xFactor;
+  filter.xHigh /= xFactor;
+
+  filter.yLow /= yFactor;
+  filter.yHigh /= yFactor;
+
 #if (DEBUG >= 4)
   printf("  Filter is: (%g, %g), (%g, %g) after Link(%s)::GetHome2D()\n",
       filter.xLow, filter.yLow, filter.xHigh, filter.yHigh, GetName());
@@ -393,6 +472,7 @@ VisualLink::GetHome2D(ViewGraph *view, VisualFilter &filter,
 }
 
 
+// ---------------------------------------------------------------------
 /* update visual filters for view views. */
 
 void VisualLink::SetVisualFilter(View *view)
@@ -408,68 +488,79 @@ void VisualLink::SetVisualFilter(View *view)
   VisualFlag testFlag;
   testFlag = _linkAttrs;
   Boolean change = false;
+
+  // Adjust things for the view's link multiplication factors.
+  VisualFilter newFilter = _filter;
+
+  double xFactor = view->GetXLinkMultFact();
+  newFilter.xLow /= xFactor;
+  newFilter.xHigh /= xFactor;
+
+  double yFactor = view->GetYLinkMultFact();
+  newFilter.yLow /= yFactor;
+  newFilter.yHigh /= yFactor;
   
-  if ((testFlag & VISUAL_X) && (tempFilter.xLow != _filter.xLow 
-				|| tempFilter.xHigh != _filter.xHigh)) {
-    tempFilter.xLow = _filter.xLow;
-    tempFilter.xHigh = _filter.xHigh;
+  if ((testFlag & VISUAL_X) && (tempFilter.xLow != newFilter.xLow 
+				|| tempFilter.xHigh != newFilter.xHigh)) {
+    tempFilter.xLow = newFilter.xLow;
+    tempFilter.xHigh = newFilter.xHigh;
     if (tempFilter.xHigh <= tempFilter.xLow)
       tempFilter.xHigh = tempFilter.xLow + 1;
     change = true;
   }
 
-  if ((testFlag & VISUAL_Y) && (tempFilter.yLow != _filter.yLow 
-				|| tempFilter.yHigh != _filter.yHigh)) {
-    tempFilter.yLow = _filter.yLow;
-    tempFilter.yHigh = _filter.yHigh;
+  if ((testFlag & VISUAL_Y) && (tempFilter.yLow != newFilter.yLow 
+				|| tempFilter.yHigh != newFilter.yHigh)) {
+    tempFilter.yLow = newFilter.yLow;
+    tempFilter.yHigh = newFilter.yHigh;
     change = true;
   }
 
 #if 0 // Not currently used.  RKW Feb. 25, 1998.
   if ((testFlag & VISUAL_COLOR) && 
-      (tempFilter.colorLow != _filter.colorLow 
-       || tempFilter.colorHigh != _filter.colorHigh)) {
-    tempFilter.colorLow = _filter.colorLow;
-    tempFilter.colorHigh = _filter.colorHigh;
+      (tempFilter.colorLow != newFilter.colorLow 
+       || tempFilter.colorHigh != newFilter.colorHigh)) {
+    tempFilter.colorLow = newFilter.colorLow;
+    tempFilter.colorHigh = newFilter.colorHigh;
     change = true;
   }
 
   if ((testFlag & VISUAL_SIZE) && 
-      (tempFilter.sizeLow != _filter.sizeLow 
-       || tempFilter.sizeHigh != _filter.sizeHigh)) {
-    tempFilter.sizeLow = _filter.sizeLow;
-    tempFilter.sizeHigh = _filter.sizeHigh;
+      (tempFilter.sizeLow != newFilter.sizeLow 
+       || tempFilter.sizeHigh != newFilter.sizeHigh)) {
+    tempFilter.sizeLow = newFilter.sizeLow;
+    tempFilter.sizeHigh = newFilter.sizeHigh;
     change = true;
   }
 
   if ((testFlag & VISUAL_PATTERN) &&
-     (tempFilter.patternLow != _filter.patternLow 
-      || tempFilter.patternHigh != _filter.patternHigh)) {
-    tempFilter.patternLow = _filter.patternLow;
-    tempFilter.patternHigh = _filter.patternHigh;
+     (tempFilter.patternLow != newFilter.patternLow 
+      || tempFilter.patternHigh != newFilter.patternHigh)) {
+    tempFilter.patternLow = newFilter.patternLow;
+    tempFilter.patternHigh = newFilter.patternHigh;
     change = true;
   }
 
   if ((testFlag & VISUAL_ORIENTATION) && 
-      (tempFilter.orientationLow != _filter.orientationLow 
-       || tempFilter.orientationHigh != _filter.orientationHigh)) {
-    tempFilter.orientationLow = _filter.orientationLow;
-    tempFilter.orientationHigh = _filter.orientationHigh;
+      (tempFilter.orientationLow != newFilter.orientationLow 
+       || tempFilter.orientationHigh != newFilter.orientationHigh)) {
+    tempFilter.orientationLow = newFilter.orientationLow;
+    tempFilter.orientationHigh = newFilter.orientationHigh;
     change = true;
   }
 
   if ((testFlag & VISUAL_SHAPE) && 
-      (tempFilter.shapeLow != _filter.shapeLow 
-       || tempFilter.shapeHigh != _filter.shapeHigh)) {
-    tempFilter.shapeLow = _filter.shapeLow;
-    tempFilter.shapeHigh = _filter.shapeHigh;
+      (tempFilter.shapeLow != newFilter.shapeLow 
+       || tempFilter.shapeHigh != newFilter.shapeHigh)) {
+    tempFilter.shapeLow = newFilter.shapeLow;
+    tempFilter.shapeHigh = newFilter.shapeHigh;
     change = true;
   }
 #endif
 
   if ((testFlag & VISUAL_ORIENTATION) &&
-      !(tempFilter.camera == _filter.camera)) {
-     tempFilter.camera = _filter.camera;
+      !(tempFilter.camera == newFilter.camera)) {
+     tempFilter.camera = newFilter.camera;
      change = true;
   }
 
@@ -480,6 +571,8 @@ void VisualLink::SetVisualFilter(View *view)
 
 
 void VisualLink::Print() {
-  printf("Name = %s, Flag = %d\n", GetName(), GetFlag());
   DeviseLink::Print();
+  printf("  Flag = %d\n", GetFlag());
+  printf("  Filter = (%g, %g), (%g, %g)\n", _filter.xLow, _filter.yLow,
+      _filter.xHigh, _filter.yHigh);
 }

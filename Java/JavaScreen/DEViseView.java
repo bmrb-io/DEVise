@@ -24,8 +24,28 @@
 // $Id$
 
 // $Log$
+// Revision 1.72  2002/06/17 19:40:15  wenger
+// Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+//
 // Revision 1.71  2002/05/01 21:28:59  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.70.2.7  2003/01/07 22:47:10  wenger
+// Fixed bugs 851, 853, and 854 (more view transform/axis drawing bugs).
+//
+// Revision 1.70.2.6  2002/08/16 16:30:49  wenger
+// Fixed bug 806 (better spacing of JavaScreen axis ticks).
+//
+// Revision 1.70.2.5  2002/08/02 15:34:00  wenger
+// Put in some kind of kludgey fixes for the fact that DecimalFormat
+// does not work correctly in Netscape 4.x.
+//
+// Revision 1.70.2.4  2002/08/01 17:38:22  wenger
+// Massive reorganization of axis labeling and mouse location display
+// code: both now use common number formatting code, which uses DecimalFormat
+// to do the actual work; axis tick locations are calculated differently,
+// so we don't try to draw out-of-window ticks; tick labels are constrained
+// to fit within views; etc., etc.
 //
 // Revision 1.70.2.3  2002/06/04 14:22:02  sjlong
 // Fixed bug 783 (in aart1_EmEn.ds - mouse position does not work in main view)\nFixed bug 784 (in aart1_EmEn.ds - the axis labels are sometimes not correct)
@@ -208,13 +228,21 @@ public class DEViseView
     public String viewName = null;
     public String curlyName = null;
 
+    // For a top-level view, viewLoc is the location of the view relative
+    // to the overall visualization.  For a child view, viewLoc is the
+    // location of the view relative to its parent view.
     public Rectangle viewLoc = null;
+
+    // The location of a view relative to the canvas it's drawn in.  For
+    // a top-level view, x and y here are always 0; for a child view, they
+    // are the same as for viewLoc.
     public Rectangle viewLocInCanvas = null;
+
     public float viewZ = 0.0f; // for piled views
     public int viewDimension = 0; // number of dimensions
     public int viewBg, viewFg;
 
-    // viewDataLoc is the location relative to this view
+    // The location of the view's data area relative to the view.
     public Rectangle viewDataLoc = null;
 
     public float viewDataXMin = 0.0f, viewDataXMax = 0.0f;
@@ -260,8 +288,8 @@ public class DEViseView
     private static final boolean _debug = false;
     
     // mouse position multiply factors
-    float factorX = 1; 
-    float factorY = 1;
+    float factorX = 1.0f; 
+    float factorY = 1.0f;
 
     // label drawing info.
     int labelXDraw = 0;
@@ -274,6 +302,9 @@ public class DEViseView
     int fontBoldY = 0;
     int fontItalicX = 0;
     int fontItalicY = 0;
+
+    // Smallest size to which we'll shrink font if axis labels don't fit.
+    private static int FONT_SHRINK_LIMIT = 8;
 
     public DEViseView(jsdevisec panel, String pn, String name,
       String piledname, String title, Rectangle loc, float Z, int dim,
@@ -509,8 +540,6 @@ public class DEViseView
     }
 
     // Paint the axis labels for this view.
-    //TEMP -- make sure this works right for piled views, especially
-    // piled child views
     public void paintAxisLabels(Graphics gc, boolean isChildView)
     {
 	if (DEBUG >= 1) {
@@ -518,230 +547,322 @@ public class DEViseView
 	      ").printAxisLabels(" + isChildView + ")");
 	}
 
-	Rectangle loc;
-
 	Color labelColor = new Color(viewFg);
 	if (DEBUG >= 2) {
 	    System.out.println("  labelColor: " + labelColor);
 	}
 	gc.setColor(labelColor);
 
-	//
-	// Compensate for the location of the child view relative to the
-	// parent, if this is a child view.
-	//
-	if (isChildView) {
-            loc = new Rectangle(viewLoc.x + viewDataLoc.x,
-                                viewLoc.y + viewDataLoc.y,
-                                viewDataLoc.width,
-                                viewDataLoc.height);
-	} else {
-	    loc = viewDataLoc;
-	}
-
 	if (labelYDraw == 1) {
-	    int currentYPos = 0;
-	    float currentY = 0;
-	    String labelY = null;
-	    float step = 0;
-	    int width = 0;
-	    float displayY = 0;
 
-	    gc.setFont(DEViseFonts.getFont(fontSizeY, fontTypeY,
-	      fontBoldY, fontItalicY));
-
+	    int tickSpacing = 40;
+	    if (viewDataLoc.height < 100) {
+	        tickSpacing = 20;
+	    } else if (viewDataLoc.height > 600) {
+	        tickSpacing = 80;
+	    } else if (viewDataLoc.height > 400) {
+	        tickSpacing = 60;
+	    }
 	    if ((viewDataYType.toLowerCase()).equals("real")) {
-		// round up the step
-		step = 40 * dataYStep;
-		step = roundUp(step);
-		if (viewDataYMin >= 0) {
-		    // round up the min
-		    currentY = getMin(viewDataYMin, step);
-		    currentYPos = loc.y + loc.height - 
-			(int)((currentY - viewDataYMin) / dataYStep);
-
-		    while (currentYPos >= loc.y + 10) {
-			displayY = currentY * factorY;
-
-			labelY = getYLabel(displayY);
-			if (DEBUG >= 2) {
-			    System.out.println("  Drawing Y label: " + labelY);
-			}
-
-			width = gc.getFontMetrics().stringWidth(labelY);
-			gc.drawString(labelY, loc.x-10-width, currentYPos+5); 
-			gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
-
-   			currentY += step;
-			currentYPos = loc.y + loc.height - 
-			    (int)((currentY - viewDataYMin) / dataYStep);
-		    }
-		} else { // min < 0
-		    // drawing upward
-		    currentY = 0;
-		    currentYPos = loc.y + loc.height - 
-			(int)((0 - viewDataYMin) / dataYStep);
-
-		    while (currentYPos >= loc.y + 10) {
-			displayY = currentY * factorY;
-
-			labelY = getYLabel(displayY);
-			if (DEBUG >= 2) {
-			    System.out.println("  Drawing Y label: " + labelY);
-			}
-			width = gc.getFontMetrics().stringWidth(labelY);
-			gc.drawString(labelY, loc.x-10-width, currentYPos+5); 
-			gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
-   			currentY += step;
-
-			currentYPos = loc.y + loc.height - 
-			    (int)((currentY - viewDataYMin) / dataYStep);
-
-		    }		
-    
-		    // drawing downward
-		    currentY = 0 - step;
-		    currentYPos = loc.y + loc.height - 
-			(int)((currentY - viewDataYMin) / dataYStep);
-		    	
-		    while (currentYPos <= loc.y + loc.height) {
-			displayY = currentY * factorY;
-
-			labelY = getYLabel(displayY);
-			if (DEBUG >= 2) {
-			    System.out.println("  Drawing Y label: " + labelY);
-			}
-			width = gc.getFontMetrics().stringWidth(labelY);
-
-			gc.drawString(labelY, loc.x-10-width, currentYPos+5); 
-			gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
-			//currentYPos += 40;	    
-			currentY -= step;
-			currentYPos = loc.y + loc.height - 
-			    (int)((currentY - viewDataYMin) / dataYStep);
-		    }		
+	        double[] ticks = calculateTickLocs(viewDataYMin,
+		  viewDataYMax, viewDataLoc.height, tickSpacing * dataYStep);
+		for (int index = 0; index < ticks.length; index++) {
+		    drawYAxisTick(gc, ticks[index]);
 		}
 	    } else { // for "date"
-		while (currentYPos >= loc.y + 20) {
-		    currentY = viewDataYMin + (currentYPos - loc.x) *  dataYStep;
+		//TEMP -- this doesn't work -- see date_on_y_axis.ds
+/*TEMP
+	        int currentYPos = 0;
+	        float currentY = 0;
+	        String labelY = null;
+	        float displayY = 0;
+
+		while (currentYPos >= dataLoc.y + 20) {
+		    currentY = viewDataYMin + (currentYPos - dataLoc.x) *  dataYStep;
 		    displayY = currentY * factorY;
-		    labelY = getYLabel(displayY);
+		    labelY = formatYValue(displayY);
 		    if (DEBUG >= 2) {
 		        System.out.println("  Drawing Y label: " + labelY);
 		    }
 		    
-		    gc.drawString(labelY, loc.x-40, currentYPos+5); 
-		    gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
+		    gc.drawString(labelY, dataLoc.x-40, currentYPos+5); 
+		    gc.drawLine(dataLoc.x-5, currentYPos, dataLoc.x-2, currentYPos);
 		    currentYPos -= 40;	    
 		}
+TEMP*/
 	    }    
 	}   
 	
 	if (labelXDraw == 1) {
-	    int currentXPos = loc.x;
-	    float currentX = 0;
-	    String labelX = null;
-	    float step = 0;
-	    int width = 0;
-	    float displayX = 0;
-
-	    gc.setFont(DEViseFonts.getFont(fontSizeX, fontTypeX,
-	      fontBoldX, fontItalicX));
 	    
 	    if ((viewDataXType.toLowerCase()).equals("real")) {
-		// round up the step
-		step = 100 * dataXStep;
-		step = roundUp(step);
-
-		if (viewDataXMin >= 0) {
-		    // round up the min
-		    currentX = getMin(viewDataXMin, step);
-		    currentXPos = loc.x + 
-			(int)((currentX - viewDataXMin) / dataXStep);
-		    
-		    while (currentXPos <= loc.x + loc.width) {
-			displayX = currentX * factorX;
-
-			labelX = getXLabel(displayX);
-		        if (DEBUG >= 2) {
-		            System.out.println("  Drawing X label: " + labelX);
-		        }
-			width = gc.getFontMetrics().stringWidth(labelX);	
-			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+15); 
-			gc.drawLine(currentXPos, loc.y+loc.height, 
-				    currentXPos, loc.y+loc.height+3);
-
-			currentX += step;
-			currentXPos = loc.x + 
-			    (int)((currentX - viewDataXMin) / dataXStep);
-		    }
-		} else { // min < 0
-		    // drawing upward
-		    currentX = 0;
-		    currentXPos = loc.x + 
-			(int)((0 - viewDataXMin) / dataXStep);
-		    
-		    while (currentXPos <= loc.x + loc.width) {
-			displayX = currentX * factorX;
-
-			labelX = getXLabel(displayX);
-		        if (DEBUG >= 2) {
-		            System.out.println("  Drawing X label: " + labelX);
-		        }
-			width = gc.getFontMetrics().stringWidth(labelX);	
-			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+15); 
-			gc.drawLine(currentXPos, loc.y+loc.height, 
-				    currentXPos, loc.y+loc.height+3);
-
-			currentX += step;
-			currentXPos = loc.x + 
-			    (int)((currentX - viewDataXMin) / dataXStep);
-		    }		
-			
-		    // drawing downward
-		    currentX = 0 - step;
-		    currentXPos = loc.x + 
-			(int)((currentX - viewDataXMin) / dataXStep);
-		    
-		    while (currentXPos >= loc.x) {
-			displayX = currentX * factorX;
-			
-			labelX = getXLabel(displayX);
-		        if (DEBUG >= 2) {
-		            System.out.println("  Drawing X label: " + labelX);
-		        }
-			width = gc.getFontMetrics().stringWidth(labelX);       
-			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+15); 
-			gc.drawLine(currentXPos, loc.y+loc.height, 
-				    currentXPos, loc.y+loc.height+3);
-			currentX -= step;
-			currentXPos = loc.x + 
-			    (int)((currentX - viewDataXMin) / dataXStep);
-		    }		
+		int tickSpacing = 100;
+		if (viewDataLoc.width < 250) {
+		    tickSpacing = 50;
+		} else if (viewDataLoc.width > 1000) {
+		    tickSpacing = 150;
 		}
+	        double ticks[] = calculateTickLocs(viewDataXMin,
+		    viewDataXMax, viewDataLoc.width, tickSpacing * dataXStep);
+		for (int index = 0; index < ticks.length; index++) {
+		    drawXAxisTick(gc, ticks[index]);
+		}
+
 	    } else { // for "date"
-		fontSizeX = (fontSizeX <= 12) ? fontSizeX : 12; 
+	        String labelX = null;
+	        float displayX = 0;
 
 		displayX = viewDataXMin * factorX;
-		labelX = getXLabel(displayX);
-		if (DEBUG >= 2) {
-		    System.out.println("  Drawing X label: " + labelX);
-		}
-		gc.drawString(labelX, loc.x, loc.y+loc.height+15); 
-		gc.drawLine(loc.x, loc.y+loc.height, 
-			    loc.x, loc.y+loc.height+3);
-		
+		labelX = formatXValue(displayX);
+                drawXAxisTick(gc, viewDataLoc.x, labelX);
+
 		displayX = viewDataXMax * factorX;
-		labelX = getXLabel(displayX);
-		if (DEBUG >= 2) {
-		    System.out.println("  Drawing X label: " + labelX);
-		}
-		width = gc.getFontMetrics().stringWidth(labelX);
-		gc.drawString(labelX, loc.x+loc.width-width, loc.y+loc.height+15); 
-		gc.drawLine(loc.x+loc.width, loc.y+loc.height, 
-			    loc.x+loc.width, loc.y+loc.height+3);
+		labelX = formatXValue(displayX);
+                drawXAxisTick(gc, viewDataLoc.x + viewDataLoc.width, labelX);
 	    }    
 	}   
+    }
+
+    /** -------------------------------------------------------------------
+     * Calculate the locations (in terms of data) at which axis ticks
+     * should be drawn.
+     * @param The minimum data value for the relevant axis.
+     * @param The maximum data value for the relevant axis.
+     * @param The number of pixels on the relevant axis.
+     * @param The preferred number of data units between ticks.
+     * @return An array containing data values at which ticks should
+     * be drawn.
+     */
+    private double[] calculateTickLocs(double dataMin, double dataMax,
+      int pixels, double dataStepSize)
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("DEViseView(" + viewName +
+	      ").calculateTickLocs(" + dataMin +
+	      ", " + dataMax + ",\n  " + pixels + ", " + dataStepSize + ")");
+	}
+
+	dataStepSize = Math.abs(dataStepSize);
+	dataStepSize = round2Nice(dataStepSize);
+        if (DEBUG >= 2) {
+	    System.out.println("Rounded step size: " + dataStepSize);
+	}
+
+	int maxTickCount = (int)((dataMax - dataMin) / dataStepSize) + 1;
+	double[] ticks = new double[maxTickCount];
+
+	double currentTickVal = round2Step(dataMin, dataStepSize, true);
+	int tickNum = 0;
+	while (currentTickVal <= dataMax) {
+	    ticks[tickNum++] = currentTickVal;
+	    currentTickVal += dataStepSize;
+	    currentTickVal = round2Step(currentTickVal, dataStepSize, false);
+	}
+
+	// We may not generate the full maxTickCount ticks.
+	if (ticks.length > tickNum) {
+	    int tickCount = tickNum;
+	    double[] tmpTicks = new double[tickCount];
+	    for (tickNum = 0; tickNum < tickCount; tickNum++) {
+	        tmpTicks[tickNum] = ticks[tickNum];
+	    }
+	    ticks = tmpTicks;
+	}
+
+        if (DEBUG >= 2) {
+	    System.out.println("  Ticks:");
+	    for (int index = 0; index < ticks.length; index++) {
+	        System.out.println("    " + ticks[index]);
+	    }
+	}
+
+	return ticks;
+    }
+
+    /** -------------------------------------------------------------------
+     * Draw an X-axis tick and label at the given data value.
+     * @param The Graphics object to draw to.
+     * @param The value at which the tick should be drawn.
+     */
+    private void drawXAxisTick(Graphics gc, double value)
+    {
+        if (DEBUG >= 2) {
+            System.out.println("  Drawing X label: " + value);
+        }
+
+	// Get the string for labeling this tick.
+	String label = formatXValue(value * factorX);
+
+	// Convert the tick's data value to pixels, relative to the
+	// view origin.
+	int pixelX = data2PixelX(value, false);
+
+	drawXAxisTick(gc, pixelX, label);
+    }
+
+    /** -------------------------------------------------------------------
+     * Draw the given X-axis tick mark and label.
+     * @param The Graphics object to draw to.
+     * @param The X location, in pixels relative to the view origin, where
+     * the tick should be drawn.
+     * @param The string that should be used to label the tick.
+     */
+    private void drawXAxisTick(Graphics gc, int pixelX, String label)
+    {
+        gc.setFont(DEViseFonts.getFont(fontSizeX, fontTypeX, fontBoldX,
+	  fontItalicX));
+        drawXAxisTick(gc, pixelX, label, fontSizeX);
+    }
+
+    /** -------------------------------------------------------------------
+     * Draw the given X-axis tick mark and label.
+     * @param The Graphics object to draw to.
+     * @param The X location, in pixels relative to the view origin, where
+     * the tick should be drawn.
+     * @param The string that should be used to label the tick.
+     * @param The font size in points.
+     */
+    private void drawXAxisTick(Graphics gc, int pixelX, String label,
+      int fontSize)
+    {
+        if (DEBUG >= 2) {
+            System.out.println("  Drawing X label: " + label +
+	      " at " + pixelX);
+        }
+
+	int pixelY = viewDataLoc.y + viewDataLoc.height;
+
+	// Align the label based on the string size.
+	int width = gc.getFontMetrics().stringWidth(label);
+	int height = gc.getFontMetrics().getHeight();
+	int labelX = pixelX - width / 2 + 1;
+	int labelY = pixelY + height;
+
+	// Make sure we're within the view.
+	if (labelX < 0) {
+	    labelX = 0;
+	}
+
+	int pastRightEdge = labelX + width - viewLoc.width;
+        if (pastRightEdge > 0) {
+	    labelX -= pastRightEdge;
+	}
+
+	if (labelY > viewLoc.height) {
+	    int newFontSize = fontSize - 2;
+	    if (newFontSize < FONT_SHRINK_LIMIT) {
+	        labelY = viewLoc.height;
+	    } else {
+                gc.setFont(DEViseFonts.getFont(newFontSize, fontTypeX,
+		  fontBoldX, fontItalicX));
+	        drawXAxisTick(gc, pixelX, label, newFontSize);
+		return;
+	    }
+	}
+
+	// Translate coordinates to the canvas origin.
+	pixelX += viewLocInCanvas.x;
+	pixelY += viewLocInCanvas.y;
+	labelX += viewLocInCanvas.x;
+	labelY += viewLocInCanvas.y;
+
+	// Draw the label and tick.
+	gc.drawString(label, labelX, labelY);
+	gc.drawLine(pixelX, pixelY, pixelX, pixelY + 3);
+    }
+
+    /** -------------------------------------------------------------------
+     * Draw an Y-axis tick and label at the given data value.
+     * @param The Graphics object to draw to.
+     * @param The value at which the tick should be drawn.
+     */
+    private void drawYAxisTick(Graphics gc, double value)
+    {
+        if (DEBUG >= 2) {
+            System.out.println("  Drawing Y label: " + value);
+        }
+
+	// Get the string for labeling this tick.
+	String label = formatYValue(value * factorY);
+
+	// Convert the tick's data value to pixels, relative to the
+	// view origin.
+	int pixelY = data2PixelY(value, false);
+
+	drawYAxisTick(gc, pixelY, label);
+    }
+
+    /** -------------------------------------------------------------------
+     * Draw the given Y-axis tick mark and label.
+     * @param The Graphics object to draw to.
+     * @param The Y location, in pixels relative to the view origin, where
+     * the tick should be drawn.
+     * @param The string that should be used to label the tick.
+     * @param The font size in points.
+     */
+    private void drawYAxisTick(Graphics gc, int pixelY, String label)
+    {
+        gc.setFont(DEViseFonts.getFont(fontSizeY, fontTypeY, fontBoldY,
+	  fontItalicY));
+        drawYAxisTick(gc, pixelY, label, fontSizeY);
+    }
+
+    /** -------------------------------------------------------------------
+     * Draw the given Y-axis tick mark and label.
+     * @param The Graphics object to draw to.
+     * @param The Y location, in pixels relative to the view origin, where
+     * the tick should be drawn.
+     * @param The string that should be used to label the tick.
+     * @param The font size in points.
+     */
+    private void drawYAxisTick(Graphics gc, int pixelY, String label,
+      int fontSize)
+    {
+        if (DEBUG >= 2) {
+            System.out.println("  Drawing Y label: " + label +
+	      " at " + pixelY);
+	}
+
+	int pixelX = viewDataLoc.x;
+
+	// Align the label based on the string size.
+	int width = gc.getFontMetrics().stringWidth(label);
+	int height = gc.getFontMetrics().getHeight();
+	int labelX = pixelX - width - 7;
+	// 0.35 is empirically-derived kludge. RKW 2002-07-30.
+	int labelY = pixelY + (int)(height * 0.35);
+
+	// Make sure we're within the view.
+	if (labelX < 0) {
+	    int newFontSize = fontSize - 2;
+	    if (newFontSize < FONT_SHRINK_LIMIT) {
+	        labelX = 0;
+	    } else {
+                gc.setFont(DEViseFonts.getFont(newFontSize, fontTypeY,
+		  fontBoldY, fontItalicY));
+	        drawYAxisTick(gc, pixelY, label, newFontSize);
+		return;
+	    }
+	}
+
+	if (labelY - height < 0) {
+	    // 0.8 is empirically-derived kludge. RKW 2002-07-30.
+	    labelY = (int)(height * 0.8);
+	}
+
+	if (labelY > viewLoc.height) {
+	    labelY = viewLoc.height;
+	}
+
+	// Translate coordinates to the canvas origin.
+	pixelX += viewLocInCanvas.x;
+	labelX += viewLocInCanvas.x;
+	pixelY += viewLocInCanvas.y;
+	labelY += viewLocInCanvas.y;
+
+	// Draw the label and tick.
+	gc.drawString(label, labelX, labelY);
+	gc.drawLine(pixelX - 5, pixelY, pixelX - 2, pixelY);
     }
 
     // Get the canvas corresponding to this view (note that if this view
@@ -825,8 +946,10 @@ public class DEViseView
 	    //  viewInfoFormatX = "-";
 
             dataXStep = 0.0f;
-            if (viewDataLoc.width > 0)
-                dataXStep = (viewDataXMax - viewDataXMin) / viewDataLoc.width;
+            if (viewDataLoc.width > 0) {
+                dataXStep = (viewDataXMax - viewDataXMin) / (
+		  viewDataLoc.width - 1);
+	    }
 	    factorX = factor;
 	    labelXDraw = label;
 	    fontTypeX = type;
@@ -841,8 +964,10 @@ public class DEViseView
             //  viewInfoFormatY = "-";
 
             dataYStep = 0.0f;
-            if (viewDataLoc.height > 0)
-                dataYStep = (viewDataYMax - viewDataYMin) / viewDataLoc.height;
+            if (viewDataLoc.height > 0) {
+                dataYStep = (viewDataYMax - viewDataYMin) /
+		  (viewDataLoc.height - 1);
+	    }
 	    factorY = factor;
 	    labelYDraw = label;
 	    fontTypeY = type;
@@ -855,12 +980,9 @@ public class DEViseView
 
     }
 
-    // Note: getX and getY should probably be combined into a single
-    // method. RKW 2000-05-03.
-
+    // --------------------------------------------------------------------
     // Convert mouse X coordinate (in pixels) to a String.
     // x is relative to this view's canvas
-
     public String getX(int x)
     {
 	if(!showMouseLocX || viewDimension == 3 ||
@@ -875,48 +997,12 @@ public class DEViseView
 
         x -= loc.x;
 
-        float xstep = dataXStep;
-        // x0 represent the value at the left side of that pixel x
-        float x0 = (x - viewDataLoc.x) * xstep + viewDataXMin;
+	float x0 = (float)pixel2DataX(x, true);
 
-	x0 *= factorX;
-
-        if ((viewDataXType.toLowerCase()).equals("date")) {
-            x0 *= 1000.0f; // convert to millisec????
-            Date date = new Date((long)x0);
-            DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT);
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(date);
-            String time = " " + cal.get(Calendar.HOUR_OF_DAY) + ":"
-                             + cal.get(Calendar.MINUTE) + ":"
-                             + cal.get(Calendar.SECOND);
-            return (format.format(date) + time);
-        } else {
-	    // for small values less than 1.0E-3
-	    float abs = Math.abs(x0);
-	    if (abs < 0.001) {
-		String label = new Float(x0).toString();
-		int dot = label.indexOf('.');
-		int e = label.indexOf('E');
-		if (e-dot > 4) 
-		    label = label.substring(0, dot+3).concat(label.substring(e, label.length())); 
-		return label;
-	    }
-
-	    // TEMP -- round to the nearest thousandth?
-            if (x0 > 0) {
-                x0 = (float) Math.floor(x0 * 1000.0f + 0.5f) / 1000.0f;
-            } else {
-                x0 = (float) Math.ceil(x0 * 1000.0f - 0.5f) / 1000.0f;
-            }
-
-            //  return ("" + x0);
-	    // Ven - modified for mouse display format
-	    return DEViseViewInfo.viewParser(x0, viewInfoFormatX);
-
-        }
+	return formatXValue(x0);
     }
 
+    // --------------------------------------------------------------------
     // Convert mouse Y coordinate (in pixels) to a String.
     // y is relative to this view's canvas
     public String getY(int y)
@@ -933,84 +1019,78 @@ public class DEViseView
 
         y -= loc.y;
 
-        float ystep = dataYStep;
-        // y0 represent the value at the top side of that pixel
-        float y0 = viewDataYMax - (y - viewDataLoc.y) * ystep;
+	float y0 = (float)pixel2DataY(y, true);
 
-	y0 *= factorY;
-
-        if ((viewDataYType.toLowerCase()).equals("date")) {
-            y0 *= 1000.0f; // convert to millisec????
-            Date date = new Date((long)y0);
-            DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT);
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(date);
-            String time = " " + cal.get(Calendar.HOUR_OF_DAY) + ":"
-                             + cal.get(Calendar.MINUTE) + ":"
-                             + cal.get(Calendar.SECOND);
-            return (format.format(date) + time);
-        } else {
-	    // for small values less than 1.0E-3
-	    float abs = Math.abs(y0);
-	    if (abs < 0.001) {
-		String label = new Float(y0).toString();
-		int dot = label.indexOf('.');
-		int e = label.indexOf('E');
-		if (e-dot > 4) 
-		    label = label.substring(0, dot+3).concat(label.substring(e, label.length())); 
-		return label;
-	    }
-
-	    // TEMP -- round to the nearest thousandth?
-            if (y0 > 0) {
-                y0 = (long)(y0 * 1000.0f + 0.5f) / 1000.0f;
-            } else {
-                y0 = (long)(y0 * 1000.0f - 0.5f) / 1000.0f;
-            }
-
-            // return ("" + y0);
-	    return DEViseViewInfo.viewParser(y0, viewInfoFormatY);
-        }
+	return formatYValue(y0);
     }
 
-    public double pixel2DataX(int pixelX)
+    // --------------------------------------------------------------------
+    // Convert X pixel location to data value.
+    // Pixel X is relative to the view origin.
+    public double pixel2DataX(int pixelX, boolean useMultFactor)
     {
 	if (pileBaseView != null) {
-	    return pileBaseView.pixel2DataX(pixelX);
+	    return pileBaseView.pixel2DataX(pixelX, useMultFactor);
 	} else {
-            return (pixelX - viewDataLoc.x) * dataXStep + viewDataXMin;
+            double dataX = (pixelX - viewDataLoc.x) * dataXStep + viewDataXMin;
+	    if (useMultFactor) {
+	        dataX *= factorX;
+	    }
+	    return dataX;
 	}
     }
 
-    public double pixel2DataY(int pixelY)
+    // --------------------------------------------------------------------
+    // Convert Y pixel location to data value.
+    // Pixel Y is relative to the view origin.
+    public double pixel2DataY(int pixelY, boolean useMultFactor)
     {
 	if (pileBaseView != null) {
-	    return pileBaseView.pixel2DataY(pixelY);
+	    return pileBaseView.pixel2DataY(pixelY, useMultFactor);
 	} else {
-            return viewDataYMax - (pixelY - viewDataLoc.y) * dataYStep;
+            double dataY = viewDataYMax - (pixelY - viewDataLoc.y) * dataYStep;
+	    if (useMultFactor) {
+	        dataY *= factorY;
+	    }
+	    return dataY;
         }
     }
 
-    public int data2PixelX(double dataX)
+    // --------------------------------------------------------------------
+    // Convert X data value to pixel location.
+    // Pixel X is relative to the view origin.
+    public int data2PixelX(double dataX, boolean useMultFactor)
     {
 	if (pileBaseView != null) {
-	    return pileBaseView.data2PixelX(dataX);
+	    return pileBaseView.data2PixelX(dataX, useMultFactor);
 	} else {
-            return (int)Math.round((dataX - viewDataXMin) /
+	    if (useMultFactor) {
+	        dataX /= factorX;
+	    }
+            int pixelX = (int)Math.round((dataX - viewDataXMin) /
 	      dataXStep + viewDataLoc.x);
+	    return pixelX;
         }
     }
 
-    public int data2PixelY(double dataY)
+    // --------------------------------------------------------------------
+    // Convert Y data value to pixel location.
+    // Pixel Y is relative to the view origin.
+    public int data2PixelY(double dataY, boolean useMultFactor)
     {
 	if (pileBaseView != null) {
-	    return pileBaseView.data2PixelY(dataY);
+	    return pileBaseView.data2PixelY(dataY, useMultFactor);
 	} else {
-            return (int)Math.round((viewDataYMax - dataY) /
+	    if (useMultFactor) {
+	        dataY /= factorY;
+	    }
+            int pixelY = (int)Math.round((viewDataYMax - dataY) /
 	      dataYStep + viewDataLoc.y);
+	    return pixelY;
         }
     }
 
+    // --------------------------------------------------------------------
     // check whether or not the point (relative to this view's canvas) is within the view area
     public boolean inView(Point p)
     {
@@ -1024,6 +1104,7 @@ public class DEViseView
         }
     }
 
+    // --------------------------------------------------------------------
     // check whether or not the point (relative to this view's canvas) is
     // within the view's data area
     public boolean inViewDataArea(Point p)
@@ -1039,12 +1120,14 @@ public class DEViseView
         }
     }
 
+    // --------------------------------------------------------------------
     // ADD COMMENT -- what is this doing?
     public int translateX(int x, int mode)
     {
         return translateX(x, mode, 0);
     }
 
+    // --------------------------------------------------------------------
     // ADD COMMENT -- what is this doing?
     public int translateX(int x, int mode, int width)
     {
@@ -1063,12 +1146,14 @@ public class DEViseView
         return x;
     }
 
+    // --------------------------------------------------------------------
     // ADD COMMENT -- what is this doing?
     public int translateY(int y, int mode)
     {
         return translateY(y, mode, 0);
     }
 
+    // --------------------------------------------------------------------
     // ADD COMMENT -- what is this doing?
     public int translateY(int y, int mode, int height)
     {
@@ -1087,6 +1172,7 @@ public class DEViseView
         return y;
     }
 
+    // --------------------------------------------------------------------
     // Get this first cursor in this view or this view's pile.  Note that
     // this method should only be called on a base view.
     public DEViseCursor getFirstCursor() throws YError
@@ -1111,6 +1197,7 @@ public class DEViseView
 	return cursor;
     }
 
+    // --------------------------------------------------------------------
     private DEViseCursor doGetFirstCursor()
     {
         if (_debug) {
@@ -1145,212 +1232,90 @@ public class DEViseView
         return null;
     }
 
-    //TEMP -- why are x and y labels calculated differently? RKW 2002-03-26
-
-    // get the label for Y axis
-    public String getYLabel(float y)
+    // --------------------------------------------------------------------
+    // round up the steps on axis labels
+    // Round to a "nice" value.
+    private static double round2Nice(double value)
     {
-        boolean done = false;        
+        if (DEBUG >= 3) {
+            System.out.println("round2Nice(" + value + ")");
+        }
 
-	if ((viewDataYType.toLowerCase()).equals("date")) {
-	    return getDateLabel(y, viewInfoFormatY);
-	} else {
-	    int length = 0;
-	    float abs = Math.abs(y);
-	    String labelY = new Float(y).toString();
-
-	    if (abs > 99999) { // |y| >= 1,000,000
-		int y0 = (int)(y);
-		labelY = DEViseViewInfo.viewParser(y0, viewInfoFormatY);
-
-		int e = labelY.indexOf('E');
-                // This 'while' statement will eliminate any unnecessary trailing 0s as
-                // well as an unecessary decimal point
-                done = false;
-		while (labelY.charAt(e-1) == '0' 
-		       || labelY.charAt(e-1) == '.') {
-                        
-                    // Once we get to the decimal point, we are done cleaning up the number
-                    if(labelY.charAt(e-1) == '.') {
-			done = true;
-                    }
-
-		    labelY = labelY.substring(0, e-1).concat(labelY.substring(e, labelY.length()));
-		    e = e-1;
-
-                    if(done) break;
-		}
-
-		length = labelY.length();
-	    } else if (abs >= 10) { // |y| >= 10
-		length = (int)(Math.log(abs) / Math.log(10) + 0.0001) + 1;
-	    } else if (abs < 0.01) { // |y| < 0.01
-		int e = labelY.indexOf('E');
-		if (e != -1) 
-
-                    // This 'while' statement will eliminate any unnecessary trailing 0s as
-                    // well as an unecessary decimal point
-		    
-		    while (labelY.charAt(e-1) == '0' 
-			   || labelY.charAt(e-1) == '.') {
-                        
-                        // Once we get to the decimal point, we are done cleaning up the number
-                        if(labelY.charAt(e-1) == '.') {
-			    done = true;
-                        }
-			labelY = labelY.substring(0, e-1).concat(labelY.substring(e, labelY.length()));
-			e = e-1;
- 
-			if(done) break;
-		    }
-		length = labelY.length();
-	    } else {
-		length = Math.min(labelY.length(), 4);
-	    }
-		
-	    if (y < 0) { // "-"
-		    length ++;
-	    }
-
-	    // Kludge fix for bug 760.  RKW 2002-03-26.
-	    length = Math.min(length, labelY.length());
-
-	    labelY = labelY.substring(0, length);
-
-	    while ( (labelY.charAt(length-1) == '.') || 
-		(labelY.indexOf('.') != -1 && labelY.charAt(length-1) == '0') ){
-		    labelY = labelY.substring(0, length-1);
-		    length--;
-	    }
-
-	    return labelY;
+	double log = Math.floor(Math.log(value) / Math.log(10) + 0.0001);
+        if (DEBUG >= 3) {
+            System.out.println("  log = " + log);
 	}
-    }
 
-    // get the label for X axis
-    public String getXLabel(float x)
-    {
-        boolean done = false;
-
-	if ((viewDataXType.toLowerCase()).equals("date")) {
-	    return getDateLabel(x, viewInfoFormatX);
-	} else {
-	    int length = 0;
-	    float abs = Math.abs(x);
-	    String labelX = new Float(x).toString();
-
-	    if (abs > 99999) {
-		int x0 = (int)(x);
-		labelX = DEViseViewInfo.viewParser(x0, viewInfoFormatX);
-		int e = labelX.indexOf('E');
-
-
-                // This 'while' statement will eliminate any unnecessary trailing 0s as
-                // well as an unecessary decimal point
-                done = false;
-		while (labelX.charAt(e-1) == '0' 
-		       || labelX.charAt(e-1) == '.') {
-                        
-                    // Once we get to the decimal point, we are done cleaning up the number
-                    if(labelX.charAt(e-1) == '.') {
-			done = true;
-                    }
-
-		    labelX = labelX.substring(0, e-1).concat(labelX.substring(e, labelX.length()));
-		    e = e-1;
-                  
-                    if(done) break;
-		}
-		length = labelX.length();
-	    } else if (abs >= 10) { // |x| >= 10
-		length = (int)(Math.log(abs) / Math.log(10) + 0.0001) + 1;
-	    } else if (abs < 0.01) { // |x| < 0.01
-		int e = labelX.indexOf('E');
-		if (e != -1) 
-
-                    // This 'while' statement will eliminate any unnecessary trailing 0s as
-                    // well as an unecessary decimal point
-                    //done = false;
-		    while (labelX.charAt(e-1) == '0' 
-			   || labelX.charAt(e-1) == '.') {
-
-                        // Once we get to the decimal point, we are done cleaning up the number
-                        if(labelX.charAt(e-1) == '.') {
-			    done = true;
-                        }
-
-			labelX = labelX.substring(0, e-1).concat(labelX.substring(e, labelX.length()));
-			e = e-1;
-
-                        if(done) break;
-		    }
-		length = labelX.length();
-	    } else {
-		length = Math.min(labelX.length(), 4);
-	    }
-
-	    if (x < 0) { // "-"
-		length ++;
-	    }
-
-	    // Kludge fix for bug 760.  RKW 2002-03-26.
-	    length = Math.min(length, labelX.length());
-
-	    labelX = labelX.substring(0, length);
-
-	    while ( (labelX.charAt(length-1) == '.') || 
-		(labelX.indexOf('.') != -1 && labelX.charAt(length-1) == '0') ){
-		    labelX = labelX.substring(0, length-1);
-		    length--;
-	    }
-	    return labelX;
+	double factor = Math.pow(10.0d, log);
+	double temp = value / factor; 
+        if (DEBUG >= 3) {
+            System.out.println("  temp = " + temp);
 	}
-    }
-
-    // round up the steps on axises
-    public float roundUp(float f)
-    {
-	float factor = 0;
-	float log = 0;
-	float temp = 0;
-
-	if (f >= 1)
-	    log = (int)(Math.log(f) / Math.log(10) + 0.0001);
-	else 
-	    log = (int)(Math.log(f) / Math.log(10) + 0.0001) - 1;
-	factor = (float)Math.pow(10, log);
-	temp = f / factor; 
 	
-	if (temp >= 7.5) 
-	    f = (float)((10+0.0000001) * factor);
-	else if (temp >= 3.5)
-	    f = (float)((5+0.0000001) * factor);
-	else if (temp >= 1.5)
-	    f = (float)((2+0.0000001) * factor);
-	else 
-	    f = (float)((1+0.0000001) * factor);
-	return f;
+	if (temp >= 7.5) {
+	    value = (double)(10.0d * factor);
+	} else if (temp >= 3.5) {
+	    value = (double)(5.0d * factor);
+	} else if (temp >= 1.5) {
+	    value = (double)(2.0d * factor);
+	} else {
+	    value = (double)(1.0d * factor);
+        }
+
+        if (DEBUG >= 3) {
+            System.out.println("  round2Nice() returns " + value);
+	}
+
+	return value;
     }
 
-    // get the proper min value on axises
-    public float getMin(float min, float step)
+    // --------------------------------------------------------------------
+    // Round the value to the nearest multiple of step; if roundUp is true,
+    // the result will be not less than val.
+    public static double round2Step(double val, double step, boolean roundUp)
     {
-	int factor = 0;
-	float f = 0;
+        if (DEBUG >= 3) {
+            System.out.println("round2Step(" + val + ", " + step + ", " +
+	      roundUp + ")");
+        }
 
-	factor = (int)(min / step);
-	f = factor * step;
+	long factor = Math.round(val / step);
+        if (DEBUG >= 3) {
+            System.out.println("  factor = " + factor);
+	}
 
-	if (f < min)
-	    f += step;
-	return f;
+	double roundedVal = factor * step;
+        if (DEBUG >= 3) {
+            System.out.println("  roundedVal = " + roundedVal);
+	}
+
+	// Make sure zero is really zero.
+        if (Math.abs(val / step) < 0.001) {
+	    roundedVal = 0.0d;
+	}
+
+	if (roundUp && roundedVal < val) {
+	    roundedVal += step;
+	}
+
+        if (DEBUG >= 3) {
+            System.out.println("  round2Step() returns " + roundedVal);
+	}
+
+	return roundedVal;
     }
 
+    // --------------------------------------------------------------------
     // get date label according to cftime format
-    public String getDateLabel(float f, String format)
+    public String getDateLabel(float dataVal, String format)
     {
-	f *= 1000.0f; 
-	Date date = new Date((long)f);
+	if (DEBUG >= 2) {
+	    System.out.println("DEViseView.getDateLabel(" + dataVal +
+	      ", " + format);
+	}
+
+	dataVal *= 1000.0f; // convert to milliseconds?
+	Date date = new Date((long)dataVal);
 	Calendar cal = Calendar.getInstance();
 	cal.setTime(date);
 	int i = 0;
@@ -1361,59 +1326,88 @@ public class DEViseView
 	    String st = "";
 	    c = format.charAt(i);
 
-	    if (c == 'b') {
-		int mon = cal.get(Calendar.MONTH);
+	    if (c == '%') {
+	        i++;
+	        c = format.charAt(i);
+
+	        if (c == 'b') {
+		    int mon = cal.get(Calendar.MONTH);
 		
-		switch (mon+1) {
-		case 1: st = "Jan"; break;
-		case 2: st = "Feb"; break;
-		case 3: st = "March"; break;
-		case 4: st = "April"; break;
-		case 5: st = "May"; break;
-		case 6: st = "June"; break;
-		case 7: st = "July"; break;
-		case 8: st = "Aug"; break;
-		case 9: st = "Sep"; break;
-		case 10: st = "Oct"; break;
-		case 11: st = "Nov"; break;
-		case 12: st = "Dec"; break;
-		}		
-	    } 
-	    else if (c == 'd') {
-		st = new Integer(cal.get(Calendar.DAY_OF_MONTH)).toString();
-	    }
-	    else if (c == 'Y') {
-		st = new Integer(cal.get(Calendar.YEAR)).toString();
-	    }
-	    else if (c == 'T') {
-		st = cal.get(Calendar.HOUR_OF_DAY) + ":"
-		    + cal.get(Calendar.MINUTE) + ":"
-		    + cal.get(Calendar.SECOND);
-	    }
-	    else if (c == 'm') {
-		st = new Integer(cal.get(Calendar.MONTH)+1).toString();
-	    }
-	    else if (c == 'H') {
-		st = new Integer(cal.get(Calendar.HOUR_OF_DAY)).toString();
-	    }
-	    else if (c == 'M') {
-		st = new Integer(cal.get(Calendar.MINUTE)).toString();
-	    }
-	    else if (c == ':') {
-		st = ":";
-	    }
-	    else if (c == ' ') {
-		st = " ";
-	    }
-	    else if (c == '-') {
-		st = "-";
+		    switch (mon+1) {
+		    case 1: st = "Jan"; break;
+		    case 2: st = "Feb"; break;
+		    case 3: st = "March"; break;
+		    case 4: st = "April"; break;
+		    case 5: st = "May"; break;
+		    case 6: st = "June"; break;
+		    case 7: st = "July"; break;
+		    case 8: st = "Aug"; break;
+		    case 9: st = "Sep"; break;
+		    case 10: st = "Oct"; break;
+		    case 11: st = "Nov"; break;
+		    case 12: st = "Dec"; break;
+		    }		
+	        } else if (c == 'd') {
+		    st = new Integer(cal.get(Calendar.DAY_OF_MONTH)).toString();
+	        } else if (c == 'Y') {
+		    st = new Integer(cal.get(Calendar.YEAR)).toString();
+	        } else if (c == 'T') {
+		    st = cal.get(Calendar.HOUR_OF_DAY) + ":"
+		        + cal.get(Calendar.MINUTE) + ":"
+		        + cal.get(Calendar.SECOND);
+	        } else if (c == 'm') {
+		    st = new Integer(cal.get(Calendar.MONTH)+1).toString();
+	        } else if (c == 'H') {
+		    st = new Integer(cal.get(Calendar.HOUR_OF_DAY)).toString();
+	        } else if (c == 'M') {
+		    st = new Integer(cal.get(Calendar.MINUTE)).toString();
+	        } else if (c == ':') {
+		    st = ":";
+	        } else if (c == ' ') {
+		    st = " ";
+	        } else if (c == '-') {
+		    st = "-";
+	        }
+	    } else {
+	        st = String.valueOf(c);
 	    }
 
 	    result = result.concat(st);
 	    i++;
 	}
 
+	if (DEBUG >= 2) {
+	    System.out.println("  DEViseView.getDateLabel returns " + result);
+	}
+
 	return result;
     }
 
+    // --------------------------------------------------------------------
+    // Convert a X-axis data value to a properly-formatted string for
+    // mouse location display or axis labeling.
+    private String formatXValue(double dataX) {
+	return formatDataValue(dataX, viewDataXType, viewInfoFormatX);
+    }
+
+    // --------------------------------------------------------------------
+    // Convert a Y-axis data value to a properly-formatted string for
+    // mouse location display or axis labeling.
+    private String formatYValue(double dataY) {
+	return formatDataValue(dataY, viewDataYType, viewInfoFormatY);
+    }
+
+    // --------------------------------------------------------------------
+    // Format a data value of the given type according to the given
+    // format string.
+    private String formatDataValue(double dataVal, String dataType,
+      String dataFormat) {
+	if (dataFormat.equals("-")) {
+	    return "";
+        } else if ((dataType.toLowerCase()).equals("date")) {
+	    return getDateLabel((float)dataVal, dataFormat);
+        } else {
+	    return DEViseViewInfo.viewParser((float)dataVal, dataFormat);
+        }
+    }
 }

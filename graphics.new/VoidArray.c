@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.6.14.1  2002/09/02 21:29:34  wenger
+  Did a bunch of Purifying -- the biggest change is storing the command
+  objects in a HashTable instead of an Htable -- the Htable does a bunch
+  of ugly memory copying.
+
+  Revision 1.6  1999/11/30 22:28:31  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.5  1997/12/23 23:35:43  liping
   Changed internal structure of BufMgrFull and classes it called
   The buffer manager is now able to accept queries on any attribute from the
@@ -48,7 +60,7 @@ VoidArray::VoidArray(int maxSize){
 #endif
 
 	_maxSize = maxSize;
-	_array = new void *[maxSize];//TEMPTEMP leaked
+	_array = new void *[maxSize];
 	_size = 0;
 }
 

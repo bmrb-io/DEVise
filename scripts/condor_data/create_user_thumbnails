@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1999
+#  (c) Copyright 1999-2002
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -23,6 +23,16 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.19.10.2  2002/11/20 16:02:03  wenger
+#  Changed JavaScreen GData params.
+#
+#  Revision 1.19.10.1  2002/11/19 19:31:17  wenger
+#  Condor visualizations now deal decently with large numbers of users;
+#  the "Total" value is always first, if it exists.
+#
+#  Revision 1.19  2001/10/04 19:34:23  wenger
+#  Added standard headers to automatically-generated Condor session files.
+#
 #  Revision 1.18  2001/09/18 21:54:58  wenger
 #  Added 'strict'; other improvements.
 #
@@ -111,6 +121,9 @@ my $data_schema = shift(@ARGV);
 my %userlist = ();
 GetUsers();
 
+my $userCount;
+my $users2Show;
+
 # Create the session file.
 CreateSession($session_file);
 
@@ -147,6 +160,16 @@ sub GetUserFromLine {
 
 sub CreateSession {
   my $session_file = shift(@_);
+
+  # Figure how how many users to show at once.
+  my $maxUsers2Show = 40;
+  my @tmpKeys = keys %userlist;
+  $userCount = $#tmpKeys + 1;
+  if ($userCount > $maxUsers2Show) {
+    $users2Show = $maxUsers2Show;
+  } else {
+    $users2Show = $userCount;
+  }
 
   open(SES_OUT, ">$session_file") or
       die "Can't create session_file $session_file: $!";
@@ -231,18 +254,27 @@ sub DefineData {
 sub CreateViews {
   print SES_OUT "\n# Create views\n";
 
-  print SES_OUT "DEVise create {view} {Scatter} UserList_view -0.05 1.05 0 1 36 9\n";
+  my $bottom = -$userCount + 0.5;
+  print SES_OUT "DEVise create {view} {Scatter} UserSelect_view -0.5 0.5 $bottom 0.5 36 9\n";
+  print SES_OUT "DEVise viewSetImplicitHome {UserSelect_view} 0 1 1 1 0 0.25 0 0 100 100\n";
+  print SES_OUT "DEVise setViewAutoFilter UserSelect_view 0\n";
+  print SES_OUT "DEVise viewSetDisabledActions UserSelect_view 1 0 0 1\n";
+
+  print SES_OUT "\n";
+ 
+  $bottom = -$users2Show + 0.5;
+  print SES_OUT "DEVise create {view} {Scatter} UserList_view -0.05 1.05 $bottom 0.5 36 9\n";
   print SES_OUT "DEVise viewSetImplicitHome {UserList_view} 0 1 1 1 0.0 0.0 0.0 0.0 ",
       "100.0 100.0\n";
-  print SES_OUT "DEVise setViewAutoFilter UserList_view 1\n";
+  print SES_OUT "DEVise setViewAutoFilter UserList_view 0\n";
   print SES_OUT "DEVise viewSetDisabledActions UserList_view 1 0 0 1\n";
-  print SES_OUT "DEVise viewSetJSSendP UserList_view 0 1 0 {} 1 { } 1";
+  print SES_OUT "DEVise viewSetJSSendP UserList_view 0 1 0 {} 1 { } 1\n";
   print SES_OUT "\n";
 
-  print SES_OUT "DEVise create {view} {Scatter} DataParent_view 0 1 -1 -2 36 9\n";
+  print SES_OUT "DEVise create {view} {Scatter} DataParent_view -0.45 0.45 $bottom 0.5 36 9\n";
   print SES_OUT "DEVise viewSetImplicitHome {DataParent_view} 1 1 1 1 0.00 ",
       "0.00 0.0 0.0 100.0 100.0\n";
-  print SES_OUT "DEVise setViewAutoFilter DataParent_view 1\n";
+  print SES_OUT "DEVise setViewAutoFilter DataParent_view 0\n";
   print SES_OUT "DEVise viewSetDisabledActions DataParent_view 1 0 0 1\n";
   print SES_OUT "\n";
 
@@ -284,12 +316,17 @@ sub CreateMappings {
   print SES_OUT "\n# Create mappings\n";
 
   my $dataName = "${data_prefix}UserList";
+
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "AllUser#$mappingClass {} {0} {\$X} {} {} 0.9 0 0 17 {\$ViewName} ",
+      "UserSelect#$mappingClass {} {0} {-\$X} {} 37 1 0 0 0 {0.5} ",
+      "{0.5} {} {} {} {} {} {} {} {}\n";
+
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "UserList#$mappingClass {} {0} {-\$X} {} 37 0.02 0 360 16 {\$UserName} {} -3 2 {} {} 2 {} {} {} {} {} {} {} {}\n";
+
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "AllUser#$mappingClass {} {0} {-\$X} {} {} 0.9 0 0 17 {\$ViewName} ",
       "1 1 {\$TDataName} {} {} {} {} {} {}\n";
-  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "UserList#$mappingClass {} {0} {\$X} {} 37 1.5 0 360 12 {\$UserName} ",
-      "{} {-2} {0.6} {} {-3} {2} {} {} {}\n";
 
   $dataName = "Condor_Total";
   my $user;
@@ -309,6 +346,8 @@ sub InsertMappings {
 
   print SES_OUT "\n# Insert mappings into views\n";
 
+  print SES_OUT "DEVise insertMapping {UserSelect_view} ",
+      "{UserSelect#$mappingClass}\n";
   print SES_OUT "DEVise insertMapping {UserList_view} ",
       "{UserList#$mappingClass}\n";
   print SES_OUT "DEVise insertMapping {DataParent_view} ",
@@ -337,6 +376,14 @@ sub CreateLinksCursors {
       print SES_OUT "DEVise insertLink {TimeLink} {${user}_view}\n";
   }
 
+  # Cursor to select users.
+  print SES_OUT "DEVise create {cursor} {Cursor} user_select_cursor ",
+      "2 1 1.000000 1.000000 1\n";
+  print SES_OUT "DEVise setCursorSrc {user_select_cursor} {UserList_view}\n";
+  print SES_OUT "DEVise setCursorDst {user_select_cursor} {UserSelect_view}\n";
+  print SES_OUT "DEVise color SetCursorColor {user_select_cursor} #ffffffffffff\n";
+  print SES_OUT "DEVise setCursorConstraints {user_select_cursor} 1 0 1\n";
+
   return;
 }
 
@@ -346,13 +393,17 @@ sub CreateWindows {
 
   print SES_OUT "\n# Create windows and insert views\n";
 
-  print SES_OUT "DEVise create {window} {TileLayout} UserList 0.02 0.20 ",
+  print SES_OUT "DEVise create {window} {TileLayout} UserSelect 0.02 0.20 ",
+      "0.05 0.75 0 0\n";
+  print SES_OUT "DEVise insertWindow {UserSelect_view} {UserSelect}\n";
+
+  print SES_OUT "DEVise create {window} {TileLayout} UserList 0.07 0.20 ",
       "0.15 0.75 0 0\n";
   print SES_OUT "DEVise insertWindow {UserList_view} {UserList}\n";
 
-  print SES_OUT "DEVise create {window} {TileLayout} User1 0.17 0.20 0.81 ",
+  print SES_OUT "DEVise create {window} {TileLayout} UserGraphs 0.22 0.20 0.75 ",
       "0.75 0 0\n";
-  print SES_OUT "DEVise insertWindow {DataParent_view} {User1}\n";
+  print SES_OUT "DEVise insertWindow {DataParent_view} {UserGraphs}\n";
 }
 
 #-----------------------------------------------------------

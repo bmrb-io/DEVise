@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.29.14.1  2002/09/02 21:29:24  wenger
+  Did a bunch of Purifying -- the biggest change is storing the command
+  objects in a HashTable instead of an Htable -- the Htable does a bunch
+  of ugly memory copying.
+
+  Revision 1.29  2000/03/30 16:26:48  wenger
+  Added printInstances command; destroy command now reports an error
+  if the instance is not found.
+
   Revision 1.28  2000/03/14 17:05:04  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -471,7 +480,9 @@ void ClassDir::DestroyAllInstances()
   // This is kind of a kludge to fix the problem that after TData objects
   // are destroyed there are many other objects that still reference the
   // TDatas.
-  QueryProc::Instance()->AbortAllQueries();
+  if (QueryProc::QPExists()) {
+    QueryProc::Instance()->AbortAllQueries();
+  }
 
   // Destroy links first to prevent propagation problems when other stuff
   // is destroyed.

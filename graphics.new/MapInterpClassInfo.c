@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.30.10.1  2002/09/20 17:16:23  wenger
+  Fixed memory leaks in MapInterpClassInfo.
+
+  Revision 1.30  2001/02/20 20:02:53  wenger
+  Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+  to the trunk.
+
   Revision 1.29.4.1  2001/02/16 21:37:59  wenger
   Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
   a web browser) on 'sets' of visual filters.
@@ -159,7 +166,7 @@ MapInterpClassInfo::MapInterpClassInfo()
   _isInterp = true;
   _cmd = NULL;
   _fileAlias = NULL;
-  _className = rootClassName;
+  _className = CopyString(rootClassName);
   _name = NULL;
   _map = NULL;
 }
@@ -191,7 +198,7 @@ MapInterpClassInfo::MapInterpClassInfo(const char *className,
 #endif
 
   _isInterp = true;
-  _className = className;
+  _className = CopyString(className);
   _fileAlias = fileAlias;
   _name = name;
   _numDimensions = numDimensions;
@@ -215,9 +222,28 @@ MapInterpClassInfo::~MapInterpClassInfo()
   }
 
   delete _map;
+
+  if (_cmd != NULL) {
+    // Note: we can't just do all this as part of a MappingInterpCmd
+    // destructor, because we end up copying a bunch of the pointers
+    // in MappingInterp.  RKW 2002-09-20.
+    FreeString(_cmd->xCmd);
+    FreeString(_cmd->yCmd);
+    FreeString(_cmd->zCmd);
+    FreeString(_cmd->colorCmd);
+    FreeString(_cmd->sizeCmd);
+    FreeString(_cmd->patternCmd);
+    FreeString(_cmd->orientationCmd);
+    FreeString(_cmd->shapeCmd);
+    for (int index = 0; index < MAX_SHAPE_ATTRS; index++) {
+      FreeString(_cmd->shapeAttrCmd[index]);
+    }
+  }
+
   delete _cmd;
   FreeString((char *)_fileAlias);
   FreeString((char *)_name);
+  FreeString((char *)_className);
 }
 
 /* Return true if string is not empty. A string is not empty

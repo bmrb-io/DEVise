@@ -25,8 +25,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.79  2002/06/17 19:40:20  wenger
+// Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+//
 // Revision 1.78  2002/05/01 21:29:00  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.77.2.7  2002/12/05 20:38:20  wenger
+// Removed a bunch of unused (mostly already-commented-out) code to
+// make things easier to deal with.
+//
+// Revision 1.77.2.6  2002/11/05 20:02:28  wenger
+// Fixed bug 831 (JSPoP can't respond if stuck sending data); incremented
+// DEVise and JavaScreen versions.
 //
 // Revision 1.77.2.5  2002/06/17 17:30:37  wenger
 // Added a bunch more error reporting and put timestamps on check_pop logs
@@ -568,18 +579,6 @@ public class jspop implements Runnable
             quit(1);
         }
 
-/* Only one socket now...
-        System.out.println("\nStarting data server socket on " + DEViseGlobals.imgport + " ...\n");
-        try {
-            dataServerSocket = new ServerSocket(DEViseGlobals.imgport);
-            dataServerSocket.setSoTimeout(5000); // wait for data socket connection for 5 seconds before disconnect
-        } catch (IOException e) {
-            System.out.println("Can not start data server socket at port " + DEViseGlobals.imgport);
-	    System.out.println(e.getMessage());
-            quit(1);
-        }
-*/
-
         System.out.println("\nStarting JSS handler ...\n");
         try {
             jssHandler = new JssHandler(this, jspopPort);
@@ -647,18 +646,6 @@ public class jspop implements Runnable
             cmdServerSocket = null;
         }
 	
-	/*
-        System.out.println("Stop data server socket...");
-        if (dataServerSocket != null) {
-            try {
-                dataServerSocket.close();
-            } catch (IOException e) {
-            }
-
-            dataServerSocket = null;
-        }
-	*/
-
 	//TEMP -- why is this commented out?
         /*
         System.out.println("Stop DEViseServer thread...");
@@ -958,7 +945,8 @@ public class jspop implements Runnable
     public synchronized DEViseClient getNextRequestingClient()
     {
         if (debugLevel >= 2) {
-	    System.out.println("jspop.getNextRequestingClient()");
+	    System.out.println("jspop.getNextRequestingClient() in thread " +
+	      Thread.currentThread());
 	}
 
 	//
@@ -1444,22 +1432,7 @@ public class jspop implements Runnable
                         System.exit(1);
                     }
                 }
-            } 
-	    /*  else if (args[i].startsWith("-imgport")) {
-                if (!args[i].substring(8).equals("")) {
-                    try {
-                        int port = Integer.parseInt(args[i].substring(8));
-                 d       if (port < 1024 || port > 65535) {
-                            throw new NumberFormatException();
-                        }
-                        DEViseGlobals.imgport = port;
-                    } catch (NumberFormatException e) {
-                        System.out.println("Please use a positive integer number between 1024 and 65535 as the port number");
-                        System.exit(1);
-                    }
-                }
-	     } */
-	       else if (args[i].startsWith("-debug")) {
+            } else if (args[i].startsWith("-debug")) {
                 if (!args[i].substring(6).equals("")) {
                     try {
                         debugLevel = Integer.parseInt(args[i].substring(6));
@@ -1539,11 +1512,6 @@ public class jspop implements Runnable
         if (_popCmdPort < 1024) {
             _popCmdPort = DEViseGlobals.DEFAULTCMDPORT;
         }
-	/*
-        if (DEViseGlobals.imgport < 1024) {
-            DEViseGlobals.imgport = DEViseGlobals.DEFAULTIMGPORT;
-        }
-	*/
         if (logLevel > 0) {
             logFile = new YLogFile(logFileName, logLevel, true);
         }

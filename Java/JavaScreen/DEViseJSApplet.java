@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2001
+// (c) Copyright 2000-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,40 @@
 // $Id$
 
 // $Log$
+// Revision 1.10.2.7  2002/12/18 15:19:03  wenger
+// Disabled (at least temporarily) the applet no-reload feature in the
+// JavaScreen code (because it just causes problems on Mozilla).
+//
+// Revision 1.10.2.6  2002/12/17 23:15:01  wenger
+// Fixed bug 843 (still too many java processes after many reloads);
+// improved thread debug output.
+//
+// Revision 1.10.2.5  2002/11/22 21:55:07  wenger
+// More fixes for stupid scrollbar warnings.
+//
+// Revision 1.10.2.4  2002/11/05 19:31:49  wenger
+// Debug code for applet-reuse problems.
+//
+// Revision 1.10.2.3  2002/10/03 17:59:17  wenger
+// JS applet instance re-use now reloads the session -- that's what
+// Wavelet-IDR needs for their web page to work right.
+//
+// Revision 1.10.2.2  2002/08/19 16:51:36  wenger
+// Applet instances are now re-used according to URL if the "reloadapplet"
+// flag is false.
+//
+// Revision 1.10.2.1  2002/08/16 21:56:56  wenger
+// Fixed bug 807 (reload twice in Netscape goofs up JS applets); fixed
+// various other problems with destroying hidden applets.
+//
+// Revision 1.10  2002/03/20 22:04:49  xuk
+// Added automatic collaboration functionality.
+// Four new parameters:
+// collableadername: for collaboration leader to define a collaboration name
+// collableaderpass: for collaboration leader to define the password
+// collabname: for collab follower to specify the collaboration name
+// collabpass: for collab follower to specify the collaboration passwd.
+//
 // Revision 1.9  2002/02/28 16:36:03  xuk
 // Added "reloadapplet" parameter to load old jsb applet instance into new HTML page.
 //
@@ -85,12 +119,14 @@ import  java.net.*;
 import  java.io.*;
 import  java.util.*;
 
-public class DEViseJSApplet extends Applet
+public abstract class DEViseJSApplet extends Applet
 {
     static final int DEBUG = 0;
 
-    // URL from which this applet was loaded.
-    URL baseURL = null;
+    String documentUrl = null;
+
+    // Maps URLs to applet instances.
+    static Hashtable _instances = new Hashtable();
 
     Vector images = null;
 
@@ -99,13 +135,29 @@ public class DEViseJSApplet extends Applet
 
     public DEViseJSValues jsValues = null;
 
+    // How many applet instances exist.
+    private static int _instanceCount = 0;
+
+    // The instance number of this applet.
+    private int _instanceNum = _instanceCount++;
+
+    public int getInstanceNum() { return _instanceNum; }
+
+    private DEViseJSTimer timer = null;
+    
+    private boolean _destroyed = false;
+
     public void init()
     {
 	super.init();
 
         if (DEBUG >= 1) {
 	    System.out.println("DEViseJSApplet.init()");
+	    System.out.println("  Instance number " + _instanceNum);
 	}
+
+        documentUrl = stripUrl(getDocumentBase().toString());
+	_instances.put(documentUrl, this);
 
 	jsValues = new DEViseJSValues();
 
@@ -119,7 +171,8 @@ public class DEViseJSApplet extends Applet
 
 	// Note: the "\n" here magically gets rid of the scrollbar
 	// warnings we've had for ages.  RKW 2001-01-05.
-        startInfo = new TextArea("\n", 8, 50);
+        startInfo = new TextArea("\n", 8, 50,
+	  TextArea.SCROLLBARS_VERTICAL_ONLY);
         startInfo.setBackground(jsValues.uiglobals.textBg);
         startInfo.setForeground(jsValues.uiglobals.textFg);
         startInfo.setFont(jsValues.uiglobals.textFont);
@@ -129,8 +182,8 @@ public class DEViseJSApplet extends Applet
 
         checkParameters();
 
-        baseURL = getCodeBase();
-        jsValues.connection.hostname = baseURL.getHost();
+        URL codeBaseURL = getCodeBase();
+        jsValues.connection.hostname = codeBaseURL.getHost();
         jsValues.connection.username = DEViseGlobals.DEFAULTUSER;
         jsValues.connection.password = DEViseGlobals.DEFAULTPASS;
 
@@ -145,13 +198,70 @@ public class DEViseJSApplet extends Applet
         }
     }
 
+    public void start()
+    {
+        if (timer != null) {
+	    timer.stop();
+	}
+    }
+
+    public void stop()
+    {
+        if (timer == null) {
+	    timer = new DEViseJSTimer(this);
+	}
+	timer.start();
+    }
+
     public void destroy()
     {
         if (DEBUG >= 1) {
 	    System.out.println("DEViseJSApplet.destroy()");
 	}
+	
+	if (timer != null) {
+	    timer.stop();
+	    timer = null;
+	}
 
+	if (documentUrl != null) {
+	    _instances.remove(documentUrl);
+	}
+
+	documentUrl = null;
         images = null;
+	startInfo = null;
+	jsValues = null;
+
+	_destroyed = true;
+    }
+
+    public boolean wasDestroyed()
+    {
+        return _destroyed;
+    }
+
+    public static DEViseJSApplet getInstance(String url)
+    {
+	if (DEBUG >= 2) {
+	    System.out.println("DEViseJSApplet.getInstance(" + url + ")");
+	}
+	System.out.println("We have " + _instances.size() +
+	  " applet instances in this JVM");
+	if (DEBUG >= 2) {
+	    System.out.println("URLs:");
+	    Enumeration urls = _instances.keys();
+	    while (urls.hasMoreElements()) {
+		System.out.println("  " + urls.nextElement());
+	    }
+	}
+	url = stripUrl(url);
+        DEViseJSApplet instance = (DEViseJSApplet)_instances.get(url);
+	if (DEBUG >= 2) {
+	    System.out.println("  returning: " + ((instance != null) ?
+	      new Integer(instance.getInstanceNum()).toString() : "null"));
+	}
+	return instance;
     }
 
     protected void checkParameters()
@@ -340,6 +450,9 @@ public class DEViseJSApplet extends Applet
             jsValues.session.disableButtons = false;
         }
 
+	// Force reloadApplet to always be true for now, since the "no-reload"
+	// feature doesn't work in Mozilla anyhow.  RKW 2002-12-18.
+	/*TEMP?
         String reloadString = getParameter("reloadapplet");
         if (reloadString != null) {
 	    if (reloadString.equals("true")) {
@@ -350,6 +463,9 @@ public class DEViseJSApplet extends Applet
         } else {
             jsValues.session.reloadApplet = true;
         }
+	TEMP?*/
+        jsValues.session.reloadApplet = true;//TEMP?
+
 
         String leaderName = getParameter("collableadername");
         if (leaderName != null) {
@@ -456,6 +572,22 @@ public class DEViseJSApplet extends Applet
 
     public String getAppletInfo()
     {
-        return "DEVise Java Screen version 2.0\nBy DEVise Development Group at UW-Madison\nAll rights reserved";
+        return "DEVise Java Screen version " + DEViseGlobals.VERSION +
+	  "\nBy DEVise Development Group at UW-Madison\nAll rights reserved";
     }
+
+    // Strip the question mark (if any) and everything after it from the
+    // given URL.
+    private static String stripUrl(String url)
+    {
+        int qLoc = url.indexOf('?');
+	if (qLoc >= 0) {
+	    url = url.substring(0, qLoc);
+	}
+
+	return url;
+    }
+
+    // Force the applet to reload its current session.
+    public abstract void restartSession();
 }

@@ -25,6 +25,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.24.8.1  2002/08/19 15:30:08  sjlong
+// Slight change to speed-up 3D drawing code
+//
+// Revision 1.24  2001/05/11 20:36:06  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.23  2001/04/20 19:22:20  xuk
 // Changes for 3D drill-down of segment objects.
 //
@@ -256,7 +262,8 @@ public class DEViseCrystal
             }
 
 	    // Sort by Z value.
-            if (_hasAtoms) resort();
+            if (_hasAtoms)   
+		resort();
 
             isTransformed = false;
         }
@@ -278,8 +285,8 @@ public class DEViseCrystal
             }
 
             atom = (DEViseAtomInCrystal)atomList.elementAt(index);
-            x = (int)(atom.lcspos[0] + 0.5f) + shiftedX;
-            y = (int)(atom.lcspos[1] + 0.5f) + shiftedY;
+	    x = (int)(atom.lcspos[0] + 0.5f) + shiftedX;
+	    y = (int)(atom.lcspos[1] + 0.5f) + shiftedY;
 
             atomDrawn[index] = 1;
 
@@ -296,26 +303,29 @@ public class DEViseCrystal
 
             // Draw the bonds first.
             for (int j = 0; j < atom.bondNumber; j++) {
-                index1 = atom.bond[j];
+
+		index1 = atom.bond[j];
                 if (atomDrawn[index1] == 1) { // bond already drawed
-                    continue;
+		    continue;
                 }
 
                 DEViseAtomInCrystal atom1 =
 		  (DEViseAtomInCrystal)atomList.elementAt(index1);
-                x1 = (int)(atom1.lcspos[0] + 0.5f) + shiftedX;
+		x1 = (int)(atom1.lcspos[0] + 0.5f) + shiftedX;
                 y1 = (int)(atom1.lcspos[1] + 0.5f) + shiftedY;
 
                 gc.setColor(color);
                 gc.drawLine(x, y, x1, y1);
-            }
 
-            z = (halfViewDistance - atom.lcspos[2]) / viewDistance *
-	      totalScaleFactor;
+            }
 
 	    // Now draw the atom.  (If type == null, this atom is only
 	    // here to define the end of a bond, and should not be drawn.)
             if (_hasAtoms && atom.type != null) {
+
+		z = (halfViewDistance - atom.lcspos[2]) / viewDistance *
+		    totalScaleFactor;
+
                 if (!atom.isSelected) {
                     if (isMove) {
                         atom.type.paint(component, gc, x, y, z,

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,36 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2002/07/19 17:06:48  wenger
+// Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+//
+// Revision 1.5.2.7  2002/12/18 15:19:04  wenger
+// Disabled (at least temporarily) the applet no-reload feature in the
+// JavaScreen code (because it just causes problems on Mozilla).
+//
+// Revision 1.5.2.6  2002/12/17 23:15:01  wenger
+// Fixed bug 843 (still too many java processes after many reloads);
+// improved thread debug output.
+//
+// Revision 1.5.2.5  2002/11/25 21:29:35  wenger
+// We now kill off the "real" applet when JSLoader.destroy() is called,
+// unless the reloadapplet is false for the html page (to prevent excessive
+// numbers of applet instances from hanging around); added debug code to
+// print info about creating and destroying threads; minor user message
+// change; version is now 5.2.1.
+//
+// Revision 1.5.2.4  2002/10/03 17:59:18  wenger
+// JS applet instance re-use now reloads the session -- that's what
+// Wavelet-IDR needs for their web page to work right.
+//
+// Revision 1.5.2.3  2002/08/19 16:51:37  wenger
+// Applet instances are now re-used according to URL if the "reloadapplet"
+// flag is false.
+//
+// Revision 1.5.2.2  2002/08/16 21:56:56  wenger
+// Fixed bug 807 (reload twice in Netscape goofs up JS applets); fixed
+// various other problems with destroying hidden applets.
+//
 // Revision 1.5.2.1  2002/07/19 16:05:21  wenger
 // Changed command dispatcher so that an incoming command during a pending
 // heartbeat is postponed, rather than rejected (needed some special-case
@@ -75,6 +105,7 @@ package JavaScreen;
 
 import java.applet.*;
 import java.awt.*;
+import java.util.*;
 
 public class DEViseJSLoader extends Applet implements Runnable, AppletStub
 {
@@ -83,10 +114,9 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
     String appletToLoad;
     Label label;
     Thread appletThread;
-    Applet realApplet;
+    DEViseJSApplet realApplet;
 
-    jsb app = null;
-    boolean reload = true;
+    boolean _reload = true;
 
     public void init()
     {
@@ -102,14 +132,20 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
 	    appletToLoad = "JavaScreen.jsb";
 	}
 
+        // Force reloadApplet to always be true for now, since the "no-reload"
+	// feature doesn't work in Mozilla anyhow.  RKW 2002-12-18.
+	/*TEMP?
 	// Whether reload a new applet instance for jsb.
 	String reloadString = getParameter("reloadapplet");
         if (reloadString == null) {
-	    reload = true;
-	} else if (reloadString.equals("false")) 
-	    reload = false;
-	else
-	    reload = true;
+	    _reload = true;
+	} else if (reloadString.equals("false")) {
+	    _reload = false;
+	} else {
+	    _reload = true;
+	}
+        TEMP?*/
+	_reload = true;//TEMP?
 	
         label = new Label(
 	  " *** Please wait - Loading Applet for DEVise JavaScreen. ***  ");
@@ -128,58 +164,61 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
 
         if (appletToLoad == null) return;
 
+	String url = getDocumentBase().toString();
+
         try {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
             }
 
-	    if (reload) {
-		System.out.println("New instance 1");
+	    //
+	    // Figure out whether there's an existing instance of the applet
+	    // that we may be able to re-use.
+	    // Note: this assumes that the actual HTML code referenced
+	    // by the URL hasn't changed since we loaded the associated
+	    // applet (or at least hasn't changed in a way such as
+	    // referencing a different version of the applet).  RKW
+	    // 2002-08-19.
+	    //
+	    DEViseJSApplet tmpAppl = DEViseJSApplet.getInstance(url);
 
-		Class appletClass = Class.forName(appletToLoad);
-		realApplet = (Applet)appletClass.newInstance();
-		realApplet.setStub(this);
+	    if (_reload || tmpAppl == null) {
+	        Class appletClass = Class.forName(appletToLoad);
+		realApplet = (DEViseJSApplet)appletClass.newInstance();
 
-		remove(label);
-		setLayout(new GridLayout(1, 0));
-		add(realApplet);
-		realApplet.init();
-		realApplet.start();
-	    } else { // not reload, but still check 
-		     // whether there is an old instance
-		app = jsb.app; 
-		
-		if (app == null) {
-		    System.out.println("New instance 2");
+		System.out.println("New instance (" +
+		  realApplet.getInstanceNum() + ")");
+	    } else {
+		realApplet = tmpAppl;
 
-		    Class appletClass = Class.forName(appletToLoad);
-		    realApplet = (Applet)appletClass.newInstance();
-		    realApplet.setStub(this);
+		System.out.println("Old instance (" +
+		  realApplet.getInstanceNum() + ")");
 
-		    remove(label);
-		    setLayout(new GridLayout(1, 0));
-		    add(realApplet);
-		    realApplet.init();
-		    realApplet.start();
-		} else {
-		    System.out.println("Old instance");
-		    
-		    realApplet = (Applet)app;
-		    realApplet.setStub(this);
-		    
-		    remove(label);
-		    setLayout(new GridLayout(1, 0));
-		    add(realApplet);
-		    realApplet.init();
-		    realApplet.start();
-		}
+		// Force the old applet to reload the session (this
+		// behavior is needed for Wavelet-IDR).
+	        realApplet.restartSession();
 	    }
+
+	    realApplet.setStub(this);
+
+	    remove(label);
+	    setLayout(new GridLayout(1, 0));
+	    add(realApplet);
+	    // Note: we still have to do this even if we're re-using
+	    // an existing applet instance. RKW 2002-08-05.
+	    realApplet.init();
+	    realApplet.start();
+
 	} catch (Exception e) {
 	    System.err.println("Error loading applet: " + e.getMessage());
             label.setText("Error loading applet.");
         }
         validate();
+
+	if (DEViseGlobals.DEBUG_THREADS >= 1) {
+	    jsdevisec.printAllThreads("Thread " + appletThread + " ending");
+	}
     }
 
     public void start()
@@ -192,8 +231,13 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
             appletThread = new Thread(this);
             appletThread.setName("JS loader");
             appletThread.start();
+	    if (DEViseGlobals.DEBUG_THREADS >= 1) {
+		jsdevisec.printAllThreads("Starting thread " + appletThread);
+	    }
         } else {
-	    realApplet.start();
+	    if (!realApplet.wasDestroyed()) {
+	        realApplet.start();
+	    }
 	}
     }
 
@@ -212,7 +256,16 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
 	    System.out.println("DEViseJSLoader.destroy()");
 	}
 
-	realApplet.destroy();
+	// Note: if reload is true, we'll never re-use this "real" applet
+	// instance (unless the html page is changed to have reload be
+	// false when we come back to it).  Therefore, we'll go ahead
+	// and destroy the real applet so we don't have lots of "zombie"
+	// instances cluttering things up.  RKW 2002-11-25.
+	if (_reload) {
+	    realApplet.destroy();
+	}
+
+	super.destroy();
     }
 
     public void appletResize(int width, int height)

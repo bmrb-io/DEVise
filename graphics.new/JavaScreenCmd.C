@@ -21,8 +21,14 @@
   $Id$
 
   $Log$
+  Revision 1.133  2002/06/17 19:41:07  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
   Revision 1.132  2002/05/01 21:30:12  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.131.2.4  2002/12/03 23:58:04  wenger
+  Fixed bug 841 (session postscripts goof up JS collaboration).
 
   Revision 1.131.2.3  2002/05/27 18:15:59  wenger
   Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
@@ -1942,7 +1948,7 @@ JavaScreenCmd::SaveTmpSession()
 	}
 
 	if (!Session::Save(fullpath, false, false, false,
-	  saveSelView).IsComplete()) {
+	  saveSelView, false).IsComplete()) {
 		errmsg = "Error saving session";
 		_status = ERROR;
 	} else {

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999-2001
+  (c) Copyright 1999-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,20 @@
   $Id$
 
   $Log$
+  Revision 1.3.10.3  2002/09/05 19:25:21  wenger
+  Forgot to remove temporary comment.
+
+  Revision 1.3.10.2  2002/09/05 19:24:48  wenger
+  Oops -- I really *didn't* need to make the previous change -- backing
+  out.
+
+  Revision 1.3.10.1  2002/08/29 16:47:00  wenger
+  Fixed bug in DupElim -- missing compare function for hash table.
+
+  Revision 1.3  2001/04/03 19:57:39  wenger
+  Cleaned up code dealing with GData attributes in preparation for
+  "external process" implementation.
+
   Revision 1.2  1999/05/21 14:52:23  wenger
   Cleaned up GData-related code in preparation for including bounding box
   info.

@@ -1,0 +1,47 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2001-2002
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  Makefile with configuration info for JavaScreen.
+
+#  Edit this makefile according to your system configuration.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+#-----------------------------------------------------------
+# Directories for executables we need.
+
+# BIN2 is for JSS and devised.
+JAVA_BIN2 = /usr/bin
+PERL_BIN2 = /usr/bin
+XVFB_BIN2 = /usr/openwin/bin
+
+# BIN2P is for JSPoP.
+JAVA_BIN2P = /usr/bin
+PERL_BIN2P = /usr/bin
+
+# BIN3 is for compiling.
+JAVA_BIN3 = /usr/bin
+
+POP_DIR = /p/devise/js.installed
+SERV_DIR = /p/devise/js.installed
+JAR_DIR = /bmrb/htdocs/devise
+CGI_DIR = /bmrb/htdocs/cgi-bin
+IDSTR = regular
+
+# This is who gets email about any errors.
+ERROR_EMAIL = wenger@cs.wisc.edu
+
+INSTALL_HOST = tuna

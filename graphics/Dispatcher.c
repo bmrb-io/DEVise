@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.65  2002/06/17 19:40:59  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
+  Revision 1.64.14.2  2002/08/27 21:14:23  wenger
+  Fixed bug 817 (view not draw because of single-view pile); improved
+  debug code in View and Dispatcher classes.
+
   Revision 1.64.14.1  2002/05/28 17:15:20  wenger
   Dispatcher::ImmediateTerminate() now logs signal, requests core dump.
 
@@ -1054,7 +1061,7 @@ void Dispatcher::RequestCallback(DispatcherID info)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-    printf("Dispatcher::RequestCallback(0x%p, %s)\n", info,
+    printf("Dispatcher::RequestCallback(%p, %s)\n", info,
 	  info->callBack->DispatchedName());
 #endif
 
@@ -1125,6 +1132,10 @@ void Dispatcher::RequestTimedCallback(DispatcherID info, long time)
 void Dispatcher::CancelCallback(DispatcherID info)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if defined(DEBUG)
+    printf("Dispatcher::CancelCallback(%p, %s)\n", info,
+	  info->callBack->DispatchedName());
+#endif
 
   Timer::StopTimer();
 

@@ -19,6 +19,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.10.8.1  2002/11/22 21:55:10  wenger
+// More fixes for stupid scrollbar warnings.
+//
+// Revision 1.10  2001/05/11 20:36:11  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.9  2001/01/08 20:31:54  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -95,7 +101,8 @@ public class YLogGUI extends Frame
         if (height < 5 || height > 50)
             height = 10;
 
-        textarea = new TextArea(height, width);
+        textarea = new TextArea("\n", height, width,
+	  TextArea.SCROLLBARS_VERTICAL_ONLY);
 
         if (font == null)
             font = DEViseFonts.getFont(14, DEViseFonts.MONOSPACED, 0, 0);

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.18.10.1  2002/09/02 21:29:33  wenger
+  Did a bunch of Purifying -- the biggest change is storing the command
+  objects in a HashTable instead of an Htable -- the Htable does a bunch
+  of ugly memory copying.
+
+  Revision 1.18  2001/10/08 19:21:02  wenger
+  Fixed bug 702 (JavaScreen locks up on unrecognized command in DEVised).
+
   Revision 1.17  2001/10/03 19:09:56  wenger
   Various improvements to error logging; fixed problem with return value
   from JavaScreenCmd::Run().
@@ -142,7 +150,7 @@ DeviseServer::DeviseServer(char *name,int image_port,int swt_port,
 	image_port, swt_port, clnt_port);
 #endif
 
-  new CmdContainer(control, CmdContainer::CSGROUP, this);
+  _cmdCont = new CmdContainer(control, CmdContainer::CSGROUP, this);
   _currentClient = CLIENT_INVALID;
   _previousClient = CLIENT_INVALID;
   _control = control;
@@ -180,6 +188,8 @@ DeviseServer::~DeviseServer()
   delete [] _clientDispIDs;
 
   Dispatcher::Current()->Unregister(this);
+
+  delete _cmdCont;
 }
 
 /*------------------------------------------------------------------------------

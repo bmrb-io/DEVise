@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.12.32.1  2002/09/21 23:24:37  wenger
+  Fixed a few more special-case memory leaks.
+
+  Revision 1.12  1997/10/07 17:06:02  liping
+  RecId to Coord(double) changes of the BufMgr/QureyProc interface
+
   Revision 1.11  1997/08/20 22:11:03  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -311,6 +317,7 @@ void QPRange::Insert(Coord low, Coord high, QPRangeCallback *callback,
 		    recordsProcessed < (int) (high - low + 1);
 		if (recordsProcessed != (int) (high - low + 1)) {
 		    Insert(low, low + recordsProcessed - 1, NULL);
+		    delete rec;
 		    return;
 		}
 	    }

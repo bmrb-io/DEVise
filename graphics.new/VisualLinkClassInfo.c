@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.13.10.1  2002/09/05 19:14:04  wenger
+  Implemented GData attribute value links (but not GUI for creating
+  them).
+
+  Revision 1.13  2001/04/27 17:09:43  wenger
+  Made various cleanups to external process dynamic data generation and
+  added most GUI (still need special GUI for creating the data source);
+  cleanups included finding and fixing bug 668.
+
   Revision 1.12  2001/04/12 20:15:14  wenger
   First phase of external process dynamic data generation is in place
   for RectX symbols (needs GUI and some cleanup); added the ability to
@@ -87,6 +96,7 @@
 #include "RecordLink.h"
 #include "TAttrLink.h"
 #include "ExtDataLink.h"
+#include "GAttrLink.h"
 #include "ViewGraph.h"
 #include "Util.h"
 #include "Exit.h"
@@ -191,7 +201,11 @@ ClassInfo *VisualLinkClassInfo::CreateWithParams(int argc,
   printf("VisualLinkClassInfo(%p)::CreateWithParams(%s)\n", this, argv[0]);
 #endif
 
-  DOASSERT(argc == 2 || argc == 4, "Invalid arguments");
+  if (argc != 2 && argc != 4) {
+    reportErrNosys("Wrong number of arguments");
+    return NULL;
+  }
+
   char *name = CopyString(argv[0]);
   int flag = atoi(argv[1]);
 
@@ -206,6 +220,11 @@ ClassInfo *VisualLinkClassInfo::CreateWithParams(int argc,
   if (DeviseLink::IsPileLinkName(name)) flag = 0;
 
   if (flag & VISUAL_RECORD) {
+    if (argc != 2) {
+      reportErrNosys("Wrong number of arguments");
+      return NULL;
+    }
+
     if (flag & ~VISUAL_RECORD) {
       reportErrNosys("Warning: record link also has other link attributes "
 	  "-- they will be ignored");
@@ -219,7 +238,11 @@ ClassInfo *VisualLinkClassInfo::CreateWithParams(int argc,
     reportErrNosys("TData attribute links are no longer supported");
     return NULL;
 #else
-    DOASSERT(argc == 4, "Invalid arguments");
+    if (argc != 4) {
+      reportErrNosys("Wrong number of arguments");
+      return NULL;
+    }
+
     if (flag & ~VISUAL_TATTR) {
       reportErrNosys("Warning: TData attribute link also has other link "
 	  "attributes -- they will be ignored");
@@ -230,12 +253,36 @@ ClassInfo *VisualLinkClassInfo::CreateWithParams(int argc,
   }
 
   if (flag & VISUAL_EXTDATA) {
+    if (argc != 2) {
+      reportErrNosys("Wrong number of arguments");
+      return NULL;
+    }
+
     if (flag & ~VISUAL_EXTDATA) {
       reportErrNosys("Warning: external data link also has other link "
           "attributes -- they will be ignored");
     }
     ExtDataLink *link = new ExtDataLink(name);
     return new VisualLinkClassInfo(name, flag, link);
+  }
+
+  if (flag & VISUAL_GATTR) {
+    if (argc != 4) {
+      reportErrNosys("Wrong number of arguments");
+      return NULL;
+    }
+
+    if (flag & ~VISUAL_GATTR) {
+      reportErrNosys("Warning: GData attribute link also has other link "
+	  "attributes -- they will be ignored");
+    }
+    GAttrLink *link = new GAttrLink(name, argv[2], argv[3]);
+    return new VisualLinkClassInfo(name, flag, link);
+  }
+
+  if (argc != 2) {
+    reportErrNosys("Wrong number of arguments");
+    return NULL;
   }
 
   VisualLink *link = new VisualLink(name, flag);
@@ -276,6 +323,12 @@ void VisualLinkClassInfo::CreateParams(int &argc, const char **&argv)
     sprintf(buf2, "%s", ((TAttrLink *)_link)->GetMasterAttrName());
     args[2] = buf2;
     sprintf(buf3, "%s", ((TAttrLink *)_link)->GetSlaveAttrName());
+    args[3] = buf3;
+  } else if (_flag & VISUAL_GATTR) {
+    argc = 4;
+    sprintf(buf2, "%s", ((GAttrLink *)_link)->GetLeaderAttrName());
+    args[2] = buf2;
+    sprintf(buf3, "%s", ((GAttrLink *)_link)->GetFollowerAttrName());
     args[3] = buf3;
   }
 }
@@ -318,9 +371,17 @@ VisualLinkClassInfo::Dump(FILE *fp)
       if (!leaderAttr) leaderAttr= "";
       const char *followerAttr = setLink->GetSlaveAttrName();
       if (!followerAttr) followerAttr = "";
-      fprintf(fp, "set (%s/%s)", leaderAttr, followerAttr);
+      fprintf(fp, "TAttr (%s/%s)", leaderAttr, followerAttr);
     }
     if (flag & VISUAL_EXTDATA) fprintf(fp, "external data ");
+    if (flag & VISUAL_GATTR) {
+      GAttrLink *gAttrLink = (GAttrLink *)_link;
+      const char *leaderAttr = gAttrLink->GetLeaderAttrName();
+      if (!leaderAttr) leaderAttr= "";
+      const char *followerAttr = gAttrLink->GetFollowerAttrName();
+      if (!followerAttr) followerAttr = "";
+      fprintf(fp, "GAttr (%s/%s)", leaderAttr, followerAttr);
+    }
     fprintf(fp, "\n");
 
     ViewGraph *view = _link->GetMasterView();

@@ -15,6 +15,16 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2.22.2  2003/01/10 19:49:56  wenger
+#  Argh.  Changed all of the Solaris stuff back so that DEVise compiles
+#  on Solaris 2.7 (cardinal).
+#
+#  Revision 1.2.22.1  2003/01/09 16:52:29  wenger
+#  Updated linux and solaris dependencies; solsparc now uses Tcl/Tk 8.0.
+#
+#  Revision 1.2  1998/06/18 21:41:40  wenger
+#  Client/server library related fixes and updates.
+#
 #  Revision 1.1  1996/10/18 15:20:42  jussi
 #  Initial revision.
 #
@@ -22,7 +32,8 @@
 ############################################################
 
 ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl7.4/include
-ARCH_LDFLAGS = -L/s/X11/lib -L/s/tcl7.4/lib -R /s/X11/lib
+ARCH_LDFLAGS = -L/s/X11/lib -L/s/tcl/lib -R /s/X11/lib
+#TEMPTEMP? ARCH_LDFLAGS = -L/s/X11/lib -L/s/tcl7.4/lib -R /s/X11/lib
 ARCH_SYSLIBS = -ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm
 ARCH_LDPOST = -lsocket -lnsl
 

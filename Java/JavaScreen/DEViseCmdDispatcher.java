@@ -23,11 +23,44 @@
 // $Id$
 
 // $Log$
+// Revision 1.123  2002/07/19 17:06:47  wenger
+// Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+//
 // Revision 1.122  2002/06/17 19:40:14  wenger
 // Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 //
 // Revision 1.121  2002/05/01 21:28:58  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.120.2.18  2002/12/17 23:15:01  wenger
+// Fixed bug 843 (still too many java processes after many reloads);
+// improved thread debug output.
+//
+// Revision 1.120.2.17  2002/12/05 20:38:19  wenger
+// Removed a bunch of unused (mostly already-commented-out) code to
+// make things easier to deal with.
+//
+// Revision 1.120.2.16  2002/11/25 21:29:32  wenger
+// We now kill off the "real" applet when JSLoader.destroy() is called,
+// unless the reloadapplet is false for the html page (to prevent excessive
+// numbers of applet instances from hanging around); added debug code to
+// print info about creating and destroying threads; minor user message
+// change; version is now 5.2.1.
+//
+// Revision 1.120.2.15  2002/11/05 20:02:27  wenger
+// Fixed bug 831 (JSPoP can't respond if stuck sending data); incremented
+// DEVise and JavaScreen versions.
+//
+// Revision 1.120.2.14  2002/09/27 22:10:57  wenger
+// Fixed bug 796 (JS sometimes thinks it's a collaboration leader when it
+// really isn't).
+//
+// Revision 1.120.2.13  2002/08/01 17:38:18  wenger
+// Massive reorganization of axis labeling and mouse location display
+// code: both now use common number formatting code, which uses DecimalFormat
+// to do the actual work; axis tick locations are calculated differently,
+// so we don't try to draw out-of-window ticks; tick labels are constrained
+// to fit within views; etc., etc.
 //
 // Revision 1.120.2.12  2002/07/19 16:05:20  wenger
 // Changed command dispatcher so that an incoming command during a pending
@@ -856,6 +889,9 @@ public class DEViseCmdDispatcher implements Runnable
         dispatcherThread = new Thread(this);
         dispatcherThread.setName("Command thread for " + cmd);
         dispatcherThread.start();
+	if (DEViseGlobals.DEBUG_THREADS >= 1) {
+	    jsdevisec.printAllThreads("Starting thread " + dispatcherThread);
+	}
 
         if (_debug) {
             System.out.println("Done with DEViseCmdDispatcher.start()");
@@ -880,12 +916,16 @@ public class DEViseCmdDispatcher implements Runnable
 
         if (isDisconnect) {
             if (getStatus() == STATUS_RUNNING_NON_HB) {
-                String result = jsc.confirmMsg("Abort request already send to the server!\nAre you so impatient that you want to close the connection right away?");
+                String result = jsc.confirmMsg("Abort request already send to the server!\nAre you sure that you want to close the connection right away?");
 
                 if (result.equals(YMsgBox.YIDNO)) {
                     return;
                 } else {
                     if (dispatcherThread != null) {
+			if (DEViseGlobals.DEBUG_THREADS >= 1) {
+	                    jsdevisec.printAllThreads("Stopping thread " +
+			      dispatcherThread);
+			}
                         dispatcherThread.stop();
                         dispatcherThread = null;
                     }
@@ -968,6 +1008,10 @@ public class DEViseCmdDispatcher implements Runnable
 	// Kill the dispatcher thread and disconnect.
 	//
 	if (getStatus() != STATUS_IDLE && dispatcherThread != null) {
+	    if (DEViseGlobals.DEBUG_THREADS >= 1) {
+	        jsdevisec.printAllThreads("Stopping thread " +
+		  dispatcherThread);
+	    }
 	    dispatcherThread.stop();
 	    dispatcherThread = null;
 	}
@@ -1011,34 +1055,6 @@ public class DEViseCmdDispatcher implements Runnable
     // for disconnected client
     private synchronized boolean reconnect()
     {
-	/*
-	try {
-	    if (jsc.jsValues.connection.cgi) {
-		String response = null;
-		_commCgi = null;
-		_commCgi = new DEViseCommCgi(jsc.jsValues);
-		jsc.pn("Sending Check_PoP command...");
-		_commCgi.sendCmd(DEViseCommands.CHECK_POP);
-
-		Thread.sleep(3000);
-
-		response = _commCgi.receiveCmd(true);
-		jsc.pn("Received response: " + response);
-		if (response.equals("Connection disabled")) {
-		    return false;
-		} else {
-		    return true;
-		}
-	    }   
-	} catch (YException e) {
-	    return false;
-	} catch (InterruptedIOException e) {
-	    return false;
-	} catch (InterruptedException e) {
-	    return false;
-	}
-	*/
-
         try {
             commSocket = new DEViseCommSocket(jsc.jsValues.connection.hostname,
 	      jsc.jsValues.connection.cmdport, SOCK_REC_TIMEOUT,
@@ -1094,6 +1110,7 @@ public class DEViseCmdDispatcher implements Runnable
 
 		    if (_commands[i].startsWith(DEViseCommands.CLOSE_SESSION)) {
 			jsc.jscreen.updateScreen(false);
+			DEViseViewInfo.clearFormatters();
 			try {
 			    processCmd(_commands[i]);
 			} catch (YException e1) {
@@ -1172,6 +1189,11 @@ public class DEViseCmdDispatcher implements Runnable
         }
 	jsc.jsValues.debug.log("  Done sending " + _commands[0] +
 	  " and getting replies");
+
+	if (DEViseGlobals.DEBUG_THREADS >= 1) {
+	    jsdevisec.printAllThreads("Thread " + dispatcherThread +
+	      " ending");
+	}
     }
 
     //---------------------------------------------------------------------
@@ -1281,7 +1303,11 @@ public class DEViseCmdDispatcher implements Runnable
 		jsc.restorePreCollab();
 
 	    } else {
-		if (!command.startsWith(DEViseCommands.GET_SESSION_LIST)) {
+		if (command.startsWith(DEViseCommands.SET_COLLAB_PASS)) {
+		    jsc.collabModeUnlead(false);
+		    jsc.showMsg(response);
+		} else if (!command.startsWith(
+		  DEViseCommands.GET_SESSION_LIST)) {
 		    jsc.showMsg(response);
 		} else {
 		    jsc.showSession(new String[] {response}, false);
@@ -1769,7 +1795,7 @@ public class DEViseCmdDispatcher implements Runnable
 	if (jsc.jsValues.connection.cgi) {
 	    gdata = _commCgi.receiveData(gdataSize);
         } else {
-	    gdata= sockReceiveData(gdataSize);
+	    gdata = sockReceiveData(gdataSize);
         }
 
         String gdataStr = new String(gdata);

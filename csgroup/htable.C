@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.2.26.1  2002/09/02 21:29:18  wenger
+  Did a bunch of Purifying -- the biggest change is storing the command
+  objects in a HashTable instead of an Htable -- the Htable does a bunch
+  of ugly memory copying.
+
+  Revision 1.2  1998/02/12 17:14:53  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.3  1998/02/02 08:23:59  liping
   Added CVS header
 
@@ -66,6 +74,7 @@ Htable::Htable(int t_size, Hashfn t_f) {
 Htable::~Htable() {
 
 	delete [] Table;
+	Table = NULL;
 	size = 0;
 }
 

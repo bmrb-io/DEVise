@@ -15,6 +15,16 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16.10.2  2003/01/10 19:50:02  wenger
+#  Argh.  Changed all of the Solaris stuff back so that DEVise compiles
+#  on Solaris 2.7 (cardinal).
+#
+#  Revision 1.16.10.1  2003/01/09 16:52:34  wenger
+#  Updated linux and solaris dependencies; solsparc now uses Tcl/Tk 8.0.
+#
+#  Revision 1.16  2001/10/17 17:37:13  wenger
+#  Linux devised now statically linked to make distributions work.
+#
 #  Revision 1.15  2001/08/03 18:13:41  wenger
 #  Removed all OpenGL-related code.
 #

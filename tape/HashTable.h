@@ -19,6 +19,15 @@
   $Id$
 
   $Log$
+  Revision 1.14  2002/06/17 19:42:06  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
+  Revision 1.13.22.3  2002/09/21 23:24:43  wenger
+  Fixed a few more special-case memory leaks.
+
+  Revision 1.13.22.2  2002/08/29 16:47:10  wenger
+  Fixed bug in DupElim -- missing compare function for hash table.
+
   Revision 1.13.22.1  2002/05/27 18:16:10  wenger
   Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
 
@@ -63,8 +72,6 @@
   Added CVS header.
 */
 
-#define MODIFIED
-
 #ifndef HASH_H
 #define HASH_H
 
@@ -94,7 +101,7 @@ class HashTable {
   HashTable(int tableSize,
 	    int (*hashfcn)(Index &index,
 			   int numBuckets),
-            int (*compare)(Index &index1,
+            int (*compfcn)(Index &index1,
                            Index &index2) = 0);
   ~HashTable();
 
@@ -104,12 +111,10 @@ class HashTable {
 	      void *&next);
   int remove(Index &index);  
   int clear();
-  void InitRetrieveIndex();
-  int RetrieveIndex(void *&pointer, Index *&index, Value &i);
+  void InitRetrieveEntries(int &buckIdx, void *&next);
+  int RetrieveEntries(int &buckIdx, void *&next, Index &index, Value &value);
 
-#ifdef MODIFIED
   int num() { return _num; }
-#endif
 
 #ifdef DEBUGHASH
   void dump();                               // dump contents of hash table
@@ -118,16 +123,13 @@ class HashTable {
  private:
 
   int tableSize;                             // size of hash table
-#ifdef MODIFIED
   int _num;                                  // number of entries in table
-#endif
 
   HashBucket<Index, Value> **ht;             // actual hash table
   int (*hashfcn)(Index &index,
 		 int numBuckets);            // hash function
   int (*compfcn)(Index &index1,
                  Index &index2);             // comparison function
-  int cur_buck_index;
 };
 
 // Construct hash table. Allocate memory for hash table and
@@ -149,36 +151,48 @@ HashTable<Index,Value>::HashTable(int tableSz,
     cerr << "Insufficient memory for hash table" << endl;
     exit(1);
   }
-  for(int i = 0; i < tableSize; i++)
+
+  for(int i = 0; i < tableSize; i++) {
     ht[i] = 0;
-  cur_buck_index = 0;
-#ifdef MODIFIED
+  }
+
   _num = 0;
-#endif
 }
 
 // Should be called everytime before retrieving index
 template <class Index, class Value>
-void HashTable<Index,Value>::InitRetrieveIndex() {
-	cur_buck_index = 0;
+void HashTable<Index,Value>::InitRetrieveEntries(int &buckIdx, void *&next) {
+    buckIdx = -1;
+    next = NULL;
 }
 
+// Returns 0 if index and value are valid, -1 otherwise.
 template <class Index, class Value>
-int HashTable<Index,Value>::RetrieveIndex(void *&current, Index *&index, Value &i)
+int HashTable<Index,Value>::RetrieveEntries(int &buckIdx, void *&next,
+  Index &index, Value &value)
 {
-	HashBucket<Index, Value> *bucket;
-	if(current == NULL) {
-		while (cur_buck_index < tableSize && !ht[cur_buck_index++]);
-		if(cur_buck_index >= tableSize) return -1;
-		bucket = ht[cur_buck_index-1];
-	} 
-	else bucket = (HashBucket<Index, Value> *)current;
+    HashBucket<Index, Value> *bucket = (HashBucket<Index, Value> *)next;
 
-	index = &(bucket->index);
-	i = bucket->value;
-	current = bucket->next;
-	
+    if (bucket == NULL) {
+        // Find the next valid index value in the hash table and get the
+	// first bucket for that index.
+        while (++buckIdx < tableSize) {
+	    if (ht[buckIdx]) {
+	        bucket = ht[buckIdx];
+	        break;
+	    }
+        }
+    }
+
+    if (bucket == NULL) {
+	// No more valid entries.
+        return -1;
+    } else {
+	index = bucket->index;
+	value = bucket->value;
+        next = bucket->next;
 	return 0;
+    }
 }
 
 // Insert entry into hash table mapping Index to Value.
@@ -200,9 +214,7 @@ int HashTable<Index,Value>::insert(Index &index, Value &value)
   bucket->next = ht[idx]; 
   ht[idx] = bucket; 
 
-#ifdef MODIFIED
   ++_num;
-#endif
 
 #ifdef DEBUGHASH
   dump();
@@ -292,9 +304,9 @@ int HashTable<Index,Value>::remove(Index &index)
       else
 	prevBuc->next = bucket->next;
       delete bucket;
-#ifdef MODIFIED
+
       --_num;
-#endif
+
 #ifdef DEBUGHASH
       dump();
 #endif
@@ -321,9 +333,7 @@ int HashTable<Index,Value>::clear()
     }
   }
 
-#ifdef MODIFIED
   _num = 0;
-#endif
 
   return 0;
 }

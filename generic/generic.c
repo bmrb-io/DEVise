@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   University of Wisconsin at Madison
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.66.10.1  2002/12/04 21:13:08  wenger
+  Fixed a problem with the composite parsers that was causing the
+  DEVised to run away when we tried to kill it.
+
+  Revision 1.66  2001/10/03 19:09:42  wenger
+  Various improvements to error logging; fixed problem with return value
+  from JavaScreenCmd::Run().
+
   Revision 1.65  2001/04/10 17:13:18  wenger
   Minor cleanups and additions of debug code to string table-related stuff.
 
@@ -405,6 +413,7 @@ public:
   }
 
   virtual ~YyMmDdComposite() {
+
     delete attrOffset;
   }
 
@@ -1733,7 +1742,7 @@ int main(int argc, char **argv)
 	}	
 	fin >> schemaStr >> parserName;
 
-	char* schemaChar = strdup(schemaStr.c_str());
+	char* schemaChar = CopyString(schemaStr.c_str());
 	
 	// Register the corresponding composite attribs with their parsers.
 	if (parserName == "YyMmDdComposite")

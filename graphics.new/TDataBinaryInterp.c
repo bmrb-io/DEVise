@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.14.14.2  2002/09/20 20:49:03  wenger
+  More Purifying -- there are now NO leaks when you open and close
+  a session!!
+
+  Revision 1.14.14.1  2002/08/15 18:25:56  wenger
+  Fixed bug 808 (binary data works only if values are "naturally"
+  aligned as they are defined by the schema).
+
+  Revision 1.14  2000/02/16 18:51:45  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.13  2000/01/11 22:28:34  wenger
   TData indices are now saved when they are built, rather than only when a
   session is saved; other improvements to indexing; indexing info added
@@ -89,15 +100,21 @@
 #include "Util.h"
 #include "DevError.h"
 
+//#define DEBUG 3
+#define PRINT_VALS 0
+
 #ifndef ATTRPROJ
 TDataBinaryInterpClassInfo::TDataBinaryInterpClassInfo(const char *className,
 						       AttrList *attrList,
 						       int recSize)
 {
   _className = className;
-  _attrList = attrList;
-  _recSize = recSize;
+  _name = NULL;
+  _type = NULL;
+  _param = NULL;
   _tdata = NULL;
+  _recSize = recSize;
+  _attrList = attrList;
 
   // compute size of physical record (excluding composite attributes)
 
@@ -125,12 +142,15 @@ TDataBinaryInterpClassInfo::TDataBinaryInterpClassInfo(const char *className,
   _type = type;
   _param = param;
   _tdata = tdata;
+  _attrList = NULL;
 }
 
 TDataBinaryInterpClassInfo::~TDataBinaryInterpClassInfo()
 {
-  if (_tdata)
+  if (_tdata) {
     delete _tdata;
+  }
+  FreeString((char *)_className);
 }
 
 const char *TDataBinaryInterpClassInfo::ClassName()
@@ -176,7 +196,8 @@ ClassInfo *TDataBinaryInterpClassInfo::CreateWithParams(int argc,
                                                    param, _recSize,
                                                    _physRecSize,
                                                    _attrList);
-  return new TDataBinaryInterpClassInfo(_className, name, type, param, tdata);
+  return new TDataBinaryInterpClassInfo(CopyString(_className), name, type,
+      param, tdata);
 }
 
 const char *TDataBinaryInterpClassInfo::InstanceName()
@@ -233,29 +254,56 @@ TDataBinaryInterp::TDataBinaryInterp(char *name, char *type,
 
 TDataBinaryInterp::~TDataBinaryInterp()
 {
+  delete _recInterp;
 }
 
+// Decode a binary record.  Line is input buffer, recordBuf is output.
+// IMPORTANT NOTE: all fields in the output buffer are guaranteed to
+// be aligned; this is NOT true for the input buffer.
 Boolean TDataBinaryInterp::Decode(void *recordBuf, int recPos, char *line)
 {
-  /* set buffer for interpreted record */
-  _recInterp->SetBuf(recordBuf);
-  _recInterp->SetRecPos(recPos);
+#if defined(DEBUG)
+  printf("TDataBinaryInterp::Decode(%p, %d, %p)\n", recordBuf, recPos, line);
+#endif
 
-  if (recordBuf != line)
-    memcpy(recordBuf, line, _physRecSize);
+#if defined(DEBUG)
+  memset(recordBuf, 0xff, _recSize);
+#endif
 
-  /* decode composite attributes */
-  if (hasComposite)
-    CompositeParser::Decode(_attrList.GetName(), _recInterp);
+#if (PRINT_VALS)
+   //
+   // Print the input buffer in hex.
+   //
+   printf("Input buffer: ");
+   for (int index = 0; index < _physRecSize; index++) {
+     printf("%.2hhx", *(line + index));
+     if ((index + 1) % 4 == 0) {
+       printf(" ");
+     }
+  }
+  printf("\n");
+#endif
 
-  for(int i = 0; i < _numAttrs; i++) {
+
+  //
+  // Now, for each physical (not composite) attribute, copy the relevant
+  // bytes from the input buffer to the output buffer, test any match
+  // values, and save high and low values.
+  //
+  char *src = line;
+
+  for(int i = 0; i < _numPhysAttrs; i++) {
     AttrInfo *info = _attrList.Get(i);
 
     char *string = NULL;
     int code = 0;
     int key = 0;
 
-    char *ptr = (char *)recordBuf + info->offset;
+    char *dest = (char *)recordBuf + info->offset;
+#if (DEBUG >= 3)
+    printf("Attr %s offset = %d\n", info->name, info->offset);
+#endif
+
     int intVal;
     float floatVal;
     double doubleVal;
@@ -263,9 +311,15 @@ Boolean TDataBinaryInterp::Decode(void *recordBuf, int recPos, char *line)
 
     switch(info->type) {
     case IntAttr:
-      intVal = *(int *)ptr;
-      if (info->hasMatchVal && intVal != info->matchVal.intVal)
+      memcpy(dest, src, sizeof(int));
+      src += sizeof(int);
+      intVal = *(int *)dest;
+#if (PRINT_VALS)
+      printf("Integer value: %d\n", intVal);
+#endif
+      if (info->hasMatchVal && intVal != info->matchVal.intVal) {
 	return false;
+      }
       if (!info->hasHiVal || intVal > info->hiVal.intVal) {
 	info->hiVal.intVal = intVal;
 	info->hasHiVal = true;
@@ -281,9 +335,15 @@ Boolean TDataBinaryInterp::Decode(void *recordBuf, int recPos, char *line)
       break;
 
     case FloatAttr:
-      floatVal = *(float *)ptr;
-      if (info->hasMatchVal && floatVal != info->matchVal.floatVal)
+      memcpy(dest, src, sizeof(float));
+      src += sizeof(float);
+      floatVal = *(float *)dest;
+#if (PRINT_VALS)
+      printf("Float value: %g\n", floatVal);
+#endif
+      if (info->hasMatchVal && floatVal != info->matchVal.floatVal) {
 	return false;
+      }
       if (!info->hasHiVal || floatVal > info->hiVal.floatVal) {
 	info->hiVal.floatVal = floatVal;
 	info->hasHiVal = true;
@@ -299,9 +359,15 @@ Boolean TDataBinaryInterp::Decode(void *recordBuf, int recPos, char *line)
       break;
 
     case DoubleAttr:
-      doubleVal = *(double *)ptr;
-      if (info->hasMatchVal && doubleVal != info->matchVal.doubleVal)
+      memcpy(dest, src, sizeof(double));
+      src += sizeof(double);
+      doubleVal = *(double *)dest;
+#if (PRINT_VALS)
+      printf("Double value: %g\n", doubleVal);
+#endif
+      if (info->hasMatchVal && doubleVal != info->matchVal.doubleVal) {
 	return false;
+      }
       if (!info->hasHiVal || doubleVal > info->hiVal.doubleVal) {
 	info->hiVal.doubleVal = doubleVal;
 	info->hasHiVal = true;
@@ -317,14 +383,37 @@ Boolean TDataBinaryInterp::Decode(void *recordBuf, int recPos, char *line)
       break;
 
     case StringAttr:
-      if (info->hasMatchVal && strcmp(ptr, info->matchVal.strVal))
+#if (PRINT_VALS)
+      printf("String value: <%s>\n", src);
+#endif
+      memcpy(dest, src, info->length);
+      src += info->length;
+
+      if (memchr(dest, '\0', info->length) == NULL) {
+        dest[info->length - 1] = '\0';
+
+        reportErrNosys("String is too long for available space"
+            " (truncated to fit)");
+        printf("  Attr: %s\n", info->name);
+	printf("  String: <%s>\n", dest);
+	printf("  Length: %d (includes terminating NULL)\n", info->length);
+      }
+
+      if (info->hasMatchVal && strcmp(dest, info->matchVal.strVal)) {
 	return false;
+      }
       break;
 
     case DateAttr:
-      dateVal = *(time_t *)ptr;
-      if (info->hasMatchVal && dateVal != info->matchVal.dateVal)
+      memcpy(dest, src, sizeof(time_t));
+      src += sizeof(time_t);
+      dateVal = *(time_t *)dest;
+#if (PRINT_VALS)
+      printf("Date value: %d\n", (int)dateVal);
+#endif
+      if (info->hasMatchVal && dateVal != info->matchVal.dateVal) {
 	return false;
+      }
       if (!info->hasHiVal || dateVal > info->hiVal.dateVal) {
 	info->hiVal.dateVal = dateVal;
 	info->hasHiVal = true;
@@ -343,6 +432,19 @@ Boolean TDataBinaryInterp::Decode(void *recordBuf, int recPos, char *line)
       DOASSERT(0, "Unknown attribute type");
     }
   }
-  
+
+  DOASSERT(src - line <= _physRecSize,
+    "Src pointer went past end of input record");
+
+
+  /* set buffer for interpreted record */
+  _recInterp->SetBuf(recordBuf);
+  _recInterp->SetRecPos(recPos);
+
+  /* decode composite attributes */
+  if (hasComposite) {
+    CompositeParser::Decode(_attrList.GetName(), _recInterp);
+  }
+
   return true;
 }

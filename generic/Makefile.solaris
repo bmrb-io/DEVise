@@ -15,6 +15,16 @@
 # $Id$
 
 # $Log$
+# Revision 1.66.4.2  2003/01/10 19:49:21  wenger
+# Argh.  Changed all of the Solaris stuff back so that DEVise compiles
+# on Solaris 2.7 (cardinal).
+#
+# Revision 1.66.4.1  2003/01/09 16:51:20  wenger
+# Updated linux and solaris dependencies; solsparc now uses Tcl/Tk 8.0.
+#
+# Revision 1.66  2001/12/28 18:34:13  wenger
+# Fixed bugs 727 and 730 (problems with line graphs in DEVise).
+#
 # Revision 1.65  2001/10/17 17:52:32  wenger
 # Updated Linux and Solaris dependencies.
 #
@@ -127,16 +137,16 @@ CompDate.o: CompDate.h
 DeviseBatchClient.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DeviseBatchClient.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 DeviseBatchClient.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
-DeviseBatchClient.o: /usr/include/stdlib.h DeviseBatchClient.h
-DeviseBatchClient.o: ../graphics/DeviseTypes.h /usr/include/values.h
-DeviseBatchClient.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-DeviseBatchClient.o: /usr/include/sys/machtypes.h
+DeviseBatchClient.o: /usr/include/stdlib.h /usr/include/string.h
+DeviseBatchClient.o: DeviseBatchClient.h ../graphics/DeviseTypes.h
+DeviseBatchClient.o: /usr/include/values.h ../graphics/DevStatus.h
+DeviseBatchClient.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
 DeviseBatchClient.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 DeviseBatchClient.o: /usr/include/sys/time.h /usr/include/time.h
 DeviseClient.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DeviseClient.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 DeviseClient.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
-DeviseClient.o: /usr/include/stdlib.h DeviseClient.h
+DeviseClient.o: /usr/include/stdlib.h /usr/include/string.h DeviseClient.h
 DeviseClient.o: ../graphics/DeviseTypes.h /usr/include/values.h
 DeviseClient.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 DeviseClient.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.101.4.1  2002/09/02 21:29:33  wenger
+  Did a bunch of Purifying -- the biggest change is storing the command
+  objects in a HashTable instead of an Htable -- the Htable does a bunch
+  of ugly memory copying.
+
+  Revision 1.101  2001/12/28 18:34:37  wenger
+  Fixed bugs 727 and 730 (problems with line graphs in DEVise).
+
   Revision 1.100  2001/05/18 21:14:59  wenger
   Fixed bug 671 (potential GData buffer overflow).
 
@@ -594,7 +602,7 @@ MappingInterp::~MappingInterp()
   delete GDataAttrList();
   SetGDataAttrList(NULL);
 
-  delete [] _tdataFlag;
+  delete _tdataFlag;
 
   // added by whh, support for native expression analysis
   delete _pNativeExpr;

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.3.46.1  2002/09/18 21:38:54  wenger
+  Fixed more memory leaks -- in GroupDir/Group/ItemList code.
+
+  Revision 1.3  1995/12/22 01:20:40  ravim
+  Made insert an append rather than prepend because the order of attrs and
+  groups needs to be maintained.
+
   Revision 1.2  1995/09/27 23:59:50  ravim
   Fixed some bugs. Added some new functions for handling groups.
 
@@ -40,7 +47,8 @@ ItemList::~ItemList()
   while (ptr)
   {
     nptr = ptr->nxt;
-    delete(ptr);
+    delete ptr->itm;
+    delete ptr;
     ptr = nptr;
   }
   list = NULL;

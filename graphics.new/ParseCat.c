@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.54.10.1  2002/09/20 20:49:02  wenger
+  More Purifying -- there are now NO leaks when you open and close
+  a session!!
+
+  Revision 1.54  2001/08/28 21:40:59  wenger
+  Environment variables are now expanded in Tasvir file names, EmbeddedTk
+  script names and arguments, and physical schema paths within logical
+  schemas (to make distribution setup easier).
+
   Revision 1.53  2000/03/14 17:05:33  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -359,6 +368,9 @@ CatFiles(int &numFiles, char **&fileNames)
  */
 void ClearCats()
 {
+  for (int index = 0; index < _numCatFiles; index++) {
+    FreeString(_catFiles[index]);
+  }
   _numCatFiles = 0;
 }
 
@@ -396,8 +408,9 @@ static GenClassInfo *
 FindGenClass(char *source)
 {
   for(int i = 0; i < _numGenClass; i++) {
-    if (strcmp(_genClasses[i].source,source) == 0)
+    if (strcmp(_genClasses[i].source,source) == 0) {
       return _genClasses[i].genInfo;
+    }
   }
 
   fprintf(stderr,"Can't find TData generator for input source %s\n",source);
@@ -1012,8 +1025,9 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly,
 	  numSep = numWhitespace;
 	}
 	
-	if (!hasComment)
-	  commentString = "#";
+	if (!hasComment) {
+	  commentString = CopyString("#");
+    }
 	  
 	if (hasSource)
 	{
@@ -1043,13 +1057,15 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly,
 		  printf("default source, recSize %d\n",recSize);
 		  ControlPanel::RegisterClass(
 		     new TDataAsciiInterpClassInfo(fileType,
-			attrs, recSize,sep, numSep, hasSeparator,
+			attrs, recSize, sep, numSep, hasSeparator,
 			commentString), true);
 		} else {
 		  printf("default binary source, recSize %d\n",recSize);
 		  ControlPanel::RegisterClass(
 		     new TDataBinaryInterpClassInfo(fileType, attrs, recSize),
 					      true);
+		  FreeString(commentString);
+		  delete [] sep;
 		}
 	}
 

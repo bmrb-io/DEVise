@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.30.14.1  2002/09/04 13:58:00  wenger
+  More Purifying -- fixed some leaks and mismatched frees.
+
+  Revision 1.30  2000/08/10 16:10:49  wenger
+  Phase 1 of getting rid of shared-memory-related code.
+
   Revision 1.29  1998/08/17 18:51:48  wenger
   Updated solaris dependencies for egcs; fixed most compile warnings;
   bumped version to 1.5.4.
@@ -170,6 +176,10 @@ static inline void LimitRecords(Coord &rangeLow, Coord &rangeHigh)
 
 BufMgrFull::BufMgrFull(int bufSize)
 {
+#if DEBUGLVL >= 1
+    printf("BufMgrFull::BufMgrFull(%d)\n", bufSize);
+#endif
+
     _tReturned = _tHits = _gReturned = _gHits = 0;
     _totalRanges = _totalBuf = _totalData = 0;
     _numGetRecs = _totalGetRecBytes = _totalGetRecBufSize = 0;
@@ -225,6 +235,12 @@ BufMgrFull::BufMgrFull(int bufSize)
 
 BufMgrFull::~BufMgrFull()
 {
+#if DEBUGLVL >= 1
+    printf("BufMgrFull::~BufMgrFull()\n");
+#endif
+
+    Clear();
+
     while (_reqhead.next) {
         BufMgrRequest *req = _reqhead.next->next;
         delete _reqhead.next;
@@ -682,10 +698,11 @@ Boolean BufMgrFull::ScanDiskData(BMHandle req, Coord &startVal, Coord &endVal,
 
     /* Place new range into policy arrays */
     int arrayNum, pos;
-    if (_policyFlag & BufferPolicy::ReportPlacement)
+    if (_policyFlag & BufferPolicy::ReportPlacement) {
         _policy->Placement(range, _memoryRanges, arrayNum, pos);
-    else
+    } else {
         _defaultPolicy->Placement(range, _memoryRanges, arrayNum, pos);
+    }
     
     _memoryRanges->Insert(arrayNum, pos, range);
     range->listNum = arrayNum;
@@ -1256,6 +1273,10 @@ void BufMgrFull::PrintStat()
 
 void BufMgrFull::Clear()
 {
+#if DEBUGLVL >= 1
+    printf("BufMgrFull::Clear()\n");
+#endif
+
     /* Free all ranges that have been allocated. */
     int numArrays = _memoryRanges->NumArrays();
     for(int i = 0; i < numArrays; i++) {
@@ -1268,6 +1289,7 @@ void BufMgrFull::Clear()
             int status = _memMgr->Deallocate(MemMgr::Cache,
                                              (char *)range->GetBuffer(),
                                              range->BufSize() / _pageSize);
+	    delete range;
             DOASSERT(status >= 0, "Could not deallocate memory");
         }
     }
@@ -1313,6 +1335,7 @@ void BufMgrFull::ClearData(TData *data,
             int status = _memMgr->Deallocate(MemMgr::Cache,
                                              (char *)range->GetBuffer(),
                                              range->BufSize() / _pageSize);
+	    // delete range; // causes error!!
             DOASSERT(status >= 0, "Could not deallocate memory");
             size--;
         }
@@ -1358,10 +1381,11 @@ RangeInfo *BufMgrFull::AllocRange(int size)
 
     int arrayNum, pos;
     Boolean found = false;
-    if (_policyFlag & BufferPolicy::ReportVictim)
+    if (_policyFlag & BufferPolicy::ReportVictim) {
         found = _policy->PickVictim(_memoryRanges, arrayNum, pos);
-    else
+    } else {
         found = _defaultPolicy->PickVictim(_memoryRanges, arrayNum, pos);
+    }
     DOASSERT(found, "Cannot find buffer victim");
         
     RangeInfo *range = _memoryRanges->GetRange(arrayNum, pos);
@@ -1400,6 +1424,7 @@ RangeInfo *BufMgrFull::AllocRange(int size)
 				->Delete(range);
         (void)_memoryRanges->Delete(arrayNum, pos);
         ReportDeleted(range->GetTData(), range->interval.Low, range->interval.High);
+	// delete range; // causes error!!
     }
     
 #if DEBUGLVL >= 3

@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1999
+#  (c) Copyright 1999-2002
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -20,6 +20,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8.10.1  2002/11/19 19:31:17  wenger
+#  Condor visualizations now deal decently with large numbers of users;
+#  the "Total" value is always first, if it exists.
+#
+#  Revision 1.8  2001/10/04 19:34:23  wenger
+#  Added standard headers to automatically-generated Condor session files.
+#
 #  Revision 1.7  2001/09/18 21:54:58  wenger
 #  Added 'strict'; other improvements.
 #
@@ -60,10 +67,16 @@ my $data_dir = shift(@ARGV);
 open(DATA_IN, "$data_file") or die "Couldn't open data file $data_file: $!\n";
 
 
-# Find all of the users listed in the data file.
+# Find all of the users listed in the data file.  Make sure that "Total" is
+# always first if it exists.
 my %userlist = ();
 GetUsers();
-my @userarray = reverse sort keys %userlist;
+my @userarray;
+if ($userlist{"Total"} eq 1) {
+  $userarray[0] = "Total";
+  delete $userlist{"Total"};
+}
+push @userarray, (sort keys %userlist);
 
 
 # Dump each user into the top-level data file.

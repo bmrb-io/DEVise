@@ -16,9 +16,26 @@
 // playback request.
 
 // ------------------------------------------------------------------------
+//
+// $Id$
+//
 // $Log$
+// Revision 1.15  2002/07/19 17:06:48  wenger
+// Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+//
 // Revision 1.14  2002/05/01 21:28:59  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.13.2.5  2002/12/17 23:15:01  wenger
+// Fixed bug 843 (still too many java processes after many reloads);
+// improved thread debug output.
+//
+// Revision 1.13.2.4  2002/11/25 21:29:35  wenger
+// We now kill off the "real" applet when JSLoader.destroy() is called,
+// unless the reloadapplet is false for the html page (to prevent excessive
+// numbers of applet instances from hanging around); added debug code to
+// print info about creating and destroying threads; minor user message
+// change; version is now 5.2.1.
 //
 // Revision 1.13.2.3  2002/07/19 16:05:21  wenger
 // Changed command dispatcher so that an incoming command during a pending
@@ -104,6 +121,9 @@ public class DEVisePlayback implements Runnable
 	_thread = new Thread(this);
 	_thread.setName("Playback");
 	_thread.start();
+	if (DEViseGlobals.DEBUG_THREADS >= 1) {
+	    jsdevisec.printAllThreads("Starting thread " + _thread);
+	}
     }
 
     public void run()
@@ -297,10 +317,17 @@ public class DEVisePlayback implements Runnable
 
 	    stop();
 	}
+
+	if (DEViseGlobals.DEBUG_THREADS >= 1) {
+	    jsdevisec.printAllThreads("Thread " + _thread + " ending");
+	}
     }
 
     public void stop()
     {
+	if (DEViseGlobals.DEBUG_THREADS >= 1) {
+	    jsdevisec.printAllThreads("Stopping thread " + _thread);
+	}
         _thread.stop();
     }
 

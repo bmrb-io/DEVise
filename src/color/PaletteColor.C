@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1997-1998
+  (c) Copyright 1997-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,18 @@
   $Id$
 
   $Log$
+  Revision 1.3.26.1  2002/08/22 20:49:23  wenger
+  Fixed problem with extra spaces getting into color names (fixes
+  bugs 677 and 692).
+
+  Revision 1.3  1998/02/19 23:26:07  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
  */
 
 //******************************************************************************
@@ -101,17 +113,18 @@ string	PaletteColor::ToString(void) const
 // This needs to be made robust (changed for new C++ standard library strings).
 bool	PaletteColor::FromString(const string& s)
 {
-	unsigned int	pos = s.find(' ');
+	unsigned int	firstBlank = s.find(' ');
+	unsigned int	lastBlank = s.rfind(' ');
 	bool			result = true;
 
-	if (pos == string::npos)
+	if (firstBlank == string::npos)
 	{
 		result = color.FromString(s);
 	}
 	else
 	{
-		result = color.FromString(s.substr(0, pos));
-		name = s.substr(pos, s.length());
+		result = color.FromString(s.substr(0, firstBlank));
+		name = s.substr(lastBlank + 1, s.length());
 	}
 	
 	return result;

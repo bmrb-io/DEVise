@@ -20,10 +20,9 @@
 
 include Makefile.config
 
-.PHONY: setup
-setup: bin2 bin2p dyn_lib install_info logs
+setup: do_setup
+do_setup: bin2 bin2p dyn_lib install_info logs
 
-.PHONY: clean
 clean:
 	-rm -rf bin2 bin2p
 	-rm -rf dyn_lib
@@ -48,8 +47,8 @@ bin2p:
 dyn_lib:
 	scripts/make_dyn_lib
 
-.PHONY: install_info
-install_info:
+install_info: do_install_info
+do_install_info:
 	-rm install_info
 	touch install_info
 	echo "set popdir = \"$(POP_DIR)\"" >> install_info
@@ -59,9 +58,12 @@ install_info:
 	echo "set idstr = \"$(IDSTR)\"" >> install_info
 	echo "set install_host = \"$(INSTALL_HOST)\"" >> install_info
 
+error_email:
+	-rm scripts/error_email
+	echo $(ERROR_EMAIL) > scripts/error_email
+
 logs:
 	mkdir logs
 
-.PHONY: install
-install: install_info
+install: install_info error_email
 	./install_js

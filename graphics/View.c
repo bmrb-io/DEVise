@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,8 +16,40 @@
   $Id$
 
   $Log$
+  Revision 1.243  2002/06/17 19:41:00  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
   Revision 1.242  2002/05/01 21:30:03  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.241.4.10  2003/01/09 22:21:52  wenger
+  Added "link multiplication factor" feature; changed version to 1.7.14.
+
+  Revision 1.241.4.9  2003/01/06 22:31:27  wenger
+  Fixed off-by-one-pixel area in coloring X axis area; added notes on
+  differing width and height definitions in View and XWindowRep.
+
+  Revision 1.241.4.8  2003/01/06 20:41:16  wenger
+  Added note about visual filter/WindowRep transform setup.
+
+  Revision 1.241.4.7  2003/01/04 21:38:26  wenger
+  Fixed bugs 852, 855, and 856 (all related to view geometry and transforms
+  and axis drawing).
+
+  Revision 1.241.4.6  2002/08/27 21:14:23  wenger
+  Fixed bug 817 (view not draw because of single-view pile); improved
+  debug code in View and Dispatcher classes.
+
+  Revision 1.241.4.5  2002/08/27 16:02:18  wenger
+  Added 3D view warning because of bug 815; fixed bug 680 ('histograms
+  not implemented' warning).
+
+  Revision 1.241.4.4  2002/08/23 19:19:25  wenger
+  Fixed bug 818 (problem with visual link/cursor grid interaction).
+
+  Revision 1.241.4.3  2002/08/23 17:45:06  wenger
+  Fixed bug 812 (problem with drawing piles when a piled view has
+  auto filter update turned on).
 
   Revision 1.241.4.2  2002/05/27 15:13:58  wenger
   Improved fix to bug 775 (view previous filter/JS client switch
@@ -1022,7 +1054,7 @@
   which are easier to see than the old cursor lines.
 
   Revision 1.15  1995/12/14 21:11:05  jussi
-  Replaced 0x%x with 0x%p.
+  Replaced 0x%x with %p.
 
   Revision 1.14  1995/12/14 17:18:24  jussi
   More small fixes to get rid of g++ -Wall warnings.
@@ -1122,6 +1154,11 @@ static const Boolean viewBorder = false;
 // the various parts separately.  About the only time you wouldn't want to
 // use this is on a machine that doesn't have backing store for the windows.
 #define FILL_WHOLE_BACKGROUND 0
+
+// Set COLOR_AREAS to 1 to color the label, axis, and data areas
+// differentially (for debugging).  (This works best on views with a white
+// background.)
+#define COLOR_AREAS 0
 
 // Whether to use the workaround for bug 123.
 #define USE_BUG123_WORKAROUND 0
@@ -1293,13 +1330,18 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 
 	DeviseHistory::GetDefaultHistory()->ClearAll();
 	_3dValid = false;
+
+	_queryCount = 0;
+
+	_xAxisLinkMultFact = 1.0;
+	_yAxisLinkMultFact = 1.0;
 }
 
 View::~View(void)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-	printf("View::~View(%s, this = 0x%p)\n", GetName(), this);
+	printf("View::~View(%s, this = %p)\n", GetName(), this);
 #endif
 
 	_inDestructor = true;
@@ -1492,18 +1534,19 @@ void View::SetVisualFilter(const VisualFilter &filter, Boolean registerEvent)
       printf("filter changed\n");
 #endif
 
-      if (filter.xLow > _filter.xHigh || filter.xHigh < _filter.xLow)
+      if (filter.xLow > _filter.xHigh || filter.xHigh < _filter.xLow) {
 	_jump++;
-      else if (filter.xLow < _filter.xLow && filter.xHigh > _filter.xHigh)
+      } else if (filter.xLow < _filter.xLow && filter.xHigh > _filter.xHigh) {
 	_zoomOut++;
-      else if (filter.xLow > _filter.xLow && filter.xHigh < _filter.xHigh)
+      } else if (filter.xLow > _filter.xLow && filter.xHigh < _filter.xHigh) {
 	_zoomIn++;
-      else if (filter.xLow < _filter.xLow && filter.xHigh < _filter.xHigh)
+      } else if (filter.xLow < _filter.xLow && filter.xHigh < _filter.xHigh) {
 	_scrollLeft++;
-      else if (filter.xLow > _filter.xLow && filter.xHigh > _filter.xHigh)
+      } else if (filter.xLow > _filter.xLow && filter.xHigh > _filter.xHigh) {
 	_scrollRight++;
-      else
+      } else {
 	_unknown++;
+      }
       
       if (registerEvent) DepMgr::Current()->RegisterEvent(dispatcherCallback,
 													DepMgr::EventViewFilterCh);
@@ -1518,7 +1561,15 @@ void View::SetVisualFilter(const VisualFilter &filter, Boolean registerEvent)
       _filter = filter;
 
       int flushed = _filterQueue->Enqueue(filter);
-      ReportFilterChanged(filter, flushed);
+	  // Note: it is VERY important that we call ReportFilterChanged with
+	  // _filter, not filter (this fixes bug 818).  The reason is that
+	  // ReportFilterChanged calls DeviseCursor()::SatisfyConstraints(),
+	  // which may call SetVisualFilter with a new filter.  If we call
+	  // ReportFilterChanged with filter, the pre-cursor-constraints filter
+	  // gets reported *after* the post-cursor-constraints filter, and
+	  // therefore becomes the value for any links on this view.
+	  // RKW 2002-08-23.
+      ReportFilterChanged(_filter, flushed);
       
 	  Refresh();
     }
@@ -1635,6 +1686,9 @@ void View::SetNumDimensions(int d, Boolean notifyPile = true)
     GetParentPileStack()->SetNumDimensions(d);
   } else {
 	if (d != _numDimensions) {
+       if (d == 3) {
+           printf("Note: view %s is a 3D view\n", GetName());
+       }
       _numDimensions = d;
       _updateNumDim = true;
 
@@ -1692,8 +1746,9 @@ void View::SetPileMode(Boolean mode)
     return;
   }
 
-  if (mode == _pileMode)
+  if (mode == _pileMode) {
     return;
+  }
 
   _pileMode = mode;
   _pileViewHold = true;
@@ -1786,37 +1841,47 @@ void View::SetGeometry(int x, int y, unsigned wd, unsigned ht)
 #endif
 }
 
-/* get area for displaying label */
+/********************************************************************
+Get the area for displaying the label (title).  Note that Y is measured up
+from the bottom.
 
-void View::GetLabelArea(int &x, int &y, int &width, int &height)
+              width
+          +-----------+
+          |           | height
+     (x,y)+--+--------+
+          |  |        |
+          |  |        |
+          |  |        |
+          +--+--------+
+          |           | 
+          |           |
+          +-----------+
+********************************************************************/
+
+void View::GetLabelArea(int &areaX, int &areaY, int &areaW, int &areaH)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-  unsigned int w, h;
-  Geometry(x, y, w, h);
 
-  if (_label.occupyTop) {
-    width = w;
-    height = _label.extent;
-  } else {
-    width = w;
-    height = halfHighlightWidth;
-  }
-  
-  if (width < 0)
-    width = 1;
-  if (height < 0)
-    height = 1;
+  int winX, winY;
+  unsigned int winW, winH;
+  GeometryWithHighlight(winX, winY, winW, winH);
 
-  y=h-height;
+  areaX = winX;
+  areaW = winW;
+
+  areaH = GetLabelHeight();
+  areaY = winY + winH - areaH;
 
 #if defined(DEBUG)
-  printf("View::GetLabelArea %s %d %d %d %d\n", GetName(), x, y, width, height);
+  printf("View::GetLabelArea %s %d %d %d %d\n", GetName(), areaX, areaY,
+      areaW, areaH);
 #endif
 }
 
 /********************************************************************
-get area for displaying X axis. Assumes that X axis is in use.
-area = x,y,width, height, and startX, as follows:
+Get area for displaying X axis. Note that Y is measured up
+from the bottom.  The axis area includes the row of pixels used to
+draw the actual axis line.
 
           +--+--------+
           |  |        |
@@ -1831,47 +1896,34 @@ area = x,y,width, height, and startX, as follows:
 	    	 width
 ************************************************************************/
 
-void View::GetXAxisArea(int &x, int &y, int &width, int &height,
+void View::GetXAxisArea(int &areaX, int &areaY, int &areaW, int &areaH,
 			int &startX)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
 
-  unsigned int windW, winH;
-  Geometry(x, y, windW, winH);
+  int winX, winY;
+  unsigned int winW, winH;
+  GeometryWithHighlight(winX, winY, winW, winH);
 
-  //y += winH - xAxis.width;
-  y += _xAxis.Width();
-  width = windW;
-  height = _xAxis.Width();
-  
-  // space for highlight rectangle -- corresponding change also
-  // in GetDataArea()
-  x += halfHighlightWidth;
-  width -= halfHighlightWidth * 2;
+  areaX = winX;
+  areaW = winW;
 
-  startX = x;
-  if (_yAxis.IsInUse())
-    startX += _yAxis.Width();
-  else {
-    // no space space is really necessary, but add just a little bit
-    // of space to separate label from the window border better
-    startX += 2;
-  }
+  areaH = GetXAxisHeight();
+  areaY = winY + areaH - 1;
 
-  if (width < 0)
-    width = 1;
-  if (height < 0)
-    height = 1;
+  startX = winX + GetYAxisWidth();
 
 #if defined(DEBUG)
-  printf("View::GetXAxisArea %s %d %d %d %d\n", GetName(), x, y, width, height);
+  printf("View::GetXAxisArea(%s): %d %d %d %d %d\n", GetName(), areaX, areaY,
+      areaW, areaH, startX);
 #endif
 }
 
 /********************************************************************
-get area for displaying Y axis. Assumes that X axis is in use.
-area = x,y,width, height, and startX, as follows:
+Get area for displaying Y axis. Note that Y is measured up
+from the bottom.  The axis area includes the row of pixels used to
+draw the actual axis line.
 
           width
           +--+--------+
@@ -1884,91 +1936,60 @@ area = x,y,width, height, and startX, as follows:
           +-----------+
 ********************************************************************/
 
-void View::GetYAxisArea(int &x, int &y, int &width, int &height)
+void View::GetYAxisArea(int &areaX, int &areaY, int &areaW, int &areaH)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
 
+  int winX, winY;
   unsigned int winW, winH;
-  Geometry(x, y, winW, winH);
+  GeometryWithHighlight(winX, winY, winW, winH);
 
-  if (_label.occupyTop) {
-    //    y += _label.extent;
-    // deleted so that y reflects origin of y axis
-    height = winH - _label.extent;
-    width = _yAxis.Width();
-  } else {
-    height = winH - halfHighlightWidth;
-    width = _yAxis.Width();
-  }
-  
-  if (_xAxis.IsInUse()) {
-    height -= _xAxis.Width();
-    y += _xAxis.Width(); // added so y reflects origin
-  }
-    
-  if (width <= 0 )
-    width = 1;
-  if (height <= 0)
-    height = 1;
+  areaX = winX;
+  areaW = GetYAxisWidth();
+
+  areaY = winY + GetXAxisHeight();
+  areaH = winH - GetLabelHeight() - GetXAxisHeight();
 
 #if defined(DEBUG)
-  printf("View::GetYAxisArea %s %d %d %d %d\n", GetName(), x, y, width, height);
+  printf("View::GetYAxisArea(%s): %d %d %d %d\n", GetName(), areaX, areaY,
+      areaW, areaH);
 #endif
 }
 
+/********************************************************************
+Get the area for displaying the data.  Note that Y is measured up
+from the bottom.
+
+                width
+          +--+--------+
+          |  |        |
+    height|  |        |
+          |  |        |
+          +--+--------+
+          | (x,y)     | 
+          |           |
+          +-----------+
+********************************************************************/
+
 // Note: Y here is up from the bottom, not down from the top!!  RKW 1999-03-15.
-void View::GetDataArea(int &x, int &y, int &width,int &height)
+void View::GetDataArea(int &areaX, int &areaY, int &areaW,int &areaH)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-  unsigned int winWidth, winHeight;
-  Geometry(x, y, winWidth, winHeight);
-  
-#if defined(DEBUG)
-  printf("View(%s)::GetDataArea: window is %d, %d; %d, %d\n",
-	 GetName(), x, y, winWidth, winHeight);
-#endif
 
-  if (_label.occupyTop) {
-    /* _label occupies top of view */
-    // y +=  _label.extent; 
-    /* 
-       subtract 2 from left so that data doesn't draw
-       over the highlight border (already subtracting 2 because we moved
-       the data area 2 to the right
-    */
-    x += halfHighlightWidth;
-    width = winWidth - halfHighlightWidth * 2;
-    height = winHeight - _label.extent;
-  } else {
-    x += halfHighlightWidth;
-    width = winWidth - halfHighlightWidth * 2;
-    height = winHeight - halfHighlightWidth;
-  }
-  
-  if (_numDimensions == 2) {
-    /* need to display axes */
-    if (_xAxis.IsInUse()) {
-      height -= _xAxis.Width() + 1;
-      y += _xAxis.Width() + 1;
-    } else {
-      height -= halfHighlightWidth;
-      y += halfHighlightWidth;
-    }
-    
-    if (_yAxis.IsInUse()) {
-      /* Put back in the 2 pixels we took out for the highlight border. */
-      x += (_yAxis.Width() - 2);
-      width -= (_yAxis.Width() - 2);
-    }
-  }
-  
-  if (width <= 0) width = 1;
-  if (height <= 0) height = 1;
-  
+  int winX, winY;
+  unsigned int winW, winH;
+  GeometryWithHighlight(winX, winY, winW, winH);
+
+  areaX = winX + GetYAxisWidth();
+  areaW = winW - GetYAxisWidth();
+
+  areaY = winY + GetXAxisHeight();
+  areaH = winH - GetLabelHeight() - GetXAxisHeight();
+
 #if defined(DEBUG)
-  printf("  View %s data area is %d %d; %d %d\n", GetName(), x, y, width,
-      height);
+  printf("  View %s data area is %d %d; %d %d\n", GetName(), areaX, areaY,
+      areaW, areaH);
 #endif
 }
 
@@ -2005,22 +2026,43 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
   if (_numDimensions == 2) {
     int axisX, axisY, axisWidth, axisHeight, startX;
     if (_xAxis.IsInUse()) {
-#if !FILL_WHOLE_BACKGROUND
+#if !FILL_WHOLE_BACKGROUND || COLOR_AREAS
       GetXAxisArea(axisX, axisY, axisWidth, axisHeight, startX);
       win->SetForeground(GetBackground());
       win->SetPattern(Pattern0);
+#  if COLOR_AREAS
+      win->SetForeground((PColorID)20);
+      win->SetPattern((Pattern)-2);
+#  endif
       win->SetLineWidth(0);
-      win->ClearBackground(axisX, axisY-axisHeight, axisWidth - 1, axisHeight);
+      // Note: -1s are here because WindowRep (at least, XWindowRep), defines
+      // width and height differently than View does.  RKW 2003-01-06.
+      win->ClearBackground(axisX, axisY - axisHeight + 1, axisWidth - 1,
+          axisHeight - 1);
+#  if COLOR_AREAS
+      win->SetForeground(GetBackground());
+      win->SetPattern(Pattern0);
+#  endif
 #endif
       _xAxis.DrawAxis(win, x, y, w, h);
     }
     if (_yAxis.IsInUse()) {
-#if !FILL_WHOLE_BACKGROUND
+#if !FILL_WHOLE_BACKGROUND || COLOR_AREAS
       GetYAxisArea(axisX, axisY, axisWidth, axisHeight);
       win->SetForeground(GetBackground());
       win->SetPattern(Pattern0);
+#  if COLOR_AREAS
+      win->SetForeground((PColorID)33);
+      win->SetPattern((Pattern)-21);
+#  endif
       win->SetLineWidth(0);
+      // Note: -1s are here because WindowRep (at least, XWindowRep), defines
+      // width and height differently than View does.  RKW 2003-01-06.
       win->ClearBackground(axisX, axisY, axisWidth - 1, axisHeight - 1);
+#  if COLOR_AREAS
+      win->SetForeground(GetBackground());
+      win->SetPattern(Pattern0);
+#  endif
 #endif
       _yAxis.DrawAxis(win, x, y, w, h);
     }
@@ -2049,7 +2091,17 @@ void View::DrawLabel()
     win->SetLineWidth(0);
 
     win->SetForeground(GetBackground());
+#if COLOR_AREAS
+    win->SetForeground((PColorID)10);
+    win->SetPattern((Pattern)-4);
+#endif
+    // Note: -1s are here because WindowRep (at least, XWindowRep), defines
+    // width and height differently than View does.  RKW 2003-01-06.
     win->ClearBackground(labelX, labelY, labelWidth - 1, labelHeight - 1);
+#if COLOR_AREAS
+    win->SetForeground(GetBackground());
+    win->SetPattern(Pattern0);
+#endif
 
     if (!Session::GetIsJsSession()) {
       win->SetForeground(GetForeground());
@@ -2104,8 +2156,19 @@ void View::CalcTransform2(WindowRep *winRep)
   winRep->Translate(dataX, dataY);
 
   /* scale to size of the screen */
-  winRep->Scale((Coord)dataWidth / (_filter.xHigh -  _filter.xLow),
-		  (Coord)(dataHeight) / (_filter.yHigh - _filter.yLow));
+
+  // IMPORTANT NOTE!!!!!!!!  The setting for the WindowRep transform here
+  // assumes that the lowest X and Y filter values correspond to the *center*
+  // of the lower left pixel of the data area, and the highest X and Y filter
+  // values correspond to the *center* of the upper right pixel of the
+  // data area.
+
+  // Note: we need dataWidth-1 and dataHeight-1 here because, for example,
+  // if the data area were 2 pixels wide, there is only *one* pixel
+  // *difference* between the two pixels.  (Putting in the -1s fixes
+  // bug 855.)
+  winRep->Scale((Coord)(dataWidth-1) / (_filter.xHigh - _filter.xLow),
+		  (Coord)(dataHeight-1) / (_filter.yHigh - _filter.yLow));
 
   /* translate to 0, 0 */
   winRep->Translate(-_filter.xLow, -_filter.yLow);
@@ -2138,8 +2201,16 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
   printf("View(%s)::ReportQueryDone(%d, %d)\n", _name, bytes, aborted);
 #endif
 #if defined(DEBUG_MEM)
-  printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
+  printf("%s: %d; end of data seg = %p\n", __FILE__, __LINE__, sbrk(0));
 #endif
+
+   if (!aborted) {
+       _queryCount++;
+#if defined(DEBUG)
+       printf("  %d non-aborted queries have been run by view %s\n",
+	     _queryCount, GetName());
+#endif
+   }
 
   _refreshPending = false;
 
@@ -2653,7 +2724,7 @@ void View::Refresh(Boolean refreshPile)
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("View(%s)::Refresh(%d)\n", GetName(), refreshPile);
-  printf("  _pileMode = %d, GetParentPileStack() = 0x%p\n", _pileMode,
+  printf("  _pileMode = %d, GetParentPileStack() = %p\n", _pileMode,
       GetParentPileStack());
 #endif
 
@@ -2696,7 +2767,7 @@ void View::ReportViewCreated()
       _viewCallbackList->More(index);) {
     ViewCallback *callBack = _viewCallbackList->Next(index);
 #if defined(DEBUG)
-    printf("Calling ViewCreated callback 0x%p for view 0x%p\n",
+    printf("Calling ViewCreated callback %p for view %p\n",
 	   callBack, this);
 #endif
     callBack->ViewCreated(this);
@@ -2722,7 +2793,7 @@ void View::ReportViewRecomputed()
 #endif
     ViewCallback *callBack = _viewCallbackList->Next(index);
 #if defined(DEBUG)
-    printf("Calling ViewRecomputed callback 0x%p for view 0x%p (%s)\n",
+    printf("Calling ViewRecomputed callback %p for view %p (%s)\n",
 	   callBack, this, GetName());
 #endif
     callBack->ViewRecomputed(this);
@@ -2742,7 +2813,7 @@ void View::ReportViewDestroyed()
       _viewCallbackList->More(index);) {
     ViewCallback *callBack = _viewCallbackList->Next(index);
 #if defined(DEBUG)
-    printf("Calling ViewDestroyed callback 0x%p for view 0x%p\n",
+    printf("Calling ViewDestroyed callback %p for view %p\n",
 	   callBack, this);
 #endif
     callBack->ViewDestroyed(this);
@@ -2766,7 +2837,7 @@ void View::ReportFilterAboutToChange()
       _viewCallbackList->More(index);) {
     ViewCallback *callBack = _viewCallbackList->Next(index);
 #if defined(DEBUG)
-    printf("Calling FilterAboutToChange callback 0x%p for view 0x%p\n",
+    printf("Calling FilterAboutToChange callback %p for view %p\n",
 	   callBack, this);
 #endif
     callBack->FilterAboutToChange(this);
@@ -2789,7 +2860,7 @@ void View::ReportFilterChanged(const VisualFilter &filter, int flushed)
       _viewCallbackList->More(index);) {
     ViewCallback *callBack = _viewCallbackList->Next(index);
 #if defined(DEBUG)
-    printf("Calling FilterChanged callback 0x%p for view 0x%p\n",
+    printf("Calling FilterChanged callback %p for view %p\n",
 	   callBack, this);
 #endif
     callBack->FilterChanged(this, filter, flushed);
@@ -2805,7 +2876,7 @@ void View::InsertViewCallback(ViewCallback *callBack)
   DOASSERT(_viewCallbackList, "Invalid view callback list");
 
 #if defined(DEBUG)
-  printf("Inserting 0x%p to view callback list\n", callBack);
+  printf("Inserting %p to view callback list\n", callBack);
 #endif
 
   _viewCallbackList->Append(callBack);
@@ -2815,7 +2886,7 @@ void View::DeleteViewCallback(ViewCallback *callBack)
 {
   DOASSERT(_viewCallbackList, "Invalid view callback list");
 #if defined(DEBUG)
-  printf("Removing 0x%p from view callback list\n", callBack);
+  printf("Removing %p from view callback list\n", callBack);
 #endif
 
   _viewCallbackList->Delete(callBack);
@@ -2951,7 +3022,7 @@ View::DrawCursors()
 
   if (!Mapped()) {
 #if defined(DEBUG)
-    printf("not mapped\n");
+    printf("View %s not mapped\n", GetName());
 #endif
     return false;
   }
@@ -3703,7 +3774,7 @@ View::PrintPS()
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-  printf("View(0x%p)::PrintPS(%s)\n", this, _name);
+  printf("View(%p)::PrintPS(%s)\n", this, _name);
 #endif
   DevStatus result(StatusOk);
 
@@ -3917,7 +3988,7 @@ void	View::ModeChange(ControlPanel::Mode mode)
 char*	View::DispatchedName(void)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-	return "View";
+	return GetName();
 }
 
 // Send a query, if there is one. Abort existing query if necessary. 
@@ -3933,10 +4004,10 @@ void	View::Run(void)
 	}
 #endif
 #if defined(DEBUG)
-	printf("\nView(%s, 0x%p)::Run()\n", GetName(), _dispatcherID);
+	printf("\nView(%s, %p)::Run()\n", GetName(), _dispatcherID);
 #endif
 #if defined(DEBUG_MEM)
-  printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
+  printf("%s: %d; end of data seg = %p\n", __FILE__, __LINE__, sbrk(0));
 #endif
 
     if (!_drawingEnabled) {
@@ -3990,8 +4061,9 @@ void	View::Run(void)
 
 		// If we are running client/server Devise, we may get here before this
 		// view's parent has been created, so do not bomb out.  RKW 8/30/96.
-		if (parent == NULL)
+		if (parent == NULL) {
 			return;
+        }
 
 		ViewWin *vw = GetParentPileStack()->GetFirstView();
 
@@ -4008,15 +4080,32 @@ void	View::Run(void)
 			}
 
 #if defined(DEBUG)
-			printf("Bottom pile view %s continues\n", GetName());
+			printf("Middle or top pile view %s continues\n", GetName());
 #endif
 
 			_pileViewHold = true;
 		}
 		else
 		{
+			if (GetParentPileStack()->QueryRunning())
+			{
 #if defined(DEBUG)
-			printf("Top pile view %s continues\n", GetName());
+				printf("View %s cannot continue\n", GetName());
+#endif
+				const int bufLen = 1024;
+				char buf[bufLen];
+				int formatted = snprintf(buf, bufLen, "Warning: bottom pile "
+				  "view %s should run a query, but another view in the pile "
+				  "is already running a query -- possible incorrect pile draw",
+				  GetName());
+				checkAndTermBuf(buf, bufLen, formatted);
+				reportErrNosys(buf);
+
+				AbortQuery();
+				return;
+			}
+#if defined(DEBUG)
+			printf("Bottom pile view %s continues\n", GetName());
 #endif
 
 			// Assure that the bottom view's window rep (the one used to
@@ -4304,7 +4393,7 @@ void	View::Run(void)
 	if (!piledDisplay)					// Blank out area to be drawn
 	{
 #if defined(DEBUG)
-		printf("Clearing data area in window 0x%p\n", winRep);
+		printf("Clearing data area in window %p\n", winRep);
 #endif
 
 		if (winRep->DaliImageCount() > 0)
@@ -4334,11 +4423,19 @@ void	View::Run(void)
           }
 		}
 
-#if !FILL_WHOLE_BACKGROUND
+#if !FILL_WHOLE_BACKGROUND || COLOR_AREAS
 		winRep->SetForeground(GetBackground());
 		winRep->SetPattern(Pattern0);
+#  if COLOR_AREAS
+		winRep->SetForeground((PColorID)4);
+        winRep->SetPattern((Pattern)-32);
+#  endif
 		winRep->SetLineWidth(0);
 		winRep->ClearBackground(dataX, dataY, dataW - 1, dataH - 1);
+#  if COLOR_AREAS
+		winRep->SetForeground(GetBackground());
+        winRep->SetPattern(Pattern0);
+#  endif
 #endif
 
 		//
@@ -4996,6 +5093,61 @@ View::SetViewHelp(const char *helpStr)
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (_viewHelp) FreeString((char *)_viewHelp);
   _viewHelp = CopyString(helpStr);
+}
+
+void
+View::GeometryWithHighlight(int &x, int &y, unsigned &w, unsigned &h)
+{
+  Geometry(x, y, w, h);
+
+  // Note: we're assuming here that half of the highlight line is actually
+  // "drawn" outside the window.
+  x += halfHighlightWidth;
+  y += halfHighlightWidth;
+  w -= halfHighlightWidth * 2;
+  h -= halfHighlightWidth * 2;
+}
+
+unsigned int
+View::GetLabelHeight()
+{
+  unsigned int height;
+
+  if (_label.occupyTop) {
+    height = _label.extent;
+  } else {
+    height = 0;
+  }
+
+  return height;
+}
+
+unsigned int
+View::GetXAxisHeight()
+{
+  unsigned int height;
+
+  if (_xAxis.IsInUse()) {
+    height = _xAxis.Width();
+  } else {
+    height = 0;
+  }
+
+  return height;
+}
+
+unsigned int
+View::GetYAxisWidth()
+{
+  unsigned int width;
+
+  if (_yAxis.IsInUse()) {
+    width = _yAxis.Width();
+  } else {
+    width = 0;
+  }
+
+  return width;
 }
 
 //******************************************************************************

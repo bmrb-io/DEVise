@@ -24,11 +24,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.68  2002/07/19 17:06:47  wenger
+// Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+//
 // Revision 1.67  2002/06/17 19:40:14  wenger
 // Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 //
 // Revision 1.66  2002/05/01 21:28:58  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.65.2.14  2002/12/05 20:38:18  wenger
+// Removed a bunch of unused (mostly already-commented-out) code to
+// make things easier to deal with.
 //
 // Revision 1.65.2.13  2002/07/19 16:05:20  wenger
 // Changed command dispatcher so that an incoming command during a pending
@@ -900,11 +907,6 @@ public class DEViseClient
 			//TEMP -- move to addNewCmd()?
 			String state = DEViseCommands.UPDATE_SERVER_STATE + " " + pop.getServerState();
 			sendCmd(new String[] {state, DEViseCommands.DONE});
-			// TEMP: for String[] format.
-			/*
-			  sendCmd(state);
-			  sendCmd(DEViseCommands.DONE);
-			*/
 			cmdBuffer.removeAllElements();
 		    } else if (command.startsWith(DEViseCommands.DISABLE_COLLAB)) {
 			//TEMP -- move to addNewCmd()?

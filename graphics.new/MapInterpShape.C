@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -17,6 +17,19 @@
   $Id$
 
   $Log$
+  Revision 1.78.4.2  2002/09/10 17:13:21  wenger
+  Fixed bug 821 (GAttr links fail when follower has "complex" symbols)
+  (this involved splitting up ViewData::ReturnGData() into smaller
+  methods to make it easier to deal with); fixed bug 214 (record links
+  fail if leader view has "complex" symbols); added debug output of
+  total records processed and drawn to view data.
+
+  Revision 1.78.4.1  2002/08/22 19:22:25  wenger
+  Fixed bug 813 (bars not drawn correctly for negative Y values).
+
+  Revision 1.78  2001/12/28 18:34:37  wenger
+  Fixed bugs 727 and 730 (problems with line graphs in DEVise).
+
   Revision 1.77  2001/07/19 20:08:26  wenger
   Added X Offset attribute to Line shape (for NRG examples).
 
@@ -404,6 +417,7 @@
 
 //#define DEBUG
 #define USE_TIMER 1
+#define TEST_TIMEOUT 0
 
 #define IMAGE_TYPE_GIF_LOCAL		(0)
 #define IMAGE_TYPE_DALI_FILE		(1)
@@ -486,6 +500,14 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	Coord xArray[WINDOWREP_BATCH_SIZE], yArray[WINDOWREP_BATCH_SIZE];
 	Coord widthArray[WINDOWREP_BATCH_SIZE], heightArray[WINDOWREP_BATCH_SIZE];
 	for(; i < numSyms; i++) {
+#if TEST_TIMEOUT
+        if (i > 5 && timeoutAllowed) {
+		    printf("Simulating drawing timeout: drew %d records\n", i);
+		    recordsProcessed = i;
+		    return;
+		}
+#endif
+
 		char *gdata = (char *)gdataArray[i];
 		PColorID	pcid = map->GetColor(gdata);
 		Coord size = map->GetSize(gdata);
@@ -764,8 +786,9 @@ void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (width < 2 * pixelWidth)
 	  width = 2 * pixelWidth;
 #endif
-	if (width > pixelWidth)
+	if (width > pixelWidth) {
 	  x -= width / 2.0;
+    }
 
     Boolean hasError = false;
 	Coord error;
@@ -780,7 +803,15 @@ void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	win->SetPattern(map->GetPattern(gdata));
 	win->SetLineWidth(lineWidth);
 
-	win->FillRect(x, 0.0, width, y);
+	// Note: this if/then fixes bug 813.  I think it makes more sense
+	// for the fact that the bars always go to 0 in the Y direction
+	// to be in the code here than in the FillRect() code, since that
+	// also gets used for drawing other things.  RKW 2002-08-22.
+	if (y >= 0.0) {
+	  win->FillRect(x, 0.0, width, y);
+	} else {
+	  win->FillRect(x, y, width, -y);
+	}
 
 	if (hasError) {
 	  win->Line(x + width / 2.0, 0.0, x + width / 2.0, error, lineWidth);

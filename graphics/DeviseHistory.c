@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2001
+  (c) Copyright 2001-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.2.10.1  2002/09/04 13:57:54  wenger
+  More Purifying -- fixed some leaks and mismatched frees.
+
+  Revision 1.2  2001/02/20 20:02:41  wenger
+  Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+  to the trunk.
+
   Revision 1.1.2.1  2001/02/16 21:37:46  wenger
   Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
   a web browser) on 'sets' of visual filters.
@@ -233,6 +240,8 @@ DeviseHistory::ClearAll()
     }
     vi->_filterList.DoneIterator(filterIndex);
     vi->_filterList.DeleteAll();
+
+    delete vi;
   }
   _views.DoneIterator(viewIndex);
   _views.DeleteAll();
@@ -396,6 +405,15 @@ DeviseHistory::IntStack::IntStack()
 {
   _index = -1;
   _maxSize = 0;
+  _values = NULL;
+}
+
+//-----------------------------------------------------------------------------
+// Destructor.
+DeviseHistory::IntStack::~IntStack()
+{
+  _maxSize = 0;
+  delete _values;
   _values = NULL;
 }
 

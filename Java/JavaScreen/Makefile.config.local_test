@@ -40,4 +40,8 @@ SERV_DIR = ~/tst/jspop_install/jss
 JAR_DIR = ~/tst/jspop_install/www
 CGI_DIR = ~/tst/jspop_install/cgi-bin
 IDSTR = "test"
+
+# This is who gets email about any errors.
+ERROR_EMAIL = wenger
+
 INSTALL_HOST = ""

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.43.10.1  2002/08/23 21:10:30  wenger
+  Fixed a problem that sometimes caused a cursor with no source view
+  to cause a core dump (fixes bug 679).
+
+  Revision 1.43  2001/08/03 18:13:01  wenger
+  Removed all OpenGL-related code.
+
   Revision 1.42  2001/01/08 20:32:41  wenger
   Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
   back onto the trunk.
@@ -230,6 +237,7 @@
 #include "View.h"
 #include "Color.h"
 #include "XColor.h"
+#include "Util.h"
 
 //#define DEBUG
 
@@ -243,8 +251,6 @@ DeviseCursor::DeviseCursor(char *name, VisualFlag flag,
 {
   _name = name;
   _visFlag = flag;
-  _src = 0;
-  _dst = 0;
   _src = 0;
   _dst = 0;
   _useGrid = useGrid;
@@ -267,14 +273,17 @@ DeviseCursor::~DeviseCursor(void)
 
   Boolean redrawCursors = false;
 
-  if (_dst)
+  if (_dst) {
     redrawCursors = _dst->HideCursors();
+  }
 
-  if (_dst)
+  if (_dst) {
     _dst->DeleteCursor(this);
+  }
 
-  if (_dst && redrawCursors)
+  if (_dst && redrawCursors) {
     (void)_dst->DrawCursors();
+  }
 }
 
 //******************************************************************************
@@ -370,8 +379,9 @@ DeviseCursor::SetFlag(VisualFlag flag)
 
 Boolean DeviseCursor::GetVisualFilter(const VisualFilter *&filter)
 {
-  if (!_src)
+  if (!_src) {
     return false;
+  }
   
   _src->GetVisualFilter(_filter);
   _filter.flag = _visFlag;
@@ -411,14 +421,17 @@ void DeviseCursor::FilterChanged(View *view, const VisualFilter &filter,
 
 void DeviseCursor::ViewDestroyed(View *view)
 {
-  if (_dst && (view == _src || view == _dst))
+  if (_dst && (view == _src || view == _dst)) {
     (void)_dst->HideCursors();
+  }
 
-  if (view == _src)
+  if (view == _src) {
     _src = 0;
+  }
 
-  if (view == _dst)
+  if (view == _dst) {
     _dst = 0;
+  }
 }
 
 void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height,
@@ -500,7 +513,7 @@ void DeviseCursor::DrawCursorFill(WindowRep* w)
   GetVisualFilter(filter);
 
   if (_src && _src->GetNumDimensions()==2
-   && _dst&& _dst->GetNumDimensions()==2) {
+   && _dst && _dst->GetNumDimensions()==2) {
     Coord xLowPix, yLowPix, xHighPix, yHighPix;
     w->Transform(filter->xLow, filter->yLow, xLowPix, yLowPix);
     w->Transform(filter->xHigh, filter->yHigh, xHighPix, yHighPix);
@@ -530,7 +543,9 @@ void DeviseCursor::DrawCursorBorder(WindowRep* w)
   const VisualFilter *filter;
   GetVisualFilter(filter);
 
-  w->SetForeground(_dst->GetForeground());
+  if (_dst) {
+    w->SetForeground(_dst->GetForeground());
+  }
 
   if (_src && _src->GetNumDimensions()==2
    && _dst&& _dst->GetNumDimensions()==2) {
@@ -744,6 +759,16 @@ DeviseCursor::FindNewPosition(int pixX1, int pixY1, int pixX2, int pixY2,
   printf("DeviseCursor::FindNewPosition((%d, %d), (%d, %d), %d)\n", pixX1, pixY1,
       pixX2, pixY2, hitType);
 #endif
+
+  if (!_src) {
+    const int bufLen = 1024;
+    char buf[bufLen];
+    int formatted = snprintf(buf, bufLen, "Calling DeviseCursor::"
+      "FindNewPosition on cursor %s which has no source view", GetName());
+    checkAndTermBuf(buf, bufLen, formatted);
+    reportErrNosys(buf);
+    return;
+  }
 
   VisualFilter filter;
   _src->GetVisualFilter(filter);
@@ -1109,6 +1134,10 @@ DeviseCursor::SatisfyConstraints()
 #if defined(DEBUG)
   printf("DeviseCursor(%s)::SatisfyConstraints()\n", GetName());
 #endif
+
+  if (!_src) {
+    return;
+  }
 
   VisualFilter filter;
   _src->GetVisualFilter(filter);

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.8.14.1  2002/12/04 21:13:14  wenger
+  *** empty log message ***
+
+  Revision 1.8  2000/03/14 17:05:27  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.7  2000/01/13 23:07:02  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -51,6 +58,8 @@
 #include "DevError.h"
 #include "Util.h"
 
+#define DEBUG 0
+
 CompositeEntry CompositeParser::_entries[MAX_COMPOSITE_ENTRIES];
 int CompositeParser::_numEntries = 0;
 int CompositeParser::_hintIndex = -1;
@@ -58,13 +67,23 @@ int CompositeParser::_hintIndex = -1;
 void
 CompositeParser::DestroyAll()
 {
+#if (DEBUG >= 1)
+  printf("CompositeParser::DestroyAll()\n");
+#endif
+
   for(int i = 0; i < _numEntries; i++) {
     delete _entries[i].userComposite;
     FreeString(_entries[i].fileType);
   }
+  _numEntries = 0;
+  _hintIndex = -1;
 }
 	
 void CompositeParser::Register(char *fileType, UserComposite *userComposite){
+#if (DEBUG >= 1)
+  printf("CompositeParser::Register(%s, %p)\n", fileType, userComposite);
+#endif
+
   if (_numEntries >= MAX_COMPOSITE_ENTRIES) {
     reportErrNosys("CompositeParser:: too many entries\n");
     Exit::DoExit(2);
@@ -77,6 +96,10 @@ void CompositeParser::Register(char *fileType, UserComposite *userComposite){
 
 void CompositeParser::Decode(const char *fileType, RecInterp *recInterp)
 {
+#if (DEBUG >= 1)
+  printf("CompositeParser::Decode(%s, %p)\n", fileType, recInterp);
+#endif
+
   if (_hintIndex >= 0 && !strcmp(fileType, _entries[_hintIndex].fileType)) {
     /* found it */
     _entries[_hintIndex].userComposite->Decode(recInterp);
@@ -105,6 +128,10 @@ void CompositeParser::Decode(const char *fileType, RecInterp *recInterp)
 void
 CompositeParser::ResetAll()
 {
+#if (DEBUG >= 1)
+  printf("CompositeParser::ResetAll()\n");
+#endif
+
   for(int index = 0; index < _numEntries; index++) {
     _entries[index].userComposite->Reset();
   }

@@ -1,0 +1,53 @@
+		How to Create a DEVise Distribution
+		$Id$
+
+This is a quick-and-dirty documentation of what needs to be done for
+a DEVise/JavaScreen/peptide-cgi distribution (by a distribution, I mean
+making tar files that can be downloaded and installed by users who have
+no access to the CS AFS tree).
+
+This document should probably be improved eventually -- right now it's
+mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-30.
+
+IMPORTANT NOTE:  the DEVise and JavaScreen files that are put into the
+distribution come from /p/devise/release, not the area in which you're
+running the distribution scripts.  However, the peptide-cgi files come
+from the peptide_cgi tree in which you run the distribution scripts.
+
+- Generate DEVise/JavaScreen distribution:
+    - Go to the dist directory.
+
+    - Run "make setup".
+
+    - Run "make dist".
+
+    - Do a test installation from each tar file to make sure it works.
+
+- Generate peptide-cgi distribution:
+    - Be sure the version in the peptide_cgi tree works correctly.
+
+    - Go to peptide_cgi.
+
+    - Run "make setup".
+
+    - Run "make dist".
+
+    - Copy the distribution tar file into the appropriate subdirectory
+      in /p/devise/ftp.
+
+    - Do a test installation from the tar file to make sure it works.
+
+- BMRB mirror site instructions:
+    - Copy bmrb_mirror_instructions into the appropriate subdirectory
+      in /p/devise/ftp.
+
+- Tag/archive sources:
+    - Cvs tag the source tree (the tag should be of the form dist_x_y_z,
+      where the DEVise version is x.y.z.
+
+    - There should already be a DEVise/JavaScreen source archive (see
+      the release document).
+
+    - Archive the peptide-cgi sources by checking out a version with
+      the appropriate tag, tarring it up, and copying the file to
+      /p/devise/wenger/src_archive.

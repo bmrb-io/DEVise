@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.29.10.1  2002/09/02 21:29:34  wenger
+  Did a bunch of Purifying -- the biggest change is storing the command
+  objects in a HashTable instead of an Htable -- the Htable does a bunch
+  of ugly memory copying.
+
+  Revision 1.29  2001/04/12 20:15:13  wenger
+  First phase of external process dynamic data generation is in place
+  for RectX symbols (needs GUI and some cleanup); added the ability to
+  specify format for dates and ints in GData; various improvements to
+  diagnostic output.
+
   Revision 1.28  2000/05/10 16:10:00  wenger
   Minor cleanup of debug conditionals.
 
@@ -327,9 +338,9 @@ TData::~TData()
 {
     if( _data && _data->DeleteRef() )
         delete _data;
-    delete [] _param;
-    delete [] _type;
-    delete [] _name;
+    FreeString(_param);
+    FreeString(_type);
+    FreeString(_name);
 }
 
 //------------------------------------------------------------------------------

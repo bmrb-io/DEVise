@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.3.46.1  2002/09/02 21:29:33  wenger
+  Did a bunch of Purifying -- the biggest change is storing the command
+  objects in a HashTable instead of an Htable -- the Htable does a bunch
+  of ugly memory copying.
+
+  Revision 1.3  1996/11/23 21:20:58  jussi
+  Simplified code.
+
   Revision 1.2  1995/09/05 22:15:25  jussi
   Added CVS header.
 */
@@ -32,6 +40,9 @@ class RangeInfoArrays {
   public:
     /* constructor */
     RangeInfoArrays(int numArrays, int maxSize);
+
+    /* destructor */
+    ~RangeInfoArrays();
 
     /* Clear the arrays so that contain nothing.
        DO NOT delete the RangeInfo */

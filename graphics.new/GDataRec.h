@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.13.14.1  2002/09/05 19:14:03  wenger
+  Implemented GData attribute value links (but not GUI for creating
+  them).
+
+  Revision 1.13  1999/08/10 20:15:05  wenger
+  Parent views can now control the titles of view symbols.
+
   Revision 1.12  1999/07/13 17:32:42  wenger
   Parent view can now control attribute(s) in child view's mapping;
   cleaned up some of the mapping-related code; better command logging.
@@ -139,6 +146,7 @@ struct GDataAttrOffset {
 
 // Strings for attribute names in GData attribute list.
 
+static const char *recIdName = "recId";
 static const char *gdataXName = "x";
 static const char *gdataYName = "y";
 static const char *gdataZName = "z";

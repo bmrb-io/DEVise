@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.23.10.2  2002/09/21 23:24:28  wenger
+  Fixed a few more special-case memory leaks.
+
+  Revision 1.23.10.1  2002/09/17 23:34:11  wenger
+  Fixed a bunch of memory leaks -- especially in DevError::ReportError()!
+
+  Revision 1.23  2001/04/03 19:57:28  wenger
+  Cleaned up code dealing with GData attributes in preparation for
+  "external process" implementation.
+
   Revision 1.22  2000/03/14 17:05:04  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -97,12 +107,22 @@
 #include "Util.h"
 #include "DevError.h"
 #include "GDataRec.h"
+#include "DList.h"
+
+#define DEBUG 0
+
+DefinePtrDList(AttrListList, AttrList *);
+static AttrListList _lists;
 
 static char *GetTypeString(AttrType type);
 static void WriteVal(int fd, AttrVal *aval, AttrType atype);
 
 AttrList::AttrList(const char *name, int startSize)
 {
+#if (DEBUG >= 1)
+  printf("AttrList::AttrList(%s, %d)\n", name, startSize);
+#endif
+
   startSize = MAX(startSize, MIN_ATTRLIST_SIZE);
   _attrs = new AttrInfo *[startSize];
   DOASSERT(_attrs, "Out of memory");
@@ -112,30 +132,49 @@ AttrList::AttrList(const char *name, int startSize)
     _attrs[i] = NULL;
   _size = 0;
   _name = CopyString(name);
+
+  _lists.Insert(this);
 }
 
 void AttrList::Clear(){
+#if (DEBUG >= 1)
+  printf("AttrList(%s)::Clear()\n", _name);
+#endif
+
   for(int i = 0; i < _arraySize; i++){
-	// Note: it seems like these strings should be freed here, but
-	// doing so causes DEVise to crash!  RKW 2000-03-13.
-	// FreeString(_attrs[i]->name);
-    delete _attrs[i];
-    _attrs[i] = NULL;
+    if (_attrs[i] != NULL) {
+#if (DEBUG >= 2)
+      printf("  Freeing %s\n", _attrs[i]->name);
+#endif
+	  FreeString(_attrs[i]->name);
+      delete _attrs[i];
+      _attrs[i] = NULL;
+    }
   }
   _size = 0;
 }
 
 AttrList::~AttrList()
 {
+#if (DEBUG >= 1)
+  printf("AttrList(%s)::~AttrList()\n", _name);
+#endif
+
   Clear();
   delete [] _attrs;
   _attrs = NULL;
   FreeString((char *)_name);
+
+  _lists.Delete(this);
 }
 
 /* Copy constructor */
 AttrList::AttrList(AttrList &attrs)
 {
+#if (DEBUG >= 1)
+  printf("AttrList()::AttrList(copy %s)\n", attrs.GetName());
+#endif
+
   _attrs = new AttrInfo *[attrs.NumAttrs()];
   DOASSERT(_attrs, "Out of memory");
   _arraySize = attrs.NumAttrs();
@@ -158,6 +197,17 @@ AttrList::AttrList(AttrList &attrs)
 	       &info->loVal);
   }
   attrs.DoneIterator();
+
+  _lists.Insert(this);
+}
+
+void
+AttrList::DestroyAllInstances()
+{
+    while (_lists.Size() > 0) {
+        AttrList *list = _lists.GetFirst();
+	delete list;
+    }
 }
 
 Boolean
@@ -211,19 +261,23 @@ void AttrList::InsertAttr(int attrNum, const char *name, int offset, int length,
   info->length = length;
   info->type = type;
   info->hasMatchVal = hasMatchVal;
-  if (hasMatchVal)
+  if (hasMatchVal) {
     info->matchVal = *matchVal;
+  }
   info->isComposite = isComposite;
   info->isSorted = isSorted;
   info->hasHiVal = hasHiVal;
-  if (hasHiVal)
+  if (hasHiVal) {
     info->hiVal = *hiVal;
+  }
   info->hasLoVal = hasLoVal;
-  if (hasLoVal)
+  if (hasLoVal) {
     info->loVal = *loVal;
+  }
   
-  if (_size < attrNum+1)
+  if (_size < attrNum+1) {
     _size = attrNum+1;
+  }
   _attrs[attrNum] = info;
 }
 
@@ -288,7 +342,7 @@ AttrInfo *AttrList::Get(int n)
   } else {
     /* Note: -1 is used to mean recId. */
     if (n != -1
-#if defined(DEBUG)
+#if (DEBUG >= 1)
       || true
 #endif
     )

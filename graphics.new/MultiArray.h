@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.4.14.1  2002/09/02 21:29:33  wenger
+  Did a bunch of Purifying -- the biggest change is storing the command
+  objects in a HashTable instead of an Htable -- the Htable does a bunch
+  of ugly memory copying.
+
+  Revision 1.4  1999/11/30 22:28:23  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.3  1995/12/28 21:18:51  jussi
   Small fixes to remove compiler warnings. Added copyright notice.
 
@@ -38,6 +50,9 @@ class MultiArray {
 public:
   /* constructor */
   MultiArray(int numArrays, int arraySize);
+
+  /* destructor */
+  ~MultiArray();
 
   /* Clear so there is no element left */
   void Clear();

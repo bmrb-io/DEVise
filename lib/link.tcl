@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-2001
+#  (c) Copyright 1992-2002
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,14 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.5.10.1  2002/09/17 18:50:55  wenger
+#	Added GUI for GAttr links.
+#	
+#	Revision 1.5  2001/04/27 17:09:56  wenger
+#	Made various cleanups to external process dynamic data generation and
+#	added most GUI (still need special GUI for creating the data source);
+#	cleanups included finding and fixing bug 668.
+#	
 #	Revision 1.4  2001/01/08 20:33:04  wenger
 #	Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 #	back onto the trunk.
@@ -44,6 +52,7 @@
 #   4: Record link, positive
 #   8: Record link, negative
 #   16: External data link
+#   32: GData attr link
 proc CreateLink { flag } {
 	global button dialogCkButVar dialogCkButInternalVar
 
@@ -81,7 +90,8 @@ proc CreateLink { flag } {
 	# Create a checkbutton for each of the items
 	# First element of each is name, second is text to show in GUI.
 	set items {{x x} {y y} {record_positive "record (positive)"} \
-	  {record_negative "record (negative)"} {ext_data "external data"}}
+	  {record_negative "record (negative)"} {ext_data "external data"} \
+	  {gattr "GData attr"}}
 	set butNames ""
 	set varNames ""
 	set cnt 0
@@ -117,24 +127,35 @@ proc CreateLink { flag } {
 	  set dialogCkButInternalVar(var_record_positive) 0; \
 	  set dialogCkButInternalVar(var_record_negative) 0; \
 	  set dialogCkButInternalVar(var_ext_data) 0; \
+	  set dialogCkButInternalVar(var_gattr) 0; \
 	}
 	.createLinkGUI.but_record_positive configure -command {
 	  set dialogCkButInternalVar(var_x) 0; \
 	  set dialogCkButInternalVar(var_y) 0; \
 	  set dialogCkButInternalVar(var_record_negative) 0; \
 	  set dialogCkButInternalVar(var_ext_data) 0; \
+	  set dialogCkButInternalVar(var_gattr) 0; \
 	}
 	.createLinkGUI.but_record_negative configure -command {
 	  set dialogCkButInternalVar(var_x) 0; \
 	  set dialogCkButInternalVar(var_y) 0; \
 	  set dialogCkButInternalVar(var_record_positive) 0; \
 	  set dialogCkButInternalVar(var_ext_data) 0; \
+	  set dialogCkButInternalVar(var_gattr) 0; \
 	}
 	.createLinkGUI.but_ext_data configure -command {
 	  set dialogCkButInternalVar(var_x) 0; \
 	  set dialogCkButInternalVar(var_y) 0; \
 	  set dialogCkButInternalVar(var_record_positive) 0; \
 	  set dialogCkButInternalVar(var_record_negative) 0; \
+	  set dialogCkButInternalVar(var_gattr) 0; \
+	}
+	.createLinkGUI.but_gattr configure -command {
+	  set dialogCkButInternalVar(var_x) 0; \
+	  set dialogCkButInternalVar(var_y) 0; \
+	  set dialogCkButInternalVar(var_record_positive) 0; \
+	  set dialogCkButInternalVar(var_record_negative) 0; \
+	  set dialogCkButInternalVar(var_ext_data) 0; \
 	}
 
 	eval pack .createLinkGUI.entries $butNames -in .createLinkGUI.listFrame \
@@ -195,4 +216,112 @@ proc CreateLink { flag } {
 	destroy .createLinkGUI
 	focus $oldFocus
 	return $button
+}
+
+############################################################
+
+# Allow the user to select a GAttr link (if there are any)
+# for which to set the attributes.
+
+proc DoSetGAttrLinkAttrs {} {
+    global dialogListVar
+
+    set linkSet [GAttrLinkSet]
+    if { [llength $linkSet] == 0 } {
+        dialog .noLinks "No Links" "There are no GAttr links." "" 0 OK
+        return
+    }
+
+	set answer [dialogList .getGAttrLink "Select Link" \
+	  "Select a link" "" 0 { OK Cancel } $linkSet]
+
+    if {$answer == 0} {
+	    SetGAttrLinkAttrs $dialogListVar(selected)
+	}
+}
+
+############################################################
+
+# Show the dialog to allow the user to set the attributes for
+# the given GData attribute link.
+
+proc SetGAttrLinkAttrs {linkName} {
+
+	set gdAttrs {"x" "y" "z" "color" "size" "pattern" "orientation" "shape" \
+	  "shapeAttr_0" "shapeAttr_1" "shapeAttr_2" "shapeAttr_3" "shapeAttr_4" \
+	  "shapeAttr_5" "shapeAttr_6" "shapeAttr_7" "shapeAttr_8" "shapeAttr_9" \
+	  "shapeAttr_10" "shapeAttr_11" "shapeAttr_12" "shapeAttr_13" \
+	  "shapeAttr_14" }
+
+    set leaderAttr [DEVise getLinkMasterAttr $linkName]
+    set followerAttr [DEVise getLinkSlaveAttr $linkName]
+
+    # If this window already exists, raise it to the top and return.
+	if {[WindowVisible .setLinkGAttrs]} {
+	   return
+	}
+
+    # Create the top level widget and the frames we'll later use for
+	# positioning.
+	toplevel .setLinkGAttrs
+	wm title .setLinkGAttrs "Set Link Attributes ($linkName)"
+
+	frame .setLinkGAttrs.leaderRow
+	frame .setLinkGAttrs.followerRow
+	frame .setLinkGAttrs.buttonRow
+
+    # Create the various objects that will be shown in the window.
+	label .setLinkGAttrs.leaderLabel -text "Leader:"
+	label .setLinkGAttrs.followerLabel -text "Follower:"
+
+	menubutton .setLinkGAttrs.leader -relief raised -bd 2 -text $leaderAttr \
+	  -menu .setLinkGAttrs.leader.menu
+	menu .setLinkGAttrs.leader.menu -tearoff false
+	foreach attr $gdAttrs {
+	    .setLinkGAttrs.leader.menu add command -label $attr \
+		  -command ".setLinkGAttrs.leader configure -text $attr"
+	}
+
+	menubutton .setLinkGAttrs.follower -relief raised -bd 2 \
+	  -text $followerAttr -menu .setLinkGAttrs.follower.menu
+	menu .setLinkGAttrs.follower.menu -tearoff false
+	foreach attr $gdAttrs {
+	    .setLinkGAttrs.follower.menu add command -label $attr \
+		  -command ".setLinkGAttrs.follower configure -text $attr"
+	}
+
+    button .setLinkGAttrs.ok -text "OK" -width 10 \
+	  -command "SetGAttrLinkAttrsOK $linkName; destroy .setLinkGAttrs"
+    button .setLinkGAttrs.cancel -text "Cancel" -width 10 \
+	  -command "destroy .setLinkGAttrs"
+
+    # Pack everything into the frames.
+	pack .setLinkGAttrs.leaderRow -side top -pady 2m
+	pack .setLinkGAttrs.followerRow -side top -pady 2m
+	pack .setLinkGAttrs.buttonRow -side top -pady 2m
+
+	pack .setLinkGAttrs.leaderLabel .setLinkGAttrs.leader \
+	  -in .setLinkGAttrs.leaderRow -side left -padx 4m
+	pack .setLinkGAttrs.followerLabel .setLinkGAttrs.follower \
+	  -in .setLinkGAttrs.followerRow -side left -padx 4m
+	pack .setLinkGAttrs.ok .setLinkGAttrs.cancel \
+	  -in .setLinkGAttrs.buttonRow -side left -padx 4m
+
+    # Wait for the user to make a selection from this window.
+    tkwait visibility .setLinkGAttrs
+	grab set .setLinkGAttrs
+    tkwait window .setLinkGAttrs
+}
+
+############################################################
+
+# User has clicked 'OK' button in the GAttr link attribute
+# dialog.
+
+proc SetGAttrLinkAttrsOK {linkName} {
+    set leaderAttr [lindex [.setLinkGAttrs.leader configure -text] 4]
+    set followerAttr [lindex [.setLinkGAttrs.follower configure -text] 4]
+
+    DEVise setLinkMasterAttr $linkName $leaderAttr
+	DEVise setLinkSlaveAttr $linkName $followerAttr
 }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.31.14.2  2002/09/17 23:34:11  wenger
+  Fixed a bunch of memory leaks -- especially in DevError::ReportError()!
+
+  Revision 1.31.14.1  2002/09/02 21:29:24  wenger
+  Did a bunch of Purifying -- the biggest change is storing the command
+  objects in a HashTable instead of an Htable -- the Htable does a bunch
+  of ugly memory copying.
+
+  Revision 1.31  2000/01/13 23:06:51  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.30  1999/10/18 15:36:28  wenger
   Window destroy events are handled better (DEVise doesn't crash); messages
   such as window destroy notifications are now passed to the client in
@@ -181,6 +192,8 @@ class DeviseDisplay;
 class ControlPanel  {
 public:
   enum Mode { DisplayMode, LayoutMode };
+
+  virtual ~ControlPanel();
 
   void InsertCallback(ControlPanelCallback *callback);
   void DeleteCallback(ControlPanelCallback *callback);

@@ -24,7 +24,7 @@ BAR - vertical bar (as in a bar graph)
     Shape value: 2
     Attrs:
         0) width
-        1) (optional) error
+        1) (optional) error (absolute, not relative to bar Y value)
         4) line width
 
 LINE - line (straight, infinite length)

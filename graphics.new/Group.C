@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.11.14.1  2002/09/18 21:38:52  wenger
+  Fixed more memory leaks -- in GroupDir/Group/ItemList code.
+
+  Revision 1.11  1999/11/30 22:28:23  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.10  1996/10/15 17:49:10  wenger
   Fixed bug 050 (problem with record IDs in mappings).
 
@@ -68,23 +78,18 @@
 
 //#define DEBUG
 
-Group::Group(char *nm,Group *par, int typ)
+Group::Group(char *nm, Group *par, int typ)
 {
   name = new char[strlen(nm) + 1];
   strcpy(name, nm);
   type = typ;
   parent = par;
-  subgrps = new(ItemList);
+  subgrps = new ItemList();
 }
 
 Group::~Group()
 {
   delete [] name;
-  Group *item = subgrps->first_item();
-  while (item != NULL) {
-    delete item;
-    item = subgrps->next_item();
-  }
   delete(subgrps);
 }
 

@@ -40,4 +40,8 @@ SERV_DIR = /p/devise/js.installed
 JAR_DIR = /bmrb/htdocs/devise
 CGI_DIR = /bmrb/htdocs/cgi-bin
 IDSTR = regular
+
+# This is who gets email about any errors.
+ERROR_EMAIL = zoo@bmrb.wisc.edu
+
 INSTALL_HOST = aden.bmrb.wisc.edu

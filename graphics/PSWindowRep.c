@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.43.14.1  2002/07/25 19:29:20  wenger
+  Fixed bug 800 (symbols disappear at extreme zoom) and other drawing-
+  related problems; removed unused WindowRep method (FillRectArray with
+  constant width/height).
+
+  Revision 1.43  2000/03/14 17:05:07  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.42  1999/07/16 21:35:51  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -864,7 +873,7 @@ void PSWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 /*---------------------------------------------------------------------------*/
 /* Fill rectangles, variable width/height */
 
-void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width, 
+void PSWindowRep::FillRectArray(Coord *symbolX, Coord *symbolY, Coord *width, 
 			       Coord *height, int num,
 			       SymbolAlignment alignment, Coord orientation)
 {
@@ -878,9 +887,11 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
 #if MAXPIXELDUMP > 0
   printf("\nBefore transformation:\n\n");
   for(int k = 0; k < (num > MAXPIXELDUMP ? MAXPIXELDUMP : num); k++) {
-    if ((k + 1) % 6 == 0)
+    if ((k + 1) % 6 == 0) {
       printf("\n");
-    printf("(%.2f,%.2f,%.2f,%.2f)", xlow[k], ylow[k], width[k], height[k]);
+    }
+    printf("(%.2f,%.2f,%.2f,%.2f)", symbolX[k], symbolY[k], width[k],
+        height[k]);
   }
   printf("\n");
 #endif
@@ -889,8 +900,8 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
   Rectangle rectArray[WINDOWREP_BATCH_SIZE];
   for(int i = 0; i < num; i++) {
     Coord x1, y1, x2, y2;
-    Transform(xlow[i], ylow[i], x1, y1);
-    Transform(xlow[i] + width[i], ylow[i] + height[i], x2, y2);
+    Transform(symbolX[i], symbolY[i], x1, y1);
+    Transform(symbolX[i] + width[i], symbolY[i] + height[i], x2, y2);
     
     Coord pixelWidth = ABS(x1 - x2);
     Coord pixelHeight = ABS(y1 - y2);
@@ -929,75 +940,6 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
   }
 #endif
 }
-
-
-
-/*---------------------------------------------------------------------------*/
-/* Fill rectangles, same width/height */
-
-void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
-			       Coord height, int num,
-			       SymbolAlignment alignment, Coord orientation)
-{
-#if defined(DEBUG)
-  printf("PSWindowRep::FillRectArray: %d points, width %.2f, height %.2f\n",
-         num, width, height);
-
-#if MAXPIXELDUMP > 0
-  printf("\nBefore transformation:\n\n");
-  for(int k = 0; k < (num > MAXPIXELDUMP ? MAXPIXELDUMP : num); k++) {
-    if ((k + 1) % 10 == 0)
-      printf("\n");
-    printf("(%.2f,%.2f)", xlow[k], ylow[k]);
-  }
-  printf("\n");
-#endif
-#endif
-
-  Rectangle rectArray[WINDOWREP_BATCH_SIZE];
-  for(int i = 0; i < num; i++) {
-    Coord x1, y1, x2, y2;
-    Transform(xlow[i], ylow[i], x1, y1);
-    Transform(xlow[i] + width, ylow[i] + height, x2, y2);
-
-    Coord pixelWidth = ABS(x1 - x2);
-    Coord pixelHeight = ABS(y1 - y2);
-    
-    rectArray[i].x = x1;
-    rectArray[i].y = y1;
-    rectArray[i].width = pixelWidth;
-    rectArray[i].height = pixelHeight;
-  }
-
-#ifdef DEBUG
-#if MAXPIXELDUMP > 0
-  printf("\nAfter transformation: width %f, height %f\n\n",
-	 rectArray[0].width, rectArray[0].height);
-  for(k = 0; k < (num > MAXPIXELDUMP ? MAXPIXELDUMP : num); k++) {
-    if ((k + 1) % 10 == 0)
-      printf("\n");
-    printf("(%f,%f)", rectArray[k].x, rectArray[k].y);
-  }
-  printf("\n");
-#endif
-#endif
-
-#ifdef GRAPHICS
-  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
-  DOASSERT(printFile != NULL, "No PostScript file open");
-
-#if defined(PS_DEBUG)
-  fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
-#endif
-
-  for(int pointNum = 0; pointNum < num; pointNum++) {
-    DrawAlignedRect(printFile, rectArray[pointNum].x, rectArray[pointNum].y,
-      rectArray[pointNum].width, rectArray[pointNum].height, alignment,
-      orientation);
-  }
-#endif
-}
-
 
 
 /*---------------------------------------------------------------------------*/

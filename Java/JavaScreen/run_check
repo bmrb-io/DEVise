@@ -45,9 +45,9 @@ if (-e $outfile && ! -z $outfile) then
     cat $outfile >> $tmpfile
     if (`hostname` == "yola") then
         # Note: stupid mail on SGI doesn't take -s argument!
-        cat $tmpfile | mail `whoami`
+        cat $tmpfile | mail `cat scripts/error_email`
     else
-        cat $tmpfile | mail -s "$header" `whoami`
+        cat $tmpfile | mail -s "$header" `cat scripts/error_email`
     endif
     mv $tmpfile $outfile
 endif

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.4.46.2  2002/09/04 13:58:01  wenger
+  More Purifying -- fixed some leaks and mismatched frees.
+
+  Revision 1.4.46.1  2002/09/02 21:29:33  wenger
+  Did a bunch of Purifying -- the biggest change is storing the command
+  objects in a HashTable instead of an Htable -- the Htable does a bunch
+  of ugly memory copying.
+
+  Revision 1.4  1996/11/23 21:20:58  jussi
+  Simplified code.
+
   Revision 1.3  1995/12/28 21:18:57  jussi
   Small fixes to remove compiler warnings. Added copyright notice.
 
@@ -27,14 +38,29 @@
 #include "MultiArray.h"
 #include "RangeInfo.h"
 
+#define DEBUG 0
+
 RangeInfoArrays::RangeInfoArrays(int numArrays, int maxSize)
 {
+#if (DEBUG >= 1)
+    printf("RangeInfoArrays::RangeInfoArrays(%d, %d)\n", numArrays, maxSize);
+#endif
+
     _arrays = new MultiArray(numArrays, maxSize);
     _numInsert = _numDelete = _curBuf = _curData = 0;
     _totalBuf = _totalData = 0.0;
     _totalBufInUse = _totalDataInUse = 0.0;
     _maxBuf = _maxData = 0;
     _minBuf = _minData = 1024000;
+}
+
+RangeInfoArrays::~RangeInfoArrays()
+{
+#if (DEBUG >= 1)
+    printf("RangeInfoArrays::~RangeInfoArrays()\n");
+#endif
+
+    delete _arrays;
 }
 
 /* Return # of arrays */
@@ -86,6 +112,10 @@ void RangeInfoArrays::Move(int fromArray, int fromPos, int toArray, int toPos)
 
 void RangeInfoArrays::Insert(int arrayNum, int pos, RangeInfo *data)
 {
+#if (DEBUG >= 1)
+    printf("RangeInfoArrays::Insert(%d, %d, %p)\n", arrayNum, pos, data);
+#endif
+
     _arrays->Insert(arrayNum, pos, data);
     int bufSize = data->BufSize();
     int dataSize = data->DataSize();
@@ -110,6 +140,10 @@ void RangeInfoArrays::Insert(int arrayNum, int pos, RangeInfo *data)
 
 RangeInfo *RangeInfoArrays::Delete(int arrayNum, int pos)
 {
+#if (DEBUG >= 1)
+    printf("RangeInfoArrays::Delete(%d, %d)\n", arrayNum, pos);
+#endif
+
     RangeInfo *info = (RangeInfo *)_arrays->Delete(arrayNum, pos);
     _numDelete++;
     _curBuf -= info->BufSize();
@@ -141,6 +175,10 @@ void RangeInfoArrays::PrintStat()
 
 void RangeInfoArrays::Clear()
 {
+#if (DEBUG >= 1)
+    printf("RangeInfoArrays::Clear()\n");
+#endif
+
     _arrays->Clear();
 }
 

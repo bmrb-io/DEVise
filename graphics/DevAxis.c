@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999-2002
+  (c) Copyright 1999-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,17 @@
   $Id$
 
   $Log$
+  Revision 1.12.2.2  2003/01/04 21:38:26  wenger
+  Fixed bugs 852, 855, and 856 (all related to view geometry and transforms
+  and axis drawing).
+
+  Revision 1.12.2.1  2002/09/04 13:57:54  wenger
+  More Purifying -- fixed some leaks and mismatched frees.
+
+  Revision 1.12  2002/02/21 17:02:07  wenger
+  Turned off axis labeling for JS sessions (now done in the JS itself);
+  changed version to 1.7.6.
+
   Revision 1.11  2002/01/28 23:52:10  wenger
   Updated the DEVised to support drawing axis labels on the JS side:
   changed JAVAC_ViewDataArea command; leaves blank areas for axis
@@ -76,6 +87,9 @@
 #include "Session.h"
 
 //#define DEBUG
+
+// Set this to 1 to draw the axis lines dashed (for debugging).
+#define DRAW_AXES_DASHED 0
 
 const char *DevAxis::_blankFloatFormat = "-";
 
@@ -149,6 +163,9 @@ DevAxis::~DevAxis()
   printf("DevAxis::~DevAxis()\n");
 #endif
 //TEMP -- use ObjectValid stuff here?
+
+  FreeString(_dateFormat);
+  FreeString(_floatFormat);
 }
 
 //-----------------------------------------------------------------------------
@@ -275,10 +292,9 @@ DevAxis::SetInfo(AxisInfo &info)
 	info._drawAxis = true;
 
     _view->GetXAxisArea(axisX, axisY, axisWidth, axisHeight, startX);
-    startX--; // Kludge -- RKW 1999-04-20.
 	info._x0 = axisX;
 	info._y0 = axisY;
-	info._x1 = startX - 1;
+	info._x1 = startX;
 	info._y1 = axisY;
 	info._x2 = axisX + axisWidth - 1;
 	info._y2 = axisY;
@@ -375,11 +391,17 @@ DevAxis::DrawLine(WindowRep *win, AxisInfo &info)
 {
   win->SetForeground(_view->GetForeground());
   win->SetPattern(Pattern0);
+#if DRAW_AXES_DASHED
+  win->SetPattern((Pattern)-2);
+#endif
   win->SetNormalFont();
   _font.SetWinFont(win);
 
   // Draw the line for the axis.
   win->Line(info._x1, info._y1, info._x2, info._y2, 1.0);
+#if DRAW_AXES_DASHED
+  win->SetPattern(Pattern0);
+#endif
 
   // Don't draw ticks and labels if space is too small.
   if (_width > _tickLength && TicksEnabled()) info._drawTicks = true;
@@ -438,7 +460,8 @@ DevAxis::DrawFloatTicks(WindowRep *win, AxisInfo &info)
         (info._highValue - info._lowValue) + info._varLoc1;
 
     // Draw the tick mark itself.
-    win->Line(info._tickX, info._tickY, info._tickX + _tickdrawX, info._tickY + _tickdrawY, 1);
+    win->Line(info._tickX, info._tickY, info._tickX + _tickdrawX,
+	  info._tickY + _tickdrawY, 1);
 
 	const int bufSize = 32;
     char buf[bufSize];
@@ -554,7 +577,8 @@ DevAxis::OptimizeTickMarks(Coord low, Coord high, int numTicks,
   start = tmpMantissa * pow(10.0, tickpow) * mantissa;
   if (start == -0.0) start = 0.0;
 
-  num = (int)((high - start) / inc) + 1;
+  // 0.0001 fixes roundoff errors -- fixes bug 856.
+  num = (int)((high - start) / inc + 0.0001) + 1;
 
 #if defined(DEBUG)
   printf("%d ticks from %g to %g @ %g\n", num, start, high, inc);

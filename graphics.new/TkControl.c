@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.99  2002/06/17 19:41:07  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
+  Revision 1.98.14.2  2002/09/02 21:29:34  wenger
+  Did a bunch of Purifying -- the biggest change is storing the command
+  objects in a HashTable instead of an Htable -- the Htable does a bunch
+  of ugly memory copying.
+
   Revision 1.98.14.1  2002/05/29 22:26:54  wenger
   Better error testing and diagnostics in Server.C and TkControl.c
   (related to RedHat cross-version problems).
@@ -452,7 +460,7 @@ TkControlPanel::TkControlPanel()
 #endif
 	
   _interpProto = new MapInterpClassInfo();
-  new CmdContainer(this,CmdContainer::MONOLITHIC, NULL);
+  _cmdCont = new CmdContainer(this,CmdContainer::MONOLITHIC, NULL);
   
   View::InsertViewCallback(this);
 
@@ -512,6 +520,7 @@ TkControlPanel::TkControlPanel()
 TkControlPanel::~TkControlPanel()
 {
   Dispatcher::Current()->Unregister(this);
+  delete _cmdCont;
 }
 
 // Note: this complication is so that the Version class doesn't directly

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.89  2002/06/17 19:41:08  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
+  Revision 1.88.4.2  2002/11/15 22:44:36  wenger
+  Views with no TData records don't contribute to filter values on 'home'
+  (this helps to fix some problems with the Condor user visualizations);
+  added cursorHome command; changed version to 1.7.13.
+
   Revision 1.88.4.1  2002/06/11 17:27:39  wenger
   Added an option for a view to not "contribute" to home on its visual
   links; this allows a simplification of the NRG sessions, which fixes
@@ -687,8 +695,8 @@ public:
   virtual void PanLeftOrRight(PanDirection direction);
   virtual void PanUpOrDown(PanDirection direction);
 
-  // Do home in source views for any cursors for which this view is the
-  // destination view.
+  // Make any cursors in this view exactly match the visual filter of
+  // the view.
   void CursorHome();
 
   /* Get and set the home and panning info. */
@@ -708,9 +716,12 @@ public:
   // Whether this view should contribute its home when home is done on
   // another view that has a visual link to this view.  (This is a fix
   // for bug 753.  RKW 2002-06-11.)
-  Boolean GetDoHomeOnVisLink() { return _doHomeOnVisLink; }
+  Boolean GetDoHomeOnVisLink();
   void SetDoHomeOnVisLink(Boolean doHome) { _doHomeOnVisLink = doHome; }
 
+  // Returns true iff we have a TData in this view and the TData has valid
+  // records.
+  Boolean HasTDataRecords();
 
   /* Toggle the value of DisplayStats */
   char *GetDisplayStats() { return _DisplayStats; }

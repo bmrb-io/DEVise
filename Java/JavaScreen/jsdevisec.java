@@ -22,11 +22,32 @@
 // $Id$
 
 // $Log$
+// Revision 1.144  2002/07/19 17:06:49  wenger
+// Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+//
 // Revision 1.143  2002/06/17 19:40:18  wenger
 // Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 //
 // Revision 1.142  2002/05/01 21:29:00  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.141.2.18  2002/12/17 23:15:02  wenger
+// Fixed bug 843 (still too many java processes after many reloads);
+// improved thread debug output.
+//
+// Revision 1.141.2.17  2002/11/25 21:29:35  wenger
+// We now kill off the "real" applet when JSLoader.destroy() is called,
+// unless the reloadapplet is false for the html page (to prevent excessive
+// numbers of applet instances from hanging around); added debug code to
+// print info about creating and destroying threads; minor user message
+// change; version is now 5.2.1.
+//
+// Revision 1.141.2.16  2002/09/27 22:10:58  wenger
+// Fixed bug 796 (JS sometimes thinks it's a collaboration leader when it
+// really isn't).
+//
+// Revision 1.141.2.15  2002/08/16 15:30:49  wenger
+// Fixed bug 803 (better text in playback dialog).
 //
 // Revision 1.141.2.14  2002/07/19 16:05:22  wenger
 // Changed command dispatcher so that an incoming command during a pending
@@ -521,6 +542,8 @@ import  java.lang.*;
 
 public class jsdevisec extends Panel
 {
+    static final int DEBUG = 0;
+
     private YLogGUI debugWindow = null;
 
     public DEViseCmdDispatcher dispatcher = null;
@@ -625,6 +648,10 @@ public class jsdevisec extends Panel
     public jsdevisec(Applet parentApplet, Frame frame, Vector images,
       DEViseJSValues jv)
     {
+	if (DEViseGlobals.DEBUG_THREADS >= 1) {
+	    printAllThreads("In jsdevisec constructor");
+	}
+
 	// create the DEViseJSValues object
 	jsValues = jv;
 
@@ -1343,6 +1370,14 @@ public class jsdevisec extends Panel
 
     public synchronized void destroy()
     {
+	if (DEBUG >= 1) {
+	    System.out.println("jsdevisec.destroy()");
+	}
+	if (DEViseGlobals.DEBUG_THREADS >= 1) {
+	    System.out.println("Thread count before jsdevisec.destroy(): " +
+	      Thread.activeCount());
+	}
+
         if (isQuit) {
             return;
         }
@@ -1368,6 +1403,10 @@ public class jsdevisec extends Panel
             dispatcher = null;
         }
 
+	if (DEViseGlobals.DEBUG_THREADS >= 1) {
+	    printAllThreads("After jsdevisec.destroy()");
+	}
+
         if (!jsValues.uiglobals.isApplet) {
 	    System.exit(0);
 	}
@@ -1379,12 +1418,28 @@ public class jsdevisec extends Panel
         commMode.setText("Socket");
     }
 
+    // Go out of collaboration leader mode.  (This is called with isLeader
+    // false if we are sort of halfway to being a leader.)
+    public void collabModeUnlead(boolean isLeader)
+    {
+	isCollab = false;
+	if (jsValues.connection.cgi) {
+	    cgiMode();
+	} else {
+	    socketMode();
+	}
+	if (isLeader) disableCollab();
+	jsValues.session.collabLeaderPass = DEViseGlobals.DEFAULT_COLLAB_PASS;
+    }
+
+    // Go into collaboration leader mode.
     public void collabModeL()
     {
 	commMode.setForeground(Color.white);
         commMode.setText("Collab (L)");
     }
 
+    // Go into collaboration follower mode.
     public void collabModeF()
     {
 	commMode.setForeground(Color.white);
@@ -1475,7 +1530,16 @@ public class jsdevisec extends Panel
 	jsValues.uiglobals.screenRes = oldScreenRes;
     }
     
-
+    public static void printAllThreads(String msg)
+    {
+	int count = Thread.activeCount();
+	System.out.println(count + " Threads (" + msg + "):");
+        Thread[] threads = new Thread[count];
+	int count2 = Thread.enumerate(threads);
+	for (int index = 0; index < count2; index++) {
+	    System.out.println("  " + threads[index]);
+	}
+    }
 }
 
 // ------------------------------------------------------------------------
@@ -2597,9 +2661,9 @@ class SetLogFileDlg extends Dialog
 {
     jsdevisec jsc = null;
     public TextField file = new TextField(30);
-    public Checkbox display = new Checkbox("Is Display", true);
+    public Checkbox display = new Checkbox("Display", true);
     public Checkbox original = new Checkbox("Original Rate", true);
-    public Button setButton = new Button("   Set   ");
+    public Button setButton = new Button("   Play   ");
     public Button cancelButton = new Button("  Cancel ");    
     private boolean status = false; // true means this dialog is showing
 
@@ -3119,16 +3183,8 @@ class CollabSelectDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			jsc.isCollab = false;
-                        if(jsc.jsValues.connection.cgi) {
-			    jsc.cgiMode();
-			} else {
-			    jsc.socketMode();
-			}
 			close();
-			jsc.disableCollab();
-			jsc.jsValues.session.collabLeaderPass =
-			  DEViseGlobals.DEFAULT_COLLAB_PASS;
+			jsc.collabModeUnlead(true);
                     }
                 });
 	    }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,20 @@
   $Id$
 
   $Log$
+  Revision 1.42.10.2  2002/09/20 20:49:03  wenger
+  More Purifying -- there are now NO leaks when you open and close
+  a session!!
+
+  Revision 1.42.10.1  2002/08/15 18:25:56  wenger
+  Fixed bug 808 (binary data works only if values are "naturally"
+  aligned as they are defined by the schema).
+
+  Revision 1.42  2001/04/12 20:15:13  wenger
+  First phase of external process dynamic data generation is in place
+  for RectX symbols (needs GUI and some cleanup); added the ability to
+  specify format for dates and ints in GData; various improvements to
+  diagnostic output.
+
   Revision 1.41  2000/02/16 18:51:44  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -210,7 +224,7 @@
 #include "TDataMap.h"
 #endif
 
-//#define DEBUG
+//#define DEBUG 3
 
 #ifndef ATTRPROJ
 TDataAsciiInterpClassInfo::TDataAsciiInterpClassInfo(const char *className,
@@ -228,6 +242,9 @@ TDataAsciiInterpClassInfo::TDataAsciiInterpClassInfo(const char *className,
   _numSeparators = numSeparators;
   _commentString = commentString;
   _recSize = recSize;
+  _name = NULL;
+  _type = NULL;
+  _param = NULL;
   _isSeparator = isSeparator;
   _tdata = NULL;
 }
@@ -236,16 +253,26 @@ TDataAsciiInterpClassInfo::TDataAsciiInterpClassInfo(const char *className,
     const char *name, const char *type, const char *param, TData *tdata)
 {
   _className = className;
+  _attrList = NULL;
+  _separators = NULL;
+  _numSeparators = 0;
+  _commentString = NULL;
+  _recSize = 0;
   _name = name;
   _type = type;
   _param = param;
+  _isSeparator = false;
   _tdata = tdata;
 }
 
 TDataAsciiInterpClassInfo::~TDataAsciiInterpClassInfo()
 {
-  if (_tdata)
+  if (_tdata) {
     delete _tdata;
+  }
+  FreeString(_commentString);
+  FreeString((char *)_className);
+  delete [] _separators;
 }
 
 const char *TDataAsciiInterpClassInfo::ClassName()
@@ -328,7 +355,8 @@ ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc,
 #if defined(DEBUG)
   printf("tdata=%p\n", tdata);
 #endif
-  return new TDataAsciiInterpClassInfo(_className, name, type, param, tdata);
+  return new TDataAsciiInterpClassInfo(CopyString(_className), name, type,
+      param, tdata);
 }
 
 const char *TDataAsciiInterpClassInfo::InstanceName()
@@ -395,6 +423,7 @@ TDataAsciiInterp::TDataAsciiInterp(char *name, char *type,
 
 TDataAsciiInterp::~TDataAsciiInterp()
 {
+  delete _recInterp;
 }
 
 #define MAX_ERRS_REPORTED 10
@@ -405,6 +434,8 @@ TDataAsciiInterp::~TDataAsciiInterp()
     "subsequent Decode errors for this TData (%s)\n" \
     "will not be reported.\n", (name));
 
+// IMPORTANT NOTE: all fields in the output buffer are guaranteed to
+// be aligned.
 Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
 {
 #if defined(DEBUG)
@@ -465,6 +496,10 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
   int i;
   for(i = 0; i < _numPhysAttrs; i++) {
     AttrInfo *info = _attrList.Get(i);
+#if (DEBUG >= 3)
+    printf("Attr %s offset = %d\n", info->name, info->offset);
+#endif
+
     if (info->type == IntAttr || info->type == DateAttr) {
       if (!IsBlank(args[i]) && !isdigit(args[i][0]) && args[i][0] != '-' &&
 	  args[i][0] != '+') {
@@ -524,7 +559,7 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
         if (_decodeErrCount <= MAX_ERRS_REPORTED) {
 	  reportErrNosys("String is too long for available space"
 	    " (truncated to fit)");
-printf("  Attr: %s\n", info->name);
+          printf("  Attr: %s\n", info->name);
 	  printf("  String: <%s>\n", args[i]);
 	  printf("  Length: %d (includes terminating NULL)\n", info->length);
 	  printf("  Record:");

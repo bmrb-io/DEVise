@@ -29,6 +29,6 @@ if (-f get_stats.out) then
 endif
 scripts/get_stats > get_stats.out
 mail zoo < get_stats.out
-mail eldon < get_stats.out
+mail elu < get_stats.out
 mail miron@cs.wisc.edu < get_stats.out
 rm get_stats.out

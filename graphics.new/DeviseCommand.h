@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,8 +20,19 @@
   $Id$
 
   $Log$
+  Revision 1.72  2002/06/17 19:41:06  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
   Revision 1.71  2002/05/01 21:30:12  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.70.4.5  2003/01/09 22:21:59  wenger
+  Added "link multiplication factor" feature; changed version to 1.7.14.
+
+  Revision 1.70.4.4  2002/11/15 22:44:35  wenger
+  Views with no TData records don't contribute to filter values on 'home'
+  (this helps to fix some problems with the Condor user visualizations);
+  added cursorHome command; changed version to 1.7.13.
 
   Revision 1.70.4.3  2002/06/11 17:27:38  wenger
   Added an option for a view to not "contribute" to home on its visual
@@ -2233,6 +2244,24 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(getDoHomeOnVisLink) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(cursorHome)
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setLinkMultFact) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getLinkMultFact) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

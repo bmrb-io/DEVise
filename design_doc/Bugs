@@ -871,8 +871,9 @@ Num Date        Status  Description
 213 07/28/97	FIXED	Switching TData doesn't work. (rkw)
 			(Fixed by rkw.)
 
-214 08/08/97	OPEN	Record links don't work if symbols in master view
+214 08/08/97	FIXED	Record links don't work if symbols in master view
 			are "complex". (rkw)
+			(Fixed by rkw, 9/10/02.)
 
 215 08/13/97	FIXED	View statistics in Query dialog are sometimes incorrect
 			if you stop force a view to redraw by resizing its
@@ -2192,7 +2193,7 @@ Num Date        Status  Description
 558 02/02/00	OPEN	There's no GUI to change a cursor from X to XY, etc.
 			(rkw)
 
-559 02/08/00	OPEN	JavaScreen should check protocol version compatibility
+559 02/08/00	FIXED?	JavaScreen should check protocol version compatibility
 			*before* getting session list, not *after*. (rkw)
 
 560 02/09/00	OPEN	If a cursor is very small, you may not be able to
@@ -2271,6 +2272,7 @@ Num Date        Status  Description
 
 578 04/18/00	OPEN	Displaying a data source from the 'Edit Data Stream
 			Definition' dialog doesn't work. (rkw)
+			(See 741.)
 
 579 04/19/00	FIXED	Do 'refresh' with no session open -> DEVise crashes.
 			(rkw)
@@ -2365,7 +2367,7 @@ Num Date        Status  Description
 			java.lang.OutOfMemoryError. (rkw)
 			(Fixed by rkw, 6/16/00.)
 
-599 6/20/00	OPEN	If you zoom in too far, especially with a low-
+599 6/20/00	NB	If you zoom in too far, especially with a low-
 			precision axis format, you can end up with multiple
 			axis ticks with identical labels. (rkw)
 
@@ -2393,8 +2395,9 @@ Num Date        Status  Description
 			source. (rkw)
 			(Fixed by rkw, 7/26/00.)
 
-605 8/2/00	OPEN	JavaScreen: can't go down into bmrb/dynamic_sessions
+605 8/2/00	CD	JavaScreen: can't go down into bmrb/dynamic_sessions
 			directory (can't follow link?). (rkw)
+			(Tested by rkw, 8/15/02.)
 
 606 8/3/00	OPEN	JavaScreen: JS can't draw text with orientation
 			other than 0 deg. (rkw)
@@ -2411,9 +2414,10 @@ Num Date        Status  Description
 			in a view. (rkw)
 			(Fixed by rkw, 8/7/00.)
 
-609 8/8/00	OPEN	JavaScreen: clicking the Help button doesn't
+609 8/8/00	FIXED	JavaScreen: clicking the Help button doesn't
 			display view help in view symbols (F1 in a view
 			symbol *does* display the help). (rkw)
+			(Fixed by sjl, 8/20/02.)
 
 610 8/8/00	OPEN	JavaScreen: in JS at BMRB (on aden), in the
 			4096_full.ds session, the atoms don't show up in
@@ -2431,8 +2435,9 @@ Num Date        Status  Description
 			relaxation save frames. (rkw)
 			(Fixed by rkw, 8/29/00.)
 
-614 8/29/00	OPEN	JavaScreen: looks like it re-parses the mouse format
+614 8/29/00	FIXED	JavaScreen: looks like it re-parses the mouse format
 			strings every time a value is displayed. (rkw)
+			(Fixed by rkw, 8/1/02.)
 
 615 8/30/00	OPEN	If you have both 'all in dest' and a grid set for
 			a cursor, the grid code can move a cursor edge
@@ -2454,12 +2459,13 @@ Num Date        Status  Description
 619 9/14/00	OPEN	Link info GUI makes it look like you can change
 			the link type, but you can't. (rkw)
 
-620 9/20/00	OPEN	Jspop doesn't detect if JS crashes (still keeps it
+620 9/20/00	FIXED	Jspop doesn't detect if JS crashes (still keeps it
 			in client list). (rkw)
 
-621 9/22/00	OPEN	JavaScreen: if help is shown in a view, using the
+621 9/22/00	FIXED	JavaScreen: if help is shown in a view, using the
 			F1 key to hide it also brings up the help dialog.
 			(rkw)
+			(Fixed by sjl, 8/20/02.)
 
 622 10/14/00	FIXED	Negative record links are not saved correctly in
 			sessions (they come up as positive links when the
@@ -2476,9 +2482,10 @@ Num Date        Status  Description
 			when you click to move a cursor you drill down again
 			instead. (rkw)
 
-625 12/19/00	OPEN	JavaScreen: mouse location format doesn't work for
+625 12/19/00	FIXED	JavaScreen: mouse location format doesn't work for
 			dates (doesn't pay attention to the format string).
 			(rkw)
+			(Fixed by rkw, 8/1/02.)
 
 626 12/21/00	FIXED	JavaScreen: JAVAC_ProtocolVersion command is initiated
 			by the jspop, not the client, which makes it basically
@@ -2488,8 +2495,10 @@ Num Date        Status  Description
 			when it sends the Exit command (you can see this
 			because it still generates heartbeats). (rkw)
 
-628 12/21/00	OPEN	JavaScreen: when running as an application under				Linux, redrawing text is incredibly slow when JS
+628 12/21/00	FIXED	JavaScreen: when running as an application under
+			Linux, redrawing text is incredibly slow when JS
 			window is hidden and then exposed. (rkw)
+			(Fixed by xuk).
 
 629 12/22/00	FIXED	JavaScreen: closing a session in CGI mode when
 			running applet in Netscape produces a communication
@@ -2527,8 +2536,10 @@ Num Date        Status  Description
 637 01/30/01    OPEN    JavaScreen: all of the buttons have gotten bigger.
                         (rkw)
 
-638 01/30/01    OPEN    JavaScreen: Filter button seems to make things hang.
+638 01/30/01    CD	JavaScreen: Filter button seems to make things hang.
 			(rkw)
+			(Tested by rkw, 8/15/02.  I wonder whether there's
+			a specific session that causes this problem.)
 
 639 02/01/01	FIXED	JavaScreen: if you start the JSA twice in Netscape
 			without forcing a reload, the gears and traffic
@@ -2562,12 +2573,14 @@ Num Date        Status  Description
 645 03/13/01	FIXED	Duplicating a window doesn't copy fonts. (rkw)
 			(Fixed by rkw, 3/15/01.)
 
-646 03/13/01	OPEN	JavaScreen: Lucida font family doesn't work for
+646 03/13/01	CD	JavaScreen: Lucida font family doesn't work for
 			view titles. (rkw)
+			(Tested by rkw, 8/15/02.)
 
-647 03/13/01	OPEN	In JS demo session waveletidr/.Bugs/1d_example1a.ds,
+647 03/13/01	NB	In JS demo session waveletidr/.Bugs/1d_example1a.ds,
 			the window DEViseWn2 *refuses* to display the X
 			axis. (rkw)
+			(X axis ticks were turned off; rkw 8/15/02.)
 
 648 03/15/01	OPEN	Duplicating a window doesn't work right if the
 			window has views containing view symbols. (rkw)
@@ -2651,8 +2664,9 @@ Num Date        Status  Description
 			not seem to get properly saved and restored when
 			the session is saved and refreshed. (rkw)
 
-665 04/24/01	OPEN	JavaScreen: jsb fills the entire background with
+665 04/24/01	CD	JavaScreen: jsb fills the entire background with
 			black; jsa doesn't. (rkw)
+			(Tested by rkw, 8/15/02.)
 
 666 04/24/01	FIXED	peptide-cgi: we shouldn't generate an H vs. N
 			chem shift plot for 4868. (rkw)
@@ -2679,8 +2693,9 @@ Num Date        Status  Description
 			work right when running the JS itself on pumori (balls
 			are not drawn!) (rkw)
 
-673 05/21/01	OPEN	JavaScreen: 3D drill-down often doesn't work on the
-			first click. (eu/rkw)
+673 05/21/01	FIXED	JavaScreen: 3D drill-down often doesn't work on the
+			first click. (elu/rkw)
+			(Fixed by sjl, 8/20/02.)
 
 674 05/22/01	FIXED	Drill-down on a record link follower view doesn't
 			work right (records are shown for drill-down that
@@ -2696,22 +2711,27 @@ Num Date        Status  Description
 			test/bad_y_axis.ds). (rkw)
 			(Fixed by rkw, 5/27/01.)
 
-677 07/11/01	OPEN	Format of colors saved to session files seems to
+677 07/11/01	FIXED	Format of colors saved to session files seems to
 			change slightly every time, even if the palette hasn't
 			actually been changed. (rkw)
+			(Fixed by rkw, 8/22/02.)
+			(See also bug 692.)
 
 678 07/11/01	OPEN	viewSetHome command should be propagated to all
 			views in a pile. (rkw)
 
-679 07/13/01	OPEN	Destroying a window and then saving a session sometimes
+679 07/13/01	FIXED	Destroying a window and then saving a session sometimes
 			creates a session that crashes DEVise when you
 			reload it. (rkw)  (See Test/visual_example.ds.)
+			(Fixed by rkw, 8/23/02.)
 
-680 07/13/01	OPEN	Get rid of "Warning: histograms not implemented"
+680 07/13/01	FIXED	Get rid of "Warning: histograms not implemented"
 			message. (rkw)
+			(Fixed by rkw, 8/27/02.)
 
-681 07/13/01	OPEN	JavaScreen: titles in child views don't seem to
+681 07/13/01	CD	JavaScreen: titles in child views don't seem to
 			work. (rkw)
+			(Tested by rkw, 8/15/02.)
 
 682 07/17/01	FIXED	Changing the mapping of a child view doesn't always
 			cause it to redraw. (rkw)
@@ -2757,9 +2777,11 @@ Num Date        Status  Description
 691 09/19/01	OPEN	Session files that are links don't show up in the
 			Open File dialog unless you change the pattern. (rkw)
 
-692 09/20/01	OPEN	If you open a session and save it without changing
+692 09/20/01	FIXED	If you open a session and save it without changing
 			anything, the session file shouldn't be different
 			(except for the date in the header). (rkw)
+			(Fixed by rkw, 8/22/02.)
+			(See also bug 677.)
 
 693 09/25/01	FIXED	If you are doing an X-only zoom, the rubberband
 			line that is drawn should reflect this. (rkw)
@@ -2814,7 +2836,7 @@ Num Date        Status  Description
 703 10/05/01	OPEN	JavaScreen: _pid files don't get deleted correctly
 			if the machine goes down. (rkw)
 
-704 10/05/01		JavaScreen: when restarting JSPoP, heartbeats sent
+704 10/05/01	FIXED?	JavaScreen: when restarting JSPoP, heartbeats sent
 			from an existing client can (sometimes, at least)
 			prevent the JSPoP from accepting other client
 			connections. (rkw)
@@ -2991,8 +3013,9 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			main data source catalog. (rkw)
 			(Fixed by rkw, 12/12/01.)
 
-741 12/13/01	OPEN	Displaying a TData from the Edit dialog does not
+741 12/13/01	DUP	Displaying a TData from the Edit dialog does not
 			work. (gk/rkw)
+			(See 578.)
 
 742 12/18/01	FIXED	JavaScreen: change of mouse location causes
 			irritating flickering of the mouse location display
@@ -3013,7 +3036,7 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			work right in Asos.ds. (rkw)
 			(Shows up only in older JS version.)
 
-746 1/7/02	OPEN	JavaScreen: mouse location display shows 0.0 even
+746 1/7/02	FIXED	JavaScreen: mouse location display shows 0.0 even
 			when the format is - (blank). (rkw)
 
 747 1/10/02	OPEN	Axis multiplication factor doesn't get copied when
@@ -3051,9 +3074,10 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			existing session and re-saving it works okay. (rkw)
 			(Fixed by rkw, 2/9/02.)
 
-755 2/11/02	OPEN	Data source creation GUI should default to having
+755 2/11/02	FIXED	Data source creation GUI should default to having
 			the schema selection dialog come up in the physical
 			schema directory. (rkw)
+			(Fixed by rkw, 8/15/02.)
 
 756 1/31/02	OPEN	Schema attribute names with '(' in them don't work
 			right in the GUI -- the schema parser should complain
@@ -3280,30 +3304,33 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			it is a leader, even though it isn't. <sjl>
 			(Fixed by sjl, 6/17/2002)
 
-796 6/17/02	OPEN	JavaScreen: when becoming a collaboration leader,
+796 6/17/02	FIXED	JavaScreen: when becoming a collaboration leader,
 			I got the "JavaScreen is busy working Please try again
 			later" message (I think maybe the collaboration command
 			overlapped with a heartbeat).  Anyhow, the JS GUI
 			showed that it was a collaboration leader, but it
 			did not show up as a leader when I tried to become a
 			follower with a different JS. (rkw)
+			(Fixed by rkw, 9/27/02.)
 
 797 6/17/02	OPEN	JavaScreen: figure out how to make things work if
 			the JS window is too narrow to show all of the GUI
 			elements as they are currently laid out. (rkw)
 
-798 6/26/02	OPEN	JavaScreen: JS reports mouse location even when mouse
+798 6/26/02	FIXED	JavaScreen: JS reports mouse location even when mouse
 			is outside the data area of a view. (rkw)
+			(Fixed by sjl, 8/29/2002)
 
 799 6/28/02	OPEN	JavaScreen: zoom in too much and axis labels get
 			goofed up (load test/bad_js_axes.ds, zoom in 2-3
 			times). (rkw)  (Note: this bug seems to show up
-			differently in Netscape than when you just runn the
+			differently in Netscape than when you just run the
 			JS as a stand-alone program.)
 
-800 6/28/02	OPEN	Zoom in too far and symbol disappears!!  (See
+800 6/28/02	FIXED	Zoom in too far and symbol disappears!!  (See
 			test/symbol_disappears.ds, test/symbol_disappears2.ds.)
 			(rkw)
+			(Fixed by rkw, 7/25/02.)
 
 801 7/3/02	OPEN	JavaScreen: if you try to view a directory that has
 			too many session files (e.g., the BMRB dynamic
@@ -3317,13 +3344,274 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			manipulations -> things eventually lock up (at least
 			on yola). (rkw)
 
-803 7/3/02	OPEN	JavaScreen: in log playback GUI, "Set" should be
+803 7/3/02	FIXED	JavaScreen: in log playback GUI, "Set" should be
 			"Play" or something like that. (rkw)
+			(Fixed by rkw, 8/16/02.)
 
 804 7/3/02	OPEN	JavaScreen: error message for bad log file doesn't
 			work on yola. (rkw)
 
-805 7/3/02	OPEN	JavaScreen: 4096_full.ds (with balls) caused lockup				on yola. (rkw)
+805 7/3/02	OPEN	JavaScreen: 4096_full.ds (with balls) caused lockup
+			on yola. (rkw)
+
+806 8/5/02	FIXED	JavaScreen: axes should have at least two ticks if
+			at all possible (space ticks closer together if the
+			view is very small). (sp/rkw)
+			(Fixed by rkw, 8/16/02.)
+
+807 8/5/02	FIXED	JavaScreen: doing reload twice in Netscape goofs
+			up the applet. (sp/rkw)
+			(Fixed by rkw, 8/16/02.)
+
+808 8/14/02	FIXED	Binary data works only if values are "naturally"
+			aligned as they are defined by the schema. (rkw)
+			(Fixed by rkw, 8/15/02.)
+
+809 8/14/02	OPEN	Values from some attributes of non-matching records
+			can still contribute to attribute high/low values
+			(see TDataAsciiInterp/TDataBinaryInterp::Decode).
+			(rkw)
+
+810 8/15/02	FIXED	Child view titles can go outside of the child view
+			(see session test/child_view_title.ds). (sp/rkw)
+			(Fixed by rkw, 9/27/02.)
+
+811 8/19/02	OPEN	JavaScreen: timer to destroy a non-visible applet
+			instance doesn't work if another applet instance
+			is running. (rkw)
+
+812 8/22/02	FIXED	Problem with queries in piled child views in
+			certain circumstances (see test/bad_pile_query.ds).
+			Note that if you swap View 16 and View 11 the
+			problem goes away.) (rkw)
+			(Problem seems to be with the combination of swapping
+			and piling the views.  If you swap the views and then
+			pile them, you get problems.  If you swap the views
+			(unpiled), save and restore the session, and then
+			pile them, you seem to be okay.)
+			(Fixed by rkw, 8/23/02.)
+
+813 8/22/02	FIXED	Bars are drawn wrong for negative Y values!!  (See
+			test/bad_bars.ds). (rkw)
+			(Fixed by rkw, 8/22/02.)
+
+814 8/22/02	NB	Error indicators seem to be drawn wrong for bars.
+			(rkw)
+			(Seems like the error values are absolute, not
+			relative to the bar Y values -- rkw, 8/22/02.)
+
+815 8/22/02	NB	JavaScreen: the session test/3d_goofs_up_js.ds
+			doesn't work right in the JavaScreen (the view
+			with the selected data values stays blank). (rkw)
+			(View was somehow set to 3D, and GData was not
+			sent to the JS.  rkw, 8/27/02.)
+
+816 8/23/02	OPEN	Piles, at least sometimes, generate an awful lot
+			of view refreshes (for example, View 14 in test/
+			bad_pile_query.ds). (Turn on query count in
+			View::ReportQueryDone().) (rkw)
+
+817 8/23/02	FIXED	In test/date_format_problem.ds, View 2 is not
+			drawn when the session is opened; if that view is
+			hidden and then exposed, it's drawn correctly.
+			(rkw)
+			(Fixed by rkw, 8/27/02.)
+
+818 8/23/02	FIXED	viewGoHome {View 10} in session postscript of
+			test/bad_pile_query.ds doesn't correctly update
+			the visual filters of the whole pile. (rkw)
+			(Fixed by rkw, 8/23/02.)
+
+819 8/26/02	WORK	Attempting to display a data source with recId
+			on the Y axis results in the relevant view not
+			even being created. (rkw)
+			(Workaround by rkw, 8/27/02.)
+
+820 8/30/02	OPEN	Shift-click (drill-down) on lines is awfully
+			picky about the location of the click to actually
+			find a record. (rkw)
+
+821 9/9/02	FIXED	GAttr links don't work right when the follower view
+			has "complex" symbols (including 3D). (rkw)
+			(Fixed by rkw, 9/10/02.)
+
+822 9/9/02	OPEN	Statistics values in Query dialog should not be
+			editable. (rkw)
+
+823 9/10/02	OPEN	Orientation of 360 deg. sometimes introduces
+			distortion into Rects (this is why the highlights
+			in 4096_side3h.ds are sometimes distorted). (rkw)
+
+824 9/16/02	FIXED	GAttr links show up as record links in the "Set
+			Record Link Type" dialog. (rkw)
+			(Fixed by rkw, 9/16/02.)
+
+825 9/16/02	OPEN	"Set Record Link Type" dialog doesn't automatically
+			select the current type. (rkw)
+
+826 10/1/02	OPEN	If DEVise has already parsed a schema with a given
+			"type", it ignores any new schemas with the same
+			"type", and re-uses the old one (even if the new
+			schema is in a different file and is truly different
+			from the old one). (gk/rkw)
+
+827 10/28/02	OPEN	JavaScreen: no-reload feature doesn't seem to work
+			in Mozilla. (sp/rkw)
+
+828 10/28/02	OPEN	JavaScreen: dialogs show up tiny in Mozilla. (sp/rkw)
+
+829 10/28/02	OPEN	JavaScreen: if two restart_jspops overlap, the jspop
+			log file can get goofed up. (rkw)
+
+830 11/1/02	OPEN	When switching data types in the BMRB 3D visualizations,
+			the mapping reports errors because of mismatching
+			attributes.  (This doesn't result in an actual error,
+			because things get matched up eventually; but there's
+			a temporary mismatch between the data source and
+			the attribute controlled by the parent view during
+			the course of the switch.) (rkw)
+
+831 11/5/02	FIXED	JavaScreen: if the JSPoP gets stuck in
+			DEViseCommSocket.doSendData(), it cannot respond to
+			any other commands, including JAVAC_CheckPops.  (This
+			problem is showing up on tuna at BMRB.  It seems like
+			the socket buffers are set up in such a way that if
+			the client gets goofed up, the JSPoP gets stuck trying
+			to write data to it.)  This can cause an erroneous
+			JSPoP restart, because the JSPoP fails to respond to
+			the check_connect within the timeout. (rkw)
+			(Fixed by rkw, 11/5/02.)
+
+832 11/6/02	FIXED	JavaScreen: the "The specified scrollbar value is
+			greater than the maximum scrollbar value minus the
+			scrollbar slider size." warning is showing up again
+			(this time in Mozilla). (rkw)
+			(Fixed by rkw, 11/22/02.)
+
+833 11/11/02	OPEN	JavaScreen: various combinations of forward/back/
+			reload fail in Mozilla. (rkw)
+
+834 11/15/02	OPEN	If a view tries to update a VisualLink's filter, but
+			the filter is locked, this can produce an inconsistent
+			state (linked views have different visual filters).
+			(This may be a problem mostly with automatic updates
+			in session files -- when the user does things manually,
+			the VisualLink may get run before it really becomes
+			a problem.) (rkw)
+
+835 11/15/02	OPEN	DevAxis::OptimizeTickMarks() can get into an
+			infinite recursion. (rkw)
+
+836 11/18/02	OPEN	If two cursors in the same view have the same color
+			and end up on top of each other, they become invisible.
+			(rkw)
+
+837 11/19/02	OPEN	Sessions with child views can get into infinite loops
+			(see CondorTest/UserWeekInfiniteLoop.ds). (rkw)
+			(Seems to have something to do with trying to draw
+			the same child view more than once in a parent view.)
+
+838 11/20/02	OPEN	Closing a session during a redraw can cause an
+			assertion (try CondorTest/UserThumb.ds). (rkw)
+
+839 12/03/02	NB	JavaScreen: when opening a session (e.g., opening
+			a temporary session when adding a collaboration
+			follower) warnings are not distinguished from errors.
+			(rkw)
+			(See bug 841.)
+
+840 12/03/02	NB	JavaScreen: when a collaboration follower connects,
+			if there is a problem with the temporary session file
+			created to get the follower in the right state, the
+			leader and the follower both get in the wrong state.
+			(rkw)
+			(See bug 841.)
+
+841 12/03/02	FIXED	JavaScreen: collaboration doesn't work right on
+			sessions with postscripts. (rkw)
+			(Fixed by rkw, 12/3/02.)
+
+842 12/05/02	FIXED	JavaScreen: after more than one client gets a
+			"connection reset by peer" error the JSPoP can get
+			into a state where it's continually doing client
+			switches without actually running any commands.
+			(Seen at BMRB on albacore.)
+			(Fixed by rkw, 12/5/02.)
+
+843 12/13/02	FIXED	JavaScreen: the Wavelet-IDR html code still creates
+			too many applet instances (seems to be related to
+			doing form submit rather than reload). (rkw)
+			(Fixed by rkw, 12/17/02.)
+
+844 12/13/02	FIXED	JavaScreen: drawing rubberband lines in a child view
+			whose parent has many other children is slow.  (This
+			is at least partly because the axes of all child views
+			are being redraw on every rubberband drag.) (sp/rkw)
+			(See also bug 845.)  (Note: we're redrawing the
+			*entire* canvas every time the rubberband line
+			changes.)
+			(Fixed by rkw, 12/17/02.)
+			
+845 12/13/02	OPEN	JavaScreen: repaints do too much work -- axes and
+			GData are redrawn from scratch, for example.  Can
+			we buffer an image that already has that stuff drawn,
+			and just redraw cursors and rubberband lines?
+			(sp/rkw)
+			(See also bugs 591, 628, 777.)
+
+846 12/13/02	OPEN	JavaScreen: redrawing a view with a large number of
+			child views is too slow (perhaps because of destroying
+			and re-creating the child views). (sp/rkw)
+
+847 11/15/02	OPEN	Home on multiple visual links is not transitive
+			(see Test/transitive_link_failure.ds). (rkw)
+
+848 12/16/02	OPEN	JavaScreen: in collaboration mode, when the leader
+			zooms, follower(s) should get some visual indication
+			of which regoin is being zoomed on. (ks/rkw)
+
+849 12/17/02	OPEN	JavaScreen: dragging cursors should also not repaint
+			the whole canvas. (rkw)  (See also bug 844.)
+
+850 12/18/02	NLR	JavaScreen (in Mozilla, at least): load jsa.html,
+			exit, do a reload in the browser:
+			you get the error message "You do not have any opened
+			session!" and can't restart the JavaScreen. If you
+			don't click "Exit" in the JSA before doing the reload,
+			the JSA starts, but then locks up after showing the
+			session. (rkw)
+			(Okay, this only happens when the reloadapplet
+			parameter is false.  rkw, 12/18/02.) 
+
+851 01/02/03	FIXED	Bars (and maybe also Rects) seem to be about one pixel
+			too big in both the X and Y directions (see
+			Test/Bug851.ds) (wenger)
+			(Fixed by wenger, 1/7/03.)
+
+852 01/02/03	FIXED	X- and Y-axis ticks may be off by one pixel from data
+			values. (wenger)
+
+853 01/02/03	FIXED	Minimum-size Rects seem to be larger than one pixel.
+			(wenger)
+			(Fixed by wenger, 1/7/03.)
+
+854 01/03/03	FIXED	JavaScreen: X- and Y-axis ticks may be off by one pixel
+			from data values. (wenger)
+			(Fixed by wenger, 1/7/03.)
+
+855 01/03/03	FIXED	Vertical lines at filter.xhi and horizontal lines at
+			filter.yhi do not show up (it looks like WindowRep
+			transforms are not set up correctly). (wenger)
+
+856 01/04/03	FIXED	Axis tick marks at filter.xhi and filter.yhi are not
+			drawn (for example, if the axes go from 0.0 to 1.0
+			the 1.0 ticks are not drawn). (wenger)
+
+857 01/07/03	OPEN	The bottommost pixel of the Y axis line is sometimes
+			not drawn. (wenger)
+
+858 01/07/03	OPEN	Bars in the CondorTest/UserWeek.ds session miss the
+			X axis by one pixel. (wenger)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

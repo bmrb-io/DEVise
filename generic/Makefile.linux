@@ -15,6 +15,13 @@
 # $Id$
 
 # $Log$
+# Revision 1.26.4.1  2003/01/09 16:51:20  wenger
+# Updated linux and solaris dependencies; solsparc now uses Tcl/Tk 8.0.
+#
+# Revision 1.26  2002/02/04 16:37:23  wenger
+# Compiler is explicitly set to gcc 2.95.3, updated dependencies, using
+# Tcl and Tk 8.3 so DEVise will compile and link on RedHat 7.2.
+#
 # Revision 1.25  2001/12/28 18:34:13  wenger
 # Fixed bugs 727 and 730 (problems with line graphs in DEVise).
 #
@@ -113,9 +120,9 @@ DeviseBatchClient.o: /usr/include/endian.h /usr/include/bits/endian.h
 DeviseBatchClient.o: /usr/include/sys/select.h /usr/include/bits/select.h
 DeviseBatchClient.o: /usr/include/bits/sigset.h /usr/include/bits/time.h
 DeviseBatchClient.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h
-DeviseBatchClient.o: DeviseBatchClient.h ../graphics/DeviseTypes.h
-DeviseBatchClient.o: /usr/include/values.h /usr/include/limits.h
-DeviseBatchClient.o: /usr/include/bits/wordsize.h
+DeviseBatchClient.o: /usr/include/string.h DeviseBatchClient.h
+DeviseBatchClient.o: ../graphics/DeviseTypes.h /usr/include/values.h
+DeviseBatchClient.o: /usr/include/limits.h /usr/include/bits/wordsize.h
 DeviseBatchClient.o: /usr/include/bits/posix1_lim.h
 DeviseBatchClient.o: /usr/include/bits/local_lim.h
 DeviseBatchClient.o: /usr/include/linux/limits.h
@@ -136,14 +143,15 @@ DeviseClient.o: /usr/include/endian.h /usr/include/bits/endian.h
 DeviseClient.o: /usr/include/sys/select.h /usr/include/bits/select.h
 DeviseClient.o: /usr/include/bits/sigset.h /usr/include/bits/time.h
 DeviseClient.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h
-DeviseClient.o: DeviseClient.h /usr/include/tk.h /usr/include/tcl.h
-DeviseClient.o: /usr/include/tclDecls.h /usr/include/X11/Xlib.h
-DeviseClient.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
-DeviseClient.o: /usr/include/X11/Xosdefs.h /usr/include/tkDecls.h
-DeviseClient.o: ../graphics/DeviseTypes.h /usr/include/values.h
-DeviseClient.o: /usr/include/limits.h /usr/include/bits/wordsize.h
-DeviseClient.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
-DeviseClient.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+DeviseClient.o: /usr/include/string.h DeviseClient.h /usr/include/tk.h
+DeviseClient.o: /usr/include/tcl.h /usr/include/tclDecls.h
+DeviseClient.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+DeviseClient.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+DeviseClient.o: /usr/include/tkDecls.h ../graphics/DeviseTypes.h
+DeviseClient.o: /usr/include/values.h /usr/include/limits.h
+DeviseClient.o: /usr/include/bits/wordsize.h /usr/include/bits/posix1_lim.h
+DeviseClient.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
+DeviseClient.o: /usr/include/bits/posix2_lim.h
 DeviseClient.o: /usr/lib/gcc-lib/i386-redhat-linux/2.96/include/float.h
 DeviseClient.o: ../graphics/DevStatus.h ../csgroup/TclClient.h
 DeviseClient.o: ../csgroup/Client.h

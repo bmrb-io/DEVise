@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,8 +16,27 @@
   $Id$
 
   $Log$
+  Revision 1.81  2002/06/17 19:41:06  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
   Revision 1.80  2002/05/01 21:30:11  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.79.4.7  2003/01/09 22:21:58  wenger
+  Added "link multiplication factor" feature; changed version to 1.7.14.
+
+  Revision 1.79.4.6  2002/11/15 22:44:34  wenger
+  Views with no TData records don't contribute to filter values on 'home'
+  (this helps to fix some problems with the Condor user visualizations);
+  added cursorHome command; changed version to 1.7.13.
+
+  Revision 1.79.4.5  2002/09/21 23:24:37  wenger
+  Fixed a few more special-case memory leaks.
+
+  Revision 1.79.4.4  2002/09/02 21:29:33  wenger
+  Did a bunch of Purifying -- the biggest change is storing the command
+  objects in a HashTable instead of an Htable -- the Htable does a bunch
+  of ugly memory copying.
 
   Revision 1.79.4.3  2002/06/11 17:27:37  wenger
   Added an option for a view to not "contribute" to home on its visual
@@ -436,8 +455,6 @@
 
 //#define INLINE_TRACE
 #include "debug.h"
-#include "htable.h"
-#include "datum.h"
 #include "CmdContainer.h"
 #include "DeviseServer.h"
 #include "Csprotocols.h"
@@ -448,6 +465,8 @@
 #include "Session.h"
 #include "Init.h"
 #include "JavaScreenCmd.h"
+
+template class HashTable<char *, DeviseCommand *>;
 
 //#define DEBUG
 #define DEBUG_LOG
@@ -462,9 +481,6 @@
 }
 
 static CmdContainer*	cmdContainerP = NULL;
-static const int CMD_HASHSIZE = 4;
-int f(const Datum&,int);
-static Htable 	cmdDb(CMD_HASHSIZE, &f);
 
 int GetDisplayImageAndSize(ControlPanel *control, int port, char *imageType);
 int GetWindowImageAndSize(ControlPanel *control, int port, char *imageType,
@@ -493,6 +509,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 #if defined(DEBUG)
     printf("CmdContainer::CmdContainer()\n");
 #endif
+
+	_commands = new HashTable<char *, DeviseCommand *>(128, CmdHash, CmdComp);
 
 	DeviseCommand::setDefaultControl(defaultControl);
 	this->make = make;
@@ -801,12 +819,32 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(sessionIsDirty)
 	REGISTER_COMMAND(setDoHomeOnVisLink)
 	REGISTER_COMMAND(getDoHomeOnVisLink)
+	REGISTER_COMMAND(cursorHome)
+	REGISTER_COMMAND(setLinkMultFact)
+	REGISTER_COMMAND(getLinkMultFact)
 }
 
 CmdContainer::~CmdContainer()
 {
+#if defined(DEBUG)
+    printf("CmdContainer::~CmdContainer()\n");
+#endif
+
+	// Delete the command objects (note that the command name strings
+	// are static).
+	int buckIdx;
+	void *next;
+	_commands->InitRetrieveEntries(buckIdx, next);
+	char *name;
+	DeviseCommand *cmd;
+	while (_commands->RetrieveEntries(buckIdx, next, name, cmd) == 0) {
+		delete cmd;
+	}
+
+	// Delete the actual command HashTable.
+	delete _commands;
+
 	// clean logfile upon completion
-	//TEMP -- clean out Htable here?
 }
 
 int
@@ -977,42 +1015,52 @@ CmdContainer::RunOneCommand(int argc, const char* const *argv, ControlPanel* con
 void
 CmdContainer::insertCmd(char* cmdName, DeviseCommand* cmdp, int cmdsize)
 {
-	Datum	*key = new (Datum);
-	Datum	*data = new (Datum);
-	key->set(cmdName, strlen(cmdName) +1);
-	data->set((char*)cmdp, cmdsize); // Note: this copies contents of *cmdp
-
-	cmdDb.insert(key,data);
-	Datum	*datap;
-	datap = cmdDb.get(*key);
-	return;
+    _commands->insert(cmdName, cmdp);
 }
 
 DeviseCommand*
 CmdContainer::lookupCmd(const char* cmdName)
 {
 	DeviseCommand* 	cmdp = NULL;
-	Datum	key(cmdName,strlen(cmdName)+1);
-	Datum	*datap;
-
-	datap = cmdDb.get(key);
-	if (datap != NULL)
-	{
-		cmdp = (DeviseCommand*)datap->data();
+	if (_commands->lookup((char *)cmdName, cmdp) != 0) {
+	    cmdp = NULL;
 	}
+
 	return cmdp;
 }
 
 void
 CmdContainer::deleteCmd(char* cmdName)
 {
-	DeviseCommand* 	cmdp;
-	Datum	key = Datum(cmdName,strlen(cmdName)+1);
-	cmdDb.del(key);
+	DeviseCommand *cmdp = lookupCmd(cmdName);
+	if (cmdp != NULL) {
+	    delete cmdp;
+	}
+	_commands->remove(cmdName);
 }
 
 ostream&
 operator <<(ostream&os, const CmdContainer& cc)
 {
 	return os;
+}
+
+// Note that this is a bad hash function if there are more than 256 buckets.
+int
+CmdContainer::CmdHash(char *&index, int numBuckets)
+{
+	char *cp = index;
+    unsigned char hash = 0;
+	while (*cp != '\0') {
+		hash ^= *cp;
+	    cp++;
+	}
+
+	return hash % numBuckets;
+}
+
+int
+CmdContainer::CmdComp(char *&index1, char *&index2)
+{
+    return strcmp(index1, index2);
 }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.13.14.1  2002/09/21 23:24:37  wenger
+  Fixed a few more special-case memory leaks.
+
+  Revision 1.13  2000/04/07 17:36:09  wenger
+  String file path in session file is specified with $DEVISE_SESSION.
+
   Revision 1.12  2000/03/14 17:05:33  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -81,6 +87,7 @@
 #include "Util.h"
 #include "DevError.h"
 #include "DList.h"
+#include "DevError.h"
 
 //#define DEBUG_STRINGS
 
@@ -175,22 +182,32 @@ StringStorage::Insert(char *string, int &key)
     // found string in table
     return 0;
   }
+
+#if defined(DEBUG_STRINGS)
+  printf("Inserting <%s> into hash table\n", string);
+  printf("  %d entries in hash table before insert\n", _strings.num());
+#endif
+
   _sorted = false;
   key = _stringNum++;
   char *tmpString = CopyString(string);
+
   int code = _strings.insert(tmpString, key);
-#if defined(DEBUG_STRINGS)
-  printf("Inserting <%s> into hash table\n", string);
-  printf("  %d entries in hash table\n", _strings.num());
-#endif
   if (code < 0) {
+    reportErrNosys("String insert failed");
     FreeString(tmpString);
     return code;
   }
+
   code = _keys.insert(key, tmpString);
-  if (code >= 0)
-    return 1;
-  return code;
+  if (code < 0) {
+    reportErrNosys("Key insert failed");
+    _strings.remove(tmpString);
+    FreeString(tmpString);
+    return code;
+  }
+
+  return 1;
 }
 
 int
@@ -201,15 +218,16 @@ StringStorage::Clear()
 #endif
 
   // Delete the strings themselves.
-  _strings.InitRetrieveIndex();
-  void *current = NULL;
-  char **string;
+  int buckIdx;
+  void *next;
+  _strings.InitRetrieveEntries(buckIdx, next);
+  char *string;
   int key;
-  while (_strings.RetrieveIndex(current, string, key) == 0) {
+  while (_strings.RetrieveEntries(buckIdx, next, string, key) == 0) {
 #if defined(DEBUG_STRINGS)
     printf("  deleting <%s>\n", *string);
 #endif
-    FreeString(*string);
+    FreeString(string);
   }
 
   int code = _strings.clear();

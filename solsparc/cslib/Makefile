@@ -15,6 +15,16 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4.22.2  2003/01/10 19:49:56  wenger
+#  Argh.  Changed all of the Solaris stuff back so that DEVise compiles
+#  on Solaris 2.7 (cardinal).
+#
+#  Revision 1.4.22.1  2003/01/09 16:52:29  wenger
+#  Updated linux and solaris dependencies; solsparc now uses Tcl/Tk 8.0.
+#
+#  Revision 1.4  1998/06/18 21:41:39  wenger
+#  Client/server library related fixes and updates.
+#
 #  Revision 1.3  1998/03/04 18:41:30  wenger
 #  Added <arch>/Makefile.config files that now hold stuff like the
 #  PERL_CORE definitions so those don't have to be repeated in all

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2000
+  (c) Copyright 1998-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.8.12.1  2002/09/05 19:14:03  wenger
+  Implemented GData attribute value links (but not GUI for creating
+  them).
+
+  Revision 1.8  2001/01/08 20:32:53  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.6.2.1  2000/10/18 20:32:10  wenger
   Merged changes from fixed_bug_616 through link_gui_improvements onto
   the branch.
@@ -84,8 +92,9 @@ DeviseLink::DeviseLink(const char *name, VisualFlag linkFlag)
 
 DeviseLink::~DeviseLink()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-  printf("DeviseLink(0x%p)::~DeviseLink(%s)\n", this, _name);
+  printf("DeviseLink(%s)::~DeviseLink(%s)\n", GetName(), _name);
 #endif
 
   View::DeleteViewCallback(this);

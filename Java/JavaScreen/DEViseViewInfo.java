@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,11 +22,34 @@
 // $Id$
 
 // $Log$
+// Revision 1.58  2002/07/19 17:06:48  wenger
+// Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+//
 // Revision 1.57  2002/06/17 19:40:15  wenger
 // Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 //
 // Revision 1.56  2002/05/01 21:28:59  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.55.2.8  2002/08/02 15:34:01  wenger
+// Put in some kind of kludgey fixes for the fact that DecimalFormat
+// does not work correctly in Netscape 4.x.
+//
+// Revision 1.55.2.7  2002/08/01 17:38:22  wenger
+// Massive reorganization of axis labeling and mouse location display
+// code: both now use common number formatting code, which uses DecimalFormat
+// to do the actual work; axis tick locations are calculated differently,
+// so we don't try to draw out-of-window ticks; tick labels are constrained
+// to fit within views; etc., etc.
+//
+// Revision 1.55.2.6  2002/07/26 18:02:20  wenger
+// Removed unused methods.
+//
+// Revision 1.55.2.5  2002/07/26 17:32:29  wenger
+// More format cleanup.
+//
+// Revision 1.55.2.4  2002/07/25 21:19:30  wenger
+// Cleaned up some really nasty formatting in here.
 //
 // Revision 1.55.2.3  2002/06/19 18:01:19  sjlong
 // Fixed Bug 742: (bug: mouse location would flicker even when
@@ -126,9 +149,12 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.math.*;
+import java.text.*;
 
 public class DEViseViewInfo extends Panel
 {
+    private static final int DEBUG = 0;
+
     private jsdevisec jsc = null;
     Vector images = null;
 
@@ -248,765 +274,462 @@ public class DEViseViewInfo extends Panel
 
     public static String viewParser(float x, String format)
     {
-	String result = "" + x;
-	if (format  == null) 
-	    return "" + x;
-	try{
-	    PrintfFormatter pf = new PrintfFormatter(format);
-	    result = pf.form((double) x);
-	    return result;
+	String result = String.valueOf(x);
+
+	if (format  != null) {
+	    try{
+	        PrintfFormatter pf = PrintfFormatter.get(format);
+	        result = pf.form((double) x);
+	    } catch(Exception e){
+	        e.printStackTrace();
+	    }
 	}
-	catch(Exception e){
-	    e.printStackTrace();
-	}
+
 	return result;
     }
     
+    // This should be called whenever we close a session, just to make
+    // sure we keep the number of format objects to a reasonable level.
+    public static void clearFormatters()
+    {
+        PrintfFormatter.clear();
+        GFormat.clear();
+        EFormat.clear();
+        FFormat.clear();
+    }
 }
 
 
-
-
-    
-
+// ========================================================================
 /**
  * A class for formatting numbers that follows printf conventions.
 **/
 
 class PrintfFormatter { 
+    private static final int DEBUG = 0;
     
     /* cFormats the number following printf conventions.  */
     
-    private int width;
-    private int precision;
-    private String pre;
-    private String post;
-    private boolean leading_zeroes;
-    private boolean show_plus;
-    private boolean alternate;
-    private boolean show_space;
-    private boolean left_align;
-    private char fmt; 
+    private int width = 0;
+    private int precision = -1;
+    private String pre = "";
+    private String post = "";
+    private boolean leading_zeroes = false;
+    private boolean show_plus = false;
+    private boolean alternate = false;
+    private boolean show_space = false;
+    private boolean left_align = false;
+    private char fmt = ' ';
+
+    private MyFormat _formatter = null;
+
+    private static Hashtable _pffList = new Hashtable();
+
+    // --------------------------------------------------------------------
+    // Keep a list of PrintfFormatter objects, indexed by the format
+    // string, so we don't keep creating duplicates of ones we already
+    // have.
+    public static PrintfFormatter get(String format)
+    {
+	PrintfFormatter pff = (PrintfFormatter)_pffList.get(format);
+	if (pff == null) {
+            pff = new PrintfFormatter(format);
+	    _pffList.put(format, pff);
+	}
+
+	return pff;
+    }
+
+    // --------------------------------------------------------------------
+    // Clear the list of PrintfFormatter objects.
+    public static void clear()
+    {
+	_pffList.clear();
+    }
     
-    public  PrintfFormatter(String s)
+    // --------------------------------------------------------------------
+    public  PrintfFormatter(String format)
     {  
-	width = 0;
-	precision = -1;
-	pre = "";
-	post = "";
-	leading_zeroes = false;
-	show_plus = false;
-	alternate = false;
-	show_space = false;
-	left_align = false;
-	fmt = ' ';  
+        if (DEBUG >= 1) {
+            System.out.println("PrintfFormatter constructor(" + format + ")");
+        }
 	
 	int state = 0;
-	int length = s.length();
-	int parse_state = 0;
-	
+	int length = format.length();
+
 	// 0 = prefix, 1 = flags, 2 = width, 3 = precision,
 	// 4 = format, 5 = end
-	
+	int parse_state = 0;
 	
 	int i = 0;
-	
+
+	//TEMP -- I'm sure this parsing code can use cleaning up, but
+	// I am leaving it for now.  RKW 2002-08-01.
 	
 	// Analysing for the presence of %
-	while (parse_state == 0)
-	    {  if (i >= length) parse_state = 5;
-	    else if (s.charAt(i) == '%')
-		{  
-		    if (i < length - 1)
-			{  if (s.charAt(i + 1) == '%')
-			    {  pre = pre + '%';
-			    i++;
-			    }
-			else{ 
-			    parse_state = 1;
-			}
-			}
-		    else {
-			throw new java.lang.IllegalArgumentException();
+	while (parse_state == 0) {
+	    if (i >= length) {
+	        parse_state = 5;
+	    } else if (format.charAt(i) == '%') {
+	        if (i < length - 1) {
+		    if (format.charAt(i + 1) == '%') {
+		        pre = pre + '%';
+		        i++;
+		    } else { 
+			parse_state = 1;
 		    }
+		} else {
+			throw new java.lang.IllegalArgumentException();
 		}
-	    else{
-		pre = pre + s.charAt(i);
+	    } else {
+		pre = pre + format.charAt(i);
 	    }
+
 	    i++;
-	    
-	    }
+	}
+
 	// Test for the presence of  space, plus, zeroes, alternate
-	while (parse_state == 1)
-	    {  
-		if (i >= length) parse_state = 5;
-		else if (s.charAt(i) == ' '){show_space = true; i++;}
-		else if (s.charAt(i) == '-'){left_align = true; i++;}
-		else if (s.charAt(i) == '+'){show_plus = true;i++;}
-		else if (s.charAt(i) == '0'){leading_zeroes = true; i++;}
-		else if (s.charAt(i) == '#'){alternate = true; i++;}
-		
-		parse_state = 2;
+	while (parse_state == 1) {
+	    if (i >= length) {
+	        parse_state = 5;
+	    } else if (format.charAt(i) == ' ') {
+	        show_space = true; i++;
+	    } else if (format.charAt(i) == '-') {
+	        left_align = true; i++;
+	    } else if (format.charAt(i) == '+') {
+	        show_plus = true;i++;
+	    } else if (format.charAt(i) == '0') {
+	        leading_zeroes = true; i++;
+	    } else if (format.charAt(i) == '#') {
+	        alternate = true; i++;
 	    }
+		
+	    parse_state = 2;
+	}
 	
 	// calculation of width or test for precision
 	
-	while (parse_state == 2)
-	    {  if (i >= length) parse_state = 5;
-	    else if ('0' <= s.charAt(i) && s.charAt(i) <= '9')
-		{  width = width * 10 + s.charAt(i) - '0';
+	while (parse_state == 2) {
+	    if (i >= length) {
+	        parse_state = 5;
+	    } else if ('0' <= format.charAt(i) && format.charAt(i) <= '9') {
+	        width = width * 10 + format.charAt(i) - '0';
 		i++;
-		}
-	    else if (s.charAt(i) == '.')
-		{  parse_state = 3;
+	    } else if (format.charAt(i) == '.') {
+	        parse_state = 3;
 		precision = 0;
 		i++;
-		} else{
-		    parse_state = 4;
-		}
-	    
+	    } else {
+	        parse_state = 4;
 	    }
+	    
+	}
 	
 	// calculation of precision 
 	
-	while (parse_state == 3)
-	    {  if (i >= length) parse_state = 5;
-	    else if ('0' <= s.charAt(i) && s.charAt(i) <= '9')
-		{  precision = precision * 10 + s.charAt(i) - '0';
+	while (parse_state == 3) {
+	    if (i >= length) {
+	        parse_state = 5;
+	    } else if ('0' <= format.charAt(i) && format.charAt(i) <= '9') {
+	        precision = precision * 10 + format.charAt(i) - '0';
 		parse_state = 4;
 		i++;
-		}
-	    else
+	    } else {
 		parse_state = 4;
 	    }
+	}
 	
 	// determination of fmt - format
 	
-	if (parse_state == 4)
-	    {  if (i >= length) parse_state = 5;
-	    else fmt = s.charAt(i);
-	    i++;
+	if (parse_state == 4) {
+	    if (i >= length) {
+	        parse_state = 5;
+	    } else {
+	        fmt = format.charAt(i);
 	    }
+
+	    i++;
+	}
 	
-	if(fmt  =='g' || fmt =='G'){
-	    
+	if (fmt  =='g' || fmt =='G') {
 	    width = precision;
 	}
 	
 	// determination of post fix.
 	
-	if (i < length)
-	    post = s.substring(i, length);
-	
-    }
-    
-    /**
-     * prints a formatted number following printf conventions
-     */
+	if (i < length) {
+	    post = format.substring(i, length);
+	}
 
-    public static void print(java.io.PrintStream s, String fmt, double x)
-    {
-        s.print(new PrintfFormatter(fmt).form(x));
-    }
-    
-    /**
-     * prints a formatted number following printf conventions
-     */
-    public static void print(java.io.PrintStream s, String fmt, long x)
-    { 
-	s.print(new PrintfFormatter(fmt).form(x));
-    }
-    
-    /**
-     * prints a formatted number following printf conventions
-     */
-    
-    public static void print(java.io.PrintStream s, String fmt, char x)
-    { 
-	s.print(new PrintfFormatter(fmt).form(x));
-    }
-    
-    /**
-     * prints a formatted number following printf conventions
-     */
-    
-    public static void print(java.io.PrintStream s, String fmt, String x)
-    { 
-	s.print(new PrintfFormatter(fmt).form(x));
-    }
-    
-    /**
-     * Converts a string of digits (decimal, octal or hex) to an integer
-     */
-    
-    public static int atoi(String s)
-    { 
-	return (int)atol(s);
-    }
-    
-    /**
-     * Converts a string of digits (decimal, octal or hex) to a long integer
-     */
-    
-    public static long atol(String s)
-    {  
-	int i = 0;
-	
-	while (i < s.length() && Character.isWhitespace(s.charAt(i))) i++;
-	if (i < s.length() && s.charAt(i) == '0') {
-	    if (i + 1 < s.length() &&
-	      (s.charAt(i + 1) == 'x' || s.charAt(i + 1) == 'X')) {
-		return parseLong(s.substring(i + 2), 16);
-	    } else {
-	        return parseLong(s, 8);
-	    }
+
+	if (precision < 0) precision = 6;
+        
+        if (fmt =='g' || fmt =='G') {
+	    _formatter = GFormat.get(precision);
+	} else if (fmt == 'f' || fmt == 'F') {
+	    _formatter = FFormat.get(precision);
+	} else if (fmt == 'e' || fmt == 'E') {
+	    _formatter = EFormat.get(precision);
 	} else {
-	    return parseLong(s, 10);
-        }
+	    throw new java.lang.IllegalArgumentException();
+	}
     }
     
-    //TEMP -- what is this?  why don't we use Long.parseLong???
-    private static long parseLong(String s, int base)
-    {
-	int i = 0;
-	int sign = 1;
-	long r = 0;
-	
-	while (i < s.length() && Character.isWhitespace(s.charAt(i))) i++;
-	if (i < s.length() && s.charAt(i) == '-') { sign = -1; i++; }
-	else if (i < s.length() && s.charAt(i) == '+') { i++; }
-	while (i < s.length())
-	    {  char ch = s.charAt(i);
-	    if ('0' <= ch && ch < '0' + base)
-		r = r * base + ch - '0';
-	    else if ('A' <= ch && ch < 'A' + base - 10)
-		r = r * base + ch - 'A' + 10 ;
-	    else if ('a' <= ch && ch < 'a' + base - 10)
-		r = r * base + ch - 'a' + 10 ;
-	    else
-		return r * sign;
-	    i++;
-	    }
-	return r * sign;
-    }
-    
-    /**
-     * Converts a string of digits to an double
-     */
-    
-    public static double atof(String s)
-    { 
-	int i = 0;
-	int sign = 1;
-	double r = 0; // integer part
-	double f = 0; // fractional part
-	double p = 1; // exponent of fractional part
-	int state = 0; // 0 = int part, 1 = frac part
-	
-	while (i < s.length() && Character.isWhitespace(s.charAt(i))) i++;
-	if (i < s.length() && s.charAt(i) == '-') { sign = -1; i++; }
-	else if (i < s.length() && s.charAt(i) == '+') { i++; }
-	while (i < s.length())
-	    {  char ch = s.charAt(i);
-	    if ('0' <= ch && ch <= '9')
-		{  if (state == 0)
-		    r = r * 10 + ch - '0';
-		else if (state == 1)
-		    {  p = p / 10;
-		    r = r + p * (ch - '0');
-		    }
-		}
-	    else if (ch == '.')
-		{  if (state == 0) state = 1;
-		else return sign * r;
-		}
-	    else if (ch == 'e' || ch == 'E')
-		{  long e = (int)parseLong(s.substring(i + 1), 10);
-		return sign * r * Math.pow(10, e);
-		}
-	    else return sign * r;
-	    i++;
-	    }
-	return sign * r;
-    }
-    
+    // --------------------------------------------------------------------
     /**
      * cFormats a double into a string (like sprintf in C)
      */
-    
     public String form(double x)
     { 
-	String r;
-
-	if (precision < 0) precision = 6;
-        if(fmt =='g' || fmt =='G'){
-	    GFormat gf = new GFormat(precision);
-	    return gf.format(x);
-        }
-
-	int s = 1;
-	if (x < 0) { x = -x; s = -1; }
-	if (fmt == 'f')
-	    r = fixed_format(x);
-	else if (fmt == 'e' || fmt == 'E' || fmt == 'g' || fmt == 'G')
-	    r = exp_format(x);
-	else {
-	    throw new java.lang.IllegalArgumentException();
-	}
-	
-	return pad(sign(s, r));
+        return _formatter.format(x);
     }
     
-    /**
-     * cFormats a long integer into a string (like sprintf in C)
-     */
-    
-    public String form(long x)
-    { 
-	String r;
-	int s = 0;
-	if (fmt == 'd' || fmt == 'i')
-	    {  s = 1;
-	    if (x < 0) { x = -x; s = -1; }
-	    r = "" + x;
-	    }
-	else if (fmt == 'o')
-	    r = convert(x, 3, 7, "01234567");
-	else if (fmt == 'x')
-	    r = convert(x, 4, 15, "0123456789abcdef");
-	else if (fmt == 'X')
-	    r = convert(x, 4, 15, "0123456789ABCDEF");
-	else {
-	    throw new java.lang.IllegalArgumentException();
-	}
-	
-	return pad(sign(s, r));
-    }
-    
-    /**
-     * cFormats a character into a string (like sprintf in C)
-     */
-    
-    public String form(char c)
-    {  
-	if (fmt != 'c'){
-	    throw new java.lang.IllegalArgumentException();
-	}
-	
-	String r = "" + c;
-	return pad(r);
-    }
-    
-    /**
-     * cFormats a string into a larger string (like sprintf in C)
-     */
-    
-    public String form(String s)
-    { 
-	if (fmt != 's'){
-	    throw new java.lang.IllegalArgumentException();}
-	if (precision >= 0) s = s.substring(0, precision);
-	return pad(s);
-    }
-    
-    
-    private static String repeat(char c, int n)
+    // --------------------------------------------------------------------
+    // Return a String consisting of n cs.
+    public static String repeat(char c, int n)
     {  
 	if (n <= 0) return "";
+
 	StringBuffer s = new StringBuffer(n);
-	for (int i = 0; i < n; i++) s.append(c);
+
+	for (int i = 0; i < n; i++) {
+	    s.append(c);
+	}
+
 	return s.toString();
     }
-    
-    private static String convert(long x, int n, int m, String d)
-    { 
-	if (x == 0) return "0";
-	String r = "";
-	while (x != 0)
-	    {  r = d.charAt((int)(x & m)) + r;
-	    x = x >>> n;
-	    }
-	return r;
-    }
-    
-    private String pad(String r)
-    {  
-	String p = repeat(' ', width - r.length());
-	if (left_align) return pre + r + p + post;
-	else return pre + p + r + post;
-    }
-    
-    private String sign(int s, String r)
-    { 
-	String p = "";
-	if (s < 0) p = "-";
-	else if (s > 0)
-	    {  if (show_plus) p = "+";
-	    else if (show_space) p = " ";
-	    }
-	else
-	    {  if (fmt == 'o' && alternate && r.length() > 0 && r.charAt(0) != '0') p
-											= "0";
-	    else if (fmt == 'x' && alternate) p = "0x";
-	    else if (fmt == 'X' && alternate) p = "0X";
-	    }
-	int w = 0;
-	if (leading_zeroes)
-	    w = width;
-	else if ((fmt == 'd' || fmt == 'i' || fmt == 'x' || fmt == 'X' || fmt == 'o')
-		 && precision > 0) w = precision;
-	
-	return p + repeat('0', w - p.length() - r.length()) + r;
-    }
-    
-    private String fixed_format(double d)
-    { 
-	String f = "";
-	
-	//  if (d > 0x7FFFFFFFFFFFFFFFL) return exp_format(d);
-	
-	long l = (long)(precision == 0 ? d + 0.5 : d);
-	f = f + l;
-	
-	double fr = d - l; // fractional part
-	// if (fr >= 1 || fr < 0) return exp_format(d);
-	
-	return f + frac_part(fr);
-    }
-    
-    private String frac_part(double fr)
-    // precondition: 0 <= fr < 1
-    {  
-	String z = "";
-	if (precision > 0)
-	    {  double factor = 1;
-	    String leading_zeroes = "";
-	    for (int i = 1; i <= precision && factor <= 0x7FFFFFFFFFFFFFFFL; i++)
-		{  factor *= 10;
-		leading_zeroes = leading_zeroes + "0";
-		}
-	    long l = (long) (factor * fr + 0.5);
-	    
-	    z = leading_zeroes + l;
-	    z = z.substring(z.length() - precision, z.length());
-	    }
-	
-	if (precision > 0 || alternate) z = "." + z;
-	if ((fmt == 'G' || fmt == 'g') && !alternate)
-	    // remove trailing zeroes and decimal point
-	    {  int t = z.length() - 1;
-	    z = z.substring(0, t + 1);
-	    }
-	return z;
-    }
-    
-    private String exp_format(double d)
-    {  
-	String f = "";
-	int e = 0;
-	double dd = d;
-	double factor = 1;
-	while (dd > 10) { e++; factor /= 10; dd = dd / 10; }
-	if ((fmt == 'g' || fmt == 'G') && e >= -4 && e < precision)
-	    return fixed_format(d);
+}
 
-	d = d * factor;
-	f = f + fixed_format(d);
-	
-	if (fmt == 'e' || fmt == 'g')
-	    f = f + "e";
-	else
-	    f = f + "E";
-	
-	String p = "000";
-	if (e >= 0)
-	    {  f = f + "+";
-	    p = p + e;
-	    }
-	else
-	{
-	  int temp = -e;
-	  f = f + "-";
-	  p = p + temp;
+// ------------------------------------------------------------------------
+interface MyFormat {
+    public String format(double value);
+}
+
+// ========================================================================
+// Format a number in printf %g format.
+class GFormat implements MyFormat {
+    private static final int DEBUG = 0;
+    
+    int _precision ;
+
+    EFormat _ef;
+    FFormat _ff;
+
+    private static Hashtable _gfList = new Hashtable();
+
+    // --------------------------------------------------------------------
+    // Keep a list of GFormat objects, indexed by the precision, so we
+    // don't keep creating duplicates of ones we already have.
+    public static GFormat get(int precision)
+    {
+	GFormat gf = (GFormat)_gfList.get(new Integer(precision));
+	if (gf == null) {
+            gf = new GFormat(precision);
+	    _gfList.put(new Integer(precision), gf);
+	}
+
+	return gf;
+    }
+
+    // --------------------------------------------------------------------
+    // Clear the list of GFormat objects.
+    public static void clear()
+    {
+	_gfList.clear();
+    }
+
+    // --------------------------------------------------------------------
+    private GFormat(int precision) {
+        if (DEBUG >= 1) {
+            System.out.println("GFormat constructor(" + precision + ")");
         }
-	
-	return f + p.substring(p.length() - 3, p.length());
+
+	_precision = precision;
+
+	_ef = EFormat.get(precision);
+	_ff = FFormat.get(precision);
     }
     
+    // --------------------------------------------------------------------
+    public String format(double value) {
+        if (DEBUG >= 2) {
+	    System.out.println("GFormat.format(" + value + ")");
+	}
+
+        String result = null;
+
+	if (value == 0.0d) {
+            result = _ff.format(value);
+	} else {
+	    int exponent = (int)Math.floor(Math.log(Math.abs(value)) /
+	      Math.log(10.0));
+            if (DEBUG >= 2) {
+	        System.out.println("  exponent = " + exponent);
+	    }
+
+	    if (exponent < -4 || Math.abs(exponent) > _precision) {
+                result = _ef.format(value);
+	    } else {
+                result = _ff.format(value);
+	    }
+	}
+
+        if (DEBUG >= 2) {
+	    System.out.println("  format result: " + result);
+	}
+
+	return result;
+    }
 }
 
-                                         
-				 
+// ------------------------------------------------------------------------
+// Format a number in printf %f format.
+class FFormat implements MyFormat {
+    private static final int DEBUG = 0;
 
+    double _roundoffStep;
 
+    NumberFormat _nf;
 
-/** 
-    Class that formats in g type - string like "%.4g"
-**/
+    private static Hashtable _ffList = new Hashtable();
 
-class GFormat{
-    
-    int width ;
-    double lowbound;
-    double highbound;
-    String sign;
-    
-    public GFormat(int a){
-	
-	width = a;
-	lowbound = Math.pow(10, -(a-1));
-	highbound = Math.pow(10, (a-1));
-	
+    // --------------------------------------------------------------------
+    // Keep a list of FFormat objects, indexed by the precision, so we
+    // don't keep creating duplicates of ones we already have.
+    public static FFormat get(int precision)
+    {
+	FFormat ff = (FFormat)_ffList.get(new Integer(precision));
+	if (ff == null) {
+            ff = new FFormat(precision);
+	    _ffList.put(new Integer(precision), ff);
+	}
+
+	return ff;
     }
-    
-    public String format(double d){
-	
-	String sign = "";
-	String result = null;
-	
-	if(d < 0){
-	    sign = "-"; 
-	    d = -1*d;
-	} 
-	
-	StringTokenizer dtokens = new StringTokenizer(new Double(d).toString(), "eE");
-	if( dtokens.countTokens() == 2){
 
-	    result = expFormat( dtokens.nextToken(), dtokens.nextToken()); 
-
+    // --------------------------------------------------------------------
+    // Clear the list of FFormat objects.
+    public static void clear()
+    {
+	_ffList.clear();
     }
-	else{ 
 
-	    dtokens = new StringTokenizer(new Double(d).toString(), ".");
-	    if(dtokens.countTokens()==2){
-		result = decFormat(d);
-		// Double x = new Double(result);
-		// System.out.println(x.toString());
-	    }
-	    
-	    
-	} 
-	return sign + result;
-	
+    // --------------------------------------------------------------------
+    private FFormat(int precision) {
+        if (DEBUG >= 1) {
+	    System.out.println("FFormat.FFormat(" + precision + ")");
+	}
+
+	_roundoffStep = Math.pow(10.0d, -(double)precision);
+
+	_nf = NumberFormat.getInstance();
+	if (!(_nf instanceof DecimalFormat)) {
+	    // Calling constructor directly is not preferred.
+	    _nf = new DecimalFormat();
+	}
+
+        String pattern = PrintfFormatter.repeat('#', precision - 1);
+	pattern += "0";
+	if (precision > 0) {
+	    pattern += ".";
+	    pattern += PrintfFormatter.repeat('#', precision);
+	}
+
+        if (DEBUG >= 2) {
+	    System.out.println("  pattern: <" + pattern + ">");
+	}
+
+	((DecimalFormat)_nf).applyPattern(pattern);
+    }
+
+    // --------------------------------------------------------------------
+    public String format(double value) {
+        if (DEBUG >= 2) {
+	    System.out.println("FFormat.format(" + value + ")");
+	}
+
+	// Stupid !@#$% Netscape 4.x doesn't properly round the numbers
+	// before formatting, either.  RKW 2002-08-02.
+	value = DEViseView.round2Step(value, _roundoffStep, false);
+
+	String result = _nf.format(value);
+
+        if (DEBUG >= 2) {
+	    System.out.println("  format result: " + result);
+	}
+        return result;
+    }
 }
-    
-    
-    
-    private String decFormat(double d){
-	String result = "";
-	boolean isExp = false;
-	boolean isCloseToTen = false;
-	int intpart = 0; int fracpart = 0; int exp = 0;
-	String dstring = new Double(d).toString();
-	
-	BigDecimal bd, bd1; 
-	bd = new BigDecimal(d);
-	bd1 =  bd.setScale(0,BigDecimal.ROUND_HALF_EVEN); 
-	double dx = bd1.doubleValue();
-	
-	if( dx == 10.0){
-	    isCloseToTen = true;
-	}
-  
-	if(!isCloseToTen &&  d > 0 &&  (d <lowbound || d > highbound)){
-	    isExp = true;
-	    
-	    while( d <= 9.0 && d > 0){ 
-		exp = exp-1;
-		d = d * 10;
-	    }
-	    while( d > 10) {
-		exp = exp+1;
-		d = d / 10;
-	    }
-	    
-	}
-	
-	if(isExp){ 
-	    
-	    // Using the BigDecimal rounding method
-	    bd = new BigDecimal(d);
-	    bd1 = bd.setScale(width-1, BigDecimal.ROUND_HALF_EVEN);
 
-	    // - Using the NumberFormat methods
-	    // NumberFormat nf = NumberFormat.getInstance();
-	    // nf.setMaximumFractionDigits(width-1);
-	    // dstring = nf.format(d);
-	    
-	    dstring = bd1.toString() +"E"+ new Integer(exp).toString();
-	    
-	    // System.out.println("this is string"+ dstring);
-	    
-	    
-	    // - did not work this one --
-	    // dstring = new Double(dstring).toString();
-	    //System.out.println(dstring);
-	    // StringTokenizer dtokens = new StringTokenizer(new Double(d).toString(), "eE");
-	    // result = expFormat(dtokens.nextToken(), dtokens.nextToken());
-	    
-	    
-	    result = dstring;
-	    
-	}
-	else{ 
-	    int ifZeroExtra = 0;
-	    bd1 = bd.setScale(1, BigDecimal.ROUND_HALF_EVEN);
-	    StringTokenizer st = new StringTokenizer(bd1.toString(), ".");
-	    if(st.countTokens() != 2){
-		System.out.println(bd.toString()); 
-		throw new NumberFormatException();
-	    }
-	    String temp  = st.nextToken(); 
-	    if( temp.equals("0")){
-	        ifZeroExtra = 1;
-            }
+// ========================================================================
+// Format a number in printf %e format.
+class EFormat implements MyFormat {
+    private static final int DEBUG = 0;
 
-	    int digits =  width - temp.length() + ifZeroExtra;
-	    if( digits < 0 ){ digits = 0;}
-	    bd1 =  bd.setScale(digits, BigDecimal.ROUND_HALF_EVEN); 
-	    result =  bd1.toString(); 
-	    
-	}
-	return result;  
-	
-    } 
-    
-    
-    
+    // We use an FFormat here because 'E' DecimalFormat patterns don't
+    // work in !@#$% Netscape 4.x, so we have to figure out the mantissa
+    // and exponent values ourselves.
+    FFormat _ff;
 
-    // for exp Format
-    
-    
-    private String expFormat( String mantissa, String exponent){
-	int digits = width -1;
-	int mantInt = 0, exp = 0;
- 
-        // The fractional part must be treated like a String from the start so that no leading
-        // 0s are accidently disposed of.
-        String fracpart = new String(""); 
-	// validity of exponent as number
-	
-	try { 
-	    
-	    exp = Integer.parseInt(exponent);
-	    
-	    fracpart =  getFracPart(mantissa);
-	    mantInt  =  getIntPart(mantissa);
-	}   
-	catch(NumberFormatException e){
-	    
-	    System.out.println("Invalid number format in method : expFormat");
-	    
-	}
-	
-	String intpart = new Integer(mantInt).toString();
-	
-	if(intpart.charAt(0) == '-'){ 
-	    sign = "-";
-	    intpart = intpart.substring(1, intpart.length());
-	}
-	
-	int count = intpart.length() - 1;
-	if(count > 0){
-	    fracpart = intpart.substring(1, intpart.length()) + fracpart;
-	    exp = exp + count;
+    private static Hashtable _efList = new Hashtable();
+
+    // --------------------------------------------------------------------
+    // Keep a list of GFormat objects, indexed by the precision, so we
+    // don't keep creating duplicates of ones we already have.
+    public static EFormat get(int precision)
+    {
+	EFormat ef = (EFormat)_efList.get(new Integer(precision));
+	if (ef == null) {
+            ef = new EFormat(precision);
+	    _efList.put(new Integer(precision), ef);
 	}
 
-	exponent = new Integer(exp).toString(); 
-	
-	while(fracpart.length() < digits){
-	    fracpart = fracpart +"0";
-	}
-	if(digits > 1){ 
-	    
-	    mantissa = intpart + "." + fracpart.substring(0, digits);
-	}
-	else{ 
-	    mantissa = intpart; 
-	}
-	
-	return  mantissa +"E"+ exponent;
-	
+	return ef;
     }
-    
-    /*  - Test main method - 
-	public static void main(String[] args){
-	
-        GFormat a = new GFormat(5);
-	
-        double x = -1124.84;
-        double y = 1234.3455;
-        double r =  10.0;
-        double xr =  10.02;
-        double rr =  1.0234;
-        double ri =  10234.123;
-        double rj =  0.123;
-        double rk =  0.00000123;
-        double rl =  0.0000123e-5;
-	
-        System.out.println( "x = " + x + "; formatted x  " + a.format(x));
-        System.out.println( "y = " + y + "; formatted y  " + a.format(y));
-        System.out.println( "r = " + r + "; formatted r  " + a.format(r));
-        System.out.println( "rr = " + rr + "; formatted rr  " + a.format(rr));
-        System.out.println( "xr = " + xr + "; formatted xr  " + a.format(xr));
-        System.out.println( "ri = " + ri + "; formatted ri  " + a.format(ri));
-        System.out.println( "rj = " + rj + "; formatted rj  " + a.format(rj));
-        System.out.println( "rk = " + rk + "; formatted rk  " + a.format(rk));
-        System.out.println( "rl = " + rl + "; formatted rl  " + a.format(rl));
 
-        }
-    */    
-    
-    
-    private static String getFracPart( String mantissa){
-	
-	Double db = new Double(mantissa);
-	String result = null;
-	StringTokenizer st = new StringTokenizer(db.toString(), ".");
-	
-	if(st.countTokens() == 2){
-	    
-	    st.nextToken(); 
-	    result = st.nextToken(); 	    
-	    return result;
-	    
-	    
-	}else{
-	    
-	    return "0";
-	    
-	}
-	
+    // --------------------------------------------------------------------
+    // Clear the list of EFormat objects.
+    public static void clear()
+    {
+	_efList.clear();
     }
-    
-    private static int getIntPart( String mantissa){
-	
-	Double db = new Double(mantissa);
-	String result = null;
-	StringTokenizer st = new StringTokenizer(db.toString(), ".");
-	
-	if(st.countTokens() == 2){
-	    
-	    result = st.nextToken(); 
-	    
-	    return Integer.parseInt(result);
-	    
-	    
-	}else{
-	    
-	    return Integer.parseInt(mantissa);
 
+    // --------------------------------------------------------------------
+    private EFormat(int precision) {
+        if (DEBUG >= 1) {
+	    System.out.println("EFormat.EFormat(" + precision + ")");
 	}
+
+	_ff = FFormat.get(precision);
     }
-    
-    
+
+    // --------------------------------------------------------------------
+    public String format(double value) {
+        if (DEBUG >= 2) {
+	    System.out.println("EFormat.format(" + value + ")");
+	}
+
+	// Note: patterns with 'E' don't work right in Netscape (at
+	// least Netscape 4.x), so we have to do some more work
+	// ourselves.
+	int exponent = 0;
+	if (value != 0.0d) {
+	    exponent = (int)Math.floor(Math.log(Math.abs(value)) /
+	      Math.log(10.0));
+	}
+        if (DEBUG >= 2) {
+	    System.out.println("  exponent = " + exponent);
+	}
+
+	double powTen = Math.pow(10.0d, (double)exponent);
+	double mantissa = value / powTen;
+
+	String result = _ff.format(mantissa);
+	result += "E" + exponent;
+
+        if (DEBUG >= 2) {
+	    System.out.println("  format result: " + result);
+	}
+        return result;
+    }
 }
-      
-
-
-
-
-
-
-
- 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2001
+  (c) Copyright 2001-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.2.10.1  2002/09/04 13:57:54  wenger
+  More Purifying -- fixed some leaks and mismatched frees.
+
+  Revision 1.2  2001/02/20 20:02:42  wenger
+  Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+  to the trunk.
+
   Revision 1.1.2.1  2001/02/16 21:37:46  wenger
   Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
   a web browser) on 'sets' of visual filters.
@@ -65,6 +72,7 @@ private:
   class IntStack {
   public:
     IntStack();
+    ~IntStack();
     void Push(int val);
     int Pop();
     int Size();

@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001
+#  (c) Copyright 2001-2002
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -49,11 +49,11 @@ cd ..
 # ../scripts/setup.arch_common
 # cd ..
 
-#echo "Creating solaris-intel directory"
-#setenv ARCH_DIR sunx86_54
-#cd solaris-intel
-#./setup
-#cd ..
+# echo "Creating solaris-intel directory"
+# setenv ARCH_DIR sunx86_54
+# cd solaris-intel
+# ./setup
+# cd ..
 
 echo "Creating solaris-sparc directory"
 setenv ARCH_DIR sun4m_54

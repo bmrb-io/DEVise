@@ -15,6 +15,17 @@
 # $Id$
 
 # $Log$
+# Revision 1.30.2.2  2003/01/10 19:49:05  wenger
+# Argh.  Changed all of the Solaris stuff back so that DEVise compiles
+# on Solaris 2.7 (cardinal).
+#
+# Revision 1.30.2.1  2003/01/09 16:51:02  wenger
+# Updated linux and solaris dependencies; solsparc now uses Tcl/Tk 8.0.
+#
+# Revision 1.30  2002/02/21 17:05:07  wenger
+# Updated Linux (trigger, RH 7.2) and Solaris (cardinal, Solaris 2.7)
+# dependencies.
+#
 # Revision 1.29  2000/03/23 19:51:25  wenger
 # Updated dependencies for Solaris 2.7.
 #
@@ -59,7 +70,7 @@ depend:
 cal.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 cal.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 cal.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
-cal.o: /usr/include/stdlib.h cal.h
+cal.o: /usr/include/stdlib.h /usr/include/string.h cal.h
 crsp_extract.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 crsp_extract.o: /usr/include/sys/isa_defs.h /usr/include/string.h
 crsp_extract.o: /s/tcl/include/tcl.h /usr/include/stdio.h
@@ -135,8 +146,8 @@ main.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
 sec.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 sec.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 sec.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
-sec.o: /usr/include/stdlib.h /usr/include/ctype.h sec.h ../tape/tapedrive.h
-sec.o: ../graphics.new/machdep.h /usr/include/limits.h
+sec.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/string.h sec.h
+sec.o: ../tape/tapedrive.h ../graphics.new/machdep.h /usr/include/limits.h
 sec.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
 sec.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 sec.o: /usr/include/sys/time.h /usr/include/time.h /usr/include/sys/param.h

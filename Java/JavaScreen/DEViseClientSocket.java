@@ -28,6 +28,20 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2002/07/19 17:06:47  wenger
+// Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+//
+// Revision 1.4.2.4  2002/12/05 20:38:19  wenger
+// Removed a bunch of unused (mostly already-commented-out) code to
+// make things easier to deal with.
+//
+// Revision 1.4.2.3  2002/12/05 20:09:53  wenger
+// Fixed bug 842 (JSPoP infinite client switch loop seen at BMRB).
+//
+// Revision 1.4.2.2  2002/11/05 20:02:27  wenger
+// Fixed bug 831 (JSPoP can't respond if stuck sending data); incremented
+// DEVise and JavaScreen versions.
+//
 // Revision 1.4.2.1  2002/06/26 17:29:32  wenger
 // Improved various error messages and client debug log messages; very
 // minor bug fixes; js_log script is now part of installation.
@@ -87,6 +101,9 @@ public class DEViseClientSocket implements Runnable
     private volatile boolean _shutdown = false;
     private static int _objectCount = 0;
 
+    // For mutex on writing.
+    private Boolean _writeSync = new Boolean(false);
+
     //===================================================================
     // PUBLIC METHODS
 
@@ -121,24 +138,24 @@ public class DEViseClientSocket implements Runnable
 
     // ------------------------------------------------------------------
     // Returns true iff the socket is open.
-    public synchronized boolean isOpen()
+    public boolean isOpen()
     {
         return ((_socket != null) && _socket.isOpen());
     }
 
     // ------------------------------------------------------------------
     // Returns true iff there is a pending command.
-    public synchronized boolean hasCommand()
+    public boolean hasCommand()
     {
-        return _command != null;
+        return (isOpen() && (_command != null));
     }
 
     // ------------------------------------------------------------------
     // Returns true iff the pending command is the first command received
     // on this socket.  Note: this is only needed because of the special
-    // cases for setting up collaboration, and we should eventuall get
+    // cases for setting up collaboration, and we should eventually get
     // rid of it. RKW 2001-10-22.
-    public synchronized boolean isFirstCommand()
+    public boolean isFirstCommand()
     {
 	if (DEBUG >= 2) {
 	    System.out.println(
@@ -150,7 +167,7 @@ public class DEViseClientSocket implements Runnable
 
     // ------------------------------------------------------------------
     // Get the pending command, if any.
-    public synchronized String getCommand()
+    public String getCommand()
     {
         if (DEBUG >= 2) {
 	    System.out.println(
@@ -165,7 +182,7 @@ public class DEViseClientSocket implements Runnable
     // Get the client ID corresponding to the pending command, if any.
     // TEMP -- maybe this should throw an exception if there is no
     // pending command
-    public synchronized int getCmdId()
+    public int getCmdId()
     {
         return _id;
     }
@@ -174,7 +191,7 @@ public class DEViseClientSocket implements Runnable
     // Get the CGI flag corresponding to the pending command, if any.
     // TEMP -- maybe this should throw an exception if there is no
     // pending command
-    public synchronized int getCmdCgiFlag()
+    public int getCmdCgiFlag()
     {
         return _cgiFlag;
     }
@@ -194,14 +211,14 @@ public class DEViseClientSocket implements Runnable
 
     // ------------------------------------------------------------------
     // Send the given command to the client.
-    public synchronized void sendCommand(String cmd) throws YException
+    public void sendCommand(String cmd) throws YException
     {
         sendCommand(cmd, DEViseGlobals.API_JAVA, DEViseGlobals.DEFAULTID);
     }
 
     // ------------------------------------------------------------------
     // Send the given command to the client.
-    public synchronized void sendCommand(String cmd, short msgType, int id)
+    public void sendCommand(String cmd, short msgType, int id)
       throws YException
     {
 	if (DEBUG >= 1) {
@@ -209,7 +226,9 @@ public class DEViseClientSocket implements Runnable
 	      ">, " + msgType + ", " + id + ")");
 	}
 
-        _socket.sendCmd(cmd, msgType, id);
+	synchronized (_writeSync) {
+            _socket.sendCmd(cmd, msgType, id);
+	}
 
         if (DEBUG >= 2) {
             System.out.println("  Done sending command");
@@ -217,35 +236,16 @@ public class DEViseClientSocket implements Runnable
     }
 
     // ------------------------------------------------------------------
-    // TEMP: send the given command in String[] format to the client.
-    /*
-    public synchronized void sendCommand(String[] cmds) throws YException
-    {
-        sendCommand(cmds, DEViseGlobals.API_JAVA, DEViseGlobals.DEFAULTID);
-    }
-
-    // ------------------------------------------------------------------
-    public synchronized void sendCommand(String[] cmds, short msgType, int id)
-      throws YException
-    {
-	if (DEBUG >= 1) {
-	    System.out.println("DEViseClientCommand.sendCommand(<" + cmds +
-	      ">, " + msgType + ", " + id + ")");
-	}
-
-        _socket.sendCmd(cmds, msgType, id);
-    }
-    */
-
-    // ------------------------------------------------------------------
     // Send the given data to the client.
-    public synchronized void sendData(byte[] data) throws YException
+    public void sendData(byte[] data) throws YException
     {
 	if (DEBUG >= 1) {
 	    System.out.println("DEViseClientCommand.sendData()");
 	}
 
-        _socket.sendData(data);
+	synchronized (_writeSync) {
+            _socket.sendData(data);
+	}
     }
 
     // ------------------------------------------------------------------

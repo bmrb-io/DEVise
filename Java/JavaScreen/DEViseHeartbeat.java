@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2001
+// (c) Copyright 2000-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -13,13 +13,30 @@
 // ------------------------------------------------------------------------
 
 // JavaScreen client heartbeat.  This class starts a thread that sends a
-// heartbeat every 60 sec.
+// heartbeat every 10 minutes.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.6  2002/07/19 17:06:48  wenger
+// Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+//
+// Revision 1.5.2.4  2002/12/17 23:15:01  wenger
+// Fixed bug 843 (still too many java processes after many reloads);
+// improved thread debug output.
+//
+// Revision 1.5.2.3  2002/12/04 17:15:38  wenger
+// Changed heartbeat interval to 10 minutes to reduce load on JSPoP.
+//
+// Revision 1.5.2.2  2002/11/25 21:29:35  wenger
+// We now kill off the "real" applet when JSLoader.destroy() is called,
+// unless the reloadapplet is false for the html page (to prevent excessive
+// numbers of applet instances from hanging around); added debug code to
+// print info about creating and destroying threads; minor user message
+// change; version is now 5.2.1.
+//
 // Revision 1.5.2.1  2002/07/19 16:05:21  wenger
 // Changed command dispatcher so that an incoming command during a pending
 // heartbeat is postponed, rather than rejected (needed some special-case
@@ -59,7 +76,9 @@ package JavaScreen;
 public class DEViseHeartbeat implements Runnable
 {
     private static final int DEBUG = 0;
-    private static final int HB_INTERVAL = 60 * 1000; // one minute in millisec.
+
+    // ten minutes in millisec.
+    private static final int HB_INTERVAL = 10 * 60 * 1000;
 
     private DEViseCmdDispatcher _dispatcher = null;
 
@@ -73,6 +92,9 @@ public class DEViseHeartbeat implements Runnable
 	_hbThread = new Thread(this);
 	_hbThread.setName("Heartbeat");
 	_hbThread.start();
+	if (DEViseGlobals.DEBUG_THREADS >= 1) {
+	    jsdevisec.printAllThreads("Starting thread " + _hbThread);
+	}
     }
 
     public void run()
@@ -119,6 +141,9 @@ public class DEViseHeartbeat implements Runnable
     {
 	if (DEBUG >= 1) {
 	    System.out.println("DEViseHeartBeat.stop()");
+	}
+	if (DEViseGlobals.DEBUG_THREADS >= 1) {
+	    jsdevisec.printAllThreads("Stopping thread " + _hbThread);
 	}
         _hbThread.stop();
     }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.9.4.1  2002/09/10 17:13:21  wenger
+  Fixed bug 821 (GAttr links fail when follower has "complex" symbols)
+  (this involved splitting up ViewData::ReturnGData() into smaller
+  methods to make it easier to deal with); fixed bug 214 (record links
+  fail if leader view has "complex" symbols); added debug output of
+  total records processed and drawn to view data.
+
+  Revision 1.9  2001/12/28 18:34:40  wenger
+  Fixed bugs 727 and 730 (problems with line graphs in DEVise).
+
   Revision 1.8  2000/03/14 21:51:49  wenger
   Added more invalid object checking; had to take some memory checking
   out of client-side stuff for linking reasons.
@@ -66,6 +76,7 @@
 
 class BooleanArray;
 class DerivedTable;
+class SymbolInfo;
 
 DefinePtrDList(DerivedTableList, DerivedTable *);
 
@@ -155,6 +166,25 @@ class ViewData : public ViewGraph
     private:
 	    ObjectValid _objectValid;
 		
+		void GetGDataValues(TDataMap *mapping, void *gdata, int numGData,
+		  int gRecSize, SymbolInfo symArray[], Boolean &abort);
+
+        void GAttrLinkFollower(TDataMap *mapping, void *gdata, int numGData,
+		  int gRecSize, SymbolInfo symArray[]);
+
+        void GAttrLinkLeader(TDataMap *mapping, void *gdata, int numGData,
+		  int gRecSize, SymbolInfo symArray[]);
+
+		void RecordLinkLeader(RecId recId, int numGData, SymbolInfo symArray[]);
+
+        void DrawGData(TDataMap *mapping, RecId recId, void *gdata,
+		  int numGData, int gRecSize, SymbolInfo symArray[],
+		  int &recordsProcessed, Boolean needDrawnList, int& recordsDrawn,
+		  BooleanArray*& drawnList);
+
+        void CalculateStats(TDataMap *mapping, void *gdata, int gRecSize,
+		  SymbolInfo symArray[], int recordsProcessed);
+
 		// Whether we need two passes to draw the data (lines, for example).
 		Boolean _twoPass;
 
@@ -162,6 +192,9 @@ class ViewData : public ViewGraph
 		void DrawPassTwo(TDataMap *map);
 
 		GDataStore *_passTwoGData;
+
+		int _totalRecordsProcessed;
+		int _totalRecordsDrawn;
 };
 
 //******************************************************************************

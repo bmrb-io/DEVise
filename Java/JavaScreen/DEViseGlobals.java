@@ -20,11 +20,35 @@
 // $Id$
 
 // $Log$
+// Revision 1.69  2002/07/19 17:06:48  wenger
+// Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+//
 // Revision 1.68  2002/06/17 19:40:14  wenger
 // Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 //
 // Revision 1.67  2002/05/01 21:28:58  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.66.2.12  2002/12/17 18:08:22  wenger
+// Fixed bug 844 (slow rubberband line drawing in child views).
+// Note: this fix involves some pretty signficant changes to how the
+// canvas is painted and rubberband lines are drawn, so it needs some
+// testing.
+//
+// Revision 1.66.2.11  2002/12/05 20:38:20  wenger
+// Removed a bunch of unused (mostly already-commented-out) code to
+// make things easier to deal with.
+//
+// Revision 1.66.2.10  2002/11/25 21:29:34  wenger
+// We now kill off the "real" applet when JSLoader.destroy() is called,
+// unless the reloadapplet is false for the html page (to prevent excessive
+// numbers of applet instances from hanging around); added debug code to
+// print info about creating and destroying threads; minor user message
+// change; version is now 5.2.1.
+//
+// Revision 1.66.2.9  2002/11/05 20:02:28  wenger
+// Fixed bug 831 (JSPoP can't respond if stuck sending data); incremented
+// DEVise and JavaScreen versions.
 //
 // Revision 1.66.2.8  2002/07/17 15:08:24  wenger
 // Incremented JS version to 5.1.
@@ -334,7 +358,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.1");
+    public static final String VERSION = new String("5.2.2");
 
     public static final String PROTOCOL_VERSION = new String("12.0");
 
@@ -349,6 +373,8 @@ public final class DEViseGlobals
     // (in milliseconds) we'll kill the client object on the assumption that
     // the JavaScreen has died.
     public static final int KILLINTERVAL = 24 * 60 * 60 * 1000;
+
+    public static final int DEBUG_THREADS = 0;
 
     // The default value for the maximum number of clients we allow (once we
     // reach that value, we kill off the oldest client each time a new
@@ -531,27 +557,6 @@ public final class DEViseGlobals
 
         return ((v1 << 24) + (v2 << 16) +  (v3 << 8) + (v4 << 0));
     }
-
-/*
-    public static long toUlong(byte[] data, int offset)
-    {
-        if (data == null || data.length < 8 + offset) {
-            return 0;
-        }
-
-        long v1 = (long)data[0 + offset] & 0x00000000000000FF;
-        long v2 = (long)data[1 + offset] & 0x00000000000000FF;
-        long v3 = (long)data[2 + offset] & 0x00000000000000FF;
-        long v4 = (long)data[3 + offset] & 0x00000000000000FF;
-        long v5 = (long)data[4 + offset] & 0x00000000000000FF;
-        long v6 = (long)data[5 + offset] & 0x00000000000000FF;
-        long v7 = (long)data[6 + offset] & 0x00000000000000FF;
-        long v8 = (long)data[7 + offset] & 0x00000000000000FF;
-
-        return ((v1 << 56) + (v2 << 48) + (v3 << 40) + (v4 << 32) +
-		(v5 << 24) + (v6 << 16) +  (v7 << 8) + (v8 << 0));
-    }
-*/
 
     public static long getCurrentTime()
     {

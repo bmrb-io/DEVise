@@ -23,6 +23,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.21.8.1  2002/08/01 17:38:22  wenger
+// Massive reorganization of axis labeling and mouse location display
+// code: both now use common number formatting code, which uses DecimalFormat
+// to do the actual work; axis tick locations are calculated differently,
+// so we don't try to draw out-of-window ticks; tick labels are constrained
+// to fit within views; etc., etc.
+//
+// Revision 1.21  2001/05/11 20:36:06  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.20  2000/06/27 16:44:45  wenger
 // Considerably cleaned up and simplified the cursor-related code; moved
 // cursor grid implementation from the DEViseCanvas class to the DEViseCursor
@@ -361,10 +371,10 @@ public class DEViseCursor
     public void matchGrid()
     {
 
-        double dataX0 = parentView.pixel2DataX(x);
-	double dataY0 = parentView.pixel2DataY(y);
-	double dataX1 = parentView.pixel2DataX(x + width - 1);
-	double dataY1 = parentView.pixel2DataY(y + height - 1);
+        double dataX0 = parentView.pixel2DataX(x, false);
+	double dataY0 = parentView.pixel2DataY(y, false);
+	double dataX1 = parentView.pixel2DataX(x + width - 1, false);
+	double dataY1 = parentView.pixel2DataY(y + height - 1, false);
 
 	if (isXMovable) {
 	    if (gridXData > 0.0f) {
@@ -410,12 +420,12 @@ public class DEViseCursor
 	    }
 	}
 
-	x = parentView.data2PixelX(dataX0);
-	y = parentView.data2PixelY(dataY0);
-	width = Math.abs(parentView.data2PixelX(dataX1) -
-	  parentView.data2PixelX(dataX0)) + 1;
-	height = Math.abs(parentView.data2PixelY(dataY1) -
-	  parentView.data2PixelY(dataY0)) + 1;
+	x = parentView.data2PixelX(dataX0, false);
+	y = parentView.data2PixelY(dataY0, false);
+	width = Math.abs(parentView.data2PixelX(dataX1, false) -
+	  parentView.data2PixelX(dataX0, false)) + 1;
+	height = Math.abs(parentView.data2PixelY(dataY1, false) -
+	  parentView.data2PixelY(dataY0, false)) + 1;
     }
 
     private int adjustToParentDataAreaX(int x)

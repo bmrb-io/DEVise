@@ -40,4 +40,8 @@ SERV_DIR = /local.pumori.1/devise/js.wave
 JAR_DIR = /var/home/www/public/waveletidr
 CGI_DIR = /var/home/www/cgi-bin/js_wave
 IDSTR = wave
+
+# This is who gets email about any errors.
+ERROR_EMAIL = devise@cs.wisc.edu
+
 INSTALL_HOST = pumori.cs.wisc.edu

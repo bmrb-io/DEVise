@@ -15,6 +15,15 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.81.14.1  2002/08/15 21:36:30  wenger
+#	Fixed bug 755 (schema selection GUI now defaults to physical
+#	schema directory).
+#	
+#	Revision 1.81  1999/11/16 17:02:20  wenger
+#	Removed all DTE-related conditional compiles; changed version number to
+#	1.7.0 because of removing DTE; removed DTE-related schema editing and
+#	data source creation GUI.
+#	
 #	Revision 1.80  1999/06/10 21:17:36  wenger
 #	Added '...' to appropriate menu items; added confirmation before doing
 #	automated data source checking.
@@ -347,7 +356,7 @@
 #set "sourceTypes(Table)" "{Table} $schemadir/logical/SQL"
 #set "sourceTypes(StandardTable)" "{StandardTable} $schemadir/logical/SQL"
 set "sourceTypes(Directory)" "{Directory} $schemadir/logical/SQL"
-set sourceTypes(UNIXFILE) "{Unix File} $schemadir/logical/UNIXFILE"
+set sourceTypes(UNIXFILE) "{Unix File} $schemadir/physical/UNIXFILE"
 #set sourceTypes(DEVise) "{Devise} $schemadir/logical/UNIXFILE"
 #set sourceTypes(WWW) "{World Wide Web} $schemadir/logical/WWW"
 
@@ -862,7 +871,7 @@ proc defineStream {base edit} {
 	    -width 40
     button .srcdef.top.row3.b1 -text "Select..." -width 10 -command {
 	global schemadir fsBox UserMode
-	set fsBox(path) $schemadir/logical
+	set fsBox(path) $schemadir/physical
 	if {!$UserMode} {
 	    set fsBox(path) $schemadir/physical
 	}
@@ -2042,7 +2051,7 @@ proc selectUnixFile {} {
 	return ""
     }
 
-    set fsBox(path) $schemadir/logical
+    set fsBox(path) $schemadir/physical
     if {!$UserMode} {
 	set fsBox(path) $schemadir/physical
     }
