@@ -3,20 +3,22 @@
 
 x- Testing
 x- Bug fixing
-- Build released software:
+x- Build released software:
     x- Build and release to /p/devise for standard architectures
     x- Ask everyone to confirm that they don't have any other things that
       need to go into the release.
-    - Test set_up_user.
-    - Untar dist.tar into /p/devise/dist
-    - Generate distribution files
-    - Test distribution files (re-run at least some of the user interface
-      tests on each architecure, running Devise untarred from the distribution
-      files).
-    - Tag sources (but not html and doc directories)
-    - Build on Linux
-    - Build on SGI
-	- Maybe commit SGI-related changes as a CVS branch
+    x- Build on Linux
+- Test set_up_user
+- Untar dist.tar into /p/devise/dist (or tar /p/devise/dist and see
+  whether it has changed)
+- Generate distribution files
+- Test distribution files (re-run at least some of the user interface
+  tests on each architecure, running Devise untarred from the distribution
+  files)
+- Tag sources (but not html and doc directories)
+- Generate "official" sources1.3.0.tar.gz file
+- Build on SGI
+    - Maybe commit SGI-related changes as a CVS branch
 !- Update online help
 a- Update user manual
 - Update web page
