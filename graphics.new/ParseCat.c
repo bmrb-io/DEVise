@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/07/23 20:13:03  wenger
+  Preliminary version of code to save TData (schema(s) and data) to a file.
+
   Revision 1.27  1996/07/15 17:21:23  jussi
   String attributes are no longer eliminated from the
   logical schema tree (group directory).
@@ -1094,24 +1097,22 @@ ParseCat(char *catFile)
 char *
 ParseSchema(char *schemaName, char *physSchema, char *logSchema)
 {
-	char *		result = NULL;
-	Boolean		physicalOnly = (logSchema == NULL) || !strcmp(logSchema, "");
+    char *  result = NULL;
+    Boolean physicalOnly = (logSchema == NULL) || !strcmp(logSchema, "");
+    
+    if ((physSchema != NULL) && strcmp(physSchema, "")) {
+	int len = strlen(physSchema);
+	DataSourceBuf schemaSource(physSchema, len, len, schemaName);
+	result = ParseCatPhysical(&schemaSource, physicalOnly);
+    } else {
+	fprintf(stderr, "No physical schema specified\n");
+    }
 
-	if ((physSchema != NULL) && strcmp(physSchema, ""))
-	{
-		DataSourceBuf	schemaSource(physSchema, schemaName);
-      	result = ParseCatPhysical(&schemaSource, physicalOnly);
-	}
-	else
-	{
-		fprintf(stderr, "No physical schema specified\n");
-	}
-
-	if (!physicalOnly)
-	{
-		DataSourceBuf	schemaSource(logSchema, schemaName);
+    if (!physicalOnly) {
+	int len = strlen(logSchema);
+	DataSourceBuf schemaSource(logSchema, len, len, schemaName);
     	result = ParseCatLogical(&schemaSource, result);
-	}
+    }
 
-	return result;
+    return result;
 }
