@@ -22,7 +22,7 @@ include ../../Makefile.common
 
 DTE_DIR = ../../DTE
 
-#NO_RTREE = 1
+NO_RTREE = 1
 #NO_UNIDATA = 1
 
 DTE_INCLUDES = \
@@ -60,11 +60,11 @@ CFLAGS_WO_TEMPLATES = $(ARCH_ENDIAN) $(DTE_INCLUDES) $(ARCH_FLAGS) \
 
 CFLAGS = $(CFLAGS_WO_TEMPLATES) $(TEMPLATE_FLAGS)
 
-ifdef DTE_DEBUG
-	CFLAGS += -g
-else
-	CFLAGS += -O2
-endif
+#ifdef DTE_DEBUG
+#	CFLAGS += -g
+#else
+#	CFLAGS += -O2
+#endif
 
 #temporary flag for testing the optimizer
 
@@ -182,7 +182,7 @@ client: Client.o SockStream.o
 	$(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 pure: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree datareader
-	purify $(CC) -o dte.pure $< $(STAND_ALONE_OBJ) \
+	purify $(CC) -o /tmp/dte.pure $< $(STAND_ALONE_OBJ) \
 	$(CORE_OBJ) $(STAND_ALONE_LIBS) $(ARCH_LDFLAGS) \
 	$(ARCH_SYSLIBS) $(ARCH_LDPOST)
 

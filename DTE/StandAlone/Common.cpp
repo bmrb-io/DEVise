@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/08/10 15:25:55  donjerko
+  *** empty log message ***
+
   Revision 1.3  1998/06/28 21:47:49  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -109,5 +112,5 @@ void processQuery(const string& query, ostream& cout, const string& header){
 
 		delete [] writePtrs;
 	}
-
+	TRY( , NVOID);	// check for uncought exceptions
 }

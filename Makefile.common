@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.33  1998/11/19 21:12:38  wenger
+#  Implemented non-DTE version of DEVise (new code handles data source catalog
+#  functions; Tables, SQLViews, etc., are not implemented); changed version to
+#  1.6.0.
+#
 #  Revision 1.32  1998/11/16 18:58:34  wenger
 #  Added options to compile without DTE code (NO_DTE), and to warn whenever
 #  the DTE is called (DTE_WARN).
@@ -162,7 +167,8 @@ else
     ifeq ($(DEV_DEBUG),-1)
 	OPTFLAG = -O2 -Wno-return-type
     else
-	OPTFLAG = -gstabs -Wno-return-type
+#	OPTFLAG = -gstabs -Wno-return-type
+	OPTFLAG = -g -Wno-return-type
     endif
 endif
 OPTFLAG += -Wreturn-type

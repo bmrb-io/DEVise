@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.77  1998/11/20 21:39:25  wenger
+#	Removed 'Move' from Table menu (not implemented); cleaned up some debug
+#	output.
+#
 #	Revision 1.76  1998/10/28 19:22:38  wenger
 #	Added code to check all data sources (runs through the catalog and tries
 #	to open all of them); this includes better error handling in a number of
@@ -974,7 +978,13 @@ proc defineStandardTable {content} {
 
 # these variable are used within the widgets of this procedure only
 
-	global retVal tableName sourceType schemaFile url viewFile
+	global retVal tableName sourceType schemaFile url viewFile schema
+
+	set numFlds [lindex $content 2]
+	set offSet [expr 3 + $numFlds * 2]
+	set url [lindex $content $offSet] 
+	set schema [lrange $content 3 [expr 3 + $numFlds * 2 - 1]]
+
 	set sourcetype "StandardTable"
 	set sourceType $sourcetype
 
@@ -994,15 +1004,14 @@ proc defineStandardTable {content} {
     frame .srcdef.but.row1
     pack .srcdef.but.row1 -side top
 
-     set tableName [lindex $content 0]
-	set url [lindex $content 2]
+	set tableName [lindex $content 0]
 	
     frame .srcdef.top.row1
     frame .srcdef.top.row2
     frame .srcdef.top.row3
     frame .srcdef.top.row4 -relief groove -borderwidth 2
     frame .srcdef.top.row5
-    pack .srcdef.top.row2 .srcdef.top.row3 .srcdef.top.row1 \
+    pack .srcdef.top.row1 .srcdef.top.row2 .srcdef.top.row3 \
 	     .srcdef.top.row4 .srcdef.top.row5 -side top -pady 1m
 
     label .srcdef.top.row1.l1 -text "Table Name:"
@@ -1011,10 +1020,16 @@ proc defineStandardTable {content} {
     pack .srcdef.top.row1.l1 .srcdef.top.row1.e1 -side left -padx 3m \
 	    -fill x -expand 1
 
-    label .srcdef.top.row2.l1 -text "URL"
-    entry .srcdef.top.row2.e1 -relief sunken -textvariable url \
+	label .srcdef.top.row2.l1 -text "Schema"
+    entry .srcdef.top.row2.e1 -relief sunken -textvariable schema \
+	    -width 40
+    pack .srcdef.top.row2.l1 .srcdef.top.row2.e1 -side left -padx 3m \
+	    -fill x -expand 1
+
+    label .srcdef.top.row3.l1 -text "URL"
+    entry .srcdef.top.row3.e1 -relief sunken -textvariable url \
 	    -width 40 
-    button .srcdef.top.row2.b1 -text "Select..." -width 10 -command {
+    button .srcdef.top.row3.b1 -text "Select..." -width 10 -command {
      global dialogListVar
     	if {$sourceType == "Directory"} {
 		global schemadir fsBox
@@ -1038,7 +1053,7 @@ proc defineStandardTable {content} {
 	set tableName ""
     }
 
-    pack .srcdef.top.row2.l1 .srcdef.top.row2.e1 .srcdef.top.row2.b1 \
+    pack .srcdef.top.row3.l1 .srcdef.top.row3.e1 .srcdef.top.row3.b1 \
 	    -side left -padx 2m -fill x -expand 1
 
 	button .srcdef.but.ok -text OK -width 10 -command {
@@ -1070,6 +1085,7 @@ proc defineStandardTable {content} {
 	tkwait visibility .srcdef
 	grab set .srcdef
 	tkwait window .srcdef
+
 	return $retVal
 }
 
@@ -1114,6 +1130,163 @@ proc defineUNIXFILE {content} {
 		# editing existing table
 		defineStream $tableName 1
 	}
+}
+
+proc defineGestalt {content} {
+
+	# this is a hack
+	# operate directly on the gestalt table
+	# must return nothing
+
+# these variable are used within the widgets of this procedure only
+
+	global retVal tableName sourceType schemaFile url viewFile schema
+
+	puts "In defineGestalt {$content}"
+	set numFlds [lindex $content 2]
+	set offSet [expr 3 + $numFlds * 2]
+	set url [lindex $content $offSet] 
+	set schema [lrange $content 3 [expr 3 + $numFlds * 2 - 1]]
+
+	set sourcetype "Gestalt"
+	set sourceType $sourcetype
+
+# cannot display remote site
+	global displayImmediately
+	set displayImmediately 0
+
+    toplevel .srcdef
+ 	wm title .srcdef "$sourcetype Definition"
+    wm geometry .srcdef +100+100
+    selection clear .srcdef
+
+    frame .srcdef.top -relief groove -borderwidth 2
+    frame .srcdef.but
+    pack .srcdef.top -side top -pady 3m -fill both -expand 1
+    pack .srcdef.but -side top -pady 3m -fill x
+    frame .srcdef.but.row1
+    pack .srcdef.but.row1 -side top
+
+	set tableName [lindex $content 0]
+	
+    frame .srcdef.top.row1
+    frame .srcdef.top.row2
+    frame .srcdef.top.row3
+    frame .srcdef.top.row4 -relief groove -borderwidth 2
+    frame .srcdef.top.row5
+    pack .srcdef.top.row1 .srcdef.top.row2 .srcdef.top.row3 \
+	     .srcdef.top.row4 .srcdef.top.row5 -side top -pady 1m
+
+    label .srcdef.top.row1.l1 -text "Table Name:"
+    entry .srcdef.top.row1.e1 -relief sunken -textvariable tableName \
+	    -width 40
+    pack .srcdef.top.row1.l1 .srcdef.top.row1.e1 -side left -padx 3m \
+	    -fill x -expand 1
+
+	label .srcdef.top.row2.l1 -text "Schema"
+    entry .srcdef.top.row2.e1 -relief sunken -textvariable schema \
+	    -width 40
+    pack .srcdef.top.row2.l1 .srcdef.top.row2.e1 -side left -padx 3m \
+	    -fill x -expand 1
+
+    label .srcdef.top.row3.l1 -text "URL"
+    entry .srcdef.top.row3.e1 -relief sunken -textvariable url \
+	    -width 40 
+    button .srcdef.top.row3.b1 -text "Select..." -width 10 -command {
+     global dialogListVar
+    	if {$sourceType == "Directory"} {
+		global schemadir fsBox
+		set fsBox(path) $schemadir
+		set fsBox(pattern) *.dte
+		set file [FSBox "Select $sourceType file" newDirectory]
+		if {$file != ""} { set url $file }
+	} else {
+		set answer [dialogList .selectTData "Select DEVise Script"  \
+		              "Select DEVise Script" \
+				   "" 0 { OK New Cancel } \
+				   {http://fontina.cs.wisc.edu/cgi-fontina/donko/script} ]
+		if {$answer == 0} {
+			set url $dialogListVar(selected)
+		} elseif {$answer == 1} {
+			set url [lineEntryBox "New DEVise address" "HTTP address"]
+		} else {
+			set url ""
+		}
+	}
+	set tableName ""
+    }
+
+    pack .srcdef.top.row3.l1 .srcdef.top.row3.e1 .srcdef.top.row3.b1 \
+	    -side left -padx 2m -fill x -expand 1
+
+	button .srcdef.but.add -text "Add Member" -width 10 -command {
+
+		set preserveTabNm $tableName
+		set table [selectStream]
+		set currentDir [CWD]
+		set tableName $preserveTabNm
+
+		if {[llength $table] == 0} {
+			return
+		}
+		if {[llength $table] > 1} {
+			dialog .note "Note" "Please select only one table." "" 0 OK
+			return
+		}
+
+		set fd [open $url a]
+		puts $fd "$table"
+		close $fd
+	}
+
+	button .srcdef.but.show -text "Show Members" -width 10 -command {
+
+		set memberList {}
+		set fd [open $url r]
+		while { [gets $fd line] >= 0} {
+			lappend memberList $line
+		}
+		close $fd
+
+        set answer [dialogList .selectTData "Gestalt Members"  \
+                      "Gestalt Members" \
+                   "" 0 { OK } \
+                   $memberList ]
+	}
+
+	button .srcdef.but.ok -text OK -width 10 -command {
+		if {$tableName == "" || $url == "" } {
+			dialog .noName "Missing Information" \
+				"Please enter all requested information." "" 0 OK
+		} else {
+                        # Don't allow names with dots or spaces in them -- they will cause
+                        # the DTE problems.
+                        if {[string match {*[. ]*} $tableName]} {
+                          dialog .winError "Name error" \
+	                    "Data source name cannot contain <dot> or <space>.  Please change data source name." \
+	                    "" 0 OK
+                          return
+                        }
+			set retVal "[addQuotes $tableName] $sourceType $url"
+			destroy .srcdef
+		}
+	}
+
+	button .srcdef.but.cancel -text Cancel -width 10  -command {
+			set retVal ""
+			destroy .srcdef
+	}
+
+	pack .srcdef.but.show .srcdef.but.add .srcdef.but.ok \
+		.srcdef.but.cancel -in .srcdef.but.row1 -side left -padx 7m
+
+	tkwait visibility .srcdef
+	grab set .srcdef
+	tkwait window .srcdef
+
+
+	set retVal ""
+	return $retVal
 }
 
 proc defineTable {content} {

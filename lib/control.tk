@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.174  1998/11/20 21:39:23  wenger
+#	Removed 'Move' from Table menu (not implemented); cleaned up some debug
+#	output.
+#
 #	Revision 1.173  1998/11/17 14:48:07  wenger
 #	Changed master/slave to leader/follower and fixed a few problems in GUI,
 #	session description, etc.
@@ -1099,7 +1103,10 @@ proc displayTable {table} {
          dialog .note "Note" "Please select only one table." "" 0 OK
          return
      }
-	set fulltn [fullPathName $table]
+
+#	set fulltn [fullPathName $table]
+	set fulltn $table
+
 	set errCode [catch {DEVise dteShowCatalogEntry $fulltn} entry]
 	if {$errCode != 0} {
 		dialog .noName "DTE Error" $entry "" 0 OK

@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.101  1998/02/20 08:46:29  beyer
+#	resurected histograms
+#
 #	Revision 1.100  1998/02/20 06:17:21  beyer
 #	resurected histograms
 #
@@ -394,7 +397,8 @@
 proc isDTEType {type} {
 	if {$type == "SQLView" || $type == "Table" || $type == "DEVise"
 		|| $type == "MaterView" || $type == "ODBC"
-		|| $type == "Directory" || $type == "StandardTable" } {
+		|| $type == "Directory" || $type == "StandardTable" 
+		|| $type == "Gestalt" } {
 		return 1
 	} else {
 		return 0
