@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.30  1999/08/17 19:46:53  wenger
+  Converted Condor UserMonth session from high/low symbols to piles for
+  better representation of data; fixed some cursor/pile drawing bugs and
+  TData switching bugs that I found in the process.
+
   Revision 1.29  1999/08/06 15:22:42  wenger
   DeviseCursor::MoveSource() now ensures that size does not change for
   fixed-size cursors -- fixes problem in Condor/UserMonth.ds session in
@@ -663,6 +668,13 @@ DeviseCursor::IsOnCursor(Coord dataX, Coord dataY, Coord dataXTol,
 #endif
 
   CursorHit::HitType result = CursorHit::CursorNone;
+
+  //
+  // We may *not* have a source set for this cursor!
+  //
+  if (!_src) {
+    return result;
+  }
 
   dataXTol = ABS(dataXTol);
   dataYTol = ABS(dataYTol);
