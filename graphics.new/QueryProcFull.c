@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.95  1999/06/28 21:12:20  wenger
+  The query processor now only gets woken up by the interval timer if
+  idle-time TData to GData conversion is enabled.
+
   Revision 1.94  1999/05/26 19:50:52  wenger
   Added bounding box info to GData, so that the selection of records by the
   visual filter is more accurate.  (Note that at this time the bounding box
@@ -2501,20 +2505,22 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
             /* Find exact match */
             for (; beginIndex < _tqueryNumRecs; beginIndex++) {
                 map->ConvertToGData(recId,tptr,1,_gdataBuf);
+		Coord bbULx, bbULy, bbLRx, bbLRy;
+		map->GetBoundingBox(_gdataBuf, bbULx, bbULy, bbLRx, bbLRy);
                 Boolean match = true;
                 if ( _tdataQuery->filter.flag & VISUAL_X) {
 		    x = map->GetX(_gdataBuf);
                     
-                    if (x < _tdataQuery->filter.xLow ||
-                        x > _tdataQuery->filter.xHigh)
+                    if (x + bbLRx < _tdataQuery->filter.xLow ||
+                        x + bbULx > _tdataQuery->filter.xHigh)
                         match = false;
                 }
                 
                 if (match && (_tdataQuery->filter.flag & VISUAL_Y)) {
 		    y = map->GetY(_gdataBuf);
                     
-                    if (y < _tdataQuery->filter.yLow ||
-                        y > _tdataQuery->filter.yHigh)
+                    if (y + bbULy < _tdataQuery->filter.yLow ||
+                        y + bbLRy > _tdataQuery->filter.yHigh)
                         match = false;
                 }
                 

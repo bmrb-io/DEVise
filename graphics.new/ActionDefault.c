@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  1999/07/19 22:19:03  wenger
+  Drill-down now shows as much as it can if buffer fills up.
+
   Revision 1.43  1999/06/23 19:45:10  wenger
   Increased the number of records drill-down can send to the screen; if there
   are too many records, the message sent to the JavaScreen is now "Too much
@@ -507,9 +510,10 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
         // allow user inaccuracy that is five times larger than for
         // sortedX views (where approximation is used anyway), that is,
         // roughly five pixels in each direction
+	// Note: changed the factor -- RKW 1999-08-11.
         filter.flag = VISUAL_X | VISUAL_Y;
-        float xDiff = 10 * fabs(xHigh - x);
-        float yDiff = 10 * fabs(yHigh - y);
+        float xDiff = 2.0 * fabs(xHigh - x);
+        float yDiff = 2.0 * fabs(yHigh - y);
         filter.xLow  = x - xDiff / 2;
         filter.xHigh = x + xDiff / 2;
         filter.yLow  = y - yDiff / 2;
@@ -534,6 +538,9 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
 #endif
 
 //~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+#if 0 // We don't have to do this now because we're taking into account
+      // the symbol bounding boxes.  RKW 1999-08-11.
 
     // Try it again, this time trying to take the size
     // of the structures being viewed into account.
@@ -567,6 +574,7 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
     qp->InitTDataQuery(map, filter, approxFlag);
     tooMuch = GetRecords(qp, recInterp, tdata, errorMsg, numRecs);
     qp->DoneTDataQuery();
+#endif
 
     return(!tooMuch);
 }
