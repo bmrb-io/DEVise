@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.17  1997/08/21 17:04:08  wenger
+#  Changed back from -g to -gstabs for debug because -g still causes warnings.
+#
 #  Revision 1.16  1997/08/12 18:45:25  wenger
 #  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
 #  makefiles; various other makefile cleanups.
@@ -85,7 +88,7 @@
 ############################################################
 
 # Define our linker and compiler.
-SPECIFIC_PATH = TRUE
+SPECIFIC_PATH = FALSE
 
 ifneq (, $(findstring LINUX, $(ARCH_FLAGS)))
   SPECIFIC_PATH = FALSE
