@@ -3,3 +3,4 @@ CVSROOT
 Old
 *.o
 *.a
+core
