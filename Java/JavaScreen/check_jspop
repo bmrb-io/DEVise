@@ -20,6 +20,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1999/12/10 20:15:21  wenger
+#  Improved scripts now check separately for "regular" and "soil science"
+#  jspop and deviseds.
+#
 #  Revision 1.6  1999/07/23 15:06:35  wenger
 #  Okay, finally got args passed to jspop correctly.
 #
@@ -47,15 +51,26 @@
 $foundJspop = 0;
 $foundDevised = 0;
 
-# Note: this is using Sun's (Solaris) ps -- mods may be required for other
-# versions of ps.  RKW 1999-12-10.
-open PS, "/bin/ps -e -o args >& 1 |" or die "can't fork: $!";
+# One of the hardest parts of getting this script to work has been running
+# ps in such a way that the port arguments still show up when the damn
+# path to java gets real long.  -ww option to ps would guarantee that
+# the line would be long enough, except that with the latest Intel/Solaris
+# ps, this makes the command totally hang!!  RKW 1999-12-17.
+
+# (We need to see the port arguments here so we can differentiate between
+# the "regular" jspop and deviseds, and the "soil science" jspop and
+# deviseds.)
+
+$ps_cmd = "/usr/ucb/ps -axw";
+
+open PS, "$ps_cmd >& 1 |" or die "can't fork: $!";
 
 while (<PS>) {
-  if ($_ =~ /java *jspop.*-cmdport6666/) {
+  if ($_ =~ /java *jspop.*port66/) {
     $foundJspop = 1;
   }
-  if ($_ =~ /devised -port 6/) {
+  # Wildcard here because -w option screws up ps output.
+  if ($_ =~ /devised.*port 6/) {
     $foundDevised = 1;
   }
 }
@@ -105,16 +120,14 @@ sub SaveLogs {
 #-----------------------------------------------------------
 
 sub KillJspop {
-  # Note: this is using Sun's (Solaris) ps -- mods may be required for other
-  # versions of ps.  RKW 1999-12-10.
-  open PS, "/bin/ps -e -o 'pid args' >& 1 |" or die "can't fork: $!";
+  open PS, "$ps_cmd >& 1 |" or die "can't fork: $!";
 
   while (<PS>) {
-    if ($_ =~ /java *jspop.*-cmdport6666/) {
+    if ($_ =~ /java *jspop.*port66/) {
       print "Killing $_";
       $foundJspop = 1;
       @words = split /  */, $_;
-      $pid = @words[0];
+      $pid = @words[1];
       system("kill $pid");
     }
   }

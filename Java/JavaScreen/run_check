@@ -11,4 +11,18 @@
 
 set path = ( /usr/ucb /bin /p/devise/run $path )
 
-/s/std/bin/runauth ./check_jspop
+set outfile = /tmp/run_check.out
+
+if (-e $outfile) then
+    rm $outfile
+endif
+
+./check_jspop >& $outfile
+
+# All this garbage because Sun's current crond on Intel/Solaris won't
+# send mail correctly.
+if (-e $outfile && ! -z $outfile) then
+    cat $outfile | /usr/ucb/mail -s "Error message from check_jspop" devise
+endif
+
+/usr/ucb/touch /tmp/normal_js_check

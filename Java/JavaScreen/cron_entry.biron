@@ -1,0 +1,5 @@
+# Crontab entry for devise user on biron to automatically restart
+# jspops if necessary.
+6,16,26,36,46,56 * * * * cd /local.biron/devise/JavaScreen; ./run_check
+7,17,27,37,47,57 * * * * cd /local.biron/devise/js_soil; ./run_check_soil
+47 3,15 * * * /local.biron/devise/JavaScreen/run_top
