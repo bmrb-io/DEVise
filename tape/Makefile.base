@@ -1,0 +1,15 @@
+CPPFLAGS = $(ARCH_FLAGS) -O -DUNIX  -I../../graphics \
+	-I../../graphics.new -Wall -fexternal-templates
+
+LIBSRC = TDataTape.C TDataTapeInterp.C tapedrive.C QueryProcTape.C \
+         Templates.C
+
+LIBOBJ = TDataTape.o TDataTapeInterp.o tapedrive.o QueryProcTape.o \
+         Templates.o
+
+ALLSRC= $(LIBSRC) $(TESTSRC) 
+
+LIBOBJS= $(LIBOBJ)
+
+tapeobj.o: $(LIBOBJS)
+	ld -r -o $@ $(LIBOBJS)
