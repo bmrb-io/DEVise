@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/01/10 20:59:03  jussi
+  Failure to allocate all colors will now cause a base color
+  (black) to be substituted.
+
   Revision 1.8  1995/12/28 18:56:51  jussi
   Small fix to remove compiler warning.
 
@@ -60,6 +64,8 @@ static int HandleTkEvent(ClientData data, XEvent *event)
 }
 #endif
 
+static const char *baseColorName = "black";
+
 /*******************************************************************
 Open a new X display
 ********************************************************************/
@@ -72,7 +78,6 @@ XDisplay::XDisplay(char *name)
   }
   
   /* init base color */
-  const char *baseColorName = "black";
   XColor baseColorDef;
   Colormap cmap = DefaultColormap(_display, DefaultScreen(_display));
   if (!XParseColor(_display, cmap, baseColorName, &baseColorDef)) {
@@ -212,7 +217,7 @@ void XDisplay::AllocColor(char *name, Color globalColor)
 
   // substitute base color instead of requested color
   DeviseDisplay::MapColor(baseColor, globalColor);
-  printf("Color %s mapped to base color\n", name);
+  printf("Color %s mapped to color %s\n", name, baseColorName);
 }
 
 /*********************************************************************
@@ -250,7 +255,8 @@ void XDisplay::AllocColor(double r, double g, double b, Color globalColor)
 
   // substitute base color instead of requested color
   DeviseDisplay::MapColor(baseColor, globalColor);
-  printf("Color <%.2f,%.2f,%.2f> mapped to base color\n", r, g, b);
+  printf("Color <%.2f,%.2f,%.2f> mapped to color %s\n",
+	 r, g, b, baseColorName);
 }
 
 /*
