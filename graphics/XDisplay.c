@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1996/09/05 20:03:47  jussi
+  Minor fix to get rid of compiler warning.
+
   Revision 1.33  1996/09/05 20:01:36  jussi
   Added support for user-specified screen size (mainly used
   in batch mode).
@@ -255,8 +258,24 @@ void XDisplay::Register()
 
 /* Export display image to other graphics formats */
 
-void XDisplay::ExportImage(DisplayExportFormat format,
-                           char *filename)
+void XDisplay::ExportImage(DisplayExportFormat format, char *filename)
+{
+  if (format == GIF) {
+    FILE *fp = fopen(filename, "wb");
+    if (!fp) {
+        fprintf(stderr, "Cannot open file %s for writing\n", filename);
+        return;
+    }
+    ExportGIF(fp);
+    if (fp != stderr && fp != stdout)
+        fclose(fp);
+    return;
+  }
+
+  fprintf(stderr, "Cannot export display image in PS/EPS yet\n");
+}
+
+void XDisplay::ExportGIF(FILE *fp)
 {
   /* compute the bounding rectangle of all windows */
 
@@ -361,14 +380,7 @@ void XDisplay::ExportImage(DisplayExportFormat format,
   
   /* Convert pixmap to GIF and write to file */
 
-  FILE *fp = fopen(filename, "wb");
-  if (!fp) {
-    fprintf(stderr, "Cannot open file %s for writing\n", filename);
-  } else {
-    ConvertAndWriteGIF(pixmap, xwa, fp);
-    if (fp != stderr && fp != stdout)
-      fclose(fp);
-  }
+  ConvertAndWriteGIF(pixmap, xwa, fp);
 
   /* Free gc and pixmap area */
 
@@ -659,10 +671,10 @@ void XDisplay::Dimensions(Coord &width, Coord &height)
   width = (Coord)DisplayWidth(_display, screen);
   height = (Coord)DisplayHeight(_display, screen);
 #ifndef LIBCS
-  if (Init::ScreenWidth() > 0)
-    width = Init::ScreenWidth();
-  if (Init::ScreenHeight() > 0)
-    height = Init::ScreenHeight();
+  if (_desiredScreenWidth > 0)
+    width = _desiredScreenWidth;
+  if (_desiredScreenHeight > 0)
+    height = _desiredScreenHeight;
 #endif
 }
 

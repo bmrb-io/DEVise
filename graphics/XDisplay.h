@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/09/05 20:01:50  jussi
+  Added support for user-specified screen size (mainly used
+  in batch mode).
+
   Revision 1.17  1996/08/29 22:12:17  guangshu
   Changed arguments for ConvertAndWriteGIF.
 
@@ -130,6 +134,7 @@ public:
 
     /* Export display image to other graphics formats */
     virtual void ExportImage(DisplayExportFormat format, char *filename);
+    virtual void ExportGIF(FILE *fp);
 
 #ifdef LIBCS
     /* Translate RGB colors to pixel values and back */

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/07/23 15:34:40  jussi
+  Added mechanism for bypassing the Devise internal color map.
+
   Revision 1.12  1996/07/21 02:21:47  jussi
   Made Run() a public method which View::SubclassMapped() can call.
 
@@ -118,6 +121,7 @@ public:
 
   /* Export display image to other graphics formats */
   virtual void ExportImage(DisplayExportFormat format, char *filename) = 0;
+  virtual void ExportGIF(FILE *fp) = 0;
 
   /* Iterator to go through all displays */
   static int InitIterator() { return _displays.InitIterator(); }
@@ -136,6 +140,10 @@ public:
   virtual Color FindLocalColor(float r, float g, float b) = 0;
   virtual void FindLocalColor(Color c, float &r, float &g, float &b) = 0;
 #endif
+
+  /* Get/set desired screen size */
+  virtual int &DesiredScreenWidth() { return _desiredScreenWidth; }
+  virtual int &DesiredScreenHeight() { return _desiredScreenHeight; }
 
 protected:
 #ifndef LIBCS
@@ -179,6 +187,11 @@ protected:
   unsigned long _colorMapSize;
   Color *_colorMap;
   static DeviseDisplay *_defaultDisplay;
+
+#ifndef LIBCS
+  int _desiredScreenWidth;
+  int _desiredScreenHeight;
+#endif
 };
 
 #endif

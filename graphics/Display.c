@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/07/19 14:25:30  jussi
+  Return black color for undefined colors instead of crashing.
+
   Revision 1.9  1996/06/24 19:36:50  jussi
   Removed unnecessary code that stored a pointer to the
   dispatcher in a member variable.
@@ -47,6 +50,9 @@
 */
 
 #include "XDisplay.h"
+#ifndef LIBCS
+#include "Init.h"
+#endif
 
 DeviseDisplayList DeviseDisplay::_displays;
 DeviseDisplay *DeviseDisplay::_defaultDisplay = 0;
@@ -70,6 +76,11 @@ DeviseDisplay::DeviseDisplay()
   _colorMapSize = InitColorMapSize;
   _colorMap = new Color[InitColorMapSize];
   _displays.Append(this);
+
+#ifndef LIBCS
+  _desiredScreenWidth = Init::ScreenWidth();
+  _desiredScreenHeight = Init::ScreenHeight();
+#endif
 }
 
 /************************************************************/
