@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/05 17:03:47  jussi
+  Added a couple of checks to ensure min and max are computed
+  correctly.
+
   Revision 1.4  1995/11/30  02:46:33  ravim
   Computes max and min values and plots them.
 
@@ -30,7 +34,9 @@
 */
 
 #include <stdio.h>
+#include "XDisplay.h"
 #include "BasicStats.h"
+#include "KGraph.h"
 #include "ViewGraph.h"
 
 BasicStats::BasicStats()
@@ -99,3 +105,18 @@ void BasicStats::Report()
   win->Line(filter->xLow, avg, filter->xHigh, avg, 2);
   win->SetFgColor(prev);
 }
+
+Coord BasicStats::GetStatVal(int statnum)
+{
+  switch (statnum) {
+    case STAT_NONE: return 0;
+    case STAT_MEAN: return ysum/(nsamples ? nsamples : 1);
+    case STAT_MAX: return ymax;
+    case STAT_MIN: return ymin;
+    default: printf("Error: Unknown statistic\n");
+    };
+
+  return 0;
+}
+
+      
