@@ -1481,6 +1481,12 @@ void GLWindowRep::Dimensions(unsigned int &width, unsigned int &height)
   height = _height;
 }
 
+void GLWindowRep::PrintDimensions()
+{
+  cout << "Width = " << _width << endl;
+  cout << "Height = " << _height << endl;
+}
+
 /* Get window rep origin */
 void GLWindowRep::Origin(int &x, int &y)
 {

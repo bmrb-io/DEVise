@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.119  1997/12/16 17:53:51  zhenhai
+  Added OpenGL features to graphics.
+
   Revision 1.118  1997/12/12 05:50:21  weaver
   *** empty log message ***
 
@@ -1136,7 +1139,8 @@ void View::GetYAxisArea(int &x, int &y, int &width, int &height)
   Geometry(x, y, winW, winH);
 
   if (_label.occupyTop) {
-    y += _label.extent;
+    //    y += _label.extent;
+    // deleted so that y reflects origin of y axis
     height = winH - _label.extent;
     width = yAxis.width;
   } else {
@@ -1145,9 +1149,11 @@ void View::GetYAxisArea(int &x, int &y, int &width, int &height)
     height = winH;
   }
   
-  if (xAxis.inUse)
+  if (xAxis.inUse) {
     height -= xAxis.width;
-  
+    y += xAxis.width; // added so y reflects origin
+  }
+    
   if (width <= 0 )
     width = 1;
   if (height <= 0)
@@ -1170,7 +1176,7 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
 
   if (_label.occupyTop) {
     /* _label occupies top of view */
-    y +=  _label.extent; 
+    // y +=  _label.extent; 
     /* 
        subtract 2 from left so that data doesn't draw
        over the highlight border (already subtracting 2 because we moved
@@ -1189,8 +1195,10 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
   
   if (_numDimensions == 2) {
     /* need to display axes */
-    if (xAxis.inUse)
-      height -= xAxis.width;
+    if (xAxis.inUse) {
+      height -= xAxis.width+1;
+      y += xAxis.width+1;
+    }
     else if (_label.occupyTop)
       height -= 2;
     
@@ -1246,7 +1254,7 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
       win->SetForeground(GetBackground());
       win->SetPattern(Pattern0);
       win->SetLineWidth(0);
-      win->ClearBackground(axisX, axisY, axisWidth - 1, axisHeight - 1);
+      win->ClearBackground(axisX, axisY-axisHeight, axisWidth - 1, axisHeight);
 #endif
       DrawXAxis(win, x, y, w, h);
     }
@@ -1396,9 +1404,10 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
   for(int i = 0; i < nTicks; i++) {
     Coord x, y;
 //    transform.Transform(tickMark, 0, x, y);
-    x=tickMark*axisWidth/(_filter.xHigh-_filter.xLow)+startX;
+    x=(tickMark-_filter.xLow)*(axisMaxX-startX)
+      /(_filter.xHigh-_filter.xLow)+startX;
 
-    win->Line(x, axisY, x, axisY + 3, 1);
+    win->Line(x, axisY, x, axisY - 2, 1);
     char buf[32];
     sprintf(buf, "%.*g", xAxis.significantDigits, tickMark);
     Coord xLeft = x - xAxis.labelWidth / 2;
@@ -1513,7 +1522,8 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
   for(int i = 0; i < nTicks; i++) {
     Coord x, y;
 //    transform.Transform(0, tickMark, x, y);
-    y=tickMark*axisHeight/(_filter.yHigh-_filter.yLow)+startY;
+    y=(tickMark-_filter.yLow)*(axisMaxY-startY)
+      /(_filter.yHigh-_filter.yLow)+startY;
     win->Line(axisMaxX, y, axisMaxX - 3, y, 1);
     char buf[32];
     sprintf(buf, "%.*g", yAxis.significantDigits, tickMark);
@@ -3451,7 +3461,7 @@ void	View::Run(void)
 		winRep->SetForeground(GetBackground());
 		winRep->SetPattern(Pattern0);
 		winRep->SetLineWidth(0);
-		winRep->FillRect(dataX, dataY, dataW - 1, dataH - 1);
+		winRep->ClearBackground(dataX, dataY, dataW - 1, dataH - 1);
 #endif
 	}
 

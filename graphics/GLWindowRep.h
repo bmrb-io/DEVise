@@ -304,6 +304,7 @@ public:
 
   /* Get window rep dimensions */
   virtual void Dimensions(unsigned int &width, unsigned int &height);
+  virtual void PrintDimensions();
 
   /* Get window rep origin */
   virtual void Origin(int &x, int &y);

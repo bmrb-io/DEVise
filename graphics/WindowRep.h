@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.60  1998/01/14 16:38:57  wenger
+  Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
+
   Revision 1.59  1997/12/18 18:40:18  wenger
   Turned off debug output, cleaned things up a little bit in OpenGL code.
 
@@ -712,6 +715,7 @@ public:
 
   /* Get window rep dimensions */
   virtual void Dimensions(unsigned int &width, unsigned int &height ) = 0;
+  virtual void PrintDimensions() {} // for debug
 
   /* Set window rep dimensions */
   virtual void SetDimensions(unsigned int width, unsigned int height) {}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.49  1998/01/14 16:39:00  wenger
+  Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
+
   Revision 1.48  1997/12/16 17:53:59  zhenhai
   Added OpenGL features to graphics.
 
@@ -419,7 +422,13 @@ class XWindowRep : public WindowRep
 		WindowRep::Transform(x,y,newX,newY);
 		newY=_height-newY;
 	}
-	
+
+	virtual void InverseTransform
+	  (Coord x, Coord y, Coord &oldX, Coord &oldY) {
+	  y=_height-y;
+	  WindowRep::InverseTransform(x,y,oldX, oldY);
+	}
+
 	virtual void SetPattern(Pattern p);
 
 	virtual void SetLineWidth(int w);
@@ -490,7 +499,7 @@ class XWindowRep : public WindowRep
 
 	/* Get window rep dimensions */
 	virtual void Dimensions(unsigned int &width, unsigned int &height);
-
+	virtual void PrintDimensions();
 	/* Get window rep origin */
 	virtual void Origin(int &x, int &y);
 

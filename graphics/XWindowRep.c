@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.100  1998/01/14 16:38:59  wenger
+  Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
+
   Revision 1.99  1997/12/20 00:01:42  wenger
   Fixed bug 262 (text not drawn), found some others.
 
@@ -2514,11 +2517,13 @@ void XWindowRep::HandleEvent(XEvent &event)
 #endif
 
   case Expose:
-    Coord minX, minY, maxX, maxY;
+    Coord minX, minY, maxX, maxY, tminY, tmaxY;
     minX = (Coord)event.xexpose.x;
-    minY = (Coord)event.xexpose.y;
+    tminY = (Coord)event.xexpose.y;
     maxX = minX + (Coord)event.xexpose.width - 1;
-    maxY = minY + (Coord)event.xexpose.height - 1;
+    tmaxY = tminY + (Coord)event.xexpose.height - 1;
+    minY= _height-tmaxY-1;
+    maxY= _height-tminY;
 #ifdef DEBUG
     printf("XWindowRep 0x%p Exposed %d,%d to %d,%d\n", this,
 	   (int)minX, (int)minY, (int)maxX, (int)maxY);
@@ -3073,6 +3078,12 @@ void XWindowRep::Dimensions(unsigned int &width, unsigned int &height)
 {
   width = _width;
   height = _height;
+}
+
+void XWindowRep::PrintDimensions()
+{
+  cout << "Width = " << _width << endl;
+  cout << "Height = " << _height << endl;
 }
 
 /* Get window rep origin */
