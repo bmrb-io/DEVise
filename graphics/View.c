@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.39  1996/06/13 00:14:31  jussi
+  Added support for XY cursors. All types of cursors can now
+  be moved by clicking on their new location in the data area.
+  Previously only the X label area was sensitive for cursor
+  movement.
+
   Revision 1.38  1996/05/31 15:30:28  jussi
   Added support for tick marks in axes. The spacing and location
   of tick marks is set automatically to something reasonable,
@@ -171,6 +177,10 @@
 #endif
 
 //#define DEBUG
+// #define YLC
+
+/* width/height of sensitive area for cursor */
+static const int VIEW_CURSOR_SENSE = 10;
 
 /*
    pixel image must be at least 64K bytes before it is saved with the
@@ -216,6 +226,25 @@ View::View(char *name, VisualFilter &initFilter,
 
   _hasOverrideColor = false;
   _overrideColor = fg;
+
+  /* ------------- 3D stuffs ----------------- */
+  _camera.x_ = 4.6;
+  _camera.y_ = 4.0;
+  _camera.z_ = -4.0;
+  _camera.fx = 0.0;
+  _camera.fy = 0.0;
+  _camera.fz = 0.0;
+  _camera._rho = 7.0;
+  _camera._phi = 1.0;
+  _camera._theta = 0.9;
+  _camera._dvs = 250;
+  _camera._twist_angle = deg_rad(0.0);
+  _camera._perspective = 1;
+  _camera.flag = false;
+  _camera.fix_focus = true;
+  _camera.spherical_coord = false;
+  _camera.H = 0;
+  _camera.V = 0;
 }
 
 void View::Init(char *name, VisualFilter &filter,
@@ -717,11 +746,19 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
     }
   }
 
+  if (_numDimensions == 3) {
+#ifdef YLC1
+	printf ("````````````````````````````` DrawAxesLabel ........\n");
+	printf ("\t\t\t\tFg color = %d\n", GetBgColor());
+#endif
+	// CompRhoPhiTheta();
+	win->SetFgColor(0);   // draw the axis black
+     win->DrawRefAxis(_camera);
+  }
+
   win->PopClip();
 
-  if (_numDimensions == 3)
-    win->DrawRefAxis();
-}
+} // end of DrawAxesLabel
 
 void View::DrawLabel()
 {
@@ -1071,6 +1108,31 @@ void View::CalcTransform(Transform2D &transform)
   transform.Translate(dataX, dataY);
 }
 
+/* Calculate the transformation matrix used to translate from
+   world to screen coordinates */
+
+void View::CalcTransform(Transform3D &transform)
+{
+  transform.MakeIdentity();
+
+  int dataX, dataY, dataWidth, dataHeight;
+  GetDataArea(dataX, dataY, dataWidth, dataHeight);
+
+#ifdef DEBUG
+  printf("transform data: %d,%d,%d,%d\n", dataX, dataY,
+	 dataWidth, dataHeight);
+#endif
+  
+	CompRhoPhiTheta();
+	transform.SetViewMatrix(_camera);
+#ifdef YLC
+	printf ("View.c: rho = %f phi = %f theta = %f\n", 
+		_camera._rho, _camera._phi, _camera._theta);
+#endif
+
+}
+
+/* For query processing */
 /* For query processing */
 
 void View::ReportQueryDone(int bytes)
@@ -1293,14 +1355,12 @@ void View::Run()
   GetDataArea(dataX, dataY, dataW, dataH);
   winRep->PushClip(dataX, dataY, dataW - 1, dataH - 1);
   
-  /* pop the transform */
-  winRep->PopTransform();
-  
   /* blank out area to be drawn */
   winRep->SetFgColor(GetBgColor());
-  winRep->FillRect(_queryFilter.xLow, _queryFilter.yLow,
-		   _queryFilter.xHigh - _queryFilter.xLow,
-		   _queryFilter.yHigh - _queryFilter.yLow);
+  winRep->FillRect(dataX, dataY, dataW - 1, dataH - 1);
+  
+  /* pop the transform */
+  winRep->PopTransform();
   
   _hasExposure = false;
   _filterChanged = false;
@@ -1351,10 +1411,17 @@ void View::UpdateTransform(WindowRep *winRep)
   printf("View::UpdateTransform\n");
 #endif
 
-  winRep->ClearTransformStack();
-  Transform2D transform;
-  CalcTransform(transform);
-  winRep->PostMultiply(&transform);
+  if (_numDimensions == 2) {
+     winRep->ClearTransformStack();
+     Transform2D transform;
+     CalcTransform(transform);
+     winRep->PostMultiply(&transform);
+  } else {
+     winRep->ClearTransformStack3();
+     Transform3D transform;
+     CalcTransform(transform);
+     // winRep->PostMultiply(&transform);
+  }
 }
 
 /* Get label parameters */
@@ -2257,3 +2324,206 @@ void View::PrintStat()
 	 100.0 * _scrollRight / total);
   printf("  Unknown %d, %.2f%%\n", _unknown, 100.0 * _unknown / total);
 }
+
+// ----------------------------------------------------------
+void
+View::CompRhoPhiTheta()
+{
+	double X, Y, Z;
+//	if (! _camera.flag) return;
+//	else _camera.flag = false;
+
+#ifdef YLC
+	printf ("*********** begin CompRhoPhiTheta ***********\n");
+	printf ("\n>>>> x = %f y = %f z = %f\n",_camera.x_,_camera.y_,_camera.z_);
+#endif
+
+  if (! _camera.spherical_coord) {
+	X = _camera.x_ - _camera.fx;
+	Y = _camera.y_ - _camera.fy;
+	Z = -(_camera.z_ - _camera.fz);
+
+     _camera._rho = sqrt(SQUARE(X) + SQUARE(Y) + SQUARE(Z));
+
+     if (_camera._rho > 0)
+          _camera._phi = acos(Y / _camera._rho);
+     else {
+          _camera._phi = 0.0;
+          // printf ("*********** WARNING *****************\n");
+     }
+
+     if (_camera._rho == 0)
+          _camera._theta = 0.0;
+     // ------------- on yz-axis
+     else if (X == 0 && Z >= 0)  // on +z axis
+          _camera._theta = 0.0;
+     else if (X == 0 && Z < 0)   // on -z axis
+          _camera._theta = M_PI;
+
+     // ------------- on xy-axis
+     else if (Z == 0 && X > 0) // on +x axis
+          _camera._theta = M_PI_2;
+     else if (Z == 0 && X < 0) // on -x axis
+          _camera._theta = M_PI_2 + M_PI;    // pi / 2 * 3
+
+     else if (X > 0 && Z > 0)
+          _camera._theta = atan(X / Z);
+     else if (X > 0 && Z < 0)
+          _camera._theta = M_PI + atan(X / Z);
+     else if (X < 0 && Z < 0)
+          _camera._theta = M_PI + atan(X / Z);
+     else if (X < 0 && Z > 0)
+          _camera._theta = (M_PI_2 + M_PI) + fabs(atan(Z / X));
+
+     else {
+          printf ("\nERR 1: compute theta cx = %f cy = %f cz = %f\n\n",
+               X, Y, Z);
+          exit (1);
+     }
+  } else {
+	X = _camera.fx;
+	Y = _camera.fy;
+	Z = _camera.fz;
+
+     double rho1 = sqrt(SQUARE(X) + SQUARE(Y) + SQUARE(Z)), 
+		  phi1, 
+		  theta1;
+
+     if (rho1 > 0)
+          phi1 = acos(Y / rho1);
+     else {
+          phi1 = 0.0;
+          // printf ("----------- WARNING --------------\n");
+     }
+
+     if (rho1 == 0)
+          theta1 = 0.0;
+     // ------------- on yz-axis
+     else if (X == 0 && Z >= 0)  // on +z axis
+          theta1 = 0.0;
+     else if (X == 0 && Z < 0)   // on -z axis
+          theta1 = M_PI;
+
+     // ------------- on xy-axis
+     else if (Z == 0 && X > 0) // on +x axis
+          theta1 = M_PI_2;
+     else if (Z == 0 && X < 0) // on -x axis
+          theta1 = M_PI_2 + M_PI;    // pi / 2 * 3
+
+     else if (X > 0 && Z > 0)
+          theta1 = atan(X / Z);
+     else if (X > 0 && Z < 0)
+          theta1 = M_PI + atan(X / Z);
+     else if (X < 0 && Z < 0)
+          theta1 = M_PI + atan(X / Z);
+     else if (X < 0 && Z > 0)
+          theta1 = (M_PI_2 + M_PI) + fabs(atan(Z / X));
+
+     else {
+          printf ("\nERR 2: compute theta cx = %f cy = %f cz = %f\n\n",
+               X, Y, Z);
+          exit (1);
+     }
+
+	double RHO = _camera._rho - rho1,
+		  PHI = _camera._phi - phi1,
+		  THETA = _camera._theta - theta1;
+
+	_camera.x_ = _camera._rho*sin(_camera._phi)*sin(_camera._theta);
+	_camera.y_ = _camera._rho*cos(_camera._phi);
+	_camera.z_ = -_camera._rho*sin(_camera._phi)*cos(_camera._theta);
+
+	// _camera.x_ = RHO*sin(PHI)*sin(THETA);
+	// _camera.y_ = RHO*cos(PHI);
+	// _camera.z_ = -RHO*sin(PHI)*cos(THETA);
+
+	// _camera._phi -= fabs(fabs(_camera._phi) - fabs(phi1));
+	// _camera._theta -= fabs(fabs(_camera._theta) - fabs(theta1));
+
+#ifdef YLC1
+	printf ("rho = %.2f phi = %.2f theta = %.2f\n", _camera._rho,
+		_camera._phi, _camera._theta);
+	printf ("rho1 = %.2f phi1 = %.2f theta = %.2f\n", rho1, phi1, theta1);
+#endif
+  } // end for if-then-else
+
+#ifdef YLC
+	printf (">>>> rho = %f phi = %f theta = %f\n\n", _camera._rho,
+		_camera._phi, _camera._theta);
+#endif
+} // end of CompRhoPhiTheta()
+
+
+// ----------------------------------------------------------
+// similar to SetVisualFilter, this will probably get incorporate
+// into SetVisualFiter when camera is put into struct VisualFilter
+void View::SetCamera(Camera new_camera)
+{
+	ReportFilterAboutToChange();
+
+	/* ignore new camera if same as current one */
+	if ( new_camera.x_ != _camera.x_ || new_camera.y_ != _camera.y_ || 
+		new_camera.z_ != _camera.z_ || new_camera._dvs != _camera._dvs ||
+
+		new_camera._rho != _camera._rho || 
+		new_camera._phi != _camera._phi || 
+		new_camera._theta != _camera._theta || 
+
+		new_camera.fx != _camera.fx || new_camera.fy != _camera.fy ||
+		new_camera.fz != _camera.fz || 
+		new_camera.flag != _camera.flag || 
+		new_camera._perspective != _camera._perspective || 
+		new_camera._twist_angle != _camera._twist_angle || 
+		new_camera.fix_focus != _camera.fix_focus ||
+		new_camera.spherical_coord != _camera.spherical_coord ||
+		new_camera.H != _camera.H || new_camera.V != _camera.V) {
+#ifdef YLC
+    printf("camera changed\n");
+#endif
+		_filterChanged = true;
+		_camera.x_ = new_camera.x_;
+		_camera.y_ = new_camera.y_;
+		_camera.z_ = new_camera.z_;
+
+		_camera._rho = new_camera._rho;
+		_camera._phi = new_camera._phi;
+		_camera._theta = new_camera._theta;
+
+		_camera._dvs = new_camera._dvs;
+		_camera.fx = new_camera.fx;
+		_camera.fy = new_camera.fy;
+		_camera.fz = new_camera.fz;
+		_camera._twist_angle = new_camera._twist_angle;
+		_camera._perspective = new_camera._perspective;
+		_camera.fix_focus = new_camera.fix_focus;
+		_camera.spherical_coord = new_camera.spherical_coord;
+		_camera.flag = new_camera.flag;
+		_camera.H = new_camera.H;
+		_camera.V = new_camera.V;
+
+		CompRhoPhiTheta();
+		if (!_hasTimestamp) {
+			_timeStamp = TimeStamp::NextTimeStamp();
+			_hasTimestamp = true;
+		}
+		_updateTransform = true;
+	}
+
+	int flushed = _filterQueue->Enqueue(_filter);
+	ReportFilterChanged(_filter, flushed);
+
+#ifdef YLC
+	printf ("_camera fx = %.3f fy = %.3f, fix_focus = %d\n",
+		_camera.fx, _camera.fy, _camera.fix_focus);
+	printf ("*********** end SetCamera ***********\n");
+#endif
+} // end of SetCamera
+
+void View::SetViewDir(int H, int V)
+{
+	if (_camera.H != H || _camera.V != V) {
+		_camera.H = H;
+		_camera.V = V;
+	}
+} // end of SetViewDir
+
