@@ -1,5 +1,5 @@
 #! /bin/csh -f
 # Start Tasvir for the JavaScreen.
 
-touch Tasvir.out
-bin/Tasvir >>& Tasvir.out
+touch logs/Tasvir.out
+bin/Tasvir >>& logs/Tasvir.out

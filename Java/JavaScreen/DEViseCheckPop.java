@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2001/09/12 20:34:29  wenger
+// Incremented JS version to 4.4; various fixes because of install problems
+// on pumori.
+//
 // Revision 1.8  2001/09/10 21:08:11  xuk
 // Solve the client disconnection problem.
 //
@@ -129,7 +133,7 @@ public class DEViseCheckPop
 	}
 
 	if (DEBUG_LOG >= 1) {
-	    _log = new Log("check_connect.out." + _date.getTime());
+	    _log = new Log("logs/check_connect.out." + _date.getTime());
 	}
 
 	checkArgs(args);

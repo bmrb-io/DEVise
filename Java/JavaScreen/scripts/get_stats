@@ -19,6 +19,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  2001/09/17 22:03:26  wenger
+#  Improved JavaScreen usage statistics: stats are now incremental (last
+#  day or week), session opening counts are included.
+#
 #  Revision 1.4  2001/09/05 19:31:21  wenger
 #  Added bin2 and dyn_lib directories in JavaScreen release and install,
 #  and made corresponding changes to scripts; other distribution-related
@@ -116,9 +120,9 @@ my $time2 = -1; # Latest time of data.
 #
 my $filename;
 if ($idStr eq "all") {
-  $filename = "jspop.out*";
+  $filename = "logs/jspop.out*";
 } else {
-  $filename = "jspop.out.$idStr*";
+  $filename = "logs/jspop.out.$idStr*";
 }
 my @files = glob($filename);
 print "Files: @files\n" if ($debug >= 1);

@@ -21,7 +21,7 @@
 include Makefile.config
 
 .PHONY: setup
-setup: bin2 dyn_lib install_info
+setup: bin2 dyn_lib install_info logs
 
 .PHONY: clean
 clean:
@@ -47,6 +47,9 @@ install_info: Makefile.config
 	echo "set cgidir = \"$(CGI_DIR)\"" >> install_info
 	echo "set idstr = \"$(IDSTR)\"" >> install_info
 	echo "set install_host = \"$(INSTALL_HOST)\"" >> install_info
+
+logs:
+	mkdir logs
 
 .PHONY: install
 install: install_info

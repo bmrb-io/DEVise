@@ -30,9 +30,9 @@ endif
 set cmdPort = 6666
 set popPort = 1689
 set jssPort = 1688
-set pFile = "jspop.out"
-set sFile = "jss.out"
-set dFile = "devised.out"
+set pFile = "logs/jspop.out"
+set sFile = "logs/jss.out"
+set dFile = "logs/devised.out"
 
 if ($idStr == "") then
   # Leave "standard" values alone.
