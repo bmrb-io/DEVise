@@ -12,6 +12,13 @@
   Development Group.
 */
 
+
+/*
+  $Id$
+
+  $Log$*/
+
+
 #include "MapInterpShape.h"
 
 // ---------------------------------------------------------- 
