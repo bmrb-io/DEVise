@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.33  1997/07/15 14:29:58  wenger
+  Moved hashing of strings from TData*Interp classes to MappingInterp
+  class; cleaned up a few extra includes of StringStorage.h.
+
   Revision 1.32  1997/06/14 22:35:25  liping
   re-write min/max and recId request with SQL queries
 
@@ -504,11 +508,9 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
 #endif
 
     if (doPrint) {
-    /*
       printf("Too few arguments (%d < %d) or commented line\n",
 	     numArgs, _numPhysAttrs);
       PrintRec(numArgs, args);
-	*/
     }
     return false;
   }
