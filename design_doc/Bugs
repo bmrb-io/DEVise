@@ -2020,8 +2020,9 @@ Num Date        Status  Description
 			implementation. (rkw)
 			(Fixed by rkw, 10/22/99.)
 
-518 10/19/99	OPEN	The first time you save a session, DEVise should
+518 10/19/99	FIXED	The first time you save a session, DEVise should
 			ask for confirmation. (rkw)
+			(Fixed by rkw, 12/2/99.)
 
 519 10/19/99	FIXED	When closing a session, DEVise apparently doesn't
 			throw away absolutely everything -- if you open Tim's

@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.48  1999/10/08 19:58:08  wenger
+#  Fixed bugs 470 and 513 (crashes when closing a session while a query
+#  is running), 510 (disabling actions in piles), and 511 (problem in
+#  saving sessions); also fixed various problems related to cursors on
+#  piled views.
+#
 #  Revision 1.47  1999/09/29 17:22:38  wenger
 #  "Regular" DEVise GUI displays session file name; some provision for
 #  displaying mouse position like the JavaScreen does.
@@ -242,6 +248,7 @@ proc DoActualOpen { sessionFile {asTemplate 0} } {
 # Save session
 proc DoActualSave { infile asTemplate asExport withData asBatchScript } {
     global templateMode schemadir datadir
+    global sessionHasBeenSaved
 
     # Change for saving sessions as batch scripts only.
     set asBatchScript 1
@@ -285,16 +292,26 @@ proc DoActualSave { infile asTemplate asExport withData asBatchScript } {
     }
 
     DEVise saveSession $infile $asTemplate $asExport $withData
+    set sessionHasBeenSaved 1
 }
 
 ############################################################
 
 proc DoSave {} {
     global sessionName templateMode
+    global sessiondir
+    global sessionHasBeenSaved
 
     if {$sessionName == ""} {
 	DoSaveAs 0 0 0 0
 	return
+    }
+
+    if {!$sessionHasBeenSaved} {
+        set button [ dialog .saveSession "Save Session" \
+	    "Save session to file\n$sessiondir/$sessionName?"  "" 0  OK \
+	    {Cancel} ]
+        if {$button != 0} { return }
     }
 
     DoActualSave $sessionName 0 0 0 0

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.142  1999/12/01 20:53:20  wenger
+  Fixed bug 539 (possible lockup when partially piling windows).
+
   Revision 1.141  1999/12/01 00:09:38  wenger
   Disabled extra debug logging for tracking down Omer's crash.
 
@@ -1183,7 +1186,10 @@ XWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
   DaliIfc::SetInfoFcn(SetDaliInfo);
   if (_daliServer == NULL)
   {
+    // Suppress possible error message here (error message is normal).
+    DevError::SetEnabled(false);
     result += DaliIfc::LaunchServer();
+    DevError::SetEnabled(true);
   }
 
   if (_daliServer == NULL)

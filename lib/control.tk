@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.205  1999/12/01 00:08:08  wenger
+#	Added (commented out) test code to duplicate Omer's view insertion/
+#	set view geometry problem.
+#	
 #	Revision 1.204  1999/11/24 15:44:32  wenger
 #	Removed (unnecessary) CommandObj class; commands are now logged for the
 #	monolithic form, not just the client/server form; other command-related
@@ -929,6 +933,7 @@ set exitmode ""
 set restoring 0
 set template 0
 set sessionName ""
+set sessionHasBeenSaved 0
 set curView ""
 set lastView ""
 set UserMode 1
@@ -1208,17 +1213,7 @@ menu .mbar.session.menu.descMenu -tearoff 0
 .mbar.session.menu add command -label "Quit" -command {DoExit $exitmode}
 
 #.mbar.session.menu add separator
-# Test command duplicates Omer's view insertion/set geometry crash.
-#.mbar.session.menu add command -label "Test" -command { \
-#    DEVise openSession /p/devise/wenger/session/Junk0.ds; \
-#    DEVise waitForQueries; \
-#    DEVise setViewGeometry {Y vs. X} 0.0 0.0 0.8 0.2; \
-#    DEVise waitForQueries; \
-#    DEVise removeView {Y vs. X}; \
-#    DEVise waitForQueries; \
-#    DEVise insertWindow {Y vs. X} {Test Colors}; \
-#    DEVise setViewGeometry {Y vs. X} 0.0 0.0 0.8 0.2; \
-#}
+#.mbar.session.menu add command -label "Test" -command { source test }
 #.mbar.session.menu add command -label "Memory leaks" -command { DEVise new_leaks }
 #.mbar.session.menu add command -label "Memory in use" -command { DEVise new_inuse }
 
@@ -1645,8 +1640,7 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 #.mbar.view.menu add command -label "Color Statistics" -command { DoColorStat }
 .mbar.view.menu add cascade -label "Kiviat Graph" -menu .mbar.view.menu.kmenu
 .mbar.view.menu add separator
-#TEMPTEMP
-.mbar.view.menu add command -label "Geometry" -command { EditViewGeom }
+#.mbar.view.menu add command -label "Geometry" -command { EditViewGeom }
 .mbar.view.menu add cascade -label "Dimensions" -menu .mbar.view.menu.dimmenu
 .mbar.view.menu add cascade -label "Keypad Config"  \
     -menu .mbar.view.menu.configmenu
@@ -2080,6 +2074,7 @@ proc FindDefaultXAttr { attrs } {
 # Close current session
 proc DoClose {{askUser 1}} {
     global sessionName templateMode datadir sourceList
+    global sessionHasBeenSaved
     
     if {$templateMode} {	
 	if {$askUser} {
@@ -2113,6 +2108,7 @@ proc DoClose {{askUser 1}} {
     ProcessViewSelected ""
 	
 	DEVise clearAll
+	set sessionHasBeenSaved 0
 
     ClearDescription
     UpdateLinkCursorInfo

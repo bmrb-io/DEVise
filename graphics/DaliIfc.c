@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1999/10/05 17:55:36  wenger
+  Added debug log level.
+
   Revision 1.16  1999/09/21 18:58:15  wenger
   Devise looks for an already-running Tasvir before launching one; Devise
   can also launch a new Tasvir at any time if Tasvir has crashed; added
@@ -652,7 +655,7 @@ static DevStatus
 OpenConnection(const char *daliServer, int &fd, Boolean tryLaunch)
 {
 #if defined(DEBUG)
-  printf("OpenConnection(%s)\n", daliServer);
+  printf("OpenConnection(%s, %d)\n", daliServer, tryLaunch);
 #endif
 
   DevStatus result = StatusOk;
