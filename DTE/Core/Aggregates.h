@@ -7,84 +7,311 @@
 
 class ExecAggregate {
 public:
-	virtual void initialize(const Type* input) = 0;
-	virtual void update(const Type* input) = 0;
-	virtual Type* getValue() = 0;
+  virtual void initialize(const Type* input) = 0;
+  virtual void update(const Type* input) = 0;
+  virtual Type* getValue() = 0;
+};
+
+class ExecGroupAttr : public ExecAggregate {
+public:
+  bool isdifferent(Type* newVal) const;
+  virtual void initialize(const Type* input);
+  virtual void update(const Type* input){
+    assert(0);
+  }
+  virtual Type* getValue();
 };
 
 class ExecMinMax : public ExecAggregate {
-     OperatorPtr opPtr;
-	ADTCopyPtr copyPtr;
-     Type* value;
-     size_t valueSize;
+  OperatorPtr opPtr;
+  ADTCopyPtr copyPtr;
+  Type* minMax;
+  size_t valueSize;
+
 public:
-	ExecMinMax(OperatorPtr opPtr, ADTCopyPtr copyPtr, Type* value, 
-		size_t valueSize) :
-		opPtr(opPtr), copyPtr(copyPtr), value(value), valueSize(valueSize) {}
-	void initialize(const Type* input){
-		copyPtr(input, value, valueSize);	
-	}
-	void update(const Type* input){
-		Type* boolVal;
-		opPtr(input, value, boolVal);
-		if(boolVal){
-			copyPtr(input, value, valueSize);	
-		}
-	}
-	Type* getValue(){
-		return value;
-	}
-	virtual ~ExecMinMax(){
-		delete value;
-	}
+  ExecMinMax(OperatorPtr opPtr, ADTCopyPtr copyPtr, Type* value, 
+	     size_t valueSize) :
+    opPtr(opPtr), copyPtr(copyPtr), minMax(value), valueSize(valueSize) {}
+
+  void initialize(const Type* input) {
+    copyPtr(input, minMax, valueSize);	// copy first value as current minMax
+  }
+
+  void update(const Type* input)  {
+    Type* boolVal;
+    opPtr(input, minMax, boolVal); // boolVal = input (opPtr) minMax
+    if(boolVal)
+      copyPtr(input, minMax, valueSize); // change value of current minMax
+  }
+	
+  Type* getValue() {
+    return minMax;
+  }
+
+  virtual ~ExecMinMax(){
+    delete minMax;
+  }
+
 };
+
+
+class ExecCount : public ExecAggregate {
+  int count;
+  Type* result;
+  DestroyPtr intDest;
+  
+public:
+  ExecCount() {
+  	intDest = getDestroyPtr(INT_TP);
+	assert(intDest);
+	count = 0;
+  }
+
+  void initialize(const Type* input) {
+    count = 1;	
+  }
+
+  void update(const Type* input)  {
+    count++;
+  }
+	
+  Type* getValue() {
+    result = (Type*) count;  // should be a constuctor newInt
+    return result;
+  }
+
+  virtual ~ExecCount() {intDest(result);}
+
+};
+
+
+class ExecSum : public ExecAggregate {
+  OperatorPtr opPtr;
+  ADTCopyPtr copyPtr;
+  Type* sum;
+  size_t valueSize;
+
+public:
+  ExecSum(OperatorPtr opPtr, ADTCopyPtr copyPtr, Type* value, 
+	     size_t valueSize) :
+    opPtr(opPtr), copyPtr(copyPtr), sum(value), valueSize(valueSize) {}
+
+  void initialize(const Type* input) {
+    copyPtr(input, sum, valueSize);	
+  }
+
+  void update(const Type* input)  {
+    Type* result;
+    opPtr(input, sum, result);
+    copyPtr(result, sum, valueSize);	
+  }
+	
+  Type* getValue() {
+    return sum;
+  }
+
+  virtual ~ExecSum(){
+    delete sum;
+  }
+
+};
+
+
+class ExecAverage : public ExecAggregate {
+  OperatorPtr addPtr, divPtr;
+  PromotePtr promotePtr;
+  DestroyPtr sumDestroy;
+  ADTCopyPtr copyPtr;
+  Type* sum;
+  Type *result;
+  int count;
+  size_t valueSize;
+
+public:
+  ExecAverage(OperatorPtr addPtr,OperatorPtr divPtr, PromotePtr promotePtr,
+	      DestroyPtr sumDestroy, ADTCopyPtr copyPtr,
+		 Type* value, size_t valueSize) : 
+    addPtr(addPtr), divPtr(divPtr), promotePtr(promotePtr),
+    sumDestroy(sumDestroy), copyPtr(copyPtr),
+    sum(value), valueSize(valueSize) {
+    	count = 0;
+	result = allocateSpace("double");
+	}
+
+  void initialize(const Type* input) {
+    copyPtr(input, sum, valueSize);	
+    count = 1;
+  }
+
+  void update(const Type* input)  {
+    addPtr(input, sum, sum);
+    count++;
+  }
+	
+  Type* getValue() {
+    if (count == 0)
+      return (Type *) NULL; // What should be returned here?
+
+    Type *sumDouble = &IDouble(0.0);
+    promotePtr(sum, sumDouble);
+    divPtr(sumDouble, &IDouble(count), result);
+    return result;
+  }
+
+  virtual ~ExecAverage() {
+    sumDestroy(sum);
+    DestroyPtr dp = getDestroyPtr("double");
+    assert(dp);
+    dp(result);
+  }
+
+};
+
 
 class Aggregate {
 public:
-	virtual TypeID typify(TypeID inputT) = 0;
-	virtual ExecAggregate* createExec() = 0;
+  virtual TypeID typify(TypeID inputT) = 0;
+  virtual ExecAggregate* createExec() = 0;
 };
 
 class MinAggregate : public Aggregate {
 protected:
-	OperatorPtr opPtr;
-	TypeID typeID;
+  OperatorPtr opPtr;
+  TypeID typeID;
+
 public:
-	MinAggregate() : opPtr(NULL) {}
-	TypeID typify(TypeID inputT){	// throws
-		TypeID boolT;
-		typeID = inputT;
-		GeneralPtr* genPtr = NULL;
-		TRY(genPtr = getOperatorPtr("<", inputT, inputT, boolT), UNKN_TYPE);
-		assert(genPtr);
-		opPtr = genPtr->opPtr;
-		assert(boolT == "bool");
-		return typeID;
-	}
-	ExecAggregate* createExec(){
-		Type* value;
-		size_t valueSize;
-		ADTCopyPtr copyPtr;
-		TRY(copyPtr = getADTCopyPtr(typeID), NULL);
-		value = allocateSpace(typeID, valueSize);
-		ExecAggregate* retVal;
-		retVal = new ExecMinMax(opPtr, copyPtr, value, valueSize);
-		return retVal;
-	}
+  MinAggregate() : opPtr(NULL) {}
+
+  TypeID typify(TypeID inputT){	// throws
+    TypeID boolT;
+    typeID = inputT;
+    GeneralPtr* genPtr = NULL;
+    TRY(genPtr = getOperatorPtr("<", inputT, inputT, boolT), UNKN_TYPE);
+    assert(genPtr);
+    opPtr = genPtr->opPtr;
+    assert(boolT == "bool");
+    return typeID;
+  }
+
+  ExecAggregate* createExec(){
+    ADTCopyPtr copyPtr;
+    TRY(copyPtr = getADTCopyPtr(typeID), NULL);
+
+    size_t valueSize;
+    Type *value = allocateSpace(typeID, valueSize);
+
+    ExecAggregate* retVal = new ExecMinMax(opPtr, copyPtr, value, valueSize);
+    return retVal;
+  }
+
 };
 
 class MaxAggregate : public MinAggregate {
 public:
-	TypeID typify(TypeID inputT){	// throws
-		TypeID boolT;
-		typeID = inputT;
-		GeneralPtr* genPtr = NULL;
-		TRY(genPtr = getOperatorPtr(">", inputT, inputT, boolT), UNKN_TYPE);
-		assert(genPtr);
-		opPtr = genPtr->opPtr;
-		assert(boolT == "bool");
-		return inputT;
-	}
+
+  TypeID typify(TypeID inputT){	// throws
+    TypeID boolT;
+    typeID = inputT;
+    GeneralPtr* genPtr = NULL;
+    TRY(genPtr = getOperatorPtr(">", inputT, inputT, boolT), UNKN_TYPE);
+    assert(genPtr);
+    opPtr = genPtr->opPtr;
+    assert(boolT == "bool");
+    return inputT;
+  }
+
+};
+
+class CountAggregate : public Aggregate {
+public:
+  TypeID typify (TypeID inputT) {
+    return "int";
+  }
+
+  ExecAggregate* createExec() {
+    ExecAggregate* retVal = new ExecCount();
+    return retVal;
+  }
+};
+
+class SumAggregate : public Aggregate {
+private:
+  OperatorPtr opPtr;
+  TypeID typeID;
+
+public:
+  SumAggregate() : opPtr(NULL) {}
+
+  TypeID typify(TypeID inputT){	// throws
+    TypeID boolT;
+    typeID = inputT;
+
+    GeneralPtr* genPtr = NULL;
+    TRY(genPtr = getOperatorPtr("+", inputT, inputT, boolT), UNKN_TYPE);
+    assert(genPtr);
+    opPtr = genPtr->opPtr;
+    assert(boolT == inputT);
+    return typeID;
+  }
+
+  ExecAggregate* createExec(){
+    ADTCopyPtr copyPtr;
+    TRY(copyPtr = getADTCopyPtr(typeID), NULL);
+
+    size_t valueSize;
+    Type *value = allocateSpace(typeID, valueSize);
+
+    ExecAggregate* retVal = new ExecSum(opPtr, copyPtr, value, valueSize);
+    return retVal;
+  }
+
+};
+
+class AvgAggregate : public Aggregate {
+private:
+  OperatorPtr addPtr, divPtr;
+  PromotePtr promotePtr;
+  TypeID typeID;
+
+public:
+  AvgAggregate() : addPtr(NULL), divPtr(NULL) {}
+
+  TypeID typify(TypeID inputT){	// throws
+    TypeID resultT;
+    typeID = inputT;
+
+    GeneralPtr* genPtr = NULL;
+    TRY(genPtr = getOperatorPtr("+", inputT, inputT, resultT), UNKN_TYPE);
+    assert(genPtr);
+    addPtr = genPtr->opPtr;
+    assert(resultT == inputT);
+
+    genPtr = NULL;
+    TRY(genPtr = getOperatorPtr("/", "double", "double", resultT), UNKN_TYPE);
+    assert(genPtr);
+    divPtr = genPtr->opPtr;
+    assert(resultT == "double");
+
+    promotePtr = NULL;
+    TRY(promotePtr = getPromotePtr(inputT, "double"), UNKN_TYPE);
+    assert(promotePtr);
+    return resultT;
+  }
+
+  ExecAggregate* createExec(){
+    DestroyPtr sumDestroy;
+    ADTCopyPtr copyPtr;
+    TRY(sumDestroy = getDestroyPtr(typeID), NULL);
+    TRY(copyPtr = getADTCopyPtr(typeID), NULL);
+
+    size_t valueSize;
+    Type *value = allocateSpace(typeID, valueSize);
+
+    ExecAggregate* retVal = new ExecAverage(addPtr, divPtr, promotePtr, 
+					    sumDestroy, copyPtr, value, valueSize);
+    return retVal;
+  }
+
 };
 
 class Aggregates : public Site {

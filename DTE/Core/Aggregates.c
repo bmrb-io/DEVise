@@ -2,7 +2,7 @@
 
 bool Aggregates::isApplicable(){
 	
-	// Is there any aggregates in the selectClause?
+	// Are there any aggregates in the selectClause?
 	
 	if (selList == NULL )
 		return false;
@@ -37,6 +37,21 @@ bool Aggregates::isApplicable(){
 				curr = args->get();
 				aggFuncs[i] = new MaxAggregate();
 			}
+			if(*name == "count" && numArgs == 1){
+				isApplicableValue = true;
+				curr = args->get();
+				aggFuncs[i] = new CountAggregate();
+			}
+			if(*name == "sum" && numArgs == 1){
+				isApplicableValue = true;
+				curr = args->get();
+				aggFuncs[i] = new SumAggregate();
+			}
+			if(*name == "avg" && numArgs == 1){
+				isApplicableValue = true;
+				curr = args->get();
+				aggFuncs[i] = new AvgAggregate();
+			}
 		}
 		filteredSelList->append(curr);
 		selList->step();
@@ -69,9 +84,9 @@ void Aggregates::initialize(){
 }
 
 const Tuple* Aggregates::getNext(){
-	if(done){
-		return NULL;
-	}
+	if(done)
+	  return NULL;
+
 	done = true;
 	int numFlds = getNumFlds();
 	const Tuple* currt = iterator->getNext();
