@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/15 21:11:39  ravim
+  Fix bug in extract routine.
+
   Revision 1.2  1995/11/15 07:00:56  ravim
   Outputs crsp data file.
 
@@ -29,6 +32,7 @@
 #include <fstream.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 #include <tcl.h>
 #include <tk.h>
 
@@ -40,6 +44,8 @@
 static Tcl_Interp *globalInterp = 0;
 
 #define UPDATE_TCL { (void)Tcl_Eval(globalInterp, "update"); }
+
+int find_offset(FILE *idxfile, char cval[]);
 
 /*-------------------------------------------------------------------*/
 
@@ -76,8 +82,10 @@ int crsp_create(char *tapeDrive, char *tapeFile, char *tapeBsize,
 
   for (i = 0; i < num; i++) {
     spos_arr[i] = i * 2;
-    // FIX: find offset matching CUSIP number from index file
-    offset_arr[i] = 5492912; // i * 400;
+    // find offset for this security by looking through the index file
+    if ((offset_arr[i] = find_offset(idxfile, argv[i*2])) == -1)
+      printf("ERROR: could not find selected cusip in the index file\n");
+    rewind(idxfile);
   }
 
   // Now sort offset_arr - bubble sort for now
@@ -160,4 +168,29 @@ int crsp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 
   return crsp_create(tapeDrive, tapeFile, tapeBsize, idxFile,
 		     &argv[5], argc - 5);
+}
+
+// Searches through the index file and finds the entry for the given 
+// cusip number. Then, returns the tape offset for this security.
+int find_offset(FILE *idxfile, char cval[])
+{
+  int tmpval1, tmpval2;
+  char tmpbuf[200];	// large enough to hold one line of index file
+  unsigned long int offval;
+  char fval[10];	// Stores cusip in this
+
+  do 
+  {
+    // get offset
+    fscanf(idxfile, "%lu,%d,%d,%8s", &offval, &tmpval1, &tmpval2, fval);
+
+    // Ignore rest of line
+    fgets(tmpbuf, 200, idxfile);
+
+  } while ((strcmp(cval, fval)) && (!feof(idxfile)));
+
+  if (!strcmp(cval, fval))
+    return offval;
+
+  return -1;
 }
