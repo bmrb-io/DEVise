@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.151  1998/01/09 20:46:06  wenger
+#	Merged cleanup_1_4_7_br_5 thru cleanup_1_4_7_br_6; fixed error in
+#	previous merge.
+#
 #	Revision 1.150  1998/01/07 19:30:38  wenger
 #	Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
 #	server library into Devise); updated solaris, sun, linux, and hp
@@ -1405,7 +1409,7 @@ menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "Swap Views" -command DoSwapView
 .mbar.window.menu add command -label "Move View" -command DoViewMove
 .mbar.window.menu add command -label "Remove View" -command DoViewRemove
-.mbar.window.menu add command -label "Bring View Back" -command DoBringView
+.mbar.window.menu add command -label "Restore View" -command DoBringView
 .mbar.window.menu add separator
 .mbar.window.menu add command -label "View List" -command WinViewList
 .mbar.window.menu add command -label "Print Config" -command GetWinPrintConfig

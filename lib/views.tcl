@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.42  1997/11/24 23:15:48  weaver
+#  Changes for the new ColorManager.
+#
 #  Revision 1.41  1997/08/21 21:06:39  donjerko
 #  Added Materialize button, added isDTEType to some code in views.tcl
 #
@@ -590,7 +593,7 @@ proc DoViewMove {} {
 proc DoBringView {} {
     global dialogListVar
 
-    set answer [ dialogList .bringView "Bring View Back" \
+    set answer [ dialogList .bringView "Restore View" \
 	    "Select view to move to a window" "" 0 { OK Cancel } [ViewSet] ]
     if {$answer == 1 || $dialogListVar(selected) == ""} {
 	return
