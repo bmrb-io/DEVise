@@ -1,20 +1,27 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.1  1995/09/06 15:35:33  jussi
+#	Initial revision of archive.
 
 ############################################################
 
 set issm_tapeDrive /dev/nrst1
 set issm_tapeFile  5
-set issm_tradePath /tmp/nyam1
-set issm_quotePath /tmp/nyam2
+set issm_tradePath /tmp
+set issm_quotePath /tmp
 
-set issm_tempsel(0) "One view of stocks"
-set issm_tempsel(1) "Two views of stocks"
-set issm_tempsel(2) "Trades and Quotes of one stock"
-set issm_tempsel(3) "One view of many stocks"
-set issm_template $issm_tempsel(0)
-    
+if {[info exists env(ISSM_TAPEDRIVE)]} {
+    set issm_tapeDrive $env(ISSM_TAPEDRIVE)
+}
+if {[info exists env(ISSM_TAPEFILE)]} {
+    set issm_tapeFile $env(ISSM_TAPEFILE)
+}
+if {[info exists env(ISSM_DISKPATH)]} {
+    set issm_tradePath $env(ISSM_DISKPATH)
+    set issm_quotePath $env(ISSM_DISKPATH)
+}
+
 set issm_firmsel ""
 set issm_firmlst ""
 set issm_numfirms 0
@@ -39,12 +46,11 @@ proc issm_onDisk {symbol} {
 ############################################################
 
 proc issm_setupMain {main} {
-#    wm withdraw .
     toplevel $main
-    wm minsize $main 485 700
+    wm minsize $main 485 650
     wm maxsize $main 485 1000
     wm title $main "ISSM"
-    wm geometry $main =485x700+50+50
+    wm geometry $main =485x650+50+50
     selection clear $main
 
     label $main.title -relief raised -text "ISSM Stock Database" \
@@ -95,27 +101,6 @@ proc issm_setupButtons {buttons fsel flist} {
 
 #    bind $fsel.list <Any-Button-1> +issm_setSelectButton
 #    bind $flist.list <Any-Button-1> +issm_setUnselectButton
-}
-
-############################################################
-
-proc issm_setupTemplate {tmenu tvar} {
-    frame $tmenu
-    global issm_tempsel
-    menubutton $tmenu.button -relief raised \
-	    -textvariable $tvar -menu $tmenu.button.menu
-    label $tmenu.label -text "Template:"
-    pack $tmenu.label $tmenu.button -side left -padx 2m
-    menu $tmenu.button.menu
-    $tmenu.button.menu add radiobutton -label $issm_tempsel(0) \
-	    -variable issm_template -value $issm_tempsel(0)
-    $tmenu.button.menu add radiobutton -label $issm_tempsel(1) \
-	    -variable issm_template -value $issm_tempsel(1)
-    $tmenu.button.menu add radiobutton -label $issm_tempsel(2) \
-	    -variable issm_template -value $issm_tempsel(2)
-    $tmenu.button.menu add radiobutton -label $issm_tempsel(3) \
-	    -variable issm_template -value $issm_tempsel(3)
-    tk_menuBar $tmenu $tmenu.button
 }
 
 ############################################################
@@ -335,9 +320,7 @@ proc issm_helpWindow {} {
                    and then press Select.\n\n\
                    Remove a selection by double-clicking on a stock\
                    in the right box, or select several stocks by\
-		   highlighting a range and then press Unselect.\n\n\
-		   Select a template by pulling down the template\
-		   menu button."
+		   highlighting a range and then press Unselect."
     button .help.ok -text OK -width 10 -command "destroy .help"
     pack .help.msg .help.ok -side top -padx 5m -pady 3m
 
@@ -360,291 +343,6 @@ proc issm_tapeToDisk {symbol} {
     set entry [concat $entry "On Disk"]
     set issm_firmsel [lreplace $issm_firmsel $lstIdx $lstIdx $entry]
     issm_updateFirmSelBox .issm.firmsel.list
-}
-
-############################################################
-
-proc issm_createOneViewTemplate {fname n td wn maxprice maxvol \
-	xsize ysize xorig yorig xinc yinc} {
-    global issm_tradePath issm_quotePath
-    upvar $td tdata
-    upvar $wn wname
-
-    if {$maxprice < 5} {
-	set maxprice 5
-    } else {
-	set maxprice [expr 10 * (int($maxprice/10) + 1)]
-    }
-    if {$maxvol < 50} {
-	set maxprice 50
-    } else {
-	set maxvol [expr 100 * (int($maxvol/100) + 1)]
-    }
-
-    set f [open $fname w]
-
-    puts $f "# Define schema types"
-    puts $f "DEVise importFileType $issm_tradePath/issm-t.schema"
-    puts $f "DEVise importFileType $issm_quotePath/issm-q.schema"
-    puts $f "DEVise changeMode 0"
-
-    puts $f ""
-    puts $f "# Return if session file used as a template"
-    puts $f "if { \$template } { return 0 }"
-
-    puts $f ""
-    puts $f "# Define x and y links"
-    puts $f "DEVise create link Visual_Link Date-link 1"
-    puts $f "DEVise create link Visual_Link Price-link 2"
-    puts $f "DEVise create link Visual_Link Volume-link 2"
-
-    set x $xorig
-    set y $yorig
-
-    for {set idx 0} {$idx < $n} {incr idx} {
-	puts $f ""
-	puts $f "# Define a window"
-	puts $f "set wname \{$wname($idx)\}"
-	puts $f "DEVise create window WinVertical \$wname $x $y $xsize $ysize"
-	set x [expr $x + $xinc]
-	if {$x > [expr 1 - $xsize]} { set x $xorig }
-	set y [expr $y + $yinc]
-	if {$y > [expr 1 - $ysize]} { set y $yorig }
-
-	puts $f ""
-	puts $f "# Define TData file $idx and mappings for it"
-	puts $f "set tdata $tdata($idx)"
-	puts $f "DEVise create tdata ISSM-Trade \
-		$issm_tradePath/\$tdata \$tdata"
-	puts $f "DEVise createInterp \$tdata {TRADE_PRICE} \
-		{} {\$DATE}  {\$TRADE_PRICE}  {2}  {}  {}  {}  {2}  {}  {}"
-	puts $f "DEVise createInterp \$tdata {TRADE_VOL} \
-		{}  {\$DATE}  {\$TRADE_VOL}  {7}  {}  {}  {}  {2}  {}  {}"
-
-	puts $f ""
-	puts $f "set map \"\$tdata#TRADE_PRICE#Map\""
-	puts $f "DEVise create mapping TRADE_PRICE \$tdata \
-		\$map {} {\$DATE} {\$TRADE_PRICE} 2 {} {} {} 2 {} {}"
-	puts $f "DEVise setPixelWidth \$map 1"
-	puts $f "set view \"\$tdata#TRADE_PRICE\""
-	puts $f "DEVise create view SortedX \$view \
-		{Jan 1 1992 08:00:00} {Dec 31 1992 18:00:00} \
-		0.000000 $maxprice white"
-	puts $f "DEVise setAxisDisplay \$view X 1"
-	puts $f "DEVise setAxisDisplay \$view Y 0"
-	puts $f "DEVise insertLink Date-link \$view"
-	puts $f "DEVise insertLink Price-link \$view"
-	puts $f "DEVise insertMapping \$view \$map"
-	puts $f "DEVise insertWindow \$view \$wname"
-	puts $f "DEVise clearViewHistory \$view"
-	puts $f "DEVise insertViewHistory \$view {Jan 1 1992 08:00:00} \
-		{0.00} {Dec 31 1992 18:00:00} {$maxprice} {0}"
-
-	puts $f ""
-	puts $f "set map \"\$tdata#TRADE_VOL#Map\""
-	puts $f "DEVise create mapping TRADE_VOL \$tdata \
-		\$map {} {\$DATE} {\$TRADE_VOL} 7 {} {} {} 2 {} {}"
-	puts $f "DEVise setPixelWidth \$map 1"
-	puts $f "set view \"\$tdata#TRADE_VOL\""
-	puts $f "DEVise create view SortedX \$view \
-		{Jan 1 1992 08:00:00} {Dec 31 1992 18:00:00} \
-		0.000000 $maxvol white"
-	puts $f "DEVise setAxisDisplay \$view X 1"
-	puts $f "DEVise setAxisDisplay \$view Y 0"
-	puts $f "DEVise insertLink Date-link \$view"
-	puts $f "DEVise insertLink Volume-link \$view"
-	puts $f "DEVise insertMapping \$view \$map"
-	puts $f "DEVise insertWindow \$view \$wname"
-	puts $f "DEVise clearViewHistory \$view"
-	puts $f "DEVise insertViewHistory \$view {Jan 1 1992 08:00:00} \
-		{0.00} {Dec 31 1992 18:00:00} {$maxvol} {0}"
-    }
-
-    puts $f ""
-    puts $f "return 1"
-
-    close $f
-}
-
-############################################################
-
-proc issm_createTemplate0 {fname n td wn maxprice maxvol} {
-    upvar $td tdata
-    upvar $wn wname
-    set xsize 0.4
-    set ysize 0.4
-    set xorig 0
-    set yorig 0.2
-    set xinc  0.15
-    set yinc  0.05
-    createOneViewTemplate $fname $n tdata wname $maxprice $maxvol \
-	    $xsize $ysize $xorig $yorig $xinc $yinc
-}
-
-############################################################
-
-proc issm_createTemplate3 {fname n td wn maxprice maxvol} {
-    upvar $td tdata
-    upvar $wn wname
-    set xsize 0.35
-    set ysize 0.3
-    set xorig 0
-    set yorig 0.2
-    set xinc 0.05
-    set yinc 0.03
-    createOneViewTemplate $fname $n tdata wname $maxprice $maxvol \
-	    $xsize $ysize $xorig $yorig $xinc $yinc
-}
-
-############################################################
-
-proc issm_createTemplate1 {fname n td wn maxprice maxvol} {
-    global issm_tradePath issm_quotePath
-    upvar $td tdata
-    upvar $wn wname
-
-    if {$maxprice < 5} {
-	set maxprice 5
-    } else {
-	set maxprice [expr 10 * (int($maxprice/10) + 1)]
-    }
-    if {$maxvol < 50} {
-	set maxprice 50
-    } else {
-	set maxvol [expr 100 * (int($maxvol/100) + 1)]
-    }
-
-    set f [open $fname w]
-
-    puts $f "# Define schema types"
-    puts $f "DEVise importFileType $issm_tradePath/issm-t.schema"
-    puts $f "DEVise importFileType $issm_quotePath/issm-q.schema"
-    puts $f "DEVise changeMode 0"
-
-    puts $f ""
-    puts $f "# Return if session file used as a template"
-    puts $f "if { \$template } { return 0 }"
-
-    puts $f ""
-    puts $f "# Define x and y links"
-    puts $f "DEVise create link Visual_Link Date-link-full 1"
-    puts $f "DEVise create link Visual_Link Date-link-focus 1"
-    puts $f "DEVise create link Visual_Link Price-link 2"
-    puts $f "DEVise create link Visual_Link Volume-link 2"
-
-    puts $f ""
-    puts $f "# Define one cursor"
-    puts $f "DEVise create cursor Cursor Focus 1"
-
-    set x1size 0.4
-    set y1size 0.4
-    set x1 0
-    set y1 0.2
-    set x1inc 0.05
-    set y1inc 0.05
-
-    set x2size 0.35
-    set y2size 0.2
-    set x2 0.7
-    set y2 0.0
-    set x2inc 0.0
-    set y2inc 0.23
-
-    for {set idx 0} {$idx < $n} {incr idx} {
-	puts $f ""
-	puts $f "# Define a window"
-	puts $f "set wname_0 \{Focus: $wname($idx)\}"
-	puts $f "set wname_1 \{$wname($idx)\}"
-	puts $f "DEVise create window WinVertical \$wname_0 \
-		$x1 $y1 $x1size $y1size"
-	puts $f "DEVise create window WinVertical \$wname_1 \
-		$x2 $y2 $x2size $y2size"
-	set x1 [expr $x1 + $x1inc]
-	set y1 [expr $y1 + $y1inc]
-	set x2 [expr $x2 + $x2inc]
-	set y2 [expr $y2 + $y2inc]
-	puts $f ""
-
-	puts $f "# Define TData file $idx and mappings for it"
-	puts $f "set tdata $tdata($idx)"
-	puts $f "DEVise create tdata ISSM-Trade \
-		$issm_tradePath/\$tdata \$tdata"
-	puts $f "DEVise createInterp \$tdata {TRADE_PRICE} \
-		{} {\$DATE}  {\$TRADE_PRICE}  {2}  {}  {}  {}  {2}  {}  {}"
-	puts $f "DEVise createInterp \$tdata {TRADE_VOL} \
-		{}  {\$DATE}  {\$TRADE_VOL}  {7}  {}  {}  {}  {2}  {}  {}"
-
-	puts $f ""
-	puts $f "set map \"\$tdata#TRADE_PRICE#Map\""
-	puts $f "DEVise create mapping TRADE_PRICE \$tdata \
-		\$map {} {\$DATE} {\$TRADE_PRICE} 2 {} {} {} 2 {} {}"
-	puts $f "DEVise setPixelWidth \$map 1"
-	puts $f "set view_0 \"\$tdata#TRADE_PRICE\""
-	puts $f "set view_1 \"\$tdata#TRADE_PRICE#Focus\""
-	puts $f "DEVise create view SortedX \$view_0 \
-		{Jan 1 1992 08:00:00} {Dec 31 1992 18:00:00} \
-		0.000000 $maxprice white"
-	puts $f "DEVise create view SortedX \$view_1 \
-		{May 1 1992 08:00:00} {Jun 30 1992 18:00:00} \
-		0.000000 $maxprice white"
-	puts $f "DEVise setAxisDisplay \$view_0 X 1"
-	puts $f "DEVise setAxisDisplay \$view_0 Y 0"
-	puts $f "DEVise setAxisDisplay \$view_1 X 1"
-	puts $f "DEVise setAxisDisplay \$view_1 Y 0"
-	puts $f "DEVise insertLink Date-link-full \$view_0"
-	puts $f "DEVise insertLink Date-link-focus \$view_1"
-	puts $f "DEVise insertLink Price-link \$view_0"
-	puts $f "DEVise insertLink Price-link \$view_1"
-	puts $f "DEVise setCursorSrc Focus \$view_1"
-	puts $f "DEVise setCursorDst Focus \$view_0"
-	puts $f "DEVise insertMapping \$view_0 \$map"
-	puts $f "DEVise insertMapping \$view_1 \$map"
-	puts $f "DEVise insertWindow \$view_0 \$wname_1"
-	puts $f "DEVise insertWindow \$view_1 \$wname_0"
-	puts $f "DEVise clearViewHistory \$view_0"
-	puts $f "DEVise clearViewHistory \$view_1"
-	puts $f "DEVise insertViewHistory \$view_0 {Jan 1 1992 08:00:00} \
-		{0.00} {Dec 31 1992 18:00:00} {$maxprice} {0}"
-	puts $f "DEVise insertViewHistory \$view_1 {May 1 1992 08:00:00} \
-		{0.00} {Jun 30 1992 18:00:00} {$maxprice} {0}"
-
-	puts $f ""
-	puts $f "set map \"\$tdata#TRADE_VOL#Map\""
-	puts $f "DEVise create mapping TRADE_VOL \$tdata \
-		\$map {} {\$DATE} {\$TRADE_VOL} 7 {} {} {} 2 {} {}"
-	puts $f "DEVise setPixelWidth \$map 1"
-	puts $f "set view_0 \"\$tdata#TRADE_VOL\""
-	puts $f "set view_1 \"\$tdata#TRADE_VOL#Focus\""
-	puts $f "DEVise create view SortedX \$view_0 \
-		{Jan 1 1992 08:00:00} {Dec 31 1992 18:00:00} \
-		0.000000 $maxvol white"
-	puts $f "DEVise create view SortedX \$view_1 \
-		{May 1 1992 08:00:00} {Jun 30 1992 18:00:00} \
-		0.000000 $maxvol white"
-	puts $f "DEVise setAxisDisplay \$view_0 X 1"
-	puts $f "DEVise setAxisDisplay \$view_0 Y 0"
-	puts $f "DEVise setAxisDisplay \$view_1 X 1"
-	puts $f "DEVise setAxisDisplay \$view_1 Y 0"
-	puts $f "DEVise insertLink Date-link-full \$view_0"
-	puts $f "DEVise insertLink Date-link-focus \$view_1"
-	puts $f "DEVise insertLink Volume-link \$view_0"
-	puts $f "DEVise insertLink Volume-link \$view_1"
-	puts $f "DEVise insertMapping \$view_0 \$map"
-	puts $f "DEVise insertMapping \$view_1 \$map"
-	puts $f "DEVise insertWindow \$view_0 \$wname_1"
-	puts $f "DEVise insertWindow \$view_1 \$wname_0"
-	puts $f "DEVise clearViewHistory \$view_0"
-	puts $f "DEVise clearViewHistory \$view_1"
-	puts $f "DEVise insertViewHistory \$view_0 {Jan 1 1992 08:00:00} \
-		{0.00} {Dec 31 1992 18:00:00} {$maxvol} {0}"
-	puts $f "DEVise insertViewHistory \$view_1 {May 1 1992 08:00:00} \
-		{0.00} {Jun 30 1992 18:00:00} {$maxvol} {0}"
-    }
-
-    puts $f ""
-    puts $f "return 1"
-
-    close $f
 }
 
 ############################################################
@@ -727,9 +425,6 @@ proc issmMain {} {
 
     issm_setupMain .issm
 
-    issm_setupTemplate .issm.tempsel issm_template
-    pack .issm.tempsel -side top -pady 3m
-    
     frame .issm.firms -relief groove -borderwidth 2
     issm_setupFirmSel .issm.firmsel
     issm_setupFirmList .issm.firmlst .issm.firmsel
@@ -754,6 +449,4 @@ proc issmMain {} {
     set issm_firmsel ""
 
     tkwait visibility .issm
-    grab set .issm
-    tkwait window .issm
 }
