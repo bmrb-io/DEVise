@@ -308,7 +308,8 @@ Num Date        Status  Description
 081 11/22/96	OPEN	Derived data histograms not always working (see
 			the session test/sales1.tk, must be on tiger to
 			use this). (ml/rkw)
-			Assigned: Guangshun
+			(Histograms not supported on scatter plots yet.)
+			Deferred
 
 082 11/25/96	FIXED	Load session test/a2.tk -> core dump. (rkw/jpm)
 
