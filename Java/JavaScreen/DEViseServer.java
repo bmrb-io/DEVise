@@ -27,6 +27,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.43  2000/09/20 19:29:32  wenger
+// Removed maximum logins per user from jspop (causes problems because client
+// objects are not removed if JS crashes; generally simplified the DEViseUser-
+// related code.
+//
 // Revision 1.42  2000/07/19 20:11:36  wenger
 // Code to read data from sockets is more robust (hopefully fixes BMRB/Linux
 // problem); background color of upper left part of JS changed to red when a
@@ -864,6 +869,7 @@ public class DEViseServer implements Runnable
         long time = 0;
 
         pop.pn("Receiving data from devised(" + hostname + ") of size " + size);
+        pop.pn(socket.dataAvailable() + " bytes of data available on socket");
         while (!isEnd) {
             data = socket.receiveData(size);
             pop.pn("Successfully received data from devised(" + hostname +
