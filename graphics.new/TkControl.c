@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1995/12/08 23:47:12  ravim
+  Window name is a parameter to KGraph creation. Previous KGraph not deleted
+  when the new one is created.
+
   Revision 1.19  1995/12/07 02:18:29  ravim
   The set of stats to be displayed is specified as a parameter to setViewStatistics.
 
@@ -922,10 +926,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			goto error;
 		    }
 		    /* Return status of statistics display */
-		    if (vg->GetDisplayStats())
-		      interp->result = "1";
-		    else
-		      interp->result = "0";
+		    strcpy(interp->result, vg->GetDisplayStats());
 		}
 		else {
 			interp->result = "wrong args";
