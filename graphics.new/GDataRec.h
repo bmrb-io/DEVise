@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.10  1999/05/26 19:50:49  wenger
+  Added bounding box info to GData, so that the selection of records by the
+  visual filter is more accurate.  (Note that at this time the bounding box
+  info does not take into account symbol orientation; symbol alignment is
+  taken into account somewhat crudely.) This includes considerable
+  reorganization of the mapping-related classes.  Fixed problem with
+  pixelSize getting used twice in Rect shape (resulted in size being the
+  square of pixel size).
+
   Revision 1.9  1999/05/21 14:52:28  wenger
   Cleaned up GData-related code in preparation for including bounding box
   info.
@@ -117,5 +126,20 @@ struct GDataAttrOffset {
 // single structure rather than as four individual values, but I've got
 // it working this way and I don't want to change it right now.  RKW
 // 1999-05-26.
+
+
+// Strings for attribute names in GData attribute list.
+
+static const char *gdataXName = "x";
+static const char *gdataYName = "y";
+static const char *gdataZName = "z";
+static const char *gdataColorName = "color";
+static const char *gdataSizeName = "size";
+static const char *gdataPatternName = "pattern";
+static const char *gdataOrientationName = "orientation";
+static const char *gdataShapeName = "shape";
+static const char *gdataShapeAttrName = "shapeAttr_"; // append number
+static const char *gdataShapeAttr0Name = "shapeAttr_0";
+static const char *gdataShapeAttr1Name = "shapeAttr_1";
 
 #endif

@@ -17,6 +17,11 @@
   $Id$
 
   $Log$
+  Revision 1.67  1999/05/28 16:32:42  wenger
+  Finished cleaning up bounding-box-related code except for PolyLineFile
+  symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
+  drawing of Polyline symbols.
+
   Revision 1.66  1999/05/26 19:50:50  wenger
   Added bounding box info to GData, so that the selection of records by the
   visual filter is more accurate.  (Note that at this time the bounding box
@@ -728,7 +733,7 @@ void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
     Boolean hasError = false;
 	Coord error;
-	if (map->GDataAttrList()->Find("shapeAttr_1")) {
+	if (map->GDataAttrList()->Find(gdataShapeAttr1Name)) {
 	  hasError = true;
 	  error = map->GetShapeAttr1(gdata);
 	}
@@ -1736,10 +1741,10 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	// Get the name of the image file or the image itself.  (Print a warning
 	// if this isn't a string attribute.)
     AttrList *attrList = map->GDataAttrList();
-    AttrInfo *attrInfo = attrList->Find("shapeAttr_0");
+    AttrInfo *attrInfo = attrList->Find(gdataShapeAttr0Name);
     if (attrInfo == NULL) {
 #if defined(DEBUG)
-      reportErrNosys("Can't find AttrInfo for shapeAttr_0");
+      reportErrNosys("Can't find AttrInfo for " gdataShapeAttr0Name);
 #endif
     } else {
 	  if (attrInfo->type != StringAttr) {
@@ -2029,11 +2034,11 @@ GetTextAttrInfo(AttrList *attrList,
 	Boolean &labelFormatValid, AttrType &labelFormatType)
 {
   labelAttrType = IntAttr;
-  AttrInfo *attrInfo = attrList->Find("shapeAttr_0");
+  AttrInfo *attrInfo = attrList->Find(gdataShapeAttr0Name);
   if (attrInfo == NULL) {
     labelAttrValid = false;
 #if defined(DEBUG)
-    reportErrNosys("Can't find AttrInfo for shapeAttr_0");
+    reportErrNosys("Can't find AttrInfo for " gdataShapeAttr0Name);
 #endif
   } else {
     labelAttrValid = true;
@@ -2041,11 +2046,11 @@ GetTextAttrInfo(AttrList *attrList,
   }
 
   labelFormatType = IntAttr;
-  attrInfo = attrList->Find("shapeAttr_1");
+  attrInfo = attrList->Find(gdataShapeAttr1Name);
   if (attrInfo == NULL) {
     labelFormatValid = false;
 #if defined(DEBUG)
-    reportErrNosys("Can't find AttrInfo for shapeAttr_1");
+    reportErrNosys("Can't find AttrInfo for " gdataShapeAttr1Name);
 #endif
   } else {
     labelFormatValid = true;

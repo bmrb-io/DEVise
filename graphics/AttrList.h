@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/11/25 22:31:11  wenger
+  Reduced the amount of memory allocated in the MappingInterp constructor,
+  mainly by improving the AttrList class.
+
   Revision 1.14  1998/10/21 17:16:29  wenger
   Fixed bug 101 (problems with the '5' (home) key); added "Set X, Y to
   Show All" (go home) button to Query dialog; fixed bug 421 (crash when
@@ -125,7 +129,7 @@ public:
 
   /* Insert attribute into list of attributes */
   void InsertAttr(int attrNum,
-		  char *name, int offset, int length, AttrType type,
+		  const char *name, int offset, int length, AttrType type,
 		  Boolean hasMatchVal = false,
 		  AttrVal *matchVal = (AttrVal *)NULL,
 		  Boolean isComposite = false,
@@ -138,7 +142,7 @@ public:
   char *GetName() { return _name; }
 
   /* Find an attribute, or NULL if not found */
-  AttrInfo *Find(char *name);
+  AttrInfo *Find(const char *name);
 
   /* Find a shape attribute, or NULL if not found */
   AttrInfo *FindShapeAttr(int i);

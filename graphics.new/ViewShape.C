@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1999/06/22 18:33:28  wenger
+  Visual filter values for view symbols can now be specified in the parent
+  view's mapping.
+
   Revision 1.18  1999/05/28 16:32:47  wenger
   Finished cleaning up bounding-box-related code except for PolyLineFile
   symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
@@ -74,7 +78,7 @@
 #include <iostream.h>
 
 #include "ViewShape.h"
-#include "MappingInterp.h"
+#include "TDataMap.h"
 #include "Init.h"
 #include "Util.h"
 #include "DevError.h"
@@ -280,9 +284,15 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     // Get the specified PileStack object, if any.
     PileStack *ps = GetPile(map, attrList, stringTable, gdata);
 
-    // Set the view's visual filter if filter values are specified in the
-    // mapping.
+    // Set the view symbol's visual filter if filter values are specified in
+    // the parent view's mapping.
     SetFilter(map, attrList, stringTable, gdata, viewsym);
+
+    // Set the view symbol's background color to the color specified in
+    // the parent view's mapping.
+    if (map->GDataAttrList()->Find(gdataColorName)) {
+      viewsym->SetBackground(map->GetColor(gdata));
+    }
 
     if (view->GetDisplayDataValues()) {
       win->SetForeground(view->GetForeground());

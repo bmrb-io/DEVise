@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.117  1999/06/25 15:58:25  wenger
+  Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
+  now uses DebugLog facility instead of printf; dispatcher logging is turned
+  on by default, and commands and queries are logged; added -debugLog command
+  line flag to turn logging on and off.
+
   Revision 1.116  1999/06/11 14:47:07  wenger
   Added the capability (mostly for the JavaScreen) to disable rubberband
   lines, cursor movement, drill down, and key actions in views (the code
@@ -1693,7 +1699,7 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
           gAttrList->InitIterator();
           while(gAttrList->More()) {
                 AttrInfo *info = gAttrList->Next();
-                if(!strcmp(info->name, "y") && info->type==DateAttr) {
+                if(!strcmp(info->name, gdataYName) && info->type==DateAttr) {
                         y_is_date = true;
                 }
           }
@@ -1748,7 +1754,7 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
     	  gAttrList->InitIterator();
     	  while(gAttrList->More()) {
 		AttrInfo *info = gAttrList->Next();
-		if(!strcmp(info->name, "x") && info->type==DateAttr) {
+		if(!strcmp(info->name, gdataXName) && info->type==DateAttr) {
 			x_is_date = true;
 		}
     	  }
@@ -1939,7 +1945,7 @@ Boolean ViewGraph::IsXDateType(){
 	  gAttrList->InitIterator();
 	  while(gAttrList->More()) {
 		AttrInfo *info = gAttrList->Next();
-		if(!strcmp(info->name, "x") && info->type==DateAttr) 
+		if(!strcmp(info->name, gdataXName) && info->type==DateAttr) 
 			return true;
 	  }
 	  gAttrList->DoneIterator();
@@ -1954,7 +1960,7 @@ Boolean ViewGraph::IsYDateType(){
 	  gAttrList->InitIterator();
 	  while(gAttrList->More()) {
 		AttrInfo *info = gAttrList->Next();
-		if(!strcmp(info->name, "y") && info->type==DateAttr) 
+		if(!strcmp(info->name, gdataYName) && info->type==DateAttr) 
 			return true;
 	  }
 	  gAttrList->DoneIterator();
@@ -2614,21 +2620,21 @@ ViewGraph::UpdateAxisTypes()
     if (map) {
       AttrList *attrList = map->GDataAttrList();
       if (attrList) {
-        AttrInfo *info = attrList->Find("x");
+        AttrInfo *info = attrList->Find(gdataXName);
         if (info && info->type == DateAttr) {
           SetXAxisAttrType(DateAttr);
 	} else {
           SetXAxisAttrType(FloatAttr);
 	}
 
-        info = attrList->Find("y");
+        info = attrList->Find(gdataYName);
         if (info && info->type == DateAttr) {
           SetYAxisAttrType(DateAttr);
         } else {
           SetYAxisAttrType(FloatAttr);
 	}
 
-        info = attrList->Find("z");
+        info = attrList->Find(gdataZName);
         if (info && info->type == DateAttr) {
           SetZAxisAttrType(DateAttr);
         } else {

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/11/25 22:31:00  wenger
+  Reduced the amount of memory allocated in the MappingInterp constructor,
+  mainly by improving the AttrList class.
+
   Revision 1.17  1998/10/13 19:40:35  wenger
   Added SetAttrs() function to TData and its subclasses to allow Liping to
   push projection down to the DTE.
@@ -153,7 +157,7 @@ AttrList::SetAttrs(const AttrList &newAttrs)
 }
 
 /* Insert attribute into list of attributes */
-void AttrList::InsertAttr(int attrNum, char *name, int offset, int length,
+void AttrList::InsertAttr(int attrNum, const char *name, int offset, int length,
 			  AttrType type, Boolean hasMatchVal,
 			  AttrVal *matchVal, Boolean isComposite,
 			  Boolean isSorted, Boolean hasHiVal, AttrVal *hiVal,
@@ -223,7 +227,7 @@ void AttrList::DoneIterator()
 {
 }
 
-AttrInfo *AttrList::Find(char *name)
+AttrInfo *AttrList::Find(const char *name)
 {
   for(int index = 0; index < _size; index++) {
     AttrInfo *info = _attrs[index];
