@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+# Author: Todd Tannenbaum, 12/21/98, at the request of Miron
+#
+
+# Display usage info
+if [ $# = 0 -o "$1" = "-help" ]; then
+	echo " "
+	echo "Usage: `basename $0` [-lastday | -lastweek | "
+	echo "    -lastmonth | -lasthours <hours> | "
+	echo "    -from <month> <day> <year> -to <month> <day> <year>]"
+	echo " "
+	echo "This script sends usage data records to stdout.  Each record"
+	echo "is a line.  Each line contains the following fields:"
+	echo "      Time (in seconds since Jan 1, 1970), Username, "
+	echo "      JobsRunning, JobsRunning+JobsIdle"
+	echo "  "
+	exit 1
+fi
+
+# Make certain condor_stats program can be found
+if [ ! -x /unsup/condor/bin/condor_stats ]; then
+	echo "ERROR: cannot find the condor_stats program"
+	exit 1
+fi
+
+# Do it!
+/unsup/condor/bin/condor_stats -orgformat -usergroupquery \* $* | awk  \
+'{printf "%s%40s%8d%8d\n",$1,$2,$4,$4+$5}' -
+
+exit 0
