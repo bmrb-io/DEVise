@@ -322,6 +322,9 @@ Num Date        Status  Description
                         to the current qdata (which was deleted by the cancel)
                         and tries to continue processing the query.
 
+094 12/06/96	OPEN	Linux version won't run because of an error in the
+			shared memory code. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
