@@ -19,14 +19,19 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/07/01 19:21:25  jussi
+  Initial revision.
+*/
 
 #ifndef _DataSourceWeb_h_
 #define _DataSourceWeb_h_
 
 #include "DataSourceFileDesc.h"
+#include "Timer.h"
 
-class DataSourceWeb : public DataSourceFileStream
+class DataSourceWeb : public DataSourceFileStream,
+                      public TimerCallback
 {
 public:
     DataSourceWeb(char *url, char *label, char *cache);
@@ -46,6 +51,8 @@ public:
 
     virtual int append(void *buf, int recSize);
     
+    virtual void TimerWake(int arg) {}
+
 protected:
     char * _url;              // URL of data source
     char * _cache;            // name of cache file
