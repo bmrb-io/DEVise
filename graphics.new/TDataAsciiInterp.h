@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/07/01 19:28:08  jussi
+  Added support for typed data sources (WWW and UNIXFILE). Renamed
+  'cache' references to 'index' (cache file is really an index).
+  Added support for asynchronous interface to data sources.
+
   Revision 1.9  1996/06/27 18:12:40  wenger
   Re-integrated most of the attribute projection code (most importantly,
   all of the TData code) into the main code base (reduced the number of
@@ -56,6 +61,7 @@
 #include "ClassDir.h"
 #include "TDataAscii.h"
 #include "AttrList.h"
+#include "TDataDQLInterp.h"
 
 #ifndef ATTRPROJ
 class TDataAsciiInterpClassInfo: public ClassInfo {
