@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.41  1996/11/15 10:06:17  kmurli
+  Changed importFile parameters and ParseCat parameters to take in the file type
+  and data file name so that a whole query can be formed if necessary for calling
+  DQL type. (In case of a query schema)
+
   Revision 1.40  1996/11/13 16:57:07  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -393,6 +398,17 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 2) {
+
+    if (!strcmp(argv[0], "importFileType")) {
+      char *name = ParseCat(argv[1]);
+      if (!name) {
+	strcpy(result , "");
+	control->ReturnVal(API_NAK, result);
+	return -1;
+      }
+      control->ReturnVal(API_ACK, name);
+      return 1;
+    }
     if (!strcmp(argv[0], "resetLinkMaster")) {
       VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
       if (!link) {

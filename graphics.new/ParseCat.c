@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1996/11/18 18:10:52  donjerko
+  New files and changes to make DTE work with Devise
+
   Revision 1.34  1996/11/15 10:06:18  kmurli
   Changed importFile parameters and ParseCat parameters to take in the file type
   and data file name so that a whole query can be formed if necessary for calling
@@ -1224,6 +1227,66 @@ ParseCat(char *fileType,char *catFile,char *dataFile)
   return result;
 }
 
+char *
+ParseCat(char *catFile) 
+{
+  // Check the first line of catFile - if it is "physical abc",
+  // call ParseCatPhysical(DataSourceFile(abc), false) and then
+  // ParseCatLogical(DataSourceFile(catFile)).
+  // Otherwise, simply call ParseCatPhysical(DataSourceFile(catFile), true).
+
+  char *	result = NULL;
+  
+  // Need to check if the type is DQL - then we dont have to open a file
+  // simply get the data from a DataStreamBuf instead of from the file..
+  
+  FILE *fp = fopen(catFile, "r");
+  if (!fp)
+  {
+    fprintf(stderr,"ParseCat: can't open file %s\n", catFile);
+  }
+  else
+  {
+    char buf[LINESIZE];
+	// Find the first nonblank, non-comment line.
+    buf[0] = '\0';
+	while (IsBlank(buf) || (buf[0] == '#'))
+	{
+		fgets(buf, LINESIZE, fp);
+		StripTrailingNewline(buf);
+	}
+
+	// Look for the keyword 'physical' to determine whether this is a
+	// logical schema file.
+    // Note: we could parse the header here to look for logical schema file
+    // type, too.
+
+	char token1[LINESIZE];
+	char token2[LINESIZE];
+	sscanf(buf, "%s %s", token1, token2);
+    
+	fclose(fp);
+	if (strcmp(token1, "physical"))
+	{
+      DataSourceFileStream	schemaSource(catFile, StripPath(catFile));
+      result = ParseCatPhysical(&schemaSource, true);
+      InsertCatFile(CopyString(catFile));
+    }
+    else
+    {
+      char *sname;
+      DataSourceFileStream	schemaSource(token2, StripPath(token2));
+      if (!(sname = ParseCatPhysical(&schemaSource, false))) result = NULL;
+
+      InsertCatFile(CopyString(catFile));
+
+      DataSourceFileStream	logSchemaSource(catFile, StripPath(catFile));
+      result = ParseCatLogical(&logSchemaSource, sname);
+    }
+  }
+
+  return result;
+}
 /*------------------------------------------------------------------------------
  * function: ParseSchema
  * Parse a schema from buffer(s).

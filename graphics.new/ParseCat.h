@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/11/18 18:10:52  donjerko
+  New files and changes to make DTE work with Devise
+
   Revision 1.13  1996/11/15 10:06:19  kmurli
   Changed importFile parameters and ParseCat parameters to take in the file type
   and data file name so that a whole query can be formed if necessary for calling
@@ -77,6 +80,7 @@
 /* Parse a catalog file and register new file type with the system.
    Return name of new file type if successful, else return NULL */
 extern char *ParseCat(char *fileType,char *catFile,char *dataFile);
+extern char *ParseCat(char *);
 extern char *ParseDQL(char *name,char *schema,char * schemaFile,\
 					  char *fileType,char *dataFile,char * query);
 
