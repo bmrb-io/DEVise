@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  1996/11/23 21:19:31  jussi
+  Removed failing support for variable-sized records.
+
   Revision 1.43  1996/11/13 16:57:05  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -1504,8 +1507,6 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
 #ifdef DEBUG
   printf("ConvertToGdataSimple\n");
 #endif
-
-  DOASSERT(((int)gdataPtr % (int)sizeof(double)) == 0, "gdataPtr misaligned");
 
   int tRecSize = TDataRecordSize();
   int gRecSize = GDataRecordSize();
