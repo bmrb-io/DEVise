@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.46  1999/05/26 19:50:52  wenger
+  Added bounding box info to GData, so that the selection of records by the
+  visual filter is more accurate.  (Note that at this time the bounding box
+  info does not take into account symbol orientation; symbol alignment is
+  taken into account somewhat crudely.) This includes considerable
+  reorganization of the mapping-related classes.  Fixed problem with
+  pixelSize getting used twice in Rect shape (resulted in size being the
+  square of pixel size).
+
   Revision 1.45  1999/05/21 14:52:34  wenger
   Cleaned up GData-related code in preparation for including bounding box
   info.
@@ -317,7 +326,7 @@ public:
   // some kind of value.
   void ChangeCmd(MappingInterpCmd *cmd, unsigned long int cmdFlag,
 		 unsigned long int attrFlag, VisualFlag *dimensionInfo,
-		 int NumDimensions);
+		 int numDimensions);
   
   /* Get current commands */
   MappingInterpCmd *GetCmd(unsigned long int &cmdFlag,
@@ -350,7 +359,20 @@ private:
   /* Initialize command by converting _cmd into _tclCmd,
      and initializing _tdataFlag */
   AttrList *InitCmd(char *name, int &gRecSize);
+
+  void InitOffsets();
+
+  // Returns true if mapping is "simple".
+  Boolean InitCmdSimple(StringStorage *xStringTable,
+      StringStorage *yStringTable, StringStorage *zStringTable,
+      StringStorage *genStringTable, AttrList *attrList, int &gRecSize);
+
+  void InitCmdComplex(StringStorage *xStringTable,
+      StringStorage *yStringTable, StringStorage *zStringTable,
+      StringStorage *genStringTable, AttrList *attrList, int &gRecSize);
   
+  void SetBBOffsets(AttrList *attrList, int &attrNum, int &offset);
+
   /* Convert from interpreter command of the into TCL commnd 
      Example:
      TDAta has attributes time and radiaton
