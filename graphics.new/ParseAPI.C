@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/08/29 22:17:22  guangshu
+  Added connectData for DEVise server.
+
   Revision 1.27  1996/08/08 21:02:48  beyer
   made to compile with gcc 2.6.3
 
@@ -1029,6 +1032,12 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
+    if (!strcmp(argv[0], "setScreenSize")) {
+      DeviseDisplay::DefaultDisplay()->DesiredScreenWidth() = atoi(argv[1]);
+      DeviseDisplay::DefaultDisplay()->DesiredScreenHeight() = atoi(argv[2]);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
     if (!strcmp(argv[0], "addReplicaServer")) {
       if (control->AddReplica(argv[1], atoi(argv[2])) < 0)
 	fprintf(stderr, "Could not add %s:%d as a replica.\n", argv[1],
@@ -1423,6 +1432,24 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
     }
+    if (!strcmp(argv[0], "getDisplayImage")) {
+      int port = atoi(argv[1]);
+      control->OpenDataChannel(port);
+      if (strcmp(argv[2], "gif")) {
+         control->ReturnVal(API_NAK, "Can only support GIF now.");
+         return -1;
+      }
+      int fd = control->getFd();
+      if (fd < 0) {
+        control->ReturnVal(API_NAK, "Invalid socket to write");
+        return -1;
+      }
+      FILE *fp = fdopen(control->getFd(), "wb");
+      DeviseDisplay::DefaultDisplay()->ExportGIF(fp);
+      close(control->getFd());
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
   }
 
   if (argc == 4) {
@@ -1471,17 +1498,16 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
-    if (!strcmp(argv[0], "connectData")) {
-      DisplayExportFormat format = GIF;
+    if (!strcmp(argv[0], "getWindowImage")) {
       int port = atoi(argv[1]);
       control->OpenDataChannel(port);
       if (strcmp(argv[2], "gif")) {
-         control->ReturnVal(API_NAK, "Can only support gif now.");
+         control->ReturnVal(API_NAK, "Can only support GIF now.");
          return -1;
       }
       ViewWin *viewWin = (ViewWin *)classDir->FindInstance(argv[3]);
       if (!viewWin) {
-        control->ReturnVal(API_NAK, "Cannot find window when return gif to client");
+        control->ReturnVal(API_NAK, "Cannot find window");
         return -1;
       }
       int fd = control->getFd();
@@ -1492,7 +1518,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       FILE *fp = fdopen(control->getFd(), "wb");
       viewWin->GetWindowRep()->ExportGIF(fp);
       close(control->getFd());
-//      control->returnGif(viewWin);
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
