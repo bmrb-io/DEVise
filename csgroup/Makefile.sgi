@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.4  1998/02/26 18:54:07  wenger
+# Got everything to compile on haha -- still have a link problem, though.
+#
 # Revision 1.3  1998/02/12 17:14:38  wenger
 # Merged through collab_br_2; updated version number to 1.5.1.
 #
@@ -49,15 +52,15 @@ Csprotocols.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
 Csprotocols.o: /usr/include/sys/select.h /usr/include/netinet/in.h
 Csprotocols.o: /usr/include/sys/endian.h /usr/include/arpa/inet.h
 Csprotocols.o: /usr/include/netdb.h
-callBks.o: callBks.h error.h types.h /usr/include/sys/types.h
+callBks.o: callBks.h error.h CollabTypes.h /usr/include/sys/types.h
 callBks.o: /usr/include/standards.h /usr/include/sgidefs.h
 callBks.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
 callBks.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-callBks.o: /usr/include/sys/endian.h /usr/include/arpa/inet.h ctrlMsg.h
-codec.o: codec.h /usr/include/sys/types.h /usr/include/standards.h
-codec.o: /usr/include/sgidefs.h /usr/include/sys/uio.h /usr/include/unistd.h
-codec.o: /usr/include/errno.h /usr/include/sys/errno.h error.h
-codec.o: /usr/include/assert.h
+callBks.o: /usr/include/sys/endian.h ctrlMsg.h
+codec.o: /usr/include/sys/uio.h /usr/include/sys/types.h
+codec.o: /usr/include/standards.h /usr/include/sgidefs.h
+codec.o: /usr/include/unistd.h /usr/include/errno.h /usr/include/sys/errno.h
+codec.o: codec.h /usr/include/assert.h
 colbr.o: /usr/include/stdio.h /usr/include/standards.h /usr/include/sgidefs.h
 colbr.o: /usr/include/strings.h /usr/include/sys/types.h
 colbr.o: /usr/include/stdlib.h /usr/include/errno.h /usr/include/sys/errno.h
@@ -67,66 +70,53 @@ colbr.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
 colbr.o: /usr/include/arpa/inet.h /usr/include/netdb.h
 colbr.o: /usr/include/sys/param.h /usr/include/sys/signal.h error.h colbr.h
 colbr.o: /usr/include/string.h dbase.h htable.h bucket.h entry.h datum.h
-colbr.o: queue.h queueElem.h types.h logfns.h log.h /usr/include/sys/uio.h
-colbr.o: /usr/include/unistd.h colbrLog.h sndMsg.h ctrlMsg.h timeOut.h
-colbr.o: netfns.h /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
-colbr.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
-colbr.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
-colbr.o: /usr/include/sys/filio.h serverInterface.h prnfns.h
+colbr.o: queue.h queueElem.h CollabTypes.h logfns.h log.h colbrLog.h sndMsg.h
+colbr.o: timeOut.h netfns.h /usr/include/unistd.h serverInterface.h prnfns.h
+colbr.o: ctrlMsg.h Csprotocols.h
 error.o: /usr/include/stdio.h /usr/include/standards.h /usr/include/sgidefs.h
 error.o: error.h
 logfns.o: /usr/include/sys/types.h /usr/include/standards.h
 logfns.o: /usr/include/sgidefs.h /usr/include/sys/stat.h /usr/include/fcntl.h
-logfns.o: /usr/include/sys/fcntl.h colbrLog.h log.h /usr/include/stdio.h
-logfns.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/sys/uio.h
-logfns.o: /usr/include/unistd.h colbr.h /usr/include/sys/socket.h
+logfns.o: /usr/include/sys/fcntl.h /usr/include/stdarg.h
+logfns.o: /usr/include/unistd.h colbrLog.h log.h /usr/include/stdio.h
+logfns.o: /usr/include/string.h colbr.h /usr/include/sys/socket.h
 logfns.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
 logfns.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
-logfns.o: /usr/include/arpa/inet.h dbase.h error.h htable.h bucket.h entry.h
-logfns.o: datum.h queue.h queueElem.h types.h logfns.h
+logfns.o: /usr/include/arpa/inet.h dbase.h htable.h bucket.h entry.h datum.h
+logfns.o: queue.h queueElem.h CollabTypes.h logfns.h
 netfns.o: /usr/include/stdio.h /usr/include/standards.h
-netfns.o: /usr/include/sgidefs.h /usr/include/stdlib.h netfns.h
+netfns.o: /usr/include/sgidefs.h /usr/include/stdlib.h /usr/include/string.h
 netfns.o: /usr/include/errno.h /usr/include/sys/errno.h
-netfns.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
-netfns.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
-netfns.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
-netfns.o: /usr/include/sys/types.h /usr/include/sys/filio.h
-netfns.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
-netfns.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-netfns.o: /usr/include/sys/endian.h /usr/include/arpa/inet.h
-netfns.o: /usr/include/sys/time.h /usr/include/string.h /usr/include/unistd.h
-netfns.o: error.h
-prnfns.o: prnfns.h /usr/include/stdio.h /usr/include/standards.h
-prnfns.o: /usr/include/sgidefs.h /usr/include/stdlib.h
+netfns.o: /usr/include/sys/filio.h /usr/include/sys/ioccom.h
+netfns.o: /usr/include/sys/time.h /usr/include/netinet/in.h
+netfns.o: /usr/include/sys/endian.h /usr/include/sys/bsd_types.h
+netfns.o: /usr/include/sys/select.h /usr/include/netdb.h netfns.h
+netfns.o: /usr/include/sys/types.h /usr/include/sys/socket.h
+netfns.o: /usr/include/unistd.h error.h
+prnfns.o: /usr/include/stdlib.h /usr/include/standards.h
+prnfns.o: /usr/include/sgidefs.h prnfns.h CollabTypes.h
 prnfns.o: /usr/include/sys/types.h /usr/include/sys/socket.h
 prnfns.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
 prnfns.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
-prnfns.o: /usr/include/arpa/inet.h /usr/include/strings.h types.h
-prnfns.o: serverInterface.h colbr.h /usr/include/string.h dbase.h error.h
-prnfns.o: htable.h bucket.h entry.h datum.h queue.h queueElem.h
+prnfns.o: serverInterface.h colbr.h /usr/include/string.h
+prnfns.o: /usr/include/arpa/inet.h dbase.h htable.h bucket.h entry.h datum.h
+prnfns.o: queue.h queueElem.h Csprotocols.h /usr/include/netdb.h
 rcvMsg.o: /usr/include/sys/types.h /usr/include/standards.h
 rcvMsg.o: /usr/include/sgidefs.h /usr/include/sys/socket.h
 rcvMsg.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
 rcvMsg.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
 rcvMsg.o: /usr/include/arpa/inet.h /usr/include/strings.h /usr/include/math.h
 rcvMsg.o: /usr/include/unistd.h /usr/include/sys/stat.h /usr/include/fcntl.h
-rcvMsg.o: /usr/include/sys/fcntl.h rcvMsg.h ctrlMsg.h codec.h
-rcvMsg.o: /usr/include/sys/uio.h /usr/include/errno.h
-rcvMsg.o: /usr/include/sys/errno.h error.h serverInterface.h colbr.h
-rcvMsg.o: /usr/include/string.h dbase.h htable.h bucket.h entry.h datum.h
-rcvMsg.o: queue.h queueElem.h types.h callBks.h netfns.h
-rcvMsg.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
-rcvMsg.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
-rcvMsg.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
-rcvMsg.o: /usr/include/sys/filio.h /usr/include/sys/time.h timeOut.h
-rcvMsg.o: ckptfile.h /usr/include/stdio.h
-server_clnt.o: server.h types.h /usr/include/sys/types.h
+rcvMsg.o: /usr/include/sys/fcntl.h /usr/include/sys/time.h rcvMsg.h codec.h
+rcvMsg.o: serverInterface.h colbr.h /usr/include/string.h dbase.h htable.h
+rcvMsg.o: bucket.h entry.h datum.h queue.h queueElem.h CollabTypes.h
+rcvMsg.o: callBks.h error.h ctrlMsg.h netfns.h timeOut.h ckptfile.h
+rcvMsg.o: /usr/include/stdio.h
+server_clnt.o: server.h CollabTypes.h /usr/include/sys/types.h
 server_clnt.o: /usr/include/standards.h /usr/include/sgidefs.h
 server_clnt.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
 server_clnt.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-server_clnt.o: /usr/include/sys/endian.h /usr/include/arpa/inet.h codec.h
-server_clnt.o: /usr/include/sys/uio.h /usr/include/unistd.h
-server_clnt.o: /usr/include/errno.h /usr/include/sys/errno.h error.h
+server_clnt.o: /usr/include/sys/endian.h codec.h
 server_locfns.o: /usr/include/stdio.h /usr/include/standards.h
 server_locfns.o: /usr/include/sgidefs.h /usr/include/strings.h
 server_locfns.o: /usr/include/sys/types.h /usr/include/sys/socket.h
@@ -136,108 +126,105 @@ server_locfns.o: /usr/include/arpa/inet.h /usr/include/netdb.h
 server_locfns.o: /usr/include/errno.h /usr/include/sys/errno.h
 server_locfns.o: /usr/include/sys/wait.h /usr/include/signal.h
 server_locfns.o: /usr/include/sys/signal.h /usr/include/sys/time.h
-server_locfns.o: /usr/include/stropts.h /usr/include/sys/stropts.h
-server_locfns.o: /usr/include/sys/conf.h /usr/include/string.h
-server_locfns.o: /usr/include/stdlib.h /usr/include/unistd.h error.h
-server_locfns.o: serverInterface.h colbr.h dbase.h htable.h bucket.h entry.h
-server_locfns.o: datum.h queue.h queueElem.h types.h server.h sigfns.h
-server_locfns.o: servdb.h timeOut.h netfns.h /usr/include/sys/ioctl.h
-server_locfns.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
-server_locfns.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
-server_locfns.o: /usr/include/sys/ttydev.h /usr/include/sys/filio.h
-server_locfns.o: ../graphics/Init.h ../graphics/DeviseTypes.h
-server_locfns.o: /usr/include/values.h ../graphics/DevStatus.h
-server_locfns.o: ../graphics/BufPolicy.h Server.h keys.h Csprotocols.h
+server_locfns.o: /usr/include/string.h /usr/include/stdlib.h
+server_locfns.o: /usr/include/unistd.h error.h serverInterface.h colbr.h
+server_locfns.o: dbase.h htable.h bucket.h entry.h datum.h queue.h
+server_locfns.o: queueElem.h CollabTypes.h server.h sigfns.h servdb.h
+server_locfns.o: timeOut.h netfns.h ../graphics/Init.h
+server_locfns.o: ../graphics/DeviseTypes.h /usr/include/values.h
+server_locfns.o: ../graphics/DevStatus.h ../graphics/BufPolicy.h Server.h
 server_locfns.o: ../graphics/Dispatcher.h ../graphics/DList.h
 server_locfns.o: ../graphics/Exit.h ../graphics/Journal.h
-server_locfns.o: ../graphics/VisualArg.h ../graphics/Pattern.h ckptfile.h
+server_locfns.o: ../graphics/VisualArg.h ../graphics/ViewDir.h ckptfile.h
 server_rmtfns.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
 server_rmtfns.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
 server_rmtfns.o: /usr/include/standards.h /usr/include/sys/termios.h
 server_rmtfns.o: /usr/include/sys/ttydev.h /usr/include/sys/types.h
-server_rmtfns.o: /usr/include/sgidefs.h /usr/include/sys/filio.h
-server_rmtfns.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
-server_rmtfns.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-server_rmtfns.o: /usr/include/sys/endian.h /usr/include/arpa/inet.h
-server_rmtfns.o: /usr/include/errno.h /usr/include/sys/errno.h
-server_rmtfns.o: /usr/include/sys/time.h /usr/include/string.h
-server_rmtfns.o: /usr/include/unistd.h error.h queue.h queueElem.h datum.h
-server_rmtfns.o: server.h types.h colbr.h dbase.h htable.h bucket.h entry.h
-server_rmtfns.o: colbrLog.h log.h /usr/include/stdio.h /usr/include/stdlib.h
-server_rmtfns.o: /usr/include/sys/uio.h serverInterface.h sndMsg.h ctrlMsg.h
-server_rmtfns.o: prnfns.h /usr/include/strings.h Csprotocols.h
-server_rmtfns.o: /usr/include/netdb.h
-server_serv.o: server.h types.h /usr/include/sys/types.h
+server_rmtfns.o: /usr/include/sgidefs.h /usr/include/sys/socket.h
+server_rmtfns.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+server_rmtfns.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
+server_rmtfns.o: /usr/include/arpa/inet.h /usr/include/errno.h
+server_rmtfns.o: /usr/include/sys/errno.h /usr/include/sys/time.h
+server_rmtfns.o: /usr/include/string.h /usr/include/unistd.h error.h queue.h
+server_rmtfns.o: queueElem.h datum.h server.h CollabTypes.h colbr.h dbase.h
+server_rmtfns.o: htable.h bucket.h entry.h colbrLog.h log.h
+server_rmtfns.o: /usr/include/stdio.h serverInterface.h sndMsg.h prnfns.h
+server_rmtfns.o: Csprotocols.h /usr/include/netdb.h ctrlMsg.h
+server_serv.o: server.h CollabTypes.h /usr/include/sys/types.h
 server_serv.o: /usr/include/standards.h /usr/include/sgidefs.h
 server_serv.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
 server_serv.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-server_serv.o: /usr/include/sys/endian.h /usr/include/arpa/inet.h codec.h
-server_serv.o: /usr/include/sys/uio.h /usr/include/unistd.h
-server_serv.o: /usr/include/errno.h /usr/include/sys/errno.h error.h sndMsg.h
-server_serv.o: colbr.h /usr/include/string.h dbase.h htable.h bucket.h
-server_serv.o: entry.h datum.h queue.h queueElem.h ctrlMsg.h
+server_serv.o: /usr/include/sys/endian.h codec.h sndMsg.h ctrlMsg.h
 server_serv.o: /usr/include/stdio.h /usr/include/stdlib.h
-server_serv.o: /usr/include/signal.h /usr/include/sys/signal.h
-server_serv.o: /usr/include/memory.h /usr/include/stropts.h
-server_serv.o: /usr/include/sys/stropts.h /usr/include/sys/resource.h
+server_serv.o: /usr/include/string.h /usr/include/signal.h
+server_serv.o: /usr/include/sys/signal.h /usr/include/unistd.h
+server_serv.o: /usr/include/memory.h /usr/include/sys/resource.h
 server_serv.o: /usr/include/syslog.h /usr/include/sys/syslog.h
-server_serv.o: /usr/include/strings.h
+server_serv.o: /usr/include/strings.h colbr.h /usr/include/arpa/inet.h
+server_serv.o: dbase.h htable.h bucket.h entry.h datum.h queue.h queueElem.h
 sigfns.o: sigfns.h /usr/include/signal.h /usr/include/standards.h
 sigfns.o: /usr/include/sys/signal.h error.h
 sndMsg.o: /usr/include/sys/types.h /usr/include/standards.h
 sndMsg.o: /usr/include/sgidefs.h /usr/include/sys/socket.h
 sndMsg.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
 sndMsg.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
-sndMsg.o: /usr/include/arpa/inet.h /usr/include/unistd.h sndMsg.h colbr.h
-sndMsg.o: /usr/include/string.h dbase.h error.h htable.h bucket.h entry.h
-sndMsg.o: datum.h queue.h queueElem.h types.h ctrlMsg.h codec.h
-sndMsg.o: /usr/include/sys/uio.h /usr/include/errno.h
-sndMsg.o: /usr/include/sys/errno.h prnfns.h /usr/include/stdio.h
-sndMsg.o: /usr/include/stdlib.h /usr/include/strings.h serverInterface.h
-sndMsg.o: Csprotocols.h /usr/include/netdb.h
+sndMsg.o: /usr/include/arpa/inet.h /usr/include/unistd.h sndMsg.h
+sndMsg.o: CollabTypes.h codec.h prnfns.h serverInterface.h colbr.h
+sndMsg.o: /usr/include/string.h dbase.h htable.h bucket.h entry.h datum.h
+sndMsg.o: queue.h queueElem.h Csprotocols.h /usr/include/netdb.h ctrlMsg.h
+sndMsg.o: error.h
 Client.o: /usr/include/stdio.h /usr/include/standards.h
 Client.o: /usr/include/sgidefs.h /usr/include/stdlib.h /usr/include/string.h
 Client.o: /usr/include/unistd.h /usr/include/sys/types.h
 Client.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
 Client.o: /usr/include/sys/select.h /usr/include/netinet/in.h
 Client.o: /usr/include/sys/endian.h /usr/include/netdb.h Client.h
-Client.o: Csprotocols.h /usr/include/arpa/inet.h keys.h types.h
+Client.o: Csprotocols.h /usr/include/arpa/inet.h keys.h CollabTypes.h
+CmdLog.o: /usr/include/stdio.h /usr/include/standards.h
+CmdLog.o: /usr/include/sgidefs.h /usr/include/ctype.h CmdLog.h CmdSerialize.h
+CmdLog.o: /usr/include/sys/types.h /usr/include/unistd.h /usr/include/fcntl.h
+CmdLog.o: /usr/include/sys/fcntl.h /usr/include/sys/stat.h
+CmdSerialize.o: /usr/include/stdlib.h /usr/include/standards.h
+CmdSerialize.o: /usr/include/sgidefs.h /usr/include/stdio.h CmdSerialize.h
+CommandObj.o: CommandObj.h Csprotocols.h /usr/include/sys/types.h
+CommandObj.o: /usr/include/standards.h /usr/include/sgidefs.h
+CommandObj.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
+CommandObj.o: /usr/include/sys/select.h /usr/include/netinet/in.h
+CommandObj.o: /usr/include/sys/endian.h /usr/include/arpa/inet.h
+CommandObj.o: /usr/include/netdb.h codec.h /usr/include/stdio.h
+CommandObj.o: ../graphics/View.h
 Keys.o: /usr/include/stdio.h /usr/include/standards.h /usr/include/sgidefs.h
-Keys.o: /usr/include/string.h keys.h types.h /usr/include/sys/types.h
+Keys.o: /usr/include/string.h keys.h CollabTypes.h /usr/include/sys/types.h
 Keys.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
 Keys.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-Keys.o: /usr/include/sys/endian.h /usr/include/arpa/inet.h
+Keys.o: /usr/include/sys/endian.h
 Server.o: /usr/include/stdio.h /usr/include/standards.h
 Server.o: /usr/include/sgidefs.h /usr/include/stdlib.h /usr/include/string.h
 Server.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/unistd.h
 Server.o: /usr/include/sys/types.h /usr/include/sys/socket.h
 Server.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
-Server.o: /usr/include/netinet/in.h /usr/include/sys/endian.h Server.h
-Server.o: serverInterface.h colbr.h /usr/include/arpa/inet.h dbase.h error.h
-Server.o: htable.h bucket.h entry.h datum.h queue.h queueElem.h types.h
-Server.o: keys.h Csprotocols.h /usr/include/netdb.h ../graphics/Dispatcher.h
+Server.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
+Server.o: /usr/include/math.h Server.h CollabTypes.h ../graphics/Dispatcher.h
 Server.o: ../graphics/DeviseTypes.h /usr/include/values.h
 Server.o: ../graphics/DevStatus.h ../graphics/DList.h ../graphics/Exit.h
-Server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Pattern.h
-Server.o: ../graphics/Control.h ../graphics/ClassDir.h callBks.h ctrlMsg.h
-Server.o: rcvMsg.h
+Server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/ViewDir.h
+Server.o: ../graphics/Control.h ../graphics/ClassDir.h callBks.h error.h
+Server.o: ctrlMsg.h rcvMsg.h CommandObj.h serverInterface.h colbr.h
+Server.o: /usr/include/arpa/inet.h dbase.h htable.h bucket.h entry.h datum.h
+Server.o: queue.h queueElem.h keys.h Csprotocols.h /usr/include/netdb.h
 TclClient.o: /usr/include/stdio.h /usr/include/standards.h
 TclClient.o: /usr/include/sgidefs.h /usr/include/stdlib.h
-TclClient.o: /usr/include/sys/types.h TclClient.h Client.h Csprotocols.h
-TclClient.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
-TclClient.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-TclClient.o: /usr/include/sys/endian.h /usr/include/arpa/inet.h
-TclClient.o: /usr/include/netdb.h keys.h types.h
+TclClient.o: /usr/include/sys/types.h TclClient.h Client.h
 bucket.o: bucket.h entry.h datum.h
 colbrLog.o: /usr/include/stdlib.h /usr/include/standards.h
-colbrLog.o: /usr/include/sgidefs.h colbr.h /usr/include/string.h
-colbrLog.o: /usr/include/sys/types.h /usr/include/sys/socket.h
+colbrLog.o: /usr/include/sgidefs.h /usr/include/sys/uio.h
+colbrLog.o: /usr/include/sys/types.h /usr/include/unistd.h colbr.h
+colbrLog.o: /usr/include/string.h /usr/include/sys/socket.h
 colbrLog.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
 colbrLog.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
-colbrLog.o: /usr/include/arpa/inet.h dbase.h error.h htable.h bucket.h
-colbrLog.o: entry.h datum.h queue.h queueElem.h types.h colbrLog.h log.h
-colbrLog.o: /usr/include/stdio.h /usr/include/sys/uio.h /usr/include/unistd.h
-colbrLog.o: prnfns.h /usr/include/strings.h serverInterface.h
+colbrLog.o: /usr/include/arpa/inet.h dbase.h htable.h bucket.h entry.h
+colbrLog.o: datum.h queue.h queueElem.h CollabTypes.h colbrLog.h log.h
+colbrLog.o: /usr/include/stdio.h prnfns.h serverInterface.h
 datum.o: /usr/include/stdlib.h /usr/include/standards.h
 datum.o: /usr/include/sgidefs.h /usr/include/string.h /usr/include/errno.h
 datum.o: /usr/include/sys/errno.h error.h datum.h
@@ -245,14 +232,14 @@ dbase.o: colbr.h /usr/include/string.h /usr/include/standards.h
 dbase.o: /usr/include/sys/types.h /usr/include/sgidefs.h
 dbase.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
 dbase.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-dbase.o: /usr/include/sys/endian.h /usr/include/arpa/inet.h dbase.h error.h
-dbase.o: htable.h bucket.h entry.h datum.h queue.h queueElem.h types.h
-dbase.o: sndMsg.h ctrlMsg.h /usr/include/assert.h
+dbase.o: /usr/include/sys/endian.h /usr/include/arpa/inet.h dbase.h htable.h
+dbase.o: bucket.h entry.h datum.h queue.h queueElem.h CollabTypes.h error.h
+dbase.o: sndMsg.h /usr/include/assert.h
 entry.o: entry.h datum.h
 htable.o: htable.h bucket.h entry.h datum.h
-log.o: log.h /usr/include/sys/types.h /usr/include/standards.h
-log.o: /usr/include/sgidefs.h /usr/include/stdio.h /usr/include/stdlib.h
-log.o: /usr/include/string.h /usr/include/sys/uio.h /usr/include/unistd.h
+log.o: /usr/include/sys/uio.h /usr/include/sys/types.h
+log.o: /usr/include/standards.h /usr/include/sgidefs.h /usr/include/unistd.h
+log.o: log.h /usr/include/stdio.h /usr/include/string.h
 parseConfig.o: /usr/include/string.h /usr/include/standards.h parseConfig.h
 queue.o: error.h queue.h queueElem.h datum.h
 queueElem.o: queueElem.h datum.h
@@ -261,4 +248,4 @@ servdb.o: /usr/include/sys/types.h /usr/include/sgidefs.h
 servdb.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
 servdb.o: /usr/include/sys/select.h /usr/include/netinet/in.h
 servdb.o: /usr/include/sys/endian.h /usr/include/arpa/inet.h error.h htable.h
-servdb.o: bucket.h entry.h datum.h queue.h queueElem.h types.h
+servdb.o: bucket.h entry.h datum.h queue.h queueElem.h CollabTypes.h
