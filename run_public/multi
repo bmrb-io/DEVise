@@ -17,4 +17,4 @@ if (! -f $DEVISE_EXEC) then
   exit 1
 endif
 
-$DEVISE_EXEC $*
+$DEVISE_EXEC -sharedMem 0 $*

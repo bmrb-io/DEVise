@@ -19,4 +19,4 @@ if (! -f $DEVISE_EXEC) then
   exit 1
 endif
 
-$DEVISE_EXEC -noshm $*
+$DEVISE_EXEC -sharedMem 0 $*
