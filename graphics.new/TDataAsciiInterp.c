@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/22 17:04:14  jussi
+  Added IsValid() method and cleaned up the code.
+
   Revision 1.3  1995/11/21 23:20:49  jussi
   Added copyright notice and cleaned up code.
 
@@ -219,6 +222,14 @@ Boolean TDataAsciiInterp::Decode(RecId id, void *recordBuf, char *line)
       break;
 
     case FloatAttr:
+      float floatVal = UtilAtof(args[i]);
+      if (info->hasMatchVal && floatVal != info->matchVal.floatVal)
+	return false;
+      *(float *)ptr = floatVal;
+      // printf("float %f\n", floatVal);
+      break;
+
+    case DoubleAttr:
       double doubleVal = UtilAtof(args[i]);
       if (info->hasMatchVal && doubleVal != info->matchVal.doubleVal)
 	return false;
@@ -236,7 +247,7 @@ Boolean TDataAsciiInterp::Decode(RecId id, void *recordBuf, char *line)
 
     case DateAttr:
       if (info->hasMatchVal) {
-	fprintf(stderr,"TDataTapeInterp: date attr match not implemented\n");
+	fprintf(stderr,"TDataAsciiInterp: date attr match not implemented\n");
 	Exit::DoExit(2);
       }
       time_t tm = atoi(args[i]);
@@ -244,7 +255,8 @@ Boolean TDataAsciiInterp::Decode(RecId id, void *recordBuf, char *line)
       break;
 
     default:
-      fprintf(stderr,"TDataTapeInterp: unknown attribute type\n");
+      fprintf(stderr, "TDataAsciiInterp: unknown attribute type: %d\n",
+	      info->type);
       Exit::DoExit(2);
     }
   }
