@@ -15,17 +15,22 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/11/09 15:30:56  ravim
+  Initial revision
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
+#include <ctype.h>
+
 #include "sec.h"
 
 // ******************* PUBLIC FUNCTIONS ******************
 
-Security::Security(int fdes)
+Security::Security(TapeDrive &drive) : tape(drive)
 {
-  fildes = fdes;
   reccount = 0;
 
   // Generate all the arrays in order - header has to be extracted first
@@ -68,7 +73,6 @@ Security::~Security()
 void Security::print_security()
 {
   cout << "******HEADER***********" <<endl;
-
 }
 
 
@@ -79,17 +83,27 @@ void Security::print_security()
 int Security::get_next_rec()
 {
    // Read CRSP_DATA_RLEN bytes into currec
-  if (read(fildes, (void *)currec, (size_t)CRSP_DATA_RLEN) == 0)
+  if (tape.read((void *)currec, (size_t)CRSP_DATA_RLEN) == 0)
     return 0;
   reccount++;
   return 1;
 }
 
+// Removes trailing white space from string
+
+void Security::trim_string(char *str)
+{
+  for(int i = strlen(str) - 1; i >= 0; i--)
+    if (!isspace(str[i]))
+      break;
+  str[i + 1] = 0;
+}
+
 void Security::get_field(int pos, char type, int len, int pre, void *dst)
 {
-  char *buf;
   // Offset into array is pos-1
   char *from = &(currec[pos-1]);
+  char oldchar;
 
   switch (type) {
     case 'A': 
@@ -98,21 +112,19 @@ void Security::get_field(int pos, char type, int len, int pre, void *dst)
       break;
 
     case 'I':
-      buf = new char(len+1);
-      memcpy(buf, from, len);
-      buf[len] = '\0';
-      *((int *)dst) = atoi(buf);
-      delete buf;
+      oldchar = from[len];
+      from[len] = 0;
+      *((int *)dst) = atoi(from);
+      from[len] = oldchar;
       break;
 
     case 'F':
       // Here I am assuming that the decimal point is present in the 
       // field. If the point is implied, different actions need to be done.
-      buf = new char(len+1);
-      memcpy(buf, from, len);
-      buf[len] = '\0';
-      *((float *)dst) = atof(buf);
-      delete buf;
+      oldchar = from[len];
+      from[len] = 0;
+      *((float *)dst) = atof(from);
+      from[len] = oldchar;
       break;
 
     default:  
@@ -175,6 +187,7 @@ void Security::get_names()
 
   // Allocate array
   names = new names_t[numitems];
+  assert(names);
 
   for (i=0; i < numrec; i++)
   {
@@ -191,6 +204,7 @@ void Security::get_names()
       get_field(j*len + 27, 'A', 8, 0, names[tot].ncusip);
       get_field(j*len + 35, 'A', 8, 0, names[tot].ticker);
       get_field(j*len + 43, 'A', 32, 0, names[tot].comnam);
+      trim_string(names[tot].comnam);
       get_field(j*len + 75, 'A', 4, 0, names[tot].shrcls);
       get_field(j*len + 79, 'I', 2, 0, &names[tot].shrcd);
       get_field(j*len + 81, 'I', 2, 0, &names[tot].exchcd);
@@ -214,6 +228,7 @@ void Security::get_dists()
 
   // Allocate array
   dists = new dists_t[numitems];
+  assert(dists);
 
   for (i=0; i < numrec; i++)
   {
@@ -253,6 +268,7 @@ void Security::get_shares()
 
   // Allocate array
   shares = new shares_t[numitems];
+  assert(shares);
 
   for (i=0; i < numrec; i++)
   {
@@ -287,6 +303,7 @@ void Security::get_delist()
 
   // Allocate array
   delist = new delist_t[numitems];
+  assert(delist);
 
   for (i=0; i < numrec; i++)
   {
@@ -327,6 +344,7 @@ void Security::get_nasdin()
 
   // Allocate array
   nasdin = new nasdin_t[numitems];
+  assert(nasdin);
 
   for (i=0; i < numrec; i++)
   {
@@ -365,6 +383,7 @@ void Security::get_bidlo()
 
   // Allocate array
   bidlo = new float[numitems];
+  assert(bidlo);
 
   for (i=0; i < numrec; i++)
   {
@@ -399,6 +418,7 @@ void Security::get_askhi()
 
   // Allocate array
   askhi = new float[numitems];
+  assert(askhi);
 
   for (i=0; i < numrec; i++)
   {
@@ -433,6 +453,7 @@ void Security::get_prc()
 
   // Allocate array
   prc = new float[numitems];
+  assert(prc);
 
   for (i=0; i < numrec; i++)
   {
@@ -467,6 +488,7 @@ void Security::get_vol()
 
   // Allocate array
   vol = new int[numitems];
+  assert(vol);
 
   for (i=0; i < numrec; i++)
   {
@@ -501,6 +523,7 @@ void Security::get_ret()
 
   // Allocate array
   ret = new float[numitems];
+  assert(ret);
 
   for (i=0; i < numrec; i++)
   {
@@ -535,6 +558,7 @@ void Security::get_sxret()
 
   // Allocate array
   sxret = new float[numitems];
+  assert(sxret);
 
   for (i=0; i < numrec; i++)
   {
@@ -569,6 +593,7 @@ void Security::get_bxret()
 
   // Allocate array
   bxret = new float[numitems];
+  assert(bxret);
 
   for (i=0; i < numrec; i++)
   {
@@ -602,6 +627,7 @@ void Security::get_yrval()
 
   // Allocate array
   yrval = new yrval_t[numitems];
+  assert(yrval);
 
   for (i=0; i < numrec; i++)
   {
