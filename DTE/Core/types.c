@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.61  1998/10/01 21:03:15  yunrui
+  *** empty log message ***
+
   Revision 1.60  1998/08/06 23:06:09  beyer
   fixes to get rtree's working
 
@@ -2062,6 +2065,33 @@ vector<DestroyPtr> getDestroyPtrs(const TypeIDList& types)
   for(int i = 0 ; i < n ; i++) {
     fn[i] = getDestroyPtr(types[i]);
     assert(fn[i]);
+  }
+  return fn;
+}
+
+
+vector<ADTCopyPtr> getCopyPtrs(const TypeIDList& types)
+{
+  int n = types.size();
+  vector<ADTCopyPtr> fn(n);
+  for(int i = 0 ; i < n ; i++) {
+    fn[i] = getADTCopyPtr(types[i]);
+    assert(fn[i]);
+  }
+  return fn;
+}
+
+
+vector<OperatorPtr> getComparePtrs(const TypeIDList& types)
+{
+  int n = types.size();
+  vector<OperatorPtr> fn(n);
+  for(int i = 0 ; i < n ; i++) {
+    TypeID retType;
+    GeneralPtr* p = getOperatorPtr("comp", types[i], types[i], retType);
+    assert(p);
+    assert(retType == INT_TP);
+    fn[i] = p->opPtr;
   }
   return fn;
 }

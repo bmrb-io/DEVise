@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.56  1998/07/24 04:38:05  donjerko
+  *** empty log message ***
+
   Revision 1.55  1998/06/28 21:47:47  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -1142,6 +1145,8 @@ vector<WritePtr> getWritePtrs(const TypeIDList& types);
 vector<MarshalPtr> getMarshalPtrs(const TypeIDList& types);
 vector<UnmarshalPtr> getUnmarshalPtrs(const TypeIDList& types);
 vector<DestroyPtr> getDestroyPtrs(const TypeIDList& types);
+vector<ADTCopyPtr> getCopyPtrs(const TypeIDList& types);
+vector<OperatorPtr> getComparePtrs(const TypeIDList& types);
 int packSize(const TypeIDList& types);
 TypeID* makeArray(const TypeIDList& types); // for compat.,
                                             // return must be deleted []
@@ -1205,6 +1210,15 @@ public:
   vector<Field>::size;
   vector<Field>::push_back;
   vector<Field>::operator[];
+
+  TypeIDList getTypes() {
+    int k = size();
+    TypeIDList types;
+    for(int i = 0 ; i < k ; i++) {
+      types.push_back( (*this)[i].getType() );
+    }
+    return types;
+  }
 };
 
 
