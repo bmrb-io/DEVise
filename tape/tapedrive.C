@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/04/16 20:56:25  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.7  1996/01/13 03:22:51  jussi
   Removed #include <tar.h> -- this is in tapedrive.h.
 
@@ -267,7 +270,7 @@ int TapeDrive::read(void *buf, int recSize, int binary)
       b = bytesLeft;
     char *end = 0;
     if (!binary) {                      // reading an ASCII record?
-      end = (char *)memchr(start, '\n', b);
+      end = (char *)memchr((void *)start, '\n', b);
       if (end)                          // found newline = end of record?
 	b = end - start + 1;
     }
