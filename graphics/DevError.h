@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/10/02 15:23:35  wenger
+  Improved error handling (modified a number of places in the code to use
+  the DevError class).
+
   Revision 1.3  1996/07/23 20:12:42  wenger
   Preliminary version of code to save TData (schema(s) and data) to a file.
 
@@ -54,7 +58,7 @@ const int	devNoSyserr = -9999;
 class DevError
 {
 public:
-    static void ReportError(char *message, char *file, int line, int errno);
+    static void ReportError(char *message, char *file, int line, int errnum);
     static Boolean SetEnabled(Boolean enabled) {
         Boolean old = _enabled;
         _enabled = enabled;

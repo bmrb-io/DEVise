@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/09/09 14:31:39  jussi
+  Added #ifdef LIBCS statements to make code compile in the
+  ClientServer library target.
+
   Revision 1.2  1996/06/26 23:55:44  jussi
   Added method to turn on/off error reporting.
 
@@ -53,7 +57,7 @@ Boolean DevError::_enabled = true;
  * to do something more sophisticated eventually.
  */
 void
-DevError::ReportError(char *message, char *file, int line, int errno)
+DevError::ReportError(char *message, char *file, int line, int errnum)
 {
     char * progName = "DEVise";
 
@@ -62,9 +66,9 @@ DevError::ReportError(char *message, char *file, int line, int errno)
 
     fprintf(stderr, "\n%s error: %s\n", progName, message);
     fprintf(stderr, "  at %s: %d\n", file, line);
-    if (errno != devNoSyserr)
+    if (errnum != devNoSyserr)
     {
-        fprintf(stderr, "  syserr: %d: ", errno);
+        fprintf(stderr, "  syserr: %d: ", errnum);
         perror(NULL);
     }
     fprintf(stderr, "\n");
