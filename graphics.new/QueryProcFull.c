@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/04/23 20:34:05  jussi
+  Improved scatter plot query support.
+
   Revision 1.12  1996/04/20 19:56:49  kmurli
   QueryProcFull now uses the Marker calls of Dispatcher class to call itself when
   needed instead of being continuosly polled by the Dispatcher.
@@ -195,6 +198,7 @@ QueryProcFull::QueryProcFull()
   _mgr = new BufMgrFull(bufSize*4096);
   
   _tqueryQdata = AllocEntry();
+  _tqueryQdata->isRandom = false;
 
   _needDisplayFlush = true;
 }
@@ -254,8 +258,9 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
   DOASSERT(filter.flag & VISUAL_X, "Invalid query");
   qdata->filter = filter;
 
+  qdata->isRandom = false;
   qdata->callback = callback;
-  qdata->priority= priority;
+  qdata->priority = priority;
   qdata->state = QPFull_InitState;
 
   /* insert query into list of queries */
@@ -388,7 +393,7 @@ void QueryProcFull::InitQPFullX(QPFullData *qData)
     qData->mgr->FocusHint(qData->hintId, qData->tdata,qData->gdata);
     qData->state = QPFull_ScanState;
     qData->low = qData->current;
-    if (Init::Randomize() && qData->high-qData->low > QPFULL_RANDOM_RECS) {
+    if (Init::Randomize() && qData->high - qData->low > QPFULL_RANDOM_RECS) {
 #ifdef DEBUG
       printf("isRandom with %ld recs\n", qData->high - qData->low);
 #endif
@@ -470,100 +475,106 @@ Boolean QueryProcFull::InitQueries()
 Do scan for the range [qData->current, qData->high].
 Set state == QPFull_EndState if scan is completed.
 ***********************************************************/
-void QueryProcFull::ProcessScan(QPFullData *qData) {
-	/* inform buffer manager of focus */
-	qData->mgr->FocusHint(qData->hintId, qData->tdata,qData->gdata);
+void QueryProcFull::ProcessScan(QPFullData *qData)
+{
+  /* inform buffer manager of focus */
+  qData->mgr->FocusHint(qData->hintId, qData->tdata,qData->gdata);
 
-	Boolean isTData = UseTDataQuery(qData->tdata,qData->filter);
-	InitScan();
-	Boolean cont;
-	Boolean noHigh;
-	if (qData->isRandom) {
-		/*
-		printf("Process Scan low %d, cur %d, high %d\n",
-			qData->low,qData->current, qData->high);
-		*/
-		do {
-			RecId low, high;
-			RecId endId = qData->current+QPFULL_RANDOM_RECS_PER_BATCH-1;
-			noHigh = qData->range->NextUnprocessed(qData->current, low, high);
-			/*
-			printf(" 0 current %d, low %d, high %d, noHigh %d\n",
-					qData->current, low, high, noHigh);
-			*/
-			while (low > endId && low <= qData->high) {
-				qData->current += 
-					QPFULL_RANDOM_RECS_PER_BATCH*QPFULL_RANDOM_ITERATIONS;
-				endId = qData->current+QPFULL_RANDOM_RECS_PER_BATCH-1;
-				noHigh = qData->range->NextUnprocessed(qData->current, 
-					low, high);
-				/*
-				printf(" 1 current %d, low %d, high %d, noHigh %d\n",
-					qData->current, low, high, noHigh);
-				*/
-			}
-			if (low >  qData->high) {
-				if (qData->iteration == QPFULL_RANDOM_ITERATIONS-1) {
-					/* done */
-					qData->state = QPFull_EndState;
-					break;
-				}
-				else {
-					/* Reinitialize to iterate next batch */
-					qData->iteration++;
-					low = qData->current = qData->low+qData->iteration *
-						QPFULL_RANDOM_RECS_PER_BATCH;
-					high = endId = 
-						qData->current+QPFULL_RANDOM_RECS_PER_BATCH-1;
-					noHigh = false;
-				}
-			}
-			/*
-			printf(" 2 current %d, low %d, high %d, noHigh %d\n",
-					qData->current, low, high, noHigh);
-			*/
+  Boolean isTData = UseTDataQuery(qData->tdata, qData->filter);
+  InitScan();
 
-			if (noHigh || high > qData->high)
-				high = qData->high;
-			/*
-			printf(" 3 current %d, low %d, high %d, noHigh %d\n",
-					qData->current, low, high, noHigh);
-			*/
-			if (high > endId)
-				high = endId;
-	
-			/*
-			printf("scanning (%d,%d)\n",low,high);
-			*/
-			cont= DoScan(qData, low, high, isTData);
+  Boolean cont;
+  Boolean noHigh;
 
-			if (cont && high == endId ) {
-				/* reset current */
-				qData->current += 
-					QPFULL_RANDOM_RECS_PER_BATCH*QPFULL_RANDOM_ITERATIONS;
-			}
-		} while (cont);
-	} else {
-		do {
-			RecId low, high;
-			noHigh = qData->range->NextUnprocessed(qData->current, 
-				low, high);
-			if (low >  qData->high) {
-				/* done */
-				qData->state = QPFull_EndState;
-				break;
-			}
-			if (noHigh || high > qData->high)
-				high = qData->high;
-	
-			cont= DoScan(qData, low, high, isTData);
+  if (!qData->isRandom) {
+    do {
+      RecId low, high;
+      noHigh = qData->range->NextUnprocessed(qData->current, low, high);
+      if (low > qData->high) {
+	/* done */
+	qData->state = QPFull_EndState;
+	break;
+      }
+      if (noHigh || high > qData->high)
+	high = qData->high;
+      
+      cont = DoScan(qData, low, high, isTData);
+      
+      if (cont)
+	/* reset current */
+	qData->current = high;
+      
+    } while(cont);
+    return;
+  }
 
-			if (cont)
-				/* reset current */
-				qData->current = high;
+  /* query must be executed in randomized fashion */
 
-		} while (cont);
-	}
+#ifdef DEBUG
+  printf("Process Scan low %ld, cur %ld, high %ld\n",
+	 qData->low, qData->current, qData->high);
+#endif
+
+  do {
+    RecId low, high;
+    RecId endId = qData->current + QPFULL_RANDOM_RECS_PER_BATCH - 1;
+    noHigh = qData->range->NextUnprocessed(qData->current, low, high);
+
+#ifdef DEBUG
+    printf(" 0 current %ld, low %ld, high %ld, noHigh %d\n",
+	   qData->current, low, high, noHigh);
+#endif
+
+    while(low > endId && low <= qData->high) {
+      qData->current += QPFULL_RANDOM_RECS_PER_BATCH *QPFULL_RANDOM_ITERATIONS;
+      endId = qData->current + QPFULL_RANDOM_RECS_PER_BATCH - 1;
+      noHigh = qData->range->NextUnprocessed(qData->current, low, high);
+#ifdef DEBUG
+      printf(" 1 current %ld, low %ld, high %ld, noHigh %d\n",
+	     qData->current, low, high, noHigh);
+#endif
+    }
+
+    if (low >  qData->high) {
+      if (qData->iteration == QPFULL_RANDOM_ITERATIONS - 1) {
+	/* done */
+	qData->state = QPFull_EndState;
+	break;
+      } else {
+	/* Reinitialize to iterate next batch */
+	qData->iteration++;
+	low = qData->current = qData->low + qData->iteration
+	                       * QPFULL_RANDOM_RECS_PER_BATCH;
+	high = endId = qData->current + QPFULL_RANDOM_RECS_PER_BATCH - 1;
+	noHigh = false;
+      }
+    }
+
+#ifdef DEBUG
+    printf(" 2 current %ld, low %ld, high %ld, noHigh %d\n",
+	   qData->current, low, high, noHigh);
+#endif
+      
+    if (noHigh || high > qData->high)
+      high = qData->high;
+#ifdef DEBUG
+    printf(" 3 current %ld, low %ld, high %ld, noHigh %d\n",
+	   qData->current, low, high, noHigh);
+#endif
+    if (high > endId)
+      high = endId;
+      
+#ifdef DEBUG
+    printf("scanning (%ld,%ld)\n",low,high);
+#endif
+
+    cont = DoScan(qData, low, high, isTData);
+      
+    if (cont && high == endId ) {
+      /* reset current */
+      qData->current += QPFULL_RANDOM_RECS_PER_BATCH*QPFULL_RANDOM_ITERATIONS;
+    }
+  } while (cont);
 }
 
 void QueryProcFull::ProcessQPFullX(QPFullData *qData)
@@ -784,7 +795,7 @@ Boolean QueryProcFull::UseTDataQuery(TData *tdata, VisualFilter &filter)
   }
   _queries->DoneIterator(index);
 
-  if (numMatchingQueries > 0 &&  totalGRecSize > tdata->RecSize())
+  if (numMatchingQueries > 0 && totalGRecSize > tdata->RecSize())
     return true;
 
   return false;
@@ -813,7 +824,7 @@ Boolean QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high,
 		   Randomize, tdataOnly);
 
   int tRecSize = qData->tdata->RecSize();
-  int gRecSize= qData->map->GDataRecordSize();
+  int gRecSize = qData->map->GDataRecordSize();
 		
   Boolean isTData;
   Boolean exceedMem = false;
