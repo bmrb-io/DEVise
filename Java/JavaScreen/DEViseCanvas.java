@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.53  2000/07/10 12:26:02  venkatan
+// *** empty log message ***
+//
 // Revision 1.52  2000/06/27 16:44:34  wenger
 // Considerably cleaned up and simplified the cursor-related code; moved
 // cursor grid implementation from the DEViseCanvas class to the DEViseCursor
@@ -119,6 +122,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.53  2000/07/10 12:26:02  venkatan
+// *** empty log message ***
+//
 // Revision 1.52  2000/06/27 16:44:34  wenger
 // Considerably cleaned up and simplified the cursor-related code; moved
 // cursor grid implementation from the DEViseCanvas class to the DEViseCursor
@@ -865,11 +871,11 @@ public class DEViseCanvas extends Container
                     actualKey = 0x40000 + 37;
                     break;
                 //case KeyEvent.VK_F1:
-                //    actualKey = 0x50000 + 1;
-                //    break;
-                case KeyEvent.VK_F2:
-                    actualKey = 0x50000 + 2;
-                    break;
+                 //   actualKey = 0x50000 + 1;
+                 //   break;
+                //case KeyEvent.VK_F2:
+                 //   actualKey = 0x50000 + 2;
+                  //  break;
                 case KeyEvent.VK_F3:
                     actualKey = 0x50000 + 3;
                     break;
@@ -1090,24 +1096,21 @@ public class DEViseCanvas extends Container
                 String cmd = null;
                 Point p = event.getPoint();
 
-                if (DEViseCanvas.lastKey == KeyEvent.VK_SHIFT) {
+                if (DEViseCanvas.lastKey == KeyEvent.VK_F1) {
+		// modified - Ven 
+                        helpMsg = null;
+                        DEViseGlobals.helpBox = true;
+                        cmd = DEViseCommands.GET_VIEW_HELP + " " +
+			  activeView.getCurlyName() + " " + helpMsgX + " "
+			  + helpMsgY;
+                } else if (DEViseCanvas.lastKey == KeyEvent.VK_SHIFT) {
 		    if (activeView.isDrillDown) {
                         cmd = DEViseCommands.SHOW_RECORDS + " " +
 			  activeView.getCurlyName() + " " +
 			  activeView.translateX(p.x, 2) + " " +
 			  activeView.translateY(p.y, 2);
 		    }
-                } else if (DEViseCanvas.lastKey == KeyEvent.VK_F1) {
-                    if (helpMsg != null) {
-                        helpMsg = null;
-                    } else {
-                        DEViseGlobals.helpBox = true;
-                       //  helpMsgX = activeView.translateX(p.x, 2);
-                       //  helpMsgY = activeView.translateY(p.y, 2);
-                        cmd = DEViseCommands.GET_VIEW_HELP + " " +
-			  activeView.getCurlyName() + " " + helpMsgX + " "
-			  + helpMsgY;
-                    }
+		    
                 } else {
                     DEViseCursor cursor = activeView.getFirstCursor();
 

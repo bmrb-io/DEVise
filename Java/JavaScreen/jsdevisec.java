@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.67  2000/07/10 12:26:03  venkatan
+// *** empty log message ***
+//
 // Revision 1.66  2000/06/26 16:48:33  wenger
 // Added client-side JavaScreen debug logging.
 //
@@ -530,6 +533,7 @@ public class jsdevisec extends Panel
     }
 
     public String showViewDialogHelp(String msg){
+
         return showMsg(msg, "Help", YMsgBox.YMBXOK);
     }
 

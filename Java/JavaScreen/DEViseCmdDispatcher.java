@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.59  2000/07/10 12:26:02  venkatan
+// *** empty log message ***
+//
 // Revision 1.58  2000/06/26 16:48:31  wenger
 // Added client-side JavaScreen debug logging.
 //
@@ -804,13 +807,13 @@ public class DEViseCmdDispatcher implements Runnable
                 if (cmd == null || cmd.length != 3) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                 }
-//ven
+		// Modified - Ven
                 if(!DEViseGlobals.helpBox){
                    jsc.jscreen.showHelpMsg(cmd[1], cmd[2]);
                 }
 		else{
-                   jsc.showViewDialogHelp(cmd[2]);
-		   DEViseGlobals.helpBox = false ;
+                 jsc.showViewDialogHelp(cmd[2]);
+	          DEViseGlobals.helpBox = false ;
                 }
 
             } else {
