@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16  1996/07/13 17:30:59  jussi
+#  Minor change.
+#
 #  Revision 1.15  1996/07/13 00:35:23  jussi
 #  Added check for return value from OpenAndDefineDataSources.
 #
@@ -743,7 +746,7 @@ proc DoViewUnlink {} {
     } else {
 	set answer [ dialogList .getLink "Select Link" \
 		"Select a link to unlink" "" 0 \
-		{ Cancel OK } $linkSet ]
+		{ Cancel OK } $viewLinks ]
 	if { $answer == 0 } {
 	    return
 	} elseif { $dialogListVar(selected) == "" } {
