@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/07/23 15:36:11  jussi
+  Added LandsendDateDiffComposite parser.
+
   Revision 1.29  1996/07/21 14:18:39  jussi
   Mapping from state names to lat/lon coordinates is now through
   a hash table.
@@ -1043,6 +1046,7 @@ int main(int argc, char **argv)
   CompositeParser::Register("DOWJONES", new MmDdYyComposite);
   CompositeParser::Register("LANDSEND", new StateLatLonComposite); 
   CompositeParser::Register("LANDSENDDAILY", new YyMmDdComposite);
+  CompositeParser::Register("BIRCHLE0", new LandsendDateDiffComposite);
   CompositeParser::Register("BIRCHLE1", new LandsendDateDiffComposite);
   CompositeParser::Register("BIRCHLE2", new LandsendDateDiffComposite);
   CompositeParser::Register("BIRCHLE3", new LandsendDateDiffComposite);
