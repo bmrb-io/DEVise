@@ -1,0 +1,34 @@
+The 3D navigation keys:
+
+Similar to 2D:
+
+left,  4: move the object left
+right, 6: move the object right
+up,    8: move the object up
+down,  2: move the object down
+7:        zoom in
+9:        zoom out
+
+Front and back cutting plane manipulation:
+
+D:        move the front and back cutting plane towards each other
+d:        move the front and back cutting plane away from each other
+f,     F: move the front and back cutting plane in direction away from viewer
+b,     B: move the front and back cutting plane in direction towards viewer
+
+Changing viewing directions
+
+x:       view from +x to -x
+X:       view from -x to +x
+y:       view from +y to -y
+Y:       view from -y to +y
+z:       view from +z to -z
+Z:       view from -z to +z
+
+Connect two 3D Views
+(1) Using Visual Link
+    The views linked will keep their camera position and all cutting planes
+    (front, back, left, right, top and bottom cutting planes) consistent
+(2) Using Cursor
+    The destination view will display a 3D retangular block which shows the
+    left, right, top, bottom, front and back cutting plane of the source view.
