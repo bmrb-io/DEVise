@@ -12,14 +12,17 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  This is a script to check whether the jspop is running, and restart
-#  it if it's not.
+#  This is a script to check whether the jspop, jss, and devised are running,
+#  and restart them if they're not.
 
 ############################################################
 
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  2000/04/17 20:15:49  wenger
+#  Fixed up architecture check.
+#
 #  Revision 1.10  2000/04/17 20:01:15  wenger
 #  Modified DEVise.kill, check_jspop, and run_check so that they work
 #  on Linux as well as Solaris; changed pid-finding code in them to be

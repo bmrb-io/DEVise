@@ -1,0 +1,28 @@
+#! /sbin/csh -f
+
+############################################################
+
+# This file is just to get the path, etc., set up right to run
+#  check_jspop_only from cron.
+
+# $Id$
+
+############################################################
+
+set path = ( . /sbin /usr/bin /bin /p/devise/run /usr/java/bin $path )
+
+set outfile = /tmp/run_check.out
+
+if (-e $outfile) then
+    rm $outfile
+endif
+
+./check_jspop_only >& $outfile
+
+# All this garbage because Sun's current crond on Intel/Solaris won't
+# send mail correctly.
+if (-e $outfile && ! -z $outfile) then
+    cat $outfile | mail `whoami`
+endif
+
+touch /tmp/normal_js_check
