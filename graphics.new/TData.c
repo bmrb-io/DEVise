@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/12/03 20:32:09  jussi
+  Improved Init/Get/Done interface.
+
   Revision 1.13  1996/11/23 21:16:01  jussi
   Fixed detection of tape drive device.
 
@@ -111,6 +114,16 @@ TData::TData(char* name, char* type, char* param, int recSize)
 {
     DO_DEBUG(printf("TData::TData(%s, %s, %s, %d)\n",
 		    name, type, param, recSize));
+
+#ifndef ATTRPROJ
+    /*
+       Make sure query processor/buffer manager/memory manager exist
+       at this time, because creating a data source below may invoke
+       fork(), and we want the forked process to have access to the
+       shared memory segments and semaphores of the parent process.
+    */
+    (void)QueryProc::Instance();
+#endif
 
     _name = name;
     _type = type;
