@@ -9,7 +9,7 @@ class Stats{
 	vector<int> fldSizes;
 	Cardinality cardinality;
 public:
-	const static string KEYWD;
+	static const string KEYWD;
 	Stats(){}
 	Stats(int numFlds){
 
@@ -43,7 +43,7 @@ public:
 	void display(ostream& out){
 		out << "cardinal: " << cardinality << "; ";
 		out << "fldSizes: ";
-		for(int i = 0; i < fldSizes.size(); i++){
+		for(int i = 0; i < int(fldSizes.size()); i++){
 			out << fldSizes[i] << " ";
 		}
 	}
