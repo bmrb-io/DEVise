@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/10/07 18:33:36  donjerko
+  *** empty log message ***
+
   Revision 1.16  1997/09/05 22:20:08  donjerko
   Made changes for port to NT.
 
@@ -62,7 +65,7 @@ class QueryTree : public ParseTree {
 	List<BaseSelection*>* selectList;
 	List<TableAlias*>* tableList;
 	BaseSelection* predicates;
-	BaseSelection* sequencebyTable;
+	BaseSelection* sequenceby;
 	BaseSelection* withPredicate;
 	List<BaseSelection*>* groupBy;
 	List<BaseSelection*>* orderBy;
@@ -73,13 +76,13 @@ public:
 		List<BaseSelection*>* selectList,
 		List<TableAlias*>* tableList,
 		BaseSelection* predicates,
-		BaseSelection* sequencebyTable,
+		BaseSelection *sequenceby,
 		BaseSelection* withPredicate,
 		List<BaseSelection *>*groupBy,
 		List<BaseSelection*>* orderBy,
 		List<string*>* namesToResolve) :
 		selectList(selectList), tableList(tableList), 
-		predicates(predicates), sequencebyTable(sequencebyTable),
+		predicates(predicates), sequenceby(sequenceby),
 		withPredicate(withPredicate),groupBy(groupBy), orderBy(orderBy),
 		namesToResolve(namesToResolve) {}
 	

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1997/10/02 02:27:30  donjerko
+  Implementing moving aggregates.
+
   Revision 1.34  1997/09/29 02:51:57  donjerko
   Eliminated class GlobalSelect.
 
@@ -229,7 +232,10 @@ public:
 		DestroyPtr dp = getDestroyPtr(typeID);
 		assert(dp);
 		dp(value);
-	}
+	} 
+  const Type* getValue() {
+    return value;
+  }  
 	ConstantSelection* promote(TypeID typeToPromote) const; // throws
 	int toBinary(char* to){
 		MarshalPtr marshalPtr = getMarshalPtr(typeID);
@@ -296,12 +302,14 @@ public:
      virtual TypeID getTypeID(){
           return typeID;
      }
+  
 	virtual int getSize(){
 		return packSize(value, typeID);
 	}
 	virtual bool checkOrphan(){
 		return true;
 	}
+  
 };
 
 class TypeCast : public BaseSelection {

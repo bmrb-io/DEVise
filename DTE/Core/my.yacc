@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1997/10/07 18:33:38  donjerko
+  *** empty log message ***
+
   Revision 1.29  1997/09/17 02:35:47  donjerko
   Fixed the broken remote DTE interface.
 
@@ -108,8 +111,8 @@ extern List<JoinTable*>* joinList;
 extern JoinTable * joinTable;
 extern JoinTable * jTable;
 extern BaseSelection* withPredicate;
-/* extern BaseSelection * sequencebyTable;*/
-extern string *sequencebyTable; 
+extern BaseSelection* sequencebyTable;
+// extern string *sequencebyTable; 
 int yyerror(char* msg);
 extern char* queryString;
 static int my_yyaccept();

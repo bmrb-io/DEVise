@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/10/02 02:27:29  donjerko
+  Implementing moving aggregates.
+
   Revision 1.13  1997/09/05 22:20:12  donjerko
   Made changes for port to NT.
 
@@ -66,7 +69,7 @@
 using namespace std;
 #endif
 
-#define MAX_MEM         800000 
+#define MAX_MEM         800000
 #define NUM_RUNS       	1000
 
 class Inserter;

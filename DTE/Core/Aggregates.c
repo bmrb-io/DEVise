@@ -23,6 +23,11 @@ bool Aggregates::isApplicable(){
 		grpByPos = new int[groupBy->cardinality()];
 	}
 	
+	// need to extend for multiple seq by fields
+	if (sequenceAttr) {
+	  seqByPos = new int[1];
+	}
+
 	bool hasMoving = false; //to check moving and normal aggs are not mixed
 	int i = 0;
 	numGrpByFlds = 0;
@@ -49,21 +54,26 @@ bool Aggregates::isApplicable(){
 			    aggFuncs[i] = new AvgAggregate();
 			  else if (*name == "sum")
 			    aggFuncs[i] = new SumAggregate();
-			  else if (*name == "count"){
+			  else if (*name == "count")
 			    aggFuncs[i] = new CountAggregate();
-                 }	
-			  else if (*name == "sv"){
-//			    aggFuncs[i] = new SeqSimVecAggregate();
-			  }
 			}
 			else if (numArgs == 3) {
 			  // moving aggregates
 			  isApplicableValue = true;
-			  curr = args->get();
-			  windowLow = *(int *) args->get();
-			  windowHigh = *(int *) args->get();
-			  assert(windowHigh >= windowLow);
 			  hasMoving = true;			  
+			  ConstantSelection *windowArg;
+
+			  curr = args->get();
+			  args->step();
+			  windowArg = (ConstantSelection *)args->get();
+			  windowLow = (int) windowArg->getValue();
+
+			  args->step();
+			  windowArg = (ConstantSelection *)args->get();
+			  windowHigh = (int)windowArg->getValue();
+
+			  assert(windowHigh > windowLow);
+
 			  if (*name == "min")
 			    aggFuncs[i] = new MovMinAggregate();
 			  else if (*name == "max")
@@ -86,11 +96,9 @@ bool Aggregates::isApplicable(){
 			grpByPos[numGrpByFlds++] = i;
 			aggFuncs[i] = new GroupAttribute();
 		}
-		else if (sequenceAttr){
-		  // must be sequence vy attribute
-		  // since groupby and sequence by cannot be together
-		  seqByPos[numSeqByFlds++] = i; 
-		  aggFuncs[i] = new SequenceAttribute();
+		else if (sequenceAttr) { 
+		  seqByPos[numSeqByFlds++] = i;
+		  aggFuncs[i] = new SequenceAttribute();  
 		}
 		filteredSelList->append(curr);
 		selList->step();
@@ -99,29 +107,46 @@ bool Aggregates::isApplicable(){
 
 
 	// check there is no sequence by and grouping together
-	assert (!(groupBy && sequenceAttr));
+	//assert (!(groupBy && sequenceAttr));
 
 	// Need to add a check that groupbys and select clauses match 
 
-	if(!groupBy || groupBy->isEmpty()){
-		return isApplicableValue;
+	if(groupBy && !groupBy->isEmpty()){
+	  assert(numGrpByFlds > 0);
+	  numAggs = 0;
+	  int tmp = 0;
+	  aggPos = new int[numFlds - numGrpByFlds];
+	  for(int k = 0; k < numFlds; k++){
+	    if(tmp >= numGrpByFlds || grpByPos[tmp] != k){
+	      assert(numAggs < numFlds - numGrpByFlds);
+	      aggPos[numAggs++] = k;
+	    }
+	    else{
+	      tmp++;
+	    }
+	  }
 	}
+	
+	if (sequenceAttr) {
+	  assert (numSeqByFlds > 0);
+	  numAggs = 0;
+	  int tmp = 0;
+	  aggPos = new int[numFlds - numSeqByFlds];
+	  for(int k = 0; k < numFlds; k++){
+	    if(tmp >= numSeqByFlds || seqByPos[tmp] != k){
+	      assert(numAggs < numFlds - numSeqByFlds);
+	      aggPos[numAggs++] = k;
+	    }
+	    else{
+	      tmp++;
+	    }
+	  }
 
-	assert(numGrpByFlds > 0);
-	numAggs = 0;
-	int tmp = 0;
-	aggPos = new int[numFlds - numGrpByFlds];
-	for(int k = 0; k < numFlds; k++){
-		if(tmp >= numGrpByFlds || grpByPos[tmp] != k){
-			assert(numAggs < numFlds - numGrpByFlds);
-			aggPos[numAggs++] = k;
-		}
-		else{
-			tmp++;
-		}
 	}
-	assert(numAggs + numGrpByFlds == numFlds);
-
+	/*
+	assert((numAggs + numGrpByFlds == numFlds) || 
+	       (numAggs + numSeqByFlds == numFlds));
+	       */
 	return isApplicableValue;
 }
 
@@ -219,51 +244,102 @@ void MovAggsExec::initialize(){
 	assert(inputIter);
 	inputIter->initialize();
 	currInTup = inputIter->getNext();
-	nextDrop = 0;
-	numTuplesToBeDropped[nextDrop] = 1;
-	numUniqueTuples = 1;
-	isFirstTime = true;
+	if(!currInTup){
+	  return;
+	}
+
+	for(int i = 0; i < numFlds; i++){
+	  aggExecs[i]->initialize(currInTup[i]);
+	}
+
+	currWindowHeight = 1;
+	numTuplesToBeDropped[nextDrop] = 1; // for the first tuple read
+
+	currInTup = inputIter->getNext();
+	while(currInTup) { 
+	  if (isNewGroup(currInTup)) {
+	    nextDrop = (nextDrop+1) % fullWindowHeight; 
+
+	    if (currWindowHeight == fullWindowHeight) {
+	      break; // end of window
+	    }
+
+	    // Add the currInTuple to end of the seq by queue
+	    for (int i = 0; i < grpByPosLen; i++){
+	      aggExecs[grpByPos[i]]->update(currInTup[grpByPos[i]]); 
+	    }    
+	    currWindowHeight++;
+	  } 
+
+	  for(int i = 0; i < numAggs; i++){
+	    aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
+	  }
+
+	  currInTup = inputIter->getNext();
+	  numTuplesToBeDropped[nextDrop]++;
+	}
+
+	// if window is greater than num of tuples, 
+	// set window height to number of tuples
+	
+	if (currWindowHeight < fullWindowHeight) {
+	  fullWindowHeight = currWindowHeight;
+	  nextDrop = 0;
+	}
+
+	assert (currWindowHeight == fullWindowHeight); 
 }
 
 const Tuple* MovAggsExec::getNext(){
 
-	if(!currInTup){
-		return NULL;
-	}
+	// the first window has been calculated before a call to this function
+	if (!currWindowHeight)
+	  return NULL;
 
-	int toDeque = windowHeight ? numTuplesToBeDropped[nextDrop] : 0;
-
-	if (isFirstTime){ // window has not been slided yet - simply initialize
-	  for(int i = 0; i < numFlds; i++){
-	    aggExecs[i]->initialize(currInTup[i]);
-	  }
-	}
-	else { // window has been slid down 
-	  for(int i = 0; i < numAggs; i++){
-	    aggExecs[aggPos[i]]->dequeue(toDeque);  
-	    aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]); // update aggs
-	  }
-	    // initialize seqby fields for new value
-	  for (int i = 0; i < grpByPosLen; i++){
-	    aggExecs[grpByPos[i]]->initialize(currInTup[grpByPos[i]]); 
-	  }    
-	}
-
-	// checkAndUpdateWindow updates numTuplesToBeDropped,nextDrop, and
-	// numUniqueTuples and returns true if window has been filled
-	currInTup = inputIter->getNext();
-	while(currInTup && checkAndUpdateWindow(currInTup)) { 
-		for(int i = 0; i < numAggs; i++){
-			aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
-		}
-		currInTup = inputIter->getNext();
-	}
-
-	isFirstTime = false;
-
-	for(int i = 0; i < numFlds; i++){
+	// get aggregate of tuples currently in window 
+	for(int i = 0; i < numFlds; i++){ 
 		retTuple[i] = aggExecs[i]->getValue();
 	}
+	
+	int toDeque = numTuplesToBeDropped[nextDrop];
+
+	// no more tuples left in the stream
+	if (!currInTup) { 
+	  for(int i = 0; i < numAggs; i++){
+	    aggExecs[aggPos[i]]->dequeue(toDeque);  
+	  }
+
+	  for (int i = 0; i < grpByPosLen; i++){
+	    aggExecs[grpByPos[i]]->dequeue(1);// values in seqby Q are unique
+	  }    
+
+	  currWindowHeight--;
+	  nextDrop = (nextDrop+1) % fullWindowHeight;
+	  return retTuple;
+	}
+
+	// else update aggs with currInTup and read in tuples till next value
+	for(int i = 0; i < numAggs; i++){
+	  aggExecs[aggPos[i]]->dequeue(toDeque);  
+	  aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
+	}
+
+	for (int i = 0; i < grpByPosLen; i++){
+	  aggExecs[grpByPos[i]]->dequeue(1);
+	  aggExecs[grpByPos[i]]->update(currInTup[grpByPos[i]]); 
+	}    
+
+	numTuplesToBeDropped[nextDrop] = 1; // for currInTup
+	currInTup = inputIter->getNext();
+	while(currInTup && !isNewGroup(currInTup)) { 
+	  for(int i = 0; i < numAggs; i++){
+	    aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
+	  }
+	  currInTup = inputIter->getNext();
+	  numTuplesToBeDropped[nextDrop]++; 
+	}
+	nextDrop = (nextDrop+1) % fullWindowHeight;
+
 	return retTuple;
 }
 
@@ -282,9 +358,30 @@ void ExecMovMinMax::dequeue(int n){
 	if(!tupLoad->empty() && recalculate){
 		TupleLoader::iterator it = tupLoad->begin();
 		ExecMinMax::initialize((*it)[0]);
+		++it;
 		while(!(it == tupLoad->end())){
 			ExecMinMax::update((*it)[0]);
 			++it;
 		}
 	}
 }
+
+void ExecMovSum::dequeue(int n){
+	for(int i = 0; i < n; i++){
+		assert(!tupLoad->empty());
+		const Tuple* front = tupLoad->front();
+		subPtr(sum, front[0], sum);
+		tupLoad->pop_front();
+	}
+}
+
+void ExecMovAverage::dequeue(int n){
+	for(int i = 0; i < n; i++){
+		assert(!tupLoad->empty());
+		const Tuple* front = tupLoad->front();
+		subPtr(sum, front[0], sum);
+		count--;
+		tupLoad->pop_front();
+	}
+}
+

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.39  1997/10/07 18:33:37  donjerko
+  *** empty log message ***
+
   Revision 1.38  1997/09/29 02:51:56  donjerko
   Eliminated class GlobalSelect.
 
@@ -231,8 +234,9 @@ Site* QueryTree::createSite(){
 
 	// For the sequenceby clause;
 	// find the sequecing attribute..(Only table name is known initially)
-	BaseSelection * sequenceby = sequencebyTable;
-	/*
+
+	/* The seq attribute is now derived directly from the query
+	BaseSelection * sequenceby = NULL;
 	if (sequencebyTable){
 		sites->rewind();
 		while(!sites->atEnd()){
@@ -251,6 +255,7 @@ Site* QueryTree::createSite(){
 		}
 	}
 	*/
+
 	// Need to fix a mamimum for this..
 	Aggregates **aggregates =new Aggregates*[MAX_AGG];
 	int count = 0;
@@ -363,7 +368,7 @@ Site* QueryTree::createSite(){
 	// This is to put the sequenceby table in the front
 	// of the list making it the outer instead of the inner.
 
-/*
+	/*
 	sites->rewind();
 	if (sequencebyTable){
 		while(!sites->atEnd()){
@@ -376,7 +381,8 @@ Site* QueryTree::createSite(){
 			sites->step();
 		}
 	}	
-*/	
+	*/
+
 	if (joinList && !joinList->isEmpty()){
 		List<Site*>* joinGroups = new List<Site *>;
 		while(!joinList->atEnd()){
