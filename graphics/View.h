@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1996/07/13 17:26:55  jussi
+  Added ViewRecomputed() callback interface.
+
   Revision 1.30  1996/07/12 23:42:08  jussi
   Integrated Init() method with the constructor.
 
@@ -279,11 +282,15 @@ public:
 	Boolean DrawCursors();
 	Boolean HideCursors();
 
-	/* get/set dimensionality */
+	/* Get/set dimensionality */
 	int GetNumDimensions() { return _numDimensions; }
 	void SetNumDimensions(int d);
 
-	/* get/set override color */
+	/* Get/set wireframe/solid 3D objects */
+	Boolean GetSolid3D() { return _solid3D; }
+	void SetSolid3D(Boolean solid);
+
+	/* Get/set override color */
 	Color GetOverrideColor(Boolean &active) {
 	  active = _hasOverrideColor;
 	  return _overrideColor;
@@ -502,6 +509,7 @@ private:
 	Boolean _cursorsOn;             /* true if cursors displayed */
 
 	int _numDimensions;             /* number of dimensions */
+        Boolean _solid3D;               /* true if solid 3D objects */
 
 	/* count # of times something happens */
 	int _jump, _zoomIn, _zoomOut, _scrollLeft, _scrollRight, _unknown;

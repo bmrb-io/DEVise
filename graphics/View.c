@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.55  1996/07/15 21:33:47  jussi
+  Added SetPattern(Pattern0) just before label is drawn.
+
   Revision 1.54  1996/07/14 16:51:36  jussi
   Added handling of special case where view is unmapped but is
   requested to unhighlight as if the highlighting was still on.
@@ -317,6 +320,7 @@ View::View(char *name, VisualFilter &initFilter,
 
   _cursorsOn = false;
   _numDimensions = 2;
+  _solid3D = true;
 
   _hasOverrideColor = false;
   _overrideColor = fg;
@@ -582,6 +586,18 @@ void View::SetNumDimensions(int d)
 
   _numDimensions = d;
   _updateTransform = true;
+
+  Refresh();
+}
+
+/* set solid or wideframe 3D objects */
+
+void View::SetSolid3D(Boolean solid)
+{
+  if (solid == _solid3D)
+    return;
+
+  _solid3D = solid;
 
   Refresh();
 }
