@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/09/23 00:03:51  ravim
+  Parser changed to ANSI style - g++ now used uniformly
+
   Revision 1.5  1995/09/22 16:54:48  jussi
   Replacing file with real contents.
 
@@ -29,7 +32,7 @@
 #include "parse.h"
 #include "codegen.h"
 
-#define PROTODIR  "/p/miron/miron/DEVise/parser/proto"
+#define PROTODIR  "/p/devise/parser/proto"
 
 /**************************************************************
 Generate cpp definitions for shape class.
