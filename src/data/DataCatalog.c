@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-1999
+  (c) Copyright 1998-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1999/12/29 19:21:54  wenger
+  Fixed bug 548 (problem handling extra quotes in data source definitions).
+
   Revision 1.7  1999/11/09 22:43:03  wenger
   Fixed crashes if catalog file is not found.
 
@@ -375,6 +378,14 @@ DataCatalog::ShowEntry(const char *entryName)
     if (index >= 0 && entry[index] == ' ') {
       entry[index] = '\0';
     }
+
+    // Replace environment variables with their values.
+    char *tmpEntry = RemoveEnvFromPath(entry);
+    FreeString(entry);
+    entry = tmpEntry;
+#if (DEBUG >= 3)
+    printf("Entry: <%s>\n", entry);
+#endif
   } else {
     // Match the DTE.
     entry = CopyString("");
@@ -507,6 +518,17 @@ DataCatalog::AddEntry(const char *catName, const char *entry)
 
   int result = 0;
   char errBuf[2 * MAXPATHLEN];
+
+  // Substitute DEVISE_DAT and DEVISE_SCHEMA environment variables into
+  // the entry string if possible.
+  {
+    char *tmpEntry = AddEnvToPath("DEVISE_DAT", entry);
+    entry = AddEnvToPath("DEVISE_SCHEMA", tmpEntry);
+    FreeString(tmpEntry);
+#if (DEBUG >= 3)
+    printf("Entry: <%s>\n", entry);
+#endif
+  }
 
   //TEMP -- this should probably check to make sure that an entry with
   // the given name doesn't already exist, even though the GUI seems to

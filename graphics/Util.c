@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  2000/04/07 17:36:01  wenger
+  String file path in session file is specified with $DEVISE_SESSION.
+
   Revision 1.35  2000/03/14 17:05:10  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -304,7 +307,9 @@ RemoveEnvFromPath(const char *path)
       char *envP = envVar;
 
       // Get the name of the environment variable.
-      while (*inP && *inP != '/') { // assume var name will end at '/'
+      // Assume var name will end at '/', '"', or ' ' (added '"' and
+      // ' ' to allow data catalog entries to be passed in).
+      while (*inP && *inP != '/' && *inP != '"' && *inP != ' ') {
         *envP++ = *inP++;
       }
       *envP = '\0'; // terminate the string
