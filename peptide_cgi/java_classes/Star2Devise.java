@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2000/10/10 21:09:32  wenger
+// Added '80% HA test' to CSI code; did a little extra cleanup.
+//
 // Revision 1.13  2000/10/06 16:52:48  wenger
 // Peptide-cgi code now handles multiple chemical shift save frames.  This
 // required a fairly major reorganization of the code (all html files are
@@ -624,7 +627,7 @@ public class Star2Devise {
         writeDeltashifts(index, summary_writer, display_link_base);
 
         //
-        // Write the CSI info.  (Only if we have HA chem shifts for at
+        // Write the CSI info.  (Only if we have HA or HA2 chem shifts for at
 	// least 80% of the residues.)
         //
 	int haCount = getHAChemShiftCount();
@@ -2131,7 +2134,7 @@ public class Star2Devise {
 	      _currentDataLoop.getVals().elementAt(currRowNum);
 
 	    String currAtomName = currRow.elementAt(_atomNameIndex).getValue();
-	    if (currAtomName.equals("HA")) {
+	    if (currAtomName.equals("HA") || currAtomName.equals("HA2")) {
 	        haCsCount++;
 	    }
 
