@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/01/20 00:44:23  jussi
+  Fixed problem when record size of GData is less than that of
+  TData and adding a dynamic field to GData causes the record
+  size to be more than the record size of TData.
+
   Revision 1.7  1996/01/13 23:10:02  jussi
   Added support for Z attribute and shape attribute 2.
 
@@ -47,7 +52,7 @@
 #include "TData.h"
 #include "QueryProc.h"
 
-#define DEBUG
+//#define DEBUG
 
 /* counts how many TDataMaps have been created.
    Also used in creating the name of GData */
