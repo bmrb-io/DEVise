@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/14 20:32:35  jussi
+  Added missing return statement to SetFormat.
+
   Revision 1.2  1995/09/05 21:13:17  jussi
   Added/update CVS header.
 */
@@ -33,7 +36,7 @@ public:
 	AxisLabel(char *name) {_name = name; }
 	char *GetName() { return _name; }
 	virtual char *GenerateLabel(Coord val)= 0;
-	virtual char *SetFormat(char *format){return ""};
+	virtual char *SetFormat(char *format){return "";};
 	virtual char *GetFormat(){return "";}
 private:
 	char *_name;
