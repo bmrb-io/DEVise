@@ -503,7 +503,7 @@ public class DEViseServer implements Runnable
                                 serverCmds[0] = new String("JAVAC_Done");
                                 deviseResponseCode = 0;
                             }
-                            
+
                             if (clientCmd.startsWith("JAVAC_Exit")) {
                                 removeClient();
                                 continue;
@@ -722,11 +722,11 @@ public class DEViseServer implements Runnable
                                 } catch (InterruptedIOException e) {
                                 }
                             }
-                            
+
                             if (client.getCmd() != null && client.getCmd().startsWith("JAVAC_Abort")) {
                                 client.removeCmd();
                                 suspendClient(true);
-                                
+
                                 // need to clear up img socket
                                 try {
                                     if (imgSocket == null)

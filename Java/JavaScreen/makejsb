@@ -1,0 +1,6 @@
+javac jsb.java
+jar cf jsb.jar *.class
+mv jsb.jar /var/home/www/public
+chmod 755 /var/home/www/public/*.jar
+rm *.class
+javac jspop.java

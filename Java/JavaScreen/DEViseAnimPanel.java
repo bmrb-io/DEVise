@@ -73,9 +73,9 @@ public class DEViseAnimPanel extends Canvas implements Runnable
             YGlobals.Ydebugpn("Empty image list received in DEViseAnimPanel constructor!");
             return;
         }
-        
+
         imageCount = 4;
-        
+
         // all image in the list must has same size
         currentImg = (Image)images.elementAt(0);
         if (currentImg == null) {

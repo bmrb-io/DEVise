@@ -41,7 +41,7 @@ import  java.net.*;
 import  java.io.*;
 import  java.util.*;
 
-public class jsa extends Applet
+public class jsb extends Applet
 {
     URL baseURL = null;
     String host = null;
@@ -52,18 +52,16 @@ public class jsa extends Applet
 
     Vector images = null;
 
-    Button startButton = new Button("Start Java Screen");
-
     TextArea startInfo = null;
-
     boolean isInit = true;
-    jscframe jsf = null;
+
+    jsdevisec jsc = null;
 
     public void init()
     {
         YGlobals.YISAPPLET = true;
         YGlobals.YISGUI = true;
-        YGlobals.YINBROWSER = false;
+        YGlobals.YINBROWSER = true;
 
         isInit = true;
 
@@ -74,30 +72,6 @@ public class jsa extends Applet
         host = baseURL.getHost();
 
         setLayout(new BorderLayout(0, 10));
-
-        add(startButton, BorderLayout.NORTH);
-        startButton.setEnabled(false);
-
-        startButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-                        if (jsf == null) {
-                            startInfo.append("Start Java Screen ...\n");
-                            jsf = new jscframe(host, user, pass, sessionName, images);
-                            //startButton.setEnabled(false);
-                        } else {
-                            if (jsf.isQuit()) {
-                                startInfo.append("Start Java Screen ...\n");
-                                jsf = null;
-                                jsf = new jscframe(host, user, pass, sessionName, images);
-                                //startButton.setEnabled(false);
-                            } else {
-                                startInfo.append("Java Screen already started!\n");
-                            }
-                        }
-                    }
-                });
 
         startInfo = new TextArea(8, 50);
         startInfo.setBackground(DEViseGlobals.textbgcolor);
@@ -119,52 +93,12 @@ public class jsa extends Applet
             return;
         }
 
-        if (user == null)
-            user = DEViseGlobals.DEFAULTUSER;
-        if (pass == null)
-            pass = DEViseGlobals.DEFAULTPASS;
-
-        YGlobals.start();
-    }
-
-    public void start()
-    {
-        if (sessionName != null) {
-            startJS(true);
-        } else {
-            startJS(false);
-        }
-    }
-
-    public void stop()
-    {
-        if (jsf != null && !jsf.isQuit()) {
-            jsf.displayMe(false);
-        }
-    }
-
-    public void destroy()
-    {
-        closeJS();
-
-        super.destroy();
-    }
-
-    public void closeJS()
-    {
-        if (jsf != null && !jsf.isQuit()) {
-            jsf.quit();
-            jsf = null;
+        if (sessionName == null) {
+            startInfo.append("Error: No session specified!");
+            isInit = false;
+            return;
         }
 
-        sessionName = null;
-        images = null;
-        user = null;
-        pass = null;
-    }
-
-    public void startJS(boolean flag)
-    {
         if (images == null) {
             images = new Vector();
 
@@ -188,30 +122,68 @@ public class jsa extends Applet
                 images.addElement(image);
             }
 
-            if (images != null)
+            if (images != null) {
                 startInfo.append("DEVise animation symbol successfully loaded\n");
-        }
-
-        startButton.setEnabled(true);
-
-        if (jsf == null) {
-            if (flag) {
-                startInfo.append("Start Java Screen ...\n");
-                jsf = new jscframe(host, user, pass, sessionName, images);
-                //startButton.setEnabled(false);
-            }
-        } else {
-            if (jsf.isQuit()) {
-                if (flag) {
-                    startInfo.append("Start new Java Screen ...\n");
-                    jsf = null;
-                    jsf = new jscframe(host, user, pass, sessionName, images);
-                    //startButton.setEnabled(false);
-                }
             } else {
-                jsf.displayMe(true);
+                isInit = false;
+                return;
             }
         }
+
+        if (user == null)
+            user = DEViseGlobals.DEFAULTUSER;
+        if (pass == null)
+            pass = DEViseGlobals.DEFAULTPASS;
+
+        YGlobals.start();
+
+        if (isInit) {
+            remove(startInfo);
+            if (jsc == null) {
+                jsc = new jsdevisec(host, user, pass, sessionName, images);
+                add(jsc, BorderLayout.CENTER);
+            } else {
+                if (jsc.getQuitStatus()) {
+                    jsc = null;
+                    jsc = new jsdevisec(host, user, pass, sessionName, images);
+                    add(jsc, BorderLayout.CENTER);
+                } else {
+                    //jsc.displayMe(true);
+                    setVisible(true);
+                }
+            }
+        }
+    }
+
+    public void start()
+    {
+        if (isInit && jsc != null && !jsc.getQuitStatus()) {
+            //jsc.displayMe(true);
+            setVisible(true);
+        }
+    }
+
+    public void stop()
+    {
+        if (isInit && jsc != null && !jsc.getQuitStatus()) {
+            //jsc.displayMe(false);
+            setVisible(false);
+        }
+    }
+
+    public void destroy()
+    {
+        if (jsc != null && !jsc.getQuitStatus()) {
+            jsc.quit();
+            jsc = null;
+        }
+
+        sessionName = null;
+        images = null;
+        user = null;
+        pass = null;
+
+        super.destroy();
     }
 
     private void checkParameters()
@@ -381,80 +353,3 @@ public class jsa extends Applet
     }
 }
 
-class jscframe extends Frame
-{
-    public jsdevisec jsc = null;
-
-    public jscframe(String host, String user, String pass, String sessionName, Vector images)
-    {
-        Toolkit kit = Toolkit.getDefaultToolkit();
-        Dimension screen = kit.getScreenSize();
-
-        if (DEViseGlobals.SCREENSIZE.width > screen.width) {
-            DEViseGlobals.SCREENSIZE.width = screen.width;
-        }
-
-        if (DEViseGlobals.SCREENSIZE.height > screen.height) {
-            DEViseGlobals.SCREENSIZE.height = screen.height;
-        }
-
-        int width = DEViseGlobals.SCREENSIZE.width;
-        int height = DEViseGlobals.SCREENSIZE.height;
-
-        jsc = new jsdevisec(host, user, pass, sessionName, images, this);
-        add(jsc);
-        setTitle("DEVise Java Screen");
-        pack();
-
-        Point loc = new Point(0, 0);
-        Dimension size = getSize();
-        loc.y = loc.y + height / 2 - size.height / 2;
-        loc.x = loc.x + width / 2 - size.width / 2;
-        if (loc.y < 0)
-            loc.y = 0;
-        if (loc.x < 0)
-            loc.x = 0;
-
-        setLocation(loc);
-
-        // necessary for processEvent method to work
-        this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
-
-        show();
-    }
-
-    public boolean isQuit()
-    {
-        return jsc.getQuitStatus();
-    }
-
-    public void quit()
-    {
-        jsc.quit();
-    }
-
-    protected void processEvent(AWTEvent event)
-    {
-        if (event.getID() == WindowEvent.WINDOW_CLOSING)  {
-            jsc.quit();
-
-            return;
-        }
-
-        super.processEvent(event);
-    }
-
-    public void displayMe(boolean isShow)
-    {
-        if (isShow) {
-            if (!isShowing()) {
-                setVisible(true);
-            }
-        } else {
-            if (isShowing()) {
-                setVisible(false);
-            }
-        }
-    }
-
-}

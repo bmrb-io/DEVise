@@ -51,12 +51,12 @@ public class DEViseView
         viewName = name;
         viewLoc = loc;
     }
-    
+
     public void setWindow(DEViseWindow win)
     {
         window = win;
     }
-    
+
     public String getName()
     {
         return viewName;
@@ -76,32 +76,32 @@ public class DEViseView
     }
 
     public void updateGData(Vector gdata)
-    {   
+    {
         if (GDataButton != null) {
             for (int i = 0; i < GDataButton.length; i++) {
                 jscreen.removeGDataItem(GDataButton[i]);
             }
-            
+
             GDataButton = null;
         }
-        
+
         if (gdata == null || gdata.size() == 0) {
             viewGData = null;
-            
+
             return;
         }
 
         viewGData = new DEViseGData[gdata.size()];
         for (int i = 0; i < viewGData.length; i++) {
-            viewGData[i] = (DEViseGData)gdata.elementAt(i);            
+            viewGData[i] = (DEViseGData)gdata.elementAt(i);
         }
-        
+
         GDataButton = new Button[viewGData.length];
         //YGlobals.Ydebugpn(viewName + " GDATA length " + GDataButton.length);
-        for (int i = 0; i < GDataButton.length; i++) {             
+        for (int i = 0; i < GDataButton.length; i++) {
             GDataButton[i] = new Button(viewGData[i].getLabel());
             GDataButton[i].setActionCommand(viewGData[i].getLabel());
-            GDataButton[i].setFont(new Font("Monospaced", Font.PLAIN, 10));            
+            GDataButton[i].setFont(new Font("Monospaced", Font.PLAIN, 10));
             GDataButton[i].addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -117,23 +117,23 @@ public class DEViseView
                         }
                     }
                 });
-                
+
             jscreen.addGDataItem(GDataButton[i]);
             GDataButton[i].setBounds(viewGData[i].getBounds(window));
             //YGlobals.Ydebugpn(viewName + " counts=" + jscreen.getComponentCount());
-        }               
+        }
     }
-    
+
     public void updateGData()
     {
         if (GDataButton == null)
             return;
-        
+
         for (int i = 0; i < GDataButton.length; i++) {
             GDataButton[i].setBounds(viewGData[i].getBounds(window));
         }
     }
-    
+
     public DEViseGData[] getGData()
     {
         return viewGData;

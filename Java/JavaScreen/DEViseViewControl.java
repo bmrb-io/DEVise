@@ -29,22 +29,21 @@
 // ------------------------------------------------------------------------
 
 import java.awt.*;
-import java.awt.event.*; 
+import java.awt.event.*;
 import java.util.*;
 
 public class DEViseViewControl extends Panel
 {
     jsdevisec jsc = null;
-    DEViseScreen jscreen = null; 
+    DEViseScreen jscreen = null;
     Vector images = null;
 
     public TextField screenX = new TextField(4);
     public TextField screenY = new TextField(4);
-    public TextField count = new TextField(2);
-    public Button setButton = new Button("Set");
-    Label screenSizeTitle = new Label("Screen Size"); 
+    public Button setButton = new Button("Set Size");
+    Label screenSizeTitle = new Label("");
     YImageCanvas canvas = null;
-    TrafficLight light = null;    
+    DEViseTrafficLight light = null;
 
     boolean isEditable = true;
 
@@ -69,42 +68,39 @@ public class DEViseViewControl extends Panel
         component[1] = screenX;
         component[2] = screenY;
         component[3] = setButton;
-        ComponentPanel panel = new ComponentPanel(component, "Vertical", 10);
-        
-        count.setBackground(DEViseGlobals.textbgcolor);
-        count.setForeground(DEViseGlobals.textfgcolor);
-        count.setFont(DEViseGlobals.textfont);
+        ComponentPanel panel = new ComponentPanel(component, "Vertical", 5);
+
         boolean isCanvas = false;
+        /*
         if (images != null && images.size() > 4) {
             try {
-                canvas = new YImageCanvas((Image)images.elementAt(4)); 
+                canvas = new YImageCanvas((Image)images.elementAt(4));
                 isCanvas = true;
             } catch (YException e) {
                 canvas = null;
             }
-        }                    
-        
+        }
+
         Panel lowPanel = new Panel();
         if (isCanvas) {
             lowPanel.add(canvas);
         }
-        lowPanel.add(count);
-        
+        */
+
         isCanvas = false;
         if (images != null && images.size() > 6) {
             try {
-                light = new TrafficLight((Image)images.elementAt(5), (Image)images.elementAt(6));
+                light = new DEViseTrafficLight((Image)images.elementAt(5), (Image)images.elementAt(6), "0", "BOTTOM");
                 isCanvas = true;
             } catch (YException e) {
                 light = null;
             }
         }
-        
+
         if (isCanvas) {
             add(light, BorderLayout.NORTH);
         }
-        
-        add(lowPanel, BorderLayout.CENTER);
+
         add(panel, BorderLayout.SOUTH);
 
         setButton.addActionListener(new ActionListener()
@@ -136,74 +132,43 @@ public class DEViseViewControl extends Panel
         setButton.setEnabled(isEditable);
 
         validate();
-    } 
-    
+    }
+
     // type = 0, idle
     // type = 1, sending
-    // type = 2, waiting 
+    // type = 2, waiting
     // type = 3, receiving
     // type = 4, processing
     public void updateImage(int type, int isOn)
-    {   
-        if (light != null) {
-            light.updateImage(type, isOn);
-            validate();
+    {
+        if (!jsc.inBrowser) {
+            if (light != null) {
+                light.updateImage(type, isOn);
+                validate();
+            }
+        } else {
+            if (jsc.light != null) {
+                jsc.light.updateImage(type, isOn);
+                jsc.validate();
+            }
         }
     }
-    
+
     public void updateCount(int number)
     {
-        count.setText("" + number);
-        validate();
-    }        
-}
-
-class TrafficLight extends Panel
-{          
-    Image onImage = null, offImage = null;
-    YImageCanvas [] canvas = new YImageCanvas[4];
-    Label [] label = new Label[4];
-    String[] c = {"S", "W", "R", "P"};    
-    
-    public TrafficLight(Image offi, Image oni) throws YException
-    {
-        onImage = oni;
-        offImage = offi;
-        
-        for (int i = 0; i < 4; i++) {
-            canvas[i] = new YImageCanvas(onImage);
-            if (!canvas[i].setImage(offImage))
-                throw new YException("Invalid Image!");
-            label[i] = new Label(c[i]);            
-        } 
-        
-        setFont(new Font("Monospaced", Font.BOLD, 14));
-        setBackground(DEViseGlobals.uibgcolor);
-        setForeground(DEViseGlobals.uifgcolor);
-        
-        setLayout(new GridLayout(2, 4));
-        for (int i = 0; i < 4; i++)
-            add(label[i]);
-        for (int i = 0; i < 4; i++)
-            add(canvas[i]);                    
-    } 
-    
-    public void updateImage(int type, int isOn)
-    {  
-        if (type < 0 || type > 4)
+        if (number < 0 || number > 99)
             return;
-        
-        if (type == 0) {
-            for (int i = 0; i < 4; i++) {
-                canvas[i].setImage(offImage);
-            } 
-        } else {             
-            if (isOn == 1) {
-                canvas[type - 1].setImage(onImage);
-            } else {
-                canvas[type - 1].setImage(offImage);
+
+        if (!jsc.inBrowser) {
+            if (light != null) {
+                light.updateCount("" + number);
+                validate();
             }
-        }               
-    }       
+        } else {
+            if (jsc.light != null) {
+                jsc.light.updateCount("" + number);
+                jsc.validate();
+            }
+        }
+    }
 }
-    

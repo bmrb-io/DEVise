@@ -1,5 +1,5 @@
 import java.util.*;
-import java.awt.*;  
+import java.awt.*;
 import java.applet.*;
 
 public final class DEViseGlobals
@@ -17,7 +17,8 @@ public final class DEViseGlobals
     public static int CMDPORT = DEFAULTCMDPORT, IMGPORT = DEFAULTIMGPORT;
     public static AppletContext browser = null;
     // GUI parameter used by js and jsa
-    public static Dimension SCREENSIZE = new Dimension(640, 480); // physical screen size
+    public static Dimension SCREENSIZE = new Dimension(0124, 768); // physical screen size
+    public static Dimension RubberBandLimit = new Dimension(4, 4);
     public static Cursor waitcursor = new Cursor(Cursor.WAIT_CURSOR);
     public static Cursor pointercursor = new Cursor(Cursor.DEFAULT_CURSOR);
     public static Cursor handcursor = new Cursor(Cursor.HAND_CURSOR);

@@ -61,7 +61,7 @@ public class DEViseViewInfo extends Panel
         mouseY.setFont(DEViseGlobals.textfont);
 
         setLayout(new FlowLayout(FlowLayout.LEFT));
-        
+
         Label label = new Label("");
         add(label);
         label = new Label("Window:");
@@ -115,7 +115,7 @@ public class DEViseViewInfo extends Panel
         viewName.setText("");
         mouseX.setText("");
         mouseY.setText("");
- 
+
         validate();
     }
 }

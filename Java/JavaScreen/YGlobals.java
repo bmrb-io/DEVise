@@ -17,8 +17,10 @@ public final class YGlobals
     public static final Locale LOCALE = Locale.getDefault();
 
     // global variables
-    public static boolean YISGUI = false, YISAPPLET = false;
+    public static boolean YISGUI = false, YISAPPLET = false, YINBROWSER = false;
     public static int YDEBUG = 0, YLOG = 0; // default: no debug or log information is written
+    public static Color YMSGBGCOLOR = new Color(64, 96, 0), YMSGFGCOLOR = Color.white;
+    public static Font YMSGFONT = new Font("Serif", Font.PLAIN, 14);
     public static YDebug DebugInfo = null;
 
     static {
@@ -76,47 +78,68 @@ public final class YGlobals
         System.out.println(msg);
     }
 
-    public static void Yshowinfo(Frame frame, String info)
+    public static String Yshowmsg(Container container, String msg, int style, boolean isModal, String title)
     {
-        YInfoPanel panel = new YInfoPanel(frame, info);
-        panel.show();
+        YInfoPanel win = new YInfoPanel(container, msg, title, style, isModal);
+        win.show();
+        return win.getResult();
     }
 
-    public static String Yshowmsg(Frame frame, String msg, String title, int style, boolean isCenterScreen, boolean isModal)
+    public static String Yshowmsg(Container container, String msg)
     {
-        YMSGDlg dlg = new YMSGDlg(frame, msg, title, style, isCenterScreen, isModal);
-        dlg.show();
-        return dlg.getResult();
+        return Yshowmsg(container, msg, YMBXOK, false, "Confirm");
     }
 
-    public static String Yshowmsg(Frame frame, String msg, String title, int style, boolean isCenterScreen)
+    public static String Yshowmsg(Container container, String msg, boolean isModal)
     {
-        return Yshowmsg(frame, msg, title, style, isCenterScreen, true);
+        return Yshowmsg(container, msg, YMBXOK, isModal, "Confirm");
     }
 
-    public static String Yshowmsg(Frame frame, String msg, String title, int style)
+    public static String Yshowmsg(Container container, String msg, int style)
     {
-        return Yshowmsg(frame, msg, title, style, false, true);
+        return Yshowmsg(container, msg, style, false, "Confirm");
     }
 
-    public static String Yshowmsg(Frame frame, String msg, int what)
+    public static String Yshowmsg(Container container, String msg, int style, boolean isModal)
     {
-        return Yshowmsg(frame, msg, "Confirm", YMBXYESNO, false, true);
+        return Yshowmsg(container, msg, style, isModal, "Confirm");
     }
 
-    public static String Yshowmsg(Frame frame, String msg, int what, boolean isCenterScreen, boolean isModal)
+    public static String Yconfirm(Container container, String msg)
     {
-        return Yshowmsg(frame, msg, "Confirm", YMBXYESNO, isCenterScreen, isModal);
+        return Yshowmsg(container, msg, YMBXYESNO, true, "Confirm");
     }
 
-    public static String Yshowmsg(Frame frame, String msg)
+    public static String Yshowmsgdlg(Frame container, String msg, int style, boolean isModal, String title)
     {
-        return Yshowmsg(frame, msg, "Program Message", YMBXOK, false, true);
+        YInfoDlg win = new YInfoDlg(container, msg, title, style, isModal);
+        win.show();
+        return win.getResult();
     }
 
-    public static String Yshowmsg(Frame frame, String msg, boolean isCenterScreen, boolean isModal)
+    public static String Yshowmsgdlg(Frame container, String msg)
     {
-        return Yshowmsg(frame, msg, "Program Message", YMBXOK, isCenterScreen, isModal);
+        return Yshowmsgdlg(container, msg, YMBXOK, false, "Confirm");
+    }
+
+    public static String Yshowmsgdlg(Frame container, String msg, boolean isModal)
+    {
+        return Yshowmsgdlg(container, msg, YMBXOK, isModal, "Confirm");
+    }
+
+    public static String Yshowmsgdlg(Frame container, String msg, int style)
+    {
+        return Yshowmsgdlg(container, msg, style, false, "Confirm");
+    }
+
+    public static String Yshowmsgdlg(Frame container, String msg, int style, boolean isModal)
+    {
+        return Yshowmsgdlg(container, msg, style, isModal, "Confirm");
+    }
+
+    public static String Yconfirmdlg(Frame container, String msg)
+    {
+        return Yshowmsgdlg(container, msg, YMBXYESNO, true, "Confirm");
     }
 
     public static long getTime()
@@ -371,129 +394,13 @@ public final class YGlobals
     {
         return Yparsestring(inputStr, startChar, endChar, false);
     }
-
 }
 
-final class YInfoPanel extends Frame
-{
-    private Color bgcolor = new Color(64, 96, 0);
-    private Color fgcolor = Color.white;
-    private Font font = new Font("Serif", Font.PLAIN, 14);
-
-    public YInfoPanel(Frame frame, String info)
-    {
-        setBackground(bgcolor);
-        setForeground(fgcolor);
-        setFont(font);
-
-        Button button = new Button("   OK   ");
-        button.setBackground(bgcolor);
-        button.setForeground(fgcolor);
-        button.setFont(font);
-
-        Label[] label = null;
-        if (info == null) {
-            label = new Label[1];
-            label[0] = new Label(" ");
-        } else {
-            String [] infos = YGlobals.Yparsestr(info, "\n");
-            if (infos == null || infos.length == 0) {
-                label = new Label[1];
-                label[0] = new Label(" ");
-            } else {
-                label = new Label[infos.length];
-                for (int i = 0; i < infos.length; i++) {
-                    if (infos[i] != null) {
-                        label[i] = new Label(infos[i]);
-                    } else {
-                        label[i] = new Label(" ");
-                    }
-                }
-            }
-        }
-
-        // building the panel that display messages
-        Panel panel = new Panel();
-        panel.setLayout(new GridLayout(0, 1, 0, 0));
-        for (int i = 0; i < label.length; i++) {
-            panel.add(label[i]);
-        }
-
-        // set new gridbag layout
-        GridBagLayout gridbag = new GridBagLayout();
-        GridBagConstraints c = new GridBagConstraints();
-        //c.gridx = GridBagConstraints.RELATIVE;
-        //c.gridy = GridBagConstraints.RELATIVE;
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        c.gridheight = 1;
-        c.fill = GridBagConstraints.NONE;
-        c.insets = new Insets(10, 10, 0, 0);
-        c.ipadx = 0;
-        c.ipady = 0;
-        c.anchor = GridBagConstraints.CENTER;
-        //c.weightx = 1.0;
-        //c.weighty = 1.0;
-
-        setLayout(gridbag);
-
-        gridbag.setConstraints(panel, c);
-        add(panel);
-        gridbag.setConstraints(button, c);
-        add(button);
-
-        pack();
-        setTitle("Program Information");
-
-        // reposition the dialog
-        Point parentLoc = null;
-        Dimension parentSize = null;
-        if (frame == null) {
-            Toolkit kit = Toolkit.getDefaultToolkit();
-            parentSize = kit.getScreenSize();
-            parentLoc = new Point(0, 0);
-        } else {
-            parentLoc = frame.getLocation();
-            parentSize = frame.getSize();
-        }
-
-        Dimension mysize = getSize();
-        parentLoc.y += parentSize.height / 2;
-        parentLoc.x += parentSize.width / 2;
-        parentLoc.y -= mysize.height / 2;
-        parentLoc.x -= mysize.width / 2;
-        setLocation(parentLoc);
-
-        // event handler
-        button.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)  {
-                        dispose();
-                    }
-                });
-
-        this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
-
-        button.addFocusListener(new FocusAdapter()
-            {
-                public void focusLost(FocusEvent event)
-                {
-                    dispose();
-                }
-            });
-    }
-
-    protected void processEvent(AWTEvent event)
-    {
-        if (event.getID() == WindowEvent.WINDOW_CLOSING) {
-            dispose();
-            return;
-        }
-
-        super.processEvent(event);
-    }
-}
-
-final class YMSGDlg extends Dialog
+// YInfoPanel and YInfoDlg are almost the same
+// YInfoDlg: Useful while you will do a modal dialog from some user interface component
+// YInfoPanel:Useful while you do not have a frame parent and want to do a modal/nonmodal dialog
+// Be careful while using these two class from some synchronized method, it might cause deadlock
+final class YInfoDlg extends Dialog
 {
     private Label label[] = null;
     private Button button[] = null;
@@ -502,9 +409,21 @@ final class YMSGDlg extends Dialog
     private Color fgcolor = Color.white;
     private Font font = new Font("Serif", Font.PLAIN, 14);
 
-    public YMSGDlg(Frame frame, String msg, String title, int style, boolean isCenterScreen, boolean isModal)
+    public YInfoDlg(Frame frame, String msg, String title, int style, boolean modal)
     {
-        super(frame, title, isModal);
+        super(frame, modal);
+
+        bgcolor = YGlobals.YMSGBGCOLOR;
+        fgcolor = YGlobals.YMSGFGCOLOR;
+
+        boolean isCenterScreen = false;
+        if (frame == null) {
+            isCenterScreen = true;
+        }
+
+        if (title == null) {
+            title = new String("Program Information");
+        }
 
         boolean isStyleCorrect = true;
 
@@ -558,37 +477,39 @@ final class YMSGDlg extends Dialog
             if (msg == null) {
                 label = new Label[1];
                 label[0] = new Label("No Message Given!");
-                button = new Button[1];
-                button[0] = new Button(YGlobals.YIDOK);
-                result = YGlobals.YIDOK;
-            } else if (msg.equals("")) {
-                label = new Label[1];
-                label[0] = new Label("No Message Given!");
-                button = new Button[1];
-                button[0] = new Button(YGlobals.YIDOK);
-                result = YGlobals.YIDOK;
+                //button = new Button[1];
+                //button[0] = new Button(YGlobals.YIDOK);
+                //result = YGlobals.YIDOK;
             } else {
-                String[] msgStr = YGlobals.Yparsestr(msg, "\n");
-                if (msgStr == null) {
-                    button = new Button[1];
-                    button[0] = new Button(YGlobals.YIDOK);
-                    result = YGlobals.YIDOK;
+                if (msg.equals("")) {
                     label = new Label[1];
-                    label[0] = new Label("Invalid message given!");
+                    label[0] = new Label("Empty Message Given!");
+                    //button = new Button[1];
+                    //button[0] = new Button(YGlobals.YIDOK);
+                    //result = YGlobals.YIDOK;
                 } else {
-                    label = new Label[msgStr.length];
-                    for (int i = 0; i < msgStr.length; i++) {
-                        if (msgStr[i] != null) {
-                            label[i] = new Label(msgStr[i]);
-                        } else {
-                            label[i] = new Label("");
+                    String[] msgStr = YGlobals.Yparsestr(msg, "\n");
+                    if (msgStr == null) {
+                        label = new Label[1];
+                        label[0] = new Label("Invalid message given!");
+                        //button = new Button[1];
+                        //button[0] = new Button(YGlobals.YIDOK);
+                        //result = YGlobals.YIDOK;
+                    } else {
+                        label = new Label[msgStr.length];
+                        for (int i = 0; i < msgStr.length; i++) {
+                            if (msgStr[i] != null) {
+                                label[i] = new Label(msgStr[i]);
+                            } else {
+                                label[i] = new Label("");
+                            }
                         }
                     }
                 }
             }
-        }  else  {
+        } else {
             label = new Label[1];
-            label[0] = new Label("Unsupported dialog style given!");
+            label[0] = new Label("Unsupported YInfoPanel style given!");
         }
 
         setBackground(bgcolor);
@@ -637,10 +558,12 @@ final class YMSGDlg extends Dialog
         gridbag.setConstraints(panel2, c);
         add(panel2);
 
+        setTitle(title);
+
         pack();
         //setResizable(false);
 
-        // reposition the dialog
+        // reposition the window
         Point parentLoc = null;
         Dimension parentSize = null;
         if (isCenterScreen) {
@@ -651,7 +574,6 @@ final class YMSGDlg extends Dialog
             parentLoc = frame.getLocation();
             parentSize = frame.getSize();
         }
-
         Dimension mysize = getSize();
         parentLoc.y += parentSize.height / 2;
         parentLoc.x += parentSize.width / 2;
@@ -659,7 +581,7 @@ final class YMSGDlg extends Dialog
         parentLoc.x -= mysize.width / 2;
         setLocation(parentLoc);
 
-        // event handler
+        // add event handler
         for (int i = 0; i < button.length; i++)  {
             button[i].addActionListener(new ActionListener()
                     {
@@ -670,9 +592,8 @@ final class YMSGDlg extends Dialog
                     });
         }
 
+        // enable destroying window
         this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
-
-        //show();
     }
 
     public String getResult()
@@ -683,6 +604,259 @@ final class YMSGDlg extends Dialog
     protected void processEvent(AWTEvent event)
     {
         if (event.getID() == WindowEvent.WINDOW_CLOSING) {
+            dispose();
+            return;
+        }
+
+        super.processEvent(event);
+    }
+}
+
+final class YInfoPanel extends Frame
+{
+    private Label label[] = null;
+    private Button button[] = null;
+    private String result = null;
+    private boolean isModal, isLeaving = false, isAuto = true;
+    private Color bgcolor = new Color(64, 96, 0);
+    private Color fgcolor = Color.white;
+    private Font font = new Font("Serif", Font.PLAIN, 14);
+
+    public YInfoPanel(Container container, String msg, String title, int style, boolean modal)
+    {
+        this(container, msg, title, style, modal, true);
+    }
+
+    public YInfoPanel(Container container, String msg, String title, int style, boolean modal, boolean auto)
+    {
+        bgcolor = YGlobals.YMSGBGCOLOR;
+        fgcolor = YGlobals.YMSGFGCOLOR;
+        font = YGlobals.YMSGFONT;
+
+        boolean isCenterScreen = false;
+        if (container == null) {
+            isCenterScreen = true;
+        }
+
+        if (title == null) {
+            title = new String("Program Information");
+        }
+
+        isModal = modal;
+        isAuto = auto;
+        if (isModal)
+            isAuto = false;
+
+        boolean isStyleCorrect = true;
+
+        switch (style) {
+        case YGlobals.YMBXOK:
+            button = new Button[1];
+            button[0] = new Button(YGlobals.YIDOK);
+            result = YGlobals.YIDOK;
+            break;
+        case YGlobals.YMBXYESNO:
+            button = new Button[2];
+            button[0] = new Button(YGlobals.YIDYES);
+            button[1] = new Button(YGlobals.YIDNO);
+            result = YGlobals.YIDNO;
+            break;
+        case YGlobals.YMBXOKCANCEL:
+            button = new Button[2];
+            button[0] = new Button(YGlobals.YIDOK);
+            button[1] = new Button(YGlobals.YIDCANCEL);
+            result = YGlobals.YIDCANCEL;
+            break;
+        case YGlobals.YMBXYESNOCANCEL:
+            button = new Button[3];
+            button[0] = new Button(YGlobals.YIDYES);
+            button[1] = new Button(YGlobals.YIDNO);
+            button[2] = new Button(YGlobals.YIDCANCEL);
+            result = YGlobals.YIDCANCEL;
+            break;
+        case YGlobals.YMBXRETRYCANCEL:
+            button = new Button[2];
+            button[0] = new Button(YGlobals.YIDRETRY);
+            button[1] = new Button(YGlobals.YIDCANCEL);
+            result = YGlobals.YIDCANCEL;
+            break;
+        case YGlobals.YMBXABORTRETRYIGNORE:
+            button = new Button[3];
+            button[0] = new Button(YGlobals.YIDABORT);
+            button[1] = new Button(YGlobals.YIDRETRY);
+            button[2] = new Button(YGlobals.YIDIGNORE);
+            result = YGlobals.YIDIGNORE;
+            break;
+        default:
+            isStyleCorrect = false;
+            button = new Button[1];
+            button[0] = new Button(YGlobals.YIDOK);
+            result = YGlobals.YIDOK;
+            break;
+        }
+
+        if (isStyleCorrect) {
+            if (msg == null) {
+                label = new Label[1];
+                label[0] = new Label("No Message Given!");
+                //button = new Button[1];
+                //button[0] = new Button(YGlobals.YIDOK);
+                //result = YGlobals.YIDOK;
+            } else {
+                if (msg.equals("")) {
+                    label = new Label[1];
+                    label[0] = new Label("Empty Message Given!");
+                    //button = new Button[1];
+                    //button[0] = new Button(YGlobals.YIDOK);
+                    //result = YGlobals.YIDOK;
+                } else {
+                    String[] msgStr = YGlobals.Yparsestr(msg, "\n");
+                    if (msgStr == null) {
+                        label = new Label[1];
+                        label[0] = new Label("Invalid message given!");
+                        //button = new Button[1];
+                        //button[0] = new Button(YGlobals.YIDOK);
+                        //result = YGlobals.YIDOK;
+                    } else {
+                        label = new Label[msgStr.length];
+                        for (int i = 0; i < msgStr.length; i++) {
+                            if (msgStr[i] != null) {
+                                label[i] = new Label(msgStr[i]);
+                            } else {
+                                label[i] = new Label("");
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            label = new Label[1];
+            label[0] = new Label("Unsupported YInfoPanel style given!");
+        }
+
+        setBackground(bgcolor);
+        setForeground(fgcolor);
+        setFont(font);
+
+        // building the panel that display messages
+        Panel panel1 = new Panel();
+        panel1.setLayout(new GridLayout(0, 1, 0, 0));
+        for (int i = 0; i < label.length; i++) {
+            panel1.add(label[i]);
+        }
+
+        // building the panel that display buttons
+        Panel panel2 = new Panel();
+        panel2.setLayout(new GridLayout(1, 0, 10, 0));
+        for (int i = 0; i < button.length; i++) {
+            button[i].setBackground(bgcolor);
+            button[i].setForeground(fgcolor);
+            button[i].setFont(font);
+            button[i].setActionCommand(button[i].getLabel());
+            panel2.add(button[i]);
+        }
+
+        // set new gridbag layout
+        GridBagLayout gridbag = new GridBagLayout();
+        GridBagConstraints c = new GridBagConstraints();
+        //c.gridx = GridBagConstraints.RELATIVE;
+        //c.gridy = GridBagConstraints.RELATIVE;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.gridheight = 1;
+        c.fill = GridBagConstraints.NONE;
+        c.insets = new Insets(10, 10, 0, 0);
+        c.ipadx = 0;
+        c.ipady = 0;
+        c.anchor = GridBagConstraints.CENTER;
+        //c.weightx = 1.0;
+        //c.weighty = 1.0;
+
+        setLayout(gridbag);
+
+        gridbag.setConstraints(panel1, c);
+        add(panel1);
+
+        c.insets = new Insets(10, 10, 5, 10);
+        gridbag.setConstraints(panel2, c);
+        add(panel2);
+
+        setTitle(title);
+
+        pack();
+        //setResizable(false);
+
+        // reposition the window
+        Point parentLoc = null;
+        Dimension parentSize = null;
+        if (isCenterScreen) {
+            Toolkit kit = Toolkit.getDefaultToolkit();
+            parentSize = kit.getScreenSize();
+            parentLoc = new Point(0, 0);
+        } else {
+            parentLoc = container.getLocation();
+            parentSize = container.getSize();
+        }
+        Dimension mysize = getSize();
+        parentLoc.y += parentSize.height / 2;
+        parentLoc.x += parentSize.width / 2;
+        parentLoc.y -= mysize.height / 2;
+        parentLoc.x -= mysize.width / 2;
+        setLocation(parentLoc);
+
+        // add event handler
+        for (int i = 0; i < button.length; i++)  {
+            button[i].addActionListener(new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent event)  {
+                            result = event.getActionCommand();
+                            setLeaving();
+                            dispose();
+                        }
+                    });
+            if (isAuto) {
+                button[i].addFocusListener(new FocusAdapter()
+                    {
+                        public void focusLost(FocusEvent event)
+                        {
+                            setLeaving();
+                            dispose();
+                        }
+                    });
+            }
+        }
+
+        // enable destroying window
+        this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+    }
+
+    public synchronized String getResult()
+    {
+
+        if (isModal) {
+            while (!isLeaving) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                }
+
+            }
+        }
+
+        return result;
+    }
+
+    private synchronized void setLeaving()
+    {
+        if (isModal) {
+            isLeaving = true;
+            notifyAll();
+        }
+    }
+
+    protected void processEvent(AWTEvent event)
+    {
+        if (event.getID() == WindowEvent.WINDOW_CLOSING) {
+            setLeaving();
             dispose();
             return;
         }

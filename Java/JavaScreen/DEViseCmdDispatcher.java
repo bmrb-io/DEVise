@@ -191,7 +191,7 @@ public class DEViseCmdDispatcher implements Runnable
         cmdBuffer.removeAllElements();
     }
 
-    public synchronized boolean connect()
+    public boolean connect()
     {
         boolean isEnd = false;
 
@@ -214,7 +214,7 @@ public class DEViseCmdDispatcher implements Runnable
                     msg = new String("Can not connect IMG channel to " + hostname + " at port " + imgPort + "!\n");
                 }
 
-                String result = YGlobals.Yshowmsg(jsc, msg + "Do you wish to retry now?", 0);
+                String result = YGlobals.Yconfirm(jsc, msg + "Do you wish to retry now?");
                 if (!result.equals(YGlobals.YIDYES)) {
                     return false;
                 }
@@ -262,6 +262,9 @@ public class DEViseCmdDispatcher implements Runnable
         YGlobals.Ydebugpn("Command Dispatcher is started...");
 
         while (getStatus() >= 0) {
+            jsc.viewControl.updateImage(0, 0);
+            jsc.viewControl.updateCount(0);
+
             command = getCmd(); // it is ensured command will always be a single command
 
             if (command == null) { // only when abort event happened will command be NULL
@@ -274,7 +277,7 @@ public class DEViseCmdDispatcher implements Runnable
 
                 if (command.equals("ExitDispatcher")) {
                     if (cmdSocket != null) { // normal exit
-                        try {                            
+                        try {
                             cmdSocket.sendCmd("JAVAC_Exit");
                         } catch (YException e) {
                             YGlobals.Ydebugpn(e.getMessage());
@@ -323,7 +326,7 @@ public class DEViseCmdDispatcher implements Runnable
                             }
                         } else {
                             jscreen.setCursor(DEViseGlobals.handcursor);
-                        }                        
+                        }
 
                         jsc.viewControl.updateImage(0, 0);
                         jsc.viewControl.updateCount(0);
@@ -444,18 +447,13 @@ public class DEViseCmdDispatcher implements Runnable
                     }
                 } else {
                     jscreen.setCursor(DEViseGlobals.handcursor);
-                }                        
-
-                jsc.viewControl.updateImage(0, 0);
-                jsc.viewControl.updateCount(0);
+                }
 
                 // Except for the abort events that actually been catched, some of them
                 // might not been catched, so we need to reset abort on every run
                 setAbort(false);
             }
         }
-
-        YGlobals.Ydebugpn("Command Dispatcher is stopped...");
     }
 
     // it is ensured that cmdSocket or imgSocket will not be NULL at calling
@@ -481,7 +479,7 @@ public class DEViseCmdDispatcher implements Runnable
         // it is ensured that rsp will not be null after calling sendCommand
         String[] rsp = sendCommand(command);
 
-        String[] cmd = null;  
+        String[] cmd = null;
         jsc.viewControl.updateImage(4, 1);
         for (int i = 0; i < rsp.length; i++) {
             jsc.viewControl.updateCount(rsp.length - 1 - i);
@@ -536,7 +534,7 @@ public class DEViseCmdDispatcher implements Runnable
                     jscreen.updateScreen(false);
                     clearCmdBuffer();
                     if (cmd[1].equals("1")) {
-                        String result = YGlobals.Yshowmsg(jsc, "Server failed during last client switch!\nDo you wish to open the last saved state of your session?", 0);
+                        String result = YGlobals.Yconfirm(jsc, "Server failed during last client switch!\nDo you wish to open the last saved state of your session?");
                         if (result.equals(YGlobals.YIDYES)) {
                             insertCmd("JAVAC_OpenLastSavedState", 0);
                         }
@@ -728,7 +726,7 @@ public class DEViseCmdDispatcher implements Runnable
                 }
             } else if (rsp[i].startsWith("JAVAC_DrawCursor")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null || cmd.length != 6) {
+                if (cmd == null || cmd.length != 7) {
                     throw new YException("Ill-formated command " + rsp[i] + "!", 5);
                 }
 
@@ -738,10 +736,11 @@ public class DEViseCmdDispatcher implements Runnable
                     int y0 = Integer.parseInt(cmd[3]);
                     int w = Integer.parseInt(cmd[4]);
                     int h = Integer.parseInt(cmd[5]);
+                    String move = cmd[6];
                     Rectangle rect = new Rectangle(x0, y0, w, h);
                     DEViseCursor cursor = null;
                     try {
-                        cursor = new DEViseCursor(rect);
+                        cursor = new DEViseCursor(rect, move);
                     } catch (YException e1) {
                         throw new YException("Invalid cursor data received!", 5);
                     }
@@ -770,6 +769,10 @@ public class DEViseCmdDispatcher implements Runnable
                 //if (cmd == null || cmd.length != 1) {
                 //    throw new YException("Dispatcher::processCmd: Incorrect command: " + rsp[i], 3);
                 //}
+            } else if (rsp[i].startsWith("JAVAC_ViewInfo")) {
+                // not yet implemented
+            } else if (rsp[i].startsWith("JAVAC_DrawAxis")) {
+                // not yet implemented
             } else if (rsp[i].startsWith("JAVAC_User")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length != 2) {
@@ -795,7 +798,7 @@ public class DEViseCmdDispatcher implements Runnable
                 throw new YException("Unrecognized command " + rsp[i] + "!", 5);
             }
         }
-        
+
         jsc.viewControl.updateImage(4, 0);
     }
 
@@ -831,14 +834,14 @@ public class DEViseCmdDispatcher implements Runnable
 
         jsc.viewControl.updateImage(1, 0);
         jsc.viewControl.updateCount(0);
-        jsc.viewControl.updateImage(2, 1);        
+        jsc.viewControl.updateImage(2, 1);
         jsc.viewControl.updateImage(3, 1);
         while (!isEnd) {
             isFinish = false;
-            
+
             while (!isFinish) {
                 try {
-                    //jsc.viewControl.updateImage(3, 0);  
+                    //jsc.viewControl.updateImage(3, 0);
                     response = cmdSocket.receiveRsp();
                     isRead = true;
                     isFinish = true;
@@ -848,9 +851,9 @@ public class DEViseCmdDispatcher implements Runnable
                     }
                 }
             }
-            
+
             jsc.viewControl.updateImage(2, 0);
-            
+
             if (response == null || response.length() == 0) {
                 throw new YException("Null response received!", 5);
             } else {
@@ -871,7 +874,7 @@ public class DEViseCmdDispatcher implements Runnable
                         }
 
                         rspbuf.addElement(cmd);
-                        
+
                         jsc.viewControl.updateCount(rspbuf.size());
                     } else {
                         throw new YException("Unrecognized command " + response + "!", 5);
@@ -905,9 +908,9 @@ class RecordDlg extends Frame
     {
         jsc = what;
         attrs = data;
-        
+
         DEViseGlobals.isShowingProgramInfo = true;
-        
+
         setBackground(DEViseGlobals.uibgcolor);
         setForeground(DEViseGlobals.uifgcolor);
         setFont(DEViseGlobals.uifont);
@@ -994,9 +997,9 @@ class RecordDlg extends Frame
         okButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
-                    {          
+                    {
                         DEViseGlobals.isShowingProgramInfo = false;
-                        
+
                         dispose();
                     }
                 });
@@ -1010,7 +1013,7 @@ class RecordDlg extends Frame
     {
         if (event.getID() == WindowEvent.WINDOW_CLOSING) {
             DEViseGlobals.isShowingProgramInfo = false;
-            
+
             dispose();
         }
 
@@ -1103,7 +1106,7 @@ class DEViseOpenDlg extends Frame
                                 int idx = fileList.getSelectedIndex();
                                 if (idx != -1) {
                                     sessionName = fileList.getItem(idx);
-                        
+
                                     if (sessionName.startsWith("[")) {
                                         String[] name = YGlobals.Yparsestring(sessionName, '[', ']');
                                         if (name[0].equals("..")) {
@@ -1115,7 +1118,7 @@ class DEViseOpenDlg extends Frame
                                         } else {
                                             currentDir = currentDir + "/" + name[0];
                                         }
-                        
+
                                         label = new Label("Current available sessions at " + currentDir);
                                         jsc.dispatcher.insertCmd("JAVAC_GetSessionList {" + name[0] + "}");
                                     } else {
@@ -1129,7 +1132,7 @@ class DEViseOpenDlg extends Frame
                             }
                         }
                     }
-                });                        
+                });
 
         okButton.addActionListener(new ActionListener()
                 {

@@ -86,11 +86,11 @@ public class DEViseClient
             pos = cmdBuffer.size();
 
         if (cmd.startsWith("JAVAC_Abort")) {
-            cmdBuffer.removeAllElements();             
-            cmdBuffer.insertElementAt(cmd, 0);            
+            cmdBuffer.removeAllElements();
+            cmdBuffer.insertElementAt(cmd, 0);
         } else {
             cmdBuffer.insertElementAt(cmd, pos);
-        }        
+        }
     }
 
     public synchronized void insertCmd(String cmd)

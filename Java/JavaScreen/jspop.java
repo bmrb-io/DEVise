@@ -27,7 +27,7 @@ public class jspop implements Runnable
     //      number: The debug level for writing debug information to console
     //      default: No Debug information is written
     //
-    private int cmdPort, imgPort; 
+    private int cmdPort, imgPort;
     private ServerSocket cmdServerSocket = null;
     private ServerSocket imgServerSocket = null;
 
@@ -75,7 +75,7 @@ public class jspop implements Runnable
     public jspop(String[] args)
     {
         System.out.println("\nChecking command line arguments ...\n");
-        checkArguments(args); 
+        checkArguments(args);
         imgPort = DEViseGlobals.IMGPORT;
         cmdPort = DEViseGlobals.CMDPORT;
 
