@@ -228,6 +228,28 @@ Possibly allow each user to have their own composite.ini file. (rkw 10/29/96)
 Add documentation on date attribute format and related composite parsers
 to the user manual. (rkw 10/29/96)
 
+Add GUI to easily be able to tell which data source(s) are in a particular
+view. (rkw 11/11/96)
+
+Allow user to add new colors to the "Color Chooser".  Have sliders or
+something similar to set the RGB values. (ml/rkw 11/11/96)
+
+Add a color palette to the mapping to allow flexibility in mapping TData
+values to colors (e.g., maybe you want value 1 to be color 10, value 2
+to be color 5, etc.). (ml/rkw 11/11/96)
+
+Add a "pattern choose" similar to the "color chooser".  Then be able to
+change the number to pattern correspondence in the mapping (similar to
+what we want to do with the colors).  (ml/rkw 11/12/96)
+
+When importing a data source, the GUI should allow you a "sneak peek"
+at the first ~10 lines of the data. (ml/rkw 11/12/96)
+
+When creating or editing a schema, you should be able to look at the
+first ~10 lines of a corresponding data file. (ml/rkw 11/12/96)
+
+Switch positions of 'hi' and 'lo' in schema editor. (ml/rkw 11/12/96)
+
 
 COMPLETED
 ---------
