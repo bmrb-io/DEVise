@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1998/05/02 09:02:28  taodb
+  Added support for command logging
+  Added support for registering events with delay
+
   Revision 1.21  1998/02/12 17:15:57  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -196,6 +200,8 @@ class Init {
 	static int MaxClients() { return _maxclients;}
 	static char* SwitchName() { return _switchname;}
 
+	static Boolean QuitOnDisconnect() { return _quitOnDisconnect; }
+
 protected:
     static Boolean _savePopup;     /* true if pop-up window should be saved and
                                       wait for button even to remove it */
@@ -257,6 +263,8 @@ protected:
     static int _imageport;         /* port for image server to listen on */
 	static int _maxclients;		   /* max number of clients */
 	static char* _switchname;      /* name of the switch(collaborator)*/
+
+	static Boolean _quitOnDisconnect; /* quit when client disconnects */
 };
 
 #endif

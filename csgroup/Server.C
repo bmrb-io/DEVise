@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/05/14 18:20:50  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.11  1998/05/13 13:36:45  wenger
   Fixed some dynamic memory errors in the csgroup code; cleaned up
   DeviseCommand class somewhat -- simplified the calling of Run()
@@ -118,6 +122,7 @@
 #include "keys.h"
 #include "Csprotocols.h"
 #include "Util.h"
+#include "Init.h"
 
 Server* _ThisServer;
 
@@ -596,6 +601,10 @@ void Server::CloseClient(ClientID clientID)
 	// clean the group associated with this client, if any
 	CloseClientGroup(clientID);
     _numClients--;
+
+    if (Init::QuitOnDisconnect()) {
+		Exit::DoExit();
+	}
 }
 
 int Server::CloseClientGroup(ClientID clientID)

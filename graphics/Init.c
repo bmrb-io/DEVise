@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.44  1998/05/02 09:02:27  taodb
+  Added support for command logging
+  Added support for registering events with delay
+
   Revision 1.43  1998/02/12 17:15:56  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -305,6 +309,8 @@ int Init::_imageport = DefaultImagePort;
 char* Init::_switchname = DefaultSwitchName;
 int Init::_maxclients = DefaultMaxClients;
 
+Boolean Init::_quitOnDisconnect = false;
+
 /**************************************************************
 Remove positions from index to index+len-1 from argv
 Update argc.
@@ -369,6 +375,7 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-switchname <value>: host for the server to listen for"
 					" the collaborator\n");
   fprintf(stderr, "\t-maxclients <value>: maximum number of clients\n");
+  fprintf(stderr, "\t-quit 0|1: quit on client disconnect or not\n");
 
   Exit::DoExit(1);
 }
@@ -794,6 +801,15 @@ void Init::DoInit(int &argc, char **argv)
 	  Usage(argv[0]);
 	}
 	_port = atoi(argv[i+1]);
+	MoveArg(argc,argv,i,2);
+      }
+
+      else if (strcmp(&argv[i][1], "quit") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_quitOnDisconnect = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
 
