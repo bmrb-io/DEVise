@@ -1538,8 +1538,9 @@ Num Date        Status  Description
 			are not saved in new positions unless you also resize
 			them. (rkw)
 
-402 09/30/98	OPEN	DataReader cannot parse a schema containing any
+402 09/30/98	FIXED	DataReader cannot parse a schema containing any
 			attribute named 'y'. (rkw)
+			(Fixed by kb 9/30/98.)
 
 403 09/30/98	OPEN	DataReader error messages are almost useless. (rkw)
 
