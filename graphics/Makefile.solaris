@@ -38,6 +38,8 @@ ClassDir.o: /usr/include/sys/select.h /usr/include/sys/time.h
 ClassDir.o: /usr/include/sys/time.h Exit.h Util.h /usr/include/stdlib.h
 ClassDir.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
 ClassDir.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+ClassDir.o: ../DTE/DeviseSpecific/TDataDQLInterp.h ../DTE/Core/types.h 
+ClassDir.o: ../graphics.new/ViewGraph.h
 ColorMgr.o: ../graphics.new/machdep.h /usr/include/limits.h
 ColorMgr.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
 ColorMgr.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
