@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/03/05 08:10:24  zhenhai
+  Added ability to view 3D graphs from six directions. Use -gl option to run,
+  and click key x,y,z and X,Y,Z to select the direction you are viewing.
+  Use arrow keys to pan left right up and down.
+
   Revision 1.13  1998/02/26 00:18:58  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -296,11 +301,13 @@ void Map3D::ClipBlocks(WindowRep *win,
                        Object3D *block, int numSyms,
                        Camera camera, int H, int V)
 {
+#if 0
   double x1 = 0.0, y1 = 0.0, z1 = 0.0;
 
   for(int i = 0; i < numSyms; i++) {
 
     block[i].clipout = false;  // default is no clip
+
 
     if (fabs(block[i].pt.x_ - camera.x_) <= block[i].W / 2
 	&& fabs(block[i].pt.y_ - camera.y_) <= block[i].D / 2
@@ -357,12 +364,14 @@ void Map3D::ClipBlocks(WindowRep *win,
 #endif
     }
   }
+#endif
 }
 
 void Map3D::ClipOvals(WindowRep *win,
                        Object3D *block, int numSyms,
                        Camera camera, int H, int V)
 {
+#ifdef 0
   double x1 = 0.0, y1 = 0.0, z1 = 0.0;
 
   for(int i = 0; i < numSyms; i++) {
@@ -424,6 +433,7 @@ void Map3D::ClipOvals(WindowRep *win,
 #endif
     }
   }
+#endif
 }
 
 // ---------------------------------------------------------- 
@@ -498,7 +508,9 @@ void Map3D::MapBlockPlanes(WindowRep *win,
                            Object3D *block, int numSyms,
 			   Camera camera, int H, int V)
 {
+#if 0
   Point3D cameraPoint;
+
   cameraPoint.x_ = camera.x_;
   cameraPoint.y_ = camera.y_;
   cameraPoint.z_ = camera.z_;
@@ -554,12 +566,14 @@ void Map3D::MapBlockPlanes(WindowRep *win,
   // sort the triangular planes back to front, based on their distance
   // from the camera
   qsort(_plane, _numPlanes, sizeof(Plane), _reversePlaneSortFunction);
+#endif
 }
 
 void Map3D::MapOvalPlanes(WindowRep *win,
                            Object3D *block, int numSyms,
 			   Camera camera, int H, int V)
 {
+#ifdef 0
   Point3D cameraPoint;
   cameraPoint.x_ = camera.x_;
   cameraPoint.y_ = camera.y_;
@@ -616,6 +630,7 @@ void Map3D::MapOvalPlanes(WindowRep *win,
   // sort the triangular planes back to front, based on their distance
   // from the camera
   qsort(_plane, _numPlanes, sizeof(Plane), _reversePlaneSortFunction);
+#endif
 }
 // ---------------------------------------------------------- 
 // clip segments
@@ -734,6 +749,7 @@ Point3D Map3D::CompLocationOnViewingSpace(WindowRep *win, Point3D &pt)
 
 Point Map3D::CompProjectionOnViewingPlane(Point3D &viewPt, Camera camera)
 {
+#if 0
   Point screenPt;
   double z_over_dvs = viewPt.z_ / camera._dvs;
 
@@ -753,6 +769,7 @@ Point Map3D::CompProjectionOnViewingPlane(Point3D &viewPt, Camera camera)
   screenPt.y = camera.V - screenPt.y;
 
   return screenPt;
+#endif
 }
 
 // ---------------------------------------------------------- 

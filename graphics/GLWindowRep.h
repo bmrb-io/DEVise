@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/04/16 21:50:17  wenger
+  Committed Sanjay's text code.
+
   Revision 1.10  1998/04/13 22:24:49  zhenhai
   Optimized 2D cursors to read and draw individual patches instead
   of patches for the whole region. Added 3D cursors to show directions.
@@ -286,16 +289,7 @@ public:
   virtual void DrawCursorStore(CursorStore & c);
 
   virtual void ClearBackground(Coord xlow, Coord ylow, Coord width,
-                        Coord height)
-  {
-    if (_numDim==2)
-      FillRect(xlow, ylow, width, height);
-    else {
-      glClearIndex(_xbgid);
-      //      glClearDepth(1.0);
-      glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    }
-  }
+                        Coord height);
   virtual void FillRect(Coord xlow, Coord ylow, Coord width,
 			Coord height,CursorStore *cstore=0);
   virtual void FillRectAlign(Coord xlow, Coord ylow, Coord width,
@@ -526,6 +520,8 @@ private:
   Pixmap _pixmap;
   GLWindowRep    *_parent;
   GLWindowRepList _children;
+
+  Camera _camera;
   
   /* GC for rubber-banding */
   //GC _rectGc;
@@ -568,7 +564,11 @@ private:
   GLuint _currentfont;
   GLXContext _gc;  
   GLboolean _double_buffer;
+#if defined(USERGB)
+  RGB _bgrgb;
+#else
   XColorID _xbgid;
+#endif
 
   ViewDir _viewdir;
   friend class RubberbandBuffer {

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/04/13 22:24:43  zhenhai
+  Optimized 2D cursors to read and draw individual patches instead
+  of patches for the whole region. Added 3D cursors to show directions.
+  After adding a 3D cursor (same as adding 2D cursors by first
+  creating the cursor, then selecting the source and destination),
+  the direction of the cone (where its top is pointing to) in one graph shows the
+  location and direction of the camera in another graph.
+
   Revision 1.13  1998/03/27 15:08:40  wenger
   Added dumping of logical session description, added GUI for dumping
   logical or physical description; cleaned up some of the command code
@@ -147,7 +155,7 @@ private:
   Boolean _useGrid;
   Coord _gridX;
   Coord _gridY;
-  CursorStore _cursor_store[6];
+  CursorStore _cursor_store[12];
 };
 
 //******************************************************************************

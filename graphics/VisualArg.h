@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/04/10 18:29:12  wenger
+  TData attribute links (aka set links) mostly implemented through table
+  insertion; a crude GUI for creating them is implemented; fixed some
+  bugs in link GUI; changed order in session file for TData attribute links.
+
   Revision 1.10  1998/03/18 08:19:44  zhenhai
   Added visual links between 3D graphics.
 
@@ -123,29 +128,31 @@ typedef unsigned CameraFlag;
 
 /* A camera; used to store view point, perspective, etc */
 struct Camera {
-	CameraFlag flag;    /* true = recompute, false = exit */
-	Coord _rho, _phi, _theta;
-	Coord _twist_angle;
-	int _perspective;
-	int _dvs;
-	int fix_focus;		/* TRUE = focus is fixed */
-					/* FALSE = focus moves with the camera */
-	int spherical_coord;/* TRUE = use spherical coordinate */
-					/* FALSE = use rectangular coordinate */
-	Coord x_, y_, z_;	/* camera location */
-	Coord fx, fy, fz;	/* view direction, a point of intereset*/
-	Coord H, V;		/* H and V are the translation wrt to
-					   the original screen coordiate sys, 
-					   original screen coordinate sys is at the
-					   upper lefthand corner of the screen */
-// new definition of camera
+        Camera():view_dir(NegZ),min_x(-2.5),max_x(2.5),min_y(-2.5),max_y(2.5),
+	         near(-2.5), far(2.5){}
+
+        // The following fields are currently used
+
 	ViewDir view_dir;
+
+        // View port info
+        Coord min_x, max_x, min_y, max_y, near, far;
+
+        // how much to pan after aligning the viewing direction to one axis 
 	Coord pan_right, pan_up;
 
 	friend unsigned char operator == (Camera const &a, Camera const &b)
-	{ return (a.view_dir==b.view_dir)
+	{ return
+                  (a.view_dir==b.view_dir)
+                &&(a.min_x==b.min_x)
+                &&(a.max_x==b.max_x)
+                &&(a.min_y==b.min_y)
+                &&(a.max_y==b.max_y)
+                &&(a.near==b.near)
+                &&(a.far==b.far)
 		&&(a.pan_right==b.pan_right)
-		&&(a.pan_up==b.pan_up);}
+		&&(a.pan_up==b.pan_up);
+        }
 };
 
 /* A visual filter: used to filter symbols inside a view. */

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.62  1998/03/18 08:19:44  zhenhai
+  Added visual links between 3D graphics.
+
   Revision 1.61  1998/03/05 08:10:28  zhenhai
   Added ability to view 3D graphs from six directions. Use -gl option to run,
   and click key x,y,z and X,Y,Z to select the direction you are viewing.
@@ -387,6 +390,7 @@ class View : public ViewWin
 			 PColorID fgid = GetPColorID(defForeColor),
 			 PColorID bgid = GetPColorID(defBackColor),
 			 AxisLabel* xAxis = NULL, AxisLabel* yAxis = NULL,
+			 AxisLabel* zAxis = NULL,
 			 int weight = 1, Boolean boundary = false);
 		virtual ~View(void);
 
@@ -436,10 +440,15 @@ class View : public ViewWin
 	AttrType GetXAxisAttrType() { return _xAxisAttrType; }
 	void SetYAxisAttrType(AttrType type);
 	AttrType GetYAxisAttrType() { return _yAxisAttrType; }
+	void SetZAxisAttrType(AttrType type);
+	AttrType GetZAxisAttrType() { return _zAxisAttrType; }
+
 	void SetXAxisLabel(AxisLabel *callback){ _xAxisLabel = callback; }
 	AxisLabel *GetXAxisLabel() { return _xAxisLabel; }
 	void SetYAxisLabel(AxisLabel *callback){ _yAxisLabel = callback; }
 	AxisLabel *GetYAxisLabel() { return _yAxisLabel; }
+	void SetZAxisLabel(AxisLabel *callback){ _zAxisLabel = callback; }
+	AxisLabel *GetZAxisLabel() { return _zAxisLabel; }
 
 	void XAxisDisplayOnOff(Boolean stat);
 	void YAxisDisplayOnOff(Boolean stat);
@@ -447,6 +456,11 @@ class View : public ViewWin
 	  xOnOff = xAxis.inUse;
 	  yOnOff = yAxis.inUse;
 	}
+	void AxisDisplay(Boolean &xOnOff, Boolean &yOnOff, Boolean &zOnOff) {
+	  xOnOff = xAxis.inUse;
+	  yOnOff = yAxis.inUse;
+	  zOnOff = zAxis.inUse;
+        }
 
 	/* view locks - lock corners or widths */
 	void SetViewLocks(int locks) { _view_locks |= locks; }
@@ -558,7 +572,6 @@ class View : public ViewWin
 	Camera GetCamera() { return _filter.camera; }
 	void SetCamera(Camera new_camera);
 	void SetViewDir(ViewDir dir);
-	void CompRhoPhiTheta();
 
 	// Print this view (and any child views) to PostScript.
 	virtual DevStatus PrintPS();
@@ -663,10 +676,11 @@ protected:
 		Coord &xLow, Coord &yLow, Coord &xHigh, Coord &yHigh); */
 
 	Boolean  _displaySymbol; /* true if to be displayed */
-	AxisInfo xAxis, yAxis;   /* X and y axis info */
+	AxisInfo xAxis, yAxis, zAxis;   /* X, y and z axis info */
 
 	AxisLabel *_xAxisLabel;
 	AxisLabel *_yAxisLabel;
+	AxisLabel *_zAxisLabel;
 
 	DispatcherID _dispatcherID;
 
@@ -694,6 +708,8 @@ protected:
 	LabelInfo _label;	  /* info about label */
 	Boolean _updateTransform; /* TRUE if we need to update transform
 				     for the window */
+	Boolean _updateNumDim;    /* TRUE if we need to update number of
+                                     dimensions for the window */
 
 	void UpdateTransform(WindowRep *winRep); /* update transformation */
 
@@ -717,6 +733,7 @@ protected:
 	Boolean _highlight;
 	AttrType _xAxisAttrType;
 	AttrType _yAxisAttrType;
+	AttrType _zAxisAttrType;
 
 	int _view_locks;	// bits from VIEW_LOCK
 
@@ -756,6 +773,7 @@ protected:
 	DevFont _titleFont;
 	DevFont _xAxisFont;
 	DevFont _yAxisFont;
+	DevFont _zAxisFont;
 
 
 

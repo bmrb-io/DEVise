@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/04/13 22:24:55  zhenhai
+  Optimized 2D cursors to read and draw individual patches instead
+  of patches for the whole region. Added 3D cursors to show directions.
+  After adding a 3D cursor (same as adding 2D cursors by first
+  creating the cursor, then selecting the source and destination),
+  the direction of the cone (where its top is pointing to) in one graph shows the
+  location and direction of the camera in another graph.
+
   Revision 1.13  1998/02/26 00:19:02  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -481,6 +489,9 @@ public:
       _cartesian = false;
   }
 
+#if 0
+// nobody using this
+// zhenhai, 4/14/1998
   void SetViewMatrix(Camera camera) {
     double st = sin(camera._theta);
     double ct = cos(camera._theta);
@@ -513,6 +524,7 @@ public:
     printf (" >>>>>>>>>>>>>> END set view matrix <<<<<<<<<\n");
 #endif
   }
+#endif
 
   void SetVector(Point3D pt) {
     _a00 = pt.x_;

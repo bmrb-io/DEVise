@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/05/02 09:00:40  taodb
+  Added support for JAVA Screen and command logging
+
   Revision 1.10  1998/04/28 18:02:54  wenger
   Added provision for "logical" and "physical" TDatas to mappings,
   instead of creating new mappings for slave views; other TAttrLink-
@@ -1555,11 +1558,11 @@ DeviseCommand_get3DLocation::Run(int argc, char** argv)
     	return -1;
           }
           Camera c = view->GetCamera();
-          sprintf(result, "%d %g %g %g %g %g %g %g %g %g %d %d",
-    	      c.spherical_coord,
-    	      c.x_, c.y_, c.z_, c.fx, c.fy, c.fz,
-    	      c._theta, c._phi, c._rho,
-                  c.fix_focus, c._perspective);
+          sprintf(result, "%s %g %g %g %g %g %g %g %g",
+            ViewDir2Char(c.view_dir),
+            c.min_x, c.max_x, c.min_y, c.max_y, c.near, c.far,
+            c.pan_right, c.pan_up);
+
           control->ReturnVal(API_ACK, result);
           return 1;
         }
@@ -4729,29 +4732,34 @@ int
 DeviseCommand_set3DLocation::Run(int argc, char** argv)
 {
     int ret_value;
+
     ret_value=DeviseCommand::Run(argc, argv);
     if (ret_value)
     {
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
-    	return -1;
+            control->ReturnVal(API_NAK, "Cannot find view");
+            return -1;
           }
-          Camera c = view->GetCamera();
-          Boolean isSphere = c.spherical_coord;
-          c.spherical_coord = false;
-          c.x_ = atof(argv[2]);
-          c.y_ = atof(argv[3]);
-          c.z_ = atof(argv[4]);
-          c.fx = atof(argv[5]);
-          c.fy = atof(argv[6]);
-          c.fz = atof(argv[7]);
-          view->SetCamera(c);
-          if (isSphere) {
-	    c = view->GetCamera();
-	    c.spherical_coord = true;
-	    view->SetCamera(c);
+          if (argc ==11)  {
+
+	    ViewDir dir;
+            Camera c=view->GetCamera();
+
+            if (Char2ViewDir(dir, argv[2])) {
+	      c.view_dir = dir;
+              c.min_x = atof(argv[3]);
+              c.max_x = atof(argv[4]);
+              c.min_y = atof(argv[5]);
+              c.max_y = atof(argv[6]);
+              c.near = atof(argv[7]);
+              c.far = atof(argv[8]);
+              c.pan_right = atof(argv[9]);
+              c.pan_up = atof(argv[10]);
+            }
+
+            view->SetCamera(c);
           }
           control->ReturnVal(API_ACK, "done");
           return 1;

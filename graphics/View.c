@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.133  1998/04/13 22:24:57  zhenhai
+  Optimized 2D cursors to read and draw individual patches instead
+  of patches for the whole region. Added 3D cursors to show directions.
+  After adding a 3D cursor (same as adding 2D cursors by first
+  creating the cursor, then selecting the source and destination),
+  the direction of the cone (where its top is pointing to) in one graph shows the
+  location and direction of the camera in another graph.
+
   Revision 1.132  1998/03/26 15:21:39  zhenhai
   The cursor drawings now use CursorStore as backup instead of using
   XOR mode for drawing and erasing.
@@ -644,7 +652,7 @@ DataSourceFixedBuf *View::_viewTableBuffer = NULL;
 
 View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 		   AxisLabel* xAxisLabel, AxisLabel* yAxisLabel,
-		   int weight, Boolean boundary)
+		   AxisLabel *zAxisLabel, int weight, Boolean boundary)
 	: ViewWin(name, fgid, bgid, weight, boundary)
 {
 	DO_DEBUG(printf("View::View(%s, this = %p)\n", name, this));
@@ -666,6 +674,7 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 
 	_xAxisLabel = xAxisLabel;
 	_yAxisLabel = yAxisLabel;
+	_zAxisLabel = zAxisLabel;
 
 	xAxis.inUse = false;
 	xAxis.width = 15;
@@ -679,12 +688,19 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	yAxis.significantDigits = 6;
 	yAxis.labelWidth = 40;
 
+	zAxis.inUse = false;
+	zAxis.width = 50;
+	zAxis.numTicks = 8;
+	zAxis.significantDigits = 6;
+	zAxis.labelWidth = 40;
+
 	_label.occupyTop = false;
 	_label.extent = 12;
 	_label.name = 0;
 
 	_xAxisAttrType = FloatAttr;
 	_yAxisAttrType = FloatAttr;
+	_zAxisAttrType = FloatAttr;
 
 	_cursors = new DeviseCursorList;
 	DOASSERT(_cursors, "Out of memory");
@@ -719,6 +735,7 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 
 	_displaySymbol = true;
 
+#if 0
 	_filter.camera.x_ = 4.6;
 	_filter.camera.y_ = 4.0;
 	_filter.camera.z_ = -4.0;
@@ -736,6 +753,7 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	_filter.camera.spherical_coord = 1;
 	_filter.camera.H = 0;
 	_filter.camera.V = 0;
+#endif
 	_filter.camera.view_dir = NegZ;
 	_filter.camera.pan_right = 0.0;
 	_filter.camera.pan_up = 0.0;
@@ -995,7 +1013,7 @@ void View::SetNumDimensions(int d)
     return;
 
   _numDimensions = d;
-  _updateTransform = true;
+  _updateNumDim = true;
 
   DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewDimensionsCh);
   Refresh();
@@ -1686,7 +1704,6 @@ void View::FindWorld(int sx1,int sy1, int sx2, int sy2,
 
 void View::CalcTransform2(WindowRep *winRep)
 {
-  winRep->SetNumDim(2);
   winRep->MakeIdentity();
 
   int dataX, dataY, dataWidth, dataHeight;
@@ -1713,7 +1730,6 @@ void View::CalcTransform2(WindowRep *winRep)
 
 void View::CalcTransform3(WindowRep *winRep)
 {
-  winRep->SetNumDim(3);
   winRep->MakeIdentity();
 
   int dataX, dataY, dataWidth, dataHeight;
@@ -1801,9 +1817,9 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
   
   _cursorsOn = false;
 
-  DrawCursors();
   if (_numDimensions == 3)
     Draw3DAxis();
+  DrawCursors();
 
   win->PopClip();
   win->Flush();
@@ -2266,6 +2282,11 @@ void View::SetXAxisAttrType(AttrType type)
 void View::SetYAxisAttrType(AttrType type)
 {
   _yAxisAttrType = type;
+}
+
+void View::SetZAxisAttrType(AttrType type)
+{
+  _zAxisAttrType = type;
 }
 
 void View::AppendCursor(DeviseCursor *cursor)
@@ -2864,6 +2885,7 @@ void View::PrintStat()
   printf("  Unknown %d, %.2f%%\n", _unknown, 100.0 * _unknown / total);
 }
 
+#ifdef 0
 void View::CompRhoPhiTheta()
 {
 #if defined(DEBUG)
@@ -2939,6 +2961,7 @@ void View::CompRhoPhiTheta()
          _filter.camera._rho, _filter.camera._phi, _filter.camera._theta);
 #endif
 }
+#endif
 
 void View::SetCamera(Camera camera)
 {
@@ -3074,6 +3097,8 @@ View::SetFont(char *which, int family, float pointSize,
     _xAxisFont.Set(family, pointSize, bold, italic);
   } else if (!strcmp(which, "y axis")) {
     _yAxisFont.Set(family, pointSize, bold, italic);
+  } else if (!strcmp(which, "z axis")) {
+    _zAxisFont.Set(family, pointSize, bold, italic);
   } else {
     reportErrNosys("Illegal font selection");
   }
@@ -3096,6 +3121,8 @@ View::GetFont(char *which, int &family, float &pointSize,
     _xAxisFont.Get(family, pointSize, bold, italic);
   } else if (!strcmp(which, "y axis")) {
     _yAxisFont.Get(family, pointSize, bold, italic);
+  } else if (!strcmp(which, "z axis")) {
+    _zAxisFont.Get(family, pointSize, bold, italic);
   } else {
     reportErrNosys("Illegal font selection");
   }
@@ -3248,12 +3275,14 @@ void	View::Run(void)
 	else
 		printf("disp mode ");
 
-	printf("exp %d flt %d ref %d upd %d\n", _hasExposure, _filterChanged,
-		   _refresh, _updateTransform);
+	printf("exp %d flt %d ref %d upd %d upnd %d\n",
+	        _hasExposure, _filterChanged,
+	        _refresh, _updateTransform, _updateNumDim);
 #endif
 
 	//TEMPTEMP -- there seems to be almost no difference between what we do
-	// for _hasExposure, _filterChanged, _refresh, and _updateTransform.
+	// for _hasExposure, _filterChanged, _refresh, _updateTransform
+	// and _updateNumDim.
 
 	if ((mode == ControlPanel::LayoutMode) && 
 		(_hasExposure || _filterChanged || _refresh || _updateTransform))
@@ -3269,8 +3298,8 @@ void	View::Run(void)
 
 	if (_querySent)
 	{
-		if (_hasExposure || _filterChanged || _refresh || _updateTransform ||
-			!Mapped())
+		if (_hasExposure || _filterChanged || _refresh
+                    || _updateTransform || _updateNumDim || !Mapped())
 		{
 #if defined(DEBUG)
 			printf("View:: aborting\n");
@@ -3327,6 +3356,9 @@ void	View::Run(void)
 
 	scrnWidth = sW;
 	scrnHeight = sH;
+        if (_updateNumDim) {
+	  winRep->SetNumDim(_numDimensions);
+	}
     
 	if (!Iconified() && !_pileMode && (_numDimensions == 2) &&
 		RestorePixmap(_filter, newFilter) == PixmapTotal)
@@ -3362,9 +3394,9 @@ void	View::Run(void)
 
 		_cursorsOn = false;
 
-		DrawCursors();		// Draw cursors
 		if (_numDimensions == 3)
 			Draw3DAxis();
+		DrawCursors();		// Draw cursors
 
 		_hasExposure = false;
 		_filterChanged = false;
@@ -3713,9 +3745,9 @@ void	View::Run2(void)
 
 		_cursorsOn = false;
 
-		DrawCursors();		// Draw cursors
 		if (_numDimensions == 3)
 			Draw3DAxis();
+		DrawCursors();		// Draw cursors
 
 		_hasExposure = false;
 		_filterChanged = false;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.43  1998/03/13 18:10:39  wenger
+  Fixed bug 327 (gaps in view background colors).
+
   Revision 1.42  1998/02/16 15:41:26  wenger
   Fixed (I believe) bug 287.
 
@@ -429,8 +432,8 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 #endif
     parentWinRep = _parent->GetWindowRep();
 
-		fgid = GetForeground();
-		bgid = GetBackground();
+    fgid = GetForeground();
+    bgid = GetBackground();
   } else {
 #ifdef DEBUG
     printf("ViewWin 0x%p mapping to root\n", this);
@@ -827,17 +830,20 @@ void ViewWin::DrawMargins()
   // draw logo
 
   WindowRep *win = GetWindowRep();
-  win->SetForeground(GetForeground());
+  PColorID	fgid, bgid;
+
+  fgid = GetForeground();
+  bgid = GetBackground();
+
+  win->SetForeground(fgid);
   win->SetPattern(Pattern0);
   win->SetLineWidth(0);
   win->FillRect(x, h-y-(_topMargin-1), w - 1, _topMargin - 1);
-  win->SetForeground(GetBackground());
+  win->SetForeground(bgid);
   win->FillRect(x + 1, h-(y + 1)-(_topMargin-1-2), w - 1 - 2,
 		_topMargin - 1 - 2);
-  win->SetForeground(GetForeground());
+  win->SetForeground(fgid);
   win->SetFont("Courier", "Medium", "r", "Normal", 8.0);
-  //win->AbsoluteText((char *) logo, x + 1, y + 1, w - 2, _topMargin - 2,
-		      //WindowRep::AlignNorth, true);
   win->AbsoluteText((char *) logo, x + 1, h-(y + 1)-(_topMargin-2),
 		    w - 2, _topMargin - 2,
 		    WindowRep::AlignNorth, true);

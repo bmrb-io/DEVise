@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1998/02/26 00:19:06  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.28  1997/12/18 18:40:17  wenger
   Turned off debug output, cleaned things up a little bit in OpenGL code.
 
@@ -158,7 +161,7 @@ Boolean WindowRep::_destroyPending = false;
 //******************************************************************************
 
 WindowRep::WindowRep(DeviseDisplay* disp, Pattern p)
-	:	_display(disp), _numDim(2)
+	:	_display(disp), _numDim(0)
 {
   _callbackList = new WindowRepCallbackList;
   DOASSERT(_callbackList, "Out of memory");

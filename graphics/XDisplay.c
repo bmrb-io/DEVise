@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.68  1998/04/16 21:50:53  wenger
+  Committed Sanjay's text code.
+
   Revision 1.67  1998/02/26 00:19:09  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -395,8 +398,9 @@ XDisplay::XDisplay(char *name)
 #ifndef LIBCS
   Register();
 #endif
-
-  if (!InitColor(_display)) {
+  Colormap cmap = DefaultColormap(_display, DefaultScreen(_display));
+  if (!InitColor(_display, DefaultDepth(_display, DefaultScreen(_display)),
+                1, &cmap)) {
     reportErrNosys("Color initialization failed");
   }
 }

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.27  1998/04/01 17:11:33  wenger
+  4/left arrow, 5 (home), and 6/right arrow keys, and cursor movements
+  now get sent to slaves during collaboration.
+
   Revision 1.26  1998/03/18 08:20:10  zhenhai
   Added visual links between 3D graphics.
 
@@ -143,6 +147,8 @@
 //#define DEBUG
 
 #define STEP_SIZE 20
+#define ZOOM_IN_FACTOR (0.9)
+#define ZOOM_OUT_FACTOR (1/ZOOM_IN_FACTOR)
 
 void Action::AreaSelected(ViewGraph *view, Coord xlow, Coord ylow,
 			  Coord xhigh, Coord yhigh, int button)
@@ -382,6 +388,28 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
     view->SetDisplayDataValues(!disp);
     break;
   }
+  case 'd': {
+    if (view->GetNumDimensions() == 3) {
+      // increase depth field
+      Camera camera = view->GetCamera();
+      Coord center_z=(camera.near+camera.far)/2;
+      camera.near=center_z+(camera.near-center_z)*ZOOM_OUT_FACTOR;
+      camera.far=center_z+(camera.far-center_z)*ZOOM_OUT_FACTOR;
+      view->SetCamera(camera);
+    }
+    break;
+  }
+  case 'D': {
+    if (view->GetNumDimensions() == 3) {
+      // decrease depth field
+      Camera camera = view->GetCamera();
+      Coord center_z=(camera.near+camera.far)/2;
+      camera.near=center_z+(camera.near-center_z)*ZOOM_IN_FACTOR;
+      camera.far=center_z+(camera.far-center_z)*ZOOM_IN_FACTOR;
+      view->SetCamera(camera);
+    }
+    break;
+  }
 #if 0
   /* Seems _xyZoom is not used by view anywhere in View.c. Zhenhai*/
   case 'z':
@@ -423,6 +451,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
     /* zoom in Z */
     if (view->GetNumDimensions() == 3) {
       Camera camera = view->GetCamera();
+#if 0
       double incr_ = 0.0;
       if (!camera.spherical_coord) {
 	/* fixed camera's x and y coordiates relative to 
@@ -442,6 +471,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	if (camera._rho < 0.1)
 	  camera._rho = 0.1;
       }
+#endif
       view->SetCamera(camera);
     }
     break;
@@ -450,6 +480,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
   case 'O': {
     /* zoom out Z */
     if (view->GetNumDimensions() == 3) {
+#ifdef 0
       Camera camera = view->GetCamera();
       double incr_ = 0.0;
       if (!camera.spherical_coord) {
@@ -469,21 +500,30 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	camera._rho += incr_;
       }
       view->SetCamera(camera);
+#endif
+    }
+    break;
+  }
+  case 'b':
+  case 'B': {
+    /* move the camera back */
+    if (view->GetNumDimensions() == 3) {
+      Camera camera = view->GetCamera();
+      Coord dist=(camera.far-camera.near)*(1-ZOOM_IN_FACTOR);
+      camera.near-=dist;
+      camera.far-=dist;
+      view->SetCamera(camera);
     }
     break;
   }
   case 'f':
   case 'F': {
-    /* set focus point fixed or unfixed */
+    /* move the camera forth */
     if (view->GetNumDimensions() == 3) {
       Camera camera = view->GetCamera();
-      if (camera.fix_focus && !camera.spherical_coord)
-	camera.fix_focus = 0;
-      else
-	camera.fix_focus = 1;
-#ifdef DEBUG
-      printf("camera fix_focus = %d\n", camera.fix_focus);
-#endif
+      Coord dist=(camera.far-camera.near)*(1-ZOOM_IN_FACTOR);
+      camera.near+=dist;
+      camera.far+=dist;
       view->SetCamera(camera);
     }
     break;
@@ -493,6 +533,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
     /* switch between rectangular and radial coordinates */
     if (view->GetNumDimensions() == 3) {
       Camera camera = view->GetCamera();
+#ifdef 0
       if (camera.spherical_coord)
 	camera.spherical_coord = 0;
       else {
@@ -503,6 +544,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
       printf("camera spherical_coord = %d\n", camera.spherical_coord);
 #endif
       view->SetCamera(camera);
+#endif
     }
     break;
   }
@@ -622,6 +664,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 		view->SetVisualFilter(filter);
 	}
     } else {
+#if 0
       Camera camera = view->GetCamera();
       double incr_ = camera._dvs / STEP_SIZE;
       if (incr_ < 1)
@@ -637,6 +680,12 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 #ifdef DEBUG
       printf("old-new dvs = %d   incr = %f\n",camera._dvs,incr_);
 #endif
+      view->SetCamera(camera);
+#endif
+      Camera camera = view->GetCamera();
+      Coord center_x=(camera.min_x+camera.max_x)/2;
+      camera.min_x=center_x+(camera.min_x-center_x)*ZOOM_IN_FACTOR;
+      camera.max_x=center_x+(camera.max_x-center_x)*ZOOM_IN_FACTOR;
       view->SetCamera(camera);
     }
   } else if (zoomOutX) {
@@ -668,11 +717,18 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 		view->SetVisualFilter(filter);
 	}
     } else {
+#if 0
       Camera camera = view->GetCamera();
       double incr_ = camera._dvs / STEP_SIZE;
       if (incr_ < 1)
 	incr_ = 1;
       camera._dvs += (int)incr_;
+      view->SetCamera(camera);
+#endif
+      Camera camera = view->GetCamera();
+      Coord center_x=(camera.min_x+camera.max_x)/2;
+      camera.min_x=center_x+(camera.min_x-center_x)*ZOOM_OUT_FACTOR;
+      camera.max_x=center_x+(camera.max_x-center_x)*ZOOM_OUT_FACTOR;
       view->SetCamera(camera);
     }
   }
@@ -705,6 +761,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 		view->SetVisualFilter(filter);
 	}
     } else {
+#if 0
       Camera camera = view->GetCamera();
       double incr_ = camera._dvs / STEP_SIZE;
       if (incr_ < 1)
@@ -714,6 +771,12 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	camera._dvs = 0;
       else
 	camera._dvs -= (int)incr_;
+      view->SetCamera(camera);
+#endif
+      Camera camera = view->GetCamera();
+      Coord center_y=(camera.min_y+camera.max_y)/2;
+      camera.min_y=center_y+(camera.min_y-center_y)*ZOOM_IN_FACTOR;
+      camera.max_y=center_y+(camera.max_y-center_y)*ZOOM_IN_FACTOR;
       view->SetCamera(camera);
     }
   } else if (zoomOutY) {
@@ -745,11 +808,18 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 		view->SetVisualFilter(filter);
 	}
     } else {
+#if 0
       Camera camera = view->GetCamera();
       double incr_ = camera._dvs / STEP_SIZE;
       if (incr_ < 1)
 	incr_ = 1;
       camera._dvs += (int)incr_;
+      view->SetCamera(camera);
+#endif
+      Camera camera = view->GetCamera();
+      Coord center_y=(camera.min_y+camera.max_y)/2;
+      camera.min_y=center_y+(camera.min_y-center_y)*ZOOM_OUT_FACTOR;
+      camera.max_y=center_y+(camera.max_y-center_y)*ZOOM_OUT_FACTOR;
       view->SetCamera(camera);
     }
   }

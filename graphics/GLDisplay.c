@@ -104,9 +104,49 @@ GLDisplay::GLDisplay(char *name)
   Register();
 #endif
 
-  if (!InitColor(_display)) {
+/*  int configuration[] = {GLX_DOUBLEBUFFER, GLX_DEPTH_SIZE, 12,
+                         GLX_RED_SIZE, 1, GLX_BLUE_SIZE, 1,
+                         GLX_GREEN_SIZE, 1, None};
+*/
+#if defined(USERGB)
+  int configuration[] = {GLX_RGBA, GLX_DEPTH_SIZE, 12,
+                         GLX_RED_SIZE, 1, GLX_BLUE_SIZE, 1,
+                         GLX_GREEN_SIZE, 1, None};
+#else
+  int configuration[] = {GLX_DEPTH_SIZE, 12,
+                         GLX_RED_SIZE, 1, GLX_BLUE_SIZE, 1,
+                         GLX_GREEN_SIZE, 1, None};
+#endif
+  int configuration2[] = {None};
+
+  vi = glXChooseVisual(_display, DefaultScreen(_display), configuration);
+  if (vi == NULL) {
+    vi = glXChooseVisual(_display, DefaultScreen(_display), configuration2);
+    DOASSERT(vi != NULL, "no appropriate RGB visual with depth buffer");
+    double_buffer=GL_FALSE;
+  }
+  else {
+//    double_buffer=GL_TRUE;
+    double_buffer=GL_FALSE;
+  }
+  
+  /* Define window attributes. */
+#ifdef SGI
+  _cmap = XCreateColormap(_display, RootWindow(_display, vi->screen), vi->visual, AllocNone);
+  Colormap cmap[2]={_cmap, DefaultColormap(_display, DefaultScreen(_display))};
+  if (!InitColor(_display, DefaultDepth(_display, DefaultScreen(_display)),
+		2, cmap)) {
     reportErrNosys("Color initialization failed");
   }
+#else
+  _cmap	= DefaultColormap(_display, DefaultScreen(_display));
+  Colormap cmap[1]={_cmap};
+  if (!InitColor(_display, DefaultDepth(_display, DefaultScreen(_display)),
+		1, cmap)) {
+    reportErrNosys("Color initialization failed");
+  }
+#endif
+
 }
 
 GLDisplay::~GLDisplay()
@@ -702,36 +742,6 @@ WindowRep *GLDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   mask |= PointerMotionMask;
 #endif
 
-  XVisualInfo *vi;
-
-/*  int configuration[] = {GLX_DOUBLEBUFFER, GLX_DEPTH_SIZE, 12,
-                         GLX_RED_SIZE, 1, GLX_BLUE_SIZE, 1,
-                         GLX_GREEN_SIZE, 1, None};
-*/
-  int configuration[] = {GLX_DEPTH_SIZE, 12,
-                         GLX_RED_SIZE, 1, GLX_BLUE_SIZE, 1,
-                         GLX_GREEN_SIZE, 1, None};
-  int configuration2[] = {None};
-  GLboolean double_buffer;
-
-  vi = glXChooseVisual(_display, DefaultScreen(_display), configuration);
-  if (vi == NULL) {
-    vi = glXChooseVisual(_display, DefaultScreen(_display), configuration2);
-    DOASSERT(vi != NULL, "no appropriate RGB visual with depth buffer");
-    double_buffer=GL_FALSE;
-  }
-  else {
-//    double_buffer=GL_TRUE;
-    double_buffer=GL_FALSE;
-  }
-  
-  /* Define window attributes. */
-#ifdef SGI
-  Colormap cmap = XCreateColormap(_display, RootWindow(_display, vi->screen), vi->visual, AllocNone);
-  //  Colormap cmap = XCopyColormapAndFree(_display, DefaultColormap(_display, DefaultScreen(_display)));
-#else
-  Colormap cmap	= DefaultColormap(_display, DefaultScreen(_display));
-#endif
 
   XSetWindowAttributes attr;
   attr.background_pixmap 	= None;
@@ -747,7 +757,7 @@ WindowRep *GLDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   attr.event_mask  		= mask;
   attr.do_not_propagate_mask	= 0;
   attr.override_redirect  	= False;
-  attr.colormap			= cmap;
+  attr.colormap			= _cmap;
   attr.cursor  			= None;
 
   /* Create the window. */
@@ -858,7 +868,7 @@ WindowRep *GLDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   /* Return the GLWindowRep structure. */
 
   GLWindowRep *xwin = new GLWindowRep(_display, w, this,
-                                    (GLWindowRep *)parentRep, gc, double_buffer);
+                                   (GLWindowRep *)parentRep, gc, double_buffer);
   DOASSERT(xwin, "Cannot create GLWindowRep");
   _winList.Insert(xwin);
   

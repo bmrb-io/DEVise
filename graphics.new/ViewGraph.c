@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.79  1998/04/30 14:24:23  wenger
+  DerivedTables are now owned by master views rather than links;
+  views now unlink from master and slave links in destructor.
+
   Revision 1.78  1998/04/29 17:53:59  wenger
   Created new DerivedTable class in preparation for moving the tables
   from the TAttrLinks to the ViewDatas; found bug 337 (potential big
@@ -929,6 +933,7 @@ void ViewGraph::GoHome()
         }
     } else {
         Camera c=GetCamera();
+#if 0
         c.fx = 0;
         c.fy = 0;
         c.fz = 0;
@@ -946,6 +951,7 @@ void ViewGraph::GoHome()
             c._phi = M_PI_2;
             c._rho = fabs(minZ);
         }
+#endif
         c.pan_right=0;
         c.pan_up=0;
         SetCamera(c);

@@ -30,7 +30,11 @@ class CursorStore {
     // 2D region that the cursor covers on the screen
     int _min_x, _min_y, _max_x, _max_y;
 
+#if defined(USERGB)
+    GLfloat *rgba;
+#else
     GLfloat *color_index;
+#endif
     GLfloat *depth;
 
     int _tot;         //total size of CursorStore = width*height

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/04/13 22:24:42  zhenhai
+  Optimized 2D cursors to read and draw individual patches instead
+  of patches for the whole region. Added 3D cursors to show directions.
+  After adding a 3D cursor (same as adding 2D cursors by first
+  creating the cursor, then selecting the source and destination),
+  the direction of the cone (where its top is pointing to) in one graph shows the
+  location and direction of the camera in another graph.
+
   Revision 1.13  1998/04/01 17:11:26  wenger
   4/left arrow, 5 (home), and 6/right arrow keys, and cursor movements
   now get sent to slaves during collaboration.
@@ -291,9 +299,59 @@ void DeviseCursor::ReadCursorStore(WindowRep*w)
    && _dst&& _dst->GetNumDimensions()==3) {
     w->PushTop();
     w->SetCamCursorTransform(filter->camera);
-    w->FillCone(0, 0, 2, 0, 0, 1.5, 0.25, &_cursor_store[0]);
+
+    Coord x[8], y[8], z[8];
+    x[0]=filter->camera.min_x;
+    x[1]=filter->camera.max_x;
+    x[2]=filter->camera.max_x;
+    x[3]=filter->camera.min_x;
+
+    x[4]=filter->camera.min_x;
+    x[5]=filter->camera.max_x;
+    x[6]=filter->camera.max_x;
+    x[7]=filter->camera.min_x;
+
+    y[0]=filter->camera.min_y;
+    y[1]=filter->camera.min_y;
+    y[2]=filter->camera.max_y;
+    y[3]=filter->camera.max_y;
+
+    y[4]=filter->camera.min_y;
+    y[5]=filter->camera.min_y;
+    y[6]=filter->camera.max_y;
+    y[7]=filter->camera.max_y;
+
+    z[0]=-filter->camera.near;
+    z[1]=-filter->camera.near;
+    z[2]=-filter->camera.near;
+    z[3]=-filter->camera.near;
+
+    z[4]=-filter->camera.far;
+    z[5]=-filter->camera.far;
+    z[6]=-filter->camera.far;
+    z[7]=-filter->camera.far;
+
+#define DRAWCURSORLINEREADSTORE(a,b,c) \
+    w->Line3D(x[a],y[a],z[a],x[b],y[b],z[b],1.0,&_cursor_store[c])
+
+    DRAWCURSORLINEREADSTORE(0,1,0);
+    DRAWCURSORLINEREADSTORE(1,2,1);
+    DRAWCURSORLINEREADSTORE(2,3,2);
+    DRAWCURSORLINEREADSTORE(3,0,3);
+
+    DRAWCURSORLINEREADSTORE(4,5,4);
+    DRAWCURSORLINEREADSTORE(5,6,5);
+    DRAWCURSORLINEREADSTORE(6,7,6);
+    DRAWCURSORLINEREADSTORE(7,4,7);
+
+    DRAWCURSORLINEREADSTORE(0,4,8);
+    DRAWCURSORLINEREADSTORE(1,5,9);
+    DRAWCURSORLINEREADSTORE(2,6,10);
+    DRAWCURSORLINEREADSTORE(3,7,11);
+
     w->PopTransform();
-    w->ReadCursorStore(_cursor_store[0]);
+    for (int i=0;i<12;i++)
+      w->ReadCursorStore(_cursor_store[i]);
   }
 }
 
@@ -301,13 +359,13 @@ void DeviseCursor::DrawCursorStore(WindowRep*w)
 {
   if (_src && _src->GetNumDimensions()==2
    && _dst&& _dst->GetNumDimensions()==2) {
-    for (int i=0; i<6; i++) {
+    for (int i=0; i<6; i++)
       w->DrawCursorStore(_cursor_store[i]);
-    }
   }
   if (_src && _src->GetNumDimensions()==3
    && _dst&& _dst->GetNumDimensions()==3) {
-    w->DrawCursorStore(_cursor_store[0]);
+    for (int i=0;i<12;i++)
+      w->DrawCursorStore(_cursor_store[i]);
   }
 }
 
@@ -335,7 +393,53 @@ void DeviseCursor::DrawCursor(WindowRep* w)
    && _dst&& _dst->GetNumDimensions()==3) {
     w->PushTop();
     w->SetCamCursorTransform(filter->camera);
-    w->FillCone(0, 0, 2, 0, 0, 1.5, 0.25);
+    Coord x[8], y[8], z[8];
+    x[0]=filter->camera.min_x;
+    x[1]=filter->camera.max_x;
+    x[2]=filter->camera.max_x;
+    x[3]=filter->camera.min_x;
+
+    x[4]=filter->camera.min_x;
+    x[5]=filter->camera.max_x;
+    x[6]=filter->camera.max_x;
+    x[7]=filter->camera.min_x;
+
+    y[0]=filter->camera.min_y;
+    y[1]=filter->camera.min_y;
+    y[2]=filter->camera.max_y;
+    y[3]=filter->camera.max_y;
+
+    y[4]=filter->camera.min_y;
+    y[5]=filter->camera.min_y;
+    y[6]=filter->camera.max_y;
+    y[7]=filter->camera.max_y;
+
+    z[0]=-filter->camera.near;
+    z[1]=-filter->camera.near;
+    z[2]=-filter->camera.near;
+    z[3]=-filter->camera.near;
+
+    z[4]=-filter->camera.far;
+    z[5]=-filter->camera.far;
+    z[6]=-filter->camera.far;
+    z[7]=-filter->camera.far;
+
+#define DRAWCURSORLINE(a,b) w->Line3D(x[a],y[a],z[a],x[b],y[b],z[b],1.0)
+    DRAWCURSORLINE(0,1);
+    DRAWCURSORLINE(1,2);
+    DRAWCURSORLINE(2,3);
+    DRAWCURSORLINE(3,0);
+
+    DRAWCURSORLINE(4,5);
+    DRAWCURSORLINE(5,6);
+    DRAWCURSORLINE(6,7);
+    DRAWCURSORLINE(7,4);
+
+    DRAWCURSORLINE(0,4);
+    DRAWCURSORLINE(1,5);
+    DRAWCURSORLINE(2,6);
+    DRAWCURSORLINE(3,7);
+
     w->PopTransform();
   }
 }

@@ -148,5 +148,8 @@ private:
     XFontStruct *_fontStruct;       /* current font */
     XFontStruct *_normalFontStruct; /* big font used in window */
     XFontStruct *_smallFontStruct;  /* small font used in window */
+    Colormap _cmap;
+    XVisualInfo * vi;
+    GLboolean double_buffer;
 };
 #endif

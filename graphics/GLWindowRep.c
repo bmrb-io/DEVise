@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/04/16 21:50:15  wenger
+  Committed Sanjay's text code.
+
   Revision 1.14  1998/04/13 22:24:48  zhenhai
   Optimized 2D cursors to read and draw individual patches instead
   of patches for the whole region. Added 3D cursors to show directions.
@@ -64,6 +67,7 @@
 #include "DaliIfc.h"
 #include "../xvertext/rotated.h"
 #include "XColor.h"
+#include "ThreeDVector.h"
 
 
 #if !defined(LIBCS)
@@ -1153,21 +1157,21 @@ void GLWindowRep::FillRect(Coord xlow, Coord ylow, Coord width,
     bool filled = (GetPattern() != -Pattern1);
     if (filled) {
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-      GLBEGIN(GL_QUADS);
+      glBegin(GL_QUADS);
       glVertex2f(xlow, ylow);
       glVertex2f(xlow+width, ylow);
       glVertex2f(xlow+width, ylow+height);
       glVertex2f(xlow, ylow+height);
-      GLEND();
+      glEnd();
     }
     if( GetLineWidth() >= 0 || !filled) {
       glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-      GLBEGIN(GL_QUADS);
+      glBegin(GL_QUADS);
       glVertex2f(xlow, ylow);
       glVertex2f(xlow+width, ylow);
       glVertex2f(xlow+width, ylow+height);
       glVertex2f(xlow, ylow+height);
-      GLEND();
+      glEnd();
     }
   }
   else {
@@ -1209,22 +1213,22 @@ void GLWindowRep::FillRectAlign(Coord xlow, Coord ylow, Coord width,
   bool filled=(GetPattern() != -Pattern1);
   if (filled) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    GLBEGIN(GL_QUADS);
+    glBegin(GL_QUADS);
     glVertex2f(point_x[0], point_y[0]);
     glVertex2f(point_x[1], point_y[1]);
     glVertex2f(point_x[2], point_y[2]);
     glVertex2f(point_x[3], point_y[3]);
-    GLEND();
+    glEnd();
   }
   
   if( GetLineWidth() >= 0 || !filled) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    GLBEGIN(GL_QUADS);
+    glBegin(GL_QUADS);
       glVertex2f(point_x[0], point_y[0]);
       glVertex2f(point_x[1], point_y[1]);
       glVertex2f(point_x[2], point_y[2]);
       glVertex2f(point_x[3], point_y[3]);
-    GLEND();
+    glEnd();
   }
   
 #endif
@@ -1311,9 +1315,9 @@ void GLWindowRep::DrawPixel(Coord x, Coord y)
   MAKECURRENT();
   if (_dispGraphics) {
     
-    GLBEGIN(GL_POINTS);
+    glBegin(GL_POINTS);
     glVertex2d(x,y);
-    GLEND();
+    glEnd();
     
   }
 #endif
@@ -1342,10 +1346,10 @@ void GLWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
   MAKECURRENT();
   if (_dispGraphics) {
     
-    GLBEGIN(GL_POINTS);
+    glBegin(GL_POINTS);
     for (int i=0; i<num; i++)
       glVertex2d(x[i],y[i]);
-    GLEND();
+    glEnd();
     
   }
 #endif
@@ -1391,14 +1395,14 @@ void GLWindowRep::FillPoly(Point *points, int n)
 	PrintTransform();
 #endif
 
-	GLBEGIN(GL_POLYGON);
+	glBegin(GL_POLYGON);
 	for (int i=0; i<n; i++) {
 	  glVertex2d(points[i].x, points[i].y);
 #if defined(DEBUG)
 	  printf("vertex[%d]=(%.2f,%.2f)\n", i, points[i].x, points[i].y);
 #endif
 	}
-	GLEND();
+	glEnd();
       }
 
 #if defined(DEBUG)
@@ -1406,14 +1410,14 @@ void GLWindowRep::FillPoly(Point *points, int n)
 #endif
       if( GetLineWidth() >= 0 || !fill ) {
   	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  	GLBEGIN(GL_POLYGON);
+  	glBegin(GL_POLYGON);
 	for (int i=0; i<n; i++) {
 	  glVertex2d(points[i].x, points[i].y);
 #if defined(DEBUG)
 	  printf("vertex[%d]=(%.2f,%.2f)\n", i, points[i].x, points[i].y);
 #endif
 	}
-	GLEND();
+	glEnd();
       }
   }
   
@@ -1435,7 +1439,7 @@ void GLWindowRep::FillTriangle3D(Point3D p1, Point3D p2, Point3D p3)
       PrintTransform();
 #endif
       
-      GLBEGIN(GL_POLYGON);
+      glBegin(GL_POLYGON);
       glVertex3d(p1.x_, p1.y_, p1.z_);
       glVertex3d(p2.x_, p2.y_, p2.z_);
       glVertex3d(p3.x_, p3.y_, p3.z_);
@@ -1448,7 +1452,7 @@ void GLWindowRep::FillTriangle3D(Point3D p1, Point3D p2, Point3D p3)
 	     p3.x_, p3.y_, p3.z_);
 #endif
       
-      GLEND();
+      glEnd();
     }
     
     
@@ -1457,7 +1461,7 @@ void GLWindowRep::FillTriangle3D(Point3D p1, Point3D p2, Point3D p3)
 #endif
     if( GetLineWidth() >= 0 || !fill ) {
       glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-      GLBEGIN(GL_POLYGON);
+      glBegin(GL_POLYGON);
       glVertex3d(p1.x_, p1.y_, p1.z_);
       glVertex3d(p2.x_, p2.y_, p2.z_);
       glVertex3d(p3.x_, p3.y_, p3.z_);
@@ -1469,7 +1473,7 @@ void GLWindowRep::FillTriangle3D(Point3D p1, Point3D p2, Point3D p3)
       printf("vertex[%d]=(%.2f,%.2f,%.2f)\n",
 	     p3.x, p3.y, p3.z);
 #endif
-      GLEND();
+      glEnd();
     }
   }
   
@@ -1481,7 +1485,7 @@ void GLWindowRep::FillSphere(Coord x, Coord y, Coord z, Coord r)
   //        r  = radius of sphere
 {
   MAKECURRENT();
-  GLMATRIXMODE(GL_MODELVIEW);
+  glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glTranslatef(x, y, z);
 
@@ -1491,7 +1495,7 @@ void GLWindowRep::FillSphere(Coord x, Coord y, Coord z, Coord r)
   qObj=gluNewQuadric();
 //  gluQuadricDrawStyle(qObj, (GLenum)GLU_FILL);
 //  gluQuadricNormals(qObj, (GLenum)GLU_SMOOTH);
-  gluSphere(qObj, r, 20, 20);
+  gluSphere(qObj, r, 40, 40);
   gluDeleteQuadric(qObj);
 
   glPopMatrix();
@@ -1523,7 +1527,7 @@ void GLWindowRep::FillCone
   MAKECURRENT();
 
 
-  GLMATRIXMODE(GL_MODELVIEW);
+  glMatrixMode(GL_MODELVIEW);
 
   DEBUGE(glTranslated(x0, y0, z0));
 
@@ -1553,21 +1557,21 @@ void GLWindowRep::FillCone
   }
   
   if (!cstore) {
-    GLBEGIN(GL_TRIANGLE_FAN);
+    glBegin(GL_TRIANGLE_FAN);
     glVertex3d(0,0,logicalz[0]);
 
     for (i=1; i<=sides; i++) {
       glVertex3d(logicalx[i], logicaly[i], 0);
     }
     glVertex3d(logicalx[1], logicaly[1], 0);
-    GLEND();
+    glEnd();
 
-    GLBEGIN(GL_POLYGON);
+    glBegin(GL_POLYGON);
     for (i=1; i<=sides; i++) {
       glVertex3d(logicalx[i], logicaly[i], 0);
     }
     glVertex3d(logicalx[1], logicaly[1], 0);
-    GLEND();
+    glEnd();
   }
   else {
     cstore->Clear();
@@ -1629,10 +1633,10 @@ void GLWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width,
   MAKECURRENT();
 
   if (!cstore) {
-    GLBEGIN(GL_LINES);
+    glBegin(GL_LINES);
     glVertex2d(x1,y1);
     glVertex2d(x2,y2);
-    GLEND();
+    glEnd();
   }
   else {
     Coord logicalx[2]={x1, x2},
@@ -1658,10 +1662,10 @@ void GLWindowRep::Line3D(Coord x1, Coord y1, Coord z1,
 #endif
   MAKECURRENT();
   if (!cstore) {
-    GLBEGIN(GL_LINES);
+    glBegin(GL_LINES);
     glVertex3d(x1,y1,z1);
     glVertex3d(x2,y2,z2);
-    GLEND();
+    glEnd();
   }
   else {
     Coord logicalx[2]={x1, x2},
@@ -1694,13 +1698,13 @@ void GLWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
 #endif
   
   MAKECURRENT();
-  GLMATRIXMODE(GL_MODELVIEW);
+  glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();
-  GLBEGIN(GL_LINES);
+  glBegin(GL_LINES);
   glVertex2i(x1,y1);
   glVertex2i(x2,y2);
-  GLEND();
+  glEnd();
   glPopMatrix();
   
 }
@@ -1794,8 +1798,10 @@ void GLWindowRep::SetCopyMode()
 #ifdef GRAPHICS
   
   MAKECURRENT();
+  GLCHECKERROR();
   glDisable(GL_INDEX_LOGIC_OP);
 //  glLogicOp(GL_COPY);
+  GLCHECKERROR();
   
 #endif
 }
@@ -1876,12 +1882,12 @@ void GLWindowRep::DrawRubberband(int x1, int y1, int x2, int y2)
   MAKECURRENT();
 
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  GLBEGIN(GL_QUADS);
+  glBegin(GL_QUADS);
   glVertex2f(x1, y1);
   glVertex2f(x1, y2);
   glVertex2f(x2, y2);
   glVertex2f(x2, y1);
-  GLEND();
+  glEnd();
   this->Flush();
   
 #endif
@@ -1982,17 +1988,15 @@ void GLWindowRep::TkWindowSizeChanged()
 /* called by GLDisplay to create new X window */
 GLWindowRep::GLWindowRep(Display *display, Window window, GLDisplay *DVDisp,
 	GLWindowRep *parent, GLXContext gc, GLboolean double_buffer):
-  WindowRep(DVDisp),_display(0),_win(0),
+  WindowRep(DVDisp),_display(display),_win(window),
   _specialfontstruct(0),_specialfont(0),
   _normalfontstruct(0),_normalfont(0),_currentfont(0),
-  _gc(gc), _double_buffer(double_buffer), _xbgid(0), _viewdir(NegZ)
+  _gc(gc), _double_buffer(double_buffer), _viewdir(NegZ)
 {
 #if defined(DEBUG)
   printf("GLWindowRep::GLWindowRep(this = %p, parent = %p,
     window = 0x%lx)\n", this, parent, window);
 #endif
-  _display = display;
-  _win = window;
   _pixmap = 0;
   _parent = parent;
   if (_parent)
@@ -2009,7 +2013,7 @@ GLWindowRep::GLWindowRep(Display *display, Pixmap pixmap, GLDisplay *DVDisp,
   WindowRep(DVDisp),_display(0),_win(0),
   _specialfontstruct(0),_specialfont(0),
   _normalfontstruct(0),_normalfont(0),_currentfont(0),
-  _gc(0), _double_buffer(GL_FALSE), _xbgid(0), _viewdir(NegZ)
+  _gc(0), _double_buffer(GL_FALSE), _viewdir(NegZ)
 {
 #if defined(DEBUG)
   printf("GLWindowRep::GLWindowRep(this = %p, parent = %p, "
@@ -2038,6 +2042,7 @@ void GLWindowRep::Init()
 #endif
 
   MAKECURRENT();
+
 #if defined(LIBCS)
   _dispGraphics = true;
 #else
@@ -2045,22 +2050,17 @@ void GLWindowRep::Init()
 #endif
   _compress = new SimpleCompress();
 
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+
   UpdateWinDimensions();
   _unobscured = false;
-  // use double buffer. Use color index mode instead of RGB mode
 
   SetLineWidth(0);
   WindowRep::SetPattern(Pattern0);
   
   SetNormalFont();
   // font pixmap creating elimated.
-  MAKECURRENT();
-  glViewport(0, 0, (GLsizei)_width, (GLsizei)_height);
-  GLMATRIXMODE(GL_PROJECTION);
-  glLoadIdentity();
-  gluOrtho2D(0.0, (GLsizei)_width, 0.0, (GLsizei)_height);
-  GLMATRIXMODE(GL_MODELVIEW);
-  glLoadIdentity();
 #if defined(DEBUG)
   PrintTransform();
 #endif
@@ -2101,31 +2101,83 @@ GLWindowRep::~GLWindowRep()
 
 void    GLWindowRep::SetForeground(PColorID fgid)
 {
-  MAKECURRENT();
-  
-        XColorID        xfgid = AP_GetXColorID(fgid);
+#ifdef GRAPHICS
 
+	MAKECURRENT();
+
+#if defined(USERGB)
+	RGB rgb;
+        WindowRep::SetForeground(fgid);
+        if (_dispGraphics) {
+	  if(!PM_GetRGB(fgid, rgb))
+	    fprintf(stderr,
+		"GLWindowRep::SetForeground: Cannot get rgb for fgid=%d\n",
+		fgid);
+          else
+	    glColor3d( GLdouble(rgb.r)/GLdouble(65535), 
+		       GLdouble(rgb.g)/GLdouble(65535), 
+		       GLdouble(rgb.b)/GLdouble(65535));
+	}
+#else
+        XColorID        xfgid = AP_GetXColorID(fgid);
         WindowRep::SetForeground(fgid);
 
-#ifdef GRAPHICS
         if (_dispGraphics) {
 	  glIndexi(xfgid);
 	}
 #endif
+
+#endif
+}
+
+void GLWindowRep::ClearBackground(Coord xlow, Coord ylow, Coord width,
+                        Coord height)
+{
+  
+    if (_numDim==2)
+      FillRect(xlow, ylow, width, height);
+    else {
+#if defined(USERGB)
+      glClearColor( GLdouble(_bgrgb.r)/GLdouble(65535), 
+		GLdouble(_bgrgb.g)/GLdouble(65535), 
+		GLdouble(_bgrgb.b)/GLdouble(65535),
+		1.0);
+#else
+      glClearIndex(_xbgid);
+#endif
+//      glClearDepth(_camera.far);
+#if defined(USERGB)
+      glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+#else
+      glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+#endif
+    }
 }
 
 void    GLWindowRep::SetBackground(PColorID bgid)
 {
-  MAKECURRENT();
+#ifdef GRAPHICS
+	MAKECURRENT();
+
+#if defined(USERGB)
+	DOASSERT(PM_GetRGB(bgid, _bgrgb), "Cannot get rgb");
+	if (_dispGraphics) {
+		glClearColor( GLdouble(_bgrgb.r)/GLdouble(65535), 
+				GLdouble(_bgrgb.g)/GLdouble(65535), 
+				GLdouble(_bgrgb.b)/GLdouble(65535),
+				1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
+#else
         _xbgid = AP_GetXColorID(bgid);
 
         WindowRep::SetBackground(bgid);
 
-#ifdef GRAPHICS
         if (_dispGraphics) {
 	  	glClearIndex(_xbgid);
   		glClear(GL_COLOR_BUFFER_BIT);
 	}
+#endif
 #endif
 }
 
@@ -2610,33 +2662,75 @@ void GLWindowRep::UpdateWinDimensions()
 
   Window root;
   unsigned int border_width, depth;
+  unsigned int w, h;
 
   if (_win) {
-    XGetGeometry(_display, _win, &root, &_x, &_y, &_width, &_height,
+    XGetGeometry(_display, _win, &root, &_x, &_y, &w, &h,
 		 &border_width, &depth);
+    if (_width==w && _height==h)
+      return;
+    _width=w;
+    _height=h;
+
 #if defined(DEBUG)
     printf("GLWindowRep(0x%p)::UpdateWinDimensions():\n",this);
     printf("_x=%d, _y=%d, _width=%u, _height=%u\n", _x, _y, _width, _height);
 #endif
     if (_gc) {
       MAKECURRENT();
-      glViewport(0, 0, (GLsizei)_width, (GLsizei)_height);
-      GLMATRIXMODE(GL_PROJECTION);
+      glViewport(0, 0, w, h);
+    }
+    if (_numDim==2) {
+      MAKECURRENT();
+      glDisable(GL_DEPTH_TEST);
+      glMatrixMode(GL_PROJECTION);
       glLoadIdentity();
-      gluOrtho2D(0.0, (GLsizei)_width, 0.0, (GLsizei)_height);
+      glOrtho(0.0, w, 0.0, h, DEPTH_NEAR, DEPTH_FAR);
+      glMatrixMode(GL_MODELVIEW);
+      glLoadIdentity();
+    }
+    else if (_numDim==3) {
+      MAKECURRENT();
+      glEnable(GL_DEPTH_TEST);
+
+      glMatrixMode(GL_PROJECTION);
+      glPopMatrix();
+      glLoadIdentity();
+      if (w<h)
+	glOrtho(-2.5, 2.5, -2.5*h/w, 2.5*h/w, DEPTH_NEAR, DEPTH_FAR);
+      else
+	glOrtho(-2.5*w/h, 2.5*w/h, -2.5, 2.5, DEPTH_NEAR, DEPTH_FAR);
+      glPushMatrix();
+
+      glMatrixMode(GL_MODELVIEW);
+      glLoadIdentity();
     }
   }
   else {
     // pixmaps don't have position information so XGetGeometry returns
     // X = 0 and Y = 0... just ignore them
     int dummyX, dummyY;
-    XGetGeometry(_display, _pixmap, &root, &dummyX, &dummyY, &_width, &_height,
+    XGetGeometry(_display, _pixmap, &root, &dummyX, &dummyY, &w, &h,
 		 &border_width, &depth);
+    if (_width==w && _height==h)
+      return;
+    if (_numDim==2) {
+      MAKECURRENT();
+      glDisable(GL_DEPTH_TEST);
+      glMatrixMode(GL_PROJECTION);
+      glLoadIdentity();
+      glOrtho(0.0, w, 0.0, h, DEPTH_NEAR, DEPTH_FAR);
+      glMatrixMode(GL_MODELVIEW);
+      glLoadIdentity();
+    }
+    else if (_numDim==3) {
+	SetViewCamera(_camera);
+    }
   }
 }
 
 void GLWindowRep::SetNumDim(int numDim) {
-  GLfloat w, h;
+  GLsizei w, h;
   if (_numDim==numDim)
     return;
   _numDim=numDim;
@@ -2645,13 +2739,13 @@ void GLWindowRep::SetNumDim(int numDim) {
   if (numDim==2) {
     MAKECURRENT();
     glDisable(GL_DEPTH_TEST);
-    GLMATRIXMODE(GL_PROJECTION);
+    glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0.0, w, 0.0, h, DEPTH_NEAR, DEPTH_FAR);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
   }
-  if (numDim==3) {
-    w=_width;
-    h=_height;
+  else if (numDim==3) {
     MAKECURRENT();
     glEnable(GL_DEPTH_TEST);
     glMatrixMode(GL_PROJECTION);
@@ -2693,7 +2787,7 @@ void GLWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow, int &xhigh,
   /* draw rubberband rectangle */
 
   MAKECURRENT();
-  GLMATRIXMODE(GL_MODELVIEW);
+  glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();
   glEnable(GL_INDEX_LOGIC_OP);
@@ -3299,7 +3393,7 @@ void GLWindowRep::PushTop()
 #endif
   
   MAKECURRENT();
-  GLMATRIXMODE(GL_MODELVIEW);
+  glMatrixMode(GL_MODELVIEW);
   DEBUGE(glPushMatrix());
 #if defined (DEBUG)
   PrintTransform();
@@ -3316,7 +3410,7 @@ void GLWindowRep::PopTransform()
   MAKECURRENT();
 #if defined(DEBUG)
 #endif
-  GLMATRIXMODE(GL_MODELVIEW);
+  glMatrixMode(GL_MODELVIEW);
   DEBUGE(glPopMatrix());
 #if defined(DEBUG)
   PrintTransform();
@@ -3330,7 +3424,7 @@ void GLWindowRep::Scale(Coord sx, Coord sy) {
 #endif
   
   MAKECURRENT();
-  GLMATRIXMODE(GL_MODELVIEW);
+  glMatrixMode(GL_MODELVIEW);
   DEBUGE(glScaled(sx,sy,1.0));
   
 }
@@ -3341,7 +3435,7 @@ void GLWindowRep::Translate(Coord dx, Coord dy) {
 #endif
   
   MAKECURRENT();
-  GLMATRIXMODE(GL_MODELVIEW);
+  glMatrixMode(GL_MODELVIEW);
   DEBUGE(glTranslated(dx, dy, 0.0));
   
 }
@@ -3352,7 +3446,7 @@ void GLWindowRep::Translate3(Coord dx, Coord dy, Coord dz) {
 #endif
   
   MAKECURRENT();
-  GLMATRIXMODE(GL_MODELVIEW);
+  glMatrixMode(GL_MODELVIEW);
   DEBUGE(glTranslated(dx, dy, dz));
   
 }
@@ -3370,7 +3464,7 @@ void GLWindowRep::MakeIdentity() {
 #endif
   
   MAKECURRENT();
-  GLMATRIXMODE(GL_MODELVIEW);
+  glMatrixMode(GL_MODELVIEW);
   DEBUGE(glLoadIdentity());
   
 }
@@ -3507,7 +3601,7 @@ void GLWindowRep::PrintTransform()
   GLfloat a[16];
   printf("x=%d, y = %d, Width = %u, Height = %u\n", _x, _y, _width, _height);
   GLint depth;
-  GLMATRIXMODE(GL_MODELVIEW);
+  glMatrixMode(GL_MODELVIEW);
   glGetIntegerv(GL_MODELVIEW_STACK_DEPTH, &depth);
   printf("Model view stack depth=%d\n", depth);
   
@@ -3520,7 +3614,7 @@ void GLWindowRep::PrintTransform()
   }
   
 
-  GLMATRIXMODE(GL_PROJECTION);
+  glMatrixMode(GL_PROJECTION);
   glGetIntegerv(GL_PROJECTION_STACK_DEPTH, &depth);
   printf("Projection stack depth=%d\n", depth);
   
@@ -3545,9 +3639,15 @@ void GLWindowRep::ReadCursorStore(CursorStore & c)
 
   if (c.Valid()) {
 
+#if defined(USERGB)
+    glReadPixels(c._min_x, c._min_y,
+		 (c._max_x-c._min_x+1), (c._max_y-c._min_y+1),
+		 GL_RGBA,GL_FLOAT, c.rgba);
+#else
     glReadPixels(c._min_x, c._min_y,
 		 (c._max_x-c._min_x+1), (c._max_y-c._min_y+1),
 		 GL_COLOR_INDEX,GL_FLOAT, c.color_index);
+#endif
     glReadPixels(c._min_x, c._min_y,
 		 (c._max_x-c._min_x+1), (c._max_y-c._min_y+1),
 		 GL_DEPTH_COMPONENT,GL_FLOAT, c.depth);
@@ -3560,10 +3660,10 @@ void GLWindowRep::DrawCursorStore(CursorStore & c)
   MAKECURRENT();
 
   if (c.Valid()) {
-    GLMATRIXMODE(GL_MODELVIEW);
+    glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
-    GLMATRIXMODE(GL_PROJECTION);
+    glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
     glOrtho(0.0, (GLdouble)_width, 0.0, (GLdouble)_height,
@@ -3573,13 +3673,18 @@ void GLWindowRep::DrawCursorStore(CursorStore & c)
     glRasterPos2i(c._min_x,c._min_y);
     glDrawPixels((c._max_x-c._min_x+1),(c._max_y-c._min_y+1),
 		 GL_DEPTH_COMPONENT,GL_FLOAT, c.depth);
+#if defined(USERGB)
+    glDrawPixels((c._max_x-c._min_x+1),(c._max_y-c._min_y+1),
+		 GL_RGBA,GL_FLOAT, c.rgba);
+#else
     glDrawPixels((c._max_x-c._min_x+1),(c._max_y-c._min_y+1),
 		 GL_COLOR_INDEX,GL_FLOAT, c.color_index);
+#endif
     glDepthFunc(GL_LESS);
 
-    GLMATRIXMODE(GL_PROJECTION);
+    glMatrixMode(GL_PROJECTION);
     glPopMatrix();
-    GLMATRIXMODE(GL_MODELVIEW);
+    glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
   }
 }
@@ -3593,7 +3698,7 @@ void GLWindowRep::ClearTransformStack() {
 #endif
   MAKECURRENT();
   GLint depth;
-  GLMATRIXMODE(GL_MODELVIEW);
+  glMatrixMode(GL_MODELVIEW);
   glGetIntegerv(GL_MODELVIEW_STACK_DEPTH, &depth);
   while (depth>1) {
     glPopMatrix();
@@ -3605,10 +3710,25 @@ void GLWindowRep::ClearTransformStack() {
 void GLWindowRep::SetViewCamera(const Camera & c)
 {
   MAKECURRENT();
+  Coord // screen
+	sw=_width, sh=_height,
+	scenterx=sw/2, scentery=sh/2,
+
+	// port
+        center_px=(c.max_x+c.min_x)/2,
+        center_py=(c.max_y+c.min_y)/2,
+        scaling=MAX( (c.max_x-c.min_x)/sw, (c.max_y-c.min_y)/sh );
 
   glMatrixMode(GL_PROJECTION);
   glPopMatrix();
+  glLoadIdentity();
+
+  glOrtho(center_px-scaling*scenterx, center_px+scaling*scenterx,
+          center_py-scaling*scentery, center_py+scaling*scentery,
+          c.near, c.far);
+
   glPushMatrix();
+
   glTranslatef(c.pan_right, 0.0, 0.0);
   glTranslatef(0.0, c.pan_up, 0.0);
   switch (c.view_dir) {
@@ -3630,6 +3750,7 @@ void GLWindowRep::SetViewCamera(const Camera & c)
     case NegZ:
       break;
   }
+  _camera=c;
 }
 
 void GLWindowRep::SetCamCursorTransform(const Camera & c)
@@ -3659,4 +3780,3 @@ void GLWindowRep::SetCamCursorTransform(const Camera & c)
   glTranslatef(-c.pan_right, 0.0, 0.0);
   glTranslatef(0.0, -c.pan_up, 0.0);
 }
-

@@ -16,9 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/03/25 14:51:48  wenger
+  Added standard headers to all graphics sources.
+
  */
 
-#include "GLDebug.h"
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <stdio.h>
@@ -30,5 +32,6 @@ void __glcheckerror(char* a, int j) {
 		errString = gluErrorString(errCode);
 		fprintf(stderr, "%s : %d ", a, j);
 		fprintf(stderr, "OpenGL Error detected: %s\n", errString);
+		fflush(stderr);
 	}
 }

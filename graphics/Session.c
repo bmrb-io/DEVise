@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1998/05/02 09:02:29  taodb
+  Added support for command logging
+  Added support for registering events with delay
+
   Revision 1.22  1998/04/19 22:30:12  wenger
   Modified CreateTData() so that it works on "regular" and "internal"
   data sources.
@@ -1118,7 +1122,7 @@ Session::SaveCamera(char *category, char *devClass, char *instance,
       "get3DLocation", instance);
   if (status.IsComplete()) {
     fprintf(saveData->fp, "DEVise set3DLocation {%s} ", instance);
-    PrintArgs(saveData->fp, 6, &argvOut[1]);
+    PrintArgs(saveData->fp, 9, argvOut);
     free((char *) argvOut);
   }
 

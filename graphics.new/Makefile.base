@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.84  1998/05/02 09:00:45  taodb
+#  Added support for JAVA Screen and command logging
+#
 #  Revision 1.83  1998/04/29 17:53:52  wenger
 #  Created new DerivedTable class in preparation for moving the tables
 #  from the TAttrLinks to the ViewDatas; found bug 337 (potential big
@@ -326,7 +329,7 @@ libserver.a: ServerAPI.o ClientAPI.o DeviseServer.o
 	$(AR) cr $@ ServerAPI.o ClientAPI.o DeviseServer.o
 	$(RANLIB) $@
 
-$(LIBNAME): depend $(LIBOBJ)
+$(LIBNAME): $(LIBOBJ)
 	$(AR) cr $@ $(LIBOBJ)
 	$(RANLIB) $@
 
@@ -453,7 +456,7 @@ depend: Makefile.depend
 
 Makefile.depend:
 	-rm Makefile.depend
-	-$(CC) -M $(CFLAGS) $(VPATH)/*.[cC] > Makefile.depend
+	-$(CC) -MM $(CFLAGS) $(VPATH)/*.[cC] > Makefile.depend
 
 clean: mostlyclean
 	-rm $(LIBNAME) genStrData strData libclient.a libserver.a\
