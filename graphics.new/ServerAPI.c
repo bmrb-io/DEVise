@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/12/03 20:35:17  jussi
+  Added initialization of semaphore structures.
+
   Revision 1.22  1996/11/01 19:28:22  kmurli
   Added DQL sources to include access to TDataDQL. This is equivalent to
   TDataAscii/TDataBinary. The DQL type in the Tcl/Tk corresponds to this
@@ -120,10 +123,9 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <netinet/in.h>
 #include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include <arpa/inet.h>
 
 #include "ServerAPI.h"
