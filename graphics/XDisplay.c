@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.84  2001/03/23 18:06:31  wenger
+  Color palettes are now associated with sessions; added borders to
+  color chooser buttons so they're visible even if they're the same
+  color as the background; fixed various color-related bugs.
+
   Revision 1.83  1999/11/30 22:28:08  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -445,8 +450,7 @@ XDisplay::XDisplay(char *name)
   printf("XDisplay::XDisplay(%s)\n", name != NULL ? name : "NULL");
 #endif
   if (!(_display = XOpenDisplay(name))) {
-    fprintf(stderr, "Cannot open XDisplay\n");
-    reportErrNosys("Fatal error");//TEMP -- replace with better message
+    reportErrNosys("Cannot open XDisplay");
     Exit::DoExit(1);
   }
 
