@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/03/27 17:55:09  wenger
+  Changes to get DEVise to compile and run on Linux.
+
   Revision 1.8  1996/03/26 15:34:50  wenger
   Fixed various compile warnings and errors; added 'clean' and
   'mostlyclean' targets to makefiles; changed makefiles so that
@@ -309,7 +312,7 @@ void Command::Run()
 #define BUFSIZE 256
   char buf[BUFSIZE];
   struct timeval timeout;
-#if defined(AIX) || defined(LINUX)
+#ifndef HPUX
   fd_set readfds;
 #else
   int readfds;
@@ -333,18 +336,14 @@ void Command::Run()
   case ReadInput:
     /* read next input */
     fd = fileno(_input);
-#if defined(AIX) || defined(LINUX)
+#ifndef HPUX
     FD_SET(fd, &readfds);
 #else
     readfds = 1 << fd;
 #endif
     timeout.tv_sec = 0;
     timeout.tv_usec = 0;
-#if defined(AIX) || defined(HPUX) || defined(LINUX)
-    ret = select(fd + 1, &readfds, NULL, NULL, &timeout);
-#else
-    ret = select(fd + 1, (fd_set *)&readfds, NULL, NULL, &timeout);
-#endif
+    ret = select(fd + 1, &readfds, 0, 0, &timeout);
     if (ret > 0) {
       /* ready to read */
       if (fgets(buf,BUFSIZE,_input)==NULL) {
