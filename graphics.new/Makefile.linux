@@ -1576,8 +1576,6 @@ ServerAPI.o: ../graphics/Compress.h ../graphics/DevError.h
 ServerAPI.o: ../graphics/DualWindowRep.h ../graphics/Cursor.h
 ServerAPI.o: ../graphics/DevFont.h ../graphics/Util.h /usr/include/ctype.h
 ServerAPI.o: Version.h StringStorage.h ../tape/HashTable.h
-StringHash.o: /usr/include/stdio.h /usr/include/libio.h
-StringHash.o: /usr/include/_G_config.h StringHash.h
 TData.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
 TData.o: /usr/include/fcntl.h /usr/include/features.h
 TData.o: /usr/include/sys/cdefs.h /usr/include/sys/types.h
@@ -2599,7 +2597,7 @@ genStrData.o: /usr/include/limits.h /usr/include/posix1_lim.h
 genStrData.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
 genStrData.o: /usr/include/unistd.h /usr/include/posix_opt.h
 genStrData.o: /usr/include/confname.h /usr/include/sys/stat.h
-genStrData.o: /usr/include/linux/stat.h StrData.h ../graphics/DevError.h
+genStrData.o: /usr/include/linux/stat.h ../graphics/DevError.h
 genStrData.o: ../graphics/DeviseTypes.h /usr/include/values.h
 genStrData.o: ../graphics/DevStatus.h
 makeBackTest.o: /usr/include/stdio.h /usr/include/libio.h
@@ -2861,8 +2859,6 @@ testRecFile.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
 testRecFile.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
 testRecFile.o: /usr/include/netinet/in.h /usr/include/linux/in.h
 testRecFile.o: /usr/include/asm/byteorder.h TestData.h
-testStringHash.o: /usr/include/stdio.h /usr/include/libio.h
-testStringHash.o: /usr/include/_G_config.h StringHash.h
 testTcl.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
 testTcl.o: /usr/include/stdlib.h /usr/include/features.h
 testTcl.o: /usr/include/sys/cdefs.h
@@ -3585,7 +3581,22 @@ Seq.o: ../graphics/Parse.h ../graphics/DevError.h
 StringStorage.o: /usr/include/string.h /usr/include/features.h
 StringStorage.o: /usr/include/sys/cdefs.h
 StringStorage.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
-StringStorage.o: StringStorage.h ../tape/HashTable.h
+StringStorage.o: /usr/include/stdio.h /usr/include/libio.h
+StringStorage.o: /usr/include/_G_config.h StringStorage.h ../tape/HashTable.h
+StringStorage.o: ../graphics/Util.h /usr/include/stdlib.h
+StringStorage.o: /usr/include/errno.h /usr/include/linux/errno.h
+StringStorage.o: /usr/include/asm/errno.h /usr/include/alloca.h
+StringStorage.o: /usr/include/sys/time.h /usr/include/ctype.h
+StringStorage.o: /usr/include/endian.h /usr/include/bytesex.h
+StringStorage.o: /usr/include/math.h /usr/include/huge_val.h
+StringStorage.o: /usr/include/nan.h
+StringStorage.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
+StringStorage.o: /usr/include/values.h /usr/include/ieee754.h
+StringStorage.o: /usr/include/ieee854.h ../graphics/DeviseTypes.h
+StringStorage.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+StringStorage.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+StringStorage.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+StringStorage.o: /usr/include/sys/bitypes.h ../graphics/Exit.h
 UpdateLink.o: /usr/include/unistd.h /usr/include/features.h
 UpdateLink.o: /usr/include/sys/cdefs.h /usr/include/posix_opt.h
 UpdateLink.o: /usr/include/gnu/types.h

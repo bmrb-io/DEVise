@@ -70,7 +70,8 @@ generic.o: ../graphics.new/ViewScatter.h ../graphics.new/ViewLens.h
 generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
 generic.o: ../graphics.new/TDataMap.h ../graphics.new/GDataRec.h
 generic.o: ../graphics.new/TData.h ../graphics/CursorClassInfo.h
-generic.o: ../graphics.new/ParseCat.h ../graphics/Util.h /usr/include/ctype.h
+generic.o: ../graphics.new/ParseCat.h ../graphics.new/StringStorage.h
+generic.o: StateMap.h ../graphics/Util.h /usr/include/ctype.h
 testWindowSpeed.o: /usr/include/stdio.h /usr/include/libio.h
 testWindowSpeed.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
 testWindowSpeed.o: /usr/include/time.h /usr/include/features.h
