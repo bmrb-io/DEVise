@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/13 20:23:51  jussi
+  Added support for synchronization points.
+
   Revision 1.3  1996/05/13 18:07:38  jussi
   The code now accepts API_CTL type messages but ignores them.
 
@@ -40,7 +43,6 @@ static char *_hostName = "localhost";
 static int   _portNum = DefaultDevisePort;
 static int   _deviseFd = -1;
 
-static char *_idleScript = 0;
 static char *_scriptFile = 0;
 static int   _isBusy = 0;
 
@@ -179,14 +181,14 @@ int ExecuteFile(char *script)
 #endif
     if (DEViseCmd(argc, argv, result) < 0) {
       fprintf(stderr, "Error executing command: %s\n", result);
+      return -1;
     }
   }
 
   fclose(fp);
 
-  for(i = 0; i < MAXARGC; i++) {
+  for(i = 0; i < MAXARGC; i++)
     delete argv[i];
-  }
 
   return 1;
 }
@@ -207,17 +209,11 @@ void SetupConnection()
   _deviseFd = DeviseOpen(_hostName, _portNum, 0);
 	
   printf("Connection established.\n\n");
-
-  (void)ExecuteFile(_scriptFile);
-
-#if 0
-  // need to send idleScript to server when server becomes idle
-#endif
 }
 
 void Usage()
 {
-  fprintf(stderr, "Usage: %s [-h host] [-p port] script [idlescript]\n",
+  fprintf(stderr, "Usage: %s [-h host] [-p port] script\n",
 	  _progName);
 }
 
@@ -243,14 +239,11 @@ int main(int argc, char **argv)
       _portNum = atoi(argv[i + 1]);
       i++;
     } else {
-      if (!_scriptFile)
-	_scriptFile = argv[i];
-      else if (!_idleScript)
-	_idleScript = argv[i];
-      else {
+      if (_scriptFile) {
 	Usage();
 	exit(1);
       }
+      _scriptFile = argv[i];
     }
   }
 
@@ -260,6 +253,10 @@ int main(int argc, char **argv)
   }
 
   SetupConnection();
+
+  if (ExecuteFile(_scriptFile) < 0)
+    return 2;
+
   (void)DeviseClose(_deviseFd);
 
   return 1;
