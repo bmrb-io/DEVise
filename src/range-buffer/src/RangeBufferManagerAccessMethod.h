@@ -91,7 +91,6 @@ private:
 
     /* Do NOT delete empty BBoxEntry associated with this object. */
     /* Mark all BBoxEntry for this object as complete */
-    /* make decisions whether to merge BBoxEntries or not */
     /* called only when the last record from low level has just been returned */
     void cleanUpBBoxEntries();
 
@@ -106,11 +105,13 @@ private:
     /* record that satisfy the query */
     bool boundingBoxQulify(BBoxEntry *bbe);
 
-    RBMObject _obj;
-    RangeAccessMethod *_ram;
-    BoundingBox *_in;
-    BoundingBoxList *_notIn;
-    bool _scanOutstanding;
+    RBMObject _obj;		/* the object queried on */
+    RangeAccessMethod *_ram;	/* low level data provider used to get more */
+				/* records when not all records are currently */
+				/* in memory */
+    BoundingBox *_in;		/* the in of the query */
+    BoundingBoxList *_notIn; 	/* the not-in of the query */
+    bool _scanOutstanding;	/* if there is an query active */
     bool _inMemPhase;		/* true means dealing with in-M records */
 				/* false means has started on low level data
 				   already				*/

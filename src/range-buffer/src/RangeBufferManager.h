@@ -82,8 +82,10 @@ private:
     /* number of object cached */
     int _numObjects;
 
+    /* replacement policy */
     ReplacementPolicy *_replacementPolicy;
 
+    /* memory manager */
     MemoryManager *_mem;
 };
 
