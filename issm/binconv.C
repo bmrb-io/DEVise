@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/02 16:52:40  jussi
+  Updated copyright message.
+
   Revision 1.2  1995/09/22 15:49:41  jussi
   Added copyright message.
 
@@ -121,7 +124,8 @@ void BinaryConversion::CRSPDate(int index, int &day, int &month, int &year)
   if (LEAPYEAR(baseyear))
     mdays[1] = 29;                      // add February 29 for leap year
 
-  for(int i = 0; i < basemonth - 1; i++)
+  int i;
+  for(i = 0; i < basemonth - 1; i++)
     days += mdays[i];                   // add base month
   days += baseday - 1;                  // add base day
 
@@ -138,7 +142,7 @@ void BinaryConversion::CRSPDate(int index, int &day, int &month, int &year)
   if (LEAPYEAR(year))
     mdays[1] = 29;                      // add February 29 for leap years
 
-  for(i = 0; i < sizeof mdays / sizeof mdays[0]; i++) {
+  for(i = 0; i < (int)(sizeof mdays / sizeof mdays[0]); i++) {
     if (days < mdays[i])                // found current month?
       break;
     days -= mdays[i];
