@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/06/23 20:32:32  jussi
+  Query processor now properly hibernates when no queries are
+  present and when all background GData conversion is complete.
+
   Revision 1.18  1996/06/13 00:16:28  jussi
   Added support for views that are slaves of more than one record
   link. This allows one to express disjunctive queries.
@@ -1335,7 +1339,7 @@ void QueryProcFull::DoGDataConvert()
     printf("DoGDataConvert map 0x%p\n", map);
 #endif
 
-    GData *gdata = map->GetGData();
+    gdata = map->GetGData();
     tdata = map->GetTData();
 
 #ifdef DEBUG
