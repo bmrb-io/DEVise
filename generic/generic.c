@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/04/22 22:03:24  jussi
+  Added StateLatLon composite parser and associated the LANDSEND
+  schema with it.
+
   Revision 1.14  1996/04/19 17:20:11  wenger
   Put the GenClassInfo code back in -- this is needed for tape data;
   started adding the tape-related code back in (it was previously
@@ -64,6 +68,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
+#include <math.h>
 #include <sys/time.h>
 #include <sys/types.h>
 
@@ -413,7 +418,6 @@ public:
     attrOffset = 0;
     latAttr = 0;
     lonAttr = 0;
-    totalAttr = 0;
   }
 
   virtual ~StateLatLonComposite() {
@@ -426,7 +430,8 @@ public:
       /* initialize by caching offsets of all the attributes we need */
 
       char *primAttrs[] = { "State", "TotalAmount",
-			    "Latitude", "Longitude", "TotalAmountDegree" };
+			    "Latitude", "Longitude", "TotalAmountDegree",
+			    "Color" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
       DOASSERT(attrOffset, "Out of memory");
@@ -442,8 +447,6 @@ public:
 	  latAttr = info;
 	else if (!strcmp(primAttrs[i], "Longitude"))
 	  lonAttr = info;
-	else if (!strcmp(primAttrs[i], "TotalAmountDegree"))
-	  totalAttr = info;
       }
       _init = true;
     }
@@ -531,9 +534,36 @@ public:
     float *lonPtr = (float *)(buf + attrOffset[3]);
     *lonPtr = StateLatLon[i].longitude;
 
+    // fuzz up the picture a little by creating a cloud
+
+    float length = (rand() % 300) / 100.0;
+    float dir = (rand() % 360) / 360.0 * 2 * 3.14;
+    *latPtr += length * sin(dir);
+    *lonPtr += length * cos(dir);
+
     float *totalAmount = (float *)(buf + attrOffset[1]);
     float *totalPtr = (float *)(buf + attrOffset[4]);
-    *totalPtr = *totalAmount / 1500.0;
+    *totalPtr = 0.2 + *totalAmount / 8000.0;
+
+    int *colorPtr = (int *)(buf + attrOffset[5]);
+    if (*totalAmount < 250)
+      *colorPtr = RedColor;
+    else if (*totalAmount < 500)
+      *colorPtr = GreenColor;
+    else if (*totalAmount < 1000)
+      *colorPtr = BlueColor;
+    else if (*totalAmount < 2500)
+      *colorPtr = OrangeColor;
+    else if (*totalAmount < 5000)
+      *colorPtr = PurpleColor;
+    else if (*totalAmount < 10000)
+      *colorPtr = LightGrayColor;
+    else if (*totalAmount < 20000)
+      *colorPtr = AzureColor;
+    else if (*totalAmount < 30000)
+      *colorPtr = BlackColor;
+    else
+      *colorPtr = KhakiColor;
 
     if (!latAttr->hasHiVal || *latPtr > latAttr->hiVal.floatVal) {
       latAttr->hiVal.floatVal = *latPtr;
@@ -543,17 +573,12 @@ public:
       lonAttr->loVal.floatVal = *lonPtr;
       lonAttr->hasLoVal = true;
     }
-    if (!totalAttr->hasLoVal || *totalPtr < totalAttr->loVal.floatVal) {
-      totalAttr->loVal.floatVal = *totalPtr;
-      totalAttr->hasLoVal = true;
-    }
   }
 
 private:
   int       *attrOffset;          /* attribute offsets */
   AttrInfo  *latAttr;             /* latitude attribute info */
   AttrInfo  *lonAttr;             /* longitude attribute info */
-  AttrInfo  *totalAttr;           /* total amount attribute info */
   Boolean   _init;                /* true when instance initialized */
   Boolean   _warning;             /* true when warning should be displayed
 				     for unknown state codes */
