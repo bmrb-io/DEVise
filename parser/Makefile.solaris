@@ -1,5 +1,6 @@
 depend:
 	makedepend -fMakefile.solaris -I../parser *.c
+
 # DO NOT DELETE
 
 codegen.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h parse.h
