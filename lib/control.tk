@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.49  1996/01/17 18:05:14  jussi
+#	Default UserMode value now set in control.tk.
+#
 #	Revision 1.48  1996/01/16 16:49:21  jussi
 #	Added Cursor Delete. Made Switch TData work with data stream
 #	definition catalog. Made Window Duplicate be more complete
@@ -443,10 +446,11 @@ menu .mbar.view.menu -tearoff 0
 .mbar.view.menu add command -label "Edit Mapping" -command DoEditMapping
 .mbar.view.menu add command -label "Switch TData" -command DoSwitchTData
 .mbar.view.menu add separator
-.mbar.view.menu add command -label "Swap View Position" -command DoSwapView
+.mbar.view.menu add command -label "Swap Position" -command DoSwapView
 .mbar.view.menu add command -label "Move To Window" -command DoViewMove
 .mbar.view.menu add command -label "Remove From Window" -command DoViewRemove
 .mbar.view.menu add command -label "Bring Back To Window" -command DoBringView
+#.mbar.view.menu add command -label "Destroy" -command DoViewDestroy
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Link" -command DoViewLink
 .mbar.view.menu add command -label "Unlink" -command DoViewUnlink
@@ -708,7 +712,7 @@ proc DoCreateTData { file type } {
 	# This file alias already exists in memory.
 	set but [dialog .fileExist "FileExist" \
 		"Warning: TData $fileAlias	exists" "" \
-		1 {cancel} {Use Existing}]
+		1 Cancel {Use Existing}]
 	if { $but == 0 } {
 	    return
 	} else {
@@ -1338,24 +1342,12 @@ proc DoViewCreate {} {
     set ans [ DoCreateView "Select a view type" ]
 }
 
-# Destroy a view
-proc DoViewDestroy {} {
-    set answer [ dialogList .destroyView "No Current View" \
-	    "Select a view to destroy" "" 0 { Cancel OK } [ViewSet] ]
-    if { $answer == 0 } {
-	return
-    } else {
-	# Delete view here
-	return
-    }
-}
-
 # Remove view from window
 proc DoViewRemove {} {
     global curView
     if {$curView == ""} {
 	dialog .removeView "No Current View" \
-		"Select a view first by clicking in it." "" 0 { OK }
+		"Select a view first by clicking in it." "" 0 OK
 	return
     }
 
@@ -1370,6 +1362,85 @@ proc DoViewRemove {} {
 	dialogList .removeError "Cannot Remove View" $ans "" 0 OK
 	return
     }
+}
+
+# Destroy view
+proc DoViewDestroy {} {
+    global curView dialogListVar
+
+    set viewName $curView
+
+    if {$viewName != ""} {
+	set but [ dialog .removeView "Destroy View" \
+		"Okay to destroy view $viewName?" "" 0 \
+		Cancel OK Another ]
+	if {$but == 0} {
+	    return
+	}
+	if {$but == 2} {
+	    set viewName ""
+	}
+    }
+
+    if {$viewName == ""} {
+	set answer [ dialogList .removeView "Destroy View" \
+		"Select view to move to a window" "" 0 \
+		{ Cancel OK } [ViewSet] ]
+	if {$answer == 0 || $dialogListVar(selected) == ""} {
+	    return
+	}
+	set viewName $dialogListVar(selected)
+    }
+
+    set inlink 0
+
+    foreach link [LinkSet] {
+	set views [DEVise getLinkViews $link]
+	if {[lsearch $views $viewName] >= 0} {
+	    puts "View $viewName has link $link."
+	    set inlink 1
+	}
+    }
+
+    if {$inlink} {
+	dialog .hasLinks "View Has Links" \
+		"Remove links from view before destroying it." \
+		"" -1 OK
+	return
+    }
+
+    set incursor 0
+
+    foreach cursor [CursorSet] {
+	set views [DEVise getCursorViews $cursor]
+	if {[lsearch $views $viewName] >= 0} {
+	    puts "View $viewName has cursor $cursor."
+	    set incursor 1
+	}
+    }
+
+    if {$incursor} {
+	dialog .hasCursors "View Has Cursors" \
+		"Remove cursors from view before destroying it." \
+		"" -1 OK
+	return
+    }
+
+    foreach gdata [GdataSet] {
+#	puts $gdata
+    }
+
+    # Unselect current view
+    ProcessViewSelected ""
+
+    # Remove view
+    set ans [DEVise removeView $viewName]
+    if {$ans != ""} {
+	dialogList .removeError "Cannot Remove View" $ans "" 0 OK
+	return
+    }
+
+    DEVise destroy $viewName
 }
 
 # Move view to another window
@@ -1403,7 +1474,7 @@ proc DoBringView {} {
 
     set answer [ dialogList .removeView "Move View" \
 	    "Select view to move to a window" "" 0 { Cancel OK } [ViewSet] ]
-    if {$answer == 0} {
+    if {$answer == 0 || $dialogListVar(selected) == ""} {
 	return
     }
     set viewName $dialogListVar(selected)
@@ -1864,7 +1935,7 @@ proc DoActualSave { infile asTemplate } {
 proc DoSave {} {
     global sessionName
 
-    if {$sessionName == ""} {
+    if {$sessionName == "session.tk"} {
 	DoSaveAs 0
 	return
     }
@@ -2857,7 +2928,7 @@ proc DoViewAction {} {
 
 # Close current session
 proc DoClose {} {
-    set but [dialog .open OpenSession "Close Current Session?" \
+    set but [dialog .open "Open Session" "Close Current Session?" \
 	    "" 1 Cancel Ok ]
     if { $but == 0 } {
 	return 0
@@ -2876,6 +2947,7 @@ proc DoClose {} {
     }
     
     foreach cursor [CursorSet] {
+	# puts "destroying cursor $cursor"
 	DEVise destroy $cursor
     }
     
