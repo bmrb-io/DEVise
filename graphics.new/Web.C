@@ -6,7 +6,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/01/13 20:51:39  jussi
+  Initial revision.
+*/
 
 /* 
 ** Copyright 1995 by Miron Livny and Jim Pruyne
@@ -292,6 +295,7 @@ int www_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
   char url_data[BUF_LENGTH];
   
   while((len = read(fd, url_data, BUF_LENGTH)) > 0) {
+    UPDATE_TCL;
     if (fwrite(url_data, len, 1, fp) != 1) {
       fprintf(stderr, "Cannot write to cache file %s: ", cachefile);
       perror("fwrite");
