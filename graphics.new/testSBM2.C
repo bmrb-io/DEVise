@@ -1,0 +1,376 @@
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1996
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+  $Id$
+
+  $Log$*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <string.h>
+#include <ctype.h>
+
+#include "SBufMgr.h"
+
+#define CALL(c) { int res = c; if (res < 0) goto error; }
+
+#define READONLY
+
+// ===================================================================
+
+struct FileReq {
+    SBufMgr *bufMgr;
+    IOTask *task;
+    int fileSize;
+};
+
+// ===================================================================
+
+void sleepms(int ms)
+{
+    struct timeval timeout;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = ms * 1000;
+    if (select(0, 0, 0, 0, &timeout) < 0) {
+        perror("select");
+        exit(1);
+    }
+}
+
+// ===================================================================
+
+void WriterP(SBufMgr *bufMgr, IOTask *task, int fileSize)
+{
+    for(int i = 0; i < fileSize; i++) {
+        char *page;
+        if (bufMgr->AllocPage(task, i, page) < 0) {
+            perror("Writer pin");
+            exit(1);
+        }
+        sprintf(page, "test.%d Page %d %7.1f", i, i, (float)i);
+        if (bufMgr->UnPinPage(task, i, true) < 0) {
+            perror("Writer unpin");
+            exit(1);
+        }
+    }
+}
+
+// ===================================================================
+
+void *Writer(void *arg)
+{
+    FileReq *req = (FileReq *)arg;
+    WriterP(req->bufMgr, req->task, req->fileSize);
+    delete arg;
+    return (void *)0;
+}
+
+// ===================================================================
+
+void ReaderP(SBufMgr *bufMgr, IOTask *task, int fileSize)
+{
+    for(int i = 2; i < fileSize; i++) {
+        char *page;
+        if (bufMgr->PinPage(task, i, page) < 0) {
+            perror("Reader pin");
+            exit(1);
+        }
+        if (bufMgr->UnPinPage(task, i, false) < 0) {
+            perror("Reader unpin");
+            exit(1);
+        }
+    }
+}
+
+// ===================================================================
+
+void *Reader(void *arg)
+{
+    FileReq *req = (FileReq *)arg;
+    ReaderP(req->bufMgr, req->task, req->fileSize);
+    delete arg;
+    return (void *)0;
+}
+
+// ===================================================================
+
+int main(int argc, char **argv)
+{
+    char *files[argc];
+    int numFiles = 0;
+    int poolSize = 64;
+    int fileSize = 512;
+    int buffSize = 0;
+
+    int i,f;
+
+    for(i = 1; i < argc; i++) {
+        if (!strcmp(argv[i], "-b")) {
+            if (i + 1 >= argc) {
+                fprintf(stderr, "No buffer size specified with -b option.\n");
+                exit(1);
+            }
+            buffSize = atoi(argv[i + 1]);
+            i++;
+        } else if (!strcmp(argv[i], "-p")) {
+            if (i + 1 >= argc) {
+                fprintf(stderr, "No pool size specified with -p option.\n");
+                exit(1);
+            }
+            poolSize = atoi(argv[i + 1]);
+            i++;
+        } else if (!strcmp(argv[i], "-f")) {
+            if (i + 1 >= argc) {
+                fprintf(stderr, "No file size specified with -p option.\n");
+                exit(1);
+            }
+            fileSize = atoi(argv[i + 1]);
+            i++;
+        } else if (argv[i][0] != '-') {
+            files[numFiles++] = argv[i];
+        } else {
+            fprintf(stderr, "Unrecognized option: %s\n", argv[i]);
+            exit(1);
+        }
+    }
+
+    if (!numFiles) {
+        fprintf(stderr, "No files specified.\n");
+        exit(1);
+    }
+
+    int bufPages = poolSize - buffSize * numFiles;
+    int pageSize = 32 * 1024;
+
+    if (bufPages < numFiles) {
+        // Allocate one page per file for caching, remaining pages for
+        // buffering.
+        bufPages = numFiles;
+        buffSize = (poolSize - bufPages) / numFiles;
+        fprintf(stderr, "Buffer size adjusted to %d\n", buffSize);
+    }
+
+    fprintf(stderr, "Buffer size %d, pool size %d, %d files, file size %d\n",
+            buffSize, poolSize, numFiles, fileSize);
+
+    struct timeval start;
+    struct timeval stop;
+    double secs;
+
+    // destroy all shared memory segments
+
+    Semaphore::destroyAll();
+    SharedMemory::destroyAll();
+
+    // create space for 16 virtual semaphores
+
+    int status = SemaphoreV::create(16);
+    assert(status >= 0);
+
+    // create buffer pool and buffer manager
+
+    MemPool *memPool = new MemPool(poolSize, pageSize, status);
+    assert(memPool);
+    if (status < 0) {
+        fprintf(stderr, "Cannot create memory pool\n");
+        exit(1);
+    }
+
+    SBufMgr *bufMgr = new SBufMgrLRU(*memPool, bufPages);
+    assert(bufMgr);
+
+    // test buffer manager
+
+    time_t now = time(0);
+    printf("Random number seed = %ld\n", now);
+    srand(now);
+
+    // create files and I/O tasks
+
+    IOTask *task[numFiles];
+    FILE *fp[numFiles];
+
+#ifdef THREAD_TASK
+    pthread_t child[numFiles];
+#endif
+
+    for(i = 0; i < numFiles; i++) {
+#ifdef READONLY
+        fp[i] = fopen(files[i], "r");
+#else
+        fp[i] = fopen(files[i], "w+");
+#endif
+        if (!fp[i]) {
+            fprintf(stderr, "Could not create %s\n", files[i]);
+            exit(1);
+        }
+        task[i] = new UnixFdIOTask(fileno(fp[i]));
+        assert(task[i]);
+        int status = task[i]->Initialize();
+        if (status < 0) {
+            fprintf(stderr, "Cannot create I/O task %d\n", i);
+            exit(1);
+        }
+        task[i]->SetBuffering(true, true, buffSize * pageSize);
+    }
+        
+#ifndef READONLY
+    printf("\nAllocating pages...\n");
+
+    gettimeofday(&start, 0);
+
+    for(f = 0; f < numFiles; f++) {
+#ifdef PROCESS_TASK
+        pid_t child = fork();
+        if (child < 0) {
+            perror("fork");
+            exit(1);
+        }
+        if (!child) {
+            printf("Child %d started...\n", f);
+            WriterP(bufMgr, task[f], fileSize);
+            exit(1);
+        }
+#endif
+#ifdef THREAD_TASK
+        FileReq *req = new FileReq;
+        req->bufMgr = bufMgr;
+        req->task = task[f];
+        req->fileSize = fileSize;
+        if (pthread_create(&child[f], 0, Writer, req)) {
+            perror("pthread_create");
+            return -1;
+        }
+#endif
+    }
+
+    for(f = 0; f < numFiles; f++) {
+#ifdef PROCESS_TASK
+        int status;
+        pid_t child = wait(&status);
+        if (child < 0) {
+            if (errno == EINTR)
+                continue;
+            if (errno != ECHILD) {
+                perror("wait");
+                exit(1);
+            }
+        } else {
+            printf("Child completed...\n");
+        }
+#endif
+#ifdef THREAD_TASK
+        (void)pthread_join(child[f], 0);
+        printf("Child completed...\n");
+#endif
+    }
+
+    gettimeofday(&stop, 0);
+    secs = stop.tv_sec - start.tv_sec + (stop.tv_usec - start.tv_usec) / 1e6;
+    printf("Elapsed time %.2f seconds, %.2f MB/s\n", secs,
+           (numFiles * fileSize * pageSize) / 1048576.0 / secs);
+#endif
+    
+    printf("\nReading pages back...\n");
+
+    for(f = 0; f < numFiles; f++) {
+        for(i = 0; i < 2; i++) {
+            char *page;
+            CALL(bufMgr->PinPage(task[f], i, page));
+            CALL(bufMgr->UnPinPage(task[f], i, false));
+        }
+    }
+
+    gettimeofday(&start, 0);
+
+    for(f = 0; f < numFiles; f++) {
+#ifdef PROCESS_TASK
+        pid_t child = fork();
+        if (child < 0) {
+            perror("fork");
+            exit(1);
+        }
+        if (!child) {
+            printf("Child %d started...\n", f);
+            ReaderP(bufMgr, task[f], fileSize);
+            exit(1);
+        }
+#endif
+#ifdef THREAD_TASK
+        FileReq *req = new FileReq;
+        req->bufMgr = bufMgr;
+        req->task = task[f];
+        req->fileSize = fileSize;
+        if (pthread_create(&child[f], 0, Reader, req)) {
+            perror("pthread_create");
+            return -1;
+        }
+#endif
+    }
+
+    for(f = 0; f < numFiles; f++) {
+#ifdef PROCESS_TASK
+        int status;
+        pid_t child = wait(&status);
+        if (child < 0) {
+            if (errno == EINTR)
+                continue;
+            if (errno != ECHILD) {
+                perror("wait");
+                exit(1);
+            }
+        } else {
+            printf("Child completed...\n");
+        }
+#endif
+#ifdef THREAD_TASK
+        (void)pthread_join(child[f], 0);
+        printf("Child completed...\n");
+#endif
+    }
+
+    gettimeofday(&stop, 0);
+    secs = stop.tv_sec - start.tv_sec + (stop.tv_usec - start.tv_usec) / 1e6;
+    printf("Elapsed time %.2f seconds, %.2f MB/s\n", secs,
+           (numFiles * fileSize * pageSize) / 1048576.0 / secs);
+
+    for(i = 0; i < numFiles; i++) {
+        delete task[i];
+        fclose(fp[i]);
+#ifndef READONLY
+        (void)unlink(files[i]);
+#endif
+    }
+
+    delete bufMgr;
+    delete memPool;
+
+    printf("\nPassed all tests.\n");
+
+    return 1;
+
+  error:
+
+    printf("\nThe program failed.\n");
+
+    for(i = 0; i < numFiles; i++) {
+        delete task[i];
+        fclose(fp[i]);
+        (void)unlink(files[i]);
+    }
+
+    return 0;
+}
