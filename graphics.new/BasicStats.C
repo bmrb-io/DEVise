@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/08/07 15:23:20  guangshu
+  Simplified the calculation of statistics and Added support for regression lines.
+
   Revision 1.23  1996/08/04 21:14:39  beyer
   Changed histogram code a little.
 
@@ -317,16 +320,19 @@ Coord BasicStats::GetHistMax()
 
 void BasicStats::SetHistWidth(Coord min, Coord max)
 {
+#if defined(DEBUG)
+    printf("set width: min:%g max:%g\n", min, max);
+#endif
     DOASSERT(min <= max, "histogram min > max");
     if( min == max ) {
-	hist_min -= 0.5;
-	hist_max += 0.5;
+	min -= 0.5;
+	max += 0.5;
     }
     hist_min = min;
     hist_max = max;
     width = (max - min) / HIST_NUM;
 #if defined(DEBUG)
-    printf("set width: min:%g max:%g width:%g\n", min, max, width);
+    printf("width: %g\n", width);
 #endif
 }
 
