@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.31  2000/03/08 21:23:33  wenger
+  Fixed bug 568 (crash when opening some sessions in the JavaScreen):
+  reset devised timeout in jspop to a better value; JavaScreenCmd now
+  deals better with the possibility of a communications failure.
+
   Revision 1.30  2000/02/23 18:57:53  wenger
   Added option to do checksum on GIFs and GData sent to JavaScreen.
 
@@ -208,7 +213,6 @@ class JavaScreenCmd
 			DRAWCURSOR,
 			ERASECURSOR,
 			CREATEVIEW,
-			DELETEVIEW,
 			DELETECHILDVIEWS,
 			VIEWDATAAREA,
 			UPDATEVIEWIMAGE,

@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.96  2000/03/14 17:05:28  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.95  2000/03/08 21:23:32  wenger
   Fixed bug 568 (crash when opening some sessions in the JavaScreen):
   reset devised timeout in jspop to a better value; JavaScreenCmd now
@@ -479,7 +483,6 @@ char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 	"JAVAC_DrawCursor",
 	"JAVAC_EraseCursor",
 	"JAVAC_CreateView",
-	"JAVAC_DeleteView",
 	"JAVAC_DeleteChildViews",
 	"JAVAC_ViewDataArea",
 	"JAVAC_UpdateViewImage",
