@@ -1,0 +1,17 @@
+#! /bin/csh -f
+############################################################
+
+# Run standard DEVise (client/server form) with the standard
+# data, sessions, etc.
+
+# $Id$
+
+############################################################
+
+limit coredumpsize 0
+limit descriptors 256
+
+source dev_prog.std
+source dev_public.std
+
+source start_cs

@@ -1,0 +1,14 @@
+############################################################
+
+# Start the monolithic form of DEVise.
+
+# $Id$
+
+############################################################
+
+if (! -f $DEVISE_MONO_EXEC) then
+  echo "Cannot find Devise executable. Perhaps this platform is not supported?"
+  exit 1
+endif
+
+$DEVISE_MONO_EXEC $*

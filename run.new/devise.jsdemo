@@ -1,0 +1,17 @@
+#! /bin/csh -f
+############################################################
+
+# Run the standard DEVise with the JavaScreen demo data,
+# sessions, etc.
+
+# $Id$
+
+############################################################
+
+limit coredumpsize 0
+limit descriptors 256
+
+source dev_prog.std
+source dev_vis.jsdemo
+
+source start_mono

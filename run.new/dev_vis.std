@@ -1,0 +1,17 @@
+############################################################
+
+# Define the environment variables needed to run DEVise with
+# the standard data, sessions, etc.
+
+# $Id$
+
+############################################################
+
+setenv DEVISE_VIS    /p/devise
+
+setenv DEVISE_DAT     $DEVISE_VIS/dat
+setenv DEVISE_SCHEMA  $DEVISE_VIS/schema/schema
+setenv DEVISE_HOME_TABLE	$DEVISE_SCHEMA/catalog.dte
+setenv DEVISE_CACHE   $DEVISE_VIS/cache
+setenv DEVISE_SESSION $DEVISE_VIS/session
+setenv DEVISE_PALETTE	$DEVISE_VIS/palette

@@ -1,0 +1,27 @@
+############################################################
+
+# Define the environment variables needed to run the "standard"
+# version of DEVise (released in /p/devise).
+
+# $Id$
+
+############################################################
+
+#TEMPTEMP
+setenv DEVISE_PROG    /p/devise/release
+setenv DEVISE_PROG    /u/w/e/wenger/tst/devise_release2/release
+
+setenv DEVISE_MONO_EXEC    $DEVISE_PROG/bin/devise
+setenv DEVISE_CLIENT_EXEC    $DEVISE_PROG/bin/devisec
+setenv DEVISE_SERVER_EXEC    $DEVISE_PROG/bin/devised
+setenv DEVISE_LIB     $DEVISE_PROG/lib
+setenv DEVISE_TMP     /tmp/`whoami`-devise-tmp
+setenv DEVISE_WORK    /tmp/`whoami`-devise-work
+setenv DEVISE_LOG_DIR		$DEVISE_TMP
+
+# For latest gcc.
+setenv LD_LIBRARY_PATH /s/gcc/lib
+
+# For Tasvir, EmbeddedTk, etc.
+set path = ( $path $DEVISE_PROG/bin )
+

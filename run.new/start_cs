@@ -1,0 +1,18 @@
+############################################################
+
+# Start the client/server form of DEVise.
+
+# $Id$
+
+############################################################
+
+if (! -f $DEVISE_CLIENT_EXEC || ! -f $DEVISE_SERVER_EXEC) then
+  echo "Cannot find Devise executable. Perhaps this platform is not supported?"
+  exit 1
+endif
+
+$DEVISE_SERVER_EXEC -port 6102 -quit 1 $* &
+
+sleep 5
+
+$DEVISE_CLIENT_EXEC -p 6102

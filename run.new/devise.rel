@@ -1,0 +1,16 @@
+#! /bin/csh -f
+############################################################
+
+# Run the release-area DEVise with the release-area data, sessions, etc.
+
+# $Id$
+
+############################################################
+
+limit coredumpsize 0
+limit descriptors 256
+
+source dev_prog.rel
+source dev_vis.rel
+
+source start_mono

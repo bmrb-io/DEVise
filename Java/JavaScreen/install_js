@@ -191,6 +191,7 @@ if (! -d $servdir/lib) then
   chmod 755 $servdir/lib
 endif
 cp -p lib/composite.ini $servdir/lib
+chmod 644 $servdir/lib/composite.ini
 
 if (! -d $servdir/bin) then
   mkdir $servdir/bin
