@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.57.2.1  1998/12/29 17:25:00  wenger
+  First version of new PileStack objects implemented -- allows piles without
+  pile links.  Can't be saved or restored in session files yet.
+
+  Revision 1.57  1998/09/25 20:52:56  wenger
+  Fixed bug 390 (cursor drawn in slightly wrong location) (partly caused
+  by problems in JavaScreenCmd code and partly by problems in XWindowRep).
+
   Revision 1.56  1998/05/21 18:18:37  wenger
   Most code for keeping track of 'dirty' GIFs in place; added 'test'
   command to be used for generic test code that needs to be controlled
@@ -574,6 +582,9 @@ class XWindowRep : public WindowRep
 
     virtual void SetGifDirty(Boolean dirty);
 
+    virtual void SetOutput(WindowRep *winRep);
+    virtual void ResetOutput();
+
 protected:
 
 	/* called by constructors to initialize object */
@@ -620,6 +631,9 @@ protected:
 	
 	/* recursively copy the contents of subpixmaps onto parent pixmap */
 	static void CoalescePixmaps(XWindowRep *root);
+
+	void AddInputWR(XWindowRep *winRep);
+	void DeleteInputWR(XWindowRep *winRep);
 
 private:
 	/* Update window dimensions; globals: _x, _y, _width, _height */
@@ -686,11 +700,20 @@ private:
 	unsigned int _width, _height;
 
 	Display *_display;
-	Window _win;
+
+	// Note: _win != _myWin only if this WindowRep is in a pile, and is
+	// not the first in the pile.
+	Window _win; // window currently being drawn to
+	Window _myWin; // window "owned" by this window rep
+
 	GC _gc;
 
 	/* pixmap and child/parent links for pixmaps */
-	Pixmap _pixmap;
+	// Note: _pixmap != _myPixmap only if this WindowRep is in a pile,
+	// and is not the first in the pile.
+	Pixmap _pixmap; // pixmap currently being drawn to
+	Pixmap _myPixmap; // pixmap "owned" by this window rep
+
 	XWindowRep    *_parent;
 	XWindowRepList _children;
 	
@@ -722,6 +745,11 @@ private:
 	char *_daliServer;            // Machine where Tasvir is running
 	ETkWinList _etkWindows;       // List of embedded Tk windows
 	char *_etkServer;             // Machine where ETk server is running
+
+	XWindowRepList _inputWins; // XWindowReps outputting to this WR's
+				   // X window
+	XWindowRep *_outWR; // XWindowRep whose X window we're currently
+			    // outputting to, if not our own
 };
 
 //******************************************************************************

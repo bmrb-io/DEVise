@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,18 @@
   $Id$
 
   $Log$
+  Revision 1.42.2.1  1999/02/11 18:24:02  wenger
+  PileStack objects are now fully working (allowing non-linked piles) except
+  for a couple of minor bugs; new PileStack state is saved to session files;
+  piles and stacks in old session files are dealt with reasonably well;
+  incremented version number; added some debug code.
+
+  Revision 1.42  1998/12/22 19:39:08  wenger
+  User can now change date format for axis labels; fixed bug 041 (axis
+  type not being changed between float and date when attribute is changed);
+  got dates to work semi-decently as Y axis labels; view highlight is now
+  always drawn by outlining the view; fixed some bugs in drawing the highight.
+
   Revision 1.41  1998/12/18 19:46:59  wenger
   Oops!  Fixed bug in saving sessions resulting from the elimination of
   the getAxis and setAxis commands.
@@ -316,6 +328,7 @@ static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
 Boolean Session::_isJsSession = false;
+Boolean Session::_openingSession = false;
 
 /*------------------------------------------------------------------------------
  * function: Session::Open
@@ -333,6 +346,8 @@ Session::Open(char *filename)
   // This will get set later in JavaScreenCmd::Open if this function is
   // being called from there.
   _isJsSession = false;
+
+  _openingSession = true;
 
   ControlPanelSimple control(status);
 
@@ -360,6 +375,8 @@ Session::Open(char *filename)
 	// resume original logging status
 	cmdLog->setLogStatus(oldStatus);
   }
+
+  _openingSession = false;
 
 #if defined(DEBUG)
   printf("  finished Session::Open(%s)\n", filename);
@@ -505,6 +522,9 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
 
     fprintf(saveData.fp, "\n# Insert views into windows\n");
     status += ForEachInstance("window", SaveWindowViews, &saveData);
+
+    fprintf(saveData.fp, "\n# Set window pile/stack state\n");
+    status += ForEachInstance("window", SavePileStack, &saveData);
 
     fprintf(saveData.fp, "\n# Init history of view\n");
     status += ForEachInstance("view", SaveViewHistory, &saveData);
@@ -900,9 +920,6 @@ Session::SaveView(char *category, char *devClass, char *instance,
   status += SaveParams(saveData, "getViewDisplayDataValues",
       "setViewDisplayDataValues", instance);
 
-  status += SaveParams(saveData, "getViewPileMode", "setViewPileMode",
-      instance);
-
   status += SaveParams(saveData, "getFont", "setFont", instance, "title");
 
   status += SaveParams(saveData, "getFont", "setFont", instance, "x axis");
@@ -1211,6 +1228,26 @@ Session::SaveWindowViews(char *category, char *devClass, char *instance,
     }
     free((char *) argvOut);
   }
+
+  if (status.IsError()) reportErrNosys("Error or warning");
+  return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::SavePileStack
+ * Save views for the given window.
+ */
+DevStatus
+Session::SavePileStack(char *category, char *devClass, char *instance,
+    SaveData *saveData)
+{
+#if defined(DEBUG)
+  printf("Session::SavePileStack({%s} {%s} {%s})\n", category, devClass,
+      instance);
+#endif
+
+  DevStatus status = SaveParams(saveData, "getPileStackState",
+      "setPileStackState", instance);
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;

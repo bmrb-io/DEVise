@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.75.4.1  1998/12/29 17:24:50  wenger
+  First version of new PileStack objects implemented -- allows piles without
+  pile links.  Can't be saved or restored in session files yet.
+
+  Revision 1.75  1998/06/18 21:41:12  wenger
+  Client/server library related fixes and updates.
+
   Revision 1.74  1998/05/29 16:49:21  wenger
   Fixed bug 358 (incorrect usage of colors).
 
@@ -1026,6 +1033,13 @@ public:
   // the last time it was dumped as a GIF.
   Boolean GetGifDirty() { return _gifDirty; }
   virtual void SetGifDirty(Boolean dirty);
+
+  // Set this window rep's output (drawing) to go to the window of the
+  // given window rep, rather than to its own window (used for piles).
+  virtual void SetOutput(WindowRep *winRep) = 0;
+
+  // Set this window rep's output back to its own window.
+  virtual void ResetOutput() = 0;
 
 protected:
 

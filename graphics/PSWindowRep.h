@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.30.6.1  1998/12/29 17:24:42  wenger
+  First version of new PileStack objects implemented -- allows piles without
+  pile links.  Can't be saved or restored in session files yet.
+
+  Revision 1.30  1998/05/14 18:21:07  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.29  1998/04/16 21:50:50  wenger
   Committed Sanjay's text code.
 
@@ -394,6 +402,11 @@ class PSWindowRep : public WindowRep
 	Coord &newY) {
       _pixToPointTrans.Transform(oldX, oldY, newX, newY);
     }
+
+	// These don't need to to anything because all of the PostScript already
+	// goes to the same "window".
+    virtual void SetOutput(WindowRep *winRep) {}
+    virtual void ResetOutput() {}
 
 
 protected:

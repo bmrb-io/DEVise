@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.120  1999/01/05 20:53:52  wenger
+  Fixed bugs 447 and 448 (problems with symbol patterns); cleaned up some
+  of the text symbol code.
+
+  Revision 1.119.2.1  1998/12/29 17:24:53  wenger
+  First version of new PileStack objects implemented -- allows piles without
+  pile links.  Can't be saved or restored in session files yet.
+
   Revision 1.119  1998/12/22 19:39:17  wenger
   User can now change date format for axis labels; fixed bug 041 (axis
   type not being changed between float and date when attribute is changed);
@@ -715,7 +723,9 @@ XWindowRep::XWindowRep(Display* display, Window window, XDisplay* DVDisp,
 
 	_display = display;
 	_win = window;
+	_myWin = _win;
 	_pixmap = 0;
+	_myPixmap = 0;
 
 	Init();
 }
@@ -731,7 +741,9 @@ XWindowRep::XWindowRep(Display* display, Pixmap pixmap, XDisplay* DVDisp,
 
   _display = display;
   _win = 0;
+  _myWin = 0;
   _pixmap = pixmap;
+  _myPixmap = _pixmap;
 
   Init();
 //  ClearPixmap();
@@ -751,6 +763,7 @@ XWindowRep::~XWindowRep(void)
   
   /* _win or _pixmap is destroyed by XDisplay */
   DOASSERT(_win == 0 && _pixmap == 0, "X window or pixmap not freed");
+  DOASSERT(_myWin == 0 && _myPixmap == 0, "X window or pixmap not freed");
 
   // This should have already been done by XDisplay::DestroyWindowRep(),
   // but do it again here just in case...  If it's already been done,
@@ -868,6 +881,8 @@ void XWindowRep::Init()
                      fontStruct->max_bounds.descent;
   AllocBitmap(_srcBitmap, bitmapWidth, bitmapHeight);
   AllocBitmap(_dstBitmap, 3 * bitmapWidth, 3 * bitmapHeight);
+
+  _outWR = NULL; // drawing to our own X window
 
 #ifdef TK_WINDOW_old
   _tkPathName[0] = 0;
@@ -2465,6 +2480,10 @@ the selection in window coordinates.
 void XWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow, 
 			       int &xhigh, int &yhigh, int button)
 {
+#if defined(DEBUG)
+  printf("XWindowRep(0x%p)::DoButtonPress()\n", this);
+#endif
+
   DOASSERT(_win, "Cannot handle button press in pixmap");
 
   /* grab server */
@@ -2528,6 +2547,10 @@ Handle the next X event
 
 void XWindowRep::HandleEvent(XEvent &event)
 {
+#if defined(DEBUG)
+  printf("XWindowRep(0x%p)::HandleEvent()\n", this);
+#endif
+
   DOASSERT(_win, "Cannot handle events for pixmap");
 
   XEvent ev;
@@ -2588,6 +2611,15 @@ void XWindowRep::HandleEvent(XEvent &event)
     if (d_key) {
 	d_key |= d_modifier;
 	WindowRep::HandleKey(d_key, event.xkey.x, event.xkey.y);
+
+        // Propagate the key event to any other WindowReps outputting
+        // via this one.
+        int index = _inputWins.InitIterator();
+        while (_inputWins.More(index)) {
+          XWindowRep *wr = _inputWins.Next(index);
+	      wr->WindowRep::HandleKey(d_key, event.xkey.x, event.xkey.y);
+        }
+        _inputWins.DoneIterator(index);
     }
 
     break;
@@ -2621,6 +2653,20 @@ void XWindowRep::HandleEvent(XEvent &event)
       WindowRep::HandleButtonPress(buttonXlow, buttonYlow,
 				   buttonXhigh, buttonYhigh,
 				   event.xbutton.button);
+
+      // Propagate the button press to any other WindowReps outputting
+      // via this one.
+      int index = _inputWins.InitIterator();
+      while (_inputWins.More(index)) {
+        XWindowRep *wr = _inputWins.Next(index);
+	    wr->WindowRep::HandleButtonPress(buttonXlow, buttonYlow,
+				       buttonXhigh, buttonYhigh,
+				       event.xbutton.button);
+      }
+      _inputWins.DoneIterator(index);
+      /*
+	 }
+      */
     }
     break;
 
@@ -2675,6 +2721,18 @@ void XWindowRep::HandleEvent(XEvent &event)
 	|| _height != saveHeight) {
       /* There is a real change in size */
       WindowRep::HandleResize(_x, _y, _width, _height);
+
+      // Propagate the resize event to any other WindowReps outputting
+      // via this one.
+      // Note: the way piles are currently done, all of the views get
+      // resize events anyhow, but Miron wants things done this way in
+      // case that changes in the future.  RKW 12/28/98.
+      int index = _inputWins.InitIterator();
+      while (_inputWins.More(index)) {
+        XWindowRep *wr = _inputWins.Next(index);
+        wr->WindowRep::HandleResize(_x, _y, _width, _height);
+      }
+      _inputWins.DoneIterator(index);
     }
     break;
 
@@ -4380,6 +4438,55 @@ XWindowRep::SetGifDirty(Boolean dirty)
     if (_parent) {
       _parent->SetGifDirty(true);
     }
+  }
+}
+
+void
+XWindowRep::SetOutput(WindowRep *winRep)
+{
+#if defined(DEBUG)
+  printf("XWindowRep(0x%p)::SetOutput(0x%p)\n", this, winRep);
+#endif
+
+  if (winRep != this) {
+    // winRep had better really be an XWindowRep!!
+    XWindowRep *outWR = (XWindowRep *)winRep;
+
+    _win = outWR->_win;
+    _pixmap = outWR->_pixmap;
+
+    outWR->AddInputWR(this);
+    _outWR = outWR;
+  }
+}
+
+void
+XWindowRep::ResetOutput()
+{
+#if defined(DEBUG)
+  printf("XWindowRep(0x%p)::ResetOutput()\n", this);
+#endif
+
+  if (_outWR) {
+    _outWR->DeleteInputWR(this);
+    _outWR = NULL;
+  }
+
+  _win = _myWin;
+  _pixmap = _myPixmap;
+}
+
+void
+XWindowRep::AddInputWR(XWindowRep *winRep)
+{
+  if (winRep != this) _inputWins.Append(winRep);
+}
+
+void
+XWindowRep::DeleteInputWR(XWindowRep *winRep)
+{
+  if (!_inputWins.Delete(winRep)) {
+    reportErrNosys("Warning: can't find winRep in _inputWins");
   }
 }
 

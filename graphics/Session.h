@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,16 @@
   $Id$
 
   $Log$
+  Revision 1.12.2.1  1999/02/11 18:24:02  wenger
+  PileStack objects are now fully working (allowing non-linked piles) except
+  for a couple of minor bugs; new PileStack state is saved to session files;
+  piles and stacks in old session files are dealt with reasonably well;
+  incremented version number; added some debug code.
+
+  Revision 1.12  1998/11/06 17:59:36  wenger
+  Multiple string tables fully working -- allows separate tables for the
+  axes in a given view.
+
   Revision 1.11  1998/09/30 17:44:33  wenger
   Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
   bug 401 (improper saving of window positions).
@@ -92,6 +102,9 @@ public:
   static void SetIsJsSession(Boolean isJsSession) {
       _isJsSession = isJsSession; }
 
+  // Whether we're currently in the middle of opening a session.
+  static Boolean OpeningSession() { return _openingSession; }
+
 private:
   static int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
       int argc, char *argv[]);
@@ -138,6 +151,8 @@ private:
       char *instance, SaveData *saveData);
   static DevStatus SaveWindowViews(char *category, char *devClass,
       char *instance, SaveData *saveData);
+  static DevStatus SavePileStack(char *category, char *devClass,
+      char *instance, SaveData *saveData);
   static DevStatus SaveViewHistory(char *category, char *devClass,
       char *instance, SaveData *saveData);
   static DevStatus SaveCamera(char *category, char *devClass,
@@ -154,6 +169,7 @@ private:
       char *arg1 = NULL, char *arg2 = NULL, char *arg3 = NULL);
 
   static Boolean _isJsSession;
+  static Boolean _openingSession;
 };
 
 #endif /* _Session_h_ */

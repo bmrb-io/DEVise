@@ -16,6 +16,21 @@
   $Id$
 
   $Log$
+  Revision 1.27  1999/01/04 15:33:27  wenger
+  Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
+  compiles; added code (GUI is currently disabled) to manually set view
+  geometry (not yet saved to sessions).
+
+  Revision 1.26.2.2  1999/02/11 18:24:18  wenger
+  PileStack objects are now fully working (allowing non-linked piles) except
+  for a couple of minor bugs; new PileStack state is saved to session files;
+  piles and stacks in old session files are dealt with reasonably well;
+  incremented version number; added some debug code.
+
+  Revision 1.26.2.1  1998/12/29 17:25:10  wenger
+  First version of new PileStack objects implemented -- allows piles without
+  pile links.  Can't be saved or restored in session files yet.
+
   Revision 1.26  1998/12/22 19:39:26  wenger
   User can now change date format for axis labels; fixed bug 041 (axis
   type not being changed between float and date when attribute is changed);
@@ -425,6 +440,9 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setYAxisDateFormat)
 	REGISTER_COMMAND(updateAxisTypes)
 	REGISTER_COMMAND(setViewGeometry)
+	REGISTER_COMMAND(setPileStackState)
+	REGISTER_COMMAND(getPileStackState)
+	REGISTER_COMMAND(flipPileStack)
 }
 
 CmdContainer::~CmdContainer()

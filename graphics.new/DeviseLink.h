@@ -20,6 +20,16 @@
   $Id$
 
   $Log$
+  Revision 1.4.4.1  1999/02/11 18:24:22  wenger
+  PileStack objects are now fully working (allowing non-linked piles) except
+  for a couple of minor bugs; new PileStack state is saved to session files;
+  piles and stacks in old session files are dealt with reasonably well;
+  incremented version number; added some debug code.
+
+  Revision 1.4  1998/05/06 22:04:53  wenger
+  Single-attribute set links are now working except where the slave of
+  one is the master of another.
+
   Revision 1.3  1998/04/29 17:53:51  wenger
   Created new DerivedTable class in preparation for moving the tables
   from the TAttrLinks to the ViewDatas; found bug 337 (potential big
@@ -86,6 +96,9 @@ public:
   void DoneIterator(int index);
 
   virtual void Print();
+
+  // Find out whether the given name is the name of a pile link.
+  static Boolean IsPileLinkName(char *name);
 
 protected:
   char *_name;

@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.14.2.1  1998/12/29 17:25:13  wenger
+  First version of new PileStack objects implemented -- allows piles without
+  pile links.  Can't be saved or restored in session files yet.
+
+  Revision 1.14  1998/12/01 20:04:32  wenger
+  More reductions of memory usage in DEVise -- basically eliminated the
+  histogram capability (this really saves a lot, since there are big
+  structures in every ViewGraph for this); made creation of TDatas more
+  efficient by bypassing command code.
+
   Revision 1.13  1998/11/09 20:33:26  wenger
   Fixed bug 433 (drill-down problem); improved debug output in various
   related modules.
@@ -222,18 +232,6 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	mapping->UpdateMaxSymSize(gdata, numGData);
 	mapping->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
 
-	if (IsInPileMode())
-	{
-		ViewWin*	vw = GetFirstSibling();
-
-		win = vw->GetWindowRep();
-
-#ifdef DEBUG
-		printf("Drawing view %s in view %s, window 0x%p\n",
-			   GetName(), vw->GetName(), win);
-#endif
-	}
-  
 	GDataAttrOffset*	offset = mapping->GetGDataOffset();
 	int					gRecSize = mapping->GDataRecordSize();
 	int					recIndex = 0;

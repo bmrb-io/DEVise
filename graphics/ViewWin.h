@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.32.2.1  1998/12/29 17:24:49  wenger
+  First version of new PileStack objects implemented -- allows piles without
+  pile links.  Can't be saved or restored in session files yet.
+
+  Revision 1.32  1998/10/20 19:46:05  wenger
+  Mapping dialog now displays the view's TData name; "Next in Pile" button
+  in mapping dialog allows user to edit the mappings of all views in a pile
+  without actually flipping them; user has the option to show all view names;
+  new GUI to display info about all links and cursors; added API and GUI for
+  count mappings.
+
   Revision 1.31  1998/09/30 17:44:34  wenger
   Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
   bug 401 (improper saving of window positions).
@@ -194,6 +205,7 @@
 
 class WindowRep;
 class ViewWin;
+class PileStack;
 
 //******************************************************************************
 
@@ -206,6 +218,7 @@ DefinePtrDList(ViewWinList, ViewWin *);
 class ViewWin : public Coloring
 {
 		friend class ViewWin_WindowRepCallback;
+		friend class PileStack;
 
 	private:
 
@@ -348,6 +361,9 @@ class ViewWin : public Coloring
     void SetPrintPixmap(Boolean pixmap) { _printAsPixmap = pixmap; }
     Boolean GetPrintPixmap() { return _printAsPixmap; }
 
+	PileStack *GetPileStack() { return _pileStack; }
+	void SetPileStack(PileStack *ps);
+
 protected:
     /* called by base class when it has been mapped/unmapped */
     virtual void SubClassMapped() = 0;
@@ -400,6 +416,8 @@ private:
 
     Boolean _excludeFromPrint;
     Boolean _printAsPixmap;
+
+	PileStack *_pileStack;
 
 
 

@@ -16,6 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.72  1999/02/01 23:13:35  wenger
+  Backspace key in a view goes back one in the visual filter history.
+
+  Revision 1.71.2.2  1999/02/11 18:24:07  wenger
+  PileStack objects are now fully working (allowing non-linked piles) except
+  for a couple of minor bugs; new PileStack state is saved to session files;
+  piles and stacks in old session files are dealt with reasonably well;
+  incremented version number; added some debug code.
+
+  Revision 1.71.2.1  1998/12/29 17:24:47  wenger
+  First version of new PileStack objects implemented -- allows piles without
+  pile links.  Can't be saved or restored in session files yet.
+
   Revision 1.71  1998/12/22 19:39:14  wenger
   User can now change date format for axis labels; fixed bug 041 (axis
   type not being changed between float and date when attribute is changed);
@@ -379,6 +392,7 @@ class View : public ViewWin
 		friend class View_ControlPanelCallback;
 		friend class View_DispatcherCallback;
 		friend class JavaScreenCmd;
+		friend class PileStack;
 
 		// This is here to allow direct access to dispatcherCallback
 		friend class ActionDefault;
@@ -845,6 +859,9 @@ protected:
 		static Boolean _drawCursors;
 		static Boolean _jsCursors;
 		static Boolean _showNames;
+
+    private:
+		Boolean _inDestructor;
 };
 
 //******************************************************************************

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.154  1999/02/02 17:14:40  wenger
+  Fixed bug 422 (setting cursor dest w/o source causes crash).
+
   Revision 1.153  1999/02/01 23:13:33  wenger
   Backspace key in a view goes back one in the visual filter history.
 
@@ -28,6 +31,16 @@
   Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
   compiles; added code (GUI is currently disabled) to manually set view
   geometry (not yet saved to sessions).
+
+  Revision 1.150.2.2  1999/02/11 18:24:05  wenger
+  PileStack objects are now fully working (allowing non-linked piles) except
+  for a couple of minor bugs; new PileStack state is saved to session files;
+  piles and stacks in old session files are dealt with reasonably well;
+  incremented version number; added some debug code.
+
+  Revision 1.150.2.1  1998/12/29 17:24:44  wenger
+  First version of new PileStack objects implemented -- allows piles without
+  pile links.  Can't be saved or restored in session files yet.
 
   Revision 1.150  1998/12/22 19:39:12  wenger
   User can now change date format for axis labels; fixed bug 041 (axis
@@ -756,6 +769,8 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 {
 	DO_DEBUG(printf("View::View(%s, this = %p)\n", name, this));
 
+	_inDestructor = false;
+
 	controlPanelCallback = new View_ControlPanelCallback(this);
 	dispatcherCallback = new View_DispatcherCallback(this);
 
@@ -883,6 +898,10 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 
 View::~View(void)
 {
+	DO_DEBUG(printf("View::~View(%s, this = %p)\n", GetName(), this));
+
+	_inDestructor = true;
+
 	_viewList->Delete(this);
 	Dispatcher::Current()->Unregister(dispatcherCallback);
 
@@ -1160,14 +1179,30 @@ void View::SetDisplayDataValues(Boolean disp)
 void View::SetPileMode(Boolean mode)
 {
 #if defined(DEBUG)
-  printf("View(%s)::SetPileMode()\n", GetName());
+  printf("View(%s)::SetPileMode(%d)\n", GetName(), mode);
 #endif
+
+  //
+  // This is kind of a kludgey fix for the following problem: when a view
+  // gets destroyed, it deletes itself from its parent window, which deletes
+  // it from the PileStack object, which may call SetPileMode()...
+  // RKW 1999-02-10.
+  //
+  if (_inDestructor) {
+    return;
+  }
 
   if (mode == _pileMode)
     return;
 
   _pileMode = mode;
   _pileViewHold = true;
+
+  if (mode) {
+    GetWindowRep()->SetOutput(GetFirstSibling()->GetWindowRep());
+  } else {
+    GetWindowRep()->ResetOutput();
+  }
 
   /* Just in case record links didn't get re-enabled after printing. */
   RecordLink::EnableUpdates();
@@ -1813,10 +1848,6 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
   _hasLastFilter = false;
 
   WindowRep *win = GetWindowRep();
-  if (_pileMode) {
-    /* The piled view was actually drawn into this WindowRep. */
-    win = GetFirstSibling()->GetWindowRep();
-  }
   win->SetGifDirty(true);
 
   // Show the view name, if necessary.  Note that the view name is drawn
@@ -3186,11 +3217,7 @@ View::PrintPS()
   /* If we're in piled mode, the drawing will actually be done using
    * the WindowRep of the *bottom* view in the pile, so that's the one
    * that has to be set for file output. */
-  if (_pileMode) {
-    GetFirstSibling()->SetFileOutput(viewGeom, parentGeom);
-  } else {
-    SetFileOutput(viewGeom, parentGeom);
-  }
+  SetFileOutput(viewGeom, parentGeom);
 
   // Force a refresh to print the PostScript.
   FILE *printFile = psDispP->GetPrintFile();
@@ -3216,11 +3243,7 @@ View::PrintPSDone()
   fprintf(printFile, "%% End of view '%s'\n", _name);
 
   // Switch this view back to screen drawing mode.
-  if (_pileMode) {
-    GetFirstSibling()->SetScreenOutput();
-  } else {
-    SetScreenOutput();
-  }
+  SetScreenOutput();
 
   // Continue printing any more views that need to be printed.
   result += ViewWin::PrintPS();
@@ -3411,10 +3434,7 @@ void	View::Run(void)
 		if (parent == NULL)
 			return;
 
-		int			index = parent->InitIterator();
-		DOASSERT(parent->More(index), "Parent view has no children");
-		ViewWin*	vw = parent->Next(index);
-		parent->DoneIterator(index);
+		ViewWin *vw = GetFirstSibling();
 
 		if (this != vw)
 		{
@@ -3526,10 +3546,6 @@ void	View::Run(void)
 	int				scrnX, scrnY, scrnWidth, scrnHeight;
 	unsigned int	sW, sH;
     VisualFilter	newFilter;
-
-	if (_pileMode) {
-		winRep = GetFirstSibling()->GetWindowRep();
-	}
 
 	winRep->SetGifDirty(true);
 
@@ -3729,11 +3745,7 @@ void	View::Run(void)
 	// Push clip region using this transform
 	int		dataX, dataY, dataW, dataH;
 
-	if (_pileMode) {
-		((View*)GetFirstSibling())->GetDataArea(dataX, dataY, dataW, dataH);
-	} else {
-		GetDataArea(dataX, dataY, dataW, dataH);
-	}
+	GetDataArea(dataX, dataY, dataW, dataH);
 
 #if !FILL_WHOLE_BACKGROUND
 	if (_hasExposure)					// Use exposure rectangle if needed
@@ -3895,10 +3907,6 @@ void	View::Run2(void)
 	unsigned int	sW, sH;
     VisualFilter	newFilter;
 
-	if (_pileMode) {
-		winRep = GetFirstSibling()->GetWindowRep();
-	}
-
 	Geometry(scrnX, scrnY, sW, sH);
 
 	scrnWidth = sW;
@@ -4037,11 +4045,7 @@ void	View::Run2(void)
 	// Push clip region using this transform
 	int		dataX, dataY, dataW, dataH;
 
-	if (_pileMode) {
-		((View*)GetFirstSibling())->GetDataArea(dataX, dataY, dataW, dataH);
-	} else {
-		GetDataArea(dataX, dataY, dataW, dataH);
-	}
+	GetDataArea(dataX, dataY, dataW, dataH);
 
 #if !FILL_WHOLE_BACKGROUND
 	if (_hasExposure)					// Use exposure rectangle if needed

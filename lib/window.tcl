@@ -15,6 +15,23 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.34.2.2  1999/02/11 18:24:31  wenger
+#  PileStack objects are now fully working (allowing non-linked piles) except
+#  for a couple of minor bugs; new PileStack state is saved to session files;
+#  piles and stacks in old session files are dealt with reasonably well;
+#  incremented version number; added some debug code.
+#
+#  Revision 1.34.2.1  1998/12/29 17:25:23  wenger
+#  First version of new PileStack objects implemented -- allows piles without
+#  pile links.  Can't be saved or restored in session files yet.
+#
+#  Revision 1.34  1998/10/20 19:46:36  wenger
+#  Mapping dialog now displays the view's TData name; "Next in Pile" button
+#  in mapping dialog allows user to edit the mappings of all views in a pile
+#  without actually flipping them; user has the option to show all view names;
+#  new GUI to display info about all links and cursors; added API and GUI for
+#  count mappings.
+#
 #  Revision 1.33  1998/03/05 20:36:30  wenger
 #  Fixed bugs 304 and 309 (problems with view colors); fixed a few other
 #  problems related to *ClassInfo classes.
@@ -268,13 +285,15 @@ proc SetWindowLayout {win} {
 	    -width 5
     pack .setLayout.row3.b .setLayout.row3.l .setLayout.row3.e -side left
 
-    radiobutton .setLayout.row4.b -text Stacked -variable layoutOption \
-	    -value stacked -width 12 -anchor w -command {
-	.setLayout.row2.e configure -state disabled
-	.setLayout.row3.e configure -state disabled
-#	.setLayout.row5.edit configure -state disabled
-    }
-    pack .setLayout.row4.b -side left
+# Disabled Stacked here because windows should now be stacked only via
+# the PileStack class.  RKW 1999-02-11.
+#    radiobutton .setLayout.row4.b -text Stacked -variable layoutOption \
+#	    -value stacked -width 12 -anchor w -command {
+#	.setLayout.row2.e configure -state disabled
+#	.setLayout.row3.e configure -state disabled
+##	.setLayout.row5.edit configure -state disabled
+#    }
+#    pack .setLayout.row4.b -side left
 #    radiobutton .setLayout.row5.b -text UserDefined  -variable layoutOption \
 #	    -value  custom  -width 12 -anchor w -command {
 #	.setLayout.row2.e configure -state disabled
@@ -322,7 +341,9 @@ proc SetWindowLayout {win} {
         } elseif {$layoutOption == "custom"} {
 	    DEVise setWindowLayout $layoutWin 0  0  0
 	} else {
-	    DEVise setWindowLayout $layoutWin -1 -1 1
+# Disabled Stacked here because windows should now be stacked only via
+# the PileStack class.  RKW 1999-02-11.
+#	    DEVise setWindowLayout $layoutWin -1 -1 1
 	}
 	destroy .setLayout
     }
@@ -418,6 +439,8 @@ proc DupWindow {} {
 	    DEVise insertMapping $newView $newMapName $legend
 	}
     }
+
+    DEVise setPileStackState $newWin [DEVise getPileStackState $win]
 }
 
 ############################################################
@@ -544,204 +567,6 @@ proc DoGetWindow {} {
 
 ############################################################
 
-proc DoWindowMerge {} {
-    global curView
-
-    if {![CurrentView]} {
-	return
-    }
-
-    # no need to merge if there are no views other than curView
-    if {[llength [DEVise getWinViews [DEVise getViewWin $curView]]] < 2} {
-	return
-    }
-
-    # first create a duplicate of current view
-
-    set class [GetClass view $curView]
-    set params [DEVise getCreateParam view $class $curView]
-    set win [DEVise getViewWin $curView]
-
-    set newView [UniqueName $curView]
-    set newParams [linsert [lrange $params 1 end] 0 $newView]
-    eval DEVise create view $class $newParams
-    DEVise insertWindow $newView $win
-
-    set labelParams [DEVise getLabel $curView]
-    set newLabelParams [linsert [lrange $labelParams 0 1] 2 "Composite View"]
-    eval DEVise setLabel {$newView} $newLabelParams
-    set viewStatParams [DEVise getViewStatistics $curView]
-    eval DEVise setViewStatistics {$newView} $viewStatParams
-    set stat [DEVise getAxisDisplay $curView X]
-    eval DEVise setAxisDisplay {$newView} X $stat
-    set stat [DEVise getAxisDisplay $curView Y]
-    eval DEVise setAxisDisplay {$newView} Y $stat
-
-    set viewDimensions [DEVise getViewDimensions $curView]
-    eval DEVise setViewDimensions {$newView} $viewDimensions
-    set viewSolid3D [DEVise getViewSolid3D $curView]
-    eval DEVise setViewSolid3D {$newView} $viewSolid3D
-    set viewXYZoom [DEVise getViewXYZoom $curView]
-    eval DEVise setViewXYZoom {$newView} $viewXYZoom
-    set camera [DEVise get3DLocation $curView]
-    set x [lindex $camera 1]
-    set y [lindex $camera 2]
-    set z [lindex $camera 3]
-    set fx [lindex $camera 4]
-    set fy [lindex $camera 5]
-    set fz [lindex $camera 6]
-    eval DEVise set3DLocation {$newView} $x $y $z $fx $fy $fz
-    
-    # insert links of $curView into $newView
-    foreach link [LinkSet] {
-	if {[DEVise viewInLink $link $curView]} {
-	    DEVise insertLink $link $newView
-	}
-    }
-
-    ProcessViewSelected $newView
-
-    # now move mappings from all other views to this view
-
-    foreach v [DEVise getWinViews $win] {
-	if {$v == $newView} {
-	    continue
-	}
-
-	set viewLabelParams [DEVise getLabel $v]
-	set label [lindex $viewLabelParams 2]
-
-	foreach m [DEVise getViewMappings $v] {
-	    set legend [DEVise getMappingLegend $v $m]
-	    if {$legend == ""} {
-		set legend $label
-	    }
-	    # insert mapping $m to view $newView, with legend $legend
-	    DEVise insertMapping $newView $m $legend
-	}
-
-	# remove all links in view $v
-	foreach link [LinkSet] {
-	    if {[DEVise viewInLink $link $v]} {
-		DEVise unlinkView $link $v
-	    }
-	}
-
-	# remove all cursors in view $v
-	foreach cursor [CursorSet] {
-	    set views [DEVise getCursorViews $cursor]
-	    if {[lindex $views 0] == $v} {
-		# replace view $v with $newView as the the source
-		# in cursor $cursor
-		DEVise setCursorSrc $cursor $newView
-	    }
-	    if {[lindex $views 1] == $v} {
-		# replace view $v with $newView as the the destination
-		# in cursor $cursor
-		DEVise setCursorDst $cursor $newView
-	    }
-	}
-
-	# remove view $v from its window and then destroy the view
-	DEVise removeView $v
-	DEVise destroy $v
-    }
-
-    DEVise refreshView $newView
-}
-
-############################################################
-
-proc DoWindowSplit {} {
-    global curView
-
-    if {![CurrentView]} {
-	return
-    }
-
-    set class [GetClass view $curView]
-    set params [DEVise getCreateParam view $class $curView]
-    set labelParams [DEVise getLabel $curView]
-    set win [DEVise getViewWin $curView]
-
-    # find out which links the current view is part of
-    set viewLinks ""
-    foreach link [LinkSet] {
-	if {[DEVise viewInLink $link $curView]} {
-	    lappend viewLinks $link
-	}
-    }
-
-    set lastView ""
-
-    foreach m [DEVise getViewMappings $curView] {
-	set newView [UniqueName $curView]
-	set newParams [linsert [lrange $params 1 end] 0 $newView]
-	# create view $newView
-	eval DEVise create view $class $newParams
-
-	set lastView $newView
-
-	set legend [DEVise getMappingLegend $curView $m]
-	if {$legend == ""} {
-	    set legend "New View"
-	}
-
-	set newLabelParams [linsert [lrange $labelParams 0 1] 2 $legend]
-	eval DEVise setLabel {$newView} $newLabelParams
-	set viewStatParams [DEVise getViewStatistics $curView]
-	eval DEVise setViewStatistics {$newView} $viewStatParams
-	set stat [DEVise getAxisDisplay $curView X]
-	eval DEVise setAxisDisplay {$newView} X $stat
-	set stat [DEVise getAxisDisplay $curView Y]
-	eval DEVise setAxisDisplay {$newView} Y $stat
-	
-        set viewDimensions [DEVise getViewDimensions $curView]
-        eval DEVise setViewDimensions {$newView} $viewDimensions
-        set viewSolid3D [DEVise getViewSolid3D $curView]
-        eval DEVise setViewSolid3D {$newView} $viewSolid3D
-        set viewXYZoom [DEVise getViewXYZoom $curView]
-        eval DEVise setViewXYZoom {$newView} $viewXYZoom
-        set camera [DEVise get3DLocation $curView]
-        set x [lindex $camera 1]
-        set y [lindex $camera 2]
-        set z [lindex $camera 3]
-        set fx [lindex $camera 4]
-        set fy [lindex $camera 5]
-        set fz [lindex $camera 6]
-        eval DEVise set3DLocation {$newView} $x $y $z $fx $fy $fz
-    
-	# move mapping $m from view $curView to $newView
-	DEVise insertMapping $newView $m
-	DEVise removeMapping $curView $m
-
-	# insert links of $curView into $newView
-	foreach l $viewLinks {
-	    DEVise insertLink $l $newView
-	}
-
-	# insert view $newView to window $win
-	DEVise insertWindow $newView $win
-	DEVise refreshView $newView
-    }
-
-    if {$lastView != ""} {
-	set v $curView
-	ProcessViewSelected $lastView
-	# remove all links in view $v
-	foreach link [LinkSet] {
-	    if {[DEVise viewInLink $link $v]} {
-		DEVise unlinkView $link $v
-	    }
-	}
-	# remove view $v from its window and then destroy the view
-	DEVise removeView $v
-	DEVise destroy $v
-    }
-}
-
-############################################################
-
 proc DoWindowStackControl {} {
     global curView
 
@@ -769,21 +594,17 @@ proc DoWindowStackControl {} {
     frame .stack.bot.row1.but
     frame .stack.bot.row2.but
 
-    button .stack.bot.row1.but.pile -text "Pile" -width 10 \
-	    -command { DoWindowPile }
-    button .stack.bot.row2.but.unpile -text "Unpile" -width 10 \
-	    -command { DoWindowUnpile }
-    button .stack.bot.row1.but.stack -text "Stack" -width 10 \
+    button .stack.bot.row1.but.pile -text "Pile (linked)" -width 12 \
+	    -command { DoWindowPile 1 }
+    button .stack.bot.row2.but.unpile -text "Pile (unlinked)" -width 12 \
+	    -command { DoWindowPile 0 }
+    button .stack.bot.row1.but.stack -text "Stack" -width 12 \
 	    -command { DoWindowStack }
-    button .stack.bot.row2.but.unstack -text "Unstack" -width 10 \
-	    -command { DoWindowUnstack }
-    button .stack.bot.row1.but.flip -text "Flip" -width 10 \
+    button .stack.bot.row2.but.unstack -text "Flatten" -width 12 \
+	    -command { DoWindowFlatten }
+    button .stack.bot.row1.but.flip -text "Flip" -width 12 \
 	    -command { FlipStackedView }
-
-#    button .stack.bot.row1.but.edit -text "Edit..." -width 10 \
-#	    -command { EditMergedView }
-
-    button .stack.bot.row2.but.close -text Close -width 10 \
+    button .stack.bot.row2.but.close -text Close -width 12 \
 	    -command { destroy .stack }
 
     pack .stack.bot.row1.but.pile \
@@ -853,44 +674,6 @@ proc DisableStackControl {} {
 
 ############################################################
 
-proc RotateMergedView {} {
-    global curView stackEnabled
-
-    if {![CurrentView]} {
-	return
-    }
-
-    if {!$stackEnabled} {
-	puts "Stack control currently disabled"
-	return
-    }
-
-    # no change needed if only one mapping in view
-    set mappings [DEVise getViewMappings $curView]
-    if {[llength $mappings] < 2} {
-	return
-    }
-
-    # move first mapping to end of mapping list in view
-    set map [lindex $mappings 0]
-    set legend [DEVise getMappingLegend $curView $map]
-    DEVise removeMapping $curView $map
-    if {$legend != ""} {
-        DEVise insertMapping $curView $map $legend
-    } else {
-        DEVise insertMapping $curView $map
-    }
-    
-    DEVise refreshView $curView
-}
-
-############################################################
-
-proc EditMergedView {} {
-}
-
-############################################################
-
 proc FlipStackedView {} {
     global curView stackEnabled
 
@@ -904,34 +687,13 @@ proc FlipStackedView {} {
     }
 
     set win [DEVise getViewWin $curView]
-    set views [DEVise getWinViews $win]
 
-    set prevView ""
-    foreach view $views {
-	if {$prevView == ""} {
-	    set prevView $view
-	    continue
-	}
-	DEVise swapView $win $prevView $view
-    }
-
-    # if window is stacked, raise top view
-
-    set layout [DEVise getWindowLayout $win]
-    if {[lindex $layout 2]} {
-        DEVise raiseView [lindex [DEVise getWinViews $win] 0]
-    }    
-    set pileMode [DEVise getViewPileMode $curView]
-    if { $pileMode } {
-	set views [DEVise getWinViews $win]
-	UpdateMappingDialog .editMapping $curView
-	catch {.stack.title.text configure -text "Top View: [lindex $views end]"}
-    }
+    DEVise flipPileStack $win
 }
 
 ############################################################
 
-proc DoWindowPile {} {
+proc DoWindowPile { link } {
     global curView stackEnabled
 
     if {![CurrentView]} {
@@ -943,108 +705,13 @@ proc DoWindowPile {} {
 	return
     }
 
-    # no need to pile if there are no views other than curView
-    if {[llength [DEVise getWinViews [DEVise getViewWin $curView]]] < 2} {
-	return
+    # See PileStack.h for pileState values.
+    if {$link} {
+    	set pileState 4
+    } else {
+    	set pileState 3
     }
-
-    # no need to pile if current view already in pile mode
-    if {[DEVise getViewPileMode $curView]} {
-        return
-    }
-
-    # create new XY link for piled views
-    set link [UniqueName "Pile: Link"]
-    set result [DEVise create link Visual_Link $link 3]
-    if {$result == ""} {
-        dialog .linkError "Link Error" \
-                "Error creating link $link" "" 0 OK
-        return
-    }
-
-    # insert pile link into current view first so that its filter
-    # will progagate to other views in pile
-    DEVise insertLink $link $curView
-
-    # set pileMode flag 'on' in all views in current window and
-    # insert link to all views
-
-    set win [DEVise getViewWin $curView]
-    foreach v [DEVise getWinViews $win] {
-        if {$v != $curView} {
-            DEVise insertLink $link $v
-	    DEVise refreshView $v
-        }
-        DEVise setViewPileMode $v 1
-    }
-
-    # set window to stacked mode
-    DEVise setWindowLayout $win -1 -1 1
-    
-    set views [DEVise getWinViews $win]
-#    puts "Pile views : $views"
-    .stack.title.text configure -text "Top View: [lindex $views end]"
-    UpdateMappingDialog .editMapping $curView
-}
-
-############################################################
-
-proc DoWindowUnpile {} {
-    global curView stackEnabled
-
-    if {![CurrentView]} {
-	return
-    }
-
-    if {!$stackEnabled} {
-	puts "Stack control currently disabled"
-	return
-    }
-
-    .stack.title.text configure -text "Current View: $curView"
-    # no need to unpile if there are no views other than curView
-    if {[llength [DEVise getWinViews [DEVise getViewWin $curView]]] < 2} {
-	return
-    }
-
-    # no need to unpile if current view not in pile mode
-    if {![DEVise getViewPileMode $curView]} {
-        return
-    }
-
-    # find name(s) of pile links in current view
-    set pileLinks ""
-    foreach link [LinkSet] {
-	if {[DEVise viewInLink $link $curView]} {
-            if {[string range $link 0 4] == "Pile:"} {
-                lappend pileLinks $link
-            }
-	}
-    }
-
-    # set pileMode flag 'off' in all views in current window and
-    # remove pile links from all views
-
-    set win [DEVise getViewWin $curView]
-    foreach v [DEVise getWinViews $win] {
-        DEVise setViewPileMode $v 0
-        foreach link $pileLinks {
-	    if {[DEVise viewInLink $link $v]} {
-		DEVise unlinkView $link $v
-	    }
-        }
-    }
-#    puts "pile links : $pileLinks"
-    foreach link $pileLinks  {
-	DEVise destroy $link
-    }
-    # restore window layout
-    set layout [DEVise getWindowLayout $win]
-    set newLayout [list [lindex $layout 0] [lindex $layout 1] 0]
-    eval DEVise setWindowLayout {$win} $newLayout
-    DEVise refreshView $curView
-    DEVise highlightView $curView 1
-    UpdateMappingDialog .editMapping $curView
+    DEVise setPileStackState [DEVise getViewWin $curView] $pileState
 }
 
 ############################################################
@@ -1061,18 +728,12 @@ proc DoWindowStack {} {
 	return
     }
 
-    set win [DEVise getViewWin $curView]
-    DEVise setWindowLayout $win -1 -1 1
-    DEVise refreshView $curView
-    set views [DEVise getWinViews $win]
-#    puts "Stacking views $views, curView = $curView"
-    set topView [lindex $views 0]
-#    puts "Putting view $topView on top"
+    DEVise setPileStackState [DEVise getViewWin $curView] 2
 }
 
 ############################################################
 
-proc DoWindowUnstack {} {
+proc DoWindowFlatten {} {
     global curView stackEnabled
 
     if {![CurrentView]} {
@@ -1084,16 +745,7 @@ proc DoWindowUnstack {} {
 	return
     }
 
-    set win [DEVise getViewWin $curView]
-    set layout [DEVise getWindowLayout $win]
-    set newLayout [list [lindex $layout 0] [lindex $layout 1] 0]
-    eval DEVise setWindowLayout {$win} $newLayout
-    foreach v [DEVise getWinViews $win] {
-        DEVise refreshView $v
-    }
-#    puts "Unstack : curView = $curView"
-    DEVise highlightView $curView 1
-    UpdateMappingDialog .editMapping $curView
+    DEVise setPileStackState [DEVise getViewWin $curView] 1
 }
 
 ############################################################

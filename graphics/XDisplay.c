@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.73  1999/01/04 15:30:25  wenger
+  Misc. code cleanups.
+
+  Revision 1.72.2.1  1998/12/29 17:24:51  wenger
+  First version of new PileStack objects implemented -- allows piles without
+  pile links.  Can't be saved or restored in session files yet.
+
   Revision 1.72  1998/12/15 18:47:13  wenger
   New option in fixed text symbol: if size is <=1, it is assumed to be a
   fraction of the screen height, rather than the font size in points.
@@ -1169,6 +1176,18 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
     Exit::DoExit(1);
   }
 
+  // Reset any XWindowRep that's outputting to the X window or pixmap we're
+  // about to destroy.
+  int index = _winList.InitIterator();
+  while (_winList.More(index)) {
+    XWindowRep *wr = _winList.Next(index);
+    if ((xwin->_myWin && (xwin->_myWin == wr->GetWinId())) ||
+      (xwin->_myPixmap && (xwin->_myPixmap == wr->GetPixmapId()))) {
+        wr->ResetOutput();
+      }
+  }
+  _winList.DoneIterator(index);
+
   // Free the Dali images and sleep before destroying the X window so
   // Dali doesn't get 'bad window' errors.
   if (xwin->DaliImageCount() > 0)
@@ -1186,6 +1205,9 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
   }
 //#endif
 
+  // Make sure we destroy the window or pixmap that this XWindowRep "owns".
+  xwin->ResetOutput();
+
   if (xwin->GetWinId()) {
 #ifdef DEBUG
     printf("XDisplay::DestroyWindowRep 0x%p, window 0x%lx\n",
@@ -1193,6 +1215,7 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
 #endif
     XDestroyWindow(_display, xwin->GetWinId());
     xwin->_win = 0;
+    xwin->_myWin = 0;
   } else {
 #ifdef DEBUG
     printf("XDisplay::DestroyWindowRep 0x%p, pixmap 0x%lx\n",
@@ -1200,6 +1223,7 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
 #endif
     XFreePixmap(_display, xwin->GetPixmapId());
     xwin->_pixmap = 0;
+    xwin->_myPixmap = 0;
   }
 
   /* KLUDGE WARNING.  This somehow fixes bug 182.  I think we ended up
@@ -1239,7 +1263,10 @@ void XDisplay::InternalProcessing()
     int index;
     for(index = _winList.InitIterator(); _winList.More(index);) {
       XWindowRep *win = _winList.Next(index);
-      if (win->GetWinId() && win->GetWinId() == event.xany.window) {
+
+      // Look at _myWin instead of GetWinId() so we pass the event to the
+      // XWindowRep that *owns* the window in which the event occurred.
+      if (win->_myWin && win->_myWin == event.xany.window) {
 	/* Note: got to be careful here. We need to
 	   call DoneIterator() before informing the WindowRep
 	   because it might trigger a call to DestroyWindowRep()

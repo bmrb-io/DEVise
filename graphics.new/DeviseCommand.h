@@ -20,6 +20,21 @@
   $Id$
 
   $Log$
+  Revision 1.24  1999/01/04 15:33:30  wenger
+  Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
+  compiles; added code (GUI is currently disabled) to manually set view
+  geometry (not yet saved to sessions).
+
+  Revision 1.23.2.2  1999/02/11 18:24:21  wenger
+  PileStack objects are now fully working (allowing non-linked piles) except
+  for a couple of minor bugs; new PileStack state is saved to session files;
+  piles and stacks in old session files are dealt with reasonably well;
+  incremented version number; added some debug code.
+
+  Revision 1.23.2.1  1998/12/29 17:25:13  wenger
+  First version of new PileStack objects implemented -- allows piles without
+  pile links.  Can't be saved or restored in session files yet.
+
   Revision 1.23  1998/12/22 19:39:29  wenger
   User can now change date format for axis labels; fixed bug 041 (axis
   type not being changed between float and date when attribute is changed);
@@ -1519,6 +1534,24 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(setViewGeometry) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setPileStackState) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getPileStackState) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(flipPileStack) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

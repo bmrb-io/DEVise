@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.8.10.1  1999/02/11 18:24:03  wenger
+  PileStack objects are now fully working (allowing non-linked piles) except
+  for a couple of minor bugs; new PileStack state is saved to session files;
+  piles and stacks in old session files are dealt with reasonably well;
+  incremented version number; added some debug code.
+
+  Revision 1.8  1998/02/26 00:19:01  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.7  1997/05/30 20:41:26  wenger
   Added GUI to allow user to specify windows to exclude from display
   print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
@@ -67,6 +76,11 @@ TileLayout:: TileLayout(char *name,  Coord x, Coord y, Coord w, Coord h,
 
 void TileLayout::SetPreferredLayout(int v, int h, Boolean stacked)
 {
+#if defined(DEBUG)
+  printf("TileLayout(%s)::SetPreferredLayout(%d, %d, %d)\n", GetName(),
+    v, h, stacked);
+#endif
+
   _stacked = stacked;
 
   if (!stacked) {

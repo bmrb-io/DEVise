@@ -20,6 +20,17 @@
   $Id$
 
   $Log$
+  Revision 1.47.2.1  1999/02/11 18:24:22  wenger
+  PileStack objects are now fully working (allowing non-linked piles) except
+  for a couple of minor bugs; new PileStack state is saved to session files;
+  piles and stacks in old session files are dealt with reasonably well;
+  incremented version number; added some debug code.
+
+  Revision 1.47  1998/11/19 21:12:51  wenger
+  Implemented non-DTE version of DEVise (new code handles data source catalog
+  functions; Tables, SQLViews, etc., are not implemented); changed version to
+  1.6.0.
+
   Revision 1.46  1998/08/17 18:51:55  wenger
   Updated solaris dependencies for egcs; fixed most compile warnings;
   bumped version to 1.5.4.
@@ -263,7 +274,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.6.0";
+static const char *	version = "1.6.1";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1998";

@@ -20,6 +20,21 @@
   $Id$
 
   $Log$
+  Revision 1.43  1999/01/04 15:33:28  wenger
+  Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
+  compiles; added code (GUI is currently disabled) to manually set view
+  geometry (not yet saved to sessions).
+
+  Revision 1.42.2.2  1999/02/11 18:24:19  wenger
+  PileStack objects are now fully working (allowing non-linked piles) except
+  for a couple of minor bugs; new PileStack state is saved to session files;
+  piles and stacks in old session files are dealt with reasonably well;
+  incremented version number; added some debug code.
+
+  Revision 1.42.2.1  1998/12/29 17:25:11  wenger
+  First version of new PileStack objects implemented -- allows piles without
+  pile links.  Can't be saved or restored in session files yet.
+
   Revision 1.42  1998/12/22 19:39:27  wenger
   User can now change date format for axis labels; fixed bug 041 (axis
   type not being changed between float and date when attribute is changed);
@@ -242,6 +257,7 @@
 #include "RangeDesc.h"
 #include "DataCatalog.h"
 #include "Layout.h"
+#include "PileStack.h"
 
 #include "Color.h"
 //#define INLINE_TRACE
@@ -2074,6 +2090,9 @@ DeviseCommand_getWindowLayout::Run(int argc, char** argv)
           int v, h;
           Boolean stacked;
           layout->GetPreferredLayout(v, h, stacked);
+		  // Set stacked to false here because we no longer stack windows
+		  // this way (it's now done via the PileStack class).  RKW 1999-02-11.
+		  stacked = false;
           sprintf(result, "%d %d %d", v, h, (stacked ? 1 : 0));
           ReturnVal(API_ACK, result);
           return 1;
@@ -3305,20 +3324,11 @@ DeviseCommand_setViewDisplayDataValues::Run(int argc, char** argv)
 int
 DeviseCommand_setViewPileMode::Run(int argc, char** argv)
 {
-    {
-        {
-          View *vg = (View *)classDir->FindInstance(argv[1]);
-          if (!vg) {
-    	ReturnVal(API_NAK, "Cannot find view");
-    	return -1;
-          }
-          /* Set pile mode flag */
-          vg->SetPileMode(atoi(argv[2]) ? true : false);
-          ReturnVal(API_ACK, "done");
-          return 1;
-        }
-    }
-    return true;
+	// This is now a no-op because setting the view's pile mode is now
+	// handled by the PileStack class.  The command is left here only
+	// for old session files.  RKW 1999-02-10.
+	ReturnVal(API_ACK, "done");
+	return 1;
 }
 int
 DeviseCommand_savePixmap::Run(int argc, char** argv)
@@ -4106,8 +4116,20 @@ DeviseCommand_setWindowLayout::Run_5(int argc, char** argv)
     	ReturnVal(API_NAK, "Cannot find window");
     	return -1;
           }
-          layout->SetPreferredLayout(atoi(argv[2]), atoi(argv[3]),
-    				 (atoi(argv[4]) ? true : false));
+		  if (atoi(argv[4])) {
+			//
+			// Note: if we're setting the window to stacked mode here, we
+			// assume that this is probably a command in a pre-PileStack
+			// session file, and therefore we set the PileStack object to
+			// PiledLinked mode.  Note that old sessions with stacked
+			// views will now end up with the views piled intead of stacked.
+			// RKW 1999-02-10.
+			//
+		    layout->GetPileStack()->SetState(PileStack::PSPiledLinked);
+		  } else {
+            layout->SetPreferredLayout(atoi(argv[2]), atoi(argv[3]),
+    				   (atoi(argv[4]) ? true : false));
+		  }
           ReturnVal(API_ACK, "done");
           return 1;
         }
@@ -5152,6 +5174,95 @@ IMPLEMENT_COMMAND_BEGIN(setViewGeometry)
 	    return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in setViewGeom\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setPileStackState)
+    // Arguments: <window name> <pile/stack state>
+    //   see PileStack.h for state enum
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 3) {
+        ViewWin *window = (ViewWin *)classDir->FindInstance(argv[1]);
+        if (!window) {
+          ReturnVal(API_NAK, "Cannot find window");
+          return -1;
+        }
+		PileStack *ps = window->GetPileStack();
+		if (!ps) {
+          ReturnVal(API_NAK, "Cannot find pile/stack object");
+          return -1;
+		}
+		ps->SetState((PileStack::State)atoi(argv[2]));
+        ReturnVal(API_ACK, "done");
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in setPileStackState\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getPileStackState)
+    // Arguments: <window name>
+    // Returns: <pile/stack state> (see PileStack.h for state enum)
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        ViewWin *window = (ViewWin *)classDir->FindInstance(argv[1]);
+        if (!window) {
+          ReturnVal(API_NAK, "Cannot find window");
+          return -1;
+        }
+		PileStack *ps = window->GetPileStack();
+		if (!ps) {
+          ReturnVal(API_NAK, "Cannot find pile/stack object");
+          return -1;
+		}
+		char buf[128];
+		sprintf(buf, "%d", ps->GetState());
+        ReturnVal(API_ACK, buf);
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in getPileStackState\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(flipPileStack)
+    // Arguments: <window name>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        ViewWin *window = (ViewWin *)classDir->FindInstance(argv[1]);
+        if (!window) {
+          ReturnVal(API_NAK, "Cannot find window");
+          return -1;
+        }
+		PileStack *ps = window->GetPileStack();
+		if (!ps) {
+          ReturnVal(API_NAK, "Cannot find pile/stack object");
+          return -1;
+		}
+		ps->Flip();
+        ReturnVal(API_ACK, "done");
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in flipPileStack\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.13.6.1  1998/12/29 17:24:30  wenger
+  First version of new PileStack objects implemented -- allows piles without
+  pile links.  Can't be saved or restored in session files yet.
+
+  Revision 1.13  1998/05/14 18:21:03  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.12  1998/05/05 15:14:44  zhenhai
   Implemented 3D Cursor as a rectangular block in the destination view
   showing left, right, top, bottom, front and back cutting planes of the
@@ -416,6 +424,11 @@ public:
   /* Tk window size changed -- update size of this window */
   virtual void TkWindowSizeChanged();
 #endif
+
+	//TEMP -- what should these do??
+    virtual void SetOutput(WindowRep *winRep) {}
+    virtual void ResetOutput() {}
+
 
 protected:
 

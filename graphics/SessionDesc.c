@@ -20,6 +20,16 @@
   $Id$
 
   $Log$
+  Revision 1.4.2.1  1999/02/11 18:24:03  wenger
+  PileStack objects are now fully working (allowing non-linked piles) except
+  for a couple of minor bugs; new PileStack state is saved to session files;
+  piles and stacks in old session files are dealt with reasonably well;
+  incremented version number; added some debug code.
+
+  Revision 1.4  1998/11/17 14:47:57  wenger
+  Changed master/slave to leader/follower and fixed a few problems in GUI,
+  session description, etc.
+
   Revision 1.3  1998/04/06 21:13:40  wenger
   Made minor improvements to logical session description requested by
   Chris.
@@ -351,8 +361,7 @@ SessionDescPrv::LogWriteLinks(FILE *file)
 	  // Non-pile (user-created) links are not allowed to have a
 	  // name starting with "Pile: ".
 	  //
-	  const char *pileStr = "Pile: ";
-	  if (!strncmp(link->GetName(), pileStr, strlen(pileStr))) {
+	  if (DeviseLink::IsPileLinkName(link->GetName())) {
 	    baseStr = "pile";
 	  } else {
 	    baseStr = "vislink";

@@ -17,6 +17,15 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.73  1999/01/04 15:33:16  wenger
+#  Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
+#  compiles; added code (GUI is currently disabled) to manually set view
+#  geometry (not yet saved to sessions).
+#
+#  Revision 1.72.2.1  1998/12/29 17:24:42  wenger
+#  First version of new PileStack objects implemented -- allows piles without
+#  pile links.  Can't be saved or restored in session files yet.
+#
 #  Revision 1.72  1998/12/18 22:20:49  wenger
 #  Removed axis label code, which doesn't seem to have been fully implemented,
 #  and is not used; added sanity check on visual filter at view creation.
@@ -257,7 +266,7 @@ LIBSRC = AttrList.c \
 	Map3D.C PSWindowRep.c PSDisplay.c DaliIfc.c DaliPatron.c \
 	DevStatus.c DualWindowRep.c DevFont.c \
 	ETkIfc.c ETkClient.c SessionDesc.c Scheduler.c DepMgr.c Session.c\
-	GLDebug.c GDataSock.c CursorStore.c RangeDesc.c
+	GLDebug.c GDataSock.c CursorStore.c RangeDesc.c PileStack.c
 
 SRCc = $(filter %.c,$(LIBSRC))
 SRCC = $(filter %.C,$(LIBSRC))

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,21 @@
   $Id$
 
   $Log$
+  Revision 1.51  1999/01/04 15:33:19  wenger
+  Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
+  compiles; added code (GUI is currently disabled) to manually set view
+  geometry (not yet saved to sessions).
+
+  Revision 1.50.2.2  1999/02/11 18:24:08  wenger
+  PileStack objects are now fully working (allowing non-linked piles) except
+  for a couple of minor bugs; new PileStack state is saved to session files;
+  piles and stacks in old session files are dealt with reasonably well;
+  incremented version number; added some debug code.
+
+  Revision 1.50.2.1  1998/12/29 17:24:48  wenger
+  First version of new PileStack objects implemented -- allows piles without
+  pile links.  Can't be saved or restored in session files yet.
+
   Revision 1.50  1998/12/02 23:46:30  wenger
   Changes as per request from Miron: minimum window size is now 1x1; default
   is to not show trademark notice in windows.
@@ -266,6 +281,7 @@
 #include "PSDisplay.h"
 #include "ETkIfc.h"
 #include "RecordLink.h"
+#include "PileStack.h"
 
 #ifdef TK_WINDOW
 #include <tcl.h>
@@ -312,6 +328,8 @@ ViewWin::ViewWin(char* name, PColorID fgid, PColorID bgid,
 
 	_excludeFromPrint = false;
 	_printAsPixmap = false;
+
+	_pileStack = NULL;
 }
 
 ViewWin::~ViewWin(void)
@@ -325,6 +343,8 @@ ViewWin::~ViewWin(void)
 	Unmap();
 
 	delete windowRepCallback;
+
+	delete _pileStack;
 }
 
 //******************************************************************************
@@ -626,6 +646,7 @@ void ViewWin::DetachChildren()
 void ViewWin::Append(ViewWin *child)
 {
   _children.Append(child);
+  if (_pileStack) _pileStack->InsertView(child);
 }
 
 /* Delete child */
@@ -636,6 +657,7 @@ void ViewWin::Delete(ViewWin *child)
     fprintf(stderr,"ViewWin::Delete child not found\n");
     Exit::DoExit(2);
   }
+  if (_pileStack) _pileStack->DeleteView(child);
 }
 /* Set geometry of view */
 // Note: I'm not sure what this really does that MoveResize() doesn't do.
@@ -834,7 +856,7 @@ void ViewWin::SwapChildren(ViewWin *child1, ViewWin *child2)
 void ViewWin::Raise()
 {
 #if defined(DEBUG)
-  printf("ViewWin(0x%p)::Raise()\n", this);
+  printf("ViewWin(0x%p, %s)::Raise()\n", this, GetName());
 #endif
 
   if (GetWindowRep()) {
@@ -1165,6 +1187,13 @@ Boolean ViewWin::HandleWindowDestroy(WindowRep* w)
 	classDir->DestroyInstance(_name);
 
 	return true;
+}
+
+void
+ViewWin::SetPileStack(PileStack *ps)
+{
+  delete _pileStack;
+  _pileStack = ps;
 }
 
 //******************************************************************************

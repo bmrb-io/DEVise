@@ -16,6 +16,21 @@
   $Id$
 
   $Log$
+  Revision 1.19  1999/01/04 15:33:20  wenger
+  Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
+  compiles; added code (GUI is currently disabled) to manually set view
+  geometry (not yet saved to sessions).
+
+  Revision 1.18.2.2  1999/02/11 18:24:09  wenger
+  PileStack objects are now fully working (allowing non-linked piles) except
+  for a couple of minor bugs; new PileStack state is saved to session files;
+  piles and stacks in old session files are dealt with reasonably well;
+  incremented version number; added some debug code.
+
+  Revision 1.18.2.1  1998/12/29 17:24:49  wenger
+  First version of new PileStack objects implemented -- allows piles without
+  pile links.  Can't be saved or restored in session files yet.
+
   Revision 1.18  1998/09/30 17:44:35  wenger
   Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
   bug 401 (improper saving of window positions).
@@ -94,6 +109,7 @@
 #include "Layout.h"
 #include "Util.h"
 #include "Session.h"
+#include "PileStack.h"
 
 //#define DEBUG
 
@@ -201,6 +217,15 @@ ClassInfo *TileLayoutInfo::CreateWithParams(int argc, char **argv)
   Layout *win = new Layout(name, relativeX, relativeY, 
 			   relativeWidth, relativeHeight, printExclude,
 			   printPixmap);
+
+  // PileStack object is created here rather than in the ViewWin constructor
+  // because ViewWins that are views rather than windows should not have a
+  // PileStack object.
+  char buf[256];
+  sprintf(buf, "%s_pile", name);
+  PileStack *ps = new PileStack(buf, win);
+  win->SetPileStack(ps);
+
   return new TileLayoutInfo(name, win, relativeX, relativeY, relativeWidth,
     relativeHeight);
 }
