@@ -20,6 +20,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1999/06/17 18:55:27  wenger
+#  Fixed kill_devised2 script for problems with 'ps'; added check_jspop
+#  script for restarting jspop if necessary.
+#
 
 ############################################################
 
@@ -63,7 +67,7 @@ if (!$foundJspop) {
   # with the jspop, so kill it and start over.
   KillJspop();
   SaveLogs();
-  system("jspop &");
+  system("jspop -server2 &");
 }
 
 #-----------------------------------------------------------
