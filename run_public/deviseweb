@@ -18,7 +18,7 @@ setenv DEVISE_HOME_TABLE	$DEVISE_ROOT/schema/schema/catalog.dte
 setenv DEVISE_INDEX_TABLE	$DEVISE_ROOT/schema/schema/sysind.dte
 setenv DEVISE_MINMAX_TABLE	$DEVISE_ROOT/schema/schema/minmax.dte
 setenv DEVISE_MINMAX_DIR	$DEVISE_ROOT/dat
-setenv DEVISE_MATERIAL_DIR	$DEVISE_ROOT/dat
+setenv DEVISE_MATER_DIR		$DEVISE_ROOT/dat
 setenv DEVISE_CACHE   /tmp
 setenv DEVISE_SCHEMA  $DEVISE_ROOT/schema/schema
 setenv DEVISE_SESSION $DEVISE_ROOT/session

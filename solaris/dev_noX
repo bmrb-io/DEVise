@@ -1,4 +1,9 @@
 #! /bin/csh -f
+# Run DEVise with Xvfb instead of "real" X server (for testing).
+
+Xvfb :1 -screen 0 1024x768x8 &
+
+setenv DISPLAY unix:1.0
 
 rmmem
 
