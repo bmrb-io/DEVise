@@ -24,6 +24,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/06/24 14:44:47  beyer
+  added destructor
+
   Revision 1.1  1998/02/20 20:44:07  wenger
   Changed color and utils libraries to new export directory scheme for
   dealing with include files (email with complete explanation forthcoming).
@@ -81,7 +84,7 @@ class PaletteColor
 		// Constructors and Destructors
 		PaletteColor(const RGB& rgb = RGB(), const string& s = string());
 
-                virtual ~PalletteColor() {}
+                virtual ~PaletteColor() {}
 
 		// Getters and Setters
 		const RGB&		GetColor(void) const			{ return color;	}
