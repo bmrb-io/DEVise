@@ -17,6 +17,16 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/11/13 16:57:04  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.20  1996/11/07 22:40:28  wenger
   More functions now working for PostScript output (FillPoly, for example);
   PostScript output also working for piled views; PSWindowRep member
@@ -153,9 +163,6 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
     if (fixedSymSize) {
 	Coord maxWidth, maxHeight, maxDepth;
 	map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
-	maxWidth *= pixelSize;
-	maxHeight *= pixelSize;
-	maxDepth *= pixelSize;
 
 	// pixelWidth is how many X units one pixel corresponds to
 	// pixelHeight is how many Y units one pixel corresponds to
@@ -173,7 +180,8 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view,
+                           pixelSize, true);
 	    return;
 	}
     }
@@ -214,10 +222,21 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	    _y[count] = GetY(gdata, map, offset);
 	    if (_height[count] > pixelHeight)
 	      _y[count] -= _height[count] / 2.0;
-	    
+
 	    count++;
 	}
 	
+        // Randomize X,Y coordinates if shape attribute 2 or 3 contains
+        // a constant value of 0.5 or more.
+
+        if (offset->shapeAttrOffset[2] < 0 && offset->shapeAttrOffset[3] < 0) {
+            ShapeAttr *attrs = map->GetDefaultShapeAttrs();
+            float cloudWidth = fabs(attrs[2]);
+            float cloudHeight = fabs(attrs[3]);
+            if (cloudWidth > 0.1 || cloudHeight > 0.1)
+              RandomizePoints(_x, _y, count, cloudWidth, cloudHeight);
+        }
+
 	if (firstColor == XorColor)
 	  win->SetXorMode();
 	else
@@ -336,9 +355,6 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
     if (fixedSymSize) {
 	Coord maxWidth, maxHeight, maxDepth;
 	map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
-        maxWidth *= pixelSize;
-        maxHeight *= pixelSize;
-        maxDepth *= pixelSize;
 
 	Coord x0, y0, x1, y1;
 	win->Transform(0, 0, x0, y0);
@@ -352,7 +368,8 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (maxWidth <= pixelWidth) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view,
+                           pixelSize, false);
 	    return;
 	}
     }
@@ -526,9 +543,6 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
     if (fixedSymSize) {
 	Coord maxWidth, maxHeight, maxDepth;
 	map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
-	maxWidth *= pixelSize;
-	maxHeight *= pixelSize;
-	maxDepth *= pixelSize;
 
 	Coord x0, y0, x1, y1;
 	win->Transform(0, 0, x0, y0);
@@ -546,7 +560,8 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view,
+                           pixelSize, false);
 	    return;
 	}
     }
@@ -622,9 +637,6 @@ void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
     if (fixedSymSize) {
 	Coord maxWidth, maxHeight, maxDepth;
 	map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
-        maxWidth *= pixelSize;
-        maxHeight *= pixelSize;
-        maxDepth *= pixelSize;
 
 	Coord x0, y0, x1, y1;
 	win->Transform(0, 0, x0, y0);
@@ -640,7 +652,8 @@ void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view,
+                           pixelSize, false);
 	    return;
 	}
     }
@@ -711,9 +724,6 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
     if (fixedSymSize) {
 	Coord maxWidth, maxHeight, maxDepth;
 	map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
-        maxWidth *= pixelSize;
-        maxHeight *= pixelSize;
-        maxDepth *= pixelSize;
 
 #ifdef DEBUG
 	printf("VectorShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
@@ -723,7 +733,8 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view,
+                           pixelSize, false);
 	    return;
 	}
     }
@@ -910,9 +921,6 @@ void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
     if (fixedSymSize) {
 	Coord maxWidth, maxHeight, maxDepth;
 	map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
-        maxWidth *= pixelSize;
-        maxHeight *= pixelSize;
-        maxDepth *= pixelSize;
 
 #ifdef DEBUG
 	printf("SegmentShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
@@ -922,7 +930,8 @@ void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view,
+                           pixelSize, false);
 	    return;
 	}
     }
@@ -1057,9 +1066,6 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
     if (fixedSymSize) {
 	Coord maxWidth, maxHeight, maxDepth;
 	map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
-        maxWidth *= pixelSize;
-        maxHeight *= pixelSize;
-        maxDepth *= pixelSize;
 
 #ifdef DEBUG
 	printf("HighLowShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
@@ -1069,7 +1075,8 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view,
+                           pixelSize, false);
 	    return;
 	}
     }
@@ -1184,9 +1191,6 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
     if (fixedSymSize) {
 	Coord maxWidth, maxHeight, maxDepth;
 	map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
-        //maxWidth *= pixelSize;
-        //maxHeight *= pixelSize;
-        //maxDepth *= pixelSize;
 
 #ifdef DEBUG
 	printf("PolylineShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
@@ -1196,7 +1200,8 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view,
+                           pixelSize, false);
 	    return;
 	}
     }
