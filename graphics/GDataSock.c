@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1999/05/21 14:52:10  wenger
+  Cleaned up GData-related code in preparation for including bounding box
+  info.
+
   Revision 1.8  1998/12/10 21:53:16  wenger
   Devised now sends GIFs to JavaScreen on a per-view rather than per-window
   basis; GIF "dirty" flags are now also referenced by view rather than by
@@ -227,17 +231,17 @@ GDataSock::Send(ViewGraph *view, void **gdataArray, TDataMap *map,
       //
       // Get the values of the attributes.
       //
-      Coord x = ShapeGetX(gdata, map, offsets);
-      Coord y = ShapeGetY(gdata, map, offsets);
-      Coord z = GetZ(gdata, map, offsets);
+      Coord x = map->GetX(gdata);
+      Coord y = map->GetY(gdata);
+      Coord z = map->GetZ(gdata);
 
 //      Coord color = GetColor(view, gdata, map, offsets);
-      Coord		pcid = GetPColorID(gdata, map, offsets);
+      Coord		pcid = map->GetPColorID(gdata);
 
-      Coord size = GetSize(gdata, map, offsets);
-      Coord pattern = GetPattern(gdata, map, offsets);
-      Coord orientation = GetOrientation(gdata, map, offsets);
-      Coord symbolType = GetShape(gdata, map, offsets);
+      Coord size = map->GetSize(gdata);
+      Coord pattern = map->GetPattern(gdata);
+      Coord orientation = map->GetOrientation(gdata);
+      Coord symbolType = map->GetShape(gdata);
 
       const int shapeAttrCount = 10;
       AttrVals shapeAttrs[shapeAttrCount] = {
@@ -253,7 +257,7 @@ GDataSock::Send(ViewGraph *view, void **gdataArray, TDataMap *map,
 	  {"shapeAttr_9", IntAttr, 0.0, NULL} };
 
       int attrNum;
-      ShapeAttr *defaultAttrs = map->GetDefaultShapeAttrs();
+      const ShapeAttr *defaultAttrs = map->GetDefaultShapeAttrs();
       for (attrNum = 0; attrNum < shapeAttrCount; attrNum++) {
 	//
 	// Get the numerical value for this shape attribute.

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.16  1999/05/20 15:17:56  wenger
+  Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
+  with duplicate elimination and count mappings) exposed by Tim Wilson's
+  two-station session.
+
   Revision 1.15  1999/05/12 21:01:59  wenger
   Views containing view symbols can now be piled.
 
@@ -80,6 +85,44 @@ void FullMapping_ViewShape::MaxSymSize(TDataMap *map, void *gdata,
   height = 0.0;
 }
 
+void
+FullMapping_ViewShape::FindBoundingBoxes(void *gdataArray, int numRecs,
+    TDataMap *tdMap)
+{
+#if defined(DEBUG)
+  printf("FullMapping_ViewShape::FindBoundingBoxes(%d)\n", numRecs);
+#endif
+
+  GDataAttrOffset *offsets = tdMap->GetGDataOffset();
+
+  if (offsets->_bbULxOffset < 0 && offsets->_bbULyOffset < 0 &&
+      offsets->_bbLRxOffset < 0 && offsets->_bbLRyOffset < 0) {
+#if defined(DEBUG)
+  printf("  Bounding box is constant\n");
+#endif
+    // Just do one record, since they're all the same.
+    numRecs = 1;
+    gdataArray = NULL; // because accessing GData is an error here
+  } else {
+#if defined(DEBUG)
+    printf("  Bounding box is variable\n");
+#endif
+  }
+
+  char *dataP = (char *)gdataArray; // char * for ptr arithmetic
+  int recSize = tdMap->GDataRecordSize();
+  for (int recNum = 0; recNum < numRecs; recNum++) {
+    Coord symSize = tdMap->GetSize(dataP);
+    Coord symWidth = tdMap->GetShapeAttr1(dataP);
+    Coord symHeight = tdMap->GetShapeAttr2(dataP);
+
+    tdMap->SetBoundingBox(dataP, -symSize * symWidth / 2.0,
+        symSize * symHeight / 2.0, symSize * symWidth / 2.0,
+        -symSize * symHeight / 2.0);
+
+    dataP += recSize;
+  }
+}
 
 void FullMapping_ViewShape::DrawGDataArray(WindowRep *win, 
 					   void **gdataArray,
@@ -125,20 +168,20 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     //
     // Do transformations to get width and height.
     //
-    Coord dataX = ShapeGetX(gdata, map, offset);
-    Coord dataY = ShapeGetY(gdata, map, offset);
+    Coord dataX = map->GetX(gdata);
+    Coord dataY = map->GetY(gdata);
 
     Boolean hasZ = false;
     Coord dataZ;
     if (map->GDataAttrList()->Find("z")) {
       hasZ = true;
-      dataZ = GetZ(gdata, map, offset);
+      dataZ = map->GetZ(gdata);
     }
 
-    Coord dataSize = GetSize(gdata, map, offset);
+    Coord dataSize = map->GetSize(gdata);
     dataSize *= pixelSize; // +/- keys in view
-    Coord dataWd = GetShapeAttr1(gdata, map, offset) * dataSize;
-    Coord dataHt = GetShapeAttr2(gdata, map, offset) * dataSize;
+    Coord dataWd = map->GetShapeAttr1(gdata) * dataSize;
+    Coord dataHt = map->GetShapeAttr2(gdata) * dataSize;
 
     Coord pixX1, pixY1, pixX2, pixY2;
 
@@ -157,8 +200,8 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     {
       PColorID	pcid = view->GetForeground();
       win->SetForeground(pcid);
-      win->SetPattern(GetPattern(gdata, map, offset));
-      win->SetLineWidth(GetLineWidth(gdata, map, offset));
+      win->SetPattern(map->GetPattern(gdata));
+      win->SetLineWidth(map->GetLineWidth(gdata));
       win->FillRect(dataX - dataWd / 2.0, dataY - dataHt / 2.0, dataWd, dataHt);
     }
 #endif
@@ -168,7 +211,7 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     //
     char *viewname = NULL;
     
-    int key = (int)GetShapeAttr0(gdata, map, offset);
+    int key = (int)map->GetShapeAttr0(gdata);
     int code = stringTable->Lookup(key, viewname);
     if (code < 0) {
       reportErrNosys("Can't find view name in string table");
@@ -189,8 +232,8 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     {
       PColorID	pcid = view->GetForeground();
       win->SetForeground(pcid);
-      win->SetPattern(GetPattern(gdata, map, offset));
-      win->SetLineWidth(GetLineWidth(gdata, map, offset));
+      win->SetPattern(map->GetPattern(gdata));
+      win->SetLineWidth(map->GetLineWidth(gdata));
       // 2.1, 0.9 are a kludge so rect is no larger than the view symbol.
       win->FillRect(dataX - dataWd / 2.0, dataY - dataHt / 2.1, dataWd * 0.9,
         dataHt * 0.9);
@@ -217,7 +260,7 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     AttrList *attrList = map->GDataAttrList();
     AttrInfo *info = attrList->Find("shapeAttr_3");
     if (info && info->type == StringAttr) {
-      key = (int)GetShapeAttr3(gdata, map, offset);
+      key = (int)map->GetShapeAttr3(gdata);
 
       char *tdName = NULL;
       code = stringTable->Lookup(key, tdName);
@@ -232,7 +275,7 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     PileStack *ps = NULL;
     info = attrList->Find("shapeAttr_4");
     if (info && info->type == StringAttr) {
-      key = (int)GetShapeAttr4(gdata, map, offset);
+      key = (int)map->GetShapeAttr4(gdata);
 
       char *pileName = NULL;
       code = stringTable->Lookup(key, pileName);

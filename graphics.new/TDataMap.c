@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.34  1999/05/21 14:52:45  wenger
+  Cleaned up GData-related code in preparation for including bounding box
+  info.
+
   Revision 1.33  1999/04/16 20:59:23  wenger
   Fixed various bugs related to view symbols, including memory problem
   with MappingInterp dimensionInfo; updated create_condor_session script
@@ -228,6 +232,10 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
   _defaults._pattern = Pattern0;
   _defaults._orientation = 0.0;
   _defaults._shape = 0;
+  _defaults._bbULx = 0.0;
+  _defaults._bbULy = 0.0;
+  _defaults._bbLRx = 0.0;
+  _defaults._bbLRy = 0.0;
 
   _numShapeAttr = MAX_SHAPE_ATTRS;
   for(unsigned int i = 0; i < (unsigned int)MAX_SHAPE_ATTRS; i++) {
@@ -521,6 +529,13 @@ void TDataMap::SetDefaultShape(ShapeID shapeID, int numAttr,
       _defaults._shapeAttrs[i] = 0.1;
     }
   }
+}
+
+void
+TDataMap::CreateGData(int gRecSize)
+{
+  _createGData = true;
+  ResetGData(gRecSize);
 }
 
 void TDataMap::ResetGData(int gRecSize)

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.72  1999/05/17 18:38:00  wenger
+  Views now have GData sending configuration that is only employed when
+  connecting to the JavaScreen (eliminates the need for the current kludgey
+  setup to send GData to the JS).
+
   Revision 1.71  1999/05/14 16:46:52  wenger
   View vertical scroll can now be configured by the user.
 
@@ -686,6 +691,18 @@ public:
   // Refresh the view; then do a GoHome().  (Meant to update follower views
   // after leader view changes in record links.)
   void RefreshAndHome();
+
+  // Determine whether a symbol with the given bounding box is within the
+  // visual filter.
+  inline Boolean InVisualFilter2(Coord ULx, Coord ULy, Coord LRx, Coord LRy)
+  {
+    if (LRx < _queryFilter.xLow || ULx > _queryFilter.xHigh ||
+        ULy < _queryFilter.yLow || LRy > _queryFilter.yHigh) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
  protected:
   virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs){};

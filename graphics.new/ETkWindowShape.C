@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1999/05/21 14:52:24  wenger
+  Cleaned up GData-related code in preparation for including bounding box
+  info.
+
   Revision 1.16  1999/05/20 15:17:36  wenger
   Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
   with duplicate elimination and count mappings) exposed by Tim Wilson's
@@ -117,6 +121,43 @@ void FullMapping_ETkWindowShape::MaxSymSize(TDataMap *map, void *gdata,
 }
 
 
+void
+FullMapping_ETkWindowShape::FindBoundingBoxes(void *gdataArray, int numRecs,
+    TDataMap *tdMap)
+{
+#if defined(DEBUG)
+  printf("FullMapping_ETkWindowShape::FindBoundingBoxes(%d)\n", numRecs);
+#endif
+
+  GDataAttrOffset *offsets = tdMap->GetGDataOffset();
+
+  if (offsets->_bbULxOffset < 0 && offsets->_bbULyOffset < 0 &&
+      offsets->_bbLRxOffset < 0 && offsets->_bbLRyOffset < 0) {
+#if defined(DEBUG)
+  printf("  Bounding box is constant\n");
+#endif
+    // Just do one record, since they're all the same.
+    numRecs = 1;
+    gdataArray = NULL; // because accessing GData is an error here
+  } else {
+#if defined(DEBUG)
+    printf("  Bounding box is variable\n");
+#endif
+  }
+
+  char *dataP = (char *)gdataArray; // char * for ptr arithmetic
+  int recSize = tdMap->GDataRecordSize();
+  for (int recNum = 0; recNum < numRecs; recNum++) {
+    Coord symSize = tdMap->GetSize(dataP);
+
+    tdMap->SetBoundingBox(dataP, -symSize / 2.0, symSize / 2.0,
+	    symSize / 2.0, -symSize / 2.0);
+
+    dataP += recSize;
+  }
+}
+
+
 void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 						void **gdataArray,
 						int numSyms, TDataMap *map,
@@ -169,12 +210,12 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 	// then at least the user sees some symbol in the window
 
 	gdata = (char *) gdataArray[i];
-	x = ShapeGetX(gdata, map, offset);
-	y = ShapeGetY(gdata, map, offset);
+	x = map->GetX(gdata);
+	y = map->GetY(gdata);
 
-	win->SetForeground(GetPColorID(gdata, map, offset));
+	win->SetForeground(map->GetColor(gdata));
 
-	win->SetPattern(GetPattern(gdata, map, offset));
+	win->SetPattern(map->GetPattern(gdata));
 	win->Transform(x, y, tx, ty);
 	win->PushTop();
 	win->MakeIdentity();
@@ -189,7 +230,7 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 	
 	// Size is expressed in data units, so convert to width and
 	// height in pixels.
-	size = GetSize(gdata, map, offset);
+	size = map->GetSize(gdata);
 	win->Transform(0.0, 0.0, x0, y0);
 	win->Transform(size, size, x1, y1);
 	width = fabs(x1 - x0);

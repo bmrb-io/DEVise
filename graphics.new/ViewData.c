@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  1999/05/21 14:52:50  wenger
+  Cleaned up GData-related code in preparation for including bounding box
+  info.
+
   Revision 1.20  1999/05/20 15:17:56  wenger
   Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
   with duplicate elimination and count mappings) exposed by Tim Wilson's
@@ -240,6 +244,8 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 #if defined(DEBUG)
 	printf("ViewData(%s)::ReturnGData(%d, 0x%p, %d)\n", GetName(), (int)recId,
 	  gdata, numGData);
+    printf("Visual filter: (%g, %g), (%g, %g)\n", _queryFilter.xLow,
+	  _queryFilter.yHigh, _queryFilter.xHigh, _queryFilter.yLow);
 #endif
 
 	DOASSERT(numGData <= WINDOWREP_BATCH_SIZE,
@@ -263,12 +269,12 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 
 	void*		recs[WINDOWREP_BATCH_SIZE];
 	int			reverseIndex[WINDOWREP_BATCH_SIZE + 1];
-	Coord		maxWidth, maxHeight, maxDepth;
 	WindowRep*	win = GetWindowRep();
 
 	reverseIndex[0] = 0;
-	mapping->UpdateMaxSymSize(gdata, numGData);
-	mapping->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
+#if 1 // BBTEMP -- mainly needed for drill-down query
+    mapping->UpdateMaxSymSize(gdata, numGData);
+#endif
 
 	GDataAttrOffset*	offset = mapping->GetGDataOffset();
 	int					gRecSize = mapping->GDataRecordSize();
@@ -296,8 +302,42 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	    DevStatus result = _countMapping->ProcessRecord(dataP);
 	  }
 
-	  Coord x = symArray[recNum].x = ShapeGetX(dataP, mapping, offset);
-	  Coord y = symArray[recNum].y = ShapeGetY(dataP, mapping, offset);
+	  Coord x = symArray[recNum].x = mapping->GetX(dataP);
+	  Coord y = symArray[recNum].y = mapping->GetY(dataP);
+
+	  //
+	  // Get the bounding box for this symbol.
+	  //
+	  Coord ULx, ULy, LRx, LRy; // bounding box
+	  mapping->GetBoundingBox(dataP, ULx, ULy, LRx, LRy);
+
+	  // Adjust the bounding box for "pixel size" (+/- key).
+      ULx *= mapping->GetPixelWidth();
+      ULy *= mapping->GetPixelWidth();
+      LRx *= mapping->GetPixelWidth();
+      LRy *= mapping->GetPixelWidth();
+
+	  // This is a really crude adjustment for alignment, partly because
+	  // some symbols implement alignment and some don't.
+	  if (GetAlign() != WindowRep::AlignCenter) {
+        ULx *= 1.5;
+        ULy *= 1.5;
+        LRx *= 1.5;
+        LRy *= 1.5;
+	  }
+
+	  // Make the bounding box absolute instead of relative to symbol
+	  // position.
+      ULx += x;
+      ULy += y;
+	  LRx += x;
+	  LRy += y;
+
+#if defined(DEBUG)
+      printf("  Record %d bounding box: UL: %g, %g; LR: %g, %g\n",
+	    recId + recNum, ULx, ULy, LRx, LRy);
+#endif
+
 
       if (_dataRangeFirst) {
 		_dataXMin = _dataXMax = x;
@@ -310,7 +350,7 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 		_dataYMax = MAX(_dataYMax, y);
 	  }
 
-	  ShapeID shape = symArray[recNum].shape = GetShape(dataP, mapping, offset);
+	  ShapeID shape = symArray[recNum].shape = mapping->GetShape(dataP);
       symArray[recNum].isComplex = mapping->IsComplexShape(shape) ||
 		  (GetNumDimensions() == 3);
 
@@ -320,8 +360,7 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	  // RKW Feb. 12, 1998.
       // Use of maxWidth and maxHeight here is probably goofed up if symbols
 	  // are rotated.  RKW Aug. 8, 1997.
-	  symArray[recNum].inFilter = InVisualFilter(_queryFilter, x, y,
-		  maxWidth, maxHeight);
+	  symArray[recNum].inFilter = InVisualFilter2(ULx, ULy, LRx, LRy);
 #if defined(TEST_FILTER_LINK) // TEMP -- remove later. RKW 1998-10-29.
 	  if (!strcmp(GetName(), "FilterSlaveView")) {
 	    Coord linkX = GetShapeAttr(5, dataP, mapping, offset);
@@ -471,8 +510,9 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 		// previous call to InVisualFilter().
 		// Do we really want the set of records we do stats on to not be
 		// the same as the set we draw?
+		//BBTEMP -- change here???
 		if (symArray[recNum].inFilter &&
-			InVisualFilter(_queryFilter, x, y, 0.0, 0.0))
+			InVisualFilter(_queryFilter, x, y, (Coord)0.0, (Coord)0.0))
 		{
 			PColorID	pcid = mapping->GetPColorID(ptr);
 

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.93  1999/05/21 14:52:37  wenger
+  Cleaned up GData-related code in preparation for including bounding box
+  info.
+
   Revision 1.92  1999/03/03 18:21:58  wenger
   Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
   and 467 (query errors with sorted attributes); minor improvements to
@@ -2488,7 +2492,7 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
                 map->ConvertToGData(recId,tptr,1,_gdataBuf);
                 Boolean match = true;
                 if ( _tdataQuery->filter.flag & VISUAL_X) {
-		    x = ShapeGetX(_gdataBuf, map, gdataOffsets);
+		    x = map->GetX(_gdataBuf);
                     
                     if (x < _tdataQuery->filter.xLow ||
                         x > _tdataQuery->filter.xHigh)
@@ -2496,7 +2500,7 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
                 }
                 
                 if (match && (_tdataQuery->filter.flag & VISUAL_Y)) {
-		    y = ShapeGetY(_gdataBuf, map, gdataOffsets);
+		    y = map->GetY(_gdataBuf);
                     
                     if (y < _tdataQuery->filter.yLow ||
                         y > _tdataQuery->filter.yHigh)
@@ -2530,7 +2534,7 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
                     map->ConvertToGData(recId, tptr, 1, _gdataBuf);
                     Boolean match = true;
                     if ( _tdataQuery->filter.flag & VISUAL_X) {
-		        x = ShapeGetX(_gdataBuf, map, gdataOffsets);
+		        x = map->GetX(_gdataBuf);
                         
                         if (x < _tdataQuery->filter.xLow ||
                             x > _tdataQuery->filter.xHigh)
@@ -2538,7 +2542,7 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
                     }
                     
                     if (match && (_tdataQuery->filter.flag & VISUAL_Y)) {
-		        y = ShapeGetY(_gdataBuf, map, gdataOffsets);
+		        y = map->GetY(_gdataBuf);
                         
                         if (y < _tdataQuery->filter.yLow ||
                             y > _tdataQuery->filter.yHigh)

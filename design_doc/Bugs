@@ -1913,6 +1913,9 @@ Num Date        Status  Description
 			QueryProcFull::ProcessScan() (monothlithic version
 			is okay).  (rkw)
 
+494 05/25/99	OPEN	Vectors are not drawn correctly (the arrowhead does
+			not match up with the line). (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

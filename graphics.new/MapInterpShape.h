@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.45  1999/05/20 15:17:53  wenger
+  Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
+  with duplicate elimination and count mappings) exposed by Tim Wilson's
+  two-station session.
+
   Revision 1.44  1998/11/04 20:33:56  wenger
   Multiple string tables partly working -- loading and saving works, one
   table per mapping works; need multiple tables per mapping, API and GUI,
@@ -235,7 +240,7 @@ class FullMapping_RectXShape
   public:
     
     virtual int NumShapeAttrs();
-    
+
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
@@ -251,9 +256,23 @@ class FullMapping_BarShape
   public:
 
     virtual int NumShapeAttrs();
+
+    virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
+      Boolean result = false;
+      if (offsets->_yOffset >= 0 ||
+          offsets->_sizeOffset >= 0 ||
+	  offsets->_shapeAttrOffset[0] >= 0 ||
+	  offsets->_shapeAttrOffset[1] >= 0) {
+        result = true;
+      }
+      return result;
+    }
     
     virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
 			    Coord &width, Coord &height);
+
+    virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
+        TDataMap *tdMap);
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
@@ -270,7 +289,7 @@ class FullMapping_RegularPolygonShape
   public:
 
     virtual int NumShapeAttrs();
-    
+
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
@@ -322,9 +341,17 @@ class FullMapping_HorLineShape
 {
   public:
 
+    virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
+      Boolean result = false;
+      return result;
+    }
+
     virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
 			    Coord &width, Coord &height);
     
+    virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
+        TDataMap *tdMap);
+
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
@@ -368,8 +395,23 @@ class FullMapping_HighLowShape
 
     virtual int NumShapeAttrs();
 
+    virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
+      Boolean result = false;
+      if (offsets->_yOffset >= 0 ||
+          offsets->_sizeOffset >= 0 ||
+          offsets->_shapeAttrOffset[0] >= 0 ||
+          offsets->_shapeAttrOffset[1] >= 0 ||
+          offsets->_shapeAttrOffset[2] >= 0) {
+        result = true;
+      }
+      return result;
+    }
+
     virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
 			    Coord &width, Coord &height);
+
+    virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
+        TDataMap *tdMap);
 
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
@@ -387,9 +429,21 @@ class FullMapping_PolylineShape
 
     virtual int NumShapeAttrs();
 
+    virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
+      Boolean result = false;
+      //BBTEMP -- check
+      if (offsets->_sizeOffset >= 0) {
+        result = true;
+      }
+      return result;
+    }
+
     virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
 			    Coord &width, Coord &height);
     
+    virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
+        TDataMap *tdMap);
+
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
@@ -406,8 +460,19 @@ class FullMapping_GifImageShape
 
     virtual int NumShapeAttrs();
 
+    virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
+      Boolean result = false;
+      if (offsets->_sizeOffset >= 0) {
+        result = true;
+      }
+      return result;
+    }
+
     virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
 			    Coord &width, Coord &height);
+
+    virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
+        TDataMap *tdMap);
 
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
@@ -425,9 +490,21 @@ class FullMapping_PolylineFileShape
 
     virtual int NumShapeAttrs();
 
+    virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
+      Boolean result = false;
+      //BBTEMP -- check
+      if (offsets->_sizeOffset >= 0) {
+        result = true;
+      }
+      return result;
+    }
+
     virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
 			    Coord &width, Coord &height);
     
+    virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
+        TDataMap *tdMap);
+
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
@@ -444,8 +521,23 @@ class FullMapping_TextLabelShape
 
     virtual int NumShapeAttrs();
 
+    virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
+      Boolean result = false;
+      if (offsets->_sizeOffset >= 0 ||
+          offsets->_shapeAttrOffset[0] >= 0 ||
+          offsets->_shapeAttrOffset[1] >= 0 ||
+          offsets->_shapeAttrOffset[2] >= 0 ||
+          offsets->_shapeAttrOffset[3] >= 0) {
+        result = true;
+      }
+      return result;
+    }
+
     virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
 			    Coord &width, Coord &height);
+
+    virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
+        TDataMap *tdMap);
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
@@ -463,8 +555,20 @@ class FullMapping_TextDataLabelShape
 
     virtual int NumShapeAttrs();
 
+    virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
+      Boolean result = false;
+	  //BBTEMP -- depends on string??
+      if (offsets->_sizeOffset >= 0) {
+        result = true;
+      }
+      return result;
+    }
+
     virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
 			    Coord &width, Coord &height);
+
+    virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
+        TDataMap *tdMap);
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
@@ -482,8 +586,16 @@ class FullMapping_FixedTextLabelShape
 
     virtual int NumShapeAttrs();
 
+    virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
+      Boolean result = false;
+      return result;
+    }
+
     virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
 			    Coord &width, Coord &height);
+
+    virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
+        TDataMap *tdMap);
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
@@ -499,8 +611,16 @@ class FullMapping_LineShape
 {
   public:
 
+    virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
+      Boolean result = false;
+      return result;
+    }
+
     virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
 			    Coord &width, Coord &height);
+
+    virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
+        TDataMap *tdMap);
     
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
@@ -528,8 +648,19 @@ class FullMapping_LineShadeShape
 {
   public:
 
+    virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
+      Boolean result = false;
+      if (offsets->_yOffset >= 0) {
+        result = true;
+      }
+      return result;
+    }
+
     virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
 			    Coord &width, Coord &height);
+
+    virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
+        TDataMap *tdMap);
     
     virtual void DrawConnectingLine(WindowRep *win, ViewGraph *view,
 				    Pattern pattern, int line_width,

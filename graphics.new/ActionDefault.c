@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.38  1999/04/22 19:29:50  wenger
+  Separated the configuration of explicit (user-requested) and implicit
+  home actions (no GUI for configuring the implicit home); changed the
+  Condor user script accordingly; modified JavaScreen support so that this
+  all works for the JS.
+
   Revision 1.37  1998/12/15 14:55:08  wenger
   Reduced DEVise memory usage in initialization by about 6 MB: eliminated
   Temp.c (had huge global arrays); eliminated Object3D class and greatly
@@ -378,7 +384,7 @@ Boolean ActionDefault::PopUp(ViewGraph *view, Coord x, Coord y, Coord xHigh,
 Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y, 
 				    Coord xHigh, Coord yHigh, char *&errorMsg)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("ActionDefault::PrintRecords %s %.2f %.2f %.2f %.2f\n",
            view->GetName(), x, y, xHigh, yHigh);
 #endif
@@ -400,7 +406,7 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
     char *buf;
     QueryProc *qp = QueryProc::Instance();
 
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("ActionDefault::PrintRecords: getting TData\n");
 #endif
 
@@ -515,6 +521,7 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
     filter.flag = VISUAL_X | VISUAL_Y;
 
     Coord height, width, depth;
+    // BBTEMP -- get rid of this?
     map->GetMaxSymSize(width,height,depth);
 
     /* Don't let the visual filter for the point query get any larger

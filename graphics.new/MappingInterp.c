@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.84  1999/05/21 14:52:32  wenger
+  Cleaned up GData-related code in preparation for including bounding box
+  info.
+
   Revision 1.83  1999/05/20 15:17:54  wenger
   Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
   with duplicate elimination and count mappings) exposed by Tim Wilson's
@@ -420,6 +424,7 @@
 
 Shape     **MappingInterp::_shapes       = NULL;
 
+//--------------------------------------------------------------------------
 /* Return true if command is a constant, and return the constant value */
 Boolean MappingInterp::IsConstCmd(char *cmd, AttrList *attrList, Coord &val,
 								  AttrType &attrType)
@@ -443,107 +448,25 @@ Boolean MappingInterp::IsConstCmd(char *cmd, AttrList *attrList, Coord &val,
   return false;
 }
 
-/* Return the size of GData records, given command and attribute flags */
-int MappingInterp::FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
-				 unsigned long int flag,
-				 unsigned long int attrFlag)
-{
-#if defined(DEBUG)
-  printf("MappingInterp::FindGDataSize()\n");
-#endif
-
-  if (cmd->xCmd == NULL) {
-    fprintf(stderr, "Warning: null X command in mapping\n");
-  }
-  if (cmd->yCmd == NULL) {
-    fprintf(stderr, "Warning: null Y command in mapping\n");
-  }
-
-  /* Record ID is always first GData attribute */
-  int size = sizeof(RecId);
-  double val;
-  AttrType attrType;
-
-  if (flag & MappingCmd_X
-#if !FORCE_X_INTO_GDATA
-      && !IsConstCmd(cmd->xCmd, attrList, val, attrType)
-#endif
-      ) {
-    size = WordBoundary(size, sizeof(double));
-    size += sizeof(double);
-  }
-  if (flag & MappingCmd_Y
-#if !FORCE_Y_INTO_GDATA
-      && !IsConstCmd(cmd->yCmd, attrList, val, attrType)
-#endif
-      ) {
-    size = WordBoundary(size, sizeof(double));
-    size += sizeof(double);
-  }
-  if (flag & MappingCmd_Z && !IsConstCmd(cmd->zCmd, attrList, val, attrType)) {
-    size = WordBoundary(size, sizeof(double));
-    size += sizeof(double);
-  }
-  if ((flag & MappingCmd_Color) && !IsConstCmd(cmd->colorCmd, attrList, val,
-	  attrType)) {
-    size = WordBoundary(size, sizeof(PColorID));
-    size += sizeof(PColorID);
-  }
-  if ((flag & MappingCmd_Size) && !IsConstCmd(cmd->sizeCmd, attrList, val,
-	  attrType)) {
-    size = WordBoundary(size, sizeof(double));
-    size += sizeof(double);
-  }
-  if ((flag & MappingCmd_Pattern) && !IsConstCmd(cmd->patternCmd, attrList,
-	  val, attrType)) {
-    size = WordBoundary(size, sizeof(Pattern));
-    size += sizeof(Pattern);
-  }
-  if ((flag & MappingCmd_Shape) && !IsConstCmd(cmd->shapeCmd, attrList, val,
-	  attrType)) {
-    size = WordBoundary(size, sizeof(ShapeID));
-    size += sizeof(ShapeID);
-  }
-  if ((flag & MappingCmd_Orientation) && 
-      !IsConstCmd(cmd->orientationCmd, attrList, val, attrType)) {
-    size = WordBoundary(size, sizeof(double));
-    size += sizeof(double);
-  }
-
-  for(int j = 0; j < MAX_SHAPE_ATTRS; j++) {
-    if ((attrFlag & (1 << j)) && !IsConstCmd(cmd->shapeAttrCmd[j], attrList,
-		val, attrType) ) {
-      size = WordBoundary(size, sizeof(double));
-      size += sizeof(double);
-    }
-  }
-  
-  size = WordBoundary(size, sizeof(double));
-  
-#ifdef DEBUG
-  printf("Gdata record size %d\n", size);
-#endif
-
-  return size;
-}
-
+//--------------------------------------------------------------------------
 MappingInterp::MappingInterp(char *name, TData *tdata,
 			     MappingInterpCmd *cmd,
 			     unsigned long int flag,
 			     unsigned long int attrFlag,
 			     VisualFlag *dimensionInfo, int numDimensions):
 	TDataMap(name, tdata, name,
-                 FindGDataSize(cmd, tdata->GetAttrList(),
-                               flag, attrFlag),
+				 0,
                  MappingInterpAllFlags, attrFlag,
 		 Init::MaxGDataPages(),
-                 dimensionInfo, numDimensions, true)
+                 dimensionInfo, numDimensions, false)
 {
 #if defined(DEBUG)
   printf("MappingInterp::MappingInterp(0x%p, %d dimensions, cmdFlag 0x%lx, "
 	 "attrFlag 0x%lx\n", this, numDimensions, flag, attrFlag);
 #endif
 
+
+//TEMP -- a lot of commonality with ChangeCmd?
   if (cmd->xCmd == NULL) {
     fprintf(stderr, "Warning: null X command in mapping %s\n", GetName());
   }
@@ -591,8 +514,12 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
   _cmd = cmd; // Note: cmd is allocated in MapInterpClassInfo.
   _cmdFlag = flag;
   _cmdAttrFlag = attrFlag;
-  AttrList *attrList = InitCmd(name);
+
+  int gRecSize;
+  AttrList *attrList = InitCmd(name, gRecSize);
   SetGDataAttrList(attrList);
+
+  CreateGData(gRecSize);
 
   /* sorted in the X direction? */
   AttrInfo *info = attrList->Find("x");
@@ -606,6 +533,7 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
   if (!_isSimpleCmd) _pNativeExpr = new CGraphicExpr( cmd );
 }
 
+//--------------------------------------------------------------------------
 MappingInterp::~MappingInterp()
 {
   delete _tclCmd;
@@ -623,6 +551,7 @@ MappingInterp::~MappingInterp()
   delete _pNativeExpr;
 }
 
+//--------------------------------------------------------------------------
 void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,
 			      unsigned long int flag,
 			      unsigned long int attrFlag,
@@ -650,7 +579,9 @@ void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,
   
   AttrList *attrList = GDataAttrList();
   delete attrList;
-  attrList = InitCmd(GetName());
+
+  int gRecSize;
+  attrList = InitCmd(GetName(), gRecSize);
   SetGDataAttrList(attrList);
 
   /* sorted in the X direction? */
@@ -661,8 +592,7 @@ void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,
     SetDimensionInfo(new VisualFlag(0), 0);
   }
 
-  TDataMap::ResetGData(FindGDataSize(cmd, _tdata->GetAttrList(), flag,
-					   attrFlag));
+  TDataMap::ResetGData(gRecSize);
 
   // added by whh, support for native expression analysis
   delete _pNativeExpr;
@@ -670,6 +600,7 @@ void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,
   if (!_isSimpleCmd) _pNativeExpr = new CGraphicExpr( cmd );
 }
 
+//--------------------------------------------------------------------------
 /* Get current commands */
 MappingInterpCmd *MappingInterp::GetCmd(unsigned long int &cmdFlag,
 					unsigned long int &attrFlag)
@@ -679,6 +610,7 @@ MappingInterpCmd *MappingInterp::GetCmd(unsigned long int &cmdFlag,
   return _cmd;
 }
 
+//--------------------------------------------------------------------------
 /* Get the AttrInfo for a GData attribute. */
 AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)
 {
@@ -758,6 +690,7 @@ AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)
 }
 
 
+//--------------------------------------------------------------------------
 char *MappingInterp::MapTAttr2GAttr(char *tname)
 {
     int i;
@@ -790,6 +723,7 @@ char *MappingInterp::MapTAttr2GAttr(char *tname)
     return gname;
 }
 
+//--------------------------------------------------------------------------
 /* Get the AttrInfo for shape attribute i */
 AttrInfo *MappingInterp::MapShapeAttr2TAttr(int i)
 {
@@ -819,6 +753,8 @@ AttrInfo *MappingInterp::MapShapeAttr2TAttr(int i)
     return 0;
 }
 
+// BBTEMP -- we should probably get rid of this
+//--------------------------------------------------------------------------
 void MappingInterp::UpdateMaxSymSize(void *gdata, int numSyms)
 {
   _maxSymWidth = 0;
@@ -862,6 +798,7 @@ void MappingInterp::UpdateMaxSymSize(void *gdata, int numSyms)
 #endif
 }
 
+//--------------------------------------------------------------------------
 void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
 				   void **gdataArray, int num,
 				   int &recordsProcessed,
@@ -927,10 +864,10 @@ void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
 #endif
 }
 
-/*
-   convert from Tdata to Gdata. buf contains
-   buffer for data. tRecs are pointers to variable size records only.
-*/
+//--------------------------------------------------------------------------
+// convert from Tdata to Gdata. buf contains
+// buffer for data. tRecs are pointers to variable size records only.
+//
 // modified by whh for native expression support
 
 void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
@@ -944,14 +881,1052 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
   if (_isSimpleCmd) {
     /* Do simple command conversion */
     ConvertToGDataSimple(startRecId, buf, numRecs, gdataPtr);
-    return;
+  } else {
+    ConvertToGDataComplex(startRecId, buf, numRecs, gdataPtr);
+  }
+
+  FindBoundingBoxes(gdataPtr, numRecs);
+}
+
+//TEMP -- this function really needs to be cleaned up!!!!!!!!!
+//--------------------------------------------------------------------------
+AttrList *MappingInterp::InitCmd(char *name, int &gRecSize)
+{
+#if defined(DEBUG)
+  printf("MappingInterp::InitCmd(%s)\n", name);
+#endif
+
+  AttrList *attrList = new AttrList(name);
+  StringStorage *xStringTable = GetStringTable(TableX);
+  StringStorage *yStringTable = GetStringTable(TableY);
+  StringStorage *zStringTable = GetStringTable(TableZ);
+  StringStorage *genStringTable = GetStringTable(TableGen);
+
+  /* Record ID is always first GData attribute */
+  _offsets->_recIdOffset = 0;
+
+  /* Init offsets to other GData attributes */
+  _offsets->_xOffset = _offsets->_yOffset = _offsets->_zOffset = -1;
+  _offsets->_colorOffset = _offsets->_sizeOffset = _offsets->_shapeOffset = -1;
+  _offsets->_patternOffset = _offsets->_orientationOffset = -1;
+  _offsets->_bbULxOffset = _offsets->_bbULyOffset = -1;
+  _offsets->_bbLRxOffset = _offsets->_bbLRyOffset = -1;
+
+  int i;
+  for(i = 0; i < MAX_SHAPE_ATTRS; i++) {
+    _offsets->_shapeAttrOffset[i] = -1;
+  }
+
+  _tdataFlag->ClearBitmap();
+  _maxTDataAttrNum = 0;
+  
+  int offset = sizeof(RecId);
+
+  _isSimpleCmd = true;
+  Boolean isSorted;
+  AttrType attrType;
+  int attrNum = 0;
+
+  ShapeID shape = (ShapeID)9999; // invalid unless shape is constant
+
+  int j;
+
+  if (_cmdFlag & MappingCmd_X) {
+    if (!ConvertSimpleCmd(_cmd->xCmd, _tdata->GetAttrList(), _simpleCmd->xCmd, attrType, isSorted, xStringTable))
+      goto complexCmd;
+    if (_simpleCmd->xCmd.cmdType == MappingSimpleCmdEntry::ConstCmd &&
+		!FORCE_X_INTO_GDATA) {
+      /* constant */
+      SetDefaultX((Coord)_simpleCmd->xCmd.cmd.num);
+      attrList->InsertAttr(attrNum++, "x", -1, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
+    } else {
+      //TEMP -- make a macro for this? -- at least only specify the
+      // type in one place!
+      _offsets->_xOffset = offset = WordBoundary(offset, sizeof(double));
+      attrList->InsertAttr(attrNum++, "x", offset, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
+      offset += sizeof(double);
+    }
+  }
+
+  if (_cmdFlag & MappingCmd_Y) {
+    if (!ConvertSimpleCmd(_cmd->yCmd, _tdata->GetAttrList(),
+		_simpleCmd->yCmd, attrType, isSorted, yStringTable))
+      goto complexCmd;
+    if (_simpleCmd->yCmd.cmdType == MappingSimpleCmdEntry::ConstCmd &&
+		!FORCE_Y_INTO_GDATA) {
+      /* constant */
+      SetDefaultY((Coord)_simpleCmd->yCmd.cmd.num);
+      attrList->InsertAttr(attrNum++, "y", -1, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
+    } else {
+      _offsets->_yOffset = offset = WordBoundary(offset, sizeof(double));
+      attrList->InsertAttr(attrNum++, "y", offset, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
+      offset += sizeof(double);
+    }
+  }
+
+  if (_cmdFlag & MappingCmd_Z) {
+    if (!ConvertSimpleCmd(_cmd->zCmd, _tdata->GetAttrList(),
+		_simpleCmd->zCmd, attrType, isSorted, zStringTable))
+      goto complexCmd;
+    if (_simpleCmd->zCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
+      /* constant */
+      SetDefaultZ((Coord)_simpleCmd->zCmd.cmd.num);
+      attrList->InsertAttr(attrNum++, "z", -1, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
+    } else {
+      _offsets->_zOffset = offset = WordBoundary(offset, sizeof(double));
+      attrList->InsertAttr(attrNum++, "z", offset, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
+      offset += sizeof(double);
+    }
+  }
+
+  // Color command
+  if (_cmdFlag & MappingCmd_Color)
+  {
+    if (!ConvertSimpleCmd(_cmd->colorCmd, _tdata->GetAttrList(),
+		_simpleCmd->colorCmd, attrType, isSorted, genStringTable)) {
+      goto complexCmd;
+    }
+
+    if (_simpleCmd->colorCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
+      PColorID	pcid = (PColorID)_simpleCmd->colorCmd.cmd.num;
+
+	  // Coloring in TDataMap is apparently used to store color if constant.
+      GetColoring().SetForeground(pcid);
+      attrList->InsertAttr(attrNum++, "color", -1, sizeof(double),
+      attrType, false, NULL, false, isSorted);
+    } else {
+      _offsets->_colorOffset = offset = WordBoundary(offset,
+      sizeof(PColorID));
+      attrList->InsertAttr(attrNum++, "color", offset, sizeof(double),
+      attrType, false, NULL, false, isSorted);
+      offset += sizeof(PColorID);
+    }
+  }
+
+  if (_cmdFlag & MappingCmd_Size) {
+    if (!ConvertSimpleCmd(_cmd->sizeCmd, _tdata->GetAttrList(),
+		_simpleCmd->sizeCmd, attrType, isSorted, genStringTable))
+      goto complexCmd;
+    if (_simpleCmd->sizeCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
+      /* constant */
+      SetDefaultSize((Coord)_simpleCmd->sizeCmd.cmd.num);
+      attrList->InsertAttr(attrNum++, "size", -1, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
+    } else {
+      _offsets->_sizeOffset = offset = WordBoundary(offset, sizeof(double));
+      attrList->InsertAttr(attrNum++, "size", offset, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
+      offset += sizeof(double);
+    }
+  }
+
+  if (_cmdFlag & MappingCmd_Pattern) {
+    if (!ConvertSimpleCmd(_cmd->patternCmd, _tdata->GetAttrList(),
+		_simpleCmd->patternCmd, attrType, isSorted, genStringTable))
+      goto complexCmd;
+    if (_simpleCmd->patternCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
+      /* constant */
+      SetDefaultPattern((Pattern)_simpleCmd->patternCmd.cmd.num);
+      attrList->InsertAttr(attrNum++, "pattern", -1, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
+    } else {
+      _offsets->_patternOffset = offset = WordBoundary(offset, sizeof(Pattern));
+      attrList->InsertAttr(attrNum++, "pattern", offset, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
+      offset += sizeof(Pattern);
+    }
+  }
+
+  if (_cmdFlag & MappingCmd_Shape) {
+    if (!ConvertSimpleCmd(_cmd->shapeCmd, _tdata->GetAttrList(),
+		_simpleCmd->shapeCmd, attrType, isSorted, genStringTable))
+      goto complexCmd;
+    if (_simpleCmd->shapeCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
+      /* constant */
+      shape = (ShapeID)_simpleCmd->shapeCmd.cmd.num;
+      if (shape >= MaxInterpShapes)
+	shape = 0;
+      SetDefaultShape(shape);
+      attrList->InsertAttr(attrNum++, "shape", -1, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
+    } else {
+      _offsets->_shapeOffset = offset = WordBoundary(offset, sizeof(ShapeID));
+      attrList->InsertAttr(attrNum++, "shape", offset, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
+      offset += sizeof(ShapeID);
+    }
+  }
+
+  if (_cmdFlag & MappingCmd_Orientation) {
+    if (!ConvertSimpleCmd(_cmd->orientationCmd,
+			  _tdata->GetAttrList(), _simpleCmd->orientationCmd, attrType,
+			  isSorted, genStringTable))
+      goto complexCmd;
+    if (_simpleCmd->orientationCmd.cmdType == 
+	MappingSimpleCmdEntry::ConstCmd) {
+      /* constant */
+      SetDefaultOrientation((Coord)_simpleCmd->orientationCmd.cmd.num);
+      attrList->InsertAttr(attrNum++, "orientation", -1, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
+    } else {
+      _offsets->_orientationOffset = offset = WordBoundary(offset,
+							  sizeof(double));
+      attrList->InsertAttr(attrNum++, "orientation", offset, sizeof(double),
+			   attrType, false, NULL, false, isSorted);
+      offset += sizeof(double);
+    }
+  }
+
+  _maxGDataShapeAttrNum = -1;
+  for(j = 0; j < MAX_SHAPE_ATTRS; j++) {
+    if (_cmdAttrFlag & (1 << j)) {
+      _maxGDataShapeAttrNum = j;
+      if (!ConvertSimpleCmd(_cmd->shapeAttrCmd[j],
+			    _tdata->GetAttrList(), _simpleCmd->shapeAttrCmd[j], attrType,
+			    isSorted, genStringTable))
+	goto complexCmd;
+      if (_simpleCmd->shapeAttrCmd[j].cmdType ==
+	  MappingSimpleCmdEntry::ConstCmd) {
+	/* constant */
+	SetDefaultShapeAttr(j, (Coord)_simpleCmd->shapeAttrCmd[j].cmd.num);
+	char attrName [80];
+	sprintf(attrName, "shapeAttr_%d", j);
+	attrList->InsertAttr(attrNum++, attrName, -1, sizeof(double),
+			     attrType, false, NULL, false, isSorted);
+      } else {
+	char attrName [80];
+	sprintf(attrName, "shapeAttr_%d", j);
+	_offsets->_shapeAttrOffset[j] = offset = WordBoundary(offset,
+							     sizeof(double));
+	attrList->InsertAttr(attrNum++, attrName, offset, sizeof(double),
+			     attrType, false, NULL, false, isSorted);
+	offset += sizeof(double);
+      }
+    }
+  }
+
+//TEMP -- note -- code relies on Coord being the same as double --
+// get rid of this and use Coords where necessary
+
+  if (_offsets->_shapeOffset >= 0 || _shapes[shape]->BBIsVariable(_offsets)) {
+	_offsets->_bbULxOffset = offset = WordBoundary(offset, sizeof(double));
+	attrList->InsertAttr(attrNum++, "bbULx", offset, sizeof(double),
+	    DoubleAttr);
+	offset += sizeof(double);
+
+	_offsets->_bbULyOffset = offset = WordBoundary(offset, sizeof(double));
+	attrList->InsertAttr(attrNum++, "bbULy", offset, sizeof(double),
+	    DoubleAttr);
+	offset += sizeof(double);
+
+	_offsets->_bbLRxOffset = offset = WordBoundary(offset, sizeof(double));
+	attrList->InsertAttr(attrNum++, "bbLRx", offset, sizeof(double),
+	    DoubleAttr);
+	offset += sizeof(double);
+
+	_offsets->_bbLRyOffset = offset = WordBoundary(offset, sizeof(double));
+	attrList->InsertAttr(attrNum++, "bbLRy", offset, sizeof(double),
+	    DoubleAttr);
+	offset += sizeof(double);
+  }
+
+  gRecSize = offset;
+
+#if defined(DEBUG)
+  printf("Command is %s\n", name);
+  PrintCmd();
+  attrList->Print();
+  printf("offsets: x %d, y %d, z %d, color %d, size %d,\n", 
+	 _offsets->_xOffset, _offsets->_yOffset, _offsets->_zOffset,
+	 _offsets->_colorOffset, _offsets->_sizeOffset);
+  printf("         shape %d, pattern %d, orientation %d\n", 
+	 _offsets->_shapeOffset, _offsets->_patternOffset,
+	 _offsets->_orientationOffset);
+  printf("         ULx %d, ULy %d, LRx %d, LRy %d\n", _offsets->_bbULxOffset,
+         _offsets->_bbULyOffset, _offsets->_bbLRxOffset,
+	 _offsets->_bbLRyOffset);
+  printf("attr offsets:");
+  for(i = 0; i < MAX_SHAPE_ATTRS; i++) {
+    printf(" %d", _offsets->_shapeAttrOffset[i]);
+  }
+  printf("\n");
+  printf("gRecSize = %d\n", gRecSize);
+#endif
+
+  return attrList;
+  
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+complexCmd:
+/* Note:  I don't understand why having a single "complex" GData attribute
+ * forces all other GData attributes to be converted in the "complex" mode.
+ * RKW 4/24/97. */
+
+  /* Record ID is always first GData attribute */
+  _offsets->_recIdOffset = 0;
+
+  /* Init offsets to other GData attributes */
+  _offsets->_xOffset = _offsets->_yOffset = _offsets->_zOffset = -1;
+  _offsets->_colorOffset = _offsets->_sizeOffset = _offsets->_shapeOffset = -1;
+  _offsets->_patternOffset = _offsets->_orientationOffset = -1;
+  for(i = 0; i < MAX_SHAPE_ATTRS; i++) {
+    _offsets->_shapeAttrOffset[i] = -1;
+  }
+
+  _isSimpleCmd = false;
+
+  if (attrList != NULL)
+    delete attrList;
+  attrList = new AttrList(name);
+
+  _tdataFlag->ClearBitmap();
+  _maxTDataAttrNum = 0;
+
+  offset = sizeof(RecId);
+  offset = WordBoundary(offset, sizeof(double));
+  attrNum = 0;
+
+  double constVal;
+
+  if (_cmdFlag & MappingCmd_X) {
+    if (IsConstCmd(_cmd->xCmd, attrList, constVal, attrType) &&
+		!FORCE_X_INTO_GDATA) {
+      SetDefaultX((Coord)constVal);
+      _tclCmd->xCmd = "";
+      attrList->InsertAttr(attrNum++, "x", -1, sizeof(double), attrType,
+			   false, NULL, false, false);
+    } else {
+      _tclCmd->xCmd = ConvertCmd(_cmd->xCmd, attrType, isSorted);
+      _offsets->_xOffset = offset = WordBoundary(offset,sizeof(double));
+      attrList->InsertAttr(attrNum++, "x", offset, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
+      offset += sizeof(double);
+    }
+  }
+  if (_cmdFlag & MappingCmd_Y) {
+    if (IsConstCmd(_cmd->yCmd, attrList, constVal, attrType) &&
+		!FORCE_Y_INTO_GDATA) {
+      SetDefaultY((Coord)constVal);
+      _tclCmd->yCmd = "";
+      attrList->InsertAttr(attrNum++, "y", -1, sizeof(double), attrType,
+			   false, NULL, false, false);
+    } else {
+      _tclCmd->yCmd = ConvertCmd(_cmd->yCmd, attrType, isSorted);
+      _offsets->_yOffset = offset = WordBoundary(offset,sizeof(double));
+      attrList->InsertAttr(attrNum++, "y", offset, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
+      offset += sizeof(double);
+    }
+  }
+
+  if (_cmdFlag & MappingCmd_Z) {
+    if (IsConstCmd(_cmd->zCmd, attrList, constVal, attrType)) {
+      SetDefaultZ((Coord)constVal);
+      _tclCmd->zCmd = "";
+      attrList->InsertAttr(attrNum++, "z", -1, sizeof(double), attrType,
+			   false, NULL, false, false);
+    } else {
+      _tclCmd->zCmd = ConvertCmd(_cmd->zCmd, attrType, isSorted);
+      _offsets->_zOffset = offset = WordBoundary(offset,sizeof(double));
+      attrList->InsertAttr(attrNum++, "z", offset, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
+      offset += sizeof(double);
+    }
+  }
+
+	// Color command
+	if (_cmdFlag & MappingCmd_Color)
+	{
+		if (IsConstCmd(_cmd->colorCmd, attrList, constVal, attrType))
+		{
+			PColorID	pcid = (PColorID)constVal;
+
+	        // Coloring in TDataMap is apparently used to store color if
+			// constant.
+			GetColoring().SetForeground(pcid);
+			_tclCmd->colorCmd = "";
+			attrList->InsertAttr(attrNum++, "color", -1, sizeof(double), attrType,
+								 false, NULL, false, false);
+		}
+		else
+		{
+			_tclCmd->colorCmd = ConvertCmd(_cmd->colorCmd, attrType, isSorted);
+			_offsets->_colorOffset = offset = WordBoundary(offset,
+														  sizeof(PColorID));
+			attrList->InsertAttr(attrNum++, "color", offset, sizeof(double), attrType,
+								 false, NULL, false, isSorted);
+			offset += sizeof(PColorID);
+		}
+	}
+
+  if (_cmdFlag & MappingCmd_Size) {
+    if (IsConstCmd(_cmd->sizeCmd, attrList, constVal, attrType)) {
+      SetDefaultSize(constVal);
+      _tclCmd->sizeCmd = "";
+      attrList->InsertAttr(attrNum++, "size", -1, sizeof(double), attrType,
+			   false, NULL, false, false);
+    } else {
+      _tclCmd->sizeCmd = ConvertCmd(_cmd->sizeCmd, attrType, isSorted);
+      _offsets->_sizeOffset = offset = WordBoundary(offset,sizeof(double));
+      attrList->InsertAttr(attrNum++, "size", offset, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
+      offset += sizeof(double);
+    }
+  }
+
+  if (_cmdFlag & MappingCmd_Pattern) {
+    if (IsConstCmd(_cmd->patternCmd, attrList, constVal, attrType)) {
+      SetDefaultPattern((Pattern)constVal);
+      _tclCmd->patternCmd = "";
+      attrList->InsertAttr(attrNum++, "pattern", -1, sizeof(double), attrType,
+			   false, NULL, false, false);
+    } else {
+      _tclCmd->patternCmd = ConvertCmd(_cmd->patternCmd, attrType, isSorted);
+      _offsets->_patternOffset = offset = WordBoundary(offset,sizeof(Pattern));
+      attrList->InsertAttr(attrNum++, "pattern", offset, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
+      offset += sizeof(Pattern);
+    }
+  }
+
+  if (_cmdFlag & MappingCmd_Orientation) {
+    if (IsConstCmd(_cmd->orientationCmd, attrList, constVal, attrType)) {
+      SetDefaultOrientation(constVal);
+      _tclCmd->orientationCmd = "";
+      attrList->InsertAttr(attrNum++, "orientation", -1, sizeof(double), attrType,
+			   false, NULL, false, false);
+    } else {
+      _tclCmd->orientationCmd = ConvertCmd(_cmd->orientationCmd, attrType, 
+					   isSorted);
+      _offsets->_shapeOffset = offset = WordBoundary(offset,sizeof(double));
+      attrList->InsertAttr(attrNum++, "orientation", offset, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
+      offset += sizeof(double);
+    }
+  }
+
+  if (_cmdFlag & MappingCmd_Shape) {
+    if (IsConstCmd(_cmd->shapeCmd, attrList, constVal, attrType)) {
+      shape = (ShapeID)constVal;
+      if (shape >= MaxInterpShapes)
+	shape = 0;
+      SetDefaultShape(shape);
+      _tclCmd->shapeCmd = "";
+      attrList->InsertAttr(attrNum++, "shape", -1, sizeof(double), attrType,
+			   false, NULL, false, false);
+    } else {
+      _tclCmd->shapeCmd = ConvertCmd(_cmd->shapeCmd, attrType, isSorted);
+      _offsets->_shapeOffset = offset = WordBoundary(offset,sizeof(ShapeID));
+      attrList->InsertAttr(attrNum++, "shape", offset, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
+      offset += sizeof(ShapeID);
+    }
+  }
+
+  _maxGDataShapeAttrNum = -1;
+  for(j = 0; j < MAX_SHAPE_ATTRS; j++) {
+    char attrName [80];
+    sprintf(attrName, "shapeAttr_%d", j);
+    if (_cmdAttrFlag & (1 << j)) {
+      _maxGDataShapeAttrNum = j;
+      if (IsConstCmd(_cmd->shapeAttrCmd[j], attrList, constVal, attrType)) {
+	SetDefaultShapeAttr(j,constVal);
+	_tclCmd->shapeAttrCmd[j] = "";
+	attrList->InsertAttr(attrNum++, attrName, -1, sizeof(double),
+			     attrType, false, NULL, false, false);
+      } else {
+	_tclCmd->shapeAttrCmd[j] = 
+	  ConvertCmd(_cmd->shapeAttrCmd[j], attrType, isSorted);
+	_offsets->_shapeAttrOffset[j] = offset = WordBoundary(offset,
+							     sizeof(double));
+	attrList->InsertAttr(attrNum++, attrName, offset, sizeof(double),
+			     attrType, false,  NULL, false, isSorted);
+	offset += sizeof(double);
+      }
+    }
+  }
+
+  if (_offsets->_shapeOffset >= 0 || _shapes[shape]->BBIsVariable(_offsets)) {
+	_offsets->_bbULxOffset = offset = WordBoundary(offset, sizeof(double));
+	attrList->InsertAttr(attrNum++, "bbULx", offset, sizeof(double),
+	    DoubleAttr);
+	offset += sizeof(double);
+
+	_offsets->_bbULyOffset = offset = WordBoundary(offset, sizeof(double));
+	attrList->InsertAttr(attrNum++, "bbULy", offset, sizeof(double),
+	    DoubleAttr);
+	offset += sizeof(double);
+
+	_offsets->_bbLRxOffset = offset = WordBoundary(offset, sizeof(double));
+	attrList->InsertAttr(attrNum++, "bbLRx", offset, sizeof(double),
+	    DoubleAttr);
+	offset += sizeof(double);
+
+	_offsets->_bbLRyOffset = offset = WordBoundary(offset, sizeof(double));
+	attrList->InsertAttr(attrNum++, "bbLRy", offset, sizeof(double),
+	    DoubleAttr);
+	offset += sizeof(double);
+  }
+
+  gRecSize = offset;
+
+#if defined(DEBUG)
+  printf("Command is %s\n", name);
+  PrintCmd();
+  attrList->Print();
+  printf("offsets: x %d, y %d, z %d, color %d, size %d,\n", 
+	 _offsets->_xOffset, _offsets->_yOffset, _offsets->_zOffset,
+	 _offsets->_colorOffset, _offsets->_sizeOffset);
+  printf("         shape %d, pattern %d, orientation %d\n", 
+	 _offsets->_shapeOffset, _offsets->_patternOffset,
+	 _offsets->_orientationOffset);
+  printf("         ULx %d, ULy %d, LRx %d, LRy %d\n", _offsets->_bbULxOffset,
+         _offsets->_bbULyOffset, _offsets->_bbLRxOffset,
+	 _offsets->_bbLRyOffset);
+  printf("attr offsets: ");
+  for(i = 0; i < MAX_SHAPE_ATTRS; i++) {
+    printf(" %d", _offsets->_shapeAttrOffset[i]);
+  }
+  printf("\n");
+  printf("gRecSize = %d\n", gRecSize);
+#endif
+  
+  return attrList;
+}
+
+/* string manipulation commands */
+const int MAX_STRING = 1024;
+static char _stringBuf[MAX_STRING];
+static int _numChar = 0;
+
+//--------------------------------------------------------------------------
+static void InitString()
+{
+  _numChar = 0;
+  _stringBuf[0] = '\0';
+}
+
+//--------------------------------------------------------------------------
+static void InsertChar(char c)
+{
+  DOASSERT(_numChar + 1 < MAX_STRING, "No more string space");
+  _stringBuf[_numChar++] = c;
+  _stringBuf[_numChar] = '\0';
+}
+
+//--------------------------------------------------------------------------
+static void InsertString(char *string)
+{
+  int length = strlen(string);
+  DOASSERT(_numChar + length < MAX_STRING, "No more string space");
+  char *ptr = &_stringBuf[_numChar];
+  while (*string != '\0') {
+    *ptr++ = *string++;
+  }
+  _numChar += length;
+  _stringBuf[_numChar] = '\0';
+}
+
+//--------------------------------------------------------------------------
+static char *GetString()
+{
+  return _stringBuf;
+}
+
+//--------------------------------------------------------------------------
+/* Return TRUE if cmd is a simple command, and set entry to the
+   converted cmmand entry. A simple command
+   is either a constant, or a tdata attribute */
+
+Boolean MappingInterp::ConvertSimpleCmd(char *cmd, AttrList *attrList,
+					MappingSimpleCmdEntry &entry,
+					AttrType &type, Boolean &isSorted,
+					StringStorage *stringTable)
+{
+#if defined(DEBUG)
+  printf("MappingInterp::ConvertSimpleCmd: '%s'\n",cmd);
+#endif
+
+  /* do not use simple interpreter? */
+  if (!Init::UseSimpleInterpreter())
+    return false;
+
+  /* skip leading blanks and tabs */
+  while (*cmd == ' ' || *cmd == '\t') cmd++;
+
+  /* NULL command? */
+  if (*cmd == '\0') {
+    entry.cmdType = MappingSimpleCmdEntry::NULLCmd;
+    type = FloatAttr;
+    isSorted = false;
+    return true;
   }
   
+  AttrInfo *info;
+  double num;
+
+  if (*cmd == '$') {
+    /*
+       printf("got '$'\n");
+    */
+    if ( *(cmd+1) == '\0' )
+      return false;
+
+    if (!strcmp(cmd + 1, REC_ID_NAME)) {
+      entry.cmdType = MappingSimpleCmdEntry::AttrCmd;
+      entry.cmd.attrNum = -1;
+      type = IntAttr;
+      isSorted = true;
+      return true;
+    }
+    
+    if ((info = attrList->Find(cmd+1)) != NULL) {
+      entry.cmdType = MappingSimpleCmdEntry::AttrCmd;
+      entry.cmd.attrNum = info->attrNum;
+      type = info->type;
+      isSorted = info->isSorted;
+      return true;
+    }
+#if defined(DEBUG)
+    printf("Undefined variable name: %s\n", cmd + 1);
+    //printf("Attribute list:\n");
+    //attrList->Print();
+#endif
+    return false;
+  }
+
+  if (*cmd == '"') {
+    int len = strlen(cmd);
+    char* end = cmd + len - 1;
+    if( len == 1 || *end != '"' ) return false;
+    len -= 2; 
+    char* str = new char[len+1];
+    strncpy(str, cmd+1, len);
+    str[len] = '\0'; // Terminate the string!
+    int strid;
+    int code = stringTable->Insert(str, strid);
+    DOASSERT(code >= 0, "Cannot insert string");
+    delete [] str;
+#if defined(DEBUG)
+    printf("string constant at %d: %s\n", strid, str != NULL ? str : "NULL");
+#endif
+    entry.cmdType = MappingSimpleCmdEntry::ConstCmd;
+    entry.cmd.num = strid;
+    type = StringAttr;
+    isSorted = false;
+    return true;
+  }
+
+  if (ConvertNum(cmd, num)) {
+    entry.cmdType = MappingSimpleCmdEntry::ConstCmd;
+    entry.cmd.num = num;
+    type = DoubleAttr;
+    isSorted = false;
+    return true;
+  }
+
+  return false;
+}
+
+//--------------------------------------------------------------------------
+// Note: sorted will now be set to false if the command is anything but
+// a simple invocation of a sorted attribute.  This fixes bug 466.
+// RKW 1999-03-02.
+char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
+				Boolean &isSorted)
+{
+#if defined(DEBUG)
+  printf("  MappingInterp::ConvertCmd: '%s'\n",cmd);
+#endif
+
+  InitString();
+
+  attrType = DoubleAttr;
+  isSorted = true;
+  
+  while (*cmd != '\0') {
+    if (*cmd == '$') {
+      /* convert variable name */
+      char *ptr = cmd+1;
+      while ( (*ptr >= 'a' && *ptr <='z') ||
+	     (*ptr >= 'A' && *ptr <= 'Z') ||
+	     (*ptr >= '0' && *ptr <= '9') ||
+	     (*ptr == '_')) {
+	      ptr++;
+      }
+      if (ptr == cmd+1) {
+	    /* did not get a variable name */
+	      isSorted = false;
+	      InsertChar(*cmd);
+      } else {
+		    /* from cmd+1 to ptr-1 is a variable name */
+			  char buf[80];
+			  int len = ptr - 1 - (cmd + 1) + 1;
+			  DOASSERT(len < (int)sizeof buf, "Variable name too long");
+			  memcpy(buf, cmd + 1, len);
+			  buf[len] = 0;
+			
+	      if (strcmp(buf, REC_ID_NAME) == 0) {
+          InsertString("$recId");
+	      } else {
+			    AttrInfo *info = _tdata->GetAttrList()->Find(buf);
+			    if (!info) {
+			      /* can't find variable name */
+			      char errBuf[256];
+			      sprintf(errBuf, "Can't find attribute '%s' requested by mapping",
+			              buf);
+		        reportErrNosys(errBuf);
+			    } else {
+			      /* found the attribute */
+			      if (!info->isSorted) {
+			        isSorted = false;
+				  }
+			      if (info->type == DateAttr) {
+			        attrType = DateAttr;
+			      } else if (info->type == StringAttr) {
+			        attrType = StringAttr;
+			      }
+			  
+			      if (info->attrNum > _maxTDataAttrNum)
+			        _maxTDataAttrNum = info->attrNum;
+			      _tdataFlag->SetBit(info->attrNum);
+			  
+		         sprintf(buf, "$interpAttr_%d", info->attrNum);
+			       InsertString(buf);
+			    }
+		    }
+			  cmd = ptr - 1;
+      }
+    } else {
+	  isSorted = false;
+      InsertChar(*cmd);
+    }
+    cmd++;
+  }
+  return CopyString(GetString());
+}
+
+//--------------------------------------------------------------------------
+void MappingInterp::PrintSimpleCmdEntry(MappingSimpleCmdEntry *entry)
+{
+  switch(entry->cmdType) {
+  case MappingSimpleCmdEntry::AttrCmd:
+    if (entry->cmd.attrNum != -1) {
+      AttrInfo *info = _tdata->GetAttrList()->Get(entry->cmd.attrNum);
+      printf("\"%s\"", info->name);
+    }
+    else {
+      printf("\"recId\"");
+    }
+    break;
+
+  case MappingSimpleCmdEntry::ConstCmd:
+    printf("%f", entry->cmd.num);
+    break;
+
+  case MappingSimpleCmdEntry::NULLCmd:
+    printf("NULL");
+    break;
+
+  default:
+    printf("Unknown");
+
+  }
+}
+
+//--------------------------------------------------------------------------
+void MappingInterp::PrintCmd()
+{
+  if (_isSimpleCmd) {
+    /* simple command */
+    printf("simple command\n");
+    if (_cmdFlag & MappingCmd_X) {
+      printf("x: %s --> ", _cmd->xCmd);
+      PrintSimpleCmdEntry(&_simpleCmd->xCmd);
+      printf("\n");
+    }
+    
+    if (_cmdFlag & MappingCmd_Y) {
+      printf("y: %s --> ", _cmd->yCmd);
+      PrintSimpleCmdEntry(&_simpleCmd->yCmd);
+      printf("\n");
+    }
+    
+    if (_cmdFlag & MappingCmd_Z) {
+      printf("z: %s --> ", _cmd->zCmd);
+      PrintSimpleCmdEntry(&_simpleCmd->zCmd);
+      printf("\n");
+    }
+
+    if (_cmdFlag & MappingCmd_Color) {
+      printf("color: %s --> ", _cmd->colorCmd);
+      PrintSimpleCmdEntry(&_simpleCmd->colorCmd);
+      printf("\n");
+    }
+    
+    if (_cmdFlag & MappingCmd_Size) {
+      printf("size: %s --> ", _cmd->sizeCmd);
+      PrintSimpleCmdEntry(&_simpleCmd->sizeCmd);
+      printf("\n");
+		}
+    
+    if (_cmdFlag & MappingCmd_Pattern) {
+      printf("pattern: %s --> ", _cmd->patternCmd);
+      PrintSimpleCmdEntry(&_simpleCmd->patternCmd);
+      printf("\n");
+    }
+    
+    if (_cmdFlag & MappingCmd_Shape) {
+      printf("shape: %s --> ", _cmd->shapeCmd);
+      PrintSimpleCmdEntry(&_simpleCmd->shapeCmd);
+      printf("\n");
+    }
+    
+    if (_cmdFlag & MappingCmd_Orientation) {
+      printf("orientation: %s --> ", _cmd->orientationCmd);
+      PrintSimpleCmdEntry(&_simpleCmd->orientationCmd);
+      printf("\n");
+    }
+
+    for(int j = 0; j < MAX_SHAPE_ATTRS; j++) {
+      if (_cmdAttrFlag & (1 << j)) {
+	printf("shapeAttr_%d: %s --> ", j, _cmd->shapeAttrCmd[j]);
+	PrintSimpleCmdEntry(&_simpleCmd->shapeAttrCmd[j]);
+	printf("\n");
+      }
+    }
+
+  } else {
+
+    printf("complex command\n");
+    if (_cmdFlag & MappingCmd_X)
+      printf("x: %s --> %s\n", _cmd->xCmd, _tclCmd->xCmd);
+    
+    if (_cmdFlag & MappingCmd_Y)
+      printf("y: %s --> %s\n", _cmd->yCmd, _tclCmd->yCmd);
+    
+    if (_cmdFlag & MappingCmd_Z)
+      printf("z: %s --> %s\n", _cmd->zCmd, _tclCmd->zCmd);
+    
+    if (_cmdFlag & MappingCmd_Color)
+      printf("color: %s --> %s\n", _cmd->colorCmd, _tclCmd->colorCmd);
+    
+    if (_cmdFlag & MappingCmd_Size)
+      printf("size: %s --> %s\n", _cmd->sizeCmd, _tclCmd->sizeCmd);
+
+    if (_cmdFlag & MappingCmd_Pattern)
+      printf("pattern: %s --> %s\n", _cmd->patternCmd, _tclCmd->patternCmd);
+
+    if (_cmdFlag & MappingCmd_Shape)
+      printf("shape: %s --> %s\n", _cmd->shapeCmd, _tclCmd->shapeCmd);
+
+    if (_cmdFlag & MappingCmd_Orientation)
+      printf("orientation: %s --> %s\n", _cmd->orientationCmd,
+	     _tclCmd->orientationCmd);
+
+    for(int j = 0; j < MAX_SHAPE_ATTRS; j++) {
+      if (_cmdAttrFlag & (1 << j))
+	printf("shapeAttr_%d: %s --> %s\n", j, _cmd->shapeAttrCmd[j],
+	       _tclCmd->shapeAttrCmd[j]);
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// Return the value to be mapped using from as the pointer to record,
+// entry as entry describing mapping, and defaultVal as the default value.
+
+double MappingInterp::ConvertOneAttr(char *from, MappingSimpleCmdEntry *entry, 
+				 double defaultVal, StringStorage *stringTable)
+{
+#if defined(DEBUG)
+  printf("MappingInterp::ConvertOneAttr(%s)\n", from);
+#endif
+
+  AttrInfo *info;
+  int offset;
+  char *ptr;
+  double retVal;
+
+  int code = 0;
+  int key = 0;
+
+//  printf("entry->cmdType : %d\n", entry->cmdType);
+  switch(entry->cmdType) {
+  
+  case MappingSimpleCmdEntry::AttrCmd: {
+    info = _tdata->GetAttrList()->Get(entry->cmd.attrNum);
+    if (!info)
+      return MappingInterp::_recId;
+
+    offset = info->offset;
+    ptr = from + offset;
+
+    switch(info->type) {
+
+      case IntAttr:{
+      	int tmp;
+      	memcpy(&tmp, ptr, sizeof(int));
+	return tmp;
+        break;
+      }
+      case FloatAttr:{
+      	float tmp;
+      	memcpy(&tmp, ptr, sizeof(float));
+	return tmp;
+        break;
+     }
+
+      case DoubleAttr:{
+      	double tmp;
+      	memcpy(&tmp, ptr, sizeof(double));
+	return tmp;
+        break;
+      }
+
+      case StringAttr:
+        code = stringTable->Insert(ptr, key);
+#ifdef DEBUG
+        printf("Converted string \"%s\" to key %d, code %d\n", ptr, key, code);
+#endif
+        if (code < 0)
+          return defaultVal;
+        return (double)key;
+        break;
+
+      case DateAttr:{
+      	time_t tmp;
+      	memcpy(&tmp, ptr, sizeof(time_t));
+	return (double) tmp;
+        break;
+      }
+    }
+    DOASSERT(0, "Unknown attr cmd type");
+    break;
+  }
+  case MappingSimpleCmdEntry::ConstCmd:
+    /*
+       printf("returning num: %f\n", entry->cmd.num);
+    */
+    return entry->cmd.num;
+    break;
+
+  case MappingSimpleCmdEntry::NULLCmd:
+    /*
+       printf("returning NULL\n");
+    */
+    return defaultVal;
+    break;
+  }
+  fflush(stdout);
+  DOASSERT(0, "Unknown simple command type");
+
+  // keep compiler happy
+  return 0;
+}
+
+//--------------------------------------------------------------------------
+void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
+					 int numRecs, void *gdataPtr)
+{
+#if defined(DEBUG)
+  printf("ConvertToGDataSimple\n");
+#endif
+
+  int tRecSize = TDataRecordSize();
+  int gRecSize = GDataRecordSize();
+  char *tPtr = (char *)buf;
+  char *gPtr = (char *)gdataPtr;
+  _recId = startRecId;
+
+  StringStorage *xStringTable = GetStringTable(TableX);
+  StringStorage *yStringTable = GetStringTable(TableY);
+  StringStorage *zStringTable = GetStringTable(TableZ);
+  StringStorage *genStringTable = GetStringTable(TableGen);
+
+  for(int i = 0; i < numRecs; i++) {
+    /* Store ID of current record */
+    *((RecId *)(gPtr + _offsets->_recIdOffset)) = startRecId + i;
+    
+    double *dPtr;
+    if (_offsets->_xOffset >= 0) {
+      dPtr = (double *)(gPtr + _offsets->_xOffset);
+      *dPtr = ConvertOneAttr(tPtr, &_simpleCmd->xCmd, 1.0, xStringTable);
+    }
+    if ( _offsets->_yOffset >= 0) {
+      dPtr = (double *)(gPtr + _offsets->_yOffset);
+      *dPtr = ConvertOneAttr(tPtr, &_simpleCmd->yCmd, 1.0, yStringTable);
+    }
+    if (_offsets->_zOffset >= 0) {
+      dPtr = (double *)(gPtr + _offsets->_zOffset);
+      *dPtr = ConvertOneAttr(tPtr, &_simpleCmd->zCmd, 1.0, zStringTable);
+    }
+
+	// Color command
+	if (_offsets->_colorOffset >= 0)
+	{
+		PColorID*	pcid = (PColorID*)(gPtr + _offsets->_colorOffset);
+
+		*pcid = (PColorID)ConvertOneAttr(tPtr, &_simpleCmd->colorCmd, 1.0,
+		  genStringTable);
+	}
+
+    if (_offsets->_sizeOffset >= 0) {
+      dPtr = (double *)(gPtr + _offsets->_sizeOffset);
+      *dPtr = ConvertOneAttr(tPtr, &_simpleCmd->sizeCmd, 1.0, genStringTable);
+    }
+    if (_offsets->_patternOffset >= 0) {
+      Pattern *pPtr = (Pattern *)(gPtr + _offsets->_patternOffset);
+      *pPtr = (Pattern)ConvertOneAttr(tPtr, &_simpleCmd->patternCmd, 0.0,
+	    genStringTable);
+    }
+    if (_offsets->_orientationOffset >= 0) {
+      dPtr = (double *)(gPtr + _offsets->_orientationOffset);
+      *dPtr = ConvertOneAttr(tPtr, &_simpleCmd->orientationCmd, 0.0,
+	    genStringTable);
+    }
+    if (_offsets->_shapeOffset >= 0) {
+      ShapeID *sPtr = (ShapeID *)(gPtr + _offsets->_shapeOffset);
+      *sPtr = (ShapeID) ConvertOneAttr(tPtr, &_simpleCmd->shapeCmd, 1.0,
+	    genStringTable);
+    }
+
+    for(int j = 0; j <= _maxGDataShapeAttrNum; j++) {
+      if (_offsets->_shapeAttrOffset[j] >= 0) {
+	double *dPtr = (double *)(gPtr + _offsets->_shapeAttrOffset[j]);
+	*dPtr =  ConvertOneAttr(tPtr, &_simpleCmd->shapeAttrCmd[j], 0.1,
+	  genStringTable);
+#ifdef DEBUG
+	printf("ConvertGData: shape attribute %d: %.2f\n", j, *dPtr);
+#endif
+      }
+    }
+
+    tPtr += tRecSize;
+    gPtr += gRecSize;
+
+    _recId++;
+  }
+}
+
+//--------------------------------------------------------------------------
+void MappingInterp::ConvertToGDataComplex(RecId startRecId, void *buf,
+					  int numRecs, void *gdataPtr)
+{
+#if defined(DEBUG)
+  printf("ConvertToGDataComplex\n");
+#endif
+
   int tRecSize = TDataRecordSize();
   int gRecSize = GDataRecordSize();
 
 #ifdef DEBUG
-  printf("ConvertToGData: gRecSize = %d, tRecSize %d\n",
+  printf("ConvertToGDataComplex: gRecSize = %d, tRecSize %d\n",
 	 gRecSize, tRecSize);
 #endif
 
@@ -1060,6 +2035,19 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
       *((Pattern *)(gPtr + _offsets->_patternOffset)) = (Pattern)_exprResult;
     }
     
+    if (_offsets->_orientationOffset >= 0 ) {
+      if (_tclCmd->orientationCmd == NULL) {
+	_exprResult = GetDefaultOrientation();
+      } else {
+	// added by whh, support for native expression analysis
+	_exprResult = EvalExpr( _pNativeExpr->pExprOrientation );
+      }
+      /*
+	 printf("eval orientation\n");
+      */
+      *((double *)(gPtr + _offsets->_orientationOffset))= _exprResult;
+    }
+
     if (_offsets->_shapeOffset >= 0) {
       if (_tclCmd->shapeCmd == NULL) {
 	_exprResult = GetDefaultShape();
@@ -1076,20 +2064,7 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
       *((ShapeID *)(gPtr + _offsets->_shapeOffset))= (ShapeID )_exprResult;
     }
 
-    if (_offsets->_orientationOffset >= 0 ) {
-      if (_tclCmd->orientationCmd == NULL) {
-	_exprResult = GetDefaultOrientation();
-      } else {
-	// added by whh, support for native expression analysis
-	_exprResult = EvalExpr( _pNativeExpr->pExprOrientation );
-      }
-      /*
-	 printf("eval orientation\n");
-      */
-      *((double *)(gPtr + _offsets->_orientationOffset))= _exprResult;
-    }
-
-    ShapeAttr *shapeAttr = GetDefaultShapeAttrs();
+    const ShapeAttr *shapeAttr = GetDefaultShapeAttrs();
     for(int j = 0; j <= _maxGDataShapeAttrNum; j++) {
       if (_offsets->_shapeAttrOffset[j] >= 0) {
 	if (_tclCmd->shapeAttrCmd[j] == NULL) {
@@ -1104,6 +2079,7 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 	*((double *)(gPtr + _offsets->_shapeAttrOffset[j]))= _exprResult;
       }
     }
+
     InitAttrList();
 
     tPtr += tRecSize;
@@ -1111,955 +2087,11 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 
     _recId++;
   }
+
+
 }
 
-AttrList *MappingInterp::InitCmd(char *name)
-{
-#if defined(DEBUG)
-  printf("MappingInterp::InitCmd(%s)\n", name);
-#endif
-
-  AttrList *attrList = new AttrList(name);
-  StringStorage *xStringTable = GetStringTable(TableX);
-  StringStorage *yStringTable = GetStringTable(TableY);
-  StringStorage *zStringTable = GetStringTable(TableZ);
-  StringStorage *genStringTable = GetStringTable(TableGen);
-
-  /* Record ID is always first GData attribute */
-  _offsets->_recIdOffset = 0;
-
-  /* Init offsets to other GData attributes */
-  _offsets->_xOffset = _offsets->_yOffset = _offsets->_zOffset = -1;
-  _offsets->_colorOffset = _offsets->_sizeOffset = _offsets->_shapeOffset = -1;
-  _offsets->_patternOffset = _offsets->_orientationOffset = -1;
-
-  int i;
-  for(i = 0; i < MAX_SHAPE_ATTRS; i++) {
-    _offsets->_shapeAttrOffset[i] = -1;
-  }
-
-  _tdataFlag->ClearBitmap();
-  _maxTDataAttrNum = 0;
-  
-  int offset = sizeof(RecId);
-
-  _isSimpleCmd = true;
-  Boolean isSorted;
-  AttrType attrType;
-
-  int j;
-
-  if (_cmdFlag & MappingCmd_X) {
-    if (!ConvertSimpleCmd(_cmd->xCmd, _tdata->GetAttrList(), _simpleCmd->xCmd, attrType, isSorted, xStringTable))
-      goto complexCmd;
-    if (_simpleCmd->xCmd.cmdType == MappingSimpleCmdEntry::ConstCmd &&
-		!FORCE_X_INTO_GDATA) {
-      /* constant */
-      SetDefaultX((Coord)_simpleCmd->xCmd.cmd.num);
-      attrList->InsertAttr(0, "x", -1, sizeof(double),
-			   attrType, false, NULL, false, isSorted);
-    } else {
-      _offsets->_xOffset = offset = WordBoundary(offset, sizeof(double));
-      attrList->InsertAttr(0, "x", offset, sizeof(double),
-			   attrType, false, NULL, false, isSorted);
-      offset += sizeof(double);
-    }
-  }
-
-  if (_cmdFlag & MappingCmd_Y) {
-    if (!ConvertSimpleCmd(_cmd->yCmd, _tdata->GetAttrList(),
-		_simpleCmd->yCmd, attrType, isSorted, yStringTable))
-      goto complexCmd;
-    if (_simpleCmd->yCmd.cmdType == MappingSimpleCmdEntry::ConstCmd &&
-		!FORCE_Y_INTO_GDATA) {
-      /* constant */
-      SetDefaultY((Coord)_simpleCmd->yCmd.cmd.num);
-      attrList->InsertAttr(1, "y", -1, sizeof(double),
-			   attrType, false, NULL, false, isSorted);
-    } else {
-      _offsets->_yOffset = offset = WordBoundary(offset, sizeof(double));
-      attrList->InsertAttr(1, "y", offset, sizeof(double),
-			   attrType, false, NULL, false, isSorted);
-      offset += sizeof(double);
-    }
-  }
-
-  if (_cmdFlag & MappingCmd_Z) {
-    if (!ConvertSimpleCmd(_cmd->zCmd, _tdata->GetAttrList(),
-		_simpleCmd->zCmd, attrType, isSorted, zStringTable))
-      goto complexCmd;
-    if (_simpleCmd->zCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
-      /* constant */
-      SetDefaultZ((Coord)_simpleCmd->zCmd.cmd.num);
-      attrList->InsertAttr(2, "z", -1, sizeof(double),
-			   attrType, false, NULL, false, isSorted);
-    } else {
-      _offsets->_zOffset = offset = WordBoundary(offset, sizeof(double));
-      attrList->InsertAttr(2, "z", offset, sizeof(double),
-			   attrType, false, NULL, false, isSorted);
-      offset += sizeof(double);
-    }
-  }
-
-  // Color command
-  if (_cmdFlag & MappingCmd_Color)
-  {
-    if (!ConvertSimpleCmd(_cmd->colorCmd, _tdata->GetAttrList(),
-		_simpleCmd->colorCmd, attrType, isSorted, genStringTable)) {
-      goto complexCmd;
-    }
-
-    if (_simpleCmd->colorCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
-      PColorID	pcid = (PColorID)_simpleCmd->colorCmd.cmd.num;
-
-	  // Coloring in TDataMap is apparently used to store color if constant.
-      GetColoring().SetForeground(pcid);
-      attrList->InsertAttr(3, "color", -1, sizeof(double),
-      attrType, false, NULL, false, isSorted);
-    } else {
-      _offsets->_colorOffset = offset = WordBoundary(offset,
-      sizeof(PColorID));
-      attrList->InsertAttr(3, "color", offset, sizeof(double),
-      attrType, false, NULL, false, isSorted);
-      offset += sizeof(PColorID);
-    }
-  }
-
-  if (_cmdFlag & MappingCmd_Size) {
-    if (!ConvertSimpleCmd(_cmd->sizeCmd, _tdata->GetAttrList(),
-		_simpleCmd->sizeCmd, attrType, isSorted, genStringTable))
-      goto complexCmd;
-    if (_simpleCmd->sizeCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
-      /* constant */
-      SetDefaultSize((Coord)_simpleCmd->sizeCmd.cmd.num);
-      attrList->InsertAttr(4, "size", -1, sizeof(double),
-			   attrType, false, NULL, false, isSorted);
-    } else {
-      _offsets->_sizeOffset = offset = WordBoundary(offset, sizeof(double));
-      attrList->InsertAttr(4, "size", offset, sizeof(double),
-			   attrType, false, NULL, false, isSorted);
-      offset += sizeof(double);
-    }
-  }
-
-  if (_cmdFlag & MappingCmd_Pattern) {
-    if (!ConvertSimpleCmd(_cmd->patternCmd, _tdata->GetAttrList(),
-		_simpleCmd->patternCmd, attrType, isSorted, genStringTable))
-      goto complexCmd;
-    if (_simpleCmd->patternCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
-      /* constant */
-      SetDefaultPattern((Pattern)_simpleCmd->patternCmd.cmd.num);
-      attrList->InsertAttr(5, "pattern", -1, sizeof(double),
-			   attrType, false, NULL, false, isSorted);
-    } else {
-      _offsets->_patternOffset = offset = WordBoundary(offset, sizeof(Pattern));
-      attrList->InsertAttr(5, "pattern", offset, sizeof(double),
-			   attrType, false, NULL, false, isSorted);
-      offset += sizeof(Pattern);
-    }
-  }
-
-  if (_cmdFlag & MappingCmd_Shape) {
-    if (!ConvertSimpleCmd(_cmd->shapeCmd, _tdata->GetAttrList(),
-		_simpleCmd->shapeCmd, attrType, isSorted, genStringTable))
-      goto complexCmd;
-    if (_simpleCmd->shapeCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
-      /* constant */
-      ShapeID shape = (ShapeID)_simpleCmd->shapeCmd.cmd.num;
-      if (shape >= MaxInterpShapes)
-	shape = 0;
-      SetDefaultShape(shape);
-      attrList->InsertAttr(6, "shape", -1, sizeof(double),
-			   attrType, false, NULL, false, isSorted);
-    } else {
-      _offsets->_shapeOffset = offset = WordBoundary(offset, sizeof(ShapeID));
-      attrList->InsertAttr(6, "shape", offset, sizeof(double),
-			   attrType, false, NULL, false, isSorted);
-      offset += sizeof(ShapeID);
-    }
-  }
-
-  if (_cmdFlag & MappingCmd_Orientation) {
-    if (!ConvertSimpleCmd(_cmd->orientationCmd,
-			  _tdata->GetAttrList(), _simpleCmd->orientationCmd, attrType,
-			  isSorted, genStringTable))
-      goto complexCmd;
-    if (_simpleCmd->orientationCmd.cmdType == 
-	MappingSimpleCmdEntry::ConstCmd) {
-      /* constant */
-      SetDefaultOrientation((Coord)_simpleCmd->orientationCmd.cmd.num);
-      attrList->InsertAttr(7, "orientation", -1, sizeof(double),
-			   attrType, false, NULL, false, isSorted);
-    } else {
-      _offsets->_orientationOffset = offset = WordBoundary(offset,
-							  sizeof(double));
-      attrList->InsertAttr(7, "orientation", offset, sizeof(double),
-			   attrType, false, NULL, false, isSorted);
-      offset += sizeof(double);
-    }
-  }
-
-  _maxGDataShapeAttrNum = -1;
-  for(j = 0; j < MAX_SHAPE_ATTRS; j++) {
-    if (_cmdAttrFlag & (1 << j)) {
-      _maxGDataShapeAttrNum = j;
-      if (!ConvertSimpleCmd(_cmd->shapeAttrCmd[j],
-			    _tdata->GetAttrList(), _simpleCmd->shapeAttrCmd[j], attrType,
-			    isSorted, genStringTable))
-	goto complexCmd;
-      if (_simpleCmd->shapeAttrCmd[j].cmdType ==
-	  MappingSimpleCmdEntry::ConstCmd) {
-	/* constant */
-	SetDefaultShapeAttr(j, (Coord)_simpleCmd->shapeAttrCmd[j].cmd.num);
-	char attrName [80];
-	sprintf(attrName, "shapeAttr_%d", j);
-	attrList->InsertAttr(8 + j, attrName, -1, sizeof(double),
-			     attrType, false, NULL, false, isSorted);
-      } else {
-	char attrName [80];
-	sprintf(attrName, "shapeAttr_%d", j);
-	_offsets->_shapeAttrOffset[j] = offset = WordBoundary(offset,
-							     sizeof(double));
-	attrList->InsertAttr(8 + j, attrName, offset, sizeof(double),
-			     attrType, false, NULL, false, isSorted);
-	offset += sizeof(double);
-      }
-    }
-  }
-
-#ifdef DEBUG
-  printf("Command is %s\n", name);
-  PrintCmd();
-  attrList->Print();
-  printf("offsets: x %d, y %d, z %d, color %d, size %d,\n", 
-	 _offsets->_xOffset, _offsets->_yOffset, _offsets->_zOffset,
-	 _offsets->_colorOffset, _offsets->_sizeOffset);
-  printf("         shape %d, pattern %d, orientation %d\n", 
-	 _offsets->_shapeOffset, _offsets->_patternOffset,
-	 _offsets->_orientationOffset);
-  printf("attr offsets:");
-  for(i = 0; i < MAX_SHAPE_ATTRS; i++) {
-    printf(" %d", _offsets->_shapeAttrOffset[i]);
-  }
-  printf("\n");
-#endif
-
-  return attrList;
-  
- complexCmd:
-/* Note:  I don't understand why having a single "complex" GData attribute
- * forces all other GData attributes to be converted in the "complex" mode.
- * RKW 4/24/97. */
-  /* Record ID is always first GData attribute */
-  _offsets->_recIdOffset = 0;
-
-  /* Init offsets to other GData attributes */
-  _offsets->_xOffset = _offsets->_yOffset = _offsets->_zOffset = -1;
-  _offsets->_colorOffset = _offsets->_sizeOffset = _offsets->_shapeOffset = -1;
-  _offsets->_patternOffset = _offsets->_orientationOffset = -1;
-  for(i = 0; i < MAX_SHAPE_ATTRS; i++) {
-    _offsets->_shapeAttrOffset[i] = -1;
-  }
-
-  _isSimpleCmd = false;
-
-  if (attrList != NULL)
-    delete attrList;
-  attrList = new AttrList(name);
-
-  _tdataFlag->ClearBitmap();
-  _maxTDataAttrNum = 0;
-
-  offset = sizeof(RecId);
-  offset = WordBoundary(offset, sizeof(double));
-
-  double constVal;
-
-  if (_cmdFlag & MappingCmd_X) {
-    if (IsConstCmd(_cmd->xCmd, attrList, constVal, attrType) &&
-		!FORCE_X_INTO_GDATA) {
-      SetDefaultX((Coord)constVal);
-      _tclCmd->xCmd = "";
-      attrList->InsertAttr(0, "x", -1, sizeof(double), attrType,
-			   false, NULL, false, false);
-    } else {
-      _tclCmd->xCmd = ConvertCmd(_cmd->xCmd, attrType, isSorted);
-      _offsets->_xOffset = offset = WordBoundary(offset,sizeof(double));
-      attrList->InsertAttr(0, "x", offset, sizeof(double), attrType,
-			   false, NULL, false, isSorted);
-      offset += sizeof(double);
-    }
-  }
-  if (_cmdFlag & MappingCmd_Y) {
-    if (IsConstCmd(_cmd->yCmd, attrList, constVal, attrType) &&
-		!FORCE_Y_INTO_GDATA) {
-      SetDefaultY((Coord)constVal);
-      _tclCmd->yCmd = "";
-      attrList->InsertAttr(1, "y", -1, sizeof(double), attrType,
-			   false, NULL, false, false);
-    } else {
-      _tclCmd->yCmd = ConvertCmd(_cmd->yCmd, attrType, isSorted);
-      _offsets->_yOffset = offset = WordBoundary(offset,sizeof(double));
-      attrList->InsertAttr(1, "y", offset, sizeof(double), attrType,
-			   false, NULL, false, isSorted);
-      offset += sizeof(double);
-    }
-  }
-
-  if (_cmdFlag & MappingCmd_Z) {
-    if (IsConstCmd(_cmd->zCmd, attrList, constVal, attrType)) {
-      SetDefaultZ((Coord)constVal);
-      _tclCmd->zCmd = "";
-      attrList->InsertAttr(2, "z", -1, sizeof(double), attrType,
-			   false, NULL, false, false);
-    } else {
-      _tclCmd->zCmd = ConvertCmd(_cmd->zCmd, attrType, isSorted);
-      _offsets->_zOffset = offset = WordBoundary(offset,sizeof(double));
-      attrList->InsertAttr(2, "z", offset, sizeof(double), attrType,
-			   false, NULL, false, isSorted);
-      offset += sizeof(double);
-    }
-  }
-
-	// Color command
-	if (_cmdFlag & MappingCmd_Color)
-	{
-		if (IsConstCmd(_cmd->colorCmd, attrList, constVal, attrType))
-		{
-			PColorID	pcid = (PColorID)constVal;
-
-	        // Coloring in TDataMap is apparently used to store color if
-			// constant.
-			GetColoring().SetForeground(pcid);
-			_tclCmd->colorCmd = "";
-			attrList->InsertAttr(3, "color", -1, sizeof(double), attrType,
-								 false, NULL, false, false);
-		}
-		else
-		{
-			_tclCmd->colorCmd = ConvertCmd(_cmd->colorCmd, attrType, isSorted);
-			_offsets->_colorOffset = offset = WordBoundary(offset,
-														  sizeof(PColorID));
-			attrList->InsertAttr(3, "color", offset, sizeof(double), attrType,
-								 false, NULL, false, isSorted);
-			offset += sizeof(PColorID);
-		}
-	}
-
-  if (_cmdFlag & MappingCmd_Size) {
-    if (IsConstCmd(_cmd->sizeCmd, attrList, constVal, attrType)) {
-      SetDefaultSize(constVal);
-      _tclCmd->sizeCmd = "";
-      attrList->InsertAttr(4, "size", -1, sizeof(double), attrType,
-			   false, NULL, false, false);
-    } else {
-      _tclCmd->sizeCmd = ConvertCmd(_cmd->sizeCmd, attrType, isSorted);
-      _offsets->_sizeOffset = offset = WordBoundary(offset,sizeof(double));
-      attrList->InsertAttr(4, "size", offset, sizeof(double), attrType,
-			   false, NULL, false, isSorted);
-      offset += sizeof(double);
-    }
-  }
-
-  if (_cmdFlag & MappingCmd_Pattern) {
-    if (IsConstCmd(_cmd->patternCmd, attrList, constVal, attrType)) {
-      SetDefaultPattern((Pattern)constVal);
-      _tclCmd->patternCmd = "";
-      attrList->InsertAttr(5, "pattern", -1, sizeof(double), attrType,
-			   false, NULL, false, false);
-    } else {
-      _tclCmd->patternCmd = ConvertCmd(_cmd->patternCmd, attrType, isSorted);
-      _offsets->_patternOffset = offset = WordBoundary(offset,sizeof(Pattern));
-      attrList->InsertAttr(5, "pattern", offset, sizeof(double), attrType,
-			   false, NULL, false, isSorted);
-      offset += sizeof(Pattern);
-    }
-  }
-
-  if (_cmdFlag & MappingCmd_Shape) {
-    if (IsConstCmd(_cmd->shapeCmd, attrList, constVal, attrType)) {
-      ShapeID shape = (ShapeID)constVal;
-      if (shape >= MaxInterpShapes)
-	shape = 0;
-      SetDefaultShape(shape);
-      _tclCmd->shapeCmd = "";
-      attrList->InsertAttr(6, "shape", -1, sizeof(double), attrType,
-			   false, NULL, false, false);
-    } else {
-      _tclCmd->shapeCmd = ConvertCmd(_cmd->shapeCmd, attrType, isSorted);
-      _offsets->_shapeOffset = offset = WordBoundary(offset,sizeof(ShapeID));
-      attrList->InsertAttr(6, "shape", offset, sizeof(double), attrType,
-			   false, NULL, false, isSorted);
-      offset += sizeof(ShapeID);
-    }
-  }
-
-  if (_cmdFlag & MappingCmd_Orientation) {
-    if (IsConstCmd(_cmd->orientationCmd, attrList, constVal, attrType)) {
-      SetDefaultOrientation(constVal);
-      _tclCmd->orientationCmd = "";
-      attrList->InsertAttr(7, "orientation", -1, sizeof(double), attrType,
-			   false, NULL, false, false);
-    } else {
-      _tclCmd->orientationCmd = ConvertCmd(_cmd->orientationCmd, attrType, 
-					   isSorted);
-      _offsets->_shapeOffset = offset = WordBoundary(offset,sizeof(double));
-      attrList->InsertAttr(7, "orientation", offset, sizeof(double), attrType,
-			   false, NULL, false, isSorted);
-      offset += sizeof(double);
-    }
-  }
-
-  _maxGDataShapeAttrNum = -1;
-  for(j = 0; j < MAX_SHAPE_ATTRS; j++) {
-    char attrName [80];
-    sprintf(attrName, "shapeAttr_%d", j);
-    if (_cmdAttrFlag & (1 << j)) {
-      _maxGDataShapeAttrNum = j;
-      if (IsConstCmd(_cmd->shapeAttrCmd[j], attrList, constVal, attrType)) {
-	SetDefaultShapeAttr(j,constVal);
-	_tclCmd->shapeAttrCmd[j] = "";
-	attrList->InsertAttr(8 + j, attrName, -1, sizeof(double),
-			     attrType, false, NULL, false, false);
-      } else {
-	_tclCmd->shapeAttrCmd[j] = 
-	  ConvertCmd(_cmd->shapeAttrCmd[j], attrType, isSorted);
-	_offsets->_shapeAttrOffset[j] = offset = WordBoundary(offset,
-							     sizeof(double));
-	attrList->InsertAttr(8 + j, attrName, offset, sizeof(double),
-			     attrType, false,  NULL, false, isSorted);
-	offset += sizeof(double);
-      }
-    }
-  }
-
-#if defined(DEBUG)
-  printf("Command is %s\n", name);
-  PrintCmd();
-  attrList->Print();
-  printf("offsets: x %d, y %d, z %d, color %d, size %d,\n", 
-	 _offsets->_xOffset, _offsets->_yOffset, _offsets->_zOffset,
-	 _offsets->_colorOffset, _offsets->_sizeOffset);
-  printf("         shape %d, pattern %d, orientation %d\n", 
-	 _offsets->_shapeOffset, _offsets->_patternOffset,
-	 _offsets->_orientationOffset);
-  printf("attr offsets: ");
-  for(i = 0; i < MAX_SHAPE_ATTRS; i++) {
-    printf(" %d", _offsets->_shapeAttrOffset[i]);
-  }
-  printf("\n");
-#endif
-  
-  return attrList;
-}
-
-/* string manipulation commands */
-const int MAX_STRING = 1024;
-static char _stringBuf[MAX_STRING];
-static int _numChar = 0;
-
-static void InitString()
-{
-  _numChar = 0;
-  _stringBuf[0] = '\0';
-}
-
-static void InsertChar(char c)
-{
-  DOASSERT(_numChar + 1 < MAX_STRING, "No more string space");
-  _stringBuf[_numChar++] = c;
-  _stringBuf[_numChar] = '\0';
-}
-
-static void InsertString(char *string)
-{
-  int length = strlen(string);
-  DOASSERT(_numChar + length < MAX_STRING, "No more string space");
-  char *ptr = &_stringBuf[_numChar];
-  while (*string != '\0') {
-    *ptr++ = *string++;
-  }
-  _numChar += length;
-  _stringBuf[_numChar] = '\0';
-}
-
-static char *GetString()
-{
-  return _stringBuf;
-}
-
-/* Return TRUE if cmd is a simple command, and set entry to the
-   converted cmmand entry. A simple command
-   is either a constant, or a tdata attribute */
-
-Boolean MappingInterp::ConvertSimpleCmd(char *cmd, AttrList *attrList,
-					MappingSimpleCmdEntry &entry,
-					AttrType &type, Boolean &isSorted,
-					StringStorage *stringTable)
-{
-#if defined(DEBUG)
-  printf("MappingInterp::ConvertSimpleCmd: '%s'\n",cmd);
-#endif
-
-  /* do not use simple interpreter? */
-  if (!Init::UseSimpleInterpreter())
-    return false;
-
-  /* skip leading blanks and tabs */
-  while (*cmd == ' ' || *cmd == '\t') cmd++;
-
-  /* NULL command? */
-  if (*cmd == '\0') {
-    entry.cmdType = MappingSimpleCmdEntry::NULLCmd;
-    type = FloatAttr;
-    isSorted = false;
-    return true;
-  }
-  
-  AttrInfo *info;
-  double num;
-
-  if (*cmd == '$') {
-    /*
-       printf("got '$'\n");
-    */
-    if ( *(cmd+1) == '\0' )
-      return false;
-
-    if (!strcmp(cmd + 1, REC_ID_NAME)) {
-      entry.cmdType = MappingSimpleCmdEntry::AttrCmd;
-      entry.cmd.attrNum = -1;
-      type = IntAttr;
-      isSorted = true;
-      return true;
-    }
-    
-    if ((info = attrList->Find(cmd+1)) != NULL) {
-      entry.cmdType = MappingSimpleCmdEntry::AttrCmd;
-      entry.cmd.attrNum = info->attrNum;
-      type = info->type;
-      isSorted = info->isSorted;
-      return true;
-    }
-#if defined(DEBUG)
-    printf("Undefined variable name: %s\n", cmd + 1);
-    //printf("Attribute list:\n");
-    //attrList->Print();
-#endif
-    return false;
-  }
-
-  if (*cmd == '"') {
-    int len = strlen(cmd);
-    char* end = cmd + len - 1;
-    if( len == 1 || *end != '"' ) return false;
-    len -= 2; 
-    char* str = new char[len+1];
-    strncpy(str, cmd+1, len);
-    str[len] = '\0'; // Terminate the string!
-    int strid;
-    int code = stringTable->Insert(str, strid);
-    DOASSERT(code >= 0, "Cannot insert string");
-    delete [] str;
-#if defined(DEBUG)
-    printf("string constant at %d: %s\n", strid, str != NULL ? str : "NULL");
-#endif
-    entry.cmdType = MappingSimpleCmdEntry::ConstCmd;
-    entry.cmd.num = strid;
-    type = StringAttr;
-    isSorted = false;
-    return true;
-  }
-
-  if (ConvertNum(cmd, num)) {
-    entry.cmdType = MappingSimpleCmdEntry::ConstCmd;
-    entry.cmd.num = num;
-    type = DoubleAttr;
-    isSorted = false;
-    return true;
-  }
-
-  return false;
-}
-
-// Note: sorted will now be set to false if the command is anything but
-// a simple invocation of a sorted attribute.  This fixes bug 466.
-// RKW 1999-03-02.
-char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
-				Boolean &isSorted)
-{
-#if defined(DEBUG)
-  printf("  MappingInterp::ConvertCmd: '%s'\n",cmd);
-#endif
-
-  InitString();
-
-  attrType = DoubleAttr;
-  isSorted = true;
-  
-  while (*cmd != '\0') {
-    if (*cmd == '$') {
-      /* convert variable name */
-      char *ptr = cmd+1;
-      while ( (*ptr >= 'a' && *ptr <='z') ||
-	     (*ptr >= 'A' && *ptr <= 'Z') ||
-	     (*ptr >= '0' && *ptr <= '9') ||
-	     (*ptr == '_')) {
-	      ptr++;
-      }
-      if (ptr == cmd+1) {
-	    /* did not get a variable name */
-	      isSorted = false;
-	      InsertChar(*cmd);
-      } else {
-		    /* from cmd+1 to ptr-1 is a variable name */
-			  char buf[80];
-			  int len = ptr - 1 - (cmd + 1) + 1;
-			  DOASSERT(len < (int)sizeof buf, "Variable name too long");
-			  memcpy(buf, cmd + 1, len);
-			  buf[len] = 0;
-			
-	      if (strcmp(buf, REC_ID_NAME) == 0) {
-          InsertString("$recId");
-	      } else {
-			    AttrInfo *info = _tdata->GetAttrList()->Find(buf);
-			    if (!info) {
-			      /* can't find variable name */
-			      char errBuf[256];
-			      sprintf(errBuf, "Can't find attribute '%s' requested by mapping",
-			              buf);
-		        reportErrNosys(errBuf);
-			    } else {
-			      /* found the attribute */
-			      if (!info->isSorted) {
-			        isSorted = false;
-				  }
-			      if (info->type == DateAttr) {
-			        attrType = DateAttr;
-			      } else if (info->type == StringAttr) {
-			        attrType = StringAttr;
-			      }
-			  
-			      if (info->attrNum > _maxTDataAttrNum)
-			        _maxTDataAttrNum = info->attrNum;
-			      _tdataFlag->SetBit(info->attrNum);
-			  
-		         sprintf(buf, "$interpAttr_%d", info->attrNum);
-			       InsertString(buf);
-			    }
-		    }
-			  cmd = ptr - 1;
-      }
-    } else {
-	  isSorted = false;
-      InsertChar(*cmd);
-    }
-    cmd++;
-  }
-  return CopyString(GetString());
-}
-
-void MappingInterp::PrintSimpleCmdEntry(MappingSimpleCmdEntry *entry)
-{
-  switch(entry->cmdType) {
-  case MappingSimpleCmdEntry::AttrCmd:
-    if (entry->cmd.attrNum != -1) {
-      AttrInfo *info = _tdata->GetAttrList()->Get(entry->cmd.attrNum);
-      printf("\"%s\"", info->name);
-    }
-    else {
-      printf("\"recId\"");
-    }
-    break;
-
-  case MappingSimpleCmdEntry::ConstCmd:
-    printf("%f", entry->cmd.num);
-    break;
-
-  case MappingSimpleCmdEntry::NULLCmd:
-    printf("NULL");
-    break;
-
-  default:
-    printf("Unknown");
-
-  }
-}
-
-void MappingInterp::PrintCmd()
-{
-  if (_isSimpleCmd) {
-    /* simple command */
-    printf("simple command\n");
-    if (_cmdFlag & MappingCmd_X) {
-      printf("x: %s --> ", _cmd->xCmd);
-      PrintSimpleCmdEntry(&_simpleCmd->xCmd);
-      printf("\n");
-    }
-    
-    if (_cmdFlag & MappingCmd_Y) {
-      printf("y: %s --> ", _cmd->yCmd);
-      PrintSimpleCmdEntry(&_simpleCmd->yCmd);
-      printf("\n");
-    }
-    
-    if (_cmdFlag & MappingCmd_Z) {
-      printf("z: %s --> ", _cmd->zCmd);
-      PrintSimpleCmdEntry(&_simpleCmd->zCmd);
-      printf("\n");
-    }
-
-    if (_cmdFlag & MappingCmd_Color) {
-      printf("color: %s --> ", _cmd->colorCmd);
-      PrintSimpleCmdEntry(&_simpleCmd->colorCmd);
-      printf("\n");
-    }
-    
-    if (_cmdFlag & MappingCmd_Size) {
-      printf("size: %s --> ", _cmd->sizeCmd);
-      PrintSimpleCmdEntry(&_simpleCmd->sizeCmd);
-      printf("\n");
-		}
-    
-    if (_cmdFlag & MappingCmd_Pattern) {
-      printf("pattern: %s --> ", _cmd->patternCmd);
-      PrintSimpleCmdEntry(&_simpleCmd->patternCmd);
-      printf("\n");
-    }
-    
-    if (_cmdFlag & MappingCmd_Shape) {
-      printf("shape: %s --> ", _cmd->shapeCmd);
-      PrintSimpleCmdEntry(&_simpleCmd->shapeCmd);
-      printf("\n");
-    }
-    
-    if (_cmdFlag & MappingCmd_Orientation) {
-      printf("orientation: %s --> ", _cmd->orientationCmd);
-      PrintSimpleCmdEntry(&_simpleCmd->orientationCmd);
-      printf("\n");
-    }
-
-    for(int j = 0; j < MAX_SHAPE_ATTRS; j++) {
-      if (_cmdAttrFlag & (1 << j)) {
-	printf("shapeAttr_%d: %s --> ", j, _cmd->shapeAttrCmd[j]);
-	PrintSimpleCmdEntry(&_simpleCmd->shapeAttrCmd[j]);
-	printf("\n");
-      }
-    }
-
-  } else {
-
-    printf("complex command\n");
-    if (_cmdFlag & MappingCmd_X)
-      printf("x: %s --> %s\n", _cmd->xCmd, _tclCmd->xCmd);
-    
-    if (_cmdFlag & MappingCmd_Y)
-      printf("y: %s --> %s\n", _cmd->yCmd, _tclCmd->yCmd);
-    
-    if (_cmdFlag & MappingCmd_Z)
-      printf("z: %s --> %s\n", _cmd->zCmd, _tclCmd->zCmd);
-    
-    if (_cmdFlag & MappingCmd_Color)
-      printf("color: %s --> %s\n", _cmd->colorCmd, _tclCmd->colorCmd);
-    
-    if (_cmdFlag & MappingCmd_Size)
-      printf("size: %s --> %s\n", _cmd->sizeCmd, _tclCmd->sizeCmd);
-
-    if (_cmdFlag & MappingCmd_Pattern)
-      printf("pattern: %s --> %s\n", _cmd->patternCmd, _tclCmd->patternCmd);
-
-    if (_cmdFlag & MappingCmd_Shape)
-      printf("shape: %s --> %s\n", _cmd->shapeCmd, _tclCmd->shapeCmd);
-
-    if (_cmdFlag & MappingCmd_Orientation)
-      printf("orientation: %s --> %s\n", _cmd->orientationCmd,
-	     _tclCmd->orientationCmd);
-
-    for(int j = 0; j < MAX_SHAPE_ATTRS; j++) {
-      if (_cmdAttrFlag & (1 << j))
-	printf("shapeAttr_%d: %s --> %s\n", j, _cmd->shapeAttrCmd[j],
-	       _tclCmd->shapeAttrCmd[j]);
-    }
-  }
-}
-
-/*
-   Return the value to be mapped using from as the pointer to record,
-   entry as entry describing mapping, and defaultVal as the default value.
-*/
-
-double MappingInterp::ConvertOne(char *from, MappingSimpleCmdEntry *entry, 
-				 double defaultVal, StringStorage *stringTable)
-{
-#if defined(DEBUG)
-  printf("MappingInterp::ConvertOne(%s)\n", from);
-#endif
-
-  AttrInfo *info;
-  int offset;
-  char *ptr;
-  double retVal;
-
-  int code = 0;
-  int key = 0;
-
-//  printf("entry->cmdType : %d\n", entry->cmdType);
-  switch(entry->cmdType) {
-  
-  case MappingSimpleCmdEntry::AttrCmd: {
-    info = _tdata->GetAttrList()->Get(entry->cmd.attrNum);
-    if (!info)
-      return MappingInterp::_recId;
-
-    offset = info->offset;
-    ptr = from + offset;
-
-    switch(info->type) {
-
-      case IntAttr:{
-      	int tmp;
-      	memcpy(&tmp, ptr, sizeof(int));
-	return tmp;
-        break;
-      }
-      case FloatAttr:{
-      	float tmp;
-      	memcpy(&tmp, ptr, sizeof(float));
-	return tmp;
-        break;
-     }
-
-      case DoubleAttr:{
-      	double tmp;
-      	memcpy(&tmp, ptr, sizeof(double));
-	return tmp;
-        break;
-      }
-
-      case StringAttr:
-        code = stringTable->Insert(ptr, key);
-#ifdef DEBUG
-        printf("Converted string \"%s\" to key %d, code %d\n", ptr, key, code);
-#endif
-        if (code < 0)
-          return defaultVal;
-        return (double)key;
-        break;
-
-      case DateAttr:{
-      	time_t tmp;
-      	memcpy(&tmp, ptr, sizeof(time_t));
-	return (double) tmp;
-        break;
-      }
-    }
-    DOASSERT(0, "Unknown attr cmd type");
-    break;
-  }
-  case MappingSimpleCmdEntry::ConstCmd:
-    /*
-       printf("returning num: %f\n", entry->cmd.num);
-    */
-    return entry->cmd.num;
-    break;
-
-  case MappingSimpleCmdEntry::NULLCmd:
-    /*
-       printf("returning NULL\n");
-    */
-    return defaultVal;
-    break;
-  }
-  fflush(stdout);
-  DOASSERT(0, "Unknown simple command type");
-
-  // keep compiler happy
-  return 0;
-}
-
-void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
-					 int numRecs, void *gdataPtr)
-{
-#ifdef DEBUG
-  printf("ConvertToGDataSimple\n");
-#endif
-
-  int tRecSize = TDataRecordSize();
-  int gRecSize = GDataRecordSize();
-  char *tPtr = (char *)buf;
-  char *gPtr = (char *)gdataPtr;
-  _recId = startRecId;
-
-  StringStorage *xStringTable = GetStringTable(TableX);
-  StringStorage *yStringTable = GetStringTable(TableY);
-  StringStorage *zStringTable = GetStringTable(TableZ);
-  StringStorage *genStringTable = GetStringTable(TableGen);
-
-  for(int i = 0; i < numRecs; i++) {
-    /* Store ID of current record */
-    *((RecId *)(gPtr + _offsets->_recIdOffset)) = startRecId + i;
-    
-    double *dPtr;
-    if (_offsets->_xOffset >= 0) {
-      dPtr = (double *)(gPtr + _offsets->_xOffset);
-      *dPtr = ConvertOne(tPtr, &_simpleCmd->xCmd, 1.0, xStringTable);
-    }
-    if ( _offsets->_yOffset >= 0) {
-      dPtr = (double *)(gPtr + _offsets->_yOffset);
-      *dPtr = ConvertOne(tPtr, &_simpleCmd->yCmd, 1.0, yStringTable);
-    }
-    if (_offsets->_zOffset >= 0) {
-      dPtr = (double *)(gPtr + _offsets->_zOffset);
-      *dPtr = ConvertOne(tPtr, &_simpleCmd->zCmd, 1.0, zStringTable);
-    }
-
-	// Color command
-	if (_offsets->_colorOffset >= 0)
-	{
-		PColorID*	pcid = (PColorID*)(gPtr + _offsets->_colorOffset);
-
-		*pcid = (PColorID)ConvertOne(tPtr, &_simpleCmd->colorCmd, 1.0,
-		  genStringTable);
-	}
-
-    if (_offsets->_sizeOffset >= 0) {
-      dPtr = (double *)(gPtr + _offsets->_sizeOffset);
-      *dPtr = ConvertOne(tPtr, &_simpleCmd->sizeCmd, 1.0, genStringTable);
-    }
-    if (_offsets->_shapeOffset >= 0) {
-      ShapeID *sPtr = (ShapeID *)(gPtr + _offsets->_shapeOffset);
-      *sPtr = (ShapeID) ConvertOne(tPtr, &_simpleCmd->shapeCmd, 1.0,
-	    genStringTable);
-    }
-    if (_offsets->_patternOffset >= 0) {
-      Pattern *pPtr = (Pattern *)(gPtr + _offsets->_patternOffset);
-      *pPtr = (Pattern)ConvertOne(tPtr, &_simpleCmd->patternCmd, 0.0,
-	    genStringTable);
-    }
-    if (_offsets->_orientationOffset >= 0) {
-      dPtr = (double *)(gPtr + _offsets->_orientationOffset);
-      *dPtr = ConvertOne(tPtr, &_simpleCmd->orientationCmd, 0.0,
-	    genStringTable);
-    }
-
-    for(int j = 0; j <= _maxGDataShapeAttrNum; j++) {
-      if (_offsets->_shapeAttrOffset[j] >= 0) {
-	double *dPtr = (double *)(gPtr + _offsets->_shapeAttrOffset[j]);
-	*dPtr =  ConvertOne(tPtr, &_simpleCmd->shapeAttrCmd[j], 0.1,
-	  genStringTable);
-#ifdef DEBUG
-	printf("ConvertGData: shape attribute %d: %.2f\n", j, *dPtr);
-#endif
-      }
-    }
-
-    tPtr += tRecSize;
-    gPtr += gRecSize;
-
-    _recId++;
-  }
-}
-
+//--------------------------------------------------------------------------
 void
 MappingInterp::InsertExprAttrs(RecId recId, char *tDataRec,
   StringStorage *stringTable)
@@ -2155,6 +2187,30 @@ MappingInterp::InsertExprAttrs(RecId recId, char *tDataRec,
 	  default:
 	    DOASSERT(0, "Unknown attribute type");
 	  }
+    }
+  }
+}
+
+void
+MappingInterp::FindBoundingBoxes(void *gdataArray, int numRecs)
+{
+#if defined(DEBUG)
+  printf("MappingInterp(%s)::FindBoundingBoxes(%d)\n", GetName(), numRecs);
+#endif
+
+  if (_offsets->_shapeOffset < 0) {
+    /* constant shape */
+    ShapeID shape = GetDefaultShape();
+    _shapes[shape]->FindBoundingBoxes(gdataArray, numRecs, this);
+  } else {
+	// Note: this could be made more efficient by making one call to
+	// FindBoundingBoxes() for each group of the same shape; but I'm not
+	// going to worry about it for now.  RKW 1999-05-25.
+	char *dataP = (char *)gdataArray; // char * for ptr arithmetic
+    for (int recNum = 0; recNum < numRecs; recNum++) {
+      ShapeID shape = *((ShapeID *)(dataP + _offsets->_shapeOffset));
+      _shapes[shape]->FindBoundingBoxes(dataP, 1, this);
+	  dataP += GDataRecordSize();
     }
   }
 }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.45  1999/05/21 14:52:34  wenger
+  Cleaned up GData-related code in preparation for including bounding box
+  info.
+
   Revision 1.44  1999/05/20 15:17:55  wenger
   Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
   with duplicate elimination and count mappings) exposed by Tim Wilson's
@@ -240,8 +244,8 @@ struct MappingInterpCmd {
   char *colorCmd;
   char *sizeCmd;
   char *patternCmd;
-  char *shapeCmd;
   char *orientationCmd;
+  char *shapeCmd;
   char *shapeAttrCmd[MAX_SHAPE_ATTRS];
 };
 
@@ -253,7 +257,6 @@ struct MappingSimpleCmdEntry {
 				// unsafe as DTE can change it, we keep the 
 				// attrnum which can be used to retrieve the 
 				// attrInfo at any point.
-//    AttrInfo *attr;      /* ptr to attribute info */
     double num;          /* value of constant field */
   } cmd;
 };
@@ -279,14 +282,7 @@ const unsigned int MaxInterpShapes = 19;
 
 
 class MappingInterp: public TDataMap {
-//  friend inline double ConvertOne(char *from,
-//				  MappingSimpleCmdEntry *entry,
-//				  double defaultVal);
   
-protected:
-double ConvertOne(char *from,
-		  MappingSimpleCmdEntry *entry,
-		  double defaultVal, StringStorage *stringTable);
 public:
   // cmdFlag tells which attributes have some kind of value given for them
   // (see MappingCmd_X, etc.).  attrFlag tells which shape attributes have
@@ -353,7 +349,7 @@ protected:
 private:
   /* Initialize command by converting _cmd into _tclCmd,
      and initializing _tdataFlag */
-  AttrList *InitCmd(char *name);
+  AttrList *InitCmd(char *name, int &gRecSize);
   
   /* Convert from interpreter command of the into TCL commnd 
      Example:
@@ -383,19 +379,24 @@ private:
   /* WARNING: gdataPtr must be aligned on a double (8 byte) boundary. */
   void ConvertToGDataSimple(RecId startRecId, void *buf,
 			    int numRecs, void *gdataPtr);
+
+  /* Do convert to GData for complex command */
+  /* WARNING: gdataPtr must be aligned on a double (8 byte) boundary. */
+  void ConvertToGDataComplex(RecId startRecId, void *buf,
+			     int numRecs, void *gdataPtr);
   
   void InsertExprAttrs(RecId recId, char *tDataRec,
     StringStorage *stringTable);
 
-  /* Find size of GData given attribute flag information */
-  // Note: MUST be static so it can be called before the constructor.
-  static int FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
-                           unsigned long int cmdFlag,
-                           unsigned long int attrFlag);
-  
   static Boolean IsConstCmd(char *cmd, AttrList *attrList, Coord &val,
 			    AttrType &attrType);
   
+  double ConvertOneAttr(char *from,
+		        MappingSimpleCmdEntry *entry,
+		        double defaultVal, StringStorage *stringTable);
+
+  void FindBoundingBoxes(void *gdataArray, int numRecs);
+
   /* command for the mapping and the associated flags */
   MappingInterpCmd *_cmd;
   MappingInterpCmd *_tclCmd;     /* actual tcl command used */

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.34  1999/05/21 14:52:42  wenger
+  Cleaned up GData-related code in preparation for including bounding box
+  info.
+
   Revision 1.33  1999/05/20 15:17:55  wenger
   Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
   with duplicate elimination and count mappings) exposed by Tim Wilson's
@@ -171,127 +175,6 @@
 
 #include "Color.h"
 
-#define GetAttr(ptr, attrName, attrType, offset) \
-	*((attrType *)(ptr+offset->attrName))
-
-inline RecId GetRecId(char *ptr, TDataMap *map, GDataAttrOffset *offset)
-{
-  if (offset->_recIdOffset < 0)
-    return map->GetDefaultRecId();
-  return GetAttr(ptr, _recIdOffset, RecId, offset);
-}
-
-inline Coord ShapeGetX(char *ptr, TDataMap *map, GDataAttrOffset *offset)
-{
-  if (offset->_xOffset < 0)
-    return map->GetDefaultX();
-  return GetAttr(ptr, _xOffset, Coord, offset);
-}
-
-inline Coord ShapeGetY(char *ptr, TDataMap *map, GDataAttrOffset *offset)
-{
-  if (offset->_yOffset < 0)
-    return map->GetDefaultY();
-  return GetAttr(ptr, _yOffset, Coord, offset);
-}
-
-inline Coord GetZ(char *ptr, TDataMap *map, GDataAttrOffset *offset)
-{
-  if (offset->_zOffset < 0)
-    return map->GetDefaultZ();
-  return GetAttr(ptr, _zOffset, Coord, offset);
-}
-
-inline PColorID	GetPColorID(char* ptr, TDataMap* map, GDataAttrOffset* offset)
-{
-	if (offset->_colorOffset < 0) {
-		return map->GetColoring().GetForeground();
-	} else {
-		return map->GetPColorID(ptr);
-    }
-}
-
-inline Coord GetSize(char *ptr, TDataMap *map, GDataAttrOffset *offset)
-{
-  if (offset->_sizeOffset < 0)
-    return map->GetDefaultSize();
-  return GetAttr(ptr, _sizeOffset, Coord, offset);
-}
-
-inline Pattern GetPattern(char *ptr, TDataMap *map, GDataAttrOffset *offset)
-{
-  if (offset->_patternOffset < 0)
-    return map->GetDefaultPattern();
-  return GetAttr(ptr, _patternOffset, Pattern, offset);
-}
-
-
-inline Coord GetOrientation(char *ptr, TDataMap *map, GDataAttrOffset *offset)
-{
-  if (offset->_orientationOffset < 0)
-    return map->GetDefaultOrientation();
-  return GetAttr(ptr, _orientationOffset, Coord, offset);
-}
-
-inline ShapeID GetShape(char *ptr, TDataMap *map, GDataAttrOffset *offset)
-{
-  if (offset->_shapeOffset < 0)
-    return map->GetDefaultShape();
-  return GetAttr(ptr, _shapeOffset, ShapeID, offset);
-}
-
-inline Coord GetShapeAttr0(char *ptr, TDataMap *map, GDataAttrOffset *offset)
-{
-  if (offset->_shapeAttrOffset[0] < 0) {
-    ShapeAttr *attrs = map->GetDefaultShapeAttrs();
-    return attrs[0];
-  }
-  return GetAttr(ptr, _shapeAttrOffset[0], Coord, offset);
-}
-
-inline Coord GetShapeAttr1(char *ptr, TDataMap *map, GDataAttrOffset *offset)
-{
-  if (offset->_shapeAttrOffset[1] < 0){
-    ShapeAttr *attrs = map->GetDefaultShapeAttrs();
-    return attrs[1];
-  }
-  return GetAttr(ptr, _shapeAttrOffset[1], Coord, offset);
-}
-
-inline Coord GetShapeAttr2(char *ptr, TDataMap *map, GDataAttrOffset *offset)
-{
-  if (offset->_shapeAttrOffset[2] < 0){
-    ShapeAttr *attrs = map->GetDefaultShapeAttrs();
-    return attrs[2];
-  }
-  return GetAttr(ptr, _shapeAttrOffset[2], Coord, offset);
-}
-
-inline Coord GetShapeAttr3(char *ptr, TDataMap *map, GDataAttrOffset *offset)
-{
-  if (offset->_shapeAttrOffset[3] < 0){
-    ShapeAttr *attrs = map->GetDefaultShapeAttrs();
-    return attrs[3];
-  }
-  return GetAttr(ptr, _shapeAttrOffset[3], Coord, offset);
-}
-
-inline Coord GetShapeAttr4(char *ptr, TDataMap *map, GDataAttrOffset *offset)
-{
-  if (offset->_shapeAttrOffset[4] < 0){
-    ShapeAttr *attrs = map->GetDefaultShapeAttrs();
-    return attrs[4];
-  }
-  return GetAttr(ptr, _shapeAttrOffset[4], Coord, offset);
-}
-
-// hack alert: GetLineWidth really returns ShapeAttr4 (temporarily)
-inline int GetLineWidth(char *ptr, TDataMap *map, GDataAttrOffset *offset)
-{
-    return int(GetShapeAttr4(ptr, map, offset)+0.5);
-}
-
-
 class WindowRep;
 class TDataMap;
 
@@ -303,6 +186,18 @@ class Shape {
   /* Return # of shape attributes needed for this shape */
   virtual int NumShapeAttrs() { return 0; }
 
+  virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
+    Boolean result = false;
+    // This is the most common case...
+    if (offsets->_sizeOffset >= 0 ||
+        offsets->_shapeAttrOffset[0] >= 0 ||
+        offsets->_shapeAttrOffset[1] >= 0) {
+      result = true;
+    }
+    return result;
+  }
+
+// BBTEMP -- this may no longer be needed
   /* Find maximum symbol size. By default, use 0th and 1st shape
      attribute as the width and height, respectively.  */
   virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
@@ -316,13 +211,52 @@ class Shape {
 
     for(int i = 0; i < numSyms; i++) {
       Coord temp;
-      temp = fabs(GetSize(ptr, map, offset)
-                  * GetShapeAttr0(ptr, map, offset));
+      temp = fabs(map->GetSize(ptr)
+                  * map->GetShapeAttr0(ptr));
       if (temp > width) width = temp;
-      temp = fabs(GetSize(ptr, map, offset)
-                  * GetShapeAttr1(ptr, map,  offset));
+      temp = fabs(map->GetSize(ptr)
+                  * map->GetShapeAttr1(ptr));
       if (temp > height) height = temp;
       ptr += gRecSize;
+    }
+  }
+
+  // Take converted GData records and plug in bounding box information.
+  // The default is that ShapeAttr0 is width and ShapeAttr1 is height.
+  virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
+      TDataMap *tdMap) {
+#if defined(DEBUG)
+    printf("Shape::FindBoundingBoxes(%d)\n", numRecs);
+#endif
+
+    GDataAttrOffset *offsets = tdMap->GetGDataOffset();
+
+    if (offsets->_bbULxOffset < 0 && offsets->_bbULyOffset < 0 &&
+        offsets->_bbLRxOffset < 0 && offsets->_bbLRyOffset < 0) {
+#if defined(DEBUG)
+	  printf("  Bounding box is constant\n");
+#endif
+	  // Just do one record, since they're all the same.
+      numRecs = 1;
+	  gdataArray = NULL; // because accessing GData is an error here
+    } else {
+#if defined(DEBUG)
+	  printf("  Bounding box is variable\n");
+#endif
+    }
+
+    char *dataP = (char *)gdataArray; // char * for ptr arithmetic
+    int recSize = tdMap->GDataRecordSize();
+    for (int recNum = 0; recNum < numRecs; recNum++) {
+      Coord symSize = tdMap->GetSize(dataP);
+      Coord symWidth = tdMap->GetShapeAttr0(dataP);
+      Coord symHeight = tdMap->GetShapeAttr1(dataP);
+
+      tdMap->SetBoundingBox(dataP, -symSize * symWidth / 2.0,
+          symSize * symHeight / 2.0, symSize * symWidth / 2.0,
+	      -symSize * symHeight / 2.0);
+
+      dataP += recSize;
     }
   }
 
@@ -355,20 +289,20 @@ class Shape {
     while (i < numSyms) {
       char *gdata = (char *)gdataArray[i];
       int count = 1;
-      xArray[0] = ShapeGetX(gdata, map, offset);
-      yArray[0] = ShapeGetY(gdata, map, offset);
+      xArray[0] = map->GetX(gdata);
+      yArray[0] = map->GetY(gdata);
 
-      PColorID	fgid = GetPColorID(gdata, map, offset);
+      PColorID	fgid = map->GetPColorID(gdata);
       
       int colorIndex;
       for(colorIndex = i + 1; colorIndex < numSyms; colorIndex++) {
 	char *colorGData = (char *)gdataArray[colorIndex];
 
-	if (GetPColorID(colorGData, map, offset) != fgid)
+	if (map->GetPColorID(colorGData) != fgid)
 	  break;
 
-	xArray[count] = ShapeGetX(colorGData, map, offset);
-	yArray[count] = ShapeGetY(colorGData, map, offset);
+	xArray[count] = map->GetX(colorGData);
+	yArray[count] = map->GetY(colorGData);
         count++;
       }
       
@@ -377,7 +311,7 @@ class Shape {
 
       if (canRandomize && offset->_shapeAttrOffset[2] < 0
           && offset->_shapeAttrOffset[3] < 0) {
-        ShapeAttr *attrs = map->GetDefaultShapeAttrs();
+        const ShapeAttr *attrs = map->GetDefaultShapeAttrs();
         float cloudWidth = fabs(attrs[2]);
         float cloudHeight = fabs(attrs[3]);
         if (cloudWidth >= 0.15 || cloudHeight >= 0.15)

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.35  1999/05/21 14:52:50  wenger
+  Cleaned up GData-related code in preparation for including bounding box
+  info.
+
   Revision 1.34  1999/05/20 15:17:55  wenger
   Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
   with duplicate elimination and count mappings) exposed by Tim Wilson's
@@ -260,12 +264,17 @@ class TDataMap
   char *GetName() { return _mappingName; }    /* type of mapping */
   char *GetGDataName() { return _gdataName; } /* name of GData */
 
+  // Create a GData, whether or not we already have one.  Added to reduce
+  // complications of determining GData record size in MappingInterp class.
+  // RKW 1999-05-21.
+  void CreateGData(int gRecSize);
+
   /* clear GData and start anew. This
      happens when subclass changes its mapping, and
      needs to get rid of cached mappings */
   void ResetGData(int gRecSize);
   
-  RecId GetDefaultRecId() { return 0; }
+  RecId GetDefaultRecId() const { return 0; }
 
   VisualFlag GetDynamicArgs() { return _dynamicArgs; }
 
@@ -273,17 +282,21 @@ class TDataMap
   void SetDynamicShapeAttrs(unsigned long attrs) { _dynamicAttrs = attrs; }
   
   // Default GData values.
-  void GetDefaultLocation(Coord &x, Coord &y) {
+  void GetDefaultLocation(Coord &x, Coord &y) const {
     x = _defaults._x; y = _defaults._y; }
-  Coord GetDefaultX() { return _defaults._x; }
-  Coord GetDefaultY() { return _defaults._y; }
-  Coord GetDefaultZ() { return _defaults._z; }
-  Coord GetDefaultSize() { return _defaults._size; }
-  Pattern GetDefaultPattern() { return _defaults._pattern; }
-  Coord GetDefaultOrientation() { return _defaults._orientation; }
-  ShapeID GetDefaultShape() { return _defaults._shape; }
-  int GetDefaultNumShapeAttrs() { return _numShapeAttr; }
-  ShapeAttr *GetDefaultShapeAttrs() { return _defaults._shapeAttrs; }
+  Coord GetDefaultX() const { return _defaults._x; }
+  Coord GetDefaultY() const { return _defaults._y; }
+  Coord GetDefaultZ() const { return _defaults._z; }
+  Coord GetDefaultSize() const { return _defaults._size; }
+  Pattern GetDefaultPattern() const { return _defaults._pattern; }
+  Coord GetDefaultOrientation() const { return _defaults._orientation; }
+  ShapeID GetDefaultShape() const { return _defaults._shape; }
+  Coord GetDefaultBbULx() const { return _defaults._bbULx; }
+  Coord GetDefaultBbULy() const { return _defaults._bbULy; }
+  Coord GetDefaultBbLRx() const { return _defaults._bbLRx; }
+  Coord GetDefaultBbLRy() const { return _defaults._bbLRy; }
+  int GetDefaultNumShapeAttrs() const { return _numShapeAttr; }
+  const ShapeAttr *GetDefaultShapeAttrs() const { return _defaults._shapeAttrs; }
   
   int GetPixelWidth() { return _pixelWidth; }
   void SetPixelWidth(int width) { _pixelWidth = width; }
@@ -382,6 +395,198 @@ class TDataMap
   
   void InsertUserData(void *data) { _userData = data; }
   void *GetUserData() { return _userData; }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Moved here from Shape.h...
+
+#define GetAttr(gdataRecP, attrName, attrType, offset) \
+	*((attrType *)(gdataRecP+offset->attrName))
+
+  inline RecId GetRecId(const char *gdataRecP) const
+  {
+    if (_gOffset->_recIdOffset < 0)
+      return GetDefaultRecId();
+    return GetAttr(gdataRecP, _recIdOffset, RecId, _gOffset);
+  }
+
+  inline Coord GetX(const char *gdataRecP) const
+  {
+    if (_gOffset->_xOffset < 0)
+      return GetDefaultX();
+    return GetAttr(gdataRecP, _xOffset, Coord, _gOffset);
+  }
+
+  inline Coord GetY(const char *gdataRecP) const
+  {
+    if (_gOffset->_yOffset < 0)
+      return GetDefaultY();
+    return GetAttr(gdataRecP, _yOffset, Coord, _gOffset);
+  }
+
+  inline Coord GetZ(const char *gdataRecP) const
+  {
+    if (_gOffset->_zOffset < 0)
+      return GetDefaultZ();
+    return GetAttr(gdataRecP, _zOffset, Coord, _gOffset);
+  }
+
+  inline PColorID GetColor(const char* gdataRecP) const
+  {
+    if (_gOffset->_colorOffset < 0) {
+      return GetColoring().GetForeground();
+    } else {
+      return GetPColorID(gdataRecP);
+    }
+  }
+
+  inline Coord GetSize(const char *gdataRecP) const
+  {
+    if (_gOffset->_sizeOffset < 0)
+      return GetDefaultSize();
+    return GetAttr(gdataRecP, _sizeOffset, Coord, _gOffset);
+  }
+
+  inline Pattern GetPattern(const char *gdataRecP) const
+  {
+    if (_gOffset->_patternOffset < 0)
+      return GetDefaultPattern();
+    return GetAttr(gdataRecP, _patternOffset, Pattern, _gOffset);
+  }
+
+  inline Coord GetOrientation(const char *gdataRecP) const
+  {
+    if (_gOffset->_orientationOffset < 0)
+      return GetDefaultOrientation();
+    return GetAttr(gdataRecP, _orientationOffset, Coord, _gOffset);
+  }
+
+  inline ShapeID GetShape(const char *gdataRecP) const
+  {
+    if (_gOffset->_shapeOffset < 0)
+      return GetDefaultShape();
+    return GetAttr(gdataRecP, _shapeOffset, ShapeID, _gOffset);
+  }
+
+  inline Coord GetShapeAttr0(const char *gdataRecP) const
+  {
+    if (_gOffset->_shapeAttrOffset[0] < 0) {
+      const ShapeAttr *attrs = GetDefaultShapeAttrs();
+      return attrs[0];
+    }
+    return GetAttr(gdataRecP, _shapeAttrOffset[0], Coord, _gOffset);
+  }
+
+  inline Coord GetShapeAttr1(const char *gdataRecP) const
+  {
+    if (_gOffset->_shapeAttrOffset[1] < 0){
+      const ShapeAttr *attrs = GetDefaultShapeAttrs();
+      return attrs[1];
+    }
+    return GetAttr(gdataRecP, _shapeAttrOffset[1], Coord, _gOffset);
+  }
+
+  inline Coord GetShapeAttr2(const char *gdataRecP) const
+  {
+    if (_gOffset->_shapeAttrOffset[2] < 0){
+      const ShapeAttr *attrs = GetDefaultShapeAttrs();
+      return attrs[2];
+    }
+    return GetAttr(gdataRecP, _shapeAttrOffset[2], Coord, _gOffset);
+  }
+
+  inline Coord GetShapeAttr3(const char *gdataRecP) const
+  {
+    if (_gOffset->_shapeAttrOffset[3] < 0){
+      const ShapeAttr *attrs = GetDefaultShapeAttrs();
+      return attrs[3];
+    }
+    return GetAttr(gdataRecP, _shapeAttrOffset[3], Coord, _gOffset);
+  }
+
+  inline Coord GetShapeAttr4(const char *gdataRecP) const
+  {
+    if (_gOffset->_shapeAttrOffset[4] < 0){
+      const ShapeAttr *attrs = GetDefaultShapeAttrs();
+      return attrs[4];
+    }
+    return GetAttr(gdataRecP, _shapeAttrOffset[4], Coord, _gOffset);
+  }
+
+  // hack alert: GetLineWidth really returns ShapeAttr4 (temporarily)
+  inline int GetLineWidth(const char *gdataRecP) const
+  {
+    return int(GetShapeAttr4(gdataRecP)+0.5);
+  }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  // Bounding box location is given relative to symbol's x, y location
+  inline void
+  GetBoundingBox(const char *gdataRecP, Coord &ULx, Coord &ULy, Coord &LRx,
+      Coord &LRy) const
+  {
+    if (_gOffset->_bbULxOffset < 0) {
+      ULx = GetDefaultBbULx();
+    } else {
+      ULx = GetAttr(gdataRecP, _bbULxOffset, Coord, _gOffset);
+    }
+    if (_gOffset->_bbULyOffset < 0) {
+      ULy = GetDefaultBbULy();
+    } else {
+      ULy = GetAttr(gdataRecP, _bbULyOffset, Coord, _gOffset);
+    }
+
+    if (_gOffset->_bbLRxOffset < 0) {
+      LRx = GetDefaultBbLRx();
+    } else {
+      LRx = GetAttr(gdataRecP, _bbLRxOffset, Coord, _gOffset);
+    }
+    if (_gOffset->_bbLRyOffset < 0) {
+      LRy = GetDefaultBbLRy();
+    } else {
+      LRy = GetAttr(gdataRecP, _bbLRyOffset, Coord, _gOffset);
+    }
+  }
+
+  // Bounding box relative to symbol x, y.
+  inline void SetBoundingBox(char *gdataP, Coord ULx, Coord ULy, Coord LRx,
+      Coord LRy)
+  {
+    if (ULx > LRx) {
+      Coord tmp = ULx;
+      ULx = LRx;
+      LRx = tmp;
+    }
+    if (ULy < LRy) {
+      Coord tmp = ULy;
+      ULy = LRy;
+      LRy = tmp;
+    }
+
+    if (_gOffset->_bbULxOffset < 0) {
+      SetDefaultBbULx(ULx);
+    } else {
+      *((Coord *)(gdataP + _gOffset->_bbULxOffset)) = ULx;
+    }
+
+    if (_gOffset->_bbULyOffset < 0) {
+      SetDefaultBbULy(ULy);
+    } else {
+      *((Coord *)(gdataP + _gOffset->_bbULyOffset)) = ULy;
+    }
+
+    if (_gOffset->_bbLRxOffset < 0) {
+      SetDefaultBbLRx(LRx);
+    } else {
+      *((Coord *)(gdataP + _gOffset->_bbLRxOffset)) = LRx;
+    }
+
+    if (_gOffset->_bbLRyOffset < 0) {
+      SetDefaultBbLRy(LRy);
+    } else {
+      *((Coord *)(gdataP + _gOffset->_bbLRyOffset)) = LRy;
+    }
+  }
   
 protected:
   
@@ -394,6 +599,10 @@ protected:
   void SetDefaultPattern(Pattern pattern) { _defaults._pattern = pattern; }
   void SetDefaultOrientation(Coord orientation) {
     _defaults._orientation = orientation; }
+  void SetDefaultBbULx(Coord x) { _defaults._bbULx = x; }
+  void SetDefaultBbULy(Coord y) { _defaults._bbULy = y; }
+  void SetDefaultBbLRx(Coord x) { _defaults._bbLRx = x; }
+  void SetDefaultBbLRy(Coord y) { _defaults._bbLRy = y; }
   void SetDefaultShape(ShapeID shapeID, int numAttr = 0, 
 		       ShapeAttr *shapeAttr = NULL);
   void SetDefaultShapeAttr(int attrNum, Coord shapeAttr);

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1999/05/21 14:52:28  wenger
+  Cleaned up GData-related code in preparation for including bounding box
+  info.
+
   Revision 1.8  1998/01/30 21:53:14  wenger
   Did some cleaning up of the MappingInterp and NativeExpr code
   (NativeExpr still needs a lot more); NativeExpr code can now
@@ -76,8 +80,12 @@ struct GDataRec {
   PColorID  _color;
   Coord     _size;
   Pattern   _pattern;
-  ShapeID   _shape;
   Coord     _orientation;
+  ShapeID   _shape;
+  Coord     _bbULx; // Upper left corner of bounding box relative to x, y
+  Coord     _bbULy;
+  Coord     _bbLRx; // Lower right corner of bounding box relative to x, y
+  Coord     _bbLRy;
   ShapeAttr _shapeAttrs[MAX_SHAPE_ATTRS];
 };
 
@@ -88,18 +96,26 @@ const int MAX_GDATA_REC_SIZE = sizeof(GDataRec);
 // can be -1, which means that the given attribute is a constant and is
 // therefore not included in the individual records.
 
-struct GDataAttrOffset { //TEMP -- change for BB
+struct GDataAttrOffset {
   int _recIdOffset;
   int _xOffset;
   int _yOffset;
   int _zOffset;
   int _colorOffset;
   int _sizeOffset;
-  int _shapeOffset;
   int _patternOffset;
   int _orientationOffset;
+  int _shapeOffset;
+  int _bbULxOffset;
+  int _bbULyOffset;
+  int _bbLRxOffset;
+  int _bbLRyOffset;
   int _shapeAttrOffset[MAX_SHAPE_ATTRS];
 };
 
+// Note: it would probably make sense to handle the bounding box as a
+// single structure rather than as four individual values, but I've got
+// it working this way and I don't want to change it right now.  RKW
+// 1999-05-26.
 
 #endif
