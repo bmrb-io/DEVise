@@ -942,6 +942,8 @@ int UniData::getRec_delimit(char *buff, off_t *offset)
             udParam *prm = _params->ith(0);
             prm->buf_pos = *offset;
 
+// To get a single line, replacing delimeter with \0 in buffer . 
+
             if ((sent = strchr(_slbuf->getcur(), *delim) )) {
                 have_sent = 1;
                 soff = _slbuf->getoff(sent);    
@@ -1287,11 +1289,13 @@ int UniData::TxtCopy_Double(char *dst, char *src, udParam *ud)
 }
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+// Delimiters are already handled in UniData::getRec_delimit(char *buff, off_t *offset)
+// So parts handling delimiters are erased.
+
 int UniData::TxtCopy_String(char *dst, char *src, udParam *ud)
 {
     int n, tmpn, has_qte;
     char *str = &(dst[ud->dst_off]);
-    char *delim;
 
     n = ud->sze()-1;
 
@@ -1305,19 +1309,7 @@ int UniData::TxtCopy_String(char *dst, char *src, udParam *ud)
     } else if (ud->attr->whitespace()) {
       tmpn = strcspn(src, ud->attr->whitespace());
       n = (tmpn < n) ? tmpn : n;
-    } else if ((delim = ud->attr->delimiter())) {
-      tmpn = strcspn(src,delim);
-	 n = (tmpn < n) ? tmpn : n;
-    }
-
-/*
-    delim = ud->attr->delimiter();
-    if (!delim)
-        delim = "\n";
-
-    tmpn = strcspn(src,delim);
-    n = (tmpn < n) ? tmpn : n;
-*/
+    } 
 
     strncpy(str,src,n);
     str[n] = '\0';

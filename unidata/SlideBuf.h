@@ -109,7 +109,9 @@ class SlideBuf {
     off_t getoff(char *bptr) { return( _buf_off + (bptr - _buf)); }
     void  setoff(off_t off) { _buf_off = off; }
 
-    char *getcur(int pos=0) { return &(_buf[_buf_init + pos]); }
+    char *getcur(int pos=0) { 
+		return &(_buf[_buf_init + pos]); 
+	}
 
       // returns a pointer to the pos position, when myzero is 
       // considered to be the "zero" position.
