@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/02/13 16:35:44  jussi
+  Minor fix for AIX.
+
   Revision 1.1  1996/01/13 03:23:44  jussi
   Moved file from tape/.
 
@@ -273,8 +276,7 @@ union semun {
   #include <sys/uio.h>
 #endif
 
-#if defined(__ultrix) || defined(__sun) || \
-    (!defined(__cplusplus) && (defined(__aix_was_sun) || defined(__aix)))
+#if defined(__ultrix) || defined(__sun) || defined(__aix)
   EXTERNC int ioctl(int, int, char *);
 #endif
 
