@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.29  2001/12/18 18:42:59  wenger
+// Changed mouse location display in peptide-cgi session templates as
+// requested by John Markley.
+//
 // Revision 1.28  2001/12/12 21:55:18  wenger
 // Changed mouse location display formats as requested by John Markley.
 //
@@ -159,7 +163,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.19";
+    public static final String PEP_CGI_VERSION = "2.20";
 
     private int _masterAccNum; // accession number the user requested
 
