@@ -15,6 +15,12 @@
 # $Id$
 
 # $Log$
+# Revision 1.59  1998/12/15 14:54:43  wenger
+# Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+# Temp.c (had huge global arrays); eliminated Object3D class and greatly
+# simplified Map3D; removed ViewLens class (unused); got rid of large static
+# buffers in a number of other source files.
+#
 # Revision 1.58  1998/09/22 17:20:59  wenger
 # Updated Solaris dependencies (on Intel/Solaris 2.6).
 #
@@ -118,21 +124,18 @@ DeviseClient.o: /usr/include/time.h
 collaborator.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 collaborator.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 collaborator.o: /usr/include/string.h /usr/include/signal.h
-collaborator.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-collaborator.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
-collaborator.o: /usr/include/sys/select.h /usr/include/sys/time.h
-collaborator.o: /usr/include/time.h /usr/include/sys/signal.h
-collaborator.o: /usr/include/sys/unistd.h /usr/include/sys/siginfo.h
-collaborator.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-collaborator.o: /usr/include/unistd.h /usr/include/fcntl.h
-collaborator.o: /usr/include/sys/fcntl.h /usr/include/memory.h
-collaborator.o: /usr/include/sys/resource.h /usr/include/syslog.h
-collaborator.o: /usr/include/sys/syslog.h
+collaborator.o: /usr/include/sys/signal.h /usr/include/sys/unistd.h
+collaborator.o: /usr/include/unistd.h /usr/include/sys/types.h
+collaborator.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+collaborator.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
+collaborator.o: /usr/include/sys/time.h /usr/include/time.h
+collaborator.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+collaborator.o: /usr/include/memory.h /usr/include/sys/resource.h
+collaborator.o: /usr/include/syslog.h /usr/include/sys/syslog.h
 generic.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 generic.o: /usr/include/sys/va_list.h /usr/include/errno.h
 generic.o: /usr/include/sys/errno.h /usr/include/time.h /usr/include/string.h
-generic.o: /usr/include/math.h /usr/include/floatingpoint.h
-generic.o: /usr/include/sys/ieeefp.h /usr/include/sys/time.h
+generic.o: /usr/include/math.h /usr/include/sys/time.h
 generic.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 generic.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 generic.o: /usr/include/sys/select.h ../graphics/DeviseTypes.h
@@ -173,7 +176,6 @@ testWindowSpeed.o: ../graphics/ViewDir.h /usr/include/string.h
 testWindowSpeed.o: ../graphics/DList.h ../graphics/Exit.h
 testWindowSpeed.o: ../graphics/ClassDir.h ../graphics/Display.h
 testWindowSpeed.o: ../graphics/Geom.h /usr/include/math.h
-testWindowSpeed.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 testWindowSpeed.o: ../graphics/Dispatcher.h ../graphics/Journal.h
 testWindowSpeed.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
 testWindowSpeed.o: ../graphics/Transform.h ../graphics/Pattern.h

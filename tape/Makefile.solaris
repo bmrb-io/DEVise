@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.47  1998/06/24 22:15:37  donjerko
+# *** empty log message ***
+#
 # Revision 1.46  1998/06/04 23:08:47  donjerko
 # *** empty log message ***
 #
@@ -90,26 +93,25 @@ Templates.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 Templates.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
 Templates.o: /usr/include/errno.h /usr/include/sys/errno.h
 Templates.o: /usr/include/assert.h /usr/include/limits.h
-Templates.o: /usr/include/sys/int_limits.h /usr/include/sys/stat.h
-Templates.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-Templates.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-Templates.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-Templates.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-Templates.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-Templates.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-Templates.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-Templates.o: /usr/include/sys/machlock.h /usr/include/sys/sleepq.h
-Templates.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-Templates.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-Templates.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-Templates.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-Templates.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-Templates.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-Templates.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-Templates.o: /usr/include/sys/netconfig.h ../graphics.new/GData.h
-Templates.o: ../graphics.new/RangeList.h ../graphics.new/RangeInfo.h
-Templates.o: ../graphics/AttrList.h ../graphics/Init.h
-Templates.o: ../graphics/Scheduler.h
+Templates.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
+Templates.o: /usr/include/sys/param.h /usr/include/sys/wait.h
+Templates.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
+Templates.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+Templates.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+Templates.o: /usr/include/netdb.h /usr/include/netinet/in.h
+Templates.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+Templates.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+Templates.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+Templates.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+Templates.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+Templates.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+Templates.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+Templates.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+Templates.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
+Templates.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+Templates.o: ../graphics.new/GData.h ../graphics.new/RangeList.h
+Templates.o: ../graphics.new/RangeInfo.h ../graphics/AttrList.h
+Templates.o: ../graphics/Init.h ../graphics/Scheduler.h
 devtype.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 devtype.o: /usr/include/sys/stat.h /usr/include/sys/time.h
 devtype.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -122,73 +124,71 @@ tapedrive.o: /usr/include/sys/select.h /usr/include/sys/time.h
 tapedrive.o: /usr/include/time.h /usr/include/sys/unistd.h
 tapedrive.o: /usr/include/string.h tapedrive.h /usr/include/stdio.h
 tapedrive.o: /usr/include/sys/va_list.h ../graphics.new/machdep.h
-tapedrive.o: /usr/include/limits.h /usr/include/sys/int_limits.h
-tapedrive.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-tapedrive.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-tapedrive.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-tapedrive.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-tapedrive.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-tapedrive.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-tapedrive.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-tapedrive.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-tapedrive.o: /usr/include/sys/machlock.h /usr/include/sys/sleepq.h
-tapedrive.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-tapedrive.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-tapedrive.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-tapedrive.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-tapedrive.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-tapedrive.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-tapedrive.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-tapedrive.o: /usr/include/sys/netconfig.h ../graphics.new/DCE.h
-tapedrive.o: /usr/include/errno.h /usr/include/sys/errno.h
-tapedrive.o: /usr/include/assert.h /usr/include/sys/stat.h ../graphics/Exit.h
+tapedrive.o: /usr/include/limits.h /usr/include/sys/param.h
+tapedrive.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
+tapedrive.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+tapedrive.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+tapedrive.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+tapedrive.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+tapedrive.o: /usr/include/netdb.h /usr/include/netinet/in.h
+tapedrive.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+tapedrive.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+tapedrive.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+tapedrive.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+tapedrive.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+tapedrive.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+tapedrive.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+tapedrive.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+tapedrive.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
+tapedrive.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+tapedrive.o: ../graphics.new/DCE.h /usr/include/errno.h
+tapedrive.o: /usr/include/sys/errno.h /usr/include/assert.h
+tapedrive.o: /usr/include/sys/stat.h ../graphics/Exit.h
 tapedrive.o: ../graphics/DevError.h ../graphics/DeviseTypes.h
 tapedrive.o: /usr/include/values.h ../graphics/DevStatus.h
 testtape.o: tapedrive.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testtape.o: /usr/include/sys/va_list.h ../graphics.new/machdep.h
 testtape.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
-testtape.o: /usr/include/sys/int_limits.h /usr/include/sys/types.h
-testtape.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
-testtape.o: /usr/include/sys/select.h /usr/include/sys/time.h
-testtape.o: /usr/include/time.h /usr/include/sys/param.h
-testtape.o: /usr/include/sys/unistd.h /usr/include/sys/wait.h
-testtape.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-testtape.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-testtape.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-testtape.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-testtape.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-testtape.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-testtape.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-testtape.o: /usr/include/sys/machlock.h /usr/include/sys/sleepq.h
-testtape.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-testtape.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-testtape.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-testtape.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-testtape.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-testtape.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-testtape.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-testtape.o: /usr/include/sys/netconfig.h
+testtape.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
+testtape.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
+testtape.o: /usr/include/sys/time.h /usr/include/time.h
+testtape.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+testtape.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
+testtape.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+testtape.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+testtape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+testtape.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+testtape.o: /usr/include/netdb.h /usr/include/netinet/in.h
+testtape.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+testtape.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+testtape.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+testtape.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+testtape.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+testtape.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+testtape.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+testtape.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+testtape.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
+testtape.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
 vertape.o: tapedrive.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
 vertape.o: /usr/include/sys/va_list.h ../graphics.new/machdep.h
 vertape.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
-vertape.o: /usr/include/sys/int_limits.h /usr/include/sys/types.h
-vertape.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
-vertape.o: /usr/include/sys/select.h /usr/include/sys/time.h
-vertape.o: /usr/include/time.h /usr/include/sys/param.h
-vertape.o: /usr/include/sys/unistd.h /usr/include/sys/wait.h
-vertape.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-vertape.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-vertape.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-vertape.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-vertape.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-vertape.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-vertape.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-vertape.o: /usr/include/sys/machlock.h /usr/include/sys/sleepq.h
-vertape.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-vertape.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-vertape.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-vertape.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-vertape.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-vertape.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-vertape.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-vertape.o: /usr/include/sys/netconfig.h
+vertape.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
+vertape.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
+vertape.o: /usr/include/sys/time.h /usr/include/time.h
+vertape.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+vertape.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
+vertape.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+vertape.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+vertape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+vertape.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+vertape.o: /usr/include/netdb.h /usr/include/netinet/in.h
+vertape.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+vertape.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+vertape.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+vertape.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+vertape.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+vertape.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+vertape.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+vertape.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+vertape.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
+vertape.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h

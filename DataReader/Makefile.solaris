@@ -5,10 +5,9 @@ depend:
 
 # DO NOT DELETE
 
-Buffer.o: Buffer.h DRSchema.h /usr/include/math.h
-Buffer.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h DateTime.h
-DataReader.o: DataReader.h Buffer.h DRSchema.h DataReaderParser.h
+Buffer.o: /usr/include/math.h Buffer.h DRSchema.h DateTime.h
+DataReader.o: DataReader.h DRSchema.h Buffer.h DataReaderParser.h
 DataReader.o: /usr/include/assert.h
 DateTime.o: DateTime.h
 Schema.o: DRSchema.h DateTime.h
-testParser.o: DataReader.h Buffer.h DRSchema.h
+testParser.o: DataReader.h DRSchema.h DateTime.h

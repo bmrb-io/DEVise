@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.16  1998/09/22 17:20:55  wenger
+# Updated Solaris dependencies (on Intel/Solaris 2.6).
+#
 # Revision 1.15  1998/08/04 16:53:08  wenger
 # Re-made solaris (2.6) dependencies.
 #
@@ -173,23 +176,22 @@ logfns.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 logfns.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 logfns.o: /usr/include/sys/time.h /usr/include/time.h /usr/include/sys/stat.h
 logfns.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h /usr/include/stdarg.h
-logfns.o: /usr/include/varargs.h /usr/include/sys/va_list.h
-logfns.o: /usr/include/unistd.h /usr/include/sys/unistd.h colbrLog.h log.h
-logfns.o: /usr/include/stdio.h /usr/include/string.h colbr.h
-logfns.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
-logfns.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-logfns.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-logfns.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-logfns.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-logfns.o: /usr/include/sys/param.h /usr/include/sys/pirec.h
-logfns.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-logfns.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-logfns.o: /usr/include/sys/cred.h /usr/include/sys/resource.h
-logfns.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-logfns.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-logfns.o: /usr/include/sys/byteorder.h /usr/include/arpa/inet.h dbase.h
-logfns.o: htable.h bucket.h entry.h datum.h queue.h queueElem.h CollabTypes.h
-logfns.o: logfns.h
+logfns.o: /usr/include/sys/va_list.h /usr/include/unistd.h
+logfns.o: /usr/include/sys/unistd.h colbrLog.h log.h /usr/include/stdio.h
+logfns.o: /usr/include/string.h colbr.h /usr/include/sys/socket.h
+logfns.o: /usr/include/sys/uio.h /usr/include/sys/netconfig.h
+logfns.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+logfns.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+logfns.o: /usr/include/sys/machlock.h /usr/include/sys/sleepq.h
+logfns.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
+logfns.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+logfns.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+logfns.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+logfns.o: /usr/include/sys/resource.h /usr/include/vm/seg_enum.h
+logfns.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+logfns.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
+logfns.o: /usr/include/arpa/inet.h dbase.h htable.h bucket.h entry.h datum.h
+logfns.o: queue.h queueElem.h CollabTypes.h logfns.h
 netfns.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 netfns.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 netfns.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
@@ -246,9 +248,8 @@ rcvMsg.o: /usr/include/sys/resource.h /usr/include/vm/seg_enum.h
 rcvMsg.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 rcvMsg.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
 rcvMsg.o: /usr/include/arpa/inet.h /usr/include/strings.h
-rcvMsg.o: /usr/include/string.h /usr/include/math.h
-rcvMsg.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-rcvMsg.o: /usr/include/unistd.h /usr/include/sys/stat.h /usr/include/fcntl.h
+rcvMsg.o: /usr/include/string.h /usr/include/math.h /usr/include/unistd.h
+rcvMsg.o: /usr/include/sys/stat.h /usr/include/fcntl.h
 rcvMsg.o: /usr/include/sys/fcntl.h rcvMsg.h codec.h serverInterface.h colbr.h
 rcvMsg.o: dbase.h htable.h bucket.h entry.h datum.h queue.h queueElem.h
 rcvMsg.o: CollabTypes.h callBks.h error.h ctrlMsg.h netfns.h timeOut.h
@@ -348,20 +349,14 @@ server_serv.o: /usr/include/sys/byteorder.h codec.h sndMsg.h ctrlMsg.h
 server_serv.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 server_serv.o: /usr/include/stdlib.h /usr/include/string.h
 server_serv.o: /usr/include/signal.h /usr/include/sys/signal.h
-server_serv.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-server_serv.o: /usr/include/vm/faultcode.h /usr/include/sys/stat.h
-server_serv.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
-server_serv.o: /usr/include/unistd.h /usr/include/memory.h
-server_serv.o: /usr/include/syslog.h /usr/include/sys/syslog.h
-server_serv.o: /usr/include/strings.h colbr.h /usr/include/arpa/inet.h
-server_serv.o: dbase.h htable.h bucket.h entry.h datum.h queue.h queueElem.h
+server_serv.o: /usr/include/sys/stat.h /usr/include/fcntl.h
+server_serv.o: /usr/include/sys/fcntl.h /usr/include/unistd.h
+server_serv.o: /usr/include/memory.h /usr/include/syslog.h
+server_serv.o: /usr/include/sys/syslog.h /usr/include/strings.h colbr.h
+server_serv.o: /usr/include/arpa/inet.h dbase.h htable.h bucket.h entry.h
+server_serv.o: datum.h queue.h queueElem.h
 sigfns.o: sigfns.h /usr/include/signal.h /usr/include/sys/feature_tests.h
-sigfns.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-sigfns.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
-sigfns.o: /usr/include/sys/select.h /usr/include/sys/time.h
-sigfns.o: /usr/include/time.h /usr/include/sys/signal.h
-sigfns.o: /usr/include/sys/unistd.h /usr/include/sys/siginfo.h
-sigfns.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h error.h
+sigfns.o: /usr/include/sys/signal.h /usr/include/sys/unistd.h error.h
 sndMsg.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 sndMsg.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 sndMsg.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
@@ -475,20 +470,17 @@ Server.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 Server.o: /usr/include/sys/resource.h /usr/include/vm/seg_enum.h
 Server.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 Server.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-Server.o: /usr/include/math.h /usr/include/floatingpoint.h
-Server.o: /usr/include/sys/ieeefp.h /usr/include/signal.h
-Server.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
-Server.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h Server.h
-Server.o: CollabTypes.h ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
-Server.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/DList.h
-Server.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
-Server.o: ../graphics/ViewDir.h CmdDescriptor.h CmdSerialize.h
-Server.o: ../graphics/Control.h ../graphics/ClassDir.h callBks.h error.h
-Server.o: ctrlMsg.h rcvMsg.h CommandObj.h serverInterface.h colbr.h
-Server.o: /usr/include/arpa/inet.h dbase.h htable.h bucket.h entry.h datum.h
-Server.o: queue.h queueElem.h keys.h Csprotocols.h /usr/include/netdb.h
-Server.o: ../graphics/Util.h /usr/include/ctype.h ../graphics/Init.h
-Server.o: ../graphics/BufPolicy.h
+Server.o: /usr/include/math.h /usr/include/signal.h /usr/include/sys/signal.h
+Server.o: Server.h CollabTypes.h ../graphics/Dispatcher.h
+Server.o: ../graphics/DeviseTypes.h /usr/include/values.h
+Server.o: ../graphics/DevStatus.h ../graphics/DList.h ../graphics/Exit.h
+Server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/ViewDir.h
+Server.o: CmdDescriptor.h CmdSerialize.h ../graphics/Control.h
+Server.o: ../graphics/ClassDir.h callBks.h error.h ctrlMsg.h rcvMsg.h
+Server.o: CommandObj.h serverInterface.h colbr.h /usr/include/arpa/inet.h
+Server.o: dbase.h htable.h bucket.h entry.h datum.h queue.h queueElem.h
+Server.o: keys.h Csprotocols.h /usr/include/netdb.h ../graphics/Util.h
+Server.o: /usr/include/ctype.h ../graphics/Init.h ../graphics/BufPolicy.h
 TclClient.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TclClient.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 TclClient.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h

@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.23  1998/08/17 18:51:14  wenger
+# Updated solaris dependencies for egcs; fixed most compile warnings;
+# bumped version to 1.5.4.
+#
 # Revision 1.22  1998/08/04 16:53:10  wenger
 # Re-made solaris (2.6) dependencies.
 #
@@ -116,6 +120,41 @@ Client.o: /usr/include/sys/cred.h /usr/include/sys/resource.h
 Client.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 Client.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
 Client.o: /usr/include/sys/byteorder.h Client.h
+ClientServer.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+ClientServer.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
+ClientServer.o: /usr/include/string.h /usr/include/errno.h
+ClientServer.o: /usr/include/sys/errno.h /usr/include/unistd.h
+ClientServer.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+ClientServer.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+ClientServer.o: /usr/include/sys/select.h /usr/include/sys/time.h
+ClientServer.o: /usr/include/time.h /usr/include/sys/unistd.h
+ClientServer.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+ClientServer.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+ClientServer.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+ClientServer.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+ClientServer.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+ClientServer.o: /usr/include/sys/param.h /usr/include/sys/pirec.h
+ClientServer.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+ClientServer.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+ClientServer.o: /usr/include/sys/cred.h /usr/include/sys/resource.h
+ClientServer.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+ClientServer.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
+ClientServer.o: /usr/include/sys/byteorder.h /s/tcl/include/tcl.h
+ClientServer.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
+ClientServer.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+ClientServer.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
+ClientServer.o: ClientServer.h ../graphics/Display.h
+ClientServer.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ClientServer.o: ../graphics/DevStatus.h ../graphics/Geom.h
+ClientServer.o: /usr/include/math.h ../graphics/Dispatcher.h
+ClientServer.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+ClientServer.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+ClientServer.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+ClientServer.o: ../graphics/Transform.h ../graphics/Pattern.h
+ClientServer.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+ClientServer.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
+ClientServer.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h
+ClientServer.o: ../graphics/GraphicsDebug.h
 Server.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Server.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 Server.o: /usr/include/string.h /usr/include/errno.h /usr/include/sys/errno.h
@@ -194,20 +233,18 @@ WinServer.o: /usr/include/time.h /usr/include/sys/unistd.h WinServer.h
 WinServer.o: Server.h ../graphics/Display.h ../graphics/DeviseTypes.h
 WinServer.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Geom.h
 WinServer.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-WinServer.o: /usr/include/math.h /usr/include/floatingpoint.h
-WinServer.o: /usr/include/sys/ieeefp.h ../graphics/Dispatcher.h
-WinServer.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-WinServer.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-WinServer.o: /usr/include/string.h ../graphics/ViewWin.h
-WinServer.o: ../graphics/WindowRep.h ../graphics/Transform.h
-WinServer.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
-WinServer.o: ../graphics/Compress.h ../graphics/DevError.h
-WinServer.o: /usr/include/errno.h /usr/include/sys/errno.h
-WinServer.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
-WinServer.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
-WinServer.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-WinServer.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
-WinServer.o: ../graphics/GraphicsDebug.h
+WinServer.o: /usr/include/math.h ../graphics/Dispatcher.h ../graphics/DList.h
+WinServer.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
+WinServer.o: ../graphics/ViewDir.h /usr/include/string.h
+WinServer.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+WinServer.o: ../graphics/Transform.h ../graphics/Pattern.h
+WinServer.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+WinServer.o: ../graphics/DevError.h /usr/include/errno.h
+WinServer.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
+WinServer.o: ../graphics/Xdef.h /s/X11/include/X11/Xlib.h
+WinServer.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+WinServer.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
+WinServer.o: /s/X11/include/X11/Xutil.h ../graphics/GraphicsDebug.h
 client.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 client.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 client.o: /usr/include/string.h TkClient.h /s/tcl/include/tk.h
@@ -226,7 +263,6 @@ server.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 server.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 server.o: /usr/include/sys/select.h /usr/include/sys/time.h
 server.o: /usr/include/time.h ../graphics/Geom.h /usr/include/math.h
-server.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 server.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
 server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/ViewDir.h
 server.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
