@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.48  1999/07/21 18:51:13  wenger
+  Moved alignment and data font information from view into mapping.
+
   Revision 1.47  1999/05/28 16:32:43  wenger
   Finished cleaning up bounding-box-related code except for PolyLineFile
   symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
@@ -229,8 +232,6 @@ class FullMapping_RectShape
 {
   public:
     
-    virtual int NumShapeAttrs();
-    
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
@@ -253,8 +254,6 @@ class FullMapping_RectXShape
 {
   public:
     
-    virtual int NumShapeAttrs();
-
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
@@ -268,8 +267,6 @@ class FullMapping_BarShape
 : public BarShape 
 {
   public:
-
-    virtual int NumShapeAttrs();
 
     virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
       Boolean result = false;
@@ -299,8 +296,6 @@ class FullMapping_RegularPolygonShape
 {
   public:
 
-    virtual int NumShapeAttrs();
-
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
@@ -314,8 +309,6 @@ class FullMapping_OvalShape
 : public OvalShape
 {
   public:
-
-    virtual int NumShapeAttrs();
 
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
@@ -335,8 +328,6 @@ class FullMapping_VectorShape
 : public VectorShape
 {
   public:
-
-    virtual int NumShapeAttrs();
 
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
@@ -374,8 +365,6 @@ class FullMapping_SegmentShape
 {
   public:
 
-    virtual int NumShapeAttrs();
-
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
@@ -397,8 +386,6 @@ class FullMapping_HighLowShape
 : public HighLowShape
 {
   public:
-
-    virtual int NumShapeAttrs();
 
     virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
       Boolean result = false;
@@ -429,8 +416,6 @@ class FullMapping_PolylineShape
 {
   public:
 
-    virtual int NumShapeAttrs();
-
     virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
       // Note: this isn't really correct, but doing it correctly would require
       // more parameters.  RKW 1999-05-28.
@@ -459,8 +444,6 @@ class FullMapping_GifImageShape
 {
   public:
 
-    virtual int NumShapeAttrs();
-
     virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
       Boolean result = false;
       if (offsets->_sizeOffset >= 0) {
@@ -486,8 +469,6 @@ class FullMapping_PolylineFileShape
 {
   public:
 
-    virtual int NumShapeAttrs();
-
     virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
       Boolean result = false;
       //BBTEMP -- not correct
@@ -510,8 +491,6 @@ class FullMapping_TextLabelShape
 : public TextLabelShape
 {
   public:
-
-    virtual int NumShapeAttrs();
 
     virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
       Boolean result = false;
@@ -543,8 +522,6 @@ class FullMapping_TextDataLabelShape
 {
   public:
 
-    virtual int NumShapeAttrs();
-
     virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
       Boolean result = false;
       if (offsets->_sizeOffset >= 0 ||
@@ -571,8 +548,6 @@ class FullMapping_FixedTextLabelShape
 : public FixedTextLabelShape
 {
   public:
-
-    virtual int NumShapeAttrs();
 
     virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
       Boolean result = false;

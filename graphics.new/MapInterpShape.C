@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.70  1999/07/21 18:51:12  wenger
+  Moved alignment and data font information from view into mapping.
+
   Revision 1.69  1999/07/16 21:36:08  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -379,11 +382,6 @@
 
 //---------------------------------------------------------------------------
 
-int FullMapping_RectShape::NumShapeAttrs()
-{
-	return 2; 
-}
-
 void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 					   int numSyms, TDataMap *map,
 					   ViewGraph *view, int pixelSize, int &recordsProcessed,
@@ -531,11 +529,6 @@ void FullMapping_RectShape::Draw3DGDataArray(WindowRep *win,
 
 //---------------------------------------------------------------------------
 
-int FullMapping_RectXShape::NumShapeAttrs()
-{
-	return 2; 
-}
-
 void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 						int numSyms, TDataMap *map,
 						ViewGraph *view, int pixelSize, int &recordsProcessed,
@@ -630,12 +623,6 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 }
 
 //---------------------------------------------------------------------------
-
-
-int FullMapping_BarShape::NumShapeAttrs()
-{ 
-	return 1; 
-}
 
 void
 FullMapping_BarShape::FindBoundingBoxes(void *gdataArray, int numRecs,
@@ -776,12 +763,6 @@ void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 //---------------------------------------------------------------------------
 
-
-int FullMapping_RegularPolygonShape::NumShapeAttrs()
-{
-	return 3; 
-}
-
 void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
 							 void **gdataArray,
 							 int numSyms,
@@ -875,13 +856,6 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
 
 
 // -----------------------------------------------------------------
-
-
-int FullMapping_OvalShape::NumShapeAttrs()
-{
-	return 2;
-}
-
 
 void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 					   int numSyms, TDataMap *map,
@@ -986,13 +960,6 @@ void FullMapping_OvalShape::Draw3DGDataArray(WindowRep *win, void **gdataArray,
   recordsProcessed = numSyms;
 }
 // -----------------------------------------------------------------
-
-
-int FullMapping_VectorShape::NumShapeAttrs()
-{
-	return 2;
-}
-
 
 void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 						 int numSyms, TDataMap *map,
@@ -1190,13 +1157,6 @@ void FullMapping_HorLineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 // -----------------------------------------------------------------
 
-
-int FullMapping_SegmentShape::NumShapeAttrs()
-{
-	return 2;
-}
-
-
 void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 						  int numSyms, TDataMap *map,
 						  ViewGraph *view, int pixelSize, int &recordsProcessed,
@@ -1302,13 +1262,6 @@ Draw3DGDataArray(WindowRep *win, void **gdataArray,
 
 
 // -----------------------------------------------------------------
-
-
-int FullMapping_HighLowShape::NumShapeAttrs()
-{
-	return 3;
-}
-
 
 void
 FullMapping_HighLowShape::FindBoundingBoxes(void *gdataArray,
@@ -1466,13 +1419,6 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
  
 // -----------------------------------------------------------------
-
-
-int FullMapping_PolylineShape::NumShapeAttrs()
-{ 
-	return MAX_SHAPE_ATTRS;
-}
-
 
 void
 FullMapping_PolylineShape::GetPoints(char *dataP, TDataMap *tdMap,
@@ -1636,12 +1582,6 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 
  
 // -----------------------------------------------------------------
-
-
-int FullMapping_GifImageShape::NumShapeAttrs()
-{
-	return 3;
-}
 
 
 void
@@ -1883,13 +1823,6 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 
 // -----------------------------------------------------------------
 
-
-int FullMapping_PolylineFileShape::NumShapeAttrs()
-{
-	return 1;
-}
-
-
 void
 FullMapping_PolylineFileShape::FindBoundingBoxes(void *gdataArray,
     int numRecs, TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight)
@@ -2033,13 +1966,6 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 
  
 // -----------------------------------------------------------------
-
-
-int FullMapping_TextLabelShape::NumShapeAttrs()
-{
-	return 4;
-}
-
 
 static void
 GetTextAttrInfo(AttrList *attrList,
@@ -2470,13 +2396,6 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 
 // -----------------------------------------------------------------
 
-
-int FullMapping_TextDataLabelShape::NumShapeAttrs()
-{
-	return 4;
-}
-
-
 void
 FullMapping_TextDataLabelShape::FindBoundingBoxes(void *gdataArray,
     int numRecs, TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight)
@@ -2679,12 +2598,6 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
 }
 
 // -----------------------------------------------------------------
-
-int FullMapping_FixedTextLabelShape::NumShapeAttrs()
-{
-	return 2;
-}
-
 
 void
 FullMapping_FixedTextLabelShape::FindBoundingBoxes(void *gdataArray,

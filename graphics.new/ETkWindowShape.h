@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1999/05/28 16:32:42  wenger
+  Finished cleaning up bounding-box-related code except for PolyLineFile
+  symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
+  drawing of Polyline symbols.
+
   Revision 1.7  1999/05/26 19:50:49  wenger
   Added bounding box info to GData, so that the selection of records by the
   visual filter is more accurate.  (Note that at this time the bounding box
@@ -65,8 +70,6 @@ class FullMapping_ETkWindowShape
 {
   public:
     
-    virtual int NumShapeAttrs();
-
     virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
       Boolean result = false;
       if (offsets->_sizeOffset >= 0) {

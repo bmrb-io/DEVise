@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1999/08/10 20:15:05  wenger
+  Parent views can now control the titles of view symbols.
+
   Revision 1.22  1999/07/13 18:22:39  wenger
   Conditionaled out drawing of rectangle and view name to reduce flashing.
 
@@ -102,11 +105,6 @@
 #include "Parse.h"
 
 //#define DEBUG
-
-int FullMapping_ViewShape::NumShapeAttrs()
-{
-  return 3;
-}
 
 void
 FullMapping_ViewShape::FindBoundingBoxes(void *gdataArray, int numRecs,

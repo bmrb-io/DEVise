@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.36  1999/05/28 16:32:45  wenger
+  Finished cleaning up bounding-box-related code except for PolyLineFile
+  symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
+  drawing of Polyline symbols.
+
   Revision 1.35  1999/05/26 19:50:54  wenger
   Added bounding box info to GData, so that the selection of records by the
   visual filter is more accurate.  (Note that at this time the bounding box
@@ -191,9 +196,6 @@ class Shape {
  public:
   /* Initialize shape every time a view is refreshed */
   virtual void Init() {}
-
-  /* Return # of shape attributes needed for this shape */
-  virtual int NumShapeAttrs() { return 0; }
 
   virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
     Boolean result = false;

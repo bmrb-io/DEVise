@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1999/08/10 20:15:05  wenger
+  Parent views can now control the titles of view symbols.
+
   Revision 1.10  1999/07/13 17:32:44  wenger
   Parent view can now control attribute(s) in child view's mapping;
   cleaned up some of the mapping-related code; better command logging.
@@ -66,8 +69,6 @@ class FullMapping_ViewShape
 : public ViewShape
 {
 public:
-  virtual int NumShapeAttrs();
-
   virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
     Boolean result = false;
     if (offsets->_sizeOffset >= 0 ||
