@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.46  1996/11/26 16:51:39  ssl
+  Added support for piled viws
+
   Revision 1.45  1996/11/20 20:35:21  wenger
   Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
   some Makefile improvements so compile works first time; fixed up files
@@ -407,7 +410,7 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 #if defined(DEBUG)
   printf("TDataViewX::ReturnGData()\n");
 #endif
-  DOASSERT(_index >= 0, "Invalid iterator index");
+  if( _index < 0 ) return;
 
   mapping->UpdateMaxSymSize(gdata, numGData);
   int gRecSize = mapping->GDataRecordSize();
@@ -505,47 +508,48 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 void TDataViewX::QueryDone(int bytes, void *userData)
 {
 #ifdef DEBUG
-    printf("TDataViewX::Query done, index = %d, bytes = %d\n", _index, bytes);
+  printf("TDataViewX::Query done, index = %d, bytes = %d\n", _index, bytes);
 #endif
 
-  _pstorage.Clear();
+  if( _index >= 0 ) {
 
-  DOASSERT(_index >= 0, "Invalid iterator index");
+    _pstorage.Clear();
 
-  if (MoreMapping(_index)) {
-    _map = NextMapping(_index)->map;
+    if (MoreMapping(_index)) {
+      _map = NextMapping(_index)->map;
 #ifdef DEBUG
-    printf("Submitting next query 0x%p\n", _map);
+      printf("Submitting next query 0x%p\n", _map);
 #endif
-    _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
-    return;
+      _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
+      return;
+    }
+
+    DoneMappingIterator(_index);
+    _map = 0;
+    _index = -1;
+
+    _allStats.Done();
+    _allStats.Report();
+
+    for(int i = 0; i < MAXCOLOR; i++)
+      _stats[i].Done();
+
+    PrepareStatsBuffer();
+
+    _dataBin->Final();
+
+    DrawLegend();
+
+    // Finish record links whose master this view is
+    int index = _masterLink.InitIterator();
+    while(_masterLink.More(index)) {
+      RecordLink *link = _masterLink.Next(index);
+      link->Done();
+    }
+    _masterLink.DoneIterator(index);
+
+    ReportQueryDone(bytes);
   }
-
-  DoneMappingIterator(_index);
-  _map = 0;
-  _index = -1;
-
-  _allStats.Done();
-  _allStats.Report();
-
-  for(int i = 0; i < MAXCOLOR; i++)
-    _stats[i].Done();
-
-  PrepareStatsBuffer();
-
-  _dataBin->Final();
-
-  DrawLegend();
-
-  // Finish record links whose master this view is
-  int index = _masterLink.InitIterator();
-  while(_masterLink.More(index)) {
-    RecordLink *link = _masterLink.Next(index);
-    link->Done();
-  }
-  _masterLink.DoneIterator(index);
-
-  ReportQueryDone(bytes);
 }
 
 void TDataViewX::ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs)

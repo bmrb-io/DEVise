@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/12/18 15:33:39  jussi
+  Rewrote DoInMemGDataConvert() to improve performance.
+
   Revision 1.16  1996/12/12 22:04:07  jussi
   Replaced destructor with Cleanup() which gets called by the Dispatcher.
 
@@ -204,19 +207,10 @@ protected:
   */
   void ProcessScan(QPFullData *qData); 
 
-  /* Process query for each query type */
-  void ProcessQPFullX(QPFullData *qData);
-  void ProcessQPFullYX(QPFullData *qData);
-  void ProcessQPFullScatter(QPFullData *qData);
-
-  /* End of queries */
-  void EndQueries(QPFullData *qData);
+  /* Do query cleanup */
+  void EndQueries();
+  void EndQuery(QPFullData *qData);
   
-  /* End of queries for each query type */
-  void EndQPFullX(QPFullData *qData);
-  void EndQPFullYX(QPFullData *qData);
-  void EndQPFullScatter(QPFullData *qData);
-
   /*
      Do Binary Search, and return the Id of first matching record.
      isPrefetch == TRUE if we're doing prefetch.
@@ -261,6 +255,9 @@ protected:
   
   /* Report to journal */
   void JournalReport();
+
+  /* Advance the query state */
+  void AdvanceState(QPFullData* query, QPFullState state);
 
   /* callback from QPRange */
   QPFullData *_rangeQuery;

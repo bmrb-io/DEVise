@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/11/26 16:51:42  ssl
+  Added support for piled viws
+
   Revision 1.26  1996/11/13 16:57:14  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -222,7 +225,9 @@ void ViewScatter::QueryInit(void *userData)
 void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
 			      void *gdata, int numGData)
 {
-  DOASSERT(_index >= 0, "Invalid iterator index");
+  if( _index < 0 ) {
+    return;
+  }
 
 #if defined(DEBUG)
   printf("ViewScatter %d recs buf start 0x%p\n", numGData, gdata);
@@ -346,43 +351,43 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
 void ViewScatter::QueryDone(int bytes, void *userData)
 {
 #ifdef DEBUG
-    printf("ViewScatter::Query done, index = %d, bytes = %d\n", _index, bytes);
+  printf("ViewScatter::Query done, index = %d, bytes = %d\n", _index, bytes);
 #endif
 
   _pstorage.Clear();
 
-  DOASSERT(_index >= 0, "Invalid iterator index");
-
-  if (MoreMapping(_index)) {
+  if( _index >= 0 ) {
+    if (MoreMapping(_index)) {
 #ifdef DEBUG
-    printf("Submitting next query\n");
+      printf("Submitting next query\n");
 #endif
-    _map = NextMapping(_index)->map;
-    _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
-    return;
+      _map = NextMapping(_index)->map;
+      _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
+      return;
+    }
+
+    DoneMappingIterator(_index);
+    _map = 0;
+    _index = -1;
+
+    _allStats.Done();
+    _allStats.Report();
+
+    for(int i = 0; i < MAXCOLOR; i++)
+      _stats[i].Done();
+
+    PrepareStatsBuffer();
+
+    DrawLegend();
+
+    // Finish record links whose master this view is
+    int index = _masterLink.InitIterator();
+    while(_masterLink.More(index)) {
+      RecordLink *link = _masterLink.Next(index);
+      link->Done();
+    }
+    _masterLink.DoneIterator(index);
+
+    ReportQueryDone(bytes);
   }
-
-  DoneMappingIterator(_index);
-  _map = 0;
-  _index = -1;
-
-  _allStats.Done();
-  _allStats.Report();
-
-  for(int i = 0; i < MAXCOLOR; i++)
-    _stats[i].Done();
-
-  PrepareStatsBuffer();
-
-  DrawLegend();
-
-  // Finish record links whose master this view is
-  int index = _masterLink.InitIterator();
-  while(_masterLink.More(index)) {
-    RecordLink *link = _masterLink.Next(index);
-    link->Done();
-  }
-  _masterLink.DoneIterator(index);
-
-  ReportQueryDone(bytes);
 }

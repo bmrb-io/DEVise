@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1996/12/18 15:33:38  jussi
+  Rewrote DoInMemGDataConvert() to improve performance.
+
   Revision 1.44  1996/12/12 22:04:07  jussi
   Replaced destructor with Cleanup() which gets called by the Dispatcher.
 
@@ -361,6 +364,8 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
   query->tdata = tdata;
   query->gdata = map->GetGData();
   query->bytes = 0;
+  query->handle = NULL;
+  query->callback = NULL;
 
   /* Find out if this query is a slave of a record link */
   query->isRecLinkSlave = false;
@@ -544,8 +549,10 @@ void QueryProcFull::AbortQuery(TDataMap *map, QueryCallback *callback)
   for(index = _queries->InitIterator(); _queries->More(index);) {
     QPFullData *query = (QPFullData *)_queries->Next(index);
     if (query->map == map && query->callback == callback) {
-      _queries->DeleteCurrent(index);
-      delete query;
+      AdvanceState(query, QPFull_EndState);
+      // callback not called because view classes can't handle it!
+      //query->callback->QueryDone(query->bytes, query->userData);
+      query->callback = NULL;
       break;
     }
   }
@@ -627,9 +634,6 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
   printf("InitQPFullX map %s\n", query->map->GetName());
 #endif
 
-  /* Call initialization of query */
-  query->callback->QueryInit(query->userData);
-
   /*
      If data source is on tape, do a linear search instead of
      a binary search.
@@ -639,8 +643,8 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
       /* Find first record that matches filter */
       if (!DoLinearSearch(_mgr, query->tdata, query->map,
                           query->filter.xLow, false, query->low)) {
-          query->state = QPFull_EndState;
-          return;
+        AdvanceState(query, QPFull_EndState);
+        return;
       }
 
       /* Find last record that matches filter */
@@ -655,7 +659,7 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
       query->hintId = (query->high + query->low) / 2;
       _mgr->FocusHint(query->high, query->tdata, query->gdata);
       query->isRandom = false;
-      query->state = QPFull_ScanState;
+      AdvanceState(query, QPFull_ScanState);
 #if DEBUGLVL >= 5
       printf("search [%ld,%ld]\n", query->low, query->high);
 #endif
@@ -665,8 +669,8 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
   /* Find first record that matches filter */
   if (!DoBinarySearch(_mgr, query->tdata, query->map,
                       query->filter.xLow, false, query->low)) {
-      query->state = QPFull_EndState;
-      return;
+    AdvanceState(query, QPFull_EndState);
+    return;
   }
 
   /* Find last record that matches filter */
@@ -679,7 +683,7 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
   }
   query->hintId = (query->high + query->low) / 2;
   _mgr->FocusHint(query->hintId, query->tdata, query->gdata);
-  query->state = QPFull_ScanState;
+  AdvanceState(query, QPFull_ScanState);
   query->map->SetFocusId(query->low);
   if (query->high - query->low > QPFULL_RANDOM_RECS)
       query->isRandom = Init::Randomize();
@@ -697,19 +701,16 @@ void QueryProcFull::InitQPFullYX(QPFullData *query)
 
 void QueryProcFull::InitQPFullScatter(QPFullData *query)
 {
-  /* Call initialization of query */
-  query->callback->QueryInit(query->userData);
-
   TData *tdata = query->tdata;
   if (tdata->HeadID(query->low) && tdata->LastID(query->high)) {
-    query->state = QPFull_ScanState;
+    AdvanceState(query, QPFull_ScanState);
     query->map->SetFocusId(query->low);
     query->isRandom = false;
 #if DEBUGLVL >= 5
     printf("InitQPFullScatter search [%ld,%ld]\n", query->low, query->high);
 #endif
   } else {
-    query->state = QPFull_EndState;
+    AdvanceState(query, QPFull_EndState);
 #if DEBUGLVL >= 5
     printf("InitQPFullScatter no data, no search\n");
 #endif
@@ -739,6 +740,7 @@ void QueryProcFull::PrepareProcessedList(QPFullData *query)
     printf("Creating unprocessed list for query 0x%p\n", query);
 #endif
 
+    DOASSERT(query->callback, "No callback");
     RecordLinkList *recLinkList = query->callback->GetRecordLinkList();
     QPRange unprocessed;
 
@@ -827,11 +829,11 @@ Boolean QueryProcFull::InitQueries()
     if (query->state != QPFull_InitState)
         continue;
 
-    /*
-       Must terminate iterator because query initialization may
-       cause query to be aborted.
-    */
     _queries->DoneIterator(index);
+
+    DOASSERT(query->callback, "No callback");
+    /* Call initialization of query */
+    query->callback->QueryInit(query->userData);
 
     switch(query->qType) {
       case QPFull_X:
@@ -878,6 +880,9 @@ Boolean QueryProcFull::InitQueries()
 
 void QueryProcFull::ProcessScan(QPFullData *query)
 {
+  DOASSERT(query && query->state == QPFull_ScanState,
+           "Query not in a valid state.");
+
     /* Inform buffer manager of focus */
     _mgr->FocusHint(query->hintId, query->tdata, query->gdata);
 
@@ -908,8 +913,7 @@ void QueryProcFull::ProcessScan(QPFullData *query)
 #if DEBUGLVL >= 3
             printf("Query finished\n");
 #endif
-            _mgr->DoneGetRecs(query->handle);
-            query->state = QPFull_EndState;
+            AdvanceState(query, QPFull_EndState);
             return;
         }
         
@@ -931,36 +935,6 @@ void QueryProcFull::ProcessScan(QPFullData *query)
 #endif
 }
 
-void QueryProcFull::ProcessQPFullX(QPFullData *query)
-{
-  if (query->state == QPFull_EndState) {
-      EndQPFullX(query);
-      return;
-  }
-
-  ProcessScan(query);
-  if (query->state == QPFull_EndState) {
-      EndQPFullX(query);
-  }
-}
-
-void QueryProcFull::ProcessQPFullYX(QPFullData *query)
-{
-  DOASSERT(0, "Cannot process XY query yet");
-}
-
-void QueryProcFull::ProcessQPFullScatter(QPFullData *query)
-{
-  if (query->state == QPFull_EndState) {
-      EndQPFullScatter(query);
-      return;
-  }
-
-  ProcessScan(query);
-  if (query->state == QPFull_EndState) {
-      EndQPFullScatter(query);
-  }
-}
 
 void QueryProcFull::ProcessQuery()
 {
@@ -994,8 +968,17 @@ void QueryProcFull::ProcessQuery()
 
   ControlPanel::Instance()->SetSyncAllowed();
 
+  EndQueries();
+
   if (InitQueries()) {
     /* Have initialized queries. Return now. */
+    return;
+  }
+
+  EndQueries();
+
+  if (_queries->Size() == 0) {
+    // might have removed all queries.
     return;
   }
 
@@ -1018,44 +1001,50 @@ void QueryProcFull::ProcessQuery()
          query->tdata->GetName(), query->map->GetName());
 #endif
 
-  switch(query->qType) {
-  case QPFull_X:
-	ProcessQPFullX(query);
-	break;
-  case QPFull_YX:
-	ProcessQPFullYX(query);
-	break;
-  case QPFull_Scatter:
-	ProcessQPFullScatter(query);
-	break;
-  }
+  ProcessScan(query);
   
-  if (query->state == QPFull_EndState) {
-    /* finished with this query */
-    _queries->Delete(query);
-    delete query;
+  /* move query to end of query list */
+  _queries->Delete(query);
+  if( query->state == QPFull_EndState ) {
+    EndQuery(query);
   } else {
-    /* move query to end of query list */
-    _queries->Delete(query);
     _queries->Append(query);
   }
 }
 
-void QueryProcFull::EndQPFullX(QPFullData *query)
+
+void QueryProcFull::EndQueries()
 {
-  query->callback->QueryDone(query->bytes, query->userData);
+  /* remove any terminated queries from the query list and clean up */
+  QPFullData *query = NULL;
+  int index = _queries->InitIterator();
+  while (_queries->More(index)) {
+    query = (QPFullData *)_queries->Next(index);
+    if( query->state == QPFull_EndState ) {
+      EndQuery(query);
+      _queries->DeleteCurrent(index);
+      delete query;
+    }
+  }
+  _queries->DoneIterator(index);
+}
+
+
+void QueryProcFull::EndQuery(QPFullData *query)
+{
+#if DEBUGLVL >= 5
+  printf("End query for tdata %s, map %s\n",
+         query->tdata->GetName(), query->map->GetName());
+#endif
+  if( query->handle != NULL ) {
+    _mgr->DoneGetRecs(query->handle);
+  }
+  if( query->callback != NULL ) {
+    query->callback->QueryDone(query->bytes, query->userData);
+  }
   JournalReport();
 }
 
-void QueryProcFull::EndQPFullYX(QPFullData *query)
-{
-}
-
-void QueryProcFull::EndQPFullScatter(QPFullData *query)
-{
-  query->callback->QueryDone(query->bytes, query->userData);
-  JournalReport();
-}
 
 /**********************************************************************
   Do Binary Search, and returning the Id of first matching record.
@@ -1390,6 +1379,10 @@ void QueryProcFull::QPRangeInserted(RecId low, RecId high)
            low, high, _rangeBuf, _rangeStartId,
            _rangeStartId + _rangeNumRecs - 1, _rangeTData);
 #endif
+
+    if( _rangeQuery->callback == NULL ) {
+      return;
+    }
 
     int tRecSize = _rangeQuery->tdata->RecSize();
     int gRecSize = _rangeQuery->map->GDataRecordSize();
@@ -2102,4 +2095,12 @@ Boolean QueryProcFull::GetMinX(TDataMap *map, Coord &minX)
 #endif
 
   return false;
+}
+
+
+void QueryProcFull::AdvanceState(QPFullData* query, QPFullState state)
+{
+  if( query->state < state ) {
+    query->state = state;
+  }
 }
