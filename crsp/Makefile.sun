@@ -5,56 +5,53 @@ depend:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 cal.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
-cal.o: cal.h /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-cal.o: /usr/include/sys/uio.h /usr/include/unistd.h
+cal.o: cal.h
 crsp_extract.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 crsp_extract.o: /usr/include/string.h /s/tcl/include/tcl.h
 crsp_extract.o: /usr/include/stdio.h /s/tcl/include/tk.h
 crsp_extract.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
 crsp_extract.o: /usr/include/sys/sysmacros.h /s/X11/include/X11/X.h
 crsp_extract.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-crsp_extract.o: /usr/include/stddef.h sec.h /usr/include/sys/uio.h
-crsp_extract.o: /usr/include/unistd.h ../tape/tapedrive.h /usr/include/tar.h
-crsp_extract.o: ../graphics.new/machdep.h /usr/include/limits.h
-crsp_extract.o: /usr/include/sys/param.h /usr/include/machine/param.h
-crsp_extract.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-crsp_extract.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
-crsp_extract.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-crsp_extract.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-crsp_extract.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
-crsp_extract.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-crsp_extract.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-crsp_extract.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-crsp_extract.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-crsp_extract.o: /usr/include/netdb.h /usr/include/sys/socket.h
-crsp_extract.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
+crsp_extract.o: /usr/include/stddef.h sec.h ../tape/tapedrive.h
+crsp_extract.o: /usr/include/tar.h ../graphics.new/machdep.h
+crsp_extract.o: /usr/include/limits.h /usr/include/sys/param.h
+crsp_extract.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+crsp_extract.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+crsp_extract.o: /usr/include/sys/time.h /usr/include/sys/time.h
+crsp_extract.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+crsp_extract.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+crsp_extract.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+crsp_extract.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+crsp_extract.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+crsp_extract.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+crsp_extract.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+crsp_extract.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+crsp_extract.o: /usr/include/arpa/inet.h
 crsp_index.o: /usr/include/string.h /usr/include/sys/stdtypes.h
-crsp_index.o: /usr/include/stdlib.h sec.h /usr/include/sys/types.h
-crsp_index.o: /usr/include/sys/sysmacros.h /usr/include/sys/uio.h
-crsp_index.o: /usr/include/unistd.h ../tape/tapedrive.h /usr/include/stdio.h
-crsp_index.o: /usr/include/tar.h ../graphics.new/machdep.h
-crsp_index.o: /usr/include/limits.h /usr/include/sys/param.h
-crsp_index.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-crsp_index.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-crsp_index.o: /usr/include/sys/time.h /usr/include/sys/time.h
-crsp_index.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-crsp_index.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-crsp_index.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-crsp_index.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-crsp_index.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-crsp_index.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-crsp_index.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-crsp_index.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-crsp_index.o: /usr/include/arpa/inet.h
-main.o: sec.h /usr/include/sys/types.h /usr/include/sys/stdtypes.h
-main.o: /usr/include/sys/sysmacros.h /usr/include/sys/uio.h
-main.o: /usr/include/unistd.h ../tape/tapedrive.h /usr/include/stdio.h
-main.o: /usr/include/tar.h ../graphics.new/machdep.h /usr/include/limits.h
-main.o: /usr/include/sys/param.h /usr/include/machine/param.h
-main.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-main.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
-main.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-main.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+crsp_index.o: /usr/include/stdlib.h sec.h ../tape/tapedrive.h
+crsp_index.o: /usr/include/stdio.h /usr/include/tar.h
+crsp_index.o: ../graphics.new/machdep.h /usr/include/limits.h
+crsp_index.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+crsp_index.o: /usr/include/sys/param.h /usr/include/machine/param.h
+crsp_index.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+crsp_index.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+crsp_index.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+crsp_index.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+crsp_index.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+crsp_index.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+crsp_index.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+crsp_index.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+crsp_index.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+crsp_index.o: /usr/include/netdb.h /usr/include/sys/socket.h
+crsp_index.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
+main.o: sec.h ../tape/tapedrive.h /usr/include/stdio.h /usr/include/tar.h
+main.o: ../graphics.new/machdep.h /usr/include/limits.h
+main.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
+main.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
+main.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+main.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+main.o: /usr/include/sys/time.h /usr/include/sys/time.h
+main.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
 main.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
 main.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
 main.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
@@ -63,10 +60,9 @@ main.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
 main.o: /usr/include/netdb.h /usr/include/sys/socket.h
 main.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
 sec.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
-sec.o: /usr/include/ctype.h sec.h /usr/include/sys/types.h
-sec.o: /usr/include/sys/sysmacros.h /usr/include/sys/uio.h
-sec.o: /usr/include/unistd.h ../tape/tapedrive.h /usr/include/tar.h
+sec.o: /usr/include/ctype.h sec.h ../tape/tapedrive.h /usr/include/tar.h
 sec.o: ../graphics.new/machdep.h /usr/include/limits.h
+sec.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 sec.o: /usr/include/sys/param.h /usr/include/machine/param.h
 sec.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
 sec.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
@@ -78,4 +74,4 @@ sec.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
 sec.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
 sec.o: /usr/include/sys/sockio.h /usr/include/netdb.h
 sec.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-sec.o: /usr/include/arpa/inet.h
+sec.o: /usr/include/arpa/inet.h cal.h

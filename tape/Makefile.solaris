@@ -28,11 +28,11 @@ QueryProcTape.o: ../graphics/Geom.h /usr/include/math.h
 QueryProcTape.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 QueryProcTape.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 QueryProcTape.o: ../graphics/Compress.h ../graphics/Control.h
-QueryProcTape.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-QueryProcTape.o: ../graphics/Config.h ../graphics/Cursor.h
-QueryProcTape.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
-QueryProcTape.o: ../graphics.new/Action.h ../graphics.new/GDataBin.h
-QueryProcTape.o: ../graphics.new/MappingInterp.h
+QueryProcTape.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
+QueryProcTape.o: ../graphics/AttrList.h ../graphics/Config.h
+QueryProcTape.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
+QueryProcTape.o: ../graphics.new/ViewStats.h ../graphics.new/Action.h
+QueryProcTape.o: ../graphics.new/GDataBin.h ../graphics.new/MappingInterp.h
 QueryProcTape.o: ../graphics.new/TDataMapDispatch.h ../graphics/Display.h
 QueryProcTape.o: ../graphics/ColorMgr.h
 Templates.o: QueryProcTape.h ../graphics.new/QueryProc.h
