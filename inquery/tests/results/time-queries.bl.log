@@ -1,0 +1,720 @@
+Database: time
+eval file: time-queries.evl
+Query file: time-queries.bl
+Relevance file: time.rel
+Stopwords file: default.stp
+Output directory is .
+Queries will be stemmed (defaults)
+All recognizers off (default)
+Keeping duplicate documents in list
+Maximum relevant docs: 1000
+use_recog=
+skip_recog=
+Belief: 0.4
+tf: 0.4
+top-docs: OFF
+---------------------------------------------
+	Query Text for Count 1, number 1:
+	#sum( Kennedy administration pressure on Ngo Dinh Diem to stop
+suppressing the Buddhists. )
+	Parse is : 
+	#SUM( kenned administr pressur ngo dinh diem stop suppress buddhist)
+Query 1 (cnt=1), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 2, number 2:
+	#sum( Efforts of Ambassador Henry Cabot Lodge to get Viet Nam's
+President Diem to change his policies of political repression. )
+	Parse is : 
+	#SUM( effort ambassador henr cabot lodg viet nam presid diem chang polic polit repress)
+Query 2 (cnt=2), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 3, number 3:
+	#sum( Number of troops the United States has stationed in South
+Viet Nam as compared with the number of troops it has stationed
+in West Germany. )
+	Parse is : 
+	#WSUM(1  2 number 2 troop 1 unit 1 state 2 station 1 south 1 viet 1 nam 1 compar 1 west 1 german)
+Query 3 (cnt=3), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 4, number 4:
+	#sum( U.S. policy toward the new regime in South Viet Nam which overthrew
+President Diem. )
+	Parse is : 
+	#SUM( polic new regim south viet nam overthrew presid diem)
+Query 4 (cnt=4), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 5, number 5:
+	#sum( Persons involved in the Viet Nam coup. )
+	Parse is : 
+	#SUM( person involv viet nam coup)
+Query 5 (cnt=5), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 6, number 6:
+	#sum( Ceremonial suicides committed by some Buddhist monks in South Viet Nam
+and what they are seeking to gain by such acts. )
+	Parse is : 
+	#SUM( ceremon suicid commit buddhist monk south viet nam seek gain act)
+Query 6 (cnt=6), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 7, number 7:
+	#sum( Rejection by Prince Norodom Sihanouk, an Asian neutralist leader,
+of all further U.S. aid to his nation. )
+	Parse is : 
+	#SUM( reject princ norodom sihanouk asian neutralist leader aid nation)
+Query 7 (cnt=7), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 8, number 8:
+	#sum( U.N. team survey of public opinion in North Borneo and Sarawak on
+the question of joining the Federation of Malaysia. )
+	Parse is : 
+	#SUM( team survey public opinion north borneo sarawak question join feder malaysia)
+Query 8 (cnt=8), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 9, number 9:
+	#sum( Opposition of Indonesia to the newly-created Malaysia. )
+	Parse is : 
+	#SUM( opposit indonesia new create malaysia)
+Query 9 (cnt=9), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 10, number 10:
+	#sum( Growing controversy in southeast Asia over the proposed
+creation of a Federation of Malaysia. )
+	Parse is : 
+	#SUM( grow controvers southeast asia propos creation feder malaysia)
+Query 10 (cnt=10), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 11, number 11:
+	#sum( Arrangements for Indonesia to take over the administration
+of West Irian, which has been under United Nations administration. )
+	Parse is : 
+	#WSUM(1  1 arrang 1 indonesia 1 take 2 administr 1 west 1 irian 1 unit 1 nation)
+Query 11 (cnt=11), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 12, number 12:
+	#sum( Controversy between Indonesia and Malaya on the proposed
+Federation of Malaysia, which would unite five territories. )
+	Parse is : 
+	#SUM( controvers indonesia malaya propos feder malaysia unit five territor)
+Query 12 (cnt=12), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 13, number 13:
+	#sum( Precarious truce in Laos which was brought up by Britain
+before the 14 nations that agreed on the truce in Geneva last 
+year. )
+	Parse is : 
+	#WSUM(1  1 precar 2 truce 1 lao 1 brought 1 britain 1 14 1 nation 1 agree 1 geneva)
+Query 13 (cnt=13), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 14, number 14:
+	#sum( Maphilindo, a word formed from parts of the names of three
+countries, which is being used in discussions of international
+relations in the far east. )
+	Parse is : 
+	#SUM( maphilindo word form part name three countr discuss intern relat east)
+Query 14 (cnt=14), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 15, number 15:
+	#sum( Election of Park Chung Hee as president of South Korea.)
+	Parse is : 
+	#SUM( elect park chung hee presid south korea)
+Query 15 (cnt=15), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 16, number 16:
+	#sum( Efforts of the three-nation international control commission
+for Indo-China to try to stop the fighting that has flared 
+in Laos. )
+	Parse is : 
+	#SUM( effort three nation intern control commiss indo china try stop fight flare lao)
+Query 16 (cnt=16), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 17, number 17:
+	#sum( Withdrawal by the Sultanate of Brunei from the proposed
+Federation of Malaysia. )
+	Parse is : 
+	#SUM( withdraw sultan brunei propos feder malaysia)
+Query 17 (cnt=17), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 18, number 18:
+	#sum( Russia's refusal to contribute funds for the support of United Nations
+peacekeeping forces. )
+	Parse is : 
+	#SUM( russia refus contribut fund support unit nation peacekeep forc)
+Query 18 (cnt=18), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 19, number 19:
+	#sum( Agreement by the United Arab Republic and Saudi Arabia to
+withdraw their forces from Yemen, which involves observers
+from the United Nations expeditionary force being sent to Yemen. )
+	Parse is : 
+	#WSUM(1 
+ 1 agreement
+ 2 unit
+ 1 arab
+ 1 republ
+ 1 saudi
+ 1 arabia
+ 1 withdraw
+ 2 forc
+ 2 yemen
+ 1 involv
+ 1 observ
+ 1 nation
+ 1 expeditionar)
+Query 19 (cnt=19), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 20, number 20:
+	#sum( The United States has warned it would limit its United Nations
+payments to the level of its regular assessment if nations now in      
+arrears fail to pay up.   What issues are involved in these
+nations' being in arrears? )
+	Parse is : 
+	#WSUM(1 
+ 2 unit
+ 1 state
+ 1 warn
+ 1 limit
+ 3 nation
+ 1 payment
+ 1 level
+ 1 regular
+ 1 fail
+ 1 pay
+ 1 issue
+ 1 involv)
+Query 20 (cnt=20), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 21, number 21:
+	#sum( Security Council consideration of the complaints by 32 African
+nations against South Africa and Portugal. )
+	Parse is : 
+	#SUM( secur council consider complaint 32 african nation south africa portug)
+Query 21 (cnt=21), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 22, number 22:
+	#sum( Alternatives which have been offered if U.N. forces are
+withdrawn from the Congo. )
+	Parse is : 
+	#SUM( altern offer forc withdrawn congo)
+Query 22 (cnt=22), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 23, number 23:
+	#sum( What countries have newly joined the United Nations? )
+	Parse is : 
+	#SUM( countr new join unit nation)
+Query 23 (cnt=23), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 24, number 24:
+	#sum( United Nations efforts to get Portugal to free its African colonies. )
+	Parse is : 
+	#SUM( unit nation effort portug free african colon)
+Query 24 (cnt=24), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 25, number 25:
+	#sum( U.N. consideration of the conflict between Israel and its
+Arab neighbors. )
+	Parse is : 
+	#SUM( consider conflict israel arab neighbor)
+Query 25 (cnt=25), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 26, number 26:
+	#sum( Effect in the U.N. of a majority comprised of underdeveloped
+nations. )
+	Parse is : 
+	#SUM( effect major compris underdevelop nation)
+Query 26 (cnt=26), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 27, number 27:
+	#sum( British proposal for new high level negotiations with
+Russia or a four-power summit meeting. )
+	Parse is : 
+	#SUM( british propos new high level negot russia four power summit meet)
+Query 27 (cnt=27), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 28, number 28:
+	#sum( Strengths in popular votes of the various political parties in the
+recent Italian elections. )
+	Parse is : 
+	#SUM( strength popular vote various polit part recent italian elect)
+Query 28 (cnt=28), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 29, number 29:
+	#sum( Talks between Secretary of State Rusk and President Tito of
+Yugoslavia concerning most-favored-nation treatment for Yugoslav       
+exports to the United States. )
+	Parse is : 
+	#WSUM(1 
+ 1 talk
+ 1 secretar
+ 2 state
+ 1 rusk
+ 1 presid
+ 1 tito
+ 1 yugoslavia
+ 1 concern
+ 1 most
+ 1 favor
+ 1 nation
+ 1 treatment
+ 1 yugoslav
+ 1 export
+ 1 unit)
+Query 29 (cnt=29), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 30, number 30:
+	#sum( Parliamentary vote of confidence won by Prime Minister Macmillan
+on the Profumo scandal and what effect the Profumo scandal may
+have on Labor's chances in the next British elections. )
+	Parse is : 
+	#WSUM(1 
+ 1 parliamentar
+ 1 vote
+ 1 confid
+ 1 won
+ 1 prime
+ 1 minist
+ 1 macmillan
+ 2 profumo
+ 2 scandal
+ 1 effect
+ 1 labor
+ 1 chanc
+ 1 british
+ 1 elect)
+Query 30 (cnt=30), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 31, number 31:
+	#sum( Leaders which figure in discussions of the future of the West
+German Chancellorship. )
+	Parse is : 
+	#SUM( leader figur discuss futur west german chancellorship)
+Query 31 (cnt=31), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 32, number 32:
+	#sum( Talks held in East Germany by Premier Khrushchev with the leaders of
+four east European satellite countries. )
+	Parse is : 
+	#WSUM(1 
+ 1 talk
+ 1 held
+ 2 east
+ 1 german
+ 1 premier
+ 1 khrushchev
+ 1 leader
+ 1 four
+ 1 european
+ 1 satellit
+ 1 countr)
+Query 32 (cnt=32), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 33, number 33:
+	#sum( Government crisis which was produced by the controversy involving
+the Walloons and the Flemings. )
+	Parse is : 
+	#SUM( govern crisi produc controvers involv walloon fleme)
+Query 33 (cnt=33), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 34, number 34:
+	#sum( Difficulties Ireland's minority government is facing because of
+the growing unrest over its agricultural policies. )
+	Parse is : 
+	#SUM( difficult ireland minor govern face grow unrest agricultur polic)
+Query 34 (cnt=34), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 35, number 35:
+	#sum( Talks between Portugal and the U.S. on the troubles Portugal
+has been having with its African possessions. )
+	Parse is : 
+	#WSUM(1  1 talk 2 portug 1 troubl 1 have 1 african 1 possess)
+Query 35 (cnt=35), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 36, number 36:
+	#sum( Shake-ups in the Czech regime headed by President antonin 
+Novotny. )
+	Parse is : 
+	#SUM( shake ups czech regim head presid antonin novotn)
+Query 36 (cnt=36), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 37, number 37:
+	#sum( Wheat deals involving the United States, Russia and Canada. )
+	Parse is : 
+	#SUM( wheat deal involv unit state russia canada)
+Query 37 (cnt=37), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 38, number 38:
+	#sum(  Speculation that the number of U.S. forces in Europe might be 
+reduced. )
+	Parse is : 
+	#SUM( specul number forc europ reduc)
+Query 38 (cnt=38), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 39, number 39:
+	#sum( Coalition government to be formed in Italy by the left-wing
+Socialists, the Republicans, Social Democrats, and Christian
+Democrats. )
+	Parse is : 
+	#WSUM(1 
+ 1 coalit
+ 1 govern
+ 1 form
+ 1 ita
+ 1 left
+ 1 wing
+ 1 socialist
+ 1 republican
+ 1 social
+ 2 democrat
+ 1 christian)
+Query 39 (cnt=39), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 40, number 40:
+	#sum( Results of the political polls in Britain regarding which party
+is in the lead, the Labor party or the Conservatives. )
+	Parse is : 
+	#WSUM(1  1 result 1 polit 1 poll 1 britain 1 regard 2 part 1 lead 1 labor 1 conserv)
+Query 40 (cnt=40), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 41, number 41:
+	#sum( What two proposals did de Gaulle reject this year affecting allied
+relations? )
+	Parse is : 
+	#SUM( two propos did de gaull reject affect all relat)
+Query 41 (cnt=41), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 42, number 42:
+	#sum( President de Gaulle's belief that France's nuclear force should
+be the keystone of a European defense system. )
+	Parse is : 
+	#SUM( presid de gaull belief franc nuclear forc keyston european defens system)
+Query 42 (cnt=42), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 43, number 43:
+	#sum( Efforts by Khrushchev to find a closer relationship with
+Yugoslavia. )
+	Parse is : 
+	#SUM( effort khrushchev find closer relationship yugoslavia)
+Query 43 (cnt=43), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 44, number 44:
+	#sum( Bonn's opposition to proposals for an East-West nonaggression
+pact. )
+	Parse is : 
+	#SUM( bonn opposit propos east west nonaggress pact)
+Query 44 (cnt=44), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 45, number 45:
+	#sum( Background of the new Prime Minister of Great Britain. )
+	Parse is : 
+	#SUM( background new prime minist great britain)
+Query 45 (cnt=45), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 46, number 46:
+	#sum( President de Gaulle's policy on British entry into the
+Common Market. )
+	Parse is : 
+	#SUM( presid de gaull polic british entr common market)
+Query 46 (cnt=46), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 47, number 47:
+	#sum( Proposals for a unified Europe independent of the U.S. )
+	Parse is : 
+	#SUM( propos unif europ independ)
+Query 47 (cnt=47), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 48, number 48:
+	#sum( What is the "hot line" proposal? )
+	Parse is : 
+	#SUM( hot line propos)
+Query 48 (cnt=48), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 49, number 49:
+	#sum( Background of the new Chancellor of West Germany, Ludwig Erhard. )
+	Parse is : 
+	#SUM( background new chancellor west german ludwig erhard)
+Query 49 (cnt=49), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 50, number 50:
+	#sum( Meeting of ministers in Paris in April of those countries that
+are members of both NATO and SEATO. )
+	Parse is : 
+	#SUM( meet minist pari april countr member nato seato)
+Query 50 (cnt=50), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 51, number 51:
+	#sum( Successor to Premier Khrushchev. )
+	Parse is : 
+	#SUM( successor premier khrushchev)
+Query 51 (cnt=51), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 52, number 52:
+	#sum( Hint by Premier Khrushchev, who is both the Communist party
+Secretary and Premier, that he may retire from one of his two posts. )
+	Parse is : 
+	#WSUM(1  1 hint 2 premier 1 khrushchev 1 communist 1 part 1 secretar 1 retir 1 two 1 post)
+Query 52 (cnt=52), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 53, number 53:
+	#sum( Premier Khrushchev once again pressing for a nonaggression pact
+between NATO and the Warsaw pact nations. )
+	Parse is : 
+	#WSUM(1  1 premier 1 khrushchev 1 press 1 nonaggress 2 pact 1 nato 1 warsaw 1 nation)
+Query 53 (cnt=53), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 54, number 54:
+	#sum( Communist China's reaction to the Soviet Union's signing of
+the nuclear test ban treaty with the West. )
+	Parse is : 
+	#SUM( communist china reaction soviet union sign nuclear test ban treati west)
+Query 54 (cnt=54), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 55, number 55:
+	#sum( Suggestion made by President Kennedy for a NATO nuclear missile
+fleet manned by international crews. )
+	Parse is : 
+	#SUM( suggest made presid kenned nato nuclear missil fleet man intern crew)
+Query 55 (cnt=55), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 56, number 56:
+	#sum( Suggestion by President Kennedy that the U.S . and the
+Soviet Union cooperate on a moon project. )
+	Parse is : 
+	#SUM( suggest presid kenned soviet union cooper moon project)
+Query 56 (cnt=56), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 57, number 57:
+	#sum( Provisions of the test ban treaty. )
+	Parse is : 
+	#SUM( provis test ban treati)
+Query 57 (cnt=57), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 58, number 58:
+	#sum( Other nations possessing U.S. Polaris missiles for their
+nuclear submarine fleets. )
+	Parse is : 
+	#SUM( nation possess polar missil nuclear submarin fleet)
+Query 58 (cnt=58), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 59, number 59:
+	#sum( Dispute between the U.S. and the Soviet Union over inspection
+systems at the Geneva disarmament conferences. )
+	Parse is : 
+	#SUM( disput soviet union inspect system geneva disarma confer)
+Query 59 (cnt=59), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 60, number 60:
+	#sum( Signing of the test ban treaty. )
+	Parse is : 
+	#SUM( sign test ban treati)
+Query 60 (cnt=60), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 61, number 61:
+	#sum( Nations working on nuclear weapons development.)
+	Parse is : 
+	#SUM( nation work nuclear weapon develop)
+Query 61 (cnt=61), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 62, number 62:
+	#sum( Moscow's support of the Kurd's struggle for autonomy. )
+	Parse is : 
+	#SUM( moscow support kurd struggl autonom)
+Query 62 (cnt=62), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 63, number 63:
+	#sum( President Nasser's ruling out Arab union so long as the present
+governing party in Syria remains in control. )
+	Parse is : 
+	#SUM( presid nasser rule arab union long present govern part syria remain control)
+Query 63 (cnt=63), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 64, number 64:
+	#sum( Prime Minister Nehru's coming under attack last week in the
+first no-confidence motion entertained by the Indian
+parliament since his government took office. )
+	Parse is : 
+	#SUM(
+ prime
+ minist
+ nehru
+ come
+ attack
+ no
+ confid
+ motion
+ entertain
+ indian
+ parliament
+ govern
+ took
+ offic)
+Query 64 (cnt=64), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 65, number 65:
+	#sum( Border dispute between Israel and Syria. )
+	Parse is : 
+	#SUM( border disput israel syria)
+Query 65 (cnt=65), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 66, number 66:
+	#sum( Agreement between Syria and Iraq on full economic unity
+and closer economic cooperation. )
+	Parse is : 
+	#WSUM(1  1 agreement 1 syria 1 iraq 1 full 2 econom 1 unit 1 closer 1 cooper)
+Query 66 (cnt=66), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 67, number 67:
+	#sum( Continuing conflict between India and Pakistan over Kashmir.)
+	Parse is : 
+	#SUM( continu conflict india pakistan kashmir)
+Query 67 (cnt=67), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 68, number 68:
+	#sum( Indian fears of another Communist Chinese invasion.)
+	Parse is : 
+	#SUM( indian fear communist chines invas)
+Query 68 (cnt=68), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 69, number 69:
+	#sum( The Baath Renaissance party founded by Michel Aflak, which has
+gained control of Syria and Iraq and aims to unite all arab countries. )
+	Parse is : 
+	#SUM( baath renaiss part found michel aflak gain control syria iraq aim unit arab countr)
+Query 69 (cnt=69), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 70, number 70:
+	#sum( King who signed away his power of state giving free rein to his
+half-brother Feisal's reform rule. )
+	Parse is : 
+	#SUM( king sign away power state give free rein half brother feisal reform rule)
+Query 70 (cnt=70), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 71, number 71:
+	#sum( Somalia is involved in border disputes with its neighbors.  
+What military aid is being supplied to Somalia by Russia? )
+	Parse is : 
+	#WSUM(1  2 somalia 1 involv 1 border 1 disput 1 neighbor 1 militar 1 aid 1 suppl 1 russia)
+Query 71 (cnt=71), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 72, number 72:
+	#sum( Economic steps taken against South Africa as a protest against
+that nation's Apartheid policy. )
+	Parse is : 
+	#SUM( econom step taken south africa protest nation apartheid polic)
+Query 72 (cnt=72), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 73, number 73:
+	#sum( Increasing criticism of Premier Ben Bella in Algeria from other
+leaders who helped bring about Algerian independence. )
+	Parse is : 
+	#SUM( increas critic premier ben bella algeria leader help bring algerian independ)
+Query 73 (cnt=73), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 74, number 74:
+	#sum( Take over again by Moise Tshombe of the Katanga province
+in the Congo. )
+	Parse is : 
+	#SUM( take moise tshomb katanga provinc congo)
+Query 74 (cnt=74), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 75, number 75:
+	#sum( Premier Cyrille Adoula's ordering the entire Soviet embassy
+staff thrown out of his country on spying charges. )
+	Parse is : 
+	#SUM( premier cyril adoula order entir soviet embass staff thrown countr spy charg)
+Query 75 (cnt=75), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 76, number 76:
+	#sum( Conference on African unity to be held in Addis Ababa on May 22
+by the heads of state of 31 independent African nations. )
+	Parse is : 
+	#WSUM(1 
+ 1 confer
+ 2 african
+ 1 unit
+ 1 held
+ 1 add
+ 1 ababa
+ 1 22
+ 1 head
+ 1 state
+ 1 31
+ 1 independ
+ 1 nation)
+Query 76 (cnt=76), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 77, number 77:
+	#sum( Spain's relaxation of controls over some of its African
+territories. )
+	Parse is : 
+	#SUM( spain relax control african territor)
+Query 77 (cnt=77), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 78, number 78:
+	#sum( Federation of East Africa to be formed by Kenya, Tanganyika
+and Uganda when Kenya gains its independence on Dec. 12 from Britain. )
+	Parse is : 
+	#WSUM(1 
+ 1 feder
+ 1 east
+ 1 africa
+ 1 form
+ 2 kenya
+ 1 tanganyika
+ 1 uganda
+ 1 gain
+ 1 independ
+ 1 dec
+ 1 12
+ 1 britain)
+Query 78 (cnt=78), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 79, number 79:
+	#sum( Algerian vote on a new constitution giving full
+powers to premier Ben Bella's political party. )
+	Parse is : 
+	#SUM( algerian vote new constitut give full power premier ben bella polit part)
+Query 79 (cnt=79), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 80, number 80:
+	#sum( Effects of the Sino-Soviet dispute on the
+new nations of Africa and Asia or on areas of ferment
+in Latin America. )
+	Parse is : 
+	#SUM( effect sino soviet disput new nation africa asia area ferment latin america)
+Query 80 (cnt=80), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 81, number 81:
+	#sum( Communist Chinese trade with the Soviet Union, the rest of the
+Communist world, and with the non-Communist world. )
+	Parse is : 
+	#WSUM(1  3 communist 1 chines 1 trade 1 soviet 1 union 1 rest 2 world 1 non)
+Query 81 (cnt=81), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 82, number 82:
+	#sum( Albanian backing of Communist China in the ideological
+split with the Soviet Union. )
+	Parse is : 
+	#SUM( albanian back communist china ideolog split soviet union)
+Query 82 (cnt=82), default=0.400000, doc cnt=423
+---------------------------------------------
+	Query Text for Count 83, number 83:
+	#sum( Red Chinese blaming of economic troubles and the treaty-breaking
+withdrawal of Russian technical assistance for serious delays in its
+development program. )
+	Parse is : 
+	#SUM(
+ red
+ chines
+ blame
+ econom
+ troubl
+ treati
+ break
+ withdraw
+ russian
+ technic
+ assist
+ serious
+ delay
+ develop
+ program)
+Query 83 (cnt=83), default=0.400000, doc cnt=423

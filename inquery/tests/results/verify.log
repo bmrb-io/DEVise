@@ -1,0 +1,508 @@
+Linking to input files...
+Building the collection...
+Bin directory is ../bin.
+
+
+	<<../bin/inbuild: PARSING (sgml) ../data/time_sgml.dat>>
+
+
+Parser System version 2.2
+	COLLECTION:  /usr/mel/data10/releases/3.0/obj-alpha/data/time_sgml.dat
+	DATABASE:    /usr/mel/data10/releases/3.0/obj-alpha/tests/time
+	STOPWORDS:   default.stp
+	STEMMING:    porter
+	STOPPING:    on
+	GENTRANS:    gentrans version: 2.1
+
+Finished doc #100.
+Finished doc #200.
+Finished doc #300.
+Finished doc #400.
+Flushed batch buffer, 15445 terms, 140592 posts
+Flushed batch buffer, 15445 terms, 140592 posts
+
+
+           S U M M A R Y
+Parse Status                     = 0
+
+
+	<<../bin/inbuild: MERGING>>
+
+Keyfile version: standard keyfile 21
+doc_cnt=423
+merging   1 blocks from "/usr/mel/data10/releases/3.0/obj-alpha/tests/time.imd"
+  ".41", coll_freq=1, doc_cnt=1
+  "0", coll_freq=1, doc_cnt=1
+  "00", coll_freq=1, doc_cnt=1
+  "000", coll_freq=1, doc_cnt=1
+  "1", coll_freq=65, doc_cnt=56
+  "10", coll_freq=35, doc_cnt=30
+  "100", coll_freq=49, doc_cnt=42
+  "1000", coll_freq=30, doc_cnt=29
+  "10000", coll_freq=18, doc_cnt=17
+  "100000", coll_freq=14, doc_cnt=14
+  "1000000", coll_freq=8, doc_cnt=8
+  "100o", coll_freq=1, doc_cnt=1
+  "100th", coll_freq=1, doc_cnt=1
+  "101", coll_freq=1, doc_cnt=1
+  "1013", coll_freq=1, doc_cnt=1
+  "1014", coll_freq=1, doc_cnt=1
+  "102", coll_freq=1, doc_cnt=1
+  "103", coll_freq=3, doc_cnt=3
+  "10308", coll_freq=1, doc_cnt=1
+  "104", coll_freq=4, doc_cnt=4
+  "105", coll_freq=4, doc_cnt=4
+  "106000", coll_freq=1, doc_cnt=1
+  "108", coll_freq=1, doc_cnt=1
+  "109", coll_freq=1, doc_cnt=1
+  "10ft", coll_freq=1, doc_cnt=1
+  "10th", coll_freq=2, doc_cnt=2
+  "11", coll_freq=22, doc_cnt=22
+  "1100", coll_freq=2, doc_cnt=2
+  "110000", coll_freq=1, doc_cnt=1
+  "1100000", coll_freq=2, doc_cnt=2
+  "11182", coll_freq=1, doc_cnt=1
+  "113", coll_freq=3, doc_cnt=3
+  "114", coll_freq=1, doc_cnt=1
+  "115", coll_freq=4, doc_cnt=4
+  "116", coll_freq=2, doc_cnt=2
+  "116000", coll_freq=1, doc_cnt=1
+  "117", coll_freq=1, doc_cnt=1
+  "1170", coll_freq=1, doc_cnt=1
+  "119", coll_freq=1, doc_cnt=1
+  "1193", coll_freq=1, doc_cnt=1
+  "11o", coll_freq=1, doc_cnt=1
+  "12", coll_freq=28, doc_cnt=27
+  "120", coll_freq=12, doc_cnt=12
+  "1200", coll_freq=3, doc_cnt=3
+  "12000", coll_freq=5, doc_cnt=5
+  "120000", coll_freq=2, doc_cnt=2
+  "1200000", coll_freq=3, doc_cnt=3
+  "123", coll_freq=2, doc_cnt=2
+  "12376", coll_freq=1, doc_cnt=1
+  "125", coll_freq=3, doc_cnt=3
+  "125000", coll_freq=1, doc_cnt=1
+  "126", coll_freq=1, doc_cnt=1
+  "126000", coll_freq=1, doc_cnt=1
+  "1270000", coll_freq=1, doc_cnt=1
+  "128", coll_freq=1, doc_cnt=1
+  "12800", coll_freq=1, doc_cnt=1
+  "129500", coll_freq=1, doc_cnt=1
+  "12f", coll_freq=1, doc_cnt=1
+  "12in", coll_freq=1, doc_cnt=1
+  "13", coll_freq=27, doc_cnt=24
+  "130", coll_freq=5, doc_cnt=5
+  "1300", coll_freq=1, doc_cnt=1
+  "13000", coll_freq=1, doc_cnt=1
+  "1300000", coll_freq=1, doc_cnt=1
+  "1304", coll_freq=1, doc_cnt=1
+  "131", coll_freq=1, doc_cnt=1
+  "133", coll_freq=3, doc_cnt=3
+  "13455", coll_freq=1, doc_cnt=1
+  "135", coll_freq=1, doc_cnt=1
+  "136", coll_freq=1, doc_cnt=1
+  "137", coll_freq=1, doc_cnt=1
+  "1370", coll_freq=1, doc_cnt=1
+  "138", coll_freq=1, doc_cnt=1
+  "1380", coll_freq=1, doc_cnt=1
+  "139", coll_freq=1, doc_cnt=1
+  "13th", coll_freq=5, doc_cnt=5
+  "14", coll_freq=40, doc_cnt=35
+  "140", coll_freq=4, doc_cnt=4
+  "1400", coll_freq=3, doc_cnt=3
+  "14000", coll_freq=12, doc_cnt=12
+  "140000", coll_freq=2, doc_cnt=2
+  "1400000", coll_freq=2, doc_cnt=2
+  "14129", coll_freq=1, doc_cnt=1
+  "142", coll_freq=1, doc_cnt=1
+  "144", coll_freq=3, doc_cnt=3
+  "145", coll_freq=1, doc_cnt=1
+  "149", coll_freq=1, doc_cnt=1
+  "1498", coll_freq=1, doc_cnt=1
+  "14th", coll_freq=1, doc_cnt=1
+  "15", coll_freq=65, doc_cnt=60
+  "150", coll_freq=15, doc_cnt=13
+  "1500", coll_freq=12, doc_cnt=12
+  "15000", coll_freq=9, doc_cnt=9
+  "150000", coll_freq=3, doc_cnt=3
+  "1500000", coll_freq=7, doc_cnt=7
+  "1512", coll_freq=1, doc_cnt=1
+  "155", coll_freq=2, doc_cnt=2
+  "1551", coll_freq=1, doc_cnt=1
+  "156", coll_freq=2, doc_cnt=2
+  "1571820", coll_freq=1, doc_cnt=1
+  "1579", coll_freq=1, doc_cnt=1
+  "158", coll_freq=1, doc_cnt=1
+  "15846", coll_freq=1, doc_cnt=1
+  "159", coll_freq=1, doc_cnt=1
+  "15f", coll_freq=1, doc_cnt=1
+  "15member", coll_freq=1, doc_cnt=1
+  "15q6", coll_freq=1, doc_cnt=1
+  "15th", coll_freq=1, doc_cnt=1
+  "16", coll_freq=25, doc_cnt=23
+  "160", coll_freq=7, doc_cnt=6
+  "1600", coll_freq=4, doc_cnt=4
+  "16000", coll_freq=2, doc_cnt=2
+  "160500", coll_freq=1, doc_cnt=1
+  "16139", coll_freq=1, doc_cnt=1
+  "162", coll_freq=2, doc_cnt=2
+  "162000", coll_freq=1, doc_cnt=1
+  "1630", coll_freq=1, doc_cnt=1
+  "16395", coll_freq=1, doc_cnt=1
+  "16456", coll_freq=1, doc_cnt=1
+  "165", coll_freq=1, doc_cnt=1
+  "16500", coll_freq=2, doc_cnt=2
+  "166", coll_freq=3, doc_cnt=3
+  "1679", coll_freq=1, doc_cnt=1
+  "16th", coll_freq=3, doc_cnt=3
+  "17", coll_freq=37, doc_cnt=33
+  "170", coll_freq=5, doc_cnt=5
+  "17000", coll_freq=1, doc_cnt=1
+  "1700000", coll_freq=2, doc_cnt=2
+  "1707", coll_freq=1, doc_cnt=1
+  "172", coll_freq=1, doc_cnt=1
+  "1725", coll_freq=2, doc_cnt=2
+  "1735", coll_freq=1, doc_cnt=1
+  "1745", coll_freq=1, doc_cnt=1
+  "175", coll_freq=4, doc_cnt=3
+  "1750", coll_freq=1, doc_cnt=1
+  "175000", coll_freq=1, doc_cnt=1
+  "1767", coll_freq=1, doc_cnt=1
+  "1776", coll_freq=1, doc_cnt=1
+  "1778", coll_freq=2, doc_cnt=1
+  "1787", coll_freq=1, doc_cnt=1
+  "17th", coll_freq=3, doc_cnt=3
+  "18", coll_freq=33, doc_cnt=29
+  "180", coll_freq=7, doc_cnt=7
+  "1800", coll_freq=2, doc_cnt=2
+  "18000", coll_freq=3, doc_cnt=3
+  "180000", coll_freq=3, doc_cnt=3
+  "1800000", coll_freq=2, doc_cnt=2
+  "1802", coll_freq=1, doc_cnt=1
+  "1805", coll_freq=1, doc_cnt=1
+  "182", coll_freq=2, doc_cnt=2
+  "1820", coll_freq=1, doc_cnt=1
+  "182000", coll_freq=1, doc_cnt=1
+  "1822", coll_freq=1, doc_cnt=1
+  "1825", coll_freq=1, doc_cnt=1
+  "1826", coll_freq=1, doc_cnt=1
+  "1829", coll_freq=1, doc_cnt=1
+  "182900", coll_freq=1, doc_cnt=1
+  "1830", coll_freq=1, doc_cnt=1
+  "1841", coll_freq=1, doc_cnt=1
+  "1845", coll_freq=1, doc_cnt=1
+  "1847", coll_freq=1, doc_cnt=1
+  "1848", coll_freq=2, doc_cnt=2
+  "185", coll_freq=3, doc_cnt=3
+  "18518", coll_freq=1, doc_cnt=1
+  "1858", coll_freq=1, doc_cnt=1
+  "1859", coll_freq=1, doc_cnt=1
+  "1862", coll_freq=1, doc_cnt=1
+  "1864", coll_freq=1, doc_cnt=1
+  "1868", coll_freq=1, doc_cnt=1
+  "1870", coll_freq=1, doc_cnt=1
+  "1872", coll_freq=1, doc_cnt=1
+  "1878", coll_freq=2, doc_cnt=2
+  "188000", coll_freq=3, doc_cnt=3
+  "1887", coll_freq=1, doc_cnt=1
+  "1890", coll_freq=3, doc_cnt=3
+  "1894", coll_freq=1, doc_cnt=1
+  "1895", coll_freq=1, doc_cnt=1
+  "1897", coll_freq=1, doc_cnt=1
+  "1899", coll_freq=1, doc_cnt=1
+  "18th", coll_freq=11, doc_cnt=8
+  "19", coll_freq=22, doc_cnt=22
+  "190", coll_freq=2, doc_cnt=2
+  "19000", coll_freq=4, doc_cnt=4
+  "1902", coll_freq=2, doc_cnt=2
+  "1904", coll_freq=2, doc_cnt=2
+  "1911", coll_freq=1, doc_cnt=1
+  "1912", coll_freq=1, doc_cnt=1
+  "1913", coll_freq=1, doc_cnt=1
+  "1914", coll_freq=1, doc_cnt=1
+  "1916", coll_freq=2, doc_cnt=2
+  "1917", coll_freq=1, doc_cnt=1
+  "1918", coll_freq=1, doc_cnt=1
+  "1919", coll_freq=2, doc_cnt=2
+  "1920", coll_freq=4, doc_cnt=4
+  "1921", coll_freq=4, doc_cnt=3
+  "1922", coll_freq=3, doc_cnt=3
+  "1923", coll_freq=2, doc_cnt=2
+  "1924", coll_freq=3, doc_cnt=3
+  "1925", coll_freq=1, doc_cnt=1
+  "1926", coll_freq=1, doc_cnt=1
+  500 terms written this run
+  1000 terms written this run
+  1500 terms written this run
+  2000 terms written this run
+  2500 terms written this run
+  3000 terms written this run
+  3500 terms written this run
+  4000 terms written this run
+  4500 terms written this run
+  5000 terms written this run
+  5500 terms written this run
+  6000 terms written this run
+  6500 terms written this run
+  7000 terms written this run
+  7500 terms written this run
+  8000 terms written this run
+  8500 terms written this run
+  9000 terms written this run
+  9500 terms written this run
+  10000 terms written this run
+  10500 terms written this run
+  11000 terms written this run
+  11500 terms written this run
+  12000 terms written this run
+  12500 terms written this run
+  13000 terms written this run
+  13500 terms written this run
+  14000 terms written this run
+
+
+Transaction File STOP and STEM Status:
+  Stopping: on
+  Stemming: porter
+Removing intermediate files
+Belief File Build Summary:
+  423 nodes defined
+  14090 terms written
+  14090 terms written this run
+  length needed for longest list is 2235
+  136878 basic postings
+  0 terms found
+  0 terms not found
+  paragraph transactions for 0 documents
+  length of paragraph record is 0
+
+
+	<<../bin/inbuild: MERGING fields>>
+
+Keyfile version: standard keyfile 21
+doc_cnt=423
+merging   1 blocks from "/usr/mel/data10/releases/3.0/obj-alpha/tests/time.imf"
+  "001.41", coll_freq=1, doc_cnt=1
+  "0011", coll_freq=3, doc_cnt=3
+  "00112", coll_freq=9, doc_cnt=9
+  "0012", coll_freq=10, doc_cnt=10
+  "00122", coll_freq=1, doc_cnt=1
+  "0013", coll_freq=1, doc_cnt=1
+  "001333", coll_freq=1, doc_cnt=1
+  "0015000000", coll_freq=1, doc_cnt=1
+  "0016000", coll_freq=1, doc_cnt=1
+  "001a", coll_freq=36, doc_cnt=34
+  "001about", coll_freq=1, doc_cnt=1
+  "001abroad", coll_freq=1, doc_cnt=1
+  "001across", coll_freq=1, doc_cnt=1
+  "001aden", coll_freq=1, doc_cnt=1
+  "001adipos", coll_freq=1, doc_cnt=1
+  "001adjust", coll_freq=1, doc_cnt=1
+  "001advic", coll_freq=1, doc_cnt=1
+  "001africa", coll_freq=17, doc_cnt=17
+  "001afro", coll_freq=1, doc_cnt=1
+  "001after", coll_freq=3, doc_cnt=3
+  "001again", coll_freq=2, doc_cnt=2
+  "001against", coll_freq=1, doc_cnt=1
+  "001ah", coll_freq=1, doc_cnt=1
+  "001ahead", coll_freq=1, doc_cnt=1
+  "001aid", coll_freq=1, doc_cnt=1
+  "001ail", coll_freq=1, doc_cnt=1
+  "001air", coll_freq=1, doc_cnt=1
+  "001ala", coll_freq=1, doc_cnt=1
+  "001albert", coll_freq=1, doc_cnt=1
+  "001aldermaston", coll_freq=1, doc_cnt=1
+  "001algeria", coll_freq=3, doc_cnt=3
+  "001all", coll_freq=8, doc_cnt=8
+  "001allah", coll_freq=1, doc_cnt=1
+  "001along", coll_freq=1, doc_cnt=1
+  "001alt", coll_freq=1, doc_cnt=1
+  "001alway", coll_freq=1, doc_cnt=1
+  "001amen", coll_freq=2, doc_cnt=2
+  "001american", coll_freq=1, doc_cnt=1
+  "001an", coll_freq=8, doc_cnt=8
+  "001anachron", coll_freq=1, doc_cnt=1
+  "001anan", coll_freq=1, doc_cnt=1
+  "001and", coll_freq=3, doc_cnt=3
+  "001anger", coll_freq=1, doc_cnt=1
+  "001angola", coll_freq=1, doc_cnt=1
+  "001angr", coll_freq=1, doc_cnt=1
+  "001ani", coll_freq=1, doc_cnt=1
+  "001anniversar", coll_freq=1, doc_cnt=1
+  "001anoth", coll_freq=2, doc_cnt=2
+  "001antholog", coll_freq=1, doc_cnt=1
+  "001anyon", coll_freq=1, doc_cnt=1
+  "001apart", coll_freq=1, doc_cnt=1
+  "001apertura", coll_freq=2, doc_cnt=2
+  "001apr", coll_freq=1, doc_cnt=1
+  "001arabia", coll_freq=3, doc_cnt=3
+  "001are", coll_freq=5, doc_cnt=5
+  "001argoud", coll_freq=1, doc_cnt=1
+  "001arm", coll_freq=1, doc_cnt=1
+  "001armband", coll_freq=1, doc_cnt=1
+  "001arrang", coll_freq=1, doc_cnt=1
+  "001arriv", coll_freq=1, doc_cnt=1
+  "001art", coll_freq=1, doc_cnt=1
+  "001artist", coll_freq=1, doc_cnt=1
+  "001as", coll_freq=3, doc_cnt=2
+  "001asia", coll_freq=3, doc_cnt=3
+  "001asian", coll_freq=2, doc_cnt=2
+  "001at", coll_freq=15, doc_cnt=15
+  "001atque", coll_freq=1, doc_cnt=1
+  "001australia", coll_freq=2, doc_cnt=2
+  "001austria", coll_freq=2, doc_cnt=2
+  "001ave", coll_freq=1, doc_cnt=1
+  "001avon", coll_freq=1, doc_cnt=1
+  "001away", coll_freq=1, doc_cnt=1
+  "001back", coll_freq=4, doc_cnt=4
+  "001bad", coll_freq=1, doc_cnt=1
+  "001bafflement", coll_freq=1, doc_cnt=1
+  "001baker", coll_freq=1, doc_cnt=1
+  "001balanc", coll_freq=2, doc_cnt=2
+  "001bali", coll_freq=1, doc_cnt=1
+  "001bandwagon", coll_freq=1, doc_cnt=1
+  "001banyan", coll_freq=1, doc_cnt=1
+  "001bare", coll_freq=1, doc_cnt=1
+  "001base", coll_freq=1, doc_cnt=1
+  "001battl", coll_freq=2, doc_cnt=2
+  "001be", coll_freq=3, doc_cnt=3
+  "001beard", coll_freq=1, doc_cnt=1
+  "001beckon", coll_freq=1, doc_cnt=1
+  "001begin", coll_freq=1, doc_cnt=1
+  "001belgica", coll_freq=1, doc_cnt=1
+  "001belgium", coll_freq=1, doc_cnt=1
+  "001bellism", coll_freq=1, doc_cnt=1
+  "001ben", coll_freq=1, doc_cnt=1
+  "001berlin", coll_freq=5, doc_cnt=5
+  "001best", coll_freq=1, doc_cnt=1
+  "001better", coll_freq=2, doc_cnt=1
+  "001between", coll_freq=1, doc_cnt=1
+  "001bingo", coll_freq=1, doc_cnt=1
+  "001birth", coll_freq=2, doc_cnt=2
+  "001bit", coll_freq=1, doc_cnt=1
+  "001black", coll_freq=3, doc_cnt=3
+  "001blitz", coll_freq=1, doc_cnt=1
+  "001blockad", coll_freq=1, doc_cnt=1
+  "001blond", coll_freq=1, doc_cnt=1
+  "001blood", coll_freq=3, doc_cnt=3
+  "001bobb", coll_freq=1, doc_cnt=1
+  "001bomb", coll_freq=1, doc_cnt=1
+  "001bond", coll_freq=2, doc_cnt=2
+  "001bound", coll_freq=1, doc_cnt=1
+  "001brawl", coll_freq=1, doc_cnt=1
+  "001break", coll_freq=1, doc_cnt=1
+  "001breath", coll_freq=1, doc_cnt=1
+  "001breed", coll_freq=1, doc_cnt=1
+  "001brew", coll_freq=1, doc_cnt=1
+  "001brickbat", coll_freq=1, doc_cnt=1
+  "001bridg", coll_freq=1, doc_cnt=1
+  "001brief", coll_freq=1, doc_cnt=1
+  "001britain", coll_freq=33, doc_cnt=33
+  "001broker", coll_freq=1, doc_cnt=1
+  "001brother", coll_freq=2, doc_cnt=2
+  "001brotherhood", coll_freq=1, doc_cnt=1
+  "001buddhist", coll_freq=1, doc_cnt=1
+  "001burden", coll_freq=1, doc_cnt=1
+  "001burma", coll_freq=3, doc_cnt=3
+  "001burn", coll_freq=1, doc_cnt=1
+  "001bush", coll_freq=1, doc_cnt=1
+  "001busi", coll_freq=1, doc_cnt=1
+  "001buss", coll_freq=1, doc_cnt=1
+  "001but", coll_freq=2, doc_cnt=2
+  "001buy", coll_freq=1, doc_cnt=1
+  "001by", coll_freq=2, doc_cnt=2
+  "001cactu", coll_freq=1, doc_cnt=1
+  "001caesar", coll_freq=1, doc_cnt=1
+  "001call", coll_freq=1, doc_cnt=1
+  "001cambodia", coll_freq=4, doc_cnt=4
+  "001camel", coll_freq=1, doc_cnt=1
+  "001camelot", coll_freq=1, doc_cnt=1
+  "001campaign", coll_freq=1, doc_cnt=1
+  "001candid", coll_freq=2, doc_cnt=2
+  "001cap", coll_freq=1, doc_cnt=1
+  "001capitalist", coll_freq=1, doc_cnt=1
+  "001capricorn", coll_freq=1, doc_cnt=1
+  "001case", coll_freq=1, doc_cnt=1
+  "001caught", coll_freq=1, doc_cnt=1
+  "001cause", coll_freq=1, doc_cnt=1
+  "001caution", coll_freq=1, doc_cnt=1
+  "001central", coll_freq=4, doc_cnt=4
+  "001certain", coll_freq=1, doc_cnt=1
+  "001ceylon", coll_freq=1, doc_cnt=1
+  "001channel", coll_freq=1, doc_cnt=1
+  "001chap", coll_freq=1, doc_cnt=1
+  "001charg", coll_freq=1, doc_cnt=1
+  "001charl", coll_freq=1, doc_cnt=1
+  "001cheek", coll_freq=1, doc_cnt=1
+  "001chemistr", coll_freq=1, doc_cnt=1
+  "001chiang", coll_freq=1, doc_cnt=1
+  "001chill", coll_freq=1, doc_cnt=1
+  "001china", coll_freq=6, doc_cnt=6
+  "001choice", coll_freq=1, doc_cnt=1
+  "001christin", coll_freq=2, doc_cnt=2
+  "001citi", coll_freq=2, doc_cnt=2
+  "001citizen", coll_freq=1, doc_cnt=1
+  "001civil", coll_freq=2, doc_cnt=2
+  "001class", coll_freq=3, doc_cnt=3
+  "001climat", coll_freq=1, doc_cnt=1
+  "001cloudburst", coll_freq=1, doc_cnt=1
+  "001club", coll_freq=1, doc_cnt=1
+  "001cold", coll_freq=9, doc_cnt=9
+  "001colon", coll_freq=2, doc_cnt=2
+  "001combat", coll_freq=1, doc_cnt=1
+  "001common", coll_freq=1, doc_cnt=1
+  "001commun", coll_freq=1, doc_cnt=1
+  "001communist", coll_freq=14, doc_cnt=14
+  "001comrad", coll_freq=2, doc_cnt=2
+  "001confer", coll_freq=1, doc_cnt=1
+  "001confid", coll_freq=1, doc_cnt=1
+  "001confront", coll_freq=1, doc_cnt=1
+  "001congo", coll_freq=15, doc_cnt=15
+  "001constant", coll_freq=1, doc_cnt=1
+  "001cop", coll_freq=1, doc_cnt=1
+  "001cope", coll_freq=2, doc_cnt=2
+  "001corrupt", coll_freq=1, doc_cnt=1
+  "001corsica", coll_freq=1, doc_cnt=1
+  "001cost", coll_freq=1, doc_cnt=1
+  "001council", coll_freq=1, doc_cnt=1
+  "001countr", coll_freq=1, doc_cnt=1
+  "001coup", coll_freq=1, doc_cnt=1
+  "001cover", coll_freq=3, doc_cnt=3
+  "001cow", coll_freq=1, doc_cnt=1
+  "001crackdown", coll_freq=1, doc_cnt=1
+  "001crisi", coll_freq=2, doc_cnt=2
+  "001critic", coll_freq=1, doc_cnt=1
+  "001cross", coll_freq=1, doc_cnt=1
+  "001crumbl", coll_freq=1, doc_cnt=1
+  "001cupboard", coll_freq=1, doc_cnt=1
+  "001curtain", coll_freq=1, doc_cnt=1
+  "001cut", coll_freq=1, doc_cnt=1
+  "001czechoslovakia", coll_freq=1, doc_cnt=1
+  "001daddah", coll_freq=1, doc_cnt=1
+  "001dahomey", coll_freq=1, doc_cnt=1
+  "001danger", coll_freq=1, doc_cnt=1
+  "001date", coll_freq=1, doc_cnt=1
+  500 terms written this run
+  1000 terms written this run
+
+
+Transaction File STOP and STEM Status:
+  Stopping: on
+  Stemming: porter
+Removing intermediate files
+Belief File Build Summary:
+  423 nodes defined
+  1355 terms written
+  1355 terms written this run
+  length needed for longest list is 2415
+  136878 basic postings
+  0 terms found
+  0 terms not found
+  paragraph transactions for 0 documents
+  length of paragraph record is 0
+
+Finished building!
+
+Running queries...
+time-queries.bl:  Match
+Done

@@ -1,0 +1,86 @@
+#!/bin/csh
+
+########################################################################### 
+#                         Copyright (c) 1996                              #
+# by Sovereign Hill Software, Inc., Amherst, Massachusetts, U.S.A.        #
+#        (413-256-6916;   http://www.sovereign-hill.com)                  #
+#                          All Rights Reserved.                           #
+#                                                                         #
+# The SOFTWARE was developed in part at the Center for Intelligent        #
+# Information Retrieval (CIIR) at the University of Massachusetts at      #
+# Amherst (For more information, contact 413-545-0463 or                  #
+# http://ciir.cs.umass.edu).  The SOFTWARE was acquired by Sovereign      #
+# Hill Software Inc. and is the property of Sovereign Hill Software.      #
+# ACSIOM is authorized, under an agreement with Sovereign Hill Software,  #
+# to license the SOFTWARE for non-commercial, non-revenue-producing       #
+# prototyping and internal evaluation purposes only.                      #
+#                                                                         #
+# This SOFTWARE was developed in significant part with private funding.   #
+# The INQUERY SOFTWARE is proprietary to Sovereign Hill Software and may  #
+# not be distributed in whole or in part or used in any way without       #
+# authorized permission in writing from Sovereign Hill Software.          #
+# Possession, use, duplication or dissemination of the INQUERY SOFTWARE   #
+# and media is authorized only pursuant to a valid written license from   #
+# ACSIOM or Sovereign Hill Software, Inc.                                 #
+#                                                                         #
+# RESTRICTED RIGHTS LEGEND:  Use, duplication, or disclosure by the U.S.  #
+# Government is subject to restrictions as set forth in subparagraph      #
+# (c)(l)(ii) of the Rights in Technical Data and Computer Software clause #
+# at DFARS 252.227-7013, or in FAR 52.227-19, as applicable.              #
+########################################################################### 
+
+#  This shell script tests the Inquery system by comparing its results
+#  on the time collection with a reference set of results.  The
+#  first (and only) parameter must specify a directory path for the
+#  reference data and results.
+#
+if ($#argv == 0) \
+then
+  set ref_path=./results
+else
+  set ref_path=$1
+endif
+
+set stat=0
+set bin_dir=../binary
+set query_dir=../data
+set data_dir=../data
+
+#  Link to the input files (no point in having duplicate copies laying around).
+#
+echo "Linking to input files..."
+ln -s $data_dir/time.rel .
+ln -s $data_dir/default.stp .
+
+#  Build the collection files.
+#
+echo "Building the collection..."
+echo Bin directory is ${bin_dir}.
+
+$bin_dir/inbuild time $data_dir/time_sgml.dat -fields -stemmer porter -stoplist default.stp
+if ($status != 0) then
+  echo ERROR: inbuild failed!
+  exit 1
+endif
+
+#  Run the queries
+#
+echo "Running queries..."
+set query_files="time-queries.bl"
+
+foreach f ($query_files)
+  echo -n "$f"":  "
+  ln -s $query_dir/$f .
+  $bin_dir/inqueryb time $f time.rel -stop default.stp >& $f.log
+  diff $ref_path/`basename $f .bl`.evl `basename $f .bl`.evl
+  if ($status != 0) \
+  then
+    echo "Mismatch"
+    set stat=1
+  else
+    echo "Match"
+  endif
+end
+
+echo "Done"
+exit $stat
