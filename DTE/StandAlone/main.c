@@ -15,6 +15,7 @@
 #include "InitShut.h"
 #include "Common.h"
 #include "sysdep.h"
+#include "exception.h"
 
 int main(int argc, char** argv){
 
