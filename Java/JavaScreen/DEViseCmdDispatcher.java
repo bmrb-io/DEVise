@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.94  2001/04/25 19:41:43  xuk
+// Fixed bug 661: when a JS goes into Collaboration mode from Socket mode,
+// It will not become an available collaboration leader.
+//
 // Revision 1.93  2001/04/24 01:46:18  xuk
 // Fixed bug 658: restoring pre-collaboration session, when leader exits.
 //
@@ -1432,7 +1436,7 @@ public class DEViseCmdDispatcher implements Runnable
 
     private void viewDataArea(String command, String[] args) throws YException
     {
-        if (args.length < 5 || args.length > 6) {
+        if (args.length < 5 || args.length > 7) {
             throw new YException(
               "Ill-formated command received from server \"" + command +
               "\"", "DEViseCmdDispatcher::processCmd()", 2);
@@ -1446,12 +1450,17 @@ public class DEViseCmdDispatcher implements Runnable
 
             // Ven - for mouse display format string
             String format = null;
-            if (args.length == 6) {
-               format = args[5];
+            if (args.length >= 6) {
+		format = args[5];
             } 
+	    
+	    float factor = 1;
+	    if (args.length == 7) {
+		factor = (Float.valueOf(args[6])).floatValue();
+	    }
 
             jsc.jscreen.updateViewDataRange(viewname, viewaxis, min, max,
-              format);
+              format, factor);
         } catch (NumberFormatException e) {
             throw new YException(
               "Ill-formated command received from server \"" + command +
