@@ -1,4 +1,27 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1995
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
 .c.o:
+	$(CC) -c $(CFLAGS) $<
+
+.C.o:
 	$(CC) -c $(CFLAGS) $<
 
 CC = g++
@@ -18,6 +41,9 @@ ams:    ams.o ../graphics.new/libobj.o ../tape/tapeobj.o ../issm/issmobj.o \
 
 extend: extend.o
 	$(CC) -o $@ $@.o
+		
+exttape: exttape.o
+	$(CC) -o $@ $@.o ../tape/tapedrive.o
 		
 extendAms: extendAms.o
 	$(CC) -o $@ $@.o -lm
