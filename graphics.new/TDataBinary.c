@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/12/18 19:34:06  jussi
+  Fixed minor bugs in ReadRecAsync(). Added FlushDataPipe().
+
   Revision 1.27  1996/12/18 15:30:43  jussi
   Added support for concurrent I/O.
 
@@ -201,10 +204,8 @@ TDataBinary::TDataBinary(char *name, char *type, char *param,
   _totalRecs = 0;
 
 #ifdef CONCURRENT_IO
-  if (_fileOpen) {
-      if (_data->InitializeProc() < 0)
-        fprintf(stderr, "Cannot use concurrent I/O to access data stream\n");
-  }
+  if (_fileOpen)
+    (void)_data->InitializeProc();
 #endif
 
   float estNumRecs = _data->DataSize() / _physRecSize;
@@ -262,8 +263,7 @@ Boolean TDataBinary::CheckFileStatus()
     printf("Data stream %s has become available\n", _name);
     _fileOpen = true;
 #ifdef CONCURRENT_IO
-    if (_data->InitializeProc() < 0)
-      fprintf(stderr, "Cannot use concurrent I/O to access data stream\n");
+    (void)_data->InitializeProc();
 #endif
     Dispatcher::Current()->Register(this, 10, AllState, false, -1);
   }

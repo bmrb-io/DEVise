@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.52  1996/12/18 19:34:05  jussi
+  Fixed minor bugs in ReadRecAsync(). Added FlushDataPipe().
+
   Revision 1.51  1996/12/18 15:30:29  jussi
   Added flushing of pipes when I/Os are prematurely terminated.
 
@@ -282,8 +285,7 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
 
     if (_fileOpen) {
 #ifdef CONCURRENT_IO
-      if (_data->InitializeProc() < 0)
-        fprintf(stderr, "Cannot use concurrent I/O to access data stream\n");
+      (void)_data->InitializeProc();
 #endif
 
       /* Read first 10 records from data source and estimate record size. */
@@ -360,8 +362,7 @@ Boolean TDataAscii::CheckFileStatus()
     printf("Data stream %s has become available\n", _name);
     _fileOpen = true;
 #ifdef CONCURRENT_IO
-    if (_data->InitializeProc() < 0)
-      fprintf(stderr, "Cannot use concurrent I/O to access data stream\n");
+    (void)_data->InitializeProc();
 #endif
     Dispatcher::Current()->Register(this, 10, AllState, false, -1);
   }
