@@ -19,12 +19,11 @@ CycleCpuTimeMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Dispatcher.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/stdlib.h ../graphics/DList.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Exit.h ../graphics/VisualArg.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/Color.h ../graphics/Journal.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/ColorMgr.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/Color.h ../graphics/Pattern.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/Journal.h ../graphics/ColorMgr.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/Shape.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/TDataMap.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/Pattern.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/ShapeID.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/Bitmap.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/RecId.h
@@ -80,10 +79,11 @@ CycleEffMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 CycleEffMappingClassInfo.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
 CycleEffMappingClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
 CycleEffMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/Color.h
-CycleEffMappingClassInfo.o: ../graphics/Journal.h ../graphics/ColorMgr.h
+CycleEffMappingClassInfo.o: ../graphics/Pattern.h ../graphics/Journal.h
+CycleEffMappingClassInfo.o: ../graphics/ColorMgr.h
 CycleEffMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleEffMappingClassInfo.o: ../graphics.new/Shape.h
-CycleEffMappingClassInfo.o: ../graphics.new/TDataMap.h ../graphics/Pattern.h
+CycleEffMappingClassInfo.o: ../graphics.new/TDataMap.h
 CycleEffMappingClassInfo.o: ../graphics.new/ShapeID.h
 CycleEffMappingClassInfo.o: ../graphics.new/Bitmap.h ../graphics.new/RecId.h
 CycleEffMappingClassInfo.o: ../graphics.new/GDataRec.h
@@ -134,10 +134,11 @@ CycleOccMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 CycleOccMappingClassInfo.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
 CycleOccMappingClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
 CycleOccMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/Color.h
-CycleOccMappingClassInfo.o: ../graphics/Journal.h ../graphics/ColorMgr.h
+CycleOccMappingClassInfo.o: ../graphics/Pattern.h ../graphics/Journal.h
+CycleOccMappingClassInfo.o: ../graphics/ColorMgr.h
 CycleOccMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleOccMappingClassInfo.o: ../graphics.new/Shape.h
-CycleOccMappingClassInfo.o: ../graphics.new/TDataMap.h ../graphics/Pattern.h
+CycleOccMappingClassInfo.o: ../graphics.new/TDataMap.h
 CycleOccMappingClassInfo.o: ../graphics.new/ShapeID.h
 CycleOccMappingClassInfo.o: ../graphics.new/Bitmap.h ../graphics.new/RecId.h
 CycleOccMappingClassInfo.o: ../graphics.new/GDataRec.h
@@ -190,12 +191,12 @@ CycleSuspendedMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Dispatcher.h
 CycleSuspendedMappingClassInfo.o: /usr/include/stdlib.h ../graphics/DList.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Exit.h ../graphics/VisualArg.h
-CycleSuspendedMappingClassInfo.o: ../graphics/Color.h ../graphics/Journal.h
+CycleSuspendedMappingClassInfo.o: ../graphics/Color.h ../graphics/Pattern.h
+CycleSuspendedMappingClassInfo.o: ../graphics/Journal.h
 CycleSuspendedMappingClassInfo.o: ../graphics/ColorMgr.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/Shape.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/TDataMap.h
-CycleSuspendedMappingClassInfo.o: ../graphics/Pattern.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/ShapeID.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/Bitmap.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/RecId.h
@@ -255,12 +256,11 @@ CycleWorkingMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 CycleWorkingMappingClassInfo.o: ../graphics/Dispatcher.h
 CycleWorkingMappingClassInfo.o: /usr/include/stdlib.h ../graphics/DList.h
 CycleWorkingMappingClassInfo.o: ../graphics/Exit.h ../graphics/VisualArg.h
-CycleWorkingMappingClassInfo.o: ../graphics/Color.h ../graphics/Journal.h
-CycleWorkingMappingClassInfo.o: ../graphics/ColorMgr.h
+CycleWorkingMappingClassInfo.o: ../graphics/Color.h ../graphics/Pattern.h
+CycleWorkingMappingClassInfo.o: ../graphics/Journal.h ../graphics/ColorMgr.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/Shape.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/TDataMap.h
-CycleWorkingMappingClassInfo.o: ../graphics/Pattern.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/ShapeID.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/Bitmap.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/RecId.h
@@ -315,9 +315,9 @@ HostMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 HostMappingClassInfo.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
 HostMappingClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
 HostMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/Color.h
-HostMappingClassInfo.o: ../graphics/Journal.h ../graphics/ColorMgr.h
-HostMappingClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
-HostMappingClassInfo.o: ../graphics.new/TDataMap.h ../graphics/Pattern.h
+HostMappingClassInfo.o: ../graphics/Pattern.h ../graphics/Journal.h
+HostMappingClassInfo.o: ../graphics/ColorMgr.h ../graphics.new/RectShape.h
+HostMappingClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
 HostMappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
 HostMappingClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
 HostMappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
@@ -358,10 +358,10 @@ MappingClassInfo.o: ../graphics/DeviseTypes.h ../graphics/Display.h
 MappingClassInfo.o: ../graphics/Geom.h ../graphics/Dispatcher.h
 MappingClassInfo.o: /usr/include/stdlib.h ../graphics/DList.h
 MappingClassInfo.o: ../graphics/Exit.h ../graphics/VisualArg.h
-MappingClassInfo.o: ../graphics/Color.h ../graphics/Journal.h
-MappingClassInfo.o: ../graphics/ColorMgr.h ../graphics.new/RectShape.h
-MappingClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
-MappingClassInfo.o: ../graphics/Pattern.h ../graphics.new/ShapeID.h
+MappingClassInfo.o: ../graphics/Color.h ../graphics/Pattern.h
+MappingClassInfo.o: ../graphics/Journal.h ../graphics/ColorMgr.h
+MappingClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
+MappingClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 MappingClassInfo.o: ../graphics.new/Bitmap.h ../graphics.new/RecId.h
 MappingClassInfo.o: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
 MappingClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
@@ -397,7 +397,8 @@ Message.o: /usr/include/math.h /usr/include/floatingpoint.h
 Message.o: /usr/include/sys/ieeefp.h MultiRec.h ../graphics.new/TData.h
 Message.o: ../graphics/DeviseTypes.h ../graphics.new/RecId.h
 Message.o: ../graphics.new/RecOrder.h ../graphics/VisualArg.h
-Message.o: ../graphics/Color.h ../graphics/DList.h ../graphics/Exit.h
+Message.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/DList.h
+Message.o: ../graphics/Exit.h
 TDataCycle.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TDataCycle.o: /usr/include/stdlib.h TDataCycle.h ../graphics.new/TDataAscii.h
 TDataCycle.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -405,7 +406,7 @@ TDataCycle.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 TDataCycle.o: /usr/include/sys/time.h /usr/include/sys/time.h
 TDataCycle.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
 TDataCycle.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
-TDataCycle.o: ../graphics/Color.h ../graphics/Journal.h
+TDataCycle.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Journal.h
 TDataCycle.o: ../graphics.new/TData.h ../graphics.new/RecId.h
 TDataCycle.o: ../graphics.new/RecOrder.h ../graphics/ClassDir.h CycleRec.h
 TDataCycle.o: ../graphics/Parse.h ../graphics/Control.h ../graphics/Util.h
@@ -417,7 +418,7 @@ TDataHost.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 TDataHost.o: /usr/include/sys/time.h /usr/include/sys/time.h
 TDataHost.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
 TDataHost.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
-TDataHost.o: ../graphics/Color.h ../graphics/Journal.h
+TDataHost.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Journal.h
 TDataHost.o: ../graphics.new/TData.h ../graphics.new/RecId.h
 TDataHost.o: ../graphics.new/RecOrder.h ../graphics/ClassDir.h HostRec.h
 TDataHost.o: ../graphics/Parse.h ../graphics/Control.h ../graphics/Util.h
@@ -429,7 +430,7 @@ TDataMulti.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 TDataMulti.o: /usr/include/sys/time.h /usr/include/sys/time.h
 TDataMulti.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
 TDataMulti.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
-TDataMulti.o: ../graphics/Color.h ../graphics/Journal.h
+TDataMulti.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Journal.h
 TDataMulti.o: ../graphics.new/TData.h ../graphics.new/RecId.h
 TDataMulti.o: ../graphics.new/RecOrder.h ../graphics/ClassDir.h MultiRec.h
 TDataMulti.o: ../graphics/Parse.h ../graphics/Control.h ../graphics/Util.h
@@ -439,15 +440,15 @@ ViewClassInfo.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 ViewClassInfo.o: /usr/include/sys/select.h /usr/include/sys/time.h
 ViewClassInfo.o: /usr/include/sys/time.h /usr/include/stdio.h
 ViewClassInfo.o: ../graphics/VisualArg.h ../graphics/DeviseTypes.h
-ViewClassInfo.o: ../graphics/Color.h ../graphics.new/TDataViewX.h
-ViewClassInfo.o: ../graphics.new/QueryProc.h ../graphics.new/RecId.h
-ViewClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
-ViewClassInfo.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
-ViewClassInfo.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-ViewClassInfo.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-ViewClassInfo.o: ../graphics/Geom.h /usr/include/math.h
-ViewClassInfo.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-ViewClassInfo.o: ../graphics/Transform.h ../graphics/Pattern.h
+ViewClassInfo.o: ../graphics/Color.h ../graphics/Pattern.h
+ViewClassInfo.o: ../graphics.new/TDataViewX.h ../graphics.new/QueryProc.h
+ViewClassInfo.o: ../graphics.new/RecId.h ../graphics.new/ViewGraph.h
+ViewClassInfo.o: ../graphics/View.h ../graphics/Dispatcher.h
+ViewClassInfo.o: /usr/include/stdlib.h ../graphics/DList.h ../graphics/Exit.h
+ViewClassInfo.o: ../graphics/Journal.h ../graphics/ViewWin.h
+ViewClassInfo.o: ../graphics/WindowRep.h ../graphics/Geom.h
+ViewClassInfo.o: /usr/include/math.h /usr/include/floatingpoint.h
+ViewClassInfo.o: /usr/include/sys/ieeefp.h ../graphics/Transform.h
 ViewClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 ViewClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 ViewClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
@@ -459,7 +460,7 @@ ViewClassInfo.o: ../graphics.new/Connector.h ../graphics.new/ShapeID.h
 ViewClassInfo.o: ../graphics.new/ViewScatter.h ViewClassInfo.h
 ViewClassInfo.o: ../graphics/Selection.h ../graphics/Util.h
 ViewClassInfo.o: /usr/include/string.h /usr/include/ctype.h
-ViewClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/VisualLink.h
+ViewClassInfo.o: ../graphics.new/ActionDefault.h ../graphics.new/VisualLink.h
 ViewClassInfo.o: ../graphics.new/DispQueryProc.h
 ViewClassInfo.o: ../graphics.new/QueryProcSimple.h ../graphics/Init.h
 ViewClassInfo.o: ../graphics/BufPolicy.h ../graphics.new/BufHint.h
@@ -474,10 +475,10 @@ disp.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 disp.o: /s/tcl/include/tcl.h /usr/include/stdio.h ../graphics/DeviseTypes.h
 disp.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/Dispatcher.h
 disp.o: /usr/include/stdlib.h ../graphics/DList.h ../graphics/Exit.h
-disp.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Journal.h
-disp.o: ../graphics/ColorMgr.h ../graphics.new/RectShape.h
-disp.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
-disp.o: ../graphics/Pattern.h ../graphics.new/ShapeID.h
+disp.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+disp.o: ../graphics/Journal.h ../graphics/ColorMgr.h
+disp.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
+disp.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 disp.o: ../graphics.new/Bitmap.h ../graphics.new/RecId.h
 disp.o: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
 disp.o: ../graphics/View.h ../graphics/ViewWin.h ../graphics/WindowRep.h
@@ -487,7 +488,7 @@ disp.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 disp.o: ../graphics/Config.h ../graphics/Cursor.h
 disp.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
 disp.o: ../graphics.new/Action.h ../graphics.new/Temp.h ../graphics/Init.h
-disp.o: ../graphics/BufPolicy.h ../graphics/VisualLinkClassInfo.h
+disp.o: ../graphics/BufPolicy.h ../graphics.new/VisualLinkClassInfo.h
 disp.o: TDataMulti.h ../graphics.new/TDataAscii.h ../graphics.new/TData.h
 disp.o: ../graphics.new/RecOrder.h TDataHost.h TDataCycle.h
 disp.o: ../graphics.new/TDataViewX.h ../graphics.new/QueryProc.h

@@ -20,7 +20,6 @@ compustat.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 compustat.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
 compustat.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
 compustat.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
-extract.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 index.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 index.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
 index.o: /usr/include/unistd.h /usr/include/sys/unistd.h index.h

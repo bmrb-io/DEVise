@@ -32,7 +32,6 @@ compustat.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 compustat.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 compustat.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
 compustat.o: /usr/include/arpa/inet.h
-extract.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 index.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 index.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
 index.o: /usr/include/unistd.h /usr/include/sys/types.h

@@ -10,7 +10,8 @@ ApGroup.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h ApGroup.h
 ApGroup.o: /usr/include/stdlib.h ApItemList.h
 ApGroupDir.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 ApGroupDir.o: /usr/include/string.h ApGroupDir.h ApItemList.h ApGroup.h
-ApGroupDir.o: /usr/include/stdlib.h
+ApGroupDir.o: /usr/include/stdlib.h ../graphics/Util.h /usr/include/time.h
+ApGroupDir.o: /usr/include/sys/time.h /usr/include/ctype.h ../graphics/Exit.h
 ApInit.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 ApInit.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 ApInit.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h /usr/include/stdlib.h
@@ -19,30 +20,31 @@ ApInit.o: /usr/include/sys/signal.h /usr/include/sys/types.h
 ApInit.o: ../graphics/Exit.h ApInit.h ../graphics/DeviseTypes.h
 ApInit.o: ../graphics/BufPolicy.h ../graphics/Time.h /usr/include/sys/time.h
 ApInit.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
-ApInit.o: ../graphics/Timer.h ../graphics/Util.h /usr/include/time.h
-ApInit.o: /usr/include/ctype.h
+ApInit.o: ../graphics/Pattern.h ../graphics/Timer.h ../graphics/Util.h
+ApInit.o: /usr/include/time.h /usr/include/ctype.h
 ApItemList.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h ApItemList.h
 ApItemList.o: ApGroup.h /usr/include/stdlib.h
 ApParseCat.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h ApParseCat.h
 ApParseCat.o: ../graphics/DeviseTypes.h ../graphics.new/TData.h
 ApParseCat.o: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
-ApParseCat.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/DList.h
-ApParseCat.o: ../graphics/Exit.h ../graphics/AttrList.h
-ApParseCat.o: /usr/include/sys/time.h ../graphics/Config.h ApGroupDir.h
-ApParseCat.o: ApItemList.h ApGroup.h /usr/include/stdlib.h
-ApParseCat.o: ../graphics/Parse.h /usr/include/time.h ApInit.h
-ApParseCat.o: ../graphics/BufPolicy.h ApTDataAsciiInterp.h ApTDataAscii.h
-ApParseCat.o: /usr/include/sys/types.h ../tape/tapedrive.h /usr/include/tar.h
-ApParseCat.o: ../graphics.new/machdep.h /usr/include/limits.h
-ApParseCat.o: /usr/include/sys/param.h /usr/include/machine/param.h
-ApParseCat.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
-ApParseCat.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-ApParseCat.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-ApParseCat.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-ApParseCat.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
-ApParseCat.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-ApParseCat.o: /usr/include/arpa/inet.h ApTDataBinaryInterp.h ApTDataBinary.h
-ApParseCat.o: ../graphics/Util.h /usr/include/string.h /usr/include/ctype.h
+ApParseCat.o: ../graphics/VisualArg.h ../graphics/Color.h
+ApParseCat.o: ../graphics/Pattern.h ../graphics/DList.h ../graphics/Exit.h
+ApParseCat.o: ../graphics/AttrList.h /usr/include/sys/time.h
+ApParseCat.o: ../graphics/Config.h ApGroupDir.h ApItemList.h ApGroup.h
+ApParseCat.o: /usr/include/stdlib.h ../graphics/Parse.h /usr/include/time.h
+ApParseCat.o: ApInit.h ../graphics/BufPolicy.h ApTDataAsciiInterp.h
+ApParseCat.o: ApTDataAscii.h /usr/include/sys/types.h ../tape/tapedrive.h
+ApParseCat.o: /usr/include/tar.h ../graphics.new/machdep.h
+ApParseCat.o: /usr/include/limits.h /usr/include/sys/param.h
+ApParseCat.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
+ApParseCat.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
+ApParseCat.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+ApParseCat.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+ApParseCat.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
+ApParseCat.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
+ApParseCat.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
+ApParseCat.o: ApTDataBinaryInterp.h ApTDataBinary.h ../graphics/Util.h
+ApParseCat.o: /usr/include/string.h /usr/include/ctype.h
 ApTDataAscii.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 ApTDataAscii.o: /usr/include/stdlib.h /usr/include/fcntl.h
 ApTDataAscii.o: /usr/include/sys/fcntl.h /usr/include/limits.h
@@ -55,8 +57,8 @@ ApTDataAscii.o: /usr/include/sys/stat.h ../graphics/Parse.h
 ApTDataAscii.o: /usr/include/time.h ApTDataAscii.h ../graphics/DeviseTypes.h
 ApTDataAscii.o: ../graphics.new/TData.h ../graphics.new/RecId.h
 ApTDataAscii.o: ../graphics.new/RecOrder.h ../graphics/VisualArg.h
-ApTDataAscii.o: ../graphics/Color.h ../graphics/DList.h ../graphics/Exit.h
-ApTDataAscii.o: ../tape/tapedrive.h /usr/include/tar.h
+ApTDataAscii.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/DList.h
+ApTDataAscii.o: ../graphics/Exit.h ../tape/tapedrive.h /usr/include/tar.h
 ApTDataAscii.o: ../graphics.new/machdep.h /usr/include/sys/wait.h
 ApTDataAscii.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
 ApTDataAscii.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
@@ -72,11 +74,11 @@ ApTDataAsciiInterp.o: ApTDataAscii.h /usr/include/stdio.h
 ApTDataAsciiInterp.o: /usr/include/sys/stdsyms.h /usr/include/sys/types.h
 ApTDataAsciiInterp.o: ../graphics.new/TData.h ../graphics.new/RecId.h
 ApTDataAsciiInterp.o: ../graphics.new/RecOrder.h ../graphics/VisualArg.h
-ApTDataAsciiInterp.o: ../graphics/Color.h ../graphics/DList.h
-ApTDataAsciiInterp.o: ../graphics/Exit.h ../tape/tapedrive.h
-ApTDataAsciiInterp.o: /usr/include/tar.h ../graphics.new/machdep.h
-ApTDataAsciiInterp.o: /usr/include/limits.h /usr/include/sys/param.h
-ApTDataAsciiInterp.o: /usr/include/machine/param.h
+ApTDataAsciiInterp.o: ../graphics/Color.h ../graphics/Pattern.h
+ApTDataAsciiInterp.o: ../graphics/DList.h ../graphics/Exit.h
+ApTDataAsciiInterp.o: ../tape/tapedrive.h /usr/include/tar.h
+ApTDataAsciiInterp.o: ../graphics.new/machdep.h /usr/include/limits.h
+ApTDataAsciiInterp.o: /usr/include/sys/param.h /usr/include/machine/param.h
 ApTDataAsciiInterp.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
 ApTDataAsciiInterp.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
 ApTDataAsciiInterp.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
@@ -101,28 +103,29 @@ ApTDataBinary.o: /usr/include/time.h ApTDataBinary.h
 ApTDataBinary.o: ../graphics/DeviseTypes.h ../graphics.new/TData.h
 ApTDataBinary.o: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
 ApTDataBinary.o: ../graphics/VisualArg.h ../graphics/Color.h
-ApTDataBinary.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Util.h
-ApTDataBinary.o: /usr/include/string.h /usr/include/ctype.h ApInit.h
-ApTDataBinary.o: ../graphics/BufPolicy.h
+ApTDataBinary.o: ../graphics/Pattern.h ../graphics/DList.h ../graphics/Exit.h
+ApTDataBinary.o: ../graphics/Util.h /usr/include/string.h
+ApTDataBinary.o: /usr/include/ctype.h ApInit.h ../graphics/BufPolicy.h
 ApTDataBinaryInterp.o: /usr/include/string.h ApTDataBinaryInterp.h
 ApTDataBinaryInterp.o: ../graphics/DeviseTypes.h ApTDataBinary.h
 ApTDataBinaryInterp.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 ApTDataBinaryInterp.o: ../graphics.new/TData.h ../graphics.new/RecId.h
 ApTDataBinaryInterp.o: ../graphics.new/RecOrder.h ../graphics/VisualArg.h
-ApTDataBinaryInterp.o: ../graphics/Color.h ../graphics/DList.h
-ApTDataBinaryInterp.o: ../graphics/Exit.h ../graphics/AttrList.h
-ApTDataBinaryInterp.o: /usr/include/sys/time.h ../graphics/Config.h
-ApTDataBinaryInterp.o: ../graphics.new/CompositeParser.h ../graphics/Parse.h
-ApTDataBinaryInterp.o: /usr/include/time.h ../graphics/Util.h
-ApTDataBinaryInterp.o: /usr/include/stdlib.h /usr/include/ctype.h
+ApTDataBinaryInterp.o: ../graphics/Color.h ../graphics/Pattern.h
+ApTDataBinaryInterp.o: ../graphics/DList.h ../graphics/Exit.h
+ApTDataBinaryInterp.o: ../graphics/AttrList.h /usr/include/sys/time.h
+ApTDataBinaryInterp.o: ../graphics/Config.h ../graphics.new/CompositeParser.h
+ApTDataBinaryInterp.o: ../graphics/Parse.h /usr/include/time.h
+ApTDataBinaryInterp.o: ../graphics/Util.h /usr/include/stdlib.h
+ApTDataBinaryInterp.o: /usr/include/ctype.h
 AttrProj.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 AttrProj.o: /usr/include/string.h AttrProj.h ../graphics/DeviseTypes.h
 AttrProj.o: ../graphics.new/RecId.h VectorArray.h ApParseCat.h
 AttrProj.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
-AttrProj.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/DList.h
-AttrProj.o: ../graphics/Exit.h ../graphics/Util.h /usr/include/stdlib.h
-AttrProj.o: /usr/include/time.h /usr/include/sys/time.h /usr/include/ctype.h
-AttrProj.o: ../graphics/AttrList.h ../graphics/Config.h
+AttrProj.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+AttrProj.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Util.h
+AttrProj.o: /usr/include/stdlib.h /usr/include/time.h /usr/include/sys/time.h
+AttrProj.o: /usr/include/ctype.h ../graphics/AttrList.h ../graphics/Config.h
 VectorArray.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h VectorArray.h
 VectorArray.o: ../graphics/DeviseTypes.h ../graphics/Util.h
 VectorArray.o: /usr/include/stdlib.h /usr/include/time.h

@@ -25,7 +25,6 @@ compustat.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
 compustat.o: /usr/include/sys/sockio.h /usr/include/netdb.h
 compustat.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 compustat.o: /usr/include/arpa/inet.h
-extract.o: /usr/include/stdio.h
 index.o: /usr/include/stdio.h /usr/include/stdlib.h
 index.o: /usr/include/sys/stdtypes.h /usr/include/string.h
 index.o: /usr/include/ctype.h /usr/include/unistd.h /usr/include/sys/types.h

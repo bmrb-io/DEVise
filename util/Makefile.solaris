@@ -5,7 +5,10 @@ depend:
 
 atof.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 atof.o: /usr/include/assert.h /usr/include/ctype.h /usr/include/time.h
-atof.o: /usr/include/sys/timeb.h
+atof.o: /usr/include/math.h /usr/include/floatingpoint.h
+atof.o: /usr/include/sys/ieeefp.h /usr/include/sys/time.h
+atof.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+atof.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 http_url.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 http_url.o: /usr/include/stdlib.h /usr/include/unistd.h
 http_url.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h

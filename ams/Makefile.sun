@@ -13,10 +13,10 @@ MapClassInfo.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
 MapClassInfo.o: /usr/include/sys/stdtypes.h /usr/include/sys/types.h
 MapClassInfo.o: /usr/include/sys/sysmacros.h ../graphics/DList.h
 MapClassInfo.o: ../graphics/Exit.h ../graphics/VisualArg.h
-MapClassInfo.o: ../graphics/Color.h ../graphics/Journal.h
-MapClassInfo.o: ../graphics/ColorMgr.h ../graphics.new/RectShape.h
-MapClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
-MapClassInfo.o: ../graphics/Pattern.h ../graphics.new/ShapeID.h
+MapClassInfo.o: ../graphics/Color.h ../graphics/Pattern.h
+MapClassInfo.o: ../graphics/Journal.h ../graphics/ColorMgr.h
+MapClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
+MapClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 MapClassInfo.o: ../graphics.new/Bitmap.h ../graphics.new/RecId.h
 MapClassInfo.o: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
 MapClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
@@ -45,21 +45,21 @@ ams.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
 ams.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
 ams.o: ../graphics/Dispatcher.h /usr/include/stdlib.h ../graphics/DList.h
 ams.o: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
-ams.o: ../graphics/Journal.h ../graphics/Display.h ../graphics/Geom.h
-ams.o: /usr/include/math.h /usr/include/floatingpoint.h
+ams.o: ../graphics/Pattern.h ../graphics/Journal.h ../graphics/Display.h
+ams.o: ../graphics/Geom.h /usr/include/math.h /usr/include/floatingpoint.h
 ams.o: /usr/include/sys/ieeefp.h ../graphics/ColorMgr.h ../graphics/Control.h
 ams.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
 ams.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
-ams.o: ../graphics/VisualLinkClassInfo.h ../graphics/View.h
+ams.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
 ams.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Transform.h
-ams.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
-ams.o: ../graphics/Compress.h ../graphics/ViewCallback.h
-ams.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
-ams.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
-ams.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
-ams.o: ../graphics.new/QueryProc.h ../graphics.new/RecId.h
-ams.o: ../tape/QueryProcTape.h ../graphics.new/QPRange.h
-ams.o: ../tape/SortedTable.h ../graphics.new/GData.h ../graphics.new/TData.h
+ams.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+ams.o: ../graphics/ViewCallback.h ../graphics/AttrList.h ../graphics/Config.h
+ams.o: ../graphics/Cursor.h ../graphics/AxisLabelClassInfo.h
+ams.o: ../graphics.new/ViewClassInfo.h ../graphics.new/CompositeParser.h
+ams.o: ../graphics.new/RecInterp.h ../graphics.new/QueryProc.h
+ams.o: ../graphics.new/RecId.h ../tape/QueryProcTape.h
+ams.o: ../graphics.new/QPRange.h ../tape/SortedTable.h
+ams.o: ../graphics.new/GData.h ../graphics.new/TData.h
 ams.o: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
 ams.o: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
 ams.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
@@ -77,10 +77,10 @@ amsStat.o: ../graphics.new/BufHint.h ../graphics.new/PageSize.h
 amsStat.o: ../graphics.new/TDataAppend.h ../graphics.new/TData.h
 amsStat.o: ../graphics/DeviseTypes.h ../graphics.new/RecId.h
 amsStat.o: ../graphics.new/RecOrder.h ../graphics/VisualArg.h
-amsStat.o: ../graphics/Color.h ../graphics/DList.h ../graphics/Exit.h
-amsStat.o: ../graphics.new/DiskFile.h ../graphics.new/ams.h
-amsStat.o: /usr/include/math.h /usr/include/floatingpoint.h
-amsStat.o: /usr/include/sys/ieeefp.h
+amsStat.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/DList.h
+amsStat.o: ../graphics/Exit.h ../graphics.new/DiskFile.h
+amsStat.o: ../graphics.new/ams.h /usr/include/math.h
+amsStat.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 extendAms.o: /usr/include/stdio.h /usr/include/stdlib.h
 extendAms.o: /usr/include/sys/stdtypes.h /usr/include/fcntl.h
 extendAms.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h
