@@ -84,7 +84,7 @@ public:
 	***************************************************************/
 	virtual TDHandle InitGetRecs(Interval *interval, int &bytesleft,
                                  Boolean asyncAllowed = false,
-                                 ReleaseMemoryCallback *callback
+                                 ReleaseMemoryCallback *callback = NULL
 				 );
 
 	/**************************************************************
