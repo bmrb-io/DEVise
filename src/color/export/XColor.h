@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/02/20 20:44:08  wenger
+  Changed color and utils libraries to new export directory scheme for
+  dealing with include files (email with complete explanation forthcoming).
+
   Revision 1.1  1998/02/19 23:26:11  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -58,7 +62,7 @@ const XColorID		nullXColorID = 0;
 // palette are allocated in X. Returns true if initialization completed, false
 // if an error occurred (some colors in the default palette could not be
 // allocated).
-bool		InitColor(Display* display);
+bool		InitColor(Display * d, int depth, int ncmap, Colormap * cmap);
 
 
 //******************************************************************************
