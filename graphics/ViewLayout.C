@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/28 18:53:07  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.4  1995/12/14 22:32:39  jussi
   Disabled an assertion which may unnecessarily fail.
 
@@ -38,7 +41,8 @@
 //#define DEBUG
 
 ViewLayout:: ViewLayout(char *name,  Coord x, Coord y, Coord w, Coord h) :
-	ViewWin(name), verRequested(-1), horRequested(-1)
+	ViewWin(name), verRequested(-1), horRequested(-1),
+	_stacked(false)
 {
 }
 
@@ -112,7 +116,7 @@ void ViewLayout::SwapChildren(ViewWin *child1, ViewWin *child2)
 
   int x1, y1, x2, y2;
   unsigned w1, w2, h1, h2;
-#ifdef TK_WINDOW
+#if defined(MARGINS) || defined(TK_WINDOW)
   child1->RealGeometry(x1, y1, w1, h1);
   child2->RealGeometry(x2, y2, w2, h2);
 #else
