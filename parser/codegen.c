@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "parse.h"
 
-#define PROTODIR  "/u1/mcheng/devise/parser/proto"
+#define PROTODIR  "/p/miron/miron/DEVise/src/parser/proto"
 
 /**************************************************************
 Generate cpp definitions for shape class.
