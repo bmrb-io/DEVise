@@ -15,41 +15,48 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/09/22 20:09:26  ravim
+  Group structure for viewing schema
+*/
 
 #ifndef _GROUP_H_
 #define _GROUP_H_
 
-#define TOPLEVEL 1
-#define NOTTOP   0
+#include <libc.h>
+#include "TkControl.h"
+#include "ClassDir.h"
+#include "ViewGraph.h"
+#include "View.h"
+#include "TData.h"
+#include "TDataMap.h"
+#include "Init.h"
+#include "Util.h"
+#include "MapInterpClassInfo.h"
 
-class Item
-{
-public:
-  char *name;
+#define MAX_STR_LEN 50
 
-  Item(char *name);
-  ~Item();
-  virtual int composite() { return 0; }
-};
+#define TOPGRP 1
+#define SUBGRP 2
+#define ITEM 3
 
 class Group;
 class ItemList;
 
-class Group:public Item
+class Group
 {
 public:
+  char name[MAX_STR_LEN];
   ItemList *subgrps;
   Group *parent;
-  int toplevel;
+  int type;
 
-  Group(char *name, Group *par, int top);
+  Group(char *name, Group *par, int typ);
   ~Group();
-  virtual int composite() {return 1;}
-  Item *insert_item(char *name);
+  Group *insert_item(char *name);
   Group *insert_group(char *name);
   Group *parent_group();
-  void subitems();
+  void subitems(Tcl_Interp *interp);
 };
 
 #endif

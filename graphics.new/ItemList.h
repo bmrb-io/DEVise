@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/09/22 20:09:30  ravim
+  Group structure for viewing schema
+*/
 
 #ifndef _ITEMLIST_H_
 #define _ITEMLIST_H_
@@ -24,7 +27,7 @@
 
 struct GroupItem
 {
-  Item *itm;
+  Group *itm;
   GroupItem *nxt;
 };
 typedef GroupItem GroupItem;
@@ -38,10 +41,10 @@ public:
   ItemList();
   ~ItemList();
   
-  void add_entry(Item *itm);
-  void remove_entry(Item *itm);
-  Item *first_item();
-  Item *next_item();
+  void add_entry(Group *itm);
+  void remove_entry(Group *itm);
+  Group *first_item();
+  Group *next_item();
 };
 
 #endif

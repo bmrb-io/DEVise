@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1995/09/26 23:06:22  jussi
+  Did some reformatting.
+
   Revision 1.7  1995/09/19 16:08:32  jussi
   Changed comp_extract from C linkage to C++ linkage.
 
@@ -43,6 +46,10 @@
 #include "Parse.h"
 #include "QueryProc.h"
 #include "Cursor.h"
+#include "Group.h"
+#include "GroupDir.h"
+
+extern GroupDir *gdir;
 
 extern int extractStocksCmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
@@ -319,6 +326,8 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 	int code;
 	int numArgs; char **args;
 	char *name;
+	Group *grp;
+	
 	if (argc == 1){
 		interp->result = "wrong args";
 		goto error;
@@ -378,6 +387,11 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		else if (strcmp(argv[1],"exit")== 0){
 			QueryProc::Instance()->PrintStat();
 			control->DoQuit();
+		}
+		else if (strcmp(argv[1], "getTopGroups") == 0)
+		{
+		  printf("Getting top groups\n");
+		  gdir->top_level_groups(interp);
 		}
 		else {
 			interp->result = "wrong args";
@@ -535,6 +549,35 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			char buf[80];
 			sprintf(buf,"%d", map->GetPixelWidth());
 			Tcl_AppendElement(interp,buf);
+		}
+		else if (strcmp(argv[1], "getItems") == 0)
+		{
+		  printf("Getting subitems for group %s\n", argv[2]);
+		  grp = gdir->get_entry(argv[2]);
+		  grp->subitems(interp);
+		}
+		else if (strcmp(argv[1], "defaultGroup") == 0)
+		{
+		  printf("Generating default group\n");
+		  TData *tdata = (TData *)classDir->FindInstance(argv[2]);
+		  if (tdata == NULL)
+		  {
+		    interp->result = "Can't find tdata in getSchema";
+		    goto error;
+		  }
+		  AttrList *attrList = tdata->GetAttrList();
+		  Group *newgrp = new Group("__default", NULL, TOPGRP);
+		  gdir->add_entry(newgrp);
+		  if (attrList != NULL)
+		  {
+		    int numAttrs = attrList->NumAttrs();
+		    int i;
+		    for (i=0; i < numAttrs; i++)
+		    {
+		      AttrInfo *info = attrList->Get(i);
+		      newgrp->insert_item(info->name);
+		    }
+		  }
 		}
 		else if (strcmp(argv[1],"getSchema") == 0 ){
 

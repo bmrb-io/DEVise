@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/09/22 20:09:29  ravim
+  Group structure for viewing schema
+*/
 
 #include <stdio.h>
 #include "ItemList.h"
@@ -40,22 +43,22 @@ ItemList::~ItemList()
   list = NULL;
 }
 
-void ItemList::add_entry(Item *itm)
+void ItemList::add_entry(Group *itmp)
 {
   GroupItem *newitem = new(GroupItem);
 
-  newitem->itm = itm;
+  newitem->itm = itmp;
   newitem->nxt = list;
   list = newitem;
 }
 
-void ItemList::remove_entry(Item *itm)
+void ItemList::remove_entry(Group *itmp)
 {
   GroupItem *tmptr;
   GroupItem *ptr = list;
 
   if (!list) return;
-  if (list->itm == itm)
+  if (list->itm == itmp)
   {
     tmptr = list;
     list = list->nxt;
@@ -63,7 +66,7 @@ void ItemList::remove_entry(Item *itm)
     return;
   }
 
-  while ((ptr->nxt) && (ptr->nxt->itm != itm))
+  while ((ptr->nxt) && (ptr->nxt->itm != itmp))
     ptr = ptr->nxt;
 
   if (!ptr->nxt) return;
@@ -73,7 +76,7 @@ void ItemList::remove_entry(Item *itm)
   delete tmptr;
 }
 
-Item *ItemList::first_item()
+Group *ItemList::first_item()
 {
   curr = list;
   
@@ -82,7 +85,7 @@ Item *ItemList::first_item()
   return curr->itm;
 }
 
-Item *ItemList::next_item()
+Group *ItemList::next_item()
 {
   curr = curr->nxt;
 

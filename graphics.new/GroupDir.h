@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/09/22 20:09:27  ravim
+  Group structure for viewing schema
+*/
 
 #ifndef _GROUPDIR_H_
 #define _GROUPDIR_H_
@@ -34,7 +37,7 @@ public:
   void remove_entry(Group *grp);
 
   Group *get_entry(char *name);
-  void top_level_items();
+  void top_level_groups(Tcl_Interp *interp);
 };
 
 #endif

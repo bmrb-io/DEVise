@@ -15,27 +15,21 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/09/22 20:09:25  ravim
+  Group structure for viewing schema
+*/
 
+#include <stdio.h>
 #include <iostream.h>
 #include "Group.h"
 #include "ItemList.h"
 
-Item::Item(char *nm)
+Group::Group(char *nm,Group *par, int typ)
 {
-  name = nm;
-}
-
-Item::~Item()
-{
-
-}
-
-Group::Group(char *name,Group *par, int top)
-:Item(name)
-{
+  strcpy(name, nm);
+  type = typ;
   parent = par;
-  toplevel = top;
   subgrps = new(ItemList);
 }
 
@@ -44,19 +38,19 @@ Group::~Group()
   delete(subgrps);
 }
 
-Item *Group::insert_item(char *name)
+Group *Group::insert_item(char *nm)
 {
-  Item *newitem = new Item(name);
+  Group *newitem = new Group(nm, this, ITEM);
 
   subgrps->add_entry(newitem);
   return newitem;
 }
 
-Group *Group::insert_group(char *name)
+Group *Group::insert_group(char *nm)
 {
-  Group *newgrp = new Group(name, this, NOTTOP);
+  Group *newgrp = new Group(nm, this, SUBGRP);
   
-  subgrps->add_entry((Item *)newgrp);
+  subgrps->add_entry(newgrp);
   return newgrp;
 }
 
@@ -65,7 +59,41 @@ Group *Group::parent_group()
   return parent;
 }
 
-void Group::subitems()
+void Group::subitems(Tcl_Interp *interp)
 {
+  char attrbuf[MAX_STR_LEN];
+  Group *curr;
   cout << "Returning list of subitems in this group" <<endl;
+
+  /* If this is a top level group there is an additional item called
+     "recId" which is not stored in our lists */
+  if (type == TOPGRP)
+  {
+    sprintf(attrbuf, "recId leaf");
+    Tcl_AppendElement(interp, attrbuf);
+  }    
+  
+  curr = subgrps->first_item();
+  while (curr)
+  {
+    printf("Item : %s ", curr->name);
+    if (curr->type == SUBGRP)
+    {
+      printf(" is a GROUP item\n");
+      sprintf(attrbuf, "%s intr", curr->name);
+    }
+    else if (curr->type == ITEM)
+    {
+      printf(" is a leaf item\n");
+      sprintf(attrbuf, "%s leaf", curr->name);
+    }
+    else
+    {
+      printf("Error: top level group within group \n");
+      exit(0);
+    }
+
+    Tcl_AppendElement(interp, attrbuf);
+    curr = subgrps->next_item();
+  }
 }

@@ -1,4 +1,4 @@
-# include "stdio.h"
+#include <stdio.h>
 # define U(x) x
 # define NLSTATE yyprevious=YYNEWLINE
 # define BEGIN yybgin = yysvec + 1 +
@@ -7,11 +7,60 @@
 # define YYSTATE (yyestate-yysvec-1)
 # define YYOPTIM 1
 # define YYLMAX BUFSIZ
-# define output(c) putc(c,yyout)
-# define input() (((yytchar=yysptr>yysbuf?U(*--yysptr):getc(yyin))==10?(yylineno++,yytchar):yytchar)==EOF?0:yytchar)
+#ifndef __cplusplus
+# define output(c) (void)putc(c,yyout)
+#else
+# define lex_output(c) (void)putc(c,yyout)
+#endif
+
+#if defined(__cplusplus) || defined(__STDC__)
+
+#if defined(__cplusplus) && defined(__EXTERN_C__)
+extern "C" {
+#endif
+	int yyback(int *, int);
+	int yyinput(void);
+	int yylook(void);
+	void yyoutput(int);
+	int yyracc(int);
+	int yyreject(void);
+	void yyunput(int);
+	int yylex(void);
+#ifdef YYLEX_E
+	void yywoutput(wchar_t);
+	wchar_t yywinput(void);
+#endif
+#ifndef yyless
+	void yyless(int);
+#endif
+#ifndef yywrap
+	int yywrap(void);
+#endif
+#ifdef LEXDEBUG
+	void allprint(char);
+	void sprint(char *);
+#endif
+#if defined(__cplusplus) && defined(__EXTERN_C__)
+}
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+	void exit(int);
+#ifdef __cplusplus
+}
+#endif
+
+#endif
 # define unput(c) {yytchar= (c);if(yytchar=='\n')yylineno--;*yysptr++=yytchar;}
 # define yymore() (yymorfg=1)
-# define ECHO fprintf(yyout, "%s",yytext)
+#ifndef __cplusplus
+# define input() (((yytchar=yysptr>yysbuf?U(*--yysptr):getc(yyin))==10?(yylineno++,yytchar):yytchar)==EOF?0:yytchar)
+#else
+# define lex_input() (((yytchar=yysptr>yysbuf?U(*--yysptr):getc(yyin))==10?(yylineno++,yytchar):yytchar)==EOF?0:yytchar)
+#endif
+#define ECHO fprintf(yyout, "%s",yytext)
 # define REJECT { nstr = yyreject(); goto yyfussy;}
 int yyleng; extern char yytext[];
 int yymorfg;
@@ -25,85 +74,136 @@ struct yysvf {
 	int *yystops;};
 struct yysvf *yyestate;
 extern struct yysvf yysvec[], *yybgin;
+
+# line 2 "../../parser/scan.lex"
+/* definitions */
 #include "tokens.h"
-extern char *malloc();
 # define YYNEWLINE 10
 yylex(){
 int nstr; extern int yyprevious;
+#ifdef __cplusplus
+/* to avoid CC and lint complaining yyfussy not being used ...*/
+static int __lex_hack = 0;
+if (__lex_hack) goto yyfussy;
+#endif
 while((nstr = yylook()) >= 0)
 yyfussy: switch(nstr){
 case 0:
 if(yywrap()) return(0); break;
 case 1:
+
+# line 8 "../../parser/scan.lex"
 	return(TOKEN_X);
 break;
 case 2:
+
+# line 9 "../../parser/scan.lex"
 	return(TOKEN_Y);
 break;
 case 3:
+
+# line 10 "../../parser/scan.lex"
 return(TOKEN_COLOR);
 break;
 case 4:
+
+# line 11 "../../parser/scan.lex"
 return(TOKEN_SHAPE);
 break;
 case 5:
+
+# line 12 "../../parser/scan.lex"
 return(TOKEN_ORIENTATION);
 break;
 case 6:
+
+# line 13 "../../parser/scan.lex"
 return(TOKEN_SHAPEATTR);
 break;
 case 7:
+
+# line 14 "../../parser/scan.lex"
 	return(TOKEN_LEFT_BRACKET);
 break;
 case 8:
+
+# line 15 "../../parser/scan.lex"
 	return(TOKEN_RIGHT_BRACKET);
 break;
 case 9:
+
+# line 16 "../../parser/scan.lex"
 	return(TOKEN_MAPPING);
 break;
 case 10:
+
+# line 17 "../../parser/scan.lex"
 	return(TOKEN_DYNAMIC);
 break;
 case 11:
+
+# line 18 "../../parser/scan.lex"
 	return(TOKEN_STATIC);
 break;
 case 12:
+
+# line 19 "../../parser/scan.lex"
 			return(TOKEN_SEMI_COLON);
 break;
 case 13:
+
+# line 20 "../../parser/scan.lex"
 			return(TOKEN_COMMA);
 break;
 case 14:
+
+# line 21 "../../parser/scan.lex"
 	return(TOKEN_LEFT_BRACE);
 break;
 case 15:
+
+# line 22 "../../parser/scan.lex"
 	return(TOKEN_RIGHT_BRACE);
 break;
 case 16:
+
+# line 23 "../../parser/scan.lex"
 return(TOKEN_INT);
 break;
 case 17:
+
+# line 24 "../../parser/scan.lex"
 return(TOKEN_INT);
 break;
 case 18:
+
+# line 25 "../../parser/scan.lex"
 return(TOKEN_IDENT);
 break;
 case 19:
+
+# line 26 "../../parser/scan.lex"
 ;
 break;
 case 20:
+
+# line 27 "../../parser/scan.lex"
 ;
 break;
 case 21:
+
+# line 28 "../../parser/scan.lex"
 ;
 break;
 case 22:
+
+# line 29 "../../parser/scan.lex"
 syntax_error();
 break;
 case -1:
 break;
 default:
-fprintf(yyout,"bad switch yylook %d",nstr);
+(void)fprintf(yyout,"bad switch yylook %d",nstr);
 } return(0); }
 /* end of yylex */
 /* user subroutines */
@@ -124,7 +224,7 @@ int index = 0;
 char *text;
 
     while (!done){
-        c = input();
+        c = lex_input();
         if (c == 0)
             syntax_error();
         else if (c == '{'){
@@ -144,12 +244,11 @@ char *text;
     }
 	buf[index++] = '\0';
 
-	if ((text = malloc(index))==NULL){
+	if ((text = (char *)malloc(index))==NULL){
 		printf("no memory\n");
 		exit(2);
 	}
-	memcpy(text,buf,index);
-	/* bcopy(buf,text,index); */
+	bcopy(buf,text,index);
 	return text;
 }
 
@@ -159,12 +258,18 @@ Return the current text
 char *GetTokenText(){
 	char *text;
 
-	if ((text=malloc(yyleng+1))==NULL){
+	if ((text=(char *)malloc(yyleng+1))==NULL){
 		printf("no memory\n");
 		exit(2);
 	}
 	strcpy(text, yytext);
 	return text;
+}
+
+yywrap()
+{
+
+
 }
 int yyvstop[] = {
 0,
@@ -373,7 +478,7 @@ int yyvstop[] = {
 18,
 0,
 0};
-# define YYTYPE char
+# define YYTYPE unsigned char
 struct yywork { YYTYPE verify, advance; } yycrank[] = {
 0,0,	0,0,	1,3,	0,0,	
 0,0,	0,0,	0,0,	0,0,	
@@ -391,7 +496,7 @@ struct yywork { YYTYPE verify, advance; } yycrank[] = {
 0,0,	0,0,	0,0,	0,0,	
 0,0,	0,0,	2,8,	0,0,	
 1,10,	0,0,	0,0,	0,0,	
-0,0,	0,0,	1,11,	0,0,	
+0,0,	0,0,	1,11,	48,53,	
 0,0,	0,0,	0,0,	0,0,	
 0,0,	2,10,	7,23,	7,23,	
 7,23,	7,23,	7,23,	7,23,	
@@ -416,23 +521,23 @@ struct yywork { YYTYPE verify, advance; } yycrank[] = {
 11,25,	11,25,	11,25,	11,25,	
 11,25,	11,25,	11,25,	11,25,	
 42,48,	43,49,	45,50,	46,51,	
-47,52,	48,53,	49,54,	11,25,	
+47,52,	49,54,	50,55,	11,25,	
 11,25,	11,25,	11,25,	11,25,	
 11,25,	11,25,	11,25,	11,25,	
 11,25,	11,25,	11,25,	11,25,	
 11,25,	11,25,	11,25,	11,25,	
 11,25,	11,25,	11,25,	11,25,	
 11,25,	11,25,	11,25,	11,25,	
-11,25,	50,55,	51,56,	52,57,	
-53,58,	11,25,	57,59,	11,25,	
+11,25,	51,56,	52,57,	53,58,	
+57,59,	11,25,	58,60,	11,25,	
 11,25,	11,25,	11,25,	11,25,	
 11,25,	11,25,	11,25,	11,25,	
 11,25,	11,25,	11,25,	11,25,	
 11,25,	11,25,	11,25,	11,25,	
 11,25,	11,25,	11,25,	11,25,	
 11,25,	11,25,	11,25,	11,25,	
-11,25,	58,60,	59,61,	60,62,	
-61,63,	63,64,	0,0,	0,0,	
+11,25,	59,61,	60,62,	61,63,	
+63,64,	0,0,	0,0,	0,0,	
 0,0};
 struct yysvf yysvec[] = {
 0,	0,	0,
@@ -483,52 +588,73 @@ yycrank+0,	yysvec+11,	yyvstop+94,
 yycrank+57,	yysvec+11,	yyvstop+97,
 yycrank+53,	yysvec+11,	yyvstop+99,
 yycrank+48,	yysvec+11,	yyvstop+101,
-yycrank+100,	yysvec+11,	yyvstop+103,
-yycrank+67,	yysvec+11,	yyvstop+106,
-yycrank+94,	yysvec+11,	yyvstop+108,
-yycrank+91,	yysvec+11,	yyvstop+110,
-yycrank+98,	yysvec+11,	yyvstop+112,
-yycrank+80,	yysvec+11,	yyvstop+114,
+yycrank+2,	yysvec+11,	yyvstop+103,
+yycrank+66,	yysvec+11,	yyvstop+106,
+yycrank+67,	yysvec+11,	yyvstop+108,
+yycrank+90,	yysvec+11,	yyvstop+110,
+yycrank+97,	yysvec+11,	yyvstop+112,
+yycrank+79,	yysvec+11,	yyvstop+114,
 yycrank+0,	yysvec+11,	yyvstop+116,
 yycrank+0,	yysvec+11,	yyvstop+119,
 yycrank+0,	yysvec+11,	yyvstop+122,
-yycrank+82,	yysvec+11,	yyvstop+125,
-yycrank+109,	yysvec+11,	yyvstop+127,
-yycrank+121,	yysvec+11,	yyvstop+129,
-yycrank+113,	yysvec+11,	yyvstop+131,
-yycrank+117,	yysvec+11,	yyvstop+133,
+yycrank+80,	yysvec+11,	yyvstop+125,
+yycrank+82,	yysvec+11,	yyvstop+127,
+yycrank+120,	yysvec+11,	yyvstop+129,
+yycrank+112,	yysvec+11,	yyvstop+131,
+yycrank+116,	yysvec+11,	yyvstop+133,
 yycrank+0,	yysvec+11,	yyvstop+135,
-yycrank+119,	yysvec+11,	yyvstop+138,
+yycrank+118,	yysvec+11,	yyvstop+138,
 yycrank+0,	yysvec+11,	yyvstop+140,
 0,	0,	0};
-struct yywork *yytop = yycrank+229;
+struct yywork *yytop = yycrank+228;
 struct yysvf *yybgin = yysvec+1;
 char yymatch[] = {
-00  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,012 ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,'+' ,01  ,'+' ,01  ,01  ,
-'0' ,'0' ,'0' ,'0' ,'0' ,'0' ,'0' ,'0' ,
-'0' ,'0' ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,
-'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,
-'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,
-'A' ,'A' ,'A' ,01  ,01  ,01  ,01  ,'A' ,
-01  ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,
-'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,
-'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,
-'A' ,'A' ,'A' ,01  ,01  ,01  ,01  ,01  ,
+  0,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,  10,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,  43,   1,  43,   1,   1, 
+ 48,  48,  48,  48,  48,  48,  48,  48, 
+ 48,  48,   1,   1,   1,   1,   1,   1, 
+  1,  65,  65,  65,  65,  65,  65,  65, 
+ 65,  65,  65,  65,  65,  65,  65,  65, 
+ 65,  65,  65,  65,  65,  65,  65,  65, 
+ 65,  65,  65,   1,   1,   1,   1,  65, 
+  1,  65,  65,  65,  65,  65,  65,  65, 
+ 65,  65,  65,  65,  65,  65,  65,  65, 
+ 65,  65,  65,  65,  65,  65,  65,  65, 
+ 65,  65,  65,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
 0};
 char yyextra[] = {
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,
 0};
-#ifndef lint
-static	char ncform_sccsid[] = "@(#)ncform 1.6 88/02/08 SMI"; /* from S5R2 1.2 */
-#endif
+/*	Copyright (c) 1989 AT&T	*/
+/*	  All Rights Reserved  	*/
+
+/*	THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF AT&T	*/
+/*	The copyright notice above does not evidence any   	*/
+/*	actual or intended publication of such source code.	*/
+
+#pragma ident	"@(#)ncform	6.7	93/06/07 SMI"
 
 int yylineno =1;
 # define YYU(x) x
@@ -540,7 +666,12 @@ char *yysptr = yysbuf;
 int *yyfnd;
 extern struct yysvf *yyestate;
 int yyprevious = YYNEWLINE;
-yylook(){
+#if defined(__cplusplus) || defined(__STDC__)
+int yylook(void)
+#else
+yylook()
+#endif
+{
 	register struct yysvf *yystate, **lsp;
 	register struct yywork *yyt;
 	struct yysvf *yyz;
@@ -575,7 +706,15 @@ yylook(){
 				if(yyz == 0)break;
 				if(yyz->yystoff == yycrank)break;
 				}
+#ifndef __cplusplus
 			*yylastch++ = yych = input();
+#else
+			*yylastch++ = yych = lex_input();
+#endif
+			if(yylastch > &yytext[YYLMAX]) {
+				fprintf(yyout,"Input string too long, limit %d\n",YYLMAX);
+				exit(1);
+			}
 			yyfirst=0;
 		tryagain:
 # ifdef LEXDEBUG
@@ -592,6 +731,10 @@ yylook(){
 					if(yyt->advance+yysvec == YYLERR)	/* error transitions */
 						{unput(*--yylastch);break;}
 					*lsp++ = yystate = yyt->advance+yysvec;
+					if(lsp > &yylstate[YYLMAX]) {
+						fprintf(yyout,"Input string too long, limit %d\n",YYLMAX);
+						exit(1);
+					}
 					goto contin;
 					}
 				}
@@ -606,6 +749,10 @@ yylook(){
 					if(yyt->advance+yysvec == YYLERR)	/* error transitions */
 						{unput(*--yylastch);break;}
 					*lsp++ = yystate = yyt->advance+yysvec;
+					if(lsp > &yylstate[YYLMAX]) {
+						fprintf(yyout,"Input string too long, limit %d\n",YYLMAX);
+						exit(1);
+					}
 					goto contin;
 					}
 				yyt = yyr + YYU(yymatch[yych]);
@@ -620,6 +767,10 @@ yylook(){
 					if(yyt->advance+yysvec == YYLERR)	/* error transition */
 						{unput(*--yylastch);break;}
 					*lsp++ = yystate = yyt->advance+yysvec;
+					if(lsp > &yylstate[YYLMAX]) {
+						fprintf(yyout,"Input string too long, limit %d\n",YYLMAX);
+						exit(1);
+					}
 					goto contin;
 					}
 				}
@@ -679,35 +830,67 @@ yylook(){
 			yysptr=yysbuf;
 			return(0);
 			}
+#ifndef __cplusplus
 		yyprevious = yytext[0] = input();
 		if (yyprevious>0)
 			output(yyprevious);
+#else
+		yyprevious = yytext[0] = lex_input();
+		if (yyprevious>0)
+			lex_output(yyprevious);
+#endif
 		yylastch=yytext;
 # ifdef LEXDEBUG
 		if(debug)putchar('\n');
 # endif
 		}
 	}
+#if defined(__cplusplus) || defined(__STDC__)
+int yyback(int *p, int m)
+#else
 yyback(p, m)
 	int *p;
+#endif
 {
-if (p==0) return(0);
-while (*p)
-	{
-	if (*p++ == m)
-		return(1);
+	if (p==0) return(0);
+	while (*p) {
+		if (*p++ == m)
+			return(1);
 	}
-return(0);
+	return(0);
 }
 	/* the following are only used in the lex library */
-yyinput(){
+#if defined(__cplusplus) || defined(__STDC__)
+int yyinput(void)
+#else
+yyinput()
+#endif
+{
+#ifndef __cplusplus
 	return(input());
+#else
+	return(lex_input());
+#endif
 	}
+#if defined(__cplusplus) || defined(__STDC__)
+void yyoutput(int c)
+#else
 yyoutput(c)
-  int c; {
+  int c; 
+#endif
+{
+#ifndef __cplusplus
 	output(c);
+#else
+	lex_output(c);
+#endif
 	}
+#if defined(__cplusplus) || defined(__STDC__)
+void yyunput(int c)
+#else
 yyunput(c)
-   int c; {
+   int c; 
+#endif
+{
 	unput(c);
 	}

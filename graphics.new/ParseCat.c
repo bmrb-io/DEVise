@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:15:09  jussi
+  Added CVS header.
+*/
 
 #include <stdio.h>
 #include "ParseCat.h"
@@ -11,6 +14,10 @@
 #include "Control.h"
 #include "Util.h"
 #include "Init.h"
+#include "Group.h"
+#include "GroupDir.h"
+
+GroupDir *gdir = new GroupDir();
 
 const int INIT_CAT_FILES = 64;
 static char **_catFiles = (char **)NULL;
@@ -172,6 +179,7 @@ char *ParseCat(char *catFile){
 	int attrLength;
 	AttrType attrType;
 	char *commentString;
+	Group *currgrp = NULL;
 
 	/*
 	printf("opening file %s\n", catFile);
@@ -385,6 +393,31 @@ char *ParseCat(char *catFile){
 				isComposite, isSorted);
 			numAttrs++;
 			recSize += attrLength;
+		      }
+		else if (strcmp(args[0], "group") == 0)
+		{
+		  printf("Begin group %s\n", args[1]);
+		  if (!currgrp)		/* Top level */
+		    currgrp = new Group(args[1], NULL, TOPGRP);
+		  else
+		    currgrp = currgrp->insert_group(args[1]);
+		  /* Insert into group directory */
+		  gdir->add_entry(currgrp);
+		}
+		else if (strcmp(args[0], "item") == 0)
+		{
+		  printf("Item %s\n", args[1]);
+		  currgrp->insert_item(args[1]);
+		}
+		else if (strcmp(args[0], "endgroup") == 0)
+		{
+		  printf("End of group\n");
+		  if (!currgrp)
+		  {
+		    fprintf(stderr, "Group begins and ends not matched\n");
+		    goto error;
+		  }
+		  currgrp = currgrp->parent_group();
 		}
 		else {
 			fprintf(stderr,"ParseCat: unknown command %s\n", args[0]);

@@ -15,8 +15,12 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/09/22 20:09:27  ravim
+  Group structure for viewing schema
+*/
 
+#include <stdio.h>
 #include <iostream.h>
 #include "GroupDir.h"
 
@@ -32,25 +36,46 @@ GroupDir::~GroupDir()
 
 void GroupDir::add_entry(Group *grp)
 {
-  dir->add_entry((Item *)grp);
+  dir->add_entry(grp);
 }
 
 void GroupDir::remove_entry(Group *grp)
 {
-  dir->remove_entry((Item *)grp);
+  dir->remove_entry(grp);
 }
-
+  
 Group *GroupDir::get_entry(char *name)
 {
-  Item *curr = dir->first_item();
+  Group *curr = dir->first_item();
   
   while (curr && (strcmp(curr->name, name)))
     curr = dir->next_item();
 
-  return (Group *)curr;
+  return curr;
 }
 
-void GroupDir::top_level_items()
+void GroupDir::top_level_groups(Tcl_Interp *interp)
 {
-  cout << "Generating list of top level item names" <<endl;
+  Group *curr;
+  cout << "Generating list of top level group names" <<endl;
+  
+  curr = dir->first_item();
+  printf("after first item \n");
+  while (curr)
+  {
+    if (curr->type == ITEM)
+    {
+      printf("Error: item found in group directory\n");
+      exit(0);
+    }
+
+    if (curr->type == TOPGRP)
+    {
+      printf("Top level group : %s\n", curr->name);
+      Tcl_AppendElement(interp, curr->name);
+    }
+    else
+      printf("Not top level group : %s\n", curr->name);
+    curr = dir->next_item();
+  }
 }

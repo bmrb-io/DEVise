@@ -27,7 +27,9 @@ CC = g++
 CFLAGS = $(ARCH_FLAGS) -O -DUNIX -I../../graphics -I../../graphics.new \
 	-fexternal-templates
 .c.o: 
-	$(CC) -c $(CFLAGS) $<
+	$(CC) -c  $(CFLAGS) $<
+.C.o: 
+	$(CC) -c  $(CFLAGS) $<
 
 # Buffer manager
 
