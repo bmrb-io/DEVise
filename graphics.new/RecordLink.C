@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/07/10 21:20:07  wenger
+  Minor cleanups and improvements.
+
   Revision 1.16  1998/04/28 18:03:11  wenger
   Added provision for "logical" and "physical" TDatas to mappings,
   instead of creating new mappings for slave views; other TAttrLink-
@@ -356,12 +359,6 @@ void RecordLink::FlushToDisk()
   _file->WriteRec(_lastRec, _num, _array);
   _lastRec += _num;
   _num = 0;
-}
-
-void RecordLink::Print()
-{
-  DeviseLink::Print();
-    printf("Master = %s\n", _masterView->GetName());
 }
 
 void RecordLink::SetFlag(VisualFlag flag)

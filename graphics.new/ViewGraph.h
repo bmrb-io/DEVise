@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.51  1998/05/06 22:05:03  wenger
+  Single-attribute set links are now working except where the slave of
+  one is the master of another.
+
   Revision 1.50  1998/04/30 14:24:24  wenger
   DerivedTables are now owned by master views rather than links;
   views now unlink from master and slave links in destructor.
@@ -352,6 +356,13 @@ class ViewGraph : public View
 		// Utility Function (Color)
 		double	CalcDataColorEntropy(void);
 
+protected:
+  friend class MasterSlaveLink;
+
+  // Note: view and link data structures may not be consistent if these
+  // methods are called by anything other than the MasterSlaveLink class.
+  // RKW July 30, 1998.
+
   /* Make view a master/slave of a link */
   virtual void AddAsMasterView(MasterSlaveLink *link);
   virtual void DropAsMasterView(MasterSlaveLink *link);
@@ -361,6 +372,7 @@ class ViewGraph : public View
   /* Unlink all MasterSlaveLinks connected to this view. */
   virtual void UnlinkMasterSlave();
 
+public:
   // Stats update link access
   UpdateLink& GetUpdateLink() { return _updateLink; }
   // Record link list

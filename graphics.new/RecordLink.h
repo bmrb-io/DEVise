@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/04/10 18:29:30  wenger
+  TData attribute links (aka set links) mostly implemented through table
+  insertion; a crude GUI for creating them is implemented; fixed some
+  bugs in link GUI; changed order in session file for TData attribute links.
+
   Revision 1.9  1998/03/27 15:08:59  wenger
   Added dumping of logical session description, added GUI for dumping
   logical or physical description; cleaned up some of the command code
@@ -88,7 +93,6 @@ class RecordLink : public MasterSlaveLink {
   virtual int  FetchRecs(RecId recid, RecId &rec, int &num);
   virtual void Done();
   virtual void Abort();
-  virtual void Print();
   virtual RecordLinkType GetLinkType () { return _linkType; }
   virtual void SetLinkType(RecordLinkType type) { _linkType = type; }
   Boolean CheckTData(ViewGraph *view, Boolean isMaster);

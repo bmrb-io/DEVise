@@ -1444,7 +1444,7 @@ Num Date        Status  Description
 			views even though they don't actually change anything.
 			(rkw)
 
-381 07/16/98	OPEN	It's possible to set the same view to be the master
+381 07/16/98	FIXED	It's possible to set the same view to be the master
 			*and* slave of the same set link; if you do this,
 			and then zoom in that view, DEVise crashes. (rkw)
 

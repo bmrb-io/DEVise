@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/04/14 21:03:14  wenger
+  TData attribute links (aka set links) are working except for actually
+  creating the join table, and some cleanup when unlinking, etc.
+
   Revision 1.1  1998/04/10 18:29:25  wenger
   TData attribute links (aka set links) mostly implemented through table
   insertion; a crude GUI for creating them is implemented; fixed some
@@ -84,14 +88,25 @@ MasterSlaveLink::SetMasterView(ViewGraph *view)
       view != NULL ? view->GetName() : "NULL");
 #endif
 
-  if (_masterView) {
-    _masterView->DropAsMasterView(this);
-  }
+  if (_masterView != view) {
 
-  _masterView = view;
+    // Unlink the existing master view, if there is one.
+    if (_masterView) {
+      _masterView->DropAsMasterView(this);
+      _masterView = NULL;
+      Initialize();
+    }
 
-  if (_masterView) {
-    _masterView->AddAsMasterView(this);
+    // Make sure view isn't a slave, too.
+    if (view != NULL) {
+      (void) DeleteView(view);
+    }
+
+    // Link the new master view.
+    _masterView = view;
+    if (_masterView) {
+      _masterView->AddAsMasterView(this);
+    }
   }
 }
 
@@ -106,6 +121,9 @@ MasterSlaveLink::InsertView(ViewGraph *view)
   printf("MasterSlaveLink(%s)::InsertView(%s)\n", _name, view->GetName());
 #endif
 
+  if (view == _masterView) {
+    SetMasterView(NULL);
+  }
   DeviseLink::InsertView(view);
   view->AddAsSlaveView(this);
 }
@@ -118,19 +136,24 @@ bool
 MasterSlaveLink::DeleteView(ViewGraph *view)
 {
 #if defined(DEBUG)
-  printf("MasterSlaveLink(%s)::DeleteView(%s)\n", _name, view->GetName());
+  printf("MasterSlaveLink(%s)::DeleteView(%s)\n", _name, view != NULL ?
+      view->GetName() : "NULL");
 #endif
 
-  if( view == _masterView ) {
-      view->DropAsMasterView(this);
-      _masterView = NULL;
-  } else if( DeviseLink::DeleteView(view) ) {
-      view->DropAsSlaveView(this);
-  } else {
-      // view was not part of this link
+  if (view == NULL) {
       return false;
+  } else {
+      if (view == _masterView) {
+	  SetMasterView(NULL);
+          return true;
+      } else if (DeviseLink::DeleteView(view)) {
+          view->DropAsSlaveView(this);
+          return true;
+      } else {
+          // view was not part of this link
+          return false;
+      }
   }
-  return true;
 }
 
 /*------------------------------------------------------------------------------
@@ -172,6 +195,20 @@ MasterSlaveLink::Done()
     }
   }
   DoneIterator(index);
+}
+
+/*------------------------------------------------------------------------------
+ * function: MasterSlaveLink::Print
+ * Print the views of this link.
+ */
+void
+MasterSlaveLink::Print()
+{
+  DeviseLink::Print();
+  char *masterName = NULL;
+  if (_masterView != NULL) _masterView->GetName();
+  if (masterName == NULL) masterName = "NULL";
+  printf("Master view = %s\n", masterName);
 }
 
 /*============================================================================*/

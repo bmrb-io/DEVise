@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.81  1998/05/06 22:05:02  wenger
+  Single-attribute set links are now working except where the slave of
+  one is the master of another.
+
   Revision 1.80  1998/05/05 15:15:20  zhenhai
   Implemented 3D Cursor as a rectangular block in the destination view
   showing left, right, top, bottom, front and back cutting planes of the
@@ -619,19 +623,14 @@ double	ViewGraph::CalcDataColorEntropy(void)
 
 void ViewGraph::AddAsMasterView(MasterSlaveLink *link)
 {
-    // remove this view from the slave view list of the link; then add
-    // the link as one of the links whose master this view is
-    
-    // Why don't we let this call RecordLink::DeleteView()?  RKW Mar. 6, 1998.
-    if (link->DeviseLink::DeleteView(this))
-      DropAsSlaveView(link);
+    // add the link as one of the links whose master this view is
     if (!_masterLink.Find(link)) {
 #ifdef DEBUG
         printf("View %s becomes master of record link %s\n", GetName(),
                link->GetName());
 #endif
         _masterLink.Append(link);
-      }
+    }
     Refresh();
 }
 
@@ -678,9 +677,6 @@ ViewGraph::UnlinkMasterSlave()
 
 void ViewGraph::AddAsSlaveView(MasterSlaveLink *link)
 {
-    // view cannot be a master
-    DropAsMasterView(link);
-
     if (!_slaveLink.Find(link)) {
 #if defined(DEBUG)
         printf("View %s becomes slave of record link %s\n", GetName(),
@@ -690,6 +686,7 @@ void ViewGraph::AddAsSlaveView(MasterSlaveLink *link)
     }
 
     if (link->GetFlag() == VISUAL_TATTR) TAttrLinkChanged();
+    Refresh();
 }
 
 void ViewGraph::DropAsSlaveView(MasterSlaveLink *link)
@@ -703,6 +700,7 @@ void ViewGraph::DropAsSlaveView(MasterSlaveLink *link)
     }
 
     if (link->GetFlag() == VISUAL_TATTR) TAttrLinkChanged();
+    Refresh();
 }
 
 void ViewGraph::InsertMapping(TDataMap *map, char *label)
