@@ -15,6 +15,9 @@
 %  $Id$
 
 %  $Log$
+%  Revision 1.9  1996/07/01 19:39:15  jussi
+%  Added description of the new TData constructor interface.
+%
 %  Revision 1.8  1996/06/20 21:50:15  jussi
 %  Updated description of command get3DLocation. Added command
 %  set3DLocation.
@@ -166,7 +169,7 @@ class.
 \begin{tabular}{l|l|p{4in}}
 Category & What class means           & Parameters\\
 \hline
-tdata    & Schema name                & TData name, file path, TData type \\
+tdata    & Schema name                & TData name, TData type, parameter \\
 mapping  & Client-program assigned    & Tdata name, mapping name, empty,
                                         X attribute, Y, Z, color, size,
                                         pattern, orientation, shape,
@@ -188,8 +191,10 @@ and class is simply {\tt create}. The number of parameters varies
 according to object category. The types of the parameters are shown in
 the table.
 
-The TData type parameter is either UNIXFILE or WWW. These are the two
-types of data streams understood by the Devise server at this point.
+The TData type parameter is either UNIXFILE, WWW, or BASICSTAT. These
+are the only types of data streams understood by the Devise server at
+this point.  The parameter is either a filename (for UNIXFILE), a URL
+(for WWW), or the name of a view (BASICSTAT).
 
 The link flag is a binary value with the following values OR'ed: X
 (1), Y (2), size (4), pattern (8), color (16), orientation (32), shape
@@ -321,6 +326,22 @@ Output       & List of instance names or empty (strings) \\
 \end{tabular}
 
 \section{Source Data Commands}
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt dataSegment} \\
+Description  & Sets the data segment information for the next
+               'create tdata' command \\
+Input \#     & 4 \\
+Input Types  & Tdata name (string), filename (string), file offset
+               (integer) (0 for no offset), segment length (integer)
+               (0 for rest of file) \\
+Output       & {\tt done} \\
+\hline
+\end{tabular}
+
+\bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
