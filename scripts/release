@@ -19,6 +19,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  2001/09/19 17:28:44  wenger
+#  Added dynamic libraries to releases to /p/devise; made some improvements
+#  to run scripts.
+#
 #  Revision 1.5  2001/08/30 17:12:08  wenger
 #  Minor improvements to make errors more visible.
 #
@@ -45,6 +49,19 @@ endif
 
 set dest = $1/release
 set arches = ($argv[2-$#argv])
+
+#-----------------------------------------------------------
+# Check that we're doing this on trigger.
+
+if (`hostname` != trigger) then
+  echo "Release should be done on trigger (or another Intel/Solaris machine)"
+  echo -n "Are you SURE you want to continue? [N] "
+  set answer = $<
+  if ($answer != y && $answer != Y) then
+    echo Aborted.
+    exit 1
+  endif
+endif
 
 #-----------------------------------------------------------
 # Make sure we have the files we need to do the release.
