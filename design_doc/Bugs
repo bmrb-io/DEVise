@@ -1567,23 +1567,25 @@ Num Date        Status  Description
 
 409 10/09/98	OPEN	DataReader needs to be more robust when there are
 			errors parsing data recods. (rkw)
-			(Partly fixed by rkw, 10/12/98.)
+			(Partly fixed by rkw, 10/12/98.  More improvements
+			by rkw, 01/18/99.)
 
 410 10/09/98	OPEN	DataReader allows duplicate attribute names without
 			complaint. (rkw)
 
-411 10/09/98	OPEN	Fractional seconds in dates doesn't work right in
+411 10/09/98	FIXED	Fractional seconds in dates doesn't work right in
 			DataReader ('1.1' is read as 1.000001, for example).
 			(rkw)
 
-412 10/09/98	OPEN	DataReader should look for comments in data only at
+412 10/09/98	FIXED	DataReader should look for comments in data only at
 			the beginning of lines. (rkw)
+			(Fixed by rkw, 01/18/99.)
 
-413 10/12/98	OPEN	If a comment line is the last line of a data file,
+413 10/12/98	FIXED	If a comment line is the last line of a data file,
 			the DataReader gives no indication that no fields
 			were actually read. (rkw)
 
-414 10/12/98	OPEN	DataReader should recognize blank lines in data file
+414 10/12/98	FIXED	DataReader should recognize blank lines in data file
 			as being like comment lines (skip them). (rkw)
 
 415 10/12/98	OPEN	In DataReader, record separators/delimiters other than
@@ -1721,6 +1723,10 @@ Num Date        Status  Description
 449 01/04/99	OPEN	When the leader view of a record/set link is removed
 			from a window (but not destroyed), its follower views
 			should probably display no records. (rkw)
+
+450 01/18/99	FIXED	Fixed-length strings don't work in the DataReader.
+			(rkw)
+			(Fixed by rkw, 01/18/99.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

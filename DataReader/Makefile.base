@@ -19,6 +19,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.8  1998/11/03 17:53:34  okan
+# Fixed Several bugs and changed DataReader to use UtilAtof
+#
 # Revision 1.7  1998/10/13 15:41:37  wenger
 # Purify'd DataReader.
 #
@@ -131,5 +134,17 @@ test4: testParser
 test5: testParser
 	testParser ../../DataReader/test/test5.dat \
 		../../DataReader/test/test5.schema
+
+test6: testParser
+	testParser ../../DataReader/test/test6.dat \
+		../../DataReader/test/test6.schema
+
+test7: testParser
+	testParser ../../DataReader/test/test7.dat \
+		../../DataReader/test/test7.schema
+
+test8: testParser
+	testParser ../../DataReader/test/test8.dat \
+		../../DataReader/test/test8.schema
 
 ###############################################################################

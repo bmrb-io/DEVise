@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/11/03 17:53:33  okan
+  Fixed Several bugs and changed DataReader to use UtilAtof
+
   Revision 1.7  1998/10/06 20:06:33  wenger
   Partially fixed bug 406 (dates sometimes work); cleaned up DataReader
   code without really changing functionality: better error handling,
@@ -37,7 +40,6 @@
 #ifndef DATAREADER_DATAREADER_H
 #define DATAREADER_DATAREADER_H
 
-//TEMP -- should probably hide some of this
 #include "DRSchema.h"
 
 class Buffer;
@@ -47,19 +49,27 @@ class DataReader {
 private:
 	Buffer* myBuffer; // Buffer Object used for extracting fields
 	Status _uStat; // Status of DataReader
-	bool _dataInValid;
 
 public:
 	DataReader(const char* dataFile, const char* schemaFile);
 	~DataReader();
 
-	Status getRecord(char* dest); // Function to read next record
-	Status getRndRec(char* dest,int fileOffset); // Function to read a random record
-	bool isOk() {return _uStat == OK;} // Check the Status of Reader
+	// Function to read next record: returns true iff the record was read
+	// successfully, regardless of whether we're at EOF, etc.
+	bool getRecord(char* dest);
+
+	// Function to read a random record.
+	bool getRndRec(char* dest, int fileOffset);
+
+	// Check whether we're at EOF.
+	bool isEof();
+
+	// Check the Status of Reader.
+	bool isOk() {return _uStat == OK;}
+
 	friend ostream& operator<<(ostream &out, const DataReader &dr);
 
 	DRSchema* myDRSchema; // DRSchema Object associated with this Reader
-	bool getInValid() { return _dataInValid;}
 };
 
 #endif

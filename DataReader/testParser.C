@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/11/03 17:53:36  okan
+  Fixed Several bugs and changed DataReader to use UtilAtof
+
   Revision 1.8  1998/10/13 15:41:39  wenger
   Purify'd DataReader.
 
@@ -62,7 +65,8 @@ int main(int ARGV, char **ARGC) {
 
 	int aa;
 	char* results = new char[2048];
-	Status status = OK;
+	bool status = true;
+	int recordNum = 0;
 
 	DataReader* myDataReader = new DataReader(df,sf);
 	if (!(myDataReader->isOk())) {
@@ -96,7 +100,6 @@ int main(int ARGV, char **ARGC) {
 	} 
  **********************************************************************/
 
-	int recordNum = 0;
 	bool writeData; 
 
 	while (true) {
@@ -112,21 +115,11 @@ int main(int ARGV, char **ARGC) {
 		cout << "  After getRecord(); status = " << status << endl;
 #endif
 
-		if (myDataReader->getInValid()) {
-			writeData = false;
-		}
-
-		if (status == OK || status == FOUNDEOL || status == FOUNDEOF) {
-			// these are okay
-		} else if (status == FAIL) {
+		if (!status) {
 			cerr << "Error occured in DataReader at record " << recordNum <<
-			  endl ;
+			  endl << endl;
 			testResult = TEST_ERROR;
-		} else {
-			cerr << "Possible error in DataReader at record " << recordNum <<
-			  endl;
-			cerr << "  status = " << status << endl;
-			if (testResult != TEST_ERROR) testResult = TEST_PROB_ERROR;
+			writeData = false;
 		}
 
 #ifndef TESTDATAREADER
@@ -168,7 +161,7 @@ int main(int ARGV, char **ARGC) {
 						  sizeof(tmpDate));
 						{
 							double secs = tmpDate.getSec() +
-							  tmpDate.getNanoSec() * 1.0e-6;
+							  tmpDate.getNanoSec() * 1.0e-9;
 							cout << "{" << tmpDate.getYear() << "-" <<
 							  tmpDate.getMonth() << "-" << tmpDate.getDay() << " " <<
 							  tmpDate.getHour() << ":" << tmpDate.getMin() << ":" <<
@@ -185,7 +178,7 @@ int main(int ARGV, char **ARGC) {
 		}
 #endif
 
-		if (status == FOUNDEOF) {
+		if (myDataReader->isEof()) {
 			cerr << "End of file" << endl;
 			break;
 		}

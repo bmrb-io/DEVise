@@ -1,0 +1,9 @@
+schema test6_schema {
+	delimiter = [\n]+;
+	separator = [ 	]+ ;
+	comment = "#";
+	
+	attr sci_const {
+		type = double;
+	}
+}

@@ -425,7 +425,7 @@ CodeReplaced By <BR><BR>
 
 <UL>
 
-<LI>The 'length' keyword is used for fixed-length attributes and defines the length of the attribute.  maxlen and length can't be used together.  Separator can not be specified if length is used, also quoted strings can't specify length. <BR>
+<LI>The 'length' keyword is used for fixed-length attributes and defines the length of the attribute.  maxlen and length can't be used together.  Separator can not be specified if length is used, also quoted strings can't specify length.  Note that the length value does <em>not</em> include the terminating NULL.<BR>
 
 <BR>
 
@@ -449,7 +449,7 @@ Default value: none<BR>
 
 <UL>
 
-<LI>The 'maxlen' keyword indicates how much storage should be reserved for strings that are read in.  This option can only be specified for strings.  Attribute can't have maxlen and length at the same time.  If the specified string is longer than given 'maxlen', only first maxlen bytes of the strings are read and a warning message is displayed.<BR>
+<LI>The 'maxlen' keyword indicates how much storage should be reserved for strings that are read in.  This option can only be specified for strings.  Attribute can't have maxlen and length at the same time.  If the specified string is longer than given 'maxlen', only first maxlen bytes of the strings are read and a warning message is displayed.  Note that the maxlen value <em>does</em> include the terminating NULL (the opposite of length).<BR>
 
 <BR>
 

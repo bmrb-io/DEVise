@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/11/03 17:53:32  okan
+  Fixed Several bugs and changed DataReader to use UtilAtof
+
   Revision 1.5  1998/10/06 20:06:33  wenger
   Partially fixed bug 406 (dates sometimes work); cleaned up DataReader
   code without really changing functionality: better error handling,
@@ -45,17 +48,7 @@
 enum AttrType { TYPE_INVALID, TYPE_INT, TYPE_STRING, TYPE_DOUBLE, TYPE_DATE };
 ostream& operator<<(ostream &out, const AttrType &attrType);
 
-#define DIGITSTART '0'
-#define DIGITEND '9'
-#define MINUS '-' //ASCII value of '-'
-#define PLUS '+' //ASCII value of '+'
-#define DOT '.' //ASCII value of '.'
-#define ESCAPE '\\' //ASCII value of '\'
-#define EXPONENTC 'e' //ASCII value of 'e'
-#define EXPONENTS 'E' //ASCII value of 'E'
-
-enum Status { OK, FAIL, FOUNDEOF, FOUNDEOL, NOQUOTE, FOUNDSEPARATOR,
-	FOUNDCOMMENT };
+enum Status { OK, FAIL };
 ostream& operator<<(ostream &out, const Status &status);
 
 enum Encoding { ENCODING_CSTYLE, ENCODING_QUOTED, ENCODING_URL,

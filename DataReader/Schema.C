@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1999/01/18 18:09:29  beyer
+  All objects are now aligned on MAX_ALIGN in buffer.
+  Also, changed stringstream usage.
+
   Revision 1.13  1998/11/03 17:53:35  okan
   Fixed Several bugs and changed DataReader to use UtilAtof
 
@@ -98,26 +102,6 @@ operator<<(ostream &out, const Status &status)
 
 	case FAIL:
 		out << "FAIL";
-		break;
-
-	case FOUNDEOF:
-		out << "FOUNDEOF";
-		break;
-
-	case FOUNDEOL:
-		out << "FOUNDEOL";
-		break;
-
-	case NOQUOTE:
-		out << "NOQUOTE";
-		break;
-
-	case FOUNDSEPARATOR:
-		out << "FOUNDSEPARATOR";
-		break;
-
-	case FOUNDCOMMENT:
-		out << "FOUNDCOMMENT";
 		break;
 
 	default:

@@ -1,0 +1,20 @@
+schema test8_schema {
+	delimiter = [\n]+;
+	separator = [	]+ ;
+	comment = "#";
+	
+	attr int1 {
+		type = int;
+		length = 6;
+	}
+
+	attr double1 {
+		type = double;
+		length = 8;
+	}
+
+	attr str1 {
+		type = string;
+		length = 12;
+	}
+}

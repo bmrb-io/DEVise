@@ -1,0 +1,10 @@
+schema test7_schema {
+	delimiter = [\n]+;
+	separator = [	]+ ;
+	comment = "#";
+	
+	attr str1 {
+		type = string;
+		maxlen = 32;
+	}
+}

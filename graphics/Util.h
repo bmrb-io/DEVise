@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.21  1998/12/22 19:39:10  wenger
+  User can now change date format for axis labels; fixed bug 041 (axis
+  type not being changed between float and date when attribute is changed);
+  got dates to work semi-decently as Y axis labels; view highlight is now
+  always drawn by outlining the view; fixed some bugs in drawing the highight.
+
   Revision 1.20  1998/11/19 21:13:27  wenger
   Implemented non-DTE version of DEVise (new code handles data source catalog
   functions; Tables, SQLViews, etc., are not implemented); changed version to
@@ -243,7 +249,7 @@ const double _UtilPower10[] = { 1, 10, 100, 1000, 10000, 100000,
 			        1e12, 1e13 };
 const int _UtilMaxDecimals = sizeof _UtilPower10 / sizeof _UtilPower10[0];
 
-inline double UtilAtof(char *str)
+inline double UtilAtof(const char *str)
 {
   /* Deal with leading +/- sign, if any. */
   int sign = 1;

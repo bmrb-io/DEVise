@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/11/03 17:53:33  okan
+  Fixed Several bugs and changed DataReader to use UtilAtof
+
   Revision 1.9  1998/10/12 21:24:20  wenger
   Fixed bugs 405, 406, and 408 (all DataReader problems); considerably
   increased the robustness of the DataReader (partly addresses bug 409);
@@ -46,6 +49,7 @@
 
 //#define DEBUG
 
+//---------------------------------------------------------------------------
 DataReader::DataReader(const char* dataFile, const char* schemaFile)
 {
 #if defined(DEBUG)
@@ -113,6 +117,7 @@ DataReader::DataReader(const char* dataFile, const char* schemaFile)
 #endif
 }
 
+//---------------------------------------------------------------------------
 DataReader::~DataReader() {
 
 	_uStat = FAIL;
@@ -124,101 +129,41 @@ DataReader::~DataReader() {
 	myDRSchema = NULL;
 }
 
-Status DataReader::getRecord(char* dest) {
+//---------------------------------------------------------------------------
+bool
+DataReader::getRecord(char* dest)
+{
 #if defined(DEBUG)
 	cout << "DataReader::getRecord()\n";
 #endif
 
-	Status status = OK;
-	char* tmpPoint;
+	bool result;
 
-	int lastAttrProcessed;
-	bool endOfRecord = false;
+	result = myBuffer->ReadRecord(dest, myDRSchema);
 
-	// Check for comments at the beginning of the record and if the last line
-	// of a datafile is commented, then just return FOUNDEOF.
-	// Upper Layer will just do nothing
-
-	myBuffer->unSetInValid();
-	_dataInValid = true;
-
-	status = myBuffer->checkComment();
-	if (status == FOUNDEOF) {
-		return status;
-	}
-
-	for (int attrNum = 0 ; attrNum < (int)(myDRSchema->qAttr) && !endOfRecord;
-	  attrNum++) {
-		lastAttrProcessed = attrNum;
-
-		tmpPoint = dest + myDRSchema->tableAttr[attrNum]->offset; 
-		Status tmpStatus = myBuffer->extractField(
-		  myDRSchema->tableAttr[attrNum], tmpPoint);
-
-		switch (tmpStatus) {
-		case OK:
-			// I don't think we should actually ever get OK here.
-			// RKW 1998-10-12.
-		case FOUNDSEPARATOR:
-			// Everything's OK, just keep going.
-			if (status == OK || status == FOUNDSEPARATOR) status = tmpStatus;
-			break;
-
-		case FOUNDEOF:
-		case FOUNDEOL:
-		case FOUNDCOMMENT:
-			// Done with this record.
-			endOfRecord = true;
-			if (status == OK || status == FOUNDSEPARATOR) status = tmpStatus;
-			break;
-
-		case FAIL:
-		case NOQUOTE:
-			// Zero out this field, try to keep going.
-			memset(tmpPoint, 0, myDRSchema->tableAttr[attrNum]->getLength());
-			status = tmpStatus;
-			break;
-
-		default:
-			assert(0 && "Illegal status value");
-			break;
-		}
-	}
-	_dataInValid = myBuffer->getInValid();
-
-	if ((lastAttrProcessed < (int)(myDRSchema->qAttr) - 1)  && (!_dataInValid)) {
-		cerr << "Not enough fields in record\n";
-	} else {
-		if ((myDRSchema->getDelimiter() == NULL) && (status == FOUNDSEPARATOR)) {
-			status = FOUNDEOL;
-		}
-	}
-
-	// Zero out any fields that weren't read.
-	for (int clearAttr = lastAttrProcessed + 1;
-	  clearAttr < (int)(myDRSchema->qAttr); clearAttr++) {
-		tmpPoint = dest + myDRSchema->tableAttr[clearAttr]->offset; 
-		memset(tmpPoint, 0, myDRSchema->tableAttr[clearAttr]->getLength());
-	}
-
-	// Consume the rest of this record (does nothing if record delimiter
-	// not defined).
-	if (!endOfRecord) {
-		status = myBuffer->consumeRecord(status);
-	}
-
-	return status;
+	return result;
 }
 
-Status DataReader::getRndRec(char* dest, int fileOffset) {
-	Status status;
-	status = myBuffer->setBufferPos(fileOffset-1);
-	if (status != OK)
-		return status;
-	status = getRecord(dest);
-	return status;
+//---------------------------------------------------------------------------
+bool
+DataReader::getRndRec(char* dest, int fileOffset)
+{
+	bool result;
+	result = myBuffer->setBufferPos(fileOffset-1); //TEMP -- why -1?
+	if (result) {
+		result = myBuffer->ReadRecord(dest, myDRSchema);
+	}
+	return result;
 }
 
+//---------------------------------------------------------------------------
+bool
+DataReader::isEof()
+{
+	return myBuffer->GetState() == BufEof;
+}
+
+//---------------------------------------------------------------------------
 ostream &
 operator<<(ostream &out, const DataReader &dr)
 {

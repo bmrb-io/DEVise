@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/11/03 18:08:49  okan
+  Fixed Several Bugs of DataReader
+   ----------------------------------------------------------------------
+
   Revision 1.3  1998/06/28 21:47:34  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -171,18 +175,14 @@ void DataReadExec::initialize()
 
 const Tuple* DataReadExec::getNext()
 {
-  Status stat;
+  bool stat;
   if(!ud->isOk()){	// should not happen
     return NULL;
   }
   stat = ud->getRecord(buff);
-  if (ud->getInValid()) {
-	  return NULL;
-  }
-  if (stat == FOUNDEOF) {
+  if (!stat) {
     return NULL;
   }
-  assert((stat == OK) || (stat == FOUNDEOL) || (stat == FOUNDEOF));
   intCopy((Type*) recId, tuple[0]);
   for(int i = 1; i < numFlds; i++){
     unmarshalPtrs[i](&buff[offsets[i]], tuple[i]);
@@ -203,15 +203,11 @@ Offset DataReadExec::getOffset()
 const Tuple* DataReadExec::getThis(Offset offset)
 {
   this->recId = -999;
-  Status stat;
-  if(!ud->isOk()){	// should not happen
-    return NULL;
-  }
+  bool stat;
   stat = ud->getRndRec(buff, offset.getOffset());
-  if(stat == FOUNDEOF){
+  if(!stat){
     return NULL;
   }
-  assert(stat == OK);
   intCopy((Type*) recId, tuple[0]);
   for(int i = 1; i < numFlds; i++){
     unmarshalPtrs[i](&buff[offsets[i]], tuple[i]);
