@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/12/18 15:31:59  jussi
+  Added synchronization methods and IsBusy() method.
+
   Revision 1.8  1996/12/13 21:34:20  jussi
   Added checking of available semaphores.
 
@@ -576,9 +579,9 @@ void *DataSource::ProcessReq()
 
         if (req.type == TerminateReq) {
             DO_DEBUG(printf("\nSource 0x%p received quit command\n", this));
-            printf("Data source: %llu requests, read: %.2f MB, write: %.2f MB, seek: %.2f MB\n",
+            DO_DEBUG(printf("Data source: %llu requests, read: %.2f MB, write: %.2f MB, seek: %.2f MB\n",
                    _totalCount, _readBytes / 1048576.0,
-                   _writeBytes / 1048576.0, _seekBytes / 1048576.0);
+                   _writeBytes / 1048576.0, _seekBytes / 1048576.0));
             break;
         }
 
