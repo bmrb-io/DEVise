@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/07/25 15:14:24  guangshu
+  Fixed compiling Warning.
+
   Revision 1.20  1996/07/22 23:42:32  guangshu
   Added statistics for gdata. The statistics includes count, ysum, max, mean, min.
 
@@ -101,7 +104,7 @@ BasicStats::~BasicStats()
 void BasicStats::Init(ViewGraph *vw)
 {
   xsum = xsum_sqr = xmax = xmin = 0;
-  ysum = ysum_sqr = ymax = ymin = 0;
+  ysum = ysum_sqr = ymin = ymax = 0;
   xatymax = xatymin = 0;
   int_x = int_y = 0;
   avg = std = var = 0;
@@ -114,7 +117,7 @@ void BasicStats::Init(ViewGraph *vw)
   for(int j=0; j<HIST_NUM; j++){
 	hist[j]=0;
   }
-  width = 0;
+/*  width = 0; */
 }
 
 void BasicStats::Sample(double x, double y)
@@ -154,9 +157,9 @@ void BasicStats::Sample(double x, double y)
   int_x = int_y = 0;
 }
 
-void BasicStats::Histogram(double y)
+void BasicStats::Histogram(double y, double yMin)
 {
-       int index = (int) ((y - ymin)/width);
+       int index = (int) ((y - yMin)/width);
        if(index>=HIST_NUM) index = HIST_NUM-1;
        DOASSERT(index >= 0 && index < HIST_NUM, "Invalid histogram index!");
        hist[index]++;

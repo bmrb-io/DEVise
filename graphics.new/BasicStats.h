@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/07/22 23:42:42  guangshu
+  Added statistics for gdata. The statistics includes count, ysum, max, mean, min.
+
   Revision 1.12  1996/07/19 18:00:28  guangshu
   Added support for histograms.
 
@@ -109,7 +112,7 @@ public:
 
   virtual void Init(ViewGraph *vw = 0);
   virtual void Sample(double x, double y);
-  virtual void Histogram(double y);
+  virtual void Histogram(double y, double yMin);
   virtual void Done();
   virtual void Report();
   virtual void ReturnHist();
