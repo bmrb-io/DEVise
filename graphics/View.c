@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.193  1999/09/20 18:59:54  wenger
+  Fixed problem with titles not being displayed in the JavaScreen (premature
+  commit of code to avoid drawing titles in JS sessions).
+
   Revision 1.192  1999/08/31 21:46:16  wenger
   Found and fixed bug 506 (problem with cursor drawing when source and
   destination views are in the same window).
@@ -1698,11 +1702,7 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
 
 void View::DrawLabel()
 {
-#if 1 //TEMP
-  if (true) {
-#else //TEMP
   if (!Session::GetIsJsSession()) {
-#endif //TEMP
 	WindowRep*	win = GetWindowRep();
 	win->SetGifDirty(true);
 	

@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.73  1999/09/01 19:27:09  wenger
+  Debug logging improved -- directory of log file can now be specified
+  with the DEVISE_LOG_DIR environment variable (changed most startup scripts
+  to put it in the DEVise tmp directory); added logging of a bunch of elapsed
+  times to help figure out JavaScreen performance bottlenecks.
+
   Revision 1.72  1999/09/01 16:11:00  wenger
   New version of JAVAC_CreateView command (with more title info) is in place
   but currently disabled.
@@ -411,13 +417,8 @@ static DeviseCursorList _drawnCursors;
 // Assume no more than 1000 views in a pile...
 static const float viewZInc = 0.001;
 
-#if 0 //TEMP
 static const int protocolMajorVersion = 3;
 static const int protocolMinorVersion = 0;
-#else //TEMP
-static const int protocolMajorVersion = 2;
-static const int protocolMinorVersion = 1;
-#endif //TEMP
 
 // be very careful that this order agree with the ControlCmdType definition
 char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
@@ -2565,7 +2566,6 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 	Boolean keysEnabled = !keysDisabled;
 
 	{ // limit variable scopes
-#if 0 //TEMP
 	  JSArgs args(31);
 	  args.FillString(_controlCmdName[CREATEVIEW]);
 	  args.FillString(view->GetName());
@@ -2616,34 +2616,6 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 		  args.FillInt(bold);
 		  args.FillInt(italic);
 	  }
-#else //TEMP
-	  JSArgs args(24);
-	  args.FillString(_controlCmdName[CREATEVIEW]);
-	  args.FillString(view->GetName());
-	  args.FillString(parent ? parent->GetName() : "");
-	  args.FillString(view->IsInPileMode() ?
-	    view->GetParentPileStack()->GetFirstView()->GetName() : "");
-	  args.FillInt(viewX);
-	  args.FillInt(viewY);
-	  args.FillInt(viewWidth);
-	  args.FillInt(viewHeight);
-	  args.FillDouble(viewZ);
-	  args.FillInt(dataX);
-	  args.FillInt(dataY);
-	  args.FillInt(dataWidth);
-	  args.FillInt(dataHeight);
-	  args.FillString(fgColorStr.c_str());
-	  args.FillString(bgColorStr.c_str());
-	  args.FillString(xAxisType);
-	  args.FillString(yAxisType);
-	  args.FillString(viewTitle);
-	  args.FillDouble(gridX);
-	  args.FillDouble(gridY);
-	  args.FillInt(rubberbandEnabled);
-	  args.FillInt(cursorMoveEnabled);
-	  args.FillInt(drillDownEnabled);
-	  args.FillInt(keysEnabled);
-#endif //TEMP
 
 	  args.ReturnVal(this);
 	}
