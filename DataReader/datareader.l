@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/11/03 17:53:35  okan
+  Fixed Several bugs and changed DataReader to use UtilAtof
+
   Revision 1.8  1998/10/12 21:24:21  wenger
   Fixed bugs 405, 406, and 408 (all DataReader problems); considerably
   increased the robustness of the DataReader (partly addresses bug 409);
@@ -115,6 +118,9 @@ comment     return COMMENT_TOKEN;
 							break;
 						case 't':
 							stringBuf[stringIndex++] = '\t';
+							break;
+						case 'r':
+							stringBuf[stringIndex++] = '\r';
 							break;
 						default:
 							stringBuf[stringIndex++] = yytext[0];
