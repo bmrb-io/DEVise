@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1998/07/06 21:07:03  wenger
+  More memory leak hunting -- partly tracked down some in the DTE.
+
   Revision 1.30  1998/06/28 21:47:40  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -304,6 +307,41 @@ public:
 	virtual Iterator* createExec();	// throws exception
 	virtual ~CreateTableParse();
 	virtual const ISchema* getISchema();
+};
+
+class CreateGestaltParse : public ParseTree {
+  	vector<IdentType*>* identTypePairs;
+	TableName* gestaltName;
+	string* fileName;
+public:
+	CreateGestaltParse(List<string*>* gestaltName, vector<IdentType*>* identTypePairs,
+			   string* fileName);
+ 	virtual Iterator* createExec();	// throws exception
+	virtual ~CreateGestaltParse();
+}; 
+
+class RegisterIntoGestaltParse : public ParseTree {
+	List<string*>* gestaltName;
+	TableName* tableName;
+public:
+	RegisterIntoGestaltParse(List<string*>* gestaltName, List<string*>* tableName);
+ 	virtual Iterator* createExec();	// throws exception
+	virtual ~RegisterIntoGestaltParse(){
+	  delete gestaltName;
+	  delete tableName;
+	}
+};
+
+class UnregisterFromGestaltParse : public ParseTree {
+	TableName* gestaltName;
+	TableName* tableName;
+public:
+	UnregisterFromGestaltParse(List<string*>* gestaltName, List<string*>* tableName);
+ 	virtual Iterator* createExec();	// throws exception
+	virtual ~UnregisterFromGestaltParse(){
+	  delete gestaltName;
+	  delete tableName;
+	}
 };
 
 class ODBCTableAddParse : public ParseTree {
