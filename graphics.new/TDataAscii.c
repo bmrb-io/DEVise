@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/24 21:34:55  jussi
+  Added _currPos scheme to eliminate most of the fseek() calls.
+  This appears to speed up execution significantly.
+
   Revision 1.3  1995/11/22 17:51:35  jussi
   Added copyright notice and cleaned up the code. Optimized some
   routines a la TDataTape.C.
@@ -425,7 +429,7 @@ void TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
   for(int i = 0; i < numRecs; i++) {
     if (_currPos != _index[id + i]) {
       if (fseek(_file, _index[id + i], SEEK_SET) < 0) {
-	fprintf(stderr,"TDataAscii::ReadRec(%d,%d,0x%x) seek\n",
+	fprintf(stderr,"TDataAscii::ReadRec(%ld,%d,0x%x) seek\n",
 		id, numRecs, buf);
 	perror("fseek");
 	PrintIndices();
@@ -435,7 +439,7 @@ void TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
     }
 
     if (fgets(line, LINESIZE, _file) == NULL) {
-      fprintf(stderr,"TDataAscii::ReadRec(%d,%d,0x%x) fgets pos %d\n",
+      fprintf(stderr,"TDataAscii::ReadRec(%ld,%d,0x%x) fgets pos %ld\n",
 	      id, numRecs, buf, _index[id + i]);
       perror("fgets");
       Exit::DoExit(1);
@@ -513,7 +517,7 @@ void TDataAscii::PrintIndices()
 {
   int cnt = 0;
   for(int i = 0; i < _totalRecs; i++) {
-    printf("%d ", _index[i]);
+    printf("%ld ", _index[i]);
     if (cnt++ == 10) {
       printf("\n");
       cnt=0;

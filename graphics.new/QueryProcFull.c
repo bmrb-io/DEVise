@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/24 21:28:42  jussi
+  Added copyright notice and cleaned up code. Added debugging statements.
+
   Revision 1.2  1995/09/05 22:15:15  jussi
   Added CVS header.
 */
@@ -228,7 +231,6 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
 	_queries->Append(qdata);
 	*/
 
-done:
 /*
 	printf("queries are: \n");
 	for (index= _queries->InitIterator(); _queries->More(index); ) {
@@ -286,6 +288,7 @@ void QueryProcFull::ClearGData(GData *gdata)
     QPFullData *qd = _queries->Next(index);
     if (qd->gdata == gdata) {
       switch(qd->state) {
+      default: break;
       }
       qd->gdata = NULL;
     }
@@ -365,11 +368,8 @@ void QueryProcFull::InitQPFullScatter(QPFullData *qData) {
 
 	/* Init replacement policy. . */
 	qData->mgr->InitPolicy(_policy);
-	VisualFilter &filter = qData->filter;
 
-	TDataMap *map = qData->map;
 	TData *tdata = qData->tdata;
-	RecId lowId, highId;
 	if (tdata->HeadID(qData->current)) {
 		(void)tdata->LastID(qData->high);
 		qData->state = QPFull_ScanState;
@@ -720,7 +720,7 @@ Boolean QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high,
   BufMgr *mgr = qData->mgr;
   mgr->InitGetRecs(qData->tdata, qData->gdata, low, high, 
 		   Randomize, tdataOnly);
-  Coord x;
+
   int tRecSize = qData->tdata->RecSize();
   int gRecSize= qData->map->GDataRecordSize();
 		
@@ -940,6 +940,10 @@ Keep track of journal report
 void QueryProcFull::JournalReport() {
 
 	QPFullData *query = FirstQuery();
+
+	// keep compiler happy
+	query = query;
+
 	int numGetPage=0, numHits=0,numPrefetch=0, numPrefetchHits=0;
 	Journal::EventType lastEvent = Journal::LastEvent();
 	if (lastEvent == Journal::PushSelection ||
@@ -1028,7 +1032,7 @@ Boolean QueryProcFull::DoInMemGDataConvert(TData *tdata, GData *gdata,
 					numConvert = maxRecs;
 
 				char *startBuf = buf + tRecSize*(convertId-inMemLow);
-				void **recPtrs;
+				void **recPtrs = 0;
 				char *firstRec = _gdataBuf;
 				char *lastRec = _gdataBuf + gRecSize*(numConvert-1);
 				map->ConvertToGData(convertId,startBuf,recPtrs,
@@ -1129,9 +1133,9 @@ printf("Converting Gata %s, %d recs left\n", gdata->GetName(),recsLeft);
 	RecId startRid;
 	int numRetrieved;
 	int dataSize;
-	void **recPtrs;
-	Boolean more = tdata->GetRecs(_tdataBuf, TDATA_BUF_SIZE,startRid,
-		numRetrieved, dataSize, recPtrs);
+	void **recPtrs = 0;
+	(void)tdata->GetRecs(_tdataBuf, TDATA_BUF_SIZE,startRid,
+			     numRetrieved, dataSize, recPtrs);
 	tdata->DoneGetRecs();
 
 	/* convert [startRid..startRid+numRetrieved-1] */
@@ -1306,7 +1310,6 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid,
 		}
 
 		int tRecSize = tdata->RecSize();
-		int gRecSize = map->GDataRecordSize();
 		Coord x, y;
 	
 		/* Find the 1st record that fits */
