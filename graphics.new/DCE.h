@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/09/08 05:35:20  jussi
+  Added semaphore number as parameter to Semaphore::test().
+
   Revision 1.2  1996/07/18 02:13:20  jussi
   Added protective ifdef's for Ultrix.
 
@@ -48,6 +51,11 @@
 #include <errno.h>
 #include <assert.h>
 
+#ifdef MODIFIED
+#include <sys/types.h>
+#endif
+#include <sys/stat.h>
+
 #include "machdep.h"
 
 class Semaphore {
@@ -58,7 +66,7 @@ public:
 
   int acquire(int num = 1,
 	      int sem = 0) {            // acquire num units of resource
-    static struct sembuf sop;
+    struct sembuf sop;
     sop.sem_num = sem;                  // semaphore sem
     sop.sem_op = -num;                  // acquire/get num units (P)
     sop.sem_flg = 0;
@@ -66,8 +74,10 @@ public:
       int result = semop(id, &sop, 1);
       if (result < 0 && errno == EINTR) // signal received?
 	continue;
-      if (result < 0)
+      if (result < 0) {
+        printf("num %d, op %d\n", sop.sem_num, sop.sem_op);
 	perror("semop");
+      }
       assert(result >= 0);
       break;
     }
@@ -76,20 +86,22 @@ public:
 
   int release(int num = 1,
 	      int sem = 0) {            // release num units of resource
-    static struct sembuf sop;
+    struct sembuf sop;
     sop.sem_num = sem;                  // semaphore sem
     sop.sem_op = num;                   // release num units (V)
     sop.sem_flg = 0;
     int result = semop(id, &sop, 1);
-    if (result < 0)
+    if (result < 0) {
+      printf("num %d, op %d\n", sop.sem_num, sop.sem_op);
       perror("semop");
+    }
     assert(result >= 0);
     return num;
   }
 
   int test(int num = 1,
            int sem = 0) {               // try to acquire num units of resource
-    static struct sembuf sop;
+    struct sembuf sop;
     sop.sem_num = sem;                  // semaphore sem
     sop.sem_op = -num;                  // acquire/get num units (P)
     sop.sem_flg = IPC_NOWAIT;
@@ -102,16 +114,84 @@ public:
     return num;
   }
 
+  int getValue(int sem = 0) {           // get value of semaphore
+#ifdef __linux
+    int result = semctl(id, sem, GETVAL, NullSemUnion);
+#else
+    int result = semctl(id, sem, GETVAL, 0);
+#endif
+    if (result < 0)
+      perror("semctl");
+    assert(result >= 0);
+    return result;
+  }
+
   int setValue(int num, int sem = 0);   // set num units of resource
   int getId() { return id; }            // return id
 
   static key_t newKey();                // create new key
 
-  operator int();                       // get current number of units
+  operator int() {                      // get current number of units
+    return getValue(0);                 // get current number of units
+  }
 
 private:
   key_t key;                            // identifying key
   int   id;                             // semaphore id
+};
+
+class SemaphoreV {
+public:
+  SemaphoreV(key_t key, int &status, int nsem = 1);
+  int destroy() {                       // destroy semaphore
+    if (--_semCount > 0)
+      return 0;
+    return _sem->destroy();
+  }
+  static int destroyAll() {             // destroy all semaphores
+    return Semaphore::destroyAll();
+  }
+  static int create(int maxSems);       // create real semaphore
+
+  int acquire(int num = 1,
+	      int sem = 0) {            // acquire num units of resource
+    return _sem->acquire(num, _base + sem);
+  }
+
+  int release(int num = 1,
+	      int sem = 0) {            // release num units of resource
+    return _sem->release(num, _base + sem);
+  }
+
+  int test(int num = 1,
+           int sem = 0) {               // try to acquire num units of resource
+    return _sem->test(num, _base + sem);
+  }
+
+  int getValue(int sem = 0) {           // get value of semaphore
+    return _sem->getValue(_base + sem);
+  }
+
+  int setValue(int num, int sem = 0) {  // set num units of resource
+    return _sem->setValue(num, _base + sem);
+  }
+
+  operator int() {
+    return _sem->getValue(_base);       // get current number of units
+  }
+
+  int getId() { return _sem->getId(); } // return id
+
+  static key_t newKey() {
+    return Semaphore::newKey();         // create new key
+  }
+
+private:
+  static Semaphore *_sem;               // real semaphore
+  static int _semBase;                  // base number of semaphores
+  static int _maxSems;                  // maximum semaphore number
+  static int _semCount;                 // count of semaphores
+  int _base;                            // base number of this semaphore
 };
 
 class SharedMemory {
@@ -171,7 +251,7 @@ protected:
     char buf[1];                        // start of buffer
   } *comm;                              // communication area
 
-  Semaphore *sems;                      // semaphores
+  SemaphoreV *sems;                     // semaphores
   const int lock = 0;                   // protects comm area
   const int hasData = 1;                // set when comm area has data
   const int hasSpace = 2;               // set when comm area has space

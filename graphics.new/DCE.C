@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/08/01 22:48:22  jussi
+  Fixed problem with semop() in SunOS and HP-UX.
+
   Revision 1.3  1996/07/29 21:40:16  wenger
   Fixed various compile errors and warnings.
 
@@ -39,10 +42,6 @@
 #include <iostream.h>
 #include <stdio.h>
 #include <assert.h>
-#ifdef MODIFIED
-#include <sys/types.h>
-#endif
-#include <sys/stat.h>
 
 #include "DCE.h"
 
@@ -50,10 +49,6 @@
 #include "Exit.h"
 #define UXCALL(c,s) {if ((c) < 0) { perror(s); \
                                     DOASSERT(0, "Unix call failed"); }}
-#ifdef assert
-#undef assert
-#endif
-#define assert(c) { DOASSERT(c, "Internal error"); }
 #endif
 
 struct ShmKeyTable {
@@ -68,6 +63,11 @@ static struct ShmKeyTable *shmKeyTable = 0;
 #ifdef __linux
 static const union semun NullSemUnion = { 0 };
 #endif
+
+Semaphore *SemaphoreV::_sem = 0;
+int SemaphoreV::_semBase = 0;
+int SemaphoreV::_maxSems = 0;
+int SemaphoreV::_semCount = 0;
 
 Semaphore::Semaphore(key_t key, int &status, int nsem)
 {
@@ -196,17 +196,36 @@ key_t Semaphore::newKey()
   return key;
 }
 
-Semaphore::operator int()
+SemaphoreV::SemaphoreV(key_t key, int &status, int nsem)
 {
-#ifdef __linux
-  int result = semctl(id, 0, GETVAL, NullSemUnion);
-#else
-  int result = semctl(id, 0, GETVAL);
-#endif
-  if (result < 0)
-    perror("semop");
-  assert(result >= 0);
-  return result;
+  key = key;
+
+  if (!_sem || _semBase + nsem > _maxSems) {
+    status = -1;
+    return;
+  }
+
+  _base = _semBase;
+  _semBase += nsem;
+  _semCount++;
+
+  status = 0;
+}
+
+int SemaphoreV::create(int maxSems)
+{
+  DOASSERT(!_sem, "Real semaphore exists already");
+
+  int status;
+  _sem = new Semaphore(Semaphore::newKey(), status, maxSems);
+  if (!_sem || status < 0)
+    return -1;
+
+  _semBase = 0;
+  _maxSems = maxSems;
+  _semCount = 0;
+
+  return status;
 }
 
 SharedMemory::SharedMemory(key_t key, int size, char *&address, int &created) :
@@ -360,7 +379,7 @@ void IOBuffer::attach()
   // attach to semaphores
 
   int status;
-  sems = new Semaphore(semKey, status, 3);
+  sems = new SemaphoreV(semKey, status, 3);
   UXCALL(status, "sem");
   
   // attach to shared memory segment
