@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/03/26 21:18:43  jussi
+  Merged with TDataTape. Added magic number to cache file.
+
   Revision 1.12  1996/03/05 22:06:04  jussi
   Minor fix in debugging output.
 
@@ -265,7 +268,7 @@ void TDataAscii::Initialize()
   
   unsigned long magicNumber;
   if (read(cacheFd, &magicNumber, sizeof magicNumber) != sizeof magicNumber) {
-    perror("BuildIndex:read");
+    perror("Initialize:read");
     goto error;
   }
   if (magicNumber != 0xdeadbeef) {
@@ -277,28 +280,28 @@ void TDataAscii::Initialize()
      file, and if we are, reinitialize */
   if (_tape) {
     if (_tape->seek(0) != 0) {
-      perror("BuildIndex:tapeseek");
+      perror("Initialize:tapeseek");
       goto error;
     }
     if (_tape->read(fileContent, FILE_CONTENT_COMPARE_BYTES)
 	!= FILE_CONTENT_COMPARE_BYTES) {
-      perror("BuildIndex:taperead");
+      perror("Initialize:taperead");
       goto error;
     }
   } else {
     if (fseek(_file, 0, SEEK_SET) < 0) {
-      perror("BuildIndex:fseek");
+      perror("Initialize:fseek");
       goto error;
     }
     if (fread(fileContent, FILE_CONTENT_COMPARE_BYTES, 1, _file) != 1) {
-      perror("BuildIndex:fread");
+      perror("Initialize:fread");
       goto error;
     }
   }
 
   if (read(cacheFd, cachedFileContent, FILE_CONTENT_COMPARE_BYTES)
       != FILE_CONTENT_COMPARE_BYTES) {
-    perror("BuildIndex:read");
+    perror("Initialize:read");
     goto error;
   }
   if (memcmp(cachedFileContent, fileContent, FILE_CONTENT_COMPARE_BYTES)) {
@@ -314,13 +317,13 @@ void TDataAscii::Initialize()
   
   /* Read last file position */
   if (read(cacheFd, &_lastPos, sizeof(_lastPos)) != sizeof _lastPos) {
-    perror("BuildIndex:read");
+    perror("Initialize:read");
     goto error;
   }
   
   /* Read number of records */
   if (read(cacheFd, &_totalRecs, sizeof(_totalRecs)) != sizeof _totalRecs) {
-    perror("BuildIndex:read");
+    perror("Initialize:read");
     goto error;
   }
 
@@ -328,7 +331,7 @@ void TDataAscii::Initialize()
     delete _index;
     _indexSize = _totalRecs + INDEX_ALLOC_INCREMENT;
 #ifdef DEBUG
-    printf("BuildIndex:allocating %ld index elements\n", _indexSize);
+    printf("Initialize:allocating %ld index elements\n", _indexSize);
 #endif
     _index = new long[_indexSize];
   }
@@ -336,7 +339,7 @@ void TDataAscii::Initialize()
   /* read the index */
   if (read(cacheFd, _index, _totalRecs * sizeof(long))
       != (int)(_totalRecs * sizeof(long))) {
-    perror("BuildIndex:read");
+    perror("Initialize:read");
     goto error;
   }
   
@@ -443,7 +446,10 @@ void TDataAscii::Checkpoint()
 
   close(cacheFd);
 
-  _currPos = ftell(_file);
+  if (_tape)
+    _currPos = _tape->tell();
+  else
+    _currPos = ftell(_file);
 
   return;
   
@@ -452,7 +458,10 @@ void TDataAscii::Checkpoint()
     close(cacheFd);
   (void)unlink(_cacheFileName);
 
-  _currPos = ftell(_file);
+  if (_tape)
+    _currPos = _tape->tell();
+  else
+    _currPos = ftell(_file);
 }
 
 /* Build index for the file. This code should work when file size
@@ -520,14 +529,18 @@ void TDataAscii::BuildIndex()
     _currPos += len;
   }
 
-  if (_tape)
+  if (_tape) {
+    // last position is > current position because TapeDrive advances
+    // bufferOffset to the next block, past the EOF, when tape file
+    // ends
     _lastPos = _tape->tell();
-  else
+    assert(_lastPos >= _currPos);
+  } else {
     _lastPos = ftell(_file);
-
-  if (_lastPos != _currPos)
-    printf("lastPos %ld, currPos %ld\n", _lastPos, _currPos);
-  assert(_lastPos == _currPos);
+    if (_lastPos != _currPos)
+      printf("lastPos %ld, currPos %ld\n", _lastPos, _currPos);
+    assert(_lastPos == _currPos);
+  }
 
   _fileGrown = false;
 
