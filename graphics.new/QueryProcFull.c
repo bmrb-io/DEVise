@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.50  1997/01/23 17:40:57  jussi
+  Added distribution of records from GetX().
+
   Revision 1.49  1997/01/11 20:59:34  jussi
   Fix for bug #106. Simplified processing of record links.
 
@@ -1065,7 +1068,7 @@ void QueryProcFull::EndQuery(QPFullData *query)
 
 void QueryProcFull::ReportQueryElapsedTime(QPFullData *query)
 {
-#if DEBUGLVL >= 0
+#if DEBUGLVL >= 1
   struct timeval stop;
   gettimeofday(&stop, 0);
   double seconds = stop.tv_sec - query->started.tv_sec
