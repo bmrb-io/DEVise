@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.79  1999/11/19 21:34:40  wenger
+#  Removed Journal class and related code (no longer works); removed various
+#  other unused or unnecessary code.
+#
 #  Revision 1.78  1999/08/18 20:45:50  wenger
 #  First step for axis drawing improvement: moved code to new DevAxis
 #  class with unchanged functionality.
@@ -307,7 +311,7 @@ ALLSRC = $(LIBSRC) $(OTHERSRC)
 
 LIBNAME = libgraphics.a
 
-all: $(LIBNAME)
+all: $(LIBNAME) libopengldum.a
 lib: $(LIBNAME) libopengldum.a
 
 #$(LIBNAME): $(LIBNAME)($(LIBOBJ))
