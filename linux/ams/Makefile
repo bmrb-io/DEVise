@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/07/13 05:01:37  jussi
+#  Updated to compile on Linux.
+#
 #  Revision 1.1  1996/03/27 18:03:50  wenger
 #  Changes to get DEVise to compile and run on Linux.
 #
@@ -32,6 +35,7 @@
 
 ARCH_FLAGS   = -DLINUX -I/usr/include/tcl
 ARCH_LDFLAGS = -L/usr/lib -L/usr/X11/lib
+ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lXmu -lXt -lXext -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../ams

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/07/18 14:09:56  jussi
+#  We now produce dynamically linked executables.
+#
 #  Revision 1.1  1996/07/17 00:27:38  jussi
 #  Initial revision.
 
@@ -22,6 +25,7 @@
 
 ARCH_FLAGS   = -DULTRIX -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/tcl/lib
+ARCH_SYSLIBS = -ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../ams

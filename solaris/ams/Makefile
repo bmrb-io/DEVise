@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1996/10/18 16:07:21  jussi
+#  Removed -lpthread option.
+#
 #  Revision 1.11  1996/09/26 18:53:59  jussi
 #  Added -lpthread to get thread support.
 #
@@ -35,6 +38,7 @@
 
 ARCH_FLAGS   = -DSOLARIS -I/s/X11/include -I/s/tcl/include
 ARCH_LDFLAGS = -L /s/X11/lib -L /s/tcl/lib -R /s/X11/lib 
+ARCH_SYSLIBS = -ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm
 ARCH_LDPOST  = -lsocket -lnsl
 
 VPATH = ../../ams

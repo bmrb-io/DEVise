@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1996/07/18 14:10:24  jussi
+#  We now produce dynamically linked executables.
+#
 #  Revision 1.6  1995/09/28 15:09:57  jussi
 #  Added copyright and CVS log messages.
 
@@ -22,6 +25,7 @@
 
 ARCH_FLAGS   = -DSUN -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/tcl/lib
+ARCH_SYSLIBS = -ltk -ltcl -lXmu -lXt -lXext -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../ams
