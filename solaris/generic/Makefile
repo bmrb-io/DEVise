@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.24  1998/05/26 20:49:02  wenger
+#  Changed makefiles for new Tcl/Tk installation.
+#
 #  Revision 1.23  1998/04/13 22:28:23  zhenhai
 #  Optimized 2D cursors to read and draw individual patches instead
 #  of patches for the whole region. Added 3D cursors to show directions.
@@ -96,7 +99,9 @@ include ../Makefile.config
 
 ARCH_LDFLAGS = -L/s/mesa-2.4/lib -R/s/mesa-2.4/lib \
                -L/s/X11/lib -L /s/tcl7.4/lib -R /s/X11/lib
-ARCH_SYSLIBS = -lMesaGLU -lMesaGL \
+#ARCH_SYSLIBS = -lMesaGLU -lMesaGL \
+#               -ltk -ltcl -lXaw -lXpm -lXt -lXmu -lX11 -lm
+ARCH_SYSLIBS = -lopengldum \
                -ltk -ltcl -lXaw -lXpm -lXt -lXmu -lX11 -lm
 ARCH_LDPOST  = -lsocket -lnsl
 ARCH_STATIC_LDPOST  = -lsocket -lnsl -static

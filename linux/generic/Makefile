@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13  1998/07/29 14:20:34  wenger
+#  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+#  allow static linking on Linux.
+#
 #  Revision 1.12  1998/05/08 17:37:27  wenger
 #  *** empty log message ***
 #
@@ -82,8 +86,8 @@ include ../Makefile.config
 ARCH_LDFLAGS = -L/home/zhenhai/Mesa-2.4/lib -Xlinker -rpath -Xlinker /home/zhenhai/Mesa-2.4/lib -L/usr/lib -L/usr/X11R6/lib
 #ARCH_SYSLIBS = -L../graphics -lopengldum -ltk4.0 -ltcl7.4 -lX11 -lm
 #ARCH_SYSLIBS = -L../graphics -lopengldum -ltk4.1 -ltcl7.5 -ldl -lX11 -lm
-#ARCH_SYSLIBS = -L../graphics -lopengldum -ltk4.2 -ltcl7.6 -lX11 -lm
-ARCH_SYSLIBS =  -lMesaGLU -lMesaGL -ltk4.2 -ltcl7.6 -ldl -lXaw -lXt -lXmu -lX11 -lm
+ARCH_SYSLIBS = -L../graphics -lopengldum -ltk4.2 -ltcl7.6 -lX11 -lm
+#ARCH_SYSLIBS =  -lMesaGLU -lMesaGL -ltk4.2 -ltcl7.6 -ldl -lXaw -lXt -lXmu -lX11 -lm
 ARCH_LDPOST  = 
 # to make everything statically-linked...
 #ARCH_LDPOST  = -static

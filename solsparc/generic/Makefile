@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1998/05/26 20:49:08  wenger
+#  Changed makefiles for new Tcl/Tk installation.
+#
 #  Revision 1.11  1998/03/04 18:41:32  wenger
 #  Added <arch>/Makefile.config files that now hold stuff like the
 #  PERL_CORE definitions so those don't have to be repeated in all
@@ -65,8 +68,10 @@ include ../Makefile.config
 # rather than from /s/mesa-2.4/lib.
 ARCH_LDFLAGS = -L/usr/lib -L/s/mesa-2.4/lib -R/s/mesa-2.4/lib \
 		-L /s/X11/lib -L /s/tcl7.4/lib -R /s/X11/lib
-ARCH_SYSLIBS = -lMesaGLw -lMesaGLU -lMesaGL \
-		-ltk -ltcl -lXaw -lXpm -lXt -lXmu -lX11 -lm
+#ARCH_SYSLIBS = -lMesaGLw -lMesaGLU -lMesaGL \
+#		-ltk -ltcl -lXaw -lXpm -lXt -lXmu -lX11 -lm
+ARCH_SYSLIBS = -lopengldum \
+               -ltk -ltcl -lXaw -lXpm -lXt -lXmu -lX11 -lm
 ARCH_LDPOST  = -lsocket -lnsl
 ARCH_STATIC_LDPOST  = -lsocket -lnsl -static
 
