@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.38  1999/10/12 17:59:27  wenger
+  Fixed bug in code for checking if the mouse is on a cursor that caused
+  devised to crash with JavaScreen; fixed Dispatcher problem that sometimes
+  caused core dump when DEVise is killed with INT signals; WindowRep
+  remembers last cursor hit type to avoid changing the mouse cursor unless
+  really necessary.
+
   Revision 1.37  1999/08/12 16:02:48  wenger
   Implemented "inverse" zoom -- alt-drag zooms out instead of in.
 
@@ -365,20 +372,34 @@ void WindowRep::HandleWindowDestroy()
   _destroyPending = true;
 
   /* first tell everyone that the window is going away */
-  Boolean canDestroy = true;
-  int index;
-  for(index = InitIterator(); More(index); ){
-    WindowRepCallback *c = Next(index);
-    canDestroy &= c->HandleWindowDestroy(this);
-    
+
+  // Copy the callback list to a separate array, so that the
+  // HandleWindowDestroy() function(s) can delete from the callback list.
+  int callbackCount = _callbackList->Size();
+  WindowRepCallback **callbacks = new (WindowRepCallback *)[callbackCount];
+
+  int callbackNum = 0;
+  int index = InitIterator();
+  while (More(index)) {
+    callbacks[callbackNum++] = Next(index);
   }
   DoneIterator(index);
+
+  Boolean canDestroy = true;
+  for (callbackNum = 0; callbackNum < callbackCount; callbackNum++) {
+    canDestroy &= callbacks[callbackNum]->HandleWindowDestroy(this);
+  }
+
+  delete [] callbacks;
+
 
   _destroyPending = false;
 
   /* now destroy the window if everyone
      returned a positive acknowledgement */
   if (canDestroy) {
+    // Note: this indirectly calls the destructor of this object!  Probably
+    // *not* really a good idea, but I am leaving it for now.  RKW 1999-10-15.
     DeviseDisplay::DefaultDisplay()->DestroyWindowRep(this);
   } else {
     printf("Window not destroyed\n");

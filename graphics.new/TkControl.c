@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.92  1999/10/05 17:55:50  wenger
+  Added debug log level.
+
   Revision 1.91  1999/10/04 19:37:10  wenger
   Mouse location is displayed in "regular" DEVise.
 
@@ -541,7 +544,7 @@ void TkControlPanel::StartSession()
     SetSyncNotify();
 }
 
-void TkControlPanel::DoAbort(char *reason)
+void TkControlPanel::DoAbort(const char *reason)
 {
   char cmd[256];
   sprintf(cmd, "AbortProgram {%s}", reason);
@@ -645,7 +648,7 @@ void TkControlPanel::SelectView(View *view)
 }
 
 void
-TkControlPanel::ShowMouseLocation(char *dataX, char *dataY)
+TkControlPanel::ShowMouseLocation(const char *dataX, const char *dataY)
 {
 #if defined(DEBUG)
   printf("TkControlPanel::ShowMouseLocation(%s, %s)\n", dataX, dataY);
@@ -683,11 +686,14 @@ void TkControlPanel::Raise()
   Run();
 }
 
-void TkControlPanel::NotifyFrontEnd(char *script) 
+void TkControlPanel::NotifyFrontEnd(const char *script) 
 {
-  if (Tcl_Eval(_interp, script) != TCL_OK) {
+  // Tcl needs to be able to temporarily write to the string.
+  char *tmpScript = CopyString(script);
+  if (Tcl_Eval(_interp, tmpScript) != TCL_OK) {
     fprintf(stderr, "Cannot execute %s: %s\n",
             script, _interp->result);
   }
+  free(tmpScript);
 }
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1999/10/04 19:37:10  wenger
+  Mouse location is displayed in "regular" DEVise.
+
   Revision 1.18  1998/09/28 20:05:54  wenger
   Fixed bug 383 (unnecessary creation of QueryProc); moved all
   DestroySessionData() code from subclasses of ControlPanel into base class,
@@ -128,7 +131,7 @@ public:
 
   virtual void SelectView(View *view);
 
-  virtual void ShowMouseLocation(char *dataX, char *dataY);
+  virtual void ShowMouseLocation(const char *dataX, const char *dataY);
 
   /* Get/set busy status. */
   virtual void SetBusy();
@@ -143,7 +146,7 @@ public:
   virtual void SyncNotify();
 
   /* Abort program */
-  virtual void DoAbort(char *reason);
+  virtual void DoAbort(const char *reason);
 
   /* Get GroupDir info */
   virtual GroupDir *GetGroupDir() { return gdir; }
@@ -155,6 +158,11 @@ public:
   virtual int getFd() { return _dataFd; }
 
   virtual int NumClients() { return _server->NumClients(); }
+
+  virtual void Raise();
+
+  virtual void NotifyFrontEnd(const char *script);
+
 
 protected:
   virtual void SubclassInsertDisplay(DeviseDisplay *disp,
@@ -184,7 +192,7 @@ private:
 
   virtual int ReturnVal(int flag, int argc, char **argv, bool addBrace){
 	_valueReturned = true;
-    return _server->ReturnVal(flag, argc,argv, addBrace);
+    return _server->ReturnVal(flag, argc, argv, addBrace);
   } 
   virtual int SendControl(u_short flag, char *result, bool grp_enable) {
 	if (grp_enable)

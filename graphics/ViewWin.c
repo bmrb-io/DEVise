@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.64  1999/10/08 19:57:46  wenger
+  Fixed bugs 470 and 513 (crashes when closing a session while a query
+  is running), 510 (disabling actions in piles), and 511 (problem in
+  saving sessions); also fixed various problems related to cursors on
+  piled views.
+
   Revision 1.63  1999/10/04 19:36:58  wenger
   Mouse location is displayed in "regular" DEVise.
 
@@ -1113,7 +1119,7 @@ void ViewWin::HandleWindowMappedInfo(WindowRep*, Boolean mapped)
 Boolean ViewWin::HandleWindowDestroy(WindowRep* w)
 {
 #ifdef DEBUG
-	printf("ViewWin %s being destroyed\n", _name);
+	printf("ViewWin <%s> being destroyed\n", _name);
 #endif
 
 	ClassDir*	classDir = ControlPanel::GetClassDir();

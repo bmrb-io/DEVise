@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.65  1999/10/04 22:36:07  wenger
+  Fixed bug 508 (windows move slightly when repeatedly opening and saving
+  a session) -- replaced kludgey (incorrect) way of dealing with window
+  manager borders with correct way; user is warned if any windows extend
+  off-screen when opening or saving a session.
+
   Revision 1.64  1999/10/04 19:36:56  wenger
   Mouse location is displayed in "regular" DEVise.
 
@@ -344,6 +350,7 @@
 #include "Layout.h"
 #include "ElapsedTime.h"
 #include "WinClassInfo.h"
+#include "ArgList.h"
 
 
 //#define DEBUG
@@ -397,6 +404,10 @@ public:
   virtual void SetBusy() { ControlPanel::Instance()->SetBusy(); }
   virtual void SetIdle() { ControlPanel::Instance()->SetIdle(); }
 
+  virtual void SyncNotify() {}
+  virtual void Raise() {}
+  virtual void NotifyFrontEnd(const char *script) {}
+
   virtual void DestroySessionData() {
       ControlPanel::Instance()->DestroySessionData(); }
   virtual void RestartSession() { ControlPanel::Instance()->RestartSession(); }
@@ -419,7 +430,7 @@ public:
   // The following member functions are needed just because they are pure
   // virtual in the base class.
   virtual void SelectView(View *view) {}
-  virtual void ShowMouseLocation(char *dataX, char *dataY) {}
+  virtual void ShowMouseLocation(const char *dataX, const char *dataY) {}
   virtual Boolean IsBusy() { return false; }
   virtual void SubclassInsertDisplay(DeviseDisplay *disp, Coord x, Coord y,
       Coord w, Coord h) {}
@@ -427,27 +438,6 @@ public:
 
   // This is the interpreter used for opening a session.
   string _result;
-};
-
-class ArgsBuf {
-public:
-  ArgsBuf() {
-    _argc = 0;
-	_argv = NULL;
-	_buf = NULL;
-  };
-
-  ~ArgsBuf() {
-    delete[] _argv;
-	_argv = NULL;
-
-	delete[] _buf;
-	_buf = NULL;
-  }
-
-  int _argc;
-  char **_argv;
-  char *_buf;
 };
 
 static char *classNameList;
@@ -468,7 +458,7 @@ char *Session::_catFile = NULL;
  * Open specified session file.
  */
 DevStatus
-Session::Open(char *filename)
+Session::Open(const char *filename)
 {
 #if defined(DEBUG)
   printf("Session::Open(%s)\n", filename);
@@ -542,7 +532,7 @@ Session::Close()
  * Save session to specified file.
  */
 DevStatus
-Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
+Session::Save(const char *filename, Boolean asTemplate, Boolean asExport,
     Boolean withData, Boolean selectedView)
 {
 #if defined(DEBUG)
@@ -700,7 +690,7 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
  * save it).
  */
 DevStatus
-Session::Update(char *filename)
+Session::Update(const char *filename)
 {
 #if defined(DEBUG)
   printf("Session::Update(%s)\n", filename);
@@ -758,7 +748,7 @@ Session::UpdateFilters()
  * to be stored in session files.
  */
 DevStatus
-Session::CreateTData(char *name)
+Session::CreateTData(const char *name)
 {
 #if defined(DEBUG)
   printf("Session::CreateTData(%s)\n", name);
@@ -786,12 +776,12 @@ Session::CreateTData(char *name)
 
     DataSeg::Set(name, "", 0, 0);
 
-    char *argvIn[3];
+    const char *argvIn[3];
     argvIn[0] = name;
     argvIn[1] = schemaName;
     argvIn[2] = "";
     ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
-    classDir->CreateWithParams("tdata", schemaName, 3, argvIn);
+    classDir->CreateWithParams("tdata", schemaName, 3, (char **)argvIn);
     return status;
   }
 
@@ -857,15 +847,15 @@ Session::CreateTData(char *name)
     }
 
     if (!isDteSource) {
-	  ArgsBuf args;
+	  ArgList args;
 
-	  DevStatus tmpStatus = ParseString(catEntry, args);
+	  DevStatus tmpStatus = args.ParseString(catEntry);
 	  status += tmpStatus;
 	  if (tmpStatus.IsComplete()) {
-        strcpy(schema, args._argv[3]);
-        strcpy(schemaFile, args._argv[4]);
-        strcpy(sourceType, args._argv[1]);
-        sprintf(param, "%s/%s", args._argv[8], args._argv[2]);
+        strcpy(schema, args.GetArgs()[3]);
+        strcpy(schemaFile, args.GetArgs()[4]);
+        strcpy(sourceType, args.GetArgs()[1]);
+        sprintf(param, "%s/%s", args.GetArgs()[8], args.GetArgs()[2]);
       }
     }
   }
@@ -915,8 +905,8 @@ Session::CreateTData(char *name)
 
   // Create the TData object.
   if (status.IsComplete()) {
-	char *arg2;
-    char *argvIn[3];
+	const char *arg2;
+    const char *argvIn[3];
     if (isDteSource) {
       arg2 = name;
       argvIn[0] = name;
@@ -929,7 +919,7 @@ Session::CreateTData(char *name)
       argvIn[2] = param;
     }
     ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
-    classDir->CreateWithParams("tdata", arg2, 3, argvIn);
+    classDir->CreateWithParams("tdata", (char *)arg2, 3, (char **)argvIn);
   }
 
   if (catEntry != NULL) free(catEntry);
@@ -1085,7 +1075,7 @@ Session::GetDataCatalog()
  * Read and execute a DEVise session file.
  */
 DevStatus
-Session::ReadSession(ControlPanelSimple *control, char *filename)
+Session::ReadSession(ControlPanelSimple *control, const char *filename)
 {
 #if defined(DEBUG)
   printf("Session::ReadSession(%s)\n", filename);
@@ -1125,13 +1115,14 @@ Session::ReadSession(ControlPanelSimple *control, char *filename)
 #endif
 
 	  if (!IsBlankOrComment(lineBuf)) {
-		ArgsBuf args;
-	    if (ParseString(lineBuf, args).IsComplete()) {
+		ArgList args;
+	    if (args.ParseString(lineBuf).IsComplete()) {
 #if defined(DEBUG)
 	      printf("Arguments: ");
-          PrintArgs(stdout, args._argc, args._argv, true);
+          PrintArgs(stdout, args.GetCount(), args.GetArgs(), true);
 #endif
-		  result += RunCommand(control, args._argc, args._argv);
+		  result += RunCommand(control, args.GetCount(),
+		      (char **)args.GetArgs());
 	    }
 	  }
 	}
@@ -1168,175 +1159,6 @@ Session::IsBlankOrComment(const char *str)
 	  break;
 	}
     str++;
-  }
-
-  return result;
-}
-
-/*------------------------------------------------------------------------------
- * function: Session::ParseString
- * Parse a string into an argument list (does not alter the original string).
- * Arguments delimited by whitespace, double quotes, or braces.
- * Delete buf, argv when done.
- */
-DevStatus
-Session::ParseString(const char *str, ArgsBuf &args)
-{
-#if defined(DEBUG)
-  printf("Session::ParseString(%s)\n", str);
-#endif
-
-  DevStatus result = StatusOk;
-
-  enum { ParseInvalid = 0, ParseNone, ParseWhite, ParseInArg,
-      ParseInDoublequote, ParseInBraces, ParseError }
-	  state = ParseNone;
-  char errBuf[MAXPATHLEN * 3];
-
-  args._buf = new (char)[strlen(str) + 1];
-  const char *inP = str;
-  char *outP = args._buf;
-
-  int argCount = 0;
-  const int maxArgs = 128;
-  char *argList[maxArgs];
-  int braceDepth;
-
-  while (*inP && state != ParseError) {
-    if (argCount >= maxArgs) {
-      reportErrNosys("Too many arguments");
-	  state = ParseError;
-    }
-
-    switch (state) {
-    case ParseNone:
-    case ParseWhite:
-	  if (*inP == '"') {
-	    state = ParseInDoublequote;
-	    argList[argCount] = outP;
-	    argCount++;
-	  } else if (*inP == '{') {
-	    state = ParseInBraces;
-	    braceDepth = 1;
-	    argList[argCount] = outP;
-	    argCount++;
-	  } else if (*inP == '}') {
-	    state = ParseInArg;
-	    argList[argCount] = outP;
-	    argCount++;
-		*outP++ = *inP;
-	  } else if (*inP == '\\') {
-		inP++;
-		if (*inP) {
-	      state = ParseInArg;
-	      argList[argCount] = outP;
-	      argCount++;
-		  *outP++ = *inP;
-		}
-	  } else if (isspace(*inP)) {
-	    state = ParseWhite;
-	  } else {
-	    state = ParseInArg;
-	    argList[argCount] = outP;
-	    argCount++;
-		*outP++ = *inP;
-	  }
-	  break;
-
-    case ParseInArg:
-	  if (*inP == '"') {
-		*outP++ = *inP;
-	  } else if (*inP == '{') {
-		*outP++ = *inP;
-	  } else if (*inP == '}') {
-		*outP++ = *inP;
-	  } else if (*inP == '\\') {
-		inP++;
-		if (*inP) {
-		  *outP++ = *inP;
-		}
-	  } else if (isspace(*inP)) {
-	    state = ParseWhite;
-	    *outP++ = '\0';
-	  } else {
-		*outP++ = *inP;
-	  }
-      break;
-
-    case ParseInDoublequote:
-	  if (*inP == '"') {
-	    state = ParseNone;
-	    *outP++ = '\0';
-	  } else if (*inP == '{') {
-		*outP++ = *inP;
-	  } else if (*inP == '}') {
-		*outP++ = *inP;
-	  } else if (*inP == '\\') {
-		inP++;
-		if (*inP) {
-		  *outP++ = *inP;
-		}
-	  } else if (isspace(*inP)) {
-		*outP++ = *inP;
-	  } else {
-		*outP++ = *inP;
-	  }
-      break;
-
-    case ParseInBraces:
-	  if (*inP == '"') {
-		*outP++ = *inP;
-	  } else if (*inP == '{') {
-	    braceDepth++;
-		*outP++ = *inP;
-	  } else if (*inP == '}') {
-	    braceDepth--;
-		if (braceDepth > 0) *outP++ = *inP;
-	  } else if (*inP == '\\') {
-		inP++;
-		if (*inP) {
-		  *outP++ = *inP;
-		}
-	  } else if (isspace(*inP)) {
-		*outP++ = *inP;
-	  } else {
-		*outP++ = *inP;
-	  }
-
-	  if (braceDepth == 0) {
-	    state = ParseNone;
-	    *outP++ = '\0';
-	  }
-      break;
-
-	case ParseError:
-	  // No op.
-	  break;
-
-	default:
-	  DOASSERT(false, "Illegal parse state");
-	  break;
-	}
-
-	inP++;
-  }
-  *outP = '\0';
-
-  if (state == ParseError) {
-    result = StatusFailed;
-	argCount = 0;
-  }
-
-  args._argc = argCount;
-  if (argCount > 0) {
-    args._argv = new (char *)[argCount];
-    for (int index = 0; index < argCount; index++) {
-      args._argv[index] = argList[index];
-    }
-  } else {
-    args._argv = NULL;
-	delete [] args._buf;
-	args._buf = NULL;
   }
 
   return result;
@@ -1609,7 +1431,7 @@ Session::SaveInterpMapping(char *category, char *devClass, char *instance,
     }
 
     char *result;
-	ArgsBuf args;
+	ArgList args;
     status += CallParseAPI(saveData->control, result, false, args,
 	    "isInterpretedGData", instance);
     if (status.IsComplete()) {
@@ -1731,14 +1553,14 @@ Session::SaveViewLinks(char *category, char *devClass, char *instance,
   DevStatus status = StatusOk;
 
   char *result;
-  ArgsBuf args;
+  ArgList args;
   status += CallParseAPI(saveData->control, result, true, args,
       "getLinkViews", instance);
   if (status.IsComplete()) {
     int index;
-    for (index = 0; index < args._argc; index++) {
+    for (index = 0; index < args.GetCount(); index++) {
       fprintf(saveData->fp, "DEVise insertLink {%s} {%s}\n", instance,
-	      args._argv[index]);
+	      args.GetArgs()[index]);
     }
   }
 
@@ -1765,12 +1587,12 @@ Session::SaveCursor(char *category, char *devClass, char *instance,
   DevStatus status = StatusOk;
 
   char *result;
-  ArgsBuf args;
+  ArgList args;
   status += CallParseAPI(saveData->control, result, true, args,
       "getCursorViews", instance);
   if (status.IsComplete()) {
-    char *source = args._argv[0];
-    char *dest = args._argv[1];
+    const char *source = args.GetArgs()[0];
+    const char *dest = args.GetArgs()[1];
     if (strlen(source) > 0) {
       fprintf(saveData->fp, "DEVise setCursorSrc {%s} {%s}\n", instance,
           source);
@@ -1781,11 +1603,12 @@ Session::SaveCursor(char *category, char *devClass, char *instance,
     }
   }
 
+  args.Cleanup();
   status += CallParseAPI(saveData->control, result, true, args,
       "color", "GetCursorColor", instance);
   if (status.IsComplete()) {
     fprintf(saveData->fp, "DEVise color SetCursorColor {%s} %s\n", instance,
-	    args._argv[0]);
+	    args.GetArgs()[0]);
   }
 
   status += SaveParams(saveData, "getCursorFixedSize", "setCursorFixedSize",
@@ -1811,16 +1634,16 @@ Session::SaveViewMappings(char *category, char *devClass, char *instance,
   DevStatus status = StatusOk;
 
   char *result;
-  ArgsBuf args;
+  ArgList args;
   status += CallParseAPI(saveData->control, result, true, args,
       "getViewMappings", instance);
   if (status.IsComplete()) {
     int index;
-    for (index = 0; index < args._argc; index++) {
+    for (index = 0; index < args.GetCount(); index++) {
       fprintf(saveData->fp, "DEVise insertMapping {%s} {%s}\n", instance,
-          args._argv[index]);
+          args.GetArgs()[index]);
       status += SaveParams(saveData, "getMappingLegend", "setMappingLegend",
-          instance, args._argv[index]);
+          instance, args.GetArgs()[index]);
     }
   }
 
@@ -1844,7 +1667,7 @@ Session::SaveWindowViews(char *category, char *devClass, char *instance,
   DevStatus status = StatusOk;
 
   char *result;
-  ArgsBuf args;
+  ArgList args;
   status += CallParseAPI(saveData->control, result, true, args,
       "getWinViews", instance);
   if (status.IsComplete()) {
@@ -1852,9 +1675,9 @@ Session::SaveWindowViews(char *category, char *devClass, char *instance,
     // Insert views into windows.
     //
     int index;
-    for (index = 0; index < args._argc; index++) {
+    for (index = 0; index < args.GetCount(); index++) {
       fprintf(saveData->fp, "DEVise insertWindow {%s} {%s}\n",
-	      args._argv[index], instance);
+	      args.GetArgs()[index], instance);
     }
 
     //
@@ -1865,9 +1688,9 @@ Session::SaveWindowViews(char *category, char *devClass, char *instance,
     LayoutMode mode;
     window->GetLayoutMode(mode);
     if (mode == CUSTOM) {
-      for (index = 0; index < args._argc; index++) {
+      for (index = 0; index < args.GetCount(); index++) {
         status += SaveParams(saveData, "getViewGeometry", "setViewGeometry",
-            args._argv[index], NULL, NULL, false);
+            args.GetArgs()[index], NULL, NULL, false);
       }
     }
   }
@@ -1914,14 +1737,14 @@ Session::SaveViewHistory(char *category, char *devClass, char *instance,
   fprintf(saveData->fp, "DEVise clearViewHistory {%s}\n", instance);
 
   char *result;
-  ArgsBuf args;
+  ArgList args;
   status += CallParseAPI(saveData->control, result, true, args,
       "getVisualFilters", instance);
   if (status.IsComplete()) {
     int index;
-    for (index = 0; index < args._argc; index++) {
+    for (index = 0; index < args.GetCount(); index++) {
       fprintf(saveData->fp, "DEVise insertViewHistory {%s} %s\n", instance,
-          args._argv[index]);
+          args.GetArgs()[index]);
     }
   }
 
@@ -1945,12 +1768,12 @@ Session::SaveCamera(char *category, char *devClass, char *instance,
   DevStatus status = StatusOk;
 
   char *result;
-  ArgsBuf args;
+  ArgList args;
   status += CallParseAPI(saveData->control, result, true, args,
       "get3DLocation", instance);
   if (status.IsComplete()) {
     fprintf(saveData->fp, "DEVise set3DLocation {%s} ", instance);
-    PrintArgs(saveData->fp, 9, args._argv);
+    PrintArgs(saveData->fp, 9, args.GetArgs());
   }
 
   if (status.IsError()) reportErrNosys("Error or warning");
@@ -1992,7 +1815,7 @@ Session::SaveStringTables(char *category, char *devClass, char *instance,
  */
 DevStatus
 Session::SaveParams(SaveData *saveData, char *getCommand, char *setCommand,
-    char *arg0, char *arg1, char *arg2, Boolean addBraces)
+    const char *arg0, const char *arg1, const char *arg2, Boolean addBraces)
 {
 #if defined(DEBUG)
   printf("Session::SaveParams(%s)\n", arg0);
@@ -2011,7 +1834,7 @@ Session::SaveParams(SaveData *saveData, char *getCommand, char *setCommand,
   }
 
   char *result;
-  ArgsBuf args;
+  ArgList args;
   status += CallParseAPI(saveData->control, result, false, args,
       getCommand, arg0, arg1, arg2);
   if (status.IsComplete()) {
@@ -2036,8 +1859,8 @@ Session::SaveParams(SaveData *saveData, char *getCommand, char *setCommand,
  */
 DevStatus
 Session::CallParseAPI(ControlPanelSimple *control, const char *&result,
-    Boolean splitResult, ArgsBuf &args, char *arg0, char *arg1 = NULL,
-	char *arg2 = NULL, char *arg3 = NULL)
+    Boolean splitResult, ArgList &args, const char *arg0,
+	const char *arg1 = NULL, const char *arg2 = NULL, const char *arg3 = NULL)
 {
 #if defined(DEBUG)
   printf("Session::CallParseAPI(%s)\n", arg0);
@@ -2062,12 +1885,12 @@ Session::CallParseAPI(ControlPanelSimple *control, const char *&result,
   } else {
     argcIn = 1;
   }
-  char *argvIn[4];
+  const char *argvIn[4];
   argvIn[0] = arg0;
   argvIn[1] = arg1;
   argvIn[2] = arg2;
   argvIn[3] = arg3;
-  if (cmdContainerp->Run(argcIn, argvIn, control, cmdDes) <= 0) {
+  if (cmdContainerp->Run(argcIn, (char **)argvIn, control, cmdDes) <= 0) {
     reportErrNosys(control->GetResult());
     status = StatusFailed;
   } else {
@@ -2076,15 +1899,13 @@ Session::CallParseAPI(ControlPanelSimple *control, const char *&result,
     printf("  result = <%s>\n", result);
 #endif
     if (splitResult) {
-      DevStatus tmpStatus = ParseString(result, args);
+      DevStatus tmpStatus = args.ParseString(result);
 	  if (!tmpStatus.IsComplete()) {
         reportErrNosys(result);
 	  }
       status += tmpStatus;
     } else {
-	  args._buf = NULL;
-      args._argc = 0;
-      args._argv = NULL;
+	  args.Cleanup();
     }
   }
 
@@ -2243,30 +2064,30 @@ Session::SaveDataSources(FILE *fp)
 #endif
 
   if (sourceList) {
-	ArgsBuf args;
-    status += ParseString(sourceList, args);
+	ArgList args;
+    status += args.ParseString(sourceList);
 
 	if (status.IsComplete()) {
-	  if (args._argc > 0) {
+	  if (args.GetCount() > 0) {
 	    fprintf(fp, "\n# Per-session data source definitions\n");
 	  }
 
-	  for (int sourceNum = 0; sourceNum < args._argc; sourceNum++) {
+	  for (int sourceNum = 0; sourceNum < args.GetCount(); sourceNum++) {
 #if defined(DEBUG)
-        printf("  source[%d] = <%s>\n", sourceNum, args._argv[sourceNum]);
+        printf("  source[%d] = <%s>\n", sourceNum, args.GetArgs()[sourceNum]);
 #endif
-		ArgsBuf args2;
-        DevStatus tmpStatus = ParseString(args._argv[sourceNum], args2);
+		ArgList args2;
+        DevStatus tmpStatus = args2.ParseString(args.GetArgs()[sourceNum]);
 		status += tmpStatus;
 		if (tmpStatus.IsComplete()) {
-		  if (args2._argc != 2) {
+		  if (args2.GetCount() != 2) {
 			reportErrNosys("Incorrect catalog listing format");
 			status += StatusFailed;
 		  } else {
 #if defined(DEBUG)
-            printf("  sourceName = <%s>\n", args2._argv[0]);
+            printf("  sourceName = <%s>\n", args2.GetArgs()[0]);
 #endif
-		    char *catEntry = GetDataCatalog()->ShowEntry(args2._argv[0]);
+		    char *catEntry = GetDataCatalog()->ShowEntry(args2.GetArgs()[0]);
 			if (!catEntry || strlen(catEntry) == 0) {
 			  reportErrNosys("Can't find catalog entry");
 			  status += StatusFailed;

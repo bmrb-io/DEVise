@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.17  1999/10/04 22:36:08  wenger
+  Fixed bug 508 (windows move slightly when repeatedly opening and saving
+  a session) -- replaced kludgey (incorrect) way of dealing with window
+  manager borders with correct way; user is warned if any windows extend
+  off-screen when opening or saving a session.
+
   Revision 1.16  1999/09/23 15:46:24  wenger
   Added per-session data source capability:  data sources defined in a
   session file are added to a separate catalog which is delete when the
@@ -110,20 +116,20 @@
 
 class ControlPanel;
 class ControlPanelSimple;
-class ArgsBuf;
+class ArgList;
 class DataCatalog;
 
 class Session {
 public:
-  static DevStatus Open(char *filename);
+  static DevStatus Open(const char *filename);
   static DevStatus Close();
-  static DevStatus Save(char *filename, Boolean asTemplate, Boolean asExport,
-      Boolean withData, Boolean selectedView = false);
-  static DevStatus Update(char *filename);
+  static DevStatus Save(const char *filename, Boolean asTemplate,
+      Boolean asExport, Boolean withData, Boolean selectedView = false);
+  static DevStatus Update(const char *filename);
 
   static DevStatus UpdateFilters();
 
-  static DevStatus CreateTData(char *name);
+  static DevStatus CreateTData(const char *name);
 
   // Whether current session (if any) was opened by JavaScreen.
   static Boolean GetIsJsSession() { return _isJsSession; }
@@ -140,9 +146,9 @@ public:
   static char *ListDataCatalog(const char *catName);
   
 private:
-  static DevStatus ReadSession(ControlPanelSimple *control, char *filename);
+  static DevStatus ReadSession(ControlPanelSimple *control,
+      const char *filename);
   static Boolean IsBlankOrComment(const char *str);
-  static DevStatus ParseString(const char *str, ArgsBuf &args);
   static DevStatus RunCommand(ControlPanelSimple *control, int argc,
       char *argv[]);
 
@@ -200,12 +206,13 @@ private:
       char *instance, SaveData *saveData);
 
   static DevStatus SaveParams(SaveData *saveData, char *getCommand,
-      char *setCommand, char *arg0, char *arg1 = NULL, char *arg2 = NULL,
-      Boolean addBraces = false);
+      char *setCommand, const char *arg0, const char *arg1 = NULL,
+      const char *arg2 = NULL, Boolean addBraces = false);
 
   static DevStatus CallParseAPI(ControlPanelSimple *control,
-      const char *&result, Boolean splitResult, ArgsBuf &args,
-	  char *arg0, char *arg1 = NULL, char *arg2 = NULL, char *arg3 = NULL);
+      const char *&result, Boolean splitResult, ArgList &args,
+	  const char *arg0, const char *arg1 = NULL, const char *arg2 = NULL,
+	  const char *arg3 = NULL);
 
   static DataCatalog *GetDataCatalog();
   static DevStatus SaveDataSources(FILE *fp);

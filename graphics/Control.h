@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1999/10/04 19:36:55  wenger
+  Mouse location is displayed in "regular" DEVise.
+
   Revision 1.28  1999/09/08 20:56:08  wenger
   Removed all Tcl dependencies from the devised (main changes are in the
   Session class); changed version to 1.6.5.
@@ -185,7 +188,7 @@ public:
   virtual void SelectView(View *view) = 0;
 
   /* Show mouse location. */
-  virtual void ShowMouseLocation(char *dataX, char *dataY) = 0;
+  virtual void ShowMouseLocation(const char *dataX, const char *dataY) = 0;
 
   /* Find pointer to instance with given name */
   static void *FindInstance(const char *name) {
@@ -216,7 +219,7 @@ public:
   virtual void SetSyncNotify() { _syncNotify = true; }
   virtual void ClearSyncNotify() { _syncNotify = false; }
   virtual Boolean GetSyncNotify() { return _syncNotify; }
-  virtual void SyncNotify() {}
+  virtual void SyncNotify() = 0;
 
   /* Set/clear/get sync allowed status */
 
@@ -225,13 +228,13 @@ public:
   virtual Boolean GetSyncAllowed() { return _syncAllowed; }
 
   /* Raise the control panel */
-  virtual void Raise() {}
+  virtual void Raise() = 0;
 
   /* Miscellaneous Event Handlers to report events to front end*/
   /* Given a script which the frond end can execute -in our case 
    * a Tcl/Tk procedure
    */
-  virtual void NotifyFrontEnd(char *script) {}
+  virtual void NotifyFrontEnd(const char *script) = 0;
 
   /* Instantiate control panel into display */
   static void InsertDisplay(DeviseDisplay *disp,
@@ -258,7 +261,7 @@ public:
   virtual void DoQuit();
 
   /* abort */
-  virtual void DoAbort(char *reason) {}
+  virtual void DoAbort(const char *reason) {}
 
   /* return one or multiple values to caller of API */
   virtual int ReturnVal(u_short flag, char *result) = 0;

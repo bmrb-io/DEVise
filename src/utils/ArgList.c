@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1999/01/18 18:14:54  beyer
+  fixed compile warnings and errors for egcs v 1.1.1
+
   Revision 1.2  1998/08/21 22:17:46  wenger
   Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
   linked DEVise for distribution.
@@ -38,6 +41,7 @@
 #include "DevError.h"
 
 //#define DEBUG
+//#define DEBUG_MORE
 
 /*------------------------------------------------------------------------------
  * function: ArgList::ArgList
@@ -49,9 +53,12 @@ ArgList::ArgList(int size)
   printf("ArgList(0x%p)::ArgList(%d)\n", this, size);
 #endif
 
+  _buf = NULL;
+
   _argc = 0;
 
-  _argv = new char *[size];
+  size = MAX(0, size);
+  _argv = new (char *)[size];
   if (_argv == NULL) {
     reportErrSys("Out of memory!!");
   } else {
@@ -70,13 +77,35 @@ ArgList::~ArgList()
   printf("ArgList(0x%p)::~ArgList()\n", this);
 #endif
 
-  for (int index = 0; index < _argc; index++) {
-    delete [] _argv[index];
-    _argv[index] = NULL;
+  Cleanup();
+}
+
+/*------------------------------------------------------------------------------
+ * function: ArgList::Cleanup
+ * Clean up (free all dynamic memory).
+ */
+void
+ArgList::Cleanup()
+{
+#if defined(DEBUG)
+  printf("ArgList(0x%p)::Cleanup()\n", this);
+#endif
+
+  // Note: this code relies on not allowing a combination of ParseString()
+  // and AddArg().
+  if (_buf) {
+    delete [] _buf;
+    _buf = NULL;
+  } else {
+    for (int index = 0; index < _argc; index++) {
+      delete [] _argv[index];
+      _argv[index] = NULL;
+    }
   }
 
   delete [] _argv;
   _argv = NULL;
+  _argvSize = 0;
 
   _argc = 0;
 }
@@ -97,14 +126,22 @@ ArgList::AddArg(const char *arg)
 
   DevStatus result = StatusOk;
 
-  if (_argc == _argvSize) {
-    result += Enlarge();
-    if (!result.IsComplete()) {
-      return result;
+  if (_buf) {
+	// Note: there's no reason that this *shouldn't* be allowed, but allowing
+	// it would make freeing memory more complicated, and I don't need it
+	// for now.  RKW 1999-10-15.
+    reportErrNosys("Can't add arguments after ParseString()");
+	result = StatusFailed;
+  } else {
+    if (_argc == _argvSize) {
+      result += Enlarge();
+      if (!result.IsComplete()) {
+        return result;
+      }
     }
-  }
 
-  _argv[_argc++] = CopyString(arg);
+    _argv[_argc++] = CopyString(arg);
+  }
 
   return result;
 }
@@ -154,8 +191,8 @@ ArgList::Enlarge()
 
   DevStatus result = StatusOk;
 
-  int newSize = _argvSize * 2;
-  char **newArgv = new char *[newSize];
+  int newSize = MAX(10, _argvSize * 2);
+  char **newArgv = new (char *)[newSize];
   if (newArgv == NULL) {
     reportErrSys("Out of memory!!");
     result = StatusFailed;
@@ -167,6 +204,173 @@ ArgList::Enlarge()
     delete [] _argv;
     _argv = newArgv;
     _argvSize = newSize;
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: ArgList::ParseString
+ * Parse a string into an argument list (does not alter the original string).
+ * Arguments delimited by whitespace, double quotes, or braces.
+ */
+DevStatus
+ArgList::ParseString(const char *str)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if defined(DEBUG)
+  printf("ArgList::ParseString(%s)\n", str);
+#endif
+
+  DevStatus result = StatusOk;
+
+  if (_argc != 0) {
+    reportErrNosys("Can't do ParseString() after AddArg()");
+	result = StatusFailed;
+  } else {
+    _buf = new (char)[strlen(str) + 1];
+	if (_buf == NULL) {
+      reportErrSys("Out of memory!!");
+	  result = StatusFailed;
+	}
+  }
+
+  enum { ParseInvalid = 0, ParseNone, ParseWhite, ParseInArg,
+      ParseInDoublequote, ParseInBraces, ParseError }
+	  state = ParseNone;
+  char errBuf[MAXPATHLEN * 3];
+
+  const char *inP = str;
+  char *outP = _buf;
+
+  int braceDepth;
+
+  while (*inP && state != ParseError && result.IsComplete()) {
+#if defined(DEBUG_MORE)
+    printf("  *inP = %c\n", *inP);
+#endif
+
+	if (_argc >= _argvSize) {
+	  result += Enlarge();
+	}
+
+    switch (state) {
+    case ParseNone:
+    case ParseWhite:
+	  if (*inP == '"') {
+	    state = ParseInDoublequote;
+	    _argv[_argc] = outP;
+	    _argc++;
+	  } else if (*inP == '{') {
+	    state = ParseInBraces;
+	    braceDepth = 1;
+	    _argv[_argc] = outP;
+	    _argc++;
+	  } else if (*inP == '}') {
+	    state = ParseInArg;
+	    _argv[_argc] = outP;
+	    _argc++;
+		*outP++ = *inP;
+	  } else if (*inP == '\\') {
+		inP++;
+		if (*inP) {
+	      state = ParseInArg;
+	      _argv[_argc] = outP;
+	      _argc++;
+		  *outP++ = *inP;
+		}
+	  } else if (isspace(*inP)) {
+	    state = ParseWhite;
+	  } else {
+	    state = ParseInArg;
+	    _argv[_argc] = outP;
+	    _argc++;
+		*outP++ = *inP;
+	  }
+	  break;
+
+    case ParseInArg:
+	  if (*inP == '"') {
+		*outP++ = *inP;
+	  } else if (*inP == '{') {
+		*outP++ = *inP;
+	  } else if (*inP == '}') {
+		*outP++ = *inP;
+	  } else if (*inP == '\\') {
+		inP++;
+		if (*inP) {
+		  *outP++ = *inP;
+		}
+	  } else if (isspace(*inP)) {
+	    state = ParseWhite;
+	    *outP++ = '\0';
+	  } else {
+		*outP++ = *inP;
+	  }
+      break;
+
+    case ParseInDoublequote:
+	  if (*inP == '"') {
+	    state = ParseNone;
+	    *outP++ = '\0';
+	  } else if (*inP == '{') {
+		*outP++ = *inP;
+	  } else if (*inP == '}') {
+		*outP++ = *inP;
+	  } else if (*inP == '\\') {
+		inP++;
+		if (*inP) {
+		  *outP++ = *inP;
+		}
+	  } else if (isspace(*inP)) {
+		*outP++ = *inP;
+	  } else {
+		*outP++ = *inP;
+	  }
+      break;
+
+    case ParseInBraces:
+	  if (*inP == '"') {
+		*outP++ = *inP;
+	  } else if (*inP == '{') {
+	    braceDepth++;
+		*outP++ = *inP;
+	  } else if (*inP == '}') {
+	    braceDepth--;
+		if (braceDepth > 0) *outP++ = *inP;
+	  } else if (*inP == '\\') {
+		inP++;
+		if (*inP) {
+		  *outP++ = *inP;
+		}
+	  } else if (isspace(*inP)) {
+		*outP++ = *inP;
+	  } else {
+		*outP++ = *inP;
+	  }
+
+	  if (braceDepth == 0) {
+	    state = ParseNone;
+	    *outP++ = '\0';
+	  }
+      break;
+
+	case ParseError:
+	  // No op.
+	  break;
+
+	default:
+	  DOASSERT(false, "Illegal parse state");
+	  break;
+	}
+
+	inP++;
+  }
+  *outP = '\0';
+
+  if (state == ParseError) {
+    result = StatusFailed;
+	_argc = 0;
   }
 
   return result;

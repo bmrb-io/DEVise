@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.42  1999/10/05 17:55:50  wenger
+  Added debug log level.
+
   Revision 1.41  1999/10/04 19:37:09  wenger
   Mouse location is displayed in "regular" DEVise.
 
@@ -229,6 +232,7 @@
 #include "Version.h"
 #include "Session.h"
 #include "DebugLog.h"
+#include "ArgList.h"
 
 #ifdef SUN
 #include "missing.h"
@@ -298,14 +302,14 @@ ServerAPI::~ServerAPI()
   delete _server;
 }
 
-void ServerAPI::DoAbort(char *reason)
+void ServerAPI::DoAbort(const char *reason)
 {
 #if defined(DEBUG)
   printf("ServerAPI(0x%p)::DoAbort()\n", this);
 #endif
 
   fprintf(stderr, "An internal error has occurred. Reason:\n  %s\n", reason);
-  char *args[] = { "AbortProgram", reason };
+  char *args[] = { "AbortProgram", (char *)reason };
   SendControl(2, args, false);
   fprintf(stderr, "Server aborts.\n");
   delete _server;
@@ -447,13 +451,13 @@ void ServerAPI::SelectView(View *view)
 }
 
 void
-ServerAPI::ShowMouseLocation(char *dataX, char *dataY)
+ServerAPI::ShowMouseLocation(const char *dataX, const char *dataY)
 {
 #if defined(DEBUG)
   printf("ServerAPI(0x%p)::ShowMouseLocation(%s, %s)\n", this, dataX, dataY);
 #endif
 
-  char *args[] = { "ShowMouseLocation", dataX, dataY };
+  char *args[] = { "ShowMouseLocation", (char *)dataX, (char *)dataY };
   SendControl(3, args, true);
 }
 
@@ -465,4 +469,26 @@ void ServerAPI::SyncNotify()
 
   SendControl(API_CTL, "SyncDone", false);
   ClearSyncNotify();
+}
+
+void ServerAPI::Raise()
+{
+#if defined(DEBUG)
+  printf("ServerAPI(0x%p)::Raise()\n", this);
+#endif
+
+  SendControl(API_CTL, "raise .", false);
+}
+
+void
+ServerAPI::NotifyFrontEnd(const char *script)
+{
+#if defined(DEBUG)
+  printf("ServerAPI(0x%p)::NotifyFrontEnd(%s)\n", this, script);
+#endif
+
+  ArgList args;
+  args.ParseString(script);
+
+  SendControl(args.GetCount(), (char **)args.GetArgs(), false);
 }

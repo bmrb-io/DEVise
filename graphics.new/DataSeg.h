@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/06/04 14:21:40  wenger
+  Ascii data can now be read from session files (or other files
+  where the data is only part of the file); added some assertions
+  to check for pointer alignment in functions that rely on this;
+  Makefile changes to make compiling with debugging easier.
+
  */
 
 #ifndef _DataSeg_h_
@@ -30,7 +36,8 @@
 class DataSeg
 {
 public:
-	static void Set(char *label, char *filename, long offset, long length);
+	static void Set(const char *label, const char *filename, long offset,
+	  long length);
 	static void Get(char *&label, char *&filename, long &offset, long &length);
 
 private:

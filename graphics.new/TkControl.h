@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1999/10/04 19:37:11  wenger
+  Mouse location is displayed in "regular" DEVise.
+
   Revision 1.26  1999/09/02 17:26:06  wenger
   Took out the ifdefs around the MARGINS code, since DEVise won't compile
   without them; removed all of the TK_WINDOW code, and removed various
@@ -160,7 +163,7 @@ public:
 
   virtual void SelectView(View *view);
 
-  virtual void ShowMouseLocation(char *dataX, char *dataY);
+  virtual void ShowMouseLocation(const char *dataX, const char *dataY);
 
   /* Get/set busy status. */
   virtual void SetBusy();
@@ -177,10 +180,10 @@ public:
   /* Raise the control panel */
   virtual void Raise();
   
-  virtual void NotifyFrontEnd(char *script);
+  virtual void NotifyFrontEnd(const char *script);
 
   /* Abort program */
-  virtual void DoAbort(char *reason);
+  virtual void DoAbort(const char *reason);
 
   /* Get GroupDir info */
   virtual GroupDir *GetGroupDir() { return gdir; }

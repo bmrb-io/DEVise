@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/03/04 19:11:01  wenger
+  Fixed some more dynamic memory errors.
+
   Revision 1.2  1996/08/05 19:48:53  wenger
   Fixed compile errors caused by some of Kevin's recent changes; changed
   the attrproj stuff to make a .a file instead of a .o; added some more
@@ -61,7 +64,7 @@ long		DataSeg::_length = 0;
  * Set the information about a data segment.
  */
 void
-DataSeg::Set(char *label, char *filename, long offset, long length)
+DataSeg::Set(const char *label, const char *filename, long offset, long length)
 {
 	if (label == NULL) label = "";
 	if (filename == NULL) filename = "";
