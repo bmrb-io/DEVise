@@ -242,7 +242,7 @@ View.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h DList.h
 View.o: Journal.h VisualArg.h Color.h Pattern.h ViewWin.h WindowRep.h Geom.h
 View.o: Transform.h DevisePixmap.h Compress.h Control.h ClassDir.h
 View.o: ViewCallback.h AttrList.h /usr/include/sys/time.h Config.h Cursor.h
-View.o: FilterQueue.h TimeStamp.h Parse.h Map3D.h
+View.o: FilterQueue.h TimeStamp.h Parse.h Map3D.h Display.h ColorMgr.h
 ViewWin.o: /usr/include/stdio.h /usr/include/string.h
 ViewWin.o: /usr/include/sys/stdtypes.h ViewWin.h DList.h Exit.h DeviseTypes.h
 ViewWin.o: WindowRep.h /usr/include/stdlib.h Geom.h /usr/include/math.h

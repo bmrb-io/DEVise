@@ -206,7 +206,8 @@ View.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 View.o: /usr/include/sys/types.h DList.h Journal.h VisualArg.h Color.h
 View.o: Pattern.h ViewWin.h WindowRep.h Geom.h Transform.h DevisePixmap.h
 View.o: Compress.h Control.h ClassDir.h ViewCallback.h AttrList.h Config.h
-View.o: Cursor.h FilterQueue.h TimeStamp.h Parse.h Map3D.h
+View.o: Cursor.h FilterQueue.h TimeStamp.h Parse.h Map3D.h Display.h
+View.o: ColorMgr.h
 ViewWin.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 ViewWin.o: /usr/include/string.h ViewWin.h DList.h Exit.h DeviseTypes.h
 ViewWin.o: WindowRep.h /usr/include/stdlib.h Geom.h /usr/include/math.h
