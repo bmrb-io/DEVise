@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/07/23 19:34:43  beyer
+  Changed dispatcher so that pipes are not longer used for callback
+  requests from other parts of the code.
+
   Revision 1.23  1996/07/01 19:25:44  jussi
   When a query is initialized in InitQueries(), the iterator must
   be terminated before the initialization code is called because
@@ -126,6 +130,22 @@ static char* _gdataBuf = (char *) _gdataDoubleBuf;
 static const int TDATA_BUF_SIZE = 40960;
 static char _tdataBuf[TDATA_BUF_SIZE];
 
+/* This function is used for checking that gdataBuf still points to
+   gdataDoubleBuf; a persistent bug somewhere apparently stores
+   data in gdataDoubleBuf exceeding its boundaries, causing
+   the value of gdataBuf to be overwritten; rather than core dump,
+   we want a message printed on screen; this macro can be removed
+   when the cause of the bug is found. */
+
+inline static void CheckGDataBuf()
+{
+  if (_gdataBuf != (char *)_gdataDoubleBuf) {
+      fprintf(stderr, "Warning: gdataPtr 0x%p != 0x%p\n",
+              (void *)_gdataBuf, _gdataDoubleBuf);
+      _gdataBuf = (char *)_gdataDoubleBuf;
+  }
+}
+
 /* max # of bytes to fetch for each iteration of the query processor.
    After fetching this many bytes, the query processor relinquishes control
    (coming out for air) to allow the rest of the system to check for user
@@ -167,6 +187,7 @@ inline void GetX(BufMgr *mgr, TData *tdata, TDataMap *map, RecId id, Coord &x)
 
   if (isTData) {
     /* X are assigned dynamically */
+    CheckGDataBuf();
     map->ConvertToGData(id, buf, recs, 1, _gdataBuf);
     x = ((GDataBinRec *)_gdataBuf)->x;
   } else
@@ -197,6 +218,7 @@ inline void GetY(BufMgr *mgr, TData *tdata, TDataMap *map, RecId id, Coord &y)
     
   if (isTData) {
     /* Y are assigned dynamically */
+    CheckGDataBuf();
     map->ConvertToGData(id, buf, recs, 1, _gdataBuf);
     y = ((GDataBinRec *)_gdataBuf)->y;
   } else
@@ -1026,6 +1048,7 @@ void QueryProcFull::QPRangeInserted(RecId low, RecId high)
       if (numToConvert > recsLeft)
 	numToConvert = recsLeft;
       
+      CheckGDataBuf();
       _rangeQData->map->ConvertToGData(recId, dbuf,
 				       &_rangeRecs[numRecs-recsLeft + offset],
 				       numToConvert, _gdataBuf);
@@ -1035,6 +1058,7 @@ void QueryProcFull::QPRangeInserted(RecId low, RecId high)
 	     _gdataBuf, numToConvert);
 #endif
 	
+      CheckGDataBuf();
       _rangeQData->callback->ReturnGData(_rangeQData->map, recId,
 					 _gdataBuf, numToConvert);
 
@@ -1305,10 +1329,12 @@ Boolean QueryProcFull::DoInMemGDataConvert(TData *tdata, GData *gdata,
 	void **recPtrs = 0;
 	char *firstRec = _gdataBuf;
 	char *lastRec = _gdataBuf + gRecSize * (numConvert - 1);
+        CheckGDataBuf();
 	map->ConvertToGData(convertId, startBuf, recPtrs,
 			    numConvert, _gdataBuf);
 	gdata->UpdateConversionInfo(convertId, convertId + numConvert - 1, 
 				    firstRec, lastRec);
+        CheckGDataBuf();
 	gdata->WriteRecs(convertId, numConvert, _gdataBuf);
 	numBytes += gRecSize * numConvert;
 	
@@ -1442,11 +1468,13 @@ void QueryProcFull::DoGDataConvert()
   tdata->DoneGetRecs();
   
   /* convert [startRid..startRid+numRetrieved-1] */
+  CheckGDataBuf();
   map->ConvertToGData(startRid, _tdataBuf, recPtrs, numRetrieved, _gdataBuf);
   char *firstRec = _gdataBuf;
   char *lastRec = _gdataBuf + gRecSize * (numRetrieved - 1);
   gdata->UpdateConversionInfo(startRid, startRid + numRetrieved - 1,
 			      firstRec, lastRec);
+  CheckGDataBuf();
   gdata->WriteRecs(startRid, numRetrieved, _gdataBuf);
 }
 
