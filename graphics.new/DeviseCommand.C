@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.105  2000/08/15 19:16:57  wenger
+  Fixed typecasts that caused problems when compiled on denali.
+
   Revision 1.104  2000/07/12 20:49:27  wenger
   Added first version of metavisualization session description; changed
   DEVise version to 1.7.1.
@@ -1165,45 +1168,6 @@ DeviseCommand_getAllViews::Run(int argc, char** argv)
     }
     return true;
 }
-#if 0 // Why the hell do we have two *different* versions of the same
-	  // command?!?  RKW Feb. 3, 1998.
-int
-DeviseCommand_getAllViews::Run(int argc, char** argv)
-{
-    {
-    	{
-    		int		iargc;
-    		char**	iargv;
-    
-    		_classDir->ClassNames("view", iargc, iargv);
-    
-    		for (int i=0; i<iargc; i++)
-    		{
-    			_classDir->InstanceNames("view", iargv[i], _numArgs, _args);
-    
-    			for (int j=0; j<_numArgs; j++)
-    			{
-    				View*	view = (View*)_classDir->FindInstance(_args[j]);
-    
-    				if (!view)
-    				{
-    					ReturnVal(API_NAK, "Cannot find view");
-    					return -1;
-    				}
-    
-    				strcat(_result, "{");
-    				strcat(_result, view->GetName());
-    				strcat(_result, "} ");
-    			}
-    		}
-    
-    		ReturnVal(API_ACK, _result);
-    		return 1;
-    	}
-    }
-    return true;
-}
-#endif
 
 int
 DeviseCommand_changeParam::Run(int argc, char** argv)
@@ -1651,22 +1615,6 @@ DeviseCommand_mapT2GAttr::Run(int argc, char** argv)
 int
 DeviseCommand_startLayoutManager::Run(int argc, char** argv)
 {
-#if 0
-    {
-        {
-          printf("starting Layout Manager\n");
-          int childpid = fork();
-          if (childpid == 0) {
-    	char *args[] = {"/u/s/s/ssl/Work/LM/C++/LM", 0};
-    	execvp(args[0], argv);
-          } else {
-    	return 1;
-          }
-          LMControl::GetLMControl()->Go();
-          return 1;
-        }
-    }
-#endif
     return false;
 }
 int
@@ -3379,32 +3327,6 @@ DeviseCommand_testDataSock::Run(int argc, char** argv)
     }
     return true;
 }
-
-#if 0 // Moved alignment to mapping.  RKW 1999-07-20.
-int
-DeviseCommand_viewGetAlign::Run(int argc, char** argv)
-{
-    {
-        {
-          // Argument: <view name>
-          // Returns: <alignment value>
-    #if defined(DEBUG)
-          printf("viewGetAlign <%s>\n", argv[1]);
-    #endif
-          ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
-          if (!view) {
-    	    ReturnVal(API_NAK, "Cannot find view");
-    	    return -1;
-          }
-          char buf[1024];
-          sprintf(buf, "%d", view->GetAlign());
-          ReturnVal(API_ACK, buf);
-          return 1;
-        }
-    }
-    return true;
-}
-#endif
 
 int
 DeviseCommand_setLinkMaster::Run(int argc, char** argv)
