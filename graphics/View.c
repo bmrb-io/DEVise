@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.147  1998/10/20 19:46:03  wenger
+  Mapping dialog now displays the view's TData name; "Next in Pile" button
+  in mapping dialog allows user to edit the mappings of all views in a pile
+  without actually flipping them; user has the option to show all view names;
+  new GUI to display info about all links and cursors; added API and GUI for
+  count mappings.
+
   Revision 1.146  1998/09/28 20:06:04  wenger
   Fixed bug 383 (unnecessary creation of QueryProc); moved all
   DestroySessionData() code from subclasses of ControlPanel into base class,
@@ -792,6 +799,7 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	_pileMode = false;
 	_pileViewHold = true;
 	_printing = false;
+	_isHighlight = false;
 
 	_displaySymbol = true;
 
@@ -3366,16 +3374,13 @@ void	View::Run(void)
 			return;
 
 		int			index = parent->InitIterator();
-
 		DOASSERT(parent->More(index), "Parent view has no children");
-
 		ViewWin*	vw = parent->Next(index);
-
 		parent->DoneIterator(index);
 
 		if (this != vw)
 		{
-			if (_pileViewHold)
+			if (_pileViewHold && !_isHighlight)
 			{
 #if defined(DEBUG)
 				printf("View %s cannot continue\n", GetName());

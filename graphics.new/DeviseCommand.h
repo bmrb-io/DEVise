@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/11/06 17:59:47  wenger
+  Multiple string tables fully working -- allows separate tables for the
+  axes in a given view.
+
   Revision 1.18  1998/11/02 19:22:44  wenger
   Added "range/MQL" session description capability.
 
@@ -1469,6 +1473,18 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(viewGetStringTable) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(viewSetIsHighlight) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(viewGetIsHighlight) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

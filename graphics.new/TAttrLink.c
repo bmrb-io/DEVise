@@ -29,6 +29,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/11/02 19:22:44  wenger
+  Added "range/MQL" session description capability.
+
   Revision 1.12  1998/10/21 17:16:42  wenger
   Fixed bug 101 (problems with the '5' (home) key); added "Set X, Y to
   Show All" (go home) button to Query dialog; fixed bug 421 (crash when
@@ -283,6 +286,13 @@ TAttrLink::Initialize()
   if (_masterTableName == NULL) {
     (void) CreateMasterTable();
   } else {
+    //
+    // If this link already had some records, and it's the master of any
+    // highlight views, redraw the highlight views with the background view
+    // data color to "erase" the highlight symbols.
+    //
+    ClearHighlightViews();
+
     //
     // Make sure the master table has the same TData as the master view
     // (in case the view's TData got changed).

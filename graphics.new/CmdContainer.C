@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1998/11/06 17:59:44  wenger
+  Multiple string tables fully working -- allows separate tables for the
+  axes in a given view.
+
   Revision 1.21  1998/11/02 19:22:41  wenger
   Added "range/MQL" session description capability.
 
@@ -395,6 +399,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(writeRangeDesc)
 	REGISTER_COMMAND(viewSetStringTable)
 	REGISTER_COMMAND(viewGetStringTable)
+	REGISTER_COMMAND(viewSetIsHighlight)
+	REGISTER_COMMAND(viewGetIsHighlight)
 }
 
 CmdContainer::~CmdContainer()

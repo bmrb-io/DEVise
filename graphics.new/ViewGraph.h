@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.56  1998/11/06 17:59:55  wenger
+  Multiple string tables fully working -- allows separate tables for the
+  axes in a given view.
+
   Revision 1.55  1998/11/04 20:34:05  wenger
   Multiple string tables partly working -- loading and saving works, one
   table per mapping works; need multiple tables per mapping, API and GUI,
@@ -256,6 +260,8 @@
 //******************************************************************************
 // Libraries
 //******************************************************************************
+
+#include <sys/time.h>
 
 //#include "HashTable.h"
 #include "View.h"
@@ -610,6 +616,8 @@ public:
   char *_stringYTableName;
   char *_stringZTableName;
   char *_stringGenTableName;
+
+  struct timeval _queryStartTime;
 
 	protected:
 

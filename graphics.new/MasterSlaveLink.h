@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/07/30 15:31:21  wenger
+  Fixed bug 381 (problem with setting master and slave of a link to the same
+  view); generally cleaned up some of the master-slave link related code.
+
   Revision 1.2  1998/04/30 14:24:20  wenger
   DerivedTables are now owned by master views rather than links;
   views now unlink from master and slave links in destructor.
@@ -69,6 +73,8 @@ public:
   static void DisableUpdates() { _disableUpdates = true; }
 
 protected:
+  virtual void ClearHighlightViews();
+
   ViewGraph *_masterView; // master view of link
   static Boolean _disableUpdates;	// disable all master/slave links
 };

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/09/08 16:07:15  wenger
+  Fixed bug 386 -- problem with duplicate class names.  Devise now prevents
+  the creation of multiple classes with the same name; fixed session file.
+
   Revision 1.18  1998/05/14 18:20:58  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -86,6 +90,7 @@
 #include "Exit.h"
 #include "Util.h"
 #include "DevError.h"
+#include "MasterSlaveLink.h"
 
 //#define DEBUG
 #define CHECK_CLASS_RECS 0
@@ -408,6 +413,11 @@ ClassDir::FindClassInfo(char *instanceName)
 void ClassDir::DestroyAllInstances()
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
+
+  // Destroy links first to prevent propagation problems when other stuff
+  // is destroyed.
+  DestroyCategory("link");
+
   _destroyingAll = true;
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
@@ -430,6 +440,34 @@ void ClassDir::DestroyAllInstances()
     }
   }
   _destroyingAll = false;
+}
+
+/* Destroy category */
+void
+ClassDir::DestroyCategory(char *categoryName)
+{
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
+
+  for(int i = 0; i < _numCategories; i++) {
+    CategoryRec *catRec = _categories[i];
+
+    if (!strcmp(catRec->name, categoryName)) {
+      for(int j = 0; j < catRec->_numClasses; j++) {
+        ClassRec *classRec = catRec->_classRecs[j];
+#if defined(DEBUG)
+        printf("Destroying Class -> %s\n", classRec->classInfo->ClassName());
+#endif
+        for(int k = 0; k < classRec->_numInstances; k++) {
+	  ClassInfo *instRec = classRec->_instances[k];
+#if defined(DEBUG)
+          printf("now destroying %s\n", instRec->InstanceName());
+#endif
+	  delete instRec;
+        }
+        classRec->_numInstances = 0;
+      }
+    }
+  }
 }
 
 /* Destroy instance */

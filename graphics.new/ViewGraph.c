@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.91  1998/11/09 20:33:27  wenger
+  Fixed bug 433 (drill-down problem); improved debug output in various
+  related modules.
+
   Revision 1.90  1998/11/06 17:59:54  wenger
   Multiple string tables fully working -- allows separate tables for the
   axes in a given view.
@@ -398,6 +402,7 @@
 //******************************************************************************
 
 //#define DEBUG
+//#define REPORT_QUERY_TIME
 
 #include <assert.h>
 
@@ -1745,6 +1750,10 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
   if (_countMapping) {
     DevStatus result = _countMapping->Init(this);
   }
+
+#if defined(REPORT_QUERY_TIME)
+  gettimeofday(&_queryStartTime, NULL);
+#endif
 }
 
 void ViewGraph::DerivedAbortQuery()
@@ -1820,9 +1829,20 @@ ViewGraph::SetSendParams(const GDataSock::Params &params)
 
 void	ViewGraph::QueryDone(int bytes, void* userData, TDataMap* map)
 {
+#if defined(REPORT_QUERY_TIME)
+	struct timeval queryEndTime;
+    gettimeofday(&queryEndTime, NULL);
+	double elapsedTime = (queryEndTime.tv_sec - _queryStartTime.tv_sec) +
+	  1.0e-6 * (queryEndTime.tv_usec - _queryStartTime.tv_usec);
+#endif
+
 #if defined(DEBUG)
 	printf("ViewGraph(%s)::QueryDone(), index = %d, bytes = %d\n", GetName(),
 		_index, bytes);
+#endif
+
+#if defined(REPORT_QUERY_TIME)
+    printf("  elapsed time: %g sec.\n", elapsedTime);
 #endif
 
 	_pstorage.Clear();

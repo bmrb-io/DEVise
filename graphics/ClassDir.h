@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/05/14 18:20:58  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.8  1998/05/06 22:04:40  wenger
   Single-attribute set links are now working except where the slave of
   one is the master of another.
@@ -174,6 +178,9 @@ public:
 
 	/* Destroy all instances */
 	void DestroyAllInstances();
+
+	/* Destroy all classes and instances in at category */
+	void DestroyCategory(char *categoryName);
 
 	/* Destroy an instance */
 	void DestroyInstance(char *instanceName);

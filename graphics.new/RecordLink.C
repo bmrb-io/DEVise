@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/07/30 15:31:22  wenger
+  Fixed bug 381 (problem with setting master and slave of a link to the same
+  view); generally cleaned up some of the master-slave link related code.
+
   Revision 1.17  1998/07/10 21:20:07  wenger
   Minor cleanups and improvements.
 
@@ -98,6 +102,7 @@
 #include "Util.h"
 #include "ViewGraph.h"
 #include "TDataMap.h"
+#include "MappingInterp.h"
 
 //#define DEBUG
 
@@ -210,6 +215,15 @@ void RecordLink::Initialize()
     printf("  record link updates disabled -- returning\n");
 #endif
     return;
+  }
+
+  //
+  // If this link already had some records, and it's the master of any
+  // highlight views, redraw the highlight views with the background view
+  // data color to "erase" the highlight symbols.
+  //
+  if (_file) {
+    ClearHighlightViews();
   }
 
   if (_file) {

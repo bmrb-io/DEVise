@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.34  1998/11/06 17:59:35  wenger
+  Multiple string tables fully working -- allows separate tables for the
+  axes in a given view.
+
   Revision 1.33  1998/10/28 19:22:15  wenger
   Added code to check all data sources (runs through the catalog and tries
   to open all of them); this includes better error handling in a number of
@@ -873,6 +877,9 @@ Session::SaveView(char *category, char *devClass, char *instance,
   status += SaveParams(saveData, "viewGetAlign", "viewSetAlign", instance);
 
   status += SaveParams(saveData, "getCountMapping", "setCountMapping",
+      instance);
+
+  status += SaveParams(saveData, "viewGetIsHighlight", "viewSetIsHighlight",
       instance);
 
   if (status.IsError()) reportErrNosys("Error or warning");

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.40  1998/11/06 17:59:51  wenger
+  Multiple string tables fully working -- allows separate tables for the
+  axes in a given view.
+
   Revision 1.39  1998/11/04 20:33:58  wenger
   Multiple string tables partly working -- loading and saving works, one
   table per mapping works; need multiple tables per mapping, API and GUI,
@@ -304,11 +308,9 @@ public:
 		 unsigned long int attrFlag, VisualFlag *dimensionInfo,
 		 int NumDimensions);
   
-#if 0 // Not currently used.  RKW Feb. 26, 1998.
   /* Get current commands */
   MappingInterpCmd *GetCmd(unsigned long int &cmdFlag,
 			   unsigned long int &attrFlag);
-#endif
   
   /* Update maximum symbol size */
   void UpdateMaxSymSize(void *gdata, int numSyms);

@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/10/20 19:46:17  wenger
+  Mapping dialog now displays the view's TData name; "Next in Pile" button
+  in mapping dialog allows user to edit the mappings of all views in a pile
+  without actually flipping them; user has the option to show all view names;
+  new GUI to display info about all links and cursors; added API and GUI for
+  count mappings.
+
   Revision 1.3  1998/07/30 15:31:21  wenger
   Fixed bug 381 (problem with setting master and slave of a link to the same
   view); generally cleaned up some of the master-slave link related code.
@@ -39,6 +46,7 @@
 
 #include "MasterSlaveLink.h"
 #include "ViewGraph.h"
+#include "MappingInterp.h"
 
 //#define DEBUG
 
@@ -161,6 +169,79 @@ MasterSlaveLink::DeleteView(ViewGraph *view)
 }
 
 /*------------------------------------------------------------------------------
+ * function: MasterSlaveLink::ClearHighlightViews
+ * Redraw highlight views with background view data color to "erase"
+ * highlight view symbols.
+ */
+void
+MasterSlaveLink::ClearHighlightViews()
+{
+#if defined(DEBUG)
+  printf("MasterSlaveLink(%s)::ClearHighlightViews()\n", _name);
+#endif
+
+  // Note: the criteria for a view being acceptable as a highlight view
+  // are as follows:
+  // - The highlight view must be piled on top of a background view.
+  //   Note that there can be only one highlight view in a pile.
+  // - The records drawn in the highlight view must be a subset of the
+  //   records drawn in the background view.
+  // - The symbols of the highlight view and the backgrounds view must
+  //   be of the same type.
+  // - The symbols of the highlight view and the background view must be
+  //   drawn at the same place.
+  // - The symbols of the highlight view must be no larger than the symbols
+  //   of the background view.
+  // - The highlight view must be the slave of a record link or set link.
+  // - Relatively few symbols should be drawn in the highlight view.
+  // At this time (1998-11-10) whether a view meets these criteria must
+  // be determined by the user.
+
+  int index = InitIterator();
+  while(More(index)) {
+    ViewGraph *view = Next(index);
+    if (view->IsHighlight() && view->IsInPileMode()) {
+      MappingInterp *map = (MappingInterp *)view->GetFirstMap();
+
+      ViewGraph *bgView = (ViewGraph *)view->GetFirstSibling();
+      MappingInterp *bgMap = (MappingInterp *)bgView->GetFirstMap();
+
+      //
+      // Get current info from mapping.
+      //
+      VisualFlag *dimensionInfo;
+      int numDimensions = map->DimensionInfo(dimensionInfo);
+      unsigned long cmdFlag, attrFlag;
+      MappingInterpCmd *cmd = map->GetCmd(cmdFlag, attrFlag);
+
+      //
+      // Make a new mapping command with the color set to the background
+      // view's data color.
+      //
+      MappingInterpCmd tmpCmd = *cmd;
+      tmpCmd.colorCmd = bgMap->GetMappingCmd()->colorCmd;
+
+      //
+      // Change the mapping and re-draw this view.
+      //
+      map->ChangeCmd(&tmpCmd, cmdFlag, attrFlag, dimensionInfo, numDimensions);
+      view->Refresh();
+      // WaitForQueries here seems a little dangerous, but doing something
+      // else would *really* get complicated. RKW 1998-11-10.
+      Dispatcher::Current()->WaitForQueries();
+
+      //
+      // Put the mapping back to the way it was.
+      //
+      map->ChangeCmd(cmd, cmdFlag, attrFlag, dimensionInfo, numDimensions);
+    }
+  }
+    DoneIterator(index);
+
+
+}
+
+/*------------------------------------------------------------------------------
  * function: MasterSlaveLink::Done
  * Propagate updates when insertions to link are done.
  */
@@ -176,7 +257,7 @@ MasterSlaveLink::Done()
   while(More(index)) {
     ViewGraph *view = Next(index);
 
-    if (view->IsInPileMode()) {
+    if (view->IsInPileMode() && !view->IsHighlight()) {
       /* Refresh the whole pile of a piled view. */
 
       /* This code sometimes causes "unnecessary" redraws of a view if a view

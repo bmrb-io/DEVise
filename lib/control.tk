@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.171  1998/11/06 18:00:27  wenger
+#	Multiple string tables fully working -- allows separate tables for the
+#	axes in a given view.
+#
 #	Revision 1.170  1998/11/02 19:22:51  wenger
 #	Added "range/MQL" session description capability.
 #
@@ -1415,6 +1419,8 @@ menu .mbar.view.menu.linkMenu -tearoff 0
 #.mbar.view.menu add separator
 .mbar.view.menu add cascade -label "Cursors" \
 	-menu .mbar.view.menu.cursorMenu 
+.mbar.view.menu add command -label "Toggle View Highlight" \
+	-command { ToggleViewHighlight }
 
 
 menu .mbar.view.menu.cursorMenu -tearoff 0

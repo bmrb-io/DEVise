@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.77  1998/11/09 20:33:22  wenger
+  Fixed bug 433 (drill-down problem); improved debug output in various
+  related modules.
+
   Revision 1.76  1998/11/06 17:59:51  wenger
   Multiple string tables fully working -- allows separate tables for the
   axes in a given view.
@@ -545,7 +549,7 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
   _offsets = new GDataAttrOffset;
   SetGDataOffset(_offsets);
 
-  _cmd = cmd;
+  _cmd = cmd; // Note: cmd is allocated in MapInterpClassInfo.
   _cmdFlag = flag;
   _cmdAttrFlag = attrFlag;
   AttrList *attrList = InitCmd(name);
@@ -588,7 +592,7 @@ void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,
 	 "attrFlag 0x%lx\n", this, numDimensions, flag, attrFlag);
 #endif
 
-  _cmd = cmd;
+  _cmd = cmd; // Note: cmd is allocated in MapInterpClassInfo.
   _cmdFlag = flag;
   _cmdAttrFlag = attrFlag;
   
@@ -616,7 +620,6 @@ void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,
   if (!_isSimpleCmd) _pNativeExpr = new CGraphicExpr( cmd );
 }
 
-#if 0 // Not currently used.  RKW Feb. 26, 1998.
 /* Get current commands */
 MappingInterpCmd *MappingInterp::GetCmd(unsigned long int &cmdFlag,
 					unsigned long int &attrFlag)
@@ -625,7 +628,6 @@ MappingInterpCmd *MappingInterp::GetCmd(unsigned long int &cmdFlag,
   attrFlag = _cmdAttrFlag;
   return _cmd;
 }
-#endif
 
 /* Get the AttrInfo for a GData attribute. */
 AttrInfo *MappingInterp::MapGAttr2TAttr(int which_attr)

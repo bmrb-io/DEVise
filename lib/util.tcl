@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.61  1998/11/02 19:22:53  wenger
+#  Added "range/MQL" session description capability.
+#
 #  Revision 1.60  1998/10/20 19:46:33  wenger
 #  Mapping dialog now displays the view's TData name; "Next in Pile" button
 #  in mapping dialog allows user to edit the mappings of all views in a pile
@@ -1385,3 +1388,13 @@ proc BindYview { lists args } {
   }
 }
 
+############################################################
+# Toggle whether the selected view is a highlight view.
+
+proc ToggleViewHighlight {} {
+    global curView
+
+    set highlight [DEVise viewGetIsHighlight $curView]
+    set highlight [expr !$highlight]
+    DEVise viewSetIsHighlight $curView $highlight
+}

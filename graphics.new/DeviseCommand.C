@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.33  1998/11/06 17:59:46  wenger
+  Multiple string tables fully working -- allows separate tables for the
+  axes in a given view.
+
   Revision 1.32  1998/11/04 20:33:52  wenger
   Multiple string tables partly working -- loading and saving works, one
   table per mapping works; need multiple tables per mapping, API and GUI,
@@ -4881,6 +4885,56 @@ IMPLEMENT_COMMAND_BEGIN(viewGetStringTable)
 	    return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in viewGetStringTable\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(viewSetIsHighlight)
+    // Arguments: <view name> <is highlight>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 3) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+		view->SetHighlight(atoi(argv[2]));
+
+        ReturnVal(API_ACK, "done");
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in viewSetIsHighlight\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(viewGetIsHighlight)
+    // Arguments: <view name>
+    // Returns: <is highlight>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+		char buf[128];
+		sprintf(buf, "%d", view->IsHighlight());
+        ReturnVal(API_ACK, buf);
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in viewGetIsHighlight\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

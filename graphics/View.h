@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.68  1998/10/20 19:46:05  wenger
+  Mapping dialog now displays the view's TData name; "Next in Pile" button
+  in mapping dialog allows user to edit the mappings of all views in a pile
+  without actually flipping them; user has the option to show all view names;
+  new GUI to display info about all links and cursors; added API and GUI for
+  count mappings.
+
   Revision 1.67  1998/09/08 20:26:02  wenger
   Added option to save which view is selected when saving a session -- for
   JavaScreen client switching support.
@@ -538,6 +545,9 @@ class View : public ViewWin
 	Boolean IsInPileMode() { return _pileMode; }
 	void SetPileMode(Boolean mode);
 
+	Boolean IsHighlight() { return _isHighlight; }
+	void SetHighlight(Boolean highlight) { _isHighlight = highlight; }
+
 	Boolean DoneRefresh() { return _doneRefresh;}
 
 	/* This isn't used anywhere. RKW 1/7/97. */
@@ -805,6 +815,8 @@ protected:
 	DevFont _xAxisFont;
 	DevFont _yAxisFont;
 	DevFont _zAxisFont;
+
+	Boolean _isHighlight;
 
 
 
