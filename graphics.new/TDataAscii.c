@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.53  1996/12/20 16:13:41  jussi
+  Removed extraneous message about not being able to use concurrent I/O.
+
   Revision 1.52  1996/12/18 19:34:05  jussi
   Fixed minor bugs in ReadRecAsync(). Added FlushDataPipe().
 
@@ -280,6 +283,7 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
     _lastIncompleteLen = 0;
 
     _totalRecs = 0;
+    _lastFileUpdate = 0;
 
     float estNumRecs = 0;
 
@@ -400,14 +404,19 @@ Boolean TDataAscii::LastID(RecId &recId)
       /* File has shrunk, rebuild index from scratch */
       InvalidateTData();
     } else if (_currPos > _lastPos) {
-      /* File has grown, build index for new records */
+      /* Don't update view more frequently than at 1-second intervals */
+      time_t now = time(NULL);
+      if (now != _lastFileUpdate) {
+        _lastFileUpdate = now;
+        /* File has grown, build index for new records */
 #if DEBUGLVL >= 3
-      printf("Extending index...\n");
+        printf("Extending index...\n");
 #endif
-      BuildIndex();
+        BuildIndex();
 #ifndef ATTRPROJ
-      QueryProc::Instance()->RefreshTData(this);
+        QueryProc::Instance()->RefreshTData(this);
 #endif
+      }
     }
   }
   

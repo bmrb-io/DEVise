@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/12/18 19:34:07  jussi
+  Fixed minor bugs in ReadRecAsync(). Added FlushDataPipe().
+
   Revision 1.16  1996/12/18 15:30:45  jussi
   Added support for concurrent I/O.
 
@@ -251,6 +254,7 @@ private:
   long _initTotalRecs;            // initial # of records in cache
   int _initLastPos;               // initial last position in file
 
+  time_t _lastFileUpdate;         // timestamp of last file update
   int _bytesFetched;              // total # of bytes fetched
 };
 
