@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.28  1999/08/05 21:42:33  wenger
+  Cursor improvements: cursors can now be dragged in "regular" DEVise;
+  cursors are now drawn with a contrasting border for better visibility;
+  fixed bug 468 (cursor color not working).
+
   Revision 1.27  1999/07/30 21:26:49  wenger
   Partway to cursor dragging: code to change mouse cursor when on a DEVise
   cursor is in place (but disabled).
@@ -353,7 +358,8 @@ void DeviseCursor::ViewDestroyed(View *view)
 void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height)
 {
 #if defined(DEBUG)
-  printf("DeviseCursor(%s)::MoveSource(%f, %f)\n", GetName(), x, y);
+  printf("DeviseCursor(%s)::MoveSource(%g, %g, %g, %g)\n", GetName(), x, y,
+      width, height);
 #endif
 
   if (!_src)
@@ -364,6 +370,12 @@ void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height)
   // so that the flag is correct.
   _src->GetVisualFilter(filter);
   VisualFilter oldFilter = filter;
+
+  if (_fixedSize) {
+    // Force the new width and height to be the same as the old ones.
+    width = filter.xHigh - filter.xLow;
+    height = filter.yHigh - filter.yLow;
+  }
 
   MatchGrid(x, y, width, height, filter);
 
