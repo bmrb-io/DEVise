@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.69  1996/12/03 20:34:35  jussi
+  Added initialization of semaphore structures.
+
   Revision 1.68  1996/11/18 18:10:57  donjerko
   New files and changes to make DTE work with Devise
 
@@ -358,10 +361,6 @@ TkControlPanel::TkControlPanel()
 #ifdef TK_WINDOW
   ControlPanelMainWindow = _mainWindow;
 #endif
-
-  // destroy all semaphores and shared memory segments
-  Semaphore::destroyAll();
-  SharedMemory::destroyAll();
 
   // create space for 16 virtual semaphores
   int status = SemaphoreV::create(16);
