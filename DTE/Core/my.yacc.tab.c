@@ -1,5 +1,5 @@
 
-/*  A Bison parser, made from ../my.yacc with Bison version GNU Bison version 1.24
+/*  A Bison parser, made from ../../DTE/Core/my.yacc with Bison version GNU Bison version 1.24
   */
 
 #define YYBISON 1  /* Identify Bison output.  */
@@ -14,7 +14,7 @@
 #define	LESSGREATER	265
 #define	STRING	266
 
-#line 1 "../my.yacc"
+#line 1 "../../DTE/Core/my.yacc"
 
 
 #include "myopt.h"
@@ -30,7 +30,7 @@ extern BaseSelection* predicates;
 extern List<String*>* namesToResolve;
 int yyerror(char* msg);
 
-#line 16 "../my.yacc"
+#line 16 "../../DTE/Core/my.yacc"
 typedef union{
      String* string;
 	int integer;
@@ -695,7 +695,7 @@ yyreduce:
   switch (yyn) {
 
 case 1:
-#line 47 "../my.yacc"
+#line 47 "../../DTE/Core/my.yacc"
 {
 		selectList = yyvsp[-4].selList;
 		tableList = yyvsp[-2].tableList;
@@ -704,7 +704,7 @@ case 1:
 	;
     break;}
 case 2:
-#line 53 "../my.yacc"
+#line 53 "../../DTE/Core/my.yacc"
 {
 		selectList = NULL;
 		tableList = yyvsp[-2].tableList;
@@ -713,95 +713,95 @@ case 2:
 	;
     break;}
 case 3:
-#line 60 "../my.yacc"
+#line 60 "../../DTE/Core/my.yacc"
 {
 		yyvsp[-2].selList->append(yyvsp[0].sel);
 		yyval.selList = yyvsp[-2].selList;
 	;
     break;}
 case 4:
-#line 64 "../my.yacc"
+#line 64 "../../DTE/Core/my.yacc"
 {
 		yyval.selList = new List<BaseSelection*>;
 		yyval.selList->append(yyvsp[0].sel);
 	;
     break;}
 case 5:
-#line 68 "../my.yacc"
+#line 68 "../../DTE/Core/my.yacc"
 {
 		yyval.selList = new List<BaseSelection*>;
 	;
     break;}
 case 6:
-#line 72 "../my.yacc"
+#line 72 "../../DTE/Core/my.yacc"
 {
 		yyvsp[-2].tableList->append(yyvsp[0].tabAlias);
 		yyval.tableList = yyvsp[-2].tableList;
 	;
     break;}
 case 7:
-#line 76 "../my.yacc"
+#line 76 "../../DTE/Core/my.yacc"
 {
 		yyval.tableList = new List<TableAlias*>;
 		yyval.tableList->append(yyvsp[0].tabAlias);
 	;
     break;}
 case 8:
-#line 81 "../my.yacc"
+#line 81 "../../DTE/Core/my.yacc"
 {
           yyval.sel = yyvsp[0].sel;
 	;
     break;}
 case 9:
-#line 84 "../my.yacc"
+#line 84 "../../DTE/Core/my.yacc"
 {
 		yyval.sel = NULL;
 	;
     break;}
 case 10:
-#line 88 "../my.yacc"
+#line 88 "../../DTE/Core/my.yacc"
 {
           yyval.sel = new OrOperator(yyvsp[-2].sel, yyvsp[0].sel);
 	;
     break;}
 case 11:
-#line 91 "../my.yacc"
+#line 91 "../../DTE/Core/my.yacc"
 {
 		yyval.sel = new AndOperator(yyvsp[-2].sel, yyvsp[0].sel);
 	;
     break;}
 case 12:
-#line 94 "../my.yacc"
+#line 94 "../../DTE/Core/my.yacc"
 {
           yyval.sel = new Operator("=", yyvsp[-2].sel, yyvsp[0].sel);
 	;
     break;}
 case 13:
-#line 97 "../my.yacc"
+#line 97 "../../DTE/Core/my.yacc"
 {
 		yyval.sel = new Operator(*yyvsp[-1].string, yyvsp[-2].sel, yyvsp[0].sel);
 	;
     break;}
 case 14:
-#line 100 "../my.yacc"
+#line 100 "../../DTE/Core/my.yacc"
 {
           yyval.sel = new Operator("+", yyvsp[-2].sel, yyvsp[0].sel);
 	;
     break;}
 case 15:
-#line 103 "../my.yacc"
+#line 103 "../../DTE/Core/my.yacc"
 {
 		yyval.sel = new Operator(*yyvsp[-1].string, yyvsp[-2].sel, yyvsp[0].sel);
 	;
     break;}
 case 17:
-#line 109 "../my.yacc"
+#line 109 "../../DTE/Core/my.yacc"
 {
 		yyval.sel = new PrimeSelection(yyvsp[-2].string, yyvsp[0].path);
 	;
     break;}
 case 18:
-#line 112 "../my.yacc"
+#line 112 "../../DTE/Core/my.yacc"
 {
 		String* dummy = new String;
 		namesToResolve->append(dummy); 
@@ -809,61 +809,61 @@ case 18:
 	;
     break;}
 case 19:
-#line 117 "../my.yacc"
+#line 117 "../../DTE/Core/my.yacc"
 {
 		yyval.sel = new StringConstant(yyvsp[0].string);
 	;
     break;}
 case 20:
-#line 120 "../my.yacc"
+#line 120 "../../DTE/Core/my.yacc"
 {
 		yyval.sel = new IntegerConstant(yyvsp[0].integer);
 	;
     break;}
 case 21:
-#line 123 "../my.yacc"
+#line 123 "../../DTE/Core/my.yacc"
 {
 		yyval.sel = yyvsp[-1].sel;
 	;
     break;}
 case 22:
-#line 127 "../my.yacc"
+#line 127 "../../DTE/Core/my.yacc"
 {
 		yyval.tabAlias = new TableAlias(yyvsp[-1].string, yyvsp[0].string);
 	;
     break;}
 case 23:
-#line 130 "../my.yacc"
+#line 130 "../../DTE/Core/my.yacc"
 {
 		yyval.tabAlias = new TableAlias(yyvsp[-1].string, yyvsp[0].string, true);
 	;
     break;}
 case 24:
-#line 134 "../my.yacc"
+#line 134 "../../DTE/Core/my.yacc"
 {
 		yyval.string = yyvsp[0].string;
 	;
     break;}
 case 25:
-#line 137 "../my.yacc"
+#line 137 "../../DTE/Core/my.yacc"
 {
 		yyval.string = NULL;
 	;
     break;}
 case 26:
-#line 141 "../my.yacc"
+#line 141 "../../DTE/Core/my.yacc"
 {
 		yyval.path = new Path(yyvsp[0].string, NULL);
 	;
     break;}
 case 27:
-#line 144 "../my.yacc"
+#line 144 "../../DTE/Core/my.yacc"
 {
 		yyval.path = new Method(yyvsp[-3].string, yyvsp[-1].selList, NULL);
 	;
     break;}
 case 28:
-#line 147 "../my.yacc"
+#line 147 "../../DTE/Core/my.yacc"
 {
 		yyvsp[-2].path->append(yyvsp[0].path);
 		yyval.path = yyvsp[-2].path;
@@ -1067,7 +1067,7 @@ yyerrhandle:
   yystate = yyn;
   goto yynewstate;
 }
-#line 152 "../my.yacc"
+#line 152 "../../DTE/Core/my.yacc"
 
 int yyerror(char* msg){
 	return 0;
