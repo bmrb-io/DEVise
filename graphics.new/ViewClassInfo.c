@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/28 20:07:48  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.2  1995/09/05 22:16:15  jussi
   Added CVS header.
 */
@@ -66,9 +69,9 @@ ViewXInfo::~ViewXInfo()
     delete _view;
 }
 
-/* Get name of parameters */
+/* Get names of parameters */
 
-static char buf1[256], buf2[80],buf3[80],buf4[80],buf5[80], buf6[80];
+static char buf1[256], buf2[80], buf3[80], buf4[80], buf5[80], buf6[80];
 
 void ViewXInfo::ParamNames(int &argc, char **&argv)
 {
@@ -79,7 +82,7 @@ void ViewXInfo::ParamNames(int &argc, char **&argv)
   argc = 6;
   argv = arg;
   arg[0] = buf1;
-  sprintf(buf1,"name %s", ControlPanel::Instance()->ViewName());
+  sprintf(buf1, "name %s", ControlPanel::Instance()->ViewName());
   arg[1] = buf2;
   arg[2] = buf3;
   arg[3] = buf4;
@@ -89,28 +92,28 @@ void ViewXInfo::ParamNames(int &argc, char **&argv)
   if (numDefaults == 4) {
     sprintf(buf2, "xlow {%s}", defaults[0]);;
     sprintf(buf3, "xhigh {%s}", defaults[1]);
-    sprintf(buf4,"ylow {%s}", defaults[2]);
-    sprintf(buf5,"yhigh {%s}", defaults[3]);
+    sprintf(buf4, "ylow {%s}", defaults[2]);
+    sprintf(buf5, "yhigh {%s}", defaults[3]);
   } else {
     sprintf(buf2, "xlow 0.0");
     sprintf(buf3, "xhigh 0.0");
-    sprintf(buf4,"ylow 0.0");
-    sprintf(buf5,"yhigh 0.0");
+    sprintf(buf4, "ylow 0.0");
+    sprintf(buf5, "yhigh 0.0");
   }
 
-  sprintf(buf6,"color %s",_bgColorName);
+  sprintf(buf6, "color %s", _bgColorName);
 }
 
 ClassInfo *ViewXInfo::CreateWithParams(int argc, char **argv)
 {
   if ( argc != 6){
-    fprintf(stderr,"ViewXInfo::CreateWithParams wrong args\n");
+    fprintf(stderr, "ViewXInfo::CreateWithParams wrong args\n");
     return NULL;
   }
 
   VisualFilter filter;
   (void)ParseFloatDate(argv[1], filter.xLow);
-  (void)ParseFloatDate(argv[2],filter.xHigh);
+  (void)ParseFloatDate(argv[2], filter.xHigh);
   (void)ParseFloatDate(argv[3], filter.yLow);
   (void)ParseFloatDate(argv[4], filter.yHigh);
   filter.flag = VISUAL_LOC;
@@ -118,7 +121,7 @@ ClassInfo *ViewXInfo::CreateWithParams(int argc, char **argv)
   char *name = CopyString(argv[0]);
   Color bgColor;
   char *bgName;
-  if (strcmp(argv[5],"white") == 0) {
+  if (!strcmp(argv[5], "white")) {
     bgColor = WhiteColor;
     bgName = "white";
   } else {
@@ -126,8 +129,8 @@ ClassInfo *ViewXInfo::CreateWithParams(int argc, char **argv)
     bgColor = ColorMgr::AllocColor(bgName);
   }
 
-  TDataViewX *view = new TDataViewX(name,filter, GetQueryProc(), 
-				    WhiteColor, bgColor,
+  TDataViewX *view = new TDataViewX(name, filter, GetQueryProc(), 
+				    BlackColor, bgColor,
 				    NULL, NULL, NULL);
   return new ViewXInfo(name, bgName, view);
 }
@@ -167,8 +170,8 @@ void ViewXInfo::CreateParams(int &argc, char **&argv)
     sprintf(buf4, "%s", DateString(filter->yLow));
     sprintf(buf5, "%s", DateString(filter->yHigh));
   } else {
-    sprintf(buf4,"%f", filter->yLow);
-    sprintf(buf5,"%f", filter->yHigh);
+    sprintf(buf4, "%f", filter->yLow);
+    sprintf(buf5, "%f", filter->yHigh);
   }
   
   sprintf(buf6,"%s", _bgColorName);
@@ -206,16 +209,16 @@ void ViewScatterInfo::ParamNames(int &argc, char **&argv)
   arg[4] = buf5;
   arg[5] = buf6;
 
-  sprintf(buf1,"name %s", ControlPanel::Instance()->ViewName());
+  sprintf(buf1, "name %s", ControlPanel::Instance()->ViewName());
   
   int numDefaults;
   char **defaults;
   GetDefaultParams(numDefaults, defaults);
   if (numDefaults == 4) {
-    sprintf(arg[1],"xlow %s",defaults[0]);
-    sprintf(arg[2],"xhigh %s",defaults[1]);
-    sprintf(arg[3],"ylow %s",defaults[2]);
-    sprintf(arg[4],"yhigh %s",defaults[3]);
+    sprintf(arg[1], "xlow %s", defaults[0]);
+    sprintf(arg[2], "xhigh %s", defaults[1]);
+    sprintf(arg[3], "ylow %s", defaults[2]);
+    sprintf(arg[4], "yhigh %s", defaults[3]);
   } else {
     arg[1] = "xlow -10.0";
     arg[2] = "xhigh 1000.0";
@@ -223,13 +226,13 @@ void ViewScatterInfo::ParamNames(int &argc, char **&argv)
     arg[4] = "yhigh 150.0";
   }
   
-  sprintf(arg[5],"color %s",_bgName);
+  sprintf(arg[5], "color %s", _bgName);
 }
 
 ClassInfo *ViewScatterInfo::CreateWithParams(int argc, char **argv)
 {
   if ( argc != 6) {
-    fprintf(stderr,"ViewScatterInfo::CreateWithParams wrong args\n");
+    fprintf(stderr, "ViewScatterInfo::CreateWithParams wrong args\n");
     return NULL;
   }
 
@@ -243,18 +246,18 @@ ClassInfo *ViewScatterInfo::CreateWithParams(int argc, char **argv)
   char buf[80];
   static sel_id = 0;
   
-  sprintf(buf,"sel_%d",sel_id++);
+  sprintf(buf, "sel_%d", sel_id++);
   char *name = CopyString(argv[0]);
   Color bgColor;
   char *bgName;
-  if (strcmp(argv[1],"white") == 0){
+  if (!strcmp(argv[1], "white")) {
     bgName = "white";
     bgColor = WhiteColor;
   } else {
     bgName = CopyString(argv[5]);
     bgColor = ColorMgr::AllocColor(bgName);
   }
-  ViewScatter *view = new ViewScatter(name,filter, GetQueryProc(), 
+  ViewScatter *view = new ViewScatter(name, filter, GetQueryProc(), 
 				      BlackColor, bgColor, NULL, NULL, NULL);
   return new ViewScatterInfo(name, bgName, view);
 }
@@ -279,16 +282,16 @@ void ViewScatterInfo::CreateParams(int &argc, char **&argv)
   VisualFilter *filter = _view->GetVisualFilter();
   
   arg[1] = buf2;
-  sprintf(buf2, "%f", filter->xLow);;
+  sprintf(buf2, "%f", filter->xLow);
   
   arg[2] = buf3;
   sprintf(buf3, "%f", filter->xHigh);
   
   arg[3] = buf4;
-  sprintf(buf4,"%f", filter->yLow);
+  sprintf(buf4, "%f", filter->yLow);
   
   arg[4] = buf5;
-  sprintf(buf5,"%f", filter->yHigh);
+  sprintf(buf5, "%f", filter->yHigh);
   
   arg[5] = _bgName;
 }
