@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/03/27 15:08:42  wenger
+  Added dumping of logical session description, added GUI for dumping
+  logical or physical description; cleaned up some of the command code
+  a little.
+
   Revision 1.1  1997/06/25 21:25:20  wenger
   Added writeDesc (write session description) command needed by Hongyu's
   Java client.
@@ -262,13 +267,15 @@ SessionDescPrv::LogWriteViews(FILE *file)
   fprintf(file, "# Views:\n");
   fprintf(file, "# Item\tName\tType\n");
 
-  int count = 0;
   int index = View::InitViewIterator();
   while (View::MoreView(index)) {
-    count++;
     View *view = View::NextView(index);
-    fprintf(file, "View%d\t\"%s\"\tview\tnull\tnull\n", count,
-	view->GetName());
+    Boolean occupyTop;
+    int extent;
+    char *viewTitle;
+    view->GetLabelParam(occupyTop, extent, viewTitle);
+    fprintf(file, "\"%s\"\t\"%s\"\tview\tnull\tnull\n", view->GetName(),
+	viewTitle);
   }
   View::DoneViewIterator(index);
 
@@ -302,7 +309,6 @@ SessionDescPrv::LogWriteLinks(FILE *file)
     if (linkInfo != NULL) {
       DeviseLink *link = (DeviseLink *) linkInfo->GetInstance();
       if (link != NULL) {
-        count++;
 
 	//
 	// Figure out the type of link.
@@ -394,8 +400,9 @@ SessionDescPrv::LogWriteLinks(FILE *file)
 	//
 	viewCount = MAX(2, viewCount); // Print the link even if no views.
 	for (int viewNum = 1; viewNum < viewCount; viewNum++) {
-	fprintf(file, "Link%d\t\"%s\"\t%s\t\"%s\"\t\"%s\"\n", count,
-	    link->GetName(), linkType, viewNames[0], viewNames[viewNum]);
+          count++;
+	  fprintf(file, "Link%d\t\"%s\"\t%s\t\"%s\"\t\"%s\"\n", count,
+	      link->GetName(), linkType, viewNames[0], viewNames[viewNum]);
         }
       }
     }
