@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/12/13 21:34:20  jussi
+  Added checking of available semaphores.
+
   Revision 1.7  1996/12/03 20:36:02  jussi
   Added support for concurrent I/O.
 
@@ -355,6 +358,8 @@ int DataSource::InitializeProc()
         return -1;
     }
 
+    SynchronizeBeforeAsyncIO();
+
     DO_DEBUG(printf("Creating data source process/thread...\n"));
 
 #ifdef DS_PROCESS
@@ -456,6 +461,8 @@ int DataSource::TerminateProc()
 
 int DataSource::ReadProc(streampos_t offset, iosize_t bytes)
 {
+    SynchronizeBeforeAsyncIO();
+
     AcquireMutex();
 
     DO_DEBUG(printf("Submitting read request %llu:%lu to data source 0x%p\n",
@@ -488,6 +495,8 @@ int DataSource::ReadProc(streampos_t offset, iosize_t bytes)
 
 int DataSource::WriteProc(streampos_t offset, iosize_t bytes)
 {
+    SynchronizeBeforeAsyncIO();
+
     AcquireMutex();
 
     DO_DEBUG(printf("Submitting write request %llu:%lu to data source 0x%p\n",
@@ -510,6 +519,22 @@ int DataSource::WriteProc(streampos_t offset, iosize_t bytes)
     ReleaseMutex();
 
     return reply.handle;
+}
+
+/*============================================================================*/
+
+//
+// Return true if data currently performing I/O.
+//
+
+Boolean DataSource::IsBusy()
+{
+    int status = _mutex->test(1);
+    DOASSERT(status >= 0, "Unable to test semaphore");
+    if (!status)
+        return true;
+    _mutex->release();
+    return false;
 }
 
 /*============================================================================*/
@@ -573,10 +598,14 @@ void *DataSource::ProcessReq()
 
         DO_DEBUG(printf("Source 0x%p request acknowledged\n", this));
 
+        AcquireMutex();
+
         if (req.type == ReadReq)
             ReadStream(req.offset, req.bytes);
         else
             WriteStream(req.offset, req.bytes);
+
+        ReleaseMutex();
 
         DO_DEBUG(printf("Source 0x%p request completed\n", this));
     }

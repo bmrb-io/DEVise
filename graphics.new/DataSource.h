@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/12/03 20:36:02  jussi
+  Added support for concurrent I/O.
+
   Revision 1.8  1996/11/18 22:29:01  jussi
   Added DataSize() method.
 
@@ -188,6 +191,7 @@ class DataSource
 	    DOASSERT(_dpipe, "Invalid data pipe");
             return _dpipe->NumData();
         }
+        Boolean IsBusy();
 
       protected:
         
@@ -230,6 +234,9 @@ class DataSource
         // Child process for communicating with parent
         static void *ProcessReq(void *arg);
         void *ProcessReq();
+
+        // Synchronize before issuing asynchronous I/Os
+        virtual void SynchronizeBeforeAsyncIO() {}
 
         // Read and write streaming
         void ReadStream(streampos_t offset, iosize_t bytes);
