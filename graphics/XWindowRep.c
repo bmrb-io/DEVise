@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.42  1996/06/21 19:31:07  jussi
+  Moved all 3D-related code to Map3D.C and Map3D.h.
+  Replaced MinMax calls with calls to MIN() and MAX().
+
   Revision 1.41  1996/06/16 01:52:54  jussi
   Minor improvements here and there, mostly debugging
   statements.
@@ -446,7 +450,7 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
   char cmd[256];
   if (format == POSTSCRIPT || format == EPS) {
     sprintf(cmd,
-       "xwd -frame -id %ld | xpr -device ps -portrait -compact -scale 4 > %s",
+       "xwd -frame -id %ld | xpr -device ps -portrait -compact -gray 4 > %s",
 	    _win, filename);
   } else {
     printf("Requested export format not supported yet.\n");
