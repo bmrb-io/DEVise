@@ -2843,6 +2843,15 @@ Num Date        Status  Description
 711 10/16/01	OPEN	JavaScreen: command playback cannot be done in
 			timed mode if not displaying. (rkw)
 
+712 10/16/01	OPEN	JavaScreen: collaboration no longer works. (rkw)
+
+713 10/16/01	OPEN	JavaScreen: collaboration doesn't work right when
+			collaborating clients have different screen sizes.
+			(rkw)
+
+714 10/16/01	OPEN	JavaScreen: collaboration follower cannot switch
+			out of collaboration mode. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
