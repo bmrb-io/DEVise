@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/03/26 20:22:34  jussi
+  Added tape query processor.
+
   Revision 1.9  1996/03/23 23:34:16  jussi
   Added MdDdYy to DATE composite parser.
 
@@ -107,6 +110,7 @@ public:
   YyMmDdComposite() {
     _init = false;
     attrOffset = 0;
+    dateAttr = 0;
   }
 
   virtual ~YyMmDdComposite() {
@@ -177,6 +181,7 @@ public:
   MmDdYyComposite() {
     _init = false;
     attrOffset = 0;
+    dateAttr = 0;
   }
 
   virtual ~MmDdYyComposite() {
@@ -246,6 +251,7 @@ public:
   ObsDateComposite() {
     _init = false;
     attrOffset = 0;
+    dateAttr = 0;
   }
 
   virtual ~ObsDateComposite() {
@@ -317,6 +323,7 @@ public:
   DOLDateComposite() {
     _init = false;
     attrOffset = 0;
+    dateAttr = 0;
   }
 
   virtual ~DOLDateComposite() {
