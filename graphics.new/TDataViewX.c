@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/06/20 17:10:24  guangshu
+  Added support for color statistics.
+
   Revision 1.21  1996/06/20 16:49:50  jussi
   Added Y condition to filter comparison.
 
@@ -193,6 +196,10 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
 
 void TDataViewX::DerivedAbortQuery()
 {
+#ifdef DEBUG
+    printf("TDataViewX::Abort query, index = %d\n", _index);
+#endif
+
   if (_map) {
     _queryProc->AbortQuery(_map, this);
     DOASSERT(_index >= 0, "Invalid iterator index");
@@ -340,6 +347,10 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 
 void TDataViewX::QueryDone(int bytes, void *userData)
 {
+#ifdef DEBUG
+    printf("TDataViewX::Query done, index = %d, bytes = %d\n", _index, bytes);
+#endif
+
   DOASSERT(_index >= 0, "Invalid iterator index");
 
   if (MoreMapping(_index)) {

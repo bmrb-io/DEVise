@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/06/24 19:30:37  jussi
+  Fixed problem with some mappings not getting drawn to a window.
+
   Revision 1.15  1996/06/20 17:10:27  guangshu
   Added support for color statistics.
 
@@ -145,6 +148,10 @@ void ViewScatter::DerivedStartQuery(VisualFilter &filter, int timestamp)
 
 void ViewScatter::DerivedAbortQuery()
 {
+#ifdef DEBUG
+    printf("ViewScatter::Abort query, index = %d\n", _index);
+#endif
+
   if (_map) {
     _queryProc->AbortQuery(_map, this);
     DOASSERT(_index >= 0, "Invalid iterator index");
@@ -247,6 +254,10 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
 /* Done with query */
 void ViewScatter::QueryDone(int bytes, void *userData)
 {
+#ifdef DEBUG
+    printf("ViewScatter::Query done, index = %d, bytes = %d\n", _index, bytes);
+#endif
+
   DOASSERT(_index >= 0, "Invalid iterator index");
 
   if (MoreMapping(_index)) {
