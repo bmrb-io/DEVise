@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2001/10/25 21:35:42  wenger
+// Added heartbeat count to heartbeat command (for debugging); other minor
+// cleanup and debug code additions.
+//
 // Revision 1.3  2001/05/11 20:36:07  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -75,8 +79,25 @@ public class DEViseHeartbeat implements Runnable
 	    if (DEBUG >= 1) {
 	        System.out.println("Sending heartbeat");
 	    }
-	    _dispatcher.start(DEViseCommands.HEART_BEAT + " " +
-	      " " + _hbCount);
+	    
+	    if (_dispatcher.jsc.specialID == -1) { // normal JS
+		_dispatcher.start(DEViseCommands.HEART_BEAT + " " +
+				  " " + _hbCount);
+	    } else {
+		try {
+		    _dispatcher.commSocket.sendCmd(new String[] 
+			{DEViseCommands.HEART_BEAT,
+			 Integer.toString(_hbCount)}, 
+			 DEViseGlobals.API_JAVA, 
+			 _dispatcher.jsc.jsValues.connection.connectionID);
+		    _dispatcher.jsc.pn("Sent Heartbeat to collaboration JS.");
+		} catch (YException e) {
+		    String errMsg = e.getMessage();
+		    _dispatcher.jsc.pn("Error in sending heartbeat: " +
+				       errMsg);
+		}
+	    }
+	    
 	    _hbCount++;
 	}
     }
