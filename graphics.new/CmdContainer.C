@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/03/27 15:08:52  wenger
+  Added dumping of logical session description, added GUI for dumping
+  logical or physical description; cleaned up some of the command code
+  a little.
+
   Revision 1.5  1998/03/19 18:36:26  taodb
   Fixed core dump for illegal devise commands
 
@@ -39,48 +44,13 @@
 #include <assert.h>
 
 #include "ParseAPI.h"
-#include "TDataDQLInterp.h"
-#include "ClassDir.h"
-#include "Control.h"
-#include "ViewKGraph.h"
-#include "Util.h"
-#include "ParseCat.h"
-#include "TData.h"
-#include "TDataMap.h"
-#include "Parse.h"
-#include "GroupDir.h"
-#include "ViewLayout.h"
-#include "RecordLink.h"
-#include "FilterQueue.h"
-#include "DataSeg.h"
-#include "Version.h"
-#include "CompDate.h"
-#include "DevFileHeader.h"
-#include "Display.h"
-#include "TDataAscii.h"
-#include "DevError.h"
-#include "ViewLens.h"
-#include "WinClassInfo.h"
-#include "CursorClassInfo.h"
-#include "MappingInterp.h"
-#include "QueryProc.h"
 
-#include "LMControl.h"		// LayoutManager
-
-#include "CatalogComm.h"
-#include "SessionDesc.h"
-#include "StringStorage.h"
-#include "DepMgr.h"
-#include "Session.h"
-#include "GDataSock.h"
-#include "Timer.h"
-
-#include "Color.h"
 //#define INLINE_TRACE
 #include "debug.h"
 #include "htable.h"
 #include "datum.h"
 #include "CmdContainer.h"
+#include "DeviseCommand.h"
 
 #define REGISTER_COMMAND(objType)\
 {\

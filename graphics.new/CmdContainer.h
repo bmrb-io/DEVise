@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/03/27 15:08:53  wenger
+  Added dumping of logical session description, added GUI for dumping
+  logical or physical description; cleaned up some of the command code
+  a little.
+
  */
 
 #ifndef _CmdContainer_h_
@@ -23,10 +28,9 @@
 
 #include <iostream.h>
 
-#include "Control.h"
-#include "DeviseCommand.h"
-
+class ControlPanel;
 class DeviseCommand;
+
 class CmdContainer 
 {
   	friend ostream& operator <<(ostream& os, const CmdContainer& cc);
