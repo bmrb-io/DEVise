@@ -3,7 +3,8 @@ import java.awt.event.*;
 
 public class DEViseViewControl extends Panel
 {   
-    private jsdevisec jsc = null;
+    jsdevisec jsc = null;
+    DEViseScreen jscreen = null;
     
     Label title = null;
     Component [] component = null;
@@ -12,53 +13,63 @@ public class DEViseViewControl extends Panel
     public DEViseViewControl(jsdevisec what)
     {
         jsc = what;
+        jscreen = what.jscreen;
       
         setBackground(UIGlobals.uibgcolor);
         setForeground(UIGlobals.uifgcolor);
         setFont(UIGlobals.uifont);
-        setLayout(new GridLayout(1, 0));
+        //setLayout(new GridLayout(1, 0));
+        setLayout(new BorderLayout());
         
-        DEViseImageView view = jsc.getCurrentView();
+        DEViseView view = null;
+        DEViseWindow win = jscreen.getCurrentWindow();
+        if (win != null)
+            view = win.getCurrentView();
+            
         if (view == null) {
-            title = new Label("No Active View");
+            title = new Label("GData For Current View");
             component = new Component[1];
             component[0] = title;
         }  else {
             title = new Label("GData For Current View");
-            component = new Component[1 + view.gdataValue.size()];
+            component = new Component[1 + view.getGData().size()];
             component[0] = title;
-            if (!view.gdataValue.isEmpty()) {
-                int howMany = view.gdataValue.size();         
+            if (!view.getGData().isEmpty()) {
+                int howMany = view.getGData().size();         
                 Button [] button = new Button[howMany];
                 for (int i = 0; i < howMany; i++) {
-                    button[i] = new Button((String)view.gdataValue.elementAt(i));
+                    button[i] = new Button((String)view.getGData().elementAt(i));
                     component[i + 1] = button[i];
                 }
             }
         }
         
         panel = new ComponentPanel(component, "Vertical", 2);
-        add(panel);                            
+        add(panel, BorderLayout.CENTER);
     }
 
     public void updateControl()
     {
         remove(panel);
-
-        DEViseImageView view = jsc.getCurrentView();
+        
+        DEViseView view = null;
+        DEViseWindow win = jscreen.getCurrentWindow();
+        if (win != null)
+            view = win.getCurrentView();
+            
         if (view == null) {
-            title = new Label("No Active View");
+            title = new Label("GData For Current View");
             component = new Component[1];
             component[0] = title;
-        }  else {
+        } else {
             title = new Label("GData For Current View");
-            component = new Component[1 + view.gdataValue.size()];
+            component = new Component[1 + view.getGData().size()];
             component[0] = title;
-            if (!view.gdataValue.isEmpty()) {
-                int howMany = view.gdataValue.size();         
+            if (!view.getGData().isEmpty()) {
+                int howMany = view.getGData().size();         
                 Button [] button = new Button[howMany];
                 for (int i = 0; i < howMany; i++) {
-                    button[i] = new Button((String)view.gdataValue.elementAt(i));
+                    button[i] = new Button((String)view.getGData().elementAt(i));
                     component[i + 1] = button[i];
                 }
             }

@@ -7,8 +7,16 @@ public final class UIGlobals
     // global constants
     public static final String NO_OP = new String("   No   "), YES_OP = new String(" Yes "), OK_OP = new String("   OK   "), CANCEL_OP = new String("Cancel");
     public static final int OP_OK = 0, OP_YESNO = 1, OP_OKCANCEL = 2, OP_YESNOCANCEL = 3;
-        
-    // global variables
+    public static final Dimension SCREENDIM1 = new Dimension(1024, 768);
+    public static final Dimension SCREENDIM2 = new Dimension(800, 600);
+    public static final Dimension SCREENDIM3 = new Dimension(640, 480);
+    public static final Dimension SCREENDIM4 = new Dimension(480, 360);
+    public static final Dimension SCREENDIM5 = new Dimension(320, 240);
+    public static final Dimension SCREENDIM6 = new Dimension(200, 150);
+    public static final Dimension SCREENDIM7 = new Dimension(160, 120);   
+       
+    // global variables  
+    public static Dimension SCREENDIM = new Dimension(480, 360);
     public static Color uibgcolor = new Color(64, 96, 0);    
     public static Color uifgcolor = Color.white;
     public static Color dialogbgcolor = new Color(64, 96, 0);    

@@ -6,37 +6,34 @@ import  java.util.*;
 
 public class jsdevisec extends Frame
 {
-    public DEViseCDataChannel channel = null;
-    private DEViseCmdSocket cmdSocket = null;
-    private DEViseImgSocket imgSocket = null;
+    public DEViseCmdDispatcher dispatcher = null;
+    public Thread dispatcherThread = null;
+    public DEViseCmdSocket cmdSocket = null;
+    public DEViseImgSocket imgSocket = null;
+    public DEViseScreen jscreen = null;
+    private TextField screenX = new TextField(4);
+    private TextField screenY = new TextField(4);
+    
     private String myID = null;
-    
-    private Vector allViews = new Vector();
-    private DEViseImageView currentView = null;
-    
+        
     private Button exitButton = new Button("Exit");
     private Button openButton = new Button("Open");
     private Button closeButton = new Button("Close");
     private Button queryButton = new Button("Query");
-    private Button stopButton = new Button("Stop");
+    public  Button stopButton = new Button("Stop");
     private Button gridButton = new Button("NonGrid");
-    private Panel titlePanel = null;
-    private ComponentPanel panel = null;    
-    private DEViseAnimPanel animPanel = null;
-    public DEViseViewControl viewControl = null;
-    public DEViseViewInfo viewInfo = null;
-    private Panel viewPanel = null;
+    private Button refreshButton = new Button("Refresh");
+    public  DEViseAnimPanel animPanel = null;
+    public  DEViseViewControl viewControl = null;
+    public  DEViseViewInfo viewInfo = null;
     
-    public boolean isGrid = false;    
-    private boolean isAvailable = true;
-    private boolean isFatalError = false;
-    private boolean isSessionOpened = false; 
+    public  boolean isSessionOpened = false; 
     private boolean isQuit = false;
-    private OpenSessionHandler openSessionHandler = null;
     
     public Vector currSession = new Vector();
     
-    public YDebugInfo debugInfo = null;    
+    public YDebugInfo debugInfo = null;
+    public YLogFile logFile = null;
     
     public jsdevisec(DEViseCmdSocket arg1, DEViseImgSocket arg2, String arg3)
     {
@@ -49,11 +46,13 @@ public class jsdevisec extends Frame
         imgSocket = arg2;
         myID = arg3;        
                 
-        debugInfo = new YDebugInfo(Globals.ISDEBUG, Globals.ISLOG);
+        if (!Globals.ISAPPLET)
+            logFile = new YLogFile(false);
+
+        //debugInfo = new YDebugInfo(Globals.ISDEBUG, Globals.ISLOG);
+        debugInfo = new YDebugInfo(true, true);
         YDebugInfo.println("Successfully connect to DEVise command and image Server - ID: " + myID);
-        
-        channel = new DEViseCDataChannel(this, cmdSocket, imgSocket);
-        
+
         // necessary for processEvent method to work
         this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 
@@ -76,8 +75,10 @@ public class jsdevisec extends Frame
                 }  catch (InterruptedException e)  {
                 }
         
-                if (tracker.isErrorID(0))
-                    exitOnError("Can not get symbols of DEVise!");
+                if (tracker.isErrorID(0)) {
+                    String result = UIGlobals.showMsg(this, "Fatal error occurs in the Program\nCan not get symbols of DEVise!", "Confirm");
+                    System.exit(1);
+                }
                                                           
                 images.addElement(image);
             }
@@ -88,28 +89,50 @@ public class jsdevisec extends Frame
         try  {
             animPanel = new DEViseAnimPanel(this, images, 100);
         }  catch (YException e)  {
-            exitOnError(e.getMessage());
+            YDebugInfo.println("Can not start animation symbol!");
         }
         
-        titlePanel = new Panel(new FlowLayout(FlowLayout.LEFT));
+        Panel titlePanel = new Panel(new FlowLayout(FlowLayout.LEFT));
         titlePanel.add(animPanel);
-        Button[] button = new Button[6];
+        Component[] button = new Component[9];
         button[0] = openButton;
         button[1] = closeButton;
-        button[2] = queryButton;
-        button[3] = gridButton;
-        button[4] = stopButton;
+        button[2] = stopButton;
+        button[3] = queryButton;
+        button[4] = gridButton;
         button[5] = exitButton;
-        panel = new ComponentPanel(button);
+        button[6] = screenX;
+        button[7] = screenY;
+        button[8] = refreshButton;
+        //gridButton.setEnabled(false);
+        queryButton.setEnabled(false);
+        screenX.setText("640");
+        //screenX.setEditable(false);
+        screenY.setText("480");
+        //screenY.setEditable(false);
+        ComponentPanel panel = new ComponentPanel(button);
         titlePanel.add(panel);
-        add(titlePanel, BorderLayout.NORTH);
+        screenX.setBackground(Color.white);
+        screenY.setBackground(Color.white);
         addEventHandler(this);
+        jscreen = new DEViseScreen(this);        
+        viewControl = new DEViseViewControl(this);
+        viewInfo = new DEViseViewInfo(this);
+        add(titlePanel, BorderLayout.NORTH);
+        add(jscreen, BorderLayout.CENTER);        
+        add(viewControl, BorderLayout.EAST);
+        add(viewInfo, BorderLayout.SOUTH);
         
         setTitle("DEVise Java Screen");
         pack();
-        displayMe(true);
+        show();
+        
+        dispatcher = new DEViseCmdDispatcher(this);
+        dispatcherThread = new Thread(dispatcher);
+        dispatcherThread.start();
     }
-
+    
+    // used by applet
     public void displayMe(boolean isShow)
     {
         if (isShow) {
@@ -133,136 +156,25 @@ public class jsdevisec extends Frame
         }
     }
     
+    // used by applet
     public boolean getQuitStatus()
     {
         return isQuit;
     }
-
-    public void addView(DEViseImageView view)
-    { 
-        allViews.addElement(view);
-    }
-    
-    public void removeView(DEViseImageView view)
-    {
-        allViews.removeElement(view);
-    }
-    
-    public Vector getAllViews()
-    {
-        return allViews;
-    }
-    
-    public void setCurrentView(DEViseImageView view)
-    {
-        if (currentView != null)  {
-            currentView.setSelected(false);
-        }
         
-        currentView = view;
-        currentView.setSelected(true);
-        viewControl.updateControl();
-    }
-    
-    public DEViseImageView getCurrentView()
-    {
-        return currentView;
-    }
-           
-    public synchronized void startAnim()
-    {
-        isAvailable = false;
-        stopButton.setBackground(Color.red);
-        animPanel.start();
-    }
-    
-    public synchronized void stopAnim()
-    {
-        isAvailable = true;
-        stopButton.setBackground(UIGlobals.buttonbgcolor);
-        animPanel.stop();
-    }
-    
-    public synchronized boolean getStatus()
-    {
-        return isAvailable && !isFatalError;
-    }
-    
-    public synchronized void setStatus(boolean flag)
-    {
-        isAvailable = flag;
-    }
-    
     public void updateSessionList(String[] data)
     {
         currSession.removeAllElements();
         
+        if (data == null)
+            return;
+            
         if (data.length > 1) {
             for (int i = 1; i < data.length; i++) 
                 currSession.addElement(data[i]);
         }
     }
         
-    public void jscOpen()
-    {
-        removeAll();
-        
-        int number = allViews.size();
-        if (number < 1) {
-            // do nothing now
-            return;
-        }        
-        int num = (int)Math.sqrt(number);
-        int row , column = num;
-        if (num * num < number) {
-            row = num + 1;
-        } else {
-            row = num;
-        }
-        
-        viewPanel = new Panel(new GridLayout(row, column));
-        viewPanel.setBackground(UIGlobals.uibgcolor);
-        for (int i = 0; i < number; i++)  {
-            ScrollPane tmpPanel = new ScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED); 
-            tmpPanel.setBackground(UIGlobals.uibgcolor);
-            tmpPanel.add((DEViseImageView)allViews.elementAt(i));
-            viewPanel.add(tmpPanel);
-        }
-        
-        //setCurrentView((DEViseImageView)allViews.elementAt(0));
-        viewControl = new DEViseViewControl(this);
-        viewInfo = new DEViseViewInfo(this);
-        
-        add(titlePanel, BorderLayout.NORTH);
-        add(viewPanel, BorderLayout.CENTER);
-        add(viewControl, BorderLayout.EAST);
-        add(viewInfo, BorderLayout.SOUTH);
-        validate();
-        pack();
-        displayMe(true);
-        //show();
-        
-        isSessionOpened = true;
-    }
-    
-    public void jscClose()
-    {         
-        removeAll();
-        
-        add(titlePanel, BorderLayout.NORTH);
-        validate();
-        pack();
-        displayMe(true);
-        //show();
-
-        isSessionOpened = false;
-        allViews.removeAllElements();
-        currentView = null;
-        currSession.removeAllElements();
-        isGrid = false;
-        setStatus(true);
-    }
-
     public void addEventHandler(jsdevisec what)
     { 
         final jsdevisec jsc = what;
@@ -270,21 +182,31 @@ public class jsdevisec extends Frame
         openButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
-                    {    
-                        if (getStatus()) {
+                    {   
+                        if (!dispatcherThread.isAlive()) {
+                            dispatcherThread = new Thread(dispatcher);
+                            dispatcherThread.start();
+                        }
+                        
+                        if (dispatcher.getStatus()) {
                             if (!isSessionOpened) {
-                                channel.stop();
-                                channel.start("JAVAC_GetSessionList");
-                                
-                                setStatus(false);
-                                
-                                if (openSessionHandler != null && openSessionHandler.isAlive()) {
-                                    openSessionHandler.stop();
-                                    openSessionHandler = null;
+                                dispatcher.addCmd("JAVAC_SetDisplaySize " + screenX.getText() + " " + screenY.getText());
+                                dispatcher.addCmd("JAVAC_GetSessionList");
+                                // Need to refine
+                                while (currSession.isEmpty()) {
+                                    try {
+                                        Thread.sleep(100);
+                                    } catch (InterruptedException e) {
+                                    }
                                 }
-                                
-                                openSessionHandler = new OpenSessionHandler(jsc);
-                                openSessionHandler.start();
+                                DEViseOpenDlg dlg = new DEViseOpenDlg(jsc);
+                                dlg.show();
+                                if (dlg.getStatus()) {
+                                    dispatcher.addCmd("JAVAC_OpenSession {" + dlg.getSessionName() + "}");
+                                    refreshButton.setEnabled(false);
+                                    screenX.setEditable(false);
+                                    screenY.setEditable(false);
+                                }
                             }                            
                         }
                     }
@@ -293,10 +215,12 @@ public class jsdevisec extends Frame
                 {
                     public void actionPerformed(ActionEvent event)
                     {   
-                        if (getStatus()) {
+                        if (dispatcher.getStatus()) {
                             if (isSessionOpened) {
-                                channel.stop();
-                                channel.start("JAVAC_CloseCurrentSession");
+                                dispatcher.addCmd("JAVAC_CloseCurrentSession");
+                                refreshButton.setEnabled(true);
+                                screenX.setEditable(true);
+                                screenY.setEditable(true);
                             }
                         }
                     }
@@ -318,34 +242,44 @@ public class jsdevisec extends Frame
                 {
                     public void actionPerformed(ActionEvent event)
                     {   
-                        if (openSessionHandler != null && openSessionHandler.isAlive()) {
-                            openSessionHandler.stop();
-                            openSessionHandler = null;
-                        }
-                                                
-                        channel.stop();
+                        stopDispatcher();
                     }
                 });
         gridButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-                        if (!getStatus())
+                        if (!dispatcher.getStatus())
                             return;
                             
-                        if (isGrid) {
+                        if (jscreen.isGrid) {
                             gridButton.setLabel("NonGrid");
                             validate();
-                            isGrid = !isGrid;
                         } else {
                             gridButton.setLabel("Grid");
                             validate();
-                            isGrid = !isGrid;
                         }
+
+                        jscreen.isGrid = !jscreen.isGrid;
                     }
                 });
+        refreshButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {   
+                        Dimension newDim = new Dimension((Integer.valueOf(screenX.getText())).intValue(), (Integer.valueOf(screenY.getText())).intValue());
+                        jscreen.setScreenDim(newDim);
+                    }
+                });           
     }
-                   
+    
+    public void stopDispatcher()
+    {
+        dispatcherThread.stop();
+        animPanel.stop();
+        stopButton.setBackground(UIGlobals.buttonbgcolor);
+    }
+    
     public void quit()
     {   
         if (isQuit)
@@ -356,20 +290,26 @@ public class jsdevisec extends Frame
             return;
         }
         
-        if (channel.dataChannel != null) {
-            if (channel.dataChannel.isAlive()) {
-                if ((UIGlobals.showMsg(this, "Still talking to Server - Continue quit?", "Confirm",
-                                  UIGlobals.OP_YESNO)).equals(UIGlobals.NO_OP)) {
+        if (dispatcherThread.isAlive()) {
+            if (!dispatcher.getWaitStatus()) {
+                if ((UIGlobals.showMsg(this, "Still talking to Server - Continue to quit?", "Confirm",
+                                       UIGlobals.OP_YESNO)).equals(UIGlobals.NO_OP)) {
                     return;
                 } else {
-                    channel.stop();
+                    stopDispatcher();
                 }
             }
+            
+            dispatcher.addCmd("ExitDispatcher");
         }
          
         isQuit = true;
+        if (!Globals.ISAPPLET)
+            logFile.finalize();
         
-        stopAnim();
+        animPanel.stop();
+        stopButton.setBackground(UIGlobals.buttonbgcolor);
+
         debugInfo.dispose();
         dispose();
 
@@ -387,8 +327,8 @@ public class jsdevisec extends Frame
             }
         } catch (YError e) {
             if (!Globals.ISAPPLET) {
-                if (isFatalError)
-                    System.out.println("Fatal error happened in program execution!");
+                //if (isFatalError)
+                //    System.out.println("Fatal error happened in program execution!");
                 System.out.println("Can not close socket connection!");
                 System.exit(1);
             }
@@ -396,22 +336,15 @@ public class jsdevisec extends Frame
         
 
         if (!Globals.ISAPPLET) {
-            if (isFatalError) {
-                System.out.println("Fatal error happened in program execution!");
-                System.exit(1);
-            } else {
+            //if (isFatalError) {
+            //    System.out.println("Fatal error happened in program execution!");
+            //    System.exit(1);
+            //} else {
                 System.exit(0);
-            }
+            //}
         }
     }
-    
-    public void exitOnError(String msg)
-    {
-        String result = UIGlobals.showMsg(this, "Error occurs in the Program\n" + msg + "\nPlease press Exit to quit the program!", "Confirm");
-        isFatalError = true;
-        channel.stop();
-    }
-            
+
     protected void processEvent(AWTEvent event)
     {
         if (event.getID() == WindowEvent.WINDOW_CLOSING)  {
@@ -441,9 +374,12 @@ class DEViseOpenDlg extends Dialog
         setBackground(UIGlobals.uibgcolor);
         setForeground(UIGlobals.uifgcolor);
         setFont(UIGlobals.uifont);
-
-        fileList = new List(10, false);
-        fileList.setBackground(UIGlobals.textbgcolor);
+        
+        label.setFont(new Font("Serif", Font.BOLD, 16));
+                
+        fileList = new List(8, false);
+        //fileList.setBackground(UIGlobals.textbgcolor);
+        fileList.setBackground(Color.white);
         fileList.setForeground(UIGlobals.textfgcolor);
         fileList.setFont(UIGlobals.textfont);
         
@@ -457,13 +393,34 @@ class DEViseOpenDlg extends Dialog
         Button [] button = new Button[2];
         button[0] = okButton;
         button[1] = cancelButton;
-        ComponentPanel panel = new ComponentPanel(button, "Horizontal");
+        ComponentPanel panel = new ComponentPanel(button, "Horizontal", 20);
 
         // set layout manager
-        setLayout(new BorderLayout(5, 5));
-        add(label, BorderLayout.NORTH);
-        add(fileList, BorderLayout.CENTER);
-        add(panel, BorderLayout.SOUTH);
+        GridBagLayout  gridbag = new GridBagLayout();
+        GridBagConstraints  c = new GridBagConstraints();       
+        setLayout(gridbag); 
+        //c.gridx = GridBagConstraints.RELATIVE;
+        //c.gridy = GridBagConstraints.RELATIVE;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        //c.gridheight = 1;
+        c.fill = GridBagConstraints.BOTH;
+        c.insets = new Insets(5, 10, 5, 10);
+        //c.ipadx = 0;
+        //c.ipady = 0;
+        c.anchor = GridBagConstraints.CENTER;
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+                
+        gridbag.setConstraints(label, c);
+        add(label);
+        gridbag.setConstraints(fileList, c);
+        add(fileList);
+        gridbag.setConstraints(panel, c);
+        add(panel);
+        //setLayout(new BorderLayout(5, 5));        
+        //add(label, BorderLayout.NORTH);
+        //add(fileList, BorderLayout.CENTER);
+        //add(panel, BorderLayout.SOUTH);
 
         pack();
         
@@ -518,34 +475,5 @@ class DEViseOpenDlg extends Dialog
     public boolean getStatus()
     {
         return status;
-    }
-}
-
-// Used only to make 'stop' button work while something wrong in executing 'getSessionList'
-class OpenSessionHandler extends Thread
-{   
-    jsdevisec jsc = null;
-     
-    public OpenSessionHandler(jsdevisec what)
-    {
-        super();
-        jsc = what;
-    }
-    
-    public void run()
-    {
-        while (!jsc.getStatus()) {
-            try {
-                sleep(300);
-            } catch (InterruptedException e) {
-            }
-        }
-
-        DEViseOpenDlg dlg = new DEViseOpenDlg(jsc);
-        dlg.show();
-        if (dlg.getStatus()) {
-            jsc.channel.stop();
-            jsc.channel.start("JAVAC_OpenSession {" + dlg.getSessionName() + "}");
-        }
     }
 }

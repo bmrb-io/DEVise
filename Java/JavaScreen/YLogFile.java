@@ -5,8 +5,13 @@ public final class YLogFile
     private static BufferedWriter logFile = null;
     private static String logFileName = null;
     private static boolean isLog = false;
-    
-    public YLogFile(boolean arg1, String arg2) throws YException
+
+    public YLogFile(boolean arg)
+    {
+        this(arg, null);
+    }
+        
+    public YLogFile(boolean arg1, String arg2) //throws YException
     {   
         isLog = arg1;
         logFileName = arg2;
@@ -19,7 +24,7 @@ public final class YLogFile
                 logFile = new BufferedWriter(new FileWriter(logFileName));
             } catch (IOException e) {
                 logFile = null;
-                throw new YException("Can not open log file " + logFileName);
+                //throw new YException("Can not open log file " + logFileName);
             }
         }
     }        
