@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:15:11  jussi
+  Added CVS header.
+*/
 
 #ifndef ParseCat_h
 #define ParseCat_h
@@ -11,6 +14,8 @@
 /* Parse a catalog file and register new file type with the system.
 Return name of new file type if successful, else return NULL */
 extern char *ParseCat(char *catFile);
+extern char *ParseCatPhysical(char *catFile);
+extern char *ParseCatLogical(char *catFile, char *sname);
 
 /* Register a new constructor for class. The
 constructor is called depending on the "source" statment stored
