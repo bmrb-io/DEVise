@@ -1,0 +1,882 @@
+#!/usr/bin/wish -f
+
+global debug
+set debug 1
+
+global DEViseLM 
+set DEViseLM 1
+
+global defaultFgColor defaultBgColor defaultName
+set defaultFgColor black
+set defaultBgColor white
+set defaultName "view"
+
+global nodeListPtr
+global nodeList
+
+global rbdList 
+global rbdListPtr 
+
+global nodeTagList 
+global curNode ""
+
+global rbdTagList
+
+global resizeMode selectionDone curSelection
+set resizeMode "join"
+set selectionDone 0
+set curSelection ""
+
+global opMode 
+set opMode "create"
+
+
+proc LayoutManager { w params} {
+    global rbdListPtr curNode window nodeListPtr topwin
+    toplevel $w
+    set topwin $w
+    canvas $w.parent 
+    $w.parent configure -bg white
+    pack $w.parent 
+    set rbdListPtr 0
+    set nodeListPtr 0
+    set curNode ""
+    set window $w.parent
+    bind $window <Button-1> {
+	global startNode createStart window rbdTag name
+	global startIndex endIndex 
+	global opMode	
+	global moveStart
+        
+        set name $defaultName
+	set rbdTag ""
+	set startIndex -1
+	set endIndex -1
+	
+	if { $opMode == "create" } {
+	    set startNodeTag [ $window find withtag current ]
+	    
+	    if { $startNodeTag != "" } {
+		set taglist [ $window gettags $startNodeTag ]
+		#puts $taglist 
+		if { [ lsearch $taglist resize ] != -1 } {
+		    #		set startIndex [ FindNodeIndex $startNodeTag ]
+		    set startIndex [ lindex $nodeTagList($startNodeTag) 0]
+		    set startNode $nodeList($startIndex)
+		    #puts " Found old node ...index = $startIndex" 
+		}
+	    }
+	    if { $startIndex == -1 } { 
+		#puts " Creating new node ..."
+		if { [ CheckNodeInRbd %x %y] == 1 } {
+		    puts " node in Rbd"
+		    return
+		}
+		set startNode [ CreateNode $window %x %y ]
+	    }
+	    set createStart 1
+	    #puts "startNode = $startNode"
+	}
+	if { $opMode == "move" } {
+	    set moveStart 0
+	    set rbdTag [ $window find withtag current ]
+	    if { $rbdTag != "" } {
+		set taglist [ $window gettags $rbdTag ]
+		if { [lsearch $taglist rbd ] != -1 } {
+		    puts " rbdTag = $rbdTag"
+                    puts " rbdtaglist = $taglist "
+		    set moveStart 1
+		}
+	    }
+	}
+    }
+    
+    bind $window <B1-Motion> {
+	global startNode endNode createStart rbdTag bgColor endIndex 
+	global opMode
+	global moveStart
+	global name nameTag
+	if { $opMode == "create" } { 
+	    set bgColor white
+	    set endIndex -1
+	    if { $createStart == 1 } {
+		if { [ CheckOverLap [lindex $startNode 0] \
+			[lindex $startNode 1] \
+			%x %y {} ] == 1 } {
+		    puts " overlap "
+		    #set createStart 0
+		    return
+		}
+		if { $rbdTag != "" } {
+		    $window delete [lindex $endNode 2]
+		    $window delete $rbdTag 
+		    $window delete $nameTag
+		}
+		if { $endIndex == -1 } { 
+		    #puts " Creating new node ..."
+		    set endNode [CreateNode $window %x %y]
+		}
+		#puts "endNode = $endNode"
+		set rbdTag [DrawRbd $window $startNode $endNode $bgColor]
+		set nameTag [DrawNameTag $window \
+			[MidPoint $startNode $endNode] $name]
+		#puts "rbdTag = $rbdTag"
+	    }  
+	}
+	if { $opMode == "move" } {
+	    if { $moveStart == 1 } {
+		set rbdIndex $rbdTagList($rbdTag)
+		set rbdObj $rbdList($rbdIndex)
+		set startNode $nodeList([lindex $rbdObj 1])
+		set endNode $nodeList([lindex $rbdObj 2])
+                
+		set startX [lindex $startNode 0]
+		set startY [lindex $startNode 1]
+		set endX [lindex $endNode 0]
+		set endY [lindex $endNode 1]
+		
+		set wd [expr abs($endX - $startX)]
+		set ht [expr abs($endY - $startY)]
+		#puts "wd = $wd ht= $ht"
+		set centerX %x
+		set centerY %y
+		set startX [expr  $centerX - [expr $wd / 2]]
+		set endX [expr $centerX + [expr $wd / 2]]
+		set startY [expr  $centerY - [expr $ht / 2]]
+		set endY [expr  $centerY + [expr $ht / 2]]
+		if { [ CheckOverLap $startX $startY \
+			$endX $endY [list $rbdIndex ] ] == 1 } {
+		    return
+		}
+		$window delete $rbdTag
+                set nameTag [lindex $rbdObj 4]
+		set name [GetNameFromtag $window $nameTag]
+		$window delete $nameTag
+		if { [llength $nodeTagList([lindex $startNode 2])] == 2 } {
+		    $window delete [lindex $startNode 2]
+		}
+		if { [llength $nodeTagList([lindex $endNode 2])] == 2 } {
+		    $window delete [lindex $endNode 2]
+		}
+		set startNode [ CreateNode $window $startX $startY]
+		set endNode   [ CreateNode $window $endX $endY]
+		set rbdTag [ UpdateMoveRbd $window $rbdIndex \
+			$startNode $endNode $name]
+	    }
+	}
+
+    }
+    
+    bind $window <ButtonRelease-1> {
+	global createStart startNode EndNode rbdTag startIndex endIndex bgColor
+	global nameTag 
+	global opMode
+	global moveStart
+	global rbdList rbdTagList nodeList nodeTagList
+
+	if { $opMode == "create" } {
+	    if { $createStart == 1 } { 
+		UpdateCreateRbd $rbdTag $startNode $endNode \
+			$startIndex $endIndex \
+			$bgColor $nameTag
+		set createStart 0
+	    } else  {
+		if { $startIndex == -1 } {
+		    $window delete [lindex $startNode 2]
+		}
+		if { $endIndex == -1 } {
+		    $window delete [lindex $endNode 2]
+		}
+		if { $rbdTag != " "} {
+		    $window delete $rbdTag
+		    $window delete $nameTag
+		}
+	    }
+	}
+	if { $opMode == "move" } {
+	    set moveStart 0
+	}
+    }
+
+    bind $window <Button-2> {
+	global selectionDone curSelection resizeMode
+	
+	#puts $selectionDone
+	
+    	if { $resizeMode == "split" } {
+	    #puts " Resizing in split mode "
+	    if { $selectionDone == 0 } {
+		set curRbdTag [$window find withtag current]
+		if { $curRbdTag != "" } {
+		    if { [lsearch [$window gettags $curRbdTag ] rbd ] != -1 } {
+			set curSelection $curRbdTag
+		    }
+		    $window itemconfigure $curSelection -outline red
+		    set selectionDone 1
+		}
+	    } else {
+		set curSelection ""
+		set selectionDone 0
+	    }
+	} else { 
+	    #puts "Resizing in join mode "
+	}
+    }
+
+    bind $window <Button-3> {
+	global movingNodeTag resizeStart window movingIndex movingNode
+	
+#	if { $resizeMode == "split" && $selectionDone == false } {
+#	    #puts "Select a rectangle by Double Click 1 on it
+#	    return
+#	}
+	set resizeStart 0
+	set movingIndex -1
+        
+	set movingNodeTag [ $window find withtag current ]
+	set movingIndex -1
+	if { $movingNodeTag != "" } {
+	    set taglist [ $window gettags $movingNodeTag ]
+	    #puts $taglist
+	    if { [ lsearch $taglist resize ] != -1 } {
+		#puts "beginning resize..." 
+		set resizeStart 1
+		set movingIndex [ lindex $nodeTagList($movingNodeTag) 0]
+		set movingNode $nodeList($movingIndex)
+		#puts "$movingIndex $movingNode"
+	    }
+	}
+    }
+    
+    bind $window <B3-Motion> {
+	global resizeStart window movingIndex
+#	global selectionDone curSelection 
+	
+	set movingNode $nodeList($movingIndex)
+	set movingNodeTag [lindex $movingNode 2]
+	
+	
+	if { $resizeStart == 1 } {
+	    #puts "changing...$nodeTagList($movingNodeTag)"
+	    set movingRectList [lrange $nodeTagList($movingNodeTag) 1 end]
+	    #puts "moving...$movingRectList" 
+	    foreach rbdIndex $movingRectList {
+		if { [ChangeSign $rbdList($rbdIndex) \
+			$movingIndex %x %y] == 1 } {
+		    return 
+		}
+	    }
+	    $window delete $movingNodeTag
+	    
+	    foreach rbdIndex $movingRectList {
+		set rbdObj $rbdList($rbdIndex)
+		#puts " deleting old rect $rbdIndex : $rbdObj"
+		$window delete [lindex $rbdObj 0]
+	    }
+	    set newNode [CreateNode $window %x %y]
+	    set nodeList($movingIndex) $newNode
+	    foreach rbdIndex $movingRectList {
+		set name [GetNameFromTag $window [lindex $rbdObj 4]]
+		$window delete [lindex $rbdObj 4]
+		UpdateResizeRbd $window $movingIndex $movingNode \
+			$newNode $rbdIndex $name
+	    }
+	    # update the nodeTagList 
+	    set nodeTagList([lindex $newNode 2]) $nodeTagList($movingNodeTag)
+	    set nodeTagList($movingNodeTag) {} 
+	}
+    }
+
+    bind $window <ButtonRelease-3> {
+	global resizeStart selectionDone curSelection rbdTag 
+	if { $resizeStart == 1 } { 
+	    set selectionDone 0
+	    set curSelection ""
+	    set resizeStart 0
+	}
+    }
+    button $w.opMode -textvariable opMode -command {
+    	if { $opMode == "create" } {
+    	    set opMode "move"
+    	} elseif { $opMode == "move" } {
+    	    set opMode "create"
+	}
+    }
+    button $w.quit -text  "Quit" -command { 
+	exit
+    }
+
+    button $w.load -text  "Load" -command {
+	global dialogParamVar
+	if { [dialogParam $window.dialog "Load" \
+		"Give filename to load" "" 1 {Cancel OK} {filename}] == 0 } {
+	    return
+	}
+	LoadFromFile $window  "$dialogParamVar(params)"
+    }
+
+    button $w.save -text  "Save" -command {
+	global dialogParamVar
+	if { [dialogParam $window.dialog "Save" \
+		"Give filename to save" "" 1 {Cancel OK} {filename}] == 0} {
+	    return
+	}
+	
+	SaveToFile $window "$dialogParamVar(params)"
+    }
+    button $w.clear -text "Clear" -command {
+	global window
+	ClearCanvas  $window
+    }
+    pack $w.opMode $w.load $w.save $w.clear $w.quit -side left -expand 1 \
+	    -fill x 
+    global DEViseLM
+
+    if { $DEViseLM == 1 } {
+	InitFromDEViseParams $w.parent $params
+    }
+}
+
+proc UpdateResizeRbd { w nodeIndex oldNode newNode rbdIndex name } {
+    global rbdList nodeList
+    global rbdTagList
+
+    set rbdObj $rbdList($rbdIndex)
+    set oldTag     [lindex $rbdObj 0]
+    set node1Index [lindex $rbdObj 1]
+    set node2Index [lindex $rbdObj 2]
+    set color      [lindex $rbdObj 3]
+    #puts "start $node1Index , end $node2Index "
+
+#    unset rbdTagList($oldTag)
+    if { $nodeIndex == $node1Index } {
+	#puts " changing start node "
+    	set rbdTag [DrawRbd $w $newNode $nodeList($node2Index) $color]
+	set nameTag [DrawNameTag $w \
+                [MidPoint $newNode $nodeList($node2Index)] $name]
+	set rbdList($rbdIndex) [list $rbdTag $nodeIndex $node2Index \
+                $color $nameTag]
+    } elseif { $nodeIndex == $node2Index } {
+	#puts " changing end node "
+	set rbdTag [DrawRbd $w $nodeList($node1Index) $newNode $color]
+	set nameTag [DrawNameTag $w \
+                [MidPoint $nodeList($node1Index) $newNode] $name]
+	set rbdList($rbdIndex) [list $rbdTag $node1Index $nodeIndex \
+                $color $nameTag]
+    }
+
+    global DEViseLM
+
+    if { $DEViseLM == 1 } {
+	puts " resize -> $name"
+	UpdateDeviseViews $name $nodeList($node1Index) \
+		$nodeList($node2Index)
+    }
+}
+
+proc UpdateCreateRbd { rbdTag startNode endNode startIndex endIndex \
+	bgColor nameTag } {
+    global debug
+    global nodeList nodeListPtr
+    global rbdList rbdListPtr
+    global nodeTagList
+    global rbdTagList
+
+    #      add nodes to the node list
+    
+    set node1tag  [lindex $startNode 2]
+    set node2tag  [lindex $endNode 2]
+    
+    if { $startIndex == -1 } {
+	set startIndex $nodeListPtr
+	set nodeList($startIndex) $startNode 
+	set nodeListPtr [expr $nodeListPtr + 1] 
+	set nodeTagList($node1tag) [list $startIndex ]
+    }
+    if { $endIndex == -1 } {
+        set endIndex $nodeListPtr
+        set nodeList($endIndex) $endNode
+        set nodeTagList($node2tag) [list  $endIndex ]
+        set nodeListPtr [expr $nodeListPtr + 1] 
+    }
+    
+    #      log info about the rubberband into the rbdlist
+    
+    set index $rbdListPtr
+    set rbdList($index) [list $rbdTag $startIndex $endIndex $bgColor $nameTag]
+
+    #puts $nodeTagList($node1tag)
+    #puts $nodeTagList($node2tag)    
+    set nodeTagList($node1tag) [lappend nodeTagList($node1tag) $index]
+    set nodeTagList($node2tag) [lappend nodeTagList($node2tag) $index]
+    set rbdTagList($rbdTag) $index
+    set rbdListPtr [expr $rbdListPtr + 1]
+
+    if { $debug  ==  1 }  {
+	#puts $rbdList($index)
+	#puts $nodeTagList($node1tag)
+	#puts $nodeTagList($node2tag)
+    }
+}
+
+
+proc DrawRbd { w node1 node2 bgColor} {
+    global defaultBgColor defaultFgColor
+    if { $bgColor == "" } {
+	set bgColor  $defaultBgColor
+    }
+    set tag [$w create rectangle  \
+	    [lindex $node1 0] [lindex $node1 1] \
+	    [lindex $node2 0] [lindex $node2 1] -outline $defaultFgColor \
+	    -fill $bgColor -tags rbd] 
+    $w lower $tag
+    return $tag
+}
+
+proc DrawNameTag { w node name } {
+    global defaultName 
+    puts "Draw -> name = $name"
+    if { $name == "" } {
+	set name $defaultName
+    }
+    set tag [$w create text \
+	    [lindex $node 0] [lindex $node 1] \
+	    -text "$name" -anchor center -tags "$name" ]
+
+    return $tag
+}
+
+proc CreateNode { w x y }  {
+    set tag [$w create rectangle \
+               [expr $x - 3] \
+               [expr $y - 3] [expr $x + 3] \
+               [expr $y + 3] -fill black  -tags resize ]
+	return [list $x $y $tag] 
+} 
+
+proc FindNodeIndex { tag } {
+    global nodeTagList 
+     
+    set index [lindex $nodeTagList($tag) 0]
+    #puts "index = $index"
+    return $index
+}
+
+
+#    if { $index == -1 } {
+#        #puts " something is wrong...."
+#    }
+#
+#    set info $rbdList($index)
+#    #puts " info = $info" 
+#    set startIndex [lindex $info 1]
+#    set endIndex [lindex $info 2]
+#    #puts " start : $startIndex , end : $endIndex" 
+#    set startNode $nodeList($startIndex)
+#    set endNode   $nodeList($endIndex)
+#    if { $tag == [lindex $startNode 2] } {
+#        return $startIndex
+#    } elseif { $tag == [lindex $endNode 2] } {
+#        return $endIndex 
+#    }
+#}
+
+proc CheckNodeInRbd { x y } {
+    global rbdList nodeList
+
+    #puts "rbdList->" 
+    foreach i [array names rbdList] {
+	#puts "checking ...$rbdList($i)"
+	set node1 $nodeList([lindex $rbdList($i) 1])
+	set node2 $nodeList([lindex $rbdList($i) 2])
+	set x1 [lindex $node1 0]
+	set y1 [lindex $node1 1]
+	set x2 [lindex $node2 0]
+	set y2 [lindex $node2 1]
+
+	if { [PointInRbd $x1 $y1 $x2 $y2 $x $y] == 1 } {
+	    	    return 1
+	}
+    }
+    return 0
+}
+
+proc CheckOverLap { x1 y1 x2 y2 except } {
+    global rbdList nodeList
+    #puts "rbdList->" 
+    foreach i [array names rbdList] {
+	#puts "checking ...$rbdList($i)"
+	if  { [ lsearch $except $i ] == -1 } {
+	    set node1 $nodeList([lindex $rbdList($i) 1])
+	    set node2 $nodeList([lindex $rbdList($i) 2])
+	    set x3 [lindex $node1 0]
+	    set y3 [lindex $node1 1]
+	    set x4 [lindex $node2 0]
+	    set y4 [lindex $node2 1]
+	    if { [OverLapDim $x1 $x2 $x3 $x4 ] == 1 } {
+		if { [OverLapDim $y1 $y2 $y3 $y4 ] == 1 } {
+		    return 1
+		}
+	    }
+	}
+    }
+    return 0
+}    
+    
+proc PointInRbd { x1 y1 x2 y2 x y } {
+    
+    set inX 0 
+    set inY 0
+    if { $x1 < $x2 }  {
+	if { $x > $x1 && $x < $x2 } {
+	    set inX 1
+	}
+    } else {
+	if { $x > $x2 && $x < $x1 } {
+	    set inX 1
+	}
+    }
+
+    if { $y1 < $y2 }  {
+	if { $y > $y1 && $y < $y2 } {
+	    set inY 1
+	}
+    } else {
+	if { $y > $y2 && $y < $y1 } {
+	    set inY 1
+	}
+    }
+    
+    if { $inX == 1  && $inY == 1 } {
+	return 1 
+    } else {
+	return 0
+    }
+    
+}
+
+proc OverLapDim { x1 x2  x3 x4 } {
+    puts " $x1 $x2 $x3 $x4 "
+    if { $x1 < $x2 } {
+	set 	minx12  $x1
+	set 	maxx12  $x2
+    } else {
+	set 	minx12  $x2
+	set 	maxx12  $x1
+    } 
+    
+    if { $x3 < $x4 } {
+	set 	minx34  $x3
+	set 	maxx34  $x4
+    } else {
+	set 	minx34  $x4
+	set 	maxx34  $x3
+    } 
+    puts "$minx12 $maxx12 $minx34 $maxx34"
+    if { $minx12 <= $minx34 } {
+	if { $minx34 < $maxx12  && $minx34 != $maxx34} {
+	    puts "overlap 1"
+	    return 1
+	}
+    } elseif { $minx34 < $minx12 } {
+	if { $minx12 < $maxx34 && $minx12 != $maxx12} {
+	    puts "overlap 2"
+	    return 1
+	}
+    }
+    
+    puts "overlap none"
+    return 0
+}
+
+proc ChangeSign { rbd movingIndex x y } {
+    global nodeList
+
+    if { $movingIndex == [lindex $rbd 1] } {
+	set moving $nodeList([lindex $rbd 1])
+	set other $nodeList([lindex $rbd 2])
+    }
+    if { $movingIndex == [lindex $rbd 2] } {
+	set moving $nodeList([lindex $rbd 2])
+	set other $nodeList([lindex $rbd 1])
+    }
+    set movingX [lindex $moving 0]
+    set movingY [lindex $moving 1]
+    set otherX [lindex $other 0]
+    set otherY [lindex $other 1]
+    
+    puts "$movingX $x  $otherX"
+    puts "$movingY $y  $otherY"
+    if { $movingX < $otherX && $x > $otherX } {
+#	puts "change sign "
+	return 1
+    }
+    if { $movingX > $otherX && $x < $otherX } {
+#	puts "change sign "
+	return 1
+    }
+    if { $movingY < $otherY && $y > $otherY } {
+#	puts "change sign "
+	return 1
+    }
+    if { $movingY > $otherY && $y < $otherY } {
+#	puts "change sign "
+	return 1
+    }
+    return 0
+}
+
+proc UpdateMoveRbd { w rbdIndex startNode endNode name } {
+    global rbdList rbdTagList
+    global nodeList nodeTagList
+    global nodeListPtr 
+
+    set rbdObj $rbdList($rbdIndex)
+    set oldTag [ lindex $rbdObj 0 ] 
+#    unset rbdTagList($oldTag)
+
+    set startIndex [lindex $rbdObj 1 ]
+    set endIndex [ lindex $rbdObj 2] 
+    set bgColor  [lindex $rbdObj 3]
+    set startTag [lindex $nodeList($startIndex) 2]
+    set endTag  [lindex $nodeList($endIndex) 2]
+    
+
+    if { [llength  $nodeTagList($startTag)] == 2 } {
+	unset nodeTagList($startTag)
+    } else {
+	set startIndex $nodeListPtr
+	set nodeListPtr [ expr $nodeListPtr + 1]
+	set index [lsearch [lrange $nodeTagList($startTag)  1 end] $rbdIndex]
+	set nodeTagList($startTag)  \
+		[lreplace $nodeTagList($startTag) $index $index]
+    }
+
+    if { [llength $nodeTagList($endTag) ] == 2 } {
+	unset nodeTagList($endTag)
+    } else {
+	set endIndex $nodeListPtr
+	set nodeListPtr [ expr $nodeListPtr + 1]
+	set index [lsearch [lrange $nodeTagList($endTag) 1 end] $rbdIndex]
+	set nodeTagList($endTag)  \
+		[lreplace $nodeTagList($endTag) $index $index]
+    }
+    set nodeList($startIndex) $startNode
+    set nodeList($endIndex) $endNode
+
+    set nodeTagList([lindex $startNode 2]) [list $startIndex $rbdIndex]
+    set nodeTagList([lindex $endNode 2]) [list $endIndex $rbdIndex]
+
+    set rbdTag [ DrawRbd $w $startNode $endNode $bgColor]
+    set nameTag [DrawNameTag $w [MidPoint $startNode $endNode] $name]
+    set rbdList($rbdIndex) [list $rbdTag $startIndex $endIndex \
+	       $bgColor $nameTag]
+    set rbdTagList($rbdTag) $rbdIndex
+    global DEViseLM
+    if { $DEViseLM == 1 } {
+	UpdateDeviseViews $name $startNode $endNode 
+    }
+
+    return $rbdTag
+}
+
+#LayoutManager .manager1
+
+proc InitFromDEViseParams { w params } {
+    global rbdTag 
+    global winGeom xscale yscale
+
+    if { $params == "" } {
+	return
+    }
+    set winGeom [lindex $params 0]
+    set xscale  [lindex $params 1]
+    set yscale  [lindex $params 2]
+    set viewList [lindex $params 3]
+
+    set winabsX [lindex $winGeom 0]
+    set winabsY [lindex $winGeom 1]
+    set winX [lindex $winGeom 2]
+    set winY [lindex $winGeom 3]
+    set winWd [lindex $winGeom 4]
+    set winHt [lindex $winGeom 5]
+    
+    $w configure -width  [expr $winWd * $xscale + 10]
+    $w configure -height [expr $winHt * $yscale + 10]
+    
+    foreach view $viewList {
+	set viewName [lindex $view 0]
+	set viewGeom [lindex $view 1]
+	set rect [ MapDevisetoTk $winGeom $viewGeom $xscale $yscale]
+	set x1 [lindex $rect 0]
+	set y1 [lindex $rect 1]
+	set x2 [lindex $rect 2]
+	set y2 [lindex $rect 3]
+	set bgColor [lindex $rect 4]
+	set startNode [CreateNode $w $x1 $y1]
+	set endNode [CreateNode $w $x2 $y2]
+	set rbdTag [DrawRbd $w $startNode $endNode $bgColor]
+	set nameTag [DrawNameTag $w [MidPoint $startNode $endNode] $viewName]
+	UpdateCreateRbd $rbdTag $startNode $endNode -1 -1 $bgColor $nameTag
+    }
+}
+proc MidPoint { node1 node2 } {
+    set x1 [lindex $node1 0]
+    set x2 [lindex $node2 0]
+    set y1 [lindex $node1 1]
+    set y2 [lindex $node2 1]
+    return [list [expr ($x1 + $x2)/2] [expr ($y1 + $y2)/2]]
+}
+
+proc GetNameFromTag { w tag } {
+    set taglist [$w gettags $tag]
+    puts "tags :$taglist"
+    return "$taglist"
+}
+
+proc LoadFromFile { w filename } {
+    puts "file :$filename"
+    global nodeList rbdList nodeTagList rbdTagList nodeListPtr
+    set nodeListPtr 0
+    set rbdListPtr 0
+    set f [open $filename r]
+    set type 0
+    while { [gets $f line] >= 0 } {
+	puts "$line"
+	# check that line is not a comment
+	if { [string match "#*" $line] == 0 } { 
+	    if { $type == 1 } {
+		puts "scanning node"
+		scan $line "%d %d %d" index nodeX nodeY
+		set node [CreateNode $w $nodeX $nodeY]
+		set nodeList($index) $node
+		set nodeListPtr [expr $nodeListPtr + 1]
+	    } elseif { $type == 2 } {
+		puts "scanning rect"
+		scan $line "%d %d %s %s" index1 index2 color name
+		set node1 $nodeList($index1)
+		set node2 $nodeList($index2)
+		set rbdTag [ DrawRbd $w $node1 $node2 $color]
+		set nameTag [DrawNameTag $w [MidPoint $node1 $node2] $name]
+		UpdateCreateRbd $rbdTag $node1 $node2 $index1 $index2 \
+			$color $nameTag
+	    }
+	} else {
+	    set type [expr $type + 1 ]
+	}
+    }
+    close $f
+}
+
+
+proc SaveToFile { w filename } {
+    global nodeList rbdList nodeTagList rbdTagList
+    global nodeListPtr rbdListPtr
+    puts "file :$filename"
+
+    set f [open $filename w]
+    puts $f "#list of nodes"
+    set i $nodeListPtr
+    while { $i > 0 } {
+	set i [expr $i - 1]
+	set node $nodeList($i)
+	set nodeX [lindex $node 0]
+	set nodeY [lindex $node 1]
+	puts $f "$i $nodeX $nodeY"
+    }
+    puts $f "#list of rubberbands"
+    set i $rbdListPtr
+    while { $i > 0 } {
+	set i [expr $i - 1]
+	set startIndex [lindex $rbdList($i) 1]
+	set endIndex [lindex $rbdList($i) 2]
+	set color [lindex $rbdList($i) 3]
+	set nameTag  [lindex $rbdList($i) 4]
+	set name [ GetNameFromTag $w $nameTag]
+	puts $f "$startIndex $endIndex $color $name"
+    }
+    close $f
+}
+
+proc ClearCanvas { w } {
+    global nodeList rbdList nodeTagList rbdTagList
+    global nodeListPtr rbdListPtr
+
+    set i $nodeListPtr
+    while { $i > 0 } {
+	set i [expr $i - 1]
+	puts $nodeList($i)
+	$w delete [lindex $nodeList($i) 2]
+	unset nodeTagList([lindex $nodeList($i) 2])
+	unset nodeList($i)
+    }
+    set i $rbdListPtr
+    while { $i > 0 } {
+	set i [expr $i - 1]
+	puts $rbdList($i)
+	$w delete [lindex $rbdList($i) 0]
+	$w delete [lindex $rbdList($i) 4]
+	unset rbdTagList([lindex $rbdList($i) 0])
+	unset rbdList($i)
+    }
+    set nodeListPtr 0
+    set rbdListPtr 0
+}
+
+#DEVise specific functions
+
+proc MapDevisetoTk { winGeom viewGeom xscale yscale } {
+    set winabsX [lindex $winGeom 0]
+    set winabsY [lindex $winGeom 1]
+    set winX [lindex $winGeom 2]
+    set winY [lindex $winGeom 3]
+
+    set viewX [expr [lindex $viewGeom 0] - $winX - $winabsX]
+    set viewY [expr [lindex $viewGeom 1] - $winY - $winabsY]
+    set viewWd [lindex $viewGeom 4]
+    set viewHt [lindex $viewGeom 5]
+    puts "view params : $viewX $viewY $viewWd $viewHt"
+    set rectX1 [expr $viewX * $xscale + 5] 
+    set rectY1 [expr $viewY * $yscale + 5] 	
+    set rectX2 [expr ($viewX + $viewWd) * $xscale + 5] 
+    set rectY2 [expr ($viewY + $viewHt) * $yscale + 5]
+    set bgColor white
+    puts "coords: $rectX1, $rectY1 ; $rectX2, $rectY2; $bgColor"
+    return [list $rectX1 $rectY1 $rectX2 $rectY2 $bgColor]
+}
+
+proc MapTktoDevise { winGeom viewGeom xscale yscale } {
+    set winabsX [lindex $winGeom 0]
+    set winabsY [lindex $winGeom 1]
+    set winX [lindex $winGeom 2]
+    set winY [lindex $winGeom 3]
+
+    set rectX1 [expr [lindex $viewGeom 0] - 5]
+    set rectY1 [expr [lindex $viewGeom 1] - 5]
+    set rectX2 [expr [lindex $viewGeom 2] - 5]
+    set rectY2 [expr [lindex $viewGeom 3] - 5]
+    
+    set viewX [expr $rectX1 / $xscale  + $winX ] 
+    set viewY [expr $rectY1 / $yscale  + $winY ]
+    set viewWd [expr  ($rectX2 - $rectX1) / $xscale ]
+    set viewHt [expr  ($rectY2 - $rectY1) / $yscale ]
+
+    return [list $viewX $viewY $viewWd $viewHt]
+}
+
+#	 DEVise setWinGeometry $view  \
+#		 [expr [lindex $viewGeom 0] - $winabsX]] \
+#		 [expr [lindex $viewGeom 1] - $winabsY]] \
+#		 [expr $viewWd / 2  ] [expr $viewHt / 2 ]
+
+
+proc UpdateDeviseViews { view startNode endNode } {
+    global winGeom xscale yscale
+    
+    set tkGeom [list [lindex $startNode 0] [lindex $startNode 1] \
+	    [lindex $endNode 0] [lindex $endNode 1]]
+    puts "tkGeom->$tkGeom"
+    set  viewGeom [MapTktoDevise $winGeom $tkGeom $xscale $yscale]
+    DEVise setWinGeometry $view [lindex $viewGeom 0] [lindex $viewGeom 1] \
+	    [lindex $viewGeom 2] [lindex $viewGeom 3]
+}

@@ -1,0 +1,405 @@
+# new GUI for lens control
+proc DoLensControl {} {
+    global curView  ok
+    	
+    if { [WindowVisible .lens] } {
+	return
+    }
+
+    toplevel .lens
+    wm title .lens "Lens Control"
+    wm geometry .lens +100+100
+    
+    set lensList [ ViewLensSet ]  	
+    CreateListBox .lens.lenslist $lensList "All lenses"
+    button .lens.create -text "Create"  \
+	    -command { DoLensEdit "" }
+    button .lens.destroy -text "Destroy" \
+       -command { DoLensDestroy [.lens.lenslist.listbox get active] }
+    button .lens.edit -text "Edit" \
+	    -command { DoLensEdit [.lens.lenslist.listbox get active] }
+    
+    button .lens.ok -text "OK"  \
+            -command { 
+                       set ok 1
+	                   destroy .lens
+                     }
+    button .lens.cancel -text "Cancel"  \
+	    -command {
+                   set ok 0
+      		       destroy .lens
+                 }
+    pack    .lens.create \
+	    .lens.destroy \
+	    .lens.edit \
+	    .lens.ok \
+	    .lens.cancel \
+	    -side left -expand 1 -fill x
+}
+
+#proc MyViewSet {} {
+#    return [list a b c d e f g h i j k l m ]
+#}
+
+#proc LensSet {} {
+#    return [list x y z]
+#}
+
+proc ViewsInLens { lensname } {
+    return [DEVise getViewsInLens $lensname]
+}
+
+
+proc DoLensEdit { lensname } {
+    set viewList [ ViewExceptLensSet ]
+    if { $lensname != "" } {
+      set lensparams [DEVise getViewLensParams $lensname]
+      #puts " lensparams = $lensparams"
+      set lensmode [lindex $lensparams 0]
+      set lenslink [lindex $lensparams 1]
+      set oldList [lindex $lensparams 2]
+      set new 0
+    } else {
+      set lensparams {}
+      set oldList {} 
+      set lenslink ""
+      set lensmode "transparent"
+      set new 1
+    }
+    #puts "mode $lensmode"
+    #puts "list $oldList"
+    set newparams [ LensEdit $lensname $viewList $oldList $lensmode ]
+    #puts "$newparams"
+    if { $newparams != "" } {
+     set lensname [ lindex $newparams 0]
+     set lensmode [lindex $newparams 1]
+     set lensList [lindex $newparams 2]
+     if { $lensname == "" } {
+         return
+     } 
+     CreateEditLensInfo $new $lensname $lensList $lensmode $lenslink $oldList
+     if { $new == 1 }  {
+       .lens.lenslist.listbox insert end $lensname
+     }
+    }
+}
+
+# do stuff to edit devise ....
+
+proc LensEdit { lensname viewList lensList lensMode} {
+    global winname ok
+    global newname newmode
+    set ok -1
+    set newname $lensname 
+    set newmode $lensMode
+    set winname "_lens_"
+    if { [winfo exists .$winname ] } {
+         dialog .error "Simultaneous Lens Create/Edit Error" \
+             "You already have a Lens Create/Edit Session Open" \
+             "" 0  OK   
+         return "" 
+    }
+    toplevel .$winname
+    if { $lensname == "" } {
+         wm title .$winname "Create Lens" 
+    } else {
+         wm title .$winname "Edit Lens : $lensname" 
+    }
+    frame .$winname.top -relief raised -borderwidth 2 
+    label .$winname.top.namelabel -text "Name : "
+    if { $newname ==  ""  } {
+       entry .$winname.top.nameentry -relief sunken -textvariable newname 
+    } else {
+       label .$winname.top.nameentry -relief sunken -textvariable newname
+    }
+    .$winname.top.nameentry configure -background white
+    .$winname.top.nameentry configure -foreground red
+    label  .$winname.top.modelabel -text "DisplayMode : " 
+    button .$winname.top.modebutton -textvariable newmode  -command {
+	set newmode [ ToggleMode $newmode "opaque" "transparent"]
+    }
+    pack .$winname.top.namelabel \
+         .$winname.top.nameentry \
+ 	 -in .$winname.top \
+	 -side left -fill x
+    pack .$winname.top.modelabel \
+	 .$winname.top.modebutton \
+ 	 -in .$winname.top \
+	 -side left -fill x
+    pack .$winname.top -side top -expand 1 -fill x
+
+    CreateDoubleListBox .$winname.lenslist $viewList $lensList \
+	    "All views" "Views in Lens" 
+    
+    frame .$winname.bot   -relief raised -borderwidth 2
+    button .$winname.ok -text "OK"  -command { 
+       set ok 1
+    }        
+
+    button .$winname.cancel -text "Cancel" -command { 
+       set ok 0
+    }
+    pack    .$winname.cancel \
+	    .$winname.ok \
+            -in .$winname.bot \
+            -expand 1 \
+	    -side left       
+    pack    .$winname.bot -side bottom -expand 1 -fill x
+    while { 1==1 } {
+     tkwait variable ok 
+     if { $ok == 0 } {
+       #puts "Pressed Cancel" 
+       catch { destroy .$winname }  
+       return 
+     } elseif { $ok == 1 } {
+        if { $newname == "" } {
+           set status [dialog .error "Lens Edit/Create Error"  \
+             "You haven't specified a name for the lens - discard changes ?"  \
+             "" 1  Edit OK   ]
+           if { $status == 1 } {
+             catch { destroy .$winname }  
+             return ""
+           } 
+        } elseif { $lensname == ""  &&  \
+                   [CheckUnique .lens.lenslist.listbox $newname ] == 0 } {
+           set status [dialog .error "Lens Edit/Create Error"  \
+             "Lens( $newname ) already exists - discard changes ? "  \
+             "" 1  Edit OK ]
+           if { $status == 1 } {
+             catch { destroy .$winname }  
+             return ""
+           } 
+        } else  {
+             set selList [.$winname.lenslist.right.l2.listbox get 0 end]
+             if { $selList == "" } {
+                set status [dialog .error "Lens Edit/Create Error"  \
+                "Lens( $newname ) has no views - discard edits? "  \
+                "" 1  Edit OK ]
+                if { $status == 1 } {
+                   catch { destroy .$winname }  
+                   return ""
+                } 
+             } else {
+                #puts "Pressed OK : name $newname , selList $selList , mode $newmode"
+                catch { destroy .$winname }  
+                return [list $newname $newmode $selList] 
+             }
+        }
+     }
+   }
+}
+
+proc CreateListBox { w listOfItems name } {
+    frame $w
+    label $w.label -relief raised -pady 2m -borderwidth 2 -text $name 
+    listbox $w.listbox -relief raised  -selectmode browse -borderwidth 2 \
+	    -yscrollcommand "$w.scroll set" 
+    $w.listbox configure -selectforeground "red"
+    $w.listbox configure -selectbackground "white"
+    scrollbar $w.scroll -command "$w.listbox yview"
+    pack $w.label -in $w -side top  -fill x
+    pack $w.listbox -in $w -side left -expand 1 -fill x
+    pack $w.scroll -in $w -side right -fill y
+    foreach i $listOfItems {
+	$w.listbox insert end $i
+    }
+    pack $w -expand 1 -fill both
+    $w.listbox selection set 0 0
+}
+
+
+proc CreateDoubleListBox { w listOfItems1 listOfItems2 name1 name2 } {
+    global win lItems1 mode
+    set mode "uniq"
+    frame $w
+    frame $w.left
+    frame $w.middle 
+    frame $w.right
+    frame $w.end
+
+    set win $w
+    set lItems1 $listOfItems1 
+    CreateListBox $w.left.l1 $listOfItems1 $name1
+    $win.left.l1.listbox configure -selectmode multiple
+    CreateListBox $w.right.l2 $listOfItems2 $name2
+
+    button $w.middle.add -text "-->" -command {
+	global win lItems1
+	set curSel [$win.left.l1.listbox curselection]
+	AddSel $win.right.l2.listbox $lItems1 $curSel $mode
+    }
+
+    button $w.middle.del -text "<--" -command {
+	global win lItems1
+	set curSel [$win.right.l2.listbox curselection]
+	DelSel $win.right.l2.listbox $curSel 
+    }
+    
+    button $w.middle.mode -textvariable mode -command {
+	set mode [ToggleMode $mode "dupl" "uniq"]
+    }
+
+    button $w.end.up  -text "up" -command {
+	global win 
+        set curSel [$win.right.l2.listbox curselection]
+        MoveUpDown $win.right.l2.listbox -1 [lindex $curSel 0]      
+    }
+    button $w.end.down -text "down" -command {
+	global win 
+        set curSel [$win.right.l2.listbox curselection]
+        MoveUpDown $win.right.l2.listbox 1 [lindex $curSel 0]      
+    }
+    
+    pack    $w.middle.mode \
+	    $w.middle.del \
+	    $w.middle.add \
+	    -in $w.middle \
+	    -side bottom -pady 3m 
+
+    pack $w.end.up $w.end.down \
+	    -in $w.end \
+	    -side bottom  -pady 3m 
+
+    pack    $w.left \
+	    $w.middle \
+	    $w.right \
+	    $w.end \
+	    -in $w -side left -expand 1 -fill both 
+    pack $w -expand 1 -fill both 
+}
+
+
+proc AddSel {w litems curSel mode} {
+    #puts "$curSel"
+    foreach sel $curSel {
+	set ok 1
+	set item [lindex $litems $sel]
+	if { $mode == "uniq" } {
+	    set ok [ CheckUnique $w $item ]
+	}
+	if { $ok == 1 } {
+	    $w insert end $item
+	    $w see end 
+	}
+    }
+    $w selection set 0 0 
+}
+
+proc DelSel { w curSel } {
+    foreach sel $curSel {
+        $w delete $sel
+    }
+    $w selection set 0 0 
+}
+
+proc CheckUnique { w item } {
+    set selList [ $w get 0 end ]
+    if { [ lsearch $selList $item ] == -1 } {
+	return 1
+    } else {
+	return 0
+    }
+}
+
+proc MoveUpDown { w dir index } {
+    set item [$w get $index]
+    set next [NextIndex $dir $index 0 [expr [$w size] - 1]]
+    #puts "index = $index , next = $next"
+    $w selection set $index $index
+    $w delete $index
+    $w insert $next $item 
+    $w selection set $next $next
+}
+
+proc NextIndex { dir index min max } {
+     #puts "$index $min $max $dir"
+     set next [expr $index + $dir]
+     if { $next < $min } {
+         set next $max
+     } elseif { $next > $max } {
+         set next $min
+     }
+     return $next
+}
+
+proc ToggleMode { mode val1 val2} {
+    if { $mode == $val1 } {  
+	return $val2
+    } 
+    if { $mode == $val2 } { 
+	return $val1
+    }
+}
+#puts "name.."     
+proc CreateEditLensInfo { new name lenslist mode link oldList } {
+   global DEViseColors
+   if { $lenslist == "" } {
+      return
+   }
+   set firstview [lindex $lenslist 0]
+   set filter [DEVise getCurVisualFilter $firstview]
+   if { $new == 1 } { 
+     set win [DEVise getViewWin $firstview]
+     set class [GetClass window $win]
+     set newWin [UniqueName $win] 
+     set params [DEVise getCreateParam window $class $win]
+     set newParam [linsert [lrange $params 1 end] 0 $newWin ]
+     #puts "DEVise create window $class $newParam"
+     eval "DEVise create window $class $newParam"
+   # slightly hokey as window remains even if view creation fails
+     if { [DEVise create view ViewLens $name \
+        [lindex  $filter 0] [lindex $filter 1] \
+        [lindex  $filter 2] [lindex $filter 2] ] == "" } {
+        #puts "error in creating viewlens"
+        return 
+     }
+     set link [UniqueName "Lens:Link"]
+     #puts "Creating $link for lens"
+     DEVise insertWindow $name $newWin     
+     DEVise create link Visual_Link $link 3
+     DEVise setWindowLayout $newWin -1 -1 1
+   }
+   # do other editing stuff 
+   #puts "$name $mode $lenslist"
+   set bgColor [DEVise getBgColor $firstview]
+   #puts "bgColor = $bgColor"
+   set deviseColor [lindex [lindex $DEViseColors [expr $bgColor + 1]] 1]
+   #puts "color = $deviseColor"
+   eval "DEVise setViewLensParams $name $mode {$link} $bgColor $lenslist"
+   InsertDeleteLinks $link $oldList $lenslist
+   if { $new == 1 } {
+     DEVise insertLink $link $name
+   }
+#   DEVise refreshView $name
+}
+
+proc InsertDeleteLinks { link oldList newList } {
+     foreach view $oldList {
+         if { [ lsearch $newList $view ] == -1 } {
+            #puts "deleting $link from $view"
+            DEVise unlinkView $link $view
+         }
+     }
+     foreach view $newList {
+         if { [ lsearch $oldList $view ] == -1 } {
+	     #puts " inserting $link in $view"
+            DEVise insertLink $link $view
+         }
+     }
+}
+
+proc DoLensDestroy { lensname } {
+  set lensparams [DEVise getViewLensParams $lensname]
+  set lensmode [lindex $lensparams 0]
+  set lenslink [lindex $lensparams 1]
+  set lenslist [lindex $lensparams 2]
+  foreach view $lenslist {
+    DEVise unlinkView $lenslink $view 
+  }  
+  DEVise unlinkView $lenslink  $lensname 
+  set win [DEVise getViewWin $lensname]
+  DEVise removeView $lensname
+  DEVise destroy $lensname
+  DEVise destroy $win
+  .lens.lenslist.listbox delete active
+}

@@ -1,0 +1,168 @@
+## layout manager interface
+source "$libdir/rbnd1.tk"
+
+proc RootLayout {  } {
+    global xscale yscale 
+    if { [ winfo exists .layout ] } {
+	return
+    }
+    toplevel .layout
+    set xscale 0.4
+
+    set yscale  0.4
+    
+    wm title .layout "Root Layout"
+    canvas .layout.root -borderwidth 2
+    .layout.root configure -bg white
+    set rootHt [winfo vrootheight .layout ]
+    set rootWd [winfo vrootwidth .layout ]
+    set appWd [expr $xscale * $rootWd + 10] 
+    set appHt [expr $yscale * $rootHt + 10]
+    .layout.root configure -width $appWd
+    .layout.root configure -height $appHt
+    frame .layout.buttons -relief raised -borderwidth 2
+    .layout.buttons configure -bg white 
+#   .layout.buttons configure -fg black
+
+    pack .layout.root .layout.buttons -side top -expand 1 -fill both
+    
+    button .layout.buttons.quit -text "quit" -command { 
+	destroy .layout
+    }
+    button .layout.buttons.refresh -text "refresh" -command {
+	
+    }
+    pack .layout.buttons.quit .layout.buttons.refresh -in .layout.buttons \
+	    -side left  -expand 1
+    
+    set winSet [ WinSet ]
+    .layout.root bind win <Button-1> {
+	set current [ .layout.root find withtag current ]
+	set taglist [.layout.root gettags $current]
+	puts $taglist
+	set win [lindex $taglist 0]
+	set geom [lindex [DEVise getWinGeometry $win] 0 ]
+	set params [CreateLayoutParams $win $geom]
+	LayoutManager ._$win $params
+    }				
+    foreach win $winSet {
+	set geom [lindex [DEVise getWinGeometry $win] 0 ]
+	DrawWindow $win $geom
+    }	
+}	
+
+
+proc DrawWindow { win geom } {
+    global xscale yscale
+    puts " $win : $geom"
+    set x [lindex $geom 0]
+    set y [lindex $geom 1] 
+    set w [lindex $geom 4]
+    set h [lindex $geom 5]
+    puts "$x $y $w $h"
+    
+    set rectX1 [expr $x * $xscale + 5] 
+    set rectY1 [expr $y * $yscale + 5] 	
+    set rectX2 [expr ($x + $w) * $xscale + 5] 
+    set rectY2 [expr ($y + $h) * $yscale + 5]
+    puts "$rectX1, $rectY1 ; $rectX2, $rectY2 "  
+    set tag [.layout.root create rectangle $rectX1 $rectY1 \
+	    $rectX2 $rectY2 \
+	    -outline "red" -fill "white"  -tags "{$win} win"]
+    set name [.layout.root create text  \
+	    [expr $rectX1 + ($rectX2 - $rectX1) / 2] \
+	    [expr $rectY1 + ($rectY2 - $rectY1) / 2]  \
+	    -text "$win" -anchor center -tag "{Name:$win}"]
+}
+
+#params has format :
+#{ width height { rect1 rect2 ....}}
+#rect is of type x1 y1 x2 y2 color
+proc CreateLayoutParams { win wingeom } {
+    global xscale yscale
+    
+    # set window geom variables
+    set winabsX [lindex $wingeom 0]
+    set winabsY [lindex $wingeom 1]
+    set winX [lindex $wingeom 2]
+    set winY [lindex $wingeom 3]
+    set winWd [lindex $wingeom 4]
+    set winHt [lindex $wingeom 5]
+    
+
+    set viewList [ DEVise getWinViews $win ]
+    set params [ list $wingeom $xscale $yscale ]
+    puts "window params :     wx = $winX wy = $winY wd = $winWd ht = $winHt"
+    set viewGeomList {}
+    
+    
+    foreach view $viewList {
+	set viewgeom [lindex [DEVise getWinGeometry $view] 0]
+	set viewGeomList [ linsert $viewGeomList 0 [list $view $viewgeom]]
+    }			
+    set params [linsert $params 3 $viewGeomList]
+    puts "params :  $params "
+    return $params		
+}
+
+proc DEViseWindowRaise { win } {
+    puts "DEViseWindowRaise"
+    if { winfo exists .layout.root } {
+	.layout.root raise $win 
+    }
+}
+
+proc DEViseWindowLower { win } {
+    puts "DEViseWindowLower"
+    if { winfo exists .layout.root } {
+	.layout.root lower $win 
+    }
+}
+
+proc DEViseWindowMove   { win } {
+    puts  "window $win moved"
+    if { winfo exists .layout.root } {
+    }
+}
+
+proc DEViseWindowMapped { win } {
+    puts  "window $win resized"
+    if { [ winfo exists .layout ] } {
+	if { [ lsearch [ .layout.root gettags all] $win] == -1 } {
+	    set geom [lindex [DEVise getWinGeometry $win] 0 ]
+	    DrawWindow $win $geom
+	}
+    }   
+}
+
+proc DEViseWindowResize {  win  } {
+    puts  "window $win resized"
+    if { [ winfo exists .layout ] } {
+	if { [ lsearch [.layout.root gettags all] $win] == -1 } {
+	    return
+	}
+	.layout.root delete $win
+	.layout.root delete "Name:$win"
+	set geom [lindex [DEVise getWinGeometry $win] 0 ]
+	DrawWindow $win $geom
+	if { [ winfo exists ._$win ] } {
+	    UpdateViewsInWindow $win
+	}
+    }   
+}
+
+proc DEViseWindowDestroy { win } {
+    puts "window $win destroy"
+    if { [ winfo exists .layout ] } {
+	if { [lsearch [.layout.root gettags all] $win] == -1 } {
+	    return
+	}
+	.layout.root delete $win
+	.layout.root delete "Name:$win"
+    }
+}
+
+proc UpdateViewsInWindow { win } {
+    puts "updating views in $win"
+}
+
