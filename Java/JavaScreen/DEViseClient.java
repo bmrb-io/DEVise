@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.49  2001/10/05 21:20:28  xuk
+// Fixed bug 705: JSPoP doesn't create log files for the clients that only send JAVAC_CheckPop command.
+//
 // Revision 1.48  2001/09/28 19:18:58  xuk
 // *** empty log message ***
 //
@@ -246,7 +249,7 @@ public class DEViseClient
 
     public DEViseUser user = null;
     //TEMP -- why Integer vs. int?
-    public Integer ID = null;
+    public long ID = 0;
     public String hostname = null;
     public DEViseCommSocket socket = null;
 
@@ -287,12 +290,12 @@ public class DEViseClient
 
     public YLogFile logFile = null;
 
-    public DEViseClient(jspop p, String host, DEViseCommSocket s, Integer id,
+    public DEViseClient(jspop p, String host, DEViseCommSocket s, long id,
       boolean cgi)
     {
 	if (DEBUG >= 1) {
 	    System.out.println("DEViseClient.DEViseClient(" +
-	      id.intValue() + ") in thread " + Thread.currentThread());
+	      id + ") in thread " + Thread.currentThread());
 	}
 
         pop = p;
@@ -300,7 +303,7 @@ public class DEViseClient
         socket = s;
         ID = id;
 
-        savedSessionName = ".tmp/jstmp_" + ID.intValue();
+        savedSessionName = ".tmp/jstmp_" + ID;
 
         status = IDLE;
 
@@ -314,7 +317,7 @@ public class DEViseClient
     protected void finalize()
     {
 	if (DEBUG >= 1) {
-	    System.out.println("DEViseClient(" + ID.intValue() +
+	    System.out.println("DEViseClient(" + ID +
 	      ").finalize() in thread " + Thread.currentThread());
 	}
 
@@ -350,7 +353,7 @@ public class DEViseClient
 
     public void addNewCmd(String cmd) {
 	if (DEBUG >= 1) {
-	    System.out.println("DEViseClient(" + ID.intValue() +
+	    System.out.println("DEViseClient(" + ID +
 	      ").addNewCmd(" + cmd + ") in thread " + Thread.currentThread());
 	}
 
@@ -424,7 +427,7 @@ public class DEViseClient
         }
     }
 
-    public Integer getConnectionID()
+    public long getConnectionID()
     {
         return ID;
     }
@@ -481,7 +484,7 @@ public class DEViseClient
     public synchronized int getStatus()
     {
 	if (DEBUG >= 2) {
-	    System.out.println("DEViseClient(" + ID.intValue() +
+	    System.out.println("DEViseClient(" + ID +
 	      ").getStatus() in thread " + Thread.currentThread());
 	}
 
@@ -530,7 +533,7 @@ public class DEViseClient
     public void removeLastCmd()
     {
 	if (DEBUG >= 1) {
-	    System.out.println("DEViseClient(" + ID.intValue() +
+	    System.out.println("DEViseClient(" + ID +
 	      ").removeLastCmd() in thread " + Thread.currentThread());
 	}
 
