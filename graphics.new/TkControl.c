@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.60  1996/07/15 01:03:47  jussi
+  Code now compatible with tk4.1. Compatibility with tk4.0 maintained
+  for a short while.
+
   Revision 1.59  1996/07/11 19:38:35  jussi
   The Tcl variable 'file' is set to the name of the session file
   before the session file is executed. Exported session files
@@ -302,7 +306,7 @@ TkControlPanel::TkControlPanel()
     Exit::DoExit(1);
   }
 
-#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 1
+#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION > 0
   _mainWindow = Tk_MainWindow(_interp);
 #endif
 
