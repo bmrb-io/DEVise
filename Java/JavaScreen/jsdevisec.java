@@ -12,13 +12,21 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// This class implements the top-level GUI components (buttons, dialog
+// boxes, status display, etc.) of the JavaScreen.
+
+// There is one instance of this class for the entire JavaScreen.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.59  2000/05/04 15:53:32  wenger
+// Added consistency checking, added comments, commented out unused code
+// in DEViseScreen.java, DEViseCanvas.java, DEViseView.java,
+// DEViseCmdDispatcher.java.
+//
 // Revision 1.58  2000/04/27 20:15:25  wenger
 // Added DEViseCommands class which has string constants for all command
 // names; replaced all literal command names in code with the appropriate
@@ -97,6 +105,8 @@ public class jsdevisec extends Panel
     public DEViseViewInfo viewInfo = null;
     public DEViseTrafficLight light = null;
 
+	// Box for displaying messages -- apparently kept as an object member
+	// so we can know whether we're displaying a message.
     private YMsgBox msgbox = null;
 
     public SessionDlg sessiondlg = null;
@@ -113,10 +123,11 @@ public class jsdevisec extends Panel
     public String currentDir = "DEViseSession";
     public String currentSession = null;
 
-    public Cursor lastCursor = DEViseUIGlobals.defaultCursor;
 
-
-    public jsdevisec(Frame frame, Vector images, int level, String sessionName)
+	// images[0-9] are the gears; 10 and 11 are "traffic lights"
+	//   (devise[0-10].gif).
+	// sessionName is non-null only in jsb.
+    public jsdevisec(Frame frame, Vector images, int dbgLvl, String sessionName)
     {
         // frame might be null if JavaScreen is running inside a browser
         parentFrame = frame;
@@ -125,7 +136,7 @@ public class jsdevisec extends Panel
             isCenterScreen = true;
         }
 
-        debugLevel = level;
+        debugLevel = dbgLvl;
         if (debugLevel > 0) {
             debugWindow = new YLogGUI(debugLevel);
         }
@@ -137,10 +148,10 @@ public class jsdevisec extends Panel
         if (width > 800 ) {
             DEViseUIGlobals.font = new Font("Serif", Font.PLAIN, 12);
             DEViseUIGlobals.textFont = new Font("Serif", Font.PLAIN, 12);
-        } else if (width <= 800 && width > 640) {
+        } else if (width > 640) {
             DEViseUIGlobals.font = new Font("Serif", Font.PLAIN, 10);
             DEViseUIGlobals.textFont = new Font("Serif", Font.PLAIN, 10);
-        } else if (width <= 640) {
+        } else {
             DEViseUIGlobals.font = new Font("Serif", Font.PLAIN, 8);
             DEViseUIGlobals.textFont = new Font("Serif", Font.PLAIN, 8);
         }
@@ -157,6 +168,9 @@ public class jsdevisec extends Panel
 
         mainPanel.add(animPanel);
 
+		// Note: we're just relying on the file names of the images,
+		// and the code that reads them in, to assume that image 9
+		// and image 10 are what we need for the traffic light.
         if (images != null && images.size() == 11) {
             try {
                 light = new DEViseTrafficLight((Image)images.elementAt(9), (Image)images.elementAt(10), "0");
@@ -169,6 +183,11 @@ public class jsdevisec extends Panel
             mainPanel.add(light);
         }
 
+		//
+		// Add buttons to the panel (only add a subset if we're running
+		// in a browser).  Note that we have created all of the buttons
+		// even if only some of them will get used.
+		//
         Component[] button = null;
         if (DEViseUIGlobals.inBrowser) {
             button = new Component[3];
@@ -201,36 +220,65 @@ public class jsdevisec extends Panel
             topPanel.add(new Label("                       " + DEViseUIGlobals.javaScreenTitle), BorderLayout.CENTER);
         }
 
+		//
+		// Constrain the screen width to be within the min and max width,
+		// if they are valid; width is set to max if not already set.
+		//
         if (DEViseUIGlobals.screenSize.width <= 0) {
-            DEViseUIGlobals.screenSize.width = DEViseUIGlobals.maxScreenSize.width;
-        } else if (DEViseUIGlobals.screenSize.width < DEViseUIGlobals.minScreenSize.width && DEViseUIGlobals.screenSize.width > 0) {
-            DEViseUIGlobals.screenSize.width = DEViseUIGlobals.minScreenSize.width;
-        } else if (DEViseUIGlobals.screenSize.width > DEViseUIGlobals.maxScreenSize.width) {
-            DEViseUIGlobals.screenSize.width = DEViseUIGlobals.maxScreenSize.width;
+
+            DEViseUIGlobals.screenSize.width =
+			  DEViseUIGlobals.maxScreenSize.width;
+
+        } else if (DEViseUIGlobals.screenSize.width <
+		  DEViseUIGlobals.minScreenSize.width &&
+		  DEViseUIGlobals.screenSize.width > 0) {
+
+            DEViseUIGlobals.screenSize.width =
+			  DEViseUIGlobals.minScreenSize.width;
+
+        } else if (DEViseUIGlobals.screenSize.width >
+		  DEViseUIGlobals.maxScreenSize.width) {
+
+            DEViseUIGlobals.screenSize.width =
+			  DEViseUIGlobals.maxScreenSize.width;
+
         }
 
+		//
+		// Constrain the screen height to be within the min and max height,
+		// if they are valid; height is set to max if not already set.
+		//
         if (DEViseUIGlobals.screenSize.height <= 0) {
-            DEViseUIGlobals.screenSize.height = DEViseUIGlobals.maxScreenSize.height;
-        } else if (DEViseUIGlobals.screenSize.height < DEViseUIGlobals.minScreenSize.height && DEViseUIGlobals.screenSize.height > 0) {
-            DEViseUIGlobals.screenSize.height = DEViseUIGlobals.minScreenSize.height;
-        } else if (DEViseUIGlobals.screenSize.height > DEViseUIGlobals.maxScreenSize.height) {
-            DEViseUIGlobals.screenSize.height = DEViseUIGlobals.maxScreenSize.height;
+
+            DEViseUIGlobals.screenSize.height =
+			  DEViseUIGlobals.maxScreenSize.height;
+
+        } else if (DEViseUIGlobals.screenSize.height <
+		  DEViseUIGlobals.minScreenSize.height &&
+		  DEViseUIGlobals.screenSize.height > 0) {
+
+            DEViseUIGlobals.screenSize.height =
+			  DEViseUIGlobals.minScreenSize.height;
+
+        } else if (DEViseUIGlobals.screenSize.height >
+		  DEViseUIGlobals.maxScreenSize.height) {
+
+            DEViseUIGlobals.screenSize.height =
+			  DEViseUIGlobals.maxScreenSize.height;
+
         }
 
         jscreen = new DEViseScreen(this);
         Panel screenPanel = new Panel(new FlowLayout(FlowLayout.CENTER, 3, 3));
-        //int r = DEViseUIGlobals.bg.getRed() + 32, g = DEViseUIGlobals.bg.getGreen() + 32, b = DEViseUIGlobals.bg.getBlue() + 32;
-        //if (r > 255) r = 255;
-        //if (g > 255) g = 255;
-        //if (b > 255) b = 255;
-        //screenPanel.setBackground(new Color(r, g, b));
-        screenPanel.setBackground(new Color(64, 192, 0));
+        screenPanel.setBackground(DEViseUIGlobals.screenBg);
         screenPanel.add(jscreen);
 
         add(topPanel, BorderLayout.NORTH);
         add(screenPanel, BorderLayout.CENTER);
 
-        // define event handler for buttons
+		//
+        // Define event handlers for buttons.
+		//
         openButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -243,6 +291,7 @@ public class jsdevisec extends Panel
                         dispatcher.start(DEViseCommands.GET_SESSION_LIST + " {" + currentDir + "}");
                     }
                 });
+
         closeButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -255,6 +304,7 @@ public class jsdevisec extends Panel
                         dispatcher.start(DEViseCommands.CLOSE_SESSION);
                     }
                 });
+
         stopButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -269,6 +319,7 @@ public class jsdevisec extends Panel
                         }
                     }
                 });
+
         restartButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -278,10 +329,10 @@ public class jsdevisec extends Panel
                             return;
                         }
 
-
                         dispatcher.start(DEViseCommands.OPEN_SESSION + " {" + currentDir + "/" + currentSession + "}");
                     }
                 });
+
         setButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -289,6 +340,7 @@ public class jsdevisec extends Panel
                         showSetting();
                     }
                 });
+
         exitButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -296,6 +348,7 @@ public class jsdevisec extends Panel
                         quit();
                     }
                 });
+
         filterButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -308,6 +361,7 @@ public class jsdevisec extends Panel
                         dispatcher.start(DEViseCommands.RESET_FILTERS);
                     }
                 });
+
         helpButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -324,8 +378,14 @@ public class jsdevisec extends Panel
 
         isSessionOpened = false;
 
+		//
+		// Create the one DEViseCmdDispatcher instance we will have.
+		//
         dispatcher = new DEViseCmdDispatcher(this);
 
+		//
+		// Open the session if a session name was specified.
+		//
         if (sessionName != null) {
             int index = sessionName.lastIndexOf('/');
             if (index > 0) {
@@ -337,9 +397,10 @@ public class jsdevisec extends Panel
 
             dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " + DEViseUIGlobals.screenSize.width + " " + DEViseUIGlobals.screenSize.height + "\n" + DEViseCommands.OPEN_SESSION + " {" + currentDir + "/" + currentSession + "}");
         }
-    }
+    } // end of constructor
 
     // print out message to debug window
+	// ADD COMMENT -- explain the difference between the p() and pn() methods
     public void pn(String msg, int level)
     {
         if (debugLevel > 0) {
@@ -367,6 +428,8 @@ public class jsdevisec extends Panel
     // show message in message box
     public String showMsg(String msg, String title, int style)
     {
+		// ADD COMMENT -- why do we need two cases here?  Only if there
+		// are two message boxes at the same time?
         if (msgbox == null) {
             msgbox = new YMsgBox(parentFrame, isCenterScreen, true, msg, title, style, DEViseUIGlobals.font, DEViseUIGlobals.bg, DEViseUIGlobals.fg);
             msgbox.open();
@@ -392,6 +455,7 @@ public class jsdevisec extends Panel
         return showMsg(msg, "Confirm", YMsgBox.YMBXYESNO);
     }
 
+	// flag is apparently set to false if there is an error
     public void showSession(String[] msg, boolean flag)
     {
         if (flag) {
@@ -462,12 +526,14 @@ public class jsdevisec extends Panel
     }
 }
 
+// ------------------------------------------------------------------------
 
+// Dialog to show record values.
 class RecordDlg extends Dialog
 {
     String[] attrs = null;
     Button okButton = new Button("  OK  ");
-    private boolean status = false;
+    private boolean status = false; // ADD COMMENT -- what does this mean?
 
     public RecordDlg(Frame owner, boolean isCenterScreen, String[] data)
     {
@@ -616,7 +682,10 @@ class RecordDlg extends Dialog
     }
 }
 
+// ------------------------------------------------------------------------
 
+// Dialog to show available session files and allow the user to select
+// one.
 class SessionDlg extends Frame
 {
     private jsdevisec jsc = null;
@@ -631,7 +700,7 @@ class SessionDlg extends Frame
     private boolean[] sessionTypes = null;
     private String[] sessionNames = null;
 
-    private boolean status = false;
+    private boolean status = false; // ADD COMMENT -- what does this mean?
 
     public SessionDlg(jsdevisec what, Frame owner, boolean isCenterScreen, String[] data)
     {
@@ -891,7 +960,9 @@ class SessionDlg extends Frame
     }
 }
 
+// ------------------------------------------------------------------------
 
+// Dialog for setting values such as screen size.
 class SettingDlg extends Dialog
 {
     jsdevisec jsc = null;
@@ -899,7 +970,7 @@ class SettingDlg extends Dialog
     public TextField screenY = new TextField(4);
     public Button setButton = new Button("   Set   ");
     public Button statButton = new Button("Request");
-    private boolean status = false;
+    private boolean status = false; // ADD COMMENT -- what does this mean?
 
     public SettingDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
     {
@@ -1086,7 +1157,9 @@ class SettingDlg extends Dialog
     }
 }
 
+// ------------------------------------------------------------------------
 
+// Dialog for displaying server state.
 class ServerStateDlg extends Dialog
 {
     private java.awt.List serverList = null, activeClientList = null, suspendClientList = null;
@@ -1095,7 +1168,7 @@ class ServerStateDlg extends Dialog
     private Label label3 = new Label("Current suspended client:");
     private Button okButton = new Button("   OK   ");
 
-    private boolean status = false;
+    private boolean status = false; // ADD COMMENT -- what does this mean?
 
     public ServerStateDlg(Frame owner, boolean isCenterScreen, String data)
     {

@@ -23,6 +23,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.55  2000/05/04 15:53:33  wenger
+// Added consistency checking, added comments, commented out unused code
+// in DEViseScreen.java, DEViseCanvas.java, DEViseView.java,
+// DEViseCmdDispatcher.java.
+//
 // Revision 1.54  2000/04/27 20:15:24  wenger
 // Added DEViseCommands class which has string constants for all command
 // names; replaced all literal command names in code with the appropriate
@@ -199,7 +204,6 @@ public class DEViseCmdDispatcher implements Runnable
                 if (!connect()) {
                     String result = jsc.confirmMsg(errMsg + "\n \nDo you wish to try again?");
                     if (result.equals(YMsgBox.YIDNO)) {
-                        //jsc.jscreen.setCursor(jsc.lastCursor);
                         jsc.animPanel.stop();
                         jsc.stopButton.setBackground(DEViseUIGlobals.bg);
                         setStatus(0);

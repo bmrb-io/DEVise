@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.43  2000/05/08 16:40:39  wenger
+// JavaScreen cursors are now drawn as frames rather than filled
+// rectangles (so symbols, especially text, show up better within cursors).
+//
 // Revision 1.42  2000/05/04 15:53:22  wenger
 // Added consistency checking, added comments, commented out unused code
 // in DEViseScreen.java, DEViseCanvas.java, DEViseView.java,
@@ -76,6 +80,10 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.43  2000/05/08 16:40:39  wenger
+// JavaScreen cursors are now drawn as frames rather than filled
+// rectangles (so symbols, especially text, show up better within cursors).
+//
 // Revision 1.42  2000/05/04 15:53:22  wenger
 // Added consistency checking, added comments, commented out unused code
 // in DEViseScreen.java, DEViseCanvas.java, DEViseView.java,
@@ -783,8 +791,7 @@ public class DEViseCanvas extends Container
             ep.y = op.y = sp.y = p.y;
 
             if (view.viewDimension == 3) {
-                jsc.lastCursor = DEViseUIGlobals.rbCursor;
-                setCursor(jsc.lastCursor);
+                setCursor(DEViseUIGlobals.rbCursor);
 
                 activeView = view;
                 jsc.viewInfo.updateInfo(activeView.viewName, activeView.getX(sp.x), activeView.getY(sp.y));
@@ -1052,8 +1059,7 @@ public class DEViseCanvas extends Container
                 point.x = p.x;
                 point.y = p.y;
 
-                jsc.lastCursor = DEViseUIGlobals.rbCursor;
-                setCursor(jsc.lastCursor);
+                setCursor(DEViseUIGlobals.rbCursor);
 
                 activeView = view;
                 jsc.viewInfo.updateInfo(activeView.viewName, activeView.getX(p.x), activeView.getY(p.y));
@@ -1091,48 +1097,49 @@ public class DEViseCanvas extends Container
         activeView = null;
 
         if (checkMousePos(p, view)) { // activeView will not be null
+	    Cursor tmpCursor = null;
             if (checkDispatcher && jsc.dispatcher.getStatus() != 0) {
                 // dispatcher still busy
-                jsc.lastCursor = DEViseUIGlobals.waitCursor;
+                tmpCursor = DEViseUIGlobals.waitCursor;
             } else if (isInViewDataArea && selectedCursor == null) {
                 // inside the date area but not within any cursor, you can draw rubber band or
                 // get the records at that data point
-                jsc.lastCursor = DEViseUIGlobals.rbCursor;
+                tmpCursor = DEViseUIGlobals.rbCursor;
             } else if (isInViewDataArea && selectedCursor != null) {
                 switch (whichCursorSide) {
                 case 0: // inside a cursor, you can move that cursor
-                    jsc.lastCursor = DEViseUIGlobals.moveCursor;
+                    tmpCursor = DEViseUIGlobals.moveCursor;
                     break;
                 case 1: // on left side of a cursor, you can resize this cursor
-                    jsc.lastCursor = DEViseUIGlobals.lrsCursor;
+                    tmpCursor = DEViseUIGlobals.lrsCursor;
                     break;
                 case 2: // on right side of a cursor, you can resize this cursor
-                    jsc.lastCursor = DEViseUIGlobals.rrsCursor;
+                    tmpCursor = DEViseUIGlobals.rrsCursor;
                     break;
                 case 3: // on top side of a cursor, you can resize this cursor
-                    jsc.lastCursor = DEViseUIGlobals.trsCursor;
+                    tmpCursor = DEViseUIGlobals.trsCursor;
                     break;
                 case 4: // on bottom side of a cursor, you can resize this cursor
-                    jsc.lastCursor = DEViseUIGlobals.brsCursor;
+                    tmpCursor = DEViseUIGlobals.brsCursor;
                     break;
                 case 5: // on left-top corner of a cursor, you can resize this cursor
-                    jsc.lastCursor = DEViseUIGlobals.tlrsCursor;
+                    tmpCursor = DEViseUIGlobals.tlrsCursor;
                     break;
                 case 6: // on left-bottom corner of a cursor, you can resize this cursor
-                    jsc.lastCursor = DEViseUIGlobals.blrsCursor;
+                    tmpCursor = DEViseUIGlobals.blrsCursor;
                     break;
                 case 7: // on right-top corner of a cursor, you can resize this cursor
-                    jsc.lastCursor = DEViseUIGlobals.trrsCursor;
+                    tmpCursor = DEViseUIGlobals.trrsCursor;
                     break;
                 case 8: // on right-bottom corner of a cursor, you can resize this cursor
-                    jsc.lastCursor = DEViseUIGlobals.brrsCursor;
+                    tmpCursor = DEViseUIGlobals.brrsCursor;
                     break;
                 }
             } else { // inside the view but not within the data area of that view
-                jsc.lastCursor = DEViseUIGlobals.defaultCursor;
+                tmpCursor = DEViseUIGlobals.defaultCursor;
             }
 
-            setCursor(jsc.lastCursor);
+            setCursor(tmpCursor);
 
             if (activeView.pileBaseView != null) {
                 activeView = activeView.pileBaseView;
@@ -1151,13 +1158,14 @@ public class DEViseCanvas extends Container
             isInViewDataArea = false;
             activeView = null;
 
+	    Cursor tmpCursor = null;
             if (!checkDispatcher || jsc.dispatcher.getStatus() == 0) {
-                jsc.lastCursor = DEViseUIGlobals.defaultCursor;
+                tmpCursor = DEViseUIGlobals.defaultCursor;
             } else {
-                jsc.lastCursor = DEViseUIGlobals.waitCursor;
+                tmpCursor = DEViseUIGlobals.waitCursor;
             }
 
-            setCursor(jsc.lastCursor);
+            setCursor(tmpCursor);
 
             if (jscreen.getCurrentView() != activeView) {
                 jscreen.setCurrentView(activeView);

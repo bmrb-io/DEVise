@@ -32,6 +32,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.54  2000/05/04 15:53:31  wenger
+// Added consistency checking, added comments, commented out unused code
+// in DEViseScreen.java, DEViseCanvas.java, DEViseView.java,
+// DEViseCmdDispatcher.java.
+//
 // Revision 1.53  2000/04/27 20:15:25  wenger
 // Added DEViseCommands class which has string constants for all command
 // names; replaced all literal command names in code with the appropriate
@@ -649,8 +654,7 @@ public class DEViseScreen extends Panel
             jsc.viewInfo.updateImage(0, 0);
             jsc.viewInfo.updateCount(0);
 
-            jsc.lastCursor = DEViseUIGlobals.defaultCursor;
-            setCursor(jsc.lastCursor);
+            setCursor(DEViseUIGlobals.defaultCursor);
 
             offScrImg = null;
 

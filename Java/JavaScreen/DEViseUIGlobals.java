@@ -15,6 +15,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2000/05/04 17:40:28  wenger
+// Added new text object feature: GData Z value specifies max size of
+// font in points (if > 1).  (Allows me to fix problems with BMRB 4096
+// protein session.)
+//
 // Revision 1.1  2000/04/24 20:22:01  hongyu
 // remove UI dependency of jspop and js
 //
@@ -44,6 +49,7 @@ public final class DEViseUIGlobals
 
     public static Color bg = new Color(64, 96, 0);
     public static Color fg = Color.white;
+    public static Color screenBg = new Color(64, 192, 0);
     public static Font font = new Font("Serif", Font.PLAIN, 14);
     public static Color textBg = new Color(160, 160, 160);
     public static Color textFg = Color.black;
