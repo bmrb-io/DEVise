@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.87  1999/05/28 16:32:44  wenger
+  Finished cleaning up bounding-box-related code except for PolyLineFile
+  symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
+  drawing of Polyline symbols.
+
   Revision 1.86  1999/05/27 17:45:13  wenger
   Lots of cleanup of MappingInterp code.
 
@@ -1496,8 +1501,8 @@ char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
 			    if (!info) {
 			      /* can't find variable name */
 			      char errBuf[256];
-			      sprintf(errBuf, "Can't find attribute '%s' requested by mapping",
-			              buf);
+			      sprintf(errBuf, "Can't find attribute '%s' requested by mapping %s",
+			              buf, GetName());
 		        reportErrNosys(errBuf);
 			    } else {
 			      /* found the attribute */
