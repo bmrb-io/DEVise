@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  1996/11/23 22:05:12  jussi
+  Forgot to turn off debugging.
+
   Revision 1.39  1996/11/23 21:13:37  jussi
   Merged DispQueryProcFull functionality into QueryProcFull.
   Merged QueryProcTape functionality into QueryProcFull.
@@ -1336,6 +1339,16 @@ void QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high,
 #if DEBUGLVL >= 3
   printf("DoScan map 0x%p, [%ld,%ld]\n", qData->map, low, high);
 #endif
+
+  // kb 11/25/96:
+  // hack to keep the system more interactive, otherwise the buffer mgr
+  // often return too many records.  Ideally, the buffer mgr should get
+  // the entire range, and then only return the max number of records in
+  // one chunk (so that we can make full use of the cache), but that is
+  // much more difficult than setting it here!
+  if( high - low >= QPFULL_RECS_PER_BATCH ) {
+    high = low + QPFULL_RECS_PER_BATCH;
+  }
 
   BufMgr *mgr = qData->mgr;
   mgr->InitGetRecs(qData->tdata, qData->gdata, low, high, 
