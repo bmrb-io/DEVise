@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1997
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/01/08 19:01:52  wenger
+  Fixed bug 064 and various other problems with drawing piled views;
+  added related debug code.
+
   Revision 1.21  1996/12/27 17:00:13  wenger
   Got latest code to compile for sun, solsparc, and hp; updated dependencies;
   changed 'Import' to 'New Table' in main window GUI to reflect change of
@@ -136,10 +140,10 @@
 static const char *	version = "1.2.6";
 
 // Master DEVise copyright dates.
-static const char *	copyright = "Copyright (c) 1992-1996";
+static const char *	copyright = "Copyright (c) 1992-1997";
 
 // Trademark logo for each DEVise window.
-static const char *	winLogo = "Visualization by DEVise (tm) 1996";
+static const char *	winLogo = "Visualization by DEVise (tm) 1997";
 
 
 #if !defined(lint) && defined(RCSID)
