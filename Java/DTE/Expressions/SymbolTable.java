@@ -1,15 +1,17 @@
 package Expressions;
 
-/** Symbol table is used to store already resolved (type checked) expressions.
+/** Symbol table is used to store already resolved (type checked) expressions
+    without duplicates.
 */
 
 public class SymbolTable {
-	public void initialize(TableAlias[] fromList){
+	bool isPresent(String exprStr){
+		return false;
 	}
 	public void insert(Expression element){
 	}
-	public Expression lookup(Expression element){
-		return null;
+	public Expression lookup(String exprStr){
+		// throw exception if not found
 	}
 }
 

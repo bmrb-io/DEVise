@@ -2,21 +2,6 @@ package Expressions;
 
 import Types.*;
 
-/** ExecExpr is created in the process of creating the executable structure
-    from the best plan produced by the optimizer.
-*/ 
-
-public interface ExecExpr {
-
-	/** ExecExpr always evaluates to a single types. However the
-	input can be two tuples (if this expression is evaluated
-	in a join method), or it can be only one tuple if this 
-	expression is evaluated as a part of a unary operator,
-	such as file-scan. */
-
-	DTE_Type evaluate(Tuple left, Tuple right);
-}
-
 /** Expression is used to represents all the SQL expressions that can be found
     in WHERE or SELECT clause. 
     Two main operations that the Expressions should implement are typechecking
@@ -56,15 +41,28 @@ public interface Expression {
 public class Selection implements Expression {
 	String alias;
 	String attribute;
+	TypeDesc type;
 
 	public Selection(String alias, String attribute){
 		this->alias = alias;
 		this->attribute = attribute;
 	}
+	public Selection(String alias, String attribute, TypeDesc type){
+		this->alias = alias;
+		this->attribute = attribute;
+		this->type = type;
+	}
 	public String toString(){
 		return alias + "." + attribute;
 	}
 	public Expression typeCheck(SymbolTable st){
+		Expression ste = lookup(toString());
+		if(ste != null){
+			return ste;
+		}
+		else{
+			// throw "table " + alias + " does not have attr " + attribute;
+		}
 	}
 	public ExecExpr createExec(OptNode[] opn);
 }
