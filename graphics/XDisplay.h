@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/08/29 22:12:17  guangshu
+  Changed arguments for ConvertAndWriteGIF.
+
   Revision 1.16  1996/07/23 15:34:43  jussi
   Added mechanism for bypassing the Devise internal color map.
 
@@ -102,11 +105,7 @@ public:
       return DisplayPlanes(_display, DefaultScreen(_display));
     }
 
-    virtual void Dimensions(Coord &width, Coord &height) {
-      int screen = DefaultScreen(_display);
-      width = (Coord) DisplayWidth(_display, screen);
-      height = (Coord) DisplayHeight(_display, screen);
-    }
+    virtual void Dimensions(Coord &width, Coord &height);
 
     /* Create a new window Rep. Dimensions are in normatlized
        coord from (0,0) to (1,1) */
@@ -171,16 +170,7 @@ protected:
     }
 
     /* Get width and height of X window */
-    void WinDimensions(Window win,Coord &winWidth, Coord &winHeight) {
-      Window root;
-      int x,y;
-      unsigned int width, height;
-      unsigned int border_width, depth;
-      XGetGeometry(_display,win,&root,&x,&y,&width,&height,
-		   &border_width, &depth);
-      winWidth = (Coord)width;
-      winHeight = (Coord)height;
-    }
+    void WinDimensions(Window win, Coord &winWidth, Coord &winHeight);
 
     /* translate from normalized dimensions of (0,0) to (1,1) into
        real window coordinates.  */
@@ -188,7 +178,7 @@ protected:
 			      Coord &realX, Coord &realY, Coord &realWidth,
 			      Coord &realHeight) {
       Coord winWidth, winHeight;
-      WinDimensions(win,winWidth, winHeight);
+      WinDimensions(win, winWidth, winHeight);
       realX = x * winWidth;
       realY = y * winHeight;
       realWidth = w * winWidth;
@@ -198,7 +188,7 @@ protected:
     void RealWindowWidthHeight(Window win,Coord width, Coord height,
 			       Coord &realWidth, Coord &realHeight){
       Coord winWidth, winHeight;
-      WinDimensions(win,winWidth, winHeight);
+      WinDimensions(win, winWidth, winHeight);
       realWidth = width * winWidth;
       realHeight = height * winHeight;
     }

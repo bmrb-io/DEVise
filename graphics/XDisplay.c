@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.32  1996/09/05 19:11:23  jussi
+  Displays containing multiple windows are now properly
+  exported as GIF files.
+
   Revision 1.31  1996/09/04 21:24:50  wenger
   'Size' in mapping now controls the size of Dali images; improved Dali
   interface (prevents Dali from getting 'bad window' errors, allows Devise
@@ -644,6 +648,34 @@ void XDisplay::FindLocalColor(Color c, float &r, float &g, float &b)
   b = color.blue / 65535.0;
 }
 #endif
+
+void XDisplay::Dimensions(Coord &width, Coord &height)
+{
+  int screen = DefaultScreen(_display);
+  width = (Coord)DisplayWidth(_display, screen);
+  height = (Coord)DisplayHeight(_display, screen);
+#ifndef LIBCS
+  if (Init::ScreenWidth() > 0)
+    width = Init::ScreenWidth();
+  if (Init::ScreenHeight() > 0)
+    height = Init::ScreenHeight();
+#endif
+}
+
+void XDisplay::WinDimensions(Window win, Coord &winWidth, Coord &winHeight)
+{
+  if (win == DefaultRootWindow(_display))
+    return Dimensions(winWidth, winHeight);
+
+  Window root;
+  int x, y;
+  unsigned int width, height;
+  unsigned int border_width, depth;
+  XGetGeometry(_display, win, &root, &x, &y, &width, &height,
+               &border_width, &depth);
+  winWidth = (Coord)width;
+  winHeight = (Coord)height;
+}
 
 /*
  * This structure forms the WMHINTS property of the window,
