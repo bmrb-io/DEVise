@@ -1,0 +1,49 @@
+#! /s/std/bin/perl
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1998
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  This is a script for the jspop to use to kill a devised.  Optional
+#  argument is port number devised is listening on, to make sure you
+#  kill the right one.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+if ($#ARGV >= 0) {
+    $pattern = "devised -port $ARGV[0]";
+} else {
+    $pattern = "devised";
+}
+
+open PS, "ps -ax >& 1 |" or die "can't fork: $!";
+while (<PS>) {
+#    print "line: ";
+#    print;
+    if ($_ =~ /$pattern/) {
+	@words = split / /, $_;
+	$pid = @words[1];
+
+        system("kill -INT $pid");
+        system sleep 1;
+        system("kill -INT $pid");
+        system sleep 1;
+        system("kill -INT $pid");
+    }
+}
+
+close PS;
