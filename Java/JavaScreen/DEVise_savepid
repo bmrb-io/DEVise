@@ -39,9 +39,6 @@ outfile=`echo $info | cut -d' ' -f6`
 #
 # Set the various environment variables that the DEVise executable needs.
 #
-HOSTNAME=`hostname | sed -e s/\\..\*//`
-export HOSTNAME
-
 DEVISE_ROOT=/p/devise/demo
 #DEVISE_ROOT=/p/devise/wenger
 export DEVISE_ROOT
