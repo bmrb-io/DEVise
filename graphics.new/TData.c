@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/07/23 20:13:05  wenger
+  Preliminary version of code to save TData (schema(s) and data) to a file.
+
   Revision 1.3  1996/01/27 00:17:27  jussi
   Added copyright notice and cleaned up a bit.
 
@@ -38,6 +41,127 @@
 #include "DevFileHeader.h"
 #include "DevError.h"
 #include "AttrList.h"
+#include "DataSourceFileStream.h"
+#include "DataSourceSegment.h"
+#include "DataSourceTape.h"
+#include "DataSourceBuf.h"
+#include "DataSeg.h"
+#include "ViewGraph.h"
+#include "QueryProc.h"
+
+#ifndef ATTRPROJ
+#include "DataSourceWeb.h"
+#endif
+
+/*---------------------------------------------------------------------------*/
+TData::TData(char* name, char* type, char* param, int recSize)
+{
+    DO_DEBUG(printf("TData::TData(%s, %s, %s, %d)\n",
+		    name, type, param, recSize));
+
+    _name = name;
+    _type = type;
+    _param = param;
+    _recSize = recSize;
+    _data = NULL;
+
+    // Find out whether the data occupies an entire data source or only
+    // a segment of it
+    char *	segLabel;
+    char *	segFile;
+    long	segOffset;
+    long	segLength;
+
+    DataSeg::Get(segLabel, segFile, segOffset, segLength);
+
+    // Check that data segment label matches TData name
+
+    if (strcmp(_name, segLabel)) {
+	DOASSERT(false, "Data segment does not match tdata");
+    }
+
+    // Now instantiate the appropriate type of source, according to
+    // whether this is a tape, disk file, or Web resource, and whether
+    // or not the data occupies the entire file.
+
+    if (!strcmp(_type, "UNIXFILE")) {
+	char *file = _param;
+	if (strcmp(file, segFile)) {
+	    DOASSERT(false, "Data segment does not match tdata");
+	}
+	if (   !strncmp(name, "/dev/rmt", 8)
+	    || !strncmp(name, "/dev/nrmt", 9)
+	    || !strncmp(name, "/dev/rst", 8)
+	    || !strncmp(name, "/dev/nrst", 9)) {
+
+	    _data = new DataSourceTape(file, NULL);
+	} else {
+	    _data = new DataSourceFileStream(file, NULL);
+	}
+    }
+
+#if 0
+    // buffer stuff not working or used
+    else if (!strcmp(_type, "BUFFER")) {
+	// For BUFFER data sources, _param is a pointer to the buffer
+	DOASSERT(_param, "Invalid buffer data source");
+	// need buffer & data sizes
+	_data = new DataSourceBuf(_param, buffer_size, data_size, NULL);
+    }
+#endif
+
+	//--------------------------------------------------------------------
+	// statistics datasources are stored in their corresponding viewgraph.
+	// the viewgraph will delete the source.
+    else if (!strcmp(_type, "BASICSTAT")) {
+	DOASSERT( strncmp(name, "Stat: ", 6) == 0, "invalid basicstat prefix");
+	ViewGraph* v = (ViewGraph *)ControlPanel::FindInstance(name+6);
+	DOASSERT(v, "BASICSTAT view not found");
+	_data = v->GetViewStatistics();
+    } else if (!strcmp(_type, "HISTOGRAM")) {
+	DOASSERT( strncmp(name, "Hist: ", 6) == 0, "invalid histogram prefix");
+	ViewGraph* v = (ViewGraph *)ControlPanel::FindInstance(name+6);
+	DOASSERT(v, "HISTOGRAM view not found");
+	_data = v->GetViewHistogram();
+	DO_DEBUG(printf("found histogram data source 0x%p from view 0x%p\n",
+			_data, v));
+    } else if (!strcmp(_type, "GDATASTAT")) {
+	DOASSERT( strncmp(name, "Gstat: ", 7) == 0, "invalid gdatastat prefix");
+	ViewGraph* v = (ViewGraph *)ControlPanel::FindInstance(name+7);
+	DOASSERT(v, "GDATASTAT view not found");
+	_data = v->GetGdataStatistics();
+    }
+#ifndef ATTRPROJ
+    else if (!strcmp(_type, "WWW")) {
+	char *file = MakeCacheFileName(_name, _type);
+	delete file;
+    }
+#endif
+    else {
+	fprintf(stderr, "Invalid TData type: %s\n", _type);
+	DOASSERT(0, "Invalid TData type");
+    }
+
+    if ((segOffset != 0) || (segLength != 0)) {
+	_data = new DataSourceSegment(_data, segOffset, segLength);
+    }
+
+    DOASSERT(_data, "Couldn't find/create data source");
+    _data->AddRef();
+}
+
+
+/*---------------------------------------------------------------------------*/
+TData::TData(DataSource* data_source)
+{
+    _name = NULL;
+    _type = NULL;
+    _param = NULL;
+    _recSize = 0;
+    _data = data_source;
+    _version = 0;
+}
+
 
 /*------------------------------------------------------------------------------
  * function: TData::~TData
@@ -45,6 +169,12 @@
  */
 TData::~TData()
 {
+    if( _data && _data->DeleteRef() ) {
+	delete _data;
+    }
+    delete _param;
+    delete _type;
+    delete _name;
 }
 
 /*------------------------------------------------------------------------------
@@ -196,3 +326,32 @@ TData::WriteData(int fd)
   return result;
 }
 
+
+//---------------------------------------------------------------------------
+void TData::InvalidateTData()
+{
+    DO_DEBUG(printf("invaliding tdata version %d for %d\n",
+		    _version, _data->Version()));
+#ifndef ATTRPROJ
+    QueryProc::Instance()->ClearTData(this);
+#endif
+    _version = _data->Version();
+}
+
+
+//---------------------------------------------------------------------------
+
+char* TData::MakeCacheFileName(char *name, char *type)
+{
+  char *fname = StripPath(name);
+  char *cacheDir = getenv("DEVISE_CACHE");
+  if (!cacheDir)
+    cacheDir = ".";
+  int nameLen = strlen(cacheDir) + 1 + strlen(fname) + 1 + strlen(type) + 1;
+  char *fn = new char [nameLen];
+  sprintf(fn, "%s/%s.%s", cacheDir, fname, type);
+  return fn;
+}
+
+
+//===========================================================================

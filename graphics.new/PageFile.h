@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:15:06  jussi
+  Added CVS header.
+*/
 
 /* Page file that uses a buffer manager to for I/O */
 
@@ -20,7 +23,10 @@ struct PageFileHeader {
 	int maxAlloc;	/* max # of pages allowed, or -1 if no limit */
 };
 
-class PageFile {
+class PageFile
+: public DataSource
+{
+
 public:
 	PageFile(char *name, BufMgr *mgr, int maxAlloc = -1);
 	~PageFile();

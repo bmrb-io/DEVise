@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1996/07/13 01:32:33  jussi
+  Moved initialization of i to make older compilers happy.
+
   Revision 1.36  1996/07/13 00:22:39  jussi
   Fixed bug in Initialize().
 
@@ -179,7 +182,6 @@
 #else
 #   include "Init.h"
 #   include "DataSourceWeb.h"
-#   include "DerivedDataSource.h"
 #endif
 
 # define  _STREAM_COMPAT
@@ -189,146 +191,32 @@ static char indexFileContent[FILE_CONTENT_COMPARE_BYTES];
 static char *   srcFile = __FILE__;
 
 TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
+: TData(name, type, param, recSize)
 {
-  DO_DEBUG(printf("TDataAscii::TDataAscii(%s, %s, %s, %d)\n",
-                  name, type, param, recSize));
+    DO_DEBUG(printf("TDataAscii::TDataAscii(0x%p)(%s, %s, %s, %d)\n",
+		    this, name, type, param, recSize));
+    DO_DEBUG(printf("_data = 0x%p\n", _data));
 
-  _name = name;
-  _type = type;
-  _param = param;
-  _recSize = recSize;
-  _data = NULL;
-
-  // Find out whether the data occupies an entire file or only
-  // a segment of a file.
-  char *	segLabel;
-  char *	segFile;
-  long		segOffset;
-  long		segLength;
-
-  DataSeg::Get(segLabel, segFile, segOffset, segLength);
-
-  // Check that data segment label matches TData name
-
-  if (strcmp(_name, segLabel))
-  {
-      DOASSERT(false, "Data segment does not match tdata");
-  }
-
-  // Now instantiate the appropriate type of object, according to
-  // whether this is a tape, disk file, or Web resource, and whether
-  // or not the data occupies the entire file.
-
-#ifndef ATTRPROJ
-  if (!strcmp(_type, "WWW"))
-  {
-      char *file = MakeCacheFileName(_name, _type);
-      if ((segOffset == 0) && (segLength == 0))
-      {
-          _data = new DataSourceWeb(_param, NULL, file);
-      }
-      else
-      {
-          _data = new DataSourceSegment<DataSourceWeb>(_param, NULL, file,
-                                                       segOffset, segLength);
-      }
-      delete file;
-  }
-  else
-#endif
-  if (!strcmp(_type, "UNIXFILE"))
-  {
-    char *file = _param;
-    if (strcmp(file, segFile))
-    {
-      DOASSERT(false, "Data segment does not match tdata");
+    _fileOpen = true;
+    if (_data->Open("r") != StatusOk) {
+	_fileOpen = false;
     }
-    if (!strncmp(name, "/dev/rmt", 8)
-        || !strncmp(name, "/dev/nrmt", 9)
-        || !strncmp(name, "/dev/rst", 8)
-        || !strncmp(name, "/dev/nrst", 9)) {
-      if ((segOffset == 0) && (segLength == 0))
-      {
-        _data = new DataSourceTape(file, NULL);
-      }
-      else
-      {
-        _data = new DataSourceSegment<DataSourceTape>(file, NULL, NULL,
-                                                      segOffset, segLength);
-      }
-    } else {
-      if ((segOffset == 0) && (segLength == 0))
-      {
-        _data = new DataSourceFileStream(file, NULL);
-      }
-      else
-      {
-        _data = new DataSourceSegment<DataSourceFileStream>(file, NULL, NULL,
-                                                            segOffset,
-                                                            segLength);
-      }
-    }
-  }
-  else if (!strcmp(_type, "BUFFER")
-#ifndef ATTRPROJ
-           || DerivedDataSource::IsDerivedDataType(_type)
-#endif
-           )
-  {
-    // For regular BUFFER data sources, _param is a pointer to the buffer
+    
+    DataSeg::Set(NULL, NULL, 0, 0);
+    
+    _bytesFetched = 0;
+    
+    _lastPos = 0;
+    _currPos = 0;
+    _lastIncompleteLen = 0;
 
-    char *dataBuf = _param;
+    _totalRecs = 0;
 
-#ifndef ATTRPROJ
-    // For derived data sources, map the name of the data source
-    // to a pointer to the buffer associated with that source
+    _indexSize = 0;
+    _index = 0;
 
-    if (DerivedDataSource::IsDerivedDataType(_type)) {
-        dataBuf = DerivedDataSource::GetDerivedData(_type, _param);
-        if (!dataBuf)
-            fprintf(stderr, "Cannot get data buffer for %s %s\n",
-                    _type, _param);
-    }
-#endif
-
-    DOASSERT(dataBuf, "Invalid buffer data source");
-
-    if ((segOffset == 0) && (segLength == 0))
-    {
-      _data = new DataSourceBuf(dataBuf, NULL);
-    }
-    else
-    {
-      _data = new DataSourceSegment<DataSourceBuf>(dataBuf, NULL, NULL,
-                                                   segOffset, segLength);
-    }
-  }
-  else
-  {
-      fprintf(stderr, "Invalid TData type: %s\n", _type);
-      DOASSERT(0, "Invalid TData type");
-  }
-
-  DOASSERT(_data, "Out of memory");
-
-  _fileOpen = true;
-  if (_data->Open("r") != StatusOk)
-    _fileOpen = false;
-  
-  DataSeg::Set(NULL, NULL, 0, 0);
-
-  _bytesFetched = 0;
-  
-  _lastPos = 0;
-  _currPos = 0;
-  _lastIncompleteLen = 0;
-
-  _totalRecs = 0;
-
-  _indexSize = 0;
-  _index = 0;
-
-  Dispatcher::Current()->Register(this, 10, AllState, false, _data->AsyncFd());
+    Dispatcher::Current()->Register(this, 10, AllState, 
+				    false, _data->AsyncFd());
 }
 
 TDataAscii::~TDataAscii()
@@ -342,16 +230,13 @@ TDataAscii::~TDataAscii()
 
   Dispatcher::Current()->Unregister(this);
 
-  delete _data;
   delete _index;
-  delete _param;
-  delete _type;
-  delete _name;
   delete _indexFileName;
 }
 
 Boolean TDataAscii::CheckFileStatus()
 {
+  CheckDataSource();
   // see if file is (still) okay
   if (!_data->IsOk()) {
     // if file used to be okay, close it
@@ -359,9 +244,7 @@ Boolean TDataAscii::CheckFileStatus()
       Dispatcher::Current()->Unregister(this);
       printf("Data stream %s is no longer available\n", _name);
       _data->Close();
-#ifndef ATTRPROJ
-      QueryProc::Instance()->ClearTData(this);
-#endif
+      TData::InvalidateTData();
       _fileOpen = false;
     }
     Boolean old = DevError::SetEnabled(false);
@@ -408,15 +291,16 @@ Boolean TDataAscii::LastID(RecId &recId)
   if (!_data->isTape()) {
     // see if file has shrunk or grown
     _currPos = _data->gotoEnd();
+#ifdef DEBUG
+    printf("TDataAscii::LastID: currpos: %ld, lastpos: %ld\n", 
+	   _currPos, _lastPos);
+#endif
     if (_currPos < _lastPos) {
       // file has shrunk, rebuild index from scratch
 #ifdef DEBUG
       printf("Rebuilding index...\n");
 #endif
-      RebuildIndex();
-#ifndef ATTRPROJ
-      QueryProc::Instance()->ClearTData(this);
-#endif
+	InvalidateTData();
     } else if (_currPos > _lastPos) {
       // file has grown, build index for new records
 #ifdef DEBUG
@@ -500,18 +384,6 @@ char *TDataAscii::MakeIndexFileName(char *name, char *type)
   int nameLen = strlen(Init::WorkDir()) + 1 + strlen(fname) + 1;
   char *fn = new char [nameLen];
   sprintf(fn, "%s/%s", Init::WorkDir(), fname);
-  return fn;
-}
-
-char *TDataAscii::MakeCacheFileName(char *name, char *type)
-{
-  char *fname = StripPath(name);
-  char *cacheDir = getenv("DEVISE_CACHE");
-  if (!cacheDir)
-    cacheDir = ".";
-  int nameLen = strlen(cacheDir) + 1 + strlen(fname) + 1 + strlen(type) + 1;
-  char *fn = new char [nameLen];
-  sprintf(fn, "%s/%s.%s", cacheDir, fname, type);
   return fn;
 }
 
@@ -724,6 +596,14 @@ void TDataAscii::Checkpoint()
   _currPos = _data->Tell();
 }
 
+
+void TDataAscii::InvalidateTData()
+{
+    RebuildIndex();
+    TData::InvalidateTData();
+}
+
+
 /* Build index for the file. This code should work when file size
    is extended dynamically. Before calling this function, position
    should be at the last place where file was scanned. */
@@ -750,6 +630,10 @@ void TDataAscii::BuildIndex()
 
     if (_data->Fgets(buf, LINESIZE) == NULL)
       break;
+
+#ifdef DEBUG
+	printf("read record: \"%s\"\n", buf);
+#endif
 
     len = strlen(buf);
 

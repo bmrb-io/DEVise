@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/07 16:41:49  jussi
+  Updated constructor and added HandleKey, HandlePress and HandlePopup
+  to reflect new interface between View and its derived classes.
+
   Revision 1.3  1996/04/05 20:13:34  wenger
   Fixed error causing pure virtual function to be called
   if a session was closed during a query; fixed an error
@@ -46,7 +50,7 @@ private:
   virtual void DerivedAbortQuery();
   virtual void HandlePress(WindowRep * w, int xlow, int ylow,
 			   int xhigh, int yhigh, int button) {}
-  virtual void HandleKey(WindowRep *w ,char key, int x, int y) {}
+  virtual void HandleKey(WindowRep *w ,int key, int x, int y) {}
   virtual Boolean HandlePopUp(WindowRep *, int x, int y, int button,
 			      char **&msgs, int &numMsgs) {
     return false;

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/03/26 15:34:58  wenger
+  Fixed various compile warnings and errors; added 'clean' and
+  'mostlyclean' targets to makefiles; changed makefiles so that
+  object lists are derived from source lists.
+
   Revision 1.4  1995/12/28 19:59:24  jussi
   Small fixes to remove compiler warnings.
 
@@ -33,14 +38,18 @@
 #include "TDataRec.h"
 #include "RecFile.h"
 #include "Init.h"
+#include "Util.h"
+
 
 int  TDATAREC_CHUNK_SIZE = DEVISE_PAGESIZE;
 
-TDataRec::TDataRec(char *name, int recSize):TData()
+TDataRec::TDataRec(char *name, int recSize)
+: TData(RecFile::OpenFile(name, recSize))
 {
   TDATAREC_CHUNK_SIZE = Init::PageSize();
-  
-  _rFile = RecFile::OpenFile(name, recSize);
+
+  _name = CopyString(name);
+  _rFile = (RecFile*)_data;
   if (_rFile == NULL){
     fprintf(stderr,"can't open file %s\n",name);
     Exit::DoExit(1);
@@ -51,7 +60,7 @@ TDataRec::TDataRec(char *name, int recSize):TData()
 
 TDataRec::~TDataRec()
 {
-  delete _rFile;
+    // deleted by TData: delete _rFile;
 }
 
 int TDataRec::Dimensions(int *sizeDimension)

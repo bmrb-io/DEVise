@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/05/31 15:37:41  jussi
+  Moved to the graphics.new directory.
+
   Revision 1.3  1995/12/29 18:28:58  jussi
   Added FilterAboutToChange() method to facilitate the new
   cursor mechanism. Also added the copyright message.
@@ -25,7 +28,7 @@
 */
 
 #include "VisualLink.h"
-#include "View.h"
+#include "ViewGraph.h"
 
 VisualLink::VisualLink(char *name, VisualFlag linkFlag)
 {
@@ -79,17 +82,19 @@ void VisualLink::InsertView(ViewGraph *view)
 
 /* delete view from visual link */
 
-void VisualLink::DeleteView(ViewGraph *view)
+bool VisualLink::DeleteView(ViewGraph *view)
 {
-  if (!_viewList->Find(view))
-    /* view not in list */
-    return;
+  if (!_viewList->Find(view)) {
+      /* view not in list */
+      return false;
+  }
 
 #ifdef DEBUG
   printf("Removing view %s from link %s\n", view->GetName(), GetName());
 #endif
 
   _viewList->Delete(view);
+  return true;
 }
 
 /* Called by View when its visual filter has changed.
@@ -113,6 +118,13 @@ void VisualLink::FilterChanged(View *view, VisualFilter &filter,
   if (found)
     ProcessFilterChanged(view, filter);
 }
+
+
+void VisualLink::ViewDestroyed(View *view)
+{
+    DeleteView((ViewGraph *)view);
+}
+
 
 void VisualLink::ProcessFilterChanged(View *view, VisualFilter &filter)
 {

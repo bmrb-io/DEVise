@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/05/31 15:40:34  jussi
+  Cleaned up a bit. Added copyright notice.
+
   Revision 1.2  1995/09/05 22:15:28  jussi
   Added CVS header.
 */
@@ -26,9 +29,21 @@
 #define RecFile_h
 
 #include "DeviseTypes.h"
+#include "DataSource.h"
 
-class RecFile {
+
+// Should this be derived from DataSourceFileStream, or should the
+// functionality of this class be put int there, or leave it alone??
+
+
+class RecFile
+: public DataSource
+{
+
 public:
+
+  RecFile() : DataSource() {}
+
   virtual ~RecFile() {}
 
   /* Create a new file. Return NULL if file already exists */
@@ -37,12 +52,6 @@ public:
   /* Open an existing file. Return NULL if file does not exist .
      trunc == true to truncate file */
   static RecFile *OpenFile(char *name, int recSize, Boolean trunc = false);
-
-  /* Get the time file last modified. Return an integer
-     specifying when file was modified. We require that
-     if r1, and r2 are two different files, and r1 was modified before
-     r2, then r1->GetModTime() < r2->GetModFile() */
-  virtual long GetModTime() = 0;
 
   virtual char *GetName() = 0;
 
@@ -55,6 +64,17 @@ public:
 
   /* Write this record onto disk.*/
   virtual void WriteRec(int recNum, int numRecs, void *buf) = 0;
+
+  // The following functions are included to make RecFiles complete
+  // DataSources without having to specify these.  I suppose that
+  // the should support them sometime...
+  DevStatus Open(char*) { return StatusFailed; }
+  char IsOk() { return true; }
+  DevStatus Close() { return StatusFailed; }
+  int Seek(long, int) { return -1; }
+  long Tell() { return -1; }
+  int gotoEnd() { return -1; }
+
 };
 
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/07/25 14:25:11  jussi
+  Re-enabled record range merging, added checking of empty ranges.
+
   Revision 1.4  1996/07/23 20:53:02  jussi
   Fixed small bug.
 
@@ -38,6 +41,8 @@
 #include "Exit.h"
 #include "Init.h"
 #include "Util.h"
+#include "ViewGraph.h"
+
 
 //#define DEBUG
 
@@ -241,12 +246,23 @@ void RecordLink::InsertView(ViewGraph *view)
   view->AddAsSlaveView(this);
 }
 
-/* delete slave view from visual link */
+/* delete slave or master view from visual link */
 
-void RecordLink::DeleteView(ViewGraph *view)
+bool RecordLink::DeleteView(ViewGraph *view)
 {
-  VisualLink::DeleteView(view);
-  view->DropAsSlaveView(this);
+#if defined(DEBUG) || 1
+  printf("RecordLink::DeleteView(0x%p, 0x%p)\n", this, view);
+#endif
+  if( view == _masterView ) {
+      view->DropAsMasterView(this);
+      _masterView = NULL;
+  } else if( VisualLink::DeleteView(view) ) {
+      view->DropAsSlaveView(this);
+  } else {
+      // view was not part of this link
+      return false;
+  }
+  return true;
 }
 
 void RecordLink::FlushToDisk()

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/07/26 16:19:19  guangshu
+  Remove unnecessary comment.
+
   Revision 1.25  1996/07/25 14:33:00  guangshu
   Added linked list to keep track of the gstat records so it doesnot need to scann the range from xmin to xmax and fixed bugs for histograms
 
@@ -110,8 +113,9 @@
 #include "DList.h"
 #include "Color.h"
 #include "BasicStats.h"
-#include "DerivedDataSource.h"
 #include "GdataStat.h"
+#include "DataSourceFixedBuf.h"
+#include "UpdateLink.h"
 
 const int MAXCOLOR = 43;
 const int MAX_GSTAT = 10000;
@@ -133,7 +137,9 @@ struct MappingInfo {
 DefinePtrDList(MappingInfoList, MappingInfo *);
 DefinePtrDList(RecordLinkList, RecordLink *);
 
-class ViewGraph: public View, public DerivedDataSource {
+class ViewGraph
+: public View
+{
 public:
   ViewGraph(char *name, VisualFilter &initFilter, 
 	    AxisLabel *xAxis, AxisLabel *yAxis,
@@ -146,6 +152,9 @@ public:
   virtual void DropAsMasterView(RecordLink *link);
   virtual void AddAsSlaveView(RecordLink *link);
   virtual void DropAsSlaveView(RecordLink *link);
+
+  // Stats update link access
+  UpdateLink& GetUpdateLink() { return _updateLink; }
 
   /* Insert/remove mappings from view */
   virtual void InsertMapping(TDataMap *map, char *label = "");
@@ -190,9 +199,12 @@ public:
   BasicStats *GetStatObj() { return &_allStats; }
 
   /* Return pointer to buffer with view statistics */
-  virtual char *GetViewStatistics() { return _statBuffer; }
-  virtual char *GetViewHistogram()  { return _histBuffer; }
-  virtual char *GetGdataStatistics() { return _gdataStatBuffer; }
+  DataSourceBuf* GetViewStatistics() { return _statBuffer; }
+  DataSourceBuf* GetViewHistogram()  { return _histBuffer; }
+  DataSourceBuf* GetGdataStatistics() { return _gdataStatBuffer; }
+
+  // uses filter's y range to set the histogram upper & lower bounds
+  void SetHistogramWidthToFilter();
 
   /* Set/get action */
   void SetAction(Action *action) { _action = action; }
@@ -203,6 +215,10 @@ public:
       
   /* Return address of point storage */
   virtual PointStorage *GetPointStorage() { return &_pstorage; }
+
+  // the view master has recomputed its view, this view is called if
+  // it depends upon master
+  void MasterRecomputed(ViewGraph* master);
 
  protected:
   /* Write color statistics to memory buffer */
@@ -219,11 +235,10 @@ public:
 
   BasicStats _allStats;            /* basic stats for all categories */
   BasicStats _stats[MAXCOLOR];     /* basic stats per category */
-  char _statBuffer[3072];          /* view statistics */
-  char _histBuffer[3072];	   /* histograms */
-  Coord yMax, yMin;		   /* the ymax and ymin for _allStats */
 
-  char _gdataStatBuffer[3072];         /* the statistics for each x */
+  DataSourceFixedBuf* _statBuffer;          /* view statistics */
+  DataSourceFixedBuf* _histBuffer;	   /* histograms */
+  DataSourceFixedBuf* _gdataStatBuffer;	   /* the statistics for each x */
 
   GdataStat _gstat;
   GStatList _glist;                /* List to keep track of all the gdata */ 
@@ -232,6 +247,9 @@ public:
   Action *_action;                 /* action in this view */
   RecordLinkList _masterLink;      /* links whose master this view is */
   RecordLinkList _slaveLink;       /* slave record link list */
+
+  UpdateLink _updateLink;	// link to view that want to know when
+				// this view has changed
 
   Boolean _autoScale;              /* true if auto scaling in effect */
 
@@ -246,7 +264,7 @@ public:
 			   int ylow, int xhigh, int yhigh, int button);
 
   /* Handle key event */
-  virtual void HandleKey(WindowRep *w ,char key, int x, int y);
+  virtual void HandleKey(WindowRep *w ,int key, int x, int y);
 
   /* Handle pop-up */
   virtual Boolean HandlePopUp(WindowRep *, int x, int y, int button,

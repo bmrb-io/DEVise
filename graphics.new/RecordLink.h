@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/07/25 14:25:11  jussi
+  Re-enabled record range merging, added checking of empty ranges.
+
   Revision 1.1  1996/05/31 15:37:22  jussi
   Initial revision.
 */
@@ -45,7 +48,7 @@ class RecordLink : public VisualLink {
   virtual ViewGraph *GetMasterView() { return _masterView; }
 
   virtual void InsertView(ViewGraph *view);
-  virtual void DeleteView(ViewGraph *view);
+  virtual bool DeleteView(ViewGraph *view);
 
   void Initialize();
   void InsertRecs(RecId recid, int num);

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.33  1996/08/03 15:20:17  jussi
+  Made "out of statistics buffer space" messages appear only when
+  DEBUG is defined.
+
   Revision 1.32  1996/07/30 18:24:56  guangshu
   Commit the change as last one again.
 
@@ -125,6 +129,8 @@
   Added CVS header.
 */
 
+//#define DEBUG
+
 #include <assert.h>
 
 #include "ViewGraph.h"
@@ -132,17 +138,20 @@
 #include "ActionDefault.h"
 #include "Init.h"
 #include "RecordLink.h"
+#include "TData.h"
 
-//#define DEBUG
 
 ImplementDList(GStatList, int)
 
 ViewGraph::ViewGraph(char *name, VisualFilter &initFilter, 
 		     AxisLabel *xAxis, AxisLabel *yAxis,
 		     Color fg, Color bg,
-		     Action *action) :
-	View(name, initFilter, fg, bg, xAxis, yAxis)
+		     Action *action)
+: View(name, initFilter, fg, bg, xAxis, yAxis),
+  _updateLink("stats link")
 {
+    DO_DEBUG(printf("ViewGraph::ViewGraph(0x%p, %s)\n",
+		    this, (name != NULL) ? name : "<null>"));
     _action = action;
     if (!_action)
       _action = new ActionDefault("default");
@@ -152,40 +161,47 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
     // add terminating null
     _DisplayStats[STAT_NUM] = 0;
     
-    // no ymax and ymin yet 
-    yMax = yMin = 0;
-    // no statistics yet
-    _statBuffer[0] = 0;
-    _histBuffer[0] = 0;
-    _gdataStatBuffer[0] = 0;
-
     // auto scaling is in effect by default
     _autoScale = true;
+
+    _updateLink.SetMasterView(this);
+
+    _statBuffer = new DataSourceFixedBuf(3072, "statBuffer");
+    _statBuffer->AddRef();
+    _statBuffer->SetControllingView(this);
+
+    _histBuffer = new DataSourceFixedBuf(3072, "histBuffer");
+    _histBuffer->AddRef();
+    _histBuffer->SetControllingView(this);
+
+    _gdataStatBuffer = new DataSourceFixedBuf(3072, "gdataStatBuffer");
+    _gdataStatBuffer->AddRef();
+    _gdataStatBuffer->SetControllingView(this);
 }
 
 ViewGraph::~ViewGraph()
 {
-    // Drop view as master from all links.
+    DO_DEBUG(printf("ViewGraph::~ViewGraph(0x%p, %s)\n",
+		    this, (GetName() != NULL) ? GetName() : "<null>"));
 
-    // Must delete link using DeleteCurrent() because SetMasterView()
-    // calls DropAsMasterView() which calls _masterLink.Delete(link)
-    // which is not allowed because we're inside an iterator
-    
-    int index = _masterLink.InitIterator();
-    while(_masterLink.More(index)) {
-        RecordLink *link = _masterLink.Next(index);
-        _masterLink.DeleteCurrent(index);
-        link->SetMasterView(0);
-    }
-    _masterLink.DoneIterator(index);
+    // note: viewgraphs report their destruction twice, once during
+    // ~ViewGraph() and once during ~View()
+    ReportViewDestroyed();
 
-    index = _slaveLink.InitIterator();
-    while(_slaveLink.More(index)) {
-        RecordLink *link = _slaveLink.Next(index);
-        _slaveLink.DeleteCurrent(index);
-        link->DeleteView(this);
+    // disconnect from the stats buffers
+    _statBuffer->RemoveControllingView(this);
+    if( _statBuffer->DeleteRef() ) {
+	delete _statBuffer;
     }
-    _slaveLink.DoneIterator(index);
+    _histBuffer->RemoveControllingView(this);
+    if( _histBuffer->DeleteRef() ) {
+	delete _histBuffer;
+    }
+    _gdataStatBuffer->RemoveControllingView(this);
+    if( _gdataStatBuffer->DeleteRef() ) {
+	delete _gdataStatBuffer;
+    }
+
 }
 
 void ViewGraph::AddAsMasterView(RecordLink *link)
@@ -250,9 +266,44 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
 {
     MappingInfo *info = new MappingInfo;
     DOASSERT(info, "Could not create mapping information");
+    DOASSERT(map, "null map");
 
     info->map = map;
     info->label = CopyString(label);
+
+    int index = InitMappingIterator();
+    if (!MoreMapping(index)) {
+      // this is the first mapping
+      // update the histogram bucket sizes
+      AttrInfo *yAttr = map->MapGAttr2TAttr("y");
+      if( yAttr && yAttr->hasLoVal && yAttr->hasHiVal ) {
+	// y min & max known for the file, so use those to define buckets
+	double lo = AttrList::GetVal(&yAttr->loVal, yAttr->type);
+	double hi = AttrList::GetVal(&yAttr->hiVal, yAttr->type);
+	_allStats.SetHistWidth(lo, hi);
+      } else {
+	// global min & max are not known, so use filter hi & lo
+        VisualFilter filter;
+        GetVisualFilter(filter);
+	_allStats.SetHistWidth(filter.yLow, filter.yHigh);
+      }
+    }
+    DoneMappingIterator(index);
+
+    // determine if this view is dependent upon any other
+    TData* tdata = map->GetTData();
+    DOASSERT(tdata, "null tdata");
+    DataSource* ds = tdata->GetDataSource();
+    DOASSERT(ds, "null data source");
+    ViewGraph* v = ds->ControllingView();
+    if( v ) {
+#ifdef DEBUG
+        printf("View %s is slave of update link for %s\n", GetName(),
+               v->GetName());
+#endif
+	v->GetUpdateLink().InsertView(this);
+    }
+
     _mappings.Append(info);
 
     AttrList *attrList = map->GDataAttrList();
@@ -264,25 +315,6 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
         if (info && info->type == DateAttr)
           SetYAxisAttrType(DateAttr);
     }
-
-    int index = InitMappingIterator();
-
-    if (MoreMapping(index)) {
-        AttrInfo *yAttr = map->MapGAttr2TAttr("y");
-        if(yAttr && yAttr->hasHiVal && yAttr->hasLoVal){
-	    yMax = AttrList::GetVal(&yAttr->hiVal, yAttr->type);
-	    yMin = AttrList::GetVal(&yAttr->loVal, yAttr->type);
-        } else { 
-  	    VisualFilter filter;
-	    GetVisualFilter(filter);
-	    yMax = filter.yHigh;
-	    yMin = filter.yLow;
-	}
-	_allStats.SetHistWidth(yMax, yMin);
-    } else
-        fprintf(stderr, "No more Mapping\n");
-
-    DoneMappingIterator(index);
 
     Refresh();
 }
@@ -504,6 +536,16 @@ void ViewGraph::SetDisplayStats(char *stat)
       win->Flush();
 }
 
+
+void ViewGraph::MasterRecomputed(ViewGraph* master)
+{
+#ifdef DEBUG
+    printf("ViewGraph::MasterRecomputed[%s]\n", GetName());
+#endif
+    AbortAndReexecuteQuery();
+}
+
+
 Boolean ViewGraph::ToRemoveStats(char *oldset, char *newset)
 {
     DOASSERT(strlen(oldset) == STAT_NUM && strlen(newset) == STAT_NUM,
@@ -526,9 +568,9 @@ void ViewGraph::StatsXOR(char *oldstat, char *newstat, char *result)
 void ViewGraph::PrepareStatsBuffer()
 {
     /* initialize statistics buffer */
-    _statBuffer[0] = 0;
-    _histBuffer[0] = 0;
-    _gdataStatBuffer[0] = 0;
+    _statBuffer->Clear();
+    _histBuffer->Clear();
+    _gdataStatBuffer->Clear();
 
     /* find last non-zero count */
     int j;
@@ -536,8 +578,6 @@ void ViewGraph::PrepareStatsBuffer()
         if (_stats[j].GetStatVal(STAT_COUNT) > 0)
             break;
     }
-    if (j < 0)
-        j = 0;
 
     /* print one extra record */
     j++;
@@ -548,7 +588,8 @@ void ViewGraph::PrepareStatsBuffer()
     char line[128];
     int i;
     for(i = 0; i <= j; i++) {
-        sprintf(line, "%d %d %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n",
+        int len = 
+	  sprintf(line, "%d %d %g %g %g %g %g %g %g %g %g\n",
                 i, (int)_stats[i].GetStatVal(STAT_COUNT),	
                 _stats[i].GetStatVal(STAT_MEAN),
                 _stats[i].GetStatVal(STAT_MAX),
@@ -559,29 +600,30 @@ void ViewGraph::PrepareStatsBuffer()
                 _stats[i].GetStatVal(STAT_ZVAL90H),
                 _stats[i].GetStatVal(STAT_ZVAL95L),
                 _stats[i].GetStatVal(STAT_ZVAL95H));
-        if (strlen(_statBuffer) + strlen(line) + 1 > sizeof _statBuffer) {
+        if( _statBuffer->Write(line, len) != len ) {
 #ifdef DEBUG
-            printf("Out of statistics buffer space\n");
+            fprintf(stderr, "Out of statistics buffer space\n");
 #endif
             break;
         }
-        strcat(_statBuffer, line);
     }
 
-    if (_allStats.GetHistWidth() > 0) {
-	for(i = 0; i<HIST_NUM; i++) {
-	    sprintf(line, "%.2f %d\n", 
-                    _allStats.GetStatVal(STAT_MIN) +
-                    (i + 0.5) * _allStats.GetHistWidth(), 
-                    _allStats.GetHistVal(i));
-	    if (strlen(_histBuffer) + strlen(line) + 1 > sizeof _histBuffer) {
+    double width = _allStats.GetHistWidth();
+#if defined(DEBUG)
+    printf("histogram width: %g\n", width);
+#endif
+    if( width > 0 ) {
+	double pos = _allStats.GetHistMin() + width / 2.0;
+	for(int i = 0; i < HIST_NUM; i++) {
+	    int len = sprintf(line, "%g %d\n", pos, _allStats.GetHistVal(i));
+	    if( _histBuffer->Write(line, len) != len ) {
 #ifdef DEBUG
-	        printf("Out of histogram buffer space\n");
+	        fprintf(stderr, "Out of histogram buffer space\n");
 #endif
 	        break;
 	    }
-	    strcat(_histBuffer, line);
-        }
+	    pos += width;
+	}
     }
 
     BasicStats *bs;
@@ -590,29 +632,21 @@ void ViewGraph::PrepareStatsBuffer()
 	int i = _glist.Next(index); 
 	if (_gstat.Lookup(i, bs)) {
 	   DOASSERT(bs,"HashTable lookup error\n");
-	   sprintf(line, "%d %d %.2f %.2f %.2f %.2f\n",
-		   i, (int)bs->GetStatVal(STAT_COUNT),
-		   bs->GetStatVal(STAT_YSUM),
-		   bs->GetStatVal(STAT_MAX),
-		   bs->GetStatVal(STAT_MEAN),
-		   bs->GetStatVal(STAT_MIN));
-            if (strlen(_gdataStatBuffer) + strlen(line) + 1
-                > sizeof _gdataStatBuffer) {
+	   int len = sprintf(line, "%d %d %g %g %g %g\n",
+			     i, (int)bs->GetStatVal(STAT_COUNT),
+			     bs->GetStatVal(STAT_YSUM),
+			     bs->GetStatVal(STAT_MAX),
+			     bs->GetStatVal(STAT_MEAN),
+			     bs->GetStatVal(STAT_MIN));
+	   if( _gdataStatBuffer->Write(line, len) != len ) {
 #ifdef DEBUG
-                printf("Out of GData Stat Buffer space\n");
+	       fprintf(stderr, "Out of GData Stat Buffer space\n");
 #endif
-                break;
-            }
-           strcat(_gdataStatBuffer, line);
+	       break;
+	   }
        }
     }	
     _glist.DoneIterator(index);
-
-#ifdef DEBUG
-    printf("%s\n", _statBuffer);
-    printf("%s\n", _histBuffer);
-    printf("%s\n", _gdataStatBuffer);
-#endif
 }
 
 /* Handle button press event */
@@ -641,7 +675,7 @@ void ViewGraph::HandlePress(WindowRep *w, int xlow, int ylow,
 
 /* handle key event */
 
-void ViewGraph::HandleKey(WindowRep *w, char key, int x, int y)
+void ViewGraph::HandleKey(WindowRep *w, int key, int x, int y)
 {
     ControlPanel::Instance()->SelectView(this);
 
@@ -691,3 +725,30 @@ Boolean ViewGraph::HandlePopUp(WindowRep *win, int x, int y, int button,
 }
 
 
+void ViewGraph::SetHistogramWidthToFilter()
+{
+    VisualFilter filter;
+    GetVisualFilter(filter);
+    Coord lo = filter.yLow;
+    Coord hi = filter.yHigh;
+    bool is_filter = true;
+    if( lo == _allStats.GetHistMin() && hi == _allStats.GetHistMax() ) {
+	// histogram already at these values so switch to the
+	// global file min & max if available
+	int index = InitMappingIterator();
+	if (MoreMapping(index)) {
+	    MappingInfo *info = NextMapping(index);
+	    AttrInfo *yAttr = info->map->MapGAttr2TAttr("y");
+	    if( yAttr && yAttr->hasLoVal && yAttr->hasHiVal ) {
+		lo = AttrList::GetVal(&yAttr->loVal, yAttr->type);
+		hi = AttrList::GetVal(&yAttr->hiVal, yAttr->type);
+		is_filter = false;
+	    }
+	}
+	DoneMappingIterator(index);
+    }
+    printf("Histogram for view %s set to (%g, %g) from %s range\n",
+	   GetName(), lo, hi, is_filter ? "filter" : "file");
+    _allStats.SetHistWidth(lo, hi);
+    AbortAndReexecuteQuery();
+}

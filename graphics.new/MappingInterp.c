@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.37  1996/07/19 02:53:40  jussi
+  Increase number of shapes to 15 (LineShape and LineShadeShape
+  were added). RecId is now the first GData attribute in all
+  GData records.
+
   Revision 1.36  1996/07/15 21:14:06  jussi
   Minor cleanup.
 
@@ -826,7 +831,7 @@ AttrList *MappingInterp::InitCmd(char *name)
     if (_simpleCmd->shapeCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
       /* constant */
       ShapeID shape = (ShapeID)_simpleCmd->shapeCmd.cmd.num;
-      if (shape < 0 || shape >= MaxInterpShapes)
+      if (shape >= MaxInterpShapes)
 	shape = 0;
       SetDefaultShape(shape);
     } else {
@@ -1003,7 +1008,7 @@ AttrList *MappingInterp::InitCmd(char *name)
   if (_cmdFlag & MappingCmd_Shape) {
     if (IsConstCmd(_cmd->shapeCmd, constVal)) {
       ShapeID shape = (ShapeID)constVal;
-      if (shape < 0 || shape >= MaxInterpShapes)
+      if (shape >= MaxInterpShapes)
 	shape = 0;
       SetDefaultShape(shape);
       _tclCmd->shapeCmd = "";

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/07/13 17:27:29  jussi
+  Removed unnecessary virtual function prototypes.
+
   Revision 1.1  1996/05/31 15:37:42  jussi
   Moved to the graphics.new directory.
 
@@ -30,8 +33,12 @@
 #ifndef VisualLink_h
 #define VisualLink_h
 
-#include "ViewGraph.h"
 #include "DList.h"
+#include "ViewCallback.h"
+#include "VisualArg.h"
+
+class ViewGraph;
+
 
 DefinePtrDList(LinkViewList, ViewGraph *)
 
@@ -53,13 +60,13 @@ public:
 
   /* Insert/delete view from link's view list */
   virtual void InsertView(ViewGraph *view);
-  virtual void DeleteView(ViewGraph *view);
+  virtual bool DeleteView(ViewGraph *view);
 
   /* Return TRUE if view is part of this link */
   virtual Boolean ViewInLink(ViewGraph *view);	
 
   virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
-  virtual void ViewDestroyed(View *view) { DeleteView((ViewGraph *)view); }
+  virtual void ViewDestroyed(View *view);
   
   /* Iterator for view list */
   int InitIterator();

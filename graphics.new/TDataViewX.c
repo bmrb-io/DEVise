@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1996/08/03 15:19:38  jussi
+  The visual filter is not applied in 3D views.
+
   Revision 1.36  1996/07/26 16:17:42  guangshu
   Assign yMax and yMin from tdata so the width of histogram is fixed for the whole data sets
 
@@ -207,6 +210,9 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
   printf("start query\n");
 #endif
 
+  _queryFilter = filter;
+  _timestamp = timestamp;
+
   // Initialize statistics collection
   _allStats.Init(this);
 
@@ -223,9 +229,6 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
     link->Initialize();
   }
   _masterLink.DoneIterator(index);
-
-  _queryFilter = filter;
-  _timestamp = timestamp;
 
   _index = InitMappingIterator(true);   // open iterator backwards
   if (MoreMapping(_index)) {
@@ -364,30 +367,30 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
         canElimRecords = false;
 
       // Compute statistics only for records that match the filter's
-      // X range and that exceed the Y low boundary
-      if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh
-	  && y >= _queryFilter.yLow) {
+      // X range, regardless of the Y boundary
+      if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh) {
 	if (color < MAXCOLOR)
 	  _stats[color].Sample(x, y);
 	_allStats.Sample(x, y);
-	if (_allStats.GetHistWidth() > 0)
-            _allStats.Histogram(y, yMin);
+	_allStats.Histogram(y);
       }
 
-      if (_glist.Size() <= MAX_GSTAT) {
-	 int X = (int)x;
-         BasicStats *bs;
-         if (_gstat.Lookup(X, bs)) {
-	   bs->Sample(x, y);
-         } else {
-	   bs = new BasicStats();
-           DOASSERT(bs, "Out of memory");
-	   bs->Init(0);
-	   _glist.InsertOrderly(X, 1);
-	   bs->Sample(x, y);
-	   _gstat.Insert(X, bs);
-         } 
-      } 
+      if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh) {
+	  if(_glist.Size() <= MAX_GSTAT) {
+	      int X = (int) x;
+	      BasicStats *bs;
+	      if(_gstat.Lookup(X, bs)) {
+		  bs->Sample(x,y);
+	      } else {
+		  bs = new BasicStats();
+		  DOASSERT(bs, "Out of memory");
+		  bs->Init(0);
+		  _glist.InsertOrderly(X, 1);
+		  bs->Sample(x, y);
+		  _gstat.Insert(X, bs);
+	      } 
+	  } 
+      }
 
       // Contiguous ranges which match the filter's X *and* Y range
       // are stored in the record link

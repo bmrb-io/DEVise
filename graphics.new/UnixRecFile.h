@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/05/31 15:40:35  jussi
+  Cleaned up a bit. Added copyright notice.
+
   Revision 1.2  1995/09/05 22:16:14  jussi
   Added CVS header.
 */
@@ -40,7 +43,7 @@ public:
      specifying when file was modified. We require that
      if r1, and r2 are two different files, and r1 was modified before
      r2, then r1->GetModTime() < r2->GetModFile() */
-  virtual long GetModTime();
+  virtual int GetModTime();
 
   virtual char *GetName();
 

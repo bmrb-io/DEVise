@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/06/24 19:42:11  jussi
+  Cleaned up and removed unused code.
+
   Revision 1.7  1996/03/05 23:27:50  jussi
   Minor fix.
 
@@ -45,6 +48,7 @@
 //#define DEBUG
 
 GData::GData(TData *tdata, char *fname, int recSize, int maxBuf)
+: TData()
 {
   _tdata = tdata;
 
@@ -69,6 +73,9 @@ GData::GData(TData *tdata, char *fname, int recSize, int maxBuf)
   }
   DOASSERT(_recFile, "Cannot create GData file");
 
+  _data = _recFile;
+  _data->AddRef();
+
   char buf[256];
   sprintf(buf, "%s.Range", fname);
   _rangeMap = new GDataRangeMap(recSize, buf, trunc);
@@ -86,7 +93,7 @@ GData::~GData()
 #endif
 
   delete _rangeMap;
-  delete _recFile;
+  // deleted by TData(): delete _recFile; 
 }
 
 int GData::Dimensions(int *sizeDimension)

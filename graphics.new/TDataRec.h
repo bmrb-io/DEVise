@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:16:04  jussi
+  Added CVS header.
+*/
 
 #ifndef TDataRec_h
 #define TDataRec_h
@@ -71,13 +74,11 @@ public:
 
 
 private:
-	int _recSize;
+
 	int _totalRecs;
-	RecFile *_rFile;
-	RecId _nextId, _endId;
+	RecFile *_rFile;	// = (RecFile*)_data
 	RecordOrder _recOrder; /* order to return the records */
 
-	RecId _lowId, _highId;
 	RecId _chunkStart; /* ID of start of chunk 0 */
 	int _loopIndex, 
 		_chunkSize, /* # of records to fetch in each chunk */

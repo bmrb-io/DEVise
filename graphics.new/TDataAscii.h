@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/07/12 19:39:43  jussi
+  Removed _file member variable as it's not needed.
+
   Revision 1.14  1996/07/03 23:13:51  jussi
   Added call to _data->Close() in destructor. Renamed
   _fileOkay to _fileOpen which is more accurate.
@@ -116,26 +119,8 @@ public:
 	// or -1 if unknown
 	virtual int Dimensions(int *sizeDimension);
 
-	// Return record size, or -1 if variable record size
-	virtual int RecSize() { return _recSize; }
-
-	// Return page size of TDataAscii, or -1 if no paging structure
-	virtual int PageSize() { return -1; }
-
-	// Return true if TDataTape deletes records from the beginning
-	// due to limited disk/memory buffer.
-	virtual Boolean HasDeletion() { return false; }
-
 	// Return true if TDataTape appends records
 	virtual Boolean HasAppend() { return true; }
-
-	// Use this to get user defined attributes.
-	// We reserve attributes 0-SysAttrNum for internal use.
-	// A -1 is returned for none-existing attrNum
-	virtual int UserAttr(int attrNum) { return -1; }
-
-        // Get name
-        virtual char *GetName() { return _name; }
 
 	/* Convert RecId into index */
 	virtual void GetIndex(RecId id, int *&indices);
@@ -184,6 +169,9 @@ public:
 	/* Do a checkpoint */
 	virtual void Checkpoint();
 
+	// rebuild index, et. al
+	virtual void InvalidateTData();
+
 	/* writing a record. For TDataAscii, the new record
 	is appended to the file (startRid not examined), numRecs ==1, 
 	and buf points to a string to be written to disk. */
@@ -191,6 +179,7 @@ public:
 
 	/* Write a line into the file, but don't make it into a record */
 	void WriteLine(void *line);
+
 
 protected:
 	/* For derived class */
@@ -215,7 +204,6 @@ protected:
         virtual void InvalidateIndex() {}
 
 	static char *MakeIndexFileName(char *name, char *type);
-	static char *MakeCacheFileName(char *name, char *type);
 
 private:
 	/* From DispatcherCallback */
@@ -237,20 +225,11 @@ private:
 	/* Print indices */
 	void PrintIndices();
 
-	long _totalRecs;                // total number of records
-	char *_name;                    // name of data stream
-        char *_type;                    // type of data stream
-        char *_param;                   // parameters of data stream
-        char *_indexFileName;           // name of index file
-	int _recSize;                   // size of record
-	DataSource *_data;              // Source of data (disk file or tape)
-
-	RecId _lowId, _highId;          // current range to read data
-	RecId _nextId, _endId;          // range of next retrieval
-
+	char *_indexFileName;           // name of index file
 	long *_index;                   // index to records
 	long _indexSize;                // size of index
 
+	long _totalRecs;                // total number of records
 	long _lastPos;                  // position of last record in file
 	long _currPos;                  // current file position
         long _lastIncompleteLen;        // length of last incomplete record

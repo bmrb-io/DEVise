@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/31 15:40:35  jussi
+  Cleaned up a bit. Added copyright notice.
+
   Revision 1.5  1996/03/05 23:49:00  jussi
   Removed extra debugging statement.
 
@@ -102,6 +105,7 @@ Constructor
 ***********************************************************/
 
 UnixRecFile::UnixRecFile(char *name, int fd, int recSize, int numRecs)
+: RecFile()
 {
   _name = CopyString(name);
   _fd = fd;
@@ -116,6 +120,7 @@ Destructor
 
 UnixRecFile::~UnixRecFile()
 {
+  delete _name;
   close(_fd);
 }
 
@@ -216,7 +221,7 @@ void UnixRecFile::WriteRec(int recNum, int numRecs, void *buf)
    r2, then r1->GetModTime() < r2->GetModFile()
 */
 
-long UnixRecFile::GetModTime()
+int UnixRecFile::GetModTime()
 {
   struct stat sbuf;
   if (fstat(_fd, &sbuf) < 0) {

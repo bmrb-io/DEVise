@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/07/03 23:13:47  jussi
+  Added call to _data->Close() in destructor. Renamed
+  _fileOkay to _fileOpen which is more accurate.
+
   Revision 1.9  1996/07/01 19:28:09  jussi
   Added support for typed data sources (WWW and UNIXFILE). Renamed
   'cache' references to 'index' (cache file is really an index).
@@ -196,7 +200,6 @@ protected:
   virtual void InvalidateIndex() {}
 
   static char *MakeIndexFileName(char *name, char *type);
-  static char *MakeCacheFileName(char *name, char *type);
 
 private:
   /* From DispatcherCallback */
@@ -219,17 +222,9 @@ private:
   void PrintIndices();
 
   long _totalRecs;                // total number of records
-  char *_name;                    // name of data stream
-  char *_type;                    // type of data stream
-  char *_param;                   // parameters of data stream
   char *_file;                    // name of (cache) file
   char *_indexFileName;           // name of index file
-  int _recSize;                   // size of record
   int _physRecSize;               // physical record size
-  DataSource *_data;              // Source of data (disk file or tape)
-
-  RecId _lowId, _highId;          // current range to read data
-  RecId _nextId, _endId;          // range of next retrieval
 
   long *_index;                   // index to records
   long _indexSize;                // size of index

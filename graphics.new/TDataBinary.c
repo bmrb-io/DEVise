@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/07/13 01:59:24  jussi
+  Moved initialization of i to make older compilers happy.
+
   Revision 1.15  1996/07/05 15:19:15  jussi
   Data source object is only deleted in the destructor. The dispatcher
   now properly destroys all TData objects when it shuts down.
@@ -115,11 +118,8 @@ static char *   srcFile = __FILE__;
 
 TDataBinary::TDataBinary(char *name, char *type, char *param,
                          int recSize, int physRecSize)
+: TData(name, type, param, recSize)
 {
-  _name = name;
-  _type = type;
-  _param = param;
-  _recSize = recSize;
   _physRecSize = physRecSize;
 
   if (!strcmp(_type, "UNIXFILE")) {
@@ -132,74 +132,6 @@ TDataBinary::TDataBinary(char *name, char *type, char *param,
     fprintf(stderr, "Invalid TData type: %s\n", _type);
     DOASSERT(0, "Invalid TData type");
   }
-
-  _data = NULL;
-
-  // Find out whether the data occupies an entire file or only
-  // a segment of a file.
-  char *	segLabel;
-  char *	segFile;
-  long		segOffset;
-  long		segLength;
-
-  DataSeg::Get(segLabel, segFile, segOffset, segLength);
-
-  // Now instantiate the appropriate type of object, according to
-  // whether this is a tape, disk file, or Web resource, and whether
-  // or not the data occupies the entire file.
-
-#ifndef ATTRPROJ
-  if (!strcmp(_type, "WWW"))
-  {
-    if (strcmp(_name, segLabel))
-    {
-      DOASSERT(false, "Data segment does not match tdata");
-    }
-    if ((segOffset == 0) && (segLength == 0))
-    {
-      _data = new DataSourceWeb(_param, NULL, _file);
-    }
-    else
-    {
-      _data = new DataSourceSegment<DataSourceWeb>(_param, NULL, _file,
-                                                   segOffset, segLength);
-    }
-  }
-  else
-#endif
-  {
-    if (strcmp(_file, segFile) || strcmp(_name, segLabel))
-    {
-      DOASSERT(false, "Data segment does not match tdata");
-    }
-    if (!strncmp(name, "/dev/rmt", 8)
-        || !strncmp(name, "/dev/nrmt", 9)
-        || !strncmp(name, "/dev/rst", 8)
-        || !strncmp(name, "/dev/nrst", 9)) {
-      if ((segOffset == 0) && (segLength == 0))
-      {
-        _data = new DataSourceTape(_file, NULL);
-      }
-      else
-      {
-        _data = new DataSourceSegment<DataSourceTape>(_file, NULL, NULL,
-                                                      segOffset, segLength);
-      }
-    } else {
-      if ((segOffset == 0) && (segLength == 0))
-      {
-        _data = new DataSourceFileStream(_file, NULL);
-      }
-      else
-      {
-        _data = new DataSourceSegment<DataSourceFileStream>(_file, NULL, NULL,
-                                                            segOffset,
-                                                            segLength);
-      }
-    }
-  }
-
-  DOASSERT(_data, "Out of memory");
 
   _fileOpen = true;
   if (_data->Open("r") != StatusOk)
@@ -232,12 +164,8 @@ TDataBinary::~TDataBinary()
 
   Dispatcher::Current()->Unregister(this);
 
-  delete _data;
   delete _index;
   delete _file;
-  delete _param;
-  delete _type;
-  delete _name;
   delete _indexFileName;
 }
 
@@ -386,18 +314,6 @@ char *TDataBinary::MakeIndexFileName(char *name, char *type)
   int nameLen = strlen(Init::WorkDir()) + 1 + strlen(fname) + 1;
   char *fn = new char[nameLen];
   sprintf(fn, "%s/%s", Init::WorkDir(), fname);
-  return fn;
-}
-
-char *TDataBinary::MakeCacheFileName(char *name, char *type)
-{
-  char *fname = StripPath(name);
-  char *cacheDir = getenv("DEVISE_CACHE");
-  if (!cacheDir)
-    cacheDir = ".";
-  int nameLen = strlen(cacheDir) + 1 + strlen(fname) + 1 + strlen(type) + 1;
-  char *fn = new char [nameLen];
-  sprintf(fn, "%s/%s.%s", cacheDir, fname, type);
   return fn;
 }
 

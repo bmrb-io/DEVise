@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/12 15:20:27  jussi
+  Replaced libc.h with stdlib.h.
+
   Revision 1.2  1995/09/05 22:15:05  jussi
   Added CVS header.
 */
@@ -49,7 +52,9 @@ Layout of DiskFile:
 /**********************************************************************
 constructor
 ************************************************************************/
-PageFile::PageFile(char *name, BufMgr *mgr, int maxAlloc){
+PageFile::PageFile(char *name, BufMgr *mgr, int maxAlloc)
+: DataSource()
+{
 	BufPage *bpage;
 	_mgr = mgr;
 	if ((_diskFile = DiskFile::OpenFile(name))!= NULL){
