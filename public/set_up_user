@@ -20,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/11/06 18:01:51  guangshu
+#  Some improvements to make it working in cs department afs.
+#
 #  Revision 1.1  1996/11/06 16:51:40  wenger
 #  Added script to set up a Devise user with their own data, session files,
 #  etc.
@@ -31,7 +34,6 @@ echo ""
 echo "Setting you up to run DEVise with your own data, schemas, session"
 echo "files, and cache."
 
-cd ~
 set dir = devise
 
 if (! -d $dir) then
@@ -41,8 +43,8 @@ endif
 cd $dir
 mkdir dat cache session 
 cp -r /p/devise/public/schema .
-cp /p/devise/public/session_local/* session/.
-cp /p/devise/public/dat_local/* dat/.
+cp /p/devise/public/session_local/* session
+cp /p/devise/public/dat/* dat
 cp /p/devise/public/devisepub .
 cp /p/devise/public/run.script---copy.and.customize devise
 
