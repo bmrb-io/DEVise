@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/04/12 23:43:54  jussi
+  Removed IsValid() and removed RecId parameter from Decode().
+
   Revision 1.2  1995/11/25 19:52:56  jussi
   Added copyright notice and the IsValid() method.
 */
@@ -29,50 +32,49 @@
 class TDataCycle;
 class CycleClassInfo : public ClassInfo {
 public:
-	CycleClassInfo();	/* for creating class */
+  /* for creating class */
+  CycleClassInfo();
 
-	/* for creating instance */
-	CycleClassInfo(char *name, char *alias, TDataCycle *tdata); 
+  /* for creating instance */
+  CycleClassInfo(char *name, char *alias, TDataCycle *tdata); 
 
-	/* Info for category */
-	virtual char *CategoryName() { return "tdata"; }
+  /* Info for category */
+  virtual char *CategoryName() { return "tdata"; }
 
-	/* Info for class */
-	virtual char *ClassName(){ return "Cycle"; }   /* name of class */
+  /* Info for class */
+  virtual char *ClassName() { return "Cycle"; }
 
-	/* Get name of parameters */
-	virtual void ParamNames(int &argc, char **&argv); 
+  /* Get name of parameters */
+  virtual void ParamNames(int &argc, char **&argv); 
 
-	/* Create instance using the supplied parameters. Return
-	the instance info if successful, otherwise return NULL. */
-	virtual ClassInfo *CreateWithParams(int argc, char **argv);
+  /* Create instance using the supplied parameters. Return
+     the instance info if successful, otherwise return NULL. */
+  virtual ClassInfo *CreateWithParams(int argc, char **argv);
 
-	/**************************************************
-		Instance Info.
-	***************************************************/
-	virtual char *InstanceName();
-	virtual void *GetInstance();
+  virtual char *InstanceName();
+  virtual void *GetInstance();
 
-	/* Get parameters that can be used to re-create this instance */
-	virtual void CreateParams(int &argc, char **&argv);
+  /* Get parameters that can be used to re-create this instance */
+  virtual void CreateParams(int &argc, char **&argv);
+
 private:
-	char *_name;
-	char *_alias;
-	TDataCycle *_tdata;
+  char *_name;
+  char *_alias;
+  TDataCycle *_tdata;
 };
 
 class TDataCycle: public TDataAscii {
 public:
-	TDataCycle(char *name);
+  TDataCycle(char *name, char *alias);
 
 protected:
-	/* Decode a record and put data into buffer */
-	virtual Boolean Decode(void *recordBuf, char *line);
+  /* Decode a record and put data into buffer */
+  virtual Boolean Decode(void *recordBuf, int recPos, char *line);
 
 private:
-	int _first;
-	Boolean _hasFirst;
-	int _now;
+  int _first;
+  Boolean _hasFirst;
+  int _now;
 };
 
 #endif

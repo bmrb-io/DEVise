@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/04/12 23:44:04  jussi
+  Removed IsValid() and removed RecId parameter from Decode().
+
   Revision 1.2  1995/11/25 19:48:28  jussi
   Added copyright notice and cleaned up the code a bit. Added IsValid
   method.
@@ -23,6 +26,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "TDataMulti.h"
 #include "MultiRec.h"
 #include "Parse.h"
@@ -32,8 +36,8 @@
 
 MultiClassInfo::MultiClassInfo()
 {
-  _name = _alias = (char *)NULL;
-  _tdata = (TDataMulti *)NULL;
+  _name = _alias = 0;
+  _tdata = 0;
 }
 
 MultiClassInfo::MultiClassInfo(char *name, char *alias, TDataMulti *tdata)
@@ -54,27 +58,33 @@ void MultiClassInfo::ParamNames(int &argc, char **&argv)
   args[1] = buf2;
   
   sprintf(buf1, "File %s", ControlPanel::Instance()->FileName());
-    sprintf(buf2, "Alias %s", ControlPanel::Instance()->FileAlias());
+  sprintf(buf2, "Alias %s", ControlPanel::Instance()->FileAlias());
 }
 
 ClassInfo *MultiClassInfo::CreateWithParams(int argc, char **argv)
 {
   if (argc != 2) {
     fprintf(stderr, "MultiClassInfo::CreateWithParams: wrong args\n");
-    for (int i=0; i < argc; i++)
+    for(int i = 0; i < argc; i++)
       printf("%s\n", argv[i]);
-    return (ClassInfo *)NULL;
+    return 0;
   }
 
   char *name = CopyString(argv[0]);
   char *alias = CopyString(argv[1]);
-  TDataMulti *tdata = new TDataMulti(name);
+  TDataMulti *tdata = new TDataMulti(name, alias);
   return new MultiClassInfo(name, alias, tdata);
 }
 
-char *MultiClassInfo::InstanceName() { return _alias; }
+char *MultiClassInfo::InstanceName()
+{
+  return _alias;
+}
 
-void *MultiClassInfo::GetInstance() { return _tdata; }
+void *MultiClassInfo::GetInstance()
+{
+  return _tdata;
+}
 
 /* Get parameters that can be used to re-create this instance */
 
@@ -86,7 +96,8 @@ void MultiClassInfo::CreateParams(int &argc, char **&argv)
   args[1] = _alias;
 }
 
-TDataMulti::TDataMulti(char *name): TDataAscii(name, sizeof(MultiRec))
+TDataMulti::TDataMulti(char *name, char *alias) :
+     TDataAscii(name, alias, sizeof(MultiRec))
 {
   _hasFirst = false;
   Initialize();
@@ -94,7 +105,7 @@ TDataMulti::TDataMulti(char *name): TDataAscii(name, sizeof(MultiRec))
 
 /* Decode a record and put data into buffer */
 
-Boolean TDataMulti::Decode(void *recordBuf, char *line)
+Boolean TDataMulti::Decode(void *recordBuf, int recPos, char *line)
 {
   MultiRec *rec = (MultiRec *)recordBuf;
   int numArgs; char **args;
@@ -102,7 +113,7 @@ Boolean TDataMulti::Decode(void *recordBuf, char *line)
   Parse(line, numArgs, args);
 
   if (numArgs != 5) {
-    fprintf(stderr, "TDatamulti::Decode: invalid line\n");
+    fprintf(stderr, "Ignoring invalid line: %s\n", line);
     return false;
   }
 

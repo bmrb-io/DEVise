@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,12 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/04/12 23:43:51  jussi
+  Removed IsValid() and removed RecId parameter from Decode().
+
   Revision 1.2  1995/11/25 19:51:58  jussi
   Added copyright notice and the IsValid() method.
 */
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "TDataCycle.h"
 #include "CycleRec.h"
 #include "Parse.h"
@@ -31,8 +35,8 @@
 
 CycleClassInfo::CycleClassInfo()
 {
-  _name = _alias = (char *)NULL;
-  _tdata = (TDataCycle *)NULL;
+  _name = _alias = 0;
+  _tdata = 0;
 }
 
 CycleClassInfo::CycleClassInfo(char *name, char *alias, TDataCycle *tdata)
@@ -62,18 +66,24 @@ ClassInfo *CycleClassInfo::CreateWithParams(int argc, char **argv)
     fprintf(stderr,"AfsioClassInfo::CreateWithParams: wrong args\n");
     for(int i = 0; i < argc; i++)
       printf("%s\n", argv[i]);
-    return (ClassInfo *)NULL;
+    return 0;
   }
 
   char *name = CopyString(argv[0]);
   char *alias = CopyString(argv[1]);
-  TDataCycle *tdata = new TDataCycle(name);
+  TDataCycle *tdata = new TDataCycle(name, alias);
   return new CycleClassInfo(name, alias, tdata);
 }
 
-char *CycleClassInfo::InstanceName() { return _alias; }
+char *CycleClassInfo::InstanceName()
+{
+  return _alias;
+}
 
-void *CycleClassInfo::GetInstance() { return _tdata; }
+void *CycleClassInfo::GetInstance()
+{
+  return _tdata;
+}
 
 /* Get parameters that can be used to re-create this instance */
 
@@ -85,7 +95,8 @@ void CycleClassInfo::CreateParams(int &argc, char **&argv)
   args[1] = _alias;
 }
 
-TDataCycle::TDataCycle(char *name): TDataAscii(name, sizeof(CycleRec))
+TDataCycle::TDataCycle(char *name, char *alias) :
+     TDataAscii(name, alias, sizeof(CycleRec))
 {
   _now = 0;
   Initialize();
@@ -93,7 +104,7 @@ TDataCycle::TDataCycle(char *name): TDataAscii(name, sizeof(CycleRec))
 
 /* Decode a record and put data into buffer */
 
-Boolean TDataCycle::Decode(void *recordBuf, char *line)
+Boolean TDataCycle::Decode(void *recordBuf, int recPos, char *line)
 {
   CycleRec *rec = (CycleRec *)recordBuf;
   int numArgs; char **args;
@@ -102,7 +113,7 @@ Boolean TDataCycle::Decode(void *recordBuf, char *line)
   Parse(line, numArgs, args);
 
   if (numArgs != 7) {
-    fprintf(stderr,"TDataCycle::Decode: invalid line\n");
+    fprintf(stderr, "Invalid line: %s\n", line);
     _now = 0;
     
     rec->last_time = 0;

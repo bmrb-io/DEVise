@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,12 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/04/12 23:43:57  jussi
+  Removed IsValid() and removed RecId parameter from Decode().
+
   Revision 1.2  1995/11/25 19:50:24  jussi
   Added copyright notice and the IsValid() method.
 */
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "TDataHost.h"
 #include "HostRec.h"
 #include "Parse.h"
@@ -31,8 +35,8 @@
 
 HostClassInfo::HostClassInfo()
 {
-  _name = _alias = (char *)NULL;
-  _tdata = (TDataHost *)NULL;
+  _name = _alias = 0;
+  _tdata = 0;
 }
 
 HostClassInfo::HostClassInfo(char *name, char *alias, TDataHost *tdata)
@@ -60,20 +64,26 @@ ClassInfo *HostClassInfo::CreateWithParams(int argc, char **argv)
 {
   if (argc != 2) {
     fprintf(stderr,"AfsioClassInfo::CreateWithParams: wrong args\n");
-    for (int i = 0; i < argc; i++)
+    for(int i = 0; i < argc; i++)
       printf("%s\n", argv[i]);
-    return (ClassInfo *)NULL;
+    return 0;
   }
 
   char *name = CopyString(argv[0]);
   char *alias = CopyString(argv[1]);
-  TDataHost *tdata = new TDataHost(name);
+  TDataHost *tdata = new TDataHost(name, alias);
   return new HostClassInfo(name, alias, tdata);
 }
 
-char *HostClassInfo::InstanceName() { return _alias; }
+char *HostClassInfo::InstanceName()
+{
+  return _alias;
+}
 
-void *HostClassInfo::GetInstance() { return _tdata; }
+void *HostClassInfo::GetInstance()
+{
+  return _tdata;
+}
 
 /* Get parameters that can be used to re-create this instance */
 
@@ -85,7 +95,8 @@ void HostClassInfo::CreateParams(int &argc, char **&argv)
   args[1] = _alias;
 }
 
-TDataHost::TDataHost(char *name): TDataAscii(name, sizeof(HostRec))
+TDataHost::TDataHost(char *name, char *alias) :
+     TDataAscii(name, alias, sizeof(HostRec))
 {
   _hasFirst = false;
   Initialize();
@@ -93,7 +104,7 @@ TDataHost::TDataHost(char *name): TDataAscii(name, sizeof(HostRec))
 
 /* Decode a record and put data into buffer */
 
-Boolean TDataHost::Decode(void *recordBuf, char *line)
+Boolean TDataHost::Decode(void *recordBuf, int recPos, char *line)
 {
   HostRec *rec = (HostRec *)recordBuf;
   int numArgs; char **args;
@@ -101,7 +112,7 @@ Boolean TDataHost::Decode(void *recordBuf, char *line)
   Parse(line, numArgs, args);
 
   if (numArgs != 4) {
-    fprintf(stderr,"TDataHost::Decode: invalid line\n");
+    fprintf(stderr, "Ignoring invalid line: %s\n", line);
     return false;
   }
 
@@ -117,7 +128,7 @@ Boolean TDataHost::Decode(void *recordBuf, char *line)
 
 #if 0
   if (rec->working + rec->suspended > rec->hosts) {
-    fprintf(stderr,"TDataHost::Decode: ignored line %d %d %d %d\n",
+    fprintf(stderr, "Ignoring line %d %d %d %d\n",
 	    rec->time, rec->hosts, rec->working, rec->suspended);
     return false;
   }
