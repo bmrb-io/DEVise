@@ -1,7 +1,24 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 21:12:52  jussi
+  Added/update CVS header.
+*/
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -162,7 +179,9 @@ char *args[512];
 	Time::Init();
 
 	/* init timer */
+#if 0
 	Timer::InitTimer();
+#endif
 
 	_progName = (char *)malloc(strlen(argv[0])+1);
 	strcpy(_progName, argv[0]);
