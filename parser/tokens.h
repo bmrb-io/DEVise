@@ -1,9 +1,9 @@
 /*
   ========================================================================
-  DEVise Software
+  DEVise Data Visualization Software
   (c) Copyright 1992-1995
   By the DEVise Development Group
-  University of Wisconsin at Madison
+  Madison, Wisconsin
   All Rights Reserved.
   ========================================================================
 
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/10/24 03:12:46  ravim
+  Lex changes.
+
   Revision 1.5  1995/09/23 00:03:55  ravim
   Parser changed to ANSI style - g++ now used uniformly
 
@@ -48,8 +51,8 @@
 #define TOKEN_PATTERN 20
 
 extern void syntax_error();
-extern char *GetText();	/* Get text until matching '}' */
-extern char *GetTokenText(); /* get input string matching token */
+extern char *GetText();	                /* Get text until matching '}' */
+extern char *GetTokenText();            /* Get input string matching token */
 extern int yylex();
 #ifdef IBM_POWER_STATION
 extern unsigned char yytext[];
@@ -58,4 +61,5 @@ extern char *yytext;
 #endif
 
 #include <malloc.h>
+
 #endif

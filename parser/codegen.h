@@ -1,9 +1,9 @@
 /*
   ========================================================================
-  DEVise Software
+  DEVise Data Visualization Software
   (c) Copyright 1992-1995
   By the DEVise Development Group
-  University of Wisconsin at Madison
+  Madison, Wisconsin
   All Rights Reserved.
   ========================================================================
 
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/09/23  00:03:52  ravim
+  Parser changed to ANSI style - g++ now used uniformly
+
   Revision 1.3  1995/09/22 15:56:20  jussi
   Added copyright message.
 
