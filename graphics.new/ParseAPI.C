@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.72  1997/08/20 19:15:18  wenger
+  Added new getDisplayImageAndSize command for Hongyu (not yet fully
+  tested).
+
   Revision 1.71  1997/07/22 15:36:37  wenger
   Added capability to dump human-readable information about all links
   and cursors.
@@ -352,6 +356,7 @@ extern "C" int purify_new_leaks();
 extern "C" int purify_new_inuse();
 #endif
 
+int GetDisplayImageAndSize(ControlPanel *control, int port, char *imageType);
 
 //#define DEBUG
 #define LINESIZE 1024
@@ -2218,53 +2223,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       return 1;
     }
     if (!strcmp(argv[0], "getDisplayImageAndSize")) {
-      int port = atoi(argv[1]);
-      if (strcmp(argv[2], "gif")) {
-         control->ReturnVal(API_NAK, "Can only support GIF now.");
-         return -1;
-      }
-      control->OpenDataChannel(port);
-      int fd = control->getFd();
-      if (fd < 0) {
-        control->ReturnVal(API_NAK, "Invalid socket to write");
-        return -1;
-      }
-
-      // Write the GIF to a temporary file.
-      char tmpFile[L_tmpnam];
-      (void) tmpnam(tmpFile);
-      FILE *tmpfp = fopen(tmpFile, "w");
-      if (tmpfp == NULL) {
-        control->ReturnVal(API_NAK, "Can't open temp file");
-        close(control->getFd());
-        return -1;
-      }
-      DeviseDisplay::DefaultDisplay()->ExportGIF(tmpfp, false);
-
-      // Find out out big the temp file is.
-      struct stat filestat;
-      stat(tmpFile, &filestat);
-
-      // Write the size and the GIF to the socket.
-      const int bufSize = 1024;
-      char buf[bufSize];
-      sprintf(buf, "%d", (int) filestat.st_size);
-      int numBytes = strlen(buf) + 1;
-      write(control->getFd(), buf, numBytes);
-
-      int bytesLeft = (int) filestat.st_size;
-      while (bytesLeft > 0) {
-	int bytesToRead = MIN(bytesLeft, bufSize);
-	int bytesRead = fread(buf, 1, bytesToRead, tmpfp);
-	DOASSERT(bytesRead == bytesToRead, "fread error");
-	write(control->getFd(), buf, bytesToRead);
-	bytesLeft -= bytesToRead;
-      }
-      (void) fclose(tmpfp);
-      unlink(tmpFile);
-      close(control->getFd());
-      control->ReturnVal(API_ACK, "done");
-      return 1;
+      return GetDisplayImageAndSize(control, atoi(argv[1]), argv[2]);
     }
     if (!strcmp(argv[0], "getFont")) {
       View *view = View::FindViewByName(argv[1]);
@@ -2709,3 +2668,88 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   return -1;
 }
 
+int
+GetDisplayImageAndSize(ControlPanel *control, int port, char *imageType)
+{
+  if (strcmp(imageType, "gif")) {
+    control->ReturnVal(API_NAK, "Can only support GIF now.");
+    return -1;
+  }
+
+  control->OpenDataChannel(port);
+  int fd = control->getFd();
+  if (fd < 0) {
+    control->ReturnVal(API_NAK, "Invalid socket to write");
+    return -1;
+  }
+
+  // Write the GIF to a temporary file.
+  char tmpFile[L_tmpnam];
+  (void) tmpnam(tmpFile);
+  FILE *tmpfp = fopen(tmpFile, "w");
+  if (tmpfp == NULL) {
+    reportErrSys("Can't open temp file");
+    control->ReturnVal(API_NAK, "Can't open temp file");
+    close(control->getFd());
+    return -1;
+  }
+  DeviseDisplay::DefaultDisplay()->ExportGIF(tmpfp, false);
+  if (fclose(tmpfp) != 0) {
+    reportErrSys("fclose error");
+  }
+
+  int tmpfd = open(tmpFile, O_RDONLY, 0644);
+
+  // Find out out big the temp file is.
+  struct stat filestat;
+  if (fstat(tmpfd, &filestat) != 0) {
+    reportErrSys("Can't get temp file size");
+    control->ReturnVal(API_NAK, "Can't get temp file size");
+    (void) close(control->getFd());
+    (void) close(tmpfd);
+    return -1;
+  }
+
+  // Write the size and the GIF to the socket.
+  const int bufSize = 1024;
+  char buf[bufSize];
+  sprintf(buf, "%d", (int) filestat.st_size);
+  int numBytes = strlen(buf) + 1;
+  if (write(control->getFd(), buf, numBytes) != numBytes) {
+    reportErrSys("write error");
+    control->ReturnVal(API_NAK, "write error");
+    (void) close(control->getFd());
+    (void) close(tmpfd);
+    return -1;
+  }
+
+  int bytesLeft = (int) filestat.st_size;
+  while (bytesLeft > 0) {
+    int bytesToRead = MIN(bytesLeft, bufSize);
+    int bytesRead = read(tmpfd, buf, bytesToRead);
+    if (bytesRead != bytesToRead) {
+      reportErrSys("read error");
+      control->ReturnVal(API_NAK, "read error");
+      (void) close(control->getFd());
+      (void) close(tmpfd);
+      return -1;
+    }
+    if (write(control->getFd(), buf, bytesRead) != bytesRead) {
+      reportErrSys("write error");
+      control->ReturnVal(API_NAK, "write error");
+      (void) close(control->getFd());
+      (void) close(tmpfd);
+      return -1;
+    }
+    bytesLeft -= bytesRead;
+  }
+  if (close(tmpfd) != 0) {
+    reportErrSys("close error");
+  }
+  unlink(tmpFile);
+  if (close(control->getFd()) != 0) {
+    reportErrSys("close error");
+  }
+  control->ReturnVal(API_ACK, "done");
+  return 1;
+}
