@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/04/10 21:50:26  donjerko
+  Made integers inlined, added type cast operator.
+
   Revision 1.14  1997/04/04 23:10:27  donjerko
   Changed the getNext interface:
   	from: Tuple* getNext()
@@ -302,7 +305,7 @@ Interface* Catalog::findInterface(TableName* path){ // Throws Exception
 	String firstPathNm = *path->getFirst();
 	path->deleteFirst();
 	Tuple tuple[1];
-//	cout << "searching for " << firstPathNm << " in " << fileName << endl;
+	cout << "searching for " << firstPathNm << " in " << fileName << endl;
 
 	while(fileRead->getNext(tuple)){
 		CatEntry* entry = (CatEntry*) tuple[0];
@@ -338,5 +341,6 @@ Interface* Catalog::findInterface(TableName* path){ // Throws Exception
 	delete in;
 	String msg = "Table " + firstPathNm + " not defined in file: " +
 		fileName;
+		cout << msg;
 	THROW(new Exception(msg), NULL);
 }
