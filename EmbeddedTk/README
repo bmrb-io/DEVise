@@ -35,6 +35,12 @@ inside the server.
 
 Some notes on the ETk implementation:
 
+* The Makefile settings for different platforms are stored in separate
+Makefile.<platform> files. To compile for a new platform (and to
+complile for the first time), issue a 'cp Makefile.<platform>
+Makefile' command. The Makefile settings and rules common to all
+platforms are in Makefile.base.
+
 * main.c contains all the networking code for the server. For each
 command that arrives from a client, a Process<command-name> procedure
 exists in main.c. These Process procedures parse the client commands,
