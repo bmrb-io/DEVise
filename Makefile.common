@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.34  1998/11/23 19:17:47  donjerko
+#  *** empty log message ***
+#
 #  Revision 1.33  1998/11/19 21:12:38  wenger
 #  Implemented non-DTE version of DEVise (new code handles data source catalog
 #  functions; Tables, SQLViews, etc., are not implemented); changed version to
@@ -186,7 +189,7 @@ ifeq ($(DEBUG_MEM),1)
     DEBUG_FLAGS += -DDEBUG_MEM
 endif
 
-DEBUG_FLAGS += -DNO_DTE
+#DEBUG_FLAGS += -DNO_DTE
 #DEBUG_FLAGS += -DDTE_WARN
 
 
