@@ -2550,6 +2550,19 @@ Num Date        Status  Description
 			when JS is in CGI mode. (rkw)
 			(Fixed by rkw, 3/9/01.)
 
+644 03/13/01	OPEN	Data source subdirectories don't work (problem with
+			using environment variables in data source
+			definitions?).  (rkw)
+
+645 03/13/01	OPEN	Duplicating a window doesn't copy fonts. (rkw)
+
+646 03/13/01	OPEN	JavaScreen: Lucida font family doesn't work for
+			view titles. (rkw)
+
+647 03/13/01	OPEN	In JS demo session waveletidr/.Bugs/1d_example1a.ds,
+			the window DEViseWn2 *refuses* to display the X
+			axis. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
