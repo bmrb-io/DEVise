@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  1999/11/19 15:23:17  wenger
+  Added dispatcherRun1 command (for debugging).
+
   Revision 1.50  1999/10/05 17:55:46  wenger
   Added debug log level.
 
@@ -650,7 +653,7 @@ CmdContainer::playCommand(long logId1, long logId2)
 
 
 int
-CmdContainer::Run(int argc, char** argv, ControlPanel* control, 
+CmdContainer::Run(int argc, const char* const *argv, ControlPanel* control, 
 	CmdDescriptor& cmdDes)
 {
 	int		retval = 1;
@@ -682,7 +685,8 @@ CmdContainer::Run(int argc, char** argv, ControlPanel* control,
 			{
 				// send control commands to its client
 				// which CLIENT?
-				((Server*)_server)->SendControl(API_CTL, argc, argv, true);
+				//TEMP -- remove typecast on argv
+				((Server*)_server)->SendControl(API_CTL, argc, (char **)argv, true);
 			}
 			else
 			if (cmdDes.getDest() == CmdDescriptor::FOR_SERVER)
@@ -727,7 +731,8 @@ CmdContainer::Run(int argc, char** argv, ControlPanel* control,
 				if (strcmp(argv[0],"playLog"))
 				{
 					if (retval > 0)
-						logCommand(argc, argv, cmdDes);
+						//TEMP -- remove typecast on argv
+						logCommand(argc, (char **)argv, cmdDes);
 					else
 						cerr <<"Commands failed, not logged"<<endl;
 				}
@@ -743,22 +748,25 @@ CmdContainer::Run(int argc, char** argv, ControlPanel* control,
 			else
 			{
 				// group cast commands first
+				//TEMP -- remove typecast on argv
 				retval = _server->GroupCast(cInfo->gname, cInfo->cname,
 						SS_CSS_Cmd,
-						argc, argv, errmsg) ? 1 : -1;
+						argc, (char **)argv, errmsg) ? 1 : -1;
 
 				// run it locally
 				if (retval <= 0)
 					cerr <<"Error in groupcast:"<<errmsg<<endl;
 				retval = RunOneCommand(argc, argv, control);
 				if (retval > 0)
-					logCommand(argc, argv, cmdDes);
+				    //TEMP -- remove typecast on argv
+					logCommand(argc, (char **)argv, cmdDes);
 			}
 			break;
 		case CmdSource::INTERNAL:
 			retval = RunOneCommand(argc, argv, control);
 			if (retval > 0)
-				logCommand(argc, argv, cmdDes);
+				//TEMP -- remove typecast on argv
+				logCommand(argc, (char **)argv, cmdDes);
 			else
 					cerr <<"Commands failed, not logged"<<endl;
 			break;
@@ -779,7 +787,7 @@ CmdContainer::Run(int argc, char** argv, ControlPanel* control,
 }
 
 int
-CmdContainer::RunOneCommand(int argc, char** argv, ControlPanel* control) 
+CmdContainer::RunOneCommand(int argc, const char* const *argv, ControlPanel* control) 
 {
 #if defined(DEBUG)
     printf("CmdContainer::RunOneCommand(");
@@ -805,7 +813,8 @@ CmdContainer::RunOneCommand(int argc, char** argv, ControlPanel* control)
 	}
 	else
 	{
-		retval = cmd->Run(argc, argv, control);
+		//TEMP -- remove typecast on argv
+		retval = cmd->Run(argc, (char **)argv, control);
 	}
 	return retval;
 }
@@ -824,7 +833,7 @@ CmdContainer::insertCmd(char* cmdName, DeviseCommand* cmdp, int cmdsize)
 	return;
 }
 DeviseCommand*
-CmdContainer::lookupCmd(char* cmdName)
+CmdContainer::lookupCmd(const char* cmdName)
 {
 	DeviseCommand* 	cmdp = NULL;
 	Datum	key(cmdName,strlen(cmdName)+1);

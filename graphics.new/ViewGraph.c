@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.130  1999/11/18 22:49:19  wenger
+  Fixed bug Omer ran into (removing a mapping from a view while a query is
+  running in that view causes DEVise to crash).
+
   Revision 1.129  1999/10/30 19:08:11  wenger
   Kludgey fix for bug 527 (problems with Condor/UserWeek.ds session).
 
@@ -599,8 +603,6 @@
 #include "TData.h"
 #include "Util.h"
 #include "AssoArray.h"
-#include "CommandObj.h"
-#include "CmdContainer.h"
 #include "TimeStamp.h"
 #include "SlaveTable.h"
 
@@ -1375,12 +1377,7 @@ void ViewGraph::GoHome(Boolean explicitRequest)
         VisualFilter filter;
 	GetHome2D(explicitRequest, filter);
 
-        if (cmdContainerp->getMake() == CmdContainer::CSGROUP) {
-          CommandObj *    cmdObj = GetCommandObj();
-          cmdObj->SetVisualFilter(this, &filter);
-        } else if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC) {
-          SetVisualFilter(filter);
-        }
+	SetVisualFilterCommand(filter);
     } else {
         Camera c=GetCamera();
 #if 0
@@ -1455,12 +1452,7 @@ void ViewGraph::PanLeftOrRight(PanDirection direction)
       filter.xLow += panFactor * panDist;
       filter.xHigh = filter.xLow + width;
 
-      if (cmdContainerp->getMake() == CmdContainer::CSGROUP) {
-        CommandObj *    cmdObj = GetCommandObj();
-        cmdObj->SetVisualFilter(this, &filter);
-      } else if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC) {
-        SetVisualFilter(filter);
-      }
+      SetVisualFilterCommand(filter);
     } else { 
       // Note: this will fail for collaboration.  RKW 3/31/98.
       Camera camera = GetCamera();
@@ -1518,12 +1510,7 @@ void ViewGraph::PanUpOrDown(PanDirection direction)
       filter.yLow += panFactor * panDist;
       filter.yHigh = filter.yLow + height;
 
-      if (cmdContainerp->getMake() == CmdContainer::CSGROUP) {
-        CommandObj *    cmdObj = GetCommandObj();
-        cmdObj->SetVisualFilter(this, &filter);
-      } else if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC) {
-        SetVisualFilter(filter);
-      }
+      SetVisualFilterCommand(filter);
     } else { 
       Camera camera = GetCamera();
       camera.pan_up+=0.10*panFactor;
@@ -2876,12 +2863,7 @@ ViewGraph::NiceifyAxes(Boolean xAxis, Boolean yAxis)
   if (xAxis) NiceAxisRange(filter.xLow, filter.xHigh);
   if (yAxis) NiceAxisRange(filter.yLow, filter.yHigh);
 
-  if (cmdContainerp->getMake() == CmdContainer::CSGROUP) {
-    CommandObj *    cmdObj = GetCommandObj();
-    cmdObj->SetVisualFilter(this, &filter);
-  } else if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC) {
-    SetVisualFilter(filter);
-  }
+  SetVisualFilterCommand(filter);
 }
 
 void

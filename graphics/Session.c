@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.69  1999/11/16 17:01:44  wenger
+  Removed all DTE-related conditional compiles; changed version number to
+  1.7.0 because of removing DTE; removed DTE-related schema editing and
+  data source creation GUI.
+
   Revision 1.68  1999/11/01 17:55:13  wenger
   Fixed compile warning.
 
@@ -772,9 +777,6 @@ Session::CreateTData(const char *name)
   et.Start();
 #endif
 
-  CmdSource cmdSrc(CmdSource::INTERNAL, CLIENT_INVALID);
-  CmdDescriptor cmdDes(cmdSrc, CmdDescriptor::UNDEFINED);
-
   DevStatus status = StatusOk;
 
   // check for derived sources
@@ -1210,9 +1212,6 @@ Session::DEViseCmd(ControlPanel *control, int argc, char *argv[])
   PrintArgs(stdout, argc, argv);
 #endif
 
-  CmdSource cmdSrc(CmdSource::SESSION_PLAY, CLIENT_INVALID);
-  CmdDescriptor cmdDes(cmdSrc, CmdDescriptor::UNDEFINED);
-
   DevStatus status = StatusOk;
 
   // Don't do anything for "DEVise create tdata...", "DEVise importFileType",
@@ -1231,7 +1230,7 @@ Session::DEViseCmd(ControlPanel *control, int argc, char *argv[])
 	control->ReturnVal(0, "");
   } else {
     // don't pass DEVise command verb (argv[0])
-    if (cmdContainerp->Run(argc-1, &argv[1], control, cmdDes) < 0) {
+    if (cmdContainerp->RunOneCommand(argc-1, &argv[1], control) <= 0) {
       status = StatusFailed;
       fprintf(stderr, "Error in command: ");
       PrintArgs(stderr, argc, argv);
@@ -1861,9 +1860,6 @@ Session::CallParseAPI(ControlPanelSimple *control, const char *&result,
   printf("Session::CallParseAPI(%s)\n", arg0);
 #endif
 
-  CmdSource cmdSrc(CmdSource::SESSION_SAVE,CLIENT_INVALID);
-  CmdDescriptor cmdDes(cmdSrc, CmdDescriptor::UNDEFINED);
-
   DevStatus status = StatusOk;
 
   int argcIn;
@@ -1885,7 +1881,7 @@ Session::CallParseAPI(ControlPanelSimple *control, const char *&result,
   argvIn[1] = arg1;
   argvIn[2] = arg2;
   argvIn[3] = arg3;
-  if (cmdContainerp->Run(argcIn, (char **)argvIn, control, cmdDes) <= 0) {
+  if (cmdContainerp->RunOneCommand(argcIn, (char **)argvIn, control) <= 0) {
     reportErrNosys(control->GetResult());
     status = StatusFailed;
   } else {

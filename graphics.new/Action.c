@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.35  1999/10/08 19:57:55  wenger
+  Fixed bugs 470 and 513 (crashes when closing a session while a query
+  is running), 510 (disabling actions in piles), and 511 (problem in
+  saving sessions); also fixed various problems related to cursors on
+  piled views.
+
   Revision 1.34  1999/06/11 14:47:02  wenger
   Added the capability (mostly for the JavaScreen) to disable rubberband
   lines, cursor movement, drill down, and key actions in views (the code
@@ -167,8 +173,6 @@
 #include "ViewGraph.h"
 #include "DeviseKey.h"
 #include "GDataBin.h"  // for USE_CONNECTORS
-#include "CommandObj.h"
-#include "CmdContainer.h"
 
 
 //#define DEBUG
@@ -198,29 +202,13 @@ void Action::AreaSelected(ViewGraph *view, Coord xlow, Coord ylow,
     filter.xLow = xlow;
     filter.xHigh = xhigh;
 
-	if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
-	{
-  		CommandObj *	cmdObj = GetCommandObj();
-		cmdObj->SetVisualFilter(view, &filter);
-	}
-	else if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
-	{
-		view->SetVisualFilter(filter);
-	}
+	view->SetVisualFilterCommand(filter);
   } else if (button == 3) {
     filter.xLow = xlow;
     filter.xHigh = xhigh;
     filter.yLow = ylow;
     filter.yHigh = yhigh;
-	if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
-	{
-  		CommandObj *	cmdObj = GetCommandObj();
-		cmdObj->SetVisualFilter(view, &filter);
-	}
-	else if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
-	{
-		view->SetVisualFilter(filter);
-	}
+	view->SetVisualFilterCommand(filter);
   }
 }
 
@@ -698,15 +686,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
     // (fixes bug 478).
     //
     if (view->GetNumDimensions() == 2) {
-      if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
-      {
-  	CommandObj *	cmdObj = GetCommandObj();
-	cmdObj->SetVisualFilter(view, &filter);
-      }
-      if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
-      {
-	view->SetVisualFilter(filter);
-      }
+      view->SetVisualFilterCommand(filter);
     } else {
       // Note: this won't work right for collaboration.  RKW 1999-05-14.
       view->SetCamera(camera);

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.31  1999/10/01 21:08:34  wenger
+  Fixed problem in DeviseCursor::IsOnCursor() that caused crash if cursor
+  has no source view.
+
   Revision 1.30  1999/08/17 19:46:53  wenger
   Converted Condor UserMonth session from high/low symbols to piles for
   better representation of data; fixed some cursor/pile drawing bugs and
@@ -177,8 +181,6 @@
 #include "View.h"
 #include "Color.h"
 #include "XColor.h"
-#include "CmdContainer.h"
-#include "CommandObj.h"
 
 //#define DEBUG
 
@@ -396,12 +398,7 @@ void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height)
       (void)_dst->HideCursors();
     }
 
-    if (cmdContainerp->getMake() == CmdContainer::CSGROUP) {
-      CommandObj *    cmdObj = GetCommandObj();
-      cmdObj->SetVisualFilter(_src, &filter);
-    } else if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC) {
-      _src->SetVisualFilter(filter);
-    }
+    _src->SetVisualFilterCommand(filter);
   }
 }
 

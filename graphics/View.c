@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.204  1999/11/15 22:54:52  wenger
+  Fixed bug 534 ("disappearing" data in SoilSci/TwoStation5Var.ds session
+  caused by highlight view/pile problems).
+
   Revision 1.203  1999/11/10 22:46:56  wenger
   More fixes to dimension-changing.
 
@@ -938,6 +942,9 @@
 #include "PileStack.h"
 #include "DebugLog.h"
 #include "Session.h"
+#include "CommandObj.h"
+#include "CmdContainer.h"
+#include "ArgList.h"
 
 //******************************************************************************
 
@@ -1247,6 +1254,34 @@ void View::SubClassUnmapped()
 
   AbortQuery();
   CleanUpViewSyms();
+}
+
+void View::SetVisualFilterCommand(VisualFilter &filter, Boolean registerEvent)
+{
+  if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
+  {
+    CommandObj *	cmdObj = GetCommandObj();
+    cmdObj->SetVisualFilter(this, &filter);
+  }
+  else if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
+  {
+    ArgList args(6);
+    args.AddArg("setFilter");
+    args.AddArg(GetName());
+
+    char tmpBuf[128];
+    sprintf(tmpBuf, "%g", filter.xLow);
+    args.AddArg(tmpBuf);
+    sprintf(tmpBuf, "%g", filter.yLow);
+    args.AddArg(tmpBuf);
+    sprintf(tmpBuf, "%g", filter.xHigh);
+    args.AddArg(tmpBuf);
+    sprintf(tmpBuf, "%g", filter.yHigh);
+    args.AddArg(tmpBuf);
+
+    ControlPanel *control = ControlPanel::Instance();
+    cmdContainerp->RunOneCommand(args.GetCount(), args.GetArgs(), control);
+  }
 }
 
 void View::SetVisualFilter(VisualFilter &filter, Boolean registerEvent)
@@ -2756,6 +2791,7 @@ View::BackOne()
     _filterQueue->Get(_filterQueue->Size() - 2, filter);
 	filter.flag = _filter.flag;
     SetVisualFilter(filter);
+    //TEMP -- should this do collaboration, etc.???
   }
 }
 

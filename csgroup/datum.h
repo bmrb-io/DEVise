@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:49  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:23:56  liping
   Added CVS header
 
@@ -66,7 +69,7 @@ class Datum {
 	
 	public:
 		Datum();
-		Datum(char *bytearray, int size);
+		Datum(const char *bytearray, int size);
 		Datum(const Datum& d);
 		~Datum();
 

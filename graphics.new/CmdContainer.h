@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/08/17 17:12:02  wenger
+  Devised now responds to KeyAction commands from JavaScreen.
+
   Revision 1.5  1998/05/02 09:00:38  taodb
   Added support for JAVA Screen and command logging
 
@@ -50,12 +53,12 @@ class CmdContainer
 		CmdContainer(ControlPanel* control, Make make, DeviseServer* server);
 		~CmdContainer();
 
-		int	Run(int argc, char** argv, ControlPanel* control, 
+		int	Run(int argc, const char* const *argv, ControlPanel* control, 
 			CmdDescriptor& cmdDes);
-		int	RunOneCommand(int argc, char** argv, ControlPanel* control);
+		int	RunOneCommand(int argc, const char* const *argv, ControlPanel* control);
 
 		void insertCmd(char*, DeviseCommand *,int cmdsize);		
-		DeviseCommand* lookupCmd(char*);
+		DeviseCommand* lookupCmd(const char*);
 		void deleteCmd(char* cmdName);
 
 		Make	getMake(){return make;}

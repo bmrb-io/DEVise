@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.98  1999/11/10 18:48:36  wenger
+  Changing view dimenion now changes all views in a pile; PileStack makes
+  sure all views in pile have the same number of dimensions; fixed 'bad
+  query' problem with highlight views.
+
   Revision 1.97  1999/10/22 20:54:03  wenger
   Major changes to how view refreshes are handled (prevents "extra" queries
   from being run in piled views, fixes bug 520); also fixed bug 517.
@@ -564,6 +569,10 @@ class View : public ViewWin
 	int GetId() { return _id; }
 
 	/* setting/getting visual filter */
+	// Set visual filter, generating a command.
+	void SetVisualFilterCommand(VisualFilter &filter,
+	                            Boolean registerEvent = true);
+	// Set visual filter, *not* generating a command.
 	void SetVisualFilter(VisualFilter &filter,
 			     Boolean registerEvent = true);
 	void GetVisualFilter(VisualFilter &filter);

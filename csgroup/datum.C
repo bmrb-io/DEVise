@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/07/03 23:41:48  wenger
+  Fixed some memory leaks; added provision to print data segment size
+  at certain places in the code.
+
   Revision 1.4  1998/03/03 20:54:03  wenger
   Fixed bad free in csgroup code; cleaned up (somewhat) the use of the
   (highly-dangerous) ERROR macro.
@@ -77,7 +81,7 @@ Datum::Datum() {
 	dataval = NULL;
 }
 
-Datum::Datum(char *bytearray, int size) {
+Datum::Datum(const char *bytearray, int size) {
 	
 	datasize = size;
 	dataval = new(char) [size];
