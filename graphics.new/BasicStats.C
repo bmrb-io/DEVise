@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/29 17:08:55  jussi
+  In average computation, added check if nsamples == 0.
+
   Revision 1.2  1995/11/29 02:34:37  ravim
   Statistics printed out only when toggle enabled.
 
@@ -40,16 +43,25 @@ BasicStats::~BasicStats()
 
 void BasicStats::Init(ViewGraph *vw)
 {
-  sum = 0;
-  sum_sqr = 0;
+  xsum = xsum_sqr = xmax = xmin = 0;
+  ysum = ysum_sqr = ymax = ymin = 0;
+
   nsamples = 0;
   ViewStats::Init(vw);
 }
 
 void BasicStats::Sample(double x, double y)
 {
-  sum += y;
-  sum_sqr += y*y;
+  ysum += y;
+  ysum_sqr += y*y;
+  if (y > ymax) ymax = y;
+  if (y < ymin) ymin = y;
+
+  xsum += x;
+  xsum_sqr += x*x;
+  if (x > xmax) xmax = x;
+  if (x < xmin) xmin = x;
+
   nsamples++;
 }
 
@@ -63,20 +75,24 @@ void BasicStats::Report()
   if (_vw->GetDisplayStats() == true) 
   {
     printf("***********Statistics Report***********\n");
-    printf("Sum : %f  Sum of Squares : %f\n", sum, sum_sqr);
+    printf("Sum : %f  Sum of Squares : %f\n", ysum, ysum_sqr);
     printf("Number of samples : %d\n", nsamples);
-    double avg = sum / (nsamples ? nsamples : 1);
-    printf("Average : %f\n", avg);
+    double avg = ysum / (nsamples ? nsamples : 1);
+    printf("Max: %f Min: %f Average: %f\n", ymax, ymin, avg);
 
-    // Draw a line across the window to depict the average
+    // Draw a line across the window to depict the min, max and average
     // Get the window
     WindowRep *win = _vw->GetWindowRep();
     // Get the visual filter
     VisualFilter *filter =  _vw->GetVisualFilter();
+
     // Draw line
     Color prev = win->GetFgColor();
     win->SetFgColor(GreenColor);
+    win->Line(filter->xLow, ymax, filter->xHigh, ymax, 2);
+    win->Line(filter->xLow, ymin, filter->xHigh, ymin, 2);
     win->Line(filter->xLow, avg, filter->xHigh, avg, 2);
+
     win->SetFgColor(prev);
   }
 }
