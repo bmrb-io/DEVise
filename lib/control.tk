@@ -1,6 +1,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.11  1995/09/13 14:24:56  jussi
+#	Extracted macro definition code and moved it to macrodef.tk.
+#	Added interfacing to SEQ and SQL queries.
+#
 #	Revision 1.10  1995/09/12 22:05:45  jussi
 #	Fixed some problems in interfacing new user interface to
 #	DEVise. New user interface was creating too many mapping
@@ -87,6 +91,7 @@ source $libdir/macrodef.tk
 source $libdir/issm.tk
 source $libdir/seq.tk
 source $libdir/sql.tk
+source $libdir/cstat.tk
 
 # abstract data type for dictionary
 # Insert name and val into dictionary. Return new dictionary.
@@ -143,7 +148,7 @@ proc GetClass { category instance } {
 	set insts [DEVise get $category $c]
 	foreach inst $insts {
 	    # puts "comparing $category $c $inst"
-	    if {$inst $instance} {
+	    if {$inst == $instance} {
 		return $c
 	    }
 	}
@@ -234,6 +239,7 @@ menu .mbar.session.menu -tearoff 0
 
 menu .mbar.import.menu -tearoff 0
 .mbar.import.menu add command -label "Stock Data" -command issmMain
+.mbar.import.menu add command -label "Compustat Data" -command cstatMain
 .mbar.import.menu add command -label "SEQ Data" -command seqMain
 .mbar.import.menu add command -label "SQL Query" -command sqlMain
 
@@ -458,7 +464,7 @@ proc DoCreateTData { file type } {
     set params [linsert $params 0 $file ]
     set cmd "DEVise create tdata $type $params"
  
-    set result [ eval $cmd]
+    set result [eval $cmd]
     if {$result == ""} {
 	set but [ dialog .createError "CreateError" \
 		"Can't import file $file of type $type" \
@@ -716,7 +722,7 @@ proc DoActualCreateGData { tdata mapping } {
 	}
 
 	set cmd "DEVise create mapping $mapping $dialogParamVar(params)"
-	set result [ eval $cmd]
+	set result [eval $cmd]
 	if { [string compare $result "" ] == 0 } {
 	    set but [ dialog .CreateError \
 		    "Can't create mapping using $mapping" \
@@ -759,7 +765,7 @@ proc DoActualCreateGData { tdata mapping } {
 		[ lindex [lindex $paramNames 11] 1]] 
 	
 	set cmd "DEVise create mapping $mapping $params"
-	set result [ eval $cmd]
+	set result [eval $cmd]
 	if { [string compare $result "" ] == 0 } {
 	    set but [ dialog .CreateError \
 		    "Can't create mapping using $mapping" \
@@ -869,7 +875,7 @@ proc DoActualCreateView { viewType name } {
     }
 
     set cmd "DEVise create view $viewType $dialogParamVar(params)"
-    set result [ eval $cmd]
+    set result [eval $cmd]
     if { [string compare $result "" ] == 0 } {
 	set but [ dialog .viewError "ViewError" \
 		"Can't create view using $viewType" "" 0 {OK} ]
@@ -933,7 +939,7 @@ proc DoActualCreateWindow { winType } {
 	return
     }
     set cmd "DEVise create window $winType $dialogParamVar(params)"
-    set result [ eval $cmd ]
+    set result [eval $cmd ]
     if { [string compare $result "" ] == 0 } {
 	set but [ dialog .winError "winError" \
 		"Can't create window using $winType" "" 0 {OK} ]
@@ -1640,7 +1646,7 @@ proc ProcessViewSelected { view } {
     foreach filter $filters { 
 	ProcessViewFilterChange $curView -1 \
 		[lindex $filter 0] [lindex $filter 1] \
-		[lindex $filter 2]  [lindex $filter 3] [lindex $filter 4]
+		[lindex $filter 2] [lindex $filter 3] [lindex $filter 4]
     }
 }
 
@@ -1649,6 +1655,7 @@ proc ProcessViewFilterChange { view flushed xLow yLow xHigh yHigh marked} {
     # puts "ProcessViewFilterChange { $view $flushed $xLow \
 	    $yLow $xHigh $yHigh $marked}" 
     global curView historyWinOpened
+
     if {$view != $curView} {
 	return
     }
@@ -1662,7 +1669,7 @@ proc ProcessViewFilterChange { view flushed xLow yLow xHigh yHigh marked} {
     .history.xhigh insert 0 $xHigh
     .history.yhigh insert 0 $yHigh
 
-    if { $historyWinOpened } {
+    if {$historyWinOpened} {
 	if {$flushed >= 0} {
 	    # Remove last in the list 
 	    foreach i { listMark listXlow listXhigh listYlow listYhigh } {
@@ -1676,7 +1683,7 @@ proc ProcessViewFilterChange { view flushed xLow yLow xHigh yHigh marked} {
 	.historyWin.listXhigh insert 0 $xHigh
 	.historyWin.listYlow insert 0 $yLow
 	.historyWin.listYhigh insert 0 $yHigh
-	if { $marked } {
+	if {$marked} {
 	    .historyWin.listMark insert 0 "*"
 	} else {
 	    .historyWin.listMark insert 0 " "
@@ -2316,7 +2323,7 @@ proc DoActualCreateAxisLabel { type } {
     }
 
     set cmd "DEVise create axisLabel $type $dialogParamVar(params)"
-    set result [ eval $cmd ]
+    set result [eval $cmd ]
     if { [string compare $result "" ] == 0 } {
 	set but [ dialog .axisError "AxisError" \
 		"Can't create axis" "" 0 {OK} ]
@@ -2390,7 +2397,7 @@ proc DoActualCreateAction { type } {
     }
     
     set cmd "DEVise create action $type $dialogParamVar(params)"
-    set result [ eval $cmd ]
+    set result [eval $cmd ]
     if { [string compare $result "" ] == 0 } {
 	set but [ dialog .actionError "ActionError" \
 		"Can't create action" "" 0 {OK} ]
@@ -2520,7 +2527,7 @@ proc DoOpen { asTemplate} {
     set fsBox(pattern) *.tk
     set file [ FSBox "Select session file" ]
     
-    puts "Got File: $file"
+    # puts "Got File: $file"
 
     if { [ string compare $file "" ] == 0 } {
 	return
@@ -2669,7 +2676,7 @@ proc DoSwitchTData { } {
 	    set newMapParam [linsert [lrange $curMapParam 2 end] 0 $tdata \
 		    $mapName]
 	    set cmd "DEVise create mapping $curMapClass $newMapParam"
-	    set result [ eval $cmd]
+	    set result [eval $cmd]
 	    if { [string compare $result "" ] == 0 } {
 		set but [ dialog .CreateError "Can't create mapping" \
 			"" 0 {OK} ]
@@ -2683,7 +2690,7 @@ proc DoSwitchTData { } {
 	set view [UniqueName [format "%s#%s" $mapName $curViewClass]]
 	set newViewParam [linsert [lrange $curViewParam 1 end] 0 $view]
 	set cmd "DEVise create view $curViewClass $newViewParam"
-	set result [ eval $cmd ]
+	set result [eval $cmd ]
 	if { [string compare $result "" ] == 0 } {
 	    set but [ dialog .CreateError "Can't create view" "" 0 {OK} ]
 	    return
@@ -2741,7 +2748,7 @@ proc OpenHistory { } {
     
     frame $w.lists -background LightBlue
     listbox $w.listMark -yscrollcommand "$w.scroll set" \
-	    -relief raised -selectmode single
+	    -relief raised -selectmode single -width 4
     
     foreach i { listXlow listYlow listXhigh listYhigh } {
 	listbox $w.$i -yscrollcommand "$w.scroll set" \
@@ -2749,45 +2756,43 @@ proc OpenHistory { } {
     }
     bind $w.listMark <Button-1> {
 	set sel [.historyWin.listMark nearest %y]
-	if { $sel >= 0 } {
+	if {$sel >= 0} {
 	    ProcessMarkSelected $sel
 	}
     }
     
     bind $w.listXlow <Button-1> {
 	set sel [.historyWin.listXlow nearest %y]
-	if { $sel >= 0 } {
+	if {$sel >= 0} {
+	    ProcessHistorySelected $sel
+	}
+    }
+    bind $w.listXhigh <Button-1> {
+	set sel [.historyWin.listXhigh nearest %y]
+	if {$sel >= 0} {
 	    ProcessHistorySelected $sel
 	}
     }
     bind $w.listYlow <Button-1> {
 	set sel [.historyWin.listYlow nearest %y]
-	if { $sel >= 0 } {
+	if {$sel >= 0} {
 	    ProcessHistorySelected $sel
 	}
     }
-    
-    bind $w.listXhigh <Button-1> {
-	set sel [.historyWin.listXhigh nearest %y]
-	if { $sel >= 0 } {
-	    ProcessHistorySelected $sel
-	}
-    }
-    
     bind $w.listYhigh <Button-1> {
 	set sel [.historyWin.listYhigh nearest %y]
-	if { $sel >= 0 } {
+	if {$sel >= 0} {
 	    ProcessHistorySelected $sel
 	}
     }
     scrollbar $w.scroll -command "DoScrollBar"
     
-    button $w.close -text "Close" -command {CloseHistory}
+    button $w.close -text Close -command CloseHistory -width 10
     
     pack $w.close -side bottom
     
     pack $w.scroll -in $w.lists -side right -fill both
-    pack  $w.listYhigh $w.listYlow $w.listXhigh $w.listXlow\
+    pack  $w.listYhigh $w.listYlow $w.listXhigh $w.listXlow \
 	    -in $w.lists -side right 
     pack $w.listMark -in $w.lists -side left 
     
@@ -2813,18 +2818,18 @@ proc OpenHistory { } {
     }
 }
  
-
-proc DoScrollBar { arg1 arg2 arg3 } {
-    foreach i { listMark listXlow listXhigh listYlow listYhigh } {
-	.historyWin.$i yview $arg1 $arg2 $arg3
+# note: DoScrollBar takes variable number of arguments
+proc DoScrollBar args {
+    foreach i {listMark listXlow listXhigh listYlow listYhigh} {
+	eval .historyWin.$i yview $args
     }
 }
 
 proc ClearHistory { } {
     global historyWinOpened
     if {$historyWinOpened} {
-	foreach i { listMark listXlow listXhigh listYlow listYhigh } {
-	    .historyWin.$i select clear
+	foreach i {listMark listXlow listXhigh listYlow listYhigh} {
+	    selection clear .historyWin.$i
 	    .historyWin.$i delete 0 end
 	}
     }
@@ -2876,7 +2881,7 @@ proc DoGoBackOne { } {
 # duplicate window
 proc DupWindow { } {
     global curView
-    if { [ string compare $curView "" ] ==  0 } {
+    if {$curView == ""} {
 	set but [dialog .dupWinError "DupWindowError" \
 		"Please select a window by clicking any view in it" "" 0 {OK} ]
 	return
@@ -2889,7 +2894,7 @@ proc DupWindow { } {
     foreach view $views {
 	# Crete a new view
 	set class [GetClass  view $view]
-	set params [ DEVise getCreateParam view $class $view]
+	set params [DEVise getCreateParam view $class $view]
 	set viewName [lindex $params 0]
 	set newName [UniqueName $viewName]
 
@@ -2908,7 +2913,7 @@ proc DupWindow { } {
 
     # Create new window
     set class [GetClass window $win]
-    set params [ DEVise getCreateParam window $class $win]
+    set params [DEVise getCreateParam window $class $win]
     set newWin [UniqueName $win]
     set newParam [linsert [lrange $params 1 end] 0 $newWin]
     eval DEVise create window $class $newParam
