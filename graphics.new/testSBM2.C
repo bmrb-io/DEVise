@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/01/18 18:41:32  jussi
+  Added definition of variables and funcitons which allow the code to
+  link properly. Init.c and Exit.c reference functions related to
+  initializing and shutting down the RTree system.
+
   Revision 1.10  1996/12/20 16:26:17  jussi
   Removed call to SemaphoreV::create().
 
@@ -320,7 +325,8 @@ int main(int argc, char **argv)
         else
             fp[i] = fopen(files[i], "w+");
         if (!fp[i]) {
-            fprintf(stderr, "Could not create %s\n", files[i]);
+            fprintf(stderr, "Could not open/create %s\n", files[i]);
+            perror("fopen");
             exit(1);
         }
         task[i] = new FdIOTask(status, fileno(fp[i]));
