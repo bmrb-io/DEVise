@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/02/05 02:53:49  yuc
+  Update MaxInterpShapes to 8, for adding
+  3d vector
+
   Revision 1.10  1996/01/27 00:18:39  jussi
   Made recId be evaluated as a simple command rather than as
   a complex command.
@@ -108,8 +112,8 @@ class AttrList;
 const int MaxInterpShapes = 8;
 
 class MappingInterp: public TDataMapDispatch {
-  friend double ConvertOne(char *from, MappingSimpleCmdEntry *entry,
-			   double defaultVal);
+  friend inline double ConvertOne(char *from, MappingSimpleCmdEntry *entry,
+				  double defaultVal);
 
 public:
   MappingInterp(char *name,
