@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.37  1996/05/31 15:32:12  jussi
+  Added 'state' variable to HandleButton(). This tells the callee
+  whether the shift/control keys were pressed in conjunction with
+  the mouse button.
+
   Revision 1.36  1996/05/22 21:02:47  jussi
   Added ImportImage() method.
 
@@ -996,8 +1001,8 @@ void XWindowRep::Arc(Coord x, Coord y, Coord w, Coord h,
 #endif
   
   Coord tx, ty, tempX, tempY;
-  WindowRep::Transform(x - w / 2, y + h / 2, tx, ty);
-  WindowRep::Transform(x + w / 2, y - h / 2, tempX, tempY);
+  WindowRep::Transform(x - w / 2, y - h / 2, tx, ty);
+  WindowRep::Transform(x + w / 2, y + h / 2, tempX, tempY);
   int realWidth = ROUND(int, fabs(tempX - tx));
   int realHeight = ROUND(int, fabs(tempY - ty));
   int realStart= ROUND(int, ToDegree(startAngle) * 64);
@@ -1233,9 +1238,6 @@ void XWindowRep::HandleEvent(XEvent &event)
 
   case ConfigureNotify:
     /* resize event */
-#ifdef DEBUG
-    printf("XWindowRep 0x%p ConfigureNotify\n", this);
-#endif
     int saveX, saveY; 
     unsigned int saveWidth, saveHeight;
     saveX = _x;
@@ -1243,6 +1245,10 @@ void XWindowRep::HandleEvent(XEvent &event)
     saveWidth = _width;
     saveHeight = _height;
     UpdateWinDimensions();
+#ifdef DEBUG
+    printf("XWindowRep 0x%p ConfigureNotify: %d,%d,%d,%d\n", this,
+	   _x, _y, _width, _height);
+#endif
     if (_x != saveX || _y != saveY || _width != saveWidth
 	|| _height != saveHeight) {
       /* There is a real change in size */
