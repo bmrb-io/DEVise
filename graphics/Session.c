@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/03/02 22:04:06  taodb
+  Added control parameter to Run invocations
+
   Revision 1.16  1998/02/26 20:40:53  taodb
   Replaced ParseAPI calls with Command Container calls
 
@@ -446,22 +449,30 @@ Session::CreateTData(char *name)
       int argcOut;
       char **argvOut;
 
-      if (Tcl_SplitList(interp, catEntry, &argcOut, &argvOut) != TCL_OK) {
-        reportErrNosys(interp->result);
-        status = StatusFailed;
+      // This is a kludgey way of trying to figure out whether we have a
+      // DTE data source or a UNIXFILE -- it will fail if someone has a
+      // table with an attribute call UNIXFILE.  However, because of changes
+      // Donko has made to SQLViews, Tcl_SplitList() will barf on many
+      // SQLView data sources, so we have to decide whether it belongs to
+      // the DTE before with do Tcl_SplitList() on it.  RKW Mar. 12, 1998.
+      if (strstr(catEntry, "UNIXFILE") != NULL) {
+        isDteSource = false;
       } else {
-	if (isDteType(argvOut[1])) {
-          isDteSource = true;
-          // All we really need for a DTE source is the name.
-	} else {
-	  // This should be a non-DTE-type data source.
+        isDteSource = true;
+      }
+
+      if (!isDteSource) {
+        if (Tcl_SplitList(interp, catEntry, &argcOut, &argvOut) != TCL_OK) {
+          reportErrNosys(interp->result);
+          status = StatusFailed;
+        } else {
           isDteSource = false;
           strcpy(schema, argvOut[3]);
           strcpy(schemaFile, argvOut[4]);
           strcpy(sourceType, argvOut[1]);
           sprintf(param, "%s/%s", argvOut[8], argvOut[2]);
-	}
-        free((char *) argvOut);
+          free((char *) argvOut);
+        }
       }
       Tcl_DeleteInterp(interp);
     }
