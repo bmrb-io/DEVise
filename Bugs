@@ -493,7 +493,13 @@ Num Date        Status  Description
 
 129 01/22/97	OPEN	Date attribute value displayed as a floating
 			point number in Query dialog when filter changed
-			with keypad zoom/pan keys.
+			with keypad zoom/pan keys. (jpm)
+
+130 01/22/97	OPEN	Load the session test/ibmcache2.tk (with or without
+			shared memory) you get the following error:
+			An internal error has occurred. The reason is:
+  			Inconsistent state (../../graphics.new/RangeList.c:232)
+			(rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
