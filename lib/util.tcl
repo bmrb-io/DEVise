@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.40  1997/02/03 20:02:04  ssl
+#  Added interface for negative record links and user defined layout mode
+#
 #  Revision 1.39  1997/01/30 02:12:02  beyer
 #  added stringCaseCmp for case insensitive string comparisons and
 #  lsortCase for case insensitive list sorting.
@@ -409,7 +412,7 @@ proc RecordLinkSet {} {
     set linkSet [ CategoryInstances "link"]
     set recLinkSet {}
     foreach link $linkSet {
-	set flag [DEVise getLinkFlag $linkSet]
+	set flag [DEVise getLinkFlag $link]
 	if { [expr $flag & 128] } {
 	    set recLinkSet [lappend $recLinkSet $link]
 	}
