@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.83  1999/05/20 15:17:54  wenger
+  Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
+  with duplicate elimination and count mappings) exposed by Tim Wilson's
+  two-station session.
+
   Revision 1.82  1999/03/03 18:21:56  wenger
   Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
   and 467 (query errors with sorted attributes); minor improvements to
@@ -505,7 +510,7 @@ int MappingInterp::FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
     size += sizeof(double);
   }
 
-  for(int j = 0; j < MAX_GDATA_ATTRS; j++) {
+  for(int j = 0; j < MAX_SHAPE_ATTRS; j++) {
     if ((attrFlag & (1 << j)) && !IsConstCmd(cmd->shapeAttrCmd[j], attrList,
 		val, attrType) ) {
       size = WordBoundary(size, sizeof(double));
@@ -820,7 +825,7 @@ void MappingInterp::UpdateMaxSymSize(void *gdata, int numSyms)
   _maxSymHeight = 0;
   _maxSymDepth = 0;
 
-  if (_offsets->shapeOffset < 0) {
+  if (_offsets->_shapeOffset < 0) {
     /* constant shape */
     ShapeID shape = GetDefaultShape();
     _shapes[shape]->MaxSymSize(this, gdata, numSyms,
@@ -837,11 +842,11 @@ void MappingInterp::UpdateMaxSymSize(void *gdata, int numSyms)
   int i = 0;
   while (i < numSyms) {
     char *start = ptr + i * gRecSize;
-    ShapeID shape = *((ShapeID *)(start + _offsets->shapeOffset));
+    ShapeID shape = *((ShapeID *)(start + _offsets->_shapeOffset));
     int j;
     for(j = i + 1; j < numSyms; j++) {
       char *end = ptr + j * gRecSize;
-      ShapeID nextShape = *((ShapeID *)(end + _offsets->shapeOffset));
+      ShapeID nextShape = *((ShapeID *)(end + _offsets->_shapeOffset));
       if (shape != nextShape)
         break;
     }
@@ -868,7 +873,7 @@ void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
 #endif
 
   if (view->GetDrawToScreen()) {
-    if (_offsets->shapeOffset < 0) {
+    if (_offsets->_shapeOffset < 0) {
       /* constant shape */
       ShapeID shape = GetDefaultShape();
 #if defined(DEBUG)
@@ -883,11 +888,11 @@ void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
       int i = 0;
       Boolean timedOut = false;
       while (i < num && !timedOut) {
-        ShapeID shape = *((ShapeID *)((char *)gdataArray[i]+_offsets->shapeOffset));
+        ShapeID shape = *((ShapeID *)((char *)gdataArray[i]+_offsets->_shapeOffset));
         int j;
         for(j = i + 1; j < num; j++) {
 	  ShapeID nextShape =
-	                *((ShapeID *)((char *)gdataArray[j]+_offsets->shapeOffset));
+	                *((ShapeID *)((char *)gdataArray[j]+_offsets->_shapeOffset));
 	  if (shape != nextShape)
 	    break;
         }
@@ -962,7 +967,7 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
   for(int i = 0; i < numRecs; i++) {
 
     /* Store ID of current record */
-    *((RecId *)(gPtr + _offsets->recidOffset)) = startRecId + i;
+    *((RecId *)(gPtr + _offsets->_recIdOffset)) = startRecId + i;
 
     /* Initialize tdata variables into tcl variables.*/
 #if 0
@@ -978,47 +983,47 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
     const int maxcmd = sizeof cmdbuf - 7 - 1;
 
 	InsertExprAttrs(startRecId + i, tPtr, xStringTable);
-    if (_offsets->xOffset >= 0) {
+    if (_offsets->_xOffset >= 0) {
       if (_tclCmd->xCmd == NULL) {
 	      _exprResult = GetDefaultX();
       } else {
 	// added by whh, support for native expression analysis
 	_exprResult = EvalExpr( _pNativeExpr->pExprX );
       }
-      *((double *)(gPtr + _offsets->xOffset)) = _exprResult;
+      *((double *)(gPtr + _offsets->_xOffset)) = _exprResult;
     }
     
 	if (yStringTable != xStringTable) {
 	  InsertExprAttrs(startRecId + i, tPtr, yStringTable);
 	}
-    if (_offsets->yOffset >= 0) {
+    if (_offsets->_yOffset >= 0) {
       if (_tclCmd->yCmd == NULL) {
 	_exprResult = GetDefaultY();
       } else {
 	// added by whh, support for native expression analysis
 	_exprResult = EvalExpr( _pNativeExpr->pExprY );
       }
-      *((double *)(gPtr + _offsets->yOffset)) = _exprResult;
+      *((double *)(gPtr + _offsets->_yOffset)) = _exprResult;
     }
     
 	if (zStringTable != yStringTable) {
 	  InsertExprAttrs(startRecId + i, tPtr, zStringTable);
 	}
-    if (_offsets->zOffset >= 0) {
+    if (_offsets->_zOffset >= 0) {
       if (_tclCmd->zCmd == NULL) {
 	_exprResult = GetDefaultZ();
       } else {
 	// added by whh, support for native expression analysis
 	_exprResult = EvalExpr( _pNativeExpr->pExprZ );
       }
-      *((double *)(gPtr + _offsets->zOffset)) = _exprResult;
+      *((double *)(gPtr + _offsets->_zOffset)) = _exprResult;
     }
 
     // Color command
 	if (genStringTable != zStringTable) {
 	  InsertExprAttrs(startRecId + i, tPtr, genStringTable);
 	}
-    if (_offsets->colorOffset >= 0 ) {
+    if (_offsets->_colorOffset >= 0 ) {
       if (_tclCmd->colorCmd == NULL) {
         _exprResult = (Coord)nullPColorID;
       } else {
@@ -1026,10 +1031,10 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
         _exprResult = EvalExpr( _pNativeExpr->pExprColor );
       }
 
-      *((PColorID*)(gPtr + _offsets->colorOffset)) = (PColorID)_exprResult;
+      *((PColorID*)(gPtr + _offsets->_colorOffset)) = (PColorID)_exprResult;
     }
 
-    if (_offsets->sizeOffset >= 0) {
+    if (_offsets->_sizeOffset >= 0) {
       if (_tclCmd->sizeCmd == NULL) {
 	_exprResult = GetDefaultSize();
       } else {
@@ -1039,10 +1044,10 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
       /*
 	 printf("eval size\n");
       */
-      *((double *)(gPtr + _offsets->sizeOffset)) = _exprResult;
+      *((double *)(gPtr + _offsets->_sizeOffset)) = _exprResult;
     }
     
-    if (_offsets->patternOffset >= 0) {
+    if (_offsets->_patternOffset >= 0) {
       if (_tclCmd->patternCmd == NULL) {
 	_exprResult = (double) GetDefaultPattern();
       } else {
@@ -1052,10 +1057,10 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
       /*
 	 printf("eval pattern\n");
       */
-      *((Pattern *)(gPtr + _offsets->patternOffset)) = (Pattern)_exprResult;
+      *((Pattern *)(gPtr + _offsets->_patternOffset)) = (Pattern)_exprResult;
     }
     
-    if (_offsets->shapeOffset >= 0) {
+    if (_offsets->_shapeOffset >= 0) {
       if (_tclCmd->shapeCmd == NULL) {
 	_exprResult = GetDefaultShape();
       } else {
@@ -1068,10 +1073,10 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
       /*
 	 printf("eval shape\n");
       */
-      *((ShapeID *)(gPtr + _offsets->shapeOffset))= (ShapeID )_exprResult;
+      *((ShapeID *)(gPtr + _offsets->_shapeOffset))= (ShapeID )_exprResult;
     }
 
-    if (_offsets->orientationOffset >= 0 ) {
+    if (_offsets->_orientationOffset >= 0 ) {
       if (_tclCmd->orientationCmd == NULL) {
 	_exprResult = GetDefaultOrientation();
       } else {
@@ -1081,12 +1086,12 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
       /*
 	 printf("eval orientation\n");
       */
-      *((double *)(gPtr + _offsets->orientationOffset))= _exprResult;
+      *((double *)(gPtr + _offsets->_orientationOffset))= _exprResult;
     }
 
     ShapeAttr *shapeAttr = GetDefaultShapeAttrs();
     for(int j = 0; j <= _maxGDataShapeAttrNum; j++) {
-      if (_offsets->shapeAttrOffset[j] >= 0) {
+      if (_offsets->_shapeAttrOffset[j] >= 0) {
 	if (_tclCmd->shapeAttrCmd[j] == NULL) {
 	  _exprResult = shapeAttr[j];
 	} else {
@@ -1096,7 +1101,7 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 #if defined(DEBUG)
         printf("ShapeAttr%d = %f\n", j, _exprResult);
 #endif
-	*((double *)(gPtr + _offsets->shapeAttrOffset[j]))= _exprResult;
+	*((double *)(gPtr + _offsets->_shapeAttrOffset[j]))= _exprResult;
       }
     }
     InitAttrList();
@@ -1121,17 +1126,18 @@ AttrList *MappingInterp::InitCmd(char *name)
   StringStorage *genStringTable = GetStringTable(TableGen);
 
   /* Record ID is always first GData attribute */
-  _offsets->recidOffset = 0;
+  _offsets->_recIdOffset = 0;
 
   /* Init offsets to other GData attributes */
-  _offsets->xOffset = _offsets->yOffset = _offsets->zOffset = -1;
-  _offsets->colorOffset = _offsets->sizeOffset = _offsets->shapeOffset = -1;
-  _offsets->patternOffset = _offsets->orientationOffset = -1;
+  _offsets->_xOffset = _offsets->_yOffset = _offsets->_zOffset = -1;
+  _offsets->_colorOffset = _offsets->_sizeOffset = _offsets->_shapeOffset = -1;
+  _offsets->_patternOffset = _offsets->_orientationOffset = -1;
 
   int i;
-  for(i = 0; i < MAX_GDATA_ATTRS; i++)
-    _offsets->shapeAttrOffset[i] = -1;
-  
+  for(i = 0; i < MAX_SHAPE_ATTRS; i++) {
+    _offsets->_shapeAttrOffset[i] = -1;
+  }
+
   _tdataFlag->ClearBitmap();
   _maxTDataAttrNum = 0;
   
@@ -1153,7 +1159,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       attrList->InsertAttr(0, "x", -1, sizeof(double),
 			   attrType, false, NULL, false, isSorted);
     } else {
-      _offsets->xOffset = offset = WordBoundary(offset, sizeof(double));
+      _offsets->_xOffset = offset = WordBoundary(offset, sizeof(double));
       attrList->InsertAttr(0, "x", offset, sizeof(double),
 			   attrType, false, NULL, false, isSorted);
       offset += sizeof(double);
@@ -1171,7 +1177,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       attrList->InsertAttr(1, "y", -1, sizeof(double),
 			   attrType, false, NULL, false, isSorted);
     } else {
-      _offsets->yOffset = offset = WordBoundary(offset, sizeof(double));
+      _offsets->_yOffset = offset = WordBoundary(offset, sizeof(double));
       attrList->InsertAttr(1, "y", offset, sizeof(double),
 			   attrType, false, NULL, false, isSorted);
       offset += sizeof(double);
@@ -1188,7 +1194,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       attrList->InsertAttr(2, "z", -1, sizeof(double),
 			   attrType, false, NULL, false, isSorted);
     } else {
-      _offsets->zOffset = offset = WordBoundary(offset, sizeof(double));
+      _offsets->_zOffset = offset = WordBoundary(offset, sizeof(double));
       attrList->InsertAttr(2, "z", offset, sizeof(double),
 			   attrType, false, NULL, false, isSorted);
       offset += sizeof(double);
@@ -1211,7 +1217,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       attrList->InsertAttr(3, "color", -1, sizeof(double),
       attrType, false, NULL, false, isSorted);
     } else {
-      _offsets->colorOffset = offset = WordBoundary(offset,
+      _offsets->_colorOffset = offset = WordBoundary(offset,
       sizeof(PColorID));
       attrList->InsertAttr(3, "color", offset, sizeof(double),
       attrType, false, NULL, false, isSorted);
@@ -1229,7 +1235,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       attrList->InsertAttr(4, "size", -1, sizeof(double),
 			   attrType, false, NULL, false, isSorted);
     } else {
-      _offsets->sizeOffset = offset = WordBoundary(offset, sizeof(double));
+      _offsets->_sizeOffset = offset = WordBoundary(offset, sizeof(double));
       attrList->InsertAttr(4, "size", offset, sizeof(double),
 			   attrType, false, NULL, false, isSorted);
       offset += sizeof(double);
@@ -1246,7 +1252,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       attrList->InsertAttr(5, "pattern", -1, sizeof(double),
 			   attrType, false, NULL, false, isSorted);
     } else {
-      _offsets->patternOffset = offset = WordBoundary(offset, sizeof(Pattern));
+      _offsets->_patternOffset = offset = WordBoundary(offset, sizeof(Pattern));
       attrList->InsertAttr(5, "pattern", offset, sizeof(double),
 			   attrType, false, NULL, false, isSorted);
       offset += sizeof(Pattern);
@@ -1266,7 +1272,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       attrList->InsertAttr(6, "shape", -1, sizeof(double),
 			   attrType, false, NULL, false, isSorted);
     } else {
-      _offsets->shapeOffset = offset = WordBoundary(offset, sizeof(ShapeID));
+      _offsets->_shapeOffset = offset = WordBoundary(offset, sizeof(ShapeID));
       attrList->InsertAttr(6, "shape", offset, sizeof(double),
 			   attrType, false, NULL, false, isSorted);
       offset += sizeof(ShapeID);
@@ -1285,7 +1291,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       attrList->InsertAttr(7, "orientation", -1, sizeof(double),
 			   attrType, false, NULL, false, isSorted);
     } else {
-      _offsets->orientationOffset = offset = WordBoundary(offset,
+      _offsets->_orientationOffset = offset = WordBoundary(offset,
 							  sizeof(double));
       attrList->InsertAttr(7, "orientation", offset, sizeof(double),
 			   attrType, false, NULL, false, isSorted);
@@ -1294,7 +1300,7 @@ AttrList *MappingInterp::InitCmd(char *name)
   }
 
   _maxGDataShapeAttrNum = -1;
-  for(j = 0; j < MAX_GDATA_ATTRS; j++) {
+  for(j = 0; j < MAX_SHAPE_ATTRS; j++) {
     if (_cmdAttrFlag & (1 << j)) {
       _maxGDataShapeAttrNum = j;
       if (!ConvertSimpleCmd(_cmd->shapeAttrCmd[j],
@@ -1312,7 +1318,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       } else {
 	char attrName [80];
 	sprintf(attrName, "shapeAttr_%d", j);
-	_offsets->shapeAttrOffset[j] = offset = WordBoundary(offset,
+	_offsets->_shapeAttrOffset[j] = offset = WordBoundary(offset,
 							     sizeof(double));
 	attrList->InsertAttr(8 + j, attrName, offset, sizeof(double),
 			     attrType, false, NULL, false, isSorted);
@@ -1326,14 +1332,15 @@ AttrList *MappingInterp::InitCmd(char *name)
   PrintCmd();
   attrList->Print();
   printf("offsets: x %d, y %d, z %d, color %d, size %d,\n", 
-	 _offsets->xOffset, _offsets->yOffset, _offsets->zOffset,
-	 _offsets->colorOffset, _offsets->sizeOffset);
+	 _offsets->_xOffset, _offsets->_yOffset, _offsets->_zOffset,
+	 _offsets->_colorOffset, _offsets->_sizeOffset);
   printf("         shape %d, pattern %d, orientation %d\n", 
-	 _offsets->shapeOffset, _offsets->patternOffset,
-	 _offsets->orientationOffset);
+	 _offsets->_shapeOffset, _offsets->_patternOffset,
+	 _offsets->_orientationOffset);
   printf("attr offsets:");
-  for(i = 0; i < MAX_GDATA_ATTRS; i++)
-    printf(" %d", _offsets->shapeAttrOffset[i]);
+  for(i = 0; i < MAX_SHAPE_ATTRS; i++) {
+    printf(" %d", _offsets->_shapeAttrOffset[i]);
+  }
   printf("\n");
 #endif
 
@@ -1344,14 +1351,15 @@ AttrList *MappingInterp::InitCmd(char *name)
  * forces all other GData attributes to be converted in the "complex" mode.
  * RKW 4/24/97. */
   /* Record ID is always first GData attribute */
-  _offsets->recidOffset = 0;
+  _offsets->_recIdOffset = 0;
 
   /* Init offsets to other GData attributes */
-  _offsets->xOffset = _offsets->yOffset = _offsets->zOffset = -1;
-  _offsets->colorOffset = _offsets->sizeOffset = _offsets->shapeOffset = -1;
-  _offsets->patternOffset = _offsets->orientationOffset = -1;
-  for(i = 0; i < MAX_GDATA_ATTRS; i++)
-    _offsets->shapeAttrOffset[i] = -1;
+  _offsets->_xOffset = _offsets->_yOffset = _offsets->_zOffset = -1;
+  _offsets->_colorOffset = _offsets->_sizeOffset = _offsets->_shapeOffset = -1;
+  _offsets->_patternOffset = _offsets->_orientationOffset = -1;
+  for(i = 0; i < MAX_SHAPE_ATTRS; i++) {
+    _offsets->_shapeAttrOffset[i] = -1;
+  }
 
   _isSimpleCmd = false;
 
@@ -1376,7 +1384,7 @@ AttrList *MappingInterp::InitCmd(char *name)
 			   false, NULL, false, false);
     } else {
       _tclCmd->xCmd = ConvertCmd(_cmd->xCmd, attrType, isSorted);
-      _offsets->xOffset = offset = WordBoundary(offset,sizeof(double));
+      _offsets->_xOffset = offset = WordBoundary(offset,sizeof(double));
       attrList->InsertAttr(0, "x", offset, sizeof(double), attrType,
 			   false, NULL, false, isSorted);
       offset += sizeof(double);
@@ -1391,7 +1399,7 @@ AttrList *MappingInterp::InitCmd(char *name)
 			   false, NULL, false, false);
     } else {
       _tclCmd->yCmd = ConvertCmd(_cmd->yCmd, attrType, isSorted);
-      _offsets->yOffset = offset = WordBoundary(offset,sizeof(double));
+      _offsets->_yOffset = offset = WordBoundary(offset,sizeof(double));
       attrList->InsertAttr(1, "y", offset, sizeof(double), attrType,
 			   false, NULL, false, isSorted);
       offset += sizeof(double);
@@ -1406,7 +1414,7 @@ AttrList *MappingInterp::InitCmd(char *name)
 			   false, NULL, false, false);
     } else {
       _tclCmd->zCmd = ConvertCmd(_cmd->zCmd, attrType, isSorted);
-      _offsets->zOffset = offset = WordBoundary(offset,sizeof(double));
+      _offsets->_zOffset = offset = WordBoundary(offset,sizeof(double));
       attrList->InsertAttr(2, "z", offset, sizeof(double), attrType,
 			   false, NULL, false, isSorted);
       offset += sizeof(double);
@@ -1430,7 +1438,7 @@ AttrList *MappingInterp::InitCmd(char *name)
 		else
 		{
 			_tclCmd->colorCmd = ConvertCmd(_cmd->colorCmd, attrType, isSorted);
-			_offsets->colorOffset = offset = WordBoundary(offset,
+			_offsets->_colorOffset = offset = WordBoundary(offset,
 														  sizeof(PColorID));
 			attrList->InsertAttr(3, "color", offset, sizeof(double), attrType,
 								 false, NULL, false, isSorted);
@@ -1446,7 +1454,7 @@ AttrList *MappingInterp::InitCmd(char *name)
 			   false, NULL, false, false);
     } else {
       _tclCmd->sizeCmd = ConvertCmd(_cmd->sizeCmd, attrType, isSorted);
-      _offsets->sizeOffset = offset = WordBoundary(offset,sizeof(double));
+      _offsets->_sizeOffset = offset = WordBoundary(offset,sizeof(double));
       attrList->InsertAttr(4, "size", offset, sizeof(double), attrType,
 			   false, NULL, false, isSorted);
       offset += sizeof(double);
@@ -1461,7 +1469,7 @@ AttrList *MappingInterp::InitCmd(char *name)
 			   false, NULL, false, false);
     } else {
       _tclCmd->patternCmd = ConvertCmd(_cmd->patternCmd, attrType, isSorted);
-      _offsets->patternOffset = offset = WordBoundary(offset,sizeof(Pattern));
+      _offsets->_patternOffset = offset = WordBoundary(offset,sizeof(Pattern));
       attrList->InsertAttr(5, "pattern", offset, sizeof(double), attrType,
 			   false, NULL, false, isSorted);
       offset += sizeof(Pattern);
@@ -1479,7 +1487,7 @@ AttrList *MappingInterp::InitCmd(char *name)
 			   false, NULL, false, false);
     } else {
       _tclCmd->shapeCmd = ConvertCmd(_cmd->shapeCmd, attrType, isSorted);
-      _offsets->shapeOffset = offset = WordBoundary(offset,sizeof(ShapeID));
+      _offsets->_shapeOffset = offset = WordBoundary(offset,sizeof(ShapeID));
       attrList->InsertAttr(6, "shape", offset, sizeof(double), attrType,
 			   false, NULL, false, isSorted);
       offset += sizeof(ShapeID);
@@ -1495,7 +1503,7 @@ AttrList *MappingInterp::InitCmd(char *name)
     } else {
       _tclCmd->orientationCmd = ConvertCmd(_cmd->orientationCmd, attrType, 
 					   isSorted);
-      _offsets->shapeOffset = offset = WordBoundary(offset,sizeof(double));
+      _offsets->_shapeOffset = offset = WordBoundary(offset,sizeof(double));
       attrList->InsertAttr(7, "orientation", offset, sizeof(double), attrType,
 			   false, NULL, false, isSorted);
       offset += sizeof(double);
@@ -1503,7 +1511,7 @@ AttrList *MappingInterp::InitCmd(char *name)
   }
 
   _maxGDataShapeAttrNum = -1;
-  for(j = 0; j < MAX_GDATA_ATTRS; j++) {
+  for(j = 0; j < MAX_SHAPE_ATTRS; j++) {
     char attrName [80];
     sprintf(attrName, "shapeAttr_%d", j);
     if (_cmdAttrFlag & (1 << j)) {
@@ -1516,7 +1524,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       } else {
 	_tclCmd->shapeAttrCmd[j] = 
 	  ConvertCmd(_cmd->shapeAttrCmd[j], attrType, isSorted);
-	_offsets->shapeAttrOffset[j] = offset = WordBoundary(offset,
+	_offsets->_shapeAttrOffset[j] = offset = WordBoundary(offset,
 							     sizeof(double));
 	attrList->InsertAttr(8 + j, attrName, offset, sizeof(double),
 			     attrType, false,  NULL, false, isSorted);
@@ -1530,14 +1538,15 @@ AttrList *MappingInterp::InitCmd(char *name)
   PrintCmd();
   attrList->Print();
   printf("offsets: x %d, y %d, z %d, color %d, size %d,\n", 
-	 _offsets->xOffset, _offsets->yOffset, _offsets->zOffset,
-	 _offsets->colorOffset, _offsets->sizeOffset);
+	 _offsets->_xOffset, _offsets->_yOffset, _offsets->_zOffset,
+	 _offsets->_colorOffset, _offsets->_sizeOffset);
   printf("         shape %d, pattern %d, orientation %d\n", 
-	 _offsets->shapeOffset, _offsets->patternOffset,
-	 _offsets->orientationOffset);
+	 _offsets->_shapeOffset, _offsets->_patternOffset,
+	 _offsets->_orientationOffset);
   printf("attr offsets: ");
-  for(i = 0; i < MAX_GDATA_ATTRS; i++)
-    printf(" %d", _offsets->shapeAttrOffset[i]);
+  for(i = 0; i < MAX_SHAPE_ATTRS; i++) {
+    printf(" %d", _offsets->_shapeAttrOffset[i]);
+  }
   printf("\n");
 #endif
   
@@ -1830,7 +1839,7 @@ void MappingInterp::PrintCmd()
       printf("\n");
     }
 
-    for(int j = 0; j < MAX_GDATA_ATTRS; j++) {
+    for(int j = 0; j < MAX_SHAPE_ATTRS; j++) {
       if (_cmdAttrFlag & (1 << j)) {
 	printf("shapeAttr_%d: %s --> ", j, _cmd->shapeAttrCmd[j]);
 	PrintSimpleCmdEntry(&_simpleCmd->shapeAttrCmd[j]);
@@ -1866,7 +1875,7 @@ void MappingInterp::PrintCmd()
       printf("orientation: %s --> %s\n", _cmd->orientationCmd,
 	     _tclCmd->orientationCmd);
 
-    for(int j = 0; j < MAX_GDATA_ATTRS; j++) {
+    for(int j = 0; j < MAX_SHAPE_ATTRS; j++) {
       if (_cmdAttrFlag & (1 << j))
 	printf("shapeAttr_%d: %s --> %s\n", j, _cmd->shapeAttrCmd[j],
 	       _tclCmd->shapeAttrCmd[j]);
@@ -1988,54 +1997,54 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
 
   for(int i = 0; i < numRecs; i++) {
     /* Store ID of current record */
-    *((RecId *)(gPtr + _offsets->recidOffset)) = startRecId + i;
+    *((RecId *)(gPtr + _offsets->_recIdOffset)) = startRecId + i;
     
     double *dPtr;
-    if (_offsets->xOffset >= 0) {
-      dPtr = (double *)(gPtr + _offsets->xOffset);
+    if (_offsets->_xOffset >= 0) {
+      dPtr = (double *)(gPtr + _offsets->_xOffset);
       *dPtr = ConvertOne(tPtr, &_simpleCmd->xCmd, 1.0, xStringTable);
     }
-    if ( _offsets->yOffset >= 0) {
-      dPtr = (double *)(gPtr + _offsets->yOffset);
+    if ( _offsets->_yOffset >= 0) {
+      dPtr = (double *)(gPtr + _offsets->_yOffset);
       *dPtr = ConvertOne(tPtr, &_simpleCmd->yCmd, 1.0, yStringTable);
     }
-    if (_offsets->zOffset >= 0) {
-      dPtr = (double *)(gPtr + _offsets->zOffset);
+    if (_offsets->_zOffset >= 0) {
+      dPtr = (double *)(gPtr + _offsets->_zOffset);
       *dPtr = ConvertOne(tPtr, &_simpleCmd->zCmd, 1.0, zStringTable);
     }
 
 	// Color command
-	if (_offsets->colorOffset >= 0)
+	if (_offsets->_colorOffset >= 0)
 	{
-		PColorID*	pcid = (PColorID*)(gPtr + _offsets->colorOffset);
+		PColorID*	pcid = (PColorID*)(gPtr + _offsets->_colorOffset);
 
 		*pcid = (PColorID)ConvertOne(tPtr, &_simpleCmd->colorCmd, 1.0,
 		  genStringTable);
 	}
 
-    if (_offsets->sizeOffset >= 0) {
-      dPtr = (double *)(gPtr + _offsets->sizeOffset);
+    if (_offsets->_sizeOffset >= 0) {
+      dPtr = (double *)(gPtr + _offsets->_sizeOffset);
       *dPtr = ConvertOne(tPtr, &_simpleCmd->sizeCmd, 1.0, genStringTable);
     }
-    if (_offsets->shapeOffset >= 0) {
-      ShapeID *sPtr = (ShapeID *)(gPtr + _offsets->shapeOffset);
+    if (_offsets->_shapeOffset >= 0) {
+      ShapeID *sPtr = (ShapeID *)(gPtr + _offsets->_shapeOffset);
       *sPtr = (ShapeID) ConvertOne(tPtr, &_simpleCmd->shapeCmd, 1.0,
 	    genStringTable);
     }
-    if (_offsets->patternOffset >= 0) {
-      Pattern *pPtr = (Pattern *)(gPtr + _offsets->patternOffset);
+    if (_offsets->_patternOffset >= 0) {
+      Pattern *pPtr = (Pattern *)(gPtr + _offsets->_patternOffset);
       *pPtr = (Pattern)ConvertOne(tPtr, &_simpleCmd->patternCmd, 0.0,
 	    genStringTable);
     }
-    if (_offsets->orientationOffset >= 0) {
-      dPtr = (double *)(gPtr + _offsets->orientationOffset);
+    if (_offsets->_orientationOffset >= 0) {
+      dPtr = (double *)(gPtr + _offsets->_orientationOffset);
       *dPtr = ConvertOne(tPtr, &_simpleCmd->orientationCmd, 0.0,
 	    genStringTable);
     }
 
     for(int j = 0; j <= _maxGDataShapeAttrNum; j++) {
-      if (_offsets->shapeAttrOffset[j] >= 0) {
-	double *dPtr = (double *)(gPtr + _offsets->shapeAttrOffset[j]);
+      if (_offsets->_shapeAttrOffset[j] >= 0) {
+	double *dPtr = (double *)(gPtr + _offsets->_shapeAttrOffset[j]);
 	*dPtr =  ConvertOne(tPtr, &_simpleCmd->shapeAttrCmd[j], 0.1,
 	  genStringTable);
 #ifdef DEBUG

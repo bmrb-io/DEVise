@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.33  1999/04/16 20:59:23  wenger
+  Fixed various bugs related to view symbols, including memory problem
+  with MappingInterp dimensionInfo; updated create_condor_session script
+  to take advantage of view symbol TData switching capability.
+
   Revision 1.32  1999/03/03 18:22:01  wenger
   Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
   and 467 (query errors with sorted attributes); minor improvements to
@@ -216,20 +221,19 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
     DOASSERT(_gdata, "Out of memory");
   }
   
-  _x = 0.0;
-  _y = 0.0;
-  _z = 0.0;
-  _size = 1.0;
-  _pattern = Pattern0;
-  _orientation = 0.0;
-  _shapeId = 0;
+  _defaults._x = 0.0;
+  _defaults._y = 0.0;
+  _defaults._z = 0.0;
+  _defaults._size = 1.0;
+  _defaults._pattern = Pattern0;
+  _defaults._orientation = 0.0;
+  _defaults._shape = 0;
 
-  _numShapeAttr = MAX_GDATA_ATTRS;
-  _shapeAttrs = new Coord [MAX_GDATA_ATTRS];
-  DOASSERT(_shapeAttrs, "Out of memory");
-  for(unsigned int i = 0; i < (unsigned int)MAX_GDATA_ATTRS; i++)
-    _shapeAttrs[i] = 0.1;
-  
+  _numShapeAttr = MAX_SHAPE_ATTRS;
+  for(unsigned int i = 0; i < (unsigned int)MAX_SHAPE_ATTRS; i++) {
+    _defaults._shapeAttrs[i] = 0.1;
+  }
+
   _maxSymWidth = 0.0;
   _maxSymHeight = 0.0;
   _maxSymDepth = 0.0;
@@ -251,9 +255,6 @@ TDataMap::~TDataMap()
 {
   delete _gdata;
   _gdata = NULL;
-
-  delete [] _shapeAttrs;
-  _shapeAttrs = NULL;
 
   delete [] _stringXTableName;
   _stringXTableName = NULL;
@@ -280,12 +281,14 @@ TDataMap::~TDataMap()
 
 PColorID	TDataMap::GetPColorID(const char* recPtr) const
 {
-	if ((GetGDataOffset()->colorOffset >= 0) && (recPtr != NULL))
-		return *(PColorID*)(recPtr + GetGDataOffset()->colorOffset);
-	else
+	if ((GetGDataOffset()->_colorOffset >= 0) && (recPtr != NULL)) {
+		return *(PColorID*)(recPtr + GetGDataOffset()->_colorOffset);
+	} else {
 		return nullPColorID;
+    }
 }
 
+//TEMP -- does the color stuff really have to be treated specially??
 ColorID		TDataMap::GetColorID(const char* recPtr) const
 {
 	PColorID	pcid = GetPColorID(recPtr);
@@ -345,18 +348,19 @@ void TDataMap::MapToSymbol(TData *tdata, RecId recId, void *rec, Symbol *sym)
 {
   /* init default values */
   sym->recId = recId;
-  sym->x = _x;
-  sym->y = _y;
-  sym->z = _z;
+  sym->x = _defaults._x;
+  sym->y = _defaults._y;
+  sym->z = _defaults._z;
   sym->color = GetColoring().GetForeground();
-  sym->size = _size;
-  sym->pattern = _pattern; 
-  sym->orientation = _orientation;
-  sym->shapeID = _shapeId;
-  sym->numShapeAttr = _numShapeAttr;
-  for(int i = 0; i < _numShapeAttr; i++)
-    sym->shapeAttrs[i] = _shapeAttrs[i];
-  
+  sym->size = _defaults._size;
+  sym->pattern = _defaults._pattern; 
+  sym->orientation = _defaults._orientation;
+  sym->shapeID = _defaults._shapeId;
+  sym->numShapeAttr = _defaults._numShapeAttr;
+  for(int i = 0; i < MAX_SHAPE_ATTRS; i++) {
+    sym->shapeAttrs[i] = _defaults._shapeAttrs[i];
+  }
+
   /* call the user-defined mapping function */
   Map(tdata, recId, rec, sym);
   
@@ -492,26 +496,30 @@ RecId TDataMap::GetFocusId() {
 
 void TDataMap::SetDefaultShapeAttr(int attrNum, Coord shapeAttr)
 {
-  if (attrNum < 0 || attrNum >= (int)MAX_GDATA_ATTRS) {
+  if (attrNum < 0 || attrNum >= (int)MAX_SHAPE_ATTRS) {
     fprintf(stderr,"Mapping::SetDefaultShapeAttr: attrNum %d\n", attrNum);
     Exit::DoExit(1);
   }
-  _shapeAttrs[attrNum] = shapeAttr;
+  _defaults._shapeAttrs[attrNum] = shapeAttr;
 }
 
 void TDataMap::SetDefaultShape(ShapeID shapeID, int numAttr,
 			       ShapeAttr *shapeAttr)
 {
-  if (numAttr > (int)MAX_GDATA_ATTRS) {
+  if (numAttr > (int)MAX_SHAPE_ATTRS) {
     fprintf(stderr,"Mapping::SetDefaultShape: too many attrs %d\n", numAttr);
     Exit::DoExit(1);
   }
   
-  _shapeId = shapeID;
+  _defaults._shape = shapeID;
   _numShapeAttr = numAttr;
   if (numAttr > 0) {
-    for(int i = 0; i < numAttr; i++)
-      _shapeAttrs[i] = shapeAttr[i];
+    for(int i = 0; i < numAttr; i++) {
+      _defaults._shapeAttrs[i] = shapeAttr[i];
+    }
+    for(int i = numAttr; i < MAX_SHAPE_ATTRS; i++) {
+      _defaults._shapeAttrs[i] = 0.1;
+    }
   }
 }
 

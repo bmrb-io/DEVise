@@ -26,6 +26,13 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/10/20 19:46:13  wenger
+  Mapping dialog now displays the view's TData name; "Next in Pile" button
+  in mapping dialog allows user to edit the mappings of all views in a pile
+  without actually flipping them; user has the option to show all view names;
+  new GUI to display info about all links and cursors; added API and GUI for
+  count mappings.
+
   Revision 1.1  1998/02/26 22:59:46  wenger
   Added "count mappings" to views, except for API and GUI (waiting for
   Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
@@ -76,7 +83,7 @@ private:
   Transform2D *_transform;
   VisualFilter *_filter;
 
-  int _binCount;;
+  int _binCount;
   int *_bins;
 
   Boolean _valid;

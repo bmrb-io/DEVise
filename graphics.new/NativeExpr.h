@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/01/30 21:53:19  wenger
+  Did some cleaning up of the MappingInterp and NativeExpr code
+  (NativeExpr still needs a lot more); NativeExpr code can now
+  parse expressions containing constant strings (they are treated
+  as numerical zero for now) (this fixes bug 275).
+
   Revision 1.3  1997/12/23 23:35:31  liping
   Changed internal structure of BufMgrFull and classes it called
   The buffer manager is now able to accept queries on any attribute from the
@@ -91,11 +97,11 @@ public:
   Node *pOrientationInverse;
   char *pszOrientationVar;
 
-  char *ppszGDataAttr[MAX_GDATA_ATTRS];  // defined in GDataRec.h
-  Node *ppExprGDataAttr[MAX_GDATA_ATTRS];
-  int GDataAttrInversible[MAX_GDATA_ATTRS];
-  Node *ppGDataAttrInverse[MAX_GDATA_ATTRS];
-  char *ppszGDataAttrVar[MAX_GDATA_ATTRS];
+  char *ppszGDataAttr[MAX_SHAPE_ATTRS];  // defined in GDataRec.h
+  Node *ppExprGDataAttr[MAX_SHAPE_ATTRS];
+  int GDataAttrInversible[MAX_SHAPE_ATTRS];
+  Node *ppGDataAttrInverse[MAX_SHAPE_ATTRS];
+  char *ppszGDataAttrVar[MAX_SHAPE_ATTRS];
 
   CGraphicExpr( MappingInterpCmd *cmd );
   ~CGraphicExpr();

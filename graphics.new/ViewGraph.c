@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.112  1999/05/17 20:55:21  wenger
+  Partially-kludged fix for bug 488 (problems with cursors in piled views
+  in the JavaScreen).
+
   Revision 1.111  1999/05/17 18:38:00  wenger
   Views now have GData sending configuration that is only employed when
   connecting to the JavaScreen (eliminates the need for the current kludgey
@@ -1046,7 +1050,7 @@ void ViewGraph::DrawLegend()
 		TDataMap*	map = info->map;
 		PColorID	fgid = GetPColorID(viewGraphLegendColor);
 		
-		if (map->GetGDataOffset()->colorOffset < 0)
+		if (map->GetGDataOffset()->_colorOffset < 0)
 			fgid = map->GetColoring().GetForeground();
 
 		win->SetForeground(fgid);

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.24  1998/05/06 22:04:57  wenger
+  Single-attribute set links are now working except where the slave of
+  one is the master of another.
+
   Revision 1.23  1998/03/04 19:11:03  wenger
   Fixed some more dynamic memory errors.
 
@@ -283,6 +287,10 @@ TData::TData(char* name, char* type, char* param, int recSize)
 /*---------------------------------------------------------------------------*/
 TData::TData(DataSource* data_source)
 {
+#if defined(DEBUG)
+    printf("TData::TData()\n");
+#endif
+
     _name = NULL;
     _type = NULL;
     _param = NULL;

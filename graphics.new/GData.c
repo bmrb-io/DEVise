@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/10/13 19:40:44  wenger
+  Added SetAttrs() function to TData and its subclasses to allow Liping to
+  push projection down to the DTE.
+
   Revision 1.18  1997/12/23 23:35:17  liping
   Changed internal structure of BufMgrFull and classes it called
   The buffer manager is now able to accept queries on any attribute from the
@@ -97,7 +101,12 @@
 //#define DEBUG
 
 GData::GData(TData *tdata, char *fname, int recSize, int maxBuf)
+    : TData()
 {
+#if defined(DEBUG)
+  printf("GData(0x%p)::GData(%s)\n", this, tdata->GetName());
+#endif
+
   _tdata = tdata;
 
   _recSize = recSize;
@@ -146,7 +155,7 @@ GData::GData(TData *tdata, char *fname, int recSize, int maxBuf)
 
 GData::~GData()
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("GData destructor %s, 0x%p \n", GetName(), this);
 #endif
 

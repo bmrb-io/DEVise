@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/07/03 23:42:20  wenger
+  Fixed some memory leaks; added provision to print data segment size
+  at certain places in the code.
+
   Revision 1.7  1998/02/26 17:19:27  wenger
   Fixed problems with yesterday's commit.
 
@@ -59,7 +63,6 @@
 #include "MappingInterp.h"
 #include "NativeExpr.h"
 
-//#define MAX_GDATA_ATTRS 10
 #define HUGE_NUMBER  1e30
 
 //#define DEBUG
@@ -337,7 +340,7 @@ CGraphicExpr::CGraphicExpr( MappingInterpCmd *cmd )
     pExprOrientation = NULL;
   }
 
-  for( iCount = 0; iCount < MAX_GDATA_ATTRS; iCount ++ )
+  for( iCount = 0; iCount < MAX_SHAPE_ATTRS; iCount ++ )
   {
     if( cmd->shapeAttrCmd[iCount] != NULL )
     {
@@ -382,7 +385,7 @@ CGraphicExpr::~CGraphicExpr()
   if( pszOrientation != NULL )
     free( pszOrientation );
 
-  for( iCount = 0; iCount < MAX_GDATA_ATTRS; iCount ++ )
+  for( iCount = 0; iCount < MAX_SHAPE_ATTRS; iCount ++ )
     if( ppszGDataAttr[iCount] != NULL )
       free( ppszGDataAttr[iCount] );
 }
@@ -443,7 +446,7 @@ int CGraphicExpr::GetRange( Interval GDataRange[], Interval **ppSourceRangeList,
 	      pszOrientationVar, iNumOfRanges, pOrientationInverse );
   }
 
-  for( iCount = 0; iCount < MAX_GDATA_ATTRS; iCount ++ )
+  for( iCount = 0; iCount < MAX_SHAPE_ATTRS; iCount ++ )
   {
     if( GDataRange[8+iCount].AttrName != 0 && GDataAttrInversible[iCount] )
     {

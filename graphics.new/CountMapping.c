@@ -28,6 +28,13 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/10/20 19:46:13  wenger
+  Mapping dialog now displays the view's TData name; "Next in Pile" button
+  in mapping dialog allows user to edit the mappings of all views in a pile
+  without actually flipping them; user has the option to show all view names;
+  new GUI to display info about all links and cursors; added API and GUI for
+  count mappings.
+
   Revision 1.2  1998/08/17 18:51:49  wenger
   Updated solaris dependencies for egcs; fixed most compile warnings;
   bumped version to 1.5.4.
@@ -122,16 +129,16 @@ CountMapping::Init(ViewGraph *view)
     TDataMap *gdataMap = view->GetFirstMap();
     GDataAttrOffset *offsets = gdataMap->GetGDataOffset();
 
-    _xOffset = offsets->xOffset;
-    _yOffset = offsets->yOffset;
+    _xOffset = offsets->_xOffset;
+    _yOffset = offsets->_yOffset;
 
     switch (_putAttr) {
     case AttrX:
-      _putOffset = offsets->xOffset;
+      _putOffset = offsets->_xOffset;
       break;
 
     case AttrY:
-      _putOffset = offsets->yOffset;
+      _putOffset = offsets->_yOffset;
       break;
 
     default:

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1999/03/12 18:46:04  wenger
+  Implemented duplicate symbol elimination.
+
  */
 
 #include <stdio.h>
@@ -115,8 +118,8 @@ DupElim::Init(ViewGraph *view)
     TDataMap *gdataMap = view->GetFirstMap();
     GDataAttrOffset *offsets = gdataMap->GetGDataOffset();
 
-    _xOffset = offsets->xOffset;
-    _yOffset = offsets->yOffset;
+    _xOffset = offsets->_xOffset;
+    _yOffset = offsets->_yOffset;
 
     WindowRep *windowRep = view->GetWindowRep();
     _transform = windowRep->TopTransform();

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.16  1999/05/20 15:17:36  wenger
+  Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
+  with duplicate elimination and count mappings) exposed by Tim Wilson's
+  two-station session.
+
   Revision 1.15  1998/11/06 17:59:48  wenger
   Multiple string tables fully working -- allows separate tables for the
   axes in a given view.
@@ -99,7 +104,7 @@ GetShapeAttrString(int i,
 
 int FullMapping_ETkWindowShape::NumShapeAttrs()
 {
-    return MAX_GDATA_ATTRS;
+    return MAX_SHAPE_ATTRS;
 }
 
 
@@ -129,11 +134,11 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
     Coord x, y, tx, ty, size;
     Coord x0, y0, x1, y1, width, height;
     int argc;
-    char argv[MAX_GDATA_ATTRS][ETK_MAX_STR_LENGTH + 1];
+    char argv[MAX_SHAPE_ATTRS][ETK_MAX_STR_LENGTH + 1];
     Coord attrValue;
     AttrType attrType;
     char *temp;
-    char *argv2[MAX_GDATA_ATTRS];
+    char *argv2[MAX_SHAPE_ATTRS];
     int handle;    
     Boolean freeScript, freeTemp;
     
@@ -198,7 +203,7 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 	// Initialize the argv array with NULL strings
 	//
 	argc = 0;
-	for (j = 0; j < MAX_GDATA_ATTRS; j++)
+	for (j = 0; j < MAX_SHAPE_ATTRS; j++)
 	{
 	    argv[j][0] = '\0';
 	}
@@ -246,9 +251,9 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 			devNoSyserr);
 	    continue;
 	}
-	if (argc > (MAX_GDATA_ATTRS - 2))
+	if (argc > (MAX_SHAPE_ATTRS - 2))
 	{
-	    argc = (MAX_GDATA_ATTRS - 2);
+	    argc = (MAX_SHAPE_ATTRS - 2);
 	}
 	
 	//
@@ -316,7 +321,7 @@ GetShapeAttrValue(int i,
     int gdataOffset;
     AttrInfo *attrInfo;
     
-    if (i < 0 || i >= MAX_GDATA_ATTRS)
+    if (i < 0 || i >= MAX_SHAPE_ATTRS)
     {
 	return false;
     }
@@ -330,7 +335,7 @@ GetShapeAttrValue(int i,
     offset = map->GetGDataOffset();
     defaultAttrs = map->GetDefaultShapeAttrs();
     
-    if ((gdataOffset = offset->shapeAttrOffset[i]) < 0)
+    if ((gdataOffset = offset->_shapeAttrOffset[i]) < 0)
     {
 	attrValue = Coord(defaultAttrs[i]);
     }

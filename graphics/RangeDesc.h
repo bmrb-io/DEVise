@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/12/08 20:01:06  wenger
+  MQL session description improvements: views list table name and mappings
+  for all GData attrs; color palette is now listed.
+
   Revision 1.1  1998/11/02 19:22:33  wenger
   Added "range/MQL" session description capability.
 
@@ -35,6 +39,7 @@
 #include "DList.h"
 #include "Util.h"
 #include "GDataRec.h"
+#include "MappingInterp.h"
 
 #define DeleteAndNull(ptr, isArray) { \
   if (isArray) { \
@@ -111,15 +116,7 @@ public:
     View *_view;
     TData *_tData;
 
-    char *_xMapping;
-    char *_yMapping;
-    char *_zMapping;
-    char *_colorMapping;
-    char *_sizeMapping;
-    char *_patternMapping;
-    char *_orientMapping;
-    char *_symTypeMapping;
-    char *_shapeMappings[MAX_GDATA_ATTRS];
+    MappingInterpCmd _mapping;
   };
 
   //

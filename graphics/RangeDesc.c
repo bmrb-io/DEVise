@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/12/08 20:00:53  wenger
+  MQL session description improvements: views list table name and mappings
+  for all GData attrs; color palette is now listed.
+
   Revision 1.1  1998/11/02 19:22:33  wenger
   Added "range/MQL" session description capability.
 
@@ -566,16 +570,16 @@ RangeDesc::ViewInfo::ViewInfo(View *view, TData *tData, MappingInterpCmd *cmd)
   _view = view;
   _tData = tData;
 
-  _xMapping = CopyString(cmd->xCmd);
-  _yMapping = CopyString(cmd->yCmd);
-  _zMapping = CopyString(cmd->zCmd);
-  _colorMapping = CopyString(cmd->colorCmd);
-  _sizeMapping = CopyString(cmd->sizeCmd);
-  _patternMapping = CopyString(cmd->patternCmd);
-  _orientMapping = CopyString(cmd->orientationCmd);
-  _symTypeMapping = CopyString(cmd->shapeCmd);
-  for (int index = 0; index < MAX_GDATA_ATTRS; index++) {
-    _shapeMappings[index] = CopyString(cmd->shapeAttrCmd[index]);
+  _mapping.xCmd = CopyString(cmd->xCmd);
+  _mapping.yCmd = CopyString(cmd->yCmd);
+  _mapping.zCmd = CopyString(cmd->zCmd);
+  _mapping.colorCmd = CopyString(cmd->colorCmd);
+  _mapping.sizeCmd = CopyString(cmd->sizeCmd);
+  _mapping.patternCmd = CopyString(cmd->patternCmd);
+  _mapping.orientationCmd = CopyString(cmd->orientationCmd);
+  _mapping.shapeCmd = CopyString(cmd->shapeCmd);
+  for (int index = 0; index < MAX_SHAPE_ATTRS; index++) {
+    _mapping.shapeAttrCmd[index] = CopyString(cmd->shapeAttrCmd[index]);
   }
 }
 
@@ -588,16 +592,16 @@ RangeDesc::ViewInfo::~ViewInfo()
   _view = NULL;
   _tData = NULL;
 
-  DeleteAndNull(_xMapping, true);
-  DeleteAndNull(_yMapping, true);
-  DeleteAndNull(_zMapping, true);
-  DeleteAndNull(_colorMapping, true);
-  DeleteAndNull(_sizeMapping, true);
-  DeleteAndNull(_patternMapping, true);
-  DeleteAndNull(_orientMapping, true);
-  DeleteAndNull(_symTypeMapping, true);
-  for (int index = 0; index < MAX_GDATA_ATTRS; index++) {
-    DeleteAndNull(_shapeMappings[index], true);
+  DeleteAndNull(_mapping.xCmd, true);
+  DeleteAndNull(_mapping.yCmd, true);
+  DeleteAndNull(_mapping.zCmd, true);
+  DeleteAndNull(_mapping.colorCmd, true);
+  DeleteAndNull(_mapping.sizeCmd, true);
+  DeleteAndNull(_mapping.patternCmd, true);
+  DeleteAndNull(_mapping.orientationCmd, true);
+  DeleteAndNull(_mapping.shapeCmd, true);
+  for (int index = 0; index < MAX_SHAPE_ATTRS; index++) {
+    DeleteAndNull(_mapping.shapeAttrCmd[index], true);
   }
 }
 
@@ -609,12 +613,13 @@ void
 RangeDesc::ViewInfo::Print(FILE *file)
 {
   fprintf(file, "  %s: {%s} {%s} {%s} {%s} {%s} {%s} {%s} {%s} {%s}",
-    _view->GetName(), SafeNullStr(_tData->GetName()), SafeNullStr(_xMapping),
-    SafeNullStr(_yMapping), SafeNullStr(_zMapping), SafeNullStr(_colorMapping),
-    SafeNullStr(_sizeMapping), SafeNullStr(_patternMapping),
-    SafeNullStr(_orientMapping), SafeNullStr(_symTypeMapping));
-  for (int index = 0; index < MAX_GDATA_ATTRS; index++) {
-    fprintf(file, " {%s}", SafeNullStr(_shapeMappings[index]));
+    _view->GetName(), SafeNullStr(_tData->GetName()),
+    SafeNullStr(_mapping.xCmd), SafeNullStr(_mapping.yCmd),
+    SafeNullStr(_mapping.zCmd), SafeNullStr(_mapping.colorCmd),
+    SafeNullStr(_mapping.sizeCmd), SafeNullStr(_mapping.patternCmd),
+    SafeNullStr(_mapping.orientationCmd), SafeNullStr(_mapping.shapeCmd));
+  for (int index = 0; index < MAX_SHAPE_ATTRS; index++) {
+    fprintf(file, " {%s}", SafeNullStr(_mapping.shapeAttrCmd[index]));
   }
   fprintf(file, "\n");
 }

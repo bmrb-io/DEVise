@@ -17,6 +17,11 @@
   $Id$
 
   $Log$
+  Revision 1.64  1999/05/20 15:17:52  wenger
+  Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
+  with duplicate elimination and count mappings) exposed by Tim Wilson's
+  two-station session.
+
   Revision 1.63  1999/05/14 14:00:48  wenger
   User can now control data font family, weight, and slant, on a per-view
   basis.
@@ -375,8 +380,8 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	Coord pixelHeight = 1 / fabs(y1 - y0);
 
 #if defined(PIXELOPTIMIZE)
-	Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0) &&
-				(offset->shapeAttrOffset[1] < 0);
+	Boolean fixedSymSize = (offset->_shapeAttrOffset[0] < 0) &&
+				(offset->_shapeAttrOffset[1] < 0);
 
 
 	if (fixedSymSize) {
@@ -456,7 +461,7 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		// Randomize X,Y coordinates if shape attribute 2 or 3 contains
 		// a constant value of 0.15 or more.
 
-		if (offset->shapeAttrOffset[2] < 0 && offset->shapeAttrOffset[3] < 0)
+		if (offset->_shapeAttrOffset[2] < 0 && offset->_shapeAttrOffset[3] < 0)
 		{
 			ShapeAttr*	attrs = map->GetDefaultShapeAttrs();
 			float		cloudWidth = fabs(attrs[2]);
@@ -524,8 +529,8 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	GDataAttrOffset *offset = map->GetGDataOffset();
 
 #if defined(PIXELOPTIMIZE)
-	Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
-				offset->shapeAttrOffset[1] < 0 ? true : false);
+	Boolean fixedSymSize = (offset->_shapeAttrOffset[0] < 0 &&
+				offset->_shapeAttrOffset[1] < 0 ? true : false);
 
 	if (fixedSymSize) {
 	Coord maxWidth, maxHeight, maxDepth;
@@ -731,8 +736,8 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
 	GDataAttrOffset *offset = map->GetGDataOffset();
 
 #if defined(PIXELOPTIMIZE)
-	Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
-				offset->shapeAttrOffset[1] < 0 ? true : false);
+	Boolean fixedSymSize = (offset->_shapeAttrOffset[0] < 0 &&
+				offset->_shapeAttrOffset[1] < 0 ? true : false);
 
 	if (fixedSymSize) {
 	Coord maxWidth, maxHeight, maxDepth;
@@ -830,8 +835,8 @@ void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	GDataAttrOffset *offset = map->GetGDataOffset();
 
 #if defined(PIXELOPTIMIZE)
-	Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
-				offset->shapeAttrOffset[1] < 0 ? true : false);
+	Boolean fixedSymSize = (offset->_shapeAttrOffset[0] < 0 &&
+				offset->_shapeAttrOffset[1] < 0 ? true : false);
 
 	if (fixedSymSize) {
 	Coord maxWidth, maxHeight, maxDepth;
@@ -947,8 +952,8 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	Coord pixelHeight = 1 / fabs(y1 - y0);
 
 #if defined(PIXELOPTIMIZE)
-	Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
-				offset->shapeAttrOffset[1] < 0 ? true : false);
+	Boolean fixedSymSize = (offset->_shapeAttrOffset[0] < 0 &&
+				offset->_shapeAttrOffset[1] < 0 ? true : false);
 
 	if (fixedSymSize) {
 	Coord maxWidth, maxHeight, maxDepth;
@@ -1149,8 +1154,8 @@ void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	Coord pixelHeight = 1 / fabs(y1 - y0);
 
 #if defined(PIXELOPTIMIZE)
-	Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
-				offset->shapeAttrOffset[1] < 0 ? true : false);
+	Boolean fixedSymSize = (offset->_shapeAttrOffset[0] < 0 &&
+				offset->_shapeAttrOffset[1] < 0 ? true : false);
 
 	if (fixedSymSize) {
 	Coord maxWidth, maxHeight, maxDepth;
@@ -1280,9 +1285,9 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	GDataAttrOffset *offset = map->GetGDataOffset();
 	
 #if defined(PIXELOPTIMIZE)
-	Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
-				offset->shapeAttrOffset[1] < 0 &&
-				offset->shapeAttrOffset[2] < 0 ? true : false);
+	Boolean fixedSymSize = (offset->_shapeAttrOffset[0] < 0 &&
+				offset->_shapeAttrOffset[1] < 0 &&
+				offset->_shapeAttrOffset[2] < 0 ? true : false);
 
 	Coord x0, y0, x1, y1;
 	win->Transform(0, 0, x0, y0);
@@ -1365,7 +1370,7 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 int FullMapping_PolylineShape::NumShapeAttrs()
 { 
-	return MAX_GDATA_ATTRS;
+	return MAX_SHAPE_ATTRS;
 }
 
 
@@ -1381,16 +1386,16 @@ void FullMapping_PolylineShape::MaxSymSize(TDataMap *map, void *gdata,
 	char *ptr = (char *)gdata;
 
 	for(int i = 0; i < numSyms; i++) {
-	int npOff = offset->shapeAttrOffset[0];
+	int npOff = offset->_shapeAttrOffset[0];
 	if (npOff < 0) {
 		ptr += gRecSize;
 		continue;
 	}
 	int np = (int)*(Coord *)(ptr + npOff);
 	for(int j = 1; j <= 2 * np; j++) {
-		if (j >= MAX_GDATA_ATTRS)
+		if (j >= MAX_SHAPE_ATTRS)
 		  continue;
-		int off = offset->shapeAttrOffset[j];
+		int off = offset->_shapeAttrOffset[j];
 		if (off < 0)
 		  continue;
 		Coord temp = *(Coord *)(ptr + off);
@@ -1425,9 +1430,9 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 	GDataAttrOffset *offset = map->GetGDataOffset();
 
 #if defined(PIXELOPTIMIZE)
-	Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
-				offset->shapeAttrOffset[1] < 0 &&
-				offset->shapeAttrOffset[2] < 0 ? true : false);
+	Boolean fixedSymSize = (offset->_shapeAttrOffset[0] < 0 &&
+				offset->_shapeAttrOffset[1] < 0 &&
+				offset->_shapeAttrOffset[2] < 0 ? true : false);
 
 	Coord x0, y0, x1, y1;
 	win->Transform(0, 0, x0, y0);
@@ -1469,7 +1474,7 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 
 	win->DrawPixel(x, y);
 
-	int npOff = offset->shapeAttrOffset[0];
+	int npOff = offset->_shapeAttrOffset[0];
 	if (npOff < 0)
 		continue;
 
@@ -1478,10 +1483,10 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 	printf("Drawing %d additional data points\n", np);
 #endif
 	for(int j = 0; j < np; j++) {
-		if (1 + 2 * j + 1 >= MAX_GDATA_ATTRS)
+		if (1 + 2 * j + 1 >= MAX_SHAPE_ATTRS)
 		  break;
-		int xOff = offset->shapeAttrOffset[1 + 2 * j];
-		int yOff = offset->shapeAttrOffset[1 + 2 * j + 1];
+		int xOff = offset->_shapeAttrOffset[1 + 2 * j];
+		int yOff = offset->_shapeAttrOffset[1 + 2 * j + 1];
 		if (xOff < 0 || yOff < 0)
 		  continue;
 		Coord x1 = *(Coord *)(gdata + xOff);
@@ -1594,7 +1599,7 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
     }
 
 	char *shapeAttr0 = NULL;
-	if (offset->shapeAttrOffset[0] >= 0) {
+	if (offset->_shapeAttrOffset[0] >= 0) {
 	    int key = (int)GetShapeAttr0(gdata, map, offset);
 	    int code = stringTable->Lookup(key, shapeAttr0);
 #ifdef DEBUG
@@ -1755,7 +1760,7 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 	char *file = "polyline.dat";
 	char *format = "%lf%lf";
 
-	if (offset->shapeAttrOffset[0] >= 0) {
+	if (offset->_shapeAttrOffset[0] >= 0) {
 		int key = (int)GetShapeAttr0(gdata, map, offset);
 		int code = stringTable->Lookup(key, file);
 #ifdef DEBUG
@@ -1767,7 +1772,7 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 #endif
 	}
 
-	if (offset->shapeAttrOffset[1] >= 0) {
+	if (offset->_shapeAttrOffset[1] >= 0) {
 		int key = (int)GetShapeAttr1(gdata, map, offset);
 		int code = stringTable->Lookup(key, format);
 #ifdef DEBUG

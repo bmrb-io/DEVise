@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.34  1999/05/20 15:17:55  wenger
+  Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
+  with duplicate elimination and count mappings) exposed by Tim Wilson's
+  two-station session.
+
   Revision 1.33  1999/03/03 18:22:01  wenger
   Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
   and 467 (query errors with sorted attributes); minor improvements to
@@ -193,22 +198,6 @@ class WindowRep;
 class ViewGraph;
 class StringStorage;
 
-/* Offsets for GData attributes. Not all offsets are valid (negative). */
-
-//TEMP -- somehow combine this with GDataRec??
-struct GDataAttrOffset { //TEMP -- change for BB
-  int recidOffset;
-  int xOffset;
-  int yOffset;
-  int zOffset;
-  int colorOffset;
-  int sizeOffset;
-  int shapeOffset;
-  int patternOffset;
-  int orientationOffset;
-  int shapeAttrOffset[MAX_GDATA_ATTRS];
-};
-
 //******************************************************************************
 // class TDataMap
 //******************************************************************************
@@ -284,16 +273,17 @@ class TDataMap
   void SetDynamicShapeAttrs(unsigned long attrs) { _dynamicAttrs = attrs; }
   
   // Default GData values.
-  void GetDefaultLocation(Coord &x, Coord &y) { x = _x; y = _y; }
-  Coord GetDefaultX() { return _x; }
-  Coord GetDefaultY() { return _y; }
-  Coord GetDefaultZ() { return _z; }
-  Coord GetDefaultSize() { return _size; }
-  Pattern GetDefaultPattern() { return _pattern; }
-  Coord GetDefaultOrientation() { return _orientation; }
-  ShapeID GetDefaultShape() { return _shapeId; }
+  void GetDefaultLocation(Coord &x, Coord &y) {
+    x = _defaults._x; y = _defaults._y; }
+  Coord GetDefaultX() { return _defaults._x; }
+  Coord GetDefaultY() { return _defaults._y; }
+  Coord GetDefaultZ() { return _defaults._z; }
+  Coord GetDefaultSize() { return _defaults._size; }
+  Pattern GetDefaultPattern() { return _defaults._pattern; }
+  Coord GetDefaultOrientation() { return _defaults._orientation; }
+  ShapeID GetDefaultShape() { return _defaults._shape; }
   int GetDefaultNumShapeAttrs() { return _numShapeAttr; }
-  ShapeAttr *GetDefaultShapeAttrs() { return _shapeAttrs; }
+  ShapeAttr *GetDefaultShapeAttrs() { return _defaults._shapeAttrs; }
   
   int GetPixelWidth() { return _pixelWidth; }
   void SetPixelWidth(int width) { _pixelWidth = width; }
@@ -397,12 +387,13 @@ protected:
   
   /* Set new defaults. Should only be done in the constructor of
      derived classes.*/
-  void SetDefaultX(Coord x) { _x = x; }
-  void SetDefaultY(Coord y) { _y = y; }
-  void SetDefaultZ(Coord z) { _z = z; }
-  void SetDefaultSize(Coord size) { _size = size; }
-  void SetDefaultPattern(Pattern pattern) { _pattern = pattern; }
-  void SetDefaultOrientation(Coord orientation) { _orientation = orientation; }
+  void SetDefaultX(Coord x) { _defaults._x = x; }
+  void SetDefaultY(Coord y) { _defaults._y = y; }
+  void SetDefaultZ(Coord z) { _defaults._z = z; }
+  void SetDefaultSize(Coord size) { _defaults._size = size; }
+  void SetDefaultPattern(Pattern pattern) { _defaults._pattern = pattern; }
+  void SetDefaultOrientation(Coord orientation) {
+    _defaults._orientation = orientation; }
   void SetDefaultShape(ShapeID shapeID, int numAttr = 0, 
 		       ShapeAttr *shapeAttr = NULL);
   void SetDefaultShapeAttr(int attrNum, Coord shapeAttr);
@@ -429,16 +420,8 @@ private:
   char *CreateGDataPath(char *gdataName);
 
   /* default values */
-  //TEMP -- use a GDataRec here???
-  Coord _x;
-  Coord _y;
-  Coord _z;
-  Coord _size;
-  Pattern _pattern;
-  Coord _orientation;
-  ShapeID _shapeId;
-  int _numShapeAttr;
-  ShapeAttr *_shapeAttrs;
+  GDataRec _defaults;
+  int _numShapeAttr; // Number of shape attrs that are valid
   
   /* For hint calculation */
   Boolean _hintInitialized;  /* TRUE if _minX, _maxX, _numPages initialized */

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.44  1999/05/20 15:17:55  wenger
+  Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
+  with duplicate elimination and count mappings) exposed by Tim Wilson's
+  two-station session.
+
   Revision 1.43  1999/01/19 01:25:41  beyer
   fixed compile warning
 
@@ -237,7 +242,7 @@ struct MappingInterpCmd {
   char *patternCmd;
   char *shapeCmd;
   char *orientationCmd;
-  char *shapeAttrCmd[MAX_GDATA_ATTRS];
+  char *shapeAttrCmd[MAX_SHAPE_ATTRS];
 };
 
 struct MappingSimpleCmdEntry {
@@ -262,7 +267,7 @@ struct MappingSimpleCmd {
   MappingSimpleCmdEntry patternCmd;
   MappingSimpleCmdEntry shapeCmd;
   MappingSimpleCmdEntry orientationCmd;
-  MappingSimpleCmdEntry shapeAttrCmd[MAX_GDATA_ATTRS];
+  MappingSimpleCmdEntry shapeAttrCmd[MAX_SHAPE_ATTRS];
 };
 
 // added by whh, support for native expression analysis

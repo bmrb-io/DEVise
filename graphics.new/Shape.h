@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.33  1999/05/20 15:17:55  wenger
+  Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
+  with duplicate elimination and count mappings) exposed by Tim Wilson's
+  two-station session.
+
   Revision 1.32  1998/12/15 14:55:22  wenger
   Reduced DEVise memory usage in initialization by about 6 MB: eliminated
   Temp.c (had huge global arrays); eliminated Object3D class and greatly
@@ -171,112 +176,113 @@
 
 inline RecId GetRecId(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
-  if (offset->recidOffset < 0)
+  if (offset->_recIdOffset < 0)
     return map->GetDefaultRecId();
-  return GetAttr(ptr, recidOffset, RecId, offset);
+  return GetAttr(ptr, _recIdOffset, RecId, offset);
 }
 
 inline Coord ShapeGetX(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
-  if (offset->xOffset < 0)
+  if (offset->_xOffset < 0)
     return map->GetDefaultX();
-  return GetAttr(ptr, xOffset, Coord, offset);
+  return GetAttr(ptr, _xOffset, Coord, offset);
 }
 
 inline Coord ShapeGetY(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
-  if (offset->yOffset < 0)
+  if (offset->_yOffset < 0)
     return map->GetDefaultY();
-  return GetAttr(ptr, yOffset, Coord, offset);
+  return GetAttr(ptr, _yOffset, Coord, offset);
 }
 
 inline Coord GetZ(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
-  if (offset->zOffset < 0)
+  if (offset->_zOffset < 0)
     return map->GetDefaultZ();
-  return GetAttr(ptr, zOffset, Coord, offset);
+  return GetAttr(ptr, _zOffset, Coord, offset);
 }
 
 inline PColorID	GetPColorID(char* ptr, TDataMap* map, GDataAttrOffset* offset)
 {
-	if (offset->colorOffset < 0)
+	if (offset->_colorOffset < 0) {
 		return map->GetColoring().GetForeground();
-	else
+	} else {
 		return map->GetPColorID(ptr);
+    }
 }
 
 inline Coord GetSize(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
-  if (offset->sizeOffset < 0)
+  if (offset->_sizeOffset < 0)
     return map->GetDefaultSize();
-  return GetAttr(ptr, sizeOffset, Coord, offset);
+  return GetAttr(ptr, _sizeOffset, Coord, offset);
 }
 
 inline Pattern GetPattern(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
-  if (offset->patternOffset < 0)
+  if (offset->_patternOffset < 0)
     return map->GetDefaultPattern();
-  return GetAttr(ptr, patternOffset, Pattern, offset);
+  return GetAttr(ptr, _patternOffset, Pattern, offset);
 }
 
 
 inline Coord GetOrientation(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
-  if (offset->orientationOffset < 0)
+  if (offset->_orientationOffset < 0)
     return map->GetDefaultOrientation();
-  return GetAttr(ptr, orientationOffset, Coord, offset);
+  return GetAttr(ptr, _orientationOffset, Coord, offset);
 }
 
 inline ShapeID GetShape(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
-  if (offset->shapeOffset < 0)
+  if (offset->_shapeOffset < 0)
     return map->GetDefaultShape();
-  return GetAttr(ptr, shapeOffset, ShapeID, offset);
+  return GetAttr(ptr, _shapeOffset, ShapeID, offset);
 }
 
 inline Coord GetShapeAttr0(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
-  if (offset->shapeAttrOffset[0] < 0) {
+  if (offset->_shapeAttrOffset[0] < 0) {
     ShapeAttr *attrs = map->GetDefaultShapeAttrs();
     return attrs[0];
   }
-  return GetAttr(ptr, shapeAttrOffset[0], Coord, offset);
+  return GetAttr(ptr, _shapeAttrOffset[0], Coord, offset);
 }
 
 inline Coord GetShapeAttr1(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
-  if (offset->shapeAttrOffset[1] < 0){
+  if (offset->_shapeAttrOffset[1] < 0){
     ShapeAttr *attrs = map->GetDefaultShapeAttrs();
     return attrs[1];
   }
-  return GetAttr(ptr, shapeAttrOffset[1], Coord, offset);
+  return GetAttr(ptr, _shapeAttrOffset[1], Coord, offset);
 }
 
 inline Coord GetShapeAttr2(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
-  if (offset->shapeAttrOffset[2] < 0){
+  if (offset->_shapeAttrOffset[2] < 0){
     ShapeAttr *attrs = map->GetDefaultShapeAttrs();
     return attrs[2];
   }
-  return GetAttr(ptr, shapeAttrOffset[2], Coord, offset);
+  return GetAttr(ptr, _shapeAttrOffset[2], Coord, offset);
 }
 
 inline Coord GetShapeAttr3(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
-  if (offset->shapeAttrOffset[3] < 0){
+  if (offset->_shapeAttrOffset[3] < 0){
     ShapeAttr *attrs = map->GetDefaultShapeAttrs();
     return attrs[3];
   }
-  return GetAttr(ptr, shapeAttrOffset[3], Coord, offset);
+  return GetAttr(ptr, _shapeAttrOffset[3], Coord, offset);
 }
 
 inline Coord GetShapeAttr4(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
-  if (offset->shapeAttrOffset[4] < 0){
+  if (offset->_shapeAttrOffset[4] < 0){
     ShapeAttr *attrs = map->GetDefaultShapeAttrs();
     return attrs[4];
   }
-  return GetAttr(ptr, shapeAttrOffset[4], Coord, offset);
+  return GetAttr(ptr, _shapeAttrOffset[4], Coord, offset);
 }
 
 // hack alert: GetLineWidth really returns ShapeAttr4 (temporarily)
@@ -369,8 +375,8 @@ class Shape {
       // Randomize X,Y coordinates if shape attribute 2 or 3 contains
       // a constant value of 0.15 or more.
 
-      if (canRandomize && offset->shapeAttrOffset[2] < 0
-          && offset->shapeAttrOffset[3] < 0) {
+      if (canRandomize && offset->_shapeAttrOffset[2] < 0
+          && offset->_shapeAttrOffset[3] < 0) {
         ShapeAttr *attrs = map->GetDefaultShapeAttrs();
         float cloudWidth = fabs(attrs[2]);
         float cloudHeight = fabs(attrs[3]);

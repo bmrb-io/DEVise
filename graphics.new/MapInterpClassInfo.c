@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1999/04/26 20:25:10  wenger
+  Fixed bug 486.
+
   Revision 1.22  1999/04/16 21:03:55  wenger
   Fixed various bugs related to view symbols, including memory problem
   with MappingInterp dimensionInfo; updated create_condor_session script
@@ -116,8 +119,8 @@
 //#define DEBUG
 
 static char *rootClassName = "interpreted";
-static char buf[11 + MAX_GDATA_ATTRS][64];
-static char *args[11 + MAX_GDATA_ATTRS];
+static char buf[11 + MAX_SHAPE_ATTRS][64];
+static char *args[11 + MAX_SHAPE_ATTRS];
 
 MapInterpClassInfo::MapInterpClassInfo()
 {
@@ -223,16 +226,17 @@ MapInterpClassInfo::ExtractCommand(int argc, char **argv,
     return StatusFailed;
   }
 
-  if (argc > 11 + MAX_GDATA_ATTRS) {
+  if (argc > 11 + MAX_SHAPE_ATTRS) {
     fprintf(stderr, "Ignoring extraneous shape attributes\n");
-    argc = 11 + MAX_GDATA_ATTRS;
+    argc = 11 + MAX_SHAPE_ATTRS;
   }
 
   cmd->xCmd = cmd->yCmd = cmd->zCmd = cmd->colorCmd = cmd->sizeCmd = 0;
   cmd->patternCmd = cmd->shapeCmd = cmd->orientationCmd = 0;
-  for(int i = 0; i < MAX_GDATA_ATTRS; i++)
+  for(int i = 0; i < MAX_SHAPE_ATTRS; i++) {
     cmd->shapeAttrCmd[i] = 0;
-  
+  }
+
   if (argv[0][0] == '.') {
     tdataAlias = CopyString(argv[0]);
   } else {
@@ -362,7 +366,7 @@ void MapInterpClassInfo::ParamNames(int &argc, char **&argv)
 
   /* params for an existing interpreted mapping */
 
-  argc = 11 + MAX_GDATA_ATTRS;
+  argc = 11 + MAX_SHAPE_ATTRS;
   argv = args;
 
   if (_fileAlias)
@@ -430,11 +434,12 @@ void MapInterpClassInfo::ParamNames(int &argc, char **&argv)
   } else
     args[10] = "Shape";
     
-  for(int i = 0; i < MAX_GDATA_ATTRS; i++) {
-    if ( _cmd->shapeAttrCmd[i])
+  for(int i = 0; i < MAX_SHAPE_ATTRS; i++) {
+    if ( _cmd->shapeAttrCmd[i]) {
       sprintf(buf[11 + i], "ShapeAttr%d {%s}", i, _cmd->shapeAttrCmd[i]);
-    else
+    } else {
       sprintf(buf[11 + i], "ShapeAttr%d", i);
+    }
     args[11 + i] = buf[11 + i];
   }
 }
@@ -544,7 +549,7 @@ void MapInterpClassInfo::CreateParams(int &argc, char **&argv)
 
   /* parameters are: fileAlias, mapName, x, y, color, size, 
      pattern, orientation, shape, and shapeAttrs */
-  argc = 11 + MAX_GDATA_ATTRS;
+  argc = 11 + MAX_SHAPE_ATTRS;
   argv = args;
   
   args[0] = _fileAlias;
@@ -595,7 +600,7 @@ void MapInterpClassInfo::CreateParams(int &argc, char **&argv)
   else
     args[10] = "";
   
-  for(int i = 0; i < MAX_GDATA_ATTRS; i++) {
+  for(int i = 0; i < MAX_SHAPE_ATTRS; i++) {
     if ( _cmd->shapeAttrCmd[i])
       args[11 + i] = _cmd->shapeAttrCmd[i];
     else

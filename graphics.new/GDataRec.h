@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/01/30 21:53:14  wenger
+  Did some cleaning up of the MappingInterp and NativeExpr code
+  (NativeExpr still needs a lot more); NativeExpr code can now
+  parse expressions containing constant strings (they are treated
+  as numerical zero for now) (this fixes bug 275).
+
   Revision 1.7  1997/11/24 23:14:51  weaver
   Changes for the new ColorManager.
 
@@ -55,25 +61,45 @@
 
 #include "Color.h"
 
-const int MAX_GDATA_ATTRS = 10;
+const int MAX_SHAPE_ATTRS = 10;
 
-// note that this GData struct is used only to compute the maximum
-// GData record size; MappingInterp.c uses a dynamic structure which
-// stores and caches only those fields which depend on user data
+// Note that GData in memory is *not* an array of GDataRecs; MappingInterp.c
+// uses a dynamic structure which stores and caches only those fields that
+// are variable.  GDataRec is used to hold default GData values and compute
+// the maximum GData record size.
 
 struct GDataRec {
-  RecId     _recIdDummy;
-  Coord     _xDummy;
-  Coord     _yDummy;
-  Coord     _zDummy;
-  PColorID  _colorDummy;
-  Coord     _sizeDummy;
-  Pattern   _patternDummy;
-  ShapeID   _shapeDummy;
-  Coord     _orientationDummy;
-  ShapeAttr _shapeAttrsDummy[MAX_GDATA_ATTRS];
+  RecId     _recId;
+  Coord     _x;
+  Coord     _y;
+  Coord     _z;
+  PColorID  _color;
+  Coord     _size;
+  Pattern   _pattern;
+  ShapeID   _shape;
+  Coord     _orientation;
+  ShapeAttr _shapeAttrs[MAX_SHAPE_ATTRS];
 };
 
 const int MAX_GDATA_REC_SIZE = sizeof(GDataRec);
+
+
+// Offsets for the attributes in an actual GData record.  Note that an offset
+// can be -1, which means that the given attribute is a constant and is
+// therefore not included in the individual records.
+
+struct GDataAttrOffset { //TEMP -- change for BB
+  int _recIdOffset;
+  int _xOffset;
+  int _yOffset;
+  int _zOffset;
+  int _colorOffset;
+  int _sizeOffset;
+  int _shapeOffset;
+  int _patternOffset;
+  int _orientationOffset;
+  int _shapeAttrOffset[MAX_SHAPE_ATTRS];
+};
+
 
 #endif

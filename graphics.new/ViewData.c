@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.20  1999/05/20 15:17:56  wenger
+  Fixed bugs 490 (problem destroying piled parent views) and 491 (problem
+  with duplicate elimination and count mappings) exposed by Tim Wilson's
+  two-station session.
+
   Revision 1.19  1999/05/12 21:01:57  wenger
   Views containing view symbols can now be piled.
 
@@ -125,11 +130,11 @@ struct SymbolInfo {
 inline Coord GetShapeAttr(int shapeAttrNum, char *ptr, TDataMap *map,
   GDataAttrOffset *offset)
 {
-  if (offset->shapeAttrOffset[shapeAttrNum] < 0) {
+  if (offset->_shapeAttrOffset[shapeAttrNum] < 0) {
     ShapeAttr *attrs = map->GetDefaultShapeAttrs();
     return attrs[shapeAttrNum];
   }
-  return GetAttr(ptr, shapeAttrOffset[shapeAttrNum], Coord, offset);
+  return GetAttr(ptr, _shapeAttrOffset[shapeAttrNum], Coord, offset);
 }
 #endif
 

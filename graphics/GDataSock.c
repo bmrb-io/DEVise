@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/12/10 21:53:16  wenger
+  Devised now sends GIFs to JavaScreen on a per-view rather than per-window
+  basis; GIF "dirty" flags are now also referenced by view rather than by
+  window.
+
   Revision 1.7  1998/11/06 17:59:33  wenger
   Multiple string tables fully working -- allows separate tables for the
   axes in a given view.
@@ -253,11 +258,11 @@ GDataSock::Send(ViewGraph *view, void **gdataArray, TDataMap *map,
 	//
 	// Get the numerical value for this shape attribute.
 	//
-	if (offsets->shapeAttrOffset[attrNum] < 0) {
+	if (offsets->_shapeAttrOffset[attrNum] < 0) {
 	  shapeAttrs[attrNum].numericalValue = defaultAttrs[attrNum];
 	} else {
 	  shapeAttrs[attrNum].numericalValue = GetAttr(gdata,
-	      shapeAttrOffset[attrNum], Coord, offsets);
+	      _shapeAttrOffset[attrNum], Coord, offsets);
 	}
 
 	//

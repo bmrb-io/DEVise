@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.92  1999/03/03 18:21:58  wenger
+  Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
+  and 467 (query errors with sorted attributes); minor improvements to
+  view symbols.
+
   Revision 1.91  1999/03/01 23:09:10  wenger
   Fixed a number of memory leaks and removed unused code.
 
@@ -2594,7 +2599,7 @@ void QueryProcFull::GetX(QPFullData *query, RecId id, Coord &x)
 {
   DOASSERT(query, "Invalid query");
 
-  if (query->map->GetGDataOffset()->xOffset < 0) {
+  if (query->map->GetGDataOffset()->_xOffset < 0) {
       x = query->map->GetDefaultX();
       return;
   }
