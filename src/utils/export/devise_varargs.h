@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/08/21 22:17:53  wenger
+  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
+  linked DEVise for distribution.
+
   Revision 1.1  1998/07/29 14:21:07  wenger
   Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
   allow static linking on Linux.
@@ -33,7 +37,7 @@
 #if defined(OSF)
 #   include <sys/param.h>
 #   include <stdarg.h>
-#elif defined(SGI) || defined(LINUX)
+#elif defined(SGI) || defined(LINUX) || defined(SOLARIS)
 #   include <stdarg.h>
 #elif defined(SUN)
 #   include <stdarg.h>

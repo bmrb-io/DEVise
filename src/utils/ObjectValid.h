@@ -25,6 +25,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/05/07 15:18:22  wenger
+  This damn file somehow didn't get committed.
+
  */
 
 #ifndef _ObjectValid_h_
@@ -43,7 +46,7 @@ public:
   void Clear() { _status = 0; }
 
 private:
-  const int _valid = 0x5b7aa1f9; // a hopefully unusual series of bits
+  static const int _valid = 0x5b7aa1f9; // a hopefully unusual series of bits
   int _status;
 };
 

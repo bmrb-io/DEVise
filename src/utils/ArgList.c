@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/08/21 22:17:46  wenger
+  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
+  linked DEVise for distribution.
+
   Revision 1.1  1998/06/17 17:20:49  wenger
   Devised now sends "real" session file list to JavaScreen.
 
@@ -60,7 +64,7 @@ ArgList::ArgList(int size)
  * function: ArgList::~ArgList
  * Destructor.
  */
-ArgList::~ArgList(int size)
+ArgList::~ArgList()
 {
 #if defined(DEBUG)
   printf("ArgList(0x%p)::~ArgList()\n", this);
