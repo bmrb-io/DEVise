@@ -7,7 +7,7 @@ import Types.*;
 import Optimizer.*;
 import Iterators.*;
 
-/**  */
+/** A parsed query is represented by a Query object. */
 
 public class Query {
 	Vector selectClause;
@@ -18,6 +18,8 @@ public class Query {
 
 	Vector predList;	// Conj normal form of where clause
 
+	/** Constructor: create Query object with given SELECT, FROM,
+	    WHERE clause. */
 	public Query(Vector selCl, Vector fromCl, Expression whereCl){
 		selectClause = selCl;
 		fromClause = fromCl;
@@ -32,6 +34,7 @@ public class Query {
 	public Vector getFromClause(){
 		return fromClause;
 	}
+
 	public Vector getSelectClause(){
 		return selectClause;
 	}
@@ -72,6 +75,8 @@ public class Query {
 		return retVal;
 	}
 
+	/** Print the parsed query in the form of: SELECT ... , FROM ... ,
+	    WHERE ... */
         public String toString(){
                String s = "\n\tSELECT ";
                Expression e = null;
@@ -104,6 +109,8 @@ public class Query {
                return s; 
         }
 
+        /** Generate the SymbolTable and type-check the query; throw 
+	    exception if illegal. */
 	public void typeCheck(RelationManager relMngr) throws IOException {
 	    SymbolTable symbolTable = new SymbolTable( );
 	    for(int i = 0; i < fromClause.size(); i++){
@@ -133,6 +140,7 @@ public class Query {
 	    }
 	}
 
+        /** Print the type-checked query with type information. */
 	public String printTypes(){
                String s = "\n\tSELECT ";
                Expression e = null;

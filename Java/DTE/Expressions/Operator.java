@@ -5,7 +5,7 @@ import java.util.*;
 import Operators.*;
 
 /** class Operator is used to represent all the binary operators.
-    It takes the text of the operator, like "+" and two inputs. */
+    It takes the text of the operator, like "+" and two operands. */
 
 public class Operator implements Expression {
     private String operator;
@@ -14,6 +14,7 @@ public class Operator implements Expression {
     private Expression right;
     private EvalOperator evalOp;
 
+    /** Constructor with arguments: an operator and two operands.*/
     public Operator(String op, Expression l, Expression r){
         operator = op;
         left=l;
@@ -22,6 +23,7 @@ public class Operator implements Expression {
         evalOp = null;
     }
 
+    /** Check if two Operator objects are equal. */
     public boolean equals(Object obj){
         if(!getClass().equals(obj.getClass())){
             return false;
@@ -31,19 +33,25 @@ public class Operator implements Expression {
             left.equals(opObj.left) && right.equals(opObj.right);
     }
 
+    /** Return its String representation. */
     public String toString( ) {
         return "(" + left.toString() + " " + operator + " " + 
         right.toString() + ")";
     }
 
+    /** Print it with type information; used for printing type-checked 
+	query. */
     public String printTypes( ) {
         return type.getString()+"[" + left.printTypes() + " " + operator + " " +            right.printTypes() + "]";
     }
 
+    /** Return the type of evaluated result, e.g. "boolean" for "l > r". */
     public TypeDesc getType( ) {
         return type;
     }
 
+    /** TypeCheck this Operator object; add it to the SymbolTable if it
+	not contained there. */
     public Expression typeCheck( SymbolTable st ) throws TypeCheckException{
         String strRep = this.toString();
         if ( st.containsKey( strRep ) )
@@ -65,6 +73,7 @@ public class Operator implements Expression {
         return this;
     }
 
+    /** Create an ExecOperator object for query evaluation. */
     public ExecExpr createExec(Vector[] projLists) throws InternalError{
         for(int i = 0; i < projLists.length; i++){
             for(int field = 0; field < projLists[i].size(); field++){

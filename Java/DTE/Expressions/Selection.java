@@ -10,12 +10,15 @@ public class Selection implements Expression {
     private String attribute;
     private TypeDesc type;
 
+    /** Constructor with table alias and attribute name; type will 
+	be looked up from the SymbolTable. */
     public Selection(String alias, String attribute){
         this.alias = alias;
         this.attribute = attribute;
 	this.type = null;
     }
 
+    /** Constructor with table alias, attribute, type. */
     public Selection(String alias, String attribute, TypeDesc type){
         this.alias = alias;
         this.attribute = attribute;
