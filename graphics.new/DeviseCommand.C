@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.41  1998/12/18 22:21:01  wenger
+  Removed axis label code, which doesn't seem to have been fully implemented,
+  and is not used; added sanity check on visual filter at view creation.
+
   Revision 1.40  1998/12/15 14:55:11  wenger
   Reduced DEVise memory usage in initialization by about 6 MB: eliminated
   Temp.c (had huge global arrays); eliminated Object3D class and greatly
@@ -4993,6 +4997,129 @@ IMPLEMENT_COMMAND_BEGIN(viewGetIsHighlight)
 	    return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in viewGetIsHighlight\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+
+IMPLEMENT_COMMAND_BEGIN(getXAxisDateFormat)
+    // Arguments: <view name>
+    // Returns: <date format (cftime() format string)>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+		const char *format = view->GetXAxisDateFormat();
+		if (format == NULL) format = "";
+        ReturnVal(API_ACK, (char *)format);
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in getXAxisDateFormat\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getYAxisDateFormat)
+    // Arguments: <view name>
+    // Returns: <date format (cftime() format string)>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+		const char *format = view->GetYAxisDateFormat();
+		if (format == NULL) format = "";
+        ReturnVal(API_ACK, (char *)format);
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in getYAxisDateFormat\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setXAxisDateFormat)
+    // Arguments: <view name> <date format (cftime() format string)>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 3) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+		view->SetXAxisDateFormat(argv[2]);
+        ReturnVal(API_ACK, "done");
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in setXAxisDateFormat\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setYAxisDateFormat)
+    // Arguments: <view name> <date format (cftime() format string)>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 3) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+		view->SetYAxisDateFormat(argv[2]);
+        ReturnVal(API_ACK, "done");
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in setYAxisDateFormat\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(updateAxisTypes)
+    // Arguments: <view name>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+		view->UpdateAxisTypes();
+        ReturnVal(API_ACK, "done");
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in updateAxisTypes\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.58  1998/12/01 20:04:34  wenger
+  More reductions of memory usage in DEVise -- basically eliminated the
+  histogram capability (this really saves a lot, since there are big
+  structures in every ViewGraph for this); made creation of TDatas more
+  efficient by bypassing command code.
+
   Revision 1.57  1998/11/11 14:31:04  wenger
   Implemented "highlight views" for record links and set links; improved
   ClassDir::DestroyAllInstances() by having it destroy all links before
@@ -559,6 +565,8 @@ public:
   char *GetStringTable(TDataMap::TableType type) {
     return *TableType2NameP(type);
   }
+
+  void UpdateAxisTypes();
 
  protected:
   virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs){};

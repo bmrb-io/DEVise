@@ -138,11 +138,11 @@ Num Date        Status  Description
 			stacked views (see LandsEnd/a2.tk). (rkw)
 			Deferred
 
-041 09/16/96	OPEN	If you change the X mapping between a date attribute
+041 09/16/96	FIXED	If you change the X mapping between a date attribute
 			and an attribute of another type, the axis labels
 			aren't correctly updated until the session is saved
 			and re-opened. (rkw)
-			Deferred
+			Fixed by RKW, 1998-12-22.
 
 042 09/19/96	FIXED	Devise doesn't complain if you give an illegal
 			command line option. (rkw)

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.29  1998/11/19 21:13:27  wenger
+  Implemented non-DTE version of DEVise (new code handles data source catalog
+  functions; Tables, SQLViews, etc., are not implemented); changed version to
+  1.6.0.
+
   Revision 1.28  1998/07/29 14:20:19  wenger
   Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
   allow static linking on Linux.
@@ -238,9 +243,7 @@ char *CopyString(const char *str)
   return result;
 }
 
-static char dateBuf[21];
-
-char *DateString(time_t tm)
+char *DateString(time_t tm, const char *format)
 {
 #if 0
   if (tm < 0) {
@@ -250,20 +253,16 @@ char *DateString(time_t tm)
   }
 #endif
 
-  char *dateStr = ctime(&tm);
-  int i;
-  for(i = 0; i < 7; i++)
-    dateBuf[i] = dateStr[i + 4];
+  static char dateBuf[32];
 
-  for(i = 7; i < 11; i++)
-    dateBuf[i] = dateStr[i + 13];
+  // Note: ParseFloatDate() depends on this format.
+  const char *defaultFormat = "%b %d %Y %T";
 
-  dateBuf[11] = ' ';
-  
-  for(i = 12; i < 20; i++)
-    dateBuf[i] = dateStr[i - 1];
+  if (format == NULL || strlen(format) == 0) format = defaultFormat;
 
-  dateBuf[20] = '\0';
+  // Note: second arg. of cftime() should be declared const in system header
+  // files.
+  cftime(dateBuf, (char *)format, &tm);
 
   return dateBuf;
 }

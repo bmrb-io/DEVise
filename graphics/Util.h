@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/11/19 21:13:27  wenger
+  Implemented non-DTE version of DEVise (new code handles data source catalog
+  functions; Tables, SQLViews, etc., are not implemented); changed version to
+  1.6.0.
+
   Revision 1.19  1998/06/17 17:20:33  wenger
   Devised now sends "real" session file list to JavaScreen.
 
@@ -165,8 +170,9 @@ inline Boolean IsBlank(char *string)
 }
 
 /* convert double to string */
-char *DateString(time_t tm);
-inline char *DateString(double d) {
+char *DateString(time_t tm, const char *format = NULL);
+
+inline char *DateString(double d, char *format = NULL) {
   return DateString((time_t)d);
 }
 

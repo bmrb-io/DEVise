@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.70  1998/12/18 22:20:52  wenger
+  Removed axis label code, which doesn't seem to have been fully implemented,
+  and is not used; added sanity check on visual filter at view creation.
+
   Revision 1.69  1998/11/11 14:30:46  wenger
   Implemented "highlight views" for record links and set links; improved
   ClassDir::DestroyAllInstances() by having it destroy all links before
@@ -628,6 +632,11 @@ class View : public ViewWin
 	int GetAlign() { return _symbolAlign; }
 	void SetAlign(int symbolAlign) { _symbolAlign = symbolAlign; }
 
+	const char *GetXAxisDateFormat() { return _xAxisDateFormat; }
+	void SetXAxisDateFormat(char *format);
+	const char *GetYAxisDateFormat() { return _yAxisDateFormat; }
+	void SetYAxisDateFormat(char *format);
+
 	static void SetDrawCursors(Boolean draw) { _drawCursors = draw; }
 	static void SetJSCursors(Boolean js) { _jsCursors = js; }
 	static Boolean GetShowNames() { return _showNames; }
@@ -820,6 +829,9 @@ protected:
 									 unsigned width, unsigned height);
 
 		int _symbolAlign;
+
+		char *_xAxisDateFormat;
+		char *_yAxisDateFormat;
 
 		static Boolean _drawCursors;
 		static Boolean _jsCursors;

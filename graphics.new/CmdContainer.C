@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.25  1998/12/18 22:21:00  wenger
+  Removed axis label code, which doesn't seem to have been fully implemented,
+  and is not used; added sanity check on visual filter at view creation.
+
   Revision 1.24  1998/12/15 14:55:09  wenger
   Reduced DEVise memory usage in initialization by about 6 MB: eliminated
   Temp.c (had huge global arrays); eliminated Object3D class and greatly
@@ -409,6 +413,11 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(viewGetStringTable)
 	REGISTER_COMMAND(viewSetIsHighlight)
 	REGISTER_COMMAND(viewGetIsHighlight)
+	REGISTER_COMMAND(getXAxisDateFormat)
+	REGISTER_COMMAND(getYAxisDateFormat)
+	REGISTER_COMMAND(setXAxisDateFormat)
+	REGISTER_COMMAND(setYAxisDateFormat)
+	REGISTER_COMMAND(updateAxisTypes)
 }
 
 CmdContainer::~CmdContainer()

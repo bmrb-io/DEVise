@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.93  1998/12/01 20:04:33  wenger
+  More reductions of memory usage in DEVise -- basically eliminated the
+  histogram capability (this really saves a lot, since there are big
+  structures in every ViewGraph for this); made creation of TDatas more
+  efficient by bypassing command code.
+
   Revision 1.92  1998/11/11 14:31:03  wenger
   Implemented "highlight views" for record links and set links; improved
   ClassDir::DestroyAllInstances() by having it destroy all links before
@@ -826,15 +832,7 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
 
     _mappings.Append(info);
 
-    AttrList *attrList = map->GDataAttrList();
-    if (attrList) {
-        AttrInfo *info = attrList->Find("x");
-        if (info && info->type == DateAttr)
-          SetXAxisAttrType(DateAttr);
-        info = attrList->Find("y");
-        if (info && info->type == DateAttr)
-          SetYAxisAttrType(DateAttr);
-    }
+    UpdateAxisTypes();
 
 //    if(IsXDateType()) {
 //    	PrepareStatsBuffer(GetFirstMap());
@@ -2210,6 +2208,43 @@ ViewGraph::TableType2NameP(TDataMap::TableType type)
   }
 
   return tableNameP;
+}
+
+
+
+void
+ViewGraph::UpdateAxisTypes()
+{
+
+  MappingInfo *mapInfo = _mappings.GetLast();
+  if (mapInfo) {
+    TDataMap *map = mapInfo->map;
+    if (map) {
+      AttrList *attrList = map->GDataAttrList();
+      if (attrList) {
+        AttrInfo *info = attrList->Find("x");
+        if (info && info->type == DateAttr) {
+          SetXAxisAttrType(DateAttr);
+	} else {
+          SetXAxisAttrType(FloatAttr);
+	}
+
+        info = attrList->Find("y");
+        if (info && info->type == DateAttr) {
+          SetYAxisAttrType(DateAttr);
+        } else {
+          SetYAxisAttrType(FloatAttr);
+	}
+
+        info = attrList->Find("z");
+        if (info && info->type == DateAttr) {
+          SetZAxisAttrType(DateAttr);
+        } else {
+          SetZAxisAttrType(FloatAttr);
+	}
+      }
+    }
+  }
 }
 
 //******************************************************************************

@@ -15,6 +15,13 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.42  1998/10/20 19:46:33  wenger
+#       Mapping dialog now displays the view's TData name; "Next in Pile" button
+#       in mapping dialog allows user to edit the mappings of all views in a pile
+#       without actually flipping them; user has the option to show all view names;
+#       new GUI to display info about all links and cursors; added API and GUI for
+#       count mappings.
+#
 #       Revision 1.41  1998/04/16 21:51:55  wenger
 #       Committed Sanjay's text code.
 #
@@ -645,6 +652,7 @@ proc ChangeViewMapping { map } {
 		set view [lindex [DEVise getWinViews $win] 0]
 	    }
 	    DEVise invalidatePixmap $view
+	    DEVise updateAxisTypes $view
 	    DEVise refreshView $view
 	}
     }

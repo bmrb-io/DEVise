@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.149  1998/12/18 22:20:51  wenger
+  Removed axis label code, which doesn't seem to have been fully implemented,
+  and is not used; added sanity check on visual filter at view creation.
+
   Revision 1.148  1998/11/11 14:30:45  wenger
   Implemented "highlight views" for record links and set links; improved
   ClassDir::DestroyAllInstances() by having it destroy all links before
@@ -702,6 +706,9 @@ static const int VIEW_BYTES_BEFORE_SAVE = 64 * 1024;
 static const Coord DELTA_X = .000000000001;
 static const Coord DELTA_Y = .000000000001;
 
+static const int highlightWidth = 3;
+static const int halfHighlightWidth = (int)((highlightWidth + 1.0) / 2.0);
+
 /* id for the next view created. view == NULL return id = 0. */
 
 int View::_nextId = 0;
@@ -842,6 +849,9 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	_id = ++_nextId;
 
 	_symbolAlign = WindowRep::AlignCenter;
+
+	_xAxisDateFormat = NULL;
+	_yAxisDateFormat = NULL;
 
 	_viewList->Insert(this);
 	ControlPanel::Instance()->InsertCallback(controlPanelCallback);
@@ -1166,25 +1176,6 @@ void View::SetGeometry(int x, int y, unsigned wd, unsigned ht)
   Refresh();
 }
 
-/* set override color */
-//void View::SetOverrideColor(GlobalColor color, Boolean active)
-//{
-//  /* no change in color override? */
-//  if (_hasOverrideColor == active && color == _overrideColor)
-//    return;
-
-//  _overrideColor = color;
-
-//  /* color override still not enabled (but color may have changed)? */
-//  if (_hasOverrideColor == active && !active)
-//    return;
-
-//  _hasOverrideColor = active;
-
-//  DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewOverrideColorCh);
-//  Refresh();
-//}
-
 /* get area for displaying label */
 
 void View::GetLabelArea(int &x, int &y, int &width, int &height)
@@ -1196,8 +1187,8 @@ void View::GetLabelArea(int &x, int &y, int &width, int &height)
     width = w;
     height = _label.extent;
   } else {
-    width = _label.extent;
-    height = h;
+    width = w;
+    height = halfHighlightWidth;
   }
   
   if (width < 0)
@@ -1242,14 +1233,10 @@ void View::GetXAxisArea(int &x, int &y, int &width, int &height,
   width = windW;
   height = xAxis.width;
   
-  if (_label.occupyTop) {
-    // space for highlight rectangle -- corresponding change also
-    // in GetDataArea()
-    width -= 2;
-  } else {
-    x += _label.extent;
-    width -= _label.extent;
-  }
+  // space for highlight rectangle -- corresponding change also
+  // in GetDataArea()
+  x += halfHighlightWidth;
+  width -= halfHighlightWidth * 2;
 
   startX = x;
   if (yAxis.inUse)
@@ -1298,9 +1285,8 @@ void View::GetYAxisArea(int &x, int &y, int &width, int &height)
     height = winH - _label.extent;
     width = yAxis.width;
   } else {
-    x += _label.extent;
+    height = winH - halfHighlightWidth;
     width = yAxis.width;
-    height = winH;
   }
   
   if (xAxis.inUse) {
@@ -1336,14 +1322,13 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
        over the highlight border (already subtracting 2 because we moved
        the data area 2 to the right
     */
-    x += 2;
-    width = winWidth - 4;
+    x += halfHighlightWidth;
+    width = winWidth - halfHighlightWidth * 2;
     height = winHeight - _label.extent;
   } else {
-    /* _label occupies left of view */
-    x += _label.extent;
-    width = winWidth - _label.extent;
-    height = winHeight;
+    x += halfHighlightWidth;
+    width = winWidth - halfHighlightWidth * 2;
+    height = winHeight - halfHighlightWidth;
   }
   
   if (_numDimensions == 2) {
@@ -1351,9 +1336,10 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
     if (xAxis.inUse) {
       height -= xAxis.width+1;
       y += xAxis.width+1;
+    } else {
+      height -= halfHighlightWidth;
+      y += halfHighlightWidth;
     }
-    else if (_label.occupyTop)
-      height -= 2;
     
     if (yAxis.inUse) {
       /* Put back in the 2 pixels we took out for the highlight border. */
@@ -1452,20 +1438,6 @@ void View::DrawLabel()
 
     win->AbsoluteText(_label.name, labelX, labelY, labelWidth - 1,
 		      labelHeight - 1, WindowRep::AlignCenter, true);
-  } else {
-    /* draw square with cross mark in top-left corner of view */
-    int x, y, w, h;
-    GetLabelArea(x, y, w, h);
-    win->SetPattern(Pattern0);
-    win->SetForeground(GetForeground());
-    win->AbsoluteLine(x, y, x + _label.extent - 1, y, 1);
-    win->AbsoluteLine(x + _label.extent - 1, y,
-		      x + _label.extent - 1, y + _label.extent - 1, 1);
-    win->AbsoluteLine(x + _label.extent - 1, y + _label.extent - 1,
-		      x, y + _label.extent - 1, 1);
-    win->AbsoluteLine(x, y + _label.extent - 1, x, y, 1);
-    win->AbsoluteLine(x, y, x + _label.extent - 1, y + _label.extent - 1, 1);
-    win->AbsoluteLine(x + _label.extent - 1, y, x, y + _label.extent - 1, 1);
   }
 
   win->PopTransform();
@@ -1505,10 +1477,10 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
 
   /* if axis is date, draw values and return */
   if (_xAxisAttrType == DateAttr) {
-    char *label = DateString((time_t)_filter.xLow);
+    char *label = DateString((time_t)_filter.xLow, _xAxisDateFormat);
     win->AbsoluteText(label, startX, axisY - 2 - (axisHeight-1), drawWidth / 2 - 1,
 		      axisHeight - 1, WindowRep::AlignWest, true);
-    label = DateString((time_t)_filter.xHigh);
+    label = DateString((time_t)_filter.xHigh, _xAxisDateFormat);
     win->AbsoluteText(label, startX + drawWidth / 2, axisY- 2 - (axisHeight-1), drawWidth / 2 - 1,
 		      axisHeight - 1, WindowRep::AlignEast, true);
     return;
@@ -1612,12 +1584,12 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
 
   /* if axis is date, draw values and return */
   if (_yAxisAttrType == DateAttr) {
-    char *label = DateString((time_t)_filter.yLow);
-    win->AbsoluteText(label, axisX, startY + drawHeight / 2, axisWidth - 1,
-		      drawHeight / 2 - 1, WindowRep::AlignSouth, true);
-    label = DateString((time_t)_filter.yHigh);
+    char *label = DateString((time_t)_filter.yLow, _yAxisDateFormat);
     win->AbsoluteText(label, axisX, startY, axisWidth - 1,
-		      drawHeight / 2 - 1, WindowRep::AlignNorth, true);
+		      drawHeight / 2 - 1, WindowRep::AlignCenter, true, 90.0);
+    label = DateString((time_t)_filter.yHigh, _yAxisDateFormat);
+    win->AbsoluteText(label, axisX, startY + drawHeight / 2, axisWidth - 1,
+		      drawHeight / 2 - 1, WindowRep::AlignCenter, true, 90.0);
     return;
   }
 
@@ -1993,9 +1965,23 @@ void View::SetLabelParam(Boolean occupyTop, int extent, char *name)
    * to re-draw the whole view. */
   if (occupyTop == oldOccupyTop) {
     if (_winReps.GetWindowRep()) {
+	  if (_highlight) {
+        // Undraw highlight.
+        WindowRep *winRep = GetWindowRep();
+        winRep->SetXorMode();
+        DrawHighlight();
+        winRep->SetCopyMode();
+      }
       DrawLabel();
       _winReps.GetWindowRep()->Flush();
       _winReps.GetWindowRep()->SetGifDirty(true);
+	  if (_highlight) {
+        // Redraw highlight.
+        WindowRep *winRep = GetWindowRep();
+        winRep->SetXorMode();
+        DrawHighlight();
+        winRep->SetCopyMode();
+      }
     }
   } else {
     _updateTransform = true;
@@ -2367,17 +2353,10 @@ void View::DrawHighlight()
   winRep->MakeIdentity();
   winRep->PushClip((Coord) x, (Coord) y, (Coord) w - 1, (Coord) h - 1);
   
-  if (_label.occupyTop) {
-    winRep->AbsoluteLine(x, y, w - 1, x, 3);
-    winRep->AbsoluteLine(x + w - 1, y, x + w - 1, y + h - 1, 3);
-    winRep->AbsoluteLine(x + w - 1, y + h - 1, x, y + h - 1, 3);
-    winRep->AbsoluteLine(x, y + h - 1, x, y, 3);
-  } else {
-    int labelW, labelH;
-    GetLabelArea(x, y, labelW, labelH);
-    winRep->AbsoluteLine(x + _label.extent / 2, y + _label.extent, 
-			 x + _label.extent / 2, labelH, _label.extent);
-  }
+  winRep->AbsoluteLine(x, y, w - 1, x, highlightWidth);
+  winRep->AbsoluteLine(x + w - 1, y, x + w - 1, y + h - 1, highlightWidth);
+  winRep->AbsoluteLine(x + w - 1, y + h - 1, x, y + h - 1, highlightWidth);
+  winRep->AbsoluteLine(x, y + h - 1, x, y, highlightWidth);
 
   winRep->PopClip();
   winRep->PopTransform();
@@ -4203,6 +4182,26 @@ View::SetShowNames(Boolean showNames)
   if (showNames != _showNames) {
 	_showNames = showNames;
 	RefreshAll();
+  }
+}
+
+void
+View::SetXAxisDateFormat(char *format)
+{
+  if (_xAxisDateFormat == NULL || strcmp(format, _xAxisDateFormat)) {
+    delete [] _xAxisDateFormat;
+    _xAxisDateFormat = CopyString(format);
+    Refresh();
+  }
+}
+
+void
+View::SetYAxisDateFormat(char *format)
+{
+  if (_yAxisDateFormat == NULL || strcmp(format, _yAxisDateFormat)) {
+    delete [] _yAxisDateFormat;
+    _yAxisDateFormat = CopyString(format);
+    Refresh();
   }
 }
 

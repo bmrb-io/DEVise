@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.175  1998/11/23 19:19:56  donjerko
+#	*** empty log message ***
+#
 #	Revision 1.174  1998/11/20 21:39:23  wenger
 #	Removed 'Move' from Table menu (not implemented); cleaned up some debug
 #	output.
@@ -889,6 +892,7 @@ source $libdir/dr_schema.tcl
 source $libdir/link.tcl
 source $libdir/count_mapping.tcl
 source $libdir/string_table.tcl
+source $libdir/dateformat.tcl
 
 set mode 0
 DEVise changeMode $mode
@@ -1047,7 +1051,7 @@ menu .mbar.session.menu.descMenu -tearoff 0
 .mbar.session.menu add command -label "Quit" -command {DoExit $exitmode}
 
 #.mbar.session.menu add separator
-#.mbar.session.menu add command -label "Test" -command { DEVise test range_desc }
+#.mbar.session.menu add command -label "Test" -command { DEVise test }
 #.mbar.session.menu add command -label "Memory leaks" -command { DEVise new_leaks }
 #.mbar.session.menu add command -label "Memory in use" -command { DEVise new_inuse }
 
@@ -1407,6 +1411,8 @@ menu .mbar.view.menu -tearoff 0
 .mbar.view.menu add command -label "Title" -command DoSetTitle
 .mbar.view.menu add command -label "Toggle View Names" -command ToggleViewNames
 .mbar.view.menu add cascade -label "Fonts" -menu .mbar.view.menu.fontsmenu
+.mbar.view.menu add cascade -label "Date Formats" \
+    -menu .mbar.view.menu.dateformatmenu
 
 .mbar.view.menu add separator
 .mbar.view.menu add cascade -label "Links" \
@@ -1530,6 +1536,12 @@ menu .mbar.view.menu.fontsmenu -tearoff false
     -command { GetFont "y axis" }
 # TEMPTEMP? use this to bring up mapping window
 #.mbar.view.menu.fontsmenu add  command -label "Data Labels"
+
+menu .mbar.view.menu.dateformatmenu -tearoff false
+.mbar.view.menu.dateformatmenu add command -label "X Axis" \
+    -command { EditDateFormat X }
+.mbar.view.menu.dateformatmenu add command -label "Y Axis" \
+    -command { EditDateFormat Y }
 
 menu .mbar.view.menu.dimmenu -tearoff 0
 .mbar.view.menu.dimmenu add command -label "Two Dimensions" \

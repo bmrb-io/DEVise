@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.118  1998/12/15 14:54:59  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.117  1998/11/16 15:27:57  wenger
   Fixed bug 437 (drill-down on black background).
 
@@ -2954,10 +2960,16 @@ void XWindowRep::DrawText(Boolean scaled, char *text, Coord x,
     double yscale = (double)winHeight / (double)textHeight;
     scale = MIN(xscale, yscale);
   } else {
-    if (textWidth > winWidth || textHeight > winHeight) {
-      DrawText(true, text, x, y, width, height, alignment, skipLeadingSpace,
-	orientation);
-      return;
+    // Note: the orientation check here is kind of a kludge.  If orientation
+    // is not 0, we should do some fancier checking, but I'm just totally
+    // bypassing it for now so that dates will work as Y axis labels.
+    // RKW 1998-12-22.
+    if (orientation == 0.0) {
+      if (textWidth > winWidth || textHeight > winHeight) {
+        DrawText(true, text, x, y, width, height, alignment, skipLeadingSpace,
+	  orientation);
+        return;
+      }
     }
   }
   

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.41  1998/12/18 19:46:59  wenger
+  Oops!  Fixed bug in saving sessions resulting from the elimination of
+  the getAxis and setAxis commands.
+
   Revision 1.40  1998/12/11 18:07:13  wenger
   Tempararily disabled saving of color palette because of bug 441.
 
@@ -920,6 +924,11 @@ Session::SaveView(char *category, char *devClass, char *instance,
 
   status += SaveParams(saveData, "viewGetIsHighlight", "viewSetIsHighlight",
       instance);
+
+  status += SaveParams(saveData, "getXAxisDateFormat", "setXAxisDateFormat",
+      instance, NULL, NULL, true);
+  status += SaveParams(saveData, "getYAxisDateFormat", "setYAxisDateFormat",
+      instance, NULL, NULL, true);
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;

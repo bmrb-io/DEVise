@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1998/12/18 22:21:02  wenger
+  Removed axis label code, which doesn't seem to have been fully implemented,
+  and is not used; added sanity check on visual filter at view creation.
+
   Revision 1.21  1998/12/15 14:55:13  wenger
   Reduced DEVise memory usage in initialization by about 6 MB: eliminated
   Temp.c (had huge global arrays); eliminated Object3D class and greatly
@@ -1473,6 +1477,36 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(viewGetIsHighlight) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getXAxisDateFormat) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getYAxisDateFormat) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setXAxisDateFormat) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setYAxisDateFormat) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(updateAxisTypes) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_
