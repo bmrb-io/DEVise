@@ -11,7 +11,7 @@ public:
   // if lo and/or hi is null, +/- infinity will be used.
   Range(const TypeID& type, Type* lo, Type* hi)
     : _type(type), _lo(lo), _hi(hi) {
-      if( type != INT_TP ) assert(lo && hi);
+      if( !(type == INT_TP)) assert(lo && hi);
   }
 
   // +infinity : -infinity

@@ -1,10 +1,12 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <string>
 #include "sysdep.h"
 
 using namespace std;
 
-void processQuery(istream& cin, ostream& cout);
+string extractQuery(istream& cin);
+void processQuery(const string& query, ostream& cout, const string& = ""); // throws
 
 #endif

@@ -12,32 +12,37 @@
   Development Group.
 */
 
-#include "InitShut.h"
 #include "SockStream.h"
-#include "Common.h"
 #include "sysdep.h"
-#include "exception.h"
 
 const unsigned short PORT = 6571;
+const char* HOST = "quarg.cs.wisc.edu";
 
 int main(int argc, char** argv){
 
-	initialize_system();
-	
-	Cor_sockbuf listener(PORT);
+	Cor_sockbuf* sockBuf = new Cor_sockbuf(HOST, PORT);
 
-	while(true){
-		Cor_sockbuf* sockBuf = listener.AcceptConnection(); 
-		iostream str(sockBuf);
-		string protocol;
-		str >> protocol;
-		string query = extractQuery(str);
-		str << "DTE/0.0 ";
-		processQuery(query, str, "200 OK\n\n");
-		CATCH(str << 500 << " " << currExcept->toString() << "\n\n";)
-		delete sockBuf;
+	assert(sockBuf);
+
+	if(!sockBuf->valid()){
+		cerr << "Could not open connection to `" << HOST 
+			<< "' at port " << PORT << endl;
+		cerr << "Server might be down" << endl;
+		exit(1);
 	}
 
-	shutdown_system();
-	return 1;
+	iostream str(sockBuf);
+
+	str << "DTE/0.0 ";
+	char c;
+	while(cin.get(c)){
+		str.put(c);
+	}
+
+	str.flush();
+
+	while(str.get(c)){
+		cout.put(c);
+	}
+	return 0;
 }

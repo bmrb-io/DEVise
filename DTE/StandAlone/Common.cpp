@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/06/28 21:47:49  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.2  1998/04/09 20:26:32  donjerko
   *** empty log message ***
 
@@ -64,40 +68,35 @@
 #include <string>
 #include "sysdep.h"
 
-void processQuery(istream& cin, ostream& cout){
-
+string extractQuery(istream& cin){
 	string query;
 	char c = '\0';
 	while(1){
 		cin.get(c);
 		if(c == ';'){
 			break;
-		/*
-			cin.get(c);
-			if(c == '\n'){
-				break;
-			}
-			else{
-				query += string(";") + c;
-			}
-		*/
 		}
 		else{
 			query += c;
 		}
 	}
+	return query;
+}
+
+void processQuery(const string& query, ostream& cout, const string& header){
 
 	cerr << "Received query: " << query << endl;
 
 	Engine engine(query);
-	EXIT(engine.optimize());
+	TRY(engine.optimize(), NVOID);
 	int numFlds = engine.getNumFlds();
 	if(numFlds > 0){
 		const TypeID* typeIDs = engine.getTypeIDs();
-		EXIT(WritePtr* writePtrs = newWritePtrs(typeIDs, numFlds));
+		TRY(WritePtr* writePtrs = newWritePtrs(typeIDs, numFlds), NVOID);
 		const Tuple* tup;
 
-		EXIT(tup = engine.getFirst());
+		TRY(tup = engine.getFirst(), NVOID);
+		cout << header;
 		while(tup){
 			for(int i = 0; i < numFlds; i++){
 				writePtrs[i](cout, tup[i]);

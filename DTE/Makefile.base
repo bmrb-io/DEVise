@@ -145,7 +145,7 @@ STAND_ALONE_OBJ = $(STAND_ALONE_SRC:.cpp=.o)
 
 LIBNAME = libdte.a
 
-all: $(LIBNAME) unidata dte server datareader
+all: $(LIBNAME) unidata dte server client datareader
 lib: $(LIBNAME)
 
 .PHONY: unidata 
@@ -175,6 +175,10 @@ dte: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree datareader
 
 server: Server.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree datareader
 	$(CC) -o $@ $< $(STAND_ALONE_OBJ) $(CORE_OBJ) $(STAND_ALONE_LIBS) \
+	$(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+
+client: Client.o SockStream.o
+	$(CC) -o $@ $< SockStream.o \
 	$(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 pure: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree datareader
@@ -238,7 +242,7 @@ Templates.o: Templates.c
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm $(LIBNAME) dte gui core script server $(YACC_SRC)
+	-rm $(LIBNAME) dte gui core script server client $(YACC_SRC)
 
 mostlyclean:
 	-rm $(LIBOBJ) $(STAND_ALONE_OBJ) $(GUI_OBJ) main.o Server.o

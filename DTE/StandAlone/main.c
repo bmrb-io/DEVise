@@ -20,7 +20,8 @@ int main(int argc, char** argv){
 
      initialize_system();
 
-	processQuery(cin, cout);
+	string query = extractQuery(cin);
+	EXIT(processQuery(query, cout));
 
      shutdown_system();
 	return 0;
