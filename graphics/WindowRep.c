@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/07/10 18:59:20  jussi
+  Moved 3D transform variables to WindowRep.
+
   Revision 1.11  1996/06/21 19:31:25  jussi
   Moved all 3D-related code to Map3D.C and Map3D.h.
 
@@ -70,20 +73,13 @@ WindowRep::WindowRep(DeviseDisplay *disp, Color fgndColor, Color bgndColor,
   _pattern = p;
 }
 
-/***************************************************************
-called by derived class to when window is resized or moved: 
-Update the current size and inform all callbacks. 
-******************************************************************/
+/* called by derived class to when window is resized or moved */
 
 void WindowRep::HandleResize(int x, int y, unsigned width, unsigned height)
 {
 #ifdef DEBUG
   printf("WindowRep::HandleResize(%d,%d,%d,%d)\n",x,y,width,height);
 #endif
-
-  /*
-     MaxDamage();
-  */
 
   int index;
   for(index = InitIterator(); More(index);) {
@@ -94,9 +90,7 @@ void WindowRep::HandleResize(int x, int y, unsigned width, unsigned height)
 }
 
 #ifdef RAWMOUSEEVENTS
-/***************************************************************
-called by derived class with button event: Report event to all callbacks 
-******************************************************************/
+/* called by derived class with button event */
 
 void WindowRep::HandleButton(int x, int y, int button, int state, int type)
 {
@@ -113,40 +107,38 @@ void WindowRep::HandleButton(int x, int y, int button, int state, int type)
   DoneIterator(index);
 }
 #else
-/***************************************************************
-called by derived class when button presssed: Report event to all callbacks 
-******************************************************************/
+/* called by derived class when button pressed */
 
 void WindowRep::HandleButtonPress(int xlow, int ylow, 
 				  int xhigh, int yhigh, int button)
 {
 #ifdef DEBUG
-  printf("WindowRep::HandleButtonPress(%d,%d,%d,%d,%d)\n",xlow,ylow,
-	 xhigh, yhigh,button);
+  printf("WindowRep::HandleButtonPress(%d,%d,%d,%d,%d)\n",
+         xlow, ylow, xhigh, yhigh, button);
 #endif
 
   int index;
   for(index = InitIterator(); More(index); ){
-    WindowRepCallback *c= Next(index);
-    c->HandlePress(this, xlow,ylow,xhigh,yhigh,button);
+    WindowRepCallback *c = Next(index);
+    c->HandlePress(this, xlow, ylow, xhigh, yhigh, button);
   }
   DoneIterator(index);
 }
 #endif
 
-/*called by derived class when key presssed: Report event to all callbacks */
+/* called by derived class when key pressed */
 
 void WindowRep::HandleKey(char key, int x, int y)
 {
   int index;
   for(index = InitIterator(); More(index); ){
-    WindowRepCallback *c= Next(index);
+    WindowRepCallback *c = Next(index);
     c->HandleKey(this, key, x, y);
   }
   DoneIterator(index);
 }
 
-/*called by derived class when exposed: Report event to all callbacks */
+/* called by derived class when exposed */
 
 void WindowRep::HandleExpose(int x, int y, unsigned w, unsigned h)
 {
@@ -159,7 +151,7 @@ void WindowRep::HandleExpose(int x, int y, unsigned w, unsigned h)
 }
 
 #ifndef RAWMOUSEEVENTS
-/* Called by derived class on pop-up event. Report to all callbacks */
+/* Called by derived class on pop-up event. Report to first callback */
 
 Boolean WindowRep::HandlePopUp(int x, int y, int button, char **&msgs,
 			       int &numMsgs)
@@ -167,9 +159,9 @@ Boolean WindowRep::HandlePopUp(int x, int y, int button, char **&msgs,
   int index = InitIterator(); 
   if (More(index)) {
     /* do only first callback */
-    WindowRepCallback *callBack = Next(index);
+    WindowRepCallback *c = Next(index);
     DoneIterator(index);
-    return callBack->HandlePopUp(this, x, y, button, msgs, numMsgs);
+    return c->HandlePopUp(this, x, y, button, msgs, numMsgs);
   }
   DoneIterator(index);
 
@@ -177,112 +169,31 @@ Boolean WindowRep::HandlePopUp(int x, int y, int button, char **&msgs,
 }
 #endif
 
-/* called by dervied class on window mapped info change event.
-Report to all callbacks */
+/* called by derived class on window mapped info change event */
 
 void WindowRep::HandleWindowMappedInfo(Boolean mapped)
 {
   int index;
   for(index = InitIterator(); More(index); ){
-    WindowRepCallback *c= Next(index);
+    WindowRepCallback *c = Next(index);
     c->HandleWindowMappedInfo(this, mapped);
   }
   DoneIterator(index);
 }
 
-/****************************************************************
-called by derived class to draw the contents of the window rep.
-Derived class should initialize the transfomation stack first so
-that everything is mapped into (0.0), (1.0). 
-*****************************************************************/
+/* called by derived class on window destroy event */
 
-#ifdef OLD_CODE
-void WindowRep::_Draw()
-{
-  if (_damaged){
-    /* iterate through all damage areas and draw them */
-    int damageIndex;
-    for(damageIndex=_damageRects.InitIterator();
-	_damageRects.More(damageIndex);){
-      Coord damageX,damageY,damageWidth,damageHeight;
-      ClipRect *rect= _damageRects.Next(damageIndex);
-      damageX = rect->x; damageY = rect->y;
-      damageWidth = rect->width; damageHeight = rect->height;
-      
-      /* set clip region */
-      PushClip(damageX,damageY,damageWidth, damageHeight);
-
-#if 0
-      printf("WindowRep: Damaged %f %f %f %f\n",damageX,damageY,
-	     damageX+damageWidth, damageY+damageHeight);
-      Coord dx1,dy1,dx2,dy2;
-      Transform(damageX,damageY,dx1,dy1);
-      Transform(damageX+damageWidth,damageY+damageHeight,dx2,dy2);
-      printf("transformed into (%f,%f),(%f,%f)\n",
-	     dx1,dy1,dx2,dy2);
-#endif
-      
-      /* clear background */
-      SetFgColor(_bgndColor);
-      SetPattern(Pattern0);
-
-#if 0
-      Point points[4];
-      Coord maxX = damageX + damageWidth;
-      Coord maxY = damageY + damageHeight;
-      points[0].x = damageX; points[0].y = damageY;
-      points[1].x = maxX ; points[1].y = damageY;
-      points[2].x = maxX; points[2].y = maxY;
-      points[3].x = damageX; points[3].y = maxY;
-      FillPoly(points,4);
-#endif
-
-      FillRect(damageX,damageY,damageWidth,damageHeight);
-
-      /* inform each callback to redraw */
-      int index;
-      for (index=InitIterator(); More(index); ){
-	WindowRepCallback *callBack = Next(index);
-	callBack->HandleDraw(this,damageX,damageY,
-			     damageWidth,damageHeight);
-      }
-      DoneIterator(index);
-
-      /* unset clip region */
-      PopClip();
-      
-      /* delete damaged area */
-      delete rect;
-      _damageRects.DeleteCurrent(damageIndex);
-    }
-    _damageRects.DoneIterator(damageIndex);
-    _damaged = false;
-  }
-}
-#endif
-
-/**************************************************************
-Set max damaged area: 
-***************************************************************/
-
-#ifdef OLD_CODE
-void WindowRep::MaxDamage()
+void WindowRep::HandleWindowDestroy()
 {
   int index;
-  for(index = _damageRects.InitIterator(); _damageRects.More(index);) {
-    ClipRect *rect = _damageRects.Next(index);
-    _damageRects.DeleteCurrent(index);
-    delete rect;
+  for(index = InitIterator(); More(index); ){
+    WindowRepCallback *c = Next(index);
+    c->HandleWindowDestroy(this);
   }
-  _damageRects.DoneIterator(index);
-  
-  /* insert max damage area */
-  Damage(_x,_y,_width,_height);
+  DoneIterator(index);
 }
-#endif
 
-/* called by derived class to get current local color from
-   global color */
+/* called by derived class to get current local color from global color */
 
 Color WindowRep::GetLocalColor(Color globalColor)
 {
