@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.47  1996/07/15 00:30:21  jussi
+  Added handling of ButtonRelease events when not in RAWMOUSEEVENTS
+  mode.
+
   Revision 1.46  1996/07/14 16:50:49  jussi
   Added handling of DestroyNotify events.
 
@@ -1023,17 +1027,18 @@ void XWindowRep::Arc(Coord x, Coord y, Coord w, Coord h,
 #endif
   
   Coord tx, ty, tempX, tempY;
-  WindowRep::Transform(x - w / 2, y - h / 2, tx, ty);
-  WindowRep::Transform(x + w / 2, y + h / 2, tempX, tempY);
-  int realWidth = ROUND(int, fabs(tempX - tx));
-  int realHeight = ROUND(int, fabs(tempY - ty));
-  int realStart= ROUND(int, ToDegree(startAngle) * 64);
+  WindowRep::Transform(x, y, tx, ty);
+  WindowRep::Transform(x + w, y + h, tempX, tempY);
+  Coord width = fabs(tempX - tx);
+  Coord height = fabs(tempY - ty);
+  int realStart = ROUND(int, ToDegree(startAngle) * 64);
   int realEnd = ROUND(int, ToDegree(endAngle) * 64);
 #ifdef GRAPHICS
   if (_dispGraphics) {
     XSetLineAttributes(_display, _gc, 0, LineSolid, CapButt, JoinRound);
-    XDrawArc(_display, DRAWABLE, _gc, ROUND(int, tx), ROUND(int, ty),
-	     realWidth, realHeight, realStart, realEnd);
+    XDrawArc(_display, DRAWABLE, _gc, ROUND(int, tx - width / 2),
+             ROUND(int, ty - height / 2), ROUND(int, width),
+             ROUND(int, height), realStart, realEnd);
   }
 #endif
 }
