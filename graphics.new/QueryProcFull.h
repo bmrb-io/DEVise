@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/31 15:41:27  jussi
+  Added support for record links.
+
   Revision 1.5  1996/04/20 19:56:51  kmurli
   QueryProcFull now uses the Marker calls of Dispatcher class to call
   itself when needed instead of being continuosly polled by the Dispatcher.
@@ -75,9 +78,10 @@ struct QPFullData {
   
   int bytes;                            /* # of bytes processed in query */
   
-  RecordLink *recLink;                  /* record link */
-  RecFile    *recLinkFile;              /* record link file */
-  RecId      recLinkRecId;              /* current record link record */
+  RecordLinkList *recLinkList;          /* record link list */
+  int            recLinkListIter;       /* record link list iterator */
+  RecordLink     *recLink;              /* current record link */
+  RecId          recLinkRecId;          /* current record link record */
 
   RecId hintId;                         /* ID for hint */
   void *userData;

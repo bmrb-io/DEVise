@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/05/31 15:37:21  jussi
+  Initial revision.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -84,7 +87,7 @@ RecordLink::~RecordLink()
   int index = InitIterator();
   while(More(index)) {
     ViewGraph *view = Next(index);
-    view->SetSlaveView(0);
+    view->DropAsSlaveView(this);
   }
   DoneIterator(index);
 
@@ -213,8 +216,7 @@ void RecordLink::Abort()
 void RecordLink::InsertView(ViewGraph *view)
 {
   VisualLink::InsertView(view);
-  view->SetSlaveView(this);
-  view->Refresh();
+  view->AddAsSlaveView(this);
 }
 
 /* delete slave view from visual link */
@@ -222,7 +224,7 @@ void RecordLink::InsertView(ViewGraph *view)
 void RecordLink::DeleteView(ViewGraph *view)
 {
   VisualLink::DeleteView(view);
-  view->SetSlaveView(0);
+  view->DropAsSlaveView(this);
 }
 
 void RecordLink::FlushToDisk()

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/05/31 15:41:25  jussi
+  Added support for record links.
+
   Revision 1.18  1996/04/22 21:38:06  jussi
   Fixed problem with simultaneous view refresh and record query
   activities. Previously, there was a single iterator over the
@@ -271,7 +274,6 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
     for(int i = 0; i < numGData; i++) {
 
       // extract X, Y, shape, and color information from gdata record
-
       Coord x = GetX(tp, mapping, offset);
       Coord y = GetY(tp, mapping, offset);
       ShapeID shape = GetShape(tp, mapping, offset);
@@ -282,8 +284,13 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
       // eliminate records which don't match the filter's X range
       if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh)
 	_stats.Sample(x, y);
-      else if (i > firstRec) {
-	WriteMasterLink(recId + firstRec, i - firstRec);
+
+      // contiguous ranges which match the filter's X *and* Y range
+      // are stored in the record link
+      if (x < _queryFilter.xLow || x > _queryFilter.xHigh
+	  || y < _queryFilter.yLow || y > _queryFilter.yHigh) {
+	if (i > firstRec)
+	  WriteMasterLink(recId + firstRec, i - firstRec);
 	firstRec = i + 1;
       }
       

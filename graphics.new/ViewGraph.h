@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/05/31 15:41:23  jussi
+  Added support for record links.
+
   Revision 1.13  1996/05/07 16:33:35  jussi
   Moved Action member variable from View to ViewGraph. Moved
   implementation of HandleKey, HandlePress and HandlePopup to
@@ -97,7 +100,8 @@ public:
   /* Make view a master/slave of a link */
   virtual void AddAsMasterView(RecordLink *link);
   virtual void DropAsMasterView(RecordLink *link);
-  virtual void SetSlaveView(RecordLink *link);
+  virtual void AddAsSlaveView(RecordLink *link);
+  virtual void DropAsSlaveView(RecordLink *link);
 
   /* Insert/remove mappings from view */
   virtual void InsertMapping(TDataMap *map, char *label = "");
@@ -147,9 +151,8 @@ public:
   BasicStats _stats;
 
   Action *_action;                      /* action in this view */
-  RecordLinkList _masterLink;           /* list of links whose master this
-					   view is */
-  RecordLink *_slaveLink;               /* slave record link */
+  RecordLinkList _masterLink;           /* links whose master this view is */
+  RecordLinkList _slaveLink;            /* slave record link list */
 
  private:
   Boolean ToRemoveStats(char *oldset, char *newset);

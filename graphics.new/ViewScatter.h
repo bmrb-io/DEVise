@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/05/31 15:41:24  jussi
+  Added support for record links.
+
   Revision 1.7  1996/04/22 21:38:10  jussi
   Fixed problem with simultaneous view refresh and record query
   activities. Previously, there was a single iterator over the
@@ -72,7 +75,7 @@ protected:
   virtual void DerivedAbortQuery();
 
   /* Get record link */
-  virtual RecordLink *GetRecordLink() { return _slaveLink; }
+  virtual RecordLinkList *GetRecordLinkList() { return &_slaveLink; }
 
 private:
 

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/05/31 21:35:35  wenger
+  Fixed core dump in SPARC/Solaris version caused by GData buffer
+  misalignment; cleaned up generic/Makefile.base, etc., to get HP
+  version to link correctly and eliminate special Makefile.base.aix.
+
   Revision 1.16  1996/05/31 15:41:26  jussi
   Added support for record links.
 
@@ -241,8 +246,15 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
   qdata->mgr = _mgr;
   qdata->bytes = 0;
 
-  qdata->recLink = callback->GetRecordLink();
-  qdata->recLinkRecId = 0;
+  // get pointer to record link list and initialize list iterator
+  qdata->recLinkList = callback->GetRecordLinkList();
+  qdata->recLinkListIter = qdata->recLinkList->InitIterator();
+  // if list is empty, close iterator
+  if (!qdata->recLinkList->More(qdata->recLinkListIter)) {
+    qdata->recLinkList->DoneIterator(qdata->recLinkListIter);
+    qdata->recLinkListIter = -1;
+  }
+  qdata->recLink = 0;
 
   VisualFlag *dimensionInfo;
   int numDimensions = map->DimensionInfo(dimensionInfo);
@@ -326,6 +338,8 @@ void QueryProcFull::AbortQuery(TDataMap *map, QueryCallback *callback)
   for(index = _queries->InitIterator(); _queries->More(index);) {
     QPFullData *qData = (QPFullData *)_queries->Next(index);
     if (qData->map == map && qData->callback == callback) {
+      if (qData->recLinkListIter >= 0)
+	qData->recLinkList->DoneIterator(qData->recLinkListIter);
       _queries->DeleteCurrent(index);
       FreeEntry(qData);
       break;
@@ -345,6 +359,8 @@ void QueryProcFull::ClearQueries()
   int index;
   for(index = _queries->InitIterator(); _queries->More(index);) {
     QPFullData *qd = _queries->Next(index);
+    if (qd->recLinkListIter >= 0)
+      qd->recLinkList->DoneIterator(qd->recLinkListIter);
     _queries->DeleteCurrent(index);
     FreeEntry(qd);
   }
@@ -406,8 +422,8 @@ void QueryProcFull::InitQPFullX(QPFullData *qData)
 			qData->current, lastId, false)) {
       qData->high = lastId;
     }
-    qData->hintId = (qData->high+qData->current)/2;
-    qData->mgr->FocusHint(qData->hintId, qData->tdata,qData->gdata);
+    qData->hintId = (qData->high + qData->current) / 2;
+    qData->mgr->FocusHint(qData->hintId, qData->tdata, qData->gdata);
     qData->state = QPFull_ScanState;
     qData->low = qData->current;
     if (Init::Randomize() && qData->high - qData->low > QPFULL_RANDOM_RECS) {
@@ -502,7 +518,30 @@ void QueryProcFull::ProcessScan(QPFullData *qData)
   Boolean cont;
   Boolean noHigh;
 
-  if (qData->recLink) {
+  if (qData->recLinkListIter >= 0) {
+    // if no current record link, try to get next from record link list
+    if (!qData->recLink) {
+      qData->recLinkRecId = 0;
+      if (qData->recLinkList->More(qData->recLinkListIter)) {
+	qData->recLink = qData->recLinkList->Next(qData->recLinkListIter);
+#ifdef DEBUG
+	printf("Beginning of record link file %s\n",
+	       qData->recLink->GetFileName());
+#endif
+	// need to re-initialize record range (qData->range)
+	// and beginning of search area (qData->current)
+	delete qData->range;
+	qData->range = new QPRange;
+	(void)qData->tdata->HeadID(qData->current);
+      }
+    }
+    // if still no record link, query is finished
+    if (!qData->recLink) {
+      qData->recLinkList->DoneIterator(qData->recLinkListIter);
+      qData->recLinkListIter = -1;
+      qData->state = QPFull_EndState;
+      return;
+    }
     /* execute a restricted, non-randomized query using the record
        ranges specified in recLink */
     do {
@@ -512,7 +551,8 @@ void QueryProcFull::ProcessScan(QPFullData *qData)
       if (result < 0) {
 	printf("Cannot fetch record %ld from record link file %s\n",
 	       qData->recLinkRecId, qData->recLink->GetFileName());
-	qData->recLinkRecId = 0;
+	qData->recLinkList->DoneIterator(qData->recLinkListIter);
+	qData->recLinkListIter = -1;
 	qData->state = QPFull_EndState;
 	return;
       }
@@ -521,8 +561,7 @@ void QueryProcFull::ProcessScan(QPFullData *qData)
 	printf("End of record link file %s (%ld records)\n",
 	       qData->recLink->GetFileName(), qData->recLinkRecId);
 #endif
-	qData->recLinkRecId = 0;
-	qData->state = QPFull_EndState;
+	qData->recLink = 0;
 	return;
       }
 #ifdef DEBUG
@@ -531,8 +570,11 @@ void QueryProcFull::ProcessScan(QPFullData *qData)
 	     qData->recLinkRecId);
 #endif
       if (low > qData->high) {
-	qData->recLinkRecId = 0;
-	qData->state = QPFull_EndState;
+#ifdef DEBUG
+	printf("End of record link file %s (%ld records)\n",
+	       qData->recLink->GetFileName(), qData->recLinkRecId);
+#endif
+	qData->recLink = 0;
 	return;
       }
       qData->recLinkRecId++;
@@ -1004,7 +1046,7 @@ void QueryProcFull::DistributeTData(QPFullData *queryData, RecId startRid,
     // if query is a slave of a record link, do not distribute tdata
     // to it; the query will be executed when the master of the link
     // is done
-    if (queryData != qData && qData->recLink)
+    if (queryData != qData && qData->recLinkListIter >= 0)
       continue;
 
     RecId tempLow = low;
@@ -1056,7 +1098,7 @@ void QueryProcFull::DistributeGData(QPFullData *queryData, RecId startRid,
     // if query is a slave of a record link, do not distribute tdata
     // to it; the query will be executed when the master of the link
     // is done
-    if (queryData != qData && qData->recLink)
+    if (queryData != qData && qData->recLinkListIter >= 0)
       continue;
 
     if (qData->gdata == queryData->gdata) {

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/31 15:41:28  jussi
+  Added support for record links.
+
   Revision 1.3  1996/01/15 16:55:15  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -35,6 +38,7 @@ class TData;
 class TDataMap;
 class GData;
 class RecordLink;
+class RecordLinkList;
 
 /* Used to return query results */
 class QueryCallback {
@@ -49,14 +53,16 @@ class QueryCallback {
      processing this query. */
   virtual void QueryDone(int bytes, void *userData) = 0;
 
-  virtual RecordLink *GetRecordLink() { return 0; }
+  virtual RecordLinkList *GetRecordLinkList() { return 0; }
 };
 
 class QueryProc;
 
 typedef QueryProc *QueryProcGen();
 
-const int MAX_QUERYPROCS = 10; /* max # of query procs we can choose from */
+/* max # of query procs we can choose from */
+const int MAX_QUERYPROCS = 10;
+
 struct QPRec {
   char *name;
   QueryProcGen *gen;

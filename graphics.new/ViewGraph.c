@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/05/31 15:41:22  jussi
+  Added support for record links.
+
   Revision 1.16  1996/05/07 16:33:23  jussi
   Moved Action member variable from View to ViewGraph. Moved
   implementation of HandleKey, HandlePress and HandlePopup to
@@ -89,18 +92,15 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
 		     Action *action) :
 	View(name, initFilter, fg, bg, xAxis, yAxis)
 {
-  if (!action)
+  _action = action;
+  if (!_action)
     _action = new ActionDefault("default");
-  else
-    _action = action;
 
   // initialize statistics toggles to ASCII zero (not binary zero)
   memset(_DisplayStats, '0', STAT_NUM);
 
   // add terminating null
   _DisplayStats[STAT_NUM] = 0;
-
-  _slaveLink = 0;
 }
 
 ViewGraph::~ViewGraph()
@@ -119,8 +119,13 @@ ViewGraph::~ViewGraph()
   }
   _masterLink.DoneIterator(index);
 
-  if (_slaveLink)
-    _slaveLink->DeleteView(this);
+  index = _slaveLink.InitIterator();
+  while(_slaveLink.More(index)) {
+    RecordLink *link = _slaveLink.Next(index);
+    _slaveLink.DeleteCurrent(index);
+    link->DeleteView(this);
+  }
+  _slaveLink.DoneIterator(index);
 }
 
 void ViewGraph::AddAsMasterView(RecordLink *link)
@@ -151,23 +156,33 @@ void ViewGraph::DropAsMasterView(RecordLink *link)
   }
 }
 
-void ViewGraph::SetSlaveView(RecordLink *link)
+void ViewGraph::AddAsSlaveView(RecordLink *link)
 {
-  // view cannot be a master, record it as a slave
+  // view cannot be a master
+  DropAsMasterView(link);
 
-  if (link) {
+  if (!_slaveLink.Find(link)) {
 #ifdef DEBUG
     printf("View %s becomes slave of record link %s\n", GetName(),
 	   link->GetName());
 #endif
-    DropAsMasterView(link);
-  } else {
+    _slaveLink.Append(link);
+  }
+
+  Refresh();
+}
+
+void ViewGraph::DropAsSlaveView(RecordLink *link)
+{
+  if (_slaveLink.Find(link)) {
+    _slaveLink.Delete(link);
 #ifdef DEBUG
-    printf("View %s no longer slave\n", GetName());
+    printf("View %s no longer slave of record link %s\n", GetName(),
+	   link->GetName());
 #endif
   }
 
-  _slaveLink = link;
+  Refresh();
 }
 
 void ViewGraph::InsertMapping(TDataMap *map, char *label)
@@ -339,14 +354,14 @@ void ViewGraph::StatsXOR(char *oldstat, char *newstat, char *result)
 void ViewGraph::HandlePress(WindowRep *w, int xlow, int ylow,
 			    int xhigh, int yhigh, int button)
 {
-  ControlPanel::Instance()->SelectView(this);
-	
   if (xlow == xhigh && ylow == yhigh) {
     if (CheckCursorOp(w, xlow, ylow, button))
       /* was a cursor event */
       return;
   }
   
+  ControlPanel::Instance()->SelectView(this);
+	
   if (_action) {
     /* transform from screen to world coordinates */
     Coord worldXLow, worldYLow, worldXHigh, worldYHigh;
@@ -381,21 +396,15 @@ Boolean ViewGraph::HandlePopUp(WindowRep *win, int x, int y, int button,
   printf("View::HandlePopUp at %d,%d, action = 0x%p\n", x, y, _action);
 #endif
 
+  ControlPanel::Instance()->SelectView(this);
+
   if (GetNumDimensions() != 2)
     return false;
 
-  ControlPanel::Instance()->SelectView(this);
-
-  static char *buf[10];
-  Coord worldXLow, worldYLow, worldXHigh, worldYHigh;
-  
-  if (CheckCursorOp(win, x, y, button)) {
-    /* it was cursor event */
-    return false;
-  }
-
   int labelX, labelY, labelW, labelH;
   GetLabelArea(labelX, labelY, labelW, labelH);
+
+  static char *buf[10];
 
   if (x >= labelX && x <= labelX + labelW - 1
       && y >= labelY && y <= labelY + labelH - 1) {
@@ -407,8 +416,8 @@ Boolean ViewGraph::HandlePopUp(WindowRep *win, int x, int y, int button,
   
   if (_action) {
     /* transform from screen x/y into world x/y */
-    FindWorld(x, y, x + 1, y - 1,
-	      worldXLow,worldYLow, worldXHigh, worldYHigh);
+    Coord worldXLow, worldYLow, worldXHigh, worldYHigh;
+    FindWorld(x, y, x + 1, y - 1, worldXLow,worldYLow, worldXHigh, worldYHigh);
     return _action->PopUp(this, worldXLow, worldYLow,
 			  worldXHigh, worldYHigh, button,
 			  msgs, numMsgs);
