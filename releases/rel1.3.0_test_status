@@ -1,7 +1,7 @@
 		Status of Testing for Devise 1.3.0 Release
 				$Revision$
 
-- Intel/Solaris GUI: Donko
+- Intel/Solaris GUI: Kent
 x- SPARC/Solaris GUI: Guangshun
 x- SPARC/SunOS GUI: Jussi
 - HP GUI: Kevin
@@ -13,7 +13,7 @@ x- Client/server Devise: Kent
 x- Client/server library: Kent
 x- Composite parsers: Kent
 x- Display (Display, WindowRep, Transform, 3D stuff): Kent
-- DTE: Donko
+x- DTE: Donko
 - Links (record links, regular links): Kevin
 x- Histograms: Guangshun
 x- Large data sets: Jussi
@@ -24,7 +24,7 @@ x- Purify Devise: Guangshun/Kent
 x- Stat (incl. statistical part of KGraph stuff): Guangshun
 x- TData (incl. schema parsing code and web sources): Kent
 x- Tk windows: Kent
-- Views (incl. stacks and piles): Shilpa
+x- Views (incl. stacks and piles): Shilpa
 
 a- Automatic test scripts: Kent
 
