@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1995/12/28 18:56:51  jussi
+  Small fix to remove compiler warning.
+
   Revision 1.7  1995/12/14 21:13:40  jussi
   Replaced 0x%x with 0x%p.
 
@@ -40,6 +43,8 @@
 */
 
 #include <X11/Intrinsic.h>
+#include <math.h>
+
 #include "XDisplay.h"
 #include "XWindowRep.h"
 #include "Control.h"
@@ -61,11 +66,25 @@ Open a new X display
 
 XDisplay::XDisplay(char *name)
 {
-  if (!(this->_display = XOpenDisplay(name))) {
+  if (!(_display = XOpenDisplay(name))) {
     (void)fprintf(stderr,"can't open display\n");
     Exit::DoExit(1);
   }
   
+  /* init base color */
+  const char *baseColorName = "black";
+  XColor baseColorDef;
+  Colormap cmap = DefaultColormap(_display, DefaultScreen(_display));
+  if (!XParseColor(_display, cmap, baseColorName, &baseColorDef)) {
+    fprintf(stderr, "Cannot understand color %s.\n", baseColorName);
+    Exit::DoExit(1);
+  }
+  float error;
+  if (!ClosestColor(cmap, baseColorDef, baseColor, error)) {
+    fprintf(stderr, "Cannot allocate color %s.\n", baseColorName);
+    Exit::DoExit(1);
+  }
+
   /* init colors from the color manager. */
   DeviseDisplay::InitializeColors();
   
@@ -110,10 +129,12 @@ XDisplay::~XDisplay()
 Allocate closest matching color
 ********************************************************************/
 
-Boolean XDisplay::ClosestColor(Colormap &map, XColor &color, Color &c)
+Boolean XDisplay::ClosestColor(Colormap &map, XColor &color, Color &c,
+			       float &error)
 {
   if (XAllocColor(_display, map, &color)) {
     c = color.pixel;
+    error = 0.0;
     return true;
   }
 
@@ -122,25 +143,38 @@ Boolean XDisplay::ClosestColor(Colormap &map, XColor &color, Color &c)
   // of the RGB directions (X color values are between 0 and 65535);
   // increment specifies the hop size between each attempt
 
-  const int maxDeviation = (int)(0.05 * 65535);   // 1% max deviation
-  const int increment = (int)(maxDeviation / 4);
+  const int maxDeviation = (int)(0.05 * 65535);   // +-5% max deviation
+  const int incFraction = 4;                      // number of probes per color
     
-  for(int dev = increment; dev < maxDeviation; dev += increment) {
-    for(int r = -1; r <= 1; r += 2) {
-      for(int g = -1; g <= 1; g += 2) {
-	for(int b = -1; b <= 1; b += 2) {
-	  XColor ctry;
-	  ctry.red   = color.red + r * dev;
-	  ctry.green = color.green + g * dev;
-	  ctry.blue  = color.blue + b * dev;
-#ifdef DEBUG
-	  printf("Trying to allocate color %d,%d,%d\n", ctry.red,
-		 ctry.green, ctry.blue);
+  const long int lwr = MinMax::max(color.red - maxDeviation, 0);
+  const long int hir = MinMax::min(color.red + maxDeviation, 65535);
+  const long int lwg = MinMax::max(color.green - maxDeviation, 0);
+  const long int hig = MinMax::min(color.green + maxDeviation, 65535);
+  const long int lwb = MinMax::max(color.blue - maxDeviation, 0);
+  const long int hib = MinMax::min(color.blue + maxDeviation, 65535);
+
+  const int rstep = MinMax::max((hir - lwr) / incFraction, 1);
+  const int gstep = MinMax::max((hig - lwg) / incFraction, 1);
+  const int bstep = MinMax::max((hib - lwb) / incFraction, 1);
+
+  for(int r = lwr; r <= hir; r += rstep) {
+    for(int g = lwg; g <= hig; g += gstep) {
+      for(int b = lwb; b <= hib; b += bstep) {
+	XColor ctry;
+	ctry.red   = (unsigned short)r;
+	ctry.green = (unsigned short)g;
+	ctry.blue  = (unsigned short)b;
+#ifdef DEBUG_xxx
+	printf("Trying to allocate color %d,%d,%d\n", ctry.red,
+	       ctry.green, ctry.blue);
 #endif
-	  if (XAllocColor(_display, map, &ctry)) {
-	    c = ctry.pixel;
-	    return true;
-	  }
+	if (XAllocColor(_display, map, &ctry)) {
+	  c = ctry.pixel;
+	  float rerr = (ctry.red - color.red) / 65535;
+	  float gerr = (ctry.green - color.green) / 65535;
+	  float berr = (ctry.blue - color.blue) / 65535;
+	  error = sqrt(rerr * rerr + gerr * gerr + berr * berr);
+	  return true;
 	}
       }
     }
@@ -155,12 +189,10 @@ Alloc color by name
 
 void XDisplay::AllocColor(char *name, Color globalColor)
 {
-  Colormap cmap = DefaultColormap(this->_display,
-				  DefaultScreen(this->_display));
+  Colormap cmap = DefaultColormap(_display, DefaultScreen(_display));
 
   XColor color_def;
-
-  if (!XParseColor(this->_display, cmap, name, &color_def)) {
+  if (!XParseColor(_display, cmap, name, &color_def)) {
     fprintf(stderr, "Cannot understand color %s.\n", name);
     Exit::DoExit(1);
   }
@@ -170,15 +202,17 @@ void XDisplay::AllocColor(char *name, Color globalColor)
 #endif
 
   Color color;
-  if (ClosestColor(cmap, color_def, color)) {
+  float error;
+  if (ClosestColor(cmap, color_def, color, error)) {
     DeviseDisplay::MapColor(color, globalColor);
+    if (error > 0)
+      printf("Color %s allocated with %.2f error\n", name, error);
     return;
   }
 
-  fprintf(stderr, "Cannot allocate color %s.\n", name);
-  fprintf(stderr, "Try starting DEVise before any other color-intensive\n");
-  fprintf(stderr, "applications (such as Netscape).\n");
-  Exit::DoExit(1);
+  // substitute base color instead of requested color
+  DeviseDisplay::MapColor(baseColor, globalColor);
+  printf("Color %s mapped to base color\n", name);
 }
 
 /*********************************************************************
@@ -188,14 +222,13 @@ Alloc color by RGB
 void XDisplay::AllocColor(double r, double g, double b, Color globalColor)
 {
 #ifdef DEBUG
-  printf("XDisplay::AllocColor(%f,%f,%f,)\n",r,g,b);
+  printf("XDisplay::AllocColor(%.2f,%.2f,%.2f)\n",r,g,b);
 #endif
 
-  Colormap cmap = DefaultColormap(this->_display,
-				  DefaultScreen(this->_display));
-  XColor color_def;
-  
+  Colormap cmap = DefaultColormap(_display, DefaultScreen(_display));
+
   /* convert from (0.0,1.0) to (0,65535)*/
+  XColor color_def;
   color_def.red = (unsigned short)(r * 65535); 
   color_def.green = (unsigned short)(g * 65535);
   color_def.blue = (unsigned short)(b * 65535);
@@ -206,14 +239,18 @@ void XDisplay::AllocColor(double r, double g, double b, Color globalColor)
 #endif
 
   Color color;
-  if (ClosestColor(cmap, color_def, color)) {
+  float error;
+  if (ClosestColor(cmap, color_def, color, error)) {
     DeviseDisplay::MapColor(color, globalColor);
+    if (error > 0)
+      printf("Color <%.2f,%.2f,%.2f> allocated with %.2f error\n",
+	     r, g, b, error);
     return;
   }
 
-  fprintf(stderr, "Cannot allocate color %.2f,%.2f,%.2f.\n", r, g, b);
-  fprintf(stderr, "Try starting DEVise before any other color-intensive\n");
-  fprintf(stderr, "applications (such as Netscape).\n");
+  // substitute base color instead of requested color
+  DeviseDisplay::MapColor(baseColor, globalColor);
+  printf("Color <%.2f,%.2f,%.2f> mapped to base color\n", r, g, b);
 }
 
 /*
