@@ -1,0 +1,40 @@
+#! /bin/csh -f
+# Start devised for JavaScreen.
+
+rmmem
+
+# For Tasvir and EmbeddedTk.
+set path = ( $path /p/devise/public/bin )
+
+setenv DEVISE_ROOT		/p/devise/demo
+#setenv DEVISE_ROOT		/p/devise/wenger
+setenv DEVISE_PUB               /p/devise/public
+
+setenv DEVISE_DAT		$DEVISE_ROOT/dat
+setenv DEVISE_HOME_TABLE	$DEVISE_ROOT/schema/schema/catalog.js.dte
+setenv DEVISE_ID_FILE		$DEVISE_ROOT/schema/schema/temp_catalog.js
+setenv DEVISE_DEF_FILE		$DEVISE_ROOT/schema/schema/def_file.js
+setenv DEVISE_INDEX_TABLE	$DEVISE_ROOT/schema/schema/sysind.js.dte
+setenv DEVISE_MINMAX_TABLE	$DEVISE_ROOT/schema/schema/minmax.js.dte
+setenv DEVISE_MINMAX_DIR	$DEVISE_ROOT/dat
+setenv DEVISE_MATER_DIR		$DEVISE_ROOT/dat
+setenv DEVISE_CACHE		$DEVISE_ROOT/cache
+setenv DEVISE_SCHEMA		$DEVISE_ROOT/schema/schema
+setenv DEVISE_SESSION		$DEVISE_ROOT/session.js/SoilSci
+setenv DEVISE_PALETTE		$DEVISE_ROOT/palette
+
+setenv DEVISE_TMP		/tmp/$USER-devise-tmp
+setenv DEVISE_WORK		/tmp/$USER-devise-work
+setenv LM_DAT			/tmp/LM/dat
+setenv LM_TMP			/tmp/LM/dat
+
+setenv DEVISE_LIB               $DEVISE_PUB/lib
+setenv LM_LIB                   $DEVISE_LIB/LM 
+#setenv DEVISE_EXEC              $DEVISE_PUB/bin/devised
+#setenv DEVISE_EXEC              ../../solaris/generic/devised
+#setenv DEVISE_EXEC              /p/devise/wenger/tmp/hongyu/devised
+setenv DEVISE_EXEC              ./devised
+
+$DEVISE_EXEC $* >>& devised.out
+
+rmmem
