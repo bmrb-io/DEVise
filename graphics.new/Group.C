@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/09/27 23:59:43  ravim
+  Fixed some bugs. Added some new functions for handling groups.
+
   Revision 1.1  1995/09/22 20:09:25  ravim
   Group structure for viewing schema
 */
@@ -24,6 +27,8 @@
 #include <iostream.h>
 #include "Group.h"
 #include "ItemList.h"
+
+//#define DEBUG
 
 Group::Group(char *nm,Group *par, int typ)
 {
@@ -63,7 +68,6 @@ void Group::subitems(Tcl_Interp *interp)
 {
   char attrbuf[MAX_STR_LEN];
   Group *curr;
-  cout << "Returning list of subitems in this group" <<endl;
 
   /* If this is a top level group there is an additional item called
      "recId" which is not stored in our lists */
@@ -76,15 +80,21 @@ void Group::subitems(Tcl_Interp *interp)
   curr = subgrps->first_item();
   while (curr)
   {
+#ifdef DEBUG
     printf("Item : %s ", curr->name);
+#endif
     if (curr->type == SUBGRP)
     {
+#ifdef DEBUG
       printf(" is a GROUP item\n");
+#endif
       sprintf(attrbuf, "%s intr", curr->name);
     }
     else if (curr->type == ITEM)
     {
+#ifdef DEBUG
       printf(" is a leaf item\n");
+#endif
       sprintf(attrbuf, "%s leaf", curr->name);
     }
     else
