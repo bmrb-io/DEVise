@@ -1,4 +1,4 @@
-#! /bin/csh
+#! /bin/csh -f
 
 ############################################################
 
@@ -55,4 +55,5 @@ touch $doutfile
 # Note: I would also like to save stderr to the log file here, but
 # for some strange reason that goofs up everything when this script is
 # run via rsh.  RKW 2000-12-08.
+set path = ( /s/java-1/bin $path )
 nohup java jss -debug $* > $joutfile &

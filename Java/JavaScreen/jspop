@@ -1,4 +1,4 @@
-#! /bin/csh
+#! /bin/csh -f
 
 ############################################################
 
@@ -40,4 +40,5 @@ endif
 touch $outfile
 
 
+set path = ( /s/java-1/bin $path )
 nohup java jspop -debug $* >& $outfile &
