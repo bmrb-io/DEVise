@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,16 @@
   $Id$
 
   $Log$
+  Revision 1.5.14.1  2002/05/27 18:15:36  wenger
+  Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
+
+  Revision 1.5  1999/11/30 22:27:27  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.4  1998/07/29 14:19:43  wenger
   Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
   allow static linking on Linux.
@@ -67,6 +77,7 @@
 #if defined(SGI)
 #include <stdarg.h>
 #endif
+#include <stdlib.h>
 
 #include "devise_varargs.h"
 #include "error.h"

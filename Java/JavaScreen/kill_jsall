@@ -10,24 +10,39 @@
 
 ############################################################
 
-if ($#argv > 1) then
-  echo "Usage: kill_jsall [id_string]"
+if ($#argv > 2) then
+  echo "Usage: kill_jsall [-f] [id_string]"
   exit 1
 endif
 
+set force = 0
+
 set idString = ""
 if ($#argv == 1) then
-  set idString = $argv[1]
+  if (xx$argv[1] == xx-f) then
+      set force = 1
+  else
+    set idString = $argv[1]
+  endif
+else if ($#argv == 2) then
+  if (xx$argv[1] == xx-f) then
+      set force = 1
+  endif
+  set idString = $argv[2]
 endif
 
+if ($force == 0) then
+  echo "You are about to kill the jspop, jss, and associated devised(s)."
+  if ($idString != "") then
+    echo "ID string is <$idString>"
+  endif
+  echo -n "Are you absolutely sure you want to do this? [N] "
 
-echo "You are about to kill the jspop, jss, and associated devised(s)."
-if ($idString != "") then
-  echo "ID string is <$idString>"
+  set answer = $<
+else
+  set answer = y
 endif
-echo -n "Are you absolutely sure you want to do this? [N] "
 
-set answer = $<
 if ($answer == y || $answer == Y) then
   if ($idString == "") then
     ./jspop.kill

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,17 @@
   $Id$
 
   $Log$
+  Revision 1.71  2002/05/01 21:30:12  wenger
+  Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.70.4.3  2002/06/11 17:27:38  wenger
+  Added an option for a view to not "contribute" to home on its visual
+  links; this allows a simplification of the NRG sessions, which fixes
+  bug 753.
+
+  Revision 1.70.4.2  2002/05/20 21:21:48  wenger
+  Fixed bug 779 (client switching problem with multiple DEViseds).
+
   Revision 1.70.4.1  2002/04/18 17:25:44  wenger
   Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
   temporary session files when the JSPoP and DEViseds are on different
@@ -587,6 +598,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(JAVAC_DeleteTmpSession)
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_SetTmpSessionDir)
 DECLARE_CLASS_END
 
 //-------------------------------------------------------------------------
@@ -2204,6 +2221,18 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(sessionIsDirty) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setDoHomeOnVisLink) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getDoHomeOnVisLink) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

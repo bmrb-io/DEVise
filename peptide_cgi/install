@@ -193,6 +193,7 @@ rm bin.tar
 
 cd ..
 chmod a+rx $targetdir/bin
+chmod a+rx $targetdir/bin/java
 
 
 # Link data directory to CGI directory.

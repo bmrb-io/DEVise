@@ -27,6 +27,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.78  2002/05/01 21:28:59  wenger
+// Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.77.2.4  2002/05/22 21:31:50  xuk
+// Improve autotest.
+//
+// Revision 1.77.2.3  2002/05/20 21:21:33  wenger
+// Fixed bug 779 (client switching problem with multiple DEViseds).
+//
 // Revision 1.77.2.2  2002/04/18 17:25:11  wenger
 // Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
 // temporary session files when the JSPoP and DEViseds are on different
@@ -483,21 +492,25 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 	// Have the DEVised create or clear the temporary session directory
 	// if we haven't already done it.
 	//
+	String hostname = "unknown";
+	try {
+            InetAddress address = InetAddress.getLocalHost();
+	    hostname = address.getHostName();
+	} catch (UnknownHostException ex) {
+	    System.err.println("Unable to get local host: " +
+	      ex.getMessage());
+	}
+
 	if (!_createdTmpSessionDir) {
 	    System.out.println(
 	      "Creating or clearing temporary session directory");
-	    String hostname = "unknown";
-	    try {
-                InetAddress address = InetAddress.getLocalHost();
-	        hostname = address.getHostName();
-	    } catch (UnknownHostException ex) {
-	        System.err.println("Unable to get local host: " +
-		  ex.getMessage());
-	    }
 
 	    processClientCmd(DEViseCommands.CREATE_TMP_SESSION_DIR +
 	      " " + hostname + " " + pop.getCmdPort());
 	    _createdTmpSessionDir = true;
+	} else {
+	    processClientCmd(DEViseCommands.SET_TMP_SESSION_DIR +
+	      " " + hostname + " " + pop.getCmdPort());
 	}
     }
 
@@ -895,6 +908,9 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 	  DEViseCommands.CREATE_TMP_SESSION_DIR)) {
 	    cmdCreateTmpSessionDir(clientCmd);
 
+        } else if (clientCmd.startsWith(DEViseCommands.SET_TMP_SESSION_DIR)) {
+	    cmdSetTmpSessionDir(clientCmd);
+
         } else {
 	    cmdClientDefault(clientCmd);
         }
@@ -1137,6 +1153,14 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
         }
     }
 
+    private void cmdSetTmpSessionDir(String clientCmd)
+      throws YException
+    {
+        if (!sendCmd(clientCmd)) {
+	    System.err.println("Error setting temporary session directory");
+        }
+    }
+
 // ------------------------------------------------------------------------
 // Method to process all client commands not using the command-specific
 // methods.
@@ -1189,10 +1213,8 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                     count = -1;
                     pop.pn(ee.getMessage());
                 }
-		pop.pn("$$$ after send open_session. $$$ " + count);
                 socket.clearSocket(count);
 		// socket.clearSocket(-1);
-		pop.pn("$$$ after clear socket. $$$ ");
             } else {
                 pop.pn("Switch error: client switch not successful");
             }
@@ -1362,7 +1384,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                         setAction(ACTION_QUIT);
                     //}
                 }
-            }
+	    }
 
             pop.suspendClient(client);
             client = null;
@@ -1558,21 +1580,27 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 	//
         pop.pn("We send the save-session command.");
 	processClientCmd(DEViseCommands.SAVE_TMP_SESSION + " {" +
-	  client.savedSessionName + "}");
-        client.tmpSessionExists = true;
+			 client.savedSessionName + "}");
+        // only when isSessionOpened = true, 
+	// this save_tmp_session command can be sent out
+	if (client.isSessionOpened)
+	    client.tmpSessionExists = true;
 
 	pop.pn("We send the close-session command.");
 	//server.serverCmds = null;
 	processClientCmd(DEViseCommands.CLOSE_SESSION);
+
 	// keep the current session opened
-	if ( ! client.isSessionOpened ) {
+	if ( !client.isSessionOpened ) {
 	    client.isSessionOpened = true;
 	}
-
-	pop.pn("We send the open-session command.");
-	sendCmd(DEViseCommands.OPEN_TMP_SESSION + " {" +
-	  client.savedSessionName + "}");
 	    
+	if (client.tmpSessionExists) {
+	    pop.pn("We send the open-session command.");
+	    sendCmd(DEViseCommands.OPEN_TMP_SESSION + " {" +
+		    client.savedSessionName + "}");
+	}
+
 	Vector serverDatas = new Vector();
 	processServerCmd(serverDatas);
 			    

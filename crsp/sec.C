@@ -1,8 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
-  By the DEVise Development Group
+  (c) Copyright 1992-2002
   Madison, Wisconsin
   All Rights Reserved.
   ========================================================================
@@ -16,6 +15,13 @@
   $Id$
 
   $Log$
+  Revision 1.8.46.1  2002/05/27 18:15:29  wenger
+  Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
+
+  Revision 1.8  1996/05/11 04:00:17  jussi
+  Handle case where calendar fails to return the appropriate
+  date value for a sequential date number.
+
   Revision 1.7  1996/05/11 03:24:30  jussi
   Added interface to trade calendar, so now a "real" date
   is extracted with each record.
@@ -45,6 +51,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "sec.h"
 #include "cal.h"

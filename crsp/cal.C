@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.4.46.1  2002/05/27 18:15:29  wenger
+  Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
+
+  Revision 1.4  1996/05/11 14:46:02  jussi
+  Record numbers are numbered from one to n, not from zero to n,
+  so we substract one from the record number when doing a seek.
+
   Revision 1.3  1996/05/11 04:00:39  jussi
   Minor improvement in code readability.
 
@@ -29,6 +36,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream.h>
+#include <string.h>
 
 #include "cal.h"
 

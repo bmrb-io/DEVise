@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.88.4.1  2002/06/11 17:27:39  wenger
+  Added an option for a view to not "contribute" to home on its visual
+  links; this allows a simplification of the NRG sessions, which fixes
+  bug 753.
+
+  Revision 1.88  2001/12/28 18:34:40  wenger
+  Fixed bugs 727 and 730 (problems with line graphs in DEVise).
+
   Revision 1.87  2001/05/24 18:42:02  wenger
   Fixed bug 674 (drill-down doesn't work correctly on record link follower
   views).
@@ -641,7 +649,7 @@ public:
       printf("No Mapping available\n");
       DoneMappingIterator(index);
       return NULL;
-      }
+    }
   }
 
   // Switch TDatas.
@@ -696,6 +704,13 @@ public:
   virtual void SetHorPanInfo(const ViewPanInfo &info) { _horPanInfo = info; }
   virtual void GetVerPanInfo(ViewPanInfo &info) { info = _verPanInfo; }
   virtual void SetVerPanInfo(const ViewPanInfo &info) { _verPanInfo = info; }
+
+  // Whether this view should contribute its home when home is done on
+  // another view that has a visual link to this view.  (This is a fix
+  // for bug 753.  RKW 2002-06-11.)
+  Boolean GetDoHomeOnVisLink() { return _doHomeOnVisLink; }
+  void SetDoHomeOnVisLink(Boolean doHome) { _doHomeOnVisLink = doHome; }
+
 
   /* Toggle the value of DisplayStats */
   char *GetDisplayStats() { return _DisplayStats; }
@@ -904,6 +919,8 @@ public:
   char *_viewSymParentVal;
 
   Boolean _inDerivedStartQuery;
+
+  Boolean _doHomeOnVisLink;
 
 	protected:
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -11,6 +11,8 @@
   or altered in any way without prior permission from the DEVise
   Development Group.
 */
+
+#include <string.h>
 
 #include "RangeInfo.h"
 

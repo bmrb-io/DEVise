@@ -1,4 +1,12 @@
 #! /bin/csh -f
+
+############################################################
+
+# $Id$
+
+# Automatic test script for the JavaScreen installation.
+
+############################################################
  
 # Check the arguments.
 if ($#argv != 1) then
@@ -10,7 +18,7 @@ if ($#argv != 1) then
 endif
 
 # Kill all jspop, jss, and devised
-./kill_jsall
+./kill_jsall -f
 rm jspop_pid:* jss_pid:* devised_pid:*
 
 # Restart one "regular" jspop and associated processes
@@ -22,47 +30,85 @@ sleep 20
 set jspop_pid = `ls jspop_pid:* | cut -d':' -f4`
 set jss_pid = `ls jss_pid:* | cut -d':' -f4`
 set devised_pid = `ls devised_pid:* | cut -d':' -f4` 
+if ($jspop_pid == "") then
+    echo "No PID available for JSPoP"
+    exit 1
+endif
+if ($jss_pid == "") then
+    echo "No PID available for JSS"
+    exit 1
+endif
+if ($devised_pid == "") then
+    echo "No PID available for DEVised"
+    exit 1
+endif
 
 set success = 1
 
+if ($argv[1] == "all" || $argv[1] == "test1") then
+    ./test1
+    if ($? != 0) then
+        success = 0
+    endif
+endif
+
 if ($argv[1] == "all") then
-    ./test1
     sleep 10
+endif
+
+if ($argv[1] == "all" || $argv[1] == "test2") then
     ./test2
+    if ($? != 0) then
+        success = 0
+    endif
 endif
 
-if ($argv[1] == "test1") then
-    ./test1
-endif
 
-if ($argv[1] == "test2") then
-    ./test2
-endif
+if ($success == 1) then
+    # Check the status of jspop, jss and devised
+    set jspop = `ps -p $jspop_pid | grep $jspop_pid`
+    set jss = `ps -p $jss_pid | grep $jss_pid`
+    set devised = `ps -p $devised_pid | grep $devised_pid`
 
-# Check the status of jspop, jss and devised
-set jspop = `ps -p $jspop_pid | grep $jspop_pid`
-set jss = `ps -p $jss_pid | grep $jss_pid`
-set devised = `ps -p $devised_pid | grep $devised_pid`
+    if ("$jspop" != "") then
+	echo "jspop -- OK"
+    else
+	echo "Error found with jspop. Please check logs/jspop.out.regular."
+	set success = 0
+    endif
 
-if ("$jspop" != "") then
-    echo "jspop -- OK"
-else
-    echo "Error found with jspop. Please check logs/jspop.out.regular."
-    set success = 0
-endif
+    if ("$jss" != "") then
+	echo "jss -- OK"
+    else
+	echo "Error found with jss. Please check logs/jss.out.regular."
+	set success = 0
+    endif
 
-if ("$jss" != "") then
-    echo "jss -- OK"
-else
-    echo "Error found with jss. Please check logs/jss.out.regular."
-    set success = 0
-endif
+    if ("$devised" != "") then
+	echo "devised -- OK"
+    else
+	echo "Error found with devised. Please check logs/devised.out.regular."
+	set success = 0
+    endif
 
-if ("$devised" != "") then
-    echo "devised -- OK"
-else
-    echo "Error found with devised. Please check logs/devised.out.regular."
-    set success = 0
+    # Check errors in log files
+    set jspop = `grep -i error logs/jspop.out.regular  | wc -l`
+    set jss = `grep -i error logs/jss.out.regular  | wc -l`
+
+    if ($jspop > 1) then
+	echo "Error found in jspop log. Please check logs/jspop.out.regular."
+	set success = 0
+    else 
+	echo "No error found in jspop log."
+    endif
+    
+    if ($jss > 0) then
+	echo "Error found in jss log. Please check logs/jss.out.regular."
+	set success = 0
+    else 
+	echo "No error found in jss log."
+    endif
+
 endif
 
 if ($success == 1) then
@@ -90,8 +136,5 @@ if ($success == 1) then
 endif
 
 exit(0)
-
-
-
 
 

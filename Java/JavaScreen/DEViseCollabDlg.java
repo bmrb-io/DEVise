@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2001
+// (c) Copyright 2000-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -12,7 +12,16 @@
 
 // ------------------------------------------------------------------------
 
+// TEMP -- I don't know yet what this class is for.  RKW 2002-05-10.
+
 // ------------------------------------------------------------------------
+
+// $Id$
+
+// $Log$
+// Revision 1.1.2.6  2002/05/10 14:46:20  wenger
+// Added normal header.
+//
 
 // ========================================================================
 
@@ -81,6 +90,3 @@ public class DEViseCollabDlg implements Runnable
         thread.stop();
     }
 }
-
-
-

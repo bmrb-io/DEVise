@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.4.22.1  2002/05/27 18:15:47  wenger
+  Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
+
+  Revision 1.4  1998/08/18 15:22:05  wenger
+  Found and fixed bug 384 (devisec not quitting).
+
   Revision 1.3  1998/02/12 17:15:38  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -41,6 +47,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "DeviseClient.h"
 

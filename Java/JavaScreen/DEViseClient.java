@@ -24,6 +24,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.66  2002/05/01 21:28:58  wenger
+// Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.65.2.10  2002/06/17 17:30:36  wenger
+// Added a bunch more error reporting and put timestamps on check_pop logs
+// to try to diagnose JSPoP restarts.
+//
 // Revision 1.65.2.9  2002/04/19 20:50:47  xuk
 // Add new testings in autotest: enforced client switching, restore pre-collab
 // states for JS;
@@ -514,7 +521,8 @@ public class DEViseClient
 	    try {
 	        sendCmd(DEViseCommands.DONE);
 	    } catch (YException ex) {
-	        System.err.println(ex.getMessage());
+	        System.err.println("YException in " +
+		  "DEViseClient.addNewCmd(): " + ex.getMessage());
 	    }
 
 	    if (useCgi()) {
@@ -529,7 +537,8 @@ public class DEViseClient
 	            sendCmd(DEViseCommands.ERROR);
 		}
 	    } catch (YException ex) {
-	        System.err.println("Error sending " + DEViseCommands.DONE +
+	        System.err.println("Error (" + ex.getMessage() +
+		  ") sending " + DEViseCommands.DONE +
 		  " command in response to " + DEViseCommands.CHECK_POP);
 	    }
 
@@ -725,7 +734,8 @@ public class DEViseClient
 	            status = REQUEST;
 	        }
 	    } catch(YException ex) {
-                pop.pn(ex.getMsg());
+                pop.pn("YException in DEViseClient.getStatus(): " +
+		  ex.getMsg());
                 close();
 	    }
 	}
@@ -1198,7 +1208,8 @@ public class DEViseClient
 	          "Invalid connection request received from client");
             }
 	} catch (YException ex) {
-	    System.err.println(ex.getMessage());
+	    System.err.println("YException in DEViseClient.connect(): " +
+	      ex.getMessage());
 	}
     }
 

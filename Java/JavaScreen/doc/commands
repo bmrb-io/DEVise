@@ -2,7 +2,7 @@
         $Id$
 
 Version: this document refers to the JavaScreen communication protocol
-version 11.0.
+version 12.0.
 
 
 For the details of the format in which commands are send on the socket,
@@ -347,6 +347,18 @@ see comments in DEViseCommSocket.java.
     Arguments: 1
         <session file>: path of session file to delete, relative to
                         $DEVISE_TMP_SESSION.
+
+    4.22 JAVAC_SetTmpSessionDir
+    Purpose: Set the directory to hold temporary session files for clients
+             associated with this JSPoP.  (This command is sent to a DEVised
+	     when another DEVised has already created the temporary session
+	     directory.)
+	     (Note: the JSPoP hostname and command port are used to ensure
+	     that the directory names are unique in case there are multiple
+	     JSPoPs.)
+    Arguments: 2
+	<JSPoP hostname>: hostname of the JSPoP.
+	<JSPoP cmd port>: command port of the JSPoP.
 
 
 5. Devised to JavaScreen (via JSPoP)

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.153  2002/05/01 21:30:13  wenger
+  Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.152.4.4  2002/06/11 17:27:38  wenger
+  Added an option for a view to not "contribute" to home on its visual
+  links; this allows a simplification of the NRG sessions, which fixes
+  bug 753.
+
   Revision 1.152.4.3  2002/04/30 17:48:11  wenger
   More improvements to 'home' functionality, especially on QPFull_X
   queries.
@@ -915,6 +923,8 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
   _viewSymFilterInfo = new ViewSymFilterInfo;
   _viewSymParentVal = NULL;
 
+  _doHomeOnVisLink = true;
+
   _objectValid.Set();
 }
 
@@ -1342,15 +1352,16 @@ ViewGraph::GetHome2D(Boolean explicitRequest, VisualFilter &filter)
       homeInfo->manYHi);
 #endif
 
+#if defined(DEBUG)
+    if (RefreshPending()) {
+	    fprintf(stderr, "WARNING: doing GetHome2D on a view with pending refresh (%s)\n", GetName());
+	}
+#endif
+
     DOASSERT(GetNumDimensions() == 2, "GetHome2D called on non 2D view");
 
-    int index = InitMappingIterator();
-    if (!MoreMapping(index)) {
-        DoneMappingIterator(index);
-        return;
-    }
-    TDataMap *map = NextMapping(index)->map;
-    DoneMappingIterator(index);
+    TDataMap *map = GetFirstMap();
+	if (map == NULL) return;
 
     const AttrInfo *xAttr = map->MapGAttr2TAttr(MappingCmd_X);
     const AttrInfo *yAttr = map->MapGAttr2TAttr(MappingCmd_Y);

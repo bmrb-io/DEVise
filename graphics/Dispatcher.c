@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.64.14.1  2002/05/28 17:15:20  wenger
+  Dispatcher::ImmediateTerminate() now logs signal, requests core dump.
+
+  Revision 1.64  1999/12/15 20:03:57  wenger
+  Command log now includes information about how many times we went through
+  the dispatcher, to try to allow reproducing timing-dependent bugs.
+
   Revision 1.63  1999/11/30 22:28:01  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -590,8 +597,11 @@ void Dispatcher::ImmediateTerminate(int sig)
      In the future, perhaps print a stack trace.
   */
 
-  DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
-    "Dispatcher::ImmediateTerminate()\n");
+  const int bufSize = 1024;
+  char buf[bufSize];
+  int formatted = snprintf(buf, bufSize, "Dispatcher::ImmediateTerminate(%d)",
+    sig);
+  DebugLog::DefaultLog()->Message(DebugLog::LevelError, buf);
 
   fprintf(stderr, "\n");
   fprintf(stderr, "An unrecoverable system error (code %d) occurred.\n",
@@ -600,8 +610,10 @@ void Dispatcher::ImmediateTerminate(int sig)
 
   /* Kill all processes in the process group */
 
-  kill(-getpgrp(), SIGKILL);
+  // Commented out because this kills ourself, preventing core dump.
+  //TEMP? kill(-getpgrp(), SIGKILL);
 
+  Init::SetAbort(true);
   Exit::DoExit(1);
 }
 

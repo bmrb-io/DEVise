@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.65  2002/05/01 21:30:13  wenger
+  Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.64.2.3  2002/05/16 17:11:30  wenger
+  Version is now 1.7.8x.
+
+  Revision 1.64.2.2  2002/05/13 17:39:59  wenger
+  Final 1.7.7 version.
+
   Revision 1.64.2.1  2002/04/18 17:25:45  wenger
   Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
   temporary session files when the JSPoP and DEViseds are on different
@@ -364,7 +373,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.7.7x";
+static const char *	version = "1.7.8x";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2002";

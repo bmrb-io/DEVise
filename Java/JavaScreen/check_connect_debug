@@ -1,0 +1,31 @@
+#! /bin/csh -f
+
+############################################################
+
+# $Id$
+
+# Note: specific port number must NOT be specified in this script.
+
+# This is a special version that dumps java profiling information
+# to try to figure out what's going on with the check processes
+# that chew up CPU on yola.
+
+############################################################
+
+if (`hostname` == "yola") then
+  unsetenv DISPLAY
+  unsetenv LD_LIBRARY_PATH
+endif
+
+limit cputime 10
+limit coredumpsize 0
+
+set datestr = `date +%j%H%M%S`
+#echo $datestr
+set prof_file = logs/check_prof$datestr
+#echo $prof_file
+
+set javaexec = `cat bin2/java`
+$javaexec -prof:$prof_file JavaScreen.DEViseCheckPop $*
+# Note: we're interested in the profiles for the ones that hang, anyhow.
+rm $prof_file

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.7.10.1  2002/05/16 17:16:11  wenger
+  Changed default foreground color to black.
+
+  Revision 1.7  2001/06/12 15:29:52  wenger
+  Implemented a choice of modulus (default) or truncate color modes.
+
   Revision 1.6  1998/05/05 15:16:13  zhenhai
   Corrected make files for sgi uses.
 
@@ -259,6 +265,7 @@ void	SetupColors(void)
 	gColorManager->GetColorID(rgb, cid);
 
 	SetColorID(blackColor, cid);
+	SetColorID(defForeColor, cid);
 	SetColorID(gifBlackColor, cid);
 	SetColorID(map3DframeColor, cid);
 	SetColorID(xWinForeColor, cid);
@@ -276,7 +283,6 @@ void	SetupColors(void)
 	rgb = gCorePalette->GetColor(2)->GetColor();
 	gColorManager->GetColorID(rgb, cid);
 
-	SetColorID(defForeColor, cid);
 	SetColorID(kgraphForeColor, cid);
 	SetColorID(gdatasnapColor, cid);
 	SetColorID(viewBorderColor, cid);

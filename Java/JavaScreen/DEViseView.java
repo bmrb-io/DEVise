@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.71  2002/05/01 21:28:59  wenger
+// Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.70.2.3  2002/06/04 14:22:02  sjlong
+// Fixed bug 783 (in aart1_EmEn.ds - mouse position does not work in main view)\nFixed bug 784 (in aart1_EmEn.ds - the axis labels are sometimes not correct)
+//
+// Revision 1.70.2.2  2002/05/17 17:13:10  wenger
+// Did some cleanup of the JavaScreen axis labeling code (including fixing
+// a bug that prevented the BMRB histogram sessions from working).
+//
 // Revision 1.70.2.1  2002/03/30 19:16:01  xuk
 // Fix bugs for displaying axis labels for very small values.
 //
@@ -189,6 +199,8 @@ import  java.text.*;
 // This class represent a image view in DEVise
 public class DEViseView
 {
+    private static final int DEBUG = 0;
+
     public jsdevisec jsc = null;
 
     public DEViseCanvas canvas = null;
@@ -496,6 +508,242 @@ public class DEViseView
         viewChilds.removeAllElements();
     }
 
+    // Paint the axis labels for this view.
+    //TEMP -- make sure this works right for piled views, especially
+    // piled child views
+    public void paintAxisLabels(Graphics gc, boolean isChildView)
+    {
+	if (DEBUG >= 1) {
+	    System.out.println("DEViseView(" + viewName +
+	      ").printAxisLabels(" + isChildView + ")");
+	}
+
+	Rectangle loc;
+
+	Color labelColor = new Color(viewFg);
+	if (DEBUG >= 2) {
+	    System.out.println("  labelColor: " + labelColor);
+	}
+	gc.setColor(labelColor);
+
+	//
+	// Compensate for the location of the child view relative to the
+	// parent, if this is a child view.
+	//
+	if (isChildView) {
+            loc = new Rectangle(viewLoc.x + viewDataLoc.x,
+                                viewLoc.y + viewDataLoc.y,
+                                viewDataLoc.width,
+                                viewDataLoc.height);
+	} else {
+	    loc = viewDataLoc;
+	}
+
+	if (labelYDraw == 1) {
+	    int currentYPos = 0;
+	    float currentY = 0;
+	    String labelY = null;
+	    float step = 0;
+	    int width = 0;
+	    float displayY = 0;
+
+	    gc.setFont(DEViseFonts.getFont(fontSizeY, fontTypeY,
+	      fontBoldY, fontItalicY));
+
+	    if ((viewDataYType.toLowerCase()).equals("real")) {
+		// round up the step
+		step = 40 * dataYStep;
+		step = roundUp(step);
+		if (viewDataYMin >= 0) {
+		    // round up the min
+		    currentY = getMin(viewDataYMin, step);
+		    currentYPos = loc.y + loc.height - 
+			(int)((currentY - viewDataYMin) / dataYStep);
+
+		    while (currentYPos >= loc.y + 10) {
+			displayY = currentY * factorY;
+
+			labelY = getYLabel(displayY);
+			if (DEBUG >= 2) {
+			    System.out.println("  Drawing Y label: " + labelY);
+			}
+
+			width = gc.getFontMetrics().stringWidth(labelY);
+			gc.drawString(labelY, loc.x-10-width, currentYPos+5); 
+			gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
+
+   			currentY += step;
+			currentYPos = loc.y + loc.height - 
+			    (int)((currentY - viewDataYMin) / dataYStep);
+		    }
+		} else { // min < 0
+		    // drawing upward
+		    currentY = 0;
+		    currentYPos = loc.y + loc.height - 
+			(int)((0 - viewDataYMin) / dataYStep);
+
+		    while (currentYPos >= loc.y + 10) {
+			displayY = currentY * factorY;
+
+			labelY = getYLabel(displayY);
+			if (DEBUG >= 2) {
+			    System.out.println("  Drawing Y label: " + labelY);
+			}
+			width = gc.getFontMetrics().stringWidth(labelY);
+			gc.drawString(labelY, loc.x-10-width, currentYPos+5); 
+			gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
+   			currentY += step;
+
+			currentYPos = loc.y + loc.height - 
+			    (int)((currentY - viewDataYMin) / dataYStep);
+
+		    }		
+    
+		    // drawing downward
+		    currentY = 0 - step;
+		    currentYPos = loc.y + loc.height - 
+			(int)((currentY - viewDataYMin) / dataYStep);
+		    	
+		    while (currentYPos <= loc.y + loc.height) {
+			displayY = currentY * factorY;
+
+			labelY = getYLabel(displayY);
+			if (DEBUG >= 2) {
+			    System.out.println("  Drawing Y label: " + labelY);
+			}
+			width = gc.getFontMetrics().stringWidth(labelY);
+
+			gc.drawString(labelY, loc.x-10-width, currentYPos+5); 
+			gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
+			//currentYPos += 40;	    
+			currentY -= step;
+			currentYPos = loc.y + loc.height - 
+			    (int)((currentY - viewDataYMin) / dataYStep);
+		    }		
+		}
+	    } else { // for "date"
+		while (currentYPos >= loc.y + 20) {
+		    currentY = viewDataYMin + (currentYPos - loc.x) *  dataYStep;
+		    displayY = currentY * factorY;
+		    labelY = getYLabel(displayY);
+		    if (DEBUG >= 2) {
+		        System.out.println("  Drawing Y label: " + labelY);
+		    }
+		    
+		    gc.drawString(labelY, loc.x-40, currentYPos+5); 
+		    gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
+		    currentYPos -= 40;	    
+		}
+	    }    
+	}   
+	
+	if (labelXDraw == 1) {
+	    int currentXPos = loc.x;
+	    float currentX = 0;
+	    String labelX = null;
+	    float step = 0;
+	    int width = 0;
+	    float displayX = 0;
+
+	    gc.setFont(DEViseFonts.getFont(fontSizeX, fontTypeX,
+	      fontBoldX, fontItalicX));
+	    
+	    if ((viewDataXType.toLowerCase()).equals("real")) {
+		// round up the step
+		step = 100 * dataXStep;
+		step = roundUp(step);
+
+		if (viewDataXMin >= 0) {
+		    // round up the min
+		    currentX = getMin(viewDataXMin, step);
+		    currentXPos = loc.x + 
+			(int)((currentX - viewDataXMin) / dataXStep);
+		    
+		    while (currentXPos <= loc.x + loc.width) {
+			displayX = currentX * factorX;
+
+			labelX = getXLabel(displayX);
+		        if (DEBUG >= 2) {
+		            System.out.println("  Drawing X label: " + labelX);
+		        }
+			width = gc.getFontMetrics().stringWidth(labelX);	
+			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+15); 
+			gc.drawLine(currentXPos, loc.y+loc.height, 
+				    currentXPos, loc.y+loc.height+3);
+
+			currentX += step;
+			currentXPos = loc.x + 
+			    (int)((currentX - viewDataXMin) / dataXStep);
+		    }
+		} else { // min < 0
+		    // drawing upward
+		    currentX = 0;
+		    currentXPos = loc.x + 
+			(int)((0 - viewDataXMin) / dataXStep);
+		    
+		    while (currentXPos <= loc.x + loc.width) {
+			displayX = currentX * factorX;
+
+			labelX = getXLabel(displayX);
+		        if (DEBUG >= 2) {
+		            System.out.println("  Drawing X label: " + labelX);
+		        }
+			width = gc.getFontMetrics().stringWidth(labelX);	
+			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+15); 
+			gc.drawLine(currentXPos, loc.y+loc.height, 
+				    currentXPos, loc.y+loc.height+3);
+
+			currentX += step;
+			currentXPos = loc.x + 
+			    (int)((currentX - viewDataXMin) / dataXStep);
+		    }		
+			
+		    // drawing downward
+		    currentX = 0 - step;
+		    currentXPos = loc.x + 
+			(int)((currentX - viewDataXMin) / dataXStep);
+		    
+		    while (currentXPos >= loc.x) {
+			displayX = currentX * factorX;
+			
+			labelX = getXLabel(displayX);
+		        if (DEBUG >= 2) {
+		            System.out.println("  Drawing X label: " + labelX);
+		        }
+			width = gc.getFontMetrics().stringWidth(labelX);       
+			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+15); 
+			gc.drawLine(currentXPos, loc.y+loc.height, 
+				    currentXPos, loc.y+loc.height+3);
+			currentX -= step;
+			currentXPos = loc.x + 
+			    (int)((currentX - viewDataXMin) / dataXStep);
+		    }		
+		}
+	    } else { // for "date"
+		fontSizeX = (fontSizeX <= 12) ? fontSizeX : 12; 
+
+		displayX = viewDataXMin * factorX;
+		labelX = getXLabel(displayX);
+		if (DEBUG >= 2) {
+		    System.out.println("  Drawing X label: " + labelX);
+		}
+		gc.drawString(labelX, loc.x, loc.y+loc.height+15); 
+		gc.drawLine(loc.x, loc.y+loc.height, 
+			    loc.x, loc.y+loc.height+3);
+		
+		displayX = viewDataXMax * factorX;
+		labelX = getXLabel(displayX);
+		if (DEBUG >= 2) {
+		    System.out.println("  Drawing X label: " + labelX);
+		}
+		width = gc.getFontMetrics().stringWidth(labelX);
+		gc.drawString(labelX, loc.x+loc.width-width, loc.y+loc.height+15); 
+		gc.drawLine(loc.x+loc.width, loc.y+loc.height, 
+			    loc.x+loc.width, loc.y+loc.height+3);
+	    }    
+	}   
+    }
+
     // Get the canvas corresponding to this view (note that if this view
     // is a child view or a non-base piled view, the canvas returned is
     // not "owned" by this view).
@@ -556,9 +804,11 @@ public class DEViseView
             while (v.parentView != null) {
                 v = v.parentView;
             }
-            return new Rectangle(loc.x + v.viewLoc.x, loc.y + v.viewLoc.y, viewLoc.width, viewLoc.height);
+            return new Rectangle(loc.x + v.viewLoc.x, loc.y + v.viewLoc.y,
+	      viewLoc.width, viewLoc.height);
         } else {
-            return new Rectangle(loc.x + canvas.view.viewLoc.x, loc.y + canvas.view.viewLoc.y, viewLoc.width, viewLoc.height);
+            return new Rectangle(loc.x + canvas.view.viewLoc.x,
+	      loc.y + canvas.view.viewLoc.y, viewLoc.width, viewLoc.height);
         }
     }
 
@@ -653,12 +903,11 @@ public class DEViseView
 		return label;
 	    }
 
-
 	    // TEMP -- round to the nearest thousandth?
             if (x0 > 0) {
-                x0 = (int)(x0 * 1000.0f + 0.5f) / 1000.0f;
+                x0 = (float) Math.floor(x0 * 1000.0f + 0.5f) / 1000.0f;
             } else {
-                x0 = (int)(x0 * 1000.0f - 0.5f) / 1000.0f;
+                x0 = (float) Math.ceil(x0 * 1000.0f - 0.5f) / 1000.0f;
             }
 
             //  return ("" + x0);
@@ -714,9 +963,9 @@ public class DEViseView
 
 	    // TEMP -- round to the nearest thousandth?
             if (y0 > 0) {
-                y0 = (int)(y0 * 1000.0f + 0.5f) / 1000.0f;
+                y0 = (long)(y0 * 1000.0f + 0.5f) / 1000.0f;
             } else {
-                y0 = (int)(y0 * 1000.0f - 0.5f) / 1000.0f;
+                y0 = (long)(y0 * 1000.0f - 0.5f) / 1000.0f;
             }
 
             // return ("" + y0);
@@ -901,6 +1150,8 @@ public class DEViseView
     // get the label for Y axis
     public String getYLabel(float y)
     {
+        boolean done = false;        
+
 	if ((viewDataYType.toLowerCase()).equals("date")) {
 	    return getDateLabel(y, viewInfoFormatY);
 	} else {
@@ -911,22 +1162,46 @@ public class DEViseView
 	    if (abs > 99999) { // |y| >= 1,000,000
 		int y0 = (int)(y);
 		labelY = DEViseViewInfo.viewParser(y0, viewInfoFormatY);
+
 		int e = labelY.indexOf('E');
+                // This 'while' statement will eliminate any unnecessary trailing 0s as
+                // well as an unecessary decimal point
+                done = false;
 		while (labelY.charAt(e-1) == '0' 
 		       || labelY.charAt(e-1) == '.') {
+                        
+                    // Once we get to the decimal point, we are done cleaning up the number
+                    if(labelY.charAt(e-1) == '.') {
+			done = true;
+                    }
+
 		    labelY = labelY.substring(0, e-1).concat(labelY.substring(e, labelY.length()));
 		    e = e-1;
+
+                    if(done) break;
 		}
+
 		length = labelY.length();
 	    } else if (abs >= 10) { // |y| >= 10
 		length = (int)(Math.log(abs) / Math.log(10) + 0.0001) + 1;
 	    } else if (abs < 0.01) { // |y| < 0.01
 		int e = labelY.indexOf('E');
 		if (e != -1) 
+
+                    // This 'while' statement will eliminate any unnecessary trailing 0s as
+                    // well as an unecessary decimal point
+		    
 		    while (labelY.charAt(e-1) == '0' 
 			   || labelY.charAt(e-1) == '.') {
+                        
+                        // Once we get to the decimal point, we are done cleaning up the number
+                        if(labelY.charAt(e-1) == '.') {
+			    done = true;
+                        }
 			labelY = labelY.substring(0, e-1).concat(labelY.substring(e, labelY.length()));
 			e = e-1;
+ 
+			if(done) break;
 		    }
 		length = labelY.length();
 	    } else {
@@ -947,6 +1222,7 @@ public class DEViseView
 		    labelY = labelY.substring(0, length-1);
 		    length--;
 	    }
+
 	    return labelY;
 	}
     }
@@ -954,6 +1230,8 @@ public class DEViseView
     // get the label for X axis
     public String getXLabel(float x)
     {
+        boolean done = false;
+
 	if ((viewDataXType.toLowerCase()).equals("date")) {
 	    return getDateLabel(x, viewInfoFormatX);
 	} else {
@@ -965,10 +1243,23 @@ public class DEViseView
 		int x0 = (int)(x);
 		labelX = DEViseViewInfo.viewParser(x0, viewInfoFormatX);
 		int e = labelX.indexOf('E');
+
+
+                // This 'while' statement will eliminate any unnecessary trailing 0s as
+                // well as an unecessary decimal point
+                done = false;
 		while (labelX.charAt(e-1) == '0' 
 		       || labelX.charAt(e-1) == '.') {
+                        
+                    // Once we get to the decimal point, we are done cleaning up the number
+                    if(labelX.charAt(e-1) == '.') {
+			done = true;
+                    }
+
 		    labelX = labelX.substring(0, e-1).concat(labelX.substring(e, labelX.length()));
 		    e = e-1;
+                  
+                    if(done) break;
 		}
 		length = labelX.length();
 	    } else if (abs >= 10) { // |x| >= 10
@@ -976,10 +1267,22 @@ public class DEViseView
 	    } else if (abs < 0.01) { // |x| < 0.01
 		int e = labelX.indexOf('E');
 		if (e != -1) 
+
+                    // This 'while' statement will eliminate any unnecessary trailing 0s as
+                    // well as an unecessary decimal point
+                    //done = false;
 		    while (labelX.charAt(e-1) == '0' 
 			   || labelX.charAt(e-1) == '.') {
+
+                        // Once we get to the decimal point, we are done cleaning up the number
+                        if(labelX.charAt(e-1) == '.') {
+			    done = true;
+                        }
+
 			labelX = labelX.substring(0, e-1).concat(labelX.substring(e, labelX.length()));
 			e = e-1;
+
+                        if(done) break;
 		    }
 		length = labelX.length();
 	    } else {

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2001
+  (c) Copyright 1998-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,21 @@
   $Id$
 
   $Log$
+  Revision 1.126  2002/05/01 21:30:12  wenger
+  Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.125.4.4  2002/06/11 17:27:38  wenger
+  Added an option for a view to not "contribute" to home on its visual
+  links; this allows a simplification of the NRG sessions, which fixes
+  bug 753.
+
+  Revision 1.125.4.3  2002/05/27 15:14:07  wenger
+  Improved fix to bug 775 (view previous filter/JS client switch
+  problem) -- improved precision of view history values.
+
+  Revision 1.125.4.2  2002/05/20 21:21:48  wenger
+  Fixed bug 779 (client switching problem with multiple DEViseds).
+
   Revision 1.125.4.1  2002/04/18 17:25:42  wenger
   Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
   temporary session files when the JSPoP and DEViseds are on different
@@ -968,6 +983,12 @@ IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(JAVAC_DeleteTmpSession)
 	JavaScreenCmd jc(_control,JavaScreenCmd::DELETE_TMP_SESSION,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_SetTmpSessionDir)
+	JavaScreenCmd jc(_control,JavaScreenCmd::SET_TMP_SESSION_DIR,
 		argc-1, &argv[1]);
 	return jc.Run();
 IMPLEMENT_COMMAND_END
@@ -2951,16 +2972,16 @@ DeviseCommand_getVisualFilters::Run(int argc, char** argv)
     	  sprintf(xLowBuf, "%s",DateString(filter.xLow));
     	  sprintf(xHighBuf, "%s",DateString(filter.xHigh));
     	} else {
-    	  sprintf(xLowBuf, "%.2f",filter.xLow);
-    	  sprintf(xHighBuf, "%.2f",filter.xHigh);
+    	  sprintf(xLowBuf, "%g",filter.xLow);
+    	  sprintf(xHighBuf, "%g",filter.xHigh);
     	}
     	
     	if (view->GetYAxisAttrType() == DateAttr) {
     	  sprintf(yLowBuf, "%s",DateString(filter.yLow));
     	  sprintf(yHighBuf, "%s",DateString(filter.yHigh));
     	} else {
-    	  sprintf(yLowBuf, "%.2f",filter.yLow);
-    	  sprintf(yHighBuf, "%.2f",filter.yHigh);
+    	  sprintf(yLowBuf, "%g",filter.yLow);
+    	  sprintf(yHighBuf, "%g",filter.yHigh);
     	}
     	sprintf(buf, "{{%s} {%s} {%s} {%s} %d} ",xLowBuf, yLowBuf,
     		xHighBuf, yHighBuf, filter.marked);
@@ -7564,6 +7585,61 @@ IMPLEMENT_COMMAND_BEGIN(sessionIsDirty)
         return 1;
     } else {
 		fprintf(stderr, "Wrong # of arguments: %d in getColorMode\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setDoHomeOnVisLink)
+    // Arguments: [view name] [do home on visual link (0 = no; 1 = yes)]
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 3) {
+        Session::SetDirty();
+
+        ViewGraph *view = (ViewGraph *)View::FindViewByName(argv[1]);
+        if (!view) {
+   	        ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+	    Boolean doHome = (atoi(argv[1]) != 0);
+		view->SetDoHomeOnVisLink(doHome);
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in setDoHomeOnVisLink\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getDoHomeOnVisLink)
+    // Arguments: [view name]
+    // Returns: [do home on visual link (0 = no; 1 = yes)]
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)View::FindViewByName(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+		Boolean doHome = view->GetDoHomeOnVisLink();
+
+		const int bufLen = 128;
+		char buf[bufLen];
+		int formatted = snprintf(buf, bufLen, "%d", doHome);
+		checkAndTermBuf(buf, bufLen, formatted);
+        ReturnVal(API_ACK, buf);
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in getDoHomeOnVisLink\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

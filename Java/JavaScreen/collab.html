@@ -1,7 +1,7 @@
 <!--
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2001
+  (c) Copyright 2001-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -41,8 +41,8 @@ accept most user input (cursor moves, for example).
 <h3>Starting Collaboration</h3>
 
 <p>Starting collaboration is a two-part process: first, the leader JavaScreen
-must enable collaboration; second, the follower or followers must start
-collaboration.
+must create a collaboration; second, the follower or followers must connect
+to that collaboration.
 
 <h4>Leader</h4>
 
@@ -51,25 +51,29 @@ allow collaboration.  To enable collaboration once a session is open,
 perform the following procedure:
 <ul>
 <li>Click the "Collaborate" button.
-<li>Then click the "Enable Collaboration" button within the dialog.
-<li>When you click the "Enable Collaboration" button, a new dialog will
-be shown in which you can set a collaboration password.  If you don't want
-third parties "eavesdropping" on your collaboration, you should change the
-password to something other than the default.
+<li>Then click the "Become Leader" button within the dialog.
+<li>When you click the "Become Leader" button, a new dialog will
+be shown in which you can set a collaboration name and password.  The
+collaboration name is simply a way of identifying the collaboration to
+prospective followers.  If you don't want third parties "eavesdropping"
+on your collaboration, you should set a password for your collaboration.
 </ul>
 
 <h4>Followers</h4>
 
-<p>Once the leader has enabled collaboration, the followers can connect to
+<p>Follow the link to get a <a target="_blank" href="collabf.html">
+JavaScreen follower</a>.
+
+<p>Once the leader has created a collaboration, the followers can connect to
 that leader and start the actual collaboration.  To do so, perform this
 procedure:
 
 <ul>
 <li>Click the "Collaborate" button in the follower JavaScreen.
-<li>Then click the "Start Collaboration" button in the dialog.
-<li>A new dialog will be show with a list of available collaboration leaders.
-For each leader, its client ID, host name, and session name are shown.
-Select the appropriate leader in the dialog, and click "OK".
+<li>Then click the "Become Follower" button in the dialog.
+<li>A new dialog will be shown with a list of available collaboration leaders.
+For each leader, its client ID, collaboration name, host name, and session
+name are shown.  Select the appropriate leader in the dialog, and click "OK".
 <li>A new dialog will be shown in which you must enter the collaboration
 password.  If you enter the correct password, you will become a
 collaboration follower. 
@@ -82,7 +86,7 @@ collaboration follower.
 <p>The leader can end the collaboration as follows:
 <ul>
 <li>Click the "Collaborate" button.
-<li>Click the "Disable Collaboration" button.
+<li>Click the "Quit Leader" button.
 </ul>
 
 <p>The leader can also end the collaboration by simply exiting.  In
@@ -94,23 +98,25 @@ collaboration state.
 Any follower can exit from collaboration mode as follows:
 <ul>
 <li>Click the "Collaborate" button.
-<li>Then click the "Finish Collaboration" button in the dialog.
+<li>Then click the "Quit Following" button in the dialog.
 </ul>
-This will return you to your pre-collaboration state.
-
-any follower can quit
-leader can disable or quit
+This will return the follower to its pre-collaboration state.
 
 <h3>Notes</h3>
 
 <p>At the present time, collaboration does not work in CGI communication mode.
+(CGI mode is a special mode to deal with the problem of firewalls that prevent
+the JavaScreen client from connecting a socket back to the JSPoP on the
+web server machine.  You can tell that you're in CGI mode because the
+text just to the right of the JavaScreen buttons says 'CGI' instead of
+'Socket'.)
 
 <p>At the present time, you must exit and restart the collaboration to
 switch leaders.
 
 <hr>
 
-<p><i>Last updated 2001-12-03.</i>
+<p><i>Last updated 2002-05-08.</i>
 
 </body>
 </HTML>

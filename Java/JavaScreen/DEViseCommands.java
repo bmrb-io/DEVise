@@ -19,6 +19,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2002/05/01 21:28:58  wenger
+// Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.19.2.4  2002/05/20 21:21:33  wenger
+// Fixed bug 779 (client switching problem with multiple DEViseds).
+//
 // Revision 1.19.2.3  2002/04/18 17:25:10  wenger
 // Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
 // temporary session files when the JSPoP and DEViseds are on different
@@ -262,6 +268,9 @@ public final class DEViseCommands
     public static final String SET_COLLAB_PASS = JS_PREFIX + "SetCollabPass";
 
     public static final String SET_DISPLAY_SIZE = JS_PREFIX + "SetDisplaySize";
+
+    public static final String SET_TMP_SESSION_DIR = JS_PREFIX +
+        "SetTmpSessionDir";
 
     public static final String SHOW_RECORDS = JS_PREFIX + "ShowRecords";
 

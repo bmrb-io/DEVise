@@ -21,6 +21,15 @@
   $Id$
 
   $Log$
+  Revision 1.132  2002/05/01 21:30:12  wenger
+  Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.131.2.3  2002/05/27 18:15:59  wenger
+  Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
+
+  Revision 1.131.2.2  2002/05/20 21:21:48  wenger
+  Fixed bug 779 (client switching problem with multiple DEViseds).
+
   Revision 1.131.2.1  2002/04/18 17:25:44  wenger
   Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
   temporary session files when the JSPoP and DEViseds are on different
@@ -678,7 +687,7 @@ static DeviseCursorList _drawnCursors;
 // Assume no more than 1000 views in a pile...
 static const float viewZInc = 0.001;
 
-static const int protocolMajorVersion = 11;
+static const int protocolMajorVersion = 12;
 static const int protocolMinorVersion = 0;
 
 JavaScreenCache JavaScreenCmd::_cache;
@@ -713,6 +722,7 @@ char *JavaScreenCmd::_serviceCmdName[] =
     "JAVAC_CreateTmpSessionDir",
     "JAVAC_OpenTmpSession",
     "JAVAC_DeleteTmpSession",
+    "JAVAC_SetTmpSessionDir",
     "null_svc_cmd"
 };
 
@@ -1330,6 +1340,9 @@ JavaScreenCmd::Run()
 		case DELETE_TMP_SESSION:
 			DeleteTmpSession();
 			break;
+		case SET_TMP_SESSION_DIR:
+			SetTmpSessionDir();
+			break;
 		default:
 			fprintf(stderr, "Undefined JAVA Screen Command:%d\n", _ctype);
 	}
@@ -1880,8 +1893,8 @@ JavaScreenCmd::KeyAction()
 	    int key = atoi(_argv[1]);
 
 		// TEMP -- pixels or data units?
-        Coord xLoc = 0; //TEMP
-        Coord yLoc = 0; //TEMP
+        int xLoc = 0; //TEMP
+        int yLoc = 0; //TEMP
 
         PreRedraw();
 
@@ -3683,6 +3696,37 @@ JavaScreenCmd::CreateTmpSessionDir()
     const char *popMachine = _argv[0];
 	const char *popPort = _argv[1];
 
+	DoSetTmpSessionDir(popMachine, popPort);
+
+    CheckAndMakeDirectory(_tmpSessionDir, true);
+}
+
+//====================================================================
+// Process a JAVAC_SetTmpSessionDir command that we received.
+void
+JavaScreenCmd::SetTmpSessionDir()
+{
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	  "JavaScreenCmd::SetTmpSessionDir(", _argc, _argv, ")\n");
+#endif
+
+	if (_argc != 2) {
+		errmsg = "Usage: JAVAC_SetTmpSessionDir <jspop hostname> <jspop cmd port>";
+		_status = ERROR;
+		return;
+	}
+
+    const char *popMachine = _argv[0];
+	const char *popPort = _argv[1];
+
+	DoSetTmpSessionDir(popMachine, popPort);
+}
+
+//====================================================================
+void
+JavaScreenCmd::DoSetTmpSessionDir(const char *popMachine, const char *popPort)
+{
 	// Length of final temp session string buffer (first 1 is for '/').
 	int length = strlen(_tmpSessionDirBase) + 1 + strlen(popMachine) +
 	  strlen(popPort) + 1;
@@ -3691,11 +3735,6 @@ JavaScreenCmd::CreateTmpSessionDir()
 	int formatted = snprintf(_tmpSessionDir, length, "%s/%s%s",
 	  _tmpSessionDirBase, popMachine, popPort);
 	checkAndTermBuf(_tmpSessionDir, length, formatted);
-
-	printf("Creating or clearing temporary session directory %s\n",
-	  _tmpSessionDir);
-
-    CheckAndMakeDirectory(_tmpSessionDir, true);
 }
 
 //====================================================================

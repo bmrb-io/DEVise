@@ -1,4 +1,13 @@
 #! /bin/csh -f
+
+############################################################
+
+# $Id$
+
+# Part of automatic testing -- test client switch and
+# restoring of pre-collaboration state.
+
+############################################################
  
 # Start a collaboration leader
 ./js -collableadernamecollab -collableaderpassguest -autoplayback -clientlogclient_log.2 -playbackoriginal -screensize600x400 &
@@ -16,8 +25,10 @@ sleep 200
 set js = `ps | grep js$`
 if ("$js" != "") then
     echo "\nError found with JavaScreen. Please check logs."
-    set success = 0
+    exit (1)
 endif
+
+exit (0)
 
 
 

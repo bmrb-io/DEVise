@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.7.14.1  2002/05/27 18:15:37  wenger
+  Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
+
+  Revision 1.7  2000/03/23 19:58:39  wenger
+  Updated dependencies, got everything to compile on pumori (Linux 2.2.12,
+  g++ 2.95.2).
+
   Revision 1.6  1999/11/30 22:27:28  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -94,6 +101,7 @@
 #if defined(SUN)
 #   include "machdep.h"
 #endif
+#include <stdlib.h>
 
 #include "rcvMsg.h"
 #include "codec.h"

@@ -1,7 +1,7 @@
 /*
    ========================================================================
    DEVise Data Visualization Software
-   (c) Copyright 1992-2000
+   (c) Copyright 1992-2002
    By the DEVise Development Group
    Madison, Wisconsin
    All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.43.10.1  2002/05/10 21:52:58  wenger
+  Fixed problem of X-only zoom in DEVise not working when the Y pixels
+  of the mouse drag are exactly the same.
+
+  Revision 1.43  2001/09/26 16:31:37  wenger
+  Fixed bug 693 (DEVise rubberband line now reflects X-only zoom).
+
   Revision 1.42  2001/01/08 20:32:52  wenger
   Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
   back onto the trunk.
@@ -223,7 +230,7 @@ void Action::AreaSelected(ViewGraph *view, Coord xlow, Coord ylow,
       xlow, ylow, xhigh, yhigh, button);
 #endif
 
-  if (xlow == xhigh || ylow == yhigh) {
+  if (xlow == xhigh && ylow == yhigh) {
 #if defined(DEBUG)
     printf("Both points are the same\n");
 #endif

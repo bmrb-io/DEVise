@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.80  2002/05/01 21:30:11  wenger
+  Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.79.4.3  2002/06/11 17:27:37  wenger
+  Added an option for a view to not "contribute" to home on its visual
+  links; this allows a simplification of the NRG sessions, which fixes
+  bug 753.
+
+  Revision 1.79.4.2  2002/05/20 21:21:47  wenger
+  Fixed bug 779 (client switching problem with multiple DEViseds).
+
   Revision 1.79.4.1  2002/04/18 17:25:42  wenger
   Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
   temporary session files when the JSPoP and DEViseds are on different
@@ -517,6 +528,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(JAVAC_CreateTmpSessionDir)
 	REGISTER_COMMAND(JAVAC_OpenTmpSession)
 	REGISTER_COMMAND(JAVAC_DeleteTmpSession)
+	REGISTER_COMMAND(JAVAC_SetTmpSessionDir)
 
 	REGISTER_COMMAND(dteImportFileType)
 	REGISTER_COMMAND(dteListAllIndexes)
@@ -787,6 +799,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setColorMode)
 	REGISTER_COMMAND(getColorMode)
 	REGISTER_COMMAND(sessionIsDirty)
+	REGISTER_COMMAND(setDoHomeOnVisLink)
+	REGISTER_COMMAND(getDoHomeOnVisLink)
 }
 
 CmdContainer::~CmdContainer()

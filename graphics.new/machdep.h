@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   University of Wisconsin at Madison
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.26.14.1  2002/05/27 18:16:00  wenger
+  Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
+
+  Revision 1.26  1999/07/12 19:02:12  wenger
+  Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
+
   Revision 1.25  1998/08/21 22:17:02  wenger
   Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
   linked DEVise for distribution.
@@ -484,8 +490,8 @@ union semun {
   EXTERNC key_t ftok(char *, char);
 #endif
   
-EXTERNC int fsync(int);
-EXTERNC unsigned sleep(unsigned);
+// EXTERNC int fsync(int);
+// EXTERNC unsigned sleep(unsigned);
 
 
 /*

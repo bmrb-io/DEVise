@@ -20,6 +20,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.38.2.1  2002/06/17 17:30:37  wenger
+// Added a bunch more error reporting and put timestamps on check_pop logs
+// to try to diagnose JSPoP restarts.
+//
+// Revision 1.38  2002/02/06 18:59:37  wenger
+// Got the JavaScreen to work on RedHat 7.2 (by running with Java 1.2,
+// but still compiling with Java 1.1); added debug code.
+//
 // Revision 1.37  2002/01/24 23:01:47  xuk
 // *** empty log message ***
 //
@@ -250,7 +258,7 @@ public class DEViseCommSocket
     private static final int DEBUG = 0;
 
     //TEMP -- increased this from 1000 to see if it helps on yola.
-    private static final int DEFAULT_RCV_TIMEOUT = 10000; // millisec
+    private static final int DEFAULT_RCV_TIMEOUT = 10 * 1000; // millisec
 
     private Socket socket = null;
     private DataInputStream is = null;
@@ -368,7 +376,9 @@ public class DEViseCommSocket
                 os.close();
 	    }
         } catch (IOException e) {
-	    System.err.println(e.getMessage());
+	    System.err.println(
+	      "IOException in DEViseCommSocket.closeSocket(): " +
+	      e.getMessage());
         }
 
         try {
@@ -376,7 +386,9 @@ public class DEViseCommSocket
                 is.close();
 	    }
         } catch (IOException e) {
-	    System.err.println(e.getMessage());
+	    System.err.println(
+	      "IOException in DEViseCommSocket.closeSocket(): " +
+	      e.getMessage());
         }
 
         try {
@@ -384,7 +396,9 @@ public class DEViseCommSocket
                 socket.close();
 	    }
         } catch (IOException e) {
-	    System.err.println(e.getMessage());
+	    System.err.println(
+	      "IOException in DEViseCommSocket.closeSocket(): " +
+	      e.getMessage());
         }
 
         os = null;
@@ -437,9 +451,9 @@ public class DEViseCommSocket
             }
         } catch (IOException e) {
             closeSocket();
-            System.err.println("Can not read from input stream in " +
-	      "DEViseCommSocket:isEmpty()");
-            throw new YException("Can not read from input stream",
+            System.err.println("Cannot read from input stream in " +
+	      "DEViseCommSocket:isEmpty(): " + e.getMessage());
+            throw new YException("Cannot read from input stream",
 	      "DEViseCommSocket:isEmpty()");
         }
     }
@@ -457,9 +471,9 @@ public class DEViseCommSocket
         } catch (IOException e) {
             closeSocket();
             System.err.println("Socket is not available " +
-	      "DEViseCommSocket:isAvailable()");
+	      "DEViseCommSocket:isAvailable(): " + e.getMessage());
 	    return false;
-            //throw new YException("Can not read from input stream",
+            //throw new YException("Cannot read from input stream",
 	    //  "DEViseCommSocket:isEmpty()");
         }
 
@@ -495,7 +509,9 @@ public class DEViseCommSocket
                 }
             } catch (IOException e) {
                 closeSocket();
-	        System.err.println(e.getMessage());
+	        System.err.println(
+		  "IOException in DEViseCommSocket.clearSocket(): " +
+		  e.getMessage());
                 throw new YException(
 	          "Error occurs while reading from input stream",
 	          "DEViseCommSocket:clearSocket()");
@@ -639,7 +655,7 @@ public class DEViseCommSocket
 	    try {
 	        bytes = is.available();
 	    } catch (IOException e) {
-		System.err.println("Exception " + e.getMessage() +
+		System.err.println("IOException " + e.getMessage() +
 		  "while getting number of bytes available");
 	        bytes = 0;
 	    }
@@ -695,23 +711,23 @@ public class DEViseCommSocket
         try {
             socket = new Socket(hostname, port);
         } catch (NoRouteToHostException e) {
-	    System.err.println("Exception in DEViseCommSocket.createSocket: " +
-	      e.getMessage());
+	    System.err.println("NoRouteToHostException in " +
+	      "DEViseCommSocket.createSocket: " + e.getMessage());
             closeSocket();
             throw new YException(
-	      "Can not find route to host, may caused by an internal firewall", 
+	      "Cannot find route to host, may caused by an internal firewall", 
 	      "DEViseCommSocket.createSocket");
         } catch (UnknownHostException e) {
-	    System.err.println("Exception in DEViseCommSocket.createSocket: " +
-	      e.getMessage());
+	    System.err.println("UnknownHostException in " +
+	      "DEViseCommSocket.createSocket: " + e.getMessage());
             closeSocket();
             throw new YException("Unknown host {" + hostname + "}",
 	      "DEViseCommSocket:constructor");
         } catch (IOException e) {
-	    System.err.println("Exception in DEViseCommSocket.createSocket: " +
-	      e.getMessage());
+	    System.err.println("IOException in " +
+	      "DEViseCommSocket.createSocket: " + e.getMessage());
             closeSocket();
-            throw new YException("Can not open socket connection to host {"
+            throw new YException("Cannot open socket connection to host {"
 	      + hostname + "}", "DEViseCommSocket.createSocket");
 	}
 
@@ -729,16 +745,22 @@ public class DEViseCommSocket
             socket.setSoTimeout(timeout);
         } catch (NoRouteToHostException e) {
             closeSocket();
+	    System.err.println("NoRouteToHostException in " +
+	      "DEViseCommSocket.CreateStreams(): " + e.getMessage());
             throw new YException(
-	      "Can not find route to host, may caused by an internal firewall",
+	      "Cannot find route to host, may caused by an internal firewall",
 	      "DEViseCommSocket:constructor");
         } catch (SocketException e) {
             closeSocket();
-            throw new YException("Can not set timeout for sockets",
+	    System.err.println("SocketException in " +
+	      "DEViseCommSocket.CreateStreams(): " + e.getMessage());
+            throw new YException("Cannot set timeout for sockets",
 	      "DEViseCommSocket:constructor");
         } catch (IOException e) {
             closeSocket();
-            throw new YException("Can not open i/o stream for sockets",
+	    System.err.println("IOException in " +
+	      "DEViseCommSocket.CreateStreams(): " + e.getMessage());
+            throw new YException("Cannot open i/o stream for sockets",
 	      "DEViseCommSocket:constructor");
         }
     }
@@ -810,7 +832,9 @@ public class DEViseCommSocket
         } catch (IOException e) {
             closeSocket();
 	    socket = null;
-            System.err.println("Error occurs while writing command " + cmd + " to output stream: " + e.getMessage() + " in DEViseCommSocket:sendCmd()");
+            System.err.println("Error occurs while writing command " + cmd +
+	      " to output stream: " + e.getMessage() +
+	      " in DEViseCommSocket:sendCmd()");
             //throw new YException("Error occurs while writing to output " +
 	    // "stream: " + e.getMessage(), "DEViseCommSocket:sendCmd()");
         }
@@ -880,7 +904,9 @@ public class DEViseCommSocket
         } catch (IOException e) {
             closeSocket();
 	    socket = null;
-            System.err.println("Error occurs while writing command " + cmd + " to output stream: " + e.getMessage() + " in DEViseCommSocket:sendCmd()");
+            System.err.println("Error occurs while writing command " + cmd +
+	      " to output stream: " + e.getMessage() +
+	      " in DEViseCommSocket:sendCmd()");
             //throw new YException("Error occurs while writing to output " +
 	    //  "stream: " + e.getMessage(), "DEViseCommSocket:sendCmd()");
         }
@@ -967,7 +993,8 @@ public class DEViseCommSocket
             throw e;
         } catch (IOException e) {
             closeSocket();
-	    System.err.println(e.getMessage() + "DEViseCommSocket:receiveCmd()");
+	    System.err.println(e.getMessage() +
+	      "in DEViseCommSocket:receiveCmd()");
 	    return("Connection disabled");
             //throw new YException("Error occurs while reading from input stream", "DEViseCommSocket:receiveCmd()");
         }
@@ -1082,7 +1109,8 @@ public class DEViseCommSocket
             throw e;
         } catch (IOException e) {
             closeSocket();
-	    System.err.println(e.getMessage() + "DEViseCommSocket:receiveCmd()");
+	    System.err.println(e.getMessage() +
+	      "in DEViseCommSocket:receiveCmd()");
 	    return(new String[] {"Connection disabled"});
             //throw new YException("Error occurs while reading from input stream", "DEViseCommSocket:receiveCmd()");
         }
@@ -1194,7 +1222,8 @@ public class DEViseCommSocket
             return data;
         } catch (IOException e) {
             closeSocket();
-	    System.err.println(e.getMessage());
+	    System.err.println("IOException in " +
+	      "DEViseCommSocket.doReceiveData(): " +  e.getMessage());
             throw new YException(
 	      "Error occurs while reading from input stream",
 	      "DEViseCommSocket:receiveData()");

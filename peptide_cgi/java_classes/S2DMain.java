@@ -21,6 +21,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.33.2.2  2002/06/05 18:56:08  wenger
+// Improved summary page labels as per feedback from Eldon; fixed bug
+// 006 (visual filters not set correctly when some sessions opened).
+//
+// Revision 1.33.2.1  2002/05/13 15:33:25  wenger
+// Added "values" to the peptide-cgi summary page where appropriate.
+//
+// Revision 1.33  2002/03/27 18:23:56  wenger
+// Peptide-cgi now parses local mmCIF files related to NMR-Star files;
+// added URL for PDB files to config stuff.
+//
 // Revision 1.32  2002/02/23 19:30:19  wenger
 // Peptide-cgi now identifies related PDB entries.
 //
@@ -172,7 +183,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.21";
+    public static final String PEP_CGI_VERSION = "2.23";
 
     private int _masterAccNum; // accession number the user requested
 
@@ -1151,7 +1162,7 @@ public class S2DMain {
 	// mmCIF file?  we should still show the stuff from the NMR-Star
 	// file
 
-	S2DCifIfc cif = new S2DCifIfc(star.getParser(), pdbId);
+	//TEMP S2DCifIfc cif = new S2DCifIfc(star.getParser(), pdbId);
     }
 }
 

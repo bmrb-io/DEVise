@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.242  2002/05/01 21:30:03  wenger
+  Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.241.4.2  2002/05/27 15:13:58  wenger
+  Improved fix to bug 775 (view previous filter/JS client switch
+  problem) -- improved precision of view history values.
+
   Revision 1.241.4.1  2002/04/19 16:13:27  wenger
   Fixed bug 775 (backspace in JS doesn't work after client switch)
   (really a problem in the view history in the DEVised).
@@ -3941,13 +3948,19 @@ void	View::Run(void)
 
     _refreshPending = false;
 
+#if defined(DEBUG)
+  _filterQueue->Print(stdout);
+#endif
+
     VisualFilter histFilter;
 	FilterQueue *fq = GetHistory();
 	fq->Get(fq->Size() - 1, histFilter);
-    if (!dequal(histFilter.xLow, _filter.xLow, 1.0e-3, 1.0e-3) ||
-	    !dequal(histFilter.xHigh, _filter.xHigh, 1.0e-3, 1.0e-3) ||
-		!dequal(histFilter.yLow, _filter.yLow, 1.0e-3, 1.0e-3) ||
-		!dequal(histFilter.yHigh, _filter.yHigh, 1.0e-3, 1.0e-3)) {
+	const double absTol = 1.0e-3;
+	const double relTol = 1.0e-3;
+    if (!dequal(histFilter.xLow, _filter.xLow, absTol, relTol) ||
+	    !dequal(histFilter.xHigh, _filter.xHigh, absTol, relTol) ||
+		!dequal(histFilter.yLow, _filter.yLow, absTol, relTol) ||
+		!dequal(histFilter.yHigh, _filter.yHigh, absTol, relTol)) {
       _filterQueue->Enqueue(_filter, _filter.marked);
 	  char errBuf[256];
 	  sprintf(errBuf, "(warning) view <%s> current filter does not match "

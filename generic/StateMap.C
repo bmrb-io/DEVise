@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   University of Wisconsin at Madison
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.3.22.1  2002/05/27 18:15:47  wenger
+  Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
+
+  Revision 1.3  1998/06/28 21:40:31  beyer
+  changed to implicit templates
+
   Revision 1.2  1998/03/02 22:34:12  wenger
   Got DEVise to link on SGI (haha) -- had to change things so that all
   templates are implicit (they are still not implicit on other
@@ -29,6 +35,8 @@
 //#ifdef __GNUG__
 //#pragma implementation "HashTable.h"
 //#endif
+
+#include <string.h>
 
 #include "StateMap.h"
 

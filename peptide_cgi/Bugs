@@ -13,3 +13,12 @@ Num Date        Status  Description
 
 004 11/02/01	OPEN	s2d can't find set_modes on yola (BMRB).  (./set_modes
 			doesn't work, explicit full path does). (rkw)
+
+005 5/14/02	OPEN	Dimitri ran into a problem installing peptide-cgi
+			on top of an earlier version on SPARC/Solaris
+			(may be related to non-gnu make). (rkw)
+
+006 6/5/02	FIXED	Chemical shift delta, chemical shift index, percent
+			assigned sessions don't default to showing all
+			residues. (rkw)
+			(Fixed by rkw, 6/5/02.)

@@ -29,7 +29,8 @@ cp /usr/X11R6/lib/libX11.so.6 .
 cp /lib/libdl.so.2 .
 cp /s/gcc-2.95.3/i386_rh72/lib/libstdc++-libc6.2-2.so.3 .
 cp /lib/libm.so.6 .
-cp /lib/libc.so.6 .
+# Copying RedHat 7.2 libc causes things to not run on RedHat 7.1.
+# cp /lib/libc.so.6 .
 cp /lib/ld-linux.so.2 .
 
 chmod 644 *.so*

@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.18.2.1  2002/05/08 16:39:45  wenger
+// JSB applet allows startup without loading a session (for collaboration
+// follower); collabf.html web page doesn't load a session.
+//
+// Revision 1.18  2002/03/07 17:18:31  xuk
+// Destroy jsa applet when it's invisible longer than one hour.
+//
 // Revision 1.17  2002/03/05 23:01:24  xuk
 // Resize JavaScreen after reloading jsb in browser.
 // Added DEViseJSTimer class in jsb.java to destroy applet after the applet
@@ -137,12 +144,6 @@ public class jsb extends DEViseJSApplet
         }
 
         jsValues.uiglobals.inBrowser = true;
-
-        if (jsValues.session.defaultName == null) {
-            startInfo.append("Error: No session specified!");
-            isInit = false;
-            return;
-        }
 
 	loadImages();
 

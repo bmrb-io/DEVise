@@ -51,11 +51,11 @@ CGI_HOME = $(WWW_HOME)/cgi-bin/bmrb
 
 # The "real" directory (not symlink) where peptide-cgi sessions will
 # be put.
-PEP_SESSION_HOME = /local.pumori/devise/bmrb/dynamic_sessions
+PEP_SESSION_HOME = /local.pumori.1/devise/bmrb/dynamic_sessions
 
 # The "real" directory (not symlink) where peptide-cgi data (and html
 # files) will be put.
-PEP_DATA_HOME = /local.pumori/devise/bmrb/dynamic_data
+PEP_DATA_HOME = /local.pumori.1/devise/bmrb/dynamic_data
 
 # Machine installation should be done on (optional).
 INSTALL_MACHINE = pumori.cs.wisc.edu

@@ -19,6 +19,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10.2.1  2002/06/05 14:14:14  wenger
+#  Changed DEVise release scripts to fix RedHat 7.1/7.2 compatibility
+#  problem.
+#
+#  Revision 1.10  2002/02/21 21:06:25  wenger
+#  Fixed up release scripts to release for "linux" (RedHat 7.2) and
+#  "linux_rh62" (RedHat 6.2).
+#
 #  Revision 1.9  2001/12/19 18:26:01  wenger
 #  Added sunx86_58 architecture.
 #
@@ -174,6 +182,8 @@ foreach arch ($arches)
 
     if (! -d $mainarch) then
       mkdir $mainarch
+    else
+      \rm $mainarch/*
     endif
 
     foreach dir ($otherarches)

@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.46  2002/05/01 21:30:12  wenger
+  Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.45.4.2  2002/05/20 21:21:49  wenger
+  Fixed bug 779 (client switching problem with multiple DEViseds).
+
   Revision 1.45.4.1  2002/04/18 17:25:45  wenger
   Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
   temporary session files when the JSPoP and DEViseds are on different
@@ -300,8 +306,9 @@ class JavaScreenCmd
 			CREATE_TMP_SESSION_DIR,
 			OPEN_TMP_SESSION,
 			DELETE_TMP_SESSION,
+			SET_TMP_SESSION_DIR,
 			NULL_SVC_CMD
-		}ServiceCmdType;
+		} ServiceCmdType;
 
 		typedef enum
 		{
@@ -380,6 +387,7 @@ class JavaScreenCmd
 		void RefreshData();
 		void CreateTmpSessionDir();
 		void DeleteTmpSession();
+		void SetTmpSessionDir();
 
 		// Server->JavaScreen Control Commands
 		ControlCmdType RequestUpdateSessionList(int argc, char** argv);
@@ -393,6 +401,7 @@ class JavaScreenCmd
 		void UpdateSessionList(char *dirName);
 		void DoCloseSession();
 		void DoOpenSession(char *fullpath);
+		void DoSetTmpSessionDir(const char *popMachine, const char *popPort);
 
 		// < 0 if error
 		int CreateView(View *view, View *parent);

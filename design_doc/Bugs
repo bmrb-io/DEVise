@@ -2908,7 +2908,7 @@ Num Date        Status  Description
 			in client. (rkw)
 			(Fixed by rkw, 11/07/01.)
 
-726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
+v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			no devised, and a client connects, the JSPoP should
 			return an error message to the client, rather than
 			just leaving it hanging. (rkw)
@@ -3038,9 +3038,10 @@ Num Date        Status  Description
 			JavaScreen is compiled with Java 1.2 (as opposed to
 			1.1). (rkw)
 
-753 2/5/02	OPEN	In NRG demo sessions, the selected views no longer
+753 2/5/02	FIXED	In NRG demo sessions, the selected views no longer
 			fill the main window when you select only a subset
 			of the available views. (rkw)
+			(Fixed by rkw, 6/11/02.)
 
 754 2/8/02	FIXED	Create a session by displaying a data source
 			and try to save it -> DEVise crashes. Opening an
@@ -3088,12 +3089,12 @@ Num Date        Status  Description
 			handle axis multiplication factors. (rkw)
 			(Fixed by xuk, 4/4/02.)
 	
-764 3/28/02	OPEN	JavaScreen: default password doesn't show up in
+764 3/28/02	WORK	JavaScreen: default password doesn't show up in
 			collaboration enabling GUI on Miron's laptop (WinXP);
 			getting into collab mode locked up both the leader
 			and follower. (rkw/ml)
 
-765 4/2/02	OPEN	JavaScreen: backspace key (to toggle between the last
+765 4/2/02	FIXED?	JavaScreen: backspace key (to toggle between the last
 			two visual filters) doesn't work. (rkw)
 			(Saw this at BMRB, on Steve Mading's machine
 			(lobster).) (Two problems here -- backspace in opera
@@ -3171,9 +3172,102 @@ Num Date        Status  Description
 			axes and the titles). (rkw)
 			(Fixed by xuk, 4/24/02.)
 
-778 4/26/02	OPEN	JavaScreen: collab password for leader is never set
+778 4/26/02	FIXED?	JavaScreen: collab password for leader is never set
 			to the default value in the applet (it is in the
 			stand-alone version). (rkw)
+
+779 5/20/02	FIXED	JavaScreen: client switching sometimes fails when
+			more than one DEVised is running (because the
+			temporary session directory only gets set in the
+			first DEVised). (rkw)
+			(Fixed by rkw, 5/20/02.)
+
+780 5/21/02	FIXED	JavaScreen: if a client switch happens on a client
+			that doesn't have a session open, an error occurs
+			because the DEVised is told to open a non-existant
+			temporary session file. (rkw)
+			(Fixed by xuk, 5/23/02.)
+
+781 5/21/02	FIXED	JavaScreen: 'autotest all' does not clearly report
+			failure if test1 fails. (rkw)
+			(Fixed by xuk, 5/23/02.)
+
+782 5/22/02	FIXED	JavaScreen: JS hangs when requesting JSPoP status
+			if there is more than one DEVised. (rkw)
+			(Fixed by rkw, 5/24/02.)
+
+783 5/28/02	FIXED	JavaScreen: in the session aart1_EmEn.ds display of
+			mouse location does not work in the main view. (rkw)
+                        (Fixed by sjl, 6/4/2002)
+
+784 5/28/02	FIXED	JavaScreen: in the session aart1_EmEn.ds axis labels
+			on the X axis of the main view were sometimes not
+			correct. (rkw)
+                        (Fixed by sjl, 6/4/2002)
+
+785 5/29/02     FIXED   JavaScreen: in the session aart1_EmEn.ds, the X value
+                        of the mouse location displayed is sometimes missing 0s.
+                        Example: value '9.0768E7' appears as '9.768E7'. <sjl>
+                        (Fixed by sjl, 6/4/2002)
+
+786 6/5/02      FIXED 	JavaScreen: From the 'Collaborate' menu choosing 
+                        'Become a Leader' and then hitting 'Cancel' will make 
+                        the JavaScreen believe that it is a leader. <sjl>
+                        (Fixed by sjl, 6/5/2002)
+
+787 6/11/02	FIXED	JavaScreen: In collaboration, when you become the leader
+			of a group, the option to 'Become Follower' is still
+                        available. <sjl>
+			(Fixed by sjl, 6/11/2002)
+
+788 6/11/02	FIXED	JavaScreen: The message to the right of the buttons
+			on the top of the JavaScreen says 'Collaboration' only
+			when that JavaScreen is a follower, but not when it is
+			a leader. <sjl>
+			(Fixed by sjl, 6/11/2002)
+
+789 6/11/02	FIXED	JavaScreen: If two JavaScreens are collaborating with one
+                        being the leader and the other following, if the follower
+			hits the 'Open' button, it will lock up until the
+			leader stops leading or exits. <sjl>
+			(Fixed by sjl, 6/12/2002)
+
+790 6/11/02	FIXED	JavaScreen: If two JavaScreens are collaborating with one
+                        being the leader and the other following, if the follower
+			hits the 'Stop' button, it will lock up until the
+			leader stops leading or exits.  This differs from 789 by
+  			the button that causes the lock-up.  <sjl>
+			(Fixed by sjl, 6/12/2002)
+
+791 6/11/02	FIXED	JavaScreen: If two JavaScreens are collaborating with one
+                        being the leader and the other following, if the follower
+			requests the 'Jspop Status' from the 'Options' dialogue box, 
+                        it will lock up until the leader stops leading or exits. <sjl>
+			(Fixed by sjl, 6/12/2002)
+
+792 6/11/02	OPEN	JavaScreen: Two JavaScreens are collaborating with one being
+			the leader and the other following.  The leader will open a
+			session, the follower will then quit following, the leader then
+ 			closes the session and then quits leading.  If the leader then
+			starts a new group of which it is the leader, but does not open
+			any session, then the follower joins the leader's new group, the 
+			last screen from the session that the follower saw from the original
+			group will now appear on the follower JavaScreen even though the
+			leader does not have any sessions currently open. <sjl>
+
+793 6/11/02	FIXED	JavaScreen: Two JavaScreens are collaborating with one being the
+			leader and the other following.  The follower hits the 'Collaborate'
+			button and then 'Become Follower' then 'Collaborate' again and then 
+			'Become Follower' again.  The follower now has two windows called 
+			'Current Active Clients' open to choose the group that it would like
+			to join.  Use one window to join a group, then do anything with the
+			second window, including 'Cancel', and the follower will lock up. <sjl>
+			(Fixed by sjl, 6/14/2002)
+
+794 6/13/02	FIXED	JavaScreen: The JavaScreen will lock up if the 'Help' button is quickly
+			pushed twice so that the second push is while the 'Stop' button is
+			red from the first push. <sjl>
+			(Fixed by sjl, 6/14/2002)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

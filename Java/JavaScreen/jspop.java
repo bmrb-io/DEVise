@@ -25,6 +25,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.78  2002/05/01 21:29:00  wenger
+// Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.77.2.5  2002/06/17 17:30:37  wenger
+// Added a bunch more error reporting and put timestamps on check_pop logs
+// to try to diagnose JSPoP restarts.
+//
 // Revision 1.77.2.4  2002/04/19 20:50:49  xuk
 // Add new testings in autotest: enforced client switching, restore pre-collab
 // states for JS;
@@ -420,7 +427,7 @@ public class jspop implements Runnable
     //      default: No Debug information is written
     //
 
-    private static final int SOCK_REC_TIMEOUT = 100000; // milliseconds
+    private static final int SOCK_REC_TIMEOUT = 100 * 1000; // milliseconds
 
     private ServerSocket cmdServerSocket = null;
     //private ServerSocket dataServerSocket = null;

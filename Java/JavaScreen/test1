@@ -1,4 +1,13 @@
 #! /bin/csh -f
+
+############################################################
+
+# $Id$
+
+# Part of automatic testing -- test collaboration and most
+# commands.
+
+############################################################
  
 # Start a collaboration leader
 ./js -collableadernamecollab -collableaderpasspasswd -autoplayback -clientlogclient_log.1 -playbackoriginal -screensize600x400 &
@@ -20,5 +29,8 @@ kill -9 $follower_id
 set js = `ps | grep js$`
 if ("$js" != "") then
     echo "\nError found with JavaScreen. Please check logs."
-    set success = 0
+    exit (1)
 endif
+
+exit (0)
+

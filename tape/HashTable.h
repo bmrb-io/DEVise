@@ -19,6 +19,12 @@
   $Id$
 
   $Log$
+  Revision 1.13.22.1  2002/05/27 18:16:10  wenger
+  Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
+
+  Revision 1.13  1998/08/24 14:57:47  wenger
+  Added misc. debug output.
+
   Revision 1.12  1998/03/05 08:13:08  zhenhai
   *** empty log message ***
 
@@ -68,6 +74,7 @@
 //#endif
 
 #include <iostream.h>
+#include <stdlib.h>
 
 // a generic hash bucket class
 

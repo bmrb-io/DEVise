@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.7.22.1  2002/05/27 18:15:36  wenger
+  Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
+
+  Revision 1.7  1998/08/21 22:16:06  wenger
+  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
+  linked DEVise for distribution.
+
   Revision 1.6  1998/07/29 14:19:42  wenger
   Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
   allow static linking on Linux.
@@ -187,7 +194,7 @@ XferRpcCall(int fd, int type, int elements, ...) {
 				nbytes = XferBuffer(fd, mode, (char *)&intArg, sizeof(int));
 				break;
 			case TYP_CHARACTER:
-				charArg = va_arg(pvar, char);
+				charArg = va_arg(pvar, int);
 
 				nbytes = XferBuffer(fd, mode, &charArg, sizeof(char));
 				break;

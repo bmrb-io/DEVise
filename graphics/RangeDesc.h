@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,13 @@
   $Id$
 
   $Log$
+  Revision 1.4.14.1  2002/05/27 18:15:53  wenger
+  Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
+
+  Revision 1.4  2000/03/14 17:05:09  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.3  1999/05/21 14:52:14  wenger
   Cleaned up GData-related code in preparation for including bounding box
   info.
@@ -82,6 +89,7 @@ public:
   // Objects to hold description.
   //
   DefinePtrDList(ViewList, View *)
+  DefinePtrDList(LinkList, DeviseLink *)
 
   enum RangeType { RangeInvalid, RangeX, RangeY };
   class Range {
@@ -156,7 +164,6 @@ public:
 
 private:
   DefinePtrDList(RangeList, Range *)
-  DefinePtrDList(LinkList, DeviseLink *)
   DefinePtrDList(TdInfoList, TdInfo *)
   DefinePtrDList(ViewInfoList, ViewInfo *)
 

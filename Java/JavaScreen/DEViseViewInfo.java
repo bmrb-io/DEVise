@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.56  2002/05/01 21:28:59  wenger
+// Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.55.2.2  2002/06/04 14:19:08  sjlong
+// Fixed bug 785 (The displayed mouse position is sometimes missing 0s after the decimal point)
+//
 // Revision 1.55.2.1  2002/03/30 19:16:05  xuk
 // Fix bugs for displaying axis labels for very small values.
 //
@@ -520,12 +526,13 @@ class PrintfFormatter {
     public String form(double x)
     { 
 	String r;
+
 	if (precision < 0) precision = 6;
         if(fmt =='g' || fmt =='G'){
 	    GFormat gf = new GFormat(precision);
 	    return gf.format(x);
         }
-	
+
 	int s = 1;
 	if (x < 0) { x = -x; s = -1; }
 	if (fmt == 'f')
@@ -753,9 +760,12 @@ class GFormat{
 	
 	StringTokenizer dtokens = new StringTokenizer(new Double(d).toString(), "eE");
 	if( dtokens.countTokens() == 2){
+
 	    result = expFormat( dtokens.nextToken(), dtokens.nextToken()); 
+
     }
 	else{ 
+
 	    dtokens = new StringTokenizer(new Double(d).toString(), ".");
 	    if(dtokens.countTokens()==2){
 		result = decFormat(d);
@@ -858,15 +868,18 @@ class GFormat{
     
     private String expFormat( String mantissa, String exponent){
 	int digits = width -1;
-	int mantFrac = 0, mantInt = 0, exp = 0;
+	int mantInt = 0, exp = 0;
+ 
+        // The fractional part must be treated like a String from the start so that no leading
+        // 0s are accidently disposed of.
+        String fracpart = new String(""); 
 	// validity of exponent as number
 	
 	try { 
 	    
 	    exp = Integer.parseInt(exponent);
 	    
-	    mantFrac =  getFracPart(mantissa);
-
+	    fracpart =  getFracPart(mantissa);
 	    mantInt  =  getIntPart(mantissa);
 	}   
 	catch(NumberFormatException e){
@@ -876,7 +889,6 @@ class GFormat{
 	}
 	
 	String intpart = new Integer(mantInt).toString();
-	String fracpart = new Integer(mantFrac).toString();
 	
 	if(intpart.charAt(0) == '-'){ 
 	    sign = "-";
@@ -909,33 +921,33 @@ class GFormat{
     /*  - Test main method - 
 	public static void main(String[] args){
 	
-	gFormat a = new gFormat(5);
+        GFormat a = new GFormat(5);
 	
-	double x = -1124.84;
-	double y = 1234.3455;
-	double r =  10.0;
-	double xr =  10.02;
-	double rr =  1.0234;
-	double ri =  10234.123;
-	double rj =  0.123;
-	double rk =  0.00000123;
-	double rl =  0.0000123e-5;
+        double x = -1124.84;
+        double y = 1234.3455;
+        double r =  10.0;
+        double xr =  10.02;
+        double rr =  1.0234;
+        double ri =  10234.123;
+        double rj =  0.123;
+        double rk =  0.00000123;
+        double rl =  0.0000123e-5;
 	
-	System.out.println( "x = " + x + "; formatted x  " + a.format(x));
-	System.out.println( "y = " + y + "; formatted y  " + a.format(y));
-	System.out.println( "r = " + r + "; formatted r  " + a.format(r));
-	System.out.println( "rr = " + rr + "; formatted rr  " + a.format(rr));
-	System.out.println( "xr = " + xr + "; formatted xr  " + a.format(xr));
-	System.out.println( "ri = " + ri + "; formatted ri  " + a.format(ri));
-	System.out.println( "rj = " + rj + "; formatted rj  " + a.format(rj));
-	System.out.println( "rk = " + rk + "; formatted rk  " + a.format(rk));
-	System.out.println( "rl = " + rl + "; formatted rl  " + a.format(rl));
-	
-	}
-    */
+        System.out.println( "x = " + x + "; formatted x  " + a.format(x));
+        System.out.println( "y = " + y + "; formatted y  " + a.format(y));
+        System.out.println( "r = " + r + "; formatted r  " + a.format(r));
+        System.out.println( "rr = " + rr + "; formatted rr  " + a.format(rr));
+        System.out.println( "xr = " + xr + "; formatted xr  " + a.format(xr));
+        System.out.println( "ri = " + ri + "; formatted ri  " + a.format(ri));
+        System.out.println( "rj = " + rj + "; formatted rj  " + a.format(rj));
+        System.out.println( "rk = " + rk + "; formatted rk  " + a.format(rk));
+        System.out.println( "rl = " + rl + "; formatted rl  " + a.format(rl));
+
+        }
+    */    
     
     
-    private static int getFracPart( String mantissa){
+    private static String getFracPart( String mantissa){
 	
 	Double db = new Double(mantissa);
 	String result = null;
@@ -944,14 +956,13 @@ class GFormat{
 	if(st.countTokens() == 2){
 	    
 	    st.nextToken(); 
-	    result = st.nextToken(); 
-	    
-	    return Integer.parseInt(result);
+	    result = st.nextToken(); 	    
+	    return result;
 	    
 	    
 	}else{
 	    
-	    return 0;
+	    return "0";
 	    
 	}
 	

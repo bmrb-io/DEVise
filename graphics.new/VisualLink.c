@@ -30,6 +30,14 @@
   $Id$
 
   $Log$
+  Revision 1.24  2002/05/01 21:30:13  wenger
+  Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.23.4.2  2002/06/11 17:27:39  wenger
+  Added an option for a view to not "contribute" to home on its visual
+  links; this allows a simplification of the NRG sessions, which fixes
+  bug 753.
+
   Revision 1.23.4.1  2002/04/25 21:06:16  wenger
   Totally re-did code for home on visual links -- fixed bug 749,
   fix for bug 735 is much cleaner, fixed previously-unnoted bugs
@@ -348,7 +356,8 @@ VisualLink::GetHome2D(ViewGraph *view, VisualFilter &filter,
     ViewGraph *tmpView = (ViewGraph *)_viewList->Next(index);
 
     // Note: we're excluding view here just for efficiency.  RKW 2002-04-25.
-    if ((tmpView != view) && (tmpView->GetNumDimensions() == 2)) {
+    if ((tmpView != view) && (tmpView->GetNumDimensions() == 2) &&
+        tmpView->GetDoHomeOnVisLink()) {
       VisualFilter tmpFilter;
       tmpView->GetHome2D(explicitRequest, tmpFilter);
       if (_linkAttrs & VISUAL_X) {

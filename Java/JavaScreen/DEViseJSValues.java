@@ -27,6 +27,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.12.2.1  2002/05/08 21:16:51  wenger
+// Changed some collaboration GUI for more clarity, updated instructions
+// accordingly; default collaboration password is now "" as workaround
+// for problem filling in default in GUI on some platforms.
+//
+// Revision 1.12  2002/03/20 22:06:36  xuk
+// Added automatic collaboration functionality.
+// Four new global variables:
+// collabLeaderName: for collaboration leader to define a collaboration name
+// collabLeaderPass: for collaboration leader to define the password
+// collabName: for collab follower to specify the collaboration name
+// collabPass: for collab follower to specify the collaboration passwd.
+//
 // Revision 1.11  2002/02/28 16:35:59  xuk
 // Added "reloadapplet" parameter to load old jsb applet instance into new HTML page.
 //
@@ -167,7 +180,7 @@ public final class DEViseJSValues
 	public boolean disableButtons = false;
 	public boolean reloadApplet = true;
 	public String collabLeaderName = null;
-	public String collabLeaderPass = DEViseGlobals.DEFAULTPASS;
+	public String collabLeaderPass = DEViseGlobals.DEFAULT_COLLAB_PASS;
 	public String collabName = null;
 	public String collabPass = null;
     }

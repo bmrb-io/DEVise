@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.98.14.1  2002/05/29 22:26:54  wenger
+  Better error testing and diagnostics in Server.C and TkControl.c
+  (related to RedHat cross-version problems).
+
+  Revision 1.98  2000/08/10 16:10:53  wenger
+  Phase 1 of getting rid of shared-memory-related code.
+
   Revision 1.97  2000/03/14 17:05:34  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -419,6 +426,7 @@
 #include "DebugLog.h"
 
 //#define DEBUG
+#define DEBUG_LOG
 
 extern int extractStocksCmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
@@ -438,6 +446,10 @@ ControlPanel *GetNewControl()
 
 TkControlPanel::TkControlPanel()
 {
+#if defined(DEBUG_LOG)
+  DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+   "TkControlPanel::TkControlPanel()");
+#endif
 	
   _interpProto = new MapInterpClassInfo();
   new CmdContainer(this,CmdContainer::MONOLITHIC, NULL);
@@ -483,12 +495,18 @@ TkControlPanel::TkControlPanel()
   _mainWindow = Tk_MainWindow(_interp);
 #endif
 
+
 #if TK_MAJOR_VERSION != 4
   _mainWindow = Tk_MainWindow(_interp);
 #endif
 
   int fd = ConnectionNumber(Tk_Display(_mainWindow));
   Dispatcher::Current()->Register(this, 10, GoState, true, fd);
+
+#if defined(DEBUG_LOG)
+  DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+   "  done with TkControlPanel::TkControlPanel()");
+#endif
 }
 
 TkControlPanel::~TkControlPanel()

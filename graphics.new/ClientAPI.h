@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,16 @@
    $Id$
 
    $Log$
+   Revision 1.19.6.1  2002/05/27 18:15:59  wenger
+   Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
+
+   Revision 1.19  2001/11/07 22:31:36  wenger
+   Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
+   js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
+   accidentally merged onto the bmrb_dist_br branch previously).
+   (These changes include JS heartbeat improvements and the fix to get
+   CGI mode working again.)
+
    Revision 1.18.2.1  2001/11/07 17:22:26  wenger
    Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
    handle it; got CGI mode working again (bug 723).  (Changed JS version
@@ -105,11 +115,11 @@ typedef struct {
   // Network Header that is guaranteed to have no "padding", so we can
   // read and write it without problems. RKW 2001-10-12.
 
-  unsigned char		msgType[sizeof(NetworkHeader::msgType)];
-  unsigned char		jsId[sizeof(NetworkHeader::jsId)];
-  unsigned char		useCgi[sizeof(NetworkHeader::useCgi)];
-  unsigned char		nelem[sizeof(NetworkHeader::nelem)];
-  unsigned char		size[sizeof(NetworkHeader::size)];
+  unsigned char		msgType[sizeof(u_short)];
+  unsigned char		jsId[sizeof(int)];
+  unsigned char		useCgi[sizeof(u_short)];
+  unsigned char		nelem[sizeof(u_short)];
+  unsigned char		size[sizeof(u_short)];
 } NetworkHeaderBuf;
 
 // Do *NOT* use sizeof(NetworkHeader) to read/write to/from sockets.

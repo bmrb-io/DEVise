@@ -122,6 +122,7 @@ cp -p jsa.html $jardir
 cp -p jsb.html $jardir
 cp -p keyboard.html $jardir
 cp -p collab.html $jardir
+cp -p collabf.html $jardir
 chmod 644 $jardir/*.html
 cp -p logo_background.gif $jardir
 chmod 644 $jardir/logo_background.gif

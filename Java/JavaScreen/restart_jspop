@@ -55,8 +55,9 @@ mv $popFile $popFile_new
 
 # Restart the jspop.
 sleep 15
-./jspop -id$idStr -cmdport$cmdPort -jspopport$popPort 
 
+#./jspop -id$idStr -cmdport$cmdPort -jspopport$popPort -restore
+./jspop -id$idStr -cmdport$cmdPort -jspopport$popPort 
 
 # Restart the jss.
 if ($jssHost == "") then

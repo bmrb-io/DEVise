@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001
+// (c) Copyright 2001-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.12.2.1  2002/06/17 17:30:36  wenger
+// Added a bunch more error reporting and put timestamps on check_pop logs
+// to try to diagnose JSPoP restarts.
+//
+// Revision 1.12  2001/12/14 01:11:16  wenger
+// Added a time limit to DEViseCheckPop to hopefully fix the problems
+// we've been seeing on yola with the processes occasionally hanging
+// around indefinitely for some unknown reason.
+//
 // Revision 1.11  2001/11/07 22:31:28  wenger
 // Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
 // js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
@@ -93,7 +102,7 @@ public class DEViseCheckPop
 
     private static final int DEBUG = 1;
     private static final int DEBUG_LOG = 2;
-    private static final int RECEIVE_TIMEOUT = 5000; // millisec
+    private static final int RECEIVE_TIMEOUT = 5 * 1000; // millisec
 
     private int _port = DEViseGlobals.DEFAULTCMDPORT; // default value
     private String _host = DEViseGlobals.DEFAULTHOST; // default value
@@ -291,11 +300,14 @@ public class DEViseCheckPop
     {
 	private String _filename = null;
 	private FileWriter _fw = null;
+	private DateFormat _dtf = null;
 
 	public Log(String logFile) {
 	    try {
 	        _fw = new FileWriter(logFile);
 		_filename = logFile;
+		_dtf = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
+		  DateFormat.MEDIUM);
 	    } catch (IOException ex) {
 	        System.err.println("Can't open log file: " + ex.getMessage());
 	    }
@@ -308,6 +320,14 @@ public class DEViseCheckPop
         public void write(String str)
 	{
 	    if (_fw != null) {
+		// Append timestamp at the end of lines.
+		int length = str.length();
+		if (length > 0 && str.substring(length-1).equals("\n")) {
+		    Date date = new Date();
+		    str = str.substring(0, length-1) + " [" +
+		      _dtf.format(date) + "]\n";
+		}
+
 	        try {
 	            _fw.write(str);
 	            _fw.flush();
@@ -365,6 +385,7 @@ public class DEViseCheckPop
 	    try {
 	        Thread.sleep(MAX_TIME);
 	    } catch (InterruptedException ex) {
+	        _log.write("Sleep interrupted in DEViseCheckPop.run()");
 	    }
 
 	    _log.write("DEViseCheckPop timed out\n");

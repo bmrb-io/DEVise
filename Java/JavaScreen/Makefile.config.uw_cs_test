@@ -39,6 +39,6 @@ JAVA_BIN3 = /s/java-1/bin
 POP_DIR = /local.pumori.1/devise/js.test
 SERV_DIR = /local.pumori.1/devise/js.test
 JAR_DIR = /var/home/www/public/test
-CGI_DIR = /var/home/www/cgi-bin
+CGI_DIR = /var/home/www/cgi-bin/js.test
 IDSTR = test
 INSTALL_HOST = pumori.cs.wisc.edu

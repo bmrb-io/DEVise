@@ -20,6 +20,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.67  2002/05/01 21:28:58  wenger
+// Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.66.2.7  2002/05/20 21:21:33  wenger
+// Fixed bug 779 (client switching problem with multiple DEViseds).
+//
+// Revision 1.66.2.6  2002/05/08 21:16:50  wenger
+// Changed some collaboration GUI for more clarity, updated instructions
+// accordingly; default collaboration password is now "" as workaround
+// for problem filling in default in GUI on some platforms.
+//
 // Revision 1.66.2.5  2002/04/18 17:25:10  wenger
 // Merged js_tmpdir_fix_br_2 to V1_7b0_br (this fixes the problems with
 // temporary session files when the JSPoP and DEViseds are on different
@@ -319,12 +330,14 @@ public final class DEViseGlobals
     public static final String JSPOPHOST = new String("localhost");
     public static final String VERSION = new String("5.0");
 
-    public static final String PROTOCOL_VERSION = new String("11.0");
+    public static final String PROTOCOL_VERSION = new String("12.0");
 
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");
     public static final String DEFAULTHOST = new String("localhost");
+
+    public static final String DEFAULT_COLLAB_PASS = "";
 
     // If we haven't gotten a heartbeat from a JavaScreen in this interval
     // (in milliseconds) we'll kill the client object on the assumption that

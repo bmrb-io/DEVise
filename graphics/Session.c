@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.103.4.1  2002/06/11 17:27:31  wenger
+  Added an option for a view to not "contribute" to home on its visual
+  links; this allows a simplification of the NRG sessions, which fixes
+  bug 753.
+
+  Revision 1.103  2002/02/08 21:12:23  wenger
+  Fixed bug 754 (problem saving sessions).
+
   Revision 1.102  2002/01/15 21:49:40  wenger
   Added session postscript capability needed for the latest peptide-cgi
   improvements.
@@ -1974,6 +1982,9 @@ Session::SaveView(char *category, char *devClass, char *instance,
     status += SaveParams(saveData, "getJS3dConfig",
         "setJS3dConfig", instance, NULL, NULL, false);
   }
+
+  status += SaveParams(saveData, "getDoHomeOnVisLink",
+      "setDoHomeOnVisLink", instance, NULL, NULL, true);
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;

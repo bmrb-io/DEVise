@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.32.10.1  2002/05/29 22:26:47  wenger
+  Better error testing and diagnostics in Server.C and TkControl.c
+  (related to RedHat cross-version problems).
+
+  Revision 1.32  2001/03/23 18:06:45  wenger
+  Color palettes are now associated with sessions; added borders to
+  color chooser buttons so they're visible even if they're the same
+  color as the background; fixed various color-related bugs.
+
   Revision 1.31  2001/01/08 20:32:19  wenger
   Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
   back onto the trunk.
@@ -253,6 +262,7 @@ int ExecCheckpoint(char *fname, ConnectInfo *cinfo)
 }
 
 //#define DEBUG
+#define DEBUG_LOG
 
 char *NoError = "NONE";
 
@@ -264,6 +274,15 @@ Server::Server(char *name, int image_port,
 #if defined(DEBUG)
     printf("Server::Server(%s, %d, %d, %d)\n", name, image_port, swt_port,
       clnt_port);
+#endif
+#if defined(DEBUG_LOG)
+    const int bufLen = 256;
+	char logBuf[bufLen];
+	int formatted = snprintf(logBuf, bufLen,
+	  "Server::Server(%s, %d, %d, %d)\n", name, image_port, swt_port,
+      clnt_port);
+    checkAndTermBuf(logBuf, bufLen, formatted);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
     char hostname[MAXNAMELEN];
@@ -284,11 +303,19 @@ Server::Server(char *name, int image_port,
 	switchname = CopyString(swtname);
 									   
 	bzero((char *) &switchaddr, sizeof(switchaddr));
-	gethostname(hostname, MAXNAMELEN);
+	if (gethostname(hostname, MAXNAMELEN) != 0) {
+	    reportErrSys("Error in gethostname()");
+		Exit::DoExit(1);
+	}
 
     hst = gethostbyname(hostname);
+	if (hst == NULL) {
+	    reportErrSys("Error in gethostbyname(); bad libc version??");
+		Exit::DoExit(1);
+	}
 
 #if defined(DEBUG)
+	printf("hst = 0x%p\n", hst);
     printf("h_name = %s\n", hst->h_name);
     printf("h_addrtype = %s\n", hst->h_addrtype == AF_INET ? "AF_INET" :
       "other");
@@ -308,7 +335,7 @@ Server::Server(char *name, int image_port,
 #endif
 	 
 	switchaddr.sin_family = AF_INET;
-	switchaddr.sin_addr   = *(struct in_addr *) (hst->h_addr_list[0]);
+	switchaddr.sin_addr   = *((struct in_addr *) (hst->h_addr_list[0]));
 	switchaddr.sin_port = htons(swt_port);
 				  
 	_port = clnt_port;                   // port for switch, _port for clients
@@ -338,6 +365,11 @@ Server::Server(char *name, int image_port,
 	if (_listenSwtFd >0) {
 	    _channel = new ControlChannel();
     }
+
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	  "  done with Server::Server()");
+#endif
 }
 
 

@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1999-2001
+#  (c) Copyright 1999-2002
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -20,6 +20,21 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.27.8.2  2002/05/16 17:12:53  wenger
+#  Changed '==' in if to '='.
+#
+#  Revision 1.1  2002/05/13 22:23:29  wenger
+#  Initial revision
+#
+#  Revision 1.27.8.1  2002/05/06 20:26:16  wenger
+#  Check_connect now kills off any previous DEViseCheckPop processes;
+#  check_jspop allows a killed check_connect to be considered successful
+#  (this is all to try to fix the problems on yola at BMRB).
+#
+#  Revision 1.27  2001/09/25 14:38:46  wenger
+#  Modified all JS-related scripts, etc., to work without '.' in path;
+#  fixed some problems in the JSS related to starting and killing deviseds.
+#
 #  Revision 1.26  2001/09/12 20:34:30  wenger
 #  Incremented JS version to 4.4; various fixes because of install problems
 #  on pumori.
@@ -175,9 +190,13 @@ then
   info=`./ports+files $idStr`;
   port=`echo $info | cut -d' ' -f1`
 
+  #TEMP -- conflict with file names here!
   result=`./check_connect -port$port 2>check_connect.err`
 
-  if [ "$result" = "OK" ]
+  # Note: we allow "" as a result here in case the DEViseCheckPop process
+  # is killed -- we don't want that to count as the check failing.
+  # RKW 2002-05-06.
+  if [ "$result" = "OK" ] || [ "$result" = "" ]
   then
     connected=1
   else

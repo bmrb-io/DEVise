@@ -22,6 +22,38 @@
 // $Id$
 
 // $Log$
+// Revision 1.142  2002/05/01 21:29:00  wenger
+// Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.141.2.11  2002/06/14 14:37:35  sjlong
+// Fixed Bug 793 (Fix: It is no longer possible to have two "Current Active
+// Clients" windows open at the same time.)
+// Fixed Bug 794 (Bug: Quickly hitting the 'Help' button twice caused
+// the JS to lock-up.)
+//
+// Revision 1.141.2.10  2002/06/12 14:02:15  sjlong
+// Fixed Bugs 789, 790, 791 (Bugs: In collaboration mode, the follower can
+// lock up if the 'Open' or 'Stop' buttons are pressed as well as the
+// 'JSPOP Status' from the 'Options' menu.)
+//
+// Revision 1.141.2.9  2002/06/11 19:09:14  sjlong
+// Fixed Bug 787 (Fix: 'Become Follower' option is no longer available if you are
+// leading)
+// Fixed Bug 788 (Fix: When leading, the message to the right of the buttons now
+// says "Collaboration (L)" and it says "Collaboration (F)" when following)
+//
+// Revision 1.141.2.8  2002/06/05 17:21:59  sjlong
+// Fixed bug 786 (JavaScreen: From the 'Collaborate' menu, choosing 'Become Leader'
+// and then hitting 'Cancel' will make the JavaScreen believe it is a leader.
+//
+// Revision 1.141.2.7  2002/05/24 17:48:05  wenger
+// Fixed bug 782 (getting JSPoP status fails for > 1 DEVised).
+//
+// Revision 1.141.2.6  2002/05/08 21:16:51  wenger
+// Changed some collaboration GUI for more clarity, updated instructions
+// accordingly; default collaboration password is now "" as workaround
+// for problem filling in default in GUI on some platforms.
+//
 // Revision 1.141.2.5  2002/04/12 21:21:54  xuk
 // Improvement on autotest: test more dialog-related commands.
 //
@@ -522,7 +554,10 @@ public class jsdevisec extends Panel
     public EnterCollabPassDlg entercollabpassdlg = null;
     public CollabStateDlg collabstatedlg = null;
 
-    public boolean isSessionOpened = false;
+    public boolean isSessionOpened = false; 
+
+    // This variable will tell us if a CollabIdDlg is open (only 1 should be open at a time)
+    public boolean isCollabIdDlgOpened = false;
 
     // This seems to be true if we are in the process of quitting -- avoids
     // re-entering the quit code(?).
@@ -781,6 +816,12 @@ public class jsdevisec extends Panel
                             showMsg("You already have a session opened!\nPlease close current session first!");
                             return;
                         }
+
+			// If we are a follower in collaboration mode
+			if (specialID != -1) {
+			    showMsg("Cannot 'Open' while following.");
+			    return;
+			}
 			
 			dispatcher.start(DEViseCommands.GET_SESSION_LIST + " {" + currentDir + "}");
                     }
@@ -802,6 +843,13 @@ public class jsdevisec extends Panel
                 {
                     public void actionPerformed(ActionEvent event)
                     {
+			// If we are a follower in collaboration mode
+			if (specialID != -1) {
+			    showMsg("Cannot 'Stop' while following.\n" +
+                                     "To stop, choose 'Quit Following' from 'Collaborate'.");
+			    return;
+			}
+
                         if (dispatcher.getStatus() != 0) {
                             stopNumber++;
                             if (stopNumber > 1) {
@@ -886,12 +934,17 @@ public class jsdevisec extends Panel
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-                        if (!isSessionOpened) {
-                            showMsg("You do not have any opened session!");
-                            return;
-                        }
+			if (!isSessionOpened) {
+			    showMsg("You do not have any opened session!");
+			    return;
+			}
 
-                        jscreen.showAllHelp();
+			// Don't call showAllHelp() until we know that the dispatcher is not busy.
+			// This is to avoid lock-ups caused by calling showAllHelp() twice before
+			// getting a response
+			while(dispatcher.getStatus() !=0 ) {}
+
+			jscreen.showAllHelp();
                     }
                 });
 
@@ -930,6 +983,7 @@ public class jsdevisec extends Panel
 		    "} {" + jsValues.session.collabLeaderPass +
 		    "}";
 		isCollab = true;
+		collabModeL();
 	    }
 	    
             dispatcher.start(cmd);
@@ -941,7 +995,8 @@ public class jsdevisec extends Panel
 		    "} {" + jsValues.session.collabLeaderPass +
 		    "}";
 		dispatcher.start(cmd);
-		isCollab = true;
+		isCollab = true; 
+		collabModeL();
 	    }
 	    
 	    // for automatic collaboration
@@ -1114,14 +1169,16 @@ public class jsdevisec extends Panel
 
     public void showClientList(String msg)
     {
-	try {
-            collabIdDlg = new CollabIdDlg(this, parentFrame,
-	      isCenterScreen, msg);
-            collabIdDlg.open();
-	} catch (YException ex) {
-	    System.err.println(ex.getMessage());
+	if(isCollabIdDlgOpened == false) {
+	    try {
+		collabIdDlg = new CollabIdDlg(this, parentFrame,
+					      isCenterScreen, msg);
+		collabIdDlg.open();
+	    } catch (YException ex) {
+		System.err.println(ex.getMessage());
+	    }
+	    collabIdDlg = null;
 	}
-	collabIdDlg = null;
     }
 
     public void showCollabPass()
@@ -1302,10 +1359,16 @@ public class jsdevisec extends Panel
         commMode.setText("Socket");
     }
 
-    public void collabMode()
+    public void collabModeL()
     {
 	commMode.setForeground(Color.white);
-        commMode.setText("Collaboration");
+        commMode.setText("Collaboration (L)");
+    }
+
+    public void collabModeF()
+    {
+	commMode.setForeground(Color.white);
+        commMode.setText("Collaboration (F)");
     }
 
     public void cgiMode()
@@ -1340,7 +1403,7 @@ public class jsdevisec extends Panel
         
 	specialID = leaderId;
 
-	collabMode();
+	collabModeF();
     }
 
     public synchronized void collabQuit()
@@ -1886,7 +1949,12 @@ class SettingDlg extends Dialog
         screenX.setText("" + jsc.jsValues.uiglobals.screenSize.width);
         screenY.setText("" + jsc.jsValues.uiglobals.screenSize.height);
 
-        statButton.setBackground(jsc.jsValues.uiglobals.bg);
+        if (jsc.specialID == -1) {
+	    statButton.setBackground(jsc.jsValues.uiglobals.bg);
+	} else {
+	    statButton.setBackground(Color.red);
+	}
+
         statButton.setForeground(jsc.jsValues.uiglobals.fg);
         statButton.setFont(jsc.jsValues.uiglobals.font);
 
@@ -2046,8 +2114,8 @@ class SettingDlg extends Dialog
                         }
                     }
                 });
-
-        statButton.addActionListener(new ActionListener()
+        if (jsc.specialID == -1) {
+            statButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
                     {
@@ -2056,6 +2124,7 @@ class SettingDlg extends Dialog
                         close();
                     }
                 });
+	}
 
 	if (jsc.specialID == -1) {
 	    collabButton.addActionListener(new ActionListener()
@@ -2142,6 +2211,7 @@ class ServerStateDlg extends Dialog
 
     private boolean status = false; // true means this dialog is showing
 
+    // For the format of the data string, see jspop.getServerState().
     public ServerStateDlg(Frame owner, boolean isCenterScreen, String data, jsdevisec what)
     {
         super(owner, true);
@@ -2150,35 +2220,42 @@ class ServerStateDlg extends Dialog
 
 	jsc.jsValues.debug.log("Creating ServerStateDlg");
 
+	String[] serverInfo = null, activeClientInfo = null,
+	  suspClientInfo = null;
+
 	String[] list = DEViseGlobals.parseString(data);
-	String[] list1 = null, list2 = null, list3 = null;
+	int listIndex = 0;
 	
 	if (list != null && list.length > 3) {
             try {
-                int number1 = Integer.parseInt(list[0]);
-                if (number1 != 0) {
-                    list1 = new String[number1];
-		    String[] temp_list = DEViseGlobals.parseStr(list[1], " ");
-                    for (int i = 0; i < number1; i++) {
-                        list1[i] = temp_list[2*i] + " " + temp_list[2*i+1];
+                int serverCount = Integer.parseInt(list[listIndex++]);
+                if (serverCount != 0) {
+                    serverInfo = new String[serverCount];
+                    for (int i = 0; i < serverCount; i++) {
+		        String[] subList = DEViseGlobals.parseStr(
+			  list[listIndex++], " ");
+                        serverInfo[i] = subList[0] + " " + subList[1];
                     }
                 }
 
-                int number2 = Integer.parseInt(list[3]);
-                if (number2 != 0) {
-                    list2 = new String[number2];
-		    String[] temp_list = DEViseGlobals.parseStr(list[4], " ");
-                    for (int i = 0; i < number2; i++) {
-                        list2[i] = temp_list[2*i] + " " + temp_list[2*i+1];
+		listIndex++; // skip total clients value
+                int activeClientCount = Integer.parseInt(list[listIndex++]);
+                if (activeClientCount != 0) {
+                    activeClientInfo = new String[activeClientCount];
+                    for (int i = 0; i < activeClientCount; i++) {
+		        String[] subList = DEViseGlobals.parseStr(
+			  list[listIndex++], " ");
+                        activeClientInfo[i] = subList[0] + " " + subList[1];
                     }
                 }
 
-                int number3 = Integer.parseInt(list[5]);
-                if (number3 != 0) {
-                    list3 = new String[number3];
-		    for (int i = 0; i < number3; i++) {
-			String[] temp_list = DEViseGlobals.parseStr(list[6+i], " ");
-                        list3[i] = temp_list[0] + " " + temp_list[1];
+                int suspClientCount = Integer.parseInt(list[listIndex++]);
+                if (suspClientCount != 0) {
+                    suspClientInfo = new String[suspClientCount];
+		    for (int i = 0; i < suspClientCount; i++) {
+		        String[] subList = DEViseGlobals.parseStr(
+			  list[listIndex++], " ");
+                        suspClientInfo[i] = subList[0] + " " + subList[1];
                     }
                 }
             } catch (NumberFormatException e) {
@@ -2199,27 +2276,27 @@ class ServerStateDlg extends Dialog
         serverList.setBackground(jsc.jsValues.uiglobals.textBg);
         serverList.setForeground(jsc.jsValues.uiglobals.textFg);
         serverList.setFont(jsc.jsValues.uiglobals.textFont);
-        if (list1 != null) {
-            for (int i = 0; i < list1.length; i++) {
-                serverList.add(list1[i]);
+        if (serverInfo != null) {
+            for (int i = 0; i < serverInfo.length; i++) {
+                serverList.add(serverInfo[i]);
             }
         }
         activeClientList = new java.awt.List(6, false);
         activeClientList.setBackground(jsc.jsValues.uiglobals.textBg);
         activeClientList.setForeground(jsc.jsValues.uiglobals.textFg);
         activeClientList.setFont(jsc.jsValues.uiglobals.textFont);
-        if (list2 != null) {
-            for (int i = 0; i < list2.length; i++) {
-                activeClientList.add(list2[i]);
+        if (activeClientInfo != null) {
+            for (int i = 0; i < activeClientInfo.length; i++) {
+                activeClientList.add(activeClientInfo[i]);
             }
         }
         suspendClientList = new java.awt.List(6, false);
         suspendClientList.setBackground(jsc.jsValues.uiglobals.textBg);
         suspendClientList.setForeground(jsc.jsValues.uiglobals.textFg);
         suspendClientList.setFont(jsc.jsValues.uiglobals.textFont);
-        if (list3 != null) {
-            for (int i = 0; i < list3.length; i++) {
-                suspendClientList.add(list3[i]);
+        if (suspClientInfo != null) {
+            for (int i = 0; i < suspClientInfo.length; i++) {
+                suspendClientList.add(suspClientInfo[i]);
             }
         }
 
@@ -2828,9 +2905,9 @@ class CollabSelectDlg extends Dialog
     jsdevisec jsc = null;
 
     public Button collabButton = new Button("Become Follower");
-    public Button endButton = new Button("Finish Collaboration");
+    public Button endButton = new Button("Quit Following");
     public Button enCollabButton = new Button("Become Leader");
-    public Button disCollabButton = new Button("Disable Collaboration");
+    public Button disCollabButton = new Button("Quit Leading");
     public Button cancelButton = new Button("Cancel");
     private boolean status = false; // true means this dialog is showing
 
@@ -2848,7 +2925,7 @@ class CollabSelectDlg extends Dialog
 
         setTitle("JavaScreen Collaboration");
 
-	if (jsc.specialID == -1) {
+	if ((jsc.specialID == -1) && (!jsc.isCollab)) {
 	    collabButton.setBackground(jsc.jsValues.uiglobals.bg);
 	} else {
 	    collabButton.setBackground(Color.red);
@@ -2935,7 +3012,7 @@ class CollabSelectDlg extends Dialog
 
         this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 
-	if (jsc.specialID == -1) {
+	if ((jsc.specialID == -1) && (!jsc.isCollab)) {
 	    collabButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -3004,7 +3081,6 @@ class CollabSelectDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			jsc.isCollab = true;
 			close();
 			jsc.showCollabPass();
                     }
@@ -3017,8 +3093,15 @@ class CollabSelectDlg extends Dialog
                     public void actionPerformed(ActionEvent event)
                     {
 			jsc.isCollab = false;
+                        if(jsc.jsValues.connection.cgi) {
+			    jsc.cgiMode();
+			} else {
+			    jsc.socketMode();
+			}
 			close();
 			jsc.disableCollab();
+			jsc.jsValues.session.collabLeaderPass =
+			  DEViseGlobals.DEFAULT_COLLAB_PASS;
                     }
                 });
 	    }
@@ -3244,6 +3327,7 @@ class CollabIdDlg extends Frame
     {
 	jsc.jsValues.debug.log("Opening CollabIdDlg");
         status = true;
+        jsc.isCollabIdDlgOpened = true;
         setVisible(true);
     }
 
@@ -3252,6 +3336,7 @@ class CollabIdDlg extends Frame
         if (status) {
             dispose();
             status = false;
+	    jsc.isCollabIdDlgOpened = false;
             jsc.collabIdDlg = null;
         }
 	jsc.jsValues.debug.log("Closed CollabIdDlg");
@@ -3266,7 +3351,7 @@ class CollabIdDlg extends Frame
 
 // ------------------------------------------------------------------------
 
-// Dialog for setting password for collaboration.
+// Dialog for setting password for collaboration (the *leader* does this).
 class CollabPassDlg extends Dialog
 {
     jsdevisec jsc = null;
@@ -3368,6 +3453,9 @@ class CollabPassDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
+                        jsc.isCollab = true; 
+			jsc.collabModeL();
+
 			jsc.jsValues.session.collabLeaderPass = 
 			    pass.getText();
 			jsc.jsValues.session.collabLeaderName = 
@@ -3427,7 +3515,7 @@ class CollabPassDlg extends Dialog
 
 // ------------------------------------------------------------------------
 
-// Dialog for setting password for collaboration.
+// Dialog for setting password for collaboration (the *follower* does this).
 class EnterCollabPassDlg extends Dialog
 {
     jsdevisec jsc = null;
@@ -3467,7 +3555,7 @@ class EnterCollabPassDlg extends Dialog
         c.weighty = 1.0;
         c.insets = new Insets(10, 10, 10, 10);
 
-	pass.setText(DEViseGlobals.DEFAULTPASS);
+	pass.setText(DEViseGlobals.DEFAULT_COLLAB_PASS);
 
         Button [] button = new Button[1];
         button[0] = setButton;

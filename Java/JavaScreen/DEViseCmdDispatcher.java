@@ -23,6 +23,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.121  2002/05/01 21:28:58  wenger
+// Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.120.2.10  2002/06/17 15:50:35  sjlong
+// Fixed Bug 795 (Bug: By choosing to become the leader of a group that already
+// exists, then hitting "Cancel", a JavaScreen will think it is a leader when
+// it really isn't.)
+//
 // Revision 1.120.2.9  2002/04/19 20:50:48  xuk
 // Add new testings in autotest: enforced client switching, restore pre-collab
 // states for JS;
@@ -1379,6 +1387,14 @@ public class DEViseCmdDispatcher implements Runnable
 	    jsc.jscreen.updateScreen(false);
 
         } else if (args[0].equals(DEViseCommands.RESET_COLLAB_NAME)) {
+	    // First, reset the variable that says we are collaborating
+	    jsc.isCollab = false;
+            if(jsc.jsValues.connection.cgi) {
+	        jsc.cgiMode();
+	    } else {
+	        jsc.socketMode();
+	    }
+
             // collaboration name already exist
 	    jsc.showMsg("Already have collaboration name \"" + 
 			jsc.jsValues.session.collabLeaderName + 

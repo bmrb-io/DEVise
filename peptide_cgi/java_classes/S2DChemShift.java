@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.9.8.1  2002/06/05 15:47:18  wenger
+// Got peptide-cgi to compile with (fussier) Java 1.4 compiler.
+//
+// Revision 1.9  2001/05/14 18:08:26  wenger
+// Parameterized all star file tag names, etc.
+//
 // Revision 1.8  2001/05/08 18:24:18  wenger
 // Fixed problem getting residue count if a star file contains info for
 // more than one protein; added residue counts to 'all shifts' and 'H
@@ -62,9 +68,6 @@
 
 import java.io.*;
 import java.util.*;
-
-import ShiftDataManager.Pair;
-import AssgDataManager.AssgEntry;
 
 public class S2DChemShift {
     //===================================================================
@@ -175,8 +178,8 @@ public class S2DChemShift {
 	        double chemShift = _chemShiftVals[index];
 
 		try {
-	            Pair standardValue = _refTable.returnValues(resLabel,
-		      atomName);
+	            ShiftDataManager.Pair standardValue =
+		      _refTable.returnValues(resLabel, atomName);
 
 		    // Note: do the calculation in double and truncate to float
 		    // to avoid getting values like 0.05000000000000071.
@@ -326,8 +329,8 @@ public class S2DChemShift {
 		    double chemShift = _chemShiftVals[index];
 
 		    try {
-	                Pair standardValue = _refTable.returnValues(resLabel,
-			  atomName);
+	                ShiftDataManager.Pair standardValue =
+			  _refTable.returnValues(resLabel, atomName);
 
 			// Note: do the calculation in double and truncate to
 			// float to avoid getting values like
@@ -451,7 +454,8 @@ public class S2DChemShift {
 	        String resLabel = _residueLabels[index];
 
 		try {
-		    AssgEntry assignments = assgTable.returnAssg(resLabel);
+		    AssgDataManager.AssgEntry assignments =
+		      assgTable.returnAssg(resLabel);
 
 		    int starNumH = 0;
 		    int starNumC = 0;

@@ -7,6 +7,12 @@
   $Id$
 
   $Log$
+  Revision 1.21.14.1  2002/05/27 18:16:10  wenger
+  Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
+
+  Revision 1.21  2000/01/13 23:07:27  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.20  1999/11/30 22:28:51  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -99,6 +105,7 @@
 #include <iostream.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "tapedrive.h"
 #include "DCE.h"

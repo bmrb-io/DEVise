@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.32.10.1  2002/05/28 17:15:20  wenger
+  Dispatcher::ImmediateTerminate() now logs signal, requests core dump.
+
+  Revision 1.32  2001/08/28 18:30:11  wenger
+  Added 'robustOpen' option (default is true) -- this allows a session
+  open to succeed even if there are unrecognized commands (useful for
+  opening a newer session file with an older version of DEVise); if a
+  session open fails, we now clean things up.
+
   Revision 1.31  2001/08/03 18:13:03  wenger
   Removed all OpenGL-related code.
 
@@ -160,6 +169,8 @@ const int DEVISE_MAX_TDATA_ATTRS = 512;
 class Init {
   public:
     static void DoInit(int &argc, char **argv);
+
+    static void SetAbort(Boolean doAbort) { _abort = doAbort; }
 
     static Boolean SavePopup() { return _savePopup;}
 

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2001
+// (c) Copyright 2000-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -25,6 +25,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.11.8.2  2002/06/05 18:56:09  wenger
+// Improved summary page labels as per feedback from Eldon; fixed bug
+// 006 (visual filters not set correctly when some sessions opened).
+//
+// Revision 1.11.8.1  2002/05/13 15:33:25  wenger
+// Added "values" to the peptide-cgi summary page where appropriate.
+//
+// Revision 1.11  2001/10/10 22:37:33  wenger
+// First version of atomic coordinate extraction and visualization (atoms,
+// not bonds, only tested on 4096 -- coordinates must be in same NMR-STAR
+// file as other data); fixed various minor problems with peptide-cgi code.
+//
 // Revision 1.10  2001/07/25 19:56:23  wenger
 // Started adding configuration setup stuff; s2d gets URLs from properties
 // file.
@@ -248,7 +260,7 @@ public class S2DSummaryHtml {
 
         _writer.write("<li><a href=\"" + _accNum +
 	  S2DNames.DELTASHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">Chemical Shift Delta</a> (" + count + " shifts)\n");
+	  "\">Chemical Shift Delta</a> (" + count + " residues)\n");
 
         _wroteLink = true;
     }
@@ -263,7 +275,7 @@ public class S2DSummaryHtml {
 
         _writer.write("<li><a href=\"" + _accNum +
 	  S2DNames.CSI_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">Chemical Shift Index</a> (" + count + " shifts)\n");
+	  "\">Chemical Shift Index</a> (" + count + " residues)\n");
 
         _wroteLink = true;
     }
@@ -278,7 +290,7 @@ public class S2DSummaryHtml {
 
         _writer.write("<li><a href=\"" + _accNum +
 	  S2DNames.PERCENT_ASSIGN_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">Percent Assigned Atoms</a> (" + count + " shifts)\n");
+	  "\">Percent Assigned Atoms</a> (" + count + " residues)\n");
 
         _wroteLink = true;
     }
@@ -293,7 +305,7 @@ public class S2DSummaryHtml {
 
         _writer.write("<li><a href=\"" + _accNum +
 	  S2DNames.COUPLING_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">Coupling Constants</a> (" + count + ")\n");
+	  "\">Coupling Constants</a> (" + count + " values)\n");
 
         _wroteLink = true;
     }
@@ -309,7 +321,7 @@ public class S2DSummaryHtml {
 
         _writer.write("<li><a href=\"" + _accNum +
 	  suffix + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">" + name + "</a> (" + count + ")\n");
+	  "\">" + name + "</a> (" + count + " values)\n");
 
         _wroteLink = true;
     }
@@ -325,7 +337,8 @@ public class S2DSummaryHtml {
 
         _writer.write("<li><a href=\"" + _accNum +
 	  S2DNames.HETERONUCLEAR_NOE_SUFFIX + frameIndex +
-	  S2DNames.HTML_SUFFIX + "\">" + name + "</a> (" + count + ")\n");
+	  S2DNames.HTML_SUFFIX + "\">" + name + "</a> (" + count +
+	  " values)\n");
 
         _wroteLink = true;
     }
@@ -359,7 +372,7 @@ public class S2DSummaryHtml {
         _writer.write("<li><a href=\"" + _accNum +
 	  S2DNames.HVSN_CHEM_SHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
 	  "\">Simulated 1H-15N backbone HSQC spectrum</a> (" + count +
-	  " shifts)\n");
+	  " peaks)\n");
 
         _wroteLink = true;
     }

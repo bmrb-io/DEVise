@@ -19,6 +19,15 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7.4.1  2002/05/08 16:09:26  wenger
+#  Added collaboration follower page; changed html targets from "new" to
+#  "_blank" so we get the desired behavior; added link from collab help
+#  page to collab follower page.
+#
+#  Revision 1.7  2001/12/03 18:20:43  wenger
+#  Added JavaScreen collaboration instructions; added standard DEVise
+#  background to web pages.
+#
 #  Revision 1.6  2001/09/25 14:38:55  wenger
 #  Modified all JS-related scripts, etc., to work without '.' in path;
 #  fixed some problems in the JSS related to starting and killing deviseds.
@@ -167,7 +176,7 @@ foreach file ($files)
   chmod 755 $dest/$file
 end
 
-set files = (jsa.html jsb.html keyboard.html collab.html)
+set files = (jsa.html jsb.html keyboard.html collab.html collabf.html)
 foreach file ($files)
   cp -p $file $dest
   chmod 644 $dest/$file

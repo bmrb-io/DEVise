@@ -370,3 +370,6 @@ DEVise set3DLocation {View 5} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 DEVise set3DLocation {View 6} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 
 # Set string tables for each view
+
+# Session postscript
+DEVise sessionPost updateFilters
