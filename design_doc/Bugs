@@ -1815,6 +1815,13 @@ Num Date        Status  Description
 470 03/16/99	OPEN	Open a session while queries for an existing session
 			are running -> QueryProc fails an assertion. (rkw)
 
+471 03/17/99	OPEN	Resizing a piled window sometimes causes the window
+			to become blank. (rkw)
+
+472 03/17/99	OPEN	When you've set global foreground and background
+			colors, new views should be created with those
+			colors. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

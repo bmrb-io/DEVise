@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.51  1999/03/16 17:10:03  wenger
+  Improved 'view home' configuration: user can select whether home changes
+  X, Y, or both parts of visual filter; added explicit option to force Y
+  min to 0 in automatic mode; fixed bug 469 (problems with 'home' in
+  record link follower views).
+
   Revision 1.50  1999/03/12 18:46:02  wenger
   Implemented duplicate symbol elimination.
 
@@ -4619,10 +4625,24 @@ IMPLEMENT_COMMAND_END
 IMPLEMENT_COMMAND_BEGIN(test)
 // Note: modify this code to do whatever you need to test.
     if (argc == 1) {
-        View *view = (View *)classDir->FindInstance("Y vs. X");
+        View *view = (View *)classDir->FindInstance("GlewRunning");
 		if (view != NULL) {
-		  view->MoveResize(10, 10, 100, 100);
-		  ((Layout *)(view->GetParent()))->SetLayoutProperties(CUSTOM, 0, 0);
+		  view->SetPileMode(true);
+		}
+
+        view = (View *)classDir->FindInstance("GlewTotal");
+		if (view != NULL) {
+		  view->SetPileMode(true);
+		}
+
+        view = (View *)classDir->FindInstance("YetkinRunning");
+		if (view != NULL) {
+		  view->SetPileMode(true);
+		}
+
+        view = (View *)classDir->FindInstance("YetkinTotal");
+		if (view != NULL) {
+		  view->SetPileMode(true);
 		}
 		
        	ReturnVal(API_ACK, "done");

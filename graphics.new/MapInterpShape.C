@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.59  1999/01/05 22:38:30  wenger
+  Added new "constant font size" option for scaled text symbols.
+
   Revision 1.58  1999/01/05 20:54:03  wenger
   Fixed bugs 447 and 448 (problems with symbol patterns); cleaned up some
   of the text symbol code.
@@ -1267,24 +1270,39 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	char *gdata = (char *)gdataArray[i];
 	Coord x = GetX(gdata, map, offset);
 	Coord y = GetY(gdata, map, offset);
+	PColorID color = (int)(GetPColorID(gdata, map, offset) + 0.5);
 	Coord width = fabs(GetSize(gdata, map, offset)
 			   * GetShapeAttr0(gdata, map, offset));
 	width *= pixelSize;
 	Coord high = GetShapeAttr1(gdata, map, offset);
 	Coord low = GetShapeAttr2(gdata, map, offset);
+	int colorInc = (int)(GetShapeAttr3(gdata, map, offset) + 0.5);
 	Coord tw = width / 20.0;
 	Coord hw = width / 2.0;
 
-	win->SetForeground(GetPColorID(gdata, map, offset));
+	win->SetForeground(color);
 	win->SetPattern(GetPattern(gdata, map, offset));
 	int line_width = GetLineWidth(gdata, map, offset);
-	win->SetLineWidth(line_width);
+	if (line_width > 0) {
+	    win->SetLineWidth(line_width);
+	} else {
+	    win->SetLineWidth(0);
+	}
 
 	// ksb: should the width be applied to the rect, lines, or both?
-	win->FillRect(x - tw, low, 2 * tw, high - low);
-	win->Line(x - hw, y, x + hw, y, line_width);
-	win->Line(x - hw, low, x + hw, low, line_width);
-	win->Line(x - hw, high, x + hw, high, line_width);
+	if (colorInc == 0) {
+		win->FillRect(x - tw, low, 2 * tw, high - low);
+	} else {
+		win->FillRect(x - tw, low, 2 * tw, y - low);
+		win->SetForeground(color + colorInc);
+		win->FillRect(x - tw, y, 2 * tw, high - y);
+		win->SetForeground(color);
+	}
+	if (line_width >= 0) {
+	    win->Line(x - hw, y, x + hw, y, line_width);
+	    win->Line(x - hw, low, x + hw, low, line_width);
+	    win->Line(x - hw, high, x + hw, high, line_width);
+	}
 
 	if (view->GetDisplayDataValues())
 	  DisplayDataLabel(win, x, y, y);

@@ -15,6 +15,10 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.44  1999/02/17 15:10:05  wenger
+#       Added "Next in Pile" button to query dialog; more pile fixes; fixed bug
+#       in mapping dialog updating when a view is selected.
+#
 #       Revision 1.43  1998/12/22 19:39:43  wenger
 #       User can now change date format for axis labels; fixed bug 041 (axis
 #       type not being changed between float and date when attribute is changed);
@@ -708,7 +712,8 @@ set DEViseShapeAttrNames { \
 	{Vector "X Length (Height)" "Y Length (Width)" "" "" "Line Width"} \
 	{HorLine "" "" "" "" "Line Width"} \
 	{Segment Width Height "" "" "Line Width"} \
-	{HighLow Width "High (Y max)" "Low (Y min)" "" "Line Width"} \
+	{HighLow Width "High (Y max)" "Low (Y min)" "Color increment" \
+	"Line Width"} \
 	{Polyline "" "" "" "" ""} \
 	{Image "Filename/Image" "Image Type" "Aspect" "" ""} \
 	{"Polyline File" Filename Format "" "" "Line Width"} \

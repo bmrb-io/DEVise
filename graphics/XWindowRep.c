@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.122  1999/02/15 21:53:15  wenger
+  Made XWindowRep::MoveResize() work correctly for pixmaps so that the
+  new pile/stack code works for the JavaScreen.
+
   Revision 1.121  1999/02/11 19:54:43  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -834,7 +838,9 @@ void	XWindowRep::ClearPixmap(void)
 	PColorID	savePColorID = GetForeground();
 
 	SetForeground(GetBackground());
-	XFillRectangle(_display, _pixmap, _gc, 0, 0, _width, _height);
+        // Correct for XFillRectangle() not working the way O'Reilly says
+	// it does.
+	XFillRectangle(_display, _pixmap, _gc, 0, 0, _width - 1, _height - 1);
 	SetForeground(savePColorID);
 #endif
 }
@@ -1924,8 +1930,9 @@ void XWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
     Transform(x[i],y[i],tx,ty);
     rectAngles[i].x = ROUND(short, tx - halfWidth);
     rectAngles[i].y = ROUND(short, ty - halfWidth);
-    rectAngles[i].width = width;
-    rectAngles[i].height = width;
+    // Correct for XFillRectangles() not working the way O'Reilly says it does.
+    rectAngles[i].width = width - 1;
+    rectAngles[i].height = width - 1;
   }
   
 #ifdef DEBUG
@@ -2130,12 +2137,13 @@ void XWindowRep::FillRect(Coord xlow, Coord ylow, Coord width,
      system starts at the upper left corner */
 
   unsigned pixelWidth = (unsigned)(ROUND(int, txmax) - ROUND(int, txlow) + 1);
-  if (pixelWidth == 0)
-    pixelWidth = 1;
+  if (pixelWidth == 0) pixelWidth = 1;
   unsigned pixelHeight = (unsigned)(ROUND(int, tymax) - ROUND(int, tylow) + 1);
-  if (pixelHeight == 0)
-    pixelHeight = 1;
+  if (pixelHeight == 0) pixelHeight = 1;
   
+  // Correct for XFillRectangle() not working the way O'Reilly says it does.
+  pixelWidth--; pixelHeight--;
+
 #ifdef DEBUG
   printf("After transformation: x %d, y %d, width %d, height %d\n",
 	 ROUND(int, txlow), ROUND(int, tylow), pixelWidth, pixelHeight);
@@ -2407,7 +2415,7 @@ void XWindowRep::Arc(Coord x, Coord y, Coord w, Coord h,
 void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2, 
 		      Coord width, CursorStore * cstore)
 {
-#if defined(DEBUG) || 0
+#if defined(DEBUG)
   printf("XWindowRep::Line %.2f,%.2f,%.2f,%.2f\n", x1, y1, x2, y2);
 #endif
   
@@ -3521,7 +3529,8 @@ void XWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
 
     // clear all pixels in pixmap
     SetForeground(GetBackground());
-    XFillRectangle(_display, _myPixmap, _gc, 0, 0, w, h);
+    // Correct for XFillRectangle() not working the way O'Reilly says it does.
+    XFillRectangle(_display, _myPixmap, _gc, 0, 0, w - 1, h - 1);
   }
 
   UpdateWinDimensions();
@@ -4189,8 +4198,9 @@ void XWindowRep::DrawRectangle(int symbolX, int symbolY, int width,
       orientation);
 
     if (filled) {
+      // Correct for XFillRectangle() not working the way O'Reilly says it does.
       XFillRectangle(_display, DRAWABLE, _gc, symbolX,
-        symbolY, width, height);
+        symbolY, width - 1, height - 1);
     }
 
     // do I need to reduce the bounding boxes height & width by 1??
