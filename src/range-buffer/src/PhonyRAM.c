@@ -5,14 +5,12 @@
 
 RBMObjectInfo *findObjectInfo(RBMObject objectId);
 
-PhonyRAM::PhonyRAM(RBMObject obj, DteAdtPage *page)
+PhonyRAM::PhonyRAM(RBMObject obj, const DteTupleAdt& rec,
+		   vector<char*>& inPages)
+: _page(rec), _inPages(inPages)
 {
     _obj = obj;
     _scanOutstanding = false;
-    _page = page;
-
-    _totalNumRecs = _page->getNumSlots();
-
 }
 
 PhonyRAM::~PhonyRAM()
@@ -26,7 +24,8 @@ int PhonyRAM::openScan(BoundingBox *in, BoundingBoxList *notIn)
     _notIn = notIn->clone();
 
     _scanOutstanding = true;
-    _numReadSofar = 0;
+    _curPage = 0;
+    _curSlot = 0;
 
     return 0;
 }
@@ -39,21 +38,26 @@ int PhonyRAM::nextRec(void *&record)
     assert(_scanOutstanding);
 
     /* iterate through the page to find the next qualified record */
-    while (_numReadSofar < _totalNumRecs)
-    {
-    	tuple = _page->getTuple(_numReadSofar);
-    	_numReadSofar++;
+    while( _curPage < _inPages.size() ) {
+        _page.setPage( _inPages[_curPage] );
+        while (_curSlot < _page.getNumSlots() )
+        {
+    	    tuple = _page.getTuple(_curSlot);
+    	    _curSlot++;
 
- 	/* find the value for the bounding box attribute */
+ 	    /* find the value for the bounding box attribute */
 
-	RBMObjectInfo *roi = findObjectInfo(_obj);
-    	value = DteFloat8Adt::cast(tuple[roi->boundingBoxAttrNumber]);
+	    RBMObjectInfo *roi = findObjectInfo(_obj);
+    	    value = DteFloat8Adt::cast(tuple[roi->boundingBoxAttrNumber]);
 
-	if (_in->contain(value) && (_notIn->contain(value) == false))
-	{
-	    record = tuple;
-	    return 0;
-  	}
+	    if (_in->contain(value) && (_notIn->contain(value) == false))
+	    {
+	        record = tuple;
+	        return 0;
+  	    }
+        }
+        _curPage++;
+	_curSlot = 0;
     }
 
     return NO_MORE_RECORD;

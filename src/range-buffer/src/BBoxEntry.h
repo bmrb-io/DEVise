@@ -43,6 +43,9 @@ private:
 				/* processed. Processed means have been     */
 				/* checked and, eithr returned or discarded */
 
+    bool _pageRequestDenied;  	/* Set to true when asking for more pages   */
+				/* to insert new record but denied.         */
+
     BBoxEntry *_next;
     BBoxEntry *_prev;
 };

@@ -19,7 +19,7 @@ class PhonyRAM: public RangeAccessMethod
 
 public:
 
-    PhonyRAM(RBMObject obj, DteAdtPage *page);
+    PhonyRAM(RBMObject obj, const DteTupleAdt& rec, vector<char*>& inPages);
     virtual ~PhonyRAM();
 
     /* return 0 if OK. return negtive number if something is wrong */
@@ -46,10 +46,11 @@ private:
 
     bool _scanOutstanding;
 
-    DteAdtPage *_page;		/* there is one page of record */
-    int _totalNumRecs;		/* total # of records in the page */
-    int _numReadSofar;		/* # of records read out of the page so far. */
-				/* May be less than or equal to # of records */
+    DteAdtPage _page;		/* there is one page of record */
+    vector<char*> _inPages;
+    size_t _curPage;		/* current page in the page list */
+    int _curSlot;		/* # of records read out of the page so far. */
+				/* May be more than or equal to # of records */
 				/* returned so far */
 };
 

@@ -25,7 +25,7 @@ RangeBufferManager::RangeBufferManager(ReplacementPolicyType rep,
 		break;
 
 	default:
-		fprintf(stderr, "Unsupported replace policy type!\n");
+		printf("Unsupported replace policy type!\n");
 		exit(1);
     }
 }
@@ -59,7 +59,7 @@ int RangeBufferManager::startCaching(RBMObject obj, RangeAccessMethod *ram)
     /* Object should not be in the RBM now */
     if (isCaching(obj))
     {
-	fprintf(stderr, "startCaching: Object already cached!\n");
+	printf("startCaching: Object already cached!\n");
 	return ALREADY_CACHED;
     }
 
@@ -175,7 +175,7 @@ int RangeBufferManager::stopCaching(RBMObject obj)         /* IN: Object */
 
     if (cached->_pinCount > 0)
     {
-	fprintf(stderr, "Object pinned. Cannot stop caching it now.\n");
+	printf("Object pinned. Cannot stop caching it now.\n");
 	return OBJECT_PINNED;
     }
 

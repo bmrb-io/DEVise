@@ -106,11 +106,14 @@ printf("
     /* create pages used to create phony RAM */
 
     char readBuf[DTE_PAGESIZE];
-    char packBuf[DTE_PAGESIZE];
 
     DteAdtPage readPage(rec);
     DteAdtPage packPage(rec);
-    packPage.initPage(packBuf);
+
+    vector<char*> inPages;
+    char* newPage = new char[DTE_PAGESIZE];
+    inPages.push_back(newPage);
+    packPage.initPage(newPage);
 
     /* read data into pages from cin */
 
@@ -123,13 +126,20 @@ printf("
 
  	const Tuple* tup = readPage.getTuple(0);
        	fitOnPage = packPage.addTuple(tup);
-	assert (fitOnPage);
+	if( !fitOnPage ) {
+    	    char* newPage = new char[DTE_PAGESIZE];
+    	    inPages.push_back(newPage);
+    	    packPage.initPage(newPage);
+       	    fitOnPage = packPage.addTuple(tup);
+	    assert (fitOnPage);
+        }
     }
 
     /* Create a PhonyRAM with the page. */
     /* We query on object 1 in the following DEMOs 1 through 5. */
 
-    globalPhonyRAM = new PhonyRAM(TEST_OBJECTID_1, &packPage);
+    globalPhonyRAM = new PhonyRAM(TEST_OBJECTID_1, rec, inPages);
+    // kb: the buffers in inPages should be deleted sometime...
 
 /*-------------- Creating the global Range Buffer Manager --------------*/
 
@@ -511,7 +521,7 @@ printf("
 
     /* Tell the lower level to switch to object 2 */
     delete globalPhonyRAM;
-    globalPhonyRAM = new PhonyRAM(TEST_OBJECTID_2, &packPage);
+    globalPhonyRAM = new PhonyRAM(TEST_OBJECTID_2, rec, inPages);
 
 /*-------------- Creating the in and the notIn --------------*/
 
@@ -591,7 +601,7 @@ printf("
 
     /* Tell the lower level to switch to object 1 */
     delete globalPhonyRAM;
-    globalPhonyRAM = new PhonyRAM(TEST_OBJECTID_1, &packPage);
+    globalPhonyRAM = new PhonyRAM(TEST_OBJECTID_1, rec, inPages);
 
 /*-------------- Creating the in and the notIn --------------*/
 
@@ -671,7 +681,7 @@ printf("
 
     /* Tell the lower level to switch to object 2 */
     delete globalPhonyRAM;
-    globalPhonyRAM = new PhonyRAM(TEST_OBJECTID_2, &packPage);
+    globalPhonyRAM = new PhonyRAM(TEST_OBJECTID_2, rec, inPages);
 
 /*-------------- Creating the in and the notIn --------------*/
 
@@ -799,7 +809,7 @@ printf("
 
     /* Tell the lower level to switch to object 1 */
     delete globalPhonyRAM;
-    globalPhonyRAM = new PhonyRAM(TEST_OBJECTID_1, &packPage);
+    globalPhonyRAM = new PhonyRAM(TEST_OBJECTID_1, rec, inPages);
 
 /*-------------- Creating the in and the notIn --------------*/
 

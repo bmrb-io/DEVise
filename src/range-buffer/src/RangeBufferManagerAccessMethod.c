@@ -109,7 +109,7 @@ int RangeBufferManagerAccessMethod::openScan(BoundingBox *in,
 	_lowLevelScanActive = true;
     	if (resultOpenScan < 0)
     	{
-            fprintf(stderr, "RBM call low level RAM's openScan failed.\n");
+            printf("RBM call low level RAM's openScan failed.\n");
             error_number = resultOpenScan;
 	    goto exit;
     	}
@@ -221,8 +221,10 @@ int RangeBufferManagerAccessMethod::nextRec(void *&record)
 	    insert_result = insertRecord(low_level_record);
 	    if (insert_result < 0)
 	    {
+		/*
 		printf("Cannot insert new record\n");
 		return ERROR_AT_INSERT;
+		*/
 	    }
 
 	    record = low_level_record;
@@ -268,6 +270,10 @@ void RangeBufferManagerAccessMethod::closeScan()
 
 		bbe2 = bbe;
 		bbe = bbe->_next;
+		for (PageEntry *pe = bbe2->_datapages; pe; pe = pe->_next)
+		{
+		    globalRBM->_mem->recyclePage(pe->_buf);
+		}
 		delete bbe2;
 	    }
 	    else
@@ -485,9 +491,34 @@ void RangeBufferManagerAccessMethod::cleanUpBBoxEntries()
     od = globalRBM->isCaching(_obj);
     assert(od);
 
-    for (bbe = od->_list; bbe != NULL; bbe = bbe->_next)
+    for (bbe = od->_list; bbe != NULL;)
     {
-	bbe->_complete = true;
+	if (bbe->_pageRequestDenied == false)
+	{
+	    bbe->_complete = true;
+	    bbe = bbe->_next;
+	}
+	else
+	{
+	    BBoxEntry *bbe2;
+	    /* this is an incomplete bbox. need to get rid of */
+	    if (bbe->_prev)
+                bbe->_prev->_next = bbe->_next;
+            else
+                od->_list = bbe->_next;
+
+            if (bbe->_next)
+                bbe->_next->_prev = bbe->_prev;
+
+	    bbe2 = bbe;
+            bbe = bbe->_next;
+	    
+	    for (PageEntry *pe = bbe2->_datapages; pe ;pe = pe->_next)
+	    {
+		globalRBM->_mem->recyclePage(pe->_buf);
+	    }
+            delete bbe2;
+ 	}
     }
 }
 
@@ -641,7 +672,8 @@ int RangeBufferManagerAccessMethod::insertRecord(void *lowLevelRec)
     	    if (!newBuf)
 	    {
 		/* No free page left & no page can be robbed from any victim */
-		fprintf(stderr, "Cannot find space in RBM for new record.\n");
+		TELL_ERROR("Cannot find space in RBM for new record.");
+		bbe->_pageRequestDenied = true;
 		return NO_PAGE_FOR_REC;
 	    }
 	    else
@@ -688,7 +720,7 @@ int RangeBufferManagerAccessMethod::insertRecord(void *lowLevelRec)
     /* Not able to find the right BBoxEntry. */
     /* This is an error since we should have created BBoxEntry for all new */
     /* records in the createHoleBBoxes() call */
-    fprintf(stderr, "BBoxEntry for new record doesn't exist!\n");
+    printf("BBoxEntry for new record doesn't exist!\n");
     return BBOXENTRY_NOT_EXIST;
 }
 

@@ -10,6 +10,7 @@ BBoxEntry::BBoxEntry(Coord low, bool openLow, Coord high, bool openHigh)
     _next = NULL;
     _prev = NULL;
     _complete = false;
+    _pageRequestDenied = false;
 }
 
 BBoxEntry::~BBoxEntry()
