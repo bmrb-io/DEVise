@@ -39,14 +39,20 @@ DTE_INCLUDES = \
 	-I../../unidata \
 	$(PERL_INCL)
 
-CFLAGS = $(ARCH_FLAGS) $(DTE_INCLUDES)\
-	-Wall -Wno-unused $(OPTFLAG) \
+#no-comment is for the perl files
+
+CFLAGS = $(ARCH_FLAGS) $(ARCH_ENDIAN) $(DTE_INCLUDES)\
+	-Wall -Wno-unused -Wno-comment $(OPTFLAG) \
 	-DUNIX -DLIBCS \
-	-fexternal-templates \
 	-G
+#	-fexternal-templates \
 
 ifdef NO_RTREE
 	CFLAGS += -DNO_RTREE
+endif
+
+ifdef DTE_DEBUG
+	CFLAGS += -g
 endif
 
 CORE_SRC = DevRead.c resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
@@ -54,7 +60,7 @@ CORE_SRC = DevRead.c resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 	Engine.c Aggregates.c joins.c QueryTree.c IndexParse.c Util.c \
 	InsertParse.c DeleteParse.c SchemaParse.c DropIndexParse.c \
 	PQueue.c Sort.c UnionParse.c \
-	ExecOp.c Inserter.c
+	ExecOp.c Inserter.c TypeCheck.c
 #	TuplePtr.Plex.c TuplePtr.XPlex.c
 #	ApParseCat.c FunctionRead.c
 
@@ -184,7 +190,7 @@ gui: $(GUI_OBJ)
 	$(READ_FLAGS) $(ARCH_GUISYSLIBS) $(ARCH_LDPOST)
 
 FormatVolume: FormatVolume.C
-	$(CC) $< -o $@
+	$(CC) $(ARCH_ENDIAN) $< -o $@
 
 convert_bulk: convert_bulk.C correct_math.C heap.o
 	$(CC) $(ARCH_ENDIAN) heap.o $< -o $@
