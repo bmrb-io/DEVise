@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.111  1997/05/28 15:38:57  wenger
+  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+
   Revision 1.110  1997/05/21 22:09:59  andyt
   Added EmbeddedTk and Tasvir functionality to client-server library.
   Changed protocol between devise and ETk server: 1) devise can specify
@@ -2141,9 +2144,9 @@ void View::SetLabelParam(Boolean occupyTop, int extent, char *name)
    * have a label, we can just re-draw the label.  Otherwise, we have
    * to re-draw the whole view. */
   if (occupyTop == oldOccupyTop) {
-    if (_windowRep) {
+    if (_winReps.GetWindowRep()) {
       DrawLabel();
-      _windowRep->Flush();
+      _winReps.GetWindowRep()->Flush();
     }
   } else {
     _updateTransform = true;

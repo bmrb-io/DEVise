@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.50  1997/05/29 15:21:23  wenger
+  Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
+  compile on linux.
+
   Revision 1.49  1997/05/21 22:10:00  andyt
   Added EmbeddedTk and Tasvir functionality to client-server library.
   Changed protocol between devise and ETk server: 1) devise can specify
@@ -496,7 +500,6 @@ public:
   }
   virtual int ETk_WindowCount()
   {
-      reportErrNosys("This object does not support EmbeddedTk operations");
       return 0;
   }
   virtual DevStatus ETk_GetInfo(int handle, ETkInfo &info)

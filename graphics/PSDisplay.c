@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/05/21 22:09:55  andyt
+  Added EmbeddedTk and Tasvir functionality to client-server library.
+  Changed protocol between devise and ETk server: 1) devise can specify
+  that a window be "anchored" at an x-y location, with the anchor being
+  either the center of the window, or the upper-left corner. 2) devise can
+  let Tk determine the appropriate size for the new window, by sending
+  width and height values of 0 to ETk. 3) devise can send Tcl commands to
+  the Tcl interpreters running inside the ETk process.
+
   Revision 1.17  1997/05/05 19:40:37  wenger
   Oops!  Forgot to remove PSWindowReps from _winList when they're destroyed!
 
@@ -248,6 +257,124 @@ PSDisplay::ClosePrintFile()
 
   return result;
 }
+
+/**************************************************************
+Import a DEVise window, getting pixels from the display, not
+generating PostScript directly.
+**************************************************************/
+
+DevStatus PSDisplay::ImportWindow(ViewWin *window,
+    DisplayExportFormat format)
+{
+  DevStatus result(StatusOk);
+
+  /* Calculate the size and location in PostScript for this window. */
+  Rectangle location;
+
+  unsigned winWidth, winHeight;
+  int winXOrig, winYOrig;
+  window->GetWindowRep()->Dimensions(winWidth, winHeight);
+  window->GetWindowRep()->AbsoluteOrigin(winXOrig, winYOrig);
+
+  location.x = _boundingBox.x + (winXOrig - _screenPrintRegion.x) /
+    _screenPrintRegion.width * _boundingBox.width;
+  location.y = _boundingBox.y + _boundingBox.height - 1 - (winYOrig -
+    _screenPrintRegion.y) / _screenPrintRegion.height * _boundingBox.height;
+  location.width = winWidth / _screenPrintRegion.width * _boundingBox.width;
+  location.height = winHeight / _screenPrintRegion.height * _boundingBox.height;
+
+  /* Dump the window and import the resulting PostScript. */
+  char tmpFile[L_tmpnam];
+  tmpnam(tmpFile);
+  window->ExportImage(format, tmpFile);
+  ImportPSImage(tmpFile, &location);
+  unlink(tmpFile);
+
+  return result;
+}
+
+/**************************************************************
+Import a PostScript image.
+**************************************************************/
+
+DevStatus PSDisplay::ImportPSImage(char *filename, Rectangle *location)
+{
+  DevStatus result(StatusOk);
+
+  DOASSERT(_printFile != NULL, "No print file");
+
+  /* Call procedure to prepare for including EPS file. */
+  fprintf(_printFile, "\nBeginEPSF\n");
+
+  /* Now open and read the file to import. */
+  FILE *importFile = fopen(filename, "r");
+  if (importFile == NULL) {
+    reportError("Can't open import file", errno);
+    result += StatusFailed;
+  } else {
+    const int bufSize = 256;
+    char buf[bufSize];
+
+    /* Note: location is desired location and size of the imported image
+     * on the page, in points.  x, y are top left corner, y positive up.
+     * If location is not specified, just leave the imported image wherever
+     * it already is. */
+    if (location != NULL) {
+      /* Find out the bounding box for what we're importing. */
+      char *bbString = "%%BoundingBox:";
+      int bbStrLen = strlen(bbString);
+      Coord x1, y1, x2, y2;
+      while (fgets(buf, bufSize, importFile) != NULL) {
+        if (!strncmp(bbString, buf, bbStrLen)) {
+	  sscanf(buf, "%*s %lf %lf %lf %lf", &x1, &y1, &x2, &y2);
+	  break;
+        }
+      }
+      if (ferror(importFile)) {
+        reportErrSys("Error reading import file");
+        result += StatusFailed;
+      }
+      rewind(importFile);
+
+      /* Figure out what we have to do to size and position the imported
+       * image correctly. */
+      Coord xTrans, yTrans;
+      Coord xScale, yScale;
+
+      xTrans = location->x - MIN(x1, x2);
+      yTrans = (location->y - location->height + 1) - MIN(x1, x2);
+      xScale = location->width / (ABS(x2 - x1) + 1);
+      yScale = location->height / (ABS(y2 - y1) + 1);
+ 
+      fprintf(_printFile, "%f %f translate\n", xTrans, yTrans);
+      fprintf(_printFile, "%f %f scale\n", xScale, yScale);
+    }
+
+    /* Transfer the imported image into the output file. */
+    fprintf(_printFile, "\n%%%%BeginDocument: %s\n", filename);
+
+    while (fgets(buf, bufSize, importFile) != NULL) {
+      fputs(buf, _printFile);
+    }
+    if (ferror(importFile)) {
+	reportErrSys("Error reading import file");
+	result += StatusFailed;
+    }
+
+    fprintf(_printFile, "\n%%%%EndDocument\n\n");
+
+    if (fclose(importFile) != 0) {
+      reportError("Error closing import file", errno);
+      result += StatusWarn;
+    }
+  }
+
+  /* Clean up after the EPS file. */
+  fprintf(_printFile, "\nEndEPSF\n\n");
+
+  return result;
+}
+
 
 /**************************************************************
 Print PostScript header.

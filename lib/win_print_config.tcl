@@ -21,6 +21,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.2  1997/05/30 21:18:30  wenger
+# Accidentally added this damn thing on a branch the first time.
+#
 # Revision 1.1.2.1  1997/05/30 20:46:50  wenger
 # Added GUI to allow user to specify windows to exclude from display
 # print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
@@ -60,7 +63,7 @@ proc GetWinPrintConfig {} {
     checkbutton .getWinPrintCfg.exclude -variable doExclude -relief raised \
       -bd 2 -text "Exclude" -padx 2m -pady 1m
     checkbutton .getWinPrintCfg.bitmap -variable doPixmap -relief raised \
-      -bd 2 -text "Bitmap" -padx 2m -pady 1m
+      -bd 2 -text "Pixmap" -padx 2m -pady 1m
 
     button .getWinPrintCfg.ok -text "OK" -width 10 \
       -command "SetWinPrintConfig; destroy .getWinPrintCfg"

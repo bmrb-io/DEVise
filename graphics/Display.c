@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/05/30 20:40:32  wenger
+  Added GUI to allow user to specify windows to exclude from display
+  print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
+  implemented but pixmap printing is not.
+
   Revision 1.14  1997/03/25 17:58:50  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -202,7 +207,7 @@ DeviseDisplay::ExportToPS(DisplayExportFormat format, char *filename)
 
   /* Find the smallest bounding rectangle covering all of the windows.
    * Note: this is in _screen_ coordinates. */
-  int winLeft=MAXINT, winRight=0, winTop=MAXINT, winBot=0;
+  int winLeft = MAXINT, winRight = 0, winTop = MAXINT, winBot = 0;
 
   ClassInfo *windowInfo;
   ViewWin *windowP;
@@ -255,10 +260,14 @@ DeviseDisplay::ExportToPS(DisplayExportFormat format, char *filename)
       windowP = (ViewWin *) windowInfo->GetInstance();
       if ((windowP != NULL) && !windowP->Iconified() &&
 	  !windowP->GetPrintExclude()) {
-        windowP->PrintPS();
-        while (windowP->IsPrinting()) {
-          Dispatcher::SingleStepCurrent();
-        }
+	if (!windowP->GetPrintPixmap()) {
+          windowP->PrintPS();
+          while (windowP->IsPrinting()) {
+            Dispatcher::SingleStepCurrent();
+          }
+	} else {
+	  psDisplay->ImportWindow(windowP, format);
+	}
       }
     }
     DevWindow::DoneIterator(index);

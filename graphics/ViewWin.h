@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/05/30 20:42:28  wenger
+  Added GUI to allow user to specify windows to exclude from display
+  print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
+  implemented but pixmap printing is not.
+
   Revision 1.22  1997/04/21 22:48:35  guangshu
   Added _histViewExist.
 
@@ -145,8 +150,6 @@
 #include <tk.h>
 #endif
 
-#define _windowRep _winReps.GetWindowRep()
-
 class ViewWin;
 DefinePtrDList(ViewWinList, ViewWin *);
 class WindowRep;
@@ -202,7 +205,7 @@ public:
     virtual void MoveResize(int x, int y, unsigned w, unsigned h);
     
     /* Get the Window Rep of this View window */
-    WindowRep *GetWindowRep() { return _windowRep; }
+    WindowRep *GetWindowRep() { return _winReps.GetWindowRep(); }
 //    WindowRep *GetAltRep() { return _alternate;}
 //    void SetAltRep(WindowRep *w) { _alternate = w;}
     /* Detach all children from this view */

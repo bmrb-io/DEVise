@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.36  1997/05/30 20:42:27  wenger
+  Added GUI to allow user to specify windows to exclude from display
+  print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
+  implemented but pixmap printing is not.
+
   Revision 1.35  1997/05/28 15:38:59  wenger
   Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
 
@@ -206,6 +211,8 @@
 
 #define DIRECT_POSTSCRIPT 1
 #define LAYOUT 1
+#define _windowRep _winReps.GetWindowRep()
+
 ViewWin::ViewWin(char *name, GlobalColor fg, GlobalColor bg,
                  int weight, Boolean boundary)
 {
@@ -244,11 +251,12 @@ void ViewWin::Iconify()
 DevStatus
 ViewWin::ExportImage(DisplayExportFormat format, char *filename)
 {
-  DO_DEBUG(printf("ViewWin::ExportImage(_parent = %p)\n", _parent));
+  DO_DEBUG(printf("ViewWin::ExportImage(_parent = %p, filename = %s)\n",
+    _parent, filename));
   DevStatus result = StatusOk;
 
 #if DIRECT_POSTSCRIPT
-  if (format == POSTSCRIPT || format == EPS)
+  if ((format == POSTSCRIPT || format == EPS) && !_printAsPixmap)
   {
     ViewWin *printWinP = this;
 

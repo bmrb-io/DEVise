@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/05/21 22:09:50  andyt
+  Added EmbeddedTk and Tasvir functionality to client-server library.
+  Changed protocol between devise and ETk server: 1) devise can specify
+  that a window be "anchored" at an x-y location, with the anchor being
+  either the center of the window, or the upper-left corner. 2) devise can
+  let Tk determine the appropriate size for the new window, by sending
+  width and height values of 0 to ETk. 3) devise can send Tcl commands to
+  the Tcl interpreters running inside the ETk process.
+
   Revision 1.23  1997/05/05 16:53:42  wenger
   Devise now automatically launches Tasvir and/or EmbeddedTk servers if
   necessary.
@@ -124,6 +133,7 @@
 #include "DList.h"
 #include "ColorMgr.h"
 #include "WindowRep.h"
+#include "ViewWin.h"
 
 const int InitColorMapSize = 512;
 const int AdditionalColorMapSize = 512;
@@ -189,6 +199,8 @@ public:
   virtual DevStatus OpenPrintFile(char *filename) { return StatusFailed; }
   virtual DevStatus ClosePrintFile() { return StatusFailed; }
   virtual FILE *GetPrintFile() { return NULL; }
+  virtual DevStatus ImportWindow(ViewWin *window,
+    DisplayExportFormat format) { return StatusFailed; }
 
   virtual void PrintPSHeader(char *title, const Rectangle &screenPrintRegion,
     Boolean maintainAspect = true) {}

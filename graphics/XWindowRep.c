@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.93  1997/05/21 22:10:04  andyt
+  Added EmbeddedTk and Tasvir functionality to client-server library.
+  Changed protocol between devise and ETk server: 1) devise can specify
+  that a window be "anchored" at an x-y location, with the anchor being
+  either the center of the window, or the upper-left corner. 2) devise can
+  let Tk determine the appropriate size for the new window, by sending
+  width and height values of 0 to ETk. 3) devise can send Tcl commands to
+  the Tcl interpreters running inside the ETk process.
+
   Revision 1.92  1997/05/05 16:53:51  wenger
   Devise now automatically launches Tasvir and/or EmbeddedTk servers if
   necessary.
@@ -785,39 +794,44 @@ void XWindowRep::PopClip()
 }
 
 /* export window image */
+/* Changing how this works -- always export to GIF; then if we need
+ * PostScript, translate from GIF to PostScript.  RKW June 3, 1997. */
 
 void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
 {
   DO_DEBUG(printf("XWindowRep::ExportImage(this = %p)\n", this));
+
+  /* Generate the GIF file. */
+  char *gifFile;
   if (format == GIF) {
-    FILE *fp = fopen(filename, "wb");
-    if (!fp) {
-        fprintf(stderr, "Cannot open file %s for writing\n", filename);
-        return;
-    }
-    ExportGIF(fp);
-    if (fp != stderr && fp != stdout)
-        fclose(fp);
-    return;
-  }
-
-  DOASSERT(_win, "Exporting a pixmap not supported yet");
-
-  Window win = FindTopWindow(_win);
-  XRaiseWindow(_display, win);
-
-  char cmd[256];
-  if (format == POSTSCRIPT || format == EPS) {
-    sprintf(cmd,
-       "xwd -frame -id %ld | xpr -device ps -portrait -compact -gray 4 > %s",
-	    win, filename);
+    gifFile = filename;
+  } else if (format == POSTSCRIPT || format == EPS) {
+    char tmpFile[L_tmpnam];
+    tmpnam(tmpFile);
+    gifFile = tmpFile;
   } else {
     printf("Requested export format not supported yet.\n");
     return;
   }
 
+  FILE *fp = fopen(gifFile, "wb");
+  if (!fp) {
+      fprintf(stderr, "Cannot open file %s for writing\n", gifFile);
+      return;
+  }
+  ExportGIF(fp);
+  if (fp != stderr && fp != stdout)
+      fclose(fp);
+
+  /* If GIF is what we want, we're done here. */
+  if (format == GIF) return;
+
+  /* Otherwise, translate the GIF file to PostScript. */
+  char cmd[256];
+  sprintf(cmd, "giftopnm %s | pnmtops -rle -noturn -nocenter > %s",
+    gifFile, filename);
+
 #ifdef DEBUG
-  printf("ExportImage: for window id 0x%lx:\n", win);
   printf("ExportImage: executing %s\n", cmd);
 #endif
 
@@ -847,6 +861,8 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
       break;
     }
   }
+
+  unlink(gifFile);
 }
 
 /*--------------------------------------------------------------------------
@@ -1546,8 +1562,18 @@ void XWindowRep::ExportGIF(FILE *fp, int isView)
 {
   if (_win) {
     Window win;
-    if(isView == 0) win = FindTopWindow(_win);
-    else win = _win;
+/* Don't do FindTopWindow so we don't print the window manager border.
+ * Also, for some reason, windows with Embedded Tk symbols don't work
+ * if we do FindTopWindow().  RKW June 4, 1997. */
+#if 1
+    win = _win;
+#else
+    if (!isView) {
+      win = FindTopWindow(_win);
+    } else {
+      win = _win;
+    }
+#endif
     XWindowAttributes xwa;
     if (!XGetWindowAttributes(_display, win, &xwa)) {
       fprintf(stderr, "Cannot get window attributes\n");
