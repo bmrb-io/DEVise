@@ -2141,6 +2141,10 @@ Num Date        Status  Description
 547 12/23/99	OPEN	'5' (home) key functionality should take into account
 			symbol bounding boxes. (rkw)
 
+548 12/29/99	FIXED	Quotes around UNIXFILE or Table in data source
+			catalog goof things up. (rkw)
+			(Fixed by rkw, 1999-12-29.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

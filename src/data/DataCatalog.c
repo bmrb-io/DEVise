@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/11/09 22:43:03  wenger
+  Fixed crashes if catalog file is not found.
+
   Revision 1.6  1999/09/23 15:46:38  wenger
   Added per-session data source capability:  data sources defined in a
   session file are added to a separate catalog which is delete when the
@@ -161,12 +164,27 @@ ParseSpaceString(const char *inBuf, char *outBuf, int outBufSize)
   while (*inChar != '\0' && isspace(*inChar)) {
     inChar++;
   }
+
+  Boolean hasQuotes = false;
+  // Bypass leading quote, if any.
+  if (*inChar == '"') {
+    inChar++;
+    hasQuotes = true;
+  }
+
   if (*inChar != '\0') {
 
     // Copy from input to output until we hit whitespace, making sure we
     // don't overflow the output buffer.  If the buffer overflows, we keep
     // going without copying so the return value is correct.
     while (*inChar != '\0' && !isspace(*inChar)) {
+
+      // If we had a leading quote, trailing quote ends string; quotes are
+      // not included in string.
+      if (hasQuotes && *inChar == '"') {
+        break;
+      }
+
       if (outChar - outBuf < outBufSize - 1) {
         *outChar = *inChar;
         outChar++;
