@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1999/08/18 20:46:04  wenger
+  First step for axis drawing improvement: moved code to new DevAxis
+  class with unchanged functionality.
+
  */
 
 #include <stdio.h>
@@ -29,18 +33,19 @@
 #include "View.h"
 #include "DevError.h"
 #include "Util.h"
+#include "Session.h"
 
 //#define DEBUG
 
 //-----------------------------------------------------------------------------
 // Constructor.
 DevAxis::DevAxis(View *view, AxisType type, Boolean inUse,
-    int withTicksWidth, int noTicksWidth, int numTicks, int significantDigits,
+    int withTicksWidth, int noTicksWidth, int significantDigits,
     int labelWidth)
 {
 #if defined(DEBUG)
-  printf("DevAxis::DevAxis(%s, %d, %d, %d, %d, %d, %d, %d)\n",
-      view->GetName(), type, inUse, withTicksWidth, noTicksWidth, numTicks,
+  printf("DevAxis::DevAxis(%s, %d, %d, %d, %d, %d, %d)\n",
+      view->GetName(), type, inUse, withTicksWidth, noTicksWidth,
           significantDigits, labelWidth);
 #endif
 
@@ -50,12 +55,41 @@ DevAxis::DevAxis(View *view, AxisType type, Boolean inUse,
   _withTicksWidth = withTicksWidth;
   _noTicksWidth = noTicksWidth;
   _width = _withTicksWidth; // default is ticks enabled
-  _numTicks = numTicks;
   _significantDigits = significantDigits;
   _labelWidth = labelWidth;
 
   _attrType = FloatAttr;
   _dateFormat = NULL;
+
+  switch (_type) {
+  case AxisX:
+	_tickLength = 3;
+	_tickdrawX = 0;
+	_tickdrawY = -_tickLength;
+	_dateOrientation = 0.0;
+	_dateAlignment1 = WindowRep::AlignWest;
+	_dateAlignment2 = WindowRep::AlignEast;
+    break;
+
+  case AxisY:
+    _tickLength = 4;
+	_tickdrawX = -_tickLength;
+	_tickdrawY = 0;
+	_dateOrientation = 90.0;
+
+	// This shouldn't really be center, but non-center alignments don't seem
+	// to work right for non-zero orientations.  RKW 1999-08-30.
+	_dateAlignment1 = WindowRep::AlignCenter;
+	_dateAlignment2 = WindowRep::AlignCenter;
+    break;
+
+  case AxisZ:
+    break;
+
+  default:
+    reportErrNosys("Illegal axis type");
+    break;
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -119,18 +153,121 @@ DevAxis::DrawAxis(WindowRep *win, int x, int y, int w, int h)
   printf("DevAxis::DrawAxis(%d %d %d %d)\n", x, y, w, h);
 #endif
 
+  DOASSERT(_view->GetNumDimensions() == 2, "Invalid number of dimensions");
+
   // Make sure the WindowRep has an identity transform matrix, even though
   // this has *probably* already been done.
   win->PushTop();
   win->MakeIdentity();
 
+  AxisInfo info;
+  SetInfo(info);
+
+  if (info._drawAxis) {
+    CheckIntersect(x, y, w, h, info);
+  }
+
+  if (info._drawAxis) {
+	DrawLine(win, info);
+  }
+
+  if (info._drawTicks) {
+    if (_attrType == DateAttr) {
+	  DrawDateTicks(win, info);
+    }
+  }
+
+  if (info._drawTicks) {
+	DrawFloatTicks(win, info);
+  }
+
+  win->PopTransform();
+}
+
+//-----------------------------------------------------------------------------
+void
+DevAxis::SetInfo(AxisInfo &info)
+{
+  info._drawAxis = false;
+  info._drawTicks = false;
+
+  int axisX, axisY, axisWidth, axisHeight, startX;
+
+  VisualFilter filter;
+  _view->GetVisualFilter(filter);
+
   switch (_type) {
   case AxisX:
-    DrawXAxis(win, x, y, w, h);
+	info._drawAxis = true;
+
+    _view->GetXAxisArea(axisX, axisY, axisWidth, axisHeight, startX);
+    startX--; // Kludge -- RKW 1999-04-20.
+	info._x0 = axisX;
+	info._y0 = axisY;
+	info._x1 = startX - 1;
+	info._y1 = axisY;
+	info._x2 = axisX + axisWidth - 1;
+	info._y2 = axisY;
+	info._axisLength = axisWidth - (startX - axisX);
+	info._axisAcross = axisHeight;
+
+	info._lowValue = filter.xLow;
+	info._highValue = filter.xHigh;
+
+    info._tickPixVar = &info._tickX;
+    info._labelPixVar = &info._labelX;
+
+    info._tickY = info._y1;
+    info._labelY = info._y0 - _tickLength - (info._axisAcross-1);
+
+    info._varLoc0 = info._x0;
+    info._varLoc1 = info._x1;
+    info._varLoc2 = info._x2;
+  
+    info._labelHorSize = _labelWidth;
+    info._labelVerSize = (int)info._axisAcross - 1;
+
+    info._bottomOrLeftAlign = WindowRep::AlignWest;
+    info._topOrRightAlign = WindowRep::AlignEast;
+
+	info._dateWidth = info._axisLength / 2 - 1;
+	info._dateHeight = info._axisAcross - 1;
     break;
 
   case AxisY:
-    DrawYAxis(win, x, y, w, h);
+	info._drawAxis = true;
+
+    _view->GetYAxisArea(axisX, axisY, axisWidth, axisHeight);
+	info._x0 = axisX;
+	info._y0 = axisY;
+	info._x1 = axisX + axisWidth - 1;
+	info._y1 = axisY;
+	info._x2 = info._x1;
+	info._y2 = axisY + axisHeight - 1;
+	info._axisLength = axisHeight;
+	info._axisAcross = axisWidth;
+
+	info._lowValue = filter.yLow;
+	info._highValue = filter.yHigh;
+
+    info._tickPixVar = &info._tickY;
+	info._labelPixVar = &info._labelY;
+
+    info._tickX = info._x1;
+	info._labelX = info._x0;
+
+    info._varLoc0 = info._y0;
+    info._varLoc1 = info._y1;
+    info._varLoc2 = info._y2;
+
+	info._labelHorSize = (int)info._axisAcross;
+	info._labelVerSize = _labelWidth;
+
+    info._bottomOrLeftAlign = WindowRep::AlignSouth;
+    info._topOrRightAlign = WindowRep::AlignNorth;
+
+	info._dateWidth = info._axisAcross - 1;
+	info._dateHeight = info._axisLength / 2 - 1;
     break;
 
   case AxisZ:
@@ -141,289 +278,141 @@ DevAxis::DrawAxis(WindowRep *win, int x, int y, int w, int h)
     reportErrNosys("Illegal axis type");
     break;
   }
-
-  win->PopTransform();
 }
 
 //-----------------------------------------------------------------------------
-// Draw X axis.
-//TEMP -- combine with Y
 void
-DevAxis::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
+DevAxis::CheckIntersect(int x, int y, int w, int h, AxisInfo &info)
 {
+  Coord maxX = x + w - 1.0;
+  Coord maxY = y + h - 1.0;
+  if (!Geom::RectRectIntersect(x, y, maxX, maxY, info._x0, info._y0, info._x2,
+      info._y2)) {
 #if defined(DEBUG)
-  printf("DevAxis::DrawXAxis(%d %d %d %d)\n", x, y, w, h);
+    printf("do not intersect\n");
 #endif
-  
-  DOASSERT(_view->GetNumDimensions() == 2, "Invalid number of dimensions");
-
-  const int tickLength = 3;
-
-  int axisX, axisY, axisWidth, axisHeight, startX;
-  _view->GetXAxisArea(axisX, axisY, axisWidth, axisHeight, startX);
-  startX--; // Kludge -- RKW 1999-04-20.
-  int axisMaxX = axisX + axisWidth - 1;
-  int axisMaxY = axisY + axisHeight - 1;
-
-  {
-    Coord maxX = x + w - 1.0;
-    Coord maxY = y + h - 1.0;
-    if (!Geom::RectRectIntersect(x, y, maxX, maxY, axisX, axisY, axisMaxX,
-        axisMaxY)) {
-//TEMP -- does this ever happen?
-#if defined(DEBUG)
-      printf("do not intersect\n");
-#endif
-      return;
-    }
+    info._drawAxis = false;
   }
+}
 
-  VisualFilter filter;
-  _view->GetVisualFilter(filter);
-  
+//-----------------------------------------------------------------------------
+void
+DevAxis::DrawLine(WindowRep *win, AxisInfo &info)
+{
   win->SetForeground(_view->GetForeground());
   win->SetPattern(Pattern0);
   win->SetNormalFont();
   _font.SetWinFont(win);
 
-  /* draw a line from startX to the end of the view */
-  win->Line(startX - 1, axisY, axisMaxX, axisY, 1);
+  // Draw the line for the axis.
+  win->Line(info._x1, info._y1, info._x2, info._y2, 1.0);
 
   // Don't draw ticks and labels if space is too small.
-  if (_width <= tickLength || !TicksEnabled()) return;
-
-  Coord drawWidth = axisWidth - (startX - axisX);
-  int numTicks = (int)(drawWidth / _labelWidth);
-
-  /* if axis is date, draw values and return */
-  if (_attrType == DateAttr) {
-
-    // Draw the labels (date values).
-    const char *label = DateString((time_t)filter.xLow, _dateFormat);
-    win->AbsoluteText(label, startX, axisY - tickLength - (axisHeight-1),
-        drawWidth / 2 - 1, axisHeight - 1, WindowRep::AlignWest, true);
-    label = DateString((time_t)filter.xHigh, _dateFormat);
-    win->AbsoluteText(label, startX + drawWidth / 2,
-        axisY - tickLength - (axisHeight-1), drawWidth / 2 - 1, axisHeight - 1,
-	WindowRep::AlignEast, true);
-
-    // Draw ticks.
-    win->Line(startX - 1, axisY, startX - 1, axisY - tickLength, 1);
-    win->Line(axisMaxX, axisY, axisMaxX, axisY - tickLength, 1);
-
-    return;
-  }
-
-  /*
-     since neither custom nor date labels are used, we can draw
-     tick marks and label each tick with the corresponding value
-  */
-
-  Coord tickMark;
-  int nTicks;
-  Coord tickInc;
-  OptimizeTickMarks(filter.xLow, filter.xHigh, _numTicks,
-		    tickMark, nTicks, tickInc);
-
-  /* draw tick marks */
-  for(int i = 0; i < nTicks; i++) {
-    Coord xPixel = (tickMark - filter.xLow) * (axisMaxX - startX) /
-        (filter.xHigh - filter.xLow) + startX;
-
-    // Draw the tick mark itself.
-    win->Line(xPixel, axisY, xPixel, axisY - tickLength, 1);
-
-    char buf[32];
-    sprintf(buf, "%.*g", _significantDigits, tickMark);
-
-    Coord labelX = xPixel - _labelWidth / 2;
-
-    /* make sure label doesn't go past left or right edge */
-    Boolean pastLeft, pastRight;
-    if (labelX < startX) {
-      pastLeft = true;
-    } else {
-      pastLeft = false;
-    }
-
-    if (labelX + _labelWidth > axisX + axisWidth) {
-      pastRight = true;
-    } else {
-      pastRight = false;
-    }
-
-    if (!pastLeft && !pastRight) {
-      win->AbsoluteText(buf, labelX, axisY - tickLength - (axisHeight-1),
-			_labelWidth,
-			axisHeight - 1, WindowRep::AlignCenter, true);
-#if defined(DEBUG)
-        printf("  Label <%s> at %g, %d\n", buf, labelX, axisY);
-#endif
-    } else if (pastLeft && !pastRight) {
-      labelX = startX;
-      win->AbsoluteText(buf, labelX, axisY - tickLength - (axisHeight-1), 
-			_labelWidth,
-			axisHeight - 1, WindowRep::AlignWest, true);
-#if defined(DEBUG)
-        printf("  Label <%s> at %g, %d\n", buf, labelX, axisY);
-#endif
-    } else if (!pastLeft && pastRight) {
-      labelX = axisX + axisWidth - _labelWidth;
-      win->AbsoluteText(buf, labelX, axisY - tickLength - (axisHeight-1),
-			_labelWidth,
-			axisHeight - 1, WindowRep::AlignEast, true);
-#if defined(DEBUG)
-        printf("  Label <%s> at %g, %d\n", buf, labelX, axisY);
-#endif
-    } else {
-      // Don't draw the label.
-    }
-
-    tickMark += tickInc;
-  }
+  if (_width > _tickLength && TicksEnabled()) info._drawTicks = true;
 }
 
 //-----------------------------------------------------------------------------
-// Draw Y axis.
-//TEMP -- combine with X
 void
-DevAxis::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
+DevAxis::DrawDateTicks(WindowRep *win, AxisInfo &info)
 {
-#if defined(DEBUG)
-  printf("DevAxis::DrawYAxis(%d %d %d %d)\n", x, y, w, h);
-#endif
-  
-  DOASSERT(_view->GetNumDimensions() == 2, "Invalid number of dimensions");
-
-  const int tickLength = 4;
-
-  int axisX, axisY, axisWidth, axisHeight;
-  _view->GetYAxisArea(axisX, axisY, axisWidth, axisHeight);
-  Coord startY = axisY;
-  int axisMaxX = axisX + axisWidth - 1;
-  int axisMaxY = axisY + axisHeight - 1;
-
-  {
-    Coord maxX = x + w - 1.0;
-    Coord maxY = y + h - 1.0;
-    if (!Geom::RectRectIntersect(x, y, maxX, maxY, axisX, axisY,
-			         axisMaxX, axisMaxY)) {
-#if defined(DEBUG)
-      printf("do not intersect\n");
-#endif
-      return;
-    }
-  }
-
-  VisualFilter filter;
-  _view->GetVisualFilter(filter);
-
-  win->SetForeground(_view->GetForeground());
-  win->SetPattern(Pattern0);
-  win->SetNormalFont();
-  _font.SetWinFont(win);
-
-  /* draw a line from startY to the bottom of the view */
-  win->Line(axisMaxX, startY, axisMaxX, axisMaxY, 1.0);
-
-  // Don't draw ticks and labels if space is too small.
-  if (_width <= tickLength || !TicksEnabled()) return;
-
-  Coord drawHeight = axisHeight - (startY - axisY);
-  // Factor of 0.6 spaces things out a little better -- RKW 1999-04-15.
-  int numTicks = (int)(drawHeight / _labelWidth * 0.6);
-
-  /* if axis is date, draw values and return */
-  if (_attrType == DateAttr) {
+  if (!Session::GetIsJsSession() || 1/*TEMP*/) {
 
     // Draw the labels (date values).
-    const char *label = DateString((time_t)filter.yLow, _dateFormat);
-    win->AbsoluteText(label, axisX, startY, axisWidth - 1,
-		      drawHeight / 2 - 1, WindowRep::AlignCenter, true, 90.0);
-    label = DateString((time_t)filter.yHigh, _dateFormat);
-    win->AbsoluteText(label, axisX, startY + drawHeight / 2, axisWidth - 1,
-		      drawHeight / 2 - 1, WindowRep::AlignCenter, true, 90.0);
 
-    // Draw ticks.
-    win->Line(axisMaxX, axisY, axisMaxX - tickLength, axisY, 1);
-    win->Line(axisMaxX, axisMaxY, axisMaxX - tickLength, axisMaxY, 1);
+    *info._labelPixVar = info._varLoc1;
+    const char *label = DateString((time_t)info._lowValue, _dateFormat);
+    win->AbsoluteText(label, info._labelX, info._labelY, info._dateWidth,
+	    info._dateHeight, _dateAlignment1, true, _dateOrientation);
 
-    return;
+    *info._labelPixVar = info._varLoc1 + (info._axisLength / 2);
+    label = DateString((time_t)info._highValue, _dateFormat);
+    win->AbsoluteText(label, info._labelX, info._labelY, info._dateWidth,
+	   info._dateHeight, _dateAlignment2, true, _dateOrientation);
   }
 
-  /*
-     since neither custom nor date labels are used, we can draw
-     tick marks and label each tick with the corresponding value
-  */
+  // Draw ticks.
+  win->Line(info._x1, info._y1, info._x1 + _tickdrawX,
+      info._y1 + _tickdrawY, 1);
+  win->Line(info._x2, info._y2, info._x2 + _tickdrawX,
+      info._y2 + _tickdrawY, 1);
 
+  info._drawTicks = false;
+}
+
+//-----------------------------------------------------------------------------
+void
+DevAxis::DrawFloatTicks(WindowRep *win, AxisInfo &info)
+{
+  info._numTicks = info._axisLength / _labelWidth;
+
+  // Factor of 0.6 spaces things out a little better for Y axis --
+  // RKW 1999-04-15.
+  if (_type == AxisY) {
+    info._numTicks *= 0.6;
+  }
+
+  // Figure out how to space the tick marks.
   Coord tickMark;
   int nTicks;
   Coord tickInc;
-  OptimizeTickMarks(filter.yLow, filter.yHigh, numTicks,
-		    tickMark, nTicks, tickInc);
+  OptimizeTickMarks(info._lowValue, info._highValue, (int)info._numTicks,
+      tickMark, nTicks, tickInc);
 
   /* draw tick marks */
-  Coord oldTop = -100.0;
   for(int i = 0; i < nTicks; i++) {
+
     // Note: it would be better to use the WindowRep's transform here, but
     // Zhenhai's inversion makes that a pain.  RKW 1999-04-20.
-    Coord yPixel = (tickMark - filter.yLow) * (axisMaxY-startY) /
-      (filter.yHigh - filter.yLow) + startY;
+    *info._tickPixVar = (tickMark - info._lowValue) * (info._varLoc2 - info._varLoc1) /
+        (info._highValue - info._lowValue) + info._varLoc1;
 
     // Draw the tick mark itself.
-    win->Line(axisMaxX, yPixel, axisMaxX - tickLength, yPixel, 1);
+    win->Line(info._tickX, info._tickY, info._tickX + _tickdrawX, info._tickY + _tickdrawY, 1);
 
     char buf[32];
     sprintf(buf, "%.*g", _significantDigits, tickMark);
 
-    Coord labelY = yPixel - _labelWidth/2;
+	*info._labelPixVar = *info._tickPixVar - _labelWidth / 2;
 
-    /* make sure label doesn't go past bottom or top edge */
-    Boolean pastBottom, pastTop;
-    if (labelY < startY) {
-      pastBottom = true;
+    /* make sure label doesn't go past left or right edge */
+    Boolean pastLeftOrBottom, pastRightOrTop;
+	if (*info._labelPixVar < info._varLoc0) {
+      pastLeftOrBottom = true;
     } else {
-      pastBottom = false;
+      pastLeftOrBottom = false;
     }
 
-    if (labelY + _labelWidth > axisY + axisHeight) {
-      pastTop = true;
+	if (*info._labelPixVar + _labelWidth > info._varLoc2) {
+      pastRightOrTop = true;
     } else {
-      pastTop = false;
+      pastRightOrTop = false;
     }
 
-    if (!pastBottom && !pastTop) {
-	  if (labelY > oldTop) {
-        win->AbsoluteText(buf, axisX, labelY, axisWidth-1,
-			  _labelWidth, WindowRep::AlignCenter, true);
+	if (!Session::GetIsJsSession() || 1/*TEMP*/) {
+	  WindowRep::SymbolAlignment align;
+	  Boolean drawLabel = true;
+      if (!pastLeftOrBottom && !pastRightOrTop) {
+	    // We're fine where we are.
+		align = WindowRep::AlignCenter;
+      } else if (pastLeftOrBottom && !pastRightOrTop) {
+		*info._labelPixVar = info._varLoc1;
+		align = info._bottomOrLeftAlign;
+      } else if (!pastLeftOrBottom && pastRightOrTop) {
+		*info._labelPixVar = info._varLoc2 - _labelWidth;
+		align = info._topOrRightAlign;
+      } else {
+        // Don't draw the label.
+		drawLabel = false;
+      }
+
+	  if (drawLabel) {
+        win->AbsoluteText(buf, info._labelX, info._labelY, info._labelHorSize, info._labelVerSize,
+			  align, true);
 #if defined(DEBUG)
-        printf("  Label <%s> at %d, %g\n", buf, axisX, labelY);
+          printf("  Label <%s> at %g, %g\n", buf, info._labelX, info._labelY);
 #endif
-	    oldTop = labelY + _labelWidth;
 	  }
-    } else if (pastBottom && !pastTop) {
-      labelY = startY;
-	  if (labelY > oldTop) {
-        win->AbsoluteText(buf, axisX, labelY, axisWidth-1,
-			  _labelWidth, WindowRep::AlignSouth, true);
-#if defined(DEBUG)
-        printf("  Label <%s> at %d, %g\n", buf, axisX, labelY);
-#endif
-	    oldTop = labelY + _labelWidth;
-	  }
-    } else if (!pastBottom && pastTop) {
-      labelY = axisMaxY - _labelWidth;
-	  if (labelY > oldTop) {
-        win->AbsoluteText(buf, axisX, labelY, axisWidth-1,
-			  _labelWidth, WindowRep::AlignNorth, true);
-#if defined(DEBUG)
-        printf("  Label <%s> at %d, %g\n", buf, axisX, labelY);
-#endif
-	    oldTop = labelY + _labelWidth;
-	  }
-    } else {
-      // Don't draw the label.
-    }
+	}
 
     tickMark += tickInc;
   }

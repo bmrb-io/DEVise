@@ -1965,6 +1965,10 @@ Num Date        Status  Description
 504 07/27/99	FIXED	Copying a view fails. (rkw)
 			(Fixed by rkw, 7/27/99.)
 
+505 08/30/99	FIXED	Changing axis date format doesn't force a redraw.
+			(rkw)
+			(Fixed by rkw, 8/30/99.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.190  1999/08/18 20:46:04  wenger
+  First step for axis drawing improvement: moved code to new DevAxis
+  class with unchanged functionality.
+
   Revision 1.189  1999/08/17 19:46:54  wenger
   Converted Condor UserMonth session from high/low symbols to piles for
   better representation of data; fixed some cursor/pile drawing bugs and
@@ -881,6 +885,7 @@
 #include "JavaScreenCmd.h"
 #include "PileStack.h"
 #include "DebugLog.h"
+#include "Session.h"
 
 //******************************************************************************
 
@@ -936,11 +941,11 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 		   AxisLabel *, int weight, Boolean boundary)
 	: ViewWin(name, fgid, bgid, weight, boundary),
 	  _xAxis(this, DevAxis::AxisX, false, _defaultXAxisWidth,
-	      _noTicksXAxisWidth, 8, 6, 60),
+	      _noTicksXAxisWidth, 6, 60),
       _yAxis(this, DevAxis::AxisY, false, _defaultYAxisWidth,
-	      _noTicksYAxisWidth, 8, 6, 20),
+	      _noTicksYAxisWidth, 6, 20),
       _zAxis(this, DevAxis::AxisZ, false, _defaultZAxisWidth,
-	      _noTicksZAxisWidth, 8, 6, 40)
+	      _noTicksZAxisWidth, 6, 40)
 {
 #if defined(DEBUG)
 	printf("View::View(%s, this = %p)\n", name, this);
@@ -1685,32 +1690,34 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
 
 void View::DrawLabel()
 {
+  if (!Session::GetIsJsSession()) {
 	WindowRep*	win = GetWindowRep();
 	win->SetGifDirty(true);
 	
-  win->PushTop();
-  win->MakeIdentity();
+    win->PushTop();
+    win->MakeIdentity();
   
-  win->SetNormalFont();
-  _titleFont.SetWinFont(win);
+    win->SetNormalFont();
+    _titleFont.SetWinFont(win);
 
-  if (_label.occupyTop) {
-    /* draw label */
-    int labelX, labelY, labelWidth, labelHeight;
-    GetLabelArea(labelX, labelY, labelWidth, labelHeight);
-    win->SetPattern(Pattern0);
-    win->SetLineWidth(0);
+    if (_label.occupyTop) {
+      /* draw label */
+      int labelX, labelY, labelWidth, labelHeight;
+      GetLabelArea(labelX, labelY, labelWidth, labelHeight);
+      win->SetPattern(Pattern0);
+      win->SetLineWidth(0);
 
-    win->SetForeground(GetBackground());
-    win->ClearBackground(labelX, labelY, labelWidth - 1, labelHeight - 1);
+      win->SetForeground(GetBackground());
+      win->ClearBackground(labelX, labelY, labelWidth - 1, labelHeight - 1);
 
-    win->SetForeground(GetForeground());
+      win->SetForeground(GetForeground());
 
-    win->AbsoluteText(_label.name, labelX, labelY, labelWidth - 1,
-		      labelHeight - 1, WindowRep::AlignCenter, true);
+      win->AbsoluteText(_label.name, labelX, labelY, labelWidth - 1,
+		        labelHeight - 1, WindowRep::AlignCenter, true);
+    }
+
+    win->PopTransform();
   }
-
-  win->PopTransform();
 }
 
 /* Find world coord given screen coord */
@@ -4176,6 +4183,7 @@ View::SetXAxisDateFormat(const char *format, Boolean notifyPile)
     GetParentPileStack()->SetXAxisDateFormat(format);
   } else {
     _xAxis.SetDateFormat(format);
+    Refresh();
   }
 }
 
@@ -4186,6 +4194,7 @@ View::SetYAxisDateFormat(const char *format, Boolean notifyPile)
     GetParentPileStack()->SetYAxisDateFormat(format);
   } else {
     _yAxis.SetDateFormat(format);
+    Refresh();
   }
 }
 

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1999/08/18 20:46:04  wenger
+  First step for axis drawing improvement: moved code to new DevAxis
+  class with unchanged functionality.
+
  */
 
 #ifndef _DevAxis_h_
@@ -31,8 +35,8 @@
 #include "DeviseTypes.h"
 #include "DevFont.h"
 #include "AttrList.h"
+#include "WindowRep.h"
 
-class WindowRep;
 class View;
 
 class DevAxis {
@@ -40,7 +44,7 @@ public:
   enum AxisType { AxisInvalid = 0, AxisX, AxisY, AxisZ };
 
   DevAxis(View *view, AxisType type, Boolean inUse, int withTicksWidth,
-      int noTicksWidth, int numTicks, int significantDigits, int labelWidth);
+      int noTicksWidth, int significantDigits, int labelWidth);
   ~DevAxis();
 
   void DrawAxis(WindowRep *win, int x, int y, int w, int h);
@@ -63,30 +67,65 @@ public:
   void SetDateFormat(const char *format);
 
 protected:
-  void DrawXAxis(WindowRep *win, int x, int y, int w, int h);
-  void DrawYAxis(WindowRep *win, int x, int y, int w, int h);
+  struct AxisInfo {
+    Boolean _drawAxis;
+    Boolean _drawTicks;
+
+    int _x0, _y0, _x1, _y1, _x2, _y2;
+    Coord _axisLength; // number of pixels along the axis
+    Coord _axisAcross; // number of pixels across the axis
+    Coord _lowValue, _highValue; // filter values
+
+    Coord _numTicks;
+
+    Coord _tickX, _tickY;
+    Coord _labelX, _labelY;
+    Coord *_tickPixVar;
+    Coord *_labelPixVar;
+
+    Coord _varLoc0, _varLoc1, _varLoc2;
+
+    int _labelHorSize, _labelVerSize;
+
+    WindowRep::SymbolAlignment _bottomOrLeftAlign;
+    WindowRep::SymbolAlignment _topOrRightAlign;
+
+    Coord _dateWidth;
+    Coord _dateHeight;
+  };
+
+  void SetInfo(AxisInfo &info);
+  void CheckIntersect(int x, int y, int w, int h, AxisInfo &info);
+  void DrawLine(WindowRep *win, AxisInfo &info);
+  void DrawDateTicks(WindowRep *win, AxisInfo &info);
+  void DrawFloatTicks(WindowRep *win, AxisInfo &info);
   static void OptimizeTickMarks(Coord low, Coord high, int numTicks,
       Coord &start, int &num, Coord &inc);
 
 private:
   AxisType _type;
   Boolean _inUse;          // TRUE if this axis is in use
-  int _width;              // width (for Y axis) or height (X axis)
-			   // to draw label, in terms of # of pixels
-  int _numTicks;           // # of ticks to use
   int _significantDigits;  // # of significant digits
   int _labelWidth;         // height (for Y axis) or width (X axis)
 
+  int _width;              // width (for Y axis) or height (X axis)
+			   // to draw label, in terms of # of pixels
   int _noTicksWidth;
   int _withTicksWidth;
-
-  char *_dateFormat;
 
   View *_view;
 
   DevFont _font;
 
-  AttrType _attrType;
+  AttrType _attrType;      // type of axis attribute
+  char *_dateFormat;       // format for labels if date type
+
+  int _tickLength;
+  int _tickdrawX, _tickdrawY; // values to draw the ticks
+
+  Coord _dateOrientation;
+  WindowRep::SymbolAlignment _dateAlignment1;
+  WindowRep::SymbolAlignment _dateAlignment2;
 };
 
 #endif // _DevAxis_h_
