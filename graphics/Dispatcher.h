@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.31  1998/05/02 09:02:27  taodb
+  Added support for command logging
+  Added support for registering events with delay
+
   Revision 1.30  1998/03/10 19:52:34  wenger
   Merged cleanup_1_4_7_br_10 through cleanup_1_4_7_br_11 (fixes callback
   list problems on SGIs).
@@ -308,8 +312,10 @@ private:
   Boolean _quit;	/* Set to true when dispatcher should quit */
   
   /* Set of file descriptors to inspect for potential input */
-  fd_set fdset;
-  int maxFdCheck;
+  fd_set _fdset;
+  int _maxFdCheck;
+
+  time_t _lastCmdTime;
 };
 
 #if 0

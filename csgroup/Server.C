@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/06/11 20:45:35  wenger
+  Added -quit command line argument for devised to quit when client disconnects.
+
   Revision 1.12  1998/05/14 18:20:50  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -415,6 +418,27 @@ void Server::WaitForConnection()
 
     printf("%s server waiting for client connection on port %d\n",
       _name, _port);
+
+    if (Init::ClientTimeout() > 0) {
+		fd_set fdread;
+		FD_ZERO(&fdread);
+		FD_SET(_listenFd, &fdread);
+
+		struct timeval timeout;
+		timeout.tv_sec = Init::ClientTimeout() * 60;
+		timeout.tv_usec = 0;
+
+		int fdReadyCount = select(_listenFd + 1, &fdread, NULL, NULL, &timeout);
+		if (fdReadyCount < 0) {
+			perror("select failed: ");
+			return;
+		} else if (fdReadyCount == 0) {
+		    printf("Last client command more than %d minutes ago; "
+			  "server exiting\n", Init::ClientTimeout());
+			Exit::DoExit(0);
+		}
+	}
+
     struct sockaddr_in tempaddr;
     int len = sizeof(tempaddr);
     clientfd = accept(_listenFd, (struct sockaddr *)&tempaddr, &len);

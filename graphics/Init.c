@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.46  1998/06/12 19:55:16  wenger
+  Attribute of TAttr/set links can now be changed; GUI has menu of available
+  attributes; attribute is set when master view is set instead of at link
+  creation; misc. debug code added.
+
   Revision 1.45  1998/06/11 20:45:45  wenger
   Added -quit command line argument for devised to quit when client disconnects.
 
@@ -313,6 +318,7 @@ char* Init::_switchname = DefaultSwitchName;
 int Init::_maxclients = DefaultMaxClients;
 
 Boolean Init::_quitOnDisconnect = false;
+int Init::_clientTimeout = 0;
 
 /**************************************************************
 Remove positions from index to index+len-1 from argv
@@ -380,6 +386,8 @@ static void Usage(char *prog)
 					" the collaborator\n");
   fprintf(stderr, "\t-maxclients <value>: maximum number of clients\n");
   fprintf(stderr, "\t-quit 0|1: quit on client disconnect or not\n");
+  fprintf(stderr, "\t-clientTimeout <value>: quit if client doesn't send"
+					" a command for <value> minutes\n");
 
   Exit::DoExit(1);
 }
@@ -814,6 +822,15 @@ void Init::DoInit(int &argc, char **argv)
 	  Usage(argv[0]);
 	}
 	_quitOnDisconnect = !(atoi(argv[i+1]) == 0);
+	MoveArg(argc,argv,i,2);
+      }
+
+      else if (strcmp(&argv[i][1], "clientTimeout") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_clientTimeout = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
 

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.44  1998/05/14 18:21:00  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.43  1998/05/02 09:02:26  taodb
   Added support for command logging
   Added support for registering events with delay
@@ -239,7 +243,6 @@ static Dispatcher dispatcher;
 
 static char _logBuf[MAXPATHLEN*2];
 
-
 Dispatcher::Dispatcher(StateFlag state)
 {
   _stateFlag = state;
@@ -261,8 +264,8 @@ Dispatcher::Dispatcher(StateFlag state)
   /* Set this process to be the session leader */
   setsid();
 
-  FD_ZERO(&fdset);
-  maxFdCheck = 0;
+  FD_ZERO(&_fdset);
+  _maxFdCheck = 0;
 
   _callback_requests = 0;
 
@@ -323,11 +326,11 @@ DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
   info->delay = 0;
 
   if (fd >= 0) {
-    if (fd > maxFdCheck) {
+    if (fd > _maxFdCheck) {
       DOASSERT(fd < FD_SETSIZE, "too many file descriptors for select()");
-      maxFdCheck = fd;
+      _maxFdCheck = fd;
     }
-    FD_SET(fd, &fdset);
+    FD_SET(fd, &_fdset);
   }
 
   Boolean inserted = false;
@@ -413,7 +416,7 @@ void Dispatcher::RunNoReturn()
   ControlPanel::Init();
 
 #ifdef DEBUG
-  printf("Run No Return.\n");
+  printf("Dispatcher::RunNoReturn()\n");
 #endif
 
   while(1)
@@ -519,8 +522,20 @@ long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 	       info->fd, info->callback_requested); 
         LogMessage(_logBuf);
 #endif
-			CancelCallback(info);
-			info->callBack->Run();
+		  CancelCallback(info);
+		  info->callBack->Run();
+		  if (Init::ClientTimeout() > 0) {
+			if (!strcmp(info->callBack->DispatchedName(), "DeviseServer")
+			    || !strcmp(info->callBack->DispatchedName(),
+				"TkControlPanel")) {
+			  struct timeval currTime;
+              if (gettimeofday(&currTime, NULL) < 0) {
+                reportErrSys("gettimeofday() failed");
+              } else {
+                _lastCmdTime = currTime.tv_sec;
+              }
+			}
+		  }
 		}
       }
     }
@@ -601,28 +616,35 @@ void Dispatcher::Run1()
   */
 
   fd_set fdread,fdexc;
-  memcpy(&fdread, &fdset, sizeof fdread);
-  memcpy(&fdexc, &fdset, sizeof fdread);
+  memcpy(&fdread, &_fdset, sizeof fdread);
+  memcpy(&fdexc, &_fdset, sizeof fdread);
 
   struct timeval timeout;
   timeout.tv_sec = waitfor_secs;
   timeout.tv_usec = 0;
   struct timeval* timeoutp = NULL;
-  if( _callback_requests > 0 || _playback ) timeoutp = &timeout;
+  if ( _callback_requests > 0 || _playback ) {
+    timeoutp = &timeout;
+  } else if (Init::ClientTimeout() > 0) {
+    // Don't allow select() to block for more than one minute if client
+    // timeout is specified.
+    timeout.tv_sec = 60;
+    timeoutp = &timeout;
+  }
 
 #if defined(DEBUG)
   if( !timeoutp ) {
     printf("blocking select: %d userdefs\n", _callback_requests);
   } else {
-    printf("non-blocking select\n");
+    printf("non-blocking select: %d userdefs\n", _callback_requests);
   }
 #endif
 
 #if defined(HPUX)
-  int NumberFdsReady = select(maxFdCheck + 1, (int*)&fdread, 
+  int NumberFdsReady = select(_maxFdCheck + 1, (int*)&fdread, 
 			      (int*)0, (int*)&fdexc, timeoutp);
 #else
-  int NumberFdsReady = select(maxFdCheck + 1, &fdread, 0, &fdexc, timeoutp);
+  int NumberFdsReady = select(_maxFdCheck + 1, &fdread, 0, &fdexc, timeoutp);
 #endif
 
   if( NumberFdsReady < 0 ) {
@@ -639,10 +661,24 @@ void Dispatcher::Run1()
   if (NumberFdsReady > 0 || _callback_requests > 0) { 
 #if defined(DEBUG)
     printf("Checked %d fds, %d have data, %d user-defined\n",
-	   maxFdCheck + 1, NumberFdsReady, _callback_requests);
+	   _maxFdCheck + 1, NumberFdsReady, _callback_requests);
 #endif
     waitfor_secs = ProcessCallbacks(fdread, fdexc);
   } 
+
+  if (Init::ClientTimeout() > 0) {
+    struct timeval currTime;
+    if (gettimeofday(&currTime, NULL) < 0) {
+      reportErrNosys("gettimeofday() failed");
+    } else {
+      int minSinceLastCmd = (currTime.tv_sec - _lastCmdTime) / 60;
+      if (minSinceLastCmd > Init::ClientTimeout()) {
+	    printf("Last client command more than %d minutes ago; "
+	    "server exiting\n", Init::ClientTimeout());
+        Exit::DoExit(0);
+      }
+    }
+  }
 
   /* end of call backs */
 
@@ -782,6 +818,7 @@ void Dispatcher::RequestCallback(DispatcherID info)
 {
 	RequestTimedCallback ( info, 0);
 }
+
 void Dispatcher::RequestTimedCallback(DispatcherID info, long time)
 {
   Timer::StopTimer();
@@ -933,7 +970,7 @@ void Dispatcher::Unregister(DispatcherCallback *c, DispatcherID id)
 					// and mark for deletion
       CancelCallback(info);		// cancel any user-requested calls
       if (info->fd >= 0) {
-	FD_CLR(info->fd, &fdset);
+	FD_CLR(info->fd, &_fdset);
       }
       _callbacks.DoneIterator(index);
       return;

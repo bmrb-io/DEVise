@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1998/06/11 20:45:45  wenger
+  Added -quit command line argument for devised to quit when client disconnects.
+
   Revision 1.22  1998/05/02 09:02:28  taodb
   Added support for command logging
   Added support for registering events with delay
@@ -201,6 +204,7 @@ class Init {
 	static char* SwitchName() { return _switchname;}
 
 	static Boolean QuitOnDisconnect() { return _quitOnDisconnect; }
+	static int ClientTimeout() { return _clientTimeout; }
 
 protected:
     static Boolean _savePopup;     /* true if pop-up window should be saved and
@@ -265,6 +269,7 @@ protected:
 	static char* _switchname;      /* name of the switch(collaborator)*/
 
 	static Boolean _quitOnDisconnect; /* quit when client disconnects */
+	static int _clientTimeout;	   /* quit if client doesn't send commands */
 };
 
 #endif
