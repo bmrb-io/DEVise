@@ -20,6 +20,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2001/11/07 22:31:28  wenger
+// Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
+// js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
+// accidentally merged onto the bmrb_dist_br branch previously).
+// (These changes include JS heartbeat improvements and the fix to get
+// CGI mode working again.)
+//
 // Revision 1.10.2.1  2001/10/28 18:12:00  wenger
 // Fixed usage message.
 //
@@ -129,6 +136,9 @@ public class DEViseCheckPop
 	    System.err.println(ex.getMessage());
 	    System.exit(1);
 	}
+
+	// Do System.exit() here to kill off the TimeLimit thread.
+	System.exit(0);
     }
 
     //-------------------------------------------------------------------
@@ -142,6 +152,8 @@ public class DEViseCheckPop
 	if (DEBUG_LOG >= 1) {
 	    _log = new Log("logs/check_connect.out." + _date.getTime());
 	}
+
+	TimeLimit tl = new TimeLimit();
 
 	checkArgs(args);
     }
@@ -328,6 +340,38 @@ public class DEViseCheckPop
 		      ex.getMessage());
 		}
 	    }
+	}
+    }
+
+    // This class is used to force the checking process to quit after a
+    // certain amount of time, since these processes sometimes hang around
+    // for a long time on yola, for some unknown reason.  (Things should
+    // either succeed or fail quickly, but for some reason on yola (SGI)
+    // the DEViseCheckPop processes run for a long time.)
+    class TimeLimit implements Runnable
+    {
+	private int MAX_TIME = 10 * 1000; // millisec
+
+	private Thread _thread = null;
+
+        public TimeLimit()
+	{
+	    _thread = new Thread(this);
+	    _thread.start();
+	}
+
+        public void run()
+	{
+	    try {
+	        Thread.sleep(MAX_TIME);
+	    } catch (InterruptedException ex) {
+	    }
+
+	    _log.write("DEViseCheckPop timed out\n");
+
+	    System.out.println("FAIL");
+
+	    System.exit(1);
 	}
     }
 }
