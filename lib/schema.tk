@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.20  1996/10/23 22:51:08  flisakow
+#  Added an array, "hiddendata" to store attributes that we don't wish to
+#  show in the listbox.  Used it to store the strlen for strings, and
+#  added an entry field to display/change it.
+#
 #  Revision 1.19  1996/07/11 17:26:14  wenger
 #  Devise now writes headers to some of the files it writes;
 #  DataSourceSegment class allows non-fixed data length with non-zero
@@ -345,6 +350,8 @@ proc newschemawin {} {
     }
     entry .newschema.separ.entry -width 15 -relief sunken -bd 2 \
 	    -textvariable separ
+    bind .newschema.separ.entry <Tab> { set separ "$separ\	'" }
+
     pack .newschema.separ.button .newschema.separ.entry -side left \
 	    -padx 1m -pady 1m 
     
