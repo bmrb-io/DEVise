@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.30  1998/06/28 21:47:40  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.29  1998/06/24 05:02:58  okan
   Added ODBC List & DSN List commands
   Added insert & delete commands to update ODBC entries in related catalogs
@@ -100,6 +104,9 @@ const ISchema SCHEMA_SCHEMA("1 " + SCHEMA_STR + " " + SCHEMA_STR);
 
 class ParseTree {
 public:
+	// We need this destructor so the destructors from the subclasses
+	// will get called, but putting it in results in a crash.  RKW 7/6/98.
+	//virtual ~ParseTree() {}
 	virtual const ISchema* getISchema(){
 		return &EMPTY_SCHEMA;
 	}

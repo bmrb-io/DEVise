@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.140  1998/07/03 23:42:09  wenger
+  Fixed some memory leaks; added provision to print data segment size
+  at certain places in the code.
+
   Revision 1.139  1998/06/24 14:49:53  beyer
   changed #ifdef 0 to #if 0
 
@@ -1782,7 +1786,7 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
   printf("View(%s)::ReportQueryDone(%d, %d)\n", _name, bytes, aborted);
 #endif
 #if defined(DEBUG_MEM)
-  printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));
+  printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
 #endif
 
   _bytes = bytes;
@@ -3269,7 +3273,7 @@ void	View::Run(void)
 	printf("\nView::Run for view '%s' (0x%p)\n", GetName(), _dispatcherID);
 #endif
 #if defined(DEBUG_MEM)
-  printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));
+  printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
 #endif
 
 	if (_refresh)

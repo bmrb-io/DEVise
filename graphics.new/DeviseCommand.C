@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/06/12 19:55:28  wenger
+  Attribute of TAttr/set links can now be changed; GUI has menu of available
+  attributes; attribute is set when master view is set instead of at link
+  creation; misc. debug code added.
+
   Revision 1.16  1998/06/09 20:06:12  wenger
   2D OpenGL cursor now drawn as shaded outline plus every-other-point
   "mesh"; OpenGL CursorStore and GLWindowRep on SGI now use color indices
@@ -177,6 +182,9 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 	printf("DeviseCommand::Run(");
 	PrintArgs(stdout, argc, argv, false);
 	printf(")\n");
+#  if defined(DEBUG_MEM)
+    printf("  %s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
+#  endif
 	fflush(stdout);
 #endif
 

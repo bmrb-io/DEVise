@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.24  1998/06/28 21:47:35  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.23  1997/12/04 04:05:09  donjerko
   *** empty log message ***
 
@@ -125,6 +129,7 @@ const ISchema* Engine::typeCheck(){
 		TRY(parse(), 0);
 	}
 	assert(schema == 0);
+	// This may leak a bunch of memory.  RKW 7/6/98.
 	TRY(schema = parseTree->getISchema(), 0);
 	return schema;
 }
@@ -133,6 +138,7 @@ int Engine::optimize(){
 	if(!schema){
 		TRY(typeCheck(), 0);
 	}
+	// This may leak a bunch of memory.  RKW 7/6/98.
 	TRY(topNodeIt = parseTree->createExec(), 0);
 	return 0;
 }
