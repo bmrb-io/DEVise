@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/06/17 17:20:33  wenger
+  Devised now sends "real" session file list to JavaScreen.
+
   Revision 1.18  1998/05/14 18:21:10  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -117,6 +120,12 @@ extern char *CopyString(const char *str);
 
 extern int readn(int fd, char *buf, int nbytes);
 extern int writen(int fd, char *buf, int nbytes);
+
+// "Friendly" wrapper around fgets -- checks for hitting the end of the
+// buffer, makes sure string is always terminated, strips trailing newline.
+enum fgets_result { fgets_invalid, fgets_ok, fgets_eof, fgets_bufoverflow,
+  fgets_error };
+fgets_result nice_fgets(char *buf, int bufSize, FILE *fp);
 
 /* Clear contents of directory */
 extern void ClearDir(char *dir);

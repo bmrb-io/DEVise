@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.46  1998/08/17 18:51:55  wenger
+  Updated solaris dependencies for egcs; fixed most compile warnings;
+  bumped version to 1.5.4.
+
   Revision 1.45  1998/06/03 17:09:41  wenger
   Rubberband line in JavaScreen now sends updates of all changed windows
   using the "dirty GIF" flag; updated DEVise version to 1.5.3.
@@ -259,7 +263,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.5.4";
+static const char *	version = "1.6.0";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1998";

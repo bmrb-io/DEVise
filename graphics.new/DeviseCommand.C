@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.35  1998/11/16 18:58:43  wenger
+  Added options to compile without DTE code (NO_DTE), and to warn whenever
+  the DTE is called (DTE_WARN).
+
   Revision 1.34  1998/11/11 14:30:56  wenger
   Implemented "highlight views" for record links and set links; improved
   ClassDir::DestroyAllInstances() by having it destroy all links before
@@ -204,6 +208,7 @@
 #include "JavaScreenCmd.h"
 #include "TAttrLink.h"
 #include "RangeDesc.h"
+#include "DataCatalog.h"
 
 #include "Color.h"
 //#define INLINE_TRACE
@@ -512,7 +517,14 @@ TAG*/
 #if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, control);
 #else
-        return false;
+		int result = DataCatalog::Instance()->DeleteEntry(argv[1]);
+		if (result == 0) {
+          ReturnVal(API_ACK, "");
+    	  return 1;
+		} else {
+          ReturnVal(API_NAK, "");
+    	  return -1;
+		}
 #endif
     }
     return true;
@@ -587,7 +599,15 @@ TAG*/
 #if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, control);
 #else
-        return false;
+	char *catEntry = DataCatalog::Instance()->ShowEntry(argv[1]);
+	if (catEntry != NULL) {
+   	  ReturnVal(API_ACK, catEntry);
+   	  delete [] catEntry;
+   	  return 1;
+	} else {
+   	  ReturnVal(API_ACK, "");
+   	  return 1;
+	}
 #endif
     }
     return true;
@@ -618,7 +638,15 @@ TAG*/
 #if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, control);
 #else
-        return false;
+    char *catListing = DataCatalog::Instance()->ListCatalog(argv[1]);
+	if (catListing != NULL) {
+      ReturnVal(API_ACK, catListing);
+	  delete [] catListing;
+      return 1;
+	} else {
+      ReturnVal(API_NAK, "");
+      return -1;
+	}
 #endif
     }
     return true;
@@ -757,7 +785,14 @@ TAG*/
 #if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, control);
 #else
-        return false;
+		int result = DataCatalog::Instance()->AddEntry(argv[1], argv[2]);
+		if (result == 0) {
+          ReturnVal(API_ACK, "");
+    	  return 1;
+		} else {
+          ReturnVal(API_NAK, "");
+    	  return -1;
+		}
 #endif
     }
     return true;

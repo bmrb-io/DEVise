@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.55  1998/08/21 22:16:38  wenger
+#  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
+#  linked DEVise for distribution.
+#
 #  Revision 1.54  1998/07/29 14:20:11  wenger
 #  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
 #  allow static linking on Linux.
@@ -206,6 +210,7 @@ LDFLAGS = -L../DTE/ -L../RTree -L../graphics.new -L../graphics -L../tape \
 	-lissm -lcrsp -lcstat -ltape \
 	-L../unidata -lunidata \
 	-L../DataReader -ldatareader \
+	-L../data -ldevdata \
 	-L$(PERL_CORE) -lperl $(ARCH_SYSLIBS)
 
 TEST_LDFLAGS = -L../graphics -lgraphics -lutils -lcolor -lX11
@@ -230,7 +235,8 @@ ALLLIBS = ../utils/libutils.a ../color/libcolor.a \
 	../DTE/libdte.a \
 	../RTree/librtree.a \
 	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \
-	../crsp/libcrsp.a ../xvertext/libXrot.a ../DataReader/libdatareader.a
+	../crsp/libcrsp.a ../xvertext/libXrot.a ../DataReader/libdatareader.a \
+	../data/libdevdata.a
 
 CLIENTLIB = ../graphics.new/libclient.a
 SERVERLIB = ../graphics.new/libserver.a ../csgroup/libcsgroup.a

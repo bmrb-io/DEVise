@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  1998/07/29 14:20:19  wenger
+  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+  allow static linking on Linux.
+
   Revision 1.27  1998/06/17 17:20:33  wenger
   Devised now sends "real" session file list to JavaScreen.
 
@@ -403,6 +407,41 @@ int writen(int fd, char *buf, int nbytes)
     }
 
     return nbytes - nleft;
+}
+
+fgets_result
+nice_fgets(char *buf, int bufSize, FILE *fp)
+{
+  fgets_result result = fgets_ok;
+
+  // In case no chars get transferred to buffer.
+  buf[0] = '\0';
+
+  char testChar = '\123';
+  buf[bufSize - 1] = testChar;
+
+  if (fgets(buf, bufSize, fp) == NULL) {
+    if (feof(fp)) {
+      result = fgets_eof;
+    }
+    if (ferror(fp)) {
+      reportErrSys("Error in nice_fgets()");
+      result = fgets_error;
+    }
+  }
+
+  if (buf[bufSize - 1] != testChar) {
+    // Buffer is too small (or the line had *exactly* bufSize-1 characters).
+    reportErrNosys("Buffer overflow");
+    result = fgets_bufoverflow;
+  }
+
+  // Make absolutely sure the string is terminated.
+  buf[bufSize - 1] = '\0';
+
+  StripTrailingNewline(buf);
+
+  return result;
 }
 
 void

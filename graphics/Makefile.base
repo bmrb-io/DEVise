@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.68  1998/11/02 19:22:33  wenger
+#  Added "range/MQL" session description capability.
+#
 #  Revision 1.67  1998/07/03 23:42:07  wenger
 #  Fixed some memory leaks; added provision to print data segment size
 #  at certain places in the code.
@@ -217,6 +220,7 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics  -I../../graphics.new \
 	-I../../util -I../../tape -I../../DTE/StandAlone \
 	-I../../LM/C++ \
 	-I../../csgroup/export \
+	-I../../src/data/export \
 	$(GLINCLUDE) \
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(DEBUG_FLAGS) $(OPTFLAG) \
 	$(DEBUGFLAGS) -DUNIX -DGRAPHICS -DNEW_LAYOUT

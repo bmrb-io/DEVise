@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.88  1998/07/03 23:42:19  wenger
+#  Fixed some memory leaks; added provision to print data segment size
+#  at certain places in the code.
+#
 #  Revision 1.87  1998/06/26 14:31:53  wenger
 #  Needed include path for new config.h and sysdep.h locations.
 #
@@ -257,6 +261,7 @@ CFLAGS =  $(ARCH_FLAGS) \
 	-I../unidata\
 	-I../../graphics.new -I../../tape -I../../generic $(GLINCLUDE)\
 	-I.. -I../../src/include \
+	-I../../src/data/export \
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(DEBUG_FLAGS) $(OPTFLAG) -DUNIX \
 	-DNEW_LAYOUT -DVIEW_SHAPE -DHAVE_CONFIG_H
 

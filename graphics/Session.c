@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.36  1998/11/16 18:58:59  wenger
+  Added options to compile without DTE code (NO_DTE), and to warn whenever
+  the DTE is called (DTE_WARN).
+
   Revision 1.35  1998/11/11 14:30:42  wenger
   Implemented "highlight views" for record links and set links; improved
   ClassDir::DestroyAllInstances() by having it destroy all links before
@@ -200,6 +204,7 @@
 #include "DeviseServer.h"
 #include "CmdLog.h"
 #include "View.h"
+#include "DataCatalog.h"
 
 
 //#define DEBUG
@@ -559,7 +564,7 @@ Session::CreateTData(char *name)
 #if !defined(NO_DTE)
     catEntry = dteShowCatalogEntry(name);
 #else
-    catEntry = CopyString("\"testcolors_dat\" UNIXFILE testcolors.dat Visible-Infrared-Schema /p/devise/schema/schema/logical/VN \"\" 100 50 \"/p/devise/dat\" \"\" ;");
+    catEntry = DataCatalog::Instance()->ShowEntry(name);
 #endif
     if ((catEntry == NULL) || (strlen(catEntry) == 0)) {
       char errBuf[256];

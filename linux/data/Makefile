@@ -15,6 +15,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.46  1998/11/19 21:12:59  wenger
+# Implemented non-DTE version of DEVise (new code handles data source catalog
+# functions; Tables, SQLViews, etc., are not implemented); changed version to
+# 1.6.0.
+#
 # Revision 1.45  1998/08/21 22:17:34  wenger
 # Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
 # linked DEVise for distribution.
