@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.56  1998/12/11 17:00:04  beyer
+  small cleanup
+
   Revision 1.55  1998/11/23 19:18:51  donjerko
   Added support for gestalts
 
@@ -117,6 +120,8 @@
  */
 
 // #define DEBUG
+
+#define USE_OPTIMIZER
 
 // Changed to non-pragma templates method. CEW 5/12/97
 //#ifdef __GNUG__

@@ -28,7 +28,7 @@ public:
 	void initialize(int numTabs);
 	Iterator begin();
 	Iterator end();
-	int count() const;
+	int count() const; // returns the number of 1s
 	inline bool isSinglet() const;
 	int getBitMap() const {
 		return bitmap;
@@ -41,6 +41,7 @@ public:
 	}
 	friend ostream& operator<<(ostream&, const TableMap&);
 	string toString() const;
+	int index() const;  // returns the position of the first 1, counting from the least sig. bit position.
 };
 
 inline TableMap::TableMap(int bitmap) : bitmap(bitmap) {}

@@ -286,6 +286,7 @@ public:
 	virtual Interface* copyTo(void* space){
 		return new (space) DeviseInterface(*this);
 	}
+	virtual vector<AccessMethod*> createAccessMethods();
 };
 
 class QueryInterface : public Interface{

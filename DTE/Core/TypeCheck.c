@@ -65,6 +65,7 @@ void TypeCheck::initialize(const vector<TableAlias*>& tableList){
 			int avgSize = 0;
 			ps = new PrimeSelection(
 				aliasCopy, attCpy, types[i], avgSize, current);
+			ps->setTableMap(tableList);
 			insert(ps);
 		}
 	}

@@ -179,52 +179,27 @@ Site* DeviseInterface::getSite(){
 }
 
 const ISchema* DeviseInterface::getISchema(TableName* table){
+	
+	// table is OK to be NULL since it is not used
+
 	if(schema){
 		return schema;
 	}
-	assert(table);
-	assert(table->isEmpty());
 	int numFlds;
 	const string* attributeNames;
 	const TypeID* typeIDs;
-	if(viewNm.empty()){
-		if(schemaNm.substr(schemaNm.size() - 3) == "ddr"){
+	assert(viewNm.empty());		// obsolete feature
 
-			// Devise Data Reader
+	// DataReaderAM incorporates both DataReader and UniData
 
-			TRY(DataRead* reader = new DataRead(schemaNm, dataNm), 0);
-			assert(reader);
-			numFlds = reader->getNumFlds();
-			attributeNames = reader->getAttributeNames();
-			typeIDs = reader->getTypeIDs();
-			schema = new ISchema(numFlds, typeIDs, attributeNames);
-			delete reader;
-		}
-		else{
+	TRY(DataReaderAM* reader = new DataReaderAM(schemaNm, dataNm), 0);
+	assert(reader);
+	numFlds = reader->getNumFlds();
+	attributeNames = reader->getAttributeNames();
+	typeIDs = reader->getTypeIDs();
+	schema = new ISchema(numFlds, typeIDs, attributeNames);
+	delete reader;
 
-			// Unidata Reader
-
-			DevRead* reader = 0;
-			char* schemaFile = strdup(schemaNm.c_str());
-			char* data = strdup(dataNm.c_str());
-			reader = new DevRead();
-			TRY(reader->Open(schemaFile, data), NULL);
-			assert(reader);
-			numFlds = reader->getNumFlds();
-			attributeNames = reader->getAttributeNames();
-			typeIDs = reader->getTypeIDs();
-			schema = new ISchema(numFlds, typeIDs, attributeNames);
-			delete reader;
-		}
-	}
-	else {
-		assert(!"single table views not implemented");
-		/*
-		string select;
-		string where;
-		TRY(readFilter(viewNm, select, attributeNames, numFlds, where), NULL);
-		*/
-	}
 	return schema;
 }
 
@@ -687,7 +662,6 @@ istream& StandardInterface::read(istream& in){
 	return Interface::read(in);
 }
 
-// *** YL
 istream& GestaltInterface::read(istream& in){
 	in >> schema;
 	in >> urlString;
@@ -700,6 +674,17 @@ vector<AccessMethod*> StandardInterface::createAccessMethods()
 	Stats defStats(schema.getNumFlds());
 	Stats* nonNullStats = (stats ? stats : &defStats);
 	AccessMethod* sr = new StandardAM(schema, urlString, *nonNullStats);
+	retVal.push_back(sr);
+	return retVal;
+}
+
+vector<AccessMethod*> DeviseInterface::createAccessMethods()
+{
+	vector<AccessMethod*> retVal;
+	const ISchema* tmpSchema = getISchema(0);
+	Stats defStats(tmpSchema->getNumFlds());
+	Stats* nonNullStats = (stats ? stats : &defStats);
+	AccessMethod* sr = new DataReaderAM(schemaNm, dataNm);
 	retVal.push_back(sr);
 	return retVal;
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.52  1998/11/23 19:18:55  donjerko
+  Added support for gestalts
+
   Revision 1.51  1998/10/08 22:27:12  donjerko
   *** empty log message ***
 
@@ -204,6 +207,7 @@ typedef enum SelectID {
 
 class BaseSelection{
 protected:
+	TableMap tableMap;
 	TypeID typeID;
 	int avgSize;	// to estimate result sizes
 public:
@@ -242,6 +246,7 @@ public:
 		return false;
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to) = 0;
+	virtual void collect(TableMap group, vector<BaseSelection*>& to) = 0;
 	virtual ExecExpr* createExec(Site* site1, Site* site2);	// obsolete
 	virtual ExecExpr* createExec(const SqlExprLists& inputs) const;
 	virtual TypeID typeCheck() = 0;
@@ -282,7 +287,13 @@ public:
 		assert(0);
 		return ""; // avoid compiler warning
 	}
-	virtual TableMap getTableMap(const vector<TableAlias*>&) const = 0;
+	virtual TableMap setTableMap(const vector<TableAlias*>&) = 0;
+	TableMap getTableMap() const {
+		return tableMap;
+	}
+	bool containedIn(TableMap group){
+		return group.contains(tableMap);
+	}
 };
 
 class ConstantSelection : public BaseSelection {
@@ -356,6 +367,8 @@ public:
 	virtual BaseSelection* duplicate();
 	virtual void collect(Site* s, List<BaseSelection*>* to){
 	}
+	virtual void collect(TableMap group, vector<BaseSelection*>& to){
+	}
      virtual SelectID selectID() const {
           return CONST_ID;
      }
@@ -382,8 +395,10 @@ public:
 	virtual bool checkOrphan(){
 		return true;
 	}
-	virtual TableMap getTableMap(const vector<TableAlias*>&) const {
-		return TableMap(0);
+	virtual TableMap setTableMap(const vector<TableAlias*>&) {
+		TableMap tmp(0);
+		tableMap = tmp;
+		return tableMap;
 	}
 };
 
@@ -395,10 +410,12 @@ public:
 		PromotePtr promotePtr = NULL) : 
 		BaseSelection(typeID), input(input), 
 		promotePtr(promotePtr){
-
+		
+		tableMap = input->getTableMap();
 		assert(input);
 	}
 	TypeCast(const TypeCast& x) {
+		tableMap = x.tableMap;
 		typeID = x.typeID;
 		input = x.input->duplicate();
 		promotePtr = x.promotePtr;
@@ -434,6 +451,7 @@ public:
 		return new TypeCast(*this);
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to);
+	virtual void collect(TableMap group, vector<BaseSelection*>& to);
      virtual SelectID selectID() const {
           return CAST_ID;
      }
@@ -459,8 +477,9 @@ public:
 	virtual bool checkOrphan(){
 		return input->checkOrphan();
 	}
-	virtual TableMap getTableMap(const vector<TableAlias*>& x) const {
-		return input->getTableMap(x);
+	virtual TableMap setTableMap(const vector<TableAlias*>& x) {
+		tableMap = input->setTableMap(x);
+		return tableMap;
 	}
 };
 
@@ -522,6 +541,7 @@ public:
 		return new Member(*this);
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to);
+	virtual void collect(TableMap group, vector<BaseSelection*>& to);
      virtual SelectID selectID() const {
           return MEMBER_ID;
      }
@@ -550,8 +570,9 @@ public:
 	virtual bool checkOrphan(){
 		return input->checkOrphan();
 	}
-	virtual TableMap getTableMap(const vector<TableAlias*>& x) const {
-		return input->getTableMap(x);
+	virtual TableMap setTableMap(const vector<TableAlias*>& x){
+		tableMap = input->setTableMap(x);
+		return tableMap;
 	}
 };
 
@@ -593,6 +614,9 @@ public:
 		assert(0);
 		input->collect(s, to);
 	}
+	virtual void collect(TableMap group, vector<BaseSelection*>& to){
+		assert(0);
+	}
      virtual SelectID selectID() const {
           return METHOD_ID;
      }
@@ -632,9 +656,9 @@ public:
 		assert(0);
 		return input->checkOrphan();
 	}
-	virtual TableMap getTableMap(const vector<TableAlias*>& x) const {
+	virtual TableMap setTableMap(const vector<TableAlias*>& x) {
 		assert(!"not implemented");
-		return input->getTableMap(x);
+		return TableMap(0);
 	}
 };
 
@@ -684,6 +708,7 @@ public:
 		return NULL;
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to);
+	virtual void collect(TableMap group, vector<BaseSelection*>& to);
      virtual SelectID selectID() const {
           return CONSTRUCTOR_ID;
      }
@@ -725,7 +750,7 @@ public:
 	virtual double getSelectivity(){  
 		return 0.01;
 	}
-	virtual TableMap getTableMap(const vector<TableAlias*>& x) const {
+	virtual TableMap setTableMap(const vector<TableAlias*>& x) {
 		assert(!"not implemented");
 		return TableMap(0);
 	}
@@ -764,11 +789,14 @@ public:
 	virtual void collect(Site* s, List<BaseSelection*>* to){
 		assert(0);
 	}
+	virtual void collect(TableMap group, vector<BaseSelection*>& to){
+		assert(0);
+	}
 	virtual bool match(BaseSelection* x) const {
 		assert(0);
 		return false;
 	}
-	virtual TableMap getTableMap(const vector<TableAlias*>& x) const {
+	virtual TableMap setTableMap(const vector<TableAlias*>& x) {
 		assert(!"this should not be called!!");
 		return TableMap(0);
 	}
@@ -827,6 +855,7 @@ public:
 		return new PrimeSelection(dupAlias, dupFieldNm);
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to);
+	virtual void collect(TableMap group, vector<BaseSelection*>& to);
 	virtual ExecExpr* createExec(const SqlExprLists& inputs) const;
      virtual ExecExpr* createExec(Site* site1, Site* site2);
 	virtual TypeID typeCheck();
@@ -848,7 +877,7 @@ public:
 	virtual string toStringAttOnly(){
 		return *fieldNm;
 	}
-	virtual TableMap getTableMap(const vector<TableAlias*>& x) const;
+	virtual TableMap setTableMap(const vector<TableAlias*>& x);
 };
 
 class Operator : public BaseSelection {
@@ -954,6 +983,7 @@ public:
 		return new Operator(name, left->duplicate(), right->duplicate());
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to);
+	virtual void collect(TableMap group, vector<BaseSelection*>& to);
      virtual ExecExpr* createExec(Site* site1, Site* site2);
 	virtual ExecExpr* createExec(const SqlExprLists& inputs) const;
      virtual SelectID selectID() const {
@@ -970,7 +1000,7 @@ public:
 		TRY(right->checkOrphan(), false);
 		return true;
 	}
-	virtual TableMap getTableMap(const vector<TableAlias*>& x) const;
+	virtual TableMap setTableMap(const vector<TableAlias*>& x);
 };
 
 class ArithmeticOp : public Operator {

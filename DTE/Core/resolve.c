@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.42  1998/11/23 19:18:56  donjerko
+  Added support for gestalts
+
   Revision 1.41  1998/10/08 22:27:13  donjerko
   *** empty log message ***
 
@@ -191,15 +194,19 @@ bool PrimeSelection::exclusive(string* attributeNames, int numFlds){
 
 ExecExpr* BaseSelection::createExec(const SqlExprLists& inputs) const
 {
+//	cerr << "searching for " << toString() << "in:\n";
 	for(int i = 0; i < inputs.size(); i++){
 		for(int j = 0; j < inputs[i].size(); j++){
 			BaseSelection* curr = inputs[i][j];
 			assert(curr);
+//			cerr << curr->toString();
 			if(match(curr)){
+//				cerr << "found\n";
 				return new ExecSelect(getTypeID(), i, j);
 			}
 		}
 	}
+//	cerr << "not found\n";
 	return 0;
 }
 		
@@ -391,6 +398,7 @@ TypeID Operator::typeCheck(){
 	}
 	opPtr = genPtr->opPtr;
 	avgSize = genPtr->sizePtr(left->getSize(), right->getSize());
+	tableMap = left->getTableMap() | right->getTableMap();
 	return typeID;
 }
 
@@ -529,9 +537,11 @@ TypeID Constructor::typeCheck(){
 	assert(args);
 	int numFlds = args->cardinality();
 	TypeID* inpTypes = new TypeID[numFlds];	
+	tableMap = 0;
 	int i = 0;
 	for(args->rewind(); !args->atEnd(); args->step()){
 		inpTypes[i] = args->get()->getTypeID();
+		tableMap = tableMap | args->get()->getTableMap();
 		i++;
 	}
 	TRY(consPtr = 
@@ -622,6 +632,7 @@ void Operator::collect(Site* site, List<BaseSelection*>* to){
 
 TypeID Member::typeCheck(){
 	TypeID parentType = input->getTypeID();
+	tableMap = input->getTableMap();
 	GeneralMemberPtr* genPtr;
 	TRY(genPtr = getMemberPtr(*name, parentType, typeID), "unknown");
 	assert(genPtr);
@@ -658,6 +669,7 @@ TypeID TypeCast::typeCheck(){
 		return typeID;
 	}
 	TypeID inpType = input->getTypeID();
+	tableMap = input->getTableMap();
 	TRY(PromotePtr promotePtr = getPromotePtr(inpType, typeID), "");
 	return typeID;
 }
@@ -679,7 +691,7 @@ void Constructor::setChildren(const vector<BaseSelection*>& children){
 	}
 }
 
-TableMap PrimeSelection::getTableMap(const vector<TableAlias*>& x) const {
+TableMap PrimeSelection::setTableMap(const vector<TableAlias*>& x) {
 	int pos = 1;
 	bool found = false;
 	vector<TableAlias*>::const_iterator it;
@@ -691,11 +703,13 @@ TableMap PrimeSelection::getTableMap(const vector<TableAlias*>& x) const {
 		pos <<= 1;
 	}
 	assert(found);
-	return TableMap(pos);
+	tableMap = TableMap(pos);
+	return tableMap;
 }
 
-TableMap Operator::getTableMap(const vector<TableAlias*>& x) const {
-	return left->getTableMap(x) | right->getTableMap(x);
+TableMap Operator::setTableMap(const vector<TableAlias*>& x) {
+	tableMap = left->setTableMap(x) | right->setTableMap(x);
+	return tableMap;
 }
 
 TableAlias::TableAlias(TableName *t, string* a, string *func,
@@ -825,3 +839,52 @@ QuoteAlias::~QuoteAlias(){
 	delete interf;
 }
 
+// These are the latest (and the only) additions to this file after 
+// Working revision:    1.42    Mon Nov 23 19:18:56 1998 (Donko)
+
+void TypeCast::collect(TableMap group, vector<BaseSelection*>& to){
+	if(containedIn(group)){
+		to.push_back(this);
+	}
+	else{
+		input->collect(group, to);
+	}
+}
+
+void Member::collect(TableMap group, vector<BaseSelection*>& to){
+	if(containedIn(group)){
+		to.push_back(this);
+	}
+	else{
+		input->collect(group, to);
+	}
+}
+
+void Constructor::collect(TableMap group, vector<BaseSelection*>& to){
+	if(containedIn(group)){
+		to.push_back(this);
+	}
+	else{
+		assert(args);
+		for(args->rewind(); !args->atEnd(); args->step()){
+			BaseSelection* curr = args->get();
+			curr->collect(group, to);
+          }
+	}
+}
+
+
+void PrimeSelection::collect(TableMap group, vector<BaseSelection*>& to){
+	if(containedIn(group)){
+		to.push_back(this);
+	}
+}
+
+void Operator::collect(TableMap group, vector<BaseSelection*>& to){
+	if(containedIn(group)){
+		to.push_back(this);
+		return;
+	}
+	left->collect(group, to);
+	right->collect(group, to);
+}

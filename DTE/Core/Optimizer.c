@@ -15,6 +15,10 @@
 
 DTESite THIS_SITE;
 
+void deleteFun(BaseSelection* x){
+	delete x;
+}
+
 ExprList* createExecExprs(const vector<BaseSelection*>& projList, const SqlExprLists& inputLists)
 {
 	ExprList* retVal = new ExprList();
@@ -287,18 +291,16 @@ bool SPQueryProduced::expand(
 		return false;
 	}
 	const vector<TableAlias*>& tl = q.getTableList();
-	assert(tl.size() == 1);
-	const TableAlias* ta = tl[0];
+
+	assert(tableMap.isSinglet());
+
+	const TableAlias* ta = tl[tableMap.index()];
 	const vector<AccessMethod*>& amethods = ta->getAccessMethods();
 
 	assert(amethods.size() == 1 || !"not implemented");
 	// choose the cheapest access method (depends on predicates available)
 
-	// do projections and selections here
-
-	projList = q.getSelectList();
-	predList = q.getPredicateList();
-	aliasM = *q.getTableList().front()->getAlias();
+	aliasM = *(ta->getAlias());
 
 	bestAlt = amethods[0];
 
@@ -342,13 +344,13 @@ bool GestaltQueryProduced::expand(
 	return retVal;
 }
 
-Iterator* GestaltQueryProduced::createExec() const 
+Iterator* GestaltQueryProduced::createExec(const Query& q) const 
 {
 	vector<NodeQueryPair>::const_iterator i;
 	vector<Iterator*> ite_vec;
 	
 	for (i = gestMembers.begin(); i != gestMembers.end(); ++i){
-		ite_vec.push_back ((*i).first->createExec());
+		ite_vec.push_back ((*i).first->createExec(*(*i).second));
 	}
 	
 	Iterator* retVal = new UnionExec(ite_vec);
@@ -361,7 +363,7 @@ string GestaltQueryProduced::toString() const
 	return "gestalt";
 }
 
-Iterator* SPQueryProduced::createExec() const 
+Iterator* SPQueryProduced::createExec(const Query& q) const 
 {
 	assert(bestAlt);
 
@@ -370,19 +372,91 @@ Iterator* SPQueryProduced::createExec() const
 	vector<vector<BaseSelection*> > inputs;
 	inputs.push_back(inputProj);
 
-	TRY(ExprList* myWhere = createExecExprs(predList, inputs), 0);
+	vector<BaseSelection*> projList = getProjectList(q);
+
+	const vector<BaseSelection*>& preds = q.getPredicateList();
+
+	ExprList* myWhere = new ExprList();
+
+	vector<BaseSelection*>::const_iterator pi;
+	for(pi = preds.begin(); pi != preds.end(); ++pi){
+		if((*pi)->containedIn(tableMap)){
+			TRY(ExecExpr* execPred = (*pi)->createExec(inputs), 0);
+			assert(execPred);
+			myWhere->push_back(execPred);
+		}
+	}
+
 	TRY(ExprList* myProject = createExecExprs(projList, inputs), 0);
 
 	Iterator* inputIt = bestAlt->createExec();
 
 	Iterator* retVal = new SelProjExec(inputIt, myWhere, myProject);
 
+	for_each(inputProj.begin(), inputProj.end(), deleteFun);
+
 	return retVal;
 }
 
-Iterator* SPJQueryProduced::createExec() const {
-	assert(!"not implemented");
-	return NULL;
+Iterator* SPJQueryProduced::createExec(const Query& q) const {
+
+	JoinMethod* jm = alts.front().second;
+
+	TRY(Iterator* leftIt = jm->getLeft()->createExec(q), 0);
+	assert(leftIt);
+	TRY(Iterator* rightIt = jm->getRight()->createExec(q), 0);
+	assert(rightIt);
+
+	cerr << "MADE INPUTS\n";
+
+	ExprList* execPreds = new ExprList();
+
+
+	const vector<BaseSelection*>& preds = q.getPredicateList();
+	const vector<TableAlias*>& tableList = q.getTableList();
+
+	vector<BaseSelection*> leftProjLst = jm->getLeft()->getProjectList(q);
+	vector<BaseSelection*> rightProjLst = jm->getRight()->getProjectList(q);
+
+	// there should be no duplicates in proj list (for efficiency)
+/*
+	cerr << "left: ";
+	displayVec(cerr, leftProjLst);
+	cerr << "\n right: ";
+	displayVec(cerr, rightProjLst);
+	cerr << endl;
+*/
+
+	SqlExprLists inputs;
+	inputs.push_back(leftProjLst);
+	inputs.push_back(rightProjLst);
+
+
+	TableMap leftMap = jm->getLeft()->getTableMap();
+	TableMap rightMap = jm->getRight()->getTableMap();
+
+	// walk the where clause and identify the predicates that 
+	// can only be done at this level
+
+	vector<BaseSelection*>::const_iterator pi;
+	for(pi = preds.begin(); pi != preds.end(); ++pi){
+		if((*pi)->containedIn(tableMap) && !(*pi)->containedIn(leftMap) &&
+			!(*pi)->containedIn(rightMap)){
+
+			TRY(ExecExpr* execPred = (*pi)->createExec(inputs), 0);
+			assert(execPred);
+			execPreds->push_back(execPred);
+		}
+	}
+
+	ExprList* project = new ExprList();
+	vector<BaseSelection*> myProjLst = getProjectList(q);
+	vector<BaseSelection*>::const_iterator it;
+	for(it = myProjLst.begin(); it != myProjLst.end(); ++it){
+		project->push_back((*it)->createExec(inputs));
+	}
+
+	return new NLJoinExec(leftIt, rightIt, execPreds, project);
 }
 
 string SPQueryProduced::toString() const
@@ -428,9 +502,9 @@ AggQueryNeeded::AggQueryNeeded(const Query& query, TableMap tableMap, const Site
 	root = new QueryNeeded(*aggLessQuery, tableMap, siteDesc);
 }
 
-Iterator* AggQueryNeeded::createExec() const
+Iterator* AggQueryNeeded::createExec(const Query& q) const
 {
-	Iterator* input = root->createExec();
+	Iterator* input = root->createExec(*aggLessQuery);
 	return new StandAggsExec(input, aggs);
 }
 
@@ -519,7 +593,7 @@ vector<OptNode*> RemQueryProduced::getLevel(int level)
 	return retVal;
 }
 
-Iterator* RemQueryProduced::createExec() const
+Iterator* RemQueryProduced::createExec(const Query& q) const
 {
 //	cerr << "Shipping: " << queryToShip;
 
@@ -675,7 +749,7 @@ Iterator* Optimizer::createExec() {
 	if(!root){
 		run();
 	}
-	return root->createExec();
+	return root->createExec(query);
 }
 
 AccessMethod* DTESite::getBestAM(TableMap tableMap, const Query& q) const
@@ -809,7 +883,7 @@ void LogPropTable::initialize(const Query& query)
 	predMaps.reserve(preds.size());
 	vector<BaseSelection*>::const_iterator pi;
 	for(pi = preds.begin(); pi != preds.end(); ++pi){
-		TableMap tmp = (*pi)->getTableMap(tableList);
+		TableMap tmp = (*pi)->getTableMap();
 		predMaps.push_back(tmp);
 	}
 
@@ -919,6 +993,24 @@ bool Query::hasAggregates() const
 		}
 	}
 	return false;
+}
+
+vector<BaseSelection*> OptNode::getProjectList(const Query& query) const
+{
+	vector<BaseSelection*> retVal;
+
+	const vector<BaseSelection*>& projects = query.getSelectList();
+	const vector<BaseSelection*>& preds = query.getPredicateList();
+	vector<BaseSelection*>::const_iterator it;
+	for(it = projects.begin(); it != projects.end(); ++it){
+		(*it)->collect(tableMap, retVal);
+	}
+	for(it = preds.begin(); it != preds.end(); ++it){
+		if(!(*it)->containedIn(tableMap)){
+			(*it)->collect(tableMap, retVal);
+		}
+	}
+	return retVal;
 }
 
 #ifdef DEBUG_STAT

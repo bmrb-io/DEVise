@@ -89,3 +89,16 @@ string TableMap::toString() const
 	tmp << *this;
 	return tmp.str();
 }
+
+int TableMap::index() const {
+	int tmpMap = bitmap;
+	for(int i = 0; i < sizeof(int) * 8; i++){	
+		if(tmpMap & 1){
+			return i;
+		}
+		tmpMap >>= 1;
+	}
+	assert(0);
+	return 0;
+}
+

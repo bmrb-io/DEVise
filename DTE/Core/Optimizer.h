@@ -179,7 +179,7 @@ public:
 		const Query& q, 
 		NodeTable& nodeTab, 
 		const LogPropTable& logPropTab) = 0;
-	virtual Iterator* createExec() const = 0;
+	virtual Iterator* createExec(const Query& q) const = 0;
 	virtual Cost getCost(const LogPropTable& logPropTab) = 0;
 	virtual string toString() const = 0;
 	virtual int getNumOfChilds() = 0;
@@ -187,6 +187,10 @@ public:
 	virtual Cost getCostConst() const = 0;
 	virtual int getTotalNumNodes() const = 0;	// for debugging
 	virtual int getNumExpandedNodes() const = 0;	// for debugging
+	vector<BaseSelection*> getProjectList(const Query& query) const;
+	TableMap getTableMap() const {
+		return tableMap;
+	}
 };
 
 class SPJQueryProduced : public OptNode {
@@ -198,7 +202,7 @@ public:
 		const Query& q, 
 		NodeTable& nodeTab, 
 		const LogPropTable& logPropTab);
-	virtual Iterator* createExec() const;
+	virtual Iterator* createExec(const Query& q) const;
 	virtual string toString() const;
 	virtual Cost getCost(const LogPropTable& logPropTab);
 	virtual int getNumOfChilds(){return 2;}
@@ -220,7 +224,7 @@ public:
 		const Query& q, 
 		NodeTable& nodeTab, 
 		const LogPropTable& logPropTab);
-	virtual Iterator* createExec() const;
+	virtual Iterator* createExec(const Query& q) const;
 	virtual string toString() const {return "Query Shipping";}
 	virtual Cost getCost(const LogPropTable& logPropTab) {
 		return 0;
@@ -241,7 +245,9 @@ public:
 		const Query& q, 
 		NodeTable& nodeTab, 
 		const LogPropTable& logPropTab);
-	virtual Iterator* createExec() const {return root->createExec();}
+	virtual Iterator* createExec(const Query& q) const {
+		return root->createExec(q);
+	}
 	virtual string toString() const {return root->toString();}
 	virtual Cost getCost(const LogPropTable& logPropTab) {
 		return root->getCost(logPropTab);
@@ -267,7 +273,7 @@ public:
 	{
 		return root->expand(*aggLessQuery, nodeTab, logPropTab);
 	}
-	virtual Iterator* createExec() const;
+	virtual Iterator* createExec(const Query& q) const;
 	virtual string toString() const {return "aggregates";}
 	virtual Cost getCost(const LogPropTable& logPropTab) {
 		return root->getCost(logPropTab);
@@ -282,8 +288,6 @@ public:
 class SPQueryProduced : public OptNode {
 	AccessMethod* bestAlt;
 	Cost cost;		// temporarily here
-	vector<BaseSelection*> projList;
-	vector<BaseSelection*> predList;
 	string aliasM;
 public:
 	SPQueryProduced(TableMap tableMap, const SiteDesc* siteDesc);
@@ -292,7 +296,7 @@ public:
 		const Query& q, 
 		NodeTable& nodeTab, 
 		const LogPropTable& logPropTab);
-	virtual Iterator* createExec() const;
+	virtual Iterator* createExec(const Query& q) const;
 	virtual string toString() const;
 	virtual Cost getCost(const LogPropTable& logPropTab);
 	virtual int getNumOfChilds(){return 0;}
@@ -314,7 +318,7 @@ public:
 		const Query& q, 
 		NodeTable& nodeTab, 
 		const LogPropTable& logPropTab);
-	virtual Iterator* createExec() const;
+	virtual Iterator* createExec(const Query& q) const;
 	virtual string toString() const;
 };
 
