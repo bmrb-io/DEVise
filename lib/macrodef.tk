@@ -15,6 +15,12 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.45  1996/06/04 14:22:06  wenger
+#	Ascii data can now be read from session files (or other files
+#	where the data is only part of the file); added some assertions
+#	to check for pointer alignment in functions that rely on this;
+#	Makefile changes to make compiling with debugging easier.
+#
 #	Revision 1.44  1996/05/11 03:00:01  jussi
 #	Minor improvements. Changes made towards caching multiple
 #	data sources in one step.
@@ -2369,7 +2375,7 @@ proc MacroDefAutoNew {tdata} {
 
     checkbutton .auto.gdatasel.link -text "New Mappings" -variable newgdata
     pack .auto.gdatasel.link -side left -padx 3m
-    set newgdata 0
+    set newgdata 1
 
     label .auto.colorsel.label -text "Background:"
     button .auto.colorsel.color -width 15 -textvariable bgcolor \
@@ -2652,14 +2658,15 @@ proc MacroDefAutoActualNew {tdata viewsel linksel window bgcolor
 	set mapname [format "%s_vs_%s" $name $x]
 
 	if {[lsearch [DEVise get mapping] $mapname] < 0} {
-	    # ask DEVise to create interpreted mapping
-	    # parameter format: x y color size pattern orientation shape
-	    set result [DEVise createInterp $tdata $mapname "" \$$x \$$name \
-		    "" $color $size $pattern $orient $shape $shapeAttr0 \
-		    $shapeAttr1 ""]
+	    # ask DEVise to create interpreted mapping class
+	    set result [DEVise createMappingClass $mapname]
 	}
 
 	set mapinstance "$tdata#$mapname"
+	if {$newgdata} {
+	    # new mappings are requested
+	    set mapinstance [UniqueName $mapinstance]
+	}
 	if {[lsearch [GdataSet] $mapinstance] < 0} {
 	    # ask DEVise to create an instance of mapping
 	    set result [DEVise create mapping $mapname $tdata $mapinstance \
@@ -2668,7 +2675,7 @@ proc MacroDefAutoActualNew {tdata viewsel linksel window bgcolor
 	    DEVise setPixelWidth $mapinstance 1
 	}
 
-	# ask DEVise to insert $viewinstance into $mapinstance
+	# ask DEVise to insert $mapinstance into $viewinstance
 	set result [DEVise insertMapping $viewinstance $mapinstance]
 	# seems that there's no error code returned
 
