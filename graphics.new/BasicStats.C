@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/11/29 02:34:37  ravim
+  Statistics printed out only when toggle enabled.
+
   Revision 1.1  1995/11/28 05:09:59  ravim
   Initial Version.
 */
@@ -62,7 +65,7 @@ void BasicStats::Report()
     printf("***********Statistics Report***********\n");
     printf("Sum : %f  Sum of Squares : %f\n", sum, sum_sqr);
     printf("Number of samples : %d\n", nsamples);
-    double avg = sum/nsamples;
+    double avg = sum / (nsamples ? nsamples : 1);
     printf("Average : %f\n", avg);
 
     // Draw a line across the window to depict the average
