@@ -507,6 +507,8 @@ Have a 'clear' selection in mapping menus. (ml/rkw 5/30/97)
 
 Add a "dashed line" drawing function in the WindowRep classes. (na/rkw 9/20/96)
 
+Move opening and saving of session files to back end. (rkw 10/3/97)
+
 
 CANCELLED
 ---------
