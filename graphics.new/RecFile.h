@@ -1,42 +1,60 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1996
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:15:28  jussi
+  Added CVS header.
+*/
 
 /* supports file record read/write operations */
 
 #ifndef RecFile_h
 #define RecFile_h
+
 #include "DeviseTypes.h"
 
 class RecFile {
 public:
-	virtual ~RecFile() {};
+  virtual ~RecFile() {}
 
-	/* Create a new file. Return NULL if file already exists */
-	static RecFile *CreateFile(char *name, int recSize);
+  /* Create a new file. Return NULL if file already exists */
+  static RecFile *CreateFile(char *name, int recSize);
 
-	/* Open an existing file. Return NULL if file does not exist .
-	trunc == true to truncate file */
-	static RecFile *OpenFile(char *name, int recSize, Boolean trunc = false);
+  /* Open an existing file. Return NULL if file does not exist .
+     trunc == true to truncate file */
+  static RecFile *OpenFile(char *name, int recSize, Boolean trunc = false);
 
-	/* Get the time file last modified. Return an integer
-	specifying when file was modified. We require that
-	if r1, and r2 are two different files, and r1 was modified before
-	r2, then r1->GetModTime() < r2->GetModFile()*/
-	virtual long GetModTime() = 0;
+  /* Get the time file last modified. Return an integer
+     specifying when file was modified. We require that
+     if r1, and r2 are two different files, and r1 was modified before
+     r2, then r1->GetModTime() < r2->GetModFile() */
+  virtual long GetModTime() = 0;
 
-	virtual char *GetName()=0;
+  virtual char *GetName() = 0;
 
-	/* Return number of records currently in the file */
-	virtual int NumRecs()= 0;
+  /* Return number of records currently in the file */
+  virtual int NumRecs() = 0;
 
-	/* Get data for this record and put it into buffer.
-	If record does not already exist, return random data */
-	virtual void ReadRec(int recNum, int numRecs, void *buf)=0;
+  /* Get data for this record and put it into buffer.
+     If record does not already exist, return random data */
+  virtual void ReadRec(int recNum, int numRecs, void *buf) = 0;
 
-	/* Write this record onto disk.*/
-	virtual void WriteRec(int recNum, int numRecs, void *buf)=0;
+  /* Write this record onto disk.*/
+  virtual void WriteRec(int recNum, int numRecs, void *buf) = 0;
 };
 
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/03/05 23:49:00  jussi
+  Removed extra debugging statement.
+
   Revision 1.4  1996/03/05 23:22:00  jussi
   Cleaned up a bit.
 
@@ -44,20 +47,18 @@ Create a new file. Return NULL if file already exists
 
 UnixRecFile *UnixRecFile::CreateFile(char *name, int recSize)
 {
-  /* open file */
+  /* Open file */
   int fd;
-  if ((fd = open(name, /* O_FSYNC| */O_RDWR,
-		 S_IRUSR | S_IWUSR | S_IROTH | S_IWOTH)) >= 0) {
-    /* file already exists */
+  if ((fd = open(name, O_RDWR, 0)) >= 0) {
+    /* File already exists */
     close(fd);
     return NULL;
   }
 
-  /* can't open file. Create it */
-  if ((fd = open(name, /* O_FSYNC| */O_RDWR | O_CREAT,
-		 S_IRUSR | S_IWUSR)) < 0) {
-    perror("UnixRecFile: can't create file");
-    fprintf(stderr, "file name is %s\n", name);
+  /* Cannot open file. Create it */
+  if ((fd = open(name, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR)) < 0) {
+    fprintf(stderr, "File %s: ", name);
+    perror("open");
     Exit::DoExit(1);
   }
 
@@ -70,22 +71,21 @@ Open an existing file. Return NULL if file does not exist
 
 UnixRecFile *UnixRecFile::OpenFile(char *name, int recSize, Boolean trunc)
 {
-  /* open file */
+  /* Open file */
   int fd;
-  if ((fd = open(name, /* O_FSYNC| */ O_RDWR | (trunc? O_TRUNC : 0),
-		 S_IRUSR|S_IWUSR))<0)
-    /* can't open file */
+  if ((fd = open(name, O_RDWR | (trunc ? O_TRUNC : 0), 0)) < 0)
+    /* Cannot open file */
     return NULL;
 
-  /* find size of file */
+  /* Find size of file */
   struct stat fileStat;
-  if (fstat(fd,&fileStat) != 0) {
-    perror("UnixRecFile: can't get file stat\n");
+  if (fstat(fd, &fileStat) != 0) {
+    perror("fstat");
     Exit::DoExit(1);
   }
   
   if ((fileStat.st_size % recSize) != 0) {
-    fprintf(stderr,"UnixRecFile: OpenFile %s not multiple of rec size\n",name);
+    fprintf(stderr, "File %s not multiple of rec size\n",name);
     Exit::DoExit(1);
   }
 
@@ -126,53 +126,45 @@ Get data for this page and put it into buffer
 void UnixRecFile::ReadRec(int recNum, int numRecs, void *buf)
 {
   if (recNum < 0 || recNum+numRecs > _totalRecs) {
-    fprintf(stderr,"UnixRecFile::ReadRec: rec %d invalid,\n", recNum);
-    fprintf(stderr,"UnixRecFile::ReadRec: there are %d recs,\n", _totalRecs);
+    fprintf(stderr, "ReadRec: rec %d invalid (%d)\n", recNum, _totalRecs);
     Exit::DoExit(1);
   }
   
   if (_seekRec != recNum) {
     off_t pos = (off_t) (recNum * _recSize);
-    if (lseek(_fd,pos,SEEK_SET)!= pos) {
-      perror("UnixRecFile::GetRec: can't seek");
+    if (lseek(_fd, pos, SEEK_SET) != pos) {
+      perror("lseek");
       Exit::DoExit(1);
     }
   }
   
-  int toRead = _recSize*numRecs;
+  int toRead = _recSize * numRecs;
   while (toRead > 0) {
     int len;
-    len=read(_fd,(char *)buf, toRead);
+    len = read(_fd, (char *)buf, toRead);
     if (len< 0) {
       if ( errno != EINTR) {
-	perror("UnixRecFile::GetRec: ");
+	perror("read");
 	Exit::DoExit(1);
       }
-    }
-    else if (len == 0) {
-      if (toRead != _recSize*numRecs) {
+    } else if (len == 0) {
+      if (toRead != _recSize * numRecs) {
 	/* read partial number of records, should not happen */
-	fprintf(stderr,"UnixRecFile::ReadRec: partial read\n");
+	fprintf(stderr, "ReadRec: partial read\n");
 	Exit::DoExit(1);
-      }
-      else {
+      } else {
 	/* trying to read at eof. */
-	/*
-	   _seekRec = recNum;
-	   return;
-	   */
-	fprintf(stderr,"UnixRecFile::ReadRec: read beyond eof\n");
+	fprintf(stderr, "ReadRec: read beyond EOF\n");
 	Exit::DoExit(2);
       }
-    }
-    else {/* len > 0 */
+    } else {
       toRead -= len;
-      buf = ((char *)buf)+len;
+      buf = ((char *)buf) + len;
     }
   }
 
   /* After reading, _seekRec == recNum+numRecs */
-  _seekRec = recNum +numRecs;
+  _seekRec = recNum + numRecs;
 }
 
 /**********************************************************************
@@ -182,42 +174,43 @@ Write a page.
 void UnixRecFile::WriteRec(int recNum, int numRecs, void *buf)
 {
   if (recNum < 0) {
-    fprintf(stderr,"UnixRecFile::WriteRec: rec %d invalid\n", recNum);
+    fprintf(stderr, "WriteRec: rec %d invalid\n", recNum);
     Exit::DoExit(1);
   }
   
   if (_seekRec != recNum) {
-    off_t pos = (off_t) (recNum * _recSize);
-    if (lseek(_fd,pos,SEEK_SET)!= pos) {
-      perror("UnixRecFile::GetRec: can't seek");
+    off_t pos = (off_t)(recNum * _recSize);
+    if (lseek(_fd, pos, SEEK_SET) != pos) {
+      perror("lseek");
       Exit::DoExit(1);
     }
   }
   
-  int toWrite = _recSize*numRecs;
+  int toWrite = _recSize * numRecs;
   while (toWrite > 0) {
     int len;
-    len=write(_fd,(char *)buf, toWrite);
+    len = write(_fd, (char *)buf, toWrite);
     if (len< 0) {
       if (errno != EINTR) {
-	perror("UnixRecFile::WriteRec: ");
+	perror("write");
 	Exit::DoExit(1);
       }
-    }
-    else {/* len >= 0 */
+    } else {
       toWrite -= len;
-      buf = ((char *)buf)+ len;
+      buf = ((char *)buf) + len;
     }
   }
+
   /* After writing, _seekRec == recNum+numRecs */
-  _seekRec = recNum +numRecs;
+  _seekRec = recNum + numRecs;
   
   /* adjust # of records */
-  if ( _seekRec > _totalRecs)
+  if (_seekRec > _totalRecs)
     _totalRecs = _seekRec;
 }
 
-/* Get the time file last modified. Return an integer
+/*
+   Get the time file last modified. Return an integer
    specifying when file was modified. We require that
    if r1, and r2 are two different files, and r1 was modified before
    r2, then r1->GetModTime() < r2->GetModFile()
@@ -226,8 +219,8 @@ void UnixRecFile::WriteRec(int recNum, int numRecs, void *buf)
 long UnixRecFile::GetModTime()
 {
   struct stat sbuf;
-  if (fstat(_fd,&sbuf) < 0) {
-    fprintf(stderr,"UnixRecFile:: can't find stat\n");
+  if (fstat(_fd, &sbuf) < 0) {
+    perror("fstat");
     Exit::DoExit(1);
   }
 
