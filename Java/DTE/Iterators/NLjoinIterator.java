@@ -6,6 +6,7 @@ import java.lang.*;
 import Types.*;
 import Expressions.*;
 
+/** This class works for Block-Nested loop join. */
 
 public class NLjoinIterator implements Iterator 
 {
@@ -37,6 +38,20 @@ public class NLjoinIterator implements Iterator
       stack.push("tempfileforNljoin"+i);
   }
 
+
+  /* Argument:
+     left1:  iterator on outer relation
+     right1: iterator on outer relation
+     mySelect1: ExecExpr array, to test if the tuple satisfy the selection or
+               projection requirement
+     myWhere1:  ExecExpr array, after testing the tuple belong to the result,
+               use this to pick out fields in returned tuple, so the number of
+               elements of this array should be the same as that of the returned tuple.
+     typeStrings: TypeDesc array, specify the type of attributes of the returned tuple.
+     typeStrings1: TypeDesc array, specify the type of attributes of the outer relation tuple.
+     typeStrings2: TypeDesc array, specify the type of attributes of the inner relation tuple.
+     bucketsize: integer, specify how many outer relation tuples can be stored in memory. 
+*/
 
   public NLjoinIterator(Iterator left1, Iterator right1, ExecExpr[] mySelect1, 
 			ExecExpr[] myWhere1,TypeDesc[] typeStrings, 
