@@ -50,7 +50,7 @@ Num Date        Status  Description
 014 07/11/96	FIXED   Schema editor doesn't allow entry of string lengths
 			(always forces them to 10). (rkw) (duplicate of 004)
 
-015 07/11/96	OPEN	HP version of Devise can't open the condorview1.tk
+015 07/11/96	FIXED	HP version of Devise can't open the condorview1.tk
 			session. (rkw)
 
 016 07/31/96	OPEN	Catalog system is type unsafe. (kb/rkw)
