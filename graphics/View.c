@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/01/30 21:11:21  jussi
+  Replaced references to specific colors with references to
+  BackgrounColor and ForegroundColor.
+
   Revision 1.19  1996/01/16 17:07:29  jussi
   Redefined computation of cursor area.
 
@@ -666,23 +670,24 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
   
   DrawLabel();
 
-  win->SetFgColor(GetBgColor());
-
-  /* Clear axis areas whether or not axes are actually displayed */
-  int axisX, axisY, axisWidth, axisHeight, startX;
-  GetXAxisArea(axisX, axisY, axisWidth, axisHeight, startX);
-  win->FillRect(axisX, axisY, axisWidth - 1, axisHeight - 1);
-  GetYAxisArea(axisX, axisY, axisWidth, axisHeight);
-  win->FillRect(axisX, axisY, axisWidth - 1, axisHeight - 1);
-
   /* Clear highlight area */
+  win->SetFgColor(GetBgColor());
   DrawHighlight();
 
   if (_axisDisplay) {
-    if (xAxis.inUse)
+    int axisX, axisY, axisWidth, axisHeight, startX;
+    if (xAxis.inUse) {
+      GetXAxisArea(axisX, axisY, axisWidth, axisHeight, startX);
+      win->SetFgColor(GetBgColor());
+      win->FillRect(axisX, axisY, axisWidth - 1, axisHeight - 1);
       DrawXAxis(win, x, y, w, h);
-    if (yAxis.inUse)
+    }
+    if (yAxis.inUse) {
+      GetYAxisArea(axisX, axisY, axisWidth, axisHeight);
+      win->SetFgColor(GetBgColor());
+      win->FillRect(axisX, axisY, axisWidth - 1, axisHeight - 1);
       DrawYAxis(win, x, y, w, h);
+    }
   }
 
   win->PopClip();
