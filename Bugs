@@ -216,9 +216,9 @@ Num Date        Status  Description
 			only when one of the three views is on top. (ml/
 			rkw)
 
-065 11/14/96	OPEN	Load session test/dcb1.tk; the data in the 'Log
+065 11/14/96	CD  	Load session test/dcb1.tk; the data in the 'Log
 			Display' window is not drawn, even though a point
-			query indicates that the data is there. (rkw)
+			query indicates that the data is there. (rkw/kb)
 
 066 11/14/96	CD	Load session test/dbc1.tk; decrease the size of
 			the symbols in the 'RunTime vs. ExecTime' view
@@ -347,9 +347,13 @@ Num Date        Status  Description
 			work on two of three piled views. (rkw/jpm)
 			(This is a specific instance of bug 071.)
 
-099 12/16/96	OPEN	Load session test/molbio_demo.tk -> zooming doesn't
+099 12/16/96	NB	Load session test/molbio_demo.tk -> zooming doesn't
 			work correctly (sometimes zooms in X and Y when it
 			should zoom only in X). (rkw)
+                        Session didn't mark time attr as sorted, so the
+                        system thought the view must be a scatter plot,
+                        regardless of the symbol type (a line).
+                        Perhaps this behavior should be modified. (kb)
 
 100 12/16/96	OPEN	If you import data into several windows and specify
 			that there should be an X link, _all_ views are
@@ -358,6 +362,10 @@ Num Date        Status  Description
 
 101 12/16/96	OPEN	'5' key sometimes doesn't work correctly (for example,
 			load the session test/bad5key.tk). (ml/rkw)
+                        Cause: recIds don't have hi/lo values.
+                        Technical cause: recIds don't have AttrInfo in
+                        the TData, (ie, map->MapGAttr2TAttr(MappingCmd_X)
+                        returns NULL when X is mapped to recId).
 
 102 12/17/96	OPEN	Control-c doesn't seem to be able to terminate
 			Devise if you have an input-grabbing Tk dialog
@@ -389,9 +397,9 @@ Num Date        Status  Description
 			print to PostScript -> some of the text comes out at
 			the wrong place. (jpm/rkw)
 
-109 01/09/97	OPEN	Load the session /p/devise/test/baa1.tk, select the
+109 01/09/97	CD  	Load the session /p/devise/test/baa1.tk, select the
 			view in window DEViseWn1, bring up the Query Tool ->
-			the axis limits are not filled in. (rkw)
+			the axis limits are not filled in. (rkw/kb)
 
 110 01/09/97	NB	Load the session /p/devise/test/baa1.tk, select the
 			view in window DEViseWn1 -> you can't display
@@ -416,6 +424,16 @@ Num Date        Status  Description
 114 01/10/97	FIXED	Load session /p/devise/session/test/baa1.tk, select
 			view 'Location 1 Visits', print -> the data in the
 			'BAA.am' view doesn't get printed.
+
+115 01/13/97	OPEN    Load session test/molbio_demo.tk
+                        XY zoom with mouse (button 3) produces what looks
+                        like an X zoom and you must hit button '5' twice
+                        to get the proper filter.
+                        The cause is that the views are both X linked on
+                        time and XY linked with the pile link.  To fix this
+                        bug, the system needs to understand its links
+                        better.  I think Shilpa's work should address this.
+                        (kb)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
