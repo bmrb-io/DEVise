@@ -6,8 +6,12 @@
 
 ############################################################
 
-# Jspop doesn't need an X server.
-unsetenv DISPLAY
+nohup /s/std/bin/Xvfb :1 -screen 0 1280x1024x8 &
+#nohup /s/std/bin/Xvfb :1 -screen 0 1024x768x8 &
+setenv DISPLAY unix:1.0
+
+# Make sure Xvfb gets going before starting the jss.
+sleep 10
 
 \rm jspop.out
 touch jspop.out
