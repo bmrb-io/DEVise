@@ -35,6 +35,7 @@ dist: peptide-cgi
 
 .PHONEY : peptide-cgi-setup
 peptide-cgi-setup:
+	ln -s ../../INSTALL .
 	ln -s ../../Makefile .
 	ln -s ../../Makefile.config.* .
 	ln -s ../../bmrb_select.tmpl .
