@@ -1,9 +1,9 @@
 /*
   ========================================================================
-  DEVise Software
+  DEVise Data Visualization Software
   (c) Copyright 1992-1995
   By the DEVise Development Group
-  University of Wisconsin at Madison
+  Madison, Wisconsin
   All Rights Reserved.
   ========================================================================
 
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/09/22 15:52:16  jussi
+  Added copyright message.
+
   Revision 1.4  1995/09/19 16:42:34  jussi
   Added tape drive functionality.
 

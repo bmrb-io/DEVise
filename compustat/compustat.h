@@ -1,9 +1,9 @@
 /*
   ========================================================================
-  DEVise Software
+  DEVise Data Visualization Software
   (c) Copyright 1992-1995
   By the DEVise Development Group
-  University of Wisconsin at Madison
+  Madison, Wisconsin
   All Rights Reserved.
   ========================================================================
 
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/10/18 21:03:06  ravim
+  Extracts all the attrs from compustat database.
+
   Revision 1.5  1995/09/22 15:52:15  jussi
   Added copyright message.
 
