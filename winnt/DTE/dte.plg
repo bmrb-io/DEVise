@@ -1,0 +1,67 @@
+--------------------Configuration: dte - Win32 Debug--------------------
+Begining build with project "P:\devise\okan\winnt\DTE\dte.dsp", at root.
+Active configuration is Win32 (x86) Console Application (based on Win32 (x86) Console Application)
+
+Project's tools are:
+			"32-bit C/C++ Compiler for 80x86" with flags "/nologo /MLd /W3 /Gm /GX /Zi /I "P:\devise\okan\DTE\Core" /I "P:\devise\okan\dte\StandAlone" /I "P:\devise\okan\unidata" /I "." /I "C:\Program Files\DevStudio\MyProjects\DTE" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"C:\Program Files\DevStudio\MyProjects\DTE\normal/dte.pch" /YX /Fo"C:\Program Files\DevStudio\MyProjects\DTE\normal/" /Fd"C:\Program Files\DevStudio\MyProjects\DTE\normal/" /FD /TP /c "
+			"Win32 Resource Compiler" with flags "/l 0x409 /d "_DEBUG" "
+			"Browser Database Maker" with flags "/nologo /o"dte.bsc" "
+			"COFF Linker for 80x86" with flags "kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib /nologo /subsystem:console /incremental:yes /pdb:"C:\Program Files\DevStudio\MyProjects\DTE\normal/dte.pdb" /debug /machine:I386 /out:"C:\Program Files\DevStudio\MyProjects\DTE\normal/dte.exe" /pdbtype:sept "
+			"Custom Build" with flags ""
+			"<Component 0xa>" with flags ""
+
+Creating temp file "C:\TEMP\RSP55.tmp" with contents </nologo /MLd /W3 /Gm /GX /Zi /I "P:\devise\okan\DTE\Core" /I "P:\devise\okan\dte\StandAlone" /I "P:\devise\okan\unidata" /I "." /I "C:\Program Files\DevStudio\MyProjects\DTE" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"C:\Program Files\DevStudio\MyProjects\DTE\normal/dte.pch" /YX /Fo"C:\Program Files\DevStudio\MyProjects\DTE\normal/" /Fd"C:\Program Files\DevStudio\MyProjects\DTE\normal/" /FD /TP /c 
+"P:\devise\okan\DTE\ODBC\WSInit.cpp"
+>
+Creating command line "cl.exe @C:\TEMP\RSP55.tmp" 
+Creating temp file "C:\TEMP\RSP56.tmp" with contents <kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib /nologo /subsystem:console /incremental:yes /pdb:"C:\Program Files\DevStudio\MyProjects\DTE\normal/dte.pdb" /debug /machine:I386 /out:"C:\Program Files\DevStudio\MyProjects\DTE\normal/dte.exe" /pdbtype:sept 
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\Aggregates.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\catalog.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\Common.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\DateTime.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\DeleteParse.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\DevRead.dummy.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\DropIndexParse.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\Engine.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\ExecOp.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\GetHandle.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\IndexParse.dummy.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\Inserter.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\InsertParse.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\Interface.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\joins.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\lex.yy.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\listop.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\main.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\MaterializeParse.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\MemoryMgr.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\MinMax.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\my.yacc.tab.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\ODBC.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\ODBCInterface.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\ODBCIterator.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\ODBCSite.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\PQueue.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\QueryTree.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\resolve.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\RTreeRead.dummy.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\SBMInit.dummy.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\SchemaParse.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\site.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\SockStream.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\Sort.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\StandardRead.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\TypeCheck.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\types.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\UnionParse.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\url.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\Util.obj"
+"C:\Program Files\DevStudio\MyProjects\DTE\normal\WSInit.obj">
+Creating command line "link.exe @C:\TEMP\RSP56.tmp" 
+Compiling...
+WSInit.cpp
+Linking...
+
+
+
+dte.exe - 0 error(s), 0 warning(s)
