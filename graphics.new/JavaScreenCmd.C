@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.120  2001/10/04 19:03:49  wenger
+  JavaScreen support allows session files without .ds extension; various
+  improvements to session file processing.
+
   Revision 1.119  2001/10/03 19:09:56  wenger
   Various improvements to error logging; fixed problem with return value
   from JavaScreenCmd::Run().
@@ -676,6 +680,10 @@ IsSessionFile(const char *fullPath, const char *filename)
 {
 	Boolean isSession = false;
 
+	// Avoid logging errors from all of the files that are not
+	// DEVise session files.
+	DevError::SetEnabled(false);
+
 	// Note: there are many valid session files with the extension .ds.bak,
 	// but we don't want to show them to the user (also exclude anything
 	// with .bak in it).  .str, .ds.commands, and .ds.data files would
@@ -690,6 +698,8 @@ IsSessionFile(const char *fullPath, const char *filename)
 			FreeString(description);
 		}
 	}
+
+	DevError::SetEnabled(true);
 
 	return isSession;
 }
