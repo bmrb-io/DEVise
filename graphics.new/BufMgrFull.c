@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/01/11 20:59:32  jussi
+  Fix for bug #106. Simplified processing of record links.
+
   Revision 1.18  1997/01/08 18:58:18  wenger
   Fixed some compile warnings.
 
@@ -106,6 +109,14 @@ static const int BM_RANDOM_SKIPS = 10;
    Max number of records returned by buffer manager per GetRecs() call.
 */
 static const int BMFULL_RECS_PER_BATCH = 1024;
+
+static inline void LimitRecords(RecId &rangeLow, RecId &rangeHigh)
+{
+  RecId maxRec = rangeLow + BMFULL_RECS_PER_BATCH - 1;
+  if (rangeHigh > maxRec) {
+    rangeHigh = maxRec;
+  }
+}
 
 BufMgrFull::BufMgrFull(int bufSize)
 {
@@ -299,8 +310,7 @@ Boolean BufMgrFull::GetDataInMem(BufMgrRequest *req, RecId &startRecId,
             uHigh = req->high;
         
         /* Limit number of records returned to BMFULL_RECS_PER_BATCH. */
-        if (uLow + BMFULL_RECS_PER_BATCH < uHigh)
-            uHigh = uLow + BMFULL_RECS_PER_BATCH;
+        LimitRecords(uLow, uHigh);
 
         if (uLow <= inMem->high) {
             /*
@@ -387,8 +397,7 @@ Boolean BufMgrFull::InitGDataScan(BufMgrRequest *req)
 #endif
             
         /* Limit number of records returned to BMFULL_RECS_PER_BATCH. */
-        if (rangeLow + BMFULL_RECS_PER_BATCH < rangeHigh)
-            rangeHigh = rangeLow + BMFULL_RECS_PER_BATCH;
+        LimitRecords(rangeLow, rangeHigh);
 
         req->currentRec = rangeHigh + 1;
 
@@ -456,8 +465,7 @@ Boolean BufMgrFull::InitTDataScan(BufMgrRequest *req)
 #endif    
 
     /* Limit number of records returned to BMFULL_RECS_PER_BATCH. */
-    if (rangeLow + BMFULL_RECS_PER_BATCH < rangeHigh)
-        rangeHigh = rangeLow + BMFULL_RECS_PER_BATCH;
+    LimitRecords(rangeLow, rangeHigh);
 
     req->currentRec = rangeHigh + 1;
     /* In randomized mode, skip over a large number of records */

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.97  1997/01/11 23:04:00  jussi
+  Fixed bugs #071 and 098: clipping in piled views.
+
   Revision 1.96  1997/01/09 18:41:17  wenger
   Added workarounds for some Tasvir image bugs, added debug code.
 
@@ -1040,10 +1043,17 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
   int winX, winY; 
   unsigned int winW, winH;
   Geometry(winX, winY, winW, winH);
+  printf("  Geometry(): %d %d %d %d\n", winX, winY, winW, winH);
   
   /* Make it possible to update the label areas */
   win->PushClip(winX, winY, winW - 1, winH - 1);
-  
+
+  /* Fill the whole background so we don't have the missing "stripes"
+   * in PostScript.  Note that we _must_ have an identity matrix for
+   * the window transform for this to work. */
+  win->SetFgColor(GetBgColor());
+  win->FillRect((Coord) winX, (Coord) winY, (Coord) winW, (Coord) winH);
+
   DrawLabel();
 
   /* Clear highlight area */

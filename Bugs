@@ -377,7 +377,7 @@ Num Date        Status  Description
 104 12/23/96	FIXED	AttrProj::LastRecId should report an error when
 			called on TData that doesn't have an index.  (rkw)
 
-105 12/26/96	OPEN	Print a view with a non-white background to
+105 12/26/96	FIXED	Print a view with a non-white background to
 			PostScript -> there are "stripes" where white shows
 			through because the various background areas don't
 			quite touch each other. (rkw)
@@ -434,6 +434,16 @@ Num Date        Status  Description
                         bug, the system needs to understand its links
                         better.  I think Shilpa's work should address this.
                         (kb)
+
+116 01/13/97	FIXED	Load session /p/devise/session/test/birch.tk ->
+			assertion fails indicating that points array
+			in XWindowRep will overflow. (rkw)
+
+117 01/14/97	OPEN	There are a number of places that variations on
+			'records per batch' are independently defined to
+			1024.  It looks like these must all be the same
+			size and therefore should be defined in a single
+			place. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

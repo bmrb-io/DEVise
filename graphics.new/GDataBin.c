@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/11/20 20:35:19  wenger
+  Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
+  some Makefile improvements so compile works first time; fixed up files
+  to correspond to new query catalog name.
+
   Revision 1.14  1996/11/07 22:40:28  wenger
   More functions now working for PostScript output (FillPoly, for example);
   PostScript output also working for piled views; PSWindowRep member
@@ -335,7 +340,7 @@ void GDataBin::ReturnSymbols()
 
   _numSymsReturned += _returnIndex;
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("GDataBin: returning %d symbols:\n", _returnIndex);
 #endif
 

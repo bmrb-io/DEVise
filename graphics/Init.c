@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/01/09 18:47:22  jussi
+  Added command line options for setting tape search method.
+
   Revision 1.30  1996/12/30 23:51:07  andyt
   First version with support for Embedded Tcl/Tk windows. WindowRep classes
   now have member functions for creating and destroying Tk windows.
@@ -272,7 +275,7 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-screenWidth <value>: sets screen width for batch mode\n");
   fprintf(stderr, "\t-screenHeight <value>: sets screen height for batch mode\n");
   fprintf(stderr, "\t-imageDelay <value>: sets delay before drawing images\n");
-  fprintf(stderr, "\t-noshm: don't use shared memory\n");
+  fprintf(stderr, "\t-sharedMem 0|1: use shared memory or not\n");
   fprintf(stderr, "\t-forceBinarySearch: force binary search on tape files\n");
   fprintf(stderr, "\t-forceTapeSearch: force searching on tape files\n");
 
@@ -610,9 +613,13 @@ void Init::DoInit(int &argc, char **argv)
 	MoveArg(argc,argv,i,2);
       }
 
-      else if (strcmp(&argv[i][1], "noshm") == 0) {
-	_useSharedMem = false;
-	MoveArg(argc,argv,i,1);
+      else if (strcmp(&argv[i][1], "sharedMem") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_useSharedMem = !(atoi(argv[i+1]) == 0);
+	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "forceBinarySearch") == 0) {

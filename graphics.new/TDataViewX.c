@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.48  1997/01/11 23:04:31  jussi
+  Changed code to use GetFirstSibling().
+
   Revision 1.47  1996/12/18 22:12:13  beyer
   Query abort (especially for statistical views) bug fixed.
 
@@ -557,7 +560,7 @@ void TDataViewX::QueryDone(int bytes, void *userData)
 
 void TDataViewX::ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("TDataViewX %d recs buf start 0x%p\n", numRecs, recs);
 #endif
 
