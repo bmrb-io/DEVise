@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.47  1997/12/19 19:43:19  wenger
+  Fixed bug 250 (problems with colors.ds session) (actually three
+  separate bugs).
+
   Revision 1.46  1997/12/16 17:57:50  zhenhai
   Added OpenGL features.
 
@@ -1943,6 +1947,9 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 		orientation);
 	  win->SetPattern(oldPattern);
 	}
+#if defined(DEBUG)
+    printf("Text label: <%s>\n", label);
+#endif
     win->ScaledText(label, x - width / 2, y - height / 2, width, height,
       WindowRep::AlignCenter, true, orientation);
   }
