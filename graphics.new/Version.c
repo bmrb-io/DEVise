@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.44  1998/03/04 18:40:11  wenger
+  Added <arch>/Makefile.config files that now hold stuff like the
+  PERL_CORE definitions so those don't have to be repeated in all
+  of the lower level makefiles; various other compile fixes; changed
+  version to 1.5.2.
+
   Revision 1.43  1998/02/12 17:17:10  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -249,7 +255,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.5.2";
+static const char *	version = "1.5.3";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1998";

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/05/29 19:34:40  wenger
+  Added JAVAC_SetDisplaySize to allow the JavaScreen to set the display
+  size.
+
   Revision 1.5  1998/05/14 18:21:44  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -163,6 +167,7 @@ class JavaScreenCmd
 		// Convenience functions
 		void CloseJavaConnection();
 		ControlCmdType SendWindowImage(const char* fileName, int& filesize);
+		ControlCmdType SendChangedWindows();
 		void FillArgv(char** argv, int& pos, const JavaRectangle& jr);
 		void FillInt(char** argv, int& pos, int i);
 		int  ControlCmd(ControlCmdType  status);

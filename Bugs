@@ -1362,6 +1362,11 @@ Num Date        Status  Description
 359 05/27/98	OPEN	Bar widths do not come out correctly when printing
 			to PostScript. (rkw)
 
+360 06/03/98	OPEN	Printing OpenGL windows to GIFs does not work. (rkw)
+
+361 06/03/98	OPEN	Printing 3D OpenGL views to PostScript does not work.
+			(rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.111  1998/05/21 18:18:35  wenger
+  Most code for keeping track of 'dirty' GIFs in place; added 'test'
+  command to be used for generic test code that needs to be controlled
+  by GUI; added debug code in NetworkSend().
+
   Revision 1.110  1998/05/14 18:21:17  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -1756,6 +1761,7 @@ void XWindowRep::ExportGIF(FILE *fp, int isView)
   CoalescePixmaps(this);
 
   GetDisplay()->ConvertAndWriteGIF(_pixmap, xwa, fp);
+  SetGifDirty(false);
 }
 
 void XWindowRep::CoalescePixmaps(XWindowRep *root)

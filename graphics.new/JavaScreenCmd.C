@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/05/29 20:50:33  wenger
+  Fixed sending of window locations.
+
   Revision 1.10  1998/05/29 19:34:39  wenger
   Added JAVAC_SetDisplaySize to allow the JavaScreen to set the display
   size.
@@ -431,28 +434,8 @@ JavaScreenCmd::MouseAction_RubberBand()
 			WaitForQueries();
 
 
-			// Send the updated window image.
-			// TEMP: this needs to be changed to send images of all windows
-			// that are "dirty".
-			char *fileName = "/tmp/window.gif";
-			window->ExportImage(GIF, fileName);
-	
-			int	filesize;
-			filesize = getFileSize(fileName);
-			if (filesize >0)
-			{
-				_status = RequestUpdateWindow(_argv[0] ,filesize);
-				ControlCmd(_status);
-				if (_status == DONE)
-				{
-					_status = SendWindowImage(fileName, filesize);
-				}
-		
-				// avoid unnecessary JAVAC_Done command, after sending
-				// back images
-				if (_status == DONE)
-					_status = NULL_COMMAND;
-			}
+			// Send the updated window image(s).
+			_status = SendChangedWindows();
 		}
 	}
 	window->DoneIterator(index);
@@ -809,6 +792,56 @@ JavaScreenCmd::SendWindowImage(const char* fileName, int& filesize)
 	return status;
 }
 
+JavaScreenCmd::ControlCmdType
+JavaScreenCmd::SendChangedWindows()
+{
+#if defined (DEBUG)
+    printf("JavaScreenCmd::SendChangedWindows()\n");
+	fflush(stdout);
+#endif
+
+    JavaScreenCmd::ControlCmdType result = DONE;
+
+	int winIndex = DevWindow::InitIterator();
+	while (DevWindow::More(winIndex)) {
+	  ClassInfo *info = DevWindow::Next(winIndex);
+	  ViewWin *window = (ViewWin *)info->GetInstance();
+	  if (window != NULL) {
+		if (window->GetGifDirty()) {
+#if defined(DEBUG)
+		  printf("GIF of window %s is \"dirty\".\n", window->GetName());
+#endif
+
+			char *fileName = tmpnam(NULL);
+			if (!window->ExportImage(GIF, fileName).IsComplete()) {
+				result = ERROR;
+			}
+	
+			int	filesize;
+			filesize = getFileSize(fileName);
+			if (filesize >0)
+			{
+				if (result == DONE) {
+				    result = RequestUpdateWindow(window->GetName(), filesize);
+				}
+				if (result == DONE) {
+				    result = SendWindowImage(fileName, filesize);
+				}
+			}
+			(void) unlink(fileName);
+		}
+	  }
+    }
+	DevWindow::DoneIterator(winIndex);
+
+	// avoid unnecessary JAVAC_Done command, after sending
+	// back images
+	if (_status == DONE)
+		_status = NULL_COMMAND;
+
+	return result;
+}
+
 JavaScreenCmd::ControlCmdType 
 JavaScreenCmd::RequestUpdateSessionList(int argc, char** argv)
 {
@@ -889,6 +922,7 @@ JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo)
 
 		// Send back the window image.
 		status = SendWindowImage(fileName, filesize);
+		(void) unlink(fileName);
 
 		// free all ..
 		for (i=0; i< argc; ++i)
