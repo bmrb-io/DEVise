@@ -100,7 +100,7 @@ int Engine::optimize(){
 	#else
 		catalogName += getenv("DEVISE_SCHEMA");
 	#endif
-	catalogName += "/catalog";
+	catalogName += "/catalog.dte";
 	TRY(catalog.read(catalogName), 0);
      List<Site*>* sites = new List<Site*>;
 	while(!tableList->atEnd()){
