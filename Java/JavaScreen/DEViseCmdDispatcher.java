@@ -23,6 +23,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.106  2001/10/30 17:20:13  xuk
+// Created DEViseClient object for collaborating clients in jspop.
+// 1. Modified sockSendCmd(), no difference between normal and collaborating modes;
+// 2. Modified start(), no difference between normal and collaborating modes;
+// 	                now JAVAC_Connect command has no collab_passwd argument;
+// 			enable heartbeat in collaboration mode;
+// 3. Modified run(), in collaboration mode, break loop when specialID == 1;
+// 4. Modified sendRcvCommand(), in collaboration mode, when current thread is interrupted, sends JAVAC_CollabExit command to jspop;
+//
 // Revision 1.105  2001/10/25 21:35:41  wenger
 // Added heartbeat count to heartbeat command (for debugging); other minor
 // cleanup and debug code additions.
