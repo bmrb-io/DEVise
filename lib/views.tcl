@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.56  1999/02/17 15:10:07  wenger
+#  Added "Next in Pile" button to query dialog; more pile fixes; fixed bug
+#  in mapping dialog updating when a view is selected.
+#
 #  Revision 1.55  1998/11/17 14:48:10  wenger
 #  Changed master/slave to leader/follower and fixed a few problems in GUI,
 #  session description, etc.
@@ -534,6 +538,25 @@ proc DoActualViewCopy {view tdata gdata newGdata window} {
     eval DEVise setLabel {$newView} $viewLabelParams
     set viewStatParams [DEVise getViewStatistics $view]
     eval DEVise setViewStatistics {$newView} $viewStatParams
+
+    eval DEVise setViewDimensions {$newView} [DEVise getViewDimensions $view]
+    eval DEVise setViewSolid3D {$newView} [DEVise getViewSolid3D $view]
+    eval DEVise setViewXYZoom {$newView} [DEVise getViewXYZoom $view]
+    eval DEVise setViewDisplayDataValues {$newView} \
+      [DEVise getViewDisplayDataValues $view]
+    eval DEVise setFont {$newView} {title} [DEVise getFont $view "title"]
+    eval DEVise setFont {$newView} {{x axis}} [DEVise getFont $view "x axis"]
+    eval DEVise setFont {$newView} {{y axis}} [DEVise getFont $view "y axis"]
+    eval DEVise setViewGDS {$newView} [DEVise getViewGDS $view]
+    eval DEVise setHistogram {$newView} [DEVise getHistogram $view]
+    eval DEVise viewSetAlign {$newView} [DEVise viewGetAlign $view]
+    eval DEVise setCountMapping {$newView} [DEVise getCountMapping $view]
+    eval DEVise viewSetIsHighlight {$newView} [DEVise viewGetIsHighlight $view]
+    eval DEVise setXAxisDateFormat {$newView} \
+      {[DEVise getXAxisDateFormat $view]}
+    eval DEVise setYAxisDateFormat {$newView} \
+      {[DEVise getYAxisDateFormat $view]}
+
     set stat [DEVise getAxisDisplay $view X]
     eval DEVise setAxisDisplay {$newView} X $stat
     set stat [DEVise getAxisDisplay $view Y]
@@ -541,6 +564,12 @@ proc DoActualViewCopy {view tdata gdata newGdata window} {
 
     eval DEVise viewSetHome {$newView} [DEVise viewGetHome $view]
     eval DEVise viewSetHorPan {$newView} [DEVise viewGetHorPan $view]
+
+    eval DEVise setViewAutoFilter {$newView} [DEVise getViewAutoFilter $view]
+
+    eval DEVise setDupElim {$newView} [DEVise getDupElim $view]
+
+    eval DEVise setNiceAxes {$newView} [DEVise getNiceAxes $view]
 	
     DEVise insertWindow $newView $window
     DEVise insertMapping $newView $newGdata
