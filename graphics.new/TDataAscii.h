@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/03/26 21:18:44  jussi
+  Merged with TDataTape. Added magic number to cache file.
+
   Revision 1.6  1996/01/25 20:22:58  jussi
   Improved support for data files that grow while visualization
   is being performed.
@@ -62,7 +65,7 @@ const int FILE_CONTENT_COMPARE_BYTES = 4096;
 
 class TDataAscii: public TData, private DispatcherCallback {
 public:
-	TDataAscii(char *name, int recSize);
+	TDataAscii(char *name, char *alias, int recSize);
 
 	virtual ~TDataAscii();
 
@@ -158,7 +161,7 @@ protected:
 
 	/* Decode a record and put data into buffer. Return false if
 	this line is not valid. */
-	virtual Boolean Decode(void *recordBuf, char *line) = 0;
+	virtual Boolean Decode(void *recordBuf, int recPos, char *line) = 0;
 
 	/* Read/Write specific to each subclass cache. The cached information
 	is to be read during file start up, and written when file closes,
@@ -169,7 +172,7 @@ protected:
 	virtual Boolean WriteCache(int fd) { return false; }
 	virtual Boolean ReadCache(int fd) { return false; }
 
-	static char *MakeCacheName(char *file);
+	static char *MakeCacheName(char *alias);
 
 private:
 	/* From DispatcherCallback */
@@ -190,6 +193,7 @@ private:
 
 	long _totalRecs;                // total number of records
 	char *_name;                    // name of file/dataset
+	char *_alias;                   // alias of file/dataset
 	char *_cacheFileName;           // name of cache file
 	int _recSize;                   // size of record
 	FILE *_file;                    // file pointer
@@ -204,8 +208,6 @@ private:
 
 	long _lastPos;                  // position of last record in file
 	long _currPos;                  // current file position
-
-	char *_recBuf;                  // record buffer
 
 	int _cacheFd;                   // file descriptor of cache
 

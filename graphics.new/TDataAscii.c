@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/04/20 19:56:56  kmurli
+  QueryProcFull now uses the Marker calls of Dispatcher class to call itself when
+  needed instead of being continuosly polled by the Dispatcher.
+
   Revision 1.17  1996/04/18 17:12:04  jussi
   Added missing #include <errno.h>.
 
@@ -93,11 +97,10 @@
 static char fileContent[FILE_CONTENT_COMPARE_BYTES];
 static char cachedFileContent[FILE_CONTENT_COMPARE_BYTES];
 
-TDataAscii::TDataAscii(char *name, int recSize) : TData()
+TDataAscii::TDataAscii(char *name, char *alias, int recSize) : TData()
 {
-  // Dispatcher::Current()->Register(this,10,GoState,false,);
-
   _name = name;
+  _alias = alias;
   _recSize = recSize;
 
   _file = NULL;
@@ -126,19 +129,16 @@ TDataAscii::TDataAscii(char *name, int recSize) : TData()
   _currPos = 0;
 
   _totalRecs = 0;
-  _recBuf = new char[recSize];
 
   _indexSize = INIT_INDEX_SIZE;
   _index = new long[_indexSize];
 
   _fileGrown = false;
-  // Extract the file descriptor and use it..
-  // fileno is defined in stdio.h that returns the descriptor
   
-  //Dispatcher::Current()->Register(this,10,GoState,false,fileno(_file));
-  Dispatcher::Current()->Register(this);
-
-
+  if (_tape)
+    Dispatcher::Current()->Register(this);
+  else
+    Dispatcher::Current()->Register(this, 10, GoState, false, fileno(_file));
 }
 
 TDataAscii::~TDataAscii()
@@ -147,15 +147,16 @@ TDataAscii::~TDataAscii()
   printf("TDataAscii destructor\n");
 #endif
 
-  delete _recBuf;
-  delete _index;
-
   Dispatcher::Current()->Unregister(this);
 
   if (_tape)
     delete _tape;
   else
     fclose(_file);
+
+  delete _index;
+  delete _alias;
+  delete _name;
 }
 
 int TDataAscii::Dimensions(int *sizeDimension)
@@ -255,13 +256,12 @@ int TDataAscii::GetModTime()
   return (long)sbuf.st_mtime;
 }
 
-char *TDataAscii::MakeCacheName(char *file)
+char *TDataAscii::MakeCacheName(char *alias)
 {
-  char *fname = StripPath(file);
-  unsigned int nameLen = strlen(Init::WorkDir()) + strlen(fname) + 8;
+  char *fname = StripPath(alias);
+  int nameLen = strlen(Init::WorkDir()) + 1 + strlen(fname) + 1;
   char *name = new char[nameLen];
-  sprintf(name, "%s/%s.cache", Init::WorkDir(), fname);
-  DOASSERT(strlen(name) < nameLen, "Name too long");
+  sprintf(name, "%s/%s", Init::WorkDir(), fname);
   return name;
 }
 
@@ -270,7 +270,7 @@ void TDataAscii::Initialize()
   int i = 0;
 
   /* Read file contents into buffer */
-  _cacheFileName = MakeCacheName(_name);
+  _cacheFileName = MakeCacheName(_alias);
 
   Boolean fileOpened = false;
   int cacheFd;
@@ -384,7 +384,7 @@ void TDataAscii::Initialize()
 
 void TDataAscii::Checkpoint()
 {
-  printf("Checkpointing %s: %ld total records, %ld new\n", _name,
+  printf("Checkpointing %s: %ld total records, %ld new\n", _alias,
 	 _totalRecs, _totalRecs - _initTotalRecs);
   
   if (_lastPos == _initLastPos && _totalRecs == _initTotalRecs)
@@ -489,6 +489,7 @@ void TDataAscii::BuildIndex()
 #endif
 
   char buf[LINESIZE];
+  char recBuf[_recSize];
   int oldTotal = _totalRecs;
   
   if (_tape) {
@@ -524,7 +525,7 @@ void TDataAscii::BuildIndex()
 
     if (len > 0 && buf[len - 1] == '\n') {
       buf[len - 1] = 0;
-      if (Decode(_recBuf, buf)) {
+      if (Decode(recBuf, _currPos, buf)) {
 	if (_totalRecs >= _indexSize)     // index buffer too small?
 	  ExtendIndex();                  // extend it
 	_index[_totalRecs++] = _currPos;
@@ -553,7 +554,7 @@ void TDataAscii::BuildIndex()
 
   _fileGrown = false;
 
-  printf("Index for %s: %ld total records, %ld new\n", _name,
+  printf("Index for %s: %ld total records, %ld new\n", _alias,
 	 _totalRecs, _totalRecs - oldTotal);
 }
 
@@ -597,7 +598,7 @@ void TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
       line[len - 1] = '\0';
     }
 
-    Boolean valid = Decode(ptr, line);
+    Boolean valid = Decode(ptr, _currPos, line);
     DOASSERT(valid, "Inconsistent validity flag");
     ptr += _recSize;
 
