@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.69  1999/06/16 19:26:30  wenger
+  Fixed bug 497 (doing 'remove view' on a piled parent view with a piled
+  view symbol caused crash).
+
   Revision 1.68  1999/06/16 18:28:31  wenger
   Fixed bug 499 (problem with 'Next in Pile' not working for piled view
   symbols).
@@ -376,6 +380,7 @@
 #include "PileStack.h"
 #include "ViewGeom.h"
 #include "DRUtils.h"
+#include "DebugLog.h"
 
 #include "Color.h"
 //#define INLINE_TRACE
@@ -383,6 +388,7 @@
 #define LINESIZE 1024
 
 //#define DEBUG
+#define DEBUG_LOG
 #define PURIFY 0
 
 #define IMPLEMENT_COMMAND_BEGIN(command) \
@@ -450,6 +456,11 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 #  endif
 	fflush(stdout);
 #endif
+#if defined(DEBUG_LOG)
+    char logBuf[256];
+	sprintf(logBuf, "Starting command <%s>\n", argv[0]);
+	DebugLog::DefaultLog()->Message(logBuf);
+#endif
 
 	int	retval;
 
@@ -487,6 +498,10 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 #  if defined(DEBUG_MEM)
     printf("  %s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
 #  endif
+#endif
+#if defined(DEBUG_LOG)
+    sprintf(logBuf, "  Done with command <%s>\n", argv[0]);
+	DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	return retval;

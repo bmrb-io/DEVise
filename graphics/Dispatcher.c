@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.54  1999/06/01 17:37:22  wenger
+  Fixed various compiler warnings.
+
   Revision 1.53  1999/05/07 14:13:42  wenger
   Piled view symbols now working: pile name is specified in parent view's
   mapping, views are piled by Z specified in parent's mapping; changes
@@ -276,7 +279,7 @@
 #include "Session.h"
 
 //#define DEBUG
-//#define DEBUG_LOG
+#define DEBUG_LOG
 //#define DEBUG_CALLBACK_LIST
 //#define DEBUG_CALLBACK_ORDER
 
@@ -570,7 +573,7 @@ long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
     if ((info->flag == 0) && (_processingDepth == 1)) {
       // callback has been unregistered - remove it 
       // note: info->callBack could very well be an invalid pointer!
-#if defined(DEBUG)
+#if defined(DEBUG) || defined(DEBUG_LOG)
       sprintf(_logBuf, "deleting callback 0x%p\n", info->callBack);
       LogMessage(_logBuf);
 #endif
@@ -592,7 +595,7 @@ long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 		if (!(info->callback_requested)||
 			(info->delay <= tv.tv_sec))
 		{
-#if defined(DEBUG)
+#if defined(DEBUG) || defined(DEBUG_LOG)
 	sprintf(_logBuf,
                "Calling callback 0x%p (%s): called fd = %d  req = %d\n", 
 	       info->callBack, info->callBack->DispatchedName(),
@@ -601,7 +604,7 @@ long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 #endif
 		  CancelCallback(info);
 		  info->callBack->Run();
-#if defined(DEBUG)
+#if defined(DEBUG) || defined(DEBUG_LOG)
         LogMessage("  ran callback\n");
 #endif
 		  if (Init::ClientTimeout() > 0) {

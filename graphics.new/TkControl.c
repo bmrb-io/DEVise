@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.86  1998/11/04 20:34:02  wenger
+  Multiple string tables partly working -- loading and saving works, one
+  table per mapping works; need multiple tables per mapping, API and GUI,
+  saving to session, sorting.
+
   Revision 1.85  1998/09/28 20:05:55  wenger
   Fixed bug 383 (unnecessary creation of QueryProc); moved all
   DestroySessionData() code from subclasses of ControlPanel into base class,
@@ -359,6 +364,7 @@
 #include "Version.h"
 #include "DCE.h"
 #include "CmdContainer.h"
+#include "DebugLog.h"
 
 //#define DEBUG
 
@@ -457,9 +463,18 @@ TkControlPanel::~TkControlPanel()
   Dispatcher::Current()->Unregister(this);
 }
 
+// Note: this complication is so that the Version class doesn't directly
+// refer to the DebugLog class, which goofs up the devisec link.  RKW
+// 1999-06-24.
+static void
+LogFn(char *msg)
+{
+  DebugLog::DefaultLog()->Message(msg);
+}
+
 void TkControlPanel::StartSession()
 {
-  Version::PrintInfo();
+  Version::PrintInfo(LogFn);
   printf("\n");
 
   Tcl_LinkVar(_interp, "argv0", (char *)&_argv0, TCL_LINK_STRING);

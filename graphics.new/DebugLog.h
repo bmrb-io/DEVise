@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/03/08 01:10:54  wenger
+  Merged cleanup_1_4_7_br_9 through cleanup_1_4_7_br_10 (fix to idle
+  CPU usage bug (308)).
+
   Revision 1.1.2.1  1998/03/05 16:10:53  wenger
   Added DebugLog class for use in extensive logging of debug information.
 
@@ -32,6 +36,8 @@
 class DebugLog {
 public:
   void Message(char *msg);
+  void Message(char *msg1, int argc, const char * const *argv,
+      char *msg2 = "\n");
 
   static DebugLog *DefaultLog();
   static void DeleteAll();
@@ -43,6 +49,8 @@ protected:
   ~DebugLog();
 
 private:
+  static char *GetTimeString();
+
   FILE *_stream;
   long _maxSize;
 };

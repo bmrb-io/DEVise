@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.177  1999/06/16 19:26:45  wenger
+  Fixed bug 497 (doing 'remove view' on a piled parent view with a piled
+  view symbol caused crash).
+
   Revision 1.176  1999/06/11 20:46:47  wenger
   Fixed bug that caused DEVise to crash when closing the
   SoilSci/TwoStations.ds demo session.
@@ -802,6 +806,7 @@
 #endif
 
 //#define DEBUG
+#define DEBUG_LOG
 
 #include "Geom.h"
 #include "WindowRep.h"
@@ -825,6 +830,7 @@
 #include "DepMgr.h"
 #include "JavaScreenCmd.h"
 #include "PileStack.h"
+#include "DebugLog.h"
 
 //******************************************************************************
 
@@ -3611,6 +3617,13 @@ char*	View::DispatchedName(void)
 // XXX: need to crop exposure against _filter before sending query.
 void	View::Run(void)
 {
+#if defined(DEBUG_LOG)
+	{
+      char logBuf[256];
+	  sprintf(logBuf, "View(%s)::Run()\n", GetName());
+	  DebugLog::DefaultLog()->Message(logBuf);
+	}
+#endif
 #if defined(DEBUG)
 	printf("\nView::Run for view '%s' (0x%p)\n", GetName(), _dispatcherID);
 #endif

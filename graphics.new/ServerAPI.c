@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.39  1998/11/04 20:33:59  wenger
+  Multiple string tables partly working -- loading and saving works, one
+  table per mapping works; need multiple tables per mapping, API and GUI,
+  saving to session, sorting.
+
   Revision 1.38  1998/09/30 17:44:46  wenger
   Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
   bug 401 (improper saving of window positions).
@@ -214,6 +219,7 @@
 #include "Util.h"
 #include "Version.h"
 #include "Session.h"
+#include "DebugLog.h"
 
 #ifdef SUN
 #include "missing.h"
@@ -229,13 +235,22 @@ ControlPanel *GetNewControl()
   return new ServerAPI();
 }
 
+// Note: this complication is so that the Version class doesn't directly
+// refer to the DebugLog class, which goofs up the devisec link.  RKW
+// 1999-06-24.
+static void
+LogFn(char *msg)
+{
+  DebugLog::DefaultLog()->Message(msg);
+}
+
 ServerAPI::ServerAPI()
 {
 #if defined(DEBUG)
   printf("ServerAPI(0x%p)::ServerAPI()\n", this);
 #endif
 
-  Version::PrintInfo();
+  Version::PrintInfo(LogFn);
 
   ControlPanel::_controlPanel = (ControlPanel *)this;
   _interpProto = new MapInterpClassInfo();

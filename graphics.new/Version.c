@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.51  1999/05/04 17:17:08  wenger
+  Merged js_viewsyms_br thru js_viewsyms_br_1 (code for new JavaScreen
+  protocol that deals better with view symbols).
+
   Revision 1.50.2.1  1999/04/29 14:00:06  wenger
   Changed version to 1.6.3 because of new JavaScreen protocol.
 
@@ -336,16 +340,38 @@ Version::GetWinLogo()
 /*------------------------------------------------------------------------------
  * function: Version::PrintInfo
  * Print version and copyright information.
+ *
+ * Note: we pass in a pointer to the log function, because if this code
+ * refers directly to the DebugLog class, the devisec won't link.
+ * RKW 1999-06-24.
  */
 void
-Version::PrintInfo()
+Version::PrintInfo(LogFunc logFunc)
 {
-  printf("DEVise Data Visualization Software\n");
-  printf("%s\n", copyright);
-  printf("By the DEVise Development Group\n");
-  printf("All Rights Reserved.\n");
-  printf("Version %s (%s)\n", version, ARCH_NAME);
-  printf("Compile date: %s\n", CompDate::Get());
+  char *msg = "DEVise Data Visualization Software\n";
+  printf("%s", msg);
+  if (logFunc) logFunc(msg);
+
+  char buf[256];
+  sprintf(buf, "%s\n", copyright);
+  printf("%s", buf);
+  if (logFunc) logFunc(buf);
+
+  msg = "By the DEVise Development Group\n";
+  printf("%s", msg);
+  if (logFunc) logFunc(msg);
+
+  msg = "All Rights Reserved.\n";
+  printf("%s", msg);
+  if (logFunc) logFunc(msg);
+
+  sprintf(buf, "Version %s (%s)\n", version, ARCH_NAME);
+  printf("%s", buf);
+  if (logFunc) logFunc(buf);
+
+  sprintf(buf, "Compile date: %s\n", CompDate::Get());
+  printf("%s", buf);
+  if (logFunc) logFunc(buf);
 }
 
 /*============================================================================*/

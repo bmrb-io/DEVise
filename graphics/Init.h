@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.24  1998/06/23 17:51:39  wenger
+  Added client timeout to Devise -- quits if no commands from client
+  within specified period.
+
   Revision 1.23  1998/06/11 20:45:45  wenger
   Added -quit command line argument for devised to quit when client disconnects.
 
@@ -206,6 +210,8 @@ class Init {
 	static Boolean QuitOnDisconnect() { return _quitOnDisconnect; }
 	static int ClientTimeout() { return _clientTimeout; }
 
+    static Boolean DoDebugLog() { return _doDebugLog; }
+
 protected:
     static Boolean _savePopup;     /* true if pop-up window should be saved and
                                       wait for button even to remove it */
@@ -270,6 +276,8 @@ protected:
 
 	static Boolean _quitOnDisconnect; /* quit when client disconnects */
 	static int _clientTimeout;	   /* quit if client doesn't send commands */
+
+	static Boolean _doDebugLog;
 };
 
 #endif

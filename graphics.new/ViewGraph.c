@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.116  1999/06/11 14:47:07  wenger
+  Added the capability (mostly for the JavaScreen) to disable rubberband
+  lines, cursor movement, drill down, and key actions in views (the code
+  to send this info to the JS is still conditionaled out until the JS is
+  ready for it).
+
   Revision 1.115  1999/06/04 16:32:31  wenger
   Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
   with key presses in piled views in the JavaScreen); made other pile-
@@ -517,6 +523,7 @@
 //******************************************************************************
 
 //#define DEBUG
+#define DEBUG_LOG
 //#define REPORT_QUERY_TIME
 
 #include <assert.h>
@@ -543,6 +550,7 @@
 #include "PileStack.h"
 #include "MapInterpClassInfo.h"
 #include "Session.h"
+#include "DebugLog.h"
 
 #define STEP_SIZE 20
 
@@ -1990,6 +1998,14 @@ void ViewGraph::SetHistogramWidthToFilter()
 
 void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
 {
+#if defined(DEBUG_LOG)
+  {
+    char logBuf[256];
+    sprintf(logBuf, "ViewGraph(%s)::DerivedStartQuery()\n", GetName());
+    DebugLog::DefaultLog()->Message(logBuf);
+  }
+#endif
+
 #if defined(DEBUG)
   printf("ViewGraph(%s)::DerivedStartQuery()\n", GetName());
   printf("  Filter x: (%g, %g)\n", filter.xLow, filter.xHigh);
@@ -2076,6 +2092,14 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
 
 void ViewGraph::DerivedAbortQuery()
 {
+#if defined(DEBUG_LOG)
+  {
+    char logBuf[256];
+    sprintf(logBuf, "ViewGraph(%s)::DerivedAbortQuery()\n", GetName());
+    DebugLog::DefaultLog()->Message(logBuf);
+  }
+#endif
+
 #if defined(DEBUG)
     printf("ViewGraph(%s)::DerivedAbortQuery(), index = %d\n", GetName(),
         _index);
@@ -2155,6 +2179,14 @@ void	ViewGraph::QueryDone(int bytes, void* userData,
     gettimeofday(&queryEndTime, NULL);
 	double elapsedTime = (queryEndTime.tv_sec - _queryStartTime.tv_sec) +
 	  1.0e-6 * (queryEndTime.tv_usec - _queryStartTime.tv_usec);
+#endif
+
+#if defined(DEBUG_LOG)
+  {
+    char logBuf[256];
+    sprintf(logBuf, "ViewGraph(%s)::QueryDone(%d)\n", GetName(), bytes);
+    DebugLog::DefaultLog()->Message(logBuf);
+  }
 #endif
 
 #if defined(DEBUG)

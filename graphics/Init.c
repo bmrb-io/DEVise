@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  1999/02/12 20:15:40  wenger
+  Improved buffer size usage message.
+
   Revision 1.50  1998/12/02 23:46:29  wenger
   Changes as per request from Miron: minimum window size is now 1x1; default
   is to not show trademark notice in windows.
@@ -334,6 +337,8 @@ int Init::_imageport = DefaultImagePort;
 char* Init::_switchname = DefaultSwitchName;
 int Init::_maxclients = DefaultMaxClients;
 
+Boolean Init::_doDebugLog = true;
+
 Boolean Init::_quitOnDisconnect = false;
 int Init::_clientTimeout = 0;
 
@@ -405,6 +410,7 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-quit 0|1: quit on client disconnect or not\n");
   fprintf(stderr, "\t-clientTimeout <value>: quit if client doesn't send"
 					" a command for <value> minutes\n");
+  fprintf(stderr, "\t-debugLog 0|1: write debug log or not\n");
 
   Exit::DoExit(1);
 }
@@ -857,6 +863,15 @@ void Init::DoInit(int &argc, char **argv)
 	  Usage(argv[0]);
 	}
 	_clientTimeout = atoi(argv[i+1]);
+	MoveArg(argc,argv,i,2);
+      }
+
+      else if (strcmp(&argv[i][1], "debugLog") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_doDebugLog = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
 

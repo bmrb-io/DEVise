@@ -21,6 +21,13 @@
   $Id$
 
   $Log$
+  Revision 1.62  1999/06/22 19:46:58  wenger
+  Devised support for JavaScreen improvements: cursors are now drawn in any
+  view of a pile; mouse actions can be disabled in views; cursor grid info
+  is sent; JAVAC_CursorChanged command sends cursor name instead of view
+  name; added dummy mouse grid info (not yet implemented).  Fixed some
+  problems with how the devised deals with piles for the JavaScreen.
+
   Revision 1.61  1999/06/11 14:47:05  wenger
   Added the capability (mostly for the JavaScreen) to disable rubberband
   lines, cursor movement, drill down, and key actions in views (the code
@@ -333,8 +340,9 @@
 #include "Cursor.h"
 #include "CursorClassInfo.h"
 #include "PileStack.h"
+#include "DebugLog.h"
 
-#define DEBUG
+#define DEBUG_LOG
 #define JS_TIMER 0
 #define MONOLITHIC_TEST 0
 #define NO_BATCH 0 // Non-zero for test only.
@@ -342,6 +350,9 @@
 #define ROUND_TO_INT(value) ((int)(value + 0.5))
 
 Boolean JavaScreenCmd::_postponeCursorCmds = false;
+
+// Buffer for debug logging.
+static char logBuf[MAXPATHLEN * 2];
 
 // Views that are not subviews (view symbols).
 static ViewWinList _topLevelViews;
@@ -488,8 +499,8 @@ JSSessionInit()
 static void
 FillScreen()
 {
-#if defined(DEBUG)
-    printf("FillScreen()\n");
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("FillScreen()\n");
 #endif
 
 	//
@@ -509,15 +520,17 @@ FillScreen()
 	    int winX, winY;
 	    unsigned winW, winH;
 	    window->RealGeometry(winX, winY, winW, winH);
-#if defined(DEBUG)
-        printf("window <%s> RealGeometry = %d, %d, %d, %d\n", window->GetName(),
-		  winX, winY, winW, winH);
+#if defined(DEBUG_LOG)
+        sprintf(logBuf, "window <%s> RealGeometry = %d, %d, %d, %d\n",
+		  window->GetName(), winX, winY, winW, winH);
+        DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	    window->AbsoluteOrigin(winX, winY);
-#if defined(DEBUG)
-        printf("window <%s> AbsoluteOrigin = %d, %d\n", window->GetName(),
-		  winX, winY);
+#if defined(DEBUG_LOG)
+        sprintf(logBuf, "window <%s> AbsoluteOrigin = %d, %d\n",
+		  window->GetName(), winX, winY);
+        DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 		// Windows can have negative positions (off of virtual desktop).
@@ -543,11 +556,10 @@ FillScreen()
 	}
 	DevWindow::DoneIterator(winIndex);
 
-#if defined(DEBUG)
-    printf("top = %d\n", top);
-    printf("bottom = %d\n", bottom);
-    printf("left = %d\n", left);
-    printf("right = %d\n", right);
+#if defined(DEBUG_LOG)
+	sprintf(logBuf, "top = %d\nbottom = %d\nleft = %d\nright = %d\n",
+	  top, bottom, left, right);
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	Coord displayWidth, displayHeight;
@@ -581,9 +593,10 @@ FillScreen()
 		winW = (int)(winW * xMult);
 		winH = (int)(winH * yMult);
 
-#if defined(DEBUG)
-        printf("window %s geometry changed to = %d, %d, %d, %d\n",
+#if defined(DEBUG_LOG)
+        printf(logBuf, "window %s geometry changed to = %d, %d, %d, %d\n",
 		  window->GetName(), winX, winY, winW, winH);
+        DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
         window->MoveResize(winX, winY, winW, winH);
@@ -598,8 +611,8 @@ FillScreen()
 static void
 CreateViewLists()
 {
-#if defined(DEBUG)
-    printf("CreateViewLists()\n");
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("CreateViewLists()\n");
 #endif
 
 	_topLevelViews.DeleteAll();
@@ -659,25 +672,28 @@ CreateViewLists()
 	}
 	DevWindow::DoneIterator(winIndex);
 
-#if defined (DEBUG)
-    printf("Top-level views:\n");
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("Top-level views:");
 	int viewIndex = _topLevelViews.InitIterator();
 	while (_topLevelViews.More(viewIndex)) {
-	  printf("  <%s>\n", _topLevelViews.Next(viewIndex)->GetName());
+	  sprintf(logBuf, "  <%s>", _topLevelViews.Next(viewIndex)->GetName());
+      DebugLog::DefaultLog()->Message(logBuf);
 	}
 	_topLevelViews.DoneIterator(viewIndex);
 
-    printf("GIF views:\n");
+    DebugLog::DefaultLog()->Message("GIF views:");
 	viewIndex = _gifViews.InitIterator();
 	while (_gifViews.More(viewIndex)) {
-	  printf("  <%s>\n", _gifViews.Next(viewIndex)->GetName());
+	  sprintf(logBuf, "  <%s>", _gifViews.Next(viewIndex)->GetName());
+      DebugLog::DefaultLog()->Message(logBuf);
 	}
 	_gifViews.DoneIterator(viewIndex);
 
-    printf("GData views:\n");
+    DebugLog::DefaultLog()->Message("GData views:");
 	viewIndex = _gdataViews.InitIterator();
 	while (_gdataViews.More(viewIndex)) {
-	  printf("  <%s>\n", _gdataViews.Next(viewIndex)->GetName());
+	  sprintf(logBuf, "  <%s>", _gdataViews.Next(viewIndex)->GetName());
+      DebugLog::DefaultLog()->Message(logBuf);
 	}
 	_gdataViews.DoneIterator(viewIndex);
 #endif
@@ -690,8 +706,8 @@ CreateViewLists()
 static void
 SetGDataFiles()
 {
-#if defined(DEBUG)
-    printf("SetGDataFiles()\n");
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("SetGDataFiles()\n");
 #endif
 
 	int viewIndex = _gdataViews.InitIterator();
@@ -703,9 +719,10 @@ SetGDataFiles()
 
 		delete [] params.file;
 		params.file = tempnam(Init::TmpDir(), NULL);
-#if defined(DEBUG)
-		printf("Setting GData file for view %s to %s\n",
+#if defined(DEBUG_LOG)
+		sprintf(logBuf, "Setting GData file for view %s to %s\n",
 		  view->GetName(), params.file);
+        DebugLog::DefaultLog()->Message(logBuf);
 #endif
 		view->SetSendParams(params);
 		delete [] params.file;
@@ -718,8 +735,8 @@ SetGDataFiles()
 static void
 DeleteGDataFiles()
 {
-#if defined(DEBUG)
-    printf("DeleteGDataFiles()\n");
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("DeleteGDataFiles()\n");
 #endif
 
 	int viewIndex = _gdataViews.InitIterator();
@@ -729,8 +746,9 @@ DeleteGDataFiles()
 		GDataSock::Params params;
 		view->GetSendParams(params);
 		if (params.file != NULL) {
-#if defined(DEBUG)
-			printf("Deleting GData file: %s\n", params.file);
+#if defined(DEBUG_LOG)
+			sprintf(logBuf, "Deleting GData file: %s\n", params.file);
+            DebugLog::DefaultLog()->Message(logBuf);
 #endif
 			(void) unlink(params.file);
 		}
@@ -744,8 +762,10 @@ DeleteGDataFiles()
 JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 	ServiceCmdType ctype, int argc, char** argv)
 {
-#if defined(DEBUG)
-    printf("\nJavaScreenCmd(0x%p)::JavaScreenCmd(%d)\n", this, (int)ctype);
+#if defined(DEBUG_LOG)
+    sprintf(logBuf, "JavaScreenCmd(0x%p)::JavaScreenCmd(%d)\n", this,
+	  (int)ctype);
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	int	i;
@@ -801,8 +821,10 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 //====================================================================
 JavaScreenCmd::~JavaScreenCmd()
 {
-#if defined(DEBUG)
-    printf("\nJavaScreenCmd(0x%p)::~JavaScreenCmd(%d)\n", this, (int)_ctype);
+#if defined(DEBUG_LOG)
+    sprintf(logBuf, "JavaScreenCmd(0x%p)::~JavaScreenCmd(%d)\n", this,
+	  (int)_ctype);
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	int	i;
@@ -815,12 +837,9 @@ JavaScreenCmd::~JavaScreenCmd()
 int
 JavaScreenCmd::Run()
 {
-#if defined(DEBUG)
-    printf("\nJavaScreenCmd(0x%p)::Run(%d)\n", this, _ctype);
-    struct timeval cmdTime;
-    if (gettimeofday(&cmdTime, NULL) >= 0) {
-		printf("  %s\n", DateString(cmdTime.tv_sec));
-    }
+#if defined(DEBUG_LOG)
+    sprintf(logBuf, "JavaScreenCmd(0x%p)::Run(%d)\n", this, _ctype);
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	_status = DONE;
@@ -880,10 +899,9 @@ JavaScreenCmd::Run()
 void
 JavaScreenCmd::GetSessionList()
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::GetSessionList(");
-    PrintArgs(stdout, _argc, _argv, false);
-    printf(")\n");
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("JavaScreenCmd::GetSessionList(",
+      _argc, _argv, ")\n");
 #endif
 
 	if (_argc == 0) {
@@ -904,10 +922,9 @@ JavaScreenCmd::GetSessionList()
 void
 JavaScreenCmd::OpenSession()
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::OpenSession(");
-    PrintArgs(stdout, _argc, _argv, false);
-    printf(")\n");
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("JavaScreenCmd::OpenSession(", _argc,
+	  _argv, ")\n");
 #endif
 
 	if (_argc != 1)
@@ -948,8 +965,9 @@ JavaScreenCmd::OpenSession()
 void
 JavaScreenCmd::DoOpenSession(char *fullpath)
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::DoOpenSession(%s)\n", fullpath);
+#if defined (DEBUG_LOG)
+    sprintf(logBuf, "JavaScreenCmd::DoOpenSession(%s)\n", fullpath);
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 #if JS_TIMER
@@ -1007,15 +1025,15 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 	SetGDataFiles();
 
 	// Wait for all queries to finish before continuing.
-#if defined(DEBUG)
-	printf("Before WaitForQueries()\n");
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("Before WaitForQueries()\n");
 #endif
 
 	Dispatcher::Current()->WaitForQueries();
 	_postponeCursorCmds = false;
 
-#if defined(DEBUG)
-	printf("After WaitForQueries()\n");
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("After WaitForQueries()\n");
 #endif
 
 	// Now re-create the view lists so that we get the correct view symbol
@@ -1043,8 +1061,9 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
         _status = NULL_COMMAND;
     } else {
         // Clean up if things didn't work.
-#if defined(DEBUG)
-        printf("Cleaning up partially-opened session\n");
+#if defined(DEBUG_LOG)
+        DebugLog::DefaultLog()->Message(
+		  "Cleaning up partially-opened session\n");
 #endif
         DoCloseSession();
     }
@@ -1060,8 +1079,9 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 	printf("  OpenSession took %g sec.\n", time2 - time1);
 #endif
 
-#if defined(DEBUG)
-    printf("End of OpenSession; _status = %d\n", _status);
+#if defined(DEBUG_LOG)
+    sprintf(logBuf, "End of OpenSession; _status = %d\n", _status);
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 }
 
@@ -1069,10 +1089,9 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 void
 JavaScreenCmd::MouseAction_Click()
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::MouseAction_Click(");
-    PrintArgs(stdout, _argc, _argv, false);
-    printf(")\n");
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("JavaScreenCmd::MouseAction_Click(",
+	  _argc, _argv, ")\n");
 #endif
 
 	if (_argc != 3)
@@ -1111,10 +1130,9 @@ JavaScreenCmd::MouseAction_Click()
 void
 JavaScreenCmd::MouseAction_DoubleClick()
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::MouseAction_DoubleClick(");
-    PrintArgs(stdout, _argc, _argv, false);
-    printf(")\n");
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("JavaScreenCmd::MouseAction_DoubleClick(",
+      _argc, _argv, ")\n");
 #endif
 
 	// Note: x and y are relative to GIF origin.  This used to be the
@@ -1148,15 +1166,13 @@ JavaScreenCmd::MouseAction_DoubleClick()
 void
 JavaScreenCmd::MouseAction_RubberBand()
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::MouseAction_RubberBand(");
-    PrintArgs(stdout, _argc, _argv, false);
-    printf(")\n");
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("JavaScreenCmd::MouseAction_RubberBand(",
+      _argc, _argv, ")\n");
 #endif
 
 	if (_argc != 5)
 	{
-		// Note: 'view name' is really the JavaScreen's window name.
 		errmsg = "Usage: MouseAction_RubberBand <view name>"
 				 " <x1> <y1> <x2> <y2>";
 		// Note: (x1, y1) is where mouse started; Y is down from the top of
@@ -1177,9 +1193,10 @@ JavaScreenCmd::MouseAction_RubberBand()
 		return;
 	}
 
-#if defined(DEBUG)
-    printf("Rubberband from (%d, %d) to (%d, %d) in view %s\n",
+#if defined(DEBUG_LOG)
+    sprintf(logBuf, "Rubberband from (%d, %d) to (%d, %d) in view %s\n",
 	  startX, startY, endX, endY, view->GetName());
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	_postponeCursorCmds = true;
@@ -1206,10 +1223,9 @@ JavaScreenCmd::MouseAction_RubberBand()
 void
 JavaScreenCmd::CloseCurrentSession()
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::CloseCurrentSession(");
-    PrintArgs(stdout, _argc, _argv, false);
-    printf(")\n");
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("JavaScreenCmd::CloseCurrentSession(",
+	  _argc, _argv, ")\n");
 #endif
 
 	if (_argc != 0) {
@@ -1229,10 +1245,9 @@ JavaScreenCmd::CloseCurrentSession()
 void
 JavaScreenCmd::SetDisplaySize()
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::SetDisplaySize(");
-    PrintArgs(stdout, _argc, _argv, false);
-    printf(")\n");
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("JavaScreenCmd::SetDisplaySize(",
+      _argc, _argv, ")\n");
 #endif
 
 	if (_argc != 2) {
@@ -1252,10 +1267,9 @@ JavaScreenCmd::SetDisplaySize()
 void
 JavaScreenCmd::KeyAction()
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::KeyAction(");
-    PrintArgs(stdout, _argc, _argv, false);
-    printf(")\n");
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("JavaScreenCmd::KeyAction(",
+      _argc, _argv, ")\n");
 #endif
 
 	//TEMP -- this must be changed to give key press location
@@ -1295,10 +1309,9 @@ JavaScreenCmd::KeyAction()
 void
 JavaScreenCmd::SaveSession()
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::SaveSession(");
-    PrintArgs(stdout, _argc, _argv, false);
-    printf(")\n");
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("JavaScreenCmd::SaveSession(",
+      _argc, _argv, ")\n");
 #endif
 
 	Boolean saveSelView;
@@ -1334,10 +1347,9 @@ JavaScreenCmd::SaveSession()
 void
 JavaScreenCmd::ServerExit()
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::ServerExit(");
-    PrintArgs(stdout, _argc, _argv, false);
-    printf(")\n");
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("JavaScreenCmd::ServerExit(",
+      _argc, _argv, ")\n");
 #endif
 
 	printf("Server exiting on command from JavaScreen\n");
@@ -1352,10 +1364,9 @@ JavaScreenCmd::ServerExit()
 void
 JavaScreenCmd::ServerCloseSocket()
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::ServerCloseSocket(");
-    PrintArgs(stdout, _argc, _argv, false);
-    printf(")\n");
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("JavaScreenCmd::ServerCloseSocket(",
+      _argc, _argv, ")\n");
 #endif
 
 //TEMP -- add body of function
@@ -1368,10 +1379,9 @@ JavaScreenCmd::ServerCloseSocket()
 void
 JavaScreenCmd::ImageChannel()
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::ImageChannel(");
-    PrintArgs(stdout, _argc, _argv, false);
-    printf(")\n");
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("JavaScreenCmd::ImageChannel(",
+      _argc, _argv, ")\n");
 #endif
 
 //TEMP -- add body of function
@@ -1385,10 +1395,9 @@ JavaScreenCmd::ImageChannel()
 void
 JavaScreenCmd::CursorChanged()
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::CursorChanged(");
-    PrintArgs(stdout, _argc, _argv, false);
-    printf(")\n");
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("JavaScreenCmd::CursorChanged(",
+      _argc, _argv, ")\n");
 #endif
 
 	// Note: x and y are the location of the upper left corner of the cursor
@@ -1420,9 +1429,10 @@ JavaScreenCmd::CursorChanged()
 	int pixY = atoi(_argv[2]);
 	int pixWidth = atoi(_argv[3]);
 	int pixHeight = atoi(_argv[4]);
-#if defined(DEBUG)
-	printf("x, y = %d, %d; width, height = %d, %d\n", pixX, pixY, pixWidth,
-	  pixHeight);
+#if defined(DEBUG_LOG)
+	sprintf(logBuf, "x, y = %d, %d; width, height = %d, %d\n", pixX, pixY,
+	  pixWidth, pixHeight);
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	if (view->GetCursorMoveDisabled()) {
@@ -1462,8 +1472,9 @@ JavaScreenCmd::CursorChanged()
 JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestUpdateRecordValue(int argc, char **argv)
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::RequestUpdateRecordValue()\n");
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message(
+	  "JavaScreenCmd::RequestUpdateRecordValue()\n");
 #endif
 
     char **args = new char *[argc+1];
@@ -1528,8 +1539,8 @@ JavaScreenCmd::ControlCmd(JavaScreenCmd::ControlCmdType  status)
 JavaScreenCmd::ControlCmdType
 JavaScreenCmd::SendWindowData(const char* fileName)
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::SendWindowData(%s)\n", fileName);
+#if defined (DEBUG_LOG)
+    sprintf(logBuf, "JavaScreenCmd::SendWindowData(%s)\n", fileName);
 #endif
 
 	ControlCmdType	status = DONE;
@@ -1570,22 +1581,24 @@ JavaScreenCmd::SendWindowData(const char* fileName)
 				break;
 			}
 			filesize += bytesRead;
-#if defined(DEBUG)
-        printf("    %d bytes sent\n", filesize);
+#if defined(DEBUG_LOG)
+        sprintf(logBuf, "    %d bytes sent\n", filesize);
+        DebugLog::DefaultLog()->Message(logBuf);
 #endif
 		}
 		if (bytesRead < 0) {
 			reportErrSys("Reading image file");
 		}
 		close(fd);
-#if defined(DEBUG)
-        printf("  Image file size = %d\n", filesize);
+#if defined(DEBUG_LOG)
+        sprintf(logBuf, "  Image file size = %d\n", filesize);
+        DebugLog::DefaultLog()->Message(logBuf);
 #endif
 	}
 
-#if defined(DEBUG)
-    printf("  done sending window image\n");
-	printf("  status = %d\n", status);
+#if defined(DEBUG_LOG)
+    sprintf(logBuf, "  done sending window image\n  status = %d\n", status);
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	return status;
@@ -1595,8 +1608,9 @@ JavaScreenCmd::SendWindowData(const char* fileName)
 JavaScreenCmd::ControlCmdType
 JavaScreenCmd::SendChangedViews(Boolean update)
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::SendChangedViews(%d)\n", update);
+#if defined (DEBUG_LOG)
+    sprintf(logBuf, "JavaScreenCmd::SendChangedViews(%d)\n", update);
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
     JavaScreenCmd::ControlCmdType result = DONE;
@@ -1617,8 +1631,10 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 	while (_gifViews.More(viewIndex)) {
 		View *view = (View *)_gifViews.Next(viewIndex);
         if (view->GetGifDirty()) {
-#if defined(DEBUG)
-	        printf("GIF of view <%s> is \"dirty\".\n", view->GetName());
+#if defined(DEBUG_LOG)
+	        sprintf(logBuf, "GIF of view <%s> is \"dirty\".\n",
+			  view->GetName());
+            DebugLog::DefaultLog()->Message(logBuf);
 #endif
 		    dirtyGifList.Append(view);
 
@@ -1652,8 +1668,9 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 				filesize = getFileSize(fileName);
 			}
 	
-#if defined(DEBUG)
-            printf("  Image file size = %d\n", filesize);
+#if defined(DEBUG_LOG)
+            sprintf(logBuf, "  Image file size = %d\n", filesize);
+            DebugLog::DefaultLog()->Message(logBuf);
 #endif
 			if (filesize > 0)
 			{
@@ -1692,8 +1709,10 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 		// GData file exists -- if the file does exist, the GData is "dirty"
 		// (because the file is deleted after being sent).
 		if (gdParams.file != NULL && access(gdParams.file, F_OK) == 0) {
-#if defined(DEBUG)
-	        printf("GData of view <%s> is \"dirty\".\n", view->GetName());
+#if defined(DEBUG_LOG)
+	        sprintf(logBuf, "GData of view <%s> is \"dirty\".\n",
+			  view->GetName());
+            DebugLog::DefaultLog()->Message(logBuf);
 #endif
    			ControlCmdType tmpResult = DONE;
 
@@ -1748,8 +1767,9 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 		result = NULL_COMMAND;
 	}
 
-#if defined(DEBUG)
-    printf("End of SendChangedViews; result = %d\n", result);
+#if defined(DEBUG_LOG)
+    sprintf(logBuf, "End of SendChangedViews; result = %d\n", result);
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	return result;
@@ -1767,8 +1787,10 @@ JavaScreenCmd::RequestUpdateSessionList(int argc, char** argv)
 JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestUpdateGData(ViewGraph *view)
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::RequestUpdateGData(%s)\n", view->GetName());
+#if defined (DEBUG_LOG)
+    sprintf(logBuf, "JavaScreenCmd::RequestUpdateGData(%s)\n",
+	  view->GetName());
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	//
@@ -1850,14 +1872,16 @@ JavaScreenCmd::RequestUpdateGData(ViewGraph *view)
 void
 JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::DrawCursor(%s, %s)\n", view->GetName(),
+#if defined (DEBUG_LOG)
+    sprintf(logBuf, "JavaScreenCmd::DrawCursor(%s, %s)\n", view->GetName(),
       cursor->GetName());
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	if (_postponeCursorCmds) {
-#if defined (DEBUG)
-        printf("Cursor draw temporarily postponed.\n");
+#if defined (DEBUG_LOG)
+        sprintf(logBuf, "Cursor draw temporarily postponed.\n");
+        DebugLog::DefaultLog()->Message(logBuf);
 #endif
 		if (!_drawnCursors.Find(cursor)) {
 			_drawnCursors.Append(cursor);
@@ -1874,9 +1898,11 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	    cursor->GetVisualFilter(filter);
 	    cursorFilter = *filter;
 	}
-#if defined(DEBUG)
-    printf("Cursor vis. filter: (%g, %g), (%g, %g)\n", cursorFilter.xLow,
-	  cursorFilter.yLow, cursorFilter.xHigh, cursorFilter.yHigh);
+#if defined(DEBUG_LOG)
+    sprintf(logBuf, "Cursor vis. filter: (%g, %g), (%g, %g)\n",
+	  cursorFilter.xLow, cursorFilter.yLow, cursorFilter.xHigh,
+	  cursorFilter.yHigh);
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	//
@@ -1904,10 +1930,11 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	cursorFilter.xHigh = MIN(cursorFilter.xHigh, viewFilter.xHigh);
 	cursorFilter.yHigh = MIN(cursorFilter.yHigh, viewFilter.yHigh);
 
-#if defined(DEBUG)
-    printf("Modified cursor vis. filter: (%g, %g), (%g, %g)\n",
+#if defined(DEBUG_LOG)
+    sprintf(logBuf, "Modified cursor vis. filter: (%g, %g), (%g, %g)\n",
 	  cursorFilter.xLow, cursorFilter.yLow, cursorFilter.xHigh,
 	  cursorFilter.yHigh);
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	//
@@ -1927,9 +1954,10 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 		yPixHigh = ROUND_TO_INT(MAX(yPix1, yPix2));
 	}
 
-#if defined(DEBUG)
-    printf("Pixels: (%d, %d), (%d, %d)\n", xPixLow, yPixLow, xPixHigh,
-	  yPixHigh);
+#if defined(DEBUG_LOG)
+    sprintf(logBuf, "Pixels: (%d, %d), (%d, %d)\n", xPixLow, yPixLow,
+	  xPixHigh, yPixHigh);
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	//
@@ -1948,18 +1976,20 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 		yPixHigh = MIN(yPixHigh, (int)viewH-1);
     }
 
-#if defined(DEBUG)
-    printf("Modified pixels: (%d, %d), (%d, %d)\n", xPixLow, yPixLow, xPixHigh,
-	  yPixHigh);
+#if defined(DEBUG_LOG)
+    sprintf(logBuf, "Modified pixels: (%d, %d), (%d, %d)\n", xPixLow,
+	  yPixLow, xPixHigh, yPixHigh);
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	int xLoc = (int)MIN(xPixLow, xPixHigh);
 	int yLoc = (int)MIN(yPixLow, yPixHigh);
 	int width = (int)ABS(xPixHigh - xPixLow) + 1;
 	int height = (int)ABS(yPixHigh - yPixLow) + 1;
-#if defined(DEBUG)
-    printf("x, y: (%d, %d), width, height: (%d, %d)\n", xLoc, yLoc, width,
-	  height);
+#if defined(DEBUG_LOG)
+    sprintf(logBuf, "x, y: (%d, %d), width, height: (%d, %d)\n", xLoc,
+	  yLoc, width, height);
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	//
@@ -2034,9 +2064,10 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 void
 JavaScreenCmd::EraseCursor(View *view, DeviseCursor *cursor)
 {
-#if defined (DEBUG)
-    printf("JavaScreenCmd::EraseCursor(%s, %s)\n", view->GetName(),
+#if defined (DEBUG_LOG)
+    sprintf(logBuf, "JavaScreenCmd::EraseCursor(%s, %s)\n", view->GetName(),
       cursor->GetName());
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 // JavaScreen will now automatically erase cursor before re-drawing it,
@@ -2044,8 +2075,9 @@ JavaScreenCmd::EraseCursor(View *view, DeviseCursor *cursor)
 // a cursor.  RKW 1999-04-02.
 #if 0
 	if (_postponeCursorCmds) {
-#if defined (DEBUG)
-        printf("Cursor erase temporarily postponed.\n");
+#if defined (DEBUG_LOG)
+        DebugLog::DefaultLog()->Message(
+		  "Cursor erase temporarily postponed.\n");
 #endif
 		if (!_erasedCursors.Find(cursor)) {
 			_erasedCursors.Append(cursor);
@@ -2069,15 +2101,9 @@ JavaScreenCmd::EraseCursor(View *view, DeviseCursor *cursor)
 void
 JavaScreenCmd::ReturnVal(int argc, char** argv)
 {
-#if defined(DEBUG)
-    printf("JavaScreenCmd(0x%p)::ReturnVal(", this);
-	PrintArgs(stdout, argc, argv, false);
-	printf(")");
-
-    struct timeval cmdTime;
-    if (gettimeofday(&cmdTime, NULL) >= 0) {
-		printf(" at %s\n", DateString(cmdTime.tv_sec));
-    }
+#if defined(DEBUG_LOG)
+    sprintf(logBuf, "JavaScreenCmd(0x%p)::ReturnVal(", this);
+    DebugLog::DefaultLog()->Message(logBuf, argc, argv, ")\n");
 #endif
 
 #if 0 // I don't understand what the heck all of this junk is for, and taking
@@ -2190,8 +2216,8 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 void
 JavaScreenCmd::DrawAllCursors()
 {
-#if defined(DEBUG)
-	printf("JavaScreenCmd::DrawAllCursors()\n");
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("JavaScreenCmd::DrawAllCursors()\n");
 #endif
 
 	int index = DevCursor::InitIterator();
@@ -2209,8 +2235,9 @@ JavaScreenCmd::DrawAllCursors()
 	}
 	DevCursor::DoneIterator(index);
 
-#if defined(DEBUG)
-    printf("Done with JavaScreenCmd::DrawAllCursors()\n");
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message(
+	  "Done with JavaScreenCmd::DrawAllCursors()\n");
 #endif
 }
 
@@ -2218,8 +2245,8 @@ JavaScreenCmd::DrawAllCursors()
 void
 JavaScreenCmd::EraseChangedCursors()
 {
-#if defined(DEBUG)
-	printf("JavaScreenCmd::EraseChangedCursors()\n");
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("JavaScreenCmd::EraseChangedCursors()\n");
 #endif
 
 	int index = _erasedCursors.InitIterator();
@@ -2239,8 +2266,8 @@ JavaScreenCmd::EraseChangedCursors()
 void
 JavaScreenCmd::DrawChangedCursors()
 {
-#if defined(DEBUG)
-	printf("JavaScreenCmd::DrawChangedCursors()\n");
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("JavaScreenCmd::DrawChangedCursors()\n");
 #endif
 
 	int index = _drawnCursors.InitIterator();
@@ -2289,8 +2316,9 @@ JavaScreenCmd::DoCloseSession()
 JavaScreenCmd::ControlCmdType
 JavaScreenCmd::SendViewGData(ViewGraph *view)
 {
-#if defined(DEBUG)
-    printf("JavaScreenCmd::SendViewGData(%s)\n", view->GetName());
+#if defined(DEBUG_LOG)
+    sprintf(logBuf, "JavaScreenCmd::SendViewGData(%s)\n", view->GetName());
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	ControlCmdType status = DONE;
@@ -2321,9 +2349,10 @@ JavaScreenCmd::SendViewGData(ViewGraph *view)
 void
 JavaScreenCmd::CreateView(View *view, View* parent)
 {
-#if defined(DEBUG)
-	printf("CreateView(%s, %s)\n", view->GetName(),
+#if defined(DEBUG_LOG)
+	sprintf(logBuf, "CreateView(%s, %s)\n", view->GetName(),
 	  parent ? parent->GetName() : "none");
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	//
@@ -2332,14 +2361,16 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 	int viewX, viewY;
 	unsigned viewWidth, viewHeight;
 	view->RealGeometry(viewX, viewY, viewWidth, viewHeight);
-#if defined(DEBUG)
-    printf("window RealGeometry = %d, %d, %d, %d\n", viewX, viewY, viewWidth,
-		viewHeight);
+#if defined(DEBUG_LOG)
+    sprintf(logBuf, "window RealGeometry = %d, %d, %d, %d\n", viewX,
+	  viewY, viewWidth, viewHeight);
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	view->AbsoluteOrigin(viewX, viewY);
-#if defined(DEBUG)
-    printf("view AbsoluteOrigin = %d, %d\n", viewX, viewY);
+#if defined(DEBUG_LOG)
+    sprintf(logBuf, "view AbsoluteOrigin = %d, %d\n", viewX, viewY);
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
     //
@@ -2351,8 +2382,9 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 		// Make subview's location relative to parent.
 		int tmpX, tmpY;
 		view->GetParent()->AbsoluteOrigin(tmpX, tmpY);
-#if defined(DEBUG)
-    	printf("parent AbsoluteOrigin = %d, %d\n", tmpX, tmpY);
+#if defined(DEBUG_LOG)
+    	sprintf(logBuf, "parent AbsoluteOrigin = %d, %d\n", tmpX, tmpY);
+        DebugLog::DefaultLog()->Message(logBuf);
 #endif
 		viewX -= tmpX;
 		viewY -= tmpY;
@@ -2360,8 +2392,9 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 		// Include window's location.
 		int tmpX, tmpY;
 		view->GetParent()->AbsoluteOrigin(tmpX, tmpY);
-#if defined(DEBUG)
-    	printf("parent AbsoluteOrigin = %d, %d\n", tmpX, tmpY);
+#if defined(DEBUG_LOG)
+    	sprintf(logBuf, "parent AbsoluteOrigin = %d, %d\n", tmpX, tmpY);
+        DebugLog::DefaultLog()->Message(logBuf);
 #endif
 		viewX += tmpX;
 		viewY += tmpY;
@@ -2506,8 +2539,9 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 void
 JavaScreenCmd::DeleteChildViews(View *view)
 {
-#if defined(DEBUG)
-	printf("DeleteChildViews(%s)\n", view->GetName());
+#if defined(DEBUG_LOG)
+	sprintf(logBuf, "DeleteChildViews(%s)\n", view->GetName());
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	const int argCount = 2;
@@ -2524,8 +2558,9 @@ JavaScreenCmd::DeleteChildViews(View *view)
 void
 JavaScreenCmd::SendViewDataArea(View *view)
 {
-#if defined(DEBUG)
-	printf("SendViewDataArea(%s)\n", view->GetName());
+#if defined(DEBUG_LOG)
+	sprintf(logBuf, "SendViewDataArea(%s)\n", view->GetName());
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	// Don't draw axes for 3D views.
@@ -2578,9 +2613,10 @@ JavaScreenCmd::SendViewDataArea(View *view)
 void
 JavaScreenCmd::UpdateViewImage(View *view, int imageSize)
 {
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::UpdateViewImage(%s, %d)\n", view->GetName(),
-	  imageSize);
+#if defined (DEBUG_LOG)
+    sprintf(logBuf, "JavaScreenCmd::UpdateViewImage(%s, %d)\n",
+	  view->GetName(), imageSize);
+    DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
 	const int argCount = 3;
