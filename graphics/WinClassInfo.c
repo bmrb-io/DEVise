@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/03/25 23:37:46  jussi
+  Changed order in which geometry and absolute position are
+  retrieved.
+
   Revision 1.6  1996/03/25 23:32:42  jussi
   Size of window now correctly computed for windows that have
   a margin.
@@ -71,21 +75,21 @@ void TileLayoutInfo::ParamNames(int &argc, char **&argv)
   arg[3] = buf4;
   arg[4] = buf5;
 
-  sprintf(buf1, "name %s", ControlPanel::Instance()->WindowName());
+  strcpy(buf1, "Name {foobar}");
   int numDefaults;
   char **defaults;
   GetDefaultParams(numDefaults, defaults);
   
   if (numDefaults == 4) {
-    sprintf(arg[1], "x %s", defaults[0]);
-    sprintf(arg[2], "y %s", defaults[1]);
-    sprintf(arg[3], "width %s", defaults[2]);
-    sprintf(arg[4], "height %s", defaults[3]);
+    sprintf(arg[1], "X %s", defaults[0]);
+    sprintf(arg[2], "Y %s", defaults[1]);
+    sprintf(arg[3], "Width %s", defaults[2]);
+    sprintf(arg[4], "Height %s", defaults[3]);
   } else {
-    sprintf(buf2, "x 0.0");
-    sprintf(buf3, "y 0.0");
-    sprintf(buf4, "width 0.5");
-    sprintf(buf5, "height 0.5");
+    sprintf(buf2, "X 0.0");
+    sprintf(buf3, "Y 0.0");
+    sprintf(buf4, "Width 0.5");
+    sprintf(buf5, "Height 0.5");
   }
 }
 
