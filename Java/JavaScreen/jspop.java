@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.76  2002/01/24 23:03:36  xuk
+// *** empty log message ***
+//
 // Revision 1.75  2001/11/28 21:56:21  wenger
 // Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
 //
@@ -425,6 +428,9 @@ public class jspop implements Runnable
 
     // saving temporary session files in one directory
     public String sessionDir = null;
+
+    // all collaboration names
+    public Vector collabNames = new Vector();
 
     //----------------------------------------------------------------------
 
@@ -837,6 +843,31 @@ public class jspop implements Runnable
 	      (DEViseClient) suspendClients.elementAt(i);
 	    if (tmpClient != null) {
 	        if (tmpClient.getConnectionID() == id) {
+		    return tmpClient;
+		}
+	    }
+	}
+
+        return null;
+    }
+
+    private DEViseClient findClientByCollabName(String name)
+    {
+	for (int i = 0; i < activeClients.size(); i++) {
+	    DEViseClient tmpClient =
+	      (DEViseClient) activeClients.elementAt(i);
+	    if (tmpClient != null) {
+	        if (tmpClient.getCollabName().equals(name)) {
+		    return tmpClient;
+		}
+	    }
+	}
+
+	for (int i = 0; i < suspendClients.size(); i++) {
+	    DEViseClient tmpClient =
+	      (DEViseClient) suspendClients.elementAt(i);
+	    if (tmpClient != null) {
+	        if (tmpClient.getCollabName().equals(name)) {
 		    return tmpClient;
 		}
 	    }
@@ -1523,8 +1554,9 @@ public class jspop implements Runnable
 	      (DEViseClient) activeClients.elementAt(i);
 	    if (tmpClient != null && tmpClient.isAbleCollab) {
 		command = command + " {" + tmpClient.getConnectionID() +
-		  "}" + " {  " + tmpClient.hostname + ":}" + " { " +
-		  tmpClient.sessionName + "}";
+		    "} {  " + tmpClient.getCollabName() + "} {  " + 
+		    tmpClient.hostname + ":}" + " { " +
+		    tmpClient.sessionName + "}";
 	    }
 	}
 
@@ -1533,8 +1565,9 @@ public class jspop implements Runnable
 	      (DEViseClient) suspendClients.elementAt(i);
 	    if (tmpClient != null && tmpClient.isAbleCollab) {
 		command = command + " {" + tmpClient.getConnectionID() +
-		  "}" + " {  " + tmpClient.hostname + ":}" +
-		  " { " + tmpClient.sessionName + "}";
+		    "} {  " + tmpClient.getCollabName() + "} {  " + 
+		    tmpClient.hostname + ":}" +
+		    " { " + tmpClient.sessionName + "}";
 	    }
 	}
 
@@ -1546,19 +1579,32 @@ public class jspop implements Runnable
     // Set up the client as a collaboration follower.
     public void setUpCollab(DEViseClient client, String cmd, String hostname) 
     {
+	DEViseClient leaderClient = null;
+	long id = 0;
+
 	String[] cmds = DEViseGlobals.parseString(cmd);
+	pn("cmd[1] = " + cmds[1] + " cmd[2] = " + cmds[2]);
+	int flag = new Integer(cmds[1]).intValue();
 	
-	long id = new Long(cmds[1]).longValue();
-	pn("We got collaboration id: " + id);
-        // find the proper client;
-        DEViseClient leaderClient = findClientById(id);
+	if (flag == 2) { // use collab-name to identify leader
+	    String name = cmds[3];
+	    leaderClient = findClientByCollabName(name);
+	    id = leaderClient.getConnectionID();
+	    pn("We got collabortion name: " + name);
+	    pn("We got collabortion id: " + id);
+	} else {         // use id to identify leader
+	    id = new Long(cmds[2]).longValue();
+	    pn("We got collaboration id: " + id);
+	    // find the proper client;
+	    leaderClient = findClientById(id);
+	}
 
 	try {
 	    if (leaderClient != null) {
 		// check for enable collaboration status
 		if (leaderClient.isAbleCollab) {
 		    
-		    String collabPass = new String(cmds[2]);
+		    String collabPass = new String(cmds[4]);
 		    pn("We got collaboration passwd: " + collabPass);
 		    
 		    if (leaderClient.checkPass(collabPass)) {
@@ -1602,11 +1648,13 @@ public class jspop implements Runnable
 				   " {Client " + id + "does not allow collaboration.}");
 		}
 	    } else {
-		pn("No client for ID: " + id);
-		client.sendCmd(DEViseCommands.ERROR + " {Incorrect client id. Please try again.}");
+		pn("No client is found.");
+		client.sendCmd(DEViseCommands.ERROR + " {Incorrect client id or collaboration name. Please try again.}");
 	    }
         } catch (YException e) {
             System.out.println(e.getMsg());
         }
     }
 }
+
+
