@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.136  1998/05/21 18:18:30  wenger
+  Most code for keeping track of 'dirty' GIFs in place; added 'test'
+  command to be used for generic test code that needs to be controlled
+  by GUI; added debug code in NetworkSend().
+
   Revision 1.135  1998/05/06 22:04:43  wenger
   Single-attribute set links are now working except where the slave of
   one is the master of another.
@@ -2339,11 +2344,19 @@ Boolean View::DrawCursors()
         cursor->ReadCursorStore(winRep);
       }
       _cursors->DoneIterator(index);
+
       for(index = _cursors->InitIterator(); _cursors->More(index);) {
         DeviseCursor *cursor = _cursors->Next(index);
-        cursor->DrawCursor(winRep);
+        cursor->DrawCursorFill(winRep);
       }
       _cursors->DoneIterator(index);
+
+      for(index = _cursors->InitIterator(); _cursors->More(index);) {
+        DeviseCursor *cursor = _cursors->Next(index);
+        cursor->DrawCursorBorder(winRep);
+      }
+      _cursors->DoneIterator(index);
+
       _cursorsOn = true;
       return false;
     }

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/06/09 20:06:01  wenger
+  2D OpenGL cursor now drawn as shaded outline plus every-other-point
+  "mesh"; OpenGL CursorStore and GLWindowRep on SGI now use color indices
+  instead of RGB so that they work the same as the other architectures;
+  added user interface to allow changing cursor color (merged through
+  cursor_test_br_1).
+
   Revision 1.3.2.2  1998/06/05 20:08:10  wenger
   Cursor in OpenGL now drawn as a shaded outline plus background color
   is changed.
@@ -96,12 +103,10 @@ void CursorStore::Expand(int min_x, int min_y, int max_x, int max_y)
   // expand the region to cover a bit more to make sure the edges are covered
 
   DOASSERT(_inited, "CursorStore not inited before used");
-#if 0 // Shouldn't be needed -- RKW June 9, 1998.
   _min_x-=1;
   _min_y-=1;
   _max_x+=1;
   _max_y+=1;
-#endif
   if (_min_x > max_x || _max_x < min_x || _min_y > max_y || _max_y < min_y) {
     _need_draw=0;
     return;

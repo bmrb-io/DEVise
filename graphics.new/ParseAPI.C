@@ -22,6 +22,13 @@
   $Id$
 
   $Log$
+  Revision 1.96  1998/06/09 20:06:14  wenger
+  2D OpenGL cursor now drawn as shaded outline plus every-other-point
+  "mesh"; OpenGL CursorStore and GLWindowRep on SGI now use color indices
+  instead of RGB so that they work the same as the other architectures;
+  added user interface to allow changing cursor color (merged through
+  cursor_test_br_1).
+
   Revision 1.95  1998/02/26 20:48:17  taodb
   Replaced ParseAPI() with Command Object Interface
 
@@ -1063,6 +1070,7 @@ int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control)
 		return 1;
 	}
 
+	control->ReturnVal(API_NAK, "Unknown color command");
 	return -1;
 }
 

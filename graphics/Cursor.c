@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/06/09 20:05:59  wenger
+  2D OpenGL cursor now drawn as shaded outline plus every-other-point
+  "mesh"; OpenGL CursorStore and GLWindowRep on SGI now use color indices
+  instead of RGB so that they work the same as the other architectures;
+  added user interface to allow changing cursor color (merged through
+  cursor_test_br_1).
+
   Revision 1.16.2.7  1998/06/09 18:15:27  wenger
   Added cursor color-changing capability.
 
@@ -390,10 +397,41 @@ void DeviseCursor::DrawCursorStore(WindowRep*w)
   }
 }
 
-void DeviseCursor::DrawCursor(WindowRep* w)
+void DeviseCursor::DrawCursorFill(WindowRep* w)
 {
 #if defined(DEBUG)
-  printf("DeviseCursor(%s)::DrawCursor()\n", _name);
+  printf("DeviseCursor(%s)::DrawCursorFill()\n", _name);
+#endif
+
+  VisualFilter *filter;
+  GetVisualFilter(filter);
+
+  if (_src && _src->GetNumDimensions()==2
+   && _dst&& _dst->GetNumDimensions()==2) {
+    Coord xLowPix, yLowPix, xHighPix, yHighPix;
+    w->Transform(filter->xLow, filter->yLow, xLowPix, yLowPix);
+    w->Transform(filter->xHigh, filter->yHigh, xHighPix, yHighPix);
+
+    //
+    // Fill in "mesh" of the cursor color.
+    //
+    w->PushTop();
+    w->MakeIdentity();
+	w->SetForeground(_cursorColor);
+    for (int line = (int)yLowPix; line <= (int)yHighPix; line+=1) {
+      for (int column = (int)xLowPix + (line%2) * 2; column <= (int)xHighPix;
+		  column+=4) {
+	    w->DrawPixel((Coord)column, (Coord)line);
+      }
+    }
+    w->PopTransform();
+  }
+}
+
+void DeviseCursor::DrawCursorBorder(WindowRep* w)
+{
+#if defined(DEBUG)
+  printf("DeviseCursor(%s)::DrawCursorBorder()\n", _name);
 #endif
 
   VisualFilter *filter;
@@ -403,41 +441,6 @@ void DeviseCursor::DrawCursor(WindowRep* w)
 
   if (_src && _src->GetNumDimensions()==2
    && _dst&& _dst->GetNumDimensions()==2) {
-    //
-    // Note that this code relies on USERGB *not* being defined.
-    //
-
-    //
-    // Fill in every-other-point "mesh" of the cursor color.
-    //
-    XColorID viewBgColX = AP_GetXColorID(_dst->GetBackground());
-    XColorID viewFgColX = AP_GetXColorID(_dst->GetForeground());
-    XColorID cursorColX = AP_GetXColorID(_cursorColor);
-
-    GLfloat *savePixels = _cursor_store[0].color_index;
-    GLfloat *tmpPixels = new GLfloat[_cursor_store[0]._tot];
-    memcpy(tmpPixels, _cursor_store[0].color_index,
-	_cursor_store[0]._tot * sizeof(GLfloat));
-    _cursor_store[0].color_index = tmpPixels;
-
-    {
-      for (int index = 0; index < _cursor_store[0]._tot; index+=4) {
-	if (_cursor_store[0].color_index[index] != cursorColX) {
-	  _cursor_store[0].color_index[index] = cursorColX;
-	} else {
-	  _cursor_store[0].color_index[index] = viewFgColX;
-	}
-      }
-    }
-
-    w->DrawCursorStore(_cursor_store[0]);
-
-    //
-    // Restore the original CursorStore pixmap.
-    //
-    _cursor_store[0].color_index = savePixels;
-    delete [] tmpPixels;
-
     Coord xLowPix, yLowPix, xHighPix, yHighPix;
     w->Transform(filter->xLow, filter->yLow, xLowPix, yLowPix);
     w->Transform(filter->xHigh, filter->yHigh, xHighPix, yHighPix);
@@ -445,30 +448,31 @@ void DeviseCursor::DrawCursor(WindowRep* w)
     //
     // Outline the cursor in the view foreground color.
     //
+    w->SetForeground(_dst->GetForeground());
     w->AbsoluteLine((int)xLowPix+1, (int)yLowPix+1, (int)xLowPix+1,
-	(int)yHighPix-1, 1);
+	(int)yHighPix-1, 3);
     w->AbsoluteLine((int)xHighPix-1, (int)yLowPix+1, (int)xHighPix-1,
-	(int)yHighPix-1, 1);
+	(int)yHighPix-1, 3);
 
     w->AbsoluteLine((int)xLowPix+1, (int)yLowPix+1, (int)xHighPix-1,
-	(int)yLowPix+1, 1);
+	(int)yLowPix+1, 3);
     w->AbsoluteLine((int)xLowPix+1, (int)yHighPix-1, (int)xHighPix-1,
-	(int)yHighPix-1, 1);
+	(int)yHighPix-1, 3);
 
     //
     // Draw a highlight and shadow around the outline.
     //
     w->SetForeground(GetPColorID(whiteColor));
     w->AbsoluteLine((int)xLowPix, (int)yLowPix, (int)xLowPix,
-	(int)yHighPix, 1);
+	(int)yHighPix, 3);
     w->AbsoluteLine((int)xLowPix, (int)yHighPix, (int)xHighPix,
-	(int)yHighPix, 1);
+	(int)yHighPix, 3);
 
     w->SetForeground(GetPColorID(blackColor));
     w->AbsoluteLine((int)xHighPix, (int)yLowPix, (int)xHighPix,
-	(int)yHighPix, 1);
+	(int)yHighPix, 3);
     w->AbsoluteLine((int)xLowPix, (int)yLowPix, (int)xHighPix,
-	(int)yLowPix, 1);
+	(int)yLowPix, 3);
 
     w->SetForeground(_dst->GetForeground());
     w->Line(xHighPix/2+xLowPix/2, yLowPix+1,
@@ -540,10 +544,9 @@ void DeviseCursor::SetCursorColor(PColorID color)
 
   _cursorColor = color;
 
-  // Force the cursor to be redrawn.  Note that if we change how the cursor
-  // is drawn, we might have to do something more extensive here, like
-  // restoring the original pixmap before we redraw.
-  DrawCursor(_dst->GetWindowRep());
+  // Force all cursors in the destination view to be redrawn.
+  _dst->HideCursors();
+  _dst->DrawCursors();
 }
 
 //******************************************************************************

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1998/06/04 22:07:17  wenger
+  View symbol alignment is now saved in session files.
+
   Revision 1.25  1998/05/14 18:21:08  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -972,7 +975,7 @@ Session::SaveViewLinks(char *category, char *devClass, char *instance,
 
 /*------------------------------------------------------------------------------
  * function: Session::SaveCursor
- * Save mappings for the given view.
+ * Save the given cursor.
  */
 DevStatus
 Session::SaveCursor(char *category, char *devClass, char *instance,
@@ -1001,6 +1004,15 @@ Session::SaveCursor(char *category, char *devClass, char *instance,
       fprintf(saveData->fp, "DEVise setCursorDst {%s} {%s}\n", instance,
           dest);
     }
+    free((char *) argvOut);
+  }
+
+  status += CallParseAPI(saveData->control, result, true, argcOut, argvOut,
+      "color", "GetCursorColor", instance);
+  if (status.IsComplete()) {
+    fprintf(saveData->fp, "DEVise color SetCursorColor {%s} %s\n", instance,
+	argvOut[0]);
+
     free((char *) argvOut);
   }
 

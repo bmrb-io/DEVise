@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/06/09 20:06:01  wenger
+  2D OpenGL cursor now drawn as shaded outline plus every-other-point
+  "mesh"; OpenGL CursorStore and GLWindowRep on SGI now use color indices
+  instead of RGB so that they work the same as the other architectures;
+  added user interface to allow changing cursor color (merged through
+  cursor_test_br_1).
+
   Revision 1.15.2.1  1998/06/09 18:15:28  wenger
   Added cursor color-changing capability.
 
@@ -148,7 +155,8 @@ class DeviseCursor : private ViewCallback
   }
   void ReadCursorStore(WindowRep*);
   void DrawCursorStore(WindowRep*);
-  void DrawCursor(WindowRep*);
+  void DrawCursorFill(WindowRep*);
+  void DrawCursorBorder(WindowRep*);
 
   void SetCursorColor(PColorID color);
   PColorID GetCursorColor() { return _cursorColor; }
