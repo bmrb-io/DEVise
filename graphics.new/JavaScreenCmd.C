@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.129  2002/03/05 17:57:57  wenger
+  Changed protocol version to 11.0 to match latest JavaScreen.
+
   Revision 1.128  2002/02/18 21:13:49  wenger
   Fixed a problem with the <label axis> in the JAVAC_ViewDataArea command.
 
@@ -640,8 +643,8 @@ static DeviseCursorList _drawnCursors;
 // Assume no more than 1000 views in a pile...
 static const float viewZInc = 0.001;
 
-static const int protocolMajorVersion = 11;
-static const int protocolMinorVersion = 0;
+static const int protocolMajorVersion = 10;
+static const int protocolMinorVersion = 1;
 
 JavaScreenCache JavaScreenCmd::_cache;
 

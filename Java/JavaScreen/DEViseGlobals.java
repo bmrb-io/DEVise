@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.64  2002/03/01 20:00:08  xuk
+// Added new command DEViseCommands.UpdateJS, now protocol number 11.0
+//
 // Revision 1.63  2002/01/28 23:51:59  wenger
 // Updated the DEVised to support drawing axis labels on the JS side:
 // changed JAVAC_ViewDataArea command; leaves blank areas for axis
@@ -279,7 +282,7 @@ public final class DEViseGlobals
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
     public static final String VERSION = new String("5.0");
-    public static final String PROTOCOL_VERSION = new String("11.0");
+    public static final String PROTOCOL_VERSION = new String("10.1");
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");
