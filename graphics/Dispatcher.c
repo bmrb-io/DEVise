@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/04/20 19:52:04  kmurli
+  Changed Viex.c to use a pipe mechanism to call itself if it needs to be
+  done again. The view now is not called contiously by the Dispatcher,instead
+  only of there is some data in the pipe.
+  The pipe mechanism is implemented transparently through static functions
+  in the Dispatcher.c (InsertMarker,CreateMarker,CloseMarker,FlushMarker)
+
   Revision 1.11  1996/04/09 18:55:35  jussi
   Minor change to make this file compile under HP-UX.
 
@@ -72,7 +79,6 @@
 //#define DEBUG
 //#define DISPATCHER_SLEEP
 
-
 Dispatcher *Dispatcher::_current_dispatcher = NULL;
 DispatcherList Dispatcher::_dispatchers;
 DispatcherInfoList Dispatcher::_allCallbacks;
@@ -86,12 +92,14 @@ Boolean Dispatcher::_returnFlag;
 */
 Boolean Dispatcher::_quit = false;
 
+#ifdef USE_SELECT
 #ifndef HPUX
 fd_set Dispatcher::fdset;
 #else
 int Dispatcher::fdset;
 #endif
 int Dispatcher::maxFdCheck = 0;
+#endif
 
 void Dispatcher::InsertMarker(int writeFd)
 {
@@ -102,7 +110,6 @@ void Dispatcher::InsertMarker(int writeFd)
 
 void Dispatcher::FlushMarker(int readFd)
 {
-
  // Read thru the pipe and check if anyone needs the ProcQuery to
  // start from the first - if so return 1 else return 0;
  
@@ -115,7 +122,6 @@ void Dispatcher::FlushMarker(int readFd)
 
 void Dispatcher::CreateMarker(int & readFd,int & writeFd)
 {
-
 	int pipeFd[2];
 
 	if ( pipe(pipeFd) < 0 ){
@@ -129,16 +135,12 @@ void Dispatcher::CreateMarker(int & readFd,int & writeFd)
 
      if (fcntl(readFd,F_SETFL,O_NDELAY) < 0)
 	  perror("Error in DEVise");
-
-
 }
 
 void Dispatcher::CloseMarker(int readFd,int writeFd)
 {
-
 	if (readFd) close(readFd);
 	if (writeFd) close(writeFd);
-
 }
 
 
@@ -147,12 +149,14 @@ Dispatcher::Dispatcher(StateFlag state)
   _stateFlag = state;
   AppendDispatcher();
 
+#ifdef USE_SELECT
 #ifndef HPUX
   memset(&fdset, 0, sizeof fdset);
 #else
   fdset = 0;
 #endif
   maxFdCheck = 0;
+#endif
 
   /* init current time */
   _oldTime = DeviseTime::Now();
@@ -201,6 +205,7 @@ void Dispatcher::Register(DispatcherCallback *c, int priority,
   printf("In Register, fd = %d\n", fd);
 #endif
 
+#ifdef USE_SELECT
   if (fd >= 0) {
 #ifndef HPUX
     FD_SET(fd, &fdset);
@@ -210,6 +215,7 @@ void Dispatcher::Register(DispatcherCallback *c, int priority,
     if (fd > maxFdCheck)
       maxFdCheck = fd;
   }
+#endif
   
   if (allDispatchers) {
     _toInsertAllCallbacks.Append(info);
@@ -269,6 +275,7 @@ void Dispatcher::Unregister(DispatcherCallback *c)
     DispatcherInfo *info = _callbacks.Next(index);
     if (info->callBack == c) {
       info->flag = 0;                   // prevent callback from being called
+#ifdef USE_SELECT
       if (info->fd >= 0) {
 #ifndef HPUX
 	FD_CLR(info->fd, &fdset);
@@ -276,6 +283,7 @@ void Dispatcher::Unregister(DispatcherCallback *c)
 	fdset &= ~(1 << info->fd);
 #endif
       }
+#endif
       _toDeleteCallbacks.Append(info);
       _callbacks.DoneIterator(index);
       return;
@@ -287,6 +295,7 @@ void Dispatcher::Unregister(DispatcherCallback *c)
     DispatcherInfo *info = _allCallbacks.Next(index);
     if (info->callBack == c) {
       info->flag = 0;                   // prevent callback from being called
+#ifdef USE_SELECT
       if (info->fd >= 0) {
 #ifndef HPUX
 	FD_CLR(info->fd, &fdset);
@@ -294,6 +303,7 @@ void Dispatcher::Unregister(DispatcherCallback *c)
 	fdset &= ~(1 << info->fd);
 #endif
       }
+#endif
       _toDeleteAllCallbacks.Append(info);
       _allCallbacks.DoneIterator(index);
       return;
@@ -424,7 +434,9 @@ void Dispatcher::Run1()
   for(index = _allCallbacks.InitIterator(); _allCallbacks.More(index);) {
     DispatcherInfo *callback = _allCallbacks.Next(index);
     if (callback->flag & _stateFlag) {
+#ifdef USE_SELECT
       if (callback->fd < 0)
+#endif
 	callback->callBack->Run();
     }
   }
@@ -433,9 +445,10 @@ void Dispatcher::Run1()
   for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
     DispatcherInfo *callback = _callbacks.Next(index);
     if (callback->flag & _stateFlag) {
-      if (callback->fd < 0) {
+#ifdef USE_SELECT
+      if (callback->fd < 0)
+#endif
 	callback->callBack->Run();
-      }
     }
   }
   _callbacks.DoneIterator(index);
@@ -461,6 +474,7 @@ void Dispatcher::Run1()
   timeout.tv_sec = 0;
   timeout.tv_usec = 0;
 
+#ifdef USE_SELECT
 #ifndef HPUX
   fd_set fdread;
 #else
@@ -517,6 +531,7 @@ void Dispatcher::Run1()
     }
     _callbacks.DoneIterator(index);
   } 
+#endif
 
   // end of call backs     
 

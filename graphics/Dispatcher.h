@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/04/20 19:52:07  kmurli
+  Changed Viex.c to use a pipe mechanism to call itself if it needs to be
+  done again. The view now is not called contiously by the Dispatcher,instead
+  only of there is some data in the pipe.
+  The pipe mechanism is implemented transparently through static functions
+  in the Dispatcher.c (InsertMarker,CreateMarker,CloseMarker,FlushMarker)
+
   Revision 1.9  1996/04/09 18:56:00  jussi
   Minor change to make this file compile under HP-UX.
 
@@ -60,6 +67,9 @@
 #include "VisualArg.h"
 #include "Journal.h"
 #include "Exit.h"
+
+/* uncomment to compile with select() */
+//#define USE_SELECT
 
 /* dispatcher timer interval, in milliseconds */
 const long DISPATCHER_TIMER_INTERVAL = 500;
@@ -312,6 +322,7 @@ private:
   /* All dispatchers */
   static DispatcherList _dispatchers;
   
+#ifdef USE_SELECT
   /* Set of file descriptors to inspect for potential input */
 #ifndef HPUX
   static fd_set fdset;
@@ -319,6 +330,7 @@ private:
   static int fdset;
 #endif
   static int maxFdCheck;
+#endif
 
   /* Set to true when dispatcher should quit */
   static Boolean _quit;
