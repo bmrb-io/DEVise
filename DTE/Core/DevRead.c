@@ -19,6 +19,9 @@
 /*
     $Id$
     $Log$
+    Revision 1.1  1996/11/23 02:00:35  donjerko
+    Restructered DTE directory
+
     Revision 1.2  1996/11/21 19:13:32  wenger
     Fixed more compile warnings; updated devise.dali to match current
     command-line flags.
@@ -260,7 +263,7 @@ Tuple *DevRead::getNext()
         int            numRecs;
 
         if (_tDataP->GetRecs(_recBuf, _recBufSize, _nxtRecId,
-                numRecs, dataSize, NULL))
+                numRecs, dataSize))
         {
             result = new Tuple[_numAttr];
 
