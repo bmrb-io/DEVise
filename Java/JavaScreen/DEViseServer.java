@@ -27,6 +27,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.67  2001/08/20 18:20:08  wenger
+// Fixes to various font problems: XDisplay calculates point sizes correctly
+// and uses screen resolution in specifying font; JS passes *its* screen
+// resolution to the devised so that fonts show up correctly in the JS
+// (JS protocol version now 7.0); changed DEVise version to 1.7.4.
+//
 // Revision 1.66  2001/05/11 20:36:08  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -464,7 +470,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 	      ").setCurrentClient(" + c.getConnectionID() + ") in thread " +
 	      Thread.currentThread());
 	    System.out.println("  current client is: " +
-	      ((client != null) ? (client.getConnectionID().toString()) :
+	      ((client != null) ? (new Long(client.getConnectionID()).toString()) :
 	      "null"));
         }
 
@@ -606,7 +612,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 		if (clientCmd != null && DEBUG >= 1) {
 		    System.out.println("Server on " + hostname +
 		      " got command " + clientCmd + " from client " +
-		      client.getConnectionID().intValue() + " in thread " +
+		      client.getConnectionID() + " in thread " +
 		      Thread.currentThread());
 		}
 
@@ -642,7 +648,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                     }
 		    processServerCmd(serverDatas);
                 } catch (YException e) {
-                    pop.pn("DEViseServer failed1");
+                    pop.pn("DEViseServer failed!");
                     pop.pn(e.getMsg());
 
                     if (clientCmd.startsWith(DEViseCommands.EXIT)) {
@@ -779,7 +785,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
         if (sendCmd(clientCmd)) {
             serverCmds = new String[2];
             serverCmds[0] = DEViseCommands.USER + " " +
-            client.ID.intValue();
+            client.ID;
             serverCmds[1] = DEViseCommands.DONE;
         } else {
             isRemoveClient = true;
@@ -1248,7 +1254,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
         Vector rspbuf = new Vector();
 
         pop.pn("Sending command to devised(" + hostname + " at " + cmdPort + ") :  \"" + clientCmd + "\"");
-        socket.sendCmd(clientCmd);
+        socket.sendCmd(clientCmd, (short)5, (long)9999);
 
         isEnd = false;
         while (!isEnd) {
