@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/07/15 14:22:38  jussi
+  This code is now compatible with Tcl 7.5 and Tk 4.1. Compatibility
+  with older Tcl/Tk code maintained for a short while.
+
   Revision 1.11  1996/07/11 19:38:27  jussi
   The Tcl variable 'file' is set to the name of the session file
   before the session file is executed. Exported session files
@@ -68,6 +72,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <fcntl.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <tcl.h>
@@ -83,6 +88,9 @@ static char *_progName = 0;
 static char *_hostName = "localhost";
 static int _portNum = DefaultNetworkPort;
 static int _deviseFd = -1;
+static int _dataFd = -1;
+static int _dataNewFd = -1;
+static int _quiet = 0;
 
 static char *_idleScript = 0;
 static int   _syncDone = 0;
@@ -159,6 +167,134 @@ int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
     return TCL_OK;
 }
 
+int SetGetImage(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]) 
+{ 
+   _dataFd = socket(AF_INET, SOCK_STREAM, 0);
+   if(_dataFd < 0) 
+      perror("socket");
+   DOASSERT(_dataFd >= 0, "Cannot create socket");
+
+   struct sockaddr_in dataAddr;
+   memset(&dataAddr, 0, sizeof dataAddr);
+   dataAddr.sin_family = AF_INET;
+
+   dataAddr.sin_port = htons(DefaultDataPort);
+#ifdef DEBUG
+   printf("Client Listening at port%u.\n", DefaultDataPort);
+#endif
+
+   dataAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+   
+   int result = bind(_dataFd, (struct sockaddr *)&dataAddr,
+			sizeof(struct sockaddr));
+   if (result < 0) {
+      perror("bind");
+//      close(_dataFd);
+   }
+   DOASSERT(result >= 0, "Cannot bind to address");
+
+   result = listen(_dataFd, 1);
+   if (result < 0) {
+  	perror("listen");
+//	close(_dataFd);
+   }
+   DOASSERT(result >= 0, "Cannot listen");
+
+#ifdef DEBUG
+   printf("\nData Client waiting for server to connect\n");
+#endif
+
+   int len = sizeof(dataAddr);
+
+   char *mArgv[4];
+   for(int i = 0; i < 4; i++) {
+      mArgv[i] = new char[100];
+      DOASSERT(mArgv[i], "Run out of memory.");
+   }
+
+   sprintf(mArgv[0], "%s", "connectData");
+   mArgv[0][11] = '\0';
+   sprintf(mArgv[1], "%s", "0");
+   sprintf(mArgv[2], "%s", argv[1]);
+   sprintf(mArgv[3], "%s", argv[2]);
+   if (NetworkSend(_deviseFd, API_CMD, 0, 4, mArgv) < 0) {
+        fprintf(stderr, "Server has terminated. Client exits.\n");
+//	close(_dataFd);
+        exit(1);
+   }
+
+   struct sockaddr_in servAddr;
+   memset(&servAddr, 0, sizeof(struct sockaddr));
+   len = sizeof(servAddr);
+#ifdef DEBUG
+   printf("Waiting for server to connect data Channnel.\n");
+#endif
+   do {
+      _dataNewFd = accept(_dataFd, (struct sockaddr *)&servAddr, &len);
+   } while (_dataNewFd < 0 && errno == EINTR);
+   close(_dataFd);
+   if (_dataNewFd < 0) {
+      perror("data accept");
+//      close(_dataFd);
+      DOASSERT(0, "Error in network interface when connecting data channel");
+   }
+#ifdef DEBUG
+   printf("Data Channel established.\n");
+#endif
+   
+   int file;
+   if (!strcmp(argv[3], "stderr")) file = 2;
+   else if(!strcmp(argv[3],"stdout")) file = 1; 
+   else {
+      file = open(argv[3], O_WRONLY);
+/*      printf("argv[3]=%s\n",argv[1]);
+      perror("Unrecognized output stream");
+      return TCL_ERROR;
+ */  }
+   char buf[BUF_SIZE];
+   do {
+      result = read(_dataNewFd, buf, BUF_SIZE);
+#ifdef DEBUG
+      printf("Client got data %s\n", buf);
+#endif
+      if (result > 0) write(file, buf, result);
+   } while (result > 0);
+   close(_dataNewFd);
+   if (result < 0) {
+      perror("Read error when read data from the data channel.\n");
+      return TCL_ERROR;
+   }
+#ifdef DEBUG
+   printf("Done getting gif file");
+#endif
+
+   u_short flag;
+   int rargc;
+   char **rargv;
+   do {
+     if (NetworkReceive(_deviseFd, 1, flag, rargc, rargv) <= 0) {
+         fprintf(stderr, "Server has terminated. Client exits.\n");
+         exit(1);
+     }
+     if (flag == API_CTL)
+         ControlCmd(rargc, rargv);
+   } while (flag != API_ACK && flag != API_NAK);
+    
+   char *res = NetworkPaste(rargc, rargv);
+   DOASSERT(res, "Out of memory");
+#ifdef DEBUG
+   printf("Received reply: \"%s\"\n", res);
+#endif
+   Tcl_SetResult(_interp, res, TCL_VOLATILE);
+   delete res;
+    
+   if (flag == API_NAK)
+     return TCL_ERROR;
+   
+   return TCL_OK;
+}    
+
 void ReadServer(ClientData cd, int mask)
 {
 #ifdef DEBUG
@@ -183,8 +319,10 @@ void ReadServer(ClientData cd, int mask)
 
 void SetupConnection()
 {
-    Version::PrintInfo();
-    printf("\n");
+    if(!_quiet) {
+      Version::PrintInfo();
+      printf("\n");
+    }
 
     _interp = Tcl_CreateInterp();
     if (Tcl_Init(_interp) == TCL_ERROR) {
@@ -212,12 +350,16 @@ void SetupConnection()
     }
     
     Tcl_LinkVar(_interp, "argv0", (char *)&_progName, TCL_LINK_STRING);
+    Tcl_LinkVar(_interp, "quiet", (char *)&_quiet, TCL_LINK_INT);
     Tcl_CreateCommand(_interp, "DEVise", DEViseCmd, 0, 0);
+    Tcl_CreateCommand(_interp, "DEVGetImage", SetGetImage, 0, 0);
     
-    printf("Client running.\n");
-    printf("\n");
+    if(!_quiet) {
+	 printf("Client running.\n");
+         printf("\n");
+    }
     
-    printf("Connecting to server %s:%d.\n", _hostName, _portNum);
+    if(!_quiet) printf("Connecting to server %s:%d.\n", _hostName, _portNum);
     
     _deviseFd = NetworkOpen(_hostName, _portNum);
     if (_deviseFd < 0)
@@ -232,7 +374,7 @@ void SetupConnection()
 #endif
     }
     
-    printf("Connection established.\n\n");
+    if(!_quiet) printf("Connection established.\n\n");
     
     char *controlFile = "control.tk";
     if (_idleScript) {
@@ -249,7 +391,7 @@ void SetupConnection()
     } else
         control = controlFile;
     
-    printf("Control panel file is: %s\n", control);
+    if(!_quiet) printf("Control panel file is: %s\n", control);
     
     int code = Tcl_EvalFile(_interp, control);
     if (code != TCL_OK) {
@@ -259,7 +401,7 @@ void SetupConnection()
     }
     
     if (_restoreFile) {
-        printf("Restoring session file %s\n", _restoreFile);
+        if(!_quiet) printf("Restoring session file %s\n", _restoreFile);
         Tcl_SetVar(_interp, "restoring", "1", 0);
         Tcl_SetVar(_interp, "file", _restoreFile, 0);
         int code = Tcl_EvalFile(_interp, _restoreFile);
@@ -300,7 +442,10 @@ int main(int argc, char **argv)
             }
             _portNum = atoi(argv[i + 1]);
             i++;
-        } else {
+        } else if (!strcmp(argv[i], "-q")) {
+	    _quiet = 1;
+//	    i ++;
+	} else {
             if (!_restoreFile)
                 _restoreFile = argv[i];
             else if(!_idleScript)
@@ -315,7 +460,7 @@ int main(int argc, char **argv)
     SetupConnection();
 
     if (_idleScript) {
-        printf("Waiting for server synchronization.\n");
+        if (!_quiet) printf("Waiting for server synchronization.\n");
         _syncDone = 0;
         (void)Tcl_Eval(_interp, "DEVise sync");
         while(!_syncDone) {
@@ -329,7 +474,7 @@ int main(int argc, char **argv)
             if (flag == API_CTL)
                 ControlCmd(argc, argv);
         }
-        printf("Executing script file %s\n", _idleScript);
+        if (!_quiet) printf("Executing script file %s\n", _idleScript);
         int code = Tcl_EvalFile(_interp, _idleScript);
         if (code != TCL_OK) {
             fprintf(stderr, "Cannot execute script file %s\n", _idleScript);
