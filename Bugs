@@ -739,6 +739,9 @@ Num Date        Status  Description
 177 04/21/97	OPEN	Negative color value (at least for data) causes
 			core dump. (rkw)
 
+178 04/24/97	OPEN	Devise can't run if it can't find the 5x7 font
+			(requested by the Tcl/Tk code). (rkw)
+
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

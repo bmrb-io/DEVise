@@ -17,6 +17,11 @@
   $Id$
 
   $Log$
+  Revision 1.37  1997/04/16 18:53:35  wenger
+  Text labels can now show non-string attributes; fixed a bug in constant
+  strings in mapping (non-terminated string); added constant attributes to
+  GData attribute list; commented out some debug code in mapping dialog.
+
   Revision 1.36  1997/04/14 17:45:17  beyer
   TextLabelShape now works with string constants in mapping.
 
@@ -1660,7 +1665,7 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 
 int FullMapping_TextLabelShape::NumShapeAttrs()
 {
-	return 2;
+	return 4;
 }
 
 
@@ -1689,6 +1694,9 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 
   /* Figure out the type of the label and label format attribute. */
   AttrList *attrList = map->GDataAttrList();
+#if defined(DEBUG)
+  attrList->Print();
+#endif
 
   Boolean labelAttrValid;
   AttrType labelAttrType = IntAttr;
@@ -1716,7 +1724,6 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
     labelFormatType = attrInfo->type;
   }
 
-
   VisualFilter filter;
   view->GetVisualFilter(filter);
   Coord filterWidth = filter.xHigh - filter.xLow;
@@ -1730,9 +1737,23 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
     char *gdata = (char *)gdataArray[i];
     Coord x = GetX(gdata, map, offset);
     Coord y = GetY(gdata, map, offset);
-    Coord pointSize = GetSize(gdata, map, offset);
-    if (pointSize <= 1.0)
-      pointSize = 12.0;
+
+	Coord size = GetSize(gdata, map, offset);
+	size *= pixelSize;
+
+	Coord width = fabs(size * GetShapeAttr2(gdata, map, offset));
+	Coord height = fabs(size * GetShapeAttr3(gdata, map, offset));
+
+	/* Figure out a reasonable font size to use so that the amount of scaling
+	 * is as small as possible.  I'm sure this isn't perfect, but it seems
+	 * fairly close. RKW 4/25/97. */
+	Coord x0, y0, x1, y1;
+	win->Transform(0, 0, x0, y0);
+	win->Transform(1, 1, x1, y1);
+	Coord pointSize = height * fabs(y1 - y0);
+	pointSize = MIN(pointSize, 16.0);
+	pointSize = (Coord) ((int) (pointSize + 0.5));
+
     GlobalColor color = GetColor(view, gdata, map, offset);
 
     /* Find or generate the label string. */
@@ -1787,13 +1808,14 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
       oldPointSize = pointSize;
     }
 
-    // Pretend that there's a large box in which the text has to
-    // be drawn; this is done because we don't know the size of the
-    // the label in pixels, and if we pass a width or height that
-    // is too tight, AbsoluteText() will try to scale the text.
-    win->AbsoluteText(label, x - filterWidth / 2, y - filterHeight / 2,
-    filterWidth, filterHeight,
-    WindowRep::AlignCenter, true);
+	if ((Boolean)GetShapeAttr4(gdata, map, offset)) {
+	  Pattern oldPattern = win->GetPattern();
+	  win->SetPattern((Pattern)-1);
+      win->FillRect(x - width / 2, y - height / 2, width, height);
+	  win->SetPattern(oldPattern);
+	}
+    win->ScaledText(label, x - width / 2, y - height / 2, width, height,
+      WindowRep::AlignCenter, true);
 
     if (color == XorColor)
       win->SetCopyMode();

@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.86  1997/04/22 15:25:52  wenger
+#	Conditionaled out lots of debug code; fixed data source visualization
+#	window so the window for the data again defaults to 'New' if there are
+#	no windows.
+#
 #	Revision 1.85  1997/04/21 23:06:28  guangshu
 #	1. Make statistics deal with different DATE types.
 #	2. Make Aggregates on TData and GData.
@@ -436,9 +441,9 @@ proc OpenDataSource {sname} {
 		set newname ""
 		regsub -all {\.| |,} $sname _ newname
 		set newname ".$newname"
-		dialog .oldTableName "Old Table Name Format" \
-			"Table name $sname will be converted to $newname" \
-			"" 0 OK
+#		dialog .oldTableName "Old Table Name Format" \
+#			"Table name $sname will be converted to $newname" \
+#			"" 0 OK
 		set sname $newname
 	}
 #	puts "looking up \"$sname\""

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.90  1997/04/11 18:48:56  wenger
+  Added dashed line support to the cslib versions of WindowReps; added
+  option to not maintain aspect ratio in Tasvir images; re-added shape
+  help file that somehow didn't get added in 1.3 merges; removed code
+  for displaying GIFs locally (including some of the xv code).
+
   Revision 1.89  1997/03/25 17:59:03  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -3201,6 +3207,7 @@ void XWindowRep::DoPopup(int x, int y, int button)
     return;
   
   /* find width and height of window */
+  SetNormalFont(); // In case the last font we used was different.
   XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
   int textWidth = 0;
   int textHeight = 0;

@@ -15,6 +15,9 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.26  1997/04/21 23:03:54  guangshu
+#       Changes to deal with more statistics cases.
+#
 #       Revision 1.25  1997/04/18 20:47:30  donjerko
 #       Removed tdata name chopping.
 #
@@ -597,7 +600,7 @@ set DEViseShapeAttrNames { \
 	{Polyline "" "" "" "" ""} \
 	{Image "Filename/Image" "Image Type" "Aspect" "" ""} \
 	{"Polyline File" Filename Format "" "" "Line Width"} \
-	{"Text Label" "Label Text" "Format" "" "" ""} \
+	{"Text Label" "Label Text" "Format" "Width" "Height" "Outline"} \
 	{"Tcl/Tk Window" "Script File" "Arg Count" "Arg 0" "Arg 1" "Arg 2"} \
 }
 
