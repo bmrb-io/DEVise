@@ -19,6 +19,9 @@
 /*
     $Id$
     $Log$
+    Revision 1.6  1997/02/03 04:11:26  donjerko
+    Catalog management moved to DTE
+
     Revision 1.5  1996/12/16 11:13:03  kmurli
     Changes to make the code work for separate TDataDQL etc..and also changes
     done to make Aggregates more robust
@@ -262,7 +265,7 @@ String *DevRead::getAttributeNames()
         return(NULL);
 
     String *result = new String [_numAttr];
-    result[0] = "RecId";
+    result[0] = "recId";
     int j = 1;
 
     AttrList *attrListP = _tDataP->GetAttrList();

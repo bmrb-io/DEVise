@@ -22,7 +22,8 @@
 #include "ParseTree.h"
 #include "joins.h"
 
-List<ConstantSelection*>* dummy;	// Just needed for pragme implementation
+List<ConstantSelection*>* dummy;	// Just needed for pragma implementation
+List<char*>* dummy2;	// Just needed for pragma implementation
 extern List<JoinTable*>*joinList;
 const int DETAIL = 1;
 LOG(ofstream logFile("log_file.txt");)
