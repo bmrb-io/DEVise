@@ -1,0 +1,85 @@
+###############################################################################
+#
+#    DataReader Makefile
+#
+###############################################################################
+
+include ../../Makefile.common
+
+RM = /bin/rm -f
+
+LIB_FILES = \
+	Buffer.C \
+	Schema.C \
+	DataReader.C \
+	DateTime.C \
+	datareader.lex.C \
+	datareader.tab.C
+
+CC_FILES =
+
+C_FILES =
+
+OTHER_FILES =
+
+LEX_FILES = \
+	datareader.l
+
+FLEX = flex
+FLEXFLAGS = -t
+
+UNI_INCL = -I../../DataReader -I../DataReader -I/s/flex/include
+
+CFLAGS = $(ARCH_FLAGS) -Wall $(OPTFLAG) $(UNI_INCL) \
+	-DHAVE_CONFIG_H $(OPTFLAG)
+
+.PHONY: all default clean
+.PRECIOUS: %.o %.lex.C %.tab.C %.tab.h
+
+PURE_OPTS = -g++=yes -collector=/p/coral/bin/hp_ld -windows=no -chain-length=12 -output-limit=160000 -inuse-at-exit -copy-fd-output-to-logfile=1 -log-file=/u/f/l/flisakow/devise/DataReader/try/pure.log -cache-dir=/p/coral/people/tmp -always-use-cache-dir=yes
+
+###############################################################################
+#
+#	Object files
+#
+
+LIBOBJ = $(LIB_FILES:.C=.o) $(OTHER_FILES)
+
+OBJFILES = $(CC_FILES:.C=.o) $(C_FILES:.c=.o)
+
+###############################################################################
+
+default: all
+
+LIBNAME = libdatareader.a
+
+all: $(LIBNAME)
+lib: $(LIBNAME)
+
+$(LIBNAME): $(LIBNAME)($(LIBOBJ))
+
+umain: $(OBJFILES) libdatareader.a
+	$(CC) -o $@ $(OBJFILES) -L. -ldatareader $(ARCH_LDPOST)
+
+umain.pure: $(OBJFILES) libdatareader.a
+	purify $(PURE_OPTS) $(CC) -o $@ $(OBJFILES) -L. -ldatareader\
+	$(ARCH_LDPOST)
+clean:
+	/bin/rm -f *.o *.lex.C ../../DataReader/*.tab.c ../../DataReader/*.output ../../DataReader/*.tab.h *.output libdatareader.a
+
+###############################################################################
+#
+#    Special compilation rules
+
+%.tab.C %.tab.h: %.y
+	bison --verbose --defines --debug -p dr $<
+	mv ../../DataReader/datareader.tab.c ../../DataReader/datareader.tab.C
+#	mv $%.c $%.C
+	
+%.lex.C: %.l %.tab.h
+	flex -t $< > $@
+
+# %.o: %.C
+#	g++ $(CFLAGS) $(INCLUDE) -c $<
+
+###############################################################################

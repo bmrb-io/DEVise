@@ -1,0 +1,14 @@
+
+depend:
+	makedepend -fMakefile.solaris *.c *.C *.cc
+# DO NOT DELETE
+
+Buffer.o: Buffer.h Schema.h /usr/include/stdlib.h
+Buffer.o: /usr/include/sys/feature_tests.h /usr/include/math.h
+Buffer.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+Schema.o: Schema.h /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+Schema.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
+DataReader.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h DataReader.h
+DataReader.o: DataReaderParser.h /usr/include/assert.h Schema.h Buffer.h
+testParser.o: DataReader.h DataReaderParser.h /usr/include/assert.h Schema.h
+testParser.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h Buffer.h
