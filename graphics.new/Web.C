@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/31 15:39:32  jussi
+  Minor changes to remove compiler warnings in Linux.
+
   Revision 1.6  1996/04/16 20:38:49  jussi
   Replaced assert() calls with DOASSERT macro.
 
@@ -62,19 +65,13 @@
 #include <string.h>
 #include <errno.h>
 
-#include <tcl.h>
-#include <tk.h>
-
 #include "Exit.h"
+#include "Web.h"
 #include "machdep.h"
 
 //#define DEBUG
 
 extern int errno;
-
-static Tcl_Interp *globalInterp = 0;
-
-#define UPDATE_TCL { (void)Tcl_Eval(globalInterp, "update"); }
 
 #define HTTP_PORT	80
 
@@ -168,7 +165,6 @@ string_to_sin(char *string, struct sockaddr_in *sin)
 	}
 }
 
-static
 int condor_bytes_stream_open_ckpt_file( char *name )
 {
 	struct sockaddr_in	sin;
@@ -224,7 +220,6 @@ char *get_ftpd_response(int sock_fd, int resp_val)
   return buffer;
 }
 
-static
 int open_ftp( char *name )
 {
   struct sockaddr_in	sin;
@@ -373,7 +368,6 @@ int open_ftp( char *name )
   return -1;
 }
 
-extern
 int open_http( char *name, size_t * bytes_in_body)
 {
   struct sockaddr_in sin;
@@ -502,57 +496,4 @@ int open_http( char *name, size_t * bytes_in_body)
  error:
   close(sock_fd);
   return -1;
-}
-
-int www_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
-{
-  // Allow other functions to UPDATE_TCL
-
-  globalInterp = interp;
-
-  DOASSERT(argc == 5, "Invalid parameters");
-
-  char *url = argv[1];
-  char *cachefile = argv[2];
-  char *schemafile = argv[3];
-  char *schematype = argv[4];
-
-  int fd;
-  size_t len = 0;
-  if (!strncmp(url, "ftp://", 6))
-    fd = open_ftp(url);
-  else
-    fd = open_http(url, &len);
-  if (fd < 0) {
-    fprintf(stderr, "Could not open URL %s.\n", url);
-    return TCL_ERROR;
-  }
-
-  FILE *fp = fopen(cachefile, "w");
-  if (!fp) {
-    fprintf(stderr, "Cannot create cache file %s: ", cachefile);
-    perror("fopen");
-    close(fd);
-    return TCL_ERROR;
-  }
-
-  while((len = read(fd, buffer, sizeof buffer)) > 0) {
-    UPDATE_TCL;
-    if (fwrite(buffer, len, 1, fp) != 1) {
-      fprintf(stderr, "Cannot write to cache file %s: ", cachefile);
-      perror("fwrite");
-      close(fd);
-      return TCL_ERROR;
-    }
-  }
-
-  close(fd);
-
-  if (fclose(fp)) {
-    fprintf(stderr, "Cannot close cache file %s: ", cachefile);
-    perror("close");
-    return TCL_ERROR;
-  }
-
-  return TCL_OK;
 }
