@@ -19,16 +19,20 @@ a- Test distribution files (re-run at least some of the user interface
   files)
 x- Tag sources (but not html and doc directories) and "thaw" sources
 x- Change the Devise version number in the sources
-- Build on SGI
+?- Build on SGI
     - Maybe commit SGI-related changes as a CVS branch
 !- Update online help
 a- Update user manual
+- Fix bug 148
+- Fix problem with mapping dialog not getting updated when user selects
+  a new view.
 - Update web page
 - Tag html and doc directories
 - Generate "official" sources1.3.0.tar.gz file
 - Release documentation and re-generate distribution files with up-to-date
   documentation.
 - Put 1.3.0 release on FTP site
+- Announce on devise-sup mailing list.
 
 x = done
 ~ = almost done
