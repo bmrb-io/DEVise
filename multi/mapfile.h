@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/08/20 22:11:40  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.14.8.1  1997/08/20 21:20:40  wenger
   Changed multi versions of DrawGData functions to have recordsProcessed
   argument needed for interruptible draws.
@@ -183,7 +187,7 @@ public:
 	}
 
 
-	win->SetFgColor(lastColor);
+	//TEMPTEMPwin->SetFgColor(lastColor);
 
 	win->DrawPixelArray(_x, _y, count, pixelSize);
 	i = colorIndex;
@@ -233,7 +237,7 @@ public:
 	}
 
 
-	win->SetFgColor((GlobalColor) (gdata->color) );
+	//TEMPTEMPwin->SetFgColor((GlobalColor) (gdata->color) );
 
 	win->FillRectArray(_x, _y, _width, _height, count);
 	i = colorIndex;

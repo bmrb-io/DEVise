@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/10/03 14:37:21  wenger
+  Various fixes to get session opening/saving to work with client/server
+  version; reading old-style (Tcl) session files now works in back end;
+  got back-end session file stuff working for multi.
+
   Revision 1.8  1996/12/03 20:44:06  jussi
   Removed reference to unneeded file Snapshot.h.
 
@@ -55,7 +60,7 @@
 #include "Display.h"
 #include "Dispatcher.h"
 #include "RectShape.h"
-#include "ColorMgr.h"
+#include "Color.h"
 #include "Control.h"
 #include "TDataCMap.h"
 #include "Connector.h"
@@ -66,7 +71,6 @@
 #include "TDataMap.h"
 #include "TDataMulti.h"
 #include "Temp.h"
-#include "ViewScatter.h"
 #include "MappingClassInfo.h"
 #include "MultiRec.h"
 #include "Util.h"

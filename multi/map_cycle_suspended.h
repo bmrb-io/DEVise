@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/08/20 22:11:39  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.13.8.1  1997/08/20 21:20:39  wenger
   Changed multi versions of DrawGData functions to have recordsProcessed
   argument needed for interruptible draws.
@@ -153,7 +157,7 @@ public:
     Coord pixelHeight = 1 / fabs(y1 - y0);
 
 
-    win->SetFgColor((GlobalColor) (map->GetDefaultColor()) );
+    //TEMPTEMPwin->SetFgColor((GlobalColor) (map->GetDefaultColor()) );
 
 
     if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {

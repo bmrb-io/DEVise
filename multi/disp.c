@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/11/24 23:15:56  weaver
+  Changes for the new ColorManager.
+
   Revision 1.12.10.1  1997/05/21 20:41:25  weaver
   Changes for new ColorManager
 
@@ -59,35 +62,30 @@
 #include <time.h>
 #include <sys/time.h>
 
-#include "DeviseTypes.h"
-#include "Display.h"
-#include "Dispatcher.h"
-#include "RectShape.h"
-#include "Control.h"
-#include "Init.h"
-#include "VisualLinkClassInfo.h"
+#include "TDataMap.h"
+#include "ActionDefault.h"
+#include "AxisLabelClassInfo.h"
+#include "View.h"
+#include "ViewGraph.h"
+#include "Message.h"
+#include "WinClassInfo.h"
+#include "ActionClassInfo.h"
 #include "TDataMulti.h"
-#include "TDataHost.h"
-#include "TDataCycle.h"
-#include "TDataViewX.h"
-#include "ViewClassInfo.h"
 #include "MappingClassInfo.h"
-#include "MapInterpClassInfo.h"
 #include "HostMappingClassInfo.h"
 #include "CycleOccMappingClassInfo.h"
 #include "CycleEffMappingClassInfo.h"
 #include "CycleWorkingMappingClassInfo.h"
 #include "CycleSuspendedMappingClassInfo.h"
 #include "CycleCpuTimeMappingClassInfo.h"
-#include "ViewClassInfo.h"
-#include "WinClassInfo.h"
-#include "ActionDefault.h"
-#include "Message.h"
-#include "TData.h"
-#include "TDataMap.h"
-#include "ActionClassInfo.h"
-#include "AxisLabelClassInfo.h"
+#include "VisualLinkClassInfo.h"
 #include "CursorClassInfo.h"
+#include "ViewClassInfo.h"
+#include "TDataHost.h"
+#include "TDataCycle.h"
+#include "Display.h"
+
+class TData;
 
 #include "Color.h"
 

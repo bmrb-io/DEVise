@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/10/28 19:48:51  wenger
+  More updates for changes to TData GetRecs interface.
+
   Revision 1.5  1997/07/16 15:56:10  wenger
   Changes to accomodate new TData interface.
 
@@ -43,13 +46,14 @@ int binarySearch = false;
 /* Get a record from TData */
 void GetRec(TData *tdata, RecId id, MultiRec &rec)
 {
-    Range range;
+    Interval range;
     range.AttrName = "recId";
     range.Low = id;
     range.High = id;
     range.Granularity = 0; // Not used.
 
-    TData::TDHandle handle = tdata->InitGetRecs(&range);
+    int bytesLeft;//TEMPTEMP -- what do we do with this?
+    TData::TDHandle handle = tdata->InitGetRecs(&range, bytesLeft);
     double startRid; int numRecs, dataSize;
 
     if (!tdata->GetRecs(handle, &rec, sizeof(MultiRec), &range, dataSize)) {
