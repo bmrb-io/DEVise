@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/31 15:41:44  jussi
+  Minor change to remove compiler warnings in Linux.
+
   Revision 1.6  1996/05/20 18:42:03  jussi
   Replaced PENTIUM flag with SOLARIS.
 
@@ -206,7 +209,9 @@
   EXTERNC int semget(key_t, int, int);
   EXTERNC int semctl(int, int, int, ...);
   EXTERNC int semop(int, struct sembuf *, unsigned int);
+#endif
 
+#if defined(__alpha) || defined(__sun) || defined(__linux)
   #ifndef SEM_A
   #define SEM_A 0200                    // alter permission
   #endif

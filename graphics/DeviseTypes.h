@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/06/21 19:29:11  jussi
+  Cleaned up file and replaced MinMax class with simpler MIN/MAX macros.
+
   Revision 1.4  1996/05/20 18:44:40  jussi
   Replaced PENTIUM flag with SOLARIS.
 
@@ -21,7 +24,7 @@
 typedef double Coord;
 typedef char Boolean;
 
-#if defined(HPUX) || defined(SUN) || defined(SOLARIS)
+#if defined(HPUX) || defined(SUN) || defined(SOLARIS) || defined(LINUX)
 inline int trunc(float num) {
   return (int)num;
 }
