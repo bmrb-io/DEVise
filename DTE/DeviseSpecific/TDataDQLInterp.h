@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/02/03 04:09:03  donjerko
+  Catalog management moved to DTE
+
   Revision 1.3  1996/12/16 11:13:45  kmurli
   Changed the naming of attributes from DTE
 
@@ -112,5 +115,4 @@ private:
 
 };
 
-void dqlCreateIndex(char *);
 #endif

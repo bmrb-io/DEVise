@@ -23,4 +23,13 @@ char* dteListAttributes(const char* tableName);
 
 char* dteReadSQLFilter(const char* fileName);
 
+void dteCreateIndex(const char* tableName, const char* indexName, 
+	const char* keyAttrs, const char* dataAttrs, const char* isStandAlone);
+
+char* dteListAllIndexes();
+
+char* dteShowIndexDesc(const char* tableName, const char* indexName);
+
+void dteDeleteIndex(const char* tableName, const char* indexName);
+
 #endif

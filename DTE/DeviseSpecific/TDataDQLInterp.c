@@ -252,29 +252,3 @@ Boolean TDataDQLInterp::Decode(void *recordBuf, int recPos, char *line)
   /* set buffer for interpreted record */
   return true;
 }
-
-void dqlCreateIndex(char *query)
-{
-	
-	cout << "strlen = " << strlen(query);
-	cout << "qurery = " << query << endl;
-	String *queryStr = new String(query);
-     Engine engine(*queryStr);
-     engine.optimize();
-	CATCH(
-		cout << "DTE error coused by query: \n";
-		cout << "   " << *queryStr << endl;
-		currExcept->display(); 
-		currExcept = NULL; 
-		cout << endl;
-		exit(0);
-	)
-}
-
-
-
-
-
-
-
-

@@ -285,3 +285,112 @@ char* dteReadSQLFilter(const char* fileName){
 	return retval;
 }
 
+void dteCreateIndex(const char* tableName, const char* indexName, 
+     const char* keyAttrs, const char* dataAttrs, const char* isStandAlone){
+
+	numFlds = 0;
+	String standAlone;
+	if(strcmp(isStandAlone, "Yes") == 0){
+		standAlone = "standAlone ";
+	}
+	String query = "create " + standAlone + "index " + indexName +
+		" on " + tableName + "(" + keyAttrs + ") add (" + dataAttrs + ")"; 
+	cerr << "in dteCreateIndex, query =" << query << endl;
+	char* retVal = executeQuery(query);
+     CATCH(
+          cout << "DTE error coused by query: \n";
+          cout << "   " << query << endl;
+          currExcept->display();
+          currExcept = NULL;
+          cout << endl;
+          exit(0);
+     )
+}
+
+String join(const String* src, int n, const String& sep){
+	String retVal;
+	int i = 0;
+	while(i < n){
+		retVal += src[i++];
+		if(i < n){
+			retVal += sep;
+		}
+	}
+	return retVal;
+}
+
+char* dteShowIndexDesc(const char* tableName, const char* indexName){
+	cout << "in dteShowIndexDesc(" << tableName << ", " << indexName << ")\n";
+	numFlds = 1;
+	String query = 
+		String("select t.descriptor from .sysind as t where t.table = \"") +
+		tableName + "\" and t.name = \"" + indexName + "\"";
+	Engine engine(query);
+	engine.optimize();
+     CATCH(
+          cout << "DTE error coused by query: \n";
+          cout << "   " << query << endl;
+          currExcept->display();
+          currExcept = NULL;
+          cout << endl;
+          exit(0);
+     )
+	assert(engine.getNumFlds() == 1);
+	TypeID* types = engine.getTypeIDs();
+	assert(types[0] == "indexdesc");
+	engine.initialize();
+	Tuple* tuple = engine.getNext();
+	assert(tuple);
+	IndexDesc* indexDesc = (IndexDesc*) tuple[0];
+	assert(engine.getNext() == NULL);
+	engine.finalize();
+	int numKeyFlds = indexDesc->getNumKeyFlds();
+	int numAddFlds = indexDesc->getNumAddFlds();
+	const String* keyFlds = indexDesc->getKeyFlds();
+	const String* addFlds = indexDesc->getAddFlds();
+	String retVal("{");
+	retVal += join(keyFlds, numKeyFlds, ", ");
+	retVal += "} {";
+	retVal += join(addFlds, numAddFlds, ", ");
+	retVal += "} {";
+	if(indexDesc->isStandAlone()){
+		retVal += "Yes";
+	}
+	else{
+		retVal += "No";
+	}
+	retVal += "}";
+	cout << "returning " << retVal << endl;
+	return strdup(retVal.chars());
+}
+
+char* dteListAllIndexes(){
+	numFlds = 2;
+
+	String query = "select t.table, t.name from .sysind as t";
+	char* retVal = executeQuery(query);
+     CATCH(
+          cout << "DTE error coused by query: \n";
+          cout << "   " << query << endl;
+          currExcept->display();
+          currExcept = NULL;
+          cout << endl;
+          exit(0);
+     )
+	return retVal;
+}
+
+void dteDeleteIndex(const char* tableName, const char* indexName){
+     numFlds = 0;
+
+     String query = String("drop index ") + tableName + " " + indexName;
+     char* retVal = executeQuery(query);
+     CATCH(
+          cout << "DTE error coused by query: \n";
+          cout << "   " << query << endl;
+          currExcept->display();
+          currExcept = NULL;
+          cout << endl;
+          exit(0);
+     )
+}
