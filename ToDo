@@ -476,6 +476,10 @@ cases). (rkw, et al 2/5/98)
 Build DEVise for Solaris with threads so we don't have to use semaphores.
 (rkw, et al 2/5/98)
 
+Possibly add record id to GData sent to socket or file. (rkw 2/10/98)
+
+Possibly add view name to GData sent to socket or file. (rkw 2/10/98)
+
 
 COMPLETED
 ---------

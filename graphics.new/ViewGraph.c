@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.66  1998/01/27 23:04:27  wenger
+  Broke the server's view selection dependency on the client (except when
+  running in collaboration mode).
+
   Revision 1.65  1998/01/14 16:39:23  wenger
   Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
 
@@ -305,6 +309,65 @@
 #define STEP_SIZE 20
 
 ImplementDList(GStatList, double)
+
+//******************************************************************************
+// class ViewGraph_QueryCallback
+//******************************************************************************
+
+class ViewGraph_QueryCallback : public QueryCallback
+{
+	private:
+
+		ViewGraph*	_parent;
+		
+	public:
+
+		ViewGraph_QueryCallback(ViewGraph* parent)
+			: _parent(parent) {}
+
+		virtual void	QueryInit(void* userData)
+		{
+			_parent->QueryInit(userData);
+		}
+
+		virtual void	QueryDone(int bytes, void* userData,
+								  TDataMap* map = NULL)
+		{
+			_parent->QueryDone(bytes, userData, map);
+		}
+
+		virtual void*	GetObj(void)
+		{
+			return _parent->GetObj();
+		}
+
+		virtual RecordLinkList*		GetMasterLinkList()
+		{
+			return _parent->GetMasterLinkList();
+		}
+
+		virtual RecordLinkList*		GetRecordLinkList()
+		{
+			return _parent->GetRecordLinkList();
+		}
+
+		virtual void	ReturnGData(TDataMap* mapping, RecId id,
+									void* gdata, int numGData,
+									int& recordsProcessed,
+									Boolean needDrawnList, int& recordsDrawn,
+									BooleanArray*& drawnList)
+		{
+			_parent->ReturnGData(mapping, id, gdata, numGData,
+								 recordsProcessed, needDrawnList, recordsDrawn,
+								 drawnList);
+		}
+
+		virtual void	PrintLinkInfo(void)
+		{
+			_parent->PrintLinkInfo();
+		}
+};
+
 
 //******************************************************************************
 // Constructors and Destructors

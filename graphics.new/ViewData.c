@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/02/09 18:11:00  wenger
+  Removed ViewScatter class (totally replaced by ViewData, which is a
+  renamed version of TDataViewX); removed ViewRanges class (not used);
+  re-made Solaris dependencies.
+
 */
 
 //******************************************************************************
@@ -228,19 +233,23 @@ void	ViewData::QueryDone(int bytes, void* userData, TDataMap* map = NULL)
 
 void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 								void* gdata, int numGData,
-								int& recordsProcessed)
+								int& recordsProcessed,
+								Boolean needDrawnList, int& recordsDrawn,
+								BooleanArray*& drawnList)
 {
+#if defined(DEBUG)
+	printf("ViewData::ReturnGData(%d)\n", numGData);
+#endif
+
+	drawnList = NULL;
 	VisualFilter	filter;
 
 	GetVisualFilter(filter);
 	ResetGStatInMem();
 
-#if defined(DEBUG)
-	printf("ViewData::ReturnGData(%d)\n", numGData);
-#endif
-
 	recordsProcessed = numGData;
 
+	//TEMPTEMP -- what does this mean?
 	if( _index < 0 )
 		return;
 
@@ -282,6 +291,7 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 #endif
 	}
 
+	//TEMPTEMP -- what do we do for recordsDrawn if view is iconified?
 	// Draw data only if window is not iconified
 	if (!Iconified())
 	{

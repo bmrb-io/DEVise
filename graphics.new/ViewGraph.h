@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.43  1998/01/14 16:39:24  wenger
+  Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
+
   Revision 1.42  1997/12/12 05:50:46  weaver
   *** empty log message ***
 
@@ -522,7 +525,10 @@ class ViewGraph : public View
 		{ DOASSERT(false, "Call in derived class only"); return NULL; }
 		virtual void	ReturnGData(TDataMap* mapping, RecId id,
 									void* gdata, int numGData,
-									int& recordsProcessed)
+									int& recordsProcessed,
+									Boolean needDrawnList,
+									int& recordsDrawn,
+									BooleanArray*& drawnList)
 		{ DOASSERT(false, "Call in derived class only"); }
 		virtual void	PrintLinkInfo(void);
 
@@ -532,61 +538,6 @@ class ViewGraph : public View
 		virtual void	HandleKey(WindowRep* w ,int key, int x, int y);
 		virtual Boolean HandlePopUp(WindowRep*, int x, int y, int button,
 									char**& msgs, int& numMsgs);
-};
-
-//******************************************************************************
-// class ViewGraph_QueryCallback
-//******************************************************************************
-
-class ViewGraph_QueryCallback : public QueryCallback
-{
-	private:
-
-		ViewGraph*	_parent;
-		
-	public:
-
-		ViewGraph_QueryCallback(ViewGraph* parent)
-			: _parent(parent) {}
-
-		virtual void	QueryInit(void* userData)
-		{
-			_parent->QueryInit(userData);
-		}
-
-		virtual void	QueryDone(int bytes, void* userData,
-								  TDataMap* map = NULL)
-		{
-			_parent->QueryDone(bytes, userData, map);
-		}
-
-		virtual void*	GetObj(void)
-		{
-			return _parent->GetObj();
-		}
-
-		virtual RecordLinkList*		GetMasterLinkList()
-		{
-			return _parent->GetMasterLinkList();
-		}
-
-		virtual RecordLinkList*		GetRecordLinkList()
-		{
-			return _parent->GetRecordLinkList();
-		}
-
-		virtual void	ReturnGData(TDataMap* mapping, RecId id,
-									void* gdata, int numGData,
-									int& recordsProcessed)
-		{
-			_parent->ReturnGData(mapping, id, gdata, numGData,
-								 recordsProcessed);
-		}
-
-		virtual void	PrintLinkInfo(void)
-		{
-			_parent->PrintLinkInfo();
-		}
 };
 
 //******************************************************************************

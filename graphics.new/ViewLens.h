@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/12/12 05:50:46  weaver
+  *** empty log message ***
+
   Revision 1.7  1997/11/24 23:15:25  weaver
   Changes for the new ColorManager.
 
@@ -207,7 +210,10 @@ protected:
 		virtual RecordLinkList*		GetRecordLinkList(void);
 		virtual void	ReturnGData(TDataMap* mapping, RecId id,
 									void* gdata, int numGData,
-									int& recordsProcessed);
+									int& recordsProcessed,
+									Boolean needDrawnList,
+									int &recordsDrawn,
+									BooleanArray*& drawnList);
 
 		// Callback methods (ViewCallback)
 		virtual void	ViewCreated(View* view) {}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/11/24 23:15:15  weaver
+  Changes for the new ColorManager.
+
   Revision 1.13  1997/08/20 22:11:04  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -82,6 +85,7 @@ class Selection;
 class GData;
 class RecordLink;
 class RecordLinkList;
+class BooleanArray;
 
 /* Used to return query results */
 class QueryCallback
@@ -106,7 +110,9 @@ class QueryCallback
 		// Return a batch of records
 		virtual void	ReturnGData(TDataMap* mapping, RecId id,
 									void* gdata, int numGData,
-									int& recordsProcessed) = 0;
+									int& recordsProcessed,
+									Boolean needDrawnList, int& recordsDrawn,
+									BooleanArray*& drawnList) = 0;
 
 		virtual void	PrintLinkInfo(void) {}
 };

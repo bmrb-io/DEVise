@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/02/09 18:11:01  wenger
+  Removed ViewScatter class (totally replaced by ViewData, which is a
+  renamed version of TDataViewX); removed ViewRanges class (not used);
+  re-made Solaris dependencies.
+
 */
 
 //******************************************************************************
@@ -32,6 +37,7 @@
 #include "ViewGraph.h"
 #include "TDataCMap.h"
 #include "DList.h"
+#include "BooleanArray.h"
 
 #include "Color.h"
 
@@ -103,7 +109,9 @@ class ViewData : public ViewGraph
 		virtual RecordLinkList*	GetRecordLinkList(void) { return &_slaveLink; }
 		virtual void	ReturnGData(TDataMap* mapping, RecId id,
 									void* gdata, int numGData,
-									int& recordsProcessed);
+									int& recordsProcessed,
+									Boolean needDrawnList, int& recordsDrawn,
+									BooleanArray*& drawnList);
 };
 
 //******************************************************************************

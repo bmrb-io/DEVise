@@ -7,6 +7,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1997/12/28 16:41:41  beyer
+#  Eliminated dependency on DTE.
+#
 #  Revision 1.4  1997/12/11 04:48:14  beyer
 #  .o files that are placed into libraries (.a) are now removed.
 #
@@ -48,9 +51,12 @@ CFLAGS_T = $(ARCH_FLAGS) $(UTILS_INCLUDES) $(OPTFLAG) \
 	-Wall -Wno-unused -DHAVE_CONFIG_H
 CFLAGS = $(CFLAGS_T) $(TEMPLATE_FLAGS)
 
-UTILS_SRC = templates.C
+UTILS_SRC = templates.C BooleanArray.c
 
-LIBOBJ = $(UTILS_SRC:.C=.o)
+SRCc = $(filter %.c,$(UTILS_SRC))
+SRCC = $(filter %.C,$(UTILS_SRC))
+LIBOBJ = $(SRCc:.c=.o)
+LIBOBJ += $(SRCC:.C=.o)
 
 LIBNAME = libutils.a
 
@@ -77,4 +83,4 @@ clean:	mostlyclean
 	-rm $(LIBNAME)
 
 mostlyclean:
-	-rm $(LIBOBJ) templates.o Makefile.depend
+	-rm $(LIBOBJ) Makefile.depend

@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.72  1997/12/23 23:35:33  liping
+  Changed internal structure of BufMgrFull and classes it called
+  The buffer manager is now able to accept queries on any attribute from the
+          Query Processor
+  The buffer manager is also able to issue queries on various attributes to DTE
+  Instead of keeping an in memory list for each T/GData, the buffer manager keeps
+          a list for each (T/GData, AttrName, Granularity) combination
+  The class Range was replaced by Interval
+
   Revision 1.71  1997/12/01 21:21:34  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br3 tag
   into the trunk.
@@ -340,6 +349,7 @@
 #include "BufPolicy.h"
 #include "Shape.h"
 #include "DrawTimer.h"
+#include "BooleanArray.h"
 
 #define DEBUGLVL 0
 //#define DEBUG_NEG_LINKS 0
@@ -1691,9 +1701,14 @@ void QueryProcFull::QPRangeInserted(Coord low, Coord high,
         printf("Returning GData [%ld,%ld], map 0x%p, buf 0x%p\n",
                low, high, _rangeQuery->map, _gdataBuf);
 #endif
+	//TEMPTEMP
+	int recordsDrawn;
+	BooleanArray *drawnList;
         _rangeQuery->callback->ReturnGData(_rangeQuery->map, (RecId)low,
                                            ptr, (int)(high - low + 1),
-					   recordsProcessed);
+					   recordsProcessed,
+					   true/*TEMPTEMP*/, recordsDrawn, drawnList);
+        delete drawnList;//TEMPTEMP?
 #if DEBUGLVL >= 5
 	printf("Records %d - %d of %d - %d processed\n", (int) low,
 	  (int) low + recordsProcessed - 1, (int) low, (int) high);
@@ -1727,9 +1742,14 @@ void QueryProcFull::QPRangeInserted(Coord low, Coord high,
                recId, recId + numToConvert - 1, _rangeQuery->map, _gdataBuf);
 #endif
 	int tmpRecs;
+	//TEMPTEMP
+	int recordsDrawn;
+	BooleanArray *drawnList;
         _rangeQuery->callback->ReturnGData(_rangeQuery->map, recId,
                                            _gdataBuf, numToConvert,
-					   tmpRecs);
+					   tmpRecs,
+					   true/*TEMPTEMP*/, recordsDrawn, drawnList);
+        delete drawnList;//TEMPTEMP?
 #if DEBUGLVL >= 5
 	printf("Records %d - %d of %d - %d processed\n", (int) recId,
 	  (int) recId + tmpRecs - 1, (int) recId, (int) low + numToConvert - 1);

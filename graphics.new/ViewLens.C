@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/11/24 23:15:24  weaver
+  Changes for the new ColorManager.
+
   Revision 1.9  1997/09/05 22:36:32  wenger
   Dispatcher callback requests only generate one callback; added Scheduler;
   added DepMgr (dependency manager); various minor code cleanups.
@@ -523,13 +526,16 @@ RecordLinkList*		ViewLens::GetRecordLinkList()
 }
 
 void	ViewLens::ReturnGData(TDataMap* mapping, RecId recId,
-							  void* gdata, int numGData, int& recordsProcessed)
+							  void* gdata, int numGData, int& recordsProcessed,
+							  Boolean needDrawnList, int &recordsDrawn,
+							  BooleanArray*& drawnList)
 {
 #if defined(DEBUG)
 	printf("ViewLens::ReturnGData()\n");
 //	printf("ViewLens %d recs buf start 0x%p\n", numGData, gdata);
 #endif
 
+	drawnList = NULL;
 	recordsProcessed = numGData;
 
 	// Cancel the draw timeout for now, so we don't have to deal with
