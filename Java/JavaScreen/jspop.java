@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.43  2001/02/23 16:07:46  xuk
+// Don't display client's ID on the collaboration side, when it disables collaboration.
+// Changes in OnCollab().
+//
 // Revision 1.42  2001/02/21 17:49:37  xuk
 // Added the collaboration security features.
 // Changes in OnCollab() for checking collaboration password.
@@ -1312,14 +1316,14 @@ public class jspop implements Runnable
 		    DEViseClient tmpClient =
 			(DEViseClient) activeClients.elementAt(i);
 		    if (tmpClient != null && tmpClient.isAbleCollab) 
-			command = command + " {" + tmpClient.getConnectionID().intValue() + "}";
+			command = command + " {" + tmpClient.getConnectionID().intValue() + "}" + " {  " + tmpClient.hostname + ":}" + " { " + tmpClient.sessionName + "}";
 		}
 
 		for (int i = 0; i < suspendClients.size(); i++) {
 		    DEViseClient tmpClient =
 			(DEViseClient) suspendClients.elementAt(i);
 		    if (tmpClient != null && tmpClient.isAbleCollab) 
-			command = command + " {" + tmpClient.getConnectionID().intValue() + "}";
+			command = command + " {" + tmpClient.getConnectionID().intValue() + "}" + " {  " + tmpClient.hostname + ":}" + " { " + tmpClient.sessionName + "}";
 		}    
 		command = command.trim();
 		pn("Send clients list to collaboration JS: " + command);
@@ -1339,9 +1343,13 @@ public class jspop implements Runnable
 		    String[] cmds = DEViseGlobals.parseString(cmd);
 		    String requestPass = new String(cmds[4]);
 		    pn("We got request passwd: " + requestPass);
-		    if (client.checkPass(requestPass))
+		    if (client.checkPass(requestPass)) {
 			client.addCollabSocket(socket);
-		    else { // wrong passwd
+			DEViseServer server = getNextAvailableServer();
+			if (server != null) {
+			    server.setCurrentClient(client);
+			}
+		    } else { // wrong passwd
 			socket.sendCmd(DEViseCommands.ERROR + " {Incorrect password. Please try again.}");
 			socket.closeSocket();	
 			pn("Incorrect password.");

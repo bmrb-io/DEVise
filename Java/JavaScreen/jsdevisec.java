@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.88  2001/02/23 03:48:50  xuk
+// Fixed bugs: "follower" JS doesn't reponse the "Collaboration Status" request.
+//
 // Revision 1.87  2001/02/21 17:44:33  xuk
 // Added the collaboration security features.
 // When a user opens a session normally, the default will be that their
@@ -2077,6 +2080,13 @@ class SetModeDlg extends Dialog
                             return;
                         }
 			close();
+			if (jsc.dispatcher.dispatcherThread != null) {
+			    jsc.dispatcher.dispatcherThread.stop();
+			    jsc.dispatcher.dispatcherThread = null;
+			}
+			jsc.dispatcher.destroy();
+			jsc.dispatcher.setAbortStatus(false);
+
                         jsc.showCollab();
                     }
                 });
@@ -2236,7 +2246,9 @@ class CollabDlg extends Frame
                             if (clientList.getItemCount() > 0) {
                                 int idx = clientList.getSelectedIndex();
                                 if (idx != -1) {
-				    String clientID = clientList.getItem(idx);
+				    String list = clientList.getItem(idx);
+				    int n = list.indexOf(' ');
+				    String clientID = list.substring(0,n);
 				    jsc.specialID = Integer.parseInt(clientID);
                                     close();
 				    jsc.enterCollabPass();
@@ -2253,7 +2265,9 @@ class CollabDlg extends Frame
                         if (clientList.getItemCount() > 0) {
                             int idx = clientList.getSelectedIndex();
                             if (idx != -1) {
-                                    String clientID = clientList.getItem(idx);
+				    String list = clientList.getItem(idx);
+				    int n = list.indexOf(' ');
+				    String clientID = list.substring(0,n);
 				    jsc.specialID = Integer.parseInt(clientID);
 
                                     close();
@@ -2294,8 +2308,12 @@ class CollabDlg extends Frame
 
         clientList.removeAll();
 
-        for (int i = 1; i < clients.length; i++) 
-	    clientList.add(clients[i]);
+        for (int i = 1; i <= (clients.length-1)/3; i++) {
+	    String list = new String();
+	    list = clients[(i-1)*3+1] + clients[(i-1)*3+2] 
+		   + clients[(i-1)*3+3];
+	    clientList.add(list);
+	}
 
         validate();
     }

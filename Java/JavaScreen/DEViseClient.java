@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.31  2001/02/22 17:08:43  xuk
+// Close collaboration JSs when "leader" JS exits.
+// In getCmd(), process JAVAC_Exit.
+//
 // Revision 1.30  2001/02/21 17:48:49  xuk
 // Added the collaboration security features.
 // In getCmd(), process JAVAC_SetCollabPass command;
@@ -173,7 +177,7 @@ public class DEViseClient
     public DEViseUser user = null;
     //TEMP -- why Integer vs. int?
     public Integer ID = null;
-    private String hostname = null;
+    public String hostname = null;
     private DEViseCommSocket socket = null;
 
     public boolean isSessionOpened = false;
