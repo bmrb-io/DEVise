@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/05/29 19:34:39  wenger
+  Added JAVAC_SetDisplaySize to allow the JavaScreen to set the display
+  size.
+
   Revision 1.9  1998/05/29 18:12:34  wenger
   Fixed the problem with the JavaScreen only getting one window of multi-
   window sessions (JAVAC_Done isn't sent until all JAVAC_CreateWindow
@@ -205,9 +209,6 @@ JavaScreenCmd::OpenSession()
 
         JavaViewInfo **views = new JavaViewInfo*[window->NumChildren()];
 
-
-
-
 		int winX, winY;
 		unsigned winW, winH;
 		window->RealGeometry(winX, winY, winW, winH);
@@ -221,7 +222,7 @@ JavaScreenCmd::OpenSession()
         printf("window AbsoluteOrigin = %d, %d\n", winX, winY);
 #endif
 
-		JavaRectangle winRect(0, 0, winW-1, winH-1);
+		JavaRectangle winRect(winX, winY, winX+winW-1, winY+winH-1);
 #if defined(DEBUG)
         printf("window JavaRectangle: (%g, %g), (%g, %g)\n", winRect._x1,
 			winRect._y1, winRect._x2, winRect._y2);
@@ -234,9 +235,6 @@ JavaScreenCmd::OpenSession()
         cout << "imageName = " << imageName << endl;
 #endif
 
-
-
-
 	    int viewNum = 0;
 		int viewIndex = window->InitIterator();
 		while (window->More(viewIndex))
@@ -245,7 +243,6 @@ JavaScreenCmd::OpenSession()
 #if defined(DEBUG)
           printf("  view name: %s\n", view->GetName());
 #endif
-
 
 		  int viewX, viewY;
 		  unsigned viewW, viewH;
@@ -279,8 +276,6 @@ JavaScreenCmd::OpenSession()
         JavaWindowInfo winInfo(winRect, winName, imageName,
 			window->NumChildren(), views);
 
-
-
 	    _status = RequestCreateWindow(winInfo);
 
         delete [] views;
@@ -308,9 +303,6 @@ JavaScreenCmd::MouseAction_Click()
 
 	// ADD---begin
 	TDataVal	tdval = 3.1415926;
-
-
-
 
 
 	// ADD---end
