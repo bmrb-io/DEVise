@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.99  2001/04/12 15:29:59  xuk
+// When collaboration leader exits, followers don't exit; instead they go back to n
+// ormal mode.
+// Added collabQuit() function.
+//
 // Revision 1.98  2001/04/11 21:16:29  xuk
 // A collaboration leader could find out the followers hostname.
 //
@@ -287,7 +292,7 @@ public class jsdevisec extends Panel
     private Button helpButton = new Button("Help");
     private Label commMode = new Label("");
     private Button modeButton = new Button("Mode");
-    //private Button collabButton = new Button("Collaborate");
+    private Button logButton = new Button("Logs");
 
     public DEViseAnimPanel animPanel = null;
     public DEViseViewInfo viewInfo = null;
@@ -328,16 +333,18 @@ public class jsdevisec extends Panel
     // 0: before the first round connection
     // >0: collaborated JS ID
     public int specialID = -1;
-    // disable collaboration defaultly
-    // public boolean isAbleCollab = false;
+
     public String collabPass = new String(DEViseGlobals.DEFAULTPASS);
 
     public boolean sessionSaved = false;
 
+    // message buffer for logging
+    public Vector msgBuffer = new Vector();
 
-	// images[0-9] are the gears; 10 and 11 are "traffic lights"
-	//   (devise[0-10].gif).
-	// sessionName is non-null only in jsb.
+
+    // images[0-9] are the gears; 10 and 11 are "traffic lights"
+    //   (devise[0-10].gif).
+    // sessionName is non-null only in jsb.
     public jsdevisec(Applet parentApplet, Frame frame, Vector images,
 	  String sessionName, DEViseJSValues jv)
     {
@@ -358,7 +365,7 @@ public class jsdevisec extends Panel
         }
 
         if (jv.debug._debugLevel > 0) {
-System.out.println("Creating new debug window");
+	    System.out.println("Creating new debug window");
             debugWindow = new YLogGUI(jv.debug._debugLevel);
         }
 
@@ -429,7 +436,7 @@ System.out.println("Creating new debug window");
             button[2] = modeButton;
             button[3] = helpButton;
         } else {
-            button = new Component[9];
+            button = new Component[10];
             button[0] = openButton;
             button[1] = closeButton;
             button[2] = stopButton;
@@ -437,9 +444,9 @@ System.out.println("Creating new debug window");
             button[4] = setButton;
             button[5] = filterButton;
             button[6] = modeButton;
-	    //button[7] = collabButton;
-            button[7] = helpButton;
-            button[8] = exitButton;
+	    button[7] = logButton;
+            button[8] = helpButton;
+            button[9] = exitButton;
         }
 
         DEViseComponentPanel buttonPanel = new DEViseComponentPanel(button,
@@ -600,6 +607,13 @@ System.out.println("Creating new debug window");
                     }
                 });
 
+        logButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+			setLog();
+                    }
+                });
 
         filterButton.addActionListener(new ActionListener()
                 {
@@ -670,7 +684,9 @@ System.out.println("Creating new debug window");
     {
         if (jsValues.debug._debugLevel > 0 && debugWindow != null) {
             debugWindow.pn(msg, level);
-        }
+        } else {
+	    msgBuffer.addElement(msg);
+	}
     }
 
     public void pn(String msg)
@@ -682,13 +698,30 @@ System.out.println("Creating new debug window");
     {
         if (jsValues.debug._debugLevel > 0 && debugWindow != null) {
             debugWindow.p(msg, level);
-        }
+        } else {
+	    msgBuffer.addElement(msg);
+	}
     }
 
     public void p(String msg)
     {
         p(msg, 1);
     }
+
+    public void setLog()
+    {
+        jsValues.debug._debugLevel = 1;
+	debugWindow = new YLogGUI(jsValues.debug._debugLevel);
+        showDebug();
+	
+	for (int i = 0; i < msgBuffer.size(); i++) {
+	    String msg = (String)msgBuffer.elementAt(i);
+	    pn(msg);
+	}
+
+	msgBuffer.removeAllElements();
+    }
+
 
     // show message in message box
     public String showMsg(String msg, String title, int style)
