@@ -1,6 +1,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.8  1995/09/08 22:17:57  jussi
+#	Integrated creation of TData source, windows, and links in DEVise.
+#
 #	Revision 1.7  1995/09/08 20:35:25  jussi
 #	Added definition of data source and size of new windows.
 #
@@ -48,11 +51,15 @@ set lastView ""
 set historyWinOpened false
 # not reading files as template
 
+set libdir "."
 if { [info exists env(DEVISE_LIB)] } {
     set libdir $env(DEVISE_LIB)
-} else {
-    set libdir "./"
 }
+set datadir "."
+if { [info exists env(DEVISE_DAT)] } {
+    set datadir $env(DEVISE_DAT)
+}
+
 set mode 0
 DEVise changeMode $mode
 
@@ -75,7 +82,7 @@ proc DictInsert { dict name val }  {
 # lookup val based on name
 proc DictLookup { dict name } {
     foreach element $dict {
-	if { [string compare $name [lindex $element 0 ]] == 0 } {
+	if {$name == [lindex $element 0]} {
 	    return [lindex $element 1]
 	}
     }
@@ -120,7 +127,7 @@ proc GetClass { category instance } {
 	set insts [DEVise get $category $c]
 	foreach inst $insts {
 	    # puts "comparing $category $c $inst"
-	    if { [string compare $inst $instance] == 0 } {
+	    if {$inst $instance} {
 		return $c
 	    }
 	}
@@ -130,16 +137,12 @@ proc GetClass { category instance } {
 # All instances of tdata that we have
 # Form: {tdatafilebasename1 tdatafilebasename2 ...}
 proc TdataSet { } {
-    puts "TDataSet:"
-    puts [CategoryInstances "tdata" ]
     return [CategoryInstances "tdata" ]
 }
 
 # All instances of GData
 # Form: {gdataname1 gdataname2 ...}
 proc GdataSet { } {
-    puts "GDataSet:"
-    puts [CategoryInstances "mapping" ]
     return [ CategoryInstances "mapping" ]
 }
 
@@ -445,7 +448,7 @@ proc DoCreateTData { file type } {
     set cmd "DEVise create tdata $type $params"
  
     set result [ eval $cmd]
-    if { [string compare $result "" ] == 0 } {
+    if {$result == ""} {
 	set but [ dialog .createError "CreateError" \
 		"Can't import file $file of type $type" \
 		"" 0 {OK} ]
@@ -458,15 +461,16 @@ proc DoCreateTData { file type } {
 #import a new file type
 #Return name of file type, or ""
 proc ImportFileType { } {
-    global fsBox
+    global fsBox datadir
+    set fsBox(path) $datadir
     set fsBox(pattern) *.schema
     set ftypeFile [FSBox "Select schema file"]
-    if { [string compare $ftypeFile "" ]  == 0 } {
+    if {$ftypeFile == ""} {
 	return
     }
     
     set result [DEVise importFileType $ftypeFile]
-    if { [string compare $result "" ] == 0 } {
+    if {$result == ""} {
 	dialog .fileTypeError "FileTypeError" \
 		"Can't import file type from file\n$ftypeFile" "" 0 {ok} 
 	return
@@ -477,7 +481,7 @@ proc ImportFileType { } {
 # Check to see if file already exists 
 proc FileExist { file } {
     foreach tdata [ TdataSet] {
-	if { [string compare $file [DEVise tdataFileName $tdata]] == 0 } {
+	if {$file == [DEVise tdataFileName $tdata]} {
 	    return 1
 	}
     }
@@ -486,13 +490,14 @@ proc FileExist { file } {
 
 # Select a file and make it into a TData
 proc DoSelectFile { } {
-    global dialogListVar fsBox
+    global dialogListVar fsBox datadir
     # Get file name
+    set fsBox(path) $datadir
     set fsBox(pattern) *
-    set file [ FSBox ]
+   set file [ FSBox ]
 
     # Map file into TData classes
-    if { [ string compare $file "" ] == 0 } {
+    if {$file == ""} {
 	return
     }
 
@@ -516,7 +521,7 @@ proc DoSelectFile { } {
 		return
 	    }
 	    set result [ImportFileType]
-	    if { [string compare $result ""] == 0 } {
+	    if {$result == ""} {
 		return
 	    }
 	    set ftype $result
@@ -530,12 +535,12 @@ proc DoSelectFile { } {
 	    return
 	} elseif { $button == 1 } {
 	    set result [ImportFileType]
-	    if { [string compare $result ""] == 0 } {
+	    if {$result == ""} {
 		return
 	    }
 	    set ftype $result
 	    break
-	} elseif { [ string compare $dialogListVar(selected) ""] == 0 } {
+	} elseif {$dialogListVar(selected) == ""} {
 	    return
 	} else {
 	    break
@@ -543,7 +548,7 @@ proc DoSelectFile { } {
     }
 
     set alias [ DoCreateTData $file $ftype ]
-    if { [ string compare $alias "" ] == 0 } {
+    if {$alias == ""} {
 	return
     }
 
@@ -662,7 +667,6 @@ proc CreateInterpretedMapping { tdata } {
 	    {} {} {} [lindex $parm 3] {} {} ]
     
     set cmd "DEVise createInterp $params"
-    # puts "cmd is $cmd"
     set result [eval $cmd]
     if { [string compare $result "" ] == 0 } {
 	set but [dialog .CreateError \
@@ -759,7 +763,6 @@ proc DoActualCreateGData { tdata mapping } {
 proc DoCreateGData { tdata } {
     global dialogListVar
     set schema [DEVise getSchema $tdata ]
-    # puts "schema is $schema"
 
     while { 1 } {
 	set tmappings [ DEVise get mapping ]
@@ -839,7 +842,7 @@ proc DoActualCreateView { viewType name } {
     # }
 
     set paramNames [ DEVise getparam view $viewType ]
-    # puts "paramNames $paramNames"
+    puts "paramNames $paramNames"
 
     set button [ dialogParam .viewParam "ViewParam" \
 	    "Enter parameters to create view\n$viewName"\
@@ -848,7 +851,6 @@ proc DoActualCreateView { viewType name } {
 	return
     }
     set name [lindex $dialogParamVar(params) 0]
-    # puts "view name is $name"
     if { [DEVise exists $name ] } {
 	set but [dialog .viewExists "ViewExists" \
 		"Error: View\n$name exists" "" 0  {Cancel}]
@@ -920,8 +922,6 @@ proc DoActualCreateWindow { winType } {
 	return
     }
     set cmd "DEVise create window $winType $dialogParamVar(params)"
-    puts "create window cmd:"
-    puts $cmd
     set result [ eval $cmd ]
     if { [string compare $result "" ] == 0 } {
 	set but [ dialog .winError "winError" \
@@ -1505,9 +1505,10 @@ proc DoSave { } {
 }
 
 proc DoSaveAs { } {
-    global sessionName fsBox
+    global sessionName fsBox datadir
 
     # Get file name
+    set fsBox(path) $datadir
     set fsBox(pattern) *.tk
     set file [ FSBox ]
     
@@ -1542,7 +1543,7 @@ if { [ info exists env($envName)] && [file exists env$(envName) ] } {
     set rcFile ""
 }
 
-if { [string compare $rcFile "" ] != 0 } {
+if {$rcFile != ""} {
     puts "reading from $rcFile"
     source $rcFile
 }
@@ -2509,7 +2510,7 @@ proc DoClose { } {
 
 # Do open a session file
 proc DoOpen { asTemplate} {
-    global fsBox
+    global fsBox datadir
 
     # DEVise printDispatcher
 
@@ -2519,6 +2520,7 @@ proc DoOpen { asTemplate} {
     }
     
     # Get a session file name
+    set fsBox(path) $datadir
     set fsBox(pattern) *.tk
     set file [ FSBox "Select session file" ]
     
@@ -2992,7 +2994,7 @@ proc DoSavePixmap { } {
 }
 
 proc DoLoadPixmap { } {
-    global curView lastView dialogListVar
+    global curView lastView
     if { [ string compare $curView "" ] ==  0 } {
 	set but [dialog .swapViewError "LoadPixmapError" \
 		"Please select two views by clicking in them in order\n\
@@ -3014,9 +3016,10 @@ proc DoLoadPixmap { } {
 # This procedure asks user for file name, and imports it as 
 # the new TData
 proc GetTDataTemplate { type total num} {
-    global dialogListVar fsBox dialogParamVar
+    global fsBox dialogParamVar datadir
 
     # Get file name
+    set fsBox(path) $datadir
     set fsBox(pattern) *
 
     while { 1 } {
@@ -3071,6 +3074,87 @@ proc TestMacroDef {} {
     global tdatas schemas maps mappings views links windows session modified
 
     MacroDefClear
+
+    foreach schema [DEVise get tdata] {
+	set maps($schema) ""
+	foreach tdata [DEVise get tdata $schema] {
+	    set params [DEVise getCreateParam tdata $schema $tdata]
+	    set filePath [lindex $params 0]
+	    set fileAlias [lindex $params 1]
+	    lappend tdatas [list $fileAlias $filePath]
+	    set sdef [DEVise getSchema $tdata]
+	    set schemas($tdata) [list $schema $sdef]
+	}
+    }
+
+    foreach class [lsort [DEVise get "mapping"]] {
+	foreach mapping [lsort [DEVise get "mapping" $class]] {
+	    set params [DEVise getCreateParam "mapping" $class $mapping]
+	    set tdata [lindex $params 0]
+	    set schema [lindex $schemas($tdata) 0]
+	    set mapname [lindex $params 1]
+	    set firsthash [string first \# $mapname]
+	    if {$firsthash >= 0} {
+		incr firsthash
+		set mapname [string range $mapname $firsthash end]
+	    }
+	    set x [string range [lindex $params 3] 1 end]
+	    set y [string range [lindex $params 4] 1 end]
+	    set color [lindex $params 5]
+	    set shape [lindex $params 9]
+	    set size 1
+	    set pattern ""
+	    set orient ""
+	    set defn [list $x $y $color $shape $size $pattern $orient]
+	    
+	    set mappings($mapname) $defn
+	    if {[string first $mapname $maps($schema)] < 0} {
+		lappend maps($schema) $mapname
+	    }
+	}
+    }
+
+    foreach class [lsort [DEVise get "window"]] {
+	foreach window [lsort [DEVise get "window" $class]] {
+	    set params [DEVise getCreateParam "window" $class $window]
+	    set name [lindex $params 0]
+	    set windows($name) [lrange $params 1 end]
+	}
+    }
+
+    foreach class [lsort [DEVise get "link"]] {
+	foreach link [lsort [DEVise get "link" $class]] {
+	    set params [DEVise getCreateParam "link" $class $link]
+	    set name [lindex $params 0]
+	    set links($name) [lrange $params 1 end]
+	}
+    }
+
+    foreach class [lsort [DEVise get "view"]] {
+	foreach view [lsort [DEVise get "view" $class]] {
+	    set params [DEVise getCreateParam "view" $class $view]
+	    set name [lindex $params 0]
+	    set views($name) [lrange $params 1 end]
+	}
+    }
+
+    foreach view [array names views] {
+	set firsthash [string first \# $view]
+	if {$firsthash < 0} { continue }
+	incr firsthash
+	set name [string range $view $firsthash end]
+	set lasthash [string last \# $name]
+	if {$lasthash >= 0} {
+	    incr lasthash -1
+	    set name [string range $name 0 $lasthash]
+	}
+	set err [catch {set exists $views($name)}]
+	if {$err > 0} {
+	    set views($name) $views($view)
+	    unset views($view)
+	}
+    }
+
     set modified 0
     MacroDef
 }
@@ -3117,12 +3201,18 @@ proc MacroDef {} {
     button .map.but.load -text "Load..." -width 10 -command MacroDefLoad
     button .map.but.auto -text "Auto..." -width 10 -state disabled -command {
 	MacroDefAuto $tdata
+	destroy .map
     }
     pack .map.but.save .map.but.saveas .map.but.load .map.but.auto \
 	    -in .map.but.row1 -side left -padx 5m
 
-    button .map.but.ok -text OK -width 10 -state disabled -command {}
-    button .map.but.apply -text Apply -width 10 -state disabled -command {}
+    button .map.but.ok -text OK -width 10 -command {
+	MacroDefNewMapping
+	destroy .map
+    }
+    button .map.but.apply -text Apply -width 10 -command {
+	MacroDefNewMapping
+    }
     button .map.but.cancel -text Cancel -width 10 -command "destroy .map"
     button .map.but.help -text Help -width 10 -command MacroDefHelp
     pack .map.but.ok .map.but.apply .map.but.cancel .map.but.help \
@@ -3162,6 +3252,70 @@ proc MacroDefTitle {m} {
     } else {
 	wm title $m "Define Session - $session"
     }
+}
+
+proc MacroDefNewMapping {} {
+    global tdatas schemas maps mappings views links windows
+    global tdata window gdata view link none
+
+    if {$tdata == $none || $window == $none} { return }
+    if {$gdata == $none || $view == $none} { return }
+
+    # ask DEVise to create view instance
+    set sorted SortedX
+    set viewname $tdata#$view
+    set cmd [concat DEVise create view $sorted $viewname $views($view)]
+    puts "cmd = $cmd"
+    set result [eval $cmd]
+    if {$result == ""} {
+	dialog .viewError "View Error" \
+		"Error creating view $viewname" "" 0 OK
+	return
+    }
+
+    set x [lindex $mappings($gdata) 0]
+    set y [lindex $mappings($gdata) 1]
+    set color [lindex $mappings($gdata) 2]
+    set shape [lindex $mappings($gdata) 3]
+
+    # ask DEVise to create interpreted mapping
+    # parameter format: x y color size pattern orientation shape
+    set result [DEVise createInterp $tdata $gdata "" \$$x \$$y \
+		$color "" "" "" $shape "" ""]
+    if {$result == ""} {
+	dialog .mapError "Mapping Error" \
+		"Error creating interpreted mapping gdata" "" 0 OK
+	return
+    }
+
+    # ask DEVise to create an instance of mapping
+    set mapinstance "$tdata#$gdata"
+    set result [DEVise create mapping $gdata $tdata $mapinstance \
+	    "" \$$x \$$y $color "" "" "" $shape "" ""]
+    DEVise setPixelWidth $mapinstance 1
+    if {$result == ""} {
+	dialog .mapError "Mapping Error" \
+		"Error creating mapping instance $mapinstance" "" 0 OK
+	return
+    }
+
+    # ask DEVise to insert $mapinstance into $viewinstance
+    set result [DEVise insertMapping $viewname $mapinstance]
+    # seems that there's no error code returned
+
+    # ask DEVise to insert $viewname into $window
+    set result [DEVise insertWindow $viewname $window]
+    # seems that there's no error code returned
+
+    if {$link != $none} {
+	# ask DEVise to link $viewname to $link
+	set result [DEVise insertLink $link $viewname]
+	# seems that there's no error code returned
+    }
+
+    DEVise refreshView $viewname
+    ProcessViewSelected $viewname
+    update
 }
 
 proc MacroDefSession {title} {
@@ -3342,7 +3496,7 @@ proc MacroDefHelp {} {
 }
 
 proc MacroDefAuto {tdata} {
-    global schemas modified x
+    global schemas modified x sortedx yvar
 
     # see if .auto window already exists; if so, just return
     set err [catch {set exists [wm state .auto]}]
@@ -3350,48 +3504,83 @@ proc MacroDefAuto {tdata} {
 
     toplevel .auto
     wm minsize .auto 250 150
-    wm maxsize .auto 250 150
+    wm maxsize .auto 750 500
     wm title .auto "Automatic Views"
-    wm geometry .auto =250x150+100+100
+    wm geometry .auto =750x300+100+100
     selection clear .auto
 
     label .auto.label -text "Select Auto Parameters"
-    frame .auto.sel
+    frame .auto.xsel -relief groove -borderwidth 2
+    frame .auto.ysel -relief groove -borderwidth 2
     frame .auto.but
-    pack .auto.label -side top -pady 3m
-    pack .auto.sel -side top -padx 3m -fill both -expand 1
-    pack .auto.but -side top -fill x -expand 1
+    pack .auto.label -side top -pady 3m -fill x -expand 1
+    pack .auto.xsel -side top -pady 3m -ipady 5m -ipadx 5m
+    pack .auto.ysel -side top -pady 3m
+    pack .auto.but -side top -pady 3m -fill x -expand 1
 
-    label .auto.sel.label -text X -width 8
-    menubutton .auto.sel.attr -relief raised \
-	    -textvariable x -menu .auto.sel.attr.menu -width 15
-    pack .auto.sel.label .auto.sel.attr -side left -fill x -expand 1
+    label .auto.xsel.label -text "Select X" -width 15
+    menubutton .auto.xsel.attr -relief raised \
+	    -textvariable x -menu .auto.xsel.attr.menu -width 15
+    pack .auto.xsel.label -side left
+    pack .auto.xsel.attr -side left
 
-    menu .auto.sel.attr.menu
+    label .auto.ysel.label -text "Select Y" -width 15
+    pack .auto.ysel.label -side top -fill x -expand 1 -pady 3m
+
+    menu .auto.xsel.attr.menu
     set sname [lindex $schemas($tdata) 0]
     set schema [lindex $schemas($tdata) 1]
     set x ""
+    set sortedx 0
+
+    set row -1
+    set col -1
+    set maxcol 5
+    set varcnt 0
+
     foreach attr $schema {
 	set name [lindex $attr 0]
 	set type [lindex $attr 1]
 	set sorted [lindex $attr 2]
-	.auto.sel.attr.menu add radiobutton -label $name \
+	.auto.xsel.attr.menu add radiobutton -label $name \
 		-variable x -value $name
-	if {$sorted > 0 && $x == ""} {
+	if {$sorted > 0 && $name != "recId" && $x == ""} {
 	    set x $name
+	    set sortedx $sorted
+	}
+	if {$col < 0} {
+	    incr row
+	    set col 0
+	    frame .auto.ysel.row$row -relief groove -borderwidth 1
+	    pack .auto.ysel.row$row -side top -fill x -expand 1
+	}
+	checkbutton .auto.ysel.row$row.col$col -text $name \
+		-variable yvar($name) -width 15 -anchor w
+	set yvar($name) 0
+	pack .auto.ysel.row$row.col$col -side left
+	incr col
+	if {$col >= $maxcol} {
+	    set col -1
 	}
     }
     if {$x == ""} {
 	set x [lindex [lindex $schema 0] 0]
+	set sortedx [lindex [lindex $schema 0] 2]
     }
 
-    tk_menuBar .auto.sel .auto.sel.attr
+    tk_menuBar .auto.xsel .auto.xsel.attr
 
-    button .auto.but.ok -text OK -width 10 -command {
-	MacroDefAutoActual $tdata $x
+    button .auto.but.ok -text OK -width 20 -command {
+	set ylist ""
+	foreach yname [array names yvar] {
+	    if {$yvar($yname) > 0} {
+		lappend ylist $yname
+	    }
+	}
+	MacroDefAutoActual $tdata $x $sortedx $ylist
 	destroy .auto
     }
-    button .auto.but.cancel -text Cancel -width 10 -command { destroy .auto }
+    button .auto.but.cancel -text Cancel -width 20 -command { destroy .auto }
     pack .auto.but.ok .auto.but.cancel -side left -expand 1
 
     tkwait visibility .auto
@@ -3399,28 +3588,57 @@ proc MacroDefAuto {tdata} {
     tkwait window .auto
 }
 
-proc MacroDefAutoActual {tdata x} {
+proc MacroDefAutoActual {tdata x sortedx ylist} {
     global schemas maps mappings views links windows modified none
 
-    set window "$tdata Auto"
+    set window [format "%s_Auto" $tdata]
     set err [catch {set exists $windows($window)}]
     if {$err > 0} {
 	# ask DEVise to create window
 	set winType WinVertical
-	set result [DEVise create window $winType $window 0.1 0.3 0.5 0.5]
+	set result [DEVise create window $winType $window 0.3 0.0 0.5 0.95]
 	if {$result == ""} {
 	    dialog .windowError "Window Error" \
 		    "Error creating window $window" "" 0 OK
-	    return ""
+	    return
 	}
-	set windows($window) {0.1 0.3 0.5 0.5}
+	set windows($window) {0.3 0.0 0.5 0.95}
     }
     
-    # scan x in file and compute xlo and xhi
-    set xlo 0.0
-    set xhi 100.0
+    if {$sortedx > 0} {
+	set sortedx SortedX
+    } else {
+	set sortedx Scatter
+    }
 
-    set linkname "$x link"
+    # should scan x in file and compute xlo and xhi
+
+    set xlo 0.0
+    set xhi 1000.0
+    set ylo 0.0
+    set yhi 100.0
+    set bgColor white
+
+    set viewParams [DEVise getparam view $sortedx]
+    foreach param $viewParams {
+	set pname [lindex $param 0]
+	set value [lindex $param 1]
+	if {$pname == "xlow"} {
+	    set xlo $value
+	}
+	if {$pname == "xhigh"} {
+	    set xhi $value
+	}
+	if {$pname == "ylow"} {
+	    set ylo $value
+	}
+	if {$pname == "yhigh"} {
+	    set yhi $value
+	}
+    }
+    puts "Auto mappings will have xlo $xlo and xhi $xhi"
+
+    set linkname [format "%s_Link" $x]
     set err [catch {set exists $links($linkname)}]
     if {$err > 0} {
 	# ask DEVise to create link
@@ -3428,43 +3646,97 @@ proc MacroDefAutoActual {tdata x} {
 	if {$result == ""} {
 	    dialog .linkError "Link Error" \
 		    "Error creating link $linkname" "" 0 OK
-	    return ""
+	    return
 	}
-	set defn [list 1 0 0 0 0 0 0]
-	set links($linkname) $defn
+	set flag 1
+	set links($linkname) $flag
     }
 
     set sname [lindex $schemas($tdata) 0]
     set schema [lindex $schemas($tdata) 1]
-    set color 0
+    set color 1
+    set shape 2
+    set size 1
+    set pattern 0
+    set orient 0
+
     foreach attr $schema {
 	set name [lindex $attr 0]
 	set type [lindex $attr 1]
 	set sorted [lindex $attr 2]
-	if {$name == $x} { continue }
+	if {[lsearch $ylist $name] < 0} { continue }
 
-	set mapname "$name vs $x"
+	set mapname [format "%s_vs_%s" $name $x]
 	set err [catch {set exists $mappings($mapname)}]
 	if {$err > 0} {
-	    set defn [list $x $name $color 2 1 0 0]
+	    set defn [list $x $name $color $shape $size $pattern $orient]
 	    set mappings($mapname) $defn
 	    lappend maps($sname) $mapname
 	    incr color
 	}
 
-	set viewname "$name view"
+	# should scan y in file and compute ylo and yhi for each view
+
+	set viewname [format "%s" $name]
 	set err [catch {set exists $views($viewname)}]
 	if {$err > 0} {
-	    # scan y in file and compute ylo and yhi
-	    set ylo 0.0
-	    set yhi 100.0
-	    set defn [list $xlo $xhi $ylo $yhi]
+	    set defn [list $xlo $xhi $ylo $yhi $bgColor]
 	    set views($viewname) $defn
 	}
 
-	# insert $viewname to $window using $mapname
-	# apply $linkname to $viewname
+	# ask DEVise to create view instance
+	set sorted $sortedx
+	set viewinstance "$tdata#$viewname"
+	set result [DEVise create view $sorted $viewinstance \
+		$xlo $xhi $ylo $yhi $bgColor]
+	if {$result == ""} {
+	    dialog .viewError "View Error" \
+		    "Error creating view $viewinstance" "" 0 OK
+	    return
+	}
+	
+	# ask DEVise to create interpreted mapping
+	# parameter format: x y color size pattern orientation shape
+	set result [DEVise createInterp $tdata $mapname "" \$$x \$$name \
+		$color "" "" "" $shape "" ""]
+	if {$result == ""} {
+	    dialog .mapError "Mapping Error" \
+		    "Error creating interpreted mapping $mapname" "" 0 OK
+	    return
+	}
+
+	# ask DEVise to create an instance of mapping
+	set mapinstance "$tdata#$mapname"
+	set result [DEVise create mapping $mapname $tdata $mapinstance \
+		"" \$$x \$$name $color "" "" "" $shape "" ""]
+	DEVise setPixelWidth $mapinstance 1
+	if {$result == ""} {
+	    dialog .mapError "Mapping Error" \
+		    "Error creating mapping instance $mapinstance" "" 0 OK
+	    return
+	}
+
+	# ask DEVise to insert $mapinstance into $viewinstance
+	set result [DEVise insertMapping $viewinstance $mapinstance]
+	# seems that there's no error code returned
+
+	# ask DEVise to insert $viewinstance into $window
+	set result [DEVise insertWindow $viewinstance $window]
+	# seems that there's no error code returned
+
+	# ask DEVise to link $viewinstance to $linkname
+	set result [DEVise insertLink $linkname $viewinstance]
+	# seems that there's no error code returned
+
+	DEVise clearViewHistory $viewinstance
+	DEVise insertViewHistory $viewinstance $xlo $ylo $xhi $yhi 0
+
+	DEVise refreshView $viewinstance
+	ProcessViewSelected $viewinstance
     }
+
+    # DoToggleAxisAllViews X
+    DoToggleAxisAllViews Y
 
     MacroDefWindows .map.window $none
     MacroDefMaps .map.gdata $none
@@ -3601,7 +3873,7 @@ proc MacroDefMaps {m default} {
 		-command {
 	    set sname [lindex $schemas($tdata) 0]
 	    set schema [lindex $schemas($tdata) 1]
-	    set mapname [DefMapping $schema]
+	    set mapname [DefMapping $tdata $schema]
 	    if {$mapname != ""} {
 		lappend maps($sname) $mapname
 		# fix this: .map.gdata s.b. $m
@@ -3696,12 +3968,13 @@ proc MacroDefLinks {m default} {
 }
 
 proc DefSource {} {
-    global tdatas schemas maps fsBox sname
+    global tdatas schemas maps fsBox sname datadir dialogListVar
 
     # see if .source window already exists; if so, just return
     set err [catch {set exists [wm state .source]}]
     if {!$err} { return }
 
+    set fsBox(path) $datadir
     set fsBox(pattern) *
     set source [FSBox]
 
@@ -3791,22 +4064,29 @@ proc DefSource {} {
 	    }
 	}
     }
+    button .source.but.clear -text Clear -width 10 \
+	    -command { set sname "" }
     button .source.but.cancel -text Cancel -width 10 \
 	    -command {
 	set sname ""
 	destroy .source
     }
-    pack .source.but.ok .source.but.cancel -side left -expand 1
+    pack .source.but.ok .source.but.clear .source.but.cancel -side left \
+	    -expand 1
 
     tkwait visibility .source
     grab set .source
     tkwait window .source
 
     if {$sname != ""} {
+	set fname [file tail $source]
+	statusWindow .info "Status" \
+		"Creating an index on $fname.\n\n\
+		This may take a while."
 	# ask DEVise to create tdata
 	set result [DEVise create tdata $schema $source $sname]
+	catch {destroy .info}
 	if {$result == ""} {
-	    set fname [file tail $source]
 	    dialog .fileError "File Error" \
 		    "Error reading file $fname" "" 0 OK
 	    return ""
@@ -3817,6 +4097,15 @@ proc DefSource {} {
     }
 
     return $sname
+}
+
+proc statusWindow {w title msg} {
+    toplevel $w
+    wm title $w $title
+    wm geometry $w +200+200
+    message $w.msg -justify center -width 8c -text $msg
+    pack $w.msg -side top -padx 8m -pady 4m
+    update
 }
 
 proc DefWindow {} {
@@ -3913,7 +4202,7 @@ proc DefWindow {} {
     return $winname
 }
 
-proc DefMapping {schema} {
+proc DefMapping {tdata schema} {
     global DEViseColors DEViseShapes
     global mappings devcolors devshapes
     global mapname x y color shape size pattern orient
@@ -3990,7 +4279,7 @@ proc DefMapping {schema} {
 		-variable x -value $name
 	.def.map.right.y.menu add radiobutton -label $name \
 		-variable y -value $name
-	if {$sorted > 0 && $x == ""} {
+	if {$sorted > 0 && $name != "recId" && $x == ""} {
 	    set x $name
 	}
     }
@@ -4054,12 +4343,6 @@ proc DefMapping {schema} {
 			"Mapping $mapname exists already." \
 			"" 0 {OK}
 	    } else {
-		set cidx $devcolors($color)
-		set sidx $devshapes($shape)
-		set pidx 0
-		set oidx 0
-		set defn [list $x $y $cidx $sidx $size $pidx $oidx]
-		set mappings($mapname) $defn
 		destroy .def
 	    }
 	}
@@ -4074,6 +4357,15 @@ proc DefMapping {schema} {
     tkwait visibility .def
     grab set .def
     tkwait window .def
+
+    if {$mapname != ""} {
+	set cidx $devcolors($color)
+	set sidx $devshapes($shape)
+	set pidx 0
+	set oidx 0
+	set defn [list $x $y $cidx $sidx $size $pidx $oidx]
+	set mappings($mapname) $defn
+    }
 
     return $mapname
 }
@@ -4142,8 +4434,6 @@ proc DefView {} {
 			"View $viewname exists already." \
 			"" 0 {OK}
 	    } else {
-		set defn [list $xlo $xhi $ylo $yhi]
-		set views($viewname) $defn
 		destroy .def
 	    }
 	}
@@ -4159,8 +4449,14 @@ proc DefView {} {
     grab set .def
     tkwait window .def
 
+    if {$viewname != ""} {
+	set defn [list $xlo $xhi $ylo $yhi white]
+	set views($viewname) $defn
+    }
+
     return $viewname
 }
+
 proc DefLink {} {
     global links x y color shape size pattern orient linkname
 
@@ -4248,8 +4544,7 @@ proc DefLink {} {
 		    "Error creating link $linkname" "" 0 OK
 	    return ""
 	}
-	set defn [list $x $y $color $shape $size $pattern $orient]
-	set links($linkname) $defn
+	set links($linkname) $flag
     }
 
     return $linkname
