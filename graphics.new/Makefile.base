@@ -17,6 +17,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.67  1998/01/30 21:53:15  wenger
+#  Did some cleaning up of the MappingInterp and NativeExpr code
+#  (NativeExpr still needs a lot more); NativeExpr code can now
+#  parse expressions containing constant strings (they are treated
+#  as numerical zero for now) (this fixes bug 275).
+#
 #  Revision 1.66  1998/01/07 19:28:58  wenger
 #  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
 #  server library into Devise); updated solaris, sun, linux, and hp
@@ -176,8 +182,8 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
         TDataMap.c FileIndex.c TDataMap.c \
 	GDataBin.c TDataAscii.c TDataBinary.c GdataStat.C\
 	PageRange.c  RecFile.c UnixRecFile.c \
-	GDataRangeMap.c GData.c TData.c TDataViewX.c ViewScatter.c \
-	ViewLens.C ViewRanges.c ViewGraph.c QPRange.c ParseAPI.C \
+	GDataRangeMap.c GData.c TData.c ViewData.c \
+	ViewLens.C ViewGraph.c QPRange.c ParseAPI.C \
 	ViewClassInfo.c MapInterpShape.C DataSource.c DataSourceBuf.c \
 	DataSourceFileStream.c DataSourceTape.c DataSourceFileDesc.c \
 	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C DataSourceDQL.c  \
@@ -222,7 +228,7 @@ TESTSRC = testbuf.c testpage.c testpfile.c testpfileGap.c testQueryProc.c \
 	testPageRangeFile.c testAms1.c rstat.c testAms1Sym.c makeGData.c \
 	testBufPage.c testRecFile.c test2d.c testraw.c testVoidArray.c \
         testBufMech.c testBufMgrFull.c testRangeList.c \
-        genStrData.c testStr.c testViewRanges.c testXY.c testSBufMgr.C
+        genStrData.c testStr.c testXY.c testSBufMgr.C
 
 LIBNAME = libgraphicsnew.a
 
@@ -263,10 +269,6 @@ testSBM3: testSBM3.o SBufMgr.o DCE.o ../generic/CompDate.o
 	$(CC) -o $@ $@.o SBufMgr.o DCE.o ../generic/CompDate.o \
 		-L../graphics -lgraphics -L. -lgraphicsnew -lX11 -lm \
                 $(ARCH_LDFLAGS)
-
-testViewRanges: testViewRanges.o ViewRanges.o RangeCallback.o
-	$(CC) -o $@ $@.o ViewRanges.o RangeCallback.o \
-		-L../graphics -lgraphics $(ARCH_LDFLAGS) -lX11 -lm
 
 rstat: rstat.o ../graphics/Parse.o
 	$(CC) -o $@ $@.o ../graphics/Parse.o ../graphics/Exit.o -lm
@@ -371,10 +373,10 @@ NativeExpr.main.o:
 clean: mostlyclean
 	-rm $(LIBNAME) genStrData strData libclient.a libserver.a\
 		libmonolith.a testSBufMgr testGDataRange \
-                testRecFile testViewRanges testVoidArray
+                testRecFile testVoidArray
 
 mostlyclean:
 	-rm $(LIBOBJ) libbufmgr.a genStrData.o rstat.o testGDataRange.o \
-	testRecFile.o testViewRanges.o testVoidArray.o\
+	testRecFile.o testVoidArray.o\
 	ClientAPI.o ServerAPI.o TkControl.o testSBufMgr.o DeviseServer.o
 

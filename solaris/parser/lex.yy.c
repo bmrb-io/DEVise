@@ -97,10 +97,6 @@ extern struct yysvf yysvec[], *yybgin;
   $Id$
 
   $Log$
-  Revision 1.18.14.1  1997/12/03 22:53:12  whh
-  Devise now uses new C++ expression evaluation code instead of Tcl
-  interpreter.
-
   Revision 1.8  1995/12/14 19:07:59  jussi
   Changed return code of yywrap().
 

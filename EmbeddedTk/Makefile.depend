@@ -1,145 +1,193 @@
 ETkCommands.o: ETkCommands.c TkWindowRep.h EmbeddedTk.h \
- /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
- /usr/include/libio.h /usr/include/_G_config.h /usr/include/tcl/tcl.h \
- /usr/X11R6/include/X11/X.h /usr/X11R6/include/X11/Xlib.h \
- /usr/include/sys/types.h /usr/include/linux/types.h \
- /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h \
- /usr/include/asm/types.h /usr/include/sys/bitypes.h \
- /usr/X11R6/include/X11/Xfuncproto.h /usr/X11R6/include/X11/Xosdefs.h \
- /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h \
- /usr/X11R6/include/X11/Xutil.h /usr/X11R6/include/X11/keysym.h \
- /usr/X11R6/include/X11/keysymdef.h /usr/include/tcl/tk.h \
- /usr/include/assert.h ETkCommands.h
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdio.h \
+ /usr/include/sys/feature_tests.h /s/tcl/include/tcl.h \
+ /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/types.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/isa_defs.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/select.h \
+ /usr/include/sys/time.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/time.h \
+ /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
+ /usr/include/vm/faultcode.h /s/X11/include/X11/Xfuncproto.h \
+ /s/X11/include/X11/Xosdefs.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stddef.h \
+ /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
+ /s/X11/include/X11/keysymdef.h /s/tcl/include/tk.h \
+ /s/gcc-2.7.2/sunx86_55/i386-unknown-solaris2.5/include/assert.h \
+ ETkCommands.h
 ETkCompDate.o: ETkCompDate.c ETkCompDate.h
-ETkPatron.o: ETkPatron.c /usr/include/stdio.h /usr/include/features.h \
- /usr/include/sys/cdefs.h /usr/include/libio.h \
- /usr/include/_G_config.h /usr/include/stdlib.h \
- /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h \
- /usr/include/errno.h /usr/include/linux/errno.h \
- /usr/include/asm/errno.h /usr/include/alloca.h /usr/include/string.h \
- /usr/include/sys/types.h /usr/include/linux/types.h \
- /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h \
- /usr/include/asm/types.h /usr/include/sys/bitypes.h \
- /usr/include/sys/socket.h /usr/include/linux/socket.h \
- /usr/include/asm/socket.h /usr/include/asm/sockios.h \
- /usr/include/linux/sockios.h /usr/include/linux/uio.h \
- /usr/include/netinet/in.h /usr/include/linux/in.h \
- /usr/include/asm/byteorder.h /usr/include/arpa/inet.h \
- /usr/include/sys/param.h \
- /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/limits.h \
- /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/syslimits.h \
- /usr/include/limits.h /usr/include/posix1_lim.h \
- /usr/include/linux/limits.h /usr/include/posix2_lim.h \
- /usr/include/linux/param.h /usr/include/asm/param.h \
- /usr/include/netdb.h /usr/include/paths.h /usr/include/unistd.h \
- /usr/include/posix_opt.h /usr/include/gnu/types.h \
- /usr/include/confname.h ETkPatron.h
+ETkPatron.o: ETkPatron.c \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdio.h \
+ /usr/include/sys/feature_tests.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdlib.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/string.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/types.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/isa_defs.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/select.h \
+ /usr/include/sys/time.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/time.h \
+ /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
+ /usr/include/vm/faultcode.h /usr/include/sys/socket.h \
+ /usr/include/sys/netconfig.h /usr/include/netinet/in.h \
+ /usr/include/sys/stream.h /usr/include/sys/vnode.h \
+ /usr/include/sys/t_lock.h /usr/include/sys/machlock.h \
+ /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h \
+ /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/param.h \
+ /usr/include/sys/unistd.h /usr/include/sys/pirec.h \
+ /usr/include/sys/mutex.h /usr/include/sys/rwlock.h \
+ /usr/include/sys/semaphore.h /usr/include/sys/condvar.h \
+ /usr/include/sys/cred.h /usr/include/sys/uio.h \
+ /usr/include/vm/seg_enum.h /usr/include/sys/poll.h \
+ /usr/include/sys/strmdep.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/byteorder.h \
+ /usr/include/arpa/inet.h /usr/include/netdb.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/unistd.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/errno.h \
+ /usr/include/sys/errno.h ETkPatron.h
 ETk_DeviseClient.o: ETk_DeviseClient.c ETk_DeviseClient.h EmbeddedTk.h \
- /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
- /usr/include/libio.h /usr/include/_G_config.h /usr/include/tcl/tcl.h \
- /usr/X11R6/include/X11/X.h /usr/X11R6/include/X11/Xlib.h \
- /usr/include/sys/types.h /usr/include/linux/types.h \
- /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h \
- /usr/include/asm/types.h /usr/include/sys/bitypes.h \
- /usr/X11R6/include/X11/Xfuncproto.h /usr/X11R6/include/X11/Xosdefs.h \
- /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h \
- /usr/X11R6/include/X11/Xutil.h /usr/X11R6/include/X11/keysym.h \
- /usr/X11R6/include/X11/keysymdef.h /usr/include/sys/time.h \
- /usr/include/linux/time.h /usr/include/time.h
-EmbeddedTk.o: EmbeddedTk.c EmbeddedTk.h /usr/include/stdio.h \
- /usr/include/features.h /usr/include/sys/cdefs.h /usr/include/libio.h \
- /usr/include/_G_config.h /usr/include/tcl/tcl.h \
- /usr/X11R6/include/X11/X.h /usr/X11R6/include/X11/Xlib.h \
- /usr/include/sys/types.h /usr/include/linux/types.h \
- /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h \
- /usr/include/asm/types.h /usr/include/sys/bitypes.h \
- /usr/X11R6/include/X11/Xfuncproto.h /usr/X11R6/include/X11/Xosdefs.h \
- /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h \
- /usr/X11R6/include/X11/Xutil.h /usr/X11R6/include/X11/keysym.h \
- /usr/X11R6/include/X11/keysymdef.h TkWindowRep.h \
- /usr/include/tcl/tk.h /usr/include/assert.h /usr/include/errno.h \
- /usr/include/linux/errno.h /usr/include/asm/errno.h \
- /usr/include/string.h
-NetscapeRemote.o: NetscapeRemote.c /usr/include/stdio.h \
- /usr/include/features.h /usr/include/sys/cdefs.h /usr/include/libio.h \
- /usr/include/_G_config.h /usr/include/stdlib.h \
- /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h \
- /usr/include/errno.h /usr/include/linux/errno.h \
- /usr/include/asm/errno.h /usr/include/alloca.h /usr/include/unistd.h \
- /usr/include/posix_opt.h /usr/include/gnu/types.h \
- /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h \
- /usr/include/confname.h /usr/include/sys/types.h \
- /usr/include/linux/types.h /usr/include/asm/types.h \
- /usr/include/sys/bitypes.h /usr/include/string.h \
- /usr/include/assert.h /usr/X11R6/include/X11/Xlib.h \
- /usr/X11R6/include/X11/X.h /usr/X11R6/include/X11/Xfuncproto.h \
- /usr/X11R6/include/X11/Xosdefs.h /usr/X11R6/include/X11/Xatom.h \
- /usr/X11R6/include/X11/Xmu/WinUtil.h /usr/X11R6/include/X11/Xutil.h \
- vroot.h BrowserCommands.h /usr/include/tcl/tcl.h
-SampleClient.o: SampleClient.c /usr/lib/g++-include/iostream.h \
- /usr/lib/g++-include/streambuf.h /usr/include/libio.h \
- /usr/include/_G_config.h /usr/include/sys/cdefs.h \
- /usr/include/ctype.h /usr/include/features.h /usr/include/endian.h \
- /usr/include/bytesex.h /usr/include/unistd.h /usr/include/posix_opt.h \
- /usr/include/gnu/types.h /usr/include/linux/posix_types.h \
- /usr/include/asm/posix_types.h \
- /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h \
- /usr/include/confname.h /usr/include/sys/types.h \
- /usr/include/linux/types.h /usr/include/asm/types.h \
- /usr/include/sys/bitypes.h /usr/include/string.h EmbeddedTk.h \
- /usr/include/stdio.h /usr/include/tcl/tcl.h \
- /usr/X11R6/include/X11/X.h /usr/X11R6/include/X11/Xlib.h \
- /usr/X11R6/include/X11/Xfuncproto.h /usr/X11R6/include/X11/Xosdefs.h \
- /usr/X11R6/include/X11/Xutil.h /usr/X11R6/include/X11/keysym.h \
- /usr/X11R6/include/X11/keysymdef.h ETkPatron.h ETkCompDate.h
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdio.h \
+ /usr/include/sys/feature_tests.h /s/tcl/include/tcl.h \
+ /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/types.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/isa_defs.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/select.h \
+ /usr/include/sys/time.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/time.h \
+ /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
+ /usr/include/vm/faultcode.h /s/X11/include/X11/Xfuncproto.h \
+ /s/X11/include/X11/Xosdefs.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stddef.h \
+ /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
+ /s/X11/include/X11/keysymdef.h
+EmbeddedTk.o: EmbeddedTk.c EmbeddedTk.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdio.h \
+ /usr/include/sys/feature_tests.h /s/tcl/include/tcl.h \
+ /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/types.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/isa_defs.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/select.h \
+ /usr/include/sys/time.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/time.h \
+ /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
+ /usr/include/vm/faultcode.h /s/X11/include/X11/Xfuncproto.h \
+ /s/X11/include/X11/Xosdefs.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stddef.h \
+ /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
+ /s/X11/include/X11/keysymdef.h TkWindowRep.h /s/tcl/include/tk.h \
+ /s/gcc-2.7.2/sunx86_55/i386-unknown-solaris2.5/include/assert.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/errno.h \
+ /usr/include/sys/errno.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/string.h
+NetscapeRemote.o: NetscapeRemote.c \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdio.h \
+ /usr/include/sys/feature_tests.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdlib.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/unistd.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/types.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/isa_defs.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/select.h \
+ /usr/include/sys/time.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/time.h \
+ /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
+ /usr/include/vm/faultcode.h /usr/include/sys/unistd.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/string.h \
+ /s/gcc-2.7.2/sunx86_55/i386-unknown-solaris2.5/include/assert.h \
+ /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h \
+ /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stddef.h \
+ /s/X11/include/X11/Xatom.h /s/X11/include/X11/Xmu/WinUtil.h \
+ /s/X11/include/X11/Xutil.h vroot.h BrowserCommands.h \
+ /s/tcl/include/tcl.h
+SampleClient.o: SampleClient.c \
+ /s/gcc-2.7.2/sunx86_55/lib/g++-include/iostream.h \
+ /s/gcc-2.7.2/sunx86_55/lib/g++-include/streambuf.h \
+ /s/gcc-2.7.2/sunx86_55/lib/g++-include/libio.h \
+ /s/gcc-2.7.2/sunx86_55/i386-unknown-solaris2.5/include/_G_config.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/ctype.h \
+ /usr/include/sys/feature_tests.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/unistd.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/types.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/isa_defs.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/select.h \
+ /usr/include/sys/time.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/time.h \
+ /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
+ /usr/include/vm/faultcode.h /usr/include/sys/unistd.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/string.h \
+ EmbeddedTk.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdio.h \
+ /s/tcl/include/tcl.h /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
+ /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stddef.h \
+ /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
+ /s/X11/include/X11/keysymdef.h ETkPatron.h ETkCompDate.h
 TkWindowRep.o: TkWindowRep.c TkWindowRep.h EmbeddedTk.h \
- /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
- /usr/include/libio.h /usr/include/_G_config.h /usr/include/tcl/tcl.h \
- /usr/X11R6/include/X11/X.h /usr/X11R6/include/X11/Xlib.h \
- /usr/include/sys/types.h /usr/include/linux/types.h \
- /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h \
- /usr/include/asm/types.h /usr/include/sys/bitypes.h \
- /usr/X11R6/include/X11/Xfuncproto.h /usr/X11R6/include/X11/Xosdefs.h \
- /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h \
- /usr/X11R6/include/X11/Xutil.h /usr/X11R6/include/X11/keysym.h \
- /usr/X11R6/include/X11/keysymdef.h /usr/include/tcl/tk.h \
- /usr/include/assert.h ETkCommands.h BrowserCommands.h \
- /usr/lib/g++-include/iostream.h /usr/lib/g++-include/streambuf.h \
- /usr/lib/g++-include/strstream.h /usr/lib/g++-include/strfile.h \
- /usr/include/stdlib.h /usr/include/errno.h /usr/include/linux/errno.h \
- /usr/include/asm/errno.h /usr/include/alloca.h /usr/include/unistd.h \
- /usr/include/posix_opt.h /usr/include/gnu/types.h \
- /usr/include/confname.h /usr/include/string.h
-ZooCommands.o: ZooCommands.c ZooCommands.h /usr/include/tcl/tcl.h \
- /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
- /usr/include/libio.h /usr/include/_G_config.h /usr/include/string.h \
- /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-main.o: main.c TkWindowRep.h EmbeddedTk.h /usr/include/stdio.h \
- /usr/include/features.h /usr/include/sys/cdefs.h /usr/include/libio.h \
- /usr/include/_G_config.h /usr/include/tcl/tcl.h \
- /usr/X11R6/include/X11/X.h /usr/X11R6/include/X11/Xlib.h \
- /usr/include/sys/types.h /usr/include/linux/types.h \
- /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h \
- /usr/include/asm/types.h /usr/include/sys/bitypes.h \
- /usr/X11R6/include/X11/Xfuncproto.h /usr/X11R6/include/X11/Xosdefs.h \
- /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h \
- /usr/X11R6/include/X11/Xutil.h /usr/X11R6/include/X11/keysym.h \
- /usr/X11R6/include/X11/keysymdef.h /usr/include/tcl/tk.h \
- /usr/include/assert.h ETkCompDate.h BrowserCommands.h \
- /usr/include/stdlib.h /usr/include/errno.h /usr/include/linux/errno.h \
- /usr/include/asm/errno.h /usr/include/alloca.h /usr/include/fcntl.h \
- /usr/include/gnu/types.h /usr/include/linux/fcntl.h \
- /usr/include/asm/fcntl.h /usr/include/unistd.h \
- /usr/include/posix_opt.h /usr/include/confname.h \
- /usr/include/string.h /usr/include/sys/socket.h \
- /usr/include/linux/socket.h /usr/include/asm/socket.h \
- /usr/include/asm/sockios.h /usr/include/linux/sockios.h \
- /usr/include/linux/uio.h /usr/include/netdb.h /usr/include/paths.h \
- /usr/include/netinet/in.h /usr/include/linux/in.h \
- /usr/include/asm/byteorder.h /usr/include/arpa/inet.h \
- /usr/include/sys/param.h \
- /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/limits.h \
- /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/syslimits.h \
- /usr/include/limits.h /usr/include/posix1_lim.h \
- /usr/include/linux/limits.h /usr/include/posix2_lim.h \
- /usr/include/linux/param.h /usr/include/asm/param.h
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdio.h \
+ /usr/include/sys/feature_tests.h /s/tcl/include/tcl.h \
+ /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/types.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/isa_defs.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/select.h \
+ /usr/include/sys/time.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/time.h \
+ /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
+ /usr/include/vm/faultcode.h /s/X11/include/X11/Xfuncproto.h \
+ /s/X11/include/X11/Xosdefs.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stddef.h \
+ /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
+ /s/X11/include/X11/keysymdef.h /s/tcl/include/tk.h \
+ /s/gcc-2.7.2/sunx86_55/i386-unknown-solaris2.5/include/assert.h \
+ ETkCommands.h BrowserCommands.h \
+ /s/gcc-2.7.2/sunx86_55/lib/g++-include/iostream.h \
+ /s/gcc-2.7.2/sunx86_55/lib/g++-include/streambuf.h \
+ /s/gcc-2.7.2/sunx86_55/lib/g++-include/libio.h \
+ /s/gcc-2.7.2/sunx86_55/i386-unknown-solaris2.5/include/_G_config.h \
+ /s/gcc-2.7.2/sunx86_55/lib/g++-include/strstream.h \
+ /s/gcc-2.7.2/sunx86_55/lib/g++-include/strfile.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdlib.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/unistd.h \
+ /usr/include/sys/unistd.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/string.h
+ZooCommands.o: ZooCommands.c ZooCommands.h /s/tcl/include/tcl.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdio.h \
+ /usr/include/sys/feature_tests.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/string.h
+main.o: main.c TkWindowRep.h EmbeddedTk.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdio.h \
+ /usr/include/sys/feature_tests.h /s/tcl/include/tcl.h \
+ /s/X11/include/X11/X.h /s/X11/include/X11/Xlib.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/types.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/isa_defs.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/select.h \
+ /usr/include/sys/time.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/time.h \
+ /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
+ /usr/include/vm/faultcode.h /s/X11/include/X11/Xfuncproto.h \
+ /s/X11/include/X11/Xosdefs.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stddef.h \
+ /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
+ /s/X11/include/X11/keysymdef.h /s/tcl/include/tk.h \
+ /s/gcc-2.7.2/sunx86_55/i386-unknown-solaris2.5/include/assert.h \
+ ETkCompDate.h BrowserCommands.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdlib.h \
+ /usr/include/fcntl.h /usr/include/sys/fcntl.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/unistd.h \
+ /usr/include/sys/unistd.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/string.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/errno.h \
+ /usr/include/sys/errno.h /usr/include/sys/socket.h \
+ /usr/include/sys/netconfig.h /usr/include/netdb.h \
+ /usr/include/netinet/in.h /usr/include/sys/stream.h \
+ /usr/include/sys/vnode.h /usr/include/sys/t_lock.h \
+ /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h \
+ /usr/include/sys/dl.h /usr/include/sys/sleepq.h \
+ /usr/include/sys/turnstile.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/param.h \
+ /usr/include/sys/pirec.h /usr/include/sys/mutex.h \
+ /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h \
+ /usr/include/sys/condvar.h /usr/include/sys/cred.h \
+ /usr/include/sys/uio.h /usr/include/vm/seg_enum.h \
+ /usr/include/sys/poll.h /usr/include/sys/strmdep.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/byteorder.h \
+ /usr/include/arpa/inet.h

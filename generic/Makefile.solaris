@@ -15,6 +15,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.49  1998/01/07 19:28:15  wenger
+# Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+# server library into Devise); updated solaris, sun, linux, and hp
+# dependencies.
+#
 # Revision 1.48  1997/12/22 17:54:45  donjerko
 # Initial version of Saeed's sequence similarity search.
 #
@@ -97,36 +102,35 @@ generic.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
 generic.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
 generic.o: ../graphics.new/ViewGraph.h ../graphics.new/Action.h
 generic.o: ../graphics.new/RecId.h ../graphics.new/PointStorage.h
-generic.o: ../tape/HashTable.h ../graphics.new/TDataViewX.h
-generic.o: ../graphics.new/ViewScatter.h ../graphics.new/ViewLens.h
-generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
-generic.o: ../graphics/AttrList.h ../graphics.new/TDataMap.h
-generic.o: ../graphics.new/ShapeID.h ../graphics.new/GDataRec.h
-generic.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
-generic.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-generic.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-generic.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-generic.o: /usr/include/assert.h /usr/include/limits.h
-generic.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-generic.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-generic.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-generic.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-generic.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-generic.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-generic.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-generic.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-generic.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-generic.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-generic.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-generic.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-generic.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-generic.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-generic.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-generic.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-generic.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
-generic.o: ../graphics.new/DataSourceBuf.h ../graphics.new/StringStorage.h
-generic.o: StateMap.h ../graphics/Util.h /usr/include/stdlib.h
-generic.o: /usr/include/ctype.h ../graphics/XDisplay.h
+generic.o: ../tape/HashTable.h ../graphics.new/ViewData.h
+generic.o: ../graphics.new/ViewLens.h ../graphics.new/CompositeParser.h
+generic.o: ../graphics.new/RecInterp.h ../graphics/AttrList.h
+generic.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+generic.o: ../graphics.new/GDataRec.h ../graphics.new/TData.h
+generic.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
+generic.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
+generic.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+generic.o: /usr/include/sys/unistd.h /usr/include/assert.h
+generic.o: /usr/include/limits.h /usr/include/sys/stat.h
+generic.o: ../graphics.new/machdep.h /usr/include/sys/param.h
+generic.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+generic.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+generic.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+generic.o: /usr/include/netdb.h /usr/include/sys/socket.h
+generic.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+generic.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+generic.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+generic.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+generic.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+generic.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+generic.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+generic.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+generic.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+generic.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+generic.o: /usr/include/sys/byteorder.h ../graphics/CursorClassInfo.h
+generic.o: ../graphics.new/ParseCat.h ../graphics.new/DataSourceBuf.h
+generic.o: ../graphics.new/StringStorage.h StateMap.h ../graphics/Util.h
+generic.o: /usr/include/stdlib.h /usr/include/ctype.h ../graphics/XDisplay.h
 generic.o: ../graphics/XWindowRep.h ../graphics/XBitmap.h
 testWindowSpeed.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testWindowSpeed.o: /usr/include/sys/va_list.h /usr/include/time.h

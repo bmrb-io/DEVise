@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/11/24 23:15:22  weaver
+  Changes for the new ColorManager.
+
   Revision 1.5.10.1  1997/05/21 20:40:51  weaver
   Changes for new ColorManager
 
@@ -38,8 +41,7 @@
 #define ViewClassInfo_h
 
 #include "ViewGraph.h"
-#include "TDataViewX.h"
-#include "ViewScatter.h"
+#include "ViewData.h"
 #include "ViewLens.h"
 
 
@@ -68,7 +70,7 @@ protected:
 class ViewXInfo: public ViewClassInfo {
 public:
   ViewXInfo() : ViewClassInfo() {}
-  ViewXInfo(char *name, TDataViewX *view);
+  ViewXInfo(char *name, ViewData *view);
   virtual char *ClassName() { return "SortedX"; }
   virtual ClassInfo *CreateWithParams(int argc, char **argv);
 };
@@ -76,7 +78,7 @@ public:
 class ViewScatterInfo : public ViewClassInfo {
 public:
   ViewScatterInfo() : ViewClassInfo() {}
-  ViewScatterInfo(char *name, ViewScatter *view);
+  ViewScatterInfo(char *name, ViewGraph *view);
   virtual char *ClassName() { return "Scatter"; }
   virtual ClassInfo *CreateWithParams(int argc, char **argv);
 };

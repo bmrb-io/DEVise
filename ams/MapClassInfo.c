@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/12/03 20:58:26  jussi
+  Removed reference to unneeded file Snapshot.h.
+
   Revision 1.8  1996/11/23 20:45:36  jussi
   Removed references to DispQueryProc.
 
@@ -56,7 +59,6 @@
 #include "Init.h"
 #include "TDataMap.h"
 #include "Temp.h"
-#include "ViewScatter.h"
 #include "MapClassInfo.h"
 #include "Util.h"
 #include "AttrList.h"

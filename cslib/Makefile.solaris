@@ -15,6 +15,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.12  1998/01/07 19:27:49  wenger
+# Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+# server library into Devise); updated solaris, sun, linux, and hp
+# dependencies.
+#
 # Revision 1.11  1997/12/22 17:54:42  donjerko
 # Initial version of Saeed's sequence similarity search.
 #
@@ -74,6 +79,40 @@ Client.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 Client.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 Client.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 Client.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h Client.h
+ClientServer.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+ClientServer.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
+ClientServer.o: /usr/include/string.h /usr/include/errno.h
+ClientServer.o: /usr/include/sys/errno.h /usr/include/unistd.h
+ClientServer.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+ClientServer.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+ClientServer.o: /usr/include/sys/time.h /usr/include/time.h
+ClientServer.o: /usr/include/sys/unistd.h /usr/include/sys/socket.h
+ClientServer.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+ClientServer.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+ClientServer.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+ClientServer.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+ClientServer.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+ClientServer.o: /usr/include/sys/param.h /usr/include/sys/pirec.h
+ClientServer.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+ClientServer.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+ClientServer.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+ClientServer.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+ClientServer.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+ClientServer.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h
+ClientServer.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
+ClientServer.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+ClientServer.o: /usr/include/stddef.h ClientServer.h ../graphics/Display.h
+ClientServer.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ClientServer.o: ../graphics/DevStatus.h ../graphics/Geom.h
+ClientServer.o: /usr/include/math.h /usr/include/floatingpoint.h
+ClientServer.o: /usr/include/sys/ieeefp.h ../graphics/Dispatcher.h
+ClientServer.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+ClientServer.o: ../graphics/VisualArg.h ../graphics/Pattern.h
+ClientServer.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+ClientServer.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+ClientServer.o: ../graphics/Compress.h ../graphics/DevError.h
+ClientServer.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
+ClientServer.o: /s/X11/include/X11/Xutil.h ../graphics/GraphicsDebug.h
 Server.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Server.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 Server.o: /usr/include/string.h /usr/include/errno.h /usr/include/sys/errno.h

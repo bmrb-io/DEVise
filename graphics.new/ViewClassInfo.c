@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/11/24 23:15:22  weaver
+  Changes for the new ColorManager.
+
   Revision 1.12  1997/08/20 22:11:13  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -81,8 +84,7 @@
 #include <sys/time.h>
 
 #include "VisualArg.h"
-#include "TDataViewX.h"
-#include "ViewScatter.h"
+#include "ViewData.h"
 #include "ViewClassInfo.h"
 #include "Selection.h"
 #include "Control.h"
@@ -199,7 +201,7 @@ void ViewClassInfo::ChangeParams(int argc, char **argv)
   _view->SetColors(GetPColorID(defForeColor), GetPColorID(defBackColor));
 }
 
-ViewXInfo::ViewXInfo(char *name, TDataViewX *view)
+ViewXInfo::ViewXInfo(char *name, ViewData *view)
 	: ViewClassInfo(name, view)
 {
 }
@@ -220,11 +222,11 @@ ClassInfo *ViewXInfo::CreateWithParams(int argc, char **argv)
   (void)ParseFloatDate(argv[4], filter.yHigh);
   filter.flag = VISUAL_LOC;
   
-  TDataViewX *view = new TDataViewX(name, filter, GetQueryProc());
+  ViewData *view = new ViewData(name, filter, GetQueryProc());
   return new ViewXInfo(name, view);
 }
 
-ViewScatterInfo::ViewScatterInfo(char *name, ViewScatter *view)
+ViewScatterInfo::ViewScatterInfo(char *name, ViewGraph *view)
 	: ViewClassInfo(name, view)
 {
 }
@@ -245,7 +247,7 @@ ClassInfo *ViewScatterInfo::CreateWithParams(int argc, char **argv)
   (void)ParseFloatDate(argv[4], filter.yHigh);
   filter.flag = VISUAL_LOC;
   
-  ViewScatter *view = new ViewScatter(name, filter, GetQueryProc());
+  ViewData *view = new ViewData(name, filter, GetQueryProc());
   return new ViewScatterInfo(name, view);
 }
 

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.123  1998/02/05 23:45:53  wenger
+  Added view-level specification of symbol alignment, API commands, simple
+  GUI for Sanjay.
+
   Revision 1.122  1998/02/04 20:22:02  zhenhai
   Fixed bugs of displaying date and customized text at axis.
 
@@ -2003,7 +2007,7 @@ void View::AbortQuery()
   printf("View(%s)::AbortQuery()\n", _name);
 #endif
   // If the View object is really anything other than a
-  // TDataViewX, ViewRanges, or ViewScatter, and _querySent is true,
+  // ViewData or maybe ViewLens, and _querySent is true,
   // this will call a pure virtual function.
 
   if (_querySent) {
