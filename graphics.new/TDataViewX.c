@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/04/15 16:07:45  jussi
+  Improved the way x and y attributes are extracted from a GData
+  record in ReturnGData(). Also added code for extracting shape
+  and color which will be used for statistics collection later
+  on.
+
   Revision 1.15  1996/04/15 15:07:26  jussi
   Interface to ViewGraph's mapping iterator has changed. Added
   call to DrawLegend().
@@ -69,8 +75,6 @@
   Revision 1.2  1995/09/05 22:16:04  jussi
   Added CVS header.
 */
-
-#include <assert.h>
 
 #include "Init.h"
 #include "TDataViewX.h"
@@ -179,13 +183,13 @@ Boolean TDataViewX::DisplayConnectors(Boolean state)
     return state;
 
   if (!state) {
-    assert(_cMap);
+    DOASSERT(_cMap, "No connector mapping");
     delete _cMap;
     _cMap = NULL;
   } else {
-    assert(!_cMap);
+    DOASSERT(!_cMap, "Unexpected connector mapping");
     _cMap = new TDataCMap;
-    assert(_cMap);
+    DOASSERT(_cMap, "Could not create connector mapping");
     _cMap->SetDefaultColor(GetFgColor());
   }
 
