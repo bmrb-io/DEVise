@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/03/28 16:09:11  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
   Revision 1.12  1996/12/18 18:52:01  wenger
   Devise requests Tasvir not to use subwindows for its images; sizing of
   Tasvir images now basically works like a RectX, except that the aspect
@@ -98,7 +102,7 @@ inline int trunc(double num) {
 
 #ifndef ABS
 #define ABS(x) ((x) >= 0 ? (x) : -(x))
-#endif  ABS
+#endif  //ABS
 
 
 
