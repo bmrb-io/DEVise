@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/11/20 01:09:17  jussi
+  Changed threshold value for randomization from 0.5 to 0.15.
+
   Revision 1.22  1996/11/20 00:43:52  jussi
   Added support for X,Y randomization. Changed DrawPixelArray() call
   back so that +/- is used to control pixel size.
@@ -187,7 +190,8 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1, true);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view,
+                           pixelSize, true);
 	    return;
 	}
     }
@@ -376,7 +380,8 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (maxWidth <= pixelWidth) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1, false);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view,
+                           pixelSize, false);
 	    return;
 	}
     }
@@ -570,7 +575,8 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1, false);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view,
+                           pixelSize, false);
 	    return;
 	}
     }
@@ -661,7 +667,8 @@ void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1, false);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view,
+                           pixelSize, false);
 	    return;
 	}
     }
@@ -741,7 +748,8 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1, false);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view,
+                           pixelSize, false);
 	    return;
 	}
     }
@@ -937,7 +945,8 @@ void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1, false);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view,
+                           pixelSize, false);
 	    return;
 	}
     }
@@ -1081,7 +1090,8 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1, false);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view,
+                           pixelSize, false);
 	    return;
 	}
     }
@@ -1205,7 +1215,8 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1, false);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view,
+                           pixelSize, false);
 	    return;
 	}
     }
