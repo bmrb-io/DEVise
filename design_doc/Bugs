@@ -134,7 +134,7 @@ Num Date        Status  Description
 
 039 09/12/96	FIXED	+/- keys don't change symbol sizes. (ml/rkw)
 
-040 09/13/96	OPEN	+/- keys seem to only work on one view of piled/
+040 09/13/96	FIXED	+/- keys seem to only work on one view of piled/
 			stacked views (see LandsEnd/a2.tk). (rkw)
 			Deferred
 
@@ -287,7 +287,7 @@ Num Date        Status  Description
 			(rr/rkw)
 			Deferred
 
-077 11/21/96	OPEN	Importing data into a window with piled views
+077 11/21/96	FIXED	Importing data into a window with piled views
 			doesn't work correctly -- new view gets put into
 			window but is not visible unless views are unpiled.
 			(rkw)
@@ -617,7 +617,7 @@ Num Date        Status  Description
 148 02/03/97	FIXED	Try to create a window with the same name as an
 			existing window -> Devise exits. (ml/rkw)
 
-149 02/07/97	OPEN	Changing the window background color should also
+149 02/07/97	NLR	Changing the window background color should also
 			change the background color of the trademark notice
 			in that window. (rkw)
 			Deferred
@@ -672,7 +672,7 @@ Num Date        Status  Description
 161 02/19/97	OPEN	Shape attribute menus in mapping dialog are not
 			correct for 3D mappings. (rkw)
 
-162 02/19/97	OPEN	Shape attribute names should get set to the generic
+162 02/19/97	FIXED	Shape attribute names should get set to the generic
 			values if the shape is a variable. (rkw)
 
 163 02/19/97	OPEN	In mapping dialog, bring up expression on Shape,
@@ -682,10 +682,11 @@ Num Date        Status  Description
 164 02/23/97	OPEN	The online help in the Data Streams window is
 			out of date. (rkw)
 
-165 02/09/97	OPEN	An object is not drawn if its center falls outside
+165 02/09/97	FIXED	An object is not drawn if its center falls outside
 			the visual filter, even if part of the object would
 			fall inside the visual filter if it were drawn.
 			(kb/rkw)
+			(Fixed by rkw -- added bounding boxes to GData.)
 
 166 02/19/97	OPEN	Merging a template sometimes puts duplicate data
 			stream definitions into the catalog. (ml/rkw)
@@ -778,15 +779,16 @@ Num Date        Status  Description
 			of the cursor grid, for example), the cursor is
 			erased and not redrawn. (rkw)
 
-188 06/10/97	OPEN	You can't select old visual filters from the history
+188 06/10/97	CD	You can't select old visual filters from the history
 			window. (rkw/lz)
 
 189 06/17/97	OPEN	In the BankFace.tk demo session, the face images
 			aren't redrawn correctly as you scroll (sometimes
 			they are drawn as gray rectangles). (rkw)
 
-190 06/17/97	OPEN	Point queries on piled views don't show data from
+190 06/17/97	FIXED	Point queries on piled views don't show data from
 			the (visually) top view. (rkw)
+			(Fixed by rkw.)
 
 191 06/17/97	OPEN	Attempting to do a group-by on a UNIXFILE should
 			result in an error message as opposed to a crash.
@@ -806,7 +808,7 @@ Num Date        Status  Description
 
 195 07/15/97	OPEN	Color links don't seem to work. (rkw)
 
-196 07/15/97	OPEN	Window->duplicate doesn't work right if window has
+196 07/15/97	FIXED	Window->duplicate doesn't work right if window has
 			piled views. (rkw)
 
 197 07/15/97	FIXED	You can't select data sources from the 'active tables'
@@ -824,7 +826,7 @@ Num Date        Status  Description
 			results than printing to a file and then printing
 			the file. (ml/rkw)
 
-201 07/17/97	OPEN	sourcedef.tcl file ends up with 644 permissions
+201 07/17/97	NLR	sourcedef.tcl file ends up with 644 permissions
 			(at least sometimes).  Causes problems for multiple
 			people creating data sources if not on AFS. (ma/rkw)
 
@@ -865,7 +867,8 @@ Num Date        Status  Description
 212 07/28/97	OPEN	Sessions cannot be saved or opened as templates.
 			(rkw)
 
-213 07/28/97	OPEN	Switching TData doesn't work. (rkw)
+213 07/28/97	FIXED	Switching TData doesn't work. (rkw)
+			(Fixed by rkw.)
 
 214 08/08/97	OPEN	Record links don't work if symbols in master view
 			are "complex". (rkw)
@@ -913,7 +916,7 @@ Num Date        Status  Description
 226 09/15/97	OPEN	The user should be able to set the title font from
 			the 'Set View Title' dialog. (ml/rkw)
 
-227 09/22/97	OPEN	Select a Table to display, but then cancel in
+227 09/22/97	CD	Select a Table to display, but then cancel in
 			Define Visualization dialog -> DEVise core dumps on
 			exit.  (rkw)
 
@@ -966,7 +969,7 @@ Num Date        Status  Description
 242 11/26/97	FIXED	UniData schema editor GUI doesn't let you choose
 			between separator and whitespace. (rkw)
 
-243 11/26/97	OPEN	UniData schema editor GUI is taller than screen
+243 11/26/97	NLR	UniData schema editor GUI is taller than screen
 			when 'More Spec' is selected. (rkw)
 
 244 11/26/97	OPEN	Schema editor GUIs for both types of schema allow
@@ -1067,7 +1070,7 @@ Num Date        Status  Description
 
 272 01/23/98	FIXED (donko) Trying to create an index causes a core dump. (rkw)
 
-273 01/28/98	OPEN	UniData cannot recognize pipes (|) as field delimiters
+273 01/28/98	NLR	UniData cannot recognize pipes (|) as field delimiters
 			(also check about any other characters).  (rkw/ad)
 
 274 01/29/98	OPEN	When generating a GIF, DEVise should check whether
@@ -1131,8 +1134,9 @@ Num Date        Status  Description
 293 02/12/98	OPEN	'kill_devised' doesn't work (with collaboration
 			code).  Perhaps deviseb doesn't work at all? (rkw)
 
-294 02/12/98	OPEN	Sometimes symbols are not drawn that should be
+294 02/12/98	FIXED	Sometimes symbols are not drawn that should be
 			(see test/missing_bars.ds). (rkw)
+			(Fixed by rkw.)
 
 295 02/16/98	FIXED?	Connecting multiple clients to a single server no
 			longer works. (rkw)
@@ -1141,7 +1145,7 @@ Num Date        Status  Description
 
 297 02/17/98	FIXED	Cannot create or edit data source definitions. (am/rkw)
 
-298 02/18/98	OPEN	If you accidentally specify a UNIXFILE-type schema
+298 02/18/98	NLR	If you accidentally specify a UNIXFILE-type schema
 			for a Table, the UniData code core dumps. (rkw)
 
 299 02/18/98	OPEN	GUI lets you specify a UNIXFILE-type schema for a
@@ -1273,12 +1277,12 @@ Num Date        Status  Description
 			when DEVISE_COLLABORATOR environment variable is not
 			defined causes devised to crash. (rkw)
 
-334 04/10/98	OPEN	Dot in schema name within UniData schema file causes
+334 04/10/98	NLR	Dot in schema name within UniData schema file causes
 			core dump. (rkw)
 
-335 04/10/98	OPEN	'float' type not implemented in UniData. (rkw)
+335 04/10/98	NLR	'float' type not implemented in UniData. (rkw)
 
-336 04/14/98	OPEN	DEVise uses 26 MB of memory before you even do
+336 04/14/98	FIXED	DEVise uses 26 MB of memory before you even do
 			*anything*. (rkw)
 
 337 04/29/98	OPEN	When a session is closed, and
@@ -1380,10 +1384,10 @@ Num Date        Status  Description
 			the plot all data in the slave instead of no data.
 			(rkw)
 
-364 06/15/98	OPEN	RELATION_MNGR.deleteRelation doesn't actually delete
+364 06/15/98	DUP	RELATION_MNGR.deleteRelation doesn't actually delete
 			the relation. (rkw)
 
-365 06/15/98	OPEN	Duplicate elimination in UniqueInserter doesn't work
+365 06/15/98	DUP	Duplicate elimination in UniqueInserter doesn't work
 			(at least for strings). (rkw)
 
 366 06/15/98	OPEN	cslib test client core dumps on Linux. (rkw)
@@ -1436,7 +1440,7 @@ Num Date        Status  Description
 			established, but DEVise window never shows up.
 			(rkw)
 
-379 07/14/98	OPEN	UniData schema GUI sometimes produces the line:
+379 07/14/98	NLR	UniData schema GUI sometimes produces the line:
 			    whitespace = '  '       ' ;
 			when it should be:
 			    whitespace = '  ' ;
@@ -1604,12 +1608,13 @@ Num Date        Status  Description
 			until you select a view in the new session. (rkw)
 			(Fixed by rkw, 10/14/98.)
 
-419 10/14/98	OPEN	When selecting a piled view, the mapping dialog selects
+419 10/14/98	FIXED	When selecting a piled view, the mapping dialog selects
 			the "top" (drawn last) view, while everything else
 			selects the "bottom" (drawn first) view. (rkw)
 			(I think this could be fixed by having piled views
 			draw into the WindowRep of the "top" view instead of
 			the "bottom" view.  rkw)
+			(Fixed by rkw.)
 
 420 10/14/98	OPEN	If you pile and stack the same views, the opposite
 			view is on top of the pile vs. the stack. (rkw)
@@ -1844,9 +1849,10 @@ Num Date        Status  Description
 			visual filter doesn't go back to where it was. (rkw)
 			(Fixed by rkw, 5/14/99.)
 
-479 04/01/99	OPEN	Protocol for sending GData to the JavaScreen can't
+479 04/01/99	FIXED	Protocol for sending GData to the JavaScreen can't
 			handle arguments with spaces (separator characters)
 			in them. (rkw)
+			(Fixed by rkw.)
 
 480 04/01/99	FIXED	Setting title and axis fonts does not work right in
 			piled views. (rkw)
@@ -1932,8 +1938,9 @@ Num Date        Status  Description
 			forcing a redraw, causes a crash. (rkw)
 			(Fixed by rkw, 6/16/99.)
 
-498 06/07/99	OPEN	jspop uses huge amounts of CPU while JS has a session
+498 06/07/99	FIXED	jspop uses huge amounts of CPU while JS has a session
 			open. (rkw)
+			(Fixed by Hongyu.)
 
 499 06/07/99	FIXED	"Next in Pile" in mapping dialog doesn't work right in
 			"unconventional" piles (e.g., piled view syms). (rkw)
@@ -1953,3 +1960,4 @@ WORK = workaround for bug in place
 NB = not (really) a bug.
 CD = can't duplicate (reproduce).
 DUP = duplicate of another bug
+NLR = no longer relevant
