@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.101  1997/01/23 17:38:27  jussi
+  Removed references to GetXMin().
+
   Revision 1.100  1997/01/17 20:31:47  wenger
   Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
   simulation of XOR drawing in PSWindowRep; removed diagnostic output
@@ -444,10 +447,10 @@ static const Boolean viewBorder = false;
 // Whether to fill the background of the entire view, rather than filling
 // the various parts separately.  About the only time you wouldn't want to
 // use this is on a machine that doesn't have backing store for the windows.
-#define FILL_WHOLE_BACKGROUND 1
+#define FILL_WHOLE_BACKGROUND 0
 
 // Whether to use the workaround for bug 123.
-#define USE_BUG123_WORKAROUND 1
+#define USE_BUG123_WORKAROUND 0
 
 /* width/height of sensitive area for cursor */
 static const int VIEW_CURSOR_SENSE = 10;

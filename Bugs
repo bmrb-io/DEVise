@@ -498,8 +498,10 @@ Num Date        Status  Description
 			ColorMgr::GetColorRgb() failed when printing
 			PostScript.  (Doesn't seem to be repeatable.) (rkw)
 
-122 01/16/97	FIXED	Changing mapping (forcing data to be redrawn) goofs
+122 01/16/97	OPEN	Changing mapping (forcing data to be redrawn) goofs
 			up the drawing of the view selection box. (rkw)
+			(Setting FILL_WHOLE_BACKGROUND to 0 in View.c
+			removed the fix for this bug.  rkw)
 
 123 01/16/97	WORK	Load the sesson demo/COD1.tk; resize the 'Global
 			View' window; then obscure any part of that window
@@ -567,6 +569,8 @@ Num Date        Status  Description
 			view *after* pixmap is restored. Also see bug #069.
                         (jpm)
 			Deferred (storing of pixmaps disabled).
+
+136 01/23/97	OPEN	'5' key doesn't work for negative values. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
