@@ -1,0 +1,49 @@
+			DEVise Memory Usage
+		$Id$
+
+Memory usage of DEVise.
+Running on Intel P6/Solaris 2.6.
+Compiled without debug option, not stripped.
+
+Devise 1.5.3, compiled Aug 5, 1998
+----------------------------------
+Size of monolithic executable: 13,604,864 (stripping reduces to 12,774,704)
+
+Size of process before loading any data: 31M (not stripped)
+Size of process after opening the session Contour/contour1.ds: 41M (not
+  stripped)
+    Size of data for Contour/contour1.ds: 63,830 (Table, UniData)
+Size of process after opening the session orange_rtree.tk: 41M (not stripped)
+    Size of data for orange_rtree.tk: 9,034,420 (UNIXFILEs)
+Size of process after opening the session colors.tk: 39M (not stripped)
+    Size of data for colors.tk: 304 (UNIXFILE)
+
+
+Devise 1.5.3 without Mesa, compiled Aug 5, 1998
+-----------------------------------------------
+Size of monolithic executable: 13,604,628 (stripping reduces to 12,774,292)
+
+Size of process before loading any data: 30M (not stripped)
+Size of process after opening the session colors.tk: 38M (not stripped)
+
+
+Devise 1.3.4 in /unsup (compiled Mar 24, 1997)
+----------------------------------------------
+Size of monolithic executable: 3,823,680 (may be stripped)
+Size of process before loading any data: 8M
+Size of process after opening the session colors.tk: 14M
+
+
+Devise 1.3.4.1a (compiled Aug 5, 1998)
+--------------------------------------
+Size of monolithic executable: 12,242,096 (stripping reduces to 3,983,760)
+Size of process before loading any data: 8M (not stripped)
+Size of process after opening the session colors.tk: 14M (not stripped)
+
+
+Devise 1.4.7.3 (compiled Aug 5, 1998)
+-------------------------------------
+Size of monolithic executable: 6,303,468 (stripping reduces to 5,662,592)
+Size of process before loading any data: 10M (not stripped)
+Size of process after opening the session orange_rtree.tk: 21M (not stripped)
+Size of process after opening the session colors.tk: 19M (not stripped)
