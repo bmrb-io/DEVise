@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/04/10 02:22:52  jussi
+  Added support for > 1 mappings in a view.
+
   Revision 1.8  1996/04/09 22:53:32  jussi
   Added View parameter to DrawGDataArray.
 
@@ -28,12 +31,12 @@
   Revision 1.6  1995/12/14 21:20:15  jussi
   Replaced 0x%x with 0x%p.
 
- * Revision 1.5  1995/11/25  01:20:20  jussi
- * This code now uses Transform matrix operations to convert user/world
- * coordinates to screen pixel coordinates. This is to avoid any future
- * inconsistencies in how the different code locations compute the
- * conversion. xPerPixel and yPerPixel are now obsolete coefficients.
- *
+  Revision 1.5  1995/11/25  01:20:20  jussi
+  This code now uses Transform matrix operations to convert user/world
+  coordinates to screen pixel coordinates. This is to avoid any future
+  inconsistencies in how the different code locations compute the
+  conversion. xPerPixel and yPerPixel are now obsolete coefficients.
+
   Revision 1.4  1995/11/24 21:27:45  jussi
   Fixed inconsistency in computing xPerPixel vs. matrix transformations
   done by View.
@@ -82,7 +85,7 @@ void ViewScatter::DerivedStartQuery(VisualFilter &filter, int timestamp)
 
   InitMappingIterator(true);            // open iterator backwards
   if (MoreMapping()) {
-    _map = NextMapping();
+    _map = NextMapping()->map;
 #ifdef DEBUG
     printf("Submitting first query\n");
 #endif
@@ -157,7 +160,7 @@ void ViewScatter::QueryDone(int bytes, void *userData)
 #ifdef DEBUG
     printf("Submitting next query\n");
 #endif
-    _map = NextMapping();
+    _map = NextMapping()->map;
     _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
     return;
   }

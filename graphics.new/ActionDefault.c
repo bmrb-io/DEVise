@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/01/19 19:52:19  jussi
+  Made attribute output appear on separate lines.
+
   Revision 1.7  1995/12/29 22:43:57  jussi
   Small fixes.
 
@@ -46,7 +49,7 @@
 #include "QueryProc.h"
 #include "TData.h"
 
-ActionDefault::ActionDefault( char *name, Coord leftEdge,
+ActionDefault::ActionDefault(char *name, Coord leftEdge,
 			     Boolean useLeftFlag, Coord rightEdge,
 			     Boolean useRightFlag):
      Action(name)
@@ -67,7 +70,7 @@ void ActionDefault::KeySelected(View *view, char key, Coord x, Coord y)
     /* increase pixel size */
     Boolean changed = false;
     for(vg->InitMappingIterator(); vg->MoreMapping();) {
-      TDataMap *map = vg->NextMapping();
+      TDataMap *map = vg->NextMapping()->map;
       if (map->GetPixelWidth() < 30) {
 	changed = true;
 	map->SetPixelWidth(map->GetPixelWidth()+1);
@@ -81,7 +84,7 @@ void ActionDefault::KeySelected(View *view, char key, Coord x, Coord y)
     /* decrease pixel size */
     Boolean changed = false;
     for(vg->InitMappingIterator(); vg->MoreMapping();) {
-      TDataMap *map = vg->NextMapping();
+      TDataMap *map = vg->NextMapping()->map;
       if (map->GetPixelWidth() >1) { 
 	changed = true;
 	map->SetPixelWidth(map->GetPixelWidth()-1);
@@ -231,23 +234,17 @@ Boolean ActionDefault::PrintRecords(View *view, Coord x, Coord y,
   if (recInterp == NULL)
     recInterp = new RecInterp;
   
-  VisualFilter filter;
-  filter.flag = VISUAL_X;
-  filter.xLow = x;
-  filter.xHigh = xHigh;
-  
   /* get mapping */
   ViewGraph *vg = (ViewGraph *)view;
-  TDataMap *map = NULL;
-  for (vg->InitMappingIterator(); vg->MoreMapping(); ) {
-    map = vg->NextMapping();
-    break;
-  }
-  vg->DoneMappingIterator();
-  if (map == NULL) {
-    errorMsg = "PrintRecord: no mapping";
+  vg->InitMappingIterator();
+  if (!vg->MoreMapping()) {
+    errorMsg = "No mapping found!";
+    vg->DoneMappingIterator();
     return false;
   }
+
+  TDataMap *map = vg->NextMapping()->map;
+  vg->DoneMappingIterator();
   
   RecId startRid;
   int numRecs;
@@ -270,8 +267,8 @@ Boolean ActionDefault::PrintRecords(View *view, Coord x, Coord y,
   
   TData *tdata = map->GetTData();
   AttrList *attrs = tdata->GetAttrList();
-  if (attrs == NULL) {
-    errorMsg = "PrintRecords: no attribute info";
+  if (!attrs) {
+    errorMsg = "No attribute info!";
     return false;
   }
 
@@ -280,6 +277,11 @@ Boolean ActionDefault::PrintRecords(View *view, Coord x, Coord y,
   recInterp->PrintAttrHeading();
 #endif
 
+  VisualFilter filter;
+  filter.flag = VISUAL_X;
+  filter.xLow = x;
+  filter.xHigh = xHigh;
+  
   Boolean tooMuch = false;
   qp->InitTDataQuery(map, filter, approxFlag);
 
