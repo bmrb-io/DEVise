@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/05/13 18:07:38  jussi
+  The code now accepts API_CTL type messages but ignores them.
+
   Revision 1.2  1996/05/11 17:23:24  jussi
   Added command line options for setting host name and port number.
 
@@ -34,11 +37,12 @@
 
 static char *_progName = 0;
 static char *_hostName = "localhost";
-static int _portNum = DefaultDevisePort;
-static int _deviseFd = -1;
+static int   _portNum = DefaultDevisePort;
+static int   _deviseFd = -1;
 
 static char *_idleScript = 0;
 static char *_scriptFile = 0;
+static int   _isBusy = 0;
 
 void DoAbort(char *reason)
 {
@@ -47,10 +51,31 @@ void DoAbort(char *reason)
   exit(1);
 }
 
+void ControlCmd(char *result)
+{
+  if (strncmp(result, "ChangeStatus", 12)) {
+#ifdef DEBUG
+    printf("Ignoring control command: \"%s\"\n", result);
+#endif
+    return;
+  }
+
+  char *space = strchr(result, ' ');
+  if (!space) {
+    printf("Ignoring invalid ChangeStatus command: \"%s\"\n", result);
+    return;
+  }
+
+  _isBusy = atoi(space + 1);
+#ifdef DEBUG
+  printf("Server is now in %s state.\n", (_isBusy ? "busy" : "idle"));
+#endif
+}
+
 int DEViseCmd(int argc, char **argv, char *result)
 {
 #ifdef DEBUG	
-  printf("Function %s, %d args\n", argv[1], argc - 1);
+  printf("Function %s, %d args\n", argv[0], argc);
 #endif
 
   if (DeviseSend(_deviseFd, argv, argc) < 0)
@@ -58,13 +83,10 @@ int DEViseCmd(int argc, char **argv, char *result)
 
   u_short flag;
   do {
-    if (DeviseReceive(_deviseFd, result, flag, argv[1]) < 0)
+    if (DeviseReceive(_deviseFd, result, flag, argv[0]) < 0)
       DOASSERT(0, "Server has terminated");
-    if (flag == API_CTL) {
-#ifdef DEBUG
-      printf("Ignoring control command: \"%s\"\n", result);
-#endif
-    }
+    if (flag == API_CTL)
+      ControlCmd(result);
   } while (flag != API_ACK && flag != API_NAK);
 
   if (flag == API_NAK)
@@ -137,10 +159,24 @@ int ExecuteFile(char *script)
     }
 
     ++argc;
+    char result[10 * 1024];
+
+    if (argc == 1 && !strcmp(argv[0], "sync")) {
+      printf("Waiting for server synchronization.\n");
+      while(_isBusy) {
+	u_short flag;
+	if (DeviseReceive(_deviseFd, result, flag, "Control command") < 0)
+	  DOASSERT(0, "Server has terminated");
+	if (flag == API_CTL)
+	  ControlCmd(result);
+      }
+      printf("Continuing.\n");
+      continue;
+    }
+
 #ifdef DEBUG
     printf("Sending %d elements\n", argc);
 #endif
-    char result[10 * 1024];
     if (DEViseCmd(argc, argv, result) < 0) {
       fprintf(stderr, "Error executing command: %s\n", result);
     }
@@ -181,7 +217,8 @@ void SetupConnection()
 
 void Usage()
 {
-  fprintf(stderr, "Usage: %s [-h host] [-p port] script idle\n", _progName);
+  fprintf(stderr, "Usage: %s [-h host] [-p port] script [idlescript]\n",
+	  _progName);
 }
 
 int main(int argc, char **argv)
