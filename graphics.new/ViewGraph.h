@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.79  2000/02/09 21:29:47  wenger
+  Fixed bug 562 (one problem with pop clip underflow, related to highlight
+  views).
+
   Revision 1.78  1999/10/08 19:57:58  wenger
   Fixed bugs 470 and 513 (crashes when closing a session while a query
   is running), 510 (disabling actions in piles), and 511 (problem in
@@ -446,6 +450,7 @@ class CountMapping;
 class DerivedTable;
 class SlaveTable;
 class VisualLink;
+class ViewSymFilterInfo;
 
 struct MappingInfo {
   TDataMap *map;
@@ -599,7 +604,16 @@ public:
   }
 
   // Switch TDatas.
-  DevStatus SwitchTData(char *tdName);
+  DevStatus SwitchTData(const char *tdName);
+
+  // Set parent value in mapping.
+  DevStatus SetParentValue(const char *parentVal);
+
+  // Save and restore visual filter for a given TData and parent value (used
+  // to "remember where we were" when this is a view symbol and we switch
+  // back to a TData and/or parent value we had previously.
+  DevStatus SaveViewSymFilter();
+  DevStatus RestoreViewSymFilter();
 
   /* Return true if restoring pixmaps is allowed */
   virtual Boolean PixmapEnabled() {
@@ -846,6 +860,9 @@ public:
 
   Boolean _niceXAxis;
   Boolean _niceYAxis;
+
+  ViewSymFilterInfo *_viewSymFilterInfo;
+  char *_viewSymParentVal;
 
   Boolean _inDerivedStartQuery;
 

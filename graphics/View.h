@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.102  2000/02/08 22:11:50  wenger
+  Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
+  edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
+  version now 4.0; added GUI to edit view help, and commands to save it
+  to session files.
+
   Revision 1.101  1999/12/15 16:25:44  wenger
   Fixed bugs 543 and 544 (problems with cursor movement).
 
@@ -581,10 +587,10 @@ class View : public ViewWin
 
 	/* setting/getting visual filter */
 	// Set visual filter, generating a command.
-	void SetVisualFilterCommand(VisualFilter &filter,
+	void SetVisualFilterCommand(const VisualFilter &filter,
 	                            Boolean registerEvent = true);
 	// Set visual filter, *not* generating a command.
-	void SetVisualFilter(VisualFilter &filter,
+	void SetVisualFilter(const VisualFilter &filter,
 			     Boolean registerEvent = true);
 	void GetVisualFilter(VisualFilter &filter);
 	VisualFilter *GetVisualFilter();
@@ -899,7 +905,7 @@ protected:
 
 	void ReportViewCreated();
 	void ReportFilterAboutToChange();
-	void ReportFilterChanged(VisualFilter &filter, int flushed);
+	void ReportFilterChanged(const VisualFilter &filter, int flushed);
 	void ReportViewRecomputed();
 	void ReportViewDestroyed();
 

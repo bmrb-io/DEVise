@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.24  1999/12/27 19:33:07  wenger
+  Cursor grids can now be applied to the edges of a cursor, rather than the
+  center, if desired.
+
   Revision 1.23  1999/08/17 19:46:54  wenger
   Converted Condor UserMonth session from high/low symbols to piles for
   better representation of data; fixed some cursor/pile drawing bugs and
@@ -170,7 +174,8 @@ class DeviseCursor : private ViewCallback
   VisualFlag GetFlag() { return _visFlag; }
 
   /* Move the X and Y coords of source; X and Y are the center of the cursor */
-  void MoveSource(Coord x, Coord y, Coord width = -1.0, Coord height = -1.0);
+  void MoveSource(Coord x, Coord y, Coord width = -1.0, Coord height = -1.0,
+      Boolean noCommand = false);
 
   /* Get or set the grid parameters. */
   void GetGrid(Boolean &useGrid, Coord &gridX, Coord &gridY,

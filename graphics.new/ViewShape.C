@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-1999
+  (c) Copyright 1998-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.25  1999/10/14 16:48:27  wenger
+  Fixed problem in the JS with cursors in view symbols sometimes getting
+  erased and not redrawn when they should still be there.
+
   Revision 1.24  1999/08/23 21:23:31  wenger
   Removed Shape::NumShapeAttrs() method -- not used.
 
@@ -290,6 +294,9 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
       continue;
     }
 
+    //TEMP -- check return value?
+    viewsym->SaveViewSymFilter();
+
     // Set the view's TData if a TData is specified in the mapping.
     AttrList *attrList = map->GDataAttrList();
     SetTData(map, attrList, stringTable, gdata, viewsym);
@@ -304,6 +311,9 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     // Set the view symbol's visual filter if filter values are specified in
     // the parent view's mapping.
     SetFilter(map, attrList, stringTable, gdata, viewsym);
+
+    //TEMP -- check return value?
+    viewsym->RestoreViewSymFilter();
 
     // Set the view symbol's title if a title value is specified in the
     // parent view's mapping.
@@ -411,9 +421,11 @@ FullMapping_ViewShape::SetChildValue(TDataMap *map, AttrList *attrList,
       sprintf(valBuf, "%g", map->GetShapeAttr(gdata, 9));
       mapStr = valBuf;
     }
+#if defined(DEBUG)
+    printf("mapStr = <%s>\n", mapStr);
+#endif
 
-    TDataMap *map = viewsym->GetFirstMap();
-    map->SetParentValue(mapStr);
+    viewsym->SetParentValue(mapStr);
   }
 }
 
@@ -529,6 +541,7 @@ void
 FullMapping_ViewShape::CheckPile(ViewGraph *viewsym, PileStack *&ps, int pixX,
     int pixY, unsigned pixWd, unsigned pixHt)
 {
+//TEMP -- this fails if pile parents with piled children are unpiled
   ViewWin *firstView = ps->GetFirstView();
   if (firstView && firstView->Mapped()) {
     int pileX, pileY, tmpXP, tmpYP;

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.134  2000/02/09 21:29:40  wenger
+  Fixed bug 562 (one problem with pop clip underflow, related to highlight
+  views).
+
   Revision 1.133  1999/12/15 16:25:50  wenger
   Reading composite file /afs/cs.wisc.edu/p/devise/ext5/wenger/devise.dev2/solarisFixed bugs 543 and 544 (problems with cursor movement).
 
@@ -625,6 +629,7 @@
 #include "MapInterpClassInfo.h"
 #include "Session.h"
 #include "DebugLog.h"
+#include "ViewSymFilterInfo.h"
 
 #define STEP_SIZE 20
 
@@ -800,6 +805,9 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
   _niceYAxis = false;
   _homeAfterQueryDone = false;
   _inDerivedStartQuery = false;
+
+  _viewSymFilterInfo = new ViewSymFilterInfo;
+  _viewSymParentVal = NULL;
 }
 
 ViewGraph::~ViewGraph(void)
@@ -872,6 +880,12 @@ ViewGraph::~ViewGraph(void)
 
 	delete [] _stringGenTableName;
 	_stringGenTableName = NULL;
+
+	delete _viewSymFilterInfo;
+	_viewSymFilterInfo = NULL;
+
+	if (_viewSymParentVal) free(_viewSymParentVal);
+	_viewSymParentVal = NULL;
 }
 
 //******************************************************************************
@@ -2287,8 +2301,10 @@ void	ViewGraph::QueryDone(int bytes, void* userData,
 
 	_pstorage.Clear();
 
-	if (_index < 0)
+	// Note: _index is index of mapping iterator.
+	if (_index < 0) {
 		return;
+    }
 
 	if (MoreMapping(_index))
 	{
@@ -2942,7 +2958,7 @@ ViewGraph::RefreshAndHome()
 
 //---------------------------------------------------------------------------
 DevStatus
-ViewGraph::SwitchTData(char *tdName)
+ViewGraph::SwitchTData(const char *tdName)
 {
 #if defined(DEBUG)
   printf("ViewGraph(%s)::SwitchTData(%s)\n", GetName(), tdName);
@@ -3013,11 +3029,13 @@ ViewGraph::SwitchTData(char *tdName)
 
 	  // Get creation arguments of old mapping.
       int argc;
+	  //TEMPTEMP -- restore const here
 	  char **argv;
 	  oldInfo->CreateParams(argc, argv);
 
 	  // Change the TData name and mapping name.
-	  argv[0] = tdName;
+	  //TEMPTEMP -- remove cast
+	  argv[0] = (char *)tdName;
 
       char newName[1024];
       sprintf(newName, "%s#%s", tdName, GetName());
@@ -3031,7 +3049,7 @@ ViewGraph::SwitchTData(char *tdName)
 	  // Note: we're no longer checking DevError::GetLatestError() here
 	  // because we may get an 'index file invalid' error, but things
 	  // actually work.  RKW 1999-08-17.
-	  char *instName = classDir->CreateWithParams(oldInfo->CategoryName(),
+	  const char *instName = classDir->CreateWithParams(oldInfo->CategoryName(),
 	      oldInfo->ClassName(), argc, argv);
 
 	  Boolean failed = false;
@@ -3088,6 +3106,83 @@ ViewGraph::SwitchTData(char *tdName)
 #if defined(DEBUG)
       printf("  Returning %s\n", result.Value());
 #endif
+
+  return result;
+}
+
+//---------------------------------------------------------------------------
+DevStatus
+ViewGraph::SetParentValue(const char *parentVal)
+{
+#if defined(DEBUG)
+  printf("ViewGraph(%s)::SetParentValue(%s)\n", GetName(), parentVal);
+#endif
+
+  DevStatus result = StatusOk;
+
+  if (!_viewSymParentVal || strcmp(_viewSymParentVal, parentVal)) {
+    TDataMap *map = GetFirstMap();
+    //TEMP -- what if > 1 maps?
+
+    map->SetParentValue(parentVal);
+
+    if (_viewSymParentVal) free(_viewSymParentVal);
+	_viewSymParentVal = CopyString(parentVal);
+  }
+
+  return result;
+}
+
+//---------------------------------------------------------------------------
+DevStatus
+ViewGraph::SaveViewSymFilter()
+{
+#if defined(DEBUG)
+  printf("ViewGraph(%s)::SaveViewSymFilter()\n", GetName());
+  VisualFilter *tmpFilter = GetVisualFilter();
+  printf("  Visual filter: (%g, %g), (%g, %g)\n", tmpFilter->xLow,
+      tmpFilter->yLow, tmpFilter->xHigh, tmpFilter->yHigh);
+#endif
+
+  DevStatus result = StatusOk;
+
+  TData *tdata = NULL;
+  TDataMap *tdMap = GetFirstMap();
+  if (tdMap) tdata = tdMap->GetLogTData();
+
+  const char *parentVal = _viewSymParentVal;
+  // In case no parent value is specified.
+  if (!parentVal) parentVal = "(null)";
+
+  if (tdata && _viewSymParentVal) {
+    _viewSymFilterInfo->Save(tdata->GetName(), _viewSymParentVal,
+        GetVisualFilter());
+  }
+
+  return result;
+}
+
+//---------------------------------------------------------------------------
+DevStatus
+ViewGraph::RestoreViewSymFilter()
+{
+#if defined(DEBUG)
+  printf("ViewGraph(%s)::RestoreViewSymFilter()\n", GetName());
+#endif
+
+  DevStatus result = StatusOk;
+
+  TData *tdata = NULL;
+  TDataMap *tdMap = GetFirstMap();
+  if (tdMap) tdata = tdMap->GetLogTData();
+  if (tdata && _viewSymParentVal) {
+
+    const VisualFilter *filter = _viewSymFilterInfo->Find(tdata->GetName(),
+        _viewSymParentVal);
+	if (filter) {
+      SetVisualFilter(*filter);
+	}
+  }
 
   return result;
 }

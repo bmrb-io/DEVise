@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.34  1999/12/27 19:33:06  wenger
+  Cursor grids can now be applied to the edges of a cursor, rather than the
+  center, if desired.
+
   Revision 1.33  1999/12/15 16:25:42  wenger
   Reading composite file /afs/cs.wisc.edu/p/devise/ext5/wenger/devise.dev2/solarisFixed bugs 543 and 544 (problems with cursor movement).
 
@@ -351,9 +355,15 @@ void DeviseCursor::FilterChanged(View *view, VisualFilter &filter,
         (cFilter->yHigh < filter.yLow || cFilter->yLow > filter.yHigh)) {
       outside = true;
     }
-    if (outside) {
+    // Don't do this if destination view is unmapped because we're probably
+    // in the middle of changing around child views.
+    if (outside && _dst && _dst->Mapped()) {
       // The cursor is outside the visual filter -- move it to the center
       // of the destination view.
+#if defined(DEBUG)
+      printf("Moving cursor <%s> because cursor is outside destination view "
+          "visual filter\n", GetName());
+#endif
       Coord newX = (filter.xLow + filter.xHigh) / 2.0;
       Coord newY = (filter.yLow + filter.yHigh) / 2.0;
       MoveSource(newX, newY);
@@ -377,7 +387,8 @@ void DeviseCursor::ViewDestroyed(View *view)
     _dst = 0;
 }
 
-void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height)
+void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height,
+    Boolean noCommand)
 {
 #if defined(DEBUG)
   printf("DeviseCursor(%s)::MoveSource(%g, %g, %g, %g)\n", GetName(), x, y,
@@ -406,7 +417,11 @@ void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height)
       (void)_dst->HideCursors();
     }
 
-    _src->SetVisualFilterCommand(filter);
+    if (noCommand) {
+      _src->SetVisualFilterCommand(filter);
+    } else {
+      _src->SetVisualFilter(filter);
+    }
   }
 }
 

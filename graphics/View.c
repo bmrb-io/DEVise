@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.214  2000/02/09 21:28:50  wenger
+  Fixed bug 562 (one problem with pop clip underflow, related to highlight
+  views).
+
   Revision 1.213  2000/02/08 22:11:49  wenger
   Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
   edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
@@ -1299,7 +1303,8 @@ void View::SubClassUnmapped()
   CleanUpViewSyms();
 }
 
-void View::SetVisualFilterCommand(VisualFilter &filter, Boolean registerEvent)
+void View::SetVisualFilterCommand(const VisualFilter &filter,
+    Boolean registerEvent)
 {
 #if defined(DEBUG)
   printf("View(%s)::SetVisualFilterCommand()\n", GetName());
@@ -1334,7 +1339,7 @@ void View::SetVisualFilterCommand(VisualFilter &filter, Boolean registerEvent)
   }
 }
 
-void View::SetVisualFilter(VisualFilter &filter, Boolean registerEvent)
+void View::SetVisualFilter(const VisualFilter &filter, Boolean registerEvent)
 {
 #if defined(DEBUG)
   printf("View(%s)::SetVisualFilter()\n", GetName());
@@ -1396,7 +1401,9 @@ void View::SetVisualFilter(VisualFilter &filter, Boolean registerEvent)
       _updateTransform = true;
       _filter = filter;
 
-      int flushed = _filterQueue->Enqueue(filter);
+	  //TEMPTEMP -- remove temp
+	  VisualFilter tmpFilter = filter;
+      int flushed = _filterQueue->Enqueue(tmpFilter);
       ReportFilterChanged(filter, flushed);
       
 	  Refresh();
@@ -2525,8 +2532,12 @@ void View::ReportFilterAboutToChange()
   _viewCallbackList->DoneIterator(index);
 }
 
-void View::ReportFilterChanged(VisualFilter &filter, int flushed)
+void View::ReportFilterChanged(const VisualFilter &filter, int flushed)
 {
+#if defined(DEBUG)
+  printf("View(%s)::ReportFilterChanged()\n", GetName());
+#endif
+
   if (!_viewCallbackList)
     return;
   
@@ -2538,7 +2549,9 @@ void View::ReportFilterChanged(VisualFilter &filter, int flushed)
     printf("Calling FilterChanged callback 0x%p for view 0x%p\n",
 	   callBack, this);
 #endif
-    callBack->FilterChanged(this, filter, flushed);
+	//TEMPTEMP -- remove temp
+	VisualFilter tmpFilter = filter;
+    callBack->FilterChanged(this, tmpFilter, flushed);
   }
   _viewCallbackList->DoneIterator(index);
 }
