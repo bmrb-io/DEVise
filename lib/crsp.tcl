@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.4  1995/11/14 22:57:21  jussi
+#	Listbox listing CRSP securities now shows CUSIP number; previously
+#	the PERMNO was displayed which I had mistaken for the CUSIP number.
+#
 #	Revision 1.3  1995/11/10 22:01:25  jussi
 #	Another small change.
 #
@@ -42,10 +46,10 @@ proc crsp_extract_data {tapedrive filenum blocksize key file} {
     global sourceTypes crsp_status
 
     set indexFile [lindex $sourceTypes(CRSP) 2]
-    set cstat_status "Extracting CRSP data..."
-    crsp_setupStatus .cstatstatus
+    set crsp_status "Extracting CRSP data..."
+    crsp_setupStatus .crspstatus
     crsp_extract $tapedrive $filenum $blocksize $indexFile $key $file
-    catch {destroy .cstatstatus}
+    catch {destroy .crspstatus}
 }
 
 ############################################################
