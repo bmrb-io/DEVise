@@ -76,7 +76,6 @@ while ($inline = <IN>) {
   }
 }
 EndOfAcidConn();
-close(OUT);
 close(IN);
 
 
@@ -107,6 +106,7 @@ close(IN);
 
 EndOfAcidAtoms();
 
+close(OUT);
 
 
 
@@ -192,9 +192,9 @@ sub ConnectAtoms {
     # type.
     $struct_type = "backbone";
     if ($info0[16] eq "side_proton" or $info1[16] eq "side_proton") {
-      $struct_type = "side_proton";
+      $struct_type = "all_hydrogens";
     } elsif ($info0[16] eq "side_heavy" or $info1[16] eq "side_heavy") {
-      $struct_type = "side_heavy";
+      $struct_type = "side_chains";
     }
 
     for ($index = 0; $index < 16; $index++) {
