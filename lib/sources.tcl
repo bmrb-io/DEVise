@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.21  1996/01/13 23:54:53  jussi
+#	Recent changes had caused Unix files to show up as uncached
+#	in the stream selection list. Fixed this.
+#
 #	Revision 1.20  1996/01/13 20:57:27  jussi
 #	Fixed minor bugs. Added CachePrune function.
 #
@@ -927,7 +931,7 @@ proc updateSources {} {
 	set source [lindex $sourceList($dispName) 0]
 	set cachefile [lindex $sourceList($dispName) 4]
 	set cached ""
-	if {[isCached $dispName -1 -1]} {
+	if {[isCached $dispName -1 -1] != ""} {
 	    set cached "Cached"
 	}
 	set item [format "%-40.40s  %-10.10s  %-6.6s" \
