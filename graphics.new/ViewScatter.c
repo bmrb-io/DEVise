@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/03/20 22:27:48  guangshu
+  Enhanced statistics for user specified number of buckets in histogram,
+  group by X and Y, support for date type.
+
   Revision 1.31  1997/02/26 16:31:50  wenger
   Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
 
@@ -301,7 +305,28 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
   char *ptr = (char *)gdata;
   int recIndex = 0;
   int firstRec = 0;
-  
+
+  double width = _allStats.GetHistWidth();
+
+#if defined(DEBUG) || 0
+  printf("Hist width in ViewScatter is %g\n", width);
+#endif
+
+  VisualFilter filter;
+  GetVisualFilter(filter);
+  double yMax = _allStats.GetStatVal(STAT_MAX);
+  double yMin = _allStats.GetStatVal(STAT_MIN);
+  double ratio = (filter.yHigh-filter.yLow)/(yMax-yMin);
+  if( width == 0 || ratio > 2) {
+        double hi = (yMax > filter.yHigh) ? yMax:filter.yHigh;
+        double lo = (yMin > filter.yLow) ? yMin:filter.yLow;
+	_allStats.SetHistWidth(lo, hi);
+#if defined(DEBUG) || 0
+        printf("ViewScatter::yMax=%g,yMin=%g,filter.yHigh=%g,filter.yLow=%g,width=%g\n",
+                yMax, yMin, filter.yHigh, filter.yLow, _allStats.GetHistWidth());
+#endif
+  }
+
 
   for(int i = 0; i < numGData; i++) {
     // Extract X, Y, shape, and color information from gdata record
