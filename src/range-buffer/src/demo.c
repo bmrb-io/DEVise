@@ -230,6 +230,10 @@ printf("
 /* RangeBufferManagerAccessMethod can get the correct query result when */
 /* the query has an *in* bounding box but the *notIn* list is empty,	*/
 /* and when all records are fetched from low level data provider.	*/
+/*									*
+/* It also shows that we can deal with duplicates, as can be seen that	*/
+/* there are duplicates in the input data file (test.in) and the query	*/
+/* result.								*/
 /************************************************************************/
 ");
 
@@ -761,7 +765,7 @@ printf("
 
         i++;
     }
-    
+
     printf("\nTotal number of records = %d\n", i);
 
 /*-------------- Clean up --------------*/
@@ -771,6 +775,141 @@ printf("
     delete notIn;
 
     TELL_FACT("\nDEMO 9 ended successfully!\n");
+
+
+
+
+printf("
+/************************************************************************/
+/* DEMO 10: Query on Object 1. The first attr is the Bounding Box Attr.	*/
+/* Issue the following query:						*/
+/* In = [40, 45) ; NotIn = empty					*/
+/* Close the query prematurely as soon as we have got 5 records		*/
+/*									*/ 
+/* Based on our input files, 5 records should be returned, all of 	*/
+/* which are fetched from lower level.					*/
+/************************************************************************/
+/* What this demo shows:						*/
+/*									*/ 
+/* We can close query pre-maturely.					*/
+/************************************************************************/
+");
+
+/*-------------- Switch to object 1 --------------*/
+
+    /* Tell the lower level to switch to object 1 */
+    delete globalPhonyRAM;
+    globalPhonyRAM = new PhonyRAM(TEST_OBJECTID_1, &packPage);
+
+/*-------------- Creating the in and the notIn --------------*/
+
+    /* In is [40, 45) */
+    in = new BoundingBox(40, false, 45, true);
+
+    /* NotIn is empty */
+    notIn = new BoundingBoxList;
+
+/*-------------- Open scan on Range Buffer Manager --------------*/
+
+    result = rbmam_1->openScan(in, notIn);
+    if (result < 0)
+    {
+	TELL_ERROR("Error in global RBM's opening scan");
+	exit(1);
+    }
+
+/*-------------- Iterate to get all records --------------*/
+
+    printf("\nQuery Result Records:\n\n");
+
+    /* close query prematurely after 5 records are returned. */
+    i = 0;
+    while (i < 5 && rbmam_1->nextRec(tup) >= 0)
+    {
+        rec.print(tup, cout);
+        printf("\n");
+
+        i++;
+    }
+    
+    printf("\nQuery closed prematurely.\n");
+    printf("\nTotal number of records = %d\n", i);
+
+/*-------------- Clean up --------------*/
+ 
+    rbmam_1->closeScan();
+    delete in;
+    delete notIn;
+
+    TELL_FACT("\nDEMO 10 ended successfully!\n");
+
+
+
+
+
+printf("
+/************************************************************************/
+/* DEMO 11: Query on Object 1. The first attr is the Bounding Box Attr.	*/
+/* Issue the following query:						*/
+/* In = [40, 45) ; NotIn = empty					*/
+/*									*/ 
+/* Based on our input files, 10 records should be returned, all of 	*/
+/* which are fetched from lower level.					*/
+/* 									*/
+/* Although we have just ran this query in demo 10, we have to go to 	*/
+/* the lower level again since query in demo 10 was pre-maturely	*/
+/* closed and thus left no record in Memory.				*/
+/************************************************************************/
+/* What this demo shows:						*/
+/*									*/ 
+/* We can run more query successfully after we pre-maturely closed 	*/
+/* some scan previously. This means we did a good clean up work when	*/
+/* the scan was pre-maturely closed.					*/
+/************************************************************************/
+");
+
+/*-------------- Creating the in and the notIn --------------*/
+
+    /* In is [40, 45) */
+    in = new BoundingBox(40, false, 45, true);
+
+    /* NotIn is empty */
+    notIn = new BoundingBoxList;
+
+/*-------------- Open scan on Range Buffer Manager --------------*/
+
+    result = rbmam_1->openScan(in, notIn);
+    if (result < 0)
+    {
+	TELL_ERROR("Error in global RBM's opening scan");
+	exit(1);
+    }
+
+/*-------------- Iterate to get all records --------------*/
+
+    printf("\nQuery Result Records:\n\n");
+
+    i = 0;
+    while (rbmam_1->nextRec(tup) >= 0)
+    {
+        rec.print(tup, cout);
+        printf("\n");
+
+        i++;
+    }
+    
+    printf("\nTotal number of records = %d\n", i);
+
+/*-------------- Clean up --------------*/
+ 
+    rbmam_1->closeScan();
+    delete in;
+    delete notIn;
+
+    TELL_FACT("\nDEMO 11 ended successfully!\n");
+
+
+
 
 /************************************************************************/
 /* Global Clean-up Work 						*/ 

@@ -59,9 +59,6 @@ private:
     /* return NULL if no more record */
     void *findNextInMemRec();
 
-    /* unpack record into _unpackedRecordAbove */
-    void unpackRecord(void *in_mem_record);
-
     /* insert lowLevelRec into the appropriate bounding box entry */
     int insertRecord(void *lowLevelRec);
 
@@ -85,6 +82,15 @@ private:
     BBoxEntry *_nextToConsider;
 				/* Where to start searching upon the next */
 				/* insertRecord() call */
+
+    bool _lowLevelScanActive;	/* True iff low level scan has been opened */
+				/* but we are not sure if low level has	   */
+				/* returned all records it has.		   */
+
+				/* If closeScan() is called when 	   */
+				/* _lowLevelScanActive is true, must 	   */
+				/* remove all bboxes created for low level */
+				/* scan since they may be incomplete.	   */
 };
 
 #endif

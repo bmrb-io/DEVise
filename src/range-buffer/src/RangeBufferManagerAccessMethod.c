@@ -100,10 +100,13 @@ int RangeBufferManagerAccessMethod::openScan(BoundingBox *in,
 	needto_undo_generate_llbb = true;
     }
 
+    _lowLevelScanActive = false;
+
     /* _lowIn is NULL means we don't have to go to low level */
     if (_lowIn)
     {
     	resultOpenScan = _ram->openScan(_lowIn, _lowNotIn);
+	_lowLevelScanActive = true;
     	if (resultOpenScan < 0)
     	{
             fprintf(stderr, "RBM call low level RAM's openScan failed.\n");
@@ -142,7 +145,10 @@ int RangeBufferManagerAccessMethod::openScan(BoundingBox *in,
 exit:
 
     if (needto_undo_open_low_level_scan)
+    {
 	_ram->closeScan();
+	_lowLevelScanActive = false;
+    }
 
     if (needto_undo_generate_llbb)
     {
@@ -205,6 +211,7 @@ int RangeBufferManagerAccessMethod::nextRec(void *&record)
 	if (resultNextRec == NO_MORE_RECORD)
 	{
 	    cleanUpBBoxEntries();
+	    _lowLevelScanActive = false;
     	    TELL_FACT("End of records fetched from low level and end of all records.");
 	    return NO_MORE_RECORD;
 	}
@@ -237,9 +244,38 @@ void RangeBufferManagerAccessMethod::closeScan()
     /* let lower level RAM close its scan */
     _ram->closeScan();
 
-    /* unpin the object */
+    /* find the object */
     od = globalRBM->isCaching(_obj);
     assert(od);
+
+    /* if we are not done with low level scan, remove the (incomplete) */
+    /* bboxes created for them. */
+
+    if (_inMemPhase == false && _lowLevelScanActive == true)
+    {
+	BBoxEntry *bbe, *bbe2;
+	for (bbe = od->_list; bbe != NULL;)
+    	{
+	    if (bbe->_complete == false)
+	    {
+		if (bbe->_prev)
+		    bbe->_prev->_next = bbe->_next;
+		else
+		    od->_list = bbe->_next;
+
+		if (bbe->_next)
+		    bbe->_next->_prev = bbe->_prev;
+
+		bbe2 = bbe;
+		bbe = bbe->_next;
+		delete bbe2;
+	    }
+	    else
+	    	bbe = bbe->_next;
+    	}
+    }
+
+    /* unpin the object */
     if (od->_pinCount != 1)
     {
 	printf("This and only this RBM-AM should be pinning the object.\n"
