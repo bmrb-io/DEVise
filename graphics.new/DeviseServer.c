@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/01/30 02:16:59  wenger
+  Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
+
   Revision 1.2  1998/01/07 19:28:56  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -153,6 +156,32 @@ DeviseServer::CloseClient()
   } else {
     reportErrNosys("No client to close");
   }
+}
+
+/*------------------------------------------------------------------------------
+ * function: DeviseServer::CurrentClientFd
+ * Closes a client connection (of the current client or the one that
+ * most recently executed a command).
+ */
+int
+DeviseServer::CurrentClientFd()
+{
+#if defined(DEBUG)
+  printf("DeviseServer(0x%p)::CurrentClientFd()\n", this);
+#endif
+
+  int result;
+
+  if (_currentClient != CLIENT_INVALID) {
+    result = _clients[_currentClient].fd;
+  } else if (_previousClient != CLIENT_INVALID) {
+    result = _clients[_previousClient].fd;
+  } else {
+    reportErrNosys("No client to connect data socket to");
+    result = -1;
+  }
+
+  return result;
 }
 
 /*------------------------------------------------------------------------------

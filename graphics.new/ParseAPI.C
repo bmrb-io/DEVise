@@ -22,6 +22,12 @@
   $Id$
 
   $Log$
+  Revision 1.88  1998/02/02 18:26:14  wenger
+  Strings file can now be loaded manually; name of strings file is now
+  stored in session file; added 'serverExit' command and kill_devised
+  script to cleanly kill devised; fixed bug 249; more info is now
+  printed for unrecognized commands.
+
   Revision 1.87  1998/01/30 02:17:03  wenger
   Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
 
@@ -520,9 +526,6 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
 	if (!strcmp(argv[0], "color"))
 		return ParseAPIColorCommands(argc, argv, control);
 
-	if (!strcmp(argv[0], "setViewOverrideColor"))
-		return 1;
-
 	// Added for global color changes, but useful otherwise
 	// Doesn't seem to work for some view categories? CEW 971105
 	if (!strcmp(argv[0], "getAllViews"))
@@ -544,6 +547,8 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
 		return 1;
 	}
 
+#if 0 // Why the hell do we have two *different* versions of the same
+	  // command?!?  RKW Feb. 3, 1998.
 	if (!strcmp(argv[0], "getAllViews"))
 	{
 		int		iargc;
@@ -574,6 +579,7 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
 		control->ReturnVal(API_ACK, result);
 		return 1;
 	}
+#endif
 
 // The first few commands have a variable number of arguments
 
@@ -618,6 +624,17 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
       control->ReturnVal(API_ACK, "");
     else
       control->ReturnVal(API_ACK, name);
+    return 1;
+  }
+
+  if (!strcmp(argv[0], "getTDataName")) {
+    TData *tdata = (TData *)classDir->FindInstance(argv[1]);
+    if (!tdata) {
+        control->ReturnVal(API_NAK, "Cannot find TData");
+        return -1;
+    }
+    char *tname = tdata->GetName();
+    control->ReturnVal(API_ACK, tname); 
     return 1;
   }
 
@@ -696,6 +713,33 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
     return 1;
   }
 
+  if (!strcmp(argv[0], "setHistViewname")) {
+    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+    if (!view) {
+            control->ReturnVal(API_NAK, "Cannot find view");
+            return -1;
+    }
+    char *viewName = new char[strlen(argv[2]) + 1];
+    strcpy(viewName, argv[2]);
+    view->setHistViewname(viewName);
+
+    control->ReturnVal(API_ACK, "done");
+    return 1;
+  }
+
+  if (!strcmp(argv[0], "getHistViewname")) {
+    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+    if (!view) {
+    	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+    }
+    char *name = NULL;
+    name = view->getHistViewname();
+
+    control->ReturnVal(API_ACK, name);
+    return 1;
+  }
+
   if (!strcmp(argv[0], "checkGstat")) {
     ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
     if (!view) {
@@ -710,6 +754,20 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
         strcpy(result, "0");
     }
     control->ReturnVal(API_ACK, result);
+
+    return 1;
+  }
+
+  if (!strcmp(argv[0], "getSourceName")) {
+   ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+    if (!view) {
+        control->ReturnVal(API_NAK, "Cannot find view");
+        return -1;
+    }
+    TDataMap *map = view->GetFirstMap();
+    TData *tdata = map->GetTData();
+    char *sourceName = tdata->GetTableName();
+    control->ReturnVal(API_ACK, sourceName); 
 
     return 1;
   }
@@ -729,6 +787,82 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
     }
     control->ReturnVal(API_ACK, result);
 
+    return 1;
+  }
+
+  if (!strcmp(argv[0], "isYDateType")) {
+    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+    if (!view) {
+        control->ReturnVal(API_NAK, "Cannot find view");
+        return -1;
+    }
+    if(view->IsYDateType()) {
+//	printf("Y type is date\n");
+        strcpy(result, "1");
+    } else {
+//	printf("Y type is NOT date\n");
+        strcpy(result, "0");
+    }
+    control->ReturnVal(API_ACK, result);
+
+    return 1;
+  }
+
+  if (!strcmp(argv[0], "mapG2TAttr")) {
+    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+    if (!view) {
+        control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+    }
+    TDataMap *map = view->GetFirstMap();
+    if (!map) {
+	control->ReturnVal(API_NAK, "Cannot find Mapping");
+        return -1;
+    }
+    AttrInfo *attr = NULL;
+    if (!strcasecmp(argv[2], "X")) {
+      	attr = map->MapGAttr2TAttr(MappingCmd_X);
+    } else if (!strcasecmp(argv[2], "Y")) {
+      	attr = map->MapGAttr2TAttr(MappingCmd_Y);
+    } else if (!strcasecmp(argv[2], "Z")) {
+      	attr = map->MapGAttr2TAttr(MappingCmd_Z);
+    } else if (!strcasecmp(argv[2], "Color")) {
+        attr = map->MapGAttr2TAttr(MappingCmd_Color);
+    } else {
+      	fprintf(stderr, "Not implemented yet\n");
+      	control->ReturnVal(API_NAK, "GAttr type not implemented");
+	return -1;
+    }
+    if (attr) {
+      strcpy(result, attr->name);
+    } else {
+      strcpy(result, "0");
+    }
+    control->ReturnVal(API_ACK, result);
+    return 1;
+  }
+
+  if (!strcmp(argv[0], "mapT2GAttr")) {
+    char *gname = NULL;
+    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+    if (!view) {
+        control->ReturnVal(API_NAK, "Cannot find view");
+        return -1;
+    }
+    TDataMap *map = view->GetFirstMap();
+    if (!map) {
+        control->ReturnVal(API_NAK, "Cannot find Mapping");
+        return -1;
+    }
+    printf("argv[2] is %s\n", argv[2]);
+    gname = map->MapTAttr2GAttr(argv[2]);
+    if (gname == NULL) {
+	strcpy(result, "0");
+    } else {
+	strcpy(result, gname);
+    }
+    control->ReturnVal(API_ACK, result);
+    delete gname; 
     return 1;
   }
 
@@ -2552,6 +2686,12 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
 
       control->ReturnVal(API_ACK, "done");
       return 1;
+    }
+	// This is retained only because old session files have the command
+	// in them.
+	if (!strcmp(argv[0], "setViewOverrideColor")) {
+		control->ReturnVal(API_ACK, "done");
+		return 1;
     }
     if (!strcmp(argv[0], "insertMapping")) {
       ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);

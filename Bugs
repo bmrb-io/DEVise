@@ -1090,6 +1090,18 @@ Num Date        Status  Description
 280 01/31/98	OPEN	Closing a session while a view is drawing may cause
 			a clip mask stack or transform stack underflow. (rkw)
 
+281 02/02/98	OPEN	Saving the SoilScience session ASA1.ds caused the
+			session file to create duplicate mappings. (rkw)
+
+282 02/03/98	OPEN	Axes aren't labeled correctly for date attributes.
+			(rkw)
+
+283 02/03/98	FIXED	Can't bring up GUI for 'group by' correctly. (rkw)
+
+284 02/03/98	OPEN	Can't execute 'group by'. (rkw)
+
+285 02/03/98	FIXED	Can't generate histograms. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/01/31 20:02:02  wenger
+  Fixed bugs 277, 278, and 279; GData sent on socket now has <ctl-D>
+  written at the end.
+
   Revision 1.2  1997/11/24 23:14:21  weaver
   Changes for the new ColorManager.
 
@@ -72,7 +76,10 @@ GDataSock::GDataSock(Params &params)
 {
   _status = StatusOk;
 
-  if (params.file != NULL && strlen(params.file) == 0) params.file = NULL;
+  if (params.file != NULL &&
+      (strlen(params.file) == 0 || !strcmp(params.file, "\"\""))) {
+    params.file = NULL;
+  }
 
 #if defined(DEBUG)
   printf("GDataSock(0x%p)::GDataSock(%d, {%s}, %d, '%c')\n", this,
@@ -102,6 +109,9 @@ GDataSock::GDataSock(Params &params)
     _params.file = CopyString(_params.file);
 
     if (_params.file != NULL) {
+#if defined(DEBUG)
+      printf("  Opening file <%s>.\n", _params.file);
+#endif
       _fd = open(_params.file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
       if (_fd < 0) {
         char buf[2048];
@@ -110,6 +120,9 @@ GDataSock::GDataSock(Params &params)
         _status = StatusFailed;
       }
     } else {
+#if defined(DEBUG)
+      printf("  Opening data socket.\n");
+#endif
       ControlPanel *control = ControlPanel::Instance();
       control->OpenDataChannel(_params.portNum);
       _fd = control->getFd();

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/05/30 15:41:19  wenger
+  Most of the way to user-configurable '4', '5', and '6' keys -- committing
+  this stuff now so it doesn't get mixed up with special stuff for printing
+  Mitre demo.
+
   Revision 1.10  1997/05/28 15:39:26  wenger
   Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
 
@@ -100,10 +105,10 @@ void QueryProc::RefreshTData(TData *tdata)
         }
         vg->DoneMappingIterator(idx);
         if (usesTData) {
-//#ifdef DEBUG
+#ifdef DEBUG
             printf("Reexecuting query for view %s with new data...\n",
                    vg->GetName());
-//#endif
+#endif
             vg->AbortQuery();
             vg->Refresh();
             if (vg->GetAutoScale())

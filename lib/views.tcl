@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.44  1998/01/27 23:04:45  wenger
+#  Broke the server's view selection dependency on the client (except when
+#  running in collaboration mode).
+#
 #  Revision 1.43  1998/01/14 22:24:47  wenger
 #  Changed 'Bring View Back' to 'Restore View'.
 #
@@ -1689,6 +1693,23 @@ proc DoGroupByStat {} {
         return
     }
 
+    set sourceName ""
+    set sourceName [DEVise getSourceName $curView]
+    if {$sourceName == "" } { 
+       puts "Error in getting sourceName" 
+       dialog .winError "sourceName error" \
+       		"Unable to get source name. Please select another one." \
+		"" 0 OK
+		return 
+    }
+    set pos [string first : $sourceName]
+    if { [string range $sourceName 0 [expr $pos -1]] == "GstatXDTE" } {
+       dialog .winError "sourceName error" \
+       		"Aggregate on aggregates is not support.  Please select another one." \
+		"" 0 OK
+		return 
+    }
+
     toplevel    .groupBy
     wm title    .groupBy "Group By Select"
     wm geometry .groupBy +150+150
@@ -1715,9 +1736,10 @@ proc DoGroupByStat {} {
     set windowsel ""
     if {$curView != ""} {
         set windowsel [DEVise getViewWin $curView]
-    }
-    if {$windowsel == ""} {
-        set windowsel "None selected yet"
+    } elseif {[DEVise getWinCount] <= 1} {
+    	set windowsel New
+    } else {
+    	set windowsel "None selected yet"
     }
    
     menu .groupBy.windowsel.windowMenu -tearoff 0
@@ -1727,27 +1749,27 @@ proc DoGroupByStat {} {
     }
 
     .groupBy.windowsel.windowMenu add separator
-    .groupBy.windowsel.windowMenu add command -label "New..." -command {
-        set newwin [DoCreateWindow "Select window type"]
-        if {$newwin != ""} {
-            set windowsel $newwin
-            .groupBy.windowsel.windowMenu add command -label $windowsel \
-                    -command "set windowsel {$windowsel}"
-        }
+    .groupBy.windowsel.windowMenu add command -label "New" -command {
+    	set windowsel New
     }
+#        set newwin [DoCreateWindow "Select window type"]
+#        if {$newwin != ""} {
+#            set windowsel $newwin
+#            .groupBy.windowsel.windowMenu add command -label $windowsel \
+#                    -command "set windowsel {$windowsel}"
+#        }
+   
 
-    set bylist { Y Color}
+    set bylist { X Y Color}
     set onlist { X Y Z}
     set category { Max Min Avg Count Sum }
 
     label .groupBy.byLabel -text "Group By" 
     menubutton .groupBy.xsel -relief raised \
-            -textvariable byAttr -menu .groupBy.xsel.xselMenu -width 20
-    menu .groupBy.xsel.xselMenu -tearoff 0
+            -textvariable byAttr -menu .groupBy.xsel.menu -width 20
 
     set t ""
     set result [DEVise checkGstat $curView]
-    if { $result == "0" } {set t "t."}
 
     set xDate "0"
     set xDate [DEVise isXDateType $curView]
@@ -1795,14 +1817,8 @@ proc DoGroupByStat {} {
     pack .groupBy.byLabel .groupBy.xsel \
 		-in .groupBy.top.right  -side left -padx 1m
 
-#    checkbutton .groupBy.byx -text X -width 10 -anchor w \
-#		-variable byx
-#    checkbutton .groupBy.byy -text Y -width 10 -anchor w \
-#		-variable byy
-#    checkbutton .groupBy.bycolor -text Color -width 10 -anchor w \
-#		-variable bycolor
-#    pack .groupBy.byLabel .groupBy.byx .groupBy.byy .groupBy.bycolor \
-#		-in .groupBy.top -side left -expand 1 -fill both
+    label .groupBy.mid.onLabel -text "Aggregate On: "
+    pack .groupBy.mid.onLabel -side left -fill y
 
      menubutton .groupBy.aggregate -relief raised -textvariable aggregate \
      		-menu .groupBy.aggregate.menu -width 20
@@ -1854,6 +1870,13 @@ proc DoGroupByStat {} {
 		"" 0 OK
 	    return
 	}
+
+	if {$windowsel == "New"} {
+	   set newwin [DoCreateWindow "Select window type"]
+	   if {$newwin != ""} {
+	      set windowsel $newwin
+	   }
+	}
         if {![DEVise exists $windowsel]} {
             dialog .winError "No Window Specified" \
                     "Please select a window for visualization." \
@@ -1889,20 +1912,131 @@ proc DoGroupByStat {} {
         return
     }
 
-    set tdata ""
-    set pos [string first "Color" $byAttr]
-    if {$pos > 0 || $byAttr == "Color"} {
-	set tdata "{Stat: $curView}"
-	set byAttr [string range $byAttr $pos end]
-    } else {
-	if {$aggregate == "Y"} {
-    		set tdata "{GstatX: $curView}"
-		set sourceName "GstatX: $curView"
-	} elseif {$aggregate == "X" } {
-    		set tdata "{GstatY: $curView}"
-		set sourceName "GstatY: $curView"
-	}
+    scanDerivedSources
+    set byAttrSource [string range $byAttr 0 4]
+    set byAttr [string range $byAttr 6 end]
+    set aggAttrSource [string range $aggregate 0 4]
+    set aggregate [string range $aggregate 6 end]
+
+    if { $byAttrSource != $aggAttrSource } {
+    	dialog .winError "Attribute Selection Error" \
+	    "Group By and Aggregate on attributes must be both from tdata or gdata. Please select again." \
+	    "" 0 OK
+	    return
     }
+    set attrSource $byAttrSource
+    set tdata ""
+    set queryByDTE 0
+    set queryInMem 0
+    if { $attrSource == "gdata" } {
+       set pos [string first "Color" $byAttr]
+#       puts "WAHWAHWAHWAHWAH : pos = $pos"
+       if {$pos > 0 || $byAttr == "Color"} {
+       #GroupBy color is always in memory
+    	  set tdata "{Stat: $curView}"
+  	  set byAttr [string range $byAttr $pos end]
+       } else {
+         if {$result != "0" } {
+         #GroupBy x or y is in memory
+  	   set queryInMem 1
+	   set queryByDTE 0
+	 } else {
+	 #GroupBy x or y is NOT in memory
+	   set byTAttr [DEVise mapG2TAttr $curView $byAttr]
+	   set onTAttr [DEVise mapG2TAttr $curView $aggregate]
+	   if {$byTAttr == "0" || $onTAttr == "0" } {
+	   	dialog .winError "Attribute Selection Error" \
+		     "Group By cannot be calculated in memory and cannot be converted to TData either. Please define an SQL view to visualize it" \
+		     "" 0 OK
+		     return
+	   }
+	   set byAttr $byTAttr
+	   set aggregate $onTAttr
+	   set queryByDTE 1
+	 }
+       }
+    } elseif {$attrSource == "tdata" } {
+        set byGAttr [DEVise mapT2GAttr $curView $byAttr]
+	set onGAttr [DEVise mapT2GAttr $curView $aggregate]
+	if { $byGAttr == "0" || $byGAttr == "Z" || $onGAttr == "0" || $onGAttr == "Z" || $result == "0" } {
+    		set queryByDTE 1
+	} else {
+		set byAttr $byGAttr
+		set aggregate $onGAttr
+		set pos [string first "Color" $byAttr]
+#		puts "WAHWAHWAHWAHWAH : pos = $pos byAttr=$byAttr aggregate=$aggregate"
+		if { $byAttr == "Color"} {
+		   set tdata "{Stat: $curView}"
+		   set byAttr [string range $byAttr $pos end]
+		} else {
+		   set queryByDTE 0
+		   set queryInMem 1
+		}
+	}
+    } else { 
+        puts "Invalid attribute category" 
+    	return 
+    }
+
+    if {$queryByDTE == 1 } {
+    	set baseName "{GstatXDTE: $curView: 1}"
+	set subName "GstatXDTE: $curView"
+	set uniqTData [UniqueName $baseName]
+	puts "uniqTData = $uniqTData"
+#    	set tdata "{GstatXDTE: $curView}"
+	set tdata $uniqTData
+#	puts "Before tdataMMMMM = $tdata"
+#	set uniqName [UniqueName $tdata]
+#	set tdata $uniqName
+	puts "tdataMMMMM = $tdata"
+#	set this_sourceName "GstatXDTE: $curView"
+	set this_source [string trimleft $tdata "\{"]
+	set this_source [string trimright $this_source "\}"]
+#	set uniq_this_sourceName [UniqueName $this_sourceName]
+	puts "this_source = $this_source"
+	set command "$sourceName $byAttr $aggregate $ylist"
+#	set temp [lindex $derivedSourceList($this_sourceName) 7]
+	set temp [lindex $derivedSourceList($subName) 7]
+#	set elem6 [lindex $derivedSourceList($this_sourceName) 6]
+	set elem6 [lindex $derivedSourceList($subName) 6]
+	puts "Before replace $temp command=$command elem6=$elem6"
+	set derivedSourceList($this_source) [lreplace $derivedSourceList($subName) 6 7 $elem6 $command]
+	set elem6 [lindex $derivedSourceList($this_source) 6]
+	set temp [lindex $derivedSourceList($this_source) 7]
+	puts "After replace $temp $elem6"
+    }
+    if {$queryInMem == 1 } {
+          if {$aggregate == "Y"} {
+             if { $xDate == "1" } {
+                  set tdata "{GstatXDate: $curView}"
+                  set this_sourceName "GstatXDate: $curView"
+             } else {
+                  set tdata "{GstatX: $curView}"
+                  set this_sourceName "GstatX: $curView"
+             }
+          } elseif {$aggregate == "X" } {
+             if { $yDate == "1" && $byAttr == "Y" } {
+                  set tdata "{GstatYDate: $curView}"
+                  set this_sourceName "GstatYDate: $curView"
+             } else {
+                  set tdata "{GstatY: $curView}"
+                  set this_sourceName "GstatY: $curView"
+             }
+           } 
+    }
+
+#    if $attrSource == "gdata" && $byAttr == "X" && $xDate == "1" 
+    if {$queryInMem == 1 && $byAttr == "X" && $xDate == "1" } {
+    	set byAttr DATE
+    }
+
+#    if $attrSource == "gdata" && $byAttr == "Y" && $yDate == "1" 
+    if {$queryInMem == 1 && $byAttr == "Y" && $yDate == "1" } {
+        set byAttr DATE
+    }
+
+    puts "byAttr=$byAttr aggregate=$aggregate ylist=$ylist"
+
     set viewsel 2  
     # Bar Chart
     set linksel 1 
@@ -1914,26 +2048,19 @@ proc DoGroupByStat {} {
     set newgdata 1
     set sname $tdata
 
-    scanDerivedSources
-    updateDerivedSources
-
-    if { $xDate == "1" && $byAttr == "DATE"} {
-    	set sourceName [string trimleft $sname "{"]
-    	set sourceName [string trimright $sourceName "}"]
-	set schematype GDATASTAT_DATE
-	set schemafile $schemadir/physical/GDATASTAT_DATE
-	set derivedSourceList($sourceName) [lreplace $derivedSourceList($sourceName) 2 3 $schematype $schemafile]
-    }
-
-    set name_schema_pair [OpenAndDefineDataSources 1 $tdata]
-    if {$name_schema_pair == ""} { return }
-    if {$byAttr == "Y" || [string trimleft $byAttr "t."] == "Y"} { 
-	set byAttr "X" 
-	set linksel 0 }
+    	set name_schema_pair [OpenAndDefineDataSources 1 $tdata]
+    	puts "name_schema_pair after OpenAndDefineDataSources = $name_schema_pair"
+    	set tdata [lindex $name_schema_pair 0]
+    	set is_dte_type [lindex $name_schema_pair 2]
+    	if {$name_schema_pair == ""} { return }
+    	if {$byAttr == "Y" || [string trimleft $byAttr "t."] == "Y"} { 
+		set byAttr "X" 
+		set linksel 0 }
     #Y attr will be mapped to X in the new mapping
-    MacroDefAutoActual $tdata $viewsel $linksel $windowsel $bgcolor \
-            $titlesel $xaxissel $yaxissel $byAttr $ylist $newgdata 
+    puts "result=$result"
 
+    MacroDefAutoActual $tdata $viewsel $linksel $windowsel \
+            $titlesel $xaxissel $yaxissel $byAttr $ylist $newgdata $aggregate
 }
 
 ############################################################
@@ -2021,7 +2148,7 @@ proc DoHistStat {} {
 		set name_schema_pair [OpenAndDefineDataSources 1 $tdata]
 		puts "name_schema_pair + $name_schema_pair"
 
-		MacroDefAutoActual $tdata $viewsel $linksel $windowsel $bgcolor \
+		MacroDefAutoActual $tdata $viewsel $linksel $windowsel \
             	   $titlesel $xaxissel $yaxissel $x $ylist $newgdata 
 		}
 		return
