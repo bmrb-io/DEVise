@@ -1664,6 +1664,9 @@ Num Date        Status  Description
 			want to display node8 in the cursor source view
 			for some reason. (rkw)
 
+435 11/06/98	OPEN	DataReader/DTE combination drops off the last record
+			of data. (rkw/kb)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
