@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.41  2001/02/20 20:02:26  wenger
+// Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+// to the trunk.
+//
 // Revision 1.40  2001/02/16 17:56:38  xuk
 // Added new command and GUI for collect active client ID list.
 // Changed OnCollab() sends JAVAC_Clients command after receives the first round collaboration connection request.
@@ -547,7 +551,7 @@ public class jspop implements Runnable
 		int flag = socket.flag;
 		if (flag == -1) { // collaboration JS
 		    pn("Received collaboration request for client: " + id + ".");
-		    onCollab(socket, id);
+		    onCollab(socket, id, cmd);
 		}
 		else {
 		    boolean cgi;
@@ -1293,7 +1297,7 @@ public class jspop implements Runnable
         }
     }
 
-    public synchronized void onCollab(DEViseCommSocket socket, int id)
+    public synchronized void onCollab(DEViseCommSocket socket, int id, String cmd)
     {   
 	try {	
 	    // first connection for collaboration
@@ -1328,11 +1332,20 @@ public class jspop implements Runnable
        	    if (client != null) {
 		// check for enable collaboration status
 		if (client.isAbleCollab) {
-		    client.addCollabSocket(socket);
+		    String[] cmds = DEViseGlobals.parseString(cmd);
+		    String requestPass = new String(cmds[4]);
+		    pn("We got request passwd: " + requestPass);
+		    if (client.checkPass(requestPass))
+			client.addCollabSocket(socket);
+		    else { // wrong passwd
+			socket.sendCmd(DEViseCommands.ERROR + " {Incorrect password. Please try again.}");
+			socket.closeSocket();	
+			pn("Incorrect password.");
+		    }
 		} else { // disable collaboration
-		    socket.sendCmd(DEViseCommands.ERROR + " {Disable to collaborate with client.}");
+		    socket.sendCmd(DEViseCommands.ERROR + " {Disabled to collaborate with client.}");
 		    socket.closeSocket();	
-		    pn("Disable to collaborate with client.");
+		    pn("Disabled to collaborate with client.");
 		}
 	    } else {
 		pn("No client for ID: " + id);
