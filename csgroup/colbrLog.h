@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:47  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:23:55  liping
   Added CVS header
 
@@ -82,8 +85,8 @@ public:
 	int Play();
 
 private:
-	WriteBody(int fd);
-	ReadBody(int fd);
+	int WriteBody(int fd);
+	int ReadBody(int fd);
 
 	GroupKey *GroupName;
 };
@@ -95,8 +98,8 @@ public:
 	int Play();
 
 private:
-	WriteBody(int fd);
-	ReadBody(int fd);
+	int WriteBody(int fd);
+	int ReadBody(int fd);
 
 	GroupKey *GroupName;
 };
@@ -108,8 +111,8 @@ public:
 	int Play();
 
 private:
-	WriteBody(int fd);
-	ReadBody(int fd);
+	int WriteBody(int fd);
+	int ReadBody(int fd);
 
 	GroupKey *GroupName;
 	DbEntry *ServerAddr;
@@ -122,8 +125,8 @@ public:
 	int Play();
 
 private:
-	WriteBody(int fd);
-	ReadBody(int fd);
+	int WriteBody(int fd);
+	int ReadBody(int fd);
 
 	GroupKey *GroupName;
 	DbEntry *ServerAddr;
@@ -136,8 +139,8 @@ public:
 	int Play();
 
 private:
-	WriteBody(int fd);
-	ReadBody(int fd);
+	int WriteBody(int fd);
+	int ReadBody(int fd);
 
 	GroupKey *GroupName;
 	DbEntry *ServerAddr;
@@ -150,8 +153,8 @@ public:
 	int Play();
 
 private:
-	WriteBody(int fd);
-	ReadBody(int fd);
+	int WriteBody(int fd);
+	int ReadBody(int fd);
 
 	GroupKey *GroupName;
 	DbEntry *ServerAddr;
@@ -164,8 +167,8 @@ public:
 	int Play();
 
 private:
-	WriteBody(int fd);
-	ReadBody(int fd);
+	int WriteBody(int fd);
+	int ReadBody(int fd);
 
 	GroupKey *GroupName;
 	DbEntry *ServerAddr;
@@ -178,8 +181,8 @@ public:
 	int Play();
 
 private:
-	WriteBody(int fd);
-	ReadBody(int fd);
+	int WriteBody(int fd);
+	int ReadBody(int fd);
 
 	GroupKey *GroupName;
 	DbEntry *ServerAddr;
@@ -192,8 +195,8 @@ public:
 	int Play();
 
 private:
-	WriteBody(int fd);
-	ReadBody(int fd);
+	int WriteBody(int fd);
+	int ReadBody(int fd);
 
 	GroupKey *GroupName;
 };
@@ -205,8 +208,8 @@ public:
 	int Play();
 
 private:
-	WriteBody(int fd);
-	ReadBody(int fd);
+	int WriteBody(int fd);
+	int ReadBody(int fd);
 
 	GroupKey *GroupName;
 	DbEntry *ServerAddr;
@@ -219,8 +222,8 @@ public:
 	int Play();
 
 private:
-	WriteBody(int fd);
-	ReadBody(int fd);
+	int WriteBody(int fd);
+	int ReadBody(int fd);
 
 	GroupKey *GroupName;
 };
@@ -232,8 +235,8 @@ public:
 	int Play();
 
 private:
-	WriteBody(int fd);
-	ReadBody(int fd);
+	int WriteBody(int fd);
+	int ReadBody(int fd);
 
 	GroupKey *GroupName;
 	DbEntry *ServerAddr;

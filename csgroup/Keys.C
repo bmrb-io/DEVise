@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/19 23:24:07  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
   Revision 1.2  1998/02/12 17:14:33  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -69,7 +77,7 @@ CSgroupKey::CSgroupKey(GroupKey *gkp)
 	{
 		int		keysize;
 		keysize = sizeof(GroupKey);
-		_cskey = new char[keysize +1](0);
+		_cskey = new char[keysize +1];
 		sprintf(_cskey,"%s%c%s",_gkp->grpName,seperator,_gkp->grpPwd);
 	}
 }

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/08/21 22:16:05  wenger
+  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
+  linked DEVise for distribution.
+
   Revision 1.19  1998/08/17 21:03:38  wenger
   Changed deviseb and devisec to work properly with current devised
   (clients don't expect to be sent slot number at startup).
@@ -855,7 +859,7 @@ int Server::SendClientCmd(int fd,int flag, int args, ...)
 	int		i;
 
 	DO_ASSERT((args>=1), "Insufficient parameters to SendClientCmd");
-	argv = new (char*)[args](NULL);
+	argv = new (char*)[args];
 	va_start(pvar, args);
 	for (i=0; i< args; ++i)
 	{

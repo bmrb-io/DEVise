@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/07/29 14:19:40  wenger
+  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+  allow static linking on Linux.
+
   Revision 1.5  1998/03/11 18:25:07  wenger
   Got DEVise 1.5.2 to compile and link on Linux; includes drastically
   reducing include dependencies between csgroup code and the rest of
@@ -66,7 +70,7 @@ ServerServerProt::ServerServerProt(int argc, char** argv)
 	// fill in the defaults
 	int		i;
 	dynamicStructure = true;
-	newargv = new (char*)[argc+ getHeaderLength()](NULL);
+	newargv = new (char*)[argc+ getHeaderLength()];
 	for (i=0; i < getHeaderLength(); ++i)
 		newargv[i] = DefaultStr;
 
@@ -277,7 +281,7 @@ TokenList::TokenList(int args, ...)
 {
 	if (args >0)
 	{
-		char**	argv = new (char*)[args](NULL);
+		char**	argv = new (char*)[args];
 		va_list	pvar;
 		int	i;
 		va_start(pvar,args);

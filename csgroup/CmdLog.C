@@ -242,7 +242,7 @@ CmdLogRecord::logCommand(int argc, char** argv)
 
 	// move currentLogId to the end of the log, if no log
 	// currentLogId = -1;
-	char	**nargv = new (char*)[argc](NULL);
+	char	**nargv = new (char*)[argc];
 	int	i;
 	for (i=0; i< argc; ++i)
 	{
