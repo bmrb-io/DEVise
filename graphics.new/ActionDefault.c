@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/06/15 16:11:05  jussi
+  Added '5'-key functionality to 3D views.
+
   Revision 1.15  1996/05/31 19:05:19  jussi
   Removed alternate keyboard mapping for X zoom out.
 
@@ -147,12 +150,20 @@ void ActionDefault::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
 	    filter.xHigh = AttrList::GetVal(&xAttr->hiVal, xAttr->type);
 	  if (xAttr->hasLoVal)
 	    filter.xLow = AttrList::GetVal(&xAttr->loVal, xAttr->type);
+	  if (filter.xHigh == filter.xLow) {
+	    filter.xHigh += 1.0;
+	    filter.xLow -= 1.0;
+	  }
 	}
 	if (yAttr) {
 	  if (yAttr->hasHiVal)
 	    filter.yHigh = AttrList::GetVal(&yAttr->hiVal, yAttr->type);
 	  if (yAttr->hasLoVal)
 	    filter.yLow = AttrList::GetVal(&yAttr->loVal, yAttr->type);
+	  if (filter.yHigh == filter.yLow) {
+	    filter.yHigh += 1.0;
+	    filter.yLow -= 1.0;
+	  }
 	}
 	if (!isScatterPlot)
 	  filter.yLow = 0;
@@ -200,6 +211,8 @@ void ActionDefault::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
     /* zoom out */
     view->GetVisualFilter(filter);
     Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
+    if (halfWidth == 0.0)
+      halfWidth = 1.0;
     filter.xLow -= halfWidth;
     filter.xHigh += halfWidth;
     Coord xMin;

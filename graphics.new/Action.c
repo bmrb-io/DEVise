@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/06/15 17:27:37  jussi
+  Earlier modifications that forced X and Y zooming to go together
+  in scatter plots had somehow disappeared so I put them back.
+  This is also the zooming behavior for 3D views.
+
   Revision 1.4  1996/06/15 16:12:27  jussi
   Cleaned up a bit (debug statements etc.).
 
@@ -322,7 +327,9 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
     /* zoom out X */
     if (view->GetNumDimensions() == 2) {
       view->GetVisualFilter(filter);
-      Coord halfWidth = (filter.xHigh-filter.xLow) / 2.0;
+      Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
+      if (halfWidth == 0.0)
+	halfWidth = 1.0;
       filter.xLow -= halfWidth;
       filter.xHigh += halfWidth;
       Coord xMin;
@@ -369,6 +376,8 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
     if (view->GetNumDimensions() == 2) {
       view->GetVisualFilter(filter);
       Coord halfHeight = (filter.yHigh - filter.yLow) / 2.0;
+      if (halfHeight == 0.0)
+	halfHeight = 1.0;
       filter.yLow -= halfHeight;
       filter.yHigh += halfHeight;
       view->SetVisualFilter(filter);
