@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.37  1997/06/09 14:47:16  wenger
+#  Added cursor grid; fixed bug 187; a few minor cleanups.
+#
 #  Revision 1.36  1997/05/30 15:41:39  wenger
 #  Most of the way to user-configurable '4', '5', and '6' keys -- committing
 #  this stuff now so it doesn't get mixed up with special stuff for printing
@@ -380,18 +383,22 @@ proc DoViewCopy {} {
     }
     .copy.top.old.window.menu.list add separator
     .copy.top.old.window.menu.list add command -label "New..." -command {
-	set newwin [DoCreateWindow "Select window type"]
-	if {$newwin != ""} {
-	    set window $newwin
-	    .copy.top.old.window.menu.list add command -label $window \
-		    -command "set window {$window}"
-	}
+	set window "New"
     }
 
     frame .copy.bot.but
     pack .copy.bot.but -side top
 
     button .copy.bot.but.ok -text OK -width 10 -command {
+	if {$window == "New"} {
+	    set newwin [DoCreateWindow "Select window type"]
+	    if {$newwin != ""} {
+	        set window $newwin
+	    } else {
+		puts "Unable to create new window"
+		return
+	    }
+	}
 	set newGdata [.copy.top.new.gdata.entry get]
 	if {$newGdata == ""} {
 	    dialog .noViewName "No Mapping Name" \
@@ -1341,7 +1348,6 @@ proc DoSetFgBgColor { isForeground {perWindow 0} } {
         if {$oldColor != $newColor} {
             set param [lreplace $param $paramIndex $paramIndex $newColor]
             set cmd "DEVise changeParam $param"
-puts "DIAG $cmd"
             eval $cmd
 	}
     }
