@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.23  1999/11/03 08:00:49  hongyu
+// *** empty log message ***
+//
 // Revision 1.22  1999/11/02 21:37:39  wenger
 // Made separate methods for constructing the different symbol types, without
 // really changing the functionality, to clean things up and make fixes to
@@ -72,7 +75,7 @@ public class DEViseGData
     public int x = 0, y = 0, z = 0, width = 0, height = 0;
     public double x0, y0, z0;
 
-    public String[] data = null; //TEMP -- should this really be a member?
+    public String[] data = null;
     public Component symbol = null;
     public boolean isJavaSymbol = false;
     public int symbolType = 0;
@@ -82,7 +85,7 @@ public class DEViseGData
     public Font font = null;
     public int outline = 0;
 
-    // GData format: <x> <y> <z> <color> <size> <pattern> <orientation> <symbol type> <shape attr 0> ... <shape attr 9>
+    // GData format: <x> <y> <z> <color> <size> <pattern> <orientation> <symbol type> <shape attr 0> ... <shape attr 14>
     public DEViseGData(jsdevisec panel, String name, String gdata, double xm, double xo, double ym, double yo) throws YException
     {
         jsc = panel;
@@ -169,6 +172,8 @@ public class DEViseGData
         double w = 0.0, h = 0.0;
         int align, ff, fw, fs;
 
+	// Note: format is ignored for now.  RKW 1999-11-03.
+
         // default font is courier, regular, nonitalic
         try {
             w = (Double.valueOf(data[10])).doubleValue();
@@ -219,28 +224,16 @@ public class DEViseGData
             height = -height;
 	}
 
-        x = x - width / 2;
-        y = y - height / 2;
-        /* Don't force the entire rectangle to be within the view.
-         * RKW 1999-10-28.
-        if (x < 0)
-            x = 0;
-        if (y < 0)
-            y = 0;
-        */
-
         color = DEViseGlobals.convertColor(data[3]);
 
-        if (DEViseGData.defaultFont == null) {
-            if (w < 0.0) {
-                font = DEViseGlobals.getFont(string, height, ff, fw, fs);
-            } else {
-                font = DEViseGlobals.getFont(string, width, height, ff, fw, fs);
-            }
-
-            DEViseGData.defaultFont = font;
+        // Note: not using the default font here is probably less
+        // efficient, but the previous version of this code failed
+        // if we needed different fonts for different symbols.
+        // RKW 1999-11-02.
+        if (w < 0.0) {
+            font = DEViseGlobals.getFont(string, height, ff, fw, fs);
         } else {
-            font = DEViseGData.defaultFont;
+            font = DEViseGlobals.getFont(string, width, height, ff, fw, fs);
         }
 
         if (color == null || font == null) {
@@ -248,50 +241,7 @@ public class DEViseGData
             return;
         }
 
-        // because java draw string from its baseline, so we have to make corrections
-        Toolkit tk = Toolkit.getDefaultToolkit();
-        FontMetrics fm = tk.getFontMetrics(font);
-        int ac = fm.getAscent(), dc = fm.getDescent(), ld = fm.getLeading();
-        ac = ac + ld / 2;
-        dc = dc + ld / 2;
-        int sh = fm.getHeight();
-        int sw = fm.stringWidth(string);
-
-        switch (align) {
-        case -4:
-            y = y + ac;
-            break;
-        case -3:
-            y = y + height / 2 + ac - sh / 2;
-            break;
-        case -2:
-            y = y + height - dc;
-            break;
-        case -1:
-            y = y + ac;
-            x = x + width / 2 - sw / 2;
-            break;
-        case 0:
-            y = y + height / 2 + ac - sh / 2;
-            x = x + width / 2 - sw / 2;
-            break;
-        case 1:
-            y = y + height - dc;
-            x = x + width / 2 - sw / 2;
-            break;
-        case 2:
-            y = y + ac;
-            x = x + width - sw;
-            break;
-        case 3:
-            y = y + height / 2 + ac - sh / 2;
-            x = x + width - sw;
-            break;
-        case 4:
-            y = y + height - dc;
-            x = x + width - sw;
-            break;
-        }
+	AlignText(align);
             
         x = parentView.viewLocInCanvas.x + x;
         y = parentView.viewLocInCanvas.y + y;
@@ -343,71 +293,24 @@ public class DEViseGData
 
         color = DEViseGlobals.convertColor(data[3]);
 
-        if (DEViseGData.defaultFont == null) {
-            int fsize;
-
-            if (size > 1.0) {
-                fsize = (int)(size + 0.25);
-            } else {
-                fsize = (int)(size * DEViseGlobals.screenSize.height + 0.25);
-            }
-
-            font = DEViseGlobals.getFont(fsize, ff, fw, fs);
-
-            DEViseGData.defaultFont = font;
+        // Note: not using the default font here is probably less
+        // efficient, but the previous version of this code failed
+        // if we needed different fonts for different symbols.
+        // RKW 1999-11-02.
+        int fsize;
+        if (size > 1.0) {
+            fsize = (int)(size + 0.25);
         } else {
-            font = DEViseGData.defaultFont;
+            fsize = (int)(size * DEViseGlobals.screenSize.height + 0.25);
         }
+        font = DEViseGlobals.getFont(fsize, ff, fw, fs);
 
         if (color == null || font == null) {
             string = null;
             return;
         }
 
-        // because java draw string from its baseline, so we have to make corrections
-        Toolkit tk = Toolkit.getDefaultToolkit();
-        FontMetrics fm = tk.getFontMetrics(font);
-        int ac = fm.getAscent(), dc = fm.getDescent(), ld = fm.getLeading();
-        ac = ac + ld / 2;
-        dc = dc + ld / 2;
-        int sh = fm.getHeight();
-        int sw = fm.stringWidth(string);
-
-        switch (align) {
-        case -4:
-            y = y + ac;
-            break;
-        case -3:
-            y = y + height / 2 + ac - sh / 2;
-            break;
-        case -2:
-            y = y + height - dc;
-            break;
-        case -1:
-            y = y + ac;
-            x = x + width / 2 - sw / 2;
-            break;
-        case 0:
-            y = y + height / 2 + ac - sh / 2;
-            x = x + width / 2 - sw / 2;
-            break;
-        case 1:
-            y = y + height - dc;
-            x = x + width / 2 - sw / 2;
-            break;
-        case 2:
-            y = y + ac;
-            x = x + width - sw;
-            break;
-        case 3:
-            y = y + height / 2 + ac - sh / 2;
-            x = x + width - sw;
-            break;
-        case 4:
-            y = y + height - dc;
-            x = x + width - sw;
-            break;
-        }
+	AlignText(align);
             
         x = parentView.viewLocInCanvas.x + x;
         y = parentView.viewLocInCanvas.y + y;
@@ -498,5 +401,49 @@ public class DEViseGData
         if (y < 0)
             y = 0;
         */
+    }
+
+    protected void AlignText(int align)
+    {
+        Toolkit tk = Toolkit.getDefaultToolkit();
+        FontMetrics fm = tk.getFontMetrics(font);
+        int ac = fm.getAscent(), dc = fm.getDescent();
+        int sw = fm.stringWidth(string);
+
+        switch (align) {
+        case -4: // northwest
+            y = y + ac;
+            break;
+        case -3: // west
+            y = y + (ac - dc) / 2;
+            break;
+        case -2: // southwest
+            y = y - dc;
+            break;
+        case -1: // north
+            x = x - sw / 2;
+            y = y + ac;
+            break;
+        case 0: // center
+            x = x - sw / 2;
+            y = y + (ac - dc) / 2;
+            break;
+        case 1: // south
+            x = x - sw / 2;
+            y = y - dc;
+            break;
+        case 2: // northeast
+            x = x - sw;
+            y = y + ac;
+            break;
+        case 3: // east
+            x = x - sw;
+            y = y + (ac - dc) / 2;
+            break;
+        case 4: // southeast
+            x = x - sw;
+            y = y - dc;
+            break;
+        }
     }
 }
