@@ -119,7 +119,15 @@ Num Date        Status  Description
 038 09/05/96	FIXED	'Not Supported Yet' window needs an 'OK' button.
 			(rkw)
 
-039 09/12.96	FIXED	+/- keys don't change symbol sizes. (ml/rkw)
+039 09/12/96	FIXED	+/- keys don't change symbol sizes. (ml/rkw)
+
+040 09/13/96	OPEN	+/- keys seem to only work on one view of piled/
+			stacked views (see LandsEnd/a2.tk). (rkw)
+
+041 09/16/96	OPEN	If you change the X mapping between a date attribute
+			and an attribute of another type, the axis labels
+			aren't correctly updated until the session is saved
+			and re-opened. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

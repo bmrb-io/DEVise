@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.34  1996/09/05 23:13:44  kmurli
+  Generic.c modified to read composite.ini from the DEVISE_LIB directory. (DEVISE_LIB env variable ) to register the composite parsers for various schema
+  CVS ----------------------------------------------------------------------
+
   Revision 1.33  1996/08/29 21:58:16  guangshu
   Added several DATE type schema.
 
@@ -364,6 +368,71 @@ private:
   int       *attrOffset;          /* attribute offsets */
   Boolean   _init;                /* true when instance initialized */
 };
+
+/* User composite function for dates of the form YYDDD, HHMM */
+
+class YyDdd_HhMmComposite : public UserComposite {
+public:
+
+  YyDdd_HhMmComposite() {
+    _init = false;
+    attrOffset = 0;
+  }
+
+  virtual ~YyDdd_HhMmComposite() {
+    delete attrOffset;
+  }
+
+  virtual void Decode(RecInterp *recInterp) {
+
+    if (!_init) {
+      /* initialize by caching offsets of all the attributes we need */
+
+      char *primAttrs[] = { "YYDDD", "HHMM", "Date" };
+      const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
+      attrOffset = new int [numPrimAttrs];
+      DOASSERT(attrOffset, "Out of memory");
+
+      for(int i = 0; i < numPrimAttrs; i++) {
+	AttrInfo *info;
+	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
+	  fprintf(stderr, "Cannot find attribute %s\n", primAttrs[i]);
+	  DOASSERT(0, "Cannot find attribute");
+	}
+	attrOffset[i] = info->offset;
+      }
+      _init = true;
+    }
+
+    char *buf = (char *)recInterp->GetBuf();
+
+    /* decode date */
+    float yyddd = *(float *)(buf + attrOffset[0]);
+    float hhmm = *(float *)(buf + attrOffset[1]);
+    // 0.1 are for safety in case of rounding down.
+    int year = int((yyddd / 1000.0) + 0.1);
+    int day = int((yyddd - 1000.0 * year) + 0.1);
+    int hour = int((hhmm / 100.0) + 0.1);
+    int minute = int((hhmm - 100.0 * hour) + 0.1);
+    hour--; // Convert from 1-24 to 0-23.
+
+    static struct tm now;
+    now.tm_mday = day;
+    now.tm_mon = 0;
+    now.tm_year = year;
+    now.tm_hour = hour;
+    now.tm_min = minute;
+    now.tm_sec = 0;
+
+    time_t *datePtr = (time_t *)(buf + attrOffset[2]);
+    *datePtr = GetTime(now);
+  }
+
+private:
+  int       *attrOffset;          /* attribute offsets */
+  Boolean   _init;                /* true when instance initialized */
+};
+
 
 /* User composite function for OBSDATE field */
 
@@ -1137,6 +1206,8 @@ int main(int argc, char **argv)
   		CompositeParser::Register(schemaChar,new LatLonComposite);
   	else if (parserName.matches("DayOfYearComposite"))
   		CompositeParser::Register(schemaChar,new DayOfYearComposite);
+  	else if (parserName.matches("YyDdd_HhMmComposite"))
+  		CompositeParser::Register(schemaChar,new YyDdd_HhMmComposite);
   	else if (parserName.matches("StateLatLonComposite"))
   		CompositeParser::Register(schemaChar,new StateLatLonComposite);
   	else if (parserName.matches("IBMAddressTraceComposite2"))
