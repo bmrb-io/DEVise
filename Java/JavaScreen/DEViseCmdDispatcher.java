@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.69  2001/01/23 04:06:43  xuk
+// In start() funtion, close socket after switching to cgi mode.
+//
 // Revision 1.68  2001/01/08 20:31:50  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -414,6 +417,7 @@ public class DEViseCmdDispatcher implements Runnable
 	    if (commSocket != null) {
 		commSocket.closeSocket();
 		commSocket = null;
+		jsc.pn("Socket has been closed.");
 	    }	
 	}	
 	
@@ -1469,10 +1473,10 @@ public class DEViseCmdDispatcher implements Runnable
         // sending command to server, and expect an immediate response of "JAVAC_Ack"
         jsc.pn("Sending cgi command: \"" + command + "\"");
 	try {
-	    //cgiURL = new URL("http", jsc.jsValues.connection.hostname,
-	    //jsc.jsValues.connection.cgiURL);
+	    cgiURL = new URL("http", jsc.jsValues.connection.hostname,
+			     jsc.jsValues.connection.cgiURL);
 
-	    cgiURL = new URL(jsc.jsValues.connection.cgiURL);
+	    //cgiURL = new URL(jsc.jsValues.connection.cgiURL);
 	    cgiConn = cgiURL.openConnection();
 	    cgiConn.setDoOutput(true);
 	    cgiOutput = new DataOutputStream(cgiConn.getOutputStream());
