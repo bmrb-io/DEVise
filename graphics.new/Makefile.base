@@ -39,7 +39,7 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	RecInterp.c TDataAsciiInterp.c TDataBinaryInterp.c TDataMap.c \
 	TDataMapDispatch.c GDataBin.c TDataAscii.c TDataBinary.c \
 	TDataRec.c TData2DRec.c PageRange.c  RecFile.c UnixRecFile.c \
-	GDataRangeMap.c GData.c Temp.c TData.c TDataViewX.c ViewScatter.c \
+	GDataRangeMap.c GData.c TData.c TDataViewX.c ViewScatter.c \
 	ViewRanges.c ViewGraph.c QPRange.c ParseAPI.C \
 	ViewClassInfo.c MapInterpShape.C DataSource.c DataSourceBuf.c \
 	DataSourceFileStream.c DataSourceTape.c \
