@@ -2501,6 +2501,16 @@ Num Date        Status  Description
 			somehow goofs up the CGI communication, and not having
 			an extra character goofs things up, too. (rkw)
 
+632 01/10/01	OPEN	The query dialog seems to get goofed up if it is
+			shown (and a view is selected) when the Stop button
+			is clicked. (rkw)
+
+633 01/17/01	OPEN	Load 4297g1.ds, zoom in in the X direction -- bars
+			are no longer properly displayed. (rkw)
+
+634 01/19/01	OPEN	JavaScreen: arrow keys don't work unless num lock is
+			turned on. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
