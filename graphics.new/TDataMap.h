@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/01/13 23:10:07  jussi
+  Added support for Z attribute and shape attribute 2.
+
   Revision 1.4  1995/11/25  01:20:16  jussi
   This code now uses Transform matrix operations to convert user/world
   coordinates to screen pixel coordinates. This is to avoid any future
@@ -82,6 +85,9 @@ public:
 	   VisualFlag *dimensionInfo, int numDimensions,
 	   Boolean createGData = true);
   
+  /* destructor */
+  virtual ~TDataMap();
+
   /* Set/Get GData attribute list */
   void SetGDataAttrList(AttrList *gAttrList) { _gdataAttrList = gAttrList; }
   AttrList *GDataAttrList() { return _gdataAttrList; }
