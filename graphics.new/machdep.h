@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/07/13 04:59:45  jussi
+  Added conditional for Linux.
+
   Revision 1.7  1996/05/31 15:41:44  jussi
   Minor change to remove compiler warnings in Linux.
 
@@ -258,6 +261,27 @@ union semun {
 #ifdef __ultrix
   #include <ansi_compat.h>
   #include <sys/devio.h>
+
+/*
+   Our current Ultrix installation has a signal.h file that defines
+   SIG_ERR, SIG_DFL, and SIG_IGN in a way that is incompatible with
+   the signal() definition in the same file!
+*/
+
+#ifdef __STDC__
+#  ifdef SIG_ERR
+#    undef SIG_ERR
+#  endif
+#  define SIG_ERR ((void (*)(int))(-1))
+#  ifdef SIG_DFL
+#    undef SIG_DFL
+#  endif
+#  define SIG_DFL ((void (*)(int))( 0))
+#  ifdef SIG_IGN
+#    undef SIG_IGN
+#  endif
+#  define SIG_IGN ((void (*)(int))( 1))
+#endif
 #endif
 
 #ifndef __aix
