@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.39  2001/02/12 02:54:17  xuk
+// JavaScreen can prevent from being collaborated.
+// Changes in OnCollab(), check collaboration status with client.
+//
 // Revision 1.38  2001/02/06 16:33:45  xuk
 // Change for multiple collaborate JSs.
 //
@@ -512,10 +516,10 @@ public class jspop implements Runnable
                 pn("After reading command");
 
 	        int id = socket.cmdId;
-		int flag = socket.cgiFlag;
-		if (flag == -1) { // collabration JS
+		int flag = socket.flag;
+		if (flag == -1) { // collaboration JS
+		    pn("Received collaboration request for client: " + id + ".");
 		    onCollab(socket, id);
-		    pn("Received collabration request for client: " + id + ".");	
 		}
 		else {
 		    boolean cgi;
@@ -703,7 +707,7 @@ public class jspop implements Runnable
 
 			id = socket.cmdId;
 	    		pn("Received command from client(" + id + ") :  \"" + cmd + "\"");		
-			cgi = socket.cgiFlag;
+			cgi = socket.flag;
 			if (cgi != 0) {
 			    //TEMP -- we may never get here?
 			    cgiflag = true;
@@ -1256,11 +1260,37 @@ public class jspop implements Runnable
     }
 
     public synchronized void onCollab(DEViseCommSocket socket, int id)
-    {
-	// find the proper client;
-	DEViseClient client = findClientById(id);
+    {   
+	try {	
+	    // first connection for collaboration
+	    if (id == 0) {
+		String command = new String(DEViseCommands.CLIENTS);
+
+		for (int i = 0; i < activeClients.size(); i++) {
+		    DEViseClient tmpClient =
+			(DEViseClient) activeClients.elementAt(i);
+		    if (tmpClient != null) 
+			command = command + " {" + tmpClient.getConnectionID().intValue() + "}";
+		}
+
+		for (int i = 0; i < suspendClients.size(); i++) {
+		    DEViseClient tmpClient =
+			(DEViseClient) suspendClients.elementAt(i);
+		    if (tmpClient != null) 
+			command = command + " {" + tmpClient.getConnectionID().intValue() + "}";
+		}    
+		command = command.trim();
+		pn("Send clients list to collaboration JS: " + command);
+		socket.sendCmd(command);
+		socket.closeSocket();	
+	    
+		return;
+	    }
 	
-	try {			
+	    // find the proper client;
+	    DEViseClient client = findClientById(id);
+	
+		
        	    if (client != null) {
 		// check for enable collaboration status
 		if (client.isAbleCollab) {
