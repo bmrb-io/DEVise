@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/01/09 16:35:48  jussi
+  Added missing SetDefaultX() and SetDefaultY() calls.
+
   Revision 1.14  1995/12/28 19:36:59  jussi
   Small fixes to remove compiler warnings.
 
@@ -193,6 +196,7 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
     _shapes[3] = new FullMapping_PolygonShape;
     _shapes[4] = new FullMapping_OvalShape;
     _shapes[5] = new FullMapping_VectorShape;
+    _shapes[6] = new FullMapping_BlockShape;
 
     /* Init tcl */
     _interp = Tcl_CreateInterp();

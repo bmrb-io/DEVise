@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/22 18:07:47  jussi
+  Increased MaxInterpShapes to accommodate the new Vector shape.
+
   Revision 1.6  1995/11/28 00:06:02  jussi
   Increased MaxInterpShapes to reflect the addition of polygon and
   oval shapes.
@@ -79,7 +82,7 @@ struct MappingSimpleCmd {
 
 class Shape;
 class AttrList;
-const int MaxInterpShapes = 6;
+const int MaxInterpShapes = 7;
 
 class MappingInterp: public TDataMapDispatch {
 public:
