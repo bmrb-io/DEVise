@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.46  2000/02/16 18:51:42  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.45  2000/01/13 23:07:10  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -368,7 +371,12 @@ void ServerAPI::OpenDataChannel(int port)
 
   // Get address of the current client.
   struct sockaddr_in tmpaddr;
-  int addrlen = sizeof(tmpaddr);
+#if defined(LINUX)
+  socklen_t
+#else
+  int
+#endif
+      addrlen = sizeof(tmpaddr);
   if (getpeername(_server->CurrentClientFd(), (struct sockaddr *) &tmpaddr,
       &addrlen) < 0) {
     reportErrSys("Error in getpeername()");

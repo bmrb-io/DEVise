@@ -136,8 +136,9 @@ dbJussi.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
 dbJussi.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
 dbJussi.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
 dbJussi.o: /usr/include/netinet/in.h /usr/include/stdint.h
-dbJussi.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
-dbJussi.o: ../../../tape/tapedrive.h ../../../tape/HashTable.h
+dbJussi.o: /usr/include/bits/wordsize.h /usr/include/bits/in.h
+dbJussi.o: /usr/include/bits/byteswap.h ../../../tape/tapedrive.h
+dbJussi.o: ../../../tape/HashTable.h
 
 alignedsortedpage.o: /usr/include/stdio.h /usr/include/features.h
 alignedsortedpage.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
@@ -325,13 +326,14 @@ test_rtree_jussi.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
 test_rtree_jussi.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
 test_rtree_jussi.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
 test_rtree_jussi.o: /usr/include/netinet/in.h /usr/include/stdint.h
-test_rtree_jussi.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
-test_rtree_jussi.o: ../../../tape/tapedrive.h ../../../tape/HashTable.h
-test_rtree_jussi.o: /usr/include/fcntl.h /usr/include/bits/fcntl.h
-test_rtree_jussi.o: ../../src/RTree/rtree.h ../../src/index.h
-test_rtree_jussi.o: ../../src/Common/int_key.h /usr/include/math.h
-test_rtree_jussi.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-test_rtree_jussi.o: /usr/include/bits/mathcalls.h ../../src/Common/bit_vec.h
+test_rtree_jussi.o: /usr/include/bits/wordsize.h /usr/include/bits/in.h
+test_rtree_jussi.o: /usr/include/bits/byteswap.h ../../../tape/tapedrive.h
+test_rtree_jussi.o: ../../../tape/HashTable.h /usr/include/fcntl.h
+test_rtree_jussi.o: /usr/include/bits/fcntl.h ../../src/RTree/rtree.h
+test_rtree_jussi.o: ../../src/index.h ../../src/Common/int_key.h
+test_rtree_jussi.o: /usr/include/math.h /usr/include/bits/huge_val.h
+test_rtree_jussi.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
+test_rtree_jussi.o: ../../src/Common/bit_vec.h
 test_rtree_jussi.o: ../../src/PageClasses/int_keyed_p.h
 test_rtree_jussi.o: ../../src/PageClasses/fixed_entrysz_p.h
 test_rtree_jussi.o: ../../src/PageClasses/stackpage.h
@@ -426,7 +428,10 @@ convert_bulk.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
 convert_bulk.o: /usr/include/libio.h /usr/include/_G_config.h
 convert_bulk.o: /usr/include/bits/stdio_lim.h /usr/include/strings.h
 convert_bulk.o: ../../src/Common/correct_math.h /usr/include/netinet/in.h
-convert_bulk.o: /usr/include/stdint.h /usr/include/bits/socket.h
+convert_bulk.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
+convert_bulk.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
+convert_bulk.o: /usr/include/bits/posix2_lim.h /usr/include/stdint.h
+convert_bulk.o: /usr/include/bits/wordsize.h /usr/include/bits/socket.h
 convert_bulk.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
 convert_bulk.o: /usr/include/asm/sockios.h /usr/include/bits/in.h
 convert_bulk.o: /usr/include/bits/byteswap.h
@@ -476,7 +481,10 @@ typed_key.o: /usr/include/sys/types.h /usr/include/time.h
 typed_key.o: /usr/include/endian.h /usr/include/bits/endian.h
 typed_key.o: /usr/include/sys/select.h /usr/include/bits/select.h
 typed_key.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
-typed_key.o: /usr/include/netinet/in.h /usr/include/stdint.h
+typed_key.o: /usr/include/netinet/in.h /usr/include/limits.h
+typed_key.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+typed_key.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+typed_key.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
 typed_key.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
 typed_key.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
 typed_key.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h

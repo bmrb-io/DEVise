@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.9  2000/01/04 21:17:37  wenger
+# Compiled DEVise on Linux.
+#
 # Revision 1.8  1999/07/12 19:01:30  wenger
 # Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
 #
@@ -88,7 +91,8 @@ crsp_extract.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
 crsp_extract.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
 crsp_extract.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
 crsp_extract.o: /usr/include/netinet/in.h /usr/include/stdint.h
-crsp_extract.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+crsp_extract.o: /usr/include/bits/wordsize.h /usr/include/bits/in.h
+crsp_extract.o: /usr/include/bits/byteswap.h
 crsp_index.o: /usr/include/string.h /usr/include/features.h
 crsp_index.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 crsp_index.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -121,8 +125,8 @@ crsp_index.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
 crsp_index.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
 crsp_index.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
 crsp_index.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-crsp_index.o: /usr/include/stdint.h /usr/include/bits/in.h
-crsp_index.o: /usr/include/bits/byteswap.h
+crsp_index.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
+crsp_index.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 main.o: sec.h ../tape/tapedrive.h /usr/include/stdio.h
 main.o: /usr/include/features.h /usr/include/sys/cdefs.h
 main.o: /usr/include/gnu/stubs.h
@@ -153,7 +157,8 @@ main.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
 main.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
 main.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
 main.o: /usr/include/netinet/in.h /usr/include/stdint.h
-main.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+main.o: /usr/include/bits/wordsize.h /usr/include/bits/in.h
+main.o: /usr/include/bits/byteswap.h
 sec.o: /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h
 sec.o: /usr/include/gnu/stubs.h
 sec.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -183,5 +188,6 @@ sec.o: /usr/include/sys/ttydefaults.h /usr/include/netdb.h
 sec.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
 sec.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
 sec.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-sec.o: /usr/include/netinet/in.h /usr/include/stdint.h /usr/include/bits/in.h
+sec.o: /usr/include/netinet/in.h /usr/include/stdint.h
+sec.o: /usr/include/bits/wordsize.h /usr/include/bits/in.h
 sec.o: /usr/include/bits/byteswap.h cal.h

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  2000/03/14 17:04:49  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.27  2000/01/13 23:06:43  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -521,7 +525,12 @@ void Server::WaitForConnection()
 	}
 
     struct sockaddr_in tempaddr;
-    int len = sizeof(tempaddr);
+#if defined(LINUX)
+    socklen_t
+#else
+    int
+#endif
+        len = sizeof(tempaddr);
     clientfd = accept(_listenFd, (struct sockaddr *)&tempaddr, &len);
     if (clientfd < 0)
     {
@@ -630,7 +639,12 @@ Server::WaitForImageportConnection()
 
 	int		imagefd;
     struct 	sockaddr_in tempaddr;
-    int 	len = sizeof(tempaddr);
+#if defined(LINUX)
+    socklen_t
+#else
+    int
+#endif
+        len = sizeof(tempaddr);
 	int	 	slotno = -1;
 
     imagefd = accept(_listenImageFd, (struct sockaddr *)&tempaddr, &len);

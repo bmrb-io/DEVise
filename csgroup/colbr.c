@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/08/21 22:16:07  wenger
+  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
+  linked DEVise for distribution.
+
   Revision 1.4  1998/03/30 22:32:53  wenger
   Merged fixes from collab_debug_br through collab_debug_br2 (not all
   changes from branch were merged -- some were for debug only)
@@ -200,7 +204,12 @@ void
 AcptNewConnection(int fd) {
 	int acptfd;
 	ConnectInfo Address;
-	int size = sizeof(ConnectInfo);
+#if defined(LINUX)
+    socklen_t
+#else
+	int
+#endif
+	    size = sizeof(ConnectInfo);
 
 	acptfd = accept(fd, (struct sockaddr *) &Address, &size);
 	if (acptfd < 0) {
@@ -482,7 +491,12 @@ ConnectServer(ConnectInfo Server) {
 	struct timeval timeout = CLB_CONNECTTIME;
 	int trueval = 1;
 	int retval;
-	int retsize = sizeof(retval);
+#if defined(LINUX)
+    socklen_t
+#else
+	int
+#endif
+	    retsize = sizeof(retval);
 
 	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 		perror("Can't create socket");

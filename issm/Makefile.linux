@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.8  1999/07/12 19:02:18  wenger
+# Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
+#
 # Revision 1.7  1997/11/12 15:47:37  wenger
 # Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
 # into the trunk.
@@ -83,8 +86,8 @@ extract.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
 extract.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
 extract.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
 extract.o: /usr/include/netinet/in.h /usr/include/stdint.h
-extract.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h binconv.h
-extract.o: issmdata.h
+extract.o: /usr/include/bits/wordsize.h /usr/include/bits/in.h
+extract.o: /usr/include/bits/byteswap.h binconv.h issmdata.h
 rectape.o: /usr/include/stdlib.h /usr/include/features.h
 rectape.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 rectape.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -116,5 +119,6 @@ rectape.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
 rectape.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
 rectape.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
 rectape.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-rectape.o: /usr/include/stdint.h /usr/include/bits/in.h
-rectape.o: /usr/include/bits/byteswap.h binconv.h /usr/include/string.h
+rectape.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
+rectape.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h binconv.h
+rectape.o: /usr/include/string.h

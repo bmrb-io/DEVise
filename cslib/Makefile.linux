@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.11  2000/01/04 21:17:50  wenger
+# Compiled DEVise on Linux.
+#
 # Revision 1.10  1999/07/12 19:01:44  wenger
 # Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
 #
@@ -72,9 +75,12 @@ Client.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
 Client.o: /usr/include/alloca.h /usr/include/string.h /usr/include/unistd.h
 Client.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
 Client.o: /usr/include/getopt.h /usr/include/sys/socket.h
-Client.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-Client.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-Client.o: /usr/include/netinet/in.h /usr/include/stdint.h
+Client.o: /usr/include/bits/socket.h /usr/include/limits.h
+Client.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+Client.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+Client.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+Client.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+Client.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
 Client.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h Client.h
 Server.o: /usr/include/stdio.h /usr/include/features.h
 Server.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
@@ -91,15 +97,15 @@ Server.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
 Server.o: /usr/include/asm/errno.h /usr/include/unistd.h
 Server.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
 Server.o: /usr/include/getopt.h /usr/include/sys/socket.h
-Server.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-Server.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-Server.o: /usr/include/netinet/in.h /usr/include/stdint.h
-Server.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
-Server.o: /usr/include/sys/param.h /usr/include/limits.h
+Server.o: /usr/include/bits/socket.h /usr/include/limits.h
 Server.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
 Server.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
-Server.o: /usr/include/linux/param.h /usr/include/asm/param.h Server.h
-Server.o: ../graphics/Exit.h
+Server.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+Server.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+Server.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
+Server.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+Server.o: /usr/include/sys/param.h /usr/include/linux/param.h
+Server.o: /usr/include/asm/param.h Server.h ../graphics/Exit.h
 TclClient.o: /usr/include/stdio.h /usr/include/features.h
 TclClient.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 TclClient.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -128,9 +134,12 @@ TestClient.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
 TestClient.o: /usr/include/asm/errno.h /usr/include/unistd.h
 TestClient.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
 TestClient.o: /usr/include/getopt.h /usr/include/sys/socket.h
-TestClient.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-TestClient.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-TestClient.o: /usr/include/netinet/in.h /usr/include/stdint.h
+TestClient.o: /usr/include/bits/socket.h /usr/include/limits.h
+TestClient.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+TestClient.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+TestClient.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+TestClient.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+TestClient.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
 TestClient.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h Client.h
 TkClient.o: /usr/include/stdio.h /usr/include/features.h
 TkClient.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
@@ -148,9 +157,12 @@ TkClient.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
 TkClient.o: /usr/include/asm/errno.h /usr/include/unistd.h
 TkClient.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
 TkClient.o: /usr/include/getopt.h /usr/include/sys/socket.h
-TkClient.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-TkClient.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-TkClient.o: /usr/include/netinet/in.h /usr/include/stdint.h
+TkClient.o: /usr/include/bits/socket.h /usr/include/limits.h
+TkClient.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+TkClient.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+TkClient.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+TkClient.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+TkClient.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
 TkClient.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 TkClient.o: /usr/include/tcl.h /usr/include/tk.h /usr/include/X11/Xlib.h
 TkClient.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h

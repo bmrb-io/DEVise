@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.14  2000/03/14 21:56:34  wenger
+# Updated solaris and linux dependencies.
+#
 # Revision 1.13  2000/01/04 21:17:43  wenger
 # Compiled DEVise on Linux.
 #
@@ -87,9 +90,12 @@ Csprotocols.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
 Csprotocols.o: /usr/include/libio.h /usr/include/_G_config.h
 Csprotocols.o: /usr/include/bits/stdio_lim.h Csprotocols.h
 Csprotocols.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
-Csprotocols.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
-Csprotocols.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-Csprotocols.o: /usr/include/stdint.h /usr/include/bits/in.h
+Csprotocols.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
+Csprotocols.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
+Csprotocols.o: /usr/include/bits/posix2_lim.h /usr/include/bits/sockaddr.h
+Csprotocols.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+Csprotocols.o: /usr/include/netinet/in.h /usr/include/stdint.h
+Csprotocols.o: /usr/include/bits/wordsize.h /usr/include/bits/in.h
 Csprotocols.o: /usr/include/bits/byteswap.h /usr/include/arpa/inet.h
 Csprotocols.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
 callBks.o: callBks.h error.h CollabTypes.h /usr/include/sys/types.h
@@ -100,9 +106,12 @@ callBks.o: /usr/include/time.h /usr/include/endian.h
 callBks.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 callBks.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 callBks.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
-callBks.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-callBks.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-callBks.o: /usr/include/netinet/in.h /usr/include/stdint.h
+callBks.o: /usr/include/bits/socket.h /usr/include/limits.h
+callBks.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+callBks.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+callBks.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+callBks.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+callBks.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
 callBks.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h ctrlMsg.h
 codec.o: /usr/include/sys/types.h /usr/include/features.h
 codec.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
@@ -131,21 +140,21 @@ colbr.o: /usr/include/errno.h /usr/include/bits/errno.h
 colbr.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
 colbr.o: /usr/include/sys/time.h /usr/include/bits/time.h
 colbr.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
-colbr.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
-colbr.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-colbr.o: /usr/include/stdint.h /usr/include/bits/in.h
+colbr.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
+colbr.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
+colbr.o: /usr/include/bits/posix2_lim.h /usr/include/bits/sockaddr.h
+colbr.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+colbr.o: /usr/include/netinet/in.h /usr/include/stdint.h
+colbr.o: /usr/include/bits/wordsize.h /usr/include/bits/in.h
 colbr.o: /usr/include/bits/byteswap.h /usr/include/arpa/inet.h
-colbr.o: /usr/include/sys/param.h /usr/include/limits.h
-colbr.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
-colbr.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
-colbr.o: /usr/include/linux/param.h /usr/include/asm/param.h
-colbr.o: /usr/include/netdb.h /usr/include/rpc/netdb.h error.h colbr.h
-colbr.o: /usr/include/string.h dbase.h htable.h bucket.h entry.h datum.h
-colbr.o: queue.h queueElem.h CollabTypes.h logfns.h log.h colbrLog.h sndMsg.h
-colbr.o: timeOut.h netfns.h /usr/include/unistd.h
-colbr.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
-colbr.o: /usr/include/getopt.h serverInterface.h prnfns.h ctrlMsg.h
-colbr.o: Csprotocols.h
+colbr.o: /usr/include/sys/param.h /usr/include/linux/param.h
+colbr.o: /usr/include/asm/param.h /usr/include/netdb.h
+colbr.o: /usr/include/rpc/netdb.h error.h colbr.h /usr/include/string.h
+colbr.o: dbase.h htable.h bucket.h entry.h datum.h queue.h queueElem.h
+colbr.o: CollabTypes.h logfns.h log.h colbrLog.h sndMsg.h timeOut.h netfns.h
+colbr.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
+colbr.o: /usr/include/bits/confname.h /usr/include/getopt.h serverInterface.h
+colbr.o: prnfns.h ctrlMsg.h Csprotocols.h
 error.o: /usr/include/stdio.h /usr/include/features.h
 error.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 error.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -168,9 +177,12 @@ logfns.o: /usr/include/bits/confname.h /usr/include/getopt.h colbrLog.h log.h
 logfns.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
 logfns.o: /usr/include/bits/stdio_lim.h /usr/include/string.h colbr.h
 logfns.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
-logfns.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
-logfns.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-logfns.o: /usr/include/stdint.h /usr/include/bits/in.h
+logfns.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
+logfns.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
+logfns.o: /usr/include/bits/posix2_lim.h /usr/include/bits/sockaddr.h
+logfns.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+logfns.o: /usr/include/netinet/in.h /usr/include/stdint.h
+logfns.o: /usr/include/bits/wordsize.h /usr/include/bits/in.h
 logfns.o: /usr/include/bits/byteswap.h /usr/include/arpa/inet.h dbase.h
 logfns.o: htable.h bucket.h entry.h datum.h queue.h queueElem.h CollabTypes.h
 logfns.o: logfns.h
@@ -189,7 +201,10 @@ netfns.o: /usr/include/alloca.h /usr/include/string.h /usr/include/errno.h
 netfns.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
 netfns.o: /usr/include/asm/errno.h /usr/include/sys/time.h
 netfns.o: /usr/include/bits/time.h /usr/include/netinet/in.h
-netfns.o: /usr/include/stdint.h /usr/include/bits/socket.h
+netfns.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
+netfns.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
+netfns.o: /usr/include/bits/posix2_lim.h /usr/include/stdint.h
+netfns.o: /usr/include/bits/wordsize.h /usr/include/bits/socket.h
 netfns.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
 netfns.o: /usr/include/asm/sockios.h /usr/include/bits/in.h
 netfns.o: /usr/include/bits/byteswap.h /usr/include/netdb.h
@@ -205,9 +220,12 @@ prnfns.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 prnfns.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 prnfns.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h prnfns.h
 prnfns.o: CollabTypes.h /usr/include/sys/socket.h /usr/include/bits/socket.h
-prnfns.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
-prnfns.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-prnfns.o: /usr/include/stdint.h /usr/include/bits/in.h
+prnfns.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
+prnfns.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
+prnfns.o: /usr/include/bits/posix2_lim.h /usr/include/bits/sockaddr.h
+prnfns.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+prnfns.o: /usr/include/netinet/in.h /usr/include/stdint.h
+prnfns.o: /usr/include/bits/wordsize.h /usr/include/bits/in.h
 prnfns.o: /usr/include/bits/byteswap.h serverInterface.h colbr.h
 prnfns.o: /usr/include/string.h /usr/include/arpa/inet.h dbase.h htable.h
 prnfns.o: bucket.h entry.h datum.h queue.h queueElem.h Csprotocols.h
@@ -220,9 +238,12 @@ rcvMsg.o: /usr/include/time.h /usr/include/endian.h
 rcvMsg.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 rcvMsg.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 rcvMsg.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
-rcvMsg.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-rcvMsg.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-rcvMsg.o: /usr/include/netinet/in.h /usr/include/stdint.h
+rcvMsg.o: /usr/include/bits/socket.h /usr/include/limits.h
+rcvMsg.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+rcvMsg.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+rcvMsg.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+rcvMsg.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+rcvMsg.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
 rcvMsg.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 rcvMsg.o: /usr/include/arpa/inet.h /usr/include/strings.h /usr/include/math.h
 rcvMsg.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
@@ -242,12 +263,9 @@ rcvMsg.o: /usr/include/libio.h /usr/include/_G_config.h
 rcvMsg.o: /usr/include/bits/stdio_lim.h ../graphics/DevError.h
 rcvMsg.o: /usr/include/errno.h /usr/include/bits/errno.h
 rcvMsg.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-rcvMsg.o: /usr/include/sys/param.h /usr/include/limits.h
-rcvMsg.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
-rcvMsg.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
-rcvMsg.o: /usr/include/linux/param.h /usr/include/asm/param.h
-rcvMsg.o: ../graphics/DeviseTypes.h /usr/include/values.h
-rcvMsg.o: ../graphics/DevStatus.h
+rcvMsg.o: /usr/include/sys/param.h /usr/include/linux/param.h
+rcvMsg.o: /usr/include/asm/param.h ../graphics/DeviseTypes.h
+rcvMsg.o: /usr/include/values.h ../graphics/DevStatus.h
 server_clnt.o: server.h CollabTypes.h /usr/include/sys/types.h
 server_clnt.o: /usr/include/features.h /usr/include/sys/cdefs.h
 server_clnt.o: /usr/include/gnu/stubs.h /usr/include/bits/types.h
@@ -256,9 +274,12 @@ server_clnt.o: /usr/include/time.h /usr/include/endian.h
 server_clnt.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 server_clnt.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 server_clnt.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
-server_clnt.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-server_clnt.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-server_clnt.o: /usr/include/netinet/in.h /usr/include/stdint.h
+server_clnt.o: /usr/include/bits/socket.h /usr/include/limits.h
+server_clnt.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+server_clnt.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+server_clnt.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+server_clnt.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+server_clnt.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
 server_clnt.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h codec.h
 server_locfns.o: /usr/include/stdio.h /usr/include/features.h
 server_locfns.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
@@ -271,9 +292,12 @@ server_locfns.o: /usr/include/time.h /usr/include/endian.h
 server_locfns.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 server_locfns.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 server_locfns.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
-server_locfns.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-server_locfns.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-server_locfns.o: /usr/include/netinet/in.h /usr/include/stdint.h
+server_locfns.o: /usr/include/bits/socket.h /usr/include/limits.h
+server_locfns.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+server_locfns.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+server_locfns.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+server_locfns.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+server_locfns.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
 server_locfns.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 server_locfns.o: /usr/include/arpa/inet.h /usr/include/netdb.h
 server_locfns.o: /usr/include/rpc/netdb.h /usr/include/errno.h
@@ -292,9 +316,6 @@ server_locfns.o: serverInterface.h colbr.h dbase.h htable.h bucket.h entry.h
 server_locfns.o: datum.h queue.h queueElem.h CollabTypes.h server.h sigfns.h
 server_locfns.o: servdb.h timeOut.h netfns.h ../graphics/Init.h
 server_locfns.o: ../graphics/DeviseTypes.h /usr/include/values.h
-server_locfns.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
-server_locfns.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
-server_locfns.o: /usr/include/bits/posix2_lim.h
 server_locfns.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 server_locfns.o: ../graphics/DevStatus.h ../graphics/BufPolicy.h Server.h
 server_locfns.o: ../graphics/Dispatcher.h ../graphics/DList.h
@@ -310,9 +331,12 @@ server_rmtfns.o: /usr/include/time.h /usr/include/endian.h
 server_rmtfns.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 server_rmtfns.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 server_rmtfns.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
-server_rmtfns.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-server_rmtfns.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-server_rmtfns.o: /usr/include/netinet/in.h /usr/include/stdint.h
+server_rmtfns.o: /usr/include/bits/socket.h /usr/include/limits.h
+server_rmtfns.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+server_rmtfns.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+server_rmtfns.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+server_rmtfns.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+server_rmtfns.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
 server_rmtfns.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 server_rmtfns.o: /usr/include/arpa/inet.h /usr/include/errno.h
 server_rmtfns.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
@@ -336,9 +360,12 @@ server_serv.o: /usr/include/time.h /usr/include/endian.h
 server_serv.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 server_serv.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 server_serv.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
-server_serv.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-server_serv.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-server_serv.o: /usr/include/netinet/in.h /usr/include/stdint.h
+server_serv.o: /usr/include/bits/socket.h /usr/include/limits.h
+server_serv.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+server_serv.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+server_serv.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+server_serv.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+server_serv.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
 server_serv.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h codec.h
 server_serv.o: sndMsg.h ctrlMsg.h /usr/include/stdio.h
 server_serv.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
@@ -363,10 +390,7 @@ server_serv.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
 server_serv.o: /usr/include/bits/mathcalls.h
 server_serv.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 server_serv.o: ../graphics/DeviseTypes.h /usr/include/values.h
-server_serv.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
-server_serv.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
-server_serv.o: /usr/include/bits/posix2_lim.h ../graphics/DevStatus.h
-server_serv.o: ../graphics/Exit.h
+server_serv.o: ../graphics/DevStatus.h ../graphics/Exit.h
 sigfns.o: sigfns.h /usr/include/signal.h /usr/include/features.h
 sigfns.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 sigfns.o: /usr/include/bits/sigset.h /usr/include/bits/types.h
@@ -383,9 +407,12 @@ sndMsg.o: /usr/include/time.h /usr/include/endian.h
 sndMsg.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 sndMsg.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 sndMsg.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
-sndMsg.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-sndMsg.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-sndMsg.o: /usr/include/netinet/in.h /usr/include/stdint.h
+sndMsg.o: /usr/include/bits/socket.h /usr/include/limits.h
+sndMsg.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+sndMsg.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+sndMsg.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+sndMsg.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+sndMsg.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
 sndMsg.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 sndMsg.o: /usr/include/arpa/inet.h /usr/include/unistd.h
 sndMsg.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
@@ -406,9 +433,12 @@ Client.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
 Client.o: /usr/include/alloca.h /usr/include/string.h /usr/include/unistd.h
 Client.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
 Client.o: /usr/include/getopt.h /usr/include/sys/socket.h
-Client.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-Client.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-Client.o: /usr/include/netinet/in.h /usr/include/stdint.h
+Client.o: /usr/include/bits/socket.h /usr/include/limits.h
+Client.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+Client.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+Client.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+Client.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+Client.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
 Client.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 Client.o: /usr/include/netdb.h /usr/include/rpc/netdb.h Client.h
 Client.o: Csprotocols.h /usr/include/arpa/inet.h keys.h CollabTypes.h
@@ -417,10 +447,7 @@ Client.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
 Client.o: /usr/include/bits/mathcalls.h
 Client.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 Client.o: ../graphics/DeviseTypes.h /usr/include/values.h
-Client.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
-Client.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
-Client.o: /usr/include/bits/posix2_lim.h ../graphics/DevStatus.h
-Client.o: ../graphics/Exit.h
+Client.o: ../graphics/DevStatus.h ../graphics/Exit.h
 CmdDescriptor.o: CmdDescriptor.h CmdSerialize.h
 CmdSerialize.o: /usr/include/stdlib.h /usr/include/features.h
 CmdSerialize.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
@@ -445,9 +472,12 @@ Keys.o: /usr/include/time.h /usr/include/endian.h /usr/include/bits/endian.h
 Keys.o: /usr/include/sys/select.h /usr/include/bits/select.h
 Keys.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
 Keys.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
-Keys.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
-Keys.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-Keys.o: /usr/include/stdint.h /usr/include/bits/in.h
+Keys.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
+Keys.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
+Keys.o: /usr/include/bits/posix2_lim.h /usr/include/bits/sockaddr.h
+Keys.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+Keys.o: /usr/include/netinet/in.h /usr/include/stdint.h
+Keys.o: /usr/include/bits/wordsize.h /usr/include/bits/in.h
 Keys.o: /usr/include/bits/byteswap.h
 Server.o: /usr/include/stdio.h /usr/include/features.h
 Server.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
@@ -464,9 +494,12 @@ Server.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
 Server.o: /usr/include/asm/errno.h /usr/include/unistd.h
 Server.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
 Server.o: /usr/include/getopt.h /usr/include/sys/socket.h
-Server.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-Server.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-Server.o: /usr/include/netinet/in.h /usr/include/stdint.h
+Server.o: /usr/include/bits/socket.h /usr/include/limits.h
+Server.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+Server.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+Server.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+Server.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+Server.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
 Server.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 Server.o: /usr/include/math.h /usr/include/bits/huge_val.h
 Server.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
@@ -476,12 +509,9 @@ Server.o: /usr/include/bits/siginfo.h /usr/include/bits/sigaction.h
 Server.o: /usr/include/bits/sigcontext.h /usr/include/asm/sigcontext.h
 Server.o: /usr/include/bits/sigstack.h Server.h CollabTypes.h
 Server.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
-Server.o: /usr/include/values.h /usr/include/limits.h
-Server.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
-Server.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
-Server.o: ../graphics/DevStatus.h ../graphics/DList.h ../graphics/Exit.h
-Server.o: CmdDescriptor.h CmdSerialize.h ../graphics/Control.h
-Server.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+Server.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/DList.h
+Server.o: ../graphics/Exit.h CmdDescriptor.h CmdSerialize.h
+Server.o: ../graphics/Control.h ../graphics/VisualArg.h ../graphics/ViewDir.h
 Server.o: ../graphics/ClassDir.h callBks.h error.h ctrlMsg.h rcvMsg.h
 Server.o: serverInterface.h colbr.h /usr/include/arpa/inet.h dbase.h htable.h
 Server.o: bucket.h entry.h datum.h queue.h queueElem.h keys.h Csprotocols.h
@@ -514,9 +544,12 @@ colbrLog.o: /usr/include/sys/uio.h /usr/include/bits/uio.h
 colbrLog.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
 colbrLog.o: /usr/include/bits/confname.h /usr/include/getopt.h colbr.h
 colbrLog.o: /usr/include/string.h /usr/include/sys/socket.h
-colbrLog.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-colbrLog.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-colbrLog.o: /usr/include/netinet/in.h /usr/include/stdint.h
+colbrLog.o: /usr/include/bits/socket.h /usr/include/limits.h
+colbrLog.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+colbrLog.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+colbrLog.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+colbrLog.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+colbrLog.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
 colbrLog.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 colbrLog.o: /usr/include/arpa/inet.h dbase.h htable.h bucket.h entry.h
 colbrLog.o: datum.h queue.h queueElem.h CollabTypes.h colbrLog.h log.h
@@ -542,9 +575,12 @@ dbase.o: /usr/include/time.h /usr/include/endian.h /usr/include/bits/endian.h
 dbase.o: /usr/include/sys/select.h /usr/include/bits/select.h
 dbase.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
 dbase.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
-dbase.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
-dbase.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-dbase.o: /usr/include/stdint.h /usr/include/bits/in.h
+dbase.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
+dbase.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
+dbase.o: /usr/include/bits/posix2_lim.h /usr/include/bits/sockaddr.h
+dbase.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+dbase.o: /usr/include/netinet/in.h /usr/include/stdint.h
+dbase.o: /usr/include/bits/wordsize.h /usr/include/bits/in.h
 dbase.o: /usr/include/bits/byteswap.h /usr/include/arpa/inet.h dbase.h
 dbase.o: htable.h bucket.h entry.h datum.h queue.h queueElem.h CollabTypes.h
 dbase.o: error.h sndMsg.h /usr/include/assert.h
@@ -577,9 +613,12 @@ servdb.o: /usr/include/time.h /usr/include/endian.h
 servdb.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 servdb.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 servdb.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
-servdb.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-servdb.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-servdb.o: /usr/include/netinet/in.h /usr/include/stdint.h
+servdb.o: /usr/include/bits/socket.h /usr/include/limits.h
+servdb.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+servdb.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+servdb.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+servdb.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+servdb.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
 servdb.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 servdb.o: /usr/include/arpa/inet.h error.h htable.h bucket.h entry.h datum.h
 servdb.o: queue.h queueElem.h CollabTypes.h

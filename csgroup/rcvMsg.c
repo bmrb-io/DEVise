@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/11/30 22:27:28  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.5  1998/08/21 22:16:10  wenger
   Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
   linked DEVise for distribution.
@@ -106,7 +113,12 @@ TransferCkpt(int sockfd) {
 	int ckptfd;
 	int netfd;
 	struct sockaddr Address;
-	int size = sizeof(Address);
+#if defined(LINUX)
+        socklen_t
+#else
+	int
+#endif
+	    size = sizeof(Address);
 	char ch;
 	int nbytes;
 

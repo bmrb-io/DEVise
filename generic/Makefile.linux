@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.19  2000/01/04 21:17:56  wenger
+# Compiled DEVise on Linux.
+#
 # Revision 1.18  1999/07/12 19:01:58  wenger
 # Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
 #
@@ -124,9 +127,12 @@ collaborator.o: /usr/include/time.h /usr/include/endian.h
 collaborator.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 collaborator.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 collaborator.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
-collaborator.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-collaborator.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-collaborator.o: /usr/include/netinet/in.h /usr/include/stdint.h
+collaborator.o: /usr/include/bits/socket.h /usr/include/limits.h
+collaborator.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+collaborator.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+collaborator.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+collaborator.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+collaborator.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
 collaborator.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 collaborator.o: ../csgroup/colbr.h /usr/include/string.h
 collaborator.o: /usr/include/arpa/inet.h ../csgroup/dbase.h

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/08/21 22:16:11  wenger
+  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
+  linked DEVise for distribution.
+
   Revision 1.6  1998/03/30 22:32:57  wenger
   Merged fixes from collab_debug_br through collab_debug_br2 (not all
   changes from branch were merged -- some were for debug only)
@@ -136,7 +140,12 @@ AcptSwitchConnection(int sockfd, struct sockaddr *Address, int *size) {
 	int acptfd;
 	int flag;
 	int retval;
-	int retsize = sizeof(retval);
+#if defined(LINUX)
+        socklen_t
+#else
+	int
+#endif
+	    retsize = sizeof(retval);
 
 	flag = 1;
 	setsockopt(sockfd, SOL_SOCKET, SO_KEEPALIVE, 
@@ -146,9 +155,16 @@ AcptSwitchConnection(int sockfd, struct sockaddr *Address, int *size) {
 		printf("SO_KEEPALIVE is set\n");
 	else
 		printf("SO_KEEPALIVE is unset\n"); 
-	if ((acptfd = accept(sockfd, Address, size)) < 0) {
+#if defined(LINUX)
+        socklen_t
+#else
+	int
+#endif
+	    tmpSize;
+	if ((acptfd = accept(sockfd, Address, &tmpSize)) < 0) {
 		{ ERROR(FATAL, "Accept Failed"); }
 	}
+	*size = tmpSize;
 	return acptfd;
 }
 

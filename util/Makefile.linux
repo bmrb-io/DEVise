@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.9  2000/01/04 21:18:08  wenger
+# Compiled DEVise on Linux.
+#
 # Revision 1.8  1999/07/12 19:03:22  wenger
 # Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
 #
@@ -102,8 +105,8 @@ http_url.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
 http_url.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
 http_url.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
 http_url.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-http_url.o: /usr/include/stdint.h /usr/include/bits/in.h
-http_url.o: /usr/include/bits/byteswap.h
+http_url.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
+http_url.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 mk3dstruct.o: /usr/include/math.h /usr/include/features.h
 mk3dstruct.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 mk3dstruct.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h

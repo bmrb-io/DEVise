@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.13  1999/07/12 19:02:55  wenger
+# Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
+#
 # Revision 1.12  1998/06/30 19:12:40  wenger
 # Got DEVise to compile on linux again.
 #
@@ -92,11 +95,11 @@ CycleCpuTimeMappingClassInfo.o: /usr/include/bits/endian.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/sysmacros.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/string.h ../graphics/ViewWin.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/Exit.h ../graphics/ViewWin.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/WindowRep.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/Transform.h ../graphics/Pattern.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/Transform.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/string.h ../graphics/Pattern.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/DevisePixmap.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/errno.h
@@ -131,7 +134,6 @@ CycleCpuTimeMappingClassInfo.o: ../graphics.new/GDataBin.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/ActionDefault.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Util.h /usr/include/stdlib.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/alloca.h /usr/include/ctype.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/Selection.h ../graphics/View.h
 CycleCpuTimeMappingClassInfo.o: TDataCycle.h ../graphics.new/TDataAscii.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/TData.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/DataSource.h
@@ -164,9 +166,10 @@ CycleCpuTimeMappingClassInfo.o: /usr/include/bits/sockaddr.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/asm/socket.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/asm/sockios.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/netinet/in.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/stdint.h /usr/include/bits/in.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/stdint.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/bits/wordsize.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/bits/in.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/bits/byteswap.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleCpuTimeMappingClassInfo.o: CycleCpuTimeMappingClassInfo.h CycleRec.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Session.h map_cycle_cpu_time.h
 CycleEffMappingClassInfo.o: /usr/include/sys/time.h /usr/include/features.h
@@ -197,13 +200,13 @@ CycleEffMappingClassInfo.o: /usr/include/endian.h /usr/include/bits/endian.h
 CycleEffMappingClassInfo.o: /usr/include/sys/sysmacros.h
 CycleEffMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 CycleEffMappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
-CycleEffMappingClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
-CycleEffMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-CycleEffMappingClassInfo.o: /usr/include/string.h ../graphics/ViewWin.h
+CycleEffMappingClassInfo.o: ../graphics/Exit.h ../graphics/ViewWin.h
 CycleEffMappingClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
-CycleEffMappingClassInfo.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
-CycleEffMappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
-CycleEffMappingClassInfo.o: /usr/include/errno.h /usr/include/bits/errno.h
+CycleEffMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+CycleEffMappingClassInfo.o: /usr/include/string.h ../graphics/Pattern.h
+CycleEffMappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+CycleEffMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
+CycleEffMappingClassInfo.o: /usr/include/bits/errno.h
 CycleEffMappingClassInfo.o: /usr/include/linux/errno.h
 CycleEffMappingClassInfo.o: /usr/include/asm/errno.h /usr/include/sys/param.h
 CycleEffMappingClassInfo.o: /usr/include/linux/param.h
@@ -231,7 +234,6 @@ CycleEffMappingClassInfo.o: ../graphics.new/GDataBin.h
 CycleEffMappingClassInfo.o: ../graphics.new/ActionDefault.h
 CycleEffMappingClassInfo.o: ../graphics/Util.h /usr/include/stdlib.h
 CycleEffMappingClassInfo.o: /usr/include/alloca.h /usr/include/ctype.h
-CycleEffMappingClassInfo.o: ../graphics/Selection.h ../graphics/View.h
 CycleEffMappingClassInfo.o: TDataCycle.h ../graphics.new/TDataAscii.h
 CycleEffMappingClassInfo.o: ../graphics.new/TData.h
 CycleEffMappingClassInfo.o: ../graphics.new/DataSource.h
@@ -261,9 +263,9 @@ CycleEffMappingClassInfo.o: /usr/include/bits/sockaddr.h
 CycleEffMappingClassInfo.o: /usr/include/asm/socket.h
 CycleEffMappingClassInfo.o: /usr/include/asm/sockios.h
 CycleEffMappingClassInfo.o: /usr/include/netinet/in.h /usr/include/stdint.h
+CycleEffMappingClassInfo.o: /usr/include/bits/wordsize.h
 CycleEffMappingClassInfo.o: /usr/include/bits/in.h
 CycleEffMappingClassInfo.o: /usr/include/bits/byteswap.h
-CycleEffMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleEffMappingClassInfo.o: CycleEffMappingClassInfo.h CycleRec.h
 CycleEffMappingClassInfo.o: ../graphics/Session.h map_cycle_eff.h
 CycleOccMappingClassInfo.o: /usr/include/sys/time.h /usr/include/features.h
@@ -294,13 +296,13 @@ CycleOccMappingClassInfo.o: /usr/include/endian.h /usr/include/bits/endian.h
 CycleOccMappingClassInfo.o: /usr/include/sys/sysmacros.h
 CycleOccMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 CycleOccMappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
-CycleOccMappingClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
-CycleOccMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-CycleOccMappingClassInfo.o: /usr/include/string.h ../graphics/ViewWin.h
+CycleOccMappingClassInfo.o: ../graphics/Exit.h ../graphics/ViewWin.h
 CycleOccMappingClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
-CycleOccMappingClassInfo.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
-CycleOccMappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
-CycleOccMappingClassInfo.o: /usr/include/errno.h /usr/include/bits/errno.h
+CycleOccMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+CycleOccMappingClassInfo.o: /usr/include/string.h ../graphics/Pattern.h
+CycleOccMappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+CycleOccMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
+CycleOccMappingClassInfo.o: /usr/include/bits/errno.h
 CycleOccMappingClassInfo.o: /usr/include/linux/errno.h
 CycleOccMappingClassInfo.o: /usr/include/asm/errno.h /usr/include/sys/param.h
 CycleOccMappingClassInfo.o: /usr/include/linux/param.h
@@ -328,7 +330,6 @@ CycleOccMappingClassInfo.o: ../graphics.new/GDataBin.h
 CycleOccMappingClassInfo.o: ../graphics.new/ActionDefault.h
 CycleOccMappingClassInfo.o: ../graphics/Util.h /usr/include/stdlib.h
 CycleOccMappingClassInfo.o: /usr/include/alloca.h /usr/include/ctype.h
-CycleOccMappingClassInfo.o: ../graphics/Selection.h ../graphics/View.h
 CycleOccMappingClassInfo.o: TDataCycle.h ../graphics.new/TDataAscii.h
 CycleOccMappingClassInfo.o: ../graphics.new/TData.h
 CycleOccMappingClassInfo.o: ../graphics.new/DataSource.h
@@ -358,9 +359,9 @@ CycleOccMappingClassInfo.o: /usr/include/bits/sockaddr.h
 CycleOccMappingClassInfo.o: /usr/include/asm/socket.h
 CycleOccMappingClassInfo.o: /usr/include/asm/sockios.h
 CycleOccMappingClassInfo.o: /usr/include/netinet/in.h /usr/include/stdint.h
+CycleOccMappingClassInfo.o: /usr/include/bits/wordsize.h
 CycleOccMappingClassInfo.o: /usr/include/bits/in.h
 CycleOccMappingClassInfo.o: /usr/include/bits/byteswap.h
-CycleOccMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleOccMappingClassInfo.o: CycleOccMappingClassInfo.h CycleRec.h
 CycleOccMappingClassInfo.o: ../graphics/Session.h map_cycle_occ.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/time.h
@@ -398,12 +399,11 @@ CycleSuspendedMappingClassInfo.o: /usr/include/sys/sysmacros.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Dispatcher.h
 CycleSuspendedMappingClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
-CycleSuspendedMappingClassInfo.o: ../graphics/Journal.h
-CycleSuspendedMappingClassInfo.o: ../graphics/VisualArg.h
-CycleSuspendedMappingClassInfo.o: ../graphics/ViewDir.h /usr/include/string.h
 CycleSuspendedMappingClassInfo.o: ../graphics/ViewWin.h
 CycleSuspendedMappingClassInfo.o: ../graphics/WindowRep.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Transform.h
+CycleSuspendedMappingClassInfo.o: ../graphics/VisualArg.h
+CycleSuspendedMappingClassInfo.o: ../graphics/ViewDir.h /usr/include/string.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Pattern.h
 CycleSuspendedMappingClassInfo.o: ../graphics/DevisePixmap.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Compress.h
@@ -441,7 +441,6 @@ CycleSuspendedMappingClassInfo.o: ../graphics.new/GDataBin.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/ActionDefault.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Util.h /usr/include/stdlib.h
 CycleSuspendedMappingClassInfo.o: /usr/include/alloca.h /usr/include/ctype.h
-CycleSuspendedMappingClassInfo.o: ../graphics/Selection.h ../graphics/View.h
 CycleSuspendedMappingClassInfo.o: TDataCycle.h ../graphics.new/TDataAscii.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/TData.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/DataSource.h
@@ -480,9 +479,9 @@ CycleSuspendedMappingClassInfo.o: /usr/include/asm/socket.h
 CycleSuspendedMappingClassInfo.o: /usr/include/asm/sockios.h
 CycleSuspendedMappingClassInfo.o: /usr/include/netinet/in.h
 CycleSuspendedMappingClassInfo.o: /usr/include/stdint.h
+CycleSuspendedMappingClassInfo.o: /usr/include/bits/wordsize.h
 CycleSuspendedMappingClassInfo.o: /usr/include/bits/in.h
 CycleSuspendedMappingClassInfo.o: /usr/include/bits/byteswap.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleSuspendedMappingClassInfo.o: CycleSuspendedMappingClassInfo.h CycleRec.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Session.h map_cycle_suspended.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/time.h
@@ -517,11 +516,11 @@ CycleWorkingMappingClassInfo.o: /usr/include/bits/endian.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/sysmacros.h
 CycleWorkingMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 CycleWorkingMappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
-CycleWorkingMappingClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
-CycleWorkingMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-CycleWorkingMappingClassInfo.o: /usr/include/string.h ../graphics/ViewWin.h
+CycleWorkingMappingClassInfo.o: ../graphics/Exit.h ../graphics/ViewWin.h
 CycleWorkingMappingClassInfo.o: ../graphics/WindowRep.h
-CycleWorkingMappingClassInfo.o: ../graphics/Transform.h ../graphics/Pattern.h
+CycleWorkingMappingClassInfo.o: ../graphics/Transform.h
+CycleWorkingMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+CycleWorkingMappingClassInfo.o: /usr/include/string.h ../graphics/Pattern.h
 CycleWorkingMappingClassInfo.o: ../graphics/DevisePixmap.h
 CycleWorkingMappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
 CycleWorkingMappingClassInfo.o: /usr/include/errno.h
@@ -556,7 +555,6 @@ CycleWorkingMappingClassInfo.o: ../graphics.new/GDataBin.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/ActionDefault.h
 CycleWorkingMappingClassInfo.o: ../graphics/Util.h /usr/include/stdlib.h
 CycleWorkingMappingClassInfo.o: /usr/include/alloca.h /usr/include/ctype.h
-CycleWorkingMappingClassInfo.o: ../graphics/Selection.h ../graphics/View.h
 CycleWorkingMappingClassInfo.o: TDataCycle.h ../graphics.new/TDataAscii.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/TData.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/DataSource.h
@@ -589,9 +587,10 @@ CycleWorkingMappingClassInfo.o: /usr/include/bits/sockaddr.h
 CycleWorkingMappingClassInfo.o: /usr/include/asm/socket.h
 CycleWorkingMappingClassInfo.o: /usr/include/asm/sockios.h
 CycleWorkingMappingClassInfo.o: /usr/include/netinet/in.h
-CycleWorkingMappingClassInfo.o: /usr/include/stdint.h /usr/include/bits/in.h
+CycleWorkingMappingClassInfo.o: /usr/include/stdint.h
+CycleWorkingMappingClassInfo.o: /usr/include/bits/wordsize.h
+CycleWorkingMappingClassInfo.o: /usr/include/bits/in.h
 CycleWorkingMappingClassInfo.o: /usr/include/bits/byteswap.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleWorkingMappingClassInfo.o: CycleWorkingMappingClassInfo.h CycleRec.h
 CycleWorkingMappingClassInfo.o: ../graphics/Session.h map_cycle_working.h
 HostMappingClassInfo.o: /usr/include/sys/time.h /usr/include/features.h
@@ -619,18 +618,18 @@ HostMappingClassInfo.o: /usr/include/endian.h /usr/include/bits/endian.h
 HostMappingClassInfo.o: /usr/include/sys/sysmacros.h ../graphics/Display.h
 HostMappingClassInfo.o: ../graphics/Geom.h ../graphics/Dispatcher.h
 HostMappingClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
-HostMappingClassInfo.o: ../graphics/Journal.h ../graphics/VisualArg.h
-HostMappingClassInfo.o: ../graphics/ViewDir.h /usr/include/string.h
 HostMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-HostMappingClassInfo.o: ../graphics/Transform.h ../graphics/Pattern.h
-HostMappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-HostMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
-HostMappingClassInfo.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
-HostMappingClassInfo.o: /usr/include/asm/errno.h /usr/include/sys/param.h
-HostMappingClassInfo.o: /usr/include/linux/param.h /usr/include/asm/param.h
-HostMappingClassInfo.o: ../graphics/ETkIfc.h ../graphics/ETk.h
-HostMappingClassInfo.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h
-HostMappingClassInfo.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
+HostMappingClassInfo.o: ../graphics/Transform.h ../graphics/VisualArg.h
+HostMappingClassInfo.o: ../graphics/ViewDir.h /usr/include/string.h
+HostMappingClassInfo.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+HostMappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
+HostMappingClassInfo.o: /usr/include/errno.h /usr/include/bits/errno.h
+HostMappingClassInfo.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+HostMappingClassInfo.o: /usr/include/sys/param.h /usr/include/linux/param.h
+HostMappingClassInfo.o: /usr/include/asm/param.h ../graphics/ETkIfc.h
+HostMappingClassInfo.o: ../graphics/ETk.h ../graphics/Xdef.h
+HostMappingClassInfo.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+HostMappingClassInfo.o: /usr/include/X11/Xfuncproto.h
 HostMappingClassInfo.o: /usr/include/X11/Xosdefs.h /usr/include/X11/Xutil.h
 HostMappingClassInfo.o: ../graphics/GraphicsDebug.h
 HostMappingClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
@@ -646,8 +645,7 @@ HostMappingClassInfo.o: ../graphics.new/Connector.h
 HostMappingClassInfo.o: ../graphics.new/GDataBin.h
 HostMappingClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
 HostMappingClassInfo.o: /usr/include/stdlib.h /usr/include/alloca.h
-HostMappingClassInfo.o: /usr/include/ctype.h ../graphics/Selection.h
-HostMappingClassInfo.o: ../graphics/View.h TDataHost.h
+HostMappingClassInfo.o: /usr/include/ctype.h TDataHost.h
 HostMappingClassInfo.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
 HostMappingClassInfo.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
 HostMappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
@@ -670,8 +668,8 @@ HostMappingClassInfo.o: /usr/include/bits/socket.h
 HostMappingClassInfo.o: /usr/include/bits/sockaddr.h
 HostMappingClassInfo.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
 HostMappingClassInfo.o: /usr/include/netinet/in.h /usr/include/stdint.h
-HostMappingClassInfo.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
-HostMappingClassInfo.o: ../graphics.new/FileIndex.h HostMappingClassInfo.h
+HostMappingClassInfo.o: /usr/include/bits/wordsize.h /usr/include/bits/in.h
+HostMappingClassInfo.o: /usr/include/bits/byteswap.h HostMappingClassInfo.h
 HostMappingClassInfo.o: HostRec.h ../graphics/Session.h map_host.h
 MappingClassInfo.o: /usr/include/sys/time.h /usr/include/features.h
 MappingClassInfo.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
@@ -695,17 +693,16 @@ MappingClassInfo.o: /usr/include/sys/types.h /usr/include/endian.h
 MappingClassInfo.o: /usr/include/bits/endian.h /usr/include/sys/sysmacros.h
 MappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 MappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
-MappingClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
-MappingClassInfo.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-MappingClassInfo.o: /usr/include/string.h ../graphics/ViewWin.h
+MappingClassInfo.o: ../graphics/Exit.h ../graphics/ViewWin.h
 MappingClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
-MappingClassInfo.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
-MappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
-MappingClassInfo.o: /usr/include/errno.h /usr/include/bits/errno.h
-MappingClassInfo.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-MappingClassInfo.o: /usr/include/sys/param.h /usr/include/linux/param.h
-MappingClassInfo.o: /usr/include/asm/param.h ../graphics/ETkIfc.h
-MappingClassInfo.o: ../graphics/ETk.h ../graphics/Xdef.h
+MappingClassInfo.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+MappingClassInfo.o: /usr/include/string.h ../graphics/Pattern.h
+MappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+MappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
+MappingClassInfo.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
+MappingClassInfo.o: /usr/include/asm/errno.h /usr/include/sys/param.h
+MappingClassInfo.o: /usr/include/linux/param.h /usr/include/asm/param.h
+MappingClassInfo.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
 MappingClassInfo.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 MappingClassInfo.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 MappingClassInfo.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
@@ -721,8 +718,7 @@ MappingClassInfo.o: ../graphics.new/ConnectorShape.h
 MappingClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
 MappingClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
 MappingClassInfo.o: /usr/include/stdlib.h /usr/include/alloca.h
-MappingClassInfo.o: /usr/include/ctype.h ../graphics/Selection.h
-MappingClassInfo.o: ../graphics/View.h TDataMulti.h
+MappingClassInfo.o: /usr/include/ctype.h TDataMulti.h
 MappingClassInfo.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
 MappingClassInfo.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
 MappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
@@ -743,9 +739,9 @@ MappingClassInfo.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
 MappingClassInfo.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
 MappingClassInfo.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
 MappingClassInfo.o: /usr/include/netinet/in.h /usr/include/stdint.h
-MappingClassInfo.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
-MappingClassInfo.o: ../graphics.new/FileIndex.h MappingClassInfo.h MultiRec.h
-MappingClassInfo.o: ../graphics/Session.h mapfile.h
+MappingClassInfo.o: /usr/include/bits/wordsize.h /usr/include/bits/in.h
+MappingClassInfo.o: /usr/include/bits/byteswap.h MappingClassInfo.h
+MappingClassInfo.o: MultiRec.h ../graphics/Session.h mapfile.h
 Message.o: /usr/include/stdio.h /usr/include/features.h
 Message.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 Message.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -786,8 +782,9 @@ Message.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
 Message.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
 Message.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
 Message.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-Message.o: /usr/include/stdint.h /usr/include/bits/in.h
-Message.o: /usr/include/bits/byteswap.h
+Message.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
+Message.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+Message.o: ../graphics/Dispatcher.h ../graphics/DList.h
 TDataCycle.o: /usr/include/stdio.h /usr/include/features.h
 TDataCycle.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 TDataCycle.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -800,16 +797,13 @@ TDataCycle.o: /usr/include/endian.h /usr/include/bits/endian.h
 TDataCycle.o: /usr/include/sys/select.h /usr/include/bits/select.h
 TDataCycle.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
 TDataCycle.o: /usr/include/alloca.h TDataCycle.h ../graphics.new/TDataAscii.h
-TDataCycle.o: ../graphics/DeviseTypes.h /usr/include/values.h
-TDataCycle.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
-TDataCycle.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
-TDataCycle.o: /usr/include/bits/posix2_lim.h
+TDataCycle.o: ../graphics.new/TData.h ../graphics/DeviseTypes.h
+TDataCycle.o: /usr/include/values.h /usr/include/limits.h
+TDataCycle.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+TDataCycle.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
 TDataCycle.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
-TDataCycle.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
-TDataCycle.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-TDataCycle.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-TDataCycle.o: /usr/include/string.h ../graphics.new/TData.h
-TDataCycle.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
+TDataCycle.o: ../graphics/DevStatus.h ../graphics.new/RecId.h
+TDataCycle.o: ../graphics.new/DataSource.h ../graphics/Exit.h
 TDataCycle.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 TDataCycle.o: /usr/include/sys/ipc.h /usr/include/bits/ipc.h
 TDataCycle.o: /usr/include/sys/sem.h /usr/include/bits/sem.h
@@ -831,13 +825,15 @@ TDataCycle.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
 TDataCycle.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
 TDataCycle.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
 TDataCycle.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-TDataCycle.o: /usr/include/stdint.h /usr/include/bits/in.h
-TDataCycle.o: /usr/include/bits/byteswap.h ../graphics.new/FileIndex.h
+TDataCycle.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
+TDataCycle.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+TDataCycle.o: ../graphics/Dispatcher.h ../graphics/DList.h
 TDataCycle.o: ../graphics/ClassDir.h CycleRec.h ../graphics/Parse.h
-TDataCycle.o: ../graphics/Control.h ../graphics/Util.h /usr/include/ctype.h
-TDataCycle.o: /usr/include/math.h /usr/include/bits/huge_val.h
-TDataCycle.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
-TDataCycle.o: ../graphics.new/DataSeg.h
+TDataCycle.o: ../graphics/Control.h ../graphics/VisualArg.h
+TDataCycle.o: ../graphics/ViewDir.h /usr/include/string.h ../graphics/Util.h
+TDataCycle.o: /usr/include/ctype.h /usr/include/math.h
+TDataCycle.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
+TDataCycle.o: /usr/include/bits/mathcalls.h ../graphics.new/DataSeg.h
 TDataHost.o: /usr/include/stdio.h /usr/include/features.h
 TDataHost.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 TDataHost.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -850,16 +846,13 @@ TDataHost.o: /usr/include/endian.h /usr/include/bits/endian.h
 TDataHost.o: /usr/include/sys/select.h /usr/include/bits/select.h
 TDataHost.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
 TDataHost.o: /usr/include/alloca.h TDataHost.h ../graphics.new/TDataAscii.h
-TDataHost.o: ../graphics/DeviseTypes.h /usr/include/values.h
-TDataHost.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
-TDataHost.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
-TDataHost.o: /usr/include/bits/posix2_lim.h
+TDataHost.o: ../graphics.new/TData.h ../graphics/DeviseTypes.h
+TDataHost.o: /usr/include/values.h /usr/include/limits.h
+TDataHost.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+TDataHost.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
 TDataHost.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
-TDataHost.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
-TDataHost.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-TDataHost.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-TDataHost.o: /usr/include/string.h ../graphics.new/TData.h
-TDataHost.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
+TDataHost.o: ../graphics/DevStatus.h ../graphics.new/RecId.h
+TDataHost.o: ../graphics.new/DataSource.h ../graphics/Exit.h
 TDataHost.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 TDataHost.o: /usr/include/sys/ipc.h /usr/include/bits/ipc.h
 TDataHost.o: /usr/include/sys/sem.h /usr/include/bits/sem.h
@@ -881,13 +874,15 @@ TDataHost.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
 TDataHost.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
 TDataHost.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
 TDataHost.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-TDataHost.o: /usr/include/stdint.h /usr/include/bits/in.h
-TDataHost.o: /usr/include/bits/byteswap.h ../graphics.new/FileIndex.h
+TDataHost.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
+TDataHost.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+TDataHost.o: ../graphics/Dispatcher.h ../graphics/DList.h
 TDataHost.o: ../graphics/ClassDir.h HostRec.h ../graphics/Parse.h
-TDataHost.o: ../graphics/Control.h ../graphics/Util.h /usr/include/ctype.h
-TDataHost.o: /usr/include/math.h /usr/include/bits/huge_val.h
-TDataHost.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
-TDataHost.o: ../graphics.new/DataSeg.h
+TDataHost.o: ../graphics/Control.h ../graphics/VisualArg.h
+TDataHost.o: ../graphics/ViewDir.h /usr/include/string.h ../graphics/Util.h
+TDataHost.o: /usr/include/ctype.h /usr/include/math.h
+TDataHost.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
+TDataHost.o: /usr/include/bits/mathcalls.h ../graphics.new/DataSeg.h
 TDataMulti.o: /usr/include/stdio.h /usr/include/features.h
 TDataMulti.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 TDataMulti.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -900,16 +895,13 @@ TDataMulti.o: /usr/include/endian.h /usr/include/bits/endian.h
 TDataMulti.o: /usr/include/sys/select.h /usr/include/bits/select.h
 TDataMulti.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
 TDataMulti.o: /usr/include/alloca.h TDataMulti.h ../graphics.new/TDataAscii.h
-TDataMulti.o: ../graphics/DeviseTypes.h /usr/include/values.h
-TDataMulti.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
-TDataMulti.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
-TDataMulti.o: /usr/include/bits/posix2_lim.h
+TDataMulti.o: ../graphics.new/TData.h ../graphics/DeviseTypes.h
+TDataMulti.o: /usr/include/values.h /usr/include/limits.h
+TDataMulti.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+TDataMulti.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
 TDataMulti.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
-TDataMulti.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
-TDataMulti.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-TDataMulti.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-TDataMulti.o: /usr/include/string.h ../graphics.new/TData.h
-TDataMulti.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
+TDataMulti.o: ../graphics/DevStatus.h ../graphics.new/RecId.h
+TDataMulti.o: ../graphics.new/DataSource.h ../graphics/Exit.h
 TDataMulti.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 TDataMulti.o: /usr/include/sys/ipc.h /usr/include/bits/ipc.h
 TDataMulti.o: /usr/include/sys/sem.h /usr/include/bits/sem.h
@@ -931,13 +923,15 @@ TDataMulti.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
 TDataMulti.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
 TDataMulti.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
 TDataMulti.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-TDataMulti.o: /usr/include/stdint.h /usr/include/bits/in.h
-TDataMulti.o: /usr/include/bits/byteswap.h ../graphics.new/FileIndex.h
+TDataMulti.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
+TDataMulti.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+TDataMulti.o: ../graphics/Dispatcher.h ../graphics/DList.h
 TDataMulti.o: ../graphics/ClassDir.h MultiRec.h ../graphics/Parse.h
-TDataMulti.o: ../graphics/Control.h ../graphics/Util.h /usr/include/ctype.h
-TDataMulti.o: /usr/include/math.h /usr/include/bits/huge_val.h
-TDataMulti.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
-TDataMulti.o: ../graphics.new/DataSeg.h
+TDataMulti.o: ../graphics/Control.h ../graphics/VisualArg.h
+TDataMulti.o: ../graphics/ViewDir.h /usr/include/string.h ../graphics/Util.h
+TDataMulti.o: /usr/include/ctype.h /usr/include/math.h
+TDataMulti.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
+TDataMulti.o: /usr/include/bits/mathcalls.h ../graphics.new/DataSeg.h
 disp.o: /usr/include/math.h /usr/include/features.h /usr/include/sys/cdefs.h
 disp.o: /usr/include/gnu/stubs.h /usr/include/bits/huge_val.h
 disp.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
@@ -967,8 +961,7 @@ disp.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/alloca.h
 disp.o: /usr/include/ctype.h ../graphics/View.h ../graphics.new/ViewGraph.h
 disp.o: ../graphics.new/PointStorage.h Message.h ../graphics/WinClassInfo.h
 disp.o: ../graphics/ClassDir.h ../graphics.new/ActionClassInfo.h TDataMulti.h
-disp.o: ../graphics.new/TDataAscii.h ../graphics/Dispatcher.h
-disp.o: ../graphics/Journal.h ../graphics.new/TData.h
+disp.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
 disp.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
 disp.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h /usr/include/bits/ipc.h
 disp.o: /usr/include/sys/sem.h /usr/include/bits/sem.h /usr/include/sys/shm.h
@@ -989,15 +982,16 @@ disp.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
 disp.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
 disp.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
 disp.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-disp.o: /usr/include/stdint.h /usr/include/bits/in.h
-disp.o: /usr/include/bits/byteswap.h ../graphics.new/FileIndex.h
-disp.o: MappingClassInfo.h HostMappingClassInfo.h CycleOccMappingClassInfo.h
-disp.o: CycleEffMappingClassInfo.h CycleWorkingMappingClassInfo.h
-disp.o: CycleSuspendedMappingClassInfo.h CycleCpuTimeMappingClassInfo.h
-disp.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/CursorClassInfo.h
-disp.o: ../graphics.new/ViewClassInfo.h ../graphics.new/ViewData.h
-disp.o: TDataHost.h TDataCycle.h ../graphics/Display.h ../graphics/Geom.h
-disp.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Transform.h
+disp.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
+disp.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
+disp.o: ../graphics/Dispatcher.h MappingClassInfo.h HostMappingClassInfo.h
+disp.o: CycleOccMappingClassInfo.h CycleEffMappingClassInfo.h
+disp.o: CycleWorkingMappingClassInfo.h CycleSuspendedMappingClassInfo.h
+disp.o: CycleCpuTimeMappingClassInfo.h ../graphics.new/VisualLinkClassInfo.h
+disp.o: ../graphics/CursorClassInfo.h ../graphics.new/ViewClassInfo.h
+disp.o: ../graphics.new/ViewData.h TDataHost.h TDataCycle.h
+disp.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/ViewWin.h
+disp.o: ../graphics/WindowRep.h ../graphics/Transform.h
 disp.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 disp.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
 disp.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
