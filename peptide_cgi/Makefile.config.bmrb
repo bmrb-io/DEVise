@@ -22,8 +22,8 @@
 
 #-----------------------------------------------------------
 # Directories for executables we need.
-JAVA_BIN = /s/std/bin TEMPTEMP
-PERL_BIN = /usr/freeware/bin TEMPTEMP
+JAVA_BIN = /usr/java/bin
+PERL_BIN = /usr/freeware/bin
 
 #-----------------------------------------------------------
 # Where to find stuff on the web.
