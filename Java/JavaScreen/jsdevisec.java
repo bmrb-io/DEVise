@@ -443,11 +443,13 @@ public class jsdevisec extends Frame
         
         jscreen.updateScreen(false);
         
-        jscomm.disconnect(false);
+        //jscomm.disconnect(false);
         
         if (isTimeout) {
+            jscomm.disconnect(false);
             YGlobals.showMsg(this, "Disconnect: Java Screen timeout value has been reached!\nPlease press connect button to reconnect to server!", "Program Message", YGlobals.MBXOK, true);
-        } else {
+        } else {            
+            jscomm.disconnect(true);
             YGlobals.showMsg(this, "Disconnect: Unrecoverable error happened in command dispatcher!\nPlease press connect button to reconnect to server!", "Program Message", YGlobals.MBXOK, true);
         }    
     }

@@ -132,6 +132,7 @@ public class DEViseAnimPanel extends Canvas implements Runnable
     public void paint(Graphics g) 
     {        
         if (currentImg != null) {
+            //YDebug.println("I am in paint");
             g.drawImage(currentImg, 0, 0, this);          
         } else {
             g.setColor(DEViseGlobals.uibgcolor);
@@ -142,7 +143,8 @@ public class DEViseAnimPanel extends Canvas implements Runnable
     public void run()  
     {   
         Thread me = Thread.currentThread();
-        //me.setPriority(Thread.MIN_PRIORITY);
+        me.setPriority(Thread.MIN_PRIORITY);
+        
         //YDebug.println("I am in run");
         frameNum = 1;
         while (animator == me)  {

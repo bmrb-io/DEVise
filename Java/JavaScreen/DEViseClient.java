@@ -151,7 +151,11 @@ public class DEViseClient implements Runnable
                         } else {
                             rsp = new String[1];
                             rsp[0] = new String("JAVAC_Error {Can not find Saved Session!}");
-                        }    
+                        }
+                    } else if (cmd[0].startsWith("JAVAC_GetStat")) {
+                        String newstr = pop.getStat();
+                        rsp = new String[1];
+                        rsp[0] = "JAVAC_UpdateStat {" + newstr + "}";    
                     } else {
                         if (command.startsWith("JAVAC")) {
                             rsp = deviseCmdSocket.sendCommand(command);

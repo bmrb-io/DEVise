@@ -196,7 +196,6 @@ final class YMSGDlg extends Dialog
         super(frame, title, true);
 
         boolean isStyleCorrect = true;
-        int i;
 
         switch (style)  {
         case YGlobals.MBXOK:
@@ -229,34 +228,26 @@ final class YMSGDlg extends Dialog
         if (isStyleCorrect)  {
             if (msg == null)  {
                 label = new Label[1];
-                label[0] = new Label("No Message Given!");
+                label[0] = new Label("Null Message Given!");
             }  else if (msg.equals(""))  {
                 label = new Label[1];
                 label[0] = new Label("No Message Given!");
             }  else  {
-                StringTokenizer msgStr = new StringTokenizer(msg, "\n");
-                int msgNum = msgStr.countTokens();
-                label = new Label[msgNum];
-                try  {
-                    String tmpMsg = null;
-                    for (i = 0; i < msgNum; i++)  {
-                        tmpMsg = msgStr.nextToken();
-                        if (tmpMsg.equals(""))  {
-                            label[i] = new Label(" ");
-                        }  else  {
-                            label[i] = new Label(tmpMsg);
-                        }
-                    }
-                }  catch (NoSuchElementException e)  {
+                String[] msgStr = YGlobals.parseStr(msg, "\n");
+                if (msgStr == null) {
                     button = new Button[1];
                     button[0] = new Button(YGlobals.IDOK);
                     label = new Label[1];
-                    label[0] = new Label("Fatal Internal Error!");
-                }
+                    label[0] = new Label("Invalid Message given!");
+                } else {
+                    label = new Label[msgStr.length];
+                    for (int i = 0; i < msgStr.length; i++)
+                        label[i] = new Label(msgStr[i]);
+                }    
             }
         }  else  {
             label = new Label[1];
-            label[0] = new Label("Unsupported Dialog Style!");
+            label[0] = new Label("Invalid Dialog Style!");
         }
 
         setBackground(bgcolor);
@@ -265,12 +256,12 @@ final class YMSGDlg extends Dialog
 
         // building the panel that display messages
         panel1.setLayout(new GridLayout(0, 1, 0, 0));
-        for (i = 0; i < label.length; i++)
+        for (int i = 0; i < label.length; i++)
             panel1.add(label[i]);
 
         // building the panel that display buttons
         panel2.setLayout(new GridLayout(1, 0, 10, 0));
-        for (i = 0; i < button.length; i++)  {
+        for (int i = 0; i < button.length; i++)  {
             button[i].setBackground(buttonbgcolor);
             button[i].setForeground(buttonfgcolor);
             button[i].setFont(buttonfont);
@@ -329,7 +320,7 @@ final class YMSGDlg extends Dialog
         setLocation(parentLoc);
 
         // event handler
-        for (i = 0; i < button.length; i++)  {
+        for (int i = 0; i < button.length; i++)  {
             button[i].addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent event)  {

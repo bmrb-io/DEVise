@@ -74,6 +74,8 @@ public class DEViseScreen extends Panel
         setForeground(screenColor);
         setFont(screenFont);
         screenSize = new Dimension(screenDim.width + 2 * screenEdge.width, screenDim.height + 2 *screenEdge.height);
+
+        //addKeyListener(new ViewKeyListener());
     }
     
     public Dimension getPreferredSize() 
@@ -255,4 +257,5 @@ public class DEViseScreen extends Panel
         }
         g.setColor(oldColor);    
     }    
+
 }

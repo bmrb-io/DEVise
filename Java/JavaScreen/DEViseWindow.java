@@ -154,7 +154,8 @@ public class DEViseWindow extends Canvas
         isCurrent = flag;
         if (isCurrent == false)
             currentView = null;
-            
+        
+        requestFocus();    
         repaint();
     }
     
@@ -186,7 +187,7 @@ public class DEViseWindow extends Canvas
             }
                         
             super.processEvent(event);
-        }
+        }                    
     }    
     /*    
     public void updateGData(String[] data)
@@ -318,7 +319,10 @@ public class DEViseWindow extends Canvas
     
     // start of class ViewKeyListener
     class ViewKeyListener extends KeyAdapter
-    {
+    {  
+        //boolean isKeyPressed;
+        //int lastKey;
+        
         public void keyPressed(KeyEvent event)
         {
             isKeyPressed = true;
@@ -334,10 +338,12 @@ public class DEViseWindow extends Canvas
         {
             char key = event.getKeyChar();
             
+            //YDebug.println("this key is pressed: " + key);
+            
             userAction = 0;
             repaint();
             
-            dispatcher.addCmd("JAVAC_KeyAction {" + currentView.getName() + "} " + key);            
+            dispatcher.addCmd("JAVAC_KeyAction {" + currentView.getName() + "} " + (int)key);            
         }
     }
     // end of class ViewKeyListener
@@ -355,8 +361,11 @@ public class DEViseWindow extends Canvas
             
             setCurrentView(sp);
             
-            if (!isCurrent)
+            if (!isCurrent) {
                 jscreen.setCurrentWindow(DEViseWindow.this);
+            } else {
+                requestFocus();
+            }
             
             if (currentView == null)
                 jsc.viewInfo.updateInfo(windowName, null, sp.x, sp.y);

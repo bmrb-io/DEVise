@@ -112,6 +112,12 @@ public class jspop implements Runnable
         System.out.println("\nDEVise POP Server quit ...");
     }
     
+    public synchronized String getStat()
+    {
+        String newstr = "" + maxServer + " " + activeServers.size();
+        return newstr;
+    }
+    
     private void startClient(Socket socket)
     {   
         try {
@@ -245,14 +251,18 @@ public class jspop implements Runnable
         if (activeClients.size() < activeServers.size()) {
             for (int i = 0; i < activeServers.size(); i++) {
                 DEViseServer oldserver = (DEViseServer)activeServers.elementAt(i);
-                if (oldserver.isAvailable) {
-                    client.deviseImgPort = oldserver.imgPort;
-                    client.deviseCmdPort = oldserver.cmdPort;
-                    client.server = oldserver;
-                    oldserver.isAvailable = false;
+                if (oldserver.getStatus()) {
+                    if (oldserver.isAvailable) {
+                        client.deviseImgPort = oldserver.imgPort;
+                        client.deviseCmdPort = oldserver.cmdPort;
+                        client.server = oldserver;
+                        oldserver.isAvailable = false;
                     
-                    return true;
-                }
+                        return true;
+                    }
+                } else {
+                    activeServers.removeElement(oldserver);
+                }                
             }
         }
         

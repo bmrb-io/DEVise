@@ -57,6 +57,16 @@ class DEViseServer
         YGlobals.printMsg("New DEVise Server successfully started!\n");    
     }
     
+    public boolean getStatus()
+    {
+        try {
+            int v = proc.exitValue();
+            return false;
+        } catch (IllegalThreadStateException e) {
+            return true;
+        }
+    }
+    
     public synchronized static int getPortCount()
     {        
         if (portCount > 20000)
