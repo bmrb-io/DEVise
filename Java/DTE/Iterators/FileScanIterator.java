@@ -18,7 +18,7 @@ public class FileScanIterator implements Iterator
   String filename;
   
   public FileScanIterator(String fileName, TypeDesc[] types) 
-       throws IOException //FileNotFoundException
+       throws IOException
   {
     fr = new FileReader(fileName);
     file = new BufferedReader(fr);

@@ -1,9 +1,11 @@
 package Iterators; 
 
 import java.io.*;
+import java.util.*;
+import java.lang.*;
 import Types.*;
-import Functions.*;
 import Expressions.*;
+
 
 public class NLjoinIterator implements Iterator 
 {
@@ -23,17 +25,26 @@ public class NLjoinIterator implements Iterator
 
   MemoryLoader outerRel;
   FileScanIterator innerRel;
-  //  Inserter inserter;
-
+  
+  File f;
   String temp_file;
+  
+  static Stack stack = new Stack();
+ 
+  static
+  {
+    for(int i = 0; i < 100; i++)
+      stack.push("tempfileforNljoin"+i);
+  }
+
 
   public NLjoinIterator(Iterator left1, Iterator right1, ExecExpr[] mySelect1, 
-		ExecExpr[] myWhere1, TypeDesc[] typeStrings, int bucketsize, 
-		String temp_file1) throws IOException
-    {
+		ExecExpr[] myWhere1, TypeDesc[] typeStrings, int bucketsize)
+       throws IOException
+  {
       left       = left1;
       right      = right;
-
+      
       mySelect   = mySelect1;
       myWhere    = myWhere1;
 
@@ -44,24 +55,36 @@ public class NLjoinIterator implements Iterator
       innerTup   = null;
       next       = new Tuple(typeStrings);
 
-      temp_file = temp_file1;
+
+      try
+	{
+	  temp_file = (String)stack.pop();
+	}
+
+      catch(EmptyStackException ex)
+	{
+	  System.out.println("There can't be more than 100 temporary files for NLjoin.");
+	  System.exit(-1);
+	} 
+
 
       fw = new FileWriter(temp_file);
       bw = new BufferedWriter(fw);
       pw = new PrintWriter(bw);
-      //      inserter = new Inserter(pw);
+      
+      innerRel = new FileScanIterator(temp_file, typeStrings);
+      outerRel = new MemoryLoader(bucketsize, left);
+      
+      f = new File(temp_file);
+  }
 
-      innerRel = new FileScanIterator( temp_file, typeStrings);
-      outerRel   = new MemoryLoader(bucketsize, left, typeStrings);      
-    }
 
-
-  //  public ~NLJoin(){}
 
   public Tuple getFirst() throws IOException
   {
     return getNext();
   }
+
 
   public Tuple getNext() throws IOException
   {
@@ -84,19 +107,16 @@ public class NLjoinIterator implements Iterator
 			
 		if((innerTup = right.getNext())!=null)
 		  innerTup.print(pw);
-		  //		  inserter.write(innerTup);
 		
 		else
 		  {
 		    firstPass = false;
-		    //		    innerRel.end_write();
+
 		    pw.flush();
-		    pw.close();
 		    bw.flush();
-		    bw.close();
 		    fw.flush();
-		    fw.close();
-		    
+		    pw.close();
+
 		    innerTup = innerRel.getFirst();
 		    
 		    outerRel.load();
@@ -121,8 +141,12 @@ public class NLjoinIterator implements Iterator
 
 
 	if( outerTup==null || innerTup==null )
-	  return null;
-       
+	 {
+	   stack.push(temp_file);
+	   f.delete();
+	   return null;
+	 }
+
 	cond = ListOp.evaluateList(myWhere, outerTup, innerTup);
       }
 
@@ -130,8 +154,3 @@ public class NLjoinIterator implements Iterator
     return next;
   }
 }
-
-
-
-
-

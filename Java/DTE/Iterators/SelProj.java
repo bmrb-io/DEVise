@@ -3,7 +3,6 @@ package Iterators;
 
 import java.io.*;
 import Types.*;
-import Functions.*;
 import Expressions.*;
 
 
@@ -20,14 +19,9 @@ public class SelProj implements Iterator
     inputIt  = inputit;
     mySelect = myselect;
     myWhere  = mywhere; 
-    
-    /* error-checking NULL*/
-
     next = new Tuple(typeStrings);
-    /* error-checking NULL*/
   }
 
-  //  public ~SelProjExec(){}
 
   public Tuple getNext() throws IOException
   {

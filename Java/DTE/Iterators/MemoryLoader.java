@@ -13,23 +13,18 @@ public class MemoryLoader implements Iterator
   Iterator reln;
   int size, curr = 0;
 
-  public MemoryLoader(int size1, Iterator r, TypeDesc[] typeStrings)
+  public MemoryLoader(int size1, Iterator r)
   {
     size = size1;
 
     TupleArray = new Tuple[size];
-    /*    for(int i = 0; i < size; i++)
-      TupleArray[i] = new Tuple(typeStrings);
-      */
     reln = r;
   }
 
-  //  public ~MemoryLoader(){}
-  
   public void load() throws IOException
   {
     for(int i = 0; i < size; i++)
-      TupleArray[i] = new Tuple(reln.getNext());
+      TupleArray[i] = (Tuple)(reln.getNext()).clone();
     curr = 0;
   }
 

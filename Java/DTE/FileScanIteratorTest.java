@@ -1,11 +1,7 @@
-package Iterators;
-
-
 import java.io.*;
 import Iterators.*;
 import Types.*;
 import Expressions.*;
-import Functions.*;
 
 
 /** This is a class whose only purpose is to test the FileScanIterator
@@ -30,8 +26,28 @@ public class FileScanIteratorTest {
 		int cnt = 0;
 		while((t = fs.getNext()) != null){
 		        t.print(pw);
+			t.print(System.out);
+			Tuple a = (Tuple)t.clone();
+			a.print(pw);
+			a.print(System.out);
 			cnt++;
 		}
+
+		t = fs.getFirst();
+		t.print(pw);
+		Tuple a = (Tuple)t.clone();
+		a.print(pw);
+		a.print(System.out);
+		cnt++;
+		
+		while((t = fs.getNext()) != null){
+		        t.print(pw);
+			t.print(System.out);
+			a = (Tuple)t.clone();
+			a.print(pw);
+			a.print(System.out);
+			cnt++;
+		}		
 			       
 		pw.flush();
 		pw.close();
@@ -43,9 +59,10 @@ public class FileScanIteratorTest {
 		ExecExpr[] m2 = new ExecExpr[10];	
 		TypeDesc[] ty = new TypeDesc[10];
 
-		NLjoinIterator n = new NLjoinIterator(fs,fs,m1,m2,ty,10,"hh");
+		NLjoinIterator n = new NLjoinIterator(fs,fs,m1,m2,ty,10);
 		SelProj S = new SelProj(fs,m1,m2,ty);
-
-
 	}
 }
+
+
+
