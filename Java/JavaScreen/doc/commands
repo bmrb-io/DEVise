@@ -410,19 +410,23 @@ see comments in DEViseCommSocket.java.
         <parent view name>: name of view whose children are to be deleted.
 
     5.8 JAVAC_ViewDataArea
-    Purpose: defines the size of a view in data units so that the JavaScreen
+    Purpose: defines the size of a view in data units so that the
+             JavaScreen
              can convert mouse location to data units to display it.
-    Arguments: 4
+    Arguments: 4 to 6
         <view name>: name of view for which data area is being specified.
         <axis>: "X" or "Y".
         <low value>: low (left or bottom of axis) data value.
         <high value>: high (right or top of axis) data value.
-	<axis/mouse format>: optional.  The format to be used in labeling
-	                     axis ticks and displaying the mouse location.
-			     The format is either a printf-style string
-			     (e.g., "%.4f") or a cftime string (e.g.,
-			     "%b %d %Y %T"), according to whether the axis
-			     data is a date or floating-point value.
+        <axis/mouse format>: optional.  The format to be used in labeling
+                             axis ticks and displaying the mouse location.
+                             The format is either a printf-style string
+                             (e.g., "%.4f") or a cftime string (e.g.,
+                             "%b %d %Y %T"), according to whether the axis
+                             data is a date or floating-point value.
+        <mult factor>: optional.  Multiply the data value by this factor 
+                       before displaying mouse position (may be negative).
+
 
     5.9 JAVAC_UpdateViewImage
     Purpose: tells the JavaScreen that a new GIF is being sent for the
