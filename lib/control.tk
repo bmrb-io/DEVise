@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.68  1996/05/22 21:05:43  jussi
+#	Added HighLow shape.
+#
 #	Revision 1.67  1996/05/16 21:39:05  wenger
 #	implemented saving schemas ans session file for importing tdata
 #
@@ -501,16 +504,21 @@ menu .mbar.view.menu -tearoff 0
 	-menu .mbar.view.menu.xaxismenu
 .mbar.view.menu add cascade -label "Toggle Y Axis" \
 	-menu .mbar.view.menu.yaxismenu
-.mbar.view.menu add separator
 
+.mbar.view.menu add separator
 .mbar.view.menu add cascade -label "Links" \
 	-menu .mbar.view.menu.linkMenu 
 
 menu .mbar.view.menu.linkMenu -tearoff 0
 .mbar.view.menu.linkMenu add command -label "Link" -command DoViewLink
 .mbar.view.menu.linkMenu add command -label "Unlink" -command DoViewUnlink
-.mbar.view.menu add separator
+.mbar.view.menu.linkMenu add separator
+.mbar.view.menu.linkMenu add command -label "Set Master" \
+	-command { DoSetLinkMaster }
+.mbar.view.menu.linkMenu add command -label "Reset Master" \
+	-command { DoResetLinkMaster}
 
+.mbar.view.menu add separator
 .mbar.view.menu add cascade -label "Cursor" \
 	-menu .mbar.view.menu.cursorMenu 
 
@@ -526,7 +534,7 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 .mbar.view.menu add separator
 .mbar.view.menu add cascade -label "Toggle Statistics" \
 	-menu .mbar.view.menu.statmenu
-.mbar.view.menu add cascade -label "Show KGraph" \
+.mbar.view.menu add cascade -label "Kiviat Graph" \
 	-menu .mbar.view.menu.kmenu
 .mbar.view.menu add separator
 #.mbar.view.menu add command -label "Background..." -command DoSetBgColor
@@ -1327,24 +1335,17 @@ proc ShowKGraph {} {
 	dialog .showKGraph "Error " "Selecting specific views to \
 		display is not yet implemented" "" 0 { OK }
 	return
-    } else {
-	if {![CurrentView]} {
-	    return
-	}
-
-	# Form graph out of all the views in the current window
-	set win [DEVise getViewWin $curView]
-	set vlist [DEVise getWinViews $win]
     }
+
+    if {![CurrentView]} {
+	return
+    }
+
+    # Form graph out of all the views in the current window
+    set win [DEVise getViewWin $curView]
+    set vlist [DEVise getWinViews $win]
 
     # Pass list of view names and also stat number
     set cmd "DEVise showkgraph $knew $kval {$win} $vlist"
-
     eval $cmd
 }
-
-
-
-
-
-
