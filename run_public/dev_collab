@@ -14,7 +14,7 @@ collaborator &
 
 sleep 5
 
-devised -port 6101 -switchport 6201 &
+devised -port 6101 -switchport 6201 -imageport 6401 &
 sleep 5
 devisec -p 6101 &
 

@@ -9,9 +9,9 @@
 #kill_devised -p 6101
 #kill_devised -p 6102
 (set j=`ps -ax|grep devised|grep -v 'grep\|csh'|head -1`;kill -INT $j[1]; \
-    kill -INT $j[1]) >& /dev/null
+    kill -INT $j[1]; kill -INT $j[1]) >& /dev/null
 (set j=`ps -ax|grep devised|grep -v 'grep\|csh'|head -1`;kill -INT $j[1]; \
-    kill -INT $j[1]) >& /dev/null
+    kill -INT $j[1]; kill -INT $j[1]) >& /dev/null
 
 # Kill the collaborator.
 (set j=`ps -ax|grep collaborator|grep -v grep|head -1`;kill -1 $j[1]) \
