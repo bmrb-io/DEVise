@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1995/12/29 22:41:01  jussi
+  Symbols are turned on and connectors off before a pixel map
+  is saved.
+
   Revision 1.17  1995/12/29 18:33:13  jussi
   Forgot to comment out the #define DEBUG statement in last check-in.
 
@@ -94,18 +98,23 @@
 
 //#define DEBUG
 
-int View::_nextPos = 0;
+/* width/height of sensitive area for cursor */
+static const int VIEW_CURSOR_SENSE = 10;
 
-ViewCallbackList *View::_viewCallbackList;
+/* 256K bytes before saving pixel data*/
+static const int VIEW_BYTES_BEFORE_SAVE = 256 * 1024;
 
-const Coord DELTA_X = .000000000001;
-const Coord DELTA_Y = .000000000001;
+static const Coord DELTA_X = .000000000001;
+static const Coord DELTA_Y = .000000000001;
 
 /* id for the next view created.
    view == NULL return id = 0.*/
 
 int View::_nextId = 0;
 ViewList *View::_viewList = NULL;   /* list of all views */
+
+int View::_nextPos = 0;
+ViewCallbackList *View::_viewCallbackList;
 
 View::View(char *name, Action *action, 
 	   VisualFilter &initFilter, 
@@ -536,11 +545,15 @@ void View::GetXAxisArea(int &x, int &y, int &width, int &height,
     width -= _label.extent;
   }
 
+  startX = x;
   if (yAxis.inUse)
-    startX = x + yAxis.width;
-  else
-    startX = x + 3 * VIEW_CURSOR_WIDTH;
-  
+    startX += yAxis.width;
+  else {
+    // no space space is really necessary, but add just a little bit
+    // of space to separate label from the window border better
+    startX += 2;
+  }
+
   if (width < 0)
     width = 1;
   if (height < 0)
@@ -579,8 +592,6 @@ void View::GetYAxisArea(int &x, int &y, int &width, int &height)
   
   if (xAxis.inUse)
     height -= xAxis.width;
-  else
-    height -= 3 * VIEW_CURSOR_WIDTH;
   
   if (width <= 0 )
     width = 1;
@@ -615,18 +626,12 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
     /* need to display axes */
     if (xAxis.inUse)
       height -= xAxis.width;
-    else {
-      /* leave room for cursor */
-      height -= 3 * VIEW_CURSOR_HEIGHT;
-    }
-    
+    else if (_label.occupyTop)
+      height -= 2;
+
     if (yAxis.inUse) {
       x += yAxis.width;
       width -= yAxis.width;
-    } else {
-      /* room for cursor */
-      x += 3 * VIEW_CURSOR_WIDTH;
-      width -= 3 * VIEW_CURSOR_WIDTH;
     }
   }
   
@@ -1569,11 +1574,12 @@ void View::GetXCursorArea(int &x, int &y, int &w, int &h)
   int startX;
   if (xAxis.inUse) {
     GetXAxisArea(x, y, w, h, startX);
+    x = startX;
   } else {
     /* X axis not in use */
     GetDataArea(x, y, w, h);
-    y += h;
-    h = VIEW_CURSOR_HEIGHT * 3;
+    y += h - VIEW_CURSOR_SENSE;
+    h = VIEW_CURSOR_SENSE;
   }
 
 #ifdef DEBUG
@@ -1587,8 +1593,7 @@ void View::GetYCursorArea(int &x, int &y, int &w, int &h)
     GetYAxisArea(x, y, w, h);
   } else {
     GetDataArea(x, y, w, h);
-    x -= VIEW_CURSOR_WIDTH * 3;
-    w = VIEW_CURSOR_WIDTH * 3;
+    w = VIEW_CURSOR_SENSE;
   }
 
 #ifdef DEBUG
@@ -1744,11 +1749,12 @@ View::PixmapStat View::RestorePixmap(VisualFilter filter,
 
 void View::InvalidatePixmaps()
 {
-  if (_pixmap != NULL) {
-    free(_pixmap->data);
-    delete _pixmap;
-    _pixmap = NULL;
-  }
+  if (!_pixmap)
+    return;
+
+  free(_pixmap->data);
+  delete _pixmap;
+  _pixmap = NULL;
 }
 
 void View::SavePixmaps(FILE *file)
