@@ -21,6 +21,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1999/02/17 18:48:54  wenger
+#  Made this script work even if the devised command has a very long path.
+#
 #  Revision 1.1  1998/11/03 17:42:49  wenger
 #  New script for jspop to use to kill devised.
 #
@@ -41,7 +44,7 @@ while (<PS>) {
 #    print "line: ";
 #    print;
     if ($_ =~ /$pattern/) {
-	@words = split / /, $_;
+	@words = split /  */, $_;
 	$pid = @words[1];
 
         system("kill -INT $pid");
