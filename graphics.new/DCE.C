@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/12/31 17:57:29  jussi
+  Corrected if condition to handle failing semget().
+
   Revision 1.10  1996/12/20 16:25:38  jussi
   Improved support for multiple semaphore vectors.
 
@@ -308,8 +311,8 @@ SemaphoreV::~SemaphoreV()
 
   _semUnused += _nsem;
 
-  delete _semvec;
-  delete _semnum;
+  delete [] _semvec;
+  delete [] _semnum;
 
 #ifdef DEBUG
   printf("%%  Semaphores left unused %d\n", _semUnused);
@@ -325,10 +328,10 @@ SemaphoreV::~SemaphoreV()
   for(int i = 0; i < _semVectors; i++) {
     _sem[i]->destroy();
     delete _sem[i];
-    delete _semUsed[i];
+    delete [] _semUsed[i];
   }
-  delete _sem;
-  delete _semUsed;
+  delete [] _sem;
+  delete [] _semUsed;
 
   _sem = NULL;
   _semUsed = NULL;
