@@ -192,22 +192,31 @@ extern int RD_LagrPrepareForErrBpp(RD_Job *job, int unum)
 
 #define SetErrNoThresh(E) \
 { \
-  long i,longquant; \
+  long i,longquant,ilim; \
   RD_float orig, err; \
   register RD_float ans; \
   register long * ctptr; \
       ans = ((RD_float) 0.0); \
-      for (i=H(n).PlusSize-1,ctptr=&(H(n).PlusCount[i]);i>=0;i--) { \
-        orig = UnDiscretizePlus(i); \
-        longquant = QuantizeDis(i,q); \
-        err = orig - RealUnQuantize(longquant,q); \
-        ans += (err*err*((RD_float) (*ctptr--))); \
+      for (i=H(n).PlusSize-1,ctptr=&(H(n).PlusCount[i]);i>=q;i--) { \
+	  orig = UnDiscretizePlus(i); \
+	  longquant = QuantizeDis(i,q); \
+	  err = orig - RealUnQuantize(longquant,q); \
+	  ans += (err*err*((RD_float) (*ctptr--))); \
       } \
-      for (i=1-H(n).MinusSize,ctptr=&(H(n).MinusCount[0-i]);i<=0;i++) { \
+      for (i=q-1,ctptr=&(H(n).PlusCount[i]);i>=0;i--) { \
+	  err = UnDiscretizePlus(i); \
+	  ans += (err*err*((RD_float) (*ctptr--))); \
+      } \
+      ilim = 0 - q; \
+      for (i=1-H(n).MinusSize,ctptr=&(H(n).MinusCount[0-i]);i<=ilim;i++) { \
         orig = UnDiscretizeMinus(i); \
         longquant = QuantizeDis(i,q); \
         err = orig - RealUnQuantize(longquant,q); \
         ans += (err*err*((RD_float) (*ctptr--))); \
+      } \
+      for (i=(1-q),ctptr=&(H(n).MinusCount[0-i]);i<=0;i++) { \
+	err = UnDiscretizeMinus(i); \
+	ans += (err*err*((RD_float) (*ctptr--))); \
       } \
       if (job->WeightedCoefs[unum]) ans *= job->CoefWeights[unum][n]; \
       E = (ans*job->UnitWeights[unum])/job->opt_method.lagr.ErrScale; \
