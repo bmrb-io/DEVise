@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/02/09 21:12:17  donjerko
+  Added Bin by clause and implementation.
+
   Revision 1.13  1997/12/10 00:00:36  okan
   ODBC Interface Changes ...
 
@@ -149,13 +152,20 @@ Cor_sockbuf::Cor_sockbuf(unsigned short _port)
     srv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     srv_addr.sin_port = htons(port);
 
-      if( bind(_socketfd, (struct sockaddr*)&srv_addr, sizeof(srv_addr)) < 0) {
-		perror("bind error\n");
-		perror("SockStream bind failed");
-		assert(0);
-		::close(_socketfd);
-        _socketfd = -1;
-        return;
+    // allow the port to be re-bound
+    int reuse = 1;
+    if( setsockopt(_socketfd, SOL_SOCKET, SO_REUSEADDR, 
+                   (char*)&reuse, sizeof(reuse))<0) {
+      perror("error setting reuse in Socket::bind");
+    }
+
+    if( bind(_socketfd, (struct sockaddr*)&srv_addr, sizeof(srv_addr)) < 0) {
+      perror("bind error\n");
+      perror("SockStream bind failed");
+      assert(0);
+      ::close(_socketfd);
+      _socketfd = -1;
+      return;
     }
 
       // listen() specifies the queue size for pending connections
