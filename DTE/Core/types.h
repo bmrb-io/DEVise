@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/04/18 20:46:31  donjerko
+  Added function pointers to marshall types.
+
   Revision 1.17  1997/04/18 15:42:30  arvind
   Modified stringLT so it returns (cmp < 0) instead of (cmp == -1).
   Similarly for stringGT
@@ -212,6 +215,7 @@ Type* intComp(Type *arg1,Type *arg2);
 Type* dateEq(Type* arg1, Type* arg2);
 Type* dateLT(Type* arg1, Type* arg2);
 Type* dateGT(Type* arg1, Type* arg2);
+Type* dateComp(Type *arg1,Type *arg2);
 
 Type* intToDouble(const Type* intarg);
 
@@ -221,14 +225,18 @@ Type* doubleDiv(Type* arg1, Type* arg2);
 Type* doubleEq(Type* arg1, Type* arg2);
 Type* doubleLT(Type* arg1, Type* arg2);
 Type* doubleGT(Type* arg1, Type* arg2);
+Type* doubleComp(Type *arg1,Type *arg2);
 
 Type* stringEq(Type* arg1, Type* arg2);
 Type* stringLT(Type* arg1, Type* arg2);
 Type* stringGT(Type* arg1, Type* arg2);
+Type* stringComp(Type *arg1,Type *arg2);
+
 Type* boolOr(Type* arg1, Type* arg2);
 Type* boolAnd(Type* arg1, Type* arg2);
 Type* boolEq(Type* arg1, Type* arg2);
 Type* boolLT(Type* arg1, Type* arg2);
+Type* boolComp(Type *arg1,Type *arg2);
 
 void intRead(istream&, Type*&);
 void stringRead(istream&, Type*&);
@@ -346,6 +354,10 @@ public:
 		else if(name == "<"){
 			return new GeneralPtr(boolLT, boolSize, oneOver2);
 		}
+		else if(name == "comp"){
+			retType = "int";
+			return new GeneralPtr(boolComp, sameSize);
+		}
 		else{
 			return NULL;
 		}
@@ -402,6 +414,10 @@ public:
 				retType = "double";
 				return new GeneralPtr(doubleDiv, sameSize);
 			}
+   		        else if(name == "comp"){
+			        retType = "int";
+			        return new GeneralPtr(doubleComp, sameSize);
+		        }
 			else{
 				return NULL;
 			}
@@ -564,6 +580,10 @@ public:
 			retType = "bool";
 			return new GeneralPtr(stringGT, boolSize, oneOver3);
 		}
+		else if(name == "comp"){
+			retType = "int";
+			return new GeneralPtr(stringComp, sameSize);
+		}
 		else{
 			THROW(new Exception(msg), NULL);
 		}
@@ -616,6 +636,10 @@ public:
 		else if(name == ">"){
 			retType = "bool";
 			return new GeneralPtr(dateGT, boolSize, oneOver3);
+		}
+		else if(name == "comp"){
+		        retType = "int";
+			return new GeneralPtr(dateComp, sameSize);
 		}
 		else{
 			THROW(new Exception(msg), NULL);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/04/18 20:46:29  donjerko
+  Added function pointers to marshall types.
+
   Revision 1.16  1997/04/18 15:42:29  arvind
   Modified stringLT so it returns (cmp < 0) instead of (cmp == -1).
   Similarly for stringGT
@@ -89,6 +92,20 @@ Type* dateGT(Type* arg1, Type* arg2){
 	time_t val1 = ((IDate*)arg1)->getValue();
 	time_t val2 = ((IDate*)arg2)->getValue();
      return (Type*)(val1 > val2);
+}
+
+Type* dateComp(Type* arg1, Type* arg2){
+	time_t val1 = ((IDate*)arg1)->getValue();
+	time_t val2 = ((IDate*)arg2)->getValue();
+	if(val1 > val2){
+		return (Type*) 1;
+	}
+	else if(val1 == val2){
+		return (Type*)(0);
+	}
+	else{
+		return (Type*)(-1);
+	}
 }
 
 Type* catEntryName(Type* arg1){
@@ -183,6 +200,20 @@ Type* doubleGT(Type* arg1, Type* arg2){
      return (Type*)(val1 > val2);
 }
 
+Type* doubleComp(Type* arg1, Type* arg2){
+	double val1 = ((IDouble*)arg1)->getValue();
+	double val2 = ((IDouble*)arg2)->getValue();
+	if(val1 > val2){
+		return (Type*) 1;
+	}
+	else if(val1 == val2){
+		return (Type*)(0);
+	}
+	else{
+		return (Type*)(-1);
+	}
+}
+
 Type* boolEq(Type* arg1, Type* arg2){
      return (Type*)(arg1 == arg2);
 }
@@ -197,6 +228,18 @@ Type* boolAnd(Type* arg1, Type* arg2){
 
 Type* boolLT(Type* arg1, Type* arg2){
      return (Type*)(arg1 < arg2);
+}
+
+Type* boolComp(Type* arg1, Type* arg2){
+	if(arg1 > arg2){
+		return (Type*) 1;
+	}
+	else if(arg1 == arg2){
+		return (Type*)(0);
+	}
+	else{
+   	        return (Type*)(-1);
+	}
 }
 
 Type* stringEq(Type* arg1, Type* arg2){
@@ -220,6 +263,11 @@ Type* stringGT(Type* arg1, Type* arg2){
 	return (Type*)(cmp > 0);
 }
 
+Type* stringComp(Type* arg1, Type* arg2){
+	char* val1 = ((IString*)arg1)->getValue();
+	char* val2 = ((IString*)arg2)->getValue();
+	return (Type*) strcmp(val1, val2);
+}
 
 void intRead(istream& in, Type*& adt){
 	int tmp;
@@ -858,20 +906,24 @@ void destroyTuple(Tuple* tuple, int numFlds, DestroyPtr* destroyers){ // throws
 int tupleCompare(int *compare_flds, int num_compare_flds, 
                  GeneralPtr **comparePtrs, Tuple *left, Tuple *right)
 {
-  // Returns 1 if compare(left, right) = 1 on any compare_fld 
-  //         0 otherwise
-
-  assert(right);
-  assert(left);
+  // Returns -1 if left < right 
+  //          0 if left = right
+  //          1 if left > right
+  // Each comparePtrs is a GeneralPtr with name = "comp"
 
   for(int i = 0; i < num_compare_flds; i++)
     {
       assert (compare_flds[i] >= 0 );
-      if (comparePtrs[compare_flds[i]]->opPtr(left[compare_flds[i]],
-                                              right[compare_flds[i]]))
-	 return 1;
-     }
-  return 0;
+      int cmp = int(comparePtrs[compare_flds[i]]->opPtr(left[compare_flds[i]],
+						    right[compare_flds[i]]));
+      if (cmp < 0) 
+        return -1;
+
+      if (cmp > 0)
+        return 1;
+     } // continue checking only if the tuples are equal on current compare_fld
+
+  return 0; // The tuples are equal on all comparison fields
 }
 
 
