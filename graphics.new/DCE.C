@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/12/20 16:25:38  jussi
+  Improved support for multiple semaphore vectors.
+
   Revision 1.9  1996/12/18 15:32:50  jussi
   Replaced ~SharedMemory() with destroy().
 
@@ -353,7 +356,7 @@ int SemaphoreV::create()
   for(int i = 0; i < _semVectors; i++) {
     int status;
     _sem[i] = new Semaphore(Semaphore::newKey(), status, _semsPerVector);
-    if (!_sem[i] && status < 0)
+    if (!_sem[i] || status < 0)
       return -1;
     _semUsed[i] = new int [_semsPerVector];
     if (!_semUsed)
