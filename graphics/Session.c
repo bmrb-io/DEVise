@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.79  2000/02/16 18:51:21  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.78  2000/02/08 22:11:47  wenger
   Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
   edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
@@ -538,6 +541,12 @@ Session::Save(const char *filename, Boolean asTemplate, Boolean asExport,
 
   if (status.IsComplete()) {
     saveData.fp = fopen(filename, "w");
+    if (!saveData.fp) {
+	  char errBuf[MAXPATHLEN + 100];
+	  sprintf(errBuf, "Can't open session file (%s) for save", filename);
+      reportErrSys(errBuf);
+      status += StatusFailed;
+    }
   }
 
   if (status.IsComplete()) {
