@@ -1,9 +1,9 @@
 /*
   ========================================================================
-  DEVise Software
+  DEVise Data Visualization Software
   (c) Copyright 1992-1995
   By the DEVise Development Group
-  University of Wisconsin at Madison
+  Madison, Wisconsin
   All Rights Reserved.
   ========================================================================
 
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/09/22 15:52:14  jussi
+  Added copyright message.
+
   Revision 1.3  1995/09/19 14:59:41  jussi
   Added log message.
 
@@ -42,6 +45,7 @@ static Tcl_Interp *globalInterp = 0;
 static char *outfile_path = 0;
 static char *tapeDrive = 0;
 static char *tapeFile = 0;
+static char *tapeBsize = 0;
 
 /*-------------------------------------------------------------------*/
 
@@ -61,13 +65,17 @@ int comp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 
   tapeDrive = Tcl_GetVar(interp, "cstat_tapeDrive", TCL_GLOBAL_ONLY);
   tapeFile = Tcl_GetVar(interp, "cstat_tapeFile", TCL_GLOBAL_ONLY);
+  tapeBsize = Tcl_GetVar(interp, "cstat_tapeBsize", TCL_GLOBAL_ONLY);
   outfile_path = Tcl_GetVar(interp, "cstat_diskPath", TCL_GLOBAL_ONLY);
-  if (!tapeDrive || !tapeFile || !outfile_path) {
+  if (!tapeDrive || !tapeFile || !tapeBsize || !outfile_path) {
     fprintf(stderr, "One of cstat_tapeDrive, cstat_tapeFile,\n");
-    fprintf(stderr, "or cstat_diskPath is undefined.\n");
-    fprintf(stderr, "Define cstat_diskPath in $(DEVISE_LIB)/cstat.tk.\n");
+    fprintf(stderr, "cstat_tapeBsize, or cstat_diskPath is undefined.\n");
+    fprintf(stderr, "Define these values in $(DEVISE_LIB)/cstat.tk.\n");
     return TCL_ERROR;
   }
+
+  printf("Reading from %s:%s (%s) to %s\n", tapeDrive, tapeFile,
+	 tapeBsize, outfile_path);
 
   /* do not pass argv[0] (name of TCL command) */
 
@@ -160,7 +168,7 @@ int create_comp_dat(char *fname, char *fvalue)
   char smbl_val[COMP_MAX_STR_LEN];
   char tmpval[COMP_MAX_STR_LEN];
 
-  TapeDrive tape(tapeDrive, "r", atoi(tapeFile), 8332);
+  TapeDrive tape(tapeDrive, "r", atoi(tapeFile), atoi(tapeBsize));
   if (!tape)
   {
     fprintf(stderr, "Error: could not open tape device %s\n", tapeDrive);

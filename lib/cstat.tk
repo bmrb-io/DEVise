@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.3  1995/09/22 17:33:37  jussi
+#	Added copyright message.
+#
 #	Revision 1.2  1995/09/19 15:57:45  jussi
 #	Minor changes in appearance of listbox contents.
 #
@@ -24,8 +27,9 @@
 
 ############################################################
 
-set cstat_tapeDrive /dev/nrst1
-set cstat_tapeFile  7
+set cstat_tapeDrive /dev/nrst4
+set cstat_tapeFile  0
+set cstat_tapeBsize 32768
 set cstat_diskPath /tmp
 
 if {[info exists env(CSTAT_TAPEDRIVE)]} {
@@ -33,6 +37,9 @@ if {[info exists env(CSTAT_TAPEDRIVE)]} {
 }
 if {[info exists env(CSTAT_TAPEFILE)]} {
     set cstat_tapeFile $env(CSTAT_TAPEFILE)
+}
+if {[info exists env(CSTAT_TAPEBSIZE)]} {
+    set cstat_tapeBsize $env(CSTAT_TAPEBSIZE)
 }
 if {[info exists env(CSTAT_DISKPATH)]} {
     set cstat_diskPath $env(CSTAT_DISKPATH)

@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.4  1995/09/22 17:33:46  jussi
+#	Added copyright message.
+#
 #	Revision 1.3  1995/09/21 15:36:00  jussi
 #	Minor changes.
 #
@@ -27,8 +30,9 @@
 
 ############################################################
 
-set issm_tapeDrive /dev/nrst1
-set issm_tapeFile  5
+set issm_tapeDrive /dev/nrst4
+set issm_tapeFile  3
+set issm_tapeBsize 32768
 set issm_tradePath /tmp
 set issm_quotePath /tmp
 
@@ -37,6 +41,9 @@ if {[info exists env(ISSM_TAPEDRIVE)]} {
 }
 if {[info exists env(ISSM_TAPEFILE)]} {
     set issm_tapeFile $env(ISSM_TAPEFILE)
+}
+if {[info exists env(ISSM_TAPEBSIZE)]} {
+    set issm_tapeBsize $env(ISSM_TAPEBSIZE)
 }
 if {[info exists env(ISSM_DISKPATH)]} {
     set issm_tradePath $env(ISSM_DISKPATH)

@@ -1,9 +1,9 @@
 /*
   ========================================================================
-  DEVise Software
+  DEVise Data Visualization Software
   (c) Copyright 1992-1995
   By the DEVise Development Group
-  University of Wisconsin at Madison
+  Madison, Wisconsin
   All Rights Reserved.
   ========================================================================
 
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/09/22 15:49:44  jussi
+  Added copyright message.
+
   Revision 1.4  1995/09/11 17:33:15  jussi
   Updated names of tapeToDisk and status to reflect the issm prefix.
 
@@ -54,6 +57,7 @@ static char *quotePath = 0;
 
 static char *tapeDrive = "/dev/nrst1";
 static int tapeFile = 5;
+static int tapeBsize = 32768;
 static char *tradePath = "/tmp/nyam1";
 static char *quotePath = "/tmp/nyam2";
 #endif
@@ -652,7 +656,7 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  RecTape tape(tapeDrive, "r", tapeFile);
+  RecTape tape(tapeDrive, "r", tapeFile, tapeBsize);
   if (!tape) {
     cerr << "Cannot open " << tapeDrive << " for reading." << endl;
     return 1;
@@ -719,20 +723,21 @@ int extractStocksCmd(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 
   char *tapeDrive = Tcl_GetVar(interp, "issm_tapeDrive", TCL_GLOBAL_ONLY);
   char *tapeFile = Tcl_GetVar(interp, "issm_tapeFile", TCL_GLOBAL_ONLY);
+  char *tapeBsize = Tcl_GetVar(interp, "issm_tapeBsize", TCL_GLOBAL_ONLY);
   tradePath = Tcl_GetVar(interp, "issm_tradePath", TCL_GLOBAL_ONLY);
   quotePath = Tcl_GetVar(interp, "issm_quotePath", TCL_GLOBAL_ONLY);
 
-  if (!tapeDrive || !tapeFile || !tradePath || !quotePath) {
-    cerr << "One of issm_tapeDrive, issm_tapeFile, issm_tradePath," << endl;
-    cerr << "and issm_quotePath is undefined." << endl;
+  if (!tapeDrive || !tapeFile || !tapeBsize || !tradePath || !quotePath) {
+    cerr << "One of issm_tapeDrive, issm_tapeFile, issm_tapeBsize," << endl;
+    cerr << "issm_tradePath, or issm_quotePath is undefined." << endl;
     cerr << "Define these values in $(DEVISE_LIB)/issm.tk." << endl;
     return TCL_ERROR;
   }
 
   cout << "Reading from " << tapeDrive << ":" << tapeFile
-       << " to " << tradePath << endl;
+       << " (" << tapeBsize << ") to " << tradePath << endl;
 
-  RecTape tape(tapeDrive, "r", atoi(tapeFile));
+  RecTape tape(tapeDrive, "r", atoi(tapeFile), atoi(tapeBsize));
   if (!tape) {
     cerr << "Cannot open " << tapeDrive << " for reading." << endl;
     return TCL_ERROR;
