@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/07/18 14:17:24  jussi
+#  Removed -static flag to save disk space.
+#
 #  Revision 1.3  1996/06/28 13:57:29  wenger
 #  Forgot to change the attrproj Makefiles for all architectures.
 #
@@ -28,7 +31,7 @@
 
 ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
-ARCH_LDPOST  =
+ARCH_LDPOST  = -lpthread
 
 VPATH = ../../attrproj:../../graphics:../../graphics.new
 include ../../attrproj/Makefile.base

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/07/18 14:27:48  jussi
+#  We now produce dynamically linked executables.
+#
 #  Revision 1.4  1996/06/27 18:13:16  wenger
 #  Re-integrated most of the attribute projection code (most importantly,
 #  all of the TData code) into the main code base (reduced the number of
@@ -35,7 +38,7 @@
 
 ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
-ARCH_LDPOST  =
+ARCH_LDPOST  = -lpthread
 
 VPATH = ../../attrproj:../../graphics:../../graphics.new
 include ../../attrproj/Makefile.base

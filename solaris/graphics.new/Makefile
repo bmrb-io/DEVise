@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1996/05/20 18:37:59  jussi
+#  Replaced PENTIUM flag with SOLARIS.
+#
 #  Revision 1.9  1996/04/20 19:57:31  kmurli
 #  no changes done.
 #
@@ -28,6 +31,7 @@
 ############################################################
 
 ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include 
+ARCH_LDFLAGS = -lpthread
 
 VPATH = ../../graphics.new
 include $(VPATH)/Makefile.base
