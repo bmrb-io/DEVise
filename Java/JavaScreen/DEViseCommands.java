@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2001/02/16 17:47:33  xuk
+// Added new command JAVAC_Clients for collaboration JS to collect active client ID list.
+//
 // Revision 1.4  2001/01/22 17:08:12  wenger
 // Added DEViseCheckPop to actually connect to the jspop when checking
 // with cron; added JAVAC_CheckPop command to make this possible; cleaned
@@ -135,6 +138,9 @@ public final class DEViseCommands
     public static final String VIEW_DATA_AREA = JS_PREFIX + "ViewDataArea";
 
     public static final String CLIENTS = JS_PREFIX + "Clients";
+
+    public static final String GET_COLLAB_LIST = JS_PREFIX + "GetCollabList";
+    public static final String COLLAB_STATE = JS_PREFIX + "CollabState";
 
     // -------------------------------------------------------------------
     // JSS commands.
