@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1996/07/30 18:24:56  guangshu
+  Commit the change as last one again.
+
   Revision 1.30  1996/07/25 14:32:55  guangshu
   Added linked list to keep track of the gstat records so it doesnot need to scann the range from xmin to xmax and fixed bugs for histograms
 
@@ -263,6 +266,7 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
     }
 
     int index = InitMappingIterator();
+
     if (MoreMapping(index)) {
         AttrInfo *yAttr = map->MapGAttr2TAttr("y");
         if(yAttr && yAttr->hasHiVal && yAttr->hasLoVal){
@@ -275,8 +279,11 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
 	    yMin = filter.yLow;
 	}
 	_allStats.SetHistWidth(yMax, yMin);
-    } else { fprintf(stderr, "No more Mapping\n"); }	 
+    } else
+        fprintf(stderr, "No more Mapping\n");
+
     DoneMappingIterator(index);
+
     Refresh();
 }
 
@@ -465,6 +472,7 @@ Boolean ViewGraph::IsScatterPlot()
     }
 
     DoneMappingIterator(index);
+
     return false;
 }
 
@@ -552,18 +560,24 @@ void ViewGraph::PrepareStatsBuffer()
                 _stats[i].GetStatVal(STAT_ZVAL95L),
                 _stats[i].GetStatVal(STAT_ZVAL95H));
         if (strlen(_statBuffer) + strlen(line) + 1 > sizeof _statBuffer) {
-            fprintf(stderr, "Out of statistics buffer space\n");
+#ifdef DEBUG
+            printf("Out of statistics buffer space\n");
+#endif
             break;
         }
         strcat(_statBuffer, line);
     }
-    if(_allStats.GetHistWidth()>0){
-	for(i=0; i<HIST_NUM; i++) {
+
+    if (_allStats.GetHistWidth() > 0) {
+	for(i = 0; i<HIST_NUM; i++) {
 	    sprintf(line, "%.2f %d\n", 
-		    _allStats.GetStatVal(STAT_MIN)+(i+0.5)*_allStats.GetHistWidth(), 
-		    _allStats.GetHistVal(i));
-	    if(strlen(_histBuffer) + strlen(line) + 1 > sizeof _histBuffer) {
-	        fprintf(stderr, "Out of histogram buffer space\n");
+                    _allStats.GetStatVal(STAT_MIN) +
+                    (i + 0.5) * _allStats.GetHistWidth(), 
+                    _allStats.GetHistVal(i));
+	    if (strlen(_histBuffer) + strlen(line) + 1 > sizeof _histBuffer) {
+#ifdef DEBUG
+	        printf("Out of histogram buffer space\n");
+#endif
 	        break;
 	    }
 	    strcat(_histBuffer, line);
@@ -571,11 +585,10 @@ void ViewGraph::PrepareStatsBuffer()
     }
 
     BasicStats *bs;
-    //Only put count ysum mean max min into the buffer considering the size of buffer 
     int index = _glist.InitIterator();
     while(_glist.More(index)) {
 	int i = _glist.Next(index); 
-	if(_gstat.Lookup(i, bs)) {
+	if (_gstat.Lookup(i, bs)) {
 	   DOASSERT(bs,"HashTable lookup error\n");
 	   sprintf(line, "%d %d %.2f %.2f %.2f %.2f\n",
 		   i, (int)bs->GetStatVal(STAT_COUNT),
@@ -585,8 +598,10 @@ void ViewGraph::PrepareStatsBuffer()
 		   bs->GetStatVal(STAT_MIN));
             if (strlen(_gdataStatBuffer) + strlen(line) + 1
                 > sizeof _gdataStatBuffer) {
-		   fprintf(stderr, "Out of GData Stat Buffer space\n");
-		   break;
+#ifdef DEBUG
+                printf("Out of GData Stat Buffer space\n");
+#endif
+                break;
             }
            strcat(_gdataStatBuffer, line);
        }
