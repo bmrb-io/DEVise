@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.89  2001/02/23 17:41:42  xuk
+// Added machine name and session name on the client list sent to collaboration JS.
+//
 // Revision 1.88  2001/02/23 03:48:50  xuk
 // Fixed bugs: "follower" JS doesn't reponse the "Collaboration Status" request.
 //
@@ -295,6 +298,8 @@ public class jsdevisec extends Panel
     // disable collaboration defaultly
     // public boolean isAbleCollab = false;
     public String collabPass = new String(DEViseGlobals.DEFAULTPASS);
+
+    public boolean sessionSaved = false;
 
 
 	// images[0-9] are the gears; 10 and 11 are "traffic lights"
@@ -769,7 +774,7 @@ System.out.println("Creating new debug window");
     {
 
 	collabMode();
-
+	/*
 	if (dispatcher.getOnlineStatus()) {
 	    try {
                 pn("Sending: \"" + DEViseCommands.EXIT +"\"");
@@ -779,6 +784,7 @@ System.out.println("Creating new debug window");
             }
 	    dispatcher.disconnect();
 	}
+	*/
 	specialID = 0;
 	dispatcher.start(null);
     }
@@ -2058,13 +2064,40 @@ class SetModeDlg extends Dialog
 
 			// switch out off the collaboration mode
 			if (jsc.specialID != -1) {
+
+
 			    if (jsc.dispatcher.dispatcherThread != null) {
 				jsc.dispatcher.dispatcherThread.stop();
 				jsc.dispatcher.dispatcherThread = null;
 			    }
-			    jsc.dispatcher.destroy();
+			    try {
+				jsc.pn("Sending: \"" + DEViseCommands.EXIT +"\"");
+				jsc.dispatcher.socketSendCom(DEViseCommands.EXIT);
+			    } catch (YException e) {
+				jsc.showMsg(e.getMsg());
+			    }
+
+			    if (jsc.dispatcher.commSocket != null) {
+				jsc.dispatcher.commSocket.closeSocket();
+				jsc.dispatcher.commSocket = null;
+			    }
+
+			    jsc.dispatcher._connectedAlready = false;
+			    jsc.dispatcher.isOnline = false;
+
+			    jsc.animPanel.stop();
+			    jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+			    jsc.jscreen.updateScreen(false);
+
+			    jsc.dispatcher.setStatus(0);
 			    jsc.dispatcher.setAbortStatus(false);
+
 			    jsc.specialID = -1;
+			    if (jsc.sessionSaved) {
+				jsc.isSessionOpened = true;
+				jsc.dispatcher.start(DEViseCommands.REOPEN_SESSION);
+				jsc.sessionSaved = false;
+			    }
 			}
  
 			close();
@@ -2075,16 +2108,34 @@ class SetModeDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
+			// if switch from "socket" mode, save current 
+			// session.
                         if (jsc.isSessionOpened) {
-                            jsc.showMsg("You already have a session opened!\nPlease close current session first!");
-                            return;
+			    jsc.sessionSaved = true;
+			    try {
+				jsc.dispatcher.socketSendCom(DEViseCommands.SAVE_CUR_SESSION);
+			    } catch (YException e) {
+			    }
                         }
 			close();
 			if (jsc.dispatcher.dispatcherThread != null) {
 			    jsc.dispatcher.dispatcherThread.stop();
 			    jsc.dispatcher.dispatcherThread = null;
 			}
-			jsc.dispatcher.destroy();
+			if (jsc.dispatcher.commSocket != null) {
+			    jsc.dispatcher.commSocket.closeSocket();
+			    jsc.dispatcher.commSocket = null;
+			}
+
+			jsc.dispatcher._connectedAlready = false;
+
+			jsc.dispatcher.isOnline = false;
+
+			jsc.animPanel.stop();
+			jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+			jsc.jscreen.updateScreen(false);
+
+			jsc.dispatcher.setStatus(0);
 			jsc.dispatcher.setAbortStatus(false);
 
                         jsc.showCollab();
@@ -2285,7 +2336,13 @@ class CollabDlg extends Frame
 			    jsc.dispatcher.dispatcherThread.stop();
 			    jsc.dispatcher.dispatcherThread = null;
 			}
-			jsc.dispatcher.disconnect();
+
+			if (jsc.dispatcher.commSocket != null) {
+			    jsc.dispatcher.commSocket.closeSocket();
+			    jsc.dispatcher.commSocket = null;
+			}
+			jsc.dispatcher._connectedAlready = false;
+			jsc.dispatcher.isOnline = false;
 
 			jsc.animPanel.stop();
 			jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
@@ -2601,7 +2658,14 @@ class EnterCollabPassDlg extends Dialog
 			    jsc.dispatcher.dispatcherThread.stop();
 			    jsc.dispatcher.dispatcherThread = null;
 			}
-			jsc.dispatcher.disconnect();
+
+			if (jsc.dispatcher.commSocket != null) {
+			    jsc.dispatcher.commSocket.closeSocket();
+			    jsc.dispatcher.commSocket = null;
+			}
+
+			jsc.dispatcher._connectedAlready = false;
+			jsc.dispatcher.isOnline = false;
 
 			jsc.animPanel.stop();
 			jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
@@ -2625,7 +2689,13 @@ class EnterCollabPassDlg extends Dialog
 			    jsc.dispatcher.dispatcherThread.stop();
 			    jsc.dispatcher.dispatcherThread = null;
 			}
-			jsc.dispatcher.disconnect();
+
+			if (jsc.dispatcher.commSocket != null) {
+			    jsc.dispatcher.commSocket.closeSocket();
+			    jsc.dispatcher.commSocket = null;
+			}
+			jsc.dispatcher._connectedAlready = false;
+			jsc.dispatcher.isOnline = false;
 
 			jsc.animPanel.stop();
 			jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
