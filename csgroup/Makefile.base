@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1998/02/20 20:42:53  wenger
+#  Changed color and utils libraries to new export directory scheme for
+#  dealing with include files (email with complete explanation forthcoming).
+#
 #  Revision 1.5  1998/02/19 23:24:07  wenger
 #  Improved color library and got client/server test code to work
 #  (except for setting colors by RGB): reduced compile interdependencies,
@@ -58,7 +62,8 @@ LOCALSRC1 = Client.C\
 	parseConfig.C\
 	queue.C\
 	queueElem.C\
-	servdb.C
+	servdb.C\
+	CommandObj.C
 LOCALSRC2= prnfns.c\
 	callBks.c\
 	codec.c\
@@ -75,7 +80,8 @@ LOCALSRC2= prnfns.c\
 	sndMsg.c\
 	Csprotocols.c
 
-LIBCSOBJ = $(LOCALSRC1:.C=.o) $(LOCALSRC2:.c=.o) ../graphics.new/ClientAPI.o 
+LIBCSOBJ = $(LOCALSRC1:.C=.o) $(LOCALSRC2:.c=.o) 
+#../graphics.new/ClientAPI.o 
 
 LIBCS = libcsgroup.a
 

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:49  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:23:56  liping
   Added CVS header
 
@@ -59,7 +62,7 @@
 #include "sndMsg.h"
 #include <assert.h>
 
-int f(const Datum& key, int size) {
+int f1(const Datum& key, int size) {
 	int x;
 
 	x = key.fold();
@@ -105,7 +108,7 @@ pwdCheck(char *Pwd, char *inputPwd) {
 	}
 }
 
-Dbase::Dbase() : GroupDB(HASH_SIZE, &f) {
+Dbase::Dbase() : GroupDB(HASH_SIZE, &f1) {
 	currbckt = NULL;
 	currentr = NULL;
 }

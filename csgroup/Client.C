@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/26 18:54:04  wenger
+  Got everything to compile on haha -- still have a link problem, though.
+
   Revision 1.2  1998/02/12 17:14:31  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -120,8 +123,8 @@ Client::Client(char *name, char *hostname, int port, char* initStr)
 Client::~Client()
 {
   (void)NetworkClose(_serverFd);
-  delete _name;
-  delete _hostname;
+  free( _name);
+  free(_hostname);
   delete _result;
   delete _cmd;
   delete csk;
@@ -169,7 +172,7 @@ Client::SetPanelMajorCmd(char* cmd)
 {
 	DOASSERT((cmd!=NULL), "SetPanelMajorCmd has a NULL parameter");
 	if (panelMajorCmd != NULL)
-		delete panelMajorCmd;
+		free(panelMajorCmd);
 	panelMajorCmd = strdup(cmd);
 }
 void
@@ -177,7 +180,7 @@ Client::SetPanelSubCmd(char* cmd)
 {
 	DOASSERT((cmd!=NULL), "SetPanelSubCmd has a NULL parameter");
 	if (panelSubCmd != NULL)
-		delete panelSubCmd;
+		free(panelSubCmd);
 	panelSubCmd = strdup(cmd);
 }
 void
@@ -185,7 +188,7 @@ Client::SetPanelInfo(char* cmd)
 {
 	DOASSERT((cmd!=NULL), "SetPanelInfo has a NULL parameter");
 	if (panelInfo != NULL)
-		delete panelInfo;
+		free(panelInfo);
 	panelInfo = strdup(cmd);
 }
 // call back virtual function that can be overloaded
@@ -403,7 +406,7 @@ int Client::LeaveGroup(const char *& errmsg)
 	else
 	{
 		_grpstat = EMPTY;
-		delete _groupname;
+		free( _groupname);
 		_groupname = NULL;
 	}
 	return retval;

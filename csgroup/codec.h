@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/26 18:54:09  wenger
+  Got everything to compile on haha -- still have a link problem, though.
+
   Revision 1.2  1998/02/12 17:14:45  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -78,6 +81,8 @@
 #define TYP_CHARACTER 1
 #define TYP_STRING 2
 #define TYP_VALIST 3
+#define TYP_ARRAY 4
+#define TYP_DOUBLE 5
 
 int XferMsgType(int fd, int mode, int *type);
 int XferMsg(int fd, int mode, int elements, ...);

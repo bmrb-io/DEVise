@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/26 18:54:08  wenger
+  Got everything to compile on haha -- still have a link problem, though.
+
   Revision 1.2  1998/02/12 17:14:40  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -61,6 +64,7 @@
 #include "Dispatcher.h"
 #include "callBks.h"
 #include "rcvMsg.h"
+#include "CommandObj.h"
 
 Server* _ThisServer;
 
@@ -135,6 +139,9 @@ Server::Server(char *name, int swt_port, int clnt_port, char* swtname,
 		(void)Dispatcher::Current()->Register(this, 10, AllState, 
 		true, _listenSwtFd);
 	_channel = new ControlChannel();
+
+	// initialize the command object
+	cmdObj = new CommandObj(this);
 }
 
 
@@ -218,7 +225,7 @@ Server::~Server()
 		CloseClient(i);
     }
     delete [] _clients;
-    delete _name;
+    free( _name);
     delete _cmd;
 }
 
@@ -542,7 +549,7 @@ void Server::ProcessGroupControl(ClientID cid, int argc, char** argv)
 		// initialize the server according to the client
 		success = ExecInitServer(cid, argv[2], errmsg);
 		if (_clients[cid].cname != NULL)
-			delete _clients[cid].cname;
+			free( _clients[cid].cname);
 		_clients[cid].cname = strdup(argv[2]);
 	}
 	else if (!strcmp(argv[0], CS_Query_Req))
@@ -772,39 +779,12 @@ void Server::ExecClientCmds(fd_set *fdset)
 #if defined(DEBUG)
 	    	printf("Executing command\n");
 #endif
-			success = FilterCmd(i,argc,argv,errmsg);
-			if ((_clients[i].gname != NULL)&&!(_clients[i].active))
-			{
-				success = false;
-				errmsg = "Non-leader should not operate!";
-				ReturnVal(i, (u_short)API_NAK, errmsg);
-			}
-			else
-			{
-				// process the command locally
-				ProcessCmd(i,argc -1, &argv[1]);
-			}
+			success = cmdObj->filterCmd(i,argc,argv,errmsg);
 #if defined(DEBUG)
 	    	printf("Done executing command\n");
 #endif
 		}
     }
-}
-
-bool
-Server::FilterCmd(ClientID cid, int argc, char** argv, char*& errmsg)
-{
-	bool		success;
-
-	// argv[0], holds the NULL groupkey, reserved for future use
-	if ((_clients[cid].gname != NULL)&&(_clients[cid].active))
-		success = GroupCast(_clients[cid].gname, _clients[cid].cname, 
-					SS_CSS_Cmd,
-					argc-1, &argv[1], errmsg);
-	else
-		success = false;
-
-	return success;
 }
 
 bool 

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:40  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.1  1998/01/28 22:42:22  taodb
   Added support for group communicatoin
 
@@ -40,6 +43,7 @@
 // in a ClientInfo object. A Server instance will have an array of
 // ClientInfo objects, indexed by ClientID values.
 //
+class CommandObj;
 #define CLIENT_INVALID (-1)
 class ClientInfo
 {
@@ -79,7 +83,7 @@ class ControlChannel {
 };
 class Server:public DispatcherCallback{
 friend class ControlChannel;
-
+friend class CommandObj;
 public:
     Server(char *name, int swt_port, int clnt_port, char* switchname, 
 		int maxClients = 10);
@@ -162,15 +166,12 @@ protected:
 				int argc, 
 				char** argv, 
 				char*&errmsg);
-    virtual bool FilterCmd(ClientID,
-			    int argc,
-			    char **argv,
-				char *&errmsg);	 	      // process a single client command
     virtual void ProcessCmd(ClientID,
 			    int argc,
 			    char **argv);	 	      // process a single client command
 public:
 	// Server-Switch side call back functions
+	CommandObj	*cmdObj;
 	virtual int _RequestRelinquish(char *groupname, ConnectInfo *cinfo); 
 										// requlish control call back
 	virtual int _NotifyGrabbed(char *groupname, ConnectInfo *cinfo);
