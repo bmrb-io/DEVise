@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/09/05 21:33:11  jussi
+  Devise command 'connectData' was renamed getDisplayImage.
+  Minor other improvements.
+
   Revision 1.13  1996/08/29 21:43:39  guangshu
   Added Tcl command SetGetImage to set up data channel then ask server
   to ship the gif files. The gif files can be either put to stdout,
@@ -105,6 +109,8 @@ static int   _syncDone = 0;
 static Tcl_Interp *_interp = 0;
 static Tk_Window _mainWindow = 0;
 static char *_restoreFile = 0;
+
+int _useopengl = 0;
 
 static void DoAbort(char *reason)
 {
@@ -445,7 +451,10 @@ int main(int argc, char **argv)
         } else if (!strcmp(argv[i], "-q")) {
 	    _quiet = 1;
 //	    i ++;
-	} else {
+	} else if (!strcmp(argv[i], "-gl")) {
+            _useopengl=1;
+        }
+	else {
             if (!_restoreFile)
                 _restoreFile = argv[i];
             else if(!_idleScript)

@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1997/11/24 23:15:07  weaver
+  Changes for the new ColorManager.
+
   Revision 1.44  1997/11/18 23:26:52  wenger
   First version of GData to socket capability; removed some extra include
   dependencies; committed test version of TkControl::OpenDataChannel().
@@ -818,7 +821,73 @@ void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	recordsProcessed = numSyms;
 }
 
+void FullMapping_OvalShape::Draw3DGDataArray(WindowRep *win, void **gdataArray,
+					   int numSyms, TDataMap *map,
+					   ViewGraph *view, int pixelSize,
+					   int &recordsProcessed)
+{
+  GDataAttrOffset *offset = map->GetGDataOffset();
+  
+  // 0 = wireframe only, 1 = solid, 2 = solid + wireframe
+  Boolean wireframe = (view->GetSolid3D() == 0);
+  Boolean solidFrame = (view->GetSolid3D() == 2);
+  
+  for(int i = 0; i < numSyms; i++) {
+	char *gdata = (char *)gdataArray[i];
+	
+	Coord size = GetSize(gdata, map, offset);
+	
+	_object3D[i].pt.x_ = GetX(gdata, map, offset);
+	_object3D[i].pt.y_ = GetY(gdata, map, offset);
+	_object3D[i].pt.z_ = GetZ(gdata, map, offset);
+	_object3D[i].W = fabs(size * GetShapeAttr0(gdata, map, offset));
+	_object3D[i].H = fabs(size * GetShapeAttr1(gdata, map, offset));
+	_object3D[i].D = fabs(size * GetShapeAttr2(gdata, map, offset));
+	_object3D[i].segWidth = fabs(GetShapeAttr3(gdata, map, offset));
+	_object3D[i].segWidth = MAX(_object3D[i].segWidth, 1);
+	_object3D[i].SetForeground(GetPColorID(gdata, map, offset));
 
+	Map3D::AssignOvalVertices(_object3D[i]);
+	if (wireframe)
+	  Map3D::AssignOvalEdges(_object3D[i]);
+	else
+	  Map3D::AssignOvalSides(_object3D[i]);
+	
+#ifdef DEBUG
+/*
+	cout << "sym " << i << " of " << numSyms << endl
+	  << "	x = " << _object3D[i].pt.x_
+	<< "  y = " << _object3D[i].pt.y_
+	  << "	z = " << _object3D[i].pt.z_ << endl;
+	for(int j = 0; j < BLOCK_VERTEX; j++) {
+	  cout << "	 "
+	<< _object3D[i].vt[j].x_ << "  "
+	  << _object3D[i].vt[j].y_ << "	 "
+		<< _object3D[i].vt[j].z_ << endl;
+	}
+*/
+#endif
+  }
+  
+  // get width and height of 3D display area
+  int x, y, w, h;
+  view->GetDataArea(x, y, w, h);
+  
+  // clip Ovals
+  Map3D::ClipOvals(win, _object3D, numSyms, view->GetCamera(), w, h);
+  
+  // map ovals to points, segments, and planes and then draw them
+  if (wireframe) {
+	Map3D::MapOvalSegments(win, _object3D, numSyms,
+				view->GetCamera(), w, h);
+	Map3D::DrawSegments(win);
+  } else {
+	Map3D::MapOvalPlanes(win, _object3D, numSyms,
+			  view->GetCamera(), w, h);
+	Map3D::DrawPlanes(win, solidFrame);
+  }
+  recordsProcessed = numSyms;
+}
 // -----------------------------------------------------------------
 
 

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.17  1997/12/04 18:31:57  wenger
+#  Merged new expression evaluation code thru the expression_br_2 tag.
+#
 #  Revision 1.16.6.2  1997/12/04 15:50:05  wenger
 #  Undid Haihong's temporary changes.
 #
@@ -68,8 +71,10 @@
 PERL_CORE = /s/perl/lib/CORE
 
 ARCH_FLAGS   = -DSOLARIS -I/s/X11/include -I/s/tcl/include
-ARCH_LDFLAGS = -L /s/X11/lib -L /s/tcl/lib -R /s/X11/lib
-ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
+ARCH_LDFLAGS = -L/s/mesa-2.4/lib -R/s/mesa-2.4/lib \
+               -L/s/X11/lib -L /s/tcl/lib -R /s/X11/lib
+ARCH_SYSLIBS = -lMesaGLw -lMesaGLU -lMesaGL \
+               -ltk -ltcl -lXaw -lXpm -lXt -lXmu -lX11 -lm
 ARCH_LDPOST  = -lsocket -lnsl
 ARCH_STATIC_LDPOST  = -lsocket -lnsl -static
 # Note: Purify is not available on Pentium/Solaris.

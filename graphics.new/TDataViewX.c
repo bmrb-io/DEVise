@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.57  1997/11/24 23:15:21  weaver
+  Changes for the new ColorManager.
+
   Revision 1.56  1997/08/28 18:21:14  wenger
   Moved duplicate code from ViewScatter, TDataViewX, and ViewLens classes
   up into ViewGraph (parent class).
@@ -443,8 +446,8 @@ void	TDataViewX::ReturnGDataBinConnectors(TDataCMap* cmap,
 // Query data ready to be returned. Do initialization here.
 void	TDataViewX::QueryInit(void* userData)
 { 
-	_dataBin->Init(_map, &_queryFilter, GetWindowRep()->TopTransform(),
-				   _dispSymbols, _dispConnectors, _cMap, gDataBinCallback);
+	_dataBin->Init(_map, &_queryFilter,
+		   _dispSymbols, _dispConnectors, _cMap, gDataBinCallback);
 }
 
 void	TDataViewX::QueryDone(int bytes, void* userData, TDataMap* map = NULL)

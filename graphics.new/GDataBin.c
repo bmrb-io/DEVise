@@ -16,6 +16,20 @@
   $Id$
 
   $Log$
+
+  Revision 1.18 1997/10/17 00:51:53 zhenhai
+  Removed _transform. It was used to optimize drawing on the same pixel.
+  However it needs to access the transformation of WindowRep. First,
+  this is violation of encapsulation of the WindowRep classes. Second,
+  the problem is that GDataBin assumes WindowRep classes uses Transform class
+  to calculate coordinates. However, this is not the case for OpenGL WindowRep.
+  Third, if such an optimization needs to be done, it should be done at
+  WindowRep level instead of GDataBin level.
+
+  Revision 1.17  1997/08/20 22:10:56  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.16.12.4  1997/08/20 18:36:22  wenger
   QueryProcFull and QPRange now deal correctly with interrupted draws.
   (Some debug output still turned on.)
@@ -123,8 +137,11 @@ GDataBin::GDataBin()
     GDATA_BIN_MAX_PIXELS, sizeof(Connector));
 #endif
   int i;
+
+#ifdef 0
   for(i = 0; i < GDATA_BIN_MAX_PIXELS; i++)
     _timestamp[i] = 0;
+#endif
   _iteration = 1;
   _returnIndex = 0;
   
@@ -159,7 +176,7 @@ Init before any data is returned from query processor
 ************************************************************************/
 
 void GDataBin::Init(TDataMap *mapping, VisualFilter *filter,
-		    Transform2D *transform, Boolean dispSymbol,
+		    Boolean dispSymbol,
 		    Boolean dispConnector, TDataCMap *cMap,
 		    GDataBinCallback *callback)
 {
@@ -182,14 +199,15 @@ void GDataBin::Init(TDataMap *mapping, VisualFilter *filter,
   _cMap = cMap;
 
   Coord ylow, yhigh;
-  _transform = transform;
-  _transform->TransformY(filter->xLow, filter->yLow, ylow);
-  _transform->TransformY(filter->xHigh, filter->yHigh, yhigh);
-  _maxYPixels = ROUND(int, fabs(yhigh - ylow));
+//  _transform = transform;
+//  _transform->TransformY(filter->xLow, filter->yLow, ylow);
+//  _transform->TransformY(filter->xHigh, filter->yHigh, yhigh);
+//  _maxYPixels = ROUND(int, fabs(yhigh - ylow));
 
 #ifdef DEBUG
   printf("GDataBin: _maxYPixels: %d\n", _maxYPixels);
 #endif
+#ifdef 0
   if (!(_maxYPixels > 0 && _maxYPixels < GDATA_BIN_MAX_PIXELS))
     printf("GDataBin: yhigh %.2f, ylow %.2f, _maxYPixels: %d\n",
 	   yhigh, ylow, _maxYPixels);
@@ -197,6 +215,7 @@ void GDataBin::Init(TDataMap *mapping, VisualFilter *filter,
 	   "Illegal value for maxYPixels");
 
   _needX = true;
+#endif
   _callBack = callback;
   _gRecSize = mapping->GDataRecordSize();
 }
@@ -259,6 +278,7 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
 	// compute X pixel value for this symbol and see if it differs
 	// from X pixel value for current bin
 	
+#ifdef 0
 	Coord x, y;
 	_transform->Transform(sym->x, sym->y, x, y);
 	int thisPixelX = ROUND(int, x);
@@ -267,7 +287,8 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
 	if (_needX) {
 	  _pixelX = thisPixelX;
 	  _needX = false;
-	} else if (thisPixelX != _pixelX) {
+	}
+	else if (thisPixelX != _pixelX) {
 	  _iteration++;
 	  _pixelX = thisPixelX;
 	}
@@ -277,9 +298,12 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
 	  thisPixelY = 0;
 	else if (thisPixelY > _maxYPixels)
 	  thisPixelY = _maxYPixels;
+#endif
 	
+#ifdef 0
 	if (_timestamp[thisPixelY] != _iteration) {
 	  _timestamp[thisPixelY] = _iteration;
+#endif
 	  DOASSERT(_returnIndex < GDATA_BIN_MAX_PIXELS,
 		   "Illegal value for returnIndex");
 	  _returnSyms[_returnIndex++] = sym;
@@ -294,12 +318,14 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
 	    if (timedOut) printf("%s: %d: Draw timed out\n", __FILE__, __LINE__);
 	    recordsProcessed += reverseIndex[tmpRecProc];
 	  }
+#ifdef 0
 	} else {
 #ifdef DEBUGx
-	  printf("Not adding x %f, X pixel %d\n", sym->x, thisPixelX);
+//	  printf("Not adding x %f, X pixel %d\n", sym->x, thisPixelX);
 #endif
 	  reverseIndex[_returnIndex] = i + 1;
 	}
+#endif
 	
 	ptr += ptrIncr;
       }
@@ -323,10 +349,12 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
   char *ptr = (char *)recs + startIndex * _gRecSize; 
   
   GDataBinRec *lastSym = (GDataBinRec *)ptr;
+#ifdef 0
   Coord x, y;
   _transform->Transform(lastSym->x, lastSym->y, x, y);
   int lastPixelX = ROUND(int, x);
   int lastPixelY = ROUND(int, y);
+#endif
   
   /* amount to increment pointer in each iteration */
   
@@ -338,11 +366,15 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
   for(int i = startIndex + 1; i < recordsProcessed; i++) {
     GDataBinRec *sym = (GDataBinRec *)ptr;
     
+#ifdef 0
     _transform->Transform(sym->x, sym->y, x, y);
     int thisPixelX = ROUND(int, x);
     int thisPixelY = ROUND(int, y);
+#endif
     
+#ifdef 0
     if (lastPixelX != thisPixelX || lastPixelY != thisPixelY) {
+#endif
       
 #ifdef DEBUG
       printf("mapping syms: (%d,%d) (%d,%d): ",
@@ -366,11 +398,15 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
 	printf("rejected\n");
 #endif
       }
+#ifdef 0
     }
+#endif
     
     lastSym = sym;
+#ifdef 0
     lastPixelX = thisPixelX;
     lastPixelY = thisPixelY;
+#endif
     
     ptr += ptrIncr;
   }

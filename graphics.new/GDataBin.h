@@ -16,6 +16,20 @@
   $Id$
 
   $Log$
+
+  Revision 1.13 1997/10/16 zhenhai
+  Removed _transform. It was used to optimize drawing on the same pixel.
+  However it needs to access the transformation of WindowRep. First,
+  this is violation of encapsulation of the WindowRep classes. Second,
+  the problem is that GDataBin assumes WindowRep classes uses Transform class
+  to calculate coordinates. However, this is not the case for OpenGL WindowRep.
+  Third, if such an optimization needs to be done, it should be done at
+  WindowRep level instead of GDataBin level.
+
+  Revision 1.12  1997/09/05 22:36:18  wenger
+  Dispatcher callback requests only generate one callback; added Scheduler;
+  added DepMgr (dependency manager); various minor code cleanups.
+
   Revision 1.11  1997/08/20 22:10:56  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -111,7 +125,8 @@ public:
   ~GDataBin();
 
   /* Init before any data is returned from query processor */
-  void Init(TDataMap *map, VisualFilter *filter, Transform2D *transform,
+
+  void Init(TDataMap *map, VisualFilter *filter, 
 	    Boolean dispSymbol, Boolean dispConnector, TDataCMap *cMap,
 	    GDataBinCallback *callback);
 
@@ -134,8 +149,8 @@ private:
 
   int _gRecSize;	/* size of GData record */
 
-  Transform2D *_transform;
-  int _maxYPixels;
+//  Transform2D *_transform;
+//  int _maxYPixels;
 
   int _timestamp[GDATA_BIN_MAX_PIXELS];
   GDataBinRec *_returnSyms[GDATA_BIN_MAX_PIXELS];
@@ -149,8 +164,8 @@ private:
   Boolean _dispConnector; /* TRUE if display connector */
   TDataCMap *_cMap;	  /* connector mapping */
   
-  Boolean _needX; /* TRUE if we need to get X value for the bin */
-  int _pixelX;	/* get the X value for the bin */
+//  Boolean _needX; /* TRUE if we need to get X value for the bin */
+//  int _pixelX;	/* get the X value for the bin */
   GDataBinCallback *_callBack;
   TDataMap *_mapping;
 

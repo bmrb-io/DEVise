@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  1997/11/24 23:15:08  weaver
+  Changes for the new ColorManager.
+
   Revision 1.39  1997/11/18 23:26:54  wenger
   First version of GData to socket capability; removed some extra include
   dependencies; committed test version of TkControl::OpenDataChannel().
@@ -270,6 +273,10 @@ class FullMapping_OvalShape
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
 				int &recordsProcessed);
+    virtual void Draw3DGDataArray(WindowRep *win, void **gdataArray,
+				  int numSyms, TDataMap *map,
+				  ViewGraph *view, int pixelSize,
+				  int &recordsProcessed);
 };
 
 // -----------------------------------------------------------------
