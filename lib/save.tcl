@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.23  1996/07/16 23:47:37  jussi
+#  Added support for saving a session as a batch script (no Tcl variable
+#  names used or if statements or anything, just a sequential list
+#  of DEVise API calls).
+#
 #  Revision 1.22  1996/07/12 22:24:37  jussi
 #  Views are now saved before tdata and mappings in a session file.
 #  Exporting template with data does not add "addDataSource"
@@ -821,6 +826,10 @@ proc SaveViews { fileId viewDictRef asBatchScript } {
 	    puts $fileId "DEVise setViewStatistics $viewName $viewStatParams"
 	    set viewDimensions [DEVise getViewDimensions $inst]
 	    puts $fileId "DEVise setViewDimensions $viewName $viewDimensions"
+	    set viewSolid3D [DEVise getViewSolid3D $inst]
+	    puts $fileId "DEVise setViewSolid3D $viewName $viewSolid3D"
+	    set viewXYZoom [DEVise getViewXYZoom $inst]
+	    puts $fileId "DEVise setViewXYZoom $viewName $viewXYZoom"
 
 	    set viewDict [DictInsert $viewDict $inst $viewVar]
 	    incr viewNum
