@@ -15,6 +15,11 @@
 %  $Id$
 
 %  $Log$
+%  Revision 1.2  1996/04/14 00:13:29  jussi
+%  Removed interpMapClassInfo and clearInterp. Replaced createInterp
+%  with createMappingClass, and moved createInterp to the obsolete
+%  section.
+%
 %  Revision 1.1  1996/04/12 22:00:07  jussi
 %  Initial revision.
 %
@@ -466,10 +471,25 @@ Errors       & Cannot find mapping (console) \\
 \hline
 Command name & {\tt insertMapping} \\
 Description  & Inserts the mapping to a view \\
+Input \#     & 2/3 \\
+Input Types  & View name (string), mapping name (string), legend (string)
+               (optional) \\
+Output       & None \\
+Errors       & Cannot find view or mapping (return value) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt getMappingLegend} \\
+Description  & Returns the legend used for the mapping \\
 Input \#     & 2 \\
 Input Types  & View name (string), mapping name (string) \\
-Output       & None \\
-Errors       & Cannot find view or mapping (console) (!!) \\
+Output       & Legend (string) \\
+Errors       & Cannot find view or mapping (console) \\
 \hline
 \end{tabular}
 
@@ -1101,7 +1121,7 @@ Description  & Connects a view to the link \\
 Input \#     & 2 \\
 Input Types  & Link name (string), view name (string) \\
 Output       & None \\
-Errors       & Cannot find link or view (console) (!!) \\
+Errors       & Cannot find link or view (return value) \\
 \hline
 \end{tabular}
 
