@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1996/01/19 18:59:02  jussi
+  Added ClearTopGroups.
+
   Revision 1.30  1996/01/17 20:53:51  jussi
   Added support for additional image export formats.
 
@@ -116,6 +119,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "TkControl.h"
 #include "ClassDir.h"
@@ -1479,50 +1483,54 @@ void TkControlPanel::Run()
 		      | TK_IDLE_EVENTS | TK_DONT_WAIT) != 0);
 }
 
-/*************************************************************************/
 void TkControlPanel::SubclassInsertDisplay(DeviseDisplay * /*disp*/,
 					   Coord /*x*/, Coord /*y*/,
 					   Coord /*w*/, Coord /*h*/)
 {
-  /* noop for now */
 }
 
-/************************************************************************/
-void TkControlPanel::SubclassRegisterView(View *view){
+void TkControlPanel::SubclassRegisterView(View *view)
+{
 
 }
 
-/**********************************************************************/
-void TkControlPanel::SubclassUnregisterView(View *view){
+void TkControlPanel::SubclassUnregisterView(View *view)
+{
 }
 
-/************************************************************************/
-void TkControlPanel::SubclassDoInit(){
+void TkControlPanel::SubclassDoInit()
+{
 }
 
-/********************************************************************/
 void TkControlPanel::SubclassDoViewPerspectiveChanged(View *view,
-		Coord , Coord, Coord, Coord){
+		Coord , Coord, Coord, Coord)
+{
 }
 
-void TkControlPanel::SetBusy(){
-	if (++_busy == 1 ){
-		(void)Tcl_Eval(_interp,"ChangeStatus 1");
-	}
+void TkControlPanel::SetBusy()
+{
+  if (++_busy == 1)
+    (void)Tcl_Eval(_interp, "ChangeStatus 1");
 }
 
-void TkControlPanel::SetIdle() {
-	if (--_busy == 0 )
-		(void)Tcl_Eval(_interp,"ChangeStatus 0" );
-	if (_busy < 0){
-		fprintf(stderr,"Internal Error: TkContrlPanel::_busy < 0\n");
-		Exit::DoExit(2);
-	}
+void TkControlPanel::SetIdle()
+{
+  assert(_busy > 0);
+
+  if (--_busy == 0)
+    (void)Tcl_Eval(_interp, "ChangeStatus 0");
 }
 
 Boolean TkControlPanel::IsBusy()
 {
   return (_busy > 0);
+}
+
+void TkControlPanel::ExecuteScript(char *script)
+{
+  char cmd[256];
+  sprintf(cmd, "ExecuteScript %s", script);
+  (void)Tcl_Eval(_interp, cmd);
 }
 
 void TkControlPanel::FilterChanged(View *view, VisualFilter &filter,
