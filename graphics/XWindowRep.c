@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/04/16 19:49:41  jussi
+  Replaced assert() calls with DOASSERT().
+
   Revision 1.29  1996/04/11 17:54:28  jussi
   Added Raise() and Lower().
 
@@ -120,6 +123,10 @@
 #include "XWindowRep.h"
 #include "XDisplay.h"
 #include "Compress.h"
+
+extern "C" {
+#include "xv.h"
+}
 
 //#define DEBUG
 #define MAXPIXELDUMP 0
@@ -297,12 +304,14 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
 {
   char cmd[256];
 
+  if (format == GIF) {
+    ExportGIF(filename);
+    return;
+  }
+
 #if defined(SUN) || defined(HPUX) || defined(LINUX)
   if (format == POSTSCRIPT || format == EPS) {
     sprintf(cmd, "xwd -frame -id %ld | xpr -device ps -portrait -compact -scale 4 > %s",
-	    _win, filename);
-  } else if (format == GIF) {
-    sprintf(cmd, "xwd -frame -id %ld | xwdtopnm | ppmtogif > %s",
 	    _win, filename);
   } else {
     printf("Requested export format not supported yet on this platform.\n");
@@ -313,9 +322,6 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
 #if defined(PENTIUM)
   if (format == POSTSCRIPT || format == EPS) {
     sprintf(cmd, "xwd -frame -id %ld | xwdtopnm | pnmtops -rle > %s",
-	    _win, filename);
-  } else if (format == GIF) {
-    sprintf(cmd, "xwd -frame -id %ld | xwdtopnm | ppmtogif > %s",
 	    _win, filename);
   } else {
     printf("Requested export format not supported yet on this platform.\n");
@@ -334,12 +340,6 @@ rm /tmp/devise.xwd /tmp/devise.rgb",
     sprintf(cmd, "xwd -frame -id %ld > /tmp/devise.xwd; \
 fromxwd /tmp/devise.xwd /tmp/devise.rgb; \
 tops /tmp/devise.rgb -eps > %s; \
-rm /tmp/devise.xwd /tmp/devise.rgb",
-	    _win, filename);
-  } else if (format == GIF) {
-    sprintf(cmd, "xwd -frame -id %ld > /tmp/devise.xwd; \
-fromxwd /tmp/devise.xwd /tmp/devise.rgb; \
-togif /tmp/devise.rgb %s; \
 rm /tmp/devise.xwd /tmp/devise.rgb",
 	    _win, filename);
   } else {
@@ -379,6 +379,57 @@ rm /tmp/devise.xwd /tmp/devise.rgb",
       break;
     }
   }
+}
+
+/* export image as GIF */
+void XWindowRep::ExportGIF(char *filename)
+{
+  XWindowAttributes xwa;
+  if (!XGetWindowAttributes(_display, _win, &xwa)) {
+    fprintf(stderr, "Cannot get window attributes\n");
+    return;
+  }
+
+  XImage *image = XGetImage(_display, _win, 0, 0, xwa.width, xwa.height,
+			    AllPlanes, ZPixmap);
+  if (!image || !image->data) {
+    fprintf(stderr, "Cannot get X pixmap\n");
+    return;
+  }
+
+  XColor *colors = 0;
+  int ncolors = getxcolors(&xwa, &colors, _display);
+  int code = convertImage(image, colors, ncolors, &xwa);
+
+  XDestroyImage(image);
+  if (colors)
+    free(colors);
+
+  if (code != 1 || !grabPic) {
+    fprintf(stderr, "Cannot convert image\n");
+    return;
+  }
+
+  int ptype = (gbits == 24 ? PIC24 : PIC8);
+  int colorstyle = -1;                  // use 1 for grayscale
+  char *comment = "Visualization by DEVise (c) 1996";
+
+  FILE *fp = fopen(filename, "wb");
+  if (!fp) {
+    fprintf(stderr, "Cannot open file %s for writing\n", filename);
+    return;
+  }
+
+  int status = WriteGIF(fp, grabPic, ptype, gWIDE, gHIGH,
+			grabmapR, grabmapG, grabmapB, ncolors,
+			colorstyle, comment);
+  if (status)
+    fprintf(stderr, "Cannot write GIF image\n");
+
+  fclose(fp);
+
+  free(grabPic);
+  grabPic = 0;
 }
 
 /* drawing primitives */

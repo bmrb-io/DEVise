@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/04/11 17:56:25  jussi
+  Added Raise() and Lower().
+
   Revision 1.11  1996/02/28 17:39:57  yuc
   Added _xsegs as a protected variable. This is used in 3D display.
 
@@ -251,6 +254,9 @@ protected:
 #endif
 
 	Window GetWin() { return _win; }
+
+	/* export window image as GIF */
+	void ExportGIF(char *filename);
 
 private:
 	/* Update window dimensions; globals:
