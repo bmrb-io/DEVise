@@ -1,7 +1,7 @@
 #!/s/perl/bin/perl -w
 
 if (grep(/^$ENV{'USER'}.*devise/, `ps aux`)) {
-    print "Nothing done because you are running a DEVise\n";
+    print "Nothing done because you may be running a DEVise\n";
 } else {
     $rm = 'ipcrm';
     foreach (grep(/$ENV{'USER'}/, `ipcs`)) {
