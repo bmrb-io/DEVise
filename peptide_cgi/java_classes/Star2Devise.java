@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2000/10/12 20:08:46  wenger
+// Star2Devise now tolerates not being able to get a value for residue
+// count; added more info to peptide-cgi keyboard help; updated star
+// file list.
+//
 // Revision 1.16  2000/10/11 23:04:25  wenger
 // Added coupling constants (for arbitrary entries, not just 4096) to the
 // peptide-cgi code.
@@ -2089,7 +2094,8 @@ TEMP*/
 "  </center>\n" +
 "  <hr>\n" +
 "\n" +
-"  <applet code=DEViseJSBLoader.class archive=../../jsb1.jar,../../jsb2.jar width=800 height=600>\n" +
+"  <applet code=DEViseJSLoader.class archive=../../jsb1.jar,../../jsb2.jar width=800 height=600>\n" +
+"    <param name=\"applet\" value=\"jsb\">\n" +
 "    <param name=\"debug\" value=\"0\">\n");
 
         dataWriter.print(
