@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Apr 18 2001 09:02:01
+# file date: Apr 23 2001 14:27:58
 # DEVise version: 1.7.2
-# DEVise date: Apr  2 2001
+# DEVise date: Apr 23 2001
 # DEVise endHeader
 
 # Session description
@@ -12,44 +12,44 @@ DEVise setSessionDesc {}
 DEVise loadStringSpace $DEVISE_SESSION/bmrb/amino.str
 
 # Load color palette
-DEVise color SessionPalette {#000000000000          black
-#000000008b00          DarkBlue
-#00000000cd00          MediumBlue
-#00000000ff00          blue
-#000064000000          DarkGreen
-#00008b000000          green4
-#0000bf00ff00          DeepSkyBlue1
-#0000ff000000          green
-#0000ff00ff00          cyan
-#190019007000          MidnightBlue
-#1e009000ff00          DodgerBlue
-#1f001f001f00          gray12
-#22008b002200          ForestGreen
-#400040004000          gray25
-#610061006100          gray38
-#7f007f007f00          gray50
-#8b0000000000          DarkRed
-#8b0045001300          SaddleBrown
-#99003200cc00          DarkOrchid
-#a100a100a100          gray63
-#b20022002200          firebrick
-#b4005200cd00          MediumOrchid3
-#bf00bf00bf00          gray75
-#c000ff003e00          OliveDrab
-#e000e000e000          gray88
-#ee00ad000e00          Goldenrod2
-#ee00e800aa00          PaleGoldenrod
-#f000e6008c00          khaki
-#f500de00b300          wheat
-#fa00fa00d200          LightGoldenrodYellow
-#fd00f500e600          OldLace
-#ff0000000000          red
-#ff000000ff00          magenta
-#ff007f000000          DarkOrange1
-#ff00a5000000          orange
-#ff00d7000000          gold
-#ff00ff000000          yellow
-#ffffffffffff          white
+DEVise color SessionPalette {#000000000000             black
+#000000008b00             DarkBlue
+#00000000cd00             MediumBlue
+#00000000ff00             blue
+#000064000000             DarkGreen
+#00008b000000             green4
+#0000bf00ff00             DeepSkyBlue1
+#0000ff000000             green
+#0000ff00ff00             cyan
+#190019007000             MidnightBlue
+#1e009000ff00             DodgerBlue
+#1f001f001f00             gray12
+#22008b002200             ForestGreen
+#400040004000             gray25
+#610061006100             gray38
+#7f007f007f00             gray50
+#8b0000000000             DarkRed
+#8b0045001300             SaddleBrown
+#99003200cc00             DarkOrchid
+#a100a100a100             gray63
+#b20022002200             firebrick
+#b4005200cd00             MediumOrchid3
+#bf00bf00bf00             gray75
+#c000ff003e00             OliveDrab
+#e000e000e000             gray88
+#ee00ad000e00             Goldenrod2
+#ee00e800aa00             PaleGoldenrod
+#f000e6008c00             khaki
+#f500de00b300             wheat
+#fa00fa00d200             LightGoldenrodYellow
+#fd00f500e600             OldLace
+#ff0000000000             red
+#ff000000ff00             magenta
+#ff007f000000             DarkOrange1
+#ff00a5000000             orange
+#ff00d7000000             gold
+#ff00ff000000             yellow
+#ffffffffffff             white
 }
 
 # Per-session data source definitions
@@ -100,7 +100,7 @@ DEVise viewSetHorPan {View 4} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 4} 1 0.500000 1.000000
 DEVise setViewGDS {View 4} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {View 4} 1 0 0 "" 1 " " 1
-DEVise setHistogram {View 4} -0.5 3.5 10
+DEVise setHistogram {View 4} 17.5 19.5 10
 DEVise setCountMapping {View 4} 0 {} {}
 DEVise viewSetIsHighlight {View 4} 0
 DEVise setXAxisDateFormat {View 4} {%b %d %Y %T}
@@ -112,7 +112,7 @@ DEVise setDupElim {View 4} {1}
 DEVise setNiceAxes {View 4} 0 0
 DEVise viewSetDisabledActions {View 4} 0 0 0 0
 DEVise setShowMouseLocation {View 4} {1}
-DEVise create {view} {Scatter} {View 1} 6.310000 10.200000 104.430000 132.960007 37 0
+DEVise create {view} {Scatter} {View 1} -10.200000 -6.310000 -132.960007 -104.430000 37 0
 DEVise setLabel {View 1} 1 16 {N chem shift vs. H chem shift}
 DEVise setViewStatistics {View 1} 00000000
 DEVise setViewDimensions {View 1} 2
@@ -128,7 +128,7 @@ DEVise viewSetHorPan {View 1} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 1} 1 0.500000 1.000000
 DEVise setViewGDS {View 1} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {View 1} 1 0 0 "" 1 " " 1
-DEVise setHistogram {View 1} 6.56 9.95 10
+DEVise setHistogram {View 1} -132.96 0 10
 DEVise setCountMapping {View 1} 0 {} {}
 DEVise viewSetIsHighlight {View 1} 0
 DEVise setXAxisDateFormat {View 1} {%b %d %Y %T}
@@ -140,7 +140,7 @@ DEVise setDupElim {View 1} {0}
 DEVise setNiceAxes {View 1} 0 0
 DEVise viewSetDisabledActions {View 1} 0 0 0 0
 DEVise setShowMouseLocation {View 1} {1}
-DEVise create {view} {Scatter} {View 2} 6.310000 10.200000 104.430000 132.960007 37 0
+DEVise create {view} {Scatter} {View 2} -10.200000 -6.310000 -132.960007 -104.430000 37 0
 DEVise setLabel {View 2} 1 16 {N chem shift vs. H chem shift}
 DEVise setViewStatistics {View 2} 00000000
 DEVise setViewDimensions {View 2} 2
@@ -156,7 +156,7 @@ DEVise viewSetHorPan {View 2} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 2} 1 0.500000 1.000000
 DEVise setViewGDS {View 2} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {View 2} 1 0 0 "" 1 " " 1
-DEVise setHistogram {View 2} 6.56 9.95 10
+DEVise setHistogram {View 2} -132.96 0 10
 DEVise setCountMapping {View 2} 0 {} {}
 DEVise viewSetIsHighlight {View 2} 0
 DEVise setXAxisDateFormat {View 2} {%b %d %Y %T}
@@ -174,9 +174,9 @@ DEVise createMappingClass {Hshift_vs_Nshift}
 DEVise createMappingClass {AcidName_vs_ResNum}
 
 # Create mapping instances (GData)
-DEVise create {mapping} {Hshift_vs_Nshift} .4267hn1 .4267hn1#Hshift_vs_Nshift {} {$Hshift} {$Nshift} {} 8 0.5 -1 0 4 0.1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Hshift_vs_Nshift} .4267hn1 .4267hn1#Hshift_vs_Nshift {} {-$Hshift} {-$Nshift} {} 8 0.5 -1 0 4 0.1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267hn1#Hshift_vs_Nshift} 1
-DEVise create {mapping} {Hshift_vs_Nshift} .4267hn1 {.4267hn1#Hshift_vs_Nshift 2} {} {$Hshift} {$Nshift} {} 31 0.3 0 0 4 0.1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Hshift_vs_Nshift} .4267hn1 {.4267hn1#Hshift_vs_Nshift 2} {} {-$Hshift} {-$Nshift} {} 31 0.3 0 0 4 0.1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267hn1#Hshift_vs_Nshift 2} 1
 DEVise create {mapping} {AcidName_vs_ResNum} .4267hn1 .4267hn1#AcidName_vs_ResNum {} 0 {19-$AcidName} {} 37 12 0 0 16 {$AcidName} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267hn1#AcidName_vs_ResNum} 1
@@ -210,18 +210,26 @@ DEVise setAxisDisplay {View 3} {X} 0
 DEVise setAxisDisplay {View 3} {Y} 0
 DEVise setAxisTicks {View 3} {X} 1
 DEVise setAxisTicks {View 3} {Y} 1
+DEVise setAxisNegLabel {View 3} {X} 0
+DEVise setAxisNegLabel {View 3} {Y} 0
 DEVise setAxisDisplay {View 4} {X} 0
 DEVise setAxisDisplay {View 4} {Y} 0
 DEVise setAxisTicks {View 4} {X} 1
 DEVise setAxisTicks {View 4} {Y} 1
+DEVise setAxisNegLabel {View 4} {X} 0
+DEVise setAxisNegLabel {View 4} {Y} 0
 DEVise setAxisDisplay {View 1} {X} 1
 DEVise setAxisDisplay {View 1} {Y} 1
 DEVise setAxisTicks {View 1} {X} 1
 DEVise setAxisTicks {View 1} {Y} 1
+DEVise setAxisNegLabel {View 1} {X} 1
+DEVise setAxisNegLabel {View 1} {Y} 1
 DEVise setAxisDisplay {View 2} {X} 1
 DEVise setAxisDisplay {View 2} {Y} 1
 DEVise setAxisTicks {View 2} {X} 1
 DEVise setAxisTicks {View 2} {Y} 1
+DEVise setAxisNegLabel {View 2} {X} 1
+DEVise setAxisNegLabel {View 2} {Y} 1
 
 # Put action into view
 
@@ -258,61 +266,9 @@ DEVise setPileStackState {DEViseWn2} 1
 
 # Init history of view
 DEVise clearViewHistory {View 3}
-DEVise insertViewHistory {View 3} {3.00} {0.00} {26.00} {100.00} 0
-DEVise insertViewHistory {View 3} {0.00} {0.00} {1.00} {19.00} 0
-DEVise insertViewHistory {View 3} {-0.50} {0.00} {0.50} {19.00} 0
-DEVise insertViewHistory {View 3} {-0.50} {-0.50} {0.50} {19.50} 0
 DEVise clearViewHistory {View 4}
-DEVise insertViewHistory {View 4} {-0.50} {-0.50} {0.50} {19.50} 0
-DEVise insertViewHistory {View 4} {-0.50} {-0.50} {0.50} {6.94} 0
-DEVise insertViewHistory {View 4} {-0.50} {-0.50} {0.50} {6.50} 0
-DEVise insertViewHistory {View 4} {-0.50} {-0.50} {0.50} {3.50} 0
-DEVise insertViewHistory {View 4} {-0.50} {4.50} {0.50} {8.50} 0
-DEVise insertViewHistory {View 4} {-0.50} {7.50} {0.50} {8.50} 0
-DEVise insertViewHistory {View 4} {-0.50} {7.50} {0.50} {9.50} 0
-DEVise insertViewHistory {View 4} {-0.50} {17.50} {0.50} {19.50} 0
 DEVise clearViewHistory {View 1}
-DEVise insertViewHistory {View 1} {113.37} {7.70} {129.92} {8.25} -110
-DEVise insertViewHistory {View 1} {112.22} {7.86} {131.80} {8.99} -110
-DEVise insertViewHistory {View 1} {108.91} {7.08} {133.62} {9.45} -110
-DEVise insertViewHistory {View 1} {108.91} {7.08} {133.62} {9.45} -110
-DEVise insertViewHistory {View 1} {103.39} {6.30} {133.01} {10.42} -110
-DEVise insertViewHistory {View 1} {105.61} {6.73} {130.53} {9.95} 0
-DEVise insertViewHistory {View 1} {80.38} {2.96} {171.96} {11.70} 0
-DEVise insertViewHistory {View 1} {102.03} {6.38} {135.05} {10.24} 0
-DEVise insertViewHistory {View 1} {102.03} {6.38} {135.05} {10.24} -73
-DEVise insertViewHistory {View 1} {104.68} {6.56} {132.71} {9.95} 0
-DEVise insertViewHistory {View 1} {104.43} {6.31} {132.96} {10.20} 0
-DEVise insertViewHistory {View 1} {104.43} {6.31} {132.96} {10.20} -73
-DEVise insertViewHistory {View 1} {104.43} {6.31} {132.96} {10.20} 0
-DEVise insertViewHistory {View 1} {112.78} {8.21} {116.56} {8.82} 0
-DEVise insertViewHistory {View 1} {104.43} {6.31} {132.96} {10.20} 0
-DEVise insertViewHistory {View 1} {6.31} {104.43} {10.20} {132.96} 0
-DEVise insertViewHistory {View 1} {7.44} {118.75} {7.73} {121.90} 0
-DEVise insertViewHistory {View 1} {6.31} {104.43} {10.20} {132.96} 0
-DEVise insertViewHistory {View 1} {7.30} {116.44} {8.02} {122.38} 0
-DEVise insertViewHistory {View 1} {6.31} {104.43} {10.20} {132.96} 0
 DEVise clearViewHistory {View 2}
-DEVise insertViewHistory {View 2} {108.91} {7.08} {133.62} {9.45} -110
-DEVise insertViewHistory {View 2} {108.91} {7.08} {133.62} {9.45} -110
-DEVise insertViewHistory {View 2} {95.77} {3.38} {147.91} {12.02} 0
-DEVise insertViewHistory {View 2} {103.39} {6.30} {133.01} {10.42} 0
-DEVise insertViewHistory {View 2} {103.39} {6.30} {133.01} {10.42} -110
-DEVise insertViewHistory {View 2} {105.61} {6.73} {130.53} {9.95} 0
-DEVise insertViewHistory {View 2} {80.38} {2.96} {171.96} {11.70} 0
-DEVise insertViewHistory {View 2} {102.03} {6.38} {135.05} {10.24} 0
-DEVise insertViewHistory {View 2} {102.03} {6.38} {135.05} {10.24} -73
-DEVise insertViewHistory {View 2} {104.68} {6.56} {132.71} {9.95} 0
-DEVise insertViewHistory {View 2} {104.43} {6.31} {132.96} {10.20} 0
-DEVise insertViewHistory {View 2} {104.43} {6.31} {132.96} {10.20} -73
-DEVise insertViewHistory {View 2} {104.43} {6.31} {132.96} {10.20} 0
-DEVise insertViewHistory {View 2} {112.78} {8.21} {116.56} {8.82} 0
-DEVise insertViewHistory {View 2} {104.43} {6.31} {132.96} {10.20} 0
-DEVise insertViewHistory {View 2} {6.31} {104.43} {10.20} {132.96} 0
-DEVise insertViewHistory {View 2} {7.44} {118.75} {7.73} {121.90} 0
-DEVise insertViewHistory {View 2} {6.31} {104.43} {10.20} {132.96} 0
-DEVise insertViewHistory {View 2} {7.30} {116.44} {8.02} {122.38} 0
-DEVise insertViewHistory {View 2} {6.31} {104.43} {10.20} {132.96} 0
 
 # Set camera location for each view
 DEVise set3DLocation {View 3} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>

@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Apr 18 2001 09:52:40
+# file date: Apr 23 2001 16:31:19
 # DEVise version: 1.7.2
-# DEVise date: Apr  2 2001
+# DEVise date: Apr 23 2001
 # DEVise endHeader
 
 # Session description
@@ -12,51 +12,51 @@ DEVise setSessionDesc {}
 DEVise loadStringSpace $DEVISE_SESSION/bmrb/amino+atom_color.str
 
 # Load color palette
-DEVise color SessionPalette {#000000000000             black
-#000000008b00             DarkBlue
-#00000000cd00             MediumBlue
-#00000000ff00             blue
-#000064000000             DarkGreen
-#00008b000000             green4
-#0000bf00ff00             DeepSkyBlue1
-#0000ff000000             green
-#0000ff00ff00             cyan
-#190019007000             MidnightBlue
-#1e009000ff00             DodgerBlue
-#1f001f001f00             gray12
-#22008b002200             ForestGreen
-#400040004000             gray25
-#610061006100             gray38
-#7f007f007f00             gray50
-#8b0000000000             DarkRed
-#8b0045001300             SaddleBrown
-#99003200cc00             DarkOrchid
-#a100a100a100             gray63
-#b20022002200             firebrick
-#b4005200cd00             MediumOrchid3
-#bf00bf00bf00             gray75
-#c000ff003e00             OliveDrab
-#e000e000e000             gray88
-#ee00ad000e00             Goldenrod2
-#ee00e800aa00             PaleGoldenrod
-#f000e6008c00             khaki
-#f500de00b300             wheat
-#fa00fa00d200             LightGoldenrodYellow
-#fd00f500e600             OldLace
-#ff0000000000             red
-#ff000000ff00             magenta
-#ff007f000000             DarkOrange1
-#ff00a5000000             orange
-#ff00d7000000             gold
-#ff00ff000000             yellow
-#ffffffffffff             white
+DEVise color SessionPalette {#000000000000               black
+#000000008b00               DarkBlue
+#00000000cd00               MediumBlue
+#00000000ff00               blue
+#000064000000               DarkGreen
+#00008b000000               green4
+#0000bf00ff00               DeepSkyBlue1
+#0000ff000000               green
+#0000ff00ff00               cyan
+#190019007000               MidnightBlue
+#1e009000ff00               DodgerBlue
+#1f001f001f00               gray12
+#22008b002200               ForestGreen
+#400040004000               gray25
+#610061006100               gray38
+#7f007f007f00               gray50
+#8b0000000000               DarkRed
+#8b0045001300               SaddleBrown
+#99003200cc00               DarkOrchid
+#a100a100a100               gray63
+#b20022002200               firebrick
+#b4005200cd00               MediumOrchid3
+#bf00bf00bf00               gray75
+#c000ff003e00               OliveDrab
+#e000e000e000               gray88
+#ee00ad000e00               Goldenrod2
+#ee00e800aa00               PaleGoldenrod
+#f000e6008c00               khaki
+#f500de00b300               wheat
+#fa00fa00d200               LightGoldenrodYellow
+#fd00f500e600               OldLace
+#ff0000000000               red
+#ff000000ff00               magenta
+#ff007f000000               DarkOrange1
+#ff00a5000000               orange
+#ff00d7000000               gold
+#ff00ff000000               yellow
+#ffffffffffff               white
 }
 
 # Per-session data source definitions
 DEVise dteInsertCatalogEntry . {"4267as1" UNIXFILE 4267as1.dat AllShift /p/devise/demo/schema/schema/physical/bmrb:AllShift "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
 
 # Create views
-DEVise create {view} {SortedX} {View 1} 11.700000 181.460001 -0.500000 19.500000 37 0
+DEVise create {view} {SortedX} {View 1} -181.460001 -11.700000 -0.500000 19.500000 37 0
 DEVise setLabel {View 1} 1 16 {Chemical Shift Values}
 DEVise setViewStatistics {View 1} 00000000
 DEVise setViewDimensions {View 1} 2
@@ -175,7 +175,7 @@ DEVise createMappingClass {ResLabel_vs_ShiftAssignID}
 DEVise createMappingClass {AtomType_vs_recId}
 
 # Create mapping instances (GData)
-DEVise create {mapping} {ChemShiftVal_vs_ShiftAssignID} .4267as1 .4267as1#ChemShiftVal_vs_ShiftAssignID {} {$ChemShiftVal} {19-$ResLabel} {} 8 1 0 0 0 0.01 0.5 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {ChemShiftVal_vs_ShiftAssignID} .4267as1 .4267as1#ChemShiftVal_vs_ShiftAssignID {} {-$ChemShiftVal} {19-$ResLabel} {} 8 1 0 0 0 0.01 0.5 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267as1#ChemShiftVal_vs_ShiftAssignID} 1
 DEVise create {mapping} {ResLabel_vs_ShiftAssignID} .4267as1 .4267as1#ResLabel_vs_ShiftAssignID {} 0 {19-$ResLabel} {} 37 12 0 0 16 {$ResLabel} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267as1#ResLabel_vs_ShiftAssignID} 1
@@ -213,18 +213,26 @@ DEVise setAxisDisplay {View 1} {X} 1
 DEVise setAxisDisplay {View 1} {Y} 0
 DEVise setAxisTicks {View 1} {X} 1
 DEVise setAxisTicks {View 1} {Y} 1
+DEVise setAxisNegLabel {View 1} {X} 1
+DEVise setAxisNegLabel {View 1} {Y} 0
 DEVise setAxisDisplay {View 2} {X} 1
 DEVise setAxisDisplay {View 2} {Y} 0
 DEVise setAxisTicks {View 2} {X} 1
 DEVise setAxisTicks {View 2} {Y} 1
+DEVise setAxisNegLabel {View 2} {X} 0
+DEVise setAxisNegLabel {View 2} {Y} 0
 DEVise setAxisDisplay {View 3} {X} 0
 DEVise setAxisDisplay {View 3} {Y} 0
 DEVise setAxisTicks {View 3} {X} 1
 DEVise setAxisTicks {View 3} {Y} 1
+DEVise setAxisNegLabel {View 3} {X} 0
+DEVise setAxisNegLabel {View 3} {Y} 0
 DEVise setAxisDisplay {View 4} {X} 0
 DEVise setAxisDisplay {View 4} {Y} 0
 DEVise setAxisTicks {View 4} {X} 1
 DEVise setAxisTicks {View 4} {Y} 1
+DEVise setAxisNegLabel {View 4} {X} 0
+DEVise setAxisNegLabel {View 4} {Y} 0
 
 # Put action into view
 
@@ -262,71 +270,9 @@ DEVise setPileStackState {DEViseWn3} 1
 
 # Init history of view
 DEVise clearViewHistory {View 1}
-DEVise insertViewHistory {View 1} {-10.51} {-1.52} {193.48} {20.14} -110
-DEVise insertViewHistory {View 1} {-10.51} {-0.50} {193.48} {19.50} -110
-DEVise insertViewHistory {View 1} {-10.51} {-0.50} {193.48} {19.50} -38
-DEVise insertViewHistory {View 1} {-10.51} {-0.50} {193.48} {19.50} -6
-DEVise insertViewHistory {View 1} {-10.51} {-0.50} {193.48} {19.50} -110
-DEVise insertViewHistory {View 1} {-10.51} {-0.50} {193.48} {19.50} -110
-DEVise insertViewHistory {View 1} {-0.51} {-0.50} {181.46} {19.50} -73
-DEVise insertViewHistory {View 1} {11.70} {-0.50} {181.46} {19.50} 0
-DEVise insertViewHistory {View 1} {83.89} {-0.50} {132.81} {19.50} 0
-DEVise insertViewHistory {View 1} {83.89} {-0.50} {132.81} {19.50} -73
-DEVise insertViewHistory {View 1} {11.70} {-0.50} {181.46} {19.50} 0
-DEVise insertViewHistory {View 1} {83.89} {-0.50} {132.81} {19.50} 0
-DEVise insertViewHistory {View 1} {-0.51} {-0.50} {10.13} {19.50} 0
-DEVise insertViewHistory {View 1} {11.70} {-0.50} {181.46} {19.50} 0
-DEVise insertViewHistory {View 1} {11.70} {-0.50} {181.46} {19.50} -73
-DEVise insertViewHistory {View 1} {11.70} {-0.50} {181.46} {19.50} 0
-DEVise insertViewHistory {View 1} {11.70} {-0.50} {181.46} {19.50} -73
-DEVise insertViewHistory {View 1} {11.70} {-0.50} {181.46} {19.50} 0
-DEVise insertViewHistory {View 1} {11.70} {-0.50} {181.46} {19.50} -73
-DEVise insertViewHistory {View 1} {11.70} {-0.50} {181.46} {19.50} 0
 DEVise clearViewHistory {View 2}
-DEVise insertViewHistory {View 2} {1.00} {0.00} {2005.00} {100.00} 0
-DEVise insertViewHistory {View 2} {0.00} {0.00} {1.00} {19.00} 0
-DEVise insertViewHistory {View 2} {-0.50} {0.00} {0.50} {19.00} 0
-DEVise insertViewHistory {View 2} {-0.50} {-0.50} {0.50} {19.50} 0
-DEVise insertViewHistory {View 2} {-0.50} {0.00} {0.50} {19.00} 0
-DEVise insertViewHistory {View 2} {-0.50} {-0.50} {0.50} {19.50} 0
-DEVise insertViewHistory {View 2} {-0.50} {14.04} {0.50} {15.75} 0
-DEVise insertViewHistory {View 2} {-0.50} {-0.50} {0.50} {19.50} 0
 DEVise clearViewHistory {View 3}
-DEVise insertViewHistory {View 3} {-0.41} {0.00} {181.36} {100.00} 0
-DEVise insertViewHistory {View 3} {0.00} {1.00} {1.00} {5.00} 0
-DEVise insertViewHistory {View 3} {-0.50} {1.00} {0.50} {5.00} 0
-DEVise insertViewHistory {View 3} {-2.97} {-8.59} {3.29} {10.05} 0
-DEVise insertViewHistory {View 3} {-0.33} {0.15} {0.34} {6.28} 0
-DEVise insertViewHistory {View 3} {-0.33} {0.15} {0.34} {6.28} 0
-DEVise insertViewHistory {View 3} {-0.33} {0.15} {0.34} {6.28} -73
-DEVise insertViewHistory {View 3} {0.00} {20.00} {1.00} {22.00} 0
-DEVise insertViewHistory {View 3} {-0.50} {20.00} {0.50} {22.00} 0
-DEVise insertViewHistory {View 3} {0.00} {20.00} {1.00} {22.00} 0
-DEVise insertViewHistory {View 3} {-0.50} {19.50} {1.00} {22.50} 0
-DEVise insertViewHistory {View 3} {-0.50} {19.50} {0.50} {22.50} 0
-DEVise insertViewHistory {View 3} {-0.50} {-0.50} {1.00} {2.50} 0
-DEVise insertViewHistory {View 3} {-0.50} {-0.50} {0.50} {2.50} 0
 DEVise clearViewHistory {View 4}
-DEVise insertViewHistory {View 4} {-0.33} {1.50} {0.34} {2.50} 0
-DEVise insertViewHistory {View 4} {-0.33} {0.50} {0.34} {1.50} 0
-DEVise insertViewHistory {View 4} {-0.33} {1.50} {0.34} {2.50} 0
-DEVise insertViewHistory {View 4} {-0.33} {4.50} {0.34} {5.50} 0
-DEVise insertViewHistory {View 4} {-0.33} {1.50} {0.34} {2.50} 0
-DEVise insertViewHistory {View 4} {-0.33} {0.50} {0.34} {1.50} 0
-DEVise insertViewHistory {View 4} {-0.33} {1.50} {0.34} {2.50} 0
-DEVise insertViewHistory {View 4} {-0.33} {4.50} {0.34} {5.50} 0
-DEVise insertViewHistory {View 4} {-0.33} {20.50} {0.34} {21.50} 0
-DEVise insertViewHistory {View 4} {0.00} {20.50} {1.00} {21.50} 0
-DEVise insertViewHistory {View 4} {-0.50} {20.50} {0.50} {21.50} 0
-DEVise insertViewHistory {View 4} {-0.50} {21.50} {0.50} {22.50} 0
-DEVise insertViewHistory {View 4} {-0.50} {19.50} {0.50} {20.50} 0
-DEVise insertViewHistory {View 4} {-0.50} {20.50} {0.50} {21.50} 0
-DEVise insertViewHistory {View 4} {0.00} {20.50} {1.00} {21.50} 0
-DEVise insertViewHistory {View 4} {-0.50} {20.50} {1.00} {21.50} 0
-DEVise insertViewHistory {View 4} {-0.50} {20.50} {0.50} {21.50} 0
-DEVise insertViewHistory {View 4} {-0.50} {0.50} {0.50} {1.50} 0
-DEVise insertViewHistory {View 4} {-0.50} {0.50} {1.00} {1.50} 0
-DEVise insertViewHistory {View 4} {-0.50} {0.50} {0.50} {1.50} 0
 
 # Set camera location for each view
 DEVise set3DLocation {View 1} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>

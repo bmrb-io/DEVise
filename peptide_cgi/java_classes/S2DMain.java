@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2001/04/18 15:14:50  wenger
+// Various improvements to "H vs. N" and "all chem shift" visualizations
+// as requested yesterday at BMRB meeting; added string files to CVS and
+// the install process.
+//
 // Revision 1.10  2001/04/17 17:09:09  wenger
 // Added display of H vs. N chem shifts.
 //
@@ -83,7 +88,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.4";
+    public static final String PEP_CGI_VERSION = "2.5";
 
     private int _accessionNum;
     private String _dataDir;
