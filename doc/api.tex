@@ -15,6 +15,9 @@
 %  $Id$
 
 %  $Log$
+%  Revision 1.1  1996/04/12 22:00:07  jussi
+%  Initial revision.
+%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -419,31 +422,12 @@ Errors       & None \\
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt createInterp} \\
-Description  & Create interpreted mapping \\
-Input \#     & 13 \\
-Input Types  & TData name (string), interpreter name (string),
-               X axis (constant/variable name/expression),
-               Y axis, Z axis, color, size, pattern, orientation, shape,
-               shapeAttr0, shapeAttr1, shapeAttr2 \\
-Output       & None \\
-Errors       & Cannot create mapping (return value) \\
-\hline
-\end{tabular}
-
-\bigskip
-
-\noindent
-\begin{tabular}{l|p{5in}}
-\hline
-Command name & {\tt interpMapClassInfo} \\
-Description  & Return information that can be used to create
-               an interpreted mapping classes \\
-Input \#     & 0 \\
-Input Types  & None \\
-Output       & \{\{class arg\} \ldots \} where arg is of the form
-               \{tdata mappingName sorted x y color \ldots \} \\
-Errors       & None \\
+Command name & {\tt createMappingClass} \\
+Description  & Create interpreted mapping class \\
+Input \#     & 1 \\
+Input Types  & Mapping class name (string) \\
+Output       & Mapping class name (string) \\
+Errors       & Cannot create mapping class (empty return value) \\
 \hline
 \end{tabular}
 
@@ -1266,20 +1250,6 @@ Errors       & None \\
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt clearInterp} \\
-Description  & Clear the list of interpreted classes \\
-Input \#     & 0 \\
-Input Types  & None \\
-Output       & None \\
-Errors       & None \\
-\hline
-\end{tabular}
-
-\bigskip
-
-\noindent
-\begin{tabular}{l|p{5in}}
-\hline
 Command name & {\tt parseDateFloat} \\
 Description  & Converts a date in string format to Unix time format \\
 Input \#     & 1 \\
@@ -1421,6 +1391,23 @@ Input \#     & 0 \\
 Input Types  & None \\
 Output       & Dispatched class name(string),DispatcherCallBack * (pointer) \\
 Errors       & None \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt createInterp} \\
+Description  & Create interpreted mapping class \\
+Input \#     & 13 \\
+Input Types  & TData name (string), mapping class name (string),
+               X axis (constant/variable name/expression),
+               Y axis, Z axis, color, size, pattern, orientation, shape,
+               shapeAttr0, shapeAttr1, shapeAttr2 \\
+Output       & Mapping class name (string) \\
+Errors       & Cannot create mapping class (empty return value) \\
 \hline
 \end{tabular}
 
