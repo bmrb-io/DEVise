@@ -21,6 +21,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16  2000/12/13 22:02:03  wenger
+#  Added more paths to perl.
+#
 #  Revision 1.15  2000/12/08 20:54:59  wenger
 #  Major changes to cron job scripts to check and restart jspop, etc., so they
 #  work when jspop and jss are on different machines.
@@ -106,6 +109,8 @@ $arch = `uname`;
 chomp $arch;
 if ($arch eq "Linux") {
   $ps_cmd = "/bin/ps axw";
+} elsif (`hostname` eq "yola\n") {
+  $ps_cmd = "/sbin/ps -ef";
 } else {
   $ps_cmd = "/usr/ucb/ps -axw";
 }

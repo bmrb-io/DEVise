@@ -33,9 +33,9 @@ endif
 
 
 # Check whether all of the processes are running.
-set popCheck = `check_jspop $idStr`
+set popCheck = `./check_jspop $idStr`
 if ($jssHost == "") then
-  set jssCheck = `check_jss $idStr`
+  set jssCheck = `./check_jss $idStr`
 else
   set jssCheck = `rsh $jssHost "cd $jssPath; check_jss $idStr"`
 endif
@@ -50,5 +50,5 @@ if ($jssCheck != "OK") then
 endif
 
 if ($popCheck != "OK" || $jssCheck != "OK") then
-  restart_jspop $idStr $serverCount $jssHost $jssPath
+  ./restart_jspop $idStr $serverCount $jssHost $jssPath
 endif

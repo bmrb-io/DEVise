@@ -12,7 +12,12 @@
 
 ############################################################
 
+
+# For CS.
 set path = ( /s/std/bin /usr/ucb /bin /p/devise/run $path )
+
+# For yola.
+set path = ( $path /usr/people/zoo/bin /usr/local/zoobin /usr/freeware/bin /usr/people/zoo/zoobin /usr/sbin /usr/bsd /sbin /usr/bin /usr/bin/X11 /usr/freeware/bin /bmrb/bin /bmrb/irix/bin /usr/java/bin /usr/local/bin /usr/people/zoo/perl /usr1/local/share /usr1/local/bin /usr/bin/X11 )
 
 set outfile = /tmp/run_check.out
 
@@ -25,7 +30,12 @@ endif
 # All this garbage because Sun's current crond on Intel/Solaris won't
 # send mail correctly.
 if (-e $outfile && ! -z $outfile) then
-    cat $outfile | mail -s "Error message from check_jsall on `hostname`" `whoami`
+    if (`hostname` == "yola") then
+        # Note: stupid mail on SGI doesn't take -s argument!
+        cat $outfile | mail `whoami`
+    else
+        cat $outfile | mail -s "Error message from check_jsall on `hostname`" `whoami`
+    endif
 endif
 
 touch /tmp/normal_js_check

@@ -21,6 +21,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  2000/12/13 22:02:04  wenger
+#  Added more paths to perl.
+#
 #  Revision 1.1  2000/12/06 19:48:57  wenger
 #  New scripts to kill jspop and jss.
 #
@@ -33,7 +36,11 @@ if ($#ARGV >= 0) {
     $pattern = "java jspop";
 }
 
-open PS, "ps -axw >& 1 |" or die "can't fork: $!";
+if (`hostname` eq "yola\n") {
+  open PS, "ps -ef >& 1 |" or die "can't fork: $!";
+} else {
+  open PS, "ps -axw >& 1 |" or die "can't fork: $!";
+}
 
 while (<PS>) {
     # Avoid killing ourself!
