@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1995/12/01 19:46:30  jussi
+#  Fixed case where a view that is not mapped to the screen caused
+#  an error.
+#
 #  Revision 1.3  1995/11/29 15:55:11  jussi
 #  Removed constant window size definitions because they will produce
 #  unexpected results on some window managers.
@@ -111,7 +115,7 @@ proc PrintActual {toprinter printcmd filename allviews} {
 		    "Please select a view by clicking in it first." "" 0 OK
 	    return
 	}
-	set windowlist [DEVise getViewWin $curView]
+	set windowlist [list [DEVise getViewWin $curView]]
 
     } else {
 
