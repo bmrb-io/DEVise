@@ -1,7 +1,10 @@
 /*
    $Id$
 
-   $Log$*/
+   $Log$
+   Revision 1.1  1995/09/06 15:28:56  jussi
+   Initial revision of archive.
+*/
 
 #include <iostream.h>
 #include <strstream.h>
@@ -690,14 +693,15 @@ static int extract(RecTape &tape, char *stock, long offset)
 int extractStocksCmd(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 {
   // Create variable links
-  Tcl_LinkVar(interp, "tapeDrive", (char *)&tapeDrive, TCL_LINK_STRING);
-  Tcl_LinkVar(interp, "tapeFile", (char *)&tapeFile, TCL_LINK_INT);
-  Tcl_LinkVar(interp, "tradePath", (char *)&tradePath, TCL_LINK_STRING);
-  Tcl_LinkVar(interp, "quotePath", (char *)&quotePath, TCL_LINK_STRING);
+  Tcl_LinkVar(interp, "issm_tapeDrive", (char *)&tapeDrive, TCL_LINK_STRING);
+  Tcl_LinkVar(interp, "issm_tapeFile", (char *)&tapeFile, TCL_LINK_INT);
+  Tcl_LinkVar(interp, "issm_tradePath", (char *)&tradePath, TCL_LINK_STRING);
+  Tcl_LinkVar(interp, "issm_quotePath", (char *)&quotePath, TCL_LINK_STRING);
 
   if (!tapeDrive || !tradePath || !quotePath) {
-    cerr << "One of tapeDrive, tradePath, and quotePath is undefined." << endl;
-    cerr << "Define these values in issm.tcl and restart xissm." << endl;
+    cerr << "One of issm_tapeDrive, issm_tradePath, and "
+         << "issm_quotePath is undefined." << endl;
+    cerr << "Define these values in $(DEVISE_LIB)/issm.tk." << endl;
     return TCL_ERROR;
   }
 
