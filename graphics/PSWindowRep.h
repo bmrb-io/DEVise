@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/09/10 20:07:09  wenger
+  High-level parts of new PostScript output code are in place (conditionaled
+  out for now so that the old code is used until the new code is fully
+  working); changed (c) (tm) in windows so images are not copyrighted
+  by DEVise; minor bug fixes; added more debug code in the course of working
+  on the PostScript stuff.
+
   Revision 1.2  1996/07/10 16:25:33  jussi
   Removed _dispGraphics variable.
 
@@ -77,6 +84,8 @@ public:
     virtual void ScrollAbsolute(int x, int y, unsigned width,
                                 unsigned height, int dstX, int dstY) {}
 
+    virtual void SetFgColor(Color bg);
+    virtual void SetBgColor(Color bg);
     virtual void SetWindowBgColor(Color bg);
 
     virtual void FillRect(Coord xlow, Coord ylow, Coord width, Coord height);
@@ -158,6 +167,9 @@ protected:
 private:
     /* Update window dimensions; globals: _x, _y, _width, _height */
     void UpdateWinDimensions();
+
+    void DrawFilledRect(FILE *printFile, Coord x1, Coord y1, Coord x2,
+      Coord y2);
 
     /* current dimensions of window */
     int _x, _y;

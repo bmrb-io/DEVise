@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/09/19 20:11:52  wenger
+  More PostScript output code (still disabled); some code for drawing
+  view borders (disabled).
+
   Revision 1.1  1996/07/10 16:23:02  jussi
   Initial revision.
 */
@@ -187,7 +191,23 @@ void PSWindowRep::ExportImage(DisplayExportFormat format, char *filename)
     /* do something */
 }
 
-/* drawing primitives */
+/* color selection interface using Devise colormap */
+
+void PSWindowRep::SetFgColor(Color fg)
+{
+  WindowRep::SetFgColor(fg);
+#ifdef GRAPHICS
+    /* do something */
+#endif
+}
+
+void PSWindowRep::SetBgColor(Color bg)
+{
+  WindowRep::SetBgColor(bg);
+#ifdef GRAPHICS
+    /* do something */
+#endif
+}
 
 void PSWindowRep::SetWindowBgColor(Color bg)
 {
@@ -195,6 +215,8 @@ void PSWindowRep::SetWindowBgColor(Color bg)
   /* do something */
 #endif
 }
+
+/* drawing primitives */
 
 void PSWindowRep::DrawPixel(Coord x, Coord y)
 {
@@ -347,7 +369,17 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
 #endif
 
 #ifdef GRAPHICS
-  /* do something */
+  // Note: get rid of cast -- not safe.  RKW 9/19/96.
+  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+  FILE * printFile = psDispP->GetPrintFile();
+
+  for(int pointNum = 0; pointNum < num; pointNum++) {
+    Coord x1 = (Coord) rectAngles[pointNum].x;
+    Coord y1 = (Coord) rectAngles[pointNum].y;
+    Coord x2 = x1 + (Coord) rectAngles[pointNum].width;
+    Coord y2 = y1 + (Coord) rectAngles[pointNum].height;
+    DrawFilledRect(printFile, x1, y1, x2, y2);
+  }
 #endif
 }
 
@@ -406,7 +438,17 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
 #endif
 
 #ifdef GRAPHICS
-  /* do something */
+  // Note: get rid of cast -- not safe.  RKW 9/19/96.
+  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+  FILE * printFile = psDispP->GetPrintFile();
+
+  for(int pointNum = 0; pointNum < num; pointNum++) {
+    Coord x1 = (Coord) rectAngles[pointNum].x;
+    Coord y1 = (Coord) rectAngles[pointNum].y;
+    Coord x2 = x1 + (Coord) rectAngles[pointNum].width;
+    Coord y2 = y1 + (Coord) rectAngles[pointNum].height;
+    DrawFilledRect(printFile, x1, y1, x2, y2);
+  }
 #endif
 }
 
@@ -416,6 +458,14 @@ void PSWindowRep::FillRect(Coord xlow, Coord ylow, Coord width, Coord height)
   printf("PSWindowRep::FillRect: x %.2f, y %.2f, width %.2f, height %.2f\n",
          xlow, ylow, width, height);
 #endif
+
+  //TEMPTEMP -- temporary expedient to keep from drawing over the whole data
+  // area.
+  if (GetFgColor() == GetBgColor()) {
+    printf("Dropping out of PSWindowRep::FillRect() because foreground\n");
+    printf("  is the same as background color\n");
+    return;
+  }
 
   /* XXX: need to clip rect against window dimensions */
 
@@ -444,7 +494,13 @@ void PSWindowRep::FillRect(Coord xlow, Coord ylow, Coord width, Coord height)
 #endif
 
 #ifdef GRAPHICS
-  /* do something */
+#if 1 //TEMPTEMP
+  // Note: get rid of cast -- not safe.  RKW 9/19/96.
+  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+  FILE * printFile = psDispP->GetPrintFile();
+
+  DrawFilledRect(printFile, txlow, tylow, txmax, tymax);
+#endif
 #endif
 }
 
@@ -603,7 +659,14 @@ void PSWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
   WindowRep::Transform(x2, y2, tx2, ty2);
 
 #ifdef GRAPHICS
-  /* do something */
+  // Note: get rid of cast -- not safe.  RKW 9/19/96.
+  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+  FILE * printFile = psDispP->GetPrintFile();
+
+  fprintf(printFile, "newpath\n");
+  fprintf(printFile, "%f %f moveto\n", tx1, ty1);
+  fprintf(printFile, "%f %f lineto\n", tx2, ty2);
+  fprintf(printFile, "stroke\n");
 #endif
 }
 
@@ -614,7 +677,14 @@ void PSWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
 #endif
   
 #ifdef GRAPHICS
-  /* do something */
+  // Note: get rid of cast -- not safe.  RKW 9/19/96.
+  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+  FILE * printFile = psDispP->GetPrintFile();
+
+  fprintf(printFile, "newpath\n");
+  fprintf(printFile, "%d %d moveto\n", x1, y1);
+  fprintf(printFile, "%d %d lineto\n", x2, y2);
+  fprintf(printFile, "stroke\n");
 #endif
 }
 
@@ -651,7 +721,15 @@ void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
     return;
   
 #ifdef GRAPHICS
-  /* do something */
+  // Note: get rid of cast -- not safe.  RKW 9/19/96.
+  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+  FILE * printFile = psDispP->GetPrintFile();
+
+  fprintf(printFile, "/Times-Roman findfont\n");//TEMPTEMP
+  fprintf(printFile, "15 scalefont\n");//TEMPTEMP
+  fprintf(printFile, "setfont\n");//TEMPTEMP
+  fprintf(printFile, "%f %f moveto\n", tx1, ty1);//TEMPTEMP
+  fprintf(printFile, "(%s) show\n", text);
 #endif
 }
 
@@ -686,7 +764,15 @@ void PSWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
     return;
 
 #ifdef GRAPHICS
-  /* do something */
+  // Note: get rid of cast -- not safe.  RKW 9/19/96.
+  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+  FILE * printFile = psDispP->GetPrintFile();
+
+  fprintf(printFile, "/Times-Roman findfont\n");//TEMPTEMP
+  fprintf(printFile, "15 scalefont\n");//TEMPTEMP
+  fprintf(printFile, "setfont\n");//TEMPTEMP
+  fprintf(printFile, "%f %f moveto\n", tx1, ty1);//TEMPTEMP
+  fprintf(printFile, "(%s) show\n", text);
 #endif
 }
 
@@ -795,4 +881,20 @@ void PSWindowRep::Lower()
 #endif
 
   /* do something */
+}
+
+/* Draw a filled rectangle (coordinates must have already been scaled if
+ * that is necessary). */
+
+void PSWindowRep::DrawFilledRect(FILE *printFile, Coord x1, Coord y1,
+    Coord x2, Coord y2)
+{
+  fprintf(printFile, "newpath\n");
+  fprintf(printFile, "%f %f moveto\n", x1, y1);
+  fprintf(printFile, "%f %f lineto\n", x1, y2);
+  fprintf(printFile, "%f %f lineto\n", x2, y2);
+  fprintf(printFile, "%f %f lineto\n", x2, y1);
+  fprintf(printFile, "%f %f lineto\n", x1, y1);
+  fprintf(printFile, "closepath\n");
+  fprintf(printFile, "fill\n");
 }
