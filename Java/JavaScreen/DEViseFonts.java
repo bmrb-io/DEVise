@@ -15,6 +15,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2000/05/22 17:52:49  wenger
+// JavaScreen handles fonts much more efficiently to avoid the problems with
+// GData text being drawn very slowly on Intel platforms.
+//
 
 // This class contains methods for dealing with fonts efficiently.
 
@@ -41,13 +45,14 @@ public final class DEViseFonts
 	      ", " + fWeight + ", " + fSlant);
 	}
 
+	// TEMP -- should have defined constants for font family
+        if (fFam < 0 || fFam >= _families.length) {
+            fFam = 1;
+        }
+
         Font font = FindExisting(fSize, fFam, fWeight, fSlant);
 	if (font == null) {
 	    if (fSize >= _minSize) {
-	        // TEMP -- should have defined constants for font family
-                if (fFam < 0 || fFam >= _families.length) {
-                    fFam = 1;
-                }
 
                 int fontstyle = ((fWeight == 0) ? Font.PLAIN : Font.BOLD) +
 	          ((fSlant == 0) ? Font.PLAIN : Font.ITALIC);

@@ -2334,8 +2334,9 @@ Num Date        Status  Description
 			pick up keystrokes in 3D views. (rkw)
 			(See also bug 592.)
 
-595 06/06/00	OPEN	JavaScreen: java.lang.ArrayIndexOutOfBoundsException
+595 06/06/00	FIXED	JavaScreen: java.lang.ArrayIndexOutOfBoundsException
 			when opening AWON session. (rkw)
+			(Fixed by rkw, 6/6/00.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
