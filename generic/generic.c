@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.40  1996/12/02 18:44:21  wenger
+  Fixed problems dealing with DST in dates (including all date composite
+  parsers); added more error checking to date composite parsers.
+
   Revision 1.39  1996/11/23 20:44:26  jussi
   Removed references to QueryProcTape.
 
@@ -249,8 +253,16 @@ static time_t GetTime(struct tm &now)
   
   time_t nowtime = 0;
 
+/* Calling mktime() every time is the easiest way to get DST to work out
+ * correctly.  We probably eventually want to restore the code to not
+ * always call mktime(), but this is the quickest way to get things to
+ * be _correct_, even if slower.  RKW 12/4/96. */
+#if 0
   if (lasttime != (time_t)-1 && now.tm_year == lasttm.tm_year
       && now.tm_mon == lasttm.tm_mon) {
+#else
+  if (false) {
+#endif
     int diff = (now.tm_mday - lasttm.tm_mday) * 24 * 3600 +
                (now.tm_hour - lasttm.tm_hour) * 3600 +
 	       (now.tm_min  - lasttm.tm_min) * 60 +
@@ -298,6 +310,9 @@ public:
 	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
 	  fprintf(stderr, "Cannot find attribute %s\n", primAttrs[i]);
 	  DOASSERT(0, "Cannot find attribute");
+	}
+	if (!strcmp(info->name, "DATE") && (info->type != DateAttr)) {
+	  reportErrNosys("Type of DATE attribute is not date");
 	}
 	attrOffset[i] = info->offset;
       }
@@ -356,6 +371,9 @@ public:
 	  fprintf(stderr, "Cannot find attribute %s\n", primAttrs[i]);
 	  DOASSERT(0, "Cannot find attribute");
 	}
+	if (!strcmp(info->name, "DATE") && (info->type != DateAttr)) {
+	  reportErrNosys("Type of DATE attribute is not date");
+	}
 	attrOffset[i] = info->offset;
       }
       _init = true;
@@ -411,6 +429,9 @@ public:
 	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
 	  fprintf(stderr, "Cannot find attribute %s\n", primAttrs[i]);
 	  DOASSERT(0, "Cannot find attribute");
+	}
+	if (!strcmp(info->name, "Date") && (info->type != DateAttr)) {
+	  reportErrNosys("Type of Date attribute is not date");
 	}
 	attrOffset[i] = info->offset;
       }
@@ -472,6 +493,9 @@ public:
 	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
 	  fprintf(stderr, "Cannot find attribute %s\n", primAttrs[i]);
 	  DOASSERT(0, "Cannot find attribute");
+	}
+	if (!strcmp(info->name, "Date") && (info->type != DateAttr)) {
+	  reportErrNosys("Type of Date attribute is not date");
 	}
 	attrOffset[i] = info->offset;
       }
@@ -542,6 +566,9 @@ public:
 	  fprintf(stderr, "Cannot find attribute %s\n", primAttrs[i]);
 	  DOASSERT(0, "Cannot find attribute");
 	}
+	if (!strcmp(info->name, "DATE") && (info->type != DateAttr)) {
+	  reportErrNosys("Type of DATE attribute is not date");
+	}
 	attrOffset[i] = info->offset;
       }
       _init = true;
@@ -598,6 +625,9 @@ public:
 	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
 	  fprintf(stderr, "Cannot find attribute %s\n", primAttrs[i]);
 	  DOASSERT(0, "Cannot find attribute");
+	}
+	if (!strcmp(info->name, "Date") && (info->type != DateAttr)) {
+	  reportErrNosys("Type of Date attribute is not date");
 	}
 	attrOffset[i] = info->offset;
       }
@@ -665,6 +695,9 @@ public:
 	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
 	  fprintf(stderr, "Cannot find attribute %s\n", primAttrs[i]);
 	  DOASSERT(0, "Cannot find attribute");
+	}
+	if (!strcmp(info->name, "DATE") && (info->type != DateAttr)) {
+	  reportErrNosys("Type of Date attribute is not date");
 	}
 	attrOffset[i] = info->offset;
       }

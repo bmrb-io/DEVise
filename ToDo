@@ -4,18 +4,14 @@
 
 ACTIVE
 ------
+Improve control of fonts. (ml/rkw 11/19/96)
+
 Be able to save schemas to a "TData file". (ml/rkw 6/13/96)
 
 
 HIGH PRIORITY
 -------------
 Update examples on Devise web page. (ml/rkw 9/6/96)
-
-Composite parsers for dates should make sure the dates being converted
-are within the legal range of Unix dates; possible also check that the
-attribute being written to is of type 'date'. (rkw 9/25/96)
-
-Improve control of fonts. (ml/rkw 11/19/96)
 
 
 LOW PRIORITY
@@ -266,6 +262,9 @@ Show name of view in mapping window. (ml/rkw 11/21/96)
 RecId should be in the TData attribute lists so you can find the min and
 max (needed if RecId is mapped to X, Y, or Z in GData). (kb/rkw 11/25/96)
 
+Have a 'reload' menu selection that closes and re-opens the current
+session, eliminating all caching, etc. (ml/rkw 12/03/96)
+
 
 COMPLETED
 ---------
@@ -296,6 +295,10 @@ Make a script to easily do a release of Devise to the outside world.
 Add true PostScript printing capability. (yi/rkw 7/9/96)
 
 'Apply' button in mapping window. (ml/rkw 11/12/96)
+
+Composite parsers for dates should make sure the dates being converted
+are within the legal range of Unix dates; possible also check that the
+attribute being written to is of type 'date'. (rkw 9/25/96)
 
 
 CANCELLED
