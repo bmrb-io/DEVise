@@ -1,6 +1,9 @@
 /*
   $Id$
+
   $Log$
+  Revision 1.2  1995/09/05 20:05:24  jussi
+  Added VCS header.
 */
 
 #include <sys/types.h>
