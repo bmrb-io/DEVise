@@ -17,6 +17,9 @@
 
 // ------------------------------------------------------------------------
 // $Log$
+// Revision 1.10  2001/10/19 19:28:55  xuk
+// Added playback indicator.
+//
 // Revision 1.9  2001/10/16 23:30:34  wenger
 // Client logs use client ID for file name uniqueness; added human-readable
 // datestamp.
@@ -160,6 +163,14 @@ public class DEVisePlayback implements Runnable
 		    }
 
 		    //
+		    // Check whether dispatcher is still running.
+		    // If so, sleep one more ms.
+		    //
+		    while (_dispatcher.getStatus() == 1) {
+		        Thread.sleep(1);
+		    }		
+
+		    //
 		    // Send the command to the JSPoP.
 		    //
 		    _dispatcher.start(cmd.command);
@@ -190,7 +201,7 @@ public class DEVisePlayback implements Runnable
 	    }
 	    _jsc.isDisplay = true;
 	    _jsc.isPlayback = false;
-	    -jsc.socketMode();
+	    _jsc.socketMode();
 	    stop();
 	}
     }
