@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/08/21 21:04:51  donjerko
+  Implemented view materialization
+
   Revision 1.3  1997/04/22 15:25:25  wenger
   Conditionaled out lots of debug code; fixed data source visualization
   window so the window for the data again defaults to 'New' if there are
@@ -41,7 +44,6 @@ char* dteImportFileType(char* name){
 #if defined(DEBUG)
 	cout << "in dteImportFileType(" << name << ")\n";
 #endif
-	// string query = "select * from " + string(name) + " as t";
 	string query = "dummy";
 
 	gdir->add_entry(name);

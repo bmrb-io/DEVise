@@ -22,6 +22,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/10/02 18:46:14  wenger
+  Opening and saving batch-style sessions in back end now fully working;
+  added tk2ds.tcl script for conversion.
+
   Revision 1.6  1997/08/21 21:04:51  donjerko
   Implemented view materialization
 
@@ -40,7 +44,7 @@
  */
 
 #include <string.h>
-#include <String.h>
+#include <string>
 
 #ifdef DTE_STANDALONE
 	#include "DTEControl.h"		// defines ControlPanel and API_ACK ...
@@ -131,8 +135,19 @@ int ParseAPIDTE(int argc, char **argv, ControlPanel *control){
     if(!strcmp(argv[0], "dteInsertCatalogEntry")){
       dteInsertCatalogEntry(argv[1], argv[2]);
       control->ReturnVal(API_ACK, "");
-      return 1;
+	 return 1;
     }
+		if(!strcmp(argv[0], "dteCheckSQLViewEntry")){
+			string errmsg = dteCheckSQLViewEntry(argv[1], argv[2]);
+			if(errmsg.empty()){
+				control->ReturnVal(API_ACK, "");
+			}
+			else{
+				// this cast is OK
+				control->ReturnVal(API_ACK, (char*) errmsg.c_str());
+			}
+			return 1;
+		}
 	}
 
 	if (argc == 6) {
@@ -142,8 +157,8 @@ int ParseAPIDTE(int argc, char **argv, ControlPanel *control){
           return 1;
      }
 	}
-	String tmp = String(argv[0]) +
+	string tmp = string(argv[0]) +
 	  ": no such command or wrong number of args";
-	control->ReturnVal(API_NAK, strdup(tmp.chars()));
+	control->ReturnVal(API_NAK, strdup(tmp.c_str()));
 	return -1;
 }

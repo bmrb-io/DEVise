@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/09/29 02:52:12  donjerko
+  *** empty log message ***
+
   Revision 1.15  1997/09/23 19:58:19  wenger
   Opening and saving of sessions now working with new scheme of mapping
   automatically creating the appropriate TData.
@@ -51,6 +54,7 @@
 
 #include <iostream.h>
 #include <strstream.h>
+#include <stdlib.h>
 #include "CatalogComm.h"
 #include "types.h"
 #include "exception.h"
@@ -146,8 +150,8 @@ char* dteShowCatalogEntry(const char* tableName){
 
 char* dteShowCatalogEntry(const char* catName, const char* entryName){
 
-//	cout << "in dteShowCatalogEntry(" << catName << ", " << entryName << ")\n";
-	string query = "select * from " +
+	cout << "in dteShowCatalogEntry(" << catName << ", " << entryName << ")\n";
+	string query = "select cat.name, cat.interf from " +
 		string(catName) + " as cat where cat.name = " +
 		addQuotes(entryName);
 	char* retVal = executeQuery(query);
@@ -159,6 +163,7 @@ char* dteShowCatalogEntry(const char* catName, const char* entryName){
 		cout << endl;
 		exit(0);
 	)
+	cout << "Returning: " << retVal << endl;
 	return retVal;
 }
 
@@ -208,7 +213,7 @@ void dteDeleteCatalogEntry(const char* catName, const char* entryName){
      )
 }
 
-void dteInsertCatalogEntry(const char* catName, const char* values){
+int dteInsertCatalogEntry(const char* catName, const char* values){
 
 #if defined(DEBUG)
 	cout << "in dteInsertCatalogEntry(" << catName << ", " 
@@ -225,6 +230,59 @@ void dteInsertCatalogEntry(const char* catName, const char* values){
           cout << endl;
           exit(0);
      )
+	return 0;
+}
+
+string dteCheckSQLViewEntry(const char* asClause, const char* queryToCheck){
+
+#if defined(DEBUG)
+	cout << "in dteCheckSQLViewEntry(" << asClause 
+		<< ", " << queryToCheck << ")\n";
+#endif
+		
+	string retVal;
+	string asString(asClause);
+	int asCard = 1;
+	string::iterator it;
+	for(it = asString.begin(); it != asString.end(); ++it){
+		if(*it == ','){
+			asCard++;
+			*it = ' ';
+		}
+	}
+	asString = string(" ") + asString + " ";
+	if(asString.find(" recId ") != string::npos){
+		retVal = "\"reciId\" is a reserved attribute name and may not be listed in the AS clause";
+		return retVal;
+	}
+	string query = "typecheck " + string(queryToCheck);
+	Engine engine(query);
+	engine.optimize();
+     CATCH(
+		string err("Coused by query:\n");
+		err += queryToCheck;
+		currExcept->append(err);
+          retVal = currExcept->toString();
+          currExcept = NULL;
+		return retVal;
+     )
+	assert(engine.getNumFlds() == 1);
+	TRY(const TypeID* typeIDs = engine.getTypeIDs(), NULL);
+	assert(typeIDs[0] == SCHEMA_TP);
+	engine.initialize();
+	const Tuple* tup = engine.getNext();
+	int numFlds = (ISchema::getISchema(tup[0]))->getNumFlds();
+	if(numFlds != asCard){
+		ostringstream out;
+		out << "Number of fields in the SELECT clause (" << numFlds << ")";
+		out << " does not match number of fields in the AS clause (";
+		out << asCard << ")" << ends;
+		char* tmp = out.str();
+		retVal = string(tmp);
+		delete [] tmp;
+		return retVal;
+	}
+	return retVal;
 }
 
 char* dteShowAttrNames(const char* schemaFile, const char* dataFile){

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/09/23 19:58:19  wenger
+  Opening and saving of sessions now working with new scheme of mapping
+  automatically creating the appropriate TData.
+
   Revision 1.4  1997/08/21 21:04:50  donjerko
   Implemented view materialization
 
@@ -28,6 +32,7 @@
 #ifndef CATALOG_COMM_H
 #define CATALOG_COMM_H
 
+#include <string>
 #include "DeviseTypes.h"
 
 char* executeQuery(const char* query); // throws exception
@@ -44,7 +49,9 @@ void dteDeleteCatalogEntry(const char* tableName);
 
 void dteMaterializeCatalogEntry(const char* tableName);
 
-void dteInsertCatalogEntry(const char* catName, const char* values);
+int dteInsertCatalogEntry(const char* catName, const char* values);
+
+string dteCheckSQLViewEntry(const char* asClause, const char* queryToCheck);
 
 char* dteImportFileType(char* name);
 

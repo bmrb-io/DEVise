@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/10/10 21:07:27  liping
+  The interface provided by TData::InitGetRecs and TData::GetRecs was changed
+  The new interface carries the information of 1. LowId 2. HighId 3. AttrName
+  	4. Granularity in the structure "Range"
+
   Revision 1.23  1997/09/17 02:36:07  donjerko
   *** empty log message ***
 
@@ -250,6 +255,7 @@ TDataDQL::TDataDQL(char* tableName, List<char*>* attrList, char* query) :
 	char* attNames = dteListAttributes(_tableName);
 	char* attName = strtok(attNames, " ");
 	string minmaxQ("select ");
+	queryHeader += "select ";
 	const int MAX_NUM_ATTRS = 100;
 	_attributeNames = new string[MAX_NUM_ATTRS];
 	int i = 0;
@@ -257,14 +263,17 @@ TDataDQL::TDataDQL(char* tableName, List<char*>* attrList, char* query) :
 		assert(i < MAX_NUM_ATTRS);	
 		_attributeNames[i] = string(attName);
 		minmaxQ += string("min(t.") + attName + "), max(t." + attName + ")";
+		queryHeader += string("t.") + attName;
 		attName = strtok(NULL, " "); 	
 		if(attName){
 			minmaxQ += ", ";
+			queryHeader += ", ";
 		}
 		i++;
 	}
 	_numFlds = i;
 	minmaxQ += string(" from ") + _tableName + " as t";
+	queryHeader += string(" from ") + _tableName + " as t where ";
 	_query = strdup(minmaxQ.c_str());
 	this->attrList = attrList;
 	runQuery();
@@ -343,12 +352,7 @@ TData::TDHandle TDataDQL::InitGetRecs(Range *range,
 
   _nextToFetch = lowId;
 //  Issue a query to the engine;
-  string SQLquery;
-  SQLquery="select ";
-  SQLquery+="* ";
-  SQLquery+="from ";
-  SQLquery+=_tableName;
-  SQLquery+=" as t where ";
+  string SQLquery = queryHeader;
   char whereClause[29+sizeof(unsigned long)*2];
   sprintf(whereClause, "t.recId>=%ld and t.recId<=%ld", lowId, highId);
   SQLquery+=whereClause;

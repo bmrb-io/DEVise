@@ -187,6 +187,7 @@ private:
 	char* _tableName;
 	RecId _nextToFetch;
 	Engine* engine;
+	string queryHeader;
 };
 
 #endif
