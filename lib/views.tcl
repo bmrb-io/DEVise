@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.32  1997/03/21 16:18:00  guangshu
+#  Minor change for Date.
+#
 #  Revision 1.31  1997/03/20 22:38:49  guangshu
 #  Added new statistics interface for histogram, groupby and basic stats.
 #
@@ -713,17 +716,15 @@ proc DoLinkCreate { isRec } {
 	    }
 	    
             set type -1
-########## Temporary hack to make links working DD & KW ############33
-#           if {[ expr ($flag & 128) ] }  {
-#	        set type 0
-#	        puts " link type + " 
-#	        set flag 128
-#           } else if { [ expr ($flag & 256) ] } {
-#	        set type 1
-#	        puts " link type - " 
-#	        set flag 128
-#            }
-#######################################################################3
+            if {[ expr ($flag & 128) ] }  {
+	        set type 0
+	        puts " link type + " 
+	        set flag 128
+            } elseif { [ expr ($flag & 256) ] } {
+	        set type 1
+	        puts " link type - " 
+	        set flag 128
+            }
 	    set result [DEVise create link Visual_Link $name $flag]
        	    if { $flag == 128  } {
 	        DEVise setLinkType $name $type
