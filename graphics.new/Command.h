@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/03/05 23:24:17  jussi
+  Added a destructor which closes an open file.
+
   Revision 1.3  1995/12/05 18:41:07  jussi
   Added copyright notice and cleaned up code a bit. Changed argv
   parameter to UpdateVisualFilter from const char ** to char **.
@@ -46,7 +49,7 @@ public:
   Command(char *fname, QueryProc *qp);
   
   /* destructor */
-  ~Command();
+  virtual ~Command();
 
 protected:
   enum CmdState { WaitTime, WaitCmd, ReadInput, Eof };
