@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/03/26 15:34:55  wenger
+  Fixed various compile warnings and errors; added 'clean' and
+  'mostlyclean' targets to makefiles; changed makefiles so that
+  object lists are derived from source lists.
+
   Revision 1.21  1996/02/05 19:59:21  yuc
   updating _shapes, get 3Dvector.
 
@@ -297,7 +302,8 @@ void MappingInterp::UpdateBoundingBox(int pageNum,
 }
 #endif
 
-void MappingInterp::DrawGDataArray(WindowRep *win, void **gdataArray, int num)
+void MappingInterp::DrawGDataArray(View *view, WindowRep *win,
+				   void **gdataArray, int num)
 {
   SetGDataOffset(_offsets);
 
@@ -308,7 +314,7 @@ void MappingInterp::DrawGDataArray(WindowRep *win, void **gdataArray, int num)
     printf("Drawing shape %d\n", shape);
 #endif
     _shapes[shape]->DrawGDataArray(win, gdataArray, num, this,
-				   GetPixelWidth());
+				   view, GetPixelWidth());
   } else {
     /* dynamic shape */
     int i = 0;
@@ -326,7 +332,7 @@ void MappingInterp::DrawGDataArray(WindowRep *win, void **gdataArray, int num)
       printf("Drawing shape %d\n", shape);
 #endif
       _shapes[shape]->DrawGDataArray(win, &gdataArray[i], j - i, this,
-				     GetPixelWidth());
+				     view, GetPixelWidth());
       i = j;
     }
   }
@@ -685,7 +691,7 @@ AttrList *MappingInterp::InitCmd(char *name)
     if (_simpleCmd->shapeCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
       /* constant */
       ShapeID shape = (ShapeID)_simpleCmd->shapeCmd.cmd.num;
-      if (shape >= MaxInterpShapes)
+      if (shape < 0 || shape >= MaxInterpShapes)
 	shape = 0;
       SetDefaultShape(shape);
     } else {
@@ -861,7 +867,7 @@ AttrList *MappingInterp::InitCmd(char *name)
   if (_cmdFlag & MappingCmd_Shape) {
     if (IsConstCmd(_cmd->shapeCmd, constVal)) {
       ShapeID shape = (ShapeID)constVal;
-      if (shape >= MaxInterpShapes)
+      if (shape < 0 || shape >= MaxInterpShapes)
 	shape = 0;
       SetDefaultShape(shape);
       _tclCmd->shapeCmd = "";
