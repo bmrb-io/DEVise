@@ -17,6 +17,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.43  1997/04/11 18:48:50  wenger
+#  Added dashed line support to the cslib versions of WindowReps; added
+#  option to not maintain aspect ratio in Tasvir images; re-added shape
+#  help file that somehow didn't get added in 1.3 merges; removed code
+#  for displaying GIFs locally (including some of the xv code).
+#
 #  Revision 1.42  1997/04/09 18:24:36  wenger
 #  Fixed various makefiles (removed extra -gstabs flags, etc.);
 #  setup script now links client.tcl into all cslib directories;
@@ -146,9 +152,6 @@ xv24to8.o:	xv24to8.c
 	$(C) -c $(CFLAGS) $<
 
 xvgrab.o:	xvgrab.c
-	$(C) -c $(CFLAGS) $<
-
-xvgif.o:	xvgif.c
 	$(C) -c $(CFLAGS) $<
 
 jstat: jstat.o $(LIBOBJ)
