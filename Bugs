@@ -928,6 +928,7 @@ Num Date        Status  Description
 			to the data source catalog. (rkw)
 
 232 09/26/97	OPEN	Dots ('.') in data source names goof things up. (rkw)
+			(See also 245.)
 
 233 10/01/97	OPEN	Schema editor GUI (for both old and UniData schemas)
 			doesn't let you add a new attribute prior to an
@@ -972,6 +973,7 @@ Num Date        Status  Description
 
 245 12/01/97	OPEN	Dots or spaces in data source names goof up the DTE.
 			(dk/rkw)
+			(See also 232.)
 
 246 12/01/97	FIXED	Data source definition GUI shouldn't let you add
 			data source names with dots or spaces. (rkw)
@@ -1006,7 +1008,7 @@ Num Date        Status  Description
 254 12/12/97	OPEN	Devised doesn't seem to notify Tasvir and EmbeddedTk
 			server when it exits. (rkw)
 
-255 12/12/97	OPEN	Trademark notice no longer shows up in DEVise windows.
+255 12/12/97	FIXED	Trademark notice no longer shows up in DEVise windows.
 			(rkw)
 
 256 12/15/97	OPEN	Drill-down on compiled mappings (multi) causes
